@@ -43,6 +43,7 @@ import {
   CONCEPT_CHIP_IDS,
   conceptChipLabel,
   isConceptChipId,
+  validateConceptChipId,
   CONCEPT_FLOOR_MATERIAL_LABELS,
   CONCEPT_FLOOR_MATERIALS,
   CONCEPT_PLACE_COUNT_MAX,
@@ -796,16 +797,66 @@ function renderThingInspector(
       }),
     );
   }
+  const chipError = el("p", { class: "scratch-concept-chip-error" });
+  chipError.hidden = true;
+  const setChipError = (message: string | null): void => {
+    if (message) {
+      chipError.hidden = false;
+      chipError.textContent = message;
+      chipError.dataset.testid = "scratch-concept-chip-error";
+      return;
+    }
+    chipError.hidden = true;
+    chipError.textContent = "";
+    delete chipError.dataset.testid;
+  };
   const customChips = thing.chips.filter((chip) => !isConceptChipId(chip));
   for (const chip of customChips) {
+    const input = el("input", {
+      class: "scratch-concept-chip-custom-input",
+      attrs: { type: "text", value: chip, title: "자유 칩 이름 — 바꾸면 바로 저장" },
+      dataset: { testid: `scratch-concept-chip-custom-input-${chip}` },
+      value: chip,
+      on: {
+        change: (event) => {
+          const field = event.target as HTMLInputElement;
+          const result = renameThingChip(tileset.id, bundle.id, thing.id, chip, field.value);
+          if (!result.ok) {
+            field.value = chip;
+            setChipError(result.error);
+            return;
+          }
+          if (result.value === chip) {
+            setChipError(null);
+            return;
+          }
+          refresh(host, rerender);
+        },
+      },
+    }) as HTMLInputElement;
     chips.append(
-      el("button", {
-        class: `scratch-concept-chip custom on`,
-        attrs: { type: "button", title: "자유 칩 — 누르면 지운다" },
+      el("div", {
+        class: "scratch-concept-chip-custom",
+        attrs: { title: "자유 칩" },
         dataset: { testid: `scratch-concept-chip-custom-${chip}` },
-        text: `× ${chip}`,
+        children: [
+          input,
+          el("button", {
+            class: "scratch-concept-chip-remove",
+            attrs: { type: "button", title: "자유 칩 지우기" },
+            dataset: { testid: `scratch-concept-chip-remove-${chip}` },
+            text: "지우기",
+            on: {
+              click: () => {
+                toggleChip(tileset.id, bundle.id, thing.id, chip);
+                refresh(host, rerender);
+              },
+            },
+          }),
+        ],
         on: {
-          click: () => {
+          click: (event) => {
+            if (event.target !== event.currentTarget) return;
             toggleChip(tileset.id, bundle.id, thing.id, chip);
             refresh(host, rerender);
           },
@@ -819,10 +870,11 @@ function renderThingInspector(
     dataset: { testid: "scratch-concept-chip-add" },
     on: {
       change: (event) => {
-        const next = (event.target as HTMLInputElement).value.trim();
-        if (!next) return;
-        if (!/^[A-Za-z0-9-_]{1,32}$/.test(next)) return;
-        addChip(tileset.id, bundle.id, thing.id, next);
+        const result = addChip(tileset.id, bundle.id, thing.id, (event.target as HTMLInputElement).value);
+        if (!result.ok) {
+          setChipError(result.error);
+          return;
+        }
         refresh(host, rerender);
       },
     },
@@ -889,6 +941,7 @@ function renderThingInspector(
       }),
       el("div", { class: "scratch-concept-section-label", text: "능력 칩" }),
       chips,
+      chipError,
       el("div", { class: "scratch-concept-section-label", text: "이 물건이 속한 장소" }),
       places,
       el("label", {
@@ -1018,14 +1071,45 @@ function defaultChipsFor(object: InteriorObjectDef): ConceptChipId[] {
   return ["block"];
 }
 
-function addChip(tilesetId: string, bundleId: string, thingId: string, chip: string): void {
-  const next = chip.trim();
-  if (!next || !/^[A-Za-z0-9-_]{1,32}$/.test(next)) return;
+function addChip(
+  tilesetId: string,
+  bundleId: string,
+  thingId: string,
+  chip: string,
+): { ok: true; value: string } | { ok: false; error: string } {
+  const validated = validateConceptChipId(chip);
+  if (!validated.ok) return validated;
   mutateBundle(tilesetId, bundleId, (bundle) => {
     const thing = bundle.things.find((entry) => entry.id === thingId);
     if (!thing) return;
-    if (!thing.chips.includes(next)) thing.chips = [...thing.chips, next];
+    if (!thing.chips.includes(validated.value)) thing.chips = [...thing.chips, validated.value];
   }, "칩 추가");
+  return validated;
+}
+
+function renameThingChip(
+  tilesetId: string,
+  bundleId: string,
+  thingId: string,
+  from: string,
+  to: string,
+): { ok: true; value: string } | { ok: false; error: string } {
+  const validated = validateConceptChipId(to);
+  if (!validated.ok) return validated;
+  const next = validated.value;
+  if (next === from) return validated;
+  let error: string | undefined;
+  mutateBundle(tilesetId, bundleId, (bundle) => {
+    const thing = bundle.things.find((entry) => entry.id === thingId);
+    if (!thing || !thing.chips.includes(from)) return;
+    if (thing.chips.includes(next)) {
+      error = "같은 칩이 이미 있습니다";
+      return;
+    }
+    thing.chips = thing.chips.map((chip) => (chip === from ? next : chip));
+  }, "칩 이름");
+  if (error) return { ok: false, error };
+  return validated;
 }
 
 function toggleChip(tilesetId: string, bundleId: string, thingId: string, chip: ConceptChipId): void {

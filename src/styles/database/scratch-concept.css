@@ -200,6 +200,42 @@
   background: color-mix(in srgb, var(--db-studio-accent) 16%, transparent);
 }
 
+.scratch-concept-chip-custom {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 4px 0 8px;
+  border-radius: 999px;
+  border: 1px solid var(--db-studio-accent);
+  background: color-mix(in srgb, var(--db-studio-accent) 16%, transparent);
+}
+
+.scratch-concept-chip-custom-input,
+.scratch-concept-chip-add {
+  font: 700 11px/1.6 ui-monospace, monospace;
+  width: 8em;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--db-studio-text-1);
+}
+
+.scratch-concept-chip-remove {
+  font: 700 11px/1.6 inherit;
+  padding: 0 6px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--db-studio-text-2);
+  cursor: pointer;
+}
+
+.scratch-concept-chip-error {
+  margin: 0;
+  font-size: 12px;
+  color: var(--db-studio-danger);
+}
+
 .scratch-concept-required {
   display: flex;
   align-items: center;

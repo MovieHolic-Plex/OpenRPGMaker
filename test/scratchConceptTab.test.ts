@@ -202,18 +202,80 @@ describe("scratchConceptTab 편집", () => {
     expect(after.things.find((thing) => thing.id === "bed_h")?.chips).not.toContain("block");
   });
 
+  function bedChips(): string[] {
+    return store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles![0]!.things.find((thing) => thing.id === "bed_h")!.chips;
+  }
+
+  function chipAdd(host: FakeElement): { value: string; dispatchEvent: (event: Event) => void } {
+    return host.querySelector("[data-testid='scratch-concept-chip-add']") as unknown as { value: string; dispatchEvent: (event: Event) => void };
+  }
+
   it("자유 칩을 입력하면 저장되고 눌러서 지울 수 있다", () => {
     const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
     host.querySelector("[data-testid='scratch-concept-thing-bed_h']")!.click();
-    const input = host.querySelector("[data-testid='scratch-concept-chip-add']") as unknown as { value: string; dispatchEvent: (event: Event) => void };
+    const input = chipAdd(host);
     input.value = "guest-only";
     input.dispatchEvent(new Event("change"));
-    const added = store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles![0]!;
-    expect(added.things.find((thing) => thing.id === "bed_h")?.chips).toContain("guest-only");
+    expect(bedChips()).toContain("guest-only");
     expect(host.querySelector("[data-testid='scratch-concept-chip-custom-guest-only']")).not.toBeNull();
     host.querySelector("[data-testid='scratch-concept-chip-custom-guest-only']")!.click();
-    const removed = store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles![0]!;
-    expect(removed.things.find((thing) => thing.id === "bed_h")?.chips).not.toContain("guest-only");
+    expect(bedChips()).not.toContain("guest-only");
+  });
+
+  it("잘못된 자유 칩 입력은 이유를 보여 주고 넣지 않는다", () => {
+    const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
+    host.querySelector("[data-testid='scratch-concept-thing-bed_h']")!.click();
+    const input = chipAdd(host);
+    input.value = "bad chip!";
+    input.dispatchEvent(new Event("change"));
+    const error = host.querySelector("[data-testid='scratch-concept-chip-error']");
+    expect(error).not.toBeNull();
+    expect(error?.textContent).toContain("영문·숫자");
+    expect(bedChips()).not.toContain("bad chip!");
+    expect(host.querySelector("[data-testid='scratch-concept-chip-custom-bad chip!']")).toBeNull();
+  });
+
+  it("자유 칩 이름을 바꾸면 저장된다", () => {
+    const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
+    host.querySelector("[data-testid='scratch-concept-thing-bed_h']")!.click();
+    const input = chipAdd(host);
+    input.value = "guest-only";
+    input.dispatchEvent(new Event("change"));
+    const rename = host.querySelector("[data-testid='scratch-concept-chip-custom-input-guest-only']") as unknown as { value: string; dispatchEvent: (event: Event) => void };
+    expect(rename).not.toBeNull();
+    rename.value = "vip";
+    rename.dispatchEvent(new Event("change"));
+    expect(bedChips()).toContain("vip");
+    expect(bedChips()).not.toContain("guest-only");
+    expect(host.querySelector("[data-testid='scratch-concept-chip-custom-input-vip']")).not.toBeNull();
+    expect(host.querySelector("[data-testid='scratch-concept-chip-error']")).toBeNull();
+  });
+
+  it("같은 자유 칩을 두 번 넣어도 한 개만 남는다", () => {
+    const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
+    host.querySelector("[data-testid='scratch-concept-thing-bed_h']")!.click();
+    chipAdd(host).value = "guest-only";
+    chipAdd(host).dispatchEvent(new Event("change"));
+    chipAdd(host).value = "guest-only";
+    chipAdd(host).dispatchEvent(new Event("change"));
+    expect(bedChips().filter((chip) => chip === "guest-only")).toHaveLength(1);
+  });
+
+  it("잘못된 이름 변경은 예전 칩을 그대로 둔다", () => {
+    const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
+    host.querySelector("[data-testid='scratch-concept-thing-bed_h']")!.click();
+    const input = chipAdd(host);
+    input.value = "guest-only";
+    input.dispatchEvent(new Event("change"));
+    const rename = host.querySelector("[data-testid='scratch-concept-chip-custom-input-guest-only']") as unknown as { value: string; dispatchEvent: (event: Event) => void };
+    rename.value = "bad chip!";
+    rename.dispatchEvent(new Event("change"));
+    expect(bedChips()).toContain("guest-only");
+    expect(bedChips()).not.toContain("bad chip!");
+    expect(rename.value).toBe("guest-only");
+    const error = host.querySelector("[data-testid='scratch-concept-chip-error']");
+    expect(error).not.toBeNull();
+    expect(error?.textContent).toContain("영문·숫자");
   });
 
   it("물건 인스펙터에 그림 칠하기 버튼이 있다", () => {
@@ -311,6 +373,21 @@ describe("scratchConceptBundles 스키마", () => {
         }],
       }],
     };
-    expect(() => validateTileset(tileset.id, invalid)).toThrow(/empty chip/);
+    expect(() => validateTileset(tileset.id, invalid)).toThrow(/칩 id가 비어 있습니다/);
+    const badChars = {
+      ...valid,
+      scratchConceptBundles: [{
+        ...cloneConceptBundle(SCRATCH_INN_BUNDLE),
+        things: [{
+          id: "bed_h",
+          label: "침대",
+          objectId: "bed_h",
+          placeIds: ["bedroom"],
+          chips: ["bad chip!"],
+        }],
+      }],
+    };
+    expect(() => validateTileset(tileset.id, badChars)).toThrow(/칩 id는 영문·숫자/);
+
   });
 });

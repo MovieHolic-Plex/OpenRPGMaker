@@ -6,6 +6,7 @@ import {
   isConceptPlaceRole,
   isConceptPlaceSize,
   isConceptWallMaterial,
+  validateConceptChipId,
 } from "../types/conceptBundle";
 import { isPaletteSlotRole } from "../tilesetPalette";
 import { TERM_KEYS } from "../terms";
@@ -385,8 +386,10 @@ export function validateTileset(id: string, value: unknown): void {
           `tileset ${id}.scratchConceptBundles[${index}].things[${thingIndex}].chips`,
           entry.chips,
         )) {
-          const chipId = requireString(`tileset ${id}.scratchConceptBundles[${index}].things[${thingIndex}].chips[]`, chip);
-          assert(chipId.trim().length > 0, `tileset ${id}: scratchConceptBundles[${index}].things[${thingIndex}] empty chip`);
+          const chipPath = `tileset ${id}.scratchConceptBundles[${index}].things[${thingIndex}].chips[]`;
+          const chipId = requireString(chipPath, chip);
+          const validated = validateConceptChipId(chipId);
+          assert(validated.ok, validated.ok ? chipPath : `${chipPath} ${validated.error}`);
         }
         if (entry.required !== undefined) {
           requireBoolean(`tileset ${id}.scratchConceptBundles[${index}].things[${thingIndex}].required`, entry.required);

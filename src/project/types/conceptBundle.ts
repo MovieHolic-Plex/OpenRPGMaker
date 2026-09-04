@@ -40,6 +40,26 @@ export function conceptChipLabel(chip: string): string {
   return CONCEPT_CHIP_LABELS[chip as ConceptBuiltinChipId] ?? chip;
 }
 
+/** 자유 칩 id — 영문·숫자·하이픈·밑줄, 1~32자. 내장 칩은 이 패턴을 우회한다. */
+export const CONCEPT_FREE_CHIP_PATTERN = /^[A-Za-z0-9-_]{1,32}$/;
+
+export function normalizeConceptChipId(value: string): string {
+  return value.trim();
+}
+
+export function validateConceptChipId(
+  value: string,
+): { ok: true; value: string } | { ok: false; error: string } {
+  const next = normalizeConceptChipId(value);
+  if (isConceptChipId(next)) return { ok: true, value: next };
+  if (next.length === 0) return { ok: false, error: "칩 id가 비어 있습니다" };
+  if (next.length > 32) return { ok: false, error: "칩 id는 32자를 넘을 수 없습니다" };
+  if (!CONCEPT_FREE_CHIP_PATTERN.test(next)) {
+    return { ok: false, error: "칩 id는 영문·숫자·-_만 쓸 수 있습니다" };
+  }
+  return { ok: true, value: next };
+}
+
 /** 중개념 — 장소에 올 수 있는 물건. 여러 장소에 속할 수 있다. */
 export interface ConceptThingRecord {
   id: string;
