@@ -11,6 +11,7 @@
 import { editorState } from "@/editor/editorState";
 import {
   createBlankStructureKit,
+  conceptThingsReferencingKit,
   deleteStructureKit,
   duplicateIntoTileset,
 } from "@/editor/harnessSuggestion/structureKitActions";
@@ -505,8 +506,14 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
                     exportOneKit(activeTileset!, kit);
                   }),
                   rowActionButton("✕", "삭제", `structure-kit-db-delete-${kit.id}`, () => {
+                    const refs = conceptThingsReferencingKit(activeTileset!.id, kit.id);
                     deleteStructureKit(activeTileset!.id, kit.id);
-                    toast(`'${kit.name ?? "구조물"}' 삭제`, "info");
+                    toast(
+                      refs.length > 0
+                        ? `'${kit.name ?? "구조물"}" 삭제 — 개념 꾸러미 ${refs.length}개 물건('${refs[0]!.thingLabel}' 외)의 그림이 고아가 됐다`
+                        : `'${kit.name ?? "구조물"}" 삭제`,
+                      refs.length > 0 ? "error" : "info",
+                    );
                     setInspectorSelectedPartId(null);
                     rerender();
                     refresh(host, rerender);
