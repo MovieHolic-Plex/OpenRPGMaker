@@ -164,8 +164,8 @@ function importFormatBox(): HTMLElement {
     dataset: { testid: "resource-import-format" },
     children: [
       el("legend", { text: "가져오기 형식" }),
-      labelWithInput("PNG (표준)", "png-standard", true),
-      labelWithInput("XYZ (사용자 지정)", "xyz-custom", false),
+      labelWithInput("PNG·JPEG (표준)", "png-standard", true),
+      labelWithInput("WebP·GIF (PNG로 자동 변환)", "webp-gif-normalize", false),
     ],
   });
 }
