@@ -1,0 +1,71 @@
+{
+  "base": "http://127.0.0.1:9845",
+  "at": "2026-09-04T12:18:53.333Z",
+  "afterMax": {
+    "autonomy": "max",
+    "reasoning": "high",
+    "agentMode": "auto"
+  },
+  "afterConfirm": {
+    "autonomy": "confirm",
+    "reasoning": "low",
+    "agentMode": "chat"
+  },
+  "stored": {
+    "oprn:ai-config": {
+      "authMode": "chatgpt",
+      "providerId": "google-antigravity",
+      "baseUrl": "",
+      "model": "gemini-3.7-flash",
+      "liteModel": "gemini-3.7-flash",
+      "apiKey": "",
+      "maxToolCalls": 2000,
+      "maxTokens": 200000,
+      "reasoningEffort": "low",
+      "agentMode": "chat",
+      "autonomyLevel": "confirm"
+    }
+  },
+  "shots": [
+    {
+      "file": "01-dial-render.png",
+      "caption": "settings modal behavior section renders ai-config-autonomy dial",
+      "box": {
+        "x": 426,
+        "y": 264.84375,
+        "width": 578,
+        "height": 418.046875
+      }
+    },
+    {
+      "file": "02-dial-max-sync.png",
+      "caption": "dial=max syncs reasoning=high + agentMode=auto (visible labels)",
+      "box": {
+        "x": 426,
+        "y": 264.84375,
+        "width": 578,
+        "height": 418.046875
+      }
+    },
+    {
+      "file": "03-dial-confirm-sync.png",
+      "caption": "dial=confirm syncs reasoning=low + agentMode=chat (visible labels)",
+      "box": {
+        "x": 426,
+        "y": 264.84375,
+        "width": 578,
+        "height": 418.046875
+      }
+    },
+    {
+      "file": "04-settings-modal-full.png",
+      "caption": "full settings modal with dial at confirm",
+      "box": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 900
+      }
+    }
+  ]
+}
