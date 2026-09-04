@@ -101,7 +101,17 @@ grid-template-rows:    minmax(0,1fr) | auto(덱)
 
 P0 두 건. 새 hex · 새 `!important` 없음.
 
-1. **덱 접힘이 공간을 돌려준다.** `.ai-studio-deck` 그리드가 접혀도 `var(--studio-deck-h)` 행을 남겨 모니터 아래가 빈 섬이 됐다. `.ai-studio-deck.is-collapsed` 가 `grid-template-rows` 를 손잡이+40px 머리로 줄인다. 덱 손잡이는 `deckPaneRoot.prepend` 로 덱 **안** 첫 자식이라 형제 선택자 `.ai-studio-deck.is-collapsed + .ai-studio-splitter` 는 죽어 있었고, 자손 선택자로 고친다(그리드 아이템을 남겨 머리가 8px 행에 앉지 않게 `visibility:hidden`). 접힌 장면·조수 손잡이는 `visibility:hidden` 이 8px 열+gap 을 남겨 `display:none`.
+1. **덱 접힘이 공간을 돌려준다.** `.ai-studio-deck` 그리드가 접혀도 `var(--studio-deck-h)` 행을 남겨 모니터 아래가 빈 섬이 됐다. `.ai-studio-deck.is-collapsed` 가 `grid-template-rows` 를 손잡이+40px 머리로 줄인다. 덱 손잡이는 `deckPaneRoot.prepend` 로 덱 **안** 첫 자식이라 형제 선택자 `.ai-studio-deck.is-collapsed + .ai-studio-splitter` 는 죽어 있었고, 자손 선택자로 고친다(그리드 아이템을 남겨 머리가 8px 행에 앉지 않게 `visibility:hidden`). 접힌 장면·조수 손잡이는 `display:none` — 탭 순서·히트테스트에서 빼지만 `grid-template-columns` 의 `var(--studio-splitter)` 트랙은 남는다.
 2. **부팅 모니터 입양.** persist `oprn:ai-studio=1` 로 켜진 채 부팅하면 attach 시점에 `edit-canvas` 노드가 아직 document 에 없다(`renderEditor` 가 `renderAiChatPanel` 뒤에 layout 을 main 에 붙인다). `refreshMonitor` 가 빈 자리(`ai-studio-monitor-empty`)를 본 뒤 document 에 `edit-canvas` / `editor-zoom-controls` 가 있으면 `adoptLiveMap` 을 다시 부른다. attach 는 그 재시도를 현재 턴 다음 microtask 로 한 번 건다. attach/detach 재부모화 계약은 그대로다.
 
 검증: `test/aiStudioShell.test.ts`(접힘 클래스 · attach 이후 캔버스 입양) · `npm run typecheck:app` · 캡처 `scripts/capture-ai-studio.mjs` 의 `*-05-deck-collapsed.png`.
+
+## 9. Phase 2 (2026-09-04) — 덱 탭 첫 등장만 전환 · 스튜디오 컴포저 크롬
+
+P1 리뷰 nit + 스튜디오 입력줄이 데크 컴포저 문법을 못 입던 결함. 새 hex · 새 `!important` 없음.
+
+1. **탭은 첫 등장에만 연다.** `setWorkPlan` / `setChangePreview` 가 값이 있을 때마다 작업/변경 탭으로 강제 전환해서, 사용자가 도구·활동에 머무를 수 없었다. 빈 값 → 값의 첫 등장에만 `showTab` 하고, plan→plan / input→input 갱신은 현재 탭을 유지한다(그 탭이 작업/변경이면 내용만 다시 그린다).
+2. **접힌 장면·조수 손잡이 주석.** `display:none` 은 탭 순서·히트테스트에서 손잡이를 빼는 것이고, `grid-template-columns` 가 여전히 `var(--studio-splitter)` 를 나열하므로 8px 트랙(+gap)은 남는다. 트랙 붕괴는 열 `grid-column` 재배치가 따라붙어 이 패치에서 하지 않는다.
+3. **스튜디오 컴포저는 데크 크롬을 쓴다.** attach 가 `commandBar` 를 `.ai-deck` 에서 `.ai-studio-composer` 로 옮기므로 `.ai-deck .ai-composer` 규칙이 안 먹었다. `18-assistant-deck.css` 가 `:is(.ai-deck, .ai-studio-composer)` 로 같은 규칙을 적용한다. 스튜디오 시트의 테두리·반경 덮어쓰기는 열 폭만 남긴다.
+
+검증: `test/aiStudioShell.test.ts`(계획/미리보기 두 번 설정 뒤 사용자가 둔 탭 유지) · `npm run typecheck:app` · 캡처 `scripts/capture-ai-studio.mjs` 의 `*-06-composer-focus.png`.

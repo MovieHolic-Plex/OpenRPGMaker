@@ -1,0 +1,12 @@
+{
+  "note": "studio vs float-deck composer computed styles, 1440x900, empty input (send is-not-ready)",
+  "match": {
+    "composer.bg": "transparent both",
+    "composer.border": "0 both",
+    "composer.radius": "0 both",
+    "composer.height": "102px both",
+    "send.size": "34x34 circle both",
+    "input.height": "44px both",
+    "input.border": "0 both"
+  }
+}
