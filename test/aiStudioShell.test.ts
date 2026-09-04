@@ -286,6 +286,47 @@ describe("스튜디오 콘솔(재개편)", () => {
     expect(deck?.className).not.toContain("is-collapsed");
   });
 
+  it("덱을 접으면 그리드 행 축소 마커가 덱 뿌리에 붙는다", () => {
+    // FakeDom 은 computed grid-template-rows 를 못 본다. CSS `.ai-studio-deck.is-collapsed`
+    // 가 splitter+40px 머리로 줄이는 훅이 이 클래스다.
+    const { root } = standaloneShell();
+    const deck = findByTestId(root, "ai-studio-deck");
+    const toggle = findByTestId(root, "ai-studio-deck-collapse");
+    expect(deck?.classList.contains("is-collapsed")).toBe(false);
+    expect(deck?.querySelector("[data-testid=ai-studio-split-deck]")).toBeTruthy();
+    toggle?.click();
+    expect(deck?.classList.contains("is-collapsed")).toBe(true);
+    expect(deck?.className.split(/\s+/)).toContain("is-collapsed");
+    toggle?.click();
+    expect(deck?.classList.contains("is-collapsed")).toBe(false);
+  });
+
+  it("refreshMonitor 는 attach 뒤에 나타난 캔버스를 입양한다", () => {
+    // 부팅: persist 된 스튜디오가 캔버스보다 먼저 attach 되면 빈 자리가 고정됐다.
+    const { shell, root } = standaloneShell();
+    const stage = findByTestId(root, "ai-studio-monitor-stage");
+    expect(stage?.querySelector("[data-testid=ai-studio-monitor-empty]")).toBeTruthy();
+    expect(stage?.querySelector("[data-testid=edit-canvas]")).toBeNull();
+
+    const body = (globalThis.document as unknown as { body: FakeElement }).body;
+    const canvas = new FakeElement("div");
+    canvas.dataset.testid = "edit-canvas";
+    canvas.setAttribute("data-testid", "edit-canvas");
+    const zoom = new FakeElement("div");
+    zoom.dataset.testid = "editor-zoom-controls";
+    zoom.setAttribute("data-testid", "editor-zoom-controls");
+    body.append(canvas, zoom);
+
+    shell.refreshMonitor();
+    expect(stage?.querySelector("[data-testid=edit-canvas]")).toBe(canvas);
+    expect(stage?.querySelector("[data-testid=ai-studio-monitor-empty]")).toBeNull();
+    expect(findByTestId(root, "ai-studio-monitor-chrome")?.querySelector("[data-testid=editor-zoom-controls]")).toBe(zoom);
+
+    shell.detach();
+    expect(body.querySelector("[data-testid=edit-canvas]")).toBe(canvas);
+    expect(body.querySelector("[data-testid=editor-zoom-controls]")).toBe(zoom);
+  });
+
   it("좌·우·하단 손잡이가 있고 키보드로 크기를 조절한다", () => {
     // Break: 손잡이가 없거나 키 입력이 크기에 닿지 않아 고정 폭으로 굳는다.
     const { root } = standaloneShell();

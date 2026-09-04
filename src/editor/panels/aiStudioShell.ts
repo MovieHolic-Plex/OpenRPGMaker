@@ -667,9 +667,21 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     chips.push(metaChip(brief.layerShort));
     monitorMeta.replaceChildren(...chips);
     refreshBriefing();
+    if (!attachedTo) return;
     if (parked.length > 0) return;
     if (monitorStage.querySelector("[data-testid=edit-canvas]")) return;
-    if (!monitorStage.querySelector("[data-testid=ai-studio-monitor-empty]")) {
+    const showingEmpty = monitorStage.querySelector("[data-testid=ai-studio-monitor-empty]");
+    // 부팅 때 oprn:ai-studio=1 이면 attach 시점에 캔버스가 아직 document 에 없다.
+    // 빈 자리만 두고 끝나지 말고, 캔버스·줌이 생기면 다시 입양한다.
+    if (showingEmpty && typeof document !== "undefined") {
+      const canvasReady = document.querySelector("[data-testid=edit-canvas]");
+      const zoomReady = document.querySelector("[data-testid=editor-zoom-controls]");
+      if (canvasReady || zoomReady) {
+        adoptLiveMap();
+        return;
+      }
+    }
+    if (!showingEmpty) {
       monitorStage.replaceChildren(monitorEmpty());
     }
   };
@@ -745,6 +757,9 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     adoptLiveMap();
     refreshScenes();
     refreshMonitor();
+    // persist-studio 부팅: 캔버스 노드는 이미 있지만 renderEditor 가 layout 을 main 에
+    // 붙이기 전이라 document.querySelector 가 못 찾는다. 이 턴이 끝나면 다시 입양한다.
+    if (typeof queueMicrotask === "function") queueMicrotask(() => refreshMonitor());
     watchLog(next.historyLogMount);
     showTab(deckTab);
     if (typeof ResizeObserver !== "undefined") {
