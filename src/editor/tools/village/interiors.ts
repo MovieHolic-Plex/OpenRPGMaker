@@ -1,7 +1,7 @@
 // editor/tools/village/interiors.ts
 // 집 실내 — 내부 맵 생성·등록, 문 이벤트 연결, 맵 트리 배선.
 
-import { createHouseDoorEvent, createHouseInteriorMap, registerInteriorMaps } from "@/editor/houseInteriors";
+import { createHouseDoorEvent, createHouseDoorStepEvent, createHouseInteriorMap, registerInteriorMaps } from "@/editor/houseInteriors";
 import { appendToTree } from "@/project/mapTree";
 import type { GameEvent, GameMap, MapId, MapTreeNode, Project } from "@/project/types";
 import {
@@ -70,6 +70,19 @@ export function createVillageHouseInteriors(
       entryX: interior.entry.x,
       entryY: interior.entry.y,
     }));
+    // 열린 문 기본값: 문 앞 통행 칸에 밟으면 열리는 발판 — 문 칸은 벽이라 밟히지 않는다.
+    // 문 앞이 맵 밖이면 발판을 생략한다(문 스프라이트만 남는다).
+    if (house.doorAt.y + 1 < map.height) {
+      upsertEvent(map.events, createHouseDoorStepEvent({
+        eventId: `${doorEventId}_step`,
+        x: house.doorAt.x,
+        y: house.doorAt.y + 1,
+        interiorMapId,
+        name: `${owner}의 집 문`,
+        entryX: interior.entry.x,
+        entryY: interior.entry.y,
+      }));
+    }
     refs.push({
       houseIndex: index,
       ownerName: owner,

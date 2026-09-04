@@ -476,8 +476,9 @@ describe("build_village", () => {
       const door = map.events.find((event) => event.id === house.doorEventId);
       expect(door?.x).toBe(house.doorAt.x);
       expect(door?.y).toBe(house.doorAt.y);
-      expect(door?.pages?.[0]?.trigger.kind).toBe("action");
-      expect(door?.pages?.[0]?.priority).toBe("same");
+      // 열린 문 기본값: 문 스프라이트는 below 장식, 전이는 문 앞 발판이 맡는다.
+      expect(door?.pages?.[0]?.trigger.kind).toBe("playerTouch");
+      expect(door?.pages?.[0]?.priority).toBe("below");
       expect(door?.pages?.[0]?.graphic.sprite?.id).toBe(HOUSE_DOOR_CHARSET_TEXTURE);
       expect(door?.pages?.[0]?.commands.map((command) => command.kind)).toEqual([
         "playAudio",

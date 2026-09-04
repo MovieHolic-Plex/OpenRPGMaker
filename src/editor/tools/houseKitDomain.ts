@@ -6,6 +6,7 @@ import {
 } from "@/editor/houseKit";
 import {
   createHouseDoorEvent,
+  createHouseDoorStepEvent,
   createHouseInteriorMap,
   registerInteriorMaps,
   type HouseInteriorProgram,
@@ -166,6 +167,19 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
         entryX: interior.entry.x,
         entryY: interior.entry.y,
       }));
+      // 열린 문 기본값: 문 앞 통행 칸에 밟으면 열리는 발판 — 문 칸은 벽이라 밟히지 않는다.
+      // 문 앞이 맵 밖이면 발판을 생략한다(문 스프라이트만 남는다).
+      if (y + 1 < map.height) {
+        upsertEvent(map.events, createHouseDoorStepEvent({
+          eventId: `${doorEventId}_step`,
+          x,
+          y: y + 1,
+          interiorMapId,
+          name: `${ownerName}의 집 문`,
+          entryX: interior.entry.x,
+          entryY: interior.entry.y,
+        }));
+      }
       interiorData = {
         interiorMapId,
         floorMapIds: interior.floors.map((floor) => floor.mapId),

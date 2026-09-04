@@ -150,7 +150,7 @@ export function createHouseDoorEvent(options: {
     id: options.eventId,
     x: options.x,
     y: options.y,
-    trigger: { kind: "action" },
+    trigger: { kind: "playerTouch" },
     commands: [],
     pages: [
       {
@@ -158,8 +158,11 @@ export function createHouseDoorEvent(options: {
         name: options.name ?? "집 문",
         conditions: [],
         graphic: houseDoorGraphic(options.kitId),
-        trigger: { kind: "action" },
-        priority: "same",
+        // 열린 문이 기본값: 문 앞 통행 칸의 발판이 밟으면 전이시킨다(아래 참조).
+        // 문 스프라이트 자체는 벽 칸 장식이라 below — 통행을 막지 않는다.
+        trigger: { kind: "playerTouch" },
+        priority: "below",
+        overlapForbidden: false,
         // RM2k3 door: fixed graphic so action-turn / idle remapping cannot snap the door closed.
         animationType: "fixedGraphic",
         movement: { type: "fixed", speed: 3, frequency: 3 },
@@ -170,6 +173,52 @@ export function createHouseDoorEvent(options: {
           entryX: options.entryX,
           entryY: options.entryY,
         }),
+      },
+    ],
+  };
+}
+
+/**
+ * 열린 문의 발판 — 문 앞 통행 칸에 놓는 투명 playerTouch 전이.
+ *
+ * 왜 문 스프라이트와 분리하나: 문 칸은 벽 타일이라 플레이어가 밟을 수 없고,
+ * playerTouch+below 는 벽 칸 위에서 발동하지 않는다. 그래서 문 그림(벽 칸 장식)과
+ * 전이 발판(문 앞 통행 칸)을 나눈다 — 시작집 문(STARTER_HOUSE_DOOR_APPROACH)과 같은 배치다.
+ */
+export function createHouseDoorStepEvent(options: {
+  readonly eventId: string;
+  readonly x: number;
+  readonly y: number;
+  readonly interiorMapId: MapId;
+  readonly name?: string;
+  readonly entryX?: number;
+  readonly entryY?: number;
+}): GameEvent {
+  return {
+    id: options.eventId,
+    x: options.x,
+    y: options.y,
+    trigger: { kind: "playerTouch" },
+    commands: [],
+    pages: [
+      {
+        id: `${options.eventId}_page`,
+        name: options.name ?? "집 문",
+        conditions: [],
+        graphic: { transparent: true },
+        trigger: { kind: "playerTouch" },
+        priority: "below",
+        overlapForbidden: false,
+        movement: { type: "fixed", speed: 3, frequency: 3 },
+        commands: [
+          {
+            kind: "transfer",
+            mapId: options.interiorMapId,
+            x: options.entryX ?? HOUSE_INTERIOR_ENTRY.x,
+            y: options.entryY ?? HOUSE_INTERIOR_ENTRY.y,
+            fade: "black",
+          },
+        ],
       },
     ],
   };
