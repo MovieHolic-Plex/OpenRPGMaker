@@ -13,6 +13,7 @@ import { interiorFurnitureKits, interiorObjectFromKit } from "@/editor/interiorR
 import { field } from "@/editor/panels/databaseControls";
 import { makeDatabaseTabIcon } from "@/editor/panels/databaseTabIcons";
 import { emptyState } from "@/editor/panels/databaseWorkspace";
+import { duplicateIntoTileset } from "@/editor/harnessSuggestion/structureKitActions";
 import { interiorObjectCanvas } from "@/editor/panels/structureKitInspector";
 import { getSelectedTilesetId, setSelectedTileset } from "@/editor/panels/tilesetSettingsPanel";
 import {
@@ -40,7 +41,8 @@ import {
 } from "@/editor/conceptBundleResolve";
 import {
   CONCEPT_CHIP_IDS,
-  CONCEPT_CHIP_LABELS,
+  conceptChipLabel,
+  isConceptChipId,
   CONCEPT_FLOOR_MATERIAL_LABELS,
   CONCEPT_FLOOR_MATERIALS,
   CONCEPT_PLACE_COUNT_MAX,
@@ -666,7 +668,7 @@ function renderThingChip(
       el("span", { class: "scratch-concept-thing-label", text: thing.label }),
       el("span", {
         class: "scratch-concept-thing-chips",
-        text: thing.chips.map((chip) => CONCEPT_CHIP_LABELS[chip]).join(" · "),
+        text: thing.chips.map((chip) => conceptChipLabel(chip)).join(" · "),
       }),
     ],
     on: {
@@ -784,7 +786,7 @@ function renderThingInspector(
         class: `scratch-concept-chip ${chip}${on ? " on" : ""}`,
         attrs: { type: "button" },
         dataset: { testid: `scratch-concept-chip-${chip}` },
-        text: CONCEPT_CHIP_LABELS[chip],
+        text: conceptChipLabel(chip),
         on: {
           click: () => {
             toggleChip(tileset.id, bundle.id, thing.id, chip);
@@ -794,6 +796,38 @@ function renderThingInspector(
       }),
     );
   }
+  const customChips = thing.chips.filter((chip) => !isConceptChipId(chip));
+  for (const chip of customChips) {
+    chips.append(
+      el("button", {
+        class: `scratch-concept-chip custom on`,
+        attrs: { type: "button", title: "자유 칩 — 누르면 지운다" },
+        dataset: { testid: `scratch-concept-chip-custom-${chip}` },
+        text: `× ${chip}`,
+        on: {
+          click: () => {
+            toggleChip(tileset.id, bundle.id, thing.id, chip);
+            refresh(host, rerender);
+          },
+        },
+      }),
+    );
+  }
+  const chipAdd = el("input", {
+    class: "scratch-concept-chip-add",
+    attrs: { type: "text", placeholder: "자유 칩 추가", title: "영문·숫자·-_·1~32자 — 엔진 무동작 메모" },
+    dataset: { testid: "scratch-concept-chip-add" },
+    on: {
+      change: (event) => {
+        const next = (event.target as HTMLInputElement).value.trim();
+        if (!next) return;
+        if (!/^[A-Za-z0-9-_]{1,32}$/.test(next)) return;
+        addChip(tileset.id, bundle.id, thing.id, next);
+        refresh(host, rerender);
+      },
+    },
+  }) as HTMLInputElement;
+  chips.append(chipAdd);
 
   const places = el("div", { class: "scratch-concept-place-toggles" });
   for (const place of bundle.places) {
@@ -822,10 +856,36 @@ function renderThingInspector(
       el("div", { class: "scratch-concept-raster", children: [preview] }),
       field("이름", name),
       field("그림", graphic),
+      el("div", {
+        class: "scratch-concept-paint-row",
+        children: [
+          el("button", {
+            class: "db-mini-btn",
+            attrs: {
+              type: "button",
+              title: object
+                ? "이 그림의 타일을 직접 칠한다 — 카탈로그 그림이면 사본을 만들어 이 물건에 붙이고, 타일셋 그림이면 그 그림을 바로 고친다"
+                : "그림이 없어 칠할 수 없다 — 먼저 위 「그림」에서 골라라",
+              ...(object ? {} : { disabled: "" }),
+            },
+            dataset: { testid: "scratch-concept-thing-paint" },
+            text: storedKitId(tileset, thing.objectId) ? "그림 칠하기" : "사본 만들어 칠하기",
+            on: {
+              click: () => {
+                paintThingGraphic(tileset, bundle, thing, host, rerender);
+              },
+            },
+          }),
+          ...(storedKitId(tileset, thing.objectId)
+            ? []
+            : [el("span", { class: "scratch-concept-quiet", text: "카탈로그 그림은 사본을 만들어 고친다 — 원본은 그대로 둔다" })]),
+        ],
+      }),
       el("p", {
         class: "scratch-concept-line",
         dataset: { testid: "scratch-concept-line" },
         text: oneLine(bundle, thing),
+
       }),
       el("div", { class: "scratch-concept-section-label", text: "능력 칩" }),
       chips,
@@ -874,7 +934,7 @@ function decorateThumb(node: HTMLElement, className: string): HTMLElement {
 function oneLine(bundle: ConceptBundleRecord, thing: ConceptThingRecord): string {
   const facility = bundle.facilities[0]?.label ?? bundle.label;
   const place = bundle.places.find((entry) => thing.placeIds.includes(entry.id))?.label ?? "장소";
-  const chips = thing.chips.map((chip) => CONCEPT_CHIP_LABELS[chip]).join(", ");
+  const chips = thing.chips.map((chip) => conceptChipLabel(chip)).join(", ");
   return `${facility} — ${place} — ${thing.label} — ${chips || "칩 없음"}`;
 }
 
@@ -956,6 +1016,16 @@ function defaultChipsFor(object: InteriorObjectDef): ConceptChipId[] {
   if (object.snap === "wall-north" || object.snap === "wall-any") return ["wall"];
   if (object.snap === "floor") return ["block"];
   return ["block"];
+}
+
+function addChip(tilesetId: string, bundleId: string, thingId: string, chip: string): void {
+  const next = chip.trim();
+  if (!next || !/^[A-Za-z0-9-_]{1,32}$/.test(next)) return;
+  mutateBundle(tilesetId, bundleId, (bundle) => {
+    const thing = bundle.things.find((entry) => entry.id === thingId);
+    if (!thing) return;
+    if (!thing.chips.includes(next)) thing.chips = [...thing.chips, next];
+  }, "칩 추가");
 }
 
 function toggleChip(tilesetId: string, bundleId: string, thingId: string, chip: ConceptChipId): void {
@@ -1075,6 +1145,44 @@ function removeThing(tilesetId: string, bundleId: string, thingId: string): void
   mutateBundle(tilesetId, bundleId, (bundle) => {
     bundle.things = bundle.things.filter((thing) => thing.id !== thingId);
   }, "물건 삭제");
+}
+
+/** 타일셋에 저장된 section 킷 id — 이 물건 그림을 직접 칠할 수 있다. 카탈로그 그림은 null. */
+function storedKitId(tileset: TilesetDef, objectId: string): string | null {
+  const kit = (tileset.structureKits ?? []).find((entry) => entry.id === objectId);
+  return kit?.kind === "section" ? kit.id : null;
+}
+
+/**
+ * 물건 그림을 타일 에디터로 직접 칠한다 — 구조물 탭과 같은 다이얼로그(`openStructureKitEditor`).
+ * 타일셋 저장 그림이면 그 킷을 바로 열고, 카탈로그 그림이면 사본을 만들어 이 물건에 붙인 뒤 연다.
+ * 저장은 에디터가 즉시 하고, 닫히면 이 인스펙터를 다시 그린다. 순환 import 를 피하려 다이얼로그는 동적 import.
+ */
+function paintThingGraphic(
+  tileset: TilesetDef,
+  bundle: ConceptBundleRecord,
+  thing: ConceptThingRecord,
+  host: HTMLElement,
+  rerender: () => void,
+): void {
+  const object = resolveThingObject(tileset, thing.objectId);
+  if (!object) return;
+  const existing = storedKitId(tileset, thing.objectId);
+  const openAfter = (kitId: string): void => {
+    void import("@/editor/panels/structureKitEditorDialog").then(({ openStructureKitEditor }) => {
+      openStructureKitEditor(tileset.id, kitId, () => {
+        refresh(host, rerender);
+      });
+    });
+  };
+  if (existing) {
+    openAfter(existing);
+    return;
+  }
+  const copy = duplicateIntoTileset(tileset.id, object);
+  patchThing(tileset.id, bundle.id, thing.id, { objectId: copy.id });
+  refresh(host, rerender);
+  openAfter(copy.id);
 }
 
 function mutateBundle(

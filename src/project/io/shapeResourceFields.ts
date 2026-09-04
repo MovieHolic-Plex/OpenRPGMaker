@@ -1,7 +1,6 @@
 import {
   CONCEPT_PLACE_COUNT_MAX,
   CONCEPT_PLACE_LEVEL_MAX,
-  isConceptChipId,
   isConceptPlaceLevel,
   isConceptFloorMaterial,
   isConceptPlaceRole,
@@ -387,7 +386,7 @@ export function validateTileset(id: string, value: unknown): void {
           entry.chips,
         )) {
           const chipId = requireString(`tileset ${id}.scratchConceptBundles[${index}].things[${thingIndex}].chips[]`, chip);
-          assert(isConceptChipId(chipId), `tileset ${id}: scratchConceptBundles[${index}].things[${thingIndex}] unknown chip`);
+          assert(chipId.trim().length > 0, `tileset ${id}: scratchConceptBundles[${index}].things[${thingIndex}] empty chip`);
         }
         if (entry.required !== undefined) {
           requireBoolean(`tileset ${id}.scratchConceptBundles[${index}].things[${thingIndex}].required`, entry.required);

@@ -28,7 +28,7 @@ import {
 import { INTERIOR_ROOM_TILESET_ID, interiorVocabFromTileset } from "@/editor/interiorRoomPipeline";
 import { runRoomPipeline } from "@/editor/roomHarness/engine";
 import { INTERIOR_ROOM_KIT } from "@/editor/roomHarness/interiorKit";
-import { CONCEPT_CHIP_LABELS } from "@/project/types/conceptBundle";
+import { conceptChipLabel } from "@/project/types/conceptBundle";
 import type { GameMap, Project } from "@/project/types";
 import { deterministicRng } from "@/util/rng";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
@@ -78,8 +78,8 @@ const PLAN_SCHEMA = {
           placeIds: { type: "array", items: { type: "string" } },
           chips: {
             type: "array",
-            items: { type: "string", enum: [...CONCEPT_PLAN_ENUMS.chips] },
-            description: Object.entries(CONCEPT_PLAN_ENUMS.chipLabels).map(([id, label]) => `${id}=${label}`).join(" · "),
+            items: { type: "string" },
+            description: `내장 ${Object.entries(CONCEPT_PLAN_ENUMS.chipLabels).map(([id, label]) => `${id}=${label}`).join(" · ")} · 자유 칩(영문·숫자·-_·1~32자, 엔진 무동작 메모)도 된다`,
           },
           required: { type: "boolean", description: "자리가 없으면 경고를 내는 핵심 물건" },
         },
@@ -268,7 +268,7 @@ export const PLACE_CONCEPT_TOOL: ToolDefinition = {
           label: thing.label,
           objectId: thing.objectId,
           required: Boolean(thing.required),
-          chips: thing.chips.map((chip) => CONCEPT_CHIP_LABELS[chip]),
+          chips: thing.chips.map((chip) => conceptChipLabel(chip)),
         })),
       };
     });

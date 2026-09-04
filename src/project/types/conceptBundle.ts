@@ -1,7 +1,8 @@
 // 타일셋에 붙는 개념 꾸러미 — 시설 → 장소 → 물건 → 능력 칩.
 // 데이터베이스 「임시」 그룹에서 저작하고, place_concept 이 그 나무를 읽어 시공한다.
 
-/** 엔진이 집행할 닫힌 칩. 산문 배치 규칙과 섞지 않는다. */
+/** 엔진이 집행하는 내장 칩. 산문 배치 규칙과 섞지 않는다.
+ *  사용자는 DB에서 자유 칩(임의 id)을 덧붙일 수 있다 — 자유 칩은 엔진 무동작 메모 태그다. */
 export const CONCEPT_CHIP_IDS = [
   "pass",
   "block",
@@ -13,9 +14,12 @@ export const CONCEPT_CHIP_IDS = [
   "wall",
 ] as const;
 
-export type ConceptChipId = (typeof CONCEPT_CHIP_IDS)[number];
+export type ConceptBuiltinChipId = (typeof CONCEPT_CHIP_IDS)[number];
 
-export const CONCEPT_CHIP_LABELS: Record<ConceptChipId, string> = {
+/** 물건 칩 — 내장 칩 또는 사용자 자유 칩(임의의 빈 문자열 아닌 id). */
+export type ConceptChipId = string;
+
+export const CONCEPT_CHIP_LABELS: Record<ConceptBuiltinChipId, string> = {
   pass: "통행 가능",
   block: "통행 불가",
   event: "이벤트 가능",
@@ -26,8 +30,14 @@ export const CONCEPT_CHIP_LABELS: Record<ConceptChipId, string> = {
   wall: "벽",
 };
 
-export function isConceptChipId(value: string): value is ConceptChipId {
+/** 내장 칩 판정 — plan 게이트·어휘 enum 용. 저작 데이터 검증에는 쓰지 않는다. */
+export function isConceptChipId(value: string): value is ConceptBuiltinChipId {
   return (CONCEPT_CHIP_IDS as readonly string[]).includes(value);
+}
+
+/** 칩 표시 라벨 — 내장 칩은 한글, 자유 칩은 id 그대로. */
+export function conceptChipLabel(chip: string): string {
+  return CONCEPT_CHIP_LABELS[chip as ConceptBuiltinChipId] ?? chip;
 }
 
 /** 중개념 — 장소에 올 수 있는 물건. 여러 장소에 속할 수 있다. */

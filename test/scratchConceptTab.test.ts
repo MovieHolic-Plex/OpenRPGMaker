@@ -202,6 +202,26 @@ describe("scratchConceptTab 편집", () => {
     expect(after.things.find((thing) => thing.id === "bed_h")?.chips).not.toContain("block");
   });
 
+  it("자유 칩을 입력하면 저장되고 눌러서 지울 수 있다", () => {
+    const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
+    host.querySelector("[data-testid='scratch-concept-thing-bed_h']")!.click();
+    const input = host.querySelector("[data-testid='scratch-concept-chip-add']") as unknown as { value: string; dispatchEvent: (event: Event) => void };
+    input.value = "guest-only";
+    input.dispatchEvent(new Event("change"));
+    const added = store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles![0]!;
+    expect(added.things.find((thing) => thing.id === "bed_h")?.chips).toContain("guest-only");
+    expect(host.querySelector("[data-testid='scratch-concept-chip-custom-guest-only']")).not.toBeNull();
+    host.querySelector("[data-testid='scratch-concept-chip-custom-guest-only']")!.click();
+    const removed = store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles![0]!;
+    expect(removed.things.find((thing) => thing.id === "bed_h")?.chips).not.toContain("guest-only");
+  });
+
+  it("물건 인스펙터에 그림 칠하기 버튼이 있다", () => {
+    const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
+    host.querySelector("[data-testid='scratch-concept-thing-bed_h']")!.click();
+    expect(host.querySelector("[data-testid='scratch-concept-thing-paint']")).not.toBeNull();
+  });
+
   it("그림을 바꾸면 물건의 objectId가 저장된다", () => {
     const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
     const graphic = host.querySelector("[data-testid='scratch-concept-thing-graphic']") as unknown as { value: string; dispatchEvent: (event: Event) => void };
@@ -260,10 +280,24 @@ describe("scratchConceptTab 편집", () => {
 });
 
 describe("scratchConceptBundles 스키마", () => {
-  it("여관 초안은 타일셋 검증을 통과하고 모르는 칩은 거절한다", () => {
+  it("여관 초안과 자유 칩은 타일셋 검증을 통과하고 빈 칩은 거절한다", () => {
     const tileset = store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]!;
     const valid = { ...tileset, scratchConceptBundles: [cloneConceptBundle(SCRATCH_INN_BUNDLE)] };
     expect(() => validateTileset(tileset.id, valid)).not.toThrow();
+    const custom = {
+      ...valid,
+      scratchConceptBundles: [{
+        ...cloneConceptBundle(SCRATCH_INN_BUNDLE),
+        things: [{
+          id: "bed_h",
+          label: "침대",
+          objectId: "bed_h",
+          placeIds: ["bedroom"],
+          chips: ["block", "guest-only"],
+        }],
+      }],
+    };
+    expect(() => validateTileset(tileset.id, custom)).not.toThrow();
     const invalid = {
       ...valid,
       scratchConceptBundles: [{
@@ -273,10 +307,10 @@ describe("scratchConceptBundles 스키마", () => {
           label: "침대",
           objectId: "bed_h",
           placeIds: ["bedroom"],
-          chips: ["king-size"],
+          chips: [""],
         }],
       }],
     };
-    expect(() => validateTileset(tileset.id, invalid)).toThrow(/unknown chip/);
+    expect(() => validateTileset(tileset.id, invalid)).toThrow(/empty chip/);
   });
 });

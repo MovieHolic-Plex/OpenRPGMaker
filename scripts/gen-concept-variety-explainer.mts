@@ -25,7 +25,7 @@ import { runTool } from "../src/editor/tools/toolRunner.ts";
 import { createBlankProject } from "../src/project/defaults.ts";
 import { cloneConceptBundle, SCRATCH_INN_BUNDLE } from "../src/project/defaults/scratchInnBundle.ts";
 import {
-  CONCEPT_CHIP_LABELS,
+  conceptChipLabel,
   CONCEPT_FLOOR_MATERIAL_LABELS,
   CONCEPT_PLACE_ROLE_LABELS,
   CONCEPT_PLACE_SIZE_LABELS,
@@ -263,7 +263,7 @@ function objectSprite(object: InteriorObjectDef, scale = 2): string {
 
 function thingChip(thing: ConceptThingRecord, state: "on" | "off" | "new" = "on"): string {
   const object = interiorObjectById(thing.objectId);
-  const chips = thing.chips.map((chip) => `<i class="chip ${chip}">${esc(CONCEPT_CHIP_LABELS[chip])}</i>`).join("");
+  const chips = thing.chips.map((chip) => `<i class="chip ${chip}">${esc(conceptChipLabel(chip))}</i>`).join("");
   return `<span class="thing ${state}" title="${esc(thing.objectId)}">${object ? objectSprite(object) : ""}<span class="tl">${esc(thing.label)}${thing.required ? '<b class="req">필수</b>' : ""}</span><span class="chips">${chips}</span></span>`;
 }
 
