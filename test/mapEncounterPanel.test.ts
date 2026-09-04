@@ -28,6 +28,10 @@ afterEach(() => {
 function openEncounterTab(): FakeElement {
   const container = document.createElement("div") as unknown as FakeElement;
   renderMapProps(container as unknown as HTMLElement);
+  // 단일 화면 전환 뒤 탭 클릭은 섹션 이동일 뿐 전환이 아니다 — 8섹션이 동시에 붙는지 단언한다.
+  for (const tab of ["general", "background", "bgm", "battle", "restrictions", "encounter", "spawns", "minimap"]) {
+    expect(findByTestId(container, `map-props-section-${tab}`)).not.toBeNull();
+  }
   const tab = findByTestId(container, "map-props-tab-encounter");
   expect(tab).not.toBeNull();
   tab?.click();
