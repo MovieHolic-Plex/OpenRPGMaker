@@ -475,6 +475,7 @@ function graphicChildren(record: MonsterSpeciesRecord, rerender: () => void): HT
       resourceId: record.graphic.monsterResourceId,
       kind: "monster",
       testid: "db-monster-species-resource",
+      queueKey: `monster-species-resource:${record.id}`,
       allowClear: true,
       allowHue: true,
       currentHue: record.graphic.graphicHue,
