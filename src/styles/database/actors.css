@@ -1117,24 +1117,11 @@
   font-weight: 700;
 }
 
+/* 크기만 둔다 — surface/border/accent-ring/tabular-nums/hover/focus 는
+   studio-v2.css 입력 크롬이 이미 이긴다 (PR #540 후속, ultrabrain 리뷰). */
 .database-modal-body .oprn-record-actors .actor-build-level-control input {
-  background-color: var(--db-studio-surface);
-  border: 1px solid var(--db-studio-border-default);
-  border-radius: var(--db2-radius-control);
-  color: var(--db-studio-text-1);
-  font-variant-numeric: tabular-nums;
   height: 30px;
   width: 64px;
-}
-
-.database-modal-body .oprn-record-actors .actor-build-level-control input:hover:not(:disabled) {
-  border-color: var(--db-studio-border-strong);
-}
-
-.database-modal-body .oprn-record-actors .actor-build-level-control input:focus-visible {
-  border-color: var(--db-studio-accent);
-  box-shadow: 0 0 0 3px var(--db2-accent-ring);
-  outline: none;
 }
 
 .database-modal-body .oprn-record-actors .actor-build-natural-max {
