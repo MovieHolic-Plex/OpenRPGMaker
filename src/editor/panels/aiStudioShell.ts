@@ -817,16 +817,18 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
       chatPane.classList.toggle("is-busy", !idle);
     },
     setWorkPlan(plan, active) {
+      const appeared = plan != null && workPlan == null;
       workPlan = plan;
       workActive = active;
       refreshWorkBadge();
-      if (plan && attachedTo) showTab("work");
+      if (appeared && attachedTo) showTab("work");
       else if (deckTab === "work") renderDeck();
     },
     setChangePreview(input) {
+      const appeared = input != null && changePreview == null;
       changePreview = input;
       setBadge("changes", input ? "" : null);
-      if (input && attachedTo) showTab("changes");
+      if (appeared && attachedTo) showTab("changes");
       else if (deckTab === "changes") renderDeck();
     },
     setToolLines(lines) {
