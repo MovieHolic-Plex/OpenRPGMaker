@@ -9,7 +9,16 @@
  * 울리고, 이벤트 참조 검증(resourceReferenceValidation)을 그대로 통과한다.
  */
 import { charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
+import {
+  CHEST_OPEN_SE_POOL,
+  LOOT_GOLD_SE_POOL,
+  LOOT_ITEM_SE_POOL,
+  resolveSeVariant,
+  type SeVariantContext,
+} from "@/assets/seThemeVariants";
 import type { Command, EventPageGraphic } from "@/project/types";
+
+export type { SeVariantContext };
 
 /** 「나무 상자 열기」 0.374s — 상자 뚜껑·서랍·궤 공통. */
 export const CHEST_OPEN_SE = "cc0-se-osx-wooded-box-open";
@@ -41,9 +50,14 @@ function chestFrame(graphic: EventPageGraphic, direction: (typeof CHEST_OPEN_DIR
   return charsetFrameIndex({ characterIndex: closed.characterIndex, direction, pattern: closed.pattern });
 }
 
-/** 개봉 SE 를 먼저 울리고 닫힘 → 반개방 → 개방 프레임으로 뚜껑을 연다. */
-export function chestOpenCommands(eventId: string, closedGraphic: EventPageGraphic): Command[] {
-  const commands: Command[] = [{ kind: "playAudio", resourceId: CHEST_OPEN_SE, loop: false }];
+/** 개봉 SE 를 먼저 울리고 닫힘 → 반개방 → 개방 프레임으로 뚜껑을 연다. seed 없으면 기본 상수. */
+export function chestOpenCommands(
+  eventId: string,
+  closedGraphic: EventPageGraphic,
+  context?: SeVariantContext,
+): Command[] {
+  const resourceId = resolveSeVariant(CHEST_OPEN_SE_POOL, CHEST_OPEN_SE, context);
+  const commands: Command[] = [{ kind: "playAudio", resourceId, loop: false }];
   for (const direction of CHEST_OPEN_DIRECTIONS) {
     commands.push({ kind: "setEventGraphicPattern", eventId, pattern: chestFrame(closedGraphic, direction) });
     commands.push({ kind: "wait", ms: direction === CHEST_OPENED_DIRECTION ? CHEST_OPEN_HOLD_MS : CHEST_OPEN_FRAME_WAIT_MS });
@@ -66,27 +80,35 @@ export type LootReward = {
   readonly itemAmount?: number;
 };
 
-/** 보상마다 소리가 앞선다: 아이템 징글 → changeItem, (둘 다면 사이를 두고) 동전 → changeGold. */
-export function lootGrantCommands(reward: LootReward): Command[] {
+/** 보상마다 소리가 앞선다: 아이템 징글 → changeItem, (둘 다면 사이를 두고) 동전 → changeGold. seed 없으면 기본 상수. */
+export function lootGrantCommands(reward: LootReward, context?: SeVariantContext): Command[] {
   const commands: Command[] = [];
   const hasItem = typeof reward.itemId === "string" && reward.itemId.length > 0;
   const hasGold = typeof reward.gold === "number" && reward.gold > 0;
   if (hasItem) {
-    commands.push({ kind: "playAudio", resourceId: LOOT_ITEM_SE, loop: false });
+    commands.push({
+      kind: "playAudio",
+      resourceId: resolveSeVariant(LOOT_ITEM_SE_POOL, LOOT_ITEM_SE, context),
+      loop: false,
+    });
     commands.push({ kind: "changeItem", itemId: reward.itemId as string, op: "+=", amount: reward.itemAmount ?? 1 });
   }
   if (hasGold) {
     if (hasItem) commands.push({ kind: "wait", ms: LOOT_REWARD_GAP_MS });
-    commands.push({ kind: "playAudio", resourceId: LOOT_GOLD_SE, loop: false });
+    commands.push({
+      kind: "playAudio",
+      resourceId: resolveSeVariant(LOOT_GOLD_SE_POOL, LOOT_GOLD_SE, context),
+      loop: false,
+    });
     commands.push({ kind: "changeGold", op: "+=", amount: reward.gold as number });
   }
   return commands;
 }
 
-/** 그래픽이 없는 타일 가구(서랍·나무 상자·캐비닛)를 뒤지는 소리와 짧은 사이. */
-export function lootRummageCommands(): Command[] {
+/** 그래픽이 없는 타일 가구(서랍·나무 상자·캐비닛)를 뒤지는 소리와 짧은 사이. seed 없으면 기본 상수. */
+export function lootRummageCommands(context?: SeVariantContext): Command[] {
   return [
-    { kind: "playAudio", resourceId: CHEST_OPEN_SE, loop: false },
+    { kind: "playAudio", resourceId: resolveSeVariant(CHEST_OPEN_SE_POOL, CHEST_OPEN_SE, context), loop: false },
     { kind: "wait", ms: LOOT_RUMMAGE_WAIT_MS },
   ];
 }

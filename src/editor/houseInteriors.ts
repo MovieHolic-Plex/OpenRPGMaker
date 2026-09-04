@@ -1,5 +1,11 @@
 import { charsetFrameIndex, type CharsetDirection } from "@/assets/easyrpgRtp";
 import {
+  DOOR_CLOSE_SE_POOL,
+  DOOR_OPEN_SE_POOL,
+  resolveSeVariant,
+  type SeVariantContext,
+} from "@/assets/seThemeVariants";
+import {
   floorMaskFromPlan,
   runInteriorRoomPipeline,
   type InteriorRoomPlan,
@@ -44,6 +50,8 @@ export const HOUSE_DOOR_OPEN_HOLD_MS = 180;
  * 리소스 id 는 seCatalog 소속이라 이벤트 참조 검증(resourceReferenceValidation)을 그대로 통과한다.
  */
 export const HOUSE_DOOR_OPEN_SE = "cc0-se-kra-dooropen-1";
+/** 문 닫힘 효과음 — CC0 카탈로그 「문 닫기 01」(Kenney RPG Audio). 열기 01 과 짝. */
+export const HOUSE_DOOR_CLOSE_SE = "cc0-se-kra-doorclose-1";
 
 export type HouseDoorVariant = {
   readonly textureKey: typeof HOUSE_DOOR_CHARSET_TEXTURE;
@@ -115,9 +123,15 @@ export function houseDoorOpenCommands(options: {
   readonly kitId: HouseKitId;
   readonly entryX?: number;
   readonly entryY?: number;
+  readonly seed?: number;
+  readonly exclude?: SeVariantContext["exclude"];
 }): Command[] {
   // 효과음은 첫 프레임과 같은 틱에 — 열림 모션(100+100+180ms)보다 SE 가 길어도 전이 뒤까지 이어진다.
-  const commands: Command[] = [{ kind: "playAudio", resourceId: HOUSE_DOOR_OPEN_SE, loop: false }];
+  const resourceId = resolveSeVariant(DOOR_OPEN_SE_POOL, HOUSE_DOOR_OPEN_SE, {
+    seed: options.seed,
+    exclude: options.exclude,
+  });
+  const commands: Command[] = [{ kind: "playAudio", resourceId, loop: false }];
   for (const step of [0, 1, 2] as const) {
     commands.push({
       kind: "setEventGraphicPattern",
@@ -145,6 +159,7 @@ export function createHouseDoorEvent(options: {
   readonly name?: string;
   readonly entryX?: number;
   readonly entryY?: number;
+  readonly seed?: number;
 }): GameEvent {
   return {
     id: options.eventId,
@@ -172,6 +187,7 @@ export function createHouseDoorEvent(options: {
           kitId: options.kitId,
           entryX: options.entryX,
           entryY: options.entryY,
+          seed: options.seed,
         }),
       },
     ],
@@ -337,6 +353,7 @@ export function createHouseInteriorMap(options: {
     returnY: options.returnY,
     entry,
     door,
+    seed,
   });
   const ground = groundBuilt.map;
   const pipelineWarnings: string[] = [...groundBuilt.warnings];
@@ -871,6 +888,7 @@ function materializeInteriorMap(input: {
   readonly entry: { readonly x: number; readonly y: number };
   readonly door: { readonly x: number; readonly y: number };
   readonly skipDefaultExit?: boolean;
+  readonly seed?: number;
 }): { map: GameMap; warnings: readonly string[] } {
   const result = runInteriorRoomPipeline(input.plan);
   const map = result.map;
@@ -890,6 +908,7 @@ function materializeInteriorMap(input: {
         returnMapId: input.returnMapId,
         returnX: input.returnX,
         returnY: input.returnY,
+        seed: input.seed,
       }),
     );
   }
@@ -1035,7 +1054,9 @@ function createHouseInteriorExitEvent(options: {
   readonly returnMapId: MapId;
   readonly returnX: number;
   readonly returnY: number;
+  readonly seed?: number;
 }): GameEvent {
+  const closeSe = resolveSeVariant(DOOR_CLOSE_SE_POOL, HOUSE_DOOR_CLOSE_SE, { seed: options.seed });
   return {
     id: options.eventId,
     x: options.x,
@@ -1052,6 +1073,7 @@ function createHouseInteriorExitEvent(options: {
         priority: "below",
         movement: { type: "fixed", speed: 3, frequency: 3 },
         commands: [
+          { kind: "playAudio", resourceId: closeSe, loop: false },
           {
             kind: "transfer",
             mapId: options.returnMapId,

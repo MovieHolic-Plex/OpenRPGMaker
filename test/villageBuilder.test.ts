@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { HOUSE_DOOR_CHARSET_TEXTURE, HOUSE_DOOR_OPEN_SE } from "@/editor/houseInteriors";
+import { DOOR_CLOSE_SE_POOL, DOOR_OPEN_SE_POOL } from "@/assets/seThemeVariants";
+import { HOUSE_DOOR_CHARSET_TEXTURE } from "@/editor/houseInteriors";
 import { INTERIOR_ROOM_TILESET_ID as INTERIOR_HOUSE_TILESET_ID } from "@/editor/interiorRoomPipeline";
 import { TOOL_CATEGORIES } from "@/editor/panels/toolBrowserModal";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
@@ -468,6 +469,7 @@ describe("build_village", () => {
     const map = context.project.maps[data.mapId];
     const childIds = treeChildIds(context.project.mapTree, data.mapId);
     expect(data.houses).toHaveLength(8);
+    const openIds = new Set<string>();
     for (const house of data.houses) {
       expect(house.interiorMapId).toBeTruthy();
       expect(house.doorEventId).toBeTruthy();
@@ -490,7 +492,10 @@ describe("build_village", () => {
         "wait",
         "transfer",
       ]);
-      expect(door?.pages?.[0]?.commands[0]).toEqual({ kind: "playAudio", resourceId: HOUSE_DOOR_OPEN_SE, loop: false });
+      const openCmd = door?.pages?.[0]?.commands[0];
+      expect(openCmd).toMatchObject({ kind: "playAudio", loop: false });
+      const openId = (openCmd as { resourceId: string }).resourceId;
+      expect(DOOR_OPEN_SE_POOL).toContain(openId);
       const interior = context.project.maps[house.interiorMapId as string];
       expect(interior.name.startsWith(`${house.ownerName}의 집 내부`)).toBe(true);
       expect(interior.tilesetId).toBe(INTERIOR_HOUSE_TILESET_ID);
@@ -509,10 +514,19 @@ describe("build_village", () => {
       expect(exit?.x).toBe(house.exit!.x);
       expect(exit?.y).toBe(house.exit!.y);
       expect(exit?.pages?.[0]?.trigger.kind).toBe("playerTouch");
-      expect(exit?.pages?.[0]?.commands).toEqual([{ kind: "transfer", mapId: data.mapId, x: house.front.x, y: house.front.y, fade: "black" }]);
+      expect(exit?.pages?.[0]?.commands.map((command) => command.kind)).toEqual(["playAudio", "transfer"]);
+      expect(exit?.pages?.[0]?.commands[0]).toMatchObject({ kind: "playAudio", loop: false });
+      const closeId = (exit?.pages?.[0]?.commands[0] as { resourceId: string }).resourceId;
+      expect(DOOR_CLOSE_SE_POOL).toContain(closeId);
+      expect(DOOR_OPEN_SE_POOL.indexOf(openId as (typeof DOOR_OPEN_SE_POOL)[number])).toBe(
+        DOOR_CLOSE_SE_POOL.indexOf(closeId as (typeof DOOR_CLOSE_SE_POOL)[number]),
+      );
+      expect(exit?.pages?.[0]?.commands[1]).toEqual({ kind: "transfer", mapId: data.mapId, x: house.front.x, y: house.front.y, fade: "black" });
       // 문 이벤트는 front가 아니라 doorAt에만 둔다 (NPC 등은 front 가능)
       expect(map.events.some((event) => event.id === house.doorEventId && event.x === house.front.x && event.y === house.front.y)).toBe(false);
+      openIds.add(openId);
     }
+    expect(openIds.size).toBeGreaterThan(1);
   });
 
   

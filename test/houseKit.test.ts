@@ -314,7 +314,9 @@ describe("build_house_kit AI 툴", () => {
     expect(exit?.x).toBe(exitPt.x);
     expect(exit?.y).toBe(exitPt.y);
     expect(exit?.pages?.[0]?.trigger.kind).toBe("playerTouch");
-    expect(exit?.pages?.[0]?.commands).toEqual([{ kind: "transfer", mapId, x: 4, y: 8, fade: "black" }]);
+    expect(exit?.pages?.[0]?.commands.map((command) => command.kind)).toEqual(["playAudio", "transfer"]);
+    expect(exit?.pages?.[0]?.commands[0]).toMatchObject({ kind: "playAudio", loop: false });
+    expect(exit?.pages?.[0]?.commands[1]).toEqual({ kind: "transfer", mapId, x: 4, y: 8, fade: "black" });
   });
 
   it("windows:false 인자로 창문 자동 배치를 끈다", async () => {

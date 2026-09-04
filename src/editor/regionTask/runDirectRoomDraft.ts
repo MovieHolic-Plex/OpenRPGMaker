@@ -154,6 +154,7 @@ export function runDirectInteriorRoomDraft(
       name: `${preset.label} 입구`,
       entryX: entry.x,
       entryY: entry.y,
+      seed,
     }));
 
     const reviewProject = (project: Project) => reviewRegionDraft({

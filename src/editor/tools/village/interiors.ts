@@ -31,6 +31,7 @@ export function createVillageHouseInteriors(
     const doorEventId = uniqueId(draft, "ev_house_door", base);
     const exitEventId = uniqueId(draft, "ev_house_exit", base);
     const footprintArea = house.bbox.w * house.bbox.h;
+    const interiorSeed = (seed ^ Math.imul(index + 1, 0x9e3779b1)) >>> 0;
     const interior = createHouseInteriorMap({
       id: interiorMapId,
       name: `${owner}의 집 내부`,
@@ -38,7 +39,7 @@ export function createVillageHouseInteriors(
       returnX: house.front.x,
       returnY: house.front.y,
       exitEventId,
-      seed: (seed ^ Math.imul(index + 1, 0x9e3779b1)) >>> 0,
+      seed: interiorSeed,
       exterior: {
         stories: house.stories,
         kitId: house.kitId,
@@ -69,6 +70,7 @@ export function createVillageHouseInteriors(
       name: `${owner}의 집 문`,
       entryX: interior.entry.x,
       entryY: interior.entry.y,
+      seed: interiorSeed,
     }));
     // 열린 문 기본값: 문 앞 통행 칸에 밟으면 열리는 발판 — 문 칸은 벽이라 밟히지 않는다.
     // 문 앞이 맵 밖이면 발판을 생략한다(문 스프라이트만 남는다).
