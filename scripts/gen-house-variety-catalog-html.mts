@@ -153,7 +153,7 @@ footer{margin-top:3em;color:var(--ink-3);font-size:.85rem;border-top:1px solid v
 아래 39컷은 각 축을 고립시켜 전 범위를 실증한 대표 단면이다.
 </div>
 <div class="card warn">
-<b>노출 격차.</b> AI 도구 <code>build_house_kit</code>은 ①②④⑤+문+내부를 노출한다.
+<b>노출 격차.</b> AI 도구 <code>author_house</code>는 ①②④⑤+문+내부를 노출한다.
 ③ 층수(stories)와 헛간(lowWall)은 엔진(<code>stampFootprintHouseKit</code>)에는 있지만 도구 스키마에 아직 없다 — 아래 C섹션은 엔진 직접 호출 실증.
 </div>
 
@@ -195,7 +195,7 @@ ${grid(F)}
 
 <section id="interior">
 <h2>G. 내부 자동 생성 — 문 하나에 집 한 채가 딸려온다</h2>
-<p><code>build_house_kit</code>은 기본으로 문 이벤트+내부 맵을 함께 만든다. 내부는 외장 힌트(층수·킷·면적·집주인 이름)와 시드로 <b>스케일</b>(cottage~mansion)과 <b>프로그램</b>(dwelling·shop·workshop·study·inn·manor)을 골라 가구까지 배치한다. 킷 재질이 내부 벽 재질로 이어지고(석벽 킷→돌벽돌), mansion은 금벽. 2층 이상이면 위층 맵+계단 연결까지 자동.</p>
+<p><code>author_house</code>는 기본으로 문 이벤트+내부 맵을 함께 만든다. 내부는 외장 힌트(층수·킷·면적·집주인 이름)와 시드로 <b>스케일</b>(cottage~mansion)과 <b>프로그램</b>(dwelling·shop·workshop·study·inn·manor)을 골라 가구까지 배치한다. 킷 재질이 내부 벽 재질로 이어지고(석벽 킷→돌벽돌), mansion은 금벽. 2층 이상이면 위층 맵+계단 연결까지 자동.</p>
 ${grid(G)}
 </section>
 
@@ -216,7 +216,7 @@ ${grid(H)}
 <li><b>재질은 6킷이 전부.</b> 초가·벽돌 등 목록 밖 재질을 요청하면 도구가 지어내지 않고 '아직 학습되지 않은 재질'로 거부하도록 설계돼 있다.</li>
 <li><b>문은 남쪽 자동 1개.</b> 측면·후면 문, 복수 문은 스키마에 없다.</li>
 <li><b>A자 킷 제약.</b> 단일 직사각 날개 전용, 높이 강제 — 랜덤 킷 믹스에서도 제외(<code>MIXABLE_HOUSE_KIT_IDS</code>).</li>
-<li><b>stories·lowWall 미노출.</b> 엔진엔 있으나 <code>build_house_kit</code> 스키마엔 없다(위 C섹션). 도구로는 날개 높이를 키워도 벽은 1층 밴드, 나머지는 지붕이 된다 — 내부 층수만 날개 높이(h≥9→2층, h≥11→3층)로 올라간다.</li>
+<li><b>stories·lowWall 미노출.</b> 엔진엔 있으나 <code>author_house</code> 스키마엔 없다(위 C섹션). 도구로는 날개 높이를 키워도 벽은 1층 밴드, 나머지는 지붕이 된다 — 내부 층수만 날개 높이(h≥9→2층, h≥11→3층)로 올라간다.</li>
 <li><b>창문 위치 개별 지정 불가.</b> 밀도(spacing)와 on/off만.</li>
 <li><b>최소 제약.</b> 날개 폭 ≥3 · 각 열 구간 높이 ≥5(벽3+지붕2, lowWall은 ≥4).</li>
 </ul>

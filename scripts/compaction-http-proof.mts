@@ -37,7 +37,7 @@ const SUMMARY_TEXT = [
   "- (none)",
   "",
   "## Key Decisions",
-  "- **author_village 사용**: 개별 build_house_kit 보다 계약이 좁다.",
+  "- **author_village 사용**: 개별 author_house 보다 계약이 좁다.",
   "",
   "## Next Steps",
   "1. place_npc 로 주민 3명을 배치한다.",

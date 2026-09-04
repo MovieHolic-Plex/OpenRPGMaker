@@ -281,10 +281,9 @@ export interface StructureKitRow {
   upperTiles?: number[];
 }
 
-// 스탬프 출처 유니언(2026-07-20, 스탬프 3부작 선행과제): 붓질 학습 외에 내장 파라메트릭 킷.
-// db-authored(2026-08-28): 데이터베이스 '구조물' 탭에서 직접 만들거나 복제·가져온 킷.
+// 스탬프 출처 유니언: 붓질 학습·DB 작성·실내 카탈로그.
 // 이 값은 계보 표시 전용이다 — 편집 잠금은 앨범 엔트리의 source 로 판정한다(structureKitDbTab).
-export type StructureKitLearnedFrom = "user-paint" | "builtin-parametric" | "db-authored" | "interior-catalog";
+export type StructureKitLearnedFrom = "user-paint" | "db-authored" | "interior-catalog";
 
 // 구조물 부위(2026-08, kit-parts 제안 §06·§07) — 타일을 바꾸지 않는 인스턴스 힌트.
 // 좌표는 킷 원점 기준 상대(dx,dy) — 시공 시점에 origin을 더해 절대좌표가 된다.
@@ -341,7 +340,7 @@ export interface StructureKitAiMeta {
   /**
    * 어디에 놓는지 — **기계가 검사하는 조건**(2026-08-30).
    * placementRules 는 프롬프트에 100자로 잘려 들어가는 산문이라 아무도 지키게 만들 수 없었다.
-   * 이쪽은 찍는 순간 실제로 검사한다(사람 스탬프 · stamp_structure_kit 둘 다).
+   * 이쪽은 찍는 순간 실제로 검사한다(사람 스탬프).
    * 비었거나 없으면 검사 없음 — 하위 호환.
    */
   placement?: PlacementSurfaceCondition[];
@@ -350,7 +349,7 @@ export interface StructureKitAiMeta {
   /** 분류. TileGroupRole enum 재사용. */
   role?: TileGroupRole;
   /**
-   * 가로로 이어 찍어도 되는지. stamp_structure_kit 의 repeat 기본값이 3 이라,
+   * 가로로 이어 찍어도 되는지. 팔레트 반복의 기본값이 3 이라,
    * 이 값이 없으면 우물·간판 같은 완결 구조물도 3개 이어 찍힌다.
    * TileAiMetadata 는 4값이지만 "center" 는 구조물에 뜻이 없어 2값으로 줄인다.
    * undefined 는 현재 동작(kind === "section" → 반복) 유지 — 하위 호환.
@@ -358,9 +357,8 @@ export interface StructureKitAiMeta {
   repeatability?: "repeat" | "fixed";
   /**
    * 무한 확장 축(2026-08-30) — `repeatability` 보다 정밀한 표현.
-   * 그 두 값(repeat/fixed)은 **가로 전용**이라 「세로로만 이어지는 벽」을 적을 수 없었고,
-   * stamp_structure_kit 도 가로로만 반복할 수 있었다. 이 값이 있으면 이것이 정본이고,
-   * 없으면 repeatability → kind 순으로 떨어진다(하위 호환). 판정은 structureKitGrowthAxes.
+   * 그 두 값(repeat/fixed)은 **가로 전용**이라 「세로로만 이어지는 벽」을 적을 수 없었다.
+   * 이 값이 있으면 이것이 정본이고, 없으면 repeatability → kind 순으로 떨어진다(하위 호환). 판정은 structureKitGrowthAxes.
    */
   growthAxis?: StructureGrowthAxis;
   /**
@@ -412,9 +410,8 @@ export interface SectionStructureKitDef {
 }
 
 /**
- * 파라메트릭 집 스탬프(2026-07-20, 3계층 사다리 '행렬→파라메트릭'의 상단).
- * 행렬이 아니라 시공 파라미터를 저장 — 찍는 순간 정본 houseKit(stampFootprintHouseKit)이 전개한다.
- * houseKitId는 editor 계층 HouseKitId 문자열(타입 순환 방지로 string 보관, 사용처에서 검증).
+ * (삭제됨) 파라메트릭 집 스탬프 — 집 외장은 author_house 정본이 담당한다.
+ * 기존 저장 데이터와의 타입 호환용으로만 남긴다. 신규 생성은 금지.
  */
 export interface HouseStructureKitDef {
   id: string;
@@ -429,7 +426,7 @@ export interface HouseStructureKitDef {
   /** 남쪽 벽 문 타일(116/146) 포함 여부. 기본 true. */
   door?: boolean;
   chimney?: boolean;
-  /** 입구·간판·자리 등 부위 목록(상대좌표). section·house 공통 필드. */
+  /** 입구·간판·자리 등 부위 목록(상대좌표). */
   parts?: StructureKitPart[];
   /** AI 어휘 메타데이터. 없으면 AI 는 이름과 크기만 본다. */
   ai?: StructureKitAiMeta;
@@ -438,6 +435,9 @@ export interface HouseStructureKitDef {
 }
 
 export type StructureKitDef = SectionStructureKitDef | HouseStructureKitDef;
+
+/** 구 저장 데이터에 남아 있을 수 있는 내장 파라메트릭 킷 id 접두사. 신규 생성은 없다. */
+export const LEGACY_BUILTIN_HOUSE_KIT_ID_PREFIX = "kit_house_";
 
 /** Editor-facing chipset classification. Omitted legacy records are inferred conservatively. */
 export type TilesetKind = "rpg2k" | "custom";

@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AI_CONFIG_STORAGE_KEY, resetAiTransportHealth } from "@/ai/llmClient";
 import { refreshAiConnectionStatus, resetAiConnectionStatusCache } from "@/editor/panels/aiConnectionStatus";
-import { createStructureKitFromHouse, importStructureKits, registerStructureKit, replaceStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
+import { importStructureKits, registerStructureKit, replaceStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
 import { buildAiMetaDraftPrompt, collectUsedTiles, openStructureKitEditor, parseAiMetaDraft } from "@/editor/panels/structureKitEditorDialog";
 import { store } from "@/project/store";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
@@ -87,29 +87,6 @@ describe("replaceStructureKit", () => {
   });
 });
 
-describe("createStructureKitFromHouse", () => {
-  it("aframe-stone 은 폭·높이 등식이 안 맞으면 null 을 돌려주고 아무것도 등록하지 않는다", () => {
-    // wallBandRows(3) + floor((12-1)/2)(5) + 1 = 9 여야 하는데 8 을 준다 — stampFootprintHouseKit 이 거부한다.
-    const kit = createStructureKitFromHouse(DEFAULT_TILESET_ID, "aframe-stone", { width: 12, height: 8 });
-
-    expect(kit).toBeNull();
-    const stored = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits ?? [];
-    expect(stored).toHaveLength(0);
-  });
-
-  it("aframe-stone 은 등식이 맞는 크기면 실제로 칠해진 킷을 등록한다", () => {
-    const kit = createStructureKitFromHouse(DEFAULT_TILESET_ID, "aframe-stone", { width: 12, height: 9 });
-
-    expect(kit).not.toBeNull();
-    expect(kit!.kind).toBe("section");
-    const painted = kit!.rows.some((row) => row.tiles.some((tile) => tile !== -1));
-    expect(painted).toBe(true);
-
-    const stored = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits ?? [];
-    expect(stored.some((candidate) => candidate.id === kit!.id)).toBe(true);
-  });
-});
-
 describe("openStructureKitEditor", () => {
   it("다이얼로그를 열고 래스터·팔레트·크기 입력을 그린다", () => {
     seedKit();
@@ -161,7 +138,7 @@ describe("openStructureKitEditor", () => {
     const pick = (id: string): FakeElement | null =>
       document.querySelector(`[data-testid='${id}']`) as unknown as FakeElement | null;
     const readKit = () => (store.getCurrent().tilesets[DEFAULT_TILESET_ID]?.structureKits ?? [])
-      .find((c) => c.id === kit.id);
+      .find((c) => c.id === kit.id) as SectionStructureKitDef | undefined;
 
     // 이력 한 칸: 크기 변경은 commitKit 을 지난다
     const width = pick("structure-kit-editor-width");
@@ -519,7 +496,7 @@ describe("importStructureKits", () => {
 
   it("가져온 킷은 편집 가능한 계보를 갖는다", () => {
     const added = importStructureKits(DEFAULT_TILESET_ID, [
-      { kit: { ...seedKit(), id: "x", learnedFrom: "builtin-parametric" }, name: "가져온 집" },
+      { kit: { ...seedKit(), id: "x", learnedFrom: "user-paint" }, name: "가져온 집" },
     ]);
     expect(added).toBe(1);
     const kits = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits!;

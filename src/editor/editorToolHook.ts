@@ -140,8 +140,6 @@ const MAP_ONLY_WRITE_TOOLS = new Set([
   "paint_road",
   "stamp_structure",
   "build_house",
-  "build_house_kit",
-  "build_house_lots",
   "build_village",
   "clear_region",
   "set_map_properties",

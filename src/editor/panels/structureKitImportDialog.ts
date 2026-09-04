@@ -46,7 +46,7 @@ export function pickAndImportStructureKits(tilesetId: TilesetId, onDone: () => v
       if (!tileset) return;
       try {
         const { file: parsed, diagnostics } = parseStructureKitFile(String(reader.result));
-        const plan = planImport(parsed, tileset, tileset.structureKits ?? [], diagnostics);
+        const plan = planImport(parsed, tileset, (tileset.structureKits ?? []).filter((kit) => kit.kind === "section"), diagnostics);
         openStructureKitImportDialog(tilesetId, plan, onDone);
       } catch (error) {
         const message = error instanceof StructureKitFileError ? error.message : "가져오기 실패";

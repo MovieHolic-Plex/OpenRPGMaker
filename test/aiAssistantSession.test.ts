@@ -1462,7 +1462,7 @@ describe("AssistantSession 툴콜 루프", () => {
       PLANNER_DIRECT,
       assistantToolCall("create_map", { id: "m1", name: "작은 마을", width: 40, height: 40 }, "c_map"),
       assistantToolCall("set_build_spec", spec, "c_spec"),
-      assistantToolCall("build_house_kit", { mapId: "m1", kitId: "blue-stone", wings: [{ x: 2, y: 2, w: 6, h: 6 }], interior: false, windows: false }, "c_house1"),
+      assistantToolCall("author_house", { kind: "single", mapId: "m1", kitId: "blue-stone", wings: [{ x: 2, y: 2, w: 6, h: 6 }], interior: "exterior-only", door: true, yard: [] }, "c_house1"),
       // 검수 단계 진입 조건(writeToolAttempts > 8).
       nineWriteCalls(),
       assistantFinal("집 1채를 제안했습니다."),

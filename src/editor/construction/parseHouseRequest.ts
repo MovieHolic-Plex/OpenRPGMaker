@@ -236,8 +236,10 @@ function parseWindows(value: unknown, scope: string): HouseWindowOptions | undef
   if (value === true) return {};
   if (value === false) return false;
   const options = requireRecord(value, `${scope}.windows`);
-  rejectUnknownKeys(options, ["spacing"], `${scope}.windows`);
+  rejectUnknownKeys(options, ["enabled", "spacing"], `${scope}.windows`);
+  const enabled = optionalBoolean(options, "enabled", `${scope}.windows`);
   const spacing = optionalInteger(options, "spacing", `${scope}.windows`);
+  if (enabled === false) return false;
   if (spacing !== undefined && spacing < 0) {
     throw new ToolError(`${scope}.windows.spacing must be non-negative.`, { code: "invalid-args" });
   }

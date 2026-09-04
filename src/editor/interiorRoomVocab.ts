@@ -39,7 +39,7 @@ export function interiorFurnitureKits(tileset: TilesetDef | undefined): readonly
   );
 }
 
-export function interiorObjectFromKit(kit: StructureKitDef): InteriorObjectDef {
+export function interiorObjectFromKit(kit: SectionStructureKitDef): InteriorObjectDef {
   const cells = structureKitUnitCells(kit).map((cell) => ({
     dx: cell.dx,
     dy: cell.dy,

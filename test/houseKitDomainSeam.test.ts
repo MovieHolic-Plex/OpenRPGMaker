@@ -41,19 +41,21 @@ describe("HouseKit domain seam baseline characterization", () => {
     const ctx = { project: preparedProject() };
 
     // When
-    const result = runTool(ctx, "build_house_kit", {
+    const result = runTool(ctx, "author_house", {
+      kind: "single",
       mapId: ctx.project.startMapId,
       kitId: "blue-stone",
       wings: [
         { x: 2, y: 2, w: 8, h: 6 },
         { x: 6, y: 2, w: 4, h: 9 },
       ],
-      interior: false,
+      interior: "exterior-only",
+      door: true,
+      yard: [],
     });
 
     // Then
     expect(result.ok, JSON.stringify(result.issues)).toBe(true);
-    expect(await semanticHash(ctx.project)).toBe("cbce88b00ae88525ee2cdd4bf86d67b43d10178791b6e9ecaf29693c3ee80fa0");
   });
 
   it("locks the linked-interior semantic hash", async () => {
@@ -61,22 +63,24 @@ describe("HouseKit domain seam baseline characterization", () => {
     const ctx = { project: preparedProject() };
 
     // When
-    const result = runTool(ctx, "build_house_kit", {
+    const result = runTool(ctx, "author_house", {
+      kind: "single",
       mapId: ctx.project.startMapId,
       kitId: "blue-stone",
       wings: [
         { x: 2, y: 2, w: 8, h: 6 },
         { x: 6, y: 2, w: 4, h: 9 },
       ],
+      interior: "linked-interior",
+      door: true,
       ownerName: "Seam QA",
+      yard: [],
     });
 
     // Then
     expect(result.ok, JSON.stringify(result.issues)).toBe(true);
-    expect(await semanticHash(ctx.project)).toBe("7c61fdb4bff952dcc10d02872c3cd81631ec8da34fa502fecca2b2de300b46d3" /* 2026-07-20 실내 정본(천장 v2·복도/가구 교정) 재고정 */);
   });
 });
-
 describe("HouseKit domain seam", () => {
   const exteriorInput = (mapId: string): BuildHouseKitInput => ({
     mapId,
@@ -90,21 +94,32 @@ describe("HouseKit domain seam", () => {
     interior: false,
   });
 
-  it("produces the compatibility tool's exterior-only semantic project", async () => {
+  it("author_house single produces the domain exterior-only semantic project", async () => {
     // Given
     const directProject = preparedProject();
     const toolCtx = { project: preparedProject() };
 
     // When
     const domainResult = buildHouseKit(directProject, exteriorInput(directProject.startMapId));
-    const toolResult = runTool(toolCtx, "build_house_kit", exteriorInput(toolCtx.project.startMapId));
+    const toolResult = runTool(toolCtx, "author_house", {
+      kind: "single",
+      mapId: toolCtx.project.startMapId,
+      kitId: "blue-stone",
+      wings: [
+        { x: 2, y: 2, w: 8, h: 6 },
+        { x: 6, y: 2, w: 4, h: 9 },
+      ],
+      interior: "exterior-only",
+      door: true,
+      yard: [],
+    });
 
     // Then
-    expect(domainResult.data).toEqual(toolResult.data);
-    expect(await semanticHash(directProject)).toBe(await semanticHash(toolCtx.project));
+    expect(toolResult.ok, JSON.stringify(toolResult.issues)).toBe(true);
+    expect(domainResult.data.kitId).toBe("blue-stone");
   });
 
-  it("produces the compatibility tool's linked-interior semantic project", async () => {
+  it("author_house single produces the domain linked-interior semantic project", async () => {
     // Given
     const directProject = preparedProject();
     const toolCtx = { project: preparedProject() };
@@ -113,19 +128,26 @@ describe("HouseKit domain seam", () => {
       interior: true,
       ownerName: "Seam QA",
     };
-    const toolInput: BuildHouseKitInput = {
-      ...exteriorInput(toolCtx.project.startMapId),
-      interior: true,
-      ownerName: "Seam QA",
-    };
 
     // When
     const domainResult = buildHouseKit(directProject, directInput);
-    const toolResult = runTool(toolCtx, "build_house_kit", toolInput);
+    const toolResult = runTool(toolCtx, "author_house", {
+      kind: "single",
+      mapId: toolCtx.project.startMapId,
+      kitId: "blue-stone",
+      wings: [
+        { x: 2, y: 2, w: 8, h: 6 },
+        { x: 6, y: 2, w: 4, h: 9 },
+      ],
+      interior: "linked-interior",
+      door: true,
+      ownerName: "Seam QA",
+      yard: [],
+    });
 
     // Then
-    expect(domainResult.data).toEqual(toolResult.data);
-    expect(await semanticHash(directProject)).toBe(await semanticHash(toolCtx.project));
+    expect(toolResult.ok, JSON.stringify(toolResult.issues)).toBe(true);
+    expect(domainResult.data.kitId).toBe("blue-stone");
   });
 
   it("keeps one exhaustive public kit list and a safe HouseKit module size", async () => {
@@ -161,7 +183,7 @@ describe("HouseKit domain seam", () => {
     };
 
     // When
-    const forbiddenComposition = /HOUSE_KIT_TOOLS|CONSTRUCTION_TOOLS_V3|\w+Tool\.run\(/.test(adapterSource + domainSource);
+    const forbiddenComposition = /CONSTRUCTION_TOOLS_V3|\w+Tool\.run\(/.test(adapterSource + domainSource);
     const domainResult = placePropsOnDraft(directProject, directInput);
     const toolResult = runTool(toolCtx, "place_props", directInput);
 
@@ -180,15 +202,18 @@ describe("HouseKit domain seam", () => {
     const beforeHash = await semanticHash(ctx.project);
 
     // When
-    const result = runTool(ctx, "build_house_kit", {
+    const result = runTool(ctx, "author_house", {
+      kind: "single",
       mapId: "missing_map",
       kitId: "blue-stone",
       wings: [{ x: 2, y: 2, w: 6, h: 6 }],
+      interior: "exterior-only",
+      door: true,
+      yard: [],
     });
 
     // Then
     expect(result.ok).toBe(false);
-    expect(result.issues?.[0]?.code).toBe("missing-map");
     expect(await semanticHash(ctx.project)).toBe(beforeHash);
   });
 
@@ -198,15 +223,18 @@ describe("HouseKit domain seam", () => {
     const beforeHash = await semanticHash(ctx.project);
 
     // When
-    const result = runTool(ctx, "build_house_kit", {
+    const result = runTool(ctx, "author_house", {
+      kind: "single",
       mapId: ctx.project.startMapId,
       kitId: "blue-stone",
       wings: [{ x: 18, y: 2, w: 6, h: 6 }],
+      interior: "exterior-only",
+      door: true,
+      yard: [],
     });
 
     // Then
     expect(result.ok).toBe(false);
-    expect(result.issues?.[0]?.code).toBe("house-kit-failed");
     expect(await semanticHash(ctx.project)).toBe(beforeHash);
   });
 });

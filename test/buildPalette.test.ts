@@ -65,7 +65,7 @@ describe("build palette house kit wings", () => {
 });
 
 describe("build palette deterministic stamps", () => {
-  it("집 프리미티브가 시작 위치를 덮으면 무결성 오류를 사용자 메시지로 요약한다", () => {
+  it("집 프리미티브가 시작 위치를 덮으면 시공이 시작점을 복원하고 성공한다", () => {
     const project = createBlankProject();
     const result = applyBuildPalettePrimitiveToProject(
       project,
@@ -73,10 +73,9 @@ describe("build palette deterministic stamps", () => {
       "house"
     );
 
-    expect(result.ok).toBe(false);
-    expect(result.summary).toContain("시작 위치");
-    expect(result.summary).not.toContain("커밋 거부");
-    expect(result.toolResults.some((toolResult) => toolResult.issues?.some((issue) => issue.code === "start-position"))).toBe(true);
+    expect(result.ok).toBe(true);
+    expect(projectLint(result.project).some((issue) => issue.code === "start-position")).toBe(false);
+    expect(result.toolResults.some((toolResult) => (toolResult.diff?.tilesChanged ?? 0) > 0)).toBe(true);
   });
 
   it("선재 무결성 오류가 있어도 무관한 영역의 시공은 허용한다", () => {
@@ -127,7 +126,7 @@ describe("build palette deterministic stamps", () => {
     expect(result.issues?.map((issue) => issue.code)).toEqual(["transfer-impassable"]);
   });
 
-  it("집 프리미티브는 build_house_kit를 호출하고 문 이벤트와 창문이 diff에 반영된다", () => {
+  it("집 프리미티브는 author_house 정본을 호출하고 문 이벤트와 창문이 diff에 반영된다", () => {
     const chat = vi.spyOn(llmClient, "chatCompletion");
     const result = applyBuildPalettePrimitiveToProject(
       createBlankProject(),
@@ -139,18 +138,19 @@ describe("build palette deterministic stamps", () => {
     expect(chat).not.toHaveBeenCalled();
     expect(result.toolResults).toHaveLength(1);
     const toolResult = result.toolResults[0];
-    expect(toolResult.summary).toContain("집 키트");
+    expect(toolResult.summary).toContain("집");
     expect(toolResult.diff?.tilesChanged).toBeGreaterThan(0);
     expect(toolResult.diff?.eventsAdded).toBeGreaterThan(0);
     expect(toolResult.diff?.mapsAdded).toBeGreaterThan(0);
 
-    const data = toolResult.data as { readonly kitId: string; readonly doorAt: { readonly x: number; readonly y: number }; readonly wings: unknown };
-    expect(data.kitId).toBe("blue-stone");
-    expect(data.wings).toEqual([{ x: 1, y: 1, w: 10, h: 6 }]);
+    const data = toolResult.data as { readonly houses: readonly { readonly kitId: string; readonly wings: unknown; readonly doorAt: { readonly x: number; readonly y: number } | null }[] };
+    const doorAt = data.houses[0]!.doorAt!;
+    expect(data.houses[0]!.kitId).toBe("blue-stone");
+    expect(data.houses[0]!.wings).toEqual([{ x: 1, y: 1, w: 10, h: 6 }]);
     const map = result.project.maps[MAP_ID];
     // 문 외형은 Object1 문 이벤트가 맡는다 — 문 칸에 타일 문(146)을 겹쳍 깔지 않고, 그 자리에 문 이벤트가 선다.
-    expect(map.lowerTiles[data.doorAt.y * map.width + data.doorAt.x]).not.toBe(146);
-    expect(map.events.some((event) => event.x === data.doorAt.x && event.y === data.doorAt.y)).toBe(true);
+    expect(map.lowerTiles[doorAt.y * map.width + doorAt.x]).not.toBe(146);
+    expect(map.events.some((event) => event.x === doorAt.x && event.y === doorAt.y)).toBe(true);
     expect(map.upperTiles.some((tile) => tile === 87)).toBe(true);
   });
 

@@ -32,10 +32,10 @@ import {
   structureTilesHash,
 } from "@/project/structurePlacements";
 import { store } from "@/project/store";
-import type { GameMap, MapId, Project, StructureKitDef, TilesetDef } from "@/project/types";
+import type { GameMap, MapId, Project, SectionStructureKitDef, TilesetDef } from "@/project/types";
 
 /** 3×2 오두막 단면 — 등록 킷(내 스탬프)과 같은 shape. */
-const HUT_KIT: StructureKitDef = {
+const HUT_KIT: SectionStructureKitDef = {
   id: "kit_hut_test",
   kind: "section",
   name: "오두막 단면",
@@ -53,7 +53,7 @@ function tilesetIdOf(project: Project, mapId: MapId): string {
 }
 
 /** 등록 킷 하나를 가진 스토어 프로젝트. 사람 스탬프 경로(store 기반)용. */
-function seedStoreWithKit(kit: StructureKitDef = HUT_KIT): { mapId: MapId; tilesetId: string } {
+function seedStoreWithKit(kit: SectionStructureKitDef = HUT_KIT): { mapId: MapId; tilesetId: string } {
   store.replace(createBlankProject());
   resetMapEditHistory();
   const mapId = store.getCurrent().startMapId;
@@ -115,7 +115,7 @@ beforeEach(() => {
 describe("기록 범위 — 구조물 킷 스탬프만, 스트로크당 한 번", () => {
   it("사람이 킷을 한 스트로크로 드래그해 찍어도 배치는 1개다", () => {
     const { mapId, tilesetId } = seedStoreWithKit();
-    const kit = store.getCurrent().tilesets[tilesetId]!.structureKits![0]!;
+    const kit = store.getCurrent().tilesets[tilesetId]!.structureKits!.find((entry) => entry.kind === "section")!;
     editorState.set({
       activePaletteStamp: paletteStampFromKit(kit),
       autoConnectMode: false,
@@ -163,7 +163,7 @@ describe("기록 범위 — 구조물 킷 스탬프만, 스트로크당 한 번"
 
   it("실내 오브젝트 스탬프는 kitId 가 있어도 구조물이 아니라 배치가 없다", () => {
     const { mapId, tilesetId } = seedStoreWithKit();
-    // 실내 오브젝트는 kitId 를 채우지만 tileset.structureKits/내장 킷 어디에도 없다.
+    // 실내 오브젝트는 kitId 를 채우지만 tileset.structureKits 어디에도 없다.
     editorState.set({
       activePaletteStamp: paletteStampFromCells({
         cells: [{ dx: 0, dy: 0, layer: "upper", tile: 300 }],
@@ -183,8 +183,8 @@ describe("기록 범위 — 구조물 킷 스탬프만, 스트로크당 한 번"
   });
 });
 
-describe("AI 도구 stamp_structure_kit — 반복마다 배치를 따로 남긴다", () => {
-  it("repeat 3 이면 배치 3개, 각 배치가 자기 단면만 덮는다", () => {
+describe("제거된 스탬프 호출은 배치를 남기지 않는다", () => {
+  it("미등록 호출은 배치를 남기지 않는다", () => {
     const context = { project: createEmptyToolProject("배치 테스트") };
     expect(runTool(context, "create_map", { name: "배치맵", width: 20, height: 15 }).ok).toBe(true);
     const mapId = Object.keys(context.project.maps)[0]!;
@@ -197,11 +197,10 @@ describe("AI 도구 stamp_structure_kit — 반복마다 배치를 따로 남긴
       repeat: 3,
     });
     expect(result.ok).toBe(false);
-    expect(result.summary).toContain("사람 팔레트");
     expect(structurePlacementsOf(context.project.maps[mapId]!)).toHaveLength(0);
   });
 
-  it("기본 repeat(3) 도 배치를 3개 남긴다 — 하나로 뭉치지 않는다", () => {
+  it("기본 호출도 배치를 남기지 않는다", () => {
     const context = { project: createEmptyToolProject("기본 반복") };
     runTool(context, "create_map", { name: "배치맵", width: 20, height: 15 });
     const mapId = Object.keys(context.project.maps)[0]!;
@@ -215,7 +214,7 @@ describe("AI 도구 stamp_structure_kit — 반복마다 배치를 따로 남긴
 describe("지우기 — 찍기 전 타일을 날것으로 복원한다", () => {
   it("복원 후 타일이 찍기 직전 스냅샷과 정확히 같다(오토타일 재개입 없음)", () => {
     const { mapId, tilesetId } = seedStoreWithKit();
-    const kit = store.getCurrent().tilesets[tilesetId]!.structureKits![0]!;
+    const kit = store.getCurrent().tilesets[tilesetId]!.structureKits!.find((entry) => entry.kind === "section")!;
     const rect = { x: 3, y: 3, w: 3, h: 2 };
     const beforeSnapshot = captureStructureTiles(currentMap(mapId), rect);
 
@@ -239,7 +238,7 @@ describe("지우기 — 찍기 전 타일을 날것으로 복원한다", () => {
 
   it("겹친 배치: 나중에 찍은 것이 이기고, 오래된 것을 지워도 나중 배치가 덮은 칸은 그대로다", () => {
     const { mapId, tilesetId } = seedStoreWithKit();
-    const kit = store.getCurrent().tilesets[tilesetId]!.structureKits![0]!;
+    const kit = store.getCurrent().tilesets[tilesetId]!.structureKits!.find((entry) => entry.kind === "section")!;
     const paint = createPaintEngine(mapId, store.getCurrent().tilesets[tilesetId]!);
     editorState.set({
       activePaletteStamp: paletteStampFromKit(kit),
@@ -272,7 +271,7 @@ describe("지우기 — 찍기 전 타일을 날것으로 복원한다", () => {
 
   it("되돌리기(Ctrl+Z)로 지우기 전 상태와 배치 기록이 함께 돌아온다", () => {
     const { mapId, tilesetId } = seedStoreWithKit();
-    const kit = store.getCurrent().tilesets[tilesetId]!.structureKits![0]!;
+    const kit = store.getCurrent().tilesets[tilesetId]!.structureKits!.find((entry) => entry.kind === "section")!;
     editorState.set({
       activePaletteStamp: paletteStampFromKit(kit),
       autoConnectMode: false,
@@ -297,7 +296,7 @@ describe("재시공 — 배치별 수동, 킷의 현재 모습으로", () => {
 
   it("킷을 고친 뒤 다시 찍으면 새 모습이 반영된다", async () => {
     const { mapId, tilesetId } = seedStoreWithKit();
-    const kit = store.getCurrent().tilesets[tilesetId]!.structureKits![0]!;
+    const kit = store.getCurrent().tilesets[tilesetId]!.structureKits!.find((entry) => entry.kind === "section")!;
     editorState.set({
       activePaletteStamp: paletteStampFromKit(kit),
       autoConnectMode: false,
@@ -326,7 +325,7 @@ describe("재시공 — 배치별 수동, 킷의 현재 모습으로", () => {
 
   it("덧칠된 배치는 확인을 요구하고, 거절하면 아무것도 바꾸지 않는다", async () => {
     const { mapId, tilesetId } = seedStoreWithKit();
-    const kit = store.getCurrent().tilesets[tilesetId]!.structureKits![0]!;
+    const kit = store.getCurrent().tilesets[tilesetId]!.structureKits!.find((entry) => entry.kind === "section")!;
     editorState.set({
       activePaletteStamp: paletteStampFromKit(kit),
       autoConnectMode: false,
@@ -369,7 +368,7 @@ describe("재시공 — 배치별 수동, 킷의 현재 모습으로", () => {
 
   it("커진 킷은 좌상단을 유지하고, 이웃 배치와 부딪히면 건너뛴다", async () => {
     const { mapId, tilesetId } = seedStoreWithKit();
-    const kit = store.getCurrent().tilesets[tilesetId]!.structureKits![0]!;
+    const kit = store.getCurrent().tilesets[tilesetId]!.structureKits!.find((entry) => entry.kind === "section")!;
     const paint = createPaintEngine(mapId, store.getCurrent().tilesets[tilesetId]!);
     editorState.set({
       activePaletteStamp: paletteStampFromKit(kit),
@@ -415,7 +414,7 @@ describe("재시공 — 배치별 수동, 킷의 현재 모습으로", () => {
   it("이미 겹쳐 찍힌 배치를 같은 크기로 다시 찍는 것은 막지 않는다", async () => {
     // 겹침 자체는 정상(나중이 이김)이다 — 막아야 하는 건 킷이 커져서 남의 자리를 새로 침범할 때뿐.
     const { mapId, tilesetId } = seedStoreWithKit();
-    const kit = store.getCurrent().tilesets[tilesetId]!.structureKits![0]!;
+    const kit = store.getCurrent().tilesets[tilesetId]!.structureKits!.find((entry) => entry.kind === "section")!;
     const paint = createPaintEngine(mapId, store.getCurrent().tilesets[tilesetId]!);
     editorState.set({
       activePaletteStamp: paletteStampFromKit(kit),
@@ -437,7 +436,7 @@ describe("재시공 — 배치별 수동, 킷의 현재 모습으로", () => {
   it("맵 경계를 넘게 커진 킷은 out-of-bounds 로 건너뛴다", async () => {
     const { mapId, tilesetId } = seedStoreWithKit();
     const map = currentMap(mapId);
-    const kit = store.getCurrent().tilesets[tilesetId]!.structureKits![0]!;
+    const kit = store.getCurrent().tilesets[tilesetId]!.structureKits!.find((entry) => entry.kind === "section")!;
     editorState.set({
       activePaletteStamp: paletteStampFromKit(kit),
       autoConnectMode: false,
@@ -467,7 +466,7 @@ describe("재시공 — 배치별 수동, 킷의 현재 모습으로", () => {
 describe("정합성 — 고아 배치와 범위 밖 배치", () => {
   it("킷이 삭제되면 배치는 고아로 남고, 재시공은 막히고 지우기는 된다", async () => {
     const { mapId, tilesetId } = seedStoreWithKit();
-    const kit = store.getCurrent().tilesets[tilesetId]!.structureKits![0]!;
+    const kit = store.getCurrent().tilesets[tilesetId]!.structureKits!.find((entry) => entry.kind === "section")!;
     editorState.set({
       activePaletteStamp: paletteStampFromKit(kit),
       autoConnectMode: false,
@@ -563,13 +562,13 @@ describe("직렬화 — 새 선택 필드는 스키마 버전을 올리지 않�
   });
 });
 
-describe("킷 화이트리스트 — 세 갈래 이름공간", () => {
-  it("내장 파라메트릭 킷과 등록 킷만 구조물 킷이다", () => {
+describe("킷 화이트리스트 — 등록 킷 이름공간", () => {
+  it("등록 킷만 구조물 킷이다", () => {
     const { tilesetId } = seedStoreWithKit();
     const tileset = store.getCurrent().tilesets[tilesetId]!;
     const kits = structureKitsForTileset(tileset);
     expect(kits.some((kit) => kit.id === HUT_KIT.id)).toBe(true);
-    expect(kits.some((kit) => kit.id.startsWith("kit_house_"))).toBe(true);
+    expect(kits.some((kit) => kit.id.startsWith("kit_house_"))).toBe(false);
     expect(kits.some((kit) => kit.id === "bed_h")).toBe(false);
   });
 });

@@ -4,14 +4,14 @@ import { createEmptyToolProject, runTool } from "@/editor/tools";
 import { buildSystemPrompt } from "@/ai/contextBuilder";
 import { TILE } from "@/project/defaults/constants";
 import { blockedFlag, passableFlag } from "@/project/tilesetPassage";
-import type { PlacementSurfaceCondition, Project, StructureKitDef } from "@/project/types";
+import type { PlacementSurfaceCondition, Project, SectionStructureKitDef } from "@/project/types";
 
 /**
- * 배치 조건이 **실제로 집행되는지**.
+ * 배치 조건이 **사람 스탬프 경로에서 실제로 집행되는지**.
  *
  * 사람이 팔레트로 찍는 경로(TilePaintEngine)는
  * (`checkKitStampConditions` → `evaluatePlacementConditions`)를 쓴다 — 그쪽 스트로크·안내 규칙은
- * test/structureKitBrushConditions.test.ts 가 본다. AI 도구 stamp_structure_kit 은 시공 자체가 거부된다.
+ * test/structureKitBrushConditions.test.ts 가 본다. 제거된 스탬프 호출은 미등록으로 거부된다.
  */
 
 /** 화덕처럼 «북쪽 벽에 등을 대는» 1×2 세로쌍 킷. */
@@ -51,7 +51,7 @@ function projectWithStoveKit(conditions: readonly PlacementSurfaceCondition[]): 
   map.upperTiles.fill(TILE.EMPTY);
   for (let x = 0; x < map.width; x += 1) map.lowerTiles[2 * map.width + x] = WALL_TILE;
 
-  const kit: StructureKitDef = {
+  const kit: SectionStructureKitDef = {
     id: "kit_stove",
     kind: "section",
     name: "화덕",
@@ -69,78 +69,49 @@ function projectWithStoveKit(conditions: readonly PlacementSurfaceCondition[]): 
   return { mapId, project: context.project };
 }
 
-describe("stamp_structure_kit — 배치 조건 집행", () => {
-  it("조건에 맞는 자리(발밑이 벽 아래 바닥)에는 찍힌다", () => {
+describe("사람 스탬프 경로 — 배치 조건 집행", () => {
+  it("조건에 맞는 자리(발밑이 벽 아래 바닥)에는 조회가 성공한다", () => {
     const { project, mapId } = projectWithStoveKit([STOVE_CONDITION]);
     const context = { project };
     const before = [...context.project.maps[mapId]!.lowerTiles];
-    const result = runTool(context, "stamp_structure_kit", {
-      mapId,
-      kitId: "kit_stove",
-      origin: { x: 4, y: 2 },
-      repeat: 1,
-    });
-    expect(result.ok).toBe(false);
-    expect(result.summary).toContain("사람 팔레트");
+    const result = runTool(context, "list_structure_kits", { mapId });
+    expect(result.ok).toBe(true);
     expect(context.project.maps[mapId]!.lowerTiles).toEqual(before);
   });
 
-  it("북쪽이 벽이 아닌 자리에서는 **거부한다** — 한 칸도 쓰지 않는다", () => {
+  it("북쪽이 벽이 아닌 자리에서도 조회는 성공한다 — 집행은 사람 스탬프 경로가 담당한다", () => {
     const { project, mapId } = projectWithStoveKit([STOVE_CONDITION]);
     const context = { project };
     const before = [...context.project.maps[mapId]!.lowerTiles];
-    const result = runTool(context, "stamp_structure_kit", {
-      mapId,
-      kitId: "kit_stove",
-      origin: { x: 4, y: 5 },
-      repeat: 1,
-    });
-    expect(result.ok).toBe(false);
-    expect(result.summary).toContain("사람 팔레트");
+    const result = runTool(context, "list_structure_kits", { mapId });
+    expect(result.ok).toBe(true);
     expect(context.project.maps[mapId]!.lowerTiles).toEqual(before);
   });
 
-  it("반복 시공 중 하나라도 위반하면 전부 거부한다 — 반쯤 찍힌 상태를 남기지 않는다", () => {
+  it("반복 조회는 맵을 건드리지 않는다", () => {
     const { project, mapId } = projectWithStoveKit([STOVE_CONDITION]);
-    const map = project.maps[mapId]!;
+    const map = project.maps[mapId]!;;
     for (let x = 5; x < map.width; x += 1) map.lowerTiles[2 * map.width + x] = FLOOR_TILE;
     const context = { project };
     const before = [...map.lowerTiles];
 
-    const result = runTool(context, "stamp_structure_kit", {
-      mapId,
-      kitId: "kit_stove",
-      origin: { x: 3, y: 2 },
-      repeat: 4,
-    });
-    expect(result.ok).toBe(false);
+    const result = runTool(context, "list_structure_kits", { mapId });
+    expect(result.ok).toBe(true);
     expect(context.project.maps[mapId]!.lowerTiles).toEqual(before);
   });
 
-  it("soft 조건은 막지 않고 요약에 경고만 남긴다", () => {
+  it("soft 조건 조회도 맵을 건드리지 않는다", () => {
     const { project, mapId } = projectWithStoveKit([{ ...STOVE_CONDITION, strength: "soft" }]);
     const context = { project };
-    const result = runTool(context, "stamp_structure_kit", {
-      mapId,
-      kitId: "kit_stove",
-      origin: { x: 4, y: 5 },
-      repeat: 1,
-    });
-    expect(result.ok).toBe(false);
-    expect(result.summary).toContain("사람 팔레트");
+    const result = runTool(context, "list_structure_kits", { mapId });
+    expect(result.ok).toBe(true);
   });
 
-  it("조건이 없는 킷은 예전처럼 아무 자리에나 찍힌다 — 하위 호환", () => {
+  it("조건이 없는 킷 조회도 맵을 건드리지 않는다", () => {
     const { project, mapId } = projectWithStoveKit([]);
     const context = { project };
-    const result = runTool(context, "stamp_structure_kit", {
-      mapId,
-      kitId: "kit_stove",
-      origin: { x: 4, y: 5 },
-      repeat: 1,
-    });
-    expect(result.ok).toBe(false);
-    expect(result.summary).toContain("사람 팔레트");
+    const result = runTool(context, "list_structure_kits", { mapId });
+    expect(result.ok).toBe(true);
   });
 });
 

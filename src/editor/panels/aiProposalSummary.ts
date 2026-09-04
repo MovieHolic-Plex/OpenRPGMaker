@@ -5,7 +5,7 @@ import { TILE } from "@/project/defaults/constants";
 import { combineDiffs } from "@/project/projectCommitLog";
 import type { Project } from "@/project/types";
 
-const HOUSE_TOOLS = new Set(["build_house", "build_house_kit", "author_house", "build_house_lots"]);
+const HOUSE_TOOLS = new Set(["build_house", "author_house"]);
 const WATER_LABEL = /호수|연못|하천|수역|강가|water|river|lake|pond|(^|[^가-힣])(물|강)([^가-힣]|$)/iu;
 const isHouseCall = (call: { name: string; args: Record<string, unknown> }): boolean =>
   HOUSE_TOOLS.has(call.name) || (call.name === "tile_structure" && call.args.kind === "house");

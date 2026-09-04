@@ -2,7 +2,10 @@
 
 작성: 2026-07-13. 정본 소스: `src/editor/tools/toolRegistry.ts`(tagLegacy), `src/editor/tools/v2/index.ts`.
 
-## 현황
+## 현황 (2026-09-04 갱신)
+
+집 킷 잔재 제거로 `build_house_kit` / `build_house_lots` / `stamp_structure_kit` 는 등록 자체가 제거됐다.
+옛 이름 호출은 `unknown-tool` 로 거부된다. 집 외장은 `author_house` 정본만 남는다.
 
 레지스트리에는 deprecated 툴이 두 갈래로 남아 있다. LLM에는 어떤 모드에서도 노출되지 않지만
 (`toOpenAiTools`가 무조건 제외), `getTool()` 실행 호환은 유지된다 — 과거 대화 재생·이벤트
@@ -10,8 +13,8 @@
 
 | 갈래 | 목록 위치 | 개수 | 대체 |
 |---|---|---|---|
-| v1 타일 배치/지식/조회 | `v2/index.ts` `V1_TILE_SUPERSEDED` | 20 | v3 정공법(`fill_region`, `tile_erase`, `place_props`, `build_house_kit`) · `propose_tile_vocabulary` · `tile_query` |
-| 구조물 스탬프 시공 | `toolRegistry.ts` `CONSTRUCTION_WRITE_SUPERSEDED` | 1 (`stamp_structure_kit`) | `author_house` / `build_wall` / `fill_region` — **2단계(실행 차단)** 2026-08-31. 사람 팔레트는 유지 |
+| v1 타일 배치/지식/조회 | `v2/index.ts` `V1_TILE_SUPERSEDED` | 20 | v3 정공법(`fill_region`, `tile_erase`, `place_props`, `author_house`) · `propose_tile_vocabulary` · `tile_query` |
+| 구조물 스탬프 시공 | — (등록 제거, 2026-09-04) | 0 | `author_house` / `build_wall` / `fill_region` — 사람 팔레트는 유지 |
 | 구 지식 UI 보조 | `toolRegistry.ts` `LEGACY_TILE_KNOWLEDGE_SUPERSEDED` | 5 | `propose_tile_vocabulary` · `tile_query` |
 | 구 v2 배치 래퍼 | `v2/index.ts` `REMOVED_V2_PLACE_TOOLS` | 4 | **이미 제거됨** — 이름 매핑만 테스트/문서용으로 잔존 |
 

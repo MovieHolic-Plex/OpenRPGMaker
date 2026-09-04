@@ -63,12 +63,14 @@ function stampCornerHouse(
   y: number,
   kitId: "blue-stone" | "bright-plaster",
 ): string {
-  return runOk(ctx, "build_house_kit", {
+  return runOk(ctx, "author_house", {
+    kind: "single",
     mapId,
     kitId,
     wings: [{ x, y, w: 7, h: 6 }],
-    doorEvent: false,
-    interior: false,
+    interior: "exterior-only",
+    door: true,
+    yard: [],
   });
 }
 

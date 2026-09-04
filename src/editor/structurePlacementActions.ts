@@ -9,7 +9,6 @@
 // 재시공은 배치별 수동만이다 — 킷을 고쳤을 때 기존 배치로 자동 전파하지 않는다.
 
 import { paintTilesBulk } from "@/editor/tileActions";
-import { builtinHouseStructureKitsFor } from "@/editor/harnessSuggestion/builtinHouseStructureKits";
 import { structureKitSize, structureKitUnitCells } from "@/editor/harnessSuggestion/structureKitModel";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
@@ -36,20 +35,20 @@ import {
   type StructureTiles,
 } from "@/project/structurePlacements";
 import { store } from "@/project/store";
-import type { GameMap, MapId, StructureKitDef, StructurePlacement, TilesetDef } from "@/project/types";
+import type { GameMap, MapId, SectionStructureKitDef, StructurePlacement, TilesetDef } from "@/project/types";
 
 /**
- * 이 타일셋에서 "구조물 킷"으로 인정되는 것 전부 — 내장 파라메트릭 킷 + 등록 킷.
+ * 이 타일셋에서 "구조물 킷"으로 인정되는 것 전부 — 등록 킷.
  * 데이터베이스 구조물 탭의 albumEntries 와 같은 규약이며, 세 번째 갈래인 **실내 오브젝트는 제외**한다.
  * 실내 오브젝트(bed_h 등)도 PaletteStamp.kitId 를 채우지만 구조물이 아니라 배치 기록 대상이 아니다.
  */
-export function structureKitsForTileset(tileset: TilesetDef | undefined): readonly StructureKitDef[] {
+export function structureKitsForTileset(tileset: TilesetDef | undefined): readonly SectionStructureKitDef[] {
   if (!tileset) return [];
-  return [...builtinHouseStructureKitsFor(tileset), ...(tileset.structureKits ?? [])];
+  return (tileset.structureKits ?? []).filter((kit) => kit.kind === "section");
 }
 
 /** kitId 화이트리스트 조회. 실내 오브젝트 id 나 삭제된 킷은 undefined. */
-export function findStructureKit(tileset: TilesetDef | undefined, kitId: string): StructureKitDef | undefined {
+export function findStructureKit(tileset: TilesetDef | undefined, kitId: string): SectionStructureKitDef | undefined {
   return structureKitsForTileset(tileset).find((kit) => kit.id === kitId);
 }
 
@@ -57,7 +56,7 @@ export function structureKitForPlacement(
   project: { readonly maps: Record<string, GameMap>; readonly tilesets: Record<string, TilesetDef> },
   mapId: MapId,
   placement: StructurePlacement,
-): StructureKitDef | undefined {
+): SectionStructureKitDef | undefined {
   const map = project.maps[mapId];
   if (!map) return undefined;
   return findStructureKit(project.tilesets[map.tilesetId], placement.kitId);
@@ -77,7 +76,7 @@ export function structurePlacementIsOrphan(mapId: MapId, placement: StructurePla
  */
 export function evaluateKitPlacementConditions(input: {
   readonly mapId: MapId;
-  readonly kit: StructureKitDef;
+  readonly kit: SectionStructureKitDef;
   readonly rect: StructureRect;
 }): PlacementSurfaceVerdict {
   const project = store.getCurrent();
@@ -99,7 +98,7 @@ export function checkKitStampConditions(
   stamp: PaletteStamp,
   x: number,
   y: number,
-): { readonly kit: StructureKitDef; readonly verdict: PlacementSurfaceVerdict } | null {
+): { readonly kit: SectionStructureKitDef; readonly verdict: PlacementSurfaceVerdict } | null {
   const kitId = stamp.kitId;
   if (!kitId) return null;
   const project = store.getCurrent();
@@ -190,7 +189,7 @@ export interface RestampStructurePlacementDeps {
   /** 덧칠이 감지됐을 때 확인을 받는다. **무음 차단이 아니라 soft hint** — 사용자가 승낙하면 덮어쓴다. */
   readonly confirmOverpaint: (input: {
     readonly placement: StructurePlacement;
-    readonly kit: StructureKitDef;
+    readonly kit: SectionStructureKitDef;
   }) => Promise<boolean>;
 }
 

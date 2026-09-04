@@ -31,7 +31,6 @@ import { renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
 import { structureKitLayerHome } from "@/editor/harnessSuggestion/structureKitModel";
 import {
   createBlankStructureKit,
-  createStructureKitFromHouse,
   replaceStructureKit,
 } from "@/editor/harnessSuggestion/structureKitActions";
 import {
@@ -48,7 +47,6 @@ import {
   updatePart,
   type KitLayer,
 } from "@/editor/harnessSuggestion/structureKitRasterModel";
-import { HOUSE_KITS } from "@/editor/houseKit";
 import { openDialog } from "@/editor/panels/databaseEnemyRecordSupport";
 import { getAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
 import { openMapContextMenu } from "@/editor/panels/mapContextMenu";
@@ -60,7 +58,6 @@ import {
 import { makeSvgIcon, type SvgIconName } from "@/editor/panels/tileToolbarIcons";
 import { tileCellsForPaintShape } from "@/editor/tileShapeTools";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
-import { PUBLIC_HOUSE_KIT_IDS } from "@/editor/tools/houseKitDomain";
 import { unregisterModal } from "@/editor/ui/modalStack";
 import { describeChipsetTile, tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { TILE } from "@/project/defaults/constants";
@@ -646,73 +643,19 @@ function fillContiguous(
   return next;
 }
 
-/** 시작점 선택 — 빈 칸이냐, 집 한 채냐. 집 갈래는 combined_town 앨범에서만 열린다. */
+/** 시작점 선택 — 빈 칸에서 시작한다. */
 export function openNewStructureKitDialog(tilesetId: TilesetId, onCreated: (kitId: string) => void): void {
-  let houseKitId: string = PUBLIC_HOUSE_KIT_IDS[0]!;
-  let width = 9;
-  let height = 8;
-
-  const kitSelect = el("select", {
-    dataset: { testid: "structure-kit-new-house-kit" },
-    children: PUBLIC_HOUSE_KIT_IDS.map((id) =>
-      el("option", { attrs: { value: id }, text: HOUSE_KITS[id]?.name ?? id }),
-    ),
-    on: {
-      change: (event: Event) => {
-        const target = event.currentTarget;
-        if (target instanceof HTMLSelectElement) houseKitId = target.value;
-      },
-    },
-  });
-
-  const numberField = (label: string, testid: string, value: number, apply: (next: number) => void): HTMLElement =>
-    el("label", {
-      class: "structure-kit-editor-size-field",
-      children: [
-        el("span", { text: label }),
-        el("input", {
-          attrs: { type: "number", min: "3", max: "32" },
-          value: String(value),
-          dataset: { testid },
-          on: {
-            change: (event: Event) => {
-              const target = event.currentTarget;
-              if (target instanceof HTMLInputElement) apply(Number(target.value));
-            },
-          },
-        }),
-      ],
-    });
-
   openDialog(
     "structure-kit-new",
     "새 구조물",
     [
-      el("p", { class: "structure-kit-quiet", text: "빈 칸에서 시작하거나, 집 한 채를 놓고 고쳐 나갈 수 있습니다." }),
-      el("div", {
-        class: "structure-kit-new-house",
-        children: [kitSelect, numberField("폭", "structure-kit-new-width", width, (n) => { width = n; }),
-          numberField("높이", "structure-kit-new-height", height, (n) => { height = n; })],
-      }),
+      el("p", { class: "structure-kit-quiet", text: "빈 칸에서 시작해 원하는 모양으로 그려 나갈 수 있습니다." }),
     ],
     [
       {
         label: "빈 3×3 으로 시작",
         testid: "structure-kit-new-blank",
         action: () => onCreated(createBlankStructureKit(tilesetId).id),
-      },
-      {
-        label: "이 집으로 시작",
-        testid: "structure-kit-new-house-confirm",
-        action: () => {
-          const kit = createStructureKitFromHouse(tilesetId, houseKitId, { width, height });
-          if (!kit) {
-            const kitLabel = HOUSE_KITS[houseKitId as keyof typeof HOUSE_KITS]?.name ?? houseKitId;
-            toast(`'${kitLabel}' 은 ${width}×${height} 크기로 지어지지 않습니다 — 폭·높이를 바꿔 보세요.`, "info");
-            return;
-          }
-          onCreated(kit.id);
-        },
       },
       { label: "취소", testid: "structure-kit-new-cancel" },
     ],
@@ -2039,7 +1982,7 @@ function drawAiTab(
     });
 
   // 증분 축 — 「반복」 드롭다운이 표현하지 못하는 것을 맡는다: 그쪽은 가로 전용이다.
-  // 이 값이 세로를 포함하면 stamp_structure_kit 의 세로 반복(repeatY)이 열린다.
+  // 이 값이 세로를 포함하면 사람 스탬프의 세로 반복(repeatY)이 열린다.
   const growthSelect = el("select", {
     dataset: { testid: "structure-kit-editor-ai-growth" },
     children: GROWTH_AXIS_OPTIONS.map((option) =>
@@ -2087,8 +2030,7 @@ function drawAiTab(
   });
 
   // 배치 조건 — 「설명 / 배치 규칙」과 달리 **기계가 검사하는** 조건이다.
-  // 여기서 hard 로 걸어 둔 조건을 어기면 사람이 팔레트로 찍어도, AI 가 stamp_structure_kit 을
-  // 불러도 시공이 거부된다. 산문(배치 규칙)은 남겨 둔다 — 사람이 읽는 설명은 여전히 필요하다.
+  // 여기서 hard 로 걸어 둔 조건을 어기면 사람이 팔레트로 찍어도 시공이 거부된다. 산문(배치 규칙)은 남겨 둔다 — 사람이 읽는 설명은 여전히 필요하다.
   const snapSelect = el("select", {
     dataset: { testid: "structure-kit-editor-ai-snap" },
     children: [

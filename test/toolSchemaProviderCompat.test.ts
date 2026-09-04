@@ -3,7 +3,7 @@
 // - type 은 단일 문자열이어야 한다 (["boolean","object"] 같은 union 금지)
 // - properties 는 type:"object" 에서만 허용
 // - items 는 type:"array" 에서만 허용
-// 위반 시 요청 전체가 400 으로 죽어 "채팅 치면 에러" 로 나타난다 — build_house_kit.windows 회귀의 재발 방지.
+// 위반 시 요청 전체가 400 으로 죽어 "채팅 치면 에러" 로 나타난다 — author_house.windows 회귀의 재발 방지.
 //
 // 2026-08-23 추가: `type:"object"` 인데 properties 가 없는 노드도 금지한다. 400 은 안 나지만
 // strict function-calling 경로에서 모델이 그 객체의 필드를 표현할 방법이 없어 `{}` 만 보낸다.

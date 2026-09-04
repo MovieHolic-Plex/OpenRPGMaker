@@ -53,19 +53,10 @@ describe("serializeStructureKitFile", () => {
     expect(many.kits).toHaveLength(2);
   });
 
-  it("집 킷은 굳혀서 담는다 — 파일에 들어가는 순간 사진이 된다", () => {
-    const house = {
-      id: "kit_house",
-      kind: "house" as const,
-      name: "통나무집",
-      houseKitId: "log",
-      wings: [{ x: 0, y: 0, w: 5, h: 5 }],
-      learnedFrom: "builtin-parametric" as const,
-    };
-    const json = JSON.parse(serializeStructureKitFile(tileset(), [house], AT));
+  it("section 킷은 행렬 그대로 담는다", () => {
+    const json = JSON.parse(serializeStructureKitFile(tileset(), [well()], AT));
     expect(json.kits[0].kind).toBe("section");
     expect(Array.isArray(json.kits[0].rows)).toBe(true);
-    expect(json.kits[0].houseKitId).toBeUndefined();
   });
 });
 

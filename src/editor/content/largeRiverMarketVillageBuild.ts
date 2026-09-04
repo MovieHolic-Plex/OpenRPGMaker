@@ -323,14 +323,15 @@ export function buildLargeRiverMarketVillageProject(
       const kitId = pickHouseKitDiverse(i, kitUsed);
       const windowSpacing = 1 + (i % 3);
       const yardTheme = pickYardTheme(houseRng, hasFence);
-      const result = runOk(ctx, "build_house_kit", {
+      const result = runOk(ctx, "author_house", {
+        kind: "single",
         mapId,
         kitId,
         wings: layout.wings.map((fw) => ({ x: fw.x, y: fw.y, w: fw.w, h: fw.h })),
         windows: { spacing: windowSpacing },
-        interior: false,
-        doorEvent: false,
+        interior: "exterior-only",
         door: true,
+        yard: [],
       }, toolWarnings, log);
       shapeUsed.set(shape, (shapeUsed.get(shape) ?? 0) + 1);
       kitUsed.set(kitId, (kitUsed.get(kitId) ?? 0) + 1);
@@ -616,7 +617,7 @@ export function buildLargeRiverMarketVillageProject(
         "1 plan bboxes (landmarks → houses, no overlap, feedback)",
         "2 create_map",
         "3 water from plan only",
-        "4 houses in lots via build_house_kit",
+        "4 houses in lots via author_house",
         "5 roads between anchors",
         "6 market in market bbox",
         "7 fisher + npcs",

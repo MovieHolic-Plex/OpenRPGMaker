@@ -1,12 +1,6 @@
 // harnessSuggestion/structureKitFile.ts
 // 구조물 파일 포맷 — DOM·store 의존 없음(유닛 테스트 대상).
-//
-// 규칙 하나: 파일에 들어가는 순간 사진이 된다.
-//   집 킷은 내보낼 때 전개해서 rows 로 담는다. 포맷이 한 종류라 파서·검증이 하나이고,
-//   받는 쪽에서 항상 편집 가능하며 AI 가 항상 모양을 읽을 수 있다.
-//   받는 프로젝트에 그 houseKitId 가 있는지 걱정할 필요도 없다.
 
-import { bakeStructureKit } from "@/editor/harnessSuggestion/structureKitRasterModel";
 import { structureKitSignature } from "@/editor/harnessSuggestion/structureKitModel";
 import type {
   PlacementFacing,
@@ -16,7 +10,6 @@ import type {
   StructureGrowthAxis,
   StructureKitAiMeta,
   StructureKitCellHint,
-  StructureKitDef,
   TilesetDef,
 } from "@/project/types";
 
@@ -49,16 +42,15 @@ export interface KitDiagnostic {
 /** exportedAt 을 인자로 받는다 — new Date() 를 안에서 부르면 결과를 단언할 수 없다. */
 export function serializeStructureKitFile(
   tileset: TilesetDef,
-  kits: readonly StructureKitDef[],
+  kits: readonly SectionStructureKitDef[],
   exportedAt: string,
 ): string {
-  const baked = kits.map((kit) => bakeStructureKit(kit, kit.id, kit.name ?? "구조물"));
   const file: StructureKitFile = {
     format: STRUCTURE_KIT_FILE_FORMAT,
     version: STRUCTURE_KIT_FILE_VERSION,
     exportedAt,
     tileset: { id: tileset.id, name: tileset.name },
-    kits: baked,
+    kits: kits.map((kit) => ({ ...kit })),
   };
   return `${JSON.stringify(file, null, 2)}\n`;
 }
@@ -331,7 +323,7 @@ function readAiMeta(raw: unknown): StructureKitAiMeta | undefined {
 }
 
 /** 낱개는 구조물 이름, 묶음은 타일셋 이름과 개수. 이중 확장자라 브라우저는 JSON 으로 연다. */
-export function structureKitFileName(tilesetName: string, kits: readonly StructureKitDef[]): string {
+export function structureKitFileName(tilesetName: string, kits: readonly SectionStructureKitDef[]): string {
   if (kits.length === 1) return `${kits[0]!.name ?? "구조물"}.rpgzzu-kit.json`;
   return `${tilesetName}-구조물-${kits.length}개.rpgzzu-kit.json`;
 }
@@ -363,7 +355,7 @@ export interface ImportPlan {
 export function planImport(
   file: StructureKitFile,
   targetTileset: TilesetDef,
-  existingKits: readonly StructureKitDef[],
+  existingKits: readonly SectionStructureKitDef[],
   diagnostics: readonly KitDiagnostic[],
 ): ImportPlan {
   const existingSignatures = new Set(existingKits.map((kit) => structureKitSignature(kit)));

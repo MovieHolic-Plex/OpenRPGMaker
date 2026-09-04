@@ -30,6 +30,12 @@ const CURRENTLY_DEPRECATED_TO_AUTHOR_HOUSE = {
   supersededBy: "author_house",
 } as const;
 
+const CURRENTLY_REMOVED = {
+  registered: false,
+  deprecated: true,
+  supersededBy: "author_house",
+} as const;
+
 const CURRENTLY_DEPRECATED_TO_AUTHOR_VILLAGE = {
   registered: true,
   deprecated: true,
@@ -66,21 +72,21 @@ export const CONSTRUCTION_WRITE_ROUTE_MANIFEST = [
   },
   {
     name: "build_house_kit",
-    currentRegistry: CURRENTLY_DEPRECATED_TO_AUTHOR_HOUSE,
+    currentRegistry: CURRENTLY_REMOVED,
     llmExposed: false,
     defaultToolBrowserExposed: false,
-    directExecution: true,
+    directExecution: false,
     supersededBy: "author_house",
-    implementation: "house-kit-tool",
+    implementation: "removed-use-author-house",
   },
   {
     name: "build_house_lots",
-    currentRegistry: CURRENTLY_DEPRECATED_TO_AUTHOR_HOUSE,
+    currentRegistry: CURRENTLY_REMOVED,
     llmExposed: false,
     defaultToolBrowserExposed: false,
-    directExecution: true,
+    directExecution: false,
     supersededBy: "author_house",
-    implementation: "house-lot-tool",
+    implementation: "removed-use-author-house",
   },
   {
     name: "plan_village",

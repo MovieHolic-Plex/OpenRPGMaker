@@ -15,8 +15,6 @@ import { MAP_GEN_TOOLS } from "./generateMapTool";
 import { GROUP_LAYOUT_TOOLS } from "./groupLayoutTools";
 import { GROUP_SAMPLE_TOOLS } from "./groupSampleTool";
 import { HISTORY_TOOLS } from "./historyTools";
-import { HOUSE_KIT_TOOLS } from "./houseKitTools";
-import { HOUSE_LOT_TOOLS } from "./houseLotTools";
 import { HOUSE_VISION_TOOLS } from "./houseVisionTools";
 import { INVESTIGATION_TOOLS } from "./investigationTools";
 import { NARRATIVE_HORROR_TEMPLATE_TOOLS } from "./narrativeHorrorTemplateTools";
@@ -78,11 +76,12 @@ export const LEGACY_TILE_KNOWLEDGE_SUPERSEDED: ReadonlyMap<string, string> = new
 
 // construction route manifest: 레거시 쓰기 → canonical facade (LLM 비노출, 직접 실행 호환).
 // preview_house는 읽기 진단이므로 여기 넣지 않는다(공개 유지).
+// build_house_kit / build_house_lots / stamp_structure_kit 는 등록 자체가 제거됐다 —
+// 레지스트리에 정의가 없으므로 superseded 매핑도 두지 않는다. 옛 이름 호출은 unknown-tool 로 거부된다.
 export const CONSTRUCTION_WRITE_SUPERSEDED: ReadonlyMap<string, string> = new Map([
   ["build_house", "author_house"],
   ["build_house_kit", "author_house"],
   ["build_house_lots", "author_house"],
-  ["stamp_structure_kit", "author_house"],
   ["plan_village", "author_village"],
   ["materialize_village_spec", "author_village"],
   ["revise_village_plan", "author_village"],
@@ -156,8 +155,6 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   AUTHOR_HOUSE_TOOL,
   AUTHOR_VILLAGE_TOOL,
   ...withDomain(CONSTRUCTION_TOOLS_V3, "tile"),
-  ...withDomain(HOUSE_KIT_TOOLS, "tile"),
-  ...withDomain(HOUSE_LOT_TOOLS, "tile"),
   ...withDomain(HOUSE_VISION_TOOLS, "tile"),
   ...withDomain(VILLAGE_TOOLS, "tile"),
   ...withDomain(VILLAGE_SESSION_TOOLS, "tile"),
@@ -255,8 +252,7 @@ export interface ToolExposureOptions {
 // 분산된다 — 2026-07-10 라이브 실측(place_chest 크라우드아웃)의 재발 방지 구조.
 const MAX_EXPOSED_TOOLS = 40;
 // 핀 규칙: deprecated(=supersededBy 가 붙는) 툴은 절대 핀하지 않는다. toOpenAiTools가
-// deprecated를 먼저 걸러내므로 핀해도 노출되지 않고, "보장됐다"는 착각만 남는다
-// (build_house_kit/build_house_lots 가 실제로 이 함정에 걸려 있었다 — CONSTRUCTION_WRITE_SUPERSEDED).
+// deprecated를 먼저 걸러내므로 핀해도 노출되지 않고, "보장됐다"는 착각만 남는다.
 // 재발 방지는 test/toolRegistry.test.ts 의 "핀된 툴은 deprecated가 아니다" 가드가 담당한다.
 export const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>> = new Map([
   ["system", new Set(["reset_project", "configure_time_system", "evaluate_game_quality"])],

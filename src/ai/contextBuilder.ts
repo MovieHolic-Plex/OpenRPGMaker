@@ -149,7 +149,7 @@ const INTRO = [
   "    사용자가 가르친 메타데이터(source=user)가 최우선 근거입니다. 그룹의 placementRules가 있으면 반드시 따르세요.",
   "11. 집/구조물(야외 외장)은 절대 벽 타일로 사각형을 채워 만들지 마세요. 야외 집은 author_house를 우선 사용하고,",
   "    건물 평면은 wings 사각형들의 합집합으로 설계하세요. 길/모래는 paint_road(style=dirt/sand)가 오토타일로 성형합니다.",
-  "    구조물 스탬프(stamp_structure_kit / stamp_structure)는 사람 팔레트 전용이다. 타일 시공에 쓰지 마세요.",
+  "    구조물 스탬프는 사람 팔레트 전용이다. 타일 시공에 쓰지 마세요.",
   "    **실내·방·인테리어 요청은 야외 집이 아니다.** 현재 맵에 author_house를 올리지 말고",
   "    시설(여관 등)은 get_concept_facility → plan 설계 → place_concept({query, mapId, plan})으로 **새 mapId**를 시공하세요. 그 외 실내는 start_interior_room_session(또는 run_interior_room_pipeline)으로 **새 mapId·요청 이름**을 쓰세요",
   "    (rooms[] 역할 테마 → advance_interior_room_build 반복 → evaluate_interior_room). create_map만 하고 멈추지 마세요.",
@@ -368,7 +368,7 @@ function tileSemanticsSection(project: Project): string {
 }
 
 // 사람이 등록한 구조 킷은 팔레트 스탬프 전용이다. 목록을 시공 재료로 주면
-// 모델이 stamp_structure_kit 으로 집을 찍는다(2026-08-31 실측).
+// 모델이 구조물 스탬프로 집을 찍는다(2026-08-31 실측).
 function structureKitSection(project: Project, mapId: string | undefined): string {
   const names: string[] = [];
   for (const tilesetId of currentTilesetIds(project, mapId)) {
@@ -383,7 +383,7 @@ function structureKitSection(project: Project, mapId: string | undefined): strin
   return [
     "## 구조물 스탬프는 사람 팔레트 전용",
     `사람이 등록한 구조물: ${shown.join(", ")}${extra}.`,
-    "타일 시공에 stamp_structure_kit / stamp_structure 를 쓰지 마세요.",
+    "타일 시공에 구조물 스탬프를 쓰지 마세요.",
     "집=author_house, 마을=author_village, 벽=build_wall, 지형=fill_region, 소품=place_props.",
   ].join("\n");
 }
@@ -459,7 +459,7 @@ function interiorCatalogSection(project: Project, mapId: string | undefined): st
   tilesetIds.add(INTERIOR_ROOM_TILESET_ID);
   const lines: string[] = [
     "## 타일셋 실내 문법 (start_interior_room_session / run_interior_room_pipeline 이 읽음)",
-    "가구 모양과 방 종류는 데이터베이스 구조물 탭의 그 타일셋 데이터다. stamp_structure_kit 으로 찍지 마라.",
+    "가구 모양과 방 종류는 데이터베이스 구조물 탭의 그 타일셋 데이터다. 구조물 스탬프로 찍지 마라.",
   ];
   let any = false;
   for (const tilesetId of tilesetIds) {

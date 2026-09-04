@@ -5,7 +5,7 @@
 // 2. 표에는 선택된 타일셋의 구조물만 표시.
 // 3. 빈 상태 정확한 카피: "이 타일셋에는 아직 구조물이 없습니다."
 // 4. 인스펙터는 이 파일이 배치만 한다 — 내용·액션 계약은 structureKitInspector.ts 를 본다.
-// 5. 원본(source) 칩은 앨범 안의 세 갈래 — 내장 건물 · 실내 오브젝트 · 내가 저장한 구조물. 실내 오브젝트는 실내 칩셋 전용.
+// 5. 원본(source) 칩은 앨범 안의 두 갈래 — 실내 오브젝트 · 내가 저장한 구조물. 실내 오브젝트는 실내 칩셋 전용.
 // 6. 공간 종류(침실·주방 문법)는 형제 탭 tilesetSpacesTab 이 소유한다. 이 파일은 방 카드를 그리지 않는다.
 
 import { editorState } from "@/editor/editorState";
@@ -29,7 +29,7 @@ import {
   type StructureAlbumEntry,
   type StructureKitDbSource,
 } from "@/editor/panels/structureKitDbSources";
-import { openNewStructureKitDialog, openStructureKitEditor } from "@/editor/panels/structureKitEditorDialog";
+import { openStructureKitEditor } from "@/editor/panels/structureKitEditorDialog";
 import { pickAndImportStructureKits } from "@/editor/panels/structureKitImportDialog";
 import {
   interiorObjectCanvas,
@@ -39,10 +39,9 @@ import {
   setInspectorSelectedPartId,
 } from "@/editor/panels/structureKitInspector";
 import { clearSelectedTileset, getSelectedTilesetId, setSelectedTileset } from "@/editor/panels/tilesetSettingsPanel";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import type {
-  StructureKitDef,
+  SectionStructureKitDef,
   StructureKitPart,
   StructureKitPartKind,
   TilesetDef,
@@ -116,10 +115,10 @@ function enterStructureKitEditor(
   });
 }
 
-/** 내장 킷·실내 오브젝트를 내 구조물로 굳히고 그 사본을 바로 편집한다. */
+/** 실내 오브젝트를 내 구조물로 굳히고 그 사본을 바로 편집한다. */
 function duplicateAndEdit(
   tilesetId: string,
-  source: StructureKitDef | InteriorObjectDef,
+  source: SectionStructureKitDef | InteriorObjectDef,
   host: HTMLElement,
   rerender: () => void,
 ): void {
@@ -187,7 +186,7 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
     }, { scope: "database", label: "실내 가구·방 종류 시드" });
     activeTileset = store.getCurrent().tilesets[session.tilesetId] ?? tilesets[0];
   }
-  // 팔레트 선반과 같은 합집합 규약: 내장 파라메트릭 킷 → 실내 오브젝트 → 등록 킷 순.
+  // 팔레트 선반과 같은 규약: 실내 오브젝트 → 등록 킷 순.
   const allEntries = albumEntries(activeTileset);
   const query = session.searchQuery.trim().toLowerCase();
   const visibleEntries = entriesForSource(allEntries, session.source)
@@ -196,8 +195,8 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
   // 체크는 지금 보이는 행에만 뜻이 있다 — 원본 칩·검색으로 가려지면 그 선택은 화면에서 사라진다.
   // 푸터 개수·내보내기 버튼 라벨·실제 내보내기 대상을 전부 이 한 배열에서 갈라내 서로 어긋나지
   // 않게 한다. 지워진 킷의 남은 id 도 visibleEntries 에 없으니 따로 걸러낼 필요가 없다.
-  const checkedVisibleKits: StructureKitDef[] = visibleEntries.flatMap((entry) =>
-    entry.kind === "kit" && session.checkedKitIds.has(entry.kit.id) ? [entry.kit] : [],
+  const checkedVisibleKits: SectionStructureKitDef[] = visibleEntries.flatMap((entry) =>
+    entry.kind === "kit" && entry.kit.kind === "section" && session.checkedKitIds.has(entry.kit.id) ? [entry.kit] : [],
   );
 
   // 선택 유효성 확인 — 보이는 행 안에서만 선택을 유지하고, 없으면 첫 행으로 되돌린다.
@@ -333,14 +332,7 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
           click: () => {
             const tilesetId = session.tilesetId;
             if (!tilesetId) return;
-            const openEditorFor = (kitId: string): void => {
-              enterStructureKitEditor(tilesetId, kitId, host, rerender);
-            };
-            if (tilesetId !== DEFAULT_TILESET_ID) {
-              openEditorFor(createBlankStructureKit(tilesetId).id);
-              return;
-            }
-            openNewStructureKitDialog(tilesetId, openEditorFor);
+            enterStructureKitEditor(tilesetId, createBlankStructureKit(tilesetId).id, host, rerender);
           },
         },
       }),
@@ -364,7 +356,7 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
           if (!activeTileset) return;
           const targets = checkedVisibleKits.length > 0
             ? checkedVisibleKits
-            : (activeTileset.structureKits ?? []);
+            : (activeTileset.structureKits ?? []).filter((kit) => kit.kind === "section");
           if (targets.length === 0) {
             toast("내보낼 구조물이 없습니다. 먼저 [+ 새 구조물]이나 [복제]로 만들어 주세요.", "info");
             return;
@@ -438,6 +430,7 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
         );
         continue;
       }
+      if (entry.kit.kind !== "section") continue;
       const kit = entry.kit;
       const isSelected = kit.id === selectedKit?.id;
       const size = structureKitSize(kit);
@@ -501,30 +494,24 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
             children: [
               el("div", {
                 class: "structure-kit-row-actions",
-                children: entry.source === "user"
-                  ? [
-                      rowActionButton("✎", "편집", `structure-kit-row-edit-${kit.id}`, () => {
-                        enterStructureKitEditor(activeTileset!.id, kit.id, host, rerender);
-                      }),
-                      rowActionButton("⧉", "복제", `structure-kit-row-duplicate-${kit.id}`, () => {
-                        duplicateAndEdit(activeTileset!.id, kit, host, rerender);
-                      }),
-                      rowActionButton("↓", "내보내기", `structure-kit-export-${kit.id}`, () => {
-                        exportOneKit(activeTileset!, kit);
-                      }),
-                      rowActionButton("✕", "삭제", `structure-kit-db-delete-${kit.id}`, () => {
-                        deleteStructureKit(activeTileset!.id, kit.id);
-                        toast(`'${kit.name ?? "구조물"}' 삭제`, "info");
-                        setInspectorSelectedPartId(null);
-                        rerender();
-                        refresh(host, rerender);
-                      }, "structure-kit-delete"),
-                    ]
-                  : [
-                      rowActionButton("⧉", "내 구조물로 복제", `structure-kit-row-duplicate-${kit.id}`, () => {
-                        duplicateAndEdit(activeTileset!.id, kit, host, rerender);
-                      }),
-                    ],
+                children: [
+                  rowActionButton("✎", "편집", `structure-kit-row-edit-${kit.id}`, () => {
+                    enterStructureKitEditor(activeTileset!.id, kit.id, host, rerender);
+                  }),
+                  rowActionButton("⧉", "복제", `structure-kit-row-duplicate-${kit.id}`, () => {
+                    duplicateAndEdit(activeTileset!.id, kit, host, rerender);
+                  }),
+                  rowActionButton("↓", "내보내기", `structure-kit-export-${kit.id}`, () => {
+                    exportOneKit(activeTileset!, kit);
+                  }),
+                  rowActionButton("✕", "삭제", `structure-kit-db-delete-${kit.id}`, () => {
+                    deleteStructureKit(activeTileset!.id, kit.id);
+                    toast(`'${kit.name ?? "구조물"}' 삭제`, "info");
+                    setInspectorSelectedPartId(null);
+                    rerender();
+                    refresh(host, rerender);
+                  }, "structure-kit-delete"),
+                ],
               }),
             ],
           }),
@@ -537,13 +524,6 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
             refresh(host, rerender);
           },
           dblclick: () => {
-            // 내장 행은 고칠 수 없다. 예전엔 조용히 return 해서 "더블클릭했는데 아무 일도
-            // 안 남" 이었다 — 편집하겠다는 뜻을 그대로 받아 사본을 만들고 그 사본을 연다.
-            // 원본은 그대로 남고, 사본 생성은 DB 모달 취소·Ctrl+Z 로 되돌릴 수 있다.
-            if (entry.source !== "user") {
-              duplicateAndEdit(activeTileset!.id, kit, host, rerender);
-              return;
-            }
             enterStructureKitEditor(activeTileset!.id, kit.id, host, rerender);
           },
         },
@@ -575,9 +555,8 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
       renderObjectInspector(activeTileset, selectedObject, (kitId) =>
         enterStructureKitEditor(activeTileset.id, kitId, host, rerender))
     );
-  } else if (selectedKit && activeTileset) {
-    // 편집 잠금의 축은 "어떻게 만들어졌나"(learnedFrom)가 아니라 "프로젝트 데이터에 있나"(source)다.
-    // learnedFrom 으로 판정하면 내장 킷을 내보낸 파일을 가져왔을 때 영구히 잠긴 유령 킷이 생긴다.
+  } else if (selectedKit && selectedKit.kind === "section" && activeTileset) {
+    // 편집 잠금의 축은 "프로젝트 데이터에 있나"(source)다.
     const editable = selectedEntry?.source === "user";
     workspace.append(
       renderInspector(
@@ -593,7 +572,7 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
 }
 
 /** 한 구조물만 파일로. 예전엔 인스펙터 액션 줄이었고, 지금은 행의 ↓ 아이콘이다. */
-function exportOneKit(tileset: TilesetDef, kit: StructureKitDef): void {
+function exportOneKit(tileset: TilesetDef, kit: SectionStructureKitDef): void {
   const text = serializeStructureKitFile(tileset, [kit], new Date().toISOString());
   downloadBlob(new Blob([text], { type: "application/json" }), structureKitFileName(tileset.name, [kit]));
   toast(`'${kit.name ?? "구조물"}'을 내보냈습니다`, "ok");
@@ -611,18 +590,16 @@ function matchesQuery(entry: StructureAlbumEntry, query: string): boolean {
     if (entry.object.label.toLowerCase().includes(query)) return true;
     return interiorObjectThemeLabels(entry.object).some((label) => label.toLowerCase().includes(query));
   }
+  if (entry.kit.kind !== "section") return true;
   const kit = entry.kit;
   if ((kit.name ?? "").toLowerCase().includes(query)) return true;
   // 어휘를 적을 수 있게 만든 값은 찾을 수 있어야 한다 — 태그·테마를 검색이 못 보면
   // 사람이 적어 넣은 뒤 다시 찾을 방법이 이름뿐이다.
   if ((kit.ai?.tags ?? []).some((tag) => tag.toLowerCase().includes(query))) return true;
   if ((kit.ai?.themes ?? []).some((theme) => theme.toLowerCase().includes(query))) return true;
-  if (
-    kit.kind === "section"
-    && (kit.cellHints ?? []).some((hint) => (hint.note ?? "").toLowerCase().includes(query))
-  ) return true;
-  return (kit.parts ?? []).some(
-    (part) => partKindName(part.kind).includes(query) || (part.note ?? "").toLowerCase().includes(query),
+  if ((kit.cellHints ?? []).some((hint) => (hint.note ?? "").toLowerCase().includes(query))) return true;
+  return (kit.parts ?? []).some((part) =>
+    partKindName(part.kind).includes(query) || (part.note ?? "").toLowerCase().includes(query),
   );
 }
 

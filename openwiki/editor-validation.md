@@ -116,5 +116,5 @@ Wiki verification, Playwright evidence, and focused test guidance for editor cha
 
   구조물 킷의 `hard` 조건은 사람 팔레트가 찍는 시점에 거부한다(`structurePlacementActions.ts`) —
   킷마다 옵트인이고, `soft` 는 경고로 내려가며, 오류 문구가 고칠 자리를 지목한다("데이터베이스 → 구조물 →
-  [편집] → AI 메타 탭의 «배치 조건»"). AI 도구 `stamp_structure_kit` 은 2026-08-31 부터 시공 자체가
-  거부된다. `list_structure_kits` 는 조회만 하고 시공 경로를 안내하지 않는다.
+  [편집] → AI 메타 탭의 «배치 조건»"). 구조물 스탬프 LLM 노출은 2026-09-04 에 등록 자체가 제거됐다.
+  `list_structure_kits` 는 조회만 하고 시공 경로를 안내하지 않는다.

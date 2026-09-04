@@ -1,10 +1,8 @@
 // editor/tools/structureKitTools.ts
 // 유저 붓질에서 학습·등록된 구조 킷(tileset.structureKits)의 하네스 접점.
 //  - list_structure_kits (read)  — 킷의 존재·정확한 타일 행을 기계가 읽는다.
-//  - stamp_structure_kit (write) — **AI 시공 금지**(2026-08-31). 사람 팔레트 스탬프 전용.
-//    호출되면 맵을 건드리지 않고 거절한다. 집=author_house, 벽=build_wall, 지형=fill_region.
+// 구조물 시공은 사람 팔레트 스탬프 전용이다. 집=author_house, 벽=build_wall, 지형=fill_region.
 
-import { builtinHouseStructureKitsFor } from "@/editor/harnessSuggestion/builtinHouseStructureKits";
 import {
   structureKitGrowthAxes,
   structureKitLayerHome,
@@ -17,30 +15,29 @@ import { appendStructurePlacement, captureStructureTiles } from "@/project/struc
 import type {
   GameMap,
   Project,
+  SectionStructureKitDef,
   StructureKitAiMeta,
   StructureKitCellHint,
-  StructureKitDef,
   StructureKitPart,
   TilesetDef,
 } from "@/project/types";
 import { TILE } from "@/project/defaults";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
-import { COORD_SCHEMA } from "./schemaShapes";
 
 type Point = { readonly x: number; readonly y: number };
 
-/** 타일셋의 사용 가능한 킷 전체 — 내장 파라메트릭 집 킷 + 등록 킷. */
-function availableKits(tileset: TilesetDef | undefined): StructureKitDef[] {
+/** 타일셋의 사용 가능한 킷 전체 — 등록 킷. */
+function availableKits(tileset: TilesetDef | undefined): SectionStructureKitDef[] {
   if (!tileset) return [];
-  return [...builtinHouseStructureKitsFor(tileset), ...(tileset.structureKits ?? [])];
+  return (tileset.structureKits ?? []).filter((kit) => kit.kind === "section");
 }
 
 const listStructureKits: ToolDefinition = {
   name: "list_structure_kits",
   description:
     "사람이 팔레트에 등록한 구조 킷 목록(읽기 전용). mapId를 주면 그 맵 타일셋의 킷만. "
-    + "이 킷은 사람 팔레트 스탬프 전용이다 — 타일 시공에 stamp_structure_kit를 쓰지 말 것. "
+    + "이 킷은 사람 팔레트 스탬프 전용이다 — 타일 시공에 쓰지 말 것. "
     + "집=author_house, 마을=author_village, 벽=build_wall, 지형=fill_region, 소품=place_props. "
     + "rows/parts/placementText/growth/cellHints는 사람이 등록한 내용의 조회 표면일 뿐이다.",
   mode: "read",
@@ -51,11 +48,15 @@ const listStructureKits: ToolDefinition = {
     },
   },
   run(project, args): ToolExecResult {
+    const mapId = typeof args.mapId === "string" && args.mapId.length > 0 ? args.mapId : undefined;
+    if (mapId !== undefined && project.maps[mapId] === undefined) {
+      return { summary: `맵을 찾을 수 없습니다: ${mapId}`, data: { kits: [] } };
+    }
     const entries: {
       kitId: string;
       name: string;
       tilesetId: string;
-      kind: StructureKitDef["kind"];
+      kind: SectionStructureKitDef["kind"];
       width: number;
       height: number;
       learnedFrom: string;
@@ -65,7 +66,7 @@ const listStructureKits: ToolDefinition = {
       repeatable: boolean;
       /**
        * 어느 축으로 무한히 이어 붙여도 되는지. repeatable 은 x 하나만 말할 수 있어서
-       * 「세로로만 쌓는 벽」을 표현하지 못했다 — stamp_structure_kit 의 repeat/repeatY 가 이 값을 본다.
+       * 「세로로만 쌓는 벽」을 표현하지 못했다 — 사람 스탬프의 repeat/repeatY 가 이 값을 본다.
        */
       growth: { x: boolean; y: boolean };
       /** 홈 레이어(사람이 선언했으면 그 값, 아니면 행렬에서 유도). */
@@ -79,7 +80,6 @@ const listStructureKits: ToolDefinition = {
       placementText?: string[];
       parts?: StructureKitPart[];
       rows?: { tiles: number[]; upperTiles?: number[] }[];
-      house?: { houseKitId: string; wings: { x: number; y: number; w: number; h: number }[] };
     }[] = [];
     for (const tileset of tilesetsInScope(project, args.mapId)) {
       for (const kit of availableKits(tileset)) {
@@ -107,16 +107,10 @@ const listStructureKits: ToolDefinition = {
               }
             : {}),
           ...(kit.parts && kit.parts.length > 0 ? { parts: kit.parts.map((part) => ({ ...part })) } : {}),
-          ...(kit.kind === "section"
-            ? {
-                rows: kit.rows.map((row) => ({
-                  tiles: [...row.tiles],
-                  ...(row.upperTiles ? { upperTiles: [...row.upperTiles] } : {}),
-                })),
-              }
-            : {
-                house: { houseKitId: kit.houseKitId, wings: kit.wings.map((wing) => ({ ...wing })) },
-              }),
+          rows: kit.rows.map((row) => ({
+            tiles: [...row.tiles],
+            ...(row.upperTiles ? { upperTiles: [...row.upperTiles] } : {}),
+          })),
         });
       }
     }
@@ -130,133 +124,94 @@ const listStructureKits: ToolDefinition = {
   },
 };
 
-/** AI 가 stamp_structure_kit 을 부르면 돌려주는 거절 문장. 테스트·프롬프트가 같은 문구를 본다. */
-export const STAMP_STRUCTURE_KIT_BLOCKED =
-  "구조물 스탬프(stamp_structure_kit)는 사람 팔레트 전용입니다. 타일 시공에 쓰지 마세요. "
-  + "집=author_house, 마을=author_village, 벽=build_wall, 지형=fill_region, 소품=place_props.";
-
-const stampStructureKit: ToolDefinition = {
-  name: "stamp_structure_kit",
-  description:
-    "AI 시공 금지. 구조물 스탬프는 사람 팔레트 전용이다. "
-    + "집=author_house, 마을=author_village, 벽=build_wall, 지형=fill_region, 소품=place_props.",
-  mode: "write",
-  parameters: {
-    type: "object",
-    properties: {
-      mapId: { type: "string" },
-      kitId: { type: "string", description: "쓰지 말 것 — 이 도구는 거부된다" },
-      kitName: { type: "string" },
-      origin: { ...COORD_SCHEMA, description: "{x,y}" },
-      repeat: { type: "integer" },
-      repeatY: { type: "integer" },
-    },
-    required: ["mapId", "origin"],
-  },
-  invalidArgsExample: { mapId: "map_blank_start", kitId: "kit_...", origin: { x: 3, y: 4 } },
-  run(_draft, _args): ToolExecResult {
-    throw new ToolError(STAMP_STRUCTURE_KIT_BLOCKED, { code: "stamp-blocked" });
-  },
-};
-
-/** 사람 팔레트·계약 테스트용 시공 엔진. AI 툴 run() 은 이 함수를 부르지 않는다. */
+/** 사람 팔레트 시공 엔진. 사람 스탬프 경로에서만 부른다. */
 export function applyStampStructureKit(draft: Project, args: Record<string, unknown>): ToolExecResult {
-    const map = requireMap(draft, args.mapId as string);
-    const tileset = draft.tilesets[map.tilesetId];
-    const kit = resolveKit(tileset, args);
-    const origin = originArg(args);
-    // 증분 축이 시공 반복을 지배한다. 집 킷·우물처럼 한 채로 완결인 것은 두 축 모두 1회다.
-    // 사람이 적지 않은 축으로는 절대 늘리지 않는다 — 조용히 3채가 생기는 쪽이 1채보다 나쁘다.
-    const axes = structureKitGrowthAxes(kit);
-    const requestedX = repeatArg(args, "repeat", 3);
-    const requestedY = repeatArg(args, "repeatY", 1);
-    const repeat = axes.x ? requestedX : 1;
-    const repeatY = axes.y ? requestedY : 1;
-    // 조인 사실은 결과 문장에 남긴다. 말없이 조이면 모델은 세로로 쌓았다고 믿고 다음 층을 그 위에 얹는다.
-    const clampNotes = [
-      axes.x || requestedX === 1 ? "" : `가로 ${requestedX}회 요청 → 1회(가로 증분 불가)`,
-      axes.y || requestedY === 1 ? "" : `세로 ${requestedY}회 요청 → 1회(세로 증분 불가)`,
-    ].filter(Boolean);
-    const size = structureKitSize(kit);
-    const totalWidth = size.width * repeat;
-    const totalHeight = size.height * repeatY;
-    if (
-      origin.x < 0 || origin.y < 0
-      || origin.x + totalWidth > map.width
-      || origin.y + totalHeight > map.height
-    ) {
-      throw new ToolError(
-        `킷 '${kit.name ?? kit.id}'(${size.width}x${size.height})×가로${repeat}·세로${repeatY}회가 맵을 벗어납니다 — origin (${origin.x},${origin.y}), 맵 ${map.width}×${map.height}`,
-        { code: "out-of-bounds", mapId: map.id, x: origin.x, y: origin.y },
-      );
-    }
+  const map = requireMap(draft, args.mapId as string);
+  const tileset = draft.tilesets[map.tilesetId];
+  const kit = resolveKit(tileset, args);
+  const origin = originArg(args);
+  const axes = structureKitGrowthAxes(kit);
+  const requestedX = repeatArg(args, "repeat", 3);
+  const requestedY = repeatArg(args, "repeatY", 1);
+  const repeat = axes.x ? requestedX : 1;
+  const repeatY = axes.y ? requestedY : 1;
+  const clampNotes = [
+    axes.x || requestedX === 1 ? "" : `가로 ${requestedX}회 요청 → 1회(가로 증분 불가)`,
+    axes.y || requestedY === 1 ? "" : `세로 ${requestedY}회 요청 → 1회(세로 증분 불가)`,
+  ].filter(Boolean);
+  const size = structureKitSize(kit);
+  const totalWidth = size.width * repeat;
+  const totalHeight = size.height * repeatY;
+  if (
+    origin.x < 0 || origin.y < 0
+    || origin.x + totalWidth > map.width
+    || origin.y + totalHeight > map.height
+  ) {
+    throw new ToolError(
+      `킷 '${kit.name ?? kit.id}'(${size.width}x${size.height})×가로${repeat}·세로${repeatY}회가 맵을 벗어납니다 — origin (${origin.x},${origin.y}), 맵 ${map.width}×${map.height}`,
+      { code: "out-of-bounds", mapId: map.id, x: origin.x, y: origin.y },
+    );
+  }
 
-    /** 반복 격자의 단위 사각 목록. 배치 조건 검사와 실제 시공이 **같은 목록**을 봐야 한다. */
-    const unitRects: { x: number; y: number; w: number; h: number }[] = [];
-    for (let row = 0; row < repeatY; row += 1) {
-      for (let column = 0; column < repeat; column += 1) {
-        unitRects.push({
-          x: origin.x + column * size.width,
-          y: origin.y + row * size.height,
-          w: size.width,
-          h: size.height,
-        });
-      }
+  const unitRects: { x: number; y: number; w: number; h: number }[] = [];
+  for (let row = 0; row < repeatY; row += 1) {
+    for (let column = 0; column < repeat; column += 1) {
+      unitRects.push({
+        x: origin.x + column * size.width,
+        y: origin.y + row * size.height,
+        w: size.width,
+        h: size.height,
+      });
     }
-    // 배치 조건(kit.ai.placement) 검사 — **한 칸도 쓰기 전에** 전 반복을 먼저 본다.
-    // 중간에 던지면 앞의 반복은 이미 찍혀 있어 드래프트가 반쯤 시공된 상태로 남는다.
-    // 조건이 없는 킷(대부분)은 아래 루프가 그냥 돌지 않는다.
-    const surfaceWarnings: string[] = [];
-    if ((kit.ai?.placement ?? []).length > 0) {
-      const probe = mapSurfaceProbe(draft, map);
-      for (const rect of unitRects) {
-        const verdict = evaluatePlacementConditions({ conditions: kit.ai?.placement, probe, rect });
-        if (verdict.blocked.length > 0) {
-          throw new ToolError(
-            `킷 '${kit.name ?? kit.id}'의 배치 조건에 맞지 않는 자리입니다 — (${rect.x},${rect.y}): `
-            + verdict.blocked.map((failure) => failure.text).join(" / ")
-            + " · 조건은 데이터베이스 → 구조물 → [편집] → AI 메타 탭의 «배치 조건»에서 고칩니다.",
-            { code: "placement-condition", mapId: map.id, x: rect.x, y: rect.y },
-          );
-        }
-        for (const warning of verdict.warnings) surfaceWarnings.push(`(${rect.x},${rect.y}) ${warning.text}`);
-      }
-    }
-
-    // 반복마다 배치를 따로 기록한다 — 하나로 뭉치면 "가운데 집만 지워줘"가 불가능해진다.
-    // before 는 시공 전에 뜨고, afterHash 는 시공 직후 드래프트 맵을 되읽어 계산한다(킷 정의 아님).
-    let painted = 0;
-    const placementIds: string[] = [];
+  }
+  const surfaceWarnings: string[] = [];
+  if ((kit.ai?.placement ?? []).length > 0) {
+    const probe = mapSurfaceProbe(draft, map);
     for (const rect of unitRects) {
-      const before = captureStructureTiles(map, rect);
-      painted += stampKitCells(map, kit, { x: rect.x, y: rect.y }, 1);
-      placementIds.push(appendStructurePlacement(map, { kitId: kit.id, rect, before }).id);
+      const verdict = evaluatePlacementConditions({ conditions: kit.ai?.placement, probe, rect });
+      if (verdict.blocked.length > 0) {
+        throw new ToolError(
+          `킷 '${kit.name ?? kit.id}'의 배치 조건에 맞지 않는 자리입니다 — (${rect.x},${rect.y}): `
+          + verdict.blocked.map((failure) => failure.text).join(" / ")
+          + " · 조건은 데이터베이스 → 구조물 → [편집] → AI 메타 탭의 «배치 조건»에서 고칩니다.",
+          { code: "placement-condition", mapId: map.id, x: rect.x, y: rect.y },
+        );
+      }
+      for (const warning of verdict.warnings) surfaceWarnings.push(`(${rect.x},${rect.y}) ${warning.text}`);
     }
-    const parts = absoluteKitParts(kit, origin);
-    return {
-      summary: `${map.name}에 구조 킷 '${kit.name ?? kit.id}' 시공 — (${origin.x},${origin.y})부터 ${size.width}x${size.height} ${kit.kind === "house" ? "집 킷" : "단면"} ×가로${repeat}·세로${repeatY}회, ${painted}칸`
-        + (clampNotes.length > 0 ? ` · 증분 축 제한: ${clampNotes.join(", ")}` : "")
-        + (surfaceWarnings.length > 0 ? ` · 배치 조건 권장 위반: ${surfaceWarnings.join(", ")}` : ""),
-      data: {
-        kitId: kit.id,
-        origin,
-        repeat,
-        repeatY,
-        growth: axes,
-        ...(clampNotes.length > 0 ? { repeatClamped: clampNotes } : {}),
-        height: totalHeight,
-        width: totalWidth,
-        painted,
-        placementIds,
-        ...(parts.length > 0 ? { parts } : {}),
-      },
-    };
+  }
+
+  let painted = 0;
+  const placementIds: string[] = [];
+  for (const rect of unitRects) {
+    const before = captureStructureTiles(map, rect);
+    painted += stampKitCells(map, kit, { x: rect.x, y: rect.y }, 1);
+    placementIds.push(appendStructurePlacement(map, { kitId: kit.id, rect, before }).id);
+  }
+  const parts = absoluteKitParts(kit, origin);
+  return {
+    summary: `${map.name}에 구조 킷 '${kit.name ?? kit.id}' 시공 — (${origin.x},${origin.y})부터 ${size.width}x${size.height} 단면 ×가로${repeat}·세로${repeatY}회, ${painted}칸`
+      + (clampNotes.length > 0 ? ` · 증분 축 제한: ${clampNotes.join(", ")}` : "")
+      + (surfaceWarnings.length > 0 ? ` · 배치 조건 권장 위반: ${surfaceWarnings.join(", ")}` : ""),
+    data: {
+      kitId: kit.id,
+      origin,
+      repeat,
+      repeatY,
+      growth: axes,
+      ...(clampNotes.length > 0 ? { repeatClamped: clampNotes } : {}),
+      height: totalHeight,
+      width: totalWidth,
+      painted,
+      placementIds,
+      ...(parts.length > 0 ? { parts } : {}),
+    },
+  };
 }
 
-/** 부위 상대좌표 → 시공 절대좌표. 타일과 달리 부위는 한 킷 당 한 번만 — origin에 고정된 힌트다.
- * 입구의 워프 칸은 y + h - 1 행(규약) — 이 툴은 이벤트를 만들지 않고 좌표만 돌려준다. */
+/** 부위 상대좌표 → 시공 절대좌표. */
 function absoluteKitParts(
-  kit: StructureKitDef,
+  kit: SectionStructureKitDef,
   origin: Point,
 ): (Omit<StructureKitPart, "dx" | "dy"> & { x: number; y: number })[] {
   return (kit.parts ?? []).map((part) => ({
@@ -270,9 +225,8 @@ function absoluteKitParts(
   }));
 }
 
-/** 팔레트 스탬프(applyPaletteStamp)와 동일 규약: 비어 있지 않은 칸만 쓴다(고른 그대로, 성형 없음).
- * 셀 목록은 구조 킷 모델이 전개(section=행렬, house=정본 houseKit 시공). */
-function stampKitCells(map: GameMap, kit: StructureKitDef, origin: Point, repeat: number): number {
+/** 비어 있지 않은 칸만 쓴다(고른 그대로, 성형 없음). */
+function stampKitCells(map: GameMap, kit: SectionStructureKitDef, origin: Point, repeat: number): number {
   const cells = structureKitUnitCells(kit);
   const size = structureKitSize(kit);
   let painted = 0;
@@ -299,7 +253,7 @@ function tilesetsInScope(project: Project, mapId: unknown): readonly TilesetDef[
   return Object.values(project.tilesets);
 }
 
-function resolveKit(tileset: TilesetDef | undefined, args: Record<string, unknown>): StructureKitDef {
+function resolveKit(tileset: TilesetDef | undefined, args: Record<string, unknown>): SectionStructureKitDef {
   const kits = availableKits(tileset);
   if (kits.length === 0) {
     throw new ToolError(
@@ -399,7 +353,7 @@ const registerStructureKitTool: ToolDefinition = {
       }
       return { tiles, upperTiles };
     });
-    const kit: StructureKitDef = {
+    const kit: SectionStructureKitDef = {
       id: kitId,
       name,
       kind: "section",
@@ -414,4 +368,4 @@ const registerStructureKitTool: ToolDefinition = {
   },
 };
 
-export const STRUCTURE_KIT_TOOLS: readonly ToolDefinition[] = [listStructureKits, stampStructureKit, registerStructureKitTool];
+export const STRUCTURE_KIT_TOOLS: readonly ToolDefinition[] = [listStructureKits, registerStructureKitTool];

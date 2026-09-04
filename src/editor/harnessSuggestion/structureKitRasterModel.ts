@@ -7,7 +7,7 @@
 //   테스트에서 항상 (0,0) 이 나와 검증이 무의미해진다. 호출부가 읽어서 넘긴다.
 
 import { TILE_SIZE } from "@/assets/bundled";
-import { structureKitSize, structureKitUnitCells } from "@/editor/harnessSuggestion/structureKitModel";
+import { structureKitSize } from "@/editor/harnessSuggestion/structureKitModel";
 import type { InteriorObjectDef } from "@/editor/interiorObjectCatalog";
 import type { PaletteStampCell } from "@/editor/tilePaletteStamp";
 import { TILE } from "@/project/defaults/constants";
@@ -15,7 +15,6 @@ import type {
   SectionStructureKitDef,
   StructureGrowthAxis,
   StructureKitCellHint,
-  StructureKitDef,
   StructureKitPart,
   StructureKitPartKind,
   StructureKitRow,
@@ -288,14 +287,10 @@ export function bakeCellsToRows(
 
 /**
  * 무엇을 복제하든 결과는 section 이다.
- * 집 킷의 파라미터성은 여기서 잃지만, 파라메트릭 시공은 원래 build_house_kit 의 일이고
- * list_structure_kits 는 section 킷에만 rows 를 넘기므로 굽기가 오히려 AI 가독성을 높인다.
  */
-export function bakeStructureKit(kit: StructureKitDef, id: string, name: string): SectionStructureKitDef {
+export function bakeStructureKit(kit: SectionStructureKitDef, id: string, name: string): SectionStructureKitDef {
   const size = structureKitSize(kit);
-  const rows = kit.kind === "section"
-    ? kit.rows.map((row) => ({ tiles: [...row.tiles], ...(row.upperTiles ? { upperTiles: [...row.upperTiles] } : {}) }))
-    : bakeCellsToRows(structureKitUnitCells(kit), size.width, size.height);
+  const rows = kit.rows.map((row) => ({ tiles: [...row.tiles], ...(row.upperTiles ? { upperTiles: [...row.upperTiles] } : {}) }));
   return {
     id,
     kind: "section",
@@ -304,8 +299,7 @@ export function bakeStructureKit(kit: StructureKitDef, id: string, name: string)
     height: size.height,
     rows,
     ...(kit.parts && kit.parts.length > 0 ? { parts: kit.parts.map((part) => ({ ...part })) } : {}),
-    // 칸 힌트는 행렬 좌표에 매달린 메타다 — house 킷을 구울 땐 원본에 없으므로 그냥 없다.
-    ...(kit.kind === "section" && kit.cellHints && kit.cellHints.length > 0
+    ...(kit.cellHints && kit.cellHints.length > 0
       ? { cellHints: kit.cellHints.map((hint) => ({ ...hint })) }
       : {}),
     ...(kit.ai ? { ai: { ...kit.ai, tags: kit.ai.tags ? [...kit.ai.tags] : undefined } } : {}),
@@ -314,7 +308,7 @@ export function bakeStructureKit(kit: StructureKitDef, id: string, name: string)
 }
 
 /**
- * 실내 오브젝트 → section. 역할·스냅·테마는 ai 메타로 남긴다 — 파이프라인이 같은 킷을 가구로 읽는다.
+ * 실내 오브젝트 → section.
  */
 export function bakeInteriorObject(object: InteriorObjectDef, id: string, name: string): SectionStructureKitDef {
   return {

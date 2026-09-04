@@ -3905,8 +3905,6 @@ function autoExpandedAssetKind(toolName: string): string {
     case "tile_scatter":
       return "prop";
     case "build_house":
-    case "build_house_kit":
-    case "build_house_lots":
     case "build_village":
       return "house";
     default:

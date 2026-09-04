@@ -87,12 +87,12 @@ describe("proposal completeness lint", () => {
     expect(warnings).toEqual(["⚠ 미이행: 실제 변경이 없습니다(체인지셋 0건)."]);
   });
 
-  it("실내 신축 선언에 야외 집 키트만 쓰면 경고한다", () => {
+  it("실내 신축 선언에 야외 집 정본만 쓰면 경고한다", () => {
     const warnings = proposalCompletenessWarnings({
       requestText: "연금술사의 집 이라는 실내 를 하나 만드렁줘",
       intent: declaredIntent({ mode: "create", space: "interior" }),
       calls: [
-        call("build_house_kit", { mapId: "m1", kitId: "bright-plaster", wings: [{ x: 4, y: 5, w: 12, h: 10 }] }, { tilesChanged: 80 }),
+        call("author_house", { kind: "single", mapId: "m1", kitId: "bright-plaster", wings: [{ x: 4, y: 5, w: 12, h: 10 }], interior: "exterior-only", door: true, yard: [] }, { tilesChanged: 80 }),
       ],
     });
     expect(warnings.some((line) => line.includes("실내 요청") && line.includes("author_house"))).toBe(true);
@@ -163,7 +163,7 @@ describe("proposal completeness lint", () => {
     const warnings = proposalCompletenessWarnings({
       requestText: "40x40 맵에 작은 집 3채 NPC 5명 배치해줘",
       calls: [
-        call("build_house_kit", { mapId: "m1", kitId: "blue-stone", wings: [{ x: 2, y: 2, w: 6, h: 6 }] }, { tilesChanged: 36 }),
+        call("author_house", { kind: "single", mapId: "m1", kitId: "blue-stone", wings: [{ x: 2, y: 2, w: 6, h: 6 }], interior: "exterior-only", door: true, yard: [] }, { tilesChanged: 36 }),
       ],
     });
 

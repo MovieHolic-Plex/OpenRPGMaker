@@ -37,7 +37,7 @@ function loadLLMKey(): { apiKey: string; baseUrl: string } | null {
 }
 
 describe("region AI house/tree/npc probe", () => {
-  it("reports approved vocab + direct tool success for place_props/place_npc/build_house_kit", () => {
+  it("reports approved vocab + direct tool success for place_props/place_npc/author_house", () => {
     const project = makeMapProject();
     const tilesetId = project.maps[MAP_ID].tilesetId;
     const tileset = project.tilesets[tilesetId];
@@ -54,10 +54,14 @@ describe("region AI house/tree/npc probe", () => {
     console.log("VOCAB", JSON.stringify(report, null, 2));
 
     const ctx = { project };
-    const house = runTool(ctx, "build_house_kit", {
+    const house = runTool(ctx, "author_house", {
+      kind: "single",
       mapId: MAP_ID,
       kitId: "blue-stone",
       wings: [{ x: 3, y: 3, w: 6, h: 6 }],
+      interior: "exterior-only",
+      door: true,
+      yard: [],
     });
     console.log("HOUSE", house.ok, house.summary);
 
@@ -98,7 +102,7 @@ describe("region AI house/tree/npc probe", () => {
     console.log("HAS_TOOLS", {
       place_props: tools.includes("place_props"),
       place_npc: tools.includes("place_npc"),
-      build_house_kit: tools.includes("build_house_kit"),
+      author_house: tools.includes("author_house"),
       toolCount: tools.length,
     });
 
@@ -107,7 +111,7 @@ describe("region AI house/tree/npc probe", () => {
     expect(npc.ok).toBe(true);
     expect(tools).toContain("place_props");
     expect(tools).toContain("place_npc");
-    expect(tools).toContain("build_house_kit");
+    expect(tools).toContain("author_house");
   });
 
   it("live region task LLM: 집과 나무 1개 npc 배치", async () => {
@@ -209,7 +213,7 @@ describe("region AI house/tree/npc probe", () => {
     // After harness: tree placement and non-transparent NPC are expected when lite model cooperates.
     const treeCalls = toolCalls.filter((name) => name === "place_props").length;
     console.log("TREE_CALLS", treeCalls, "upperNonEmpty", upperNonEmpty);
-    if (toolCalls.includes("place_props") || toolCalls.includes("build_house_kit")) {
+    if (toolCalls.includes("place_props") || toolCalls.includes("author_house")) {
       expect(result.applied || result.changedCells + result.changedEvents > 0).toBe(true);
     }
     const villager = events.find((event) => event.pages?.[0]?.graphic && !("transparent" in (event.pages[0].graphic as object) && (event.pages[0].graphic as { transparent?: boolean }).transparent));

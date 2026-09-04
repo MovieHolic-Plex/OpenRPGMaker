@@ -30,8 +30,8 @@ import {
 import { aiRoleLabel, growthAxisLabel, layerHomeLabel } from "@/editor/panels/structureKitEditorDialog";
 import { describePlacementSurface } from "@/project/placementSurface";
 import type {
+  SectionStructureKitDef,
   StructureKitAiMeta,
-  StructureKitDef,
   StructureKitLearnedFrom,
   StructureKitPartKind,
   TilesetDef,
@@ -180,13 +180,13 @@ export function partKindName(kind: StructureKitPartKind): string {
   }
 }
 
-/** 계보 표시 — 편집 잠금과 무관한 순수 표시값. */
-function learnedFromLabel(learnedFrom: StructureKitLearnedFrom): string {
+/** 계보 표시 — 구 데이터에 남아 있을 수 있는 내장 표시 포함. */
+function learnedFromLabel(learnedFrom: StructureKitLearnedFrom | "builtin-parametric"): string {
   switch (learnedFrom) {
     case "user-paint":
       return "붓질에서 학습";
     case "builtin-parametric":
-      return "내장 파라메트릭";
+      return "내장(구 데이터)";
     case "db-authored":
       return "데이터베이스에서 작성";
     case "interior-catalog":
@@ -205,7 +205,7 @@ function firstLineForColumn(text: string): string {
  * ai 가 아예 없으면 빈 블록을 그리지 않고 그 사실을 말하는 한 줄만 둔다.
  * 반복 여부는 structureKitRepeatable() 로 구해 AI 가 실제로 받는 값과 어긋나지 않게 한다.
  */
-function renderAiSummary(kit: StructureKitDef): HTMLElement {
+function renderAiSummary(kit: SectionStructureKitDef): HTMLElement {
   const ai: StructureKitAiMeta | undefined = kit.ai;
   if (!ai) {
     return el("p", {
@@ -225,7 +225,7 @@ function renderAiSummary(kit: StructureKitDef): HTMLElement {
         ? "세로 증분"
         : "한 채 완결";
   const descLine = firstLineForColumn(ai.description);
-  const hintCount = kit.kind === "section" ? (kit.cellHints ?? []).length : 0;
+  const hintCount = (kit.cellHints ?? []).length;
 
   return el("div", {
     class: "structure-kit-ai-summary",
@@ -266,7 +266,7 @@ function renderAiSummary(kit: StructureKitDef): HTMLElement {
       ...(descLine ? [el("p", { class: "structure-kit-quiet structure-kit-ai-summary-desc", text: descLine })] : []),
       // 배치 조건은 **집행되는** 값이다 — 인스펙터에 없으면 "왜 안 찍히지"의 답이 편집기를
       // 열어 봐야만 나온다. 설명(산문)과 달리 자르지 않는다: 실무상 1~3줄이다.
-      ...(kit.kind === "section" ? kit.cellHints ?? [] : [])
+      ...(kit.cellHints ?? [])
         .filter((hint) => hint.growth !== undefined || hint.note !== undefined)
         .slice(0, 4)
         .map((hint) => el("p", {
@@ -286,7 +286,7 @@ function renderAiSummary(kit: StructureKitDef): HTMLElement {
 
 export function renderInspector(
   tileset: TilesetDef,
-  kit: StructureKitDef,
+  kit: SectionStructureKitDef,
   editable: boolean,
   refresh: () => void,
   rerender: () => void,

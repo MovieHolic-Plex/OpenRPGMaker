@@ -275,15 +275,15 @@ The Database modal was modernized in six waves while keeping every hard contract
 - 피커는 프로젝트 킷 뒤에 카탈로그에만 있는 소품(성상·과일 선반·항아리 선반·곡물 자루·잡화 상자·물통·주전자·스툴·붉은 카펫·짚 돗자리)을 이어 보여 준다 — 킷을 옛 카탈로그로 시드한 프로젝트에서도 고를 수 있다. 러그류(`rug*`)는 기본 칩이 통행 가능·바닥, 계단류(`stairs*`)는 통행 가능·맵 연결.
 - 진입: `src/editor/panels/scratchConceptTab.ts`. 초안 데이터: `src/project/defaults/conceptFacilityTemplates.ts`. 계약: `test/scratchConceptTab.test.ts`, `test/conceptFacilityTemplates.test.ts`, `test/placeConceptTool.test.ts`. 시공 쪽 설명은 `openwiki/editor-interior-room-harness.md` 「개념 시설 시공」. 갤러리 보고서: `npx tsx scripts/gen-concept-facility-gallery.mts` → `reports/concept-facilities/index.html`.
 
-## '구조물' 탭 — 세 출처 앨범 + 방 종류 문법 (2026-08-28)
+## '구조물' 탭 — 두 출처 앨범 + 방 종류 문법 (2026-08-28)
 
 `src/editor/panels/structureKitDbTab.ts` + 데이터 계층 `src/editor/panels/structureKitDbSources.ts`.
 
-- **목록 규약은 합집합**: `builtinHouseStructureKitsFor(tileset)` 먼저, 그 다음 `tileset.structureKits`. `src/editor/tools/structureKitTools.ts` 와 `src/editor/harnessSuggestion/structureKitShelf.ts` 가 쓰는 규약과 같다 — 탭·AI 툴·팔레트 선반의 목록이 갈리면 회귀다. 이전에는 탭만 `tileset.structureKits` 를 읽어 새 프로젝트에서 항상 빈 앨범이었다.
-- **타일셋 레일이 앨범 축, 원본 칩이 그 안의 필터**: `structure-kit-source-all` / `-builtin` / `-interior` / `-user` (라벨 전체 · 내장 건물 · 실내 오브젝트 · 내가 저장한 구조물). 각 칩의 숫자는 그 원본이 지금 나열하는 행 수와 같다.
+- **목록 규약은 등록 킷**: `tileset.structureKits`. 집 외장은 `author_house` 정본이 담당하므로 내장 파라메트릭 집 선반은 없다.
+- **타일셋 레일이 앨범 축, 원본 칩이 그 안의 필터**: `structure-kit-source-all` / `-interior` / `-user` (라벨 전체 · 실내 오브젝트 · 내가 저장한 구조물). 각 칩의 숫자는 그 원본이 지금 나열하는 행 수와 같다.
 - **실내 오브젝트는 타일셋 데이터**: `interiorObjectsForTileset` 은 그 타일셋의 실내 가구 킷(`ai.snap` / `ai.interiorRole` / `learnedFrom: interior-catalog`)을 돌려준다. 실내 칩셋은 코드 카탈로그를 시드·폴백한다. **방·공간 종류는 이 탭이 아니다** — `tileset.interiorRoomKinds` 는 형제 탭 `tilesetSpaces` 가 저작한다. "한 타일셋의 구조물은 다른 타일셋에 섞이지 않는다"는 기존 IA 규약을 그대로 지킨다.
 - **행은 실제 래스터**: 오브젝트 행 `structure-kit-object-<id>` 은 `INTERIOR_OBJECT_CATALOG` 의 셀을 `renderTileCellsToCanvas` 로 그린다(받침 타일 `VR.FLOOR`). 킷 행 `structure-kit-db-<kitId>` 은 기존대로 `assembledKitCells`.
-- **가상 항목은 파괴적 액션이 없다**: 내장 파라메트릭 킷(`learnedFrom === "builtin-parametric"`)과 실내 카탈로그 오브젝트는 프로젝트 데이터가 아니라 코드다 — 이름 변경·삭제를 노출하지 않고 인스펙터가 그 이유를 적는다. 등록 킷의 액션은 이름 변경, 부위 삭제, 문에서 입구 추정, 팔레트에서 쓰기, 복제, 편집, 낱개 내보내기, 삭제다.
+- **가상 항목은 실내 카탈로그 오브젝트뿐이다**: 실내 카탈로그 오브젝트는 프로젝트 데이터가 아니라 코드다 — 이름 변경·삭제를 노출하지 않고 인스펙터가 그 이유를 적는다. 등록 킷의 액션은 이름 변경, 부위 삭제, 문에서 입구 추정, 팔레트에서 쓰기, 복제, 편집, 낱개 내보내기, 삭제다.
 - **빈 상태 카피는 불변**: 앨범에 아무것도 없을 때 `structure-kit-db-empty` + `이 타일셋에는 아직 구조물이 없습니다.`. 원본·검색·테마 필터 때문에 행만 없는 경우는 `structure-kit-source-empty` 로 구분해 안내한다.
 - 커버리지: `test/structureKitDbTab.test.ts` (앨범 기본 선택, 내장 킷 노출, 레일 카운트, 빈 카피, rows 없는 malformed 킷 무크래시, 내장 킷 삭제 버튼 부재, 세 원본 칩 카운트 일치, 오브젝트 인스펙터, 공간 종류 카드 부재). 스타일은 `src/styles/editor/harness-suggestion.css`.
 
@@ -295,12 +295,12 @@ The Database modal was modernized in six waves while keeping every hard contract
 - **편집 잠금은 계보가 아니라 소유로 판정한다.** 예전에는 `learnedFrom` 을 보고 잠갔는데, 그러면 사람이 만든 킷도 계보 값에 따라 잠긴다. 이제 앨범 엔트리의 `source` 가 `"user"` 인지(= `tileset.structureKits` 에 실제로 들어 있는 프로젝트 데이터인지)로 판정한다. 내장 파라메트릭 킷과 실내 카탈로그 오브젝트는 코드라서 잠긴 채로 남는다. 같은 이유로 `toast()` 만 부르고 아무것도 저장하지 않던 가짜 `[지금 저장]` 버튼은 사라졌다 — 저장은 `store.update()` 즉시 반영이고 취소는 DB 모달의 세션 롤백이 담당한다.
 - **아무 원본이든 편집은 `section` 으로 굽는다(bake).** house 파라미터와 실내 카탈로그 오브젝트를 래스터 `rows` 로 전개한 뒤 편집한다(`structureKitRasterModel.ts`). 즉 복제는 사진을 찍는 행위다 — 원본 코드가 나중에 바뀌어도 구운 사본은 그대로다. 계보는 `learnedFrom: "db-authored"` 로 남는다.
 - **편집기는 DB 모달 위에 뜨는 전용 다이얼로그**(`structureKitEditorDialog.ts`, testid `structure-kit-editor`)다. 인스펙터 열이 352px 고정이라 9×8 킷이 들어가지 않는다는 치수 실측 때문이며, 인스펙터(`structureKitInspector.ts`)는 요약과 액션만 담당하도록 물러났다.
-- 진입점: 도구줄 `structure-kit-new` → combined_town 앨범에서만 시작점 선택창(`structure-kit-new-blank` / `structure-kit-new-house-kit` + `structure-kit-new-house-confirm`), 그 외 앨범은 빈 킷으로 직행. 표 행 더블클릭과 인스펙터의 복제·편집 버튼도 같은 편집기를 연다. 편집기 안은 `structure-kit-editor-canvas`, 타일 팔레트 `structure-kit-editor-tile-<tileId>`, 부위 도구 `structure-kit-editor-tool-part`, 부위 목록 `structure-kit-editor-parts`.
+- 진입점: 도구줄 `structure-kit-new` → 빈 킷으로 직행. 표 행 더블클릭과 인스펙터의 복제·편집 버튼도 같은 편집기를 연다. 편집기 안은 `structure-kit-editor-canvas`, 타일 팔레트 `structure-kit-editor-tile-<tileId>`, 부위 도구 `structure-kit-editor-tool-part`, 부위 목록 `structure-kit-editor-parts`.
 - **칸 계산 함수는 `rect`·`scale` 을 인자로 받는다.** 유닛 테스트 환경이 `environment: "node"` + `FakeElement` 라 `getBoundingClientRect()` 가 전부 0 이고 `getContext()` 는 `null` 이다. 내부에서 `event.clientX - rect.left` 를 읽으면 테스트가 항상 (0,0) 을 보게 되므로 순수 함수 경계를 이렇게 그었다 — 클릭 좌표 → 칸 매핑의 실제 증명은 e2e 몫이다.
 - **크기 조절은 부위 손실을 숨기지 않는다.** `resizeKit` 은 새 크기 밖으로 나가는 부위를 보고서로 돌려주고, 편집기가 그 사실을 사람에게 알린 뒤 반영한다.
 - **AI 메타는 초안과 승인이 분리된다.** `StructureKitAiMeta`(`description`·`placementRules`·`tags`·`role`·`repeatability`)에서 AI 초안(`structure-kit-editor-ai-draft`)은 폼을 채우기만 하고, `structure-kit-editor-ai-accept` 를 눌러야 `store.update()` 가 일어난다. **어떤 자동 경로도 `origin` 을 `"user"` 로 만들지 않는다**(제로 부트스트랩). 미승인 메타는 인스펙터가 `structure-kit-ai-unapproved` 로 구분해 적는다.
-- **AI 는 `stamp_structure_kit` 으로 타일을 깔 수 없다 (2026-08-31).** 도구는 LLM 비노출이고 호출되면 맵을 안 건드리고 거절한다. 반복·배치 조건 엔진(`applyStampStructureKit`)은 사람 팔레트·계약 테스트용으로만 남는다. 집 시공은 `author_house`.
-- **`repeatability` 가 시공 반복을 지배한다.** `stamp_structure_kit` 의 repeat 기본값이 3 이라, 이 값이 없으면 우물·간판처럼 한 채로 완결인 구조물도 3개 이어 찍혔다. `ai.repeatability === "fixed"` 면 1회로 고정하고 `undefined` 는 기존 동작(`kind === "section"` → 반복)을 유지한다 — 하위 호환. 이 반복 규칙은 사람 팔레트/`applyStampStructureKit` 경로의 계약이다.
+- **구조물 스탬프는 사람 팔레트 전용이다 (2026-08-31).** 집 시공은 `author_house`.
+- **`repeatability` 가 시공 반복을 지배한다.** 이 값이 없으면 우물·간판처럼 한 채로 완결인 구조물도 이어 찍힌다. `ai.repeatability === "fixed"` 면 1회로 고정하고 `undefined` 는 기존 동작을 유지한다 — 하위 호환. 이 반복 규칙은 사람 팔레트/`applyStampStructureKit` 경로의 계약이다.
 - **AI 가 받는 것이 넓어졌다.** `src/ai/contextBuilder.ts` 가 구조물마다 설명·배치규칙·반복 여부를 함께 출력하고(설명은 100자로 자른다), `structureKitTools.ts` 의 도구 응답도 `ai` 를 싣는다. 이름만 보고 추측하던 상태를 끝낸 것이다.
 - **파일 포맷은 `rpgzzu-structure-kits` v1**(`structureKitFile.ts`). 파일에 들어가는 순간 사진이 된다 — house 킷도 구운 래스터로 나가므로 받는 쪽에 같은 코드가 없어도 열린다. 가져오기는 `planImport` 가 3단으로 판정한다: 포맷·버전 검증(미래 버전 거부) → 칩셋 경계 확인(`structure-kit-import-mismatch`) → 서명 기준 중복 판정. 같은 파일을 두 번 넣어도 사본이 쌓이지 않는다.
 - 내보내기·가져오기 진입점: 도구줄 `structure-kit-export`(체크된 행이 있으면 **지금 보이는 그 선택**만, 없으면 앨범 전체) / `structure-kit-import`, 확인창은 `structure-kit-import-list` + `structure-kit-import-confirm`. 다운로드는 `src/util/downloadBlob.ts` 한 곳을 지난다 — anchor 를 DOM 에 붙였다 떼고 `revokeObjectURL` 을 동기 호출하지 않는, `menu.ts` 에서 겪은 3-버그 회피 패턴이다.
@@ -404,10 +404,10 @@ leaf 조건에서 멈추고 `default: return false` 했다:
   (`renderTileCellsToCanvas` 가 타일셋 로드 후 비동기로 다시 그리므로 캔버스에 직접 그으면 지워진다).
 - **크기 조절이 칸 힌트 손실도 보고한다**: `resizeKit` 의 `droppedHints`. 1×1 이라 클램프 여지가 없어
   부위와 따로 센다.
-- 커버리지: `test/structureKitGrowth.test.ts`(축 3층 우선순위·레이어 유도·집 킷은 두 축 닫힘),
+- 커버리지: `test/structureKitGrowth.test.ts`(축 3층 우선순위·레이어 유도),
   `test/structureKitRasterModel.test.ts`(칸 힌트 CRUD·축/메모 독립성·크기 조절 손실·굽기 보존),
   `test/structureKitFile.test.ts`(어휘 왕복·배치 조건 왕복·행렬 밖 힌트 폐기·자유 문장 없는 메타 생존),
-  `test/structureKitTools.test.ts`(`growth`/`layerHome`/`cellHints` 응답, `repeatY` 시공, 축 제한 보고,
+  `test/structureKitTools.test.ts`(`growth`/`layerHome`/`cellHints` 응답, 축 제한 보고,
   경계 거부, 프롬프트 내용), `test/structureKitEditorDialog.test.ts`(새 폼 4칸·수락 반영·칸 힌트 순환),
   `test/structureKitPartKindMenu.test.ts`(칸 힌트 팝오버).
 
