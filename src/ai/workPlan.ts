@@ -180,6 +180,17 @@ JSON schema:
  */
 export const MAX_WORK_PLAN_AUTO_STEPS_PER_TURN = 256;
 
+/**
+ * 한 **항목**에 대한 Ralph 재주입 상한 (2026-09-03).
+ *
+ * Ralph 는 모델이 «끝났다»고 나가려 할 때만 돈다. 같은 항목에서 이것이 3번 반복되면 모델은 끝났다고
+ * 믿고 하네스는 아니라고 말하는 교착이다 — 더 밀어붙여도 같은 실패가 반복된다(실측 2026-09-03:
+ * 빈 맵에서 `fill_region` 이 스펙 게이트에 막히자 Ralph 가 **173/256** 까지 같은 항목을 재주입했다).
+ * 상한에 닿으면 항목을 `blocked` 로 표시하고 턴을 끝내 사용자에게 넘긴다. 턴 전체 상한
+ * (`MAX_WORK_PLAN_AUTO_STEPS_PER_TURN`)은 «계획이 큰» 정상 런을 위한 폭주 방지 핀으로 남는다.
+ */
+export const MAX_RALPH_ATTEMPTS_PER_ITEM = 3;
+
 /** Soft cap: do not Ralph-continue past this many remaining steps in one burst. */
 export const MAX_WORK_PLAN_ITEMS_PER_BURST = 256;
 
@@ -663,7 +674,10 @@ export function shouldRalphContinue(
   }
 ): boolean {
   if (!plan || isWorkPlanComplete(plan)) return false;
-  if (!getCurrentWorkItem(plan)) return false;
+  const current = getCurrentWorkItem(plan);
+  if (!current) return false;
+  // 막힌 항목은 사람의 판단을 기다린다 — 재주입도, 자동 계속도 하지 않는다(2026-09-03).
+  if (current.status === "blocked") return false;
   if (opts.autoStepsUsed >= MAX_WORK_PLAN_AUTO_STEPS_PER_TURN) return false;
   const remaining = summarizeWorkPlan(plan).itemsTotal - summarizeWorkPlan(plan).itemsDone;
   if (remaining > MAX_WORK_PLAN_ITEMS_PER_BURST && opts.autoStepsUsed >= MAX_WORK_PLAN_AUTO_STEPS_PER_TURN) {
@@ -721,7 +735,19 @@ export function canCompleteWorkItem(
   item: WorkItem,
   successfulTools: readonly string[] | undefined,
   gate?: WorkItemOutcomeGate,
-): { ok: true } | { ok: false; reason: string } {
+  opts: {
+    /**
+     * 이름이 어긋난 successTools 대신 «성공한 쓰기 + 산출물 게이트 통과» 를 근거로 완료를 허용한다.
+     *
+     * 자동 완료(`advanceWorkPlanFromTools`)는 계속 엄격하다 — 이 우회는 모델이 **명시적으로**
+     * `complete_work_item` 을 부른 경로에만 쓴다. 이유(2026-09-03 실측): 플래너가 적은 툴 이름과
+     * 모델이 실제로 쓴 툴이 다르면(`fill_region` vs `paint_tiles`) 이름 매칭은 영원히 통과하지 못하고
+     * 항목이 `in_progress` 로 굳어 Ralph 가 무한 재주입한다. 이름은 대리 지표이고, 실제 검사는
+     * 산출물 게이트(맵이 채워졌는가·대상 맵이 바뀌었는가·퀘스트가 완주되는가)다.
+     */
+    readonly allowWriteEvidenceFallback?: boolean;
+  } = {},
+): { ok: true } | { ok: false; reason: string; missingTools?: readonly string[] } {
   const needed = item.successTools ?? [];
   if (item.requiresAnyWrite) {
     const hasSuccessfulWrite = (successfulTools ?? []).some((name) => getTool(name)?.mode === "write");
@@ -736,8 +762,12 @@ export function canCompleteWorkItem(
   const tools = new Set(successfulTools ?? []);
   const missing = needed.filter((name) => !tools.has(name));
   if (missing.length === 0) return gate?.(item) ?? { ok: true };
+  if (opts.allowWriteEvidenceFallback && (successfulTools ?? []).some((name) => getTool(name)?.mode === "write")) {
+    return gate?.(item) ?? { ok: true };
+  }
   return {
     ok: false,
+    missingTools: missing,
     reason:
       `항목 '${item.title}' 완료 조건 미충족: 필수 successTools 중 ${missing.join(", ")} 성공 기록이 없습니다. ` +
       `누락된 툴을 성공시키거나, 항목 전제가 틀렸다면(예: 사용자가 기존 맵 수정을 요청했는데 항목이 신축을 요구) ` +
@@ -760,7 +790,13 @@ export function completeWorkItemById(
   plan: WorkPlan,
   itemId: string,
   note?: string,
-  options?: { successfulTools?: readonly string[]; force?: boolean; outcomeGate?: WorkItemOutcomeGate },
+  options?: {
+    successfulTools?: readonly string[];
+    force?: boolean;
+    outcomeGate?: WorkItemOutcomeGate;
+    /** 명시 완료 경로에서만 켠다 — `canCompleteWorkItem` 의 같은 이름 옵션을 그대로 넘긴다. */
+    allowWriteEvidenceFallback?: boolean;
+  },
 ): CompleteWorkItemResult {
   for (const layer of plan.layers) {
     const it = layer.items.find((i) => i.id === itemId);
@@ -774,7 +810,11 @@ export function completeWorkItemById(
       return { ok: true, item: it, alreadyDone: true };
     }
     if (!options?.force) {
-      const gate = canCompleteWorkItem(it, options?.successfulTools, options?.outcomeGate);
+      const gate = canCompleteWorkItem(it, options?.successfulTools, options?.outcomeGate, {
+        ...(options?.allowWriteEvidenceFallback !== undefined
+          ? { allowWriteEvidenceFallback: options.allowWriteEvidenceFallback }
+          : {}),
+      });
       if (!gate.ok) return { ok: false, reason: gate.reason, item: it };
     }
     it.status = "done";
@@ -785,6 +825,39 @@ export function completeWorkItemById(
   // 실측(2026-08-30): 모델이 "L1-1" 같은 라벨을 지어내 complete_work_item 을 반복 실패했다.
   // 유효 id 를 오류에 실어 보내면 같은 턴에서 스스로 교정한다.
   return { ok: false, reason: `항목을 찾지 못했습니다: ${itemId} — 유효한 항목 id: ${openWorkItemIds(plan).join(", ") || "(없음)"}` };
+}
+
+/**
+ * 항목을 `blocked` 로 표시한다 — 진행이 멈췄고 사람이 봐야 한다는 표시다.
+ *
+ * `currentItemId` 는 **그대로 둔다**: 다음 항목으로 넘기면 막힌 이유가 조용히 묻히고 뒤 항목이
+ * 같은 전제 위에서 또 실패한다. 드라이버·Ralph 는 `blocked` 를 보고 멈추고(`shouldRalphContinue`),
+ * 사용자의 다음 메시지가 `reactivateBlockedWorkItems` 로 되살린다.
+ */
+export function blockWorkItemById(plan: WorkPlan, itemId: string, reason: string): WorkItem | null {
+  for (const layer of plan.layers) {
+    const it = layer.items.find((i) => i.id === itemId);
+    if (!it) continue;
+    if (it.status === "done" || it.status === "skipped") return null;
+    it.status = "blocked";
+    it.note = reason;
+    return it;
+  }
+  return null;
+}
+
+/** 막힌 항목을 다시 진행 대상으로 돌린다(사용자의 새 메시지 = 재시도 신호). 되살린 항목 수를 준다. */
+export function reactivateBlockedWorkItems(plan: WorkPlan): number {
+  let revived = 0;
+  for (const layer of plan.layers) {
+    for (const item of layer.items) {
+      if (item.status !== "blocked") continue;
+      item.status = "pending";
+      revived += 1;
+    }
+  }
+  if (revived > 0) activateFirstPending(plan);
+  return revived;
 }
 
 export function skipWorkItemById(plan: WorkPlan, itemId: string, note?: string): WorkItem | null {

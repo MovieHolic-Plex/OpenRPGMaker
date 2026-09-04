@@ -111,8 +111,15 @@ function isPlanComplete(items: readonly WorkItem[]): boolean {
   return items.length > 0 && items.every(isItemFinished);
 }
 
-/** 앞줄 한 문장 — 진행 중이면 「항목 중」, 다 끝났으면 「모두 완료」, 멈춰 있으면 「항목 — 대기 중」. */
+/** 막힌 항목(사람 판단 대기) — 있으면 앞줄이 그것을 먼저 말한다. */
+function blockedItem(items: readonly WorkItem[]): WorkItem | null {
+  return items.find((item) => item.status === "blocked") ?? null;
+}
+
+/** 앞줄 한 문장 — 막힘 > 모두 완료 > 진행 중 > 대기 중 순으로 사용자에게 중요한 것을 말한다. */
 function workPlanStatusLine(plan: WorkPlan, items: readonly WorkItem[], active: boolean): string {
+  const blocked = blockedItem(items);
+  if (blocked) return `막힘 — ${blocked.title ?? "항목"}`;
   if (isPlanComplete(items)) return "모두 완료";
   const current = currentRunItemTitle(plan);
   return active ? `${current} 중` : `${current} — 대기 중`;
@@ -179,6 +186,10 @@ export function renderWorkPlanChecklist(
         on: { click: () => opts.onOpenBook?.() },
       })
     : null;
+  const blocked = blockedItem(items);
+  const blockedNote = blocked && typeof blocked.note === "string" && blocked.note.trim().length > 0
+    ? blocked.note.trim()
+    : null;
   const stop = active
     ? el("button", {
         class: "ai-run-stop",
@@ -190,7 +201,12 @@ export function renderWorkPlanChecklist(
     : null;
   return el("div", {
     class: "ai-autonomous-checklist",
-    dataset: { testid: "ai-work-plan-checklist", active: String(active), complete: String(complete) },
+    dataset: {
+      testid: "ai-work-plan-checklist",
+      active: String(active),
+      complete: String(complete),
+      blocked: String(blockedItem(items) !== null),
+    },
     attrs: { role: "group", "aria-label": "할 일 목록" },
     children: [
       el("div", {
@@ -212,6 +228,13 @@ export function renderWorkPlanChecklist(
             ],
           }),
           ...(running ? [workItemActivityNode(opts.activity)] : []),
+          ...(blockedNote
+            ? [el("span", {
+                class: "ai-autonomous-item-note is-blocked",
+                dataset: { testid: "ai-work-item-blocked-note" },
+                text: blockedNote,
+              })]
+            : []),
           el("div", {
             class: "ai-run-progress",
             dataset: { testid: "ai-run-progress" },

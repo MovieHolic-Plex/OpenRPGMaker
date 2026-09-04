@@ -154,6 +154,22 @@ describe("작업 계획 앞면 렌더", () => {
     }
   });
 
+  it("막힌 항목은 앞줄이 먼저 말하고 사유가 붙는다", () => {
+    const restore = installFakeDom();
+    try {
+      const plan = samplePlan();
+      plan.layers[0]!.items[0]!.status = "blocked";
+      plan.layers[0]!.items[0]!.note = "스펙 게이트: 밑그림이 없습니다";
+      const node = renderWithFakeDom(() => renderWorkPlanChecklist(plan, { active: false })) as FakeElement;
+      expect(node.dataset.blocked).toBe("true");
+      expect(node.querySelector("[data-testid='ai-run-status']")?.textContent).toBe("막힘 — 마을 광장");
+      expect(node.querySelector("[data-testid='ai-work-item-blocked-note']")?.textContent).toBe("스펙 게이트: 밑그림이 없습니다");
+      expect(node.querySelectorAll("[data-testid='ai-autonomous-item']")).toHaveLength(0);
+    } finally {
+      restore();
+    }
+  });
+
   it("layers 가 아예 없는 페이로드는 빈 앞면으로 안전하게 렌더한다", () => {
     const restore = installFakeDom();
     try {

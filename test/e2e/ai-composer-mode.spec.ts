@@ -5,6 +5,8 @@
  *  - 질문 모드: 목업 LLM 이 쓰기 툴(fill_region)을 불러도 맵 셀이 바뀌지 않고, 요청 본문의 tools 에
  *    쓰기 스키마가 하나도 없다.
  *  - 지시 모드(기본): 계획이 뜨고 툴이 성공할 때마다 항목에 체크가 붙으며, 턴이 끝나도 목록이 남는다.
+ *  - 지시 모드(교착): 스펙 게이트에 막히는 대본이면 항목이 3회 만에 「막힘」으로 표시되고 턴이 끝난다
+ *    (2026-09-03 실측 회귀: 예전에는 Ralph 가 같은 항목을 173/256 번 재주입했다).
  *  - 계획 모드: 플래너가 new_plan 을 내면 계획 체크리스트(`ai-work-plan-checklist`)만 뜨고 tools 가 실린
  *    LLM 호출(툴 루프)이 0회이며 맵 셀이 그대로다.
  *
@@ -208,5 +210,30 @@ test.describe("컴포저 모드가 실제로 세션을 바꾼다", () => {
     expect(log.toolRounds).toBe(2);
     await page.screenshot({ path: path.join(EVIDENCE, "do-mode-settled-list.png"), animations: "disabled" });
     writeFileSync(path.join(EVIDENCE, "do-mode.json"), JSON.stringify({ log }, null, 2));
+  });
+
+  test("지시 모드(교착): 스펙 게이트에 막히면 항목이 「막힘」으로 표시되고 턴이 끝난다", async ({ page }) => {
+    const target = { mapId: "", rect: { x: 2, y: 2, w: 6, h: 6 } };
+    // fill_region 은 밑그림 없는 빈 맵에서 스펙 게이트에 막힌다 — 모델이 몇 번 더 시도해도 같다.
+    const log = await installScriptedLlm(page, () => target, { writeRounds: 30, writeTool: "fill_region" });
+    target.mapId = await bootEditor(page);
+
+    await page.getByTestId("ai-input").fill("광장에 연못을 두 단계로 만들어줘");
+    await page.getByTestId("ai-send").click();
+
+    const checklist = page.getByTestId("ai-work-plan-checklist");
+    await expect(checklist).toBeVisible({ timeout: 60_000 });
+    // 무한 재주입이 아니라 막힘으로 끝난다.
+    await expect(checklist).toHaveAttribute("data-blocked", "true", { timeout: 120_000 });
+    await expect(checklist).toHaveAttribute("data-active", "false", { timeout: 60_000 });
+    await expect(page.getByTestId("ai-autonomous-item").nth(0)).toHaveAttribute("data-status", "blocked");
+    await expect(page.getByTestId("ai-run-status")).toContainText("막힘");
+    // 사용자는 왜 막혔는지 읽을 수 있다.
+    await expect(page.getByTestId("ai-work-item-blocked-note")).toBeVisible();
+    await expect(page.getByTestId("ai-chat-log")).toContainText("막혔습니다", { timeout: 60_000 });
+    // 왕복이 손에 꼽는 수준에서 멈춘다(예전엔 173회였다). 같은 실패 4회에서 끊긴다.
+    expect(log.toolRounds).toBeLessThanOrEqual(6);
+    await page.screenshot({ path: path.join(EVIDENCE, "do-mode-blocked-item.png"), animations: "disabled" });
+    writeFileSync(path.join(EVIDENCE, "do-mode-blocked.json"), JSON.stringify({ log }, null, 2));
   });
 });

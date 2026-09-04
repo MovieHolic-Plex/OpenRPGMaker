@@ -128,6 +128,7 @@ import {
 } from "./proposalCompleteness";
 import { defaultYieldToUi, type YieldToUi } from "./yieldToUi";
 import {
+  MAX_RALPH_ATTEMPTS_PER_ITEM,
   MAX_WORK_PLAN_AUTO_STEPS_PER_TURN,
   ORCHESTRATOR_SYSTEM_PROMPT,
   advanceWorkPlanFromTools,
@@ -141,6 +142,8 @@ import {
   isWorkPlanComplete,
   parseOrchestratorDecision,
   shouldRalphContinue,
+  blockWorkItemById,
+  reactivateBlockedWorkItems,
   skipWorkItemById,
   summarizeWorkPlan,
   workPlanFromOrchestratorDecision,
@@ -180,6 +183,11 @@ import {
 } from "./runRecap";
 
 const MAX_ESCALATED_TOOLS_PER_TURN = 16;
+/**
+ * 한 항목에서 **같은 쓰기 툴 + 같은 실패 요약**을 연속으로 몇 번까지 허용하는가 (2026-09-03).
+ * 스펙 게이트 거부처럼 인자를 바꾸지 않으면 영원히 같은 결과인 실패가 여기서 끊긴다.
+ */
+const MAX_REPEATED_TOOL_FAILURES_PER_ITEM = 4;
 const MAX_BASE_TURN_TOOL_SCHEMAS = 40;
 
 function discoveredToolNames(result: ToolResult): string[] {
@@ -719,6 +727,14 @@ export interface SessionTurnOptions {
   readonly scope?: SessionTurnScope | null;
   /** 컴포저 모드(지시/질문/계획). 없으면 지시. 세션이 강제한다 — 프롬프트 힌트가 아니다(`@/ai/composerMode`). */
   readonly composerMode?: ComposerMode;
+  /**
+   * 하네스 내부 플래그 — 자율 드라이버가 스스로 보낸 합성 「계속」 턴인가. 패널·브리지는 넘기지 않는다.
+   *
+   * 사용자의 새 메시지(직접 친 「계속」 포함)와 구분해야 하는 것이 둘 있다:
+   *  1. 막힌 항목 되살리기 — 사람이 다시 말을 걸었을 때만 재시도한다(2026-09-03).
+   *  2. 플래너 왕복 — 계획이 그대로인 드라이버 계속 턴은 resume 이 자명하므로 main 모델 콜을 건너뛴다.
+   */
+  readonly driverContinue?: boolean;
 }
 
 export interface AssistantSessionOptions {
@@ -887,6 +903,26 @@ export class AssistantSession {
   private workPlan: WorkPlan | null = null;
   /** 이번 사용자 메시지 안에서 자동으로 진행한 추가 단계 수. */
   private workPlanAutoStepsThisUserMessage = 0;
+  /**
+   * 항목 id → 이 런에서 그 항목에 Ralph 를 재주입한 횟수. 사용자의 새 메시지가 리셋한다.
+   * MAX_RALPH_ATTEMPTS_PER_ITEM 에 닿으면 항목을 blocked 로 표시하고 턴을 끝낸다(무한 재주입 차단).
+   */
+  private ralphAttemptsByItemId = new Map<string, number>();
+  /** 항목 id → 마지막으로 자동 완료를 막은 사유(산출물 게이트·완성도 경고). 교착 안내 문구의 근거. */
+  private lastBlockReasonByItemId = new Map<string, string>();
+  /**
+   * 항목 id → `${툴 이름}::${실패 요약}` 이 연속으로 몇 번 같았는가.
+   *
+   * Ralph 교착 판정은 「모델이 나가려 한다」를 신호로 쓰는데, 같은 쓰기 툴을 **같은 이유로 계속 실패**하는
+   * 모델은 나가려 하지 않으므로 그 신호가 오지 않는다(2026-09-03 e2e 실측: 스펙 게이트에 막힌 fill_region
+   * 을 대본이 주는 대로 30번 반복했고 Ralph 는 한 번도 안 돌았다). 같은 실패가 이 상한에 닿으면 항목을
+   * blocked 로 돌려 같은 출구로 나간다.
+   */
+  private repeatedToolFailures = new Map<string, { readonly key: string; count: number }>();
+  /** 이 턴은 자율 드라이버의 합성 「계속」인가(SessionTurnOptions.driverContinue). */
+  private turnIsDriverContinue = false;
+  /** 플래너 LLM 왕복만 건너뛴다 — 계획 툴·오케스트레이션 주입은 그대로 둔다(skipPlannerThisTurn 과 다르다). */
+  private skipPlannerRoundOnly = false;
   /** 현재 WorkItem에서 이번 사용자 메시지 동안 성공한 모든 툴 이름(읽기 포함). */
   private turnSuccessfulTools = new Set<string>();
   private successfulToolsWorkItemId: string | null = null;
@@ -1355,7 +1391,7 @@ export class AssistantSession {
         type: "status",
         text: `자율 실행 계속 (${this.autoRunSteps}/${AGENT_RUN_MAX_TOTAL_STEPS})`,
       });
-      const next = await this.executeUserTurn("계속", onEvent, signal);
+      const next = await this.executeUserTurn("계속", onEvent, signal, { driverContinue: true });
       if (next.stoppedReason === "aborted" || next.stoppedReason === "error") return next;
       last = next;
     }
@@ -1444,6 +1480,22 @@ export class AssistantSession {
     this.turnComposerMode = options.composerMode ?? "do";
     this.planAuthoredThisTurn = false;
     this.lastTurnPlanOnly = false;
+    this.turnIsDriverContinue = options.driverContinue === true;
+    this.skipPlannerRoundOnly = false;
+    // 사람이 다시 말을 걸었다 = 재시도 신호. 막힌 항목을 되살리고 항목별 Ralph 시도 수를 0으로 돌린다.
+    // 드라이버의 합성 「계속」은 이 리셋을 받지 못한다 — 그래야 막힌 항목에서 런이 실제로 멈춘다.
+    if (!this.turnIsDriverContinue) {
+      this.ralphAttemptsByItemId.clear();
+      this.lastBlockReasonByItemId.clear();
+      this.repeatedToolFailures.clear();
+      if (this.workPlan) {
+        const revived = reactivateBlockedWorkItems(this.workPlan);
+        if (revived > 0) {
+          this.pushAudit({ kind: "status", text: `work-item:reactivated ${revived}건 — 사용자 메시지로 재시도` });
+          this.emitWorkPlan(onEvent);
+        }
+      }
+    }
 
     // 의도 선언: 모델이 한 번 읽어 구조화한다(수정/생성·실내/야외·시설·되묻기·계획·툴). 코드는 이 선언만
     // 소비한다. 선언자가 없거나 실패하면 중립 폴백 — 되묻지 않고, 툴은 UI 도메인·핀·이름 언급·승격만.
@@ -1517,7 +1569,27 @@ export class AssistantSession {
     if (skipReason) {
       this.pushAudit({ kind: "status", text: `planner:skip ${skipReason}` });
     }
-    if ((this.orchestrationEnabled() || this.workPlan || this.turnComposerMode === "plan") && !this.skipPlannerThisTurn) {
+    // 드라이버의 합성 「계속」은 계획이 그대로면 결정이 자명하다(resume) — main 모델 왕복을 건너뛰고
+    // planner:resume 이 하던 일(계획 재주입 + 목록 갱신)만 코드가 직접 한다. 계획 툴은 그대로 노출된다
+    // (숨기면 모델이 complete_work_item 을 못 불러 교착이 오히려 늘어난다). 사용자가 직접 친 「계속」은
+    // 이 경로가 아니므로 플래너가 정상적으로 replan 할 수 있다.
+    if (
+      !this.skipPlannerThisTurn
+      && this.turnIsDriverContinue
+      && this.workPlan
+      && !isWorkPlanComplete(this.workPlan)
+      && getCurrentWorkItem(this.workPlan)?.status !== "blocked"
+    ) {
+      this.skipPlannerRoundOnly = true;
+      this.pushAudit({ kind: "status", text: "planner:skip driver-continue (resume 자명 — main 모델 왕복 생략)" });
+      this.emitWorkPlan(onEvent);
+      this.injectWorkPlanOrchestration();
+    }
+    if (
+      (this.orchestrationEnabled() || this.workPlan || this.turnComposerMode === "plan")
+      && !this.skipPlannerThisTurn
+      && !this.skipPlannerRoundOnly
+    ) {
       try {
         await this.runOrchestratorPlanner(text, onEvent, signal);
       } catch (cause) {
@@ -1777,9 +1849,80 @@ export class AssistantSession {
     this.pushOrchestrationMessage(formatWorkPlanForOrchestration(this.workPlan));
   }
 
+  /**
+   * Ralph 재주입 직전 교착 판정 — 같은 항목에서 상한(MAX_RALPH_ATTEMPTS_PER_ITEM)만큼 이어서 시도했는데도
+   * 완료되지 않았으면 그 항목을 `blocked` 로 표시하고 재주입을 포기한다. 돌려주는 값이 있으면 턴을 끝내야 한다.
+   *
+   * 왜 필요한가(2026-09-03 실측): 빈 맵에서 `fill_region` 이 스펙 게이트에 막히자 Ralph 가 같은 항목을
+   * **173번** 재주입했다. 모델이 나가려 하는데 하네스가 끝을 인정하지 않는 상태는 더 밀어붙여도 풀리지 않는다.
+   */
+  private blockStalledWorkItem(onEvent: (event: SessionEvent) => void): WorkItem | null {
+    const plan = this.workPlan;
+    const current = plan ? getCurrentWorkItem(plan) : null;
+    if (!plan || !current) return null;
+    // 연속 시도 수 — 이 항목에서 쓰기가 성공하면 recordSuccessfulTool 이 0으로 되돌린다.
+    const used = this.ralphAttemptsByItemId.get(current.id) ?? 0;
+    if (used < MAX_RALPH_ATTEMPTS_PER_ITEM) return null;
+    // 기록된 차단 사유가 없으면(툴을 아예 안 불러 게이트가 돌지 않은 경우) 미충족 완료 조건을 직접 말한다 —
+    // 「무엇을 고쳐야 하는가」가 사용자에게 전달되는 유일한 단서다.
+    const pending = (current.successTools ?? []).filter((name) => !this.turnSuccessfulTools.has(name));
+    const why =
+      this.lastBlockReasonByItemId.get(current.id)
+      ?? (pending.length > 0
+        ? `완료 조건(successTools: ${pending.join(", ")})이 이번 시도에서 충족되지 않았습니다.`
+        : "모델이 완료를 선언하지 않았고 하네스 완료 조건(산출물 검사)도 충족되지 않았습니다.");
+    const blocked = blockWorkItemById(plan, current.id, why);
+    if (!blocked) return null;
+    this.pushAudit({
+      kind: "status",
+      text: `ralph:stalled item=${current.id} attempts=${used}/${MAX_RALPH_ATTEMPTS_PER_ITEM} — ${why}`,
+    });
+    onEvent({ type: "status", text: `막힘: ${blocked.title} — ${why}` });
+    this.emitWorkPlan(onEvent);
+    return blocked;
+  }
+
+  /**
+   * 같은 쓰기 툴이 같은 이유로 연속 실패하는 것을 센다. 상한에 닿으면 현재 항목을 blocked 로 돌려
+   * Ralph 교착과 같은 출구(사용자에게 넘김)로 보낸다. 성공한 쓰기 하나가 카운터를 지운다.
+   */
+  private noteRepeatedToolFailure(name: string, result: ToolResult): void {
+    const currentItemId = this.workPlan?.currentItemId;
+    if (!currentItemId || getTool(name)?.mode !== "write") return;
+    const key = `${name}::${result.summary.slice(0, 120)}`;
+    const entry = this.repeatedToolFailures.get(currentItemId);
+    const next = entry && entry.key === key ? { key, count: entry.count + 1 } : { key, count: 1 };
+    this.repeatedToolFailures.set(currentItemId, next);
+    if (next.count >= MAX_REPEATED_TOOL_FAILURES_PER_ITEM) {
+      this.lastBlockReasonByItemId.set(currentItemId, result.summary);
+    }
+  }
+
+  /** 같은 실패가 상한만큼 반복됐는가 — 참이면 호출부가 항목을 막고 턴을 끝낸다. */
+  private hasRepeatedToolFailureStall(): boolean {
+    const currentItemId = this.workPlan?.currentItemId;
+    if (!currentItemId) return false;
+    return (this.repeatedToolFailures.get(currentItemId)?.count ?? 0) >= MAX_REPEATED_TOOL_FAILURES_PER_ITEM;
+  }
+
+  /** 막힌 항목으로 턴을 끝낼 때 사용자에게 보내는 문장 — 무엇이 막혔고 무엇을 하면 되는지. */
+  private blockedTurnText(blocked: WorkItem, modelText = ""): string {
+    return [
+      modelText.trim(),
+      `**${blocked.title}** 에서 막혔습니다 — ${blocked.note ?? ""}`.trim(),
+      "무엇을 바꿔야 할지 알려 주시면 그 지점부터 다시 진행합니다. 이 단계를 빼려면 「건너뛰기」 라고 보내세요.",
+    ]
+      .filter((part) => part.length > 0)
+      .join("\n\n");
+  }
+
   /** Ralph: re-inject current item when generator tries to exit early. */
   private injectRalphContinue(onEvent: (event: SessionEvent) => void): void {
     if (!this.workPlan || isWorkPlanComplete(this.workPlan)) return;
+    const currentItemId = this.workPlan.currentItemId;
+    if (currentItemId) {
+      this.ralphAttemptsByItemId.set(currentItemId, (this.ralphAttemptsByItemId.get(currentItemId) ?? 0) + 1);
+    }
     this.workPlanAutoStepsThisUserMessage += 1;
     this.pushOrchestrationMessage(formatRalphContinueMessage(this.workPlan));
     this.pushAudit({
@@ -1890,11 +2033,25 @@ export class AssistantSession {
       if (!id) return { ok: false, summary: "완료할 항목 id가 없습니다." };
       const note = typeof args.note === "string" ? args.note : undefined;
       this.syncSuccessfulToolsToCurrentWorkItem();
+      const beforeStatus = this.workPlan.layers.flatMap((layer) => layer.items).find((item) => item.id === id)?.status;
       const result = completeWorkItemById(this.workPlan, id, note, {
         successfulTools: [...this.turnSuccessfulTools],
         outcomeGate: this.outcomeGate(),
+        // 이름이 어긋난 successTools 로 교착되지 않게, 명시 완료는 「성공한 쓰기 + 산출물 게이트 통과」를 근거로 인정한다.
+        allowWriteEvidenceFallback: true,
       });
+      if (result.ok && !result.alreadyDone && beforeStatus !== "done") {
+        const needed = result.item.successTools ?? [];
+        const missing = needed.filter((name) => !this.turnSuccessfulTools.has(name));
+        if (missing.length > 0) {
+          this.pushAudit({
+            kind: "status",
+            text: `work-item:complete-by-write-evidence ${result.item.id} — successTools 미기록 ${missing.join(", ")}`,
+          });
+        }
+      }
       if (!result.ok) {
+        this.lastBlockReasonByItemId.set(id, result.reason);
         return {
           ok: false,
           summary: result.reason,
@@ -1987,6 +2144,14 @@ export class AssistantSession {
   private recordSuccessfulTool(name: string): void {
     this.syncSuccessfulToolsToCurrentWorkItem();
     this.turnSuccessfulTools.add(name);
+    // 교착 판정은 **연속** 무진행이다 — 이 항목에서 쓰기가 하나라도 성공했으면 진행이 있었으므로
+    // 시도 수를 0으로 돌린다. 그러지 않으면 여러 턴에 걸쳐 정상 진행하는 큰 항목이 누적으로 막힌다.
+    const currentItemId = this.workPlan?.currentItemId;
+    if (currentItemId && getTool(name)?.mode === "write") {
+      this.ralphAttemptsByItemId.delete(currentItemId);
+      this.lastBlockReasonByItemId.delete(currentItemId);
+      this.repeatedToolFailures.delete(currentItemId);
+    }
   }
 
   /**
@@ -2026,6 +2191,7 @@ export class AssistantSession {
     if (blocked && blockedKey !== this.lastOutcomeBlockedKey) {
       // 항목은 in_progress 로 남는다 — Ralph 재주입과 모델의 다음 라운드가 이어서 채우게 한다.
       this.lastOutcomeBlockedKey = blockedKey;
+      this.lastBlockReasonByItemId.set(blocked.item.id, blocked.reason);
       this.pushAudit({ kind: "status", text: `WorkPlan 자동 완료 차단: ${blocked.item.title} — ${blocked.reason}` });
       this.pushOrchestrationMessage(
         `HARNESS: 항목 '${blocked.item.title}' 은 아직 완료할 수 없습니다. ${blocked.reason}`,
@@ -2976,6 +3142,17 @@ export class AssistantSession {
             assistantText: finalText,
           })
         ) {
+          // 같은 항목을 상한만큼 밀어붙였는데도 안 되면 재주입을 멈추고 사용자에게 넘긴다.
+          const stalled = this.blockStalledWorkItem(onEvent);
+          if (stalled) {
+            assistantText = this.blockedTurnText(stalled, finalText);
+            onEvent({ type: "assistant_message", content: assistantText });
+            this.pushAudit({
+              kind: "status",
+              text: `턴 종료(final) — 항목 교착으로 중단 · 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}`,
+            });
+            return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "final" };
+          }
           phase = "execute";
           executionStarted = true;
           this.emitPhase(onEvent, "execute");
@@ -3159,6 +3336,7 @@ export class AssistantSession {
           // 읽기 툴도 기록한다 — 플래너가 `successTools:["get_map_region"]` 같은 확인 항목을 자주 쓰는데
           // 쓰기만 세면 그 항목은 무슨 짓을 해도 완료할 수 없는 게이트가 된다(2026-08-23 실측: 2회 거부 후 skip).
           if (toolResult.ok) this.recordSuccessfulTool(name);
+          else this.noteRepeatedToolFailure(name, toolResult);
           if (toolResult.ok) {
             // 이 항목이 새로 만든 맵을 기록한다 — 산출물 게이트가 "만들고 안 채운 맵"을 여기서 잡는다.
             const createdMapId = createdMapIdFrom(name, args, toolResult.data);
@@ -3304,6 +3482,28 @@ export class AssistantSession {
           type: "status",
           text: `WorkPlan 다음 스프린트 (${this.workPlanAutoStepsThisUserMessage}/${MAX_WORK_PLAN_AUTO_STEPS_PER_TURN})`,
         });
+      }
+
+      // 같은 쓰기 실패가 반복되면(인자를 바꾸지 않는 모델) 라운드를 더 태우지 않고 사용자에게 넘긴다.
+      if (this.hasRepeatedToolFailureStall() && this.workPlan) {
+        const currentItemId = this.workPlan.currentItemId;
+        const reason = currentItemId ? this.lastBlockReasonByItemId.get(currentItemId) ?? "같은 실패가 반복됩니다." : "";
+        const blocked = currentItemId ? blockWorkItemById(this.workPlan, currentItemId, reason) : null;
+        if (blocked) {
+          this.pushAudit({
+            kind: "status",
+            text: `tool-failure:stalled item=${blocked.id} repeats=${MAX_REPEATED_TOOL_FAILURES_PER_ITEM} — ${reason}`,
+          });
+          onEvent({ type: "status", text: `막힘: ${blocked.title} — ${reason}` });
+          this.emitWorkPlan(onEvent);
+          assistantText = this.blockedTurnText(blocked, assistantText);
+          onEvent({ type: "assistant_message", content: assistantText });
+          this.pushAudit({
+            kind: "status",
+            text: `턴 종료(final) — 반복 실패로 중단 · 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}`,
+          });
+          return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "final" };
+        }
       }
 
       // 출력 토큰 예산 확인(라운드의 툴 실행까지 마친 뒤). 예산 소진이 유일한 사용자 제한.

@@ -25,7 +25,15 @@ export interface VolumeBar {
   readonly quests: number;
 }
 
-export const MAX_VOLUME_CONTINUES_PER_TURN = 8;
+/**
+ * 한 턴 에서 볼륨 미달로 재주입하는 횟수 (2026-09-03: 8 → 3).
+ *
+ * 드라이버가 턴을 다시 여는 상한(`AGENT_RUN_MAX_TOTAL_STEPS` 48)이 따로 있으므로 볼륨 압박은
+ * 런 전체로는 그대로 유지된다. 한 턴 안에서 8번을 다 쓰면 사용자는 그만큼 오래 아무 보고도
+ * 못 받고 기다린다 — 짧은 턴을 여러 번 돈는 편이 할 일 목록이 갱신되는 지점을 더 자주 만들고
+ * 사용자 중단에도 더 발리 닿는다.
+ */
+export const MAX_VOLUME_CONTINUES_PER_TURN = 3;
 
 export function measureVolume(project: Project): VolumeSnapshot {
   let authoredMaps = 0;

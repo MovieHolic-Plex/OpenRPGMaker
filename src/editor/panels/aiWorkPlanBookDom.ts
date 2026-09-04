@@ -105,6 +105,9 @@ function renderPlanBookItem(item: WorkItem, input: PlanBookSheetInput): HTMLElem
   const instruction = (item.instruction ?? "").trim();
   const doneWhen = (item.doneWhen ?? "").trim();
   const activity = input.activity?.trim() ?? "";
+  const blockedNote = status === "blocked" && typeof item.note === "string" && item.note.trim().length > 0
+    ? item.note.trim()
+    : "";
   return el("article", {
     class: `ai-plan-book-item is-${status}`,
     dataset: { testid: "ai-autonomous-item", itemId: item.id ?? "", status },
@@ -128,6 +131,15 @@ function renderPlanBookItem(item: WorkItem, input: PlanBookSheetInput): HTMLElem
               class: "ai-plan-book-item-note",
               dataset: { testid: "ai-work-item-activity" },
               text: activity.length > 0 ? activity : "진행 중…",
+            }),
+          ]
+        : []),
+      ...(blockedNote
+        ? [
+            el("p", {
+              class: "ai-plan-book-item-note is-blocked",
+              dataset: { testid: "ai-work-item-blocked-note" },
+              text: blockedNote,
             }),
           ]
         : []),

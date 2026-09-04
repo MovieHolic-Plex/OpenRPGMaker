@@ -102,19 +102,18 @@ describe("자율 실행 드라이버", () => {
   it("(a) 3항목 계획이 자동 계속 턴으로 완료된다 — 수동 송신 0건", async () => {
     const { AssistantSession, createBlankProject } = await load();
     // maxToolCalls=4 로 한 턴이 결정적으로 상한 도달로 끝난다(라운드: planner는 라운드 카운트 밖).
-    // 턴1: new_plan(set_work_plan+t1 완료) → 라운드 상한. 턴2/3: resume + 다음 항목 → 상한. 턴4: 완료 보고.
+    // 드라이버의 합성 「계속」 턴은 플래너 왕복을 태우지 않는다(2026-09-03) — 그래서 resume 응답이 없다.
+    // 턴1: new_plan(set_work_plan + t1 완료) → 라운드 상한. 턴2: t2 → 상한. 턴3: t3 → 완료 보고.
     const steps: ChatResult[] = [
       finalResult(THREE_ITEM_PLAN_JSON),
       toolCallResult("set_work_plan", THREE_ITEM_PLAN, "c_plan"),
       titleWrite("c_t1", "t1"),
       finalResult("이어서 진행합니다."),
       finalResult("이어서 진행합니다."),
-      finalResult(RESUME_JSON),
       titleWrite("c_t2", "t2"),
       finalResult("이어서 진행합니다."),
       finalResult("이어서 진행합니다."),
       finalResult("이어서 진행합니다."),
-      finalResult(RESUME_JSON),
       titleWrite("c_t3", "t3"),
       finalResult("모든 항목을 완료했습니다."),
     ];
@@ -136,8 +135,12 @@ describe("자율 실행 드라이버", () => {
     const statuses = statusTexts(session);
     expect(statuses.some((t) => t.includes("agent_run:auto-continue"))).toBe(true);
     expect(result.assistantText).toContain("모든 항목을 완료했습니다");
-    // 턴1(플래너+4라운드) + 턴2(플래너+4라운드) + 턴3(플래너+쓰기+최종) = 13콜.
-    expect(index).toBe(13);
+    // 턴1(플래너1+4라운드) + 턴2(4라운드) + 턴3(쓰기+최종) = 11콜. 플래너는 사용자 턴에서 한 번만 돈다.
+    expect(index).toBe(11);
+    expect(statuses.filter((t) => t.startsWith("planner:start")).length).toBe(1);
+    expect(statuses.filter((t) => t.includes("planner:skip driver-continue")).length).toBe(2);
+    // 진행이 있는 항목은 막지 않는다 — 쓰기가 성공할 때마다 항목별 시도 수가 0으로 돌아간다.
+    expect(statuses.some((t) => t.startsWith("ralph:stalled"))).toBe(false);
   }, 120000);
 
   it("(b) 총 예산 48 소진 시 agent_run_budget_exhausted 감사를 남기고 멈춘다", async () => {
@@ -149,11 +152,13 @@ describe("자율 실행 드라이버", () => {
       toolCallResult("set_work_plan", NEVER_PLAN, "c_plan"),
     ];
     let bodyTurns = 0;
+    // 라운드 상한 4 = 드라이버 턴마다 본문 콜 4회. 각 턴의 첫 콜은 실제 쓰기다 — 저작은 진행되지만
+    // 항목의 완료 조건은 영원히 충족되지 않는 상태(2026-09-03 교착 차단은 **무진행**만 막는다).
     const chat = async (_config: unknown, req: ChatRequest): Promise<ChatResult> => {
-      // 플래너 라운드(tools 없음)는 매 턴 resume.
       if (!req.tools || req.tools.length === 0) return finalResult(RESUME_JSON);
       if (steps.length > 0) return steps.shift()!;
       bodyTurns += 1;
+      if (bodyTurns % 4 === 1) return titleWrite(`c_b${bodyTurns}`, `진행 ${bodyTurns}`);
       return finalResult(`아직 진행 중입니다(턴 ${bodyTurns}). 계속 진행이 필요합니다.`);
     };
     const session = new AssistantSession(createBlankProject(), { config: ORCH_AUTO, chat });
@@ -164,6 +169,8 @@ describe("자율 실행 드라이버", () => {
     expect(statuses.some((t) => t.includes("agent_run_budget_exhausted"))).toBe(true);
     // 48회까지 자동 계속하고 49번째는 송신하지 않는다 — 본문 턴 = 초기 1 + 자동 48.
     expect(statuses.filter((t) => t.includes("agent_run:auto-continue")).length).toBe(48);
+    // 진행이 계속되는 동안은 교착으로 판정하지 않는다.
+    expect(statuses.some((t) => t.startsWith("ralph:stalled"))).toBe(false);
   }, 300000);
 
   it("(c) 턴이 사용자 질문으로 끝나면 드라이버는 자동 송신하지 않고 일시정지한다", async () => {
@@ -267,13 +274,13 @@ describe("자율 실행 드라이버", () => {
 
     // 패널의 기존 드레인 루프가 큐의 메시지를 전달한 뒤(여기선 계속), 계획이 여전히 미완료면 런 재개.
     pending = null;
+    // 사용자가 직접 친 「계속」은 사용자 턴이므로 플래너가 한 번 돈다(resume). 그 뒤 드라이버 턴은 왕복 없음.
     steps = [
       finalResult(RESUME_JSON),
       titleWrite("c_t2", "t2"),
       finalResult("이어서 진행합니다."),
       finalResult("이어서 진행합니다."),
       finalResult("이어서 진행합니다."),
-      finalResult(RESUME_JSON),
       titleWrite("c_t3", "t3"),
       finalResult("모든 항목을 완료했습니다."),
     ];
@@ -295,12 +302,10 @@ describe("자율 실행 드라이버", () => {
       titleWrite("c_t1", "t1"),
       finalResult("이어서 진행합니다."),
       finalResult("이어서 진행합니다."),
-      finalResult(RESUME_JSON),
       titleWrite("c_t2", "t2"),
       finalResult("이어서 진행합니다."),
       finalResult("이어서 진행합니다."),
       finalResult("이어서 진행합니다."),
-      finalResult(RESUME_JSON),
       titleWrite("c_t3", "t3"),
       finalResult("모든 항목을 완료했습니다."),
     ];
@@ -389,6 +394,8 @@ describe("자율 실행 드라이버", () => {
         return toolCallResult("set_work_plan", NEVER_PLAN, "c_plan");
       }
       bodyTurns += 1;
+      // 턴마다 쓰기가 한 번 성공한다 — 진행은 있고 완료 조건만 영원히 미충족인 상태.
+      if (bodyTurns % 4 === 1) return titleWrite(`c_r${bodyTurns}`, `재가동 ${bodyTurns}`);
       return finalResult(`이어서 진행합니다(${bodyTurns}).`);
     };
     const session = new AssistantSession(createBlankProject(), { config: ORCH_AUTO, chat });
@@ -440,7 +447,6 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
     ],
   };
   const MILESTONE_PLAN_JSON = JSON.stringify({ action: "new_plan", ...MILESTONE_PLAN });
-  const MILESTONE_RESUME_JSON = JSON.stringify({ action: "resume", reason: "같은 목표 계속" });
   const titleWrite = (id: string, title: string): ChatResult => milestoneToolCall("set_title_screen", { title }, id);
   const milestoneStatusTexts = (session: { getAuditEntries(): readonly { kind: string; text?: string }[] }): string[] =>
     session.getAuditEntries().filter((e) => e.kind === "status").map((e) => String(e.text));
@@ -453,19 +459,20 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
       }
     })();
   };
-  /** 3항목 계획을 3턴(자동 계속)에 걸쳐 완료하는 스크립트 — 드라이버 테스트 (a)와 동일한 형태. */
+  /**
+   * 3항목 계획을 3턴(자동 계속)에 걸쳐 완료하는 스크립트 — 드라이버 테스트 (a)와 동일한 형태.
+   * 드라이버 턴은 플래너 왕복을 태우지 않으므로 resume 응답이 없다(2026-09-03).
+   */
   const threeMilestoneSteps = (): ChatResult[] => [
     milestoneFinal(MILESTONE_PLAN_JSON),
     milestoneToolCall("set_work_plan", MILESTONE_PLAN, "c_plan"),
     titleWrite("c_t1", "t1"),
     milestoneFinal("이어서 진행합니다."),
     milestoneFinal("이어서 진행합니다."),
-    milestoneFinal(MILESTONE_RESUME_JSON),
     titleWrite("c_t2", "t2"),
     milestoneFinal("이어서 진행합니다."),
     milestoneFinal("이어서 진행합니다."),
     milestoneFinal("이어서 진행합니다."),
-    milestoneFinal(MILESTONE_RESUME_JSON),
     titleWrite("c_t3", "t3"),
     milestoneFinal("모든 항목을 완료했습니다."),
   ];
@@ -923,19 +930,21 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
     expect(result.stoppedReason).toBe("final");
   }, 60000);
 
-  /** 3항목 계획을 3턴(자동 계속)에 걸쳐 완료하는 스크립트 — run-end 증명 테스트 공용. */
+  /**
+   * 3항목 계획을 2턴(자동 계속)에 걸쳐 완료하는 스크립트 — run-end 증명 테스트 공용.
+   *
+   * 드라이버의 합성 「계속」 턴은 **플래너 왕복을 태우지 않는다**(2026-09-03: planner:skip driver-continue).
+   * 그래서 옛 대본에 있던 `{action:"resume"}` 응답 두 개가 없다 — 있으면 그 JSON 이 툴 루프의 최종 문장으로
+   * 소비돼 대본이 어긋난다. 턴 1 은 라운드 상한(maxToolCalls 4)에서 잘리고 드라이버가 턴 2 를 연다.
+   */
   const runEndMilestoneSteps = (): ChatResult[] => [
     gateFinal(JSON.stringify({ action: "new_plan", ...MILESTONE_PLAN_SHAPE })),
     gateToolCall("set_work_plan", MILESTONE_PLAN_SHAPE, "c_plan"),
     gateToolCall("set_title_screen", { title: "t1" }, "c_t1"),
     gateFinal("이어서 진행합니다."),
     gateFinal("이어서 진행합니다."),
-    gateFinal(JSON.stringify({ action: "resume", reason: "같은 목표 계속" })),
     gateToolCall("set_title_screen", { title: "t2" }, "c_t2"),
     gateFinal("이어서 진행합니다."),
-    gateFinal("이어서 진행합니다."),
-    gateFinal("이어서 진행합니다."),
-    gateFinal(JSON.stringify({ action: "resume", reason: "같은 목표 계속" })),
     gateToolCall("set_title_screen", { title: "t3" }, "c_t3"),
     gateFinal("모든 항목을 완료했습니다."),
   ];
@@ -972,6 +981,12 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
     expect(saved!).toContain("sha256=sha-abc123");
     // commitId 증거 경로: list_project_commits 는 브라우저 전용 툴 — node 에선 우아하게 기록된다.
     expect(audits.some((t) => t.includes("agent_run:commit-evidence-unavailable"))).toBe(true);
+    // 드라이버 계속 턴은 플래너 왕복을 태우지 않는다 — 플래너는 사용자 턴에서 한 번만 돈다.
+    expect(audits.filter((t) => t.startsWith("planner:start")).length).toBe(1);
+    expect(audits.some((t) => t.includes("planner:skip driver-continue"))).toBe(true);
+    expect(audits.some((t) => t.includes("agent_run:auto-continue"))).toBe(true);
+    // 정상 진행 중인 항목은 막히지 않는다(쓰기가 성공하면 항목별 시도 수가 0으로 돌아간다).
+    expect(audits.some((t) => t.includes("ralph:stalled"))).toBe(false);
   }, 120000);
 
   it("(c-2) remote 비활성 → agent_run_local_only 감사, flush 호출 없음, 오류 없음", async () => {
