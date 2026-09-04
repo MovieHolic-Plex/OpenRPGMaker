@@ -15,6 +15,8 @@
 **타일을 먼저 막 깔지 않는다.**  
 먼저 사각형(bbox)으로 “여기 집, 여기 시장”을 정하고, 그다음에 실제로 찍는다.
 
+> AI 경로 메모 (2026-09-04): 위 순서는 100×100 bbox 하네스 전용이다. AI `author_village` / `build_village`는 다르다. 지금은 스케치 후보(`sketchHouseSites`)를 먼저 뽑고 집을 찍은 뒤 길을 잇는다. 즉 sketch sites → houses → roads다.
+
 ---
 
 ## 관련 파일
@@ -310,7 +312,7 @@ npx tsx scripts/diagnose-road-through-house.mts
 
 ## 아직 약한 부분 (솔직히)
 
-- **예쁜 마을 알고리즘이 아님** — 격자 lot + A* 모래 연결
+- **예쁜 마을 알고리즘이 아님** — 예전 설명은 격자 lot + A* 모래 연결이었으나 지금은 다르다. 집 후보는 격자 폴백을 남겨두되, `sketchHouseSites`(poisson/cluster, seed-stable)를 먼저 쓰는 유기적 후보가 기본이다. 간선은 T-branch 계약을 유지한 채 다리당 내부 경유점 하나를 더 얻는다. 관련 파일은 `src/editor/tools/village/sketch.ts`, `houses.ts`, `roads.ts`, `builder.ts`다.
 - 집 간격 2칸이면 벽 옆 길이 **시각적으로 답답**할 수 있음
 - gap을 키우면 20채가 안 들어가 best-effort로 떨어짐
 - 시장·광장 장식은 스탬프 위주
