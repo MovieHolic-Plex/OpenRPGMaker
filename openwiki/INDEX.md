@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **43쪽 / 1416KB / 약 400,325 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **43쪽 / 1417KB / 약 400,417 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,7 +16,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/editor-ai-panel.md` | 245KB | 86KB ⚠상한 초과 — 절을 더 쪼개라 | 416 | ~70,948 |
-| `openwiki/editor-ai-tools.md` | 68KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 135 | ~19,304 |
+| `openwiki/editor-ai-tools.md` | 68KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 135 | ~19,396 |
 | `openwiki/editor-database.md` | 170KB | 49KB | 816 | ~48,579 |
 | `openwiki/editor-event-authoring.md` | 117KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 557 | ~34,046 |
 | `openwiki/editor-pre-edit-routing.md` | 68KB | 50KB ⚠상한 초과 — 절을 더 쪼개라 | 196 | ~19,371 |
@@ -232,7 +232,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L357` 제공자 · OAuth · 동반 서비스
 - `L385` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
 
-### `openwiki/editor-ai-tools.md` — 68KB · 135줄 · ~19,304 토큰 · 통째읽기 잘림 · 깨진 줄 5
+### `openwiki/editor-ai-tools.md` — 68KB · 135줄 · ~19,396 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
 - `L95` Project-wide quality evaluation
 - `L101` prune_unused 의 참조 수집은 variableId 를 가진 명령 전부를 세야 한다 (2026-08-29 실측 결함 수정)
