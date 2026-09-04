@@ -43,6 +43,12 @@ export function placePropsOnDraft(draft: Project, input: PlacePropsInput): ToolE
   if (!map) throw new ToolError(`맵을 찾을 수 없습니다: ${input.mapId}`, { code: "missing-map", mapId: input.mapId });
   const tileset = draft.tilesets[map.tilesetId];
   if (!tileset) throw new ToolError(`타일셋을 찾을 수 없습니다: ${map.tilesetId}`, { code: "tileset-not-found", mapId: map.id });
+  if (!Number.isInteger(input.count) || input.count < 1) {
+    throw new ToolError(`count는 1 이상이어야 합니다(받은 값: ${JSON.stringify(input.count)}).`, { code: "invalid-args", mapId: map.id });
+  }
+  if (!Number.isInteger(input.area.w) || !Number.isInteger(input.area.h) || input.area.w < 1 || input.area.h < 1) {
+    throw new ToolError(`area.w/h는 1 이상이어야 합니다(받은 값: ${input.area.w}×${input.area.h}).`, { code: "invalid-args", mapId: map.id });
+  }
 
   const args: Record<string, unknown> = {
     mapId: input.mapId,
@@ -68,11 +74,18 @@ export function placePropsOnDraft(draft: Project, input: PlacePropsInput): ToolE
     throw new ToolError(`${access.message}${hint} — 다시 보낼 형식 예시: ${JSON.stringify(PROPS_EXAMPLE)}`, { code: "material-not-found", mapId: map.id });
   }
 
-  // 소품 툴은 소품만 놓는다 — 바닥·벽·건물·수역 그룹이 들어오면 면/벽 툴로 보낸다.
+  // 소품 툴은 소품만 놓는다 — 바닥·벽·건물·수역 재료가 들어오면 면/벽 툴로 보낸다.
   // 2026-09-03 실측: fill_region 이 「돌바닥」을 거절한 뒤 모델이 place_props 로 우회해 통행 불가 바닥 타일을 산포했다.
-  if (access.kind === "group" && !roleCapabilities(tileset, access.group.role).scatterAsProp) {
+  // 2026-09-04 적대적 리뷰: 위 검사는 kind=group 일 때만 걸렸다. 물·벽 재료가 단일 타일로 해석되면
+  // (예: 「물」→tile 0, 「흰 집 벽」→tile 318) 검사를 통째로 비껴가 육지에 수역 타일을 박았다.
+  // 타일 경로도 타일 메타 역할 + 소속 그룹 역할로 검사한다.
+  const propRole = access.kind === "group"
+    ? access.group.role
+    : (tileset.tileMeta?.[access.tileId]?.role
+      ?? tileset.tileGroups?.find((group) => group.tileIds.includes(access.tileId))?.role);
+  if (propRole !== undefined && !roleCapabilities(tileset, propRole).scatterAsProp) {
     throw new ToolError(
-      `「${input.material}」은(는) ${NON_PROP_ROLE_LABELS[access.group.role] ?? access.group.role} 재료라 소품으로 산포할 수 없습니다. `
+      `「${input.material}」은(는) ${NON_PROP_ROLE_LABELS[propRole] ?? propRole} 재료라 소품으로 산포할 수 없습니다. `
         + "바닥·지형 면은 fill_region(오토타일 재료) 또는 paint_tiles, 벽은 build_wall 을 쓰세요.",
       { code: "material-not-prop", mapId: map.id },
     );
@@ -110,6 +123,13 @@ export function placePropsOnDraft(draft: Project, input: PlacePropsInput): ToolE
   // 시작칸·이벤트칸을 덮으면 무결성 게이트가 커밋 전체를 거부한다 — 그룹 경로는 이미 피하는데
   // 단일 타일 경로만 안 피했다(실측: dense 덤불이 시작칸을 막아 숲 시공이 통째로 반려됐다).
   const protectedCells = protectedEventCells(draft, map);
+  const inBounds = targets.some((cell) => inMapBounds(map, cell.x, cell.y));
+  if (!inBounds) {
+    throw new ToolError(
+      `「${input.material}」를 ${input.count}개 요청했지만 영역 (${input.area.x},${input.area.y}) ${input.area.w}×${input.area.h} 이(가) 맵(${map.width}×${map.height}) 밖에 있습니다 — 맵 안의 영역을 쓰세요.`,
+      { code: "placement-zero", mapId: map.id },
+    );
+  }
   let placed = 0;
   for (const cell of targets) {
     if (placed >= input.count) break;
@@ -122,6 +142,14 @@ export function placePropsOnDraft(draft: Project, input: PlacePropsInput): ToolE
     if (home === "upper") setUpper(map, cell.x, cell.y, tileId);
     else setLower(map, cell.x, cell.y, tileId);
     placed += 1;
+  }
+  if (placed === 0) {
+    throw new ToolError(
+      `${access.matchedLabel || `타일 ${tileId}`}를 ${input.count}개 요청했지만 영역 (${input.area.x},${input.area.y}) ${input.area.w}×${input.area.h} 에 한 개도 놓지 못했습니다`
+        + " — 상위 레이어 소품/키큰 풀·물·길·통행 불가 칸이 영역을 덮고 있습니다."
+        + " tile_erase 로 상위 레이어를 비우고 다시 시도하거나, 다른 영역을 쓰세요.",
+      { code: "placement-zero", mapId: map.id },
+    );
   }
   const passableAfter = passableCellCount(draft, map, input.area);
   const dressing = dense
