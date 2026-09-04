@@ -504,7 +504,7 @@ const placeNpc: ToolDefinition = {
       name: { type: "string" },
       graphic: GRAPHIC_SPEC_SCHEMA,
       face: FACE_SCHEMA,
-      movement: { type: "string", enum: ["fixed", "random"] },
+      movement: { type: "string", enum: ["fixed", "random"], description: "자율 이동. 생략 시 fixed(제자리). 시장·광장·마을 주민처럼 돌아다니는 NPC는 random(배회). 상점 주인·간판 NPC·대화 거점은 fixed." },
       pages: {
         type: "array",
         description:
@@ -664,6 +664,7 @@ const makeVillager: ToolDefinition = {
       name: { type: "string" },
       graphic: GRAPHIC_SPEC_SCHEMA,
       home: COORD_SCHEMA,
+      movement: { type: "string", enum: ["fixed", "random"], description: "자율 이동. 생략 시 fixed(제자리). 돌아다니는 주민은 random(배회). 상점 주인은 fixed." },
       schedule: npcScheduleSchema,
       dailyRoutine: {
         type: "object",
@@ -752,6 +753,7 @@ const makeVillager: ToolDefinition = {
     }
     const home = { x: homeLanding.x, y: homeLanding.y };
     const homeAdjusted = home.x !== homeRaw.x || home.y !== homeRaw.y;
+    const villagerMovement = (args.movement as string | undefined) === "random" ? WANDER : PASSIVE;
     const schedule = args.schedule !== undefined
       ? parseNpcSchedule(draft, args.schedule, "schedule")
       : routineSchedule(draft, map.id, home, args.dailyRoutine);
@@ -790,7 +792,7 @@ const makeVillager: ToolDefinition = {
       authoredPages ?? villagerPages(args.dialogue, schedule, warnings),
       graphic,
       {
-        movement: PASSIVE,
+        movement: villagerMovement,
         warnings,
         face: resolvePlaceNpcFaceArg(args.face, graphic),
       },
@@ -815,7 +817,7 @@ const makeVillager: ToolDefinition = {
         trigger: { kind: "action" },
         priority: "same",
         overlapForbidden: true,
-        movement: PASSIVE,
+        movement: villagerMovement,
         commands: [
           ...(friendshipLines?.unlock ? [{ kind: "text", speaker: name, body: friendshipLines.unlock } as Command] : []),
           { kind: "setSelfSwitch", key: "A", value: true },
@@ -832,7 +834,7 @@ const makeVillager: ToolDefinition = {
         trigger: { kind: "action" },
         priority: "same",
         overlapForbidden: true,
-        movement: PASSIVE,
+        movement: villagerMovement,
         commands: friendshipLines?.after ? [{ kind: "text", speaker: name, body: friendshipLines.after }] : [],
       });
     }
@@ -854,6 +856,10 @@ const makeVillager: ToolDefinition = {
       if (giftPrefs) event.giftPrefs = giftPrefs;
       if (giftResponses) event.giftResponses = giftResponses;
       if (talkFriendship) event.talkFriendship = talkFriendship;
+      if (args.movement !== undefined && !replacesDialoguePages) {
+        for (const page of event.pages ?? []) page.movement = structuredClone(villagerMovement);
+        warnings.push(`이동 갱신 → ${args.movement === "random" ? "random(배회)" : "fixed(제자리)"}`);
+      }
       warnings.push(replacesDialoguePages
         ? `병합 → 기존 위치 (${reusedEvent.x}, ${reusedEvent.y}) 유지, 대사 페이지 갱신`
         : `병합 → 기존 위치 (${reusedEvent.x}, ${reusedEvent.y}) 및 생략한 대사 페이지 유지`);
