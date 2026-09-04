@@ -176,7 +176,7 @@ describe("제안 결과 요약", () => {
 
 describe("AI 변경 즉시 적용", () => {
   it.each(["remove_event", "reset_project"])(
-    "%s가 포함된 턴은 중간 확인 뒤 적용한다",
+    "%s가 포함된 턴은 확인 없이 바로 적용한다",
     async (toolName) => {
       const after = structuredClone(store.getCurrent());
       after.meta.title = `applied:${toolName}`;
@@ -193,10 +193,7 @@ describe("AI 변경 즉시 적용", () => {
       findByTestId(panel, "ai-send")?.click();
       await flushAsync();
       const root = document.body as unknown as Parameters<typeof findByTestId>[0];
-      const confirmButton = findByTestId(root, "app-modal-confirm");
-      expect(confirmButton, "중간 확인 모달이 떠야 한다").not.toBeNull();
-      confirmButton?.dispatchEvent(new Event("click"));
-      await flushAsync();
+      expect(findByTestId(root, "app-confirm-modal"), "확인 모달이 뜨면 안 된다").toBeNull();
 
       expect(store.getCurrent().meta.title).toBe(`applied:${toolName}`);
       expect(findByTestId(panel, "ai-msg-badge-applied")?.textContent).toBe("적용됨");

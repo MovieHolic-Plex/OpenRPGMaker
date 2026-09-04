@@ -1330,13 +1330,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const input = bookInput();
     if (input) updateWorkPlanBook(input);
   };
-  /** work_plan 이벤트 — 어느 모드의 턴이든 계획이 오면 보인다. 턴 밖에서 오면(소유권 없는 늦은 이벤트) 무시한다. */
+  /** work_plan 이벤트 — 어느 모드의 턴이든 계획이 오면 보인다. 턴 밖에서 오면(소유권 없는 늦은 이벤트) 무시한다.
+   * 계획 책 모달은 자동으로 띄우지 않는다(2026-09: plan 팝업 제거 정책) — 앞면 체크리스트와
+   * 「계획 책」 버튼으로 직접 열어본다. */
   const showWorkPlan = (plan: WorkPlan): void => {
     if (!workPlanSurfaceState) return;
-    const previousId = workPlanSurfaceState.plan?.id;
     workPlanSurfaceState.plan = plan;
     refreshWorkPlanSurface();
-    if (previousId !== plan.id) openPlanBook();
   };
   /** tool_started — 진행 중 항목의 활동 줄만 갱신. 목록이 아직 없으면 다음 렌더가 가져가게 기억만 해 둔다. */
   const noteWorkPlanActivity = (label: string): void => {

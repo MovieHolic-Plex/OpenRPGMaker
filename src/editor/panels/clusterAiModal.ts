@@ -21,7 +21,6 @@ import {
 import { focusAcceptedAgentChanges } from "@/editor/agentFocus";
 import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { editorState } from "@/editor/editorState";
-import { showConfirm } from "@/editor/ui/modal";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { store } from "@/project/store";
@@ -578,14 +577,15 @@ function proposalLine(call: ProposedCall): string {
   return `${call.destructive ? "파괴적 · " : ""}${call.name}${ruleStrengthLabel(call)} — ${call.summary}`;
 }
 
-// 커스텀 인앱 모달(§2.4) — 네이티브 confirm 대체(헤드리스 자동 통과 규약 유지).
+// 확인 모달 없음(2026-09: 변경 확인 팝업을 띄우지 않는 정책) — 파괴·규칙 경고가 있어도
+// 바로 적용하고 복구는 되돌리기다.
 function confirmDestructive(): Promise<boolean> {
-  return showConfirm({ title: "파괴적 변경", message: "파괴적 변경이 포함되어 있습니다. 그래도 적용할까요?", confirmLabel: "적용", danger: true });
+  return Promise.resolve(true);
 }
 
 function confirmRuleApproval(warnings: readonly string[]): Promise<boolean> {
-  if (warnings.length === 0) return Promise.resolve(true);
-  return showConfirm({ title: "규칙 승인", message: `${warnings.join("\n")}\n\n이 규칙을 적용할까요?`, confirmLabel: "적용" });
+  void warnings;
+  return Promise.resolve(true);
 }
 
 function ruleStrengthLabel(call: ProposedCall): string {
