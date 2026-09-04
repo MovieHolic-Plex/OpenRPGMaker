@@ -274,7 +274,7 @@ function stateRegistry(rows: readonly StateRow[]): HTMLElement {
 }
 
 function ruleCardGrid(project: Project): HTMLElement {
-  const combatFlow = project.system.battleFlow === "strict" ? "라운드 전투" : "게이지 전투";
+  const combatFlow = project.system.battleFlow === "strict" ? "턴 전투" : "게이지 전투";
   const activeSlots = project.system.activeSlots ? `${project.system.activeSlots}명` : "자동";
   const battleSkin = BATTLE_SKINS[resolveSkinId(project.system.battleUiStyle)].label;
   const battleModel = project.system.battleModel === "gen1" ? "Gen1 · 구현 중" : "기본";

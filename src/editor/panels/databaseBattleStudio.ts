@@ -21,13 +21,13 @@ export function battleStudioNav(active: BattleStudioTab): HTMLElement {
   });
 }
 
-export function battleStudioHeading(active: BattleStudioTab, title: string, _description: string): HTMLElement {
+export function battleStudioHeading(active: BattleStudioTab, title: string, description: string): HTMLElement {
   return el("header", {
     class: "db-battle-studio-heading",
     children: [
       el("div", {
         class: "db-battle-studio-title-block",
-        children: [el("h3", { text: title })],
+        children: [el("h3", { text: title }), el("p", { class: "db-battle-studio-sub", text: description })],
       }),
       battleStudioNav(active),
     ],

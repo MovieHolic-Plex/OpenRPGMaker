@@ -92,7 +92,7 @@ describe("database system studio", () => {
     const host = renderSystem();
 
     expect(findByTestId(host, "db-system-studio-card-display")?.textContent).toContain("640×360");
-    expect(findByTestId(host, "db-system-studio-card-combat")?.textContent).toContain("라운드 전투");
+    expect(findByTestId(host, "db-system-studio-card-combat")?.textContent).toContain("턴 전투");
     expect(findByTestId(host, "db-system-studio-card-combat")?.textContent).toContain("2명");
     expect(findByTestId(host, "db-system-studio-card-combat")?.textContent).toContain("유리 창 · 정면 필드");
     expect(findByTestId(host, "db-system-studio-card-combat")?.textContent).toContain("Gen1");
