@@ -2,11 +2,11 @@ import { describe, expect, it } from "vitest";
 import {
   expandRect,
   HOUSE_MARGIN,
-  pointInRect,
+  rectsOverlap,
   type Plaza,
   type Rect,
 } from "@/editor/tools/village/constants";
-import { SKETCH_MIN_GAP, sketchHouseSites } from "@/editor/tools/village/sketch";
+import { sketchSiteFootprint, sketchHouseSites } from "@/editor/tools/village/sketch";
 
 const AREA: Rect = { x: 0, y: 0, w: 50, h: 50 };
 const PLAZA: Plaza = { rect: { x: 21, y: 22, w: 8, h: 6 }, centerRow: 25, centerX: 25 };
@@ -24,19 +24,20 @@ describe("village sketch pre-pass", () => {
     expect(other).not.toEqual(first);
   });
 
-  it("목표 채수를 채우고 광장·가장자리 금지선을 지킨다", () => {
+  it("목표 채수를 채우고 8x7 footprint로 광장·가장자리 금지선을 지킨다", () => {
     // Given: 50x50 구역과 중앙 광장
     // When: seed 7로 8채분을 스케치한다
     const sites = sketchHouseSites({ area: AREA, plaza: PLAZA, seed: 7, targetHouses: TARGET });
-    // Then: 8개 이상, 확장 광장 밖, 가장자리 마진 안쪽이다
+    // Then: 8개 이상, 8x7 footprint가 확장 광장 밖·마진 안쪽이다
     expect(sites.length).toBeGreaterThanOrEqual(TARGET);
     const expanded = expandRect(PLAZA.rect, HOUSE_MARGIN + 2);
     for (const site of sites) {
-      expect(pointInRect(site, expanded)).toBe(false);
-      expect(site.x).toBeGreaterThanOrEqual(AREA.x + HOUSE_MARGIN);
-      expect(site.x).toBeLessThanOrEqual(AREA.x + AREA.w - 1 - HOUSE_MARGIN);
-      expect(site.y).toBeGreaterThanOrEqual(AREA.y + HOUSE_MARGIN);
-      expect(site.y).toBeLessThanOrEqual(AREA.y + AREA.h - 1 - HOUSE_MARGIN);
+      const box = sketchSiteFootprint(site);
+      expect(rectsOverlap(box, expanded)).toBe(false);
+      expect(box.x).toBeGreaterThanOrEqual(AREA.x + HOUSE_MARGIN);
+      expect(box.y).toBeGreaterThanOrEqual(AREA.y + HOUSE_MARGIN);
+      expect(box.x + box.w).toBeLessThanOrEqual(AREA.x + AREA.w - HOUSE_MARGIN);
+      expect(box.y + box.h).toBeLessThanOrEqual(AREA.y + AREA.h - HOUSE_MARGIN);
     }
   });
 
@@ -52,22 +53,22 @@ describe("village sketch pre-pass", () => {
     for (const count of perX.values()) expect(count).toBeLessThanOrEqual(2);
   });
 
-  it("사이트끼리 8폭 집+마진이 겹치지 않게 떨어진다", () => {
+  it("사이트끼리 8x7+마진 AABB가 겹치지 않는다", () => {
     // Given: seed 7 스케치 결과
-    // When: 모든 쌍의 거리를 잰다
+    // When: 모든 쌍의 8x7 footprint를 잰다
     const sites = sketchHouseSites({ area: AREA, plaza: PLAZA, seed: 7, targetHouses: TARGET });
-    // Then: 중심 간격이 SKETCH_MIN_GAP 이상이다
+    // Then: 마진 확정한 AABB끼리 겹치지 않는다
     expect(sites.length).toBeGreaterThanOrEqual(TARGET);
     for (let i = 0; i < sites.length; i += 1) {
       for (let j = i + 1; j < sites.length; j += 1) {
-        const dx = sites[i]!.x - sites[j]!.x;
-        const dy = sites[i]!.y - sites[j]!.y;
-        expect(Math.hypot(dx, dy)).toBeGreaterThanOrEqual(SKETCH_MIN_GAP);
+        const a = expandRect(sketchSiteFootprint(sites[i]!), HOUSE_MARGIN);
+        const b = expandRect(sketchSiteFootprint(sites[j]!), HOUSE_MARGIN);
+        expect(rectsOverlap(a, b), `site ${i} vs ${j}`).toBe(false);
       }
     }
   });
 
-  it("대로 밴드 1칸 이내에는 사이트를 두지 않는다", () => {
+  it("대로 밴드에 8x7 footprint가 닿지 않는다", () => {
     // Given: 동서대로 행 30·남북대로 열 32
     // When: 대로를 넘겨 스케치한다
     const sites = sketchHouseSites({
@@ -77,11 +78,13 @@ describe("village sketch pre-pass", () => {
       targetHouses: TARGET,
       boulevard: { ewRow: 30, nsCol: 32 },
     });
-    // Then: 대로 중심 1칸 이내에 사이트가 없다
+    // Then: 8x7 footprint가 어느 대로 밴드와도 겹치지 않는다
     expect(sites.length).toBeGreaterThanOrEqual(TARGET);
     for (const site of sites) {
-      expect(Math.abs(site.y - 30) <= 1).toBe(false);
-      expect(Math.abs(site.x - 32) <= 1).toBe(false);
+      const box = sketchSiteFootprint(site);
+      const hitsEw = box.y <= 31 && box.y + box.h - 1 >= 29;
+      const hitsNs = box.x <= 33 && box.x + box.w - 1 >= 31;
+      expect(hitsEw || hitsNs).toBe(false);
     }
   });
 });

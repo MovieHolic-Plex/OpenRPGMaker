@@ -80,15 +80,20 @@ describe("village cross-road fix", () => {
     for (const seed of [0, 1, 2, 3, 7, 42]) {
       const routes = villageArteryRoutes(AREA, PLAZA, seed, 0.5);
       const branchIndex = ((seed % 4) + 4) % 4;
-      // Then: 비분기는 5점, 분기는 4점 이상. 내부 세 점은 한 직선에 있지 않다
+      // Then: 비분기는 5점, 분기는 4점. 실제 세 정점은 한 직선에 있지 않다
       for (let index = 0; index < routes.length; index += 1) {
         const route = routes[index]!;
-        expect(route.length).toBeGreaterThanOrEqual(index === branchIndex ? 4 : 5);
-        const interior = route.slice(1, -1);
-        if (interior.length < 3) continue;
-        const [a, b, c] = interior;
-        const cross = (b!.x - a!.x) * (c!.y - b!.y) - (b!.y - a!.y) * (c!.x - b!.x);
-        expect(cross, `seed=${seed} route=${index}`).not.toBe(0);
+        if (index === branchIndex) {
+          expect(route.length).toBeGreaterThanOrEqual(4);
+          const [a, b, c] = route.slice(1);
+          const cross = (b!.x - a!.x) * (c!.y - b!.y) - (b!.y - a!.y) * (c!.x - b!.x);
+          expect(cross, `seed=${seed} branch`).not.toBe(0);
+        } else {
+          expect(route.length).toBeGreaterThanOrEqual(5);
+          const [a, b, c] = route.slice(1, -1);
+          const cross = (b!.x - a!.x) * (c!.y - b!.y) - (b!.y - a!.y) * (c!.x - b!.x);
+          expect(cross, `seed=${seed} route=${index}`).not.toBe(0);
+        }
       }
     }
   });

@@ -31,11 +31,19 @@ export type SketchHouseSitesArgs = {
   readonly boulevard?: VillageSketchBoulevard | null;
 };
 
-/** 8폭 집 + HOUSE_MARGIN 2 — 같은 행에서 canPlaceHouse가 통과하는 최소 중심 간격. */
-export const SKETCH_MIN_GAP = 10;
-const SKETCH_FOOTPRINT_W = 8;
-const SKETCH_FOOTPRINT_H = 7;
-const SKETCH_FILL_ROUNDS = 4;
+/** 스케치 후보의 근사 집 footprint — canPlaceHouse와 같은 8×7 + HOUSE_MARGIN 규칙으로 겹침을 잰다. */
+export const SKETCH_FOOTPRINT_W = 8;
+export const SKETCH_FOOTPRINT_H = 7;
+
+export function sketchSiteFootprint(site: Point): Rect {
+  return {
+    x: site.x - Math.floor(SKETCH_FOOTPRINT_W / 2),
+    y: site.y,
+    w: SKETCH_FOOTPRINT_W,
+    h: SKETCH_FOOTPRINT_H,
+  };
+}
+const SKETCH_FILL_ROUNDS = 8;
 const SKETCH_FILL_SPREAD = 6;
 
 export function sketchHouseSites(args: SketchHouseSitesArgs): readonly VillageSketchSite[] {
@@ -58,26 +66,28 @@ export function sketchHouseSites(args: SketchHouseSitesArgs): readonly VillageSk
   };
   const sites: VillageSketchSite[] = [];
   const seen = new Set<string>();
-  const farEnough = (point: Point): boolean =>
-    sites.every((site) => Math.hypot(site.x - point.x, site.y - point.y) >= SKETCH_MIN_GAP);
+  const farEnough = (point: Point): boolean => {
+    const box = expandRect(sketchSiteFootprint(point), HOUSE_MARGIN);
+    return sites.every((site) => !rectsOverlap(box, expandRect(sketchSiteFootprint(site), HOUSE_MARGIN)));
+  };
   const add = (point: Point): void => {
     const key = `${point.x},${point.y}`;
     if (seen.has(key) || !accepts(point) || !farEnough(point)) return;
     seen.add(key);
     sites.push({ x: point.x, y: point.y });
   };
-  const scattered = poissonScatter(bounds, Math.max(24, target * 3), SKETCH_MIN_GAP, rng);
+  const scattered = poissonScatter(bounds, Math.max(64, target * 8), 0, rng);
   for (const point of scattered.points) add(point);
   for (let round = 0; round < SKETCH_FILL_ROUNDS && sites.length < target; round += 1) {
     const filled = clusterScatter(
       bounds,
       quadrantAnchors(args.area, rng),
-      Math.max(target * 2, 16),
+      Math.max(target * 4, 32),
       SKETCH_FILL_SPREAD,
       rng,
     );
     for (const point of filled) {
-      if (sites.length >= Math.max(target * 2, 12)) break;
+      if (sites.length >= Math.max(target * 3, 24)) break;
       add(point);
     }
   }
@@ -85,12 +95,7 @@ export function sketchHouseSites(args: SketchHouseSitesArgs): readonly VillageSk
 }
 
 function footprintAt(point: Point): Rect {
-  return {
-    x: point.x - Math.floor(SKETCH_FOOTPRINT_W / 2),
-    y: point.y,
-    w: SKETCH_FOOTPRINT_W,
-    h: SKETCH_FOOTPRINT_H,
-  };
+  return sketchSiteFootprint(point);
 }
 
 function quadrantAnchors(area: Rect, rng: Rng): readonly Point[] {
