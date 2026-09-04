@@ -24,6 +24,9 @@ const YARD_PROPS = new Set([349, 350, 351, 352, 327, 328, 288, 348, 237, 202, 20
 const WINDOWS = new Set([85, 87]);
 const DOOR_TOP = 116;
 const DOOR_BOTTOM = 146;
+// 경작지(밭고랑+새싹) 126 템플릿 블록 — templateSurfaceTiles(FARMLAND_TILE) 전개값.
+// 조경(dressVillageLandscape)이 paintBlob 성형 후 찍는 variant도 같은 집합 안이다.
+const FARMLAND = new Set([187, 157, 217, 186, 188, 156, 158, 216, 218, 126, 128]);
 
 export type FixLayer = "plan" | "build" | "spec";
 
@@ -49,6 +52,8 @@ export interface VillageLookReport {
     readonly dirtCells: number;
     readonly waterCells: number;
     readonly treeCells: number;
+    /** 경작지(126 템플릿 블록) 칸 수 — farm 랜드마크 게이트용 */
+    readonly farmlandCells: number;
     /** 활엽수 2×2 군락 개수(강촌 숲 품질 게이트) */
     readonly tree2x2Clusters: number;
     readonly fenceCells: number;
@@ -419,6 +424,24 @@ export function evaluateVillageLook(input: EvaluateVillageInput): VillageLookRep
         lookScore -= 0.12;
       }
     }
+    // farm 필수 판정(2026-09-04) — 빌더 게이트가 커버 못 하는 대형맵 조경 영역을 look에서 지적한다.
+    // 대형맵(대로 모드)에서만 조경이 밭 지구를 깔므로 소형맵은 평가에서 지적만 한다.
+    if (req.landmarks.includes("farm")) {
+      const okFarm = metrics.farmlandCells >= 20;
+      requirementsMet.push({ kind: "farm", ok: okFarm, detail: `경작지 ${metrics.farmlandCells}칸 (필요≥20)` });
+      if (!okFarm) {
+        issues.push(`필수 스펙 실패: 농지/경작지 부족 (${metrics.farmlandCells}<20) — 쿼리「${req.query}」`);
+        fixes.push({
+          layer: "build",
+          action: "place_farmland",
+          hint: "대형 맵(대로 모드)에서 조경 밭 지구가 깔리도록 width·height 72+ 또는 bounds 확대",
+        });
+        lookScore -= 0.15;
+        themeMatch = "weak";
+      } else {
+        lookScore += 0.08;
+      }
+    }
     if (requirementsMet.every((r) => r.ok) && req.landmarks.length > 0) {
       themeMatch = themeMatch === "weak" ? "ok" : "strong";
       lookScore += 0.05;
@@ -575,6 +598,32 @@ export function countTreeCells(map: GameMap, area?: VillageCountArea): number {
   return count;
 }
 
+/** 타일 실측 장터 소품 카운트 — YARD_PROPS 상단 타일과 동일 판정. */
+export function countMarketCells(map: GameMap, area?: VillageCountArea): number {
+  const [x0, y0, x1, y1] = countBounds(map, area);
+  let count = 0;
+  for (let y = y0; y < y1; y += 1) {
+    for (let x = x0; x < x1; x += 1) {
+      const upper = map.upperTiles[y * map.width + x] ?? TILE.EMPTY;
+      if (YARD_PROPS.has(upper)) count += 1;
+    }
+  }
+  return count;
+}
+
+/** 타일 실측 경작지 카운트 — 126 템플릿 블록 전개값과 동일 판정. */
+export function countFarmlandCells(map: GameMap, area?: VillageCountArea): number {
+  const [x0, y0, x1, y1] = countBounds(map, area);
+  let count = 0;
+  for (let y = y0; y < y1; y += 1) {
+    for (let x = x0; x < x1; x += 1) {
+      const lower = map.lowerTiles[y * map.width + x] ?? TILE.EMPTY;
+      if (FARMLAND.has(lower)) count += 1;
+    }
+  }
+  return count;
+}
+
 function collectMetrics(map: GameMap) {
   let upperOccupied = 0;
   let roadCells = 0;
@@ -582,6 +631,7 @@ function collectMetrics(map: GameMap) {
   let dirtCells = 0;
   let waterCells = 0;
   let treeCells = 0;
+  let farmlandCells = 0;
   let interiorTreeCells = 0;
   let fenceCells = 0;
   let propCells = 0;
@@ -612,6 +662,9 @@ function collectMetrics(map: GameMap) {
       if (upper !== TILE.EMPTY && upper !== -1) upperOccupied += 1;
       if (isWaterChipsetTile(lower) || isLakeAutotileTile(lower) || lower === TILE.WATER) {
         waterCells += 1;
+      }
+      if (FARMLAND.has(lower)) {
+        farmlandCells += 1;
       }
       if (SAND.has(lower)) {
         sandCells += 1;
@@ -662,6 +715,7 @@ function collectMetrics(map: GameMap) {
     dirtCells,
     waterCells,
     treeCells,
+    farmlandCells,
     tree2x2Clusters,
     fenceCells,
     propCells,
@@ -791,6 +845,7 @@ function emptyFail(message: string, attempt: number, maxAttempts: number): Villa
       dirtCells: 0,
       waterCells: 0,
       treeCells: 0,
+      farmlandCells: 0,
       tree2x2Clusters: 0,
       fenceCells: 0,
       propCells: 0,

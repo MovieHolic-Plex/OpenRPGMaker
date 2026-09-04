@@ -68,6 +68,22 @@ DB 값 하나가 두 경로를 지배한다. 세션 경로에서 나무 수가 �
 5. 탭에 컨트롤을 붙인다. 비율은 `ratioField` 로 **%** 로 보여준다 — `0.14` 는 저자에게
    아무 뜻도 전달하지 않는다.
 
+## 필수 랜드마크 하드 게이트 (2026-09-04)
+
+첫 plan의 필수요소는 warning이 아니라 실패다. 실측(타일 카운트) 기준이며 자기신고가 아니다:
+
+| 랜드마크 | 빌더 게이트 | look 평가 |
+|---|---|---|
+| river/lake/harbor | 수역 ≥30/25칸 (`landmark-water-missing`) | 동일 |
+| forest | 나무 ≥15칸 (`landmark-forest-missing`) | 나무 ≥20칸 + 2×2군락 ≥3 |
+| market | 장터 소품 ≥3칸 (`landmark-market-missing`, decor 켜짐) | 광장소품 ≥3 또는 소품 ≥10 |
+| farm | 빌더 제외 — 조경(대형맵 전용)에 묶여 기본 50×50 달성 불가 | 경작지 ≥20칸 지적 + `place_farmland` fix |
+| 금지선 | 직선 폴백에도 집/수역 침범 잔존이면 실패 (`road-forbidden-residual`) | — |
+
+계수 정본: `countWaterCells`·`countTreeCells`·`countMarketCells`·`countFarmlandCells`
+(`villageEvaluate.ts` — 빌더와 평가가 공유). farm 제외 사유: 농촌= farm+forest 콤보에서
+forest 밴드 나무가 밭 자리를 막아 80×80에서도 경작지 0칸이 실측됐다.
+
 ## 검증
 
 ```bash
