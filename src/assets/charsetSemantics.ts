@@ -175,7 +175,7 @@ export const CHARSET_SEMANTICS: readonly CharsetSemanticEntry[] = [
     [4, "소", ["소", "동물", "가축"], { gender: "none" }],
     [5, "말", ["말", "동물", "가축"], { gender: "none" }],
     [6, "호랑이", ["호랑이", "동물", "야생"], { gender: "none" }],
-    [7, "고슴도치", ["고슴도치", "동물"], { gender: "none" }],
+    [7, "사자", ["사자", "동물", "야생"], { gender: "none" }],
   ]),
 
   // tex_easyrpg_charset_object1 — 문/상자류.

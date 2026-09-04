@@ -1,7 +1,12 @@
 // editor/tools/village/npcs.ts
 // 마을 NPC — 이름/대사 오버라이드, 배치(문 앞/광장), 스케줄, 그래픽 시드 셔플.
 
-import { findCharsetSemantic, type CharsetSemanticEntry } from "@/assets/charsetSemantics";
+import {
+  applyCharsetLabelOverrides,
+  CHARSET_SEMANTICS,
+  findCharsetSemantic,
+  type CharsetSemanticEntry,
+} from "@/assets/charsetSemantics";
 import { isPassable } from "@/project/collision";
 import { TILE } from "@/project/defaults/constants";
 import type { GameMap, Project } from "@/project/types";
@@ -64,7 +69,7 @@ export function placeVillageNpcs(
       mapId: map.id,
     });
   }
-  const graphics = seededVillageNpcGraphics(seed);
+  const graphics = seededVillageNpcGraphics(seed, draft);
   const workAnchors = villageNpcWorkAnchors(area, plaza, seed);
   for (let index = 0; index < placements.length; index += 1) {
     const point = placements[index] as Point;
@@ -172,9 +177,26 @@ function villageNpcActivity(index: number): string {
   return activities[index % activities.length]!;
 }
 
-function seededVillageNpcGraphics(seed: number): readonly CharsetSemanticEntry[] {
-  const entries = VILLAGE_NPC_GRAPHIC_REFS.map(([textureKey, characterIndex]) => findCharsetSemantic(textureKey, characterIndex))
+function seededVillageNpcGraphics(seed: number, draft: Project): readonly CharsetSemanticEntry[] {
+  const catalog = applyCharsetLabelOverrides(CHARSET_SEMANTICS, draft.charsetLabels);
+  const byKey = new Map<string, CharsetSemanticEntry>();
+  for (const entry of catalog) byKey.set(`${entry.textureKey}#${entry.characterIndex}`, entry);
+  const fromRefs = VILLAGE_NPC_GRAPHIC_REFS.map(([textureKey, characterIndex]) => byKey.get(`${textureKey}#${characterIndex}`) ?? findCharsetSemantic(textureKey, characterIndex))
     .filter((entry): entry is CharsetSemanticEntry => entry !== undefined);
+  const taught: CharsetSemanticEntry[] = [];
+  for (const override of draft.charsetLabels ?? []) {
+    if (!override.label.trim()) continue;
+    const entry = byKey.get(`${override.textureKey}#${override.characterIndex}`);
+    if (entry) taught.push(entry);
+  }
+  const seen = new Set<string>();
+  const entries: CharsetSemanticEntry[] = [];
+  for (const entry of [...taught, ...fromRefs]) {
+    const key = `${entry.textureKey}#${entry.characterIndex}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    entries.push(entry);
+  }
   if (entries.length === 0) throw new Error("마을 NPC 그래픽 후보가 비어 있습니다.");
   const rng = mulberry32((seed ^ 0x6d2b79f5) >>> 0);
   const offset = Math.floor(rng() * entries.length);

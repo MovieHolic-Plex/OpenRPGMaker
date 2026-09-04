@@ -46,7 +46,7 @@ export function buildFollowerPresets(): readonly FollowerPreset[] {
   const base: FollowerPreset[] = [
     {
       // id 는 즐겨찾기/테스트 계약이라 고정. 번들 charset 에 개 스프라이트가 없어서
-      // (tex_easyrpg_charset_animal = 주황 고양이/검은 고양이/닭/양/소/말/호랑이/고슴도치)
+      // (tex_easyrpg_charset_animal = 주황 고양이/검은 고양이/닭/양/소/말/호랑이/사자)
       // 이 칩은 검은 고양이로 정정했다. 이전에는 "강아지" 라벨이 붙은 채 고양이 프리셋과
       // 똑같은 0번 스프라이트를 렌더했다(pattern 을 원시 프레임으로 넣은 탓).
       id: "preset:pet-dog",
