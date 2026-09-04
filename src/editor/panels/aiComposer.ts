@@ -24,7 +24,9 @@
 // 뜨므로 확인·삭제도 같은 표면에 있어야 한다. 팝오버 기계의 한 종류로 들어 배타적 열림·바깥 클릭·
 // Escape 를 공짜로 얻는다.
 
+import { AUTONOMY_LEVELS, type AutonomyLevel } from "@/ai/autonomyLevels";
 import { COMPOSER_MODES, COMPOSER_MODE_LABEL, type ComposerMode } from "@/ai/composerMode";
+import type { AiConfig } from "@/ai/llmClient";
 import { el } from "@/util/dom";
 import { deckIcon } from "./aiDeckIcons";
 
@@ -34,6 +36,19 @@ export type ComposerPopover = "suggest" | "menu" | "preference" | "context";
 const POPOVER_KINDS = ["suggest", "menu", "preference", "context"] as const;
 
 export { COMPOSER_MODES, COMPOSER_MODE_LABEL, type ComposerMode };
+
+export type ComposerReasoningEffort = NonNullable<AiConfig["reasoningEffort"]>;
+
+/** 추론 강도 선택지 — 설정 모달(ai-config-reasoning)과 같은 값·라벨. */
+export const COMPOSER_REASONING_OPTIONS: readonly {
+  readonly id: ComposerReasoningEffort;
+  readonly label: string;
+}[] = [
+  { id: "off", label: "끔" },
+  { id: "low", label: "낮음" },
+  { id: "medium", label: "보통" },
+  { id: "high", label: "높음" },
+];
 
 export interface ComposerElements {
   /** 패널에 마운트되는 바 루트(기존 `.ai-command-bar` testid 유지). */
@@ -52,6 +67,11 @@ export interface ComposerElements {
   /** 모드 세그먼트. `modeChips` 를 주지 않았으면 null. */
   readonly modeSegment: HTMLElement | null;
   readonly setMode: (mode: ComposerMode) => void;
+  /** 자율성 셀렉트. `effortChips` 를 주지 않았으면 null. */
+  readonly autonomySelect: HTMLSelectElement | null;
+  /** 추론 강도 셀렉트. `effortChips` 를 주지 않았으면 null. */
+  readonly reasoningSelect: HTMLSelectElement | null;
+  readonly syncEffort: (autonomy: AutonomyLevel, reasoning: ComposerReasoningEffort) => void;
   readonly setModelLabel: (label: string | null) => void;
   readonly openPopover: (kind: ComposerPopover | null) => void;
   readonly openKind: () => ComposerPopover | null;
@@ -96,6 +116,16 @@ export interface ComposerOptions {
   readonly isInside?: (target: Node) => boolean;
   /** 모드 세그먼트(지시/질문/계획). 주지 않으면 만들지 않는다. */
   readonly modeChips?: { readonly initial: ComposerMode; readonly onChange: (mode: ComposerMode) => void };
+  /**
+   * 자율성·추론 강도 셀렉트(지시줄 바로 선택). 주지 않으면 만들지 않는다.
+   * 값의 저장·세션 반영은 호출자(패널)가 맡는다 — 컴포저는 선택지만 그린다.
+   */
+  readonly effortChips?: {
+    readonly initialAutonomy: AutonomyLevel;
+    readonly initialReasoning: ComposerReasoningEffort;
+    readonly onAutonomyChange: (level: AutonomyLevel) => void;
+    readonly onReasoningChange: (effort: ComposerReasoningEffort) => void;
+  };
   /** 모델 칩 초기 라벨. null/미지정이면 숨긴 채 만든다(표준 이상 모드에서 패널이 채운다). */
   readonly modelLabel?: string | null;
 }
@@ -235,6 +265,66 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     paintMode();
   }
 
+  // ── 자율성·추론 강도 셀렉트 ──
+  // 설정 모달을 열지 않고 지시줄에서 바로 고른다. 값의 저장·세션 반영은 호출자가
+  // 맡고, 여기서는 같은 값 어휘(AUTONOMY_LEVELS·COMPOSER_REASONING_OPTIONS)만 공유한다.
+  let autonomyLevel: AutonomyLevel = options.effortChips?.initialAutonomy ?? "balanced";
+  let reasoningEffort: ComposerReasoningEffort = options.effortChips?.initialReasoning ?? "low";
+  const autonomySelect = options.effortChips
+    ? el("select", {
+      class: "ai-composer-effort-select",
+      attrs: { title: "자율성 — AI가 스스로 판단하고 실행하는 정도", "aria-label": "자율성" },
+      dataset: { testid: "ai-composer-autonomy" },
+      children: AUTONOMY_LEVELS.map((level) =>
+        el("option", { attrs: { value: level.id }, text: level.label }),
+      ),
+    }) as HTMLSelectElement
+    : null;
+  const reasoningSelect = options.effortChips
+    ? el("select", {
+      class: "ai-composer-effort-select",
+      attrs: { title: "추론 강도 — 답이나 도구 사용 전에 추론하는 강도", "aria-label": "추론 강도" },
+      dataset: { testid: "ai-composer-reasoning" },
+      children: COMPOSER_REASONING_OPTIONS.map((option) =>
+        el("option", { attrs: { value: option.id }, text: option.label }),
+      ),
+    }) as HTMLSelectElement
+    : null;
+  const paintEffort = (): void => {
+    if (autonomySelect) autonomySelect.value = autonomyLevel;
+    if (reasoningSelect) reasoningSelect.value = reasoningEffort;
+  };
+  const syncEffort = (autonomy: AutonomyLevel, reasoning: ComposerReasoningEffort): void => {
+    autonomyLevel = autonomy;
+    reasoningEffort = reasoning;
+    paintEffort();
+  };
+  if (autonomySelect) {
+    const onChange = options.effortChips?.onAutonomyChange;
+    autonomySelect.addEventListener("change", () => {
+      const next = autonomySelect.value as AutonomyLevel;
+      if (!AUTONOMY_LEVELS.some((level) => level.id === next)) {
+        paintEffort();
+        return;
+      }
+      autonomyLevel = next;
+      onChange?.(next);
+    });
+  }
+  if (reasoningSelect) {
+    const onChange = options.effortChips?.onReasoningChange;
+    reasoningSelect.addEventListener("change", () => {
+      const next = reasoningSelect.value as ComposerReasoningEffort;
+      if (!COMPOSER_REASONING_OPTIONS.some((option) => option.id === next)) {
+        paintEffort();
+        return;
+      }
+      reasoningEffort = next;
+      onChange?.(next);
+    });
+  }
+  paintEffort();
+
   // ── 모델 칩 ──
   const modelChip = el("span", { class: "ai-composer-model", dataset: { testid: "ai-composer-model" } });
   const setModelLabel = (label: string | null): void => {
@@ -253,6 +343,8 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
         class: "ai-composer-actions-lead",
         children: [
           ...(modeSegment ? [modeSegment] : []),
+          ...(autonomySelect ? [autonomySelect] : []),
+          ...(reasoningSelect ? [reasoningSelect] : []),
           options.undoAppliedButton,
           options.contextChips,
           options.queueIndicator,
@@ -365,6 +457,9 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     preferencePopover,
     modeSegment,
     setMode,
+    autonomySelect,
+    reasoningSelect,
+    syncEffort,
     setModelLabel,
     openPopover,
     openKind: () => openState,

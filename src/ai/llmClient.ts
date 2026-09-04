@@ -48,8 +48,9 @@ export interface AiConfig {
   maxToolCalls: number;
   maxTokens: number;
   reasoningEffort?: "off" | "low" | "medium" | "high";
-  // 자율성 다이얼(설정 모달·컴포저 공용). reasoningEffort·agentMode·예산의 원천 — 파생 노브의
-  // 명시값과 충돌하면 다이얼이 이긴다(autonomyLevels.resolveAutonomy). 미지정(구형 blob/
+  // 자율성 다이얼(설정 모달·컴포저 공용). agentMode·예산·planOnly 의 원천 — 다이얼 선택 시
+  // 호출자가 resolveAutonomy 프리셋을 reasoningEffort·agentMode 에 함께 저장하므로, 세션은
+  // reasoningEffort 수동값을 그대로 쓴다(다이얼 덮어쓰기 없음). 미지정(구형 blob/
   // 직접 주입 config)은 종래 동작 그대로 — 하네스는 필드가 있을 때만 레벨을 적용한다.
   autonomyLevel?: AutonomyLevel;
   // 작업 모드: "auto" = 플래너(작업 분해) 라운드를 모델 구성과 무관하게 상시 동작,

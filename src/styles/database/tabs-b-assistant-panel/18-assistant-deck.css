@@ -910,6 +910,20 @@
   white-space: nowrap;
 }
 
+/* 지시줄 effort 셀렉트(자율성·추론 강도) — 모드 세그먼트 옆 28px 한 줄. */
+:is(.ai-deck, .ai-studio-composer) .ai-composer-effort-select {
+  background: transparent;
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  color: var(--text-2);
+  flex: 0 0 auto;
+  font: inherit;
+  font-size: 12px;
+  height: 28px;
+  max-width: 76px;
+  padding: 0 4px;
+}
+
 /* 모델 칩 */
 .ai-composer-model {
   align-items: center;

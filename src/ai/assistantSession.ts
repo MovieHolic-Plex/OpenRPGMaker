@@ -2739,6 +2739,7 @@ export class AssistantSession {
   private orchestrationEnabled(): boolean {
     // 자율성 다이얼이 명시됐으면 그 agentMode 가 이긴다 — agentMode 단독 설정 UI 가 없고
     // 다이얼이 플래너 모드의 정본이다. 미지정(구형 blob/직접 주입)은 종래 판정 그대로.
+    // effort 는 세션이 덮지 않는다 — 다이얼 선택 시 호출자가 이미 저장에 반영했다.
     const levelMode = this.autonomy()?.agentMode;
     if (levelMode === "auto") return true;
     // 다이얼 confirm(planOnly)은 플래너를 항상 돌려야 계획만 세우고 멈출 수 있다.
@@ -2752,10 +2753,11 @@ export class AssistantSession {
   private phaseConfig(phase: AssistantPhase): AiConfig {
     // 실행 단계는 configForLiteModel 이 reasoning 을 off 로 끈다. 계획·검수 단계는 사용자가
     // 고른 reasoningEffort 를 그대로 쓴다(모델 이름으로 effort 를 깎던 공급자 정책은 제거됨).
-    // 다이얼 명시 시 계획·검수 단계는 레벨의 effort 로 덮는다 — 실행 단계는 그대로 off.
+    // 다이얼은 더 이상 effort 를 덮어쓰지 않는다 — 저장된 수동값이 이긴다. 다이얼 선택 시
+    // 호출자(설정 모달·컴포저)가 resolveAutonomy 프리셋을 reasoningEffort 에 함께 저장하므로
+    // 별도 덮개가 없어도 레벨별 effort 가 유지된다. 다이얼이 정하는 것은 agentMode·예산·planOnly다.
     if (phase === "execute") return configForLiteModel(this.config);
-    const effort = this.autonomy()?.reasoningEffort;
-    return effort ? { ...this.config, reasoningEffort: effort } : this.config;
+    return this.config;
   }
 
   /** 사용자 텍스트 + 뷰포트 블록 + (브라우저) 뷰포트 맵 이미지. */
