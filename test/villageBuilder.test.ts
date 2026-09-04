@@ -925,10 +925,10 @@ describe("exterior footprint area (wing-union)", () => {
     expect(exteriorFootprintArea("custom-db-authored", { w: 9, h: 5 })).toBe(45);
   });
 
-  it("housePlans t-hall shop interior scale is cottage3 from union 60 not mansion bbox 80", () => {
+  it("housePlans t-hall workshop interior scale is cottage3 from union 60 not mansion bbox 80", () => {
     const ctx = { project: createEmptyToolProject() };
     const result = runTool(ctx, "build_village", {
-      name: "T홀 상점 마을",
+      name: "T홀 공방 마을",
       width: 48,
       height: 48,
       seed: 77,
@@ -937,7 +937,9 @@ describe("exterior footprint area (wing-union)", () => {
       fences: false,
       decor: false,
       housePlans: [
-        { kitId: "blue-stone", templateId: "t-hall", program: "shop" },
+        // workshop takes the area path (no program short-circuit), so this pins
+        // union 60 -> cottage3 vs bbox 80 -> mansion.
+        { kitId: "blue-stone", templateId: "t-hall", program: "workshop" },
         { kitId: "amber-wood", yard: ["pot"] },
         { kitId: "slate-wood", yard: ["jar"] },
         { kitId: "bright-plaster", yard: ["flowers"] },
@@ -948,7 +950,7 @@ describe("exterior footprint area (wing-union)", () => {
       houses?: Array<{ templateId?: string; interiorScale?: string; interiorProgram?: string }>;
     };
     expect(data.houses?.[0]?.templateId).toBe("t-hall");
-    expect(data.houses?.[0]?.interiorProgram).toBe("shop");
+    expect(data.houses?.[0]?.interiorProgram).toBe("workshop");
     expect(data.houses?.[0]?.interiorScale).toBe("cottage3");
   });
 });

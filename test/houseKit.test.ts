@@ -499,7 +499,13 @@ describe("house interior — L cottage (reference plan)", () => {
 
   it("maps catalog template families to interior scale", () => {
     expect(resolveHouseInteriorScale({ templateId: "l" }, 1)).toBe("cottage-l");
+    // L-family keeps the L plan even for shop/inn (branch order: family before program).
+    expect(resolveHouseInteriorScale({ stories: 1, templateId: "l-mirror", program: "shop" }, 1)).toBe("cottage-l");
+    expect(resolveHouseInteriorScale({ stories: 1, templateId: "l-wide", program: "inn" }, 1)).toBe("cottage-l");
+    expect(resolveHouseInteriorScale({ stories: 1, templateId: "l-deep" }, 1)).toBe("cottage-l");
     expect(resolveHouseInteriorScale({ templateId: "cottage-low" }, 1)).toBe("cottage2");
+    expect(resolveHouseInteriorScale({ templateId: "hut-low" }, 1)).toBe("cottage2");
+    expect(resolveHouseInteriorScale({ templateId: "barn-low" }, 1)).toBe("cottage2");
     expect(resolveHouseInteriorScale({ templateId: "rect-2f-slim" }, 1)).toBe("cottage3");
   });
 
