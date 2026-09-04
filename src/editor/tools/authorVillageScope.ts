@@ -32,6 +32,7 @@ export function restoreExistingTargetStart(
  * 광범위 변경은 경고 문자열로 돌려준다(호출자가 툴 결과 warnings 에 실어 보낸다).
  */
 export function assertVillageMutationScope(state: VillageFacadeState): readonly string[] {
+  assertLivedMapScope(state);
   const allowedAdded = allowedAddedMapIds(state);
   assertMapSetAndContents(state, allowedAdded);
   assertMapTree(state, allowedAdded);
@@ -39,6 +40,37 @@ export function assertVillageMutationScope(state: VillageFacadeState): readonly 
   assertProjectCore(state);
   assertTilesets(state);
   return unboundedExistingTargetWarnings(state);
+}
+
+/**
+ * 살아 있는 기존 맵의 전체 재포장 차단. 맵에 이미 저작 내용(비기본 타일·이벤트·문구가 아닌 이름)이
+ * 있으면 bounds 또는 fullMap:true 없이는 거부한다(village-requires-scope).
+ * 빈 맵은 그대로 전체 시공된다 — 새 마을 짓기가 기본 흐름이라서.
+ */
+function assertLivedMapScope(state: VillageFacadeState): void {
+  const { baseline, request } = state;
+  if (request.target.kind !== "existing") return;
+  if (request.target.bounds || request.target.fullMap === true) return;
+  const before = baseline.maps[request.target.mapId];
+  if (!before) return;
+  if (!isLivedMap(before)) return;
+  throw new ToolError(
+    `기존 맵 ${before.id}에 이미 저작 내용이 있어 전체 재시공이 거부됐습니다 — ` +
+      "일부만 손보려면 target.bounds 에 그 영역을, 맵 전체를 새로 깔려면 target.fullMap:true 를 지정하세요.",
+    { code: "village-requires-scope", mapId: before.id },
+  );
+}
+
+function isLivedMap(map: GameMap): boolean {
+  if (map.events.length > 0) return true;
+  // 기본 풀(GRASS/EMPTY) 아닌 타일이 하나라도 있으면 손댄 맵이다.
+  for (let i = 0; i < map.lowerTiles.length; i += 1) {
+    if (map.lowerTiles[i] !== TILE.GRASS) return true;
+  }
+  for (let i = 0; i < map.upperTiles.length; i += 1) {
+    if (map.upperTiles[i] !== TILE.EMPTY) return true;
+  }
+  return false;
 }
 
 /**
@@ -92,15 +124,54 @@ function changedTileBounds(
 }
 
 function allowedAddedMapIds(state: VillageFacadeState): ReadonlySet<string> {
-  const { baseline, request, inspection } = state;
-  const ids = new Set(inspection.interiorMapIds);
-  if (request.target.kind === "new") ids.add(request.target.mapId);
-  for (const id of inspection.interiorMapIds) {
-    if (id === request.target.mapId || baseline.maps[id]) {
+  const { baseline, draft, request, inspection } = state;
+  // 독립 관측: 실제로 생긴 맵 집합은 베이스라인 diff에서 구한다 — 빌더 자기신고가 아니라.
+  // inspection.interiorMapIds에 있지만 diff에 없는 id는 빌더 보고 오류로 거부한다.
+  const actuallyAdded = new Set<string>();
+  for (const mapId of Object.keys(draft.maps)) {
+    if (!baseline.maps[mapId]) actuallyAdded.add(mapId);
+  }
+  const declared = new Set(inspection.interiorMapIds);
+  if (request.target.kind === "new") declared.add(request.target.mapId);
+  for (const id of actuallyAdded) {
+    if (id === request.target.mapId) continue;
+    // 실내 맵은 문 이벤트의 transfer 명령이 실제로 가리켜야 한다 — 그래야 "실내"다.
+    if (!declared.has(id) || !isLinkedInteriorMap(draft, request.target.mapId, id)) {
+      scopeError(`Village added an undeclared map: ${id}.`, id);
+    }
+  }
+  for (const id of declared) {
+    if (id === request.target.mapId) continue;
+    if (!actuallyAdded.has(id) && !baseline.maps[id]) {
+      scopeError(`Village declared a map it did not create: ${id}.`, id);
+    }
+    if (baseline.maps[id]) {
       scopeError(`Village declared a pre-existing map as an interior: ${id}.`, id);
     }
   }
+  const ids = new Set(declared);
+  for (const id of actuallyAdded) ids.add(id);
   return ids;
+}
+
+/** 타깃 맵의 문 이벤트 transfer 명령이 interiorId를 가리키는가. */
+function isLinkedInteriorMap(draft: Project, exteriorMapId: string, interiorMapId: string): boolean {
+  const exterior = draft.maps[exteriorMapId];
+  if (!exterior) return false;
+  for (const event of exterior.events) {
+    for (const page of event.pages ?? []) {
+      for (const command of page.commands ?? []) {
+        if (
+          typeof command === "object" && command !== null
+          && Reflect.get(command, "kind") === "transfer"
+          && Reflect.get(command, "mapId") === interiorMapId
+        ) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
 }
 
 function assertMapSetAndContents(state: VillageFacadeState, allowedAdded: ReadonlySet<string>): void {
@@ -285,7 +356,26 @@ function eventInMap(event: GameEvent, map: GameMap): boolean {
 }
 
 function same(left: unknown, right: unknown): boolean {
-  return JSON.stringify(left) === JSON.stringify(right);
+  return stableStringify(left) === stableStringify(right);
+}
+
+/**
+ * 키 순서에 흔들리지 않는 직렬화 — 스코프 검사용. JSON.stringify는 키 삽입 순서에 따라
+ * 같은 내용도 다르게 뱉어 거짓 스코프 위반을 만든다. undefined·함수 값은 JSON 규칙대로 생략.
+ * 순환 참조는 스코프 대상(project/map/event)에 없으므로 throw되면 그대로 실패가 맞다.
+ */
+function stableStringify(value: unknown): string {
+  if (value === null || typeof value !== "object") {
+    const encoded = JSON.stringify(value);
+    return encoded === undefined ? "undefined" : encoded;
+  }
+  if (Array.isArray(value)) {
+    return `[${value.map((entry) => stableStringify(entry)).join(",")}]`;
+  }
+  const record = value as Record<string, unknown>;
+  const keys = Object.keys(record).sort();
+  const body = keys.map((key) => `${JSON.stringify(key)}:${stableStringify(record[key])}`).join(",");
+  return `{${body}}`;
 }
 
 function scopeError(message: string, mapId?: string): never {

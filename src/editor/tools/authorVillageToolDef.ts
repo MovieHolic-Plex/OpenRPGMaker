@@ -1,4 +1,8 @@
 import { parseAuthorVillageRequest } from "@/editor/construction/parseVillageRequest";
+import type { AuthorVillageRequest } from "@/editor/construction/contracts";
+import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { isCombinedTownTileset } from "@/project/tilesetHarness/combinedTown";
+import type { Project } from "@/project/types";
 import { createDraft } from "./changeset";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { assertVillageMutationScope, restoreExistingTargetStart } from "./authorVillageScope";
@@ -17,7 +21,7 @@ import {
 } from "./villageBuilder";
 import { RECT_SCHEMA } from "./schemaShapes";
 import { villageTemplateCatalog } from "./village/authoringData";
-import { HOUSE_TEMPLATES } from "./village/constants";
+import { HOUSE_TEMPLATES, MIN_BOUNDS_SIZE } from "./village/constants";
 
 export type AuthorVillageDependencies = {
   readonly build: (project: Parameters<typeof buildVillageDomain>[0], args: VillageBuildDomainArgs) => ToolExecResult;
@@ -85,12 +89,15 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
             bounds: {
               ...RECT_SCHEMA,
               description:
-                "kind=\"existing\" 일 때 시공 범위. **생략하면 사용자가 보고 있는 화면(뷰포트) 중심의 영역에 짓고, "
-                + "뷰포트를 모를 때만 맵 전체를 재포장한다** — 손댈 영역이 정해진 요청이면 그 영역을 직접 지정하라. "
-                + "w/h 가 최소값(20)보다 작으면 거부되니 20 이상으로 넓혀 쓰거나 생략해 뷰포트에 맡길 것.",
+                "kind=\"existing\" 일 때 시공 범위. 생략하면 사용자가 보고 있는 화면(뷰포트) 중심의 영역에 짓고, "
+                + "뷰포트를 모를 때만 맵 전체를 재포장한다 — 손댈 영역이 정해진 요청이면 그 영역을 직접 지정하라. "
+                + "w/h 하한은 16이다(파서가 받는다). 단 16×16에는 집 1채+길이 빡빡해 시공 실패가 잦으니 "
+                + "뷰포트 기본 시공은 20×20 중심 사각형을 쓰고, bounds 없이 맵 전체를 새로 깔려면 fullMap:true — "
+                + "단 맵에 이미 내용이 있으면 필수다.",
             },
             plannedMap: {
               type: "object",
+              description: "선택. 생략하면 target 값으로 채운다. 주면 mapId·width·height가 target과 일치해야 한다.",
               properties: {
                 mapId: { type: "string" },
                 width: { type: "integer" },
@@ -103,7 +110,7 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
           required: ["kind", "mapId"],
           additionalProperties: false,
         },
-        houseCount: { type: "integer", minimum: 1, maximum: 32, description: "Requested exterior houses, 1-32 without clamping." },
+        houseCount: { type: "integer", minimum: 1, maximum: 32, description: "Requested exterior houses, 1-32 without clamping. best-effort도 4채 이하는 exact와 같다(하한 85%가 4 미만으로 안 내려간다)." },
         housePlans: {
           type: "array",
           description: "Optional per-house plans. Length must equal houseCount.",
@@ -122,10 +129,10 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
             additionalProperties: false,
           },
         },
-        countPolicy: { type: "string", enum: ["exact", "best-effort"] },
+        countPolicy: { type: "string", enum: ["exact", "best-effort"], description: "exact=정확히 houseCount, best-effort=85% 하한(4채 이하는 exact와 같음)." },
         groundTheme: { type: "string", enum: ["grass", "snow"], description: "Whole-settlement ground preset. theme remains descriptive." },
         settlementLayout: { type: "string", enum: ["plaza-ring", "street-grid", "clusters"] },
-        npcCount: { type: "integer", minimum: 0, maximum: 512, description: "Exact requested village NPC population." },
+        npcCount: { type: "integer", minimum: 0, maximum: 512, description: "Requested village NPC population. 하한 90%(최소 2명 관용)로 판정 — 1~2명 어긋남은 실패가 아니다." },
         residents: {
           type: "array",
           description:
@@ -159,6 +166,12 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
             + " 컨텍스트의 '마을 저작 데이터' 목록에 있는 id만 쓰고, 없으면 생략한다."
             + " 프리셋이 정한 길 폭·광장·마당·형태 후보가 코드 기본값을 대체한다.",
         },
+        fullMap: {
+          type: "boolean",
+          description:
+            "target.kind=\"existing\" + bounds 생략 + 맵에 이미 내용이 있을 때 전체 재시공 확인. "
+            + "빈 맵은 없이도 전체 시공, bounds가 있으면 불필요하다.",
+        },
       },
       required: ["target", "houseCount", "countPolicy"],
     },
@@ -172,6 +185,10 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
     run(draft, args): ToolExecResult {
       const normalized = normalizeUnknownHouseTemplates(args, knownTemplateIds(draft));
       const request = parseAuthorVillageRequest(normalized.args);
+      // 검증 후 변이: 맵 생성(createExactVillageMap)보다 먼저 타일셋·수용성을 검사한다.
+      // 기존 맵 타일셋이 combined_town이 아니면 시공 전에 거부 — 반쯤 지은 draft를 피한다.
+      assertTargetTilesetUsable(draft, request);
+      assertTargetCapacity(draft, request);
       const baseline = createDraft(draft);
       switch (request.target.kind) {
         case "existing":
@@ -205,3 +222,48 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
 }
 
 export const AUTHOR_VILLAGE_TOOL = createAuthorVillageTool();
+
+/**
+ * 변이 전 사전 검사 — 맵 생성·시공보다 먼저.
+ * - 타일셋: 기존 맵이 combined_town이 아니면 시공 전에 거부(village-tileset-mismatch).
+ *   새 맵은 createExactVillageMap이 DEFAULT_TILESET_ID로 만들므로 항상 통과.
+ * - 수용성: 시공 영역(bounds 또는 맵 전체)이 20×20 미만이면 거부(bounds-too-small/map-too-small).
+ *   집 슬롯 1열도 못 놓는 면적에 집 N채 요구가 오면 늦은 no-houses-built 대신 여기서 실패.
+ */
+function assertTargetTilesetUsable(draft: Project, request: AuthorVillageRequest): void {
+  if (request.target.kind !== "existing") return;
+  const map = draft.maps[request.target.mapId];
+  if (!map) return; // map-not-found는 기존 순서대로 뒤에서 처리한다.
+  const tileset = draft.tilesets?.[map.tilesetId];
+  if (!tileset || !isCombinedTownTileset(tileset)) {
+    throw new ToolError(
+      `author_village는 combined_town 칩셋(${DEFAULT_TILESET_ID}) 전용이다 — 이 맵의 타일셋: ${map.tilesetId}. ` +
+        "다른 타일 그림판에서는 문/울타리/돌마당 타일 id가 전부 다른 그림이 된다.",
+      { code: "village-tileset-mismatch", mapId: map.id },
+    );
+  }
+}
+
+function assertTargetCapacity(draft: Project, request: AuthorVillageRequest): void {
+  if (request.target.kind !== "existing") return;
+  const map = draft.maps[request.target.mapId];
+  if (!map) return;
+  const bounds = request.target.bounds;
+  // 새 맵 생성(createVillageMap 기본 50×50)과 달리 기존 맵은 있는 크기가 전부다 —
+  // 집 1채 슬롯(8+여백)도 안 나오는 면적이면 여기서 거부한다.
+  const w = bounds?.w ?? map.width;
+  const h = bounds?.h ?? map.height;
+  const area = { x: bounds?.x ?? 0, y: bounds?.y ?? 0, w, h };
+  if (area.x < 0 || area.y < 0 || area.x + area.w > map.width || area.y + area.h > map.height) {
+    throw new ToolError(
+      `author_village bounds가 맵 경계를 벗어납니다: ${area.x},${area.y},${area.w}x${area.h}`,
+      { code: "bounds-out-of-map", mapId: map.id },
+    );
+  }
+  if (w < MIN_BOUNDS_SIZE || h < MIN_BOUNDS_SIZE) {
+    throw new ToolError(
+      `author_village는 최소 ${MIN_BOUNDS_SIZE}x${MIN_BOUNDS_SIZE} 영역이 필요합니다: ${w}x${h}`,
+      { code: bounds ? "bounds-too-small" : "map-too-small", mapId: map.id },
+    );
+  }
+}

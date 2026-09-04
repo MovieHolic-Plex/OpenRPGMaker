@@ -1,3 +1,4 @@
+import { MIN_BOUNDS_SIZE } from "@/editor/tools/village/constants";
 import { isHouseKitId } from "@/editor/houseKit";
 import { ToolError } from "@/editor/tools/types";
 
@@ -26,9 +27,9 @@ import {
   type VillageSettlementLayout,
 } from "./contracts";
 
-const REQUEST_KEYS = ["target", "houseCount", "housePlans", "countPolicy", "groundTheme", "settlementLayout", "npcCount", "residents", "theme", "forestDensity", "seed", "interior", "presetId"] as const;
+const REQUEST_KEYS = ["target", "houseCount", "housePlans", "countPolicy", "groundTheme", "settlementLayout", "npcCount", "residents", "theme", "forestDensity", "seed", "interior", "presetId", "fullMap"] as const;
 const FOREST_DENSITIES = ["sparse", "normal", "dense", "impassable"] as const;
-const EXISTING_TARGET_KEYS = ["kind", "mapId", "bounds"] as const;
+const EXISTING_TARGET_KEYS = ["kind", "mapId", "bounds", "fullMap"] as const;
 const NEW_TARGET_KEYS = ["kind", "mapId", "name", "width", "height", "plannedMap"] as const;
 const HOUSE_PLAN_KEYS = ["kitId", "yard", "ownerName", "templateId", "program"] as const;
 const RESIDENT_KEYS = ["name", "role", "lines"] as const;
@@ -58,12 +59,13 @@ export function parseAuthorVillageRequest(value: unknown): AuthorVillageRequest 
   const groundTheme = parseOptionalEnum(request["groundTheme"], VILLAGE_GROUND_THEMES, "authorVillage.groundTheme");
   const settlementLayout = parseOptionalEnum(request["settlementLayout"], VILLAGE_SETTLEMENT_LAYOUTS, "authorVillage.settlementLayout");
   const npcCount = optionalInteger(request, "npcCount", "authorVillage");
+  const fullMap = optionalBoolean(request, "fullMap", "authorVillage");
   const residents = parseResidents(request["residents"]);
   if (npcCount !== undefined && (npcCount < 0 || npcCount > MAX_NPCS)) {
     throw new ToolError(`authorVillage.npcCount must be between 0 and ${MAX_NPCS}.`, { code: "invalid-args" });
   }
   return {
-    target: parseTarget(request["target"]),
+    target: withFullMap(parseTarget(request["target"]), fullMap),
     houseCount,
     countPolicy: parseCountPolicy(request["countPolicy"]),
     ...(housePlans === undefined ? {} : { housePlans }),
@@ -99,6 +101,11 @@ function parseOptionalEnum<T extends string>(value: unknown, values: readonly T[
   throw new ToolError(`${scope} must be one of ${values.join("|")}.`, { code: "invalid-args" });
 }
 
+function withFullMap(target: AuthorVillageTarget, fullMap: boolean | undefined): AuthorVillageTarget {
+  if (fullMap === undefined || target.kind !== "existing") return target;
+  return { ...target, fullMap };
+}
+
 function parseTarget(value: unknown): AuthorVillageTarget {
   const target = requireRecord(value, "authorVillage.target");
   const kind = requiredString(target, "kind", "authorVillage.target");
@@ -117,10 +124,12 @@ function parseExistingTarget(target: BoundaryRecord): AuthorVillageTarget {
   const bounds = target["bounds"] === undefined
     ? undefined
     : parseRect(target["bounds"], "authorVillage.target.bounds");
+  const fullMap = optionalBoolean(target, "fullMap", "authorVillage.target");
   return {
     kind: "existing",
     mapId: requiredString(target, "mapId", "authorVillage.target"),
     ...(bounds === undefined ? {} : { bounds }),
+    ...(fullMap === undefined ? {} : { fullMap }),
   };
 }
 
@@ -129,7 +138,11 @@ function parseNewTarget(target: BoundaryRecord): AuthorVillageTarget {
   const mapId = requiredString(target, "mapId", "authorVillage.target");
   const width = parseMapDimension(target, "width", "authorVillage.target");
   const height = parseMapDimension(target, "height", "authorVillage.target");
-  const plannedMap = parsePlannedMap(target["plannedMap"]);
+  // plannedMap은 선택 — 주면 mapId·width·height가 일치해야 하고, 생략하면 target 값으로 채운다.
+  // 모델이 같은 값을 두 번 에코하다 어긋나는 planned-map-mismatch가 잦해서 선택으로 바꿨다.
+  const plannedMap = target["plannedMap"] === undefined
+    ? { mapId, width, height }
+    : parsePlannedMap(target["plannedMap"]);
   if (plannedMap.mapId !== mapId || plannedMap.width !== width || plannedMap.height !== height) {
     throw new ToolError("authorVillage.target plannedMap must match its mapId and dimensions.", {
       code: "planned-map-mismatch",
@@ -171,8 +184,10 @@ function parseRect(value: unknown, scope: string): ConstructionRect {
   const y = requiredInteger(rect, "y", scope);
   const w = requiredInteger(rect, "w", scope);
   const h = requiredInteger(rect, "h", scope);
-  if (x < 0 || y < 0 || w < MIN_MAP_SIZE || h < MIN_MAP_SIZE) {
-    throw new ToolError(`${scope} requires x/y >= 0 and w/h >= 20.`, { code: "invalid-args" });
+  // 기존 맵 bounds 하한은 16 — 정확히 뷰포트(16×16) 크기의 선택도 받아야 한다.
+  // 새 맵 전체(MIN_MAP_SIZE 20)와는 다른 기준이다.
+  if (x < 0 || y < 0 || w < MIN_BOUNDS_SIZE || h < MIN_BOUNDS_SIZE) {
+    throw new ToolError(`${scope} requires x/y >= 0 and w/h >= ${MIN_BOUNDS_SIZE}.`, { code: "invalid-args" });
   }
   return { x, y, w, h };
 }

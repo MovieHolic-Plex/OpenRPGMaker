@@ -48,7 +48,9 @@ function finalizedConstruction(
     projectPersistence: inner.projectPersistence,
     target: inner.target,
     counts: inner.counts,
-    diff: toolDiff(result.diff),
+    // 내부 diff(파사드가 베이스라인에서 직접 계산)를 정본으로 쓴다.
+    // 러너 diff(result.diff)는 실행기 관측이라 비어 있을 수 있어 덮어쓰면 변경 내역이 증발한다.
+    diff: innerDiffOrFallback(inner.diff, result.diff),
     warnings: mergedWarnings([inner.warnings, result.warnings, result.diff?.warnings]),
   };
   if (pendingApproval) {
@@ -66,7 +68,20 @@ function failedData(args: Record<string, unknown>, result: ToolResult): AuthorVi
   const target = failedTarget(args);
   const requested = Number.isInteger(args.houseCount) ? Number(args.houseCount) : 1;
   const code = result.issues?.[0]?.code;
-  const failed = code === "village-inner-failed" || code === "tool-exception" || code === "tool-postprocess";
+  // failed = 빌더 내부 실패(재시도해도 같은 결과). blocked = 입력·환경 문제(고치고 재시도 가능).
+  // 개수 미달·QA 실패는 빌더가 할 수 있는 만큼 하고 실패한 것이라 failed — blocked로 두면
+  // UI가 "재시도 가능"으로 해석해 같은 실패를 반복한다.
+  const failed = code === "village-inner-failed"
+    || code === "tool-exception"
+    || code === "tool-postprocess"
+    || code === "village-count-shortfall"
+    || code === "village-population-shortfall"
+    || code === "village-qa-failed"
+    || code === "landmark-water-missing"
+    || code === "landmark-forest-missing"
+    || code === "landmark-market-missing"
+    || code === "road-forbidden-residual"
+    || code === "no-houses-built";
   const common = {
     requestedEntrypoint: "author_village" as const,
     canonicalRoute: "author_village" as const,
@@ -119,6 +134,22 @@ function failedTarget(args: Record<string, unknown>): { readonly kind: "existing
 
 function mergedWarnings(sources: readonly (readonly string[] | undefined)[]): readonly string[] {
   return [...new Set(sources.flatMap((source) => source ?? []))];
+}
+
+/** 내부 diff가 비어 있지 않으면(실제 쓰기 흔적) 그것을 쓰고, 비어 있을 때만 러너 diff로 폴백. */
+function innerDiffOrFallback(
+  inner: ConstructionDiffTotals,
+  runnerDiff: ChangeSummary | undefined,
+): ConstructionDiffTotals {
+  if (hasWriteTotals(inner)) return inner;
+  return toolDiff(runnerDiff);
+}
+
+function hasWriteTotals(diff: ConstructionDiffTotals): boolean {
+  return diff.tilesChanged + diff.eventsAdded + diff.eventsModified + diff.eventsRemoved + diff.mapsAdded
+    + diff.mapsRemoved + diff.dbRecordsChanged + diff.tilesetsChanged + diff.switchesAdded + diff.variablesAdded
+    + diff.worldEntitiesAdded + diff.worldEntitiesModified + diff.palettePresetsAdded + diff.palettePresetsModified
+    + diff.endingsChanged + (diff.mapPropertiesChanged ?? 0) > 0 || diff.sessionChanged || diff.systemChanged;
 }
 
 function toolDiff(diff: ChangeSummary | undefined): ConstructionDiffTotals {
