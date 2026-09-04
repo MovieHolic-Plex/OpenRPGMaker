@@ -9,16 +9,23 @@ import { CHIPSET_TILE_GROUPS } from "@/project/defaults/chipsetMapping";
 import { TILE } from "@/project/defaults/constants";
 import { isTreeCanopyTileId, isTreeTrunkTileId } from "@/project/tilesetHarness";
 import { resolveMaterialByLabel } from "@/project/tileVocabulary";
-import type { GameMap, Project } from "@/project/types";
+import type { AutotileGroup, GameMap, Project } from "@/project/types";
 import { mulberry32 } from "@/util/rng";
 import { forestCoverageTarget, type ForestDensity } from "./forestDensity";
 import { inMapBounds, reachableCells } from "./mapHelpers";
 import { placePropsOnDraft } from "./placePropsDomain";
 import { isPathSurfaceTile, protectedEventCells } from "./placementTools";
 import { tilePassability } from "@/project/collision";
-import { isLakeAutotileTile } from "@/project/defaults/lakeAutotile";
+import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
+import { autotileGroupsForTileset, DEFAULT_UNDERGROWTH_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
+import { isLakeAutotileTile, LAKE_AUTOTILE_TILE } from "@/project/defaults/lakeAutotile";
 
 const TALL_GRASS_TILES: readonly number[] = CHIPSET_TILE_GROUPS.tallGrass;
+const FOREST_FLOOR_LOWER = new Set<number>([
+  TILE.GRASS,
+  ...CHIPSET_TILE_GROUPS.grassGround,
+  ...TALL_GRASS_TILES,
+]);
 
 type Rect = { readonly x: number; readonly y: number; readonly w: number; readonly h: number };
 
@@ -350,12 +357,14 @@ const FLOOR_DARK_GRASS: readonly number[] = [245, 275, 335];
  * 왜 (2026-08-31 사용자 지적): 잔디만 깔린 숲은 나무를 아무리 심어도 평평하다.
  * `skyStairMaps.ts` 가 이미 적어 둔 교훈이고, 밀도 작업이 그걸 놓쳤다.
  *
- * 두 층으로 엮는다:
+ * 세 층으로 엮는다:
  * 1. **바닥 톤** — 짙은 풀을 저주파 얼룩으로 깔아 밝고 어두운 결을 만든다. 칸마다 독립 난수를
  *    쓰면 소금후추처럼 지저분하고, 넓게 채우면 점무늬 벽지가 된다 — 얼룩 임계로 덩어리를 만든다.
  * 2. **잡동사니** — 통나무·그루터기·돌·들꽃을 상위 레이어에 드물게 얹는다. 상위가 빈 칸에만
  *    얹어 수관·덤불을 지우지 않고, 보호셀(시작칸·이벤트)은 반드시 건너뛴다 — 여기서 막는 칩을
  *    올리면 시공 제안이 통째로 반려된다(단일 타일 경로에서 이미 겪은 결함이다).
+ * 3. **짙은 수풀 오토타일**(앵커 9) — 키큰 풀 톤과 다른 바닥. 드물게 작은 덩어리로만 깐다.
+ *    물웅덩이는 나무보다 먼저 깔리므로 이 함수는 수풀만 담당한다.
  */
 function paintForestFloor(draft: Project, map: GameMap, area: Rect, seed: number): number {
   const tileset = draft.tilesets[map.tilesetId];
@@ -405,7 +414,159 @@ function paintForestFloor(draft: Project, map: GameMap, area: Rect, seed: number
       painted += 1;
     }
   }
+  painted += scatterUndergrowthAutotile(draft, map, area, seed);
+  painted += scatterForestPuddles(draft, map, area, seed);
   return painted;
+}
+
+function undergrowthAutotileGroup(draft: Project, map: GameMap): AutotileGroup {
+  return autotileGroupsForTileset(draft.tilesets[map.tilesetId]).find((group) => group.id === "builtin_undergrowth")
+    ?? DEFAULT_UNDERGROWTH_AUTOTILE_GROUP;
+}
+
+function undergrowthBodyTile(group: AutotileGroup): number {
+  return group.variantMap["255"] ?? group.memberTileIds[0] ?? 70;
+}
+
+function isForestFloorLower(tile: number, extra?: ReadonlySet<number>): boolean {
+  return FOREST_FLOOR_LOWER.has(tile) || extra?.has(tile) === true;
+}
+
+function patchCount(cells: number, every: number, minArea: number, max: number): number {
+  if (cells < minArea) return 0;
+  return Math.min(max, Math.max(1, Math.round(cells / every)));
+}
+
+function shuffledPatchOrigins(area: Rect, patchW: number, patchH: number, inset: number, rng: () => number): { x: number; y: number }[] {
+  const x0 = area.x + inset;
+  const y0 = area.y + inset;
+  const x1 = area.x + area.w - patchW - inset;
+  const y1 = area.y + area.h - patchH - inset;
+  const origins: { x: number; y: number }[] = [];
+  if (x1 < x0 || y1 < y0) return origins;
+  for (let y = y0; y <= y1; y += 1) {
+    for (let x = x0; x <= x1; x += 1) origins.push({ x, y });
+  }
+  for (let i = origins.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(rng() * (i + 1));
+    const tmp = origins[i]!;
+    origins[i] = origins[j]!;
+    origins[j] = tmp;
+  }
+  return origins;
+}
+
+/**
+ * 숲 속 2×2 물웅덩이. 나무·밑동·수관은 건드리지 않고, 덤불·잡동사니만 비운다.
+ * 한 덩어리(큰 숲은 둘)라 밀도 계약(impassable ≥99%)을 깨지 않는다.
+ */
+function scatterForestPuddles(draft: Project, map: GameMap, area: Rect, seed: number): number {
+  const cells = Math.max(0, area.w) * Math.max(0, area.h);
+  const wanted = cells >= 1600 ? 2 : cells >= 64 ? 1 : 0;
+  if (wanted === 0) return 0;
+  const thicket = new Set<number>(undergrowthAutotileGroup(draft, map).memberTileIds);
+  const protectedCells = protectedEventCells(draft, map);
+  const rng = mulberry32((seed ^ 0x0a11) >>> 0);
+  const used = new Set<number>();
+  let painted = 0;
+  for (let n = 0; n < wanted; n += 1) {
+    let placed = false;
+    for (const origin of shuffledPatchOrigins(area, 2, 2, 1, rng)) {
+      const spots: { x: number; y: number }[] = [];
+      let blocked = false;
+      for (let dy = 0; dy < 2 && !blocked; dy += 1) {
+        for (let dx = 0; dx < 2; dx += 1) {
+          const x = origin.x + dx;
+          const y = origin.y + dy;
+          if (!inMapBounds(map, x, y) || protectedCells.has(`${x},${y}`)) {
+            blocked = true;
+            break;
+          }
+          const index = y * map.width + x;
+          if (used.has(index)) {
+            blocked = true;
+            break;
+          }
+          const lower = map.lowerTiles[index] ?? TILE.EMPTY;
+          const upper = map.upperTiles[index] ?? TILE.EMPTY;
+          if (!isForestFloorLower(lower, thicket) || isLakeAutotileTile(lower) || isPathSurfaceTile(lower)) {
+            blocked = true;
+            break;
+          }
+          if (isTreeTrunkTileId(lower) || isTreeTrunkTileId(upper) || isTreeCanopyTileId(upper)) {
+            blocked = true;
+            break;
+          }
+          spots.push({ x, y });
+        }
+      }
+      if (blocked || spots.length !== 4) continue;
+      for (const spot of spots) {
+        const index = spot.y * map.width + spot.x;
+        map.lowerTiles[index] = LAKE_AUTOTILE_TILE.OUTER_CORNER;
+        map.upperTiles[index] = TILE.EMPTY;
+        used.add(index);
+        painted += 1;
+      }
+      placed = true;
+      break;
+    }
+    if (!placed) break;
+  }
+  return painted;
+}
+
+/**
+ * 앵커 9 짙은 수풀 오토타일 — 키큰 풀 톤(243 블록)과 결이 다르다.
+ * 드물게(약 160칸에 1덩어리, 최대 5) 3×3~5×4 패치. 수관 아래는 칠하고 밑동·물·길은 건너뛴다.
+ */
+function scatterUndergrowthAutotile(draft: Project, map: GameMap, area: Rect, seed: number): number {
+  const group = undergrowthAutotileGroup(draft, map);
+  const body = undergrowthBodyTile(group);
+  const members = new Set<number>(group.memberTileIds);
+  const cells = Math.max(0, area.w) * Math.max(0, area.h);
+  const wanted = patchCount(cells, 160, 36, 5);
+  if (wanted === 0) return 0;
+  const rng = mulberry32((seed ^ 0x9e37) >>> 0);
+  const painted: { x: number; y: number }[] = [];
+  const used = new Set<number>();
+  const sizes: readonly { w: number; h: number }[] = [{ w: 5, h: 4 }, { w: 4, h: 3 }, { w: 3, h: 3 }];
+  for (let n = 0; n < wanted; n += 1) {
+    let placed = false;
+    for (const size of sizes) {
+      if (placed) break;
+      for (const origin of shuffledPatchOrigins(area, size.w, size.h, 0, rng)) {
+        const spots: { x: number; y: number }[] = [];
+        for (let dy = 0; dy < size.h; dy += 1) {
+          for (let dx = 0; dx < size.w; dx += 1) {
+            const x = origin.x + dx;
+            const y = origin.y + dy;
+            if (!inMapBounds(map, x, y)) continue;
+            const index = y * map.width + x;
+            if (used.has(index)) continue;
+            const lower = map.lowerTiles[index] ?? TILE.EMPTY;
+            const upper = map.upperTiles[index] ?? TILE.EMPTY;
+            if (!isForestFloorLower(lower, members)) continue;
+            if (isLakeAutotileTile(lower) || isPathSurfaceTile(lower)) continue;
+            if (isTreeTrunkTileId(lower) || isTreeTrunkTileId(upper)) continue;
+            if (upper !== TILE.EMPTY && !isTreeCanopyTileId(upper)) continue;
+            spots.push({ x, y });
+          }
+        }
+        if (spots.length < 6) continue;
+        for (const spot of spots) {
+          const index = spot.y * map.width + spot.x;
+          map.lowerTiles[index] = body;
+          used.add(index);
+          painted.push(spot);
+        }
+        placed = true;
+        break;
+      }
+    }
+  }
+  if (painted.length > 0) shapeAutotileGroupAround(map, group, painted);
+  return painted.length;
 }
 
 // 나무와 덤불은 다른 것이다. 한 집합으로 묶어 "나무 덮은 비율"이라 보고하면 덤불·꽃덤불을
@@ -414,7 +575,10 @@ function paintForestFloor(draft: Project, map: GameMap, area: Rect, seed: number
 const TREE_CANOPY_TILES = new Set([260, 261, 262, 263]);
 const TREE_TRUNK_TILES = new Set([290, 291, 292, 293]);
 const BUSH_TILES = new Set([288, 289]);
-const UNDERGROWTH_TILES = new Set<number>(CHIPSET_TILE_GROUPS.tallGrass);
+const UNDERGROWTH_TILES = new Set<number>([
+  ...CHIPSET_TILE_GROUPS.tallGrass,
+  ...DEFAULT_UNDERGROWTH_AUTOTILE_GROUP.memberTileIds,
+]);
 
 function isTreeCell(map: GameMap, x: number, y: number): boolean {
   if (x < 0 || y < 0 || x >= map.width || y >= map.height) return false;
