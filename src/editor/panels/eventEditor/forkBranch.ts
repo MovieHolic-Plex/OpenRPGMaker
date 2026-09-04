@@ -4,6 +4,7 @@ import { commandKindSelect, selectedOptionValue } from "./dom";
 import { COMMAND_KIND_OPTIONS, commandKindLabel } from "./options";
 import type { Command } from "@/project/types";
 import type { CommandListActions } from "./types";
+import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
 
 type ForkCommand = Extract<Command, { kind: "fork" }>;
 
@@ -95,7 +96,7 @@ function renderForkBranchItem(
       attrs: { rows: "2", placeholder: "대사 내용" },
       dataset: { testid: `event-fork-branch-text-${branch}-${index}` },
     }) as HTMLTextAreaElement;
-    body.value = command.body;
+    body.value = textBodyOf(command);
     body.addEventListener("change", () => {
       working[index] = { kind: "text", body: body.value };
       commit();

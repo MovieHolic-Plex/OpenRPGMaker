@@ -52,7 +52,18 @@ export function rewriteLegacyAdvancedDialogueInProject(project: Project): boolea
   return changed;
 }
 
+/** 레거시 text 명령의 본문을 읽는다. DB에 남은 구 모양({kind:"text", lines:[...]})도
+ * 빈 문자열 대신 실제 대사로 돌려준다 — 렌더가 `body.replace` 에서 터지지 않게. */
+export function textBodyOf(command: { readonly kind: string } & Record<string, unknown>): string {
+  if (typeof command.body === "string") return command.body;
+  if (Array.isArray(command.lines)) {
+    return command.lines.filter((line): line is string => typeof line === "string").join("\n");
+  }
+  return "";
+}
+
 function rewriteCommand(command: Command): Command {
+  if (command.kind === "text") return normalizeLegacyTextLines(command);
   if (command.kind !== "m2Command") return command;
   if (command.commandId !== "m2-209-advanced-dialogue") return command;
   const fields = command.fields ?? {};
@@ -71,4 +82,15 @@ function rewriteCommand(command: Command): Command {
     ...(emotion && emotion !== "neutral" ? { emotion } : {}),
     ...(autoAdvance ? { autoAdvance: true } : {}),
   };
+}
+
+/** 구 저장본 text 명령({kind:"text", lines:["..."]})을 현행 모양(body)으로 고친다.
+ * 로드 시 1회 정규화 — 고친 뒤에는 렌더·검증·저장이 전부 body 경로를 탄다. */
+function normalizeLegacyTextLines(command: Extract<Command, { kind: "text" }>): Command {
+  if (typeof command.body === "string") return command;
+  const raw = command as unknown as { readonly lines?: unknown };
+  if (!Array.isArray(raw.lines)) return command;
+  const { lines: _dropped, ...kept } = command as unknown as Record<string, unknown>;
+  void _dropped;
+  return { ...kept, kind: "text", body: textBodyOf(command) } as Command;
 }

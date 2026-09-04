@@ -23,6 +23,7 @@ import {
 } from "./options";
 import type { Command, MessageWindowFormat, MessageWindowPosition, SwitchValue } from "@/project/types";
 import { factionName, resolveFactionTable } from "@/project/factions";
+import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
 import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
 import { hasCharacterId } from "@/project/socialKey";
@@ -129,7 +130,7 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
     attrs: { placeholder: "플레이어에게 보여 줄 문장을 입력하세요", rows: "5" },
     dataset: { testid: "event-command-text-body" },
   }) as HTMLTextAreaElement;
-  body.value = cmd.body;
+  body.value = textBodyOf(cmd);
 
   const emotionValueRaw = cmd.emotion ?? "neutral";
   const emotionValue = (TEXT_EMOTION_SEGMENTS.some((entry) => entry.value === emotionValueRaw)

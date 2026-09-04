@@ -16,6 +16,7 @@ import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import type { Command, SwitchValue, VariableOperand } from "@/project/types";
 
 import { relationshipStateName } from "@/project/relationshipState";
+import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
 export type CommandSummaryTone =
   | "plain"
   | "command"
@@ -93,7 +94,7 @@ type CommandSummaryPartHandlers = {
 const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
   text: (cmd) => commandLine(
     "문장 표시",
-    textPart(oneLine(cmd.body || "...")),
+    textPart(oneLine(textBodyOf(cmd) || "...")),
     ...(cmd.emotion && cmd.emotion !== "neutral" ? [plainPart(" · "), valuePart(textEmotionLabel(cmd.emotion))] : []),
     ...(cmd.autoAdvance ? [plainPart(" · "), valuePart("자동 넘김")] : [])
   ),
