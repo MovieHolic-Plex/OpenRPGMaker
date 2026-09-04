@@ -14,7 +14,7 @@ import { isBuildPaletteEnabled, setBuildPaletteEnabled } from "@/editor/panels/b
 import { downloadCurrentMapScreenshot } from "@/editor/panels/editorZoomToolbar";
 import { openMapEventSearchModal } from "@/editor/panels/mapEventSearchModal";
 import { openResourceModal } from "@/editor/panels/resourceModal";
-import { openWorldPanel } from "@/editor/panels/worldPanel";
+import { openWorldCodexPanel, openWorldPanel } from "@/editor/panels/worldPanel";
 import { saveProjectNow } from "@/editor/saveActions";
 import { uiLabel } from "@/editor/uiCopy";
 import type { MapId, Project } from "@/project/types";
@@ -167,6 +167,13 @@ export function listEditorCommands(): readonly EditorCommand[] {
       category: "화면",
       keywords: ["world", "세계", "세계관"],
       run: () => openWorldPanel(),
+    },
+    {
+      id: "open-world-codex",
+      label: "화면: 설정집 열기",
+      category: "화면",
+      keywords: ["world", "codex", "세계관", "설정집", "낱장", "카드"],
+      run: () => openWorldCodexPanel(),
     },
     {
       id: "open-resources",

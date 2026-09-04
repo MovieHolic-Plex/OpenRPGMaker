@@ -133,6 +133,7 @@ describe("commandRegistry", () => {
     const commands = listEditorCommands();
     const requiredIds = [
       "open-world",
+      "open-world-codex",
       "open-resources",
       // 2026-09-03: 표준 모드에서 도구 메뉴 두 번 클릭이 유일한 길이던 셋에 팔레트 길을 낸다.
       "open-audio",

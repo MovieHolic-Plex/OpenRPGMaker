@@ -19,9 +19,16 @@ export function openWorldPanel(): void {
   });
 }
 
+/** 설정집(낱장 카드) 입구. 자료집 「설정집」 탭으로 점프한다. */
+export function openWorldCodexPanel(): void {
+  void import("./databaseModal").then(({ openDatabaseModal }) => {
+    openDatabaseModal("worldCodex");
+  });
+}
+
 export function renderWorldPanel(options: WorldPanelOptions = {}): HTMLElement {
   const state: WorldPanelState = {
-    tab: "overview",
+    tab: options.initialTab ?? "overview",
     search: "",
     selectedId: options.initialEntityId ?? null,
     addType: "character",
