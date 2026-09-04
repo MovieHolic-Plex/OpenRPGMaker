@@ -8,13 +8,33 @@
 //
 // 브라우저: requestAnimationFrame 한 틱. Node/테스트: 즉시 resolve — 세션 계약
 // 테스트가 실시간을 기다리지 않게.
+//
+// 백그라운드 탭에서는 rAF 가 멈추므로(Chromium hidden 탭은 콜백을 내주지 않는다)
+// rAF 만 기다리면 툴 루프가 영원히 멈춘다(실측 2026-09-04: 포커싱해야 이어짐).
+// 타임아웃 폴백과 race 시켜 백그라운드에서도 루프가 진행되게 한다.
 
 export type YieldToUi = () => Promise<void>;
+
+export const YIELD_TO_UI_FALLBACK_MS = 50;
 
 export function defaultYieldToUi(): Promise<void> {
   if (typeof requestAnimationFrame === "function") {
     return new Promise((resolve) => {
-      requestAnimationFrame(() => resolve());
+      let settled = false;
+      const timer = setTimeout(() => {
+        settled = true;
+        resolve();
+      }, YIELD_TO_UI_FALLBACK_MS);
+      try {
+        requestAnimationFrame(() => {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timer);
+          resolve();
+        });
+      } catch {
+        // rAF 호출 자체가 실패하면 위 타임아웃이 resolve 한다.
+      }
     });
   }
   return Promise.resolve();
