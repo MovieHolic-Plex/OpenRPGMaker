@@ -123,6 +123,15 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 
 - **Assistant identity:** the header plate and float command face consistently use the name **조수** and the current `idlePresenceLine`; float retains the command-bar face because its header is hidden.
 
+- **자율성 다이얼은 설정 동작 절에 산다 (2026-09-04):** 레벨 정의와 세션 노브 해석은 `src/ai/autonomyLevels.ts`(`AUTONOMY_LEVELS`, `resolveAutonomy`)가 소유하고, 설정 모달(`src/editor/panels/aiSettingsModal.ts`)의 동작(behavior) 섹션이 `자율성` 셀렉트(`data-testid="ai-config-autonomy"`)로 노출한다. 다이얼을 움직이면 해당 레벨의 추론·작업 모드로 `ai-config-reasoning`·`ai-config-agentmode` 셀렉트를 함께 고친 뒤 두 셀렉트에 `input` 이벤트를 쏴 커스텀 셀렉트 라벨을 동기화하고 `persist` 는 한 번만 돌린다(`change` 가 아니라 `input` 만 쏘므로 저장 리스너가 중복으로 타지 않는다). 저장은 `AiConfig.autonomyLevel`(`src/ai/llmClient.ts`)이며, 로더가 옛 blob·이상한 값을 `"balanced"` 로 백필한다. 런 표면 예산(`aiChatPanel.ts` `runBudgetTotal`)은 `min(레벨 cap, 48)` 표시용 클램프다. 실제 루프 상한은 세션(`assistantSession.ts`)이 자기 cap 으로 별도 강제한다. 컴포저 모델 칩(`modelChipLabel`)은 초보 모드에서 숨고, 표준·전문가에서는 모델 id 뒤에 `· 레벨 라벨`을 덧붙인다(읽기 전용 표시).
+
+  | level | reasoning | agentMode | budgetCap | planOnly |
+  | --- | --- | --- | --- | --- |
+  | confirm | low | chat | 6 | true |
+  | balanced | low | auto | 16 | false |
+  | autonomous | medium | auto | 32 | false |
+  | max | high | auto | 48 | false |
+
 ## 세션 수명 · 대화 컨텍스트
 
 - **채팅 세션의 경계는 프로젝트다 — 맵 이동은 경계가 아니다 (2026-08-28):** 저장/복원 범위는 `conversationScopeKey(identity, project)`(`src/ai/conversationStore.ts`)가 정한다. 원격 프로젝트는 durable row id인 `remote:<projectId>`를 쓰고, durable row가 없는 로컬 세션은 새로고침 뒤에도 재구성되는 `local:<trimmed title or (untitled)>::<startMapId>`를 쓴다. 반면 프로젝트 전환 리셋은 범위 키가 아니라 패널이 캡처한 `store.getProjectIdentity().id`를 비교한다 — 같은 모양의 새 로컬 프로젝트도 런타임 identity가 바뀌면 반드시 새 대화를 시작한다. 전환 시 진행 턴을 abort하고 대기 큐를 버리며, 늦게 정착한 턴은 시작 당시 캡처한 대화 id와 범위에만 저장된다. 로컬 `oprn:ai-conversations` 레코드가 정본이며 각 레코드가 자기 `projectContextKey`를 보존한다. Supabase `ai_conversations`는 best-effort 미러이고 저장 호출 시점에 현재 설정된 `config.projectId` 아래 파일링된다; 복원은 이 테이블을 읽지 않으므로 원격 행의 `project_id`가 로컬 범위 소유권을 뜻하지 않는다. `새 대화`는 모든 도크의 컴포저 고정 액션 행 `+`(`ai-new-chat`)에서 보이고, 기존 숨은 `ai-new-session`과 두 메뉴 항목(`ai-more-new-chat` / `ai-command-menu-new-chat`)도 호환 훅으로 유지한다. 리셋은 로그·제안·자율 런·상태 타임라인을 모두 비우고 `data-ai-conversation="empty"`로 되돌린다.
