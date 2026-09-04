@@ -38,6 +38,8 @@ import type { EnemyRecord, TroopMemberRecord, TroopRecord } from "@/project/type
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { classicEnemyFormation } from "@/battle/battleBattlers";
+import { resolveSkinEnemyPosition } from "@/player/battleFieldDom";
+import { BATTLE_SKINS, resolveSkinId } from "@/battle/skins/registry";
 import { normalizeEnemyRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { simulateBattle } from "@/battle/simulate";
 import { applyMagentaChromaKeyToImageData } from "./chromaKey";
@@ -463,9 +465,13 @@ function memberEditor(
 
 function troopBattlePreview(record: TroopRecord, selectedIndex: number, rerender: () => void): HTMLElement {
   const project = store.getCurrent();
-  const sprites = (record.members ?? []).map((member, index) => {
+  const skinId = resolveSkinId(project.system.battleUiStyle);
+  const layout = BATTLE_SKINS[skinId]?.layout;
+  const members = record.members ?? [];
+  const sprites = members.map((member, index) => {
     const enemy = project.database.enemies.find((entry) => entry.id === member.enemyId);
-    const sprite = enemySprite(enemy, member, record.id, index, index === selectedIndex, rerender);
+    const skinPos = resolveSkinEnemyPosition(skinId, { x: member.x, y: member.y }, index, members.length, record.autoAlign);
+    const sprite = enemySprite(enemy, member, skinPos, record.id, index, index === selectedIndex, rerender);
     sprite.dataset.memberIndex = String(index);
     return sprite;
   });
@@ -473,7 +479,9 @@ function troopBattlePreview(record: TroopRecord, selectedIndex: number, rerender
   const stage = el("div", {
     class: "db-troop-battle-preview-stage",
     dataset: { testid: "db-troop-preview-stage" },
-    children: [recenterGuideLine(), ...partyMarkers(), ...children],
+    children: layout === "sideview" || layout === "active"
+      ? [recenterGuideLine(), ...partyMarkers(), ...children]
+      : [...children],
   });
   const backgroundUrl = resolveAssetResourceUrl(record.previewBackgroundResourceId, { project });
   if (backgroundUrl) {
@@ -482,22 +490,30 @@ function troopBattlePreview(record: TroopRecord, selectedIndex: number, rerender
 
   const card = studioCard({
     title: "배치 미리보기",
-    hint: "붉은 점선 오른쪽은 전투에서 좌측으로 재배치됩니다.",
+    hint: previewHint(record, skinId),
     children: [
       stage,
       el("div", { class: "db-troop-preview-caption", dataset: { testid: "db-troop-preview-caption" }, text: previewCaption(record) }),
       el("div", {
         class: "db-troop-preview-legend",
-        children: [
-          legendChip("db-troop-legend-party", "① ~ ④ 아군 진형 (읽기 전용)"),
-          legendChip("db-troop-legend-recenter", "점선 = 재배치 경계 (x > 150)"),
-        ],
+        children:
+          layout === "sideview" || layout === "active"
+            ? [
+              legendChip("db-troop-legend-party", "① ~ ④ 아군 진형 (읽기 전용)"),
+              legendChip("db-troop-legend-recenter", "점선 = 재배치 경계 (x > 150)"),
+            ]
+            : [legendChip("db-troop-legend-party", "현재 전투 스킨 기준 배치 미리보기")],
       }),
     ],
     testid: "db-troop-preview-card",
     extraClass: "db-troop-preview-panel",
   });
   return card;
+}
+
+function previewHint(record: TroopRecord, skinId: string): string {
+  if (record.autoAlign) return `현재 전투 스킨(${skinId})의 자동 진형으로 싸웁니다.`;
+  return `현재 전투 스킨(${skinId}) 기준 미리보기 — 수동 좌표는 측면 스킨에서 그대로, 정면 스킨에서 중앙 기준 오프셋으로 반영됩니다.`;
 }
 
 function legendChip(className: string, text: string): HTMLElement {
@@ -532,6 +548,7 @@ function partyMarkers(): HTMLElement[] {
 function enemySprite(
   enemy: EnemyRecord | undefined,
   member: TroopMemberRecord,
+  skinPos: { readonly x: number; readonly y: number },
   troopId: string,
   index: number,
   selected: boolean,
@@ -546,12 +563,8 @@ function enemySprite(
   }) as HTMLCanvasElement;
   canvas.width = 96;
   canvas.height = 72;
-  canvas.style.left = `${(Math.max(0, Math.min(320, member.x ?? 0)) / 320) * 100}%`;
-  canvas.style.top = `${(Math.max(0, Math.min(240, member.y ?? 0)) / 240) * 100}%`;
-  if (member.x != null && member.x > RECENTER_THRESHOLD_X) {
-    canvas.classList.add("is-recentered");
-    canvas.title = "x>150 은 전투에서 좌측 진형으로 재배치됩니다";
-  }
+  canvas.style.left = `${(Math.max(0, Math.min(320, skinPos.x)) / 320) * 100}%`;
+  canvas.style.top = `${(Math.max(0, Math.min(160, skinPos.y)) / 160) * 100}%`;
   canvas.addEventListener("click", () => {
     selectedMemberIndexes.set(troopId, index);
     rerender();

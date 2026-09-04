@@ -8,7 +8,7 @@ import {
 } from "@/assets/battlerIdleAnimations";
 import type { BattleBattlerSnapshot, BattleSnapshot } from "@/battle/runtime";
 import { POSE_FRAME } from "@/battle/battlePose";
-import { getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
+import { BATTLE_SKINS, getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
 import type { BattleSkin, BattleSkinId } from "@/battle/skins/types";
 import type { DamageFeedback } from "@/player/battleSequencer";
 import type { BattlePresentationLedger } from "@/player/battlePresentation";
@@ -156,6 +156,57 @@ export const BATTLER_PLACEMENTS: Record<BattleSkinId, SkinBattlerPlacement> = {
 function skinPlacement(): SkinBattlerPlacement {
   return BATTLER_PLACEMENTS[activeSkin().id];
 }
+
+/**
+ * 정규 좌표(canonical) → 스킨 자리 매핑. DB 미리보기와 실전투가 공유하는 유일한 함수다.
+ *
+ * 정규 좌표 = 사이드뷰 기준 저작값(`TroopMemberRecord.x/y`, x 0..320 · y 0..240).
+ * `classicEnemyFormation`(battleBattlers.ts)이 그 원점이다 — 적은 좌측(x≈84)에 선다.
+ *
+ * - `autoAlign=true`: 기존 `BATTLER_PLACEMENTS[skin].enemy(i, n)` 값을 그대로 돌려준다.
+ *   (battleEnemyFeetRatios 픽스처가 잠근 저작 y 를 1px도 건드리지 않는다.)
+ * - `autoAlign=false` + 측면/액티브 스킨: 정규 좌표를 직접 쓴다.
+ *   y 만 표시 범위(0..160)에 맞춰 2/3 스케일 — x 는 저작 단위와 표시 단위가 같다.
+ * - `autoAlign=false` + 정면/1인칭 스킨: 스킨 기본 자리를 중앙에 두고
+ *   정규 x 의 편차(`canonicalX - 84`, 좌측 앵커 기준)만 0.5 감쇠로 얹는다.
+ *   정면 구도는 중앙 대칭이라 좌표를 그대로 쓰면 진형이 깨진다.
+ *   y 는 스킨 기본값을 유지한다(발 위치 픽스처 잠금).
+ * - battleX/battleY 가 없는 레거시 스냅샷은 자동 경로로 폴백한다.
+ */
+export function resolveSkinEnemyPosition(
+  skinId: BattleSkinId,
+  canonical: { readonly x?: number; readonly y?: number } | undefined,
+  index: number,
+  count: number,
+  autoAlign: boolean,
+): { x: number; y: number } {
+  const placement = BATTLER_PLACEMENTS[skinId];
+  const fallback = placement.enemy(index, count);
+  if (autoAlign) return fallback;
+  const cx = canonical?.x;
+  if (cx == null || !Number.isFinite(cx)) return fallback;
+  const layout = BATTLE_SKINS[skinId]?.layout;
+  if (layout === "sideview" || layout === "active") {
+    const cy = canonical?.y;
+    return {
+      x: Math.max(0, Math.min(320, cx)),
+      y:
+        cy != null && Number.isFinite(cy)
+          ? Math.max(0, Math.min(160, (cy * 2) / 3))
+          : fallback.y,
+    };
+  }
+  // 정면/1인칭: 중앙 기준 오프셋으로 환산.
+  return {
+    x: Math.max(0, Math.min(320, Math.round(fallback.x + (cx - CANONICAL_SIDEVIEW_ANCHOR_X) * MANUAL_FRONTAL_DAMPING))),
+    y: fallback.y,
+  };
+}
+
+/** 사이드뷰 좌측 앵커 x — classicEnemyFormation(0).x 와 같은 값이다. */
+export const CANONICAL_SIDEVIEW_ANCHOR_X = 84;
+/** 정면 스킨 수동 오프셋 감쇠율. 1이면 좌측 편차가 그대로 중앙 구도를 밀어낸다. */
+export const MANUAL_FRONTAL_DAMPING = 0.5;
 
 /** 스킨 전용 적 스프라이트(bskin-enemy-<id>)를 우선 사용. 없으면 null. */
 function skinEnemySpriteUrl(): string | null {
@@ -707,8 +758,12 @@ function enemyButton(enemy: BattleBattlerSnapshot, snapshot: BattleSnapshot, ind
   enemyNode.type = "button";
   enemyNode.className = "battle-enemy";
   // 스킨 뷰 문법에 따라 적 위치를 결정한다(사이드=좌측, 프론트/1인칭=중앙, 포켓몬=우상).
+  // 수동(autoAlign=false) 트룹은 DB 정규 좌표를 스킨 자리에 환산한다 — 같은 함수를
+  // DB 미리보기도 쓴다. 스냅샷에 battleX/Y 가 없으면 자동 경로로 폴백.
   const enemyCount = snapshot.enemies.length;
-  const ep = skinPlacement().enemy(index, enemyCount);
+  const troopAutoAlign =
+    store.getCurrent().database.troops.find((troop) => troop.id === snapshot.troopId)?.autoAlign ?? true;
+  const ep = resolveSkinEnemyPosition(activeSkin().id, { x: enemy.battleX, y: enemy.battleY }, index, enemyCount, troopAutoAlign);
   positionBattleNode(enemyNode, ep.x, ep.y);
   // 겹칠 때 화면 아래(가까운) 적이 앞에 오도록 — z 는 CSS 변수로만 소비해
   // 모션 클래스(z-index 상승)가 인라인에 눌리지 않게 한다.
