@@ -1,0 +1,302 @@
+// 테마별 맵 BGM 자동 선택 — generate_map/create_map 이 전부 같은 기본곡을 쓰지 않게 지킨다.
+import { describe, expect, it } from "vitest";
+import { recommendMapBgm } from "@/assets/bgmThemeRecommendation";
+import { BGM_CATALOG, findBgmTrack } from "@/assets/bgmCatalog";
+import { findBgmRuntimeEntry, isBgmCatalogResourceId } from "@/assets/bgmCatalogRuntime";
+import { STARTER_BATTLE_BGM_ID, STARTER_DEFAULT_BGM_ID } from "@/assets/bgmStarterTracks";
+import { createEmptyToolProject } from "@/editor/tools/emptyProject";
+import { runTool } from "@/editor/tools/toolRunner";
+import type { ToolContext } from "@/editor/tools/types";
+
+function catalogId(resourceId: string): string {
+  expect(isBgmCatalogResourceId(resourceId), `${resourceId} 가 카탈로그에 없다`).toBe(true);
+  expect(findBgmTrack(resourceId), resourceId).toBeDefined();
+  expect(findBgmRuntimeEntry(resourceId), resourceId).toBeDefined();
+  return resourceId;
+}
+
+// village 카테고리 바늘 상위집합. 테마 풀을 비우면 starterFallback 만 남아야 한다.
+const VILLAGE_CATEGORY_NEEDLES = [
+  "마을",
+  "도시",
+  "광장",
+  "길드",
+  "회관",
+  "시장",
+  "축제",
+  "과수원",
+  "어촌",
+  "찻집",
+  "공원",
+  "양봉",
+] as const;
+
+function villageThemePoolIds(): string[] {
+  return BGM_CATALOG.filter((track) =>
+    VILLAGE_CATEGORY_NEEDLES.some((needle) => track.category.includes(needle)),
+  ).map((track) => track.id);
+}
+
+describe("recommendMapBgm", () => {
+  it("village/forest/cave 가 같은 시드에서도 서로 다른 곡이다", () => {
+    const village = catalogId(recommendMapBgm("village", 1));
+    const forest = catalogId(recommendMapBgm("forest", 1));
+    const cave = catalogId(recommendMapBgm("cave", 1));
+    expect(new Set([village, forest, cave]).size).toBe(3);
+  });
+
+  it("같은 시드는 결정적이다", () => {
+    expect(recommendMapBgm("forest", 42)).toBe(recommendMapBgm("forest", 42));
+    expect(recommendMapBgm("마을", 7)).toBe(recommendMapBgm("village", 7));
+    expect(recommendMapBgm("깊은 숲", 3)).toBe(recommendMapBgm("forest", 3));
+    expect(recommendMapBgm("고블린 동굴", 11)).toBe(recommendMapBgm("cave", 11));
+  });
+
+  it("시드가 바뀌면 후보가 여러 곡일 때 다른 곡을 고른다", () => {
+    expect(recommendMapBgm("forest", 1)).not.toBe(recommendMapBgm("forest", 99));
+  });
+
+  it("한국어 키워드 마을/숲/동굴/던전/밤/전투 도 카탈로그 곡을 고른다", () => {
+    for (const name of ["마을", "숲", "동굴", "던전", "밤", "전투"]) {
+      catalogId(recommendMapBgm(name, 1));
+    }
+    expect(recommendMapBgm("마을", 1)).not.toBe(recommendMapBgm("숲", 1));
+    expect(recommendMapBgm("동굴", 1)).not.toBe(recommendMapBgm("전투", 1));
+  });
+
+  it("모르는 이름은 필드 폴백으로 카탈로그 곡을 돌려 주고 죽지 않는다", () => {
+    const unknown = catalogId(recommendMapBgm("zzzz-not-a-theme-xyz", 1));
+    expect(findBgmTrack(unknown)?.category).toMatch(/필드|초원|장거리/);
+    expect(catalogId(recommendMapBgm("", Number.NaN))).toBe(STARTER_DEFAULT_BGM_ID);
+  });
+
+  it("excludeIds 는 같은 시드에서 다른 후보로 밀어낸다", () => {
+    const first = catalogId(recommendMapBgm("forest", 1));
+    const second = catalogId(recommendMapBgm("forest", 1, [first]));
+    expect(second).not.toBe(first);
+  });
+
+  it("마을/숲/동굴은 심리스 루프 곡을 고른다", () => {
+    for (const theme of ["village", "forest", "cave"] as const) {
+      const id = catalogId(recommendMapBgm(theme, 1));
+      expect(findBgmRuntimeEntry(id)?.loop, id).toBe(true);
+    }
+  });
+
+  it("forest-village/숲 마을 은 village, deep-forest/깊은 숲 은 forest", () => {
+    const seed = 1;
+    expect(recommendMapBgm("forest-village", seed)).toBe(recommendMapBgm("village", seed));
+    expect(recommendMapBgm("숲 마을", seed)).toBe(recommendMapBgm("village", seed));
+    expect(recommendMapBgm("deep-forest", seed)).toBe(recommendMapBgm("forest", seed));
+    expect(recommendMapBgm("깊은 숲", seed)).toBe(recommendMapBgm("forest", seed));
+  });
+
+  it("테마 풀을 전부 exclude 하면 스타터 id 로 떨어진다", () => {
+    const pool = villageThemePoolIds();
+    expect(pool.length).toBeGreaterThan(0);
+    expect(pool.includes(STARTER_DEFAULT_BGM_ID)).toBe(false);
+    expect(catalogId(recommendMapBgm("village", 1, pool))).toBe(STARTER_DEFAULT_BGM_ID);
+  });
+});
+
+describe("generate_map BGM", () => {
+  it("테마마다 custom BGM 을 심고 요약/data 에 담는다", () => {
+    const ids = new Set<string>();
+    for (const theme of ["village", "forest", "cave"] as const) {
+      const ctx: ToolContext = { project: createEmptyToolProject() };
+      const result = runTool(
+        ctx,
+        "generate_map",
+        { theme, width: 12, height: 12, seed: 1, id: `gen_${theme}`, chokepoints: 0 },
+        { dryRun: false },
+      );
+      expect(result.ok, result.summary).toBe(true);
+      const data = result.data as { bgmResourceId: string };
+      const map = ctx.project.maps[`gen_${theme}`]!;
+      expect(map.bgm).toEqual({ mode: "custom", resourceId: data.bgmResourceId });
+      expect(result.summary).toContain(data.bgmResourceId);
+      catalogId(data.bgmResourceId);
+      ids.add(data.bgmResourceId);
+    }
+    expect(ids.size).toBe(3);
+  });
+
+  it("명시적 bgmResourceId 가 있으면 자동 선택을 건너뛴다", () => {
+    const ctx: ToolContext = { project: createEmptyToolProject() };
+    const result = runTool(
+      ctx,
+      "generate_map",
+      {
+        theme: "village",
+        width: 12,
+        height: 12,
+        seed: 1,
+        id: "gen_bgm_id",
+        chokepoints: 0,
+        bgmResourceId: STARTER_BATTLE_BGM_ID,
+      },
+      { dryRun: false },
+    );
+    expect(result.ok, result.summary).toBe(true);
+    expect(ctx.project.maps.gen_bgm_id?.bgm).toEqual({
+      mode: "custom",
+      resourceId: STARTER_BATTLE_BGM_ID,
+    });
+    expect((result.data as { bgmResourceId: string }).bgmResourceId).toBe(STARTER_BATTLE_BGM_ID);
+  });
+
+  it("명시적 bgm custom 이 있으면 자동 선택을 건너뛴다", () => {
+    const ctx: ToolContext = { project: createEmptyToolProject() };
+    const result = runTool(
+      ctx,
+      "generate_map",
+      {
+        theme: "forest",
+        width: 12,
+        height: 12,
+        seed: 1,
+        id: "gen_bgm_custom",
+        chokepoints: 0,
+        bgm: { mode: "custom", resourceId: STARTER_DEFAULT_BGM_ID },
+      },
+      { dryRun: false },
+    );
+    expect(result.ok, result.summary).toBe(true);
+    expect(ctx.project.maps.gen_bgm_custom?.bgm).toEqual({
+      mode: "custom",
+      resourceId: STARTER_DEFAULT_BGM_ID,
+    });
+  });
+
+  it("명시적 bgm none 은 무음으로 심는다", () => {
+    const ctx: ToolContext = { project: createEmptyToolProject() };
+    const result = runTool(
+      ctx,
+      "generate_map",
+      {
+        theme: "cave",
+        width: 12,
+        height: 12,
+        seed: 1,
+        id: "gen_bgm_none",
+        chokepoints: 0,
+        bgm: { mode: "none" },
+      },
+      { dryRun: false },
+    );
+    expect(result.ok, result.summary).toBe(true);
+    expect(ctx.project.maps.gen_bgm_none?.bgm).toEqual({ mode: "none" });
+  });
+});
+
+describe("create_map BGM", () => {
+  it("맵 이름 키워드로 테마를 읽어 자동 지정한다", () => {
+    const ctx: ToolContext = { project: createEmptyToolProject() };
+    const result = runTool(
+      ctx,
+      "create_map",
+      { name: "고블린 동굴", width: 8, height: 8, id: "map_cave", seed: 1 },
+      { dryRun: false },
+    );
+    expect(result.ok, result.summary).toBe(true);
+    const data = result.data as { bgmResourceId: string };
+    expect(ctx.project.maps.map_cave?.bgm).toEqual({ mode: "custom", resourceId: data.bgmResourceId });
+    catalogId(data.bgmResourceId);
+    expect(findBgmTrack(data.bgmResourceId)?.category).toMatch(/동굴|광산|광물/);
+  });
+
+  it("명시적 bgmResourceId 가 있으면 자동 선택을 건너뛴다", () => {
+    const ctx: ToolContext = { project: createEmptyToolProject() };
+    const result = runTool(
+      ctx,
+      "create_map",
+      { name: "마을", width: 8, height: 8, id: "map_explicit", bgmResourceId: STARTER_DEFAULT_BGM_ID },
+      { dryRun: false },
+    );
+    expect(result.ok, result.summary).toBe(true);
+    expect(ctx.project.maps.map_explicit?.bgm).toEqual({
+      mode: "custom",
+      resourceId: STARTER_DEFAULT_BGM_ID,
+    });
+  });
+
+  it("bgm none 은 무음으로 심는다", () => {
+    const ctx: ToolContext = { project: createEmptyToolProject() };
+    const result = runTool(
+      ctx,
+      "create_map",
+      { name: "마을", width: 8, height: 8, id: "map_bgm_none", bgm: { mode: "none" } },
+      { dryRun: false },
+    );
+    expect(result.ok, result.summary).toBe(true);
+    expect(ctx.project.maps.map_bgm_none?.bgm).toEqual({ mode: "none" });
+  });
+
+  it("bgm parent 는 상속으로 심는다", () => {
+    const ctx: ToolContext = { project: createEmptyToolProject() };
+    const result = runTool(
+      ctx,
+      "create_map",
+      { name: "마을", width: 8, height: 8, id: "map_bgm_parent", bgm: { mode: "parent" } },
+      { dryRun: false },
+    );
+    expect(result.ok, result.summary).toBe(true);
+    expect(ctx.project.maps.map_bgm_parent?.bgm).toEqual({ mode: "parent" });
+  });
+
+  it("bgm custom 객체는 지정 곡을 심는다", () => {
+    const ctx: ToolContext = { project: createEmptyToolProject() };
+    const result = runTool(
+      ctx,
+      "create_map",
+      {
+        name: "마을",
+        width: 8,
+        height: 8,
+        id: "map_bgm_custom",
+        bgm: { mode: "custom", resourceId: STARTER_BATTLE_BGM_ID },
+      },
+      { dryRun: false },
+    );
+    expect(result.ok, result.summary).toBe(true);
+    expect(ctx.project.maps.map_bgm_custom?.bgm).toEqual({
+      mode: "custom",
+      resourceId: STARTER_BATTLE_BGM_ID,
+    });
+  });
+
+  it("bgm 객체에 mode 가 없으면 거절한다", () => {
+    const ctx: ToolContext = { project: createEmptyToolProject() };
+    const result = runTool(
+      ctx,
+      "create_map",
+      { name: "마을", width: 8, height: 8, id: "map_bgm_empty", bgm: {} },
+      { dryRun: false },
+    );
+    expect(result.ok, result.summary).toBe(false);
+    expect(result.issues?.[0]?.code).toBe("invalid-args");
+    expect(result.issues?.[0]?.message ?? result.summary).toMatch(/mode/);
+    expect(ctx.project.maps.map_bgm_empty).toBeUndefined();
+  });
+
+  it("시드 없이 같은 이름을 두 번 만들면 같은 BGM 이다", () => {
+    const ctx: ToolContext = { project: createEmptyToolProject() };
+    const first = runTool(
+      ctx,
+      "create_map",
+      { name: "달빛 마을", width: 8, height: 8, id: "map_hash_1" },
+      { dryRun: false },
+    );
+    const second = runTool(
+      ctx,
+      "create_map",
+      { name: "달빛 마을", width: 8, height: 8, id: "map_hash_2" },
+      { dryRun: false },
+    );
+    expect(first.ok, first.summary).toBe(true);
+    expect(second.ok, second.summary).toBe(true);
+    expect(ctx.project.maps.map_hash_1?.bgm).toEqual(ctx.project.maps.map_hash_2?.bgm);
+    expect(ctx.project.maps.map_hash_1?.bgm?.mode).toBe("custom");
+    catalogId((ctx.project.maps.map_hash_1?.bgm as { resourceId: string }).resourceId);
+  });
+});
