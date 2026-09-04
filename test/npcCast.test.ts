@@ -228,6 +228,28 @@ describe("worldCanon 강제 — 캐논 주입과 금지어 검증", () => {
     expect(String(messages[1]!.content)).not.toContain("## 이 세계(세계관 고정)");
   });
 
+  it("두 번째 줄·합성어 속 금지어도 잡고, secret 캐논에도 강제한다", () => {
+    const project = projectWithPendingNpcs();
+    const lines = ["오늘 날씨가 좋군요.", "화약고 문을 열어라.", "강물지기단 얘기예요."];
+    const sheet = {
+      residents: [
+        { eventId: "ev_a", name: "은호", role: "어부", summary: "새벽 그물을 걷는 청년", knows: ["ev_b"],
+          pages: [{ pageId: "ev_a_p0", lines }] },
+        { eventId: "ev_b", name: "다래", role: "잡화점 주인", summary: "장터를 지키는 상인", knows: ["ev_a"],
+          pages: [
+            { pageId: "ev_b_p0", lines: ["은호가 가져온 은어가 오늘의 특산이에요."] },
+            { pageId: "ev_b_p1", lines: ["장터 소식? 은호가 큰 물고기를 잡았대요."] },
+          ] },
+      ],
+    };
+    const parsed = parseCastSheet(JSON.stringify(sheet), canonContext(project));
+    expect(parsed.ok).toBe(false);
+    if (parsed.ok) return;
+    expect(parsed.issues.join("\n")).toContain("화약");
+    const secret = parseCastSheet(JSON.stringify(sheet), { ...canonContext(project), worldCanon: { name: "비밀 왕국", status: "secret", absences: ["화약"] } });
+    expect(secret.ok).toBe(false);
+  });
+
   it("금지어를 쓴 대사는 재킥 사유로 거부한다", () => {
     const project = projectWithPendingNpcs();
     const sheet = {

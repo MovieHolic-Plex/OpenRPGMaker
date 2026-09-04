@@ -414,14 +414,21 @@ export function parseAndValidate(
   return { ok: true, commands };
 }
 
-/** text 커맨드 body(중첩 분기 포함)에 든 캐논 금지어를 모은다. 캐논이 비었으면 항상 빈 배열. */
+/** 플레이어에게 보이는 문구(text body·선택지 질문/문구·숫자 입력 안내, 중첩 분기 포함)에 든
+ *  캐논 금지어를 모은다. 캐논이 비었으면 항상 빈 배열. */
 function collectCanonAbsenceHits(commands: readonly Command[], canon: Project["worldCanon"]): readonly string[] {
   const hits = new Set<string>();
+  const check = (text: string | undefined): void => {
+    if (typeof text !== "string" || text.length === 0) return;
+    for (const hit of findWorldCanonAbsenceHits(text, canon)) hits.add(hit);
+  };
   const visit = (list: readonly Command[]): void => {
     for (const command of list) {
-      if (command.kind === "text" && typeof command.body === "string") {
-        for (const hit of findWorldCanonAbsenceHits(command.body, canon)) hits.add(hit);
-      }
+      if (command.kind === "text") check(command.body);
+      else if (command.kind === "choices") {
+        check(command.prompt);
+        for (const option of command.options) check(option.text);
+      } else if (command.kind === "inputNumber") check(command.prompt);
       for (const branch of commandBranches(command)) visit(branch.commands);
     }
   };
