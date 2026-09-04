@@ -56,6 +56,7 @@ import {
   workspaceShell,
 } from "@/editor/panels/databaseWorkspace";
 import { switchDatabaseActiveTab } from "@/editor/panels/database";
+import { requestSystemSection } from "@/editor/panels/databaseSystemView";
 import { store } from "@/project/store";
 import type {
   BattleFlow,
@@ -540,7 +541,7 @@ function battleScreenDetailPane(troop: TroopRecord | undefined, rerender: () => 
         children: [
           sectionCard({
             title: "전투 화면",
-            hint: "전투 중 창·커서 그래픽과 진행 방식",
+            hint: "전투 중 창·커서 그래픽과 진행 방식 — UI 스타일·규칙 모델은 시스템 › 시작 설정에서",
             children: [
               resourcePickerControl({
                 label: "전투 시스템 리소스",
@@ -574,6 +575,18 @@ function battleScreenDetailPane(troop: TroopRecord | undefined, rerender: () => 
                 store.update((draft) => {
                   draft.system.activeSlots = Number.isFinite(value) && value > 0 ? Math.trunc(value) : undefined;
                 }, { scope: "system" });
+              }),
+              el("button", {
+                class: "db-ws-btn db-ws-btn-ghost",
+                text: "UI 스타일·규칙 모델은 시작 설정에서",
+                attrs: { type: "button" },
+                dataset: { testid: "db-battle-screen-open-system-startup" },
+                on: {
+                  click: (event) => {
+                    requestSystemSection("startup", "db-field-system-battle-ui-style");
+                    jumpToTab("system", event);
+                  },
+                },
               }),
             ],
             testid: "db-battle-screen-settings-card",
@@ -637,7 +650,7 @@ function battleScreenPreviewStage(troop: TroopRecord): HTMLElement {
     el("div", {
       class: "db-battle-screen-stage-meta",
       children: [
-        el("span", { class: "db-studio-live-chip", text: project.system.battleFlow === "strict" ? "턴 방식" : "게이지 방식" }),
+        el("span", { class: "db-studio-live-chip", text: project.system.battleFlow === "strict" ? "턴 전투" : "게이지 전투" }),
         el("strong", { text: troop.name }),
         el("small", { text: `${troop.members?.length ?? troop.enemyIds.length} enemies · ${resourceDisplayName(backdropId)}` }),
       ],
@@ -1083,7 +1096,7 @@ function resourceDisplayName(resourceId: string | undefined): string {
  * 거기서 루트를 걸어 올라가고(fakeDom 처럼 문서에 붙어 있지 않은 호스트도 동작),
  * 없으면 문서에서 모달 본문을 찾는다(툴바 액션은 이벤트를 받지 않는다).
  */
-function jumpToTab(tab: "classes" | "troops", event?: Event): void {
+function jumpToTab(tab: "classes" | "system" | "troops", event?: Event): void {
   const fromEvent = event ? databasePanelRootFrom(event.currentTarget as HTMLElement | null) : null;
   const panelRoot = fromEvent ?? (document.querySelector(".database-modal-body") as HTMLElement | null);
   if (panelRoot) switchDatabaseActiveTab(tab, panelRoot);

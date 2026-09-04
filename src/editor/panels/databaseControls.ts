@@ -476,7 +476,7 @@ function literalLabel(value: string): string {
     case "gauge":
       return "게이지";
     case "strict":
-      return "엄격 턴제";
+      return "턴 전투";
     case "classic":
       return "클래식 (정면 전투)";
     case "pokemon":
