@@ -25,10 +25,28 @@ const TAB_LABELS: Record<MapPropsTab, string> = {
   minimap: "미니맵",
 };
 
-let activeTab: MapPropsTab = "general";
+const SECTION_ORDER: readonly MapPropsTab[] = [
+  "general", "background", "bgm", "battle", "restrictions", "encounter", "spawns", "minimap",
+];
+
+/** 2열 그리드에서 한 줄을 통째로 쓰는 섹션 — 인카운터 행(트룹 select+가중치+삭제)이
+ *  300px 칼럼에서 뭉개지고, 스폰 JSON·미니맵 프리뷰도 좁게 찍히므로 전폭으로 펼친다. */
+const FULL_ROW_SECTIONS: ReadonlySet<MapPropsTab> = new Set(["encounter", "spawns", "minimap"]);
+
+/** 마지막으로 고른 섹션 바로가기 — rerender 가 DOM 을 통째로 갈아끼워도
+ *  aria-current 표시가 유지되도록 모듈 상태에 둔다. */
+let currentSection: MapPropsTab | null = null;
 
 export function resetMapPropsTabForTests(): void {
-  activeTab = "general";
+  // 단일 화면 전환 뒤에는 탭 상태가 없다 — 구 테스트의 호출 자리와 맞추기 위한 no-op.
+  // 바로가기 표시 상태만 초기화한다.
+  currentSection = null;
+}
+
+/** 창을 새로 열 때 바로가기 표시를 비운다 — rerender 유지용 상태가 재오픈까지 남으면
+ *  스크롤은 맨 위인데 하이라이트만 이전 섹션이라 어긋나 보인다. */
+export function resetMapPropsSectionForOpen(): void {
+  currentSection = null;
 }
 
 export function renderMapProps(container: HTMLElement): void {
@@ -43,36 +61,65 @@ export function renderMapProps(container: HTMLElement): void {
 
   const wrapper = el("div", { class: "map-props-dialog" });
 
-  // 탭 바
-  const tabBar = el("div", { class: "map-props-tabs", dataset: { testid: "map-props-tabs" } });
-  for (const [tab, label] of Object.entries(TAB_LABELS)) {
+  // 섹션 바로가기 줄 — 구 탭 버튼과 같은 testid 를 유지하므로 기존 테스트·e2e 가 그대로 통한다.
+  // 클릭은 다시 그리지 않고 해당 섹션으로 스크롤만 한다(입력 포커스·스크롤 위치 보존).
+  // 내비는 flex 고정 영역이라 스크롤해도 자리에 남는다(스크롤러는 아래 .map-props-body 하나).
+  const nav = el("nav", {
+    class: "map-props-tabs",
+    attrs: { "aria-label": "맵 설정 섹션 바로가기" },
+    dataset: { testid: "map-props-tabs" },
+  });
+  const navButtons = new Map<MapPropsTab, HTMLElement>();
+  for (const tab of SECTION_ORDER) {
+    const sectionId = `map-props-section-${tab}`;
     const btn = el("button", {
-      class: `map-props-tab${activeTab === tab ? " active" : ""}`,
-      text: label,
-      attrs: { type: "button" },
+      class: "map-props-tab",
+      text: TAB_LABELS[tab],
+      attrs: currentSection === tab
+        ? { type: "button", "aria-controls": sectionId, "aria-current": "location" }
+        : { type: "button", "aria-controls": sectionId },
       dataset: { testid: `map-props-tab-${tab}` },
       on: {
         click: () => {
-          activeTab = tab as MapPropsTab;
-          renderMapProps(container);
+          currentSection = tab;
+          for (const [key, other] of navButtons) {
+            if (key === tab) other.setAttribute("aria-current", "location");
+            else other.removeAttribute("aria-current");
+          }
+          wrapper.querySelector(`[data-testid="${sectionId}"]`)?.scrollIntoView?.();
         },
       },
     });
-    tabBar.append(btn);
+    navButtons.set(tab, btn);
+    nav.append(btn);
   }
-  wrapper.append(tabBar);
+  wrapper.append(nav);
 
-  // 탭 내용
-  const body = el("div", { class: "map-props-body" });
-  switch (activeTab) {
-    case "general": renderGeneralTab(body, map); break;
-    case "background": renderBackgroundTab(body, map); break;
-    case "bgm": renderBgmTab(body, map); break;
-    case "battle": renderBattleTab(body, map); break;
-    case "restrictions": renderRestrictionsTab(body, map); break;
-    case "encounter": renderEncounterTab(body, map); break;
-    case "spawns": renderSpawnsTab(body, map); break;
-    case "minimap": renderMinimapTab(body, map); break;
+  // 전 섹션 단일 화면 — 8탭을 오가며 비교하던 불편을 없앤다.
+  const body = el("div", { class: "map-props-body is-single-view" });
+  const renderers: Record<MapPropsTab, (host: HTMLElement, m: typeof map) => void> = {
+    general: renderGeneralTab,
+    background: renderBackgroundTab,
+    bgm: renderBgmTab,
+    battle: renderBattleTab,
+    restrictions: renderRestrictionsTab,
+    encounter: renderEncounterTab,
+    spawns: renderSpawnsTab,
+    minimap: renderMinimapTab,
+  };
+  for (const tab of SECTION_ORDER) {
+    const block = el("section", {
+      class: `map-props-section-block${FULL_ROW_SECTIONS.has(tab) ? " is-full-row" : ""}`,
+      attrs: { id: `map-props-section-${tab}` },
+      dataset: { testid: `map-props-section-${tab}` },
+    });
+    block.append(el("h2", {
+      class: "map-props-section-title",
+      text: TAB_LABELS[tab],
+      attrs: { id: `map-props-title-${tab}` },
+    }));
+    renderers[tab](block, map);
+    body.append(block);
   }
   wrapper.append(body);
   container.append(wrapper);
@@ -170,7 +217,7 @@ function renderBackgroundTab(host: HTMLElement, map: import("@/project/types").G
     } else {
       setMapBackground(map.id, null);
     }
-    renderMapProps(host.closest(".map-props-dialog")?.parentElement ?? host);
+    rerender(host);
   });
   section.append(fieldRow("배경 사용", enableCheck));
 
@@ -230,7 +277,7 @@ function renderBgmTab(host: HTMLElement, map: import("@/project/types").GameMap)
         const val = (e.target as HTMLSelectElement).value as MapBgmSetting["mode"];
         if (val === "parent") setMapBgm(map.id, null);
         else setMapBgm(map.id, { mode: val, resourceId: bgm?.resourceId });
-        renderMapProps(host.closest(".map-props-dialog")?.parentElement ?? host);
+        rerender(host);
       },
     },
   }) as HTMLSelectElement;
@@ -244,8 +291,10 @@ function renderBgmTab(host: HTMLElement, map: import("@/project/types").GameMap)
     // 생 텍스트 입력에서 리소스 피커로 바꿨다. 기본 BGM 카탈로그가 281곡이라
     // 리소스 id 를 외워 타이핑하는 건 실질적으로 불가능하다 — 피커에서 검색·미리듣기로 고른다.
     // resourcePickerControl 은 같은 testid 의 숨은 텍스트 입력을 유지하므로 기존 e2e 는 그대로 통한다.
-    const rerender = (): void => {
-      renderMapProps(host.closest(".map-props-dialog")?.parentElement ?? host);
+    // 다시 그리기는 모듈 공용 rerender(host) 를 쓴다 — 여기서 const rerender 를 두면
+    // 자기 자신을 재귀 호출하므로 금지(섀도잉 실측).
+    const rerenderBgm = (): void => {
+      rerender(host);
     };
     section.append(resourcePickerControl({
       label: "BGM",
@@ -257,7 +306,7 @@ function renderBgmTab(host: HTMLElement, map: import("@/project/types").GameMap)
       onChange: (result) => {
         setMapBgm(map.id, { mode: "custom", resourceId: result.resourceId, fadeInMs: bgm?.fadeInMs });
       },
-      rerender,
+      rerender: rerenderBgm,
     }));
     section.append(fieldRow("페이드인 (ms)", el("input", {
       attrs: { type: "number", min: "0", max: "10000", step: "100" },
@@ -450,10 +499,19 @@ function commitTable(mapId: string, entries: EncounterTableEntry[], host: HTMLEl
   rerender(host);
 }
 
-// 탭 본문(host)은 renderMapProps가 만든 .map-props-body 이므로 전체 다이얼로그를 다시 그린다.
+// 섹션 블록(host)은 .map-props-dialog > .map-props-body 안에 있으므로
+// closest 로 다이얼로그를 찾아 그 부모(컨테이너)에 다시 그린다.
+// 다시 그리기 전 스크롤 위치를 저장했다가 복구한다 — clearChildren 으로 바디를
+// 통째로 비우면 스크롤이 0으로 돌아가 토글 한 번에 맨 위로 튕기던 후퇴를 막는다.
 function rerender(host: HTMLElement): void {
-  const container = host.parentElement?.parentElement;
-  if (container) renderMapProps(container);
+  const dialog = host.closest(".map-props-dialog");
+  const container = dialog?.parentElement;
+  if (!container) return;
+  const scroller = dialog?.querySelector(".map-props-body") ?? dialog;
+  const scrollTop = scroller?.scrollTop ?? 0;
+  renderMapProps(container as HTMLElement);
+  const nextScroller = (container as HTMLElement).querySelector(".map-props-dialog .map-props-body");
+  if (nextScroller) nextScroller.scrollTop = scrollTop;
 }
 
 function encounterRow(
