@@ -107,9 +107,11 @@ export function decideImageDataUrl(
     return { ok: true, format, normalizeToPng: needsPngNormalize(format) };
   }
   // 파일 수준 판정이 ok 였는데 dataUrl 헤더가 비어 있거나 일반 MIME 이면
-  // 파일 판정을 따른다 — 둘은 같은 필드(File.type)에서 나온다.
+  // 파일 판정의 형식을 따르되 PNG 로 다시 그린다. 헤더 그대로 저장하면
+  // safeUploadedResourceUrl 화이트리스트(data:image/png|jpeg|webp|gif)에 걸려
+  // 플레이·미리보기에서 null 이 되기 때문이다 (image/jpg 별칭과 같은 이유).
   if (fallback && GENERIC_DATA_URL_MIMES.includes(mime)) {
-    return { ok: true, format: fallback.format, normalizeToPng: fallback.normalizeToPng };
+    return { ok: true, format: fallback.format, normalizeToPng: true };
   }
   return { ok: false, reason: "format", actual: mime, message: formatImageImportFormatError(mime) };
 }

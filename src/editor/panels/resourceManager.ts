@@ -197,8 +197,13 @@ function importImageResource(file: File, kind: ResourceKind, container: HTMLElem
             assetId: id,
           });
         });
+        const animated = decision.format === "webp" || decision.format === "gif";
         const convertedNote =
-          dataUrl !== rawDataUrl ? " (WebP·GIF→PNG 변환, 첫 프레임만)" : "";
+          dataUrl !== rawDataUrl
+            ? animated
+              ? " (WebP·GIF→PNG 변환, 첫 프레임만)"
+              : " (PNG로 변환)"
+            : "";
         toast(`${spec.label} 가져오기 완료: ${width}x${height}${convertedNote}`, "ok");
         if (kind === "chipset") {
           const tileset = ensureTilesetFromUpload(asset);
