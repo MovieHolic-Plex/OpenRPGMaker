@@ -19,6 +19,7 @@ import { serializeStructureKitFile, structureKitFileName } from "@/editor/harnes
 import { assembledKitCells, renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
 import { structureKitSize } from "@/editor/harnessSuggestion/structureKitModel";
 import type { InteriorObjectDef } from "@/editor/interiorObjectCatalog";
+import { interiorFurnitureKits, kindsDerivedFromConceptBundles } from "@/editor/interiorRoomVocab";
 import { INTERIOR_ROOM_TILESET_ID, seedDefaultInteriorCatalog } from "@/editor/interiorRoomPipeline";
 import { makeDatabaseTabIcon } from "@/editor/panels/databaseTabIcons";
 import {
@@ -179,7 +180,11 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
   }
 
   let activeTileset = current.tilesets[session.tilesetId] ?? tilesets[0];
-  if (activeTileset?.id === INTERIOR_ROOM_TILESET_ID && activeTileset.interiorRoomKinds === undefined) {
+  // Phase 3: 할 일이 있을 때만 store를 만진다. 파생 모드(꾸러미 장소 있음 + 가구 있음)는
+  // 정상 상태라 렌더마다 update를 돌리면 rAF 리프레시와 맞물려 매 프레임 dirty가 된다.
+  if (activeTileset?.id === INTERIOR_ROOM_TILESET_ID
+    && activeTileset.interiorRoomKinds === undefined
+    && (kindsDerivedFromConceptBundles(activeTileset).length === 0 || interiorFurnitureKits(activeTileset).length === 0)) {
     store.update((project) => {
       const tileset = project.tilesets[activeTileset.id];
       if (!tileset || tileset.interiorRoomKinds !== undefined) return;
