@@ -95,6 +95,8 @@ export type ForestCompositionResult = {
   readonly warnings: readonly string[];
   /** 하위→상위로 옮긴 밑동 칸 수(투명 구멍 방지). */
   readonly liftedTrunks: number;
+  /** dense 에서 가장자리 덤불을 걷어 낸 칸 수. impassable 은 항상 0. */
+  readonly feathered: number;
   /** impassable 에서 덤불로 막은 남은 통행 칸 수. dense 는 항상 0(지나갈 틈을 남긴다). */
   readonly closedGaps: number;
 };
@@ -119,7 +121,7 @@ export function plantForestComposition(draft: Project, input: {
   if (!map) {
     return {
       placed: 0, requested: 0, materials: [], undergrowthCells: 0,
-      warnings: [`맵 없음: ${input.mapId}`], liftedTrunks: 0, closedGaps: 0,
+      warnings: [`맵 없음: ${input.mapId}`], liftedTrunks: 0, closedGaps: 0, feathered: 0,
     };
   }
   const cells = Math.max(0, Math.floor(input.area.w)) * Math.max(0, Math.floor(input.area.h));
@@ -167,8 +169,46 @@ export function plantForestComposition(draft: Project, input: {
   const closedGaps = input.density === "impassable"
     ? closeGapsWithBushes(draft, map, input.area, input.seed)
     : 0;
+  const feathered = input.density === "dense" ? featherForestEdge(draft, map, input.area, input.seed) : 0;
   const undergrowthCells = paintForestFloor(draft, map, input.area, input.seed);
-  return { placed, requested, materials, undergrowthCells, warnings, liftedTrunks: lifted, closedGaps };
+  return { placed, requested, materials, undergrowthCells, warnings, liftedTrunks: lifted, closedGaps, feathered };
+}
+
+/**
+ * dense 전용 — 영역 가장자리의 막는 덤불을 해시 스트라이드로 걷어 직선 경계를 깨뜨린다.
+ * 좁은 도형은 가장자리 비율이 높아 스트라이드를 늘린다.
+ */
+function featherForestEdge(draft: Project, map: GameMap, area: Rect, seed: number): number {
+  const tileset = draft.tilesets[map.tilesetId];
+  const bushIds = new Set<number>();
+  if (tileset) {
+    for (const label of BLOCKING_BUSH_LABELS) {
+      const access = resolveMaterialByLabel(tileset, label, { preferGroup: false, preferRoles: ["prop", "decoration"] });
+      if (access.status === "missing" || access.kind === "group") continue;
+      const pass = tilePassability(tileset, TILE.GRASS, access.tileId);
+      if (pass.up || pass.down || pass.left || pass.right) continue;
+      bushIds.add(access.tileId);
+    }
+  }
+  if (bushIds.size === 0) bushIds.add(289);
+
+  const edgeCells = 2 * area.w + 2 * area.h - 4;
+  const edgeRatio = edgeCells / Math.max(1, area.w * area.h);
+  const stride = edgeRatio > 0.4 ? 4 : 2;
+  let feathered = 0;
+  for (let y = area.y; y < area.y + area.h; y += 1) {
+    for (let x = area.x; x < area.x + area.w; x += 1) {
+      const onEdge = x === area.x || y === area.y || x === area.x + area.w - 1 || y === area.y + area.h - 1;
+      if (!onEdge || !inMapBounds(map, x, y)) continue;
+      const index = y * map.width + x;
+      if (!bushIds.has(map.upperTiles[index] ?? TILE.EMPTY)) continue;
+      const hash = Math.imul(x * 0x1f1f1f1f ^ y * 0x85ebca6b ^ seed, 0xc2b2ae35) >>> 0;
+      if (hash % stride !== 0) continue;
+      map.upperTiles[index] = TILE.EMPTY;
+      feathered += 1;
+    }
+  }
+  return feathered;
 }
 
 /**
