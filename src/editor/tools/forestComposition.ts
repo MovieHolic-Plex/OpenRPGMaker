@@ -364,7 +364,7 @@ const FLOOR_DARK_GRASS: readonly number[] = [245, 275, 335];
  *    얹어 수관·덤불을 지우지 않고, 보호셀(시작칸·이벤트)은 반드시 건너뛴다 — 여기서 막는 칩을
  *    올리면 시공 제안이 통째로 반려된다(단일 타일 경로에서 이미 겪은 결함이다).
  * 3. **짙은 수풀 오토타일**(앵커 9) — 키큰 풀 톤과 다른 바닥. 드물게 작은 덩어리로만 깐다.
- *    물웅덩이는 나무보다 먼저 깔리므로 이 함수는 수풀만 담당한다.
+ * 4. **작은 물웅덩이** — 빈 상위 칸에만 찍어 나무·덤불을 지우지 않는다.
  */
 function paintForestFloor(draft: Project, map: GameMap, area: Rect, seed: number): number {
   const tileset = draft.tilesets[map.tilesetId];
@@ -457,12 +457,13 @@ function shuffledPatchOrigins(area: Rect, patchW: number, patchH: number, inset:
 }
 
 /**
- * 숲 속 2×2 물웅덩이. 나무·밑동·수관은 건드리지 않고, 덤불·잡동사니만 비운다.
- * 한 덩어리(큰 숲은 둘)라 밀도 계약(impassable ≥99%)을 깨지 않는다.
+ * 숲 속 2×2 물웅덩이. 빈 상위 칸(잡동사니는 비워도 됨)에만 찍어 덤불·수관·밑동을
+ * 건드리지 않는다 — 좁은 숲 띠의 안쪽 덤불 비율 계약을 깨지 않기 위해서다.
+ * 20×20급 이상에서만 한 덩어리(큰 숲은 둘)라 밀도 계약도 유지한다.
  */
 function scatterForestPuddles(draft: Project, map: GameMap, area: Rect, seed: number): number {
   const cells = Math.max(0, area.w) * Math.max(0, area.h);
-  const wanted = cells >= 1600 ? 2 : cells >= 64 ? 1 : 0;
+  const wanted = cells >= 1600 ? 2 : cells >= 400 ? 1 : 0;
   if (wanted === 0) return 0;
   const thicket = new Set<number>(undergrowthAutotileGroup(draft, map).memberTileIds);
   const protectedCells = protectedEventCells(draft, map);
@@ -494,6 +495,11 @@ function scatterForestPuddles(draft: Project, map: GameMap, area: Rect, seed: nu
             break;
           }
           if (isTreeTrunkTileId(lower) || isTreeTrunkTileId(upper) || isTreeCanopyTileId(upper)) {
+            blocked = true;
+            break;
+          }
+          // 빈 상위 칸에만 — 안쪽 덤불을 걷어내면 좁은 숲 띠의 덤불 비율 계약이 깨진다.
+          if (upper !== TILE.EMPTY) {
             blocked = true;
             break;
           }
