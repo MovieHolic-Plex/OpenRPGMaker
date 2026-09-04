@@ -12,7 +12,7 @@
 // 4) 세트 혼합 금지 — 벽·지붕은 키트로 페어 고정.
 
 import { TILE } from "@/project/defaults/constants";
-import { createHouseDoorEvent } from "@/editor/houseInteriors";
+import { createHouseDoorEvent, createHouseDoorStepEvent } from "@/editor/houseInteriors";
 import type { GameEvent, GameMap, MapId } from "@/project/types";
 
 export type HouseKitId = "blue-stone" | "bright-plaster" | "amber-wood" | "slate-wood" | "timber-hall" | "aframe-stone";
@@ -522,6 +522,17 @@ export function stampFootprintHouseKit(map: GameMap, plan: FootprintHousePlan): 
       kitId: plan.kitId,
       name: plan.doorEvent.name,
     }));
+    // 열린 문 기본값: 문 앞 통행 칸에 밟으면 열리는 발판 — 문 칸은 벽이라 밟히지 않는다.
+    // 문 앞이 맵 밖이면 발판을 생략한다(문 스프라이트만 남는다).
+    if (doorAt.y + 1 < map.height) {
+      upsertEvent(map, createHouseDoorStepEvent({
+        eventId: `${plan.doorEvent.eventId}_step`,
+        x: doorAt.x,
+        y: doorAt.y + 1,
+        interiorMapId: plan.doorEvent.interiorMapId,
+        name: plan.doorEvent.name,
+      }));
+    }
   }
   return { ok: true, doorAt };
 }

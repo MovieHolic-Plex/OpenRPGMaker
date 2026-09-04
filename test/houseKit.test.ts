@@ -249,8 +249,9 @@ describe("house kit — 창문 자동 배치", () => {
     expect(door?.x).toBe(4);
     expect(door?.y).toBe(7);
     const page = door?.pages?.[0];
-    expect(page?.trigger.kind).toBe("action");
-    expect(page?.priority).toBe("same");
+    // 열린 문 기본값: 문 스프라이트는 below 장식, 전이는 문 앞 발판이 맡는다.
+    expect(page?.trigger.kind).toBe("playerTouch");
+    expect(page?.priority).toBe("below");
     expect(page?.graphic.sprite?.id).toBe(HOUSE_DOOR_CHARSET_TEXTURE);
     expect(page?.graphic.pattern).toBe(houseDoorFrameIndex("bright-plaster", 0));
     expect(page?.commands.map((command) => command.kind)).toEqual([

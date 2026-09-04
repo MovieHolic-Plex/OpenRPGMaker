@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
-import { houseDoorFrameIndex, HOUSE_DOOR_OPEN_SE } from "@/editor/houseInteriors";
+import { houseDoorFrameIndex } from "@/editor/houseInteriors";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
@@ -39,7 +39,7 @@ type VillageData = {
 
 const EVIDENCE_DIR = "output/evidence/village-house-interior-transfer";
 
-test("build_village door action opens and transfers into the generated house interior", async ({ page }) => {
+test("build_village open door transfers on step into the generated house interior", async ({ page }) => {
   await mkdir(EVIDENCE_DIR, { recursive: true });
   const scenario = createScenario();
   await writeFile(`${EVIDENCE_DIR}/scenario.json`, JSON.stringify({
@@ -65,15 +65,9 @@ test("build_village door action opens and transfers into the generated house int
   expect(before.player).toEqual(scenario.front);
   await page.screenshot({ path: `${EVIDENCE_DIR}/play-before-door-action.png`, fullPage: true });
 
+  // 열린 문 기본값: 시작 위치가 문 앞(front)이라 위로 한 칸 가면 문 앞 발판을 밟고 전이된다.
+  // 결정키(Space)를 누르지 않는다 — 구 닫힌 문 동작이면 전이가 일어나지 않아 실패한다.
   await tapKey(page, "ArrowUp", 90);
-  const frameCapture = collectDoorFrames(page, scenario.doorEventId, 900);
-  await tapKey(page, "Space", 30);
-  const observedFrames = await frameCapture;
-  expect(observedFrames).toContain(scenario.expectedOpenFrame);
-  // 문 여는 효과음은 SE 채널 원샷 — QA 거울에 카탈로그 리소스 id 가 그대로 찍힌다.
-  await expect.poll(async () => (await audioState(page)).se?.resourceId).toBe(HOUSE_DOOR_OPEN_SE);
-  const doorSe = await audioState(page);
-  expect(doorSe.se?.loop).toBe(false);
   await expect.poll(async () => (await runtimeState(page)).mapId).toBe(scenario.interiorMapId);
   const inside = await runtimeState(page);
   expect(inside.player).toEqual(scenario.entry);
@@ -95,8 +89,6 @@ test("build_village door action opens and transfers into the generated house int
     before,
     inside,
     returned,
-    observedFrames,
-    doorSe,
   }, null, 2), "utf8");
 });
 
@@ -129,34 +121,3 @@ async function runtimeState(page: Page): Promise<RuntimeState> {
   return JSON.parse(text) as RuntimeState;
 }
 
-type AudioState = { readonly se?: { readonly resourceId: string; readonly loop: boolean } };
-
-async function audioState(page: Page): Promise<AudioState> {
-  const node = page.getByTestId("audio-state-json");
-  if ((await node.count()) === 0) return {};
-  const text = await node.first().textContent();
-  return text ? (JSON.parse(text) as AudioState) : {};
-}
-
-async function collectDoorFrames(page: Page, doorEventId: string, durationMs: number): Promise<unknown[]> {
-  return page.evaluate(async ({ doorEventId: eventId, durationMs: duration }) => {
-    const frames: unknown[] = [];
-    const startedAt = performance.now();
-    await new Promise<void>((resolve) => {
-      const tick = () => {
-        const debug = (window as unknown as {
-          __oprnCharacterSprites?: () => { readonly events?: Record<string, { readonly frame?: unknown }> } | null;
-        }).__oprnCharacterSprites?.();
-        const frame = debug?.events?.[eventId]?.frame;
-        if (frame !== undefined) frames.push(frame);
-        if (performance.now() - startedAt >= duration) {
-          resolve();
-          return;
-        }
-        requestAnimationFrame(tick);
-      };
-      tick();
-    });
-    return frames;
-  }, { doorEventId, durationMs });
-}
