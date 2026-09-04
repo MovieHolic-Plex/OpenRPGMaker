@@ -1,6 +1,7 @@
 // ai/autonomyLevels.ts
 // 자율성 다이얼의 코어 모델 매핑 — UI가 고르는 4단계 레벨을 LLM/세션 노브로 푼다.
-// UI 파일은 이 모듈을 읽기만 한다(역방향 의존 없음). 실제 세션 배선은 후속 작업.
+// UI 파일은 이 모듈을 읽기만 한다(역방향 의존 없음). 세션 배선은 assistantSession 의
+// autonomy() 헬퍼가 맡는다(레벨 명시 시에만 적용, 미지정은 종래 동작).
 import type { AiConfig } from "./llmClient";
 
 export const AUTONOMY_LEVEL_IDS = ["confirm", "balanced", "autonomous", "max"] as const;

@@ -13,10 +13,12 @@ import {
   DEFAULT_MAX_TOKENS,
   DEFAULT_MODEL,
   defaultAiConfig,
+  isAutonomyLevel,
   loadAiConfig,
   saveAiConfig,
   type AiConfig,
 } from "@/ai/llmClient";
+import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel } from "@/ai/autonomyLevels";
 import { defaultModelForAuthMode, isModelValidForAuthMode, modelCatalogForAuthMode } from "@/ai/modelCatalog";
 import { parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 import {
@@ -180,6 +182,19 @@ export function renderAiSettingsForm(options: {
   maxTokens.input.setAttribute("max", "1000000");
   maxTokens.input.setAttribute("title", maxTokensDescription);
 
+  const initialAutonomyLevel: AutonomyLevel = isAutonomyLevel(config.autonomyLevel) ? config.autonomyLevel : "balanced";
+  const autonomySelect = el("select", {
+    class: "ai-config-select",
+    dataset: { testid: "ai-config-autonomy" },
+    children: AUTONOMY_LEVELS.map((level) =>
+      el("option", { attrs: { value: level.id }, text: level.label }),
+    ),
+  }) as HTMLSelectElement;
+  autonomySelect.value = initialAutonomyLevel;
+  const autonomyDescription = "AI가 스스로 판단하고 실행하는 정도입니다. 올리면 추론과 작업 모드가 함께 조정됩니다.";
+  const autonomyRow = settingsRow("자율성", autonomyDescription, autonomySelect);
+  autonomyRow.setAttribute("title", autonomyDescription);
+
   const reasoningSelect = el("select", {
     class: "ai-config-select",
     dataset: { testid: "ai-config-reasoning" },
@@ -258,6 +273,7 @@ export function renderAiSettingsForm(options: {
     maxTokens: Math.max(256, Number(maxTokens.input.value) || defaultAiConfig().maxTokens),
     reasoningEffort: (reasoningSelect.value as AiConfig["reasoningEffort"]) || "medium",
     agentMode: agentModeSelect.value === "chat" ? "chat" : "auto",
+    autonomyLevel: isAutonomyLevel(autonomySelect.value) ? autonomySelect.value : "balanced",
   });
 
   let autoSaveTimer: number | null = null;
@@ -306,6 +322,14 @@ export function renderAiSettingsForm(options: {
     });
   }
   reasoningSelect.addEventListener("change", () => persist(false));
+  autonomySelect.addEventListener("change", () => {
+    const level: AutonomyLevel = isAutonomyLevel(autonomySelect.value) ? autonomySelect.value : "balanced";
+    autonomySelect.value = level;
+    const resolved = resolveAutonomy(level);
+    reasoningSelect.value = resolved.reasoningEffort;
+    agentModeSelect.value = resolved.agentMode;
+    persist(false);
+  });
 
   const connectionSummary = el("div", {
     class: "ai-settings-connection-summary",
@@ -406,7 +430,7 @@ export function renderAiSettingsForm(options: {
         "behavior",
         "동작",
         "응답 예산과 작업 진행 방식을 조정합니다.",
-        [maxTokens.row, reasoningRow, agentModeRow],
+        [autonomyRow, maxTokens.row, reasoningRow, agentModeRow],
       ),
       settingsSection(
         "display",
