@@ -500,9 +500,11 @@ describe("build_village", () => {
       const interior = context.project.maps[house.interiorMapId as string];
       expect(interior.name.startsWith(`${house.ownerName}의 집 내부`)).toBe(true);
       expect(interior.tilesetId).toBe(INTERIOR_HOUSE_TILESET_ID);
-      // villager-room-v1 규모(천장 정본 v2: +1행 + 수평 벽 3행): cottage-l 20×20, cottage 20×21, mansion 24×25
+      // villager-room-v1 규모(천장 정본 v2: 북벽 = 천장+벽, minY<3이면 height를 늘림).
+      // cottage-l 20×20, cottage2/3 20×21, ceiling-shift+2 20×22, mansion 24×25.
+      // 22는 sketchHouseSites가 다른 템플릿/프로그램을 고르면 rooms minY=1이 되어 나온다.
       expect([20, 24]).toContain(interior.width);
-      expect([20, 21, 25]).toContain(interior.height); // 20 = cottage-l·2층, 21 = cottage2/3, 25 = mansion
+      expect([20, 21, 22, 25]).toContain(interior.height);
       expect(house.entry).toBeTruthy();
       expect(house.exit).toBeTruthy();
       expect(door?.pages?.[0]?.commands.at(-1)).toMatchObject({

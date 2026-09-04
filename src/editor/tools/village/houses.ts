@@ -7,6 +7,7 @@ import type { GameMap } from "@/project/types";
 import type { Rng } from "@/util/rng";
 import { ToolError } from "../types";
 import type { TerrainConstraintMasks } from "../villageTerrainPass";
+import type { VillageSketchSite } from "./sketch";
 import {
   clamp,
   coordKey,
@@ -206,8 +207,9 @@ export function buildHouses(
    * 문 이벤트를 만들지 않는 시공(interior:false / doorEvent:false)에서만 true 로 넘긴다.
    */
   paintDoorTiles = false,
+  sketchSites?: readonly VillageSketchSite[],
 ): BuiltHouse[] {
-  const available = houseCandidates(area, plaza, target, intent.templateCatalog, intent.settlementLayout, boulevard);
+  const available = houseCandidates(area, plaza, target, intent.templateCatalog, intent.settlementLayout, boulevard, sketchSites);
   const candidates = [
     ...shuffled(available.filter((candidate) => candidate.organic), rng),
     ...shuffled(available.filter((candidate) => !candidate.organic), rng),
@@ -339,6 +341,7 @@ function houseCandidates(
   catalog: readonly HouseTemplate[],
   settlement: SettlementLayout = "plaza-ring",
   boulevard?: HouseBoulevardHint,
+  sketchSites?: readonly VillageSketchSite[],
 ): HouseCandidate[] {
   const minTemplateWidth = Math.min(...catalog.map((template) => template.w));
   const wantedColumns = Math.ceil(target / 2);
@@ -353,6 +356,25 @@ function houseCandidates(
   const span = columns * slotWidth + (columns - 1) * HOUSE_MARGIN * 2;
   const xStart = area.x + Math.max(HOUSE_MARGIN, Math.floor((area.w - span) / 2));
   const candidates: HouseCandidate[] = [];
+
+  // 스케치 프리패스(유기적 후보 우선) — 격자보다 먼저 깔아 organic-first 셔플이 뽑게 한다.
+  // 기존 분수 슬롯·밴드·격자는 그대로 둔다(스케치가 못 채우면 폴백이 메운다).
+  if (sketchSites !== undefined) {
+    for (const site of sketchSites) {
+      for (const template of templates) {
+        candidates.push({
+          template,
+          bbox: {
+            x: clamp(site.x - Math.floor(template.w / 2), area.x + HOUSE_MARGIN, area.x + area.w - HOUSE_MARGIN - template.w),
+            y: clamp(site.y, area.y + HOUSE_MARGIN, area.y + area.h - HOUSE_MARGIN - template.h),
+            w: template.w,
+            h: template.h,
+          },
+          organic: true,
+        });
+      }
+    }
+  }
 
   if (settlement !== "street-grid") {
     const naturalSlots = [
