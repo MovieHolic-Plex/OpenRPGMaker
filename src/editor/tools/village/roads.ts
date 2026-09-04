@@ -614,6 +614,10 @@ function paintRoadCellsAvoidingHouses(
   shapeRoadStyle(map, pathStyle, painted);
 }
 
+/** 미리보기용 길 조각 — 본시공과 같은 몸통 타일·오토타일 성형. 타일 번호는 여기만 안다. */
+export function paintRoadStrip(map: GameMap, style: RoadStyle, cells: readonly Point[]): void {
+  paintRoadCellsAvoidingHouses(map, style, cells, EMPTY_BLOCKED);
+}
 
 /**
  * 집 footprint를 건너뛴 뒤 끊긴 길 성분을 하나로 잇는다.

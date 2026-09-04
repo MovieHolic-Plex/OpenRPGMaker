@@ -348,7 +348,7 @@
   font: 600 10px/1.3 "Cascadia Mono", Consolas, monospace;
 }
 
-/* 층수·재료 선택 — 글자 <select> 를 그림 카드로. 모양 카드보다 한 단 작다(미디어 ~72px). */
+/* 층수·재료·프리셋 분위기 선택 — 글자 <select> 를 그림 카드로. 모양 카드보다 한 단 작다(미디어 ~72px). */
 .database-modal-backdrop .database-modal-window .database-modal-body .db-field:has(.db-village-option-grid) {
   align-items: start;
 }
