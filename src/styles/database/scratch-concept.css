@@ -1,4 +1,4 @@
-/* 임시 → 개념 꾸러미. --db-studio-* 토큰만 쓴다. */
+/* 맵 → 타일셋 → 개념 꾸러미. --db-studio-* 토큰만 쓴다. */
 
 .db-body.db-shared-workspace:has(.scratch-concept-workspace) {
   overflow: hidden;

@@ -115,7 +115,7 @@ export const PLACE_CONCEPT_TOOL: ToolDefinition = {
   description:
     "시설 실내를 설계대로 시공한다. 여관 지어줘 · 상점 만들어줘 · 술집 · 주막 · 민가 · 서재 · 도서관 · "
     + "대장간 · 교회 · 성당 · 창고 · 길드 처럼 시설명을 부르는 요청에 쓴다. "
-    + "순서: get_concept_facility(query) 로 템플릿(사용자가 데이터베이스 「임시 → 개념 꾸러미」에서 고친 장소·물건)과 물건 어휘를 읽고, "
+    + "순서: get_concept_facility(query) 로 템플릿(사용자가 데이터베이스 「맵 → 타일셋 → 개념 꾸러미」에서 고친 장소·물건)과 물건 어휘를 읽고, "
     + "요청(방 수·크기·분위기·층·내용물)에 맞게 고친 plan 을 넘기라. 수식어가 없어도 템플릿을 그대로 복사하지 말고 설계를 다듬어라. "
     + "plan 을 생략하면 템플릿 그대로 짓는다. 좌표·벽·문·이벤트는 코드가 정한다(방 bbox 를 찍지 마라). "
     + "query 는 시설명(여관·상점·대장간…) 또는 꾸러미 id — 템플릿에 없는 시설도 plan 이 있으면 짓는다. "
@@ -158,7 +158,7 @@ export const PLACE_CONCEPT_TOOL: ToolDefinition = {
     const hasPlan = args.plan !== undefined && args.plan !== null;
     if (!hasPlan && tileset?.scratchConceptBundles?.length === 0) {
       throw new ToolError(
-        "이 타일셋의 개념 꾸러미가 비어 있다. plan 을 설계해 넘기거나, 데이터베이스 「임시 → 개념 꾸러미」에서 시설 템플릿을 만들거나 초안(여관·민가·상점…)을 넣어라.",
+        "이 타일셋의 개념 꾸러미가 비어 있다. plan 을 설계해 넘기거나, 데이터베이스 「맵 → 타일셋 → 개념 꾸러미」에서 시설 템플릿을 만들거나 초안(여관·민가·상점…)을 넣어라.",
         { code: "concept-bundle-empty" },
       );
     }
@@ -351,7 +351,7 @@ export const GET_CONCEPT_FACILITY_TOOL: ToolDefinition = {
   name: "get_concept_facility",
   description:
     "시설 실내를 지으려면 이것을 먼저 부른다. 여관·상점·대장간·술집·민가·교회·창고·길드·서재 시설의 "
-    + "템플릿(사용자가 데이터베이스 「임시 → 개념 꾸러미」에서 정해 둔 장소·물건)과 이 타일셋에서 쓸 수 있는 물건 어휘(vocabulary)를 돌려준다. "
+    + "템플릿(사용자가 데이터베이스 「맵 → 타일셋 → 개념 꾸러미」에서 정해 둔 장소·물건)과 이 타일셋에서 쓸 수 있는 물건 어휘(vocabulary)를 돌려준다. "
     + "이 응답의 plan 을 요청에 맞게 고쳐 place_concept({query, mapId, plan}) 에 넘기라 — 그래야 장소 수·크기·내용물이 다른 시설이 생긴다. "
     + "query 를 생략하면 지금 부를 수 있는 시설 라벨과 어휘만 돌려준다. 읽기 전용 — 맵을 건들지 않는다.",
   mode: "read",

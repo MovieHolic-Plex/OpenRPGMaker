@@ -1,7 +1,7 @@
 /**
  * 개념 꾸러미 시설 다양화 — 실제 에디터 증거(진단 스펙, 모델 호출 없음).
  *
- * 1) 데이터베이스 「임시 → 개념 꾸러미」에 시설 띠(아홉 초안)가 그려지고, 시설 칩을 누르면 그 시설의 장소·벽·바닥 재질이 보인다.
+ * 1) 데이터베이스 「맵 → 타일셋 → 개념 꾸러미」에 시설 띠(아홉 초안)가 그려지고, 시설 칩을 누르면 그 시설의 장소·벽·바닥 재질이 보인다.
  * 2) 에디터 툴 훅(`__oprnEditorTool`)으로 place_concept 을 시설마다 실행해 새 맵이 생기고 캔버스(WebGL)에 그려진다.
  *
  * 실행(이 워크트리의 dev 서버 포트로):
@@ -83,7 +83,7 @@ async function openConceptTab(page: Page): Promise<void> {
   await openDatabaseAnyMode(page);
   const tab = page.getByTestId("db-tab-scratch-concepts");
   if (!(await tab.isVisible().catch(() => false))) {
-    const group = page.getByTestId("db-tab-group-scratch");
+    const group = page.getByTestId("db-tab-group-world");
     if (await group.count()) await group.click();
   }
   await tab.click({ force: true });

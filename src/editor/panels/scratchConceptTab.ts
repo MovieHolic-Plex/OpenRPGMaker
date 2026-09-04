@@ -1,4 +1,4 @@
-// 데이터베이스 「임시 → 개념 꾸러미」.
+// 데이터베이스 「맵 → 타일셋 → 개념 꾸러미」.
 // 타일셋에 동봉된 시설→장소→물건→칩 나무를 그림으로 고친다.
 // 사용자가 고친 나무는 place_concept 이 그대로 읽는다.
 
@@ -132,7 +132,7 @@ export function renderScratchConceptTab(host: HTMLElement, rerender: () => void)
         el("h3", { text: "개념 꾸러미", dataset: { testid: "scratch-concept-heading" } }),
         el("span", {
           class: "db-tab-note-chip",
-          children: [makeDatabaseTabIcon("scratchConcepts"), el("span", { text: "임시 · 타일셋별로 분리됨" })],
+          children: [makeDatabaseTabIcon("scratchConcepts"), el("span", { text: "타일셋별로 분리됨" })],
           attrs: { title: "place_concept 가 이 나무를 읽어 시공합니다. 고친 내용이 다음 시설에 그대로 쓰입니다." },
         }),
       ],
