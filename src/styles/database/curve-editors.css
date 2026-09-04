@@ -182,7 +182,7 @@
   width: 100%;
 }
 
-.database-modal-backdrop .db-class-dialog-number input:focus {
+.database-modal-backdrop .db-class-dialog-number input:focus-visible {
   outline: none;
   border-color: var(--db-studio-accent);
   box-shadow: 0 0 0 2px var(--db-studio-accent-soft);
