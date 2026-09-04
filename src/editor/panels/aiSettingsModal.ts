@@ -328,6 +328,10 @@ export function renderAiSettingsForm(options: {
     const resolved = resolveAutonomy(level);
     reasoningSelect.value = resolved.reasoningEffort;
     agentModeSelect.value = resolved.agentMode;
+    // 프로그래밍 대입은 input/change 을 쏘지 않아 커스텀 셀렉트 라벨이 옛값을 가리킨다 —
+    // input 을 쏴 라벨만 동기화한다(change 는 persist 리스너를 한 번 더 태운다).
+    reasoningSelect.dispatchEvent(new Event("input", { bubbles: true }));
+    agentModeSelect.dispatchEvent(new Event("input", { bubbles: true }));
     persist(false);
   });
 
