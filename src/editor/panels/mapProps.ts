@@ -116,7 +116,6 @@ export function renderMapProps(container: HTMLElement): void {
     block.append(el("h2", {
       class: "map-props-section-title",
       text: TAB_LABELS[tab],
-      attrs: { id: `map-props-title-${tab}` },
     }));
     renderers[tab](block, map);
     body.append(block);
@@ -506,9 +505,9 @@ function commitTable(mapId: string, entries: EncounterTableEntry[], host: HTMLEl
 function rerender(host: HTMLElement): void {
   const dialog = host.closest(".map-props-dialog");
   const container = dialog?.parentElement;
-  if (!container) return;
-  const scroller = dialog?.querySelector(".map-props-body") ?? dialog;
-  const scrollTop = scroller?.scrollTop ?? 0;
+  const scroller = dialog?.querySelector(".map-props-body");
+  if (!container || !scroller) return;
+  const scrollTop = scroller.scrollTop;
   renderMapProps(container as HTMLElement);
   const nextScroller = (container as HTMLElement).querySelector(".map-props-dialog .map-props-body");
   if (nextScroller) nextScroller.scrollTop = scrollTop;
