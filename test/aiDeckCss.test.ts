@@ -79,6 +79,29 @@ describe("조수 데크 CSS 계약", () => {
     expect(css).toMatch(/\.ai-chat-log \.ai-command-prefix\s*\{\s*display:\s*none;/u);
   });
 
+  it("데크 입력칸은 유리 위에서도 보인다 — inset 필드 + 입력칸 직접 포커스 링", () => {
+    // Break: 데크 오버라이드가 입력 배경·테두리를 transparent/0 으로 지우면 "어디에 치는지" 안 보인다(2026-09-04).
+    const css = rulesOnly(read(DECK));
+    const blockOf = (selector: string): string => {
+      const start = css.indexOf(selector);
+      expect(start, selector).toBeGreaterThanOrEqual(0);
+      const open = css.indexOf("{", start);
+      const close = css.indexOf("}", open);
+      return css.slice(open, close);
+    };
+    const composer = blockOf(".ai-deck .ai-composer {");
+    expect(composer).toContain("border-top: 1px solid var(--ai-deck-line)");
+    const input = blockOf(".ai-deck .ai-composer .ai-assistant-input {");
+    expect(input).toContain("background: var(--bg-inset)");
+    expect(input).toContain("border: 1px solid var(--border-default)");
+    expect(input).not.toContain("transparent");
+    // 포커스 링은 셸(:focus-within — 데크 셸은 border:0)이 아니라 입력칸이 직접 그린다.
+    const focus = blockOf(".ai-deck .ai-composer .ai-assistant-input:focus,");
+    expect(focus).toContain("border-color: var(--accent-border)");
+    expect(focus).toContain("color-mix(in srgb, var(--accent) 14%, transparent)");
+    expect(focus).not.toContain("box-shadow: none");
+  });
+
   it("영수증 카드는 지금/적용 후 쌍과 되돌리기 버튼 규칙을 갖고 넓은 뷰어 z 계산식을 지킨다", () => {
     // Break: 카드 규칙 이관에서 뷰어의 z-index 식이 빠지거나 하드코딩된다(editorZLayerOrder 와 짝).
     const css = rulesOnly(read(CARDS));

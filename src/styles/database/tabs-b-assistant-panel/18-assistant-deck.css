@@ -774,6 +774,8 @@
   backdrop-filter: none;
   background: transparent;
   border: 0;
+  /* 입력 구역 상단 hairline — 유리 로그와 입력칸이 한 면으로 붙어 "어디에 치는지" 안 보이던 결함(2026-09-04). 레일 구분선과 같은 토큰. */
+  border-top: 1px solid var(--ai-deck-line);
   border-radius: 0;
   box-shadow: none;
   display: grid;
@@ -789,21 +791,23 @@
 }
 
 .ai-deck .ai-composer .ai-assistant-input {
-  background: transparent;
-  border: 0;
-  border-radius: 0;
+  /* 유리 위 무테·투명 입력은 "어디에 치는지" 안 보인다(2026-09-04) — inset 필드로 되돌린다. 베이스(assistant-composer.css)와 같은 토큰만 쓴다. */
+  background: var(--bg-inset);
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
   color: var(--text-1);
   font-family: var(--font-ui);
   font-size: 14.5px;
   line-height: 1.5;
   min-height: 44px;
-  padding: 8px 6px 4px;
+  padding: 8px 10px;
 }
 
 .ai-deck .ai-composer .ai-assistant-input:focus,
 .ai-deck .ai-composer .ai-assistant-input:focus-visible {
-  border-color: transparent;
-  box-shadow: none;
+  /* 포커스 링은 셸이 아니라 입력칸이 그린다 — 데크 셸은 border:0 이라 :focus-within 링이 닿지 않는다. 베이스와 같은 14% accent 링. */
+  border-color: var(--accent-border);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 14%, transparent);
   outline: none;
 }
 
