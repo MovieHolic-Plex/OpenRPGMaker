@@ -7,15 +7,15 @@ describe("database image matching", () => {
   it("assigns unique matching monster graphics for default enemies and species", () => {
     const project = createBlankProject();
     // 몬스터 다이어트(2026-08-30) 뒤의 실측 로스터: 적 106종이 전부 생성 배틀러 아트를 쓰고,
-    // 그중 한 쌍만 의도적으로 아트를 공유한다(species_king_slime → slime + species_sparkit → bat).
-    // 스타터 스파킷은 박쥐 아트를 hue 30 으로 재사용한다(전용 아트 없음). 예전 계약은 종족 5종만
-    // 요구해 스타터 3종·말벌·해골을 빼먹었다.
+    // 그중 한 쌍만 의도적으로 아트를 공유한다(enemy_slime / enemy_meadow_slime → slime).
+    // 종족 쪽 공유(species_king_slime → slime, species_sparkit → bat hue 30 재사용)는
+    // 아래 종족 단언에서 따로 못박는다 — 이 상한은 적 id 기준이다.
     const monsterIds = project.database.enemies.map((enemy) => enemy.monsterResourceId);
     const generatedIds = monsterIds.filter((id) => id?.startsWith("generated-enemy-"));
     expect(generatedIds.length).toBe(monsterIds.length);
     expect(generatedIds.length).toBeGreaterThanOrEqual(100);
-    // 아트 공유는 «이름이 다른 친척» 두 계열만 허용한다 — 그 외 중복은 매칭 실패로 본다.
-    expect(generatedIds.length - new Set(generatedIds).size).toBeLessThanOrEqual(2);
+    // 아트 공유는 «이름이 다른 친척» 한 쌍만 허용한다 — 그 외 중복은 매칭 실패로 본다.
+    expect(generatedIds.length - new Set(generatedIds).size).toBeLessThanOrEqual(1);
     for (const id of monsterIds) {
       expect(resolveAssetResourceUrl(id), id).toBeTruthy();
     }
