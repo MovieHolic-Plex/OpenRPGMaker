@@ -652,3 +652,30 @@ function placePropsCount(
     return 0;
   }
 }
+
+/**
+ * 미리보기용 침엽수 — 본시공과 같은 place_props.
+ * dense packer / forestPlacementPlan 은 타지 않는다(마을 전역 밀도 축은 31s 함정).
+ */
+export function placePreviewConifers(
+  draft: Project,
+  map: GameMap,
+  count: number,
+  seed: number,
+): number {
+  const treeArea = {
+    x: 1,
+    y: 1,
+    w: Math.max(2, map.width - 2),
+    h: Math.max(2, map.height - 2),
+  };
+  return placePropsCount(draft, {
+    mapId: map.id,
+    area: treeArea,
+    material: "침엽수",
+    count,
+    minGap: 3,
+    naturalness: 0.62,
+    seed,
+  }, []);
+}

@@ -316,7 +316,7 @@ describe("데이터베이스 「마을」탭 — 배치 프리셋", () => {
   it("고른 값만 저장하고 되돌리면 키를 지운다", () => {
     const host = withTemplateAndPreset();
 
-    change(findByTestId(host, "db-village-preset-path-style"), "dirt");
+    pick(host, "db-village-preset-path-style", "dirt");
     change(findByTestId(host, "db-village-preset-road-width"), "3");
     change(findByTestId(host, "db-village-preset-layout"), "street-grid");
     change(findByTestId(host, "db-village-preset-house-count"), "5");
@@ -440,7 +440,7 @@ describe("데이터베이스 「마을」탭 — 마을 원형", () => {
     expect(records[0]).toMatchObject({ id: "harbor-coast", name: archetype.name, ...archetype.values });
     // 만든 프리셋이 곧바로 상세로 열려야 한다 — 값을 확인·수정하는 게 원형을 굽는 이유다.
     expect(findByTestId(host, "db-village-preset-name")?.value).toBe(archetype.name);
-    expect(findByTestId(host, "db-village-preset-path-style")?.value).toBe("sand");
+    expect(findByTestId(host, "db-village-preset-path-style")?.dataset.value).toBe("sand");
   });
 
   it("프리셋이 생기면 갤러리 대신 상세의 「값 가져오기」로 옮겨간다", () => {
@@ -461,7 +461,7 @@ describe("데이터베이스 「마을」탭 — 마을 원형", () => {
     const host = renderView("preset");
     findByTestId(host, "db-village-create")?.click();
     change(findByTestId(host, "db-village-preset-house-count"), "7");
-    change(findByTestId(host, "db-village-preset-plaza-layout"), "north");
+    pick(host, "db-village-preset-plaza-layout", "north");
     pick(host, "db-village-preset-ground", "snow");
 
     pick(host, "db-village-archetype-source", "mine-mountain");
