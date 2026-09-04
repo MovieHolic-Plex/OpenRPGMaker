@@ -645,7 +645,7 @@
   font: 400 11px/1.2 "Malgun Gothic", system-ui, sans-serif;
 }
 
-.database-modal-backdrop .database-modal-window .db-terrain-record :is(input, select) {
+.database-modal-backdrop .database-modal-window .db-terrain-record :is(input:not([type="radio"]), select) {
   background-color: var(--db-studio-surface);
   border: 1px solid var(--db-studio-border-default);
   border-radius: 6px;
@@ -691,14 +691,14 @@
   margin: 0;
 }
 
-.database-modal-backdrop .database-modal-window :is(.db-battle-screen-inspector) :is(input, select, button) {
+.database-modal-backdrop .database-modal-window :is(.db-battle-screen-inspector) :is(input:not([type="radio"]), select, button) {
   box-sizing: border-box;
   min-height: 30px;
   min-width: 0;
   width: 100%;
 }
 
-.database-modal-backdrop .database-modal-window .db-battle-screen-inspector :is(input, select) {
+.database-modal-backdrop .database-modal-window .db-battle-screen-inspector :is(input:not([type="radio"]), select) {
   background-color: var(--db-studio-surface);
   border: 1px solid var(--db-studio-border-default);
   border-radius: 6px;
@@ -915,7 +915,7 @@
   font: 400 11px/1.2 "Malgun Gothic", system-ui, sans-serif;
 }
 
-.database-modal-backdrop .database-modal-window .db-battle-command-card :is(input, select) {
+.database-modal-backdrop .database-modal-window .db-battle-command-card :is(input:not([type="radio"]), select) {
   background-color: var(--db-studio-surface);
   border: 1px solid var(--db-studio-border-default);
   border-radius: 6px;

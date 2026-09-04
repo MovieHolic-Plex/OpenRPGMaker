@@ -122,15 +122,14 @@
   padding-right: 24px;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio input:focus-visible,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio input:not([type="radio"]):focus-visible,
 .database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio select:focus-visible {
   border-color: var(--db-studio-accent, var(--db-studio-accent));
   outline: 2px solid var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
   outline-offset: 0;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio input[type="checkbox"],
-.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio input[type="radio"] {
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio input[type="checkbox"] {
   accent-color: var(--db-studio-accent, var(--db-studio-accent));
   flex: 0 0 auto;
   height: 15px;

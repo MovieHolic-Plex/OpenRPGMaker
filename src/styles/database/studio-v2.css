@@ -800,17 +800,17 @@
   resize: vertical;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body :is(input, select, textarea):hover:not(:disabled):not(:focus-visible) {
+.database-modal-backdrop .database-modal-window .database-modal-body :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]), select, textarea):hover:not(:disabled):not(:focus-visible) {
   border-color: var(--db-studio-border-strong);
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body :is(input, select, textarea):focus-visible {
+.database-modal-backdrop .database-modal-window .database-modal-body :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]), select, textarea):focus-visible {
   border-color: var(--db-studio-accent);
   box-shadow: 0 0 0 3px var(--db2-accent-ring);
   outline: none;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body :is(input, select, textarea):disabled {
+.database-modal-backdrop .database-modal-window .database-modal-body :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]), select, textarea):disabled {
   background-color: var(--db-studio-inset);
   border-style: solid;
   color: var(--db-studio-text-3);
@@ -820,7 +820,7 @@
   font-variant-numeric: tabular-nums;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body :is(input[type="checkbox"], input[type="radio"]) {
+.database-modal-backdrop .database-modal-window .database-modal-body input[type="checkbox"] {
   accent-color: var(--db-studio-accent);
   cursor: pointer;
   flex: 0 0 auto;

@@ -296,13 +296,80 @@
   transform: rotate(45deg);
 }
 
-/* ── checkbox / radio / range: 액센트 통일 ─────────────────────────────── */
+/* ── checkbox / range: 액센트 통일 ─────────────────────────────────────── */
 
 /* 워크벤치별로 흩어져 있던 accent-color 를 기준선으로 올린다. 이 규칙에 안 걸려
    브라우저 기본 회색으로 남아 있던 탭들(states·skills·crops·characters·
-   lifeCrafting·farmSpatial·lifeCollections·switches·variables 등)이 함께 잡힌다. */
-.database-modal-backdrop .database-modal-window input:is([type="checkbox"], [type="radio"], [type="range"]) {
+   lifeCrafting·farmSpatial·lifeCollections·switches·variables 등)이 함께 잡힌다.
+   radio 는 아래 커스텀 원 규칙이 따로 잡으므로 여기서는 뺀다. */
+.database-modal-backdrop .database-modal-window input:is([type="checkbox"], [type="range"]) {
   accent-color: var(--db-studio-accent);
+}
+
+/* ── radio: 네이티브 원 → 커스텀 원 ───────────────────────────────────────
+   DB 모달 안의 모든 네이티브 radio 를 스튜디오 토큰으로 다시 그린다.
+   네이티브 input 은 그대로 둔다(e2e 가 input[value=…] 로 집고, 방향키 이동·Space
+   선택·포커스 링은 브라우저 기본 동작에 맡긴다) — 외형만 appearance:none 으로 덮는다.
+   팔레트는 --db-studio-* 변수만 소비한다(하드코딩 색·:root 재정의 금지).
+   radio-custom 가드(test/databaseRadioCustomGuard.test.ts)가 이 블록을 기계로 고정한다. */
+.database-modal-backdrop .database-modal-window input[type="radio"] {
+  appearance: none;
+  background-color: var(--db-studio-surface);
+  border: 2px solid var(--db-studio-text-3);
+  border-radius: 50%;
+  box-sizing: border-box;
+  cursor: pointer;
+  flex: 0 0 auto;
+  height: 16px;
+  margin: 0;
+  padding: 0;
+  width: 16px;
+}
+
+.database-modal-backdrop .database-modal-window input[type="radio"]:hover:not(:disabled) {
+  border-color: var(--db-studio-accent);
+}
+
+.database-modal-backdrop .database-modal-window input[type="radio"]:checked {
+  background-image: radial-gradient(circle at center, var(--db-studio-accent) 0 4px, transparent 4.5px);
+  border-color: var(--db-studio-accent);
+}
+
+.database-modal-backdrop .database-modal-window input[type="radio"]:focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: 2px;
+}
+
+.database-modal-backdrop .database-modal-window input[type="radio"]:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* 세그먼티드 필(.db-segmented-pill)은 필 자체가 선택 상태를 전달하므로 안의 작은
+   radio 는 네이티브로 둔다 — 커스텀 원을 얹으면 accent 필 위에서 점이 묻힌다.
+   appearance 만 되돌리면 기준선의 border/background 가 남아 네이티브가 안 살아나므로
+   박스도 함께 리셋한다(크기 12px·accent-color 는 아래 그대로 유지). */
+.database-modal-backdrop .database-modal-window .db-segmented-pill > input[type="radio"] {
+  appearance: auto;
+  background-color: transparent;
+  border: 0;
+  border-radius: 0;
+  height: 12px;
+  margin: 0;
+  padding: 0;
+  width: 12px;
+}
+
+/* 강제 고대비에서는 OS 네이티브로 돌려 시스템 고대비를 그대로 탄다.
+   :checked(0,4,1)가 기본 리셋(0,3,1)을 이기고 커스텀 점을 덧칠하므로
+   상태 선택자도 같은 리셋으로 덮는다. */
+@media (forced-colors: active) {
+  .database-modal-backdrop .database-modal-window input[type="radio"],
+  .database-modal-backdrop .database-modal-window input[type="radio"]:is(:checked, :hover, :focus-visible, :disabled) {
+    appearance: auto;
+    background: none;
+    border: 0;
+  }
 }
 
 /* ── 공통: 좁은 격자에서 컨트롤이 넘치지 않게 ──────────────────────────── */
