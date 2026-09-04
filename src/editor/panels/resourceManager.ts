@@ -16,6 +16,13 @@ import type { PassFlag, ResourceKind, TilesetDef, UploadedAsset } from "@/projec
 import { renderResourceWorkbench, type ResourceCategory } from "./resourceManagerViews";
 import { faceCellSuffix, planFacesetSheetSplit, sliceFacesetSheetDataUrls, type FacesetSheetSplitPlan } from "@/assets/facesetSheetSlicing";
 import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
+import {
+  IMAGE_IMPORT_ACCEPT,
+  decideImageDataUrl,
+  decideImageImport,
+  formatImageImportDimensionError,
+  prepareImportedImageDataUrl,
+} from "./resourceManagerImageImport";
 import { resourceKindFromUpload } from "./resourceManagerUtils";
 import { importMediaResource, mediaImportRuleFor } from "./resourceManagerMediaImport";
 
@@ -94,7 +101,7 @@ export function renderResourceManager(container: HTMLElement): void {
   const fileInput = document.createElement("input");
   const mediaRule = mediaImportRuleFor(selectedResourceKind);
   fileInput.type = "file";
-  fileInput.accept = mediaRule?.accept ?? "image/png,image/jpeg";
+  fileInput.accept = mediaRule?.accept ?? IMAGE_IMPORT_ACCEPT;
   fileInput.style.display = "none";
   fileInput.dataset.testid = "resource-file-input";
   fileInput.addEventListener("change", () => {
@@ -135,73 +142,73 @@ export function renderResourceManager(container: HTMLElement): void {
 }
 
 function importImageResource(file: File, kind: ResourceKind, container: HTMLElement): void {
-  const maxBytes = 4 * 1024 * 1024;
-  if (file.size > maxBytes) {
-    toast(`파일이 너무 큽니다. ${(file.size / 1024 / 1024).toFixed(1)}MB > 4MB`, "error");
+  const decision = decideImageImport({ fileName: file.name, mimeType: file.type, sizeBytes: file.size });
+  if (!decision.ok) {
+    toast(decision.message, "error");
     return;
   }
-  if (!/\.(png|jpe?g)$/i.test(file.name)) {
-    toast("PNG/JPEG 파일만 사용할 수 있습니다.", "error");
-    return;
-  }
-
-  if (file.type !== "image/png" && file.type !== "image/jpeg") {
-    toast("PNG/JPEG 이미지 MIME만 사용할 수 있습니다.", "error");
-    return;
-  }
+  const normalizeToPng = decision.normalizeToPng;
 
   const reader = new FileReader();
   reader.onload = () => {
-    const dataUrl = String(reader.result);
-    if (!dataUrl.startsWith("data:image/png;") && !dataUrl.startsWith("data:image/jpeg;")) {
-      toast("PNG/JPEG 이미지 데이터만 사용할 수 있습니다.", "error");
+    const rawDataUrl = String(reader.result);
+    const urlDecision = decideImageDataUrl(rawDataUrl);
+    if (!urlDecision.ok) {
+      toast(urlDecision.message, "error");
       return;
     }
-    const probe = new Image();
-    probe.onload = () => {
-      const facesetPlan = kind === "faceset" ? planFacesetSheetSplit(probe.width, probe.height) : null;
-      if (facesetPlan !== null) {
-        void importFacesetSheetAsFaces(dataUrl, file.name, facesetPlan, container);
-        return;
-      }
-      const result = validateResourceDimensions(kind, probe.width, probe.height);
-      if (!result.ok) {
-        toast(result.message, "error");
-        return;
-      }
-      const spec = getResourceProfileSpec(kind);
-      const id = genId(`${kind}_img`);
-      const asset: UploadedAsset = {
-        id,
-        name: file.name.replace(/\.[^.]+$/, ""),
-        kind,
-        dataUrl,
-        meta: {
-          tileSize: spec.tileWidth,
-          frames: result.tileCount,
-          frameWidth: spec.tileWidth,
-          frameHeight: spec.tileHeight,
-          width: probe.width,
-          height: probe.height,
-        },
-      };
-      store.update((project) => {
-        project.assets.uploaded[id] = asset;
-        project.resourceProfiles.push({
+    void prepareImportedImageDataUrl(rawDataUrl, normalizeToPng || urlDecision.normalizeToPng).then(
+      ({ dataUrl, width, height }) => {
+        const facesetPlan = kind === "faceset" ? planFacesetSheetSplit(width, height) : null;
+        if (facesetPlan !== null) {
+          void importFacesetSheetAsFaces(dataUrl, file.name, facesetPlan, container);
+          return;
+        }
+        const result = validateResourceDimensions(kind, width, height);
+        if (!result.ok) {
+          toast(formatImageImportDimensionError(result.message, width, height), "error");
+          return;
+        }
+        const spec = getResourceProfileSpec(kind);
+        const id = genId(`${kind}_img`);
+        const asset: UploadedAsset = {
+          id,
+          name: file.name.replace(/\.[^.]+$/, ""),
           kind,
-          name: asset.name,
-          tileWidth: spec.tileWidth,
-          tileHeight: spec.tileHeight,
-          imageWidth: probe.width,
-          imageHeight: probe.height,
-          assetId: id,
+          dataUrl,
+          meta: {
+            tileSize: spec.tileWidth,
+            frames: result.tileCount,
+            frameWidth: spec.tileWidth,
+            frameHeight: spec.tileHeight,
+            width,
+            height,
+          },
+        };
+        store.update((project) => {
+          project.assets.uploaded[id] = asset;
+          project.resourceProfiles.push({
+            kind,
+            name: asset.name,
+            tileWidth: spec.tileWidth,
+            tileHeight: spec.tileHeight,
+            imageWidth: width,
+            imageHeight: height,
+            assetId: id,
+          });
         });
-      });
-      toast(`${spec.label} 가져오기 완료: ${probe.width}x${probe.height}`, "ok");
-      renderResourceManager(container);
-    };
-    probe.onerror = () => toast("이미지를 읽을 수 없습니다.", "error");
-    probe.src = dataUrl;
+        const converted = dataUrl !== rawDataUrl ? " (WebP/GIF→PNG 변환)" : "";
+        toast(`${spec.label} 가져오기 완료: ${width}x${height}${converted}`, "ok");
+        if (kind === "chipset") {
+          const tileset = ensureTilesetFromUpload(asset);
+          if (tileset.created) toast(`타일셋 추가됨: ${asset.name}`, "ok");
+        }
+        renderResourceManager(container);
+      },
+      (error: unknown) => {
+        toast(error instanceof Error ? error.message : "이미지를 읽을 수 없습니다.", "error");
+      }
+    );
   };
   reader.onerror = () => toast("파일 읽기 실패", "error");
   reader.readAsDataURL(file);
