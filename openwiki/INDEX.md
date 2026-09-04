@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **43쪽 / 1405KB / 약 397,091 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **43쪽 / 1411KB / 약 398,912 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,7 +15,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 237KB | 86KB ⚠상한 초과 — 절을 더 쪼개라 | 400 | ~68,748 |
+| `openwiki/editor-ai-panel.md` | 242KB | 86KB ⚠상한 초과 — 절을 더 쪼개라 | 412 | ~70,336 |
 | `openwiki/editor-ai-tools.md` | 67KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 132 | ~19,213 |
 | `openwiki/editor-database.md` | 169KB | 49KB | 815 | ~48,389 |
 | `openwiki/editor-event-authoring.md` | 116KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 550 | ~33,750 |
@@ -219,7 +219,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L18` Output limits
 - `L24` Practical tips
 
-### `openwiki/editor-ai-panel.md` — 237KB · 400줄 · ~68,748 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 242KB · 412줄 · ~70,336 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
 - `L9` 패널 셸 · 도크 · 접기 · 컴포저
 - `L126` 세션 수명 · 대화 컨텍스트
@@ -487,7 +487,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L35` Storage chest authoring
 - `L41` Page 3 location/vehicle compatibility (2026-07-30)
 
-### `openwiki/runtime-pre-edit-routing.md` — 22KB · 124줄 · ~6,280 토큰
+### `openwiki/runtime-pre-edit-routing.md` — 22KB · 129줄 · ~6,513 토큰
 
 절 제목 없음 (평면 목록 페이지).
 
