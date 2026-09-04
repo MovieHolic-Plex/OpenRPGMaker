@@ -154,7 +154,7 @@
   word-break: keep-all;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench :is(input, select) {
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench :is(input:not([type="radio"]), select) {
   background-color: var(--db-studio-surface, var(--db-studio-surface));
   border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.14));
   border-radius: 6px;
@@ -171,7 +171,7 @@
   padding-right: 24px;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench :is(input, select):focus-visible {
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench :is(input:not([type="radio"]), select):focus-visible {
   border-color: var(--db-studio-accent, var(--db-studio-accent));
   outline: 2px solid var(--db-studio-accent-soft, rgba(74, 87, 214, 0.28));
   outline-offset: 0;

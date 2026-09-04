@@ -512,8 +512,7 @@
     padding-right: 24px;
   }
 
-  .database-modal-body .db-troops-classic-workbench input[type="checkbox"],
-  .database-modal-body .db-troops-classic-workbench input[type="radio"] {
+  .database-modal-body .db-troops-classic-workbench input[type="checkbox"] {
     accent-color: var(--accent);
     height: 18px;
     width: 18px;
