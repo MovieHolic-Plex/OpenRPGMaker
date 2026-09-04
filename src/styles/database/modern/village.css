@@ -348,6 +348,71 @@
   font: 600 10px/1.3 "Cascadia Mono", Consolas, monospace;
 }
 
+/* 층수·재료 선택 — 글자 <select> 를 그림 카드로. 모양 카드보다 한 단 작다(미디어 ~72px). */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-field:has(.db-village-option-grid) {
+  align-items: start;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-option-grid {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-option-card {
+  align-items: center;
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  padding: 4px;
+  text-align: center;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-option-card:hover {
+  background: var(--db-studio-inset);
+  border-color: var(--db-studio-accent-border);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-option-card:focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: -2px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-option-card.active {
+  background: var(--db-studio-accent-soft);
+  border-color: var(--db-studio-accent-border);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-option-media {
+  display: block;
+  line-height: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-option-card .db-village-house-shot.is-card {
+  height: 72px;
+  width: 72px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-option-name {
+  color: var(--db-studio-text-1);
+  font: 600 11px/1.3 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-option-meta {
+  color: var(--db-studio-text-3);
+  font: 600 9px/1.3 "Cascadia Mono", Consolas, monospace;
+}
+
 .database-modal-backdrop .database-modal-window .database-modal-body .db-village-import-gallery {
   display: flex;
   flex-direction: column;
