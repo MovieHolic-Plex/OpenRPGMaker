@@ -43,6 +43,8 @@ import { runRegionTask, type RegionTaskOptions, type RegionTaskResult } from "@/
 import { formatMaterialLabelHint } from "@/ai/turnGuide";
 import { createLlmIntentDeclarer } from "@/ai/intentDeclarationClient";
 import type { SessionTurnScope } from "@/ai/assistantSession";
+import { AUTONOMY_LEVELS, resolveAutonomy } from "@/ai/autonomyLevels";
+import { isAutonomyLevel } from "@/ai/llmClient";
 import { store } from "@/project/store";
 import { combineDiffs } from "@/project/projectCommitLog";
 import { el } from "@/util/dom";
@@ -1247,13 +1249,18 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   /**
    * 턴 시작 — 세션이 들고 있는 미완료 계획은 이어받고(사용자 「계속」·중간 지시), 끝난 계획은 버린다.
    * 예산은 자율 진입에만 세운다(드라이버가 이어 보내는 턴 수). 새 계획은 work_plan 이벤트로 들어온다.
+   * 다이얼 명시 시 예산 total 은 레벨 cap — 미지정 config 는 종래 48 그대로.
    */
+  const runBudgetTotal = (): number => {
+    const raw = loadAiConfig().autonomyLevel;
+    return isAutonomyLevel(raw) ? Math.min(resolveAutonomy(raw).budgetCap, AGENT_RUN_MAX_TOTAL_STEPS) : AGENT_RUN_MAX_TOTAL_STEPS;
+  };
   const beginWorkPlanTurn = (opts: { readonly autonomous: boolean; readonly carriedPlan: WorkPlan | null }): void => {
     const carried = opts.carriedPlan && !isWorkPlanComplete(opts.carriedPlan) ? opts.carriedPlan : null;
     workPlanSurfaceState = {
       active: true,
       plan: carried,
-      budget: opts.autonomous ? { used: 0, total: AGENT_RUN_MAX_TOTAL_STEPS, exhausted: false } : null,
+      budget: opts.autonomous ? { used: 0, total: runBudgetTotal(), exhausted: false } : null,
     };
     workPlanActivity = "";
     removeWorkPlanSurfaceDom();
@@ -2350,10 +2357,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 추천 칩·액션 메뉴·성향은 흐름 밖 팝오버 — 바 높이는 입력 줄 수만 따른다.
   let deckRoot: HTMLElement | null = null;
   // 모델 칩(제안서 D4): 초보 모드에서는 숨기고 표준·전문가에서 현재 모델 id 를 보인다.
+  // 다이얼 명시 시 레벨 라벨을 함께 싣는다(읽기 전용 표시 — 동작은 세션 배선이 정한다).
   const modelChipLabel = (): string | null => {
     if (getEditorUiMode() === "beginner") return null;
-    const model = loadAiConfig().model.trim();
-    return model.length > 0 ? model : null;
+    const config = loadAiConfig();
+    const model = config.model.trim();
+    if (model.length === 0) return null;
+    const level = AUTONOMY_LEVELS.find((entry) => entry.id === config.autonomyLevel);
+    return level ? `${model} · ${level.label}` : model;
   };
   const composerShell: ComposerElements = createComposerElements({
     input,

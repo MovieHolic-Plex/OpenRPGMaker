@@ -362,7 +362,11 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         // 대부분은 상태줄만. 재시도·오류 등 행동 신호만 말풍선.
         deps.surface.setStatus(event.text);
         // 자율 런 예산(used/48) 표시 갱신 — 드라이버의 계속/소진 status 이벤트에서 파싱.
-        const budget = parseAutonomousRunBudget(event.text);
+        // 다이얼 명시 시 표시 total 은 레벨 cap 으로 클램프한다(표시 전용 — 세션 상한은 그대로).
+        const parsedBudget = parseAutonomousRunBudget(event.text);
+        const budget = parsedBudget && deps.workPlanSurfaceState?.budget
+          ? { ...parsedBudget, total: Math.min(parsedBudget.total, deps.workPlanSurfaceState.budget.total) }
+          : parsedBudget;
         if (budget && deps.workPlanSurfaceState) {
           deps.workPlanSurfaceState.budget = budget;
           deps.refreshWorkPlanSurface();

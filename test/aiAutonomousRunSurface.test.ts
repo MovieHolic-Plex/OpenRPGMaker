@@ -256,7 +256,7 @@ describe("할 일 목록 표면 (작업 계획 체크리스트)", () => {
     expect((layers[1] as HTMLElement | undefined)?.dataset.current).toBe("false");
     expect(findByTestId(panel, "ai-autonomous-progress")?.textContent).toBe("1/4");
     expect(findByTestId(panel, "ai-autonomous-chip")?.textContent).toContain("자율 실행");
-    expect(findByTestId(panel, "ai-autonomous-budget")?.textContent).toContain("0/48");
+    expect(findByTestId(panel, "ai-autonomous-budget")?.textContent).toContain("0/16");
     expect(findByTestId(panel, "ai-run-status")?.textContent).toBe("집 3채 중");
     expect(findByTestId(panel, "ai-run-stop")?.textContent).toBe("중지");
     expect(findByTestId(panel, "ai-run-progress")).not.toBeNull();
@@ -292,7 +292,7 @@ describe("할 일 목록 표면 (작업 계획 체크리스트)", () => {
     await flushAsync();
   });
 
-  it("(b) 자동 계속/예산 소진 status 이벤트로 예산 표시(used/48)가 갱신된다", async () => {
+  it("(b) 자동 계속/예산 소진 status 이벤트로 예산 표시(used/total)가 갱신된다 — 표시는 저장 레벨 cap", async () => {
     const panel = renderPanel();
     assistantMock.setEmitter((onEvent) => {
       onEvent({ type: "work_plan", plan: samplePlan() });
@@ -303,7 +303,7 @@ describe("할 일 목록 표면 (작업 계획 체크리스트)", () => {
     const firstRun = bridgeSend("RPG 만들어줘");
     await flushAsync();
 
-    expect(findByTestId(panel, "ai-autonomous-budget")?.textContent).toContain("17/48");
+    expect(findByTestId(panel, "ai-autonomous-budget")?.textContent).toContain("17/16");
     assistantMock.releaseHeldTurn();
     await firstRun;
     await flushAsync();
@@ -316,7 +316,7 @@ describe("할 일 목록 표면 (작업 계획 체크리스트)", () => {
     assistantMock.holdNextTurn();
     const secondRun = bridgeSend("이어서");
     await flushAsync();
-    expect(findByTestId(panel, "ai-autonomous-budget")?.textContent).toContain("1/48");
+    expect(findByTestId(panel, "ai-autonomous-budget")?.textContent).toContain("1/16");
     assistantMock.releaseHeldTurn();
     await secondRun;
     await flushAsync();
