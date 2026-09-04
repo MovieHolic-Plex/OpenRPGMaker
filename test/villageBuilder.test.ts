@@ -6,6 +6,7 @@ import { TOOL_CATEGORIES } from "@/editor/panels/toolBrowserModal";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { runTool } from "@/editor/tools/toolRunner";
 import { snapshotProjectMaps, wipeAttemptMaps } from "@/editor/tools/villageBuilder";
+import { exteriorFootprintArea } from "@/editor/tools/village/interiors";
 import { buildTerrainConstraintMasks } from "@/editor/tools/villageTerrainPass";
 import { inferRequirementsFromQuery } from "@/editor/tools/villageRequirements";
 import { CHIPSET_TILE_GROUPS } from "@/project/defaults/chipsetMapping";
@@ -904,6 +905,53 @@ describe("build_village housePlans contract", () => {
     expect(report.issues.some((issue) => issue.includes("문 앞 좌표"))).toBe(true);
     // F2: layoutPlan.kind 없는 맵에도 타일 실측 검사(출구 길)가 실행된다
     expect(report.issues.some((issue) => issue.includes("4방향"))).toBe(true);
+  });
+});
+
+describe("exterior footprint area (wing-union)", () => {
+  it("rect-large 8x7 union matches bbox 56", () => {
+    expect(exteriorFootprintArea("rect-large", { w: 8, h: 7 })).toBe(56);
+  });
+
+  it("l 6x8 bbox 48 unions to 42", () => {
+    expect(exteriorFootprintArea("l", { w: 6, h: 8 })).toBe(42);
+  });
+
+  it("t-hall 8x10 bbox 80 unions to 60", () => {
+    expect(exteriorFootprintArea("t-hall", { w: 8, h: 10 })).toBe(60);
+  });
+
+  it("unknown template id falls back to bbox area", () => {
+    expect(exteriorFootprintArea("custom-db-authored", { w: 9, h: 5 })).toBe(45);
+  });
+
+  it("housePlans t-hall workshop interior scale is cottage3 from union 60 not mansion bbox 80", () => {
+    const ctx = { project: createEmptyToolProject() };
+    const result = runTool(ctx, "build_village", {
+      name: "T홀 공방 마을",
+      width: 48,
+      height: 48,
+      seed: 77,
+      interior: true,
+      doorEvent: true,
+      fences: false,
+      decor: false,
+      housePlans: [
+        // workshop takes the area path (no program short-circuit), so this pins
+        // union 60 -> cottage3 vs bbox 80 -> mansion.
+        { kitId: "blue-stone", templateId: "t-hall", program: "workshop" },
+        { kitId: "amber-wood", yard: ["pot"] },
+        { kitId: "slate-wood", yard: ["jar"] },
+        { kitId: "bright-plaster", yard: ["flowers"] },
+      ],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    const data = result.data as {
+      houses?: Array<{ templateId?: string; interiorScale?: string; interiorProgram?: string }>;
+    };
+    expect(data.houses?.[0]?.templateId).toBe("t-hall");
+    expect(data.houses?.[0]?.interiorProgram).toBe("workshop");
+    expect(data.houses?.[0]?.interiorScale).toBe("cottage3");
   });
 });
 
