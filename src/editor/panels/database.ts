@@ -34,7 +34,7 @@ import { renderStructureKitsTab } from "@/editor/panels/structureKitDbTab";
 import { applyTilesetFolderFacet, setTilesetFolderTabRequestHandler } from "@/editor/panels/tilesetMetadataEditor";
 import { getSelectedTilesetId, renderTilesetsTab } from "@/editor/panels/tilesetSettingsPanel";
 import { renderScratchConceptTab } from "@/editor/panels/scratchConceptTab";
-import { renderTilesetSpacesTab } from "@/editor/panels/tilesetSpacesTab";
+import { interiorRoomKindCount, renderTilesetSpacesTab } from "@/editor/panels/tilesetSpacesTab";
 import { listUnlabeledTileIds } from "@/editor/panels/tilesetMetadataControls";
 import { renderWorldCanonTab } from "@/editor/panels/databaseWorldCanonView";
 import { renderWorldCodexTab } from "@/editor/panels/databaseWorldCodexView";
@@ -503,7 +503,7 @@ function databaseTabCount(tab: DatabaseTab): number | null {
     }
     case "tilesetSpaces": {
       const tileset = project.tilesets[getSelectedTilesetId() ?? ""];
-      return tileset?.interiorRoomKinds?.length ?? 0;
+      return interiorRoomKindCount(tileset);
     }
     case "scratchConcepts": {
       const tileset = project.tilesets[getSelectedTilesetId() ?? ""];

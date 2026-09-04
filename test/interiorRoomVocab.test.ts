@@ -8,7 +8,9 @@ import {
 } from "@/editor/interiorRoomPipeline";
 import {
   interiorObjectFromKit,
+  interiorRoomKindSource,
   isInteriorFurnitureKit,
+  kindsDerivedFromConceptBundles,
   resolveInteriorRoomVocab,
   seedInteriorTilesetCatalog,
 } from "@/editor/interiorRoomVocab";
@@ -79,5 +81,71 @@ describe("실내 가구·방 종류 타일셋 어휘", () => {
     }, vocab);
     expect(map.upperTiles).toContain(VR.BED_L);
     expect(map.upperTiles).toContain(VR.BED_R);
+  });
+
+  it("저작값이 없으면 꾸러미 장소에서 유도한다 — walkway 전파·저작값 우선·빈배열 유지", () => {
+    const tileset = emptyInteriorTileset();
+    tileset.scratchConceptBundles = [{
+      id: "bundle_t",
+      label: "시험",
+      facilities: [{ id: "facility_t", label: "시험", placeIds: ["hall_t", "corr_t"] }],
+      places: [
+        { id: "hall_t", label: "시험 홀", role: "entrance" },
+        { id: "corr_t", label: "시험 복도", role: "walkway" },
+      ],
+      things: [],
+    }];
+    // 저작값 없음 → 유도 + 폴백 결합. 유도 kinds는 requiredRoles가 비고 walkway만 전파된다.
+    expect(interiorRoomKindSource(tileset)).toBe("derived");
+    const derived = kindsDerivedFromConceptBundles(tileset);
+    expect(derived.map((kind) => kind.id).sort()).toEqual(["corr_t", "hall_t"]);
+    expect(derived.find((kind) => kind.id === "corr_t")?.walkway).toBe(true);
+    expect(derived.find((kind) => kind.id === "hall_t")?.walkway).toBeUndefined();
+    const vocab = resolveInteriorRoomVocab(tileset, INTERIOR_OBJECT_CATALOG, BUILTIN_INTERIOR_ROOM_KINDS);
+    expect(vocab.kindsById.get("hall_t")?.label).toBe("시험 홀");
+    expect(vocab.kindsById.get("bedroom")?.label).toBe("침실");
+    // 저작값이 있으면 유도를 타지 않는다.
+    tileset.interiorRoomKinds = [{ id: "mine", label: "내 방", requiredRoles: ["bed"] }];
+    expect(interiorRoomKindSource(tileset)).toBe("authored");
+    const vocab2 = resolveInteriorRoomVocab(tileset, INTERIOR_OBJECT_CATALOG, BUILTIN_INTERIOR_ROOM_KINDS);
+    expect(vocab2.kindsById.has("hall_t")).toBe(false);
+    expect(vocab2.kindsById.get("mine")?.requiredRoles).toEqual(["bed"]);
+    // 빈 배열은 "전부 지움" — 유도도 폴백도 타지 않는다.
+    tileset.interiorRoomKinds = [];
+    expect(interiorRoomKindSource(tileset)).toBe("authored");
+    expect(resolveInteriorRoomVocab(tileset, INTERIOR_OBJECT_CATALOG, BUILTIN_INTERIOR_ROOM_KINDS).kindsById.size).toBe(0);
+  });
+
+  it("꾸러미 장소가 있으면 방 종류 시드를 건너뛰되 가구 킷은 심는다", () => {
+    const tileset = emptyInteriorTileset();
+    tileset.scratchConceptBundles = [{
+      id: "bundle_s",
+      label: "시험",
+      facilities: [{ id: "facility_s", label: "시험", placeIds: ["hall_s"] }],
+      places: [{ id: "hall_s", label: "시험 홀", role: "entrance" }],
+      things: [],
+    }];
+    expect(seedInteriorTilesetCatalog(tileset, INTERIOR_OBJECT_CATALOG, BUILTIN_INTERIOR_ROOM_KINDS)).toBe(true);
+    // 방 종류는 파생에 맡긴다 — 저작값이 생기면 안 된다.
+    expect(tileset.interiorRoomKinds).toBeUndefined();
+    // 가구 킷은 시드된다 — 구조물 탭이 비면 안 된다.
+    expect(tileset.structureKits?.some((kit) => kit.id === "bed_h")).toBe(true);
+    const vocab = resolveInteriorRoomVocab(tileset, INTERIOR_OBJECT_CATALOG, BUILTIN_INTERIOR_ROOM_KINDS);
+    expect(vocab.kindsById.get("hall_s")?.label).toBe("시험 홀");
+    expect(vocab.kindsById.get("bedroom")?.label).toBe("침실");
+  });
+
+  it("id 충돌은 꾸러미 유도가 폴백을 이긴다", () => {
+    const tileset = emptyInteriorTileset();
+    tileset.scratchConceptBundles = [{
+      id: "bundle_c",
+      label: "시험",
+      facilities: [{ id: "facility_c", label: "시험", placeIds: ["bedroom"] }],
+      places: [{ id: "bedroom", label: "침방", role: "room" }],
+      things: [],
+    }];
+    const vocab = resolveInteriorRoomVocab(tileset, INTERIOR_OBJECT_CATALOG, BUILTIN_INTERIOR_ROOM_KINDS);
+    expect(vocab.kindsById.get("bedroom")?.label).toBe("침방");
+    expect(vocab.kindsById.get("bedroom")?.requiredRoles).toEqual([]);
   });
 });
