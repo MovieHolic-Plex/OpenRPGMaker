@@ -679,7 +679,7 @@ function appendTilesetFolder(
       class: `db-tab-folder${childActive ? " open" : ""}`,
       attrs: {
         type: "button",
-        title: "타일셋 — 이 칩셋의 통행·오토타일·미분류·구조물·공간 종류",
+        title: "타일셋 — 이 칩셋의 통행·오토타일·미분류·구조물·공간 종류·개념 꾸러미",
         "aria-label": "타일셋",
         "aria-expanded": "true",
       },

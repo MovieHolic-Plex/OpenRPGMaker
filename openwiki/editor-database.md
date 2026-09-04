@@ -255,9 +255,11 @@ The Database modal was modernized in six waves while keeping every hard contract
 `test/databaseTilesetFolder.test.ts`, `test/structureKitDbTab.test.ts` 의
 「구조물 탭은 공간 종류를 그리지 않는다」.
 
-## 임시 → 개념 꾸러미 (2026-09-02)
+## 맵 → 타일셋 → 개념 꾸러미 (2026-09-02 시작, Phase 4 졸업)
 
-데이터베이스 레일에 **임시** 그룹을 두고, 그 안에 `개념 꾸러미`(`scratchConcepts`) 한 탭만 둔다.
+~~데이터베이스 레일에 **임시** 그룹을 두고, 그 안에 `개념 꾸러미`(`scratchConcepts`) 한 탭만 둔다.~~
+**Phase 4(개념 통합)에서 임시 그룹을 졸업했다** — `개념 꾸러미`(`scratchConcepts`)는
+「맵」 그룹 타일셋 폴더(통행·오토타일·미분류·구조물·공간 종류 옆)에 있다.
 세계·공간 종류·구조물과 아직 합치지 않는다 — 시설→장소→물건→칩 나무를 그림으로
 저작하는 실험 면이다. `place_concept(query)` 가 이 필드를 읽어 시공한다.
 

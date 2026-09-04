@@ -404,7 +404,7 @@ function conceptBundleSection(project: Project): string {
   const listed = listLiveConceptBundles(project);
   const lines = [
     "## 개념 꾸러미 (place_concept 이 읽음)",
-    "사용자가 데이터베이스 「임시 → 개념 꾸러미」에서 고친 나무가 정본이다. 아래 시설을 지을 때 방 종류 필수 역할로 합성하지 말고 place_concept(query)를 호출하라.",
+    "사용자가 데이터베이스 「맵 → 타일셋 → 개념 꾸러미」에서 고친 나무가 정본이다. 아래 시설을 지을 때 방 종류 필수 역할로 합성하지 말고 place_concept(query)를 호출하라.",
   ];
   if (listed.length === 0) {
     lines.push("- 지금 프로젝트에는 개념 꾸러미가 없다. 실내 칩셋이면 place_concept 첫 호출이 시설 초안(여관·민가·상점·술집·서재·대장간·교회·창고·길드)을 시드한다.");

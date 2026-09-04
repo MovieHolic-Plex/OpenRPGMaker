@@ -4,7 +4,7 @@
  * 무엇을 증명하나:
  *  1. 조수가 핀 없이 `place_concept` 에 닿아 여관 맵을 만든다(실제 모델 턴, 감사 로그로 관측).
  *  2. 만들어진 맵이 에디터 캔버스에 그려진다(스크린샷).
- *  3. 사람이 데이터베이스 「임시 → 개념 꾸러미」에서 나무를 고치면(주막 개명·피아노 삭제·객실 책장) 다음 요청이 그 나무를 따른다.
+ *  3. 사람이 데이터베이스 「맵 → 타일셋 → 개념 꾸러미」에서 나무를 고치면(주막 개명·피아노 삭제·객실 책장) 다음 요청이 그 나무를 따른다.
  *  4. 칩이 런타임에서 작동한다 — 테스트 플레이로 침대 앞에서 조사하면 여관(inn) 창이 뜬다.
  *
  * 실행(인증 파일 경로 필수 — 에이전트 셸 HOME 이 다를 수 있다):
@@ -135,7 +135,7 @@ async function openConceptTab(page: Page): Promise<void> {
   await openDatabaseAnyMode(page);
   const tab = page.getByTestId("db-tab-scratch-concepts");
   if (!(await tab.isVisible().catch(() => false))) {
-    const group = page.getByTestId("db-tab-group-scratch");
+    const group = page.getByTestId("db-tab-group-world");
     if (await group.count()) await group.click();
   }
   await tab.click({ force: true });
@@ -179,7 +179,7 @@ test.describe("개념 꾸러미 여관 — 실제 조수 턴", () => {
     const flush = (): void => writeFileSync(path.join(OUT_DIR, "receipt.json"), `${JSON.stringify(receipt, null, 2)}\n`, "utf8");
     try {
 
-    // 1) 데이터베이스 「임시 → 개념 꾸러미」 — 초안 나무.
+    // 1) 데이터베이스 「맵 → 타일셋 → 개념 꾸러미」 — 초안 나무.
     await openConceptTab(page);
     await page.getByTestId("database-modal").screenshot({ path: path.join(OUT_DIR, "01-db-concept-tab.png"), animations: "disabled" });
     await closeDatabase(page);

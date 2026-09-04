@@ -502,7 +502,7 @@ export interface TilesetDef {
    */
   interiorRoomKinds?: InteriorRoomKindRecord[];
   /**
-   * 임시 개념 꾸러미(시설→장소→물건→칩). undefined 는 아직 시드 전.
+   * 개념 꾸러미(시설→장소→물건→칩). undefined 는 아직 시드 전.
    * 빈 배열은 사용자가 지운 상태 — 다시 시드하지 않는다.
    */
   scratchConceptBundles?: ConceptBundleRecord[];
