@@ -6,6 +6,7 @@ import { handleCommandShortcut, openCommandContextMenu } from "./commandListCont
 import { attachItemDropHandlers, enableItemDrag, ensureListDropHandlers } from "./commandListDragDrop";
 import { commandCategoryVisual, renderCategoryIcon } from "./commandCategoryIcons";
 import { renderEditorIcon } from "./editorIcons";
+import { brokenCommandDigest } from "./storyboardView";
 import { commandSummaryParts, isSummaryIconPart, isSummaryVisualPart, type CommandSummaryVisual } from "./commandSummary";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import {
@@ -57,7 +58,13 @@ export function renderCommandList(
   const faceState: FaceState = { current: undefined };
   commands.forEach((cmd, index) => {
     const path = [...containerPath, index];
-    renderCommandTree(host, cmd, path, containerPath, actions, 0, faceState, options);
+    // 행 하나가 터져도 형제는 살아남는다. 실패한 행만 자리 표시자로 그린다.
+    try {
+      renderCommandTree(host, cmd, path, containerPath, actions, 0, faceState, options);
+    } catch (error) {
+      console.error("[event-editor] failed to render command row", path, error);
+      host.append(renderBrokenCommandRow(cmd, path, actions));
+    }
   });
 }
 
@@ -234,6 +241,37 @@ function sameCommandPath(a: readonly number[], b: readonly number[]): boolean {
   return a.length === b.length && a.every((part, index) => part === b[index]);
 }
 
+// 표시할 수 없는 명령의 자리 표시 행. 원시값을 펼쳐 보여주고 삭제는 살린다.
+function renderBrokenCommandRow(cmd: Command, path: number[], actions: CommandListActions): HTMLElement {
+  const info = brokenCommandDigest(cmd);
+  const item = el("div", {
+    class: "cmd-item is-broken",
+    dataset: {
+      testid: `event-command-broken-${path.join("-")}`,
+      cmdPath: JSON.stringify(path),
+      commandKind: String((cmd as { kind?: unknown })?.kind ?? "unknown"),
+      commandCategory: info.category,
+    },
+  });
+  const head = el("div", {
+    class: "cmd-head",
+    attrs: { role: "button", tabindex: "0", title: "이 명령은 표시할 수 없어 원시값으로 보여줍니다" },
+  });
+  head.append(
+    el("span", { class: "cmd-step", text: String((path[path.length - 1] ?? 0) + 1), attrs: { "aria-hidden": "true" } }),
+    el("span", { class: "cmd-summary", text: `${info.title}: ${info.detail}` }),
+  );
+  const del = el("button", {
+    class: "cmd-action is-danger",
+    text: "삭제",
+    attrs: { type: "button", "aria-label": "표시할 수 없는 명령 삭제" },
+    dataset: { testid: `event-command-broken-delete-${path.join("-")}` },
+    on: { click: () => actions.deleteCommand(path) },
+  });
+  item.append(head, del);
+  return item;
+}
+
 function renderCommandSummary(cmd: Command): HTMLElement {
   const summary = el("span", { class: "cmd-kind" });
   for (const part of commandSummaryParts(cmd)) {
@@ -361,16 +399,22 @@ function appendCommandChildren(
       host.append(renderEmptyBranchLine(depth + 1, branch.tone, branchPath, actions, options.openCommandPicker));
     }
     branch.commands.forEach((child, childIndex) => {
-      renderCommandTree(
-        host,
-        child,
-        [...path, branch.branchIndex, childIndex],
-        containerPath,
-        actions,
-        depth + 1,
-        faceState,
-        options
-      );
+      const childPath = [...path, branch.branchIndex, childIndex];
+      try {
+        renderCommandTree(
+          host,
+          child,
+          childPath,
+          containerPath,
+          actions,
+          depth + 1,
+          faceState,
+          options
+        );
+      } catch (error) {
+        console.error("[event-editor] failed to render branch command row", childPath, error);
+        host.append(renderBrokenCommandRow(child, childPath, actions));
+      }
     });
   }
   // 「선택 끝」「분기 끝」 마커 행은 두지 않는다 — 들여쓰기와 분기 머리 행이 이미 구조를 말하고,
