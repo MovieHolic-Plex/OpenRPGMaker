@@ -1118,8 +1118,23 @@
 }
 
 .database-modal-body .oprn-record-actors .actor-build-level-control input {
+  background-color: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: var(--db2-radius-control);
+  color: var(--db-studio-text-1);
+  font-variant-numeric: tabular-nums;
   height: 30px;
   width: 64px;
+}
+
+.database-modal-body .oprn-record-actors .actor-build-level-control input:hover:not(:disabled) {
+  border-color: var(--db-studio-border-strong);
+}
+
+.database-modal-body .oprn-record-actors .actor-build-level-control input:focus-visible {
+  border-color: var(--db-studio-accent);
+  box-shadow: 0 0 0 3px var(--db2-accent-ring);
+  outline: none;
 }
 
 .database-modal-body .oprn-record-actors .actor-build-natural-max {
