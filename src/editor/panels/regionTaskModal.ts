@@ -685,9 +685,10 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   };
 
   const renderSnapshot = options.renderSnapshot
-    // targetWidth 를 기본 140 → 240 으로 키운다. 단일 A/B 미리보기가 결정의 근거이므로 충분한 해상도로 보여 준다.
+    // wide 검토 레이아웃의 큰 캔버스에 맞게 240 → 480 으로 찍는다. 체크포인트 축소는
+    // CSS max-width:100% 로 내려가므로 이 기본값을 공유해도 된다.
     ?? ((project: Project, map: GameMap, rect: RegionRect) =>
-      renderRegionSnapshot(project, map, rect, { targetWidth: 240 }));
+      renderRegionSnapshot(project, map, rect, { targetWidth: 480 }));
   const compareHost = el("div", { class: "region-task-compare-host" });
 
   // 검토 단계에서 입력창 대신 보여 줄 지시 요약 — 무엇을 시켰는지는 남되 자리는 한 줄만 쓴다.
@@ -751,6 +752,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     readonly apply: () => void;
     readonly retry: () => void;
     readonly discard: () => void;
+    readonly flip: (view: "before" | "after") => void;
   } | null = null;
   let pendingUnsubscribe: (() => void) | null = null;
   let schedulePopoverReposition: () => void = () => undefined;
@@ -1085,6 +1087,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
 
     const previewStage = el("div", {
       class: "region-task-preview-stage",
+      dataset: { testid: "region-task-wide-compare" },
       children: [beforeFigure, afterFigure],
     });
 
@@ -1146,7 +1149,12 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       pending.discard();
       finalizeSettle(false);
     };
-    reviewShortcuts = { apply: doApply, retry: doRetry, discard: doDiscard };
+    reviewShortcuts = {
+      apply: doApply,
+      retry: doRetry,
+      discard: doDiscard,
+      flip: (view: "before" | "after") => setAbView(view),
+    };
 
     // 전량 적용일 때의 라벨. 아래에서 "타일 밖 변경"이 있다고 판명되면 「적용」으로 낮춘다.
     // 부분 선택 라벨과 한 곳에서 갈라져야 해서(updatePartialState) 변수로 들고 있는다.
@@ -1350,7 +1358,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       }));
     }
     const changeList = el("div", {
-      class: "region-task-change-list" + (changeRows.length > 0 ? "" : " hidden"),
+      class: "region-task-change-list is-checklist" + (changeRows.length > 0 ? "" : " hidden"),
       dataset: { testid: "region-task-change-list" },
       children: changeRows,
     });
@@ -1412,7 +1420,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     }));
     // "막는 문제·주의 없음" 같은 빈 상태 문구도 없앴다 — 문제가 없으면 진단 줄 자체가 안 뜬다.
     const issuesHost = el("div", {
-      class: "region-task-review-issues" + (issueRows.length ? "" : " hidden"),
+      class: "region-task-review-issues is-checklist" + (issueRows.length ? "" : " hidden"),
       dataset: { testid: "region-task-review-issues" },
       children: issueRows,
     });
@@ -1635,6 +1643,11 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
         class: "region-task-compare-actions",
         dataset: { testid: "region-task-compare-actions" },
         children: [applyButton, retryButton, discardButton],
+      }),
+      el("div", {
+        class: "region-task-kbd-hints",
+        dataset: { testid: "region-task-kbd-hints" },
+        children: [document.createTextNode("Left/Right 이전/이후 · Enter 적용 · R 다시 만들기")],
       }),
       ...(diagnostics ? [diagnostics] : []),
     );
@@ -2148,6 +2161,12 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       } else if (event.key === "r" || event.key === "R") {
         event.preventDefault();
         reviewShortcuts?.retry();
+      } else if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        reviewShortcuts?.flip("before");
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault();
+        reviewShortcuts?.flip("after");
       }
       return;
     }
@@ -2416,13 +2435,16 @@ export function positionRegionTaskPopover(
   const view = globalThis as { innerWidth?: number; innerHeight?: number };
   const vw = typeof view.innerWidth === "number" && view.innerWidth > 0 ? view.innerWidth : 1024;
   const vh = typeof view.innerHeight === "number" && view.innerHeight > 0 ? view.innerHeight : 768;
-  // 380: 단일 A/B 전환형 썸네일(targetWidth 240px)과 액션·메타를 담는 슬림한 팝오버 폭.
-  const maxWidth = Math.min(380, Math.max(200, vw - margin * 2));
+  // 검토 단계는 wide 결정 레이아웃이므로 팝오버 상한을 넓힌다. windowNode 의 data-stage 로
+  // 판단한다 — setStage 가 stage 를 올린 뒤에 이 함수가 불린다(검토 진입·리사이즈·복귀).
+  // compose/running 은 기존 380 슬림 폭 그대로다.
+  const widthCap = panel.dataset?.stage === "review" ? 960 : 380;
+  const maxWidth = Math.min(widthCap, Math.max(200, vw - margin * 2));
   const maxHeight = Math.max(160, vh - margin * 2);
 
   panel.style.position = "fixed";
   panel.style.width = `${maxWidth}px`;
-  panel.style.maxWidth = `min(380px, calc(100vw - ${margin * 2}px))`;
+  panel.style.maxWidth = `min(${widthCap}px, calc(100vw - ${margin * 2}px))`;
   panel.style.maxHeight = `${maxHeight}px`;
   // 임시 배치 후 실측 → 좌/우·위/아래 플립·클램프.
   let left = anchor.x + 12;
