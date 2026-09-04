@@ -36,6 +36,7 @@ import {
   type HousePreviewSize,
 } from "@/editor/panels/villageHousePreview";
 import { visualSelect } from "@/editor/panels/villageVisualSelect";
+import { createGroundThemePreview } from "@/editor/panels/villageGroundPreview";
 import { PRESET_PREVIEW_SIZE, buildPresetPreview } from "@/editor/panels/villagePresetPreview";
 import {
   detailHero,
@@ -103,6 +104,9 @@ let selectedPresetId = "";
 let villageSearch = "";
 /** 프리셋 미리보기 씨앗. 랜덤이 아니라 세는 값이다 — 같은 씨앗은 늘 같은 배치를 낸다. */
 let presetPreviewSeed = 7;
+/** 「값 가져오기」가 읽을 원형. 예전 <select> 의 첫 항목과 같이 프리셋마다 첫 원형에서 시작한다. */
+let archetypeImportSourceId = VILLAGE_ARCHETYPES[0]!.id;
+let archetypeImportPresetId = "";
 
 export function renderVillageTab(host: HTMLElement, rerender: () => void): void {
   const project = store.getCurrent();
@@ -1210,7 +1214,7 @@ function presetDetail(
           sectionCard({
             title: "규모",
             hint: "비워 두면 맵 넓이와 씨앗값으로 정합니다",
-            children: presetScaleFields(record, rerender),
+            children: presetScaleFields(project, record, rerender),
             testid: "db-village-preset-scale",
           }),
           sectionCard({
@@ -1354,7 +1358,11 @@ function presetBasicFields(
   ];
 }
 
-function presetScaleFields(record: VillageLayoutPresetRecord, rerender: () => void): HTMLElement[] {
+function presetScaleFields(
+  project: Project,
+  record: VillageLayoutPresetRecord,
+  rerender: () => void,
+): HTMLElement[] {
   return [
     optionalNumber("집 수", "db-village-preset-house-count", record.houseCount, VILLAGE_RANGE.houseCount, (value) => {
       recordCoalescedSnapshot(`village-preset-houses:${record.id}`, "프리셋 집 수 변경");
@@ -1366,10 +1374,24 @@ function presetScaleFields(record: VillageLayoutPresetRecord, rerender: () => vo
       patchPreset(record.id, () => ({ npcCount: value }));
       rerender();
     }),
-    optionalSelect("바닥", "db-village-preset-ground", record.groundTheme, VILLAGE_GROUND_THEME_IDS, GROUND_LABEL, (value) => {
-      recordProjectSnapshot("프리셋 바닥 변경");
-      patchPreset(record.id, () => ({ groundTheme: value }));
-      rerender();
+    visualSelect({
+      label: "바닥",
+      testid: "db-village-preset-ground",
+      value: record.groundTheme ?? UNSET,
+      options: VILLAGE_GROUND_THEME_IDS.map((id) => ({ id, name: GROUND_LABEL[id] ?? id })),
+      allowUnset: true,
+      unsetLabel: "지정 안 함",
+      mediaFor: (id) => createGroundThemePreview(id, project, {
+        testid: id ? `db-village-preset-ground-${id}-shot` : "db-village-preset-ground-unset-shot",
+        label: id === "snow" ? "눈 바닥" : id === "grass" ? "풀 바닥" : "지정 안 함",
+      }),
+      onChange: (value) => {
+        recordProjectSnapshot("프리셋 바닥 변경");
+        patchPreset(record.id, () => ({
+          groundTheme: value === "grass" || value === "snow" ? value : undefined,
+        }));
+        rerender();
+      },
     }),
   ];
 }
@@ -1593,12 +1615,30 @@ function archetypeGallery(rerender: () => void): HTMLElement[] {
 }
 
 function archetypeImportFields(record: VillageLayoutPresetRecord, rerender: () => void): HTMLElement[] {
-  const select = el("select", { dataset: { testid: "db-village-archetype-source" } }) as HTMLSelectElement;
-  for (const archetype of VILLAGE_ARCHETYPES) {
-    select.append(el("option", { attrs: { value: archetype.id }, text: `${archetype.name} — ${archetypeSummary(archetype)}` }));
+  if (archetypeImportPresetId !== record.id || !villageArchetypeById(archetypeImportSourceId)) {
+    archetypeImportPresetId = record.id;
+    archetypeImportSourceId = VILLAGE_ARCHETYPES[0]!.id;
   }
   return [
-    field("마을 원형", select),
+    visualSelect({
+      label: "마을 원형",
+      testid: "db-village-archetype-source",
+      value: archetypeImportSourceId,
+      options: VILLAGE_ARCHETYPES.map((archetype) => ({
+        id: archetype.id,
+        name: archetype.name,
+        meta: archetypeSummary(archetype),
+      })),
+      mediaFor: (id) => {
+        const archetype = villageArchetypeById(id ?? "") ?? VILLAGE_ARCHETYPES[0]!;
+        return archetypeShot(archetype);
+      },
+      onChange: (id) => {
+        if (!id) return;
+        archetypeImportSourceId = id;
+        rerender();
+      },
+    }),
     el("div", {
       class: "db-village-wing-actions",
       children: [el("button", {
@@ -1608,7 +1648,7 @@ function archetypeImportFields(record: VillageLayoutPresetRecord, rerender: () =
         dataset: { testid: "db-village-archetype-apply" },
         on: {
           click: () => {
-            const archetype = villageArchetypeById(select.value);
+            const archetype = villageArchetypeById(archetypeImportSourceId);
             if (!archetype) return;
             recordProjectSnapshot("원형 값 가져오기");
             // 원형이 안 정하는 항목은 `undefined` 로 지운다 — 남겨 두면 두 원형이 섞인 값이 되고,

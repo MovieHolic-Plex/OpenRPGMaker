@@ -377,7 +377,7 @@ export function buildVillageDomain(
   perfLap("interiors");
   const requestedNpcCount = integerArg(merged, "npcCount", houses.length + 2);
   placeVillageNpcs(draft, map, area, houses, plaza, overrides, seed, warnings, requestedNpcCount);
-  applyVillageGroundTheme(map, area, merged.groundTheme);
+  paintGroundThemeStrip(map, area, merged.groundTheme);
   setVillageHarnessLayoutPlan(map, area, plaza, houses, intent, seed, fencesEnabled, merged.settlementLayout);
 
   // 시작 좌표가 집/울타리 아래로 가면 커밋이 거부된다 — 광장 길로 옮긴다.
@@ -1494,7 +1494,8 @@ function isVillageStartGround(tileId: number): boolean {
   return ROAD_TILES.has(tileId) || tileId === TILE.GRASS || DEFAULT_SNOW_AUTOTILE_GROUP.memberTileIds.includes(tileId);
 }
 
-function applyVillageGroundTheme(map: GameMap, area: Rect, value: unknown): void {
+/** 잔디 칸에 눈 오토타일을 깐다. 시공과 바닥 스와치가 같은 페인터를 지난다. grass 는 무연산. */
+export function paintGroundThemeStrip(map: GameMap, area: Rect, value: unknown): void {
   if (value === undefined || value === "grass") return;
   if (value !== "snow") throw new ToolError("groundTheme은 grass|snow여야 합니다.", { code: "invalid-args", mapId: map.id });
   const points: Point[] = [];

@@ -394,7 +394,9 @@
   line-height: 0;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-village-option-card .db-village-house-shot.is-card {
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-option-card .db-village-house-shot.is-card,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-option-card .db-village-ground-shot,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-option-card .db-village-map-shot {
   height: 72px;
   width: 72px;
 }

@@ -331,6 +331,26 @@ describe("데이터베이스 「마을」탭 — 배치 프리셋", () => {
     expect(store.getCurrent().villagePresets?.[0]).not.toHaveProperty("houseCount");
   });
 
+  it("바닥을 고르면 저장하고 비움으로 되돌리면 키를 지운다", () => {
+    const host = withTemplateAndPreset();
+    const group = findByTestId(host, "db-village-preset-ground");
+    expect(group?.dataset.value).toBe("");
+    expect(findByTestId(host, "db-village-preset-ground-unset")).not.toBeNull();
+    expect(findByTestId(host, "db-village-preset-ground-grass")).not.toBeNull();
+    expect(findByTestId(host, "db-village-preset-ground-snow")).not.toBeNull();
+
+    pick(host, "db-village-preset-ground", "grass");
+    expect(store.getCurrent().villagePresets?.[0]?.groundTheme).toBe("grass");
+    expect(findByTestId(host, "db-village-preset-ground")?.dataset.value).toBe("grass");
+
+    pick(host, "db-village-preset-ground", "snow");
+    expect(store.getCurrent().villagePresets?.[0]?.groundTheme).toBe("snow");
+
+    pick(host, "db-village-preset-ground", "");
+    expect(store.getCurrent().villagePresets?.[0]).not.toHaveProperty("groundTheme");
+    expect(findByTestId(host, "db-village-preset-ground")?.dataset.value).toBe("");
+  });
+
   it("범위를 벗어난 숫자는 입력 단계에서 조여진다", () => {
     const host = withTemplateAndPreset();
     change(findByTestId(host, "db-village-preset-road-width"), "9");
@@ -419,8 +439,12 @@ describe("데이터베이스 「마을」탭 — 마을 원형", () => {
     // 갤러리는 "무엇부터 만들지" 를 고르는 빈 상태 전용이다 — 상세에서는 자리를 차지하면 안 된다.
     expect(findByTestId(host, "db-village-archetypes")).toBeNull();
     const select = findByTestId(host, "db-village-archetype-source");
-    expect(select?.querySelectorAll("option")).toHaveLength(VILLAGE_ARCHETYPES.length);
+    expect(select?.querySelectorAll("button")).toHaveLength(VILLAGE_ARCHETYPES.length);
+    expect(select?.dataset.value).toBe(VILLAGE_ARCHETYPES[0]!.id);
     expect(findByTestId(host, "db-village-archetype-apply")).not.toBeNull();
+    for (const archetype of VILLAGE_ARCHETYPES) {
+      expect(findByTestId(host, `db-village-archetype-source-${archetype.id}`), archetype.id).not.toBeNull();
+    }
   });
 
   it("「값 가져오기」는 분위기만 덮고 규모는 남긴다", () => {
@@ -428,12 +452,14 @@ describe("데이터베이스 「마을」탭 — 마을 원형", () => {
     findByTestId(host, "db-village-create")?.click();
     change(findByTestId(host, "db-village-preset-house-count"), "7");
     change(findByTestId(host, "db-village-preset-plaza-layout"), "north");
+    pick(host, "db-village-preset-ground", "snow");
 
-    change(findByTestId(host, "db-village-archetype-source"), "mine-mountain");
+    pick(host, "db-village-archetype-source", "mine-mountain");
     findByTestId(host, "db-village-archetype-apply")?.click();
 
     const record = store.getCurrent().villagePresets?.[0]!;
     expect(record.houseCount).toBe(7);
+    expect(record.groundTheme).toBe("snow");
     expect(record.pathStyle).toBe("dirt");
     expect(record.yardStyle).toBe("workshop");
     expect(record.kitMix).toBe("blue-stone");
