@@ -86,7 +86,13 @@ export function toneRow(selected: readonly WorldCanonTone[], rerender: () => voi
 export function absenceEditor(absences: readonly string[], rerender: () => void): HTMLElement {
   const input = el("input", {
     class: "db-world-canon-absence-input",
-    attrs: { type: "text", placeholder: "예: 총, 엘프, 부활", "aria-label": "없는 것 추가", maxlength: String(WORLD_CANON_BOUNDS.absence) },
+    attrs: {
+      type: "text",
+      placeholder: "예: 총, 엘프, 부활",
+      title: "부분일치입니다. 「총」은 「총각」에도 걸립니다 — 더 긴 낱말을 적으세요.",
+      "aria-label": "없는 것 추가",
+      maxlength: String(WORLD_CANON_BOUNDS.absence),
+    },
     dataset: { testid: "db-world-canon-absence-input" },
   });
   const add = (): void => {
@@ -149,6 +155,10 @@ export function absenceEditor(absences: readonly string[], rerender: () => void)
               on: { click: add },
             }),
           ],
+        }),
+        el("p", {
+          class: "db-ws-card-hint",
+          text: "부분일치입니다. 「총」은 「총각」에도 걸립니다 — 더 긴 낱말을 적으세요.",
         }),
       ],
     }),

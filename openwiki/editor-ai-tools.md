@@ -171,11 +171,12 @@ id 슬롯은 남긴다**(`def.name = ""`). id 가 지워지지 않으므로 `com
 `worldCanonContext.worldCanonPromptSection`(「이 세계(세계관 고정)」 블록)은 메인 어시스턴트 컨텍스트의 예산 밖 고정분
 (`contextBuilder.withWorldCanon`)이었지만, 정작 문장을 쓰는 3채널에는 닿지 않았다. 공유 검사
 `findWorldCanonAbsenceHits`(absences 부분일치, 빈 캐논→`[]`)로 세 채널에 주입+검증을 걸었다:
-- NPC 캐스트 라이터(`ai/npcCast`): `CastContext.worldCanon`(optional)에 캐논 전문 + 시스템 금지줄, `parseCastSheet`가
-  전 주민 전 라인 금지어 검사 — 히트 시 재킥. 호출부(`assistantSession.authorPendingNpcCast`)는 `project.worldCanon` 전달.
+- NPC 캐스트 라이터(`ai/npcCast`): `CastContext.worldCanon`(`WorldCanon | undefined`, required)에 캐논 전문 + 시스템 금지줄,
+  `parseCastSheet`가 이름·역할·요약·전 라인 금지어 검사 — 히트 시 재킥. 호출부(`assistantSession.authorPendingNpcCast`)는 `project.worldCanon` 전달.
 - DB AI 생성(`editor/aiDatabaseGeneration`): `buildRecordPrompt(kind, brief, names, canon?)` 시스템 주입,
   `parseGeneratedRecord(kind, raw, canon?)`가 name+원시 description 검사 — 적 스키마에 description이 없어 필터 뒤가
   아니라 **원시 응답 기준**이다. `generateDatabaseRecordWithAi`는 `project.worldCanon` 전달.
-- 이벤트 Assist(`ai/eventCommandAssist`): `buildEventAssistPrompt`에 캐논 섹션, `parseAndValidate`가 text body
-  (중첩 fork/choices/loop 포함, `commandBranches` 순회) 금지어 검사 — 자가수정 루프가 고친다.
+- 이벤트 Assist(`ai/eventCommandAssist`): `buildEventAssistPrompt`에 캐논 섹션, `parseAndValidate`가 text body·화자·
+  선택지 질문/문구·숫자 입력 안내·여관 인사/질문·killPlayer 메시지·엔딩 제목/본문 (중첩 fork/choices/loop 포함,
+  `commandBranches` 순회) 금지어 검사 — 자가수정 루프가 고친다. 비노출 필드(label 이름 등)는 검사하지 않는다.
 - 셋 다 빈 캐논이면 블록도 검증도 없이 기존과 동일. 테스트: 각 파일의 "worldCanon 강제" describe.

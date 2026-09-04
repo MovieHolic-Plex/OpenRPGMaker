@@ -42,7 +42,7 @@ export interface CastContext {
   readonly worldDigest: string;
   readonly worldNames: readonly string[];
   /** 「이 세계」 캐논 — 있으면 프롬프트에 고정 블록으로 실리고 금지어가 검증된다. */
-  readonly worldCanon?: WorldCanon;
+  readonly worldCanon: WorldCanon | undefined;
   readonly existingCast: readonly { readonly name: string; readonly line: string }[];
   readonly residents: readonly PendingNpc[];
 }
@@ -171,7 +171,7 @@ export function buildCastWriterMessages(ctx: CastContext): ChatMessage[] {
     "- 모든 대기 페이지(pageId)에 1~3줄의 대사를 쓴다. 빈 페이지·생략 금지.",
     "- 주민끼리 엮는다: 절반 이상의 주민이 다른 주민(새 주민 또는 기존 주민)의 **이름**을 대사에서 언급한다. knows 에 그 주민의 eventId 를 적는다.",
     "- 세계관과 엮는다: 세계관 개체가 있으면 최소 한 줄은 그 개체의 **이름**을 그대로 언급한다(세력·장소·사건).",
-    ...(canonSection ? ["- 「이 세계」에 없는 것(금지 목록)에 적힌 말은 대사에 절대 쓰지 않는다."] : []),
+    ...(canonSection ? ["- 「이 세계」에 없는 것(금지 목록)에 적힌 말은 이름·역할·요약·대사에 절대 쓰지 않는다."] : []),
     "- 테마에 맞는 한국어 구어체. 도구명·좌표·id 를 대사에 쓰지 않는다. 인사말만 있는 대사 금지 — 구체적인 일·소문·관계를 말한다.",
     "- 조건이 붙은 페이지는 그 조건(활동·시간대·호감도)에 맞는 말을 한다.",
     "- 상점 주인은 파는 것과 손님을 말하되 상점 UI 는 코드가 붙이므로 언급하지 않는다.",
@@ -244,6 +244,9 @@ export function parseCastSheet(raw: string, ctx: CastContext): ParseCastSheetRes
   }
   const absenceHits = new Set<string>();
   for (const resident of residents) {
+    for (const hit of findWorldCanonAbsenceHits(resident.name, ctx.worldCanon)) absenceHits.add(hit);
+    for (const hit of findWorldCanonAbsenceHits(resident.role, ctx.worldCanon)) absenceHits.add(hit);
+    for (const hit of findWorldCanonAbsenceHits(resident.summary, ctx.worldCanon)) absenceHits.add(hit);
     for (const page of resident.pages) {
       for (const line of page.lines) {
         for (const hit of findWorldCanonAbsenceHits(line, ctx.worldCanon)) absenceHits.add(hit);
@@ -251,7 +254,7 @@ export function parseCastSheet(raw: string, ctx: CastContext): ParseCastSheetRes
     }
   }
   if (absenceHits.size > 0) {
-    issues.push(`「이 세계」에 없는 것을 썼습니다 — 대사에서 빼세요: ${[...absenceHits].join(", ")}`);
+    issues.push(`「이 세계」에 없는 것을 썼습니다 — 이름·역할·요약·대사에서 빼세요: ${[...absenceHits].join(", ")}`);
   }
   if (issues.length > 0) return { ok: false, issues };
   return { ok: true, sheet: { residents } };

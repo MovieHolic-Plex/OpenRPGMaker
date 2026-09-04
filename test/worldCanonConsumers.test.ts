@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { buildSystemPrompt } from "@/ai/contextBuilder";
-import { worldCanonPromptSection } from "@/ai/worldCanonContext";
+import { findWorldCanonAbsenceHits, worldCanonPromptSection } from "@/ai/worldCanonContext";
 import { renderOverviewTab } from "@/editor/panels/databaseOverviewView";
 import { applyWelcomeGenrePresetToOpenProject } from "@/editor/welcomeGenrePresetApply";
 import { createBlankProject } from "@/project/defaults";
@@ -52,6 +52,22 @@ describe("worldCanon → assistant context", () => {
     expect(worldCanonPromptSection({ name: "서녘", status: "canon" })).toContain("확정");
     expect(worldCanonPromptSection({ name: "서녘", status: "secret" })).toContain("비밀");
     expect(worldCanonPromptSection({ name: "서녘" })).not.toContain("상태:");
+  });
+});
+
+describe("findWorldCanonAbsenceHits", () => {
+  it("returns nothing when the canon is undefined", () => {
+    expect(findWorldCanonAbsenceHits("총을 들어라", undefined)).toEqual([]);
+  });
+
+  it("returns nothing when the text is empty", () => {
+    expect(findWorldCanonAbsenceHits("", { absences: ["총"] })).toEqual([]);
+  });
+
+  it("returns nothing when absence entries are empty", () => {
+    expect(findWorldCanonAbsenceHits("총을 들어라", { name: "왕국" })).toEqual([]);
+    expect(findWorldCanonAbsenceHits("총을 들어라", { name: "왕국", absences: [] })).toEqual([]);
+    expect(findWorldCanonAbsenceHits("총을 들어라", { name: "왕국", absences: [""] })).toEqual([]);
   });
 });
 

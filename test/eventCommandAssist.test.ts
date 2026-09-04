@@ -918,8 +918,10 @@ describe("worldCanon 강제 — 캐논 주입과 금지어 검증", () => {
 
   it("숫자 입력 안내 문구의 금지어도 거부한다", () => {
     const parsed = parseAndValidate(canonProject(),
-      JSON.stringify([{ kind: "inputNumber", variableId: "v1", digits: 2, prompt: "화약 개수 입력" }]), { allowEmpty: true });
+      JSON.stringify([{ kind: "inputNumber", variableId: "var_0001", digits: 2, prompt: "화약 개수 입력" }]), { allowEmpty: true });
     expect(parsed.ok).toBe(false);
+    if (parsed.ok) return;
+    expect(parsed.errors.join("\n")).toContain("화약");
   });
 
   it("깊은 중첩(loop>선택지>text) 안의 금지어도 잡는다", () => {
@@ -932,6 +934,65 @@ describe("worldCanon 강제 — 캐논 주입과 금지어 검증", () => {
 
   it("플레이어에게 안 보이는 필드(label 이름)는 검사하지 않는다", () => {
     const parsed = parseAndValidate(canonProject(), JSON.stringify([{ kind: "label", name: "화약고" }]), { allowEmpty: true });
+    expect(parsed.ok).toBe(true);
+  });
+
+  it("화자 이름에 금지어가 있으면 본문이 깨끗해도 거부한다", () => {
+    const parsed = parseAndValidate(
+      canonProject(),
+      JSON.stringify([{ kind: "text", speaker: "총잡이", body: "마을에 온 걸 환영하네." }]),
+      { allowEmpty: true },
+    );
+    expect(parsed.ok).toBe(false);
+    if (parsed.ok) return;
+    expect(parsed.errors.join("\n")).toContain("총");
+  });
+
+  it("여관 인사말·질문에 금지어가 있으면 거부한다", () => {
+    const note = parseAndValidate(
+      canonProject(),
+      JSON.stringify([{ kind: "inn", price: 20, note: "화약 냄새 나는 방이오." }]),
+      { allowEmpty: true },
+    );
+    expect(note.ok).toBe(false);
+    if (!note.ok) expect(note.errors.join("\n")).toContain("화약");
+    const question = parseAndValidate(
+      canonProject(),
+      JSON.stringify([{ kind: "inn", price: 20, question: "화약고에서 쉴텐가?" }]),
+      { allowEmpty: true },
+    );
+    expect(question.ok).toBe(false);
+    if (!question.ok) expect(question.errors.join("\n")).toContain("화약");
+  });
+
+  it("게임오버 메시지·엔딩 제목/본문의 금지어도 거부한다", () => {
+    const kill = parseAndValidate(
+      canonProject(),
+      JSON.stringify([{ kind: "killPlayer", message: "화약이 터졌다." }]),
+      { allowEmpty: true },
+    );
+    expect(kill.ok).toBe(false);
+    if (!kill.ok) expect(kill.errors.join("\n")).toContain("화약");
+    const ending = parseAndValidate(
+      canonProject(),
+      JSON.stringify([{ kind: "ending", title: "총의 왕국", message: "마을은 잠잠했다." }]),
+      { allowEmpty: true },
+    );
+    expect(ending.ok).toBe(false);
+    if (!ending.ok) expect(ending.errors.join("\n")).toContain("총");
+  });
+
+  it("화자·여관·게임오버·엔딩이 깨끗한 문구면 통과한다", () => {
+    const parsed = parseAndValidate(
+      canonProject(),
+      JSON.stringify([
+        { kind: "text", speaker: "촌장", body: "마을에 온 걸 환영하네." },
+        { kind: "inn", price: 20, note: "따뜻한 방이오.", question: "묵으시겠소?" },
+        { kind: "killPlayer", message: "힘이 다했다." },
+        { kind: "ending", title: "끝", message: "마을은 잠잠했다." },
+      ]),
+      { allowEmpty: true },
+    );
     expect(parsed.ok).toBe(true);
   });
 });

@@ -69,6 +69,7 @@ function contextFor(project: Project): CastContext {
     requestText: "강가 어촌 마을 지어줘",
     worldDigest: "[faction] 강물지기단: 강을 지키는 길드",
     worldNames: ["강물지기단"],
+    worldCanon: project.worldCanon,
     existingCast: [{ name: "촌장", line: "마을에 온 걸 환영하네." }],
     residents: pending,
   };
@@ -266,6 +267,42 @@ describe("worldCanon 강제 — 캐논 주입과 금지어 검증", () => {
     const parsed = parseCastSheet(JSON.stringify(sheet), canonContext(project));
     expect(parsed.ok).toBe(false);
     if (parsed.ok) return;
-    expect(parsed.issues.join("\n")).toMatch(/총|금지/);
+    expect(parsed.issues.join("\n")).toContain("총");
+  });
+
+  it("주민 이름에 금지어가 있으면 대사가 깨끗해도 거부한다", () => {
+    const project = projectWithPendingNpcs();
+    const sheet = {
+      residents: [
+        { eventId: "ev_a", name: "총잡이", role: "어부", summary: "새벽 그물을 걷는 청년", knows: ["ev_b"],
+          pages: [{ pageId: "ev_a_p0", lines: ["다래 가게에 은어를 넘겼어요. 강물지기단 얘기 들었어요?"] }] },
+        { eventId: "ev_b", name: "다래", role: "잡화점 주인", summary: "장터를 지키는 상인", knows: ["ev_a"],
+          pages: [
+            { pageId: "ev_b_p0", lines: ["오늘 잡은 은어가 특산이에요."] },
+            { pageId: "ev_b_p1", lines: ["장터 소식? 큰 물고기를 잡았대요."] },
+          ] },
+      ],
+    };
+    const parsed = parseCastSheet(JSON.stringify(sheet), canonContext(project));
+    expect(parsed.ok).toBe(false);
+    if (parsed.ok) return;
+    expect(parsed.issues.join("\n")).toContain("총");
+  });
+
+  it("금지어 없는 정상 시트는 캐논 아래에서도 통과한다", () => {
+    const project = projectWithPendingNpcs();
+    const sheet = {
+      residents: [
+        { eventId: "ev_a", name: "은호", role: "어부", summary: "새벽 그물을 걷는 청년", knows: ["ev_b"],
+          pages: [{ pageId: "ev_a_p0", lines: ["다래 아주머니 가게에 오늘 잡은 은어를 넘겼어요.", "강물지기단이 상류를 막아서 물고기가 줄었지요."] }] },
+        { eventId: "ev_b", name: "다래", role: "잡화점 주인", summary: "장터를 지키는 상인", knows: ["ev_a"],
+          pages: [
+            { pageId: "ev_b_p0", lines: ["은호가 가져온 은어가 오늘의 특산이에요."] },
+            { pageId: "ev_b_p1", lines: ["장터 소식? 촌장님이 강물지기단과 담판을 지으러 갔대요."] },
+          ] },
+      ],
+    };
+    const parsed = parseCastSheet(JSON.stringify(sheet), canonContext(project));
+    expect(parsed.ok).toBe(true);
   });
 });
