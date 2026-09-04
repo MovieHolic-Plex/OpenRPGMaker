@@ -9,9 +9,14 @@ import { findByTestId, installFakeDom, renderWithFakeDom, type FakeElement } fro
 
 const assistantMock = vi.hoisted(() => {
   const updated: unknown[] = [];
+  const created: unknown[] = [];
+  let sent = 0;
   class MockAssistantSession {
-    constructor(_project: unknown, _options: unknown) {}
+    constructor(_project: unknown, options: unknown) {
+      created.push(options);
+    }
     async sendUserMessage(): Promise<{ assistantText: string; proposedCalls: []; stoppedReason: "final" }> {
+      sent += 1;
       return { assistantText: "완료.", proposedCalls: [], stoppedReason: "final" };
     }
     getAuditEntries(): [] {
@@ -39,8 +44,12 @@ const assistantMock = vi.hoisted(() => {
   return {
     MockAssistantSession,
     updated,
+    created,
+    sentCount: (): number => sent,
     reset() {
       updated.length = 0;
+      created.length = 0;
+      sent = 0;
     },
   };
 });
@@ -128,5 +137,25 @@ describe("지시줄 effort 셀렉트 — 패널 배선", () => {
 
     expect(storedConfig().reasoningEffort).toBe("high");
     expect(storedConfig().autonomyLevel).toBe("balanced");
+  });
+
+  it("지시줄에서 바꾼 값은 다음 전송 때 세션 생성 설정에 실린다", async () => {
+    // Break: 저장은 되지만 ensureSession 이 전송 시점 설정을 다시 읽지 않아 다음 턴이 옛값으로 돈다.
+    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig() }));
+    const panel = renderWithFakeDom(() => renderAiChatPanel()) as unknown as FakeElement;
+    const autonomy = findByTestId(panel, "ai-composer-autonomy");
+    if (!autonomy) throw new Error("ai-composer-autonomy missing");
+    autonomy.value = "max";
+    autonomy.dispatchEvent(new Event("change"));
+
+    const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
+    input.value = "짧은 질문";
+    findByTestId(panel, "ai-send")?.click();
+    await vi.waitFor(() => expect(assistantMock.sentCount()).toBe(1), { timeout: 2_000, interval: 5 });
+    // ensureSession 은 전송 시점 저장 설정으로 세션을 만든다 — 방금 고른 레벨이 실려야 한다.
+    const created = assistantMock.created as { config?: { autonomyLevel?: unknown; reasoningEffort?: unknown } }[];
+    expect(created.length).toBeGreaterThan(0);
+    expect(created[0]?.config?.autonomyLevel).toBe("max");
+    expect(created[0]?.config?.reasoningEffort).toBe(resolveAutonomy("max").reasoningEffort);
   });
 });

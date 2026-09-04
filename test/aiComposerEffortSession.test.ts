@@ -82,7 +82,9 @@ describe("지시줄 effort — 세션 effort 우선순위", () => {
     await session.sendUserMessage("마을을 만들어줘", () => {});
     // 플래너 콜이 있었다 = 레벨 agentMode(auto)가 orchestration 을 켰다(플래너 요청에는 tools 키가 없다).
     expect(toolFlags.some((tools) => tools === undefined)).toBe(true);
-    // 수동값 low 는 그대로 실린다(레벨 high 로 덮이지 않는다).
-    expect(seen[0]?.reasoningEffort).toBe("low");
+    // 턴루프 콜(tools 있음)에 수동값 low 가 그대로 실린다(레벨 high 로 덮이지 않는다).
+    // seen[0]은 플래너 콜(this.config 직통)이라 phaseConfig 를 거치지 않는다 — 턴루프 콜로 본다.
+    const loopCall = seen.find((_, index) => toolFlags[index] !== undefined);
+    expect(loopCall?.reasoningEffort).toBe("low");
   });
 });
