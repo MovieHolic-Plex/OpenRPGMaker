@@ -401,6 +401,48 @@ describe("스튜디오 콘솔(재개편)", () => {
     expect(names().some((text) => text.includes("안채"))).toBe(true);
   });
 
+  it("작업·변경 탭은 처음 나타날 때만 열고, 같은 갱신으로는 사용자가 둔 탭을 빼앗지 않는다", () => {
+    const { shell, root } = standaloneShell();
+    const project = store.getCurrent();
+    const plan = {
+      id: "plan",
+      goal: "우물을 놓는다",
+      createdAt: "0",
+      currentLayerIndex: 0,
+      currentItemId: "a",
+      layers: [{
+        id: "l1",
+        title: "광장",
+        items: [{ id: "a", title: "우물", instruction: "", status: "in_progress" as const }],
+      }],
+    };
+    const preview = {
+      before: project,
+      after: project,
+      mapId: project.startMapId,
+      title: "타일 변경",
+    };
+
+    shell.setWorkPlan(plan, true);
+    expect(findByTestId(root, "ai-studio-tab-work")?.className).toContain("is-on");
+
+    findByTestId(root, "ai-studio-tab-tools")?.click();
+    expect(findByTestId(root, "ai-studio-tab-tools")?.className).toContain("is-on");
+    shell.setWorkPlan({ ...plan, currentItemId: "a" }, true);
+    expect(findByTestId(root, "ai-studio-tab-tools")?.className).toContain("is-on");
+    expect(findByTestId(root, "ai-studio-tab-work")?.className).not.toContain("is-on");
+
+    findByTestId(root, "ai-studio-tab-activity")?.click();
+    shell.setChangePreview(preview);
+    expect(findByTestId(root, "ai-studio-tab-changes")?.className).toContain("is-on");
+
+    findByTestId(root, "ai-studio-tab-activity")?.click();
+    expect(findByTestId(root, "ai-studio-tab-activity")?.className).toContain("is-on");
+    shell.setChangePreview(preview);
+    expect(findByTestId(root, "ai-studio-tab-activity")?.className).toContain("is-on");
+    expect(findByTestId(root, "ai-studio-tab-changes")?.className).not.toContain("is-on");
+  });
+
   it("작업 판은 진행률을 세고 탭 배지에도 적는다", () => {
     const { shell, root } = standaloneShell();
     shell.setWorkPlan({
