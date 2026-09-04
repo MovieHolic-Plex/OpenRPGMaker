@@ -80,6 +80,13 @@ describe("charset label overrides", () => {
     expect(results[0]?.id).toBe(`charset:${ACTOR4_0.textureKey}:${ACTOR4_0.characterIndex}`);
   });
 
+  it("animal#7 은 사자다", () => {
+    expect(findCharsetSemantic("tex_easyrpg_charset_animal", 7)?.label).toBe("사자");
+    expect(resolveNpcGraphic("사자")?.textureKey).toBe("tex_easyrpg_charset_animal");
+    expect(resolveNpcGraphic("사자")?.characterIndex).toBe(7);
+    expect(searchResources("charset", "사자")[0]?.id).toBe("charset:tex_easyrpg_charset_animal:7");
+  });
+
   it("시스템 프롬프트에 가르친 캐릭터 칩이 실린다", () => {
     const project = createBlankProject();
     project.charsetLabels = [CHIEF];
