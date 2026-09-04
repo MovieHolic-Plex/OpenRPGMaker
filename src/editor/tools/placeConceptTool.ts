@@ -153,12 +153,21 @@ export const PLACE_CONCEPT_TOOL: ToolDefinition = {
     const tilesetId = args.tilesetId !== undefined
       ? String(args.tilesetId).trim()
       : INTERIOR_ROOM_TILESET_ID;
+    // Phase 5: 시공 파이프라인의 벽·바닥·가구 타일 번호가 실내 칩셋 하드코딩이다.
+    // 다른 칩셋은 꾸러미 저작(구성)까지만 열고, 시공은 실내 칩셋에서만 받는다.
+    if (tilesetId !== INTERIOR_ROOM_TILESET_ID) {
+      throw new ToolError(
+        `개념 시설 시공은 실내 칩셋(${INTERIOR_ROOM_TILESET_ID})에서만 된다 — "${tilesetId}" 칩셋의 벽·바닥·가구 타일 번호가 없다. ` +
+        "꾸러미 저작(장소·물건 구성)은 그 칩셋 탭에서 하고, 시공은 실내 칩셋에서 place_concept 하라.",
+        { code: "invalid-tileset" },
+      );
+    }
     ensureConceptBundles(draft, tilesetId);
     const tileset = draft.tilesets[tilesetId];
     const hasPlan = args.plan !== undefined && args.plan !== null;
     if (!hasPlan && tileset?.scratchConceptBundles?.length === 0) {
       throw new ToolError(
-        "이 타일셋의 개념 꾸러미가 비어 있다. plan 을 설계해 넘기거나, 데이터베이스 「임시 → 개념 꾸러미」에서 시설 템플릿을 만들거나 초안(여관·민가·상점…)을 넣어라.",
+        "이 타일셋의 개념 꾸러미가 비어 있다. plan 을 설계해 넘기거나, 데이터베이스 「맵 → 타일셋 → 개념 꾸러미」에서 시설 템플릿을 만들거나 초안(여관·민가·상점…)을 넣어라.",
         { code: "concept-bundle-empty" },
       );
     }
