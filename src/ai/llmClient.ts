@@ -7,6 +7,8 @@
 // - Node(테스트/스모크)에서는 config를 직접 주입해 사용한다.
 
 import { defaultModelForAuthMode, isModelValidForAuthMode } from "@/ai/modelCatalog";
+import type { AutonomyLevel } from "@/ai/autonomyLevels";
+import { AUTONOMY_LEVEL_IDS } from "@/ai/autonomyLevels";
 import { PRODUCT_BRAND } from "@/brand";
 import { DEFAULT_OH_MY_PI_PROVIDER, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 
@@ -46,6 +48,10 @@ export interface AiConfig {
   maxToolCalls: number;
   maxTokens: number;
   reasoningEffort?: "off" | "low" | "medium" | "high";
+  // 자율성 다이얼(설정 모달·컴포저 공용). reasoningEffort·agentMode·예산의 원천 — 파생 노브의
+  // 명시값과 충돌하면 다이얼이 이긴다(autonomyLevels.resolveAutonomy). 미지정(구형 blob/
+  // 직접 주입 config)은 종래 동작 그대로 — 하네스는 필드가 있을 때만 레벨을 적용한다.
+  autonomyLevel?: AutonomyLevel;
   // 작업 모드: "auto" = 플래너(작업 분해) 라운드를 모델 구성과 무관하게 상시 동작,
   // "chat" = 종래 동작(감독·실행 모델이 다를 때만 플래너). 미지정(구형 blob/테스트 주입)은
   // loadAiConfig가 "auto"로 백필하지만, 직접 주입된 config는 종래 판정을 유지한다.
@@ -78,6 +84,11 @@ export const DEFAULT_LITE_MODEL = "gemini-3.7-flash";
 // 13토큰 소비, 512 → 정상). 추론 토큰을 먼저 쓰는 모델이므로 출력 예산을 넉넉히 잡아야 한다.
 export const DEFAULT_MAX_TOKENS = 200_000;
 export const DEFAULT_MAX_TOOL_CALLS = 2000;
+
+/** 저장 blob·주입 config 의 autonomyLevel 검증. 4단계 id 만 통과한다. */
+export function isAutonomyLevel(raw: unknown): raw is AutonomyLevel {
+  return (AUTONOMY_LEVEL_IDS as readonly unknown[]).includes(raw);
+}
 /** 저장 blob 에 남아 있으면 '옛 공장 기본'으로 보고 새 기본으로 승격한다. */
 const LEGACY_DEFAULT_MAX_TOKENS = new Set([2048, 10240, 32768]);
 const LEGACY_DEFAULT_MAX_TOOL_CALLS = new Set([200]);
@@ -117,6 +128,7 @@ export function defaultAiConfig(): AiConfig {
     // 감독 단계 기본 추론 강도. 벽시계·비용을 아끼려고 낮게 시작한다(실행 단계는 off).
     reasoningEffort: "low",
     agentMode: "auto",
+    autonomyLevel: "balanced",
   };
 }
 
@@ -239,6 +251,8 @@ export function loadAiConfig(): AiConfig {
       // agentMode 백필(위 liteModel 패턴과 동일): 필드가 없는 옛 blob과 이상한 값은
       // 기본값 "auto"로 정규화한다. "chat"만 명시적으로 유지된다.
       agentMode: parsed.agentMode === "chat" ? "chat" : "auto",
+      // 자율성 다이얼 백필: 4단계 id 만 인정하고, 없는 옛 blob·이상한 값은 "balanced".
+      autonomyLevel: isAutonomyLevel(parsed.autonomyLevel) ? parsed.autonomyLevel : "balanced",
     };
   } catch {
     return base;

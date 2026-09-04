@@ -95,9 +95,11 @@ import {
   implicitSpecFromViewLocation,
   resolveTurnViewLocation,
 } from "./viewRelativeLocation";
+import { resolveAutonomy, type AutonomyResolution } from "./autonomyLevels";
 import {
   chatCompletion,
   configForLiteModel,
+  isAutonomyLevel,
   isLlmAbortError,
   isOhMyPiWorkerCrash,
   isRetryableLlmError,
@@ -1613,7 +1615,11 @@ export class AssistantSession {
       }
     }
 
-    if (this.turnComposerMode === "plan" && this.planAuthoredThisTurn && this.workPlan && !isWorkPlanComplete(this.workPlan)) {
+    // 다이얼 confirm(planOnly): 계획 모드와 같은 종료 — 계획만 세우고 「계속」을 기다린다.
+    // 이미 세운 계획이 있는 「계속」 턴(resume)은 그대로 실행된다(finishPlanOnlyTurn 은
+    // 미완성 계획에만 해당하므로 재진입 시 실행 경로로 떨어진다).
+    const autonomyPlanOnly = this.autonomy()?.planOnly === true;
+    if ((this.turnComposerMode === "plan" || autonomyPlanOnly) && this.planAuthoredThisTurn && this.workPlan && !isWorkPlanComplete(this.workPlan)) {
       this.removeOrchestrationMessages();
       return this.finishPlanOnlyTurn(onEvent);
     }
@@ -1700,6 +1706,9 @@ export class AssistantSession {
     if (this.turnComposerMode === "ask") return "composer:ask";
     if (intent.source === "empty") return "empty";
     if (this.turnComposerMode === "plan") return null;
+    // 다이얼 confirm(planOnly): 계획 모드처럼 플래너를 항상 돌린다 — 그래야 계획만 세우고
+    // 멈추는 확인 중심 턴이 성립한다. 미지정 config 는 아래 종래 스킵 그대로.
+    if (this.autonomy()?.planOnly) return null;
     if (this.workPlan) return null;
     if (this.turnScope) return "selection";
     if (intent.mode === "question") return "question";
@@ -2716,10 +2725,24 @@ export class AssistantSession {
     if (eventTarget !== null) this.eventBaseProposalKeys.set(eventTargetKey(eventTarget), key);
   }
 
+  /**
+   * 자율성 다이얼 해석. config.autonomyLevel 이 명시됐을 때만 레벨을 돌려준다 —
+   * 미지정(구형 blob/직접 주입 config)은 null 로 종래 동작을 그대로 유지한다.
+   * 직접 주입된 이상한 값은 balanced 로 스냅한다(loadAiConfig 는 이미 검증한다).
+   */
+  private autonomy(): AutonomyResolution | null {
+    const raw = this.config.autonomyLevel;
+    if (raw === undefined) return null;
+    return resolveAutonomy(isAutonomyLevel(raw) ? raw : "balanced");
+  }
+
   private orchestrationEnabled(): boolean {
-    // agentMode "auto" = 플래너 상시(모델 이원화 여부와 무관). "chat"·미지정은 종래
-    // 판정(감독≠실행 모델일 때만)을 그대로 유지한다 — 구형 저장 blob/직접 주입 config
-    // 회귀 방지.
+    // 자율성 다이얼이 명시됐으면 그 agentMode 가 이긴다 — agentMode 단독 설정 UI 가 없고
+    // 다이얼이 플래너 모드의 정본이다. 미지정(구형 blob/직접 주입)은 종래 판정 그대로.
+    const levelMode = this.autonomy()?.agentMode;
+    if (levelMode === "auto") return true;
+    // 다이얼 confirm(planOnly)은 플래너를 항상 돌려야 계획만 세우고 멈출 수 있다.
+    if (this.autonomy()?.planOnly === true) return true;
     if (this.config.agentMode === "auto") return true;
     const main = this.config.model.trim();
     const lite = this.config.liteModel?.trim();
@@ -2729,7 +2752,10 @@ export class AssistantSession {
   private phaseConfig(phase: AssistantPhase): AiConfig {
     // 실행 단계는 configForLiteModel 이 reasoning 을 off 로 끈다. 계획·검수 단계는 사용자가
     // 고른 reasoningEffort 를 그대로 쓴다(모델 이름으로 effort 를 깎던 공급자 정책은 제거됨).
-    return phase === "execute" ? configForLiteModel(this.config) : this.config;
+    // 다이얼 명시 시 계획·검수 단계는 레벨의 effort 로 덮는다 — 실행 단계는 그대로 off.
+    if (phase === "execute") return configForLiteModel(this.config);
+    const effort = this.autonomy()?.reasoningEffort;
+    return effort ? { ...this.config, reasoningEffort: effort } : this.config;
   }
 
   /** 사용자 텍스트 + 뷰포트 블록 + (브라우저) 뷰포트 맵 이미지. */
@@ -3130,9 +3156,12 @@ export class AssistantSession {
     if (this.workPlan) this.addExecutionHintIfNeeded();
     // 에이전틱 예산: 사용자 제한은 출력 토큰 하나뿐. 루프 깊이는 사실상 무제한이고
     // (maxToolCalls 기본 2000은 폭주 방지 안전핀), 누적 출력 토큰이 maxTokens를 넘으면 멈춘다.
+    // 다이얼 명시 시 레벨의 budgetCap 을 추가로 씌운다 — 미지정 config 는 종래 상한 그대로.
+    const autonomyCap = this.autonomy()?.budgetCap;
+    const roundCap = autonomyCap === undefined ? this.config.maxToolCalls : Math.min(this.config.maxToolCalls, autonomyCap);
     let spentOutputTokens = 0;
 
-    for (let round = 0; round < this.config.maxToolCalls; round += 1) {
+    for (let round = 0; round < roundCap; round += 1) {
       if (signal?.aborted) {
         this.pushAudit({ kind: "status", text: "턴 중단(aborted): 사용자가 중단했습니다" });
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "aborted", error: "사용자가 중단했습니다" };
