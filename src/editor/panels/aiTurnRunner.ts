@@ -19,6 +19,7 @@ import { isUsableToolReason, toolCallsFromAudit } from "@/ai/toolReason";
 import { resolveProposalApplyMode } from "@/ai/approvalPolicy";
 import { proposalCompletenessWarnings } from "@/ai/proposalCompleteness";
 import type { AssistantSession, ProposedCall, SessionEvent, TurnResult } from "@/ai/assistantSession";
+import type { ProposalApplyOutcome } from "@/editor/panels/aiProposalCard";
 import type { WorkPlan } from "@/ai/workPlan";
 import type { BuildSpec } from "@/ai/buildSpec";
 import type { AiDocument } from "@/project/types";
@@ -77,7 +78,7 @@ export interface AiTurnRunnerDeps {
   } | null;
 
   // ── 제안 · 변경 카드 ─────────────────────────────────────
-  readonly applyProposal: (calls: readonly ProposedCall[], assistantBubble?: HTMLElement | null) => Promise<boolean>;
+  readonly applyProposal: (calls: readonly ProposedCall[], assistantBubble?: HTMLElement | null) => Promise<ProposalApplyOutcome>;
   readonly noteNoChanges: (result: TurnResult, extraWarnings?: readonly string[]) => void;
 
   // ── 할 일 목록 표면 ──────────────────────────────────────
@@ -494,20 +495,24 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         // 게이트에서 내린 경고는 정보로 남긴다 — 적용을 막지는 않되 삼키지도 않는다.
         if (completenessWarnings.length > 0) deps.surface.appendBubble("system", completenessWarnings.join("\n"));
         deps.applyingProposal = true;
-        let applied: boolean;
+        let outcome: ProposalApplyOutcome;
         try {
-          applied = await deps.applyProposal(result.proposedCalls, assistantBubble);
+          outcome = await deps.applyProposal(result.proposedCalls, assistantBubble);
         } finally {
           deps.applyingProposal = false;
           deps.projectIdentityId = store.getProjectIdentity().id;
         }
+        const applied = outcome === "applied";
+        const cancelled = outcome === "cancelled";
         // 적용 결과가 나온 다음에 청사진을 정산한다 — 배치 검증·커밋 게이트가 거부하면
         // (applied === false) 저장소는 그대로이므로 done 은 거짓이다.
+        // 중간 검토 취소도 저장소는 그대로지만 실패가 아니라 사용자 선택이므로
+        // "적용 실패" 상태를 덮어쓰지 않는다(취소 경로가 이미 "대기"를 남겼다).
         settleBlueprintForTurnEnd(applied ? result.proposedCalls : null);
         // 시공이 저장소에 들어간 턴이 끝났다 — 밑그림은 착공 전 안내이므로 여기서 물러난다.
         // 물러난 칸은 다음 턴의 재동기화가 되살리지 않는다(agentBlueprint.retireAgentBlueprint).
         if (applied) retireAgentBlueprint();
-        deps.surface.setStatus(applied ? "대기" : "적용 실패");
+        if (!cancelled) deps.surface.setStatus(applied ? "대기" : "적용 실패");
         // 변경 카드는 proposalApi.onApplied 가 한 장만 남긴다. 여기서 또 emitChangeCard 를 부르면
         // 한 턴에 카드가 두 장 붙는다(e2e 로 잡혔다).
         if (applied && !currentMapId) {
