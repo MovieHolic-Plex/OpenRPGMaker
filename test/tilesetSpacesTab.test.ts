@@ -77,6 +77,27 @@ describe("tilesetSpacesTab 은 구조물 앨범이 아니다", () => {
     expect(host.querySelector("[data-testid='tileset-spaces-derived-note-hall_t']")).not.toBeNull();
     expect(host.querySelector("[data-testid='tileset-spaces-inspector-hall_t']")).toBeNull();
   });
+
+  it("파생 모드에서 추가하면 유도 목록을 스냅샷으로 깔고 더한다", () => {
+    const tilesetId = INTERIOR_ROOM_TILESET_ID;
+    store.update((project) => {
+      const tileset = project.tilesets[tilesetId]!;
+      delete tileset.interiorRoomKinds;
+      tileset.scratchConceptBundles = [{
+        id: "bundle_a",
+        label: "시험",
+        facilities: [{ id: "facility_a", label: "시험", placeIds: ["hall_a"] }],
+        places: [{ id: "hall_a", label: "시험 홀", role: "entrance" }],
+        things: [],
+      }];
+    });
+    const host = renderOnTileset(tilesetId);
+    host.querySelector("[data-testid='tileset-spaces-kind-add']")!.click();
+    const kinds = store.getCurrent().tilesets[tilesetId]?.interiorRoomKinds ?? [];
+    // 파생 행(hall_a)이 살아 있고 새 행이 붙는다 — [새 공간] 하나로 붕괴하지 않는다.
+    expect(kinds.some((kind) => kind.id === "hall_a")).toBe(true);
+    expect(kinds.length).toBe(2);
+  });
 });
 
 describe("tilesetSpacesTab 실내 시드와 카드", () => {

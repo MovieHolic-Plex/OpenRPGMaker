@@ -167,7 +167,7 @@ function renderTilesetRail(
     children: [el("div", { class: "structure-kit-album-rail-title", text: "타일셋" })],
   });
   for (const tileset of tilesets) {
-    const count = tileset.interiorRoomKinds?.length ?? 0;
+    const count = interiorRoomKindCount(tileset);
     const isActive = tileset.id === activeTileset?.id;
     rail.append(
       el("button", {
@@ -528,8 +528,18 @@ function addBlankKind(tilesetId: string): InteriorRoomKindRecord {
     requiredRoles: [],
   };
   const tileset = store.getCurrent().tilesets[tilesetId];
-  writeKinds(tilesetId, [...(tileset?.interiorRoomKinds ?? []), created]);
+  // Phase 3: 저작값이 없으면(파생 모드) 유도 목록을 스냅샷으로 먼저 깔고 추가한다.
+  // 파생 행을 버리고 [새 공간] 하나만 남기면 어휘가 붕괴한다.
+  const base = tileset?.interiorRoomKinds ?? kindsDerivedFromConceptBundles(tileset);
+  writeKinds(tilesetId, [...base, created]);
   return created;
+}
+
+/** 공간 종류 개수 — 저작값이 있으면 그 길이, 없으면 파생 길이. 레일·뱃지 공용. */
+export function interiorRoomKindCount(tileset: TilesetDef | undefined): number {
+  if (!tileset) return 0;
+  if (tileset.interiorRoomKinds !== undefined) return tileset.interiorRoomKinds.length;
+  return kindsDerivedFromConceptBundles(tileset).length;
 }
 
 function writeKinds(
