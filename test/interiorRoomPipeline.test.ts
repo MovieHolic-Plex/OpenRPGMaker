@@ -44,6 +44,21 @@ describe("interior room procedural pipeline (house whole-tile grammar / Option B
     expect(typeof cmd?.body).toBe("string");
   });
 
+  it("entrance transfers to returnMapId when the plan carries one", () => {
+    const plan = {
+      ...INTERIOR_ROOM_DEMO_PLANS[0]!,
+      returnMapId: "map_outdoor",
+      returnX: 3,
+      returnY: 4,
+    };
+    const map = applyInteriorRoomLayer(createEmptyRoomMap(plan), plan, "entrance").map;
+    const entrance = map.events?.find((e) => e.x === plan.door.x && e.y === plan.door.y);
+    const transfer = entrance?.pages?.[0]?.commands?.find((c) => (c as { kind?: string }).kind === "transfer") as { kind: string; mapId: string; x: number; y: number };
+    expect(transfer?.mapId).toBe("map_outdoor");
+    expect(transfer?.x).toBe(3);
+    expect(transfer?.y).toBe(4);
+  });
+
   it("366 is the only wall brush; 105 is a cream face tile, not a house brush", () => {
     expect(WALL_BRUSH).toBe(366);
     expect(DARK_WALL_TILE.BODY).toBe(366);
@@ -437,5 +452,52 @@ describe("parseInteriorPlan exterior hints", () => {
 
     const given = parseInteriorPlan(interiorArgs({ theme: "bedroom", wallMaterial: "gold-brick" }));
     expect(given.wallMaterial).toBe("gold-brick");
+  });
+
+  it("passes returnMapId/returnX/returnY through when provided", () => {
+    const plan = parseInteriorPlan(
+      interiorArgs({ theme: "bedroom", returnMapId: "map_outdoor", returnX: 3, returnY: 4 }),
+    );
+    expect(plan.returnMapId).toBe("map_outdoor");
+    expect(plan.returnX).toBe(3);
+    expect(plan.returnY).toBe(4);
+  });
+
+  it("omits return fields when absent", () => {
+    const plan = parseInteriorPlan(interiorArgs({ theme: "bedroom" }));
+    expect(plan.returnMapId).toBeUndefined();
+    expect(plan.returnX).toBeUndefined();
+    expect(plan.returnY).toBeUndefined();
+  });
+
+  it("rejects empty returnMapId", () => {
+    expect(() => parseInteriorPlan(interiorArgs({ theme: "bedroom", returnMapId: "   " }))).toThrowError(
+      expect.objectContaining({ code: "invalid-args" }),
+    );
+  });
+
+  it("forwards return fields from start_interior_room_session to the plan", () => {
+    const project = createBlankProject();
+    const startTool = INTERIOR_ROOM_SESSION_TOOLS.find((tool) => tool.name === "start_interior_room_session")!;
+    const started = runToolDefinition({ project }, startTool, {
+      mapId: "map_interior_return_toolpath",
+      name: "return target tool path",
+      width: 16,
+      height: 13,
+      wings: [{ x: 2, y: 5, w: 12, h: 5 }],
+      door: { x: 8, y: 9 },
+      seed: 0,
+      theme: "bedroom",
+      returnMapId: "map_1",
+      returnX: 5,
+      returnY: 6,
+    });
+    expect(started.ok, started.summary).toBe(true);
+    const plan = (started.data as {
+      plan: { returnMapId?: string; returnX?: number; returnY?: number };
+    }).plan;
+    expect(plan.returnMapId).toBe("map_1");
+    expect(plan.returnX).toBe(5);
+    expect(plan.returnY).toBe(6);
   });
 });

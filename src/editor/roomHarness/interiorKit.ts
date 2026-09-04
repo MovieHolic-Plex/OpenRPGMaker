@@ -61,6 +61,30 @@ function parseRequiredTrimmedString(value: unknown, label: string): string {
   return trimmed;
 }
 
+function parseOptionalInteger(value: unknown, label: string): number | undefined {
+  if (value === undefined) return undefined;
+  const parsed = Math.floor(Number(value));
+  if (!Number.isFinite(parsed)) {
+    throw new ToolError(`${label} must be an integer`, { code: "invalid-args" });
+  }
+  return parsed;
+}
+
+function parseOptionalReturnTarget(args: Record<string, unknown>): Pick<
+  InteriorRoomPlan,
+  "returnMapId" | "returnX" | "returnY"
+> {
+  const returnMapId =
+    args.returnMapId === undefined ? undefined : parseRequiredTrimmedString(args.returnMapId, "returnMapId");
+  const returnX = parseOptionalInteger(args.returnX, "returnX");
+  const returnY = parseOptionalInteger(args.returnY, "returnY");
+  return {
+    ...(returnMapId !== undefined ? { returnMapId } : {}),
+    ...(returnX !== undefined ? { returnX } : {}),
+    ...(returnY !== undefined ? { returnY } : {}),
+  };
+}
+
 function parseExteriorHint(value: unknown): HouseExteriorHint | undefined {
   if (value === undefined) return undefined;
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
@@ -209,6 +233,7 @@ export function parseInteriorPlan(args: Record<string, unknown>): ParsedInterior
     wallMaterial: wallMaterial as InteriorRoomPlan["wallMaterial"],
     ...(tilesetId ? { tilesetId } : {}),
     ...parseConceptOverlay(args.concept),
+    ...parseOptionalReturnTarget(args),
     ...(exterior
       ? {
           exterior,

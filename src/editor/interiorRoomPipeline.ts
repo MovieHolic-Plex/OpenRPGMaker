@@ -411,6 +411,10 @@ export type InteriorRoomPlan = {
   readonly height: number;
   readonly wings: readonly Wing[];
   readonly door: DoorSpec;
+  /** 출입구가 진짜 외부 맵으로 돌아가야 할 때 — 미지정 시 기존 동작(같은 맵 착지). */
+  readonly returnMapId?: MapId;
+  readonly returnX?: number;
+  readonly returnY?: number;
   /** 타일셋 방 종류 id. 기본 7종은 InteriorRoomTheme. */
   readonly theme: string;
   /** 가구·방 종류를 읽을 타일셋. 생략 시 실내 칩셋. */
@@ -890,7 +894,11 @@ export function applyInteriorRoomLayer(
     }
     case "entrance": {
       const next = cloneMap(map);
-      placeEntranceEvent(next, plan.door);
+      placeEntranceEvent(next, plan.door, {
+        ...(plan.returnMapId === undefined ? {} : { returnMapId: plan.returnMapId }),
+        ...(plan.returnX === undefined ? {} : { returnX: plan.returnX }),
+        ...(plan.returnY === undefined ? {} : { returnY: plan.returnY }),
+      });
       // 가구 조사 이벤트는 테마 시공 전용 — 개념 시설은 칩(event/loot/sleep/transfer)이 이벤트를 소유한다.
       if (!plan.concept) attachPropInspectEvents(next);
       return {
@@ -2606,8 +2614,10 @@ function isUpperEmpty(map: GameMap, x: number, y: number): boolean {
 
 // ── Entrance event ──────────────────────────────────────────────────────────
 
-function placeEntranceEvent(map: GameMap, door: DoorSpec): void {
-  const exitY = Math.min(map.height - 1, door.y + 1);
+function placeEntranceEvent(map: GameMap, door: DoorSpec, options: { readonly returnMapId?: MapId; readonly returnX?: number; readonly returnY?: number } = {}): void {
+  const targetMapId = options.returnMapId ?? map.id;
+  const targetX = options.returnX ?? door.x;
+  const exitY = options.returnY ?? Math.min(map.height - 1, door.y + 1);
   // Valid command shape: text uses `body` (not `lines`) — invalid shape was dropped on save.
   const event: GameEvent = {
     id: `ev_entrance_${map.id}`,
@@ -2629,8 +2639,8 @@ function placeEntranceEvent(map: GameMap, door: DoorSpec): void {
           { kind: "text", body: "[입구] 문을 열고 밖으로 나간다." },
           {
             kind: "transfer",
-            mapId: map.id,
-            x: door.x,
+            mapId: targetMapId,
+            x: targetX,
             y: exitY,
             fade: "black",
           },
