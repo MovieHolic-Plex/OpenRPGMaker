@@ -23,6 +23,7 @@ import {
   isConceptPlaceSize,
   isConceptPlaceZone,
   isConceptWallMaterial,
+  validateConceptChipId,
   type ConceptBundleRecord,
   type ConceptChipId,
   type ConceptFacilityRecord,
@@ -146,11 +147,12 @@ function parseChips(raw: unknown, where: string): ConceptChipId[] {
   if (!Array.isArray(raw)) throw new ConceptPlanError(`plan.${where}.chips 는 배열이어야 한다 — 내장: ${CONCEPT_CHIP_IDS.join("|")} · 자유 칩(영문·숫자·-_·1~32자)도 된다`);
   const chips: ConceptChipId[] = [];
   for (const entry of raw) {
-    if (typeof entry !== "string" || entry.trim().length === 0) {
+    if (typeof entry !== "string") {
       throw new ConceptPlanError(`plan.${where}.chips 는 빈 문자열 아닌 칩 id 배열이어야 한다`);
     }
-    const chip = entry.trim();
-    if (!chips.includes(chip)) chips.push(chip);
+    const validated = validateConceptChipId(entry);
+    if (!validated.ok) throw new ConceptPlanError(`plan.${where}.chips: ${validated.error}`);
+    if (!chips.includes(validated.value)) chips.push(validated.value);
   }
   return chips;
 }
