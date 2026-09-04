@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { enemyBattlers } from "@/battle/battleBattlers";
 import {
   BATTLER_PLACEMENTS,
   CANONICAL_SIDEVIEW_ANCHOR_X,
@@ -9,6 +10,7 @@ import {
   resolveSkinEnemyPositions,
 } from "@/battle/battlerPlacements";
 import { BATTLE_SKINS } from "@/battle/skins/registry";
+import { createScarloxyPokemonDemoProject } from "@/project/defaults";
 import type { BattleSkinId } from "@/battle/skins/types";
 
 const SKIN_IDS = Object.keys(BATTLER_PLACEMENTS) as BattleSkinId[];
@@ -121,11 +123,23 @@ describe("resolveSkinEnemyPositions", () => {
     }
   });
 
-  it("manual rm2000 x=200 matches between battle and preview inputs", () => {
-    const battle = resolveSkinEnemyPositions("rm2000", [{ x: 200, y: 80 }], false);
+  it("member x=200 keeps raw authored coords while battleX stays SC12-recentered", () => {
+    const project = createScarloxyPokemonDemoProject();
+    const troop = project.database.troops.find((t) => t.id === "troop_pkmn_grass_a");
+    if (!troop) throw new Error("missing troop");
+    const enemyId = troop.members?.[0]?.enemyId ?? troop.enemyIds[0]!;
+    const battlers = enemyBattlers(project, {
+      ...troop,
+      members: [{ enemyId, x: 200, y: 80 }],
+    });
+    expect(battlers[0]!.authoredX).toBe(200);
+    expect(battlers[0]!.battleX).toBeLessThanOrEqual(150);
+    const fromAuthored = resolveSkinEnemyPositions("rm2000", [{ x: battlers[0]!.authoredX, y: battlers[0]!.authoredY }], false);
+    const fromBattle = resolveSkinEnemyPositions("rm2000", [{ x: battlers[0]!.battleX, y: battlers[0]!.battleY }], false);
+    expect(fromAuthored).not.toEqual(fromBattle);
     const preview = resolveSkinEnemyPositions("rm2000", [{ x: 200, y: 80 }], false);
-    expect(battle).toEqual(preview);
-    expect(battle[0]!.x).toBeGreaterThan(BATTLER_PLACEMENTS.rm2000.enemy(0, 1).x);
+    expect(fromAuthored).toEqual(preview);
+    expect(preview[0]!.x).toBeGreaterThan(BATTLER_PLACEMENTS.rm2000.enemy(0, 1).x);
   });
 
   it("row helper falls back to auto seats without authored coords", () => {
