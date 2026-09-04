@@ -231,6 +231,10 @@ export function aiImageGenerateField(options: AiImageGenerateFieldOptions): HTML
         // 리마운트된 필드는 이미 등록된 id 를 보고 건너뛰어 폼 재생성 루프를 막는다.
         // 구독자가 없을 때 끝난 작업은 새 필드의 초기 스캔이 여기서 집어 올린다.
         if (!inserted.has(job.id)) {
+          // 예약을 store.update 보다 먼저 둔다. update 는 동기 emit 이라 이벤트
+          // 에디터가 리마운트한 새 필드의 초기 스캔이 같은 작업을 다시 등록하는
+          // 재진입을 이 한 줄이 막는다. 실패하면 예약을 걷어 다음 notify 가 재시도한다.
+          inserted.set(job.id, "");
           try {
             let created = "";
             store.update(
@@ -246,6 +250,7 @@ export function aiImageGenerateField(options: AiImageGenerateFieldOptions): HTML
             inserted.set(job.id, created);
             options.onInserted(created);
           } catch (error) {
+            inserted.delete(job.id);
             if (error instanceof ImageGenerationError || error instanceof GeneratedPictureError) {
               toast(error.message, "error");
             } else if (error instanceof Error) {

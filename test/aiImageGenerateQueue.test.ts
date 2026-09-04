@@ -186,6 +186,66 @@ describe("aiImageGenerateField queue", () => {
     expect(findByTestId(b, "share-key-queue-list")?.textContent).toContain("느림");
   });
 
+  it("store 재진입 리마운트에도 에셋 등록은 한 번만 한다", async () => {
+    const shared = createImageGenerationQueue({
+      runner: async () => "data:image/png;base64,AAA",
+    });
+    const inserted: string[] = [];
+    const render = (): void => {
+      renderWithFakeDom(() =>
+        aiImageGenerateField({ kind: "monster", testidPrefix: "q", queue: shared, onInserted: (resourceId) => inserted.push(resourceId) })
+      );
+    };
+    render();
+    const off = store.subscribe(() => {
+      // 이벤트 에디터처럼 store.update emit 에 리마운트되는 호출부를 흉내낸다.
+      render();
+    });
+    const before = Object.keys(store.getCurrent().assets.uploaded).length;
+    shared.enqueue({ prompt: "슬라임", kind: "monster" });
+    await vi.waitFor(() => {
+      expect(inserted.length).toBe(1);
+    });
+    const after = Object.keys(store.getCurrent().assets.uploaded).length;
+    expect(after - before).toBe(1);
+    off();
+    shared.dispose();
+  });
+
+  it("레코드를 바꾸면 이전 레코드의 완료가 새 레코드에 닿지 않는다", async () => {
+    const shared = createImageGenerationQueue({
+      runner: async () => "data:image/png;base64,AAA",
+    });
+    const forA: string[] = [];
+    const forB: string[] = [];
+    renderWithFakeDom(() =>
+      aiImageGenerateField({
+        kind: "monster",
+        testidPrefix: "qa",
+        queueKey: "monster-species-resource:speciesA",
+        queue: shared,
+        onInserted: (resourceId) => forA.push(resourceId),
+      })
+    );
+    shared.enqueue({ prompt: "A종족 그림", kind: "monster" });
+    await vi.waitFor(() => {
+      expect(forA.length).toBe(1);
+    });
+    // 같은 testid 로 B 레코드를 열면(done 작업이 있는 공유 큐라도) B 에는 닿지 않는다.
+    renderWithFakeDom(() =>
+      aiImageGenerateField({
+        kind: "monster",
+        testidPrefix: "qa",
+        queueKey: "monster-species-resource:speciesB",
+        queue: shared,
+        onInserted: (resourceId) => forB.push(resourceId),
+      })
+    );
+    // 큐 notify 와 초기 스캔은 모두 동기라 렌더 직후 판정이 확정된다.
+    expect(forB).toHaveLength(0);
+    shared.dispose();
+  });
+
   it("끝난 항목 지우기는 완료·취소만 걷는다", async () => {
     let calls = 0;
     const queue = createImageGenerationQueue({

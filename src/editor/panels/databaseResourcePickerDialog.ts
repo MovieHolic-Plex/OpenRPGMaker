@@ -230,6 +230,9 @@ export function resourcePickerControl(input: {
   readonly currentCharacterIndex?: number;
   readonly onChange: (result: DatabaseResourcePickerResult) => void;
   readonly rerender: () => void;
+  /** AI 큐 공유 키. 레코드별(record.id)로 주면 레코드 전환 시 오적용을 막는다.
+   *  없으면 testid+kind(싱글턴 시스템 행용) 으로 공유한다. */
+  readonly queueKey?: string;
 }): HTMLElement {
   const project = store.getCurrent();
   const preview = resourceVisual(
@@ -302,7 +305,7 @@ export function resourcePickerControl(input: {
       aiImageGenerateField({
         kind: aiKind,
         testidPrefix: `${input.testid}-ai`,
-        queueKey: `resource-picker:${input.testid}:${aiKind}`,
+        queueKey: input.queueKey ?? `resource-picker:${input.testid}:${aiKind}`,
         onInserted: (resourceId) => {
           input.onChange({ resourceId });
           input.rerender();
