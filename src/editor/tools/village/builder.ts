@@ -218,11 +218,11 @@ export function buildVillageDomain(
     ? housePlan.count
     : presetValues.houseCount
       ?? Math.min(MAX_HOUSES, Math.max(DEFAULT_HOUSES, Math.round((area.w * area.h) / 380)));
-  // 대로 골격(대형 맵, 리서치 spine-first): 밴드를 집 배치 전에 예약해 구멍 없는 직선 대로 보장.
+  // 대로 골격(대형 맵, 리서치 spine-first): 곡선 밴드를 집 배치 전에 예약해 구멍 없는 대로 보장.
   const boulevard = villageBoulevard(area, plaza);
   const houseBlockedIdx = new Set<number>(terrainBlockedCells(terrainMasks) ?? []);
   if (boulevard) {
-    for (const cell of boulevardCells(area, boulevard)) {
+    for (const cell of boulevardCells(area, boulevard, seed)) {
       if (cell.x >= 0 && cell.y >= 0 && cell.x < map.width && cell.y < map.height) {
         houseBlockedIdx.add(cell.y * map.width + cell.x);
       }
