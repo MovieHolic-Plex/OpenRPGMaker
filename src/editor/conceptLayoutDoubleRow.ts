@@ -61,8 +61,8 @@ function floorTileOf(place: ConceptPlaceRecord): number | undefined {
 
 function themeOf(placeId: string, role: ConceptPlaceRole): string {
   if (role === "walkway") return "corridor";
-  if (placeId === "bedroom" || placeId === "kitchen" || placeId === "dining") return placeId;
-  return "storage";
+  // row 도면기(roomTheme)와 같은 규약 — placeId 그대로, 방 종류 매칭은 파이프라인이 맡는다.
+  return placeId;
 }
 
 function layoutRoom(instance: Instance, x: number, y: number, w: number, h: number): ConceptLayoutRoom {
