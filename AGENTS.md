@@ -1,5 +1,10 @@
 # RPG ZZU Agent Entry Point
 
+> **AI-log lookup without browser (2026-09-04 incident: prompt hid under oprn-9c35ec902c):** query `rpg_zzu.ai_conversations` with `Accept-Profile: rpg_zzu`, never filter `project_id` first.
+> Search `entries_json` for kind user to find the hidden prompt.
+> Credentials from `/home/main/z-project/rpg-zzu/.env.local`.
+> Browser fallback: IndexedDB `oprn-ai-records`.
+
 This repository uses a project-local OpenWiki layer so coding agents can understand the editor before changing it.
 
 ## 처음 온 에이전트는 이 두 쪽만 먼저 읽어라
