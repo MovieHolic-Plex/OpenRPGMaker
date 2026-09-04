@@ -75,12 +75,28 @@ describe("자율성 다이얼", () => {
     if (!dial || !reasoning || !agentMode) throw new Error("autonomy controls missing");
 
     const levels: readonly AutonomyLevel[] = ["confirm", "balanced", "autonomous", "max"];
+    // 다이얼 핸들러는 프로그래밍 대입 뒤 커스텀 셀렉트 라벨 동기화용 input 을 쏜다
+    // (customSelect.ts: input → 라벨 동기화. change 를 쏘면 persist 가 한 번 더 돈다).
+    const fired: Record<string, string[]> = { reasoning: [], agentMode: [] };
+    const wrapDispatch = (select: FakeElement, bucket: string): void => {
+      const native = select.dispatchEvent.bind(select);
+      select.dispatchEvent = ((event: Event): boolean => {
+        fired[bucket]?.push(event.type);
+        return native(event);
+      }) as typeof select.dispatchEvent;
+    };
+    wrapDispatch(reasoning as unknown as FakeElement, "reasoning");
+    wrapDispatch(agentMode as unknown as FakeElement, "agentMode");
     for (const level of levels) {
+      fired.reasoning = [];
+      fired.agentMode = [];
       dial.value = level;
       dial.dispatchEvent(new Event("change"));
       const resolved = resolveAutonomy(level);
       expect(reasoning.value, level).toBe(resolved.reasoningEffort);
       expect(agentMode.value, level).toBe(resolved.agentMode);
+      expect(fired.reasoning, `input fired reasoning ${level}`).toContain("input");
+      expect(fired.agentMode, `input fired agentMode ${level}`).toContain("input");
     }
   });
 
