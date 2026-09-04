@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { HOUSE_DOOR_CHARSET_TEXTURE, HOUSE_DOOR_FRAME_WAIT_MS, HOUSE_DOOR_OPEN_SE, houseDoorFrameIndex, createHouseInteriorMap, resolveHouseInteriorScale } from "@/editor/houseInteriors";
+import { HOUSE_DOOR_CHARSET_TEXTURE, HOUSE_DOOR_FRAME_WAIT_MS, HOUSE_DOOR_OPEN_SE, houseDoorFrameIndex, createHouseInteriorMap, resolveHouseInteriorProgram, resolveHouseInteriorScale, wallMaterialForKit } from "@/editor/houseInteriors";
 import { seCatalogResourceIds } from "@/assets/seCatalogRuntime";
 import { VR } from "@/editor/interiorRoomPipeline";
 import { rectHouseHeight, stampFootprintHouseKit, stampRectHouseKit } from "@/editor/houseKit";
@@ -441,8 +441,8 @@ describe("house interior — L cottage (reference plan)", () => {
     expect(resolveHouseInteriorScale({ stories: 1, program: "dwelling" }, 1)).toBe("cottage-l");
     expect(resolveHouseInteriorScale({ stories: 1, program: "manor", ownerName: "촌장 로안" }, 1)).toBe("cottage-l");
     expect(resolveHouseInteriorScale({ stories: 2, program: "manor" }, 1)).toBe("mansion");
-    // exterior templateId "l" alone does NOT select cottage-l (only cottage-l|l-cottage aliases)
-    expect(resolveHouseInteriorScale({ stories: 1, templateId: "l" }, 1)).not.toBe("mansion");
+    // cottage-l|l-cottage aliases don't exist in the catalog; real L-shaped exteriors use id "l".
+    expect(resolveHouseInteriorScale({ stories: 1, templateId: "l" }, 1)).toBe("cottage-l");
 
     const result = createHouseInteriorMap({
       id: "map_l_cottage_test",
@@ -486,6 +486,43 @@ describe("house interior — L cottage (reference plan)", () => {
     expect(lower.some((t) => t === VR.STOVE_BOT)).toBe(true);
     expect(upper.some((t) => t === VR.BED_L || t === VR.BED_V_HEAD)).toBe(true);
     expect(upper.some((t) => t === VR.TABLE_L || t === VR.SQUARE_TABLE)).toBe(true);
+  });
+
+  it("maps every house kit to an interior wall material", () => {
+    expect(wallMaterialForKit("blue-stone")).toBe("stone-brick");
+    expect(wallMaterialForKit("slate-wood")).toBe("stone-brick");
+    expect(wallMaterialForKit("bright-plaster")).toBe("cream");
+    expect(wallMaterialForKit("amber-wood")).toBe("cream");
+    expect(wallMaterialForKit("timber-hall")).toBe("cream");
+    expect(wallMaterialForKit("aframe-stone")).toBe("cream");
+  });
+
+  it("maps catalog template families to interior scale", () => {
+    expect(resolveHouseInteriorScale({ templateId: "l" }, 1)).toBe("cottage-l");
+    // L-family keeps the L plan even for shop/inn (branch order: family before program).
+    expect(resolveHouseInteriorScale({ stories: 1, templateId: "l-mirror", program: "shop" }, 1)).toBe("cottage-l");
+    expect(resolveHouseInteriorScale({ stories: 1, templateId: "l-wide", program: "inn" }, 1)).toBe("cottage-l");
+    expect(resolveHouseInteriorScale({ stories: 1, templateId: "l-deep" }, 1)).toBe("cottage-l");
+    expect(resolveHouseInteriorScale({ templateId: "cottage-low" }, 1)).toBe("cottage2");
+    expect(resolveHouseInteriorScale({ templateId: "hut-low" }, 1)).toBe("cottage2");
+    expect(resolveHouseInteriorScale({ templateId: "barn-low" }, 1)).toBe("cottage2");
+    expect(resolveHouseInteriorScale({ templateId: "rect-2f-slim" }, 1)).toBe("cottage3");
+  });
+
+  it("defaults program to dwelling for a plain owner across seeds", () => {
+    expect(resolveHouseInteriorProgram({ ownerName: "민재" }, 1)).toBe("dwelling");
+    expect(resolveHouseInteriorProgram({ ownerName: "민재" }, 4)).toBe("dwelling");
+  });
+
+  it("preserves explicit program passthrough", () => {
+    expect(resolveHouseInteriorProgram({ program: "shop", ownerName: "민재" }, 1)).toBe("shop");
+    expect(resolveHouseInteriorProgram({ program: "workshop" }, 4)).toBe("workshop");
+  });
+
+  it("preserves ownerName shop/inn/manor heuristics", () => {
+    expect(resolveHouseInteriorProgram({ ownerName: "마을 상점" }, 1)).toBe("shop");
+    expect(resolveHouseInteriorProgram({ ownerName: "여관 주인" }, 1)).toBe("inn");
+    expect(resolveHouseInteriorProgram({ ownerName: "촌장 로안" }, 1)).toBe("manor");
   });
 });
 
