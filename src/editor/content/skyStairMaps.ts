@@ -985,7 +985,7 @@ function shrineMap(): GameMap {
 }
 
 function shrinePriestEvent(): GameEvent {
-  const graphic = charsetByLabel("사제");
+  const graphic = charsetByLabel("금발 머리 청년");
   return event("ev_sky_s_priest", 15, 13, [
     page("pr_intro", "사제 무늬", [], withFace(graphic, [
       say("무늬", "계단은 세 봉인 위에 서 있습니다. 물, 돌, 바람."),
@@ -1124,7 +1124,7 @@ function mineMap(): GameMap {
     ]),
     minerEvent(),
     mimicEvent(),
-    villager("ev_sky_mine_engineer", 21, 10, "갱도 기사 쇠비", "청년 기사", [
+    villager("ev_sky_mine_engineer", 21, 10, "갱도 기사 쇠비", "회색 옷 젊은 여성", [
       "이 아래는 무너진 게 아니야. 누가 막은 거야, 안쪽에서.",
       "잔당이 넷씩 몰려다녀. 등불에서 멀어지지 마.",
     ]),
@@ -1208,7 +1208,7 @@ function snowgateMap(): GameMap {
     ]),
     gatekeeperEvent(),
     // 은자는 정상 통로(x21~23) 입구에 세운다 — 위에 다녀온 사람이 그 문 앞에 있어야 말이 된다.
-    villager("ev_sky_sn_hermit", 22, 7, "은자 서리", "파란 로브 현자", [
+    villager("ev_sky_sn_hermit", 22, 7, "은자 서리", "파란 옷 젊은 여성 마법사", [
       "위에는 아무도 없어. 나도 그렇게 들었고, 올라가 봤지.",
       "...아무도 없는 건 사실이야. 근데 무언가는 있어.",
     ]),
@@ -1219,7 +1219,7 @@ function snowgateMap(): GameMap {
 }
 
 function gatekeeperEvent(): GameEvent {
-  const graphic = charsetByLabel("황금 갑옷 전사");
+  const graphic = charsetByLabel("금발 남성 갑옷 전사");
   // 관문 지기는 능선 A 의 통로 입구(x14~16)에 선다 — 저수지에서 올라오면 정면으로 마주친다.
   // 예전 자리 (15,10) 은 새 지형에서 능선 B 봉우리의 몸통(통행 불가)이라 이벤트가 벽에 박혔다.
   return event("ev_sky_sn_gatekeeper", 15, 18, [
