@@ -393,10 +393,12 @@ export function parseAndValidate(
     return { ok: false, errors: [cause instanceof Error ? cause.message : String(cause)] };
   }
 
-  // 3) 세계관 금지어 검증 — text 대사(중첩 포함)에 「이 세계」에 없는 말이 있으면 자가수정 루프가 고친다.
+  // 3) 세계관 금지어 검증 — text.body/speaker · choices.prompt/options · inputNumber.prompt ·
+  //    inn.note/question · killPlayer.message · ending.title/message (중첩 분기 포함)에
+  //    「이 세계」에 없는 말이 있으면 자가수정 루프가 고친다.
   const canonHits = collectCanonAbsenceHits(commands, project.worldCanon);
   if (canonHits.length > 0) {
-    return { ok: false, errors: [`「이 세계」에 없는 것을 썼습니다 — 대사에서 빼세요: ${canonHits.join(", ")}`] };
+    return { ok: false, errors: [`「이 세계」에 없는 것을 썼습니다 — 대사·선택지·숫자 입력·여관·게임오버·엔딩 문구에서 빼세요: ${canonHits.join(", ")}`] };
   }
 
   // 4) 참조 검증 — 존재하지 않는 itemId/switchId 등을 잡는다.
@@ -414,8 +416,8 @@ export function parseAndValidate(
   return { ok: true, commands };
 }
 
-/** 플레이어에게 보이는 문구(text body·선택지 질문/문구·숫자 입력 안내, 중첩 분기 포함)에 든
- *  캐논 금지어를 모은다. 캐논이 비었으면 항상 빈 배열. */
+/** 플레이어에게 보이는 문구(text 화자·본문·선택지 질문/문구·숫자 입력 안내·여관 인사/질문·
+ *  게임오버 메시지·엔딩 제목/본문, 중첩 분기 포함)에 든 캐논 금지어를 모은다. 캐논이 비었으면 항상 빈 배열. */
 function collectCanonAbsenceHits(commands: readonly Command[], canon: Project["worldCanon"]): readonly string[] {
   const hits = new Set<string>();
   const check = (text: string | undefined): void => {
@@ -424,11 +426,21 @@ function collectCanonAbsenceHits(commands: readonly Command[], canon: Project["w
   };
   const visit = (list: readonly Command[]): void => {
     for (const command of list) {
-      if (command.kind === "text") check(command.body);
-      else if (command.kind === "choices") {
+      if (command.kind === "text") {
+        check(command.speaker);
+        check(command.body);
+      } else if (command.kind === "choices") {
         check(command.prompt);
         for (const option of command.options) check(option.text);
       } else if (command.kind === "inputNumber") check(command.prompt);
+      else if (command.kind === "inn") {
+        check(command.note);
+        check(command.question);
+      } else if (command.kind === "killPlayer") check(command.message);
+      else if (command.kind === "ending") {
+        check(command.title);
+        check(command.message);
+      }
       for (const branch of commandBranches(command)) visit(branch.commands);
     }
   };

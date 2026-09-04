@@ -42,7 +42,7 @@ export interface CastContext {
   readonly worldDigest: string;
   readonly worldNames: readonly string[];
   /** 「이 세계」 캐논 — 있으면 프롬프트에 고정 블록으로 실리고 금지어가 검증된다. */
-  readonly worldCanon?: WorldCanon;
+  readonly worldCanon: WorldCanon | undefined;
   readonly existingCast: readonly { readonly name: string; readonly line: string }[];
   readonly residents: readonly PendingNpc[];
 }
@@ -244,6 +244,9 @@ export function parseCastSheet(raw: string, ctx: CastContext): ParseCastSheetRes
   }
   const absenceHits = new Set<string>();
   for (const resident of residents) {
+    for (const hit of findWorldCanonAbsenceHits(resident.name, ctx.worldCanon)) absenceHits.add(hit);
+    for (const hit of findWorldCanonAbsenceHits(resident.role, ctx.worldCanon)) absenceHits.add(hit);
+    for (const hit of findWorldCanonAbsenceHits(resident.summary, ctx.worldCanon)) absenceHits.add(hit);
     for (const page of resident.pages) {
       for (const line of page.lines) {
         for (const hit of findWorldCanonAbsenceHits(line, ctx.worldCanon)) absenceHits.add(hit);

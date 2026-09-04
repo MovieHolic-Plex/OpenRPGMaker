@@ -175,6 +175,6 @@ id 슬롯은 남긴다**(`def.name = ""`). id 가 지워지지 않으므로 `com
 - DB AI 생성(`editor/aiDatabaseGeneration`): `buildRecordPrompt(kind, brief, names, canon?)` 시스템 주입,
   `parseGeneratedRecord(kind, raw, canon?)`가 name+원시 description 검사 — 적 스키마에 description이 없어 필터 뒤가
   아니라 **원시 응답 기준**이다. `generateDatabaseRecordWithAi`는 `project.worldCanon` 전달.
-- 이벤트 Assist(`ai/eventCommandAssist`): `buildEventAssistPrompt`에 캐논 섹션, `parseAndValidate`가 text body
-  (중첩 fork/choices/loop 포함, `commandBranches` 순회) 금지어 검사 — 자가수정 루프가 고친다.
+- 이벤트 Assist(`ai/eventCommandAssist`): `buildEventAssistPrompt`에 캐논 섹션, `parseAndValidate`가 text.body·
+  선택지 질문/문구·숫자 입력 안내 (중첩 fork/choices/loop 포함, `commandBranches` 순회) 금지어 검사 — 자가수정 루프가 고친다.
 - 셋 다 빈 캐논이면 블록도 검증도 없이 기존과 동일. 테스트: 각 파일의 "worldCanon 강제" describe.
