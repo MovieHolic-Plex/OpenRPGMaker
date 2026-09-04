@@ -89,14 +89,14 @@ describe("조수 데크 CSS 계약", () => {
       const close = css.indexOf("}", open);
       return css.slice(open, close);
     };
-    const composer = blockOf(".ai-deck .ai-composer {");
+    const composer = blockOf(":is(.ai-deck, .ai-studio-composer) .ai-composer {");
     expect(composer).toContain("border-top: 1px solid var(--ai-deck-line)");
-    const input = blockOf(".ai-deck .ai-composer .ai-assistant-input {");
+    const input = blockOf(":is(.ai-deck, .ai-studio-composer) .ai-composer .ai-assistant-input {");
     expect(input).toContain("background: var(--bg-inset)");
     expect(input).toContain("border: 1px solid var(--border-default)");
     expect(input).not.toContain("transparent");
     // 포커스 링은 셸(:focus-within — 데크 셸은 border:0)이 아니라 입력칸이 직접 그린다.
-    const focus = blockOf(".ai-deck .ai-composer .ai-assistant-input:focus,");
+    const focus = blockOf(":is(.ai-deck, .ai-studio-composer) .ai-composer .ai-assistant-input:focus,");
     expect(focus).toContain("border-color: var(--accent-border)");
     expect(focus).toContain("color-mix(in srgb, var(--accent) 14%, transparent)");
     expect(focus).not.toContain("box-shadow: none");
