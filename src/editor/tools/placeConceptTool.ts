@@ -171,10 +171,11 @@ export const PLACE_CONCEPT_TOOL: ToolDefinition = {
         { code: "concept-bundle-empty" },
       );
     }
-    const template = resolveConceptFacility(draft, query, tilesetId)
-      ?? resolveConceptFacility(draft, query);
+    // Phase 5: 실내 칩셋 스코프로만 푼다 — unscoped 폴백을 타면 실외 칩셋의 꾸러미가
+    // 실내 타일 번호로 시공되는 누수가 생긴다. 실외 전용 시설명은 concept-not-found가 정직하다.
+    const template = resolveConceptFacility(draft, query, tilesetId);
     if (!template && !hasPlan) {
-      const available = listLiveConceptFacilityLabels(draft);
+      const available = listLiveConceptFacilityLabels(draft, tilesetId);
       throw new ToolError(
         `개념 꾸러미에서 "${query}" 시설을 찾지 못했다. 지금 부를 수 있는 시설: ${available.join(" · ") || "없음"}. `
         + "템플릿에 없는 시설은 get_concept_facility 로 어휘를 읽고 plan 을 설계해 넘기라.",
@@ -197,6 +198,13 @@ export const PLACE_CONCEPT_TOOL: ToolDefinition = {
       resolved = template;
     } else {
       throw new ToolError(`"${query}" 시설을 풀 수 없다`, { code: "concept-not-found" });
+    }
+    // Phase 5: plan 경로에서 template이 실외 칩셋이면 시공하지 않는다.
+    if (resolved.tilesetId !== INTERIOR_ROOM_TILESET_ID) {
+      throw new ToolError(
+        `개념 시설 시공은 실내 칩셋(${INTERIOR_ROOM_TILESET_ID})에서만 된다 — "${query}" 시설은 "${resolved.tilesetId}" 칩셋의 꾸러미다.`,
+        { code: "invalid-tileset" },
+      );
     }
     const name = String(args.name ?? "").trim() || resolved.facility.label;
     // 층: 장소 `level` 이 둘 이상이면 층마다 맵을 짓는다. 1층 = mapId, 위층 = `<mapId>_<n>f`.
@@ -374,12 +382,15 @@ export const GET_CONCEPT_FACILITY_TOOL: ToolDefinition = {
   invalidArgsExample: { query: "여관" },
   run(draft, args): ToolExecResult {
     const tilesetId = args.tilesetId !== undefined ? String(args.tilesetId).trim() : INTERIOR_ROOM_TILESET_ID;
-    ensureConceptBundles(draft, tilesetId);
+    // Phase 5: 읽기 도구는 쓰지 않는다 — 실외 칩셋의 ensure 빈 배열 쓰기를 건너뛴다.
+    // liveBundlesForTileset이 미시드 실외를 []로 읽으므로 동작은 같다.
+    if (tilesetId === INTERIOR_ROOM_TILESET_ID) ensureConceptBundles(draft, tilesetId);
     const query = String(args.query ?? "").trim();
     const vocabulary = conceptVocabulary(interiorVocabFromTileset(draft.tilesets[tilesetId]), INTERIOR_OBJECT_CATALOG);
-    const facilities = listLiveConceptFacilityLabels(draft);
+    const facilities = listLiveConceptFacilityLabels(draft, tilesetId);
+    // Phase 5: 요청 칩셋 스코프로만 푼다 — 실외 시설명을 실내 템플릿으로 둔갑시키지 않는다.
     const resolved = query
-      ? resolveConceptFacility(draft, query, tilesetId) ?? resolveConceptFacility(draft, query)
+      ? resolveConceptFacility(draft, query, tilesetId)
       : undefined;
     if (!resolved) {
       return {

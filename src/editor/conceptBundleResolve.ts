@@ -83,17 +83,13 @@ export type ConceptOverlay = {
 };
 
 /** 실내 칩셋에 꾸러미가 아직 없으면 시설 초안 묶음(여관·민가·상점…)을 얹는다. 빈 배열은 건드리지 않는다.
- * Phase 5: 다른 칩셋은 빈 꾸러미로 열어 둔다 — 시드는 실내 초안뿐이다. 시공 파이프라인의 벽·바닥·가구
- * 타일 번호가 실내 칩셋 하드코딩이라, 다른 칩셋의 place_concept는 명시적 거부(invalid-tileset)를 낸다. */
+ * Phase 5: 다른 칩셋은 손대지 않는다(no-op) — liveBundlesForTileset이 미시드 실외를 []로 읽고,
+ * 탭도 실외를 undefined(미시드)로 둔다. 읽기 도구의 빈 배열 쓰기는 실외 타일셋을 더럽힌다. */
 export function ensureConceptBundles(project: Project, tilesetId = INTERIOR_TILESET_ID): void {
   const tileset = project.tilesets[tilesetId];
   if (!tileset) return;
   if (tileset.scratchConceptBundles !== undefined) return;
-  if (tilesetId !== INTERIOR_TILESET_ID) {
-    // 빈 꾸러미로 열어 두면 탭·어휘가 "비어 있음"으로 동작한다 — undefined(미시드)와 다르다.
-    tileset.scratchConceptBundles = [];
-    return;
-  }
+  if (tilesetId !== INTERIOR_TILESET_ID) return;
   tileset.scratchConceptBundles = cloneConceptFacilityTemplates();
 }
 
