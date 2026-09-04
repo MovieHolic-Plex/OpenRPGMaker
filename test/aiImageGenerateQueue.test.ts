@@ -3,7 +3,7 @@ import { createImageGenerationQueue } from "@/ai/imageGenerationQueue";
 import { aiImageGenerateField } from "@/editor/panels/aiImageGenerateField";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
-import { findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
+import { FakeElement, findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
 
 let restoreDom: (() => void) | undefined;
 beforeEach(() => {
@@ -212,38 +212,55 @@ describe("aiImageGenerateField queue", () => {
     shared.dispose();
   });
 
-  it("레코드를 바꾸면 이전 레코드의 완료가 새 레코드에 닿지 않는다", async () => {
-    const shared = createImageGenerationQueue({
-      runner: async () => "data:image/png;base64,AAA",
+  it("레코드를 바꾸면 진행 중 작업의 완료가 새 레코드에 닿지 않는다", async () => {
+    // queueKey 격리를 진짜로 타야 한다: 주입 큐를 쓰면 resolveQueue 가 키 조회를
+    // 건너뛰어 와이어링을 지워도 테스트가 초록이 된다(재검토 지적). 그래서 기본
+    // runner + fetch 스텁으로 in-flight 를 붙잡고, 같은 testid·다른 queueKey 로 연다.
+    // 결함 형태: B 가 작업 진행 중에 마운트되고 A 구독이 끊기면, 키가 공유될 때
+    // done notify 가 B 에게 꽂혀 B 의 onInserted 가 A 그림을 받는다.
+    const png = "data:image/png;base64,AAA";
+    let resolveFetch!: (response: Response) => void;
+    const gate = new Promise<Response>((resolve) => {
+      resolveFetch = resolve;
     });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() => gate),
+    );
     const forA: string[] = [];
     const forB: string[] = [];
-    renderWithFakeDom(() =>
-      aiImageGenerateField({
-        kind: "monster",
-        testidPrefix: "qa",
-        queueKey: "monster-species-resource:speciesA",
-        queue: shared,
-        onInserted: (resourceId) => forA.push(resourceId),
-      })
+    const renderFor = (recordId: string, sink: string[]): FakeElement =>
+      renderWithFakeDom(() =>
+        aiImageGenerateField({
+          kind: "monster",
+          testidPrefix: "qa",
+          queueKey: `monster-species-resource:${recordId}`,
+          onInserted: (resourceId) => sink.push(resourceId),
+        })
+      );
+    const rootA = renderFor("speciesA", forA);
+    const promptA = findByTestId(rootA, "qa-prompt");
+    if (promptA) promptA.value = "A종족 그림";
+    findByTestId(rootA, "qa-generate")?.click();
+    // 레코드 전환으로 A 폼이 떨어진 상태를 흉내낸다. 프로덕션의 isConnected 가드와
+    // 같은 분기를 fakeDom 에서 직접 밟는다(FakeElement 에는 isConnected 가 없다).
+    (rootA as unknown as { isConnected: boolean }).isConnected = false;
+    // B 를 A 작업이 끝나기 전에 연다. 키가 분리돼 있으면 B 의 큐는 비어 있다.
+    const rootB = renderFor("speciesB", forB);
+    expect(findByTestId(rootB, "qa-queue-list")?.textContent).not.toContain("A종족 그림");
+    resolveFetch(
+      new Response(JSON.stringify({ image: { dataUrl: png } }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }),
     );
-    shared.enqueue({ prompt: "A종족 그림", kind: "monster" });
+    // A 로 돌아오면 초기 스캔이 끝난 작업을 A 에게만 반영한다.
     await vi.waitFor(() => {
-      expect(forA.length).toBe(1);
+      renderFor("speciesA", forA);
+      expect(forA.length).toBeGreaterThan(0);
     });
-    // 같은 testid 로 B 레코드를 열면(done 작업이 있는 공유 큐라도) B 에는 닿지 않는다.
-    renderWithFakeDom(() =>
-      aiImageGenerateField({
-        kind: "monster",
-        testidPrefix: "qa",
-        queueKey: "monster-species-resource:speciesB",
-        queue: shared,
-        onInserted: (resourceId) => forB.push(resourceId),
-      })
-    );
-    // 큐 notify 와 초기 스캔은 모두 동기라 렌더 직후 판정이 확정된다.
     expect(forB).toHaveLength(0);
-    shared.dispose();
+    expect(store.getCurrent().assets.uploaded[forA[0]!]?.kind).toBe("monster");
   });
 
   it("끝난 항목 지우기는 완료·취소만 걷는다", async () => {
