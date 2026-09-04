@@ -43,7 +43,8 @@ describe("database faction authoring view", () => {
 
     const relation = findByTestId(host, "db-faction-relation-enemy");
     expect(relation?.textContent).toContain("-1 적");
-    expect(relation?.textContent).toContain("먼저 공격합니다");
+    expect(relation?.textContent).toContain("이쪽이 먼저 공격");
+    expect(relation?.textContent).toContain("상대가 먼저 공격");
     expect(findByTestId(host, "db-faction-pick-enemy--1")?.getAttribute("aria-pressed")).toBe("true");
 
     const cell = findByTestId(host, "db-faction-stance-player-enemy");
@@ -78,6 +79,10 @@ describe("database faction authoring view", () => {
     expect(store.getCurrent().factions?.relations).toEqual([{ a: "player", b: "guard", stance: 1 }]);
     expect(findByTestId(host, "db-faction-pick-guard-1")?.getAttribute("aria-pressed")).toBe("true");
     expect(findByTestId(host, "db-faction-relation-label-guard")?.textContent).toContain("바꿈");
+
+    findByTestId(host, "db-faction-pick-guard-0")?.click();
+    expect(store.getCurrent().factions?.relations).toEqual([]);
+    expect(findByTestId(host, "db-faction-relation-label-guard")?.textContent).toContain("기본");
   });
 
   it("cycles a matrix cell and marks only the non-default value as authored", () => {

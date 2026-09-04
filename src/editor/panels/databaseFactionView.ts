@@ -38,6 +38,7 @@ import {
   DEFAULT_ENEMY_FACTION_ID,
   PLAYER_FACTION_ID,
   factionColor,
+  isHittableByFaction,
   normalizeProjectFactions,
   resolveFactionTable,
   stanceBarColor,
@@ -57,13 +58,6 @@ const STANCE_LABEL: Readonly<Record<FactionStance, string>> = {
   [0]: "중립",
   [1]: "우호",
   [2]: "동맹",
-};
-const STANCE_BEHAVIOR: Readonly<Record<FactionStance, string>> = {
-  [-2]: "만나면 바로 싸웁니다",
-  [-1]: "먼저 공격합니다",
-  [0]: "가만히 있습니다",
-  [1]: "도와줍니다 (아군 오사격 면제)",
-  [2]: "같은 편입니다",
 };
 const AGGRESSION_DESC: Readonly<Record<FactionAggression, string>> = {
   [0]: "먼저 싸움을 걸지 않음",
@@ -297,7 +291,6 @@ function relationList(
           }),
         ],
       });
-      const behavior = el("p", { class: "db-ws-usage", text: `${otherName} — ${STANCE_BEHAVIOR[cell.stance]}` });
       const outcomes: string[] = [];
       if (willAttackOnSight(cell.stance, aggressionOf(selectedId))) outcomes.push("이쪽이 먼저 공격");
       if (willAttackOnSight(cell.stance, aggressionOf(otherId))) outcomes.push("상대가 먼저 공격");
@@ -310,7 +303,7 @@ function relationList(
         attrs: { role: "group", "aria-label": `${otherName}과의 관계` },
         children: STANCES.map((stance) => el("button", {
           class: `db-faction-stance-pick${stance === cell.stance ? " is-active" : ""}`,
-          attrs: { type: "button", "aria-pressed": stance === cell.stance ? "true" : "false", title: STANCE_BEHAVIOR[stance] },
+          attrs: { type: "button", "aria-pressed": stance === cell.stance ? "true" : "false", title: isHittableByFaction(stance) ? `${STANCE_LABEL[stance]} — 유탄·광역에 맞습니다` : `${STANCE_LABEL[stance]} — 아군 오사격에서 면제됩니다` },
           dataset: { testid: `db-faction-pick-${otherId}-${stance}` },
           text: `${stance} ${STANCE_LABEL[stance]}`,
           on: {
@@ -323,7 +316,7 @@ function relationList(
           },
         })),
       });
-      wraps.append(head, behavior, outcome, buttons);
+      wraps.append(head, outcome, buttons);
       wraps.style.setProperty("--db-faction-stance-color", cssColor(stanceBarColor(cell.stance)));
       return wraps;
     });
@@ -365,7 +358,7 @@ function reputationFields(factions: ProjectFactions | undefined, rerender: () =>
       class: "db-faction-check",
       children: [enabledInput, el("span", { text: "플레이어가 NPC를 처치하면 관련 진영 태도에 반영" })],
     })),
-    field("처치하면 관계가 바뀌나요", weightInput),
+    field("처치당 가중치", weightInput),
     el("p", {
       class: "db-ws-usage",
       text: config
