@@ -3,11 +3,12 @@
 // 왜 필요한가 (2026-08-30 렌더 실측): 밀도만 올리고 한 재료(침엽수)를 packing:"dense" 로
 // 깔면 (1) 1칸 침엽수의 수관이 다음 나무의 수관 위에 바로 얹혀 **밑동이 안 보이는 세로 사슬**이
 // 되고 (2) 같은 스프라이트가 231번 반복되고 (3) 틈이 맨 잔디 단색이라 "산울타리 밭"으로 읽혔다.
-// 숲은 수관 모양이 섞이고, 나무마다 밑동이 보이고, 바닥에 하층식생이 깔려야 숲으로 읽힌다.
+// 숲은 수관 모양이 섞이고, 나무마다 밑동이 보이고, 바닥에는 잡동사니만 얹는다.
+// 키큰 풀 1×1 은 깔지 않는다 — 오토타일 조각이 잔디 위 네모로 뜬다.
 
 import { CHIPSET_TILE_GROUPS } from "@/project/defaults/chipsetMapping";
 import { TILE } from "@/project/defaults/constants";
-import { isTreeCanopyTileId, isTreeTrunkTileId } from "@/project/tilesetHarness";
+import { isTreeTrunkTileId } from "@/project/tilesetHarness";
 import { resolveMaterialByLabel } from "@/project/tileVocabulary";
 import type { GameMap, Project } from "@/project/types";
 import { mulberry32 } from "@/util/rng";
@@ -21,9 +22,6 @@ import { isLakeAutotileTile } from "@/project/defaults/lakeAutotile";
 const TALL_GRASS_TILES: readonly number[] = CHIPSET_TILE_GROUPS.tallGrass;
 
 type Rect = { readonly x: number; readonly y: number; readonly w: number; readonly h: number };
-
-/** 하층식생 라벨 — 실제 타일셋에서 이 이름으로 조회한다(칩셋마다 타일 번호가 다르다). */
-const UNDERGROWTH_LABEL = "키큰 풀";
 
 /**
  * impassable 의 틈을 닫는 재료 — 통행 불가 1칸 식생.
@@ -279,13 +277,6 @@ function shareWithPrimary(
 }
 
 /**
- * 나무 사이 맨 잔디를 하층식생으로 덮는다. 잔디 한 종류만 깔린 숲은 나무를 아무리 심어도
- * 평평하다(`src/editor/content/skyStairMaps.ts` 가 같은 실측으로 먼저 배운 규칙).
- *
- * 통행성은 건드리지 않는다 — `키큰 풀` 은 잔디와 같은 passable 이고, 밑동·길·물·상위 소품이
- * 있는 칸은 손대지 않는다. 그래서 밀도가 요구한 것보다 더 막히는 일이 없다.
- */
-/**
  * 2×2 활엽수 원점 — **대각 엇갈림 격자**.
  *
  * 왜 격자를 직접 만드는가 (2026-08-31 사용자 지적): 배치기가 후보를 고르면(행 우선이든 시드
@@ -341,44 +332,16 @@ const FLOOR_LITTER: readonly number[] = [
   348, // 들꽃
 ];
 
-/** 바닥 톤을 바꾸는 짙은 풀 — 점무늬 변형은 넓게 깔면 벽지가 되므로 진한 단색 위주로 쓴다. */
-const FLOOR_DARK_GRASS: readonly number[] = [245, 275, 335];
-
 /**
- * 숲 바닥 — 잔디 한 종류가 아니라 **여러 재료를 엮는다**.
+ * 숲 바닥 잡동사니 — 통나무·그루터기·돌·들꽃.
  *
- * 왜 (2026-08-31 사용자 지적): 잔디만 깔린 숲은 나무를 아무리 심어도 평평하다.
- * `skyStairMaps.ts` 가 이미 적어 둔 교훈이고, 밀도 작업이 그걸 놓쳤다.
- *
- * 두 층으로 엮는다:
- * 1. **바닥 톤** — 짙은 풀을 저주파 얼룩으로 깔아 밝고 어두운 결을 만든다. 칸마다 독립 난수를
- *    쓰면 소금후추처럼 지저분하고, 넓게 채우면 점무늬 벽지가 된다 — 얼룩 임계로 덩어리를 만든다.
- * 2. **잡동사니** — 통나무·그루터기·돌·들꽃을 상위 레이어에 드물게 얹는다. 상위가 빈 칸에만
- *    얹어 수관·덤불을 지우지 않고, 보호셀(시작칸·이벤트)은 반드시 건너뛴다 — 여기서 막는 칩을
- *    올리면 시공 제안이 통째로 반려된다(단일 타일 경로에서 이미 겪은 결함이다).
+ * 키큰 풀(1×1 오토타일 조각)은 깔지 않는다. 한 칸만 쓰면 잔디 위에 네모가 뜬다.
+ * 잡동사니는 상위가 빈 칸에만 얹어 수관·덤불을 지우지 않고, 보호셀(시작칸·이벤트)은
+ * 건너뛴다 — 여기서 막는 칩을 올리면 시공 제안이 통째로 반려된다.
  */
 function paintForestFloor(draft: Project, map: GameMap, area: Rect, seed: number): number {
-  const tileset = draft.tilesets[map.tilesetId];
-  if (!tileset) return 0;
-  const access = resolveMaterialByLabel(tileset, UNDERGROWTH_LABEL, { preferGroup: true, preferRoles: ["terrain"] });
-  const inChipset = (tile: number): boolean => TALL_GRASS_TILES.includes(tile);
-  const tall = access.status === "missing"
-    ? []
-    : access.kind === "group"
-      ? access.group.tileIds.filter(inChipset)
-      : [access.tileId];
-  // 짙은 단색 변형이 있으면 그것만, 없으면 조회된 것을 그대로 쓴다.
-  const tone = FLOOR_DARK_GRASS.filter((tile) => tall.includes(tile));
-  const toneTiles = tone.length > 0 ? tone : tall;
-
   const protectedCells = protectedEventCells(draft, map);
   const rng = mulberry32((seed ^ 0x51f7) >>> 0);
-  /** 저주파 얼룩 — 주기가 다른 두 해시를 겹쳐 덩어리를 만든다. */
-  const blob = (x: number, y: number, salt: number): number => {
-    const a = Math.imul((Math.floor(x / 3) * 73856093) ^ (Math.floor(y / 3) * 19349663) ^ (seed + salt), 0x27d4eb2d) >>> 0;
-    const b = Math.imul((Math.floor(x / 7) * 83492791) ^ (Math.floor(y / 5) * 2971215073) ^ (seed + salt * 7), 0x165667b1) >>> 0;
-    return ((a % 1024) / 1024) * 0.6 + ((b % 1024) / 1024) * 0.4;
-  };
   const grass = new Set<number>([TILE.GRASS, ...CHIPSET_TILE_GROUPS.grassGround, ...TALL_GRASS_TILES]);
   let painted = 0;
   for (let y = area.y; y < area.y + area.h; y += 1) {
@@ -390,14 +353,6 @@ function paintForestFloor(draft: Project, map: GameMap, area: Rect, seed: number
       if (!grass.has(lower)) continue;
       if (isLakeAutotileTile(lower) || isPathSurfaceTile(lower)) continue;
       if (isTreeTrunkTileId(lower) || isTreeTrunkTileId(upper)) continue;
-      // 수관 아래도 칠한다 — 수관은 투명 칩이라 바닥이 그대로 비친다.
-      if (upper !== TILE.EMPTY && !isTreeCanopyTileId(upper)) continue;
-
-      if (toneTiles.length > 0 && blob(x, y, 3) > 0.55) {
-        map.lowerTiles[index] = toneTiles[Math.floor(rng() * toneTiles.length)] ?? toneTiles[0]!;
-        painted += 1;
-      }
-      // 잡동사니는 빈 상위 칸에만, 보호셀은 건너뛴다.
       if (upper !== TILE.EMPTY) continue;
       if (protectedCells.has(`${x},${y}`)) continue;
       if (rng() >= 0.11) continue;

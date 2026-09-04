@@ -5,6 +5,11 @@ import type { RegionRect } from "@/editor/regionTask/clipToRegion";
 
 const TRUNKS = new Set([290, 291, 292, 293]);
 const CANOPIES = new Set([260, 261, 262, 263]);
+/** 1×1 풀 — 키큰 풀 오토타일 조각 + 잔디 변형. 한 칸만 쓰면 네모로 뜬다. */
+const ONE_BY_ONE_GRASS = new Set([
+  243, 244, 245, 273, 274, 275, 303, 304, 305, 333, 334, 335,
+  270, 271, 272, 300, 301, 302, 330,
+]);
 
 function grassMap(width: number, height: number): ForestMapView {
   return {
@@ -113,5 +118,12 @@ describe("buildForestWrites", () => {
     for (const w of writes) {
       if (w.layer === "lower" && TRUNKS.has(w.tile)) expect(path.has(`${w.x},${w.y}`)).toBe(false);
     }
+  });
+
+  it("1×1 풀(키큰 풀·잔디 변형)을 lower 에 쓰지 않는다", () => {
+    const map = grassMap(40, 30);
+    const { writes } = buildForestWrites(map, REGION, { density: 0.7, groundNoise: true }, 42);
+    const grassWrites = writes.filter((write) => write.layer === "lower" && ONE_BY_ONE_GRASS.has(write.tile));
+    expect(grassWrites).toEqual([]);
   });
 });

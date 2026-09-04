@@ -158,14 +158,6 @@ function makeRng(seed: number): () => number {
   };
 }
 
-/** 좌표 결정적 해시 노이즈(0..1) — 지면 변형이 시드·좌표에만 의존하게. */
-function cellNoise(seed: number, x: number, y: number, channel: number): number {
-  let h = (seed ^ Math.imul(x + 374761393, 668265263) ^ Math.imul(y + 1103515245, 2246822519) ^ Math.imul(channel + 1, 3266489917)) >>> 0;
-  h = Math.imul(h ^ (h >>> 15), 2654435761) >>> 0;
-  h = (h ^ (h >>> 13)) >>> 0;
-  return h / 4294967296;
-}
-
 type Vec = { readonly x: number; readonly y: number };
 
 function clamp(v: number, lo: number, hi: number): number {
@@ -279,27 +271,8 @@ export function buildForestWrites(
     upperOut.set(idx(x, y), tile);
   };
 
-  // ── L1 지면 노이즈 ──
-  if (p.groundNoise) {
-    for (let y = y0; y <= y1; y += 1) {
-      for (let x = x0; x <= x1; x += 1) {
-        if (!paintable(x, y)) continue;
-        if (pathCells.has(idx(x, y))) continue;
-        const dark = cellNoise(seed, Math.floor(x / 3), Math.floor(y / 3), 7);
-        if (dark < 0.16 + density * 0.1) {
-          putLower(x, y, palette.groundDark);
-          continue;
-        }
-        const v = cellNoise(seed, x, y, 1);
-        const variants = palette.groundVariants;
-        if (v < 0.14 && variants.length > 0) {
-          putLower(x, y, variants[Math.floor(cellNoise(seed, x, y, 2) * variants.length) % variants.length]!);
-        } else {
-          putLower(x, y, palette.groundBase);
-        }
-      }
-    }
-  }
+  // 1×1 풀(키큰 풀·잔디 변형)은 깔지 않는다 — 오토타일 조각이 네모로 뜬다.
+  // groundNoise 토글은 호환을 위해 받지만 풀 변형을 쓰지 않는다.
 
   // ── L5(경로 먼저 깔기 — 나무가 길을 밟지 않게) ──
   for (const cell of pathCells) {
