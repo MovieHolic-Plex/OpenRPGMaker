@@ -119,6 +119,73 @@ describe("aiImageGenerateField queue", () => {
     queue.dispose();
   });
 
+  it("같은 queueKey 의 필드는 리마운트해도 작업을 공유한다", async () => {
+    let calls = 0;
+    const shared = createImageGenerationQueue({
+      runner: async (job) => {
+        calls += 1;
+        if (job.label === "느림") return new Promise<string>(() => {});
+        return "data:image/png;base64,AAA";
+      },
+    });
+    const first = renderWithFakeDom(() =>
+      aiImageGenerateField({ kind: "monster", testidPrefix: "q", queue: shared, onInserted: vi.fn() })
+    );
+    const prompt = findByTestId(first, "q-prompt");
+    if (prompt) prompt.value = "느림";
+    findByTestId(first, "q-generate")?.click();
+    if (prompt) prompt.value = "빠름";
+    findByTestId(first, "q-generate")?.click();
+    await vi.waitFor(() => {
+      expect(shared.getSnapshot().jobs).toHaveLength(2);
+    });
+    // 폼이 통째로 다시 그려져도 같은 큐 인스턴스를 쓰면 목록이 살아 있다.
+    const second = renderWithFakeDom(() =>
+      aiImageGenerateField({ kind: "monster", testidPrefix: "q", queue: shared, onInserted: vi.fn() })
+    );
+    expect(findByTestId(second, "q-queue-list")?.textContent).toContain("느림");
+    expect(findByTestId(second, "q-queue-list")?.textContent).toContain("빠름");
+    expect(calls).toBe(1);
+    shared.dispose();
+  });
+
+  it("이미 끝난 큐에 붙은 새 필드는 초기 스캔으로 등록한다", async () => {
+    const shared = createImageGenerationQueue({
+      runner: async () => "data:image/png;base64,AAA",
+    });
+    const id = shared.enqueue({ prompt: "슬라임", kind: "monster" });
+    await vi.waitFor(() => {
+      expect(shared.getSnapshot().jobs[0]?.status).toBe("done");
+    });
+    expect(id).toBeTruthy();
+    // 이 큐의 done 을 본 구독이 없으므로, 새로 붙는 필드가 초기 스냅샷을
+    // 스캔해 에셋으로 등록한다.
+    const inserted: string[] = [];
+    renderWithFakeDom(() =>
+      aiImageGenerateField({ kind: "monster", testidPrefix: "q", queue: shared, onInserted: (resourceId) => inserted.push(resourceId) })
+    );
+    expect(inserted).toHaveLength(1);
+    expect(store.getCurrent().assets.uploaded[inserted[0]!]?.kind).toBe("monster");
+    const afterRemount: string[] = [];
+    renderWithFakeDom(() =>
+      aiImageGenerateField({ kind: "monster", testidPrefix: "q", queue: shared, onInserted: (resourceId) => afterRemount.push(resourceId) })
+    );
+    expect(afterRemount).toHaveLength(0);
+  });
+
+  it("queueKey 필드는 같은 문서에서 리마운트해도 대기 목록을 유지한다", () => {
+    const a = renderWithFakeDom(() =>
+      aiImageGenerateField({ kind: "monster", testidPrefix: "share-key", queueKey: "enemy-graphic:e1", onInserted: vi.fn() })
+    );
+    const prompt = findByTestId(a, "share-key-prompt");
+    if (prompt) prompt.value = "느림";
+    findByTestId(a, "share-key-generate")?.click();
+    const b = renderWithFakeDom(() =>
+      aiImageGenerateField({ kind: "monster", testidPrefix: "share-key", queueKey: "enemy-graphic:e1", onInserted: vi.fn() })
+    );
+    expect(findByTestId(b, "share-key-queue-list")?.textContent).toContain("느림");
+  });
+
   it("끝난 항목 지우기는 완료·취소만 걷는다", async () => {
     let calls = 0;
     const queue = createImageGenerationQueue({

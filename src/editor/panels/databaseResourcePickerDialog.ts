@@ -302,6 +302,7 @@ export function resourcePickerControl(input: {
       aiImageGenerateField({
         kind: aiKind,
         testidPrefix: `${input.testid}-ai`,
+        queueKey: `resource-picker:${input.testid}:${aiKind}`,
         onInserted: (resourceId) => {
           input.onChange({ resourceId });
           input.rerender();

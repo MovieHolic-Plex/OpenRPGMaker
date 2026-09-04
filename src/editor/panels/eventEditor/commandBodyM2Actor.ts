@@ -858,6 +858,7 @@ function changeActorFacesetCommandBody(context: CommandEditContext, cmd: M2Comma
               aiImageGenerateField({
                 kind: "faceset",
                 testidPrefix: "change-actor-faceset-ai",
+                queueKey: `change-actor-faceset:${context.path.join(".")}`,
                 onInserted: (id) => {
                   resourceId = id;
                   resourceSelect.value = id;

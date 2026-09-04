@@ -649,6 +649,7 @@ function graphicFields(record: EnemyRecord, rerender: () => void): HTMLElement[]
     aiImageGenerateField({
       kind: "monster",
       testidPrefix: "db-enemy-graphic-ai",
+      queueKey: `enemy-graphic:${record.id}`,
       onInserted: (resourceId) => {
         updateDatabaseRecord("enemies", record.id, { monsterResourceId: resourceId });
         rerender();

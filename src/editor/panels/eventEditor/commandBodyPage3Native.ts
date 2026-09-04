@@ -1154,6 +1154,7 @@ export function showPictureBody(
             fieldBlock(
               "AI로 그림 만들기",
               showPictureAiField({
+                queueKey: `show-picture:${context.path.join(".")}`,
                 onInserted: (id) => {
                   resourceId.value = id;
                   syncResourceName();

@@ -22,7 +22,10 @@ export type AiImageGenerateFieldOptions = {
   readonly buttonLabel?: string;
   readonly testidPrefix?: string;
   readonly onInserted: (resourceId: string) => void;
+  /** 위젯 수명 동안 공유할 큐. 호출부가 record.id/context.path 등 안정 키로
+   *  들고 있는다. 없으면 컴포저(testidPrefix+kind)별 모듈 공유 큐를 쓴다. */
   readonly queue?: ImageGenerationQueue;
+  readonly queueKey?: string;
 };
 
 const KIND_PROMPT_PREFIX: Record<AiImageGenerateKind, string> = {
@@ -49,14 +52,15 @@ export function aiImagePlaceholder(kind: AiImageGenerateKind): string {
   return KIND_PLACEHOLDER[kind];
 }
 
-const handledDoneByQueue = new WeakMap<ImageGenerationQueue, Set<string>>();
+const insertedResourceByQueue = new WeakMap<ImageGenerationQueue, Map<string, string>>();
 const toastedErrorByQueue = new WeakMap<ImageGenerationQueue, Set<string>>();
+const queuesByHost = new WeakMap<object, Map<string, ImageGenerationQueue>>();
 
-function handledDone(queue: ImageGenerationQueue): Set<string> {
-  let seen = handledDoneByQueue.get(queue);
+function insertedResources(queue: ImageGenerationQueue): Map<string, string> {
+  let seen = insertedResourceByQueue.get(queue);
   if (!seen) {
-    seen = new Set();
-    handledDoneByQueue.set(queue, seen);
+    seen = new Map();
+    insertedResourceByQueue.set(queue, seen);
   }
   return seen;
 }
@@ -68,6 +72,30 @@ function toastedError(queue: ImageGenerationQueue): Set<string> {
     toastedErrorByQueue.set(queue, seen);
   }
   return seen;
+}
+
+function sharedQueueMap(): Map<string, ImageGenerationQueue> | null {
+  const host = typeof document !== "undefined" ? document.body : null;
+  if (!host) return null;
+  let map = queuesByHost.get(host);
+  if (!map) {
+    map = new Map();
+    queuesByHost.set(host, map);
+  }
+  return map;
+}
+
+function resolveQueue(options: AiImageGenerateFieldOptions): ImageGenerationQueue {
+  if (options.queue) return options.queue;
+  const key = options.queueKey ?? `${options.testidPrefix ?? "ai-image-generate"}:${options.kind}`;
+  const map = sharedQueueMap();
+  if (!map) return createImageGenerationQueue();
+  let queue = map.get(key);
+  if (!queue) {
+    queue = createImageGenerationQueue();
+    map.set(key, queue);
+  }
+  return queue;
 }
 
 function statusText(job: ImageQueueJob): string {
@@ -87,8 +115,8 @@ function statusText(job: ImageQueueJob): string {
 
 export function aiImageGenerateField(options: AiImageGenerateFieldOptions): HTMLElement {
   const prefix = options.testidPrefix ?? "ai-image-generate";
-  const queue = options.queue ?? createImageGenerationQueue();
-  const done = handledDone(queue);
+  const queue = resolveQueue(options);
+  const inserted = insertedResources(queue);
   const errored = toastedError(queue);
 
   const prompt = el("input", {
@@ -184,30 +212,47 @@ export function aiImageGenerateField(options: AiImageGenerateFieldOptions): HTML
     list.append(el("ul", { class: "ai-image-queue-items", children: snapshot.jobs.map(jobRow) }));
   }
 
-  queue.subscribe((snapshot) => {
+  // handleSnapshot 보다 먼저 선언한다 — 초기 스캔 호출이 이 const 보다 뒤에
+  // 있어야 TDZ(Cannot access before initialization)에 걸리지 않는다.
+  const nodeRef: { host: HTMLElement | null } = { host: null };
+  const notifiedLocal = new Set<string>();
+  function handleSnapshot(snapshot: ImageQueueSnapshot): void {
+    // 이미 떨어진 노드에는 그리지 않는다 — 오래된 구독이 늦게 깨어나도 DOM 을
+    // 건드리지 않고 구독을 끊는다. root 는 아래에서 선언되므로 함수 호출 시점에 읽는다.
+    const host = nodeRef.host as (HTMLElement & { readonly isConnected?: boolean }) | null;
+    if (host && typeof document !== "undefined" && document.body && host.isConnected === false) {
+      release();
+      return;
+    }
     for (const job of snapshot.jobs) {
-      if (job.status === "done" && job.result?.startsWith("data:image/") && !done.has(job.id)) {
-        done.add(job.id);
-        try {
-          let resourceId = "";
-          store.update(
-            (draft) => {
-              resourceId = insertGeneratedPictureAsset(draft, {
-                name: job.label.slice(0, 40),
-                dataUrl: job.result as string,
-                kind: options.kind,
-              });
-            },
-            { scope: "assets", label: "AI 그림 생성" },
-          );
-          options.onInserted(resourceId);
-        } catch (error) {
-          if (error instanceof ImageGenerationError || error instanceof GeneratedPictureError) {
-            toast(error.message, "error");
-          } else if (error instanceof Error) {
-            toast(error.message, "error");
-          } else {
-            toast("그림을 만들지 못했습니다.", "error");
+      if (job.status === "done" && job.result?.startsWith("data:image/") && !notifiedLocal.has(job.id)) {
+        notifiedLocal.add(job.id);
+        // 에셋 등록·onInserted 는 이 큐에서 이 작업을 처음 본 구독자만 한다.
+        // 리마운트된 필드는 이미 등록된 id 를 보고 건너뛰어 폼 재생성 루프를 막는다.
+        // 구독자가 없을 때 끝난 작업은 새 필드의 초기 스캔이 여기서 집어 올린다.
+        if (!inserted.has(job.id)) {
+          try {
+            let created = "";
+            store.update(
+              (draft) => {
+                created = insertGeneratedPictureAsset(draft, {
+                  name: job.label.slice(0, 40),
+                  dataUrl: job.result as string,
+                  kind: options.kind,
+                });
+              },
+              { scope: "assets", label: "AI 그림 생성" },
+            );
+            inserted.set(job.id, created);
+            options.onInserted(created);
+          } catch (error) {
+            if (error instanceof ImageGenerationError || error instanceof GeneratedPictureError) {
+              toast(error.message, "error");
+            } else if (error instanceof Error) {
+              toast(error.message, "error");
+            } else {
+              toast("그림을 만들지 못했습니다.", "error");
+            }
           }
         }
       }
@@ -217,8 +262,15 @@ export function aiImageGenerateField(options: AiImageGenerateFieldOptions): HTML
       }
     }
     renderList(snapshot);
-  });
-  renderList(queue.getSnapshot());
+  }
+  const unsubscribe = queue.subscribe(handleSnapshot);
+  let released = false;
+  function release(): void {
+    if (released) return;
+    released = true;
+    unsubscribe();
+  }
+  handleSnapshot(queue.getSnapshot());
 
   addButton.addEventListener("click", () => {
     const text = prompt.value.trim();
@@ -236,7 +288,7 @@ export function aiImageGenerateField(options: AiImageGenerateFieldOptions): HTML
     prompt.value = "";
   });
 
-  return el("div", {
+  const root = el("div", {
     class: "page3-resource-row ai-image-queue",
     dataset: { testid: `${prefix}-queue` },
     children: [
@@ -244,4 +296,20 @@ export function aiImageGenerateField(options: AiImageGenerateFieldOptions): HTML
       list,
     ],
   });
+  // 떨어진 노드의 구독을 끊는다. 폼 리렌더가 replaceChildren 으로 이 노드를
+  // 걷어내면 다음 notify 때 해제된다 — 별도 unmount 훅이 없는 구조에서의 안전망.
+  const connectedOf = root as HTMLElement & { readonly isConnected?: boolean };
+  const observer = typeof MutationObserver === "undefined"
+    ? null
+    : new MutationObserver(() => {
+        if (connectedOf.isConnected === false) {
+          release();
+          observer?.disconnect();
+        }
+      });
+  nodeRef.host = root;
+  if (observer && typeof document !== "undefined" && document.body) {
+    observer.observe(document.body, { childList: true, subtree: true });
+  }
+  return root;
 }

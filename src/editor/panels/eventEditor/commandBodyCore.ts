@@ -668,6 +668,7 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
     aiImageGenerateField({
       kind: "faceset",
       testidPrefix: "event-command-face-ai",
+      queueKey: `event-command-face:${context.path.join(".")}`,
       onInserted: (id) => {
         resource.value = id;
         apply();
