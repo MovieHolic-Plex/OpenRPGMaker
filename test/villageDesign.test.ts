@@ -32,6 +32,7 @@ describe("마을 설계서 — DB 계약", () => {
     const { project, preset } = fixture();
     expect(resolveVillageDesignInput(project, {}, true)).toMatchObject({ presetId: preset.id, houseCount: 4, interior: false });
     expect(() => resolveVillageDesignInput(project, { houseCount: 5 }, true)).toThrow(/집 수/);
+    expect(() => resolveVillageDesignInput(project, { presetId: "missing" }, true)).toThrow(/설계서가 없습니다/);
     preset.design!.houseCount = { mode: "range", min: 3, max: 6 };
     expect(resolveVillageDesignInput(project, { houseCount: 5 }, true).houseCount).toBe(5);
     expect(() => resolveVillageDesignInput(project, { houseCount: 7 }, true)).toThrow(/집 수/);

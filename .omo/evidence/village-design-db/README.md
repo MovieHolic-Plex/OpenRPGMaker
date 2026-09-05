@@ -31,3 +31,13 @@
 시설별 프로그램·주민 역할 편성은 기존 개념 꾸러미/캐스트 라이터를 사용한다.
 구형 레이어 세션은 설계서가 활성화된 경우 `author_village`를 안내하고 변이 전에 중단한다.
 상세 계약은 `openwiki/village-design.md`.
+
+## 게이트 결과
+
+`npm run gates`: typecheck 0 errors, CSS budget/graph 통과. 전체 vitest 12,716 통과 / 169 실패(91 파일), surface 실패로 exit 1. 기록된 기준선 대비 추가 실패도 남아 있어 전체 회귀 없음으로 판정하지 않는다. 마을 관련 7개 파일 152개 테스트는 모두 통과했다. `gates.log`와 `test-results.json` 참조.
+
+기본 설정(집 6채, 실내 연결 켜짐)의 브라우저 미리보기도 성공했다: `default-preview-results.json`.
+
+마지막 ID 검증·문구 보완 뒤 8개 파일 156개 assertion은 통과했으나 Vitest `onTaskUpdate` RPC timeout 두 건으로 해당 실행은 exit 1이었다(`focused.log`). 이를 정상 종료로 취급하지 않고 변경한 3개 파일을 worker 1개로 다시 확인한다. 마지막 타입 검사 exit 0(`typecheck.log`).
+
+단일 worker 재검증도 3개 파일 / 52개 assertion 통과 후 `onTaskUpdate` RPC timeout 1건으로 exit 1이었다(`focused-retry.log`). 따라서 최종 집중 실행을 깨끗한 통과로 보고하지 않는다. 타입·CSS·브라우저 검증은 통과했으며 전체 게이트와 테스트 실행기 오류는 남아 있다.

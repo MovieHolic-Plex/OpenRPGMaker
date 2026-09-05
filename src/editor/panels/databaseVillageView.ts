@@ -316,10 +316,10 @@ function startScreen(project: Project, rerender: () => void): HTMLElement {
             children: [
               emptyState({
                 icon: "⌖",
-                title: "배치 프리셋을 만들어 보세요",
-                body: "길 폭·광장 모양·마당 스타일 같은 값을 한 묶음으로 저장합니다. AI 에게 “이 프리셋으로 마을 깔아 줘”라고 하면 그대로 쓰입니다.",
+                title: "마을 설계서를 만들어 보세요",
+                body: "집의 생김새·길·물과 숲을 한곳에서 정합니다. AI가 지킬 고정값과 바꿔도 되는 범위를 선택하세요.",
                 action: {
-                  label: "+ 빈 프리셋 추가",
+                  label: "+ 마을 설계서 추가",
                   kind: "primary",
                   testid: "db-village-preset-blank-create",
                   onClick: () => { selectedKind = "preset"; createRecord(rerender); },
@@ -1149,16 +1149,16 @@ function presetDetail(
       body: [
         emptyState({
           icon: "⌖",
-          title: "배치 프리셋을 만들어 보세요",
-          body: "길 폭·광장 모양·마당 스타일 같은 값을 한 묶음으로 저장합니다. AI 에게 “이 프리셋으로 마을 깔아 줘”라고 하면 그대로 쓰입니다.",
-          action: { label: "+ 빈 프리셋 추가", kind: "primary", testid: "db-village-preset-blank-create", onClick: () => createRecord(rerender) },
+          title: "마을 설계서를 만들어 보세요",
+          body: "집의 생김새·길·물과 숲을 한곳에서 정합니다. AI가 지킬 고정값과 바꿔도 되는 범위를 선택하세요.",
+          action: { label: "+ 마을 설계서 추가", kind: "primary", testid: "db-village-preset-blank-create", onClick: () => createRecord(rerender) },
           testid: "db-village-preset-blank",
         }),
         el("div", {
           class: "db-ws-stack db-village-inspector",
           children: [span(sectionCard({
             title: "마을 원형에서 시작하기",
-            hint: "AI 가 테마 문장으로 고르던 값 묶음. 골라서 프리셋으로 굽습니다",
+            hint: "분위기를 고른 뒤 집과 길, 자연 설정을 설계서에서 조정합니다",
             children: archetypeGallery(rerender),
             testid: "db-village-archetype-gallery",
           }))],

@@ -11,7 +11,7 @@ export function selectedVillagePreset(project: Project, args: Record<string, unk
   const id = typeof args.presetId === "string" && args.presetId.trim() ? args.presetId.trim() : project.defaultVillagePresetId;
   if (!id) return undefined;
   const preset = project.villagePresets?.find(p => p.id === id);
-  if (!preset && id === project.defaultVillagePresetId) throw new ToolError("기본 마을 설계서가 없습니다. 데이터베이스 → 마을에서 다시 선택하세요.", { code: "village-design-missing" });
+  if (!preset && project.defaultVillagePresetId) throw new ToolError("요청한 마을 설계서가 없습니다. 데이터베이스 → 마을에서 다시 선택하세요.", { code: "village-design-missing" });
   if (preset?.design) {
     const issue = villageDesignIssue(preset.design);
     if (issue) throw new ToolError(issue, { code: "village-design-invalid" });

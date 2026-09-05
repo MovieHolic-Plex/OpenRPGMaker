@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **44쪽 / 1446KB / 약 409,259 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **44쪽 / 1446KB / 약 409,301 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -67,7 +67,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/se-catalog.md` | 8 | `.mjs`, `audio-features.json`, `audition.html`, `cross-check.json`, `dist/se-staging/audition.html`, `inventory.json`, `labels.json`, `placed.json` |
 | `openwiki/testing.md` | 7 | `../dialogue.css`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts` |
 | `openwiki/town-tile-benchmark.md` | 1 | `combined-town-chipset-report.html` |
-| `openwiki/village-design.md` | 4 | `ai/villageDesignContext.ts`, `editor/tools/village/designContract.ts`, `output/village-direction/index.html`, `villageDesignPanel.ts` |
+| `openwiki/village-design.md` | 1 | `output/village-direction/index.html` |
 
 ## 페이지별 절 좌표
 
@@ -615,7 +615,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L140` 증거 시트
 - `L147` 비용
 
-### `openwiki/village-design.md` — 5KB · 45줄 · ~1,582 토큰
+### `openwiki/village-design.md` — 5KB · 45줄 · ~1,624 토큰
 
 - `L5` 데이터와 호환성
 - `L13` 단일 시공 계약
