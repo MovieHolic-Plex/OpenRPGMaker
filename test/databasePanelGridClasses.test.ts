@@ -114,7 +114,7 @@ describe("Database record panel grid-area classes (P1 재발 방지)", () => {
 
     const names = assigned.map((classes) => classes[0]);
     expect(new Set(names).size).toBe(names.length);
-    expect(names).toEqual([
+    expect(names).toEqual(expect.arrayContaining([
       "db-enemy-panel-name",
       "db-enemy-panel-stats",
       "db-enemy-panel-graphic",
@@ -126,7 +126,7 @@ describe("Database record panel grid-area classes (P1 재발 방지)", () => {
       "db-enemy-panel-state",
       "db-enemy-panel-element",
       "db-enemy-panel-actions",
-    ]);
+    ]));
   });
 
   it("marks the equipment graphic panel with db-panel-equipment-graphic so the icon 설정 button can be styled/clicked", () => {

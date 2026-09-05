@@ -14,6 +14,8 @@ import { el } from "@/util/dom";
 import { warmBundledPlayAssets } from "@/assets/bundledAssetWarmup";
 import { editorPlayBootDiagnosticSink } from "@/app/editorPlayBootDiagnostics";
 import { validateEventDraft } from "@/editor/eventDraftValidator";
+import { prepareEnemyBattleTest } from "@/editor/enemyBattleTest";
+import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { prepareEventTest, type EventTestPreparation } from "@/editor/eventTestSandbox";
 import { toast } from "@/util/toast";
 import {
@@ -24,6 +26,7 @@ import { STORAGE_PREFIX } from "@/util/appStorage";
 import { isEditorGameSuspended, resumeEditorGame, suspendEditorGame } from "@/editor/panels/editorGameSuspension";
 
 let modalRoot: HTMLElement | null = null;
+let returnFocusAfterEnemyTest: HTMLElement | null = null;
 let removePlayWindowKeydown: (() => void) | null = null;
 let releaseEventTestSnapshot: (() => void) | null = null;
 // 에디터 전투 테스트가 mount 한 배틀 씬 컨트롤러. closeTestPlayModal 이 destroy()
@@ -167,15 +170,22 @@ export async function openTroopBattleTestModal(troopId: string): Promise<void> {
   await openTroopBattleTestModalAfterGate(troopId);
 }
 
-async function openTroopBattleTestModalAfterGate(troopId: string): Promise<void> {
-  const project = store.getCurrent();
+export async function openEnemyBattleTestModal(enemyId: string): Promise<void> {
+  const prepared = prepareEnemyBattleTest(store.getCurrent(), enemyId);
+  if (!prepared) return;
+  await openTroopBattleTestModalAfterGate(prepared.troopId, prepared.project, true);
+}
+
+async function openTroopBattleTestModalAfterGate(troopId: string, project: Project = store.getCurrent(), nestedEnemyTest = false): Promise<void> {
   const troop = project.database.troops.find((record) => record.id === troopId);
-  const body = openTestPlayShell(`전투 테스트 - ${troop?.name ?? troopId}`);
+  const body = openTestPlayShell(`전투 테스트 - ${troop?.name ?? troopId}`, { nestedEnemyTest });
   const loading = mountPlayLoadingOverlay(body, "saving");
   try {
     await store.flush();
     loading.setStage("preparing");
     await yieldToBrowser();
+    // The user can close the test while persistence/assets yield to the browser.
+    if (!body.isConnected) return;
     loading.remove();
     // 에디터 전투 테스트도 실제 플레이 경로(playSceneBattle) 와 동일한 세션 기반 상태/RNG 를
     // 쓴다. 예전에는 Math.random() 에 party/sessionState 누락으로 (a) 재현 불가능하고,
@@ -274,8 +284,15 @@ export function closeTestPlayModal(): void {
   teardownPlayer();
   releaseEventTestSnapshot?.();
   releaseEventTestSnapshot = null;
+  if (modalRoot) unregisterModal(modalRoot);
   modalRoot?.remove();
   modalRoot = null;
+  if (returnFocusAfterEnemyTest) {
+    const target = returnFocusAfterEnemyTest.isConnected ? returnFocusAfterEnemyTest
+      : document.querySelector<HTMLElement>('[data-testid="db-enemy-battle-test"]');
+    target?.focus();
+  }
+  returnFocusAfterEnemyTest = null;
   // 창이 닫혔으니 편집기 게임을 다시 깨운다(열 때 잠재운 것과 짝).
   resumeEditorGame();
 }
@@ -284,9 +301,12 @@ export function closeTestPlayModal(): void {
 // 버튼을 달면 눌러도 아무 일이 없는 죽은 컨트롤이 된다.
 function openTestPlayShell(
   title: string,
-  shellOptions: { readonly runControls?: boolean } = {},
+  shellOptions: { readonly runControls?: boolean; readonly nestedEnemyTest?: boolean } = {},
 ): HTMLElement {
   closeTestPlayModal();
+  if (shellOptions.nestedEnemyTest && document.activeElement instanceof HTMLElement) {
+    returnFocusAfterEnemyTest = document.activeElement;
+  }
   const backdrop = el("div", {
     class: "test-play-modal-backdrop",
     attrs: {
@@ -375,6 +395,24 @@ function openTestPlayShell(
   backdrop.append(windowNode);
   document.body.append(backdrop);
   modalRoot = backdrop;
+  if (shellOptions.nestedEnemyTest) {
+    registerModal(backdrop, closeTestPlayModal);
+    backdrop.addEventListener("keydown", (event) => {
+      if (event.key !== "Tab") return;
+      const controls = Array.from(backdrop.querySelectorAll<HTMLElement>('button, input, select, textarea, [tabindex="0"]'))
+        .filter((node) => !node.hasAttribute("disabled") && node.getClientRects().length > 0);
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first?.focus();
+      }
+    });
+    restoreButton.focus();
+  }
   // 모달 뒤의 편집기 게임은 그릴 필요도, 키를 받을 이유도 없다 — 플레이 프레임에 양보한다.
   suspendEditorGame();
   windowNode.dataset.editorGameSuspended = String(isEditorGameSuspended());

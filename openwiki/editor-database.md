@@ -1,5 +1,31 @@
 # Editor Database
 
+## 몬스터 작업실 — 미리보기 · 행동 · 속성 (2026-09-05)
+
+- `databaseEnemyRecordView.ts`는 기존 11개 필드 패널과 `updateDatabaseRecord` 경로를 유지하고,
+  `databaseEnemyStudio.ts`가 중앙 미리보기·공격 패턴·접힌 연결 데이터와 우측 `기본 / 외형 / 전투 / 보상`
+  속성 탭을 구성한다. 예전 멀티컬럼 카드 스택은 `modern/enemies.css`에서 제거했다.
+- 슬롯·검색·선택·복제·삭제는 `databaseRecordViews.ts` 소유다. 목록 폭은 220px, 속성 폭은 340px.
+  상세 영역이 650px 이하인 도크/작은 화면에서는 하나의 세로 스크롤로 전환한다. 모달 창 기하는
+  여전히 `sidebar.css`만 소유한다. 다른 DB 탭과 전역 맵/데이터 작업 공간 전환은 이번 슬라이스 범위 밖이다.
+- 대기 애니메이션은 기존 `battlerIdleAnimations` 카탈로그의 프레임 수·시간을 그대로 쓰는 CSS 스트립이다.
+  등록되지 않았거나 스트립 로드가 실패하면 기존 크로마키 정적 그림이 남는다. 동작 줄이기 환경에서는
+  일시 정지로 시작한다. 별도 타이머·전역 리스너는 없다.
+  연관 적 그룹에 지정된 배경을 표시하며, 배경이 없으면 중립 스테이지를 쓴다.
+- 편집 이벤트가 버블링할 때 현재 store에서 헤더·능력치·미리보기·연결 데이터를 갱신한다.
+  입력 컨트롤은 재생성하지 않는다. 이름 변경은 목록 행에도 전파된다. 속성 탭과 미리보기 일시 정지는 레코드별
+  `databaseRecordViewSession`에 기억되며 전체 세션 리셋에서 지운다. 방향키/Home/End로 이동한다.
+- 연결 데이터는 적 그룹·드롭 아이템·스킬을 동일 DB 창에서 선택해 연다. 진영 설명은 기본 속성의
+  `진영 관계와 설정` disclosure 안에 있다. 종족 안내를 창 전체 배너로 중복하지 않는다.
+- `시험 전투` → `testPlayModal.openEnemyBattleTestModal` → `prepareEnemyBattleTest`는 현재 프로젝트를
+  복제한 뒤 테스트 전용 1인 적 그룹을 넣고 기존 전투 엔진/세션 경로를 실행한다. 적 그룹은 store와
+  원격 DB에 들어가지 않는다. authored troop이 없어도 시험 가능하고, 같은 ID가 있으면 충돌을 피한다.
+  이 중첩 시험 창은 modalStack에 등록해 Escape가 DB 대신 시험 창만 닫고, 닫으면 시험 버튼에
+  포커스를 복귀한다. 준비 중 닫힌 창에는 뒤늦게 전투 컨트롤러를 마운트하지 않는다.
+- 검증: `test/enemyBattleTest.test.ts`(실제 엔진 HP 반영·원본 격리),
+  `test/e2e/database-enemy-studio.spec.ts`(1680/1280/1024 hit-test·키보드·선택·연결·시험 복귀),
+  기존 EnemySpecies/Faction/ResourceSlot, RecordPartialRender, PanelGridClasses 계약.
+
 ## Database Studio chrome (2026-08-24)
 
 - The Database modal is a **neutral cool studio**, not the editor cream shell and not RM2k3. Tokens live in `src/styles/database/studio-theme.css` (`--db-studio-*`), scoped under `.database-modal-backdrop` and imported last among database CSS in `src/styles/index.css`. Do not put studio hex in `tokens.css`.
