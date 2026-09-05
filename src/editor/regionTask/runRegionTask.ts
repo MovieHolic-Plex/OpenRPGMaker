@@ -42,7 +42,7 @@ import {
 import { getEditorMapViewport } from "@/editor/editorMapViewport";
 import { ensureBuildPaletteTileGroups } from "@/editor/panels/buildPaletteCore";
 import { getTool } from "@/editor/tools";
-import { assertHouseProtection, captureHouseProtection } from "@/editor/tools/houseProtection";
+import { assertHouseProtection, captureHouseProtection, newlyBuiltHouseSnapshots } from "@/editor/tools/houseProtection";
 import { store } from "@/project/store";
 import { extractVocabSoftConfirm } from "@/project/tileVocabulary";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
@@ -745,6 +745,9 @@ export async function runRegionTask(
 
     const proposed = session.getProposedProject();
     if (!isLiveRun()) return { ...emptyBase, error: "사용자가 중단했습니다." };
+    // Seal completed new houses before clipping/review can damage them. Never refresh from
+    // a partial or polished candidate: ownership and the full north ridge must survive together.
+    const completedHouses = newlyBuiltHouseSnapshots(proposed, captureHouseProtection(base));
     // 영역 경로에서는 soft 재료를 origin:user 로 자동 승격하지 않는다.
     // (영구 합의 스탬프는 채팅 적용 경로가 찍는다 — markSoftVocabApprovalsOnProject)
     // 실내/새 맵: clip은 현재 맵 영역 밖 타일만 되돌리고 다른 맵은 통과(clipToRegion 계약).
@@ -879,6 +882,9 @@ export async function runRegionTask(
     const completionSummary = formatRegionTaskChangeParts({ changedCells, changedEvents, mapsAdded }).join(" · ") || "영역 변경";
     // 단일 저장 경로. 저장 후 완료 스트립에 알려 사용자가 적용 결과를 바로 확인한다.
     const applyOwnedProject = (project: Project): void => {
+      // Full, partial (including re-polish), and immediate apply converge here after diagnostics.
+      // This invariant is not advisory and must fail before any history/store mutation.
+      assertHouseProtection(captureHouseProtection(deps.getProject()), project, completedHouses);
       deps.applyProject(project, label, opts.mapId);
       publishAiApplyCompletion({
         mapId: opts.mapId,
