@@ -42,6 +42,7 @@ import {
 import { getEditorMapViewport } from "@/editor/editorMapViewport";
 import { ensureBuildPaletteTileGroups } from "@/editor/panels/buildPaletteCore";
 import { getTool } from "@/editor/tools";
+import { assertHouseProtection, captureHouseProtection } from "@/editor/tools/houseProtection";
 import { store } from "@/project/store";
 import { extractVocabSoftConfirm } from "@/project/tileVocabulary";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
@@ -244,6 +245,9 @@ export function countAddedMaps(base: Project, proposed: Project): number {
 }
 
 export function applyRegionProjectWithHistory(project: Project, label: string, mapId: MapId): void {
+  // Review can polish the candidate after tool guards. Enforce the live house baseline
+  // outside advisory diagnostics, before any history or store mutation (full and partial apply).
+  assertHouseProtection(captureHouseProtection(store.getCurrent()), project, []);
   // Region tasks may add maps, events, tilesets, or system data. Commit the project and its
   // single undo entry as one failure-atomic operation so a throwing store listener cannot
   // strand authored state or leave an orphan history snapshot.
