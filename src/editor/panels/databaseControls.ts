@@ -115,7 +115,7 @@ export function sliderStepperField(
       ...(bounds.unit ? [el("span", { class: "db-slider-unit", text: bounds.unit })] : []),
     ],
   });
-  return field(label, pair);
+  return numericField(label, pair, stepper, range);
 }
 
 /**
@@ -191,12 +191,13 @@ export function numberField(
   increment.addEventListener("click", () => stepBy(1));
   syncButtonState();
 
-  return field(
+  return numericField(
     label,
     el("span", {
       class: `db-number-stepper${options?.disabled ? " is-disabled" : ""}`,
       children: [decrement, input, increment],
-    })
+    }),
+    input
   );
 }
 
@@ -363,6 +364,21 @@ function faceChipAvatar(actor: AvatarChipActor): HTMLElement {
   slot.style.backgroundPosition = "center";
   slot.style.backgroundSize = `${size}px ${size}px`;
   return slot;
+}
+
+let numericFieldSequence = 0;
+
+function numericField(label: string, control: HTMLElement, input: HTMLInputElement, range?: HTMLInputElement): HTMLElement {
+  const labelId = `db-numeric-field-${++numericFieldSequence}`;
+  input.id = `${labelId}-input`;
+  const caption = el("label", { text: label, attrs: { id: labelId, for: input.id } });
+  if (range) range.setAttribute("aria-labelledby", labelId);
+  // Keep both grid spans, but put only the caption inside the label: a wrapping
+  // label activates the first stepper button instead of the numeric input.
+  return el("div", {
+    class: "db-field",
+    children: [el("span", { attrs: { title: label }, children: [caption] }), control],
+  });
 }
 
 export function field(label: string, control: HTMLElement): HTMLElement {
