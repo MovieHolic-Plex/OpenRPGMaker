@@ -228,8 +228,9 @@ function describeValue(value: unknown): string {
 }
 
 function simplePageFieldError(path: string, expected: string, actual: unknown): ToolError {
+  const conditionHint = path.includes(".conditions") ? ' 페이지 조건 예: {kind:"selfSwitch",key:"A",value:true} 또는 {kind:"switch",switchId:"조회한 ID",value:true}. 첫 페이지 conditions:[], 다음 페이지에 위 조건을 사용하세요.' : "";
   return new ToolError(
-    `SimplePage 인자 오류: 필드: ${path}; 기대 타입: ${expected}; 실제 타입: ${describeValue(actual)}; 최소 예시: ${SIMPLE_PAGE_EXAMPLE}`,
+    `SimplePage 인자 오류: 필드: ${path}; 기대 타입: ${expected}; 실제 타입: ${describeValue(actual)}; 최소 예시: ${SIMPLE_PAGE_EXAMPLE}${conditionHint}`,
     { code: "invalid-args" }
   );
 }
@@ -299,6 +300,16 @@ function normalizeCommand(raw: unknown, path: string, warnings: string[] | undef
     warnings?.push(`SimplePage 정규화: ${path}.kind "${requestedKind}" 를 "${kind}" 로 해석했습니다.`);
   }
   command.kind = kind;
+  if (kind === "text" && command.body === undefined && typeof command.text === "string") {
+    command.body = command.text;
+    delete command.text;
+    warnings?.push(`SimplePage 정규화: ${path}.text를 text.body로 변환했습니다.`);
+  }
+  if (kind === "text" && command.body === undefined && Array.isArray(command.lines) && command.lines.every(line => typeof line === "string")) {
+    command.body = command.lines.join("\n");
+    delete command.lines;
+    warnings?.push(`SimplePage 정규화: ${path}.lines를 text.body로 변환했습니다.`);
+  }
   if (kind === "setSelfSwitch" && typeof command.key !== "string" && typeof command.id === "string") {
     command.key = command.id;
     delete command.id;

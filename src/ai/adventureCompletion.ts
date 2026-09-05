@@ -1,6 +1,7 @@
 import type { Command, GameMap, Project } from "@/project/types";
-import { canMove } from "@/project/collision";
+import { canMove, tileAt, tilePassability } from "@/project/collision";
 import { roleCapabilities } from "@/project/tileRoles";
+import { startStateOf } from "@/project/session";
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
 
 /** Declared by the intent model, never inferred from incidental NPC/building words. */
@@ -11,14 +12,26 @@ export interface AdventureRequirements {
   battle: boolean;
 }
 
+/** Tools promised by the declared contract must be callable before the first write. */
+export function adventureToolNames(required: AdventureRequirements | undefined): string[] {
+  if (!required) return [];
+  return ["get_project_summary", "get_database_records", "find_events", "list_resources", "show_map_region", "upsert_event", "upsert_item", "upsert_equipment",
+    ...(required.village ? ["author_house"] : []),
+    ...(required.dungeon ? ["list_dungeon_room_themes", "run_dungeon_room_pipeline", "create_transfer_pair", "place_chest"] : []),
+    ...(required.party ? ["set_project_settings"] : []),
+    ...(required.battle ? ["upsert_enemy", "upsert_troop", "set_encounter_table"] : []),
+  ];
+}
+
 export const ADVENTURE_AUTHORING_GUIDE = `요청한 모험의 완료 조건은 실제 플레이 연결이다. 먼저 기존 맵·DB를 조회한다.
 마을은 author_village/author_house 등으로 건물과 길을 실제 시공한다. 잔디+흙길+사람은 마을 완성이 아니다.
-던전 탐험을 요청했다면 별도 탐험 맵과 create_transfer_pair로 왕복 연결하고 입구의 동굴/문/계단 외형을 조회해 사용한다. 사람 그림을 관문으로 쓰지 않는다.
+던전 탐험을 요청했다면 list_dungeon_room_themes 조회 후 run_dungeon_room_pipeline({mapId,name,theme:"stone",hazard:true})로 별도 동굴을 먼저 시공한다. 잔디 맵에 주택 벽 한 줄을 두는 것은 동굴이 아니다. 기존 맵의 무단 교체는 금지한다. 생성 결과의 통행 칸을 조회한 뒤 보물·적을 배치하고 create_transfer_pair로 왕복 연결하고 입구의 동굴/문/계단 외형을 조회해 사용한다. 사람 그림을 관문으로 쓰지 않는다.
 기본 전투 적은 조회한 트룹을 set_encounter_table 또는 battleProcessing으로 도달 가능한 탐험 맵에 연결한다.
 파티 모험은 조회한 actors를 set_project_settings({startActorIds})로 시작 파티에 넣거나 changeParty 합류 이벤트를 만든다. add_companion의 시각 추종과 전투 파티는 다르다.
-아이템은 조회한 iconResourceId를 지정한다. 착용 무기는 upsert_equipment로 만들며 items의 legacy type:weapon은 쓰지 않는다.
+아이템과 장비 모두 조회한 iconResourceId를 지정한다. 착용 무기는 upsert_equipment로 만들며 items의 legacy type:weapon은 쓰지 않는다.
 재시도는 find_events로 기존 ID를 읽고 upsert_event로 갱신한다. place_npc를 되풀이해 동명이인을 늘리지 않는다.
-마지막 저작 후 모든 관련 맵 전체를 show_map_region으로 직접 보고, 입구·동선·외형과 중복을 확인한다. lint 무오류는 장르 완성이 아니다. 정식 퀘스트/보스는 요청 없으면 불필요하다.`;
+건물을 먼저 시공하고 NPC·상자는 나중에 배치한다. 기존 이벤트 위 시공 후에는 find_events로 겹침을 확인하고 upsert_event로 통행 가능한 자리로 옮긴다.
+마지막 저작 후 모든 관련 맵 전체를 show_map_region(최대 24×24이므로 큰 맵은 분할 조회)으로 직접 보고, 입구·동선·외형과 중복을 확인한다. lint 무오류는 장르 완성이 아니다. 정식 퀘스트/보스는 요청 없으면 불필요하다.`;
 
 function commands(map: GameMap): Array<{ event: GameMap["events"][number]; command: Command }> {
   const out: Array<{ event: GameMap["events"][number]; command: Command }> = [];
@@ -75,7 +88,9 @@ export function adventureCompletionProblems(project: Project, required: Adventur
   const visited = new Set<string>();
   const pending = [{ mapId: start.id, ...project.startPos }];
   let battle = false;
-  const party = new Set(project.system.startActorIds ?? []);
+  const explored = new Set<string>();
+  const returnEdges = new Map<string, Set<string>>();
+  const party = new Set(startStateOf(project).partyActorIds);
   const actorIds = new Set(project.database.actors.map(a => a.id));
   const troops = new Set(project.database.troops.filter(t => t.enemyIds.length > 0 && t.enemyIds.every(id => project.database.enemies.some(e => e.id === id))).map(t => t.id));
   for (let i = 0; i < pending.length; i++) {
@@ -88,14 +103,40 @@ export function adventureCompletionProblems(project: Project, required: Adventur
     if (!cells.size) continue;
     if ((map.encounterRate ?? 0) > 0 && ((map.encounterTable ?? []).some(e => e.weight > 0 && troops.has(e.troopId)) || (!map.encounterTable?.length && map.troopIds?.some(id => troops.has(id))))) battle = true;
     if (map.fieldSpawns?.some(s => troops.has(s.troopId) && [...cells].some(key => { const [x,y] = key.split(',').map(Number); return x >= s.area.x && y >= s.area.y && x < s.area.x+s.area.w && y < s.area.y+s.area.h; }))) battle = true;
+    for (const event of map.events) {
+      const hasInteraction = commands(map).some(entry => entry.event === event && ["text", "changeItem", "changeGold", "changeParty", "battleProcessing"].includes(entry.command.kind));
+      if (!hasInteraction) continue;
+      const tileset = project.tilesets[map.tilesetId];
+      const tile = tileAt(map, event.x, event.y);
+      const pass = tileset && tilePassability(tileset, tile.lower, tile.upper);
+      const occupiesFloor = event.pages?.some(page => page.graphic.sprite && !page.graphic.transparent);
+      if (!accessible(cells, event) || (occupiesFloor && (!pass || !Object.values(pass).some(Boolean)))) {
+        const issue = `맵 ${map.id} 이벤트 ${event.id}가 막힌 타일 위이거나 접근 불가입니다. 건물/벽 겹침을 확인하고 통행 가능한 자리로 옮기세요.`;
+        if (!problems.includes(issue)) problems.push(issue);
+      }
+    }
     for (const { event, command } of commands(map)) {
       if (!accessible(cells, event)) continue;
-      if (command.kind === "transfer" && project.maps[command.mapId]) pending.push({ mapId: command.mapId, x: command.x, y: command.y });
+      if (command.kind === "transfer" && project.maps[command.mapId]) {
+        pending.push({ mapId: command.mapId, x: command.x, y: command.y });
+        const edges = returnEdges.get(map.id) ?? new Set<string>();
+        edges.add(command.mapId); returnEdges.set(map.id, edges);
+      }
+      if (command.kind === "changeGold" || command.kind === "changeItem" || command.kind === "battleProcessing") explored.add(map.id);
       if (command.kind === "battleProcessing" && troops.has(command.troopId)) battle = true;
       if (command.kind === "changeParty" && command.action === "add" && actorIds.has(command.actorId)) party.add(command.actorId);
     }
   }
   if (required.dungeon && ![...visited].some(key => !key.startsWith(`${start.id}:`))) problems.push("시작 마을에서 도달할 수 있는 탐험 맵 전이가 없습니다. 던전을 저작하고 create_transfer_pair로 연결하세요. 안내문은 입구가 아닙니다.");
+  if (required.dungeon && [...visited].some(key => !key.startsWith(`${start.id}:`))) {
+    const canReturn = new Set([start.id]);
+    let changed = true;
+    while (changed) {
+      changed = false;
+      for (const [from, targets] of returnEdges) if (!canReturn.has(from) && [...targets].some(to => canReturn.has(to))) { canReturn.add(from); changed = true; }
+    }
+    if (![...explored].some(id => id !== start.id && canReturn.has(id))) problems.push("던전의 도달 가능한 보물/전투 이벤트와 시작 마을 복귀 경로를 확인할 수 없습니다. 탐험 대상을 배치하고 create_transfer_pair로 왕복 연결하세요.");
+  }
   if (required.battle && !battle) problems.push("도달 가능한 전투가 없습니다. 조회한 트룹을 조우표/필드 스폰/battleProcessing에 연결하세요. DB 시드만으로 전투는 시작되지 않습니다.");
   if (required.party && [...party].filter(id => actorIds.has(id)).length < 2) problems.push("전투 파티가 1명뿐이고 도달 가능한 changeParty 합류도 없습니다. 배우 ID 조회 후 시작 파티 또는 합류 이벤트를 저작하세요.");
   return problems;

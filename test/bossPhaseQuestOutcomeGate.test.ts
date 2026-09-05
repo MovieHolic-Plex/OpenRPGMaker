@@ -92,7 +92,7 @@ describe("보스 페이즈 게이트 — 페이지를 썼다 ≠ 연출이 떴�
           name: "절대 안 뜨는 연출",
           conditions: [{ kind: "onRound", round: 99 }],
           span: "battle",
-          commands: [{ kind: "text", text: "99라운드!" }],
+          commands: [{ kind: "text", body: "99라운드!" }],
         },
       },
       { dryRun: false },

@@ -1,4 +1,4 @@
-import { adventureCompletionProblems, ADVENTURE_AUTHORING_GUIDE, type AdventureRequirements } from "./adventureCompletion";
+import { adventureToolNames, adventureCompletionProblems, ADVENTURE_AUTHORING_GUIDE, type AdventureRequirements } from "./adventureCompletion";
 // ai/assistantSession.ts
 // 어시스턴트 세션: user msg → LLM → tool_calls → runTool(dryRun 누적) → tool 메시지 → … → 최종 응답.
 // - 쓰기 툴은 로컬 draft(ctx.project)에 누적되어 연쇄 툴콜이 이전 결과를 본다(store는 건드리지 않음).
@@ -867,7 +867,7 @@ export class AssistantSession {
   private adventureRequirements: AdventureRequirements | undefined;
   private adventureRepairAttempts = 0;
   private readonly adventureInspectedMaps = new Map<string, Set<number>>();
-  private readonly adventureItemIds = new Set<string>();
+  private readonly adventureIconRecords = new Map<string, { collection: "items" | "equipment"; id: string }>();
   /** 이번 턴의 의도 선언. 턴 시작에 한 번 정해지고 라우팅(되묻기·플래너·툴 노출·대상 맵)이 이것만 읽는다. */
   private turnIntent: IntentDeclaration | null = null;
   private readonly readEvidence = new ToolReadEvidence();
@@ -1551,7 +1551,7 @@ export class AssistantSession {
       this.adventureRequirements = intent.adventure;
       this.adventureRepairAttempts = 0;
       this.adventureInspectedMaps.clear();
-      this.adventureItemIds.clear();
+      this.adventureIconRecords.clear();
     }
     if (!this.turnIsDriverContinue && intent.source !== "continuation") {
       this.readEvidence.begin(intent.readBeforeWrite);
@@ -2201,12 +2201,24 @@ export class AssistantSession {
     if (!this.adventureRequirements || this.turnComposerMode === "ask") return [];
     const project = this.getProposedProject();
     const problems = adventureCompletionProblems(project, this.adventureRequirements);
-    for (const id of this.adventureItemIds) {
-      const item = project.database.items.find(i => i.id === id);
-      if (item && !item.iconResourceId) problems.push(`아이템 ${id}에 그림이 없습니다. list_resources로 아이템 그림을 조회하고 iconResourceId를 지정하세요.`);
+    for (const { collection, id } of this.adventureIconRecords.values()) {
+      const item = project.database[collection].find(i => i.id === id);
+      if (item && !item.iconResourceId) problems.push(`${collection} ${id}에 그림이 없습니다. list_resources로 그림을 조회하고 ${collection === "equipment" ? "upsert_equipment" : "upsert_item"}의 iconResourceId를 지정하세요.`);
     }
     const unseen = Object.values(project.maps).filter(m => (this.adventureInspectedMaps.get(m.id)?.size ?? 0) < m.width * m.height);
-    if (unseen.length) problems.push(`마지막 변경 후 맵 전체 시각 조회가 없습니다: ${unseen.map(m => m.id).join(", ")}. show_map_region(mapId,x:0,y:0,w:전체너비,h:전체높이)로 확인하세요. 최대 크기로 잘리면 나머지 영역을 분할 조회하세요.`);
+    for (const map of unseen) {
+      const coverage = this.adventureInspectedMaps.get(map.id);
+      const regions: string[] = [];
+      for (let y = 0; y < map.height; y += 24) for (let x = 0; x < map.width; x += 24) {
+        const w = Math.min(24, map.width - x), h = Math.min(24, map.height - y);
+        let missing = false;
+        for (let dy = 0; dy < h && !missing; dy++) for (let dx = 0; dx < w; dx++) {
+          if (!coverage?.has((y + dy) * map.width + x + dx)) { missing = true; break; }
+        }
+        if (missing) regions.push(JSON.stringify({ mapId: map.id, x, y, w, h }));
+      }
+      problems.push(`마지막 변경 후 맵 ${map.id}의 시각 확인 누락 영역입니다. 각각 show_map_region으로 조회하세요: ${regions.join("; ")}`);
+    }
     return problems;
   }
 
@@ -2245,7 +2257,10 @@ export class AssistantSession {
         this.adventureInspectedMaps.set(map.id, cells);
       }
     }
-    if (name === "upsert_item" && result.ok && args.item && typeof args.item === "object" && typeof (args.item as { id?: unknown }).id === "string") this.adventureItemIds.add((args.item as { id: string }).id);
+    if (result.ok) for (const [tool, field, collection] of [["upsert_item", "item", "items"], ["upsert_equipment", "equipment", "equipment"]] as const) {
+      const record = args[field] as { id?: unknown } | undefined;
+      if (name === tool && record && typeof record.id === "string") this.adventureIconRecords.set(`${collection}/${record.id}`, { collection, id: record.id });
+    }
     this.verificationEvidence.observe(name, args, result, countAsSuccess ? "explicit" : "advisory");
     if (!countAsSuccess) return;
     const verdict = this.workItemVerificationEvidence.observe(name, args, result);
@@ -3309,6 +3324,7 @@ export class AssistantSession {
         [
           ...mentioned,
           ...declared,
+          ...toolSchemasForNames(adventureToolNames(this.adventureRequirements)),
           ...toolSchemasForNames(this.readEvidence.requiredReadTools()),
           ...planRequired,
           ...questPersist,

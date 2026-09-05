@@ -1,0 +1,130 @@
+[
+  {
+    "run": "02",
+    "projectId": "oprn-jrpg-solo-783770f3",
+    "saved": "saved",
+    "sha256": "5f4ea1c64b14cd6e3d059a06c6e75771499b6e990b1807ccd13bdb0eb795b5cd",
+    "reloaded": true,
+    "sourceHead": "c7731fe687a6f140503620933b7bbdbdb3c3b804",
+    "tools": 81,
+    "failures": 19,
+    "maps": 2,
+    "party": [
+      "actor_hero"
+    ],
+    "changes": {
+      "items": 1,
+      "troops": 1,
+      "enemies": 1
+    }
+  },
+  {
+    "run": "03",
+    "projectId": "oprn-jrpg-solo-4279626a",
+    "saved": "saved",
+    "sha256": "5f4ea1c64b14cd6e3d059a06c6e75771499b6e990b1807ccd13bdb0eb795b5cd",
+    "reloaded": true,
+    "sourceHead": "7a60603eb39b5cb454ebb952afbdbe4f37dc30d2",
+    "tools": 74,
+    "failures": 16,
+    "maps": 4,
+    "party": [
+      "actor_hero"
+    ],
+    "changes": {
+      "items": 1,
+      "troops": 1,
+      "enemies": 1
+    }
+  },
+  {
+    "run": "04",
+    "projectId": "oprn-jrpg-solo-69cc710e",
+    "saved": "saved",
+    "sha256": "5f4ea1c64b14cd6e3d059a06c6e75771499b6e990b1807ccd13bdb0eb795b5cd",
+    "reloaded": true,
+    "sourceHead": "ac6a4dd31caa6d34e512db98ea28c1d1ba233540",
+    "tools": 78,
+    "failures": 19,
+    "maps": 2,
+    "party": [
+      "actor_hero",
+      "actor_guardian",
+      "actor_mage",
+      "actor_scout"
+    ],
+    "changes": {
+      "troops": 1,
+      "enemies": 1
+    }
+  },
+  {
+    "run": "05",
+    "projectId": "oprn-jrpg-solo-071469c1",
+    "saved": "saved",
+    "sha256": "5f4ea1c64b14cd6e3d059a06c6e75771499b6e990b1807ccd13bdb0eb795b5cd",
+    "reloaded": true,
+    "sourceHead": "1833f1492038f02043f17efaa1f4c352e19bdc73",
+    "autonomy": "balanced",
+    "tools": 56,
+    "failures": 7,
+    "maps": 5,
+    "party": [
+      "actor_hero",
+      "actor_guardian",
+      "actor_mage"
+    ],
+    "changes": {
+      "items": 1,
+      "troops": 1,
+      "enemies": 1,
+      "equipment": 1
+    }
+  },
+  {
+    "run": "06",
+    "projectId": "oprn-jrpg-solo-7b4dc62d",
+    "saved": "saved",
+    "sha256": "5f4ea1c64b14cd6e3d059a06c6e75771499b6e990b1807ccd13bdb0eb795b5cd",
+    "reloaded": true,
+    "sourceHead": "1833f1492038f02043f17efaa1f4c352e19bdc73",
+    "autonomy": "max",
+    "verdict": "최대 자율: 기능 경로 16관측 통과. 장비 아이콘 누락은 시각 결함으로 발견해 후속 수정. 최초 QA 경로가 귀환 칸을 밟은 실패와 전이 칸 회피 후 성공을 모두 보존.",
+    "tools": 71,
+    "failures": 13,
+    "maps": 2,
+    "party": [
+      "actor_hero",
+      "actor_guardian",
+      "actor_mage"
+    ],
+    "changes": {
+      "items": 1,
+      "troops": 1,
+      "enemies": 1,
+      "equipment": 1
+    }
+  },
+  {
+    "run": "07",
+    "projectId": "oprn-jrpg-solo-d315de29",
+    "saved": "saved",
+    "sha256": "5f4ea1c64b14cd6e3d059a06c6e75771499b6e990b1807ccd13bdb0eb795b5cd",
+    "reloaded": true,
+    "sourceHead": "876e456b92bbc80a22d6fbd4174cfb8eb1ad93b4",
+    "autonomy": "max",
+    "verdict": "최종 소스 / 최대 자율: 기능 경로 통과, Supabase 저장·재로드 해시 일치. 시각은 조건부: 실제 동굴과 겹치지 않는 NPC·상자는 확보했지만 시작 마을은 집 1채이며 입구 표식과 밀도가 약하다. 이번 실행은 장비를 새로 만들지 않았으며 장비 아이콘 누락 차단은 별도 통합 테스트로 검증했다.",
+    "tools": 83,
+    "failures": 19,
+    "maps": 2,
+    "party": [
+      "actor_hero",
+      "actor_guardian"
+    ],
+    "changes": {
+      "items": 1,
+      "troops": 1,
+      "enemies": 1
+    }
+  }
+]

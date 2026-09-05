@@ -143,6 +143,7 @@ const setProjectSettings: ToolDefinition = {
       const missing = ids.filter((id) => !draft.database.actors.some((actor) => actor.id === id));
       if (missing.length > 0) throw new ToolError(`초기 파티 actor id를 찾을 수 없습니다: ${missing.join(", ")}`, { code: "actor-not-found" });
       draft.system.startActorIds = ids;
+      draft.session.partyActorIds = [...ids];
       changed.push("초기 파티");
     }
     if (changed.length === 0) throw new ToolError("바꿀 프로젝트 설정이 없습니다.", { code: "invalid-args" });

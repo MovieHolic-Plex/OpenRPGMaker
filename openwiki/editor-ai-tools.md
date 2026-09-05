@@ -230,3 +230,13 @@ author_village와 buildVillageDomain이 DB 설계서의 고정값·집 수 범�
 의도 선언의 선택적 `adventure`(village/dungeon/party/battle)는 전체 모험 저작 요청에만 붙인다. 단순 NPC 추가·질문·DB 시드 요청에 키워드로 덧붙이지 않는다. 세션은 선언을 자동 계속과 계획 교체 뒤에도 보존하고, 최종 경로 양쪽에서 `adventureCompletionProblems`를 실행한다. 구조 타일 없는 시작 마을, 도달 가능한 탐험 맵 전이·전투 연결 부재, 시작 파티/합류 부재를 보완 지시로 돌려주며 4회 뒤에도 미완성이면 완료 응답을 대체한다. 최종 쓰기 뒤 모든 맵 전체 show_map_region 조회와 저작 아이템 아이콘도 요구한다. 이것은 정적 최소 조건이며 페이지 조건·미술 완성도·재미를 증명하지 않는다. 출하 런타임과 직접 시각 검사는 별도로 한다.
 
 place_npc는 NPC의 name을 페이지 제목과 분리해 저장한다. 이름 없는 재시도는 가까운 동명 이벤트를, 같은 명시 ID는 해당 이벤트를 재사용하며 위치·일정을 보존한다. 다른 명시 ID는 의도적 복수 배치다. 새 착용 장비는 upsert_equipment를 써야 하며 upsert_item의 레거시 장비 종류 신규 생성은 거절한다(기존 레거시 수정은 허용). 저수준 text.body의 문자형 역슬래시+n은 실제 줄바꿈으로 고치도록 거절하되 배우 이름 제어문자는 유지한다.
+
+모험 보완 검사는 도달 가능한 보물/전투 이벤트 및 시작 맵 복귀 전이를 요구하고, 상호작용 이벤트의 타일 통행·접근을 검사한다. 던전 외형은 `list_dungeon_room_themes` → `run_dungeon_room_pipeline`로 저작하도록 안내하며 기존 맵 무단 교체는 금지한다. 이 검사는 동굴 미술을 자동 인증하지 않는다. 전체 맵 시각 조회는 반환 영역 기준으로 합산한다(1회 최대 24×24).
+
+`set_project_settings({startActorIds})`는 system 메타데이터와 `project.session.partyActorIds` 시작 상태를 함께 갱신한다. 런타임 `startSession` 및 모험 완료 검사는 `startStateOf(project)`를 정본으로 읽는다. system만 4인으로 바꿔도 실제 플레이가 1인으로 남던 오류를 저장/재로드/새 세션 테스트로 보호한다.
+
+NPC 고수준 commands의 `text.lines`는 실제 줄바꿈을 포함한 `text.body`로 정규화한다. 저수준 text 명령의 body 누락은 거절한다. 맵 충돌 검사는 스프라이트가 있는 NPC/상자의 막힌 바닥을 검사하며, 타일에 부착된 투명 조사 이벤트는 인접 접근을 허용한다.
+
+선언된 adventure 계약의 도구는 `adventureToolNames`에서 실제 호출 스키마로 승격되어 첫 실행부터 노출된다. 안내문에서 언급만 하고 도메인 쿼터에 숨기는 것을 금지한다. 조건 kind 누락 오류는 실행 가능한 selfSwitch/switch 예시를 반환한다.
+
+시각 재검증에서 장비 아이콘 누락이 발견돼 모험 완료 검사의 저작 레코드 추적을 items와 equipment로 확장했다. 두 컬렉션의 동일 ID도 따로 추적한다. 그림 없는 장비를 생성하고 완료라고 답하는 통합 회귀를 유지한다.
