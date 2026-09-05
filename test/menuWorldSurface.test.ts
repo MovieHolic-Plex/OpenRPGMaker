@@ -9,7 +9,7 @@ const mocks = vi.hoisted(() => ({
   openAiSettingsModal: vi.fn(),
 }));
 
-vi.mock("@/editor/panels/worldPanel", () => ({
+vi.mock("@/editor/panels/worldEntries", () => ({
   openWorldPanel: mocks.openWorldPanel,
 }));
 

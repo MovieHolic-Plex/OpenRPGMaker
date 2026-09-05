@@ -217,7 +217,7 @@ export function handleEditorKey(event: KeyboardEvent): boolean {
   if (shouldIgnoreEditorShortcut(event)) return false;
   if ((event.ctrlKey || event.metaKey) && event.altKey && event.key.toLowerCase() === "w") {
     event.preventDefault();
-    void import("@/editor/panels/worldPanel").then(({ openWorldPanel }) => openWorldPanel());
+    void import("@/editor/panels/worldEntries").then(({ openWorldPanel }) => { void openWorldPanel(); });
     return true;
   }
   if (event.ctrlKey || event.metaKey || event.altKey) return false;

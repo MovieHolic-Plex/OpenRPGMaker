@@ -38,7 +38,7 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
     workspaceShell({
       testid: "db-world-canon-workspace",
       header: detailHero({
-        eyebrow: "세계관 · AI가 항상 읽는 한 장",
+        eyebrow: "이 세계 · AI가 항상 읽는 한 장",
         title: canon.name || "이름 없는 세계",
         subtitle: "이 세계에 적는 것이 조수·개요·장르 시드가 읽는 정본이다. 낱장 카드는 「설정집」 탭에 둔다.",
         tags: [

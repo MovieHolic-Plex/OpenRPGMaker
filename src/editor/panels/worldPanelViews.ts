@@ -46,7 +46,7 @@ export function renderHeader(state: WorldPanelState, refresh: () => void, option
 
   const addType = el("select", {
     class: "world-add-type",
-    attrs: { "aria-label": "추가할 세계관 타입" },
+    attrs: { "aria-label": "추가할 카드 종류" },
   }) as HTMLSelectElement;
   for (const type of WORLD_ENTITY_TYPES) addType.append(option(type, ENTITY_TYPE_LABELS[type], type === state.addType));
   addType.value = state.addType;
@@ -187,7 +187,7 @@ function renderCardGrid(
 ): HTMLElement {
   const entities = visibleEntities(world.entities, state.tab, state.search);
   if (entities.length === 0) {
-    return el("div", { class: "world-card-grid empty", text: "표시할 세계관 항목이 없습니다." });
+    return el("div", { class: "world-card-grid empty", text: "표시할 카드가 없습니다." });
   }
   return el("div", {
     class: "world-card-grid",
@@ -288,7 +288,7 @@ function renderWikiPane(
       dataset: { testid: "world-wiki-view" },
       children: [
         renderGlobalLint(lint),
-        el("p", { text: "카드를 선택하면 세계관 내용을 볼 수 있습니다." }),
+        el("p", { text: "카드를 선택하면 내용을 볼 수 있습니다." }),
       ],
     });
   }
@@ -410,7 +410,7 @@ function renderEditPane(state: WorldPanelState, world: ProjectWorld, project: Pr
             class: "world-wiki-heading",
             children: [
               el("span", { class: "world-type-badge", text: draft.isNew ? "새 항목" : "편집 중" }),
-              el("h3", { text: draft.name.trim() || "새 세계관" }),
+              el("h3", { text: draft.name.trim() || "새 카드" }),
             ],
           }),
           el("div", {
@@ -466,12 +466,12 @@ function renderEditPane(state: WorldPanelState, world: ProjectWorld, project: Pr
 
 function renderIssueList(entityIssues: readonly LintIssue[], globalIssues: readonly LintIssue[]): HTMLElement {
   const issues = [...entityIssues, ...globalIssues];
-  if (issues.length === 0) return el("section", { class: "world-lint-list empty", dataset: { testid: "world-lint-list" }, text: "세계관 검사 이슈 없음" });
+  if (issues.length === 0) return el("section", { class: "world-lint-list empty", dataset: { testid: "world-lint-list" }, text: "설정집 검사 이슈 없음" });
   return el("section", {
     class: "world-lint-list",
     dataset: { testid: "world-lint-list" },
     children: [
-      el("strong", { text: "세계관 검사" }),
+      el("strong", { text: "설정집 검사" }),
       el("ul", {
         children: issues.map((issue) =>
           el("li", {

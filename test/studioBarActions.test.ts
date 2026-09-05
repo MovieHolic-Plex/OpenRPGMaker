@@ -33,7 +33,7 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock("@/editor/panels/databaseModal", () => ({ openDatabaseModal: mocks.openDatabaseModal }));
 vi.mock("@/editor/panels/resourceModal", () => ({ openResourceModal: mocks.openResourceModal }));
-vi.mock("@/editor/panels/worldPanel", () => ({ openWorldPanel: mocks.openWorldPanel }));
+vi.mock("@/editor/panels/worldEntries", () => ({ openWorldPanel: mocks.openWorldPanel }));
 vi.mock("@/editor/panels/audioTestDialog", () => ({ openAudioTestDialog: mocks.openAudioTestDialog }));
 vi.mock("@/editor/panels/mapEventSearchModal", () => ({ openMapEventSearchModal: mocks.openMapEventSearchModal }));
 vi.mock("@/editor/panels/aiSettingsModal", () => ({ openAiSettingsModal: mocks.openAiSettingsModal }));

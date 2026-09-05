@@ -91,7 +91,7 @@ async function assertCommonPersonaContract(page: Page, mode: Persona): Promise<v
   expect(intersectionArea(commandBox, topbarBox), "AI command bar must not intersect the studio bar").toBe(0);
 
   const world = await openPaletteResult(page, "world", "open-world");
-  await expect(world).toContainText("세계관");
+  await expect(world).toContainText("이 세계");
   await page.keyboard.press("Escape");
   await expect(page.getByTestId("command-palette")).toHaveCount(0);
 }

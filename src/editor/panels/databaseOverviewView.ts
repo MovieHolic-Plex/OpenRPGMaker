@@ -176,6 +176,23 @@ function renderCanonCard(project: ReturnType<typeof store.getCurrent>, host: HTM
   });
 }
 
+function renderCodexCard(project: ReturnType<typeof store.getCurrent>, host: HTMLElement): HTMLElement {
+  const count = project.world?.entities.length ?? 0;
+  return el("button", {
+    class: "db-overview-pulse-card db-overview-codex",
+    attrs: { type: "button", title: "자료집 「설정집」 탭 열기" },
+    dataset: { testid: "db-overview-codex" },
+    on: { click: () => jumpToTab(host, "worldCodex") },
+    children: [
+      el("span", { text: "설정집" }),
+      el("strong", { text: count > 0 ? `낱장 카드 ${count}장` : "낱장 카드를 적어 보세요" }),
+      el("p", {
+        text: "인물·장소·사건 낱장 카드 — AI가 항상 읽는 한 장(이름·요약)은 「이 세계」에 둔다",
+      }),
+    ],
+  });
+}
+
 function renderGamePulse(project: ReturnType<typeof store.getCurrent>, host: HTMLElement): HTMLElement {
   const maps = Object.values(project.maps);
   const events = maps.reduce((sum, map) => sum + map.events.length, 0) + project.commonEvents.length;
@@ -196,6 +213,7 @@ function renderGamePulse(project: ReturnType<typeof store.getCurrent>, host: HTM
     class: "db-overview-pulse-grid",
     children: [
       renderCanonCard(project, host),
+      renderCodexCard(project, host),
       card("db-overview-world", "맵", `${maps.length}개 맵`, `${project.mapConnections?.length ?? 0}개 이동 연결`),
       card("db-overview-story", "이야기", `${events}개 이벤트`, `${project.quests?.length ?? 0}개 퀘스트 · ${project.endings?.length ?? 0}개 엔딩`),
       card("db-overview-cast", "등장인물", `${cast}명`, `플레이어 ${project.database.actors.length}명 · 주민 ${Object.keys(project.characters ?? {}).length}명`),

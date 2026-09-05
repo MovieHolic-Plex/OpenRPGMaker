@@ -280,7 +280,7 @@ describe("worldPanel", () => {
     requireTestId(panel, "world-card-w_broken").click();
 
     const list = requireTestId(panel, "world-lint-list");
-    expect(list.textContent).toContain("세계관 w_broken");
+    expect(list.textContent).toContain("설정집 w_broken");
     expect(list.textContent).toContain("actor:actor_missing");
   });
 

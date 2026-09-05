@@ -99,15 +99,15 @@ export function absenceEditor(absences: readonly string[], rerender: () => void)
     const next = input.value.trim();
     if (!next) return;
     if (absences.includes(next)) {
-      toast("이미 있는 금기입니다", "info");
+      toast("이미 있는 항목입니다", "info");
       return;
     }
     if (next.length > WORLD_CANON_BOUNDS.absence) {
-      toast(`금기는 ${WORLD_CANON_BOUNDS.absence}자까지 적을 수 있습니다`, "error");
+      toast(`없는 것은 ${WORLD_CANON_BOUNDS.absence}자까지 적을 수 있습니다`, "error");
       return;
     }
     if (absences.length >= WORLD_CANON_BOUNDS.absenceCount) {
-      toast(`금기는 ${WORLD_CANON_BOUNDS.absenceCount}개까지 적을 수 있습니다`, "error");
+      toast(`없는 것은 ${WORLD_CANON_BOUNDS.absenceCount}개까지 적을 수 있습니다`, "error");
       return;
     }
     recordProjectSnapshot("세계관 없는 것");
@@ -209,8 +209,8 @@ export function bodyField(body: string, onBodyInput?: () => void): HTMLElement {
     class: "db-world-canon-body",
     attrs: {
       rows: "14",
-      placeholder: "설정집을 자유롭게 적으세요. 역사, 땅, 문화, 숨겨 둔 것.",
-      "aria-label": "설정집 본문",
+      placeholder: "이 세계의 이야기를 자유롭게 적으세요. 역사, 땅, 문화, 숨겨 둔 것.",
+      "aria-label": "이 세계 본문",
     },
     value: body,
     dataset: { testid: "db-world-canon-body" },

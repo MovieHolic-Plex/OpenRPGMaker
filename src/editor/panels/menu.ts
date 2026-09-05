@@ -20,7 +20,7 @@ import { openDatabaseModal } from "@/editor/panels/databaseModal";
 import { openDbConnectionSettings, renderDbConnectionStatus } from "@/editor/panels/dbConnectionSettings";
 import { openMapEventSearchModal } from "@/editor/panels/mapEventSearchModal";
 import { openResourceModal } from "@/editor/panels/resourceModal";
-import { openWorldPanel } from "@/editor/panels/worldPanel";
+import { openWorldPanel } from "@/editor/panels/worldEntries";
 import { deserialize, ProjectFormatError } from "@/project/io";
 import { createSampleAdventureProject, createScarloxyDemoProject, createScarloxyPokemonDemoProject, createSkyStairProject, createSnowMountain60Project, createIcePlain64Project, createTrainingExamplesProject, createFarmingDemoProject } from "@/project/defaults";
 import {

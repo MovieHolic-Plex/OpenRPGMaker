@@ -22,7 +22,7 @@ function checkMissingRefs(world: ProjectWorld, project: Project, issues: LintIss
       issues.push({
         severity: "error",
         code: "world-ref-missing",
-        message: `세계관 ${entity.id}(${entity.name})의 참조가 존재하지 않습니다: ${ref.kind}:${ref.id}`,
+        message: `설정집 ${entity.id}(${entity.name})의 참조가 존재하지 않습니다: ${ref.kind}:${ref.id}`,
       });
     }
   }
@@ -36,7 +36,7 @@ function checkUnlinkedLore(world: ProjectWorld, issues: LintIssue[]): void {
     issues.push({
       severity: "warning",
       code: "world-lore-unlinked",
-      message: `세계관 lore 개체가 게임 개체와 연결되어 있지 않습니다: ${entity.id}(${entity.name})`,
+      message: `설정집 카드가 게임 개체와 연결되어 있지 않습니다: ${entity.id}(${entity.name})`,
     });
   }
 }
@@ -59,7 +59,7 @@ function checkUnregisteredNpcEvents(world: ProjectWorld, project: Project, issue
         mapId: map.id,
         x: event.x,
         y: event.y,
-        message: `명명 NPC 이벤트가 세계관에 등록되어 있지 않습니다: ${map.id}/${event.id} (${name})`,
+        message: `명명 NPC 이벤트가 설정집에 등록되어 있지 않습니다: ${map.id}/${event.id} (${name})`,
       });
     }
   }
@@ -73,7 +73,7 @@ function checkUnregisteredItems(world: ProjectWorld, project: Project, issues: L
     issues.push({
       severity: "warning",
       code: "world-item-unregistered",
-      message: `명명 아이템이 세계관에 등록되어 있지 않습니다: ${item.id} (${name})`,
+      message: `명명 아이템이 설정집에 등록되어 있지 않습니다: ${item.id} (${name})`,
     });
   }
 }
@@ -85,7 +85,7 @@ function checkGuidelineBodies(world: ProjectWorld, issues: LintIssue[]): void {
     issues.push({
       severity: "info",
       code: "world-guideline-body-missing",
-      message: `제작 규범 세계관 개체에 본문이 없습니다: ${entity.id}(${entity.name})`,
+      message: `제작 노트 카드에 본문이 없습니다: ${entity.id}(${entity.name})`,
     });
   }
 }
