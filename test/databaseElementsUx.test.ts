@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderElementsTab } from "@/editor/panels/databaseElementsClassic";
+import { getDatabaseActiveTab, renderDatabasePanel, setDatabaseActiveTab } from "@/editor/panels/database";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { resetMapEditHistory, getMapEditHistoryState, undoMapEdit } from "@/editor/mapEditHistory";
@@ -41,19 +42,15 @@ describe("elements worksheet", () => {
     expect(get("db-elements-hero").querySelector("h3")?.textContent).toBe(node.value);
     expect(get("db-elements-row-5").querySelector(".db-list-name")?.textContent).toBe(node.value);
   });
-  it("keeps filter focus and selected detail through no results and clear", async () => {
-    vi.useFakeTimers();
-    try {
-      const detail = get("db-field-element-name-selected");
-      const search = input("db-elements-search", "not-a-real-element");
-      await vi.runOnlyPendingTimersAsync();
-      expect(document.activeElement).toBe(search);
-      expect(get("db-field-element-name-selected")).toBe(detail);
-      expect(get("db-elements-list").querySelectorAll(".db-ws-row")).toHaveLength(0);
-      get("db-elements-search-clear").click();
-      expect(get("db-elements-list").querySelectorAll(".db-ws-row")).toHaveLength(17);
-      expect(get("db-field-element-name-selected")).toBe(detail);
-    } finally { vi.useRealTimers(); }
+  it("keeps filter focus and selected detail through no results and clear", () => {
+    const detail = get("db-field-element-name-selected");
+    const search = input("db-elements-search", "not-a-real-element");
+    expect(document.activeElement).toBe(search);
+    expect(get("db-field-element-name-selected")).toBe(detail);
+    expect(get("db-elements-list").querySelectorAll(".db-ws-row")).toHaveLength(0);
+    get("db-elements-search-clear").click();
+    expect(get("db-elements-list").querySelectorAll(".db-ws-row")).toHaveLength(17);
+    expect(get("db-field-element-name-selected")).toBe(detail);
   });
   it("derives signed results and one shared scale, including edited E", () => {
     input("db-field-element-damage-E", "150");
@@ -164,7 +161,7 @@ describe("elements worksheet", () => {
     expect((get("db-elements-add") as HTMLButtonElement).disabled).toBe(false);
   });
 
-  describe("pending search lifecycle", () => {
+  describe("search lifecycle", () => {
     beforeEach(() => { vi.useFakeTimers(); });
     afterEach(() => {
       // Reset the module-owned query through the same control, even after a failed assertion.
@@ -174,13 +171,41 @@ describe("elements worksheet", () => {
       vi.useRealTimers();
     });
 
-    it("does not reapply a queued query after clearing search", () => {
+    it("keeps Fire filtered in the same cached pane after a sidebar round trip", () => {
+      document.body.replaceChildren();
+      setDatabaseActiveTab("elements");
+      renderDatabasePanel(document.body);
+      const project = store.getCurrent();
+      const pane = get("db-elements-classic");
+      const list = get("db-elements-list");
+      expect(list.querySelectorAll(".db-ws-row")).toHaveLength(17);
+      const search = input("db-elements-search", "Fire");
+
+      // Leave before the old 90ms debounce, then release it while Elements is cached.
+      get("db-tab-group-system").click();
+      get("db-tab-terms").click();
+      expect(getDatabaseActiveTab()).toBe("terms");
+      expect(pane.isConnected).toBe(false);
+      vi.advanceTimersByTime(90);
+      get("db-tab-group-battle").click();
+      get("db-tab-elements").click();
+
+      expect(getDatabaseActiveTab()).toBe("elements");
+      expect(store.getCurrent()).toBe(project);
+      expect(get("db-elements-classic")).toBe(pane);
+      expect(get("db-elements-list")).toBe(list);
+      expect(get("db-elements-search")).toBe(search);
+      expect(search.value).toBe("Fire");
+      expect(list.querySelectorAll(".db-ws-row")).toHaveLength(1);
+      expect(list.querySelector(".db-ws-row")?.getAttribute("data-testid")).toBe("db-elements-row-4");
+    });
+
+    it("does not reapply an earlier query after clearing search", () => {
       const detail = get("db-field-element-name-selected");
       const search = input("db-elements-search", "not-a-real-element");
-      vi.advanceTimersByTime(90);
       expect(get("db-elements-list").querySelectorAll(".db-ws-row")).toHaveLength(0);
 
-      input("db-elements-search", "fire");
+      input("db-elements-search", "another-missing-element");
       get("db-elements-search-clear").click();
       expect(search.value).toBe("");
       expect(document.activeElement).toBe(search);
@@ -195,41 +220,56 @@ describe("elements worksheet", () => {
       expect(get("db-elements-list").querySelectorAll(".db-ws-row")).toHaveLength(17);
     });
 
-    it("does not refresh replaced rows when maximum count shrinks during a queued search", () => {
+    it("preserves the filter without refreshing replaced rows when maximum count shrinks", () => {
       const oldList = get("db-elements-list");
       input("db-elements-search", "fire");
+      expect(oldList.querySelectorAll(".db-ws-row")).toHaveLength(1);
+      const oldRow = oldList.firstElementChild;
       get("db-elements-maximum-number").click();
       input("db-elements-max-count-input", "1");
       get("db-elements-max-ok").click();
       expect(store.getCurrent().database.elements).toHaveLength(1);
       expect(oldList.isConnected).toBe(false);
       const list = get("db-elements-list");
-      expect(list.querySelectorAll(".db-ws-row")).toHaveLength(1);
+      expect((get("db-elements-search") as HTMLInputElement).value).toBe("fire");
+      expect(list.querySelectorAll(".db-ws-row")).toHaveLength(0);
 
       expect(() => vi.advanceTimersByTime(90)).not.toThrow();
       expect(get("db-elements-list")).toBe(list);
-      expect(list.querySelectorAll(".db-ws-row")).toHaveLength(1);
-      expect(oldList.querySelectorAll(".db-ws-row")).toHaveLength(17);
+      expect(list.querySelectorAll(".db-ws-row")).toHaveLength(0);
+      expect(oldList.querySelectorAll(".db-ws-row")).toHaveLength(1);
+      expect(oldList.firstElementChild).toBe(oldRow);
       mount();
+      expect((get("db-elements-search") as HTMLInputElement).value).toBe("fire");
+      expect(get("db-elements-list").querySelectorAll(".db-ws-row")).toHaveLength(0);
+      get("db-elements-search-clear").click();
       expect((get("db-elements-search") as HTMLInputElement).value).toBe("");
       expect(get("db-elements-list").querySelectorAll(".db-ws-row")).toHaveLength(1);
     });
 
-    it("does not update a detached pane or leak its queued query into the next mount", () => {
+    it("does not update a detached pane or overwrite a new mount's query", () => {
       const oldList = get("db-elements-list");
       input("db-elements-search", "fire");
+      expect(oldList.querySelectorAll(".db-ws-row")).toHaveLength(1);
+      const oldRow = oldList.firstElementChild;
       document.body.replaceChildren();
       expect(oldList.isConnected).toBe(false);
 
       vi.advanceTimersByTime(90);
-      expect(oldList.querySelectorAll(".db-ws-row")).toHaveLength(17);
+      expect(oldList.querySelectorAll(".db-ws-row")).toHaveLength(1);
+      expect(oldList.firstElementChild).toBe(oldRow);
       expect(document.body.childElementCount).toBe(0);
       mount();
-      expect((get("db-elements-search") as HTMLInputElement).value).toBe("");
-      expect(get("db-elements-list").querySelectorAll(".db-ws-row")).toHaveLength(17);
-      input("db-elements-search", "fire");
-      vi.advanceTimersByTime(90);
+      expect((get("db-elements-search") as HTMLInputElement).value).toBe("fire");
       expect(get("db-elements-list").querySelectorAll(".db-ws-row")).toHaveLength(1);
+      const search = input("db-elements-search", "ice");
+      const row = get("db-elements-row-5");
+      vi.advanceTimersByTime(90);
+      expect(get("db-elements-search")).toBe(search);
+      expect(search.value).toBe("ice");
+      expect(get("db-elements-list").querySelectorAll(".db-ws-row")).toHaveLength(1);
+      expect(get("db-elements-list").firstElementChild).toBe(row);
+      expect(oldList.firstElementChild).toBe(oldRow);
     });
   });
 });

@@ -21,7 +21,6 @@ import {
   emptyState,
   listPane,
   listRow,
-  listSearch,
   listToolbar,
   sectionCard,
   workspaceShell,
@@ -86,13 +85,17 @@ function elementListPane(elements: readonly DatabaseElementRecord[], rerender: (
     rows.push(row);
   }
 
+  const search = el("input", {
+    attrs: { type: "search", placeholder: "속성 검색", "aria-label": "속성 검색" },
+    value: elementQuery,
+    dataset: { testid: "db-elements-search" },
+  });
   const noMatch = emptyState({
     title: "검색 결과가 없습니다",
     body: elements.length ? "다른 이름이나 ID로 찾아보세요." : "속성을 추가해 보세요.",
     compact: true,
     action: { label: "검색 지우기", testid: "db-elements-search-clear", onClick: () => {
       elementQuery = "";
-      const search = pane.querySelector<HTMLInputElement>("input[type=search]")!;
       search.value = "";
       refreshRows();
       search.focus();
@@ -114,20 +117,7 @@ function elementListPane(elements: readonly DatabaseElementRecord[], rerender: (
   const pane = listPane({
     title: "속성",
     count: elements.length,
-    search: listSearch({
-      placeholder: "속성 검색",
-      value: elementQuery,
-      testid: "db-elements-search",
-      onInput: (value) => {
-        // The shared debounce can outlive this pane or a synchronous search clear.
-        // Only the attached pane's current input may update query state and rows.
-        if (!pane.isConnected) return;
-        const search = pane.querySelector<HTMLInputElement>("input[type=search]")!;
-        if (value !== search.value) return;
-        elementQuery = value;
-        refreshRows();
-      },
-    }),
+    search: el("div", { class: "db-search db-ws-search", children: [search] }),
     rows,
     empty: noMatch,
     toolbar: listToolbar([
@@ -160,6 +150,12 @@ function elementListPane(elements: readonly DatabaseElementRecord[], rerender: (
       },
     ]),
     testid: "db-elements-list-pane",
+  });
+
+  // At most 99 rows: settle input and rows together before the shell can cache this pane.
+  search.addEventListener("input", () => {
+    elementQuery = search.value;
+    refreshRows();
   });
 
   // 예전 마크업의 훅을 새 요소에 옮겨 붙인다(테스트 계약 유지).
