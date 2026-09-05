@@ -1,3 +1,4 @@
+import { carryPursuitThroughDoor } from "./horrorRuntime";
 import { isPassable, isPassableLanding } from "@/project/collision";
 import { setMapTileOverride } from "@/project/session";
 import { store } from "@/project/store";
@@ -57,6 +58,8 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
   } else if (fadeColor) {
     await fadeCamera(scene, "out", fadeColor);
   }
+  carryPursuitThroughDoor({ project, map: scene.map, session: scene.session, positions: scene.eventPositions }, scene.autonomousNPCs,
+    { mapId: request.mapId, ...destination });
   scene.loadMap(request.mapId);
   // 다중 타일 주인공은 목적지 한 칸이 비어 있어도 **몸이** 안 들어갈 수 있다 — 가까운 유효
   // 칸으로 밀어낸다. 1x1 은 검사 없이 지정 좌표를 그대로 받으므로 기존 워프와 동작이 같다.

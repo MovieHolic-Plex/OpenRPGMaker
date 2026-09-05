@@ -236,6 +236,7 @@ export interface PlaySession {
   actorLevels: Record<string, number>;
   actorVitals: Record<string, ActorVitals>;
   eventLocations: Record<string, RuntimeEventLocation>;
+  horror?: import("./horrorState").HorrorState;
   // Erase Event 런타임 소거 목록. 맵을 다시 로드/진입하면 RM2003 관례대로 초기화된다.
   erasedEventIds: string[];
   // Persistent Modern Remove Event state. Erase Event remains map-entry scoped.

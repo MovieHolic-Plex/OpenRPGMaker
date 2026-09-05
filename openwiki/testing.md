@@ -606,6 +606,12 @@ Playwright 의 `locator.click()` 은 누르기 전에 `scrollIntoViewIfNeeded` �
   가리키고 화면은 옛 맵을 계속 그렸고, `expect.mapId` 는 세션 값을 읽으니 그 거짓말을 통과시켰다
   (smoke 시나리오의 맵 전환 비트가 그 상태였다). 지금은 이전 mapId 를 캡처해 비교한다.
   같은 맵 안 재배치는 여전히 스프라이트를 옮기지 않는다(`loadMap` 을 부를 이유가 없다).
+  밤의 괴물 체험 검토(2026-09-05)에서도 논리 위치만 통과하고 그림은 다른 위치인 설정을
+  발견했다. 상호작용 화면은 실제 이동 후 `__oprnCharacterSprites().player`의 발 좌표와
+  타일 좌표를 함께 확인한다. 이동 완료를 관측하기 전에 다음 걸음이 시작될 수 있으므로
+  한 칸 준비 이동은 움직임 시작을 감지하면 방향 입력을 놓고 도착을 기다린다.
+  맵 간 추격 QA는 teleport로 문 통과를 대신하지 말고 실제 전이→대기→재진입을 검사한다.
+  스모크 비트 통과와 실내 구성·물체 식별·은신/밀기·연속 추격의 품질 판정은 따로 기록한다.
 - `movement` 가 `fixed` 가 아닌 NPC 는 같은 세션 안에서 배회한다. 고정 좌표 인접을 전제한
   상호작용 비트는 취약하다.
 - `__oprnPlayerSprite().resourceId` 가 채워져 있어도 `textureKey` 는 `__MISSING` 일 수 있다
@@ -658,3 +664,14 @@ prune 판정 / 명시적 초안 저장 뒤 중복 쓰기.
 ## 마을 설계서 (2026-09-05)
 
 마을 설계서 집중 검증은 test/villageDesign.test.ts + databaseVillageView/villagePresetPreview/villageAuthoringData/villageBuilder다. 브라우저는 output/evidence/village-design에 실제 편집기 화면과 결과를 기록한다. 상세 계약과 경계는 [마을 설계서](village-design.md).
+
+
+## 공포 제작 개정 QA와 개발 서버 전송 (2026-09-05)
+
+`horror-authoring.md`의 전용 플레이어 probe와 `capture-horror-authoring.mjs`를 사용한다.
+이 호스트의 네트워크 변경 이벤트로 Chromium의 loopback 모듈 요청이 `ERR_NETWORK_CHANGED`로
+중단되었다. 두 캡처는 소유한 Vite URL만 Node fetch로 읽어 원본 응답을 전달한다.
+엔진 코드는 그대로이며 게임 데이터는 원격에서 읽어 개정한 검토 스냅샷이다.
+Chromium local network 검사만 캡처 실행 인자로 끈다. 일반 출하 설정은 바꾸지 않는다.
+`vite.player-qa.config.ts`는 기존 파일 감시 비활성화에 맞춰 HMR도 기본 비활성화하며,
+`PLAYER_QA_WATCH=1`이면 둘 다 다시 켠다. 실행 성공과 사람이 PNG를 본 시각 판정은 분리한다.

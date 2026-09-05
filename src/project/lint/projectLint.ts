@@ -1,3 +1,4 @@
+import { lintHorrorAuthoring } from "./horrorAuthoringLint";
 // project/lint/projectLint.ts
 // 프로젝트 무결성 정적 검사기. 순수 함수(Node 헤드리스에서도 동작 — 브라우저 전역 접근 금지).
 // 예외를 던지지 않고 모든 문제를 LintIssue 배열로 수집한다(왕복/참조 검증이 throw하면 catch).
@@ -83,6 +84,7 @@ export function projectLint(project: Project, opts: LintOptions = {}): LintIssue
   checkQuestGraphs(project, issues);
   checkClusterRules(project, issues);
   issues.push(...lintWorldGraph(project));
+  issues.push(...lintHorrorAuthoring(project));
   checkCharacterIdSocial(project, issues);
   checkUnplayableAudio(project, issues);
   checkReachabilitySpecs(project, opts.reachability ?? [], issues);

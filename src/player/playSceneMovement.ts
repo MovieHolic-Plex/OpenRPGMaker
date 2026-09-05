@@ -1,3 +1,5 @@
+import { advancePursuitDoors, isPlayerHiding, pushObject, toggleHiding } from "./horrorRuntime";
+import { refreshRuntimeEntities } from "./playSceneMapRuntime";
 import { canMoveFootprint, inBounds } from "@/project/collision";
 // 경로 세팅은 잎 모듈에 있다(가벼운 소비자가 이 파일 전체를 끌어오지 않도록) — 기존
 // 임포트 경로를 깨지 않기 위해 여기서 다시 내보낸다.
@@ -83,6 +85,9 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
     scene.syncRuntimeState();
     return;
   }
+  const world = { project: store.getCurrent(), map: scene.map, session: scene.session, positions: scene.eventPositions };
+  if (!scene.running && advancePursuitDoors(world, deltaMs)) refreshRuntimeEntities(scene);
+  scene.player.setVisible?.(!isPlayerHiding(world));
   scene.session.playTimeSeconds += deltaMs / 1000;
   const ticks = takeLogicTicks(scene, deltaMs);
   // 틱이 없는 프레임(고주사율)에서는 입력을 읽지 않는다 — 엣지와 탭이 다음 틱 프레임으로 살아서 간다.
@@ -145,6 +150,7 @@ function stepFrames(scene: Pick<PlaySceneContext, "dashing" | "moveDurationMs">)
  * 다음 프레임에 그 프레임의 입력으로 시작한다 — 이어 붙이기도, 잔여 시간도 없다.
  */
 function tickPlayerMovement(scene: PlaySceneContext, input: InputState, cutsceneInputLocked: boolean): void {
+  if (scene.session.horror?.hiding) return;
   // 체공 중에는 새 이동을 시작하지 않는다 — 공중에서 입력을 받으면 낙하가 취소된다.
   if (!scene.moving && !scene.playerHop) {
     // 주인공 강제 이동 루트가 있으면 입력보다 우선해 자동으로 걷는다.
@@ -284,7 +290,11 @@ function tryStartMove(scene: PlaySceneContext, input: InputState): void {
   const blockingEvent = findBlockingEventForPlayerBody(scene, body, nx, ny);
   if (blockingEvent) {
     scene.facing = facingForStep(step.dx, step.dy);
-    firePlayerTouchEvent(scene, blockingEvent.event.id, blockingEvent.trigger.kind);
+    if (pushObject({ project, map: scene.map, session: scene.session, positions: scene.eventPositions }, blockingEvent, scene.facing)) {
+      refreshRuntimeEntities(scene);
+      scene.dashing = false;
+      beginPlayerStep(scene, nx, ny);
+    } else firePlayerTouchEvent(scene, blockingEvent.event.id, blockingEvent.trigger.kind);
     return;
   }
   scene.dashing = input.dash;
@@ -413,11 +423,18 @@ function clampPlayerMoveDuration(current: number, delta: number): number {
 
 // 반환값: 조사 대상과 상호작용했는지. 액션 전투에서 "조사 없으면 스윙" 판정에 쓴다.
 export function handleAction(scene: ActionEventSceneContext): boolean {
+  const world = { project: store.getCurrent(), map: scene.map, session: scene.session, positions: scene.eventPositions };
+  if (world.session.horror?.hiding) { toggleHiding(world); scene.lastActionTargetKey = ""; return true; }
   const delta = directionDelta(scene.facing);
   const tx = scene.tileX + delta.x;
   const ty = scene.tileY + delta.y;
   const event = findRuntimeEventInScene(scene, tx, ty, "action");
   if (event) {
+    if (event.page?.interaction?.kind === 'hiding') return toggleHiding(world, event);
+    if (event.page?.interaction?.kind === 'pushable') {
+      if (pushObject(world, event, scene.facing)) scene.refreshRuntimeSurfaces?.();
+      return true;
+    }
     // 같은 대상 연타 디바운스. 실행은 안 하지만 정면에 대상이 있는 건 맞으므로
     // 상호작용으로 보고한다(여기서 false 를 주면 대화 중에 칼을 휘두른다).
     //

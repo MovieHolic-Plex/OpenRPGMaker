@@ -91,6 +91,7 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
     name: "start_interior_room_session",
     description:
       "**새** 주민 집 실내(villager-room-v1)를 새 mapId 로 시공하는 멀티턴 세션을 시작한다.  개념 꾸러미에 없는 실내(rooms[] 역할 테마 bedroom|study|dining|kitchen|storage|tavern|corridor, door, wallMaterial)에 쓴다 → advance_interior_room_build 반복 → evaluate_interior_room. create_map 만 하고 멈추지 말 것. **기존 실내 맵을 고치는 요청에는 금지** — 그 맵의 타일·이벤트가 전부 삭제된다. 기존 실내는 furnish_interior_space({mapId, roomId})." +
+      "저택은 방 용도·출입구·연결 통로를 먼저 계획하고 rooms/innerDoors로 구획하라. 현관에 dining을 대입하거나 가구 반복으로 빈 공간을 메우지 말 것. 평가 점수는 배치/통행 검사이며 시각 품질 합격이 아니다. 실제 플레이 화면에서 방의 용도·문 위치·물체 식별을 검토하라. " +
       "절차: plan → floor(bbox 바닥) → walls → furniture → entrance(입구 이벤트) → critique. " +
       "wings는 통행 바닥 bbox 합집합. 벽은 floor 이후 세운다. 침대 355|356은 hard 좌우 쌍. " +
       "이어서 advance_interior_room_build 반복 또는 run_interior_room_pipeline 원샷. " +
@@ -391,7 +392,9 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
     run(draft, args): ToolExecResult {
       const sessionId = String(args.sessionId ?? "").trim();
       const attempt = args.attempt !== undefined ? Math.floor(Number(args.attempt)) : 1;
-      return evaluateRoom(draft, sessionId, attempt);
+      const result = evaluateRoom(draft, sessionId, attempt);
+      return { ...result, data: { ...(result.data as object), reviewScope: "structure-and-walkability", visualReview: "required",
+        visualChecklist: ["방의 용도와 가구 배치", "문 뒤 공간과 연결 통로", "조사물 그림과 이름", "실제 입력으로 이동·상호작용"] } };
     },
   },
   {

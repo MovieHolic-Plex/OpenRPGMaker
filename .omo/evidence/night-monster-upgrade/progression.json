@@ -1,0 +1,849 @@
+{
+  "scope": "story branches and walkability; real-time pursuit separately tested in player.html",
+  "rescue": {
+    "ok": true,
+    "stepsRun": 26,
+    "totalSteps": 26,
+    "finalState": {
+      "mapId": "map_night_basement",
+      "x": 6,
+      "y": 5,
+      "camera": {
+        "cx": 104,
+        "cy": 96,
+        "session": {
+          "mode": "follow",
+          "target": {
+            "kind": "player"
+          }
+        }
+      },
+      "lightingAmbient": 0.64,
+      "lightCount": 1,
+      "weatherKind": "none",
+      "animationPlaying": false,
+      "fieldSpawnCount": 0,
+      "spawnedCount": 0,
+      "followerCount": 0,
+      "followers": [],
+      "picturesVisible": [],
+      "messages": [
+        "민서야? …문이 잠겼다. 손전등부터 켜자. 바로 앞의 쪽지를 조사해 보자.",
+        "초상 뒤에서 황동 열쇠를 찾았다. 오른쪽 아래 문고리에 써 보자. …위층에서 발소리가 멎었다.",
+        "황동 열쇠를 얻었다.",
+        "문고리를 풀었다. 이제 세 버튼을 맞는 순서로 누르면 아래쪽 문이 열린다.",
+        "어딘가에서 작은 소리가 났다.",
+        "어딘가에서 작은 소리가 났다.",
+        "찰칵. 복도 잠금쇠가 풀렸다. 문 너머에서 친구의 목소리가 들린다. “들어와.”",
+        "민서의 호루라기를 찾았다. 보관함 안쪽 쪽지: '그것은 말을 따라 하지만 호루라기는 불지 못해.'",
+        "호루라기를 주머니에 넣었다. 지하에서 민서를 찾을 때 필요할 것 같다.",
+        "'그것은 내 목소리를 훔쳤어. 침실에서 찾은 내 호루라기를 세 번 불어. 진짜 나는 대답할 수 없어.'",
+        "민서가 남긴 녹음이었다. 왼쪽에서 호루라기를 불어 친구를 찾거나, 오른쪽 비상문으로 혼자 나갈 수 있다.",
+        "호루라기를 입에 댔다. 이제 진짜 민서를 찾는다.",
+        "호루라기를 세 번 불었다. 벽장 속에서 민서가 내 손을 잡았다. 우리는 서로의 손을 놓지 않고 새벽까지 달렸다.",
+        "뒤돌아보지 마. 지금 네 이름을 부르는 건 내가 아니야."
+      ],
+      "bgm": "cc0-bgm-dungeon",
+      "gameOver": false,
+      "endingsReached": [
+        "ending_restore_truth"
+      ],
+      "cutsceneLocked": false,
+      "switchesOn": [
+        "sw_blue_key_found",
+        "sw_gallery_sequence",
+        "sw_blue_key_used",
+        "sw_truth_heard",
+        "sw_night_whistle"
+      ],
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0,
+        "var_gallery_sequence_step": 3
+      },
+      "inventory": {},
+      "friendship": {},
+      "playTimeSeconds": 0
+    },
+    "log": [
+      "event ev_night_opening start",
+      "event ev_gate_9386b541-58c6-4e1f-bf72-afbb66408c3b start",
+      "walk map_night_foyer -> map_night_study (2 steps)",
+      "walk map_night_study (2,12) -> (13,5) (18 steps)",
+      "event ev_examine_5 start",
+      "walk map_night_study (13,5) -> (16,9) (7 steps)",
+      "event ev_blue_restoration_lock_gate start",
+      "walk map_night_study (16,9) -> (10,9) (6 steps)",
+      "event ev_gallery_sequence_seq_2 start",
+      "walk map_night_study (10,9) -> (7,9) (3 steps)",
+      "event ev_gallery_sequence_seq_1 start",
+      "walk map_night_study (7,9) -> (14,9) (7 steps)",
+      "event ev_gallery_sequence_seq_3 start",
+      "event ev_gate_7d417291-79b8-4385-b51c-07382ebcc5cf start",
+      "walk map_night_study -> map_night_bedroom (12 steps)",
+      "walk map_night_bedroom (10,11) -> (6,7) (8 steps)",
+      "event map_night_bedroom_ev_examine_1 start",
+      "event ev_gate_de0b1005-34e8-4a04-a7c0-b9491bd78eae start",
+      "walk map_night_bedroom -> map_night_study (9 steps)",
+      "event ev_gate_e1d4bb14-c170-4b7b-a0c7-bfadc5aba461 start",
+      "event map_night_corridor_checkpoint_auto start",
+      "event ev_scene_mood_map_night_corridor start",
+      "walk map_night_study -> map_night_corridor (11 steps)",
+      "walk map_night_corridor (3,10) -> (25,10) (22 steps)",
+      "event ev_gate_417b6359-0b62-4129-9ca3-4a120b318fb4 start",
+      "walk map_night_corridor -> map_night_basement (6 steps)",
+      "walk map_night_basement (10,11) -> (10,7) (4 steps)",
+      "event map_night_basement_ev_examine_1 start",
+      "walk map_night_basement (10,7) -> (6,5) (6 steps)",
+      "event ev_restore_truth_ending start"
+    ],
+    "session": {
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false,
+        "sw_blue_key_found": true,
+        "sw_gallery_sequence": true,
+        "sw_blue_key_used": true,
+        "sw_truth_heard": true,
+        "sw_night_whistle": true
+      },
+      "selfSwitches": {
+        "ev_night_opening": {
+          "A": true
+        },
+        "ev_examine_5": {
+          "A": true
+        },
+        "map_night_bedroom_ev_examine_1": {
+          "A": true
+        },
+        "map_night_corridor_checkpoint_auto": {
+          "A": true
+        },
+        "map_night_basement_ev_examine_1": {
+          "A": true
+        }
+      },
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0,
+        "var_gallery_sequence_step": 3
+      },
+      "timers": {},
+      "gold": 0,
+      "inventory": {},
+      "itemUseCharges": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "shippingQueue": {},
+      "shippingHistory": [],
+      "bundleContributions": {},
+      "completedBundleIds": [],
+      "bundleRewardAppliedIds": [],
+      "unlockedRegionIds": [],
+      "unlockedRecipeIds": [],
+      "makerInstances": {},
+      "monsterInstances": {},
+      "monsterParty": [],
+      "monsterBox": [],
+      "actorSkillIds": {},
+      "actorSkillPp": {},
+      "actorExperience": {
+        "actor_hero": 0
+      },
+      "actorLevels": {
+        "actor_hero": 1,
+        "actor_guardian": 1,
+        "actor_mage": 1,
+        "actor_scout": 1,
+        "actor_cleric": 1,
+        "actor_ranger": 1
+      },
+      "actorVitals": {
+        "actor_hero": {
+          "hp": 514,
+          "mp": 43,
+          "maxHp": 514,
+          "maxMp": 43
+        }
+      },
+      "eventLocations": {},
+      "erasedEventIds": [],
+      "removedEventIds": {},
+      "spawnedEvents": {},
+      "camera": {
+        "mode": "follow",
+        "target": {
+          "kind": "player"
+        }
+      },
+      "lighting": {
+        "ambient": 0.64,
+        "color": "#080c19",
+        "sources": [
+          {
+            "id": "flashlight",
+            "at": "player",
+            "radius": 4.5,
+            "intensity": 0.92
+          }
+        ]
+      },
+      "npcTravelStates": {},
+      "npcActivities": {},
+      "npcScheduleStates": {},
+      "lifeSkills": {},
+      "followers": [],
+      "followerTrail": [],
+      "actorEquipment": {
+        "actor_hero": {},
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "actorRows": {
+        "actor_hero": "front"
+      },
+      "actorNames": {},
+      "actorCharacterResourceIds": {},
+      "classOverrides": {},
+      "actorParamBonuses": {},
+      "actorStateIds": {},
+      "factionStanceOverrides": {},
+      "currentMapId": "map_night_basement",
+      "x": 6,
+      "y": 5,
+      "mapOverrides": {},
+      "farmPlots": {},
+      "placeables": {},
+      "friendship": {},
+      "relationships": {},
+      "dailyGifts": {},
+      "dailyTalks": {},
+      "flags": {
+        "ending:ending_restore_truth": true
+      },
+      "audio": {
+        "bgm": {
+          "resourceId": "cc0-bgm-dungeon",
+          "loop": true
+        }
+      },
+      "pictures": {},
+      "messageWindowSettings": {
+        "format": "normal",
+        "position": "bottom",
+        "preventObscuringPlayer": true,
+        "allowEventMovementDuringWait": false
+      },
+      "playTimeSeconds": 0,
+      "rng": {
+        "seed": 1,
+        "streams": {
+          "encounter": {
+            "seed": 3353753583,
+            "state": 3353753583
+          },
+          "battle": {
+            "seed": 1451955416,
+            "state": 1451955416
+          },
+          "movement": {
+            "seed": 2648051123,
+            "state": 2648051123
+          },
+          "fishing": {
+            "seed": 3770436772,
+            "state": 3770436772
+          },
+          "misc": {
+            "seed": 4250317066,
+            "state": 4250317066
+          }
+        }
+      },
+      "m2Runtime": {
+        "screen": {
+          "weather": "none"
+        },
+        "access": {},
+        "audio": {},
+        "actors": {},
+        "events": {},
+        "map": {},
+        "system": {},
+        "session": {},
+        "camera": {},
+        "screenEffects": [],
+        "pathfinding": [],
+        "waits": [],
+        "regions": [],
+        "quests": {},
+        "dialogue": [],
+        "cutscene": {
+          "lockPlayer": false,
+          "skippable": false
+        },
+        "checkpoints": [],
+        "ui": [],
+        "debug": [],
+        "expressions": [],
+        "fallbacks": []
+      }
+    }
+  },
+  "escape": {
+    "ok": true,
+    "stepsRun": 3,
+    "totalSteps": 3,
+    "finalState": {
+      "mapId": "map_night_basement",
+      "x": 14,
+      "y": 5,
+      "camera": {
+        "cx": 232,
+        "cy": 96,
+        "session": {
+          "mode": "follow",
+          "target": {
+            "kind": "player"
+          }
+        }
+      },
+      "lightingAmbient": 0.64,
+      "lightCount": 1,
+      "weatherKind": "none",
+      "animationPlaying": false,
+      "fieldSpawnCount": 0,
+      "spawnedCount": 0,
+      "followerCount": 0,
+      "followers": [],
+      "picturesVisible": [],
+      "messages": [
+        "뒤에서 민서가 부른다. 대답하지 않고 혼자 비상문을 연다.",
+        "혼자 저택을 나왔다. 다음 날 새벽, 잠긴 방문 너머에서 내 목소리가 들렸다. “들어와.”"
+      ],
+      "bgm": "cc0-bgm-dungeon",
+      "gameOver": false,
+      "endingsReached": [
+        "ending_leave_it_blue"
+      ],
+      "cutsceneLocked": false,
+      "switchesOn": [],
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0,
+        "var_gallery_sequence_step": 0
+      },
+      "inventory": {},
+      "friendship": {},
+      "playTimeSeconds": 0
+    },
+    "log": [
+      "walk map_night_basement (10,11) -> (14,5) (10 steps)",
+      "event ev_leave_blue_ending start"
+    ],
+    "session": {
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false,
+        "sw_blue_key_found": false,
+        "sw_gallery_sequence": false,
+        "sw_blue_key_used": false,
+        "sw_truth_heard": false,
+        "sw_night_whistle": false
+      },
+      "selfSwitches": {},
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0,
+        "var_gallery_sequence_step": 0
+      },
+      "timers": {},
+      "gold": 0,
+      "inventory": {},
+      "itemUseCharges": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "shippingQueue": {},
+      "shippingHistory": [],
+      "bundleContributions": {},
+      "completedBundleIds": [],
+      "bundleRewardAppliedIds": [],
+      "unlockedRegionIds": [],
+      "unlockedRecipeIds": [],
+      "makerInstances": {},
+      "monsterInstances": {},
+      "monsterParty": [],
+      "monsterBox": [],
+      "actorSkillIds": {},
+      "actorSkillPp": {},
+      "actorExperience": {
+        "actor_hero": 0
+      },
+      "actorLevels": {
+        "actor_hero": 1,
+        "actor_guardian": 1,
+        "actor_mage": 1,
+        "actor_scout": 1,
+        "actor_cleric": 1,
+        "actor_ranger": 1
+      },
+      "actorVitals": {
+        "actor_hero": {
+          "hp": 514,
+          "mp": 43,
+          "maxHp": 514,
+          "maxMp": 43
+        }
+      },
+      "eventLocations": {},
+      "erasedEventIds": [],
+      "removedEventIds": {},
+      "spawnedEvents": {},
+      "camera": {
+        "mode": "follow",
+        "target": {
+          "kind": "player"
+        }
+      },
+      "lighting": {
+        "ambient": 0.64,
+        "color": "#080c19",
+        "sources": [
+          {
+            "id": "flashlight",
+            "at": "player",
+            "radius": 4.5,
+            "intensity": 0.92
+          }
+        ]
+      },
+      "npcTravelStates": {},
+      "npcActivities": {},
+      "npcScheduleStates": {},
+      "lifeSkills": {},
+      "followers": [],
+      "followerTrail": [],
+      "actorEquipment": {
+        "actor_hero": {},
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "actorRows": {
+        "actor_hero": "front"
+      },
+      "actorNames": {},
+      "actorCharacterResourceIds": {},
+      "classOverrides": {},
+      "actorParamBonuses": {},
+      "actorStateIds": {},
+      "factionStanceOverrides": {},
+      "currentMapId": "map_night_basement",
+      "x": 14,
+      "y": 5,
+      "mapOverrides": {},
+      "farmPlots": {},
+      "placeables": {},
+      "friendship": {},
+      "relationships": {},
+      "dailyGifts": {},
+      "dailyTalks": {},
+      "flags": {
+        "ending:ending_leave_it_blue": true
+      },
+      "audio": {
+        "bgm": {
+          "resourceId": "cc0-bgm-dungeon",
+          "loop": true
+        }
+      },
+      "pictures": {},
+      "messageWindowSettings": {
+        "format": "normal",
+        "position": "bottom",
+        "preventObscuringPlayer": true,
+        "allowEventMovementDuringWait": false
+      },
+      "playTimeSeconds": 0,
+      "rng": {
+        "seed": 1,
+        "streams": {
+          "encounter": {
+            "seed": 3353753583,
+            "state": 3353753583
+          },
+          "battle": {
+            "seed": 1451955416,
+            "state": 1451955416
+          },
+          "movement": {
+            "seed": 2648051123,
+            "state": 2648051123
+          },
+          "fishing": {
+            "seed": 3770436772,
+            "state": 3770436772
+          },
+          "misc": {
+            "seed": 4250317066,
+            "state": 4250317066
+          }
+        }
+      },
+      "m2Runtime": {
+        "screen": {},
+        "access": {},
+        "audio": {},
+        "actors": {},
+        "events": {},
+        "map": {},
+        "system": {},
+        "session": {},
+        "camera": {},
+        "screenEffects": [],
+        "pathfinding": [],
+        "waits": [],
+        "regions": [],
+        "quests": {},
+        "dialogue": [],
+        "cutscene": {
+          "lockPlayer": false,
+          "skippable": false
+        },
+        "checkpoints": [],
+        "ui": [],
+        "debug": [],
+        "expressions": [],
+        "fallbacks": []
+      }
+    }
+  },
+  "lint": [
+    {
+      "severity": "warning",
+      "code": "runtime-support:setSelfSwitch",
+      "mapId": "map_night_foyer",
+      "x": 16,
+      "y": 4,
+      "message": "맵 이벤트 map_night_foyer_ev_examine_3/map_night_foyer_ev_examine_3_ev_examine_3_once에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
+    },
+    {
+      "severity": "warning",
+      "code": "runtime-support:setSelfSwitch",
+      "mapId": "map_night_foyer",
+      "x": 11,
+      "y": 12,
+      "message": "맵 이벤트 ev_night_opening/night_opening에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
+    },
+    {
+      "severity": "warning",
+      "code": "runtime-support:checkpointSave",
+      "mapId": "map_night_foyer",
+      "x": 11,
+      "y": 12,
+      "message": "맵 이벤트 ev_night_opening/night_opening에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): checkpointSave"
+    },
+    {
+      "severity": "warning",
+      "code": "runtime-support:setSelfSwitch",
+      "mapId": "map_night_study",
+      "x": 4,
+      "y": 8,
+      "message": "맵 이벤트 ev_examine_1/ev_examine_1_ev_examine_1_once에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
+    },
+    {
+      "severity": "warning",
+      "code": "runtime-support:setSelfSwitch",
+      "mapId": "map_night_study",
+      "x": 10,
+      "y": 4,
+      "message": "맵 이벤트 ev_examine_2/ev_examine_2_ev_examine_2_once에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
+    },
+    {
+      "severity": "warning",
+      "code": "runtime-support:setSelfSwitch",
+      "mapId": "map_night_study",
+      "x": 18,
+      "y": 8,
+      "message": "맵 이벤트 ev_examine_3/ev_examine_3_ev_examine_3_once에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
+    },
+    {
+      "severity": "warning",
+      "code": "runtime-support:setSelfSwitch",
+      "mapId": "map_night_study",
+      "x": 7,
+      "y": 5,
+      "message": "맵 이벤트 ev_examine_4/ev_examine_4_ev_examine_4_once에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
+    },
+    {
+      "severity": "warning",
+      "code": "runtime-support:setSelfSwitch",
+      "mapId": "map_night_study",
+      "x": 13,
+      "y": 4,
+      "message": "맵 이벤트 ev_examine_5/ev_examine_5_ev_examine_5_once에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
+    },
+    {
+      "severity": "warning",
+      "code": "runtime-support:setSelfSwitch",
+      "mapId": "map_night_study",
+      "x": 18,
+      "y": 11,
+      "message": "맵 이벤트 ev_examine_6/ev_examine_6_ev_examine_6_once에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
+    },
+    {
+      "severity": "warning",
+      "code": "runtime-support:setSelfSwitch",
+      "mapId": "map_night_bedroom",
+      "x": 6,
+      "y": 6,
+      "message": "맵 이벤트 map_night_bedroom_ev_examine_1/map_night_bedroom_ev_examine_1_ev_examine_1_once에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
+    },
+    {
+      "severity": "warning",
+      "code": "runtime-support:setSelfSwitch",
+      "mapId": "map_night_basement",
+      "x": 10,
+      "y": 6,
+      "message": "맵 이벤트 map_night_basement_ev_examine_1/map_night_basement_ev_examine_1_ev_examine_1_once에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
+    },
+    {
+      "severity": "warning",
+      "code": "runtime-support:setSelfSwitch",
+      "mapId": "map_night_basement",
+      "x": 4,
+      "y": 7,
+      "message": "맵 이벤트 map_night_basement_ev_examine_2/map_night_basement_ev_examine_2_ev_examine_2_once에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
+    },
+    {
+      "severity": "warning",
+      "code": "runtime-support:setSelfSwitch",
+      "mapId": "map_night_basement",
+      "x": 16,
+      "y": 5,
+      "message": "맵 이벤트 map_night_basement_ev_examine_3/map_night_basement_ev_examine_3_ev_examine_3_once에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
+    },
+    {
+      "severity": "warning",
+      "code": "runtime-support:triggerEnding",
+      "mapId": "map_night_basement",
+      "x": 6,
+      "y": 4,
+      "message": "맵 이벤트 ev_restore_truth_ending/ev_restore_truth_ending_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): triggerEnding"
+    },
+    {
+      "severity": "warning",
+      "code": "runtime-support:triggerEnding",
+      "mapId": "map_night_basement",
+      "x": 14,
+      "y": 4,
+      "message": "맵 이벤트 ev_leave_blue_ending/ev_leave_blue_ending_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): triggerEnding"
+    },
+    {
+      "severity": "warning",
+      "code": "runtime-support:setSelfSwitch",
+      "mapId": "map_night_corridor",
+      "x": 2,
+      "y": 4,
+      "message": "맵 이벤트 map_night_corridor_checkpoint_auto/map_night_corridor_checkpoint_auto_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
+    },
+    {
+      "severity": "warning",
+      "code": "runtime-support:checkpointSave",
+      "mapId": "map_night_corridor",
+      "x": 2,
+      "y": 4,
+      "message": "맵 이벤트 map_night_corridor_checkpoint_auto/map_night_corridor_checkpoint_auto_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): checkpointSave"
+    },
+    {
+      "severity": "warning",
+      "code": "runtime-support:killPlayer",
+      "mapId": "map_night_corridor",
+      "x": 24,
+      "y": 6,
+      "message": "맵 이벤트 ev_chaser_d8dba24a-016c-4edb-8f50-9d064e1cabbe/ev_chaser_d8dba24a-016c-4edb-8f50-9d064e1cabbe_chase에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): killPlayer"
+    },
+    {
+      "severity": "warning",
+      "code": "authoring:interior-plan",
+      "mapId": "map_night_foyer",
+      "message": "큰 실내를 단일 방으로 만들었습니다. 방의 용도·문 연결·우회 통로를 먼저 검토하세요. 가구 밀도만으로 완성도를 판정하지 마세요."
+    },
+    {
+      "severity": "warning",
+      "code": "authoring:interior-plan",
+      "mapId": "map_night_study",
+      "message": "큰 실내를 단일 방으로 만들었습니다. 방의 용도·문 연결·우회 통로를 먼저 검토하세요. 가구 밀도만으로 완성도를 판정하지 마세요."
+    }
+  ]
+}

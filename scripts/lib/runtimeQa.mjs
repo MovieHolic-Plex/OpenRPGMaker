@@ -117,6 +117,7 @@ export function renderSummary(report) {
     '**이 파일을 먼저 읽어라.** PNG 는 아래 표에서 "즉시 확인" 으로 표시된 것만 열어라.',
     "전량 열람은 컨텍스트 낭비다.",
     "",
+    "- 시각 검토: 별도 판정 필요 — 실행 비트 통과는 공간 구성·물체 식별·게임 경험의 합격을 뜻하지 않습니다.",
     `- 게이트: ${passed ? "통과" : "실패"} (비트 ${report.beats.length}개 중 ${failedBeats.length}개 실패)`,
     `- 열어야 할 샷: ${mustOpen.length}개 / 전체 샷 ${totalShots}개`,
     report.errors.length > 0 ? `- 런타임 에러 ${report.errors.length}건` : "- 런타임 에러: 없음",

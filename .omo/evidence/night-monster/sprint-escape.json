@@ -1,0 +1,20 @@
+{
+  "ok": true,
+  "route": [
+    {
+      "dir": "right",
+      "map": "map_night_corridor",
+      "x": 25,
+      "y": 9,
+      "dead": false
+    },
+    {
+      "dir": "up",
+      "map": "map_night_basement",
+      "x": 10,
+      "y": 11,
+      "dead": false
+    }
+  ],
+  "errors": []
+}

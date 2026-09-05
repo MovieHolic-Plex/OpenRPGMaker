@@ -1,0 +1,213 @@
+{
+  "projectId": "rpg-zzu-night-monster-20260905",
+  "title": "밤의 괴물",
+  "verifiedAt": "2026-09-05T07:45:49.651Z",
+  "saveKind": "saved",
+  "saveSha256": "550fa5be7185dfbdfd556398bd273fbeee3479b137dc7a4658b0fe7332817f0c",
+  "reloaded": true,
+  "persistenceSpineSha256": "ca37d98ccf9f2a01332f83de238ff6b888a7185f2f8d00fb923761fd62927b32",
+  "maps": [
+    {
+      "id": "map_night_foyer",
+      "name": "1 · 비 내리는 현관",
+      "size": {
+        "width": 22,
+        "height": 18
+      },
+      "events": 5
+    },
+    {
+      "id": "map_night_bedroom",
+      "name": "3 · 숨죽인 침실",
+      "size": {
+        "width": 20,
+        "height": 16
+      },
+      "events": 4
+    },
+    {
+      "id": "map_night_study",
+      "name": "2 · 잠긴 서재",
+      "size": {
+        "width": 26,
+        "height": 18
+      },
+      "events": 13
+    },
+    {
+      "id": "map_night_corridor",
+      "name": "4 · 괴물의 복도",
+      "size": {
+        "width": 28,
+        "height": 14
+      },
+      "events": 8
+    },
+    {
+      "id": "map_night_basement",
+      "name": "5 · 지하 격리실",
+      "size": {
+        "width": 20,
+        "height": 16
+      },
+      "events": 6
+    }
+  ],
+  "walkthroughs": [
+    {
+      "id": "five-room-rescue-walkthrough",
+      "ok": true,
+      "stepsRun": 37,
+      "totalSteps": 37,
+      "finalMapId": "map_night_basement",
+      "gameOver": false,
+      "endingsReached": [
+        "ending_restore_truth"
+      ]
+    },
+    {
+      "id": "gallery-key-sequence-transfer",
+      "ok": true,
+      "stepsRun": 15,
+      "totalSteps": 15,
+      "finalMapId": "map_night_corridor",
+      "gameOver": false,
+      "endingsReached": []
+    },
+    {
+      "id": "chase-death-checkpoint-retry",
+      "ok": true,
+      "stepsRun": 4,
+      "totalSteps": 4,
+      "finalMapId": "map_night_corridor",
+      "gameOver": false,
+      "endingsReached": []
+    },
+    {
+      "id": "truth-ending",
+      "ok": true,
+      "stepsRun": 6,
+      "totalSteps": 6,
+      "finalMapId": "map_night_basement",
+      "gameOver": false,
+      "endingsReached": [
+        "ending_restore_truth"
+      ]
+    },
+    {
+      "id": "escape-ending",
+      "ok": true,
+      "stepsRun": 2,
+      "totalSteps": 2,
+      "finalMapId": "map_night_basement",
+      "gameOver": false,
+      "endingsReached": [
+        "ending_leave_it_blue"
+      ]
+    }
+  ],
+  "structuralLintIssues": [],
+  "runtimeClassificationWarnings": [
+    "runtime-support:setSelfSwitch",
+    "runtime-support:setSelfSwitch",
+    "runtime-support:checkpointSave",
+    "runtime-support:setSelfSwitch",
+    "runtime-support:setSelfSwitch",
+    "runtime-support:setSelfSwitch",
+    "runtime-support:setSelfSwitch",
+    "runtime-support:setSelfSwitch",
+    "runtime-support:setSelfSwitch",
+    "runtime-support:setSelfSwitch",
+    "runtime-support:setSelfSwitch",
+    "runtime-support:setSelfSwitch",
+    "runtime-support:setSelfSwitch",
+    "runtime-support:triggerEnding",
+    "runtime-support:triggerEnding",
+    "runtime-support:killPlayer",
+    "runtime-support:killPlayer",
+    "runtime-support:killPlayer",
+    "runtime-support:setSelfSwitch",
+    "runtime-support:checkpointSave",
+    "runtime-support:killPlayer"
+  ],
+  "browser": {
+    "errors": [],
+    "beats": [
+      {
+        "id": "title",
+        "failures": []
+      },
+      {
+        "id": "opening",
+        "failures": []
+      },
+      {
+        "id": "foyer",
+        "failures": []
+      },
+      {
+        "id": "bedroom",
+        "failures": []
+      },
+      {
+        "id": "chase",
+        "failures": []
+      },
+      {
+        "id": "basement",
+        "failures": []
+      },
+      {
+        "id": "trap-death",
+        "failures": []
+      },
+      {
+        "id": "retry",
+        "failures": []
+      },
+      {
+        "id": "monster-capture",
+        "failures": []
+      },
+      {
+        "id": "monster-retry",
+        "failures": []
+      },
+      {
+        "id": "solo-ending",
+        "failures": []
+      }
+    ],
+    "report": "verify-shots/runtime-qa/night-monster-final/SUMMARY.md"
+  },
+  "appTypecheck": {
+    "command": "npm run typecheck:app",
+    "exitCode": 0
+  },
+  "sprintEscape": {
+    "ok": true,
+    "route": [
+      {
+        "dir": "right",
+        "map": "map_night_corridor",
+        "x": 25,
+        "y": 9,
+        "dead": false
+      },
+      {
+        "dir": "up",
+        "map": "map_night_basement",
+        "x": 10,
+        "y": 11,
+        "dead": false
+      }
+    ],
+    "errors": []
+  },
+  "wholeRepositoryGate": {
+    "command": "npm run gates",
+    "status": "running",
+    "log": "output/evidence/night-monster/gates.log",
+    "note": "Content walkthroughs, shipped-player browser QA, and app typecheck have completed independently; no whole-repository regression verdict is claimed."
+  }
+}

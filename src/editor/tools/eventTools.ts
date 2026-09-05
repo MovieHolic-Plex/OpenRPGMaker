@@ -1,3 +1,4 @@
+import { CONFIGURE_OBJECT_BEHAVIOR, PURSUIT_SCHEMA, parsePursuit } from "./horrorBehaviorTools";
 // editor/tools/eventTools.ts
 // 이벤트 쓰기 툴: upsert_event / place_npc / create_transfer_pair / place_battle_blocker
 //              / duplicate_event / remove_event / move_event.
@@ -1738,7 +1739,7 @@ const placeTrap: ToolDefinition = {
 const makeChaseScene: ToolDefinition = {
   name: "make_chase_scene",
   description:
-    "장애물을 우회하는 실시간 추격자 이벤트를 만든다. chaser.at/graphic/speed/sightRange를 받고, killOnTouch면 eventTouch에서 killPlayer를 실행한다. safeZone은 map.safeZones에 추가하며, activateSwitch가 있으면 해당 스위치 ON 페이지에서만 추격한다. 추격자는 캐릭터형이므로 통행 불가 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다. 추격전·「쫓아오는」 요청의 정본.",
+    "장애물을 우회하는 실시간 추격자 이벤트를 만든다. chaser.at/graphic/speed/sightRange를 받고, killOnTouch면 eventTouch에서 killPlayer를 실행한다. safeZone은 map.safeZones에 추가하며, activateSwitch가 있으면 해당 스위치 ON 페이지에서만 추격한다. 추격자는 캐릭터형이므로 통행 불가 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다. pursuit.scope=connected면 문으로 연결된 방까지 추격한다. doorDelayMs/searchMs/onLost로 문 대기·수색·복귀를 설정한다. 추격전·「쫓아오는」 요청의 정본.",
   mode: "write",
   parameters: {
     type: "object",
@@ -1755,6 +1756,7 @@ const makeChaseScene: ToolDefinition = {
         },
         required: ["at"],
       },
+      pursuit: PURSUIT_SCHEMA,
       killOnTouch: { type: "boolean" },
       safeZone: { ...RECT_SCHEMA, description: "{x,y,w,h} 안전 지대" },
       activateSwitch: { type: "string" },
@@ -1817,6 +1819,7 @@ const makeChaseScene: ToolDefinition = {
             frequency: speed,
             ...(chaser.sightRange !== undefined ? { sightRange: Math.max(0, Math.trunc(chaser.sightRange)) } : {}),
             pathfind: true,
+            ...(args.pursuit !== undefined ? { pursuit: parsePursuit(args.pursuit) } : {}),
           },
           commands,
         },
@@ -2532,6 +2535,7 @@ export const EVENT_TOOLS: readonly ToolDefinition[] = [
   placeStorageChest,
   placeSavepoint,
   makeChaseScene,
+  CONFIGURE_OBJECT_BEHAVIOR,
   duplicateEvent,
   removeEvent,
   moveEvent,

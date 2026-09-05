@@ -554,3 +554,8 @@ friendshipAtLeast/battleResult/run)을 틀리게 확신했고, 특히 거의 모
 사라진 P1 결함)로 되돌아가는 일이라며 명시적으로 거부됐다
 (`docs/proposals/2026-08-28-event-editor-ui-improvement.html`). `all`/`any`/`not` 은 페이지 표면에서
 읽기 전용 요약 + 삭제로 유지되며, 중첩 저작은 분기(fork) 폼이 담당한다.
+
+
+## 공포 게임 제작 기능 (2026-09-05)
+
+이벤트 「움직임과 속도」에 연결 방 추격, 밀 수 있는 가구, 은신처 설정을 추가했다. 데이터·런타임·저작·검증 계약은 [horror-authoring.md](horror-authoring.md) 참조.

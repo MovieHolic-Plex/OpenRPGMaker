@@ -1,3 +1,6 @@
+import { pursuitTarget } from "./horrorRuntime";
+import { footprintBounds } from "@/project/footprint";
+import { findBlockingEventOverlappingRect } from "@/project/runtimeEventState";
 import { store } from "@/project/store";
 // 스프라이트 가로 좌표는 발자국 중앙(footprintSpriteX)이다 — 타일 중앙(characterSpriteX)을
 // 쓰면 폭 2 이상인 몸이 반 칸 왼쪽으로 붙는다. 걸음 보간·착지·첫 프레임 모두 같은 규칙이다.
@@ -122,21 +125,30 @@ function updateChaseNpc(
     setNpcIdleFrame(sprite, baseFrame, mover.facing, view.animationType, mover.animationEnabled);
     return;
   }
-  const pursuit = mover.chaseTarget ?? { x: scene.tileX, y: scene.tileY };
-  const decision = nextChaseDecision({
+  const tracked = mover.chaseTarget ? undefined : pursuitTarget({ project, map: scene.map, session: scene.session, positions: scene.eventPositions }, view, mover, deltaMs);
+  if (tracked === null) {
+    setNpcIdleFrame(sprite, baseFrame, mover.facing, view.animationType, mover.animationEnabled);
+    return;
+  }
+  const pursuit = mover.chaseTarget ?? tracked ?? { x: scene.tileX, y: scene.tileY };
+  let decision = nextChaseDecision({
     project,
     map: scene.map,
     from: { x: view.x, y: view.y },
     player: pursuit,
     deltaMs,
     mover,
-    sightRange: mover.sightRange,
-    giveUpRange: mover.giveUpRange,
+    sightRange: tracked ? undefined : mover.sightRange,
+    giveUpRange: tracked ? undefined : mover.giveUpRange,
     pathfind: mover.pathfind,
     kite: mover.kite,
     // 추격자 자신의 통행 사각. 1x1 이면 canMove 1회로 환원돼 기존 경로와 같다.
-    pass: { footprint: view.footprint, passRows: view.passRows },
+    pass: { footprint: view.footprint, passRows: view.passRows,
+      blocked: (x, y) => !!findBlockingEventOverlappingRect(project, scene.map, scene.session, scene.eventPositions, footprintBounds(x, y, view.footprint), eventId) },
   });
+  if (tracked?.searching && decision.kind === "touch" && (pursuit.x !== scene.tileX || pursuit.y !== scene.tileY)) {
+    decision = { kind: "move", x: pursuit.x, y: pursuit.y, dir: decision.dir };
+  }
   if (decision.kind === "wait") {
     setNpcIdleFrame(sprite, baseFrame, mover.facing, view.animationType, mover.animationEnabled);
     return;
@@ -149,13 +161,13 @@ function updateChaseNpc(
       setNpcIdleFrame(sprite, baseFrame, frameDir, view.animationType, mover.animationEnabled);
       return;
     }
-    fireEventTouch(scene, eventId, view.trigger.kind);
+    if (!tracked?.searching) fireEventTouch(scene, eventId, view.trigger.kind);
     setNpcIdleFrame(sprite, baseFrame, frameDir, view.animationType, mover.animationEnabled);
     return;
   }
   // Chase pathfinding only sees the player's committed tile. Mid-move destination still blocks.
   if (!mover.through && isPlayerOccupyingTile(scene, decision.x, decision.y)) {
-    fireEventTouch(scene, eventId, view.trigger.kind);
+    if (!tracked?.searching) fireEventTouch(scene, eventId, view.trigger.kind);
     setNpcIdleFrame(sprite, baseFrame, frameDir, view.animationType, mover.animationEnabled);
     return;
   }

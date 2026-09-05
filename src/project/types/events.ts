@@ -484,12 +484,26 @@ export interface NpcScheduleEntry {
   readonly activity?: string;
 }
 
+export interface ChaseAcrossMaps {
+  scope: "map" | "connected";
+  doorDelayMs: number;
+  searchMs: number;
+  onLost: "wait" | "return";
+}
+
+export interface EventObjectInteraction {
+  kind: "pushable" | "hiding";
+  /** A push always moves one tile. Omitted directions allow all four directions. */
+  directions?: Dir[];
+}
+
 export interface EventPageMovement {
   type: AutonomousMovement;
   speed: number;
   frequency: number;
   route?: MoveRoute;
   living?: NpcLivingMovement;
+  pursuit?: ChaseAcrossMaps;
   sightRange?: number;
   giveUpRange?: number;
   pathfind?: boolean;
@@ -522,6 +536,7 @@ export interface EventPage {
    * 올린다(fail-closed — 적은 행 수가 벽을 여는 것보다 다 막는 쪽이 안전하다).
    */
   passRows?: number;
+  interaction?: EventObjectInteraction;
   movement: EventPageMovement;
   commands: Command[];
 }

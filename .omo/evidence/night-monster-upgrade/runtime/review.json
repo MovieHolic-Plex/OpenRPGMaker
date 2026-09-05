@@ -1,0 +1,1331 @@
+{
+  "source": "night-monster-upgrade snapshot",
+  "execution": "passed",
+  "visualReview": "pending",
+  "captures": [
+    {
+      "id": "01-foyer",
+      "reason": "즉시 확인 — 현관으로 읽히는지, 가구 반복과 문 위치",
+      "state": {
+        "map": "map_night_foyer",
+        "x": 11,
+        "y": 12,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false,
+          "sw_blue_key_found": false,
+          "sw_gallery_sequence": false,
+          "sw_blue_key_used": false,
+          "sw_truth_heard": false,
+          "sw_night_whistle": false
+        },
+        "eventLocations": {},
+        "player": {
+          "x": 184,
+          "y": 208,
+          "depth": 200208,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chaser": null,
+        "visibleEventIds": [
+          "ev_gate_9386b541-58c6-4e1f-bf72-afbb66408c3b",
+          "map_night_foyer_ev_examine_2",
+          "ev_night_movable_map_night_foyer"
+        ],
+        "dialogue": "",
+        "gameOver": false
+      }
+    },
+    {
+      "id": "02-chair-before",
+      "reason": "즉시 확인 — 의자 밀기 전",
+      "state": {
+        "map": "map_night_foyer",
+        "x": 14,
+        "y": 11,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false,
+          "sw_blue_key_found": false,
+          "sw_gallery_sequence": false,
+          "sw_blue_key_used": false,
+          "sw_truth_heard": false,
+          "sw_night_whistle": false
+        },
+        "eventLocations": {},
+        "player": {
+          "x": 232,
+          "y": 192,
+          "depth": 200192,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chaser": null,
+        "visibleEventIds": [
+          "ev_gate_9386b541-58c6-4e1f-bf72-afbb66408c3b",
+          "map_night_foyer_ev_examine_2",
+          "ev_night_movable_map_night_foyer"
+        ],
+        "dialogue": "",
+        "gameOver": false
+      }
+    },
+    {
+      "id": "03-chair-after",
+      "reason": "즉시 확인 — 의자가 한 칸 위로 이동",
+      "state": {
+        "map": "map_night_foyer",
+        "x": 14,
+        "y": 11,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false,
+          "sw_blue_key_found": false,
+          "sw_gallery_sequence": false,
+          "sw_blue_key_used": false,
+          "sw_truth_heard": false,
+          "sw_night_whistle": false
+        },
+        "eventLocations": {
+          "ev_night_movable_map_night_foyer": {
+            "mapId": "map_night_foyer",
+            "x": 14,
+            "y": 9,
+            "direction": "down"
+          }
+        },
+        "player": {
+          "x": 232,
+          "y": 192,
+          "depth": 200192,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chaser": null,
+        "visibleEventIds": [
+          "ev_gate_9386b541-58c6-4e1f-bf72-afbb66408c3b",
+          "map_night_foyer_ev_examine_2",
+          "ev_night_movable_map_night_foyer"
+        ],
+        "dialogue": "",
+        "gameOver": false
+      }
+    },
+    {
+      "id": "04-study",
+      "reason": "즉시 확인 — 서재 물체와 퍼즐 접근",
+      "state": {
+        "map": "map_night_study",
+        "x": 12,
+        "y": 11,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false,
+          "sw_blue_key_found": false,
+          "sw_gallery_sequence": false,
+          "sw_blue_key_used": false,
+          "sw_truth_heard": false,
+          "sw_night_whistle": false
+        },
+        "eventLocations": {
+          "ev_night_movable_map_night_foyer": {
+            "mapId": "map_night_foyer",
+            "x": 14,
+            "y": 9,
+            "direction": "down"
+          }
+        },
+        "player": {
+          "x": 200,
+          "y": 192,
+          "depth": 200192,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chaser": null,
+        "visibleEventIds": [
+          "ev_examine_6",
+          "ev_gallery_sequence_seq_1",
+          "ev_gallery_sequence_seq_2",
+          "ev_gallery_sequence_seq_3",
+          "ev_blue_restoration_lock_gate",
+          "ev_gate_e1d4bb14-c170-4b7b-a0c7-bfadc5aba461",
+          "ev_gate_63bbf6ca-7c0d-44f0-bb9c-dc20cd2b6ee9",
+          "ev_gate_7d417291-79b8-4385-b51c-07382ebcc5cf",
+          "ev_night_movable_map_night_study"
+        ],
+        "dialogue": "",
+        "gameOver": false
+      }
+    },
+    {
+      "id": "05-bedroom",
+      "reason": "즉시 확인 — 침실 가구와 은신처",
+      "state": {
+        "map": "map_night_bedroom",
+        "x": 10,
+        "y": 10,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false,
+          "sw_blue_key_found": false,
+          "sw_gallery_sequence": false,
+          "sw_blue_key_used": false,
+          "sw_truth_heard": false,
+          "sw_night_whistle": false
+        },
+        "eventLocations": {
+          "ev_night_movable_map_night_foyer": {
+            "mapId": "map_night_foyer",
+            "x": 14,
+            "y": 9,
+            "direction": "down"
+          }
+        },
+        "player": {
+          "x": 168,
+          "y": 176,
+          "depth": 200176,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chaser": null,
+        "visibleEventIds": [
+          "ev_gate_de0b1005-34e8-4a04-a7c0-b9491bd78eae",
+          "map_night_bedroom_ev_examine_1",
+          "map_night_bedroom_ev_examine_2"
+        ],
+        "dialogue": "",
+        "gameOver": false
+      }
+    },
+    {
+      "id": "06-hidden",
+      "reason": "즉시 확인 — 실제 은신과 나오기 안내",
+      "state": {
+        "map": "map_night_bedroom",
+        "x": 14,
+        "y": 6,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false,
+          "sw_blue_key_found": false,
+          "sw_gallery_sequence": false,
+          "sw_blue_key_used": false,
+          "sw_truth_heard": false,
+          "sw_night_whistle": false
+        },
+        "horror": {
+          "pursuits": {},
+          "hiding": {
+            "mapId": "map_night_bedroom",
+            "eventId": "map_night_bedroom_ev_examine_2",
+            "witnessedBy": []
+          }
+        },
+        "eventLocations": {
+          "ev_night_movable_map_night_foyer": {
+            "mapId": "map_night_foyer",
+            "x": 14,
+            "y": 9,
+            "direction": "down"
+          }
+        },
+        "player": {
+          "x": 232,
+          "y": 112,
+          "depth": 200112,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": false,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chaser": null,
+        "visibleEventIds": [
+          "ev_gate_de0b1005-34e8-4a04-a7c0-b9491bd78eae",
+          "map_night_bedroom_ev_examine_1",
+          "map_night_bedroom_ev_examine_2"
+        ],
+        "dialogue": "",
+        "gameOver": false
+      }
+    },
+    {
+      "id": "07-corridor",
+      "reason": "즉시 확인 — 순환 동선과 가운데 벽",
+      "state": {
+        "map": "map_night_corridor",
+        "x": 3,
+        "y": 9,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false,
+          "sw_blue_key_found": false,
+          "sw_gallery_sequence": false,
+          "sw_blue_key_used": false,
+          "sw_truth_heard": false,
+          "sw_night_whistle": false
+        },
+        "horror": {
+          "pursuits": {
+            "ev_chaser_d8dba24a-016c-4edb-8f50-9d064e1cabbe": {
+              "home": {
+                "mapId": "map_night_corridor",
+                "x": 24,
+                "y": 6
+              },
+              "active": false,
+              "searchMs": 0,
+              "doors": []
+            }
+          }
+        },
+        "eventLocations": {
+          "ev_night_movable_map_night_foyer": {
+            "mapId": "map_night_foyer",
+            "x": 14,
+            "y": 9,
+            "direction": "down"
+          },
+          "ev_chaser_d8dba24a-016c-4edb-8f50-9d064e1cabbe": {
+            "mapId": "map_night_corridor",
+            "x": 24,
+            "y": 6,
+            "direction": "down"
+          }
+        },
+        "player": {
+          "x": 56,
+          "y": 160,
+          "depth": 200160,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chaser": {
+          "alpha": 1,
+          "frame": 79,
+          "textureKey": "tex_easyrpg_charset_monster1",
+          "x": 392,
+          "y": 112,
+          "depth": 200112,
+          "liftPx": 0
+        },
+        "visibleEventIds": [
+          "ev_gate_f3cac064-5243-4194-88b8-73d05ed9aa8d",
+          "ev_chaser_d8dba24a-016c-4edb-8f50-9d064e1cabbe",
+          "ev_gate_417b6359-0b62-4129-9ca3-4a120b318fb4",
+          "ev_night_movable_map_night_corridor"
+        ],
+        "dialogue": "",
+        "gameOver": false
+      }
+    },
+    {
+      "id": "08-crossed-door",
+      "reason": "즉시 확인 — 문 통과 뒤 추격 대기",
+      "state": {
+        "map": "map_night_basement",
+        "x": 10,
+        "y": 11,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false,
+          "sw_blue_key_found": false,
+          "sw_gallery_sequence": false,
+          "sw_blue_key_used": false,
+          "sw_truth_heard": false,
+          "sw_night_whistle": false
+        },
+        "horror": {
+          "pursuits": {
+            "ev_chaser_d8dba24a-016c-4edb-8f50-9d064e1cabbe": {
+              "home": {
+                "mapId": "map_night_corridor",
+                "x": 24,
+                "y": 6
+              },
+              "active": true,
+              "searchMs": 0,
+              "doors": [
+                {
+                  "mapId": "map_night_basement",
+                  "x": 10,
+                  "y": 11,
+                  "remainingMs": 5771.67
+                }
+              ],
+              "lastSeen": {
+                "x": 25,
+                "y": 8
+              }
+            }
+          }
+        },
+        "eventLocations": {
+          "ev_night_movable_map_night_foyer": {
+            "mapId": "map_night_foyer",
+            "x": 14,
+            "y": 9,
+            "direction": "down"
+          },
+          "ev_chaser_d8dba24a-016c-4edb-8f50-9d064e1cabbe": {
+            "mapId": "map_night_corridor",
+            "x": 24,
+            "y": 9,
+            "direction": "down"
+          }
+        },
+        "player": {
+          "x": 168,
+          "y": 192,
+          "depth": 200192,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chaser": null,
+        "visibleEventIds": [
+          "ev_gate_4ecc11be-f98d-482d-8ef7-c02daeb9dcfe",
+          "ev_restore_truth_ending",
+          "ev_leave_blue_ending",
+          "ev_night_basement_hiding"
+        ],
+        "dialogue": "",
+        "gameOver": false
+      }
+    },
+    {
+      "id": "09-hide-from-pursuer",
+      "reason": "즉시 확인 — 추격 중 지하실 보관장 은신",
+      "state": {
+        "map": "map_night_basement",
+        "x": 3,
+        "y": 5,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false,
+          "sw_blue_key_found": false,
+          "sw_gallery_sequence": false,
+          "sw_blue_key_used": false,
+          "sw_truth_heard": false,
+          "sw_night_whistle": false
+        },
+        "horror": {
+          "pursuits": {
+            "ev_chaser_d8dba24a-016c-4edb-8f50-9d064e1cabbe": {
+              "home": {
+                "mapId": "map_night_corridor",
+                "x": 24,
+                "y": 6
+              },
+              "active": true,
+              "searchMs": 0,
+              "doors": [
+                {
+                  "mapId": "map_night_basement",
+                  "x": 10,
+                  "y": 11,
+                  "remainingMs": 2133.459999999997
+                }
+              ],
+              "lastSeen": {
+                "x": 25,
+                "y": 8
+              }
+            }
+          },
+          "hiding": {
+            "mapId": "map_night_basement",
+            "eventId": "ev_night_basement_hiding",
+            "witnessedBy": []
+          }
+        },
+        "eventLocations": {
+          "ev_night_movable_map_night_foyer": {
+            "mapId": "map_night_foyer",
+            "x": 14,
+            "y": 9,
+            "direction": "down"
+          },
+          "ev_chaser_d8dba24a-016c-4edb-8f50-9d064e1cabbe": {
+            "mapId": "map_night_corridor",
+            "x": 24,
+            "y": 9,
+            "direction": "down"
+          }
+        },
+        "player": {
+          "x": 56,
+          "y": 96,
+          "depth": 200096,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": false,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chaser": null,
+        "visibleEventIds": [
+          "ev_gate_4ecc11be-f98d-482d-8ef7-c02daeb9dcfe",
+          "ev_restore_truth_ending",
+          "ev_leave_blue_ending",
+          "ev_night_basement_hiding"
+        ],
+        "dialogue": "",
+        "gameOver": false
+      }
+    },
+    {
+      "id": "10-pursuer-entered",
+      "reason": "즉시 확인 — 같은 괴물이 지하실에 들어와 수색",
+      "state": {
+        "map": "map_night_basement",
+        "x": 3,
+        "y": 5,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false,
+          "sw_blue_key_found": false,
+          "sw_gallery_sequence": false,
+          "sw_blue_key_used": false,
+          "sw_truth_heard": false,
+          "sw_night_whistle": false
+        },
+        "horror": {
+          "pursuits": {
+            "ev_chaser_d8dba24a-016c-4edb-8f50-9d064e1cabbe": {
+              "home": {
+                "mapId": "map_night_basement",
+                "x": 10,
+                "y": 11
+              },
+              "active": true,
+              "searchMs": 1109.9700000000012,
+              "doors": [],
+              "lastSeen": {
+                "x": 10,
+                "y": 11
+              }
+            }
+          },
+          "hiding": {
+            "mapId": "map_night_basement",
+            "eventId": "ev_night_basement_hiding",
+            "witnessedBy": []
+          }
+        },
+        "eventLocations": {
+          "ev_night_movable_map_night_foyer": {
+            "mapId": "map_night_foyer",
+            "x": 14,
+            "y": 9,
+            "direction": "down"
+          },
+          "ev_chaser_d8dba24a-016c-4edb-8f50-9d064e1cabbe": {
+            "mapId": "map_night_basement",
+            "x": 10,
+            "y": 11,
+            "direction": "down"
+          }
+        },
+        "player": {
+          "x": 56,
+          "y": 96,
+          "depth": 200096,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": false,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chaser": {
+          "alpha": 1,
+          "frame": 79,
+          "textureKey": "tex_easyrpg_charset_monster1",
+          "x": 168,
+          "y": 192,
+          "depth": 200192,
+          "liftPx": 0
+        },
+        "visibleEventIds": [
+          "ev_gate_4ecc11be-f98d-482d-8ef7-c02daeb9dcfe",
+          "ev_restore_truth_ending",
+          "ev_leave_blue_ending",
+          "ev_night_basement_hiding",
+          "ev_chaser_d8dba24a-016c-4edb-8f50-9d064e1cabbe"
+        ],
+        "dialogue": "",
+        "gameOver": false
+      }
+    },
+    {
+      "id": "11-search-ended",
+      "reason": "즉시 확인 — 은신 유지와 수색 종료",
+      "state": {
+        "map": "map_night_basement",
+        "x": 3,
+        "y": 5,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false,
+          "sw_blue_key_found": false,
+          "sw_gallery_sequence": false,
+          "sw_blue_key_used": false,
+          "sw_truth_heard": false,
+          "sw_night_whistle": false
+        },
+        "horror": {
+          "pursuits": {
+            "ev_chaser_d8dba24a-016c-4edb-8f50-9d064e1cabbe": {
+              "home": {
+                "mapId": "map_night_basement",
+                "x": 10,
+                "y": 11
+              },
+              "active": false,
+              "searchMs": 4534.830000000002,
+              "doors": [],
+              "lastSeen": {
+                "x": 10,
+                "y": 11
+              }
+            }
+          },
+          "hiding": {
+            "mapId": "map_night_basement",
+            "eventId": "ev_night_basement_hiding",
+            "witnessedBy": []
+          }
+        },
+        "eventLocations": {
+          "ev_night_movable_map_night_foyer": {
+            "mapId": "map_night_foyer",
+            "x": 14,
+            "y": 9,
+            "direction": "down"
+          },
+          "ev_chaser_d8dba24a-016c-4edb-8f50-9d064e1cabbe": {
+            "mapId": "map_night_basement",
+            "x": 10,
+            "y": 11,
+            "direction": "down"
+          }
+        },
+        "player": {
+          "x": 56,
+          "y": 96,
+          "depth": 200096,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": false,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chaser": {
+          "alpha": 1,
+          "frame": 79,
+          "textureKey": "tex_easyrpg_charset_monster1",
+          "x": 168,
+          "y": 192,
+          "depth": 200192,
+          "liftPx": 0
+        },
+        "visibleEventIds": [
+          "ev_gate_4ecc11be-f98d-482d-8ef7-c02daeb9dcfe",
+          "ev_restore_truth_ending",
+          "ev_leave_blue_ending",
+          "ev_night_basement_hiding",
+          "ev_chaser_d8dba24a-016c-4edb-8f50-9d064e1cabbe"
+        ],
+        "dialogue": "",
+        "gameOver": false
+      }
+    }
+  ],
+  "probes": {
+    "chair": {
+      "before": {
+        "map": "map_night_foyer",
+        "x": 14,
+        "y": 11,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false,
+          "sw_blue_key_found": false,
+          "sw_gallery_sequence": false,
+          "sw_blue_key_used": false,
+          "sw_truth_heard": false,
+          "sw_night_whistle": false
+        },
+        "eventLocations": {},
+        "player": {
+          "x": 232,
+          "y": 192,
+          "depth": 200192,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chaser": null,
+        "visibleEventIds": [
+          "ev_gate_9386b541-58c6-4e1f-bf72-afbb66408c3b",
+          "map_night_foyer_ev_examine_2",
+          "ev_night_movable_map_night_foyer"
+        ],
+        "dialogue": "",
+        "gameOver": false
+      },
+      "after": {
+        "map": "map_night_foyer",
+        "x": 14,
+        "y": 11,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false,
+          "sw_blue_key_found": false,
+          "sw_gallery_sequence": false,
+          "sw_blue_key_used": false,
+          "sw_truth_heard": false,
+          "sw_night_whistle": false
+        },
+        "eventLocations": {
+          "ev_night_movable_map_night_foyer": {
+            "mapId": "map_night_foyer",
+            "x": 14,
+            "y": 9,
+            "direction": "down"
+          }
+        },
+        "player": {
+          "x": 232,
+          "y": 192,
+          "depth": 200192,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chaser": null,
+        "visibleEventIds": [
+          "ev_gate_9386b541-58c6-4e1f-bf72-afbb66408c3b",
+          "map_night_foyer_ev_examine_2",
+          "ev_night_movable_map_night_foyer"
+        ],
+        "dialogue": "",
+        "gameOver": false
+      }
+    },
+    "hiding": {
+      "map": "map_night_bedroom",
+      "x": 14,
+      "y": 6,
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false,
+        "sw_blue_key_found": false,
+        "sw_gallery_sequence": false,
+        "sw_blue_key_used": false,
+        "sw_truth_heard": false,
+        "sw_night_whistle": false
+      },
+      "horror": {
+        "pursuits": {},
+        "hiding": {
+          "mapId": "map_night_bedroom",
+          "eventId": "map_night_bedroom_ev_examine_2",
+          "witnessedBy": []
+        }
+      },
+      "eventLocations": {
+        "ev_night_movable_map_night_foyer": {
+          "mapId": "map_night_foyer",
+          "x": 14,
+          "y": 9,
+          "direction": "down"
+        }
+      },
+      "player": {
+        "x": 232,
+        "y": 112,
+        "depth": 200112,
+        "liftPx": 0,
+        "airborne": false,
+        "visible": false,
+        "scaleX": 1,
+        "scaleY": 1
+      },
+      "chaser": null,
+      "visibleEventIds": [
+        "ev_gate_de0b1005-34e8-4a04-a7c0-b9491bd78eae",
+        "map_night_bedroom_ev_examine_1",
+        "map_night_bedroom_ev_examine_2"
+      ],
+      "dialogue": "",
+      "gameOver": false
+    },
+    "crossMap": {
+      "afterDoor": {
+        "map": "map_night_basement",
+        "x": 10,
+        "y": 11,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false,
+          "sw_blue_key_found": false,
+          "sw_gallery_sequence": false,
+          "sw_blue_key_used": false,
+          "sw_truth_heard": false,
+          "sw_night_whistle": false
+        },
+        "horror": {
+          "pursuits": {
+            "ev_chaser_d8dba24a-016c-4edb-8f50-9d064e1cabbe": {
+              "home": {
+                "mapId": "map_night_corridor",
+                "x": 24,
+                "y": 6
+              },
+              "active": true,
+              "searchMs": 0,
+              "doors": [
+                {
+                  "mapId": "map_night_basement",
+                  "x": 10,
+                  "y": 11,
+                  "remainingMs": 5718.34
+                }
+              ],
+              "lastSeen": {
+                "x": 25,
+                "y": 8
+              }
+            }
+          }
+        },
+        "eventLocations": {
+          "ev_night_movable_map_night_foyer": {
+            "mapId": "map_night_foyer",
+            "x": 14,
+            "y": 9,
+            "direction": "down"
+          },
+          "ev_chaser_d8dba24a-016c-4edb-8f50-9d064e1cabbe": {
+            "mapId": "map_night_corridor",
+            "x": 24,
+            "y": 9,
+            "direction": "down"
+          }
+        },
+        "player": {
+          "x": 168,
+          "y": 192,
+          "depth": 200192,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chaser": null,
+        "visibleEventIds": [
+          "ev_gate_4ecc11be-f98d-482d-8ef7-c02daeb9dcfe",
+          "ev_restore_truth_ending",
+          "ev_leave_blue_ending",
+          "ev_night_basement_hiding"
+        ],
+        "dialogue": "",
+        "gameOver": false
+      },
+      "followed": {
+        "map": "map_night_basement",
+        "x": 3,
+        "y": 5,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false,
+          "sw_blue_key_found": false,
+          "sw_gallery_sequence": false,
+          "sw_blue_key_used": false,
+          "sw_truth_heard": false,
+          "sw_night_whistle": false
+        },
+        "horror": {
+          "pursuits": {
+            "ev_chaser_d8dba24a-016c-4edb-8f50-9d064e1cabbe": {
+              "home": {
+                "mapId": "map_night_basement",
+                "x": 10,
+                "y": 11
+              },
+              "active": true,
+              "searchMs": 665.0000000000008,
+              "doors": [],
+              "lastSeen": {
+                "x": 10,
+                "y": 11
+              }
+            }
+          },
+          "hiding": {
+            "mapId": "map_night_basement",
+            "eventId": "ev_night_basement_hiding",
+            "witnessedBy": []
+          }
+        },
+        "eventLocations": {
+          "ev_night_movable_map_night_foyer": {
+            "mapId": "map_night_foyer",
+            "x": 14,
+            "y": 9,
+            "direction": "down"
+          },
+          "ev_chaser_d8dba24a-016c-4edb-8f50-9d064e1cabbe": {
+            "mapId": "map_night_basement",
+            "x": 10,
+            "y": 11,
+            "direction": "down"
+          }
+        },
+        "player": {
+          "x": 56,
+          "y": 96,
+          "depth": 200096,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": false,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chaser": {
+          "alpha": 1,
+          "frame": 79,
+          "textureKey": "tex_easyrpg_charset_monster1",
+          "x": 168,
+          "y": 192,
+          "depth": 200192,
+          "liftPx": 0
+        },
+        "visibleEventIds": [
+          "ev_gate_4ecc11be-f98d-482d-8ef7-c02daeb9dcfe",
+          "ev_restore_truth_ending",
+          "ev_leave_blue_ending",
+          "ev_night_basement_hiding",
+          "ev_chaser_d8dba24a-016c-4edb-8f50-9d064e1cabbe"
+        ],
+        "dialogue": "",
+        "gameOver": false
+      }
+    },
+    "afterSearch": {
+      "map": "map_night_basement",
+      "x": 3,
+      "y": 5,
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false,
+        "sw_blue_key_found": false,
+        "sw_gallery_sequence": false,
+        "sw_blue_key_used": false,
+        "sw_truth_heard": false,
+        "sw_night_whistle": false
+      },
+      "horror": {
+        "pursuits": {
+          "ev_chaser_d8dba24a-016c-4edb-8f50-9d064e1cabbe": {
+            "home": {
+              "mapId": "map_night_basement",
+              "x": 10,
+              "y": 11
+            },
+            "active": false,
+            "searchMs": 4534.830000000002,
+            "doors": [],
+            "lastSeen": {
+              "x": 10,
+              "y": 11
+            }
+          }
+        },
+        "hiding": {
+          "mapId": "map_night_basement",
+          "eventId": "ev_night_basement_hiding",
+          "witnessedBy": []
+        }
+      },
+      "eventLocations": {
+        "ev_night_movable_map_night_foyer": {
+          "mapId": "map_night_foyer",
+          "x": 14,
+          "y": 9,
+          "direction": "down"
+        },
+        "ev_chaser_d8dba24a-016c-4edb-8f50-9d064e1cabbe": {
+          "mapId": "map_night_basement",
+          "x": 10,
+          "y": 11,
+          "direction": "down"
+        }
+      },
+      "player": {
+        "x": 56,
+        "y": 96,
+        "depth": 200096,
+        "liftPx": 0,
+        "airborne": false,
+        "visible": false,
+        "scaleX": 1,
+        "scaleY": 1
+      },
+      "chaser": {
+        "alpha": 1,
+        "frame": 79,
+        "textureKey": "tex_easyrpg_charset_monster1",
+        "x": 168,
+        "y": 192,
+        "depth": 200192,
+        "liftPx": 0
+      },
+      "visibleEventIds": [
+        "ev_gate_4ecc11be-f98d-482d-8ef7-c02daeb9dcfe",
+        "ev_restore_truth_ending",
+        "ev_leave_blue_ending",
+        "ev_night_basement_hiding",
+        "ev_chaser_d8dba24a-016c-4edb-8f50-9d064e1cabbe"
+      ],
+      "dialogue": "",
+      "gameOver": false
+    }
+  },
+  "errors": []
+}

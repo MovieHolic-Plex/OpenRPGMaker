@@ -84,6 +84,7 @@ export default mergeConfig(
       // public/assets 의 수만 개 파일을 감시하면 여러 워크트리가 동시에 돌 때 호스트 inotify
       // 한도를 넘겨 `ENOSPC: System limit for number of file watchers reached` 로 서버 기동
       // 자체가 실패한다(실측). 사람이 HMR 을 쓰려면 PLAYER_QA_WATCH=1 로 켠다.
+      hmr: process.env.PLAYER_QA_WATCH === "1" ? undefined : false,
       watch: process.env.PLAYER_QA_WATCH === "1" ? undefined : null,
       fs: { allow: fsAllowRoots() },
     },

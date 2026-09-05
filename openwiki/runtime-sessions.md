@@ -123,3 +123,8 @@ Session state, save slots, farming, friendship, calendar, lighting, weather, fie
 - `spatialOccupancy.ts` includes both P2 runtime collections and treats legacy placeables/chests as occupied single cells, while never converting them into P2 records. Moving/rotating/upgrading excludes only the target instance from collision checks.
 - Save wire parsing is bounded in `saveSlotSpatialValidation.ts`; `spatialPlacementRestore.ts` then applies project-aware type/map/level/orientation/collision checks for both parsed saves and direct checkpoints. An explicitly saved `{}` is authoritative and keeps a cleared layout empty. A legacy save that omits a field retains its authored `startSession` placement.
 - The Life Ledger adds the stable `spaces` tab (`life-ledger-tab-spaces`) with summaries `life-ledger-space-building-<instanceId>` / `life-ledger-space-decoration-<instanceId>` and safe upgrade/rotation actions. It uses `/assets/farming/life-ui/decorating-card.png`.
+
+
+## 공포 게임 제작 기능 (2026-09-05)
+
+선택적 `session.horror`와 `eventLocations`로 추격·가구·은신 상태를 세이브에 보존한다. 데이터·런타임·저작·검증 계약은 [horror-authoring.md](horror-authoring.md) 참조.

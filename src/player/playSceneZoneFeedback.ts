@@ -211,6 +211,7 @@ export function feedbackSuppressedByOverlay(host: HTMLElement | null): boolean {
 }
 
 function facingPrompt(scene: ZoneFeedbackScene): string | null {
+  if (scene.session.horror?.hiding) return scene.session.horror.hiding.witnessedBy.length ? "발각 위험 · 나오기" : "숨어 있음 · 나오기";
   const delta = facingDelta(scene.facing);
   const targetX = scene.tileX + delta.x;
   const targetY = scene.tileY + delta.y;
@@ -221,6 +222,8 @@ function facingPrompt(scene: ZoneFeedbackScene): string | null {
 }
 
 function promptForEvent(event: RuntimeEventView | undefined): string | null {
+  if (event?.page?.interaction?.kind === "hiding") return "숨기";
+  if (event?.page?.interaction?.kind === "pushable") return "밀기";
   return interactionPromptLabel(event?.page);
 }
 
