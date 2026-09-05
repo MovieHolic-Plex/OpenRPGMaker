@@ -62,15 +62,16 @@ type PaletteScroll = {
 };
 
 export function renderTilePalette(container: HTMLElement): void {
-  const focusSnapshot = captureFocus(container);
-  const previousPaletteScroll = readPaletteScroll(container);
-  clearChildren(container);
-  const state = editorState.get();
-
+  // The rail owns its focus and flyout snapshots. Do not detach its focused node
+  // before it can capture them (the real browser moves focus to body on removal).
   if (getEditorChrome().paletteRail) {
     renderBasicLeftRail(container);
     return;
   }
+  const focusSnapshot = captureFocus(container);
+  const previousPaletteScroll = readPaletteScroll(container);
+  clearChildren(container);
+  const state = editorState.get();
 
   if (state.layer === "event") {
     const project = store.getCurrent();
@@ -617,4 +618,3 @@ function currentTilesetForPalette(): TilesetDef | undefined {
 // makeTerrainEditor 는 삭제됨 (2026-08-21). 「속성」 탭이 renderTileMappingInspector
 // (안에 이미 terrainEditor 가 있다)와 이 함수를 **둘 다** 붙여, 같은 tileset.terrain[tile]
 // 필드를 쓰는 입력이 화면에 두 개였다. 인스펙터 쪽(inspector-terrain-tag-input)만 남긴다.
-

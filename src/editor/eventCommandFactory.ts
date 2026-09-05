@@ -118,6 +118,8 @@ export function newCommand(kind: Command["kind"]): Command {
       return { kind: "setWeather", weather: "rain", intensity: 0.5, transitionMs: 0 };
     case "showAnimation":
       return { kind: "showAnimation", target: "player", animationId: "anim_hit", wait: false };
+    case "showEmote":
+      return { kind: "showEmote", target: { eventId: "" }, emote: "heart" };
     case "showPicture":
       return { kind: "showPicture", pictureId: "pic1", resourceId: "tex_tiles_default", x: 0, y: 0 };
     case "erasePicture":

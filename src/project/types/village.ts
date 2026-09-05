@@ -74,4 +74,25 @@ export interface VillageLayoutPresetRecord {
   templateIds?: string[];
   /** AI 컨텍스트에 실리는 한 줄 설명 — "언제 이 프리셋을 쓰라"를 사람 말로 적는다. */
   note?: string;
+  /** 명시적으로 전환한 설계서. 생략한 기존 프리셋은 이전 우선순위를 유지한다. */
+  design?: VillageDesign;
+}
+
+export type VillageDesignPolicy = "fixed" | "free";
+export interface VillageDesign {
+  version: 1;
+  revision: number;
+  policies: Record<"appearance" | "layout" | "nature" | "residents" | "interior", VillageDesignPolicy>;
+  houseCount: { mode: "fixed" | "range" | "free"; min: number; max: number };
+  stories: (1 | 2 | 3)[];
+  interior: boolean;
+  nature: {
+    water: "none" | "river" | "lake" | "river-lake";
+    waterSide: "north" | "south" | "east" | "west";
+    forest: "none" | "sparse" | "normal" | "dense" | "impassable";
+    forestSide: "north" | "south" | "east" | "west";
+    riverWidthRatio: number;
+    lakeSizeRatio: number;
+    forestDepthRatio: number;
+  };
 }

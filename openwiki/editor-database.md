@@ -1,5 +1,45 @@
 # Editor Database
 
+## 몬스터 작업실 — 미리보기 · 행동 · 속성 (2026-09-05)
+
+- `databaseEnemyRecordView.ts`는 기존 11개 필드 패널과 `updateDatabaseRecord` 경로를 유지하고,
+  `databaseEnemyStudio.ts`가 중앙 미리보기·공격 패턴·접힌 연결 데이터와 우측 `기본 / 외형 / 전투 / 보상`
+  속성 탭을 구성한다. 예전 멀티컬럼 카드 스택은 `modern/enemies.css`에서 제거했다.
+- 슬롯·검색·선택·복제·삭제는 `databaseRecordViews.ts` 소유다. 목록 폭은 220px, 속성 폭은 340px.
+  상세 영역이 650px 이하인 도크/작은 화면에서는 하나의 세로 스크롤로 전환한다. 모달 창 기하는
+  여전히 `sidebar.css`만 소유한다. 다른 DB 탭과 전역 맵/데이터 작업 공간 전환은 이번 슬라이스 범위 밖이다.
+- 대기 애니메이션은 기존 `battlerIdleAnimations` 카탈로그의 프레임 수·시간을 그대로 쓰는 CSS 스트립이다.
+  등록되지 않았거나 스트립 로드가 실패하면 기존 크로마키 정적 그림이 남는다. 동작 줄이기 환경에서는
+  일시 정지로 시작한다. 별도 타이머·전역 리스너는 없다.
+  연관 적 그룹에 지정된 배경을 표시하며, 배경이 없으면 중립 스테이지를 쓴다.
+- 편집 이벤트가 버블링할 때 현재 store에서 헤더·능력치·미리보기·연결 데이터를 갱신한다.
+  입력 컨트롤은 재생성하지 않는다. 이름 변경은 목록 행에도 전파된다. 속성 탭과 미리보기 일시 정지는 레코드별
+  `databaseRecordViewSession`에 기억되며 전체 세션 리셋에서 지운다. 방향키/Home/End로 이동한다.
+- 연결 데이터는 적 그룹·드롭 아이템·스킬을 동일 DB 창에서 선택해 연다. 진영 설명은 기본 속성의
+  `진영 관계와 설정` disclosure 안에 있다. 종족 안내를 창 전체 배너로 중복하지 않는다.
+- `시험 전투` → `testPlayModal.openEnemyBattleTestModal` → `prepareEnemyBattleTest`는 현재 프로젝트를
+  복제한 뒤 테스트 전용 1인 적 그룹을 넣고 기존 전투 엔진/세션 경로를 실행한다. 적 그룹은 store와
+  원격 DB에 들어가지 않는다. authored troop이 없어도 시험 가능하고, 같은 ID가 있으면 충돌을 피한다.
+  이 중첩 시험 창은 modalStack에 등록해 Escape가 DB 대신 시험 창만 닫고, 닫으면 시험 버튼에
+  포커스를 복귀한다. 준비 중 닫힌 창에는 뒤늦게 전투 컨트롤러를 마운트하지 않는다.
+- 검증: `test/enemyBattleTest.test.ts`(실제 엔진 HP 반영·원본 격리),
+  `test/e2e/database-enemy-studio.spec.ts`(1680/1280/1024 hit-test·키보드·선택·연결·시험 복귀),
+  기존 EnemySpecies/Faction/ResourceSlot, RecordPartialRender, PanelGridClasses 계약.
+## 몬스터 그룹 저작 신뢰성 (2026-09-05)
+
+대상은 몬스터·몬스터 종족·적 그룹·진영 네 탭이다.
+
+- 종족의 레벨별 스킬은 마운트된 행 객체를 편집한다. 저장 정규화가 레벨순 정렬을 해도 `input` 뒤 `change`/스킬 교체/삭제가 다른 행을 가리키지 않는다. 외부 수정·undo로 목록이 바뀌면 오래된 초안을 덮어쓰지 않고 다시 표시한다. 타입 상성표에서 삭제된 타입도 선택 칩으로 남아 해제할 수 있다.
+- 종족값은 Lv1의 실제 능력치가 아니다. `monsterBattleStatsForSpecies`를 사용하는 레벨별 미리보기(개체값 0)를 제공하며 종족값 수정도 즉시 반영한다. 포획 계수와 실제 성공 확률을 구분한다.
+- 몬스터 상태 유효도는 미지정(100%)과 명시 C(60%)를 구분하고 미지정으로 되돌릴 수 있다. 속성은 실제 피해 배율을 표시한다. 액션 전투의 생략된 공격 대기시간/탄속은 런타임 기본값 1200ms/6타일·초로 표시한다. 포획 기능이 꺼진 프로젝트는 안내 상태다.
+- 적 그룹 페이지 ID는 `genId`로 생성한다. `runOnce:false`를 보존하며 빈도를 바꿀 때 개별 override를 초기화한다. 첫 조건 교체는 추가 AND 조건을 보존한다. 스위치 ON/OFF, 변수 비교 연산, 그룹 내 적 슬롯별 HP 조건을 편집할 수 있다. HP 범위의 양 끝은 저장값과 표시값을 함께 조정한다.
+- `activeSlots`의 0 입력은 시스템 기본값 상속이다. 추가 이벤트가 없어도 기본 EXP/돈/드롭 보상은 동작한다. 밸런스 추정은 10회 표본임을 표시한다.
+- 적 그룹 워크벤치의 영역 배치는 `modern/troops.css`가 소유한다. 상세 패널 폭 760px 이하에서 단일 열로 전환한다. 뷰포트 폭만으로 판단하면 목록·내비게이션 레일 때문에 1024px에서 입력이 겹친다.
+- 진영은 기본·상속 소속을 포함한 몬스터/필드 스폰 사용처 이동, 상대 진영 검색, 초기 저작 관계에서 N회 처치한 결과 미리보기를 제공한다. 평판 설정은 프로젝트 전체 규칙이다. 미리보기는 `applyPlayerKillReputation`/`effectiveFactionStance`를 사용하며 프로젝트·런타임 세션을 수정하지 않는다.
+
+회귀: `test/monsterBattleAuthoringContract.test.ts`, `test/databaseMonsterEventEditing.test.ts`, 기존 종족/몬스터/진영 뷰 테스트. 브라우저 재현: `AUDIT_BASE=http://127.0.0.1:<port>/ node scripts/qa/monster-database.mjs` (임시 프로젝트, 원격 저장 없음).
+
+
 ## Database Studio chrome (2026-08-24)
 
 - The Database modal is a **neutral cool studio**, not the editor cream shell and not RM2k3. Tokens live in `src/styles/database/studio-theme.css` (`--db-studio-*`), scoped under `.database-modal-backdrop` and imported last among database CSS in `src/styles/index.css`. Do not put studio hex in `tokens.css`.
@@ -27,7 +67,7 @@
 - 자료집 레일 **첫 그룹** `세계관` (`slug: lore`). 탭 `이 세계` (`worldCanon`, `db-tab-world-canon`) 와 `설정집` (`worldCodex`, `db-tab-world-codex`). 예전에 「세계」이던 타일셋·생성 규칙 그룹은 **「맵」** 으로 개명했다 (`slug` 는 `world` 유지 — 접힌 타일셋 폴더 부제 계약).
 - `이 세계` 는 싱글톤 `project.worldCanon` 이다. 이름·한 줄 전제·톤 칩·시대·기술 천장·없는 것 태그·힘/신/죽음/돈 법칙·마크다운 본문. 비어 있으면 키를 저장하지 않는다 (`normalizeWorldCanon` / `compactWorldCanon`). 스키마는 `src/project/world/canon.ts`.
 - 텍스트는 `recordCoalescedSnapshot`, 칩·태그·법칙 토글은 `recordProjectSnapshot`. UI 는 `databaseWorldCanonView.ts`, 계약 `test/worldCanon.test.ts` + `test/databaseWorldCanonView.test.ts`.
-- `설정집` 은 기존 세계관 카드 위키를 자료집 셸에 심은 것이다 (`world-panel-embedded`). 톱바 세계관 버튼은 이 그룹의 `이 세계` 탭으로 점프한다.
+- `설정집` 은 세계관 카드 위키를 `workspaceShell` 셸에 심은 것이다 (`world-panel-embedded` + `db-world-codex-workspace`). 본문은 레이아웃 루트 하나만 자식으로 둬 `.db-body` 자체 스크롤을 만들지 않는다 — 계약 `test/databaseWorldCodexStructure.test.ts`. 톱바 세계관 버튼은 이 그룹의 `이 세계` 탭으로 점프한다.
 - **소바자 세 곳 (2026-09-03).** (1) 조수: `src/ai/worldCanonContext.ts` 의 `worldCanonPromptSection` 이 `## 이 세계(세계관 고정)` 블록을 감독 지침과 같은 **예산 밖 고정분**으로 넣는다 — 이름·전제·톤·없는 것(절대 금지)·법칙 + 본문 600자. 엔티티 다이제스트 배제(`worldAiExclusion`)는 그대로다. (2) 개요 탭 `db-overview-canon` 카드가 이름·전제를 보이고 이 세계 탭으로 점프한다. (3) 환영 장르 포스터(`applyWelcomeGenrePresetToOpenProject`)가 세계관이 뱄 때만 톤·전제 초안을 심는다. 계약 `test/worldCanonConsumers.test.ts`.
 
 ## '생성 규칙' 탭 — AI 마을 생성의 물·숲·길 (2026-08-30)
@@ -91,6 +131,11 @@ Database tabs, record views, battle database records, utility records, reference
 - The generated catalog currently contains **34 audiovisual sets**. The 12 genre-generic monster-battler additions live in `scripts/lib/effectSheet/paintersMonster.mjs`: tackle impact, claw rake, bite crunch, projectile shot, leaf volley, psychic wave, shadow pulse, holy beam, sleep dust, power aura, guard barrier, and capture seal. The next 12 reusable combat/utility additions live in `scripts/lib/effectSheet/paintersUtility.mjs`: critical burst, sonic wave, drain orbs, revive rise, cleanse sparkle, paralysis bind, blind veil, confusion spiral, silence lock, summon portal, smoke vanish, and meteor fall. They deliberately use generic geometric silhouettes rather than copied commercial-game move art. Physical/projectile effects use 8 frames, elemental/status/support effects use 10, and large ritual/seal/meteor effects use 12; every entry owns one bundled sound timed to its impact frame.
 - New projects bind the starter actors, classes, skills, and battle-usable items to purpose-specific generated effects through `generatedBattleEffectBindings.ts`; creating animation records alone is insufficient because runtime playback follows those authored references. Existing Supabase rows remain load-authoritative and receive no silent default backfill. Their explicit upgrade path is Database → Battle Animations → `이펙트 34종 적용` (`db-install-generated-effects`): `installGeneratedBattleEffectPack()` adds missing generated records, upgrades the three retained legacy aliases when they still use old art, and changes only known starter record ids. It preserves unrelated/custom records, records one undo snapshot, and becomes a disabled `적용됨` button when no changes remain.
 - Database workflows live in `src/editor/databaseActions.ts`, `src/editor/databaseRecordMutators.ts`, `src/editor/databaseReferences.ts`, and `src/editor/databaseCopy.ts`.
+- **상태 변화 · 전투 연출 · 몬스터 돌봄 저작 (2026-09-05 복구):** `databaseItemRecordView.ts`의 현재 카드 계층에 누락 브랜치의 세 컨트롤을 통합했다. 효과 구역은 종류별 패널 → 상태 변화 → 전투 연출 → 연결 스킬, 사용 제한 구역 끝에는 몬스터 돌봄 카드가 온다. 기존 아이템 요약과 최신 `modern/equipment-items.css`는 유지한다.
+  - `medicine`/`special`의 상태 변화 행은 상태·확률·부여/해제·삭제를 저작한다(`db-item-state-effect-row-<i>`, `db-field-item-state-effect-{state,chance,op}-<i>`, `db-item-state-effect-add`). 부여 확률은 0..100으로 제한한다. 기존 `healStateIds` 회복 체크박스도 유지한다. CSS는 `skill-item-visuals.css`의 상태 행 규칙을 아이템에도 공유한다.
+  - `db-picker-item-animation`은 `animationId`를 선택하거나 비운다. 전투에서 대상 위치에 재생하며 필드 메뉴에서는 재생하지 않는다.
+  - `db-field-item-care-kind`/`-friendship`/`-exp`는 `careProfile`을 저작한다. 없음은 프로필 삭제, 경험치 0은 `expDelta` 생략이다. `databaseRecordMutators.updateItemRecord` 화이트리스트에 이 필드를 포함해야 UI 편집이 저장된다.
+  - `itemEffectStory`는 상태 부여 확률과 연출 이름을 설명하며 `databaseFieldSupport`의 21개 필드 중 세 필드를 런타임 지원으로 공개한다. `test/databaseItemInspector.test.ts`는 조작과 직렬화→재로드→필드 삭제를, `test/e2e/item-effects-authoring.spec.ts`는 실제 브라우저 조작·탭 왕복·내보내기를 검증한다. 복구 화면은 `verify-shots/item-editor-modern/recovered-*.png`다. `recovered-database-harness.ts`는 실제 CSS와 `openDatabaseModal`을 전용 Vite 페이지에서 실행하고, dev-project factory로 원격 저장을 끈다. 로컬 요청만 Node `route.fetch`로 전달해 호스트의 Chromium 네트워크 변경 오류를 우회하며, 내보내기는 정본 `serialize`/`deserialize` 경로를 검증한다.
 - Item types `weapon|shield|body|head|accessory` no longer open a live equipment form. The Items tab shows a door (`db-item-open-equipment-tab`) to the Equipment tab (G006). Runtime gear stays on `database.equipment`.
 - **Items tab information hierarchy (2026-08-29):** the inspector's card order *is* the hierarchy and is asserted by `test/databaseItemInspector.test.ts` ("orders workbench cards"): 요약(`db-item-card-story`) → `db-item-section-definition` → 기본/그래픽 → `db-item-section-effect` → 대상과 사용 시점 + 종루별 효과 패넬 + 연결 스킬 → `db-item-section-limits` → 사용 가능 + 포획 → 공시. Four defects this replaced: the grab-bag `수치` card (가격+범위+포획 배율+볼 등급+스킬 in one card whose title explained nothing), the graphic card wedged between effect cards, four duplicate `db-item-card-usable` copies (one per type panel), and **two live scope controls on one screen**. Scope now has exactly one owner per type: `medicine` uses its 2-way `db-field-item-scope` segment, every other non-equipment type uses the shared `db-field-scope` select — never both (same failure shape as the equipment `slot` duplication). `itemFields` in `databaseBasicRecordFields.ts` stays as the aggregate for existing callers, but the view composes `itemPriceField` / `itemScopeField` / `itemCaptureFields` / `skillPicker` into separate cards. Capture fields stay visible for every non-equipment type (a new record is `normalGoods` and `test/e2e/qa-items.spec.ts` authors capture on it) but sit last under `db-item-card-capture` with a scope hint.
 - **Category filter chips carry counts and cluster order (2026-08-29):** `categoryFilterChips` in `databaseRecordViews.ts` renders `db-filter-chip-<id>` with a `.db-filter-chip-count` badge counted from the **unfiltered** collection (counting the filtered array collapses every other chip to 0 after one click). Items group through `ITEM_CHIP_CLUSTERS` — 무분류 물품, then `소비`, then `장비`, with `.db-filter-cluster` captions; `test/databaseFilterChips.test.ts` fails if a new `ItemType` is missing from a cluster. Zero-count chips are dimmed (`is-empty`) and keep no badge, but stay rendered and clickable — hiding them makes the row reflow as the filter changes, and every `db-filter-chip-*` testid must exist on first paint (audit specs click `db-filter-chip-medicine` straight after opening the tab).
@@ -133,10 +178,11 @@ Database tabs, record views, battle database records, utility records, reference
   - 진화 사이클/자기 진화는 `monsterEvolutionCycleSpeciesIds` + `validateMonsterSpeciesRecords` 의 **하드 에러**다(로드를 막는다). 반면 상성표 미등록 타입과 "수집 OFF + 종족 데이터" 는 출하 기본 프로젝트가 그 상태로 실려 있어 lint 경고로 올리면 전 프로젝트 노이즈가 된다 — 각각 종족 탭 칩(`db-monster-species-type-warn`)과 수집 탭 배너(`db-collection-gate-warn`)가 맥락 안에서 담당한다.
   - 경험치 곡선 편집기는 레코드 타입에 결합하지 않는다: `renderExperienceCurvePanel({ testidPrefix, readCurve, onCommit, refresh }, host)` 를 직업(`db-class-exp-*`)과 종족(`db-monster-species-exp-*`)이 공유한다.
   - 적 그룹 `밸런스` 패널은 보상 롤업(숨김 멤버 제외 — `battleRewards.ts`)과 `simulateBattle` 난이도 추정(고정 seed 12345, n=10, rAF 후 실행)을 제공한다. 20 샘플은 클릭→결과 561ms(실측)로 UI 를 멈춰 세웠다.
-  - **기본 DB 몬스터 로스터는 106종이다 (2026-08-28 정리).** 이전에는 221종이었고 그 중 `enemy_extra_006`~`enemy_extra_120` 115종이 등차수열 더미였다(`maxHp` 40,45,50,55… / `attack` 15,17,18,20…, 아트는 `enemy-art-NNN.png` 공용 슬롯). 짝이던 `species_extra_006`~`species_extra_120` 115종과 함께 `defaultDatabaseBattleRecords.ts` 에서 제거했다. 남은 것은 손으로 저작한 6종(`enemy_slime`/`enemy_meadow_slime`/`enemy_cave_bat`/`enemy_stone_golem`/`enemy_dragon`/`enemy_mine_skel_archer`) + `generatedEnemyRecords()` 100종이고, `monsterSpecies` 는 5종이다.
+  - **기본 DB 몬스터 로스터는 106종이다 (2026-08-28 정리, 2026-09 리밸런스).** 이전에는 221종이었고 그 중 `enemy_extra_006`~`enemy_extra_120` 115종이 등차수열 더미였다(`maxHp` 40,45,50,55… / `attack` 15,17,18,20…, 아트는 `enemy-art-NNN.png` 공용 슬롯). 짝이던 `species_extra_006`~`species_extra_120` 115종과 함께 `defaultDatabaseBattleRecords.ts` 에서 제거했다. 남은 것은 손으로 저작한 6종(`enemy_slime`/`enemy_meadow_slime`/`enemy_cave_bat`/`enemy_stone_golem`/`enemy_dragon`/`enemy_mine_skel_archer`) + `generatedEnemyRecords()` 100종이고, `monsterSpecies` 는 5종이다.
     - **지우기 전에 살아남는 레코드의 `speciesId` 를 먼저 훑어라.** `enemy_mine_skel_archer` 가 `species_extra_105` 를 가리키고 있어서 `references.ts:500` 이 로드를 막았다(`goldenProjectParity` 전멸). 이제 그 적은 `speciesId` 가 없다 — `generatedEnemyRecords()` 100종도 원래 없으므로 그게 기본 로스터의 표준 형태다.
     - `modernNocturneGame.ts` 는 기본 DB 의 `enemy_extra_016`/`038` 을 filter 로 건져 쓰던 유일한 소비자였다. 지금은 `enemy_neon_wraith`/`enemy_archive_custodian` 을 자기 파일에서 직접 만든다. `monsterResourceId` 의 `-enemy_extra_NNN` 접미는 **일부러 남겼다** — `generatedAssetResourceResolver.ts` 의 그 정규식이 아트를 공급한다(`test/generatedEnemyBattlers.test.ts`).
     - `test/koreanLocalizationDefaults.test.ts:90` 은 `enemies` 를 **29**개로 기대한다. 221 시절에도 틀렸고 106 이 된 뒤에도 틀리다 — 기준선 적신호이며 이 정리와 무관하다. 로스터 목표치를 정할 때 같이 고쳐라.
+    - **리밸런스(2026-09): 106종 전원에 `level`·스탯·보상을 부여했다.** 권장 레벨 기준 TTK 2~7(보스 6~12)·TTD 3+(보스 2.5~6) 밴드, `exp/hp ≈ 0.42`, `mind = attack`·MP(보스 40/일반 10) 규약 유지, `actionProfile` 실시간 수치는 불변. 손저작 6종의 구 스윙 주석(공격력 45)은 실측 공격력 22와 괴리되어 두 기준선을 병기한다. 계약: `test/monsterRebalanceBands.test.ts`. `emberQuestGame` 의 튜닝 오버라이드는 그대로라 엠버 전투 스케일은 별개다.
 - **Default DB graphic matching + Notion-style image pipeline (G006):** enemies/species/items/equipment must not share one generic image for unrelated names. Extra enemies map 1:1 to generated battlers (`generated-enemy-zombie-01` ??; starter species use dedicated art (`leafling`/`sparkit`/`aqualing`/`king-slime`); tiered equipment/items use distinct `cc0-jetrel-*` icons. **Art pipeline:** shared prompt builder `scripts/lib/dbArtPrompt.ts` (`buildDbArtPrompt({ kind: "icon"|"monster", name, subject, tags? })`) enforces 16-bit JRPG / single subject / transparent / no text-UI-logo-watermark-franchise-photorealism negatives (`DB_ART_PROMPT_NEGATIVES`). **Callers of `buildDbArtPrompt` today:** `scripts/generate-default-item-icons.mts` only. The bundled title crest is registered in `generatedAssetResourceResolver.ts`; run `npm run clean:title-logo` when its generated PNG needs deterministic edge-connected checkerboard removal, then copy the inspected output into `public/assets/generated/title/title-logo-crest.png` and update the title manifest hash. Procedural `scripts/generate-db-item-monster-art.py` remains for matched battler/icon silhouettes. Register outputs in `cc0IconAssets.ts` / `generatedAssetResourceResolver.ts`, wire defaults, prove with `test/dbArtPrompt.test.ts`, `test/dbImageMatching.test.ts`, and `test/titleLogoAsset.test.ts`. Uniqueness gate is **blank-project defaults** (`createBlankProject` / `dbImageMatching`); some older demo fixtures (e.g. dew-village-demo extras) may still reuse battlers and are residual cleanup, not the blank-project contract.
 - The Crops database tab edits optional `database.crops[]` records. Keep id/name/seedItemId/harvestItemId/harvestCount/stages/seasons/regrow/graphicStages aligned with `CropRecord`, `normalizeCropRecord`, reference validation, demo defaults, farming runtime, and `define_crop`.
 - **Life authoring surface (2026-08-24):** Grouped Database navigation no longer mixes crops/residents under the ambiguous `수집` label. `전투·몬스터` owns enemies/monsterSpecies/troops plus the existing battle tabs; `생활` owns the renamed `농사·작물` and `주민 관계` tabs. Stable tab ids/testids remain `crops`/`db-tab-crops`, `characters`/`db-tab-characters`, and `monsterSpecies`/`db-tab-monster-species`. `databaseCropView.ts` reports time, farmable-map, tool, and seed/harvest-reference readiness; `databaseCharacterView.ts` reports gift/calendar/profile readiness plus orphan/unused identity warnings; `databaseMonsterSpeciesView.ts` reports the species → enemy → troop → field-spawn → drop pipeline. Each readiness card owns a direct navigation/selection action, while empty catalogs expose first-record actions (`db-crop-empty-add`, `db-character-empty-add`). The card body is the button (`action` without `onClick` promotes the whole chip); the chevron keeps the `*-action` testid but is no longer a nested button. System jumps call `requestSystemSection` before the tab click so 선물 lands on 시작 설정 (`db-field-system-gift-system`), 생일/작물 시간 land on 시간 (`db-field-system-time-enabled`), and 종족 방식 lands on 시작 설정의 몬스터 수집. Contract: `test/databaseLifeReadinessNav.test.ts`. These panels are derived editor UI only: they add no project fields, seed no authored content, and keep `characters` distinct from party Actors. Shared DOM/navigation helpers are in `databaseLifeUi.ts`; modal-scoped CSS is `desktop-record-shell/11-life-authoring.css`. Monster tabs can prepend `db-collection-gate-warn`, so the desktop grid must reserve explicit banner/header/workspace rows; otherwise the species workspace intercepts readiness-card clicks. Browser coverage is `test/e2e/stardew-life-content.spec.ts` at 1024×768 and 1440×900.
@@ -190,7 +236,7 @@ The Database modal was modernized in six waves while keeping every hard contract
 - **Tileset tab slim (2026-08-31):** default surface is the chipset sheet + passage/layer. Per-tile `description` lives in a collapsed `<details>` on the knowledge tab (`tileset-tile-meaning-details`); group prose (`description` / `placementRules`) is likewise folded (`tileset-knowledge-prose`). Harness seed no longer copies group essays onto every `tileMeta.description` (`applyTileContract` in `combinedTown.ts` / `themePacks.ts`). The unused `최대 개수 (고정)` button, inline AI launcher, duplicate full-sheet button, and compose-tab dummy side pane are gone. `AI 타일셋` stays on the detail hero. Tests: `test/tilesetSectionTabs.test.ts`, `test/tilesetHarness.test.ts`, `test/e2e/oprn-tileset-readability.spec.ts`.
 - **통행 붓 + 넓은 시트 (2026-09-01):** 타일 규칙(통행) 면은 칸 클릭 토글이 아니라 **통과/막힘/위 ★ 붓**이다. 시트에서 클릭·드래그가 그 규칙을 칠하고, 통과 칸은 글자를 비워 그림을 가리지 않는다. 레이어·나침반(4방향)은 오른쪽 얇은 인스펙터. 방향별 통행은 기본으로 열려 있고, 화살표를 눌러도 접히지 않는다. 통행 면의 라벨 입력은 빼 둔다(우클릭 의미 편집·지식 탭). 이름/그래픽/투명색 카드는 시트 **아래**. 목록 열은 176–200px. **전체창**도 같은 붓(통과/막힘/위 ★) + 순환이며 클릭·드래그로 칠한다. Tests: `test/tilesetSectionTabs.test.ts`.
 - **Animation frame pick + battle-command door (2026-08-20):** `selectFrame` writes `editorState` **and** calls the form `rerender` so `.active` and the cell table follow the row/prev/next (do not rely on map `refreshPanels`). Battle Commands keep `db-field-battle-command-*` (no `database.battleCommands` path copy); kind labels match class `COMMAND_KIND_LABELS`; skill is a named `<select>` (`db-picker-battle-command-skill-*`) plus a visually hidden fillable `db-field-battle-command-skill-*`; `db-open-classes-tab` jumps via G006. Animation graphic uses `resourcePickerControl` kind `battle` (visible name + 설정..., fillable hidden id). Battle Screen uses a System2 resource picker. Tests: `test/databaseAnimationFrameSelect.test.ts`, `test/databaseBattleCommandsTab.test.ts`.
-- **Battle Studio surfaces (2026-08-24):** `battleAnimations`, `battleScreen`, `battleCommands`, and `terrain` keep the Database modal's cream shell, sidebar, record list, and every existing field/testid, but share a canvas-first studio language through `databaseBattleStudio.ts` and `src/styles/database/battle-studio.css`. The shared underline navigation must call `switchDatabaseActiveTab` (G006) and never reopen the modal. Animation editing is arranged as a dark stage, a scrollable light inspector, and an integrated dark timeline; Battle Screen previews the resolved background/enemy assets beside system controls and a troop strip; Battle Commands pairs a live menu canvas with class-link guidance and editable command cards; Terrain pairs presets, a live backdrop, and the existing record controls. This is derived/editor UI only: zero schema or persistence changes. The root surface explicitly owns a one-column grid so legacy `.db-detail-form` desktop columns cannot scatter its regions. At 1024px the workspaces stack inside the existing detail scroll area without document-level horizontal overflow; 1440px uses stage/inspector columns. Contract: `test/databaseBattleStudio.test.ts`; browser evidence: `output/evidence/database-battle-studio/`.
+- **Battle Studio surfaces (2026-08-24, revised 2026-09-04):** `battleAnimations`, `battleScreen`, `battleCommands`, and `terrain` keep the Database modal's cream shell, sidebar, record list, and every existing field/testid, but share a canvas-first studio language through `databaseBattleStudio.ts` and `src/styles/database/battle-studio.css`. `battleStudioHeading` renders the description callers pass as `.db-battle-studio-sub` (scoped under the modal selectors). The shared underline navigation must call `switchDatabaseActiveTab` (G006) and never reopen the modal. Animation editing is arranged as a dark stage, a scrollable light inspector, and an integrated dark timeline; Battle Screen previews the resolved background/enemy assets beside system controls and a troop strip, and links out to system › 시작 설정 (`db-battle-screen-open-system-startup`, `requestSystemSection("startup")` + focus on `db-field-system-battle-ui-style`) for UI style / rule model which live only there; Battle Commands pairs a live menu canvas with class-link guidance and editable command cards; Terrain pairs presets, a live backdrop, and the existing record controls. Flow wording is `턴 전투` / `게이지 전투` everywhere (`엄격 턴제` retired; `라운드` retired). This is derived/editor UI only: zero schema or persistence changes. The root surface explicitly owns a one-column grid so legacy `.db-detail-form` desktop columns cannot scatter its regions. At 1024px the workspaces stack inside the existing detail scroll area without document-level horizontal overflow; 1440px uses stage/inspector columns. Contract: `test/databaseBattleStudio.test.ts`; browser evidence: `output/evidence/database-battle-studio/`.
 
 ## P2 spatial authoring (2026-08-25)
 
@@ -204,7 +250,7 @@ The Database modal was modernized in six waves while keeping every hard contract
 
 `세계` 레일은 `생성 규칙`(프로젝트 전역) 다음에 **타일셋 폴더**를 둔다. 폴더 자식은
 통행(`db-tab-tilesets`, testid 유지 — e2e 가 이 버튼을 누른다) · 오토타일 설정 ·
-미분류 모아보기 · 구조물 · 공간 종류. 마을·지형·공용 이벤트는 폴더 밖 형제다.
+미분류 모아보기 · 구조물 · 공간 종류. 마을·지형 효과·공용 이벤트는 폴더 밖 형제다.
 
 칩셋 선택은 `oprn:database.selectedTilesetId` 한 키를 공유한다. 「방」 단독 탭은 없다 —
 공간 종류는 통행과 같은 층의 이 칩셋 면이다. 폴더 버튼 testid `db-tileset-folder` 는
@@ -254,9 +300,11 @@ The Database modal was modernized in six waves while keeping every hard contract
 `test/databaseTilesetFolder.test.ts`, `test/structureKitDbTab.test.ts` 의
 「구조물 탭은 공간 종류를 그리지 않는다」.
 
-## 임시 → 개념 꾸러미 (2026-09-02)
+## 맵 → 타일셋 → 개념 꾸러미 (2026-09-02 시작, Phase 4 졸업)
 
-데이터베이스 레일에 **임시** 그룹을 두고, 그 안에 `개념 꾸러미`(`scratchConcepts`) 한 탭만 둔다.
+~~데이터베이스 레일에 **임시** 그룹을 두고, 그 안에 `개념 꾸러미`(`scratchConcepts`) 한 탭만 둔다.~~
+**Phase 4(개념 통합)에서 임시 그룹을 졸업했다** — `개념 꾸러미`(`scratchConcepts`)는
+「맵」 그룹 타일셋 폴더(통행·오토타일·미분류·구조물·공간 종류 옆)에 있다.
 세계·공간 종류·구조물과 아직 합치지 않는다 — 시설→장소→물건→칩 나무를 그림으로
 저작하는 실험 면이다. `place_concept(query)` 가 이 필드를 읽어 시공한다.
 
@@ -265,14 +313,16 @@ The Database modal was modernized in six waves while keeping every hard contract
 - 데이터: `tileset.scratchConceptBundles`. undefined 는 시드 전, 빈 배열은 사용자가 지운 상태.
 - 실내 칩셋만 **시설 초안 묶음 아홉 종**을 시드한다(`CONCEPT_FACILITY_TEMPLATES`: 여관·민가·상점·술집·서재·대장간·교회·창고·길드, 여관이 첫째). 마을 칩셋에는 얹지 않는다. 옛 프로젝트에 여관만 시드돼 있으면 그대로다 — 나머지는 시설 띠의 「초안 넣기」로 골라 넣는다(재시드 아님, 사용자 선택).
 - 물건의 그림은 같은 타일셋 가구 킷/`INTERIOR_OBJECT_CATALOG` id 를 가리킨다. 픽셀을 복제하지 않는다.
-- 칩은 내장 8종(`pass`/`block`/`event`/`transfer`/`loot`/`sleep`/`floor`/`wall`) + 사용자 자유 칩. 산문 배치 규칙이 아니다. 자유 칩은 엔진 무동작 메모 태그 — 시공 분류·이벤트·점수·컨텍스트가 모르는 칩을 무시하고, plan 게이트는 내장 enum이 아니라 빈 문자열 아닌 id만 요구한다. 검증기(`shapeResourceFields`)는 빈 칩만 거절한다.
-- 화면: 타일셋 레일 + 장소 카드(가구 썸네일) + 인스펙터(큰 미리보기·이름·그림·그림 칠하기·칩 토글/자유 칩·장소 소속).
-- 사용자가 고친다: 시설명, 장소 추가/삭제/이름, 물건 추가/삭제/이름/그림/그림 직접 칠하기, 칩 토글/자유 칩 추가·삭제, 장소 소속, 필수 여부. 모두 `store.update` 로 `scratchConceptBundles` 에 남고, 다음 `place_concept` 가 그 나무를 읽는다.
+- 칩은 내장 8종(`pass`/`block`/`event`/`transfer`/`loot`/`sleep`/`floor`/`wall`) + 사용자 자유 칩. 산문 배치 규칙이 아니다. 자유 칩은 엔진 무동작 메모 태그 — 시공 분류·이벤트·점수·컨텍스트가 모르는 칩을 무시한다. 규칙은 `src/project/types/conceptBundle.ts` 의 `CONCEPT_FREE_CHIP_PATTERN` / `validateConceptChipId` 한 곳이다: 빈 id·32자 초과·영문·숫자·-_ 외 문자를 한글 이유로 거절하고, 내장 칩은 항상 통과한다. 인스펙터 추가·이름 변경(`scratchConceptTab`), plan `parseChips`, 타일셋 검증(`shapeResourceFields`)이 같은 검증기를 쓴다. 화면에서 내장 칩은 토글 버튼, 자유 칩은 id 입력으로 이름을 바꾸고 지우기 버튼으로 삭제한다. 잘못된 입력은 `scratch-concept-chip-error` 에 이유를 보여 주고 저장하지 않으며, 이름 변경 실패는 예전 id 로 되돌린다.
+- 화면: 타일셋 레일 + 장소 카드(가구 썸네일) + 인스펙터(큰 미리보기·이름·그림·그림 칠하기·칩 토글/자유 칩 편집·장소 소속).
+- 사용자가 고친다: 시설명, 장소 추가/삭제/이름, 물건 추가/삭제/이름/그림/그림 직접 칠하기, 칩 토글/자유 칩 추가·이름 변경·삭제, 장소 소속, 필수 여부. 모두 `store.update` 로 `scratchConceptBundles` 에 남고, 다음 `place_concept` 가 그 나무를 읽는다.
 - 물건 그림(2026-09-04): 인스펙터의 「그림」 셀렉트(`scratch-concept-thing-graphic`)가 같은 타일셋 가구 목록(`objectsForTileset` — 프로젝트 킷 → 카탈로그 순)에서 `thing.objectId` 를 갈아 끼운다. 모르는 id(옛 나무·지운 킷)는 「그림 없음」 옵션으로 남아 미리보기에 「그림 없음」이 뜬다. 이름과 달리 물건 id 는 그대로라 시공·이벤트·필수 판정이 갈라지지 않는다.
-- 그림 직접 칠하기(2026-09-05): 인스펙터의 「그림 칠하기/사본 만들어 칠하기」(`scratch-concept-thing-paint`)가 구조물 타일 에디터(`openStructureKitEditor`)를 연다. 타일셋 저장 그림이면 그 킷을 바로 고치고, 카탈로그 그림이면 사본(`duplicateIntoTileset`)을 만들어 이 물건에 붙인 뒤 연다 — 원본 카탈로그는 그대로 둔다. 저장은 에디터가 즉시 하고 닫히면 인스펙터를 다시 그린다.
+- 그림 직접 칠하기(2026-09-05): 인스펙터의 「그림 칠하기/사본 만들어 칠하기」(`scratch-concept-thing-paint`)가 구조물 타일 에디터(`openStructureKitEditor`)를 연다. 사용자 저장 그림이면 그 킷을 바로 고치고, 카탈로그·시드(`learnedFrom: interior-catalog`) 그림이면 사본(`duplicateIntoTileset`)을 만들어 이 물건에 붙인 뒤 연다 — 원본 카탈로그는 그대로 둔다. 저장은 에디터가 즉시 하고 닫히면 인스펙터를 다시 그린다.
+- 장소 카드 물건마다 바로 칠하기(2026-09-05): 각 물건 칩에 `scratch-concept-thing-paint-<thingId>` 가 있다. `ensureThingKitForEdit(tilesetId, bundleId, thingId)` 가 사용자 저장 킷 id 를 돌려주거나 카탈로그·시드면 사본을 만들어 `thing.objectId` 를 붙인다 — 인스펙터 버튼과 같은 경로. 피커 항목은 아직 물건이 아니라 칠하기가 없다. 계약: `test/scratchConceptTab.test.ts`.
 - **장소 도면 필드 (2026-09-02 시공 개편):** 장소 레코드에 선택 필드 `role`(`entrance` 홀·정문 / `walkway` 복도 / `room` 방), `size`(`s` 5×3 · `m` 7×4 · `l` 9×5), `count`(1..4, 같은 장소 여러 개) 가 붙었다. 장소 카드의 도면 열(`scratch-concept-place-role-<id>` / `-size-<id>` / `-count-<id>`)에서 고친다. 필드가 없는 옛 나무는 기본값(방·보통·1)으로 읽고, 복도는 라벨(복도·통로) 폴백으로 알아본다. 검증기(`shapeResourceFields`)가 모르는 role/size 와 범위 밖 count 를 거절한다.
 - 여관 초안 시드: 침실 `room·m·count 2`, 복도 `walkway`, 식당/홀 `entrance·l`. 도면은 남→북으로 홀(정문) → 복도 → 객실 ×2.
 - **시설 띠·재질 (2026-09-02 시설 다양화):** 보드 위에 시설 띠(`scratch-concept-facilities`)가 이 타일셋의 꾸러미를 칩(`scratch-concept-facility-<bundleId>`)으로 늘어놓는다. `+ 시설`(`scratch-concept-facility-add`)은 빈 꾸러미를 만들고, 아직 없는 초안이 있으면 `초안 넣기…` 셀렉트(`scratch-concept-template-select`)가 그것만 보여 준다. 도구줄의 `시설 삭제`(`scratch-concept-facility-remove`)는 꾸러미를 지운다 — 마지막 것을 지우면 빈 배열이 남고 다시 시드하지 않는다(빈 화면의 `초안 N종 넣기`(`scratch-concept-seed-templates`)가 다시 넣는 유일한 길). 시설에 **벽 재질** `wall`(`cream`·`gold-brick`·`stone-brick`, `scratch-concept-facility-wall`), 장소에 **바닥 재질** `floor`(`wood`·`stone`·`plank`·`mat`, `scratch-concept-place-floor-<id>`)가 붙었다. 기본값(크림·나무)은 필드를 지운다. 시공 뒤 파이프라인 리틴트가 그 방 바닥·그 시설 벽면을 갈아 끼운다. 장소 카드에 **층** `level`(1~3, `scratch-concept-place-level-<id>`, 2026-09-03)이 더 붙었다 — 2층 이상 장소는 `place_concept` 이 `<mapId>_2f` 별도 맵으로 짓고 계단(맵 연결 칩) 물건이 층을 잇는다. 1층은 필드를 지운다.
+- **도면 문법·구역·시설 소속 (2026-09-05):** 도구줄의 「도면」 셀렉트(`scratch-concept-facility-layout`)가 시설 `layout`(`row` 한 줄 / `double-row` 두 줄)을 고친다 — 기본 한 줄은 필드를 지운다. 장소 카드 도면 열에 「구역」 셀렉트(`scratch-concept-place-zone-<id>`)가 붙어 `zone`(`north` 북쪽 / `south` 남쪽 / 자동)을 고친다 — 자동은 필드를 지우고 두 줄 도면이 주방·창고 라벨을 남쪽으로 본다. 도구줄의 「시설 장소」 토글(`scratch-concept-facility-place-<id>`)이 꾸러미 장소 중 이 시설에 드는 것만 도면에 들인다 — 빼도 꾸러미 장소·물건은 남고 다시 넣으면 꾸러미 순서대로 붙는다. 계약: `test/scratchConceptTab.test.ts` 「도면·구역·소속」.
 - 피커는 프로젝트 킷 뒤에 카탈로그에만 있는 소품(성상·과일 선반·항아리 선반·곡물 자루·잡화 상자·물통·주전자·스툴·붉은 카펫·짚 돗자리)을 이어 보여 준다 — 킷을 옛 카탈로그로 시드한 프로젝트에서도 고를 수 있다. 러그류(`rug*`)는 기본 칩이 통행 가능·바닥, 계단류(`stairs*`)는 통행 가능·맵 연결.
 - 진입: `src/editor/panels/scratchConceptTab.ts`. 초안 데이터: `src/project/defaults/conceptFacilityTemplates.ts`. 계약: `test/scratchConceptTab.test.ts`, `test/conceptFacilityTemplates.test.ts`, `test/placeConceptTool.test.ts`. 시공 쪽 설명은 `openwiki/editor-interior-room-harness.md` 「개념 시설 시공」. 갤러리 보고서: `npx tsx scripts/gen-concept-facility-gallery.mts` → `reports/concept-facilities/index.html`.
 
@@ -333,13 +383,14 @@ leaf 조건에서 멈추고 `default: return false` 했다:
 
 - **탭 등록**: `factions`(`db-tab-factions`, 라벨 `진영`)는 `몬스터` 그룹의 `enemies` · `monsterSpecies` · `troops` 뒤에 온다. 카운트는 `2 + 예약 id 를 뺀 저작 진영 수`라서 아무것도 만들지 않은 프로젝트도 `2`(예약 `player`/`enemy`)로 나온다. 화면은 `databaseFactionView.ts`(공용 `workspaceShell`/`listPane`/`detailPane` 빌더), 순수 변경 모델은 `databaseFactionModel.ts`.
 - **기본값과 대칭 판정을 UI 가 다시 구현하지 않는다.** 표시값은 전부 `resolveFactionTable` → `factionStance` 를 거쳐 나오고(`authoredFactionStance`), 관계가 없을 때의 값도 관계를 비운 테이블에서 구한다(`defaultFactionStance`). 편집기가 자체 기본값을 세우면 "우호로 바꿨는데 계속 적대"처럼 전투와 어긋나는 화면이 생긴다. 목록 순서도 `table.ids` 라 예약 진영이 항상 앞자리(번호표 `예약`)이고, 삭제 버튼은 예약 id 에서 disabled 다.
-- **태도 행렬은 한 쌍을 대칭으로 쓴다.** `db-faction-matrix` 의 셀 `db-faction-stance-<rowId>-<columnId>` 은 누를 때 -2 → -1 → 0 → 1 → 2 로 순환하고 `data-authored` 로 저작/기본값을 구분한다. `setSparseFactionStance` 는 (1) 값이 기본값과 같아지면 관계 항목을 아예 쓰지 않고 (2) 순서가 뒤집힌 중복 관계를 걷어 한 쌍으로 합친다 — N² 화면이 프로젝트 JSON 을 N² 데이터로 부풀리지 않게 막는 유일한 장치다. 안내문 `db-faction-hostility-notice` 는 외부 JSON 의 양방향 값이 다를 때 전투와 같이 더 적대적인 쪽이 이긴다는 사실을 적는다.
-- **셀 색은 런타임 `stanceBarColor` 를 그대로 쓴다** — 의도적인 비토큰 값이다. 같은 관계가 편집기와 플레이 화면에서 다른 색으로 읽히면 안 되기 때문이고, 색만 신호로 두지 않고 숫자·라벨·저작 표식(`● 저작` / `○ 기본`)을 함께 둔다.
+- **관계 편집의 정면은 선택 진영 목록이다(2026-09-04).** 카드 `db-faction-relations` 는 선택 진영을 제외한 모든 상대를 나열하고, 각 행에 현재값 칩(`바꿈` / `기본`), 실제 전투 결과(`willAttackOnSight` 양방향 평가: `이쪽이 먼저 공격` / `상대가 먼저 공격` / `서로 먼저 공격하지 않음`)를 함께 보여 준다. 버튼 다섯 개가 `setSparseFactionStance` 로 바로 저장한다. 태도는 허가일 뿐이라 선공 설명은 전투 결과 한 줄로만 둔다 — 우호(1 이상)의 아군 오사격 면제는 `isHittableByFaction` 규칙이며 버튼 툴팁에 적는다.
+- **행렬 셀도 한 쌍을 대칭으로 쓴다.** 카드 `db-faction-matrix-card`(`전체 관계표 (고급)`)는 기본 접힘(`collapsible`, `collapsed`)이고 목록과 같은 값을 보여 준다. `db-faction-matrix` 의 셀 `db-faction-stance-<rowId>-<columnId>` 은 누를 때 -2 → -1 → 0 → 1 → 2 로 순환하고 `data-authored` 로 바뀜/기본을 구분한다. `setSparseFactionStance` 는 (1) 값이 기본값과 같아지면 관계 항목을 아예 쓰지 않고 (2) 순서가 뒤집힌 중복 관계를 걷어 한 쌍으로 합친다 — N² 화면이 프로젝트 JSON 을 N² 데이터로 부풀리지 않게 막는 유일한 장치다. 안내문 `db-faction-hostility-notice` 는 외부 JSON 의 양방향 값이 다를 때 전투와 같이 더 적대적인 쪽이 이긴다는 사실을 적는다.
+- **셀 색은 런타임 `stanceBarColor` 를 그대로 쓴다** — 의도적인 비토큰 값이다. 같은 관계가 편집기와 플레이 화면에서 다른 색으로 읽히면 안 되기 때문이고, 색만 신호로 두지 않고 숫자·라벨·바꿈 표식(`● 바꿈` / `○ 기본`)을 함께 둔다.
 - **ID 변경은 참조를 함께 옮긴다.** `renameFaction` 이 관계의 양 끝, `EnemyRecord.factionId`, 모든 맵의 `FieldSpawnDef.factionId`, 그리고 `changeFactionStance` 명령의 두 피연산자(`visitProjectCommands` 로 맵 이벤트·페이지·커먼 이벤트·트룹 전투 페이지까지)를 다시 쓴다. 삭제(`deleteFaction`)는 같은 참조를 사람이 읽는 목록(`몬스터 '…'`, `맵 '…'의 필드 스폰 '…'`, 이벤트 위치)으로 만들어 막고, 예약 id 는 아예 거부한다. 복제는 정체성만 복사하고 관계는 물려주지 않는다 — 원본의 동맹·적을 조용히 상속하는 쪽이 더 위험하다.
 - 세계관에서 구체화된 진영은 `FactionDef.worldEntityId` 에 출처(`WorldEntity.id`)를 들고 있어서, 이 탭에서 전투 ID 를 바꿔도 세계관 재반영이 같은 세력의 진영을 하나 더 만들지 않는다.
 - **플레이어 처치 평판은 진영 속성이 아니라 프로젝트 전체 규칙**이라 별도 카드 `db-faction-reputation` 에 있다: 켜면 `factions.playerKillReputation { weight }`(기본 0.25, 음수는 0 으로 조인다), 끄면 키를 지운다(`setPlayerKillReputation`). 실제 적용은 런타임 `applyPlayerKillReputation` 이 세션 오버레이에만 쓴다.
 - 구조 변경(추가·복제·삭제·ID·선공 성향·보호·평판)은 `recordProjectSnapshot`, 이름·색처럼 연속으로 들어오는 입력은 `recordCoalescedSnapshot` 이라 DB 모달의 dirty/undo 계약을 그대로 따른다. 필드·행렬·평판 쓰기는 `replaceFactions` 를 지나 `normalizeProjectFactions` 로 정규화되고, ID 변경·삭제는 모델이 만든 프로젝트를 `store.replace` 로 반영한다. 어느 경로든 남는 값이 없으면 `project.factions` 키 자체를 지운다.
-- 커버리지: `test/databaseFactionModel.test.ts`(희소 쓰기, 역순 중복 제거, 비대칭 입력, ID 변경 시 명령·몬스터·스폰 재작성, 참조 있는 삭제 차단), `test/databaseFactionView.test.ts`(공용 빌더, 예약 진영 셀 접근성, 셀 순환과 저작 표식).
+- 커버리지: `test/databaseFactionModel.test.ts`(희소 쓰기, 역순 중복 제거, 비대칭 입력, ID 변경 시 명령·몬스터·스폰 재작성, 참조 있는 삭제 차단), `test/databaseFactionView.test.ts`(공용 빌더, 예약 진영 전투 결과, 관계 목록 직접 변경·기본값 복귀, 셀 순환과 바꿈 표식).
 
 ### 몬스터 폼의 소속 진영 (`databaseEnemyRecordView.ts`)
 
@@ -608,7 +659,7 @@ n=3 / 484.6 이 나온다 — 리스트로 모아서 세라. 이 표의 `.db-lif
 
 마을 생성의 값은 전부 코드 상수였다. 집 형태 34종은 `HOUSE_TEMPLATES` 의 `wingsAt()` 함수였고, 길 폭·광장 모양·마당 스타일은 씨앗값과 테마 문자열에서 파생됐다. 사용자가 바꿀 자리가 없었고, AI 도 코드 요약만 읽었으므로 "내가 정한 대로 깔아 줘" 가 성립하지 않았다. 이 탭이 그 입력단이다.
 
-- **레일 위치**: 세계 그룹, 타일셋 폴더(`공간 종류`)와 `지형` 사이. `id: "villages"`, `data-testid="db-tab-villages"`. 배지 숫자는 사용자 레코드 수(`villageTemplates.length + villagePresets.length`)이며 **내장 34종은 세지 않는다**.
+- **레일 위치**: 세계 그룹, 타일셋 폴더(`공간 종류`)와 `지형 효과` 사이. `id: "villages"`, `data-testid="db-tab-villages"`. 배지 숫자는 사용자 레코드 수(`villageTemplates.length + villagePresets.length`)이며 **내장 34종은 세지 않는다**.
 - **두 종류를 한 탭에서 저작한다.** 목록 창 칩(`db-village-kind-template` / `db-village-kind-preset`)이 축이고, 오른쪽 상세는 고른 종류를 편집한다. 저장 위치는 `project.villageTemplates` / `project.villagePresets` — 프로젝트에 있으면 **전부 사용자 저작**이다(내장 카탈로그는 코드에 남고 레코드가 되지 않는다).
 - **제로 부트스트랩**: 탭을 열기만 해서는 아무 레코드도 생기지 않는다. 두 배열은 그대로 `undefined` 다.
 - **화면의 선택지와 하네스가 받는 값은 같은 상수에서 나온다.** select 옵션은 `village/authoringData.ts` 의 `VILLAGE_PATH_STYLES` · `VILLAGE_PLAZA_LAYOUTS` · `VILLAGE_RANGE` 등을 그대로 쓴다. 예전에 화면과 하네스가 갈라졌던 항목(`roadWidth` 2~3, `roadNaturalness` 하한 0.35)이 여기 있다 — 갈라지면 사용자가 고른 값이 조용히 무시된다.
@@ -815,3 +866,25 @@ TURN/BATTLE MENU` 칩. 전투 애니메이션 타이밍 표 헤더 `사운드...
 몇 탭이 문턱을 넘나든다(troops 53→57 · life-collections 46→60 등) — 필드가 적은 폼의 여백이라 위반이
 아니라 밀도 축의 관찰값으로 읽는다. 증거는 `docs/2026-09-03-db-studio-v2-assets/`.
 
+
+
+## 미회수 편집 후속 통합 (2026-09-05)
+
+- 구조물 삭제 토스트는 개념 물건 참조가 있어도 카탈로그 id가 남으면 원본 그림으로 돌아갔다고 안내한다. UUID 사본처럼 폴백이 없을 때만 그림 부재 오류를 표시한다. 기존 가져오기·가구 분류 경로는 유지한다. 계약: `test/structureKitDbTab.test.ts`.
+- 구형 전투 명령 안내는 실제 동작인 `방어(구형)`·`교체(구형)`으로 표기한다. 설명 글꼴은 DB 모달 규칙보다 우선하며 안내 열은 88px로 긴 이름을 담는다.
+## 마을 설계서 (2026-09-05)
+
+마을 탭에 설계서 저작 화면을 연결했다. 기존 프리셋은 명시적으로 전환하며, 새 설계서는 외형·배치·자연·실내·주민 설정과 기본 설계서 선택을 한곳에서 다룬다. 상세 계약과 경계는 [마을 설계서](village-design.md).
+
+
+## 구조물 증분 메타 정정 (2026-09-05)
+
+- AI 초안은 growthAxis가 있으면 모순되는 repeatability를 버린다. 사람 저작값은 보존하고 축이 설정된 동안 반복 셀렉트만 비활성화한다. 축을 비우면 원래 반복값으로 돌아간다. 축을 바꿀 때 즉시 다시 그린다.
+- 칸 힌트가 없으면 힌트 도구를 고르기 전까지 빈 목록을 접고, 도구 설명과 실제 아이콘(grid/rectangle)을 쓴다.
+- 목록·인스펙터는 `structureKitGrowthText`로 같은 축 문구를 쓴다. 사람 스탬프 `applyStampStructureKit`의 조인 안내는 실제로 보낸 repeat/repeatY에만 붙인다(undefined도 생략이다). AI stamp 툴을 부활시키지 않는다.
+- 계약: `test/structureKitEditorDialog.test.ts`, `test/structureKitTools.test.ts`.
+
+
+## 개념 회수 UI 직접 렌더 QA (2026-09-05)
+
+`DEV_SERVER_PORT=9901 node scripts/qa/concept-recovery-editor.mjs`는 실제 CSS와 `renderScratchConceptTab`·구조물 편집기를 작은 HTML 호스트에 열어 도면·구역·시설 소속·시드 그림 사본·증분 축 반복값 보존을 검증한다. 원격 저장은 꺼 둔 단위 QA 프로젝트이며 게임 콘텐츠 저작 산출물이 아니다. 결과는 `verify-shots/concept-recovery-editor/`(1024·1440 화면, 구조물 증분 화면, result.json). 시각 확인에서 「두 줄」이 잘리던 도면 선택기에만 최소 폭 72px를 주었다. 전체 편집기 부팅은 호스트 ERR_NETWORK_CHANGED 때문에 별도 검증하지 못했지만, 이 경로는 실제 프로덕션 렌더러와 저장 뮤테이터를 실행하며 pageerror 0건을 확인한다.

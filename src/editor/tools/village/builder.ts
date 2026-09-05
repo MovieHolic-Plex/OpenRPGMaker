@@ -53,6 +53,7 @@ import {
   MAX_ROAD_WIDTH,
   MAX_SIZE,
   MIN_HOUSES,
+  MIN_BOUNDS_SIZE,
   MIN_SIZE,
   ROAD_TILES,
   uniqueId,
@@ -91,6 +92,7 @@ import {
   wipeAttemptMaps,
 } from "./pipeline";
 import { villagePlaza } from "./plaza";
+import { sketchHouseSites } from "./sketch";
 import {
   boulevardCells,
   paintVillageRoadsChecked,
@@ -100,13 +102,15 @@ import {
 } from "./roads";
 import { COORD_SCHEMA, VILLAGE_HOUSE_PLAN_SCHEMA, VILLAGE_NPC_PLAN_SCHEMA } from "../schemaShapes";
 
+import { resolveVillageDesignInput, designTemplateCatalog, villageDesignWorldRules, villageDesignRequirements, assertLegacyVillageSession } from "./designContract";
+
 export type VillageBuildDomainArgs = Readonly<Record<string, unknown>>;
 
 export function buildVillageDomain(
   draft: Project,
   args: VillageBuildDomainArgs,
 ): ToolExecResult {
-  const merged = mergePlanIntoBuildArgs(draft, args);
+  const merged = resolveVillageDesignInput(draft, mergePlanIntoBuildArgs(draft, args));
   const seed = integerArg(merged, "seed", 1);
   // houseCount 별칭 소비(2026-07-17) — 예전엔 build_village가 이를 조용히 무시해 8채 고정이었다.
   const housePlan = coerceHousePlan(merged.houses ?? merged.houseCount, merged.housePlans);
@@ -137,7 +141,18 @@ export function buildVillageDomain(
     presetValues.templateIds && presetValues.templateIds.length > 0
       ? [...new Set([...presetValues.templateIds, ...forcedTemplateIds])]
       : presetValues.templateIds;
-  const catalog = villageTemplateCatalog(draft, allowedTemplateIds);
+  // 프리셋 화이트리스트 확장 통보 — 명시 형태가 프리셋 후보 밖이면 합집합으로 넓힌다.
+  // 합집합 자체는 house-template-unplaced 전체 중단을 막기 위한 의도적 선택이지만,
+  // 프리셋 저작자의 미적 의도가 넓혀진 것은 별도 사건이라 경고에 남긴다.
+  const presetIdSet = new Set(presetValues.templateIds ?? []);
+  const expandedByForced = forcedTemplateIds.filter((id) => !presetIdSet.has(id));
+  if (preset && expandedByForced.length > 0) {
+    warnings.push(
+      `마을 프리셋 '${preset.name || preset.id}'의 형태 후보를 명시 지정(${expandedByForced.join(", ")})으로 넓혔다.`,
+    );
+  }
+  const sourceCatalog = villageTemplateCatalog(draft, allowedTemplateIds);
+  const catalog = { ...sourceCatalog, templates: designTemplateCatalog(draft, preset, sourceCatalog.templates) };
   warnings.push(...catalog.warnings);
   if (preset) {
     warnings.push(`마을 프리셋 적용: ${preset.name || preset.id} (형태 후보 ${catalog.templates.length}종).`);
@@ -169,23 +184,25 @@ export function buildVillageDomain(
   }
   // 쿼리 상식 스펙: 강/호수 자리를 비운 채 주거 영역만 시공
   const planForReq = typeof merged.planId === "string" ? loadVillagePlan(draft, merged.planId) : undefined;
-  const worldGenRules = resolveWorldGenRules(draft.system.worldGen);
+  const worldGenRules = villageDesignWorldRules(draft, preset);
   const inferredRequirements = planForReq?.requirements
     ?? (typeof intent.theme === "string" && intent.theme
       ? inferRequirementsFromQuery(intent.theme, worldGenRules, { forestDensity: intent.forestDensity })
       : undefined);
-  const requirements = inferredRequirements && intent.forestDensity
+  const requirements = villageDesignRequirements(draft, preset, inferredRequirements && intent.forestDensity
     ? { ...inferredRequirements, forestDensity: intent.forestDensity }
-    : inferredRequirements;
+    : inferredRequirements);
   const baseArea = villageBuildArea(map, createArgs.bounds);
-  assertBuildAreaSize(map, baseArea);
+  // 명시 bounds가 있으면 하한 16(모델이 화면·선택 크기를 그대로 넘긴다),
+  // 맵 전체 시공이면 기존 하한 20을 유지한다 — 19×19 전체맵 거부 계약 그대로.
+  assertBuildAreaSize(map, baseArea, createArgs.bounds !== undefined);
   // E 하이브리드: requirements → 제약 마스크 → buildable 영역 + 물/숲 셀 회피
   const terrainMasks = requirements && requirements.landmarks.length > 0
     ? buildTerrainConstraintMasks(map, requirements, baseArea, worldGenRules)
     : undefined;
   const reserved = terrainMasks?.buildableRect ?? { x: 0, y: 0, w: map.width, h: map.height };
   const area = intersectRects(baseArea, reserved);
-  assertBuildAreaSize(map, area);
+  assertBuildAreaSize(map, area, createArgs.bounds !== undefined);
   if (requirements && requirements.landmarks.length > 0) {
     warnings.push(`상식 스펙 적용: ${requirements.mustExist.join(", ")}`);
   }
@@ -204,11 +221,11 @@ export function buildVillageDomain(
     ? housePlan.count
     : presetValues.houseCount
       ?? Math.min(MAX_HOUSES, Math.max(DEFAULT_HOUSES, Math.round((area.w * area.h) / 380)));
-  // 대로 골격(대형 맵, 리서치 spine-first): 밴드를 집 배치 전에 예약해 구멍 없는 직선 대로 보장.
+  // 대로 골격(대형 맵, 리서치 spine-first): 곡선 밴드를 집 배치 전에 예약해 구멍 없는 대로 보장.
   const boulevard = villageBoulevard(area, plaza);
   const houseBlockedIdx = new Set<number>(terrainBlockedCells(terrainMasks) ?? []);
   if (boulevard) {
-    for (const cell of boulevardCells(area, boulevard)) {
+    for (const cell of boulevardCells(area, boulevard, seed)) {
       if (cell.x >= 0 && cell.y >= 0 && cell.x < map.width && cell.y < map.height) {
         houseBlockedIdx.add(cell.y * map.width + cell.x);
       }
@@ -218,6 +235,14 @@ export function buildVillageDomain(
   const coreArea = boulevard
     ? intersectRects(area, { x: plaza.centerX - 30, y: plaza.centerRow - 30, w: 61, h: 61 })
     : area;
+  // 스케치 프리패스 — 솔버 격자 전에 유기적 후보점을 뽑아 buildHouses에 넘긴다.
+  const sketchSites = sketchHouseSites({
+    area: coreArea,
+    plaza,
+    seed,
+    targetHouses,
+    boulevard: boulevard ? { ewRow: boulevard.ewRow, nsCol: boulevard.nsCol } : null,
+  });
   // 자연 시공 순서: 집 배치 → 광장·대로·집 연결 길(얽기설기) → 문 복구 → 울타리
   // (예전엔 길→집이라 길이 집 자리를 선점하는 느낌이 났음)
   const houses = buildHouses(
@@ -225,6 +250,7 @@ export function buildVillageDomain(
     houseBlockedIdx.size > 0 ? houseBlockedIdx : undefined,
     boulevard ? { ewRow: boulevard.ewRow, nsCol: boulevard.nsCol } : undefined,
     !doorEventsPlanned,
+    sketchSites,
   );
   perfLap("houses");
   if (houses.length === 0) {
@@ -248,6 +274,8 @@ export function buildVillageDomain(
     }
   }
   // 길 시공 강제 훅 — 시공→침범 점검→롤백 재시도(최대 100회), 시뮬레이션식.
+  // 재시도 리포트는 기계 가독으로 warnings에 남겨 맹목 재시도를 막는다.
+  const roadRetryBox: { report: import("./roads").RoadRetryReport | undefined } = { report: undefined };
   paintVillageRoadsChecked({
     draft,
     map,
@@ -261,7 +289,15 @@ export function buildVillageDomain(
     throughBlocked,
     forbidden: roadForbidden,
     boulevard,
+    retryReport: roadRetryBox,
   });
+  if (roadRetryBox.report && (roadRetryBox.report.attempts > 0 || roadRetryBox.report.fallbackStraight)) {
+    const trace = roadRetryBox.report.violationTrace.join("→");
+    warnings.push(
+      `길 재시도 리포트: 시도 ${roadRetryBox.report.attempts}회(직선폴백 ${roadRetryBox.report.fallbackStraight ? "예" : "아니오"}), ` +
+        `침범 추이 [${trace}], 잔존 금지 ${roadRetryBox.report.residualForbidden}/영역밖 ${roadRetryBox.report.residualOutside}`,
+    );
+  }
   perfLap("roads");
   // 문 하단/상단 안전 복구 (진입로 폭 확장·오프셋 대비)
   restoreHouseDoors(map, houses);
@@ -354,7 +390,8 @@ export function buildVillageDomain(
   perfLap("interiors");
   const requestedNpcCount = integerArg(merged, "npcCount", houses.length + 2);
   placeVillageNpcs(draft, map, area, houses, plaza, overrides, seed, warnings, requestedNpcCount);
-  applyVillageGroundTheme(map, area, merged.groundTheme);
+  paintGroundThemeStrip(map, area, merged.groundTheme);
+  clearHouseRidgeRowProps(map, houses);
   setVillageHarnessLayoutPlan(map, area, plaza, houses, intent, seed, fencesEnabled, merged.settlementLayout);
 
   // 시작 좌표가 집/울타리 아래로 가면 커밋이 거부된다 — 광장 길로 옮긴다.
@@ -385,6 +422,19 @@ export function buildVillageDomain(
     for (const issue of critique.issues) warnings.push(issue);
   }
 
+  if (preset?.design) {
+    if (houses.length !== targetHouses) throw new ToolError(`설계서의 집 ${targetHouses}채 중 ${houses.length}채만 들어갑니다. 맵이나 시공 영역을 넓혀 주세요.`, { code: "village-design-capacity", mapId });
+    map.villageDesignSource = { preset: structuredClone(preset), seed, houseCount: houses.length,
+      resolvedSettings: {
+        pathStyle: intent.pathStyle, kitMix: intent.kitMix, groundTheme: merged.groundTheme,
+        settlementLayout: intent.settlementLayout, roadWidth: intent.roadWidth, roadNaturalness: intent.roadNaturalness,
+        yardStyle: intent.yardStyle, plazaStyle: intent.plazaStyle, plazaLayout: intent.plazaLayout,
+        interior: interiorEnabled, npcCount: requestedNpcCount, requirements: structuredClone(requirements),
+        worldGen: structuredClone(worldGenRules),
+        templates: catalog.templates.map(t => ({ id: t.id, name: t.name, w: t.w, h: t.h, stories: t.stories, kitId: t.kitId, wings: structuredClone(t.wings) })),
+      },
+    };
+  }
   const themeLabel = intent.theme ? `「${intent.theme}」 ` : "";
   const reqNote = requirements && requirements.landmarks.length > 0
     ? ` 필수[${requirements.landmarks.join(",")}]`
@@ -830,6 +880,7 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
     },
     invalidArgsExample: { planId: "vplan_1", maxAttempts: 2 },
     run(draft, args): ToolExecResult {
+      assertLegacyVillageSession(draft, args);
       return runVillagePipeline(draft, args);
     },
   },
@@ -1066,15 +1117,17 @@ function villageBuildArea(map: GameMap, value: unknown): Rect {
   return { x: bounds.x as number, y: bounds.y as number, w: bounds.w as number, h: bounds.h as number };
 }
 
-function assertBuildAreaSize(map: GameMap, area: Rect): void {
+function assertBuildAreaSize(map: GameMap, area: Rect, explicitBounds: boolean): void {
   if (area.x < 0 || area.y < 0 || area.x + area.w > map.width || area.y + area.h > map.height) {
     throw new ToolError(`build_village bounds가 맵 경계를 벗어납니다: ${area.x},${area.y},${area.w}x${area.h}`, {
       code: "bounds-out-of-map",
       mapId: map.id,
     });
   }
-  if (area.w < MIN_SIZE || area.h < MIN_SIZE) {
-    throw new ToolError(`build_village는 최소 ${MIN_SIZE}x${MIN_SIZE} 영역이 필요합니다: ${area.w}x${area.h}`, {
+  // 명시 bounds 16×16 허용(파서 MIN_BOUNDS_SIZE), 맵 전체는 기존 20 하한 유지.
+  const floor = explicitBounds ? MIN_BOUNDS_SIZE : MIN_SIZE;
+  if (area.w < floor || area.h < floor) {
+    throw new ToolError(`build_village는 최소 ${floor}x${floor} 영역이 필요합니다: ${area.w}x${area.h}`, {
       code: area.w === map.width && area.h === map.height ? "map-too-small" : "bounds-too-small",
       mapId: map.id,
     });
@@ -1469,7 +1522,8 @@ function isVillageStartGround(tileId: number): boolean {
   return ROAD_TILES.has(tileId) || tileId === TILE.GRASS || DEFAULT_SNOW_AUTOTILE_GROUP.memberTileIds.includes(tileId);
 }
 
-function applyVillageGroundTheme(map: GameMap, area: Rect, value: unknown): void {
+/** 잔디 칸에 눈 오토타일을 깐다. 시공과 바닥 스와치가 같은 페인터를 지난다. grass 는 무연산. */
+export function paintGroundThemeStrip(map: GameMap, area: Rect, value: unknown): void {
   if (value === undefined || value === "grass") return;
   if (value !== "snow") throw new ToolError("groundTheme은 grass|snow여야 합니다.", { code: "invalid-args", mapId: map.id });
   const points: Point[] = [];

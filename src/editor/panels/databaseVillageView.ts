@@ -1,3 +1,5 @@
+import { asVillageDesign } from "@/project/villageDesign";
+import { renderVillageDesignDetail } from "./villageDesignPanel";
 // 마을 탭 — 마을 하네스가 읽는 값을 사람이 저작하는 화면.
 //
 // 이 탭이 없던 동안 마을 생성의 모든 값(집 형태 34종, 길 폭, 광장 모양, 마당 스타일…)은
@@ -31,9 +33,13 @@ import {
   createHousePreview,
   createMapShot,
   houseKitTileset,
+  previewKitFor,
   villageArchetypeShotUrl,
   type HousePreviewSize,
 } from "@/editor/panels/villageHousePreview";
+import { createMoodPreview, type MoodPreviewField } from "@/editor/panels/villageMoodPreview";
+import { visualSelect } from "@/editor/panels/villageVisualSelect";
+import { createGroundThemePreview } from "@/editor/panels/villageGroundPreview";
 import { PRESET_PREVIEW_SIZE, buildPresetPreview } from "@/editor/panels/villagePresetPreview";
 import {
   detailHero,
@@ -49,7 +55,7 @@ import {
   workspaceShell,
 } from "@/editor/panels/databaseWorkspace";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
-import { ALL_HOUSE_KIT_IDS, HOUSE_KITS, MIXABLE_HOUSE_KIT_IDS } from "@/editor/houseKit";
+import { ALL_HOUSE_KIT_IDS, HOUSE_KITS, MIXABLE_HOUSE_KIT_IDS, isHouseKitId, type HouseKitId } from "@/editor/houseKit";
 import {
   VILLAGE_ARCHETYPES,
   VILLAGE_EDGE_TREE_STYLES,
@@ -76,7 +82,7 @@ import "@/styles/database/modern/village.css";
 
 type VillageKind = "template" | "preset";
 
-const KIND_LABEL: Readonly<Record<VillageKind, string>> = { template: "집 형태", preset: "배치 프리셋" };
+const KIND_LABEL: Readonly<Record<VillageKind, string>> = { template: "집 형태", preset: "마을 설계서" };
 
 // 사용자에게 보여줄 한국어 이름. 값(=하네스가 받는 문자열)은 그대로 저장한다.
 const PATH_LABEL: Readonly<Record<string, string>> = { sand: "모래길", dirt: "흙길", stone: "돌길" };
@@ -95,12 +101,15 @@ const GROUND_LABEL: Readonly<Record<string, string>> = { grass: "풀", snow: "�
 
 const UNSET = "";
 
-let selectedKind: VillageKind = "template";
+let selectedKind: VillageKind = "preset";
 let selectedTemplateId = "";
 let selectedPresetId = "";
 let villageSearch = "";
 /** 프리셋 미리보기 씨앗. 랜덤이 아니라 세는 값이다 — 같은 씨앗은 늘 같은 배치를 낸다. */
 let presetPreviewSeed = 7;
+/** 「값 가져오기」가 읽을 원형. 예전 <select> 의 첫 항목과 같이 프리셋마다 첫 원형에서 시작한다. */
+let archetypeImportSourceId = VILLAGE_ARCHETYPES[0]!.id;
+let archetypeImportPresetId = "";
 
 export function renderVillageTab(host: HTMLElement, rerender: () => void): void {
   const project = store.getCurrent();
@@ -307,10 +316,10 @@ function startScreen(project: Project, rerender: () => void): HTMLElement {
             children: [
               emptyState({
                 icon: "⌖",
-                title: "배치 프리셋을 만들어 보세요",
-                body: "길 폭·광장 모양·마당 스타일 같은 값을 한 묶음으로 저장합니다. AI 에게 “이 프리셋으로 마을 깔아 줘”라고 하면 그대로 쓰입니다.",
+                title: "마을 설계서를 만들어 보세요",
+                body: "집의 생김새·길·물과 숲을 한곳에서 정합니다. AI가 지킬 고정값과 바꿔도 되는 범위를 선택하세요.",
                 action: {
-                  label: "+ 빈 프리셋 추가",
+                  label: "+ 마을 설계서 추가",
                   kind: "primary",
                   testid: "db-village-preset-blank-create",
                   onClick: () => { selectedKind = "preset"; createRecord(rerender); },
@@ -464,7 +473,7 @@ function templateDetail(
           sectionCard({
             title: "크기와 재료",
             hint: "폭 3~8 · 높이 4~24칸",
-            children: templateSizeFields(record, rerender),
+            children: templateSizeFields(project, record, rerender),
             testid: "db-village-template-size",
           }),
           span(sectionCard({
@@ -536,10 +545,39 @@ function templateBasicFields(
   ];
 }
 
-function templateSizeFields(record: VillageHouseTemplateRecord, rerender: () => void): HTMLElement[] {
+/**
+ * 층수 카드용 미리보기 레코드.
+ * 보통은 8×9 한 날개(1·2·3층 열 최소 5/7/9 를 모두 통과)에 지금 킷을 찍는다.
+ * A자 킷은 높이가 폭에 묶여 8×9 스탬프가 거절되므로, 그 레코드의 날개를 그대로 쓴다.
+ */
+function storiesCardRecord(
+  record: VillageHouseTemplateRecord,
+  stories: 1 | 2 | 3,
+  kitId: HouseKitId,
+): VillageHouseTemplateRecord {
+  if (kitId === "aframe-stone") return { ...record, stories, kitId };
+  return {
+    id: record.id,
+    name: record.name,
+    w: 8,
+    h: 9,
+    stories,
+    kitId,
+    wings: [{ x: 0, y: 0, w: 8, h: 9 }],
+    ...(record.clonedFrom ? { clonedFrom: record.clonedFrom } : {}),
+    ...(record.lowWall ? { lowWall: true } : {}),
+    ...(record.roofDeck ? { roofDeck: true } : {}),
+  };
+}
+
+function templateSizeFields(
+  project: Project,
+  record: VillageHouseTemplateRecord,
+  rerender: () => void,
+): HTMLElement[] {
   const { templateW, templateH } = VILLAGE_RANGE;
-  // 빈 값 항목은 `baseSelect` 가 넣는다 — 여기서 또 넣으면 값이 같은 항목이 둘이 된다.
   const kitOptions = ALL_HOUSE_KIT_IDS.map((id) => ({ id, name: HOUSE_KITS[id].name }));
+  const storiesKitId = previewKitFor(record);
   return [
     requiredNumber("폭 (칸)", "db-village-template-w", record.w, templateW, (value) => {
       recordCoalescedSnapshot(`village-template-w:${record.id}`, "집 형태 폭 변경");
@@ -551,19 +589,50 @@ function templateSizeFields(record: VillageHouseTemplateRecord, rerender: () => 
       patchTemplate(record.id, () => ({ h: value }));
       rerender();
     }),
-    selectField("층수", "db-village-template-stories", String(record.stories ?? 1), [
-      { id: "1", name: "1층" },
-      { id: "2", name: "2층" },
-      { id: "3", name: "3층" },
-    ], (value) => {
-      recordProjectSnapshot("집 형태 층수 변경");
-      patchTemplate(record.id, () => ({ stories: Number(value) === 3 ? 3 : Number(value) === 2 ? 2 : 1 }));
-      rerender();
+    visualSelect({
+      label: "층수",
+      testid: "db-village-template-stories",
+      value: String(record.stories ?? 1),
+      options: [
+        { id: "1", name: "1층" },
+        { id: "2", name: "2층" },
+        { id: "3", name: "3층" },
+      ],
+      mediaFor: (id) => {
+        const stories = Number(id) === 3 ? 3 : Number(id) === 2 ? 2 : 1;
+        return createHousePreview(storiesCardRecord(record, stories, storiesKitId), project, "card", {
+          testid: `db-village-template-stories-${stories}-shot`,
+          label: `${stories}층 집 그림`,
+        });
+      },
+      onChange: (value) => {
+        recordProjectSnapshot("집 형태 층수 변경");
+        patchTemplate(record.id, () => ({ stories: Number(value) === 3 ? 3 : Number(value) === 2 ? 2 : 1 }));
+        rerender();
+      },
     }),
-    selectField("재료 킷", "db-village-template-kit", record.kitId ?? UNSET, kitOptions, (value) => {
-      recordProjectSnapshot("집 형태 재료 킷 변경");
-      patchTemplate(record.id, () => ({ kitId: value === UNSET ? undefined : value }));
-      rerender();
+    visualSelect({
+      label: "재료 킷",
+      testid: "db-village-template-kit",
+      value: record.kitId ?? UNSET,
+      options: kitOptions,
+      allowUnset: true,
+      unsetLabel: "프리셋/씨앗값이 고름",
+      mediaFor: (id) => createHousePreview(
+        { ...record, kitId: id },
+        project,
+        "card",
+        {
+          testid: id ? `db-village-template-kit-${id}-shot` : "db-village-template-kit-unset-shot",
+          label: isHouseKitId(id) ? `${HOUSE_KITS[id].name} 집 그림` : "프리셋/씨앗값이 고름",
+        },
+      ),
+      onChange: (value) => {
+        recordProjectSnapshot("집 형태 재료 킷 변경");
+        // 비움은 키를 지운다 — "" 가 남아 있으면 왕복에서 kitId:"" 로 살아남는다.
+        patchTemplate(record.id, () => ({ kitId: value || undefined }));
+        rerender();
+      },
     }),
     checkboxField("낮은 벽", "db-village-template-low-wall", record.lowWall === true, "벽 밴드를 한 단 낮춘다", (checked) => {
       recordProjectSnapshot("집 형태 낮은 벽 변경");
@@ -1080,16 +1149,16 @@ function presetDetail(
       body: [
         emptyState({
           icon: "⌖",
-          title: "배치 프리셋을 만들어 보세요",
-          body: "길 폭·광장 모양·마당 스타일 같은 값을 한 묶음으로 저장합니다. AI 에게 “이 프리셋으로 마을 깔아 줘”라고 하면 그대로 쓰입니다.",
-          action: { label: "+ 빈 프리셋 추가", kind: "primary", testid: "db-village-preset-blank-create", onClick: () => createRecord(rerender) },
+          title: "마을 설계서를 만들어 보세요",
+          body: "집의 생김새·길·물과 숲을 한곳에서 정합니다. AI가 지킬 고정값과 바꿔도 되는 범위를 선택하세요.",
+          action: { label: "+ 마을 설계서 추가", kind: "primary", testid: "db-village-preset-blank-create", onClick: () => createRecord(rerender) },
           testid: "db-village-preset-blank",
         }),
         el("div", {
           class: "db-ws-stack db-village-inspector",
           children: [span(sectionCard({
             title: "마을 원형에서 시작하기",
-            hint: "AI 가 테마 문장으로 고르던 값 묶음. 골라서 프리셋으로 굽습니다",
+            hint: "분위기를 고른 뒤 집과 길, 자연 설정을 설계서에서 조정합니다",
             children: archetypeGallery(rerender),
             testid: "db-village-archetype-gallery",
           }))],
@@ -1099,6 +1168,30 @@ function presetDetail(
     });
   }
 
+  if (record.design) {
+    return renderVillageDesignDetail(project, record, {
+      basics: presetBasicFields(record, records, rerender),
+      scale: presetScaleFields(project, record, rerender),
+      road: presetRoadFields(project, record, rerender),
+      layout: presetLayoutFields(project, record, rerender),
+      templates: presetTemplateWhitelist(project, record, rerender),
+      archetype: archetypeImportFields(record, rerender),
+      preview: presetPreviewFields(project, record),
+      patch: (patch) => {
+        recordProjectSnapshot("마을 설계서 변경");
+        patchPreset(record.id, () => patch);
+        rerender();
+      },
+      setDefault: () => {
+        recordProjectSnapshot("기본 마을 설계서 지정");
+        store.update(draft => {
+          if (draft.defaultVillagePresetId === record.id) delete draft.defaultVillagePresetId;
+          else draft.defaultVillagePresetId = record.id;
+        }, { scope: "database", collection: "villagePresets", label: "기본 마을 설계서 지정" });
+        rerender();
+      },
+    });
+  }
   const applied = presetOverrides(record);
   const catalog = villageTemplateCatalog(project, applied.templateIds);
   return detailPane({
@@ -1114,6 +1207,15 @@ function presetDetail(
       testid: "db-village-preset-hero",
     }),
     body: [
+      el("button", {
+        class: "db-ws-btn db-ws-btn-primary", text: "마을 설계서로 전환", attrs: { type: "button" },
+        dataset: { testid: "db-village-design-convert" },
+        on: { click: () => {
+          recordProjectSnapshot("마을 설계서로 전환");
+          patchPreset(record.id, () => asVillageDesign(record));
+          rerender();
+        } },
+      }),
       statStrip([
         { label: "적용되는 값", value: String(Object.keys(applied).length), hint: "범위·열거형을 통과한 값만", tone: "good" },
         { label: "형태 후보", value: String(catalog.templates.length), hint: applied.templateIds ? "화이트리스트 적용" : "카탈로그 전체" },
@@ -1148,18 +1250,18 @@ function presetDetail(
           sectionCard({
             title: "규모",
             hint: "비워 두면 맵 넓이와 씨앗값으로 정합니다",
-            children: presetScaleFields(record, rerender),
+            children: presetScaleFields(project, record, rerender),
             testid: "db-village-preset-scale",
           }),
           sectionCard({
             title: "길",
             hint: "폭 2~3칸 · 구불거림 0.35~1",
-            children: presetRoadFields(record, rerender),
+            children: presetRoadFields(project, record, rerender),
             testid: "db-village-preset-road",
           }),
           sectionCard({
             title: "배치와 분위기",
-            children: presetLayoutFields(record, rerender),
+            children: presetLayoutFields(project, record, rerender),
             // 카드 testid 는 안쪽 select 의 `db-village-preset-layout` 과 겹치면 안 된다 —
             // testid 조회는 정확 일치이므로 겹치면 조상 div 가 먼저 잡힌다.
             testid: "db-village-preset-arrangement",
@@ -1201,9 +1303,13 @@ function presetPreviewFields(project: Project, record: VillageLayoutPresetRecord
     dataset: { testid: "db-village-preset-preview-note" },
     text: "「미리보기 만들기」를 누르면 이 프리셋으로 마을 한 판을 시공해 그림으로 보여줍니다. 초안에서만 돌기 때문에 프로젝트에는 맵이 생기지 않습니다.",
   });
+  const warnings = el("details", { dataset: { testid: "db-village-preset-preview-warnings" } });
+  warnings.hidden = true;
 
   const run = (): void => {
     clearChildren(stage);
+    clearChildren(warnings);
+    warnings.hidden = true;
     const result = buildPresetPreview(project, record.id, presetPreviewSeed);
     if (!result.ok) {
       stage.dataset.previewState = "none";
@@ -1218,8 +1324,12 @@ function presetPreviewFields(project: Project, record: VillageLayoutPresetRecord
       // 좌우에 빈 띠가 남아 그림이 작아 보인다.
       height: 320,
     }));
-    const warn = result.warnings.length > 0 ? ` · 경고 ${result.warnings.length}건: ${result.warnings.join(" / ")}` : "";
-    note.textContent = `씨앗 ${presetPreviewSeed} · 집 ${result.housesBuilt}채${warn}`;
+    const visibleWarnings = [...new Set(result.warnings.filter(message => !message.startsWith("[vperf]") && !message.startsWith("마을 프리셋 적용:") && !message.startsWith("상점가 지정:")).map(message => message.split(/tile_query| — 다시 보낼/)[0]!.trim()))];
+    note.textContent = `씨앗 ${presetPreviewSeed} · 집 ${result.housesBuilt}채${visibleWarnings.length ? ` · 확인할 사항 ${visibleWarnings.length}건` : ""}`;
+    if (visibleWarnings.length) {
+      warnings.hidden = false;
+      warnings.append(el("summary", { text: "시공 결과 자세히 보기" }), el("ul", { children: visibleWarnings.map(text => el("li", { text })) }));
+    }
   };
 
   return [
@@ -1249,6 +1359,7 @@ function presetPreviewFields(project: Project, record: VillageLayoutPresetRecord
       ],
     }),
     note,
+    warnings,
   ];
 }
 
@@ -1292,7 +1403,11 @@ function presetBasicFields(
   ];
 }
 
-function presetScaleFields(record: VillageLayoutPresetRecord, rerender: () => void): HTMLElement[] {
+function presetScaleFields(
+  project: Project,
+  record: VillageLayoutPresetRecord,
+  rerender: () => void,
+): HTMLElement[] {
   return [
     optionalNumber("집 수", "db-village-preset-house-count", record.houseCount, VILLAGE_RANGE.houseCount, (value) => {
       recordCoalescedSnapshot(`village-preset-houses:${record.id}`, "프리셋 집 수 변경");
@@ -1304,17 +1419,35 @@ function presetScaleFields(record: VillageLayoutPresetRecord, rerender: () => vo
       patchPreset(record.id, () => ({ npcCount: value }));
       rerender();
     }),
-    optionalSelect("바닥", "db-village-preset-ground", record.groundTheme, VILLAGE_GROUND_THEME_IDS, GROUND_LABEL, (value) => {
-      recordProjectSnapshot("프리셋 바닥 변경");
-      patchPreset(record.id, () => ({ groundTheme: value }));
-      rerender();
+    visualSelect({
+      label: "바닥",
+      testid: "db-village-preset-ground",
+      value: record.groundTheme ?? UNSET,
+      options: VILLAGE_GROUND_THEME_IDS.map((id) => ({ id, name: GROUND_LABEL[id] ?? id })),
+      allowUnset: true,
+      unsetLabel: "지정 안 함",
+      mediaFor: (id) => createGroundThemePreview(id, project, {
+        testid: id ? `db-village-preset-ground-${id}-shot` : "db-village-preset-ground-unset-shot",
+        label: id === "snow" ? "눈 바닥" : id === "grass" ? "풀 바닥" : "지정 안 함",
+      }),
+      onChange: (value) => {
+        recordProjectSnapshot("프리셋 바닥 변경");
+        patchPreset(record.id, () => ({
+          groundTheme: value === "grass" || value === "snow" ? value : undefined,
+        }));
+        rerender();
+      },
     }),
   ];
 }
 
-function presetRoadFields(record: VillageLayoutPresetRecord, rerender: () => void): HTMLElement[] {
+function presetRoadFields(
+  project: Project,
+  record: VillageLayoutPresetRecord,
+  rerender: () => void,
+): HTMLElement[] {
   return [
-    optionalSelect("길 재질", "db-village-preset-path-style", record.pathStyle, VILLAGE_PATH_STYLES, PATH_LABEL, (value) => {
+    presetMoodSelect(project, "길 재질", "db-village-preset-path-style", record.pathStyle, VILLAGE_PATH_STYLES, PATH_LABEL, "pathStyle", (value) => {
       recordProjectSnapshot("프리셋 길 재질 변경");
       patchPreset(record.id, () => ({ pathStyle: value }));
       rerender();
@@ -1339,37 +1472,44 @@ function presetRoadFields(record: VillageLayoutPresetRecord, rerender: () => voi
   ];
 }
 
-function presetLayoutFields(record: VillageLayoutPresetRecord, rerender: () => void): HTMLElement[] {
+function presetLayoutFields(
+  project: Project,
+  record: VillageLayoutPresetRecord,
+  rerender: () => void,
+): HTMLElement[] {
   const kitOptions = ["mixed", ...MIXABLE_HOUSE_KIT_IDS] as const;
   const kitLabel: Record<string, string> = { mixed: "섞기" };
   for (const id of MIXABLE_HOUSE_KIT_IDS) kitLabel[id] = HOUSE_KITS[id].name;
   return [
+    // plaza-ring / street-grid / clusters 는 마을 전체 배치라 스크래치 스탬프로는 정직하게
+    // 안 나온다. 전경은 「미리보기 만들기」(buildPresetPreview) 가 맡고, 옵션마다 돌리면
+    // 카드 3장에 40×40 시공이 붙어 멈춘다. 그림 없이 select 로 둔다.
     optionalSelect("마을 배치", "db-village-preset-layout", record.settlementLayout, VILLAGE_LAYOUT_IDS, LAYOUT_LABEL, (value) => {
       recordProjectSnapshot("프리셋 마을 배치 변경");
       patchPreset(record.id, () => ({ settlementLayout: value }));
       rerender();
     }),
-    optionalSelect("광장 모양", "db-village-preset-plaza-style", record.plazaStyle, VILLAGE_PLAZA_STYLES, PLAZA_STYLE_LABEL, (value) => {
+    presetMoodSelect(project, "광장 모양", "db-village-preset-plaza-style", record.plazaStyle, VILLAGE_PLAZA_STYLES, PLAZA_STYLE_LABEL, "plazaStyle", (value) => {
       recordProjectSnapshot("프리셋 광장 모양 변경");
       patchPreset(record.id, () => ({ plazaStyle: value }));
       rerender();
     }),
-    optionalSelect("광장 위치", "db-village-preset-plaza-layout", record.plazaLayout, VILLAGE_PLAZA_LAYOUTS, PLAZA_LAYOUT_LABEL, (value) => {
+    presetMoodSelect(project, "광장 위치", "db-village-preset-plaza-layout", record.plazaLayout, VILLAGE_PLAZA_LAYOUTS, PLAZA_LAYOUT_LABEL, "plazaLayout", (value) => {
       recordProjectSnapshot("프리셋 광장 위치 변경");
       patchPreset(record.id, () => ({ plazaLayout: value }));
       rerender();
     }),
-    optionalSelect("마당", "db-village-preset-yard", record.yardStyle, VILLAGE_YARD_STYLES, YARD_LABEL, (value) => {
+    presetMoodSelect(project, "마당", "db-village-preset-yard", record.yardStyle, VILLAGE_YARD_STYLES, YARD_LABEL, "yardStyle", (value) => {
       recordProjectSnapshot("프리셋 마당 변경");
       patchPreset(record.id, () => ({ yardStyle: value }));
       rerender();
     }),
-    optionalSelect("바깥 나무", "db-village-preset-edge-trees", record.edgeTrees, VILLAGE_EDGE_TREE_STYLES, EDGE_TREE_LABEL, (value) => {
+    presetMoodSelect(project, "바깥 나무", "db-village-preset-edge-trees", record.edgeTrees, VILLAGE_EDGE_TREE_STYLES, EDGE_TREE_LABEL, "edgeTrees", (value) => {
       recordProjectSnapshot("프리셋 바깥 나무 변경");
       patchPreset(record.id, () => ({ edgeTrees: value }));
       rerender();
     }),
-    optionalSelect("재료 킷", "db-village-preset-kit-mix", record.kitMix, kitOptions, kitLabel, (value) => {
+    presetMoodSelect(project, "재료 킷", "db-village-preset-kit-mix", record.kitMix, kitOptions, kitLabel, "kitMix", (value) => {
       recordProjectSnapshot("프리셋 재료 킷 변경");
       patchPreset(record.id, () => ({ kitMix: value }));
       rerender();
@@ -1412,6 +1552,22 @@ function presetTemplateWhitelist(
           attrs: { title: `${template.id} · ${template.w}×${template.h}` },
           children: [
             input,
+            // 그림은 덧붙임이다 — 칩셋이 없거나 스탬프가 거절되면 canvas 가 previewState=none
+            // 으로 남을 뿐, 체크박스·이름은 그대로 동작한다.
+            createHousePreview({
+              id: template.id,
+              name: template.name,
+              w: template.w,
+              h: template.h,
+              stories: template.stories ?? 1,
+              ...(template.lowWall ? { lowWall: true } : {}),
+              ...(template.kitId ? { kitId: template.kitId } : record.kitMix && record.kitMix !== "mixed" ? { kitId: record.kitMix } : {}),
+              ...(template.roofDeck ? { roofDeck: true } : {}),
+              wings: template.wings.map((wing) => ({ x: wing.x, y: wing.y, w: wing.w, h: wing.h })),
+            }, project, "card", {
+              testid: `db-village-preset-template-${template.id}-shot`,
+              label: `${template.name} 집 그림`,
+            }),
             el("span", { class: "db-village-template-name", text: template.name }),
             el("span", { class: "db-village-template-meta", text: userIds.has(template.id) ? "내 형태" : `${template.w}×${template.h}` }),
           ],
@@ -1531,12 +1687,30 @@ function archetypeGallery(rerender: () => void): HTMLElement[] {
 }
 
 function archetypeImportFields(record: VillageLayoutPresetRecord, rerender: () => void): HTMLElement[] {
-  const select = el("select", { dataset: { testid: "db-village-archetype-source" } }) as HTMLSelectElement;
-  for (const archetype of VILLAGE_ARCHETYPES) {
-    select.append(el("option", { attrs: { value: archetype.id }, text: `${archetype.name} — ${archetypeSummary(archetype)}` }));
+  if (archetypeImportPresetId !== record.id || !villageArchetypeById(archetypeImportSourceId)) {
+    archetypeImportPresetId = record.id;
+    archetypeImportSourceId = VILLAGE_ARCHETYPES[0]!.id;
   }
   return [
-    field("마을 원형", select),
+    visualSelect({
+      label: "마을 원형",
+      testid: "db-village-archetype-source",
+      value: archetypeImportSourceId,
+      options: VILLAGE_ARCHETYPES.map((archetype) => ({
+        id: archetype.id,
+        name: archetype.name,
+        meta: archetypeSummary(archetype),
+      })),
+      mediaFor: (id) => {
+        const archetype = villageArchetypeById(id ?? "") ?? VILLAGE_ARCHETYPES[0]!;
+        return archetypeShot(archetype);
+      },
+      onChange: (id) => {
+        if (!id) return;
+        archetypeImportSourceId = id;
+        rerender();
+      },
+    }),
     el("div", {
       class: "db-village-wing-actions",
       children: [el("button", {
@@ -1546,7 +1720,7 @@ function archetypeImportFields(record: VillageLayoutPresetRecord, rerender: () =
         dataset: { testid: "db-village-archetype-apply" },
         on: {
           click: () => {
-            const archetype = villageArchetypeById(select.value);
+            const archetype = villageArchetypeById(archetypeImportSourceId);
             if (!archetype) return;
             recordProjectSnapshot("원형 값 가져오기");
             // 원형이 안 정하는 항목은 `undefined` 로 지운다 — 남겨 두면 두 원형이 섞인 값이 되고,
@@ -1579,8 +1753,9 @@ function createPresetFromArchetype(archetypeId: string, rerender: () => void): v
   const id = nextVillageId(used, archetype.id);
   recordProjectSnapshot("원형에서 배치 프리셋 만들기");
   store.update((draft) => {
-    draft.villagePresets = [...(draft.villagePresets ?? []), presetRecordFromArchetype(archetype, id)];
-  }, { scope: "database", collection: "villagePresets" });
+    draft.villagePresets = [...(draft.villagePresets ?? []), asVillageDesign(presetRecordFromArchetype(archetype, id))];
+    draft.defaultVillagePresetId ??= id;
+  }, { scope: "database", collection: "villagePresets", label: "마을 설계서 변경" });
   selectedKind = "preset";
   selectedPresetId = id;
   villageSearch = "";
@@ -1659,6 +1834,33 @@ function optionalSelect<T extends string>(
   );
 }
 
+function presetMoodSelect<T extends string>(
+  project: Project,
+  label: string,
+  testid: string,
+  value: string | undefined,
+  options: readonly T[],
+  labels: Readonly<Record<string, string>>,
+  field: MoodPreviewField,
+  onChange: (value: T | undefined) => void,
+): HTMLElement {
+  return visualSelect({
+    label,
+    testid,
+    value: typeof value === "string" && (options as readonly string[]).includes(value) ? value : UNSET,
+    options: options.map((id) => ({ id, name: labels[id] ?? id })),
+    allowUnset: true,
+    unsetLabel: "지정 안 함",
+    mediaFor: (id) => createMoodPreview(project, {
+      field,
+      id,
+      testid,
+      label: id ? (labels[id] ?? id) : "지정 안 함",
+    }),
+    onChange: (next) => onChange(next as T | undefined),
+  });
+}
+
 /** 빈 값 = 「지정 안 함」인 숫자 입력. 0 이 유효값인 필드(주민 수)가 있어 빈 문자열로 구분한다. */
 function optionalNumber(
   label: string,
@@ -1713,8 +1915,14 @@ function patchPreset(
     const records = draft.villagePresets ?? [];
     const index = records.findIndex((entry) => entry.id === id);
     if (index < 0) return;
-    draft.villagePresets = records.map((entry, at) => (at === index ? prune({ ...entry, ...patch(entry) }) : entry));
-  }, { scope: "database", collection: "villagePresets" });
+    draft.villagePresets = records.map((entry, at) => {
+      if (at !== index) return entry;
+      const next = prune({ ...entry, ...patch(entry) });
+      if (next.design) next.design = { ...next.design, revision: (entry.design?.revision ?? 0) + 1 };
+      if (draft.defaultVillagePresetId === id) draft.defaultVillagePresetId = next.id;
+      return next;
+    });
+  }, { scope: "database", collection: "villagePresets", label: "마을 설계서 변경" });
 }
 
 /** `undefined` 를 키째 지운다 — 직렬화 왕복에서 `"kitId": undefined` 는 살아남지 않으므로
@@ -1739,8 +1947,9 @@ function createRecord(rerender: () => void): void {
     const id = nextVillageId((project.villagePresets ?? []).map((entry) => entry.id), "vpreset");
     recordProjectSnapshot("배치 프리셋 추가");
     store.update((draft) => {
-      draft.villagePresets = [...(draft.villagePresets ?? []), blankPresetRecord(id)];
-    }, { scope: "database", collection: "villagePresets" });
+      draft.villagePresets = [...(draft.villagePresets ?? []), asVillageDesign({ ...blankPresetRecord(id), name: "새 마을 설계서" })];
+      draft.defaultVillagePresetId ??= id;
+    }, { scope: "database", collection: "villagePresets", label: "마을 설계서 변경" });
     selectedPresetId = id;
   }
   villageSearch = "";
@@ -1781,7 +1990,7 @@ function duplicateRecord(
     recordProjectSnapshot("배치 프리셋 복제");
     store.update((draft) => {
       draft.villagePresets = [...(draft.villagePresets ?? []), duplicatePresetRecord(source, id)];
-    }, { scope: "database", collection: "villagePresets" });
+    }, { scope: "database", collection: "villagePresets", label: "마을 설계서 변경" });
     selectedPresetId = id;
   }
   villageSearch = "";
@@ -1810,7 +2019,8 @@ function deleteRecord(rerender: () => void): void {
     recordProjectSnapshot("배치 프리셋 삭제");
     store.update((draft) => {
       draft.villagePresets = (draft.villagePresets ?? []).filter((entry) => entry.id !== id);
-    }, { scope: "database", collection: "villagePresets" });
+      if (draft.defaultVillagePresetId === id) delete draft.defaultVillagePresetId;
+    }, { scope: "database", collection: "villagePresets", label: "마을 설계서 변경" });
     selectedPresetId = "";
     toast("배치 프리셋을 삭제했습니다. Ctrl+Z 로 되돌릴 수 있습니다.", "ok");
   }
@@ -1824,7 +2034,7 @@ function renamePresetReferences(from: string, to: string): void {
       if (!preset.templateIds?.includes(from)) return preset;
       return { ...preset, templateIds: preset.templateIds.map((entry) => (entry === from ? to : entry)) };
     });
-  }, { scope: "database", collection: "villagePresets" });
+  }, { scope: "database", collection: "villagePresets", label: "마을 설계서 변경" });
 }
 
 function updateVisibleName(rowTestid: string, name: string): void {

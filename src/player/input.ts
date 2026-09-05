@@ -13,6 +13,8 @@ import {
   isGuardKey,
   isSkillCycleKey,
   isSkillKey,
+  isTextEntryFocused,
+  isTextEntryTarget,
   normalizeKey,
 } from "@/player/keyBindings";
 
@@ -298,6 +300,9 @@ export class Input {
   }
 
   private captureRuntimeKeyDown(event: KeyboardEvent): void {
+    // 텍스트 입력 컨트롤에 친 글자는 게임 키가 아니다(디버그 패널·이름 입력). keyup 은 어디서 와도
+    // 처리한다 — 키를 누른 채 입력창으로 들어가 뗐을 때 눌림이 남으면 나와서 혼자 걷는다.
+    if (isTextEntryTarget(event.target)) return;
     this.runtimeKeys.keyDown(event.key, event.repeat);
   }
 
@@ -343,11 +348,16 @@ export class Input {
     }
 
     // 현재 눌린 방향들 수집(우선순위: 위/아래 > 좌/우 관례 → 여기선 마지막 눌림).
+    // Phaser 의 KeyboardManager 는 이벤트 대상을 보지 않아 입력창에 친 방향키도 Key.isDown 으로 남는다.
+    // 텍스트 입력 컨트롤에 포커스가 있는 동안은 그 상태를 읽지 않는다(눌림 추적기는 대상을 가려 받는다).
+    const typing = isTextEntryFocused();
     const downSet = new Set<Dir>();
-    if (this.isDown("up")) downSet.add("up");
-    if (this.isDown("down")) downSet.add("down");
-    if (this.isDown("left")) downSet.add("left");
-    if (this.isDown("right")) downSet.add("right");
+    if (!typing) {
+      if (this.isDown("up")) downSet.add("up");
+      if (this.isDown("down")) downSet.add("down");
+      if (this.isDown("left")) downSet.add("left");
+      if (this.isDown("right")) downSet.add("right");
+    }
     for (const dir of this.runtimeKeys.heldDirections()) {
       downSet.add(dir);
     }
@@ -364,7 +374,7 @@ export class Input {
     }
     // 8방향 이동 의도 해석(수평/수직 축 성분 + 수평 우선 facing).
     const intent = resolveMovementIntent(this.priority);
-    const dash = this.runtimeKeys.isDashing() || (this.cursors?.shift?.isDown ?? false);
+    const dash = this.runtimeKeys.isDashing() || (!typing && (this.cursors?.shift?.isDown ?? false));
 
     // action/confirm 엣지: 이벤트 기반(keydown 리스너) 큐에서 소비.
     // JustDown(폴링)은 headless/프레임 타이밍에 취약하므로 직접 잡은 엣지를 쓴다.

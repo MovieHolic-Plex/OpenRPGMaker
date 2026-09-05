@@ -755,8 +755,10 @@
   }
 }
 
-/* ── 6. 컴포저 — 데크 안에서는 껍데기 없는 입력 + 한 줄 행 ── */
-.ai-chat-panel.chat-dock-float .ai-deck > .ai-command-bar {
+/* ── 6. 컴포저 — 데크 안에서는 껍데기 없는 입력 + 한 줄 행 ──
+   스튜디오는 commandBar 를 .ai-deck 밖으로 .ai-studio-composer 에 옮긴다.
+   크롬 규칙은 :is(.ai-deck, .ai-studio-composer) 로 한곳에서 소유한다. */
+.ai-chat-panel.chat-dock-float :is(.ai-deck, .ai-studio-composer) > .ai-command-bar {
   bottom: auto;
   display: block;
   flex: 0 0 auto;
@@ -770,10 +772,12 @@
   z-index: auto;
 }
 
-.ai-deck .ai-composer {
+:is(.ai-deck, .ai-studio-composer) .ai-composer {
   backdrop-filter: none;
   background: transparent;
   border: 0;
+  /* 입력 구역 상단 hairline — 유리 로그와 입력칸이 한 면으로 붙어 "어디에 치는지" 안 보이던 결함(2026-09-04). 레일 구분선과 같은 토큰. */
+  border-top: 1px solid var(--ai-deck-line);
   border-radius: 0;
   box-shadow: none;
   display: grid;
@@ -783,46 +787,48 @@
   transition: none;
 }
 
-.ai-deck .ai-composer:focus-within {
+:is(.ai-deck, .ai-studio-composer) .ai-composer:focus-within {
   border-color: transparent;
   box-shadow: none;
 }
 
-.ai-deck .ai-composer .ai-assistant-input {
-  background: transparent;
-  border: 0;
-  border-radius: 0;
+:is(.ai-deck, .ai-studio-composer) .ai-composer .ai-assistant-input {
+  /* 유리 위 무테·투명 입력은 "어디에 치는지" 안 보인다(2026-09-04) — inset 필드로 되돌린다. 베이스(assistant-composer.css)와 같은 토큰만 쓴다. */
+  background: var(--bg-inset);
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
   color: var(--text-1);
   font-family: var(--font-ui);
   font-size: 14.5px;
   line-height: 1.5;
   min-height: 44px;
-  padding: 8px 6px 4px;
+  padding: 8px 10px;
 }
 
-.ai-deck .ai-composer .ai-assistant-input:focus,
-.ai-deck .ai-composer .ai-assistant-input:focus-visible {
-  border-color: transparent;
-  box-shadow: none;
+:is(.ai-deck, .ai-studio-composer) .ai-composer .ai-assistant-input:focus,
+:is(.ai-deck, .ai-studio-composer) .ai-composer .ai-assistant-input:focus-visible {
+  /* 포커스 링은 셸이 아니라 입력칸이 그린다 — 데크 셸은 border:0 이라 :focus-within 링이 닿지 않는다. 베이스와 같은 14% accent 링. */
+  border-color: var(--accent-border);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 14%, transparent);
   outline: none;
 }
 
-.ai-deck .ai-composer .ai-assistant-input::placeholder {
+:is(.ai-deck, .ai-studio-composer) .ai-composer .ai-assistant-input::placeholder {
   color: var(--text-2);
   opacity: 1;
 }
 
-.ai-deck .ai-composer-actions {
+:is(.ai-deck, .ai-studio-composer) .ai-composer-actions {
   gap: 8px;
   min-height: 36px;
   padding: 0 2px;
 }
 
-.ai-deck .ai-composer-actions-lead {
+:is(.ai-deck, .ai-studio-composer) .ai-composer-actions-lead {
   gap: 8px;
 }
 
-.ai-deck .ai-composer-actions-trail {
+:is(.ai-deck, .ai-studio-composer) .ai-composer-actions-trail {
   gap: 8px;
 }
 
@@ -871,14 +877,14 @@
 }
 
 /* 컨텍스트 핀(현재 맵 · 선택 영역) */
-.ai-deck .ai-context-chips {
+:is(.ai-deck, .ai-studio-composer) .ai-context-chips {
   align-items: center;
   display: flex;
   flex: 0 0 auto;
   gap: 6px;
 }
 
-.ai-deck .ai-context-chip {
+:is(.ai-deck, .ai-studio-composer) .ai-context-chip {
   align-items: center;
   background: color-mix(in srgb, var(--bg-raised) 60%, transparent);
   border: 1px solid var(--border-default);
@@ -892,16 +898,30 @@
   white-space: nowrap;
 }
 
-.ai-deck .ai-selection-chip {
+:is(.ai-deck, .ai-studio-composer) .ai-selection-chip {
   background: var(--accent-muted);
   border-color: var(--accent-border);
   color: var(--accent-active);
 }
 
-.ai-deck .ai-pending-queue {
+:is(.ai-deck, .ai-studio-composer) .ai-pending-queue {
   color: var(--text-2);
   font-size: 12px;
   white-space: nowrap;
+}
+
+/* 지시줄 effort 셀렉트(자율성·추론 강도) — 모드 세그먼트 옆 28px 한 줄. */
+:is(.ai-deck, .ai-studio-composer) .ai-composer-effort-select {
+  background: transparent;
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  color: var(--text-2);
+  flex: 0 0 auto;
+  font: inherit;
+  font-size: 12px;
+  height: 28px;
+  max-width: 76px;
+  padding: 0 4px;
 }
 
 /* 모델 칩 */
@@ -921,7 +941,7 @@
 }
 
 /* 되돌리기(방금 적용) — 행 안의 알약. */
-.ai-deck .ai-composer-undo {
+:is(.ai-deck, .ai-studio-composer) .ai-composer-undo {
   background: transparent;
   border: 1px solid var(--border-default);
   border-radius: 999px;
@@ -930,13 +950,13 @@
   height: 28px;
 }
 
-.ai-deck .ai-composer-undo::before {
+:is(.ai-deck, .ai-studio-composer) .ai-composer-undo::before {
   content: none;
 }
 
 /* 보내기 = 34px 인디고 원, 멈추기 = 같은 자리의 검은 원. 둘 다 상주, 진행 중엔 보내기를 숨긴다. */
-.ai-deck .ai-composer-actions .ai-chat-send,
-.ai-deck .ai-composer-actions .ai-abort-button {
+:is(.ai-deck, .ai-studio-composer) .ai-composer-actions .ai-chat-send,
+:is(.ai-deck, .ai-studio-composer) .ai-composer-actions .ai-abort-button {
   align-items: center;
   border: 0;
   border-radius: 50%;
@@ -950,13 +970,13 @@
   width: 34px;
 }
 
-.ai-deck .ai-composer-actions .ai-chat-send {
+:is(.ai-deck, .ai-studio-composer) .ai-composer-actions .ai-chat-send {
   background: var(--accent);
   box-shadow: 0 6px 14px -6px color-mix(in srgb, var(--accent) 70%, transparent);
   color: var(--bg-raised);
 }
 
-.ai-deck .ai-composer-actions .ai-chat-send.is-not-ready {
+:is(.ai-deck, .ai-studio-composer) .ai-composer-actions .ai-chat-send.is-not-ready {
   background: color-mix(in srgb, var(--text-1) 10%, transparent);
   box-shadow: none;
   color: color-mix(in srgb, var(--text-1) 35%, transparent);
@@ -964,39 +984,39 @@
   opacity: 1;
 }
 
-.ai-deck .ai-composer-actions .ai-chat-send:hover:not(:disabled):not(.is-not-ready) {
+:is(.ai-deck, .ai-studio-composer) .ai-composer-actions .ai-chat-send:hover:not(:disabled):not(.is-not-ready) {
   background: var(--accent-hover);
   transform: translateY(-1px);
 }
 
-.ai-deck .ai-composer-actions .ai-abort-button {
+:is(.ai-deck, .ai-studio-composer) .ai-composer-actions .ai-abort-button {
   background: var(--text-1);
   color: var(--bg-raised);
   cursor: pointer;
 }
 
-.ai-deck .ai-composer-actions .ai-abort-button:disabled {
+:is(.ai-deck, .ai-studio-composer) .ai-composer-actions .ai-abort-button:disabled {
   cursor: default;
   opacity: 0.6;
 }
 
-.ai-deck .ai-composer-actions:has(.ai-abort-button:not([hidden])) .ai-chat-send {
+:is(.ai-deck, .ai-studio-composer) .ai-composer-actions:has(.ai-abort-button:not([hidden])) .ai-chat-send {
   display: none;
 }
 
-.ai-deck .ai-composer-actions .ai-chat-send[hidden],
-.ai-deck .ai-composer-actions .ai-abort-button[hidden] {
+:is(.ai-deck, .ai-studio-composer) .ai-composer-actions .ai-chat-send[hidden],
+:is(.ai-deck, .ai-studio-composer) .ai-composer-actions .ai-abort-button[hidden] {
   display: none;
 }
 
-.ai-deck .ai-status-group {
+:is(.ai-deck, .ai-studio-composer) .ai-status-group {
   display: none;
 }
 
 /* ── 7. 팝오버 ─────────────────────────────────────────────── */
 
 /* 추천은 데크 안에서 입력창 위에 흐름으로 선다 — 떨어진 흰 상자가 아니다. */
-.ai-deck .ai-command-bar > .ai-composer-suggest {
+:is(.ai-deck, .ai-studio-composer) .ai-command-bar > .ai-composer-suggest {
   background: transparent;
   border: 0;
   border-bottom: 1px solid var(--ai-deck-line);
@@ -1009,19 +1029,19 @@
   z-index: auto;
 }
 
-.ai-deck .ai-composer-suggest .ai-composer-chips {
+:is(.ai-deck, .ai-studio-composer) .ai-composer-suggest .ai-composer-chips {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
   padding: 0 4px 6px;
 }
 
-.ai-deck .ai-composer-suggest .ai-composer-chips:empty {
+:is(.ai-deck, .ai-studio-composer) .ai-composer-suggest .ai-composer-chips:empty {
   display: none;
   padding: 0;
 }
 
-.ai-deck .ai-composer-suggest .ai-next-steps {
+:is(.ai-deck, .ai-studio-composer) .ai-composer-suggest .ai-next-steps {
   border-top: 0;
   display: grid;
   gap: 2px;
@@ -1029,11 +1049,11 @@
   padding-top: 0;
 }
 
-.ai-deck .ai-composer-suggest .ai-next-steps[hidden] {
+:is(.ai-deck, .ai-studio-composer) .ai-composer-suggest .ai-next-steps[hidden] {
   display: none;
 }
 
-.ai-deck .ai-next-steps-hint {
+:is(.ai-deck, .ai-studio-composer) .ai-next-steps-hint {
   align-items: center;
   color: var(--text-2);
   display: flex;
@@ -1043,7 +1063,7 @@
   padding: 4px 8px 8px;
 }
 
-.ai-deck .ai-next-steps-hint::before {
+:is(.ai-deck, .ai-studio-composer) .ai-next-steps-hint::before {
   background: var(--warning-muted);
   border-radius: 5px;
   color: var(--warning);
@@ -1098,7 +1118,7 @@
 }
 
 /* 감독 프롬프트 칩(기존). */
-.ai-deck .ai-composer-chip {
+:is(.ai-deck, .ai-studio-composer) .ai-composer-chip {
   background: color-mix(in srgb, var(--bg-raised) 70%, transparent);
   border: 1px solid var(--accent-border);
   border-radius: 999px;
@@ -1108,32 +1128,32 @@
   padding: 6px 12px;
 }
 
-.ai-deck .ai-composer-chip:hover,
-.ai-deck .ai-composer-chip:focus-visible {
+:is(.ai-deck, .ai-studio-composer) .ai-composer-chip:hover,
+:is(.ai-deck, .ai-studio-composer) .ai-composer-chip:focus-visible {
   background: var(--accent-muted);
 }
 
 /* 저작 예제 칩 — 추천 행으로 대체되기 전까지 같은 언어. */
-.ai-deck .ai-authoring-examples {
+:is(.ai-deck, .ai-studio-composer) .ai-authoring-examples {
   display: grid;
   gap: 2px;
 }
 
-.ai-deck .ai-authoring-examples-title {
+:is(.ai-deck, .ai-studio-composer) .ai-authoring-examples-title {
   color: var(--text-2);
   font-size: 12px;
   font-weight: 600;
   padding: 0 8px;
 }
 
-.ai-deck .ai-authoring-example-chips {
+:is(.ai-deck, .ai-studio-composer) .ai-authoring-example-chips {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
   padding: 0 8px 4px;
 }
 
-.ai-deck .ai-authoring-example-chip {
+:is(.ai-deck, .ai-studio-composer) .ai-authoring-example-chip {
   background: color-mix(in srgb, var(--bg-raised) 70%, transparent);
   border: 1px solid var(--border-default);
   border-radius: 999px;
@@ -1144,8 +1164,8 @@
   padding: 0 12px;
 }
 
-.ai-deck .ai-authoring-example-chip:hover,
-.ai-deck .ai-authoring-example-chip:focus-visible {
+:is(.ai-deck, .ai-studio-composer) .ai-authoring-example-chip:hover,
+:is(.ai-deck, .ai-studio-composer) .ai-authoring-example-chip:focus-visible {
   background: var(--accent-muted);
   border-color: var(--accent-border);
   outline: none;

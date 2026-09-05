@@ -1,0 +1,18 @@
+
+> rpg-zzu@0.1.0 gates
+> node scripts/verify-gates.mjs --only css --json
+
+{
+  "ranAt": "2026-09-05T08:20:36.228Z",
+  "cwd": "/home/main/z-project/rpg-zzu-recover-main-20260905",
+  "css": {
+    "name": "css",
+    "exitCode": 0,
+    "budgetExitCode": 0,
+    "graphExitCode": 0,
+    "failures": [],
+    "out": "CSS 예산 래칫 — 기준선 .omo/css-budget-baseline.json\n   지표                    기준선       현재      증감  설명\n   hexLiterals          1668     1661      -7  하드코딩 hex 리터럴 (TOKENS.md §4.1)\n   important             988      975     -13  !important 선언\n   undefinedVars          61       61       0  정의 없는 커스텀 프로퍼티\n   globalRootFiles        10       10       0  전역 :root 블록을 가진 파일\n   cssFileCount          266      265      -1  CSS 파일 수\n\nGOOD: hexLiterals 1668 → 1661 (-7). 래칫을 조이세요 — node scripts/check-css-budget.mjs --save-baseline\nGOOD: important 988 → 975 (-13). 래칫을 조이세요 — node scripts/check-css-budget.mjs --save-baseline\nGOOD: cssFileCount 266 → 265 (-1). 래칫을 조이세요 — node scripts/check-css-budget.mjs --save-baseline\nCSS 예산 게이트 통과: 265개 파일 검사, 회귀 0건, 개선 3건.\nCSS graph gate: entries=12 (scan), files=267, reachable=267, orphan=0\n  missing @import target : 0 new (유예 없음)\n  unreachable            : 0 found, 0 allowlisted, 0 new\n  double-imported        : 5 found, 5 allowlisted, 0 new\n  unregistered slice     : 1 found, 1 allowlisted, 0 new\n  duplicate NN- prefix   : 1 found, 1 allowlisted, 0 new"
+  },
+  "baseline": "/home/main/z-project/rpg-zzu-recover-main-20260905/.omo/gates-baseline.json",
+  "regressions": []
+}

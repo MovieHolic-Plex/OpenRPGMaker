@@ -78,6 +78,14 @@ export interface TileAiMetadata {
 
 export type TileMetadataSource = "ai" | "bundled-default" | "imported" | "unknown" | "user";
 
+export interface CharsetLabelOverride {
+  readonly textureKey: string;
+  readonly characterIndex: number;
+  readonly label: string;
+  readonly tags?: readonly string[];
+  readonly origin?: "user" | "ai";
+}
+
 export type TileGroupRole = "building" | "castle" | "fence" | "roof" | "terrain" | "water" | "wall" | "prop";
 
 export type TileGroupLayer = "lower" | "upper" | "event" | "mixed";
@@ -494,7 +502,7 @@ export interface TilesetDef {
    */
   interiorRoomKinds?: InteriorRoomKindRecord[];
   /**
-   * 임시 개념 꾸러미(시설→장소→물건→칩). undefined 는 아직 시드 전.
+   * 개념 꾸러미(시설→장소→물건→칩). undefined 는 아직 시드 전.
    * 빈 배열은 사용자가 지운 상태 — 다시 시드하지 않는다.
    */
   scratchConceptBundles?: ConceptBundleRecord[];

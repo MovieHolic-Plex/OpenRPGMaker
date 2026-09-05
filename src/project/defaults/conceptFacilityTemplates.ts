@@ -1,7 +1,7 @@
 // 실내 칩셋용 개념 꾸러미 초안 묶음 — 여관 하나가 아니라 시설 아홉 종.
 // 장소 id 는 가능하면 BUILTIN_INTERIOR_ROOM_KINDS 와, 물건 objectId 는 INTERIOR_OBJECT_CATALOG 와 맞춘다.
 // 여기 값은 「초안」이다. 프로젝트에 시드된 뒤에는 tileset.scratchConceptBundles 가 정본이고,
-// 사용자가 데이터베이스 「임시 → 개념 꾸러미」에서 고친 나무를 place_concept 이 그대로 읽는다.
+// 사용자가 데이터베이스 「맵 → 타일셋 → 개념 꾸러미」에서 고친 나무를 place_concept 이 그대로 읽는다.
 //
 // 도면은 장소의 역할·크기·개수로만 결정된다(conceptBundleResolve.layoutConceptFacility):
 //   방 줄(room) → 3행 파티션 → 복도(walkway) → 3행 파티션 → 홀(entrance, 정문 남쪽).

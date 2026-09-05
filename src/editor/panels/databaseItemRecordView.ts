@@ -27,7 +27,9 @@ import type {
   ActorId,
   ActorRecord,
   ClassId,
+  DatabaseStateEffect,
   EquipmentStatBonuses,
+  ItemCareProfile,
   FarmTool,
   ItemConsumptionLimit,
   ItemEquipmentProfile,
@@ -55,6 +57,12 @@ export const ITEM_TYPES = [
 ] as const satisfies readonly ItemType[];
 
 const CONSUMPTION_LIMITS = ["noLimit", "1", "2", "3", "4", "5"] as const;
+const STATE_EFFECT_OPERATIONS = ["add", "remove"] as const satisfies readonly DatabaseStateEffect["operation"][];
+const CARE_KIND_OPTIONS: readonly { readonly id: "none" | ItemCareProfile["kind"]; readonly name: string }[] = [
+  { id: "none", name: "(없음)" },
+  { id: "feed", name: "먹이" },
+  { id: "toy", name: "장난감" },
+];
 const EQUIPMENT_TYPES = ["weapon", "shield", "body", "head", "accessory"] as const satisfies readonly ItemType[];
 
 const ITEM_TYPE_LABELS: Record<(typeof ITEM_TYPES)[number], string> = {
@@ -108,6 +116,13 @@ export function itemEffectStory(project: Project, record: ItemRecord): ItemEffec
   if (healedStateIds.size > 0) {
     effects.push(`상태 회복: ${namedIds([...healedStateIds], project.database.states).join(", ")}`);
   }
+  // add-op 는 전투(applyStateEffects)와 필드 메뉴(playerItemUse) 둘 다 확률 판정을 거친다 —
+  // 100 미만이면 확률을 함께 적어 저작자가 판정을 예측할 수 있게 한다.
+  for (const effect of record.stateEffects) {
+    if (effect.operation !== "add") continue;
+    const name = namedId(effect.stateId, project.database.states);
+    effects.push(effect.chance < 100 ? `상태 부여: ${name} (${effect.chance}%)` : `상태 부여: ${name}`);
+  }
 
   const learnedSkillId = record.type === "book" ? record.learnedSkillId ?? record.skillId : undefined;
   if (learnedSkillId) effects.push(`스킬 습득: ${namedId(learnedSkillId, project.database.skills)}`);
@@ -127,6 +142,7 @@ export function itemEffectStory(project: Project, record: ItemRecord): ItemEffec
     effects.push(`몬스터 친밀도 ${signed(record.careProfile.friendshipDelta)}${exp}`);
   }
   if (record.farmTool) effects.push(`농사 도구: ${FARM_TOOL_LABELS[record.farmTool]}`);
+  if (record.animationId) notes.push(`전투 연출: ${namedId(record.animationId, project.database.battleAnimations)}`);
   if (isEquipmentItemType(record.type)) notes.push("전투 효과는 장비 탭의 장비 레코드에서 설정합니다.");
   if (record.onlyEffectiveOnDeadActors) notes.push("전투불능 대상에게만 유효");
   const runtimeAppliesActorRestrictions = !isItemActorEligible(project, record, undefined);
@@ -208,10 +224,12 @@ function itemWorkbenchCards(
     sectionLabel("효과", "effect"),
     targetingCard(record, refreshStory),
     ...typePanels(record, refreshStory),
+    ...(hasUseEffects(record.type) ? [stateEffectsCard(record, rerender, refreshStory), animationCard(record, refreshStory)] : []),
     linkedSkillCard(record),
     sectionLabel("사용 제한", "limits"),
     ...(hasActorRestrictions(record.type) ? [usableCard(record, refreshStory)] : []),
     captureCard(record),
+    careCard(record, rerender, refreshStory),
     supportNotice(),
   ];
 }
@@ -325,13 +343,147 @@ function usableCard(record: ItemRecord, refreshStory: () => void): HTMLElement {
   }));
 }
 
+/** 사용 시 효과(상태 변화·전투 연출)가 실행되는 종류 — 전투 런타임 applyItem 이 읽는 두 종류. */
+function hasUseEffects(type: ItemType): boolean {
+  return type === "medicine" || type === "special";
+}
+
+/**
+ * 상태 변화 — 스킬 탭과 같은 행 모양(상태 · 확률 · 부여/해제 · 삭제). 「상태 회복」 체크박스는
+ * remove 100% 의 지름길이고, 이 카드는 부여와 확률까지 다루는 정본 편집기다.
+ */
+function stateEffectsCard(record: ItemRecord, rerender: () => void, refreshStory: () => void): HTMLElement {
+  const states = store.getCurrent().database.states;
+  const effects = record.stateEffects;
+  const rows = effects.map((effect, index) => stateEffectRow(record, effect, index, rerender, refreshStory));
+  const add = el("button", {
+    class: "db-ws-btn db-ws-btn-ghost db-item-state-effect-add",
+    text: "+ 상태 추가",
+    attrs: { type: "button", ...(states.length === 0 ? { disabled: "" } : {}) },
+    dataset: { testid: "db-item-state-effect-add" },
+    on: {
+      click: () => {
+        const state = states[0];
+        if (!state) return;
+        updateStateEffects(record, [...currentItem(record).stateEffects, { stateId: state.id, chance: 100, operation: "add" }], refreshStory);
+        rerender();
+      },
+    },
+  });
+  const body = rows.length > 0 ? rows : [el("div", { class: "db-item-state-effect-empty", text: "상태 변화 없음" })];
+  return spanCard(sectionCard({
+    title: "상태 변화",
+    hint: "부여는 확률 판정, 해제는 걸린 상태를 지웁니다",
+    testid: "db-item-card-state-effects",
+    children: [el("div", { class: "db-item-state-effects", children: [...body, add] })],
+  }));
+}
+
+function stateEffectRow(record: ItemRecord, effect: DatabaseStateEffect, index: number, rerender: () => void, refreshStory: () => void): HTMLElement {
+  const states = store.getCurrent().database.states;
+  const stateOptions = states.some((state) => state.id === effect.stateId) ? states : [...states, { id: effect.stateId, name: effect.stateId }];
+  const chance = el("input", { attrs: { type: "number", min: "0", max: "100" }, value: effect.chance, dataset: { testid: `db-field-item-state-effect-chance-${index}` } });
+  chance.addEventListener("input", () => {
+    const next = clampPercent(Number(chance.value));
+    chance.value = String(next);
+    updateStateEffectAt(record, index, { chance: next }, refreshStory);
+  });
+  return el("div", {
+    class: "db-item-state-effect-row",
+    dataset: { testid: `db-item-state-effect-row-${index}` },
+    children: [
+      selectField("상태", `db-field-item-state-effect-state-${index}`, effect.stateId, stateOptions, (stateId) =>
+        updateStateEffectAt(record, index, { stateId }, refreshStory)
+      ),
+      field("확률 %", chance),
+      selectLiteral("조작", `db-field-item-state-effect-op-${index}`, effect.operation, STATE_EFFECT_OPERATIONS, (operation) =>
+        updateStateEffectAt(record, index, { operation }, refreshStory)
+      ),
+      el("button", {
+        class: "db-ws-btn db-ws-btn-danger db-item-state-effect-delete",
+        text: "삭제",
+        attrs: { type: "button" },
+        dataset: { testid: `db-item-state-effect-delete-${index}` },
+        on: {
+          click: () => {
+            updateStateEffects(record, currentItem(record).stateEffects.filter((_, effectIndex) => effectIndex !== index), refreshStory);
+            rerender();
+          },
+        },
+      }),
+    ],
+  });
+}
+
+function updateStateEffectAt(record: ItemRecord, index: number, patch: Partial<DatabaseStateEffect>, refreshStory: () => void): void {
+  updateStateEffects(record, currentItem(record).stateEffects.map((effect, effectIndex) => (effectIndex === index ? { ...effect, ...patch } : effect)), refreshStory);
+}
+
+function updateStateEffects(record: ItemRecord, stateEffects: readonly DatabaseStateEffect[], refreshStory: () => void): void {
+  updateDatabaseRecord("items", record.id, { stateEffects: stateEffects.map((effect) => ({ ...effect, chance: clampPercent(effect.chance) })) });
+  refreshStory();
+}
+
+function clampPercent(value: number): number {
+  if (!Number.isFinite(value)) return 0;
+  return Math.min(100, Math.max(0, Math.round(value)));
+}
+
+/** 전투에서 아이템을 쓰면 대상 위치에 재생되는 애니메이션(battle/runtime.ts applyItem). */
+function animationCard(record: ItemRecord, refreshStory: () => void): HTMLElement {
+  return sectionCard({
+    title: "전투 연출",
+    hint: "전투에서 사용할 때 대상 위치에 재생됩니다",
+    testid: "db-item-card-animation",
+    children: [
+      selectField("애니메이션", "db-picker-item-animation", record.animationId ?? "", store.getCurrent().database.battleAnimations, (animationId) =>
+        updateItemAndRefresh(record, { animationId: emptyToUndefined(animationId) }, refreshStory)
+      ),
+    ],
+  });
+}
+
+/** 몬스터 돌봄(monsterCare.applyCareItem) — 종류가 (없음)이면 careProfile 자체를 지운다. */
+function careCard(record: ItemRecord, rerender: () => void, refreshStory: () => void): HTMLElement {
+  const care = record.careProfile;
+  const children: HTMLElement[] = [
+    selectField("종류", "db-field-item-care-kind", care?.kind ?? "none", CARE_KIND_OPTIONS, (kind) => {
+      const current = currentItem(record).careProfile;
+      const next: ItemCareProfile | undefined = kind !== "feed" && kind !== "toy"
+        ? undefined
+        : { kind, friendshipDelta: current?.friendshipDelta ?? 0, ...(current?.expDelta !== undefined ? { expDelta: current.expDelta } : {}) };
+      updateItemAndRefresh(record, { careProfile: next }, refreshStory);
+      rerender();
+    }),
+  ];
+  if (care) {
+    children.push(
+      numberField("친밀도 증감", "db-field-item-care-friendship", care.friendshipDelta, (friendshipDelta) => {
+        const current = currentItem(record).careProfile ?? care;
+        updateItemAndRefresh(record, { careProfile: { ...current, friendshipDelta } }, refreshStory);
+      }, { min: -100, max: 100 }),
+      numberField("경험치", "db-field-item-care-exp", care.expDelta ?? 0, (expDelta) => {
+        const current = currentItem(record).careProfile ?? care;
+        const { expDelta: _drop, ...rest } = current;
+        updateItemAndRefresh(record, { careProfile: expDelta > 0 ? { ...rest, expDelta } : rest }, refreshStory);
+      }, { min: 0, max: 9999 }),
+    );
+  }
+  return sectionCard({
+    title: "몬스터 돌봄",
+    hint: "파티 몬스터에게 먹이·장난감으로 쓰는 아이템일 때만 적용됩니다",
+    testid: "db-item-card-care",
+    children: [el("div", { class: "db-item-grid", children })],
+  });
+}
+
 /** 배우/직업 허용 목록이 의미를 갖는 종류 — 사용자가 직접 쓰는 아이템만. */
 function hasActorRestrictions(type: ItemType): boolean {
   return type === "medicine" || type === "book" || type === "seed" || type === "special";
 }
 
 function supportNotice(): HTMLElement {
-  return spanCard(databaseFieldSupportNotice("imageResourceId", "iconResourceId", "consumptionLimit", "usableActorIds", "usableClassIds", "seedParameterBonuses", "usageMessage", "equipmentProfile"));
+  return spanCard(databaseFieldSupportNotice("imageResourceId", "iconResourceId", "consumptionLimit", "usableActorIds", "usableClassIds", "seedParameterBonuses", "stateEffects", "animationId", "careProfile", "usageMessage", "equipmentProfile"));
 }
 
 /** `db-ws-stack` 안에서 한 행을 다 쓰는 카드로 표시한다. */
@@ -381,8 +533,9 @@ function itemHeader(record: ItemRecord): HTMLElement {
   const project = store.getCurrent();
   const url = resolveAssetResourceUrl(record.iconResourceId ?? record.imageResourceId, { project });
   const icon = el("div", {
-    class: "db-item-inspector-icon",
-    attrs: { role: "img", "aria-label": `${record.name} 아이콘` },
+    class: `db-item-inspector-icon${url ? "" : " db-image-placeholder"}`,
+    attrs: { role: "img", "aria-label": url ? `${record.name} 아이콘` : `${record.name} 이미지 없음` },
+    text: url ? undefined : "이미지 없음",
   });
   if (url) icon.style.backgroundImage = `url("${url}")`;
   const name = textField("이름", "db-field-name", record.name, (name) => updateDatabaseRecord("items", record.id, { name }));

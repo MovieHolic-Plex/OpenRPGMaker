@@ -725,6 +725,10 @@ const placeProps: ToolDefinition = {
   run(draft: Project, args: Record<string, unknown>): ToolExecResult {
     const { map, tileset } = requireMapContext(draft, args, PROPS_EXAMPLE);
     const area = coerceRect(args.area, "area", PROPS_EXAMPLE);
+    requireRectInMap(map, area, "area", PROPS_EXAMPLE);
+    if (args.trunkVisible !== undefined || args.origins !== undefined) {
+      failWithExample("trunkVisible·origins는 숲 합성 내부 전용이라 place_props 인자로 받지 않습니다(density로 숲을 심으세요)", PROPS_EXAMPLE);
+    }
     const density = coercePlacePropsForestDensity(args.density);
     const material = typeof args.material === "string" ? args.material.trim() : "";
     if (!material) failWithExample("material(타일 라벨/설명, 예: \"침엽수\"·\"나무 상자\")이 필요합니다", PROPS_EXAMPLE);
@@ -788,6 +792,7 @@ const placeProps: ToolDefinition = {
     const count = args.count === undefined
       ? plan?.count ?? failWithExample("count가 필요합니다(나무는 density로 대신할 수 있습니다)", PROPS_EXAMPLE)
       : coerceInt(args.count, "count", PROPS_EXAMPLE);
+    if (count < 1) failWithExample("count는 1 이상이어야 합니다", PROPS_EXAMPLE);
     const minGap = plan?.minGap
       ?? (typeof args.minGap === "number" && Number.isInteger(args.minGap) ? args.minGap : undefined);
     const seed = args.seed === undefined ? undefined : coerceInt(args.seed, "seed", PROPS_EXAMPLE);

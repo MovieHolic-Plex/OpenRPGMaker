@@ -21,6 +21,8 @@
 
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
+import { switchDatabaseActiveTab } from "@/editor/panels/database";
+import { setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
 import { emptyToUndefined, numberField, selectField, textField } from "@/editor/panels/databaseControls";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { requestDatabaseModalClose } from "@/editor/panels/databaseModal";
@@ -38,6 +40,9 @@ import type { EnemyRecord, TroopMemberRecord, TroopRecord } from "@/project/type
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { classicEnemyFormation } from "@/battle/battleBattlers";
+import { BATTLE_SKINS, resolveSkinId } from "@/battle/skins/registry";
+import { BATTLER_PLACEMENTS, resolveSkinEnemyPositions } from "@/battle/battlerPlacements";
+import type { BattleSkinId } from "@/battle/skins/types";
 import { normalizeEnemyRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { simulateBattle } from "@/battle/simulate";
 import { applyMagentaChromaKeyToImageData } from "./chromaKey";
@@ -217,7 +222,7 @@ function balancePanel(record: TroopRecord): HTMLElement {
     const rewards = normalizeEnemyRecord(enemy).rewards;
     exp += rewards.exp;
     gold += rewards.gold;
-    if (rewards.dropItemId) dropItemIds.add(rewards.dropItemId);
+    if (rewards.dropItemId && rewards.dropRatePercent > 0) dropItemIds.add(rewards.dropItemId);
   }
 
   // 롤업은 타일 세 장으로 나눈다. 예전엔 "총 경험치 5 / 총 돈 4 / 드롭 후보 1종" 한 줄
@@ -259,7 +264,7 @@ function balancePanel(record: TroopRecord): HTMLElement {
               n: 10,
               seed: 12345,
             });
-            result.textContent = `승률 ${Math.round(outcome.winRate * 100)}% · 평균 ${outcome.avgTurns.toFixed(1)}턴 · 잔여 HP ${Math.round(outcome.avgHpRemaining)}`;
+            result.textContent = `10회 표본 · 승률 ${Math.round(outcome.winRate * 100)}% · 평균 ${outcome.avgTurns.toFixed(1)}턴 · 잔여 HP ${Math.round(outcome.avgHpRemaining)}`;
           } catch (error) {
             result.textContent = `추정 불가: ${error instanceof Error ? error.message : String(error)}`;
           }
@@ -388,6 +393,7 @@ function memberEditor(
             updateSelectedMember(record, selectedIndex, enemyId ? { ...member, enemyId } : undefined);
             rerender();
           }),
+          openEnemyButton(member.enemyId),
           el("div", {
             class: "db-troop-xy-row",
             children: [
@@ -442,6 +448,7 @@ function memberEditor(
             resourceId: record.previewBackgroundResourceId,
             kind: "backdrop",
             testid: "db-field-troop-backdrop",
+            queueKey: `troop-backdrop:${record.id}`,
             dialogTitle: "전투 배경",
             allowClear: true,
             onChange: (result) => {
@@ -463,9 +470,18 @@ function memberEditor(
 
 function troopBattlePreview(record: TroopRecord, selectedIndex: number, rerender: () => void): HTMLElement {
   const project = store.getCurrent();
-  const sprites = (record.members ?? []).map((member, index) => {
+  const skinId = resolveSkinId(project.system.battleUiStyle);
+  const layout = BATTLE_SKINS[skinId]?.layout;
+  const members = record.members ?? [];
+  const positions = resolveSkinEnemyPositions(
+    skinId,
+    members.map((member) => ({ x: member.x, y: member.y })),
+    record.autoAlign,
+  );
+  const sprites = members.map((member, index) => {
     const enemy = project.database.enemies.find((entry) => entry.id === member.enemyId);
-    const sprite = enemySprite(enemy, member, record.id, index, index === selectedIndex, rerender);
+    const skinPos = positions[index] ?? { x: 160, y: 96 };
+    const sprite = enemySprite(enemy, member, skinPos, record.id, index, index === selectedIndex, rerender);
     sprite.dataset.memberIndex = String(index);
     return sprite;
   });
@@ -473,7 +489,9 @@ function troopBattlePreview(record: TroopRecord, selectedIndex: number, rerender
   const stage = el("div", {
     class: "db-troop-battle-preview-stage",
     dataset: { testid: "db-troop-preview-stage" },
-    children: [recenterGuideLine(), ...partyMarkers(), ...children],
+    children: layout === "sideview" || layout === "active"
+      ? [recenterGuideLine(), ...partyMarkers(skinId), ...children]
+      : [...partyMarkers(skinId), ...children],
   });
   const backgroundUrl = resolveAssetResourceUrl(record.previewBackgroundResourceId, { project });
   if (backgroundUrl) {
@@ -482,22 +500,35 @@ function troopBattlePreview(record: TroopRecord, selectedIndex: number, rerender
 
   const card = studioCard({
     title: "배치 미리보기",
-    hint: "붉은 점선 오른쪽은 전투에서 좌측으로 재배치됩니다.",
+    hint: previewHint(record, skinId),
     children: [
       stage,
       el("div", { class: "db-troop-preview-caption", dataset: { testid: "db-troop-preview-caption" }, text: previewCaption(record) }),
       el("div", {
         class: "db-troop-preview-legend",
-        children: [
-          legendChip("db-troop-legend-party", "① ~ ④ 아군 진형 (읽기 전용)"),
-          legendChip("db-troop-legend-recenter", "점선 = 재배치 경계 (x > 150)"),
-        ],
+        children:
+          layout === "sideview" || layout === "active"
+            ? [
+              legendChip("db-troop-legend-party", "① ~ ④ 아군 진형 (읽기 전용)"),
+              legendChip("db-troop-legend-recenter", "점선 = 재배치 경계 (x > 150)"),
+            ]
+            : [
+              legendChip("db-troop-legend-party", "현재 전투 스킨 기준 배치 미리보기"),
+              ...(manualDivergenceCount(record, skinId) > 0
+                ? [legendChip("db-troop-legend-recenter", "표시 위치가 저작 좌표와 다릅니다")]
+                : []),
+            ],
       }),
     ],
     testid: "db-troop-preview-card",
     extraClass: "db-troop-preview-panel",
   });
   return card;
+}
+
+function previewHint(record: TroopRecord, skinId: string): string {
+  if (record.autoAlign) return `현재 전투 스킨(${skinId})의 자동 진형으로 싸웁니다.`;
+  return `수동 배치 · ${skinId} 스킨의 실제 표시 위치입니다.`;
 }
 
 function legendChip(className: string, text: string): HTMLElement {
@@ -514,24 +545,42 @@ function recenterGuideLine(): HTMLElement {
   return line;
 }
 
-/** 아군 진형(battleX 252, battleY 96+36i) 읽기 전용 마커. 권위: battleBattlers.ts */
-function partyMarkers(): HTMLElement[] {
+/** 아군 진형 읽기 전용 마커. 적 스프라이트와 같은 0..160 표시 공간에 둔다. */
+function partyMarkers(skinId: BattleSkinId): HTMLElement[] {
   return [0, 1, 2, 3].map((index) => {
+    const seat = BATTLER_PLACEMENTS[skinId].party(index, 4);
     const marker = el("div", {
       class: "db-troop-preview-party-marker",
       dataset: { testid: `db-troop-preview-party-marker-${index + 1}` },
       text: String(index + 1),
     });
-    marker.style.left = `${(252 / 320) * 100}%`;
-    marker.style.top = `${((96 + index * 36) / 240) * 100}%`;
+    marker.style.setProperty("--troop-marker-x", `${(Math.max(0, Math.min(320, seat.x)) / 320) * 100}%`);
+    marker.style.setProperty("--troop-marker-y", `${(Math.max(0, Math.min(160, seat.y)) / 160) * 100}%`);
     marker.title = "아군 진형 위치(읽기 전용)";
     return marker;
   });
 }
 
+function manualDivergenceCount(record: TroopRecord, skinId: BattleSkinId): number {
+  if (record.autoAlign) return 0;
+  const members = record.members ?? [];
+  const positions = resolveSkinEnemyPositions(
+    skinId,
+    members.map((member) => ({ x: member.x, y: member.y })),
+    false,
+  );
+  return members.filter((member, index) => {
+    if (member.x == null || !Number.isFinite(member.x)) return false;
+    const rendered = positions[index]?.x;
+    if (rendered == null) return false;
+    return Math.abs(rendered - member.x) >= 1;
+  }).length;
+}
+
 function enemySprite(
   enemy: EnemyRecord | undefined,
   member: TroopMemberRecord,
+  skinPos: { readonly x: number; readonly y: number },
   troopId: string,
   index: number,
   selected: boolean,
@@ -546,12 +595,8 @@ function enemySprite(
   }) as HTMLCanvasElement;
   canvas.width = 96;
   canvas.height = 72;
-  canvas.style.left = `${(Math.max(0, Math.min(320, member.x ?? 0)) / 320) * 100}%`;
-  canvas.style.top = `${(Math.max(0, Math.min(240, member.y ?? 0)) / 240) * 100}%`;
-  if (member.x != null && member.x > RECENTER_THRESHOLD_X) {
-    canvas.classList.add("is-recentered");
-    canvas.title = "x>150 은 전투에서 좌측 진형으로 재배치됩니다";
-  }
+  canvas.style.left = `${(Math.max(0, Math.min(320, skinPos.x)) / 320) * 100}%`;
+  canvas.style.top = `${(Math.max(0, Math.min(160, skinPos.y)) / 160) * 100}%`;
   canvas.addEventListener("click", () => {
     selectedMemberIndexes.set(troopId, index);
     rerender();
@@ -646,11 +691,13 @@ function enemyList(record: TroopRecord, selectedIndex: number, selectedEnemyId: 
 // ---------------------------------------------------------------------------
 
 function activeSlotsField(record: TroopRecord, rerender: () => void): HTMLElement {
-  const field = numberField("아군 참전 인원", "db-field-troop-active-slots", record.activeSlots ?? 0, (activeSlots) => {
+  const field = numberField("아군 인원 (0=기본)", "db-field-troop-active-slots", record.activeSlots ?? 0, (activeSlots) => {
     updateDatabaseRecord("troops", record.id, { activeSlots: optionalPositiveInteger(activeSlots) });
     rerender();
   });
-  field.title = "이 적 그룹과 싸울 때 동시에 참전할 아군 수입니다(적 수가 아닙니다). 0 이면 제한 없음.";
+  const system = store.getCurrent().system;
+  field.title = `동시 참전할 아군 수입니다. 0이면 시스템 설정 사용: ${system.activeSlots ?? (system.battleModel === "gen1" ? 1 : "파티 전원")}.`;
+  field.append(el("small", { class: "db-ws-usage", text: record.activeSlots ? `${record.activeSlots}명 지정` : `기본: ${system.activeSlots ?? (system.battleModel === "gen1" ? 1 : "파티 전원")}` }));
   return field;
 }
 
@@ -723,6 +770,50 @@ function selectedMemberIndex(record: TroopRecord): number {
   if (members.length === 0) return 0;
   const selected = selectedMemberIndexes.get(record.id) ?? 0;
   return Math.max(0, Math.min(selected, members.length - 1));
+}
+
+/**
+ * 선택 슬롯의 적을 몬스터 탭에서 바로 연다. 거울 패턴: databaseEnemyRecordView 의
+ * "종족 열기" 버튼과 동일하게 setSelectedRecordId + switchDatabaseActiveTab.
+ */
+function openEnemyButton(enemyId: string): HTMLElement {
+  const enemy = store.getCurrent().database.enemies.find((entry) => entry.id === enemyId);
+  return el("div", {
+    class: "db-troop-enemy-nav-actions",
+    dataset: { testid: "db-troop-enemy-nav-actions" },
+    children: [
+      el("button", {
+        class: "db-ws-btn db-ws-btn-ghost",
+        text: enemy ? `“${enemy.name}” 수정하기` : "몬스터 탭 열기",
+        attrs: { type: "button", title: "몬스터 탭에서 이 적을 바로 수정합니다" },
+        dataset: { testid: "db-troop-open-enemy" },
+        on: {
+          click: (event) => {
+            if (!enemyId) return;
+            const panelRoot = databasePanelRootFrom(event.currentTarget as HTMLElement | null);
+            setSelectedRecordId("enemies", enemyId);
+            if (!panelRoot) {
+              toast("몬스터 탭에서 적을 선택했습니다", "ok");
+              return;
+            }
+            switchDatabaseActiveTab("enemies", panelRoot);
+          },
+        },
+      }),
+    ],
+  });
+}
+
+function databasePanelRootFrom(node: HTMLElement | null): HTMLElement | null {
+  if (!node) return null;
+  const modalBody = node.closest(".database-modal-body");
+  if (modalBody instanceof HTMLElement) return modalBody;
+  let current: HTMLElement | null = node;
+  while (current) {
+    if (current.querySelector(".db-body") && !current.classList.contains("db-body")) return current;
+    current = current.parentElement;
+  }
+  return null;
 }
 
 function updateSelectedMember(record: TroopRecord, selectedIndex: number, nextMember: TroopMemberRecord | undefined): void {

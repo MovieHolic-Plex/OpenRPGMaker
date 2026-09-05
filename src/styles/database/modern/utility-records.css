@@ -204,7 +204,7 @@
   display: grid;
   font: 400 11.5px/1.5 "Malgun Gothic", system-ui, sans-serif;
   gap: 8px;
-  grid-template-columns: 74px minmax(0, 1fr);
+  grid-template-columns: 88px minmax(0, 1fr);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-cmd-kind-guide-row > strong {

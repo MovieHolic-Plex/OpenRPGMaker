@@ -11,11 +11,12 @@ import { openDatabase } from "./oprn-database-helpers";
  * 단정한다. 캔버스에 정말 그림이 들어갔는지, 구운 PNG 가 실제로 서빙되는지, 손잡이를 끌면
  * 그림이 따라 바뀌는지는 진짜 브라우저에서만 확인된다.
  *
- * 네 가지를 본다:
+ * 다섯 가지를 본다:
  *  1. 빈 프로젝트를 열면 시작 화면에 원형 PNG 6장이 실제로 뜬다(자리끼우기 아님).
  *  2. 집 형태 히어로 캔버스가 단색이 아니다 — 타일이 들어갔다.
  *  3. 날개 손잡이를 끌면 값이 커밋되고 히어로 그림이 새로 그려진다.
  *  4. 프리셋 「미리보기 만들기」가 실제 시공 결과를 그린다.
+ *  5. 프리셋 형태 화이트리스트 행에 집 그림이 들어간다.
  */
 
 type CanvasStats = {
@@ -211,4 +212,21 @@ test("프리셋 「미리보기 만들기」가 실제 시공 결과를 그린�
   expect((await canvasStats(reseeded)).colors).toBeGreaterThan(16);
 
   await stage.screenshot({ path: testInfo.outputPath("village-preset-preview.png") });
+});
+
+test("프리셋 형태 화이트리스트에 집 그림이 들어간다", async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 1600, height: 1000 });
+  await seedProjectFromSupabaseCanonical(page, createEmptyToolProject("마을 그림"));
+  await openVillageTab(page);
+
+  await page.getByTestId("db-village-archetype-farm-rural").click();
+  const picker = page.getByTestId("db-village-preset-template-picker");
+  await expect(picker).toBeVisible();
+
+  const shot = page.getByTestId("db-village-preset-template-rect-small-shot");
+  await shot.scrollIntoViewIfNeeded();
+  await expect(shot).toHaveAttribute("data-preview-state", "ready", { timeout: 15_000 });
+  expect((await canvasStats(shot)).colors).toBeGreaterThan(8);
+
+  await picker.screenshot({ path: testInfo.outputPath("village-preset-template-whitelist.png") });
 });

@@ -30,3 +30,8 @@ Hostile-review fixes for event command forms: fork/loop rerender, setSwitch valu
 ## Show Picture preview opacity unit (2026-08-29)
 - The Show Picture form stores opacity as RM2K3 `0~255` but its input is a **percent** (`opacityToPercent` converts on seed, the label reads `불투명도(%)`, `percentToOpacity` converts back on commit). The live preview marker divided that percent by `255`, so a picture authored at `100%` previewed at `opacity: 0.39` while the game drew it fully opaque. The preview now divides by `100` and clamps through `clampPct`; the runtime path (`pictureCssOpacity`) keeps taking `0~255` and is unchanged.
 - When touching this preview, check which unit the value is in at that point. `commandBodyPage3Native.ts` holds both units in the same function: `cmd.opacity` is `0~255`, while the input and `previewOpacityPercent = intInRange(opacity, 100, 0, 100)` are `0~100`; `clampPct` only receives that explicitly named percent value. The marker carries `data-testid="show-picture-preview-marker"`; regression coverage is in `test/showPictureForm.test.ts`.
+
+
+## 조명 백분율 입력 복구 (2026-09-05)
+
+`setLightingBody`의 숫자와 슬라이더는 모두 0~100이며 저장·미리보기에서만 100으로 나눈다. `ambient`는 어둠의 불투명도라 50은 0.5, 100은 완전 암전이다. 프리셋도 두 입력을 백분율로 동기화한다. `test/setLightingPercent.test.ts`와 `node scripts/qa/recovery-lighting.mjs`가 숫자·슬라이더·프리셋·실제 모달 적용을 검증한다. 브라우저 근거: `verify-shots/recovery-lighting/`.

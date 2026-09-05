@@ -8,7 +8,7 @@
 // 초점을 옮기는 일만 한다 — 두 번째 편집 표면을 만들지 않는다(헤더 IA 규칙 「한 동작에 집 하나」).
 
 import { openEventSubdialog } from "@/editor/panels/eventEditor/subdialog";
-import { renderMapProps } from "@/editor/panels/mapProps";
+import { renderMapProps, resetMapPropsSectionForOpen } from "@/editor/panels/mapProps";
 import { selectEditorMap } from "@/editor/mapSelection";
 import type { MapId } from "@/project/types";
 
@@ -25,12 +25,14 @@ export function openMapPropertiesDialog(
   options: { readonly focus?: MapPropertiesFocus } = {},
 ): void {
   selectEditorMap(mapId);
+  resetMapPropsSectionForOpen();
   openEventSubdialog({
     render: (body) => renderMapProps(body),
     testId: `map-properties-modal-${mapId}`,
     title: "맵 설정",
     subtitle: mapName,
-    width: "narrow",
+    // 고정 섹션 내비 + 본문. 맵 전용 크기는 map-props.css 에서 소유한다.
+    width: "wide",
   });
   if (options.focus) focusMapPropertiesControl(mapId, FOCUS_TESTID[options.focus]);
 }

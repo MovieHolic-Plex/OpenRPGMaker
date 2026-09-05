@@ -255,8 +255,22 @@ export function resolveHouseInteriorScale(
     if (exterior.stories >= 3 || exterior.program === "manor") return "mansion";
     return exterior.footprintArea !== undefined && exterior.footprintArea >= 70 ? "mansion" : "cottage3";
   }
-  if (exterior?.templateId === "rect-2f" || exterior?.templateId === "rect-3f") return "cottage3";
-  if (exterior?.templateId === "cottage-l" || exterior?.templateId === "l-cottage") return "cottage-l";
+  const templateId = exterior?.templateId;
+  // Catalog L-family ids are 'l' / 'l-mirror' / 'l-wide' / 'l-deep' (cottage-l|l-cottage aliases do not exist).
+  if (
+    templateId === "l"
+    || templateId === "l-mirror"
+    || templateId === "l-wide"
+    || templateId === "l-deep"
+    || templateId === "cottage-l"
+    || templateId === "l-cottage"
+  ) {
+    return "cottage-l";
+  }
+  if (templateId === "cottage-low" || templateId === "hut-low" || templateId === "barn-low") {
+    return "cottage2";
+  }
+  if (templateId === "rect-2f" || templateId === "rect-2f-slim" || templateId === "rect-3f") return "cottage3";
   // 1층 영주/촌장 저택도 레퍼런스 L형 코티지 평면(주방·침실·홀) — 2층 이상만 풀 맨션.
   if (exterior?.program === "manor") {
     if (exterior.stories && exterior.stories >= 2) return "mansion";
@@ -291,15 +305,21 @@ export function resolveHouseInteriorProgram(
   if (/대장|목수|공방|craft|smith|workshop/.test(name)) return "workshop";
   if (/학자|서기|마법|sage|study|사서/.test(name)) return "study";
   if (/촌장|영주|귀족|lord|chief|로안/.test(name)) return "manor";
-  if (exterior?.stories && exterior.stories >= 2) return seed % 2 === 0 ? "dwelling" : "study";
-  const pick = (seed >>> 0) % 5;
-  return (["dwelling", "shop", "workshop", "study", "inn"] as const)[pick]!;
+  void seed; // kept for API compatibility — no lottery when heuristics miss
+  return "dwelling";
 }
 
 export function wallMaterialForKit(kitId: HouseKitId | undefined): InteriorWallMaterial | undefined {
   if (!kitId) return undefined;
   if (kitId === "blue-stone" || kitId === "slate-wood") return "stone-brick";
-  if (kitId === "bright-plaster" || kitId === "amber-wood") return "cream";
+  if (
+    kitId === "bright-plaster"
+    || kitId === "amber-wood"
+    || kitId === "timber-hall"
+    || kitId === "aframe-stone"
+  ) {
+    return "cream";
+  }
   return undefined;
 }
 
@@ -479,22 +499,37 @@ export function buildHouseInteriorPlan(input: {
   readonly floor?: "ground" | "upper";
   readonly themeHint?: InteriorRoomTheme;
   readonly wallMaterial?: InteriorWallMaterial;
+  readonly returnMapId?: MapId;
+  readonly returnX?: number;
+  readonly returnY?: number;
 }): InteriorRoomPlan {
   const program = input.program ?? "dwelling";
   const floor = input.floor ?? "ground";
+  const finish = (plan: InteriorRoomPlan): InteriorRoomPlan => {
+    const shifted = shiftPlanForCeiling(plan);
+    if (input.returnMapId === undefined && input.returnX === undefined && input.returnY === undefined) {
+      return shifted;
+    }
+    return {
+      ...shifted,
+      ...(input.returnMapId !== undefined ? { returnMapId: input.returnMapId } : {}),
+      ...(input.returnX !== undefined ? { returnX: input.returnX } : {}),
+      ...(input.returnY !== undefined ? { returnY: input.returnY } : {}),
+    };
+  };
   if (floor === "upper") {
-    return shiftPlanForCeiling(upperFloorPlan(input.mapId, input.name, input.seed, program, input.wallMaterial));
+    return finish(upperFloorPlan(input.mapId, input.name, input.seed, program, input.wallMaterial));
   }
   switch (input.scale) {
     case "mansion":
-      return shiftPlanForCeiling(mansionPlan(input.mapId, input.name, input.seed, program, input.wallMaterial));
+      return finish(mansionPlan(input.mapId, input.name, input.seed, program, input.wallMaterial));
     case "cottage-l":
-      return shiftPlanForCeiling(cottageLPlan(input.mapId, input.name, input.seed, program, input.themeHint, input.wallMaterial));
+      return finish(cottageLPlan(input.mapId, input.name, input.seed, program, input.themeHint, input.wallMaterial));
     case "cottage3":
-      return shiftPlanForCeiling(cottage3Plan(input.mapId, input.name, input.seed, program, input.themeHint, input.wallMaterial));
+      return finish(cottage3Plan(input.mapId, input.name, input.seed, program, input.themeHint, input.wallMaterial));
     case "cottage2":
     default:
-      return shiftPlanForCeiling(cottage2Plan(input.mapId, input.name, input.seed, program, input.themeHint, input.wallMaterial));
+      return finish(cottage2Plan(input.mapId, input.name, input.seed, program, input.themeHint, input.wallMaterial));
   }
 }
 

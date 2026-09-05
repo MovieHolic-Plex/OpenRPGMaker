@@ -49,6 +49,12 @@
   white-space: nowrap;
 }
 
+.database-modal-backdrop .database-modal-window .db-battle-studio-sub {
+  color: var(--db-studio-text-2);
+  font: 400 12px/1.5 "Malgun Gothic", system-ui, sans-serif;
+  margin: 2px 0 0;
+}
+
 .database-modal-backdrop .database-modal-window .db-battle-studio-nav {
   align-self: end;
   display: flex;
@@ -137,7 +143,7 @@
   border: 1px solid rgba(194, 232, 91, 0.45);
   border-radius: 999px;
   color: var(--db-studio-live);
-  font: 800 9px/1.2 "Malgun Gothic", system-ui, sans-serif;
+  font: 800 11px/1.35 "Malgun Gothic", system-ui, sans-serif;
   letter-spacing: 0.08em;
   padding: 4px 7px;
   width: fit-content;
@@ -645,7 +651,7 @@
   font: 400 11px/1.2 "Malgun Gothic", system-ui, sans-serif;
 }
 
-.database-modal-backdrop .database-modal-window .db-terrain-record :is(input, select) {
+.database-modal-backdrop .database-modal-window .db-terrain-record :is(input:not([type="radio"]), select) {
   background-color: var(--db-studio-surface);
   border: 1px solid var(--db-studio-border-default);
   border-radius: 6px;
@@ -691,14 +697,14 @@
   margin: 0;
 }
 
-.database-modal-backdrop .database-modal-window :is(.db-battle-screen-inspector) :is(input, select, button) {
+.database-modal-backdrop .database-modal-window :is(.db-battle-screen-inspector) :is(input:not([type="radio"]), select, button) {
   box-sizing: border-box;
   min-height: 30px;
   min-width: 0;
   width: 100%;
 }
 
-.database-modal-backdrop .database-modal-window .db-battle-screen-inspector :is(input, select) {
+.database-modal-backdrop .database-modal-window .db-battle-screen-inspector :is(input:not([type="radio"]), select) {
   background-color: var(--db-studio-surface);
   border: 1px solid var(--db-studio-border-default);
   border-radius: 6px;
@@ -915,7 +921,7 @@
   font: 400 11px/1.2 "Malgun Gothic", system-ui, sans-serif;
 }
 
-.database-modal-backdrop .database-modal-window .db-battle-command-card :is(input, select) {
+.database-modal-backdrop .database-modal-window .db-battle-command-card :is(input:not([type="radio"]), select) {
   background-color: var(--db-studio-surface);
   border: 1px solid var(--db-studio-border-default);
   border-radius: 6px;

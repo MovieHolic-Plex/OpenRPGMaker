@@ -543,6 +543,7 @@ function graphicsPanel(actor: ActorRecord, rerender: () => void): HTMLElement {
     aiImageGenerateField({
       kind: "faceset",
       testidPrefix: "db-actor-face-ai",
+      queueKey: `actor-face:${actor.id}`,
       onInserted: (resourceId) => {
         updateDatabaseRecord("actors", actor.id, { faceResourceId: resourceId });
         rerender();

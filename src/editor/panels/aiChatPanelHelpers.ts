@@ -160,17 +160,12 @@ export function isCardLevelApprovalWarning(warning: string): boolean {
   );
 }
 
-// 커스텀 인앱 모달(§2.4) — 네이티브 confirm 대체. 경고가 없으면 동기 true를 돌려
-// 수락 경로가 마이크로태스크로 미뤄지지 않게 한다(적용 직후 상태를 읽는 흐름 보존).
-// soft-confirm/재료 합의 경고만 있으면 모달 본문이 이미 확인이므로 건너뛴다.
-export function confirmRuleApproval(warnings: readonly string[]): true | Promise<boolean> {
-  if (warnings.length === 0) return true;
-  const hasDestructive = warnings.some((w) => w.includes("파괴") || w.includes("지워") || w.includes("삭제") || w.includes("remove") || w.includes("clear"));
-  if (hasDestructive) {
-    return showConfirm({ title: "파괴적 변경 확인", message: `${warnings.join("\n")}\n\n되돌릴 수 있는 작업이지만 영향 범위를 확인했습니다. 계속할까요?`, confirmLabel: "확인 후 적용" });
-  }
-  if (warnings.every(isCardLevelApprovalWarning)) return true;
-  return showConfirm({ title: "승인 확인", message: `${warnings.join("\n")}\n\n이 규칙을 적용할까요?`, confirmLabel: "적용" });
+// 확인 모달 없음(2026-09: 변경 확인 팝업을 띄우지 않는 정책) — 경고가 있어도 바로 적용하고
+// 복구는 되돌리기다. 동기 true를 돌려 수락 경로가 마이크로태스크로 미뤄지지 않게 한다
+// (적용 직후 상태를 읽는 흐름 보존). 호출부는 `await confirmRuleApproval(...)` 그대로 둬도 된다.
+export function confirmRuleApproval(warnings: readonly string[]): true {
+  void warnings;
+  return true;
 }
 
 export function attachCompletenessWarnings(calls: readonly ProposedCall[], warnings: readonly string[]): void {

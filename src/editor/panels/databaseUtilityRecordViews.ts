@@ -56,6 +56,7 @@ import {
   workspaceShell,
 } from "@/editor/panels/databaseWorkspace";
 import { switchDatabaseActiveTab } from "@/editor/panels/database";
+import { requestSystemSection } from "@/editor/panels/databaseSystemView";
 import { store } from "@/project/store";
 import type {
   BattleFlow,
@@ -78,9 +79,11 @@ const BATTLE_COMMAND_KIND_HELP: readonly { readonly label: string; readonly help
   { label: "특수기능", help: "직업이 배운 스킬 전체를 목록으로" },
   { label: "특수계열", help: "이름이 일치하는 스킬 묶음만 목록으로" },
   { label: "방어", help: "이번 턴 받는 피해를 줄임" },
+  { label: "방어(구형)", help: "방어와 같은 효과 — 새로 쓸 때는 방어를 고르세요" },
   { label: "아이템", help: "소지품에서 전투용 아이템 사용" },
   { label: "도망", help: "전투 이탈 시도" },
   { label: "교체", help: "대기 중인 동료와 자리 교대" },
+  { label: "교체(구형)", help: "교체와 같은 효과 — 새로 쓸 때는 교체를 고르세요" },
 ];
 
 let terrainQuery = "";
@@ -106,7 +109,11 @@ export function renderTerrainTab(host: HTMLElement): void {
     dataset: { testid: "db-detail-form" },
   });
   form.append(
-    battleStudioHeading("terrain", "지형", "필드의 이동 규칙과 전투 분위기를 하나의 프리셋으로 관리합니다."),
+    battleStudioHeading(
+      "terrain",
+      "지형 효과",
+      "그리는 타일이 아닙니다 — 발밑 칸을 밟았을 때 일어나는 일(피해·조우·전투 배경·발소리·탈것 통행)을 정합니다. 타일셋 탭에서 붙인 지형 태그 번호와 1:1로 짝을 이룹니다.",
+    ),
     workspaceShell({
       list: terrainListPane(terrains, selectedIndex, rerender),
       detail: terrainDetailPane(terrains, selected, selectedIndex, rerender),
@@ -138,7 +145,7 @@ function terrainListPane(
     }));
   }
   // 제목/카드 제목에 "지형" 을 쓰지 않는다 — qa-terrain 이
-  // getByRole("heading", { name: "지형" }) 로 스튜디오 헤딩 하나만 집는다(부분 일치).
+  // getByRole("heading", { name: "지형 효과" }) 로 스튜디오 헤딩 하나만 집는다(부분 일치).
   return listPane({
     title: "프리셋",
     count: terrains.length,
@@ -182,7 +189,7 @@ function terrainDetailPane(
   }
   return detailPane({
     hero: detailHero({
-      eyebrow: "지형",
+      eyebrow: "지형 효과",
       title: selected.name,
       subtitle: `태그 ${selectedIndex + 1} · ${selected.id}`,
       tags: [
@@ -216,7 +223,7 @@ function terrainDetailPane(
 function terrainBasicsCard(terrain: DatabaseTerrainRecord, index: number): HTMLElement {
   return sectionCard({
     title: "기본",
-    hint: "이 태그를 밟았을 때의 규칙",
+    hint: "이 태그 번호의 칸을 밟았을 때 일어나는 일",
     children: [
       textField("이름", `db-field-terrain-name-${index}`, terrain.name, (value) => {
         recordCoalescedSnapshot(`db-utility:terrain:${index}:name`);
@@ -240,7 +247,7 @@ function terrainBasicsCard(terrain: DatabaseTerrainRecord, index: number): HTMLE
 function terrainSceneCard(terrain: DatabaseTerrainRecord, index: number, rerender: () => void): HTMLElement {
   return sectionCard({
     title: "전투 · 표시",
-    hint: "적 그룹이 배경을 지정하지 않으면 이 배경이 쓰입니다",
+    hint: "적 그룹이 배경을 지정하지 않으면 이 배경이 쓰입니다. 우선순위: 적 그룹 → 지형 → 기본 전장",
     children: [
       resourcePickerControl({
         label: "전투 배경",
@@ -294,7 +301,7 @@ function terrainSceneCard(terrain: DatabaseTerrainRecord, index: number, rerende
 function terrainVehicleCard(terrain: DatabaseTerrainRecord, index: number): HTMLElement {
   return sectionCard({
     title: "탈것 통행",
-    hint: "끄면 그 탈것은 이 지형에 들어갈 수 없습니다",
+    hint: "끄면 그 탈것은 이 지형 태그의 칸에 들어갈 수 없습니다",
     children: [
       toggleSwitch("보트", `db-field-terrain-boat-${index}`, terrain.vehiclePassage.boat, (checked) => {
         recordProjectSnapshot();
@@ -538,10 +545,10 @@ function battleScreenDetailPane(troop: TroopRecord | undefined, rerender: () => 
         children: [
           sectionCard({
             title: "전투 화면",
-            hint: "전투 중 창·커서 그래픽과 진행 방식",
+            hint: "전투 중 창·커서 그래픽과 진행 방식 — UI 스타일·규칙 모델은 시스템 › 시작 설정에서",
             children: [
               resourcePickerControl({
-                label: "전투 시스템",
+                label: "전투 시스템 리소스",
                 resourceId: project.system.battleSystemResourceId,
                 kind: "system2",
                 testid: "db-field-battle-system-resource",
@@ -572,6 +579,18 @@ function battleScreenDetailPane(troop: TroopRecord | undefined, rerender: () => 
                 store.update((draft) => {
                   draft.system.activeSlots = Number.isFinite(value) && value > 0 ? Math.trunc(value) : undefined;
                 }, { scope: "system" });
+              }),
+              el("button", {
+                class: "db-ws-btn db-ws-btn-ghost",
+                text: "UI 스타일·규칙 모델은 시작 설정에서",
+                attrs: { type: "button" },
+                dataset: { testid: "db-battle-screen-open-system-startup" },
+                on: {
+                  click: (event) => {
+                    requestSystemSection("startup", "db-field-system-battle-ui-style");
+                    jumpToTab("system", event);
+                  },
+                },
               }),
             ],
             testid: "db-battle-screen-settings-card",
@@ -635,7 +654,7 @@ function battleScreenPreviewStage(troop: TroopRecord): HTMLElement {
     el("div", {
       class: "db-battle-screen-stage-meta",
       children: [
-        el("span", { class: "db-studio-live-chip", text: project.system.battleFlow === "strict" ? "턴 방식" : "게이지 방식" }),
+        el("span", { class: "db-studio-live-chip", text: project.system.battleFlow === "strict" ? "턴 전투" : "게이지 전투" }),
         el("strong", { text: troop.name }),
         el("small", { text: `${troop.members?.length ?? troop.enemyIds.length} enemies · ${resourceDisplayName(backdropId)}` }),
       ],
@@ -1081,7 +1100,7 @@ function resourceDisplayName(resourceId: string | undefined): string {
  * 거기서 루트를 걸어 올라가고(fakeDom 처럼 문서에 붙어 있지 않은 호스트도 동작),
  * 없으면 문서에서 모달 본문을 찾는다(툴바 액션은 이벤트를 받지 않는다).
  */
-function jumpToTab(tab: "classes" | "troops", event?: Event): void {
+function jumpToTab(tab: "classes" | "system" | "troops", event?: Event): void {
   const fromEvent = event ? databasePanelRootFrom(event.currentTarget as HTMLElement | null) : null;
   const panelRoot = fromEvent ?? (document.querySelector(".database-modal-body") as HTMLElement | null);
   if (panelRoot) switchDatabaseActiveTab(tab, panelRoot);

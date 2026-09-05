@@ -1,29 +1,13 @@
-/* 몬스터(enemies) 탭 — 2026-08 모던 개편.
- *
- * 감사 게이트(before): clipped:1 overlap:3 detailDead:55%.
- *
- * 근본 원인 세 가지:
- *  1) `.db-enemy-bm101-workbench` 라는 한 이름에 서로 다른 grid-template-areas 가 세 벌
- *     걸려 있었다 — enemies.part-2.css(5행 고정 트랙) / desktop-record-shell/05-dense-
- *     workbenches.css / studio-theme.css:339(6행 + `combat` 행). 마지막에 로드되는
- *     studio-theme 이 이겼고, 나머지 맵이 준 `grid-area` 이름은 존재하지 않는 라인이라
- *     암시적 트랙을 만들어 패널이 상세 창 밖으로 밀려났다. → 뷰가 클래스명을
- *     `.db-enemy-workbench` 로 바꿔 세 맵을 모두 무력화했고, 배치는 databaseWorkspace 의
- *     `.db-ws-stack` 카드 스택 하나로 통일했다.
- *  2) 상세 폼(`.oprn-detail-enemies`)이 `overflow:hidden` 인데 워크벤치는 `height:auto`
- *     라 내용이 973px 넘쳐 잘렸다(상태/속성 유효도·액션 전투 패널이 화면 밖). → 스크롤
- *     경계를 워크벤치 안쪽으로 옮긴다.
- *  3) 겹침 3 건은 접힌 `<details class="db-field-support-notice">` 의 `<p>` 가 레이아웃
- *     박스를 유지한 채 남아, 여러 줄 인라인 `<span>` 의 합집합 rect 가 `<strong>` 을
- *     통째로 덮은 것이었다. 접혔을 때는 아예 배치에서 뺀다.
- *
- * 모든 규칙은 `.database-modal-backdrop .database-modal-window .database-modal-body` 아래로
- * 스코프하고 `--db-studio-*` 토큰만 쓴다.
- */
+/* 몬스터 작업실: 탐색 목록 | 미리보기·행동 | 속성. 창 크기는 sidebar.css가 소유한다. */
 
-/* ── 스크롤 체인: 상세 창 → 폼 → 워크벤치(여기서 스크롤이 끝난다) ─────────── */
+.database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-enemies {
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 0;
+  padding: 0;
+}
 
 .database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-enemies .oprn-record-detail-pane {
+  container: enemy-detail / inline-size;
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -44,88 +28,19 @@
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
-  gap: 12px;
+  gap: 0;
   min-height: 0;
   min-width: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  padding: 0 0 14px;
+  overflow: hidden;
 }
-
-/* studio-theme.css:353 이 액션 전투 패널을 사라진 `combat` 영역에 못 박아 둔다.
-   이름이 없는 라인이라 스택 그리드에서 암시적 트랙을 만들어 카드를 밀어낸다. */
-.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stack > .db-enemy-panel-action-combat {
-  grid-area: auto !important;
-}
-
-/* studio-theme.css:422 의 `overflow:hidden` — 카드 안에서 내용이 자라면 잘린다. */
-.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stack > .db-enemy-panel-graphic {
-  overflow: visible;
-}
-
-/* ── 히어로 ─────────────────────────────────────────────────────────────── */
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench > .db-ws-hero {
-  border: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
-  border-radius: 10px;
-  flex: 0 0 auto;
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench .db-ws-hero-media .db-enemy-graphic-stage {
-  align-items: center;
-  background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
-  border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.1));
-  border-radius: 10px;
-  display: flex;
-  height: 78px;
-  justify-content: center;
-  overflow: hidden;
-  width: 78px;
-}
-
-/* workspace-modern.css 의 히어로 미디어는 56px `object-fit:cover` 라 스프라이트를
-   잘라 먹는다 — 몬스터 그림은 비율을 지켜 통째로 보여야 한다. */
-.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench .db-ws-hero-media :is(img, canvas) {
+  background: var(--db-studio-surface);
   border: 0;
+  border-bottom: 1px solid var(--db-studio-border-subtle);
   border-radius: 0;
-  height: auto;
-  image-rendering: pixelated;
-  max-height: 68px;
-  max-width: 68px;
-  object-fit: contain;
-  width: auto;
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench .db-ws-hero-media :is(img, canvas).flying {
-  transform: translateY(-8px);
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench .db-enemy-empty-graphic {
-  color: var(--db-studio-text-3, var(--db-studio-text-3));
-  font: 500 11px/1.3 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
-}
-
-/* ── 카드 스택 ──────────────────────────────────────────────────────────── */
-
-/* 카드 높이가 제각각이라 grid 행 정렬로는 짧은 카드 아래가 통째로 비어 버린다
-   (감사 detailDead 축). 멀티컬럼으로 흘려 카드가 세로로 촘촘히 쌓이게 한다 —
-   공격 패턴만 `column-span:all` 로 폭을 다 쓴다. */
-.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stack {
-  column-gap: 10px;
-  columns: 3 304px;
-  display: block;
   flex: 0 0 auto;
-  min-width: 0;
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stack > .db-ws-card {
-  break-inside: avoid;
-  margin: 0 0 10px;
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stack > .db-ws-span {
-  column-span: all;
-  grid-column: auto;
+  padding: 16px 20px;
 }
 
 /* ── 카드 안 필드: 라벨 왼쪽 고정폭 + 컨트롤 1fr ───────────────────────── */
@@ -143,7 +58,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench .db-field > span {
   color: var(--db-studio-text-2, var(--db-studio-text-2));
-  font: 500 12px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 500 12px/1.4 var(--font-ui);
   letter-spacing: 0;
   min-width: 0;
   /* v2(2026-09-03): 라벨은 말줄임하지 않는다 — 「이동 간격(…」 이 실측된 자리다. 어절로 줄바꿈. */
@@ -154,12 +69,12 @@
   word-break: keep-all;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench :is(input, select) {
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench :is(input:not([type="radio"]), select) {
   background-color: var(--db-studio-surface, var(--db-studio-surface));
   border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.14));
   border-radius: 6px;
   color: var(--db-studio-text-1, var(--db-studio-text-1));
-  font: 400 13px/18px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 400 13px/18px var(--font-ui);
   min-height: 30px;
   min-width: 0;
   padding: 4px 8px;
@@ -171,7 +86,7 @@
   padding-right: 24px;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench :is(input, select):focus-visible {
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench :is(input:not([type="radio"]), select):focus-visible {
   border-color: var(--db-studio-accent, var(--db-studio-accent));
   outline: 2px solid var(--db-studio-accent-soft, rgba(74, 87, 214, 0.28));
   outline-offset: 0;
@@ -191,7 +106,7 @@
   align-items: center;
   color: var(--db-studio-text-1, var(--db-studio-text-1));
   display: inline-flex;
-  font: 500 12px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 500 12px/1.4 var(--font-ui);
   gap: 8px;
   letter-spacing: 0;
   min-height: 28px;
@@ -359,13 +274,13 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench .db-enemy-species-status {
-  font: 500 12px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 500 12px/1.5 var(--font-ui);
   margin: 0;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench .db-capture-preview {
   color: var(--db-studio-text-2, var(--db-studio-text-2));
-  font: 400 12px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 400 12px/1.5 var(--font-ui);
   margin: 0;
 }
 
@@ -392,7 +307,7 @@
   border-bottom: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
   display: grid;
   gap: 10px;
-  grid-template-columns: minmax(0, 1fr) 92px;
+  grid-template-columns: minmax(0, 1fr) 160px;
   margin: 0;
   min-height: 32px;
   padding: 3px 0;
@@ -404,7 +319,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-rate-row > span {
   color: var(--db-studio-text-1, var(--db-studio-text-1));
-  font: 400 12px/18px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 400 12px/18px var(--font-ui);
   min-width: 0;
   order: 1;
   overflow: hidden;
@@ -418,7 +333,7 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-rate-row select {
   font-weight: 600;
   order: 2;
-  width: 92px;
+  width: 160px;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-rate-row.is-dangling > span {
@@ -458,7 +373,7 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-attack-table table {
   border-collapse: collapse;
   color: var(--db-studio-text-1, var(--db-studio-text-1));
-  font: 400 13px/20px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 400 13px/20px var(--font-ui);
   width: 100%;
 }
 
@@ -466,7 +381,7 @@
   background: var(--db-studio-surface-2, rgba(15, 23, 42, 0.03));
   border-bottom: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
   color: var(--db-studio-text-2, var(--db-studio-text-2));
-  font: 700 12px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 700 12px/1.4 var(--font-ui);
   height: 30px;
   padding: 0 10px;
   position: sticky;
@@ -513,18 +428,299 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-attack-hint {
   color: var(--db-studio-text-3, var(--db-studio-text-3));
-  font: 400 11px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 400 11px/1.5 var(--font-ui);
   margin: 0;
 }
 
-/* ── 좁은 폭 ────────────────────────────────────────────────────────────── */
 
-@media (max-width: 900px) {
-  .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stack {
-    grid-template-columns: minmax(0, 1fr);
+/* Split workspace. Only the stage column and inspector body scroll on wide screens. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-studio {
+  display: grid;
+  flex: 1 1 auto;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stage-column {
+  background: var(--db-studio-canvas);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-height: 0;
+  min-width: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 20px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stage {
+  background: var(--db-studio-text-1);
+  border-radius: 8px;
+  color: var(--db-studio-on-accent);
+  flex: 0 0 auto;
+  overflow: hidden;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stage-heading,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stage-toolbar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  font: 500 12px/1.4 var(--font-ui);
+  gap: 12px;
+  justify-content: space-between;
+  padding: 12px 16px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stage-status {
+  color: var(--db-studio-inset);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stage-viewport {
+  background: radial-gradient(ellipse at 50% 85%, var(--db-studio-text-2), transparent 65%);
+  height: clamp(180px, 19cqi, 240px);
+  isolation: isolate;
+  overflow: hidden;
+  position: relative;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stage-background {
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.65;
+  position: absolute;
+  width: 100%;
+  z-index: -1;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stage-media {
+  align-items: center;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  padding: 16px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stage-media .db-enemy-graphic-stage {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stage-media .db-enemy-graphic-stage img {
+  height: auto;
+  image-rendering: pixelated;
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  width: 220px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-idle-frame {
+  flex: 0 1 220px;
+  max-height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stage-media .flying {
+  translate: 0 -8px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-idle-frame .db-enemy-idle-strip {
+  animation: enemy-studio-idle var(--enemy-idle-duration) steps(var(--enemy-idle-frames)) infinite;
+  display: block;
+  height: 100%;
+  image-rendering: pixelated;
+  max-height: none;
+  max-width: none;
+  object-fit: fill;
+  width: calc(var(--enemy-idle-frames) * 100%);
+}
+
+@keyframes enemy-studio-idle {
+  to { transform: translateX(-100%); }
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stage-media.is-paused .db-enemy-idle-strip {
+  animation-play-state: paused;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stage-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  padding: 12px 16px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stage-stats > div {
+  border-top: 1px solid var(--db-studio-text-3);
+  display: grid;
+  gap: 4px;
+  padding-top: 10px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stage-stats span {
+  color: var(--db-studio-inset);
+  font: 400 12px/1.4 var(--font-ui);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stage-stats strong {
+  color: var(--db-studio-on-accent);
+  font: 600 20px/1.4 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stage-control {
+  background: transparent;
+  border: 1px solid var(--db-studio-text-3);
+  border-radius: 5px;
+  color: var(--db-studio-on-accent);
+  cursor: pointer;
+  font: 500 12px/1.4 var(--font-ui);
+  min-height: 32px;
+  padding: 6px 10px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stage-control:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-inspector {
+  background: var(--db-studio-surface);
+  border-left: 1px solid var(--db-studio-border-default);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-inspector-heading {
+  font: 600 13px/1.4 var(--font-ui);
+  margin: 0;
+  padding: 16px 16px 8px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-inspector-tabs {
+  border-bottom: 1px solid var(--db-studio-border-default);
+  display: grid;
+  flex: 0 0 auto;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 0 12px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-inspector-tabs button {
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--db-studio-text-2);
+  cursor: pointer;
+  font: 500 13px/1.4 var(--font-ui);
+  min-height: 38px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-inspector-tabs button[aria-selected="true"] {
+  border-bottom-color: var(--db-studio-accent);
+  color: var(--db-studio-accent);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-inspector-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 16px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-inspector-section {
+  display: grid;
+  gap: 20px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-inspector-section[hidden] {
+  display: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-studio .db-ws-card {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  flex: 0 0 auto;
+  margin: 0;
+  min-width: 0;
+  overflow: visible;
+  padding: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-studio .db-ws-card-body {
+  padding: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-studio .db-ws-card-head {
+  margin: 0 0 12px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-references {
+  border-top: 1px solid var(--db-studio-border-default);
+  color: var(--db-studio-text-2);
+  font: 400 12px/1.5 var(--font-ui);
+  padding-top: 12px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-references summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 6px 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-reference {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 5px;
+  color: var(--db-studio-accent);
+  cursor: pointer;
+  font: 500 12px/1.5 var(--font-ui);
+  margin: 4px 6px 0 0;
+  max-width: 100%;
+  padding: 6px 8px;
+  overflow-wrap: anywhere;
+}
+
+/* A narrow dock or 1024px screen gets one reachable scroll surface, not clipped columns. */
+@container enemy-detail (max-width: 650px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-studio {
+    display: block;
+    overflow: auto;
   }
 
-  .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench > .db-ws-hero {
-    flex-wrap: wrap;
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stage-column,
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-inspector-body {
+    overflow: visible;
   }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-inspector {
+    border-left: 0;
+    border-top: 1px solid var(--db-studio-border-default);
+  }
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-faction-details {
+  color: var(--db-studio-text-2);
+  font: 400 12px/1.5 var(--font-ui);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-faction-details summary {
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-faction-details[open] > :not(summary) {
+  margin-top: 8px;
 }

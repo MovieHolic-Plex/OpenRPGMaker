@@ -7,13 +7,14 @@ describe("database image matching", () => {
   it("assigns unique matching monster graphics for default enemies and species", () => {
     const project = createBlankProject();
     // 몬스터 다이어트(2026-08-30) 뒤의 실측 로스터: 적 106종이 전부 생성 배틀러 아트를 쓰고,
-    // 그중 한 쌍만 의도적으로 아트를 공유한다(species_king_slime → slime). 예전 계약은 종족 9종과
-    // `generated-enemy-leafling-01` 같은 지금 없는 아트를 요구해 데이터가 줄어든 뒤에도 남아 있었다.
+    // 그중 한 쌍만 의도적으로 아트를 공유한다(enemy_slime / enemy_meadow_slime → slime).
+    // 종족 쪽 공유(species_king_slime → slime, species_sparkit → bat hue 30 재사용)는
+    // 아래 종족 단언에서 따로 못박는다 — 이 상한은 적 id 기준이다.
     const monsterIds = project.database.enemies.map((enemy) => enemy.monsterResourceId);
     const generatedIds = monsterIds.filter((id) => id?.startsWith("generated-enemy-"));
     expect(generatedIds.length).toBe(monsterIds.length);
     expect(generatedIds.length).toBeGreaterThanOrEqual(100);
-    // 아트 공유는 «이름이 다른 친척» 한 계열만 허용한다 — 그 외 중복은 매칭 실패로 본다.
+    // 아트 공유는 «이름이 다른 친척» 한 쌍만 허용한다 — 그 외 중복은 매칭 실패로 본다.
     expect(generatedIds.length - new Set(generatedIds).size).toBeLessThanOrEqual(1);
     for (const id of monsterIds) {
       expect(resolveAssetResourceUrl(id), id).toBeTruthy();
@@ -23,13 +24,20 @@ describe("database image matching", () => {
       (project.database.monsterSpecies ?? []).map((species) => [species.id, species.graphic.monsterResourceId]),
     );
     expect(Object.keys(bySpecies).sort()).toEqual([
-      "species_cave_bat", "species_ember_drake", "species_king_slime", "species_stone_golem", "species_wild_slime",
+      "species_aqualing", "species_cave_bat", "species_ember_drake", "species_forest_hornet",
+      "species_king_slime", "species_leafling", "species_mine_skeleton", "species_sparkit",
+      "species_stone_golem", "species_wild_slime",
     ]);
     expect(bySpecies.species_wild_slime).toBe("generated-enemy-slime-01");
     expect(bySpecies.species_king_slime).toBe("generated-enemy-slime-01");
     expect(bySpecies.species_cave_bat).toBe("generated-enemy-bat-01");
     expect(bySpecies.species_stone_golem).toBe("generated-enemy-golem-01");
     expect(bySpecies.species_ember_drake).toBe("generated-enemy-dragon-01");
+    expect(bySpecies.species_leafling).toBe("easyrpg-monster-hornet");
+    expect(bySpecies.species_forest_hornet).toBe("easyrpg-monster-hornet");
+    expect(bySpecies.species_sparkit).toBe("generated-enemy-bat-01");
+    expect(bySpecies.species_aqualing).toBe("generated-enemy-slime-01");
+    expect(bySpecies.species_mine_skeleton).toBe("generated-enemy-skeleton-01");
     for (const id of Object.values(bySpecies)) {
       expect(resolveAssetResourceUrl(id), id).toBeTruthy();
     }

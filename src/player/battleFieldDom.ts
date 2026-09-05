@@ -9,7 +9,22 @@ import {
 import type { BattleBattlerSnapshot, BattleSnapshot } from "@/battle/runtime";
 import { POSE_FRAME } from "@/battle/battlePose";
 import { getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
-import type { BattleSkin, BattleSkinId } from "@/battle/skins/types";
+import type { BattleSkin } from "@/battle/skins/types";
+import {
+  BATTLER_PLACEMENTS,
+  resolveSkinEnemyPositions,
+  type BattlerPartyFacing,
+} from "@/battle/battlerPlacements";
+export {
+  BATTLER_PLACEMENTS,
+  CANONICAL_SIDEVIEW_ANCHOR_X,
+  MANUAL_FRONTAL_DAMPING,
+  resolveManualFrontalRow,
+  resolveSkinEnemyPosition,
+  resolveSkinEnemyPositions,
+  RM2000_PARTY_SLOTS,
+  type BattlerPartyFacing,
+} from "@/battle/battlerPlacements";
 import type { DamageFeedback } from "@/player/battleSequencer";
 import type { BattlePresentationLedger } from "@/player/battlePresentation";
 import { BATTLE_ASSET_PIXEL_SCALE } from "@/player/battleStageScale";
@@ -60,102 +75,7 @@ function activeSkin(): BattleSkin {
   return getBattleSkin(resolveSkinId(store.getCurrent().system.battleUiStyle));
 }
 
-/** 스킨별 배틀러 배치 문법: 뷰(사이드/프론트/1인칭/액티브)에 따라
- *  적·아군의 좌표(x 0-320, y 0-160), 아군 표시 방식(정면/후면/숨김)을 정한다. */
-type PartyFacing = "front" | "back" | "hidden";
-interface SkinBattlerPlacement {
-  readonly enemy: (i: number, n: number) => { x: number; y: number };
-  readonly party: (i: number, n: number) => { x: number; y: number };
-  readonly partyFacing: PartyFacing;
-  /** 편성 스프라이트 최대 표시 수(포켓몬은 선두 1). */
-  readonly partyMax?: number;
-  /** 컬럼 밀집 시 겹침 방지용 스프라이트 배율(기본 1.65). */
-  readonly partyScale?: number;
-}
-
-// 세로 배치의 단일 규칙(12종 공통):
-//  · 저작 y 는 **스프라이트의 발**이다. 노드는 `translate(-50%, -100%)` 로 아래쪽을 앵커로
-//    쓰고, 이름표·HUD 는 `.battle-enemy-chrome` 이 흐름에서 빼내 겹쳐 놓으므로
-//    노드 높이 = 스프라이트 높이다. 즉 앵커가 곧 발이고 보정이 필요 없다.
-//    (옛 실측 보정 시절 스택 높이: 정면 스킨 33px · vxace 60 · dragonquest 97
-//     · octopath·bravely 109 · mv 115 · chrono·ff·mother·goldensun 133. HUD 를 펼칠 때마다
-//     이 값이 변해 몬스터가 튀었다 — 그래서 구조로 없앴다.)
-//  · y 의 상한은 이제 "발이 필드 안" 이다 — chrome 은 필드 밖으로 넘쳐도 레이아웃을 안 민다.
-//    ff·goldensun 은 접지 띠(발 ≥ 60%)와 그 상한 사이가 36px 뿐이라 두 줄을 세우면 줄 간격이
-//    이름표 높이(38px)보다 좁아 이름이 겹쳤다(실측 교차 109×4px) → 1열로 바꿨다.
-//  · 좌표계는 필드에서 `--battle-stage-inset-top` 만큼 들어간 배틀러 그룹 박스다
-//    (rm2000 8px, 나머지 10종 48px — `01-scene-base.css` 의 단일 선언).
-//  · 그래서 스프라이트 상자가 큰 스킨은 y 가 작을 때 **위로 잘린다**(필드는 overflow:hidden).
-//  · 백드롭 그라디언트는 필드 높이 33% 에 지평선을 둔다 → 발(이미지 bottom)이 그보다
-//    위면 몬스터가 하늘에 떠 보인다.
-// 아래 y 값은 이 두 축을 실브라우저 rect 로 측정해 정한 것이다. 게이트:
-//   node scripts/runtime-qa.mjs --scenario battle  (+ 12종 스킨 스윕, `battlerGeometry` 기대치)
-// 가로 간격의 하한은 스프라이트 폭이 아니라 **공용 적 이름표**가 정한다:
-//   `03-vxace-status-nodes.css` 의 `.battle-enemy-hud { min-width: 104px }` + 이름 18px.
-//   간격이 그보다 훨씬 좁으면 스프라이트는 안 겹쳐도 이름/게이지 글자가 뭉개진다
-//   (실측: chrono 38 → 이름 잉크 24px 교차, mother 42 → 11px 교차, mv 44 → 판독 불가).
-//   그래서 chrono 38→50, mother 42→50 으로 넓혔고 mv 는 44→52 + `_mv.css` 에서 열 폭을 좁혔다.
-//   게이트의 `battlerGeometry` 이름표 축이 이 하한을 지킨다.
-export const BATTLER_PLACEMENTS: Record<BattleSkinId, SkinBattlerPlacement> = {
-  // 포켓몬: 1:1 대치 — 선두 1명만, 적 크고 중앙 상단, 아군 좌하 대형.
-  // 다마리 분기 y +10: 148px 스프라이트가 y=76 줄에서 필드 위로 11px 잘렸다(실측).
-  pokemon: { partyFacing: "back", partyMax: 1, partyScale: 1.25, enemy: (i, n) => (n <= 1 ? { x: 245, y: 92 } : { x: 250 - i * 58, y: 100 - (i % 2) * 14 }), party: () => ({ x: 84, y: 152 }) },
-  // 정면 전투(rm2000): 적은 필드 가운데에, 아군은 **뒷모습**으로 필드 하단에 선다(2026-09-03).
-  // 예전에는 아군을 그리지 않아(partyFacing hidden) 화면에서 움직이는 것이 적과 이펙트뿐이었다 —
-  // "전투가 너무 심플하다" 의 첫 번째 원인. 뒷모습 배틀러(액터별 290×280, 영상 추출)는 정면 적과
-  // 시선이 맞고 몬스터와 같은 급의 해상도라 정면 구도를 깨지 않는다.
-  // 3마리 적의 y 는 픽스처 battleEnemyFeetRatios.json 이 잠근 값(104/112/104).
-  // (2026-09-03 개명 전 id 는 rm2003. 같은 구도의 옛 deprecated `rm2000` 항목은 여기로 흡수됐다.)
-  rm2000: {
-    partyFacing: "back",
-    enemy: (i, n) => ({
-      x: Math.round(160 + (i - (n - 1) / 2) * 70),
-      y: n <= 1 ? 124 : 104 + (i % 2) * 8,
-    }),
-    // 가운데(적 자리)를 비우고 좌·우로 갈라 세운다. 발끝은 필드 바닥(160).
-    party: (i, n) => ({ x: RM2000_PARTY_SLOTS[Math.min(4, Math.max(1, n))]![i] ?? 160, y: 160 }),
-  },
-  // 측면 전투(rm2003, 2026-09-03 되살림): 적은 왼쪽 두 줄(뒷줄 y=112 · 앞줄 y=124, 간격 48 — 160px 적이
-  // 32 RM px 겹치되 깊이로 갈린다), 아군은 오른쪽 사선 열 — 뒤(위·왼쪽) 배우부터 앞(아래·오른쪽) 배우로
-  // x +22 · y +25 씩 내려앉는다. 전투 시트(48px 셀 → 96px × 1.25 = 120px = 40 RM px, 반폭 20)가 x=286 에서도
-  // 필드 오른쪽 가장자리(320) 안에 들고, 세로 간격 25 는 키 40 의 62% 라 앞 배우가 뒤 배우 머리만 가린다
-  // (첫 판 x/y +18 은 넷이 한 덩이로 겹쳤다 — 실측). 첫 배우 머리(y=84-40=44, 27%)는 상단 메시지 배너 아래다.
-  // 3마리 적의 y 는 픽스처 battleEnemyFeetRatios.json 이 잠근 값(112/124/112).
-  rm2003: {
-    partyFacing: "front",
-    enemy: (i, n) => ({
-      x: Math.round(108 + (i - (n - 1) / 2) * 48),
-      y: n <= 1 ? 124 : 112 + (i % 2) * 12,
-    }),
-    party: (i) => ({ x: 220 + i * 22, y: 84 + i * 25 }),
-  },
-  // 옥토패스 HD-2D: 오버숄더 — 적 상단 얕게, 아군 하단 깊게, HD 간격.
-  octopath: { partyFacing: "back", partyScale: 1.15, enemy: (i) => ({ x: 72 + (i % 2) * 54, y: 47 + Math.floor(i / 2) * 27 }), party: (i) => ({ x: 236 + (i % 2) * 42, y: 88 + Math.floor(i / 2) * 52 }) },
-  // 크로노 액티브: 대각 액티브 — 적 우상 일렬, 아군 좌하 클러스터.
-  // y 48 → 86: 한 줄 전원이 필드 위로 55px 잘리고 발이 지평선보다 66px 위에 떠 있었다(실측).
-  chrono: { partyFacing: "front", partyScale: 1.2, enemy: (i) => ({ x: 250 - i * 50, y: 48 }), party: (i) => ({ x: 62 + (i % 2) * 42, y: 104 + Math.floor(i / 2) * 30 }) },
-  // 브레이블리: 사이드뷰 회화풍 — 더 촘촘, 아군 대형 스케일.
-  bravely: { partyFacing: "back", partyScale: 1.35, enemy: (i) => ({ x: 64 + (i % 2) * 60, y: 47 + Math.floor(i / 2) * 27 }), party: (i) => ({ x: 218 + (i % 2) * 50, y: 84 + Math.floor(i / 2) * 56 }) },
-  // 드퀘 1인칭: 대형 단일 적 중앙, 아군 없음.
-  dragonquest: { partyFacing: "hidden", enemy: (i, n) => ({ x: 160 + (i - (n - 1) / 2) * 60, y: 68 }), party: () => ({ x: 160, y: 150 }) },
-  // FF 정통 사이드뷰: 적 좌측 2열, 아군 우측 세로 1열(진짜 칼럼).
-  // 앞줄 y 76 → 82: 발이 지평선보다 5px 위였다(실측) — 줄 간격 58 은 그대로.
-  ff: { partyFacing: "front", partyScale: 1.2, enemy: (i, n) => ({ x: 120 + (i - (n - 1) / 2) * 52, y: 46 }), party: (i) => ({ x: 242, y: 62 + i * 36 }) },
-  // 마더: 사이키델릭 프론트뷰 — 적 상단, 간격 좁게.
-  // y 62 → 84: 한 줄 전원이 필드 위로 24px 잘리고 발이 지평선보다 36px 위였다(실측).
-  mother: { partyFacing: "hidden", enemy: (i, n) => ({ x: 160 + (i - (n - 1) / 2) * 50, y: 48 }), party: () => ({ x: 160, y: 150 }) },
-  // 골든선 저앵글: 로우앵글 — 아군 대형·전방, 적 원경.
-  goldensun: { partyFacing: "back", partyScale: 1.4, enemy: (i, n) => ({ x: 116 + (i - (n - 1) / 2) * 50, y: 46 }), party: (i) => ({ x: 232 + (i % 2) * 40, y: 92 + Math.floor(i / 2) * 48 }) },
-  // MV 프론트뷰: 숨김 파티, RM2000보다 살짝 높은 중앙.
-  // y 86 → 96: 필드 위로 2px 잘리고 발이 지평선보다 11px 위였다(실측).
-  mv: { partyFacing: "hidden", enemy: (i, n) => ({ x: 160 + (i - (n - 1) / 2) * 52, y: 60 }), party: () => ({ x: 160, y: 150 }) },
-  // VX Ace 프론트뷰: 좌측 2/3 정렬 — 우측 세로 명령창 회피.
-  vxace: { partyFacing: "hidden", enemy: (i, n) => ({ x: 112 + (i - (n - 1) / 2) * 52, y: 96 }), party: () => ({ x: 112, y: 150 }) },
-};
-
-function skinPlacement(): SkinBattlerPlacement {
-  return BATTLER_PLACEMENTS[activeSkin().id];
-}
+type PartyFacing = BattlerPartyFacing;
 
 /** 스킨 전용 적 스프라이트(bskin-enemy-<id>)를 우선 사용. 없으면 null. */
 function skinEnemySpriteUrl(): string | null {
@@ -436,10 +356,11 @@ export function syncSceneBackdropVar(field: HTMLElement): void {
 function syncEnemyGroup(field: HTMLElement, snapshot: BattleSnapshot, presentation?: BattleFieldPresentation): void {
   const group = field.querySelector(".battle-enemy-group");
   if (!group) return;
+  const positions = resolveEnemyRowPositions(snapshot, snapshot.enemies);
   for (const [index, enemy] of snapshot.enemies.entries()) {
     let node = group.querySelector<HTMLElement>(`[data-testid="${enemy.id}"]`);
     if (!node) {
-      group.append(enemyButton(enemy, snapshot, index));
+      group.append(enemyButton(enemy, snapshot, index, positions[index]));
       node = group.querySelector<HTMLElement>(`[data-testid="${enemy.id}"]`);
     }
     if (!node) continue;
@@ -696,19 +617,37 @@ function battleTitle(troopId: string): HTMLElement {
 function enemyGroup(enemies: readonly BattleBattlerSnapshot[], snapshot: BattleSnapshot): HTMLElement {
   const group = document.createElement("div");
   group.className = "battle-enemy-group";
+  const positions = resolveEnemyRowPositions(snapshot, enemies);
   for (const [index, enemy] of enemies.entries()) {
-    group.append(enemyButton(enemy, snapshot, index));
+    group.append(enemyButton(enemy, snapshot, index, positions[index]));
   }
   return group;
 }
 
-function enemyButton(enemy: BattleBattlerSnapshot, snapshot: BattleSnapshot, index = 0): HTMLButtonElement {
+function resolveEnemyRowPositions(
+  snapshot: BattleSnapshot,
+  enemies: readonly BattleBattlerSnapshot[],
+): readonly { x: number; y: number }[] {
+  const skinId = activeSkin().id;
+  const autoAlign =
+    store.getCurrent().database.troops.find((troop) => troop.id === snapshot.troopId)?.autoAlign ?? true;
+  return resolveSkinEnemyPositions(
+    skinId,
+    enemies.map((enemy) => ({ x: enemy.authoredX, y: enemy.authoredY })),
+    autoAlign,
+  );
+}
+
+function enemyButton(
+  enemy: BattleBattlerSnapshot,
+  snapshot: BattleSnapshot,
+  index = 0,
+  position: { readonly x: number; readonly y: number },
+): HTMLButtonElement {
   const enemyNode = document.createElement("button");
   enemyNode.type = "button";
   enemyNode.className = "battle-enemy";
-  // 스킨 뷰 문법에 따라 적 위치를 결정한다(사이드=좌측, 프론트/1인칭=중앙, 포켓몬=우상).
-  const enemyCount = snapshot.enemies.length;
-  const ep = skinPlacement().enemy(index, enemyCount);
+  const ep = position;
   positionBattleNode(enemyNode, ep.x, ep.y);
   // 겹칠 때 화면 아래(가까운) 적이 앞에 오도록 — z 는 CSS 변수로만 소비해
   // 모션 클래스(z-index 상승)가 인라인에 눌리지 않게 한다.
@@ -815,7 +754,7 @@ function actorSpriteGroup(actors: readonly BattleBattlerSnapshot[]): HTMLElement
   const group = document.createElement("div");
   group.className = "battle-actor-group";
   group.dataset.testid = "battle-actor-sprites";
-  const place = skinPlacement();
+  const place = BATTLER_PLACEMENTS[activeSkin().id];
   group.dataset.partyFacing = place.partyFacing;
   // 1인칭/프론트뷰 스킨(드퀘·마더·rm2000)은 아군 스프라이트를 그리지 않는다.
   if (place.partyFacing === "hidden") {
@@ -843,7 +782,7 @@ function partyStatusGroup(actors: readonly BattleBattlerSnapshot[], battleFlow: 
 function actorNode(actor: BattleBattlerSnapshot, index = 0, count = 4): HTMLElement {
   const node = document.createElement("div");
   node.className = "battle-actor";
-  const place = skinPlacement();
+  const place = BATTLER_PLACEMENTS[activeSkin().id];
   const ap = place.party(index, count);
   positionBattleNode(node, ap.x, ap.y);
   if (place.partyScale) node.style.setProperty("--battle-actor-scale", String(place.partyScale));
@@ -923,14 +862,6 @@ function actorNode(actor: BattleBattlerSnapshot, index = 0, count = 4): HTMLElem
 
 /** 배틀러 위치. 입력 x/y 는 **0..320 × 0..160 저작 좌표계**이고 백분율로 환산해 심는다.
  *  이 320/160 은 논리 해상도(640×480)와 무관한 고정 저작 단위다 — 해상도를 바꿔도 손대지 않는다. */
-/** rm2000 뒷모습 파티의 x 슬롯(인원수별). 1인은 포켓몬처럼 왼쪽, 짝수는 좌우 대칭, 3인은 가운데를 끼운다. */
-const RM2000_PARTY_SLOTS: Readonly<Record<number, readonly number[]>> = {
-  1: [72],
-  2: [72, 248],
-  3: [56, 160, 264],
-  4: [44, 116, 204, 276],
-};
-
 function positionBattleNode(node: HTMLElement, x: number | undefined, y: number | undefined): void {
   node.style.setProperty("--battle-node-x", `${clampBattleCoordinate(x ?? 160, 0, 320) / 320 * 100}%`);
   node.style.setProperty("--battle-node-y", `${clampBattleCoordinate(y ?? 96, 0, 160) / 160 * 100}%`);

@@ -5,6 +5,7 @@ import {
 import { resolveFactionTable } from "@/project/factions";
 import type { Command, EndingDef, GameEvent, M2CommandFields, SwitchValue } from "@/project/types";
 
+import { clampEmoteDurationMs } from "@/project/emotes";
 import { craftRecipe } from "@/project/craftRecipes";
 import { applyItemUpgrade } from "@/project/upgrades";
 import { setEquippedTool } from "@/project/toolActions";
@@ -788,6 +789,13 @@ export function executeCommand(
         target: command.target,
         animationId: command.animationId,
         wait: command.wait === true,
+      });
+    case "showEmote":
+      return pause("showEmote", {
+        kind: "showEmote",
+        target: command.target,
+        emote: command.emote,
+        durationMs: clampEmoteDurationMs(command.durationMs),
       });
     case "playMovie":
       return pause("playMovie", {

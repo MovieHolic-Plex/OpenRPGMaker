@@ -66,3 +66,17 @@ The LLM-harnessed interior pipeline: start session, advance build per layer, eva
 - **보고서 렌더러**: `scripts/lib/renderInteriorMapPng.mts` 는 에디터와 같은 `chipsetQuarterComposition` 으로 천장·벽 프레임을 그린다. 원시 셀로 그리면 천장이 풀밭 조각으로 찍혀 판정을 오염시킨다(2026-09-02 실측). 계약: `test/placeConceptRender.test.ts`.
 - **시설 다양화 (2026-09-02):** 초안 아홉 종(`src/project/defaults/conceptFacilityTemplates.ts`)이 같은 도면 규칙·같은 구성기로 선다. 그 과정에서 바뀐 규칙 — (1) **홀 넓힘**: 복도 없이 방 둘 이상이 홀 바로 위에 서면 홀을 좌우 1열씩 넓힌다(`BAND_SPREAD`). 방문 착지 열이 홀 북벽을 2칸 조각으로 쪼개 카운터·피아노 같은 3칸 가구가 설 자리가 없었다(술집·민가). (2) **구성 순서**: 벽 가구(필수 먼저) → 러그 → 바닥·구석(필수 먼저). 러그는 상위 레이어 가구 밑으로 들어가고(`freeFor` 가 러그 칸을 상위 레이어에만 허용, 하부 레이어 상자·책장은 러그를 덮어 구멍을 내므로 불허) 입구 표지(`ENTRY_SENTINEL`) 위에도 깔린다. 방 전체를 훑어 중앙에 가장 가까운 3×3 을 고른다. (3) **구석 소품**: 네 구석 → 둘레(남·북 행, 서·동 열) → 안쪽 순으로 앉아 창고의 상자·술통 7개가 다 선다. (4) **북벽 앵커 공유**: 북벽 가구·키 큰 가구·복도 끝 계단은 서로를 앵커로 보고 퍼진다 — 안 그러면 흉상 둘이 동쪽에만 나란히 선다(교회). (5) **재질**: 장소 `floor` → `RoomSpec.floorTile`(돌 12·널 102·돗자리 139), 시설 `wall` → `plan.wallMaterial`. 파이프라인이 원래 갖고 있던 리틴트를 그대로 쓴다. (6) 조사 문장은 시설명을 받는다(`ConceptEventOptions.facilityLabel` — 「대장간 카운터다」). 계약: `test/conceptFacilityTemplates.test.ts`(초안마다 plan/walkability 경고 0·자리 없음 0·필수 물건 존재·도면 다양성·재질 리틴트).
 - **모델 설계 plan + 배치 seed (2026-09-03):** `place_concept` 이 `plan`(장소·물건 목록)을 받으면 `conceptPlan.parseConceptPlan` 이 합성 꾸러미로 바꿔 같은 도면기·구성기에 넘긴다 — 파이프라인은 템플릿과 설계를 구분하지 않는다. `InteriorRoomPlan.seed` 는 개념 분기에서 `composeConceptRoom({seed})` 로 소비된다(종전엔 테마 가구 RNG 에만 쓰여 개념 시설은 seed 와 무관했다). 도면 문법은 `plan.layout`: `row`(방 줄 → 복도 → 홀, 기본) 또는 `double-row`(북 방 줄 → 복도 → 홀+남쪽 날개, `places[].zone` north|south). 구현 `src/editor/conceptLayoutDoubleRow.ts`. 여관 품질은 `scoreConceptFacility` 가 도달·침대·카운터·계단·자리없음·종횡비·템플릿복사를 채점해 `place_concept` 결과 `review` 에 싣는다. `get_concept_facility(여관)` 은 `variants[]`(시골 단층 / 2층 객실 / 복도 양쪽)와 「수식어가 없어도 설계하라」 designHint 를 준다. 증거: `test/conceptDoubleRowLayout.test.ts` · `test/conceptFacilityScore.test.ts` · `reports/inn-freeform/index.html`.
+
+
+## 도면 호환성과 외장 스탬프 후속 (2026-09-05)
+
+- 두 줄 도면도 한 줄과 같은 legacy 복도 판정(라벨 복도·통로·corridor·hall 또는 id corridor)을 쓴다. 명시한 `role`이 우선하고, 한글 `홀`이나 id `hall`만으로 복도를 추정하지 않는다. theme은 방의 placeId를 그대로 전달하고 복도만 corridor다. 계약: `test/conceptDoubleRowLayout.test.ts`.
+- 건물 팔레트 `stampHouse`는 문 이벤트 또는 실내 토글이 꺼지면 `author_house(kind: single, interior: exterior-only)`로 보낸다. `author_house`가 읽지 않는 `doorEvent` 인자는 보내지 않는다. 후대 시공 검증·시작점 복원 경로를 유지한다. 계약: `test/buildPalette.test.ts`.
+
+
+## 입구 예약·멀티타일 통행 복원 (2026-09-05)
+
+- lower 책장도 upper ENTRY_SENTINEL을 검사한다. 카운터·책장·화덕은 현재 objectCells 카탈로그를 쓰며, 배치 전 두 레이어 값을 세트 단위로 기록한다. 단일 소품 제거로 길이 안 열릴 때만 막은 세트를 통째로 복원한다.
+- 저널은 맵 객체별 WeakMap이며 전체/방 가구 시공 시작 때 새로 만들고 통행 검사에 들어갈 때 소비·삭제한다. 개념 꾸러미 경로는 저널에 등록하지 않는다. 이전 맵/재시공의 기록을 다음 작업이 사용하지 않는다.
+- 실제 ㄱ자 서재 기본 플랜은 동쪽 포켓 앞 2×3 책장 때문에 개방 셀 9개가 고립돼 있었다. 이제 책장 6칸을 바닥으로 통째로 복원해 0개가 된다. 후속 공백 보정이 소품을 더해 조사 이벤트는 11→12개. 그 방의 단위 테스트 parity fixture만 실측대로 갱신했다(나머지 6개 플랜은 동일).
+- 계약: `test/interiorRoomWalkabilitySeal.test.ts`(입구 봉쇄, 실제 서재 세트 복원, 맵 간 독립), `test/interiorRoomPipelineParity.test.ts`, `test/interiorObjectCatalog.test.ts`.

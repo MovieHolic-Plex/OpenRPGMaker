@@ -32,6 +32,8 @@ import { applyWalkCareTicks } from "@/project/monsterCare";
 import { applyGen1FieldPoisonStep } from "@/project/monsterCollection";
 import { syncFollowerSprites } from "@/player/playSceneFollowers";
 import { eligibleEncounterEntries, pickEncounterTroopForMap } from "@/player/encounters";
+import { terrainRecordAt } from "@/project/terrainAt";
+import { applyTerrainWalkDamage, scaledEncounterRate } from "@/project/terrainStep";
 import { firesOnPlayerCollision, PLAYER_COLLISION_TRIGGER_KINDS } from "@/project/eventTouchRules";
 import { farmIntentForHand, interactWithFarmPlot, farmIgnoreMessage } from "@/player/farming";
 import { showFarmFeedbackMessage } from "@/player/playSceneZoneFeedback";
@@ -192,6 +194,7 @@ function advancePlayerStepFrame(scene: PlaySceneContext): void {
     const project = store.getCurrent();
     applyWalkCareTicks(project, scene.session, 1);
     applyGen1FieldPoisonStep(project, scene.session);
+    applyTerrainStepDamage(scene);
     scene.moving = false;
     scene.player.x = footprintSpriteX(scene.tileX, footprint);
     scene.player.y = characterSpriteY(scene.tileY);
@@ -652,10 +655,21 @@ function linear(start: number, end: number, progress: number): number {
 let encounterStepCounter = 0;
 let encounterAccumulator = 0;
 
+export function applyTerrainStepDamage(scene: PlaySceneContext): boolean {
+  const terrain = terrainRecordAt(store.getCurrent(), { mapId: scene.map.id, x: scene.tileX, y: scene.tileY });
+  const damage = terrain?.record.damage ?? 0;
+  if (damage <= 0) return false;
+  const result = applyTerrainWalkDamage(store.getCurrent(), scene.session, damage);
+  if (result.applied <= 0) return false;
+  if (result.defeated) applyBattleDefeat(scene, "지형 피해로 쓰러졌습니다.");
+  return result.defeated;
+}
+
 export function maybeTriggerRandomEncounter(scene: PlaySceneContext): void {
   if (scene.running) return; // 이미 전투/이벤트 진행 중이면 무시
   const map = scene.map;
-  const rate = map.encounterRate ?? 0;
+  const terrain = terrainRecordAt(store.getCurrent(), { mapId: map.id, x: scene.tileX, y: scene.tileY });
+  const rate = scaledEncounterRate(map.encounterRate ?? 0, terrain?.record.encounterRatePercent);
   if (rate <= 0) return;
   // 액션 전투 맵에서는 랜덤 인카운트가 턴제 전투를 시작하지 않는다.
   // 누적값을 리셋해 맵을 나간 직후 남은 누적으로 즉시 전투가 터지지 않게 한다.

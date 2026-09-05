@@ -16,6 +16,7 @@ import { store } from "@/project/store";
 import type { Command } from "@/project/types";
 import type { BattleEventPageRecord, TroopRecord } from "@/project/types/database";
 import { el } from "@/util/dom";
+import { genId } from "@/util/id";
 
 const EVENT_SPANS = ["battle", "turn", "moment"] as const;
 const ENEMY_ENCOUNTER_ID = "m2-101-enemy-encounter";
@@ -92,14 +93,13 @@ function emptyPageControls(record: TroopRecord, rerender: () => void): HTMLEleme
 const EVENT_SPAN_OPTIONS = [
   { id: "battle", name: "전투 중 1회" },
   { id: "turn", name: "매 라운드" },
-  { id: "moment", name: "매 라운드(구 moment)" },
+  { id: "moment", name: "조건이 맞을 때마다" },
 ] as const;
 
 function pageControls(record: TroopRecord, page: BattleEventPageRecord, rerender: () => void): HTMLElement[] {
   const conditionKind = kindOfBattleEventCondition(page.conditions[0]);
   const runOnce = checkboxField("1회만 발동", "db-field-troop-event-run-once", page.runOnce ?? page.span === "battle", (value) => {
-    // 해제는 undefined 로 되돌려 런타임 기본값(runOnce ?? span === "battle")을 유지한다.
-    updateTroopBattleEventPage(record, page, { runOnce: value ? true : undefined });
+    updateTroopBattleEventPage(record, page, { runOnce: value });
     rerender();
   });
   runOnce.title = '스팬이 "전투 중 1회"면 기본으로 1회만 발동합니다.';
@@ -109,7 +109,7 @@ function pageControls(record: TroopRecord, page: BattleEventPageRecord, rerender
     }),
     selectField("스팬", "db-field-troop-event-span", page.span, EVENT_SPAN_OPTIONS, (span) => {
       const next = EVENT_SPANS.find((entry) => entry === span);
-      if (next) updateTroopBattleEventPage(record, page, { span: next });
+      if (next) updateTroopBattleEventPage(record, page, { span: next, runOnce: undefined });
       rerender();
     }),
     runOnce,
@@ -137,25 +137,16 @@ function eventToolbar(record: TroopRecord, page: BattleEventPageRecord | undefin
   });
 }
 
-/**
- * 이 페이지가 "전투 후에 뭔가 해 주는가"를 한 줄로 알려 준다. 결과 요약 템플릿에만
- * 한정하지 않는다 — 텍스트/아이템/골드 지급도 전투 후 연출이라 "없음" 경고를 내면
- * 오탐이 된다. 다만 템플릿을 그대로 적용한 경우는 따로 구분해 준다(무엇이 들어갔는지
- * 사용자가 알 수 있어야 하고, qa-troops.spec.ts:245 도 그 문구를 본다).
- */
+/** Additional event commands are separate from ordinary battle rewards. */
 function qualityStrip(page: BattleEventPageRecord | undefined): HTMLElement {
   const hasTemplate = page?.commands.some((command) => command.kind === "m2Command" && command.commandId === RESULT_SUMMARY_ID) ?? false;
-  const hasPayoff =
-    hasTemplate ||
-    (page?.commands.some(
-      (command) => command.kind === "text" || command.kind === "changeItem" || command.kind === "changeGold"
-    ) ?? false);
-  const tone = hasPayoff ? "good" : "warn";
+  const hasPayoff = (page?.commands.length ?? 0) > 0;
+  const tone = hasPayoff ? "good" : "info";
   const text = hasTemplate
     ? "보상 흐름 템플릿 적용됨 — 결과 요약 명령이 들어 있습니다"
     : hasPayoff
-      ? "후속 연출 있음 — 전투 후 대사/보상 명령이 있습니다"
-      : "전투 후 보상/후속 연출 없음";
+      ? "추가 전투 이벤트 있음 — 실행 시점은 페이지 조건과 빈도를 따릅니다"
+      : "추가 전투 이벤트 없음 — 기본 경험치·돈·드롭 보상은 별도로 적용됩니다";
   return el("div", {
     class: `db-troop-event-quality db-troop-event-quality-${tone}`,
     dataset: { testid: "db-troop-event-quality" },
@@ -227,7 +218,7 @@ function conditionStrip(record: TroopRecord, page: BattleEventPageRecord | undef
           text: `이 조건 종류(${kind})는 여기서 편집할 수 없습니다 — 값이 지워지지 않도록 잠갔습니다.`,
         }),
         button("조건 교체", "db-troop-event-condition-replace", () => {
-          updateTroopBattleEventPage(record, page, { conditions: initialBattleEventConditions("turn") });
+          updateTroopBattleEventPage(record, page, { conditions: [...initialBattleEventConditions("turn", record), ...page.conditions.slice(1)] });
           rerender();
         }),
         ...extras,
@@ -239,7 +230,7 @@ function conditionStrip(record: TroopRecord, page: BattleEventPageRecord | undef
     children: [
       el("span", { text: "조건" }),
       selectLiteral("", "db-field-troop-event-condition-kind", conditionKind, TROOP_EVENT_CONDITION_KINDS, (kind) => {
-        updateTroopBattleEventPage(record, page, { conditions: initialBattleEventConditions(kind) });
+        updateTroopBattleEventPage(record, page, { conditions: [...initialBattleEventConditions(kind, record), ...page.conditions.slice(1)] });
         rerender();
       }),
       ...extras,
@@ -285,7 +276,7 @@ function commandArea(record: TroopRecord, page: BattleEventPageRecord | undefine
 function addPage(record: TroopRecord, rerender: () => void): void {
   const currentRecord = currentTroop(record);
   const page: BattleEventPageRecord = {
-    id: `${record.id}_battle_event_${currentRecord.battleEventPages.length + 1}`,
+    id: genId("battle_page"),
     name: `전투 이벤트 ${currentRecord.battleEventPages.length + 1}`,
     conditions: [],
     span: "battle",
@@ -299,7 +290,7 @@ function addPage(record: TroopRecord, rerender: () => void): void {
 function applyPayoffTemplate(record: TroopRecord, page: BattleEventPageRecord | undefined, rerender: () => void): void {
   const currentRecord = currentTroop(record);
   const targetPage = page ?? {
-    id: `${record.id}_battle_event_${currentRecord.battleEventPages.length + 1}`,
+    id: genId("battle_page"),
     name: "전투 보상 흐름",
     conditions: [],
     span: "battle" as const,

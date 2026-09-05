@@ -151,10 +151,10 @@
     width: 36px;
   }
 
+  /* 크기는 studio-theme.css 의 36px 예외가 소유한다 — 여기는 radius 만 덮는다
+     (studio-theme 4px 를 이기는 9px, PR #540 후속). box-shadow 는 위 short rule 소유. */
   .database-modal-backdrop .database-modal-window .db-actor-studio-workspace .db-actor-identity-cell .db-list-thumb {
-    flex: 0 0 36px !important;
-    height: 36px !important;
-    width: 36px !important;
+    border-radius: 9px;
   }
 
   .db-actor-avatar-fallback {

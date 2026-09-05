@@ -37,7 +37,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-village-chip-count {
   color: var(--db-studio-text-3);
-  font: 700 10px/1 "Cascadia Mono", Consolas, monospace;
+  font: 700 11.5px/1.4 "Cascadia Mono", Consolas, monospace;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-village-chip.active .db-village-chip-count {
@@ -111,7 +111,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-village-wing-field span {
   color: var(--db-studio-text-3);
-  font: 600 10px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 600 11.5px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-village-wing-field input {
@@ -160,6 +160,14 @@
   flex: none;
 }
 
+/* 화이트리스트 행 썸네일 — 카드 기본 96px 를 행 높이에 맞게 줄인다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-template-option .db-village-house-shot.is-card {
+  border-radius: 4px;
+  flex: none;
+  height: 48px;
+  width: 48px;
+}
+
 .database-modal-backdrop .database-modal-window .database-modal-body .db-village-template-name {
   flex: 1;
   min-width: 0;
@@ -171,7 +179,7 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-village-template-meta {
   color: var(--db-studio-text-3);
   flex: none;
-  font: 600 10px/1 "Cascadia Mono", Consolas, monospace;
+  font: 600 11.5px/1.4 "Cascadia Mono", Consolas, monospace;
 }
 
 /* 마을 원형 갤러리 — 프리셋이 없을 때 「무엇부터 만들지」를 고르는 자리.
@@ -345,7 +353,74 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-village-shape-meta {
   color: var(--db-studio-text-3);
-  font: 600 10px/1.3 "Cascadia Mono", Consolas, monospace;
+  font: 600 11.5px/1.4 "Cascadia Mono", Consolas, monospace;
+}
+
+/* 층수·재료·프리셋 분위기 선택 — 글자 <select> 를 그림 카드로. 모양 카드보다 한 단 작다(미디어 ~72px). */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-field:has(.db-village-option-grid) {
+  align-items: start;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-option-grid {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-option-card {
+  align-items: center;
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  padding: 4px;
+  text-align: center;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-option-card:hover {
+  background: var(--db-studio-inset);
+  border-color: var(--db-studio-accent-border);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-option-card:focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: -2px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-option-card.active {
+  background: var(--db-studio-accent-soft);
+  border-color: var(--db-studio-accent-border);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-option-media {
+  display: block;
+  line-height: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-option-card .db-village-house-shot.is-card,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-option-card .db-village-ground-shot,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-option-card .db-village-map-shot {
+  height: 72px;
+  width: 72px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-option-name {
+  color: var(--db-studio-text-1);
+  font: 600 11px/1.3 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-option-meta {
+  color: var(--db-studio-text-3);
+  font: 600 9px/1.3 "Cascadia Mono", Consolas, monospace;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-village-import-gallery {
@@ -366,7 +441,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-village-import-group-title {
   color: var(--db-studio-text-3);
-  font: 700 10px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 700 11.5px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   letter-spacing: 0.06em;
   margin: 0;
   text-transform: uppercase;
@@ -426,7 +501,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-village-wing-tag {
   color: var(--db-studio-accent);
-  font: 700 10px/1 "Cascadia Mono", Consolas, monospace;
+  font: 700 11.5px/1.4 "Cascadia Mono", Consolas, monospace;
   left: 3px;
   position: absolute;
   top: 3px;

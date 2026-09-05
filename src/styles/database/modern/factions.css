@@ -1,4 +1,84 @@
-/* 진영 탭. 공용 셸/카드/버튼은 workspace-modern.css 에 맡기고, 행렬만 정의한다. */
+/* 진영 탭. 공용 셸/카드/버튼은 workspace-modern.css 에 맡기고, 관계 목록과 행렬만 정의한다. */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-relations {
+  display: grid;
+  gap: 10px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-relation {
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-left: 6px solid var(--db-faction-stance-color);
+  border-radius: 10px;
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-relation-head {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-relation-head strong {
+  color: var(--db-studio-text-1);
+  font: 700 13px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-chip {
+  border-radius: 999px;
+  font: 700 11px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  min-height: 24px;
+  padding: 6px 10px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-chip.is-authored {
+  background: color-mix(in srgb, var(--db-faction-stance-color) 22%, var(--db-studio-surface));
+  border: 1px solid var(--db-faction-stance-color);
+  color: var(--db-studio-text-1);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-chip.is-default {
+  background: transparent;
+  border: 1px dashed var(--db-studio-border-strong);
+  color: var(--db-studio-text-3);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-stance-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-stance-pick {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 999px;
+  color: var(--db-studio-text-2);
+  cursor: pointer;
+  font: 600 11px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  min-height: 28px;
+  padding: 0 10px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-stance-pick:hover {
+  border-color: var(--db-studio-border-strong);
+  color: var(--db-studio-text-1);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-stance-pick.is-active {
+  background: color-mix(in srgb, var(--db-faction-stance-color) 24%, var(--db-studio-surface));
+  border-color: var(--db-faction-stance-color);
+  color: var(--db-studio-text-1);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-stance-pick:focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: 1px;
+}
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-faction-inspector {
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -119,7 +199,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-faction-matrix-head small {
   color: var(--db-studio-text-3);
-  font: 500 9.5px/1.35 "Cascadia Mono", Consolas, monospace;
+  font: 500 11px/1.35 "Cascadia Mono", Consolas, monospace;
   max-width: 102px;
   overflow: hidden;
   text-overflow: ellipsis;

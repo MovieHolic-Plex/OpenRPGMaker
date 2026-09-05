@@ -183,6 +183,44 @@ export function createMapShot(
   return canvas;
 }
 
+/**
+ * 스크래치 맵을 카드 크기로 그린다. 칩셋을 못 구하면 `previewState=none` 으로 남기므로
+ * 카드는 글자만으로도 클릭할 수 있다. 집 미리보기와 같은 캐시·대기열을 쓴다.
+ */
+export function createScratchPreview(options: {
+  readonly cacheKey: string;
+  readonly label: string;
+  readonly testid: string;
+  readonly size?: HousePreviewSize;
+  readonly build: () => { readonly map: GameMap; readonly tileset: TilesetDef } | undefined;
+}): HTMLCanvasElement {
+  const size = options.size ?? "card";
+  const pixels = PREVIEW_PIXELS[size];
+  const key = options.cacheKey;
+  const canvas = el("canvas", {
+    class: `db-village-house-shot is-${size}`,
+    attrs: {
+      role: "img",
+      "aria-label": options.label,
+      width: String(pixels * BACKING_SCALE),
+      height: String(pixels * BACKING_SCALE),
+    },
+    dataset: {
+      testid: options.testid,
+      previewState: "pending",
+      previewKey: key,
+    },
+  }) as HTMLCanvasElement;
+
+  const cached = renderedCache.get(key);
+  if (cached) {
+    blit(canvas, cached);
+    return canvas;
+  }
+  void paintFromBuild(options.build, key, canvas);
+  return canvas;
+}
+
 function previewCacheKey(record: VillageHouseTemplateRecord, project: Project, size: HousePreviewSize): string {
   const wings = (record.wings ?? []).map((wing) => `${wing.x},${wing.y},${wing.w},${wing.h}`).join(";");
   const tilesetId = houseKitTileset(project)?.id ?? "none";
@@ -204,6 +242,14 @@ async function paint(
   key: string,
   canvas: HTMLCanvasElement,
 ): Promise<void> {
+  await paintFromBuild(() => housePreviewMap(record, project), key, canvas);
+}
+
+async function paintFromBuild(
+  build: () => { readonly map: GameMap; readonly tileset: TilesetDef } | undefined,
+  key: string,
+  canvas: HTMLCanvasElement,
+): Promise<void> {
   const waiting = pendingKeys.get(key);
   if (waiting) {
     waiting.add(canvas);
@@ -212,7 +258,7 @@ async function paint(
   const queue = new Set<HTMLCanvasElement>([canvas]);
   pendingKeys.set(key, queue);
   try {
-    const scratch = housePreviewMap(record, project);
+    const scratch = build();
     if (!scratch) {
       for (const target of queue) target.dataset.previewState = "none";
       return;

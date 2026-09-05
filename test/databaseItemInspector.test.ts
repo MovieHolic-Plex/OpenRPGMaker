@@ -12,6 +12,7 @@ import { itemEffectStory, renderItemRecordForm } from "@/editor/panels/databaseI
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { createBlankProject } from "@/project/defaults";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
+import { deserialize, serialize } from "@/project/io";
 import { FARM_TOOLS } from "@/project/farmModel";
 import { store } from "@/project/store";
 import type { ItemRecord } from "@/project/types";
@@ -344,12 +345,142 @@ describe("database item inspector form", () => {
       "db-item-section-effect",
       "db-item-card-targeting",
       "db-items-medicine-panel",
+      "db-item-card-state-effects",
+      "db-item-card-animation",
       "db-item-card-skill",
       "db-item-section-limits",
       "db-item-card-usable",
       "db-item-card-capture",
+      "db-item-card-care",
       "db-field-support-notice",
     ]);
+  });
+
+  // Break caught: stateEffects 는 스키마·뮤테이터·전투 런타임에 모두 있는데 저작 UI 가 없어서
+  // "적에게 맹독을 거는 아이템"을 에디터만으로는 만들 수 없었다(도구/JSON 편집 필요).
+  it("authors item state effects through add, edit and delete rows", () => {
+    const states = store.getCurrent().database.states;
+    const firstState = states[0];
+    const secondState = states[1];
+    if (!firstState || !secondState) throw new Error("fixture needs two states");
+    const form = renderLiveForm();
+
+    byTestId(form, "db-item-state-effect-add").click();
+    expect(currentItem().stateEffects).toEqual([{ stateId: firstState.id, chance: 100, operation: "add" }]);
+    expect(findByTestId(form, "db-item-state-effect-row-0")).not.toBeNull();
+
+    const statePicker = byTestId(form, "db-field-item-state-effect-state-0");
+    statePicker.value = secondState.id;
+    statePicker.dispatchEvent(new Event("change"));
+    const chance = byTestId(form, "db-field-item-state-effect-chance-0");
+    chance.value = "140";
+    chance.dispatchEvent(new Event("input"));
+    const operation = byTestId(form, "db-field-item-state-effect-op-0");
+    operation.value = "remove";
+    operation.dispatchEvent(new Event("change"));
+
+    // 확률은 저장 전에 0..100 으로 클램프된다(스킬 탭과 같은 계약).
+    expect(currentItem().stateEffects).toEqual([{ stateId: secondState.id, chance: 100, operation: "remove" }]);
+
+    byTestId(form, "db-item-state-effect-delete-0").click();
+    expect(currentItem().stateEffects).toEqual([]);
+    expect(findByTestId(form, "db-item-state-effect-row-0")).toBeNull();
+  });
+
+  // Break caught: battle/runtime.ts 는 item.animationId 로 전투 연출을 재생하는데 아이템 탭에
+  // 애니메이션 선택이 없어, 저작자가 만든 전투 아이템은 언제나 무연출이었다.
+  it("assigns and clears the battle animation played when the item is used", () => {
+    const animation = store.getCurrent().database.battleAnimations[0];
+    if (!animation) throw new Error("fixture needs a battle animation");
+    const form = renderForm();
+
+    const picker = byTestId(form, "db-picker-item-animation");
+    picker.value = animation.id;
+    picker.dispatchEvent(new Event("change"));
+    expect(currentItem().animationId).toBe(animation.id);
+
+    picker.value = "";
+    picker.dispatchEvent(new Event("change"));
+    expect(currentItem().animationId).toBeUndefined();
+  });
+
+  // Break caught: careProfile 은 monsterCare 런타임이 소비하는데 저작 UI 가 없어 먹이·장난감
+  // 아이템은 기본 카탈로그에만 존재하고 사용자가 새로 만들 수 없었다.
+  it("authors the monster care profile and removes it when set to none", () => {
+    const form = renderLiveForm();
+
+    const kind = byTestId(form, "db-field-item-care-kind");
+    kind.value = "feed";
+    kind.dispatchEvent(new Event("change"));
+    expect(currentItem().careProfile).toEqual({ kind: "feed", friendshipDelta: 0 });
+
+    const friendship = byTestId(form, "db-field-item-care-friendship");
+    friendship.value = "8";
+    friendship.dispatchEvent(new Event("input"));
+    const exp = byTestId(form, "db-field-item-care-exp");
+    exp.value = "20";
+    exp.dispatchEvent(new Event("input"));
+    expect(currentItem().careProfile).toEqual({ kind: "feed", friendshipDelta: 8, expDelta: 20 });
+
+    const kindAfter = byTestId(form, "db-field-item-care-kind");
+    kindAfter.value = "none";
+    kindAfter.dispatchEvent(new Event("change"));
+    expect(currentItem().careProfile).toBeUndefined();
+  });
+
+  it("round-trips edited state effects, animation and care profile through project persistence", () => {
+    const project = store.getCurrent();
+    const itemId = currentItem().id;
+    const animationId = project.database.battleAnimations[0]!.id;
+    const stateEffects = [{ stateId: project.database.states[0]!.id, chance: 75, operation: "add" as const }];
+    const careProfile = { kind: "toy" as const, friendshipDelta: 8, expDelta: 20 };
+    updateDatabaseRecord("items", itemId, { stateEffects, animationId, careProfile });
+
+    const reloaded = deserialize(serialize(store.getCurrent()));
+    expect(reloaded.database.items.find((item) => item.id === itemId)).toMatchObject({ stateEffects, animationId, careProfile });
+    store.replace(reloaded);
+    updateDatabaseRecord("items", itemId, { stateEffects: [], animationId: undefined, careProfile: undefined });
+    const cleared = deserialize(serialize(store.getCurrent())).database.items.find((item) => item.id === itemId)!;
+    expect(cleared.stateEffects).toEqual([]);
+    expect(cleared.animationId).toBeUndefined();
+    expect(cleared.careProfile).toBeUndefined();
+  });
+
+  // Break caught: 서사가 remove(상태 회복)만 읽어서, 맹독을 부여하는 아이템이 "직접 효과 없음"
+  // 으로 요약됐다. 확률이 100 미만이면 확률도 밝혀야 저작자가 판정을 예측할 수 있다.
+  it("narrates inflicted states with their chance and names the battle animation", () => {
+    const project = store.getCurrent();
+    const state = project.database.states[0];
+    const animation = project.database.battleAnimations[0];
+    if (!state || !animation) throw new Error("fixture needs a state and an animation");
+    const item = normalizeItemRecord({
+      ...currentItem(),
+      hpRecovery: { flat: 0, percentMax: 0 },
+      mpRecovery: { flat: 0, percentMax: 0 },
+      healStateIds: [],
+      animationId: animation.id,
+      stateEffects: [{ stateId: state.id, chance: 75, operation: "add" }],
+    });
+
+    const story = itemEffectStory(project, item);
+
+    expect(story.effects).toContain(`상태 부여: ${state.name} (75%)`);
+    expect(story.notes).toContain(`전투 연출: ${animation.name}`);
+  });
+
+  it("omits the chance when an inflicted state always lands", () => {
+    const project = store.getCurrent();
+    const state = project.database.states[0];
+    if (!state) throw new Error("fixture needs a state");
+    const item = normalizeItemRecord({
+      ...currentItem(),
+      hpRecovery: { flat: 0, percentMax: 0 },
+      mpRecovery: { flat: 0, percentMax: 0 },
+      healStateIds: [],
+      stateEffects: [{ stateId: state.id, chance: 100, operation: "add" }],
+    });
+
+    expect(itemEffectStory(project, item).effects).toContain(`상태 부여: ${state.name}`);
   });
 
   // 가격은 "수치" 대신 정의(기본) 카드가 소유한다. 종류를 바꿔도 사라지지 않아야 한다.
@@ -405,6 +536,21 @@ describe("database item inspector form", () => {
 function renderForm(rerender: () => void = () => undefined): FakeElement {
   const form = document.createElement("section") as unknown as FakeElement;
   renderItemRecordForm(form as unknown as HTMLElement, currentItem(), rerender);
+  return form;
+}
+
+/**
+ * 실제 패널처럼 rerender 가 같은 노드를 다시 그리는 폼. 행 추가/삭제처럼 컨트롤 개수가
+ * 바뀌는 편집은 rerender 계약까지 함께 검증해야 한다(no-op rerender 로는 새 행이
+ * 화면에 없는데도 통과한다).
+ */
+function renderLiveForm(): FakeElement {
+  const form = document.createElement("section") as unknown as FakeElement;
+  const paint = (): void => {
+    form.replaceChildren();
+    renderItemRecordForm(form as unknown as HTMLElement, currentItem(), paint);
+  };
+  paint();
   return form;
 }
 

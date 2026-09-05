@@ -542,6 +542,7 @@ const placeNpc: ToolDefinition = {
     const graphic = resolveGraphic(graphicSpec, {
       avoidKeys: usedCharsetGraphicKeysOnMap(map),
       seed: `${map.id}:${name}:${x},${y}`,
+      overrides: draft.charsetLabels,
     });
     // 근접 유사 NPC: 상점 역할이면 id가 달라도 기존 이벤트로 합친다(상점 주인+상인 thrash).
     // 일반 NPC는 id 생략일 때만 병합 — 명시 id 2개는 의도적 복수 배치.
@@ -762,6 +763,7 @@ const makeVillager: ToolDefinition = {
     const graphic = resolveGraphic(graphicSpec, {
       avoidKeys: usedCharsetGraphicKeysOnMap(map),
       seed: `${map.id}:${name}:${home.x},${home.y}`,
+      overrides: draft.charsetLabels,
     });
     const explicitId = typeof args.id === "string" && args.id.trim() ? args.id.trim() : undefined;
     const requestedCharacterId = typeof args.characterId === "string" && args.characterId.trim()
@@ -1647,7 +1649,7 @@ const placeBattleBlocker: ToolDefinition = {
     const intro = (args.intro as string[] | undefined) ?? ["적이 앞을 가로막았다!"];
     const victory = (args.victory as string[] | undefined) ?? ["길이 열렸다."];
     const victoryItems = (args.victoryItems as Array<{ itemId: string; amount: number }> | undefined) ?? [];
-    const graphic = resolveGraphic((args.graphic as GraphicSpec | undefined) ?? { query: "monster" });
+    const graphic = resolveGraphic((args.graphic as GraphicSpec | undefined) ?? { query: "monster" }, { overrides: draft.charsetLabels });
     const event = buildFieldMonsterEvent({
       eventId: id,
       x,
@@ -1704,7 +1706,7 @@ const placeTrap: ToolDefinition = {
     const map = requireMap(draft, args.mapId as string);
     const cells = trapCells(map, args);
     const trigger = trapTrigger(args.trigger);
-    const graphic = resolveGraphic(args.graphic as GraphicSpec | undefined);
+    const graphic = resolveGraphic(args.graphic as GraphicSpec | undefined, { overrides: draft.charsetLabels });
     const idPrefix = typeof args.idPrefix === "string" && args.idPrefix.trim() ? args.idPrefix.trim() : "ev_trap";
     const eventIds: string[] = [];
     const warnings: string[] = [];
@@ -1776,7 +1778,7 @@ const makeChaseScene: ToolDefinition = {
     if (!inMapBounds(map, chaser.at.x, chaser.at.y)) {
       throw new ToolError(`추격자 위치가 맵 밖입니다: (${chaser.at.x}, ${chaser.at.y})`, { code: "chaser-out-of-bounds", mapId: map.id, x: chaser.at.x, y: chaser.at.y });
     }
-    const graphic = resolveGraphic((chaser.graphic as GraphicSpec | undefined) ?? { query: "monster" });
+    const graphic = resolveGraphic((chaser.graphic as GraphicSpec | undefined) ?? { query: "monster" }, { overrides: draft.charsetLabels });
     const id = genId("ev_chaser");
     // 추격자는 캐릭터형 — 벽 위에서 시작하면 첫 프레임부터 갇힌다.
     const placement = resolveEventPlacement(draft, map, chaser.at.x, chaser.at.y, {
@@ -1893,7 +1895,7 @@ const placeChest: ToolDefinition = {
     if (itemId && !itemRecord) {
       warnings.push(`아이템 '${itemId}'가 데이터베이스에 없습니다 — upsert_item으로 먼저 만들거나 기존 id를 쓰세요`);
     }
-    const graphic = resolveGraphic({ query: "보물상자" });
+    const graphic = resolveGraphic({ query: "보물상자" }, { overrides: draft.charsetLabels });
     const id = (args.id as string | undefined) ?? genId("ev_chest");
     const name = (args.name as string | undefined) ?? "보물상자";
     const itemLabel = itemRecord?.name.trim() || itemId;
@@ -1982,7 +1984,7 @@ const placeStorageChest: ToolDefinition = {
       code: "storage-chest-impassable",
     });
     const { x, y, adjusted } = placement;
-    const graphic = resolveGraphic({ query: "보물상자" });
+    const graphic = resolveGraphic({ query: "보물상자" }, { overrides: draft.charsetLabels });
     const id = (args.id as string | undefined) ?? genId("ev_storage_chest");
     const name = (args.name as string | undefined) ?? "보관 상자";
     const chestIdRaw = typeof args.chestId === "string" ? args.chestId.trim() : "";
@@ -2048,7 +2050,7 @@ const placeSavepoint: ToolDefinition = {
       code: "savepoint-impassable",
     });
     const { x, y, adjusted } = placement;
-    const graphic = resolveGraphic({ query: "크리스탈" });
+    const graphic = resolveGraphic({ query: "크리스탈" }, { overrides: draft.charsetLabels });
     const id = (args.id as string | undefined) ?? genId("ev_save");
     const name = (args.name as string | undefined) ?? "세이브 포인트";
     const trigger: Trigger = { kind: "action" };

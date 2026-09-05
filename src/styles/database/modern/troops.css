@@ -14,7 +14,7 @@
  *   2) `.db-troop-member-list` 의 170px×3행 격자 — 멤버 목록/적 팔레트가 "배치"
  *      필드 위에 겹쳐 그려지고 Y 입력이 통째로 잘렸다. 그 DOM 은 이제 없다.
  *
- * 워크벤치 자체의 영역 맵은 studio-theme.css(lead 소유)가 !important 로 정의한다:
+ * 워크벤치의 영역 맵과 좁은 상세 창 전환은 이 파일에서 함께 정의한다:
  *   "top top" / "preview events" / "members events" / "balance events"
  * 뷰(databaseTroopRecordView.ts)는 정확히 그 다섯 이름을 채우는 다섯 자식을 렌더한다. */
 
@@ -23,6 +23,11 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-troops-classic-workbench {
   align-content: start;
   box-sizing: border-box;
+  display: grid;
+  grid-template-areas: "top top" "preview events" "members events" "balance events";
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: auto auto auto auto;
+  height: auto;
   gap: 12px;
   min-width: 0;
   overflow: visible;
@@ -122,15 +127,14 @@
   padding-right: 24px;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio input:focus-visible,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio input:not([type="radio"]):focus-visible,
 .database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio select:focus-visible {
   border-color: var(--db-studio-accent, var(--db-studio-accent));
   outline: 2px solid var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
   outline-offset: 0;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio input[type="checkbox"],
-.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio input[type="radio"] {
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio input[type="checkbox"] {
   accent-color: var(--db-studio-accent, var(--db-studio-accent));
   flex: 0 0 auto;
   height: 15px;
@@ -148,7 +152,7 @@
   display: grid;
   gap: 12px;
   grid-area: top;
-  grid-template-columns: minmax(280px, 1fr) minmax(320px, 1.15fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
   height: auto;
   min-width: 0;
   padding: 0;
@@ -163,7 +167,7 @@
   align-items: end;
   display: grid;
   gap: 10px 14px;
-  grid-template-columns: auto minmax(140px, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(155px, 100%), 1fr));
   min-width: 0;
 }
 
@@ -394,7 +398,7 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-troop-member-columns {
   display: grid;
   gap: 12px;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
   min-width: 0;
 }
 
@@ -410,6 +414,13 @@
   color: var(--db-studio-text-3, var(--db-studio-text-3));
   font: 400 11.5px/1.55 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   margin: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-enemy-nav-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-troop-xy-row {
@@ -483,13 +494,13 @@
   background: var(--db-studio-well, var(--db-studio-well));
   border-radius: 4px;
   color: var(--db-studio-text-3, var(--db-studio-text-3));
-  font: 600 9.5px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 600 11px/1.35 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   padding: 3px 5px;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-troop-member-coords {
   color: var(--db-studio-text-3, var(--db-studio-text-3));
-  font: 500 10.5px/1 ui-monospace, Consolas, monospace;
+  font: 500 11px/1.35 ui-monospace, Consolas, monospace;
   white-space: nowrap;
 }
 
@@ -810,4 +821,37 @@
   color: var(--db-studio-text-3, var(--db-studio-text-3));
   font: 400 11.5px/1.55 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   max-width: 34ch;
+}
+
+/* The list and navigation rails leave a much narrower detail area than the viewport. */
+.database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-troops .oprn-detail-form {
+  container: troop-detail / inline-size;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio .db-ws-card-head {
+  flex-wrap: wrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-preview-caption {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-preview-party-marker {
+  top: clamp(12px, var(--troop-marker-y), calc(100% - 12px));
+  left: clamp(12px, var(--troop-marker-x), calc(100% - 12px));
+}
+
+@container troop-detail (max-width: 760px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-troops-classic-workbench {
+    grid-template-areas: "top" "preview" "members" "balance" "events";
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+  }
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-collection-gate-warn.is-info {
+  background: var(--db-studio-inset);
+  color: var(--db-studio-text-2);
 }

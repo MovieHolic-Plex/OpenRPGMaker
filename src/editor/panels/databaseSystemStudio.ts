@@ -17,6 +17,7 @@ type StudioCard = {
   readonly statusKind: "ok" | "warn" | "neutral";
   readonly target?: SystemStudioTarget;
   readonly details?: readonly StudioCardDetail[];
+  readonly openLabel?: string;
 };
 
 type StudioCardDetail = {
@@ -274,7 +275,7 @@ function stateRegistry(rows: readonly StateRow[]): HTMLElement {
 }
 
 function ruleCardGrid(project: Project): HTMLElement {
-  const combatFlow = project.system.battleFlow === "strict" ? "라운드 전투" : "게이지 전투";
+  const combatFlow = project.system.battleFlow === "strict" ? "턴 전투" : "게이지 전투";
   const activeSlots = project.system.activeSlots ? `${project.system.activeSlots}명` : "자동";
   const battleSkin = BATTLE_SKINS[resolveSkinId(project.system.battleUiStyle)].label;
   const battleModel = project.system.battleModel === "gen1" ? "Gen1 · 구현 중" : "기본";
@@ -291,6 +292,7 @@ function ruleCardGrid(project: Project): HTMLElement {
       status: `${combatFlow} · ${activeSlots}`,
       statusKind: "neutral",
       target: "startup",
+      openLabel: "시작 설정에서 보기",
       details: [
         { label: "전투 흐름", value: combatFlow },
         { label: "참전 인원", value: activeSlots },
@@ -379,7 +381,7 @@ function studioCard(card: StudioCard, variant: "primary" | "rule"): HTMLElement 
         ? [
             el("span", {
               class: "db-system-studio-card-open",
-              text: "자세히 보기",
+              text: card.openLabel ?? "자세히 보기",
               dataset: { testid: `db-system-studio-card-${card.id}-open` },
             }),
           ]
@@ -429,7 +431,7 @@ function livePreview(project: Project, titleScreen: TitleScreenSettings): HTMLEl
   const impacts = [
     ["▣", "타이틀 메뉴", `${menuLabels.length}개 항목`],
     ["⌗", "플레이 화면", `${resolution.width}×${resolution.height}`],
-    ["⚔", "전투 흐름", project.system.battleFlow === "strict" ? "라운드" : "게이지"],
+    ["⚔", "전투 흐름", project.system.battleFlow === "strict" ? "턴 전투" : "게이지 전투"],
     ["⚑", "진행 상태", `${namedStateCount(project)}개 정의`],
   ];
   return el("aside", {

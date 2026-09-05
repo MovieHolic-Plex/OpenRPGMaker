@@ -77,24 +77,30 @@ test("마을 원형을 눌러 배치 프리셋을 만들고 값을 덮어쓴다"
 
   await page.getByTestId("db-village-archetype-harbor-coast").click();
   await expect(page.getByTestId("db-village-preset-name")).toHaveValue("어촌·항구");
-  await expect(page.getByTestId("db-village-preset-path-style")).toHaveValue("sand");
-  await expect(page.getByTestId("db-village-preset-plaza-layout")).toHaveValue("south");
+  await expect(page.getByTestId("db-village-preset-path-style")).toHaveAttribute("data-value", "sand");
+  await expect(page.getByTestId("db-village-preset-plaza-layout")).toHaveAttribute("data-value", "south");
   // 갤러리는 빈 상태 전용이다 — 상세로 들어오면 「값 가져오기」가 그 역할을 잇는다.
   await expect(gallery).toBeHidden();
   await expect(page.getByTestId("db-village-archetype-source")).toBeVisible();
+  await expect(page.getByTestId("db-village-archetype-source")).toHaveAttribute("data-value", "castle-stone");
+  await expect(page.getByTestId("db-village-preset-ground")).toHaveAttribute("data-value", "");
 
   const houses = page.getByTestId("db-village-preset-house-count");
   await houses.fill("7");
   await houses.dispatchEvent("change");
-  await page.getByTestId("db-village-archetype-source").selectOption("mine-mountain");
+  await page.getByTestId("db-village-preset-ground-snow").click();
+  await expect(page.getByTestId("db-village-preset-ground")).toHaveAttribute("data-value", "snow");
+  await page.getByTestId("db-village-archetype-source-mine-mountain").click();
+  await expect(page.getByTestId("db-village-archetype-source")).toHaveAttribute("data-value", "mine-mountain");
   await page.getByTestId("db-village-archetype-apply").click();
 
   // 분위기만 덮고 규모는 남는다 — 원형은 집 수·길 폭·바닥을 정하지 않는다.
   await expect(houses).toHaveValue("7");
-  await expect(page.getByTestId("db-village-preset-path-style")).toHaveValue("dirt");
-  await expect(page.getByTestId("db-village-preset-kit-mix")).toHaveValue("blue-stone");
+  await expect(page.getByTestId("db-village-preset-ground")).toHaveAttribute("data-value", "snow");
+  await expect(page.getByTestId("db-village-preset-path-style")).toHaveAttribute("data-value", "dirt");
+  await expect(page.getByTestId("db-village-preset-kit-mix")).toHaveAttribute("data-value", "blue-stone");
   // 광산 원형은 광장 위치를 안 정한다 — 남겨 두면 두 원형이 섞인 값이 된다.
-  await expect(page.getByTestId("db-village-preset-plaza-layout")).toHaveValue("");
+  await expect(page.getByTestId("db-village-preset-plaza-layout")).toHaveAttribute("data-value", "");
   await page.screenshot({ path: testInfo.outputPath("archetype-import.png") });
 
   const project = await exportedProject(page) as unknown as {
@@ -104,6 +110,7 @@ test("마을 원형을 눌러 배치 프리셋을 만들고 값을 덮어쓴다"
   expect(project.villagePresets?.[0]).toMatchObject({
     id: "harbor-coast",
     houseCount: 7,
+    groundTheme: "snow",
     pathStyle: "dirt",
     yardStyle: "workshop",
     kitMix: "blue-stone",

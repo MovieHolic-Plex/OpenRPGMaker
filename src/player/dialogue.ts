@@ -30,7 +30,7 @@ import {
   type DialoguePresentationProfile,
 } from "@/player/dialoguePresentation";
 import { prefersReducedMotion } from "@/player/characterLanding";
-import { isCancelKey, isConfirmKey, normalizeKey } from "@/player/keyBindings";
+import { isCancelKey, isConfirmKey, isTextEntryTarget, normalizeKey } from "@/player/keyBindings";
 import { applySystemWindowSkinVariable } from "@/player/systemGraphics";
 import { PLAY_RESOLUTION } from "@/player/playResolution";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
@@ -415,6 +415,8 @@ export function createDialogueUI(
         resolve();
       };
       const onKey = (e: KeyboardEvent) => {
+        // 텍스트 입력 컨트롤(런타임 디버그 패널)에 치는 Enter/Space 는 대사 진행이 아니다.
+        if (isTextEntryTarget(e.target)) return;
         if (isDialogueAdvanceKey(e.key)) {
           e.preventDefault();
           advance();
@@ -475,6 +477,8 @@ export function createDialogueUI(
         });
       };
       onKey = (e: KeyboardEvent) => {
+        // 입력창에 치는 숫자·Enter 가 선택지를 고르면 안 된다(텍스트 입력 컨트롤은 게임 키가 아니다).
+        if (isTextEntryTarget(e.target)) return;
         const n = parseInt(e.key, 10);
         if (!isNaN(n) && n >= 1 && n <= request.options.length) {
           e.preventDefault();

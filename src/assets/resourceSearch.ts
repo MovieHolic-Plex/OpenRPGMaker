@@ -2,7 +2,7 @@
 // 부분 문자열 + 태그 매칭, 한국어 질의 기준.
 
 import { BGM_CATALOG, bgmTrackLabel } from "@/assets/bgmCatalog";
-import { CHARSET_SEMANTICS } from "@/assets/charsetSemantics";
+import { applyCharsetLabelOverrides, CHARSET_SEMANTICS } from "@/assets/charsetSemantics";
 import { builtinGeneratedResourceIds } from "@/assets/generatedAssetResourceResolver";
 import { EASYRPG_BACKDROP_ASSETS, EASYRPG_MUSIC_ASSETS, EASYRPG_RTP_ASSETS, EASYRPG_SOUND_ASSETS } from "@/assets/easyrpgRtp";
 import { koreanMonsterTags } from "@/assets/monsterResourceSemantics";
@@ -29,7 +29,7 @@ import {
   SHIP_TEXTURE_KEY,
   WORLD_TEXTURE_KEY,
 } from "@/project/tilesetHarness";
-import type { TilesetDef } from "@/project/types";
+import type { CharsetLabelOverride, TilesetDef } from "@/project/types";
 
 export type ResourceSearchKind = "backdrop" | "bgm" | "charset" | "monster" | "se" | "tile";
 
@@ -37,6 +37,7 @@ export interface ResourceSearchOptions {
   // 타일 검색 시 프로젝트 타일셋의 사용자 메타데이터(tileMeta/tileGroups)를 번들 시맨틱 위에 겹친다.
   // 맵 인터뷰로 가르친 설명이 번들 기본값보다 우선 검색되게 하는 배선이다.
   readonly tileset?: TilesetDef;
+  readonly charsetLabels?: readonly CharsetLabelOverride[];
 }
 
 export interface ResourceSearchResult {
@@ -238,7 +239,7 @@ function candidatesForKind(kind: ResourceSearchKind, options: ResourceSearchOpti
     case "tile":
       return tileCandidates(options.tileset);
     case "charset":
-      return CHARSET_SEMANTICS.map((entry) => ({
+      return applyCharsetLabelOverrides(CHARSET_SEMANTICS, options.charsetLabels).map((entry) => ({
         id: `charset:${entry.textureKey}:${entry.characterIndex}`,
         label: entry.label,
         tags: [...entry.tags, ...charsetDerivedTags(entry.textureKey)],

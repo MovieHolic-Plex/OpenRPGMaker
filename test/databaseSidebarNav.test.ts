@@ -50,11 +50,11 @@ const EXPECTED_TABS = [
   "db-tab-tileset-unlabeled",
   "db-tab-structure-kits",
   "db-tab-tileset-spaces",
+  "db-tab-scratch-concepts",
   "db-tab-villages",
   "db-tab-terrain",
   "db-tab-common-events",
-  // 임시
-  "db-tab-scratch-concepts",
+  // 맵 — 타일셋 폴더(개념 꾸러미는 임시 그룹 졸업)
   // 시스템
   "db-tab-system",
   "db-tab-terms",
@@ -62,7 +62,7 @@ const EXPECTED_TABS = [
   "db-tab-variables",
 ];
 
-const EXPECTED_GROUPS = ["세계관", "파티", "몬스터", "전투 규칙", "생활", "맵", "임시", "시스템"];
+const EXPECTED_GROUPS = ["세계관", "파티", "몬스터", "전투 규칙", "생활", "맵", "시스템"];
 const ACTIVE_TAB_KEY = "oprn:database.activeTab";
 
 let restoreDom: (() => void) | undefined;
@@ -156,6 +156,19 @@ describe("database sidebar navigation", () => {
     expect(findTab(panelRoot, "db-tab-characters").textContent).toBe("주민 관계");
     expect(findTab(panelRoot, "db-tab-daily-weather").textContent).toBe("계절·날씨");
     expect(findTab(panelRoot, "db-tab-farm-animals").textContent).toBe("동물·축사");
+  });
+
+  it("counts only authored keyword rules, not builtin override rows", () => {
+    store.update((project) => {
+      project.system.worldGen = {
+        keywords: [
+          { id: "builtin-lake", label: "호수 끄기", words: ["호수"], landmarks: ["lake"], enabled: false },
+          { id: "custom-volcano", label: "화산", words: ["화산"], landmarks: ["forest"] },
+        ],
+      };
+    });
+    const panelRoot = renderPanelHost();
+    expect(findTab(panelRoot, "db-tab-world-gen").dataset.count).toBe("1");
   });
 
   // Break caught: the new navigation entry has no aggregate count or routed view.

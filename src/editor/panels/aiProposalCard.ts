@@ -15,7 +15,6 @@ import { summarizeChanges } from "@/editor/tools";
 import { commitGateNotice } from "@/ai/aiGateNotice";
 import { reviewOverInsertion } from "@/ai/overInsertionReview";
 import { showAiGateNotice } from "@/editor/ui/aiGateModal";
-import { showConfirm } from "@/editor/ui/modal";
 import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
 import {
   formatLayoutValidationSummary,
@@ -202,14 +201,14 @@ export interface ProposalAppliedResult {
   readonly summary: string;
 }
 
-export type ProposalApplyOutcome = "applied" | "rejected" | "cancelled";
+export type ProposalApplyOutcome = "applied" | "rejected";
 
 export interface ProposalHostApi {
   pendingProposalMessage: ProposalMessageState | null;
   lastAppliedProposalMessage: ProposalMessageState | null;
   /** 변경 0건 턴의 안내(완성도 린트 경고 포함) — 적용할 것이 없을 때만 부른다. */
   noteNoChanges: (result: TurnResult, extraWarnings?: readonly string[]) => void;
-  /** applied=반영됨, rejected=게이트 반려, cancelled=중간 검토 취소 — 호출자가 상태·정산을 가르기 위해 셋을 구분한다. */
+  /** applied=반영됨, rejected=게이트 반려 — 호출자가 상태·정산을 가르기 위해 둘을 구분한다. 확인 팝업이 없으므로 취소 분기는 없다. */
   applyProposal: (calls: readonly ProposedCall[], assistantBubble?: HTMLElement | null) => Promise<ProposalApplyOutcome>;
 }
 
@@ -243,26 +242,18 @@ export function createProposalHost(options: {
     ensureGuestIdentityForAiSurface();
     const before = store.getCurrent();
     const proposed = session.getProposedProject();
+    // 과삽입 검토는 기록만 남기고 적용은 멈추지 않는다 — 파괴·대량 변경도 바로 적용하고
+    // 복구는 되돌리기다(2026-09: 변경 확인 팝업을 띄우지 않는 정책). 취소 분기는 없다.
     const review = reviewOverInsertion({
       calls,
       beforeMapCount: Object.keys(before.maps).length,
       afterMapCount: Object.keys(proposed.maps).length,
     });
     if (review.needsReview) {
-      const approved = await showConfirm({
-        title: review.destructive ? "파괴적 변경 확인" : "대량 변경 확인",
-        message: `${review.reasons.join("\n")}\n\n위 내용을 확인하고 적용할까요?`,
-        confirmLabel: review.destructive ? "확인 후 적용" : "적용",
-        danger: review.destructive,
-      });
-      if (!approved) {
-        pendingProposalMessage = null;
-        clearAgentGhostPreview();
-        session.rebaseProject(store.getCurrent());
-        setStatus("대기");
-        appendBubble("system", "중간 검토에서 취소했습니다 — 프로젝트는 그대로입니다.");
-        return "cancelled";
-      }
+      appendBubble(
+        "system",
+        `대량 변경 ${calls.length}건을 확인 없이 적용합니다 — ${review.reasons.join(" · ")} · 되돌리려면 [되돌리기](Ctrl+Z).`,
+      );
     }
     const humanSummary = proposalHumanSummaryLine(calls);
     pendingProposalMessage = { calls, assistantBubble, summary: humanSummary };

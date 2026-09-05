@@ -196,7 +196,7 @@ export function saveDraft(state: WorldPanelState, world: ProjectWorld): void {
   const entity: WorldEntity = {
     id: normalizeWorldEntityId(draft.id),
     type: draft.type,
-    name: draft.name.trim() || "새 세계관",
+    name: draft.name.trim() || "새 카드",
     summary: draft.summary.trim(),
     ...(draft.body.trim() ? { body: draft.body } : {}),
     ...(parseTags(draft.tagsText).length > 0 ? { tags: parseTags(draft.tagsText) } : {}),

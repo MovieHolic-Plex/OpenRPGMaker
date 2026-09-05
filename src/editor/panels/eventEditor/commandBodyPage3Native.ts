@@ -27,6 +27,19 @@ import { LAYER_OPTIONS, pictureSlotCaption } from "./options";
 import { showPictureAiField } from "./showPictureAiField";
 import type { CommandEditContext } from "./types";
 
+import {
+  clampEmoteDurationMs,
+  EMOTE_ASSET_PATH,
+  EMOTE_FRAME_SIZE,
+  EMOTE_KINDS,
+  EMOTE_LABELS,
+  EMOTE_MAX_DURATION_MS,
+  EMOTE_MIN_DURATION_MS,
+  emoteFrameIndex,
+  isEmoteKind,
+  type EmoteKind,
+} from "@/project/emotes";
+
 const ANCHOR_SEGMENTS = [
   { value: "player", key: "player", label: "주인공" },
   { value: "event", key: "event", label: "이벤트" },
@@ -79,14 +92,14 @@ export function setLightingBody(
   cmd: Extract<Command, { kind: "setLighting" }>
 ): HTMLElement {
   const wrap = shell("page3-command-body actor-m2-command-body", "set-lighting-command-body");
-  const ambient = numberInput(Math.round(clamp01(cmd.ambient) * 100), "밝기 (%)", "set-lighting-ambient-input");
+  const ambient = numberInput(Math.round(clamp01(cmd.ambient) * 100), "암전 (%)", "set-lighting-ambient-input");
   ambient.setAttribute("step", "1");
   ambient.setAttribute("min", "0");
   ambient.setAttribute("max", "100");
   const ambientSlider = el("input", {
     class: "page3-range-input",
-    attrs: { type: "range", min: "0", max: "1", step: "0.05", "aria-label": "암전 슬라이더" },
-    value: String(clamp01(cmd.ambient)),
+    attrs: { type: "range", min: "0", max: "100", step: "1", "aria-label": "암전 슬라이더" },
+    value: String(Math.round(clamp01(cmd.ambient) * 100)),
     dataset: { testid: "set-lighting-ambient-slider" },
   }) as HTMLInputElement;
   const color = textInput(cmd.color ?? "#000000", "어둠 색", "set-lighting-color-input");
@@ -114,7 +127,7 @@ export function setLightingBody(
     const nextTransition = Math.max(0, parseInt(transitionMs.value, 10) || 0);
     context.actions.replaceCommand(context.path, {
       kind: "setLighting",
-      ambient: clamp01(parseFloat(ambient.value)),
+      ambient: clamp01(parseFloat(ambient.value) / 100),
       color: color.value.trim() || undefined,
       ...(nextTransition > 0 ? { transitionMs: nextTransition } : {}),
     });
@@ -122,7 +135,7 @@ export function setLightingBody(
   };
 
   const renderPreview = () => {
-    const ambientValue = clamp01(parseFloat(ambient.value));
+    const ambientValue = clamp01(parseFloat(ambient.value) / 100);
     const pct = Math.round(ambientValue * 100);
     const hex = color.value.trim() || "#000000";
     const ms = Math.max(0, parseInt(transitionMs.value, 10) || 0);
@@ -157,8 +170,8 @@ export function setLightingBody(
         dataset: { testid: `set-lighting-preset-${preset.id}` },
         on: {
           click: () => {
-            ambient.value = String(preset.ambient);
-            ambientSlider.value = String(preset.ambient);
+            ambient.value = String(Math.round(preset.ambient * 100));
+            ambientSlider.value = String(Math.round(preset.ambient * 100));
             color.value = preset.color;
             colorPicker.value = normalizeHexColor(preset.color);
             transitionMs.value = String(preset.transitionMs);
@@ -170,11 +183,11 @@ export function setLightingBody(
   }
 
   ambient.addEventListener("change", () => {
-    ambientSlider.value = String(clamp01(parseFloat(ambient.value)));
+    ambientSlider.value = String(clamp01(parseFloat(ambient.value) / 100) * 100);
     commit();
   });
   ambient.addEventListener("input", () => {
-    ambientSlider.value = String(clamp01(parseFloat(ambient.value)));
+    ambientSlider.value = String(clamp01(parseFloat(ambient.value) / 100) * 100);
     renderPreview();
   });
   ambientSlider.addEventListener("input", () => {
@@ -650,6 +663,130 @@ export function setWeatherBody(
         }),
         preview,
       ],
+    })
+  );
+  return wrap;
+}
+
+const EMOTE_TARGET_SEGMENTS = [
+  { value: "self", key: "self", label: "이 이벤트" },
+  { value: "player", key: "player", label: "주인공" },
+  { value: "event", key: "event", label: "다른 이벤트" },
+] as const satisfies readonly SegmentOption<"self" | "player" | "event">[];
+
+function emoteTargetKind(target: Extract<Command, { kind: "showEmote" }>["target"]): "self" | "player" | "event" {
+  if (target === "player") return "player";
+  return target.eventId.trim() ? "event" : "self";
+}
+
+/**
+ * 이모트 선택은 이름표가 아니라 그림으로 고른다 — 「말줄임」과 「졸음」을 글자로 구분하게 하면
+ * 저작자가 매번 미리보기를 열어 확인해야 한다. 실제 시트를 배경으로 깔고 프레임만 옮긴다.
+ */
+function emoteSwatchGrid(selected: EmoteKind, onPick: (kind: EmoteKind) => void): HTMLElement {
+  const grid = el("div", {
+    class: "emote-swatch-grid",
+    attrs: { role: "radiogroup", "aria-label": "이모트" },
+    dataset: { testid: "show-emote-swatch-grid" },
+  });
+  let current = selected;
+  const buttons = new Map<EmoteKind, HTMLButtonElement>();
+  const paint = () => {
+    for (const [kind, button] of buttons) {
+      const active = kind === current;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-checked", active ? "true" : "false");
+    }
+  };
+  for (const kind of EMOTE_KINDS) {
+    const swatch = el("span", {
+      class: "emote-swatch-icon",
+      attrs: { "aria-hidden": "true" },
+    });
+    // 배경 위치는 3배로 확대한 프레임 기하값이라 토큰화 대상이 아니다(색 리터럴 아님).
+    swatch.style.backgroundImage = `url("/${EMOTE_ASSET_PATH}")`;
+    swatch.style.backgroundPosition = `-${emoteFrameIndex(kind) * EMOTE_FRAME_SIZE * 3}px 0`;
+    const button = el("button", {
+      class: "emote-swatch",
+      attrs: { type: "button", role: "radio", title: EMOTE_LABELS[kind], "aria-checked": "false" },
+      dataset: { testid: `show-emote-swatch-${kind}` },
+      children: [swatch, el("span", { class: "emote-swatch-label", text: EMOTE_LABELS[kind] })],
+      on: {
+        click: () => {
+          current = kind;
+          paint();
+          onPick(kind);
+        },
+      },
+    }) as HTMLButtonElement;
+    buttons.set(kind, button);
+    grid.append(button);
+  }
+  paint();
+  return grid;
+}
+
+export function showEmoteBody(
+  context: CommandEditContext,
+  cmd: Extract<Command, { kind: "showEmote" }>
+): HTMLElement {
+  const wrap = shell("page3-command-body actor-m2-command-body", "show-emote-command-body");
+  const target = segmentedSelect({
+    options: EMOTE_TARGET_SEGMENTS,
+    value: emoteTargetKind(cmd.target),
+    testid: "show-emote-target-kind-select",
+    ariaLabel: "이모트 대상",
+  });
+  const eventId = textInput(
+    cmd.target !== "player" ? cmd.target.eventId : "",
+    "어느 이벤트",
+    "show-emote-event-id-input"
+  );
+  const duration = numberInput(
+    clampEmoteDurationMs(cmd.durationMs),
+    `표시 시간(ms, ${EMOTE_MIN_DURATION_MS}~${EMOTE_MAX_DURATION_MS})`,
+    "show-emote-duration-input"
+  );
+  duration.min = String(EMOTE_MIN_DURATION_MS);
+  duration.max = String(EMOTE_MAX_DURATION_MS);
+  let emote: EmoteKind = isEmoteKind(cmd.emote) ? cmd.emote : "heart";
+
+  const commit = () => {
+    const kind = target.select.value;
+    context.actions.replaceCommand(context.path, {
+      kind: "showEmote",
+      target: kind === "player" ? "player" : { eventId: kind === "event" ? eventId.value.trim() : "" },
+      emote,
+      durationMs: clampEmoteDurationMs(Number(duration.value)),
+    });
+  };
+  const syncVisibility = () => {
+    eventField.hidden = target.select.value !== "event";
+    eventField.style.display = eventField.hidden ? "none" : "";
+  };
+
+  const grid = emoteSwatchGrid(emote, (picked) => {
+    emote = picked;
+    commit();
+  });
+  const eventField = fieldBlock("어느 이벤트", eventId, "show-emote-event-field");
+  target.select.addEventListener("change", () => {
+    syncVisibility();
+    commit();
+  });
+  eventId.addEventListener("change", commit);
+  duration.addEventListener("change", commit);
+  syncVisibility();
+
+  wrap.append(
+    fieldBlock("이모트", grid, "show-emote-emote-field"),
+    fieldBlock("누구 머리 위에", target.root, "show-emote-target-field"),
+    eventField,
+    fieldBlock("표시 시간", duration, "show-emote-duration-field"),
+    el("p", {
+      class: "actor-m2-preview-note",
+      text: "대사창을 열지 않고 머리 위에만 잠깐 보여줍니다. 다음 명령을 기다리지 않습니다.",
+      dataset: { testid: "show-emote-note" },
     })
   );
   return wrap;
@@ -1154,6 +1291,7 @@ export function showPictureBody(
             fieldBlock(
               "AI로 그림 만들기",
               showPictureAiField({
+                queueKey: `show-picture:${context.path.join(".")}`,
                 onInserted: (id) => {
                   resourceId.value = id;
                   syncResourceName();

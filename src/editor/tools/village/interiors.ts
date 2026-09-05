@@ -2,6 +2,7 @@
 // 집 실내 — 내부 맵 생성·등록, 문 이벤트 연결, 맵 트리 배선.
 
 import { createHouseDoorEvent, createHouseDoorStepEvent, createHouseInteriorMap, registerInteriorMaps } from "@/editor/houseInteriors";
+import { HOUSE_TEMPLATE_DEFS } from "@/project/defaults/houseTemplateCatalog";
 import { appendToTree } from "@/project/mapTree";
 import type { GameEvent, GameMap, MapId, MapTreeNode, Project } from "@/project/types";
 import {
@@ -11,6 +12,21 @@ import {
   type VillageHouseInteriorRef,
 } from "./constants";
 import { npcText } from "./npcs";
+
+/** 날개 합집합 칸 수. 카탈로그에 없는 id(커스텀 형태)는 bbox 면적. */
+export function exteriorFootprintArea(templateId: string, bbox: { w: number; h: number }): number {
+  const def = HOUSE_TEMPLATE_DEFS.find((entry) => entry.id === templateId);
+  if (!def) return bbox.w * bbox.h;
+  const cells = new Set<string>();
+  for (const wing of def.wings) {
+    for (let y = 0; y < wing.h; y += 1) {
+      for (let x = 0; x < wing.w; x += 1) {
+        cells.add(`${wing.x + x},${wing.y + y}`);
+      }
+    }
+  }
+  return cells.size;
+}
 
 export function createVillageHouseInteriors(
   draft: Project,
@@ -30,7 +46,7 @@ export function createVillageHouseInteriors(
     const interiorMapId = uniqueId(draft, "map_house_interior", base);
     const doorEventId = uniqueId(draft, "ev_house_door", base);
     const exitEventId = uniqueId(draft, "ev_house_exit", base);
-    const footprintArea = house.bbox.w * house.bbox.h;
+    const footprintArea = exteriorFootprintArea(house.templateId, house.bbox);
     const interiorSeed = (seed ^ Math.imul(index + 1, 0x9e3779b1)) >>> 0;
     const interior = createHouseInteriorMap({
       id: interiorMapId,

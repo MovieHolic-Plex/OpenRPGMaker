@@ -15,6 +15,10 @@
 **타일을 먼저 막 깔지 않는다.**  
 먼저 사각형(bbox)으로 “여기 집, 여기 시장”을 정하고, 그다음에 실제로 찍는다.
 
+> AI 경로 메모 (2026-09-04): 위 순서는 100×100 bbox 하네스 전용이다. AI `author_village` / `build_village`는 다르다. 지금은 스케치 후보(`sketchHouseSites`)를 먼저 뽑고 집을 찍은 뒤 길을 잇는다. 즉 sketch sites → houses → roads다.
+>
+> AI `build_village` 대로 (2026-09-05): 72칸 이상 맵의 골격은 이제 곡선이다. `villageBoulevardPath`가 시드 고정 경유점을 잡고, 집 예약과 길 칠하기는 `boulevardCells` 한 칸 함수를 같이 쓴다.
+
 ---
 
 ## 관련 파일
@@ -310,7 +314,7 @@ npx tsx scripts/diagnose-road-through-house.mts
 
 ## 아직 약한 부분 (솔직히)
 
-- **예쁜 마을 알고리즘이 아님** — 격자 lot + A* 모래 연결
+- **예쁜 마을 알고리즘이 아님** — 예전 설명은 격자 lot + A* 모래 연결이었으나 지금은 다르다. 집 후보는 격자 폴백을 남겨두되, `sketchHouseSites`(poisson/cluster, seed-stable)를 먼저 쓰는 유기적 후보가 기본이다. 간선은 T-branch 계약을 유지한 채 다리당 내부 경유점 하나를 더 얻는다. 관련 파일은 `src/editor/tools/village/sketch.ts`, `houses.ts`, `roads.ts`, `builder.ts`다.
 - 집 간격 2칸이면 벽 옆 길이 **시각적으로 답답**할 수 있음
 - gap을 키우면 20채가 안 들어가 best-effort로 떨어짐
 - 시장·광장 장식은 스탬프 위주
@@ -330,3 +334,14 @@ npx tsx scripts/diagnose-road-through-house.mts
 - 에디터 전반: `openwiki/editor-workflows.md` (slim index → topic pages: `editor-pre-edit-routing.md`, `editor-event-authoring.md`, `editor-event-commands.md`, `editor-database.md`, `editor-ai-panel.md`, `editor-workflows-misc.md`)
 - 검증 습관: `openwiki/testing.md`
 - 이 문서: `openwiki/large-village-generation.md`
+
+---
+
+## author_village 스코프 계약 (2026-09-04 적대 리뷰 반영)
+
+- 살아 있는 기존 맵(비기본 타일·이벤트 있음)은 bounds 또는 target.fullMap:true 없이 전체 재시공이 거부된다(village-requires-scope). 빈 맵은 그대로 전체 시공.
+- 허용 맵 집합은 빌더 자기신고가 아니라 베이스라인 diff에서 독립 계산한다 — 문 transfer가 가리키지 않는 미연결 맵은 스코프 위반.
+- 스코프 비교는 키 순서 안정 직렬화다.
+- NPC 수는 하한 90%(최소 2명 관용)로 판정한다. best-effort 집 수는 4채 이하에서 exact와 같다.
+- 기존 맵 bounds 하한 16·맵 전체 하한 20·새 맵 20×20 이상. new 타깃의 plannedMap은 생략 가능(생략하면 target 값).
+- 길 재시도 리포트가 warnings에 기계 가독으로 남는다(시도·침범 추이·잔존 분류).

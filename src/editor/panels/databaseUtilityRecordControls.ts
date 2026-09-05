@@ -135,7 +135,7 @@ function utilitySummary(tab: UtilityTabId, index: number): DatabaseWorkbenchSumm
   }
   if (tab === "terrain") {
     const record = database.terrains?.[index] ?? database.terrains?.[0];
-    return { recordId: record?.id, recordName: record?.name, selectedIndex: record ? index + 1 : undefined, tabId: "terrain", tabLabel: "지형", totalCount: database.terrains?.length };
+    return { recordId: record?.id, recordName: record?.name, selectedIndex: record ? index + 1 : undefined, tabId: "terrain", tabLabel: "지형 효과", totalCount: database.terrains?.length };
   }
   const record = database.battleCommands?.[index] ?? database.battleCommands?.[0];
   return { recordId: record?.id, recordName: record?.name, selectedIndex: record ? index + 1 : undefined, tabId: "battleCommands", tabLabel: "전투 명령", totalCount: database.battleCommands?.length };

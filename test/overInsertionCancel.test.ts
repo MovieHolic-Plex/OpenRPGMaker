@@ -117,11 +117,13 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-describe("중간 검토 취소", () => {
-  it("저장소를 그대로 두고 고스트를 치우며 적용 실패로 표기하지 않는다", async () => {
+// 확인 팝업 없음(2026-09 정책): 파괴·대량 변경도 모달 없이 바로 적용하고 복구는 되돌리기다.
+describe("과삽입 자동 적용", () => {
+  it("파괴적 변경도 확인 모달 없이 적용하고 모달 잔재를 남기지 않는다", async () => {
     const baseline = store.getCurrent();
     const mapId = baseline.startMapId;
     const drafted = structuredClone(baseline);
+    drafted.meta.title = "applied:remove_event";
     const result: ToolResult = { ok: true, summary: "이벤트 삭제", diff: diff({ eventsRemoved: 1 }) };
     const destructive: ProposedCall[] = [{
       name: "remove_event",
@@ -139,27 +141,21 @@ describe("중간 검토 취소", () => {
     findByTestId(panel, "ai-send")?.click();
     await flushAsync();
     const root = document.body as unknown as Parameters<typeof findByTestId>[0];
-    const cancelButton = findByTestId(root, "app-modal-cancel");
-    expect(cancelButton, "중간 확인 모달이 떠야 한다").not.toBeNull();
-    cancelButton?.dispatchEvent(new Event("click"));
-    await flushAsync();
 
-    expect(store.getCurrent().meta.title).toBe(baseline.meta.title);
+    expect(findByTestId(root, "app-confirm-modal"), "확인 모달이 뜨면 안 된다").toBeNull();
+    expect(store.getCurrent().meta.title).toBe("applied:remove_event");
     expect(getAgentGhostPreviewState().previews).toHaveLength(0);
     expect(findByTestId(panel, "ai-status")?.textContent).toBe("대기");
-    expect(findByTestId(panel, "ai-chat-log")?.textContent).not.toContain("적용 실패");
-    expect(findByTestId(panel, "ai-chat-log")?.textContent).toContain("중간 검토에서 취소");
-    expect(findByTestId(root, "app-confirm-modal")).toBeNull();
+    expect(findByTestId(panel, "ai-chat-log")?.textContent).toContain("확인 없이 적용");
   });
 
-  it("취소 뒤 다음 턴은 취소된 초안 위에 쌓지 않는다", async () => {
-    const baseline = store.getCurrent();
-    const drafted = structuredClone(baseline);
-    drafted.meta.title = "cancelled-draft";
+  it("적용 뒤 다음 턴은 새 기준 위에서 시작한다", async () => {
+    const drafted = structuredClone(store.getCurrent());
+    drafted.meta.title = "applied:remove_event";
     const result: ToolResult = { ok: true, summary: "이벤트 삭제", diff: diff({ eventsRemoved: 1 }) };
     const destructive: ProposedCall[] = [{
       name: "remove_event",
-      args: { mapId: baseline.startMapId, eventId: "ev1" },
+      args: { mapId: store.getCurrent().startMapId, eventId: "ev1" },
       summary: "이벤트 삭제",
       result,
       destructive: true,
@@ -174,18 +170,11 @@ describe("중간 검토 취소", () => {
     findByTestId(panel, "ai-send")?.click();
     await flushAsync();
     const root = document.body as unknown as Parameters<typeof findByTestId>[0];
-    const modalAtReview = findByTestId(root, "app-confirm-modal");
-    expect(modalAtReview, "중간 확인 모달이 떠야 한다").not.toBeNull();
-    const rebasesBeforeCancel = rebaseSpy.mock.calls.length;
-    const cancelButton = findByTestId(root, "app-modal-cancel");
-    if (!cancelButton) throw new Error("중간 확인 취소 버튼이 없다");
-    cancelButton.dispatchEvent(new Event("click"));
-    await flushAsync();
 
-    expect(store.getCurrent().meta.title).toBe(baseline.meta.title);
-    const cancelRebases = rebaseSpy.mock.calls.slice(rebasesBeforeCancel);
-    expect(cancelRebases.length).toBe(1);
-    expect(cancelRebases[0]?.[0]).toBe(store.getCurrent());
+    expect(findByTestId(root, "app-confirm-modal"), "확인 모달이 뜨면 안 된다").toBeNull();
+    expect(store.getCurrent().meta.title).toBe("applied:remove_event");
+    expect(rebaseSpy).toHaveBeenCalled();
+    expect(rebaseSpy.mock.calls.at(-1)?.[0]).toBe(store.getCurrent());
   });
 });
 

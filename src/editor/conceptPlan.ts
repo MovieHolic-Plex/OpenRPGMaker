@@ -1,6 +1,6 @@
 // LLM 이 설계한 시설 plan → 시공 입력(꾸러미 구조).
 //
-// 2026-09-03: 「AI 는 소비만」을 철회한다. DB 「임시 → 개념 꾸러미」의 시설은 **템플릿(출발점)**이고,
+// 2026-09-03: 「AI 는 소비만」을 철회한다. DB 「맵 → 타일셋 → 개념 꾸러미」의 시설은 **템플릿(출발점)**이고,
 // 모델은 요청(방 수·크기·분위기·층·내용물)에 맞게 장소·물건 목록을 고쳐 place_concept 에 plan 으로 넘긴다.
 // 좌표·벽·문·이벤트는 여전히 코드(도면기·구성기)가 정한다 — 모델이 좌표를 찍던 옛 경로의 실패를 되풀이하지 않는다.
 import type { InteriorObjectDef } from "@/editor/interiorObjectCatalog";
@@ -23,6 +23,7 @@ import {
   isConceptPlaceSize,
   isConceptPlaceZone,
   isConceptWallMaterial,
+  validateConceptChipId,
   type ConceptBundleRecord,
   type ConceptChipId,
   type ConceptFacilityRecord,
@@ -146,11 +147,12 @@ function parseChips(raw: unknown, where: string): ConceptChipId[] {
   if (!Array.isArray(raw)) throw new ConceptPlanError(`plan.${where}.chips 는 배열이어야 한다 — 내장: ${CONCEPT_CHIP_IDS.join("|")} · 자유 칩(영문·숫자·-_·1~32자)도 된다`);
   const chips: ConceptChipId[] = [];
   for (const entry of raw) {
-    if (typeof entry !== "string" || entry.trim().length === 0) {
+    if (typeof entry !== "string") {
       throw new ConceptPlanError(`plan.${where}.chips 는 빈 문자열 아닌 칩 id 배열이어야 한다`);
     }
-    const chip = entry.trim();
-    if (!chips.includes(chip)) chips.push(chip);
+    const validated = validateConceptChipId(entry);
+    if (!validated.ok) throw new ConceptPlanError(`plan.${where}.chips: ${validated.error}`);
+    if (!chips.includes(validated.value)) chips.push(validated.value);
   }
   return chips;
 }

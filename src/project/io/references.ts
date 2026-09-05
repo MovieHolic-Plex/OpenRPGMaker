@@ -343,6 +343,7 @@ function validateEndings(
 
 export function repairProjectReferences(project: Project): void {
   const mapIds = new Set(Object.keys(project.maps));
+  const eventIds = new Set(Object.values(project.maps).flatMap((map) => map.events.map((event) => event.id)));
   const animationIds = new Set(project.database.battleAnimations.map((record) => record.id));
   const commonEventIds = new Set(project.commonEvents.map((record) => record.id));
   repairFarmAnimalReferences(project);
@@ -375,18 +376,18 @@ export function repairProjectReferences(project: Project): void {
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) {
       repairNpcScheduleReferences(event, project.maps, prune);
-      event.commands = pruneDanglingCommandRefs(event.commands, commonEventIds, mapIds, prune);
+      event.commands = pruneDanglingCommandRefs(event.commands, commonEventIds, mapIds, eventIds, prune);
       for (const page of event.pages ?? []) {
-        page.commands = pruneDanglingCommandRefs(page.commands, commonEventIds, mapIds, prune);
+        page.commands = pruneDanglingCommandRefs(page.commands, commonEventIds, mapIds, eventIds, prune);
         repairLivingDestinations(page, mapIds, prune);
       }
     }
   }
   for (const troop of project.database.troops) {
-    for (const page of troop.battleEventPages) page.commands = pruneDanglingCommandRefs(page.commands, commonEventIds, mapIds, prune);
+    for (const page of troop.battleEventPages) page.commands = pruneDanglingCommandRefs(page.commands, commonEventIds, mapIds, eventIds, prune);
   }
   for (const commonEvent of project.commonEvents) {
-    commonEvent.commands = pruneDanglingCommandRefs(commonEvent.commands, commonEventIds, mapIds, prune);
+    commonEvent.commands = pruneDanglingCommandRefs(commonEvent.commands, commonEventIds, mapIds, eventIds, prune);
   }
   prune.warnIfAny();
 }
@@ -453,19 +454,22 @@ class PruneStats {
   removedLivingDestinations = 0;
   removedCommonEventCalls = 0;
   removedScheduleDestinations = 0;
+  repairedEmoteTargets = 0;
 
   warnIfAny(): void {
     const total = this.removedMapCommands
       + this.removedLivingDestinations
       + this.removedCommonEventCalls
-      + this.removedScheduleDestinations;
+      + this.removedScheduleDestinations
+      + this.repairedEmoteTargets;
     if (total === 0 || typeof console === "undefined") return;
     console.warn(
       `[project] 깨진 참조 ${total}건을 정리하고 로드했습니다 — ` +
         `존재하지 않는 맵으로의 이동/타일변경 ${this.removedMapCommands}건, ` +
         `생활 이동 목적지 ${this.removedLivingDestinations}건, ` +
         `공통 이벤트 호출 ${this.removedCommonEventCalls}건, ` +
-        `NPC 일정 목적지 ${this.removedScheduleDestinations}건`
+        `NPC 일정 목적지 ${this.removedScheduleDestinations}건, ` +
+        `없는 이모트 대상 이벤트를 현재 이벤트로 대체 ${this.repairedEmoteTargets}건`
     );
   }
 }
@@ -1085,7 +1089,7 @@ function validateTroopRecords(project: Project, enemyIds: ReadonlySet<string>, c
   for (const troop of project.database.troops) {
     collectExistingIdIssues(`troop ${troop.id}: enemy`, troop.enemyIds, enemyIds, issues);
     if (troop.members) validateTroopMembers(troop.id, troop.members, enemyIds, issues);
-    capture(issues, () => validateBattleEventPages(troop.battleEventPages, context));
+    capture(issues, () => validateBattleEventPages(troop.battleEventPages, { ...context, enemySlotIds: new Set(troop.enemyIds.map((_, index) => `enemy-${index + 1}`)) }));
   }
 }
 
@@ -1384,9 +1388,10 @@ function pruneDanglingCommandRefs(
   commands: Command[],
   commonEventIds: ReadonlySet<string>,
   mapIds: ReadonlySet<string>,
+  eventIds: ReadonlySet<string>,
   stats: PruneStats
 ): Command[] {
-  const recurse = (branch: Command[]): Command[] => pruneDanglingCommandRefs(branch, commonEventIds, mapIds, stats);
+  const recurse = (branch: Command[]): Command[] => pruneDanglingCommandRefs(branch, commonEventIds, mapIds, eventIds, stats);
   const pruned: Command[] = [];
   for (const command of commands) {
     if (command.kind === "callCommonEvent" && !commonEventIds.has(command.commonEventId)) {
@@ -1395,6 +1400,12 @@ function pruneDanglingCommandRefs(
     }
     if ((command.kind === "transfer" || command.kind === "changeTile") && !mapIds.has(command.mapId)) {
       stats.removedMapCommands += 1;
+      continue;
+    }
+    if (command.kind === "showEmote" && typeof command.target === "object"
+      && command.target.eventId.trim().length > 0 && !eventIds.has(command.target.eventId)) {
+      stats.repairedEmoteTargets += 1;
+      pruned.push({ ...command, target: { eventId: "" } });
       continue;
     }
     if (command.kind === "choices") {

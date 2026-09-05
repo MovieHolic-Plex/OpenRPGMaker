@@ -6,6 +6,8 @@ import { TOOL_CATEGORIES } from "@/editor/panels/toolBrowserModal";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { runTool } from "@/editor/tools/toolRunner";
 import { snapshotProjectMaps, wipeAttemptMaps } from "@/editor/tools/villageBuilder";
+import { sketchHouseSites } from "@/editor/tools/village/sketch";
+import { exteriorFootprintArea } from "@/editor/tools/village/interiors";
 import { buildTerrainConstraintMasks } from "@/editor/tools/villageTerrainPass";
 import { inferRequirementsFromQuery } from "@/editor/tools/villageRequirements";
 import { CHIPSET_TILE_GROUPS } from "@/project/defaults/chipsetMapping";
@@ -464,6 +466,37 @@ describe("build_village", () => {
     expect(new Set(entries.map((entry) => entry?.age).filter(Boolean)).size).toBeGreaterThanOrEqual(3);
   });
 
+  it("스케치가 이긴 집 배치는 격자 열에 서지 않는다", () => {
+    // Given: plaza-ring(7,42)과 street-grid(3,21) 시드
+    // When: build_village로 8채를 찍고 layoutPlan bbox를 읽는다
+    const plazas: Record<number, { readonly x: number; readonly y: number; readonly w: number; readonly h: number }> = {
+      7: { x: 22, y: 23, w: 7, h: 5 },
+      42: { x: 22, y: 22, w: 6, h: 6 },
+      3: { x: 22, y: 22, w: 6, h: 6 },
+      21: { x: 22, y: 22, w: 6, h: 6 },
+    };
+    for (const seed of [7, 42, 3, 21]) {
+      const { context, data } = buildVillage(seed);
+      const map = context.project.maps[data.mapId];
+      const regions = (map.layoutPlan?.regions ?? []).filter((region) => region.role === "house");
+      // Then: 8채, 고유 x/y, 열당 2채 이하, 6채 이상이 스케치 사이트에서 왔다
+      expect(regions.length, `seed=${seed}`).toBe(8);
+      expect(new Set(regions.map((region) => region.x)).size, `seed=${seed} unique x`).toBeGreaterThanOrEqual(6);
+      expect(new Set(regions.map((region) => region.y)).size, `seed=${seed} unique y`).toBeGreaterThanOrEqual(6);
+      const perX = new Map<number, number>();
+      for (const region of regions) perX.set(region.x, (perX.get(region.x) ?? 0) + 1);
+      for (const count of perX.values()) expect(count, `seed=${seed} per-x`).toBeLessThanOrEqual(2);
+      const rect = plazas[seed]!;
+      const sites = sketchHouseSites({ area: { x: 0, y: 0, w: 50, h: 50 }, plaza: { rect, centerRow: rect.y + Math.floor(rect.h / 2), centerX: rect.x + Math.floor(rect.w / 2) }, seed, targetHouses: 8, boulevard: null });
+      const nearSketch = regions.filter((region) =>
+        sites.some((site) =>
+          Math.abs(site.x - (region.x + Math.floor(region.w / 2))) <= 2 && Math.abs(site.y - region.y) <= 2
+        ),
+      );
+      expect(nearSketch.length, `seed=${seed} near-sketch`).toBeGreaterThanOrEqual(6);
+    }
+  });
+
   it("집 8채에 Object1 문 이벤트와 자식 내부 맵을 생성한다", () => {
     const { context, data } = buildVillage(7);
     const map = context.project.maps[data.mapId];
@@ -499,9 +532,11 @@ describe("build_village", () => {
       const interior = context.project.maps[house.interiorMapId as string];
       expect(interior.name.startsWith(`${house.ownerName}의 집 내부`)).toBe(true);
       expect(interior.tilesetId).toBe(INTERIOR_HOUSE_TILESET_ID);
-      // villager-room-v1 규모(천장 정본 v2: +1행 + 수평 벽 3행): cottage-l 20×20, cottage 20×21, mansion 24×25
+      // villager-room-v1 규모(천장 정본 v2: 북벽 = 천장+벽, minY<3이면 height를 늘림).
+      // cottage-l 20×20, cottage2/3 20×21, ceiling-shift+2 20×22, mansion 24×25.
+      // 22는 sketchHouseSites가 다른 템플릿/프로그램을 고르면 rooms minY=1이 되어 나온다.
       expect([20, 24]).toContain(interior.width);
-      expect([20, 21, 25]).toContain(interior.height); // 20 = cottage-l·2층, 21 = cottage2/3, 25 = mansion
+      expect([20, 21, 22, 25]).toContain(interior.height);
       expect(house.entry).toBeTruthy();
       expect(house.exit).toBeTruthy();
       expect(door?.pages?.[0]?.commands.at(-1)).toMatchObject({
@@ -904,6 +939,53 @@ describe("build_village housePlans contract", () => {
     expect(report.issues.some((issue) => issue.includes("문 앞 좌표"))).toBe(true);
     // F2: layoutPlan.kind 없는 맵에도 타일 실측 검사(출구 길)가 실행된다
     expect(report.issues.some((issue) => issue.includes("4방향"))).toBe(true);
+  });
+});
+
+describe("exterior footprint area (wing-union)", () => {
+  it("rect-large 8x7 union matches bbox 56", () => {
+    expect(exteriorFootprintArea("rect-large", { w: 8, h: 7 })).toBe(56);
+  });
+
+  it("l 6x8 bbox 48 unions to 42", () => {
+    expect(exteriorFootprintArea("l", { w: 6, h: 8 })).toBe(42);
+  });
+
+  it("t-hall 8x10 bbox 80 unions to 60", () => {
+    expect(exteriorFootprintArea("t-hall", { w: 8, h: 10 })).toBe(60);
+  });
+
+  it("unknown template id falls back to bbox area", () => {
+    expect(exteriorFootprintArea("custom-db-authored", { w: 9, h: 5 })).toBe(45);
+  });
+
+  it("housePlans t-hall workshop interior scale is cottage3 from union 60 not mansion bbox 80", () => {
+    const ctx = { project: createEmptyToolProject() };
+    const result = runTool(ctx, "build_village", {
+      name: "T홀 공방 마을",
+      width: 48,
+      height: 48,
+      seed: 77,
+      interior: true,
+      doorEvent: true,
+      fences: false,
+      decor: false,
+      housePlans: [
+        // workshop takes the area path (no program short-circuit), so this pins
+        // union 60 -> cottage3 vs bbox 80 -> mansion.
+        { kitId: "blue-stone", templateId: "t-hall", program: "workshop" },
+        { kitId: "amber-wood", yard: ["pot"] },
+        { kitId: "slate-wood", yard: ["jar"] },
+        { kitId: "bright-plaster", yard: ["flowers"] },
+      ],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    const data = result.data as {
+      houses?: Array<{ templateId?: string; interiorScale?: string; interiorProgram?: string }>;
+    };
+    expect(data.houses?.[0]?.templateId).toBe("t-hall");
+    expect(data.houses?.[0]?.interiorProgram).toBe("workshop");
+    expect(data.houses?.[0]?.interiorScale).toBe("cottage3");
   });
 });
 

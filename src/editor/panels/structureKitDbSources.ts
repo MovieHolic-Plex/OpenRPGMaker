@@ -20,7 +20,7 @@ import {
   type InteriorSemanticTileRole,
   type InteriorThemeModifier,
 } from "@/editor/interiorRoomPipeline";
-import type { StructureKitDef, TilesetDef } from "@/project/types";
+import type { InteriorRoomKindRecord, StructureKitDef, TilesetDef } from "@/project/types";
 
 /** 'all'은 앨범 전체(기본값). 나머지 둘이 요구된 원본 칩이다. */
 export type StructureKitDbSource = "all" | "interior" | "user";
@@ -142,9 +142,10 @@ export interface InteriorThemeCard {
   readonly modifierLabels: readonly string[];
 }
 
-/** 테마 문법 전체를 카드 목록으로 — 타일셋에 저작된 공간 종류만. 기본 7종 폴백은 시드가 담당한다. */
-export function interiorThemeCards(tileset?: TilesetDef): readonly InteriorThemeCard[] {
-  const kinds = tileset?.interiorRoomKinds ?? [];
+/** 테마 문법 전체를 카드 목록으로 — 타일셋에 저작된 공간 종류만. 기본 7종 폴백은 시드가 담당한다.
+ * kindsOverride가 있으면 그 목록을 카드화한다(Phase 3 파생 읽기용). */
+export function interiorThemeCards(tileset?: TilesetDef, kindsOverride?: readonly InteriorRoomKindRecord[]): readonly InteriorThemeCard[] {
+  const kinds = kindsOverride ?? tileset?.interiorRoomKinds ?? [];
   const objects = interiorObjectsForTileset(tileset);
   return kinds.map((kind) => {
     const theme = kind.id;

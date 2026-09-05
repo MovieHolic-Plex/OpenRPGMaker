@@ -49,7 +49,7 @@ function renderHost(): FakeElement {
 }
 
 describe("세계 → 타일셋 중간 카테고리", () => {
-  it("폴더와 다섯 자식 탭이 레일에 있다", () => {
+  it("폴더와 여섯 자식 탭이 레일에 있다", () => {
     const host = renderHost();
     expect(host.querySelector("[data-testid='db-tileset-folder']")?.textContent).toContain("타일셋");
     expect(host.querySelector("[data-testid='db-tab-tilesets']")?.textContent).toContain("통행");
@@ -57,12 +57,14 @@ describe("세계 → 타일셋 중간 카테고리", () => {
     expect(host.querySelector("[data-testid='db-tab-tileset-unlabeled']")?.textContent).toContain("미분류");
     expect(host.querySelector("[data-testid='db-tab-structure-kits']")?.textContent).toContain("구조물");
     expect(host.querySelector("[data-testid='db-tab-tileset-spaces']")?.textContent).toContain("공간 종류");
+    expect(host.querySelector("[data-testid='db-tab-scratch-concepts']")?.textContent).toContain("개념 꾸러미");
     expect(TILESET_FOLDER_TAB_IDS).toEqual([
       "tilesets",
       "tilesetAutotile",
       "tilesetUnlabeled",
       "structureKits",
       "tilesetSpaces",
+      "scratchConcepts",
     ]);
   });
 
@@ -74,6 +76,7 @@ describe("세계 → 타일셋 중간 카테고리", () => {
       "db-tab-tileset-unlabeled",
       "db-tab-structure-kits",
       "db-tab-tileset-spaces",
+      "db-tab-scratch-concepts",
     ]) {
       expect(host.querySelector(`[data-testid='${testid}']`)?.dataset.folderChild).toBe("1");
     }

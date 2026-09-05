@@ -186,13 +186,15 @@ export async function switchTabAnyMode(page: Page, tab: DatabaseTabSpec): Promis
   const button = page.getByTestId(tab.testId);
   if (!(await button.isVisible().catch(() => false))) {
     // 레일은 모든 모드에서 카테고리 그룹이다 — 접힌 그룹 머리를 눌러 그 탭이 있는 묶음을 펼친다.
-    const groupSlug = await button.evaluate((node) => (node as HTMLElement).dataset.groupSlug ?? null);
-    const header = groupSlug
-      ? page.getByTestId(`db-tab-group-${groupSlug}`)
-      : page.locator(".db-tab-group").filter({ has: page.getByTestId(tab.testId) }).first();
-    await expect(header, `group header must exist to reach ${tab.testId}`).toBeVisible();
-    await header.click();
-    await expect(button).toBeVisible();
+    // 탭 버튼에는 groupSlug 가 없고 접히면 hidden 이라 버튼에서 그룹을 역참조할 수 없다.
+    // 언어·라벨에 기대지 않고 그룹 헤더를 순서대로 열어 버튼이 보일 때까지 펼친다(최대 7개).
+    const headers = page.locator(".db-tab-group");
+    const count = await headers.count();
+    for (let i = 0; i < count; i++) {
+      await headers.nth(i).click();
+      if (await button.isVisible().catch(() => false)) break;
+    }
+    await expect(button, `tab must become visible after opening groups: ${tab.testId}`).toBeVisible();
   }
   await button.click({ force: true });
   await expect(button).toHaveClass(/active/);

@@ -61,9 +61,8 @@ export function findWorldCanonAbsenceHits(text: string, value: WorldCanon | unde
   const absences = resolveWorldCanon(value).absences;
   return absences.filter((absence) => absence.length > 0 && text.includes(absence));
 }
-
 function excerpt(body: string): string {
   const flat = body.trim();
   if (flat.length <= BODY_EXCERPT_CHARS) return flat;
-  return `${flat.slice(0, BODY_EXCERPT_CHARS).trimEnd()}\n…(설정집 본문 ${flat.length - BODY_EXCERPT_CHARS}자 더 있음 — 자료집 「이 세계」에서 전문을 볼 수 있다)`;
+  return `${flat.slice(0, BODY_EXCERPT_CHARS).trimEnd()}\n…(이 세계 본문 ${flat.length - BODY_EXCERPT_CHARS}자 더 있음 — 자료집 「이 세계」에서 전문을 볼 수 있다)`;
 }

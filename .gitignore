@@ -226,3 +226,11 @@ verify-shots/battle-anim-overhaul/hero-after/
 verify-shots/battle-anim-overhaul/choreo-*/
 verify-shots/battle-anim-overhaul/trio-*/
 verify-shots/battle-skin-trio/
+
+# 스튜디오 P1 — 덱 접힘 공간 회수 전후. 마지막 규칙이 이긴다(`.omo/evidence/*` + `evidence/`).
+!.omo/evidence/studio-p1-collapse/
+!.omo/evidence/studio-p1-collapse/**
+
+# 스튜디오 P2 — 탭 첫 등장만 전환 · 컴포저 데크 크롬.
+!.omo/evidence/studio-p2-composer/
+!.omo/evidence/studio-p2-composer/**

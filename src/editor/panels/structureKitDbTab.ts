@@ -11,13 +11,15 @@
 import { editorState } from "@/editor/editorState";
 import {
   createBlankStructureKit,
+  conceptThingsReferencingKit,
   deleteStructureKit,
   duplicateIntoTileset,
 } from "@/editor/harnessSuggestion/structureKitActions";
 import { serializeStructureKitFile, structureKitFileName } from "@/editor/harnessSuggestion/structureKitFile";
 import { assembledKitCells, renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
 import { structureKitSize } from "@/editor/harnessSuggestion/structureKitModel";
-import type { InteriorObjectDef } from "@/editor/interiorObjectCatalog";
+import { interiorObjectById, type InteriorObjectDef } from "@/editor/interiorObjectCatalog";
+import { interiorFurnitureKits, kindsDerivedFromConceptBundles } from "@/editor/interiorRoomVocab";
 import { INTERIOR_ROOM_TILESET_ID, seedDefaultInteriorCatalog } from "@/editor/interiorRoomPipeline";
 import { makeDatabaseTabIcon } from "@/editor/panels/databaseTabIcons";
 import {
@@ -178,7 +180,11 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
   }
 
   let activeTileset = current.tilesets[session.tilesetId] ?? tilesets[0];
-  if (activeTileset?.id === INTERIOR_ROOM_TILESET_ID && activeTileset.interiorRoomKinds === undefined) {
+  // Phase 3: 할 일이 있을 때만 store를 만진다. 파생 모드(꾸러미 장소 있음 + 가구 있음)는
+  // 정상 상태라 렌더마다 update를 돌리면 rAF 리프레시와 맞물려 매 프레임 dirty가 된다.
+  if (activeTileset?.id === INTERIOR_ROOM_TILESET_ID
+    && activeTileset.interiorRoomKinds === undefined
+    && (kindsDerivedFromConceptBundles(activeTileset).length === 0 || interiorFurnitureKits(activeTileset).length === 0)) {
     store.update((project) => {
       const tileset = project.tilesets[activeTileset.id];
       if (!tileset || tileset.interiorRoomKinds !== undefined) return;
@@ -505,8 +511,19 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
                     exportOneKit(activeTileset!, kit);
                   }),
                   rowActionButton("✕", "삭제", `structure-kit-db-delete-${kit.id}`, () => {
+                    const refs = conceptThingsReferencingKit(activeTileset!.id, kit.id);
+                    const kitLabel = kit.name ?? "구조물";
                     deleteStructureKit(activeTileset!.id, kit.id);
-                    toast(`'${kit.name ?? "구조물"}' 삭제`, "info");
+                    if (refs.length === 0) {
+                      toast(`'${kitLabel}' 삭제`, "info");
+                    } else {
+                      const labelList = refs.length === 1 ? `'${refs[0]!.thingLabel}'` : `'${refs[0]!.thingLabel}' 외 ${refs.length - 1}개`;
+                      if (interiorObjectById(kit.id)) {
+                        toast(`'${kitLabel}' 삭제 — 개념 물건 ${refs.length}개(${labelList})가 카탈로그 원본 그림을 쓴다`, "info");
+                      } else {
+                        toast(`'${kitLabel}' 삭제 — 개념 물건 ${refs.length}개(${labelList})의 그림이 없다`, "error");
+                      }
+                    }
                     setInspectorSelectedPartId(null);
                     rerender();
                     refresh(host, rerender);

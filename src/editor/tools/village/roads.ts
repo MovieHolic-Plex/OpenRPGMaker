@@ -8,7 +8,7 @@ import { shapeRoadAround } from "@/project/defaults/roadAutotile";
 import { shapeSandAround } from "@/project/defaults/sandAutotile";
 import type { GameMap, Project } from "@/project/types";
 import { mulberry32 } from "@/util/rng";
-import { inMapBounds } from "../mapHelpers";
+import { inMapBounds, lineCells } from "../mapHelpers";
 import { wobblePath } from "../naturalScatter";
 import type { RoadStyle } from "../villagePlan";
 import {
@@ -28,7 +28,7 @@ import { paintMarketDeck } from "./plaza";
 /**
  * 대로(boulevard) — 대형 맵(72+)의 골격 (2026-07-17, 외부 리서치 반영: spine-first).
  * 동서 대로는 광장 남쪽(게이트 앞)을 전폭으로 관통, 남북 대로는 광장 동쪽에서 교차.
- * 대로 밴드는 집 배치 전에 예약되어(builder) 구멍 없는 직선 대로가 보장된다.
+ * 대로 밴드는 집 배치 전에 예약되어(builder) 구멍 없는 곡선 대로가 보장된다.
  */
 export type Boulevard = {
   readonly ewRow: number;
@@ -45,15 +45,82 @@ export function villageBoulevard(area: Rect, plaza: Plaza): Boulevard | null {
   };
 }
 
-/** 대로 밴드 전체 칸(폭 width, 전 구간). 집 예약·시공 양쪽이 같은 계산을 쓴다. */
-export function boulevardCells(area: Rect, boulevard: Boulevard): Point[] {
-  const half = Math.floor(boulevard.width / 2);
-  const cells: Point[] = [];
-  for (let x = area.x; x < area.x + area.w; x += 1) {
-    for (let dy = -half; dy <= half; dy += 1) cells.push({ x, y: boulevard.ewRow + dy });
+function stitchBoulevard(waypoints: readonly Point[], alongX: boolean): Point[] {
+  const first = waypoints[0];
+  if (first === undefined) return [];
+  const cells: Point[] = [first];
+  for (let i = 1; i < waypoints.length; i += 1) {
+    const target = waypoints[i];
+    if (target === undefined) continue;
+    const from = cells[cells.length - 1];
+    if (from === undefined) continue;
+    const seg = lineCells(from, target);
+    for (let j = 1; j < seg.length; j += 1) {
+      const cell = seg[j];
+      if (cell === undefined) continue;
+      const prev = cells[cells.length - 1];
+      if (prev === undefined || (prev.x === cell.x && prev.y === cell.y)) continue;
+      if (Math.abs(cell.x - prev.x) + Math.abs(cell.y - prev.y) > 1) {
+        cells.push(alongX ? { x: cell.x, y: prev.y } : { x: prev.x, y: cell.y });
+      }
+      cells.push(cell);
+    }
   }
-  for (let y = area.y; y < area.y + area.h; y += 1) {
-    for (let dx = -half; dx <= half; dx += 1) cells.push({ x: boulevard.nsCol + dx, y });
+  return cells;
+}
+
+function boulevardPathAt(area: Rect, axes: { readonly ewRow: number; readonly nsCol: number }, seed: number): {
+  readonly ew: readonly Point[];
+  readonly ns: readonly Point[];
+} {
+  const rng = mulberry32(seed >>> 0);
+  const yLo = area.y + 2;
+  const yHi = area.y + area.h - 1 - 2;
+  const xLo = area.x + 2;
+  const xHi = area.x + area.w - 1 - 2;
+  const xEnd = area.x + area.w - 1;
+  const yEnd = area.y + area.h - 1;
+  const ewWay: Point[] = [];
+  for (let x = area.x; ; x = Math.min(xEnd, x + 12)) {
+    ewWay.push({ x, y: clamp(axes.ewRow + Math.floor(rng() * 9) - 4, yLo, yHi) });
+    if (x >= xEnd) break;
+  }
+  const nsWay: Point[] = [];
+  for (let y = area.y; ; y = Math.min(yEnd, y + 12)) {
+    nsWay.push({ x: clamp(axes.nsCol + Math.floor(rng() * 9) - 4, xLo, xHi), y });
+    if (y >= yEnd) break;
+  }
+  return { ew: stitchBoulevard(ewWay, true), ns: stitchBoulevard(nsWay, false) };
+}
+
+/** 시드 고정 곡선 골격. 예약·시공이 같은 경로를 쓴다. */
+export function villageBoulevardPath(area: Rect, plaza: Plaza, seed: number): {
+  readonly ew: readonly Point[];
+  readonly ns: readonly Point[];
+} {
+  return boulevardPathAt(area, { ewRow: plaza.rect.y + plaza.rect.h + 1, nsCol: plaza.rect.x + plaza.rect.w + 2 }, seed);
+}
+
+/** 대로 밴드 전체 칸(폭 width, 전 구간). 집 예약·시공 양쪽이 같은 계산을 쓴다. seed가 있으면 곡선 경로 주변, 없으면 옛 직선. */
+export function boulevardCells(area: Rect, boulevard: Boulevard, seed?: number): Point[] {
+  const half = Math.floor(boulevard.width / 2);
+  if (seed === undefined) {
+    const cells: Point[] = [];
+    for (let x = area.x; x < area.x + area.w; x += 1) {
+      for (let dy = -half; dy <= half; dy += 1) cells.push({ x, y: boulevard.ewRow + dy });
+    }
+    for (let y = area.y; y < area.y + area.h; y += 1) {
+      for (let dx = -half; dx <= half; dx += 1) cells.push({ x: boulevard.nsCol + dx, y });
+    }
+    return cells;
+  }
+  const path = boulevardPathAt(area, boulevard, seed);
+  const cells: Point[] = [];
+  for (const cell of path.ew) {
+    for (let dy = -half; dy <= half; dy += 1) cells.push({ x: cell.x, y: cell.y + dy });
+  }
+  for (const cell of path.ns) {
+    for (let dx = -half; dx <= half; dx += 1) cells.push({ x: cell.x + dx, y: cell.y });
   }
   return cells;
 }
@@ -80,6 +147,18 @@ function shapeRoadStyle(map: GameMap, style: RoadStyle, cells: readonly Point[])
  * 바꿔 재시도, 최대 100회 → ⑤ 전부 실패하면 지터를 끈 직선 시공으로 폴백.
  * 침범 판정은 "이번 시공이 새로 만든 길 칸"만 본다(기존 맵 잔존물 무시).
  */
+/** 길 재시도 기계 리포트 — 맹목 재시도 대신 원인을 기계 가독으로 남긴다. */
+export type RoadRetryReport = {
+  /** 0=첫 시도 통과, 1..99=롤백 재시도 후 통과, 100=직선 폴백 통과 */
+  readonly attempts: number;
+  /** 시도별 잔존 침범 칸 수(마지막이 0이면 통과) */
+  readonly violationTrace: readonly number[];
+  /** 침범 종류별 잔존(마지막 시도 기준): 집/수역·데크 vs 영역 밖 */
+  readonly residualForbidden: number;
+  readonly residualOutside: number;
+  readonly fallbackStraight: boolean;
+};
+
 export function paintVillageRoadsChecked(args: {
   readonly draft: Project;
   readonly map: GameMap;
@@ -93,22 +172,23 @@ export function paintVillageRoadsChecked(args: {
   readonly throughBlocked: ReadonlySet<string>;
   readonly forbidden: ReadonlySet<string>;
   readonly boulevard?: Boulevard | null;
+  /** 재시도 리포트 수집용 — 주면 시도별 침범 추이와 잔존 분류가 기록된다. */
+  readonly retryReport?: { readonly report: RoadRetryReport | undefined };
 }): number {
-  const { draft, map, plaza, area, houses, intent, seed, warnings, hardBlocked, throughBlocked, forbidden, boulevard } = args;
+  const { draft, map, plaza, area, houses, intent, seed, warnings, hardBlocked, throughBlocked, forbidden, boulevard, retryReport } = args;
   const MAX_RETRY = 100;
   const baseLower = [...map.lowerTiles];
   const baseUpper = [...map.upperTiles];
-  // 대로 칸은 조그 분절·가지치기에서 보호한다 — 대로는 곧고 온전해야 한다.
-  const boulevardProtected = boulevard
-    ? new Set(boulevardCells(area, boulevard).map((cell) => coordKey(cell.x, cell.y)))
-    : new Set<string>();
+  // 대로 칸은 조그 분절·가지치기에서 보호한다 — 곡선 골격이 끊기거나 곧게 펴지면 안 된다.
+  const boulevardBand = boulevard ? boulevardCells(area, boulevard, seed) : [];
+  const boulevardProtected = new Set(boulevardBand.map((cell) => coordKey(cell.x, cell.y)));
 
   const paintOnce = (runIntent: VillageIntent, runSeed: number): void => {
     if (boulevard) {
       // 대로 먼저(spine-first) — 밴드는 집 배치 전에 예약돼 있어 구멍이 없다.
-      paintRoadCellsAvoidingHouses(map, runIntent.pathStyle, boulevardCells(area, boulevard), hardBlocked);
+      paintRoadCellsAvoidingHouses(map, runIntent.pathStyle, boulevardBand, hardBlocked);
     }
-    paintPlazaAndAvenue(draft, map, plaza, area, runIntent, runSeed, warnings, throughBlocked, boulevard);
+    paintPlazaAndAvenue(draft, map, plaza, area, runIntent, runSeed, warnings, throughBlocked, boulevard, seed);
     connectHousesToRoads(draft, map, area, plaza, houses, runIntent, runSeed, warnings, hardBlocked);
     ensureSingleRoadComponent(map, area, hardBlocked, runIntent.pathStyle, throughBlocked);
     breakLongStraightRuns(map, area, hardBlocked, runIntent.pathStyle, houses, boulevardProtected);
@@ -124,26 +204,44 @@ export function paintVillageRoadsChecked(args: {
       map.upperTiles[i] = baseUpper[i]!;
     }
   };
-  const countViolations = (): number => {
-    let count = 0;
+  const countViolations = (): { total: number; forbidden: number; outside: number } => {
+    let total = 0;
+    let forbiddenCount = 0;
+    let outsideCount = 0;
     for (let y = 0; y < map.height; y += 1) {
       for (let x = 0; x < map.width; x += 1) {
         const index = y * map.width + x;
         const lower = map.lowerTiles[index] ?? TILE.EMPTY;
         if (!ROAD_TILES.has(lower) || baseLower[index] === lower) continue; // 이번 시공분만
         const outside = x < area.x || y < area.y || x >= area.x + area.w || y >= area.y + area.h;
-        if (outside || forbidden.has(coordKey(x, y))) count += 1;
+        if (!outside && !forbidden.has(coordKey(x, y))) continue;
+        total += 1;
+        if (forbidden.has(coordKey(x, y))) forbiddenCount += 1;
+        if (outside) outsideCount += 1;
       }
     }
-    return count;
+    return { total, forbidden: forbiddenCount, outside: outsideCount };
+  };
+  const recordReport = (trace: readonly number[], last: { total: number; forbidden: number; outside: number }, attempts: number, fallbackStraight: boolean): void => {
+    if (!retryReport) return;
+    (retryReport as { report: RoadRetryReport | undefined }).report = {
+      attempts,
+      violationTrace: [...trace],
+      residualForbidden: last.forbidden,
+      residualOutside: last.outside,
+      fallbackStraight,
+    };
   };
 
+  const violationTrace: number[] = [];
   for (let attempt = 0; attempt < MAX_RETRY; attempt += 1) {
     if (attempt > 0) restore();
     paintOnce(intent, seed + attempt * 7919);
     const violations = countViolations();
-    if (violations === 0) {
+    violationTrace.push(violations.total);
+    if (violations.total === 0) {
       if (attempt > 0) warnings.push(`길 침범 점검: ${attempt}회 롤백 재시도 후 통과`);
+      recordReport(violationTrace, violations, attempt, false);
       return attempt;
     }
   }
@@ -151,14 +249,17 @@ export function paintVillageRoadsChecked(args: {
   restore();
   paintOnce({ ...intent, roadNaturalness: 0 }, seed);
   const residual = countViolations();
-  if (residual === 0) {
+  violationTrace.push(residual.total);
+  if (residual.total === 0) {
     warnings.push(`길 침범 점검: ${MAX_RETRY}회 실패 → 직선 폴백으로 통과`);
+    recordReport(violationTrace, residual, MAX_RETRY, true);
     return MAX_RETRY;
   }
   // 금지선 하드 게이트(2026-09-04) — 직선 폴백에도 집/수역 침범이 남으면 성공 반환 금지.
   // 기존 "수동 확인 필요" 경고는 성공 결과에 묻혀 아무도 안 봤다.
+  recordReport(violationTrace, residual, MAX_RETRY, true);
   throw new ToolError(
-    `길 금지선 침범: 직선 폴백에도 침범 ${residual}칸 잔존 — 집 footprint·수역·데크 마스크와 area가 겹친다. bounds를 넓히거나 houses를 줄여라.`,
+    `길 금지선 침범: 직선 폴백에도 침범 ${residual.total}칸 잔존(금지 ${residual.forbidden}/영역밖 ${residual.outside}) — 집 footprint·수역·데크 마스크와 area가 겹친다. bounds를 넓히거나 houses를 줄여라.`,
     { code: "road-forbidden-residual" },
   );
 }
@@ -173,11 +274,14 @@ export function paintPlazaAndAvenue(
   warnings: string[],
   houseBlocked: ReadonlySet<string> = EMPTY_BLOCKED,
   boulevard: Boulevard | null = null,
+  // 토폴로지 고정 시드(2026-09-04) — 재시도(runSeed)가 바뀌어도 앵커·분기 갈래는
+  // 원본 시드에 묶어 둔다. layoutPlan.roadAnchors가 원본 시드로 기록되므로,
+  // 재시도마다 앵커가 drift하면 exitRoads 게이트가 빈 칸을 읽고 오실패한다.
+  topologySeed?: number,
 ): void {
   const pathStyle = intent.pathStyle;
   const width = intent.roadWidth;
   const naturalness = intent.roadNaturalness;
-  const anchors = villageRoadAnchors(area, plaza, seed);
   if (intent.plazaStyle === "market") paintMarketDeck(map, plaza.rect);
 
   // garden/market은 광장 rect가 도로 봉쇄 구역이라, 링을 rect 바깥 1칸으로 두른다 —
@@ -200,18 +304,7 @@ export function paintPlazaAndAvenue(
   // 대로 모드: 골격은 대로 2축이 담당하므로 가는 간선 4갈래는 깔지 않는다(스텁·평행 중복 원인).
   if (boulevard) return;
 
-  const rng = mulberry32((seed ^ 0x5f3759df) >>> 0);
-  const shift = (): number => Math.round((rng() - 0.5) * (2 + naturalness * 4));
-  const northJoinX = clamp(plaza.centerX + shift(), plaza.rect.x, plaza.rect.x + plaza.rect.w - 1);
-  const southJoinX = clamp(plaza.centerX + shift(), plaza.rect.x, plaza.rect.x + plaza.rect.w - 1);
-  const westJoinY = clamp(plaza.centerRow + shift(), plaza.rect.y, plaza.rect.y + plaza.rect.h - 1);
-  const eastJoinY = clamp(plaza.centerRow + shift(), plaza.rect.y, plaza.rect.y + plaza.rect.h - 1);
-  const routes: readonly (readonly Point[])[] = [
-    [anchors[0]!, { x: anchors[0]!.x + shift(), y: Math.floor((area.y + plaza.rect.y) / 2) }, { x: northJoinX, y: plaza.rect.y }],
-    [anchors[1]!, { x: anchors[1]!.x + shift(), y: Math.floor((area.y + area.h + plaza.rect.y + plaza.rect.h) / 2) }, { x: southJoinX, y: plaza.rect.y + plaza.rect.h - 1 }],
-    [anchors[2]!, { x: Math.floor((area.x + plaza.rect.x) / 2), y: anchors[2]!.y + shift() }, { x: plaza.rect.x, y: westJoinY }],
-    [anchors[3]!, { x: Math.floor((area.x + area.w + plaza.rect.x + plaza.rect.w) / 2), y: anchors[3]!.y + shift() }, { x: plaza.rect.x + plaza.rect.w - 1, y: eastJoinY }],
-  ];
+  const routes = villageArteryRoutes(area, plaza, topologySeed ?? seed, naturalness, seed);
   for (let route = 0; route < routes.length; route += 1) {
     paintWideRoad(draft, map, pathStyle, routes[route]!, Math.max(1, width - 1), naturalness, seed + 20 + route * 11, warnings, houseBlocked);
   }
@@ -219,13 +312,113 @@ export function paintPlazaAndAvenue(
 
 export function villageRoadAnchors(area: Rect, plaza: Plaza, seed: number): readonly Point[] {
   const rng = mulberry32((seed ^ 0x8da6b343) >>> 0);
-  const offset = (): number => Math.floor(rng() * 5) - 2;
+  // 앵커 확산(2026-09-04) — 예전 ±2 오프셋은 N/S 앵커가 항상 광장 중심 x 근처에 붙어
+  // 남북 간선이 일직선(= 십자가 세로축)으로 굳었다. 가장자리 1/5 폭으로 흩어 꺾인 진입을 만든다.
+  const spreadX = Math.max(4, Math.floor(area.w / 5));
+  const spreadY = Math.max(4, Math.floor(area.h / 5));
+  const spread = (half: number): number => Math.floor(rng() * (half * 2 + 1)) - half;
   return [
-    { x: clamp(plaza.centerX + offset(), area.x + 1, area.x + area.w - 2), y: area.y },
-    { x: clamp(plaza.centerX + offset(), area.x + 1, area.x + area.w - 2), y: area.y + area.h - 1 },
-    { x: area.x, y: clamp(plaza.centerRow + offset(), area.y + 1, area.y + area.h - 2) },
-    { x: area.x + area.w - 1, y: clamp(plaza.centerRow + offset(), area.y + 1, area.y + area.h - 2) },
+    { x: clamp(plaza.centerX + spread(spreadX), area.x + 1, area.x + area.w - 2), y: area.y },
+    { x: clamp(plaza.centerX + spread(spreadX), area.x + 1, area.x + area.w - 2), y: area.y + area.h - 1 },
+    { x: area.x, y: clamp(plaza.centerRow + spread(spreadY), area.y + 1, area.y + area.h - 2) },
+    { x: area.x + area.w - 1, y: clamp(plaza.centerRow + spread(spreadY), area.y + 1, area.y + area.h - 2) },
   ];
+}
+
+/**
+ * 간선 중심선(2026-09-04) — 4갈래 중 1갈래는 광장이 아니라 다른 간선에 T자로 붙는다.
+ * 예전엔 4갈래가 전부 광장 rect 변에 닿아 광장이 십자가 결절점이 됐다. 시드별 분기 갈래가
+ * 달라지므로(4-cycle) 매번 같은 plus 위상이 반복되지 않는다. paintPlazaAndAvenue가 그대로 쓴다.
+ * 앵커·분기 갈래는 seed에 묶고, 흔들림(swing)만 jitterSeed에서 뽑는다 — 재시도마다
+ * 토폴로지가 바뀌면 layoutPlan.roadAnchors(원본 seed 기록)와 어긋나 exitRoads가 깨진다.
+ */
+export function villageArteryRoutes(area: Rect, plaza: Plaza, seed: number, naturalness: number, jitterSeed: number = seed): readonly (readonly Point[])[] {
+  const anchors = villageRoadAnchors(area, plaza, seed);
+  const rng = mulberry32((jitterSeed ^ 0x5f3759df) >>> 0);
+  const swing = (): number => Math.round((rng() - 0.5) * (6 + naturalness * 8));
+  const edge = (n: number): number => Math.max(0, Math.floor(n));
+  const cx = (x: number): number => clamp(x, area.x + 1, area.x + area.w - 2);
+  const cy = (y: number): number => clamp(y, area.y + 1, area.y + area.h - 2);
+  const northJoinX = plaza.rect.x + edge(rng() * plaza.rect.w);
+  const southJoinX = plaza.rect.x + edge(rng() * plaza.rect.w);
+  const westJoinY = plaza.rect.y + edge(rng() * plaza.rect.h);
+  const eastJoinY = plaza.rect.y + edge(rng() * plaza.rect.h);
+  const northAnchor = anchors[0]!;
+  const southAnchor = anchors[1]!;
+  const westAnchor = anchors[2]!;
+  const eastAnchor = anchors[3]!;
+  const q = (from: number, to: number, t: number): number => Math.floor(from + (to - from) * t);
+  const onLine = (a: Point, b: Point, p: Point): boolean =>
+    (b.x - a.x) * (p.y - a.y) === (b.y - a.y) * (p.x - a.x);
+  // [1]·[2] 중점 + 흔들림. 흔들림이 0으로 맞아떨어져 선 위에 떨어지면(축 평행 다리에서 흔함)
+  // 수직으로 2칸 밀어 비공선을 보장한다 — 직선 굳기 방지의 핵심이 우연에 맡겨지면 안 된다.
+  // 양쪽 부호를 시도하므로 가장자리 클램프에 뭉개져도 살아남는다.
+  const joggedMid = (a: Point, b: Point): Point => {
+    const mid = {
+      x: cx(Math.floor((a.x + b.x) / 2) + swing()),
+      y: cy(Math.floor((a.y + b.y) / 2) + swing()),
+    };
+    if (!onLine(a, b, mid)) return mid;
+    const sign = rng() < 0.5 ? -1 : 1;
+    const horizontal = Math.abs(b.x - a.x) >= Math.abs(b.y - a.y);
+    const nudges: readonly Point[] = horizontal
+      ? [{ x: mid.x, y: cy(mid.y + 2 * sign) }, { x: mid.x, y: cy(mid.y - 2 * sign) }]
+      : [{ x: cx(mid.x + 2 * sign), y: mid.y }, { x: cx(mid.x - 2 * sign), y: mid.y }];
+    for (const nudged of nudges) {
+      const distinct = (nudged.x !== a.x || nudged.y !== a.y) && (nudged.x !== b.x || nudged.y !== b.y);
+      if (distinct && !onLine(a, b, nudged)) return nudged;
+    }
+    return mid;
+  };
+  const plazaRoutes: (readonly Point[])[] = [
+    [
+      northAnchor,
+      { x: cx(northAnchor.x + swing()), y: q(area.y, plaza.rect.y, 0.4) },
+      { x: cx(northJoinX + swing()), y: q(area.y, plaza.rect.y, 0.8) },
+      { x: northJoinX, y: plaza.rect.y },
+    ],
+    [
+      southAnchor,
+      { x: cx(southAnchor.x + swing()), y: q(area.y + area.h - 1, plaza.rect.y + plaza.rect.h - 1, 0.4) },
+      { x: cx(southJoinX + swing()), y: q(area.y + area.h - 1, plaza.rect.y + plaza.rect.h - 1, 0.8) },
+      { x: southJoinX, y: plaza.rect.y + plaza.rect.h - 1 },
+    ],
+    [
+      westAnchor,
+      { x: q(area.x, plaza.rect.x, 0.4), y: cy(westAnchor.y + swing()) },
+      { x: q(area.x, plaza.rect.x, 0.8), y: cy(westJoinY + swing()) },
+      { x: plaza.rect.x, y: westJoinY },
+    ],
+    [
+      eastAnchor,
+      { x: q(area.x + area.w - 1, plaza.rect.x + plaza.rect.w - 1, 0.4), y: cy(eastAnchor.y + swing()) },
+      { x: q(area.x + area.w - 1, plaza.rect.x + plaza.rect.w - 1, 0.8), y: cy(eastJoinY + swing()) },
+      { x: plaza.rect.x + plaza.rect.w - 1, y: eastJoinY },
+    ],
+  ];
+  // 직선 4점 굳기 방지 — [1]과 [2] 사이에 흔들린 경유점 하나를 끼운다.
+  // [1]은 그대로라 T-분기 host[1] 조인은 그대로 통과한다.
+  const widened: (readonly Point[])[] = plazaRoutes.map((route) => {
+    const start = route[0]!;
+    const first = route[1]!;
+    const second = route[2]!;
+    const last = route[3]!;
+    return [start, first, joggedMid(first, second), second, last];
+  });
+  // 분기 갈래: 자기 간선을 버리고 인접 축 간선 mid에 합류한다. 가장자리 출구는 유지되므로
+  // exitRoads=4 게이트와 4변 출구 테스트는 그대로 통과한다.
+  // [N,S,W,E] 순서에서 +2는 항상 인접 축(N→W, S→E, W→N, E→S)이다.
+  // +1은 seed%4가 짝수일 때 정반대 축에 붙어 plus가 살아남는다.
+  const branchIndex = ((seed % 4) + 4) % 4;
+  const hostIndex = (branchIndex + 2) % 4;
+  const branchAnchor = anchors[branchIndex]!;
+  const hostMid = widened[hostIndex]![1]!;
+  const branched: (readonly Point[])[] = widened.map((route, index) => {
+    if (index !== branchIndex) return route;
+    const mid = { x: cx(q(branchAnchor.x, hostMid.x, 0.5) + swing()), y: cy(q(branchAnchor.y, hostMid.y, 0.5) + swing()) };
+    return [branchAnchor, mid, joggedMid(mid, hostMid), hostMid];
+  });
+  return branched;
 }
 
 /**
@@ -273,7 +466,10 @@ export function breakLongStraightRuns(
   protectedExtra: ReadonlySet<string> = EMPTY_BLOCKED,
 ): void {
   const body = roadBodyTile(pathStyle);
-  const maxRun = Math.max(12, Math.floor(Math.max(map.width, map.height) * 0.42));
+  // 분절 임계(2026-09-04): 예전 0.42는 50맵에서 maxRun=21이라 간선 한 팔(~20칸)을
+  // 거의 건드리지 않아 plus 위상이 굳었다. 0.3(50맵 maxRun=15)으로 낮춰 간선을 꺾는다.
+  // 대로는 보호 집합(boulevardProtected)으로 여전히 제외되므로 대로 직선성은 유지된다.
+  const maxRun = Math.max(12, Math.floor(Math.max(map.width, map.height) * 0.3));
   const isRoad = (x: number, y: number): boolean =>
     inMapBounds(map, x, y) && ROAD_TILES.has(map.lowerTiles[y * map.width + x] ?? TILE.EMPTY);
   const isGrass = (x: number, y: number): boolean =>
@@ -511,6 +707,10 @@ function paintRoadCellsAvoidingHouses(
   shapeRoadStyle(map, pathStyle, painted);
 }
 
+/** 미리보기용 길 조각 — 본시공과 같은 몸통 타일·오토타일 성형. 타일 번호는 여기만 안다. */
+export function paintRoadStrip(map: GameMap, style: RoadStyle, cells: readonly Point[]): void {
+  paintRoadCellsAvoidingHouses(map, style, cells, EMPTY_BLOCKED);
+}
 
 /**
  * 집 footprint를 건너뛴 뒤 끊긴 길 성분을 하나로 잇는다.

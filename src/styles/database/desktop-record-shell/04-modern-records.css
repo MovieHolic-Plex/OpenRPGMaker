@@ -466,7 +466,7 @@
     font: 500 14px/1.25 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   }
 
-  .database-modal-body .oprn-record-detail-pane .oprn-detail-form :is(input, select, textarea) {
+  .database-modal-body .oprn-record-detail-pane .oprn-detail-form :is(input:not([type="radio"]), select, textarea) {
     background-color: var(--bg-raised);
     border: 1px solid var(--db-modern-line);
     border-radius: 4px;

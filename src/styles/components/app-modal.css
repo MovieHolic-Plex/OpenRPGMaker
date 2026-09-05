@@ -38,6 +38,22 @@
     gap: var(--space-2);
     justify-content: flex-end;
   }
+  .app-modal-choices {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .app-modal-choice {
+    align-items: center;
+    background: var(--bg-inset);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-m);
+    cursor: pointer;
+    display: flex;
+    font-size: 13px;
+    gap: var(--space-2);
+    padding: 8px 12px;
+  }
   .app-modal-button {
     background: var(--bg-inset);
     border: 1px solid var(--border-strong);
@@ -59,6 +75,51 @@
     background: var(--danger, #C6403D);
     border-color: var(--danger, #C6403D);
     color: var(--on-accent, #fff);
+  }
+
+  .app-modal-input {
+    background: var(--bg-inset);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-m);
+    color: var(--text-1);
+    font-size: 13px;
+    padding: 6px 10px;
+    width: 100%;
+  }
+
+  /* 새 프로젝트 다이얼로그 — 시작 장르 라디오 목록. */
+  .new-project-card {
+    max-width: 480px;
+  }
+  .new-project-genre-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+  .new-project-genre-row {
+    align-items: flex-start;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-m);
+    cursor: pointer;
+    display: flex;
+    gap: var(--space-2);
+    padding: 6px 10px;
+  }
+  .new-project-genre-row:has(.new-project-genre-radio:checked) {
+    border-color: var(--accent);
+  }
+  .new-project-genre-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .new-project-genre-label {
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .new-project-genre-blurb {
+    color: var(--text-2);
+    font-size: 12px;
   }
 
   /* AI 차단 게이트 경고(editor/ui/aiGateModal.ts) — 위 프리미티브에 목록/원문 영역만 얹는다. */
@@ -101,5 +162,39 @@
     max-height: 180px;
     overflow: auto;
     white-space: pre-wrap;
+  }
+  .new-project-card {
+    max-width: 520px;
+  }
+  .new-project-starter-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2);
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  .new-project-starter-card {
+    background: var(--bg-inset);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-m);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    font-size: 13px;
+    gap: 2px;
+    padding: var(--space-2);
+    text-align: start;
+  }
+  .new-project-starter-card.is-selected {
+    border-color: var(--accent);
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
+  .new-project-starter-label {
+    font-weight: 600;
+  }
+  .new-project-starter-blurb {
+    color: var(--text-2);
+    font-size: 12px;
   }
 }

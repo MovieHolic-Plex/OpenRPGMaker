@@ -1,4 +1,4 @@
-// 데이터베이스 「임시 → 개념 꾸러미」.
+// 데이터베이스 「맵 → 타일셋 → 개념 꾸러미」.
 // 타일셋에 동봉된 시설→장소→물건→칩 나무를 그림으로 고친다.
 // 사용자가 고친 나무는 place_concept 이 그대로 읽는다.
 
@@ -43,22 +43,30 @@ import {
   CONCEPT_CHIP_IDS,
   conceptChipLabel,
   isConceptChipId,
+  validateConceptChipId,
   CONCEPT_FLOOR_MATERIAL_LABELS,
   CONCEPT_FLOOR_MATERIALS,
+  CONCEPT_LAYOUT_KIND_LABELS,
+  CONCEPT_LAYOUT_KINDS,
   CONCEPT_PLACE_COUNT_MAX,
   CONCEPT_PLACE_LEVEL_MAX,
   CONCEPT_PLACE_ROLE_LABELS,
   CONCEPT_PLACE_ROLES,
   CONCEPT_PLACE_SIZE_LABELS,
   CONCEPT_PLACE_SIZES,
+  CONCEPT_PLACE_ZONE_LABELS,
+  CONCEPT_PLACE_ZONES,
   CONCEPT_WALL_MATERIAL_LABELS,
   CONCEPT_WALL_MATERIALS,
   isConceptFloorMaterial,
+  isConceptLayoutKind,
   isConceptPlaceRole,
   isConceptPlaceSize,
+  isConceptPlaceZone,
   isConceptWallMaterial,
 } from "@/project/types/conceptBundle";
 import { el } from "@/util/dom";
+import { toast } from "@/util/toast";
 
 interface ScratchSession {
   tilesetId: string | null;
@@ -110,15 +118,14 @@ export function renderScratchConceptTab(host: HTMLElement, rerender: () => void)
     ? bundle.facilities.find((entry) => entry.id === session.facilityId) ?? bundle.facilities[0] ?? null
     : null;
   session.facilityId = facility?.id ?? null;
-  const place = bundle
-    ? bundle.places.find((entry) => entry.id === session.placeId)
-      ?? bundle.places.find((entry) => facility?.placeIds.includes(entry.id))
-      ?? bundle.places[0]
+  const place = bundle && facility
+    ? bundle.places.find((entry) => entry.id === session.placeId && facility.placeIds.includes(entry.id))
+      ?? bundle.places.find((entry) => facility.placeIds.includes(entry.id))
       ?? null
     : null;
   session.placeId = place?.id ?? null;
-  const thing = bundle
-    ? bundle.things.find((entry) => entry.id === session.thingId)
+  const thing = bundle && facility
+    ? bundle.things.find((entry) => entry.id === session.thingId && entry.placeIds.some((id) => facility.placeIds.includes(id)))
       ?? bundle.things.find((entry) => place && entry.placeIds.includes(place.id))
       ?? null
     : null;
@@ -131,7 +138,7 @@ export function renderScratchConceptTab(host: HTMLElement, rerender: () => void)
         el("h3", { text: "개념 꾸러미", dataset: { testid: "scratch-concept-heading" } }),
         el("span", {
           class: "db-tab-note-chip",
-          children: [makeDatabaseTabIcon("scratchConcepts"), el("span", { text: "임시 · 타일셋별로 분리됨" })],
+          children: [makeDatabaseTabIcon("scratchConcepts"), el("span", { text: "타일셋별로 분리됨" })],
           attrs: { title: "place_concept 가 이 나무를 읽어 시공합니다. 고친 내용이 다음 시설에 그대로 쓰입니다." },
         }),
       ],
@@ -404,6 +411,52 @@ function renderToolbar(
   }
   wall.value = currentWall;
 
+  const layout = el("select", {
+    class: "scratch-concept-plan-select scratch-concept-layout-select",
+    attrs: { title: "도면 문법 — 한 줄은 방 줄→복도→홀, 두 줄은 객실은 복도 북쪽·날개(주방·창고)는 홀 옆" },
+    dataset: { testid: "scratch-concept-facility-layout" },
+    on: {
+      change: (event) => {
+        const next = (event.target as HTMLSelectElement).value;
+        if (isConceptLayoutKind(next)) patchFacility(tileset.id, bundle.id, facility.id, { layout: next === "row" ? undefined : next });
+        refresh(host, rerender);
+      },
+    },
+  }) as HTMLSelectElement;
+  const currentLayout = facility.layout ?? "row";
+  for (const value of CONCEPT_LAYOUT_KINDS) {
+    layout.append(el("option", { attrs: { value, ...(value === currentLayout ? { selected: "" } : {}) }, text: CONCEPT_LAYOUT_KIND_LABELS[value] }));
+  }
+  layout.value = currentLayout;
+
+  const membership = el("div", {
+    class: "scratch-concept-facility-places",
+    dataset: { testid: "scratch-concept-facility-places" },
+    children: [el("span", { class: "scratch-concept-quiet", text: "시설 장소" })],
+  });
+  for (const place of bundle.places) {
+    const on = facility.placeIds.includes(place.id);
+    membership.append(
+      el("button", {
+        class: `db-mini-btn${on ? " active" : ""}`,
+        attrs: { type: "button", "aria-pressed": String(on), title: on ? "시설에서 뺀다 — 꾸러미에는 남는다" : "시설에 넣는다" },
+        dataset: { testid: `scratch-concept-facility-place-${place.id}` },
+        text: place.label,
+        on: {
+          click: () => {
+            toggleFacilityPlace(tileset.id, bundle.id, facility.id, place.id);
+            if (session.placeId === place.id) {
+              const after = store.getCurrent().tilesets[tileset.id]?.scratchConceptBundles
+                ?.find((entry) => entry.id === bundle.id)?.facilities.find((entry) => entry.id === facility.id);
+              session.placeId = after?.placeIds[0] ?? null;
+            }
+            refresh(host, rerender);
+          },
+        },
+      }),
+    );
+  }
+
   return el("div", {
     class: "scratch-concept-toolbar",
     children: [
@@ -414,6 +467,8 @@ function renderToolbar(
       }),
       field("시설 이름", name),
       field("벽 재질", wall),
+      field("도면", layout),
+      membership,
       el("button", {
         class: "db-mini-btn",
         attrs: { type: "button" },
@@ -459,14 +514,24 @@ function renderPlaceCard(
   rerender: () => void,
 ): HTMLElement {
   const things = bundle.things.filter((entry) => entry.placeIds.includes(place.id));
+  const selectPlace = () => {
+    session.placeId = place.id;
+    session.pickerOpen = false;
+    refresh(host, rerender);
+  };
   const card = el("article", {
     class: `scratch-concept-place${active ? " active" : ""}`,
+    attrs: { tabindex: "0", role: "button", "aria-label": `${place.label} 선택` },
     dataset: { testid: `scratch-concept-place-${place.id}` },
     on: {
       click: () => {
-        session.placeId = place.id;
-        session.pickerOpen = false;
-        refresh(host, rerender);
+        selectPlace();
+      },
+      keydown: (event) => {
+        if ((event as KeyboardEvent).key !== "Enter" && (event as KeyboardEvent).key !== " ") return;
+        if ((event.target as HTMLElement | null)?.closest?.("input, select, button, textarea, a")) return;
+        event.preventDefault();
+        selectPlace();
       },
     },
   });
@@ -511,7 +576,7 @@ function renderPlaceCard(
 
   const row = el("div", { class: "scratch-concept-things", dataset: { testid: `scratch-concept-things-${place.id}` } });
   for (const entry of things) {
-    row.append(renderThingChip(tileset, entry, selectedThing?.id === entry.id, host, rerender));
+    row.append(renderThingChip(tileset, bundle, entry, selectedThing?.id === entry.id, host, rerender));
   }
   row.append(
     el("button", {
@@ -635,6 +700,27 @@ function renderPlacePlanRow(
   }
   level.value = String(currentLevel);
 
+  const zone = el("select", {
+    class: "scratch-concept-plan-select",
+    attrs: { title: "구역 — 두 줄 도면에서 북쪽은 복도 위 객실, 남쪽은 홀 옆 날개. 자동은 주방·창고 라벨을 남쪽으로 본다" },
+    dataset: { testid: `scratch-concept-place-zone-${place.id}` },
+    on: {
+      click: stop,
+      change: (event) => {
+        const next = (event.target as HTMLSelectElement).value;
+        if (next === "auto") patchPlace(tileset.id, bundle.id, place.id, { zone: undefined });
+        else if (isConceptPlaceZone(next)) patchPlace(tileset.id, bundle.id, place.id, { zone: next });
+        refresh(host, rerender);
+      },
+    },
+  });
+  const currentZone = place.zone;
+  zone.append(el("option", { attrs: { value: "auto", ...(currentZone === undefined ? { selected: "" } : {}) }, text: "자동" }));
+  for (const value of CONCEPT_PLACE_ZONES) {
+    zone.append(el("option", { attrs: { value, ...(value === currentZone ? { selected: "" } : {}) }, text: CONCEPT_PLACE_ZONE_LABELS[value] }));
+  }
+  zone.value = currentZone ?? "auto";
+
   return el("div", {
     class: "scratch-concept-place-plan",
     dataset: { testid: `scratch-concept-place-plan-${place.id}` },
@@ -644,12 +730,14 @@ function renderPlacePlanRow(
       el("label", { class: "scratch-concept-plan-field", children: [el("span", { text: "개수" }), count] }),
       el("label", { class: "scratch-concept-plan-field", children: [el("span", { text: "바닥" }), floor] }),
       el("label", { class: "scratch-concept-plan-field", children: [el("span", { text: "층" }), level] }),
+      el("label", { class: "scratch-concept-plan-field", children: [el("span", { text: "구역" }), zone] }),
     ],
   });
 }
 
 function renderThingChip(
   tileset: TilesetDef,
+  bundle: ConceptBundleRecord,
   thing: ConceptThingRecord,
   active: boolean,
   host: HTMLElement,
@@ -659,9 +747,15 @@ function renderThingChip(
   const thumb = object
     ? decorateThumb(interiorObjectCanvas(tileset, object, 3), "scratch-concept-thumb")
     : el("span", { class: "scratch-concept-missing", text: "?" });
-  return el("button", {
+  // 버튼 안에 버튼을 넣지 않으려 칩 외곽은 div — 칠하기는 안의 버튼, 선택은 칩 클릭/Enter/Space.
+  const selectThing = () => {
+    session.thingId = thing.id;
+    session.pickerOpen = false;
+    refresh(host, rerender);
+  };
+  return el("div", {
     class: `scratch-concept-thing${active ? " active" : ""}${thing.required ? " required" : ""}`,
-    attrs: { type: "button" },
+    attrs: { tabindex: "0", role: "button", "aria-label": `${thing.label} 선택` },
     dataset: { testid: `scratch-concept-thing-${thing.id}` },
     children: [
       thumb,
@@ -670,13 +764,35 @@ function renderThingChip(
         class: "scratch-concept-thing-chips",
         text: thing.chips.map((chip) => conceptChipLabel(chip)).join(" · "),
       }),
+      el("button", {
+        class: "db-mini-btn scratch-concept-thing-paint",
+        attrs: {
+          type: "button",
+          title: object
+            ? "이 그림의 타일을 직접 칠한다 — 카탈로그·시드 그림이면 사본을 만들어 이 물건에 붙이고, 내가 만든 그림이면 그 그림을 바로 고친다"
+            : "그림이 없어 칠할 수 없다",
+          ...(object ? {} : { disabled: "" }),
+        },
+        dataset: { testid: `scratch-concept-thing-paint-${thing.id}` },
+        text: storedKitId(tileset, thing.objectId) ? "칠하기" : "사본 칠하기",
+        on: {
+          click: (event) => {
+            event.stopPropagation();
+            paintThingGraphic(tileset, bundle, thing, host, rerender);
+          },
+        },
+      }),
     ],
     on: {
       click: (event) => {
         event.stopPropagation();
-        session.thingId = thing.id;
-        session.pickerOpen = false;
-        refresh(host, rerender);
+        selectThing();
+      },
+      keydown: (event) => {
+        if ((event as KeyboardEvent).key !== "Enter" && (event as KeyboardEvent).key !== " ") return;
+        event.preventDefault();
+        event.stopPropagation();
+        selectThing();
       },
     },
   });
@@ -796,16 +912,66 @@ function renderThingInspector(
       }),
     );
   }
+  const chipError = el("p", { class: "scratch-concept-chip-error" });
+  chipError.hidden = true;
+  const setChipError = (message: string | null): void => {
+    if (message) {
+      chipError.hidden = false;
+      chipError.textContent = message;
+      chipError.dataset.testid = "scratch-concept-chip-error";
+      return;
+    }
+    chipError.hidden = true;
+    chipError.textContent = "";
+    delete chipError.dataset.testid;
+  };
   const customChips = thing.chips.filter((chip) => !isConceptChipId(chip));
   for (const chip of customChips) {
+    const input = el("input", {
+      class: "scratch-concept-chip-custom-input",
+      attrs: { type: "text", value: chip, title: "자유 칩 이름 — 바꾸면 바로 저장" },
+      dataset: { testid: `scratch-concept-chip-custom-input-${chip}` },
+      value: chip,
+      on: {
+        change: (event) => {
+          const field = event.target as HTMLInputElement;
+          const result = renameThingChip(tileset.id, bundle.id, thing.id, chip, field.value);
+          if (!result.ok) {
+            field.value = chip;
+            setChipError(result.error);
+            return;
+          }
+          if (result.value === chip) {
+            setChipError(null);
+            return;
+          }
+          refresh(host, rerender);
+        },
+      },
+    }) as HTMLInputElement;
     chips.append(
-      el("button", {
-        class: `scratch-concept-chip custom on`,
-        attrs: { type: "button", title: "자유 칩 — 누르면 지운다" },
+      el("div", {
+        class: "scratch-concept-chip-custom",
+        attrs: { title: "자유 칩" },
         dataset: { testid: `scratch-concept-chip-custom-${chip}` },
-        text: `× ${chip}`,
+        children: [
+          input,
+          el("button", {
+            class: "scratch-concept-chip-remove",
+            attrs: { type: "button", title: "자유 칩 지우기" },
+            dataset: { testid: `scratch-concept-chip-remove-${chip}` },
+            text: "지우기",
+            on: {
+              click: () => {
+                toggleChip(tileset.id, bundle.id, thing.id, chip);
+                refresh(host, rerender);
+              },
+            },
+          }),
+        ],
         on: {
-          click: () => {
+          click: (event) => {
+            if (event.target !== event.currentTarget) return;
             toggleChip(tileset.id, bundle.id, thing.id, chip);
             refresh(host, rerender);
           },
@@ -819,10 +985,11 @@ function renderThingInspector(
     dataset: { testid: "scratch-concept-chip-add" },
     on: {
       change: (event) => {
-        const next = (event.target as HTMLInputElement).value.trim();
-        if (!next) return;
-        if (!/^[A-Za-z0-9-_]{1,32}$/.test(next)) return;
-        addChip(tileset.id, bundle.id, thing.id, next);
+        const result = addChip(tileset.id, bundle.id, thing.id, (event.target as HTMLInputElement).value);
+        if (!result.ok) {
+          setChipError(result.error);
+          return;
+        }
         refresh(host, rerender);
       },
     },
@@ -864,7 +1031,7 @@ function renderThingInspector(
             attrs: {
               type: "button",
               title: object
-                ? "이 그림의 타일을 직접 칠한다 — 카탈로그 그림이면 사본을 만들어 이 물건에 붙이고, 타일셋 그림이면 그 그림을 바로 고친다"
+                ? "이 그림의 타일을 직접 칠한다 — 카탈로그·시드 그림이면 사본을 만들어 이 물건에 붙이고, 내가 만든 그림이면 그 그림을 바로 고친다"
                 : "그림이 없어 칠할 수 없다 — 먼저 위 「그림」에서 골라라",
               ...(object ? {} : { disabled: "" }),
             },
@@ -878,7 +1045,7 @@ function renderThingInspector(
           }),
           ...(storedKitId(tileset, thing.objectId)
             ? []
-            : [el("span", { class: "scratch-concept-quiet", text: "카탈로그 그림은 사본을 만들어 고친다 — 원본은 그대로 둔다" })]),
+            : [el("span", { class: "scratch-concept-quiet", text: "카탈로그·시드 그림은 사본을 만들어 고친다 — 원본은 그대로 둔다" })]),
         ],
       }),
       el("p", {
@@ -889,6 +1056,7 @@ function renderThingInspector(
       }),
       el("div", { class: "scratch-concept-section-label", text: "능력 칩" }),
       chips,
+      chipError,
       el("div", { class: "scratch-concept-section-label", text: "이 물건이 속한 장소" }),
       places,
       el("label", {
@@ -1018,14 +1186,45 @@ function defaultChipsFor(object: InteriorObjectDef): ConceptChipId[] {
   return ["block"];
 }
 
-function addChip(tilesetId: string, bundleId: string, thingId: string, chip: string): void {
-  const next = chip.trim();
-  if (!next || !/^[A-Za-z0-9-_]{1,32}$/.test(next)) return;
+function addChip(
+  tilesetId: string,
+  bundleId: string,
+  thingId: string,
+  chip: string,
+): { ok: true; value: string } | { ok: false; error: string } {
+  const validated = validateConceptChipId(chip);
+  if (!validated.ok) return validated;
   mutateBundle(tilesetId, bundleId, (bundle) => {
     const thing = bundle.things.find((entry) => entry.id === thingId);
     if (!thing) return;
-    if (!thing.chips.includes(next)) thing.chips = [...thing.chips, next];
+    if (!thing.chips.includes(validated.value)) thing.chips = [...thing.chips, validated.value];
   }, "칩 추가");
+  return validated;
+}
+
+function renameThingChip(
+  tilesetId: string,
+  bundleId: string,
+  thingId: string,
+  from: string,
+  to: string,
+): { ok: true; value: string } | { ok: false; error: string } {
+  const validated = validateConceptChipId(to);
+  if (!validated.ok) return validated;
+  const next = validated.value;
+  if (next === from) return validated;
+  let error: string | undefined;
+  mutateBundle(tilesetId, bundleId, (bundle) => {
+    const thing = bundle.things.find((entry) => entry.id === thingId);
+    if (!thing || !thing.chips.includes(from)) return;
+    if (thing.chips.includes(next)) {
+      error = "같은 칩이 이미 있습니다";
+      return;
+    }
+    thing.chips = thing.chips.map((chip) => (chip === from ? next : chip));
+  }, "칩 이름");
+  if (error) return { ok: false, error };
+  return validated;
 }
 
 function toggleChip(tilesetId: string, bundleId: string, thingId: string, chip: ConceptChipId): void {
@@ -1048,6 +1247,21 @@ function toggleThingPlace(tilesetId: string, bundleId: string, thingId: string, 
   }, "물건 장소");
 }
 
+function toggleFacilityPlace(tilesetId: string, bundleId: string, facilityId: string, placeId: string): void {
+  mutateBundle(tilesetId, bundleId, (bundle) => {
+    const facility = bundle.facilities.find((entry) => entry.id === facilityId);
+    if (!facility) return;
+    if (facility.placeIds.includes(placeId)) {
+      // 시설에서만 뺀다 — 꾸러미 장소·그 장소의 물건은 그대로 둔다.
+      facility.placeIds = facility.placeIds.filter((id) => id !== placeId);
+      return;
+    }
+    // 다시 넣을 때는 꾸러미 장소 순서를 따라 붙인다.
+    const wanted = new Set([...facility.placeIds, placeId]);
+    facility.placeIds = bundle.places.map((place) => place.id).filter((id) => wanted.has(id));
+  }, "시설 장소");
+}
+
 function patchBundle(tilesetId: string, bundleId: string, patch: Partial<ConceptBundleRecord>): void {
   mutateBundle(tilesetId, bundleId, (bundle) => {
     if (patch.label !== undefined) bundle.label = patch.label;
@@ -1067,6 +1281,10 @@ function patchFacility(
     if ("wall" in patch) {
       if (patch.wall) facility.wall = patch.wall;
       else delete facility.wall;
+    }
+    if ("layout" in patch) {
+      if (patch.layout) facility.layout = patch.layout;
+      else delete facility.layout;
     }
   }, "시설 수정");
 }
@@ -1100,6 +1318,10 @@ function patchPlace(
     if ("level" in patch) {
       if (patch.level !== undefined && patch.level > 1) place.level = patch.level;
       else delete place.level;
+    }
+    if ("zone" in patch) {
+      if (patch.zone) place.zone = patch.zone;
+      else delete place.zone;
     }
   }, "장소 도면");
 }
@@ -1147,17 +1369,34 @@ function removeThing(tilesetId: string, bundleId: string, thingId: string): void
   }, "물건 삭제");
 }
 
-/** 타일셋에 저장된 section 킷 id — 이 물건 그림을 직접 칠할 수 있다. 카탈로그 그림은 null. */
+/** 직접 칠할 사용자 section 킷 id. 카탈로그·interior-catalog 시드는 사본을 써야 하므로 null. */
 function storedKitId(tileset: TilesetDef, objectId: string): string | null {
   const kit = (tileset.structureKits ?? []).find((entry) => entry.id === objectId);
-  return kit?.kind === "section" ? kit.id : null;
+  return kit?.kind === "section" && kit.learnedFrom !== "interior-catalog" ? kit.id : null;
 }
 
 /**
- * 물건 그림을 타일 에디터로 직접 칠한다 — 구조물 탭과 같은 다이얼로그(`openStructureKitEditor`).
- * 타일셋 저장 그림이면 그 킷을 바로 열고, 카탈로그 그림이면 사본을 만들어 이 물건에 붙인 뒤 연다.
- * 저장은 에디터가 즉시 하고, 닫히면 이 인스펙터를 다시 그린다. 순환 import 를 피하려 다이얼로그는 동적 import.
+ * 물건 그림을 칠 수 있는 타일셋 킷 id 를 확보한다 — UI 없음.
+ * 사용자 section 킷이면 그 id, 카탈로그·시드면 사본을 만들어 thing.objectId 를 붙인 뒤 사본 id.
+ * 물건을 풀 수 없으면 null.
  */
+export function ensureThingKitForEdit(tilesetId: string, bundleId: string, thingId: string): string | null {
+  const tileset = store.getCurrent().tilesets[tilesetId];
+  if (!tileset) return null;
+  const bundle = (tileset.scratchConceptBundles ?? []).find((entry) => entry.id === bundleId);
+  if (!bundle) return null;
+  const thing = bundle.things.find((entry) => entry.id === thingId);
+  if (!thing) return null;
+  const object = resolveThingObject(tileset, thing.objectId);
+  if (!object) return null;
+  const existing = storedKitId(tileset, thing.objectId);
+  if (existing) return existing;
+  const copy = duplicateIntoTileset(tilesetId, object);
+  patchThing(tilesetId, bundleId, thingId, { objectId: copy.id });
+  return copy.id;
+}
+
+/** `ensureThingKitForEdit` 뒤 구조물 타일 에디터를 연다. 카탈로그 사본이면 화면을 한 번 다시 그린다. */
 function paintThingGraphic(
   tileset: TilesetDef,
   bundle: ConceptBundleRecord,
@@ -1165,24 +1404,16 @@ function paintThingGraphic(
   host: HTMLElement,
   rerender: () => void,
 ): void {
-  const object = resolveThingObject(tileset, thing.objectId);
-  if (!object) return;
-  const existing = storedKitId(tileset, thing.objectId);
-  const openAfter = (kitId: string): void => {
-    void import("@/editor/panels/structureKitEditorDialog").then(({ openStructureKitEditor }) => {
-      openStructureKitEditor(tileset.id, kitId, () => {
-        refresh(host, rerender);
-      });
+  const kitId = ensureThingKitForEdit(tileset.id, bundle.id, thing.id);
+  if (!kitId) return;
+  if (kitId !== thing.objectId) refresh(host, rerender);
+  void import("@/editor/panels/structureKitEditorDialog").then(({ openStructureKitEditor }) => {
+    openStructureKitEditor(tileset.id, kitId, () => {
+      refresh(host, rerender);
     });
-  };
-  if (existing) {
-    openAfter(existing);
-    return;
-  }
-  const copy = duplicateIntoTileset(tileset.id, object);
-  patchThing(tileset.id, bundle.id, thing.id, { objectId: copy.id });
-  refresh(host, rerender);
-  openAfter(copy.id);
+  }).catch(() => {
+    toast("그림 에디터를 열지 못했습니다. 다시 시도해 주세요.", "error");
+  });
 }
 
 function mutateBundle(

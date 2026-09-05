@@ -68,12 +68,7 @@
   margin: 0;
 }
 
-.database-modal-backdrop .db-elements-radio-row input {
-  accent-color: var(--db-studio-accent);
-  height: 16px;
-  margin: 0;
-  width: 16px;
-}
+/* radio 원 크기는 기준선(modern-controls.css)이 16px 으로 통일하므로 여기서는 잡지 않는다. */
 
 .database-modal-backdrop .db-elements-grade {
   color: var(--db-studio-text-2);

@@ -1,9 +1,11 @@
 import {
+  applyCharsetLabelOverrides,
   CHARSET_SEMANTICS,
   type CharsetAge,
   type CharsetGender,
   type CharsetSemanticEntry,
 } from "@/assets/charsetSemantics";
+import type { CharsetLabelOverride } from "@/project/types";
 
 type CharsetCategory = "actor" | "animal" | "monster" | "object" | "people" | "vehicle";
 
@@ -178,24 +180,28 @@ function intentScore(entry: CharsetSemanticEntry, intent: QueryIntent): number {
   return score;
 }
 
-function exactAliasMatches(normalized: string): NpcGraphicMatch[] | null {
+function catalogFor(overrides?: readonly CharsetLabelOverride[]): readonly CharsetSemanticEntry[] {
+  return applyCharsetLabelOverrides(CHARSET_SEMANTICS, overrides);
+}
+
+function exactAliasMatches(normalized: string, catalog: readonly CharsetSemanticEntry[]): NpcGraphicMatch[] | null {
   const textureKey = directTextureAlias(normalized);
   if (textureKey) {
-    return CHARSET_SEMANTICS
+    return catalog
       .filter((entry) => entry.textureKey === textureKey)
       .map((entry, index) => ({ entry, score: 1000 - index }));
   }
   const category = LEGACY_CATEGORY_ALIASES.get(normalized);
   if (!category) return null;
   const intent = intentFromQuery(normalized);
-  return CHARSET_SEMANTICS
+  return catalog
     .filter((entry) => categoryOf(entry) === category)
     .map((entry, index) => ({ entry, score: 700 + intentScore(entry, intent) - index / 100 }));
 }
 
-function defaultNpcGraphics(): NpcGraphicMatch[] {
+function defaultNpcGraphics(catalog: readonly CharsetSemanticEntry[] = CHARSET_SEMANTICS): NpcGraphicMatch[] {
   const byCategory = new Map(DEFAULT_CATEGORY_ORDER.map((category, index) => [category, index]));
-  return CHARSET_SEMANTICS
+  return catalog
     .map((entry, index) => ({
       entry,
       score: 100 - (byCategory.get(categoryOf(entry)) ?? 99) * 10 - index / 100,
@@ -203,18 +209,23 @@ function defaultNpcGraphics(): NpcGraphicMatch[] {
     .sort((a, b) => b.score - a.score);
 }
 
-export function queryNpcGraphics(query: string | undefined, limit = 20): NpcGraphicMatch[] {
+export function queryNpcGraphics(
+  query: string | undefined,
+  limit = 20,
+  overrides?: readonly CharsetLabelOverride[],
+): NpcGraphicMatch[] {
+  const catalog = catalogFor(overrides);
   const normalized = normalizeQuery(query ?? "");
   const cappedLimit = Math.max(1, Math.min(100, Math.floor(limit)));
   if (!normalized || normalized === "*" || normalized === "all" || normalized === "전체") {
-    return defaultNpcGraphics().slice(0, cappedLimit);
+    return defaultNpcGraphics(catalog).slice(0, cappedLimit);
   }
-  const exactAlias = exactAliasMatches(normalized);
+  const exactAlias = exactAliasMatches(normalized, catalog);
   if (exactAlias) return exactAlias.slice(0, cappedLimit);
 
   const intent = intentFromQuery(normalized);
   const queryTerms = normalized.split(/\s+/).filter((term) => term.length > 0);
-  return CHARSET_SEMANTICS
+  return catalog
     .map((entry) => {
       if (!satisfiesIntent(entry, intent)) return { entry, score: 0 };
       const wholeTextScore = textMatchScore(normalized, entry);
@@ -226,8 +237,11 @@ export function queryNpcGraphics(query: string | undefined, limit = 20): NpcGrap
     .slice(0, cappedLimit);
 }
 
-export function resolveNpcGraphic(query: string): CharsetSemanticEntry | null {
-  return queryNpcGraphics(query, 1)[0]?.entry ?? null;
+export function resolveNpcGraphic(
+  query: string,
+  overrides?: readonly CharsetLabelOverride[],
+): CharsetSemanticEntry | null {
+  return queryNpcGraphics(query, 1, overrides)[0]?.entry ?? null;
 }
 
 export type NpcGraphicPickOptions = {
@@ -237,6 +251,7 @@ export type NpcGraphicPickOptions = {
   readonly seed?: string;
   /** 시드 샘플 시 top-K 후보 (기본 8). */
   readonly sampleTopK?: number;
+  readonly overrides?: readonly CharsetLabelOverride[];
 };
 
 export function charsetGraphicKey(entry: Pick<CharsetSemanticEntry, "textureKey" | "characterIndex">): string {
@@ -266,7 +281,7 @@ export function isGenericNpcGraphicQuery(query: string): boolean {
 export function pickNpcGraphic(query: string, options: NpcGraphicPickOptions = {}): CharsetSemanticEntry | null {
   const topK = Math.max(1, Math.min(24, options.sampleTopK ?? 8));
   const poolLimit = Math.max(topK, 16);
-  let matches = queryNpcGraphics(query, poolLimit);
+  let matches = queryNpcGraphics(query, poolLimit, options.overrides);
   if (matches.length === 0) return null;
 
   const avoid = options.avoidKeys;

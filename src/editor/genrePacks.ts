@@ -278,6 +278,18 @@ export function createProjectFromGenreBlankProjectSystemPreset(
   return materializeGenreBlankProjectSystemPreset(plan).project;
 }
 
+/**
+ * 「새 프로젝트」 메뉴의 씨앗. packId 가 null 이면 빈 프로젝트를 그대로 돌려주고,
+ * 팩이 있으면 그 팩의 기본 레시피로 시스템 프리셋을 적용한다.
+ * 맵·이벤트·DB 레코드는 만들지 않는다 — 바뀌는 건 system.* 토글뿐이다.
+ */
+export function createNewProjectSeed(packId: GenrePackId | null): Project {
+  if (packId === null) return createBlankProject();
+  return createProjectFromGenreBlankProjectSystemPreset(
+    createGenreBlankProjectSystemPresetPlan(packId, genrePackById(packId).starter.defaultRecipeId),
+  );
+}
+
 export type GenrePackConfiguration = {
   readonly packId: GenrePackId;
   readonly configured: boolean;

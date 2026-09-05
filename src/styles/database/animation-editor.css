@@ -8,7 +8,7 @@
 }
 
 /* Inspector inputs/selects -> studio surface */
-.database-modal-backdrop .database-modal-body .db-animation-top-grid :is(input, select),
+.database-modal-backdrop .database-modal-body .db-animation-top-grid :is(input:not([type="radio"]), select),
 .database-modal-backdrop .database-modal-body .db-animation-panel :is(input[type="text"], input[type="number"], select) {
   background-color: var(--db-studio-surface);
   border: 1px solid var(--db-studio-border-default);

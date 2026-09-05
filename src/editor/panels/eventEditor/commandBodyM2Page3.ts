@@ -1590,6 +1590,7 @@ function changeParallaxBackBody(context: CommandEditContext, cmd: M2Command): HT
           aiImageGenerateField({
             kind: "backdrop",
             testidPrefix: "change-parallax-back-ai",
+            queueKey: `change-parallax-back:${context.path.join(".")}`,
             onInserted: (id) => {
               resourceId = id;
               resourceSelect.value = id;

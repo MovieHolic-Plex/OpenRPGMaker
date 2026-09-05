@@ -411,6 +411,10 @@ export type InteriorRoomPlan = {
   readonly height: number;
   readonly wings: readonly Wing[];
   readonly door: DoorSpec;
+  /** 출입구가 진짜 외부 맵으로 돌아가야 할 때 — 미지정 시 기존 동작(같은 맵 착지). */
+  readonly returnMapId?: MapId;
+  readonly returnX?: number;
+  readonly returnY?: number;
   /** 타일셋 방 종류 id. 기본 7종은 InteriorRoomTheme. */
   readonly theme: string;
   /** 가구·방 종류를 읽을 타일셋. 생략 시 실내 칩셋. */
@@ -890,7 +894,11 @@ export function applyInteriorRoomLayer(
     }
     case "entrance": {
       const next = cloneMap(map);
-      placeEntranceEvent(next, plan.door);
+      placeEntranceEvent(next, plan.door, {
+        ...(plan.returnMapId === undefined ? {} : { returnMapId: plan.returnMapId }),
+        ...(plan.returnX === undefined ? {} : { returnX: plan.returnX }),
+        ...(plan.returnY === undefined ? {} : { returnY: plan.returnY }),
+      });
       // 가구 조사 이벤트는 테마 시공 전용 — 개념 시설은 칩(event/loot/sleep/transfer)이 이벤트를 소유한다.
       if (!plan.concept) attachPropInspectEvents(next);
       return {
@@ -1071,6 +1079,43 @@ export function houseShellWallMembers(): ReadonlySet<number> {
 // 방이 고립되는 사고 방지. 배치 동안 센티널로 점유했다가 끝나면 걷는다.
 const ENTRY_SENTINEL = 100000;
 
+// Per-map, per-furnishing transaction. A later map or room rebuild cannot undo an earlier placement.
+type PlacementWrite = { readonly x: number; readonly y: number; readonly layer: "lower" | "upper"; readonly previous: number };
+type PlacementEntry = { readonly writes: readonly PlacementWrite[] };
+const placementJournals = new WeakMap<GameMap, PlacementEntry[]>();
+
+function paintJournaledObjectCells(map: GameMap, cells: readonly InteriorObjectCell[], ox: number, oy: number): void {
+  const journal = placementJournals.get(map);
+  if (journal) {
+    journal.push({ writes: cells.map((cell) => ({
+      x: ox + cell.dx, y: oy + cell.dy, layer: cell.layer,
+      previous: cell.layer === "lower" ? getL(map, ox + cell.dx, oy + cell.dy) : getU(map, ox + cell.dx, oy + cell.dy),
+    })) });
+  }
+  paintObjectCells(map, cells, ox, oy);
+}
+
+/** Restore an entire blocking set, including mixed lower/upper furniture. Never erase half a set. */
+function revertBlockingPlacement(map: GameMap, floor: boolean[], reach: ReadonlySet<number>, journal: PlacementEntry[]): boolean {
+  const isDark = (x: number, y: number) => isOpenCell(map, floor, x, y) && !reach.has(y * map.width + x);
+  const isReach = (x: number, y: number) => inBounds(x, y, map.width, map.height) && reach.has(y * map.width + x);
+  const touches = (entry: PlacementEntry, predicate: (x: number, y: number) => boolean) =>
+    entry.writes.some((cell) => ([[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]] as const)
+      .some(([dx, dy]) => predicate(cell.x + dx, cell.y + dy)));
+  for (const requireReach of [true, false]) {
+    const index = journal.findIndex((entry) => touches(entry, isDark) && (!requireReach || touches(entry, isReach)));
+    if (index < 0) continue;
+    const entry = journal.splice(index, 1)[0]!;
+    for (const write of entry.writes) {
+      if (write.layer === "lower") setL(map, write.x, write.y, write.previous);
+      else setU(map, write.x, write.y, write.previous);
+    }
+    return true;
+  }
+  return false;
+}
+
+
 /** 공간(방/전체) 하나의 가구 시공 — 입구 센티널 + 테마 배치 + 남쪽 필러 + 매니페스트. */
 function paintRoomSpace(
   map: GameMap,
@@ -1144,7 +1189,11 @@ function paintFurniture(map: GameMap, floor: boolean[], plan: InteriorRoomPlan, 
   RNG = mulberry32((plan.seed ?? 1) * 0x9e3779b1 + 1);
   // 복도 카펫 먼저 — 복도 테마 방은 붉은 카펫 러너로 잇는다(2026-07-20 사용자 교정).
   // 개념 꾸러미가 정본이면 파이프가 가구를 보태지 않는다.
-  if (!plan.concept) paintCorridorCarpets(map, plan);
+  placementJournals.delete(map);
+  if (!plan.concept) {
+    placementJournals.set(map, []);
+    paintCorridorCarpets(map, plan);
+  }
   // 방 구조(bbox): 방마다 자기 바닥 마스크 + 자기 테마로 배치한다.
   if (plan.rooms && plan.rooms.length > 0) {
     for (const room of plan.rooms) {
@@ -1229,12 +1278,14 @@ export function furnishInteriorSpace(
   }
   // 방별 결정적 시드(플랜 시드 + 방 인덱스 성분) — 같은 인자로 재호출하면 같은 배치.
   RNG = mulberry32(((seed ?? nextPlan.seed ?? 1) + idx * 977) * 0x9e3779b1 + 1);
+  placementJournals.delete(map);
+  if (!nextPlan.concept) placementJournals.set(map, []);
   const warnings = paintRoomSpace(map, floor, mask, room.theme ?? nextPlan.theme, nextPlan, room);
   warnings.push(...enforceWalkability(map, floor, nextPlan.door));
   return { plan: nextPlan, warnings };
 }
 
-// 통행 확보를 위해 걷어낼 수 있는 단일 소품(하드 쌍/멀티타일 세트는 절대 제거하지 않는다).
+// 통행 확보를 위해 걷어낼 수 있는 단일 소품. 멀티타일 세트는 배치 저널로 별도 복원한다.
 const REMOVABLE_SINGLE_PROPS = new Set<number>([
   VR.CHAIR_LEFT, VR.CHAIR_RIGHT, VR.STOOL, VR.SQUARE_TABLE, VR.CRYSTAL_BALL,
   VR.BARREL, VR.CRATE, VR.GRAIN, VR.BOX, VR.JARS, VR.BUCKET, VR.KETTLE, VR.CAULDRON,
@@ -1244,7 +1295,7 @@ const REMOVABLE_SINGLE_PROPS = new Set<number>([
 /**
  * 통행 연결성 강제(사용자 지적: "통행 불가능한 공간이 너무 많다") — 가구를 전부 장애물로 보고
  * 문에서 BFS. 도달 불가 개방 셀이 남으면 경계의 단일 소품을 걷어내 길을 뚫는다(최대 12개).
- * 하드 쌍(침대/긴 탁자/피아노/카운터/거울 등)은 제거하지 않고, 그래도 막히면 경고를 남긴다.
+ * 단일 소품으로 뚫리지 않으면 저널의 책장·화덕·카운터를 통째로 복원한다. 다른 하드 쌍은 유지한다.
  */
 /** 개방 셀 판정: 마스크 내 바닥(러그 포함)이고 upper가 비어 있다(가구=장애물 보수 가정). */
 function isOpenCell(map: GameMap, floor: boolean[], x: number, y: number): boolean {
@@ -1277,6 +1328,8 @@ export function reachableOpenCells(map: GameMap, floor: boolean[], door: DoorSpe
 }
 
 function enforceWalkability(map: GameMap, floor: boolean[], door: DoorSpec): string[] {
+  const journal = placementJournals.get(map) ?? [];
+  placementJournals.delete(map);
   const w = map.width;
   const inMask = (x: number, y: number) => inBounds(x, y, w, map.height) && floor[y * w + x] === true;
   const isOpen = (x: number, y: number) => isOpenCell(map, floor, x, y);
@@ -1341,6 +1394,7 @@ function enforceWalkability(map: GameMap, floor: boolean[], door: DoorSpec): str
         }
       }
     }
+    if (!removedThisPass) removedThisPass = revertBlockingPlacement(map, floor, reach, journal);
     if (!removedThisPass) {
       return [`walkability: 도달 불가 개방 셀 ${unreachable.length}개 — 제거 가능한 소품 없음(멀티타일 세트가 길을 막음), 예: (${unreachable[0]!.x},${unreachable[0]!.y})`];
     }
@@ -2047,10 +2101,11 @@ function placeCounterRun(
     // 좌 캡 · 반복 몸통 · 우 캡 — 타일 id는 카탈로그 counter 정의(3칸 런)에서 가져온다.
     const counter = objectCells("counter");
     const place = (start: number, L: number): void => {
-      for (let i = 0; i < L; i += 1) {
+      const cells = Array.from({ length: L }, (_, i): InteriorObjectCell => {
         const cell = i === 0 ? counter[0]! : i === L - 1 ? counter[counter.length - 1]! : counter[1]!;
-        setU(map, start + i, y, cell.tile);
-      }
+        return { dx: i, dy: 0, layer: "upper", tile: cell.tile };
+      });
+      paintJournaledObjectCells(map, cells, start, y);
     };
     // "떠 있는 카운터" 방지: 런의 서쪽 끝 또는 동쪽 끝에 붙는(코너 앵커) 창만 허용.
     const runs: Array<{ start: number; len: number }> = [];
@@ -2431,11 +2486,11 @@ function placeBookshelfRow(
     let ok = true;
     for (let dy = 0; dy < 3 && ok; dy += 1) {
       for (let dx = 0; dx < 2 && ok; dx += 1) {
-        if (!isWalkFloor(map, c.x + dx, c.y + dy)) ok = false;
+        if (!isWalkFloor(map, c.x + dx, c.y + dy) || getU(map, c.x + dx, c.y + dy) === ENTRY_SENTINEL) ok = false;
       }
     }
     if (!ok) continue;
-    paintObjectCells(map, shelfCells, c.x, c.y);
+    paintJournaledObjectCells(map, shelfCells, c.x, c.y);
     placed += 1;
     minNextX = c.x + 3; // 책장 2칸 + 통로 1칸
   }
@@ -2475,7 +2530,7 @@ function placeStovePair(
     if (!wall.has(getL(map, c.x + step.dx, c.y + step.dy))) continue; // 등을 댈 벽면이 있어야 함
     if (!isUpperEmpty(map, c.x, c.y) || !isUpperEmpty(map, c.x, c.y - 1)) continue;
     // hard pair — never place half stove (21 must be immediately above 51)
-    paintObjectCells(map, objectCells("stove"), c.x, c.y - 1);
+    paintJournaledObjectCells(map, objectCells("stove"), c.x, c.y - 1);
     return { x: c.x, y: c.y };
   }
   return null;
@@ -2606,8 +2661,10 @@ function isUpperEmpty(map: GameMap, x: number, y: number): boolean {
 
 // ── Entrance event ──────────────────────────────────────────────────────────
 
-function placeEntranceEvent(map: GameMap, door: DoorSpec): void {
-  const exitY = Math.min(map.height - 1, door.y + 1);
+function placeEntranceEvent(map: GameMap, door: DoorSpec, options: { readonly returnMapId?: MapId; readonly returnX?: number; readonly returnY?: number } = {}): void {
+  const targetMapId = options.returnMapId ?? map.id;
+  const targetX = options.returnX ?? door.x;
+  const exitY = options.returnY ?? Math.min(map.height - 1, door.y + 1);
   // Valid command shape: text uses `body` (not `lines`) — invalid shape was dropped on save.
   const event: GameEvent = {
     id: `ev_entrance_${map.id}`,
@@ -2629,8 +2686,8 @@ function placeEntranceEvent(map: GameMap, door: DoorSpec): void {
           { kind: "text", body: "[입구] 문을 열고 밖으로 나간다." },
           {
             kind: "transfer",
-            mapId: map.id,
-            x: door.x,
+            mapId: targetMapId,
+            x: targetX,
             y: exitY,
             fade: "black",
           },

@@ -15,7 +15,7 @@ test("codex tab shows item-concept cards, locks guard manual save, and card is k
   await page.getByTestId("db-tab-world-codex").click();
   await expect(page.getByTestId("db-world-codex-lead")).toBeVisible();
 
-  await page.getByLabel("추가할 세계관 타입").selectOption("item");
+  await page.getByLabel("추가할 카드 종류").selectOption("item");
   await page.getByTestId("world-add-entity").click();
   await page.getByTestId("world-edit-name").fill("설정집검증검");
   await page.getByTestId("world-edit-summary").fill("아이템 카드");

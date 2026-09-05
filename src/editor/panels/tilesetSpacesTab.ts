@@ -21,6 +21,7 @@ import {
   type InteriorThemeCard,
 } from "@/editor/panels/structureKitDbSources";
 import { interiorObjectCanvas } from "@/editor/panels/structureKitInspector";
+import { interiorRoomKindSource, kindsDerivedFromConceptBundles } from "@/editor/interiorRoomVocab";
 import { emptyState } from "@/editor/panels/databaseWorkspace";
 import { getSelectedTilesetId, setSelectedTileset } from "@/editor/panels/tilesetSettingsPanel";
 import { BUILTIN_INTERIOR_ROOM_KINDS } from "@/project/defaults/interiorRoomKinds";
@@ -64,7 +65,14 @@ export function renderTilesetSpacesTab(host: HTMLElement, rerender: () => void):
   let activeTileset = current.tilesets[session.tilesetId] ?? tilesets[0];
   if (activeTileset) activeTileset = ensureInteriorSpaceKinds(activeTileset);
 
-  const kinds = activeTileset?.interiorRoomKinds ?? [];
+  // Phase 3 파생 읽기: 저작값이 없으면 꾸러미 장소를 읽기 전용으로 보여준다. 편집(추가·삭제·인스펙터)은
+  // 저작값에만 닿는다 — 파생 행을 고치려면 꾸러미를 고치거나 "+ 공간 종류"로 저작값을 새로 만든다.
+  const kindSource = activeTileset ? interiorRoomKindSource(activeTileset) : "none";
+  const kinds = kindSource === "authored"
+    ? activeTileset?.interiorRoomKinds ?? []
+    : kindSource === "derived"
+      ? kindsDerivedFromConceptBundles(activeTileset)
+      : [];
   const query = session.searchQuery.trim().toLowerCase();
   const visibleKinds = kinds.filter((kind) => matchesKindQuery(kind, query));
   const selectedKind =
@@ -84,6 +92,14 @@ export function renderTilesetSpacesTab(host: HTMLElement, rerender: () => void):
           children: [makeDatabaseTabIcon("tilesets"), el("span", { text: "타일셋별로 분리됨" })],
           attrs: { title: "한 타일셋의 공간 종류는 다른 타일셋에 섞이지 않습니다." },
         }),
+        ...(activeTileset && interiorRoomKindSource(activeTileset) === "derived"
+          ? [el("span", {
+            class: "db-tab-note-chip",
+            dataset: { testid: "tileset-spaces-derived-chip" },
+            children: [el("span", { text: `개념 꾸러미에서 유도됨(${kindsDerivedFromConceptBundles(activeTileset).length})` })],
+            attrs: { title: "저작된 공간 종류가 없어 개념 꾸러미의 장소를 방 종류 문법으로 읽는다. 꾸러미를 고치면 여기도 바뀐다." },
+          })]
+          : []),
       ],
     }),
   );
@@ -118,7 +134,24 @@ export function renderTilesetSpacesTab(host: HTMLElement, rerender: () => void):
   workspace.append(tableCol);
 
   if (selectedKind && activeTileset) {
-    workspace.append(renderKindInspector(activeTileset, selectedKind, host, rerender));
+    if (kindSource === "derived") {
+      // 파생 행은 읽기 전용 — 고치려면 꾸러미를 고치거나 저작값을 새로 만든다.
+      workspace.append(
+        el("div", {
+          class: "structure-kit-inspector",
+          dataset: { testid: `tileset-spaces-derived-note-${selectedKind.id}` },
+          children: [
+            el("h4", { text: selectedKind.label || selectedKind.id }),
+            el("p", {
+              class: "structure-kit-quiet",
+              text: "개념 꾸러미의 장소에서 유도된 행이다. 역할·복도 여부는 꾸러미에서 고친다.",
+            }),
+          ],
+        }),
+      );
+    } else {
+      workspace.append(renderKindInspector(activeTileset, selectedKind, host, rerender));
+    }
   }
 }
 
@@ -134,7 +167,7 @@ function renderTilesetRail(
     children: [el("div", { class: "structure-kit-album-rail-title", text: "타일셋" })],
   });
   for (const tileset of tilesets) {
-    const count = tileset.interiorRoomKinds?.length ?? 0;
+    const count = interiorRoomKindCount(tileset);
     const isActive = tileset.id === activeTileset?.id;
     rail.append(
       el("button", {
@@ -245,7 +278,8 @@ function renderKindCards(
   host: HTMLElement,
   rerender: () => void,
 ): HTMLElement {
-  const cards = interiorThemeCards(tileset).filter((card) => kinds.some((kind) => kind.id === card.theme));
+  // kinds를 그대로 넘긴다 — 저작값이면 타일셋 값과 같고, 파생이면 꾸러미 유도 목록이다.
+  const cards = interiorThemeCards(tileset, kinds).filter((card) => kinds.some((kind) => kind.id === card.theme));
   const grid = el("div", {
     class: "structure-kit-theme-grid",
     dataset: { testid: "tileset-spaces-kind-grid" },
@@ -480,6 +514,9 @@ function matchesKindQuery(kind: InteriorRoomKindRecord, query: string): boolean 
 function ensureInteriorSpaceKinds(tileset: TilesetDef): TilesetDef {
   if (tileset.interiorRoomKinds !== undefined) return tileset;
   if (tileset.id !== INTERIOR_ROOM_TILESET_ID) return tileset;
+  // Phase 3: 개념 꾸러미가 있으면 자동 시드하지 않는다 — 파생 체인(꾸러미 장소 → 방 종류)이
+  // 살아 있어야 공간 종류 탭의 "개념 꾸러미에서 유도됨" 칩이 뜬다. 시드는 명시 버튼으로만.
+  if ((tileset.scratchConceptBundles ?? []).some((bundle) => bundle.places.length > 0)) return tileset;
   writeKinds(tileset.id, BUILTIN_INTERIOR_ROOM_KINDS.map(cloneKind), "공간 종류 시드");
   return store.getCurrent().tilesets[tileset.id] ?? tileset;
 }
@@ -491,8 +528,18 @@ function addBlankKind(tilesetId: string): InteriorRoomKindRecord {
     requiredRoles: [],
   };
   const tileset = store.getCurrent().tilesets[tilesetId];
-  writeKinds(tilesetId, [...(tileset?.interiorRoomKinds ?? []), created]);
+  // Phase 3: 저작값이 없으면(파생 모드) 유도 목록을 스냅샷으로 먼저 깔고 추가한다.
+  // 파생 행을 버리고 [새 공간] 하나만 남기면 어휘가 붕괴한다.
+  const base = tileset?.interiorRoomKinds ?? kindsDerivedFromConceptBundles(tileset);
+  writeKinds(tilesetId, [...base, created]);
   return created;
+}
+
+/** 공간 종류 개수 — 저작값이 있으면 그 길이, 없으면 파생 길이. 레일·뱃지 공용. */
+export function interiorRoomKindCount(tileset: TilesetDef | undefined): number {
+  if (!tileset) return 0;
+  if (tileset.interiorRoomKinds !== undefined) return tileset.interiorRoomKinds.length;
+  return kindsDerivedFromConceptBundles(tileset).length;
 }
 
 function writeKinds(

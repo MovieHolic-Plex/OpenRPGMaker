@@ -8,6 +8,7 @@ import type {
   MonsterInstanceId,
   ResourceProfile,
   SCHEMA_VERSION,
+  CharsetLabelOverride,
   SwitchDef,
   Terms,
   TilesetDef,
@@ -82,6 +83,14 @@ export interface GameMap {
    * "가운데 파란 집 옮겨줘" 같은 영역 쿼리에 쓴다. 선택 필드 — 옛 맵 호환.
    */
   layoutPlan?: MapLayoutPlan;
+  /** 시공 당시 설계서와 시드. 원본 변경이 기존 맵을 바꾸지 않는다. */
+  villageDesignSource?: {
+    preset: VillageLayoutPresetRecord;
+    seed: number;
+    houseCount: number;
+    /** 시공 시 확정된 재료·형태·자연 규칙. 원본 자산 수정과 독립된 기록. */
+    resolvedSettings?: Record<string, unknown>;
+  };
   /**
    * 방 하네스(실내 villager-room-v1 / 던전 dungeon-room-v1)가 이 맵을 시공할 때 쓴 플랜 원본.
    *
@@ -491,12 +500,14 @@ export interface Project {
   // optional이라 마이그레이션 불필요.
   villageTemplates?: VillageHouseTemplateRecord[];
   villagePresets?: VillageLayoutPresetRecord[];
+  /** AI가 설계서를 생략할 때 사용하는 사용자 지정 기본 설계서. */
+  defaultVillagePresetId?: string;
   // AI 리치 설명 문서(채팅 present_doc 툴 산출물). optional이라 마이그레이션 불필요.
   aiDocuments?: AiDocument[];
   // 조수에게 항상 주는 사용자 고정 지침(ai/projectInstructions.ts). 시스템 프롬프트의 예산 밖
   // 고정분으로 들어가 압축·새 대화·복원에도 살아남는다. optional이라 마이그레이션 불필요.
   aiInstructions?: string;
-  /** 세계 허리 — 이름·전제·톤·없는 것·법칙·설정집 본문. 목록이 아니라 싱글톤. */
+  /** 세계 허리 — 이름·전제·톤·없는 것·법칙·이 세계 본문. 목록이 아니라 싱글톤. */
   worldCanon?: WorldCanon;
   world?: ProjectWorld;
   worldGraph?: WorldGraph;
@@ -515,6 +526,9 @@ export interface Project {
   // Optional identity package keyed by GameEvent.characterId. Opt-in; no migration.
   // Gift/birthday resolution: event-local fields override profile defaults (see characterProfiles.ts).
   characters?: Record<string, CharacterProfile>;
+  // 사용자가 에디터에서 고친 캐릭터 칩 라벨. 번들 CHARSET_SEMANTICS 위에 덮어
+  // 검색·AI 질의·피커 표시가 전부 이 값을 우선으로 읽는다. optional이라 마이그레이션 불필요.
+  charsetLabels?: CharsetLabelOverride[];
   mapTree: MapTreeNode;
   startMapId: MapId;
   startPos: { x: number; y: number };

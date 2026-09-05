@@ -24,6 +24,7 @@ import {
 import type { Command, Condition, EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { findLayoutRegions, rankRegionsByCenter } from "@/project/mapLayoutPlan";
 import { lintTilesetPalettes } from "@/editor/lint/tilesetPaletteLint";
+import { verifyPlacedTiles } from "@/project/lint/postTileVerify";
 import { passageMarkForTile } from "@/project/tilesetPassage";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
@@ -379,9 +380,9 @@ const listNpcGraphics: ToolDefinition = {
       query: { type: "string", description: "선택 검색어. 생략하면 기본 NPC 후보를 반환한다." },
     },
   },
-  run(_project, args): ToolExecResult {
+  run(project, args): ToolExecResult {
     const query = typeof args.query === "string" ? args.query : undefined;
-    const matches = queryNpcGraphics(query, 20).map((match) => ({
+    const matches = queryNpcGraphics(query, 20, project.charsetLabels).map((match) => ({
       textureKey: match.entry.textureKey,
       characterIndex: match.entry.characterIndex,
       label: match.entry.label,
@@ -410,7 +411,10 @@ const listResources: ToolDefinition = {
     const kind = args.kind as ResourceSearchKind;
     if (!RESOURCE_KINDS.includes(kind)) throw new ToolError(`알 수 없는 리소스 종류: ${kind}`, { code: "invalid-kind" });
     // 타일 검색은 프로젝트에 기록된 사용자 메타데이터(맵 인터뷰 결과)를 겹쳐 검색한다.
-    const matches = searchResources(kind, args.query as string, { tileset: project.tilesets[DEFAULT_TILESET_ID] }).slice(0, 20);
+    const matches = searchResources(kind, args.query as string, {
+      tileset: project.tilesets[DEFAULT_TILESET_ID],
+      charsetLabels: project.charsetLabels,
+    }).slice(0, 20);
     return { summary: `리소스 ${matches.length}개 검색됨("${args.query}", ${kind})`, data: { matches } };
   },
 };
@@ -479,7 +483,7 @@ function toReachSpecs(value: unknown): Array<{ mapId: string; from: ReachPoint; 
 
 const runLint: ToolDefinition = {
   name: "run_lint",
-  description: "projectLint, 타일셋 팔레트 lint를 실행해 무결성 issue 목록(error/warning/info)을 반환한다.",
+  description: "projectLint, 타일셋 팔레트 lint, 타일 후검증을 실행해 무결성 issue 목록(error/warning/info)을 반환한다.",
   mode: "read",
   parameters: {
     type: "object",
@@ -503,6 +507,7 @@ const runLint: ToolDefinition = {
     const issues: LintIssue[] = [
       ...projectLint(project, { reachability: toReachSpecs(args.reachability) }),
       ...lintTilesetPalettes(project),
+      ...verifyPlacedTiles(project),
     ];
     const errors = issues.filter((issue) => issue.severity === "error").length;
     const warnings = issues.filter((issue) => issue.severity === "warning").length;

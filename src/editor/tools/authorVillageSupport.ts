@@ -7,7 +7,7 @@ import type {
 } from "@/editor/construction/contracts";
 import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { MIN_SIZE } from "./village/constants";
-import type { GameMap, Project } from "@/project/types";
+import type { GameEvent, GameMap, Project } from "@/project/types";
 import { summarizeChanges } from "./changeset";
 import { assertMapIdAvailable } from "./mapHelpers";
 import { ToolError, type ChangeSummary, type ToolExecResult } from "./types";
@@ -60,10 +60,11 @@ export function createExactVillageMap(project: Project, target: NewVillageTarget
 }
 
 /**
- * 뷰포트 스냅샷 중심을 가운데로 둔 시공 사각형. 한 변은 최소 시공 크기(minSpan)이고,
+ * 뷰포트 스냅샷 중심을 가운데로 둔 시공 사각형. 한 변은 최소 시공 크기(minSpan, 기본 20)이고,
  * 맵을 벗어나면 안쪽으로 밀고, 맵 자체가 minSpan 보다 작으면 맵 크기로 줄인다.
- * 스냅샷의 w/h(최대 16타일, DEFAULT_VIEWPORT_MAX_SPAN)는 쓰지 않는다 — 파서·빌더가 20 미만을
- * 거부하므로(MIN_SIZE) 화면 크기를 그대로 넘기면 invalid-args 가 된다.
+ * 스냅샷 전체(최대 16타일)를 그대로 bounds로 쓰지 않는 이유: 집 1채 슬롯(8+여백 2×2)과
+ * 광장·길을 놓으려면 16×16이 빡빡해 시공 실패(no-houses-built)가 잦다. 파서는 16×16 bounds도
+ * 받으므로(MIN_BOUNDS_SIZE), 모델이 화면 크기를 직접 bounds로 지정하는 것은 허용된다.
  */
 export function viewportVillageBounds(
   snapshot: { readonly mapId: string; readonly centerX: number; readonly centerY: number },
@@ -124,16 +125,24 @@ export function assertVillagePostconditions(
     ? inspection.actualHouseCount === request.houseCount
     : inspection.actualHouseCount >= minimum;
   if (!countOk) {
+    const policyNote = request.countPolicy === "best-effort" && request.houseCount <= 4
+      ? " (best-effort도 4채 이하는 exact와 같다)"
+      : "";
     throw new ToolError(
-      `Village house count shortfall: ${inspection.actualHouseCount}/${request.houseCount}.`,
+      `Village house count shortfall: ${inspection.actualHouseCount}/${request.houseCount}${policyNote}.`,
       { code: "village-count-shortfall", mapId },
     );
   }
-  if (request.npcCount !== undefined && inspection.npcCount !== request.npcCount) {
-    throw new ToolError(
-      `Village population shortfall: ${inspection.npcCount}/${request.npcCount}.`,
-      { code: "village-population-shortfall", mapId },
-    );
+  // NPC는 배치 확률 요소가 많아 1~2명 어긋남이 흔하다 — exact여도 하한 90%(최소 2명 관용)로 본다.
+  // 집 수와 달리 과다 배치는 실패가 아니다(요청 이상이면 통과).
+  if (request.npcCount !== undefined) {
+    const npcMinimum = Math.min(request.npcCount, Math.max(2, Math.ceil(request.npcCount * 0.9)));
+    if (inspection.npcCount < npcMinimum) {
+      throw new ToolError(
+        `Village population shortfall: ${inspection.npcCount}/${request.npcCount}.`,
+        { code: "village-population-shortfall", mapId },
+      );
+    }
   }
   if (!inspection.structuralQa.ok) {
     throw new ToolError("Village structural QA failed.", { code: "village-qa-failed", mapId });
@@ -185,12 +194,52 @@ function hasWrite(diff: ChangeSummary): boolean {
 
 function collectChanges(baseline: Project, draft: Project, summary: ChangeSummary): VillageFacadeChanges {
   const addedMapIds = Object.keys(draft.maps).filter((mapId) => baseline.maps[mapId] === undefined).sort();
+  // 변경 맵 판정은 tileChanged() 헬퍼로 — JSON.stringify 전수 비교는 키 순서에 흔들리고 대형 맵에서 느리다.
   const changedMapIds = Object.keys(draft.maps)
-    .filter((mapId) => baseline.maps[mapId] === undefined || JSON.stringify(baseline.maps[mapId]) !== JSON.stringify(draft.maps[mapId]))
+    .filter((mapId) => baseline.maps[mapId] === undefined || tileChanged(baseline.maps[mapId], draft.maps[mapId]))
     .sort();
   const addedEventIds = changedMapIds.flatMap((mapId) => {
     const beforeIds = new Set((baseline.maps[mapId]?.events ?? []).map((event) => event.id));
     return (draft.maps[mapId]?.events ?? []).filter((event) => !beforeIds.has(event.id)).map((event) => event.id);
   }).sort();
   return { changedMapIds, addedMapIds, changedCells: summary.tilesChanged, addedEventIds };
+}
+
+/** 맵 변경 판정 — 타일 배열은 길이+요소 비교, 이벤트는 안정 직렬화 비교. 키 순서에 흔들리지 않는다. */
+function tileChanged(before: GameMap | undefined, after: GameMap | undefined): boolean {
+  if (before === undefined || after === undefined) return before !== after;
+  if (
+    before.width !== after.width || before.height !== after.height
+    || before.tilesetId !== after.tilesetId || before.tileSize !== after.tileSize
+    || before.name !== after.name
+  ) {
+    return true;
+  }
+  if (before.lowerTiles.length !== after.lowerTiles.length || before.upperTiles.length !== after.upperTiles.length) {
+    return true;
+  }
+  for (let i = 0; i < before.lowerTiles.length; i += 1) {
+    if (before.lowerTiles[i] !== after.lowerTiles[i]) return true;
+  }
+  for (let i = 0; i < before.upperTiles.length; i += 1) {
+    if (before.upperTiles[i] !== after.upperTiles[i]) return true;
+  }
+  if ((before.events ?? []).length !== (after.events ?? []).length) return true;
+  const encode = (event: GameEvent): string => stableEventStringify(event);
+  const beforeEvents = (before.events ?? []).map(encode).sort();
+  const afterEvents = (after.events ?? []).map(encode).sort();
+  for (let i = 0; i < beforeEvents.length; i += 1) {
+    if (beforeEvents[i] !== afterEvents[i]) return true;
+  }
+  return false;
+}
+
+function stableEventStringify(value: unknown): string {
+  if (value === null || typeof value !== "object") {
+    const encoded = JSON.stringify(value);
+    return encoded === undefined ? "undefined" : encoded;
+  }
+  if (Array.isArray(value)) return `[${value.map((entry) => stableEventStringify(entry)).join(",")}]`;
+  const record = value as Record<string, unknown>;
+  return `{${Object.keys(record).sort().map((key) => `${JSON.stringify(key)}:${stableEventStringify(record[key])}`).join(",")}}`;
 }

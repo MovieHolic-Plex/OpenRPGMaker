@@ -5,7 +5,7 @@ import {
 import { getAudioEngine, playAudioCommand, stopAudioCommand } from "@/player/audio";
 import { resolveAudioSource } from "@/player/audio/audioResources";
 import { store } from "@/project/store";
-import { charsetSemanticsForTexture } from "@/assets/charsetSemantics";
+import { applyCharsetLabelOverrides, charsetSemanticsForTexture } from "@/assets/charsetSemantics";
 import { charsetFollowerGraphic } from "@/project/followers";
 import { editorState } from "@/editor/editorState";
 import { el } from "@/util/dom";
@@ -52,6 +52,7 @@ import {
   setLightingBody,
   setWeatherBody,
   showAnimationBody,
+  showEmoteBody,
   showPictureBody,
 } from "./commandBodyPage3Native";
 import { renderTransferPicker, transferDirectionLabel, transferFadeLabel } from "./transferPlayerDialog";
@@ -148,6 +149,8 @@ export function renderAdvancedCommandBody(
       return setWeatherBody(context, cmd);
     case "showAnimation":
       return showAnimationBody(context, cmd);
+    case "showEmote":
+      return showEmoteBody(context, cmd);
     case "playMovie":
       return playMovieBody(context, cmd);
     case "changeGold":
@@ -413,7 +416,10 @@ function addFollowerBody(
   const refreshCharacters = (): void => {
     const selected = character.value;
     character.replaceChildren();
-    const labels = charsetSemanticsForTexture(graphicId.value.trim());
+    const labels = applyCharsetLabelOverrides(
+      charsetSemanticsForTexture(graphicId.value.trim()),
+      store.getCurrent().charsetLabels,
+    );
     for (let index = 0; index < 8; index += 1) {
       const label = labels.find((entry) => entry.characterIndex === index)?.label;
       character.append(el("option", { text: label ? `${index}. ${label}` : `${index}번 칸`, attrs: { value: String(index) } }));

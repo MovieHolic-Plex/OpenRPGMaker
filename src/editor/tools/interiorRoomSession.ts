@@ -44,6 +44,41 @@ const INTERIOR_ROOM_RECT_SCHEMA: JsonSchema = {
   required: ["x", "y", "w", "h"],
 };
 
+/** 집 외관 힌트 — 모델이 넘기면 파서가 벽재질·용도 기본값을 맞춘다. 검증은 파서 몫. */
+const HOUSE_EXTERIOR_HINT_SCHEMA: JsonSchema = {
+  type: "object",
+  description:
+    "이 실내가 특정 집 외관에 속할 때만 넘긴다(author_house 결과 또는 마을 집). "
+    + "그 집의 stories/kitId/templateId/ownerName/program 을 그대로 넣어 벽재질·용도 기본값이 외관과 맞는다. "
+    + "단독 데모 방은 생략한다. 명시 인자(wallMaterial/theme 등)가 우선한다.",
+  properties: {
+    stories: { type: "integer", enum: [1, 2, 3], description: "외관 층수" },
+    kitId: {
+      type: "string",
+      enum: ["blue-stone", "bright-plaster", "amber-wood", "slate-wood", "timber-hall", "aframe-stone"],
+      description: "외관 키트 id",
+    },
+    templateId: { type: "string", description: "외관 템플릿 id (author_house/village 결과)" },
+    footprintArea: { type: "integer", description: "외관 footprint 면적(타일)" },
+    program: {
+      type: "string",
+      enum: ["dwelling", "shop", "inn", "workshop", "study", "manor"],
+      description: "집 용도",
+    },
+    ownerName: { type: "string", description: "집 주인 이름" },
+  },
+};
+
+/** Outdoor landing for the entrance transfer. Parser passthrough; omitted = same-map dummy landing. */
+const RETURN_TARGET_PROPERTIES = {
+  returnMapId: {
+    type: "string",
+    description: "입구 전이가 돌아갈 맵 id. 생략 시 같은 실내 맵.",
+  },
+  returnX: { type: "integer", description: "돌아갈 칸 x. 생략 시 문 x." },
+  returnY: { type: "integer", description: "돌아갈 칸 y. 생략 시 문 아래 칸." },
+} as const;
+
 // 엔진 data에 실내 advance 툴 이름 next 힌트를 얹는다.
 function withNext(res: ToolExecResult, sessionId: string): ToolExecResult {
   const data = res.data as { done?: boolean } | undefined;
@@ -61,7 +96,9 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
       "wings는 통행 바닥 bbox 합집합. 벽은 floor 이후 세운다. 침대 355|356은 hard 좌우 쌍. " +
       "이어서 advance_interior_room_build 반복 또는 run_interior_room_pipeline 원샷. " +
       "**기존 실내 맵을 고치는 요청에는 쓰지 마라** — 그 맵을 대상으로 furnish_interior_space / " +
-      "fill_region / tile_erase / place_props 를 써라. 이미 있는 mapId 를 넘기면 map-exists 로 거부된다.",
+      "fill_region / tile_erase / place_props 를 써라. 이미 있는 mapId 를 넘기면 map-exists 로 거부된다. " +
+      "exterior가 있으면 벽재질·용도가 외관에 맞춰 기본값으로 들어간다; 명시 인자가 우선한다. " +
+      "returnMapId/returnX/returnY가 있으면 입구 전이가 그 맵·칸으로 돌아간다.",
     mode: "write",
     parameters: {
       type: "object",
@@ -94,7 +131,8 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
           type: "string",
           description:
             "방 종류 id. 기본값 bedroom|study|dining|kitchen|storage|tavern|corridor. "
-            + "데이터베이스 구조물 탭의 타일셋 방 종류 id 도 받는다.",
+            + "데이터베이스 구조물 탭의 타일셋 방 종류 id 도 받는다. "
+            + "생략 시 exterior 힌트에서 용도를 기본값으로 삼고, 둘 다 없으면 bedroom.",
         },
         tilesetId: {
           type: "string",
@@ -113,8 +151,10 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
           description: "벽면 재질 — gold-brick은 귀족 저택(식당 러그도 붉은 카펫)",
         },
         replaceExisting: REPLACE_EXISTING_SCHEMA,
+        exterior: HOUSE_EXTERIOR_HINT_SCHEMA,
+        ...RETURN_TARGET_PROPERTIES,
       },
-      required: ["mapId", "door", "theme"],
+      required: ["mapId", "door"],
     },
     invalidArgsExample: {
       mapId: "map_interior_demo",
@@ -162,7 +202,9 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
       "멀티턴 품질 경로가 기본이면 start_interior_room_session을 써라. " +
       "침대는 355|356 hard 쌍, 벽면 장식과 바닥 잔해(깨진 유리 등)를 구분한다. " +
       "**기존 실내 맵 수정에는 쓰지 마라** — 이미 있는 mapId 는 map-exists 로 거부되고, " +
-      "고치려면 furnish_interior_space / fill_region / tile_erase / place_props 를 그 맵에 직접 쓴다.",
+      "고치려면 furnish_interior_space / fill_region / tile_erase / place_props 를 그 맵에 직접 쓴다. " +
+      "exterior가 있으면 벽재질·용도가 외관에 맞춰 기본값으로 들어간다; 명시 인자가 우선한다. " +
+      "returnMapId/returnX/returnY가 있으면 입구 전이가 그 맵·칸으로 돌아간다.",
     mode: "write",
     parameters: {
       type: "object",
@@ -189,6 +231,8 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
           description: "데모 플랜 사용 시 wings/door 생략 가능",
         },
         replaceExisting: REPLACE_EXISTING_SCHEMA,
+        exterior: HOUSE_EXTERIOR_HINT_SCHEMA,
+        ...RETURN_TARGET_PROPERTIES,
       },
     },
     invalidArgsExample: { demo: "bedroom" },

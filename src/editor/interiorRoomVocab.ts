@@ -98,8 +98,42 @@ export function resolveInteriorRoomVocab(
   const authoredKinds = tileset?.interiorRoomKinds;
   const kindsById = authoredKinds !== undefined
     ? kindsFromRecords(authoredKinds)
-    : kindsFromRecords(fallbackKinds);
+    // Phase 3 파생 체인: 저작값 없음 → 꾸러미 장소에서 유도 → 그래도 없으면 호출부 폴백.
+    // 저작값이 있으면(빈 배열 포함) 유도를 타지 않는다 — []는 "전부 지움"이다.
+    // id 충돌은 유도(꾸러미)가 이긴다 — 같은 방 이름이면 꾸러미 정의가 정본이다.
+    : kindsFromRecords(fallbackKinds.concat(kindsDerivedFromConceptBundles(tileset)));
   return { objectsById, kindsById };
+}
+
+/**
+ * Phase 3: 개념 꾸러미 장소를 방 종류 문법으로 유도한다.
+ * - 같은 id가 여러 꾸러미에 있으면 첫 정의가 이긴다(저작 순서).
+ * - role walkway → walkway: true. entrance/room → requiredRoles 없음(구성은 꾸러미가 소유).
+ * - requiredRoles는 비워 둔다: 방 하나 짓기의 폴백 문법일 뿐, 시설 합성의 근거가 아니다(Phase 1 계약).
+ */
+export function kindsDerivedFromConceptBundles(tileset: TilesetDef | undefined): InteriorRoomKindRecord[] {
+  const out: InteriorRoomKindRecord[] = [];
+  const seen = new Set<string>();
+  for (const bundle of tileset?.scratchConceptBundles ?? []) {
+    for (const place of bundle.places) {
+      const id = place.id.trim();
+      if (!id || seen.has(id)) continue;
+      seen.add(id);
+      out.push({
+        id,
+        label: place.label.trim() || id,
+        requiredRoles: [],
+        ...(place.role === "walkway" ? { walkway: true as const } : {}),
+      });
+    }
+  }
+  return out;
+}
+
+/** 이 타일셋의 방 종류가 저작값인지, 꾸러미 유도인지, 둘 다 없는지. 공간 종류 탭의 출처 표시에 쓴다. */
+export function interiorRoomKindSource(tileset: TilesetDef | undefined): "authored" | "derived" | "none" {
+  if (tileset?.interiorRoomKinds !== undefined) return "authored";
+  return kindsDerivedFromConceptBundles(tileset).length > 0 ? "derived" : "none";
 }
 
 export function seedInteriorTilesetCatalog(
@@ -108,7 +142,9 @@ export function seedInteriorTilesetCatalog(
   kinds: readonly InteriorRoomKindRecord[],
 ): boolean {
   let changed = false;
-  if (tileset.interiorRoomKinds === undefined) {
+  // Phase 3: 꾸러미 장소가 있으면 방 종류를 시드하지 않는다 — 파생 체인(꾸러미 → 방 종류)이
+  // 살아 있어야 한다. 가구 킷 시드는 그대로 둔다(구조물 탭이 비면 안 된다).
+  if (tileset.interiorRoomKinds === undefined && kindsDerivedFromConceptBundles(tileset).length === 0) {
     tileset.interiorRoomKinds = kinds.map((kind) => ({
       id: kind.id,
       label: kind.label,

@@ -427,6 +427,17 @@
   border-radius: 4px;
 }
 
+/* 주인공 스튜디오 표의 얼굴은 36px 예외 — 13-actor-studio.css 의 비-important 규칙은
+   위 24px !important 를 이기지 못해 36x24 로 찌그러지므로 예외는 여기서 둔다
+   (공유 리셋에 예외를 두는 것이 index.css 정책, PR #540 후속).
+   flex 도 함께 둔다: record-list-modern 의 flex:0 0 24px(0,5,1, 비-important)이
+   short rule 의 flex:0 0 36px(0,2,0)을 이겨 basis 24px 가 남기 때문이다. */
+.database-modal-backdrop .database-modal-window .db-actor-studio-workspace .db-actor-identity-cell .db-list-thumb {
+  flex: 0 0 36px !important;
+  height: 36px !important;
+  width: 36px !important;
+}
+
 /* empty state card */
 .database-modal-backdrop .database-modal-window .db-empty-state,
 .database-modal-backdrop .database-modal-window .empty-state {
@@ -506,9 +517,6 @@
   height: auto !important;
   min-width: 0 !important;
   overflow: auto !important;
-}
-.database-modal-backdrop .database-modal-window .db-enemy-panel-action-combat {
-  grid-area: combat !important;
 }
 
 /* Troops list was pinned to a 31px row under empty search space */
@@ -610,32 +618,7 @@
   color: #fff !important;
 }
 
-/* Troops: drop the 1048×554 RM canvas so members/backdrop stay above the footer */
-.database-modal-backdrop .database-modal-window .db-troops-classic-workbench {
-  /* troops.part-1.css:212 의 옛 맵은 영역이 넷(top/preview/members/events)뿐인데 워크벤치는
-     자식을 다섯 개 렌더한다 — 밸런스 패널이 이름을 못 받아 암묵 행으로 밀려나 화면 밖에서
-     잘렸고, '난이도 추정' 에 손이 닿지 않았다. 여기서 트랙과 영역을 함께 다시 정의한다
-     (트랙만 덮고 영역을 안 덮으면 칸 수가 어긋난 채로 옛 맵이 살아남는다). */
-  grid-template-areas:
-    "top top"
-    "preview events"
-    "members events"
-    "balance events" !important;
-  grid-template-columns: minmax(0, 1.05fr) minmax(260px, 0.95fr) !important;
-  grid-template-rows: auto minmax(180px, 1fr) auto auto !important;
-  height: auto !important;
-  min-width: 0 !important;
-  width: 100% !important;
-}
-
-.database-modal-backdrop .database-modal-window .db-troop-panel-balance {
-  grid-area: balance !important;
-  min-width: 0 !important;
-}
-.database-modal-backdrop .database-modal-window .db-troop-top-controls {
-  grid-template-columns: minmax(160px, 1fr) repeat(4, auto) !important;
-  height: auto !important;
-}
+/* Troop layout is owned by modern/troops.css, including container breakpoints. */
 .database-modal-backdrop .database-modal-window .db-troop-member-list {
   grid-template-rows: auto auto auto !important;
 }

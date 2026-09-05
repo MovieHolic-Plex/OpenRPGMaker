@@ -1,5 +1,5 @@
 // 타일셋에 붙는 개념 꾸러미 — 시설 → 장소 → 물건 → 능력 칩.
-// 데이터베이스 「임시」 그룹에서 저작하고, place_concept 이 그 나무를 읽어 시공한다.
+// 데이터베이스 「맵 → 타일셋 → 개념 꾸러미」에서 저작하고, place_concept 이 그 나무를 읽어 시공한다.
 
 /** 엔진이 집행하는 내장 칩. 산문 배치 규칙과 섞지 않는다.
  *  사용자는 DB에서 자유 칩(임의 id)을 덧붙일 수 있다 — 자유 칩은 엔진 무동작 메모 태그다. */
@@ -40,6 +40,26 @@ export function conceptChipLabel(chip: string): string {
   return CONCEPT_CHIP_LABELS[chip as ConceptBuiltinChipId] ?? chip;
 }
 
+/** 자유 칩 id — 영문·숫자·하이픈·밑줄, 1~32자. 내장 칩은 이 패턴을 우회한다. */
+export const CONCEPT_FREE_CHIP_PATTERN = /^[A-Za-z0-9-_]{1,32}$/;
+
+export function normalizeConceptChipId(value: string): string {
+  return value.trim();
+}
+
+export function validateConceptChipId(
+  value: string,
+): { ok: true; value: string } | { ok: false; error: string } {
+  const next = normalizeConceptChipId(value);
+  if (isConceptChipId(next)) return { ok: true, value: next };
+  if (next.length === 0) return { ok: false, error: "칩 id가 비어 있습니다" };
+  if (next.length > 32) return { ok: false, error: "칩 id는 32자를 넘을 수 없습니다" };
+  if (!CONCEPT_FREE_CHIP_PATTERN.test(next)) {
+    return { ok: false, error: "칩 id는 영문·숫자·-_만 쓸 수 있습니다" };
+  }
+  return { ok: true, value: next };
+}
+
 /** 중개념 — 장소에 올 수 있는 물건. 여러 장소에 속할 수 있다. */
 export interface ConceptThingRecord {
   id: string;
@@ -54,12 +74,20 @@ export interface ConceptThingRecord {
 /** 장소의 도면 역할 — 정문을 품는 홀 / 방을 잇는 복도 / 일반 방. 생략 시 room. */
 export const CONCEPT_LAYOUT_KINDS = ["row", "double-row"] as const;
 export type ConceptLayoutKind = (typeof CONCEPT_LAYOUT_KINDS)[number];
+export const CONCEPT_LAYOUT_KIND_LABELS: Record<ConceptLayoutKind, string> = {
+  row: "한 줄",
+  "double-row": "두 줄",
+};
 export function isConceptLayoutKind(value: string): value is ConceptLayoutKind {
   return (CONCEPT_LAYOUT_KINDS as readonly string[]).includes(value);
 }
 
 export const CONCEPT_PLACE_ZONES = ["north", "south"] as const;
 export type ConceptPlaceZone = (typeof CONCEPT_PLACE_ZONES)[number];
+export const CONCEPT_PLACE_ZONE_LABELS: Record<ConceptPlaceZone, string> = {
+  north: "북쪽",
+  south: "남쪽",
+};
 export function isConceptPlaceZone(value: string): value is ConceptPlaceZone {
   return (CONCEPT_PLACE_ZONES as readonly string[]).includes(value);
 }

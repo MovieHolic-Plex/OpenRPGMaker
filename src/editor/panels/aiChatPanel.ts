@@ -43,8 +43,8 @@ import { runRegionTask, type RegionTaskOptions, type RegionTaskResult } from "@/
 import { formatMaterialLabelHint } from "@/ai/turnGuide";
 import { createLlmIntentDeclarer } from "@/ai/intentDeclarationClient";
 import type { SessionTurnScope } from "@/ai/assistantSession";
-import { AUTONOMY_LEVELS, resolveAutonomy } from "@/ai/autonomyLevels";
-import { isAutonomyLevel } from "@/ai/llmClient";
+import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel } from "@/ai/autonomyLevels";
+import { isAutonomyLevel, loadAiConfig, saveAiConfig, type AiConfig } from "@/ai/llmClient";
 import { store } from "@/project/store";
 import { combineDiffs } from "@/project/projectCommitLog";
 import { el } from "@/util/dom";
@@ -84,11 +84,10 @@ import {
 } from "@/ai/interviewPrompt";
 import { buildClusterEditKickoff, buildUnclassifiedAnalysisKickoff, type ClusterGroupSnapshot } from "@/ai/clusterAssistPrompt";
 import { resolveSurfaceAiConfig } from "@/ai/assistantEndpoint";
-import { loadAiConfig } from "@/ai/llmClient";
 import { AI_STUDIO_TOGGLE_EVENT, publishAiStudioChange } from "@/editor/aiStudioMode";
 import { createAiActionMenuItems, type AiActionMenuActions } from "./aiActionMenu";
 import { createAssistantTemperatureMenuSection } from "./aiTemperatureMenu";
-import { createComposerElements, type ComposerElements, type ComposerMode, type ComposerPopover } from "./aiComposer";
+import { createComposerElements, type ComposerElements, type ComposerMode, type ComposerPopover, type ComposerReasoningEffort } from "./aiComposer";
 import { deckIcon } from "./aiDeckIcons";
 import { createDeckRail, deckStateOfTone, type DeckState } from "./aiDeckRail";
 import { regionFromToolCall, renderMapChip } from "./aiMapChip";
@@ -480,6 +479,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       onSaved: (config) => {
         controller.session?.updateConfig(config);
         composerShell.setModelLabel(modelChipLabel());
+        composerShell.syncEffort(
+          isAutonomyLevel(config.autonomyLevel) ? config.autonomyLevel : "balanced",
+          config.reasoningEffort ?? "low",
+        );
       },
       onFontSizeChange: (size) => applyPanelFontSize(size),
       extraSections: settingsExtraSections,
@@ -1327,13 +1330,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const input = bookInput();
     if (input) updateWorkPlanBook(input);
   };
-  /** work_plan 이벤트 — 어느 모드의 턴이든 계획이 오면 보인다. 턴 밖에서 오면(소유권 없는 늦은 이벤트) 무시한다. */
+  /** work_plan 이벤트 — 어느 모드의 턴이든 계획이 오면 보인다. 턴 밖에서 오면(소유권 없는 늦은 이벤트) 무시한다.
+   * 계획 책 모달은 자동으로 띄우지 않는다(2026-09: plan 팝업 제거 정책) — 앞면 체크리스트와
+   * 「계획 책」 버튼으로 직접 열어본다. */
   const showWorkPlan = (plan: WorkPlan): void => {
     if (!workPlanSurfaceState) return;
-    const previousId = workPlanSurfaceState.plan?.id;
     workPlanSurfaceState.plan = plan;
     refreshWorkPlanSurface();
-    if (previousId !== plan.id) openPlanBook();
   };
   /** tool_started — 진행 중 항목의 활동 줄만 갱신. 목록이 아직 없으면 다음 렌더가 가져가게 기억만 해 둔다. */
   const noteWorkPlanActivity = (label: string): void => {
@@ -2366,6 +2369,24 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const level = AUTONOMY_LEVELS.find((entry) => entry.id === config.autonomyLevel);
     return level ? `${model} · ${level.label}` : model;
   };
+  // 지시줄 effort 셀렉트(자율성·추론 강도) — 설정 모달을 열지 않고 바로 고른다.
+  // 자율성은 resolveAutonomy 프리셋으로 추론·작업모드까지 함께 저장한다(설정 모달 다이얼과 같은 동작).
+  // 추론 강도는 수동값 그대로 저장하고, 세션도 그 값을 쓴다(다이얼 덮어쓰기 없음 — phaseConfig 주석 참조).
+  const applyComposerEffortConfig = (next: AiConfig): void => {
+    saveAiConfig(next);
+    controller.session?.updateConfig(next);
+    composerShell.setModelLabel(modelChipLabel());
+  };
+  const effortInitial = loadAiConfig();
+  const initialAutonomy: AutonomyLevel = isAutonomyLevel(effortInitial.autonomyLevel)
+    ? effortInitial.autonomyLevel
+    : "balanced";
+  const initialReasoning: ComposerReasoningEffort =
+    effortInitial.reasoningEffort === "off"
+    || effortInitial.reasoningEffort === "medium"
+    || effortInitial.reasoningEffort === "high"
+      ? effortInitial.reasoningEffort
+      : "low";
   const composerShell: ComposerElements = createComposerElements({
     input,
     collapseButton,
@@ -2388,6 +2409,23 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 바깥 클릭 판정은 데크 전체 — 레일의 ⋯ 가 바 밖에 있다(데크 조립 전엔 바 기준).
     isInside: (target) => (deckRoot ?? composerShell.commandBar).contains(target),
     modeChips: { initial: "do", onChange: (mode) => { composerMode = mode; } },
+    effortChips: {
+      initialAutonomy,
+      initialReasoning,
+      onAutonomyChange: (level) => {
+        const resolved = resolveAutonomy(level);
+        applyComposerEffortConfig({
+          ...loadAiConfig(),
+          autonomyLevel: level,
+          reasoningEffort: resolved.reasoningEffort,
+          agentMode: resolved.agentMode,
+        });
+        composerShell.syncEffort(level, resolved.reasoningEffort);
+      },
+      onReasoningChange: (effort) => {
+        applyComposerEffortConfig({ ...loadAiConfig(), reasoningEffort: effort });
+      },
+    },
     modelLabel: modelChipLabel(),
   });
   const commandBar = composerShell.commandBar;

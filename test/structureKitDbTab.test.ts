@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { renderStructureKitsTab, resetStructureKitsTabSession } from "@/editor/panels/structureKitDbTab";
 import { registerStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
+import { seedInteriorTilesetCatalog } from "@/editor/interiorRoomVocab";
 import { editorState } from "@/editor/editorState";
 import { store } from "@/project/store";
 import type { SectionStructureKitDef } from "@/project/types";
@@ -23,6 +24,7 @@ afterEach(() => {
   store.update((project) => {
     for (const tileset of Object.values(project.tilesets)) {
       delete tileset.structureKits;
+      delete tileset.scratchConceptBundles;
     }
   });
 });
@@ -672,5 +674,72 @@ describe("structureKitDbTab AI 메타 요약(§5.3)", () => {
     expect(summary!.textContent?.trim()).not.toBe("");
     expect(summary!.textContent).toContain("아직 없습니다");
     expect(host.querySelector("[data-testid='structure-kit-ai-unapproved']")).toBeNull();
+  });
+});
+
+describe("structureKitDbTab 파생 모드 시드", () => {
+  it("꾸러미+가구 있으면 렌더가 store를 만지지 않는다 — 방 종류는 undefined 유지", () => {
+    const current = store.getCurrent();
+    const mapId = Object.keys(current.maps)[0]!;
+    editorState.set({ currentMapId: mapId });
+    store.update((project) => {
+      const tileset = project.tilesets[INTERIOR_ROOM_TILESET_ID]!;
+      delete tileset.interiorRoomKinds;
+      tileset.scratchConceptBundles = [{
+        id: "bundle_r",
+        label: "시험",
+        facilities: [{ id: "facility_r", label: "시험", placeIds: ["hall_r"] }],
+        places: [{ id: "hall_r", label: "시험 홀", role: "entrance" }],
+        things: [],
+      }];
+    });
+    seedInteriorTilesetCatalog(
+      store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]!,
+      INTERIOR_OBJECT_CATALOG,
+      [],
+    );
+    let emits = 0;
+    const unsub = store.subscribe(() => { emits += 1; });
+    try {
+      const before = emits;
+      const host = new FakeElement("div");
+      renderStructureKitsTab(host as unknown as HTMLElement, () => {});
+      host.querySelector(`[data-testid='structure-kit-tileset-${INTERIOR_ROOM_TILESET_ID}']`)!.click();
+      const host2 = new FakeElement("div");
+      renderStructureKitsTab(host2 as unknown as HTMLElement, () => {});
+      expect(store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]?.interiorRoomKinds).toBeUndefined();
+      expect(emits - before).toBe(0);
+    } finally {
+      unsub();
+    }
+  });
+});
+
+
+describe("structure deletion concept feedback", () => {
+  it.each([
+    ["bed_h", "카탈로그 원본 그림을 쓴다", "info"],
+    ["kit_unique_copy", "그림이 없다", "error"],
+  ])("deleting %s explains actual graphic resolution", (kitId, message, kind) => {
+    const tilesetId = INTERIOR_ROOM_TILESET_ID;
+    const mapId = Object.keys(store.getCurrent().maps)[0]!;
+    editorState.set({ currentMapId: mapId });
+    store.update((project) => {
+      const tileset = project.tilesets[tilesetId]!;
+      tileset.structureKits = [createTestSectionKit(kitId, "시험 침대")];
+      tileset.scratchConceptBundles = [{
+        id: "b", label: "시설", facilities: [{ id: "f", label: "시설", placeIds: ["p"] }],
+        places: [{ id: "p", label: "방" }],
+        things: [{ id: "t", label: "침대", objectId: kitId, placeIds: ["p"], chips: ["block"] }],
+      }];
+    });
+    const host = new FakeElement("div");
+    renderStructureKitsTab(host as unknown as HTMLElement, () => {});
+    host.querySelector(`[data-testid='structure-kit-tileset-${tilesetId}']`)!.click();
+    host.querySelector(`[data-testid='structure-kit-db-delete-${kitId}']`)!.click();
+    expect(store.getCurrent().tilesets[tilesetId]!.structureKits?.some((kit) => kit.id === kitId)).toBe(false);
+    const notice = document.querySelector("[data-testid='toast']")!;
+    expect(notice.textContent).toContain(message);
+    expect(notice.className).toContain(kind);
   });
 });

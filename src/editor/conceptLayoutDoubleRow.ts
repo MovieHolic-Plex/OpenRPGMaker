@@ -15,8 +15,8 @@ const ROOM_FOOTPRINT: Readonly<Record<ConceptPlaceSize, { readonly w: number; re
   l: { w: 9, h: 5 },
 };
 const WALKWAY_H = 3;
-const ORIGIN_Y = 4;
-const MARGIN_X = 3;
+const ORIGIN_Y = 3;
+const MARGIN_X = 2;
 const V_GAP = 3;
 const H_GAP = 1;
 const MIN_BAND_W = 8;
@@ -29,8 +29,9 @@ type Instance = {
 };
 
 function placeRole(place: ConceptPlaceRecord): ConceptPlaceRole {
+  // row 도면기의 하위호환과 동일. 명시한 entrance/room은 hall 라벨보다 우선한다.
   if (place.role) return place.role;
-  return /복도|통로|corridor/i.test(place.label) || place.id === "corridor" ? "walkway" : "room";
+  return /복도|통로|corridor|hall/i.test(place.label) || place.id === "corridor" ? "walkway" : "room";
 }
 
 function placeSize(place: ConceptPlaceRecord): ConceptPlaceSize {
@@ -61,8 +62,8 @@ function floorTileOf(place: ConceptPlaceRecord): number | undefined {
 
 function themeOf(placeId: string, role: ConceptPlaceRole): string {
   if (role === "walkway") return "corridor";
-  if (placeId === "bedroom" || placeId === "kitchen" || placeId === "dining") return placeId;
-  return "storage";
+  // row 도면기(roomTheme)와 같은 규약 — placeId 그대로, 방 종류 매칭은 파이프라인이 맡는다.
+  return placeId;
 }
 
 function layoutRoom(instance: Instance, x: number, y: number, w: number, h: number): ConceptLayoutRoom {
@@ -193,13 +194,13 @@ export function layoutConceptFacilityDoubleRow(
     };
     laid.push(fallback);
     const door = { x: fallback.x + Math.floor(fallback.w / 2), y: fallback.y + fallback.h - 1 };
-    return { width: fallback.x + fallback.w + MARGIN_X, height: door.y + 4, door, rooms: laid, innerDoors };
+    return { width: fallback.x + fallback.w + MARGIN_X - 1, height: door.y + 3, door, rooms: laid, innerDoors };
   }
   const door = { x: doorRoom.x + Math.floor(doorRoom.w / 2), y: doorRoom.y + doorRoom.h - 1 };
   const right = Math.max(...laid.map((room) => room.x + room.w));
   return {
-    width: right + MARGIN_X,
-    height: door.y + 4,
+    width: right + MARGIN_X - 1,
+    height: door.y + 3,
     door,
     rooms: laid,
     innerDoors,

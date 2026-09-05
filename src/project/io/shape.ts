@@ -1,3 +1,4 @@
+import { villageDesignIssue } from "../villageDesign";
 import type { Project, ProjectV1, ProjectV2 } from "../types";
 import { normalizeDatabaseRecords, normalizeSystemRecords } from "../databaseRecordModel";
 import { STORY_FLAG_ID_PATTERN } from "../storyFlags";
@@ -52,6 +53,7 @@ export function validateProjectV2(data: JsonRecord): ProjectV2 {
   validateStoryFlags(data.storyFlags, idSet(data.switches), idSet(data.variables));
   validateCommonEvents(data.commonEvents);
   const maps = validateMaps(data.maps);
+
   const mapTree = validateMapTree("mapTree", data.mapTree, new Set(Object.keys(maps)));
   const startMapId = requireString("startMapId", data.startMapId);
   assert(startMapId in maps, "startMapId가 maps에 없습니다.");
@@ -76,6 +78,21 @@ export function validateProjectV4(data: JsonRecord): Project {
   validateSystem(data.system);
   validateSession(data.session);
   const maps = validateMaps(data.maps);
+  for (const [mapId, rawMap] of Object.entries(maps)) {
+    const map = requireRecord(`maps.${mapId}`, rawMap);
+    if (map.villageDesignSource === undefined) continue;
+    const source = requireRecord(`maps.${mapId}.villageDesignSource`, map.villageDesignSource);
+    const preset = requireRecord("villageDesignSource.preset", source.preset);
+    requireString("villageDesignSource.preset.id", preset.id);
+    requireString("villageDesignSource.preset.name", preset.name);
+    const issue = villageDesignIssue(preset.design);
+    assert(!issue, `마을 시공 출처: ${issue}`);
+    for (const key of ["seed", "houseCount"] as const) {
+      const value = requireNumber(`villageDesignSource.${key}`, source[key]);
+      assert(Number.isSafeInteger(value) && (key !== "houseCount" || value >= 1 && value <= 32), "마을 시공 출처 수치가 올바르지 않습니다.");
+    }
+    if (source.resolvedSettings !== undefined) requireRecord("villageDesignSource.resolvedSettings", source.resolvedSettings);
+  }
   validateMapConnections(data.mapConnections, new Set(Object.keys(maps)));
   validateVillageInfoDocuments(data.villageInfoDocuments, new Set(Object.keys(maps)));
   validateQuests(data.quests, new Set(Object.keys(maps)));
@@ -84,6 +101,13 @@ export function validateProjectV4(data: JsonRecord): Project {
   validateFactions(data.factions);
   validateVillageTemplates(data.villageTemplates);
   validateVillagePresets(data.villagePresets, idSet(data.villageTemplates));
+  if (data.defaultVillagePresetId !== undefined) {
+    const id = requireString("defaultVillagePresetId", data.defaultVillagePresetId);
+    assert(requireArray("villagePresets", data.villagePresets).some(entry => {
+      const preset = requireRecord("villagePreset", entry);
+      return preset.id === id && preset.design !== undefined;
+    }), "기본 마을 설계서를 찾을 수 없습니다.");
+  }
   validateCharacters(data.characters);
   const mapTree = validateMapTree("mapTree", data.mapTree, new Set(Object.keys(maps)));
   const startMapId = requireString("startMapId", data.startMapId);
@@ -513,6 +537,10 @@ function validateVillagePresets(value: unknown, templateIds: ReadonlySet<string>
   for (const [index, entry] of requireArray("villagePresets", value).entries()) {
     const label = `villagePresets[${index}]`;
     const preset = requireRecord(label, entry);
+    if (preset.design !== undefined) {
+      const issue = villageDesignIssue(preset.design);
+      assert(!issue, `${label}: ${issue}`);
+    }
     requireString(`${label}.id`, preset.id);
     requireString(`${label}.name`, preset.name);
     for (const [key, min, max] of [

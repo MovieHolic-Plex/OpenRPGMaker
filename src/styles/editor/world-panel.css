@@ -654,10 +654,6 @@
     background: var(--bg-overlay);
   }
 
-  .db-world-codex-lead {
-    margin: 0 0 8px;
-  }
-
   @media (max-width: 820px) {
     .world-panel {
       width: 100vw;

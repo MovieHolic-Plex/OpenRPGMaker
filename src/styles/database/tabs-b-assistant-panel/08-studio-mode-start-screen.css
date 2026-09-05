@@ -878,10 +878,9 @@ body.ai-studio-open .coach-mark-card {
   z-index: 1;
 }
 
+/* 컴포저 크롬(투명 입력·원형 보내기)은 18-assistant-deck.css 가
+   :is(.ai-deck, .ai-studio-composer) 로 같이 소유한다. 여기는 열 폭만. */
 .ai-chat-panel.chat-dock-float.is-studio .ai-composer {
-  border: 1px solid var(--border-default);
-  border-radius: 10px;
-  box-shadow: none;
   max-width: none;
   width: 100%;
 }
@@ -909,6 +908,11 @@ body.ai-studio-open .coach-mark-card {
   /* 첫 행은 덱 손잡이(8px) — 머리띠 바로 위 띠 */
   grid-template-rows: var(--studio-splitter) 40px var(--studio-deck-h);
   position: relative;
+}
+
+/* 접혀도 --studio-deck-h 행이 남으면 모니터 아래가 빈 섬이 된다. 손잡이+머리만. */
+.ai-studio-deck.is-collapsed {
+  grid-template-rows: var(--studio-splitter) 40px;
 }
 
 .ai-studio-deck-head {
@@ -1404,13 +1408,17 @@ body.ai-studio-open .coach-mark-card {
   --studio-chat-w: 52px;
 }
 
-/* 접힌 열·접힌 덱의 손잡이는 숨긴다 — 52px 기둥 옆 8px 여백은 소음이다 */
+/* 접힌 열·접힌 덱의 손잡이는 숨긴다.
+   장면·조수 손잡이는 셸 그리드 자식이라 display:none — 탭 순서·히트테스트에서만 뺀다.
+   grid-template-columns 가 여전히 var(--studio-splitter) 를 나열하므로 8px 트랙(+gap) 은 남는다.
+   덱 손잡이는 덱 안 첫 자식(prepend)이라 형제 `+` 는 죽어 있고, 자손으로 가리킨다.
+   손잡이를 그리드 아이템으로 남겨 머리띠가 8px 행에 앉지 않게 visibility 만 끈다. */
 .ai-studio-shell.is-scenes-collapsed .ai-studio-splitter[data-testid="ai-studio-split-scenes"],
 .ai-studio-shell.is-chat-collapsed .ai-studio-splitter[data-testid="ai-studio-split-chat"] {
-  visibility: hidden;
+  display: none;
 }
 
-.ai-studio-deck.is-collapsed + .ai-studio-splitter[data-testid="ai-studio-split-deck"] {
+.ai-studio-deck.is-collapsed .ai-studio-splitter[data-testid="ai-studio-split-deck"] {
   visibility: hidden;
 }
 

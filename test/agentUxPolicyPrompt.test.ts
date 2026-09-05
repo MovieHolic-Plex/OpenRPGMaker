@@ -16,7 +16,7 @@ describe("agent UX policy prompt", () => {
       - 능력 경계: 이 엔진은 2D 타일 RPG 에디터입니다. 3D 오픈월드, 실시간 액션 전투, 외부 서비스 연동/API 호출, 플러그인 설치, 실제 배포처럼 현재 툴/엔진이 지원하지 않는 요청은 쓰기 툴을 호출하거나 변경 제안을 만들지 마세요. 한계를 설명하고 2D 맵·이벤트·DB로 가능한 대안을 1~2개 제안한 뒤 턴을 끝내세요.
       - 허위 완료 금지: 존재하지 않는 결과를 했다고 서술하지 마세요. 캔버스에 없는 지형·숲·길·건물·NPC·3D 시점·전투 방식을 마무리 서술에 언급하지 말고, 실제로 조회하거나 변경한 내용만 말하세요.
       - 모호한 요청: '좀 멋지게 해줘'처럼 대상·스타일·규모를 특정할 수 없는 저정보 요청이면 도구 호출 전에 1문장으로 되물으세요. 단, 요청문에서 추출 가능한 파라미터(예: 집 두어 채, 길, 나무 군락, 작은 마을)는 되묻지 말고 그대로 사용하세요.
-      - 집 vs 실내(필수): '집/건물 만들어줘'만 있고 야외 외장·실내 맵 표지가 없으면 추측 실행 금지. 도구 호출 전에 야외 집(외장) / 실내 맵 / 둘 다 중 하나를 한 문장+선택지로 되물으세요. '실내'·'인테리어'·'실내 맵'이 있으면 실내 세션 경로, '야외'·'외장'·마을 위 집이 있으면 author_house 경로. 모호한 집 요청은 author_house를 호출하지 말고 먼저 되물으세요. 슬래시 스킬(집 짓기/실내 방 시공)로 고른 경우, 또는 영역 작업(사용자가 현재 맵 위에 선택 영역을 준 경우)에는 되묻지 마세요 — 영역 선택은 현재 맵 위 야외 시공 의도이므로 author_house로 바로 시공. 매칭 스킬이 없거나 집·실내 스킬이 동시에 걸리면 반드시 되묻세요.
+      - 집 vs 실내(필수): '집/건물 만들어줘'만 있고 야외 외장·실내 맵 표지가 없으면 추측 실행 금지. 도구 호출 전에 야외 집(외장) / 실내 맵 / 둘 다 중 하나를 한 문장+선택지로 되물으세요. '실내'·'인테리어'·'실내 맵'이 있으면 외장 없는 독립 실내 방은 실내 세션 경로, 들어가서 걷는 집(외장과 함께)은 author_house(interior:"linked-interior") 경로, '야외'·'외장'·마을 위 집이 있으면 author_house(interior:"linked-interior" 기본) 경로. 모호한 집 요청은 author_house를 호출하지 말고 먼저 되물으세요. 슬래시 스킬(집 짓기/실내 방 시공)로 고른 경우, 또는 영역 작업(사용자가 현재 맵 위에 선택 영역을 준 경우)에는 되묻지 마세요 — 영역 선택은 현재 맵 위 야외 시공 의도이므로 author_house로 바로 시공. 매칭 스킬이 없거나 집·실내 스킬이 동시에 걸리면 반드시 되묻세요.
       - 원큐 진행: 사용자가 진행/계속/진행해/진행하라고 지시하면 추가 확인 질문 없이 끝까지 실행하세요. 실행 중 장애(맵 크기 부족 등)는 리사이즈 같은 비파괴 조치로 스스로 해결하고 결과에 보고하세요. 확인 질문은 파괴적 변경·집/실내 경로 미확정·또는 진짜 모호한 요구일 때만 허용됩니다.
       - 시간 반응 분위기: 낮/밤/시간대에 따라 자동으로 분위기가 바뀌는 요청은 configure_time_system으로 시간 시스템을 opt-in 하세요. 활성화하면 런타임이 자동 주야간 색조를 적용합니다. set_scene_mood는 현재 장면의 정적 분위기 설정이며 시간 경과에 따라 자동 전환되지 않습니다.
       - 준비 작업만 한 턴: 리사이즈, 맵 이름 변경, 타일 그룹/메타데이터 등록, 밑그림 확정처럼 준비만 하고 실제 타일·이벤트·DB 배치를 아직 하지 않았다면 마무리 서술에 '아직 배치 자체는 하지 않았다'는 사실을 명확히 쓰세요.
@@ -140,7 +140,7 @@ describe("agent UX policy prompt", () => {
     expect(text).toContain("야외 집=author_house");
     expect(text).toContain("마을=author_village");
     expect(text).toContain('target:{kind:"existing",mapId}');
-    expect(text).toContain('target:{kind:"new",mapId,name,width,height,plannedMap}');
+    expect(text).toContain('target:{kind:"new",mapId,name,width,height}');
     expect(text).toContain('countPolicy:"exact"');
     expect(text).toContain("start_interior_room_session");
     expect(text).not.toMatch(/야외 집[^\n]*(build_house_kit|build_house_lots|build_wall|place_door|build_roof)/);
@@ -152,9 +152,9 @@ describe("agent UX policy prompt", () => {
 
   it("routes interior room requests to the independent session and excludes outdoor facades", () => {
     const text = prompt();
-    expect(text).toContain("실내·방·인테리어 요청은 야외 집이 아니다");
+    expect(text).toContain("외장 없는 독립 실내·방·인테리어 요청은 야외 집이 아니다");
     expect(text).toContain("start_interior_room_session");
-    expect(text).toContain("실내 요청에는 author_house/author_village 금지");
+    expect(text).toContain('author_house(interior:"linked-interior")');
     expect(text).toContain("create_map만 하고 멈추지 마세요");
   });
 

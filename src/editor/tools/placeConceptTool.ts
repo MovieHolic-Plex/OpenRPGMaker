@@ -115,7 +115,7 @@ export const PLACE_CONCEPT_TOOL: ToolDefinition = {
   description:
     "시설 실내를 설계대로 시공한다. 여관 지어줘 · 상점 만들어줘 · 술집 · 주막 · 민가 · 서재 · 도서관 · "
     + "대장간 · 교회 · 성당 · 창고 · 길드 처럼 시설명을 부르는 요청에 쓴다. "
-    + "순서: get_concept_facility(query) 로 템플릿(사용자가 데이터베이스 「임시 → 개념 꾸러미」에서 고친 장소·물건)과 물건 어휘를 읽고, "
+    + "순서: get_concept_facility(query) 로 템플릿(사용자가 데이터베이스 「맵 → 타일셋 → 개념 꾸러미」에서 고친 장소·물건)과 물건 어휘를 읽고, "
     + "요청(방 수·크기·분위기·층·내용물)에 맞게 고친 plan 을 넘기라. 수식어가 없어도 템플릿을 그대로 복사하지 말고 설계를 다듬어라. "
     + "plan 을 생략하면 템플릿 그대로 짓는다. 좌표·벽·문·이벤트는 코드가 정한다(방 bbox 를 찍지 마라). "
     + "query 는 시설명(여관·상점·대장간…) 또는 꾸러미 id — 템플릿에 없는 시설도 plan 이 있으면 짓는다. "
@@ -153,19 +153,29 @@ export const PLACE_CONCEPT_TOOL: ToolDefinition = {
     const tilesetId = args.tilesetId !== undefined
       ? String(args.tilesetId).trim()
       : INTERIOR_ROOM_TILESET_ID;
+    // Phase 5: 시공 파이프라인의 벽·바닥·가구 타일 번호가 실내 칩셋 하드코딩이다.
+    // 다른 칩셋은 꾸러미 저작(구성)까지만 열고, 시공은 실내 칩셋에서만 받는다.
+    if (tilesetId !== INTERIOR_ROOM_TILESET_ID) {
+      throw new ToolError(
+        `개념 시설 시공은 실내 칩셋(${INTERIOR_ROOM_TILESET_ID})에서만 된다 — "${tilesetId}" 칩셋의 벽·바닥·가구 타일 번호가 없다. ` +
+        "꾸러미 저작(장소·물건 구성)은 그 칩셋 탭에서 하고, 시공은 실내 칩셋에서 place_concept 하라.",
+        { code: "invalid-tileset" },
+      );
+    }
     ensureConceptBundles(draft, tilesetId);
     const tileset = draft.tilesets[tilesetId];
     const hasPlan = args.plan !== undefined && args.plan !== null;
     if (!hasPlan && tileset?.scratchConceptBundles?.length === 0) {
       throw new ToolError(
-        "이 타일셋의 개념 꾸러미가 비어 있다. plan 을 설계해 넘기거나, 데이터베이스 「임시 → 개념 꾸러미」에서 시설 템플릿을 만들거나 초안(여관·민가·상점…)을 넣어라.",
+        "이 타일셋의 개념 꾸러미가 비어 있다. plan 을 설계해 넘기거나, 데이터베이스 「맵 → 타일셋 → 개념 꾸러미」에서 시설 템플릿을 만들거나 초안(여관·민가·상점…)을 넣어라.",
         { code: "concept-bundle-empty" },
       );
     }
-    const template = resolveConceptFacility(draft, query, tilesetId)
-      ?? resolveConceptFacility(draft, query);
+    // Phase 5: 실내 칩셋 스코프로만 푼다 — unscoped 폴백을 타면 실외 칩셋의 꾸러미가
+    // 실내 타일 번호로 시공되는 누수가 생긴다. 실외 전용 시설명은 concept-not-found가 정직하다.
+    const template = resolveConceptFacility(draft, query, tilesetId);
     if (!template && !hasPlan) {
-      const available = listLiveConceptFacilityLabels(draft);
+      const available = listLiveConceptFacilityLabels(draft, tilesetId);
       throw new ToolError(
         `개념 꾸러미에서 "${query}" 시설을 찾지 못했다. 지금 부를 수 있는 시설: ${available.join(" · ") || "없음"}. `
         + "템플릿에 없는 시설은 get_concept_facility 로 어휘를 읽고 plan 을 설계해 넘기라.",
@@ -188,6 +198,13 @@ export const PLACE_CONCEPT_TOOL: ToolDefinition = {
       resolved = template;
     } else {
       throw new ToolError(`"${query}" 시설을 풀 수 없다`, { code: "concept-not-found" });
+    }
+    // Phase 5: plan 경로에서 template이 실외 칩셋이면 시공하지 않는다.
+    if (resolved.tilesetId !== INTERIOR_ROOM_TILESET_ID) {
+      throw new ToolError(
+        `개념 시설 시공은 실내 칩셋(${INTERIOR_ROOM_TILESET_ID})에서만 된다 — "${query}" 시설은 "${resolved.tilesetId}" 칩셋의 꾸러미다.`,
+        { code: "invalid-tileset" },
+      );
     }
     const name = String(args.name ?? "").trim() || resolved.facility.label;
     // 층: 장소 `level` 이 둘 이상이면 층마다 맵을 짓는다. 1층 = mapId, 위층 = `<mapId>_<n>f`.
@@ -351,7 +368,7 @@ export const GET_CONCEPT_FACILITY_TOOL: ToolDefinition = {
   name: "get_concept_facility",
   description:
     "시설 실내를 지으려면 이것을 먼저 부른다. 여관·상점·대장간·술집·민가·교회·창고·길드·서재 시설의 "
-    + "템플릿(사용자가 데이터베이스 「임시 → 개념 꾸러미」에서 정해 둔 장소·물건)과 이 타일셋에서 쓸 수 있는 물건 어휘(vocabulary)를 돌려준다. "
+    + "템플릿(사용자가 데이터베이스 「맵 → 타일셋 → 개념 꾸러미」에서 정해 둔 장소·물건)과 이 타일셋에서 쓸 수 있는 물건 어휘(vocabulary)를 돌려준다. "
     + "이 응답의 plan 을 요청에 맞게 고쳐 place_concept({query, mapId, plan}) 에 넘기라 — 그래야 장소 수·크기·내용물이 다른 시설이 생긴다. "
     + "query 를 생략하면 지금 부를 수 있는 시설 라벨과 어휘만 돌려준다. 읽기 전용 — 맵을 건들지 않는다.",
   mode: "read",
@@ -365,12 +382,15 @@ export const GET_CONCEPT_FACILITY_TOOL: ToolDefinition = {
   invalidArgsExample: { query: "여관" },
   run(draft, args): ToolExecResult {
     const tilesetId = args.tilesetId !== undefined ? String(args.tilesetId).trim() : INTERIOR_ROOM_TILESET_ID;
-    ensureConceptBundles(draft, tilesetId);
+    // Phase 5: 읽기 도구는 쓰지 않는다 — 실외 칩셋의 ensure 빈 배열 쓰기를 건너뛴다.
+    // liveBundlesForTileset이 미시드 실외를 []로 읽으므로 동작은 같다.
+    if (tilesetId === INTERIOR_ROOM_TILESET_ID) ensureConceptBundles(draft, tilesetId);
     const query = String(args.query ?? "").trim();
     const vocabulary = conceptVocabulary(interiorVocabFromTileset(draft.tilesets[tilesetId]), INTERIOR_OBJECT_CATALOG);
-    const facilities = listLiveConceptFacilityLabels(draft);
+    const facilities = listLiveConceptFacilityLabels(draft, tilesetId);
+    // Phase 5: 요청 칩셋 스코프로만 푼다 — 실외 시설명을 실내 템플릿으로 둔갑시키지 않는다.
     const resolved = query
-      ? resolveConceptFacility(draft, query, tilesetId) ?? resolveConceptFacility(draft, query)
+      ? resolveConceptFacility(draft, query, tilesetId)
       : undefined;
     if (!resolved) {
       return {
