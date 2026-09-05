@@ -1,0 +1,11 @@
+{
+  "projectId": "oprn-jrpg-solo-d315de29",
+  "checkedAt": "2026-09-05T14:28:20.303Z",
+  "hashes": {
+    "aiAfter": "f76699c5b795477605014ee745686dc5bfc2b2027f0b5eda2808594d71df1753",
+    "qaSnapshot": "f76699c5b795477605014ee745686dc5bfc2b2027f0b5eda2808594d71df1753",
+    "remote": "f76699c5b795477605014ee745686dc5bfc2b2027f0b5eda2808594d71df1753"
+  },
+  "allEqual": true,
+  "remoteLoadSucceeded": true
+}
