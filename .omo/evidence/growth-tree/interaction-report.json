@@ -1,0 +1,12 @@
+{
+  "checks": [
+    "v3-migrate-play",
+    "locked-prerequisite",
+    "spend-points",
+    "learn-node",
+    "promote",
+    "deactivate-class-tree",
+    "refund-inactive-tree"
+  ],
+  "errors": []
+}

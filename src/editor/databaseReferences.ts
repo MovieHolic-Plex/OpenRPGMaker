@@ -49,6 +49,8 @@ export function databaseReferenceMessage(collection: DatabaseCollection, id: str
   // 삭제 차단 UX 계층 — orphan-FK '검출' 권위자는 src/project/io/references.ts 의 collectProjectReferenceIssues(validate*Records) 이고,
   // 이 함수는 삭제 시점에 사용자에게 보여 줄 차단 메시지를 만드는 보조 계층이다. 두 시스템을 중복 검출기로 분리하지 말 것.
   const project = store.getCurrent();
+  const tree = project.growth?.skillTrees.find(t => collection === "classes" ? t.classIds.includes(id) : collection === "skills" && t.nodes.some(n => n.effect.kind === "skill" && n.effect.skillId === id));
+  if (tree) return `스킬 트리 '${tree.name}'에서 사용 중입니다. 먼저 연결을 해제하세요.`;
   switch (collection) {
     case "skills": {
       const actors = project.database.actors.filter((record) => record.learnedSkills.some((skill) => skill.skillId === id));
@@ -286,6 +288,7 @@ export function resourceReferenceMessage(resourceId: string): string | null {
 
 export function switchVariableReferenceMessage(kind: "switch" | "variable", id: string): string | null {
   const project = store.getCurrent();
+  if (kind === "variable" && project.growth?.bonusVariableId === id) return "스킬 트리의 성장 포인트 보너스가 이 변수를 사용 중입니다.";
   if (kind === "switch" && (project.database.lifeSkills ?? []).some((skill) =>
     skill.levelUpRewards.some((reward) => reward.switchId === id)
   )) return "생활 기술의 레벨 보상이 이 스위치를 사용 중입니다.";

@@ -1,3 +1,4 @@
+import type { GrowthMenuTab, GrowthMenuMutation } from "@/player/playerGrowthMenu";
 import type { SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
 import type { PlaySession } from "@/project/session";
 import type { ActorInitialEquipment, Project } from "@/project/types";
@@ -58,6 +59,7 @@ export type StatusMenuDetailOptions = {
   readonly targetItemId?: string;
   readonly skillActorId?: string;
   readonly selectedSkillId?: string;
+  readonly growthTab?: GrowthMenuTab;
   readonly equipmentActorId?: string;
   readonly equipmentSlotId?: keyof ActorInitialEquipment;
   readonly formationActorId?: string;
@@ -70,6 +72,8 @@ export type StatusMenuDetailOptions = {
   readonly onSelectItemTarget?: (itemId: string) => void;
   readonly onUseItem?: (itemId: string, actorId?: string, monsterInstanceId?: string) => void;
   readonly onSelectSkillActor?: (actorId: string) => void;
+  readonly onSelectGrowthTab?: (tab: GrowthMenuTab) => void;
+  readonly onGrowthMutation?: (action: GrowthMenuMutation) => void;
   readonly onSelectSkill?: (skillId: string) => void;
   readonly onSelectEquipmentActor?: (actorId: string) => void;
   readonly onSelectEquipmentSlot?: (actorId: string, slotId: keyof ActorInitialEquipment) => void;

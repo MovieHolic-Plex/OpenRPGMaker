@@ -1,0 +1,28 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/growthTrees.test.ts test/phase8aGrowthRuntime.test.ts test/databasePartyBuildStudio.test.ts test/databasePanelGridClasses.test.ts test/playerStatusMenu.test.ts
+
+
+ RUN  v3.2.4 /tmp/rpg-zzu-growth-base
+
+ ✓ test/phase8aGrowthRuntime.test.ts (11 tests) 2053ms
+   ✓ Phase 8a 런타임 직업 변경 > Change Actor Class가 classOverrides와 스탯/스킬/장비/커맨드 기준을 바꾼다  304ms
+   ✓ Phase 8a 승급 트리 > define_promotion write tool이 ClassRecord 승급을 반영한다  715ms
+ ✓ test/playerStatusMenu.test.ts (17 tests) 1572ms
+ ✓ test/growthTrees.test.ts (23 tests) 2777ms
+   ✓ growth graph authoring and persistence > loads old v4 projects without adding growth data  613ms
+   ✓ growth graph authoring and persistence > round trips node effects, prerequisites, classes and positions  409ms
+ ✓ test/databasePartyBuildStudio.test.ts (15 tests) 4840ms
+   ✓ actor build preview > opens linked class and skills inside the current Database modal  358ms
+   ✓ actor build preview > refreshes linked class and projected equipment immediately after consecutive actor edits  890ms
+   ✓ class build summary > keeps summary counts fresh across consecutive class build edits  1453ms
+ ✓ test/databasePanelGridClasses.test.ts (3 tests) 1181ms
+   ✓ Database record panel grid-area classes (P1 재발 방지) > gives every classes-tab panel exactly one db-class-panel-* class, no duplicates  422ms
+   ✓ Database record panel grid-area classes (P1 재발 방지) > gives every enemies-tab panel exactly one db-enemy-panel-* class, no duplicates  382ms
+   ✓ Database record panel grid-area classes (P1 재발 방지) > marks the equipment graphic panel with db-panel-equipment-graphic so the icon 설정 button can be styled/clicked  344ms
+
+ Test Files  5 passed (5)
+      Tests  69 passed (69)
+   Start at  18:03:51
+   Duration  51.97s (transform 38.97s, setup 0ms, collect 78.36s, tests 12.42s, environment 6ms, prepare 1.47s)
+

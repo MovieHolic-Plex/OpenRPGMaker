@@ -135,6 +135,7 @@ export interface BattleSessionState {
   readonly actorEquipment?: Readonly<Record<string, ActorInitialEquipment>>;
   // 런타임 직업 오버라이드(promoteActor 커맨드 기준 상태). 없으면 party.classOverrides 폴백.
   readonly classOverrides?: Readonly<Record<string, string>>;
+  readonly growthProgress?: import("@/project/growth/types").GrowthProgress;
   readonly gameTime?: GameTime;
   readonly npcActivities?: Readonly<Record<string, string>>;
   readonly friendship?: Readonly<Record<string, number>>;
@@ -160,6 +161,7 @@ export interface BattlePartyProgress {
   readonly skillPp?: Readonly<Record<string, Readonly<Record<SkillId, number>>>>;
   // 런타임 직업 오버라이드(Change Actor Class/승급).
   readonly classOverrides?: Readonly<Record<string, string>>;
+  readonly growthProgress?: import("@/project/growth/types").GrowthProgress;
   // 세션 상태 이상(Change State). 전투 진입 시 초기 stateIds 로 반영.
   readonly stateIds?: Readonly<Record<string, readonly string[]>>;
   // 현재 파티 편성(changeParty/순서변경 반영). 없으면 project.session(에디터 시작 상태).
@@ -394,6 +396,7 @@ export interface BattleEventStateSnapshot {
   // 전투 중 promoteActor 가 갱신한 직업 오버라이드 — 세션 classOverrides 로 되돌려 쓴다
   // (write-back 은 맵과 같은 changeActorClass 경로로 세션 바이탈을 새 클래스 최대치에 클램프).
   readonly classOverrides?: Readonly<Record<string, string>>;
+  readonly growthProgress?: import("@/project/growth/types").GrowthProgress;
 }
 
 export interface BattleSnapshot {

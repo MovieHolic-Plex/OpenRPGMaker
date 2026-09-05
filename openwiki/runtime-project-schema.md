@@ -189,6 +189,12 @@ states 5)에 아이템만 넣으면 **프로젝트가 부팅 중에 스스로 �
 세이브 네임스페이스의 파일/번들 분기는 `test/oprnGameFile.test.ts` 가 고정한다. 증거 PNG 는
 `verify-shots/oprn-single-file-game/`.
 
+## 성장 트리 선택 확장 (2026-09-05)
+
+`Project.growth`는 v4 선택 필드이며 기존 저장본에 자동 생성하지 않는다.
+스킬 노드/직업 참조와 DAG는 `growth/validation.ts`, 투자 세이브는 `PlaySession.growthProgress`와
+`saveSlots.ts`가 소유한다. 영구 스킬 목록에 투자 효과를 합쳐 저장하지 말 것.
+자세한 계약: [성장 트리](growth-trees.md).
 ## 마을 설계서 (2026-09-05)
 
 v4에 선택 필드 villagePresets[].design, defaultVillagePresetId, maps[].villageDesignSource를 추가했다. 레거시 프리셋은 자동 전환하지 않는다. 설계서·기본 참조는 load validator가 검사하며 JSON 저장/재로드 계약 테스트가 있다. 상세 계약과 경계는 [마을 설계서](village-design.md).

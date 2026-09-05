@@ -1,3 +1,4 @@
+import { renderGrowthTreeTab } from "@/editor/panels/growthTree/studio";
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { getEditorChrome } from "@/editor/editorUiMode";
 import { renderCommonEventsTab } from "@/editor/panels/databaseCommonEventViews";
@@ -48,6 +49,8 @@ import type { Project } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 
 export type DatabaseTab =
+  | "promotionTree"
+  | "skillTrees"
   | "overview"
   | DatabaseCollection
   | "animations"
@@ -87,6 +90,8 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "battleScreen", label: "전투 화면", testid: "db-tab-battle-screen" },
   { id: "battleCommands", label: "전투 명령", testid: "db-tab-battle-commands" },
   { id: "actors", label: "주인공", testid: "db-tab-actors" },
+  { id: "promotionTree", label: "직업 승급 트리", testid: "db-tab-promotion-tree" },
+  { id: "skillTrees", label: "스킬 트리", testid: "db-tab-skill-trees" },
   { id: "classes", label: "직업", testid: "db-tab-classes" },
   { id: "skills", label: "스킬", testid: "db-tab-skills" },
   { id: "items", label: "아이템", testid: "db-tab-items" },
@@ -135,7 +140,7 @@ export type DatabaseTabGroup = {
 // 전투 그룹 끝). 한쪽만 고치면 조용히 다시 갈라지므로 파생으로 묶는다.
 export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
   { label: "세계관", slug: "lore", tabs: ["worldCanon", "worldCodex"] },
-  { label: "파티", slug: "party", tabs: ["actors", "classes", "skills", "items", "equipment"] },
+  { label: "파티", slug: "party", tabs: ["actors", "classes", "promotionTree", "skills", "skillTrees", "items", "equipment"] },
   { label: "몬스터", slug: "monster", tabs: ["enemies", "monsterSpecies", "troops", "factions"] },
   {
     label: "전투 규칙",
@@ -440,6 +445,10 @@ function databaseTabCount(tab: DatabaseTab): number | null {
   const project = store.getCurrent();
   const database = project.database;
   switch (tab) {
+    case "promotionTree":
+      return database.classes.length;
+    case "skillTrees":
+      return project.growth?.skillTrees.length ?? 0;
     case "actors":
     case "classes":
     case "skills":
@@ -796,6 +805,12 @@ function renderActiveTab(
     if (banner) body.append(banner);
   }
   switch (tab) {
+    case "promotionTree":
+      renderGrowthTreeTab(body, "promotion");
+      break;
+    case "skillTrees":
+      renderGrowthTreeTab(body, "skill");
+      break;
     case "actors":
     case "classes":
     case "skills":

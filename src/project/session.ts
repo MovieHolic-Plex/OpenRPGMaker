@@ -262,6 +262,7 @@ export interface PlaySession {
   // 런타임 주인공 그래픽 오버라이드(Change Actor Graphic). actorId → charset resourceId.
   actorCharacterResourceIds?: Record<string, string>;
   // 런타임 직업 오버라이드(Change Actor Class/승급). actorId → classId.
+  growthProgress?: import("./growth/types").GrowthProgress;
   classOverrides: Record<string, string>;
   // 런타임 능력치 영구 보정(Change Parameters). actorId → parameterKey → delta.
   actorParamBonuses?: Record<string, Partial<Record<ActorParameterKey, number>>>;

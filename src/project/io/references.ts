@@ -1,3 +1,4 @@
+import { growthIssues } from "@/project/growth/validation";
 import type { Command, GameEvent, GameMap, NpcScheduleEntry, Project } from "../types";
 import { assert } from "./guards";
 import { structurePlacementBeforeIsWellFormed, structureRectFitsMap } from "../structurePlacements";
@@ -127,7 +128,7 @@ export function collectProjectItemReferenceIds(project: Project): ReadonlySet<st
 }
 
 export function collectProjectReferenceIssues(project: Project): string[] {
-  const issues: string[] = [];
+  const issues: string[] = growthIssues(project);
   const check = (fn: () => void): void => {
     try {
       fn();

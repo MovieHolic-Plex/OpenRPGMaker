@@ -17,7 +17,7 @@
 //     node scripts/qa/db-ux-probe.mjs
 //   PROBE_ONLY=actors,items node scripts/qa/db-ux-probe.mjs   # 일부 탭만
 //   PROBE_SHOTS=0 ... # 스크린샷 생략 (측정만)
-import { chromium } from "playwright";
+import { chromium, firefox } from "playwright";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { gotoWithRetry } from "../lib/goto-retry.mjs";
 
@@ -37,7 +37,7 @@ const SUBNAV = process.env.PROBE_SUBNAV === "1";
 // 가 존재한다(`src/editor/panels/database.ts:36` DatabaseTab 유니온). 목록을 틀리면
 // "탭 없음" 오류가 개선 지표를 오염시킨다.
 const TABS = [
-  "overview", "actors", "classes", "skills", "items", "equipment",
+  "overview", "actors", "classes", "promotion-tree", "skills", "skill-trees", "items", "equipment",
   "enemies", "monster-species", "troops", "elements", "states", "animations",
   "battle-screen", "battle-commands", "terrain", "tilesets", "crops", "characters",
   "life-crafting", "life-collections", "farm-animals", "farm-spatial",
@@ -298,7 +298,8 @@ async function checkUrls(page, urls) {
   }, unique);
 }
 
-const browser = await chromium.launch({ args: ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu"] });
+const browserType = process.env.PROBE_BROWSER === "firefox" ? firefox : chromium;
+const browser = await browserType.launch({ args: ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu"] });
 const page = await browser.newPage({ viewport: { width: WIDTH, height: HEIGHT }, deviceScaleFactor: 1 });
 page.setDefaultTimeout(60_000);
 const consoleErrors = [];

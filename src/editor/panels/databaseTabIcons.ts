@@ -27,6 +27,8 @@ const ANIMATION_NODES: readonly SvgNodeSpec[] = [
 ];
 
 const TAB_ICONS: Record<DatabaseTab, readonly SvgNodeSpec[]> = {
+  promotionTree: [{ tag: "path", attrs: { d: "M11 4v7M5 11h12M5 11v6M17 11v6" } }, { tag: "circle", attrs: { cx: "11", cy: "4", r: "2" } }, { tag: "circle", attrs: { cx: "5", cy: "18", r: "2" } }, { tag: "circle", attrs: { cx: "17", cy: "18", r: "2" } }],
+  skillTrees: [{ tag: "path", attrs: { d: "M5 17l6-12 6 12H5zM11 5v12" } }, { tag: "circle", attrs: { cx: "11", cy: "5", r: "2" } }, { tag: "circle", attrs: { cx: "5", cy: "17", r: "2" } }, { tag: "circle", attrs: { cx: "17", cy: "17", r: "2" } }],
   // 그룹 밖 고정 — 대시보드 격자
   overview: [
     { tag: "rect", attrs: { x: "3.6", y: "3.6", width: "6", height: "6", rx: "1.4" } },

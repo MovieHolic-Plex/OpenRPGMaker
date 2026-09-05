@@ -1,3 +1,5 @@
+import { growthEffects } from "@/project/growth/runtime";
+import type { GrowthProgress } from "@/project/growth/types";
 import { clampLevel, normalizeActorRecord, parameterValueAtLevel } from "@/project/actorModel";
 import { normalizeEnemyRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { startStateOf } from "@/project/session";
@@ -34,6 +36,7 @@ export interface ActorBattlerOverrides {
   readonly skillIds?: Readonly<Record<string, readonly SkillId[]>>;
   readonly skillPp?: Readonly<Record<string, Readonly<Record<SkillId, number>>>>;
   readonly classOverrides?: Readonly<Record<string, string>>;
+  readonly growthProgress?: GrowthProgress;
   // 필드에서 이어지는 런타임 상태 이상(Change State).
   readonly stateIds?: Readonly<Record<string, readonly string[]>>;
   // 현재 파티 편성(changeParty/순서변경 반영). 없으면 project.session(에디터 시작 상태).
@@ -98,6 +101,7 @@ export function actorBattlers(
     const derived = actorDerivedStats(project, normalizedActor, {
       level,
       classOverrides: overrides?.classOverrides,
+      growthProgress: overrides?.growthProgress,
       paramBonuses: overrides?.paramBonuses?.[actorId],
       equipment: actorEquipment,
     });
@@ -131,7 +135,7 @@ export function actorBattlers(
       equipmentEffects: derived.equipmentEffects,
       stateTurns: {},
       defending: false,
-      skillIds: learnedSkillIds(project, normalizedActor, level, overrides?.skillIds?.[actorId], derived.effectiveClassId, derived.usesOverrideCurves),
+      skillIds: learnedSkillIds(project, normalizedActor, level, overrides?.skillIds?.[actorId], derived.effectiveClassId, derived.usesOverrideCurves, overrides?.growthProgress),
       skillPp: overrides?.skillPp?.[actorId] ? { ...overrides.skillPp[actorId] } : undefined,
       hidden: false,
     };
@@ -160,6 +164,7 @@ export function actorDerivedStats(
   input: {
     readonly level: number;
     readonly classOverrides?: Readonly<Record<string, string>>;
+    readonly growthProgress?: GrowthProgress;
     readonly paramBonuses?: Readonly<Partial<Record<ActorParameterKey, number>>>;
     // 유효 장비 프로젝션(effectiveActorEquipment 통과 값 또는 initialEquipment).
     readonly equipment: ActorInitialEquipment;
@@ -170,7 +175,8 @@ export function actorDerivedStats(
   const effectiveClass = project.database.classes.find((record) => record.id === effectiveClassId);
   const usesOverrideCurves = hasActorClassOverride(session, normalizedActor.id) && effectiveClass !== undefined;
   const curves = usesOverrideCurves && effectiveClass ? effectiveClass.parameterCurves : normalizedActor.parameterCurves;
-  const bonuses = input.paramBonuses;
+  const growth = growthEffects(project, { variables: {}, classOverrides: input.classOverrides ? { ...input.classOverrides } : undefined, growthProgress: input.growthProgress }, normalizedActor.id).bonuses;
+  const bonuses = Object.fromEntries(Object.entries(growth).map(([k, v]) => [k, v + (input.paramBonuses?.[k as ActorParameterKey] ?? 0)])) as Record<ActorParameterKey, number>;
   const equipmentBonuses = totalEquipmentBonuses(project, input.equipment);
   const agility = parameterWithBonus(curves.agility, input.level, (bonuses?.agility ?? 0) + equipmentBonuses.agility, 1);
   return {
@@ -195,6 +201,7 @@ export function refreshActorBattlerDerivedStats(
   battler: MutableBattler,
   input: {
     readonly classOverrides?: Readonly<Record<string, string>>;
+    readonly growthProgress?: GrowthProgress;
     readonly paramBonuses?: Readonly<Partial<Record<ActorParameterKey, number>>>;
     // 세션형(raw) 장비 스냅샷. 유효 프로젝션은 이 함수가 생성 경로와 동일하게 계산한다.
     readonly equipment?: ActorInitialEquipment;
@@ -213,6 +220,7 @@ export function refreshActorBattlerDerivedStats(
   const derived = actorDerivedStats(project, normalizedActor, {
     level,
     classOverrides: input.classOverrides,
+    growthProgress: input.growthProgress,
     paramBonuses: input.paramBonuses,
     equipment: effectiveEquipment,
   });
@@ -234,7 +242,8 @@ export function refreshActorBattlerDerivedStats(
       level,
       input.skills.sessionSkillIds,
       derived.effectiveClassId,
-      derived.usesOverrideCurves
+      derived.usesOverrideCurves,
+      input.growthProgress
     );
   }
 }
@@ -245,9 +254,11 @@ export function learnedSkillIds(
   level: number,
   sessionSkillIds: readonly SkillId[] | undefined,
   effectiveClassId: string | undefined,
-  overrideClassSkills: boolean
+  overrideClassSkills: boolean,
+  growthProgress?: GrowthProgress
 ): SkillId[] {
-  const ids = new Set<SkillId>(sessionSkillIds ?? []);
+  const growth = growthEffects(project, { variables: {}, classOverrides: effectiveClassId ? { [actor.id]: effectiveClassId } : undefined, growthProgress }, actor.id);
+  const ids = new Set<SkillId>([...(sessionSkillIds ?? []), ...growth.skillIds]);
   for (const entry of actor.learnedSkills) if (entry.level <= level) ids.add(entry.skillId);
   const classId = overrideClassSkills ? effectiveClassId : actor.classId;
   for (const skillId of classLearnedSkillIdsUpToLevel(project, classId ?? actor.classId, level)) ids.add(skillId);

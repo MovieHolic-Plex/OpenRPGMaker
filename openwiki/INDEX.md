@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **46쪽 / 1502KB / 약 426,712 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **47쪽 / 1508KB / 약 428,432 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -17,11 +17,11 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 |---|---|---|---|---|
 | `openwiki/editor-ai-panel.md` | 253KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 447 | ~73,670 |
 | `openwiki/editor-ai-tools.md` | 76KB | 66KB ⚠상한 초과 — 절을 더 쪼개라 | 191 | ~21,880 |
-| `openwiki/editor-database.md` | 191KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 914 | ~55,134 |
+| `openwiki/editor-database.md` | 191KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 919 | ~55,234 |
 | `openwiki/editor-event-authoring.md` | 117KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 562 | ~34,122 |
 | `openwiki/editor-pre-edit-routing.md` | 69KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 197 | ~19,760 |
 | `openwiki/runtime-battle.md` | 118KB | 31KB | 358 | ~33,888 |
-| `openwiki/runtime-project-schema.md` | 57KB | 42KB | 201 | ~15,347 |
+| `openwiki/runtime-project-schema.md` | 57KB | 42KB | 207 | ~15,469 |
 | `openwiki/runtime-sessions.md` | 56KB | 45KB | 131 | ~14,753 |
 | `openwiki/testing.md` | 102KB | 45KB | 678 | ~28,756 |
 
@@ -60,6 +60,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-pre-edit-routing.md` | 8 | `authoringTestGate.ts`, `dbConnectionAdvancedSettings.ts`, `figma-editor/10-map-tree.css`, `rm2k3.part-1.css`, `shell/editor-responsive-expert.css`, `src/editor/tools/worldTools.ts`, `surface.json`, `worldTools.ts` |
 | `openwiki/editor-validation.md` | 2 | `final-layout.json`, `viewport-matrix.json` |
 | `openwiki/editor-workflows-misc.md` | 1 | `src/editor/authoringTestGate.ts` |
+| `openwiki/growth-trees.md` | 1 | `verify-shots/runtime-qa/growth-tree/SUMMARY.md` |
 | `openwiki/large-village-generation.md` | 2 | `HANDOFF.json`, `src/project/defaults/largeRiverMarketVillageBuild.ts` |
 | `openwiki/night-monster.md` | 1 | `verify-shots/runtime-qa/night-monster/SUMMARY.md` |
 | `openwiki/runtime-battle.md` | 4 | `hero-03-battle-idle.png`, `raw.png`, `reference.png`, `starter/hires/hero-0N-battle.png` |
@@ -73,17 +74,17 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 ## 페이지별 절 좌표
 
-### `openwiki/PROJECT_WIKI.md` — 10KB · 119줄 · ~2,514 토큰
+### `openwiki/PROJECT_WIKI.md` — 10KB · 120줄 · ~2,531 토큰
 
 - `L5` Purpose
 - `L16` Required pre-edit read order
-- `L55` Project identity
-- `L64` Main ownership boundaries
-- `L75` How an AI should use this wiki
-- `L86` Supabase DB mandatory (see root `AGENTS.md`)
-- `L92` Desktop UI integration truth (2026-08-11)
-- `L100` Per-project wiki structure
-- `L116` Staleness rule
+- `L56` Project identity
+- `L65` Main ownership boundaries
+- `L76` How an AI should use this wiki
+- `L87` Supabase DB mandatory (see root `AGENTS.md`)
+- `L93` Desktop UI integration truth (2026-08-11)
+- `L101` Per-project wiki structure
+- `L117` Staleness rule
 
 ### `openwiki/agent-tile-benchmark.md` — 11KB · 195줄 · ~3,365 토큰
 
@@ -245,7 +246,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L173` 「이 세계」 캐논은 문장 3채널에 강제된다 (2026-09-04)
 - `L188` 마을 설계서 (2026-09-05)
 
-### `openwiki/editor-database.md` — 191KB · 914줄 · ~55,134 토큰 · 통째읽기 잘림 · 깨진 줄 7
+### `openwiki/editor-database.md` — 191KB · 919줄 · ~55,234 토큰 · 통째읽기 잘림 · 깨진 줄 7
 
 - `L3` 아이템·장비 저작 신뢰성 (2026-09-05)
 - `L14` 몬스터 작업실 — 미리보기 · 행동 · 속성 (2026-09-05)
@@ -287,10 +288,11 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L777` AI 어시스턴트 바 — 진행·결과가 바 안에 보인다 (2026-09-03)
   - `L811` AI로 몬스터·아이템 생성 — 대화상자 재작성 (2026-09-03)
 - `L827` Database Studio v2 — 30탭 셸·폼 문법 통일 (2026-09-03)
-- `L894` 미회수 편집 후속 통합 (2026-09-05)
-- `L898` 마을 설계서 (2026-09-05)
-- `L903` 구조물 증분 메타 정정 (2026-09-05)
-- `L911` 개념 회수 UI 직접 렌더 QA (2026-09-05)
+- `L893` 직업 승급 트리 · 스킬 트리 (2026-09-05)
+- `L899` 미회수 편집 후속 통합 (2026-09-05)
+- `L903` 마을 설계서 (2026-09-05)
+- `L908` 구조물 증분 메타 정정 (2026-09-05)
+- `L916` 개념 회수 UI 직접 렌더 QA (2026-09-05)
 
 ### `openwiki/editor-event-authoring.md` — 117KB · 562줄 · ~34,122 토큰 · 통째읽기 잘림 · 깨진 줄 16
 
@@ -413,6 +415,12 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L5` Topic pages
 - `L17` Quick routing
 - `L25` For AI agents
+
+### `openwiki/growth-trees.md` — 5KB · 59줄 · ~1,481 토큰
+
+- `L3` 소유권과 데이터
+- `L23` 런타임과 저장
+- `L46` 검증
 
 ### `openwiki/horror-authoring.md` — 5KB · 61줄 · ~1,444 토큰
 
@@ -538,7 +546,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 - `L130` Recovered head emotes (2026-09-05)
 
-### `openwiki/runtime-project-schema.md` — 57KB · 201줄 · ~15,347 토큰 · 통째읽기 잘림
+### `openwiki/runtime-project-schema.md` — 57KB · 207줄 · ~15,469 토큰 · 통째읽기 잘림
 
 - `L3` 기본 카탈로그 삭제 보존 (2026-09-05)
 - `L7` 전투 페이지 중복 ID 복구와 슬롯 참조 (2026-09-05)
@@ -551,8 +559,9 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L114` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
 - `L132` Boot normalizers must not create dangling references (2026-08-30)
 - `L158` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
-- `L192` 마을 설계서 (2026-09-05)
-- `L198` 공포 게임 제작 기능 (2026-09-05)
+- `L192` 성장 트리 선택 확장 (2026-09-05)
+- `L198` 마을 설계서 (2026-09-05)
+- `L204` 공포 게임 제작 기능 (2026-09-05)
 
 ### `openwiki/runtime-sessions.md` — 56KB · 131줄 · ~14,753 토큰 · 통째읽기 잘림
 

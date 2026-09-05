@@ -971,3 +971,31 @@
   border-radius: var(--runtime-glass-radius);
   box-shadow: var(--runtime-glass-shadow);
 }
+
+/* Growth shares the skill menu, but its three tabs need a full-width row above
+   the list. The life-ledger default assumes artwork and four narrow tabs. */
+.oprn-status-menu .status-menu-detail.life-ledger-detail[data-status-menu-command="skills"] {
+  grid-template-areas: "title" "growth-tabs" "list";
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto auto minmax(0, 1fr);
+}
+.oprn-status-menu .status-menu-detail.life-ledger-detail.has-showcase[data-status-menu-command="skills"] {
+  grid-template-areas: "title title" "growth-tabs growth-tabs" "list showcase";
+  grid-template-columns: minmax(0, 1fr) 86px;
+}
+.oprn-status-menu .status-menu-detail.life-ledger-detail[data-status-menu-command="skills"] > .status-menu-detail-title {
+  grid-area: title;
+}
+.oprn-status-menu .status-menu-detail.life-ledger-detail[data-status-menu-command="skills"] > .status-menu-detail-list {
+  grid-area: list;
+}
+.oprn-status-menu .status-menu-detail.life-ledger-detail[data-status-menu-command="skills"] > .life-ledger-tabs {
+  grid-area: growth-tabs;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.oprn-status-menu .status-menu-detail.life-ledger-detail[data-status-menu-command="skills"] .life-ledger-tab {
+  min-height: 15px;
+  font-size: 7px;
+  white-space: nowrap;
+  text-overflow: clip;
+}

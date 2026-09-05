@@ -201,6 +201,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         skillIds: options.party?.skillIds,
         skillPp: options.party?.skillPp,
         classOverrides: options.party?.classOverrides,
+        growthProgress: options.party?.growthProgress,
         stateIds: options.party?.stateIds,
         partyActorIds: options.party?.partyActorIds,
       });
@@ -390,6 +391,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     refreshActorDerivedStats: (battler, refreshOptions) => {
       refreshActorBattlerDerivedStats(options.project, battler, {
         classOverrides: battleEventState.classOverrides,
+        growthProgress: options.party?.growthProgress,
         paramBonuses: options.party?.paramBonuses?.[battler.recordId],
         equipment: battleEventState.actorEquipment?.[battler.recordId],
         skills: refreshOptions?.refreshSkills

@@ -104,7 +104,10 @@ export function renderClassRecordForm(form: HTMLElement, record: ClassRecord): v
       panel("전투 명령", battleCommandControls(record, refreshBuildSummary), "db-class-panel-commands"),
       panel("옵션", optionControls(record), "db-class-panel-options"),
       panel("스킬", [skillTable(record, refreshBuildSummary)], "db-class-panel-skills"),
-      panel("승급", promotionControls(record, refreshBuildSummary), "db-class-panel-promotion"),
+      panel("승급", [el("button", { text: "승급 트리에서 보기", attrs: { type: "button" }, dataset: { testid: "db-open-promotion-tree" }, on: { click: event => {
+        const panelRoot = databasePanelRootFrom(event.currentTarget as HTMLElement | null);
+        if (panelRoot) switchDatabaseActiveTab("promotionTree", panelRoot);
+      } } }), ...promotionControls(record, refreshBuildSummary)], "db-class-panel-promotion"),
       panel("상태 유효도", rateRows(record, "state"), "db-class-panel-state"),
       panel("속성 유효도", rateRows(record, "element"), "db-class-panel-element"),
       panel("장비", [equipmentSelect(record, refreshBuildSummary)], "db-class-panel-equipment"),

@@ -1,9 +1,11 @@
+import { refreshGrowthVitals } from "@/project/growth/vitals";
 import { clampLevel, parameterValueAtLevel } from "@/project/actorModel";
 import type { ActorId, ActorParameterKey, ClassId, ClassPromotion, ClassPromotionRequirement, Project, SkillId } from "@/project/types";
 import type { ActorVitals } from "@/project/sessionVitals";
 import { transitionItemState } from "@/project/itemTransitions";
 
 export interface ClassOverrideSession {
+  growthProgress?: import("@/project/growth/types").GrowthProgress;
   classOverrides?: Record<string, string>;
   actorLevels?: Record<string, number>;
   actorSkillIds?: Record<string, SkillId[]>;
@@ -48,7 +50,8 @@ export function changeActorClass(
   session.classOverrides ??= {};
   session.classOverrides[actorId] = classId;
   learnClassSkillsUpToLevel(session, project, actorId, classId);
-  clampActorVitalsToEffectiveClass(session, project, actorId);
+  if (project.growth) refreshGrowthVitals(project, session, actorId);
+  else clampActorVitalsToEffectiveClass(session, project, actorId);
   return { ok: true, actorId, classId };
 }
 

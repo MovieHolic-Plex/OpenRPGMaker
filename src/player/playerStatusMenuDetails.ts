@@ -1,3 +1,5 @@
+import { createGrowthMenu, growthMenuTabs } from "@/player/playerGrowthMenu";
+import { growthEffects } from "@/project/growth/runtime";
 import type { SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
 import { canEquip, effectiveActorEquipment, equipmentSlotAccepts } from "@/project/equipmentRules";
 import { resolveActorName } from "@/project/sessionActorCommands";
@@ -224,9 +226,11 @@ function skillDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   if (options.skillActorId) {
     const actor = partyActors(project, session).find((record) => record.id === options.skillActorId);
     if (!actor) return { title: "스킬", entries: [], emptyLabel: "파티원을 찾을 수 없습니다" };
+    if (options.growthTab && options.growthTab !== "skills") return createGrowthMenu(options);
     const skills = learnedSkills(project, session, actor);
     return {
       title: `스킬: ${actor.name}`,
+      tabs: project.growth || project.database.classes.some(c => c.promotions?.length) ? growthMenuTabs(options) : undefined,
       entries: skills.map((skill) => ({
         label: skill.name,
         icon: skillEntryIcon(project, skill),
@@ -549,6 +553,7 @@ function learnedSkills(project: Project, session: PlaySession, actor: ActorRecor
   for (const learned of classRecord?.learnedSkills ?? []) if (learned.level <= level) skillIds.add(learned.skillId);
   for (const learned of actor.learnedSkills) if (learned.level <= level) skillIds.add(learned.skillId);
   for (const skillId of session.actorSkillIds[actor.id] ?? []) skillIds.add(skillId);
+  for (const skillId of growthEffects(project, session, actor.id).skillIds) skillIds.add(skillId);
   return project.database.skills.filter((skill) => skillIds.has(skill.id));
 }
 
@@ -708,7 +713,7 @@ function actorStatTotal(
   const worn: ActorInitialEquipment = { ...actorEquipment(project, session, actor), [slotId]: candidateId };
   return EQUIPMENT_SLOTS.reduce(
     (total, slot) => total + equipmentStats(project, worn[slot.id])[statKey],
-    parameterValueAtLevel(curves[statKey], level)
+    parameterValueAtLevel(curves[statKey], level) + (session.actorParamBonuses?.[actor.id]?.[statKey] ?? 0) + growthEffects(project, session, actor.id).bonuses[statKey]
   );
 }
 
