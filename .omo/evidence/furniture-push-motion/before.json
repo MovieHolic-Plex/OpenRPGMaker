@@ -1,0 +1,522 @@
+{
+  "source": "night-monster-upgrade snapshot",
+  "execution": "sampled",
+  "visualReview": "before coordinates show a single 16px jump and stationary player; first canvas bitmap was cleared, so no before contact sheet is claimed",
+  "captures": [
+    {
+      "id": "motion-sheet",
+      "reason": "Baseline animation samples; sheet recovered with Pillow after missing optional sharp dependency"
+    }
+  ],
+  "probes": {
+    "frames": [
+      {
+        "ms": 0.5,
+        "player": {
+          "x": 232,
+          "y": 192,
+          "depth": 200192,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chair": {
+          "alpha": 1,
+          "frame": 82,
+          "textureKey": "tex_easyrpg_charset_object2",
+          "x": 232,
+          "y": 176,
+          "depth": 200176,
+          "liftPx": 0
+        }
+      },
+      {
+        "ms": 28.30000001192093,
+        "player": {
+          "x": 232,
+          "y": 192,
+          "depth": 200192,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chair": {
+          "alpha": 1,
+          "frame": 82,
+          "textureKey": "tex_easyrpg_charset_object2",
+          "x": 232,
+          "y": 160,
+          "depth": 200160,
+          "liftPx": 0
+        }
+      },
+      {
+        "ms": 75.5,
+        "player": {
+          "x": 232,
+          "y": 192,
+          "depth": 200192,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chair": {
+          "alpha": 1,
+          "frame": 82,
+          "textureKey": "tex_easyrpg_charset_object2",
+          "x": 232,
+          "y": 160,
+          "depth": 200160,
+          "liftPx": 0
+        }
+      },
+      {
+        "ms": 130.30000001192093,
+        "player": {
+          "x": 232,
+          "y": 192,
+          "depth": 200192,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chair": {
+          "alpha": 1,
+          "frame": 82,
+          "textureKey": "tex_easyrpg_charset_object2",
+          "x": 232,
+          "y": 160,
+          "depth": 200160,
+          "liftPx": 0
+        }
+      },
+      {
+        "ms": 176.70000004768372,
+        "player": {
+          "x": 232,
+          "y": 192,
+          "depth": 200192,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chair": {
+          "alpha": 1,
+          "frame": 82,
+          "textureKey": "tex_easyrpg_charset_object2",
+          "x": 232,
+          "y": 160,
+          "depth": 200160,
+          "liftPx": 0
+        }
+      },
+      {
+        "ms": 228.20000004768372,
+        "player": {
+          "x": 232,
+          "y": 192,
+          "depth": 200192,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chair": {
+          "alpha": 1,
+          "frame": 82,
+          "textureKey": "tex_easyrpg_charset_object2",
+          "x": 232,
+          "y": 160,
+          "depth": 200160,
+          "liftPx": 0
+        }
+      },
+      {
+        "ms": 266.10000002384186,
+        "player": {
+          "x": 232,
+          "y": 192,
+          "depth": 200192,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chair": {
+          "alpha": 1,
+          "frame": 82,
+          "textureKey": "tex_easyrpg_charset_object2",
+          "x": 232,
+          "y": 160,
+          "depth": 200160,
+          "liftPx": 0
+        }
+      },
+      {
+        "ms": 300.2000000476837,
+        "player": {
+          "x": 232,
+          "y": 192,
+          "depth": 200192,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chair": {
+          "alpha": 1,
+          "frame": 82,
+          "textureKey": "tex_easyrpg_charset_object2",
+          "x": 232,
+          "y": 160,
+          "depth": 200160,
+          "liftPx": 0
+        }
+      },
+      {
+        "ms": 331.7000000476837,
+        "player": {
+          "x": 232,
+          "y": 192,
+          "depth": 200192,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chair": {
+          "alpha": 1,
+          "frame": 82,
+          "textureKey": "tex_easyrpg_charset_object2",
+          "x": 232,
+          "y": 160,
+          "depth": 200160,
+          "liftPx": 0
+        }
+      },
+      {
+        "ms": 429.80000001192093,
+        "player": {
+          "x": 232,
+          "y": 192,
+          "depth": 200192,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chair": {
+          "alpha": 1,
+          "frame": 82,
+          "textureKey": "tex_easyrpg_charset_object2",
+          "x": 232,
+          "y": 160,
+          "depth": 200160,
+          "liftPx": 0
+        }
+      },
+      {
+        "ms": 474.9000000357628,
+        "player": {
+          "x": 232,
+          "y": 192,
+          "depth": 200192,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chair": {
+          "alpha": 1,
+          "frame": 82,
+          "textureKey": "tex_easyrpg_charset_object2",
+          "x": 232,
+          "y": 160,
+          "depth": 200160,
+          "liftPx": 0
+        }
+      },
+      {
+        "ms": 522.5,
+        "player": {
+          "x": 232,
+          "y": 192,
+          "depth": 200192,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chair": {
+          "alpha": 1,
+          "frame": 82,
+          "textureKey": "tex_easyrpg_charset_object2",
+          "x": 232,
+          "y": 160,
+          "depth": 200160,
+          "liftPx": 0
+        }
+      },
+      {
+        "ms": 584.6000000238419,
+        "player": {
+          "x": 232,
+          "y": 192,
+          "depth": 200192,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chair": {
+          "alpha": 1,
+          "frame": 82,
+          "textureKey": "tex_easyrpg_charset_object2",
+          "x": 232,
+          "y": 160,
+          "depth": 200160,
+          "liftPx": 0
+        }
+      },
+      {
+        "ms": 609.7000000476837,
+        "player": {
+          "x": 232,
+          "y": 192,
+          "depth": 200192,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chair": {
+          "alpha": 1,
+          "frame": 82,
+          "textureKey": "tex_easyrpg_charset_object2",
+          "x": 232,
+          "y": 160,
+          "depth": 200160,
+          "liftPx": 0
+        }
+      },
+      {
+        "ms": 635,
+        "player": {
+          "x": 232,
+          "y": 192,
+          "depth": 200192,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chair": {
+          "alpha": 1,
+          "frame": 82,
+          "textureKey": "tex_easyrpg_charset_object2",
+          "x": 232,
+          "y": 160,
+          "depth": 200160,
+          "liftPx": 0
+        }
+      },
+      {
+        "ms": 664.9000000357628,
+        "player": {
+          "x": 232,
+          "y": 192,
+          "depth": 200192,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chair": {
+          "alpha": 1,
+          "frame": 82,
+          "textureKey": "tex_easyrpg_charset_object2",
+          "x": 232,
+          "y": 160,
+          "depth": 200160,
+          "liftPx": 0
+        }
+      },
+      {
+        "ms": 693.1000000238419,
+        "player": {
+          "x": 232,
+          "y": 192,
+          "depth": 200192,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chair": {
+          "alpha": 1,
+          "frame": 82,
+          "textureKey": "tex_easyrpg_charset_object2",
+          "x": 232,
+          "y": 160,
+          "depth": 200160,
+          "liftPx": 0
+        }
+      },
+      {
+        "ms": 726.5,
+        "player": {
+          "x": 232,
+          "y": 192,
+          "depth": 200192,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chair": {
+          "alpha": 1,
+          "frame": 82,
+          "textureKey": "tex_easyrpg_charset_object2",
+          "x": 232,
+          "y": 160,
+          "depth": 200160,
+          "liftPx": 0
+        }
+      },
+      {
+        "ms": 758.7000000476837,
+        "player": {
+          "x": 232,
+          "y": 192,
+          "depth": 200192,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chair": {
+          "alpha": 1,
+          "frame": 82,
+          "textureKey": "tex_easyrpg_charset_object2",
+          "x": 232,
+          "y": 160,
+          "depth": 200160,
+          "liftPx": 0
+        }
+      },
+      {
+        "ms": 789.1000000238419,
+        "player": {
+          "x": 232,
+          "y": 192,
+          "depth": 200192,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chair": {
+          "alpha": 1,
+          "frame": 82,
+          "textureKey": "tex_easyrpg_charset_object2",
+          "x": 232,
+          "y": 160,
+          "depth": 200160,
+          "liftPx": 0
+        }
+      },
+      {
+        "ms": 828.5,
+        "player": {
+          "x": 232,
+          "y": 192,
+          "depth": 200192,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chair": {
+          "alpha": 1,
+          "frame": 82,
+          "textureKey": "tex_easyrpg_charset_object2",
+          "x": 232,
+          "y": 160,
+          "depth": 200160,
+          "liftPx": 0
+        }
+      },
+      {
+        "ms": 854.5,
+        "player": {
+          "x": 232,
+          "y": 192,
+          "depth": 200192,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chair": {
+          "alpha": 1,
+          "frame": 82,
+          "textureKey": "tex_easyrpg_charset_object2",
+          "x": 232,
+          "y": 160,
+          "depth": 200160,
+          "liftPx": 0
+        }
+      },
+      {
+        "ms": 893.6000000238419,
+        "player": {
+          "x": 232,
+          "y": 192,
+          "depth": 200192,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "chair": {
+          "alpha": 1,
+          "frame": 82,
+          "textureKey": "tex_easyrpg_charset_object2",
+          "x": 232,
+          "y": 160,
+          "depth": 200160,
+          "liftPx": 0
+        }
+      }
+    ]
+  },
+  "errors": []
+}

@@ -35,6 +35,29 @@ AI도 `make_chase_scene.pursuit`와 `configure_object_behavior`로 같은 페이
   도착 칸이 막혀 있으면 대기한다. 맵마다 괴물을 복제하지 않고 기존 runtime event view를 사용한다.
 - 복귀는 현재 방의 시작/진입 위치까지다. 원래 방까지 역으로 돌아가는 장거리 귀환은 범위 밖이다.
 
+## 가구 밀기 애니메이션 (2026-09-05 후속 체험 수정)
+
+`playSceneMovement.tryStartFurniturePush`가 방향키와 조사 키의 공통 진입점이다.
+플레이어가 들어갈 칸과 가구의 목적지를 모두 검사한 뒤 두 물체를 같은 한 칸 이동으로 시작한다.
+대각 밀기는 거부하며, 이동 중 누른 조사 키를 다음 밀기로 예약하지 않는다.
+`furniturePushAnimation.ts`는 장면별 WeakMap에 표현 상태만 보관한다. 기본 보행에서는
+19 논리 틱(약 317ms): 처음 2틱은 힘주기 대기, 나머지는 두 물체가 같은 smoothstep 곡선으로
+가속·감속한다. 느린 이동 설정은 `max(320ms, moveDurationMs × 2)`를 60Hz 틱으로 양자화한다.
+대시는 밀기를 가속하지 않는다. 플레이어는 느린 걷기 패턴을 사용하고 가구의 그림·방향은 유지한다.
+
+밀기마다 전체 이벤트를 재생성하지 않는다. 기존 스프라이트의 위치와 깊이만 갱신한다.
+다른 이벤트 때문에 재렌더가 일어나도 `renderEvents`는 진행 중인 가구의 보간 위치를 사용한다.
+가구의 도착 칸은 기존 `session.eventLocations` 계약대로 시작 시 예약하고, 출발 발자국도
+이동 종료까지 NPC 충돌에서 예약한다. 메뉴는 두 물체를 함께 멈춘다. 이동 명령 취소는 가구도
+출발점으로 되돌리고, 맵 로드/세이브 복원은 표현 상태를 버린다. 이동 도중 저장하면 기존 보행과
+동일하게 플레이어는 출발 칸, 가구는 예약된 도착 칸으로 복원한다. 소수 좌표는 저장하지 않는다.
+
+검증은 `runtimeMovementStability.test.ts`의 4방향·두 입력·중간 좌표·주사율·메뉴·재렌더·취소·맵 리셋·
+저장 계약과 `scripts/qa/runtime/furniture-push.probe.mjs`의 출하 플레이어 연속 프레임을 사용한다.
+프로브는 준비/재로드된 Supabase 스냅샷을 읽기만 한다. `furniture-push-before`/`furniture-push-after`의
+`SUMMARY.md`를 먼저 읽고 `motion-sheet.png`에서 중간 프레임과 접촉 간격을 확인한다.
+이전 `night-monster-upgrade` 프로브의 이동 전후 두 장만으로는 애니메이션 품질을 검증할 수 없다.
+
 ## 실내 제작과 검증
 
 기존 `rooms`, `innerDoors`, 공간별 테마를 먼저 쓰도록 실내 도구 설명을 보강했다.
@@ -58,3 +81,16 @@ AI도 `make_chase_scene.pursuit`와 `configure_object_behavior`로 같은 페이
 - `scripts/revise-night-monster.mts --read`: 현재 Supabase 게임 확인.
   인자 없음은 현재 게임의 개정본 준비, `--save`는 저장과 재로드 비교까지 실행한다.
   제작 중 원격 값이 바뀌면 저장을 중단한다. 기존 DB·스킨·에셋은 보존한다.
+
+
+## 전체 게이트 후속 수정 (2026-09-05)
+
+전체 실행에서 새 도구의 활동 문구 등록 누락과 malformed `page.commands` 순회 예외를 찾았다.
+`aiActivityNarration.ts`의 이벤트 패밀리에 `configure_object_behavior`를 등록한다.
+실내 경고 검사는 명령 배열이 아닌 값을 빈 명령 목록으로 다루며, 기존 `command-shape` 경고를
+보존한다. 오류 데이터를 검증하는 과정 자체가 예외로 중단되면 안 된다.
+`eventEditorShellSurface.baseline.json`은 브라우저로 검토한 물체 상호작용 컨트롤의 추가만 반영했다.
+검증: `aiActivityNarration.test.ts`, `projectLint.test.ts`, `eventEditorShellSurface.baseline.test.ts`와
+기존 공포 런타임/세이브 계약. 통합된 main 위에서도 관련 80개와 앱 타입 검사가 통과했다.
+
+- 가구 밀기 QA (`furniture-push.probe.mjs`)는 부하가 큰 호스트에서 실제 종료 좌표까지 최대 10초 기다린다. 중간 프레임 수·16px 접촉 간격·정확한 종료 좌표·가구 프레임 고정 assertion은 유지한다. 기준선 촬영은 기존 900ms다.

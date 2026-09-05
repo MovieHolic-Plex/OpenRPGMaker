@@ -1,3 +1,4 @@
+import { advanceFurniturePush, beginFurniturePush, clearFurniturePush, furniturePushFrames } from './furniturePushAnimation';
 import { advancePursuitDoors, isPlayerHiding, pushObject, toggleHiding } from "./horrorRuntime";
 import { refreshRuntimeEntities } from "./playSceneMapRuntime";
 import { canMoveFootprint, inBounds } from "@/project/collision";
@@ -92,6 +93,7 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
   const ticks = takeLogicTicks(scene, deltaMs);
   // 틱이 없는 프레임(고주사율)에서는 입력을 읽지 않는다 — 엣지와 탭이 다음 틱 프레임으로 살아서 간다.
   if (ticks > 0) {
+    const pushingAtFrameStart = furniturePushFrames(scene) !== undefined;
     const input = scene.input_.update();
     const cutsceneInputLocked = isCutsceneInputLocked(scene.session);
     for (let tick = 0; tick < ticks; tick += 1) tickPlayerMovement(scene, input, cutsceneInputLocked);
@@ -100,7 +102,7 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
     // Z 는 조사로 남아 결정 키가 둘로 쪼개져 있었다).
     let interacted = false;
     const airborne = scene.playerHop !== null;
-    if (!cutsceneInputLocked && input.actionPressed && !scene.moving && !airborne) interacted = handleAction(scene);
+    if (!pushingAtFrameStart && !cutsceneInputLocked && input.actionPressed && !scene.moving && !airborne) interacted = handleAction(scene, event => tryStartFurniturePush(scene, event));
     if (!cutsceneInputLocked && input.attackPressed && !interacted && !airborne) tryActionCombatSwing(scene);
     if (!cutsceneInputLocked && input.skillPressed && !airborne) tryActionSkillCast(scene);
     scene.input_.resetEdges();
@@ -173,7 +175,8 @@ function tickPlayerMovement(scene: PlaySceneContext, input: InputState, cutscene
 function advancePlayerStepFrame(scene: PlaySceneContext): void {
   const hopState = scene.playerHop;
   // 점프는 자기 지속 시간으로 난다 — 대시 배속이나 이동 속도에 끌려가지 않는다.
-  const totalFrames = hopState ? framesForDuration(hopState.hop.durationMs) : stepFrames(scene);
+  const pushFrames = furniturePushFrames(scene);
+  const totalFrames = pushFrames ?? (hopState ? framesForDuration(hopState.hop.durationMs) : stepFrames(scene));
   // 스프라이트 가로 위치는 «몸 중앙» 이다 — 폭 2 이상이면 타일 중앙과 다르다(#250).
   const footprint = resolvePlayerBody(store.getCurrent(), scene.session).footprint;
   if (hopState) {
@@ -183,9 +186,10 @@ function advancePlayerStepFrame(scene: PlaySceneContext): void {
     scene.moveElapsedFrames = Math.min(totalFrames, scene.moveElapsedFrames + 1);
   }
   // 종료 판정은 정수 프레임으로 한다 — 0.1 을 열 번 더하면 1 이 아니다.
-  scene.moveProgress = scene.moveElapsedFrames / totalFrames;
+  scene.moveProgress = advanceFurniturePush(scene) ?? scene.moveElapsedFrames / totalFrames;
   if (scene.moveElapsedFrames >= totalFrames) {
     scene.moveProgress = 1;
+    clearFurniturePush(scene);
     scene.tileX = scene.movingTo.x;
     scene.tileY = scene.movingTo.y;
     scene.session.x = scene.tileX;
@@ -228,8 +232,12 @@ function advancePlayerStepFrame(scene: PlaySceneContext): void {
     );
     return;
   }
+  if (pushFrames && scene.moveElapsedFrames <= 2) {
+    scene.player.setFrame(scene.playerSprite.idleFrameFor(scene.facing));
+    return;
+  }
   scene.walkTimer += LOGIC_TICK_MS;
-  const walkFrameMs = WALK_FRAME_MS / (scene.dashing ? DASH_SPEED_FACTOR : 1);
+  const walkFrameMs = pushFrames ? 120 : WALK_FRAME_MS / (scene.dashing ? DASH_SPEED_FACTOR : 1);
   while (scene.walkTimer >= walkFrameMs) {
     // 남은 시간을 버리지 않고 이월한다 — 프레임 길이와 무관하게 패턴 주기가 일정하다.
     scene.walkTimer -= walkFrameMs;
@@ -290,16 +298,35 @@ function tryStartMove(scene: PlaySceneContext, input: InputState): void {
   const blockingEvent = findBlockingEventForPlayerBody(scene, body, nx, ny);
   if (blockingEvent) {
     scene.facing = facingForStep(step.dx, step.dy);
-    if (pushObject({ project, map: scene.map, session: scene.session, positions: scene.eventPositions }, blockingEvent, scene.facing)) {
-      refreshRuntimeEntities(scene);
-      scene.dashing = false;
-      beginPlayerStep(scene, nx, ny);
-    } else firePlayerTouchEvent(scene, blockingEvent.event.id, blockingEvent.trigger.kind);
+    // Pushing is cardinal. A diagonal collision must never move the body
+    // diagonally while the object slides along only one axis.
+    if (step.dx !== 0 && step.dy !== 0 || !tryStartFurniturePush(scene, blockingEvent)) {
+      firePlayerTouchEvent(scene, blockingEvent.event.id, blockingEvent.trigger.kind);
+    }
     return;
   }
   scene.dashing = input.dash;
   beginPlayerStep(scene, nx, ny);
   scene.lastActionTargetKey = "";
+}
+
+/** Both movement and action input use this single collision + animation transaction. */
+export function tryStartFurniturePush(scene: PlaySceneContext, event: RuntimeEventView): boolean {
+  if (scene.moving || scene.playerHop || furniturePushFrames(scene) || scene.autonomousNPCs.get(event.event.id)?.activeMove) return false;
+  const project = store.getCurrent();
+  const body = resolvePlayerBody(project, scene.session);
+  const delta = directionDelta(scene.facing);
+  const nx = scene.tileX + delta.x, ny = scene.tileY + delta.y;
+  if (!playerCanStep(scene, body, delta.x, delta.y)) return false;
+  if (findBlockingEventForPlayerBody(scene, body, nx, ny)?.event.id !== event.event.id) return false;
+  if (findBlockingEventOverlappingRect(project, scene.map, scene.session, scene.eventPositions,
+    playerPassageRect(body, nx, ny), event.event.id)) return false;
+  if (!pushObject({ project, map: scene.map, session: scene.session, positions: scene.eventPositions }, event, scene.facing)) return false;
+  scene.dashing = false;
+  scene.lastActionTargetKey = '';
+  beginPlayerStep(scene, nx, ny);
+  beginFurniturePush(scene, event, delta.x, delta.y);
+  return true;
 }
 
 // ── 주인공 강제 이동 루트(이동 루트 설정 → 주인공) ──
@@ -422,7 +449,7 @@ function clampPlayerMoveDuration(current: number, delta: number): number {
 }
 
 // 반환값: 조사 대상과 상호작용했는지. 액션 전투에서 "조사 없으면 스윙" 판정에 쓴다.
-export function handleAction(scene: ActionEventSceneContext): boolean {
+export function handleAction(scene: ActionEventSceneContext, pushFurniture?: (event: RuntimeEventView) => boolean): boolean {
   const world = { project: store.getCurrent(), map: scene.map, session: scene.session, positions: scene.eventPositions };
   if (world.session.horror?.hiding) { toggleHiding(world); scene.lastActionTargetKey = ""; return true; }
   const delta = directionDelta(scene.facing);
@@ -432,7 +459,7 @@ export function handleAction(scene: ActionEventSceneContext): boolean {
   if (event) {
     if (event.page?.interaction?.kind === 'hiding') return toggleHiding(world, event);
     if (event.page?.interaction?.kind === 'pushable') {
-      if (pushObject(world, event, scene.facing)) scene.refreshRuntimeSurfaces?.();
+      pushFurniture?.(event);
       return true;
     }
     // 같은 대상 연타 디바운스. 실행은 안 하지만 정면에 대상이 있는 건 맞으므로
