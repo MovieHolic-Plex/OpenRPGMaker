@@ -107,3 +107,35 @@ Upstream PR #603 integration:
   inspectors remain inside the modal.
 - Fresh screenshots:
   `output/evidence/inventory-catalog/party-{actors,classes,skills}-{1024,1280,1440}.png`.
+- Repeated the complete inventory-catalog browser scenario after the upstream
+  CSS change: exit 0, 312 records, all geometry and interaction checks passed.
+
+## Final build and real surfaces
+
+- Final `npm run build`: exit 0, including app typecheck, editor, player SDK,
+  and standalone player. Main entry: `main-dgqJy37W.js`; CSS:
+  `main-CztPE0ln.css`.
+- Direct Firefox access to the built editor on port 29862 opened inventory,
+  world overview, codex, enemies, and animations with zero page errors.
+  Evidence: `output/evidence/inventory-catalog/production-*.png`.
+- Built export-player custom equipment scenario: all six beats passed,
+  no runtime errors, exit 0. Evidence:
+  `verify-shots/runtime-qa/integration-equipment/`.
+- Built facility Chromium run: all eight state assertions passed, but the
+  last facility suffered `ERR_NETWORK_CHANGED` resource failures. That run
+  is retained as exit 1, not relabeled as a pass.
+- `FACILITY_QA_FIREFOX=1` selects a direct Firefox replay of the same assertions
+  and writes to `player-firefox/`, preserving the original Chromium evidence.
+  It does not proxy requests or change product code.
+- Clean upstream full `npm run gates` exceeded the 30-minute watcher limit.
+  This is not evidence of whole-suite success. Separate upstream surface
+  comparison and focused domain results remain the relevant evidence.
+- Separate `npm run gates:surface` on integration and clean `0182722b`:
+  both exit 1 with 6 failures and 107 passes in the same five files.
+  Failure names, assertion messages, and expected/received diff lines are
+  exactly equal, including changeFace/showPicture AI controls, monster
+  species defaults, M2 image queues, and portal/NPC graphics metadata.
+  The two PR #605 equipment snapshot updates introduce no extra difference.
+- Firefox facility replay: exit 0, eight of eight beats passed, no runtime
+  errors. Final report:
+  `output/evidence/facility-quality/integration/player-firefox/SUMMARY.md`.

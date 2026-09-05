@@ -1,5 +1,5 @@
 // Render every facility through the shipped player shim, not the editor shell.
-import { chromium } from "@playwright/test";
+import { chromium, firefox } from "@playwright/test";
 import { copyFile, readFile } from "node:fs/promises";
 import { createReadStream, existsSync } from "node:fs";
 import path from "node:path";
@@ -9,6 +9,8 @@ import { runRuntimeQa, writeReport } from "./lib/runtimeQaRun.mjs";
 const phase = process.argv[2] ?? "after";
 if (!/^[a-z0-9-]+$/.test(phase)) throw new Error("Expected a phase name");
 const root = path.resolve("output/evidence/facility-quality", phase);
+const useFirefox = process.env.FACILITY_QA_FIREFOX === "1";
+const playerOutput = path.join(root, useFirefox ? "player-firefox" : "player");
 const manifest = JSON.parse(await readFile(path.join(root, "manifest.json"), "utf8"));
 const facilities = manifest.filter((entry) => entry.id !== "inn");
 const first = facilities[0];
@@ -38,9 +40,9 @@ const server = await preview({
 const address = server.httpServer.address();
 if (!address || typeof address === "string") throw new Error("Missing player server address");
 const serverUrl = `http://127.0.0.1:${address.port}`;
-const browser = await chromium.launch({
+const browser = await (useFirefox ? firefox : chromium).launch({
   headless: true,
-  args: ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu"],
+  ...(useFirefox ? {} : { args: ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu"] }),
 });
 let failed = false;
 const combined = {
@@ -55,7 +57,7 @@ try {
     page.on("pageerror", (error) => console.error(`PLAYER ERROR: ${error.message}`));
     page.on("requestfailed", (request) => console.error(`PLAYER REQUEST: ${request.url()} ${request.failure()?.errorText}`));
     try {
-      const outDir = path.join(root, "player", facility.id);
+      const outDir = path.join(playerOutput, facility.id);
       const report = await runRuntimeQa(page, {
         id: `facility-${facility.id}`,
         projectFixture: path.join(root, `${facility.id}.json`),
@@ -79,7 +81,7 @@ try {
       for (const beat of report.beats) {
         const shot = `${String(index + 1).padStart(2, "0")}-${facility.id}.png`;
         if (!beat.shot) throw new Error(`Missing player screenshot: ${facility.id}`);
-        await copyFile(path.join(outDir, beat.shot), path.join(root, "player", shot));
+        await copyFile(path.join(outDir, beat.shot), path.join(playerOutput, shot));
         combined.beats.push({ ...beat, index, shot });
         console.log(`PLAYER ${beat.id}: ${beat.failures.length === 0 ? "PASS" : JSON.stringify(beat.failures)}`);
       }
@@ -89,7 +91,7 @@ try {
     }
   }
   for (const error of combined.errors) console.error(`PLAYER ERROR: ${error}`);
-  await writeReport(path.join(root, "player"), combined);
+  await writeReport(playerOutput, combined);
   failed = combined.errors.length > 0 || combined.beats.some((beat) => beat.failures.length > 0);
 } finally {
   await browser.close();
