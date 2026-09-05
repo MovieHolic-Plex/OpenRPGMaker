@@ -19,7 +19,7 @@ const mocks = vi.hoisted(() => ({
   openMapEventSearchModal: vi.fn(),
   openAiSettingsModal: vi.fn(),
   saveProjectNow: vi.fn(async () => undefined),
-  showPromptInput: vi.fn(async () => "새 프로젝트"),
+  showPromptInput: vi.fn(async () => ({ value: "새 프로젝트", choice: "blank" })),
 }));
 
 vi.mock("@/editor/panels/databaseModal", () => ({ openDatabaseModal: mocks.openDatabaseModal }));
