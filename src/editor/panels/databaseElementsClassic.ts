@@ -415,11 +415,16 @@ function elementDamageCard(element: DatabaseElementRecord, index: number): HTMLE
   gradeSelect.value = "C";
   const result = el("output", { dataset: { testid: "db-elements-example-result" }, attrs: { "aria-live": "polite" } });
   const artwork = elementArtwork(element, store.getCurrent(), 96, false);
+  const caption = el("span", { class: "db-ws-usage", text: artwork.title });
+  // The shared thumbnail's earlier error listener sets the failure title first.
+  artwork.querySelector("img")?.addEventListener("error", () => {
+    caption.textContent = artwork.title;
+  }, { once: true });
   const example = el("div", { class: "db-el-example", children: [
     artwork,
     el("div", { class: "db-el-example-copy", children: [
       el("strong", { text: element.name || "(이름 없음)", dataset: { testid: "db-elements-example-name" } }),
-      el("span", { class: "db-ws-usage", text: artwork.title }),
+      caption,
       result,
     ] }),
   ] });

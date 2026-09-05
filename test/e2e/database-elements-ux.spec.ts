@@ -3,7 +3,8 @@ import { mkdir } from "node:fs/promises";
 import { readStoredZipEntry } from "../../src/project/packageZip";
 
 test("elements real editor: recognition, filtering, editing and project export", async ({ page }) => {
-  test.setTimeout(240_000);
+  // Bound the full seven-capture workflow on the shared, CPU-contended QA host.
+  test.setTimeout(480_000);
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -105,6 +106,12 @@ test("elements real editor: recognition, filtering, editing and project export",
   await page.route("**/assets/cc0/jetrel/icons/fire-bomb.png", (route) => route.fulfill({ status: 404, body: "missing" }));
   await page.getByTestId("db-elements-row-4").click();
   await expect(page.getByTestId("db-elements-hero").locator(".db-image-load-failed")).toBeVisible();
+  const example = page.getByTestId("db-elements-damage-card").locator(".db-el-example");
+  const failedArtwork = example.locator("[data-art-source].db-image-load-failed");
+  await expect(failedArtwork).toBeVisible();
+  const failureTitle = await failedArtwork.getAttribute("title");
+  expect(failureTitle).toBeTruthy();
+  await expect(example.locator(".db-el-example-copy .db-ws-usage")).toHaveText(failureTitle!);
   await expect(name).toBeVisible();
   await page.screenshot({ path: `${directory}/elements-image-failure.png`, animations: "disabled" });
   expect(errors).toEqual([]);

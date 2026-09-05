@@ -93,6 +93,22 @@ describe("elements worksheet", () => {
     expect(linked.classList.contains("db-image-load-failed")).toBe(true);
     expect(JSON.stringify(project)).toBe(before);
   });
+  it("synchronizes the example caption with the image failure title", async () => {
+    const before = JSON.stringify(store.getCurrent());
+    const example = get("db-elements-damage-card").querySelector(".db-el-example")!;
+    const artwork = example.querySelector<HTMLElement>("[data-art-source]")!;
+    const caption = example.querySelector<HTMLElement>(".db-el-example-copy .db-ws-usage")!;
+    const image = artwork.querySelector("img")!;
+    const initialTitle = artwork.title;
+    expect(caption.textContent).toBe(initialTitle);
+    const failed = new Promise<void>((resolve) => image.addEventListener("error", () => resolve(), { once: true }));
+    image.dispatchEvent(new Event("error"));
+    await failed;
+    expect(artwork.classList.contains("db-image-load-failed")).toBe(true);
+    expect(artwork.title).not.toBe(initialTitle);
+    expect(caption.textContent).toBe(artwork.title);
+    expect(JSON.stringify(store.getCurrent())).toBe(before);
+  }, 5_000);
   it.each(["constructor", "__proto__"])("does not assign built-in artwork to custom id %s", (id) => {
     const project = createBlankProject();
     const element = { ...project.database.elements![5], id };
