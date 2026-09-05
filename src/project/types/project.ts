@@ -472,6 +472,8 @@ export interface StoryFlagDef {
 }
 
 export interface Project {
+  /** Independent skill graphs; promotion edges remain ClassRecord.promotions. */
+  growth?: import("../growth/types").GrowthDefinition;
   version: number;
   meta: { title: string; author: string; terms: Terms };
   assets: AssetSet;

@@ -1,3 +1,4 @@
+import { growthEffects } from "@/project/growth/runtime";
 import { store } from "@/project/store";
 import { projectFontStack } from "@/project/fontRegistry";
 import { DEFAULT_ATTACK_COOLDOWN_MS, DEFAULT_PROJECTILE_SPEED_TILES_PER_SEC, isActionCombatMap, resolveActionCombatConfig } from "@/project/actionCombat";
@@ -640,7 +641,7 @@ function leadLearnedSkillIds(scene: PlaySceneContext, project: Project, leadId: 
   const classOverrides = scene.session.classOverrides;
   const effectiveClass = effectiveActorClassId(project, { classOverrides }, leadId);
   const usesOverride = hasActorClassOverride({ classOverrides: classOverrides ? { ...classOverrides } : undefined }, leadId);
-  return learnedSkillIds(project, normalized, level, scene.session.actorSkillIds?.[leadId], effectiveClass, usesOverride);
+  return learnedSkillIds(project, normalized, level, scene.session.actorSkillIds?.[leadId], effectiveClass, usesOverride, scene.session.growthProgress);
 }
 
 // 배운 스킬 → 액션 슬롯 재해석. 슬롯이 줄어들어 활성 인덱스가 범위를 벗어나면 0 번으로 스냅된다.
@@ -825,9 +826,10 @@ function leadActorSwingProfile(scene: PlaySceneContext): LeadSwingProfile | null
   const weapon = project.database.equipment.find((entry) => entry.id === weaponId);
   const profile = weapon?.actionWeapon;
   const weaponAttack = weapon?.statBonuses?.attack ?? 0;
+  const growth = growthEffects(project, scene.session, actor.id).bonuses;
   return {
-    attack: parameterValueAtLevel(normalized.parameterCurves.attack, level) + weaponAttack,
-    defense: parameterValueAtLevel(normalized.parameterCurves.defense, level),
+    attack: parameterValueAtLevel(normalized.parameterCurves.attack, level) + weaponAttack + growth.attack,
+    defense: parameterValueAtLevel(normalized.parameterCurves.defense, level) + growth.defense,
     range: profile?.swingRange ?? config?.swingRange ?? 1,
     cooldownMs: profile?.swingCooldownMs ?? config?.swingCooldownMs ?? 350,
     damageBonus: (config?.swingDamageBonus ?? 0) + (profile?.swingDamageBonus ?? 0),

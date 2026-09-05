@@ -117,6 +117,7 @@ export function switchVariableReferenceLocations(
 
 export function switchVariableReferencedInProject(project: Project, kind: "switch" | "variable", id: string): boolean {
   return (
+    (kind === "variable" && project.growth?.bonusVariableId === id) ||
     project.commonEvents.some(
       (event) => (kind === "switch" && event.conditionSwitchId === id) || commandListReferencesSwitchVariable(event.commands, kind, id)
     ) ||

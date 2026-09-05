@@ -1,3 +1,4 @@
+import { isGrowthProgress } from "@/project/growth/validation";
 import { SCHEMA_VERSION, type ActorInitialEquipment, type CharacterFootprint, type Project } from "@/project/types";
 import { normalizeRelationships } from "@/project/relationshipState";
 import { normalizeCharacterFootprint } from "@/project/footprint";
@@ -212,6 +213,7 @@ export type SaveSnapshot = {
     readonly actorNicknames?: PlaySession["actorNicknames"];
     readonly actorFaceResourceIds?: PlaySession["actorFaceResourceIds"];
     readonly actorCharacterResourceIds?: Record<string, string>;
+    readonly growthProgress?: PlaySession["growthProgress"];
     readonly classOverrides?: Record<string, string>;
     readonly actorParamBonuses?: PlaySession["actorParamBonuses"];
     readonly actorStateIds?: PlaySession["actorStateIds"];
@@ -390,6 +392,7 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       actorNicknames: structuredClone(session.actorNicknames),
       actorFaceResourceIds: structuredClone(session.actorFaceResourceIds),
       actorCharacterResourceIds: structuredClone(session.actorCharacterResourceIds),
+      growthProgress: structuredClone(session.growthProgress),
       classOverrides: structuredClone(session.classOverrides),
       actorParamBonuses: structuredClone(session.actorParamBonuses),
       actorStateIds: structuredClone(session.actorStateIds),
@@ -608,6 +611,7 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.actorNicknames) session.actorNicknames = structuredClone(snapshot.session.actorNicknames);
   if (snapshot.session.actorFaceResourceIds) session.actorFaceResourceIds = structuredClone(snapshot.session.actorFaceResourceIds);
   if (snapshot.session.actorCharacterResourceIds) session.actorCharacterResourceIds = structuredClone(snapshot.session.actorCharacterResourceIds);
+  if (snapshot.session.growthProgress) session.growthProgress = structuredClone(snapshot.session.growthProgress);
   if (snapshot.session.classOverrides) session.classOverrides = structuredClone(snapshot.session.classOverrides);
   if (snapshot.session.actorParamBonuses) session.actorParamBonuses = structuredClone(snapshot.session.actorParamBonuses);
   if (snapshot.session.actorStateIds) session.actorStateIds = structuredClone(snapshot.session.actorStateIds);
@@ -934,6 +938,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       actorNicknames: isStringRecord(session.actorNicknames) ? session.actorNicknames : undefined,
       actorFaceResourceIds: parseActorFaceResourceIds(session),
       actorCharacterResourceIds: isStringRecord(session.actorCharacterResourceIds) ? session.actorCharacterResourceIds : undefined,
+      growthProgress: isGrowthProgress(session.growthProgress) ? session.growthProgress : undefined,
       classOverrides: isStringRecord(session.classOverrides) ? session.classOverrides : undefined,
       actorParamBonuses: isActorParamBonusRecord(session.actorParamBonuses) ? session.actorParamBonuses : undefined,
       actorStateIds: isActorStateIdsRecord(session.actorStateIds) ? session.actorStateIds : undefined,

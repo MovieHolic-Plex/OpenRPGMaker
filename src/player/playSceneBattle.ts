@@ -71,6 +71,7 @@ export function playBattle(
       skillIds: scene.session.actorSkillIds,
       skillPp: scene.session.actorSkillPp,
       classOverrides: scene.session.classOverrides,
+      growthProgress: scene.session.growthProgress,
       stateIds: scene.session.actorStateIds,
       partyActorIds: scene.session.partyActorIds,
       monsterParty: monsterPartyMode ? partyMonsters : undefined,
@@ -96,6 +97,7 @@ export function playBattle(
       // Step 3d: 전투 이벤트 changeEquipment/promoteActor 의 기준 상태(오버레이 시드).
       actorEquipment: scene.session.actorEquipment,
       classOverrides: scene.session.classOverrides,
+      growthProgress: scene.session.growthProgress,
       timers: scene.session.timers,
       gameTime: scene.session.gameTime,
       npcActivities: scene.session.npcActivities,

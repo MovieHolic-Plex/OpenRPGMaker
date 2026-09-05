@@ -41,7 +41,7 @@ export function renderStatusMenuDetailPanel(
   if (detail.tabs?.length) {
     const tabs = el("div", {
       class: "life-ledger-tabs",
-      attrs: { role: "tablist", "aria-label": "생활 장부 분류" },
+      attrs: { role: "tablist", "aria-label": `${detail.title} 분류` },
     });
     for (const tab of detail.tabs) {
       const actionIndex = tab.onActivate ? enabledActionIndex : undefined;

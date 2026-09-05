@@ -171,3 +171,10 @@ states 5)에 아이템만 넣으면 **프로젝트가 부팅 중에 스스로 �
 내보낸 파일명 어간과 일치) → 같은 파일을 빈 프로젝트 편집기로 되가져와 맵 수가 원본과 같아짐.
 세이브 네임스페이스의 파일/번들 분기는 `test/oprnGameFile.test.ts` 가 고정한다. 증거 PNG 는
 `verify-shots/oprn-single-file-game/`.
+
+## 성장 트리 선택 확장 (2026-09-05)
+
+`Project.growth`는 v4 선택 필드이며 기존 저장본에 자동 생성하지 않는다.
+스킬 노드/직업 참조와 DAG는 `growth/validation.ts`, 투자 세이브는 `PlaySession.growthProgress`와
+`saveSlots.ts`가 소유한다. 영구 스킬 목록에 투자 효과를 합쳐 저장하지 말 것.
+자세한 계약: [성장 트리](growth-trees.md).

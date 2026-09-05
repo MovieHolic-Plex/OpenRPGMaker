@@ -1,3 +1,7 @@
+import { investSkillNode, resetSkillTree } from "@/project/growth/runtime";
+import { promoteActor } from "@/project/sessionClass";
+import { refreshGrowthVitals } from "@/project/growth/vitals";
+import type { GrowthMenuTab } from "@/player/playerGrowthMenu";
 import { store } from "@/project/store";
 import { createSaveSnapshot, getSaveSlotStatus, listSaveSlots, saveToSlot, type SaveSlotIndex } from "@/player/saveSlots";
 import { renderPlayerStatusMenu } from "@/player/playerStatusMenu";
@@ -43,6 +47,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   let targetItemId: string | undefined;
   let skillActorId: string | undefined;
   let selectedSkillId: string | undefined;
+  let growthTab: GrowthMenuTab = "skills";
   let equipmentActorId: string | undefined;
   let equipmentSlotId: keyof ActorInitialEquipment | undefined;
   let formationActorId: string | undefined;
@@ -67,6 +72,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     targetItemId = undefined;
     skillActorId = undefined;
     selectedSkillId = undefined;
+    growthTab = "skills";
     equipmentActorId = undefined;
     equipmentSlotId = undefined;
     formationActorId = undefined;
@@ -107,6 +113,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       targetItemId,
       skillActorId,
       selectedSkillId,
+      growthTab,
       equipmentActorId,
       equipmentSlotId,
       formationActorId,
@@ -133,6 +140,18 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
           skillActorId = actorId;
           selectedSkillId = undefined;
           options.emitMenuJuice("menu-confirm", renderMenu(undefined, "skills"));
+        },
+        onSelectGrowthTab: (tab) => { growthTab = tab; selectedDetailActionIndex = 0; options.emitMenuJuice("menu-select", renderMenu(undefined, "skills")); },
+        onGrowthMutation: (action) => {
+          const scene = options.getActiveScene(); if (!scene) return;
+          const project = store.getCurrent(), session = scene.getSession();
+          let error: string | undefined;
+          if (action.kind === "invest") error = investSkillNode(project, session, action.actorId, action.treeId, action.nodeId);
+          else if (action.kind === "reset") error = resetSkillTree(project, session, action.actorId, action.treeId);
+          else { const result = promoteActor(session, project, action.actorId, action.classId); if (!result.ok) error = "승급 조건을 만족하지 못했습니다."; }
+          refreshGrowthVitals(project, session, action.actorId);
+          scene.syncRuntimeState();
+          options.emitMenuJuice("menu-confirm", renderMenu(error ?? (action.kind === "invest" ? "능력을 습득했습니다." : action.kind === "reset" ? "포인트를 환급했습니다." : "새로운 직업으로 승급했습니다."), "skills"));
         },
         onSelectSkill: (skillId) => {
           if (skillActorId) rememberDetailCursorFromTestId(`status-menu-skill-${skillActorId}-${skillId}`);
@@ -619,7 +638,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "items":
         return targetItemId ? `items:${targetItemId}:targets` : "items:list";
       case "skills":
-        return skillActorId ? `skills:${skillActorId}:list` : "skills:actors";
+        return skillActorId ? `skills:${skillActorId}:${growthTab}` : "skills:actors";
       case "equipment":
         if (!equipmentActorId) return "equipment:actors";
         if (!equipmentSlotId) return `equipment:${equipmentActorId}:slots`;
