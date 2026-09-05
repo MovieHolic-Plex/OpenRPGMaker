@@ -1,5 +1,12 @@
 # Editor AI Panel & Tools
 
+## 브라우저 포커스와 도구 실행 대기 (2026-09-05)
+
+- 도구 실행 직전의 `AssistantSession.yieldForUi` → `src/ai/yieldToUi.ts`가 이벤트 루프를 양보한다. 포커스가 있는 보이는 문서는 rAF를 기다려 라이브 행·고스트가 그려질 틈을 준다. `document.visibilityState === "hidden"` 또는 `document.hasFocus() === false`이면 `MessageChannel` 태스크로 양보한다. `Promise.resolve()`만 쓰면 입력·중단 이벤트가 굶으므로 대체하지 않는다.
+- 2026-09-04의 rAF + 50ms 타이머 폴백은 타이머까지 제한되는 백그라운드에서 도구마다 지연될 수 있었다. 이제 프레임을 기다리던 중에도 `visibilitychange`/창 `blur`를 받으면 메시지 태스크로 전환한다. 완료·전환 시 프레임, 타이머, 이벤트 리스너를 정리하고 메시지 포트도 완료 즉시 닫는다. 포커스가 있는데 rAF가 멈추거나 호출이 실패한 경우의 50ms 안전망, MessageChannel 미지원 환경의 타이머 폴백, Node의 즉시 완료는 유지한다.
+- 범위는 살아 있는 문서의 스케줄링이다. 브라우저의 탭 freeze/discard, 탭 닫기, 기기 절전 중에도 작업을 계속하려면 별도의 서버 실행·복구 설계가 필요하다.
+- 회귀: `test/yieldToUi.test.ts`(프레임·타이머 정지, 중간 숨김·포커스 상실, 자원 정리, 미지원 환경), `test/assistantSessionYield.test.ts`, `test/e2e/ai-background-progress.spec.ts`(실제 패널의 도구 3개와 최종 답변). 브라우저 증거는 `output/evidence/assistant-background/`. Playwright는 기본으로 포커스를 강제하고 타이머 제한을 끄므로 해당 스펙은 그 옵션을 해제한다. 숨김·분 단위 타이머 제한은 명시적으로 주입하고, MessageChannel과 세션 실행은 실제 브라우저 경로를 쓴다.
+
 ## 조수 카메라 이동 수명·부드러운 줌 (2026-09-05)
 
 - `EditScene.panCameraToTile`은 목적지 줌을 `editorState`에 한 번 기록하고, 같은 호출 안에서 실제 카메라를 출발 위치·줌으로 복원한다. 이후 팬의 progress로 look-at과 로그 배율 줌을 함께 보간한다. 거리별 300–650ms, 시작·끝 속도 0의 smoothstep을 쓰며 `prefers-reduced-motion: reduce`면 즉시 도착한다. `onlyIfOffscreen` 판정은 상태의 목적지 줌이 아니라 **현재 카메라 줌**을 쓴다.
