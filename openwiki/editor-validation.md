@@ -1,5 +1,10 @@
 # Editor Validation Expectations
 
+## AI 타일 후검증 (2026-09-05)
+
+- `verifyPostTilePlacement`(`src/project/lint/postTileVerify.ts`)는 AI가 타일을 깐 뒤를 본다. `build_roof`는 지붕이 **그 집 벽 연결 성분**을 덮었는지(`post-roof-incomplete`), `place_props`/`scatter_object`는 나무 요청인데 하층식생만 깔렸거나 나무 타일이 0이면(`post-tree-only-undergrowth` / `post-tree-missing`) warning 한다. 커밋 게이트는 막지 않는다. 고아 밑동·수관 보정은 기존 `repairTreePairs`가 맡는다.
+- 쓰기 툴 성공 후(`src/editor/tools/toolRunner.ts`) `result.issues`와 `diff.warnings`에 붙이고, `run_lint`는 `verifyPlacedTiles`로 맵 전체의 미완성 지붕을 본다. 회귀: `test/postTileVerify.test.ts`.
+
 ## 이벤트 초안 검증 표면 (2026-08-28)
 
 - 이벤트 편집기 검증 결과는 창 아래쪽 스트립이 아니라 타이틀바 오른쪽 **검토 알림 종**이다. 회귀: `test/eventEditorValidationBell.test.ts`(hidden/개수/최악 심각도/99+ 상한/항목 클릭 이동 + 팝오버 닫힘/바깥 클릭 닫힘) + `test/eventEditorUiDensity.test.ts`(편집면에 검증 chrome 이 없음). 심각도 계산과 개수는 `data-severity` / `data-count` 로 노출되므로 테스트는 문구가 아니라 이 값을 검사한다.

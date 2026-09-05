@@ -7,6 +7,7 @@
 //   dryRun이면 통과해도 ctx.project를 갱신하지 않는다.
 
 import type { LintIssue } from "@/project/lint/projectLint";
+import { verifyPostTilePlacement } from "@/project/lint/postTileVerify";
 import { formatTreePairRepairSummary, repairTreePairsOnProject } from "@/project/lint/repairTreePairs";
 import { resolveForestCanopyReplacementExemptTileIds } from "./forestComposition";
 import { commitChangeset, createDraft, summarizeChanges } from "./changeset";
@@ -152,7 +153,9 @@ export function runToolDefinition(
     }
 
     if (!options.dryRun) ctx.project = draft;
-    const issues = [...(exec.issues ?? []), ...commit.issues];
+    const postTile = verifyPostTilePlacement(draft, { name, args: normalizedArgs, data: exec.data });
+    if (postTile.length > 0) diff.warnings.push(...postTile.map((issue) => issue.message));
+    const issues = [...(exec.issues ?? []), ...commit.issues, ...postTile];
     const summary = treeRepairNote ? `${exec.summary} · ${treeRepairNote}` : exec.summary;
     return {
       ok: true,
