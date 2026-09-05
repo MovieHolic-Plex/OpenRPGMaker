@@ -25,6 +25,8 @@ runtimeEventViewById, } from "@/project/runtimeEventState"
 export function updateAutonomousNPCs(scene: AutonomousNpcSceneContext, deltaMs: number): void {
   const project = store.getCurrent();
   for (const [eventId, mover] of scene.autonomousNPCs) {
+    if (scene.running && scene.session.messageWindowSettings?.allowEventMovementDuringWait !== true
+      && !scene.commandMoveRouteEventIds?.has(eventId)) continue;
     if (mover.activeMove) {
       updateActiveNpcMove({ scene, eventId, mover }, deltaMs);
       continue;
@@ -69,6 +71,11 @@ export function updateAutonomousNPCs(scene: AutonomousNpcSceneContext, deltaMs: 
     if (!movement.jump && !mover.through && isPlayerOccupyingTile(scene, nx, ny)) {
       fireEventTouch(scene, eventId, view.trigger.kind);
       setNpcIdleFrame(sprite, baseFrame, frameDir, view.animationType, mover.animationEnabled);
+      if (mover.stopOnBlocked) {
+        scene.autonomousNPCs.delete(eventId);
+        scene.commandMoveRouteEventIds?.delete(eventId);
+        continue;
+      }
       retryBlockedStep(mover);
       completeRouteCommand(mover);
       continue;
@@ -104,6 +111,11 @@ export function updateAutonomousNPCs(scene: AutonomousNpcSceneContext, deltaMs: 
       scene.runtimeDom.upsertEventMarker(runtimeEventView(view.event, scene.session, scene.eventPositions));
     } else {
       setNpcIdleFrame(sprite, baseFrame, frameDir, view.animationType, mover.animationEnabled);
+      if (mover.stopOnBlocked) {
+        scene.autonomousNPCs.delete(eventId);
+        scene.commandMoveRouteEventIds?.delete(eventId);
+        continue;
+      }
       retryBlockedStep(mover);
     }
     completeRouteCommand(mover);

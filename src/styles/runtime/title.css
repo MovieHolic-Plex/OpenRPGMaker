@@ -388,3 +388,17 @@
 .player-layout.system-shell .oprn-load-slot.is-corrupt {
   color: #ffd7d0;
 }
+
+/* Event-command load screens occupy the logical play stage, like the status menu. */
+.player-layout.system-shell .play-stage > .oprn-load-panel.system-panel {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 40;
+}
+
+.player-layout.system-shell .play-stage > .oprn-load-panel .oprn-load-window {
+  max-height: calc(100% - 16px);
+  overflow-y: auto;
+}

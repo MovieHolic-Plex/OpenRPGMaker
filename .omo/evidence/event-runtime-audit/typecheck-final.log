@@ -1,0 +1,7 @@
+
+> rpg-zzu@0.1.0 gates
+> node scripts/verify-gates.mjs --only typecheck
+
+typecheck:app  exit=0  errors=0  files=0
+
+기준선 대비 회귀 없음 (/home/main/.herdr/worktrees/rpg-zzu/worktree-clear-field-df12/.omo/gates-baseline.json)

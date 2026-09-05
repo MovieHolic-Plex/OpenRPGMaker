@@ -1,3 +1,4 @@
+import { isRuntimeEventIdle } from "@/player/runtimeConditionWait";
 import { showSceneEmote } from "@/player/playSceneEmotes";
 import {
   clearAudioState,
@@ -20,6 +21,7 @@ import { applyCameraControl } from "@/player/playSceneCamera";
 import { releaseCutsceneControlForOwner } from "@/player/cutsceneControl";
 import { applyLightingStep } from "@/player/playSceneLighting";
 import { playMapAnimation } from "@/player/playSceneMapAnimations";
+import { playPathfindMove } from "@/player/playScenePathfinding";
 import { playMovieOverlay } from "@/player/playSceneMovies";
 import { applyWeatherStep } from "@/player/playSceneWeather";
 import { applyAdvanceTimeStep, applySetTimeStep, observeScheduledTimeTransition } from "@/player/playSceneTime";
@@ -113,6 +115,8 @@ function createParallelProcess(
     currentEventId: event.event.id,
     interpreter: createInterpreter(event.page?.commands ?? event.event.commands, scene.session, store.getCurrent(), {
       currentEventId: event.event.id,
+      getEventPositions: () => scene.eventPositions,
+      isEventIdle: target => isRuntimeEventIdle(scene, target),
       onFactionStanceChanged: () => invalidateFactionRetargetCache(scene),
     }),
     waitMs: 0,
@@ -128,6 +132,8 @@ function createCommonParallelProcess(scene: PlaySceneContext, event: CommonEvent
   const process = {
     pageId: event.id,
     interpreter: createInterpreter(event.commands, scene.session, project, {
+      getEventPositions: () => scene.eventPositions,
+      isEventIdle: target => isRuntimeEventIdle(scene, target),
       onFactionStanceChanged: () => invalidateFactionRetargetCache(scene),
     }),
     waitMs: 0,
@@ -154,6 +160,20 @@ function consumeParallelSteps(
     if (result.kind === "wait") {
       process.waitMs = result.ms;
       return;
+    }
+    if (result.kind === "pathfindMove") {
+      const pending = playPathfindMove(scene, result, process.currentEventId).then(() => true);
+      if (result.wait) {
+        process.pendingTimeTransition = pending;
+        void pending.then(() => {
+          if (scene.parallelProcesses.get(key) !== process) return;
+          process.pendingTimeTransition = undefined;
+          consumeParallelSteps(scene, key, process, process.interpreter.resume(undefined));
+        });
+        return;
+      }
+      result = process.interpreter.resume(undefined);
+      continue;
     }
     if (result.kind === "advanceTime" || result.kind === "sleepUntilMorning") {
       startParallelTimeTransition(scene, key, process, result);
@@ -217,6 +237,9 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
       return true;
     case "setEventGraphicPattern":
       applyEventGraphicPatternStep(scene, step, currentEventId);
+      return true;
+    case "pathfindMove":
+      void playPathfindMove(scene, step, currentEventId);
       return true;
     case "moveEvent":
       scene.registerAutonomousMover(step.eventId || currentEventId || "", step.moves, step.repeat);
@@ -301,7 +324,9 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
       scene.showRuntimeOverlay("chest-scene", "보관 상자");
       return true;
     case "openSaveMenu":
-      return true;
+    case "openMenuScreen":
+    case "openLoadMenu":
+      return false;
     case "spawnFieldEnemy":
       return true;
     case "despawnFieldEnemy":
@@ -338,6 +363,9 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
 // 이들은 consumeParallelSteps 에서 skip 대상이 된다. wait/done 읔 제외.
 function isParallelBlockingStep(step: StepResult): boolean {
   return (
+    step.kind === "openSaveMenu" ||
+    step.kind === "openMenuScreen" ||
+    step.kind === "openLoadMenu" ||
     step.kind === "text" ||
     step.kind === "choices" ||
     step.kind === "inputWait" ||

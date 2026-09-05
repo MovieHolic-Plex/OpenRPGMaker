@@ -1,7 +1,13 @@
+/** @vitest-environment happy-dom */
+import { playPathfindMove, planPathfindMove } from "@/player/playScenePathfinding";
+import { conditionWaitScenes } from "@/player/runtimeConditionWait";
+import { updateAutonomousNPCs } from "@/player/playSceneAutonomous";
+import { registerAutonomousMover } from "@/player/playSceneSchedulers";
+import { event, page, mockSprite } from "./runtimeEventPageFixtures";
 import { applySaveSnapshot, createSaveSnapshot } from '@/player/saveSlots';
 import { cancelFurniturePush, furniturePushPosition, furniturePushBlocks, furniturePushFrames } from '@/player/furniturePushAnimation';
 import { runtimeEventViewsForMap } from '@/project/runtimeEventState';
-/** @vitest-environment happy-dom */
+
 // 런타임 불안정 회귀 증거 — 2026-09-03 리뷰에서 실측한 세 결함을 고치기 **전 코드에서 실패**하도록 썼다.
 //
 //  1. 방향키를 한 프레임 사이에 눌렀다 떼면 걸음이 0 회다(래치 없음). 브라우저 실측: 즉시 탭 4회 → 1칸.
@@ -9,7 +15,7 @@ import { runtimeEventViewsForMap } from '@/project/runtimeEventState';
 //     실측: 대화 1회 = 타일 재생성 6회 · 카메라 스냅 6회, 100ms 병렬 이벤트 = 3초 정지에 24회.
 //  3. 걸음마다 walkFrame 이 0 으로 돌아가 세 번째 걷기 패턴이 한 번도 안 나오고, 칸 사이에 유휴
 //     프레임이 끼어 6 칸을 걷는 데 6.6 칸 시간이 든다.
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import type Phaser from "phaser";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { TILE_SIZE } from "@/assets/bundled";
@@ -734,5 +740,141 @@ describe('furniture animation lifecycle', () => {
     expect(furniturePushPosition(h.scene,'chair')).toBeUndefined();
     expect(furniturePushFrames(h.scene)).toBeUndefined();
     expect(furniturePushBlocks(h.scene,{left:h.x,right:h.x,top:h.y,bottom:h.y})).toBe(false);
+  });
+});
+
+describe("command NPC routes while an event is running", () => {
+  it("finishes a forced turn during a blocking event while background NPCs and parallel events stay paused", () => {
+    const harness = movementHarness();
+    const { scene } = harness;
+    scene.running = true;
+    scene.session.messageWindowSettings = { format: "normal", position: "bottom", preventObscuringPlayer: true, allowEventMovementDuringWait: false };
+    scene.commandMoveRouteEventIds = new Set(["father"]);
+    scene.map.events.push(event("father", 7, 5, [page("father", "same", { kind: "action" })]));
+    scene.map.events.push(event("bystander", 8, 5, [page("bystander", "same", { kind: "action" })]));
+    scene.eventSprites.set("father", mockSprite() as never);
+    scene.eventSprites.set("bystander", mockSprite() as never);
+    scene.runtimeDom = { upsertEventMarker: () => undefined } as never;
+    registerAutonomousMover(scene, "father", [{ kind: "turn", dir: "up" }], false);
+    registerAutonomousMover(scene, "bystander", [{ kind: "turn", dir: "left" }], true);
+    scene.updateAutonomousNPCs = (delta) => updateAutonomousNPCs(scene, delta);
+    let parallelUpdates = 0;
+    scene.updateParallelEvents = () => { parallelUpdates += 1; };
+
+    harness.tick(60); // one second of real update dispatch; not the 30-second wait fallback
+
+    expect(scene.autonomousNPCs.has("father")).toBe(false);
+    expect(scene.commandMoveRouteEventIds.has("father")).toBe(false);
+    expect(scene.eventSprites.get("father")?.frame).toBe(charsetFrameIndex({ characterIndex: 0, direction: "up", pattern: 1 }));
+    expect(scene.autonomousNPCs.get("bystander")?.step).toBe(0);
+    expect(parallelUpdates).toBe(0);
+
+    scene.session.messageWindowSettings.allowEventMovementDuringWait = true;
+    harness.tick(60);
+    expect(scene.autonomousNPCs.get("bystander")?.step).toBeGreaterThan(0);
+    expect(parallelUpdates).toBeGreaterThan(0);
+  });
+});
+
+describe("pathfinding through the real frame dispatcher", () => {
+  function setup() {
+    const h = movementHarness();
+    const s = h.scene;
+    s.running = true;
+    s.session.x = s.tileX; s.session.y = s.tileY;
+    s.commandMoveRouteEventIds = new Set();
+    s.registerAutonomousMover = (id, moves, repeat) => registerAutonomousMover(s, id, moves, repeat);
+    s.updateAutonomousNPCs = delta => updateAutonomousNPCs(s, delta);
+    s.runtimeDom = { upsertEventMarker: () => undefined } as never;
+    const callbacks = new Map<number, FrameRequestCallback>();
+    let id = 0;
+    vi.spyOn(globalThis, "requestAnimationFrame").mockImplementation(cb => { callbacks.set(++id, cb); return id; });
+    vi.spyOn(globalThis, "cancelAnimationFrame").mockImplementation(key => { callbacks.delete(key); });
+    const tick = () => {
+      h.tick(1);
+      const pending = [...callbacks.values()]; callbacks.clear();
+      for (const cb of pending) cb(performance.now());
+    };
+    return { s, tick };
+  }
+
+  it.each(["player", "this-event"])("walks %s around a solid NPC and waits for the last tween", async target => {
+    const { s, tick } = setup();
+    try {
+      const start = target === "player" ? 5 : 8;
+      if (target !== "player") {
+        s.map.events.push(event("walker", start, 5, [page("walker", "same", { kind: "action" })]));
+        s.eventSprites.set("walker", mockSprite() as never);
+      }
+      s.map.events.push(event("blocker", start + 1, 5, [page("blocker", "same", { kind: "action" })]));
+      const step = { kind: "pathfindMove", target, x: start + 2, y: 5, speed: 4, wait: true } as const;
+      const plan = planPathfindMove(s, step, "walker")!;
+      expect(plan.moves.length).toBeGreaterThan(2);
+      let done = false;
+      const pending = playPathfindMove(s, step, "walker").then(() => { done = true; });
+      expect(done).toBe(false);
+      expect(s.tileX).toBe(5);
+      const visited: string[] = [];
+      for (let i = 0; i < 250; i++) {
+        tick();
+        const p = target === "player" ? { x: s.tileX, y: s.tileY } : s.eventPositions.walker;
+        if (p) visited.push(`${p.x},${p.y}`);
+        if (i === 5) expect(done).toBe(false);
+      }
+      await pending;
+      expect(visited).not.toContain(`${start + 1},5`);
+      expect(visited).toContain(`${start + 2},5`);
+      expect(s.session.flags.pathfindSucceeded).toBe(true);
+      expect(s.moveDurationMs).toBe(160);
+    } finally { vi.restoreAllMocks(); }
+  });
+
+  it.each(["player", "this-event"])("stops %s when an obstacle appears instead of drifting along the remaining directions", async target => {
+    const { s, tick } = setup();
+    try {
+      const start = target === "player" ? 5 : 8;
+      if (target !== "player") {
+        s.map.events.push(event("walker", start, 5, [page("walker", "same", { kind: "action" })]));
+        s.eventSprites.set("walker", mockSprite() as never);
+      }
+      const step = { kind: "pathfindMove", target, x: start + 2, y: 6, speed: 4, wait: true } as const;
+      const first = planPathfindMove(s, step, "walker")!.moves[0]!;
+      if (first.kind !== "move") throw new Error("Expected walking step");
+      const dx = first.dir === "right" ? 1 : first.dir === "left" ? -1 : 0;
+      const dy = first.dir === "down" ? 1 : first.dir === "up" ? -1 : 0;
+      const pending = playPathfindMove(s, step, "walker");
+      s.map.events.push(event("new_blocker", start + dx, 5 + dy, [page("blocker", "same", { kind: "action" })]));
+      for (let i = 0; i < 100; i++) tick();
+      await pending;
+      if (target === "player") expect([s.tileX, s.tileY]).toEqual([start, 5]);
+      else expect(s.eventPositions.walker ?? { x: start, y: 5 }).toMatchObject({ x: start, y: 5 });
+      expect(s.playerRoute).toBeNull();
+      expect(s.autonomousNPCs.has("walker")).toBe(false);
+      expect(s.session.flags.pathfindSucceeded).toBe(false);
+    } finally { vi.restoreAllMocks(); }
+  });
+
+  it("does not start a route outside the map and cancels its own route on abort", async () => {
+    const { s } = setup();
+    try {
+      await playPathfindMove(s, { kind: "pathfindMove", target: "player", x: -1, y: 5, speed: 4, wait: true });
+      expect(s.playerRoute).toBeNull();
+      const abort = new AbortController();
+      const pending = playPathfindMove(s, { kind: "pathfindMove", target: "player", x: 8, y: 5, speed: 4, wait: true }, undefined, abort.signal);
+      abort.abort();
+      await pending;
+      expect(s.playerRoute).toBeNull();
+    } finally { vi.restoreAllMocks(); }
+  });
+
+  it("keeps input locked but lets parallel producers run during a foreground condition wait", () => {
+    const h = movementHarness();
+    h.scene.running = true;
+    h.scene.inputEnabled = false;
+    h.scene.updateParallelEvents = () => { h.scene.session.switches.ready = true; };
+    conditionWaitScenes.add(h.scene);
+    try { h.tick(1); } finally { conditionWaitScenes.delete(h.scene); }
+    expect(h.scene.session.switches.ready).toBe(true);
+    expect(h.scene.inputEnabled).toBe(false);
   });
 });

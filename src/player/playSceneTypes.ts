@@ -31,6 +31,7 @@ export type ParallelProcess = {
 };
 
 export type AutonomousMover = {
+  stopOnBlocked?: boolean;
   moves: MoveCommand[];
   step: number;
   timer: number;
@@ -119,6 +120,8 @@ export type TransferRequest = {
 };
 
 export interface PlayerRouteState {
+  stopOnBlocked?: boolean;
+  moveDurationMs?: number;
   moves: MoveCommand[];
   index: number;
   repeat: boolean;

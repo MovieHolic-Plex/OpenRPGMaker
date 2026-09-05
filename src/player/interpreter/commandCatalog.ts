@@ -22,6 +22,7 @@ import type { CommandExecution, Frame, InterpreterState, PendingStep, StepResult
 import { breakLoop, gotoLabel, pushFrame, pushLoopFrame } from "@/player/interpreter/stack";
 import { executeM2RuntimeCommand } from "@/player/interpreter/m2Runtime";
 import { fieldBoolean, fieldNumber, fieldString } from "@/player/interpreter/m2RuntimeFields";
+import { waitConditionMet } from "@/player/interpreter/m2ModernRuntime";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import { planScreenEffect } from "@/player/interpreter/screenEffectPlan";
 import type { RuntimeCameraTarget } from "@/project/sessionRuntimeTypes"
@@ -92,14 +93,16 @@ function executeM2Command(
     console.warn(`[interpreter] M2 command is unclassified: ${command.commandId}`);
     return resumeNext(frame);
   }
-  const m2Context = { currentEventId: state.currentEventId, project: state.project };
+  const m2Context = { currentEventId: state.currentEventId, project: state.project, eventPositions: state.eventPositions };
 
   if (entry.existingKind === "displayTextSettings") {
+    const format = fieldString(command.fields, "format", DEFAULT_MESSAGE_WINDOW_SETTINGS.format);
+    const position = fieldString(command.fields, "position", DEFAULT_MESSAGE_WINDOW_SETTINGS.position);
     state.session.messageWindowSettings = {
-      format: "normal",
-      position: "bottom",
-      preventObscuringPlayer: true,
-      allowEventMovementDuringWait: false,
+      format: format === "transparent" ? format : "normal",
+      position: position === "top" || position === "center" ? position : "bottom",
+      preventObscuringPlayer: fieldBoolean(command.fields, "preventObscuringPlayer", DEFAULT_MESSAGE_WINDOW_SETTINGS.preventObscuringPlayer),
+      allowEventMovementDuringWait: fieldBoolean(command.fields, "allowEventMovementDuringWait", DEFAULT_MESSAGE_WINDOW_SETTINGS.allowEventMovementDuringWait),
     };
     return resumeNext(frame);
   }
@@ -146,13 +149,47 @@ function executeM2Command(
     });
   }
 
-  if (entry.title === "Wait Until" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
+  if (entry.title === "Wait Until") {
+    // Record once, then re-evaluate after each short wait (including parallel processes).
+    if (!state.waitUntil) executeM2RuntimeCommand(state.session, entry, { ...command, fields: { condition: "switchOn", target: "", value: "", timeoutMs: 0, ...command.fields } }, m2Context);
     const condition = fieldString(command.fields, "condition", "switchOn");
     const target = fieldString(command.fields, "target", "");
-    if (state.session.flags[`m2-wait:${condition}:${target}`] !== true) {
-      return pause("wait", { kind: "wait", ms: fieldNumber(command.fields, "timeoutMs", 0) });
+    const met = waitConditionMet(state.session, { condition, target, value: command.fields.value === undefined ? "" : fieldString(command.fields, "value", "") }, {
+      project: state.project,
+      isEventIdle: target => state.isEventIdle?.(!target || target === "this-event" ? state.currentEventId ?? "" : target) ?? false,
+    });
+    state.session.flags[`m2-wait:${condition}:${target}`] = met;
+    const timeout = Math.max(0, fieldNumber(command.fields, "timeoutMs", 0));
+    const elapsed = state.waitUntil?.elapsedMs ?? 0;
+    if (met || (timeout > 0 && elapsed >= timeout)) {
+      state.waitUntil = undefined;
+      return resumeNext(frame);
     }
-    return resumeNext(frame);
+    const ms = timeout > 0 ? Math.min(50, timeout - elapsed) : 50;
+    state.waitUntil = { elapsedMs: elapsed, intervalMs: ms };
+    return pause("waitUntil", { kind: "wait", ms, allowParallelEvents: true });
+  }
+
+  if (entry.title === "Pathfind Move") {
+    executeM2RuntimeCommand(state.session, entry, command, m2Context);
+    return pause("pathfindMove", {
+      kind: "pathfindMove",
+      target: fieldString(command.fields, "target", "this-event"),
+      x: Math.trunc(fieldNumber(command.fields, "x", 0)),
+      y: Math.trunc(fieldNumber(command.fields, "y", 0)),
+      speed: Math.max(1, Math.min(6, fieldNumber(command.fields, "speed", 4))),
+      wait: fieldBoolean(command.fields, "wait", true),
+    });
+  }
+
+  if (entry.title === "Play Movie") {
+    return pause("playMovie", {
+      kind: "playMovie",
+      resourceId: command.fields.resourceId !== undefined
+        ? fieldString(command.fields, "resourceId", "") : fieldString(command.fields, "value", ""),
+      wait: fieldBoolean(command.fields, "wait", true),
+      skippable: fieldBoolean(command.fields, "skippable", true),
+    });
   }
 
   if (entry.title === "End Event Processing") {
@@ -164,10 +201,10 @@ function executeM2Command(
     return pause("openSaveMenu", { kind: "openSaveMenu" });
   }
   if (entry.title === "Open Menu Screen" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
-    return pause("openSaveMenu", { kind: "openSaveMenu" });
+    return pause("openMenuScreen", { kind: "openMenuScreen" });
   }
   if (entry.title === "Open Load Menu" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
-    return pause("openSaveMenu", { kind: "openSaveMenu" });
+    return pause("openLoadMenu", { kind: "openLoadMenu" });
   }
   if (entry.title === "Exit Game" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     return pause("returnToTitle", { kind: "returnToTitle" });

@@ -31,7 +31,7 @@ export type StepResult =
       cancelBehavior?: ChoiceCancelBehavior;
     }
   | { kind: "transfer"; mapId: MapId; x: number; y: number; direction?: TransferDirection; fade?: TransferFade; transition?: TransferTransition }
-  | { kind: "wait"; ms: number }
+  | { kind: "wait"; ms: number; allowParallelEvents?: boolean }
   | { kind: "eraseEvent"; eventId?: string }
   | { kind: "waitForAllMovement" }
   | { kind: "stopAllMovement" }
@@ -60,6 +60,9 @@ export type StepResult =
   | { kind: "moveEvent"; eventId: string; moves: MoveCommand[]; repeat: boolean; wait?: boolean }
   | { kind: "openChest"; chestId: string }
   | { kind: "openSaveMenu" }
+  | { kind: "openMenuScreen" }
+  | { kind: "openLoadMenu" }
+  | { kind: "pathfindMove"; target: string; x: number; y: number; speed: number; wait: boolean }
   | { kind: "spawnFieldEnemy"; spawn: FieldSpawnDef }
   | { kind: "despawnFieldEnemy"; spawnId: string }
   | { kind: "setEventGraphicPattern"; eventId: string; pattern: number }
@@ -162,7 +165,7 @@ export type StepResult =
   | { kind: "returnToTitle"; title?: string; message?: string };
 
 export type ResumeValue = number | boolean | string | undefined | void | "failed";
-export type PendingStep = Exclude<StepResult["kind"], "done">;
+export type PendingStep = Exclude<StepResult["kind"], "done"> | "waitUntil";
 export type ResumeAdvance = "continue" | "done";
 
 export interface Frame {
@@ -176,6 +179,9 @@ export interface Frame {
 
 export interface InterpreterState {
   stack: Frame[];
+  waitUntil?: { elapsedMs: number; intervalMs: number };
+  isEventIdle?: (target: string) => boolean;
+  eventPositions?: import("@/project/runtimeEventState").RuntimeEventPositions;
   session: PlaySessionLike;
   maxStackDepth: number;
   project?: Project;
@@ -191,6 +197,9 @@ export interface InterpreterState {
 }
 
 export interface InterpreterOptions {
+  readonly getEventPositions?: () => import("@/project/runtimeEventState").RuntimeEventPositions;
+  readonly isEventIdle?: (target: string) => boolean;
+  readonly eventPositions?: import("@/project/runtimeEventState").RuntimeEventPositions;
   readonly maxLoopIterations?: number;
   readonly maxInstructions?: number;
   readonly currentEventId?: string;

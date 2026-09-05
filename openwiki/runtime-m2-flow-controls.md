@@ -41,3 +41,14 @@ M2 runtime commands: event processing, erase, graphic pattern, movement, checkpo
 ## Page 3 location/vehicle compatibility (2026-07-30)
 - `m2Runtime` reads canonical editor fields first: variable location uses `mapVariableId` / `xVariableId` / `yVariableId`; boarding uses `boarded`; vehicle location uses `vehicle`; event swapping uses `eventA` / `eventB`.
 - Legacy aliases (`mapId`/`x`/`y` for variable ids, `enabled`, `target`, and swap `target`/`value`/`mapId`) remain read-only fallbacks for already-saved projects. New editor writes must use only canonical keys.
+
+## 저장된 M2 명령 실행 연결 복구 (2026-09-05)
+
+검토·재현: `docs/reviews/2026-09-05-event-runtime-audit.md`.
+
+- `Wait Until`은 `InterpreterState.waitUntil`에 경과 시간을 보관하며 50ms 이하의 기존 wait 단계를 통해 조건을 다시 검사한다. `timeoutMs=0`은 무기한, 양수는 제한 시간이다. 재검사로 명령 예산을 소모하거나 runtime.waits를 계속 늘리지 않는다. 스위치/변수 외에 지역(`layoutPlan.regions` ID)과 현재 이동 종료도 판정한다. 전경 조건 대기 중 `runtimeConditionWait.conditionWaitScenes`가 병렬 생산자만 허용하고 플레이어 입력 잠금은 유지한다.
+- `Pathfind Move`는 좌표를 즉시 쓰지 않는다. `playScenePathfinding`이 A* + 지형 통행 사각 + 현재 고체 NPC/플레이어 + 공간 배치 충돌로 경로를 계획하고 실제 보행 루트에 전달한다. `player`/`@player`, `this-event`, 이벤트 ID를 지원한다. `wait`와 속도를 적용하며 경로 도중 차단되면 `stopOnBlocked`로 나머지 방향을 버리고 `pathfindSucceeded=false`를 남긴다. 동적 재탐색은 하지 않는다. 명령 소유 루트의 교체·취소·씬 종료를 관찰한다.
+- 메뉴/불러오기 명령은 `openMenuScreen`/`openLoadMenu` 단계를 사용한다. `player.ts`의 registry 콜백은 각각 상태 메뉴/불러오기 패널을 열고 `playerEventMenus.openEventMenu`로 닫힘까지 기다린다. 인게임 불러오기 패널은 `src/styles/runtime/title.css`에서 논리 플레이 영역 전체를 덮고 내부 창만 스크롤한다. 로드 시 `PlayScene.applySession`이 이전 실행 잠금을 해제하고, 이전 `runCommands`의 finally가 새 세션을 변경하지 않는다.
+- 지형 조회는 `terrainTagAt`과 세션 `mapOverrides`를 사용한다. 이벤트 조회는 `runtimeEventViewsForMap`과 인터프리터에 전달한 실제 `eventPositions`를 getter로 사용하여 필드 스폰 등으로 위치 맵 객체가 교체돼도 최신 좌표를 읽는다. 반환값은 현재 맵의 1-based 저작 이벤트 순번(없으면 0); 원격 이동/동적 이벤트는 저작 슬롯 뒤에 배정하며 런타임 제거로 기존 순번을 당기지 않는다.
+- 저장된 M2 동영상은 `resourceId`(legacy `value`)를 읽어 네이티브 `playMovie` 재생기와 대기/스킵 설정을 사용한다. 상태 기록만으로 실행되었다고 판정하지 않는다.
+- 회귀: `test/eventRuntimeExecution.test.ts`, `test/runtimeEventMenus.test.ts`, `test/runtimeMovementStability.test.ts`, `test/playMovieRuntime.test.ts`. 출하 플레이어 QA: `npx tsx scripts/prepare-event-runtime-qa.mts` → `node scripts/qa-event-runtime.mjs`; SUMMARY를 먼저 읽고 지정 PNG만 확인한다. headless `run_scene_test`는 새 경로/메뉴 단계를 화면 검증처럼 통과시키지 않는다.
