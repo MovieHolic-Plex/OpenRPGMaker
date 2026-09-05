@@ -111,8 +111,12 @@
 .oprn-status-menu .status-menu-primary-dock > .status-menu-command.selected {
   background: var(--status-edge-amber-soft);
   border-color: transparent;
+  border-radius: 3px;
+  bottom: auto;
   box-shadow: none;
   color: var(--status-edge-ivory);
+  margin: 0;
+  min-height: 0;
 }
 .oprn-status-menu .status-menu-command.selected::before,
 .oprn-status-menu .status-menu-detail-action.selected::before { content: none; }

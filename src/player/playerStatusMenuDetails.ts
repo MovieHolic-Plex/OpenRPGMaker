@@ -5,8 +5,8 @@ import { growthEffects } from "@/project/growth/runtime";
 import { menuItemUnavailableReason, previewMenuItemTarget } from "@/player/playerItemUse";
 import type { SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
 import { canEquip, effectiveActorEquipment, equipmentSlotAccepts } from "@/project/equipmentRules";
-import { resolveActorName } from "@/project/sessionActorCommands";
-import { normalizeActorRecord, parameterValueAtLevel } from "@/project/actorModel";
+import { resolveActorName, resolveActorFaceResourceId } from "@/project/sessionActorCommands";
+import { defaultActorFaceResourceId, normalizeActorRecord, parameterValueAtLevel } from "@/project/actorModel";
 import type { StatusMenuStatDelta } from "@/player/playerStatusMenuDetailTypes";
 import { effectiveActorClassId } from "@/project/sessionClass";
 import type { PlaySession } from "@/project/session";
@@ -157,7 +157,11 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
           vitals: preview,
           unavailableReason: anyTarget ? undefined : preview.reason,
           description: anyTarget ? "사용 가능한 파티원 모두에게 적용됩니다." : preview.reason,
-          face: { resourceId: actor.faceResourceId, alt: actor.name, testId: `status-menu-target-face-${actor.id}` },
+          face: {
+            resourceId: resolveActorFaceResourceId(session, actor) ?? defaultActorFaceResourceId(actor),
+            alt: resolveActorName(session, actor),
+            testId: `status-menu-target-face-${actor.id}`,
+          },
           testId: `status-menu-item-target-${actor.id}`,
           disabled: !eligible,
           onActivate: options.onUseItem ? () => options.onUseItem?.(item.id, actor.id) : undefined,
