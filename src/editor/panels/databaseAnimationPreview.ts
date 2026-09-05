@@ -12,6 +12,14 @@ const PATTERN_PREVIEW_COUNT = 8;
 const ANIMATION_PLAYBACK_FRAME_MS = Math.round(1000 / 15);
 
 let copiedAnimationCells: BattleAnimationCell[] | null = null;
+const previewDisposers = new WeakMap<HTMLElement, () => void>();
+
+/** The tab cache owner must dispose previews before evicting their workspace. */
+export function disposeAnimationPreviewsIn(scope: ParentNode): void {
+  for (const panel of scope.querySelectorAll<HTMLElement>(".db-animation-stage-panel")) {
+    previewDisposers.get(panel)?.();
+  }
+}
 
 // Mutable, form-owned playback intent survives internal field/frame rerenders only.
 export type AnimationPlaybackState = {
@@ -268,7 +276,8 @@ function bindPlayback(
   };
 
   // Database tabs cache detached DOM. Pause that cache, resume on attachment,
-  // and release the observer on record replacement or modal close.
+  // and release the observer on record replacement or modal close. Cache eviction
+  // is explicit: detached ancestry alone cannot distinguish retained and evicted tabs.
   let workspace: HTMLElement | null = null;
   let modal: HTMLElement | null = null;
   const observer = typeof MutationObserver === "undefined" ? undefined : new MutationObserver(() => {
@@ -286,7 +295,9 @@ function bindPlayback(
     disposed = true;
     stop(false);
     observer?.disconnect();
+    previewDisposers.delete(panel);
   };
+  previewDisposers.set(panel, dispose);
   playback.dispose = dispose;
   observer?.observe(document.body, { childList: true, subtree: true });
 
