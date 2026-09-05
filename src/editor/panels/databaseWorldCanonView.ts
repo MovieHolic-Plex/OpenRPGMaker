@@ -5,20 +5,22 @@ import {
   boundedCanonText,
   lawRow,
   toneRow,
-  WORLD_CANON_TONE_LABELS,
   writeCanon,
 } from "@/editor/panels/databaseWorldCanonFields";
-import { detailHero, detailPane, sectionCard, workspaceShell } from "@/editor/panels/databaseWorkspace";
+import { detailPane, sectionCard, workspaceShell } from "@/editor/panels/databaseWorkspace";
+import { worldDocumentProperties } from "./worldDocumentProperties";
+import { worldCanonPromptSection } from "@/ai/worldCanonContext";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { store } from "@/project/store";
 import {
-  isWorldCanonStatus,
   resolveWorldCanon,
   WORLD_CANON_LAW_KINDS,
   WORLD_CANON_BOUNDS,
   type ResolvedWorldCanon,
 } from "@/project/world/canon";
 import { el } from "@/util/dom";
+
+const propertiesOpen = new WeakMap<HTMLElement, boolean>();
 
 export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): void {
   const canon = resolveWorldCanon(store.getCurrent().worldCanon);
@@ -36,44 +38,79 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
     if (hint) hint.textContent = excerptHint(filled);
   }
   hintLine();
-  host.append(
-    workspaceShell({
+  const aiPreview = el("pre", { class: "world-ai-preview", dataset: { testid: "world-canon-ai-preview" } });
+  const updateAiPreview = (): void => {
+    aiPreview.textContent = worldCanonPromptSection(store.getCurrent().worldCanon) ?? "아직 AI에 전달할 설정이 없습니다.";
+  };
+  const aiDetails = el("details", {
+    class: "world-ai-scope",
+    children: [el("summary", { text: "AI 전달 내용" }), aiPreview],
+    on: { toggle: updateAiPreview },
+  });
+  updateAiPreview();
+  const properties = worldDocumentProperties([
+    sectionCard({
+      title: "문서 설정",
+      children: [
+        segmentedControl("작성 상태", "db-world-canon-status", canon.status, [
+          { id: "draft", name: "초안" }, { id: "canon", name: "확정" },
+        ], (value) => {
+          if (value !== "draft" && value !== "canon") return;
+          recordProjectSnapshot("세계관 상태");
+          writeCanon({ status: value });
+          updateAiPreview();
+        }),
+        segmentedControl("공개 범위", "db-world-canon-visibility", canon.visibility, [
+          { id: "public", name: "공개" }, { id: "secret", name: "비밀" },
+        ], (value) => {
+          if (value !== "public" && value !== "secret") return;
+          recordProjectSnapshot("세계관 공개 범위");
+          writeCanon({ visibility: value });
+          updateAiPreview();
+        }),
+        el("p", { class: "world-muted", text: "비밀 설정도 AI는 참고하지만, 플레이어 대사에 직접 공개하지 않도록 지시합니다." }),
+      ],
+    }),
+    sectionCard({
+      title: "분위기와 시대",
+      testid: "db-world-canon-frame",
+      children: [
+        toneRow(canon.tones, rerender),
+        boundedCanonText("시대", canon.era, (value) => writeCanon({ era: value }, "db-world-canon-era"), "db-world-canon-era", WORLD_CANON_BOUNDS.era),
+        boundedCanonText("기술 수준", canon.techCeiling, (value) => writeCanon({ techCeiling: value }, "db-world-canon-tech"), "db-world-canon-tech", WORLD_CANON_BOUNDS.techCeiling),
+        absenceEditor(canon.absences, rerender),
+      ],
+    }),
+    sectionCard({
+      title: "세계의 법칙",
+      testid: "db-world-canon-laws",
+      children: WORLD_CANON_LAW_KINDS.map((kind) => lawRow(kind, canon.laws[kind], rerender)),
+    }),
+    aiDetails,
+  ], propertiesOpen.get(host) ?? false, (open) => propertiesOpen.set(host, open));
+  const workspace = workspaceShell({
       testid: "db-world-canon-workspace",
-      header: detailHero({
-        eyebrow: "이 세계 · AI가 항상 읽는 한 장",
-        title: canon.name || "이름 없는 세계",
-        subtitle: "이 세계에 적는 것이 조수·개요·장르 시드가 읽는 정본이다. 낱장 카드는 「설정집」 탭에 둔다.",
-        tags: [
-          ...canon.tones.map((tone) => WORLD_CANON_TONE_LABELS[tone]),
-          ...(canon.absences.length > 0 ? [`없는 것 ${canon.absences.length}`] : []),
+      header: el("header", {
+        class: "world-document-toolbar",
+        dataset: { testid: "db-world-canon-hero" },
+        children: [
+          el("strong", { text: "세계 개요" }),
+          el("span", { class: "world-ai-scope-label", text: "AI 참고 · 핵심 설정 + 본문 앞 600자" }),
         ],
-        testid: "db-world-canon-hero",
       }),
       detail: detailPane({
-        body: [
-          identityCard(canon),
-          sectionCard({
-            title: "뼈대",
-            hint: "톤·시대·이 세계에 없는 것",
-            testid: "db-world-canon-frame",
-            children: [
-              toneRow(canon.tones, rerender),
-              boundedCanonText("시대", canon.era, (value) => writeCanon({ era: value }, "db-world-canon-era"), "db-world-canon-era", WORLD_CANON_BOUNDS.era),
-              boundedCanonText("기술 천장", canon.techCeiling, (value) => writeCanon({ techCeiling: value }, "db-world-canon-tech"), "db-world-canon-tech", WORLD_CANON_BOUNDS.techCeiling),
-              absenceEditor(canon.absences, rerender),
-            ],
-          }),
-          sectionCard({
-            title: "법칙",
-            hint: "힘 · 신 · 죽음 · 돈",
-            testid: "db-world-canon-laws",
-            children: WORLD_CANON_LAW_KINDS.map((kind) => lawRow(kind, canon.laws[kind], rerender)),
-          }),
-          bodyCard,
-        ],
+        body: [el("div", {
+          class: "world-document-layout",
+          children: [
+            el("div", { class: "world-document-content", children: [identityCard(canon), bodyCard] }),
+            properties,
+          ],
+        })],
       }),
-    }),
-  );
+    });
+  workspace.classList.add("world-document-workspace", "world-canon-workspace");
+  workspace.addEventListener("input", updateAiPreview);
+  host.append(workspace);
 }
 
 export function excerptHint(filled: number): string {
@@ -115,22 +152,6 @@ function identityCard(canon: ResolvedWorldCanon): HTMLElement {
     children: [
       name,
       premise,
-      segmentedControl(
-        "상태",
-        "db-world-canon-status",
-        canon.status,
-        [
-          { id: "draft", name: "초안" },
-          { id: "canon", name: "확정" },
-          { id: "secret", name: "비밀" },
-        ],
-        (value) => {
-          if (!isWorldCanonStatus(value)) return;
-          // 톤·없는 것·법칙과 같은 이산 편집 — 되돌리기 한 장을 먼저 남긴다.
-          recordProjectSnapshot("세계관 상태");
-          writeCanon({ status: value });
-        },
-      ),
     ],
   });
 }

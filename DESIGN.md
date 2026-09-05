@@ -1,8 +1,62 @@
 # RPG ZZU Design System
 
+## Worldbuilding document workspace (2026-09-06)
+
+This slice follows the existing Database Studio primitives and tokens. It is a
+writing workspace, not a dashboard: a compact item browser, a white document,
+and a collapsible property inspector. No new theme, decorative hero, or card
+wall. This section overrides generic database control sizing only inside the
+worldbuilding workspace.
+
+- Typography: document title 26px/1.3, prose 16px/1.65, controls 13px/1.5,
+  metadata 12px/1.5, section headings 14px/600; all use `--font-ui`.
+- Color: `--db-studio-surface`, `--db-studio-canvas`, `--db-studio-inset`,
+  `--db-studio-text-1/2`, `--db-studio-border-subtle/default`,
+  `--db-studio-accent/soft/border`. Secondary text uses text-2, not pale text-3.
+- Geometry: 4/8/12/16/24/32px spacing; 6px controls, 8px document corners;
+  36px toolbar controls; 256px item list; 272px expanded properties.
+  The document editor is at least 320px high and grows with its text.
+- Scroll ownership: modal header/footer stay fixed. Item list and document
+  have independent vertical scrolls; an expanded property pane owns its scroll.
+  The document textarea grows instead of introducing a nested prose scrollbar.
+- Below 800px available workspace width, list and document are alternate views,
+  never two short stacked scroll boxes. A persistent list button returns to
+  browsing without losing the draft. Properties become an in-workspace overlay
+  below 1100px; Escape closes properties and restores their opener.
+- Reused primitives: `workspaceShell`, `sectionCard`, `segmentedControl`,
+  existing card media, markdown renderer, reference and relation editors.
+  Shared world document properties provide closed/open/focused states.
+  Item rows have default/hover/focus/selected/locked states; the optional gallery
+  uses the same item data and selection path.
+- Empty states distinguish no items, no search matches, and no selection.
+  Creation and search reset are explicit actions. Global lint is a separate
+  disclosure, not the first content in an empty document.
+- Filter changes clear out-of-filter reading selections. An active draft stays
+  open with an explicit out-of-filter marker. Relation navigation selects the
+  target's category and clears search. Search DOM and IME focus are preserved.
+- The main modal save remains the persistence authority. The document action is
+  labeled `편집 완료`, not a competing remote save. Draft discard and lock guards
+  retain their existing contracts.
+- World overview separates draft/confirmed status from public/secret visibility.
+  Legacy `status: secret` loads as a secret draft. AI inclusion remains explicit:
+  world overview fields plus the first 600 body characters; codex name/summary
+  only. The inspector can show the actual world overview prompt projection.
+- Accessibility: native buttons/inputs/details, visible indigo focus, associated
+  labels, no focus stolen while typing; 1024/1280/1440 desktop acceptance matrix.
+  No runtime/mobile-editor expansion is included.
+
 > **Status note:** The editor chrome is a cool white studio with one indigo accent. Runtime game surfaces keep their retro/pixel window presentation. The event-command editor is a cream-studio command editor: the event-command list, canvas, and every command form use cream tokens (`src/styles/tokens.css`), Korean-first modern labels, human sentences (named flags, no `Sw[0001]` / `◆` / `ON` / raw `\c[1]` chip walls), and the `cream form` field pattern — no RM2K3 retro command-list presentation. Shell tokens live in `src/styles/tokens.css` (single source of truth, imported first in `src/styles/index.css`) with `html { color-scheme: light; }` (`src/styles/index.css:75`); legacy names are aliased in `src/styles/editor/core.part-1.css`, `src/styles/database/tabs-b-shell-layout.css`, and `src/styles/shell/figma-editor/01-shell-topbar-team.css`. Warm cream elevation is `canvas < inset < base < surface < raised < overlay`. Previous dark values live in git history only. When the code changes, update this file — it is the source of truth, not an aspirational target.
 
 ## 1. Atmosphere & Identity
+
+### Equipment slot management
+
+Equipment uses a native labelled slot select so project-defined slots do not expand the fixed
+inspector header. The add/rename/remove disclosure lives in the scrolling inspector body, above
+the equipment cards. It uses existing Database Studio surface, border and text tokens, 12px
+control text, 8px corners and 12px internal spacing. Management rows keep the name and action
+together; the reason for a disabled delete spans the row. Built-in and referenced slots expose
+that reason as visible text. Each committed catalog operation is one undoable project edit.
 
 RPG ZZU is a compact game-making workbench. The user directs an agent named **감독**; the pixel map is the stage; the chrome is a warm cream tool shell. Korean-first labels. The signature is a faceset plate (name + presence + a one-line brief of map/layer/selection) plus an `@>` command log that defaults to a **float** over the canvas, a map/tile/event tool sidebar docked as the left column, and a recessed cream canvas well as the stage. The empty start surface is the map briefing (`지금 이 맵`) plus at most three next-move rows. Composer modes are **지시 / 질문 / 계획**. The left drawer uses a tab strip that reweights `left-map-root` / `left-palette-root` without hiding those testids. There is no theme toggle.
 
@@ -134,7 +188,7 @@ The Database > States editor uses RM2K3-style colored A-E rate grades and a smal
 
 ### Database battle animation editor tokens
 
-The Database > Battle Animations editor follows the RM2003 animation editor composition: a black target stage, green center guides, red cell selection, and teal pattern strip. Keep these scoped to the animation editor.
+The Database > Battle Animations editor is preview-first: the current graphic's catalog name and choose/change action precede a full-width dark stage, with playback and status in their own light transport row. Frame, cell, timing and sheet authoring follow in clearly titled studio sections. The existing detail form owns vertical scrolling; only wide cell tables and pattern strips own horizontal scrolling. At supported desktop sizes (1024×768, 1280×800, 1440×900) the stage is at least 280px high, rather than sharing its width with an inspector. Controls use the existing 32px / 8px-radius studio grammar, 13px text and indigo focus ring; labels/status use 12px text-2. The graphic name wraps, including long imported names. An unset graphic has an explicit choose action; unavailable graphics never manufacture an effect. Pattern thumbnails are read-only, not inert buttons. Existing RM animation tokens below remain legacy stage-only tokens, not control colors. No new motion or playback lifecycle is introduced. Independent visual approval is required; geometry alone is not a visual verdict.
 
 | Token | Value | Usage |
 |------|-------|-------|
@@ -317,7 +371,7 @@ The float assistant is **one glass instrument**, `div.ai-deck` inside the transp
 
 - **Topbar actions**: Resources (소재) opens `resourceModal`; Database (DB) opens `databaseModal`. They are the canonical editor paths for asset and database work.
 - Map properties and Event editing are not dock tabs: event editing lives in the left palette when the event layer is active and opens as a modal; map properties are edited via the map tree context menu / database.
-- **Database**: 15 tabs — 주인공/직업/스킬/아이템/장비/몬스터/적그룹/상태/전투애니메이션/타일셋/공통이벤트/시스템/용어/스위치/변수 (`db-tab-*`). Navigation follows the mode chrome contract: Beginner shows the `common` subset, Standard groups the navigation, and Expert exposes `all`.
+- **Database**: 15 tabs — 주인공/직업/스킬/아이템·장비/몬스터/적그룹/상태/전투애니메이션/타일셋/공통이벤트/시스템/용어/스위치/변수 (`db-tab-*`). Navigation follows the mode chrome contract: Beginner shows the `common` subset, Standard groups the navigation, and Expert exposes `all`.
 - **Event editor**: cream-studio command editor. Tree-style nested command list with **drag-to-reorder** (⠿ handle), up/down/delete buttons, command picker, per-page tabs, fork/choices branches.
 - **Event editor top/page controls**: cream-studio modal chrome. Page tabs show named condition sentences; validation is a titlebar bell whose summary carries the severity words `오류 N · 경고 N · 안내 N` alongside the count badge (hidden when clean), not a bare number and not `검사 !1 △1` — severity must be readable without opening the popover, because a colour-only signal fails WCAG 1.4.1 and an error (blocks commit) costs nothing like an info. Footer is `이벤트 삭제` pinned to the left cell, then `변경 있음/없음 · 취소 · 적용 · 저장하고 닫기` in the right cell. The destructive action never sits inside the save cluster, and its label names its target so it cannot be confused with the page toolbar's `페이지 삭제`. Bare `Delete` never deletes the event from anywhere in the modal; the labelled footer button is the only entry point. The titlebar name field edits the **active page's** name (`GameEvent` has no `name`); the event's display name is derived by `eventDisplayName()` from the last named page, so the field is labelled `페이지 N 이름`, never `이벤트 이름`. The view segment (`목록/스토리/미리보기/플로우`) is a `tablist` with `aria-selected` and one roving tab stop, matching the page tab strip — never `aria-pressed` toggles, which read as independent switches. Rail section headers are `언제 보이나요` / `반응 방식` / `움직임` (not `출현 조건` / `트리거·우선순위` / `이동/기타`). Event-card identity is name + coordinates; padded `ID 0001` is gone. Extra control-code chips (`\$` `\!` `\.` `\|` `\>` `\<` `\^` `\_` `\s[n]`) live behind closed `고급`. Density control stays and is labeled `간단히` (not `간단히 보기`). Picture summaries are a human sentence, never a raw slot/path dump as the scan line. Keep controls compact enough for scanning; avoid display-scale button typography inside the modal. Chrome uses cream tokens from `src/styles/tokens.css`; do not reintroduce `--rm2k3-event-page-*` or classic-gray `#eeeeee`/`#f4f4f4` fieldsets.
 - **Event editor sizing**: the event editor is a desktop-default work window at wide widths, but it must remain usable down to roughly `800px` viewport width. It opens with settings and a dominant command canvas; the command inspector is contextual and appears only after command selection. Wide layouts allocate it a fixed right track, while compact layouts overlay it on the right so the canvas does not permanently lose width. Around `900px` and below, the modal clamps to the viewport and compresses the left settings/conditions column while keeping the command contents as a second column; do not stack settings above commands unless the viewport is narrower than the supported editor width.
@@ -336,6 +390,7 @@ The float assistant is **one glass instrument**, `div.ai-deck` inside the transp
 ### Database panels
 
 - **Party growth trees (2026-09-05).** `growth-tree.css` keeps promotion and skill trees in the same indigo selection/focus language: neutral list pane, recessed graph, white toolbar and inspector, and inset 700-weight inspector group headers. Zoom/arrange controls occupy their own bottom grid row, never the scrollable node area; buttons are at least 32px square. Graph names clamp to two lines within the existing fixed node geometry, while full names remain in the accessible label and wrapping inspector title. No graph coordinates, controls, or persistence behavior change.
+- **Unified inventory catalog (2026-09-05):** one `아이템·장비` rail entry (`db-tab-items`), one search across both unchanged storage collections, All/Items/Equipment filter buttons with `aria-pressed`, and one compact subtype/slot select. Counts distinguish visible matches from the whole catalog. Search/filter changes retain the selected type-specific inspector, even when its row is outside the result; a selection notice can reveal it. Add actions explicitly name the collection. Existing guarded delete, duplicate, AI item generation, and gallery/list remain available. The list-detail spatial pattern uses `databaseWorkspace` primitives, 260px list + fluid inspector at supported 1024/1280/1440 desktops. Search, filters and actions are fixed; `.db-catalog-rows` owns list scroll and the existing `.db-ws-detail-body` owns inspector scroll. Modal geometry remains solely in `sidebar.css`. Tokens and focus treatment remain Database Studio v2; no new animation or palette. Legacy `equipment` navigation resolves to the same catalog with its remembered equipment selected. This is an editor-only projection, not a migration or an item-to-equipment conversion.
 
 - **Party record hierarchy (2026-09-05).** Actors, classes, skills, items, and equipment keep a visibly inset list pane, an indigo active rail, stronger record headers and name fields, and neutral read-only summaries. The final section of `studio-v2.css` scopes these rules to those five tabs; its local `--db-record-pane-bg` override passes through the existing Studio theme without another important declaration. At compact desktop widths the actor inspector may shrink within the fixed modal rather than extend beyond it.
 - **Database Studio v2 (2026-09-03) — one grammar for all 30 tabs.** `src/styles/database/studio-v2.css` is imported last among database sheets and restyles the classes every tab already emits (no new class vocabulary): the window is one white surface where rail | list | detail are divided by hairlines only; group cards inside the detail pane are `--db-studio-canvas` (light gray) with no border, title `600 13px` + hint `12px text-3`; every `.db-field` is a property row (label left in `minmax(min(96px, 38%), max-content)`, value right, labels **wrap — never ellipsis**), except dense numeric grids (`.db-enemy-stat-grid`, `.db-item-grid`, `.db-state-runtime-panel`, `.db-terrain-quick-row`) which stack label above value; list rows with a sub chip wrap the chip to a second line instead of truncating either the name or the chip; children of `.db-ws-detail-body` never flex-shrink (an `overflow:hidden` stats strip otherwise collapses to 2px); inputs/selects/textareas share one chrome (32px, 8px radius, `--db-studio-border-default`, accent ring on focus; `select` keeps the 24px chevron band via longhand padding); number steppers are one flex box `28px | 1fr | 28px` whose buttons fold under 120px (the fold rule is restated at v2 depth because `@container` adds no specificity); heroes (`.db-ws-hero`, `.db-record-hero`, item/equipment inspector headers) are 52px media + `700 18px` title + 11.5px Korean eyebrow + pills, and name inputs inside them render as the title (border only on hover/focus). The header shows `데이터베이스 | 그룹 › 탭` (`database-modal-crumb`, fed by `subscribeDatabaseActiveTab`), window controls are SVG (`database-modal-icon`), and the footer status is a 28px pill with a status dot, not a full-width band. Type scale: 11.5 badge · 12 label · 13 body/input/row · 13/600 card title · 15 list title · 18 hero title. No `!important`, no hex, no font-stack literals in the sheet (`test/databaseStudioV2.test.ts`); earlier layers' `!important` rules were re-valued in place (`studio-theme.css`, `sidebar.css`). English eyebrows/chips (`ELEMENT`, `GAME OVERVIEW`, `LIVE PREVIEW`, `GAUGE` …) are Korean.
@@ -467,3 +522,71 @@ Legacy `--db-light-*` / `--bg-*` / `--db-modern-*` aliases remap to these inside
 - **Footer:** `닫기` is ghost (`transparent` + `border-default`), `지금 저장` is filled accent — enforced by `[data-testid]` selectors in `studio-theme.css` even if `.primary` class is on the other button.
 - **Empty:** card + one filled CTA on studio surface, never a cream void.
 - **Dirty / G006 / testids / AI dock / gallery toggle:** unchanged — chrome only.
+
+## 12. Elements editor redesign contract (2026-09-05, implemented; independent visual review passed)
+
+**Brief:** make an element recognizable from its game artwork, put the editable rule before reference counts, and show what each authored percentage means without pretending to run a battle. Scope is Database > 전투 규칙 > 속성, vanilla DOM/TypeScript. Preserve `DatabaseElementRecord`, all authored IDs/names/order/rate labels, default content, persistence, and the battle engine. Baselines, asset inventory, source caveats and binary implementation gates: [design evidence](output/evidence/battle-rules-ux/design.md).
+
+**People and direction:** a first-time Korean-speaking author needs to distinguish Ice from Fire without reading every row; an experienced balance author needs A-E, signed percentages and immediate numeric consequences; a keyboard/low-vision author needs stable focus, text outcomes and a usable 1024px layout. The signature is an illustrated element ledger beside a compact rule worksheet, not a decorative battle arena or another dashboard. Keep the project's font choice and cool-white/indigo studio; do not add a font, theme, gradient, letter badge, particle animation or fake KPI.
+
+### System and composition
+
+- Compose `workspaceShell`, `listPane`, `listSearch`, `listRow`, `listToolbar`, `detailPane`, `detailHero({ media })`, `sectionCard`, and `field` from `databaseWorkspace.ts` / `databaseControls.ts`. Keep their `db-ws-*` / `db-field` DOM grammar, existing testids and native controls. No framework or new parallel component system.
+- Use `--db-studio-*` for every chrome color, `--font-ui` / `--font-mono` for type, `--space-1..6` for spacing, `--db2-control-h` / `--db2-radius-control` / `--db2-radius-card` for control and card geometry, and `--focus-outline` for keyboard focus. Use Studio v2's existing 12/13/15/18px hierarchy through the primitives, not per-element type styles. Artwork keeps its original palette and aspect ratio.
+- List thumbnails use the existing 32px thumbnail size; hero media stays in the existing 52px Studio v2 slot. A selected-grade example may show the same image in a 96px square, derived from `3 * --space-6`; this is a rule example, not an additional editable resource. Gaps are `--space-2`, section padding `--space-3`, section separation `--space-4`. No new color or global typography tokens are required.
+- The Database window keeps its sole geometry owner in `sidebar.css`. Never resize/reposition it from an elements selector. Retain separate list/body scroll ownership and the fixed hero and shell footer. No empty fixed-height tracks or equal-height filler cards.
+
+### Individual element artwork, not kind badges
+
+The 17 shipped IDs get 17 distinct existing game images. Use an editor-local ID-to-resource map; do not add `iconResourceId` to the schema or mutate the defaults. Resolve through `resolveAssetResourceUrl(id, { project })`, reuse the existing thumbnail/chroma-key/failure behavior, and display the same resolved identity in list, hero and rule example.
+
+| Element ID | Existing resource ID | Meaning of the image |
+|---|---|---|
+| `sword` | `cc0-jetrel-gen-sword-bronze` | Cutting weapon |
+| `spear` | `cc0-jetrel-gen-spear-iron` | Piercing weapon |
+| `hit` | `cc0-jetrel-gen-hammer-war` | Blunt impact |
+| `bow` | `cc0-jetrel-gen-bow-short` | Bow attack |
+| `fire` | `cc0-jetrel-fire-bomb` | Fire source |
+| `ice` | `cc0-jetrel-ice-shard` | Ice shard |
+| `thunder` | `cc0-jetrel-thunder-stone` | Lightning stone |
+| `water` | `cc0-jetrel-water-flask` | Water vessel |
+| `earth` | `cc0-jetrel-earth-ore` | Earth/ore |
+| `wind` | `cc0-jetrel-wind-feather` | Wind feather |
+| `holy` | `cc0-jetrel-holy-water` | Holy water |
+| `dark` | `cc0-jetrel-gen-scythe-reaper` | Dark/reaper motif |
+| `atk` | `cc0-jetrel-book-sword` | Attack manual |
+| `def` | `cc0-jetrel-iron-shield` | Defense motif |
+| `int` | `cc0-jetrel-book-magic` | Magic manual |
+| `agi` | `cc0-jetrel-boots` | Agility motif |
+| `absorb` | `cc0-jetrel-fang` | Drain motif |
+
+These are illustrative motifs, not new mechanical behavior: an ATK image does not grant an attack buff; an Absorb name does not make a positive multiplier heal. Registry provenance marks these selected files as generated, despite the `cc0-jetrel` prefix; do not relabel generated art as third-party CC0. No new/downloaded art is needed.
+
+For an unknown/custom ID, use the first matching skill with a resolvable animation in authored database order, via `recordListThumbnail("skills", skill, project, size)`, and disclose that it is linked-skill art. If no such link resolves, show the existing neutral SVG image placeholder with an honest no-linked-art caption; never assign a random built-in image by ordinal, name substring or physical/magical kind. Existing built-in ID motifs remain stable after renaming. A missing/broken URL is a distinct image-load-failed state using `markDatabaseImageFailed`, not silent substitution with a slime or a letter. Decorative repetitions beside a visible name are hidden from assistive technology; the example's meaningful image has a descriptive accessible name. Asset resolution must never dirty the project.
+
+### Edit hierarchy and responsive reading order
+
+1. **Identity:** illustrated `detailHero` with live authored name and short kind metadata. The name field remains the single editable name in the compact 기본 section, followed by the existing 물리/마법 radios and a model-aware explanation. Stable ID appears once as secondary metadata. Typing updates hero/list without replacing the focused control or losing the caret.
+2. **Rule:** put 대미지 배율 immediately after identity, before usage. Keep all five A-E percentage inputs, explicit percent units, calculated outcomes, and the existing reset action. Grade letters are stable keys, not letter artwork. Outcome descriptors are computed from the percentage, not fixed labels such as E=무효 when E was changed to 150%.
+3. **Consequence:** inside that rule section, show the selected grade's artwork and equation, with an editor-only grade selector and reference-damage input. Focus on a grade input also selects that example. Initially select C, never silently change the target's authored grade. Keep all five results visible for comparison; do not require five clicks to see the rule.
+4. **Connections:** compact usage section after the rule, from real project references. Include skills, first attack element on equipment, equipment elemental defense, and explicit actor/enemy/class rate entries. Label class entries as authored references, not guaranteed runtime application. Absence of explicit grades is not proof the element is unused. Use real names/counts; zero usage is neutral, not an error. No decorative metric cards or fake links. If navigation is added, select the actual destination record and use `switchDatabaseActiveTab` in the same modal.
+
+At **1024x768** and **1280x800**, use a single content-sized detail column: identity, rule example + A-E worksheet, then connections. Keep art compact; never shrink type to fit. A grade row may wrap its bar/result to the next line rather than overflow; all five controls remain reachable by body scroll. At **1440x900**, only if the detail body's available width permits two usable columns, place the A-E worksheet beside the illustrated equation within the rule card; identity stays above and connections below. Use available pane width, not viewport alone, so the AI dock and floating/docked modes cannot squeeze a fixed grid. The first viewport at every target size must contain identity, the example and the start of A-E editing; usage must not push the main task below the fold.
+
+### Meaningful preview and mechanical honesty
+
+The preview is explicitly **속성 배율 예시**, not a battle simulator. Reference damage is the amount immediately before this isolated percentage is applied. Compute `round(referenceDamage * percentage / 100)` with the current authored integer percentage; preserve the existing reference range 1..9999 and multiplier clamp -9999..99999. Show the equation and outcome: reference 100 at 150% yields 150 피해; at 0%, 피해 없음; at -50%, 50 회복. A negative percentage remains labeled absorption even when rounding produces zero. Formatting and bars must not imply that absorption is positive damage.
+
+Use one shared scale across the five rows, `max(100, ...abs(percentages))`, with a labeled 100% baseline. Positive/negative direction and explicit 피해/회복/무효 text communicate sign; semantic color is supplementary. Do not cap every value above 200% to an indistinguishable full bar. The example updates in place after name, kind, grade, reference and percentage changes. Reference/grade selection never records a snapshot, writes the store, saves to the project, or changes runtime/session state. Percentage/name/kind/reset edits keep the existing coalesced/structural snapshot paths.
+
+Disclose excluded factors in one concise note: defense, skill power, type chart/STAB, equipment, critical hits, variance and HP caps are not simulated. The source authority is `battleDamage.ts::usesMagicalDefense`: only `system.battleModel === "gen1"` uses mental defense for magical elements; RM2k3 retains its existing defense formula. Use that predicate/model context for helper copy rather than the current unconditional mental-defense claim. Runtime `elementMultiplierFor` also distinguishes an absent explicit grade from C and applies equipment reduction only after a valid explicit grade; do not invent a simplified final-damage formula or repair the engine in this UI work.
+
+### Empty, custom and interaction states
+
+- Empty `elements` collection: no fake Ice row or numeric preview; `emptyState` explains the link between skills and resistances. The existing list-toolbar 추가 is the primary creation path; maximum count remains secondary. Do not create records while rendering. At the 99-record limit, disable 추가 with a reason rather than silently selecting the old last row.
+- Empty search: preserve collection, selection and detail; show a local no-match state with a clear-search action. Do not turn a filter miss into a no-record state. Search typing must preserve focus/caret across filtered-list refreshes.
+- Custom names, including empty names, Unicode and very long IDs: preserve their stored values; use the existing unnamed display fallback, wrapping metadata and title/accessible full names. Never translate or normalize authored content for presentation.
+- Keep native radio keyboard behavior, labelled percentage/reference inputs, text outcomes, visible token focus, and existing modal Escape/focus-trap behavior. Derived outcome announcements are polite and coalesced, not five competing live regions. Re-render only structural edits; preserve selection and scroll when possible.
+- Static art is sufficient. Use `--transition-fast` only for hover/focus or optional opacity changes; no layout/width animations and no autoplay particle stage. Respect reduced motion. All labels/control text must meet AA; screenshot-only inspection cannot certify keyboard or screen-reader behavior.
+
+**Delivery boundary:** the elements implementation now uses `databaseElementsClassic.ts`, editor-only `databaseElementPresentation.ts`, the existing shared image thumbnail helper, and element-scoped rules in `modern/utility-records.css`. It retains a single content-sized worksheet column at all three supported sizes; the optional wide two-column arrangement is not needed to expose the example and first grade before the fold. No schema, runtime, default-content or states implementation changes. Focused DOM/browser tests and app build evidence are recorded in `output/evidence/battle-rules-ux/verification.md`. Independent visual/CJK review passed for all seven captured states in `output/evidence/battle-rules-ux/st_01a07318-manual-qa.md`; this is a separate reviewer verdict, not this implementation agent's image assessment. Supervisor comparison found all 26 newly flagged test files also fail on unchanged `32ef1bcd`; narrow reruns of five load-sensitive files yielded 39 passes, one known base failure and zero new failure names. No new unit regression was found. Supervisor also confirmed the unchanged-base surface gate has the same five files, six failures and 107 passes; scoped implementation/QA requirements are satisfied, with final review and PR owned by the supervisor.

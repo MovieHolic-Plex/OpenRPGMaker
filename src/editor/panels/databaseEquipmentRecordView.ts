@@ -1,10 +1,12 @@
+import { equipmentSlots } from "@/project/equipmentSlots";
+import { equipmentSlotManager } from "@/editor/panels/equipmentSlotManager";
 import "@/styles/database/modern/equipment-items.css";
 import { equipmentFields } from "@/editor/panels/databaseBasicRecordFields";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import {
   emptyToUndefined,
+  field,
   numberField,
-  segmentedControl,
   selectField,
   sliderStepperField,
   textField,
@@ -84,16 +86,6 @@ const LEGACY_EFFECT_FLAG_FIELDS: readonly { readonly key: keyof ItemEquipmentEff
 const EFFECT_FLAG_FIELDS = LEGACY_EFFECT_FLAG_FIELDS.filter(({ key }) =>
   key === "doubleAttack" || key === "attackAll" || key === "fixedEquipment"
 );
-
-// 부위 세그먼트 옵션 — EquipmentRecord.slot 실값(weapon/shield/armor/helmet/accessory)
-// 기준. 라벨은 갤러리 필터 칩(databaseRecordViews EQUIPMENT_SLOT_CHIPS)과 동일.
-const EQUIPMENT_SLOT_OPTIONS: readonly { readonly id: EquipmentRecord["slot"]; readonly name: string }[] = [
-  { id: "weapon", name: "무기" },
-  { id: "shield", name: "방패" },
-  { id: "helmet", name: "머리" },
-  { id: "armor", name: "몸" },
-  { id: "accessory", name: "장신구" },
-];
 
 const STAT_FIELDS = [
   ["attack", "공격력"],
@@ -262,6 +254,7 @@ export function renderEquipmentRecordForm(form: HTMLElement, record: EquipmentRe
         el("div", {
           class: "db-ws-stack db-eq-stack",
           children: [
+            equipmentSlotManager(record.id, () => { refreshOverview(); rerender(); }),
             spanCard(sectionCard({
               title: "효과 요약과 착용 비교",
               collapsible: true,
@@ -307,10 +300,10 @@ export function renderEquipmentRecordForm(form: HTMLElement, record: EquipmentRe
                     combatAxisField(record, "criticalRate", "치명타율(%p)", "db-field-equipment-critical-rate", refreshOverview),
                   ],
                 }),
-                toggleSwitch("양손 장비", "db-field-equipment-two-handed", record.twoHanded, (twoHanded) => {
+                ...(record.slot === "weapon" || record.twoHanded ? [toggleSwitch("양손 장비", "db-field-equipment-two-handed", record.twoHanded, (twoHanded) => {
                   updateDatabaseRecord("equipment", record.id, { twoHanded });
                   refreshOverview();
-                }),
+                })] : []),
                 toggleSwitch("저주", "db-field-equipment-cursed", record.cursed, (cursed) => {
                   updateDatabaseRecord("equipment", record.id, { cursed });
                   refreshOverview();
@@ -425,6 +418,17 @@ function equipmentHeader(record: EquipmentRecord, summaryHost: HTMLElement, refr
   const name = textField("이름", "db-field-name", record.name, (name) =>
     updateDatabaseRecord("equipment", record.id, { name })
   );
+  const slotSelect = el("select", {
+    dataset: { testid: "db-field-equipment-slot" },
+    children: equipmentSlots(project).map(({ id, label }) =>
+      el("option", { text: label, attrs: { value: id } })),
+  });
+  slotSelect.value = record.slot;
+  slotSelect.addEventListener("change", () => {
+    const slot = slotSelect.value;
+    updateDatabaseRecord("equipment", record.id, { slot, ...(slot !== "weapon" ? { twoHanded: false } : {}) });
+    refreshSummaryChips();
+  });
   return el("div", {
     class: "db-equipment-inspector-header db-ws-hero",
     dataset: { testid: "db-equipment-inspector-header" },
@@ -434,13 +438,7 @@ function equipmentHeader(record: EquipmentRecord, summaryHost: HTMLElement, refr
         class: "db-equipment-inspector-title db-ws-hero-text",
         children: [
           el("div", { class: "db-equipment-inspector-name", children: [name] }),
-          // 부위는 여기 세그먼트 하나뿐이다 — 예전에는 이 컨트롤과 아래 스펙 줄의
-          // 네이티브 <select data-testid="db-field-slot"> 두 개가 같은 record.slot 을
-          // 각각 써서, 하나를 바꿔도 다른 하나는 옛 값을 계속 보여줬다(G축 P0).
-          segmentedControl("부위", "db-field-equipment-slot", record.slot, EQUIPMENT_SLOT_OPTIONS, (slot) => {
-            updateDatabaseRecord("equipment", record.id, { slot: slot as EquipmentRecord["slot"] });
-            refreshSummaryChips();
-          }),
+          field("장착 부위", slotSelect),
           summaryHost,
         ],
       }),

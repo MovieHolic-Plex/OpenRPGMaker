@@ -1,3 +1,4 @@
+import { BUILTIN_EQUIPMENT_SLOTS } from "@/project/equipmentSlots";
 import type {
   BattleEventCondition,
   BattleEventPageRecord,
@@ -16,6 +17,7 @@ export type ReferenceContext = {
   enemySlotIds?: ReadonlySet<string>;
   itemIds: ReadonlySet<string>;
   equipmentIds: ReadonlySet<string>;
+  equipmentSlotIds?: ReadonlySet<string>;
   skillIds: ReadonlySet<string>;
   animationIds: ReadonlySet<string>;
   switchIds: ReadonlySet<string>;
@@ -252,6 +254,7 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       validateCommands(command.failureBranch ?? [], context);
       return;
     case "changeEquipment":
+      assert((context.equipmentSlotIds ?? new Set(BUILTIN_EQUIPMENT_SLOTS.map((slot) => slot.id))).has(command.slot), `changeEquipment: slot does not exist: ${command.slot}`);
       assert(context.actorIds.has(command.actorId), `changeEquipment: actorId가 존재하지 않습니다: ${command.actorId}`);
       if (command.equipmentId.trim().length > 0) {
         assert(context.equipmentIds.has(command.equipmentId), `changeEquipment: equipmentId가 존재하지 않습니다: ${command.equipmentId}`);

@@ -30,7 +30,7 @@ import { el } from "@/util/dom";
 import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
 
-export type WorldTabKey = "overview" | "character" | "place-faction" | "event" | "item-concept" | "guideline";
+export type WorldTabKey = "overview" | WorldEntityType | "place-faction" | "item-concept";
 
 export type WorldPanelOptions = {
   readonly initialEntityId?: string;
@@ -48,12 +48,16 @@ export type WorldPanelState = {
   addType: WorldEntityType;
   editDraft: WorldEditDraft | null;
   editError: string;
+  documentOpen: boolean;
+  gallery: boolean;
+  propertiesOpen: boolean;
   onDraftChange?: () => void;
 };
 
 export function createWorldPanelState(options: WorldPanelOptions = {}): WorldPanelState {
   return { tab: options.initialTab ?? "overview", search: "", selectedId: options.initialEntityId ?? null,
-    addType: "character", editDraft: null, editError: "" };
+    addType: "character", editDraft: null, editError: "",
+    documentOpen: Boolean(options.initialEntityId), gallery: false, propertiesOpen: false };
 }
 
 export function hasWorldDraftChanges(state: WorldPanelState): boolean {
@@ -110,11 +114,13 @@ export function setPersistedCodexView(tab: WorldTabKey, selectedId: string | nul
 }
 
 export const TABS: readonly { readonly key: WorldTabKey; readonly label: string }[] = [
-  { key: "overview", label: "개요" },
+  { key: "overview", label: "전체" },
   { key: "character", label: "인물" },
-  { key: "place-faction", label: "장소·세력" },
+  { key: "place", label: "장소" },
+  { key: "faction", label: "세력" },
   { key: "event", label: "사건" },
-  { key: "item-concept", label: "아이템·개념" },
+  { key: "item", label: "아이템" },
+  { key: "concept", label: "개념" },
   { key: "guideline", label: "제작 노트" },
 ];
 
@@ -244,6 +250,9 @@ export function saveDraft(state: WorldPanelState, _world: ProjectWorld): void {
       project.world = normalized;
     }, { scope: "project", label: draft.isNew ? "설정집 카드 추가" : "설정집 카드 편집" });
     state.selectedId = entity.id;
+    state.documentOpen = true;
+    if (!entityInTab(entity, state.tab)) state.tab = entity.type;
+    if (!visibleEntities([entity], state.tab, state.search).length) state.search = "";
     state.editDraft = null;
     state.editError = "";
     setPersistedCodexView(state.tab, state.selectedId);
@@ -286,6 +295,7 @@ export function toggleEntityLock(entityId: string): void {
 export function startNewDraft(state: WorldPanelState, world: ProjectWorld, type: WorldEntityType): void {
   const id = nextWorldId(world);
   state.selectedId = id;
+  state.documentOpen = true;
   setPersistedCodexView(state.tab, state.selectedId);
   state.editDraft = {
     id,
@@ -500,7 +510,7 @@ function sameFactionMaterializationPreview(
 
 export function ensureSelectedEntity(state: WorldPanelState, world: ProjectWorld): void {
   if (state.editDraft) return;
-  if (state.selectedId && world.entities.some((entity) => entity.id === state.selectedId)) return;
+  if (state.selectedId && visibleEntities(world.entities, state.tab, state.search).some((entity) => entity.id === state.selectedId)) return;
   state.selectedId = null;
   setPersistedCodexView(state.tab, null);
 }
@@ -591,6 +601,11 @@ function entityInTab(entity: WorldEntity, tab: WorldTabKey): boolean {
       return entity.type === "character";
     case "place-faction":
       return entity.type === "place" || entity.type === "faction";
+    case "place":
+    case "faction":
+    case "item":
+    case "concept":
+      return entity.type === tab;
     case "event":
       return entity.type === "event";
     case "item-concept":

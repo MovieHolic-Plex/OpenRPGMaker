@@ -9,6 +9,7 @@ import {
   type ResolvedConceptFacility,
 } from "@/editor/conceptBundleResolve";
 import { innDesignVariants } from "@/editor/conceptInnVariants";
+import { facilityDesignVariants } from "@/editor/conceptFacilityVariants";
 import {
   CONCEPT_PLAN_ENUMS,
   ConceptPlanError,
@@ -401,7 +402,8 @@ export const GET_CONCEPT_FACILITY_TOOL: ToolDefinition = {
       };
     }
     const plan = facilityAsPlan(resolved.bundle, resolved.facility);
-    const variants = resolved.facility.label === "여관" || resolved.facility.id === "inn" ? innDesignVariants() : [];
+    const variants = resolved.facility.label === "여관" || resolved.facility.id === "inn"
+      ? innDesignVariants() : facilityDesignVariants(resolved.facility.id);
     return {
       summary: `시설 「${resolved.facility.label}」 템플릿 — 장소 ${plan.places.length}·물건 ${plan.things.length} · 물건 어휘 ${vocabulary.length}종. `
         + (variants.length > 0 ? `variants ${variants.length}종. ` : "")
@@ -409,7 +411,7 @@ export const GET_CONCEPT_FACILITY_TOOL: ToolDefinition = {
       data: {
         query,
         designHint: {
-          rule: "템플릿을 그대로 복사해 넘기지 마라. 수식어가 없어도 규모·분위기·layout 을 네가 정해라. variants[] 중 하나를 고르거나 섞어 장소 수·크기·layout·물건을 바꿔 plan 으로 넘겨라.",
+          rule: "사용자의 요청과 현재 template의 개별 수정이 우선이다. variants는 공간 구성 참고이며 사용자에게 없는 물건을 무조건 다시 넣는 초기화 명령이 아니다. 수식어가 없어도 용도와 규모를 정하고, 요청에 맞게 장소 수·크기·layout·물건을 바꿔 plan으로 넘겨라. 탁자와 러그, 조리 도구와 화덕, 같은 종류 재고를 묶고 문 접근로를 비워라.",
           keep: plan.things.filter((thing) => thing.required).map((thing) => thing.objectId),
           levers: ["plan.layout row|double-row", "places[].zone north|south", "places[].count 1..4", "places[].size s|m|l", "places[].floor wood|stone|plank|mat", "wall cream|gold-brick|stone-brick", "things[] 에 vocabulary[].id 추가/제거", "places[].level 2 로 위층"],
         },

@@ -1,3 +1,4 @@
+import { equipmentSlotLabel as catalogSlotLabel } from "@/project/equipmentSlots";
 /**
  * 동료 · 전투 저작면 프리뷰.
  *
@@ -357,18 +358,7 @@ export function equipmentStage(
 }
 
 function equipmentSlotLabel(slot: Extract<Command, { kind: "changeEquipment" }>["slot"]): string {
-  switch (slot) {
-    case "weapon":
-      return "무기";
-    case "shield":
-      return "방패";
-    case "armor":
-      return "갑옷";
-    case "helmet":
-      return "투구";
-    case "accessory":
-      return "장식";
-  }
+  return catalogSlotLabel(store.getCurrent(), slot);
 }
 
 /** m2 배우 계열(능력치·상태·데미지·얼굴·모습·이름·직업). 해당 없으면 undefined. */

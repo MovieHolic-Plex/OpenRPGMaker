@@ -12,18 +12,12 @@ test.use({ viewport: { width: 1440, height: 900 } });
 
 async function openAnimations(page: Page): Promise<void> {
   // Code-only QA must not write to the shared project database.
-  await page.route("**/*", async (route) => {
+  await page.route("https://*.supabase.co/**", async (route) => {
     const request = route.request();
     if (new URL(request.url()).hostname.endsWith("supabase.co") && !["GET", "HEAD", "OPTIONS"].includes(request.method())) {
       throw new Error(`Unexpected remote write: ${request.method()} ${request.url()}`);
     }
-    // Chromium's host network-change notifications cancel local Vite modules.
-    // Fetch the unchanged server response through Node, as other editor QA does.
-    if (new URL(request.url()).port === (process.env.DEV_SERVER_PORT ?? "9173") && request.method() === "GET") {
-      await route.fulfill({ response: await route.fetch({ maxRetries: 2 }) });
-    } else {
-      await route.continue();
-    }
+    await route.continue();
   });
   await page.goto("/?freshProject=1", { waitUntil: "domcontentloaded" });
   await expect(page.getByTestId("toolbar-database")).toBeVisible({ timeout: 60_000 });
@@ -33,15 +27,16 @@ async function openAnimations(page: Page): Promise<void> {
   await page.clock.install({ time: now });
   await page.clock.pauseAt(new Date("2026-09-05T13:00:00Z"));
   await page.evaluate(() => {
-    const setInterval = window.setInterval.bind(window);
-    const clearInterval = window.clearInterval.bind(window);
+    const browserWindow: Window = window;
+    const setInterval = browserWindow.setInterval.bind(browserWindow);
+    const clearInterval = browserWindow.clearInterval.bind(browserWindow);
     window.battlePreviewIntervals = new Set();
-    window.setInterval = (handler: TimerHandler, timeout?: number, ...args: unknown[]): number => {
+    browserWindow.setInterval = (handler: TimerHandler, timeout?: number, ...args: unknown[]): number => {
       const id = setInterval(handler, timeout, ...args);
       if (timeout === 67) window.battlePreviewIntervals.add(id);
       return id;
     };
-    window.clearInterval = (id?: number): void => {
+    browserWindow.clearInterval = (id?: number): void => {
       if (id !== undefined) window.battlePreviewIntervals.delete(id);
       clearInterval(id);
     };

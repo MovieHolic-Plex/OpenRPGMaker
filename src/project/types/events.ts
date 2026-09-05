@@ -182,7 +182,7 @@ export type TransferFade = "black" | "white" | "none";
 // 전환 연출 종류. 기본 페이드 외에 모자이크(픽셀화)/블라인드 지원.
 export type TransferTransition = "fade" | "mosaic" | "blinds";
 export type ActorAmountOp = "=" | "+=" | "-=";
-export type ActorEquipmentSlot = "weapon" | "shield" | "armor" | "helmet" | "accessory";
+export type ActorEquipmentSlot = string;
 export type MessageWindowFormat = "normal" | "transparent";
 export type MessageWindowPosition = "top" | "center" | "bottom";
 export type ChoiceCancelBehavior = "disallow" | "choice1" | "choice2" | "choice3" | "choice4" | "choice5" | "branch";
