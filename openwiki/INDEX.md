@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **47쪽 / 1508KB / 약 428,577 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **47쪽 / 1512KB / 약 429,603 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -22,8 +22,8 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-pre-edit-routing.md` | 69KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 197 | ~19,760 |
 | `openwiki/runtime-battle.md` | 118KB | 31KB | 358 | ~33,888 |
 | `openwiki/runtime-project-schema.md` | 58KB | 42KB | 207 | ~15,542 |
-| `openwiki/runtime-sessions.md` | 56KB | 45KB | 131 | ~14,753 |
-| `openwiki/testing.md` | 102KB | 45KB | 678 | ~28,756 |
+| `openwiki/runtime-sessions.md` | 56KB | 45KB | 133 | ~14,975 |
+| `openwiki/testing.md` | 103KB | 45KB | 684 | ~29,126 |
 
 ## 한국어 산문이 깨진 페이지
 
@@ -542,9 +542,10 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L35` Storage chest authoring
 - `L41` Page 3 location/vehicle compatibility (2026-07-30)
 
-### `openwiki/runtime-pre-edit-routing.md` — 23KB · 135줄 · ~6,756 토큰
+### `openwiki/runtime-pre-edit-routing.md` — 25KB · 143줄 · ~7,190 토큰
 
 - `L130` Recovered head emotes (2026-09-05)
+- `L136` 메뉴 입력·불러오기 배율 (2026-09-05)
 
 ### `openwiki/runtime-project-schema.md` — 58KB · 207줄 · ~15,542 토큰 · 통째읽기 잘림
 
@@ -563,17 +564,17 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L198` 마을 설계서 (2026-09-05)
 - `L204` 공포 게임 제작 기능 (2026-09-05)
 
-### `openwiki/runtime-sessions.md` — 56KB · 131줄 · ~14,753 토큰 · 통째읽기 잘림
+### `openwiki/runtime-sessions.md` — 56KB · 133줄 · ~14,975 토큰 · 통째읽기 잘림
 
 - `L3` 아이템 종류 전환과 실행 효과 (2026-09-05)
-- `L12` Roguelike run kernel and field rooms (Phase 0–3, 2026-08-24)
-- `L22` P1 daily-weather transition authority (2026-08-25)
-- `L31` Session state & life-sim
-- `L104` Editorial title screen (2026-08-26)
-- `L110` playerTouch trigger contract (2026-08-20)
-- `L114` Selected-event runtime sandbox (2026-07-30)
-- `L120` P2 spatial runtime and saves (2026-08-25)
-- `L128` 공포 게임 제작 기능 (2026-09-05)
+- `L14` Roguelike run kernel and field rooms (Phase 0–3, 2026-08-24)
+- `L24` P1 daily-weather transition authority (2026-08-25)
+- `L33` Session state & life-sim
+- `L106` Editorial title screen (2026-08-26)
+- `L112` playerTouch trigger contract (2026-08-20)
+- `L116` Selected-event runtime sandbox (2026-07-30)
+- `L122` P2 spatial runtime and saves (2026-08-25)
+- `L130` 공포 게임 제작 기능 (2026-09-05)
 
 ### `openwiki/se-catalog.md` — 13KB · 228줄 · ~3,423 토큰
 
@@ -623,7 +624,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L110` Files to inspect before editing
 - `L122` Related pages
 
-### `openwiki/testing.md` — 102KB · 678줄 · ~28,756 토큰 · 통째읽기 잘림
+### `openwiki/testing.md` — 103KB · 684줄 · ~29,126 토큰 · 통째읽기 잘림
 
 - `L3` P2 낚시·채집·도감·박물관 focused gate (2026-08-25)
 - `L10` Editor e2e boot-overlay determinism (2026-08-31)
@@ -650,11 +651,12 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L478` 미정의 커스텀 프로퍼티는 콘솔에 아무 말도 남기지 않는다 (2026-08-30 실측)
   - `L485` `ERR_NETWORK_CHANGED` 는 HMR 말고 호스트 인터페이스 때문에도 터진다 (2026-08-28 실측)
 - `L507` 런타임(게임) 전용 비전 QA 하네스 (2026-08-28)
-- `L623` sceneTestRunner 의 자율 이동 관측 공백 (2026-08-27)
-- `L630` fakeDom 은 프로덕션이 쓰는 브라우저 전역을 빠짐없이 준다 (2026-08-29)
-- `L651` bugfix-sweep 실제 표면 하네스 (2026-08-29)
-- `L664` 마을 설계서 (2026-09-05)
-- `L669` 공포 제작 개정 QA와 개발 서버 전송 (2026-09-05)
+  - `L509` 메뉴 적대적 플레이 회귀 (2026-09-05)
+- `L629` sceneTestRunner 의 자율 이동 관측 공백 (2026-08-27)
+- `L636` fakeDom 은 프로덕션이 쓰는 브라우저 전역을 빠짐없이 준다 (2026-08-29)
+- `L657` bugfix-sweep 실제 표면 하네스 (2026-08-29)
+- `L670` 마을 설계서 (2026-09-05)
+- `L675` 공포 제작 개정 QA와 개발 서버 전송 (2026-09-05)
 
 ### `openwiki/town-tile-benchmark.md` — 10KB · 153줄 · ~3,010 토큰
 

@@ -506,6 +506,12 @@ Playwright 의 `locator.click()` 은 누르기 전에 `scrollIntoViewIfNeeded` �
 
 ## 런타임(게임) 전용 비전 QA 하네스 (2026-08-28)
 
+### 메뉴 적대적 플레이 회귀 (2026-09-05)
+
+`npm run qa:runtime:gate -- test/runtime/status-menu-adversarial.spec.ts`는 출하 player 서버에서 실제 키보드로 결정/취소 유지, 아이템 소모, 상태 부여·씨앗, 저장→로드→재저장, 타이틀 복귀, 오류 후 뒤로를 검사한다. 640×480·960×720·1280×800에서 불러오기 창의 stage 비율과 화면 안 배치를 잰다. fixture는 기존 테스트 프로젝트의 메모리 사본에 최소 아이템 계약만 넣으며 원격 게임을 저작하지 않는다. 결과는 `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md`를 먼저 읽는다.
+
+이 스펙은 공유 호스트의 Chromium `ERR_NETWORK_CHANGED`를 피하도록 실제 Firefox를 사용한다(기본 프로젝트 라벨은 chromium으로 남을 수 있다). 실패 시 worker가 beforeAll을 다시 실행하므로 SUMMARY는 전체 실행의 유일한 성공 집계가 아니다. 실행 종료 코드와 테스트 리포트를 함께 확인한다. 비활성 대상은 button이 아닌 div로 렌더될 수 있어 `toBeEnabled()`만으로는 부족하다. 실제 BUTTON 여부와 사용 후 수량·저장 스냅숏의 효과를 함께 단정한다.
+
 게임 화면을 브라우저로 QA 할 때 **편집기 셸을 통과하지 마라.** `npm run qa:runtime`
 (반복) / `npm run qa:runtime:gate` (게이트). `player.html` 을 전용 vite 서버로 띄워
 편집기 크롬 0, HMR 유지, 출하 shim 경로를 그대로 통과한다. 편집기 play 모드는 실제

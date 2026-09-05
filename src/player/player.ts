@@ -534,7 +534,14 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       onLoadAutosave: () => loadAutosave(fromTitle),
     });
     if (fromTitle) {
-      layout.append(panel);
+      const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system), surfaceScaleMode);
+      clearChildren(surface.stage);
+      playStage = surface.stage;
+      cleanupPlaySurface = surface.cleanup;
+      layout.append(surface.viewport);
+      mountHostControls(surface.viewport);
+      surface.stage.append(panel);
+      surface.sync();
     } else {
       replaceMenu(panel);
     }
@@ -632,7 +639,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   const onKeyDown = (event: KeyboardEvent): void => {
     // 텍스트 입력 컨트롤(런타임 디버그 패널의 숫자 입력 등)에 치는 글자는 게임 키가 아니다. 여기서
     // 걸러야 손 슬롯 숫자키가 preventDefault 로 글자를 삼키지 않고, Escape 가 메뉴를 열지 않는다.
-    if (isTextEntryTarget(event.target)) return;
+    if (event.isComposing || isTextEntryTarget(event.target)) return;
     const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
     const menu = currentStatusMenu(layout);
     if (menu && event.key === "Tab") {
@@ -670,6 +677,12 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     }
     if (!isRuntimeMenuKey(key)) return;
     if (overlayActive) return;
+    // Holding a key may navigate a list, but must not confirm another screen,
+    // spend another item, or reopen the menu that the first cancel just closed.
+    if (event.repeat && (isConfirmKey(key) || isCancelKey(key))) {
+      event.preventDefault();
+      return;
+    }
     if (cutsceneLocked) {
       if (isCancelKey(key)) event.preventDefault();
       return;
@@ -880,4 +893,3 @@ function startTitleBgm(project: ReturnType<typeof store.getCurrent>): void {
 function stopTitleBgm(): void {
   stopAudioCommand();
 }
-
