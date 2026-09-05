@@ -460,14 +460,24 @@ function renderPlaceCard(
   rerender: () => void,
 ): HTMLElement {
   const things = bundle.things.filter((entry) => entry.placeIds.includes(place.id));
+  const selectPlace = () => {
+    session.placeId = place.id;
+    session.pickerOpen = false;
+    refresh(host, rerender);
+  };
   const card = el("article", {
     class: `scratch-concept-place${active ? " active" : ""}`,
+    attrs: { tabindex: "0", role: "button", "aria-label": `${place.label} 선택` },
     dataset: { testid: `scratch-concept-place-${place.id}` },
     on: {
       click: () => {
-        session.placeId = place.id;
-        session.pickerOpen = false;
-        refresh(host, rerender);
+        selectPlace();
+      },
+      keydown: (event) => {
+        if ((event as KeyboardEvent).key !== "Enter" && (event as KeyboardEvent).key !== " ") return;
+        if ((event.target as HTMLElement | null)?.closest?.("input, select, button, textarea, a")) return;
+        event.preventDefault();
+        selectPlace();
       },
     },
   });
@@ -661,9 +671,15 @@ function renderThingChip(
   const thumb = object
     ? decorateThumb(interiorObjectCanvas(tileset, object, 3), "scratch-concept-thumb")
     : el("span", { class: "scratch-concept-missing", text: "?" });
-  // 버튼 안에 버튼을 넣지 않으려 칩 외곽은 div — 칠하기는 안의 버튼, 선택은 칩 클릭.
+  // 버튼 안에 버튼을 넣지 않으려 칩 외곽은 div — 칠하기는 안의 버튼, 선택은 칩 클릭/Enter/Space.
+  const selectThing = () => {
+    session.thingId = thing.id;
+    session.pickerOpen = false;
+    refresh(host, rerender);
+  };
   return el("div", {
     class: `scratch-concept-thing${active ? " active" : ""}${thing.required ? " required" : ""}`,
+    attrs: { tabindex: "0", role: "button", "aria-label": `${thing.label} 선택` },
     dataset: { testid: `scratch-concept-thing-${thing.id}` },
     children: [
       thumb,
@@ -694,9 +710,13 @@ function renderThingChip(
     on: {
       click: (event) => {
         event.stopPropagation();
-        session.thingId = thing.id;
-        session.pickerOpen = false;
-        refresh(host, rerender);
+        selectThing();
+      },
+      keydown: (event) => {
+        if ((event as KeyboardEvent).key !== "Enter" && (event as KeyboardEvent).key !== " ") return;
+        event.preventDefault();
+        event.stopPropagation();
+        selectThing();
       },
     },
   });

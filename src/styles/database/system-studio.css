@@ -720,7 +720,7 @@
   color: var(--db-studio-text-2) !important;
   cursor: pointer !important;
   flex: 0 0 auto !important;
-  font: 500 12px/1 "Malgun Gothic", system-ui, sans-serif !important;
+  font: 500 12px/1.35 "Malgun Gothic", system-ui, sans-serif !important;
   min-height: 30px !important;
   padding: 0 12px !important;
   white-space: nowrap !important;

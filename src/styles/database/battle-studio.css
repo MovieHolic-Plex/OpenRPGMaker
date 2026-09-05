@@ -143,7 +143,7 @@
   border: 1px solid rgba(194, 232, 91, 0.45);
   border-radius: 999px;
   color: var(--db-studio-live);
-  font: 800 9px/1.2 "Malgun Gothic", system-ui, sans-serif;
+  font: 800 11px/1.35 "Malgun Gothic", system-ui, sans-serif;
   letter-spacing: 0.08em;
   padding: 4px 7px;
   width: fit-content;
