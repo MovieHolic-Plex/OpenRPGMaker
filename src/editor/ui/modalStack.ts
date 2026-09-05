@@ -102,6 +102,12 @@ export function hasOpenModalLayer(): boolean {
   return stack.length > 0;
 }
 
+/** Whether this layer currently owns modal keyboard interaction. */
+export function isTopModal(element: Element): boolean {
+  pruneDetached();
+  return stack[stack.length - 1]?.element === element;
+}
+
 /** Test helper: how many live modals are registered. */
 export function modalStackDepthForTest(): number {
   pruneDetached();
