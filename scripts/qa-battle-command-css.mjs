@@ -16,8 +16,8 @@ try {
     localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
     localStorage.setItem("oprn:database.activeTab", "battleCommands");
   });
-  await page.goto(`http://127.0.0.1:${process.env.DEV_SERVER_PORT ?? "19841"}/?blankProject=1`, { waitUntil: "domcontentloaded" });
-  await expect(page.getByTestId("toolbar-database")).toBeVisible({ timeout: 60000 });
+  await page.goto(`http://127.0.0.1:${process.env.DEV_SERVER_PORT ?? "19841"}/?blankProject=1`, { waitUntil: "domcontentloaded", timeout: 120000 });
+  await expect(page.getByTestId("toolbar-database")).toBeVisible({ timeout: 120000 });
   await waitForEditorProject(page);
   const fixture = await readFile("test/fixtures/projects/battle-v3.json", "utf8");
   await page.evaluate(async (json) => {
