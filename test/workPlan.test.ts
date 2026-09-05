@@ -22,6 +22,19 @@ import {
 } from "@/ai/workPlan";
 
 describe("planner LLM plan parsing (no regex planning)", () => {
+  it("unknown successTools remain unmet and offer repair instead of disappearing", () => {
+    const plan = workPlanFromSetToolArgs({ goal: "DB 조회 후 시작점 설정", layers: [{ title: "설정", items: [{
+      title: "설정", instruction: "조회하고 시작점 설정", successTools: ["get_database", "set_start_position"],
+    }] }] })!;
+    expect(plan.layers[0]!.items[0]!.successTools).toEqual(["get_database", "set_start_position"]);
+    expect(advanceWorkPlanFromTools(plan, ["set_start_position"]).completed).toBeNull();
+    expect(completeWorkItemById(plan, plan.currentItemId!, undefined, { successfulTools: ["set_start_position"] }).ok).toBe(false);
+    expect(formatWorkPlanForOrchestration(plan)).toContain("Invalid tool requirements: get_database");
+    const payload = buildOrchestratorUserPayload({ userText: "시작점 설정", activePlan: null });
+    expect(payload).toContain("get_database_records");
+    expect(payload).toContain("set_start_position");
+  });
+
   it("parses new_plan JSON from main planner", () => {
     const raw = JSON.stringify({
       action: "new_plan",
@@ -380,37 +393,37 @@ describe("workPlan progress harness", () => {
     expect(MAX_RALPH_ATTEMPTS_PER_ITEM).toBeLessThan(MAX_WORK_PLAN_AUTO_STEPS_PER_TURN);
   });
 
-  it("명시 완료는 이름이 어긋난 successTools 대신 성공한 쓰기를 근거로 인정할 수 있다", () => {
+  it("명시 완료도 모든 필수 도구의 성공을 요구하고 산출물 검사로 대체하지 않는다", () => {
     const plan = workPlanFromOrchestratorDecision({
-      action: "new_plan",
-      goal: "g",
-      layers: [{ title: "L", items: [{ title: "연못", instruction: "fill_region 으로 연못", successTools: ["fill_region"] }] }],
+      action: "new_plan", goal: "모험 NPC",
+      layers: [{ title: "L", items: [{ title: "NPC", instruction: "NPC와 이벤트", successTools: ["place_npc", "upsert_event"] }] }],
     });
-    const id = plan.currentItemId!;
     const item = plan.layers[0]!.items[0]!;
+    const missing = canCompleteWorkItem(item, ["place_npc"], () => ({ ok: true }));
+    expect(missing).toMatchObject({ ok: false, missingTools: ["upsert_event"] });
+    expect(completeWorkItemById(plan, item.id, "다른 쓰기로 대체", {
+      successfulTools: ["place_npc"], outcomeGate: () => ({ ok: true }),
+    }).ok).toBe(false);
+    expect(isWorkPlanComplete(plan)).toBe(false);
+    expect(completeWorkItemById(plan, item.id, undefined, {
+      successfulTools: ["place_npc", "upsert_event"], outcomeGate: () => ({ ok: false, reason: "NPC가 비었다" }),
+    }).ok).toBe(false);
+    expect(completeWorkItemById(plan, item.id, undefined, {
+      successfulTools: ["place_npc", "upsert_event"], outcomeGate: () => ({ ok: true }),
+    }).ok).toBe(true);
+  });
 
-    // 기본(자동 완료 경로와 같은 엄격 규칙): 이름이 다르면 거부하고 누락 툴을 알려준다.
-    const strict = canCompleteWorkItem(item, ["paint_tiles"]);
-    expect(strict.ok).toBe(false);
-    if (strict.ok) throw new Error("expected strict fail");
-    expect(strict.missingTools).toEqual(["fill_region"]);
-
-    // 읽기 툴만 성공한 경우는 우회로도 거부된다 — 근거가 쓰기여야 한다.
-    expect(canCompleteWorkItem(item, ["get_project_summary"], undefined, { allowWriteEvidenceFallback: true }).ok).toBe(false);
-
-    // 다른 이름의 쓰기 툴이 성공했으면 명시 완료를 인정한다.
-    expect(canCompleteWorkItem(item, ["paint_tiles"], undefined, { allowWriteEvidenceFallback: true }).ok).toBe(true);
-    // 산출물 게이트는 그대로 최종 판정이다.
-    expect(
-      canCompleteWorkItem(item, ["paint_tiles"], () => ({ ok: false, reason: "맵이 비었다" }), { allowWriteEvidenceFallback: true }).ok
-    ).toBe(false);
-
-    const ok = completeWorkItemById(plan, id, "다른 툴로 함", {
-      successfulTools: ["paint_tiles"],
-      allowWriteEvidenceFallback: true,
+  it("다음 항목은 현재 항목의 성공 기록으로 먼저 완료할 수 없다", () => {
+    const plan = workPlanFromOrchestratorDecision({
+      action: "new_plan", goal: "순서대로",
+      layers: [{ title: "L", items: [
+        { id: "first", title: "첫 작업", instruction: "첫 NPC", successTools: ["place_npc"] },
+        { id: "second", title: "다음 작업", instruction: "다음 NPC", successTools: ["place_npc"] },
+      ] }],
     });
-    expect(ok.ok).toBe(true);
-    expect(isWorkPlanComplete(plan)).toBe(true);
+    expect(completeWorkItemById(plan, "second", undefined, { successfulTools: ["place_npc"] }).ok).toBe(false);
+    expect(plan.currentItemId).toBe("first");
+    expect(plan.layers[0]!.items[1]!.status).toBe("pending");
   });
 
     it("requires write evidence before completing a generic planner-failure fallback", () => {

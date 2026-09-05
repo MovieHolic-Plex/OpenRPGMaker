@@ -4,7 +4,9 @@ import { refreshGrowthVitals } from "@/project/growth/vitals";
 import type { GrowthMenuTab } from "@/player/playerGrowthMenu";
 import { store } from "@/project/store";
 import { createSaveSnapshot, getSaveSlotStatus, listSaveSlots, saveToSlot, type SaveSlotIndex } from "@/player/saveSlots";
-import { renderPlayerStatusMenu } from "@/player/playerStatusMenu";
+import { renderPlayerStatusMenu, statusMenuControls } from "@/player/playerStatusMenu";
+import { updateStatusMenuDetailSelection } from "@/player/playerStatusMenuDetailRenderer";
+import { animateStatusMenuPage, animateStatusMenuVitals, readStatusMenuVitals } from "@/player/playerStatusMenuMotion";
 import {
   isStatusMenuGroupEntryId,
   listStatusMenuGroupCommandIds,
@@ -44,6 +46,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   let mode: "main" | "function" = "main";
   let selectedDetailActionIndex = 0;
   const detailCursors = new Map<string, number>();
+  const detailScrolls = new Map<string, number>();
   let targetItemId: string | undefined;
   let skillActorId: string | undefined;
   let selectedSkillId: string | undefined;
@@ -63,6 +66,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     mode = "main";
     selectedDetailActionIndex = 0;
     detailCursors.clear();
+    detailScrolls.clear();
     waitModeEnabled = true;
     resetSubscreenState();
   };
@@ -97,6 +101,9 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   };
 
   const renderMenu = (message?: string, nextCommand: StatusMenuRailId = selectedCommand): HTMLElement | null => {
+    const previous = currentMenu();
+    const scroll = previous?.querySelector<HTMLElement>(".status-menu-detail-list")?.scrollTop;
+    if (previous?.dataset.detailState && scroll !== undefined) detailScrolls.set(previous.dataset.detailState, scroll);
     const project = store.getCurrent();
     const session = options.getActiveScene()?.getSession();
     if (!session) return null;
@@ -198,10 +205,40 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         onToTitle: confirmToTitle,
       },
     });
+    panel.dataset.detailState = detailStateKey();
+    const changedPage = currentMenu()?.dataset.detailState !== panel.dataset.detailState;
     const live = replaceMenu(panel);
+    if (changedPage && currentMenu()) animateStatusMenuPage(live);
     syncRenderedDetailCursor();
+    const list = live.querySelector<HTMLElement>(".status-menu-detail-list");
+    const savedScroll = detailScrolls.get(detailStateKey());
+    if (list && savedScroll !== undefined) list.scrollTop = savedScroll;
     return live;
   };
+
+  const openSaveMenu = (): void => {
+    reset();
+    // 이벤트 진입은 레일 선택만 바꾸지 않고 저장 슬롯에 바로 포커스를 준다.
+    // 저장 가능 여부는 렌더링과 saveSlot의 기존 맵/세션 제한을 그대로 따른다.
+    mode = "function";
+    options.emitMenuJuice("menu-open", renderMenu(undefined, "save"));
+  };
+  function focusMenuArea(nextMode: "main" | "function"): void {
+    mode = nextMode;
+    const menu = currentMenu();
+    if (!menu) return;
+    menu.dataset.statusMenuScreen = mode;
+    menu.classList.toggle("status-menu-detail-focus", mode === "function");
+    const detail = menu.querySelector<HTMLElement>(".status-menu-detail");
+    if (mode === "main") detail?.setAttribute("inert", "");
+    else detail?.removeAttribute("inert");
+    const controls = menu.querySelector<HTMLElement>(".status-menu-controls");
+    if (controls) controls.textContent = statusMenuControls(mode);
+    const debug = menu.querySelector<HTMLElement>("[data-testid='status-menu-debug-json']");
+    if (debug) debug.textContent = JSON.stringify({ selectedCommand, mode });
+    focusActiveMenuContainer();
+  }
+
 
   const toggleMenu = (): void => {
     if (!options.getActiveScene()) return;
@@ -217,13 +254,22 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       return;
     }
     mode = "main";
+    selectedCommand = statusMenuRailIdForCommand(selectedCommand);
+    openGroupId = undefined;
     resetSubscreenState();
     options.emitMenuJuice("menu-open", renderMenu());
   };
 
   const handleKey = (key: RuntimeMenuKey): boolean => {
     if (!currentMenu()) return false;
+    const direction = directionForKey(key);
     if (mode === "function") {
+      if (direction === "left") {
+        focusMenuArea("main");
+        options.emitMenuJuice("menu-back", currentMenu());
+        return true;
+      }
+      if (direction === "right") return true;
       if (isDetailNavKey(key)) return moveSelectedDetailAction(detailDelta(key)) ? emitAndHandle("menu-select") : rejectInput();
       if (isConfirmMenuKey(key)) return activateSelectedDetailAction() || rejectInput();
       if (isCancelMenuKey(key)) {
@@ -233,8 +279,16 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       return rejectInput();
     }
 
+    if (direction === "right" || isConfirmMenuKey(key)) {
+      if (isStatusMenuGroupEntryId(selectedCommand)) openGroupId = selectedCommand;
+      focusMenuArea("function");
+      options.emitMenuJuice("menu-confirm", currentMenu());
+      return true;
+    }
+    if (direction === "left") return true;
+
     if (isRailNavKey(key)) {
-      // 레일은 1D 라 좌/우도 상/하로 접는다. WASD 도 같은 규칙을 탄다.
+      // Horizontal input moves focus between the rail and its preview.
       const railDir = directionForKey(key);
       const railKey: RuntimeMenuKey =
         railDir === "right" || railDir === "down" ? "ArrowDown" : "ArrowUp";
@@ -242,18 +296,16 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       const commandIds = session
         ? listStatusMenuRailIds(store.getCurrent(), session)
         : undefined;
-      const next = reduceStatusMenuKeyboard({ selectedCommand, mode, commandIds }, railKey);
+      const next = reduceStatusMenuKeyboard({ selectedCommand: statusMenuRailIdForCommand(selectedCommand), mode, commandIds }, railKey);
       if (commandIds && !commandIds.includes(next.selectedCommand)) {
         selectedCommand = commandIds[0] ?? "items";
       } else {
         selectedCommand = next.selectedCommand;
       }
+      resetSubscreenState();
+      openGroupId = undefined;
       renderMenu(undefined, selectedCommand);
       return emitAndHandle("menu-select");
-    }
-    if (isConfirmMenuKey(key)) {
-      enterCommand(selectedCommand);
-      return true;
     }
     if (isCancelMenuKey(key)) {
       options.closeMenuWithJuice();
@@ -298,9 +350,12 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     if (!scene) return;
     if (actorId) rememberDetailCursorFromTestId(`status-menu-item-target-${actorId}`);
     if (monsterInstanceId) rememberDetailCursorFromTestId(`status-menu-monster-${monsterInstanceId}`);
+    const beforeVitals = readStatusMenuVitals(currentMenu());
     const result = useStatusMenuItem(scene, itemId, actorId, monsterInstanceId);
-    if (result.kind === "used") targetItemId = undefined;
-    emitMutationResult(result, renderMenu(result.message, "items"));
+    if (result.kind === "used" && (scene.getSession().inventory[itemId] ?? 0) === 0) targetItemId = undefined;
+    const panel = renderMenu(result.message, "items");
+    if (panel && result.kind === "used") animateStatusMenuVitals(panel, beforeVitals);
+    emitMutationResult(result, panel);
   }
 
   function equipItem(actorId: string, slotId: keyof ActorInitialEquipment, equipmentId: string): void {
@@ -469,7 +524,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       options.emitMenuJuice("menu-back", renderMenu(undefined, selectedCommand));
       return;
     }
-    if (isStatusMenuGroupEntryId(selectedCommand)) selectedCommand = statusMenuRailIdForCommand(selectedCommand);
+    selectedCommand = statusMenuRailIdForCommand(selectedCommand);
     openGroupId = undefined;
     mode = "main";
     options.emitMenuJuice("menu-back", renderMenu(undefined, selectedCommand));
@@ -558,7 +613,10 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     const actions = detailActionButtons();
     if (mode !== "function" || actions.length === 0) return false;
     setDetailCursor(wrapStatusMenuIndex(selectedDetailActionIndex + delta, actions.length));
-    renderMenu(undefined, selectedCommand);
+    syncRenderedDetailCursor();
+    const detail = currentMenu()?.querySelector<HTMLElement>(".status-menu-detail");
+    const message = currentMenu()?.querySelector<HTMLElement>(".status-menu-message");
+    if (detail && message) message.textContent = updateStatusMenuDetailSelection(detail, selectedDetailActionIndex) ?? "";
     return true;
   }
 
@@ -566,6 +624,8 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     const actions = detailActionButtons();
     if (mode !== "function" || actions.length === 0) return false;
     setDetailCursor(wrapStatusMenuIndex(selectedDetailActionIndex, actions.length));
+    const reason = actions[selectedDetailActionIndex]?.dataset.unavailableReason;
+    if (reason) return rejectInput(reason);
     actions[selectedDetailActionIndex]?.click();
     return true;
   }
@@ -580,7 +640,9 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   }
 
   function rejectInput(message = "선택할 수 없습니다"): true {
-    const panel = renderMenu(message, selectedCommand);
+    const panel = currentMenu();
+    const status = panel?.querySelector<HTMLElement>(".status-menu-message");
+    if (status) status.textContent = message;
     options.emitMenuJuice("menu-invalid", panel);
     return true;
   }
@@ -673,7 +735,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     return session.m2Runtime?.access.save !== false;
   }
 
-  return { reset, renderMenu, toggleMenu, handleKey };
+  return { reset, renderMenu, openSaveMenu, toggleMenu, handleKey };
 }
 
 function isRailNavKey(key: RuntimeMenuKey): boolean {

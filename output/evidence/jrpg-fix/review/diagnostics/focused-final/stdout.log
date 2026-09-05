@@ -1,0 +1,67 @@
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-final-validation
+
+ ❯ test/roleNameComparisonGate.test.ts (3 tests | 1 failed) 500ms
+   × A-2 게이트 — 역할 이름 비교 잔여 > 허용 목록 밖에서 타일 역할 이름을 직접 비교하지 않는다 471ms
+     → expected [ …(2) ] to deeply equal []
+   ✓ A-2 게이트 — 역할 이름 비교 잔여 > 허용 목록 안에서도 비교가 늘어나지 않는다 16ms
+   ✓ A-2 게이트 — 역할 이름 비교 잔여 > 허용 목록에 죽은 항목이 없다 12ms
+ ❯ test/modeTransitions.test.ts (1 test | 1 failed) 11665ms
+   × mode transitions > mounts play when a newer same-mode request overlaps an in-flight switch 11663ms
+     → Cannot set properties of undefined (setting 'testid')
+ ✓ test/databaseViewToggle.test.ts (4 tests) 14151ms
+   ✓ database per-collection view mode session > clicking db-view-toggle-gallery on items flips state to gallery and persists across re-render and localStorage re-read  10693ms
+   ✓ database per-collection view mode session > toggle buttons exist with correct aria-pressed and active class  1747ms
+   ✓ database per-collection view mode session > elements/terrain/utility tabs never render the view toggle  1535ms
+ ✓ test/databaseOverviewTab.test.ts (8 tests) 22630ms
+   ✓ database overview tab shell > summarizes the authored game across world, story, cast, systems, and readiness  12241ms
+   ✓ database overview tab shell > renders stat chips for all 9 collections with counts from the project data  1913ms
+   ✓ database overview tab shell > empty project renders chips with 0 counts without crashing  1527ms
+   ✓ database overview tab shell > default open tab after modal open is the stored last tab, NOT overview unless stored  1377ms
+   ✓ database overview tab shell > persists across hard reload: stored 'overview' lands on the overview tab  1331ms
+   ✓ database overview tab shell > setDatabaseActiveTab('overview') + renderDatabasePanel renders the overview tab  1434ms
+   ✓ database overview tab shell > stat chips are buttons that switch to the matching tab (G006)  1298ms
+   ✓ database overview tab shell > databaseTabLabel resolves the overview label for the AI footer  1507ms
+ ✓ test/databaseOverviewDashboard.test.ts (11 tests) 27279ms
+   ✓ database overview dashboard > renders stat chips immediately with counts from the project data  12241ms
+   ✓ database overview dashboard > lazy compute: charts container is empty before idle callback, populated after flush  1831ms
+   ✓ database overview dashboard > curve chart renders two non-empty SVG paths with gridlines and Lv1..Lv50 labels  1531ms
+   ✓ database overview dashboard > scatter chart draws one circle per enemy with a <title> tooltip and boss styling  1361ms
+   ✓ database overview dashboard > renders issue cards matching the detector output with jump buttons  1347ms
+   ✓ database overview dashboard > jump button switches to the target tab via switchDatabaseActiveTab (G006)  1392ms
+   ✓ database overview dashboard > attack-stagnation jump opens the classes tab, not skills  1246ms
+   ✓ database overview dashboard > curve section shows a visible HP/attack legend  1521ms
+   ✓ database overview dashboard > AI 분석 button dispatches the modal's database-ai-toggle click (aria-expanded)  1436ms
+   ✓ database overview dashboard > clean project shows empty-state cards instead of blank canvases  1637ms
+   ✓ database overview dashboard > empty project renders empty states without NaN paths  1732ms
+ ❯ test/aiChatPanelUxRepairs.test.ts (21 tests | 1 failed) 18801ms
+   ✓ 선택 영역 AI 직결 칩 > 드래그 완료 신호로 칩을 붙이고 선택 변경/X/Escape/선택 해제를 반영한다 149ms
+   ✓ 선택 영역 AI 직결 칩 > 칩이 붙은 상태에서 Enter 제출은 runRegionTask 러너로 선택 영역을 넘긴다 152ms
+   ✓ 진행 상태와 중단 > 진행 배지는 경과초와 도구 카운터를 함께 표시한다 100ms
+   ✓ 진행 상태와 중단 > 오케스트레이션 phase가 있으면 진행 배지에 phase 라벨을 합쳐 표시한다 81ms
+   ✓ 진행 상태와 중단 > 진행 배지는 음수 경과시간을 0초로 보정한다 97ms
+   ✓ 진행 상태와 중단 > 패널에 중단 버튼이 있고 기본 상태에서는 비활성화되어 있다 109ms
+   × 진행 상태와 중단 > AssistantSession은 AbortSignal을 LLM 호출에 전달하고 중단 결과로 종료한다 15102ms
+     → Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+   ✓ 도구 로그와 추론 표시 > 파괴적 도구 성공 로그에는 초안 접두를 붙인다 130ms
+   ✓ 도구 로그와 추론 표시 > 실패 도구 요약은 원문과 첫 issue를 노출하고 내부 재시도 횟수를 덧붙인다 113ms
+   ✓ 도구 로그와 추론 표시 > 실패 도구 행은 details로 접히고 원시 실패 문구를 기본 문구에 드러낸다 96ms
+   ✓ 도구 로그와 추론 표시 > 연속 추론 토글 문구는 병합 횟수를 표시한다 111ms
+   ✓ 대화 복원과 내보내기 > 같은 프로젝트 컨텍스트의 직전 대화는 부팅 시 자동 복원된다 109ms
+   ✓ 대화 복원과 내보내기 > 다른 프로젝트 컨텍스트의 직전 대화는 자동 복원하지 않고 빈 키트도 안 붙인다 126ms
+   ✓ 대화 복원과 내보내기 > 내보내기는 빈 대화에서 비활성화되고 라벨은 내보내기다 109ms
+   ✓ 키 온보딩과 설정 접근성 > 하단 커맨드 바에 입력과 확장 메뉴를 마운트한다 109ms
+   ✓ 키 온보딩과 설정 접근성 > OAuth 는 전송 전에 'API 키' 안내로 막지 않는다 (키 온보딩 개념 자체가 없다)  566ms
+   ✓ 키 온보딩과 설정 접근성 > 401 오류 버블에도 설정 열기 버튼을 붙인다  600ms
+   ✓ 키 온보딩과 설정 접근성 > ☰ 의 설정 항목은 전용 모달을 열고 첫 입력에 포커스한다 291ms
+   ✓ 키 온보딩과 설정 접근성 > AI 패널의 아이콘 버튼에는 aria-label이 있다 292ms
+   ✓ 키 온보딩과 설정 접근성 > 설정 준비 판정은 API 키까지 확인한다 145ms
+   ✓ 현재 맵 칩 > 스토어에서 현재 맵 이름이 바뀌면 컨텍스트 칩도 즉시 갱신된다 208ms
+
+ Test Files  3 failed | 3 passed (6)
+      Tests  3 failed | 45 passed (48)
+   Start at  21:12:01
+   Duration  37.64s (transform 21.63s, setup 0ms, collect 31.88s, tests 95.03s, environment 2ms, prepare 1.34s)
+
+JSON report written to /home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/output/evidence/final-c5f48f0b-comparison/focused-final/vitest-report.json

@@ -17,6 +17,7 @@ import {
 import { CHIPSET_ANIMATION_FPS, CHIPSET_ANIMATION_STRIPS } from "@/project/defaults/chipsetAnimation";
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import { FARMING_CROP_SPRITE_ASSETS } from "@/assets/farmingSprites";
+import { generatedMonsterSpriteUrl, isGeneratedMonsterSprite } from "@/assets/generatedMonsterSprites";
 import { cropGraphicStages } from "@/project/farmModel";
 import { SCARLOXY_CHIPSET_ASSETS } from "@/assets/scarloxyPack";
 import { EMOTE_ASSET_PATH, EMOTE_FRAME_SIZE, EMOTE_KINDS, EMOTE_TEXTURE_KEY } from "@/project/emotes";
@@ -118,6 +119,12 @@ export function loadBundledAssets(scene: Phaser.Scene, project?: Project): void 
   for (const asset of FARMING_CROP_SPRITE_ASSETS) {
     if (usedTextures && !usedTextures.has(asset.id)) continue;
     scene.load.image(asset.id, withInlineAsset(asset.path));
+  }
+  for (const id of usedTextures ?? []) {
+    // Project-owned sprites/uploads keep their existing texture ownership.
+    if (project?.assets.sprites[id] || project?.assets.uploaded[id]) continue;
+    const url = generatedMonsterSpriteUrl(id);
+    if (url) scene.load.image(id, url);
   }
   scene.load.image(TEX_DIALOGUE_FRAME, withInlineAsset(ASSET_DIALOGUE_FRAME));
   scene.load.image(EMOTE_TEXTURE_KEY, withInlineAsset(EMOTE_ASSET_PATH));
@@ -262,6 +269,9 @@ function projectBundledTextureKeys(project: Project): Set<string> {
   const strings = new Set<string>();
   collectProjectStrings(project, strings);
   const keys = new Set<string>([TEX_TILESET, TEX_DIALOGUE_FRAME]);
+  for (const id of strings) {
+    if (isGeneratedMonsterSprite(id)) keys.add(id);
+  }
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
     if (strings.has(asset.textureKey)) keys.add(asset.textureKey);
   }

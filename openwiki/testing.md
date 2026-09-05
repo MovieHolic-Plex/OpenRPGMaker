@@ -1,3 +1,25 @@
+## 기존 실패 비교는 진단 내용까지 확인한다 (2026-09-05)
+
+같은 main의 실패 파일·테스트 이름·중복 횟수가 같아도 회귀가 없다는 충분한 증거는 아니다.
+JRPG 재검증에서 `roleNameComparisonGate`는 양쪽 모두 실패 1개였지만, 진단은 기존 2곳에서
+새 물 타일 역할 비교를 포함한 4곳으로 늘었다. 이름 비교 뒤 실패 메시지·수신값의 차이도 검토한다.
+워크트리 경로·스택 줄 번호 차이를 제외한 새 위반을 수정하고, 실패 메시지가 불완전한 기준선은
+해당 테스트만 다시 실행한다. 전체 게이트의 직접 종료 코드와 기존 실패는 보고서에 그대로 남긴다.
+
+## Esc 메뉴 동작·시각 검증 (2026-09-05)
+
+- `npm run qa:runtime -- --scenario esc-menu`: 미리보기, 회복량 예고, 대상 유지·연속 사용,
+  장비 비교, 파티·시스템 화면, 필드 복귀. 결과는 `verify-shots/runtime-qa/esc-menu/SUMMARY.md`.
+- `test/runtime/esc-menu.spec.ts`: 같은 출하 플레이어 하네스로 실제 DOM/스크롤 유지, 좌우 영역
+  복귀, 640×480·1024×768·1280×960 배치, 닫힘 마지막 프레임과 빠른 재열기, 모션 감소를 검사한다.
+- `test/playerMenuItemPreview.test.ts`: 회복 예고와 실제 적용 일치, 무변이·난수 보존,
+  타입 전환과 사용 장소, 만피 상태 치료, 전투불능 대상 제한.
+- `test/playerStatusMenuMotion.test.ts`: 종료 완료 전에 DOM을 삭제하지 않고 오래된 종료 콜백이
+  새 메뉴를 삭제하지 않는지 확인한다.
+- `scripts/qa/runtime/esc-menu-fixture.mjs`는 기존 테스트 프로젝트를 복사해 약품 종류를 명시한다.
+  저작 콘텐츠의 정본을 수정하는 작업이 아니다. 원래 fixture의 normalGoods 약품으로 실행하면
+  필드 사용이 거절되는 것이 현재 아이템 종류 계약에 맞다.
+
 # Testing
 
 ## P2 낚시·채집·도감·박물관 focused gate (2026-08-25)
@@ -506,6 +528,12 @@ Playwright 의 `locator.click()` 은 누르기 전에 `scrollIntoViewIfNeeded` �
 
 ## 런타임(게임) 전용 비전 QA 하네스 (2026-08-28)
 
+### 메뉴 적대적 플레이 회귀 (2026-09-05)
+
+`npm run qa:runtime:gate -- test/runtime/status-menu-adversarial.spec.ts`는 출하 player 서버에서 실제 키보드로 결정/취소 유지, 아이템 소모, 상태 부여·씨앗·스위치 작동, 저장→로드→재저장, 타이틀 복귀, 오류 후 뒤로를 검사한다. 640×480·960×720·1280×800에서 불러오기 창의 stage 비율과 화면 안 배치를 잰다. fixture는 기존 테스트 프로젝트의 메모리 사본에 최소 아이템 계약만 넣으며 원격 게임을 저작하지 않는다. 결과는 `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md`를 먼저 읽는다.
+
+스펙은 기본 런타임 프로젝트의 브라우저를 따른다. 공유 호스트의 Chromium `ERR_NETWORK_CHANGED`로 부팅이 끊긴 이번 검증은 실행용 Playwright 설정에서 Firefox를 선택했다. 호스트 우회를 위해 스펙에 브라우저를 하드코딩하지 않는다. 실패 시 worker가 beforeAll을 다시 실행하므로 SUMMARY는 전체 실행의 유일한 성공 집계가 아니다. 실행 종료 코드와 테스트 리포트를 함께 확인한다. 비활성 대상은 button이 아닌 div로 렌더될 수 있어 `toBeEnabled()`만으로는 부족하다. 실제 BUTTON 여부와 사용 후 수량·저장 스냅숏의 효과를 함께 단정한다.
+
 게임 화면을 브라우저로 QA 할 때 **편집기 셸을 통과하지 마라.** `npm run qa:runtime`
 (반복) / `npm run qa:runtime:gate` (게이트). `player.html` 을 전용 vite 서버로 띄워
 편집기 크롬 0, HMR 유지, 출하 shim 경로를 그대로 통과한다. 편집기 play 모드는 실제
@@ -675,3 +703,12 @@ prune 판정 / 명시적 초안 저장 뒤 중복 쓰기.
 Chromium local network 검사만 캡처 실행 인자로 끈다. 일반 출하 설정은 바꾸지 않는다.
 `vite.player-qa.config.ts`는 기존 파일 감시 비활성화에 맞춰 HMR도 기본 비활성화하며,
 `PLAYER_QA_WATCH=1`이면 둘 다 다시 켠다. 실행 성공과 사람이 PNG를 본 시각 판정은 분리한다.
+
+## 상점 진열 중심 편집 검증 (2026-09-05)
+
+- `test/e2e/shop-command-fullscreen.spec.ts`: 실제 이벤트 피커에서 상점을 연다. 상품 추가창에서 전체 자료집의 마지막 행까지 도달하고 취소/일괄 추가/포커스 복원을 확인한다. 가격→계절→다른 상품→원래 상품, 거래 규칙→대사→거래 없음 분기→적용→재열기의 값을 검증한다.
+- 1440×900, 1280×800, 1024×768의 실제 행·목록·적용 버튼 기하와 screenshot을 `output/evidence/shop-ux/`에 기록한다. 두 번째 시나리오는 중첩 추가창의 Escape가 부모 상점을 닫지 않는지와 탭 방향키/Tab 순환, 다른 명령의 wide 폭을 확인한다.
+- 상점의 `shop-item-check-*`는 상품 추가창에서만 찾는다. 진열 목록은 선택 버튼(`shop-item-row-*`)이다. 기존 저작 시나리오는 `test/e2e/shopAuthoring.ts`의 `addShopGoods`를 사용할 수 있다.
+- `event-view-toggle-list`는 role=tab, aria-selected 계약이다. `eventStoryboardPicker.showCommandList`도 이 속성을 검사한다.
+- 표면 기준선의 최소 shop은 `item_potion`을 진열한다(`item1`은 captureProject에 없는 ID). 활성 상품 탭만 초기 DOM에 마운트되므로 form/interaction/commit 축의 shop 항목을 함께 캡처하며, 탭과 추가창의 설정 도달성은 위 단위·브라우저 시나리오에서 검사한다. 하한선·반응/no-commit 목록 변경은 별도 커밋으로 검토한다.
+- Chromium의 `ERR_NETWORK_CHANGED`가 localhost 모듈을 취소하는 호스트에서는 `SHOP_QA_ROUTE_MODULES=1`을 추가한다. 소유한 baseURL의 GET 응답만 Playwright Node 전송으로 전달하며 앱 응답·편집 동작은 그대로다. 기본 실행은 일반 브라우저 전송을 사용한다.

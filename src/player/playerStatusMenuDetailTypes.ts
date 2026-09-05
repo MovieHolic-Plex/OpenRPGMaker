@@ -8,6 +8,12 @@ export type StatusMenuDetailEntry = {
   readonly label: string;
   readonly value: string;
   readonly description?: string;
+  /** Unavailable rows remain navigable so their reason can be read before activation. */
+  readonly unavailableReason?: string;
+  readonly vitals?: {
+    readonly hp: number; readonly maxHp: number; readonly hpAfter: number;
+    readonly mp: number; readonly maxMp: number; readonly mpAfter: number;
+  };
   readonly face?: {
     readonly resourceId?: string;
     readonly alt: string;

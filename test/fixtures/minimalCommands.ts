@@ -122,7 +122,7 @@ export const MINIMAL_COMMANDS: Record<CommandKind, Command> = {
     preventObscuringPlayer: true,
     allowEventMovementDuringWait: false,
   },
-  shop: { kind: "shop", itemIds: ["item1"] },
+  shop: { kind: "shop", itemIds: ["item_potion"] },
   inn: { kind: "inn", price: 10 },
   checkpointSave: { kind: "checkpointSave" },
   killPlayer: { kind: "killPlayer", message: "trap" },

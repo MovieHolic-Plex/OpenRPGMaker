@@ -34,7 +34,7 @@ function renderPartyFaceStyle(faceResourceId: string): string {
   const hero = project.database.actors.find((actor) => actor.id === session.partyActorIds[0])!;
   hero.faceResourceId = faceResourceId;
   const menu = renderWithFakeDom(() =>
-    renderPlayerStatusMenu({ project, session, slots: [], actions: noopActions }),
+    renderPlayerStatusMenu({ project, session, slots: [], selectedCommand: "party-menu", actions: noopActions }),
   );
   return findByTestId(menu, "status-menu-face-0")?.getAttribute("style") ?? "";
 }
@@ -85,7 +85,7 @@ describe("player status menu party portrait", () => {
       const hero = project.database.actors.find((actor) => actor.id === session.partyActorIds[0])!;
       hero.faceResourceId = "missing-face-resource";
       const menu = renderWithFakeDom(() =>
-        renderPlayerStatusMenu({ project, session, slots: [], actions: noopActions }),
+        renderPlayerStatusMenu({ project, session, slots: [], selectedCommand: "party-menu", actions: noopActions }),
       );
       const face = findByTestId(menu, "status-menu-face-0");
       expect(face?.className).toContain("missing");
@@ -101,7 +101,7 @@ describe("player status menu party portrait", () => {
       const project = createBlankProject();
       const session = startSession(project);
       const menu = renderWithFakeDom(() =>
-        renderPlayerStatusMenu({ project, session, slots: [], actions: noopActions }),
+        renderPlayerStatusMenu({ project, session, slots: [], selectedCommand: "party-menu", actions: noopActions }),
       );
       const panel = findByTestId(menu, "main-menu")!;
       // The authored resource metadata survives...

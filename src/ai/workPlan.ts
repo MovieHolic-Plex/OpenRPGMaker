@@ -26,7 +26,7 @@ import {
   templateToolInstruction,
 } from "./narrativeHorrorWorkPlan";
 import { QUICK_REPLY_MARKER } from "@/ai/interviewPrompt";
-import { getTool } from "@/editor/tools/toolRegistry";
+import { allTools, getTool } from "@/editor/tools/toolRegistry";
 export type WorkItemStatus = "pending" | "in_progress" | "done" | "skipped" | "blocked";
 
 export interface WorkItem {
@@ -144,9 +144,11 @@ Harness contract:
    단, 사용자의 **금지·보존 제약**("새로 만들지 마", "기존 것 유지", "이 맵만")은 축약 예외다 — instruction 에 그대로 남겨라. 축약해서 날리면 생성기가 신축으로 되돌아간다.
 11. A multi-deliverable request MUST have every deliverable represented by at least one item. Dropping one because the plan is getting long is a contract violation — merge related deliverables into one item instead.
 12. "volume" (optional, only with new_plan/replan): the minimum outputs you commit to for greenfield content — {"authoredMaps","multiPageNpcs","shops","quests"} as integers. The harness measures the project delta against it and re-injects work until it is met, so declare only what the user actually asked for (village ≈ maps 1 / npcs 3 / shops 1; RPG campaign ≈ maps 3 / npcs 6 / shops 1 / quests 1). Omit it for repairs, single facilities, and anything the user excluded.
-13. Quest / boss items carry a **verification tool** in successTools — the harness re-checks the artifact and blocks completion without it:
-   - 퀘스트/의뢰/스토리 체인 → successTools MUST include ["create_quest","define_quest","verify_quest"]. upsert_event 로 퀘스트를 손으로 조립하지 말 것 — 완주 검증이 불가능해 항목이 완료되지 않는다.
+13. Only plan quest chains / bosses if the user asks for them. A genre preset or a guide NPC does not require a quest graph or boss.
+   - create_quest compiles a step quest and define_quest authors a separate graph contract; they are NOT mandatory sequential calls. Graph verification uses verify_quest. Debugging state to a goal is not a playthrough and cannot prove completion.
    - 보스 전투 페이즈/광폭화/HP 임계 연출 → successTools MUST include ["author_boss_phases","simulate_battle"]. 페이즈가 실제로 발동했는지(phaseCoverage)를 시뮬로 확인해야 완료된다.
+14. Preserve an explicit numbered checklist and its dependencies. Put required project/map/event/DB reads in the first item, before any writes. Use only names from the canonical tool list below: get_database_records, set_start_position, set_session_start, upsert_troop are distinct tools. Do not invent get_database or set_player_start.
+15. For a party adventure, inspect the current party and supplies, make an accessible village-to-dungeon route, and inspect every affected map with show_map_region. A solid grass rectangle or a small decorated viewport does not complete a dungeon or whole-map stage. Preserve existing content while improving it. Separate visual inspection from authoring so premature tool-name completion cannot omit it.
 ${NARRATIVE_HORROR_PLANNER_RULE}
 
 JSON schema:
@@ -218,6 +220,7 @@ export function buildOrchestratorUserPayload(input: {
   // create_map/author_village 항목으로 분해되고, successTools 에 생성툴이 박히면 그 툴이 성공할
   // 때까지 항목이 완료되지 않아 신축이 강제됐다.
   parts.push(TARGET_SELECTION_RULE);
+  parts.push(`## Canonical tool names\n${allTools().map((tool) => tool.name).join(", ")}\nUse exact names in successTools; unknown requirements block completion and require correcting the plan.`);
   parts.push("Respond with JSON only.");
   return parts.join("\n\n");
 }
@@ -494,15 +497,12 @@ function firstNonEmptyString(...candidates: readonly unknown[]): string {
 }
 
 /**
- * successTools 정리 — **실제로 존재하는 툴 이름만** 남긴다.
- * 플래너가 없는 툴을 적으면(2026-08-23 실측: `configure_element_table`) 그 항목은 어떤 방법으로도
- * 완료할 수 없는 게이트가 되고 모델은 skip 밖에 할 수 없다.
+ * Keep unknown requirements visible and unmet. Dropping an invented tool used to
+ * silently turn an explicit acceptance contract into an unrestricted completion.
  */
 function sanitizeToolNames(tools: readonly string[] | undefined): readonly string[] | undefined {
   if (!tools || tools.length === 0) return undefined;
-  const cleaned = tools
-    .map((t) => t.trim())
-    .filter((t) => t.length > 0 && t.length < 64 && getTool(t) !== undefined);
+  const cleaned = [...new Set(tools.map((t) => t.trim()).filter((t) => t.length > 0))];
   return cleaned.length > 0 ? cleaned : undefined;
 }
 
@@ -595,6 +595,10 @@ export function formatWorkPlanForOrchestration(plan: WorkPlan): string {
     lines.push(`Current item: ${s.current.itemTitle}`);
     lines.push(`Worker instruction:\n${s.current.instruction}`);
     if (s.current.doneWhen) lines.push(`Done when: ${s.current.doneWhen}`);
+    const required = getCurrentWorkItem(plan)?.successTools ?? [];
+    if (required.length) lines.push(`Required successful tools for this item (including prior continuations): ${required.join(", ")}`);
+    const unknown = required.filter((name) => !getTool(name));
+    if (unknown.length) lines.push(`Invalid tool requirements: ${unknown.join(", ")}. Use find_tools, then correct these names with set_work_plan while preserving all unfinished checklist requirements. They cannot count as completed.`);
     if (getCurrentWorkItem(plan)?.requiresAnyWrite) {
       lines.push("Fallback completion gate: at least one write tool must succeed before completing this item.");
     }
@@ -606,7 +610,7 @@ export function formatWorkPlanForOrchestration(plan: WorkPlan): string {
   }
   lines.push(
     "When all of this item's successTools succeed, the harness may auto-complete; " +
-      "or call complete_work_item only after every listed tool succeeded this turn. " +
+      "or call complete_work_item only after every listed tool succeeded for this item, including its continuations. " +
       "If blocked (wrong tileset material, out of region, etc.), call skip_work_item with a note — " +
       "do NOT complete a failed item by succeeding a different tool. " +
       "If the item's premise is wrong (e.g. it prescribes creating a new map but the user asked to fix an " +
@@ -735,18 +739,6 @@ export function canCompleteWorkItem(
   item: WorkItem,
   successfulTools: readonly string[] | undefined,
   gate?: WorkItemOutcomeGate,
-  opts: {
-    /**
-     * 이름이 어긋난 successTools 대신 «성공한 쓰기 + 산출물 게이트 통과» 를 근거로 완료를 허용한다.
-     *
-     * 자동 완료(`advanceWorkPlanFromTools`)는 계속 엄격하다 — 이 우회는 모델이 **명시적으로**
-     * `complete_work_item` 을 부른 경로에만 쓴다. 이유(2026-09-03 실측): 플래너가 적은 툴 이름과
-     * 모델이 실제로 쓴 툴이 다르면(`fill_region` vs `paint_tiles`) 이름 매칭은 영원히 통과하지 못하고
-     * 항목이 `in_progress` 로 굳어 Ralph 가 무한 재주입한다. 이름은 대리 지표이고, 실제 검사는
-     * 산출물 게이트(맵이 채워졌는가·대상 맵이 바뀌었는가·퀘스트가 완주되는가)다.
-     */
-    readonly allowWriteEvidenceFallback?: boolean;
-  } = {},
 ): { ok: true } | { ok: false; reason: string; missingTools?: readonly string[] } {
   const needed = item.successTools ?? [];
   if (item.requiresAnyWrite) {
@@ -762,9 +754,6 @@ export function canCompleteWorkItem(
   const tools = new Set(successfulTools ?? []);
   const missing = needed.filter((name) => !tools.has(name));
   if (missing.length === 0) return gate?.(item) ?? { ok: true };
-  if (opts.allowWriteEvidenceFallback && (successfulTools ?? []).some((name) => getTool(name)?.mode === "write")) {
-    return gate?.(item) ?? { ok: true };
-  }
   return {
     ok: false,
     missingTools: missing,
@@ -794,8 +783,6 @@ export function completeWorkItemById(
     successfulTools?: readonly string[];
     force?: boolean;
     outcomeGate?: WorkItemOutcomeGate;
-    /** 명시 완료 경로에서만 켠다 — `canCompleteWorkItem` 의 같은 이름 옵션을 그대로 넘긴다. */
-    allowWriteEvidenceFallback?: boolean;
   },
 ): CompleteWorkItemResult {
   for (const layer of plan.layers) {
@@ -810,11 +797,10 @@ export function completeWorkItemById(
       return { ok: true, item: it, alreadyDone: true };
     }
     if (!options?.force) {
-      const gate = canCompleteWorkItem(it, options?.successfulTools, options?.outcomeGate, {
-        ...(options?.allowWriteEvidenceFallback !== undefined
-          ? { allowWriteEvidenceFallback: options.allowWriteEvidenceFallback }
-          : {}),
-      });
+      if (plan.currentItemId !== itemId) {
+        return { ok: false, item: it, reason: `현재 항목 '${plan.currentItemId}'을 먼저 완료하세요. 다른 항목의 성공 기록을 사용할 수 없습니다.` };
+      }
+      const gate = canCompleteWorkItem(it, options?.successfulTools, options?.outcomeGate);
       if (!gate.ok) return { ok: false, reason: gate.reason, item: it };
     }
     it.status = "done";

@@ -1,0 +1,41 @@
+# JRPG 실제 플레이 QA
+
+통과 37개, 오류 0개.
+
+- start: map_blank_start (14,18), 200G
+- guide: map_blank_start (14,18), 200G
+- shop: map_blank_start (16,16), 200G
+- purchase: map_blank_start (16,16), 150G
+- house-1-entry: map_house_interior_1_map_blank_start_1 (10,15), 150G
+- house-1-return: map_blank_start (15,6), 150G
+- house-2-entry: map_house_interior_1_map_blank_start_2 (10,15), 150G
+- house-2-return: map_blank_start (3,6), 150G
+- dungeon-entry: map_forest_dungeon (12,17), 150G
+- battle-9: map_forest_dungeon (7,17), 150G
+- victory-10: map_forest_dungeon (7,17), 180G
+- battle-11: map_forest_dungeon (6,7), 180G
+- victory-12: map_forest_dungeon (6,7), 210G
+- chest-open: map_forest_dungeon (6,6), 310G
+- chest-repeat: map_forest_dungeon (6,6), 310G
+- battle-15: map_forest_dungeon (9,6), 310G
+- victory-16: map_forest_dungeon (9,6), 330G
+- battle-17: map_forest_dungeon (15,10), 330G
+- victory-18: map_forest_dungeon (15,10), 350G
+- east-chest-open: map_forest_dungeon (20,7), 450G
+- east-chest-repeat: map_forest_dungeon (20,7), 450G
+- battle-21: map_forest_dungeon (19,9), 450G
+- victory-22: map_forest_dungeon (19,9), 470G
+- battle-23: map_forest_dungeon (12,9), 470G
+- victory-24: map_forest_dungeon (12,9), 500G
+- boss-introduction: map_forest_dungeon (12,9), 500G
+- battle-26: map_forest_dungeon (12,9), 500G
+- victory-27: map_forest_dungeon (12,9), 530G
+- boss-cleared: map_forest_dungeon (12,9), 530G
+- battle-29: map_forest_dungeon (10,10), 530G
+- victory-30: map_forest_dungeon (10,10), 560G
+- battle-31: map_forest_dungeon (10,17), 560G
+- victory-32: map_forest_dungeon (10,17), 590G
+- save-menu: map_forest_dungeon (10,17), 590G
+- saved: map_forest_dungeon (10,17), 590G
+- loaded: map_forest_dungeon (10,17), 590G
+- returned: map_blank_start (20,6), 590G

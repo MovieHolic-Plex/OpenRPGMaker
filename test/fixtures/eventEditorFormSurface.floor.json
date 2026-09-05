@@ -496,12 +496,12 @@
   "textCount": 1
  },
  "shop": {
-  "testidCount": 56,
-  "controlCount": 36,
-  "selectOptionCount": 173,
-  "classCount": 86,
-  "labelCount": 28,
-  "textCount": 4
+  "testidCount": 27,
+  "controlCount": 17,
+  "selectOptionCount": 0,
+  "classCount": 43,
+  "labelCount": 18,
+  "textCount": 5
  },
  "inn": {
   "testidCount": 24,

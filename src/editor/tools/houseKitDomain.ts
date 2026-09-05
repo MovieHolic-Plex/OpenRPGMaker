@@ -174,6 +174,7 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
       if (y + 1 < map.height) {
         upsertEvent(map.events, createHouseDoorStepEvent({
           eventId: `${doorEventId}_step`,
+          doorEventId,
           x,
           y: y + 1,
           interiorMapId,

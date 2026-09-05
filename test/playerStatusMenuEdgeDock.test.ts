@@ -28,7 +28,7 @@ const noopActions: PlayerStatusMenuActions = {
 };
 
 describe("player status menu edge dock", () => {
-  it("keeps the current six primary routes in a bottom-dock DOM instead of a legacy rail", () => {
+  it("keeps six routes and a visible preview without duplicating party information", () => {
     // Break caught: replacing the edge dock with the old left-side command list removes
     // its explicit layout contract, icon affordances, party glance, and progressive detail disclosure.
     const restoreDom = installFakeDom();
@@ -41,7 +41,7 @@ describe("player status menu edge dock", () => {
         actions: noopActions,
       }));
 
-      expect(menu.getAttribute("data-status-menu-layout")).toBe("edge-dock");
+      expect(menu.getAttribute("data-status-menu-layout")).toBe("workbench");
       expect(findByTestId(menu, "status-menu-command-rail")?.className)
         .toContain("status-menu-primary-dock");
       expect(findByTestId(menu, "status-menu-command-rail")?.getAttribute("tabindex")).toBe("0");
@@ -53,9 +53,10 @@ describe("player status menu edge dock", () => {
           .toBe("true");
       }
       expect(findByTestId(menu, "status-menu-command-party-menu")?.textContent).toContain("파티");
-      expect(findByTestId(menu, "status-menu-party")?.className).toContain("status-menu-party-glance");
-      expect(findByTestId(menu, "status-menu-face-0")).not.toBeNull();
-      expect(findByTestId(menu, "status-menu-detail")?.getAttribute("aria-hidden")).toBe("true");
+      expect(findByTestId(menu, "status-menu-party")).toBeNull();
+      expect(findByTestId(menu, "status-menu-detail")?.getAttribute("aria-hidden")).toBeNull();
+      expect(findByTestId(menu, "status-menu-detail")?.getAttribute("inert")).toBe("");
+      expect(findByTestId(menu, "status-menu-controls")?.textContent).toContain("Esc 게임으로");
     } finally {
       restoreDom();
     }

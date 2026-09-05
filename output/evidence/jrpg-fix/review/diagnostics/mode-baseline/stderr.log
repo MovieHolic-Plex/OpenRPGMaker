@@ -1,0 +1,17 @@
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/modeTransitions.test.ts > mode transitions > mounts play when a newer same-mode request overlaps an in-flight switch
+TypeError: Cannot set properties of undefined (setting 'testid')
+ ❯ renderLoadFailureScreen src/app/mode.ts:308:17
+    306|   const panel = document.createElement("section");
+    307|   panel.className = "db-required-panel db-required-hero project-load-e…
+    308|   panel.dataset.testid = "project-load-error-panel";
+       |                 ^
+    309| 
+    310|   const hero = document.createElement("div");
+ ❯ bootApp src/app/mode.ts:124:7
+ ❯ test/modeTransitions.test.ts:162:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

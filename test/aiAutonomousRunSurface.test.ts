@@ -22,6 +22,7 @@ const assistantMock = vi.hoisted(() => {
   const sentMessages: string[] = [];
   let emitter: ((onEvent: (event: unknown) => void, opts?: unknown) => void) | null = null;
   let lastOpts: unknown = null;
+  let stopReason: "final" | "max-tool-calls" | "error" = "final";
   let holdNext = false;
   let heldResolve: (() => void) | null = null;
 
@@ -33,7 +34,7 @@ const assistantMock = vi.hoisted(() => {
       onEvent: (event: unknown) => void,
       _signal: unknown,
       opts?: unknown
-    ): Promise<{ assistantText: string; proposedCalls: []; stoppedReason: "final" }> {
+    ): Promise<{ assistantText: string; proposedCalls: []; stoppedReason: "final" | "max-tool-calls" | "error" }> {
       sentMessages.push(text);
       lastOpts = opts;
       emitter?.(onEvent, opts);
@@ -44,7 +45,7 @@ const assistantMock = vi.hoisted(() => {
         });
         heldResolve = null;
       }
-      return { assistantText: "완료.", proposedCalls: [], stoppedReason: "final" };
+      return { assistantText: "완료.", proposedCalls: [], stoppedReason: stopReason };
     }
 
     getAuditEntries(): [] {
@@ -86,6 +87,7 @@ const assistantMock = vi.hoisted(() => {
     setEmitter(fn: typeof emitter) {
       emitter = fn;
     },
+    setStopReason(reason: typeof stopReason) { stopReason = reason; },
     getLastOpts(): unknown {
       return lastOpts;
     },
@@ -100,6 +102,7 @@ const assistantMock = vi.hoisted(() => {
       emitter = null;
       lastOpts = null;
       holdNext = false;
+      stopReason = "final";
       heldResolve = null;
     },
   };
@@ -245,6 +248,8 @@ describe("할 일 목록 표면 (작업 계획 체크리스트)", () => {
     const checklist = findByTestId(panel, "ai-work-plan-checklist");
     expect(checklist).not.toBeNull();
     expect(checklist?.textContent).toContain("RPG 만들어줘");
+    expect(document.querySelector("[data-testid='ai-plan-book']")).toBeNull();
+    findByTestId(panel, "ai-plan-book-open")?.click();
     expect(document.querySelector("[data-testid='ai-plan-book']")).not.toBeNull();
     expect(findByTestId(panel, "ai-plan-book-open")?.textContent).toBe("계획 보기");
     const items = document.querySelectorAll("[data-testid='ai-autonomous-item']");
@@ -397,6 +402,7 @@ describe("할 일 목록 표면 (작업 계획 체크리스트)", () => {
     expect(settled).not.toBeNull();
     expect(settled?.dataset.active).toBe("false");
     expect(findByTestId(panel, "ai-run-status")?.textContent).toBe("집 3채 — 대기 중");
+    findByTestId(panel, "ai-plan-book-open")?.click();
     expect(document.querySelectorAll("[data-testid='ai-autonomous-item']")).toHaveLength(4);
 
     // 다음 턴: 다른 목표의 계획 — 이전 항목이 남지 않는다.
@@ -413,6 +419,25 @@ describe("할 일 목록 표면 (작업 계획 체크리스트)", () => {
     assistantMock.releaseHeldTurn();
     await secondRun;
     await flushAsync();
+  });
+
+  it("항목 체크 뒤에도 실행이 살아 있으면 확인 중, 도구 한도로 끝나면 중단 상태로 남는다", async () => {
+    const panel = renderPanel();
+    const finished = samplePlan({ currentItemId: null, layers: samplePlan().layers.map((layer) => ({
+      ...layer, items: layer.items.map((item) => ({ ...item, status: "done" as const })),
+    })) });
+    assistantMock.setEmitter((onEvent) => onEvent({ type: "work_plan", plan: finished }));
+    assistantMock.setStopReason("max-tool-calls");
+    assistantMock.holdNextTurn();
+    const running = bridgeSend("RPG 만들어줘");
+    await flushAsync();
+    expect(findByTestId(panel, "ai-run-status")?.textContent).toBe("마무리 확인 중");
+    expect(findByTestId(panel, "ai-work-plan-checklist")?.dataset.complete).toBe("false");
+    assistantMock.releaseHeldTurn();
+    await running;
+    await flushAsync();
+    expect(findByTestId(panel, "ai-run-status")?.textContent).toBe("작업 중단 — 실행 한도 도달");
+    expect(findByTestId(panel, "ai-work-plan-checklist")?.dataset.complete).toBe("false");
   });
 
   it("모든 항목이 끝난 계획은 「모두 완료」로 남고, 계획이 한 번도 안 온 턴은 목록을 만들지 않는다", async () => {
@@ -434,6 +459,7 @@ describe("할 일 목록 표면 (작업 계획 체크리스트)", () => {
     expect(checklist?.dataset.complete).toBe("true");
     expect(findByTestId(panel, "ai-run-status")?.textContent).toBe("모두 완료");
     expect(findByTestId(panel, "ai-autonomous-progress")?.textContent).toBe("4/4");
+    findByTestId(panel, "ai-plan-book-open")?.click();
     expect([...document.querySelectorAll("[data-testid='ai-autonomous-item']")].map((item) => (item as HTMLElement).dataset.status))
       .toEqual(["done", "done", "done", "done"]);
 
@@ -500,6 +526,7 @@ describe("할 일 목록 표면 (작업 계획 체크리스트)", () => {
     expect(findByTestId(panel, "ai-work-plan-checklist")).not.toBeNull();
     expect(findByTestId(panel, "ai-autonomous-budget")).toBeNull();
     expect(findByTestId(panel, "ai-autonomous-chip")?.textContent).toBe("할 일 목록");
+    findByTestId(panel, "ai-plan-book-open")?.click();
     expect(document.querySelectorAll("[data-testid='ai-autonomous-item']")).toHaveLength(4);
     // 패널은 autonomous 와 함께 사용자 원문(instruction)·선택 스코프를 사실로 넘긴다.
     expect(assistantMock.getLastOpts()).toMatchObject({ autonomous: false, instruction: "안녕", scope: null });

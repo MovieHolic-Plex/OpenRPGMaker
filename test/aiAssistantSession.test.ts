@@ -1282,11 +1282,16 @@ describe("AssistantSession 툴콜 루프", () => {
     const { truncatedTurnText } = await load();
     // 모델 문장이 있으면 손대지 않는다.
     expect(truncatedTurnText("숲을 배치했습니다.", 3, "도구 호출 예산")).toBe("숲을 배치했습니다.");
-    // 비어 있으면 멈춘 이유 + 승인 대기 건수를 알린다.
+    // 비어 있으면 멈춘 이유 + 적용 전 제안 건수를 알린다(승인 절차를 추측하지 않는다).
     const pending = truncatedTurnText("   ", 13, "도구 호출 예산");
     expect(pending).toContain("도구 호출 예산");
     expect(pending).toContain("제안 13건");
-    expect(pending).toContain("승인 대기");
+    expect(pending).toContain("적용 전");
+    expect(pending).not.toMatch(/승인 대기|수락하면/);
+    const applied = truncatedTurnText("", 0, "도구 호출 예산", 4);
+    expect(applied).toContain("변경 4건은 이미 프로젝트에 적용");
+    expect(applied).not.toContain("변경은 만들지 못했습니다");
+    expect(truncatedTurnText("", 2, "출력 토큰 예산", 4)).toContain("제안 2건");
     // 만든 것이 없으면 대기 건수를 꾸며내지 않는다.
     expect(truncatedTurnText("", 0, "출력 토큰 예산")).toContain("변경은 만들지 못했습니다");
   });

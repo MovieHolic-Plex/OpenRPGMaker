@@ -1,0 +1,10 @@
+{
+  "projectId": "oprn-399e312698",
+  "httpStatus": 200,
+  "checkedAt": "2026-09-05T12:03:09.510Z",
+  "updatedAt": "2026-09-05T11:38:55.48+00:00",
+  "canonicalSnapshotSha256": "ed254ee162e783808c4a3baef103e8dac7372e8ae3c2b68a4343dcc57c5111d2",
+  "canonicalRemoteSha256": "ed254ee162e783808c4a3baef103e8dac7372e8ae3c2b68a4343dcc57c5111d2",
+  "equivalent": true,
+  "note": "Compare with shipping load/serialize normalization; explicit empty shop branches may be persisted after editor reload."
+}

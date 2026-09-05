@@ -18,6 +18,7 @@
 @import "./event-editor.windowing.css";
 /* Native selects keep their data contract; this layer owns the visible dropdown UI. */
 @import "./event-editor.custom-select.css";
+@import "./event-editor.shop.css";
 
 /* alias collapse — after imports so the sheet stays valid */
 :root {

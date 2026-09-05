@@ -11,7 +11,7 @@ import {
   type StatusMenuCommand,
 } from "@/player/playerStatusMenuModel";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
-import { createStatusMenuDetail, type StatusMenuDetail, type StatusMenuStatDelta } from "@/player/playerStatusMenuDetails";
+import { createStatusMenuDetail, type StatusMenuDetail } from "@/player/playerStatusMenuDetails";
 import { renderStatusMenuDetailPanel } from "@/player/playerStatusMenuDetailRenderer";
 import { applySystemGraphic } from "@/player/systemGraphics";
 import type { PlayerStatusMenuActions, PlayerStatusMenuOptions } from "@/player/playerStatusMenuTypes";
@@ -40,13 +40,10 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
       "aria-modal": "true",
       role: "dialog",
     },
-    dataset: { testid: "main-menu", statusMenuScreen: mode, statusMenuLayout: "edge-dock" },
+    dataset: { testid: "main-menu", statusMenuScreen: mode, statusMenuLayout: "workbench" },
   });
   applySystemGraphic(panel);
-  // The modern ESC surface keeps the authored system resource metadata and the
-  // windowskin reachable via --runtime-window-skin, but deliberately strips only
-  // the border-image frame so the full-stage panel never floods the screen with the
-  // skin's center tile ("fill"). Inner panels still consume the authored skin.
+  // Keep authored metadata while the shared runtime palette paints the menu.
   panel.style.removeProperty("border-image-source");
   panel.style.removeProperty("border-image-slice");
 
@@ -95,7 +92,7 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
   const detailPanel = renderStatusMenuDetailPanel(options.project, detail, {
     selectedActionIndex: options.selectedDetailActionIndex,
     // 쇼케이스는 작업 패널에서만 — 트레이·확인 카드는 명령 버튼 목록이라 그릴 그림이 없다.
-    showcase: selectedCommand !== "to-title" && !isStatusMenuGroupEntryId(selectedCommand),
+    showcase: !options.targetItemId && selectedCommand !== "to-title" && !isStatusMenuGroupEntryId(selectedCommand),
   });
   detailPanel.dataset.statusMenuPresentation = selectedCommand === "to-title"
     ? "confirmation-card"
@@ -104,28 +101,31 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
       : "work-panel";
   detailPanel.dataset.statusMenuCommand = selectedCommand;
   if (mode === "main") {
-    detailPanel.setAttribute("aria-hidden", "true");
     detailPanel.setAttribute("inert", "");
   }
+  const showParty = selectedCommand === "party-menu";
+  panel.classList.toggle("has-party-overview", showParty);
   panel.append(
-    // B안 2열: 좌측 한 창에 레일 + 파티, 우측 전체가 작업 영역.
+    el("header", {
+      class: "status-menu-header",
+      children: [
+        el("span", { class: "status-menu-heading", text: "메뉴" }),
+        el("span", { class: "status-menu-location", text: options.project.maps[options.session.currentMapId]?.name ?? "" }),
+        el("span", { class: "status-menu-gold", text: snapshot.goldLabel, dataset: { testid: "status-menu-gold" } }),
+        el("span", { class: "status-menu-time", text: snapshot.timeLabel, dataset: { testid: "status-menu-time" } }),
+      ],
+    }),
     el("div", {
       class: "status-menu-sidebar",
       dataset: { testid: "status-menu-sidebar" },
       children: [
         renderCommandRail({ snapshot, selectedCommand, actions: options.actions }),
-        // 장비 후보를 고르는 중이면 파티 대신 "변화" 를 띄운다. 둘 다 넣으면 사이드바를 넘기고,
-        // 그 순간 알고 싶은 건 파티 HP 가 아니라 "이걸 끼면 뭐가 얼마나 바뀌나" 다.
-        renderStatDeltaPanel(selectedEntryStatDelta(detail, options.selectedDetailActionIndex))
-          ?? renderPartyPanel(options.project, snapshot),
       ],
     }),
     detailPanel,
-    // 명시 메시지가 없으면 커서가 올라간 항목의 설명을 푸터에 띄운다(리스트 행은 1줄로 압축됨).
-    // main 모드에선 상세 패널이 visibility:hidden 이라 커서가 화면에 없다 — 안 보이는 항목의
-    // 설명을 푸터에 띄우면 레일 선택(예: 시스템)과 어긋난 문구("…슬롯에 저장합니다")가 남는다.
+    ...(showParty ? [renderPartyPanel(options.project, snapshot)] : []),
     renderFooter(
-      snapshot,
+      mode,
       options.message ?? (mode === "function"
         ? selectedEntryDescription(detail, options.selectedDetailActionIndex) ?? interactiveHint(detail)
         : undefined)
@@ -150,6 +150,7 @@ function renderCommandRail(options: CommandRailRenderOptions): HTMLElement {
       "aria-label": "게임 메뉴",
       tabindex: "0",
       "aria-activedescendant": `status-menu-command-${selectedRailId}`,
+      style: `--status-menu-cursor-y:${Math.max(0, options.snapshot.commands.findIndex((command) => command.id === selectedRailId)) * 26}px`,
     },
     dataset: { testid: "status-menu-command-rail" },
   });
@@ -279,10 +280,7 @@ function renderPartyRow(
   row: PlayerStatusMenuPartyRow,
   index: number,
 ): HTMLElement {
-  // 사이드바 가용 높이(약 175px)에서 레일이 75px 를 쓰고 파티에 남는 건 100px 이다.
-  // 1열 × 4명으로 HP/MP 두 줄을 넣으면 명당 34px = 136px 로 넘친다(실측: 뒤 2명이 잘림).
-  // 2×2 격자로 두면 2행 × 34px = 69px 로 들어간다. 대신 셀 폭이 52px 라 얼굴은 뺐다 —
-  // 좁은 셀에서 얼굴은 숫자 자리를 먹기만 하고, 어차피 이름이 더 빨리 읽힌다.
+  // Party overview belongs to the party page; task pages own their target information.
   const info = el("div", { class: "status-menu-party-info" });
   info.append(
     el("div", {
@@ -369,47 +367,6 @@ function renderVitalGauge(ratio: number, variant: string, testId: string): HTMLE
   });
 }
 
-/** 커서가 올라간 조작 가능 항목의 능력치 변화. 없으면 undefined. */
-function selectedEntryStatDelta(
-  detail: StatusMenuDetail,
-  selectedActionIndex: number | undefined
-): readonly StatusMenuStatDelta[] | undefined {
-  if (selectedActionIndex === undefined) return undefined;
-  let actionIndex = 0;
-  for (const entry of detail.entries) {
-    if (!entry.onActivate || entry.disabled) continue;
-    if (actionIndex === selectedActionIndex) return entry.statDelta;
-    actionIndex += 1;
-  }
-  return undefined;
-}
-
-function renderStatDeltaPanel(deltas: readonly StatusMenuStatDelta[] | undefined): HTMLElement | null {
-  if (!deltas || deltas.length === 0) return null;
-  const panel = el("section", {
-    class: "status-menu-stat-delta",
-    dataset: { testid: "status-menu-stat-delta" },
-  });
-  panel.append(el("div", { class: "status-menu-stat-delta-title", text: "변화" }));
-  for (const delta of deltas) {
-    const diff = delta.next - delta.current;
-    const row = el("div", {
-      class: `status-menu-stat-delta-row${diff > 0 ? " up" : diff < 0 ? " down" : ""}`,
-      dataset: { testid: `status-menu-stat-delta-${delta.label}` },
-    });
-    row.append(el("span", { class: "status-menu-stat-delta-label", text: delta.label }));
-    // 변하지 않는 값에는 화살표를 그리지 않는다 — 시선이 변화에만 가야 한다.
-    row.append(el("span", {
-      class: "status-menu-stat-delta-value",
-      text: diff === 0
-        ? String(delta.current)
-        : `${delta.current} → ${delta.next} (${diff > 0 ? "+" : "−"}${Math.abs(diff)})`,
-    }));
-    panel.append(row);
-  }
-  return panel;
-}
-
 /** 상세 패널의 actionIndex 배정 규칙(renderStatusMenuDetailPanel)과 같은 순서로 세어
     커서가 올라간 조작 가능 항목의 설명을 찾는다. */
 function selectedEntryDescription(detail: StatusMenuDetail, selectedActionIndex: number | undefined): string | undefined {
@@ -417,7 +374,7 @@ function selectedEntryDescription(detail: StatusMenuDetail, selectedActionIndex:
   let actionIndex = 0;
   for (const entry of detail.entries) {
     if (!entry.onActivate || entry.disabled) continue;
-    if (actionIndex === selectedActionIndex) return entry.description;
+    if (actionIndex === selectedActionIndex) return entry.unavailableReason ?? entry.description;
     actionIndex += 1;
   }
   return undefined;
@@ -431,18 +388,10 @@ function interactiveHint(detail: StatusMenuDetail): string | undefined {
 }
 
 function renderFooter(
-  snapshot: PlayerStatusMenuSnapshot,
+  mode: "main" | "function",
   message: string | undefined
 ): HTMLElement {
   const footer = el("footer", { class: "status-menu-footer" });
-  // 돈·시간·안내를 한 덩어리로 몰아두면 "돈 0G 0:00" 처럼 붙어 읽힌다.
-  // 돈은 왼쪽, 플레이 시간은 오른쪽 끝, 안내 문구는 가운데로 갈라 놓는다.
-  footer.append(el("span", {
-    class: "status-menu-gold",
-    text: snapshot.goldLabel,
-    attrs: { "aria-label": snapshot.goldLabel },
-    dataset: { testid: "status-menu-gold" },
-  }));
   footer.append(el("div", {
     class: "status-menu-message",
     text: message ?? "",
@@ -450,11 +399,15 @@ function renderFooter(
     dataset: { testid: "status-menu-message" },
   }));
   footer.append(el("span", {
-    class: "status-menu-time",
-    text: snapshot.timeLabel,
-    dataset: { testid: "status-menu-time" },
+    class: "status-menu-controls",
+    text: statusMenuControls(mode),
+    dataset: { testid: "status-menu-controls" },
   }));
   return footer;
+}
+
+export function statusMenuControls(mode: "main" | "function"): string {
+  return mode === "main" ? "↑↓ 메뉴 이동   → / Enter 선택   Esc 게임으로" : "↑↓ 항목 이동   Enter 결정   ← 메뉴   Esc 뒤로";
 }
 
 function statusMenuDebug(selectedCommand: StatusMenuRailId, mode: "function" | "main"): HTMLElement {

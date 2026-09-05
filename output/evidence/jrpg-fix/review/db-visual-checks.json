@@ -1,0 +1,318 @@
+[
+  {
+    "tab": "items",
+    "id": "item_adventurer_potion",
+    "imageChecks": [
+      {
+        "complete": true,
+        "naturalWidth": 128
+      },
+      {
+        "complete": true,
+        "naturalWidth": 128
+      },
+      {
+        "complete": true,
+        "naturalWidth": 128
+      }
+    ]
+  },
+  {
+    "tab": "items",
+    "id": "item_adventurer_elixir",
+    "imageChecks": [
+      {
+        "complete": true,
+        "naturalWidth": 128
+      },
+      {
+        "complete": true,
+        "naturalWidth": 128
+      },
+      {
+        "complete": true,
+        "naturalWidth": 128
+      }
+    ]
+  },
+  {
+    "tab": "items",
+    "id": "item_adventurer_ration",
+    "imageChecks": [
+      {
+        "complete": true,
+        "naturalWidth": 128
+      },
+      {
+        "complete": true,
+        "naturalWidth": 128
+      },
+      {
+        "complete": true,
+        "naturalWidth": 128
+      }
+    ]
+  },
+  {
+    "tab": "items",
+    "id": "item_forest_herb",
+    "imageChecks": [
+      {
+        "complete": true,
+        "naturalWidth": 128
+      },
+      {
+        "complete": true,
+        "naturalWidth": 128
+      },
+      {
+        "complete": true,
+        "naturalWidth": 128
+      }
+    ]
+  },
+  {
+    "tab": "items",
+    "id": "item_forest_dew",
+    "imageChecks": [
+      {
+        "complete": true,
+        "naturalWidth": 16
+      },
+      {
+        "complete": true,
+        "naturalWidth": 16
+      },
+      {
+        "complete": true,
+        "naturalWidth": 16
+      }
+    ]
+  },
+  {
+    "tab": "enemies",
+    "id": "enemy_forest_slime",
+    "imageChecks": [
+      {
+        "complete": true,
+        "naturalWidth": 384
+      },
+      {
+        "complete": true,
+        "naturalWidth": 384
+      }
+    ]
+  },
+  {
+    "tab": "enemies",
+    "id": "enemy_forest_wolf",
+    "imageChecks": [
+      {
+        "complete": true,
+        "naturalWidth": 384
+      },
+      {
+        "complete": true,
+        "naturalWidth": 384
+      }
+    ]
+  },
+  {
+    "tab": "enemies",
+    "id": "enemy_forest_goblin",
+    "imageChecks": [
+      {
+        "complete": true,
+        "naturalWidth": 384
+      },
+      {
+        "complete": true,
+        "naturalWidth": 384
+      },
+      {
+        "complete": true,
+        "naturalWidth": 384
+      }
+    ]
+  },
+  {
+    "tab": "enemies",
+    "id": "enemy_forest_goblin_shaman",
+    "imageChecks": [
+      {
+        "complete": true,
+        "naturalWidth": 384
+      },
+      {
+        "complete": true,
+        "naturalWidth": 384
+      }
+    ]
+  },
+  {
+    "tab": "enemies",
+    "id": "enemy_forest_spider",
+    "imageChecks": [
+      {
+        "complete": true,
+        "naturalWidth": 384
+      },
+      {
+        "complete": true,
+        "naturalWidth": 640
+      },
+      {
+        "complete": true,
+        "naturalWidth": 384
+      }
+    ]
+  },
+  {
+    "tab": "enemies",
+    "id": "enemy_forest_hornet",
+    "imageChecks": [
+      {
+        "complete": true,
+        "naturalWidth": 64
+      },
+      {
+        "complete": true,
+        "naturalWidth": 640
+      },
+      {
+        "complete": true,
+        "naturalWidth": 64
+      }
+    ]
+  },
+  {
+    "tab": "troops",
+    "id": "troop_forest_hornets",
+    "imageChecks": [
+      {
+        "complete": true,
+        "naturalWidth": 384
+      },
+      {
+        "complete": true,
+        "naturalWidth": 64
+      },
+      {
+        "complete": true,
+        "naturalWidth": 1672
+      }
+    ]
+  },
+  {
+    "tab": "troops",
+    "id": "troop_forest_slimes",
+    "imageChecks": [
+      {
+        "complete": true,
+        "naturalWidth": 384
+      }
+    ]
+  },
+  {
+    "tab": "troops",
+    "id": "troop_forest_wolves",
+    "imageChecks": [
+      {
+        "complete": true,
+        "naturalWidth": 384
+      }
+    ]
+  },
+  {
+    "tab": "troops",
+    "id": "troop_forest_goblin_patrol",
+    "imageChecks": [
+      {
+        "complete": true,
+        "naturalWidth": 384
+      }
+    ]
+  },
+  {
+    "tab": "troops",
+    "id": "troop_forest_spiders",
+    "imageChecks": [
+      {
+        "complete": true,
+        "naturalWidth": 384
+      },
+      {
+        "complete": true,
+        "naturalWidth": 640
+      }
+    ]
+  },
+  {
+    "tab": "troops",
+    "id": "troop_forest_hornets_duo",
+    "imageChecks": [
+      {
+        "complete": true,
+        "naturalWidth": 64
+      },
+      {
+        "complete": true,
+        "naturalWidth": 640
+      }
+    ]
+  },
+  {
+    "tab": "actors",
+    "id": "actor_hero",
+    "imageChecks": [
+      {
+        "complete": true,
+        "naturalWidth": 48
+      },
+      {
+        "complete": true,
+        "naturalWidth": 48
+      },
+      {
+        "complete": true,
+        "naturalWidth": 48
+      }
+    ]
+  },
+  {
+    "tab": "actors",
+    "id": "actor_guardian",
+    "imageChecks": [
+      {
+        "complete": true,
+        "naturalWidth": 48
+      },
+      {
+        "complete": true,
+        "naturalWidth": 48
+      },
+      {
+        "complete": true,
+        "naturalWidth": 48
+      }
+    ]
+  },
+  {
+    "tab": "actors",
+    "id": "actor_cleric",
+    "imageChecks": [
+      {
+        "complete": true,
+        "naturalWidth": 48
+      },
+      {
+        "complete": true,
+        "naturalWidth": 48
+      },
+      {
+        "complete": true,
+        "naturalWidth": 48
+      }
+    ]
+  }
+]

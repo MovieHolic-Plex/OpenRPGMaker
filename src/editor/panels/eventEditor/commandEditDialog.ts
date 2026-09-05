@@ -47,6 +47,13 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
         // 새 애니메이션 표시면은 편집 본문이 재생기를 직접 갖는다. 여기서 한 번 더 그리면
         // 같은 연출이 한 모달에 둘 생긴다 — 표시면은 하나만 둔다.
         const ownsPreview = stagedCommand.kind === "showAnimation";
+        if (stagedCommand.kind === "shop") {
+          const slot = formHost.querySelector<HTMLElement>('[data-testid="shop-preview-slot"]');
+          const toggle = editor.querySelector<HTMLElement>('[data-testid="shop-preview-toggle"]');
+          if (toggle) toggle.hidden = !slot;
+          if (slot) slot.append(previewHost);
+          else previewHost.remove();
+        }
         previewHost.hidden = ownsPreview;
         if (ownsPreview) return;
         previewHost.append(renderCommandPreview(stagedCommand, { face: request.previewFace, simState: previewSimState }));
@@ -143,7 +150,7 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
       };
       const ok = el("button", {
         class: "event-command-edit-action primary",
-        text: "확인",
+        text: stagedCommand.kind === "shop" ? "상점 설정 적용" : "확인",
         attrs: { type: "button" },
         dataset: { testid: "event-command-edit-ok" },
         on: {
@@ -178,6 +185,7 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
         }),
       );
       body.append(editor);
+      editor.addEventListener("shop-tab-change", renderPreview);
       renderEditor();
       if (stagedCommand.kind === "shop") {
         queueMicrotask(() => setShopPreviewCollapsed(editor, true));
@@ -235,13 +243,9 @@ function commandEditTitle(command: Command): string {
 /** 종류 변경 또는 폼 DOM 구조가 바뀌는 필드 변경이면 true — 프리뷰-only 갱신으로는 부족. */
 export function shouldRerenderCommandForm(prev: Command, next: Command): boolean {
   if (prev.kind !== next.kind) return true;
-  if (prev.kind === "shop" && next.kind === "shop") {
-    return (
-      Boolean(prev.branchOnTransaction) !== Boolean(next.branchOnTransaction) ||
-      prev.itemIds.length !== next.itemIds.length ||
-      prev.itemIds.some((id, index) => id !== next.itemIds[index])
-    );
-  }
+  // The shop owns its mounted list, inspector, and conditional settings. Rebuilding here
+  // would discard the selected tab and detach the active input during a goods edit.
+  if (prev.kind === "shop" && next.kind === "shop") return false;
   if (prev.kind === "inn" && next.kind === "inn") {
     return Boolean(prev.branchOnNotEnoughGold) !== Boolean(next.branchOnNotEnoughGold);
   }

@@ -1,0 +1,110 @@
+{
+  "sourceHead": "c5f48f0bcf6f9cc3e4a671c612022df70b43932e",
+  "baselineHead": "6950be5d755c736cb6f5dae3a51c67a4ccf493ec",
+  "changedTestFiles": 17,
+  "passedAssertions": 280,
+  "records": [
+    {
+      "file": "test/agentVerification.test.ts",
+      "counts": {
+        "passed": 41
+      }
+    },
+    {
+      "file": "test/aiAppliedBudgetStop.test.ts",
+      "counts": {
+        "passed": 3
+      }
+    },
+    {
+      "file": "test/aiAssistantSession.test.ts",
+      "counts": {
+        "passed": 54
+      }
+    },
+    {
+      "file": "test/aiAutonomousRunSurface.test.ts",
+      "counts": {
+        "passed": 11
+      }
+    },
+    {
+      "file": "test/aiChatLeanUi.test.ts",
+      "counts": {
+        "passed": 19
+      }
+    },
+    {
+      "file": "test/aiMilestoneTurnAccounting.test.ts",
+      "counts": {
+        "passed": 3
+      }
+    },
+    {
+      "file": "test/aiTurnAppliedAccounting.test.ts",
+      "counts": {
+        "passed": 7
+      }
+    },
+    {
+      "file": "test/aiWorkItemStall.test.ts",
+      "counts": {
+        "passed": 5
+      }
+    },
+    {
+      "file": "test/assistantReadContract.test.ts",
+      "counts": {
+        "passed": 5
+      }
+    },
+    {
+      "file": "test/assistantVerificationEvidence.test.ts",
+      "counts": {
+        "passed": 20
+      }
+    },
+    {
+      "file": "test/authorVillageScopeGate.test.ts",
+      "counts": {
+        "passed": 11
+      }
+    },
+    {
+      "file": "test/authorVillageViewportBounds.test.ts",
+      "counts": {
+        "passed": 7
+      }
+    },
+    {
+      "file": "test/intentDeclaration.test.ts",
+      "counts": {
+        "passed": 24
+      }
+    },
+    {
+      "file": "test/playerOpenSaveMenu.test.ts",
+      "counts": {
+        "passed": 4
+      }
+    },
+    {
+      "file": "test/toolsMapManagement.test.ts",
+      "counts": {
+        "passed": 21
+      }
+    },
+    {
+      "file": "test/treasureChestPlacement.test.ts",
+      "counts": {
+        "passed": 5
+      }
+    },
+    {
+      "file": "test/workPlan.test.ts",
+      "counts": {
+        "passed": 40
+      }
+    }
+  ]
+}

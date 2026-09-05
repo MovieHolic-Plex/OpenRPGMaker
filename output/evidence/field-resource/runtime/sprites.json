@@ -1,0 +1,60 @@
+{
+  "player": {
+    "x": 72,
+    "y": 144,
+    "depth": 200144,
+    "liftPx": 0,
+    "airborne": false,
+    "visible": true,
+    "scaleX": 1,
+    "scaleY": 1
+  },
+  "shadows": {},
+  "events": {
+    "ev_dungeon_chest_1": {
+      "alpha": 1,
+      "frame": 79,
+      "textureKey": "tex_easyrpg_charset_object1",
+      "x": 104,
+      "y": 96,
+      "depth": 200096,
+      "liftPx": 0
+    },
+    "ev_dungeon_savepoint": {
+      "alpha": 1,
+      "frame": 79,
+      "textureKey": "tex_easyrpg_charset_object2",
+      "x": 168,
+      "y": 288,
+      "depth": 100288,
+      "liftPx": 0
+    },
+    "__field_spawn__hunt_troop_forest_slimes_1": {
+      "alpha": 1,
+      "frame": "__BASE",
+      "textureKey": "generated-enemy-slime-green",
+      "x": 40,
+      "y": 48,
+      "depth": 200048,
+      "liftPx": 0
+    },
+    "__field_spawn__hunt_troop_forest_slimes_2": {
+      "alpha": 1,
+      "frame": "__BASE",
+      "textureKey": "generated-enemy-slime-green",
+      "x": 56,
+      "y": 48,
+      "depth": 200048,
+      "liftPx": 0
+    },
+    "__field_spawn__hunt_troop_forest_slimes_3": {
+      "alpha": 1,
+      "frame": "__BASE",
+      "textureKey": "generated-enemy-slime-green",
+      "x": 72,
+      "y": 48,
+      "depth": 200048,
+      "liftPx": 0
+    }
+  }
+}

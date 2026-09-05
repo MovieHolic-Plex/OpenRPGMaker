@@ -878,7 +878,7 @@ function previewCaption(record: TroopRecord): string {
     .map((member) => enemies.find((enemy) => enemy.id === member.enemyId)?.name)
     .filter((name): name is string => Boolean(name));
   const terrainName = store.getCurrent().database.terrains?.find((terrain) => terrain.battleBackgroundResourceId === record.previewBackgroundResourceId)?.name;
-  return `${record.name} / ${enemyNames.join(", ") || "(없음)"} / ${terrainName ?? "배경 없음"}`;
+  return `${record.name} / ${enemyNames.join(", ") || "(없음)"} / ${terrainName ?? (record.previewBackgroundResourceId ? "배경 설정됨" : "배경 없음")}`;
 }
 
 function renderChromaKeyImage(canvas: HTMLCanvasElement, url: string): void {

@@ -161,8 +161,8 @@
    "set-weather-kind-select"
   ],
   "shop": [
-   "shop-item-search",
-   "shop-item-type-filter",
+   "shop-stock-all-seasons",
+   "shop-stock-price-custom",
    "shop-stock-price-override"
   ],
   "showAnimation": [

@@ -38,7 +38,8 @@ import type { PlaySurfaceScaleMode } from "@/player/playSurfaceScale";
 import { createTouchPad, type TouchPadHandle } from "@/player/touchPad";
 import { renderPlayerLoadPanel } from "@/player/playerLoadPanel";
 import { createPlayerStatusMenuController } from "@/player/playerStatusMenuController";
-import { currentStatusMenu, markStatusMenuClosing } from "@/player/playerStatusMenuControllerDom";
+import { currentStatusMenu } from "@/player/playerStatusMenuControllerDom";
+import { closeStatusMenu } from "@/player/playerStatusMenuMotion";
 import {
   moveTitleSelection,
   type RuntimeMenuKey,
@@ -403,10 +404,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       game.registry.set("dialogue", dialogue);
       game.registry.set("dialogueHost", playStage);
       game.registry.set("returnToTitle", () => renderTitle());
-      game.registry.set("openSaveMenu", () => openEventMenu(layout, () => {
-        statusMenu.reset();
-        statusMenu.renderMenu(undefined, "save");
-      }));
+      game.registry.set("openSaveMenu", () => openEventMenu(layout, statusMenu.openSaveMenu));
       game.registry.set("openMenuScreen", () => openEventMenu(layout, () => {
         statusMenu.reset();
         statusMenu.renderMenu();
@@ -415,6 +413,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
         statusMenu.reset();
         renderLoad(false);
       }));
+
       // create() 가 이미 끝났을 수도 있으므로 ready 콜백 + 폴링으로 모두 커버.
       const ready = await waitForPlaySceneReady(nextGame, () => startRun === run, readyPromise);
       if (run !== startRun) {
@@ -542,7 +541,14 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       onLoadAutosave: () => loadAutosave(fromTitle),
     });
     if (fromTitle) {
-      layout.append(panel);
+      const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system), surfaceScaleMode);
+      clearChildren(surface.stage);
+      playStage = surface.stage;
+      cleanupPlaySurface = surface.cleanup;
+      layout.append(surface.viewport);
+      mountHostControls(surface.viewport);
+      surface.stage.append(panel);
+      surface.sync();
     } else {
       replaceMenu(panel);
     }
@@ -572,11 +578,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   const closeMenuWithJuice = (): void => {
     const menu = currentStatusMenu(layout);
     if (!menu) return;
-    markStatusMenuClosing(menu);
-    emitRuntimeJuice({ event: "menu-close", target: menu });
-    window.setTimeout(() => {
-      if (menu.isConnected) menu.remove();
-    }, MENU_CLOSE_JUICE_MS);
+    emitRuntimeJuice({ event: "menu-close" });
+    closeStatusMenu(menu);
   };
 
   const emitMenuJuice = (event: RuntimeJuiceEvent, target?: HTMLElement | null): void => {
@@ -640,7 +643,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   const onKeyDown = (event: KeyboardEvent): void => {
     // 텍스트 입력 컨트롤(런타임 디버그 패널의 숫자 입력 등)에 치는 글자는 게임 키가 아니다. 여기서
     // 걸러야 손 슬롯 숫자키가 preventDefault 로 글자를 삼키지 않고, Escape 가 메뉴를 열지 않는다.
-    if (isTextEntryTarget(event.target)) return;
+    if (event.isComposing || isTextEntryTarget(event.target)) return;
     const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
     const menu = currentStatusMenu(layout);
     if (menu && event.key === "Tab") {
@@ -678,6 +681,12 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     }
     if (!isRuntimeMenuKey(key)) return;
     if (overlayActive) return;
+    // Holding a key may navigate a list, but must not confirm another screen,
+    // spend another item, or reopen the menu that the first cancel just closed.
+    if (event.repeat && (isConfirmKey(key) || isCancelKey(key))) {
+      event.preventDefault();
+      return;
+    }
     if (cutsceneLocked && !layout.querySelector("[data-testid='main-menu']")) {
       if (isCancelKey(key)) event.preventDefault();
       return;
@@ -888,4 +897,3 @@ function startTitleBgm(project: ReturnType<typeof store.getCurrent>): void {
 function stopTitleBgm(): void {
   stopAudioCommand();
 }
-

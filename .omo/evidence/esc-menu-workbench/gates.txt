@@ -1,0 +1,32 @@
+Full npm run gates (before final regression fixes): exit 1
+Application typecheck: exit 0; CSS budget/graph: exit 0
+Vitest: 12,886 passed / 216 failed / 13,117 total; 110 failed test files.
+75 failed files already existed in the tracked gates baseline.
+35 newly flagged files plus the commit-probe surface test were rerun on both
+clean main 2489cfef and the final implementation with --maxWorkers=4:
+  clean main: 30 failed assertions
+  current:    29 failed assertions
+  failures unique to current: 0
+The baseline-only failure was in transactionalNewRemoteProject, outside this change;
+this is not claimed as an improvement. See baseline-comparison.json for names.
+Both focused comparison commands exited 1; their assertion sets were compared.
+
+Final targeted validation:
+  npm run typecheck:app: exit 0
+  npm run gates -- --only css: exit 0
+  node scripts/check-css-live-classes.mjs: exit 0
+  11 relevant unit-test files: 64 passed, exit 0
+  Firefox shipping-player browser test: passed, exit 0
+
+Final editor surface run still reports 6 failed assertions in 5 files:
+  eventEditorCommitProbe.baseline (2), eventEditorM2Surface.baseline (1),
+  eventEditorPortalSurface.baseline (1): reproduced in clean-main comparison.
+  eventEditorFormSurface.baseline (1), eventEditorInteractionSurface.baseline (1):
+  already present in the tracked gates baseline; their editor sources are unchanged.
+The former live-class property failure is resolved. No baseline was rewritten.
+
+Reproduction for comparison:
+  node scripts/run-vitest.mjs run --maxWorkers=4 --reporter=json \
+    --outputFile=<report.json> <the 35 newly flagged files> \
+    test/eventEditorCommitProbe.baseline.test.ts
+Initial full-run classification and exact newly flagged file list: full-gate-summary.json.

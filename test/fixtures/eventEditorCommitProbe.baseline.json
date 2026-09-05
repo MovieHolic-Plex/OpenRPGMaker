@@ -652,38 +652,14 @@
  },
  "shop": {
   "probes": {
-   "shop-item-type-filter": "no-commit",
-   "shop-item-search": "no-commit",
-   "shop-item-check-item_potion": "replaceCommand {\"itemIds\":[\"item1\",\"item_potion\"],\"kind\":\"shop\"}",
-   "shop-item-check-item_capture_orb": "replaceCommand {\"itemIds\":[\"item1\",\"item_capture_orb\"],\"kind\":\"shop\"}",
-   "shop-item-check-item_ether": "replaceCommand {\"itemIds\":[\"item1\",\"item_ether\"],\"kind\":\"shop\"}",
-   "shop-item-check-equip_sword": "replaceCommand {\"itemIds\":[\"item1\",\"equip_sword\"],\"kind\":\"shop\"}",
-   "shop-item-check-equip_mage_staff": "replaceCommand {\"itemIds\":[\"item1\",\"equip_mage_staff\"],\"kind\":\"shop\"}",
-   "shop-item-check-equip_scout_dagger": "replaceCommand {\"itemIds\":[\"item1\",\"equip_scout_dagger\"],\"kind\":\"shop\"}",
+   "shop-stock-price-base": "radio-uncheck",
+   "shop-stock-price-custom": "replaceCommand {\"itemIds\":[\"item_potion\"],\"kind\":\"shop\",\"stock\":[{\"itemId\":\"item_potion\",\"priceOverride\":50}]}",
    "shop-stock-price-override": "disabled",
-   "shop-transaction-branch-row>select#0": "no-commit",
-   "shop-failed-branch-row>select#0": "no-commit",
-   "shop-type-select": "replaceCommand {\"itemIds\":[\"item1\"],\"kind\":\"shop\",\"shopType\":\"sellOnly\"}",
-   "shop-quantity-mode": "replaceCommand {\"itemIds\":[\"item1\"],\"kind\":\"shop\",\"quantityMode\":\"select\"}",
-   "shop-message-type": "replaceCommand {\"itemIds\":[\"item1\"],\"kind\":\"shop\",\"messageType\":\"vip\"}",
-   "shop-merchant-gold": "replaceCommand {\"itemIds\":[\"item1\"],\"kind\":\"shop\",\"merchantGold\":7619}",
-   "shop-economy-dynamic": "replaceCommand {\"economy\":{\"dynamicPricing\":true},\"itemIds\":[\"item1\"],\"kind\":\"shop\"}",
-   "shop-economy-haggle": "replaceCommand {\"economy\":{\"haggleEnabled\":true},\"itemIds\":[\"item1\"],\"kind\":\"shop\"}",
-   "shop-economy-closing": "replaceCommand {\"economy\":{\"closingSaleEnabled\":true},\"itemIds\":[\"item1\"],\"kind\":\"shop\"}",
-   "shop-economy-shopkeeper": "replaceCommand {\"economy\":{\"shopkeeperEnabled\":true},\"itemIds\":[\"item1\"],\"kind\":\"shop\"}",
-   "shop-economy-restock": "replaceCommand {\"itemIds\":[\"item1\"],\"kind\":\"shop\",\"restockPolicy\":\"onDemand\"}",
-   "shop-haggle-patience": "replaceCommand {\"economy\":{\"haggle\":{\"patience\":1.09},\"haggleEnabled\":true},\"itemIds\":[\"item1\"],\"kind\":\"shop\"}",
-   "shop-haggle-insult": "replaceCommand {\"economy\":{\"haggle\":{\"insultRatio\":0.58},\"haggleEnabled\":true},\"itemIds\":[\"item1\"],\"kind\":\"shop\"}",
-   "shop-haggle-discount": "replaceCommand {\"economy\":{\"haggle\":{\"maxDiscount\":0.06},\"haggleEnabled\":true},\"itemIds\":[\"item1\"],\"kind\":\"shop\"}",
-   "shop-branch-on-transaction": "replaceCommand {\"branchOnTransaction\":true,\"itemIds\":[\"item1\"],\"kind\":\"shop\",\"transactionBranch\":[]}",
-   "shop-branch-on-failed-transaction": "replaceCommand {\"branchOnFailedTransaction\":true,\"failedTransactionBranch\":[],\"itemIds\":[\"item1\"],\"kind\":\"shop\"}",
-   "shop-serviceKind": "replaceCommand {\"itemIds\":[\"item1\"],\"kind\":\"shop\",\"shopServiceKind\":\"pawn\"}",
-   "shop-investmentLevel": "replaceCommand {\"investmentLevel\":3,\"itemIds\":[\"item1\"],\"kind\":\"shop\"}",
-   "shop-mileageRate": "replaceCommand {\"itemIds\":[\"item1\"],\"kind\":\"shop\",\"mileageRate\":0.03}"
+   "shop-stock-all-seasons": "replaceCommand {\"itemIds\":[\"item_potion\"],\"kind\":\"shop\",\"stock\":[{\"itemId\":\"item_potion\",\"seasons\":[\"spring\"]}]}"
   },
-  "probeCount": 28,
-  "commitCount": 23,
-  "noCommitCount": 4
+  "probeCount": 4,
+  "commitCount": 2,
+  "noCommitCount": 0
  },
  "inn": {
   "probes": {

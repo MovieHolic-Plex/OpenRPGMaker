@@ -1,0 +1,211 @@
+{
+  "baseCommit": "2ef2b071",
+  "fullGate": {
+    "exitCode": 1,
+    "numTotalTests": 13070,
+    "numPassedTests": 12889,
+    "numFailedTests": 166,
+    "numPendingTests": 15,
+    "note": "Full run on the original base 2ef2b071 preceded shop-only snapshot refresh. Before rebase, the reviewed surface run had the same six pre-existing failing assertions as pristine base. After rebase, app types and 78 focused tests passed."
+  },
+  "outsideSavedBaseline": [
+    {
+      "file": "test/aiActivityLiveRow.test.ts",
+      "before": [
+        "AI 도구 라이브 활동 행 다음 도구 시작은 이전 예약을 먼저 확정하고 턴 종료는 마지막 예약까지 비운다",
+        "AI 도구 라이브 활동 행 성공한 조회 도구는 완료 행을 남기지 않고 턴 종료 시 캔버스 칩 상태도 지운다"
+      ],
+      "after": [
+        "AI 도구 라이브 활동 행 다음 도구 시작은 이전 예약을 먼저 확정하고 턴 종료는 마지막 예약까지 비운다",
+        "AI 도구 라이브 활동 행 성공한 조회 도구는 완료 행을 남기지 않고 턴 종료 시 캔버스 칩 상태도 지운다"
+      ],
+      "newFailures": []
+    },
+    {
+      "file": "test/aiAutonomousRunSurface.test.ts",
+      "before": [
+        "할 일 목록 표면 (작업 계획 체크리스트) (a) emitWorkPlan 이벤트로 체크리스트가 렌더된다 — 항목별 진행 + 현재 레이어 표시",
+        "할 일 목록 표면 (작업 계획 체크리스트) agentMode chat 에서도 할 일 목록은 뜨되 예산 없이 뜨고, 세션에 autonomous 플래그가 전달되지 않는다",
+        "할 일 목록 표면 (작업 계획 체크리스트) 모든 항목이 끝난 계획은 「모두 완료」로 남고, 계획이 한 번도 안 온 턴은 목록을 만들지 않는다",
+        "할 일 목록 표면 (작업 계획 체크리스트) 턴이 끝나도 할 일 목록은 남고, 다음 턴의 새 계획이 오면 그것으로 바뀐다"
+      ],
+      "after": [
+        "할 일 목록 표면 (작업 계획 체크리스트) (a) emitWorkPlan 이벤트로 체크리스트가 렌더된다 — 항목별 진행 + 현재 레이어 표시",
+        "할 일 목록 표면 (작업 계획 체크리스트) agentMode chat 에서도 할 일 목록은 뜨되 예산 없이 뜨고, 세션에 autonomous 플래그가 전달되지 않는다",
+        "할 일 목록 표면 (작업 계획 체크리스트) 모든 항목이 끝난 계획은 「모두 완료」로 남고, 계획이 한 번도 안 온 턴은 목록을 만들지 않는다",
+        "할 일 목록 표면 (작업 계획 체크리스트) 턴이 끝나도 할 일 목록은 남고, 다음 턴의 새 계획이 오면 그것으로 바뀐다"
+      ],
+      "newFailures": []
+    },
+    {
+      "file": "test/aiChatObservability.test.ts",
+      "before": [
+        "병합 추론 원문 전체 열람 (V3C ②) 도구 사이 추론이 한 블록으로 병합돼도 각 추론의 원문 전체가 아이템으로 남고 토글은 횟수를 표시한다",
+        "실시간 고스트 프리뷰 연결 채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다"
+      ],
+      "after": [
+        "병합 추론 원문 전체 열람 (V3C ②) 도구 사이 추론이 한 블록으로 병합돼도 각 추론의 원문 전체가 아이템으로 남고 토글은 횟수를 표시한다",
+        "실시간 고스트 프리뷰 연결 채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다"
+      ],
+      "newFailures": []
+    },
+    {
+      "file": "test/aiChatPanelTransportError.test.ts",
+      "before": [
+        "transport failure paints recovery CTA and keeps Send mounted refused fetch: is-turn-running cleared, system error bubble + ai-error-open-settings, ai-send stays disabled with ai-abort visible"
+      ],
+      "after": [
+        "transport failure paints recovery CTA and keeps Send mounted refused fetch: is-turn-running cleared, system error bubble + ai-error-open-settings, ai-send stays disabled with ai-abort visible"
+      ],
+      "newFailures": []
+    },
+    {
+      "file": "test/aiSelectionChipScope.test.ts",
+      "before": [
+        "대기 상태에서도 선택 칩은 보인다 idle 패널에서 has-selection-scope 칩 호스트의 사용 display 는 none 이 아니다",
+        "컴포저 힌트는 숨을 때 자리를 비운다 입력 포커스가 없을 때 힌트의 사용 display 는 none 이다(visibility:hidden 은 156px 를 먹었다)"
+      ],
+      "after": [
+        "대기 상태에서도 선택 칩은 보인다 idle 패널에서 has-selection-scope 칩 호스트의 사용 display 는 none 이 아니다",
+        "컴포저 힌트는 숨을 때 자리를 비운다 입력 포커스가 없을 때 힌트의 사용 display 는 none 이다(visibility:hidden 은 156px 를 먹었다)"
+      ],
+      "newFailures": []
+    },
+    {
+      "file": "test/battleRuntime.test.ts",
+      "before": [
+        "side-view battle runtime supports item skill use and command-backed troop event triggers"
+      ],
+      "after": [
+        "side-view battle runtime supports item skill use and command-backed troop event triggers"
+      ],
+      "newFailures": []
+    },
+    {
+      "file": "test/databaseNavMode.test.ts",
+      "before": [
+        "database navigation by editor mode 그룹 헤더가 안에 든 탭 이름과 레코드 합계를 알려준다 — 라벨 텍스트는 그대로"
+      ],
+      "after": [
+        "database navigation by editor mode 그룹 헤더가 안에 든 탭 이름과 레코드 합계를 알려준다 — 라벨 텍스트는 그대로"
+      ],
+      "newFailures": []
+    },
+    {
+      "file": "test/eventEditorM2Surface.baseline.test.ts",
+      "before": [
+        "M2 명령 폼 표면 스냅샷 기준선과 일치한다"
+      ],
+      "after": [
+        "M2 명령 폼 표면 스냅샷 기준선과 일치한다"
+      ],
+      "newFailures": []
+    },
+    {
+      "file": "test/eventEditorPortalSurface.baseline.test.ts",
+      "before": [
+        "포털(피커/모달) 표면 스냅샷 기준선과 일치한다"
+      ],
+      "after": [
+        "포털(피커/모달) 표면 스냅샷 기준선과 일치한다"
+      ],
+      "newFailures": []
+    },
+    {
+      "file": "test/forestDensity.test.ts",
+      "before": [
+        "place_props density — 모델이 실제로 닿는 라이브 툴 활엽수 density=dense 가 count 없이도 숲을 만든다",
+        "plant_tree_clusters 기본(dense)이 선언한 커버리지에 닿고 그 지대를 실제로 막는다"
+      ],
+      "after": [
+        "place_props density — 모델이 실제로 닿는 라이브 툴 활엽수 density=dense 가 count 없이도 숲을 만든다",
+        "plant_tree_clusters 기본(dense)이 선언한 커버리지에 닿고 그 지대를 실제로 막는다"
+      ],
+      "newFailures": []
+    },
+    {
+      "file": "test/gen1DemoContent.test.ts",
+      "before": [
+        "Scarloxy Gen1 authored content authors persistent major statuses, finite PP, a Poke Ball, and trainer semantics"
+      ],
+      "after": [
+        "Scarloxy Gen1 authored content authors persistent major statuses, finite PP, a Poke Ball, and trainer semantics"
+      ],
+      "newFailures": []
+    },
+    {
+      "file": "test/modalEscapeLayerGate.test.ts",
+      "before": [
+        "Escape 계층 게이트 body 에 오버레이를 붙이는 파일은 modalStack 에 참여하거나 이유와 함께 면제된다",
+        "Escape 계층 게이트 이번에 고친 표면들은 면제가 아니라 실제로 등록한다"
+      ],
+      "after": [
+        "Escape 계층 게이트 body 에 오버레이를 붙이는 파일은 modalStack 에 참여하거나 이유와 함께 면제된다",
+        "Escape 계층 게이트 이번에 고친 표면들은 면제가 아니라 실제로 등록한다"
+      ],
+      "newFailures": []
+    },
+    {
+      "file": "test/noLocalProjectDb.test.ts",
+      "before": [
+        "canonical project persistence has no local DB fallback does not reference IndexedDB SQLite or local JSON fallback in runtime source"
+      ],
+      "after": [
+        "canonical project persistence has no local DB fallback does not reference IndexedDB SQLite or local JSON fallback in runtime source"
+      ],
+      "newFailures": []
+    },
+    {
+      "file": "test/roleNameComparisonGate.test.ts",
+      "before": [
+        "A-2 게이트 — 역할 이름 비교 잔여 허용 목록 밖에서 타일 역할 이름을 직접 비교하지 않는다"
+      ],
+      "after": [
+        "A-2 게이트 — 역할 이름 비교 잔여 허용 목록 밖에서 타일 역할 이름을 직접 비교하지 않는다"
+      ],
+      "newFailures": []
+    }
+  ],
+  "shopSurfaces": {
+    "form": {
+      "testidCount": 27,
+      "controlCount": 17,
+      "selectOptionCount": 0,
+      "classCount": 43,
+      "labelCount": 18,
+      "textCount": 5
+    },
+    "interaction": {
+      "probeCount": 4,
+      "reactingCount": 3,
+      "classCount": 43,
+      "initialTestidCount": 27
+    },
+    "commit": {
+      "probeCount": 4,
+      "commitCount": 2,
+      "noCommitCount": 0
+    }
+  },
+  "cssLive": {
+    "baseExitCode": 1,
+    "currentExitCode": 1,
+    "sameFailure": true
+  },
+  "surfaceFinalExitCode": 1,
+  "integratedBaseCommit": "2489cfef0325cfea9d2c4366a50d9e569efdfb44",
+  "integratedChecks": {
+    "typecheckAppExitCode": 0,
+    "focusedTestsExitCode": 0,
+    "focusedTestFiles": 9,
+    "focusedTestsPassed": 78,
+    "cssGateExitCode": 0,
+    "browser": {
+      "goodsScenarioPassed": true,
+      "keyboardScenarioPassed": true,
+      "transport": "SHOP_QA_ROUTE_MODULES=1",
+      "keyboardRecheckExitCode": 0,
+      "note": "Real Vite responses forwarded by Node after ERR_NETWORK_CHANGED during boot. Goods passed in the two-scenario run; keyboard rerun passed after a socket hang-up."
+    }
+  }
+}
