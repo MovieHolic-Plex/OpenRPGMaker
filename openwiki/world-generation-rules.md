@@ -91,3 +91,7 @@ npx vitest run --configLoader bundle test/worldGenRules.test.ts test/villageBuil
 ```
 
 `villageBuilder.test.ts` 가 회귀 그물이다 — 기본값을 건드리면 강촌/호수/돌길 케이스가 깨진다.
+
+## 마을 설계서 (2026-09-05)
+
+설계서의 자연 정책이 fixed면 공유 system.worldGen을 변경하지 않고 물·숲 수치를 합성해 시공한다. 테마 문장의 수역·숲 추론보다 설계서의 명시값이 우선한다. 상세 계약과 경계는 [마을 설계서](village-design.md).

@@ -46,9 +46,7 @@ export function buildPresetPreview(project: Project, presetId: string, seed: num
       height: PRESET_PREVIEW_SIZE,
       presetId,
       seed,
-      interior: false,
-      doorEvent: false,
-      npcCount: 0,
+      ...(preset.design ? {} : { interior: false, doorEvent: false, npcCount: 0 }),
     });
     const data = (built.data ?? {}) as { mapId?: unknown; housesBuilt?: unknown; warnings?: unknown };
     const mapId = typeof data.mapId === "string" ? data.mapId : "";

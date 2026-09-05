@@ -184,3 +184,7 @@ id 슬롯은 남긴다**(`def.name = ""`). id 가 지워지지 않으므로 `com
   선택지 질문/문구·숫자 입력 안내·여관 인사/질문·killPlayer 메시지·엔딩 제목/본문 (중첩 fork/choices/loop 포함,
   `commandBranches` 순회) 금지어 검사 — 자가수정 루프가 고친다. 비노출 필드(label 이름 등)는 검사하지 않는다.
 - 셋 다 빈 캐논이면 블록도 검증도 없이 기존과 동일. 테스트: 각 파일의 "worldCanon 강제" describe.
+
+## 마을 설계서 (2026-09-05)
+
+author_village와 buildVillageDomain이 DB 설계서의 고정값·집 수 범위·집 재료/층수 호환성을 시공 전에 검사한다. 기본 설계서가 있으면 ID·집 수 생략이 가능하다. 상세 계약과 경계는 [마을 설계서](village-design.md).

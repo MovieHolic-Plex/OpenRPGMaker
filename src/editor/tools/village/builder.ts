@@ -102,13 +102,15 @@ import {
 } from "./roads";
 import { COORD_SCHEMA, VILLAGE_HOUSE_PLAN_SCHEMA, VILLAGE_NPC_PLAN_SCHEMA } from "../schemaShapes";
 
+import { resolveVillageDesignInput, designTemplateCatalog, villageDesignWorldRules, villageDesignRequirements, assertLegacyVillageSession } from "./designContract";
+
 export type VillageBuildDomainArgs = Readonly<Record<string, unknown>>;
 
 export function buildVillageDomain(
   draft: Project,
   args: VillageBuildDomainArgs,
 ): ToolExecResult {
-  const merged = mergePlanIntoBuildArgs(draft, args);
+  const merged = resolveVillageDesignInput(draft, mergePlanIntoBuildArgs(draft, args));
   const seed = integerArg(merged, "seed", 1);
   // houseCount 별칭 소비(2026-07-17) — 예전엔 build_village가 이를 조용히 무시해 8채 고정이었다.
   const housePlan = coerceHousePlan(merged.houses ?? merged.houseCount, merged.housePlans);
@@ -149,7 +151,8 @@ export function buildVillageDomain(
       `마을 프리셋 '${preset.name || preset.id}'의 형태 후보를 명시 지정(${expandedByForced.join(", ")})으로 넓혔다.`,
     );
   }
-  const catalog = villageTemplateCatalog(draft, allowedTemplateIds);
+  const sourceCatalog = villageTemplateCatalog(draft, allowedTemplateIds);
+  const catalog = { ...sourceCatalog, templates: designTemplateCatalog(draft, preset, sourceCatalog.templates) };
   warnings.push(...catalog.warnings);
   if (preset) {
     warnings.push(`마을 프리셋 적용: ${preset.name || preset.id} (형태 후보 ${catalog.templates.length}종).`);
@@ -181,14 +184,14 @@ export function buildVillageDomain(
   }
   // 쿼리 상식 스펙: 강/호수 자리를 비운 채 주거 영역만 시공
   const planForReq = typeof merged.planId === "string" ? loadVillagePlan(draft, merged.planId) : undefined;
-  const worldGenRules = resolveWorldGenRules(draft.system.worldGen);
+  const worldGenRules = villageDesignWorldRules(draft, preset);
   const inferredRequirements = planForReq?.requirements
     ?? (typeof intent.theme === "string" && intent.theme
       ? inferRequirementsFromQuery(intent.theme, worldGenRules, { forestDensity: intent.forestDensity })
       : undefined);
-  const requirements = inferredRequirements && intent.forestDensity
+  const requirements = villageDesignRequirements(draft, preset, inferredRequirements && intent.forestDensity
     ? { ...inferredRequirements, forestDensity: intent.forestDensity }
-    : inferredRequirements;
+    : inferredRequirements);
   const baseArea = villageBuildArea(map, createArgs.bounds);
   // 명시 bounds가 있으면 하한 16(모델이 화면·선택 크기를 그대로 넘긴다),
   // 맵 전체 시공이면 기존 하한 20을 유지한다 — 19×19 전체맵 거부 계약 그대로.
@@ -419,6 +422,19 @@ export function buildVillageDomain(
     for (const issue of critique.issues) warnings.push(issue);
   }
 
+  if (preset?.design) {
+    if (houses.length !== targetHouses) throw new ToolError(`설계서의 집 ${targetHouses}채 중 ${houses.length}채만 들어갑니다. 맵이나 시공 영역을 넓혀 주세요.`, { code: "village-design-capacity", mapId });
+    map.villageDesignSource = { preset: structuredClone(preset), seed, houseCount: houses.length,
+      resolvedSettings: {
+        pathStyle: intent.pathStyle, kitMix: intent.kitMix, groundTheme: merged.groundTheme,
+        settlementLayout: intent.settlementLayout, roadWidth: intent.roadWidth, roadNaturalness: intent.roadNaturalness,
+        yardStyle: intent.yardStyle, plazaStyle: intent.plazaStyle, plazaLayout: intent.plazaLayout,
+        interior: interiorEnabled, npcCount: requestedNpcCount, requirements: structuredClone(requirements),
+        worldGen: structuredClone(worldGenRules),
+        templates: catalog.templates.map(t => ({ id: t.id, name: t.name, w: t.w, h: t.h, stories: t.stories, kitId: t.kitId, wings: structuredClone(t.wings) })),
+      },
+    };
+  }
   const themeLabel = intent.theme ? `「${intent.theme}」 ` : "";
   const reqNote = requirements && requirements.landmarks.length > 0
     ? ` 필수[${requirements.landmarks.join(",")}]`
@@ -864,6 +880,7 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
     },
     invalidArgsExample: { planId: "vplan_1", maxAttempts: 2 },
     run(draft, args): ToolExecResult {
+      assertLegacyVillageSession(draft, args);
       return runVillagePipeline(draft, args);
     },
   },
