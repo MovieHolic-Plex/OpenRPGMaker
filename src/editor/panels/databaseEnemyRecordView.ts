@@ -84,7 +84,13 @@ function enemyCard(
 
 export function renderEnemyRecordForm(form: HTMLElement, record: EnemyRecord, rerender: () => void = () => undefined, onRename?: (name: string) => void): void {
   const hero = enemyHero(record);
-  const actions = enemyCard("공격 패턴", "actions", [actionSkillField(record), attackPatternTable(record, rerender)]);
+  let skillField = actionSkillField(record, rerender);
+  const refreshSkillField = (): void => {
+    const next = actionSkillField(record, rerender);
+    skillField.replaceWith(next);
+    skillField = next;
+  };
+  const actions = enemyCard("공격 패턴", "actions", [skillField, attackPatternTable(record, rerender, refreshSkillField)]);
   const studio = renderEnemyStudio(record, [
     { id: "basic", label: "기본", cards: [
       enemyCard("기본 정보", "name", identityFields(record, hero.setTitle, rerender)),
@@ -819,12 +825,14 @@ function markActiveActionRow(row: HTMLElement | null, index: number): void {
   if (!body) return;
   for (const sibling of Array.from(body.children)) {
     if (!(sibling instanceof HTMLElement)) continue;
-    sibling.classList.toggle("active", sibling.dataset.actionIndex === String(index));
+    const active = sibling.dataset.actionIndex === String(index);
+    sibling.classList.toggle("active", active);
+    sibling.setAttribute("aria-pressed", String(active));
   }
 }
 
-function attackPatternTable(record: EnemyRecord, rerender: () => void): HTMLElement {
-  const actions = record.actions;
+function attackPatternTable(record: EnemyRecord, rerender: () => void, onSelect: () => void): HTMLElement {
+  const actions = currentEnemy(record).actions;
   const selectedIndex = liveSelectedActionIndex(record);
   const toolbar = listToolbar([
     {
@@ -895,26 +903,37 @@ function attackPatternTable(record: EnemyRecord, rerender: () => void): HTMLElem
   for (const { action, index } of sorted) {
     const dangling = action.skillId.length > 0 && !store.getCurrent().database.skills.some((skill) => skill.id === action.skillId);
     const label = action.skillId.length === 0 ? "일반 공격" : dangling ? `삭제된 스킬(${action.skillId})` : skillName(action.skillId);
+    const selectRow = (event: Event): void => {
+      selectedActionIndexes.set(record.id, index);
+      markActiveActionRow(event.currentTarget instanceof HTMLElement ? event.currentTarget : null, index);
+      onSelect();
+    };
+    const editRow = (event: Event): void => {
+      selectRow(event);
+      const live = currentEnemy(record).actions[index];
+      if (live) openActionDialog(record, index, live, rerender);
+    };
     body.append(
       el("tr", {
         class: `${index === selectedIndex ? "active" : ""}${dangling ? " is-dangling" : ""}`.trim(),
-        attrs: { role: "button", tabindex: "0", "aria-label": `${label} 공격 패턴 편집` },
+        attrs: { role: "button", tabindex: "0", "aria-label": `${label} 공격 패턴 편집`, "aria-pressed": String(index === selectedIndex) },
         dataset: { testid: `db-enemy-action-row-${index}`, actionIndex: String(index) },
         on: {
           // 선택은 제자리에서 클래스만 바꾼다. 예전처럼 rerender() 하면 첫 클릭에서 행이
           // DOM 에서 떨어져 나가 두 번째 클릭이 다른 노드에 떨어지고, 그래서 더블클릭으로
           // 행동 편집 창을 여는 경로가 아예 동작하지 않았다(qa-enemies.spec.ts 주석 참조).
-          click: (event) => {
-            selectedActionIndexes.set(record.id, index);
-            markActiveActionRow(event.currentTarget as HTMLElement | null, index);
+          click: selectRow,
+          focus: selectRow,
+          contextmenu: (event) => {
+            selectRow(event);
+            const live = currentEnemy(record).actions[index];
+            if (live && event instanceof MouseEvent) openActionContextMenu(record, index, live, event, rerender);
           },
-          contextmenu: (event) => openActionContextMenu(record, index, action, event as MouseEvent, rerender),
-          dblclick: () => openActionDialog(record, index, action, rerender),
+          dblclick: editRow,
           keydown: (event) => {
-            const keyboardEvent = event as KeyboardEvent;
-            if (keyboardEvent.key !== "Enter" && keyboardEvent.key !== " ") return;
-            keyboardEvent.preventDefault();
-            openActionDialog(record, index, action, rerender);
+            if (!(event instanceof KeyboardEvent) || (event.key !== "Enter" && event.key !== " ")) return;
+            event.preventDefault();
+            editRow(event);
           },
         },
         children: [
@@ -950,13 +969,29 @@ function attackPatternTable(record: EnemyRecord, rerender: () => void): HTMLElem
   });
 }
 
-function actionSkillField(record: EnemyRecord): HTMLElement {
-  const action = currentEnemy(record).actions[0] ?? defaultAction();
-  const field = selectField("스킬", "db-picker-enemy-action-skill", action.skillId, store.getCurrent().database.skills, (skillId) => {
-    updateDatabaseRecord("enemies", record.id, { actions: replaceAction(currentEnemy(record).actions, 0, { ...action, skillId }) });
+function actionSkillField(record: EnemyRecord, rerender: () => void): HTMLElement {
+  const action = currentEnemy(record).actions[liveSelectedActionIndex(record)];
+  const skills = store.getCurrent().database.skills;
+  const options = action?.skillId && !skills.some((skill) => skill.id === action.skillId)
+    ? [...skills, { id: action.skillId, name: `삭제된 스킬(${action.skillId})` }]
+    : skills;
+  const node = selectField("스킬", "db-picker-enemy-action-skill", action?.skillId ?? "", options, (skillId) => {
+    const current = currentEnemy(record);
+    const index = liveSelectedActionIndex(record);
+    const live = current.actions[index];
+    if (!live) return;
+    updateDatabaseRecord("enemies", record.id, { actions: replaceAction(current.actions, index, { ...live, skillId }) });
+    rerender();
   });
-  field.classList.add("db-enemy-action-skill-field");
-  return field;
+  const select = node.querySelector("select");
+  if (select instanceof HTMLSelectElement) {
+    select.disabled = !action;
+    const empty = select.querySelector("option");
+    if (empty) empty.textContent = action ? "일반 공격" : "행동이 없습니다";
+    if (!action) select.title = "행동을 추가하면 사용할 수 있습니다";
+  }
+  node.classList.add("db-enemy-action-skill-field");
+  return node;
 }
 
 function actionCombatFields(record: EnemyRecord): HTMLElement[] {
