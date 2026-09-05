@@ -72,3 +72,11 @@ The LLM-harnessed interior pipeline: start session, advance build per layer, eva
 
 - 두 줄 도면도 한 줄과 같은 legacy 복도 판정(라벨 복도·통로·corridor·hall 또는 id corridor)을 쓴다. 명시한 `role`이 우선하고, 한글 `홀`이나 id `hall`만으로 복도를 추정하지 않는다. theme은 방의 placeId를 그대로 전달하고 복도만 corridor다. 계약: `test/conceptDoubleRowLayout.test.ts`.
 - 건물 팔레트 `stampHouse`는 문 이벤트 또는 실내 토글이 꺼지면 `author_house(kind: single, interior: exterior-only)`로 보낸다. `author_house`가 읽지 않는 `doorEvent` 인자는 보내지 않는다. 후대 시공 검증·시작점 복원 경로를 유지한다. 계약: `test/buildPalette.test.ts`.
+
+
+## 입구 예약·멀티타일 통행 복원 (2026-09-05)
+
+- lower 책장도 upper ENTRY_SENTINEL을 검사한다. 카운터·책장·화덕은 현재 objectCells 카탈로그를 쓰며, 배치 전 두 레이어 값을 세트 단위로 기록한다. 단일 소품 제거로 길이 안 열릴 때만 막은 세트를 통째로 복원한다.
+- 저널은 맵 객체별 WeakMap이며 전체/방 가구 시공 시작 때 새로 만들고 통행 검사에 들어갈 때 소비·삭제한다. 개념 꾸러미 경로는 저널에 등록하지 않는다. 이전 맵/재시공의 기록을 다음 작업이 사용하지 않는다.
+- 실제 ㄱ자 서재 기본 플랜은 동쪽 포켓 앞 2×3 책장 때문에 개방 셀 9개가 고립돼 있었다. 이제 책장 6칸을 바닥으로 통째로 복원해 0개가 된다. 후속 공백 보정이 소품을 더해 조사 이벤트는 11→12개. 그 방의 단위 테스트 parity fixture만 실측대로 갱신했다(나머지 6개 플랜은 동일).
+- 계약: `test/interiorRoomWalkabilitySeal.test.ts`(입구 봉쇄, 실제 서재 세트 복원, 맵 간 독립), `test/interiorRoomPipelineParity.test.ts`, `test/interiorObjectCatalog.test.ts`.
