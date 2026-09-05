@@ -139,3 +139,26 @@ Upstream PR #603 integration:
 - Firefox facility replay: exit 0, eight of eight beats passed, no runtime
   errors. Final report:
   `output/evidence/facility-quality/integration/player-firefox/SUMMARY.md`.
+
+## Last upstream delta: PR #609
+
+The final fetch found upstream `35b651bb`, which had actually merged #609.
+It is now included, unlike the earlier approval-pending intake state.
+Only the generated wiki index conflicted and was regenerated. New #614 and
+#615 are explicitly unfinished Draft PRs; they remain unmerged.
+
+- Seven animation regression files: 38 passed, exit 0.
+- Latest `npm run build && npm run gates:css`: exit 0.
+- First direct Firefox UX run reached editing after passing geometry,
+  graphic selection/clear, playback and keyboard checks, then failed reading
+  X=0 instead of 23 from a raw `import('/src/project/store.ts')`.
+- The long-lived development server had loaded the live store with a `?t=`
+  HMR suffix. Direct reproduction proved UI X=23 survives adding a cell;
+  importing that actual loaded module URL returns X=23 and two cells,
+  while the unsuffixed test import creates a different store returning X=0.
+  Restart the QA server without HMR and rerun the unmodified assertions.
+  No product fix or test expectation relaxation is justified by this failure.
+- Clean-server original Firefox UX scenario: 1 passed, exit 0, retries 0.
+  This covers all three viewport sizes, graph selection/cancel/clear,
+  keyboard playback, frame-cell editing and 14px working stepper icons.
+  The source test and assertions were not changed.
