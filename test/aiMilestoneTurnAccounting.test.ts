@@ -12,6 +12,8 @@
 // 이 결함은 **여러 항목으로 쪼개지는 복합 요청에서만** 난다 — 단발 요청은 마일스톤 플러시를
 // 거치지 않아 정산이 맞는다. 그래서 회귀 테스트도 마일스톤 경로로 재현한다.
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { AssistantSession } from "@/ai/assistantSession";
+import { createBlankProject } from "@/project/defaults";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
@@ -105,8 +107,6 @@ function steps(): ChatResult[] {
 
 describe("마일스톤 턴 정산", () => {
   it("마일스톤으로 적용된 쓰기는 턴 결과와 검수 주입에 남는다", async () => {
-    const { AssistantSession } = await import("@/ai/assistantSession");
-    const { createBlankProject } = await import("@/project/defaults");
     const project = createBlankProject();
     installHermeticEnv(project);
     const script = steps();
