@@ -192,7 +192,16 @@ describe("좌측 도크 구성은 워크스페이스 레이아웃을 따른다",
     const root = await mountEditor();
 
     const leftPanel = root.querySelector(".left-panel");
-    expect(leftPanel?.style["width"]).toBeUndefined();
+    // CSSOM represents an absent inline declaration as an empty string. The
+    // fake style object's undefined property is not a browser contract.
+    expect(leftPanel?.style.getPropertyValue("width")).toBe("");
+    expect(document.documentElement.style.getPropertyValue("--editor-left-safe")).toBe(`${RAIL_WIDTH_PX}px`);
+
+    const { setEditorUiMode } = await import("@/editor/editorUiMode");
+    setEditorUiMode("standard");
+    expect(leftPanel?.style.getPropertyValue("width")).not.toBe("");
+    setEditorUiMode("beginner");
+    expect(leftPanel?.style.getPropertyValue("width")).toBe("");
     expect(document.documentElement.style.getPropertyValue("--editor-left-safe")).toBe(`${RAIL_WIDTH_PX}px`);
   }, 120_000);
 });
