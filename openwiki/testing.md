@@ -1,3 +1,17 @@
+## Esc 메뉴 동작·시각 검증 (2026-09-05)
+
+- `npm run qa:runtime -- --scenario esc-menu`: 미리보기, 회복량 예고, 대상 유지·연속 사용,
+  장비 비교, 파티·시스템 화면, 필드 복귀. 결과는 `verify-shots/runtime-qa/esc-menu/SUMMARY.md`.
+- `test/runtime/esc-menu.spec.ts`: 같은 출하 플레이어 하네스로 실제 DOM/스크롤 유지, 좌우 영역
+  복귀, 640×480·1024×768·1280×960 배치, 닫힘 마지막 프레임과 빠른 재열기, 모션 감소를 검사한다.
+- `test/playerMenuItemPreview.test.ts`: 회복 예고와 실제 적용 일치, 무변이·난수 보존,
+  타입 전환과 사용 장소, 만피 상태 치료, 전투불능 대상 제한.
+- `test/playerStatusMenuMotion.test.ts`: 종료 완료 전에 DOM을 삭제하지 않고 오래된 종료 콜백이
+  새 메뉴를 삭제하지 않는지 확인한다.
+- `scripts/qa/runtime/esc-menu-fixture.mjs`는 기존 테스트 프로젝트를 복사해 약품 종류를 명시한다.
+  저작 콘텐츠의 정본을 수정하는 작업이 아니다. 원래 fixture의 normalGoods 약품으로 실행하면
+  필드 사용이 거절되는 것이 현재 아이템 종류 계약에 맞다.
+
 # Testing
 
 ## P2 낚시·채집·도감·박물관 focused gate (2026-08-25)

@@ -10,6 +10,37 @@ export type MenuItemUseResult =
   | { readonly kind: "used"; readonly message: string }
   | { readonly kind: "unusable"; readonly message: string };
 
+/** The menu preview and execution share the same authored-type and target rules. */
+export function menuItemUnavailableReason(item: ItemRecord): string | undefined {
+  if (item.occasion === "battle") return "전투 중에만 사용할 수 있습니다";
+  if (!itemAllowsMenu(activeItemEffects(item))) return "필드에서 사용할 수 없는 아이템입니다";
+  return undefined;
+}
+
+export function previewMenuItemTarget(project: Project, session: PlaySession, authored: ItemRecord, actorId: string) {
+  const item = activeItemEffects(authored);
+  const vitals = session.actorVitals[actorId];
+  let reason = menuItemUnavailableReason(item);
+  if (!reason && !isItemActorEligible(project, item, actorId, effectiveActorClassId(project, session, actorId))) {
+    reason = "이 대상은 사용할 수 없습니다";
+  }
+  const skillId = item.learnedSkillId ?? (item.type === "book" ? item.skillId : undefined);
+  if (!reason && skillId) {
+    if (session.actorSkillIds[actorId]?.includes(skillId)) reason = "이미 습득한 기술입니다";
+  } else if (!reason && !canApplyItemEffects(project, item, session, actorId)) {
+    reason = item.onlyEffectiveOnDeadActors && vitals && vitals.hp > 0
+      ? "전투불능 대상에게만 사용할 수 있습니다"
+      : vitals?.hp === 0 ? "전투불능 상태입니다" : "적용할 효과가 없습니다";
+  }
+  return {
+    reason,
+    hp: vitals?.hp ?? 0, maxHp: vitals?.maxHp ?? 0,
+    mp: vitals?.mp ?? 0, maxMp: vitals?.maxMp ?? 0,
+    hpAfter: vitals ? Math.min(vitals.maxHp, vitals.hp + (reason ? 0 : recoveryAmount(item.hpRecovery, vitals.maxHp))) : 0,
+    mpAfter: vitals ? Math.min(vitals.maxMp, vitals.mp + (reason ? 0 : recoveryAmount(item.mpRecovery, vitals.maxMp))) : 0,
+  };
+}
+
 export function useItemFromMenu(
   project: Project,
   session: PlaySession,
@@ -20,7 +51,8 @@ export function useItemFromMenu(
   const authoredItem = project.database.items.find((record) => record.id === itemId);
   const item = authoredItem ? activeItemEffects(authoredItem) : undefined;
   if (!item || (session.inventory[item.id] ?? 0) <= 0) return { kind: "unusable", message: "사용할 수 없습니다" };
-  if (!canUseItemInMenu(item)) return { kind: "unusable", message: `${item.name}은(는) 지금 사용할 수 없습니다` };
+  const unavailableReason = menuItemUnavailableReason(item);
+  if (unavailableReason) return { kind: "unusable", message: unavailableReason };
 
   if (item.careProfile) {
     return useCareItem(project, session, item, targetMonsterInstanceId);
@@ -126,10 +158,6 @@ function canApplyItemEffects(project: Project, item: ItemRecord, session: PlaySe
   // 부여(add) 후보가 하나라도 아직 걸리지 않았으면 사용을 시도할 수 있다 — 확률 판정은
   // applyItemEffects 가 굴리고, 실패하면 changed=false 라 공통 소모 경로가 물리지 않는다.
   return inflictStateEffectsOf(project, item).some((effect) => !states.includes(effect.stateId));
-}
-
-function canUseItemInMenu(item: ItemRecord): boolean {
-  return itemAllowsMenu(item);
 }
 
 function applyItemEffects(project: Project, item: ItemRecord, session: PlaySession, actorId: string): boolean {

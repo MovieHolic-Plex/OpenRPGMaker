@@ -37,7 +37,8 @@ import type { PlaySurfaceScaleMode } from "@/player/playSurfaceScale";
 import { createTouchPad, type TouchPadHandle } from "@/player/touchPad";
 import { renderPlayerLoadPanel } from "@/player/playerLoadPanel";
 import { createPlayerStatusMenuController } from "@/player/playerStatusMenuController";
-import { currentStatusMenu, markStatusMenuClosing } from "@/player/playerStatusMenuControllerDom";
+import { currentStatusMenu } from "@/player/playerStatusMenuControllerDom";
+import { closeStatusMenu } from "@/player/playerStatusMenuMotion";
 import {
   moveTitleSelection,
   type RuntimeMenuKey,
@@ -564,11 +565,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   const closeMenuWithJuice = (): void => {
     const menu = currentStatusMenu(layout);
     if (!menu) return;
-    markStatusMenuClosing(menu);
-    emitRuntimeJuice({ event: "menu-close", target: menu });
-    window.setTimeout(() => {
-      if (menu.isConnected) menu.remove();
-    }, MENU_CLOSE_JUICE_MS);
+    emitRuntimeJuice({ event: "menu-close" });
+    closeStatusMenu(menu);
   };
 
   const emitMenuJuice = (event: RuntimeJuiceEvent, target?: HTMLElement | null): void => {
@@ -880,4 +878,3 @@ function startTitleBgm(project: ReturnType<typeof store.getCurrent>): void {
 function stopTitleBgm(): void {
   stopAudioCommand();
 }
-

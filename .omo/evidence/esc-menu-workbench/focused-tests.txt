@@ -1,0 +1,26 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/playerStatusMenu.test.ts test/playerStatusMenuEdgeDock.test.ts test/playerStatusMenuPortrait.test.ts test/playerStatusMenuEntryIcons.test.ts test/playerStatusMenuClosingGuard.test.ts test/playerMenuItemPreview.test.ts test/playerStatusMenuMotion.test.ts test/playerItemUse.test.ts test/runtimeJuiceSelectCss.test.ts test/runtimeJuice.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-green-field-8353
+
+ ✓ test/runtimeJuiceSelectCss.test.ts (3 tests) 38ms
+ ✓ test/playerStatusMenuMotion.test.ts (1 test) 35ms
+ ✓ test/playerStatusMenuClosingGuard.test.ts (2 tests) 22ms
+ ✓ test/playerMenuItemPreview.test.ts (5 tests) 516ms
+ ✓ test/playerStatusMenuEntryIcons.test.ts (4 tests) 1481ms
+   ✓ status menu entry icons > carries the authored item icon resource id on every inventory row  699ms
+   ✓ status menu entry icons > paints the resolved item icon url inline on the rendered row  374ms
+ ✓ test/playerItemUse.test.ts (10 tests) 1798ms
+   ✓ player menu item use > applies a guaranteed add-op state effect from the menu and consumes the item  555ms
+   ✓ player menu item use > replays the same partial-chance inflict outcome for the same session seed  535ms
+ ✓ test/runtimeJuice.test.ts (2 tests) 29ms
+ ✓ test/playerStatusMenuPortrait.test.ts (5 tests) 440ms
+ ✓ test/playerStatusMenuEdgeDock.test.ts (6 tests) 697ms
+ ✓ test/playerStatusMenu.test.ts (17 tests) 1241ms
+
+ Test Files  10 passed (10)
+      Tests  55 passed (55)
+   Start at  18:59:29
+   Duration  18.33s (transform 15.02s, setup 0ms, collect 97.96s, tests 6.30s, environment 3ms, prepare 4.42s)

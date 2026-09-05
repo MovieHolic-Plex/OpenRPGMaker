@@ -1,5 +1,6 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { store } from "@/project/store";
+import { animateStatusMenuFeedback } from "@/player/playerStatusMenuMotion";
 
 export type RuntimeJuiceEvent =
   | "menu-back"
@@ -72,6 +73,10 @@ function writeRuntimeJuiceLog(entry: RuntimeJuiceLogEntry): void {
 }
 
 function applyRuntimeJuiceMotion(target: HTMLElement, spec: RuntimeJuiceSpec): void {
+  if (target.classList.contains("oprn-status-menu")) {
+    animateStatusMenuFeedback(target, spec.event);
+    return;
+  }
   target.classList.remove(...RUNTIME_JUICE_CLASSES);
   // window 가 없으면(node 환경) 모션은 건너뛰고 클래스만 즉시 얹는다 — 단위 테스트가
   // 모션 클래스 부착을 검사할 수 있게 하면서 rAF 부재로 죽지 않게 한다.
