@@ -12,8 +12,27 @@ const PATTERN_PREVIEW_COUNT = 8;
 const ANIMATION_PLAYBACK_FRAME_MS = Math.round(1000 / 15);
 
 let copiedAnimationCells: BattleAnimationCell[] | null = null;
+const previewDisposers = new WeakMap<HTMLElement, () => void>();
+
+/** The tab cache owner must dispose previews before evicting their workspace. */
+export function disposeAnimationPreviewsIn(scope: ParentNode): void {
+  for (const panel of scope.querySelectorAll<HTMLElement>(".db-animation-stage-panel")) {
+    previewDisposers.get(panel)?.();
+  }
+}
+
+// Mutable, form-owned playback intent survives internal field/frame rerenders only.
+export type AnimationPlaybackState = {
+  playing: boolean;
+  dispose?: () => void;
+};
+
+export function createAnimationPlaybackState(): AnimationPlaybackState {
+  return { playing: !globalThis.window?.matchMedia?.("(prefers-reduced-motion: reduce)").matches };
+}
 
 export type AnimationPreviewContext = {
+  readonly playback?: AnimationPlaybackState;
   readonly animation: BattleAnimationRecord;
   readonly sheet: BattleAnimationSheet;
   readonly frames: readonly BattleAnimationFrame[];
@@ -43,7 +62,20 @@ export function renderAnimationStagePanel(context: AnimationPreviewContext): HTM
   renderStageCells(cellLayer, context, context.selectedFrame, url);
   preview.append(stageCrosshair(), targetSilhouette(), cellLayer);
 
-  panel.append(commandGrid(context, panel, cellLayer, url), preview, statGrid([["시트", `${context.sheet.frameWidth}x${context.sheet.frameHeight}`], ["열", String(context.sheet.columns)], ["셀", String(context.selectedFrame.cells.length)]]));
+  const playButton = el("button", {
+    class: "btn db-animation-play-button",
+    text: "재생",
+    attrs: { type: "button", "aria-pressed": "false" },
+    dataset: { testid: "db-animation-play" },
+  });
+  const transport = el("div", {
+    class: "db-animation-transport",
+    dataset: { testid: "db-animation-transport" },
+    children: [playButton],
+  });
+  bindPlayback(playButton, panel, cellLayer, context, url, transport);
+  panel.append(el("h4", { text: "미리보기" }), preview, transport);
+
   return panel;
 }
 
@@ -54,9 +86,9 @@ export function renderAnimationPatternStripPanel(context: AnimationPreviewContex
   });
   const url = animationResourceUrl(context);
   for (let index = 0; index < PATTERN_PREVIEW_COUNT; index += 1) {
-    const cell = el("button", {
-      class: `db-animation-pattern-cell${index === 0 ? " active" : ""}`,
-      attrs: { type: "button", title: `패턴 ${index + 1}` },
+    const cell = el("div", {
+      class: "db-animation-pattern-cell",
+      attrs: { title: `패턴 ${index + 1} · 참고 이미지` },
       children: [el("span", { class: "db-animation-pattern-number", text: String(index + 1).padStart(3, "0") })],
     });
     const preview = el("span", { class: "db-animation-pattern-preview" });
@@ -67,7 +99,7 @@ export function renderAnimationPatternStripPanel(context: AnimationPreviewContex
   return panel;
 }
 
-function commandGrid(context: AnimationPreviewContext, panel: HTMLElement, cellLayer: HTMLElement, url: string | undefined): HTMLElement {
+export function renderAnimationCellCommands(context: AnimationPreviewContext): HTMLElement {
   const pasteButton = el("button", {
     text: "셀 붙여넣기",
     attrs: { type: "button", title: "복사한 셀을 현재 프레임에 덮어쓰기" },
@@ -79,14 +111,6 @@ function commandGrid(context: AnimationPreviewContext, panel: HTMLElement, cellL
     },
   });
   pasteButton.disabled = copiedAnimationCells === null;
-
-  const playButton = el("button", {
-    class: "db-animation-play-button",
-    text: "▶ 재생",
-    attrs: { type: "button", "aria-pressed": "false" },
-    dataset: { testid: "db-animation-play" },
-  });
-  bindPlayback(playButton, panel, cellLayer, context, url);
 
   const grid = el("div", {
     class: "db-animation-command-grid",
@@ -113,7 +137,6 @@ function commandGrid(context: AnimationPreviewContext, panel: HTMLElement, cellL
         },
       }),
       pasteButton,
-      playButton,
       el("button", {
         text: "보간",
         attrs: { type: "button", title: "이전·다음 프레임 사이 셀 보간" },
@@ -132,7 +155,6 @@ function commandGrid(context: AnimationPreviewContext, panel: HTMLElement, cellL
           },
         },
       }),
-      checkboxLabel("격자 사용", true),
     ],
   });
   return grid;
@@ -211,58 +233,131 @@ function bindPlayback(
   panel: HTMLElement,
   cellLayer: HTMLElement,
   context: AnimationPreviewContext,
-  url: string | undefined
+  url: string | undefined,
+  statusHost: HTMLElement,
 ): void {
-  let timer: ReturnType<typeof window.setInterval> | null = null;
-  let frameIndex = context.selectedFrameIndex;
+  const playback = context.playback ?? createAnimationPlaybackState();
+  playback.dispose?.();
+  let timer: number | null = null;
+  let frameIndex = 0;
+  let ready = false;
+  let disposed = false;
+  const status = el("div", {
+    class: "empty-hint",
+    attrs: { role: "status" },
+    dataset: { testid: "db-animation-preview-status" },
+  });
+  statusHost.append(status);
 
   const stop = (restoreSelectedFrame: boolean): void => {
     if (timer !== null) {
       window.clearInterval(timer);
       timer = null;
     }
-    button.textContent = "▶ 재생";
+    button.textContent = "재생";
     button.setAttribute("aria-pressed", "false");
-    if (restoreSelectedFrame) renderStageCells(cellLayer, context, context.selectedFrame, url);
+    if (ready) status.textContent = "선택 프레임 · 정지";
+    if (restoreSelectedFrame) {
+      renderStageCells(cellLayer, context, { cells: context.currentSelectedFrameCells() }, url);
+    }
   };
 
-  const tick = (): void => {
-    if (isDisconnected(panel)) {
-      stop(false);
-      return;
-    }
-    frameIndex += 1;
-    if (frameIndex >= context.frames.length) {
-      stop(true);
-      return;
-    }
-    renderStageCells(cellLayer, context, context.frames[frameIndex] ?? context.selectedFrame, url);
-  };
-
-  button.addEventListener("click", () => {
-    if (timer !== null) {
-      stop(true);
-      return;
-    }
-    // RM2003 재생 의미: 선택 프레임과 무관하게 항상 1프레임부터 전체를 1회 재생한다.
-    // (선택 프레임에서 시작하면 마지막 프레임 선택 시 즉시 종료돼 무반응처럼 보인다.)
+  const start = (): void => {
+    if (disposed || !ready || timer !== null || isDisconnected(panel)) return;
     frameIndex = 0;
     renderStageCells(cellLayer, context, context.frames[frameIndex] ?? context.selectedFrame, url);
-    button.textContent = "■ 정지";
+    button.textContent = "정지";
     button.setAttribute("aria-pressed", "true");
-    timer = window.setInterval(tick, ANIMATION_PLAYBACK_FRAME_MS);
+    status.textContent = "반복 재생 중";
+    timer = window.setInterval(() => {
+      if (isDisconnected(panel)) {
+        stop(false);
+        return;
+      }
+      frameIndex = (frameIndex + 1) % context.frames.length;
+      renderStageCells(cellLayer, context, context.frames[frameIndex] ?? context.selectedFrame, url);
+    }, ANIMATION_PLAYBACK_FRAME_MS);
+  };
+
+  // Database tabs cache detached DOM. Pause that cache, resume on attachment,
+  // and release the observer on record replacement or modal close. Cache eviction
+  // is explicit: detached ancestry alone cannot distinguish retained and evicted tabs.
+  let workspace: HTMLElement | null = null;
+  let modal: HTMLElement | null = null;
+  const observer = typeof MutationObserver === "undefined" ? undefined : new MutationObserver(() => {
+    if (panel.isConnected) {
+      workspace = panel.closest(".oprn-record-battleAnimations");
+      modal = panel.closest(".database-modal-backdrop");
+      if (playback.playing) start();
+    } else if (workspace?.contains(panel) && modal?.isConnected) {
+      stop(false);
+    } else {
+      dispose();
+    }
   });
+  const dispose = (): void => {
+    disposed = true;
+    stop(false);
+    observer?.disconnect();
+    previewDisposers.delete(panel);
+  };
+  previewDisposers.set(panel, dispose);
+  playback.dispose = dispose;
+  observer?.observe(document.body, { childList: true, subtree: true });
+
+  button.addEventListener("click", () => {
+    if (!ready || disposed) return;
+    playback.playing = !playback.playing;
+    if (playback.playing) start();
+    else stop(true);
+  });
+
+  button.disabled = true;
+  status.dataset.state = url ? "loading" : "empty";
+  status.textContent = url ? "그래픽 불러오는 중" : "애니메이션 그래픽을 선택하세요.";
+  if (!url) {
+    cellLayer.replaceChildren();
+    return;
+  }
+  const image = new Image();
+  const empty = (): void => {
+    if (disposed) return;
+    ready = false;
+    stop(false);
+    button.disabled = true;
+    cellLayer.replaceChildren();
+    status.dataset.state = "empty";
+    status.textContent = "재생할 그래픽이나 표시할 셀이 없습니다.";
+  };
+  image.addEventListener("error", empty, { once: true });
+  image.addEventListener("load", () => {
+    if (disposed) return;
+    const hasVisibleCells = context.frames.some((frame) => frame.cells.some((cell) =>
+      cell.visible && cell.opacity > 0 && cell.zoom > 0 &&
+      (cell.pattern % context.sheet.columns + 1) * context.sheet.frameWidth <= image.naturalWidth &&
+      (Math.floor(cell.pattern / context.sheet.columns) + 1) * context.sheet.frameHeight <= image.naturalHeight
+    ));
+    if (!hasVisibleCells) {
+      empty();
+      return;
+    }
+    ready = true;
+    button.disabled = false;
+    status.dataset.state = "ready";
+    status.textContent = "선택 프레임 · 정지";
+    if (playback.playing) start();
+  }, { once: true });
+  image.src = url;
 }
 
 function renderStageCells(layer: HTMLElement, context: AnimationPreviewContext, frame: BattleAnimationFrame, url: string | undefined): void {
-  const cells = frame.cells.length > 0 ? frame.cells : [DEFAULT_CELL];
+  const cells = url ? frame.cells : [];
   layer.replaceChildren(...cells.map((cell, index) => stageCellSprite(context, cell, url, index)));
 }
 
 function stageCellSprite(context: AnimationPreviewContext, cell: BattleAnimationCell, url: string | undefined, index: number): HTMLElement {
   const sprite = el("div", {
     class: `db-animation-stage-cell db-animation-stage-cell-sprite${cell.visible ? "" : " muted"}`,
-    children: url ? [] : [el("span"), el("span"), el("span")],
   });
   if (index === 0) sprite.dataset.testid = "db-animation-stage-target";
   if (url) {
@@ -317,23 +412,10 @@ function isDisconnected(element: HTMLElement): boolean {
   return "isConnected" in element && element.isConnected === false;
 }
 
-function checkboxLabel(label: string, checked: boolean): HTMLElement {
-  const input = el("input", { attrs: checked ? { checked: "true", disabled: "true", type: "checkbox" } : { disabled: "true", type: "checkbox" } });
-  return el("label", { class: "db-animation-checkbox", children: [input, el("span", { text: label })] });
-}
-
 function panelWrap(title: string, testid: string, className = ""): HTMLElement {
   return el("section", {
     class: `db-animation-panel${className ? ` ${className}` : ""}`,
     dataset: { testid },
     children: title ? [el("h4", { text: title })] : [],
   });
-}
-
-function statGrid(rows: readonly (readonly [string, string])[]): HTMLElement {
-  const grid = el("div", { class: "db-animation-stat-grid" });
-  for (const [label, value] of rows) {
-    grid.append(el("span", { text: label }), el("strong", { text: value }));
-  }
-  return grid;
 }

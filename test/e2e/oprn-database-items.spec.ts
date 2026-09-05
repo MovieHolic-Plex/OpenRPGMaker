@@ -45,7 +45,9 @@ test("Database Items tab follows RM2K3 item types and Korean type-specific panel
     path: testInfo.outputPath("items-tab-switch-panel.png"),
   });
 
-  await page.getByTestId("db-tab-equipment").click();
+  await page.getByTestId("db-tab-items").click();
+  await page.getByTestId("db-catalog-filter-equipment").click();
+  await page.locator('.db-catalog-rows [data-collection="equipment"]').first().click();
   const project = await exportedProject(page);
   const item = project.database.items.find((record) => record.name === "QA 회복약");
   expect(item).toMatchObject({

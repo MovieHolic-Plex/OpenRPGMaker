@@ -5,7 +5,21 @@ type RecordViewSessionState = {
   selectedIds: Partial<Record<DatabaseCollection, string>>;
   searchQueries: Partial<Record<DatabaseCollection, string>>;
   scrollTops: Partial<Record<DatabaseCollection, number>>;
+  catalog: InventoryCatalogSession;
 };
+
+// Mutable view state only; authored collections and IDs remain separate.
+export type InventoryCollection = "items" | "equipment";
+export type InventoryCatalogSession = {
+  collection: InventoryCollection;
+  filter: "all" | InventoryCollection;
+  subtype: string;
+  slotManagerOpen: boolean;
+};
+
+export function inventoryCatalogSession(): InventoryCatalogSession {
+  return state.catalog;
+}
 
 export type RecordViewMode = "gallery" | "list";
 
@@ -85,6 +99,7 @@ export function selectedRecordIdForSession(collection: DatabaseCollection): stri
 
 export function setSelectedRecordId(collection: DatabaseCollection, id: string | undefined): void {
   if (id) {
+    if (collection === "items" || collection === "equipment") state.catalog.collection = collection;
     state.selectedIds[collection] = id;
     return;
   }
@@ -116,7 +131,7 @@ export function setListScrollTopForCollection(collection: DatabaseCollection, sc
 }
 
 function createRecordViewSessionState(): RecordViewSessionState {
-  return { searchQueries: {}, selectedIds: {}, scrollTops: {} };
+  return { searchQueries: {}, selectedIds: {}, scrollTops: {}, catalog: { collection: "items", filter: "all", subtype: "all", slotManagerOpen: false } };
 }
 
 export function viewModeForCollection(collection: DatabaseCollection): RecordViewMode {

@@ -29,6 +29,7 @@ export function normalizeWorldCanon(value: unknown, label = "worldCanon"): World
       requireString(`${label}.absences[${index}]`, entry),
     ));
   const statusRaw = record.status === undefined ? undefined : requireString(`${label}.status`, record.status);
+  const visibility = record.visibility === undefined ? undefined : requireString(`${label}.visibility`, record.visibility);
   const resolved = resolveWorldCanon({
     ...(record.name === undefined ? {} : { name: requireString(`${label}.name`, record.name) }),
     ...(record.premise === undefined ? {} : { premise: requireString(`${label}.premise`, record.premise) }),
@@ -39,6 +40,7 @@ export function normalizeWorldCanon(value: unknown, label = "worldCanon"): World
     ...(record.laws === undefined ? {} : { laws: normalizeLaws(`${label}.laws`, record.laws) }),
     ...(record.body === undefined ? {} : { body: requireString(`${label}.body`, record.body) }),
     ...(statusRaw !== undefined && isWorldCanonStatus(statusRaw) ? { status: statusRaw } : {}),
+    ...(visibility === "public" || visibility === "secret" ? { visibility } : {}),
   });
   return compactWorldCanon(resolved);
 }

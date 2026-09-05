@@ -19,7 +19,7 @@ import { applyDatabaseChanges } from "@/editor/panels/databaseModalPersistence";
 import { startModalDrag, stopModalDrag } from "@/editor/panels/databaseModalWindowDrag";
 import { resetDatabaseRecordViewSession } from "@/editor/panels/databaseRecordViews";
 import { stopSkillAnimationStagesIn } from "@/editor/panels/databaseSkillAnimationStage";
-import { selectedRecordIdForSession } from "@/editor/panels/databaseRecordViewSession";
+import { inventoryCatalogSession, selectedRecordIdForSession, setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
 import { isStructureKitEditorOpen } from "@/editor/panels/structureKitEditorDialog";
 import { DATABASE_APPLY_BUTTON_HINT, DATABASE_FOOTER_ACTION_TEST_IDS, databaseFooterStatusText } from "@/editor/panels/databaseWorkbench";
 import {
@@ -114,8 +114,18 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
   activeModal?.close();
   // close() 가 backdrop 을 지우지만, 혹시 핸들 없이 남은 고아 DOM 도 방어적으로 제거.
   document.querySelector("[data-testid='database-modal']")?.remove();
-  if (initialTab) setDatabaseActiveTab(initialTab);
+  // Cross-record links establish selection before opening. Reset unrelated view state,
+  // not the catalog target; apply the legacy equipment route after that reset.
+  const requestedTab = initialTab ?? getDatabaseActiveTab();
+  const catalogCollection = requestedTab === "equipment" ? "equipment"
+    : requestedTab === "items" ? inventoryCatalogSession().collection : undefined;
+  const catalogRecordId = catalogCollection ? selectedRecordIdForSession(catalogCollection) : undefined;
   resetDatabaseRecordViewSession();
+  if (catalogCollection) {
+    inventoryCatalogSession().collection = catalogCollection;
+    setSelectedRecordId(catalogCollection, catalogRecordId);
+  }
+  if (initialTab) setDatabaseActiveTab(initialTab);
   const dirtySession = createDatabaseModalDirtySession();
   // 사이드 도킹(M8): 모달⇄우측 도크 토글 상태. localStorage 에 저장돼 다음 오픈 시 복원된다.
   let dockMode = false;
@@ -489,7 +499,8 @@ const RECORD_TAB_COLLECTIONS: Partial<Record<DatabaseTab, DatabaseCollection>> =
 // AI 컨텍스트의 선택 레코드. 세션 선택이 없으면 뷰가 기본 선택하는 첫 레코드를 따른다
 // (selectedRecordForSession 과 같은 규칙). 레코드 탭이 아니면 null.
 function selectedDatabaseRecordRef(): DatabaseAiRecordRef | null {
-  const collection = RECORD_TAB_COLLECTIONS[getDatabaseActiveTab()];
+  const tab = getDatabaseActiveTab();
+  const collection = tab === "items" ? inventoryCatalogSession().collection : RECORD_TAB_COLLECTIONS[tab];
   if (!collection) return null;
   const records: readonly { readonly id: string; readonly name: string }[] = store.getCurrent().database[collection];
   const selectedId = selectedRecordIdForSession(collection);

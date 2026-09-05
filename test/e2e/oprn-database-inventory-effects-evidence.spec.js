@@ -7,7 +7,6 @@ const EVIDENCE_DIR = "output/evidence/database-tabs-team/T2-inventory-effects";
 const TABS = [
   { label: "Skills", slug: "skills", testId: "db-tab-skills" },
   { label: "Items", slug: "items", testId: "db-tab-items" },
-  { label: "Equipment", slug: "equipment", testId: "db-tab-equipment" },
   { label: "States", slug: "states", testId: "db-tab-states" },
 ];
 
@@ -108,10 +107,11 @@ async function editInventoryEffects(page) {
   await page.getByTestId("db-field-item-hp-percent-stepper").fill("15");
   await page.getByTestId("db-field-item-mp-flat").fill("8");
 
-  await page.getByTestId("db-tab-equipment").click();
+  await page.getByTestId("db-tab-items").click();
+  await page.getByTestId("db-catalog-filter-equipment").click();
+  await page.locator('.db-catalog-rows [data-collection="equipment"]').first().click();
   await page.getByTestId("db-field-name").fill("QA 부적검");
-  // 부위는 헤더 세그먼트(네이티브 radio) 하나뿐 — 중복이던 레거시 <select> 는 제거됐다.
-  await page.locator('[data-testid="db-field-equipment-slot-option"][value="weapon"]').check();
+  await page.getByTestId("db-field-equipment-slot").selectOption("weapon");
   await page.getByTestId("db-field-equipment-description").fill("QA equipment proof");
   await page.getByTestId("db-field-equipment-attack").fill("13");
   await page.getByTestId("db-field-equipment-defense").fill("4");

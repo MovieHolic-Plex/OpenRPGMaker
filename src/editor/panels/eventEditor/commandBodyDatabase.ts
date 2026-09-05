@@ -1,3 +1,4 @@
+import { equipmentSlots, equipmentSlotLabel } from "@/project/equipmentSlots";
 ﻿import { craftRecipesOf } from "@/project/craftRecipes";
 import { openRecordPickerPanel } from "./recordPickerDialog";
 import { startStateOf } from "@/project/session";
@@ -94,21 +95,6 @@ const BATTLE_PROCESSING_PRESETS = [
     battleFlow: "strict" as const,
   },
 ] as const;
-
-const EQUIPMENT_SLOT_OPTIONS = [
-  { value: "weapon", label: "무기" },
-  { value: "shield", label: "방패" },
-  { value: "armor", label: "갑옷" },
-  { value: "helmet", label: "투구" },
-  { value: "accessory", label: "장식품" },
-] as const satisfies readonly { readonly value: ActorEquipmentSlot; readonly label: string }[];
-const EQUIPMENT_SLOT_SEGMENTS = [
-  { value: "weapon", key: "weapon", label: "무기" },
-  { value: "shield", key: "shield", label: "방패" },
-  { value: "armor", key: "armor", label: "갑옷" },
-  { value: "helmet", key: "helmet", label: "머리" },
-  { value: "accessory", key: "accessory", label: "장신구" },
-] as const satisfies readonly { readonly value: ActorEquipmentSlot; readonly key: string; readonly label: string }[];
 
 type ActorAmountCommand = Extract<Command, { kind: "changeExp" | "changeLevel" | "changeActorHp" | "changeActorMp" }>;
 
@@ -1107,6 +1093,7 @@ export function changeEquipmentBody(
   const project = store.getCurrent();
   const equipmentCatalog = project.database.equipment;
   let currentSlot: ActorEquipmentSlot = cmd.slot;
+  const slotOptions = equipmentSlots(project).map(({ id, label }) => ({ value: id, key: id, label }));
 
   const actor = actorPicker({
     project,
@@ -1114,7 +1101,7 @@ export function changeEquipmentBody(
     testid: "change-equipment-actor-select",
   });
   const slot = segmentedSelect({
-    options: EQUIPMENT_SLOT_SEGMENTS,
+    options: slotOptions,
     value: currentSlot,
     testid: "change-equipment-slot-select",
     ariaLabel: "장비 위치",
@@ -1154,7 +1141,7 @@ export function changeEquipmentBody(
   });
 
   const commit = (equipmentId = equipmentBrowser.getSelectedId()) => {
-    currentSlot = selectedOptionValue(slot.select, EQUIPMENT_SLOT_OPTIONS, currentSlot);
+    currentSlot = selectedOptionValue(slot.select, slotOptions, currentSlot);
     context.actions.replaceCommand(context.path, {
       kind: "changeEquipment",
       actorId: actor.select.value,
@@ -1255,7 +1242,7 @@ export function changeEquipmentBody(
 
   actor.select.addEventListener("change", () => commit());
   slot.select.addEventListener("change", () => {
-    currentSlot = selectedOptionValue(slot.select, EQUIPMENT_SLOT_OPTIONS, currentSlot);
+    currentSlot = selectedOptionValue(slot.select, slotOptions, currentSlot);
     const filtered = equipmentForSlot(equipmentCatalog, currentSlot);
     equipmentBrowser.setRecords(filtered);
     const selectedId = equipmentBrowser.getSelectedId();
@@ -1307,9 +1294,7 @@ function equipmentForSlot(records: readonly EquipmentRecord[], slot: ActorEquipm
 }
 
 function slotLabel(slot: ActorEquipmentSlot): string {
-  return EQUIPMENT_SLOT_SEGMENTS.find((option) => option.value === slot)?.label
-    ?? EQUIPMENT_SLOT_OPTIONS.find((option) => option.value === slot)?.label
-    ?? slot;
+  return equipmentSlotLabel(store.getCurrent(), slot);
 }
 
 function equipmentSubtitle(record: EquipmentRecord): string | null {

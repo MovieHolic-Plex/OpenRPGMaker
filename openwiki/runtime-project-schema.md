@@ -1,5 +1,13 @@
 # Runtime Project Schema & Persistence
 
+## Project-authored equipment slots (2026-09-05)
+
+`ProjectDatabaseRecords.equipmentSlots?: EquipmentSlotRecord[]` is an additive v4 catalog of `{ id, label }`. Omission keeps the five built-ins. `src/project/equipmentSlots.ts` merges built-ins with authored label overrides and custom slots; built-in IDs cannot be removed. IDs are stable ASCII identifiers, not labels. `EquipmentRecord.slot`, `ActorInitialEquipment`, and `changeEquipment.slot` reference these IDs. Actor normalization preserves every slot key; shape/reference validation rejects duplicate/unsafe catalog IDs, empty labels, and dangling equipment/actor/event slot references. No migration or schema bump is needed for catalog-free projects.
+
+Runtime projection and atomic equip transitions enumerate the catalog; custom slots have ordinary one-item occupancy and contribute their authored stats/effects. Only `weapon` and `shield` have dual-wield/two-handed semantics. Save parsing validates every equipment entry (including custom values); missing equipment maps remain legacy-compatible. `snapshotLoadBlocker` refuses a save whose slot catalog is no longer present rather than silently treating that slot as accessory. The project editor prevents removal while equipment records, actor initial equipment, or nested map/common/troop commands (including drafts) reference a slot. External saves are not rewritten on catalog edits; missing-slot saves are explicitly blocked at load.
+
+Contract: `test/customEquipmentSlots.test.ts` covers create/rename/use, initial equipment serialization and reload, menu/event equip, stats/effects, save storage roundtrip, removal protection, invalid slots, and legacy fallback.
+
 ## 기본 카탈로그 삭제 보존 (2026-09-05)
 
 로드의 `ensureDefaultDatabaseIconResources`는 기존 기본 행의 아이콘 연결만 보정한다. 누락 아이템·장비를 새로 주입하거나 그 종속 스킬·상태를 추가하지 않는다. 신규 생성은 기존 기본 카탈로그를 그대로 사용한다. `test/itemEquipmentAuthoringTrust.test.ts`는 삭제한 기본 행이 serialize→deserialize→부팅 정규화 후에도 없는 것을 확인한다. 종류 필드가 없던 v3 스킬 아이템은 `normalizeItemRecord`가 skillId를 보고 special로 복원한다. 명시된 종류는 추론으로 덮어쓰지 않으며 실제 v3 전투 fixture와 직렬화 왕복으로 검증한다. ItemRecord 종류 전환은 저장 필드를 삭제하지 않고 `itemUsage.activeItemEffects`로 실행만 제한하므로 스키마 버전 변경이 없다.

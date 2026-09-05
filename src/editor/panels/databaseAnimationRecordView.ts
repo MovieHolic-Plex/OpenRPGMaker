@@ -1,4 +1,4 @@
-import { renderAnimationPatternStripPanel, renderAnimationStagePanel } from "@/editor/panels/databaseAnimationPreview";
+import { createAnimationPlaybackState, renderAnimationCellCommands, renderAnimationPatternStripPanel, renderAnimationStagePanel, type AnimationPlaybackState } from "@/editor/panels/databaseAnimationPreview";
 import { battleStudioHeading } from "@/editor/panels/databaseBattleStudio";
 import { emptyToUndefined, field, numberField, selectLiteral } from "@/editor/panels/databaseControls";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
@@ -26,7 +26,12 @@ const DEFAULT_FRAME: BattleAnimationFrame = { cells: [{ ...DEFAULT_CELL }] };
 const SCOPE_OPTIONS = ["singleTarget", "allTargets", "screen"] as const satisfies readonly BattleAnimationScope[];
 const POSITION_OPTIONS = ["head", "center", "feet", "screen"] as const satisfies readonly BattleAnimationPosition[];
 
+// The modal's retained workspace owns intent across replacement forms. Standalone
+// forms own their own intent; another record or a new modal starts fresh.
+const playbackByOwner = new WeakMap<HTMLElement, { readonly animationId: string; readonly playback: AnimationPlaybackState }>();
+
 type AnimationEditorContext = {
+  readonly playback: AnimationPlaybackState;
   readonly animation: BattleAnimationRecord;
   readonly sheet: BattleAnimationSheet;
   readonly frames: readonly BattleAnimationFrame[];
@@ -42,7 +47,15 @@ type AnimationEditorContext = {
   readonly currentSelectedFrameCells: () => BattleAnimationCell[];
 };
 
-export function renderBattleAnimationRecordForm(form: HTMLElement, animation: BattleAnimationRecord): HTMLElement {
+export function renderBattleAnimationRecordForm(
+  form: HTMLElement,
+  animation: BattleAnimationRecord,
+  playbackOwner: HTMLElement = form,
+): HTMLElement {
+  const previous = playbackByOwner.get(playbackOwner);
+  previous?.playback.dispose?.();
+  const playback = previous?.animationId === animation.id ? previous.playback : createAnimationPlaybackState();
+  playbackByOwner.set(playbackOwner, { animationId: animation.id, playback });
   const project = store.getCurrent();
   const sheet = animation.sheet ?? DEFAULT_SHEET;
   const frames = normalizedFrames(animation.frames);
@@ -53,9 +66,10 @@ export function renderBattleAnimationRecordForm(form: HTMLElement, animation: Ba
   const rerender = () => {
     form.replaceChildren();
     const next = store.getCurrent().database.battleAnimations.find((entry) => entry.id === animation.id) ?? animation;
-    renderBattleAnimationRecordForm(form, next);
+    renderBattleAnimationRecordForm(form, next, playbackOwner);
   };
   const context: AnimationEditorContext = {
+    playback,
     animation,
     sheet,
     frames,
@@ -90,9 +104,9 @@ function animationEditor(context: AnimationEditorContext): HTMLElement {
     el("section", {
       class: "db-animation-studio-stage",
       dataset: { testid: "db-animation-studio-stage" },
-      children: [renderAnimationStagePanel(context)],
+      children: [graphicControl(context), renderAnimationStagePanel(context)],
     }),
-    el("aside", {
+    el("section", {
       class: "db-animation-studio-inspector",
       dataset: { testid: "db-animation-studio-inspector" },
       children: [topFieldGrid(context), cellTablePanel(context), referencePanel(context.animation)],
@@ -106,22 +120,26 @@ function animationEditor(context: AnimationEditorContext): HTMLElement {
   return editor;
 }
 
+function graphicControl(context: AnimationEditorContext): HTMLElement {
+  return resourcePickerControl({
+    presentation: "graphic",
+    label: "애니메이션 그래픽",
+    resourceId: context.animation.resourceId,
+    kind: "battle",
+    testid: "db-field-animation-resource",
+    allowClear: true,
+    dialogTitle: "애니메이션 그래픽",
+    onChange: (result) => {
+      updateDatabaseRecord("battleAnimations", context.animation.id, { resourceId: emptyToUndefined(result.resourceId) });
+    },
+    rerender: context.rerender,
+  });
+}
+
 function topFieldGrid(context: AnimationEditorContext): HTMLElement {
   const grid = el("div", { class: "db-animation-top-grid" });
   grid.append(
-    resourcePickerControl({
-      label: "애니메이션 그래픽",
-      resourceId: context.animation.resourceId,
-      kind: "battle",
-      testid: "db-field-animation-resource",
-      allowClear: true,
-      dialogTitle: "애니메이션 그래픽",
-      onChange: (result) => {
-        updateDatabaseRecord("battleAnimations", context.animation.id, { resourceId: emptyToUndefined(result.resourceId) });
-      },
-      rerender: context.rerender,
-    }),
-    readonlyField("대상", animationReferenceTarget(context.animation)),
+    readonlyField("사용하는 스킬 / 아이템", animationReferenceTarget(context.animation)),
     maxFrameField(context),
     animationFlagsPanel(context.animation, context.sheet)
   );
@@ -136,7 +154,7 @@ function animationFlagsPanel(animation: BattleAnimationRecord, sheet: BattleAnim
   large.checked = animation.large ?? false;
   large.addEventListener("change", () => updateDatabaseRecord("battleAnimations", animation.id, { large: large.checked }));
 
-  const panel = panelWrap("설정", "db-animation-setup", "db-animation-setup-panel");
+  const panel = panelWrap("시트와 표시 설정", "db-animation-setup", "db-animation-setup-panel");
   panel.append(
     selectLiteral("범위", "db-field-animation-scope", animation.scope ?? "singleTarget", SCOPE_OPTIONS, (scope) =>
       updateDatabaseRecord("battleAnimations", animation.id, { scope })
@@ -168,7 +186,7 @@ function maxFrameField(context: AnimationEditorContext): HTMLElement {
     dataset: { testid: "db-animation-add-frame" },
     on: { click: () => addAnimationFrame(context.animation.id, context.frames, context.rerender) },
   });
-  return field("최대 수", el("span", { class: "db-animation-inline-control", children: [input, addFrame] }));
+  return field("프레임 수", el("span", { class: "db-animation-inline-control", children: [input, addFrame] }));
 }
 
 function sheetFields(animation: BattleAnimationRecord, sheet: BattleAnimationSheet): HTMLElement {
@@ -200,13 +218,13 @@ function frameListPanel(context: AnimationEditorContext): HTMLElement {
     text: "↑ 이전",
     attrs: { type: "button", ...disabledAttr(context.selectedFrameIndex <= 0) },
     dataset: { testid: "db-animation-frame-prev" },
-    on: { click: () => selectFrame(context.selectedFrameIndex - 1, context.rerender) },
+    on: { click: () => selectFrame(context.selectedFrameIndex - 1, context) },
   });
   const next = el("button", {
     text: "↓ 다음",
     attrs: { type: "button", ...disabledAttr(context.selectedFrameIndex >= context.frames.length - 1) },
     dataset: { testid: "db-animation-frame-next" },
-    on: { click: () => selectFrame(context.selectedFrameIndex + 1, context.rerender) },
+    on: { click: () => selectFrame(context.selectedFrameIndex + 1, context) },
   });
   const list = el("div", { class: "db-animation-frame-list", dataset: { testid: "db-animation-frame-list" } });
   context.frames.forEach((frame, index) => {
@@ -215,7 +233,7 @@ function frameListPanel(context: AnimationEditorContext): HTMLElement {
       text: `< ${index + 1}>`,
       attrs: { type: "button", title: `${frame.cells.length}개 셀` },
       dataset: { testid: `db-animation-frame-${index}` },
-      on: { click: () => selectFrame(index, context.rerender) },
+      on: { click: () => selectFrame(index, context) },
     });
     list.append(row);
   });
@@ -258,7 +276,7 @@ function cellTablePanel(context: AnimationEditorContext): HTMLElement {
   cells.forEach((cell, index) => {
     body?.append(cellEditableRow(context, cell, index));
   });
-  panel.append(table);
+  panel.append(renderAnimationCellCommands(context), table);
   panel.append(
     el("div", {
       class: "db-animation-cell-actions",
@@ -392,9 +410,10 @@ function timingTablePanel(context: AnimationEditorContext): HTMLElement {
 
 // 프레임 선택 — editorState에 저장하고 셀 인덱스 초기화한 뒤 폼을 다시 그린다.
 // 상태만 바꾸면 목록 .active / 셀 테이블이 이전 프레임에 남는다.
-function selectFrame(index: number, rerender: () => void): void {
+function selectFrame(index: number, context: AnimationEditorContext): void {
+  context.playback.playing = false;
   editorState.set({ selectedAnimationFrameIndex: Math.max(0, index), selectedAnimationCellIndex: 0 });
-  rerender();
+  context.rerender();
 }
 
 // 프레임 추가 — 마지막 프레임을 복제하거나 빈 프레임.

@@ -60,12 +60,12 @@ export interface ActorExperienceCurve {
   acceleration: number;
 }
 
-export interface ActorInitialEquipment {
-  weapon?: EquipmentId;
-  shield?: EquipmentId;
-  armor?: EquipmentId;
-  helmet?: EquipmentId;
-  accessory?: EquipmentId;
+/** Slot IDs reference the project catalog, including the five legacy built-ins. */
+export type ActorInitialEquipment = Partial<Record<string, EquipmentId>>;
+
+export interface EquipmentSlotRecord {
+  id: string;
+  label: string;
 }
 
 export interface ActorOptions {
@@ -349,7 +349,7 @@ export interface EquipmentRecord {
   name: string;
   imageResourceId?: string;
   iconResourceId?: string;
-  slot: "weapon" | "shield" | "armor" | "helmet" | "accessory";
+  slot: string;
   price: number;
   skillId?: SkillId;
   description: string;
@@ -891,6 +891,8 @@ export interface HomeDecorationTypeRecord {
 }
 
 export interface ProjectDatabaseRecords extends DatabaseRecords {
+  /** Optional additive catalog; built-in slots always remain available. */
+  equipmentSlots?: EquipmentSlotRecord[];
   elements?: DatabaseElementRecord[];
   terrains?: DatabaseTerrainRecord[];
   battleCommands?: DatabaseBattleCommandRecord[];

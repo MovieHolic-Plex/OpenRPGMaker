@@ -1,3 +1,4 @@
+import { isEquipmentSlotId } from "@/project/equipmentSlots";
 import { isEmoteKind } from "@/project/emotes";
 import { ProjectFormatError } from "./errors";
 import { commandKinds, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
@@ -484,13 +485,7 @@ function requireCutsceneControlMode(label: string, value: unknown): void {
 
 function requireEquipmentSlot(label: string, value: unknown): void {
   const slot = requireString(label, value);
-  if (
-    slot === "weapon" ||
-    slot === "shield" ||
-    slot === "armor" ||
-    slot === "helmet" ||
-    slot === "accessory"
-  ) return;
+  if (isEquipmentSlotId(slot)) return;
   throw new ProjectFormatError(`${label}가 잘못되었습니다.`);
 }
 
