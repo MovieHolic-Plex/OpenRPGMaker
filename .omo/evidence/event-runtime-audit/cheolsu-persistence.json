@@ -1,0 +1,9 @@
+{
+  "projectId": "rpg-zzu-cheolsu-memory-20260905-df12",
+  "saveKind": "saved",
+  "sha256": "32625f7b4d717e4f708e57b90861f1546ca1d1b43cd410badd2e86f6004ae2b8",
+  "reloaded": true,
+  "changedEvent": "memory_summer/summer_scene",
+  "reason": "Enable NPC route updates while waiting for the father to turn; restore dialogue defaults immediately after.",
+  "verifiedAt": "2026-09-05T09:55:27.836Z"
+}

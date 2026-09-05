@@ -6,6 +6,8 @@ import type { ActorParameterKey, M2CommandFields, Project } from "@/project/type
 import type { M2RuntimeState, PlaySessionLike, RuntimePictureState } from "@/project/sessionRuntimeTypes"
 import { executeModernCommand } from "./m2ModernRuntime";
 import { fieldBoolean, fieldNumber, fieldString } from "./m2RuntimeFields";
+import { terrainTagAt } from "@/project/terrainAt";
+import { runtimeEventViewsForMap, type RuntimeEventPositions } from "@/project/runtimeEventState";
 import { ensureM2Runtime } from "./m2RuntimeState";
 
 type M2RuntimeCommand = {
@@ -17,7 +19,7 @@ export function executeM2RuntimeCommand(
   session: PlaySessionLike,
   entry: M2CommandCatalogEntry,
   command: M2RuntimeCommand,
-  context: { readonly currentEventId?: string; readonly project?: Project } = {}
+  context: { readonly currentEventId?: string; readonly project?: Project; readonly eventPositions?: RuntimeEventPositions } = {}
 ): boolean {
   // 배틀 전용 명령(index 98~108)은 맵 인터프리터에서 실행할 수 없다.
   // false를 반환하면 commandCatalog.ts의 support 등급 기반 경고/스킵이 담당한다.
@@ -33,7 +35,7 @@ function executeByTitle(
   session: PlaySessionLike,
   entry: M2CommandCatalogEntry,
   command: M2RuntimeCommand,
-  context: { readonly currentEventId?: string; readonly project?: Project }
+  context: { readonly currentEventId?: string; readonly project?: Project; readonly eventPositions?: RuntimeEventPositions }
 ): void {
   const runtime = ensureM2Runtime(session);
   const fields = command.fields;
@@ -140,14 +142,30 @@ function executeByTitle(
     runtime.events["_swap"] = { mapId: "", x: 0, y: 0, value: `${eventA}<->${eventB}` };
     return;
   }
-  if (title === "Get Terrain ID") {
+  if (title === "Get Terrain ID" || title === "Get Event ID") {
     const variableId = fieldString(fields, "variableId", "");
-    session.variables[variableId] = 0;
-    return;
-  }
-  if (title === "Get Event ID") {
-    const variableId = fieldString(fields, "variableId", "");
-    session.variables[variableId] = 0;
+    if (!variableId) return;
+    const mapId = fieldString(fields, "mapId", session.currentMapId) || session.currentMapId;
+    const x = Math.trunc(fieldNumber(fields, "x", 0));
+    const y = Math.trunc(fieldNumber(fields, "y", 0));
+    const project = context.project;
+    const map = project?.maps[mapId];
+    let result = 0;
+    if (project && map && x >= 0 && y >= 0 && x < map.width && y < map.height) {
+      if (title === "Get Terrain ID") result = terrainTagAt(project, { mapId, x, y }, session.mapOverrides?.[mapId]?.lower[y * map.width + x]);
+      else {
+        const views = runtimeEventViewsForMap(project, map, session, context.eventPositions ?? {});
+        const found = views.find(v => (!v.event.pages?.length || v.page) && v.x === x && v.y === y);
+        if (found) {
+          // Numeric variables use stable, one-based authored event slots. Removed events do not renumber them.
+          const authored = Object.values(project.maps).flatMap(m => m.events);
+          const localIndex = map.events.findIndex(e => e.id === found.event.id);
+          result = localIndex >= 0 ? localIndex + 1 : map.events.length +
+            [...authored.filter(e => !map.events.some(local => local.id === e.id)).map(e => e.id), ...Object.keys(session.spawnedEvents ?? {})].indexOf(found.event.id) + 1;
+        }
+      }
+    }
+    session.variables[variableId] = result;
     return;
   }
   if (title === "Change Tileset") {

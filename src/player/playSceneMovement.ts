@@ -1,6 +1,7 @@
 import { advanceFurniturePush, beginFurniturePush, clearFurniturePush, furniturePushFrames } from './furniturePushAnimation';
 import { advancePursuitDoors, isPlayerHiding, pushObject, toggleHiding } from "./horrorRuntime";
 import { refreshRuntimeEntities } from "./playSceneMapRuntime";
+import { conditionWaitScenes } from "@/player/runtimeConditionWait";
 import { canMoveFootprint, inBounds } from "@/project/collision";
 // 경로 세팅은 잎 모듈에 있다(가벼운 소비자가 이 파일 전체를 끌어오지 않도록) — 기존
 // 임포트 경로를 깨지 않기 위해 여기서 다시 내보낸다.
@@ -107,8 +108,10 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
     if (!cutsceneInputLocked && input.skillPressed && !airborne) tryActionSkillCast(scene);
     scene.input_.resetEdges();
   }
-  if (canUpdateWaitingEvents(scene)) {
-    scene.updateAutonomousNPCs(deltaMs);
+  // Forced event routes must progress while the interpreter awaits completion.
+  // The NPC updater keeps unrelated autonomous routes paused during dialogue.
+  scene.updateAutonomousNPCs(deltaMs);
+  if (canUpdateWaitingEvents(scene) || conditionWaitScenes.has(scene)) {
     scene.updateParallelEvents(deltaMs);
   }
   scene.updateTimers(deltaMs);
@@ -142,8 +145,8 @@ function framesForDuration(durationMs: number): number {
   return Math.max(1, Math.round(durationMs / LOGIC_TICK_MS));
 }
 
-function stepFrames(scene: Pick<PlaySceneContext, "dashing" | "moveDurationMs">): number {
-  return framesForDuration(scene.moveDurationMs / (scene.dashing ? DASH_SPEED_FACTOR : 1));
+function stepFrames(scene: Pick<PlaySceneContext, "dashing" | "moveDurationMs" | "playerRoute">): number {
+  return framesForDuration((scene.playerRoute?.moveDurationMs ?? scene.moveDurationMs) / (scene.dashing ? DASH_SPEED_FACTOR : 1));
 }
 
 /**
@@ -352,6 +355,10 @@ function advancePlayerRoute(scene: PlaySceneContext): void {
     const command = route.moves[route.index];
     route.index += 1;
     if (command && applyPlayerRouteCommand(scene, command)) return; // 이동 시작 → 이번 프레임 종료
+    if (command?.kind === "move" && route.stopOnBlocked) {
+      scene.playerRoute = null;
+      return;
+    }
   }
 }
 

@@ -379,6 +379,8 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 - 빈 이벤트의 「회상 오프닝」 CTA(`memoryOpeningTemplate.ts`)는 별도 「컷신」 페이지를 만들지 않고 보고 있던 빈 페이지에 그 프리셋을 심는다.
 - 계약: `test/recollectionBeats.test.ts`, `test/eventEditorMemoryOpeningTemplate.test.ts`, `test/scriptCutsceneIntegration.test.ts`(장면 테스트로 스틸 표시 + 종료 후 입력 잠금 해제까지 검증).
 
+- 맵 기반 회상 예제 **「철수의 기억」** (2026-09-05): Supabase `rpg-zzu-cheolsu-memory-20260905-df12`. 현재 강변의 상자 조사 → 별도 여름 맵 자동 컷신 → 현재 귀환과 후일담. `memory_seen`/`memory_closed`로 완료 상태를 분리하고, 맵 전이는 각 이벤트의 마지막 명령으로 둔다. 재현 저작: `npx tsx scripts/build-cheolsu-memory.mts` (이 ID만 저장 후 재로드 대조). 출하 플레이어 검증: `node scripts/qa-cheolsu-memory.mjs`; 결과 `verify-shots/runtime-qa/cheolsu-keyboard-fixed/SUMMARY.md`. 후속 검토에서 NPC 방향 전환의 30초 정지를 발견했다. 해당 구간의 이벤트 이동 허용/복원 명령을 원격 프로젝트에 추가했고, 검증은 일반 키보드 입력과 침묵 시간 상한을 사용한다(`docs/reviews/2026-09-05-event-runtime-audit.md`). 대사창은 장면 중간에도 닫히므로 창 부재만으로 컷신 종료를 단정하지 않고, 대사 내용·진행 스위치·입력 복구를 함께 확인한다.
+
 ## Guided story arc facade
 
 `author_story_arc` is the deterministic high-level path for bounded tutorial objectives, executable choice branches, and an optional twist reveal. It compiles only to existing event text/choices/fork/setSwitch/setVariable commands plus quest graphs and story-flag metadata, reports the created identifiers, and rejects empty objectives or branch bodies. It is a structural authoring aid, not an automatic prose-quality or story-quality judge.

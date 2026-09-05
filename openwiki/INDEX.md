@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **47쪽 / 1527KB / 약 434,294 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **47쪽 / 1532KB / 약 435,880 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -18,7 +18,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-ai-panel.md` | 253KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 447 | ~73,670 |
 | `openwiki/editor-ai-tools.md` | 76KB | 66KB ⚠상한 초과 — 절을 더 쪼개라 | 191 | ~21,880 |
 | `openwiki/editor-database.md` | 191KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 919 | ~55,234 |
-| `openwiki/editor-event-authoring.md` | 117KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 562 | ~34,122 |
+| `openwiki/editor-event-authoring.md` | 118KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 564 | ~34,433 |
 | `openwiki/editor-pre-edit-routing.md` | 69KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 197 | ~19,760 |
 | `openwiki/runtime-battle.md` | 118KB | 31KB | 358 | ~33,888 |
 | `openwiki/runtime-project-schema.md` | 58KB | 42KB | 207 | ~15,542 |
@@ -55,7 +55,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-ai-panel.md` | 33 | `.omo/evidence/assistant-glass-fold/measure.json`, `.omo/evidence/autonomous-ai-rpg/task-8-autonomous-ai-rpg.md`, `15-assistant-readable.css`, `17-assistant-modern-shell.css`, `after/measure.json`, `aiCommandBar.ts`, `aiGlassPanelWidth.test.ts`, `aiSkillDrawer.ts`, `aiVolatileController.ts`, `assistant-skills.css`, `chat-dock-switch.spec.ts`, `chatDock.ts`, `intentClarify.ts`, `newmain-after-measure.json`, `output/evidence/assistant-ui-modern/newmain-before-measure.json`, `project.json`, `regionIntentRouter.ts`, `scripts/qa/assistant-side-seam-hittest.mjs`, `src/ai/intentClarify.ts`, `src/ai/plannerSkip.ts`, `src/ai/skills.ts`, `src/editor/chatDock.ts`, `test/aiGlassFold.test.ts`, `test/aiGlassPanelWidth.test.ts`, `test/chatDock.test.ts`, `test/e2e/_assistant-glass-shots.spec.ts`, `test/e2e/_glass-dock-report.spec.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/plannerSkip.test.ts`, `test/regionIntentExposure.test.ts`, `test/turnGuideSharedRules.test.ts`, `test/volumeContractSession.test.ts`, `test/workspaceBarAssistantDock.test.ts` |
 | `openwiki/editor-ai-tools.md` | 4 | `aiCommandBar.ts`, `aiProposalModal.ts`, `test/intentClarify.test.ts`, `test/volumeContractSession.test.ts` |
 | `openwiki/editor-database.md` | 7 | `enemy-art-NNN.png`, `form-hierarchy-modern.css`, `output/evidence/system-studio/system-studio-backed-settings-1586x992.png`, `reports/generated-effect-showcase-2026-08-24.html`, `scripts/generate-default-item-icons.mts`, `scripts/lib/effectSheet/paintersMonster.mjs`, `scripts/lib/effectSheet/paintersUtility.mjs` |
-| `openwiki/editor-event-authoring.md` | 5 | `audit-before.md`, `new-editor/REPORT.html`, `output/evidence/event-ai-assist-ux/960x900-compact.png`, `scripts/generated/toolCatalog.json`, `verify-shots/page-preview-probe/02-preview-open.png` |
+| `openwiki/editor-event-authoring.md` | 6 | `audit-before.md`, `new-editor/REPORT.html`, `output/evidence/event-ai-assist-ux/960x900-compact.png`, `scripts/generated/toolCatalog.json`, `verify-shots/page-preview-probe/02-preview-open.png`, `verify-shots/runtime-qa/cheolsu-keyboard-fixed/SUMMARY.md` |
 | `openwiki/editor-event-commands.md` | 7 | `07-identifiable-previews.css`, `choicesDialog.ts`, `command-preview.css`, `event-editor.part-2/3.css`, `messageCommandDialogs.ts`, `messageDialogControls.ts`, `textCommandDialog.ts` |
 | `openwiki/editor-pre-edit-routing.md` | 8 | `authoringTestGate.ts`, `dbConnectionAdvancedSettings.ts`, `figma-editor/10-map-tree.css`, `rm2k3.part-1.css`, `shell/editor-responsive-expert.css`, `src/editor/tools/worldTools.ts`, `surface.json`, `worldTools.ts` |
 | `openwiki/editor-validation.md` | 2 | `final-layout.json`, `viewport-matrix.json` |
@@ -295,7 +295,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L908` 구조물 증분 메타 정정 (2026-09-05)
 - `L916` 개념 회수 UI 직접 렌더 QA (2026-09-05)
 
-### `openwiki/editor-event-authoring.md` — 117KB · 562줄 · ~34,122 토큰 · 통째읽기 잘림 · 깨진 줄 16
+### `openwiki/editor-event-authoring.md` — 118KB · 564줄 · ~34,433 토큰 · 통째읽기 잘림 · 깨진 줄 16
 
 - `L3` 이벤트 편집기 가독성 — 읽는 글자와 꾸미는 글자 (2026-09-03 후속)
 - `L16` 이벤트 편집기 문법 고정 — P0 (2026-09-03)
@@ -311,21 +311,21 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L357` Condition / Loop / Variable command trust fixes (2026-08-07)
 - `L367` Event draft trust loop (2026-07-30)
 - `L375` 회상 오프닝 저작 — beat 컴파일러다 (2026-09-03)
-- `L382` Guided story arc facade
-- `L386` 지도·화면 효과 탭 초보자 UX (2026-08-27)
-- `L391` 은퇴한 명령(deprecated) 레지스트리 (2026-08-28)
-- `L399` Companion roster in the command picker (2026-08-27)
-- `L405` Presentation and system M2 command bodies
-- `L412` 좌측 설정 레일 그룹 소속 (2026-08-27)
-- `L430` 페이지 조건 극성(켜짐/꺼짐) 저작 (2026-08-27)
-- `L440` 「움직임과 속도」 부피 정리 (2026-08-29)
-- `L475` 조건은 평가기가 셋이다 — 판정 일치를 테스트로 고정한다 (2026-08-29)
-  - `L509` 함정: 부재 타이머는 0초로 읽혀 조건이 참이 된다
-  - `L520` 고급 조건 목록에서 극성을 벗기지 마라 (D08 재발 방지)
-  - `L528` 참조를 비워도 조건을 삭제하지 않는다
-  - `L535` 조건 미리보기는 모르면 모른다고 말한다
-  - `L544` 조건 문구에 내부 토큰을 넣지 마라
-- `L559` 공포 게임 제작 기능 (2026-09-05)
+- `L384` Guided story arc facade
+- `L388` 지도·화면 효과 탭 초보자 UX (2026-08-27)
+- `L393` 은퇴한 명령(deprecated) 레지스트리 (2026-08-28)
+- `L401` Companion roster in the command picker (2026-08-27)
+- `L407` Presentation and system M2 command bodies
+- `L414` 좌측 설정 레일 그룹 소속 (2026-08-27)
+- `L432` 페이지 조건 극성(켜짐/꺼짐) 저작 (2026-08-27)
+- `L442` 「움직임과 속도」 부피 정리 (2026-08-29)
+- `L477` 조건은 평가기가 셋이다 — 판정 일치를 테스트로 고정한다 (2026-08-29)
+  - `L511` 함정: 부재 타이머는 0초로 읽혀 조건이 참이 된다
+  - `L522` 고급 조건 목록에서 극성을 벗기지 마라 (D08 재발 방지)
+  - `L530` 참조를 비워도 조건을 삭제하지 않는다
+  - `L537` 조건 미리보기는 모르면 모른다고 말한다
+  - `L546` 조건 문구에 내부 토큰을 넣지 마라
+- `L561` 공포 게임 제작 기능 (2026-09-05)
 
 ### `openwiki/editor-event-command-fixes.md` — 13KB · 38줄 · ~3,273 토큰 · 깨진 줄 11
 
@@ -540,18 +540,19 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L229` 배틀러 idle 애니메이션 (2026-08-30)
 - `L355` 필드 아이템 상태 부여 복구 (2026-09-05)
 
-### `openwiki/runtime-m2-flow-controls.md` — 12KB · 44줄 · ~3,162 토큰
+### `openwiki/runtime-m2-flow-controls.md` — 15KB · 57줄 · ~4,105 토큰
 
 - `L5` M2 Runtime Flow Controls
 - `L35` Storage chest authoring
 - `L41` Page 3 location/vehicle compatibility (2026-07-30)
+- `L45` 저장된 M2 명령 실행 연결 복구 (2026-09-05)
 
-### `openwiki/runtime-pre-edit-routing.md` — 28KB · 169줄 · ~8,151 토큰
+### `openwiki/runtime-pre-edit-routing.md` — 29KB · 170줄 · ~8,483 토큰
 
-- `L141` Recovered head emotes (2026-09-05)
-- `L147` 메뉴 입력·불러오기 배율 (2026-09-05)
-- `L155` 가구 밀기 애니메이션 (2026-09-05)
-- `L164` Recovered head emotes (2026-09-05)
+- `L142` Recovered head emotes (2026-09-05)
+- `L148` 메뉴 입력·불러오기 배율 (2026-09-05)
+- `L156` 가구 밀기 애니메이션 (2026-09-05)
+- `L165` Recovered head emotes (2026-09-05)
 
 ### `openwiki/runtime-project-schema.md` — 58KB · 207줄 · ~15,542 토큰 · 통째읽기 잘림
 

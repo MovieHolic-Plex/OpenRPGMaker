@@ -1,3 +1,4 @@
+import { openEventMenu } from "@/player/playerEventMenus";
 import type Phaser from "phaser";
 import { startPlayGame, destroyGame } from "@/app/mode";
 import { store } from "@/project/store";
@@ -403,11 +404,18 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       game.registry.set("dialogue", dialogue);
       game.registry.set("dialogueHost", playStage);
       game.registry.set("returnToTitle", () => renderTitle());
-      game.registry.set("openSaveMenu", () => {
-        // 타자기 세이브: 이벤트가 세이브 화면을 연다. 전역 메뉴 세이브 비활성과 조합해 세이브 포인트 전용 설계가 가능하다.
+      game.registry.set("openSaveMenu", () => openEventMenu(layout, () => {
         statusMenu.reset();
         statusMenu.renderMenu(undefined, "save");
-      });
+      }));
+      game.registry.set("openMenuScreen", () => openEventMenu(layout, () => {
+        statusMenu.reset();
+        statusMenu.renderMenu();
+      }));
+      game.registry.set("openLoadMenu", () => openEventMenu(layout, () => {
+        statusMenu.reset();
+        renderLoad(false);
+      }));
       // create() 가 이미 끝났을 수도 있으므로 ready 콜백 + 폴링으로 모두 커버.
       const ready = await waitForPlaySceneReady(nextGame, () => startRun === run, readyPromise);
       if (run !== startRun) {
@@ -681,7 +689,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       event.preventDefault();
       return;
     }
-    if (cutsceneLocked) {
+    if (cutsceneLocked && !layout.querySelector("[data-testid='main-menu']")) {
       if (isCancelKey(key)) event.preventDefault();
       return;
     }

@@ -534,6 +534,9 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
 
   applySession(session: PlaySession): void {
     this.session = structuredClone(session);
+    // Loading replaces the old event run; its pending menu must not own the new session.
+    this.running = false;
+    this.setInputEnabled(true);
     const project = store.getCurrent();
     this.playerSprite = resolvePlayerSpriteResource(project, this.session);
     this.loadMap(this.session.currentMapId, { preserveErasedEvents: true, applyDefaultLighting: false, applyMapBgm: false });
