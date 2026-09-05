@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **47쪽 / 1523KB / 약 433,297 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **47쪽 / 1525KB / 약 433,926 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -22,7 +22,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-pre-edit-routing.md` | 69KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 197 | ~19,760 |
 | `openwiki/runtime-battle.md` | 118KB | 31KB | 358 | ~33,888 |
 | `openwiki/runtime-project-schema.md` | 58KB | 42KB | 207 | ~15,542 |
-| `openwiki/runtime-sessions.md` | 59KB | 45KB | 161 | ~15,843 |
+| `openwiki/runtime-sessions.md` | 60KB | 45KB | 165 | ~16,037 |
 | `openwiki/testing.md` | 106KB | 45KB | 707 | ~30,073 |
 
 ## 한국어 산문이 깨진 페이지
@@ -69,7 +69,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/runtime-project-schema.md` | 2 | `.json`, `project.json` |
 | `openwiki/runtime-sessions.md` | 1 | `output/evidence/stardew/stardew-supabase.json` |
 | `openwiki/se-catalog.md` | 8 | `.mjs`, `audio-features.json`, `audition.html`, `cross-check.json`, `dist/se-staging/audition.html`, `inventory.json`, `labels.json`, `placed.json` |
-| `openwiki/testing.md` | 9 | `../dialogue.css`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
+| `openwiki/testing.md` | 7 | `../dialogue.css`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts` |
 | `openwiki/town-tile-benchmark.md` | 1 | `combined-town-chipset-report.html` |
 | `openwiki/village-design.md` | 1 | `output/village-direction/index.html` |
 
@@ -546,11 +546,11 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L35` Storage chest authoring
 - `L41` Page 3 location/vehicle compatibility (2026-07-30)
 
-### `openwiki/runtime-pre-edit-routing.md` — 26KB · 152줄 · ~7,473 토큰
+### `openwiki/runtime-pre-edit-routing.md` — 27KB · 163줄 · ~7,908 토큰
 
-- `L130` Recovered head emotes (2026-09-05)
-- `L136` 메뉴 입력·불러오기 배율 (2026-09-05)
-- `L144` 가구 밀기 애니메이션 (2026-09-05)
+- `L141` Recovered head emotes (2026-09-05)
+- `L147` 메뉴 입력·불러오기 배율 (2026-09-05)
+- `L155` 가구 밀기 애니메이션 (2026-09-05)
 
 ### `openwiki/runtime-project-schema.md` — 58KB · 207줄 · ~15,542 토큰 · 통째읽기 잘림
 
@@ -569,7 +569,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L198` 마을 설계서 (2026-09-05)
 - `L204` 공포 게임 제작 기능 (2026-09-05)
 
-### `openwiki/runtime-sessions.md` — 59KB · 161줄 · ~15,843 토큰 · 통째읽기 잘림
+### `openwiki/runtime-sessions.md` — 60KB · 165줄 · ~16,037 토큰 · 통째읽기 잘림
 
 - `L1` Esc 메뉴 작업 프레임 (2026-09-05)
 - `L31` 아이템 종류 전환과 실행 효과 (2026-09-05)
@@ -581,6 +581,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L144` Selected-event runtime sandbox (2026-07-30)
 - `L150` P2 spatial runtime and saves (2026-08-25)
 - `L158` 공포 게임 제작 기능 (2026-09-05)
+  - `L162` 메뉴 PR 통합 검증 (2026-09-05)
 
 ### `openwiki/se-catalog.md` — 13KB · 228줄 · ~3,423 토큰
 

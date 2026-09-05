@@ -158,3 +158,7 @@ Session state, save slots, farming, friendship, calendar, lighting, weather, fie
 ## 공포 게임 제작 기능 (2026-09-05)
 
 선택적 `session.horror`와 `eventLocations`로 추격·가구·은신 상태를 세이브에 보존한다. 데이터·런타임·저작·검증 계약은 [horror-authoring.md](horror-authoring.md) 참조.
+
+### 메뉴 PR 통합 검증 (2026-09-05)
+
+Esc 메뉴의 대상 유지·회복량 미리보기와 메뉴 입력 회귀 수정을 함께 적용한다. 대상 버튼의 사용 가능 여부는 `canUseMenuItemOnActor`를 따르고, 스위치 아이템은 남은 ally scope와 무관하게 바로 사용한다. 메뉴를 다시 열 때는 표시되는 레일 명령과 내부 명령을 동기화한다. `status-menu-adversarial.spec.ts`는 사용 뒤 유지되는 대상 화면에서 HP·잔량을 확인한 후 취소로 목록에 돌아오며, OS 키 반복 차단과 효과의 저장→로드→재저장을 계속 검사한다.

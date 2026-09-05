@@ -115,12 +115,13 @@ test("held confirm/cancel cannot consume items, reopen a menu or bypass title co
   await page.keyboard.up("z");
   await expect(page.getByTestId("status-menu-item-item_potion")).toContainText("5개");
   await expect(page.getByTestId("status-menu-item-target-actor_hero")).toHaveCount(0);
-  await expect(page.getByTestId("status-menu-party-row-0")).toContainText("100/514");
-
   await page.keyboard.press("z");
+  await expect(page.getByTestId("status-menu-item-target-actor_hero")).toContainText("100/514");
   await page.keyboard.press("z");
+  await expect(page.getByTestId("status-menu-item-target-actor_hero")).toContainText("150/514");
+  await expect(page.locator(".status-menu-detail-title")).toContainText("4개");
+  await page.keyboard.press("x");
   await expect(page.getByTestId("status-menu-item-item_potion")).toContainText("4개");
-  await expect(page.getByTestId("status-menu-party-row-0")).toContainText("150/514");
   await shot(page, "01-one-deliberate-use");
   await page.keyboard.press("x");
   await page.keyboard.down("x");
@@ -150,11 +151,17 @@ test("state items, seeds and switches work through the menu and survive save/loa
   await expect(page.getByTestId("status-menu-item-target-actor_hero")).toHaveJSProperty("tagName", "BUTTON");
   await expect(page.getByTestId("status-menu-item-target-actor_hero")).toBeEnabled();
   await page.keyboard.press("z");
+  await expect(page.getByTestId("status-menu-item-target-actor_hero")).toBeVisible();
+  await expect(page.locator(".status-menu-detail-title")).toContainText("1개");
+  await page.keyboard.press("x");
   await expect(page.getByTestId("status-menu-item-qa_buff")).toContainText("1개");
   await choose(page, "status-menu-item-qa_seed");
   await expect(page.getByTestId("status-menu-item-target-actor_hero")).toHaveJSProperty("tagName", "BUTTON");
   await expect(page.getByTestId("status-menu-item-target-actor_hero")).toBeEnabled();
   await page.keyboard.press("z");
+  await expect(page.getByTestId("status-menu-item-target-actor_hero")).toBeVisible();
+  await expect(page.locator(".status-menu-detail-title")).toContainText("1개");
+  await page.keyboard.press("x");
   await expect(page.getByTestId("status-menu-item-qa_seed")).toContainText("1개");
   await choose(page, "status-menu-item-qa_device");
   await expect(page.getByTestId("status-menu-item-target-actor_hero")).toHaveCount(0);
