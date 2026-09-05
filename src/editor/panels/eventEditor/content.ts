@@ -34,6 +34,7 @@ import { renderEventScheduleEditor } from "./eventScheduleEditor";
 import { openEventCommandEditDialog, openNewEventCommandDialog } from "./commandEditDialog";
 import { applyMemoryOpeningTemplate } from "./memoryOpeningTemplate";
 import { renderCommandList } from "./commandList";
+import { handleCommandShortcut, openCommandContextMenu } from "./commandListContextMenu";
 import {
   beginEventViewSession,
   currentCommandQuery,
@@ -47,7 +48,12 @@ import {
 import { newCommand } from "@/editor/eventActions";
 import {
   resetCommandInspectorView,
+  beginCommandSelectionScope,
+  isCommandSelected,
+  notifyCommandSelectionChanged,
+  setCommandSelectionSurface,
   selectedCommandPath,
+  selectedCommandPaths,
   setCommandInspectorHost,
   setCommandSelectionListener,
   showCommandInspector,
@@ -70,6 +76,25 @@ import { openFieldMonsterTemplateDialog } from "./fieldMonsterTemplateDialog";
 import { renderFollowerPresetBar } from "./followerPresetPicker";
 import { resolveCommandAtPath, resolveCommandListAtPath } from "@/editor/eventCommandPaths";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
+
+type CommandNavigation = {
+  readonly key: string;
+  readonly root: HTMLElement;
+  readonly navigate: (path: readonly number[]) => boolean;
+};
+let commandNavigation: CommandNavigation | undefined;
+
+/** Validation/search callers use this instead of painting a positional CSS selection. */
+export function navigateToEventCommand(
+  mapId: MapId, eventId: string, pageId: string, commandPath: readonly number[],
+): boolean {
+  if (!resolveCommandAtPath(activePageCommands(mapId, eventId, pageId), commandPath)) return false;
+  editorState.set({ selectedEventPageId: pageId });
+  if (commandNavigation?.key !== `${mapId}:${eventId}:${pageId}` || !commandNavigation.root.isConnected) return false;
+  return commandNavigation.navigate(commandPath);
+}
+
+export function clearEventCommandNavigation(): void { commandNavigation = undefined; }
 
 export function renderEventEditorContent(container: HTMLElement, mapId: MapId, eventId: string): void {
   renderEventEditorDynamic(container, mapId, eventId);
@@ -134,11 +159,9 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   const evForRender = { ...ev, pages };
   const validation = validateEventDraftBody(store.getCurrent(), mapId, evForRender);
   const activePageIssues = eventDraftIssuesForPage(validation, activePage.id);
-  const commandHistory = createCommandToolbarHistory({
-    key: `${mapId}:${ev.id}:${activePage.id}`,
-    readCommands: () => activePageCommands(mapId, ev.id, activePage.id),
-    replaceCommands: (commands) => replaceEventPageCommands(mapId, ev.id, activePage.id, commands),
-  });
+  const selectionKey = `${mapId}:${ev.id}:${activePage.id}`;
+  beginCommandSelectionScope(selectionKey);
+  const commandHistory = pageCommandHistory(mapId, ev.id, activePage.id);
   const actions = commandHistory.wrapActions(pageCommandActions(mapId, ev.id, activePage.id));
   const settingsColumn = el("div", { class: "event-editor-settings-column" });
   const commandsColumn = el("div", { class: "event-editor-commands-column" });
@@ -170,6 +193,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   const storyboardMode = currentStoryboardMode();
   const cmdList = el("div", { class: "cmd-list" });
   renderCommandList(cmdList, activePage.commands, [], actions, {
+    selectionScope: selectionKey,
     issues: activePageIssues,
     runtimeSupport: (command) => commandRuntimeSupport(command, "map"),
     pickerContext: "map",
@@ -200,13 +224,14 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     dataset: { testid: "event-page-flow-host" },
   });
   let currentMode: StoryboardMode = storyboardMode;
+  let revealAuthoredCommand = false;
   // 스토리 보기의 선택도 목록과 **같은** 인스펙터를 채운다. 예전에는 카드 한 번 클릭이
   // 곧바로 편집 모달을 열어서, 기본 보기인 스토리에서는 오른쪽 「선택한 명령」 칼럼이
   // 영원히 비어 있고 툴바의 이동/복사가 대상을 찾지 못했다.
-  const selectStoryboardCommand = (path: number[]): void => {
+  const selectStoryboardCommand = (path: number[], preserveSelection = false): void => {
     const cmd = resolveCommandAtPath(activePage.commands, path);
     if (!cmd) return;
-    showCommandInspector({ command: cmd, path, actions });
+    showCommandInspector({ command: cmd, path, actions, preserveSelection });
   };
   const openStoryboardEditor = (path: number[]): void => {
     const cmd = resolveCommandAtPath(activePage.commands, path);
@@ -217,6 +242,27 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       onApply: (edited) => actions.replaceCommand(path, edited),
     });
   };
+  const storyboardRequest = (target: EventTarget | null) => {
+    if (!(target instanceof HTMLElement) || target.closest("input, textarea, select, [contenteditable='true'], button")) return null;
+    const item = target.closest<HTMLElement>("[data-cmd-path]");
+    const path = parseCommandPath(item?.dataset.cmdPath);
+    const command = path ? resolveCommandAtPath(activePage.commands, path) : null;
+    if (!item || !path || !command) return null;
+    if (!isCommandSelected(path)) selectStoryboardCommand(path);
+    return { x: 0, y: 0, item, command, path, actions, commands: activePage.commands, pickerContext: "map" as const,
+      openEditor: () => openStoryboardEditor(path) };
+  };
+  storyboardHost.addEventListener("keydown", event => {
+    if (event.defaultPrevented) return;
+    const request = storyboardRequest(event.target);
+    if (request) handleCommandShortcut(event, request);
+  });
+  storyboardHost.addEventListener("contextmenu", event => {
+    const request = storyboardRequest(event.target);
+    if (!request) return;
+    event.preventDefault();
+    openCommandContextMenu({ ...request, x: event.clientX, y: event.clientY });
+  });
   const makeStoryboard = () =>
     renderStoryboard(activePage.commands, {
       onSelect: selectStoryboardCommand,
@@ -233,6 +279,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     });
   let storyboardEl = makeStoryboard();
   const changeMode = (next: StoryboardMode): void => {
+    revealAuthoredCommand = false;
     currentMode = next;
     setStoryboardMode(next);
     applyViewMode();
@@ -263,7 +310,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     // 나와야 하므로 DOM 이 아니라 aiAssist 의 모듈 상태를 읽는다. 기본 보기(스토리)에서
     // 초안 자리가 `hidden` 이면 「위 목록에 표시했어요」라고 말하면서 아무것도 보이지 않는다.
     // flow 보기(main 이 추가)도 같은 규칙을 따른다 — 초안이 있으면 초안이 자리를 쓴다.
-    const isStaged = hasEventAiStagedDraft(mapId, eventId, activePage.id);
+    const isStaged = !revealAuthoredCommand && hasEventAiStagedDraft(mapId, eventId, activePage.id);
     const isPreview = currentMode === "preview" && !isStaged;
     const isStoryboard = currentMode === "storyboard" && !isStaged;
     const isFlow = currentMode === "flow" && !isStaged;
@@ -284,7 +331,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       storyboardEl.hidden = false;
       // 재렌더/보기 전환 뒤에도 선택한 명령이 인스펙터에 남아 있어야 한다.
       const restored = selectedCommandPath();
-      if (restored) selectStoryboardCommand([...restored]);
+      if (restored) selectStoryboardCommand([...restored], true);
     } else {
       storyboardEl.replaceChildren();
     }
@@ -410,6 +457,31 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     workbench,
   );
   container.append(section);
+  setCommandSelectionSurface(section);
+  notifyCommandSelectionChanged();
+  commandNavigation = {
+    key: selectionKey,
+    root: section,
+    navigate: path => {
+      const command = resolveCommandAtPath(activePage.commands, path);
+      if (!command) return false;
+      revealAuthoredCommand = true;
+      currentMode = "list";
+      setStoryboardMode("list");
+      setCommandQuery("");
+      const search = section.querySelector<HTMLInputElement>('[data-testid="event-command-search"]');
+      if (search) search.value = "";
+      applyViewMode();
+      showCommandInspector({ command, path: [...path], actions });
+      const row = Array.from(cmdList.querySelectorAll<HTMLElement>(".cmd-item"))
+        .find(item => item.dataset.cmdPath === JSON.stringify(path));
+      const target = row?.querySelector<HTMLElement>(".cmd-head");
+      if (!target) return false;
+      target.focus({ preventScroll: true });
+      target.scrollIntoView?.({ block: "center", inline: "nearest" });
+      return true;
+    },
+  };
 }
 
 function columnLabel(
@@ -607,10 +679,12 @@ function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
     const bounds = moveBounds(path);
     const command = resolveCommandAtPath(page.commands, path);
     const humanIndex = (path[path.length - 1] ?? 0) + 1;
-    editTarget.textContent = `${humanIndex}번째 ${command ? commandKindLabel(command.kind) : "명령"}에 적용됩니다.`;
+    const multiple = selectedCommandPaths().length > 1;
+    editTarget.textContent = multiple ? `고른 명령 ${selectedCommandPaths().length}개에 적용됩니다.`
+      : `${humanIndex}번째 ${command ? commandKindLabel(command.kind) : "명령"}에 적용됩니다.`;
     editTarget.dataset.state = "selected";
-    setDisabled(moveUp, !bounds.canUp);
-    setDisabled(moveDown, !bounds.canDown);
+    setDisabled(moveUp, multiple || !bounds.canUp);
+    setDisabled(moveDown, multiple || !bounds.canDown);
     setDisabled(copyButton, false);
     setDisabled(cutButton, false);
   };
@@ -636,7 +710,7 @@ function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
   // 팝오버가 열릴 때마다 상태를 다시 계산한다 — 버튼이 보이는 순간이 곧 이 시점이다.
   editTools.addEventListener("toggle", () => { if (editTools.open) syncEditTools(); });
   makePopoverEscapable(editTools);
-  const toolsMenu = renderEventToolsMenu(mapId, eventId, page);
+  const toolsMenu = renderEventToolsMenu(mapId, eventId, page, actions);
   makePopoverEscapable(toolsMenu);
 
   const searchCount = el("span", {
@@ -711,6 +785,10 @@ function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
   return {
     element,
     sync: () => {
+      const undo = element.querySelector<HTMLButtonElement>('[data-testid="event-command-toolbar-undo"]');
+      const redo = element.querySelector<HTMLButtonElement>('[data-testid="event-command-toolbar-redo"]');
+      if (undo) setDisabled(undo, !commandHistory.canUndo());
+      if (redo) setDisabled(redo, !commandHistory.canRedo());
       applySearch();
       syncEditTools();
     },
@@ -744,7 +822,8 @@ function renderCommandAuxGroup(aiDock?: HTMLDetailsElement): HTMLElement {
 function renderEventToolsMenu(
   mapId: MapId,
   eventId: string,
-  page: EventPage
+  page: EventPage,
+  actions: CommandListActions,
 ): HTMLDetailsElement {
   // 플로우차트는 여기 없다 — 보기 방식 세그먼트의 「플로우」가 칼럼 전체를 쓴다.
   const auxTools = el("div", {
@@ -752,9 +831,7 @@ function renderEventToolsMenu(
     children: [
       renderFollowerPresetBar({
         insertCommandsAt: (index, commands) => {
-          for (let i = 0; i < commands.length; i += 1) {
-            insertEventPageCommandAt(mapId, eventId, page.id, [index + i], commands[i]!);
-          }
+          actions.insertCommands?.([index], commands);
         },
         commandCount: () => page.commands.length,
       }),
@@ -825,6 +902,22 @@ function pageCommandActions(mapId: MapId, eventId: string, pageId: string): Comm
     moveCommandAcross: (sourcePath, targetContainerPath, toIndex) =>
       moveEventPageCommandAcross(mapId, eventId, pageId, sourcePath, targetContainerPath, toIndex),
   };
+}
+
+function pageCommandHistory(mapId: MapId, eventId: string, pageId: string): CommandToolbarHistory {
+  return createCommandToolbarHistory({
+    key: `${mapId}:${eventId}:${pageId}`,
+    readCommands: () => activePageCommands(mapId, eventId, pageId),
+    replaceCommands: commands => replaceEventPageCommands(mapId, eventId, pageId, commands),
+  });
+}
+
+export function undoActiveEventCommands(mapId: MapId, eventId: string, redo = false): void {
+  const pageId = activePageIdOf(mapId, eventId);
+  if (!pageId) return;
+  const history = pageCommandHistory(mapId, eventId, pageId);
+  if (redo) history.redo();
+  else history.undo();
 }
 
 function activePageCommands(mapId: MapId, eventId: string, pageId: string): Command[] {
@@ -910,7 +1003,7 @@ function renderEmptyCommandLine(
           on: {
             click: () => {
               if (template.memoryOpening) {
-                applyMemoryOpeningTemplate(mapId, eventId, pageId);
+                applyMemoryOpeningTemplate(mapId, eventId, pageCommandHistory(mapId, eventId, pageId).replaceAll);
                 return;
               }
               if (!template.templateId) {
