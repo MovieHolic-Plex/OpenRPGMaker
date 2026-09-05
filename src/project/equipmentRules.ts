@@ -1,5 +1,7 @@
 import type { ActorInitialEquipment, ActorRecord, EquipmentRecord, Project } from "@/project/types";
 
+import { equipmentSlots, hasEquipmentSlot } from "@/project/equipmentSlots";
+
 export type EquipmentSlot = keyof ActorInitialEquipment;
 
 export type EquipmentTransitionFailureReason =
@@ -32,8 +34,6 @@ export interface EquipmentTransitionInput {
   readonly equipmentId?: string;
 }
 
-const EQUIPMENT_SLOTS = ["weapon", "shield", "armor", "helmet", "accessory"] as const satisfies readonly EquipmentSlot[];
-
 export function canEquip(project: Project, actor: ActorRecord, equipment: EquipmentRecord, classId = actor.classId): boolean {
   const classRecord = project.database.classes.find((record) => record.id === classId);
   return (
@@ -52,6 +52,8 @@ export function equipmentSlotAccepts(
   equipment: EquipmentRecord,
   classId = actor.classId
 ): boolean {
+  if (!hasEquipmentSlot(project, slot) || !hasEquipmentSlot(project, equipment.slot)) return false;
+  if (equipment.twoHanded && equipment.slot !== "weapon") return false;
   if (equipment.slot === slot) return true;
   const classDualWield = project.database.classes.find((record) => record.id === classId)?.options.dualWield === true;
   return slot === "shield" && equipment.slot === "weapon" && !equipment.twoHanded
@@ -73,7 +75,7 @@ export function effectiveActorEquipment(
   const source = equipment ?? actor.initialEquipment;
   const effective: ActorInitialEquipment = {};
 
-  for (const slot of EQUIPMENT_SLOTS) {
+  for (const { id: slot } of equipmentSlots(project)) {
     const id = source[slot];
     const record = id ? records.get(id) : undefined;
     if (!record) continue;
@@ -104,6 +106,7 @@ export function logicalEquipmentIds(project: Project, equipment: ActorInitialEqu
 /** Pure, atomic equip/replace/unequip authority. Rejected transitions return no partial state. */
 export function transitionActorEquipment(input: EquipmentTransitionInput): EquipmentTransitionResult {
   const { project } = input;
+  if (!hasEquipmentSlot(project, input.slot)) return rejected("invalidSlot");
   const actor = project.database.actors.find((record) => record.id === input.actorId);
   if (!actor) return rejected("missingActor");
 
@@ -218,7 +221,7 @@ function strictActorEquipment(
   const records = equipmentRecords(project);
   const source = equipment ?? actor.initialEquipment;
   const current: ActorInitialEquipment = {};
-  for (const slot of EQUIPMENT_SLOTS) {
+  for (const { id: slot } of equipmentSlots(project)) {
     const id = source[slot];
     const record = id ? records.get(id) : undefined;
     if (!record) continue;

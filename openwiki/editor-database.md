@@ -1,5 +1,11 @@
 # Editor Database
 
+## Custom equipment slot authoring (2026-09-05)
+
+The equipment header's native select consumes `equipmentSlots(project)` from `src/project/equipmentSlots.ts`, not a fixed five-slot list. Its inline `equipmentSlotManager` disclosure (`db-equipment-slot-manager`) lives in the scrolling body, not the fixed header. It adds and immediately selects a real generated-ID slot, renames labels without changing IDs, and disables removal with an explanation while referenced. Catalog mutators are `addEquipmentSlot(project, label)`, `renameEquipmentSlot(project, id, label)`, `equipmentSlotRemovalBlocker(project, id)`, and `removeEquipmentSlot(project, id)`; call them inside a labelled `store.update`, preceded by `recordProjectSnapshot` so each operation is atomic and undoable (`test/equipmentSlotHistory.test.ts`). Read labels with `equipmentSlotLabel(project, id)`. Stored shape and save compatibility are documented in `runtime-project-schema.md`.
+
+Actor initial-equipment pickers, build previews, equipment gallery/filter labels, change-equipment event authoring/previews, and the runtime menu enumerate the same catalog. Adding boots is not an accessory label alias. Built-in hand IDs retain their engine meaning even when renamed; selecting a non-weapon slot clears the incompatible two-handed flag. Existing art, effects, skills, and permission fields are otherwise preserved. Tests: `test/customEquipmentSlots.test.ts`, `test/playerEquipmentRules.test.ts`, `test/databaseEquipmentInspector.test.ts`.
+
 ## 아이템·장비 저작 신뢰성 (2026-09-05)
 
 - `src/project/itemUsage.ts`의 `activeItemEffects`가 저장값에서 현재 종류의 실행 효과를 투영한다. 종류 변경은 이전 값을 보관하며, 메뉴·전투·편집기 효과 요약은 이 투영을 사용한다. 책→약 변경 뒤 숨은 스킬 습득, 성장 보정·회복의 다른 종류 누출을 금지한다. `stateEffects`는 약 또는 발동 스킬 없는 특수 아이템에서 지원한다. 기본 상태 부여 특수 아이템과 최신 main의 필드 상태 부여·행 편집기·전투 연출·돌봄 편집을 유지한다. 돌봄은 특수 종류에서 켜며, 설정 시 필드 사용으로 전환한다.

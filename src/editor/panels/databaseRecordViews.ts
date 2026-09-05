@@ -1,3 +1,4 @@
+import { equipmentSlots, equipmentSlotLabel, hasEquipmentSlot } from "@/project/equipmentSlots";
 import { el } from "@/util/dom";
 import { matchesNameOrId, textField } from "@/editor/panels/databaseControls";
 import { createVirtualList } from "@/editor/panels/databaseListVirtualizer";
@@ -84,14 +85,6 @@ const ITEM_TYPE_CHIP_LABELS: Record<(typeof ITEM_TYPES)[number], string> = {
   special: "특수",
   switch: "장치 작동",
 };
-
-const EQUIPMENT_SLOT_CHIPS: readonly { readonly slot: EquipmentRecord["slot"]; readonly label: string }[] = [
-  { slot: "weapon", label: "무기" },
-  { slot: "shield", label: "방패" },
-  { slot: "helmet", label: "머리" },
-  { slot: "armor", label: "몸" },
-  { slot: "accessory", label: "장신구" },
-];
 
 export function renderRecordTab(host: HTMLElement, collection: DatabaseCollection, rerender: () => void): void {
   const records = store.getCurrent().database[collection];
@@ -658,7 +651,7 @@ function recordCategoryLabel(
     return ITEM_TYPE_CHIP_LABELS[(record as ItemRecord).type] ?? null;
   }
   if (collection === "equipment") {
-    return EQUIPMENT_SLOT_CHIPS.find((entry) => entry.slot === (record as EquipmentRecord).slot)?.label ?? null;
+    return equipmentSlotLabel(store.getCurrent(), (record as EquipmentRecord).slot);
   }
   return null;
 }
@@ -708,7 +701,7 @@ function categoryFilterChips(collection: DatabaseCollection, rerender: () => voi
   });
   const row = el("div", { class: "db-filter-chips", attrs: { role: "group", "aria-label": "카테고리 필터" } });
   if (collection === "equipment") {
-    row.append(chipCluster("", [allChip, ...EQUIPMENT_SLOT_CHIPS.map(({ slot, label }) => chipFor(slot, label))]));
+    row.append(chipCluster("", [allChip, ...equipmentSlots(store.getCurrent()).map(({ id, label }) => chipFor(id, label))]));
     return row;
   }
   // 캡션은 **자기 묶음 위 줄**에 둔다. 캡션을 칩과 같은 줄에 흘려보내면 줄바꿈 위치에 따라
@@ -762,7 +755,7 @@ function effectiveCategoryFilter(collection: DatabaseCollection): string {
   const stored = categoryFilterForCollection(collection);
   if (stored === "all") return "all";
   if (collection === "items") return ITEM_TYPES.includes(stored as (typeof ITEM_TYPES)[number]) ? stored : "all";
-  if (collection === "equipment") return EQUIPMENT_SLOT_CHIPS.some((chip) => chip.slot === stored) ? stored : "all";
+  if (collection === "equipment") return hasEquipmentSlot(store.getCurrent(), stored) ? stored : "all";
   return "all";
 }
 

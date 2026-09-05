@@ -4,6 +4,15 @@
 
 ## 1. Atmosphere & Identity
 
+### Equipment slot management
+
+Equipment uses a native labelled slot select so project-defined slots do not expand the fixed
+inspector header. The add/rename/remove disclosure lives in the scrolling inspector body, above
+the equipment cards. It uses existing Database Studio surface, border and text tokens, 12px
+control text, 8px corners and 12px internal spacing. Management rows keep the name and action
+together; the reason for a disabled delete spans the row. Built-in and referenced slots expose
+that reason as visible text. Each committed catalog operation is one undoable project edit.
+
 RPG ZZU is a compact game-making workbench. The user directs an agent named **감독**; the pixel map is the stage; the chrome is a warm cream tool shell. Korean-first labels. The signature is a faceset plate (name + presence + a one-line brief of map/layer/selection) plus an `@>` command log that defaults to a **float** over the canvas, a map/tile/event tool sidebar docked as the left column, and a recessed cream canvas well as the stage. The empty start surface is the map briefing (`지금 이 맵`) plus at most three next-move rows. Composer modes are **지시 / 질문 / 계획**. The left drawer uses a tab strip that reweights `left-map-root` / `left-palette-root` without hiding those testids. There is no theme toggle.
 
 The system is a Vite + TypeScript + Phaser browser app: DOM panels and controls wrap Phaser-rendered edit/play surfaces. No framework, no CSS-in-JS. General chrome styles live in `src/styles.css`; Database tileset chrome is split into `src/styles.databaseTilesets.css` and `src/styles.databaseTilesetsTerrain.css` so the large tileset editor stays readable and under the module-size ceiling.
