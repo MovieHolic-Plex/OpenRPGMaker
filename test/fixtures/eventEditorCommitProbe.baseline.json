@@ -803,5 +803,15 @@
   "probeCount": 6,
   "commitCount": 6,
   "noCommitCount": 0
+ },
+ "showEmote": {
+  "probes": {
+   "show-emote-target-kind-select": "replaceCommand {\"durationMs\":1200,\"emote\":\"heart\",\"kind\":\"showEmote\",\"target\":{\"eventId\":\"\"}}",
+   "show-emote-event-id-input": "replaceCommand {\"durationMs\":1200,\"emote\":\"heart\",\"kind\":\"showEmote\",\"target\":{\"eventId\":\"\"}}",
+   "show-emote-duration-input": "replaceCommand {\"durationMs\":7493,\"emote\":\"heart\",\"kind\":\"showEmote\",\"target\":{\"eventId\":\"\"}}"
+  },
+  "probeCount": 3,
+  "commitCount": 3,
+  "noCommitCount": 0
  }
 }

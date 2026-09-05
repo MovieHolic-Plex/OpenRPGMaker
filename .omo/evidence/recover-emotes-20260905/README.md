@@ -12,3 +12,7 @@ Recovered native showEmote authoring, serialization and runtime lifecycle, with 
 Editor artifacts: `verify-shots/emote-editor/`. Runtime artifacts: `verify-shots/runtime-qa/emote/` (generated/ignored; reproduced by the command above).
 
 Broader historical contract run: 254 passed, 6 failed in existing playMovie/setRelationship coverage inventories and whole-project undefined normalization equality. These are unrelated frozen-main gaps; full combined gates belong to supervisor.
+
+## Surface fixture follow-up
+
+The native command was absent from `test/fixtures/minimalCommands.ts`, so three generic surface harvesters passed undefined to the renderer and reported four new failures. Added the command fixture and measured its form, interaction and commit snapshots (3 input probes, all 3 commit). Updated only showEmote entries, the added showEmote option in loop/shop/inn selectors, and commandPickerTab3. Existing face/picture AI, monster-species and NPC-teaching baseline mismatches are preserved. No production rendering or allowlist changes.

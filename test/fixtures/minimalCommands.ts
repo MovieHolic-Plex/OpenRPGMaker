@@ -107,6 +107,7 @@ export const MINIMAL_COMMANDS: Record<CommandKind, Command> = {
   },
   removeLight: { kind: "removeLight", all: true },
   setWeather: { kind: "setWeather", weather: "storm", intensity: 0.8, transitionMs: 120 },
+  showEmote: { kind: "showEmote", target: { eventId: "" }, emote: "heart", durationMs: 1200 },
   showAnimation: { kind: "showAnimation", target: "player", animationId: "anim_hit", wait: true },
   showPicture: { kind: "showPicture", pictureId: "pic1", resourceId: "res1", x: 0, y: 0 },
   erasePicture: { kind: "erasePicture", pictureId: "pic1" },
