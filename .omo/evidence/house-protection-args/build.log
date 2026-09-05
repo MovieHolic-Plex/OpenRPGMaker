@@ -1,0 +1,75 @@
+
+> rpg-zzu@0.1.0 build:app
+> vite build --configLoader runner
+
+[rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] QWENCLOUD_API_KEY 가 없어 /api/qwen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] CPENROUTER_API_KEY 가 없어 /api/cpen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+vite v6.4.3 building for production...
+transforming...
+✓ 1354 modules transformed.
+Export "openRecordPickerPanel" of module "src/editor/panels/eventEditor/recordPickerPanel.ts" was reexported through module "src/editor/panels/eventEditor/recordPickerDialog.ts" while both modules are dependencies of each other and will end up in different chunks by current Rollup settings. This scenario is not well supported at the moment as it will produce a circular dependency between chunks and will likely lead to broken execution order.
+Either change the import in "src/editor/panels/databaseEnemyActionDialog.ts" to point directly to the exporting module or reconfigure "output.manualChunks" to ensure these modules end up in the same chunk.
+rendering chunks...
+[plugin vite:reporter]
+(!) /home/main/z-project/rpg-zzu-house-protection-p1-args/src/player/playSceneInterpreter.ts is dynamically imported by /home/main/z-project/rpg-zzu-house-protection-p1-args/src/player/PlayScene.ts but also statically imported by /home/main/z-project/rpg-zzu-house-protection-p1-args/src/player/PlayScene.ts, /home/main/z-project/rpg-zzu-house-protection-p1-args/src/player/playSceneMapRuntime.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter]
+(!) /home/main/z-project/rpg-zzu-house-protection-p1-args/src/editor/editorUiMode.ts is dynamically imported by /home/main/z-project/rpg-zzu-house-protection-p1-args/src/app/mode.ts but also statically imported by /home/main/z-project/rpg-zzu-house-protection-p1-args/src/editor/coachMarks.ts, /home/main/z-project/rpg-zzu-house-protection-p1-args/src/editor/commandRegistry.ts, /home/main/z-project/rpg-zzu-house-protection-p1-args/src/editor/panels/aiAgentBrief.ts, /home/main/z-project/rpg-zzu-house-protection-p1-args/src/editor/panels/aiChatPanel.ts, /home/main/z-project/rpg-zzu-house-protection-p1-args/src/editor/panels/aiConversationLog.ts, /home/main/z-project/rpg-zzu-house-protection-p1-args/src/editor/panels/aiProposalCard.ts, /home/main/z-project/rpg-zzu-house-protection-p1-args/src/editor/panels/basicLeftRail.ts, /home/main/z-project/rpg-zzu-house-protection-p1-args/src/editor/panels/database.ts, /home/main/z-project/rpg-zzu-house-protection-p1-args/src/editor/panels/editor.ts, /home/main/z-project/rpg-zzu-house-protection-p1-args/src/editor/panels/editorZoomToolbar.ts, /home/main/z-project/rpg-zzu-house-protection-p1-args/src/editor/panels/menu.ts, /home/main/z-project/rpg-zzu-house-protection-p1-args/src/editor/panels/tilePalette.ts, /home/main/z-project/rpg-zzu-house-protection-p1-args/src/editor/panels/workspaceBar.ts, /home/main/z-project/rpg-zzu-house-protection-p1-args/src/editor/workspace/workspaceStore.ts, /home/main/z-project/rpg-zzu-house-protection-p1-args/src/main.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter]
+(!) /home/main/z-project/rpg-zzu-house-protection-p1-args/src/project/devProjectPersistence.ts is dynamically imported by /home/main/z-project/rpg-zzu-house-protection-p1-args/src/app/mode.ts but also statically imported by /home/main/z-project/rpg-zzu-house-protection-p1-args/src/editor/panels/editor.ts, /home/main/z-project/rpg-zzu-house-protection-p1-args/src/project/store.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter]
+(!) /home/main/z-project/rpg-zzu-house-protection-p1-args/src/player/audio/index.ts is dynamically imported by /home/main/z-project/rpg-zzu-house-protection-p1-args/src/app/mode.ts but also statically imported by /home/main/z-project/rpg-zzu-house-protection-p1-args/src/editor/panels/audioTestDialog.ts, /home/main/z-project/rpg-zzu-house-protection-p1-args/src/editor/panels/databaseResourcePickerDialog.ts, /home/main/z-project/rpg-zzu-house-protection-p1-args/src/editor/panels/databaseSystemView.ts, /home/main/z-project/rpg-zzu-house-protection-p1-args/src/editor/panels/eventEditor/commandBodyAdvanced.ts, /home/main/z-project/rpg-zzu-house-protection-p1-args/src/player/PlayScene.ts, /home/main/z-project/rpg-zzu-house-protection-p1-args/src/player/battleAudio.ts, /home/main/z-project/rpg-zzu-house-protection-p1-args/src/player/characterHopRuntime.ts, /home/main/z-project/rpg-zzu-house-protection-p1-args/src/player/mapBgm.ts, /home/main/z-project/rpg-zzu-house-protection-p1-args/src/player/playSceneActionCombat.ts, /home/main/z-project/rpg-zzu-house-protection-p1-args/src/player/playSceneBattle.ts, /home/main/z-project/rpg-zzu-house-protection-p1-args/src/player/playSceneInterpreter.ts, /home/main/z-project/rpg-zzu-house-protection-p1-args/src/player/playSceneMapAnimations.ts, /home/main/z-project/rpg-zzu-house-protection-p1-args/src/player/playSceneSchedulers.ts, /home/main/z-project/rpg-zzu-house-protection-p1-args/src/player/player.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter]
+(!) /home/main/z-project/rpg-zzu-house-protection-p1-args/src/player/player.ts is dynamically imported by /home/main/z-project/rpg-zzu-house-protection-p1-args/src/app/mode.ts, /home/main/z-project/rpg-zzu-house-protection-p1-args/src/app/mode.ts but also statically imported by /home/main/z-project/rpg-zzu-house-protection-p1-args/src/editor/panels/testPlayModal.ts, dynamic import will not move module into another chunk.
+
+computing gzip size...
+dist/benchmark.html                                         0.77 kB │ gzip:     0.47 kB
+dist/index.html                                             0.82 kB │ gzip:     0.48 kB
+dist/assets/phaser.min-CwlHMuXa.js                      1,196.12 kB
+dist/assets/benchmark-CNDwkXV0.css                          6.54 kB │ gzip:     2.15 kB
+dist/assets/databaseModal-MSu6Yo75.css                    115.93 kB │ gzip:    13.25 kB
+dist/assets/main-CoZfV4ZR.css                           1,867.56 kB │ gzip:   267.39 kB
+dist/assets/pwa-CRridmjp.js                                 0.25 kB │ gzip:     0.20 kB
+dist/assets/welcomeGenreSystemPresetAction-BYdrapCR.js      0.45 kB │ gzip:     0.30 kB
+dist/assets/mapSelection-DwgLWXLV.js                        0.62 kB │ gzip:     0.38 kB
+dist/assets/modulepreload-polyfill-B5Qt9EMX.js              0.71 kB │ gzip:     0.40 kB
+dist/assets/welcomeGenrePresetApply-Aem1wM--.js             0.75 kB │ gzip:     0.49 kB
+dist/assets/aiBootIntent-C515MLT1.js                        0.93 kB │ gzip:     0.45 kB
+dist/assets/mapUrlSync-DvBv3lFw.js                          1.22 kB │ gzip:     0.64 kB
+dist/assets/eventSpriteResources-HpBRBZpy.js                1.39 kB │ gzip:     0.66 kB
+dist/assets/worldEntries-DxFuxtwz.js                        1.74 kB │ gzip:     0.92 kB
+dist/assets/mapTileDraw-DYTT2ZGh.js                         1.75 kB │ gzip:     0.77 kB
+dist/assets/editorCameraFocus-DnvAy7HO.js                   1.94 kB │ gzip:     0.85 kB
+dist/assets/tileShapeTools-CHnhjiXU.js                      3.19 kB │ gzip:     1.27 kB
+dist/assets/workspaceStore-DtZmPw4-.js                      3.53 kB │ gzip:     1.56 kB
+dist/assets/defaults-CJ6w-9jz.js                            4.60 kB │ gzip:     2.08 kB
+dist/assets/playSceneBattle-CiqS0Te5.js                     5.02 kB │ gzip:     1.95 kB
+dist/assets/coachMarks-THE_ORdd.js                          5.33 kB │ gzip:     2.39 kB
+dist/assets/applyChangesetToStore-BPyXpNii.js               6.30 kB │ gzip:     2.69 kB
+dist/assets/benchmark-BdOMv0KF.js                           7.03 kB │ gzip:     2.47 kB
+dist/assets/teamWorkflowUi-CHvmNG1Z.js                      9.51 kB │ gzip:     3.44 kB
+dist/assets/transientEditorChrome-VIAAd9y3.js              11.79 kB │ gzip:     4.30 kB
+dist/assets/dbConnectionSettings-CwRunKEe.js               13.35 kB │ gzip:     5.01 kB
+dist/assets/helpModal-CNWyv6jp.js                          14.36 kB │ gzip:     5.68 kB
+dist/assets/databaseAiGenerateDialog-TtlTRBc7.js           16.35 kB │ gzip:     7.22 kB
+dist/assets/downloadBlob-BXWIqINs.js                       19.17 kB │ gzip:     7.45 kB
+dist/assets/menu-BLU-6Yi2.js                               34.61 kB │ gzip:    11.82 kB
+dist/assets/structureKitEditorDialog-CuQ17ejJ.js           41.91 kB │ gzip:    14.35 kB
+dist/assets/aiStudioMode-7zpTO0lC.js                       53.93 kB │ gzip:    18.32 kB
+dist/assets/EditScene-D-9Ie9no.js                         101.81 kB │ gzip:    30.81 kB
+dist/assets/tilePalette-Djb7xJ3j.js                       141.42 kB │ gzip:    44.38 kB
+dist/assets/editor-C6OZZGIV.js                            217.96 kB │ gzip:    73.07 kB
+dist/assets/PlayScene-B05sTIv_.js                         228.11 kB │ gzip:    71.61 kB
+dist/assets/saveActions-DvoeyVlv.js                       322.58 kB │ gzip:   114.04 kB
+dist/assets/databaseModal-BNctEQkS.js                   1,051.36 kB │ gzip:   313.92 kB
+dist/assets/main-Cq4REskg.js                            6,956.25 kB │ gzip: 1,543.03 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 1m 14s

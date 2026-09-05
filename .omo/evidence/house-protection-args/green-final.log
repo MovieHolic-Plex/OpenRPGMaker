@@ -1,0 +1,46 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/toolHostileArgs.test.ts test/houseProtection.test.ts test/toolHouseProtection.test.ts --maxWorkers=1 --minWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-house-protection-p1-args
+
+ ✓ test/toolHostileArgs.test.ts (10 tests) 71234ms
+   ✓ 쓰기 툴 적대적 인자 스윕 > empty 인자에 어떤 툴도 크래시하거나 읽을 수 없는 실패를 남기지 않는다  22630ms
+   ✓ 쓰기 툴 적대적 인자 스윕 > nulls 인자에 어떤 툴도 크래시하거나 읽을 수 없는 실패를 남기지 않는다  12985ms
+   ✓ 쓰기 툴 적대적 인자 스윕 > wrongTypes 인자에 어떤 툴도 크래시하거나 읽을 수 없는 실패를 남기지 않는다  14346ms
+   ✓ 쓰기 툴 적대적 인자 스윕 > deepHoles 인자에 어떤 툴도 크래시하거나 읽을 수 없는 실패를 남기지 않는다  19753ms
+   ✓ postprocessing error boundary > returns a readable protected-house-write rejection with empty args (dryRun=false)  325ms
+   ✓ postprocessing error boundary > returns a readable protected-house-write rejection with empty args (dryRun=true)  465ms
+ ✓ test/houseProtection.test.ts (23 tests) 13484ms
+   ✓ completed house geometry and exact cell ownership > protects bbox, full-width north ridge and empty cells at (3,2)  638ms
+   ✓ completed house geometry and exact cell ownership > protects bbox, full-width north ridge and empty cells at (6,2)  570ms
+   ✓ completed house geometry and exact cell ownership > protects bbox, full-width north ridge and empty cells at (3,3)  722ms
+   ✓ completed house geometry and exact cell ownership > protects bbox, full-width north ridge and empty cells at (6,6)  499ms
+   ✓ completed house geometry and exact cell ownership > protects bbox, full-width north ridge and empty cells at (4,4)  685ms
+   ✓ completed house geometry and exact cell ownership > protects lowerTileStacks contents, order and absence  1697ms
+   ✓ completed house geometry and exact cell ownership > protects upperTileStacks contents, order and absence  1472ms
+   ✓ completed house geometry and exact cell ownership > clips ridge and bbox at map edges (0,0)  376ms
+   ✓ completed house geometry and exact cell ownership > protects a human placement rectangle without adding a north ridge  1094ms
+   ✓ completed house geometry and exact cell ownership > protects the existing roof-deck ladder attachment, not the entire yard  1943ms
+   ✓ completed house geometry and exact cell ownership > rejects structural metadata change: remove  422ms
+   ✓ completed house geometry and exact cell ownership > rejects structural metadata change: move  570ms
+   ✓ completed house geometry and exact cell ownership > does not claim a raw adjacent ladder without roof-deck metadata  324ms
+   ✓ completed house geometry and exact cell ownership > takes the current accepted human-edited tiles as truth, not original kit tiles  480ms
+ ✓ test/toolHouseProtection.test.ts (12 tests) 11668ms
+   ✓ completed house transaction invariant > rolls back maps, events and tree additions atomically (dryRun=false)  954ms
+   ✓ completed house transaction invariant > rolls back maps, events and tree additions atomically (dryRun=true)  710ms
+   ✓ completed house transaction invariant > seals a newly built standalone house before global tree repair  2356ms
+   ✓ completed house transaction invariant > retains registration-time snapshots through later work in the same transaction  996ms
+   ✓ completed house transaction invariant > does not allow removing metadata and then destroying the house  440ms
+   ✓ completed house transaction invariant > rejects new overlapping house geometry even with identical tile IDs  1662ms
+   ✓ completed house transaction invariant > rejects overlap between two newly recorded houses, including only their ridge  395ms
+   ✓ completed house transaction invariant > preflights author_house against a completed house without tile changes  1242ms
+   ✓ completed house transaction invariant > preflights build_house against a completed house without tile changes  962ms
+   ✓ completed house transaction invariant > registers and reloads a standalone roof-deck attachment without claiming its yard  950ms
+   ✓ completed house transaction invariant > allows unrelated edits and safe dry-run without changing the original project  689ms
+
+ Test Files  3 passed (3)
+      Tests  45 passed (45)
+   Start at  04:30:33
+   Duration  130.93s (transform 16.89s, setup 0ms, collect 32.18s, tests 96.39s, environment 1ms, prepare 406ms)

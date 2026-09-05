@@ -1,0 +1,44 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/toolHostileArgs.test.ts -t empty 인자
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-house-protection-p1-args
+
+ ❯ test/toolHostileArgs.test.ts (5 tests | 1 failed | 4 skipped) 21172ms
+   ↓ 쓰기 툴 적대적 인자 스윕 > 쓰기 툴이 충분히 등록되어 있다
+   × 쓰기 툴 적대적 인자 스윕 > empty 인자에 어떤 툴도 크래시하거나 읽을 수 없는 실패를 남기지 않는다 21170ms
+     → expected [ …(2) ] to deeply equal []
+   ↓ 쓰기 툴 적대적 인자 스윕 > nulls 인자에 어떤 툴도 크래시하거나 읽을 수 없는 실패를 남기지 않는다
+   ↓ 쓰기 툴 적대적 인자 스윕 > wrongTypes 인자에 어떤 툴도 크래시하거나 읽을 수 없는 실패를 남기지 않는다
+   ↓ 쓰기 툴 적대적 인자 스윕 > deepHoles 인자에 어떤 툴도 크래시하거나 읽을 수 없는 실패를 남기지 않는다
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/toolHostileArgs.test.ts > 쓰기 툴 적대적 인자 스윕 > empty 인자에 어떤 툴도 크래시하거나 읽을 수 없는 실패를 남기지 않는다
+AssertionError: expected [ …(2) ] to deeply equal []
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   "run_village_pipeline: 'run_village_pipeline' 후처리 실패: 완성된 집의 보호 영역은 AI가 변경할 수 없습니다. 집 밖에서 작업하세요. 직접 편집은 가능합니다.",[39m
+[31m+   "build_village: 'build_village' 후처리 실패: 완성된 집의 보호 영역은 AI가 변경할 수 없습니다. 집 밖에서 작업하세요. 직접 편집은 가능합니다.",[39m
+[31m+ ][39m
+
+ ❯ test/toolHostileArgs.test.ts:77:25
+     75|         }
+     76|       }
+     77|       expect(offenders).toEqual([]);
+       |                         ^
+     78|     }, HOSTILE_ARGS_TIMEOUT_MS);
+     79|   }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 skipped (5)
+   Start at  04:20:19
+   Duration  46.94s (transform 17.42s, setup 0ms, collect 24.49s, tests 21.17s, environment 0ms, prepare 222ms)
