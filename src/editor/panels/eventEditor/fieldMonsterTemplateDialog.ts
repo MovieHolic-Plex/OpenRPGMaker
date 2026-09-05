@@ -2,8 +2,8 @@
  * One-click field-monster template: battle → victory fork → clear switch + Erase Event + cleared page.
  */
 import { editorState } from "@/editor/editorState";
-import { recordProjectSnapshot } from "@/editor/mapEditHistory";
-import { ensureNamedSwitch } from "@/editor/tools/flagHelpers";
+import { beginExistingEventDraft } from "@/editor/eventDraftActions";
+import { stageEventDraftAuthoredWrite } from "@/project/eventDraftAuthored";
 import {
   buildFieldMonsterPages,
   defaultFieldMonsterClearSwitchId,
@@ -128,15 +128,18 @@ export function openFieldMonsterTemplateDialog(mapId: MapId, eventId: string, pa
               canLose: canLose.checked,
               graphic,
             });
-            recordProjectSnapshot("필드 몬스터 템플릿", mapId, { kind: "map" });
+            beginExistingEventDraft(mapId, eventId);
             store.update((draft) => {
-              ensureNamedSwitch(draft, switchId, `전투 완료: ${eventId}`);
               const target = draft.maps[mapId]?.events.find((entry) => entry.id === eventId);
               if (!target) return;
+              const existing = draft.switches.find((entry) => entry.id === switchId);
+              if (!existing?.name) stageEventDraftAuthoredWrite(target, {
+                kind: "switch", id: switchId, before: existing?.name ?? null, after: `전투 완료: ${eventId}`,
+              });
               target.pages = pages;
               target.trigger = { kind: "action" };
               target.commands = [];
-            });
+            }, { scope: "map", mapId, eventId, label: "필드 몬스터 템플릿 편집" });
             editorState.set({ selectedEventPageId: pages[0]?.id ?? null });
             toast("필드 몬스터 템플릿을 적용했습니다.", "ok");
             close();

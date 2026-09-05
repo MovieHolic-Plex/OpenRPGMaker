@@ -541,10 +541,19 @@ export interface EventPage {
   commands: Command[];
 }
 
+/** Serializable field-level writes owned by an event editor transaction. null means absent. */
+export interface EventDraftAuthoredWrite {
+  readonly kind: "characterName" | "switch";
+  readonly id: string;
+  readonly before: string | null;
+  readonly after: string | null;
+}
+
 export interface EventDraftMeta {
   kind: "new" | "edit";
   /** edit: 열기 전 원본(취소 시 복원). new: 생성 직후 스냅샷(사용자 편집 여부 판정 기준). */
   original?: PersistedGameEvent;
+  authoredWrites?: EventDraftAuthoredWrite[];
 }
 
 export interface GameEvent {
