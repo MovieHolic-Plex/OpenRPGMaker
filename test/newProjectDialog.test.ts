@@ -1,51 +1,51 @@
-// @vitest-environment jsdom
-//
-// 새 프로젝트 다이얼로그 — 이름 입력 + 시작점 선택(빈 맵 / 예제 마을).
-// minimal: 기존 showPromptInput에 선택지 옵션을 얹고, 취소→null·빈이름 폴백 계약은 그대로 둔다.
-import { afterEach, describe, expect, it } from "vitest";
-import { showPromptInput } from "@/editor/ui/modal";
+/** @vitest-environment happy-dom */
+import { describe, expect, it } from "vitest";
+import {
+  NEW_PROJECT_STARTERS,
+  resolveNewProjectStarterProject,
+  showNewProjectDialog,
+} from "@/editor/panels/newProjectDialog";
+import { WELCOME_GENRE_PRESETS } from "@/editor/welcomeGenrePresets";
 
-afterEach(() => {
-  document.body.innerHTML = "";
-});
-
-describe("showPromptInput starter choices", () => {
-  it("선택지 없이 호출하면 기존 동작 그대로 문자열을 돌려준다", async () => {
-    const pending = showPromptInput({ message: "이름", defaultValue: "새 프로젝트" });
-    const input = document.querySelector<HTMLInputElement>('[data-testid="app-modal-input"]');
-    expect(input).not.toBeNull();
-    input!.value = "나의 RPG";
-    document.querySelector<HTMLButtonElement>('[data-testid="app-modal-confirm"]')!.click();
-    await expect(pending).resolves.toBe("나의 RPG");
+describe("resolveNewProjectStarterProject", () => {
+  it("blank starter yields a project with no preset genre", () => {
+    const project = resolveNewProjectStarterProject({ kind: "blank" });
+    expect(project.system.genre).toBeUndefined();
+    expect(Object.keys(project.maps).length).toBeGreaterThan(0);
   });
 
-  it("시작점 선택지를 주면 라디오가 뜨고 고른 값이 함께 돌아온다", async () => {
-    const pending = showPromptInput({
-      message: "이름",
-      defaultValue: "새 프로젝트",
-      choices: [
-        { value: "blank", label: "빈 맵으로 시작" },
-        { value: "sample", label: "예제 마을로 시작" },
-      ],
-      defaultChoice: "blank",
-    });
-    const radios = [...document.querySelectorAll<HTMLInputElement>('input[type="radio"]')];
-    expect(radios).toHaveLength(2);
-    expect(radios.find((r) => r.checked)?.value).toBe("blank");
-    radios.find((r) => r.value === "sample")!.click();
-    document.querySelector<HTMLButtonElement>('[data-testid="app-modal-confirm"]')!.click();
-    await expect(pending).resolves.toEqual({ value: "새 프로젝트", choice: "sample" });
+  it("every starter option resolves to a project", () => {
+    for (const starter of NEW_PROJECT_STARTERS) {
+      const project = resolveNewProjectStarterProject(starter.starter);
+      expect(Object.keys(project.maps).length).toBeGreaterThan(0);
+    }
+    expect(NEW_PROJECT_STARTERS.length).toBe(WELCOME_GENRE_PRESETS.length + 1);
   });
 
-  it("취소는 null을 돌려준다 (선택지 유무와 무관)", async () => {
-    const pending = showPromptInput({
-      message: "이름",
-      choices: [
-        { value: "blank", label: "빈 맵으로 시작" },
-        { value: "sample", label: "예제 마을로 시작" },
-      ],
+  it("genre preset starter applies that pack's system genre", () => {
+    const project = resolveNewProjectStarterProject({
+      kind: "system-preset",
+      presetId: "farm-life",
     });
-    document.querySelector<HTMLButtonElement>('[data-testid="app-modal-cancel"]')!.click();
-    await expect(pending).resolves.toBeNull();
+    expect(project.system.genre).toBe("farm-life");
+  });
+
+  it("dialog opens with name input and starter options, confirm returns choice", async () => {
+    const pending = showNewProjectDialog("새 프로젝트");
+    const modal = document.querySelector('[data-testid="new-project-modal"]');
+    expect(modal).not.toBeNull();
+    const cards = document.querySelectorAll('[data-testid^="new-project-starter-"]');
+    expect(cards.length).toBe(NEW_PROJECT_STARTERS.length);
+    const farmCard = Array.from(cards).find((card) =>
+      card.textContent?.includes("농장 생활"),
+    ) as HTMLButtonElement | undefined;
+    expect(farmCard).toBeDefined();
+    farmCard?.click();
+    (document.querySelector('[data-testid="new-project-title-input"]') as HTMLInputElement).value = "내 농장";
+    (document.querySelector('[data-testid="new-project-confirm"]') as HTMLButtonElement).click();
+    const result = await pending;
+    expect(result?.title).toBe("내 농장");
+    expect(result?.starter).toEqual({ kind: "system-preset", presetId: "farm-life" });
+    expect(document.querySelector('[data-testid="new-project-modal"]')).toBeNull();
   });
 });

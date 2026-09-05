@@ -1,6 +1,6 @@
 import { getMode, toggleMode } from "@/app/mode";
 import { PRODUCT_TAGLINE } from "@/brand";
-import { showConfirm, showPromptInput } from "@/editor/ui/modal";
+import { showConfirm } from "@/editor/ui/modal";
 import {
   EDITOR_PRODUCT_BRAND,
   getEditorChrome,
@@ -20,7 +20,7 @@ import { openMapEventSearchModal } from "@/editor/panels/mapEventSearchModal";
 import { openResourceModal } from "@/editor/panels/resourceModal";
 import { openWorldPanel } from "@/editor/panels/worldPanel";
 import { deserialize, ProjectFormatError } from "@/project/io";
-import { createBlankProject, createSampleAdventureProject, createScarloxyDemoProject, createScarloxyPokemonDemoProject, createSkyStairProject, createSnowMountain60Project, createIcePlain64Project, createTrainingExamplesProject, createFarmingDemoProject } from "@/project/defaults";
+import { createSampleAdventureProject, createScarloxyDemoProject, createScarloxyPokemonDemoProject, createSkyStairProject, createSnowMountain60Project, createIcePlain64Project, createTrainingExamplesProject, createFarmingDemoProject } from "@/project/defaults";
 import {
   createProjectPackage,
   ProjectPackageError,
@@ -819,22 +819,11 @@ async function newProject(): Promise<void> {
   // 2026-08-18 UX 리뷰 P0: "현재 작업을 지우고" + 빨간 버튼은 위협적이고,
   // clearAll()은 열려 있던 원격 project id를 그대로 쓰며 공유 행을 덮어썼다.
   // 새 프로젝트는 이름을 받고 새 project id를 발급해 새 원격 행으로 저장한다.
-  const answer = await showPromptInput({
-    title: "새 프로젝트",
-    message: "새 작업의 이름을 정해 주세요. 지금 열려 있는 작업은 그대로 저장된 채 유지됩니다.",
-    placeholder: "예: 나의 첫 RPG",
-    defaultValue: "새 프로젝트",
-    confirmLabel: "만들기",
-    choices: [
-      { value: "blank", label: "빈 맵으로 시작", hint: "20×15 빈 맵 하나" },
-      { value: "sample", label: "예제 마을로 시작", hint: "이슬 마을 데모" },
-    ],
-    defaultChoice: "blank",
-  });
-  if (answer === null) return;
-  const title = answer.value.trim() || "새 프로젝트";
-  const project = answer.choice === "sample" ? createSampleAdventureProject() : createBlankProject();
-  const result = await store.loadNewRemoteProject(project, { title });
+const { showNewProjectDialog, resolveNewProjectStarterProject } = await import("@/editor/panels/newProjectDialog");
+  const choice = await showNewProjectDialog("새 프로젝트");
+  if (choice === null) return;
+  const title = choice.title.trim() || "새 프로젝트";
+  const result = await store.loadNewRemoteProject(resolveNewProjectStarterProject(choice.starter), { title });
   const { focusProjectStartMap } = await import("@/editor/mapSelection");
   focusProjectStartMap();
   toast(

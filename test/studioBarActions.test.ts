@@ -20,6 +20,7 @@ const mocks = vi.hoisted(() => ({
   openAiSettingsModal: vi.fn(),
   saveProjectNow: vi.fn(async () => undefined),
   showPromptInput: vi.fn(async () => ({ value: "새 프로젝트", choice: "blank" })),
+  showNewProjectDialog: vi.fn(async () => ({ title: "새 프로젝트", starter: { kind: "blank" } })),
 }));
 
 vi.mock("@/editor/panels/databaseModal", () => ({ openDatabaseModal: mocks.openDatabaseModal }));
@@ -35,6 +36,11 @@ vi.mock("@/editor/saveActions", async (importOriginal) => {
 vi.mock("@/editor/ui/modal", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/editor/ui/modal")>();
   return { ...actual, showPromptInput: mocks.showPromptInput };
+});
+
+vi.mock("@/editor/panels/newProjectDialog", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/editor/panels/newProjectDialog")>();
+  return { ...actual, showNewProjectDialog: mocks.showNewProjectDialog };
 });
 
 const { renderTopbar, autosaveStatusText, projectMenuLabel } = await import("@/editor/panels/menu");
