@@ -45,6 +45,13 @@
 - Basic/skill switching preserves mounted radio/select nodes and the selected skill draft; basic confirmation still writes the empty-skill sentinel. Named ON/OFF controls disable unused selectors/pickers, retain the chosen switch across use toggles, and open the picker at its current selection. Confirmation retains the existing action replacement/normalization path; runtime, shared controls and CSS are unchanged.
 - Focused contracts: `test/databaseEnemySelectionTrust.test.ts` and `test/databaseEnemyActionDialogTrust.test.ts`; browser workflows: `test/e2e/database-enemy-selection-trust.spec.ts` and `test/e2e/database-enemy-action-trust.spec.ts`.
 
+### Monster numeric caption activation (Phase 2, 2026-09-05)
+
+- `databaseControls.numberField` uses a caption-only native `label[for]` targeting the numeric input. Clicking the visible maximum HP caption activates that input without changing its value or committing a decrement. Stepper buttons remain outside the label and keep their existing input-event callbacks.
+- `sliderStepperField` targets its numeric input with the same native caption relationship and names its range through `aria-labelledby`; the unit suffix is not part of either input name. Module-local sequential DOM ids keep duplicate controls independently associated even when constructed before mounting.
+- Keep the two `.db-field > span` columns, `.db-number-stepper` child order, classes and testids. Simple text/select fields retain their implicit-label helper; no CSS, store mutation path, runtime or content change belongs to this correction.
+- Regression coverage: `test/databaseNumericLabelTrust.test.ts`, `test/databaseControlsNumberField.test.ts` and `test/databaseModernControls.test.ts`. Happy DOM proves native control association and non-mutating activation, not native label-focus defaults or geometry; browser verification must check numeric focus, numeric/range accessible names and unchanged studio layout.
+
 ### Monster nested dialog focus (Phase 2, 2026-09-05)
 
 - `databaseEnemyRecordSupport.openDialog` wraps only the live Tab/Shift+Tab boundaries of the top `modalStack` layer; interior Tab remains native. The switch picker keeps its own focus and Escape routing. Hidden, disabled and negative-tabindex controls are excluded from the boundary list.
