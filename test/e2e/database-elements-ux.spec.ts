@@ -2,17 +2,6 @@ import { test, expect } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 import { readStoredZipEntry } from "../../src/project/packageZip";
 
-// Optional transport workaround for Chromium ERR_NETWORK_CHANGED; preserve server responses.
-test.beforeEach(async ({ page, baseURL }) => {
-  const upstream = process.env.ELEMENTS_QA_UPSTREAM;
-  if (!upstream && !process.env.ELEMENTS_QA_TRANSPORT) return;
-  await page.route(`${baseURL}/**`, async (route) => {
-    const url = upstream ? route.request().url().replace(baseURL!, upstream.replace(/\/$/, "")) : route.request().url();
-    const response = await route.fetch({ url, timeout: 90_000 });
-    await route.fulfill({ response });
-  });
-});
-
 test("elements real editor: recognition, filtering, editing and project export", async ({ page }) => {
   test.setTimeout(240_000);
   const errors: string[] = [];
