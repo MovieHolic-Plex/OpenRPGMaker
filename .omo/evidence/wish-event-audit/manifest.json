@@ -7,7 +7,8 @@
     "nativeKinds": 79,
     "catalogIds": 125,
     "eventEditorFiles": 110,
-    "featureSurfaces": 21
+    "featureSurfaces": 21,
+    "combinedPickerEntries": 128
   },
   "evidence": [
     {
@@ -46,7 +47,17 @@
       "path": "output/evidence/wish-event-audit/baseline-event-editor.png",
       "sha256": "4bad73ad63c2982af7ee4decbb55f2d96bf6726d31eed628dd13cb083369dd7f",
       "provenance": "Screenshot file exists; parent reports phase port 33509 and native-fetch transport.",
-      "limit": "Image not visually reviewed here; one screenshot is not interaction coverage. Port 9841 evidence excluded."
+      "limit": "Image not visually reviewed here; one screenshot is not interaction coverage. Port 9841 evidence excluded.",
+      "artifacts": [
+        {
+          "path": "output/evidence/wish-event-audit/baseline-shell.png",
+          "sha256": "2f200f766386e43a5c7ff5d0a3650f8cf42dff8298f4ad1353764fdd46eda2b4"
+        },
+        {
+          "path": "output/evidence/wish-event-audit/baseline-event-editor.png",
+          "sha256": "4bad73ad63c2982af7ee4decbb55f2d96bf6726d31eed628dd13cb083369dd7f"
+        }
+      ]
     },
     {
       "id": "E-GATES",
@@ -55,6 +66,12 @@
       "sha256": "61284f4906cfa9db806b6a37ab7c6e5c89b45c7b8405382d4d86a7890e49f18c",
       "provenance": "Historical baseline dated 2026-09-02, 185 failed tests. First current full run timed out; rerun pending in parent handoff.",
       "limit": "No current baseline result, no regression-free claim. Compare diagnostics, not just failed filenames."
+    },
+    {
+      "id": "E-PICKER-CENSUS",
+      "strength": "SUPERVISOR_REPORTED_REAL_BROWSER_CENSUS",
+      "provenance": "Baseline phase server 33509: quick 37, companion/battle 21, map/screen 44, system/tools 26; 128 distinct rendered picker IDs.",
+      "limit": "Counts only supplied. Source-derived entry list matches counts, not yet the exact captured browser ID set. Insertion sweep pending; no insertion PASS."
     }
   ],
   "history": [
@@ -18909,9 +18926,10 @@
       "phase": 2,
       "description": "Catalog/native picker, hidden routes, search, favorites, recents and preferences",
       "initial": "NOT_VERIFIED",
-      "final": "NOT_VERIFIED",
+      "final": "RENDERED_CENSUS_REPORTED_INSERTION_UNVERIFIED",
       "evidence": [
-        "E-SOURCE"
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
       ],
       "unverified": [
         "Real-surface interaction and end-to-end effects have not been established by this report."
@@ -19514,7 +19532,7 @@
   "verification": {
     "status": "VERIFIED_SET_EQUALITY_AND_SOURCE_HASHES",
     "command": "node .omo/evidence/wish-event-audit/verify-manifest.mjs",
-    "required": "Exact authoritative set equality; zero missing, extra or duplicate keys; source hash equality.",
+    "required": "Exact authoritative set equality; zero missing, extra or duplicate keys; source hash equality. Combined visible picker source IDs and test IDs must match; supervisor tab counts must agree. Exact browser ID equality remains unverified until its captured set is supplied.",
     "tests": "No prose tests added. Production gates/build/runtime were not rerun by this documentation lane.",
     "observedResult": {
       "nativeKinds": 79,
@@ -19523,7 +19541,2606 @@
       "missing": 0,
       "extra": 0,
       "duplicates": 0,
-      "sourceHashesMatched": 110
+      "sourceHashesMatched": 110,
+      "combinedPickerEntries": 128
     }
+  },
+  "combinedPickerEntries": [
+    {
+      "id": "applyItemUpgrade",
+      "testId": "command-picker-add-applyItemUpgrade",
+      "page": 1,
+      "catalogId": null,
+      "nativeKind": "applyItemUpgrade",
+      "route": "native-noncatalog",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "craftRecipe",
+      "testId": "command-picker-add-craftRecipe",
+      "page": 1,
+      "catalogId": null,
+      "nativeKind": "craftRecipe",
+      "route": "native-noncatalog",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "equipTool",
+      "testId": "command-picker-add-equipTool",
+      "page": 1,
+      "catalogId": null,
+      "nativeKind": "equipTool",
+      "route": "native-noncatalog",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-001-show-text",
+      "testId": "command-picker-add-text",
+      "page": 1,
+      "catalogId": "m2-001-show-text",
+      "nativeKind": "text",
+      "route": "catalog-native-alias",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-002-display-text-settings",
+      "testId": "command-picker-add-displayTextSettings",
+      "page": 1,
+      "catalogId": "m2-002-display-text-settings",
+      "nativeKind": "displayTextSettings",
+      "route": "catalog-native-alias",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-003-change-faceset",
+      "testId": "command-picker-add-changeFace",
+      "page": 1,
+      "catalogId": "m2-003-change-faceset",
+      "nativeKind": "changeFace",
+      "route": "catalog-native-alias",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-004-show-choices",
+      "testId": "command-picker-add-choices",
+      "page": 1,
+      "catalogId": "m2-004-show-choices",
+      "nativeKind": "choices",
+      "route": "catalog-native-alias",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-005-input-number",
+      "testId": "command-picker-add-inputNumber",
+      "page": 1,
+      "catalogId": "m2-005-input-number",
+      "nativeKind": "inputNumber",
+      "route": "catalog-native-alias",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-006-control-switches",
+      "testId": "command-picker-add-setSwitch",
+      "page": 1,
+      "catalogId": "m2-006-control-switches",
+      "nativeKind": "setSwitch",
+      "route": "catalog-native-alias",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-007-control-variables",
+      "testId": "command-picker-add-setVariable",
+      "page": 1,
+      "catalogId": "m2-007-control-variables",
+      "nativeKind": "setVariable",
+      "route": "catalog-native-alias",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-008-control-timer",
+      "testId": "command-picker-add-timer",
+      "page": 1,
+      "catalogId": "m2-008-control-timer",
+      "nativeKind": "timer",
+      "route": "catalog-native-alias",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-009-change-gold",
+      "testId": "command-picker-add-changeGold",
+      "page": 1,
+      "catalogId": "m2-009-change-gold",
+      "nativeKind": "changeGold",
+      "route": "catalog-native-alias",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-010-change-items",
+      "testId": "command-picker-add-changeItem",
+      "page": 1,
+      "catalogId": "m2-010-change-items",
+      "nativeKind": "changeItem",
+      "route": "catalog-native-alias",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-032-shop-processing",
+      "testId": "command-picker-add-shop",
+      "page": 1,
+      "catalogId": "m2-032-shop-processing",
+      "nativeKind": "shop",
+      "route": "catalog-native-alias",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-033-inn-processing",
+      "testId": "command-picker-add-inn",
+      "page": 1,
+      "catalogId": "m2-033-inn-processing",
+      "nativeKind": "inn",
+      "route": "catalog-native-alias",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-034-name-input-processing",
+      "testId": "command-picker-add-enterHeroName",
+      "page": 1,
+      "catalogId": "m2-034-name-input-processing",
+      "nativeKind": "enterHeroName",
+      "route": "catalog-native-alias",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-035-transfer-player",
+      "testId": "command-picker-add-transfer",
+      "page": 1,
+      "catalogId": "m2-035-transfer-player",
+      "nativeKind": "transfer",
+      "route": "catalog-native-alias",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-057-move-event",
+      "testId": "command-picker-add-moveEvent",
+      "page": 1,
+      "catalogId": "m2-057-move-event",
+      "nativeKind": "moveEvent",
+      "route": "catalog-native-alias",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-058-wait-for-all-movement",
+      "testId": "command-picker-add-m2-058-wait-for-all-movement",
+      "page": 1,
+      "catalogId": "m2-058-wait-for-all-movement",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-060-wait",
+      "testId": "command-picker-add-wait",
+      "page": 1,
+      "catalogId": "m2-060-wait",
+      "nativeKind": "wait",
+      "route": "catalog-native-alias",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-061-play-bgm",
+      "testId": "command-picker-add-playAudio",
+      "page": 1,
+      "catalogId": "m2-061-play-bgm",
+      "nativeKind": "playAudio",
+      "route": "catalog-native-alias",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-062-fadeout-bgm",
+      "testId": "command-picker-add-stopAudio",
+      "page": 1,
+      "catalogId": "m2-062-fadeout-bgm",
+      "nativeKind": "stopAudio",
+      "route": "catalog-native-alias",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-063-memorize-current-bgm",
+      "testId": "command-picker-add-m2-063-memorize-current-bgm",
+      "page": 1,
+      "catalogId": "m2-063-memorize-current-bgm",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-064-play-memorized-bgm",
+      "testId": "command-picker-add-m2-064-play-memorized-bgm",
+      "page": 1,
+      "catalogId": "m2-064-play-memorized-bgm",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-065-play-se",
+      "testId": "command-picker-add-m2-065-play-se",
+      "page": 1,
+      "catalogId": "m2-065-play-se",
+      "nativeKind": "playAudio",
+      "route": "catalog-native-alias",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-080-conditional-branch",
+      "testId": "command-picker-add-fork",
+      "page": 1,
+      "catalogId": "m2-080-conditional-branch",
+      "nativeKind": "fork",
+      "route": "catalog-native-alias",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-081-label",
+      "testId": "command-picker-add-label",
+      "page": 1,
+      "catalogId": "m2-081-label",
+      "nativeKind": "label",
+      "route": "catalog-native-alias",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-082-jump-to-label",
+      "testId": "command-picker-add-gotoLabel",
+      "page": 1,
+      "catalogId": "m2-082-jump-to-label",
+      "nativeKind": "gotoLabel",
+      "route": "catalog-native-alias",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-083-loop",
+      "testId": "command-picker-add-loop",
+      "page": 1,
+      "catalogId": "m2-083-loop",
+      "nativeKind": "loop",
+      "route": "catalog-native-alias",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-084-break-loop",
+      "testId": "command-picker-add-breakLoop",
+      "page": 1,
+      "catalogId": "m2-084-break-loop",
+      "nativeKind": "breakLoop",
+      "route": "catalog-native-alias",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-085-end-event-processing",
+      "testId": "command-picker-add-m2-085-end-event-processing",
+      "page": 1,
+      "catalogId": "m2-085-end-event-processing",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-086-erase-event",
+      "testId": "command-picker-add-m2-086-erase-event",
+      "page": 1,
+      "catalogId": "m2-086-erase-event",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-206-wait-until",
+      "testId": "command-picker-add-m2-206-wait-until",
+      "page": 1,
+      "catalogId": "m2-206-wait-until",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-208-quest-objective",
+      "testId": "command-picker-add-m2-208-quest-objective",
+      "page": 1,
+      "catalogId": "m2-208-quest-objective",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-210-sound-layer",
+      "testId": "command-picker-add-m2-210-sound-layer",
+      "page": 1,
+      "catalogId": "m2-210-sound-layer",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-211-weighted-branch",
+      "testId": "command-picker-add-m2-211-weighted-branch",
+      "page": 1,
+      "catalogId": "m2-211-weighted-branch",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "openChest",
+      "testId": "command-picker-add-openChest",
+      "page": 1,
+      "catalogId": null,
+      "nativeKind": "openChest",
+      "route": "native-noncatalog",
+      "tab": "quick",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "changeLifeSkillExp",
+      "testId": "command-picker-add-changeLifeSkillExp",
+      "page": 2,
+      "catalogId": null,
+      "nativeKind": "changeLifeSkillExp",
+      "route": "native-noncatalog",
+      "tab": "companion/battle",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "despawnFieldEnemy",
+      "testId": "command-picker-add-despawnFieldEnemy",
+      "page": 2,
+      "catalogId": null,
+      "nativeKind": "despawnFieldEnemy",
+      "route": "native-noncatalog",
+      "tab": "companion/battle",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-011-change-party-member",
+      "testId": "command-picker-add-changeParty",
+      "page": 2,
+      "catalogId": "m2-011-change-party-member",
+      "nativeKind": "changeParty",
+      "route": "catalog-native-alias",
+      "tab": "companion/battle",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-012-change-exp",
+      "testId": "command-picker-add-changeExp",
+      "page": 2,
+      "catalogId": "m2-012-change-exp",
+      "nativeKind": "changeExp",
+      "route": "catalog-native-alias",
+      "tab": "companion/battle",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-013-change-level",
+      "testId": "command-picker-add-changeLevel",
+      "page": 2,
+      "catalogId": "m2-013-change-level",
+      "nativeKind": "changeLevel",
+      "route": "catalog-native-alias",
+      "tab": "companion/battle",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-014-change-parameters",
+      "testId": "command-picker-add-m2-014-change-parameters",
+      "page": 2,
+      "catalogId": "m2-014-change-parameters",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "companion/battle",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-015-change-skills",
+      "testId": "command-picker-add-learnSkill",
+      "page": 2,
+      "catalogId": "m2-015-change-skills",
+      "nativeKind": "learnSkill",
+      "route": "catalog-native-alias",
+      "tab": "companion/battle",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-016-change-equipment",
+      "testId": "command-picker-add-changeEquipment",
+      "page": 2,
+      "catalogId": "m2-016-change-equipment",
+      "nativeKind": "changeEquipment",
+      "route": "catalog-native-alias",
+      "tab": "companion/battle",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-017-change-hp",
+      "testId": "command-picker-add-changeActorHp",
+      "page": 2,
+      "catalogId": "m2-017-change-hp",
+      "nativeKind": "changeActorHp",
+      "route": "catalog-native-alias",
+      "tab": "companion/battle",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-018-change-mp",
+      "testId": "command-picker-add-changeActorMp",
+      "page": 2,
+      "catalogId": "m2-018-change-mp",
+      "nativeKind": "changeActorMp",
+      "route": "catalog-native-alias",
+      "tab": "companion/battle",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-019-change-state",
+      "testId": "command-picker-add-m2-019-change-state",
+      "page": 2,
+      "catalogId": "m2-019-change-state",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "companion/battle",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-020-recover-all",
+      "testId": "command-picker-add-recoverAll",
+      "page": 2,
+      "catalogId": "m2-020-recover-all",
+      "nativeKind": "recoverAll",
+      "route": "catalog-native-alias",
+      "tab": "companion/battle",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-021-damage-processing",
+      "testId": "command-picker-add-m2-021-damage-processing",
+      "page": 2,
+      "catalogId": "m2-021-damage-processing",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "companion/battle",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-022-change-actor-name",
+      "testId": "command-picker-add-m2-022-change-actor-name",
+      "page": 2,
+      "catalogId": "m2-022-change-actor-name",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "companion/battle",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-023-change-actor-nickname",
+      "testId": "command-picker-add-m2-023-change-actor-nickname",
+      "page": 2,
+      "catalogId": "m2-023-change-actor-nickname",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "companion/battle",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-024-change-actor-graphic",
+      "testId": "command-picker-add-m2-024-change-actor-graphic",
+      "page": 2,
+      "catalogId": "m2-024-change-actor-graphic",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "companion/battle",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-025-change-actor-faceset",
+      "testId": "command-picker-add-m2-025-change-actor-faceset",
+      "page": 2,
+      "catalogId": "m2-025-change-actor-faceset",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "companion/battle",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-031-battle-processing",
+      "testId": "command-picker-add-battleProcessing",
+      "page": 2,
+      "catalogId": "m2-031-battle-processing",
+      "nativeKind": "battleProcessing",
+      "route": "catalog-native-alias",
+      "tab": "companion/battle",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-091-change-actor-class",
+      "testId": "command-picker-add-m2-091-change-actor-class",
+      "page": 2,
+      "catalogId": "m2-091-change-actor-class",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "companion/battle",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-092-change-battle-commands",
+      "testId": "command-picker-add-m2-092-change-battle-commands",
+      "page": 2,
+      "catalogId": "m2-092-change-battle-commands",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "companion/battle",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "spawnFieldEnemy",
+      "testId": "command-picker-add-spawnFieldEnemy",
+      "page": 2,
+      "catalogId": null,
+      "nativeKind": "spawnFieldEnemy",
+      "route": "native-noncatalog",
+      "tab": "companion/battle",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "addLight",
+      "testId": "command-picker-add-addLight",
+      "page": 3,
+      "catalogId": null,
+      "nativeKind": "addLight",
+      "route": "native-noncatalog",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-026-change-vehicle-graphic",
+      "testId": "command-picker-add-m2-026-change-vehicle-graphic",
+      "page": 3,
+      "catalogId": "m2-026-change-vehicle-graphic",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-030-change-screen-transition",
+      "testId": "command-picker-add-m2-030-change-screen-transition",
+      "page": 3,
+      "catalogId": "m2-030-change-screen-transition",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-036-get-player-location",
+      "testId": "command-picker-add-m2-036-get-player-location",
+      "page": 3,
+      "catalogId": "m2-036-get-player-location",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-037-move-to-variable-location",
+      "testId": "command-picker-add-m2-037-move-to-variable-location",
+      "page": 3,
+      "catalogId": "m2-037-move-to-variable-location",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-038-get-on-off-vehicle",
+      "testId": "command-picker-add-m2-038-get-on-off-vehicle",
+      "page": 3,
+      "catalogId": "m2-038-get-on-off-vehicle",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-039-set-vehicle-location",
+      "testId": "command-picker-add-m2-039-set-vehicle-location",
+      "page": 3,
+      "catalogId": "m2-039-set-vehicle-location",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-040-set-event-location",
+      "testId": "command-picker-add-m2-040-set-event-location",
+      "page": 3,
+      "catalogId": "m2-040-set-event-location",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-041-swap-event-location",
+      "testId": "command-picker-add-m2-041-swap-event-location",
+      "page": 3,
+      "catalogId": "m2-041-swap-event-location",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-042-get-terrain-id",
+      "testId": "command-picker-add-m2-042-get-terrain-id",
+      "page": 3,
+      "catalogId": "m2-042-get-terrain-id",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-043-get-event-id",
+      "testId": "command-picker-add-m2-043-get-event-id",
+      "page": 3,
+      "catalogId": "m2-043-get-event-id",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-044-hide-screen",
+      "testId": "command-picker-add-m2-044-hide-screen",
+      "page": 3,
+      "catalogId": "m2-044-hide-screen",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-045-show-screen",
+      "testId": "command-picker-add-m2-045-show-screen",
+      "page": 3,
+      "catalogId": "m2-045-show-screen",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-046-tint-screen",
+      "testId": "command-picker-add-m2-046-tint-screen",
+      "page": 3,
+      "catalogId": "m2-046-tint-screen",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-047-flash-screen",
+      "testId": "command-picker-add-m2-047-flash-screen",
+      "page": 3,
+      "catalogId": "m2-047-flash-screen",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-048-shake-screen",
+      "testId": "command-picker-add-m2-048-shake-screen",
+      "page": 3,
+      "catalogId": "m2-048-shake-screen",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-049-scroll-map",
+      "testId": "command-picker-add-m2-049-scroll-map",
+      "page": 3,
+      "catalogId": "m2-049-scroll-map",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-050-set-weather-effects",
+      "testId": "command-picker-add-m2-050-set-weather-effects",
+      "page": 3,
+      "catalogId": "m2-050-set-weather-effects",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-051-show-picture",
+      "testId": "command-picker-add-showPicture",
+      "page": 3,
+      "catalogId": "m2-051-show-picture",
+      "nativeKind": "showPicture",
+      "route": "catalog-native-alias",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-052-move-picture",
+      "testId": "command-picker-add-m2-052-move-picture",
+      "page": 3,
+      "catalogId": "m2-052-move-picture",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-053-erase-picture",
+      "testId": "command-picker-add-erasePicture",
+      "page": 3,
+      "catalogId": "m2-053-erase-picture",
+      "nativeKind": "erasePicture",
+      "route": "catalog-native-alias",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-054-show-animation",
+      "testId": "command-picker-add-m2-054-show-animation",
+      "page": 3,
+      "catalogId": "m2-054-show-animation",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-056-flash-event",
+      "testId": "command-picker-add-m2-056-flash-event",
+      "page": 3,
+      "catalogId": "m2-056-flash-event",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-059-stop-all-movement",
+      "testId": "command-picker-add-m2-059-stop-all-movement",
+      "page": 3,
+      "catalogId": "m2-059-stop-all-movement",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-066-play-movie",
+      "testId": "command-picker-add-m2-066-play-movie",
+      "page": 3,
+      "catalogId": "m2-066-play-movie",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-067-key-input-processing",
+      "testId": "command-picker-add-inputWait",
+      "page": 3,
+      "catalogId": "m2-067-key-input-processing",
+      "nativeKind": "inputWait",
+      "route": "catalog-native-alias",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-068-change-tileset",
+      "testId": "command-picker-add-m2-068-change-tileset",
+      "page": 3,
+      "catalogId": "m2-068-change-tileset",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-069-change-parallax-back",
+      "testId": "command-picker-add-m2-069-change-parallax-back",
+      "page": 3,
+      "catalogId": "m2-069-change-parallax-back",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-070-set-encounter-rate",
+      "testId": "command-picker-add-m2-070-set-encounter-rate",
+      "page": 3,
+      "catalogId": "m2-070-set-encounter-rate",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-071-change-tile",
+      "testId": "command-picker-add-changeTile",
+      "page": 3,
+      "catalogId": "m2-071-change-tile",
+      "nativeKind": "changeTile",
+      "route": "catalog-native-alias",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-087-call-event",
+      "testId": "command-picker-add-callCommonEvent",
+      "page": 3,
+      "catalogId": "m2-087-call-event",
+      "nativeKind": "callCommonEvent",
+      "route": "catalog-native-alias",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-201-camera-control",
+      "testId": "command-picker-add-m2-201-camera-control",
+      "page": 3,
+      "catalogId": "m2-201-camera-control",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-202-screen-effect",
+      "testId": "command-picker-add-m2-202-screen-effect",
+      "page": 3,
+      "catalogId": "m2-202-screen-effect",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-203-spawn-event",
+      "testId": "command-picker-add-m2-203-spawn-event",
+      "page": 3,
+      "catalogId": "m2-203-spawn-event",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-204-remove-event",
+      "testId": "command-picker-add-m2-204-remove-event",
+      "page": 3,
+      "catalogId": "m2-204-remove-event",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-205-pathfind-move",
+      "testId": "command-picker-add-m2-205-pathfind-move",
+      "page": 3,
+      "catalogId": "m2-205-pathfind-move",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-207-region-trigger",
+      "testId": "command-picker-add-m2-207-region-trigger",
+      "page": 3,
+      "catalogId": "m2-207-region-trigger",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-212-cutscene-control",
+      "testId": "command-picker-add-m2-212-cutscene-control",
+      "page": 3,
+      "catalogId": "m2-212-cutscene-control",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "playMovie",
+      "testId": "command-picker-add-playMovie",
+      "page": 3,
+      "catalogId": null,
+      "nativeKind": "playMovie",
+      "route": "native-noncatalog",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "removeLight",
+      "testId": "command-picker-add-removeLight",
+      "page": 3,
+      "catalogId": null,
+      "nativeKind": "removeLight",
+      "route": "native-noncatalog",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "setLighting",
+      "testId": "command-picker-add-setLighting",
+      "page": 3,
+      "catalogId": null,
+      "nativeKind": "setLighting",
+      "route": "native-noncatalog",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "setWeather",
+      "testId": "command-picker-add-setWeather",
+      "page": 3,
+      "catalogId": null,
+      "nativeKind": "setWeather",
+      "route": "native-noncatalog",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "showAnimation",
+      "testId": "command-picker-add-showAnimation",
+      "page": 3,
+      "catalogId": null,
+      "nativeKind": "showAnimation",
+      "route": "native-noncatalog",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "showEmote",
+      "testId": "command-picker-add-showEmote",
+      "page": 3,
+      "catalogId": null,
+      "nativeKind": "showEmote",
+      "route": "native-noncatalog",
+      "tab": "map/screen",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "ending",
+      "testId": "command-picker-add-ending",
+      "page": 4,
+      "catalogId": null,
+      "nativeKind": "ending",
+      "route": "native-noncatalog",
+      "tab": "system/tools",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-027-change-system-bgm",
+      "testId": "command-picker-add-m2-027-change-system-bgm",
+      "page": 4,
+      "catalogId": "m2-027-change-system-bgm",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "system/tools",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-028-change-system-se",
+      "testId": "command-picker-add-m2-028-change-system-se",
+      "page": 4,
+      "catalogId": "m2-028-change-system-se",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "system/tools",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-029-change-system-graphic",
+      "testId": "command-picker-add-m2-029-change-system-graphic",
+      "page": 4,
+      "catalogId": "m2-029-change-system-graphic",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "system/tools",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-072-set-teleportation-point",
+      "testId": "command-picker-add-m2-072-set-teleportation-point",
+      "page": 4,
+      "catalogId": "m2-072-set-teleportation-point",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "system/tools",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-073-teleportation-on-off",
+      "testId": "command-picker-add-m2-073-teleportation-on-off",
+      "page": 4,
+      "catalogId": "m2-073-teleportation-on-off",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "system/tools",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-074-set-escape-location",
+      "testId": "command-picker-add-m2-074-set-escape-location",
+      "page": 4,
+      "catalogId": "m2-074-set-escape-location",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "system/tools",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-075-change-escape-access",
+      "testId": "command-picker-add-m2-075-change-escape-access",
+      "page": 4,
+      "catalogId": "m2-075-change-escape-access",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "system/tools",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-076-open-save-menu",
+      "testId": "command-picker-add-openSaveMenu",
+      "page": 4,
+      "catalogId": "m2-076-open-save-menu",
+      "nativeKind": "openSaveMenu",
+      "route": "catalog-native-alias",
+      "tab": "system/tools",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-077-change-save-access",
+      "testId": "command-picker-add-m2-077-change-save-access",
+      "page": 4,
+      "catalogId": "m2-077-change-save-access",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "system/tools",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-078-open-menu-screen",
+      "testId": "command-picker-add-m2-078-open-menu-screen",
+      "page": 4,
+      "catalogId": "m2-078-open-menu-screen",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "system/tools",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-079-change-menu-access",
+      "testId": "command-picker-add-m2-079-change-menu-access",
+      "page": 4,
+      "catalogId": "m2-079-change-menu-access",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "system/tools",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-088-comment",
+      "testId": "command-picker-add-m2-088-comment",
+      "page": 4,
+      "catalogId": "m2-088-comment",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "system/tools",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-089-game-over",
+      "testId": "command-picker-add-gameOver",
+      "page": 4,
+      "catalogId": "m2-089-game-over",
+      "nativeKind": "gameOver",
+      "route": "catalog-native-alias",
+      "tab": "system/tools",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-090-return-to-title-screen",
+      "testId": "command-picker-add-returnToTitle",
+      "page": 4,
+      "catalogId": "m2-090-return-to-title-screen",
+      "nativeKind": "returnToTitle",
+      "route": "catalog-native-alias",
+      "tab": "system/tools",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-093-open-load-menu",
+      "testId": "command-picker-add-m2-093-open-load-menu",
+      "page": 4,
+      "catalogId": "m2-093-open-load-menu",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "system/tools",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-094-exit-game",
+      "testId": "command-picker-add-m2-094-exit-game",
+      "page": 4,
+      "catalogId": "m2-094-exit-game",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "system/tools",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-095-toggle-atb-wait-mode",
+      "testId": "command-picker-add-m2-095-toggle-atb-wait-mode",
+      "page": 4,
+      "catalogId": "m2-095-toggle-atb-wait-mode",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "system/tools",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-096-toggle-fullscreen-mode",
+      "testId": "command-picker-add-m2-096-toggle-fullscreen-mode",
+      "page": 4,
+      "catalogId": "m2-096-toggle-fullscreen-mode",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "system/tools",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-097-open-video-options",
+      "testId": "command-picker-add-m2-097-open-video-options",
+      "page": 4,
+      "catalogId": "m2-097-open-video-options",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "system/tools",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-213-checkpoint-save",
+      "testId": "command-picker-add-m2-213-checkpoint-save",
+      "page": 4,
+      "catalogId": "m2-213-checkpoint-save",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "system/tools",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-214-ui-command",
+      "testId": "command-picker-add-m2-214-ui-command",
+      "page": 4,
+      "catalogId": "m2-214-ui-command",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "system/tools",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-215-debug-log",
+      "testId": "command-picker-add-m2-215-debug-log",
+      "page": 4,
+      "catalogId": "m2-215-debug-log",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "system/tools",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-216-evaluate-expression",
+      "testId": "command-picker-add-m2-216-evaluate-expression",
+      "page": 4,
+      "catalogId": "m2-216-evaluate-expression",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "system/tools",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "m2-217-data-query",
+      "testId": "command-picker-add-m2-217-data-query",
+      "page": 4,
+      "catalogId": "m2-217-data-query",
+      "nativeKind": null,
+      "route": "raw-m2",
+      "tab": "system/tools",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    },
+    {
+      "id": "runControl",
+      "testId": "command-picker-add-runControl",
+      "page": 4,
+      "catalogId": null,
+      "nativeKind": "runControl",
+      "route": "native-noncatalog",
+      "tab": "system/tools",
+      "initial": "SOURCE_INVENTORIED",
+      "final": "SOURCE_INVENTORIED_CENSUS_COUNTS_MATCH",
+      "evidence": [
+        "E-SOURCE",
+        "E-PICKER-CENSUS"
+      ],
+      "insertion": "NOT_VERIFIED",
+      "unverified": [
+        "Individual browser ID equality: supervisor supplied aggregate counts, not the full ID list.",
+        "Insertion, editing, Apply/Cancel, persistence and runtime effects."
+      ]
+    }
+  ],
+  "pickerCensus": {
+    "port": 33509,
+    "provenance": "Supervisor real-browser census supplied in follow-up to st_01a072be.",
+    "distinctRenderedIds": 128,
+    "tabs": [
+      {
+        "page": 1,
+        "tab": "quick",
+        "reportedRenderedIds": 37,
+        "sourceDerivedEntries": 37
+      },
+      {
+        "page": 2,
+        "tab": "companion/battle",
+        "reportedRenderedIds": 21,
+        "sourceDerivedEntries": 21
+      },
+      {
+        "page": 3,
+        "tab": "map/screen",
+        "reportedRenderedIds": 44,
+        "sourceDerivedEntries": 44
+      },
+      {
+        "page": 4,
+        "tab": "system/tools",
+        "reportedRenderedIds": 26,
+        "sourceDerivedEntries": 26
+      }
+    ],
+    "initial": "NOT_VERIFIED",
+    "final": "SUPERVISOR_REPORTED_RENDERED_CENSUS",
+    "individualBrowserIdSet": "NOT_SUPPLIED",
+    "insertionSweep": "PENDING",
+    "sourceIdSet": "Reconstructed from authoritative catalog and native descriptors using commandPicker.ts tab filtering and canonical test-ID rules; not a browser capture."
   }
 }

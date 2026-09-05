@@ -150,6 +150,37 @@ limits; the finding doesn't authorize a full interpreter redesign. Setter
 callbacks and subdialog Cancel aren't automatically defects. The relevant
 question is whether the owning transaction promises rollback of those effects.
 
+## Combined visible picker inventory
+
+The supervisor's real-browser census at baseline phase port **33509** found
+**128 distinct rendered picker IDs**. This combined set isn't the 79-kind native
+registry or the 125-ID catalog. It includes visible catalog/native aliases,
+raw-M2 entries and noncatalog native entries; hidden and deprecated catalog rows
+remain covered separately in the catalog inventory.
+
+| Tab | Supervisor rendered census | Source-derived entries |
+| --- | --- | --- |
+| Quick | 37 | 37 |
+| Companion/battle | 21 | 21 |
+| Map/screen | 44 | 44 |
+| System/tools | 26 | 26 |
+| Total | 128 | 128 |
+
+`combinedPickerEntries` records all 128 source-derived command IDs, DOM test IDs,
+tabs, native/catalog links, initial/final evidence states and unverified actions.
+The source set contains 112 visible catalog rows and 16 noncatalog native rows.
+The supervisor supplied aggregate counts, not the individual captured browser
+ID list. Matching counts aren't proof of exact browser ID-set equality.
+**Insertion remains NOT_VERIFIED for every entry.** The supervisor's own browser
+insertion sweep is pending; neither rendered census nor source reconciliation
+is insertion PASS.
+
+The initial ultrabrain finding also supersedes the old independent code-lane
+schedule. Controls, Transactions and Classification run in parallel. Validation
+depends on Controls; Integration depends on all four producers. Template-owned
+side effects belong to Phase 1 Transactions, and no-op redo preservation belongs
+to Phase 1 Controls. `PLAN.md` carries the revised graph.
+
 ## Feature surfaces
 
 Each subtree file has a primary surface in the manifest. Finding-to-file and
@@ -167,7 +198,7 @@ external source tree wasn't exhaustively inventoried by this documentation lane.
 | `validation-navigation` | 1 | MIXED_SEE_FINDINGS | MIXED_SEE_FINDINGS | Issue bell, target IDs, active views and focus |
 | `template-transactions` | 1 | MIXED_SEE_FINDINGS | MIXED_SEE_FINDINGS | Template insertion and project-wide side effects |
 | `command-forms` | 2 | MIXED_SEE_FINDINGS | MIXED_SEE_FINDINGS | Native and raw-M2 forms, branches, defaults and schema activation |
-| `command-picker` | 2 | NOT_VERIFIED | NOT_VERIFIED | Catalog/native picker, hidden routes, search, favorites, recents and preferences |
+| `command-picker` | 2 | NOT_VERIFIED | RENDERED_CENSUS_REPORTED_INSERTION_UNVERIFIED | Catalog/native picker, hidden routes, search, favorites, recents and preferences |
 | `record-pickers` | 3 | MIXED_SEE_FINDINGS | MIXED_SEE_FINDINGS | Record lookup, map-used grouping, keyboard order, usage hints and stale cards |
 | `graphic-pickers` | 3 | NOT_VERIFIED | NOT_VERIFIED | Charset, faceset, NPC graphics, animation and image controls |
 | `map-transfer-pickers` | 3 | NOT_VERIFIED | NOT_VERIFIED | Map points, transfer destination, direction and preview |
@@ -205,9 +236,10 @@ alone prove regression freedom.
 
 The old browser at **9841** was the wrong main server and is excluded as phase
 verification. The actual phase server is **33509**. The parent reports that a
-native-fetch transport overcame `ERR_NETWORK_CHANGED`. The file
-`output/evidence/wish-event-audit/baseline-event-editor.png` exists and its SHA-256
-is recorded. This lane didn't visually review that image. A screenshot of the
+native-fetch transport overcame `ERR_NETWORK_CHANGED`. Both screenshot files
+`output/evidence/wish-event-audit/baseline-shell.png` and
+`output/evidence/wish-event-audit/baseline-event-editor.png` exist and their
+SHA-256 hashes are recorded. This lane didn't visually review those images. A screenshot of the
 editor doesn't establish history, cancellation, parameter or runtime coverage.
 
 Audit fixtures are native content-only fixtures with no remote writes. They
@@ -249,6 +281,9 @@ Observed result:
 nativeKinds: 79 entries, missing=0 extra=0 duplicates=0
 catalogIds: 125 entries, missing=0 extra=0 duplicates=0
 eventEditorFiles: 110 entries, missing=0 extra=0 duplicates=0
+combinedPickerEntries: 128 entries, missing=0 extra=0 duplicates=0
+combinedPickerTestIds: 128 entries, missing=0 extra=0 duplicates=0
+Supervisor census counts match source: 37/21/44/26. Exact browser ID-set equality and insertion remain unverified.
 source hashes: 110 matched; mappings, aliases, evidence links and initial/final columns valid
 Inventory verification passed. This is not a runtime, UI or repair PASS.
 ```
@@ -260,9 +295,10 @@ evidence references and initial/final columns. It isn't a new prose-pinning test
 or a production behavior test. No product test suite, build or runtime QA was
 rerun for this documentation-only change.
 
-The validator has no LSP diagnostics and `node --check` passed. Markdown has no
-configured language server; the JSON language server requires unavailable
-Biome. No tooling was installed. JSON parsing and the executed inventory
+The original validator had no LSP diagnostics. Fresh diagnostics for the
+picker-census update timed out; `node --check` and the updated validator passed.
+Markdown has no configured language server; the JSON language server requires
+unavailable Biome. No tooling was installed. JSON parsing and the executed inventory
 validator provide the machine-readable checks instead.
 
 Preserve initial columns when later phases add evidence. Change final columns

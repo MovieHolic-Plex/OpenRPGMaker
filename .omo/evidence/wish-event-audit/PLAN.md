@@ -28,7 +28,8 @@ The durable aggregate is registered in the parent worktree at
 ## Sequential phases
 
 1. Exhaustive classification, baseline and editing lifecycle: undo/redo, insertion,
-   command selection/clipboard/deletion, pages, modal save/cancel and drafts.
+   command selection/clipboard/deletion, pages, modal save/cancel, drafts,
+   template-owned side effects and no-op redo preservation.
 2. Command contracts: every registered kind/catalog entry, parameter forms,
    nested branches, defaults, validation, serialization and interpreter alignment.
 3. Auxiliary surfaces and integration: routes, record/graphic/map pickers,
@@ -111,18 +112,23 @@ contains classifications, verification evidence, commit hashes and PR URLs.
 The initial audit reconciled 79 native command kinds, 125 M2 IDs and 110
 eventEditor files. Its module/FakeDOM probes are not complete runtime proof.
 
-| Lane | Isolated worktree suffix | Port | Scope and failing-first proof |
-| --- | --- | --- | --- |
-| History | wish-event-p1-history | 19842 | Modal/content/history/inspector: keyboard undo equals toolbar undo, Ctrl+K insertion participates, page changes clear stale positional selection; text native undo stays local. |
-| Selection | wish-event-p1-selection | 29842 | Command list/context menu/clipboard: Ctrl/Cmd+A followed by copy/cut/delete affects selected root commands once, nested commands are not duplicated, Escape dismisses only the context menu and listeners are cleaned. |
-| Draft | wish-event-p1-draft | 33675 | Character display-name editing and draft transaction: Cancel restores name, autosave projection does not leak draft name, Apply commits name, unrelated character fields survive. |
-| Validation | wish-event-p1-validation | 40853 | Validator/bell/page controls: missing switch/variable/actor/item issue opens and focuses the real condition control, without weakening fatal validation. |
-| Classification | wish-event-audit-p1 | 33509 | Evidence only: complete native, catalog and filename manifests, source/evidence strength, initial/final status and defect-to-phase mapping. |
+The initial ultrabrain finding supersedes the earlier four independent code
+lanes. Controls and validation share control IDs/views, while template effects
+belong to the draft transaction. The active dependency graph is:
 
-The five producers are independent. The integration verifier depends on all five,
-cherry-picks only verified atomic worker commits into the phase worktree, runs
-focused tests and reports exact diffs/conflicts to the supervisor. The supervisor
-then runs gates/build/browser and opens the PR for final ultrabrain review.
+| Lane | Dependencies | Scope and failing-first proof |
+| --- | --- | --- |
+| Controls | None | History, insertion, selection, page paths and context menus: keyboard/toolbar parity, Ctrl+K and follower insertion, no-op redo preservation, root/nested clipboard actions, stale-path clearing, Escape ownership and disposal. |
+| Transactions | None | Display-name and template-owned effects: Cancel rolls back owned side effects, autosave projection doesn't leak draft changes, Apply commits once, unrelated project fields survive. |
+| Classification | None | Evidence only: native kinds, catalog IDs, subtree files and combined visible picker entries, with source/evidence strength and initial/final status. |
+| Validation | Controls | Consume the finalized controls and target IDs/views. Missing switch/variable/actor/item issues focus actual controls without weakening fatal validation. |
+| Integration | Controls, Transactions, Classification, Validation | Integrate verified producer commits, run focused tests, report conflicts, and hand the exact tree to supervisor gates/build/browser and ultrabrain review. |
+
+Controls, Transactions and Classification run in parallel in isolated scopes.
+Validation starts after Controls, not as an independent producer. Integration
+waits for all four producers. Earlier History/Selection/Draft/Validation worker
+names and ports aren't the active scheduling graph; provisioning must follow
+the supervisor's current lane assignments without reusing stale ownership.
 
 Worker reports include exact RED/GREEN output and tests, own commit SHA, changed
 files and cleanup receipts. No worker pushes, creates PRs, or merges main.
@@ -130,7 +136,9 @@ files and cleanup receipts. No worker pushes, creates PRs, or merges main.
 Additional source-confirmed Phase 1 defects: display-name edits bypass event
 draft rollback (`pageProps.ts:711-727`); context-menu Escape bypasses modalStack;
 validation issue field IDs do not match page controls. Positional selection on
-page changes is covered by History rather than accepted as a feature.
+page changes is covered by Controls rather than accepted as a feature. Template-owned
+side effects belong to Transactions; preserving redo after no-op actions belongs
+to Controls. Both are explicit Phase 1 obligations.
 
 ## Baseline corrections
 
@@ -159,3 +167,17 @@ findings remain open; candidates and intentional preview limits stay distinct.
 The current full gate rerun is still pending in the supplied handoff. See the
 classification for the stronger observed shop round-trip finding and the limits
 of the earlier enum-only concern. No repair or merge is claimed by this snapshot.
+
+
+## Supervisor visible-picker census
+
+The supervisor's real-browser census on baseline phase port 33509 reports 128
+distinct rendered picker IDs: quick 37, companion/battle 21, map/screen 44 and
+system/tools 26. This combined inventory is separate from 79 native kinds and
+125 catalog IDs. Source-derived entries and test IDs are listed in the manifest;
+their per-tab counts agree. The captured individual browser ID set wasn't
+supplied to this lane, so exact browser set equality isn't claimed.
+
+Both screenshot paths are recorded: `output/evidence/wish-event-audit/baseline-shell.png`
+and `output/evidence/wish-event-audit/baseline-event-editor.png`. The supervisor's
+insertion sweep is pending. Rendered census evidence isn't insertion PASS.
