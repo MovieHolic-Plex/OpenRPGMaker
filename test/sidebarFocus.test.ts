@@ -17,6 +17,26 @@ describe("sidebarFocus - Focus survival & Roving Tabindex", () => {
   });
 
   describe("captureFocus & restoreFocus", () => {
+    it("preserves a search caret while filtering replaces the input", () => {
+      const input = document.createElement("input");
+      input.type = "search";
+      input.dataset.testid = "tile-search-input";
+      input.value = "xab";
+      container.append(input);
+      input.focus();
+      input.setSelectionRange(1, 1);
+      const snapshot = captureFocus(container);
+      const replacement = document.createElement("input");
+      replacement.type = "search";
+      replacement.dataset.testid = input.dataset.testid;
+      replacement.value = input.value;
+      container.replaceChildren(replacement);
+      restoreFocus(container, snapshot);
+      expect(document.activeElement).toBe(replacement);
+      expect(replacement.selectionStart).toBe(1);
+      expect(replacement.selectionEnd).toBe(1);
+    });
+
     it("captures and restores focus by data-testid", () => {
       const btn1 = document.createElement("button");
       btn1.dataset.testid = "tool-paint";

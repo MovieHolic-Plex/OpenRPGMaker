@@ -854,3 +854,17 @@
   font-size: 13px;
   height: 32px;
 }
+
+/* Short desktops share space between tiles and the map list. Matches the
+   adaptive sheet reserve in editor.ts (800px dock + 49px studio bar). */
+@media (max-height: 848px) {
+  .editor-layout .left-panel-stack[data-testid="left-palette-root"] .chipset-sheet.tile-palette {
+    min-height: 200px;
+  }
+}
+
+/* The beginner sheet measures its own flyout, not the 72px rail. */
+.editor-layout .left-panel-stack .basic-rail-flyout.is-tiles .chipset-sheet.tile-palette {
+  min-height: 120px;
+  container-type: inline-size;
+}

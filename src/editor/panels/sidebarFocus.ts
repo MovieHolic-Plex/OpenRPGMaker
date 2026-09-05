@@ -13,6 +13,7 @@ export interface FocusSnapshot {
   readonly testId?: string;
   readonly pathIndices?: readonly number[];
   readonly tagName: string;
+  readonly selection?: { start: number; end: number; direction: "forward" | "backward" | "none" };
   readonly fallbackAnchorTestId?: string;
 }
 
@@ -32,11 +33,17 @@ export function captureFocus(container: HTMLElement | null): FocusSnapshot | nul
     fallbackAnchorTestId = "oprn-tool-overflow";
   }
 
+  const field = active as HTMLInputElement | HTMLTextAreaElement;
+  const selection = (active.tagName === "INPUT" || active.tagName === "TEXTAREA")
+    && typeof field.selectionStart === "number" && typeof field.selectionEnd === "number"
+    ? { start: field.selectionStart, end: field.selectionEnd, direction: field.selectionDirection ?? "none" }
+    : undefined;
   const testId = active.dataset.testid;
   if (testId) {
     return {
       testId,
       tagName: active.tagName,
+      selection,
       fallbackAnchorTestId,
     };
   }
@@ -54,6 +61,7 @@ export function captureFocus(container: HTMLElement | null): FocusSnapshot | nul
   return {
     pathIndices: path,
     tagName: active.tagName,
+    selection,
     fallbackAnchorTestId,
   };
 }
@@ -67,7 +75,7 @@ export function restoreFocus(container: HTMLElement | null, snapshot: FocusSnaps
   if (snapshot.testId) {
     const target = container.querySelector<HTMLElement>(`[data-testid="${cssEscape(snapshot.testId)}"]`);
     if (target && typeof target.focus === "function") {
-      target.focus();
+      restoreNodeFocus(target, snapshot);
       return;
     }
   }
@@ -75,7 +83,7 @@ export function restoreFocus(container: HTMLElement | null, snapshot: FocusSnaps
   if (snapshot.fallbackAnchorTestId) {
     const anchor = container.querySelector<HTMLElement>(`[data-testid="${cssEscape(snapshot.fallbackAnchorTestId)}"]`);
     if (anchor && typeof anchor.focus === "function") {
-      anchor.focus();
+      anchor.focus({ preventScroll: true });
       return;
     }
   }
@@ -90,7 +98,18 @@ export function restoreFocus(container: HTMLElement | null, snapshot: FocusSnaps
       curr = curr.children[idx];
     }
     if (curr instanceof HTMLElement && typeof curr.focus === "function") {
-      curr.focus();
+      restoreNodeFocus(curr, snapshot);
+    }
+  }
+}
+
+function restoreNodeFocus(target: HTMLElement, snapshot: FocusSnapshot): void {
+  target.focus({ preventScroll: true });
+  if (snapshot.selection && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) {
+    const field = target as HTMLInputElement | HTMLTextAreaElement;
+    // Number and other non-text input types do not support selection ranges.
+    if (typeof field.selectionStart === "number") {
+      field.setSelectionRange?.(snapshot.selection.start, snapshot.selection.end, snapshot.selection.direction);
     }
   }
 }
