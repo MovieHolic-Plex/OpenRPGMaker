@@ -45,6 +45,15 @@ unique IDs. **Village internal early sealing and proactive terrain/road/prop
 avoidance are Phase 2**: a Phase 1 transaction may reject unsafe generation
 instead of silently restoring or accepting damaged houses.
 
+Cluster approval (`clusterAiModal.ts`, including palette range classification) uses
+`applyProposedProject` against the live store, not direct snapshot/replacement.
+That common boundary owns house validation, undo, AI-attributed replacement,
+focus and commit logging. A stale proposal that would overwrite human house
+edits or remove a newly completed house leaves store/history and session draft
+unchanged; the modal reports failure and keeps the proposal available. Safe
+metadata-only proposals apply once and then rebase. Existing destructive/rule
+confirmation hooks are unchanged. Regression: `test/clusterAiModalHouseProtection.test.ts`.
+
 Focused contracts: `test/houseProtection.test.ts`, `test/toolHouseProtection.test.ts`,
 `test/houseKitDomainSeam.test.ts`, `test/villageBuilderSeam.test.ts`,
 `test/assistantMapPreservationGuard.test.ts`, `test/constructionToolsV3.test.ts`.
