@@ -1,0 +1,19 @@
+{
+  "command": [
+    "node",
+    "scripts/run-vitest.mjs",
+    "run",
+    "test/modeTransitions.test.ts",
+    "--testTimeout",
+    "60000",
+    "--configLoader",
+    "bundle",
+    "--reporter=default",
+    "--reporter=json",
+    "--outputFile",
+    "/home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/output/evidence/final-c5f48f0b-comparison/mode-baseline/vitest-report.json"
+  ],
+  "returncode": 1,
+  "head": "6950be5d755c736cb6f5dae3a51c67a4ccf493ec",
+  "duration_seconds": 10.212444543838501
+}

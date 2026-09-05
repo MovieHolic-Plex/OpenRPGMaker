@@ -1,0 +1,469 @@
+{
+  "runs": {
+    "broad_baseline": {
+      "path": "/home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/output/evidence/final-c5f48f0b-comparison",
+      "status": {
+        "command": [
+          "node",
+          "scripts/run-vitest.mjs",
+          "run",
+          "test/actionDebounceFootprint.test.ts",
+          "test/actorBattleAuthoringSurface.test.ts",
+          "test/actorCombatCommandBodies.test.ts",
+          "test/agentBlueprintTurnEnd.test.ts",
+          "test/aiActivityLiveRow.test.ts",
+          "test/aiAssistantAfterUx.test.ts",
+          "test/aiChatObservability.test.ts",
+          "test/aiChatPanelTransportError.test.ts",
+          "test/aiChatPanelUxRepairs.test.ts",
+          "test/aiPlacementCutsceneCheckpoint.test.ts",
+          "test/aiProposalCardUxd.test.ts",
+          "test/aiSelectionChipScope.test.ts",
+          "test/appStorageMigration.test.ts",
+          "test/authorHouseFacade.test.ts",
+          "test/autosaveStatus.test.ts",
+          "test/autotileGroupPersistence.test.ts",
+          "test/battleElementAdversarialFixes.test.ts",
+          "test/changeExpCommandBody.test.ts",
+          "test/changePartyCommandBody.test.ts",
+          "test/clusterRulePlacement.test.ts",
+          "test/commandContracts/coverage.test.ts",
+          "test/commandContracts/evolveMonster.contract.test.ts",
+          "test/commandContracts/registry.test.ts",
+          "test/commandKindCoverage.test.ts",
+          "test/commentCommandBody.test.ts",
+          "test/databaseKoreanRtpDefaults.test.ts",
+          "test/databaseNavMode.test.ts",
+          "test/databaseRadioCustomGuard.test.ts",
+          "test/databaseSidebarKeyboard.test.ts",
+          "test/databaseSidebarNav.test.ts",
+          "test/databaseTabIcons.test.ts",
+          "test/databaseViewToggle.test.ts",
+          "test/defaultAdventureGame.test.ts",
+          "test/defaultDatabase.test.ts",
+          "test/defaults.test.ts",
+          "test/demoTeach.test.ts",
+          "test/detsukuruBrandStrings.test.ts",
+          "test/devShowcaseProjects.test.ts",
+          "test/emberQuestGame.test.ts",
+          "test/eventCommandPickerHandoff.test.ts",
+          "test/eventEditorCommandLabels.test.ts",
+          "test/eventEditorCommitProbe.baseline.test.ts",
+          "test/eventEditorFormSurface.baseline.test.ts",
+          "test/eventEditorInteractionSurface.baseline.test.ts",
+          "test/eventEditorM2Surface.baseline.test.ts",
+          "test/eventEditorPortalSurface.baseline.test.ts",
+          "test/eventEditorTrustLoop.test.ts",
+          "test/eventEditorUiDensity.test.ts",
+          "test/fontFamilyTokenGuard.test.ts",
+          "test/forestDensity.test.ts",
+          "test/gen1DemoContent.test.ts",
+          "test/genrePackReceiptCli.test.ts",
+          "test/houseKitDomainSeam.test.ts",
+          "test/houseLotTools.test.ts",
+          "test/interiorAutotile.test.ts",
+          "test/interiorWallFrameQuarterComposition.test.ts",
+          "test/io.test.ts",
+          "test/koreanLocalizationDefaults.test.ts",
+          "test/layerRouting.m1.test.ts",
+          "test/mapEditCommands.test.ts",
+          "test/modalEscapeLayerGate.test.ts",
+          "test/modeTransitions.test.ts",
+          "test/monsterCollection.test.ts",
+          "test/noLocalProjectDb.test.ts",
+          "test/p0ProjectSchema.test.ts",
+          "test/p1FoundationSchema.test.ts",
+          "test/p2ProjectSchema.test.ts",
+          "test/p2SpatialEditorAuthoring.test.ts",
+          "test/pkmnBalanceB6.test.ts",
+          "test/playerRuntimeCss.test.ts",
+          "test/pokemonChipsetPreset.test.ts",
+          "test/quickAuthoringPreviewIdentity.test.ts",
+          "test/regionAiHouseTreeNpc.probe.test.ts",
+          "test/regionTaskCssTokens.test.ts",
+          "test/rm2003DatabaseUtilityRecords.test.ts",
+          "test/roleNameComparisonGate.test.ts",
+          "test/scarloxyPokemonDemo.test.ts",
+          "test/scatterObject.test.ts",
+          "test/setGroupLayout.test.ts",
+          "test/storePersistence.test.ts",
+          "test/teamWorkflowUi.test.ts",
+          "test/tileFlowApprovalExpansion.test.ts",
+          "test/tileGrafts.test.ts",
+          "test/tileLayerClassification.test.ts",
+          "test/tilesetHarness.test.ts",
+          "test/tilesetPaletteT1a.test.ts",
+          "test/tilesetWave2Undo.test.ts",
+          "test/toolCatalog.test.ts",
+          "test/unsavedChangesGuard.test.ts",
+          "test/uxcEditorShell.test.ts",
+          "test/uxcLoadFailure.test.ts",
+          "test/viteConfig.test.ts",
+          "--configLoader",
+          "bundle",
+          "--reporter=default",
+          "--reporter=json",
+          "--outputFile",
+          "/home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/output/evidence/final-c5f48f0b-comparison/baseline-vitest-report.json"
+        ],
+        "returncode": 1,
+        "head": "6950be5d755c736cb6f5dae3a51c67a4ccf493ec",
+        "duration_seconds": 162.6160867214203,
+        "git_status_after": ""
+      },
+      "counts": {
+        "numTotalTests": 979,
+        "numPassedTests": 813,
+        "numFailedTests": 166,
+        "numPendingTests": 0
+      },
+      "stderr_sha256": "1d01426222fa45846a04d5b51de8a51a2a8691b40fbf2cd3be2692de4e81174e"
+    },
+    "additional_baseline": {
+      "path": "/home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/output/evidence/final-c5f48f0b-comparison/additional-baseline",
+      "status": {
+        "command": [
+          "node",
+          "scripts/run-vitest.mjs",
+          "run",
+          "test/databaseOverviewDashboard.test.ts",
+          "test/databaseOverviewTab.test.ts",
+          "test/autosaveStatus.test.ts",
+          "--configLoader",
+          "bundle",
+          "--reporter=default",
+          "--reporter=json",
+          "--outputFile",
+          "/home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/output/evidence/final-c5f48f0b-comparison/additional-baseline/vitest-report.json"
+        ],
+        "returncode": 1,
+        "head": "6950be5d755c736cb6f5dae3a51c67a4ccf493ec",
+        "duration_seconds": 41.15405225753784
+      },
+      "counts": {
+        "numTotalTests": 22,
+        "numPassedTests": 21,
+        "numFailedTests": 1,
+        "numPendingTests": 0
+      },
+      "stderr_sha256": "a495b74fc747facd582f7b34028bcfff9161f077543db0d0bad68bbe5224f99b"
+    },
+    "store_fresh_baseline": {
+      "path": "/home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/output/evidence/final-c5f48f0b-comparison/store-fresh-baseline",
+      "status": {
+        "command": [
+          "node",
+          "scripts/run-vitest.mjs",
+          "run",
+          "test/storePersistence.test.ts",
+          "--testNamePattern",
+          "always creates a new fresh project instead of reloading local dev overrides",
+          "--testTimeout",
+          "60000",
+          "--configLoader",
+          "bundle",
+          "--reporter=default",
+          "--reporter=json",
+          "--outputFile",
+          "/home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/output/evidence/final-c5f48f0b-comparison/store-fresh-baseline/vitest-report.json"
+        ],
+        "returncode": 1,
+        "head": "6950be5d755c736cb6f5dae3a51c67a4ccf493ec",
+        "duration_seconds": 7.997364521026611
+      },
+      "counts": {
+        "numTotalTests": 11,
+        "numPassedTests": 0,
+        "numFailedTests": 1,
+        "numPendingTests": 10
+      },
+      "stderr_sha256": "ccb937a26065ef19fbea5353dfcfb3bfe4366d79c250f6320a3e139441fea270"
+    },
+    "mode_baseline": {
+      "path": "/home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/output/evidence/final-c5f48f0b-comparison/mode-baseline",
+      "status": {
+        "command": [
+          "node",
+          "scripts/run-vitest.mjs",
+          "run",
+          "test/modeTransitions.test.ts",
+          "--testTimeout",
+          "60000",
+          "--configLoader",
+          "bundle",
+          "--reporter=default",
+          "--reporter=json",
+          "--outputFile",
+          "/home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/output/evidence/final-c5f48f0b-comparison/mode-baseline/vitest-report.json"
+        ],
+        "returncode": 1,
+        "head": "6950be5d755c736cb6f5dae3a51c67a4ccf493ec",
+        "duration_seconds": 10.212444543838501
+      },
+      "counts": {
+        "numTotalTests": 1,
+        "numPassedTests": 0,
+        "numFailedTests": 1,
+        "numPendingTests": 0
+      },
+      "stderr_sha256": "8b3e576c9eb38da993bb12fafc270fd0686a9a2c1e9bfd44aee5b057ed1c7076"
+    },
+    "focused_final": {
+      "path": "/home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/output/evidence/final-c5f48f0b-comparison/focused-final",
+      "status": {
+        "command": [
+          "node",
+          "scripts/run-vitest.mjs",
+          "run",
+          "test/databaseOverviewDashboard.test.ts",
+          "test/databaseOverviewTab.test.ts",
+          "test/aiChatPanelUxRepairs.test.ts",
+          "test/databaseViewToggle.test.ts",
+          "test/modeTransitions.test.ts",
+          "test/roleNameComparisonGate.test.ts",
+          "--configLoader",
+          "bundle",
+          "--reporter=default",
+          "--reporter=json",
+          "--outputFile",
+          "/home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/output/evidence/final-c5f48f0b-comparison/focused-final/vitest-report.json"
+        ],
+        "returncode": 1,
+        "head": "c5f48f0bcf6f9cc3e4a671c612022df70b43932e",
+        "cwd": "/home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-final-validation",
+        "duration_seconds": 38.76797914505005,
+        "git_status_after": ""
+      },
+      "counts": {
+        "numTotalTests": 48,
+        "numPassedTests": 45,
+        "numFailedTests": 3,
+        "numPendingTests": 0
+      },
+      "stderr_sha256": "379b404543e510d81835725e8e703431255de47ba88f2b7df750804a7c78c45d"
+    },
+    "full_final": {
+      "path": "/home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/output/evidence/final-c5f48f0b-comparison",
+      "status": {
+        "exit": 1,
+        "head": "c5f48f0bcf6f9cc3e4a671c612022df70b43932e",
+        "at": "2026-09-05T12:08:48.468158+00:00"
+      },
+      "counts": {
+        "numTotalTests": 13266,
+        "numPassedTests": 13082,
+        "numFailedTests": 169,
+        "numPendingTests": 15
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "resolutions": [
+    {
+      "file": "test/databaseOverviewDashboard.test.ts",
+      "fullName": "database overview dashboard curve section shows a visible HP/attack legend",
+      "original_full_final_status": "failed",
+      "original_full_final_duration_ms": 15006.517909000002,
+      "original_full_final_diagnostic": [
+        "Error: STACK_TRACE_ERROR"
+      ],
+      "baseline_focused_status": "passed",
+      "baseline_focused_duration_ms": 1686.4959159999999,
+      "final_focused_status": "passed",
+      "final_focused_duration_ms": 1521.422160000002,
+      "classification": "final_full_run_only_failure_both_focused_pass_original_cause_unresolved"
+    },
+    {
+      "file": "test/databaseOverviewDashboard.test.ts",
+      "fullName": "database overview dashboard jump button switches to the target tab via switchDatabaseActiveTab (G006)",
+      "original_full_final_status": "failed",
+      "original_full_final_duration_ms": 15047.431809000002,
+      "original_full_final_diagnostic": [
+        "Error: STACK_TRACE_ERROR"
+      ],
+      "baseline_focused_status": "passed",
+      "baseline_focused_duration_ms": 1817.8005460000022,
+      "final_focused_status": "passed",
+      "final_focused_duration_ms": 1392.3214230000012,
+      "classification": "final_full_run_only_failure_both_focused_pass_original_cause_unresolved"
+    },
+    {
+      "file": "test/databaseOverviewTab.test.ts",
+      "fullName": "database overview tab shell setDatabaseActiveTab('overview') + renderDatabasePanel renders the overview tab",
+      "original_full_final_status": "failed",
+      "original_full_final_duration_ms": 15021.014003999997,
+      "original_full_final_diagnostic": [
+        "Error: STACK_TRACE_ERROR"
+      ],
+      "baseline_focused_status": "passed",
+      "baseline_focused_duration_ms": 1736.0415589999975,
+      "final_focused_status": "passed",
+      "final_focused_duration_ms": 1433.7496340000034,
+      "classification": "final_full_run_only_failure_both_focused_pass_original_cause_unresolved"
+    },
+    {
+      "file": "test/aiChatPanelUxRepairs.test.ts",
+      "fullName": "진행 상태와 중단 AssistantSession은 AbortSignal을 LLM 호출에 전달하고 중단 결과로 종료한다",
+      "baseline_run": "broad_baseline",
+      "final_run": "focused_final",
+      "baseline_status": "failed",
+      "final_status": "failed",
+      "baseline_diagnostic": [
+        "Error: STACK_TRACE_ERROR"
+      ],
+      "final_diagnostic": [
+        "Error: STACK_TRACE_ERROR"
+      ],
+      "baseline_default_reporter": {
+        "diagnostic": "Error: Test timed out in 15000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".",
+        "block": "Error: Test timed out in 15000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n ❯ test/aiChatPanelUxRepairs.test.ts:210:3\n    208|   });\n    209| \n    210|   it(\"AssistantSession은 AbortSignal을 LLM 호출에 전달하고 중단 결과로 종료한다\", async …\n       |   ^\n    211|     const controller = new AbortController();\n    212|     let receivedSignal: AbortSignal | undefined;"
+      },
+      "final_default_reporter": {
+        "diagnostic": "Error: Test timed out in 15000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".",
+        "block": "Error: Test timed out in 15000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n ❯ test/aiChatPanelUxRepairs.test.ts:210:3\n    208|   });\n    209| \n    210|   it(\"AssistantSession은 AbortSignal을 LLM 호출에 전달하고 중단 결과로 종료한다\", async …\n       |   ^\n    211|     const controller = new AbortController();\n    212|     let receivedSignal: AbortSignal | undefined;"
+      },
+      "same_failure_message_diagnostic": true,
+      "same_default_diagnostic": true,
+      "same_default_failure_block": true,
+      "classification": "same_supplemental_diagnostic"
+    },
+    {
+      "file": "test/autosaveStatus.test.ts",
+      "fullName": "autosave status keeps autosave state out of the map-focused editor statusbar",
+      "baseline_run": "additional_baseline",
+      "final_run": "full_final",
+      "baseline_status": "failed",
+      "final_status": "failed",
+      "baseline_diagnostic": [
+        "TypeError: Cannot read properties of null (reading 'getItem')"
+      ],
+      "final_diagnostic": [
+        "TypeError: Cannot read properties of null (reading 'getItem')"
+      ],
+      "baseline_default_reporter": {
+        "diagnostic": "TypeError: Cannot read properties of null (reading 'getItem')",
+        "block": "TypeError: Cannot read properties of null (reading 'getItem')\n ❯ readStoredViewModes src/editor/panels/databaseRecordViewSession.ts:159:35\n    157|   const defaults = createDefaultViewModes();\n    158|   if (typeof window === \"undefined\") return defaults;\n    159|   const raw = window.localStorage.getItem(VIEW_MODE_STORAGE_KEY);\n       |                                   ^\n    160|   if (!raw) return defaults;\n    161|   try {\n ❯ src/editor/panels/databaseRecordViewSession.ts:58:70\n ❯ src/editor/panels/databaseMonsterSpeciesView.ts:22:1"
+      },
+      "final_default_reporter": null,
+      "same_failure_message_diagnostic": true,
+      "same_default_diagnostic": false,
+      "same_default_failure_block": false,
+      "classification": "same_supplemental_diagnostic"
+    },
+    {
+      "file": "test/databaseViewToggle.test.ts",
+      "fullName": "database per-collection view mode session clicking db-view-toggle-gallery on items flips state to gallery and persists across re-render and localStorage re-read",
+      "baseline_run": "broad_baseline",
+      "final_run": "focused_final",
+      "baseline_status": "failed",
+      "final_status": "passed",
+      "baseline_diagnostic": [
+        "Error: STACK_TRACE_ERROR"
+      ],
+      "final_diagnostic": [],
+      "baseline_default_reporter": {
+        "diagnostic": "Error: Test timed out in 15000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".",
+        "block": "Error: Test timed out in 15000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n ❯ test/databaseViewToggle.test.ts:80:3\n     78|   });\n     79| \n     80|   it(\"clicking db-view-toggle-gallery on items flips state to gallery …\n       |   ^\n     81|     const { renderRecordTab, resetDatabaseRecordViewSession } = await …\n     82|     resetDatabaseRecordViewSession();"
+      },
+      "final_default_reporter": null,
+      "same_failure_message_diagnostic": false,
+      "same_default_diagnostic": false,
+      "same_default_failure_block": false,
+      "classification": "final_focused_pass_original_placeholder_unresolved"
+    },
+    {
+      "file": "test/modeTransitions.test.ts",
+      "fullName": "mode transitions mounts play when a newer same-mode request overlaps an in-flight switch",
+      "baseline_run": "mode_baseline",
+      "final_run": "focused_final",
+      "baseline_status": "failed",
+      "final_status": "failed",
+      "baseline_diagnostic": [
+        "TypeError: Cannot set properties of undefined (setting 'testid')"
+      ],
+      "final_diagnostic": [
+        "TypeError: Cannot set properties of undefined (setting 'testid')"
+      ],
+      "baseline_default_reporter": {
+        "diagnostic": "TypeError: Cannot set properties of undefined (setting 'testid')",
+        "block": "TypeError: Cannot set properties of undefined (setting 'testid')\n ❯ renderLoadFailureScreen src/app/mode.ts:308:17\n    306|   const panel = document.createElement(\"section\");\n    307|   panel.className = \"db-required-panel db-required-hero project-load-e…\n    308|   panel.dataset.testid = \"project-load-error-panel\";\n       |                 ^\n    309| \n    310|   const hero = document.createElement(\"div\");\n ❯ bootApp src/app/mode.ts:124:7\n ❯ test/modeTransitions.test.ts:162:11"
+      },
+      "final_default_reporter": {
+        "diagnostic": "TypeError: Cannot set properties of undefined (setting 'testid')",
+        "block": "TypeError: Cannot set properties of undefined (setting 'testid')\n ❯ renderLoadFailureScreen src/app/mode.ts:308:17\n    306|   const panel = document.createElement(\"section\");\n    307|   panel.className = \"db-required-panel db-required-hero project-load-e…\n    308|   panel.dataset.testid = \"project-load-error-panel\";\n       |                 ^\n    309| \n    310|   const hero = document.createElement(\"div\");\n ❯ bootApp src/app/mode.ts:124:7\n ❯ test/modeTransitions.test.ts:162:11"
+      },
+      "same_failure_message_diagnostic": true,
+      "same_default_diagnostic": true,
+      "same_default_failure_block": true,
+      "classification": "same_supplemental_diagnostic"
+    },
+    {
+      "file": "test/roleNameComparisonGate.test.ts",
+      "fullName": "A-2 게이트 — 역할 이름 비교 잔여 허용 목록 밖에서 타일 역할 이름을 직접 비교하지 않는다",
+      "baseline_run": "broad_baseline",
+      "final_run": "focused_final",
+      "baseline_status": "failed",
+      "final_status": "failed",
+      "baseline_diagnostic": [
+        "AssertionError: expected [ …(2) ] to deeply equal []"
+      ],
+      "final_diagnostic": [
+        "AssertionError: expected [ …(2) ] to deeply equal []"
+      ],
+      "baseline_default_reporter": {
+        "diagnostic": "AssertionError: expected [ …(2) ] to deeply equal []\n\n- Expected\n+ Received\n\n- []\n+ [\n+   \"src/project/lint/postTileVerify.ts:129  role !== \\\"wall\\\"\",\n+   \"src/project/lint/postTileVerify.ts:138  role !== \\\"roof\\\"\",\n+ ]",
+        "block": "AssertionError: expected [ …(2) ] to deeply equal []\n\n- Expected\n+ Received\n\n- []\n+ [\n+   \"src/project/lint/postTileVerify.ts:129  role !== \\\"wall\\\"\",\n+   \"src/project/lint/postTileVerify.ts:138  role !== \\\"roof\\\"\",\n+ ]\n\n ❯ test/roleNameComparisonGate.test.ts:154:23\n    152|       .filter((file) => !ALLOWED.has(file))\n    153|       .flatMap(offendingMatches);\n    154|     expect(offenders).toEqual([]);\n       |                       ^\n    155|   });\n    156|"
+      },
+      "final_default_reporter": {
+        "diagnostic": "AssertionError: expected [ …(2) ] to deeply equal []\n\n- Expected\n+ Received\n\n- []\n+ [\n+   \"src/project/lint/postTileVerify.ts:129  role !== \\\"wall\\\"\",\n+   \"src/project/lint/postTileVerify.ts:138  role !== \\\"roof\\\"\",\n+ ]",
+        "block": "AssertionError: expected [ …(2) ] to deeply equal []\n\n- Expected\n+ Received\n\n- []\n+ [\n+   \"src/project/lint/postTileVerify.ts:129  role !== \\\"wall\\\"\",\n+   \"src/project/lint/postTileVerify.ts:138  role !== \\\"roof\\\"\",\n+ ]\n\n ❯ test/roleNameComparisonGate.test.ts:154:23\n    152|       .filter((file) => !ALLOWED.has(file))\n    153|       .flatMap(offendingMatches);\n    154|     expect(offenders).toEqual([]);\n       |                       ^\n    155|   });\n    156|"
+      },
+      "same_failure_message_diagnostic": true,
+      "same_default_diagnostic": true,
+      "same_default_failure_block": true,
+      "classification": "same_supplemental_diagnostic"
+    },
+    {
+      "file": "test/storePersistence.test.ts",
+      "fullName": "Project store remote persistence always creates a new fresh project instead of reloading local dev overrides",
+      "baseline_run": "store_fresh_baseline",
+      "final_run": "full_final",
+      "baseline_status": "failed",
+      "final_status": "failed",
+      "baseline_diagnostic": [
+        "TypeError: Cannot read properties of undefined (reading 'ok')"
+      ],
+      "final_diagnostic": [
+        "TypeError: Cannot read properties of undefined (reading 'ok')"
+      ],
+      "baseline_default_reporter": {
+        "diagnostic": "TypeError: Cannot read properties of undefined (reading 'ok')",
+        "block": "TypeError: Cannot read properties of undefined (reading 'ok')\n ❯ loadProjectSnapshotFromSupabase src/project/supabaseProjectSync.ts:221:17\n    219|     headers: supabaseJsonHeaders(config, \"read\"),\n    220|   });\n    221|   if (!response.ok) {\n       |                 ^\n    222|     throw new SupabaseProjectSyncError(await response.text(), response…\n    223|   }\n ❯ loadProjectFromSupabase src/project/supabaseProjectSync.ts:151:20\n ❯ ProjectStore.load src/project/store.ts:258:27\n ❯ test/storePersistence.test.ts:91:21"
+      },
+      "final_default_reporter": null,
+      "same_failure_message_diagnostic": true,
+      "same_default_diagnostic": false,
+      "same_default_failure_block": false,
+      "classification": "same_supplemental_diagnostic"
+    }
+  ],
+  "raw_new_failed_assertion_occurrences": 3,
+  "raw_new_failed_files": [
+    "test/databaseOverviewDashboard.test.ts",
+    "test/databaseOverviewTab.test.ts"
+  ],
+  "new_full_failures_both_focused_pass": 3,
+  "remaining_original_placeholder_cause_unresolved": 4,
+  "baseline_files_tested": 94,
+  "final_clean_checks": {
+    "baseline": {
+      "head": "6950be5d755c736cb6f5dae3a51c67a4ccf493ec",
+      "git_status": ""
+    },
+    "final": {
+      "head": "c5f48f0bcf6f9cc3e4a671c612022df70b43932e",
+      "git_status": ""
+    }
+  },
+  "final_full_report_sha256_unchanged": "6549da4710b09e937e278610581030801b1be8b84d5ab5fb862242d94782fbd7"
+}

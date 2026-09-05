@@ -1,0 +1,31 @@
+{
+  "httpStatus": 200,
+  "updatedAt": "2026-09-05T11:35:29.195+00:00",
+  "flush": {
+    "kind": "saved"
+  },
+  "reload": {
+    "kind": "reloaded",
+    "projectId": "oprn-399e312698",
+    "title": "새 프로젝트"
+  },
+  "identity": {
+    "kind": "remote",
+    "id": "oprn-399e312698"
+  },
+  "hashes": {
+    "browserBefore": "ed254ee162e783808c4a3baef103e8dac7372e8ae3c2b68a4343dcc57c5111d2",
+    "remote": "ed254ee162e783808c4a3baef103e8dac7372e8ae3c2b68a4343dcc57c5111d2",
+    "browserReload": "ed254ee162e783808c4a3baef103e8dac7372e8ae3c2b68a4343dcc57c5111d2"
+  },
+  "match": true,
+  "lint": {
+    "ok": true,
+    "summary": "lint: error 0건 / warning 33건 / info 52건",
+    "counts": {
+      "errors": 0,
+      "infos": 52,
+      "warnings": 33
+    }
+  }
+}

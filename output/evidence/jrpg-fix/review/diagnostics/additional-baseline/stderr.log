@@ -1,0 +1,17 @@
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/autosaveStatus.test.ts > autosave status > keeps autosave state out of the map-focused editor statusbar
+TypeError: Cannot read properties of null (reading 'getItem')
+ ❯ readStoredViewModes src/editor/panels/databaseRecordViewSession.ts:159:35
+    157|   const defaults = createDefaultViewModes();
+    158|   if (typeof window === "undefined") return defaults;
+    159|   const raw = window.localStorage.getItem(VIEW_MODE_STORAGE_KEY);
+       |                                   ^
+    160|   if (!raw) return defaults;
+    161|   try {
+ ❯ src/editor/panels/databaseRecordViewSession.ts:58:70
+ ❯ src/editor/panels/databaseMonsterSpeciesView.ts:22:1
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

@@ -1,0 +1,19 @@
+{
+  "command": [
+    "node",
+    "scripts/run-vitest.mjs",
+    "run",
+    "test/databaseOverviewDashboard.test.ts",
+    "test/databaseOverviewTab.test.ts",
+    "test/autosaveStatus.test.ts",
+    "--configLoader",
+    "bundle",
+    "--reporter=default",
+    "--reporter=json",
+    "--outputFile",
+    "/home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/output/evidence/final-c5f48f0b-comparison/additional-baseline/vitest-report.json"
+  ],
+  "returncode": 1,
+  "head": "6950be5d755c736cb6f5dae3a51c67a4ccf493ec",
+  "duration_seconds": 41.15405225753784
+}
