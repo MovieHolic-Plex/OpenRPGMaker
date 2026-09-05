@@ -8,6 +8,12 @@
 `src/editor/panels/growthTree/actions.ts`는 스냅샷과 라벨 있는 `store.update`를 통과한다.
 노드 드래그는 포인터를 놓을 때 한 번만 저장한다. Ctrl+휠/± 확대, Alt+방향키 이동.
 
+표현은 기존 `src/styles/database/growth-tree.css`가 소유한다. 목록은 중립색,
+캔버스는 inset, 인스펙터는 흰색이며 선택·포커스는 공통 indigo 토큰을 쓴다.
+확대/자동 배치는 캔버스의 별도 하단 grid 행이다. 떠 있는 툴바로 되돌리지 말 것:
+1024/1280/1440 실측에서 기존 툴바가 승급 노드와 겹쳤다. 노드 이름은 고정 좌표·크기를
+유지하기 위해 두 줄로 제한하되 전체 이름은 aria-label과 인스펙터 제목에 보존한다.
+
 승급 간선의 정본은 기존 `ClassRecord.promotions`다. 새 필드로 복사하지 않는다.
 위치만 `Project.growth.classPositions`에 저장하며, 위치가 없는 기존 직업은
 결정적 위상 배치를 사용한다. 단순히 탭을 열어서는 프로젝트를 바꾸지 않는다.
