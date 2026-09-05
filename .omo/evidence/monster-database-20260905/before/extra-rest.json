@@ -1,0 +1,26 @@
+{
+  "orphanTypes": {
+    "stored": [
+      "removed-a",
+      "removed-b"
+    ],
+    "fireChecked": false,
+    "warning": "타입 상성표에 없는 타입: removed-a, removed-b"
+  },
+  "runOnce": {
+    "before": true,
+    "after": true,
+    "stored": {
+      "id": "troop_slime_battle_event_1",
+      "name": "전투 이벤트 1",
+      "conditions": [],
+      "span": "battle",
+      "commands": []
+    }
+  },
+  "pageIds": [
+    "troop_slime_battle_event_1",
+    "troop_slime_battle_event_3",
+    "troop_slime_battle_event_3"
+  ]
+}

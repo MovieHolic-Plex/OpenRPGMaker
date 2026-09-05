@@ -10,6 +10,7 @@ import type {
   EnemyRewards,
   EnemyStats,
   BattleFlow,
+  BattleEventPageRecord,
   TroopMemberRecord,
   TroopRecord,
 } from "@/project/types";
@@ -75,8 +76,23 @@ export function normalizeTroopRecord(record: Partial<TroopRecord> & Pick<TroopRe
     previewBackgroundResourceId: normalizeBattleFieldBackgroundId(record.previewBackgroundResourceId),
     battleFlow: normalizeBattleFlow(record.battleFlow),
     activeSlots: normalizeOptionalPositiveInteger(record.activeSlots),
-    battleEventPages: record.battleEventPages ?? [],
+    battleEventPages: uniqueBattleEventPages(record.battleEventPages ?? []),
   };
+}
+
+/** Repair old length-based ID collisions deterministically. References keep targeting the first page. */
+function uniqueBattleEventPages(pages: readonly BattleEventPageRecord[]): BattleEventPageRecord[] {
+  const reserved = new Set(pages.map((page) => page.id));
+  const seen = new Set<string>();
+  return pages.map((page) => {
+    if (!seen.has(page.id)) { seen.add(page.id); return page; }
+    let suffix = 2;
+    while (reserved.has(`${page.id}_${suffix}`)) suffix += 1;
+    const id = `${page.id}_${suffix}`;
+    reserved.add(id);
+    seen.add(id);
+    return { ...page, id };
+  });
 }
 
 /** Rewrite sky-panorama "backdrops" to a real side-view field; leave custom/forest ids alone. */

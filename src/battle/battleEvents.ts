@@ -178,11 +178,8 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
     for (const page of options.troopRecord.battleEventPages) {
       if (!shouldRunBattleEventPage(page, context)) continue;
       logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "fired" });
-      if (page.commands.length === 0) {
-        applyLegacyTroopPageFallback();
-      } else {
-        forceEscape = executeBattleEventCommands(page, page.commands, context, 0) || forceEscape;
-      }
+      // Empty authored pages have no effects; compatibility must never invent commands.
+      forceEscape = executeBattleEventCommands(page, page.commands, context, 0) || forceEscape;
       if (pageRunsOnce(page)) firedBattleEventPageIds.add(page.id);
       if (pageHasRoundCadenceCondition(page)) firedBattleEventPageRoundKeys.add(pageRoundKey(page, context));
     }
@@ -236,7 +233,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
   }
 
   function pageHasRoundCadenceCondition(page: BattleEventPageRecord): boolean {
-    return page.conditions.some((condition) =>
+    return page.span === "turn" || page.conditions.some((condition) =>
       condition.kind === "turn"
       || condition.kind === "onRound"
       || condition.kind === "everyRound"
@@ -948,14 +945,6 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
 
   function logUnsupported(page: BattleEventPageRecord, context: BattleEventContext, detail: string): void {
     logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "unsupported", detail });
-  }
-
-  function applyLegacyTroopPageFallback(): void {
-    const stateId = options.stateIds[0];
-    const target = options.enemies.find((entry) => entry.hp > 0) ?? options.enemies[0];
-    if (stateId && target && !target.stateIds.includes(stateId)) {
-      target.stateIds = [...target.stateIds, stateId];
-    }
   }
 
   // m2-106 Call Common Event (M2 형식): 커먼 이벤트 commands 를 동일한 배틀 컨텍스트에서 재귀 실행.

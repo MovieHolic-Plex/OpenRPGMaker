@@ -41,7 +41,7 @@ describe("upsert_troop_battle_page — 조건/커맨드 검증", () => {
     expect(pages(context).map((page) => page.id)).toContain("dragon_enrage");
   });
 
-  it("빈 commands 는 거부한다(런타임이 레거시 폴백으로 빠진다)", () => {
+  it("빈 commands 는 저작 도구에서 거부한다(실행할 명령이 필요)", () => {
     const result = upsert(ctx(), { id: "empty", conditions: [], commands: [] });
     expect(result.ok).toBe(false);
     expect(JSON.stringify(result.issues)).toContain("commands가 비었습니다");
@@ -67,16 +67,21 @@ describe("upsert_troop_battle_page — 조건/커맨드 검증", () => {
     expect(JSON.stringify(result.issues)).toContain("트룹");
   });
 
-  it("HP 조건만 달고 1회성이 아니면 무한 반복으로 거부한다", () => {
+  it("HP 조건의 moment 반복을 무한 반복으로 거부한다", () => {
     const result = upsert(ctx(), {
       id: "spam",
       conditions: [{ kind: "enemyHpBelow", enemyId: ENEMY, percent: 50 }],
-      span: "turn",
+      span: "moment",
       runOnce: false,
       commands: [{ kind: "text", body: "도배" }],
     });
     expect(result.ok).toBe(false);
     expect(JSON.stringify(result.issues)).toContain("무한 반복");
+  });
+
+  it("turn span alone safely throttles an HP slot condition", () => {
+    const result = upsert(ctx(), { id: "slot_round", conditions: [{ kind: "enemyHpBelow", enemyId: "enemy-1", percent: 50 }], span: "turn", runOnce: false, commands: [{ kind: "text", body: "round" }] });
+    expect(result.ok, JSON.stringify(result.issues)).toBe(true);
   });
 
   it("라운드 조건을 함께 달면 반복 페이지도 허용한다(라운드당 1회)", () => {

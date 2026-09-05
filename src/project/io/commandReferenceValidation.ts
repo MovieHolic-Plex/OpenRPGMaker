@@ -13,6 +13,7 @@ export type ReferenceContext = {
   actorIds: ReadonlySet<string>;
   classIds: ReadonlySet<string>;
   enemyIds: ReadonlySet<string>;
+  enemySlotIds?: ReadonlySet<string>;
   itemIds: ReadonlySet<string>;
   equipmentIds: ReadonlySet<string>;
   skillIds: ReadonlySet<string>;
@@ -378,11 +379,13 @@ function validateBattleEventCondition(condition: BattleEventCondition, context: 
       validateBattleEventCondition(condition.condition as BattleEventCondition, context);
       return;
     case "enemyHp":
+      assert(context.enemyIds.has(condition.enemyId) || (context.enemySlotIds?.has(condition.enemyId) ?? false), `battle condition: enemyId가 존재하지 않습니다: ${condition.enemyId}`);
+      return;
     case "enemyTurn":
       assert(context.enemyIds.has(condition.enemyId), `battle condition: enemyId가 존재하지 않습니다: ${condition.enemyId}`);
       return;
     case "enemyHpBelow":
-      if (condition.enemyId) assert(context.enemyIds.has(condition.enemyId), `battle condition: enemyId가 존재하지 않습니다: ${condition.enemyId}`);
+      if (condition.enemyId) assert(context.enemyIds.has(condition.enemyId) || (context.enemySlotIds?.has(condition.enemyId) ?? false), `battle condition: enemyId가 존재하지 않습니다: ${condition.enemyId}`);
       return;
     case "actorHp":
     case "actorTurn":

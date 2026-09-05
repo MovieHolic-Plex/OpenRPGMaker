@@ -1,0 +1,98 @@
+{
+  "enemies": {
+    "bodySize": [
+      778,
+      646
+    ],
+    "scrollOverflow": 0,
+    "canon": true,
+    "hasListPane": true,
+    "search": true,
+    "rowCount": 29,
+    "emptyState": false,
+    "deadSpace": 0.219,
+    "detailDead": 0.29,
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "textClip": [],
+    "textClipCount": 0,
+    "nodeCount": 981,
+    "violations": []
+  },
+  "monster-species": {
+    "bodySize": [
+      778,
+      646
+    ],
+    "scrollOverflow": 0,
+    "canon": true,
+    "hasListPane": true,
+    "search": true,
+    "rowCount": 9,
+    "emptyState": false,
+    "deadSpace": 0.379,
+    "detailDead": 0.445,
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "textClip": [],
+    "textClipCount": 0,
+    "nodeCount": 332,
+    "violations": []
+  },
+  "troops": {
+    "bodySize": [
+      778,
+      646
+    ],
+    "scrollOverflow": 52,
+    "canon": true,
+    "hasListPane": true,
+    "search": true,
+    "rowCount": 6,
+    "emptyState": true,
+    "deadSpace": 0.427,
+    "detailDead": 0.467,
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "textClip": [],
+    "textClipCount": 0,
+    "nodeCount": 301,
+    "violations": []
+  },
+  "factions": {
+    "bodySize": [
+      778,
+      646
+    ],
+    "scrollOverflow": 0,
+    "canon": true,
+    "hasListPane": true,
+    "search": true,
+    "rowCount": 2,
+    "emptyState": false,
+    "deadSpace": 0.413,
+    "detailDead": 0.25,
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "textClip": [],
+    "textClipCount": 0,
+    "nodeCount": 185,
+    "violations": []
+  }
+}

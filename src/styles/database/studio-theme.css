@@ -618,32 +618,7 @@
   color: #fff !important;
 }
 
-/* Troops: drop the 1048×554 RM canvas so members/backdrop stay above the footer */
-.database-modal-backdrop .database-modal-window .db-troops-classic-workbench {
-  /* troops.part-1.css:212 의 옛 맵은 영역이 넷(top/preview/members/events)뿐인데 워크벤치는
-     자식을 다섯 개 렌더한다 — 밸런스 패널이 이름을 못 받아 암묵 행으로 밀려나 화면 밖에서
-     잘렸고, '난이도 추정' 에 손이 닿지 않았다. 여기서 트랙과 영역을 함께 다시 정의한다
-     (트랙만 덮고 영역을 안 덮으면 칸 수가 어긋난 채로 옛 맵이 살아남는다). */
-  grid-template-areas:
-    "top top"
-    "preview events"
-    "members events"
-    "balance events" !important;
-  grid-template-columns: minmax(0, 1.05fr) minmax(260px, 0.95fr) !important;
-  grid-template-rows: auto minmax(180px, 1fr) auto auto !important;
-  height: auto !important;
-  min-width: 0 !important;
-  width: 100% !important;
-}
-
-.database-modal-backdrop .database-modal-window .db-troop-panel-balance {
-  grid-area: balance !important;
-  min-width: 0 !important;
-}
-.database-modal-backdrop .database-modal-window .db-troop-top-controls {
-  grid-template-columns: minmax(160px, 1fr) repeat(4, auto) !important;
-  height: auto !important;
-}
+/* Troop layout is owned by modern/troops.css, including container breakpoints. */
 .database-modal-backdrop .database-modal-window .db-troop-member-list {
   grid-template-rows: auto auto auto !important;
 }

@@ -15,6 +15,6 @@ export function capturePreviewLine(captureRate: number, testid: string): HTMLEle
   return el("p", {
     class: "db-capture-preview",
     dataset: { testid },
-    text: `포획 확률${model === "gen1" ? " (Gen1)" : ""} — 만HP ${percent(100)} / HP 50% ${percent(50)} / HP 10% ${percent(10)}`,
+    text: `성공 확률${model === "gen1" ? " (Gen1)" : ""} — 만HP ${percent(100)} / HP 50% ${percent(50)} / HP 10% ${percent(10)} · 기본 볼, 상태 보너스 없음`,
   });
 }

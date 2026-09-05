@@ -25,6 +25,20 @@
 - 검증: `test/enemyBattleTest.test.ts`(실제 엔진 HP 반영·원본 격리),
   `test/e2e/database-enemy-studio.spec.ts`(1680/1280/1024 hit-test·키보드·선택·연결·시험 복귀),
   기존 EnemySpecies/Faction/ResourceSlot, RecordPartialRender, PanelGridClasses 계약.
+## 몬스터 그룹 저작 신뢰성 (2026-09-05)
+
+대상은 몬스터·몬스터 종족·적 그룹·진영 네 탭이다.
+
+- 종족의 레벨별 스킬은 마운트된 행 객체를 편집한다. 저장 정규화가 레벨순 정렬을 해도 `input` 뒤 `change`/스킬 교체/삭제가 다른 행을 가리키지 않는다. 외부 수정·undo로 목록이 바뀌면 오래된 초안을 덮어쓰지 않고 다시 표시한다. 타입 상성표에서 삭제된 타입도 선택 칩으로 남아 해제할 수 있다.
+- 종족값은 Lv1의 실제 능력치가 아니다. `monsterBattleStatsForSpecies`를 사용하는 레벨별 미리보기(개체값 0)를 제공하며 종족값 수정도 즉시 반영한다. 포획 계수와 실제 성공 확률을 구분한다.
+- 몬스터 상태 유효도는 미지정(100%)과 명시 C(60%)를 구분하고 미지정으로 되돌릴 수 있다. 속성은 실제 피해 배율을 표시한다. 액션 전투의 생략된 공격 대기시간/탄속은 런타임 기본값 1200ms/6타일·초로 표시한다. 포획 기능이 꺼진 프로젝트는 안내 상태다.
+- 적 그룹 페이지 ID는 `genId`로 생성한다. `runOnce:false`를 보존하며 빈도를 바꿀 때 개별 override를 초기화한다. 첫 조건 교체는 추가 AND 조건을 보존한다. 스위치 ON/OFF, 변수 비교 연산, 그룹 내 적 슬롯별 HP 조건을 편집할 수 있다. HP 범위의 양 끝은 저장값과 표시값을 함께 조정한다.
+- `activeSlots`의 0 입력은 시스템 기본값 상속이다. 추가 이벤트가 없어도 기본 EXP/돈/드롭 보상은 동작한다. 밸런스 추정은 10회 표본임을 표시한다.
+- 적 그룹 워크벤치의 영역 배치는 `modern/troops.css`가 소유한다. 상세 패널 폭 760px 이하에서 단일 열로 전환한다. 뷰포트 폭만으로 판단하면 목록·내비게이션 레일 때문에 1024px에서 입력이 겹친다.
+- 진영은 기본·상속 소속을 포함한 몬스터/필드 스폰 사용처 이동, 상대 진영 검색, 초기 저작 관계에서 N회 처치한 결과 미리보기를 제공한다. 평판 설정은 프로젝트 전체 규칙이다. 미리보기는 `applyPlayerKillReputation`/`effectiveFactionStance`를 사용하며 프로젝트·런타임 세션을 수정하지 않는다.
+
+회귀: `test/monsterBattleAuthoringContract.test.ts`, `test/databaseMonsterEventEditing.test.ts`, 기존 종족/몬스터/진영 뷰 테스트. 브라우저 재현: `AUDIT_BASE=http://127.0.0.1:<port>/ node scripts/qa/monster-database.mjs` (임시 프로젝트, 원격 저장 없음).
+
 
 ## Database Studio chrome (2026-08-24)
 

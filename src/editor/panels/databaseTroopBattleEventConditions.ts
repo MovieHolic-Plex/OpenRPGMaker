@@ -1,4 +1,4 @@
-import { numberField, selectField, textField } from "@/editor/panels/databaseControls";
+import { numberField, selectField } from "@/editor/panels/databaseControls";
 import { updateTroopBattleEventPage } from "@/editor/panels/databaseTroopBattleEventActions";
 import { store } from "@/project/store";
 import type { BattleEventCondition, BattleEventPageRecord, TroopRecord } from "@/project/types/database";
@@ -58,13 +58,13 @@ export function battleEventConditionControls(
   }
 }
 
-export function initialBattleEventConditions(kind: TroopEventConditionKind): BattleEventCondition[] {
+export function initialBattleEventConditions(kind: TroopEventConditionKind, troop?: TroopRecord): BattleEventCondition[] {
   const project = store.getCurrent();
   switch (kind) {
     case "switch":
-      return [{ kind: "switch", switchId: "0001", value: true }];
+      return [{ kind: "switch", switchId: project.switches[0]?.id ?? "", value: true }];
     case "variable":
-      return [{ kind: "variable", variableId: "0001", op: ">=", value: 0 }];
+      return [{ kind: "variable", variableId: project.variables[0]?.id ?? "", op: ">=", value: 0 }];
     case "turn":
       return [{ kind: "turn", start: 1, interval: 1 }];
     case "onRound":
@@ -72,9 +72,9 @@ export function initialBattleEventConditions(kind: TroopEventConditionKind): Bat
     case "everyRound":
       return [{ kind: "everyRound", start: 1, interval: 1 }];
     case "enemyHp":
-      return [{ kind: "enemyHp", enemyId: project.database.enemies[0]?.id ?? "", minPercent: 0, maxPercent: 100 }];
+      return [{ kind: "enemyHp", enemyId: troop?.enemyIds.length ? "enemy-1" : project.database.enemies[0]?.id ?? "", minPercent: 0, maxPercent: 100 }];
     case "enemyHpBelow":
-      return [{ kind: "enemyHpBelow", enemyId: project.database.enemies[0]?.id, percent: 50 }];
+      return [{ kind: "enemyHpBelow", enemyId: troop?.enemyIds.length ? "enemy-1" : undefined, percent: 50 }];
     case "actorHp":
       return [{ kind: "actorHp", actorId: project.database.actors[0]?.id ?? "", minPercent: 0, maxPercent: 100 }];
     case "actorCommand":
@@ -97,15 +97,21 @@ export function kindOfBattleEventCondition(condition: BattleEventCondition | und
 
 function switchControls(record: TroopRecord, page: BattleEventPageRecord, condition: BattleEventCondition | undefined): HTMLElement[] {
   const current = condition?.kind === "switch" ? condition : { kind: "switch" as const, switchId: "", value: true };
-  return [textField("스위치", "db-field-troop-event-condition-switch", current.switchId, (switchId) =>
-    setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "switch" ? stored : current), switchId })))];
+  return [
+    selectField("스위치", "db-field-troop-event-condition-switch", current.switchId, store.getCurrent().switches, (switchId) =>
+      setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "switch" ? stored : current), switchId }))),
+    selectField("스위치 상태", "db-field-troop-event-condition-switch-value", String(current.value), [{ id: "true", name: "ON (켜짐)" }, { id: "false", name: "OFF (꺼짐)" }], (value) =>
+      setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "switch" ? stored : current), value: value === "true" }))),
+  ];
 }
 
 function variableControls(record: TroopRecord, page: BattleEventPageRecord, condition: BattleEventCondition | undefined): HTMLElement[] {
   const current = condition?.kind === "variable" ? condition : { kind: "variable" as const, variableId: "", op: ">=" as const, value: 0 };
   return [
-    textField("변수", "db-field-troop-event-condition-variable", current.variableId, (variableId) =>
+    selectField("변수", "db-field-troop-event-condition-variable", current.variableId, store.getCurrent().variables, (variableId) =>
       setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "variable" ? stored : current), variableId }))),
+    selectField("비교", "db-field-troop-event-condition-variable-op", current.op, ["==", "!=", ">", ">=", "<", "<="].map((op) => ({ id: op, name: op })), (op) =>
+      setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "variable" ? stored : current), op: op as typeof current.op }))),
     numberField("값", "db-field-troop-event-condition-variable-value", current.value, (value) =>
       setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "variable" ? stored : current), value }))),
   ];
@@ -115,25 +121,25 @@ function turnControls(record: TroopRecord, page: BattleEventPageRecord, conditio
   const current = condition?.kind === "turn" ? condition : { kind: "turn" as const, start: 1, interval: 1 };
   return [
     numberField("시작", "db-field-troop-event-condition-turn-start", current.start, (start) =>
-      setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "turn" ? stored : current), start }))),
+      setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "turn" ? stored : current), start })), { min: 1, max: 999 }),
     numberField("간격", "db-field-troop-event-condition-turn-interval", current.interval, (interval) =>
-      setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "turn" ? stored : current), interval }))),
+      setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "turn" ? stored : current), interval })), { min: 0, max: 999 }),
   ];
 }
 
 function onRoundControls(record: TroopRecord, page: BattleEventPageRecord, condition: BattleEventCondition | undefined): HTMLElement[] {
   const current = condition?.kind === "onRound" ? condition : { kind: "onRound" as const, round: 1 };
   return [numberField("라운드", "db-field-troop-event-condition-on-round", current.round, (round) =>
-    setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "onRound" ? stored : current), round })))];
+    setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "onRound" ? stored : current), round })), { min: 1, max: 999 })];
 }
 
 function everyRoundControls(record: TroopRecord, page: BattleEventPageRecord, condition: BattleEventCondition | undefined): HTMLElement[] {
   const current = condition?.kind === "everyRound" ? condition : { kind: "everyRound" as const, start: 1, interval: 1 };
   return [
     numberField("시작", "db-field-troop-event-condition-every-round-start", current.start ?? 1, (start) =>
-      setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "everyRound" ? stored : current), start }))),
+      setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "everyRound" ? stored : current), start })), { min: 1, max: 999 }),
     numberField("간격", "db-field-troop-event-condition-every-round-interval", current.interval ?? 1, (interval) =>
-      setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "everyRound" ? stored : current), interval }))),
+      setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "everyRound" ? stored : current), interval })), { min: 0, max: 999 }),
   ];
 }
 
@@ -142,12 +148,9 @@ function enemyHpControls(record: TroopRecord, page: BattleEventPageRecord, condi
     ? condition
     : { kind: "enemyHp" as const, enemyId: record.enemyIds[0] ?? "", minPercent: 0, maxPercent: 100 };
   return [
-    selectField("적 HP", "db-field-troop-event-condition-enemy-hp-target", current.enemyId, store.getCurrent().database.enemies, (enemyId) =>
+    selectField("적 HP", "db-field-troop-event-condition-enemy-hp-target", current.enemyId, enemySlotOptions(record, current.enemyId), (enemyId) =>
       setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "enemyHp" ? stored : current), enemyId }))),
-    numberField("최소 %", "db-field-troop-event-condition-enemy-hp-min", current.minPercent, (minPercent) =>
-      setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "enemyHp" ? stored : current), minPercent }))),
-    numberField("최대 %", "db-field-troop-event-condition-enemy-hp-max", current.maxPercent, (maxPercent) =>
-      setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "enemyHp" ? stored : current), maxPercent }))),
+    ...hpRangeControls(record, page, current, "enemy"),
   ];
 }
 
@@ -156,14 +159,27 @@ function enemyHpBelowControls(record: TroopRecord, page: BattleEventPageRecord, 
     ? condition
     : { kind: "enemyHpBelow" as const, enemyId: record.enemyIds[0], percent: 50 };
   return [
-    textField("적 ID(비우면 전체)", "db-field-troop-event-condition-enemy-hp-below-target", current.enemyId ?? "", (enemyId) =>
+    selectField("적 슬롯 (없음=아무 적)", "db-field-troop-event-condition-enemy-hp-below-target", current.enemyId ?? "", enemySlotOptions(record, current.enemyId), (enemyId) =>
       setFreshCondition(record, page, (stored) => ({
         ...(stored?.kind === "enemyHpBelow" ? stored : current),
         enemyId: enemyId.trim() || undefined,
       }))),
     numberField("이하 %", "db-field-troop-event-condition-enemy-hp-below-percent", current.percent, (percent) =>
-      setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "enemyHpBelow" ? stored : current), percent }))),
+      setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "enemyHpBelow" ? stored : current), percent })), { min: 0, max: 100 }),
   ];
+}
+
+function enemySlotOptions(record: TroopRecord, current?: string): { id: string; name: string }[] {
+  const enemies = store.getCurrent().database.enemies;
+  const options = record.enemyIds.map((enemyId, index) => ({
+    id: `enemy-${index + 1}`,
+    name: `슬롯 ${index + 1}: ${enemies.find((enemy) => enemy.id === enemyId)?.name ?? enemyId}`,
+  }));
+  if (current && !options.some((option) => option.id === current)) {
+    const enemy = enemies.find((entry) => entry.id === current);
+    options.push({ id: current, name: record.enemyIds.includes(current) ? `${enemy?.name ?? current} (기존 설정 · 첫 일치 슬롯)` : `${enemy?.name ?? current} (이 그룹에 없음 · 다시 선택)` });
+  }
+  return options;
 }
 
 function actorHpControls(record: TroopRecord, page: BattleEventPageRecord, condition: BattleEventCondition | undefined): HTMLElement[] {
@@ -172,11 +188,39 @@ function actorHpControls(record: TroopRecord, page: BattleEventPageRecord, condi
   return [
     selectField("배우 HP", "db-field-troop-event-condition-actor-hp-target", current.actorId, store.getCurrent().database.actors, (nextActorId) =>
       setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "actorHp" ? stored : current), actorId: nextActorId }))),
-    numberField("최소 %", "db-field-troop-event-condition-actor-hp-min", current.minPercent, (minPercent) =>
-      setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "actorHp" ? stored : current), minPercent }))),
-    numberField("최대 %", "db-field-troop-event-condition-actor-hp-max", current.maxPercent, (maxPercent) =>
-      setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "actorHp" ? stored : current), maxPercent }))),
+    ...hpRangeControls(record, page, current, "actor"),
   ];
+}
+
+function hpRangeControls(
+  record: TroopRecord,
+  page: BattleEventPageRecord,
+  current: Extract<BattleEventCondition, { kind: "enemyHp" | "actorHp" }>,
+  target: "enemy" | "actor",
+): HTMLElement[] {
+  const controls: HTMLElement[] = [];
+  for (const key of ["minPercent", "maxPercent"] as const) {
+    const isMin = key === "minPercent";
+    controls.push(numberField(isMin ? "최소 HP %" : "최대 HP %", `db-field-troop-event-condition-${target}-hp-${isMin ? "min" : "max"}`, current[key], (value) => {
+      setFreshCondition(record, page, (stored) => {
+        const previous = stored?.kind === current.kind ? stored : current;
+        const next = { ...previous, [key]: value };
+        if (isMin) next.maxPercent = Math.max(value, previous.maxPercent);
+        else next.minPercent = Math.min(value, previous.minPercent);
+        const otherControl = controls[isMin ? 1 : 0];
+        const other = otherControl?.querySelector("input");
+        const pairedValue = isMin ? next.maxPercent : next.minPercent;
+        if (other) other.value = String(pairedValue);
+        const decrement = otherControl?.querySelector<HTMLButtonElement>(".db-number-stepper-dec");
+        const increment = otherControl?.querySelector<HTMLButtonElement>(".db-number-stepper-inc");
+        if (decrement) decrement.disabled = pairedValue <= 0;
+        if (increment) increment.disabled = pairedValue >= 100;
+        return next;
+      });
+    }, { min: 0, max: 100 }));
+  }
+  controls.forEach((control) => { control.title = "최소가 최대를 넘으면 반대쪽 값도 함께 조정됩니다."; });
+  return controls;
 }
 
 function actorCommandControls(record: TroopRecord, page: BattleEventPageRecord, condition: BattleEventCondition | undefined): HTMLElement[] {

@@ -1,0 +1,26 @@
+{
+  "projectile": {
+    "stored": {
+      "attack": {
+        "kind": "projectile",
+        "windupMs": 500,
+        "recoverMs": 500,
+        "damage": 4,
+        "range": 1
+      }
+    },
+    "controls": 1,
+    "afterReopen": 1
+  },
+  "state": {
+    "shown": "C",
+    "before": 100,
+    "after": 60
+  },
+  "capture": {
+    "before": "포획 확률 — 만HP 14% / HP 50% 29% / HP 10% 42%",
+    "after": "포획 확률 — 만HP 24% / HP 50% 52% / HP 10% 74%",
+    "stored": 0.8
+  },
+  "error": "Error: locator.check: Clicking the checkbox did not change its state\nCall log:\n\u001b[2m  - waiting for getByTestId('db-monster-species-type-fire')\u001b[22m\n\u001b[2m    - locator resolved to <input type=\"checkbox\" data-testid=\"db-monster-species-type-fire\"/>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - performing click action\u001b[22m\n\u001b[2m    - click action done\u001b[22m\n\u001b[2m    - waiting for scheduled navigations to finish\u001b[22m\n\u001b[2m    - navigations have finished\u001b[22m\n"
+}

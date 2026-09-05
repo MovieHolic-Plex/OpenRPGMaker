@@ -22,7 +22,9 @@ import {
   willAttackOnSight,
 } from "@/project/factions";
 import { store } from "@/project/store";
-import type { EnemyRecord } from "@/project/types";
+import { ACTOR_RATE_GRADES, stateRatePercentage } from "@/project/actorModel";
+import { DEFAULT_ATTACK_COOLDOWN_MS, DEFAULT_PROJECTILE_SPEED_TILES_PER_SEC } from "@/project/actionCombat";
+import type { ActorRateGrade, EnemyRecord } from "@/project/types";
 import { el } from "@/util/dom";
 import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
@@ -93,7 +95,7 @@ export function renderEnemyRecordForm(form: HTMLElement, record: EnemyRecord, re
       enemyCard("그래픽", "graphic", graphicFields(record, rerender)),
     ] },
     { id: "combat", label: "전투", cards: [
-      enemyCard("치명타 %", "critical", [el("div", { class: "db-enemy-critical-row", children: criticalFields(record, rerender) })], { hint: "N을 넣으면 1/N 확률로 치명타" }),
+      enemyCard("치명타 확률", "critical", [el("div", { class: "db-enemy-critical-row", children: criticalFields(record, rerender) })], { hint: record.criticalHit.enabled ? `1/${record.criticalHit.oneIn} = ${(100 / record.criticalHit.oneIn).toFixed(2)}%` : "치명타 사용 안 함" }),
       enemyCard("옵션", "options", optionFields(record)),
       enemyCard("상태 유효도", "state", rateRows(record, "state")),
       enemyCard("속성 유효도", "element", rateRows(record, "element")),
@@ -419,7 +421,7 @@ function speciesFields(record: EnemyRecord, rerender: () => void): HTMLElement[]
   ];
 
   // 프로젝트에 종족 카탈로그가 있는데 포획 종족이 비어 있으면 경고.
-  if (!speciesId && speciesList.length > 0) {
+  if (!speciesId && speciesList.length > 0 && project.system.monsterCollection === true) {
     fields.push(speciesStatusChip("warn", "db-enemy-species-unset-warn", "포획 종족 미설정"));
   }
 
@@ -686,7 +688,7 @@ function rewardFields(record: EnemyRecord): HTMLElement[] {
     selectField("아이템", "db-picker-enemy-drop", record.rewards.dropItemId ?? "", store.getCurrent().database.items, (dropItemId) =>
       updateDatabaseRecord("enemies", record.id, { rewards: { ...currentEnemy(record).rewards, dropItemId: emptyToUndefined(dropItemId) } })
     ),
-    numberField("드롭률", "db-field-enemy-drop-rate", record.rewards.dropRatePercent, (dropRatePercent) =>
+    numberField("드롭률(%)", "db-field-enemy-drop-rate", record.rewards.dropRatePercent, (dropRatePercent) =>
       updateDatabaseRecord("enemies", record.id, { rewards: { ...currentEnemy(record).rewards, dropRatePercent } }),
       { min: 0, max: 100 }
     ),
@@ -726,7 +728,7 @@ function withTitle(node: HTMLElement, title: string): HTMLElement {
 
 function optionFields(record: EnemyRecord): HTMLElement[] {
   return [
-    checkboxField("일반 공격 빗나감", "db-field-enemy-normal-miss", record.attackOptions.normalAttacksMiss, (normalAttacksMiss) =>
+    checkboxField("기본 명중률 90% (끄면 100%)", "db-field-enemy-normal-miss", record.attackOptions.normalAttacksMiss, (normalAttacksMiss) =>
       updateDatabaseRecord("enemies", record.id, { attackOptions: { ...currentEnemy(record).attackOptions, normalAttacksMiss } })
     ),
   ];
@@ -742,13 +744,22 @@ function rateRows(record: EnemyRecord, kind: "state" | "element"): HTMLElement[]
       ? [{ id: "state_death", name: "전투불능" }, ...database.states.filter((state) => state.id !== "state_death")]
       : database.elements ?? [];
   const rows = source.map((entry) => {
-    const value = (kind === "state" ? record.stateRates[entry.id] : record.elementRates[entry.id]) ?? "C";
+    const value = kind === "state" ? record.stateRates[entry.id] : record.elementRates[entry.id];
     const testid = kind === "state" ? `db-picker-enemy-state-rate-${entry.id}` : `db-picker-enemy-element-rate-${entry.id}`;
-    return rateField(entry.name, testid, value, (grade) => {
+    const multipliers = database.elements?.find((element) => element.id === entry.id)?.damageMultipliers;
+    const labels = Object.fromEntries(ACTOR_RATE_GRADES.map((grade) => [grade,
+      kind === "state" ? `${grade} · 적용 ${stateRatePercentage(grade)}%` : `${grade} · 피해 ${(multipliers?.[grade] ?? 100) / 100}배`,
+    ])) as Record<ActorRateGrade, string>;
+    const row = rateField(entry.name, testid, value, (grade) => {
       const current = currentEnemy(record);
-      if (kind === "state") updateDatabaseRecord("enemies", record.id, { stateRates: { ...current.stateRates, [entry.id]: grade } });
-      if (kind === "element") updateDatabaseRecord("enemies", record.id, { elementRates: { ...current.elementRates, [entry.id]: grade } });
-    });
+      const rates = { ...(kind === "state" ? current.stateRates : current.elementRates) };
+      if (grade) rates[entry.id] = grade;
+      else delete rates[entry.id];
+      updateDatabaseRecord("enemies", record.id, kind === "state" ? { stateRates: rates } : { elementRates: rates });
+    }, labels);
+    const fallback = row.querySelector("option");
+    if (fallback) fallback.textContent = kind === "state" ? "미지정 · 적용 100%" : `기본 C · 피해 ${(multipliers?.C ?? 100) / 100}배`;
+    return row;
   });
   if (kind !== "element") return [rateList(rows, kind)];
   // 속성 목록에서 사라졌는데 등급이 남아 있는 키 — 런타임은 무시하므로 정리 경로를 준다.
@@ -952,7 +963,7 @@ function actionCombatFields(record: EnemyRecord): HTMLElement[] {
   const profile = record.actionProfile;
   const attack = profile?.attack;
   const patchProfile = (mutate: (draft: NonNullable<EnemyRecord["actionProfile"]>) => void): void => {
-    const draft: NonNullable<EnemyRecord["actionProfile"]> = structuredClone(profile ?? {});
+    const draft: NonNullable<EnemyRecord["actionProfile"]> = structuredClone(currentEnemy(record).actionProfile ?? {});
     mutate(draft);
     updateDatabaseRecord("enemies", record.id, { actionProfile: draft });
   };
@@ -992,7 +1003,7 @@ function actionCombatFields(record: EnemyRecord): HTMLElement[] {
     knockback,
     selectField("공격 종류", "db-field-enemy-action-kind", attack?.kind ?? "", attackKindOptions, (value) => {
       if (!value) {
-        updateDatabaseRecord("enemies", record.id, { actionProfile: { ...structuredClone(profile ?? {}), attack: undefined } });
+        updateDatabaseRecord("enemies", record.id, { actionProfile: { ...structuredClone(currentEnemy(record).actionProfile ?? {}), attack: undefined } });
         return;
       }
       patchProfile((draft) => {
@@ -1019,7 +1030,7 @@ function actionCombatFields(record: EnemyRecord): HTMLElement[] {
       projectileSpeedTilesPerSec: { min: 1, max: 30 },
     } as const;
     const patchAttack = (key: keyof typeof attackBounds, label: string, testid: string): HTMLElement =>
-      numberField(label, testid, attack[key] ?? 0, (value) =>
+      numberField(label, testid, attack[key] ?? (key === "cooldownMs" ? DEFAULT_ATTACK_COOLDOWN_MS : key === "projectileSpeedTilesPerSec" ? DEFAULT_PROJECTILE_SPEED_TILES_PER_SEC : 0), (value) =>
         patchProfile((draft) => {
           if (!draft.attack) return;
           (draft.attack as unknown as Record<string, number>)[key] = value;
@@ -1037,5 +1048,5 @@ function actionCombatFields(record: EnemyRecord): HTMLElement[] {
       fields.push(patchAttack("projectileSpeedTilesPerSec", "탄 속도(타일/초)", "db-field-enemy-projectile-speed"));
     }
   }
-  return [el("div", { class: "db-enemy-stat-grid", children: fields })];
+  return [el("p", { class: "db-ws-usage", text: "시스템의 액션 전투와 맵의 액션 전투를 모두 켜야 적용됩니다. 접촉 피해는 공격 피해와 별도입니다." }), el("div", { class: "db-enemy-stat-grid", children: fields })];
 }

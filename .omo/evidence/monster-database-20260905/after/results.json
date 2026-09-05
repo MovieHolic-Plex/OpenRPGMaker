@@ -1,0 +1,43 @@
+{
+  "skills": [
+    {
+      "level": 10,
+      "skillId": "skill_sword_slash"
+    },
+    {
+      "level": 20,
+      "skillId": "skill_arcane_bolt"
+    }
+  ],
+  "types": [
+    "other-old",
+    "fire"
+  ],
+  "defaults": {
+    "state": "implicit 100%, C 60%",
+    "cooldown": 1200,
+    "speed": 6
+  },
+  "pageIds": [
+    "battle_page_d3403d5d-46fa-4ebe-8969-a4e64b48deff",
+    "battle_page_3738ce19-bd31-4b4e-b1d7-f176b2c0a2c3",
+    "battle_page_96601ac4-91a9-43a8-9d3e-ed09e477bf51"
+  ],
+  "hpTargets": "(없음)\n슬롯 1: 슬라임",
+  "reputation": "적: -1 → -2 · 플레이어에게 선공\n\n경비병: 0 → 1 · 플레이어에게 선공 안 함",
+  "troopLayout1680": {
+    "columns": "526px 526px",
+    "width": 1064,
+    "scrollWidth": 1064
+  },
+  "troopLayout1280": {
+    "columns": "692px",
+    "width": 692,
+    "scrollWidth": 692
+  },
+  "troopLayout1024": {
+    "columns": "436px",
+    "width": 436,
+    "scrollWidth": 436
+  }
+}
