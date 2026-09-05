@@ -1536,7 +1536,7 @@
    Keep this after the shared v2 grammar: its input :not() chain otherwise beats
    the hero title, and its white list surface erases the earlier actor pane tint.
    Trees and modal geometry are deliberately outside this scope. */
-.database-modal-backdrop .database-modal-window .database-modal-body :is(.oprn-record-actors, .oprn-record-classes, .oprn-record-skills, .oprn-record-items, .oprn-record-equipment) .oprn-record-list-pane {
+.database-modal-backdrop .database-modal-window .database-modal-body :is(.oprn-record-actors, .oprn-record-classes, .oprn-record-skills, .oprn-record-items, .oprn-record-equipment, .db-inventory-catalog) .oprn-record-list-pane {
   --db-record-pane-bg: var(--db-studio-inset);
 }
 
