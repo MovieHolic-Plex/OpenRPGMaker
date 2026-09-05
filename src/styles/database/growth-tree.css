@@ -66,6 +66,7 @@
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-section > h3 { padding: 6px 8px; color: var(--text-1); background: var(--bg-inset); border-bottom: 1px solid var(--border-default); font-weight: 700; overflow-wrap: anywhere; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-section .growth-section { padding: 12px; border: 1px solid var(--border-default); border-radius: 10px; background: var(--bg-base); margin: 0; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .db-field { display: grid; gap: 6px; min-width: 0; }
+  .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-inspector .db-field { grid-template-columns: minmax(0, 1fr); }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .db-field > :first-child { font-size: 12px; line-height: 1.5; white-space: normal; overflow: visible; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio :is(input:not([type=checkbox]), textarea, select) { width: 100%; min-width: 0; max-width: 100%; min-height: 32px; padding: 6px 8px; font-size: 12px; line-height: 1.5; color: var(--text-1); background: var(--bg-base); border: 1px solid var(--border-default); border-radius: 6px; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio textarea { resize: vertical; }
