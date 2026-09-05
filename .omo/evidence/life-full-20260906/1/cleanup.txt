@@ -1,0 +1,18 @@
+Task st_01a07370 / branch agent/life-full-p1
+Worktree: /home/main/z-project/rpg-zzu-life-full-p1
+Base: 1aff8c3f13df42e92f73723a2799bc671ec8bee0
+
+Both temporary test-only mutations removed with apply_patch.
+sha256sum --check mutation-before.sha256: both test files OK.
+git diff --quiet -- src: exit 0; no production mutation or product edit.
+git diff --check: exit 0.
+Final four-file run: 28 passed, zero failed/skipped; exit 0.
+All explicitly launched test/build/SSR/diagnostic commands returned.
+Both Vite SSR probes closed their server in finally; middleware mode opened no HTTP port.
+No browser, background dev server, remote project write, push, PR, or merge created.
+Harness-managed LSP service lifecycle remains owned by the tool broker, not this task.
+Fake timers and history are cleared/restored in test afterEach.
+Generated dist directory removed after successful build:app.
+Temporary gzip copy removed; original full RED transcript retained unchanged.
+No scratch source file or mutation remains. Worktree retained for parent review.
+Evidence logs are intentionally retained at this directory, not deleted during teardown.

@@ -23,6 +23,8 @@ Contract: `test/customEquipmentSlots.test.ts` covers create/rename/use, initial 
 
 Authored project schema, defaults, validation, migration, references, and persistence boundaries.
 
+생활 스키마 회귀 fixture (2026-09-06): `test/fixtures/life-full/legacyProject.ts`는 새 프로젝트의 중복 `titleScreen.titleGraphic`만 명시적으로 제외한다. 생성기는 `{mode:"text",x:32,y:62}`를 제공하지만 로더는 리소스 없는 text-only 그림을 생략한다. 이 의도된 첫 정상화를 생활 optional 필드 부재/전체 byte-stability 검사와 혼합하지 않는다. fixture 안에서 deserialize를 호출하지 않으며, `p0ProjectSchema`는 새 프로젝트에서 그 한 필드만 없어지는지와 리소스 있는 text/graphic/both 보존을 별도로 검사한다. P0/P1/P2는 원문 동일성과 두 번째 왕복 안정성을 모두 유지한다. 공간 탭의 0개 배지는 공용 UI 계약대로 `data-count`를 생략하며, `p2SpatialEditorAuthoring`는 추가/삭제 확인/undo/redo와 4종 합계를 검증한다. `test/fixtures/life-full/coverage.json`의 51개 기능 및 F01..F13은 후속 완주용 **미실행 명세**이며 PASS 원장이 아니다.
+
 ## 통행 컴포넌트 색인의 계약 (2026-08-30, PR #286)
 
 `src/project/tilePassabilityComponents.ts` 는 "여기서 저기로 갈 수 있나" 를 미리 계산한 색인이다. 세 가지가 계약이다.

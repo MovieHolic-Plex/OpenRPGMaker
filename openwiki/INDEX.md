@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **47쪽 / 1573KB / 약 448,105 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **47쪽 / 1574KB / 약 448,412 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -21,7 +21,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-event-authoring.md` | 118KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 564 | ~34,433 |
 | `openwiki/editor-pre-edit-routing.md` | 69KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 197 | ~19,760 |
 | `openwiki/runtime-battle.md` | 118KB | 31KB | 358 | ~33,888 |
-| `openwiki/runtime-project-schema.md` | 61KB | 42KB | 225 | ~16,387 |
+| `openwiki/runtime-project-schema.md` | 62KB | 42KB | 227 | ~16,694 |
 | `openwiki/runtime-sessions.md` | 60KB | 45KB | 168 | ~16,122 |
 | `openwiki/testing.md` | 107KB | 45KB | 715 | ~30,300 |
 
@@ -572,25 +572,25 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L163` 가구 밀기 애니메이션 (2026-09-05)
 - `L172` Recovered head emotes (2026-09-05)
 
-### `openwiki/runtime-project-schema.md` — 61KB · 225줄 · ~16,387 토큰 · 통째읽기 잘림
+### `openwiki/runtime-project-schema.md` — 62KB · 227줄 · ~16,694 토큰 · 통째읽기 잘림
 
 - `L3` Project-authored equipment slots (2026-09-05)
 - `L11` 기본 카탈로그 삭제 보존 (2026-09-05)
 - `L15` 전투 페이지 중복 ID 복구와 슬롯 참조 (2026-09-05)
-- `L26` 통행 컴포넌트 색인의 계약 (2026-08-30, PR #286)
-- `L34` 세계 법칙의 명시적 부재 (2026-09-05)
-- `L38` Project schema & persistence
-- `L105` Variable arithmetic & loop runtime (2026-08-07)
-- `L109` Canonical event-draft projection (2026-07-30)
-- `L115` P2 general buildings and home decorations (2026-08-25)
-- `L122` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
-- `L140` Boot normalizers must not create dangling references (2026-08-30)
-- `L166` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
-- `L200` 성장 트리 선택 확장 (2026-09-05)
-- `L206` 마을 설계서 (2026-09-05)
-- `L212` 공포 게임 제작 기능 (2026-09-05)
-  - `L216` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
-- `L220` NPC 표시 이름 (2026-09-05)
+- `L28` 통행 컴포넌트 색인의 계약 (2026-08-30, PR #286)
+- `L36` 세계 법칙의 명시적 부재 (2026-09-05)
+- `L40` Project schema & persistence
+- `L107` Variable arithmetic & loop runtime (2026-08-07)
+- `L111` Canonical event-draft projection (2026-07-30)
+- `L117` P2 general buildings and home decorations (2026-08-25)
+- `L124` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
+- `L142` Boot normalizers must not create dangling references (2026-08-30)
+- `L168` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
+- `L202` 성장 트리 선택 확장 (2026-09-05)
+- `L208` 마을 설계서 (2026-09-05)
+- `L214` 공포 게임 제작 기능 (2026-09-05)
+  - `L218` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
+- `L222` NPC 표시 이름 (2026-09-05)
 
 ### `openwiki/runtime-sessions.md` — 60KB · 168줄 · ~16,122 토큰 · 통째읽기 잘림
 

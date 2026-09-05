@@ -3,6 +3,7 @@ import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import { createBlankProject } from "@/project/defaults";
 import { deserialize, serialize } from "@/project/io";
 import { collectProjectReferenceIssues } from "@/project/io/references";
+import { createLegacyLifeProject } from "./fixtures/life-full/legacyProject";
 
 type Mutable = Record<string, any>;
 
@@ -60,7 +61,7 @@ describe("P2 authored foundation schema", () => {
 
   it("keeps legacy projects byte-stable without P2 fields", () => {
     // Break caught: P2 normalization invents empty packages in an old project.
-    const before = serialize(createBlankProject());
+    const before = serialize(createLegacyLifeProject());
     const loaded = deserialize(before) as unknown as Mutable;
     expect(loaded.database.fishSpecies).toBeUndefined();
     expect(loaded.system.fishing).toBeUndefined();
@@ -68,6 +69,7 @@ describe("P2 authored foundation schema", () => {
     expect(loaded.system.collections).toBeUndefined();
     expect(loaded.system.museum).toBeUndefined();
     expect(serialize(loaded as never)).toBe(before);
+    expect(serialize(deserialize(serialize(loaded as never)))).toBe(before);
   });
 
   it("rejects duplicate ids and unsafe authored geometry at the wire boundary", () => {
