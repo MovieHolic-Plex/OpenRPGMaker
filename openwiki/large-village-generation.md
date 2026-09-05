@@ -21,6 +21,25 @@
 
 ---
 
+## AI tree placement and completed houses (2026-09-05)
+
+`placeVillageDecor` and the terrain forest pass delegate to `runScatterObject`.
+Its tree candidates now reserve occupied upper cells and impassable lower terrain
+across the **entire tree footprint**, while allowing canopy-over-lower-trunk
+forest overlap. Recorded house geometry is always excluded, including empty
+cells; `avoidProtected:false` does not waive house ownership.
+
+This prevents the producer defect seen at `map_existing (28,8)`: conifer 260 was
+placed over house lower tile 76, with trunk 290 at `(28,9)` erasing fence 409.
+Placement cleanup removed the invalid canopy but left the trunk, and the runner
+recreated the canopy after the completed-house snapshot. The fix rejects that
+whole candidate before painting; it does not restore house tiles or change the
+runner invariant. Village registration remains at its existing completion boundary.
+
+Coverage: `villageTreePlacement.test.ts` checks both scatter packers and valid
+forest overlap; `villageProducerProtection.test.ts` compares completion snapshots
+with accepted output for ordinary and 100x100 snow villages through toolRunner.
+
 ## 관련 파일
 
 | 역할 | 파일 |

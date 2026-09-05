@@ -1,0 +1,68 @@
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-house-protection-p1-village
+
+ ❯ test/authorVillageFacade.test.ts (36 tests | 1 failed | 35 skipped) 4801ms
+   ↓ author_village adversarial boundary > runs the product facade through exactly one ToolDefinition execution
+   ↓ author_village adversarial boundary > returns a structured blocked ConstructionOutcome from the product facade
+   ↓ author_village adversarial boundary > returns a structured failed outcome when the inner builder reports data.ok false
+   ↓ author_village adversarial boundary > rolls back an unauthorized other-map add
+   ↓ author_village adversarial boundary > rolls back an unauthorized other-map remove
+   ↓ author_village adversarial boundary > rolls back an unauthorized other-map mutate
+   ↓ author_village adversarial boundary > rolls back an event created outside requested bounds
+   ↓ author_village adversarial boundary > rolls back an undeclared non-map project mutation
+   × author_village facade > applies an exact seeded village to only the requested existing exterior 4793ms
+     → 'author_village' 후처리 실패: 완성된 집의 보호 영역은 AI가 변경할 수 없습니다. 집 밖에서 작업하세요. 직접 편집은 가능합니다. [{"severity":"error","code":"protected-house-write","mapId":"map_existing","x":28,"y":8,"message":"완성된 집의 보호 영역은 AI가 변경할 수 없습니다. 집 밖에서 작업하세요. 직접 편집은 가능합니다."}]: expected false to be true // Object.is equality
+   ↓ author_village facade > supports an exact two-house starter settlement
+   ↓ author_village facade > normalizes mixed existing-target fields captured from a live LLM turn
+   ↓ author_village facade > exposes the same target and house-plan fields that its parser accepts
+   ↓ author_village facade > substitutes one plaza well for the unavailable landmark in 분수가 있는 평화로운 마을
+   ↓ author_village facade > substitutes one plaza well for the unavailable landmark in town with a Fountain centerpiece
+   ↓ author_village facade > keeps fountain fallback well placement inside requested bounds
+   ↓ author_village facade > does not emit the fountain fallback warning for an ordinary theme
+   ↓ author_village facade > creates the exact requested new map identity without suffix or reuse
+   ↓ author_village facade > rejects houseCount 0 without clamping or writing
+   ↓ author_village facade > rejects houseCount 33 without clamping or writing
+   ↓ author_village facade > rejects a house-plan count mismatch before writing
+   ↓ author_village facade > rolls back maps, interiors, events, tree, and start when exact count is short
+   ↓ author_village facade > fails a colliding new map without suffixing or reusing it
+   ↓ author_village facade > accepts a fully satisfied two-house best-effort request
+   ↓ author_village facade > reports an explicit best-effort result at the 85 percent threshold
+   ↓ author_village facade > rolls back best-effort below the 85 percent threshold
+   ↓ author_village facade > converts 'structural QA' into an atomic outer failure
+   ↓ author_village facade > converts 'target change' into an atomic outer failure
+   ↓ author_village facade > converts 'inner failure' into an atomic outer failure
+   ↓ author_village facade > converts 'no write' into an atomic outer failure
+   ↓ author_village facade > rejects an existing-target write outside requested bounds
+   ↓ author_village bounds 생략 경고 > 기존 맵을 bounds 없이 시공하면 덮은 칸수·비율·bbox 를 경고로 알린다
+   ↓ author_village bounds 생략 경고 > bounds 를 지정하면 그 경고가 붙지 않는다
+   ↓ author_village bounds 생략 경고 > 신규 맵 타깃에는 그 경고가 붙지 않는다
+   ↓ author_village bounds 생략 경고 > 스키마 설명이 생략 시 뷰포트 중심·뷰포트 모를 때만 전면 재포장임을 밝힌다
+   ↓ author_village settlement scale and winter > builds a deterministic 100x100 snow city with the requested population
+   ↓ author_village settlement scale and winter > rolls back an exact request when the requested population cannot fit
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/authorVillageFacade.test.ts > author_village facade > applies an exact seeded village to only the requested existing exterior
+AssertionError: 'author_village' 후처리 실패: 완성된 집의 보호 영역은 AI가 변경할 수 없습니다. 집 밖에서 작업하세요. 직접 편집은 가능합니다. [{"severity":"error","code":"protected-house-write","mapId":"map_existing","x":28,"y":8,"message":"완성된 집의 보호 영역은 AI가 변경할 수 없습니다. 집 밖에서 작업하세요. 직접 편집은 가능합니다."}]: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ test/authorVillageFacade.test.ts:27:83
+     25|     });
+     26|
+     27|     expect(result.ok, `${result.summary} ${JSON.stringify(result.issue…
+       |                                                                                   ^
+     28|     expect(construction(result)).toMatchObject({
+     29|       executionOk: true,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 35 skipped (36)
+   Start at  04:20:10
+   Duration  35.17s (transform 19.71s, setup 0ms, collect 28.85s, tests 4.80s, environment 0ms, prepare 316ms)

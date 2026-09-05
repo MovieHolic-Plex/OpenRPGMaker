@@ -1,0 +1,42 @@
+{
+  "base": "45921baf3192e42de2e3fa832ccfbd78333826f8",
+  "baselineReport": "/home/main/z-project/rpg-zzu-house-protection-baseline/.omo/gates-vitest-report.json",
+  "baselineReportSha256": "31a7109914ca98bd638195a4640ae3e2859772c9d92c4f3ec579396a5006185d",
+  "reviewReport": "/home/main/z-project/rpg-zzu-house-protection-p1-review/.omo/gates-vitest-report.json",
+  "productionSha256": "fd7350a96d33671e88aa43680e01d7e10b641f4b4646801e5670c608c293abe1",
+  "tests": 188,
+  "passed": 186,
+  "newFailures": [],
+  "remainingBaselineFailures": [
+    "forestDensity.test.ts::plant_tree_clusters 기본(dense)이 선언한 커버리지에 닿고 그 지대를 실제로 막는다",
+    "forestDensity.test.ts::place_props density — 모델이 실제로 닿는 라이브 툴 활엽수 density=dense 가 count 없이도 숲을 만든다"
+  ],
+  "fixedNewReviewFailures": [
+    "authorVillageFacade.test.ts::author_village adversarial boundary runs the product facade through exactly one ToolDefinition execution",
+    "authorVillageFacade.test.ts::author_village facade applies an exact seeded village to only the requested existing exterior",
+    "authorVillageFacade.test.ts::author_village facade normalizes mixed existing-target fields captured from a live LLM turn",
+    "authorVillageFacade.test.ts::author_village facade substitutes one plaza well for the unavailable landmark in 분수가 있는 평화로운 마을",
+    "authorVillageFacade.test.ts::author_village facade substitutes one plaza well for the unavailable landmark in town with a Fountain centerpiece",
+    "authorVillageFacade.test.ts::author_village facade does not emit the fountain fallback warning for an ordinary theme",
+    "authorVillageFacade.test.ts::author_village facade creates the exact requested new map identity without suffix or reuse",
+    "authorVillageFacade.test.ts::author_village bounds 생략 경고 기존 맵을 bounds 없이 시공하면 덮은 칸수·비율·bbox 를 경고로 알린다",
+    "authorVillageFacade.test.ts::author_village settlement scale and winter builds a deterministic 100x100 snow city with the requested population",
+    "authorVillageScopeGate.test.ts::author_village lived-map scope gate still builds a full empty map without any confirm",
+    "forestDensity.test.ts::author_village — 모델이 실제로 지나는 마을 파사드 「울창한 숲 마을」의 숲 밴드가 두껍고 거의 통행 불가다",
+    "forestDensity.test.ts::author_village — 모델이 실제로 지나는 마을 파사드 테마 문장만으로는 밀도를 올리지 않는다 — forestDensity enum이 필요하다",
+    "lakeVillageTwoMaps.test.ts::lake village two maps rebuild clears maps and builds a 2-map village with circular lakes",
+    "villageAuthoringData.test.ts::사용자 저작 마을 데이터 — 시공 반영 presetId를 주면 프리셋 형태만 쓰고 설계도에 프리셋을 남긴다",
+    "villageAuthoringData.test.ts::사용자 저작 마을 데이터 — 시공 반영 모르는 presetId는 경고로 흘리고 기본값으로 시공한다",
+    "villageAuthoringData.test.ts::사용자 저작 마을 데이터 — 시공 반영 저작 레코드가 없으면 예전과 똑같이 동작한다",
+    "villageBuilder.test.ts::build_village 강촌마을 쿼리는 강+숲 필수 스펙을 뽑고 맵에 수역·나무를 깐다",
+    "villageBuilder.test.ts::build_village run_village_pipeline 이 plan→build→spec→look 을 돌린다",
+    "villageBuilder.test.ts::build_village plan_village → build_village(planId) → critique_village 3층 흐름",
+    "villageBuilder.test.ts::build_village 기본 시드에서도 문 8개가 전부 온전하다 (진입로 관통 회귀)",
+    "villageBuilder.test.ts::build_village bounds 지정 시 기존 맵의 해당 영역 안에 광장·집·NPC를 배치한다",
+    "villageBuilder.test.ts::build_village housePlans contract 파이프라인 재시도 정리가 기존 무관 맵을 보존한다 (스냅샷 와이프)",
+    "villageBuilder.test.ts::build_village housePlans contract pathStyle:stone 은 포석(129 블록) 오토타일로 성형된 돌길을 깔고 불변식을 지킨다",
+    "villageBuilder.test.ts::build_village housePlans contract 길 시공 훅: bounds 밖으로 길이 새지 않는다 (침범 롤백 재시도)",
+    "villageFirstPlanHardGate.test.ts::첫 plan 필수요소 hard 게이트 농촌 테마 look 평가는 farm 충족 여부를 requirementsMet에 싣는다"
+  ],
+  "finalUnhandledErrors": false
+}
