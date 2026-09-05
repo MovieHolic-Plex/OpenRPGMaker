@@ -1,0 +1,125 @@
+{
+  "browser": "Firefox",
+  "viewport": {
+    "WIDTH": 1680,
+    "HEIGHT": 1050
+  },
+  "totals": {
+    "selectUnskinned": 0,
+    "numberUnskinned": 0,
+    "checkUnskinned": 0,
+    "rangeUnskinned": 0,
+    "detailsMarker": 0,
+    "imgBroken": 0,
+    "imgZero": 0,
+    "imgHidden": 9,
+    "bgZero": 0,
+    "bgHidden": 7,
+    "badUrls": 0,
+    "selfClipped": 224,
+    "tinyFont": 0,
+    "tinyPseudo": 0,
+    "lowLineHeight": 525,
+    "failedImageRequests": 0,
+    "tabsMeasured": 32,
+    "tabsErrored": 0,
+    "workspaceHeightSwing": 0
+  },
+  "growthTabs": {
+    "promotion-tree": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "imgHidden": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "bgHidden": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "hiddenSamples": [],
+        "bgZeroSamples": [],
+        "bgHiddenSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 0,
+        "tinyPseudo": 0,
+        "pseudoSamples": [],
+        "lowLineHeight": 0,
+        "clipSamples": [],
+        "tinySamples": [],
+        "lhSamples": []
+      },
+      "space": {
+        "headers": [],
+        "headerTotal": 0,
+        "bodyH": 802,
+        "workspaceH": 802,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": []
+    },
+    "skill-trees": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "imgHidden": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "bgHidden": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "hiddenSamples": [],
+        "bgZeroSamples": [],
+        "bgHiddenSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 0,
+        "tinyPseudo": 0,
+        "pseudoSamples": [],
+        "lowLineHeight": 0,
+        "clipSamples": [],
+        "tinySamples": [],
+        "lhSamples": []
+      },
+      "space": {
+        "headers": [],
+        "headerTotal": 0,
+        "bodyH": 802,
+        "workspaceH": 802,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": []
+    }
+  },
+  "pageErrors": []
+}

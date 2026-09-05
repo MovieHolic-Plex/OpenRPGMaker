@@ -1,0 +1,23 @@
+[
+  {
+    "width": 1600,
+    "height": 1000,
+    "inputBottom": 340.3999938964844,
+    "buttonTop": 350.3999938964844,
+    "selectWidth": 157
+  },
+  {
+    "width": 1280,
+    "height": 800,
+    "inputBottom": 302.3999938964844,
+    "buttonTop": 312.3999938964844,
+    "selectWidth": 157
+  },
+  {
+    "width": 1024,
+    "height": 768,
+    "inputBottom": 276.8000030517578,
+    "buttonTop": 286.79998779296875,
+    "selectWidth": 129
+  }
+]
