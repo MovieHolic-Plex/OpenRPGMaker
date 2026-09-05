@@ -1398,8 +1398,8 @@ export class AssistantSession {
     }
     const first = await this.executeUserTurn(text, onEvent, signal, turnOptions);
     // 계획 모드의 계획만 세운 턴은 사용자 확인을 기다린다 — 드라이버가 「계속」을 대신 보내버리면 멈춘 의미가 없다.
-    if (this.lastTurnPlanOnly) return this.finishRunRecap(first, startedAt, usageBefore, auditFrom, onEvent);
-    const last = await this.runAutonomousDriver(first, onEvent, signal);
+    if (this.lastTurnPlanOnly || turnOptions.composerMode === "ask") return this.finishRunRecap(first, startedAt, usageBefore, auditFrom, onEvent);
+    const last = await this.runAutonomousDriver(first, onEvent, signal, turnOptions);
     return this.finishRunRecap(last, startedAt, usageBefore, auditFrom, onEvent);
   }
 
@@ -1410,7 +1410,8 @@ export class AssistantSession {
   private async runAutonomousDriver(
     first: TurnResult,
     onEvent: (event: SessionEvent) => void,
-    signal?: AbortSignal
+    signal?: AbortSignal,
+    options: SessionTurnOptions = {},
   ): Promise<TurnResult> {
     this.autoRunSteps = 0;
     let last = first;
@@ -1421,7 +1422,7 @@ export class AssistantSession {
         type: "status",
         text: `자율 실행 계속 (${this.autoRunSteps}/${AGENT_RUN_MAX_TOTAL_STEPS})`,
       });
-      const next = await this.executeUserTurn("계속", onEvent, signal, { driverContinue: true });
+      const next = await this.executeUserTurn("계속", onEvent, signal, { ...options, driverContinue: true });
       if (next.stoppedReason === "aborted" || next.stoppedReason === "error") return next;
       last = next;
     }
@@ -1547,7 +1548,8 @@ export class AssistantSession {
     this.specRejections = 0;
     this.lastRejectedSpecFingerprint = null;
     this.turnProposals = new Map();
-    this.turnAppliedMilestoneCalls = [];
+    // Synthetic continuations belong to the same user goal and retain its applied ledger.
+    if (!options.driverContinue) this.turnAppliedMilestoneCalls = [];
     this.turnWriteDedupe = new Map();
     this.turnToolStartedCount = 0;
     this.turnEscalatedToolNames = [];
@@ -2006,7 +2008,7 @@ export class AssistantSession {
 
   /** 모델이 볼륨 미달인 채 퇴장하면 Ralph 다음으로 재주입한다. 사용자 「계속」이 아니다. */
   private injectVolumeContinue(onEvent: (event: SessionEvent) => void, finalText: string): boolean {
-    if (this.milestoneApplyFailed) return false;
+    if (this.milestoneApplyFailed || this.turnComposerMode === "ask") return false;
     if (assistantTextLooksLikeQuestion(finalText)) return false;
     if (this.volumeContinueUsed >= MAX_VOLUME_CONTINUES_PER_TURN) return false;
     const gaps = this.volumeGapsNow();
@@ -3345,6 +3347,7 @@ export class AssistantSession {
         // 저작하지 않는다. 새 사용자 메시지가 실패 상태를 해제한 뒤 이어갈 수 있다.
         if (
           !this.milestoneApplyFailed
+          && this.turnComposerMode !== "ask"
           && shouldRalphContinue(this.workPlan, {
             autoStepsUsed: this.workPlanAutoStepsThisUserMessage,
             assistantText: finalText,

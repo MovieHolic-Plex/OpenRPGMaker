@@ -106,10 +106,11 @@ function steps(): ChatResult[] {
 }
 
 describe("마일스톤 턴 정산", () => {
-  it("마일스톤으로 적용된 쓰기는 턴 결과와 검수 주입에 남는다", async () => {
+  it.each([false, true])("마일스톤 쓰기는 자동 계속(%s) 후에도 정산에 남는다", async (continueOnce) => {
     const project = createBlankProject();
     installHermeticEnv(project);
     const script = steps();
+    if (continueOnce) script.push(finalResult("완료했습니다."));
     let index = 0;
     const chat = async (): Promise<ChatResult> => {
       if (index >= script.length) exhausted();
@@ -117,6 +118,10 @@ describe("마일스톤 턴 정산", () => {
     };
     const session = new AssistantSession(project, { config: ORCH_CONFIG, chat });
 
+    if (continueOnce) {
+      vi.spyOn(session as unknown as { shouldAutoContinue: () => boolean }, "shouldAutoContinue")
+        .mockReturnValueOnce(true).mockReturnValue(false);
+    }
     const result = await session.sendUserMessage(GOAL, () => {}, undefined, { autonomous: true });
 
     const statuses = session.getAuditEntries().filter((e) => e.kind === "status").map((e) => String(e.text ?? ""));

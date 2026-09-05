@@ -113,7 +113,7 @@ export interface AiTurnRunner {
     runOpts?: { readonly autonomous?: boolean; readonly composerMode?: ComposerMode },
   ) => Promise<void>;
   /** LLM 오류 버블 + [설정 열기]/[재시도] 행. */
-  readonly appendErrorWithRetry: (message: string, session: AssistantSession, requestText: string) => void;
+  readonly appendErrorWithRetry: (message: string, session: AssistantSession, requestText: string, runOpts?: { readonly autonomous?: boolean; readonly composerMode?: ComposerMode }) => void;
 }
 
 export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
@@ -553,7 +553,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       if (activeSpec && planVisible && turnWrites.length === 0 && completenessWarnings.length === 0 && result.stoppedReason !== "error") {
         deps.surface.setStatus(`밑그림 확정 — 에셋 ${activeSpec.assets.length}개`);
       }
-      if (result.error) appendErrorWithRetry(result.error, session, requestText);
+      if (result.error) appendErrorWithRetry(result.error, session, requestText, runOpts);
     } catch (cause) {
       if (!ownsTurn(true)) return;
       if (abortController.signal.aborted) {
@@ -722,7 +722,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
   // LLM 오류 버블 + 수동 [재시도] 버튼(도그푸딩 결함 ⑥). 오류 메시지에는 llmClient가
   // 만든 원인(네트워크/429/5xx/인증 등)이 그대로 담긴다. 자동 재시도 1회(지수 백오프)는
   // llmClient.chatCompletion이 이미 수행했고, 여기의 버튼은 그 이후의 수동 재개다.
-  const appendErrorWithRetry = (message: string, session: AssistantSession, requestText: string): void => {
+  const appendErrorWithRetry: AiTurnRunner["appendErrorWithRetry"] = (message, session, requestText, runOpts): void => {
     const bubble = deps.surface.appendBubble("system", `오류: ${message}`);
     const actions: HTMLElement[] = [];
     // Any transport failure mounts settings opener — do not threshold on message content.
@@ -758,7 +758,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
             testid: "ai-retry-turn",
             detail: { error: message.slice(0, 200), instruction: requestText.slice(0, 120) },
           });
-          void executeTurn(session, requestText, (onEvent, signal) => session.retryLastTurn(onEvent, signal));
+          void executeTurn(session, requestText, (onEvent, signal) => session.retryLastTurn(onEvent, signal), runOpts);
         },
       },
     }) as HTMLButtonElement;

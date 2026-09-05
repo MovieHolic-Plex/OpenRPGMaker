@@ -438,3 +438,8 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 - **MCP bridge unchanged:** `src/editor/aiAssistantBridge.ts` still long-polls `127.0.0.1:17831` and drives the same `sendUserMessage` entrypoint — `assistant_send` messages land in `pendingSends` between turns, the peek hook sees them, and the driver yields; no bridge code changed.
 
 - **Demo evidence:** the todo-8 autonomous JRPG run evidence lives at `.omo/evidence/autonomous-ai-rpg/task-8-autonomous-ai-rpg.md` — *not yet present as of this sync (todo 8 still running in parallel); the link is added once it lands.*
+
+
+## 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
+
+`TurnResult.appliedCalls`는 같은 사용자 목표에서 이미 저장한 마일스톤 호출이며, `proposedCalls`와 함께 완료 집계에만 사용한다. 재적용에는 `proposedCalls`만 사용한다. 드라이버의 합성 계속은 원장을 보존하고 새 사용자 메시지만 초기화한다. recap·질문 모드·맵별 밑그림 표시를 유지하며 수동 재시도에도 원래 composer 옵션을 전달한다. 질문 중 미완료 계획은 자동 재개하지 않는다. 계약: `aiMilestoneTurnAccounting`, `aiAskPendingPlan`, `aiComposerModeSession`.
