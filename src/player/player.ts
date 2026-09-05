@@ -404,10 +404,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       game.registry.set("dialogue", dialogue);
       game.registry.set("dialogueHost", playStage);
       game.registry.set("returnToTitle", () => renderTitle());
-      game.registry.set("openSaveMenu", () => openEventMenu(layout, () => {
-        statusMenu.reset();
-        statusMenu.renderMenu(undefined, "save");
-      }));
+      game.registry.set("openSaveMenu", () => openEventMenu(layout, statusMenu.openSaveMenu));
       game.registry.set("openMenuScreen", () => openEventMenu(layout, () => {
         statusMenu.reset();
         statusMenu.renderMenu();
@@ -416,6 +413,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
         statusMenu.reset();
         renderLoad(false);
       }));
+
       // create() 가 이미 끝났을 수도 있으므로 ready 콜백 + 폴링으로 모두 커버.
       const ready = await waitForPlaySceneReady(nextGame, () => startRun === run, readyPromise);
       if (run !== startRun) {

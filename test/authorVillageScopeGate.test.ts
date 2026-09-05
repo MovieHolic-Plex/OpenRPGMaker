@@ -69,6 +69,17 @@ describe("author_village lived-map scope gate", () => {
     expect(result.ok, JSON.stringify(result.issues ?? [])).toBe(true);
   });
 
+  it("부분 bounds와 fullMap이 충돌하면 범위를 조용히 줄이거나 넓히지 않는다", () => {
+    const project = livedProject();
+    const before = serialize(project);
+    const result = runToolDefinition({ project }, stubTool(4), {
+      ...BASE, target: { ...EXISTING_TARGET, fullMap: true, bounds: { x: 0, y: 0, w: 20, h: 20 } },
+    });
+    expect(result.ok).toBe(false);
+    expect(result.issues?.[0]?.code).toBe("village-scope-conflict");
+    expect(serialize(project)).toBe(before);
+  });
+
   it("still builds a full empty map without any confirm", () => {
     const project = createExistingProject();
     const result = runFacade(project, BASE, AUTHOR_VILLAGE_TOOL);

@@ -10,6 +10,14 @@
 
 회귀: `test/questToolContract.test.ts`(중첩 입력·실제 예시·overwrite 거부), `test/questGraph.test.ts`(전투·맵 이동의 debug 대체는 미검증), `test/bossPhaseQuestOutcomeGate.test.ts`(직접 완료 게이트). Provider 계약은 `test/toolSchemaProviderCompat.test.ts`.
 
+## DB 조회 페이지와 마을 전체 범위 (2026-09-05)
+
+`get_database_records`는 collection/include 외에 `ids`, `limit`(1~500), `offset`을 받는다. 응답은 실제 `records`, 필터 후 `total`, 이어 읽을 `nextOffset`(없으면 null)이다. 대규모 DB에서 ID 목록을 먼저 읽고 기존 레코드 변경 직전 `ids:[실제 ID], include:"full"`로 필요한 원본만 조회할 수 있다. 페이지에 반환되지 않은 ID는 조회 증거로 인정하지 않는다.
+
+`author_village`의 target.fullMap 또는 루트 fullMap이 true이면 세션이 뷰포트 20×20 bounds를 끼워 넣지 않는다. 전체 맵 요청과 부분 bounds를 함께 전달하면 `village-scope-conflict`로 거부해 둘 중 하나를 고르게 한다(사람 승인 단계가 아니라 모델의 인자 수정). bounds를 조용히 넓히거나 전체 요청을 부분 시공으로 완료하지 않는다. Tests: `authorVillageViewportBounds`, `authorVillageScopeGate`.
+
+
+
 > **Encoding note:** Some Korean descriptive text has EUC-KR→UTF-8 mojibake from the original source commit. English terms, file paths, and code references are intact. For accurate Korean, consult the referenced source files. Partial automated restoration applied; remaining garbled CJK is irreversibly corrupted.
 
 Soft-confirm vocabulary, region task routing, AI visual polish, dock modes, tool exposure caps, and MCP bridge.
@@ -40,6 +48,8 @@ Soft-confirm vocabulary, region task routing, AI visual polish, dock modes, tool
   Runtime proof (not just unit tests): `test/e2e/ai-editor-reach.spec.ts` loads the real editor, imports the live modules in the page, and asserts the assembled prompt indexes every active tool and that the natural-language request escalates the tool the domain slice dropped. **Registration seam note:** the six facade modules were registered in `toolRegistry.ts` as empty arrays *before* implementation so parallel agents never had to edit the registry — that prevented git conflicts, but a broken intermediate module still breaks every sibling's test run through the shared import, so each module must stay compiling after every save.
 
 - **AI 배치 툴은 통행 가능 칸에 자동 착지한다 (2026-08-27):** `place_battle_blocker`는 `inMapBounds` + `troopId` 만 검사해 몬스터를 벽 위에 그냥 세웠다. 이제 모든 이벤트 배치 툴은 `resolveEventPlacement`(`src/editor/tools/eventTools.ts`)를 지난다 — 캐릭터형(몬스터·추격자·NPC)과 밟아서 발동하는 트리거는 반경 3 자동 착지로 `isPassable` 칸을 강제하고 `위치 자동 조정: (a,b) → (c,d)` 경고와 `data.adjusted` 를 낸다. action 트리거 오브젝트(문·상자·간판)는 RM2K3 의미대로 벽 위를 허용하되, 인접 칸이 전부 막혔으면 착지시키거나 `*-impassable` `ToolError` 로 거부한다. 그래도 사면이 막힌 채 남은 이벤트는 `projectLint` 의 `event-unreachable` 경고가 잡는다. 실면 증거(배포 데모 맵 5개 × `runTool`): `npx vite-node scripts/prove-ai-placement-passability.mts`, 로그는 `.omo/evidence/ai-place-passable-20260827/`. 계약 테스트: `test/aiEventPlacementPassability.test.ts`, `test/projectLint.test.ts`.
+
+- **보물상자의 벽감 예외는 수면 허용이 아니다 (2026-09-05):** `place_chest`는 `assertChestDrySurface`로 요청 좌표와 자동 착지 결과를 검사한다. 현재 타일셋의 `tileMeta.role`/물 그룹으로 수면을 식별하고, 메타가 없는 기본 칩셋에만 기본 물 타일 번호를 적용한다. 다른 칩셋의 같은 번호를 물로 단정하지 않는다. 수면은 이웃 지면에서 조사 가능하거나 통행 설정을 열어도 `chest-on-water`로 거부하며, 오류는 지면·다리 좌표를 안내한다. O 상층 다리/발판은 지지면으로 허용하고 ★ 장식은 하층 물을 덮지 않는다. 기존 벽감 상자와 다른 action 이벤트의 접근 정책은 그대로다. 사전 `get_map_region` 호출 여부와 무관하게 검사한다. 회귀: `test/treasureChestPlacement.test.ts` — 숲 던전 (19,6) 물가 재현의 `runTool` 실패·무변경, 통행 가능한 물, 다리/★ 장식, 타일셋별 역할, 자동 착지 수면 거부.
 
 - **배치 계약이 이제 정말 전수 적용된다 + 구조 게이트 (2026-08-30):** 위 2026-08-27 항목의 "이제 **모든** 이벤트 배치 툴은 `resolveEventPlacement`를 지난다"는 실측과 달랐다. 계약을 지나지 않고 `map.events` 에 직접 쓰던 경로가 7곳 남아 있었고, 그것이 "AI 가 물 위에 NPC 를 세운다"는 신고의 실제 원인이었다: `set_lighting_volume`/`set_scene_mood`(applyMode "event")가 area 전 칸에 playerTouch 이벤트를 무조건 생성, `author_story_arc`, 퀘스트 컴파일러 7개 생성 지점(대화 NPC·기버·드롭 전투·도달 마커·수집물·게이트), `copy_map_region`(withEvents)의 목적지 무검사 복제, 조사 퍼즐 4개 컴파일러(특히 push-switches **발판**은 playerTouch 라 물 위면 퍼즐이 풀리지 않는다), `give_starter_monsters`, 그리고 계약 자신의 파일에 있던 `ensureMapCheckpointEvent`(0,0 고정)·`script_cutscene`. 지금은 전부 계약을 지난다 — 캐릭터형·밟기형은 통행 가능 칸 강제, action 트리거는 인접 통행 가능 칸 필수.
   - **단일 대상 vs 영역/대량의 처리가 다르다.** 단일 대상은 기존대로 반경 3 자동 착지 + `위치 자동 조정` 경고, 실패 시 `*-impassable` ToolError. 영역/대량(조명 볼륨·분위기·퍼즐 발판·영역 복제)은 **전체를 실패시키지 않고** 통행 불가 칸을 건너뛰고 `통행 불가 칸 N개를 건너뛰었습니다: (x,y)...` 로 보고한다(죽은 이벤트를 만들지 않는 것이 목적이므로). `copy_map_region` 은 `data.eventsCopied`/`data.eventsSkipped` 로도 센다.
@@ -110,6 +120,8 @@ Soft-confirm vocabulary, region task routing, AI visual polish, dock modes, tool
 ## Project-wide quality evaluation
 
 `evaluate_game_quality` is read-only. It combines project, world, and tileset-palette lint with structural coverage across legacy event commands, event pages, common events, troop battle pages, and every nested command branch. It also reports quest/battle/ending/content counts, story-flag reads and writes, and optional caller-supplied walkthrough results. Only objective `projectLint` errors block its verdict; world/palette findings and walkthrough failures remain explicit evidence. It never emits a numeric score and cannot measure fun, originality, emotional impact, pacing quality, or preferred difficulty.
+
+**필수 검증 완료 근거 (2026-09-05):** `ToolResult.ok`는 검사가 실행됐다는 뜻이다. `AssistantSession`은 `parseToolVerdict`를 재사용해 `run_lint`의 `data.counts.errors`/오류 issues, `check_reachability`의 `data.reachable:false`, 퀘스트·워크스루·장면 검사의 `data.ok:false`, 품질 평가의 `data.verdict.blocked`를 판정한 뒤에만 `successTools`에 기록한다. 오류 상세가 잘려도 lint 오류 개수는 유효하다. 경고만 있는 lint는 통과한다. 실패 재실행은 이전 성공을 제거하고, 프로젝트 쓰기 성공은 기존 검증 근거를 모두 stale로 만든다. 실행되지 않은 잘못된 인자/전송 실패는 같은 도구의 고친 호출로 복구할 수 있지만 실제 음성 판정은 해당 대상을 재검사해야 한다. 같은 항목의 이어가기에서는 근거를 유지하되, 도구명+인자별로 관리하므로 다른 맵/시나리오의 성공으로 실패를 덮을 수 없다. 다음 항목의 완료에는 그 항목의 검사만 필요하며, 이전 항목의 실패/stale 기록은 목표 전체 최종 보고에 보존한다. `src/ai/toolVerificationEvidence.ts`가 이 수명을 소유한다. 최종 응답은 남은 실패와 변경 후 재검증 필요를 표시한다. 레이어 자동 검증은 종전처럼 **1회 자문**이며 선재 오류로 런을 중단하거나 필수 도구 성공을 대신 적립하지 않는다. 자동 자문 통과만 있었던 검사는 후속 쓰기로 재검증 의무가 생기지 않는다(첫 레이어 quality 통과 → 다음 레이어 쓰기 → 마지막 레이어 lint만 재실행하는 정상 경로). 자문에서 발견한 실제 실패는 보고하되 동일 대상의 재통과로 해소하며, 모델이 명시 호출한 검사의 stale 경고는 자동 통과 이력이 있어도 보존한다. Tests: `test/agentVerification.test.ts`, `test/assistantVerificationEvidence.test.ts`.
 
 `play_walkthrough` exposes a single provider-safe scenario item object rather than JSON Schema unions. All runner fields are optional at the provider boundary because the valid required set depends on `do`/`expect`; the runner is the strict trust boundary and rejects unknown fields, mixed variants, bad types, and empty scenarios before executing any command. Provider-compat tests recursively reject both `oneOf` and `anyOf` anywhere in an exposed tool schema.
 
@@ -198,3 +210,17 @@ id 슬롯은 남긴다**(`def.name = ""`). id 가 지워지지 않으므로 `com
 ## 마을 설계서 (2026-09-05)
 
 author_village와 buildVillageDomain이 DB 설계서의 고정값·집 수 범위·집 재료/층수 호환성을 시공 전에 검사한다. 기본 설계서가 있으면 ID·집 수 생략이 가능하다. 상세 계약과 경계는 [마을 설계서](village-design.md).
+
+## 저수준 이벤트 입력은 명령 위치를 검증한다 (2026-09-05)
+
+`upsert_event`의 `event.trigger.commands` 또는 `event.pages[n].trigger.commands`는 `invalid-args`로 거부한다.
+명령은 trigger와 같은 객체의 `commands`에 둔다. 검사는 입력 patch를 병합·정규화하기 전에 수행한다.
+실제 JRPG 재실행에서 잘못 중첩된 transfer를 도구가 무시하고 빈 commands로 저장해 던전 귀환이 사라졌기 때문이다.
+`test/toolsMapManagement.test.ts`는 두 잘못된 위치를 모두 거부하고 기존 귀환 이벤트가 그대로 남는지 검증한다.
+
+## 보물상자는 노출된 수면을 거부한다 (2026-09-05)
+
+`place_chest`는 요청 좌표와 자동 착지 결과를 모두 검사한다. 물 판정은 현재 타일셋의
+`roleCapabilities(...).terrainTag`를 사용하고, 메타가 없는 기본 칩셋에만 칩 번호 폴백을 적용한다.
+통행 가능한 O 상층 다리는 허용하지만 ★ 장식은 하층 물을 가리지 않는다. 벽감의 인접 조사 예외는 유지한다.
+`test/treasureChestPlacement.test.ts`가 물·다리·다른 타일셋·자동 착지를 검증한다.

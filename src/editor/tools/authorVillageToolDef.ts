@@ -252,6 +252,13 @@ function assertTargetCapacity(draft: Project, request: AuthorVillageRequest): vo
   const map = draft.maps[request.target.mapId];
   if (!map) return;
   const bounds = request.target.bounds;
+  if (request.target.fullMap === true && bounds
+    && (bounds.x !== 0 || bounds.y !== 0 || bounds.w !== map.width || bounds.h !== map.height)) {
+    throw new ToolError(
+      `fullMap:true 와 부분 bounds가 충돌합니다. 전체 ${map.width}×${map.height} 시공이면 bounds를 생략하고, 부분 시공이면 fullMap을 빼세요.`,
+      { code: "village-scope-conflict", mapId: map.id },
+    );
+  }
   // 새 맵 생성(createVillageMap 기본 50×50)과 달리 기존 맵은 있는 크기가 전부다 —
   // 집 1채 슬롯(8+여백)도 안 나오는 면적이면 여기서 거부한다.
   const w = bounds?.w ?? map.width;

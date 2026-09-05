@@ -33,6 +33,11 @@ export const RUN_LINT_TOOL = "run_lint";
 export const EVALUATE_GAME_QUALITY_TOOL = "evaluate_game_quality";
 export const VERIFY_QUEST_TOOL = "verify_quest";
 export const PLAY_WALKTHROUGH_TOOL = "play_walkthrough";
+/** Checks whose execution success is not evidence that the checked artifact passed. */
+export const VERIFICATION_TOOL_NAMES: ReadonlySet<string> = new Set([
+  RUN_LINT_TOOL, EVALUATE_GAME_QUALITY_TOOL, VERIFY_QUEST_TOOL, PLAY_WALKTHROUGH_TOOL,
+  "check_reachability", "run_scene_test", "simulate_battle",
+]);
 
 /** Tools that author quest records (questId = args.id / args.def.key). */
 export const DEFINE_QUEST_FAMILY = ["define_quest", "create_quest"] as const;
@@ -241,7 +246,7 @@ function issuesOf(result: ToolResultLike): readonly { readonly severity?: string
 /**
  * Parse ONE tool result into a verdict.
  * - Tool-level failure (ok !== true) always blocks (fail-closed on missing ok).
- * - verify_quest / play_walkthrough block when data.ok === false (their real failure channel).
+ * - Scenario checks block when data.ok === false; reachability uses data.reachable.
  * - evaluate_game_quality blocks ONLY on projectLint errors (data.verdict.blocked);
  *   its non-error issues are warnings.
  * - Other tools (run_lint): error-severity issues block; warning/info issues are warnings.
@@ -271,7 +276,7 @@ export function parseToolVerdict(name: string, result: ToolResultLike): Verdict 
     for (const issue of issuesOf(result)) {
       if (issue?.severity !== undefined && issue.severity !== "error") warnings.push(issue.message || "경고");
     }
-  } else if (name === VERIFY_QUEST_TOOL || name === PLAY_WALKTHROUGH_TOOL) {
+  } else if (name === VERIFY_QUEST_TOOL || name === PLAY_WALKTHROUGH_TOOL || name === "run_scene_test") {
     if (data?.ok === false) {
       const reason = data?.failureReason;
       blocking.push(typeof reason === "string" && reason !== "" ? reason : `${name} 검증 실패`);
@@ -283,6 +288,16 @@ export function parseToolVerdict(name: string, result: ToolResultLike): Verdict 
     for (const issue of issuesOf(result)) {
       if (issue?.severity === "error") blocking.push(issue.message || issue.code || "오류");
       else if (issue?.severity !== undefined) warnings.push(issue.message || "경고");
+    }
+    // Counts remain authoritative when detailed issues are omitted or truncated.
+    if (name === RUN_LINT_TOOL) {
+      const errors = asRecord(data?.counts)?.errors;
+      if (typeof errors === "number" && errors > 0 && blocking.length === 0) {
+        blocking.push(`lint 오류 ${errors}건`);
+      }
+    }
+    if (name === "check_reachability" && data?.reachable === false) {
+      blocking.push("도달 불가 지점이 있습니다");
     }
   }
 

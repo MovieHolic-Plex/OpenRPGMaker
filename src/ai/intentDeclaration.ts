@@ -36,6 +36,12 @@ export interface IntentDeclaration {
   readonly resetsContext: boolean;
   /** 이 요청에 쓸 가능성이 높은 툴 이름(레지스트리에 있는 것만). */
   readonly tools: readonly string[];
+  /** 사용자가 명시한 조회 선행 계약. 자연어 해석은 선언자가, 성공 근거 검사는 세션이 맡는다. */
+  readonly readBeforeWrite?: {
+    readonly project: boolean;
+    readonly collections: readonly string[];
+    readonly references: boolean;
+  };
   readonly summary: string;
   readonly source: IntentSource;
 }
@@ -84,6 +90,7 @@ Fields:
 - "needsPlan": 여러 산출물·여러 맵·마을/도시/RPG/캠페인·퀘스트 체인처럼 한두 번의 툴 호출로 끝나지 않으면 true. NPC 한 명, 소품 몇 개, 시설 하나, 질문은 false.
 - "resetsContext": 사용자가 이전 작업과 무관한 새 작업·처음부터·프로젝트 초기화를 명시하면 true.
 - "tools": 입력 툴 목록에서 이 요청에 쓸 가능성이 높은 이름만, 최대 8개. 모르면 [].
+- "readBeforeWrite": 사용자가 '기존 데이터를 먼저 읽고 이어 작업', '조회 후 실제 ID만 참조'를 명시하면 {"project":true,"collections":["items","enemies","troops"],"references":true}. project 는 프로젝트/기존 맵·이벤트 선행 조회, collections 는 작업에 필요한 DB 컬렉션 이름(실제 조회가 모두 성공하기 전 첫 쓰기 금지), references 는 참조 ID 조회 증거를 뜻한다. 필요한 컬렉션만 선택한다. 그런 조건이 없으면 생략한다. 이것은 작성 요청의 절차 계약이며 별도 허락 질문이 아니다.
 - "summary": 요청을 한 문장으로.
 
 Rules:
@@ -201,6 +208,12 @@ export function parseIntentDeclaration(raw: string, facts: IntentFacts): IntentP
       needsPlan: parsed.needsPlan === true,
       resetsContext: parsed.resetsContext === true,
       tools,
+      ...(isRecord(parsed.readBeforeWrite) ? { readBeforeWrite: {
+        project: parsed.readBeforeWrite.project === true,
+        collections: readStringList(parsed.readBeforeWrite.collections, 24).filter((name) =>
+          ["actors", "classes", "skills", "items", "equipment", "enemies", "troops", "states", "battleAnimations", "switches", "variables", "commonEvents", "quests", "maps", "elements", "monsterSpecies", "lifeSkills", "farmAnimalSpecies", "crops"].includes(name)),
+        references: parsed.readBeforeWrite.references === true,
+      } } : {}),
       summary: readString(parsed.summary, 200) ?? facts.userText.trim().slice(0, 200),
       source: "llm",
     },
@@ -353,6 +366,9 @@ export function formatScopeNote(scope: ScopeNoteInput, intent: IntentDeclaration
 export function formatIntentNote(intent: IntentDeclaration, options: { readonly clarifyBypassed?: boolean } = {}): string | null {
   if (intent.source !== "llm") return null;
   const lines: string[] = [];
+  if (intent.readBeforeWrite) {
+    lines.push(`[조회 선행 계약] 첫 쓰기 전에 ${intent.readBeforeWrite.project ? "get_project_summary와 대상 get_map_region, find_events, " : ""}${intent.readBeforeWrite.collections.map((name) => `get_database_records(collection:"${name}")`).join(", ")}를 성공시켜 반환값을 읽어라. 기존 DB 수정은 include:"full", ids:[실제 ID]로 원본을 확인한다. 새 레코드도 참조 전에 다시 조회한다. 조회 실패와 같은 응답의 쓰기는 실행되지 않는다.`);
+  }
   if (intent.clarify && options.clarifyBypassed) {
     lines.push(`[의도] 모호한 점: ${intent.clarify} — 자율 모드라 되묻지 않는다. 가장 그럴듯한 해석으로 진행하고 첫 문장에 어느 쪽을 택했는지 밝혀라.`);
   }

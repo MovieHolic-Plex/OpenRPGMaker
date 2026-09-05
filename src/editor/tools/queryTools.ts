@@ -644,13 +644,16 @@ function collectionEntries(project: Project, collection: DbCollection): { id: st
 
 const getDatabaseRecords: ToolDefinition = {
   name: "get_database_records",
-  description: "컬렉션 레코드를 반환한다. 기본은 {id, name}. include=full 이면 전체 필드(적 stats 등). collection: actors/classes/skills/items/equipment/enemies/troops/states/battleAnimations/switches/variables/commonEvents/quests/maps/elements/monsterSpecies/lifeSkills/farmAnimalSpecies/crops.",
+  description: "컬렉션 레코드를 반환한다. 기본은 {id, name}. include=full 이면 전체 필드(적 stats 등). ids로 특정 레코드만 조회, limit/offset으로 페이지 조회 가능. 수정 전에는 ids:[실제 id],include:full로 원본을 확인한다. collection: actors/classes/skills/items/equipment/enemies/troops/states/battleAnimations/switches/variables/commonEvents/quests/maps/elements/monsterSpecies/lifeSkills/farmAnimalSpecies/crops.",
   mode: "read",
   parameters: {
     type: "object",
     properties: {
       collection: { type: "string", enum: DB_COLLECTIONS as unknown as string[] },
       include: { type: "string", enum: ["ids", "full"] },
+      ids: { type: "array", items: { type: "string" }, description: "조회할 실제 ID 목록. 생략하면 모든 레코드." },
+      limit: { type: "integer", minimum: 1, maximum: 500 },
+      offset: { type: "integer", minimum: 0 },
     },
     required: ["collection"],
     additionalProperties: false,
@@ -660,10 +663,14 @@ const getDatabaseRecords: ToolDefinition = {
     if (!DB_COLLECTIONS.includes(collection)) {
       throw new ToolError(`알 수 없는 컬렉션: ${String(args.collection)}`, { code: "invalid-collection" });
     }
-    const records = args.include === "full"
-      ? collectionRecords(project, collection)
-      : collectionEntries(project, collection);
-    return { summary: `${collection} ${records.length}건`, data: { records } };
+    const all = args.include === "full" ? collectionRecords(project, collection) : collectionEntries(project, collection);
+    const ids = Array.isArray(args.ids) ? new Set(args.ids) : null;
+    const matching = ids ? all.filter((record) => ids.has(record.id)) : all;
+    const offset = typeof args.offset === "number" ? args.offset : 0;
+    const limit = typeof args.limit === "number" ? args.limit : matching.length;
+    const records = matching.slice(offset, offset + limit);
+    const nextOffset = offset + records.length < matching.length ? offset + records.length : null;
+    return { summary: `${collection} ${records.length}건 / ${matching.length}건`, data: { collection, records, total: matching.length, nextOffset } };
   },
 };
 

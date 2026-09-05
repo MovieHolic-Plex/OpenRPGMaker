@@ -4,7 +4,11 @@ import { CONFIGURE_OBJECT_BEHAVIOR, PURSUIT_SCHEMA, parsePursuit } from "./horro
 //              / duplicate_event / remove_event / move_event.
 
 import { shadowedPageWarnings } from "@/project/eventPageShadow";
-import { isPassable } from "@/project/collision";
+import { isPassable, tileAt } from "@/project/collision";
+import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
+import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { passageMarkForTile } from "@/project/tilesetPassage";
+import { roleCapabilities } from "@/project/tileRoles";
 import { isSeason, isTimePhase, resolveTimeSystem, type Season } from "@/project/gameTime";
 import { validateShopStock } from "@/project/io/shapeCommandFields";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
@@ -405,6 +409,22 @@ const upsertEvent: ToolDefinition = {
     const patch = args.event as Partial<GameEvent> | undefined;
     const warnings: string[] = [];
     if (!patch || typeof patch.id !== "string" || !patch.id.trim()) throw new ToolError("event.id(문자열)가 필요합니다.");
+    // A trigger describes when to run; commands belong beside it. Do this on the
+    // incoming patch before normalization can turn an omitted command list into [].
+    const commandOwners = [
+      { path: "event", value: patch },
+      ...(Array.isArray(patch.pages) ? patch.pages.map((page, index) => ({ path: `event.pages[${index}]`, value: page })) : []),
+    ];
+    for (const { path, value } of commandOwners) {
+      const trigger = value?.trigger;
+      if (trigger && typeof trigger === "object" && Object.prototype.hasOwnProperty.call(trigger, "commands")) {
+        throw new ToolError(
+          `${path}.trigger.commands는 지원하지 않습니다. 명령을 ${path}.commands로 옮기세요. ` +
+          '예: {"trigger":{"kind":"playerTouch"},"commands":[{"kind":"transfer","mapId":"조회한 맵 ID","x":1,"y":1}]}',
+          { code: "invalid-args" },
+        );
+      }
+    }
     const existing = map.events.find((entry) => entry.id === patch.id);
     let event: GameEvent;
     let adjusted = false;
@@ -1840,6 +1860,28 @@ const makeChaseScene: ToolDefinition = {
   },
 };
 
+/** 벽감의 action 접근 예외는 기본 보물상자를 수면에 띄우는 허가가 아니다. */
+function assertChestDrySurface(project: Project, map: GameMap, x: number, y: number): void {
+  const tileset = project.tilesets[map.tilesetId];
+  if (!tileset) return; // 통행 가능성/누락 타일셋은 resolveEventPlacement가 검사한다.
+  const waterTile = (tile: number): boolean => {
+    if (tile < 0) return false;
+    const role = tileset.tileMeta?.[tile]?.role;
+    if (role) return roleCapabilities(tileset, role).terrainTag === "water";
+    if (tileset.tileGroups?.some((group) => roleCapabilities(tileset, group.role).terrainTag === "water" && group.tileIds.includes(tile))) return true;
+    // 원시 칩 번호는 다른 타일셋에서 다른 그림이다. 메타 없는 기본 칩셋에만 폴백한다.
+    return tileset.id === DEFAULT_TILESET_ID && isWaterChipsetTile(tile);
+  };
+  const { lower, upper } = tileAt(map, x, y);
+  // O 상층(다리/발판)은 수면 위의 지지면이다. ★ 장식은 하층 물을 가리지 않는다.
+  const supported = upper >= 0 && !waterTile(upper) && passageMarkForTile(tileset, upper) === "o";
+  if (!waterTile(upper) && (!waterTile(lower) || supported)) return;
+  throw new ToolError(
+    `보물상자는 물 위에 놓을 수 없습니다: (${x}, ${y}). 지면이나 통행 가능한 다리 위 좌표를 선택하세요.`,
+    { code: "chest-on-water", mapId: map.id, x, y },
+  );
+}
+
 // 보물상자: "상자를 열면 X 지급"을 셀프스위치 2페이지로 완결하는 프리셋.
 // (코퍼스 hidden-treasure-chest / chest-potion-reward가 "부분 가능"이던 갭 해소)
 const placeChest: ToolDefinition = {
@@ -1848,7 +1890,7 @@ const placeChest: ToolDefinition = {
     "보물상자 이벤트를 배치한다. 조사하면 contents의 아이템/골드를 지급하고 셀프스위치 A로 개봉 상태를 기억한다(2페이지).  보물상자(열면 아이템/골드 지급, 개봉 기억)는 반드시 이 툴 — place_npc/upsert_event 로 흉내내지 말 것. 장식용 박스·나무상자는 이 툴이 아니라 place_props(material:\"나무 상자\"). 넣고 빼는 보관 상자는 place_storage_chest." +
     "'보물상자'·'상자를 열면 ~을 주는' 요청만 이 툴. " +
     "장식용 박스·나무상자·나무박스·과일박스는 place_props(harness-combined-town-wood-box / fruit-box) — place_chest 금지. " +
-    "벽 위(문·벽감)여도 인접 칸에서 조사할 수 있으면 그대로 두고, 사방이 막힌 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다.",
+    "벽 위(문·벽감)여도 인접 칸에서 조사할 수 있으면 그대로 두고, 사방이 막힌 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다. 물 위는 거부한다 — 지면이나 통행 가능한 다리 위 좌표를 선택하라.",
   mode: "write",
   parameters: {
     type: "object",
@@ -1874,6 +1916,7 @@ const placeChest: ToolDefinition = {
     if (!inMapBounds(map, requestedX, requestedY)) {
       throw new ToolError(`상자 위치가 맵 밖입니다: (${requestedX}, ${requestedY})`, { code: "chest-out-of-bounds", mapId: map.id, x: requestedX, y: requestedY });
     }
+    assertChestDrySurface(draft, map, requestedX, requestedY);
     // action 트리거 상자는 RM2K3 문 의미대로 벽 위도 허용 — 단 인접 칸에서 조사할 수 있어야 한다.
     const placement = resolveEventPlacement(draft, map, requestedX, requestedY, {
       kind: "interaction",
@@ -1881,6 +1924,7 @@ const placeChest: ToolDefinition = {
       code: "chest-impassable",
     });
     const { x, y, adjusted } = placement;
+    assertChestDrySurface(draft, map, x, y);
     const contents = (args.contents ?? {}) as { itemId?: unknown; gold?: unknown };
     const itemId = typeof contents.itemId === "string" && contents.itemId.length > 0 ? contents.itemId : undefined;
     const gold = typeof contents.gold === "number" && Number.isFinite(contents.gold) && contents.gold > 0

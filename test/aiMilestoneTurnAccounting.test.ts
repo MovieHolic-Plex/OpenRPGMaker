@@ -17,6 +17,7 @@ import { createBlankProject } from "@/project/defaults";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
+import { fixedDeclarer } from "./intentFixture";
 
 function installHermeticEnv(project: Project): void {
   vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
@@ -106,6 +107,34 @@ function steps(): ChatResult[] {
 }
 
 describe("마일스톤 턴 정산", () => {
+  it("한 항목이 실행 한도로 나뉘어도 앞선 성공과 미적용 제안을 이어서 완료한다", async () => {
+    const project = createBlankProject();
+    installHermeticEnv(project);
+    let rounds = 0;
+    let planners = 0;
+    const session = new AssistantSession(project, {
+      config: { ...ORCH_CONFIG, maxToolCalls: 1 },
+      declareIntent: fixedDeclarer({ mode: "modify", needsPlan: true }),
+      chat: async (_config, request): Promise<ChatResult> => {
+        if (!request.tools?.length) return finalResult(JSON.stringify(planners++ === 0 ? {
+          action: "new_plan", goal: "아이템과 타이틀",
+          layers: [{ title: "등록", items: [{
+            title: "아이템과 타이틀", instruction: "upsert_item 후 set_title_screen",
+            successTools: ["upsert_item", "set_title_screen"],
+          }] }],
+        } : { action: "resume" }));
+        if (rounds++ === 0) return toolCallResult("upsert_item", { item: { id: "item_split_budget", name: "연속 실행 약초", price: 20 } }, "split_item");
+        if (rounds === 2) return toolCallResult("set_title_screen", { title: "연속 실행 모험" }, "split_title");
+        return finalResult("완료했습니다.");
+      },
+    });
+    const result = await session.sendUserMessage("아이템과 타이틀을 등록해줘", () => {}, undefined, { autonomous: true });
+    expect(session.getHarnessSnapshot().workPlan?.layers[0]?.items[0]?.status).toBe("done");
+    expect(result.appliedCalls?.map((call) => call.name)).toEqual(["upsert_item", "set_title_screen"]);
+    expect(store.getCurrent().database.items.find((item) => item.id === "item_split_budget")?.name).toBe("연속 실행 약초");
+    expect(session.getAuditEntries().some((entry) => entry.kind === "status" && entry.text.includes("agent_run:auto-continue"))).toBe(true);
+  }, 30000);
+
   it.each([false, true])("마일스톤 쓰기는 자동 계속(%s) 후에도 정산에 남는다", async (continueOnce) => {
     const project = createBlankProject();
     installHermeticEnv(project);
@@ -157,5 +186,11 @@ describe("마일스톤 턴 정산", () => {
 
     const items = store.getCurrent().database.items;
     expect(items.filter((item) => item.id.startsWith("item_ledger_"))).toHaveLength(WRITE_COUNT);
+    // 라우팅 선언은 "계속"을 읽어도 검수는 사용자의 원래 목표를 읽어야 한다.
+    const review = (session as unknown as {
+      buildReviewPrompt: (pending: [], repaired: boolean) => { prompt: string };
+    }).buildReviewPrompt([], false);
+    expect(review.prompt).toContain(`## 사용자 요청\n${GOAL}`);
+    expect(review.prompt).not.toContain("## 사용자 요청\n계속\n");
   }, 30000);
 });
