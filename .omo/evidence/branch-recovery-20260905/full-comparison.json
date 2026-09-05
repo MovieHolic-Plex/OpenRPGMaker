@@ -1,0 +1,22 @@
+{
+  "base": {
+    "numTotalTests": 12886,
+    "numPassedTests": 12620,
+    "numFailedTests": 251,
+    "numFailedTestSuites": 241
+  },
+  "integrated": {
+    "numTotalTests": 13059,
+    "numPassedTests": 12837,
+    "numFailedTests": 207,
+    "numFailedTestSuites": 219
+  },
+  "newFailureCount": 4,
+  "resolvedFailureCount": 48,
+  "newFiles": [
+    "test/authorVillageFacade.test.ts",
+    "test/commandContracts/registry.test.ts",
+    "test/leftDockPanels.test.ts",
+    "test/mapScreenAuthoringSurface.test.ts"
+  ]
+}
