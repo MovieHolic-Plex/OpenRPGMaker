@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **44쪽 / 1455KB / 약 412,118 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **44쪽 / 1457KB / 약 412,746 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,7 +15,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 251KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 431 | ~72,744 |
+| `openwiki/editor-ai-panel.md` | 253KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 441 | ~73,372 |
 | `openwiki/editor-ai-tools.md` | 76KB | 66KB ⚠상한 초과 — 절을 더 쪼개라 | 191 | ~21,880 |
 | `openwiki/editor-database.md` | 180KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 864 | ~51,627 |
 | `openwiki/editor-event-authoring.md` | 117KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 557 | ~34,046 |
@@ -31,7 +31,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 | 페이지 | 깨진 줄 수 | 예시 줄 번호 |
 |---|---|---|
-| `openwiki/editor-ai-panel.md` | 25 | 208, 209, 210, 211, 212, 213, 225, 234 |
+| `openwiki/editor-ai-panel.md` | 25 | 218, 219, 220, 221, 222, 223, 235, 244 |
 | `openwiki/editor-ai-tools.md` | 6 | 75, 76, 80, 82, 84, 144 |
 | `openwiki/editor-database.md` | 7 | 140, 144, 145, 146, 154, 179, 182 |
 | `openwiki/editor-event-authoring.md` | 16 | 151, 152, 155, 160, 161, 162, 163, 164 |
@@ -220,18 +220,19 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L18` Output limits
 - `L24` Practical tips
 
-### `openwiki/editor-ai-panel.md` — 251KB · 431줄 · ~72,744 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 253KB · 441줄 · ~73,372 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
-- `L9` 패널 셸 · 도크 · 접기 · 컴포저
-- `L139` 세션 수명 · 대화 컨텍스트
-- `L154` 제안 적용 · 복구 · 완성도 린트
-- `L236` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
-- `L298` 영역 작업 · 시공 · 실내/집 파이프라인
-- `L322` 툴 노출 · 프롬프트 · 의도 판정 · NPC
-- `L336` 타일셋 이해 · 검토 위저드 (T1a/T1b)
-- `L362` 저장 · 내보내기 · 프로젝트 생성
-- `L370` 제공자 · OAuth · 동반 서비스
-- `L400` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
+- `L3` 조수 카메라 이동 수명·부드러운 줌 (2026-09-05)
+- `L19` 패널 셸 · 도크 · 접기 · 컴포저
+- `L149` 세션 수명 · 대화 컨텍스트
+- `L164` 제안 적용 · 복구 · 완성도 린트
+- `L246` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
+- `L308` 영역 작업 · 시공 · 실내/집 파이프라인
+- `L332` 툴 노출 · 프롬프트 · 의도 판정 · NPC
+- `L346` 타일셋 이해 · 검토 위저드 (T1a/T1b)
+- `L372` 저장 · 내보내기 · 프로젝트 생성
+- `L380` 제공자 · OAuth · 동반 서비스
+- `L410` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
 
 ### `openwiki/editor-ai-tools.md` — 76KB · 191줄 · ~21,880 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
