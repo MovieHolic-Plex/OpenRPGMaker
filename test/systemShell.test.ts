@@ -225,7 +225,8 @@ describe("T12 RM2K3 player status menu", () => {
       expect(findByTestId(menu, "status-menu-gold")?.textContent).toBe("돈 0G");
       expect(findByTestId(menu, "status-menu-slots")).toBeNull();
       expect(findByTestId(menu, "status-menu-time")?.textContent).toBe("0:00");
-      expect(findByTestId(menu, "status-menu-empty")?.textContent).toBe("파티원이 없습니다");
+      expect(findByTestId(menu, "status-menu-party")).toBeNull();
+      expect(findByTestId(menu, "status-menu-empty")).toBeNull();
       expect(findByTestId(menu, "status-menu-detail-title")?.textContent).toBe("아이템");
       expect(findByTestId(menu, "status-menu-detail")?.textContent).toContain("아이템이 없습니다");
     } finally {

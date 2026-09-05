@@ -227,6 +227,8 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     else detail?.removeAttribute("inert");
     const controls = menu.querySelector<HTMLElement>(".status-menu-controls");
     if (controls) controls.textContent = statusMenuControls(mode);
+    const debug = menu.querySelector<HTMLElement>("[data-testid='status-menu-debug-json']");
+    if (debug) debug.textContent = JSON.stringify({ selectedCommand, mode });
     focusActiveMenuContainer();
   }
 

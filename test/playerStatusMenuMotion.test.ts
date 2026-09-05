@@ -18,7 +18,7 @@ describe("status menu exit lifetime", () => {
       closeStatusMenu(menu);
       expect(currentStatusMenu(layout)).toBeNull();
       expect(menu.parentNode).toBe(layout);
-      expect(animate.mock.calls[0]?.[0]).toBeDefined();
+      expect(animate).toHaveBeenCalledTimes(1);
       const [frames, options] = (animate.mock.calls[0] as unknown as [Keyframe[], KeyframeAnimationOptions]);
       expect(frames.at(-1)?.opacity).toBe(0);
       expect(options.fill).toBe("forwards");
