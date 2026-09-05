@@ -51,3 +51,5 @@ PR582 (monster verification evidence), PR583 (sidebar verification plus a real C
 Final PR585 supervisor checks: application typecheck and CSS exit 0; both browser scenarios pass (Chromium recovered-state/animation/care serialization; Firefox three widths, capture/skill/state/care summaries, no page errors or horizontal overflow). The supervisor inspected the refreshed state/care screenshots and the 1024px equipment screenshot. Browser measurements are in `pr585-integrated-validation.json`; raw logs/screenshots are preserved in the external backup.
 
 Original branch cleanup removed 134 local and 443 remote refs. Completed temporary recovery branches are additional removals recorded in the external `deleted-refs.json`; checked-out user/agent branches remain protected.
+
+Publication cutoff: reviewed PRs through #585 (excluding draft #584). New PR586 and PR587 appeared after publication; their active work branches remain intact for separate review. The report does not claim that concurrently submitted PRs were all merged.
