@@ -28,6 +28,7 @@ import {
   toggleSwitch,
 } from "@/editor/panels/databaseControls";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { attachCatalogPlacement, battleCommandPlacement } from "./databaseBattleCommandStudio";
 import { battleStudioHeading } from "@/editor/panels/databaseBattleStudio";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { DEFAULT_BATTLE_FIELD_BACKGROUND_ID } from "@/project/databaseEnemyTroopRecordModel";
@@ -52,6 +53,7 @@ import {
   listSearch,
   listToolbar,
   sectionCard,
+  restoreFocusAfterRerender,
   statStrip,
   workspaceShell,
 } from "@/editor/panels/databaseWorkspace";
@@ -71,7 +73,7 @@ import "@/styles/database/modern/utility-records.css";
 
 const BATTLE_FLOW_OPTIONS = ["gauge", "strict"] as const satisfies readonly BattleFlow[];
 const BATTLE_COMMAND_KINDS: readonly ClassBattleCommandKind[] = [
-  "attack", "skill", "skillSubset", "defend", "guard", "item", "escape", "switch", "event",
+  "attack", "skill", "skillSubset", "defend", "guard", "item", "capture", "escape", "switch", "event",
 ];
 /** 종류별 한 줄 설명 — 예전의 아무 동작 없는 알약 줄(P9)을 대체한다. */
 const BATTLE_COMMAND_KIND_HELP: readonly { readonly label: string; readonly help: string }[] = [
@@ -81,6 +83,7 @@ const BATTLE_COMMAND_KIND_HELP: readonly { readonly label: string; readonly help
   { label: "방어", help: "이번 턴 받는 피해를 줄임" },
   { label: "방어(구형)", help: "방어와 같은 효과 — 새로 쓸 때는 방어를 고르세요" },
   { label: "아이템", help: "소지품에서 전투용 아이템 사용" },
+  { label: "포획", help: "몬스터 수집이 켜진 게임에서 포획 아이템 선택" },
   { label: "도망", help: "전투 이탈 시도" },
   { label: "교체", help: "대기 중인 동료와 자리 교대" },
   { label: "교체(구형)", help: "교체와 같은 효과 — 새로 쓸 때는 교체를 고르세요" },
@@ -706,7 +709,7 @@ export function renderBattleCommandsTab(host: HTMLElement): void {
         hero: detailHero({
           eyebrow: "전투 명령",
           title: "전투 명령",
-          subtitle: "목록 순서가 곧 전투 중 메뉴 순서입니다.",
+          subtitle: "카탈로그에서 골라 직업의 실제 메뉴에 배치합니다.",
           tags: [`${commands.length}개`, `직업 ${project.database.classes.length}개가 참조`],
           actions: [{
             label: "+ 명령 추가",
@@ -717,13 +720,13 @@ export function renderBattleCommandsTab(host: HTMLElement): void {
           testid: "db-battle-command-hero",
         }),
         body: [
-          battleCommandPreview(commands),
+          battleCommandPlacement(battleCommandListCard(commands, rerender), rerender),
+          sectionCard({ title: "카탈로그 편집", hint: "전역 원본만 편집합니다. 이미 배치한 직업의 덮어쓰기는 유지됩니다.", children: [el("div", { class: "db-cmd-card-grid", children: commands.map((command, index) => battleCommandCard(command, index, commands.length, rerender)) })] }),
           el("div", {
             class: "db-ws-stack",
             children: [
               battleCommandClassCard(project.database.classes.length),
               battleCommandKindGuideCard(),
-              battleCommandListCard(commands, rerender),
             ],
           }),
         ],
@@ -739,7 +742,7 @@ function battleCommandClassCard(classCount: number): HTMLElement {
     title: "직업 연결",
     hint: `${classCount}개 직업`,
     children: [
-      el("p", { class: "db-ws-usage", text: "각 직업의 전투 메뉴가 이 명령의 이름과 종류를 참조합니다." }),
+      el("p", { class: "db-ws-usage", text: "배치할 때 카탈로그 값을 복사합니다. 기존 직업의 이름·종류·스킬 덮어쓰기는 전역 편집으로 바뀌지 않습니다." }),
       el("button", {
         class: "db-ws-btn db-ws-btn-ghost",
         text: "직업별 메뉴 순서 편집",
@@ -775,20 +778,20 @@ function battleCommandListCard(commands: readonly DatabaseBattleCommandRecord[],
     .map((command, index) => ({ command, index }))
     .filter(({ command }) => !query || matchesNameOrId(command.name, command.id, query));
   const card = sectionCard({
-    title: "명령 목록",
-    hint: `${commands.length}개 · 위/아래로 전투 메뉴 순서를 바꿉니다`,
+    title: "명령 카탈로그",
+    hint: `${commands.length}개 · 끌어서 배치 · 카탈로그 순서는 직업 메뉴와 별개`,
     children: [
       commandSearchBox(rerender),
       visible.length > 0
         ? el("div", {
           class: "db-cmd-card-grid",
-          children: visible.map(({ command, index }) => battleCommandCard(command, index, commands.length, rerender)),
+          children: visible.map(({ command, index }) => battleCommandPaletteCard(command, index, rerender)),
         })
         : emptyState({
           icon: commands.length === 0 ? "⚔" : "⌕",
           title: commands.length === 0 ? "전투 명령이 없습니다" : "검색 결과가 없습니다",
           body: commands.length === 0
-            ? "명령이 하나도 없으면 전투 중 아무 행동도 고를 수 없습니다. \"+ 명령 추가\" 로 최소한 공격을 만드세요."
+            ? "카탈로그가 비어도 기존 직업 메뉴는 유지됩니다. 명령 추가로 새 명령을 만드세요."
             : `"${query}" 와 일치하는 명령이 없습니다.`,
           action: commands.length === 0
             ? { label: "+ 명령 추가", kind: "primary", testid: "db-battle-command-add-empty", onClick: () => addBattleCommand(rerender) }
@@ -811,8 +814,26 @@ function commandSearchBox(rerender: () => void): HTMLElement {
     onInput: (value) => {
       commandQuery = value;
       rerender();
+      restoreFocusAfterRerender("db-battle-command-search");
     },
   });
+}
+
+function battleCommandPaletteCard(command: DatabaseBattleCommandRecord, index: number, rerender: () => void): HTMLElement {
+  const card = el("article", {
+    class: "db-battle-command-card",
+    dataset: { testid: `db-battle-command-card-${index}` },
+    children: [
+      el("header", { children: [el("span", { class: "db-command-drag-label", text: "끌기" }), el("strong", { text: command.name || "이름 없는 명령" })] }),
+      commandActionButton("원본 편집", `db-command-edit-${command.id}`, "카탈로그 원본 편집", false, () => {
+        const field = document.querySelector<HTMLElement>(`[data-testid="db-field-battle-command-name-${index}"]`);
+        field?.scrollIntoView({ block: "center" });
+        field?.focus();
+      }),
+    ],
+  });
+  attachCatalogPlacement(card, command, rerender);
+  return card;
 }
 
 function battleCommandCard(
@@ -822,13 +843,13 @@ function battleCommandCard(
   rerender: () => void,
 ): HTMLElement {
   const selected = selectedUtilityRecordIndex("battleCommands") === index;
-  return el("article", {
+  const card = el("article", {
     class: `db-battle-command-card${selected ? " is-selected" : ""}`,
-    dataset: { testid: `db-battle-command-card-${index}` },
+    dataset: { testid: `db-battle-command-editor-${index}` },
     children: [
       el("header", {
         children: [
-          el("span", { class: "db-command-card-index", text: String(index + 1).padStart(2, "0") }),
+          el("span", { class: "db-command-card-index", text: "끌기", attrs: { "aria-hidden": "true" } }),
           el("strong", { text: command.name || "이름 없는 명령" }),
           el("div", {
             class: "db-cmd-card-actions",
@@ -860,7 +881,7 @@ function battleCommandCard(
         onInput: (value) => {
           recordProjectSnapshot();
           writeBattleCommand(index, (target) => {
-            target.kind = isBattleCommandKind(value) ? value : "attack";
+            target.kind = isBattleCommandKind(value) || value === "capture" ? value : "attack";
           });
         },
       }),
@@ -877,6 +898,7 @@ function battleCommandCard(
       battleCommandSkillRow(command, index),
     ],
   });
+  return card;
 }
 
 function commandActionButton(
@@ -927,7 +949,7 @@ function writeBattleCommand(index: number, mutate: (target: DatabaseBattleComman
   store.update((project) => {
     const target = project.database.battleCommands?.[index];
     if (target) mutate(target);
-  });
+  }, { scope: "database", collection: "battleCommands", label: "전투 명령 카탈로그 편집" });
 }
 
 function addBattleCommand(rerender: () => void): void {
@@ -937,10 +959,11 @@ function addBattleCommand(rerender: () => void): void {
     const list = (project.database.battleCommands ??= []);
     list.push({ id: uniqueBattleCommandId(list), name: "새 명령", kind: "attack" });
     nextIndex = list.length - 1;
-  }, { scope: "database", collection: "battleCommands" });
+  }, { scope: "database", collection: "battleCommands", label: "전투 명령 카탈로그 변경" });
   commandQuery = "";
   selectUtilityRecord("battleCommands", nextIndex);
   rerender();
+  restoreFocusAfterRerender(`db-field-battle-command-name-${nextIndex}`);
 }
 
 function duplicateBattleCommand(index: number, rerender: () => void): void {
@@ -952,19 +975,22 @@ function duplicateBattleCommand(index: number, rerender: () => void): void {
     if (!list || !source) return;
     list.splice(index + 1, 0, { ...source, id: uniqueBattleCommandId(list), name: `${source.name} 복사` });
     nextIndex = index + 1;
-  }, { scope: "database", collection: "battleCommands" });
+  }, { scope: "database", collection: "battleCommands", label: "전투 명령 카탈로그 변경" });
   selectUtilityRecord("battleCommands", nextIndex);
   rerender();
+  restoreFocusAfterRerender(`db-field-battle-command-name-${nextIndex}`);
 }
 
 function deleteBattleCommand(index: number, rerender: () => void): void {
   recordProjectSnapshot();
   store.update((project) => {
     project.database.battleCommands?.splice(index, 1);
-  }, { scope: "database", collection: "battleCommands" });
+  }, { scope: "database", collection: "battleCommands", label: "전투 명령 카탈로그 변경" });
   const remaining = store.getCurrent().database.battleCommands?.length ?? 0;
-  selectUtilityRecord("battleCommands", Math.max(0, Math.min(index, remaining - 1)));
+  const nextIndex = Math.max(0, Math.min(index, remaining - 1));
+  selectUtilityRecord("battleCommands", nextIndex);
   rerender();
+  restoreFocusAfterRerender(remaining ? `db-field-battle-command-name-${nextIndex}` : "db-battle-command-add");
 }
 
 function moveBattleCommand(index: number, delta: number, rerender: () => void): void {
@@ -977,9 +1003,10 @@ function moveBattleCommand(index: number, delta: number, rerender: () => void): 
     if (!commands) return;
     const [moved] = commands.splice(index, 1);
     if (moved) commands.splice(target, 0, moved);
-  }, { scope: "database", collection: "battleCommands" });
+  }, { scope: "database", collection: "battleCommands", label: "전투 명령 카탈로그 변경" });
   selectUtilityRecord("battleCommands", target);
   rerender();
+  restoreFocusAfterRerender(`db-field-battle-command-name-${target}`);
 }
 
 function uniqueBattleCommandId(list: readonly DatabaseBattleCommandRecord[]): string {
@@ -1026,47 +1053,6 @@ function battleCommandSkillRow(command: DatabaseBattleCommandRecord, index: numb
   return el("label", {
     class: "db-readonly-row",
     children: [el("span", { text: "스킬" }), select, hidden],
-  });
-}
-
-/**
- * 전투 메뉴 모형. 예전에는 항상 첫 명령만 활성으로 그리는 장식이었다 — 이제 선택한
- * 명령을 반영하고, 누르면 그 명령을 선택한다(P9 계열: 눌릴 것처럼 생겼으면 눌려야 한다).
- */
-function battleCommandPreview(commands: readonly DatabaseBattleCommandRecord[]): HTMLElement {
-  const selectedIndex = selectedUtilityRecordIndex("battleCommands");
-  return el("section", {
-    class: "db-battle-command-preview db-studio-dark-stage",
-    dataset: { testid: "db-battle-command-preview" },
-    children: [
-      el("div", { class: "db-studio-stage-grid", attrs: { "aria-hidden": "true" } }),
-      el("div", {
-        class: "db-command-preview-copy",
-        children: [el("span", { class: "db-studio-live-chip", text: "전투 메뉴" }), el("strong", { text: "행동 선택" })],
-      }),
-      el("div", {
-        class: "db-command-preview-menu",
-        children: commands.slice(0, 6).map((command, index) => {
-          const button = el("button", {
-            class: index === selectedIndex ? "active" : "",
-            attrs: { type: "button", "aria-pressed": index === selectedIndex ? "true" : "false" },
-            text: command.name,
-          });
-          button.addEventListener("click", () => {
-            selectUtilityRecord("battleCommands", index);
-            for (const sibling of Array.from(button.parentElement?.children ?? [])) {
-              sibling.classList.remove("active");
-              sibling.setAttribute("aria-pressed", "false");
-            }
-            button.classList.add("active");
-            button.setAttribute("aria-pressed", "true");
-            document.querySelector(`[data-testid='db-field-battle-command-name-${index}']`)
-              ?.scrollIntoView({ block: "nearest" });
-          });
-          return button;
-        }),
-      }),
-    ],
   });
 }
 

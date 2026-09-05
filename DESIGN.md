@@ -463,3 +463,12 @@ Legacy `--db-light-*` / `--bg-*` / `--db-modern-*` aliases remap to these inside
 - **Footer:** `닫기` is ghost (`transparent` + `border-default`), `지금 저장` is filled accent — enforced by `[data-testid]` selectors in `studio-theme.css` even if `.primary` class is on the other button.
 - **Empty:** card + one filled CTA on studio surface, never a cream void.
 - **Dirty / G006 / testids / AI dock / gallery toggle:** unchanged — chrome only.
+
+### Battle-command placement studio (2026-09-05)
+
+- Audience: Korean-first game authors, including keyboard-only authors. Catalog palette and the selected class menu board stay alongside each other at the desktop floor (1024x768, 1280x800, 1440x900). The existing detail body owns scrolling; no document horizontal overflow. Long names wrap inside zero-minimum grid tracks.
+- Compose existing `workspaceShell`, `detailPane`, `sectionCard`, `listToolbar`, and DB buttons. Reuse cool-white `--db-studio-*`, 4px spacing tokens, shared radii and 12/13px type. No theme or runtime styling changes.
+- Catalog cards have a visible drag handle and a keyboard `메뉴에 추가` button. Catalog editing stays below the placement surface, directly reachable from each card, with all existing field testids visible and fillable. Catalog order is explicitly not class runtime order; placed rows copy values and preserve catalog IDs, never synchronize existing overrides silently.
+- The class selector is editor-only. The board displays the exact authored array, numbered insertion gaps, up/down/remove buttons, and a fixed trailing switch reason. Six editable rows is the authoring limit; full and duplicate actions explain why they are disabled. Empty menus explicitly describe runtime fallback rather than claiming no actions exist.
+- Drag states: idle, dragging (grab/grabbing), insertion target (accent line plus insertion text), rejected (polite live status). Malformed, stale, cross-class, duplicate and full drops are no-ops with no undo snapshot. Native dragging and keyboard buttons share the same mutation authority. Successful mutations snapshot once and use labeled store updates; focus returns to the affected row or selector after rendering.
+- Runtime preview is read-only and calls `battleCommandsForActor` for the selected class, including fallback, capture and switch gating. A switch-availability preview toggle is editor-only. Explain that this is resolution, not an executable battle, and that monster-owned/custom UI command behavior can differ. No battle/schema changes.

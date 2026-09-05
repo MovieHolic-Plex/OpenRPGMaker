@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { insertCatalogClassCommand, reorderEditableClassCommand } from "@/editor/databaseClassCommandOrder";
 import { battleCommandsForActor } from "@/battle/battleCommands";
 import { createBlankProject } from "@/project/defaults";
@@ -102,5 +102,157 @@ describe("battle command studio placement", () => {
 
   it("seals an empty menu with the existing fixed footer contract", () => {
     expect(insertCatalogClassCommand([], catalog, 0)).toEqual({ ok: true, commands: [catalog, footer] });
+  });
+});
+
+
+describe("studio DOM integration", () => {
+  let restore: () => void;
+  let host: HTMLElement;
+  let rerender: () => void;
+  let studio: typeof import("@/editor/panels/databaseBattleCommandStudio");
+  let store: typeof import("@/project/store")["store"];
+  let history: typeof import("@/editor/mapEditHistory");
+  const node = (id: string): HTMLElement => {
+    const result = host.querySelector<HTMLElement>(`[data-testid="${id}"]`);
+    if (!result) throw new Error(`Missing control ${id}`);
+    return result;
+  };
+  beforeEach(async () => {
+    const { installFakeDom } = await import("./fakeDom");
+    restore = installFakeDom();
+    vi.stubGlobal("window", { localStorage: { getItem: () => null, setItem: () => {}, removeItem: () => {} } });
+    ({ store } = await import("@/project/store"));
+    history = await import("@/editor/mapEditHistory");
+    studio = await import("@/editor/panels/databaseBattleCommandStudio");
+    const project = createBlankProject();
+    const klass = project.database.classes[0];
+    if (!klass) throw new Error("missing class");
+    klass.battleCommands = [];
+    project.database.classes = [klass, { ...klass, id: "other_class", battleCommands: [{ ...item }] }];
+    project.database.battleCommands = [{ ...attack }, { ...catalog }];
+    store.replace(project);
+    history.resetMapEditHistory();
+    host = document.createElement("div");
+    rerender = () => {
+      const palette = document.createElement("div");
+      for (const command of store.getCurrent().database.battleCommands ?? []) {
+        const card = document.createElement("article");
+        card.dataset.testid = `catalog-${command.id}`;
+        studio.attachCatalogPlacement(card, command, rerender);
+        palette.append(card);
+      }
+      host.replaceChildren(studio.battleCommandPlacement(palette, rerender));
+    };
+    rerender();
+    const select = node("db-command-class-select");
+    if (!(select instanceof HTMLSelectElement)) throw new Error("missing select");
+    select.value = klass.id;
+    select.dispatchEvent(new Event("change"));
+  });
+  afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); restore(); });
+
+  function dragEvent(type: string, transfer: { getData: (type: string) => string; setData: (type: string, value: string) => void }): Event {
+    const event = new Event(type, { cancelable: true });
+    Object.defineProperty(event, "dataTransfer", { value: transfer });
+    return event;
+  }
+  function transfer() {
+    const values = new Map<string, string>();
+    return { getData: (type: string) => values.get(type) ?? "", setData: (type: string, value: string) => { values.set(type, value); } };
+  }
+  it("selects without mutation, snapshots/labells placement, and undoes exact class arrays", () => {
+    const before = structuredClone(store.getCurrent().database.classes);
+    const updates = vi.spyOn(store, "update");
+    const select = node("db-command-class-select");
+    if (!(select instanceof HTMLSelectElement)) throw new Error("missing select");
+    select.value = "other_class";
+    select.dispatchEvent(new Event("change"));
+    expect(updates).not.toHaveBeenCalled();
+    expect(history.getMapEditHistoryMarker()).toBe(0);
+    node("db-command-place-magic").dispatchEvent(new Event("click"));
+    expect(store.getCurrent().database.classes[0]).toEqual(before[0]);
+    expect(store.getCurrent().database.classes[1]?.battleCommands).toEqual([item, catalog, footer]);
+    expect(updates).toHaveBeenCalledWith(expect.any(Function), expect.objectContaining({ scope: "database", collection: "classes", label: expect.any(String) }));
+    expect(history.getMapEditHistoryMarker()).toBe(1);
+    node("db-command-undo").dispatchEvent(new Event("click"));
+    expect(store.getCurrent().database.classes).toEqual(before);
+  });
+  it("rejects malformed, stale, duplicate, full and cross-class drags without mutations or snapshots", () => {
+    const updates = vi.spyOn(store, "update");
+    node("db-command-slot-0").dispatchEvent(dragEvent("drop", transfer()));
+    expect(updates).not.toHaveBeenCalled();
+    const stale = transfer();
+    node("catalog-magic").dispatchEvent(dragEvent("dragstart", stale));
+    store.update((project) => { project.database.battleCommands = [{ ...attack }, { ...catalog, skillId: "new_skill" }]; });
+    updates.mockClear();
+    node("db-command-slot-0").dispatchEvent(dragEvent("drop", stale));
+    expect(updates).not.toHaveBeenCalled();
+    const crossClass = transfer();
+    node("catalog-attack").dispatchEvent(dragEvent("dragstart", crossClass));
+    const select = node("db-command-class-select");
+    if (!(select instanceof HTMLSelectElement)) throw new Error("missing select");
+    select.value = "other_class";
+    select.dispatchEvent(new Event("change"));
+    node("db-command-slot-0").dispatchEvent(dragEvent("drop", crossClass));
+    expect(updates).not.toHaveBeenCalled();
+    store.update((project) => {
+      const klass = project.database.classes.find((row) => row.id === "other_class");
+      if (klass) klass.battleCommands = [attack, ...Array.from({ length: 5 }, (_, index) => ({ ...item, id: `full_${index}` })), footer];
+    });
+    rerender();
+    updates.mockClear();
+    for (const id of ["attack", "magic"]) {
+      const data = transfer();
+      node(`catalog-${id}`).dispatchEvent(dragEvent("dragstart", data));
+      node("db-command-slot-0").dispatchEvent(dragEvent("drop", data));
+    }
+    expect(updates).not.toHaveBeenCalled();
+    expect(history.getMapEditHistoryMarker()).toBe(0);
+  });
+  it("uses the latest catalog values and preserves existing class overrides", () => {
+    store.update((project) => {
+      const klass = project.database.classes[0];
+      if (klass) klass.battleCommands = [{ ...attack, name: "override", skillId: "private_skill" }, footer];
+      project.database.battleCommands = [{ ...attack, name: "global" }, { ...catalog, skillId: "latest_skill" }];
+    });
+    rerender();
+    node("db-command-place-magic").dispatchEvent(new Event("click"));
+    expect(store.getCurrent().database.classes[0]?.battleCommands).toEqual([{ ...attack, name: "override", skillId: "private_skill" }, { ...catalog, skillId: "latest_skill" }, footer]);
+  });
+  it("renders runtime-authority labels while preserving resolved command identity", async () => {
+    const { battleCommandKindLabel } = await import("@/player/battleCommandDom");
+    const { resolveTerms } = await import("@/project/terms");
+    const project = createBlankProject();
+    const klass = project.database.classes.find((entry) => entry.id === "class_hero");
+    if (!klass) throw new Error("missing default hero class");
+    store.replace(project);
+    rerender();
+    const select = node("db-command-class-select");
+    if (!(select instanceof HTMLSelectElement)) throw new Error("missing select");
+    select.value = klass.id;
+    select.dispatchEvent(new Event("change"));
+    const before = structuredClone(studio.resolvedStudioCommands(project, klass.id, false));
+    const terms = resolveTerms(project);
+    const labels = Array.from(node("db-battle-command-preview").querySelectorAll("li"), (row) => row.textContent);
+    expect(labels).toEqual(before.map((command) => battleCommandKindLabel(command, terms)));
+    expect(studio.resolvedStudioCommands(project, klass.id, false)).toEqual(before);
+    expect(store.getCurrent().database.classes).toEqual(project.database.classes);
+  });
+  it("previews selected classes without actors and honors fallback/capture/switch rules", () => {
+    const project = structuredClone(store.getCurrent());
+    project.database.actors = [];
+    project.system.monsterCollection = false;
+    const klass = project.database.classes[0];
+    if (!klass) throw new Error("missing class");
+    klass.battleCommands = [{ ...catalog }, footer];
+    expect(studio.resolvedStudioCommands(project, klass.id, false)).toEqual([{ ...catalog, kind: "skill" }]);
+    expect(studio.resolvedStudioCommands(project, klass.id, true)).toEqual([{ ...catalog, kind: "skill" }, footer]);
+    klass.battleCommands = [];
+    expect(studio.resolvedStudioCommands(project, klass.id, false).map((row) => row.kind)).toEqual(["attack", "skill", "item", "defend", "escape"]);
+    project.system.monsterCollection = true;
+    expect(studio.resolvedStudioCommands(project, klass.id, false).at(-1)?.kind).toBe("capture");
+    expect(project.database.actors).toEqual([]);
+    expect(klass.battleCommands).toEqual([]);
   });
 });

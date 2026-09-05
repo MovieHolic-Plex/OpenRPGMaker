@@ -1,3 +1,12 @@
+## 전투 명령 배치 스튜디오 (2026-09-05)
+
+- `databaseUtilityRecordViews.ts`는 기존 카탈로그 CRUD/필드/testid와 지형·전투 화면을 유지한다. 새 `databaseBattleCommandStudio.ts`가 직업 선택, 네이티브 드래그 배치/재정렬, 버튼 대안, 상태 안내와 실제 메뉴 해석을 소유한다.
+- 카탈로그 팔레트와 선택한 직업의 저장된 `battleCommands` 보드가 나란히 온다. 카탈로그 편집은 그 아래의 기존 입력 필드이며 카드의 `원본 편집`으로 바로 이동한다. 카탈로그 순서는 직업 메뉴 순서가 아니다. 배치는 id를 유지한 값 복사이며 기존 직업 덮어쓰기를 전역 편집으로 동기화하지 않는다.
+- 직업 선택과 교체 가능 상황 체크는 편집기 상태뿐이다. `insertCatalogClassCommand` / `reorderEditableClassCommand`의 검증 모델을 사용하고 성공 때만 snapshot + labeled `store.update`를 남긴다. 제거는 남은 배열(기존 초과 행 포함)을 보존한다. 고정 `cmd_change`는 이동/제거 불가, 편집 가능한 행은 최대 6개다.
+- 드래그는 인메모리 세션 토큰과 DataTransfer 값, 시작 당시 직업 배열/카탈로그를 현재 store와 비교한다. malformed/stale/cross-class/duplicate/full은 데이터·history 무변경이다. 삽입 위치에 텍스트와 indigo 선을 표시하며 추가/위/아래/제거 버튼, 포커스 복귀, polite live 상태가 같은 편집 경로를 제공한다.
+- 미리보기는 `battleCommandsForActor`를 선택 직업으로 호출한다. 주인공이 없는 프로젝트는 저장되지 않는 임시 주인공으로 해석한다. 빈 배열 기본 행동, 포획 gate, 교체 상황을 그대로 반영하며 실행 버튼처럼 보이지 않는다. 몬스터 전용 메뉴/스킨 및 실제 동료 상태는 이 편집기 미리보기와 별도다. 스키마/전투 런타임은 변경하지 않는다.
+- 집중 계약: `test/databaseBattleCommandStudio.test.ts`, `test/databaseBattleCommandsTab.test.ts`, `test/databaseBattleStudio.test.ts`, `test/e2e/battle-command-studio.spec.ts`. 브라우저는 실제 편집기, dragTo, 키보드, 제거/undo, 프로젝트 패키지 다운로드/재가져오기를 사용한다. evidence: `output/evidence/battle-command-studio-p1`.
+
 # Editor Database
 
 ## 아이템·장비 저작 신뢰성 (2026-09-05)
