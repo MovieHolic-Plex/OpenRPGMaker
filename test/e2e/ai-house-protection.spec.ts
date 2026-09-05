@@ -1,4 +1,4 @@
-import { expect, test as base, type Page } from "@playwright/test";
+import { expect, test as base, type Page, type BrowserContext } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import type { GameMap } from "../../src/project/types";
@@ -6,7 +6,7 @@ import type { ToolResult } from "../../src/editor/tools/types";
 
 // Engine-only fixture. The session, runner, proposals, store and Phaser canvas are real.
 // Only the model transport is scripted; remote writes are denied, never faked as saved.
-const EVIDENCE = path.resolve(".omo/evidence/house-protection/p1");
+const EVIDENCE = path.resolve(process.env.E2E_HOUSE_EVIDENCE_DIR ?? ".omo/evidence/house-protection/p1");
 const HOUSE = { x: 2, y: 2, w: 6, h: 6 };
 const OUTSIDE = { x: 14, y: 10 };
 const PERMITS = ["selection", "confirmDestroy", "overExisting-clear", "overExisting-keep"] as const;
@@ -65,21 +65,11 @@ async function captureCanvas(page: Page, filename: string): Promise<void> {
   await page.screenshot({ path: path.join(EVIDENCE, filename), animations: "disabled" });
 }
 
-const test = base.extend<{ drainRoutes: void }>({
-  drainRoutes: [async ({ page }, use) => {
-    await use();
-    // Fixture teardown has its own deadline: a completed 120s test must not
-    // dispose responses while its remaining static-file handlers are draining.
-    await page.unrouteAll({ behavior: "wait" });
-  }, { auto: true, timeout: 30_000 }],
-});
-
-for (const permit of PERMITS) {
-  test(`completed house survives same-turn destruction with ${permit}`, async ({ page, context }) => {
-    test.setTimeout(120_000);
+async function prepareEditor(page: Page, context: BrowserContext, permit: typeof PERMITS[number]) {
+  const deniedWrites: { method: string; pathname: string }[] = [];
+  await test.step("Install remote-write guard and isolated static transport", async () => {
     mkdirSync(EVIDENCE, { recursive: true });
     await page.setViewportSize({ width: 1440, height: 900 });
-    const deniedWrites: { method: string; pathname: string }[] = [];
     // Context-owned guard survives page.unrouteAll during teardown.
     await context.route("**/*", async (route) => {
       const request = route.request();
@@ -112,12 +102,76 @@ for (const permit of PERMITS) {
       localStorage.setItem("oprn:coachmarks-basic-v1", "1");
       localStorage.setItem("oprn:ai-config", JSON.stringify({ configVersion: 2, agentMode: "chat", maxToolCalls: 20 }));
     });
+  });
+  await test.step("Navigate and dismiss editor boot overlays", async () => {
+    await page.goto("/?blankProject=1&aiBridge=0", { waitUntil: "domcontentloaded" });
+    await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 60_000 });
+    const guest = page.getByTestId("login-guest");
+    if (await guest.isVisible()) await guest.click();
+    await expect(page.getByTestId("login-modal")).toHaveCount(0);
+    const welcome = page.getByTestId("standard-welcome-start");
+    if (await welcome.isVisible()) await welcome.click();
+    await expect(page.getByTestId("standard-welcome-card")).toHaveCount(0);
+    const coach = page.getByTestId("coach-mark-skip");
+    if (await coach.isVisible()) await coach.click();
+    await expect(page.locator("[data-testid^='coach-mark-']")).toHaveCount(0);
+  });
+  return test.step("Load initial modules and establish the real editor precondition", async () => {
+    const fixture = await page.evaluate(async ({ permission, outside }) => {
+      const moduleUrl = (suffix: string) => performance.getEntriesByType("resource")
+        .map((entry) => entry.name).find((url) => new URL(url).pathname === suffix) ?? suffix;
+      const { store } = await import(moduleUrl("/src/project/store.ts")) as typeof import("../../src/project/store");
+      const { editorState } = await import(moduleUrl("/src/editor/editorState.ts")) as typeof import("../../src/editor/editorState");
+      const { getAiAssistantStatus } = await import(moduleUrl("/src/editor/aiAssistantBridge.ts")) as typeof import("../../src/editor/aiAssistantBridge");
+      const id = store.getCurrent().startMapId;
+      // Minimal human-authored QA precondition, not a replacement runner/session.
+      store.update((project) => {
+        project.startPos = { x: 0, y: 0 };
+        project.maps[id].upperTiles[outside.y * project.maps[id].width + outside.x] = 322;
+      }, { scope: "project", origin: "human", label: "House protection QA precondition" });
+      editorState.set({ selection: permission === "selection"
+        ? { mapId: id, x: 0, y: 0, width: 20, height: 15 }
+        : { mapId: id, x: 13, y: 10, width: 3, height: 2 } });
+      return { mapId: id, remotePersistenceEnabled: store.isRemotePersistenceEnabled(), selection: editorState.get().selection,
+        bridgeReady: getAiAssistantStatus().ready };
+    }, { permission: permit, outside: OUTSIDE });
+    expect(fixture.remotePersistenceEnabled).toBe(false);
+    expect(fixture.bridgeReady).toBe(true);
+    const before = await readMap(page, "store");
+    expect(before.layoutPlan?.regions.filter((region) => region.role === "house") ?? []).toEqual([]);
+    expect(before.upperTiles[OUTSIDE.y * before.width + OUTSIDE.x]).toBe(322);
+    await captureCanvas(page, `${permit}-before.png`);
+
+    return { fixture, before, deniedWrites };
+  });
+}
+
+const test = base.extend<{ drainRoutes: void }>({
+  drainRoutes: [async ({ page }, use) => {
+    await use();
+    // Fixture teardown has its own deadline: a completed 120s test must not
+    // dispose responses while its remaining static-file handlers are draining.
+    await page.unrouteAll({ behavior: "wait" });
+  }, { auto: true, timeout: 30_000 }],
+});
+
+for (const permit of PERMITS) {
+  const scenario = test.extend<{ editor: Awaited<ReturnType<typeof prepareEditor>> }>({
+    // Explicit fixture time is excluded from the behavioral test's 120s budget.
+    // No session/tool work runs until navigation, modules and preconditions finish.
+    editor: [async ({ page, context }, use) => {
+      await use(await prepareEditor(page, context, permit));
+    }, { timeout: 180_000 }],
+  });
+  scenario(`completed house survives same-turn destruction with ${permit}`, async ({ page, editor }) => {
+    test.setTimeout(120_000);
+    const { fixture, before, deniedWrites } = editor;
+    const mapId = fixture.mapId;
     const outcomes: Outcome[] = [];
     const calls: Call[] = [];
     let round = 0;
     let built: GameMap | undefined;
     let emptyUpper: { x: number; y: number } | undefined;
-    let mapId = "";
     await page.route("**/v1/chat/completions", async (route) => {
       const body = route.request().postDataJSON() as {
         tools?: unknown[];
@@ -165,46 +219,8 @@ for (const permit of PERMITS) {
       } : { role: "assistant", content: "HOUSE_PROTECTION_REGRESSION_COMPLETE" } }] } });
     });
 
-    await page.goto("/?blankProject=1&aiBridge=0", { waitUntil: "domcontentloaded" });
-    await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 60_000 });
-    const guest = page.getByTestId("login-guest");
-    if (await guest.isVisible()) await guest.click();
-    await expect(page.getByTestId("login-modal")).toHaveCount(0);
-    const welcome = page.getByTestId("standard-welcome-start");
-    if (await welcome.isVisible()) await welcome.click();
-    await expect(page.getByTestId("standard-welcome-card")).toHaveCount(0);
-    const coach = page.getByTestId("coach-mark-skip");
-    if (await coach.isVisible()) await coach.click();
-    await expect(page.locator("[data-testid^='coach-mark-']")).toHaveCount(0);
-
-    const fixture = await page.evaluate(async ({ permission, outside }) => {
-      const moduleUrl = (suffix: string) => performance.getEntriesByType("resource")
-        .map((entry) => entry.name).find((url) => new URL(url).pathname === suffix) ?? suffix;
-      const { store } = await import(moduleUrl("/src/project/store.ts")) as typeof import("../../src/project/store");
-      const { editorState } = await import(moduleUrl("/src/editor/editorState.ts")) as typeof import("../../src/editor/editorState");
-      const { getAiAssistantStatus } = await import(moduleUrl("/src/editor/aiAssistantBridge.ts")) as typeof import("../../src/editor/aiAssistantBridge");
-      const id = store.getCurrent().startMapId;
-      // Minimal human-authored QA precondition, not a replacement runner/session.
-      store.update((project) => {
-        project.startPos = { x: 0, y: 0 };
-        project.maps[id].upperTiles[outside.y * project.maps[id].width + outside.x] = 322;
-      }, { scope: "project", origin: "human", label: "House protection QA precondition" });
-      editorState.set({ selection: permission === "selection"
-        ? { mapId: id, x: 0, y: 0, width: 20, height: 15 }
-        : { mapId: id, x: 13, y: 10, width: 3, height: 2 } });
-      return { mapId: id, remotePersistenceEnabled: store.isRemotePersistenceEnabled(), selection: editorState.get().selection,
-        bridgeReady: getAiAssistantStatus().ready };
-    }, { permission: permit, outside: OUTSIDE });
-    mapId = fixture.mapId;
-    expect(fixture.remotePersistenceEnabled).toBe(false);
-    expect(fixture.bridgeReady).toBe(true);
-    const before = await readMap(page, "store");
-    expect(before.layoutPlan?.regions.filter((region) => region.role === "house") ?? []).toEqual([]);
-    expect(before.upperTiles[OUTSIDE.y * before.width + OUTSIDE.x]).toBe(322);
-    await captureCanvas(page, `${permit}-before.png`);
-
     // Subscribe before send. Both the real bridge promise and the AI store mutation must finish.
-    const turn = await bounded(page.evaluate(async () => {
+    const turn = await test.step("Send the real AI turn and await its applied store event", () => bounded(page.evaluate(async () => {
       const storeUrl = performance.getEntriesByType("resource").map((entry) => entry.name)
         .find((url) => new URL(url).pathname === "/src/project/store.ts") ?? "/src/project/store.ts";
       const { store } = await import(storeUrl) as typeof import("../../src/project/store");
@@ -231,38 +247,40 @@ for (const permit of PERMITS) {
         clearTimeout(timer);
         unsubscribe();
       }
-    }), "real AI send and applied store event", 65_000);
-    const after = await readMap(page, "store");
-    await captureCanvas(page, `${permit}-after.png`);
-    writeFileSync(path.join(EVIDENCE, `${permit}.json`), JSON.stringify({ permit, fixture, before, built,
-      protectedBefore: built ? protectedCells(built) : null, protectedAfter: protectedCells(after),
-      emptyUpper, calls, outcomes, after, turn: { status: turn.result.status, audit: turn.result.audit, storeEvent: turn.storeEvent },
-      deniedWrites }, null, 2) + "\n");
+    }), "real AI send and applied store event", 65_000));
+    await test.step("Verify house protection, full rollback and the outside edit", async () => {
+      const after = await readMap(page, "store");
+      await captureCanvas(page, `${permit}-after.png`);
+      writeFileSync(path.join(EVIDENCE, `${permit}.json`), JSON.stringify({ permit, fixture, before, built,
+        protectedBefore: built ? protectedCells(built) : null, protectedAfter: protectedCells(after),
+        emptyUpper, calls, outcomes, after, turn: { status: turn.result.status, audit: turn.result.audit, storeEvent: turn.storeEvent },
+        deniedWrites }, null, 2) + "\n");
 
-    expect(turn.result.ok, turn.result.error).toBe(true);
-    expect(turn.result.status.turnBusy).toBe(false);
-    expect(turn.result.lastAssistantText).toBe("HOUSE_PROTECTION_REGRESSION_COMPLETE");
-    expect(outcomes.map((entry) => entry.id)).toEqual(calls.map((entry) => entry.id));
-    expect(outcomes.find((entry) => entry.id === "build")?.result.ok, JSON.stringify(outcomes)).toBe(true);
-    expect(built).toBeDefined();
-    expect(built!.layoutPlan?.regions.filter((region) => region.role === "house")).toHaveLength(1);
-    expect(built!.lowerTiles).not.toEqual(before.lowerTiles);
-    expect(emptyUpper).toBeDefined();
-    expect(built!.lowerTiles[(HOUSE.y - 1) * built!.width + HOUSE.x]).not.toBe(-1);
-    for (const id of ["erase-house", "fill-empty-upper", "erase-ridge"]) {
-      const outcome = outcomes.find((entry) => entry.id === id)!;
-      expect(outcome.result.ok, JSON.stringify(outcome.result)).toBe(false);
-      expect(outcome.result.issues?.map((issue) => issue.code), id).toContain("protected-house-write");
-      expect(outcome.map, `${id}: entire map rollback, not just sampled roof tiles`).toEqual(built);
-    }
-    if (permit !== "selection") expect(outcomes.find((entry) => entry.id === "permit")?.result.ok).toBe(true);
-    expect(outcomes.find((entry) => entry.id === "edit-selected-outside")?.result.ok).toBe(true);
-    expect(protectedCells(after)).toEqual(protectedCells(built!));
-    expect(after.lowerTiles).toEqual(built!.lowerTiles);
-    const expectedUpper = [...built!.upperTiles];
-    expectedUpper[OUTSIDE.y * after.width + OUTSIDE.x] = -1;
-    expect(after.upperTiles).toEqual(expectedUpper);
-    expect(after.layoutPlan).toEqual(built!.layoutPlan);
-    expect(after.events).toEqual(built!.events);
+      expect(turn.result.ok, turn.result.error).toBe(true);
+      expect(turn.result.status.turnBusy).toBe(false);
+      expect(turn.result.lastAssistantText).toBe("HOUSE_PROTECTION_REGRESSION_COMPLETE");
+      expect(outcomes.map((entry) => entry.id)).toEqual(calls.map((entry) => entry.id));
+      expect(outcomes.find((entry) => entry.id === "build")?.result.ok, JSON.stringify(outcomes)).toBe(true);
+      expect(built).toBeDefined();
+      expect(built!.layoutPlan?.regions.filter((region) => region.role === "house")).toHaveLength(1);
+      expect(built!.lowerTiles).not.toEqual(before.lowerTiles);
+      expect(emptyUpper).toBeDefined();
+      expect(built!.lowerTiles[(HOUSE.y - 1) * built!.width + HOUSE.x]).not.toBe(-1);
+      for (const id of ["erase-house", "fill-empty-upper", "erase-ridge"]) {
+        const outcome = outcomes.find((entry) => entry.id === id)!;
+        expect(outcome.result.ok, JSON.stringify(outcome.result)).toBe(false);
+        expect(outcome.result.issues?.map((issue) => issue.code), id).toContain("protected-house-write");
+        expect(outcome.map, `${id}: entire map rollback, not just sampled roof tiles`).toEqual(built);
+      }
+      if (permit !== "selection") expect(outcomes.find((entry) => entry.id === "permit")?.result.ok).toBe(true);
+      expect(outcomes.find((entry) => entry.id === "edit-selected-outside")?.result.ok).toBe(true);
+      expect(protectedCells(after)).toEqual(protectedCells(built!));
+      expect(after.lowerTiles).toEqual(built!.lowerTiles);
+      const expectedUpper = [...built!.upperTiles];
+      expectedUpper[OUTSIDE.y * after.width + OUTSIDE.x] = -1;
+      expect(after.upperTiles).toEqual(expectedUpper);
+      expect(after.layoutPlan).toEqual(built!.layoutPlan);
+      expect(after.events).toEqual(built!.events);
+    });
   });
 }
