@@ -25,6 +25,17 @@ which were missing from the previously served local `32ef1bcd` build.
 | #610 | Await owner approval; recheck before push | PR body explicitly says final gates and approval are pending despite non-draft status |
 | #611 | Integrate and verify | Ready PR; facility composition and interaction access |
 
+At the final intake refresh, upstream `2e51a022` added PR #603. Include it
+and preserve both its party-hierarchy contract and the inventory contract in
+the DESIGN.md conflict. PR #609 became non-draft, but its body still requires
+final approval and GitHub has no approval record; do not infer approval from
+the draft flag. Newly opened #612 and #613 likewise explicitly await final
+approval, so retain them as pending owner work. No review comments are posted.
+
+The intermediate full gate and build were stopped when upstream #603 arrived;
+their partial outputs are not final-tree pass evidence. Run final-tree checks
+after integrating that CSS update.
+
 GitHub conflict labels alone do not justify holding a PR. Generated
 `openwiki/INDEX.md` conflicts are resolved by regenerating the index from the
 combined documentation rather than choosing either side.
@@ -85,3 +96,14 @@ PR #611 integration:
   The unchanged inn fixture retains its existing unconnected stair warning.
 - Fresh map artifacts and manifest:
   `output/evidence/facility-quality/integration/`.
+
+Upstream PR #603 integration:
+
+- DESIGN.md retains both inventory and party-hierarchy contracts.
+- `npm run gates:css`: exit 0; budget regressions 0, graph orphans 0,
+  protected live classes retained.
+- Direct Firefox checks of actors/classes/skills at 1024x768, 1280x800,
+  and 1440x900: all nine screens have no document overflow and their
+  inspectors remain inside the modal.
+- Fresh screenshots:
+  `output/evidence/inventory-catalog/party-{actors,classes,skills}-{1024,1280,1440}.png`.
