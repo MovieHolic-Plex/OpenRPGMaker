@@ -11,6 +11,11 @@ const UNDERGROWTH = new Set<number>(DEFAULT_UNDERGROWTH_AUTOTILE_GROUP.memberTil
 const TRUNKS = new Set([290, 291, 292, 293]);
 const CANOPIES = new Set([260, 261, 262, 263]);
 const BUSHES = new Set([288, 289]);
+/** 1×1 풀 — 키큰 풀 오토타일 조각 + 잔디 변형. 한 칸만 쓰면 네모로 뜬다. */
+const ONE_BY_ONE_GRASS = new Set([
+  243, 244, 245, 273, 274, 275, 303, 304, 305, 333, 334, 335,
+  270, 271, 272, 300, 301, 302, 330,
+]);
 
 function setup() {
   const ctx: ToolContext = { project: createEmptyToolProject("숲 바닥 혼합") };
@@ -82,6 +87,22 @@ describe("forest floor mix", () => {
     expect(s.trunks).toBeGreaterThan(0);
     expect(s.canopies).toBeGreaterThan(0);
     expect(s.bushes).toBeGreaterThan(0);
+  });
+
+  it("tone 칠하기: 1×1 풀(키큰 풀·잔디 변형)을 lower에 쓰지 않는다", () => {
+    const { ctx, mapId } = setup();
+    const area = { x: 2, y: 2, w: 20, h: 20 };
+    const result = runTool(ctx, "place_props", {
+      mapId, area, material: "침엽수", density: "dense", seed: 7,
+    });
+    expect(result.ok, result.summary).toBe(true);
+    const map = ctx.project.maps[mapId]!;
+    for (let y = area.y; y < area.y + area.h; y += 1) {
+      for (let x = area.x; x < area.x + area.w; x += 1) {
+        const lower = map.lowerTiles[y * map.width + x] ?? 0;
+        expect(ONE_BY_ONE_GRASS.has(lower), `${x},${y}=${lower}`).toBe(false);
+      }
+    }
   });
 
   it("impassable 합성: 물웅덩이가 밑동·덤불을 덮지 않는다", () => {
