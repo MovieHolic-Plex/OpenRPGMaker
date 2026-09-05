@@ -3,9 +3,9 @@
 > node scripts/verify-gates.mjs --only surface
 
 surface        exit=1  축=9
-   
+
     RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/omo-5
-   
+
     ✓ test/surfaceGateSupport.test.ts (13 tests) 109ms
     ❯ test/eventEditorCommitProbe.baseline.test.ts (13 tests | 2 failed) 389ms
       × 이벤트 편집기 커밋 프로브 축 > (1) 컨트롤 조작 → 저장 커맨드 스냅샷이 기준선과 같다 159ms
@@ -96,25 +96,25 @@ surface        exit=1  축=9
      giveMonster: 초기표면: select 선택지 변경 1개 [give-monster-species-select: 4→4종]
      evolveMonster: 초기표면: select 선택지 변경 1개 [evolve-monster-species-select: 4→4종]
      showPicture: 조작후 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list] | 초기표면: testid 신규 2종 [show-picture-ai-queue, show-picture-ai-queue-list] | 태그 개수 [div 31→33, p 3→4] | 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list]: expected [ …(4) ] to deeply equal []
-   
+
     Test Files  5 failed | 4 passed (9)
          Tests  6 failed | 106 passed (112)
       Start at  17:53:46
       Duration  130.75s (transform 99.48s, setup 0ms, collect 597.04s, tests 19.05s, environment 11.27s, prepare 5.03s)
-   
-   
+
+
    ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
-   
+
     FAIL  test/eventEditorCommitProbe.baseline.test.ts > 이벤트 편집기 커밋 프로브 축 > (1) 컨트롤 조작 → 저장 커맨드 스냅샷이 기준선과 같다
    AssertionError: [커밋 프로브] 표면이 기준선과 다르다 (4건)
      changeFace: 컨트롤 신규 event-command-face-ai-prompt
      giveMonster: 값 변경 give-monster-species-select: replaceCommand {"kind":"giveMonster","level":5,"nickname":"<undefined>","speciesId":"species_cave_bat"} → replaceCommand {"kind":"giveMonster","level":5,"nickname":"<undefined>","speciesId":"species_aqualing"}
      evolveMonster: 값 변경 evolve-monster-species-select: replaceCommand {"failureBranch":[],"instanceId":"monster_1","kind":"evolveMonster","successBranch":[],"toSpeciesId":"species_cave_bat"} → replaceCommand {"failureBranch":[],"instanceId":"monster_1","kind":"evolveMonster","successBranch":[],"toSpeciesId":"species_aqualing"}
      showPicture: 컨트롤 신규 show-picture-ai-prompt: expected [ …(4) ] to deeply equal []
-   
+
    - Expected
    + Received
-   
+
    - []
    + [
    +   "changeFace: 컨트롤 신규 event-command-face-ai-prompt",
@@ -122,30 +122,30 @@ surface        exit=1  축=9
    +   "evolveMonster: 값 변경 evolve-monster-species-select: replaceCommand {\"failureBranch\":[],\"instanceId\":\"monster_1\",\"kind\":\"evolveMonster\",\"successBranch\":[],\"toSpeciesId\":\"species_cave_bat\"} → replaceCommand {\"failureBranch\":[],\"instanceId\":\"monster_1\",\"kind\":\"evolveMonster\",\"successBranch\":[],\"toSpeciesId\":\"species_aqualing\"}",
    +   "showPicture: 컨트롤 신규 show-picture-ai-prompt",
    + ]
-   
+
     ❯ assertSurfaceGate test/surfaceGateSupport.ts:280:5
        278|     report,
        279|     labelWith(`[${axis}] 표면이 기준선과 다르다 (${report.length}건)`, report)
        280|   ).toEqual([]);
           |     ^
        281| }
-       282| 
+       282|
     ❯ test/eventEditorCommitProbe.baseline.test.ts:93:5
-   
+
    ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
-   
+
     FAIL  test/eventEditorCommitProbe.baseline.test.ts > no-commit 래칫 > 무커밋 컨트롤 집합이 허용 목록과 정확히 일치한다
    AssertionError: 무커밋 컨트롤이 새로 생겼다 — 커밋 배선이 죽었는지 확인하고, 의도적이면 test/fixtures/commitProbeNoCommitAllowlist.json 의 intentional 에 근거와 함께 추가하라: expected [ …(2) ] to deeply equal []
-   
+
    - Expected
    + Received
-   
+
    - []
    + [
    +   "changeFace :: event-command-face-ai-prompt",
    +   "showPicture :: show-picture-ai-prompt",
    + ]
-   
+
     ❯ test/eventEditorCommitProbe.baseline.test.ts:401:7
        399|       "무커밋 컨트롤이 새로 생겼다 — 커밋 배선이 죽었는지 확인하고, 의도적이면 " +
        400|         `${ALLOWLIST} 의 intentional 에 근거와 함께 추가하라`
@@ -153,19 +153,19 @@ surface        exit=1  축=9
           |       ^
        402|     expect(
        403|       disappeared,
-   
+
    ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
-   
+
     FAIL  test/eventEditorFormSurface.baseline.test.ts > 이벤트에디터 폼 표면 스냅샷 > 기준선과 일치한다
    AssertionError: [폼(kind)] 표면이 기준선과 다르다 (4건)
      changeFace: testid 신규 4종 [event-command-face-ai-generate, event-command-face-ai-prompt, event-command-face-ai-queue, event-command-face-ai-queue-list] | 태그 개수 [button 117→118, div 127→130, input 2→3, p 1→2] | 컨트롤 신규 2개 [event-command-face-ai-generate, event-command-face-ai-prompt] | 라벨 신규 1개 [AI로 만들기] | 클래스 신규 5개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list, page3-resource-row]
      giveMonster: select 선택지 변경 1개 [give-monster-species-select: 4→4종]
      evolveMonster: select 선택지 변경 1개 [evolve-monster-species-select: 4→4종]
      showPicture: testid 신규 4종 [show-picture-ai-generate, show-picture-ai-prompt, show-picture-ai-queue, show-picture-ai-queue-list] | 태그 개수 [button 6→7, div 27→32, input 8→9, p 3→4] | 컨트롤 신규 2개 [show-picture-ai-generate, show-picture-ai-prompt] | 라벨 신규 1개 [AI로 만들기] | 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list]: expected [ …(4) ] to deeply equal []
-   
+
    - Expected
    + Received
-   
+
    - []
    + [
    +   "changeFace: testid 신규 4종 [event-command-face-ai-generate, event-command-face-ai-prompt, event-command-face-ai-queue, event-command-face-ai-queue-list] | 태그 개수 [button 117→118, div 127→130, input 2→3, p 1→2] | 컨트롤 신규 2개 [event-command-face-ai-generate, event-command-face-ai-prompt] | 라벨 신규 1개 [AI로 만들기] | 클래스 신규 5개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list, page3-resource-row]",
@@ -173,28 +173,28 @@ surface        exit=1  축=9
    +   "evolveMonster: select 선택지 변경 1개 [evolve-monster-species-select: 4→4종]",
    +   "showPicture: testid 신규 4종 [show-picture-ai-generate, show-picture-ai-prompt, show-picture-ai-queue, show-picture-ai-queue-list] | 태그 개수 [button 6→7, div 27→32, input 8→9, p 3→4] | 컨트롤 신규 2개 [show-picture-ai-generate, show-picture-ai-prompt] | 라벨 신규 1개 [AI로 만들기] | 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list]",
    + ]
-   
+
     ❯ assertSurfaceGate test/surfaceGateSupport.ts:280:5
        278|     report,
        279|     labelWith(`[${axis}] 표면이 기준선과 다르다 (${report.length}건)`, report)
        280|   ).toEqual([]);
           |     ^
        281| }
-       282| 
+       282|
     ❯ test/eventEditorFormSurface.baseline.test.ts:258:5
-   
+
    ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
-   
+
     FAIL  test/eventEditorInteractionSurface.baseline.test.ts > 이벤트에디터 상호작용 후 폼 표면 스냅샷 > 기준선과 일치한다
    AssertionError: [상호작용 후 폼] 표면이 기준선과 다르다 (4건)
      changeFace: 조작후 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list] | 초기표면: testid 신규 2종 [event-command-face-ai-queue, event-command-face-ai-queue-list] | 태그 개수 [div 129→131, p 1→2] | 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list]
      giveMonster: 초기표면: select 선택지 변경 1개 [give-monster-species-select: 4→4종]
      evolveMonster: 초기표면: select 선택지 변경 1개 [evolve-monster-species-select: 4→4종]
      showPicture: 조작후 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list] | 초기표면: testid 신규 2종 [show-picture-ai-queue, show-picture-ai-queue-list] | 태그 개수 [div 31→33, p 3→4] | 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list]: expected [ …(4) ] to deeply equal []
-   
+
    - Expected
    + Received
-   
+
    - []
    + [
    +   "changeFace: 조작후 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list] | 초기표면: testid 신규 2종 [event-command-face-ai-queue, event-command-face-ai-queue-list] | 태그 개수 [div 129→131, p 1→2] | 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list]",
@@ -202,69 +202,69 @@ surface        exit=1  축=9
    +   "evolveMonster: 초기표면: select 선택지 변경 1개 [evolve-monster-species-select: 4→4종]",
    +   "showPicture: 조작후 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list] | 초기표면: testid 신규 2종 [show-picture-ai-queue, show-picture-ai-queue-list] | 태그 개수 [div 31→33, p 3→4] | 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list]",
    + ]
-   
+
     ❯ assertSurfaceGate test/surfaceGateSupport.ts:280:5
        278|     report,
        279|     labelWith(`[${axis}] 표면이 기준선과 다르다 (${report.length}건)`, report)
        280|   ).toEqual([]);
           |     ^
        281| }
-       282| 
+       282|
     ❯ test/eventEditorInteractionSurface.baseline.test.ts:313:5
-   
+
    ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
-   
+
     FAIL  test/eventEditorM2Surface.baseline.test.ts > M2 명령 폼 표면 스냅샷 > 기준선과 일치한다
    AssertionError: [M2(commandId)] 표면이 기준선과 다르다 (2건)
      m2-025-change-actor-faceset: testid 신규 2종 [change-actor-faceset-ai-queue, change-actor-faceset-ai-queue-list] | 태그 개수 [div 132→134, p 3→4] | 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list]
      m2-069-change-parallax-back: testid 신규 2종 [change-parallax-back-ai-queue, change-parallax-back-ai-queue-list] | 태그 개수 [div 15→17, p 4→5] | 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list]: expected [ …(2) ] to deeply equal []
-   
+
    - Expected
    + Received
-   
+
    - []
    + [
    +   "m2-025-change-actor-faceset: testid 신규 2종 [change-actor-faceset-ai-queue, change-actor-faceset-ai-queue-list] | 태그 개수 [div 132→134, p 3→4] | 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list]",
    +   "m2-069-change-parallax-back: testid 신규 2종 [change-parallax-back-ai-queue, change-parallax-back-ai-queue-list] | 태그 개수 [div 15→17, p 4→5] | 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list]",
    + ]
-   
+
     ❯ assertSurfaceGate test/surfaceGateSupport.ts:280:5
        278|     report,
        279|     labelWith(`[${axis}] 표면이 기준선과 다르다 (${report.length}건)`, report)
        280|   ).toEqual([]);
           |     ^
        281| }
-       282| 
+       282|
     ❯ test/eventEditorM2Surface.baseline.test.ts:188:5
-   
+
    ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
-   
+
     FAIL  test/eventEditorPortalSurface.baseline.test.ts > 포털(피커/모달) 표면 스냅샷 > 기준선과 일치한다
    AssertionError: [포털(피커/모달)] 표면이 기준선과 다르다 (1건)
      npcGraphic: testid 신규 5종: npc-charset-label-input, npc-charset-tags-input, npc-charset-teach, npc-charset-teach-save, npc-charset-teach-status | 클래스 신규 3종: npc-charset-teach, npc-charset-teach-heading, npc-charset-teach-status | 컨트롤 신규 3개: npc-charset-label-input, npc-charset-tags-input, npc-charset-teach-save | 라벨 소실 1종: 캐릭터 슬롯 # | 태그 button 32→33, div 15→16, input 8→10, p 0→2 | testidCount 46→51 | controlCount 40→43 | classCount 34→37: expected [ Array(1) ] to deeply equal []
-   
+
    - Expected
    + Received
-   
+
    - []
    + [
    +   "npcGraphic: testid 신규 5종: npc-charset-label-input, npc-charset-tags-input, npc-charset-teach, npc-charset-teach-save, npc-charset-teach-status | 클래스 신규 3종: npc-charset-teach, npc-charset-teach-heading, npc-charset-teach-status | 컨트롤 신규 3개: npc-charset-label-input, npc-charset-tags-input, npc-charset-teach-save | 라벨 소실 1종: 캐릭터 슬롯 # | 태그 button 32→33, div 15→16, input 8→10, p 0→2 | testidCount 46→51 | controlCount 40→43 | classCount 34→37",
    + ]
-   
+
     ❯ assertSurfaceGate test/surfaceGateSupport.ts:280:5
        278|     report,
        279|     labelWith(`[${axis}] 표면이 기준선과 다르다 (${report.length}건)`, report)
        280|   ).toEqual([]);
           |     ^
        281| }
-       282| 
+       282|
     ❯ test/eventEditorPortalSurface.baseline.test.ts:284:5
-   
+
    ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
-   
+
    FAIL: 렌더로 증명된 클래스 1종이 CSS 속성을 잃었다
      .selected — 속성 1종 소실 [bottom]
-   
+
    중복 제거로 의도한 감소라면: 같은 속성이 다른 시트에 남아 있는지 확인하라(남아 있으면 이 게이트는 통과한다).
    정말로 속성을 없애는 변경이면 스크린샷 대조 후 기준선 갱신을 리뷰에 포함하세요.
 

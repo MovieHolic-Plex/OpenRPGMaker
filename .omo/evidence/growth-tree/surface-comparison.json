@@ -1,0 +1,14 @@
+{
+  "baseCommit": "7167ae65",
+  "integratedCommit": "905c4e60",
+  "sameFailedAssertions": true,
+  "failedAssertions": [
+    "test/eventEditorCommitProbe.baseline.test.ts > no-commit 래칫 > 무커밋 컨트롤 집합이 허용 목록과 정확히 일치한다",
+    "test/eventEditorCommitProbe.baseline.test.ts > 이벤트 편집기 커밋 프로브 축 > (1) 컨트롤 조작 → 저장 커맨드 스냅샷이 기준선과 같다",
+    "test/eventEditorFormSurface.baseline.test.ts > 이벤트에디터 폼 표면 스냅샷 > 기준선과 일치한다",
+    "test/eventEditorInteractionSurface.baseline.test.ts > 이벤트에디터 상호작용 후 폼 표면 스냅샷 > 기준선과 일치한다",
+    "test/eventEditorM2Surface.baseline.test.ts > M2 명령 폼 표면 스냅샷 > 기준선과 일치한다",
+    "test/eventEditorPortalSurface.baseline.test.ts > 포털(피커/모달) 표면 스냅샷 > 기준선과 일치한다"
+  ],
+  "cssFailure": "selected: missing bottom (same on base and integrated)"
+}
