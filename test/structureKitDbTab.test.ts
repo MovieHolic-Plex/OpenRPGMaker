@@ -714,3 +714,32 @@ describe("structureKitDbTab 파생 모드 시드", () => {
     }
   });
 });
+
+
+describe("structure deletion concept feedback", () => {
+  it.each([
+    ["bed_h", "카탈로그 원본 그림을 쓴다", "info"],
+    ["kit_unique_copy", "그림이 없다", "error"],
+  ])("deleting %s explains actual graphic resolution", (kitId, message, kind) => {
+    const tilesetId = INTERIOR_ROOM_TILESET_ID;
+    const mapId = Object.keys(store.getCurrent().maps)[0]!;
+    editorState.set({ currentMapId: mapId });
+    store.update((project) => {
+      const tileset = project.tilesets[tilesetId]!;
+      tileset.structureKits = [createTestSectionKit(kitId, "시험 침대")];
+      tileset.scratchConceptBundles = [{
+        id: "b", label: "시설", facilities: [{ id: "f", label: "시설", placeIds: ["p"] }],
+        places: [{ id: "p", label: "방" }],
+        things: [{ id: "t", label: "침대", objectId: kitId, placeIds: ["p"], chips: ["block"] }],
+      }];
+    });
+    const host = new FakeElement("div");
+    renderStructureKitsTab(host as unknown as HTMLElement, () => {});
+    host.querySelector(`[data-testid='structure-kit-tileset-${tilesetId}']`)!.click();
+    host.querySelector(`[data-testid='structure-kit-db-delete-${kitId}']`)!.click();
+    expect(store.getCurrent().tilesets[tilesetId]!.structureKits?.some((kit) => kit.id === kitId)).toBe(false);
+    const notice = document.querySelector("[data-testid='toast']")!;
+    expect(notice.textContent).toContain(message);
+    expect(notice.className).toContain(kind);
+  });
+});

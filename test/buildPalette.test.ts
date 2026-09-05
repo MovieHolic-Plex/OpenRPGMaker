@@ -126,6 +126,35 @@ describe("build palette deterministic stamps", () => {
     expect(result.issues?.map((issue) => issue.code)).toEqual(["transfer-impassable"]);
   });
 
+  it("문 이벤트 토글을 끄면 문 이벤트 없이 외장만 시공한다", () => {
+    const result = applyBuildPalettePrimitiveToProject(
+      createBlankProject(),
+      selection({ x: 1, y: 1, width: 10, height: 6 }),
+      "house",
+      { houseShapeId: "rect", houseKitId: "blue-stone", doorEvent: false }
+    );
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.toolResults).toHaveLength(1);
+    const data = result.toolResults[0].data as { houses: readonly { interior?: unknown }[] };
+    expect(data.houses[0]!.interior).toBeUndefined();
+    expect(Object.keys(result.project.maps)).toEqual(Object.keys(createBlankProject().maps));
+    expect(result.project.maps[MAP_ID]!.events).toEqual([]);
+  });
+
+  it("내부 토글을 끄면 문 이벤트 없이 외장만 시공한다", () => {
+    const result = applyBuildPalettePrimitiveToProject(
+      createBlankProject(),
+      selection({ x: 1, y: 1, width: 10, height: 6 }),
+      "house",
+      { houseShapeId: "rect", houseKitId: "blue-stone", interior: false }
+    );
+    expect(result.ok, result.summary).toBe(true);
+    const data = result.toolResults[0].data as { houses: readonly { interior?: unknown }[] };
+    expect(data.houses[0]!.interior).toBeUndefined();
+    expect(Object.keys(result.project.maps)).toEqual(Object.keys(createBlankProject().maps));
+    expect(result.project.maps[MAP_ID]!.events).toEqual([]);
+  });
+
   it("집 프리미티브는 author_house 정본을 호출하고 문 이벤트와 창문이 diff에 반영된다", () => {
     const chat = vi.spyOn(llmClient, "chatCompletion");
     const result = applyBuildPalettePrimitiveToProject(

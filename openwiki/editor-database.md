@@ -277,11 +277,12 @@ The Database modal was modernized in six waves while keeping every hard contract
 - 화면: 타일셋 레일 + 장소 카드(가구 썸네일) + 인스펙터(큰 미리보기·이름·그림·그림 칠하기·칩 토글/자유 칩 편집·장소 소속).
 - 사용자가 고친다: 시설명, 장소 추가/삭제/이름, 물건 추가/삭제/이름/그림/그림 직접 칠하기, 칩 토글/자유 칩 추가·이름 변경·삭제, 장소 소속, 필수 여부. 모두 `store.update` 로 `scratchConceptBundles` 에 남고, 다음 `place_concept` 가 그 나무를 읽는다.
 - 물건 그림(2026-09-04): 인스펙터의 「그림」 셀렉트(`scratch-concept-thing-graphic`)가 같은 타일셋 가구 목록(`objectsForTileset` — 프로젝트 킷 → 카탈로그 순)에서 `thing.objectId` 를 갈아 끼운다. 모르는 id(옛 나무·지운 킷)는 「그림 없음」 옵션으로 남아 미리보기에 「그림 없음」이 뜬다. 이름과 달리 물건 id 는 그대로라 시공·이벤트·필수 판정이 갈라지지 않는다.
-- 그림 직접 칠하기(2026-09-05): 인스펙터의 「그림 칠하기/사본 만들어 칠하기」(`scratch-concept-thing-paint`)가 구조물 타일 에디터(`openStructureKitEditor`)를 연다. 타일셋 저장 그림이면 그 킷을 바로 고치고, 카탈로그 그림이면 사본(`duplicateIntoTileset`)을 만들어 이 물건에 붙인 뒤 연다 — 원본 카탈로그는 그대로 둔다. 저장은 에디터가 즉시 하고 닫히면 인스펙터를 다시 그린다.
-- 장소 카드 물건마다 바로 칠하기(2026-09-05): 각 물건 칩에 `scratch-concept-thing-paint-<thingId>` 가 있다. `ensureThingKitForEdit(tilesetId, bundleId, thingId)` 가 저장 킷 id 를 돌려주거나 카탈로그면 사본을 만들어 `thing.objectId` 를 붙인다 — 인스펙터 버튼과 같은 경로. 피커 항목은 아직 물건이 아니라 칠하기가 없다. 계약: `test/scratchConceptTab.test.ts`.
+- 그림 직접 칠하기(2026-09-05): 인스펙터의 「그림 칠하기/사본 만들어 칠하기」(`scratch-concept-thing-paint`)가 구조물 타일 에디터(`openStructureKitEditor`)를 연다. 사용자 저장 그림이면 그 킷을 바로 고치고, 카탈로그·시드(`learnedFrom: interior-catalog`) 그림이면 사본(`duplicateIntoTileset`)을 만들어 이 물건에 붙인 뒤 연다 — 원본 카탈로그는 그대로 둔다. 저장은 에디터가 즉시 하고 닫히면 인스펙터를 다시 그린다.
+- 장소 카드 물건마다 바로 칠하기(2026-09-05): 각 물건 칩에 `scratch-concept-thing-paint-<thingId>` 가 있다. `ensureThingKitForEdit(tilesetId, bundleId, thingId)` 가 사용자 저장 킷 id 를 돌려주거나 카탈로그·시드면 사본을 만들어 `thing.objectId` 를 붙인다 — 인스펙터 버튼과 같은 경로. 피커 항목은 아직 물건이 아니라 칠하기가 없다. 계약: `test/scratchConceptTab.test.ts`.
 - **장소 도면 필드 (2026-09-02 시공 개편):** 장소 레코드에 선택 필드 `role`(`entrance` 홀·정문 / `walkway` 복도 / `room` 방), `size`(`s` 5×3 · `m` 7×4 · `l` 9×5), `count`(1..4, 같은 장소 여러 개) 가 붙었다. 장소 카드의 도면 열(`scratch-concept-place-role-<id>` / `-size-<id>` / `-count-<id>`)에서 고친다. 필드가 없는 옛 나무는 기본값(방·보통·1)으로 읽고, 복도는 라벨(복도·통로) 폴백으로 알아본다. 검증기(`shapeResourceFields`)가 모르는 role/size 와 범위 밖 count 를 거절한다.
 - 여관 초안 시드: 침실 `room·m·count 2`, 복도 `walkway`, 식당/홀 `entrance·l`. 도면은 남→북으로 홀(정문) → 복도 → 객실 ×2.
 - **시설 띠·재질 (2026-09-02 시설 다양화):** 보드 위에 시설 띠(`scratch-concept-facilities`)가 이 타일셋의 꾸러미를 칩(`scratch-concept-facility-<bundleId>`)으로 늘어놓는다. `+ 시설`(`scratch-concept-facility-add`)은 빈 꾸러미를 만들고, 아직 없는 초안이 있으면 `초안 넣기…` 셀렉트(`scratch-concept-template-select`)가 그것만 보여 준다. 도구줄의 `시설 삭제`(`scratch-concept-facility-remove`)는 꾸러미를 지운다 — 마지막 것을 지우면 빈 배열이 남고 다시 시드하지 않는다(빈 화면의 `초안 N종 넣기`(`scratch-concept-seed-templates`)가 다시 넣는 유일한 길). 시설에 **벽 재질** `wall`(`cream`·`gold-brick`·`stone-brick`, `scratch-concept-facility-wall`), 장소에 **바닥 재질** `floor`(`wood`·`stone`·`plank`·`mat`, `scratch-concept-place-floor-<id>`)가 붙었다. 기본값(크림·나무)은 필드를 지운다. 시공 뒤 파이프라인 리틴트가 그 방 바닥·그 시설 벽면을 갈아 끼운다. 장소 카드에 **층** `level`(1~3, `scratch-concept-place-level-<id>`, 2026-09-03)이 더 붙었다 — 2층 이상 장소는 `place_concept` 이 `<mapId>_2f` 별도 맵으로 짓고 계단(맵 연결 칩) 물건이 층을 잇는다. 1층은 필드를 지운다.
+- **도면 문법·구역·시설 소속 (2026-09-05):** 도구줄의 「도면」 셀렉트(`scratch-concept-facility-layout`)가 시설 `layout`(`row` 한 줄 / `double-row` 두 줄)을 고친다 — 기본 한 줄은 필드를 지운다. 장소 카드 도면 열에 「구역」 셀렉트(`scratch-concept-place-zone-<id>`)가 붙어 `zone`(`north` 북쪽 / `south` 남쪽 / 자동)을 고친다 — 자동은 필드를 지우고 두 줄 도면이 주방·창고 라벨을 남쪽으로 본다. 도구줄의 「시설 장소」 토글(`scratch-concept-facility-place-<id>`)이 꾸러미 장소 중 이 시설에 드는 것만 도면에 들인다 — 빼도 꾸러미 장소·물건은 남고 다시 넣으면 꾸러미 순서대로 붙는다. 계약: `test/scratchConceptTab.test.ts` 「도면·구역·소속」.
 - 피커는 프로젝트 킷 뒤에 카탈로그에만 있는 소품(성상·과일 선반·항아리 선반·곡물 자루·잡화 상자·물통·주전자·스툴·붉은 카펫·짚 돗자리)을 이어 보여 준다 — 킷을 옛 카탈로그로 시드한 프로젝트에서도 고를 수 있다. 러그류(`rug*`)는 기본 칩이 통행 가능·바닥, 계단류(`stairs*`)는 통행 가능·맵 연결.
 - 진입: `src/editor/panels/scratchConceptTab.ts`. 초안 데이터: `src/project/defaults/conceptFacilityTemplates.ts`. 계약: `test/scratchConceptTab.test.ts`, `test/conceptFacilityTemplates.test.ts`, `test/placeConceptTool.test.ts`. 시공 쪽 설명은 `openwiki/editor-interior-room-harness.md` 「개념 시설 시공」. 갤러리 보고서: `npx tsx scripts/gen-concept-facility-gallery.mts` → `reports/concept-facilities/index.html`.
 
@@ -825,3 +826,9 @@ TURN/BATTLE MENU` 칩. 전투 애니메이션 타이밍 표 헤더 `사운드...
 몇 탭이 문턱을 넘나든다(troops 53→57 · life-collections 46→60 등) — 필드가 적은 폼의 여백이라 위반이
 아니라 밀도 축의 관찰값으로 읽는다. 증거는 `docs/2026-09-03-db-studio-v2-assets/`.
 
+
+
+## 미회수 편집 후속 통합 (2026-09-05)
+
+- 구조물 삭제 토스트는 개념 물건 참조가 있어도 카탈로그 id가 남으면 원본 그림으로 돌아갔다고 안내한다. UUID 사본처럼 폴백이 없을 때만 그림 부재 오류를 표시한다. 기존 가져오기·가구 분류 경로는 유지한다. 계약: `test/structureKitDbTab.test.ts`.
+- 구형 전투 명령 안내는 실제 동작인 `방어(구형)`·`교체(구형)`으로 표기한다. 설명 글꼴은 DB 모달 규칙보다 우선하며 안내 열은 88px로 긴 이름을 담는다.

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
-import { INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
+import { INTERIOR_ROOM_TILESET_ID, seedDefaultInteriorCatalog } from "@/editor/interiorRoomPipeline";
 import { TAB_GROUPS } from "@/editor/panels/database";
 import { INTERIOR_OBJECT_CATALOG, interiorObjectById } from "@/editor/interiorObjectCatalog";
 import { resolveInteriorRoomVocab } from "@/editor/interiorRoomVocab";
@@ -67,6 +67,7 @@ describe("scratchConceptTab 실내 시드", () => {
     const host = renderOnTileset(DEFAULT_TILESET_ID);
     expect(host.querySelector("[data-testid='scratch-concept-empty']")).not.toBeNull();
     expect(host.querySelector("[data-testid='scratch-concept-place-bedroom']")).toBeNull();
+    expect(host.querySelector("[data-testid='scratch-concept-thing-name']")?.value).not.toBe("침대(가로)");
     expect(store.getCurrent().tilesets[DEFAULT_TILESET_ID]?.scratchConceptBundles).toBeUndefined();
   });
 
@@ -111,6 +112,7 @@ describe("scratchConceptTab 시설 띠", () => {
     host.querySelector("[data-testid='scratch-concept-facility-smithy']")!.click();
     expect(host.querySelector("[data-testid='scratch-concept-place-workshop']")).not.toBeNull();
     expect(host.querySelector("[data-testid='scratch-concept-place-bedroom']")).toBeNull();
+    expect(host.querySelector("[data-testid='scratch-concept-thing-name']")?.value).not.toBe("침대(가로)");
     expect(host.querySelector("[data-testid='scratch-concept-crumb']")?.textContent).toContain("대장간");
     expect(select(host, "scratch-concept-facility-wall").value).toBe("stone-brick");
     expect(select(host, "scratch-concept-place-floor-workshop").value).toBe("stone");
@@ -196,6 +198,60 @@ describe("scratchConceptTab 시설 띠", () => {
     const rug = inn.things.find((thing) => thing.objectId === "rug_red");
     expect(rug?.placeIds).toContain("bedroom");
     expect(rug?.chips).toEqual(["pass", "floor"]);
+  });
+});
+
+describe("scratchConceptTab 도면·구역·소속", () => {
+  function select(host: FakeElement, testid: string): { value: string; dispatchEvent: (event: Event) => void } {
+    return host.querySelector(`[data-testid='${testid}']`) as unknown as { value: string; dispatchEvent: (event: Event) => void };
+  }
+
+  function inn(): ConceptBundleRecord {
+    return store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles!.find((bundle) => bundle.id === "inn")!;
+  }
+
+  it("시설 도면 문법을 바꾸면 저장되고 기본(한 줄)은 필드를 비운다", () => {
+    const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
+    const layout = select(host, "scratch-concept-facility-layout");
+    expect(layout.value).toBe("row");
+    layout.value = "double-row";
+    layout.dispatchEvent(new Event("change"));
+    expect(inn().facilities[0]!.layout).toBe("double-row");
+    const again = select(host, "scratch-concept-facility-layout");
+    expect(again.value).toBe("double-row");
+    again.value = "row";
+    again.dispatchEvent(new Event("change"));
+    expect(inn().facilities[0]!.layout).toBeUndefined();
+  });
+
+  it("장소 구역을 바꾸면 저장되고 자동은 필드를 비운다", () => {
+    const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
+    const zone = select(host, "scratch-concept-place-zone-bedroom");
+    expect(zone.value).toBe("auto");
+    zone.value = "north";
+    zone.dispatchEvent(new Event("change"));
+    expect(inn().places.find((place) => place.id === "bedroom")?.zone).toBe("north");
+    const again = select(host, "scratch-concept-place-zone-bedroom");
+    expect(again.value).toBe("north");
+    again.value = "auto";
+    again.dispatchEvent(new Event("change"));
+    expect(inn().places.find((place) => place.id === "bedroom")?.zone).toBeUndefined();
+  });
+
+  it("시설 장소 토글로 빼면 도면에서 빠지고 꾸러미에는 남는다 — 다시 넣을 수 있다", () => {
+    const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
+    expect(host.querySelector("[data-testid='scratch-concept-place-bedroom']")).not.toBeNull();
+    host.querySelector("[data-testid='scratch-concept-facility-place-bedroom']")!.click();
+    expect(inn().facilities[0]!.placeIds).not.toContain("bedroom");
+    expect(inn().places.some((place) => place.id === "bedroom")).toBe(true);
+    const bed = inn().things.find((thing) => thing.id === "bed_h");
+    expect(bed).toBeDefined();
+    expect(bed?.placeIds).toContain("bedroom");
+    expect(host.querySelector("[data-testid='scratch-concept-place-bedroom']")).toBeNull();
+    expect(host.querySelector("[data-testid='scratch-concept-thing-name']")?.value).not.toBe("침대(가로)");
+    host.querySelector("[data-testid='scratch-concept-facility-place-bedroom']")!.click();
+    expect(inn().facilities[0]!.placeIds).toEqual(["bedroom", "corridor", "dining"]);
+    expect(host.querySelector("[data-testid='scratch-concept-place-bedroom']")).not.toBeNull();
   });
 });
 
@@ -417,6 +473,29 @@ describe("scratchConceptTab 물건 그림 칠하기", () => {
     expect(after.scratchConceptBundles!.find((bundle) => bundle.id === "inn")!.things.find((thing) => thing.id === catalogId)?.objectId).toBe(kitId);
     expect(interiorObjectById(catalogId)?.cells).toEqual(catalogCells);
     expect(interiorObjectById(catalogId)?.id).toBe(catalogId);
+  });
+
+  it("시드 그림을 칠하면 이 물건만 사본을 쓰며 다시 칠할 때는 사본을 재사용한다", () => {
+    store.update((project) => seedDefaultInteriorCatalog(project.tilesets[tilesetId]!));
+    const host = renderOnTileset(tilesetId);
+    host.querySelector("[data-testid='scratch-concept-thing-bed_h']")!.click();
+    expect(host.querySelector("[data-testid='scratch-concept-thing-paint']")?.textContent).toBe("사본 만들어 칠하기");
+    store.update((project) => {
+      const inn = project.tilesets[tilesetId]!.scratchConceptBundles!.find((bundle) => bundle.id === "inn")!;
+      inn.things.push({ ...inn.things.find((thing) => thing.id === "bed_h")!, id: "other_bed" });
+    });
+    const before = structuredClone(store.getCurrent().tilesets[tilesetId]!.structureKits!);
+    expect(before.find((kit) => kit.id === "bed_h")?.learnedFrom).toBe("interior-catalog");
+    const kitId = ensureThingKitForEdit(tilesetId, "inn", "bed_h");
+    expect(kitId).toMatch(/^kit_/);
+    const after = store.getCurrent().tilesets[tilesetId]!;
+    expect(after.structureKits).toHaveLength(before.length + 1);
+    expect(after.structureKits!.find((kit) => kit.id === "bed_h")).toEqual(before.find((kit) => kit.id === "bed_h"));
+    const inn = after.scratchConceptBundles!.find((bundle) => bundle.id === "inn")!;
+    expect(inn.things.find((thing) => thing.id === "bed_h")?.objectId).toBe(kitId);
+    expect(inn.things.find((thing) => thing.id === "other_bed")?.objectId).toBe("bed_h");
+    expect(ensureThingKitForEdit(tilesetId, "inn", "bed_h")).toBe(kitId);
+    expect(store.getCurrent().tilesets[tilesetId]!.structureKits).toHaveLength(before.length + 1);
   });
 
   it("ensureThingKitForEdit 는 이미 저장된 킷이면 같은 id 를 돌려주고 복제하지 않는다", () => {
