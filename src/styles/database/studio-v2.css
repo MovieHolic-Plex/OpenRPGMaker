@@ -1531,3 +1531,97 @@
   background-color: var(--db-studio-surface);
   border-color: var(--db-studio-accent);
 }
+
+/* Party record hierarchy (Phase 1): actors, classes, skills, items, equipment.
+   Keep this after the shared v2 grammar: its input :not() chain otherwise beats
+   the hero title, and its white list surface erases the earlier actor pane tint.
+   Trees and modal geometry are deliberately outside this scope. */
+.database-modal-backdrop .database-modal-window .database-modal-body :is(.oprn-record-actors, .oprn-record-classes, .oprn-record-skills, .oprn-record-items, .oprn-record-equipment) .oprn-record-list-pane {
+  --db-record-pane-bg: var(--db-studio-inset);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body :is(.oprn-record-actors, .oprn-record-classes, .oprn-record-skills, .oprn-record-items, .oprn-record-equipment) :is(.db-list-row.active, .db-record-card.active) {
+  background: color-mix(in srgb, var(--db-studio-accent) 12%, var(--db-studio-surface));
+  box-shadow: inset 3px 0 0 var(--db-studio-accent);
+  color: var(--db-studio-text-1);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body :is(.oprn-record-actors, .oprn-record-classes, .oprn-record-skills, .oprn-record-items, .oprn-record-equipment) :is(.db-list-row.active .db-list-name, .db-record-card.active .db-gallery-label) {
+  font-weight: var(--font-weight-bold);
+}
+
+/* A header band belongs to the group; the existing light card body and white
+   controls remain separate surfaces. No extra outer card border or shadow. */
+.database-modal-backdrop .database-modal-window .database-modal-body :is(.oprn-record-skills, .oprn-record-items, .oprn-record-equipment) .db-ws-card-head {
+  background: var(--db-studio-inset);
+  border-bottom: 1px solid var(--db-studio-border-strong);
+  border-radius: var(--radius-s) var(--radius-s) 0 0;
+  flex-wrap: wrap;
+  padding: var(--space-2) var(--space-3);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body :is(.oprn-record-skills, .oprn-record-items, .oprn-record-equipment) .db-ws-card-head .db-ws-card-title {
+  font-weight: var(--font-weight-bold);
+}
+
+/* Fieldset legends cannot use the flex card header's full-width band. Give the
+   existing legend a neutral edge instead, retaining native fieldset layout. */
+.database-modal-backdrop .database-modal-window .database-modal-body :is(.oprn-record-actors, .oprn-record-classes) :is(.actor-panel, .db-advanced-panel) > legend {
+  background: var(--db-studio-inset);
+  border-left: 3px solid var(--db-studio-border-strong);
+  border-radius: var(--radius-s);
+  color: var(--db-studio-text-1);
+  font-weight: var(--font-weight-bold);
+  padding: var(--space-1) var(--space-2);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-actors .actor-panel .actor-panel > legend {
+  background: transparent;
+  border-left: 0;
+  color: var(--db-studio-text-2);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-items .db-item-ws .db-item-section-label {
+  color: var(--db-studio-text-2);
+  font: var(--font-weight-bold) 13px/1.4 var(--font-ui);
+  letter-spacing: 0;
+  margin-top: var(--space-3);
+}
+
+/* Name is the primary editable value, not another regular-weight summary.
+   Match the specificity of v2's five input :not() clauses without !important. */
+.database-modal-backdrop .database-modal-window .database-modal-body :is(.oprn-record-actors, .oprn-record-classes, .oprn-record-skills, .oprn-record-items, .oprn-record-equipment) .db-detail-form .db-field input[type="text"][data-testid="db-field-name"] {
+  border-color: var(--db-studio-border-strong);
+  font-size: 15px;
+  font-weight: var(--font-weight-bold);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body :is(.oprn-record-actors, .oprn-record-items, .oprn-record-equipment) .db-detail-form .db-field input[type="text"][data-testid="db-field-name"] {
+  font-size: 18px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body :is(.oprn-record-actors, .oprn-record-classes, .oprn-record-skills, .oprn-record-items, .oprn-record-equipment) .db-detail-form .db-field input[type="text"][data-testid="db-field-name"]:focus-visible {
+  border-color: var(--db-studio-accent);
+}
+
+/* Read-only summaries stay neutral; indigo continues to mean selection/action. */
+.database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-skills .db-skill-studio > .db-skill-composer {
+  background: var(--db-studio-canvas);
+  border-color: var(--db-studio-border-default);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-skills .db-skill-effect-copy > span,
+.database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-classes .db-class-build-metric strong {
+  color: var(--db-studio-text-2);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-actors .actor-section-tab.active {
+  background: var(--db-studio-accent-soft);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-actors .actor-section-tab:focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: -4px;
+}

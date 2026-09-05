@@ -419,7 +419,7 @@
 
 @media (max-width: 1180px) and (min-width: 901px) {
   .database-modal-body .oprn-record-workspace.oprn-record-actors.db-actor-studio-workspace {
-    grid-template-columns: minmax(360px, 0.76fr) minmax(500px, 1.24fr);
+    grid-template-columns: minmax(340px, 0.76fr) minmax(0, 1.24fr);
   }
 
   .database-modal-body .db-actor-studio-workspace .db-actor-studio-table .db-actor-table-row {
