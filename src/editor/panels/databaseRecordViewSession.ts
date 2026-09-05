@@ -33,6 +33,24 @@ const CATEGORY_FILTER_STORAGE_KEY = "oprn:database.categoryFilter";
 const FILTERABLE_COLLECTIONS: readonly DatabaseCollection[] = ["items", "equipment"];
 
 let state = createRecordViewSessionState();
+const detailSections = new Map<string, string>();
+const previewPauseStates = new Map<string, boolean>();
+
+export function recordPreviewPaused(recordId: string): boolean | undefined {
+  return previewPauseStates.get(recordId);
+}
+
+export function setRecordPreviewPaused(recordId: string, paused: boolean): void {
+  previewPauseStates.set(recordId, paused);
+}
+
+export function recordDetailSection(recordId: string): string {
+  return detailSections.get(recordId) ?? "basic";
+}
+
+export function setRecordDetailSection(recordId: string, section: string): void {
+  detailSections.set(recordId, section);
+}
 
 // 컬렉션별 뷰 모드(갤러리/리스트)는 세션 리셋을 가로질러 생존한다 — localStorage
 // (oprn:database.viewMode)에 JSON 맵으로 지속되며 resetRecordViewSessionState는 이
@@ -47,6 +65,8 @@ let categoryFilters: Partial<Record<DatabaseCollection, string>> = readStoredCat
 
 export function resetRecordViewSessionState(): void {
   state = createRecordViewSessionState();
+  detailSections.clear();
+  previewPauseStates.clear();
 }
 
 export function selectedRecordForSession(

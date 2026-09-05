@@ -1,3 +1,4 @@
+import { renderEnemyStudio } from "@/editor/panels/databaseEnemyStudio";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { emptyToUndefined, field, numberField, selectField, sliderStepperField, textField } from "@/editor/panels/databaseControls";
@@ -35,7 +36,6 @@ import {
   conditionLabel,
   currentEnemy,
   defaultAction,
-  enemyGraphicVisual,
   rateField,
   replaceAction,
   skillName,
@@ -80,37 +80,42 @@ function enemyCard(
   return card;
 }
 
-export function renderEnemyRecordForm(form: HTMLElement, record: EnemyRecord, rerender: () => void = () => undefined): void {
+export function renderEnemyRecordForm(form: HTMLElement, record: EnemyRecord, rerender: () => void = () => undefined, onRename?: (name: string) => void): void {
   const hero = enemyHero(record);
-  form.append(
-    el("div", {
-      // 예전 클래스명(db-enemy-bm101-workbench)을 버린다. desktop.css / 05-dense-workbenches.css /
-      // studio-theme.css 가 서로 다른 grid-template-areas 를 같은 이름에 걸어 두고 있어서,
-      // 그 이름을 유지하는 한 어떤 배치를 짜도 마지막에 로드된 맵이 이겨 버린다(겹침 3 건의 원인).
-      // testid 는 e2e 계약이라 그대로 둔다.
-      class: "db-enemy-workbench",
-      dataset: { testid: "db-enemies-bm101-workbench" },
-      children: [
-        hero.node,
-        el("div", {
-          class: "db-ws-stack db-enemy-stack",
-          children: [
-            enemyCard("기본 정보", "name", identityFields(record, hero.setTitle, rerender), { hint: "이름·레벨·전투 진영" }),
-            enemyCard("능력치", "stats", [el("div", { class: "db-enemy-stat-grid", children: statFields(record) })]),
-            enemyCard("그래픽", "graphic", graphicFields(record, rerender)),
-            enemyCard("종족", "species", speciesFields(record, rerender), { hint: "포획해 키우는 몬스터의 원본" }),
-            enemyCard("보상", "rewards", [el("div", { class: "db-enemy-reward-grid", children: rewardFields(record) })]),
-            enemyCard("치명타 %", "critical", [el("div", { class: "db-enemy-critical-row", children: criticalFields(record, rerender) })], { hint: "N 을 넣으면 1/N 확률로 치명타" }),
-            enemyCard("옵션", "options", optionFields(record)),
-            enemyCard("액션 전투", "action-combat", actionCombatFields(record), { hint: "필드에서 직접 싸우는 액션 전투용" }),
-            enemyCard("상태 유효도", "state", rateRows(record, "state")),
-            enemyCard("속성 유효도", "element", rateRows(record, "element")),
-            enemyCard("공격 패턴", "actions", [actionSkillField(record), attackPatternTable(record, rerender)], { span: true }),
-          ],
-        }),
-      ],
-    })
-  );
+  const actions = enemyCard("공격 패턴", "actions", [actionSkillField(record), attackPatternTable(record, rerender)]);
+  const studio = renderEnemyStudio(record, [
+    { id: "basic", label: "기본", cards: [
+      enemyCard("기본 정보", "name", identityFields(record, hero.setTitle, rerender)),
+      enemyCard("능력치", "stats", [el("div", { class: "db-enemy-stat-grid", children: statFields(record) })]),
+      enemyCard("종족", "species", speciesFields(record, rerender), { hint: "포획해 키우는 몬스터의 원본" }),
+    ] },
+    { id: "appearance", label: "외형", cards: [
+      enemyCard("그래픽", "graphic", graphicFields(record, rerender)),
+    ] },
+    { id: "combat", label: "전투", cards: [
+      enemyCard("치명타 %", "critical", [el("div", { class: "db-enemy-critical-row", children: criticalFields(record, rerender) })], { hint: "N을 넣으면 1/N 확률로 치명타" }),
+      enemyCard("옵션", "options", optionFields(record)),
+      enemyCard("상태 유효도", "state", rateRows(record, "state")),
+      enemyCard("속성 유효도", "element", rateRows(record, "element")),
+      enemyCard("액션 전투", "action-combat", actionCombatFields(record), { hint: "필드에서 직접 싸우는 액션 전투용" }),
+    ] },
+    { id: "rewards", label: "보상", cards: [
+      enemyCard("보상", "rewards", [el("div", { class: "db-enemy-reward-grid", children: rewardFields(record) })]),
+    ] },
+  ], actions);
+  form.append(el("div", {
+    class: "db-enemy-workbench",
+    dataset: { testid: "db-enemies-bm101-workbench" },
+    children: [hero.node, studio],
+  }));
+  const refreshHero = (): void => {
+    const live = currentEnemy(record);
+    const next = enemyHero(live);
+    hero.node.replaceChildren(...Array.from(next.node.children));
+    onRename?.(live.name);
+  };
+  form.addEventListener("input", refreshHero);
+  form.addEventListener("change", refreshHero);
 }
 
 /**
@@ -134,9 +139,7 @@ function enemyHero(record: EnemyRecord): { readonly node: HTMLElement; readonly 
   const node = detailHero({
     eyebrow: "몬스터",
     title: live.name || "(이름 없음)",
-    subtitle: `HP ${live.stats.maxHp} · 공격 ${live.stats.attack} · 방어 ${live.stats.defense} · 민첩 ${live.stats.agility} · 경험치 ${live.rewards.exp}`,
     tags,
-    media: enemyGraphicVisual(live),
     testid: "db-enemy-hero",
   });
   const titleNode = node.querySelector(".db-ws-hero-title");
@@ -168,13 +171,17 @@ function identityFields(
     { min: 1, max: 99 }
   );
   level.title = "경험치 레벨갭 보정과 포획 몬스터의 시작 레벨에 쓰입니다.";
+  const [factionSelect, ...factionDetails] = factionFields(record, rerender);
   return [
     textField("이름", "db-field-name", record.name, (name) => {
       updateDatabaseRecord("enemies", record.id, { name });
       setHeroTitle(name);
     }),
     level,
-    ...factionFields(record, rerender),
+    factionSelect,
+    el("details", { class: "db-enemy-faction-details", children: [
+      el("summary", { text: "진영 관계와 설정" }), ...factionDetails,
+    ] }),
   ];
 }
 

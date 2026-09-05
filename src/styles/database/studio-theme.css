@@ -518,9 +518,6 @@
   min-width: 0 !important;
   overflow: auto !important;
 }
-.database-modal-backdrop .database-modal-window .db-enemy-panel-action-combat {
-  grid-area: combat !important;
-}
 
 /* Troops list was pinned to a 31px row under empty search space */
 .database-modal-backdrop .database-modal-window .oprn-record-troops .oprn-record-list-pane {

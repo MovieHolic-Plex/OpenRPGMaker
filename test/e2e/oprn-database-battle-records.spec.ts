@@ -29,18 +29,23 @@ test("BM101-BM104 Enemies tab exposes Korean RPG Maker-style editable enemy sett
   await page.getByTestId("db-field-enemy-defense").fill("22");
   await page.getByTestId("db-field-enemy-mind").fill("11");
   await page.getByTestId("db-field-enemy-agility").fill("44");
+  await page.getByTestId("db-enemy-section-rewards-tab").click();
   await page.getByTestId("db-field-enemy-exp").fill("77");
   await page.getByTestId("db-field-enemy-gold").fill("88");
   await page.getByTestId("db-picker-enemy-drop").selectOption({ index: 1 });
   await page.getByTestId("db-field-enemy-drop-rate").fill("35");
+  await page.getByTestId("db-enemy-section-combat-tab").click();
   await page.getByTestId("db-field-enemy-critical-enabled").check();
   await page.getByTestId("db-field-enemy-critical-one-in").fill("7");
   await page.getByTestId("db-field-enemy-normal-miss").check();
+  await page.getByTestId("db-enemy-section-appearance-tab").click();
   await page.getByTestId("db-field-enemy-transparent").check();
   await page.getByTestId("db-field-enemy-flying").check();
+  await page.getByTestId("db-enemy-section-combat-tab").click();
   await page.getByTestId("db-picker-enemy-state-rate-state_poison").selectOption("A");
   await page.getByTestId("db-picker-enemy-element-rate-fire").selectOption("E");
 
+  await page.getByTestId("db-enemy-section-appearance-tab").click();
   await page.getByTestId("db-enemy-graphic-set").click();
   await expect(page.getByTestId("db-enemy-graphic-dialog")).toBeVisible();
   await page.getByTestId("db-enemy-graphic-hue").fill("120");
