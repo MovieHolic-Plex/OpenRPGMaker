@@ -1,3 +1,31 @@
+## Esc 메뉴 작업 프레임 (2026-09-05)
+
+이 절이 아래의 edge-dock / 상단 파티 고정 / 하위 창 숨김 설명을 대체한다.
+
+- `playerStatusMenu.ts` 는 320×240 논리 스테이지 안에 단일 프레임을 그린다. 가장자리에서 맵은
+  계속 보이고, 헤더(위치·소지금·시간), 좌측 여섯 메뉴, 우측 작업 본문, 하단 조작 안내를 분리한다.
+  파티 개요는 파티 그룹에만 나온다. 아이템 대상은 해당 행 안에 얼굴·현재 HP/MP·예상 회복량을
+  표시하고, 장비 능력치 비교는 후보 옆 설명 영역에 둔다.
+- 메인 단계에서도 본문 미리보기는 보인다(`inert`로 입력만 막는다). ↑↓/WS는 목록,
+  →/D는 본문 진입, ←/A는 메뉴로 포커스 복귀, Enter/Z는 결정, Esc/X는 기존 한 단계 취소다.
+  좌우키가 목록의 위아래 이동을 대신하지 않는다. 영역 간 이동·다시 열기에서 커서를 유지한다.
+- `playerStatusMenuDetailRenderer.updateStatusMenuDetailSelection` 이 커서 이동 때 설명 영역만
+  갱신한다. 목록 DOM·스크롤·포커스를 보존한다. 페이지 이동 때도 명령 레일 DOM은 보존한다.
+- `playerItemUse.menuItemUnavailableReason` / `previewMenuItemTarget` 는 실제 실행의
+  `activeItemEffects`, 사용 장소, 대상 제한, 회복·상태 효과 판정을 공유한다. 미리보기는 세션과
+  난수 상태를 바꾸지 않는다. 사용 불가 항목도 커서로 설명을 읽을 수 있고 결정 시 이유를 보여준다.
+  회복약 사용 후 수량이 남으면 대상과 커서를 유지하며, 마지막 한 개를 쓰면 목록으로 돌아간다.
+- `src/player/playerStatusMenuMotion.ts` 가 Esc 전용 모션과 시간을 소유한다. 열기 180ms, 닫기 120ms,
+  본문 전환 120ms, 커서 80ms, 수치 220ms. 일반 title/shop juice의 루트 변형을 적용하지 않는다.
+  닫기는 최종 opacity 0을 유지하고 Animation.finished 뒤 해당 요소만 제거한다. 이전 메뉴의
+  완료 콜백이 다시 연 메뉴를 지우면 안 된다. closing 표시는 필드 입력 소유권을 즉시 반환한다.
+  모션 감소에서는 이동 없이 40ms 페이드만 쓴다.
+- 검증: `npm run qa:runtime -- --scenario esc-menu`,
+  `npx playwright test --config playwright.runtime.config.ts test/runtime/esc-menu.spec.ts`.
+  전용 시나리오는 과거 QA 프로젝트의 사본에서 회복약 종류를 medicine으로 명시한다.
+  과거 item-runtime-qa-v3.json의 normalGoods 회복약은 저장된 회복 필드가 있어도 사용할 수 없다.
+  이것은 테스트 입력 보정이며 저작 게임이나 원격 프로젝트를 변경하지 않는다.
+
 # Runtime Sessions & State
 
 ## 아이템 종류 전환과 실행 효과 (2026-09-05)

@@ -2,6 +2,7 @@ import { createGrowthMenu, growthMenuTabs } from "@/player/playerGrowthMenu";
 import { canUseMenuItemOnActor } from "@/player/playerItemUse";
 import { activeItemEffects, itemAllowsMenu } from "@/project/itemUsage";
 import { growthEffects } from "@/project/growth/runtime";
+import { menuItemUnavailableReason, previewMenuItemTarget } from "@/player/playerItemUse";
 import type { SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
 import { canEquip, effectiveActorEquipment, equipmentSlotAccepts } from "@/project/equipmentRules";
 import { resolveActorName } from "@/project/sessionActorCommands";
@@ -145,34 +146,44 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
       };
     }
     return {
-      title: `대상 선택: ${item.name}`,
+      title: `${item.name} · ${session.inventory[item.id] ?? 0}개`,
       entries: partyActors(project, session).map((actor) => {
-        const vitals = session.actorVitals[actor.id];
-        const eligible = canUseMenuItemOnActor(project, session, item, actor.id);
+        const preview = previewMenuItemTarget(project, session, item, actor.id);
+        const anyTarget = item.scope === "allAllies" && session.partyActorIds.some((id) => canUseMenuItemOnActor(project, session, item, id));
+        const eligible = anyTarget || canUseMenuItemOnActor(project, session, item, actor.id);
         return {
-          label: actor.name,
-          value: vitals ? `HP ${vitals.hp}/${vitals.maxHp}  MP ${vitals.mp}/${vitals.maxMp}` : "HP 0/0  MP 0/0",
+          label: resolveActorName(session, actor),
+          value: `HP ${preview.hp}/${preview.maxHp}  MP ${preview.mp}/${preview.maxMp}`,
+          vitals: preview,
+          unavailableReason: anyTarget ? undefined : preview.reason,
+          description: anyTarget ? "사용 가능한 파티원 모두에게 적용됩니다." : preview.reason,
+          face: { resourceId: actor.faceResourceId, alt: actor.name, testId: `status-menu-target-face-${actor.id}` },
           testId: `status-menu-item-target-${actor.id}`,
-          onActivate: options.onUseItem && eligible ? () => options.onUseItem?.(item.id, actor.id) : undefined,
           disabled: !eligible,
+          onActivate: options.onUseItem ? () => options.onUseItem?.(item.id, actor.id) : undefined,
         };
       }),
       emptyLabel: "대상이 없습니다",
-      hint: itemTargetHint(item),
+      hint: item.scope === "allAllies" ? "사용 가능한 파티원 모두에게 적용됩니다." : "Enter 사용 · Esc 아이템 목록",
     };
   }
 
   const inventory = new Map(Object.entries(session.inventory).filter(([, count]) => count > 0));
-  const itemEntries = project.database.items.filter((item) => inventory.has(item.id)).map(activeItemEffects).map((item) => ({
-    label: item.name,
-    icon: itemEntryIcon(item),
-    value: `${inventory.get(item.id) ?? 0}개`,
-    description: item.description,
-    testId: `status-menu-item-${item.id}`,
-    onActivate: item.type !== "switch" && itemAllowsMenu(item) && (item.type === "book" || item.type === "seed" || item.scope === "ally" || item.scope === "allAllies" || Boolean(item.careProfile)) && options.onSelectItemTarget
-      ? () => options.onSelectItemTarget?.(item.id)
-      : options.onUseItem ? () => options.onUseItem?.(item.id) : undefined,
-  }));
+  const itemEntries = project.database.items.filter((item) => inventory.has(item.id)).map((authored) => {
+    const item = activeItemEffects(authored);
+    const needsTarget = item.type !== "switch" && itemAllowsMenu(item) && (item.scope === "ally" || item.scope === "allAllies" || item.type === "book" || item.type === "seed" || Boolean(item.careProfile));
+    return {
+      label: item.name,
+      icon: itemEntryIcon(item),
+      value: `${inventory.get(item.id) ?? 0}개`,
+      description: item.description,
+      unavailableReason: menuItemUnavailableReason(item),
+      testId: `status-menu-item-${item.id}`,
+      onActivate: needsTarget && options.onSelectItemTarget
+        ? () => options.onSelectItemTarget?.(item.id)
+        : options.onUseItem ? () => options.onUseItem?.(item.id) : undefined,
+    };
+  });
   const { wornSummary, bagEntries } = ownedEquipmentEntries(options);
   const entries = [...(wornSummary ? [wornSummary] : []), ...itemEntries, ...bagEntries];
   return { title: "아이템", entries, emptyLabel: "아이템이 없습니다" };
@@ -558,14 +569,6 @@ function learnedSkills(project: Project, session: PlaySession, actor: ActorRecor
   for (const skillId of session.actorSkillIds[actor.id] ?? []) skillIds.add(skillId);
   for (const skillId of growthEffects(project, session, actor.id).skillIds) skillIds.add(skillId);
   return project.database.skills.filter((skill) => skillIds.has(skill.id));
-}
-
-function itemTargetHint(item: Project["database"]["items"][number]): string {
-  if (item.type === "book") return "기술을 배울 파티원을 선택하세요.";
-  if (item.type === "seed") return "능력치를 올릴 파티원을 선택하세요.";
-  if (item.scope === "allAllies") return "전체 효과는 사용 가능한 파티원에게만 적용됩니다.";
-  if (item.onlyEffectiveOnDeadActors) return "전투불능 대상에게만 사용할 수 있습니다.";
-  return "효과를 받을 파티원을 선택하세요.";
 }
 
 function actorLevel(session: PlaySession, actor: ActorRecord): number {
