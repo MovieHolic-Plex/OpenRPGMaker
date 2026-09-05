@@ -301,14 +301,22 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
     // 붓만 바뀌었다 — 캔버스도 부위 목록도 그대로다. 도구줄과 팔레트 표식만 갱신한다.
     tools.refresh();
     syncPalette();
+    refreshCellHints();
   });
   const filterBar = createFilterBar(filterWrap, session, () => syncPalette());
   const tools = createTools(toolsWrap, session, (changed) => {
     tools.refresh();
     // 레이어를 바꾸면 스테이지 테두리(바닥/덧그림)가 달라진다 — 캔버스만 다시 그린다.
     if (changed === "layer") redrawCanvasOnly();
+    else refreshCellHints();
   });
   const tabs = createTabs(tabsWrap, session, () => redraw());
+
+  function refreshCellHints(): void {
+    const current = session.requireKit();
+    if (current) drawCellHints(hintsWrap, current, session, redraw, commitKit);
+  }
+
 
   /**
    * 팔레트 표식과 "사용 중 N칸" 은 **같은 집합**을 보므로 한 경로로 밀어야 한다.
@@ -861,7 +869,7 @@ export function parseAiMetaDraft(text: string): StructureKitAiMeta | null {
     ...(tags && tags.length > 0 ? { tags } : {}),
     ...(themes && themes.length > 0 ? { themes } : {}),
     ...(role ? { role } : {}),
-    ...(repeatability ? { repeatability } : {}),
+    ...(!growthAxis && repeatability ? { repeatability } : {}),
     ...(growthAxis ? { growthAxis } : {}),
     ...(layerHome ? { layerHome } : {}),
     origin: "ai",
@@ -1281,7 +1289,7 @@ const TOOL_BUTTONS: readonly {
   { tool: "fill", label: "이어진 곳 채우기", icon: "fill", testid: "structure-kit-editor-tool-fill" },
   { tool: "pick", label: "스포이트", icon: "eyedropper", testid: "structure-kit-editor-tool-pick" },
   { tool: "part", label: "부위 그리기", icon: "select", testid: "structure-kit-editor-tool-part" },
-  { tool: "hint", label: "칸 힌트 (증분 축·메모)", icon: "template", testid: "structure-kit-editor-tool-hint" },
+  { tool: "hint", label: "칸 힌트 — 칸에 증분 축·메모를 붙입니다. 벽처럼 끝없이 이어지는 부분에 씁니다.", icon: "template", testid: "structure-kit-editor-tool-hint" },
 ];
 
 type ToolsView = { readonly refresh: () => void };
@@ -1754,7 +1762,7 @@ function openCellHintMenu(
     items: [
       ...GROWTH_AXES.map((axis) => ({
         action: () => pick(axis),
-        icon: axis === "vertical" ? "layers" : axis === "both" ? "composite" : "terrain",
+        icon: axis === "vertical" ? "layers" : axis === "both" ? "grid" : "rectangle",
         id: `cell-hint-${axis}`,
         label: axis === currentGrowth ? `${growthAxisLabel(axis)} (현재)` : growthAxisLabel(axis),
         testId: `structure-kit-editor-hint-option-${axis}`,
@@ -1790,6 +1798,10 @@ function drawCellHints(
   commitKit: CommitKit,
 ): void {
   const hints = kit.cellHints ?? [];
+  if (hints.length === 0 && session.tool !== "hint") {
+    host.replaceChildren();
+    return;
+  }
   const rows: HTMLElement[] = [
     el("div", {
       class: "structure-kit-editor-parts-head",
@@ -1893,6 +1905,7 @@ function drawAiTab(
   session.draft = draft;
 
   const repeatabilitySelect = el("select", {
+    attrs: draft.growthAxis ? { disabled: "" } : {},
     dataset: { testid: "structure-kit-editor-ai-repeatability" },
     children: REPEATABILITY_OPTIONS.map((option) =>
       el("option", {
@@ -2000,6 +2013,7 @@ function drawAiTab(
         const axis = GROWTH_AXES.find((candidate) => candidate === target.value);
         if (axis) draft.growthAxis = axis;
         else delete draft.growthAxis;
+        redraw();
       },
     },
   });
@@ -2082,7 +2096,16 @@ function drawAiTab(
     area("설명", "structure-kit-editor-ai-description", draft.description, (next) => { draft.description = next; }),
     area("배치 규칙(설명용 문장)", "structure-kit-editor-ai-placement", draft.placementRules, (next) => { draft.placementRules = next; }),
     conditionsBlock,
-    selectField("반복", repeatabilitySelect),
+    el("label", {
+      class: "structure-kit-editor-ai-field",
+      children: [
+        el("span", {
+          text: draft.growthAxis ? "반복 — 증분 축이 대신 정함" : "반복",
+          dataset: { testid: "structure-kit-editor-ai-repeatability-hint" },
+        }),
+        repeatabilitySelect,
+      ],
+    }),
     selectField("증분 축 (무한 확장 방향)", growthSelect),
     selectField("분류", roleSelect),
     selectField(`레이어 (미지정이면 지금 그림은 ${layerHomeLabel(structureKitLayerHome(kit))})`, layerSelect),

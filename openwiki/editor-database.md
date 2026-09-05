@@ -861,3 +861,11 @@ TURN/BATTLE MENU` 칩. 전투 애니메이션 타이밍 표 헤더 `사운드...
 ## 마을 설계서 (2026-09-05)
 
 마을 탭에 설계서 저작 화면을 연결했다. 기존 프리셋은 명시적으로 전환하며, 새 설계서는 외형·배치·자연·실내·주민 설정과 기본 설계서 선택을 한곳에서 다룬다. 상세 계약과 경계는 [마을 설계서](village-design.md).
+
+
+## 구조물 증분 메타 정정 (2026-09-05)
+
+- AI 초안은 growthAxis가 있으면 모순되는 repeatability를 버린다. 사람 저작값은 보존하고 축이 설정된 동안 반복 셀렉트만 비활성화한다. 축을 비우면 원래 반복값으로 돌아간다. 축을 바꿀 때 즉시 다시 그린다.
+- 칸 힌트가 없으면 힌트 도구를 고르기 전까지 빈 목록을 접고, 도구 설명과 실제 아이콘(grid/rectangle)을 쓴다.
+- 목록·인스펙터는 `structureKitGrowthText`로 같은 축 문구를 쓴다. 사람 스탬프 `applyStampStructureKit`의 조인 안내는 실제로 보낸 repeat/repeatY에만 붙인다(undefined도 생략이다). AI stamp 툴을 부활시키지 않는다.
+- 계약: `test/structureKitEditorDialog.test.ts`, `test/structureKitTools.test.ts`.

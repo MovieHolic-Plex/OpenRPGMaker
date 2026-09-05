@@ -16,6 +16,7 @@ import {
   paletteStampFromCells,
   paletteStampFromKit,
   structureKitGrowthAxes,
+  structureKitGrowthText,
   structureKitLayerHome,
   structureKitSize,
 } from "@/editor/harnessSuggestion/structureKitModel";
@@ -216,14 +217,7 @@ function renderAiSummary(kit: SectionStructureKitDef): HTMLElement {
   }
 
   // 증분 축은 두 축을 함께 보여준다 — "반복 가능" 한 마디로는 세로로도 이어지는 벽을 말할 수 없다.
-  const axes = structureKitGrowthAxes(kit);
-  const growthText = axes.x && axes.y
-    ? "가로·세로 증분"
-    : axes.x
-      ? "가로 증분"
-      : axes.y
-        ? "세로 증분"
-        : "한 채 완결";
+  const growthText = structureKitGrowthText(structureKitGrowthAxes(kit));
   const descLine = firstLineForColumn(ai.description);
   const hintCount = (kit.cellHints ?? []).length;
 

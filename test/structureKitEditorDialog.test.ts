@@ -1,3 +1,4 @@
+import { structureKitGrowthAxes } from "@/editor/harnessSuggestion/structureKitModel";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AI_CONFIG_STORAGE_KEY, resetAiTransportHealth } from "@/ai/llmClient";
 import { refreshAiConnectionStatus, resetAiConnectionStatusCache } from "@/editor/panels/aiConnectionStatus";
@@ -538,6 +539,17 @@ describe("AI 메타 초안 파싱 — 새 어휘", () => {
     expect(draft!.origin).toBe("ai");
   });
 
+  it("growthAxis 가 있으면 repeatability 를 초안에 함께 두지 않는다", () => {
+    const draft = parseAiMetaDraft(JSON.stringify({
+      description: "돌 성벽",
+      placementRules: "경계를 따라",
+      growthAxis: "vertical",
+      repeatability: "fixed",
+    }));
+    expect(draft!.growthAxis).toBe("vertical");
+    expect(draft!.repeatability).toBeUndefined();
+  });
+
   it("모르는 축·레이어 값은 버린다", () => {
     const draft = parseAiMetaDraft(JSON.stringify({
       description: "d", placementRules: "", growthAxis: "diagonal", layerHome: "middle",
@@ -605,6 +617,54 @@ describe("AI 메타 탭 — 수정할 수 있는 축이 화면에 있다", () =>
     expect(ai.origin).toBe("user");
   });
 
+  it("증분 축을 골랐다 미지정으로 돌려도 기존 반복 값을 보존한다", () => {
+    seedKit();
+    replaceStructureKit(DEFAULT_TILESET_ID, {
+      ...readKit(),
+      ai: { description: "우물", placementRules: "한 채로 놓는다", repeatability: "fixed", origin: "user" },
+    });
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+    pick("structure-kit-editor-tab-ai")!.click();
+
+    const growth = pick("structure-kit-editor-ai-growth")!;
+    growth.value = "horizontal";
+    growth.dispatchEvent(new Event("change"));
+    const redrawnGrowth = pick("structure-kit-editor-ai-growth")!;
+    redrawnGrowth.value = "";
+    redrawnGrowth.dispatchEvent(new Event("change"));
+
+    const restoredRepeatability = pick("structure-kit-editor-ai-repeatability")!;
+    expect(restoredRepeatability.getAttribute("disabled")).toBeNull();
+    const fixedOption = restoredRepeatability.children.find((option) => option.value === "fixed");
+    expect(fixedOption?.getAttribute("selected")).toBe("");
+    pick("structure-kit-editor-ai-accept")!.click();
+    expect(readKit().ai!.repeatability).toBe("fixed");
+    expect(readKit().ai!.growthAxis).toBeUndefined();
+  });
+
+  it("증분 축과 반복 값이 함께 있으면 축을 우선하고 반복 값도 보존한다", () => {
+    seedKit();
+    replaceStructureKit(DEFAULT_TILESET_ID, {
+      ...readKit(),
+      ai: { description: "우물", placementRules: "한 채로 놓는다", repeatability: "fixed", origin: "user" },
+    });
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+    pick("structure-kit-editor-tab-ai")!.click();
+
+    const growth = pick("structure-kit-editor-ai-growth")!;
+    growth.value = "vertical";
+    growth.dispatchEvent(new Event("change"));
+
+    expect(pick("structure-kit-editor-ai-repeatability")!.getAttribute("disabled")).toBe("");
+    expect(pick("structure-kit-editor-ai-repeatability-hint")!.textContent).toContain("증분 축이 대신 정함");
+    pick("structure-kit-editor-ai-accept")!.click();
+
+    const kit = readKit();
+    expect(kit.ai!.growthAxis).toBe("vertical");
+    expect(kit.ai!.repeatability).toBe("fixed");
+    expect(structureKitGrowthAxes(kit)).toEqual({ x: false, y: true });
+  });
+
   it("비운 목록 칸은 키 자체를 지운다", () => {
     openAiTab();
     const tags = pick("structure-kit-editor-ai-tags")!;
@@ -670,10 +730,17 @@ describe("칸 힌트 도구", () => {
     expect(readKit().cellHints).toBeUndefined();
   });
 
-  it("힌트가 없을 때는 무엇을 하는 도구인지 적어 둔다", () => {
+  it("힌트가 없을 때는 블록을 접고 도구를 잡으면 안내를 보인다", () => {
     seedKit();
     openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+    expect(pick("structure-kit-editor-cell-hints-empty")).toBeNull();
+    const hintTool = pick("structure-kit-editor-tool-hint")!;
+    expect(hintTool.getAttribute("title")).toContain("벽처럼 끝없이 이어지는 부분");
+
+    hintTool.click();
     expect(pick("structure-kit-editor-cell-hints-empty")).not.toBeNull();
+    pick("structure-kit-editor-tool-paint")!.click();
+    expect(pick("structure-kit-editor-cell-hints-empty")).toBeNull();
   });
 });
 
