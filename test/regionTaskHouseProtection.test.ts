@@ -176,7 +176,7 @@ describe("final region application uses the current store", () => {
         switch (change) {
           case "lowerTiles": case "upperTiles": map[change][index] = 199; break;
           case "lowerTileStacks": case "upperTileStacks": map[change] = { [index]: [199, 322] }; break;
-          case "new-house": map.layoutPlan?.regions.push({ id: "human-house", role: "house", label: "House", x: 15, y: 15, w: 4, h: 4 }); break;
+          case "new-house": map.layoutPlan?.regions.push({ id: "human-house", role: "house", label: "House", x: 15, y: 10, w: 4, h: 4 }); break;
         }
       }, { scope: "project", origin: "human" });
       const before = store.getCurrent();
