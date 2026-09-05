@@ -7,6 +7,7 @@ import { createInteriorTerrainAutotileGroups } from "@/project/defaults/interior
 import { createDungeonTerrainAutotileGroups } from "@/project/defaults/dungeonTerrainAutotiles";
 import type { CombinedTownTileSemanticEntry } from "@/project/defaults/tileSemanticsCombinedTown";
 import { INTERIOR_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsInterior";
+import { chipsetLabelCorrection } from "@/project/defaults/chipsetLabelCorrections";
 import { RETRO_DUNGEON_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsRetroDungeon";
 import { RETRO_EXTERIOR_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsRetroExterior";
 import { RETRO_HOUSE_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsRetroHouse";
@@ -241,7 +242,7 @@ export const DUNGEON_HARNESS_GROUPS: readonly PackHarnessGroup[] = [
   packGroup(DUNGEON_HARNESS_PREFIX, "statue", "석상/비석", "building", "lower", [145, 146, 147, 148, 175, 176], "solid", "fixed", "여신상(145+175)·가고일(146+176)·왕관 비석·아궁이 비석입니다."),
   packGroup(DUNGEON_HARNESS_PREFIX, "dome", "석조 돔/화덕", "building", "lower", [438, 439, 440, 468, 469, 470, 24, 25, 26], "solid", "fixed", "3×3 대형 석조 돔(용광로) — 윗줄 438~440 · 중간 468~470 · 받침 24~26. 마법진처럼 팔레트 세로 순서가 파일 행(14→15→0)과 다르니 주의. 통행 불가."),
   packGroup(DUNGEON_HARNESS_PREFIX, "pillar", "석주", "building", "lower", [446, 476], "solid", "fixed", "석재 기둥 상·하단 세로쌍입니다."),
-  packGroup(DUNGEON_HARNESS_PREFIX, "ice-magic", "얼음 마법 블록", "building", "lower", [125, 155, 185, 215], "solid", "fixed", "빛나는 얼음 마법 블록 애니메이션입니다. 통행 불가."),
+  packGroup(DUNGEON_HARNESS_PREFIX, "ice-magic", "소용돌이", "water", "lower", [125, 155, 185, 215], "solid", "fixed", "같은 칩셋에서 125 → 155 → 185 → 215 순으로 반복하는 소용돌이 애니메이션입니다. 통행 불가."),
   // 2026-07-27 사용자 확정 + 실측 렌더(cliff-vocab.png): 난간이 아니라 **계단**이고 통행 가능하다.
   // 예전 이름("얼음 난간/다리 턱") + solid 를 믿고 설산 관문에서 다리 바닥으로 깔았다가
   // 통행 불가라 크레바스를 못 건너 맵 위쪽 전체가 도달 불가가 됐다.
@@ -285,7 +286,7 @@ export const INTERIOR_HARNESS_GROUPS: readonly PackHarnessGroup[] = [
   packGroup(INTERIOR_HARNESS_PREFIX, "curtain", "붉은 대형 커튼", "building", "lower", [142, 143, 172, 173, 202, 203], "solid", "fixed", "무대용 대형 붉은 커튼(2×3)입니다. 벽면에 배치합니다."),
   packGroup(INTERIOR_HARNESS_PREFIX, "pillar", "기둥/제단", "building", "lower", [312, 313, 342, 343, 372, 374], "solid", "fixed", "석재 기둥 상·하단과 석판 제단입니다."),
   packGroup(INTERIOR_HARNESS_PREFIX, "hedge", "숲/산(월드맵 겸용)", "building", "lower", [360, 362, 390, 391, 392, 420, 421, 422, 450, 451, 452, 363, 365, 393, 394, 395, 423, 424, 425, 453, 454, 455], "solid", "repeat", "숲 수풀 블롭과 산 둔덕 군집입니다 — 월드맵과 공용 표현. 통행 불가."),
-  packGroup(INTERIOR_HARNESS_PREFIX, "fire-magic", "모닥불/마법 블록/용암", "building", "lower", [124, 154, 184, 214, 125, 155, 185, 215, 232], "solid", "fixed", "모닥불·푸른 마법 블록 애니메이션과 용암 바닥입니다. 통행 불가."),
+  packGroup(INTERIOR_HARNESS_PREFIX, "fire-magic", "모닥불/소용돌이/용암", "building", "lower", [124, 154, 184, 214, 125, 155, 185, 215, 232], "solid", "fixed", "모닥불·소용돌이 애니메이션과 용암 바닥입니다. 소용돌이는 125 → 155 → 185 → 215 순서로 재생합니다. 통행 불가."),
   packGroup(INTERIOR_HARNESS_PREFIX, "transparent-props", "실내 투명 배경 소품", "prop", "upper", INTERIOR_TRANSPARENT_PROP_TILES, "passable", "fixed", "분홍 투명 배경을 가진 실내 가구와 장식입니다. 바닥 위 레이어에 배치해야 배경색이 드러나지 않습니다."),
 ];
 
@@ -428,6 +429,7 @@ function preserveUserPrefixCollision(
 function applyTileContract(tileset: TilesetDef, group: PackHarnessGroup, tile: number): boolean {
   if (tile < 0 || tile >= tileset.count) return false;
   const meta = tileset.tileMeta?.[tile];
+  if (chipsetLabelCorrection(tileset.image.id, tile) && (meta?.origin === "user" || meta?.locked || tileset.tileGrafts?.some(graft => graft.targetTile === tile))) return false;
   if (meta?.userLocked === true || meta?.source === "user") return setTileRuntimeContract(tileset, tile, group, meta);
   // 실내 팩: 라벨·태그·통행성은 타일별 큐레이션 정본에서, 레이어는 그룹에서.
   // 타일 description 은 비움 — 그룹 산문은 그룹 레코드에만 둔다.
@@ -445,6 +447,7 @@ function applyTileContract(tileset: TilesetDef, group: PackHarnessGroup, tile: n
     passage,
     confidence: "high",
     source: "bundled-default",
+    ...chipsetLabelCorrection(tileset.image.id, tile),
   };
   let changed = false;
   if (JSON.stringify(meta) !== JSON.stringify(nextMeta)) {
@@ -468,6 +471,7 @@ function seedInteriorUngroupedTileMeta(tileset: TilesetDef): boolean {
     if (covered.has(tile)) continue;
     const meta = tileset.tileMeta?.[tile];
     if (meta?.userLocked === true || meta?.source === "user") continue;
+    if (chipsetLabelCorrection(tileset.image.id, tile) && (meta?.origin === "user" || meta?.locked || tileset.tileGrafts?.some(graft => graft.targetTile === tile))) continue;
     const semantic = INTERIOR_SEMANTIC_BY_INDEX.get(tile);
     const nextMeta: TileAiMetadata = semantic
       ? {
@@ -478,6 +482,7 @@ function seedInteriorUngroupedTileMeta(tileset: TilesetDef): boolean {
           passage: semantic.passage,
           confidence: "high",
           source: "bundled-default",
+          ...chipsetLabelCorrection(tileset.image.id, tile),
         }
       : { label: "", description: "", source: "unknown" };
     if (JSON.stringify(meta) !== JSON.stringify(nextMeta)) {
@@ -563,6 +568,7 @@ function seedBundledSemanticTileMeta(tileset: TilesetDef): boolean {
     if (tile >= tileset.count) continue;
     const meta = tileset.tileMeta?.[tile];
     if (meta?.userLocked === true || meta?.source === "user") continue;
+    if (chipsetLabelCorrection(tileset.image.id, tile) && (meta?.origin === "user" || meta?.locked || tileset.tileGrafts?.some(graft => graft.targetTile === tile))) continue;
     const nextMeta: TileAiMetadata = {
       label: semantic.label,
       description: "",
@@ -571,6 +577,7 @@ function seedBundledSemanticTileMeta(tileset: TilesetDef): boolean {
       passage: semantic.passage,
       confidence: "high",
       source: "bundled-default",
+      ...chipsetLabelCorrection(tileset.image.id, tile),
     };
     if (JSON.stringify(meta) !== JSON.stringify(nextMeta)) {
       tileset.tileMeta![tile] = nextMeta;

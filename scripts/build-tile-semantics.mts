@@ -184,12 +184,13 @@ function one(
 // 조립: scripts/build-tile-semantics.mts (수기 편집 대신 이 스크립트로 재생성한다).
 
 import type { CombinedTownTileSemanticEntry } from "./tileSemanticsCombinedTown";
+import { applyChipsetLabelCorrections } from "./chipsetLabelCorrections";
 
 export type ${target.typeName} = CombinedTownTileSemanticEntry;
 ${entriesHelper}${oneHelper}
-export const ${target.konst}: readonly ${target.typeName}[] = [
+export const ${target.konst}: readonly ${target.typeName}[] = applyChipsetLabelCorrections("${target.textureKey}", [
 ${body}
-];
+]);
 `;
 }
 

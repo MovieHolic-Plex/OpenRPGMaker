@@ -6,6 +6,7 @@
 // 좌표 규약: 30타일/행, ID = 행×30 + 열. 분홍 배경 타일은 투명 소품(upper 레이어)이다.
 
 import type { CombinedTownTileSemanticEntry } from "./tileSemanticsCombinedTown";
+import { applyChipsetLabelCorrections } from "./chipsetLabelCorrections";
 
 export type InteriorTileSemanticEntry = CombinedTownTileSemanticEntry;
 
@@ -23,7 +24,7 @@ function one(index: number, label: string, role: string, passage: "passable" | "
   return { index, label, role, passage, tags: [label, ...tags] };
 }
 
-export const INTERIOR_TILE_SEMANTICS: readonly InteriorTileSemanticEntry[] = [
+export const INTERIOR_TILE_SEMANTICS: readonly InteriorTileSemanticEntry[] = applyChipsetLabelCorrections("tex_easyrpg_chipset_interior", [
   // ── 물/애니메이션 지형 (좌상단 애니메이션 존, 열 0-5) ─────────────────────────
   ...entries([0, 1, 2], "연못(잔디 기슭)", "water", "solid", ["water", "pond", "물", "애니메이션"]),
   ...entries([3, 4, 5], "연못(모래 기슭)", "water", "solid", ["water", "pond", "물", "모래", "애니메이션"]),
@@ -297,4 +298,4 @@ export const INTERIOR_TILE_SEMANTICS: readonly InteriorTileSemanticEntry[] = [
   one(220, "연민트 벽면(가칭) 몸통(중·세로 반복 — 190과 동일)", "wall", "solid", ["벽", "몸통", "반복"]),
   one(221, "연민트 벽면(가칭) 몸통(우·음영 변형)", "wall", "solid", ["벽", "몸통"]),
   one(250, "잔디(청록 카펫 오토타일 배경 슬롯 — 130과 동일)", "floor", "passable", ["잔디", "오토타일", "배경 슬롯"]),
-];
+]);

@@ -22,6 +22,7 @@
 // 조립: scripts/build-tile-semantics.mts (수기 편집 대신 이 스크립트로 재생성한다).
 
 import type { CombinedTownTileSemanticEntry } from "./tileSemanticsCombinedTown";
+import { applyChipsetLabelCorrections } from "./chipsetLabelCorrections";
 
 export type RetroExteriorTileSemanticEntry = CombinedTownTileSemanticEntry;
 
@@ -45,7 +46,7 @@ function one(
   return { index, label, role, passage, tags: [label, ...tags] };
 }
 
-export const RETRO_EXTERIOR_TILE_SEMANTICS: readonly RetroExteriorTileSemanticEntry[] = [
+export const RETRO_EXTERIOR_TILE_SEMANTICS: readonly RetroExteriorTileSemanticEntry[] = applyChipsetLabelCorrections("tex_easyrpg_chipset_retro_exterior", [
   // ── 0행 (인덱스 0-29) ─────────────────────────────────────────────
   one(0, "물가 상단 프레임 1", "water", "solid", ["water", "물", "연못", "잔디 물가 물 오토타일"]),
   one(1, "물가 상단 프레임 2", "water", "solid", ["water", "물", "연못", "잔디 물가 물 오토타일"]),
@@ -546,4 +547,4 @@ export const RETRO_EXTERIOR_TILE_SEMANTICS: readonly RetroExteriorTileSemanticEn
   one(477, "베이지색 천막 왼쪽 하단 벽면", "wall", "solid", ["wall", "텐트 왼쪽 천 벽 하단", "천막 좌하단 지지대", "천막 좌하단 기둥"]),
   one(478, "원형 천막 입구 하단", "door", "passable", ["door", "검은 천막 입구 하단", "천막 입구 하단", "원형 천막"]),
   one(479, "베이지색 천막 오른쪽 하단 벽면", "wall", "solid", ["wall", "텐트 오른쪽 천 벽 하단", "천막 우하단 지지대", "천막 우하단 기둥"]),
-];
+]);

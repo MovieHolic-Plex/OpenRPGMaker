@@ -4,6 +4,7 @@
 // 실제 tileMeta/통행성도 함께 채우지만, 나머지 다수는 여기에서만 라벨을 제공한다 — resourceSearch.ts 참고).
 
 import { TILE } from "./constants";
+import { applyChipsetLabelCorrections } from "./chipsetLabelCorrections";
 
 export interface CombinedTownTileSemanticEntry {
   readonly index: number;
@@ -23,7 +24,7 @@ function entries(
   return indexes.map((index) => ({ index, label, role, passage, tags: [label, ...tags] }));
 }
 
-export const COMBINED_TOWN_TILE_SEMANTICS: readonly CombinedTownTileSemanticEntry[] = [
+export const COMBINED_TOWN_TILE_SEMANTICS: readonly CombinedTownTileSemanticEntry[] = applyChipsetLabelCorrections("tex_easyrpg_chipset_combined_town", [
   // 검증된 통행 불가 타일(핸드오프 0.4) — 겉보기와 실제 통행성이 다른 함정 포함.
   ...entries([TILE.FLOOR, 343], "돌바닥", "floor", "solid", ["floor", "FLOOR", "통행불가", "함정"]),
   ...entries([TILE.STAIRS], "계단(통행 함정·석축 단)", "stairs", "solid", ["stairs", "STAIRS", "계단", "성벽", "석축 단", "석축", "축대", "통행불가", "함정"]),
@@ -152,4 +153,4 @@ export const COMBINED_TOWN_TILE_SEMANTICS: readonly CombinedTownTileSemanticEntr
   // 어둠(366/369 블록) — 심연/동굴 어둠 바닥. 통행 불가(darkWallBody 분류 유지). 426은 기존 "어두운 벽" 라벨 유지.
   ...entries([366, 368, 396, 397, 398, 427, 428, 456, 457, 458], "어둠(석축 테)", "terrain", "solid", ["darkness", "어둠", "심연", "동굴", "오토타일"]),
   ...entries([369, 371, 399, 400, 401, 429, 430, 431, 459, 460, 461], "어둠(짙은 테)", "terrain", "solid", ["darkness", "어둠", "심연", "동굴", "오토타일"]),
-];
+]);
