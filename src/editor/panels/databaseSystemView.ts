@@ -1,18 +1,18 @@
-import {
-} from "@/assets/easyrpgRtp";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { GUARD_MAX_DAMAGE_REDUCTION_PERCENT } from "@/battle/action/guard";
 import { BATTLE_SKINS, isDeprecatedBattleSkin, listActiveBattleSkinIds, listBattleSkinIds, resolveSkinId } from "@/battle/skins/registry";
 import {
   emptyToUndefined,
   field,
-  numberField,
+  numberField as baseNumberField,
   selectField,
   selectLiteral,
   textControl,
 } from "@/editor/panels/databaseControls";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
-import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
+import { resourcePickerControl as baseResourcePickerControl, listDatabaseResourceOptions } from "@/editor/panels/databaseResourcePickerDialog";
+import { sectionCard } from "@/editor/panels/databaseWorkspace";
+import { recordListThumbnail, markDatabaseImageFailed } from "@/editor/panels/databaseRecordThumbnails";
 import { renderSystemStudioOverview, wireSystemStudioOverview } from "@/editor/panels/databaseSystemStudio";
 import {
   DEFAULT_DODGE_IFRAMES_MS,
@@ -28,6 +28,8 @@ import {
   DEFAULT_DAY_END_HOUR,
   DEFAULT_DAY_START_HOUR,
   DEFAULT_DAYS_PER_SEASON,
+  MIN_DAYS_PER_SEASON,
+  MAX_DAYS_PER_SEASON,
   DEFAULT_TIME_MINUTES_PER_REAL_SECOND,
 } from "@/project/gameTime";
 import {
@@ -145,7 +147,24 @@ export function renderSystemTab(host: HTMLElement, rerender: () => void = () => 
   const requested = consumeRequestedSystemSection();
   if (requested) host.dataset.dbSystemSection = requested.slug;
   const activeSlug = requested?.slug ?? readActiveSystemSection(host);
-  const sections = systemSectionNodes(project, titleScreen, titleBackgroundResourceId, rerender, activeSlug);
+  host.dataset.dbSystemSection = activeSlug;
+  const refresh = (): void => {
+    const active = document.activeElement;
+    if (active instanceof HTMLInputElement && form.contains(active) && !active.classList.contains("db-authoring-id") && active.dataset.testid !== "db-field-system-type-chart-types" && ["text", "number", "range"].includes(active.type)) {
+      refreshSystemDerived(form);
+      return;
+    }
+    const focusId = active instanceof HTMLElement ? active.dataset.testid : undefined;
+    const scrollTop = sectionHost.scrollTop;
+    const navScroll = nav.scrollLeft;
+    rerender();
+    const nextSections = host.querySelector<HTMLElement>(".db-system-sections");
+    if (nextSections) nextSections.scrollTop = scrollTop;
+    const nextNav = host.querySelector<HTMLElement>(".db-system-section-nav");
+    if (nextNav) nextNav.scrollLeft = navScroll;
+    if (focusId) host.querySelector<HTMLElement>(`[data-testid="${focusId}"]`)?.focus({ preventScroll: true });
+  };
+  const sections = systemSectionNodes(project, titleScreen, titleBackgroundResourceId, refresh, activeSlug);
   const sectionHost = el("div", { class: "db-system-sections", dataset: { testid: "db-system-sections" } });
   for (const { slug } of SYSTEM_SECTION_ORDER) sectionHost.append(sections[slug]);
   const nav = systemSectionNav(activeSlug, host, sectionHost);
@@ -177,7 +196,7 @@ function systemSectionNav(activeSlug: SystemSectionSlug, host: HTMLElement, sect
   for (const { slug, label } of SYSTEM_SECTION_ORDER) {
     nav.append(
       el("button", {
-        class: `db-system-section-nav${slug === activeSlug ? " active" : ""}`,
+        class: `db-system-section-button${slug === activeSlug ? " active" : ""}`,
         text: label,
         attrs: { type: "button", ...(slug === activeSlug ? { "aria-current": "true" } : {}) },
         dataset: { testid: `db-system-nav-${slug}` },
@@ -196,19 +215,25 @@ function systemSectionNav(activeSlug: SystemSectionSlug, host: HTMLElement, sect
 function activateSystemSection(slug: SystemSectionSlug, host: HTMLElement, nav: HTMLElement, sectionHost: HTMLElement): void {
   if (host.dataset.dbSystemSection === slug) return;
   host.dataset.dbSystemSection = slug;
-  for (const button of Array.from(nav.querySelectorAll<HTMLElement>(".db-system-section-nav"))) {
+  for (const button of Array.from(nav.querySelectorAll<HTMLElement>(".db-system-section-button"))) {
     const isActive = button.dataset.testid === `db-system-nav-${slug}`;
     button.classList.toggle("active", isActive);
     if (isActive) button.setAttribute("aria-current", "true");
     else button.removeAttribute("aria-current");
   }
+  if (slug === "overview") {
+    const overview = sectionHost.querySelector<HTMLElement>('[data-system-section="overview"]');
+    overview?.replaceChildren(renderSystemStudioOverview(store.getCurrent()));
+    if (overview && nav.parentElement) wireSystemStudioOverview(nav.parentElement, overview);
+  }
+  sectionHost.scrollTop = 0;
   for (const section of Array.from(sectionHost.querySelectorAll<HTMLElement>(".db-system-section"))) {
     section.hidden = section.dataset.systemSection !== slug;
   }
 }
 
 /**
- * 시스템 탭의 7개 섹션을 모두 마운트하고 비활성 섹션만 [hidden] 처리한다.
+ * 시스템 탭의 10개 섹션을 모두 마운트하고 비활성 섹션만 [hidden] 처리한다.
  * 모든 섹션이 DOM 에 존재하므로 기존 testid 조회(databaseSystemView.test.ts)가
  * 섹션 상태와 무관하게 그대로 동작한다.
  */
@@ -220,7 +245,14 @@ function systemSectionNodes(
   activeSlug: SystemSectionSlug,
 ): Record<SystemSectionSlug, HTMLElement> {
   const section = (slug: SystemSectionSlug, children: readonly HTMLElement[]): HTMLElement => {
-    const node = el("div", { class: "db-system-section", dataset: { systemSection: slug }, children });
+    const label = SYSTEM_SECTION_ORDER.find((entry) => entry.slug === slug)!.label;
+    const node = el("div", {
+      class: "db-system-section", dataset: { systemSection: slug },
+      children: slug === "overview" ? children : [el("header", {
+        class: "db-system-panel-heading",
+        children: [el("h2", { text: label }), el("p", { text: SYSTEM_SECTION_HELP[slug] })],
+      }), ...children],
+    });
     node.hidden = slug !== activeSlug;
     return node;
   };
@@ -228,14 +260,18 @@ function systemSectionNodes(
     overview: section("overview", [renderSystemStudioOverview(project)]),
     party: section("party", [
       rm2k3Fieldset("초기 파티", [
-        startPartyFaceStrip(project.system.startActorIds, project.database.actors),
-        ...startPartySlots(project.system.startActorIds, project.database.actors, rerender),
+        el("div", {
+          class: "db-system-party-roster", dataset: { testid: "db-system-party-face-strip" },
+          children: startPartySlots(project.system.startActorIds, project.database.actors, rerender),
+        }),
+        systemHelp("빈 슬롯을 선택하면 뒤의 멤버가 앞으로 이동합니다. 이 순서는 시작 파티와 플레이 세션에 함께 적용됩니다."),
       ]),
     ]),
     display: section("display", [playResolutionFieldset(project, rerender)]),
     font: section("font", [systemFontFieldset(project, rerender)]),
     resources: section("resources", [
-      rm2k3Fieldset("리소스", [
+      rm2k3Fieldset("공유 그래픽", [
+        systemHelp("타이틀 리소스를 바꾸면 시작화면 배경도 함께 바뀝니다. 타이틀의 배경 선택은 이 원본 리소스를 지우지 않습니다."),
         resourcePickerControl({
           label: "타이틀 리소스",
           resourceId: project.system.titleResourceId,
@@ -284,6 +320,7 @@ function systemSectionNodes(
         el("div", {
           class: "db-system-resource-actions",
           children: [
+            systemSectionLink("타이틀 구성 열기", "title", "db-system-resources-open-title"),
             el("button", {
               class: "btn small",
               text: "미리보기 갱신",
@@ -296,7 +333,8 @@ function systemSectionNodes(
       ]),
     ]),
     startup: section("startup", [
-      rm2k3Fieldset("시작 설정", [
+      rm2k3Fieldset("전투 설정", [
+        systemHelp("초기 적 그룹은 선택 사항입니다. 기본 참전 수 0은 규칙 모델에 맞춰 자동으로 정합니다."),
         selectField("초기 적 그룹", "db-picker-system-initial-troop", project.system.initialTroopId ?? "", project.database.troops, (value) => {
           updateSystem((draft) => {
             draft.system.initialTroopId = emptyToUndefined(value);
@@ -336,16 +374,14 @@ function systemSectionNodes(
         field("규칙 모델", (() => {
           // 전투 규칙 엔진 선택. rm2k3(기본/생략) 또는 gen1(포켓몬 레드 스타일).
           // 기본은 JSON 에 생략하고 gen1 만 보존한다(normalizeSystemRecords 와 동일 계약).
-          // Gen1 규칙 엔진은 아직 미구현이다(데미지 공식·상태·포획은 계획서 task 2+). 현재 gen1 을
-          // 골라도 바뀌는 것은 magical 속성의 mind 방어 라우팅과 body[data-battle-model] 뿐이므로,
-          // 완성된 모드처럼 보이지 않게 라벨에 명시한다.
+          // Both supported models route through battle/runtime.ts; skins are a separate choice.
           const select = el("select", {
             dataset: { testid: "db-field-system-battle-model" },
-            attrs: { title: "Gen1 규칙 엔진은 구현 중입니다. 현재는 마법 속성의 마법방어 적용만 달라집니다." },
+            attrs: { title: "RM식과 Gen1은 대미지·상태·포획 규칙이 다릅니다. 전투 UI 스타일은 별도로 선택합니다." },
           });
           select.append(
             el("option", { text: "RM2k3 (기본)", attrs: { value: "rm2k3" } }),
-            el("option", { text: "Gen1 (포켓몬 레드 스타일 · 구현 중)", attrs: { value: "gen1" } }),
+            el("option", { text: "Gen1 (포켓몬 레드 스타일)", attrs: { value: "gen1" } }),
           );
           select.value = project.system.battleModel === "gen1" ? "gen1" : "rm2k3";
           select.addEventListener("change", () => {
@@ -356,7 +392,7 @@ function systemSectionNodes(
           });
           return select;
         })()),
-        numberField("기본 참전 수", "db-field-system-active-slots", project.system.activeSlots ?? 0, (value) => {
+        numberField("기본 참전 수 (0 = 자동)", "db-field-system-active-slots", project.system.activeSlots ?? 0, (value) => {
           updateSystem((draft) => {
             draft.system.activeSlots = optionalPositiveInteger(value);
           }, "system:active-slots");
@@ -446,7 +482,7 @@ function systemSectionNodes(
           rerender,
         }),
       ]),
-      rm2k3Fieldset("시작 설정 기타", [
+      rm2k3Fieldset("선물과 전투 보상", [
         checkboxField("선물 시스템", "db-field-system-gift-system", project.system.giftSystem === true, (checked) => {
           updateSystem((draft) => {
             if (checked) draft.system.giftSystem = true;
@@ -475,7 +511,7 @@ function systemSectionNodes(
         ),
       ]),
     ]),
-    optin: section("optin", [rm2k3Fieldset("옵트인 시스템", optInSystemFields(project, rerender))]),
+    optin: section("optin", optInSystemFields(project, rerender)),
     time: section("time", [timeSystemFieldset(project.system.timeSystem, project.commonEvents, rerender)]),
     typechart: section("typechart", [typeChartFieldset(project.system.typeChart, rerender)]),
     title: section("title", [
@@ -484,25 +520,31 @@ function systemSectionNodes(
           class: "db-title-workbench",
           dataset: { testid: "db-title-workbench" },
           children: [
+            titleScreenWorkbenchPreview(project, titleScreen, titleBackgroundResourceId),
             el("div", {
               class: "db-title-workbench-fields",
               children: [
                 titleScreenDisplayFieldset(titleScreen, titleBackgroundResourceId, project.system.titleResourceId, rerender),
-                titleScreenAudioFieldset(titleScreen, rerender),
                 titleScreenMenuFieldset(titleScreen, rerender),
+                titleScreenAudioFieldset(titleScreen, rerender),
                 titleScreenEffectsFieldset(titleScreen, rerender),
               ],
             }),
-            titleScreenWorkbenchPreview(project, titleScreen, titleBackgroundResourceId),
           ],
         }),
       ]),
-      rm2k3Fieldset("그래픽 미리보기", [
-        systemPreviewWell("타이틀", project.system.titleResourceId),
-        systemPreviewWell("시작화면", titleBackgroundResourceId),
-        systemPreviewWell("시스템", project.system.systemResourceId),
-        systemPreviewWell("전투", project.system.battleSystemResourceId),
-      ]),
+      el("details", {
+        class: "db-system-graphic-details",
+        children: [el("summary", { text: "공유 그래픽 미리보기" }), el("div", {
+          class: "db-system-graphic-grid",
+          children: [
+            systemPreviewWell("타이틀", project.system.titleResourceId),
+            systemPreviewWell("시작화면", titleBackgroundResourceId),
+            systemPreviewWell("시스템", project.system.systemResourceId),
+            systemPreviewWell("전투", project.system.battleSystemResourceId),
+          ],
+        })],
+      }),
     ]),
   };
 }
@@ -523,21 +565,19 @@ function systemFontFieldset(project: Project, rerender: () => void): HTMLElement
         class: "db-system-font-preview-row",
         dataset: { fontRole: role },
         children: [
-          el("span", { class: "db-system-font-preview-role", text: FONT_ROLE_LABELS[role] }),
+          fontRoleField(role, selection[role], rerender),
           fontSampleElement(role, selection[role]),
         ],
       }),
     ),
   });
 
-  const selects = FONT_ROLES.map((role) => fontRoleField(role, selection[role], rerender));
 
   return rm2k3Fieldset("글꼴", [
     el("p", {
       class: "db-system-font-help",
       text: "에디터 UI · 런타임 픽셀 · 고정폭 글꼴을 각각 고릅니다. 고른 즉시 화면에 적용됩니다.",
     }),
-    ...selects,
     preview,
     el("div", {
       class: "db-system-font-actions",
@@ -564,7 +604,7 @@ function systemFontFieldset(project: Project, rerender: () => void): HTMLElement
 function fontSampleElement(role: FontRole, id: FontFamilyId): HTMLElement {
   const sample = el("span", {
     class: "db-system-font-preview-sample",
-    text: "가나다 ABC 123",
+    text: "새로운 모험을 시작합니다 · Adventure awaits · 0123456789",
     dataset: { testid: `db-system-font-sample-${role}`, fontId: id },
   });
   sample.style.fontFamily = resolveFontStack(id);
@@ -626,14 +666,14 @@ function playResolutionFieldset(project: Project, rerender: () => void): HTMLEle
       dataset: { testid: "db-system-resolution-help" },
     }),
     field("빠른 선택", presetSelect),
-    numberField("가로", "db-field-system-resolution-width", resolution.width, (value) => {
+    numberField("가로 (px)", "db-field-system-resolution-width", resolution.width, (value) => {
       updateSystem((draft) => {
         const current = resolvePlayResolution(draft.system);
         storePlayResolution(draft.system, { width: value, height: current.height });
       }, "system:play-resolution:width");
       rerender();
     }, { min: PLAY_RESOLUTION_LIMITS.minWidth, max: PLAY_RESOLUTION_LIMITS.maxWidth, step: 1 }),
-    numberField("세로", "db-field-system-resolution-height", resolution.height, (value) => {
+    numberField("세로 (px)", "db-field-system-resolution-height", resolution.height, (value) => {
       updateSystem((draft) => {
         const current = resolvePlayResolution(draft.system);
         storePlayResolution(draft.system, { width: current.width, height: value });
@@ -685,6 +725,15 @@ function playResolutionDiagnostics(project: Project, resolution: Readonly<PlayRe
     },
     children: [
       el("strong", { text: "해상도 영향" }),
+      el("div", {
+        class: "db-system-resolution-diagram",
+        attrs: { role: "img", "aria-label": `${resolution.width} × ${resolution.height}, ${analysis.aspectWidth}:${analysis.aspectHeight}` },
+        children: [el("div", {
+          class: "db-system-resolution-frame",
+          attrs: { style: `aspect-ratio:${resolution.width}/${resolution.height}` },
+          children: [el("strong", { text: `${resolution.width} × ${resolution.height}` }), el("span", { text: `${analysis.aspectWidth}:${analysis.aspectHeight}` })],
+        })],
+      }),
       el("dl", {
         class: "db-system-resolution-facts",
         children: [
@@ -751,14 +800,15 @@ function optInSystemFields(project: Project, rerender: () => void): readonly HTM
     updateSystem((draft) => {
       if (checked) {
         draft.system.actionCombat = {
-          enabled: true,
           ...(draft.system.actionCombat ?? {}),
+          enabled: true,
         };
       } else {
         if (draft.system.actionCombat) draft.system.actionCombat.enabled = false;
         else draft.system.actionCombat = { enabled: false };
       }
     });
+    rerender();
   });
   actionCombatField.setAttribute("title", "지원 전투는 RM식(rm2k3)과 포켓몬식(gen1) 둘뿐이며, 기존 액션 전투 맵은 계속 동작합니다.");
   const fields: HTMLElement[] = [
@@ -767,15 +817,18 @@ function optInSystemFields(project: Project, rerender: () => void): readonly HTM
         draft.system.skillSystem = { enabled: checked };
       });
     }),
-    actionCombatField,
   ];
-
-  // 액션 전투 상세 필드 (활성일 때만)
-  if (system.actionCombat?.enabled === true) fields.push(...actionCombatDetailFields(system.actionCombat));
+  const groups: HTMLElement[] = [rm2k3Fieldset("생활 기능", fields)];
+  groups.push(rm2k3Fieldset("기존 액션 전투", [
+    actionCombatField,
+    systemHelp("지원 종료 기능입니다. 기존 맵의 설정은 유지되며, 끄더라도 세부 값은 삭제하지 않습니다. 새 전투는 시작 설정의 지원 전투를 사용하세요."),
+    ...(system.actionCombat?.enabled === true ? actionCombatDetailFields(system.actionCombat) : []),
+  ]));
+  const care: HTMLElement[] = [];
 
   // 몬스터 돌봄 number fields
   if (system.monsterCare) {
-    fields.push(
+    care.push(
       numberField("돌봄 걸음/tick", "db-field-system-monster-care-steps", system.monsterCare.stepsPerTick ?? 50, (value) => {
         updateSystem((draft) => {
           draft.system.monsterCare ??= { stepsPerTick: 50, walkFriendship: 1, walkExp: 1, dailyCareCap: 30 };
@@ -803,12 +856,14 @@ function optInSystemFields(project: Project, rerender: () => void): readonly HTM
     );
   }
 
+  groups.push(rm2k3Fieldset("몬스터 돌봄", care.length ? care : [systemHelp("저장된 돌봄 설정이 없습니다. 몬스터 수집 데이터에서 돌봄을 구성한 경우 여기에 세부 값이 표시됩니다.")]));
+
   // 배열 개수 읽기 전용 표시
   const toolActionsCount = (system.toolActions ?? []).length;
   const craftRecipesCount = (system.craftRecipes ?? []).length;
   const itemUpgradesCount = (system.itemUpgrades ?? []).length;
   const sellPricesCount = (system.sellPrices ?? []).length;
-  fields.push(
+  const linked: HTMLElement[] = [
     el("div", { class: "db-field db-field-readonly", children: [
       el("span", { text: `도구 규칙: ${toolActionsCount}개` }),
     ] }),
@@ -821,10 +876,13 @@ function optInSystemFields(project: Project, rerender: () => void): readonly HTM
     el("div", { class: "db-field db-field-readonly", children: [
       el("span", { text: `판매 가격 재정의: ${sellPricesCount}개` }),
     ] }),
-  );
-
-  void rerender;
-  return fields;
+    el("button", {
+      class: "btn", text: "생활 기술·제작에서 편집", attrs: { type: "button" },
+      dataset: { databaseTarget: "life-crafting", testid: "db-system-open-life-crafting" },
+    }),
+  ];
+  groups.push(rm2k3Fieldset("연결된 생활 데이터", linked));
+  return groups;
 }
 
 /**
@@ -911,64 +969,34 @@ function actionCombatDetailFields(config: NonNullable<SystemRecords["actionComba
 }
 
 function startPartySlots(
-  startActorIds: readonly string[],
-  actors: readonly { readonly id: string; readonly name: string }[],
-  rerender: () => void,
+  startActorIds: readonly string[], actors: readonly ActorRecord[], rerender: () => void,
 ): HTMLElement[] {
-  const slots: HTMLElement[] = [];
-  for (let index = 0; index < START_PARTY_SLOTS; index += 1) {
+  return Array.from({ length: START_PARTY_SLOTS }, (_, index) => {
     const value = startActorIds[index] ?? "";
-    // 첫 슬롯은 레거시 단일 피커 testid(`db-picker-system-start-actor`)를 유지한다.
+    const actor = actors.find((entry) => entry.id === value);
     const testid = index === 0 ? "db-picker-system-start-actor" : `db-picker-system-start-actor-${index + 1}`;
-    slots.push(
-      selectField(`멤버 ${index + 1}`, testid, value, actors, (next) => {
-        updateSystem((draft) => {
-          const nextSlots = Array.from({ length: START_PARTY_SLOTS }, (_, slot) => draft.system.startActorIds[slot] ?? "");
-          nextSlots[index] = next;
-          const party = nextSlots.filter((id) => id.length > 0);
-          draft.system.startActorIds = party;
-          draft.session.partyActorIds = [...party];
-        });
-        rerender();
-      }),
-    );
-  }
-  return slots;
-}
-
-function startPartyFaceStrip(startActorIds: readonly string[], actors: readonly ActorRecord[]): HTMLElement {
-  const project = store.getCurrent();
-  const faces = Array.from({ length: START_PARTY_SLOTS }, (_, index) => {
-    const actorId = startActorIds[index];
-    const actor = actorId ? actors.find((entry) => entry.id === actorId) : undefined;
-    if (!actor?.faceResourceId) {
-      return el("span", {
-        class: "db-system-party-face empty",
-        attrs: { "aria-label": `파티 슬롯 ${index + 1} 비어 있음` },
+    const selector = selectField(`멤버 ${index + 1}`, testid, value, actors, (next) => {
+      updateSystem((draft) => {
+        const slots = Array.from({ length: START_PARTY_SLOTS }, (_, slot) => draft.system.startActorIds[slot] ?? "");
+        slots[index] = next;
+        const party = slots.filter(Boolean);
+        draft.system.startActorIds = party;
+        draft.session.partyActorIds = [...party];
       });
-    }
-    const url = resolveAssetResourceUrl(actor.faceResourceId, { project });
-    if (!url) {
-      return el("span", { class: "db-system-party-face empty", attrs: { "aria-label": actor.name } });
-    }
-    return el("span", {
-      class: "db-system-party-face",
-      attrs: {
-        "aria-label": actor.name,
-        role: "img",
-        title: actor.name,
-        style: [
-          `background-image:url("${url}")`,
-          "background-position:center",
-          `background-size:${START_PARTY_FACE_SIZE}px ${START_PARTY_FACE_SIZE}px`,
-        ].join(";"),
-      },
+      rerender();
     });
-  });
-  return el("div", {
-    class: "db-system-party-face-strip",
-    dataset: { testid: "db-system-party-face-strip" },
-    children: faces,
+    const empty = selector.querySelector('option[value=""]');
+    if (empty) empty.textContent = "빈 슬롯";
+    const face = actor ? recordListThumbnail("actors", actor, store.getCurrent(), START_PARTY_FACE_SIZE) : null;
+    return el("div", {
+      class: "db-system-party-row", dataset: { testid: `db-system-party-row-${index + 1}` },
+      children: [
+        el("span", { class: "db-system-party-number", text: String(index + 1), attrs: { "aria-hidden": "true" } }),
+        face ?? el("span", { class: "db-system-party-empty", text: "비어 있음" }),
+        selector,
+        el("span", { class: "db-system-party-status", text: actor ? actor.name || "이름 없음" : value ? `없는 멤버: ${value}` : "멤버 없음" }),
+      ],
+    });
   });
 }
 
@@ -982,7 +1010,7 @@ function timeSystemFieldset(
     checkboxField("시간/달력 사용", "db-field-system-time-enabled", enabled, (checked) => {
       updateSystem((draft) => {
         if (!checked) {
-          delete draft.system.timeSystem;
+          if (draft.system.timeSystem) draft.system.timeSystem = { ...draft.system.timeSystem, enabled: false };
           return;
         }
         draft.system.timeSystem = normalizeTimeSystemConfig({
@@ -997,6 +1025,8 @@ function timeSystemFieldset(
       });
       rerender();
     }),
+    systemHelp("끄면 시간 진행만 멈춥니다. 달력·시각·하루 종료 설정은 보존되며 다시 켜면 그대로 사용합니다."),
+    timeSystemSummary(timeSystem),
   ];
   if (enabled && timeSystem) {
     children.push(
@@ -1017,7 +1047,7 @@ function timeSystemFieldset(
             dayStartHour: Number.isFinite(value) ? Math.trunc(value) : DEFAULT_DAY_START_HOUR,
           });
         }, "system:time:day-start");
-      }),
+      }, { min: 0, max: 23 }),
       numberField("하루 종료 시", "db-field-system-time-day-end", timeSystem.dayEndHour ?? DEFAULT_DAY_END_HOUR, (value) => {
         updateSystem((draft) => {
           draft.system.timeSystem = normalizeTimeSystemConfig({
@@ -1026,7 +1056,7 @@ function timeSystemFieldset(
             dayEndHour: Number.isFinite(value) ? Math.trunc(value) : DEFAULT_DAY_END_HOUR,
           });
         }, "system:time:day-end");
-      }),
+      }, { min: (timeSystem.dayStartHour ?? DEFAULT_DAY_START_HOUR) + 1, max: 48 }),
       numberField("계절당 일수", "db-field-system-time-days-per-season", timeSystem.daysPerSeason ?? DEFAULT_DAYS_PER_SEASON, (value) => {
         updateSystem((draft) => {
           draft.system.timeSystem = normalizeTimeSystemConfig({
@@ -1035,7 +1065,7 @@ function timeSystemFieldset(
             daysPerSeason: Number.isFinite(value) ? Math.trunc(value) : DEFAULT_DAYS_PER_SEASON,
           });
         }, "system:time:days-per-season");
-      }),
+      }, { min: MIN_DAYS_PER_SEASON, max: MAX_DAYS_PER_SEASON }),
       checkboxField("종료 시 강제 취침", "db-field-system-time-force-sleep", timeSystem.forceSleep === true, (checked) => {
         updateSystem((draft) => {
           draft.system.timeSystem = normalizeTimeSystemConfig({
@@ -1056,7 +1086,28 @@ function timeSystemFieldset(
       }),
     );
   }
-  return rm2k3Fieldset("시간 시스템", children);
+  const controls = children.splice(3);
+  if (controls.length) {
+    children.push(rm2k3Fieldset("달력과 시계", controls.slice(0, 4)), rm2k3Fieldset("하루 종료", controls.slice(4)));
+  }
+  const root = rm2k3Fieldset("시간 사용", children);
+  root.addEventListener("input", () => refreshTimeSummary(root));
+  root.addEventListener("change", () => refreshTimeSummary(root));
+  return root;
+}
+
+function timeSystemSummary(config: SystemRecords["timeSystem"]): HTMLElement {
+  const start = config?.dayStartHour ?? DEFAULT_DAY_START_HOUR;
+  const end = config?.dayEndHour ?? DEFAULT_DAY_END_HOUR;
+  const rate = config?.minutesPerRealSecond ?? DEFAULT_TIME_MINUTES_PER_REAL_SECOND;
+  return el("p", {
+    class: "db-system-config-summary", dataset: { testid: "db-system-time-summary", daysPerSeason: String(config?.daysPerSeason ?? DEFAULT_DAYS_PER_SEASON) },
+    text: `${config?.enabled ? "사용 중" : "사용 안 함"} · ${start}:00 → ${end}:00 · 하루 ${(end - start) * 60}분 / 실제 ${Number(((end - start) / rate).toFixed(1))}분 · 계절당 ${config?.daysPerSeason ?? DEFAULT_DAYS_PER_SEASON}일`,
+  });
+}
+
+function refreshTimeSummary(root: HTMLElement): void {
+  root.querySelector('[data-testid="db-system-time-summary"]')?.replaceWith(timeSystemSummary(store.getCurrent().system.timeSystem));
 }
 
 function typeChartFieldset(chart: TypeChartRecord | undefined, rerender: () => void): HTMLElement {
@@ -1087,12 +1138,13 @@ function typeChartFieldset(chart: TypeChartRecord | undefined, rerender: () => v
   const children: HTMLElement[] = [
     el("p", {
       class: "db-type-chart-help",
-      text: "상성표는 배율을 고치는 표입니다. 칸을 누르면 배율이 바로 바뀝니다. 타입 목록을 비우면 표 전체가 사라집니다.",
+      text: "최대 32개 타입을 쉼표로 구분합니다. 클릭은 배율 순환, F2 또는 직접 입력은 0–4 사이 값을 설정합니다. 대각선은 읽기 전용입니다. 목록을 비우면 확인 후 표를 삭제합니다.",
       dataset: { testid: "db-type-chart-help" },
     }),
     el("label", { class: "db-field", children: [el("span", { text: "타입 목록" }), typeInput] }),
   ];
   if (types.length > 0) children.push(typeChartMatrix(chart));
+  else children.push(systemHelp("상성표가 없습니다. 타입을 두 개 이상 입력하면 공격·방어 배율을 편집할 수 있습니다. 상성표가 없을 때는 타입 배율이 1배입니다."));
   return rm2k3Fieldset("타입 상성", children);
 }
 
@@ -1120,7 +1172,7 @@ function typeChartMatrix(chart: TypeChartRecord | undefined): HTMLElement {
   // 우클릭 직접 입력 팝오버 — 매트릭스와 함께 1회 생성, contextmenu 시 열고
   // 확인/Escape 시 닫는다. 값은 항상 updateTypeChartCell 경로로 쓴다.
   const popoverInput = el("input", {
-    attrs: { type: "number", min: "0", max: "4", step: "0.25" },
+    attrs: { type: "number", min: "0", max: "4", step: "any", "aria-label": "선택한 타입 쌍의 배율" },
     dataset: { testid: "db-type-chart-popover-input" },
   }) as HTMLInputElement;
   const popoverConfirm = el("button", {
@@ -1132,14 +1184,31 @@ function typeChartMatrix(chart: TypeChartRecord | undefined): HTMLElement {
   const popover = el("div", {
     class: "db-type-chart-popover",
     dataset: { testid: "db-type-chart-popover" },
-    children: [popoverInput, popoverConfirm],
+    attrs: { role: "group", "aria-label": "타입 배율 직접 입력" },
+    children: [field("배율 (0–4)", popoverInput), popoverConfirm],
   });
   popover.hidden = true;
 
-  let popoverTarget: { readonly chip: HTMLButtonElement; readonly attacker: string; readonly defender: string } | null = null;
+  type Pair = { readonly chip: HTMLButtonElement; readonly attacker: string; readonly defender: string };
+  let selectedPair: Pair | null = null;
+  let popoverTarget: Pair | null = null;
+  let opener: HTMLElement | null = null;
+  const direct = el("button", {
+    class: "btn", text: "선택한 배율 직접 입력", attrs: { type: "button" },
+    dataset: { testid: "db-type-chart-direct-edit" },
+  });
+  direct.disabled = types.length < 2;
+  const openPopover = (pair: Pair, source: HTMLElement): void => {
+    popoverTarget = pair;
+    opener = source;
+    popoverInput.value = pair.chip.dataset.value ?? "1";
+    popover.hidden = false;
+    popoverInput.focus();
+  };
+  direct.addEventListener("click", () => { if (selectedPair) openPopover(selectedPair, direct); });
   const closePopover = (): void => {
     popover.hidden = true;
-    popoverTarget?.chip.focus();
+    opener?.focus({ preventScroll: true });
     popoverTarget = null;
   };
   popoverConfirm.addEventListener("click", () => {
@@ -1151,25 +1220,34 @@ function typeChartMatrix(chart: TypeChartRecord | undefined): HTMLElement {
     showPreview(target.attacker, target.defender, value);
     closePopover();
   });
-  popoverInput.addEventListener("keydown", (event) => {
+  popover.append(el("button", {
+    class: "btn", text: "취소", attrs: { type: "button" }, dataset: { testid: "db-type-chart-popover-cancel" },
+    on: { click: closePopover },
+  }));
+  popover.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
       event.preventDefault();
+      event.stopPropagation();
       closePopover();
+    } else if (event.key === "Enter" && event.target === popoverInput) {
+      event.preventDefault();
+      event.stopPropagation();
+      popoverConfirm.click();
     }
   });
 
   const table = el("table", { class: "db-type-chart-matrix" });
-  const head = el("tr", { children: [el("th", { text: "공\\방" }), ...types.map((type) => el("th", { text: type }))] });
+  const head = el("tr", { children: [el("th", { text: "공격 / 방어" }), ...types.map((type) => el("th", { text: type, attrs: { scope: "col" } }))] });
   table.append(el("thead", { children: [head] }));
   const body = el("tbody");
   for (const attacker of types) {
-    const row = el("tr", { children: [el("th", { text: attacker })] });
+    const row = el("tr", { children: [el("th", { text: attacker, attrs: { scope: "row" } })] });
     for (const defender of types) {
       const isDiagonal = attacker === defender;
       const value = multipliers[attacker]?.[defender] ?? 1;
       const chip = el("button", {
         class: "db-type-chip",
-        attrs: { type: "button" },
+        attrs: { type: "button", "aria-label": `${attacker} → ${defender}: ${value}배`, title: isDiagonal ? "같은 타입 (읽기 전용)" : "클릭: 배율 순환 · F2: 직접 입력" },
         text: formatChipValue(value),
         dataset: {
           testid: `db-type-chart-${attacker}-${defender}`,
@@ -1181,7 +1259,21 @@ function typeChartMatrix(chart: TypeChartRecord | undefined): HTMLElement {
       }) as HTMLButtonElement;
       if (isDiagonal) chip.disabled = true;
       else {
+        const pair = { chip, attacker, defender };
+        if (!selectedPair) selectedPair = pair;
+        chip.addEventListener("focus", () => {
+          selectedPair = pair;
+          showPreview(attacker, defender, parseFloat(chip.dataset.value ?? "1"));
+        });
+        chip.addEventListener("keydown", (event) => {
+          if (event.key === "F2") {
+            event.preventDefault();
+            event.stopPropagation();
+            openPopover(pair, chip);
+          }
+        });
         chip.addEventListener("click", () => {
+          selectedPair = pair;
           const current = parseFloat(chip.dataset.value ?? "1");
           const next = nextTypeChartCycleValue(current);
           updateTypeChartCell(attacker, defender, next);
@@ -1190,15 +1282,8 @@ function typeChartMatrix(chart: TypeChartRecord | undefined): HTMLElement {
         });
         chip.addEventListener("contextmenu", (event) => {
           event.preventDefault();
-          popoverInput.value = String(parseFloat(chip.dataset.value ?? "1"));
-          popoverTarget = { chip, attacker, defender };
-          popover.hidden = false;
-          // 칩 근처에 띄운다 — fakeDom 의 getBoundingClientRect 는 0 을 돌려줘도 동작엔 영향 없다.
-          const chipRect = chip.getBoundingClientRect();
-          const hostRect = popover.parentElement?.getBoundingClientRect();
-          popover.style.left = `${chipRect.left - (hostRect?.left ?? 0)}px`;
-          popover.style.top = `${chipRect.bottom - (hostRect?.top ?? 0) + 4}px`;
-          popoverInput.focus();
+          selectedPair = pair;
+          openPopover(pair, chip);
         });
         chip.addEventListener("mouseenter", () => {
           showPreview(attacker, defender, parseFloat(chip.dataset.value ?? "1"));
@@ -1209,11 +1294,12 @@ function typeChartMatrix(chart: TypeChartRecord | undefined): HTMLElement {
     body.append(row);
   }
   table.append(body);
+  if (selectedPair) showPreview(selectedPair.attacker, selectedPair.defender, Number(selectedPair.chip.dataset.value));
 
   return el("div", {
     class: "db-type-chart-wrap",
     dataset: { testid: "db-type-chart-matrix" },
-    children: [preview, table, popover],
+    children: [preview, direct, popover, el("div", { class: "db-type-chart-scroll", attrs: { tabindex: "0", "aria-label": "타입 상성표 가로 스크롤" }, children: [table] })],
   });
 }
 
@@ -1248,6 +1334,7 @@ function applyChipValue(chip: HTMLButtonElement, value: number): void {
   chip.dataset.value = String(value);
   chip.dataset.state = typeChartState(value);
   chip.textContent = formatChipValue(value);
+  chip.setAttribute("aria-label", `${chip.dataset.attacker} → ${chip.dataset.defender}: ${value}배`);
 }
 
 function updateTypeChartCell(attacker: string, defender: string, value: number): void {
@@ -1277,7 +1364,7 @@ function updateTitleScreen(mutator: (settings: ReturnType<typeof defaultTitleScr
 function updateSystem(mutator: (draft: ReturnType<typeof store.getCurrent>) => void, snapshotKey?: string): void {
   if (snapshotKey) recordCoalescedSnapshot(`db-utility:${snapshotKey}`);
   else recordProjectSnapshot();
-  store.update(mutator, { scope: "system" });
+  store.update(mutator, { scope: "system", label: "시스템 설정 편집" });
 }
 
 function nextRewardPolicy(
@@ -1294,7 +1381,9 @@ function nextRewardPolicy(
 }
 
 function rm2k3Fieldset(title: string, children: readonly HTMLElement[]): HTMLElement {
-  return el("fieldset", { class: "oprn-db-fieldset", children: [el("legend", { text: title }), ...children] });
+  const card = sectionCard({ title, children });
+  card.classList.add("db-system-settings-group");
+  return card;
 }
 
 function clampStageCoordinate(value: number, max: number): number {
@@ -1319,14 +1408,16 @@ function systemPreviewWell(label: string, resourceId: string | undefined): HTMLE
   const preview = url
     ? el("img", { attrs: { alt: `${label} 미리보기`, src: url } })
     : el("span", { class: "db-system-preview-empty", text: "(없음)" });
-  return el("div", {
+  const well = el("div", {
     class: "db-system-preview-well",
     children: [
       el("span", { class: "db-system-preview-label", text: label }),
       el("div", { class: "db-system-preview-frame", children: [preview] }),
-      el("code", { text: resourceId ? `리소스 ${resourceId}` : "(없음)" }),
+      el("code", { text: resourceId ? systemResourceName(label === "시스템" ? "system" : label === "전투" ? "system2" : "title", resourceId) : "선택 없음" }),
     ],
   });
+  if (url) preview.addEventListener("error", () => markDatabaseImageFailed(preview.parentElement!, label), { once: true });
+  return well;
 }
 
 function titleScreenDisplayFieldset(
@@ -1338,6 +1429,7 @@ function titleScreenDisplayFieldset(
   const presentationMode = titleScreen.titleGraphic?.mode ?? "text";
   const showLogoFields = presentationMode === "graphic" || presentationMode === "both";
   const children: HTMLElement[] = [
+    systemHelp("좌표 범위: X 0–320, Y 0–240. 해상도를 바꿔도 좌표의 비례 위치는 유지됩니다."),
     textControl("게임 타이틀", titleScreen.title, (value) => {
       updateTitleScreen((settings) => {
         settings.title = value;
@@ -1407,7 +1499,7 @@ function titleScreenDisplayFieldset(
     }),
     el("code", {
       class: "db-title-workbench-system-title-id",
-      text: systemTitleResourceId ? `리소스 ${systemTitleResourceId}` : "리소스 (없음)",
+      text: systemTitleResourceId ? `기본 배경 연결: ${systemResourceName("title", systemTitleResourceId)}` : "기본 배경 연결 없음",
       dataset: { testid: "db-title-workbench-system-title-id" },
     }),
     numberField("타이틀 X", "db-field-title-screen-title-x", titleScreen.layout.titleX, (value) => {
@@ -1526,6 +1618,7 @@ function titleScreenMenuFieldset(titleScreen: TitleScreenSettings, rerender: () 
     dataset: { testid: "db-title-workbench-menu" },
     children: [
       el("legend", { text: "메뉴" }),
+      systemHelp("새 게임은 시작 경로이므로 항상 표시합니다. 이어하기는 자동 저장이 있을 때만 표시됩니다."),
       el("div", {
         class: "db-title-menu-option-row",
         dataset: { testid: "db-title-menu-option-new-game" },
@@ -1633,7 +1726,7 @@ function patchTitleGraphic(
 ): void {
   const current = settings.titleGraphic;
   const mode = patch.mode ?? current?.mode ?? "text";
-  const resourceId = patch.resourceId !== undefined ? patch.resourceId : current?.resourceId;
+  const resourceId = "resourceId" in patch ? patch.resourceId : current?.resourceId;
   const x = patch.x ?? current?.x ?? settings.layout.titleX;
   const y = patch.y ?? current?.y ?? settings.layout.titleY;
   if (mode === "text" && !resourceId) {
@@ -1657,11 +1750,7 @@ function patchTitleSounds(
   },
 ): void {
   const current = settings.sounds ?? {};
-  const next = {
-    cursorSeResourceId: patch.cursorSeResourceId !== undefined ? patch.cursorSeResourceId : current.cursorSeResourceId,
-    confirmSeResourceId: patch.confirmSeResourceId !== undefined ? patch.confirmSeResourceId : current.confirmSeResourceId,
-    cancelSeResourceId: patch.cancelSeResourceId !== undefined ? patch.cancelSeResourceId : current.cancelSeResourceId,
-  };
+  const next = { ...current, ...patch };
   const cleaned = {
     ...(next.cursorSeResourceId ? { cursorSeResourceId: next.cursorSeResourceId } : {}),
     ...(next.confirmSeResourceId ? { confirmSeResourceId: next.confirmSeResourceId } : {}),
@@ -2032,7 +2121,7 @@ function titleScreenWorkbenchPreview(
     // graphic mode without logo still needs a stable title node for layout tests.
     if (!showText && !showLogo) appendTitleText();
 
-    const visibleOptions = listTitleMenuOptions(titleScreen);
+    const visibleOptions = listTitleMenuOptions(titleScreen, { autosaveAvailable: true });
     const menu = el("div", {
       class: "db-title-workbench-menu",
       dataset: { testid: "db-title-workbench-menu-preview" },
@@ -2099,7 +2188,8 @@ function titleScreenWorkbenchPreview(
     class: "db-title-workbench-preview",
     dataset: { testid: "db-title-workbench-preview" },
     children: [
-      el("span", { class: "db-title-workbench-preview-label", text: "라이브 프리뷰" }),
+      el("span", { class: "db-title-workbench-preview-label", text: "타이틀 구성 미리보기" }),
+      systemHelp("320×240 기준 좌표를 화면에 비례해 표시합니다. 이어하기는 자동 저장이 있을 때의 모습입니다."),
       stage,
       el("div", {
         class: "db-title-workbench-audio",
@@ -2109,11 +2199,112 @@ function titleScreenWorkbenchPreview(
           replay,
           el("code", {
             class: "db-title-workbench-music-id",
-            text: musicId ?? "(BGM 없음)",
+            text: musicId ? systemResourceName("music", musicId) : "BGM 없음",
             dataset: { testid: "db-title-workbench-music-id" },
           }),
         ],
       }),
     ],
   });
+}
+
+
+const SYSTEM_SECTION_HELP: Record<Exclude<SystemSectionSlug, "overview">, string> = {
+  party: "게임을 시작할 멤버와 순서를 정합니다.",
+  display: "게임 화면의 크기와 맵에 미치는 영향을 확인합니다.",
+  font: "화면 역할마다 글꼴을 고르고 실제 문장으로 비교합니다.",
+  resources: "프로젝트에서 공유하는 그래픽을 선택합니다.",
+  startup: "전투 방식, 기본 소리와 보상 규칙을 정합니다.",
+  optin: "선택 기능과 기존 프로젝트의 세부 설정을 관리합니다.",
+  time: "시간 진행, 계절 길이와 하루 종료 동작을 정합니다.",
+  typechart: "공격 타입과 방어 타입 사이의 배율을 편집합니다.",
+  title: "시작 화면을 구성하고 표시·메뉴·소리·연출을 조정합니다.",
+};
+
+function systemHelp(text: string): HTMLElement {
+  return el("p", { class: "db-system-help", text });
+}
+
+function systemSectionLink(text: string, target: SystemSectionSlug, testid: string): HTMLElement {
+  return el("button", { class: "btn", text, attrs: { type: "button" }, dataset: { systemTarget: target, testid } });
+}
+
+function systemResourceName(kind: Parameters<typeof baseResourcePickerControl>[0]["kind"], id: string): string {
+  return listDatabaseResourceOptions(kind, store.getCurrent()).find((entry) => entry.id === id)?.name ?? id;
+}
+
+/** System-only presentation, preserving the shared picker and historical ID input. */
+function resourcePickerControl(options: Parameters<typeof baseResourcePickerControl>[0]): HTMLElement {
+  const restorePickerFocus = (): void => {
+    document.querySelector<HTMLElement>(`[data-testid="${options.testid}-set"]`)?.focus({ preventScroll: true });
+  };
+  const control = baseResourcePickerControl({
+    ...options,
+    rerender: () => { options.rerender(); restorePickerFocus(); },
+  });
+  const name = control.querySelector<HTMLElement>(".db-resource-picker-inline-name");
+  if (name) name.textContent = options.resourceId ? systemResourceName(options.kind, options.resourceId) : "선택한 리소스 없음";
+  const pick = control.querySelector<HTMLElement>(`[data-testid="${options.testid}-set"]`);
+  if (pick) pick.textContent = options.resourceId ? "변경" : "선택";
+  const meta = control.querySelector<HTMLElement>(".db-resource-picker-control-meta");
+  if (options.allowClear) {
+    const clear = el("button", {
+      class: "btn", text: "비우기", attrs: { type: "button", "aria-label": `${options.label} 비우기` },
+      dataset: { testid: `${options.testid}-clear` },
+      on: { click: () => { options.onChange({ resourceId: "" }); options.rerender(); restorePickerFocus(); } },
+    });
+    clear.disabled = !options.resourceId;
+    meta?.append(clear);
+  }
+  // File paths remain available in the picker, not as primary settings content.
+  control.querySelector(".db-resource-picker-audio-id")?.remove();
+  control.querySelector(".db-resource-picker-audio-url")?.remove();
+  return control;
+}
+
+/** Commit native numeric typing on change; steppers keep the shared input path. */
+function numberField(...args: Parameters<typeof baseNumberField>): HTMLElement {
+  const row = baseNumberField(...args);
+  const input = row.querySelector<HTMLInputElement>('input[type="number"]');
+  input?.addEventListener("input", (event) => {
+    if (typeof InputEvent !== "undefined" && event instanceof InputEvent) event.stopImmediatePropagation();
+  }, true);
+  return row;
+}
+
+/** Refresh only read-only output while typing, never replace the active input. */
+function refreshSystemDerived(form: HTMLElement): void {
+  const project = store.getCurrent();
+  const title = project.system.titleScreen ?? defaultTitleScreenSettings();
+  const text = form.querySelector<HTMLElement>('[data-testid="db-title-workbench-title-text"]');
+  if (text) {
+    text.textContent = title.title || "(제목 없음)";
+    text.style.left = `${title.layout.titleX / 320 * 100}%`;
+    text.style.top = `${title.layout.titleY / 240 * 100}%`;
+  }
+  const logo = form.querySelector<HTMLElement>('[data-testid="db-title-workbench-logo"]');
+  if (logo && title.titleGraphic) {
+    logo.style.left = `${title.titleGraphic.x / 320 * 100}%`;
+    logo.style.top = `${title.titleGraphic.y / 240 * 100}%`;
+  }
+  const menu = form.querySelector<HTMLElement>('[data-testid="db-title-workbench-menu-preview"]');
+  if (menu) {
+    menu.style.left = `${title.layout.menuX / 320 * 100}%`;
+    menu.style.top = `${title.layout.menuY / 240 * 100}%`;
+    for (const option of listTitleMenuOptions(title, { autosaveAvailable: true })) {
+      const item = menu.querySelector<HTMLElement>(`[data-title-menu-option="${option.id}"]`);
+      if (item) item.textContent = option.label;
+    }
+  }
+  const diagnostics = form.querySelector<HTMLElement>('[data-testid="db-system-resolution-diagnostics"]');
+  diagnostics?.replaceWith(playResolutionDiagnostics(project, resolvePlayResolution(project.system)));
+  const preset = form.querySelector<HTMLSelectElement>('[data-testid="db-field-system-resolution-preset"]');
+  if (preset) preset.value = playResolutionPreset(resolvePlayResolution(project.system));
+  refreshTimeSummary(form);
+  const activeId = document.activeElement instanceof HTMLElement ? document.activeElement.dataset.testid ?? "" : "";
+  if (/^db-field-title-screen-(layer-|particle-|intro-)/.test(activeId)) {
+    form.querySelector('[data-testid="db-title-workbench-preview"]')?.replaceWith(
+      titleScreenWorkbenchPreview(project, title, title.backgroundResourceId ?? project.system.titleResourceId),
+    );
+  }
 }
