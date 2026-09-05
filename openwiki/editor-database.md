@@ -36,6 +36,14 @@
 - 검증: `test/enemyBattleTest.test.ts`(실제 엔진 HP 반영·원본 격리),
   `test/e2e/database-enemy-studio.spec.ts`(1680/1280/1024 hit-test·키보드·선택·연결·시험 복귀),
   기존 EnemySpecies/Faction/ResourceSlot, RecordPartialRender, PanelGridClasses 계약.
+### Monster action input trust (Phase 1, 2026-09-05)
+
+- `databaseEnemyRecordView.ts` binds the skill field to the selected original-array action index, not priority-sorted display position. Click, focus, Enter/Space, double-click and context-menu entry select that target; selection preserves row nodes and exposes `aria-pressed`. Row rendering and dialog entry read current store actions. Skill changes merge only `skillId` into the live selected action through `updateDatabaseRecord`.
+- Add/duplicate select the new row; toolbar deletion selects the preceding original row (or the first remaining row). With no actions, skill/duplicate/delete are disabled and Add remains available. An obsolete skill picker cannot recreate a removed action list.
+- `databaseEnemyActionDialog.ts` keeps inactive turn inputs disabled while retaining their raw drafts, including empty values. OK requires integer priority 1–100 and, only for turn conditions, integer start/interval 1–999, matching `databaseEnemyTroopRecordModel.ts`. Invalid active fields show associated inline errors, focus the first invalid input, and prevent mutation/closure; Cancel discards the draft.
+- Basic/skill switching preserves mounted radio/select nodes and the selected skill draft; basic confirmation still writes the empty-skill sentinel. Named ON/OFF controls disable unused selectors/pickers, retain the chosen switch across use toggles, and open the picker at its current selection. Confirmation retains the existing action replacement/normalization path; runtime, shared controls and CSS are unchanged.
+- Focused contracts: `test/databaseEnemySelectionTrust.test.ts` and `test/databaseEnemyActionDialogTrust.test.ts`; browser workflows: `test/e2e/database-enemy-selection-trust.spec.ts` and `test/e2e/database-enemy-action-trust.spec.ts`.
+
 ## 몬스터 그룹 저작 신뢰성 (2026-09-05)
 
 대상은 몬스터·몬스터 종족·적 그룹·진영 네 탭이다.
