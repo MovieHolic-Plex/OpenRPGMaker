@@ -1,74 +1,112 @@
-import { expect, test } from "@playwright/test";
+import { expect, test as base, type Page, type BrowserContext } from "@playwright/test";
 import { writeFileSync } from "node:fs";
 
 // Real editor/modal/session/runner/store. Only model HTTP responses are scripted.
 // This is an engine-only fixture; no authored content is saved remotely.
-test("cluster modal accepts safe metadata and rejects stale live-house loss", async ({ page, context }, testInfo) => {
-  test.setTimeout(120_000);
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await context.route("**/*", async (route) => {
-    const request = route.request();
-    const url = new URL(request.url());
-    if (!["GET", "HEAD", "OPTIONS"].includes(request.method()) && url.hostname !== "127.0.0.1") {
-      return route.abort("blockedbyclient");
-    }
-    return route.fallback();
-  });
-  // Avoid this host's Chromium ERR_NETWORK_CHANGED without retrying requests.
-  await page.route("**/*", async (route) => {
-    const request = route.request();
-    const url = new URL(request.url());
-    if (url.hostname === "127.0.0.1" && request.method() === "GET"
-      && (request.isNavigationRequest() || /^\/(src|node_modules|@|vendor)\//.test(url.pathname))) {
-      return route.fulfill({ response: await route.fetch({
-        headers: { ...request.headers(), connection: "close" }, maxRetries: 0, timeout: 15_000,
-      }) });
-    }
-    return route.fallback();
-  });
-  await page.addInitScript(() => {
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "standard");
-    localStorage.setItem("oprn:editor-welcome-dismissed", "1");
-    localStorage.setItem("oprn:standard-welcome-seen", "1");
-    localStorage.setItem("oprn:coachmarks-basic-v1", "1");
-    localStorage.setItem("oprn:ai-config", JSON.stringify({ configVersion: 2, agentMode: "chat", maxToolCalls: 4 }));
-  });
-  let wrote = false;
-  const toolResults = new Map<string, boolean>();
-  await page.route("**/v1/chat/completions", async (route) => {
-    const body = route.request().postDataJSON();
-    if (!body.tools?.length) return route.fulfill({ json: { choices: [{ finish_reason: "stop", message: {
-      role: "assistant", content: JSON.stringify({ action: "new_plan", goal: "Classify metadata",
-        layers: [{ title: "Metadata", items: [{ title: "Metadata", instruction: "upsert_tile_group",
-          successTools: ["upsert_tile_group"] }] }] }),
-    } }] } });
-    for (const message of body.messages) {
-      if (message.role === "tool" && message.tool_call_id === "metadata") {
-        const ok = JSON.parse(message.content).ok;
-        expect(ok).toBe(true);
-        // Later model requests repeat conversation history, not tool execution.
-        toolResults.set(message.tool_call_id, ok);
+async function prepareEditor(page: Page, context: BrowserContext) {
+  await test.step("Install remote-write guard and isolated static transport", async () => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await context.route("**/*", async (route) => {
+      const request = route.request();
+      const url = new URL(request.url());
+      if (!["GET", "HEAD", "OPTIONS"].includes(request.method()) && url.hostname !== "127.0.0.1") {
+        return route.abort("blockedbyclient");
       }
-    }
-    const call = !wrote;
-    wrote = true;
-    return route.fulfill({ json: { choices: [{ finish_reason: call ? "tool_calls" : "stop", message: call ? {
-      role: "assistant", content: null, tool_calls: [{ id: "metadata", type: "function", function: {
-        name: "upsert_tile_group", arguments: JSON.stringify({ name: "Cluster QA metadata", role: "prop", tileIds: [322],
-          reason: "Classify an unrelated tile without changing houses" }),
-      } }],
-    } : { role: "assistant", content: "CLUSTER_QA_DONE" } }] } });
+      return route.fallback();
+    });
+    // Avoid this host's Chromium ERR_NETWORK_CHANGED without retrying requests.
+    await page.route("**/*", async (route) => {
+      const request = route.request();
+      const url = new URL(request.url());
+      if (url.hostname === "127.0.0.1" && request.method() === "GET"
+        && (request.isNavigationRequest() || /^\/(src|node_modules|@|vendor)\//.test(url.pathname))) {
+        return route.fulfill({ response: await route.fetch({
+          headers: { ...request.headers(), connection: "close" }, maxRetries: 0, timeout: 60_000,
+        }) });
+      }
+      return route.fallback();
+    });
+    await page.addInitScript(() => {
+      localStorage.setItem("rpg-zzu:editor-ui-mode", "standard");
+      localStorage.setItem("oprn:editor-welcome-dismissed", "1");
+      localStorage.setItem("oprn:standard-welcome-seen", "1");
+      localStorage.setItem("oprn:coachmarks-basic-v1", "1");
+      localStorage.setItem("oprn:ai-config", JSON.stringify({ configVersion: 2, agentMode: "chat", maxToolCalls: 4 }));
+    });
   });
-  try {
+  await test.step("Navigate and dismiss editor boot overlays", async () => {
     await page.goto("/?blankProject=1&aiBridge=0", { waitUntil: "domcontentloaded" });
     await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 60_000 });
-    for (const id of ["login-guest", "standard-welcome-start", "coach-mark-skip"]) {
-      const button = page.getByTestId(id);
-      if (await button.isVisible()) await button.click();
-    }
-    for (const scenario of ["upper-and-stack", "new-house", "safe"] as const) {
-      wrote = false;
-      toolResults.clear();
+    const guest = page.getByTestId("login-guest");
+    if (await guest.isVisible()) await guest.click();
+    await expect(page.getByTestId("login-modal")).toHaveCount(0);
+    const welcome = page.getByTestId("standard-welcome-start");
+    if (await welcome.isVisible()) await welcome.click();
+    await expect(page.getByTestId("standard-welcome-card")).toHaveCount(0);
+    const coach = page.getByTestId("coach-mark-skip");
+    if (await coach.isVisible()) await coach.click();
+    await expect(page.locator("[data-testid^='coach-mark-']")).toHaveCount(0);
+  });
+  await test.step("Load the real cluster, store and history modules before behavior", async () => {
+    await page.evaluate(async () => {
+      const moduleUrl = (suffix: string) => performance.getEntriesByType("resource")
+        .map((entry) => entry.name).find((url) => new URL(url).pathname === suffix) ?? suffix;
+      await Promise.all([
+        import(moduleUrl("/src/project/store.ts")),
+        import(moduleUrl("/src/editor/mapEditHistory.ts")),
+        import(moduleUrl("/src/editor/panels/clusterAiModal.ts")),
+        import(moduleUrl("/src/editor/panels/aiConnectionStatus.ts")),
+      ]);
+    });
+  });
+}
+
+const test = base.extend<{ drainRoutes: void; editor: void }>({
+  drainRoutes: [async ({ page }, use) => {
+    await use();
+    // Drain before page disposal, under a deadline separate from test behavior.
+    // The context-owned remote-write guard remains installed until context disposal.
+    await test.step("Drain page routes before fixture disposal", async () => {
+      await page.unrouteAll({ behavior: "wait" });
+    });
+  }, { auto: true, timeout: 30_000 }],
+  editor: [async ({ page, context }, use) => {
+    // Explicit fixture time excludes expensive boot/module loading from behavior.
+    await prepareEditor(page, context);
+    await use();
+  }, { auto: true, timeout: 180_000 }],
+});
+
+for (const scenario of ["upper-and-stack", "new-house", "safe"] as const) {
+  test(`cluster modal house protection: ${scenario}`, async ({ page }, testInfo) => {
+    test.setTimeout(120_000);
+    let wrote = false;
+    const toolResults = new Map<string, boolean>();
+    await page.route("**/v1/chat/completions", async (route) => {
+      const body = route.request().postDataJSON();
+      if (!body.tools?.length) return route.fulfill({ json: { choices: [{ finish_reason: "stop", message: {
+        role: "assistant", content: JSON.stringify({ action: "new_plan", goal: "Classify metadata",
+          layers: [{ title: "Metadata", items: [{ title: "Metadata", instruction: "upsert_tile_group",
+            successTools: ["upsert_tile_group"] }] }] }),
+      } }] } });
+      for (const message of body.messages) {
+        if (message.role === "tool" && message.tool_call_id === "metadata") {
+          const ok = JSON.parse(message.content).ok;
+          expect(ok).toBe(true);
+          // Later model requests repeat conversation history, not tool execution.
+          toolResults.set(message.tool_call_id, ok);
+        }
+      }
+      const call = !wrote;
+      wrote = true;
+      return route.fulfill({ json: { choices: [{ finish_reason: call ? "tool_calls" : "stop", message: call ? {
+        role: "assistant", content: null, tool_calls: [{ id: "metadata", type: "function", function: {
+          name: "upsert_tile_group", arguments: JSON.stringify({ name: "Cluster QA metadata", role: "prop", tileIds: [322],
+            reason: "Classify an unrelated tile without changing houses" }),
+        } }],
+      } : { role: "assistant", content: "CLUSTER_QA_DONE" } }] } });
+    });
+    await test.step("Establish the human precondition and await the real metadata proposal", async () => {
       const remoteEnabled = await page.evaluate(async (kind) => {
         const moduleUrl = (suffix: string) => performance.getEntriesByType("resource")
           .map((entry) => entry.name).find((url) => new URL(url).pathname === suffix) ?? suffix;
@@ -98,8 +136,10 @@ test("cluster modal accepts safe metadata and rejects stale live-house loss", as
       expect(remoteEnabled).toBe(false);
       await expect(page.getByTestId("cluster-ai-accept")).toBeVisible({ timeout: 30_000 });
       expect([...toolResults.entries()]).toEqual([["metadata", true]]);
+    });
+    const result = await test.step("Apply the live edit and observe the real accept status transition", async () => {
       // Observe the exact status transition before clicking the real accept button.
-      const outcome = page.evaluate(async (kind) => {
+      return page.evaluate(async (kind) => {
         const moduleUrl = (suffix: string) => performance.getEntriesByType("resource")
           .map((entry) => entry.name).find((url) => new URL(url).pathname === suffix) ?? suffix;
         const { store }: typeof import("../../src/project/store") = await import(moduleUrl("/src/project/store.ts"));
@@ -143,7 +183,8 @@ test("cluster modal accepts safe metadata and rejects stale live-house loss", as
           groupAdded: Object.values(after.tilesets).some((tileset) => tileset.tileGroups?.some((group) => group.name === "Cluster QA metadata")),
           status: status.textContent };
       }, scenario);
-      const result = await outcome;
+    });
+    await test.step("Verify exact store, map, mutation, undo and proposal invariants", async () => {
       await page.screenshot({ path: testInfo.outputPath(`${scenario}.png`), animations: "disabled" });
       const receipt = JSON.stringify({ scenario, toolResults: [...toolResults.entries()], ...result }, null, 2);
       writeFileSync(testInfo.outputPath(`${scenario}.json`), receipt + "\n");
@@ -154,8 +195,6 @@ test("cluster modal accepts safe metadata and rejects stale live-house loss", as
       } else expect(result).toMatchObject({ sameReference: true, sameBytes: true, sameMaps: true,
         mutations: 0, undoDelta: 0, proposalRetained: true, groupAdded: false });
       await page.getByTestId("cluster-ai-modal-close").click();
-    }
-  } finally {
-    await page.unrouteAll({ behavior: "wait" });
-  }
-});
+    });
+  });
+}
