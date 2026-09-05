@@ -43,3 +43,11 @@ The full supervisor gate completed with exit 1: 13,059 tests, 12,837 passed, 207
 The four follow-ups are explicit: preserve straight boulevard reservation/painting for an authored `street-grid` (the 100×100 snow city must retain 20 houses and 50 NPCs); place native emotes in the existing tab-3 staging group; align the troop movie test with the unsupported executor contract; assert an empty CSSOM width rather than fakeDom's undefined field. Synthetic autonomous continuation also now overrides the original explicit instruction with 「계속」 while preserving scope/composer mode and the applied-call ledger. Focused final verification is recorded separately.
 
 Raw pristine and integrated Vitest reports and gate output are retained in the external branch backup directory, not the tracked source tree. The full run preceded these follow-up fixes; their final results must be read together with the focused verification rather than presented as a second full run.
+
+## PRs arriving during final validation
+
+PR582 (monster verification evidence), PR583 (sidebar verification plus a real CSSOM mode-round-trip assertion) and PR585 (item/equipment settings aligned with runtime and deletion-preserving boot normalization) were integrated with their original ancestry. PR585 overlapped only the generated OpenWiki index, which was regenerated. Supervisor combined focused verification passed all 110 tests. PR584 remained a draft under its own verification when this recovery scope closed; its checked-out branch is protected.
+
+Final PR585 supervisor checks: application typecheck and CSS exit 0; both browser scenarios pass (Chromium recovered-state/animation/care serialization; Firefox three widths, capture/skill/state/care summaries, no page errors or horizontal overflow). The supervisor inspected the refreshed state/care screenshots and the 1024px equipment screenshot. Browser measurements are in `pr585-integrated-validation.json`; raw logs/screenshots are preserved in the external backup.
+
+Original branch cleanup removed 134 local and 443 remote refs. Completed temporary recovery branches are additional removals recorded in the external `deleted-refs.json`; checked-out user/agent branches remain protected.

@@ -1,0 +1,82 @@
+{
+  "commit": "caad8a7e",
+  "passed": 110,
+  "failed": 0,
+  "files": [
+    "aiMilestoneTurnAccounting.test.ts",
+    "bootNormalizerReferenceSafety.test.ts",
+    "databaseEquipmentInspector.test.ts",
+    "databaseFieldSupport.test.ts",
+    "databaseItemInspector.test.ts",
+    "databaseWave2BatchC.test.ts",
+    "defaultFeatureItemRuntime.test.ts",
+    "equipmentCatalogRuntimeAxes.test.ts",
+    "itemAuthorityIntegration.test.ts",
+    "itemEquipmentAuthoringTrust.test.ts",
+    "itemRuntimeUsability.test.ts",
+    "leftDockPanels.test.ts",
+    "playerItemUse.test.ts"
+  ],
+  "exitCode": 0,
+  "scope": "Final combined PR585 + recovered item behavior, sidebar round trip and autonomous milestone accounting. Full suite was measured before PR585; this is a focused run.",
+  "typecheckExitCode": 0,
+  "cssExitCode": 0,
+  "browserExitCode": 0,
+  "browserPassed": 2,
+  "browsers": [
+    "Chromium (state/animation/care persistence)",
+    "Firefox (item/equipment authoring)"
+  ],
+  "viewportWidths": [
+    1024,
+    1280,
+    1440
+  ],
+  "browserMeasurements": {
+    "measurements": [
+      {
+        "tab": "items",
+        "width": 1280,
+        "visible": 577,
+        "total": 1001,
+        "documentOverflow": false
+      },
+      {
+        "tab": "equipment",
+        "width": 1280,
+        "visible": 537,
+        "total": 796,
+        "documentOverflow": false
+      },
+      {
+        "tab": "items",
+        "width": 1024,
+        "visible": 545,
+        "total": 1318,
+        "documentOverflow": false
+      },
+      {
+        "tab": "equipment",
+        "width": 1024,
+        "visible": 475,
+        "total": 916,
+        "documentOverflow": false
+      },
+      {
+        "tab": "items",
+        "width": 1440,
+        "visible": 677,
+        "total": 1001,
+        "documentOverflow": false
+      },
+      {
+        "tab": "equipment",
+        "width": 1440,
+        "visible": 637,
+        "total": 769,
+        "documentOverflow": false
+      }
+    ],
+    "errors": []
+  }
+}
