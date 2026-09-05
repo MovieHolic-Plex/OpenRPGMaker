@@ -203,6 +203,8 @@ export function createHouseDoorEvent(options: {
  */
 export function createHouseDoorStepEvent(options: {
   readonly eventId: string;
+  /** Run the existing door page so authored opening effects/conditions remain authoritative. */
+  readonly doorEventId?: string;
   readonly x: number;
   readonly y: number;
   readonly interiorMapId: MapId;
@@ -226,7 +228,7 @@ export function createHouseDoorStepEvent(options: {
         priority: "below",
         overlapForbidden: false,
         movement: { type: "fixed", speed: 3, frequency: 3 },
-        commands: [
+        commands: options.doorEventId ? [{ kind: "callMapEvent", eventId: options.doorEventId }] : [
           {
             kind: "transfer",
             mapId: options.interiorMapId,

@@ -529,6 +529,7 @@ export function stampFootprintHouseKit(map: GameMap, plan: FootprintHousePlan): 
     if (doorAt.y + 1 < map.height) {
       upsertEvent(map, createHouseDoorStepEvent({
         eventId: `${plan.doorEvent.eventId}_step`,
+        doorEventId: plan.doorEvent.eventId,
         x: doorAt.x,
         y: doorAt.y + 1,
         interiorMapId: plan.doorEvent.interiorMapId,

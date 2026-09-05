@@ -93,6 +93,7 @@ export function createVillageHouseInteriors(
     if (house.doorAt.y + 1 < map.height) {
       upsertEvent(map.events, createHouseDoorStepEvent({
         eventId: `${doorEventId}_step`,
+        doorEventId,
         x: house.doorAt.x,
         y: house.doorAt.y + 1,
         interiorMapId,
