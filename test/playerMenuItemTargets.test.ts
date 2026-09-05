@@ -85,6 +85,15 @@ describe("item menu targets agree with executable effects", () => {
     expect(f.session.inventory[f.item.id]).toBe(2);
   });
 
+  it("activates a switch directly despite a stale ally scope", () => {
+    const f = fixture({ type: "switch", scope: "ally", switchId: "qa_device" });
+    f.detail().entries.find((entry) => entry.testId === `status-menu-item-${f.item.id}`)!.onActivate!();
+    expect(f.select).not.toHaveBeenCalled();
+    expect(f.use.mock.results[0]?.value.kind).toBe("used");
+    expect(f.session.switches.qa_device).toBe(true);
+    expect(f.session.inventory[f.item.id]).toBe(1);
+  });
+
   it("honors actor and effective class restrictions before a target can be selected", () => {
     const f = fixture({ hpRecovery: { flat: 50, percentMax: 0 } });
     f.session.actorVitals[f.actorId]!.hp = 1;

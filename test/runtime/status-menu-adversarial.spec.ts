@@ -29,8 +29,11 @@ test.beforeAll(async () => {
     description: "파티원 한 명의 공격력을 3 올립니다.",
     type: "seed" as const, scope: "none" as const,
     seedParameterBonuses: { attack: 3, defense: 0, mind: 0, agility: 0 } };
-  project.database.items = [potion, buff, seed];
-  project.session.inventory = { item_potion: 5, qa_buff: 2, qa_seed: 2 };
+  const device = { ...structuredClone(potion), id: "qa_device", name: "장치 작동 검사",
+    description: "검사용 장치를 작동합니다.", type: "switch" as const,
+    scope: "ally" as const, switchId: "sw_1000" };
+  project.database.items = [potion, buff, seed, device];
+  project.session.inventory = { item_potion: 5, qa_buff: 2, qa_seed: 2, qa_device: 2 };
   await mkdir(OUT, { recursive: true });
   await writeFile(`${OUT}/SUMMARY.md`, "# Runtime menu adversarial QA\n\nKeyboard input, item effects, save/load and viewport geometry.\n");
 });
@@ -142,7 +145,7 @@ test("held confirm/cancel cannot consume items, reopen a menu or bypass title co
   expect(errors).toEqual([]);
 });
 
-test("state items and seeds work through the menu and survive save/load", async ({ page }) => {
+test("state items, seeds and switches work through the menu and survive save/load", async ({ page }) => {
   const errors = await boot(page);
   await page.keyboard.press("x");
   await rail(page, "items");
@@ -156,6 +159,9 @@ test("state items and seeds work through the menu and survive save/load", async 
   await expect(page.getByTestId("status-menu-item-target-actor_hero")).toBeEnabled();
   await page.keyboard.press("z");
   await expect(page.getByTestId("status-menu-item-qa_seed")).toContainText("1개");
+  await choose(page, "status-menu-item-qa_device");
+  await expect(page.getByTestId("status-menu-item-target-actor_hero")).toHaveCount(0);
+  await expect(page.getByTestId("status-menu-item-qa_device")).toContainText("1개");
   await shot(page, "02-effects-applied");
   await rail(page, "system-menu");
   await choose(page, "status-menu-group-command-save");
@@ -165,6 +171,7 @@ test("state items and seeds work through the menu and survive save/load", async 
   expect(saved.session.actorParamBonuses.actor_hero.attack).toBe(3);
   expect(saved.session.inventory.qa_buff).toBe(1);
   expect(saved.session.inventory.qa_seed).toBe(1);
+  expect(saved.session.switches.sw_1000).toBe(true);
   await page.keyboard.press("x");
   await choose(page, "status-menu-group-command-load");
   await choose(page, "load-slot-1");
@@ -178,6 +185,7 @@ test("state items and seeds work through the menu and survive save/load", async 
   expect(reloaded.session.actorStateIds).toEqual(saved.session.actorStateIds);
   expect(reloaded.session.actorParamBonuses).toEqual(saved.session.actorParamBonuses);
   expect(reloaded.session.inventory).toEqual(saved.session.inventory);
+  expect(reloaded.session.switches.sw_1000).toBe(true);
   expect(errors).toEqual([]);
 });
 

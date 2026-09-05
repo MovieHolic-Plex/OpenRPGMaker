@@ -169,7 +169,7 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
     value: `${inventory.get(item.id) ?? 0}개`,
     description: item.description,
     testId: `status-menu-item-${item.id}`,
-    onActivate: itemAllowsMenu(item) && (item.type === "book" || item.type === "seed" || item.scope === "ally" || item.scope === "allAllies" || Boolean(item.careProfile)) && options.onSelectItemTarget
+    onActivate: item.type !== "switch" && itemAllowsMenu(item) && (item.type === "book" || item.type === "seed" || item.scope === "ally" || item.scope === "allAllies" || Boolean(item.careProfile)) && options.onSelectItemTarget
       ? () => options.onSelectItemTarget?.(item.id)
       : options.onUseItem ? () => options.onUseItem?.(item.id) : undefined,
   }));
