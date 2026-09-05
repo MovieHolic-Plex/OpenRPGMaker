@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { proposalCompletenessWarnings, type ProposalCompletenessCall } from "@/ai/proposalCompleteness";
 import { runTool } from "@/editor/tools";
+import { verifyAuthoredQuestsPlayable } from "@/ai/workItemOutcome";
 import { projectLint } from "@/project/lint/projectLint";
 import { runSceneTest } from "@/testing/sceneTestRunner";
 import { createBlankProject } from "@/project/defaults";
@@ -213,6 +214,27 @@ describe("quest graph", () => {
     expect(data.scenario.steps.some((step) => step.kind === "set" && step.manualHint)).toBe(true);
     const result = runSceneTest(project, data.scenario as Parameters<typeof runSceneTest>[1]);
     expect(result.ok, result.failureReason).toBe(true);
+    const verified = runTool({ project }, "verify_quest", { questId: "q-boss" });
+    expect(verified.ok, verified.summary).toBe(true);
+    expect(verified.summary).toContain("미검증");
+    expect(verified.data).toMatchObject({ ok: false, simulationOk: true, verificationStatus: "manual-required", verifiedNodeIds: [] });
+    expect(verified.warnings?.some((warning) => warning.includes("전투 승리"))).toBe(true);
+    const outcome = verifyAuthoredQuestsPlayable(project, ["q-boss"]);
+    expect(outcome.ok).toBe(false);
+    if (!outcome.ok) expect(outcome.reason).toContain("debug set");
+  });
+
+  it("연결 없는 맵으로 debug 이동한 시나리오는 완주 증거가 아니다", () => {
+    const project = simpleDialogueProject();
+    const otherMap = createBlankProject().maps[MAP_ID];
+    project.maps.map_other = { ...otherMap, id: "map_other", events: [] };
+    project.startMapId = "map_other";
+    const result = runTool({ project }, "verify_quest", { questId: "q-village" });
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.data).toMatchObject({ ok: false, simulationOk: true, verificationStatus: "manual-required" });
+    const outcome = verifyAuthoredQuestsPlayable(project, ["q-village"]);
+    expect(outcome.ok).toBe(false);
+    if (!outcome.ok) expect(outcome.reason).toContain("위치 강제 변경");
   });
 
   it("verify_quest는 성공과 실패 스텝을 보고한다", () => {
