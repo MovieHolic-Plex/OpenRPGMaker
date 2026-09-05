@@ -207,10 +207,18 @@ describe("cluster AI modal", () => {
 
     openClusterAiModal({ kind: "cluster-edit", tilesetId: DEFAULT_TILESET_ID, groupId: "fence-main" });
     await Promise.resolve();
+    const rebased = new Promise<void>((resolve, reject) => {
+      const timeout = setTimeout(() => reject(new Error("Cluster session did not rebase")), 5000);
+      mocks.instances[0].rebaseProject.mockImplementationOnce(() => {
+        clearTimeout(timeout);
+        resolve();
+      });
+    });
     requireTestId(document, "cluster-ai-accept").click();
+    await rebased;
 
     expect(recordProjectSnapshot).toHaveBeenCalledWith("클러스터 수정: 울타리", store.getCurrent().startMapId);
-    expect(replaceSpy).toHaveBeenCalledWith(proposed);
+    expect(replaceSpy).toHaveBeenCalledExactlyOnceWith(proposed, { change: expect.objectContaining({ origin: "ai" }) });
     expect(mocks.instances[0].rebaseProject).toHaveBeenCalledWith(store.getCurrent());
   });
 

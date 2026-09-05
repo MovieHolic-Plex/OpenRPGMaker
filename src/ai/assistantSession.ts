@@ -1228,7 +1228,9 @@ export class AssistantSession {
   //  1. 스코프(밑그림 필수·자동 확장) — SPATIAL_BUILD_TOOLS 만. 명세 밖 빈 영역은 자동 확장 warning 으로 통과.
   //  2. 기존 내용 보호 — 타일을 쓰는 모든 툴(SPATIAL 의 타일 쓰기 + TILE_WRITE_TOOLS 의 v3 프리미티브).
   //     기준선(사용자 맵)에 이미 있던 지어진 칸은 밑그림 **안이라도** 에셋 선언(clear+confirmDestroy,
-  //     overExisting) 없이는 덮지 않는다. 이 세션이 초안에 그린 것은 기준선에 없으므로 다시 손댈 수 있다.
+  //     overExisting) 없이는 덮지 않는다. 메타데이터 없는 증분 시공은 세션 안에서 다시 손댈 수 있다.
+  //  3. 완성된 집 보호 — toolRunner가 현재 프로젝트의 집 메타데이터와 실제 셀을 전역 비교한다.
+  //     같은 턴·새 맵도 보호하며, 선택 영역·밑그림 덮어쓰기 선언으로 해제되지 않는다.
   //     2026-09-03 적대적 리뷰: 보호가 제출 시점에만 돌아 밑그림 안에 지은 집을 같은 턴 clear 가 지웠고,
   //     확정 뒤 사용자가 판 호수를 다음 턴 채우기가 덮었고, 게이트 밖 tile_erase 가 절벽을 지웠다.
   private specGate(name: string, args: Record<string, unknown>): ToolResult | SpecGatePass {
@@ -1277,8 +1279,8 @@ export class AssistantSession {
           const at = guarded.sample ? `, 예: (${guarded.sample.x},${guarded.sample.y})` : "";
           return specGateResult(`스펙 게이트: '${name}' 차단 — 기존 구조물·지형 ${guarded.count}칸을 덮습니다${at}`, [
             "명세 밖 빈 영역은 자동 확장하지만, 기존 구조물 파괴 위험은 자동 보정하지 않습니다.",
-            "사용자 맵에 이미 있는 구조물·물·절벽은 밑그림 안이라도 선언 없이 덮지 않습니다(이 세션이 방금 그린 것은 예외).",
-            "철거가 의도면 그 영역을 덮는 clear 에셋에 confirmDestroy:true 를, 그 위에 지을 거면 배치 에셋에 overExisting:\"clear\"|\"keep\" 을 넣은 set_build_spec 을 제출한 뒤 다시 호출하세요.",
+            "일반 구조물·물·절벽은 밑그림 안이라도 선언 없이 덮지 않습니다. 메타데이터로 기록된 완성된 집은 같은 턴·새 맵에서도 별도로 보호됩니다.",
+            "완성된 집 밖의 철거가 의도면 clear 에셋에 confirmDestroy:true 를, 그 위에 지을 거면 배치 에셋에 overExisting:\"clear\"|\"keep\" 을 넣은 set_build_spec 을 제출하세요. 이 선언과 선택 영역도 완성된 집 보호를 해제하지 않습니다.",
             "기존 것을 피하려면 영역을 좁히세요.",
           ]);
         }

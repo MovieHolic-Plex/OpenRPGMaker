@@ -9,6 +9,10 @@ import {
   type BuildPaletteSelection,
 } from "@/editor/panels/buildPaletteCore";
 import { runTool } from "@/editor/tools";
+import { buildHouseKit } from "@/editor/tools/houseKitDomain";
+import { captureHouseProtection, houseFootprintCells } from "@/editor/tools/houseProtection";
+import { canMove, isPassableLanding } from "@/project/collision";
+import { deserialize, serialize } from "@/project/io";
 import { createBlankMap, createBlankProject } from "@/project/defaults";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { projectLint } from "@/project/lint/projectLint";
@@ -67,15 +71,113 @@ describe("build palette house kit wings", () => {
 describe("build palette deterministic stamps", () => {
   it("집 프리미티브가 시작 위치를 덮으면 시공이 시작점을 복원하고 성공한다", () => {
     const project = createBlankProject();
-    const result = applyBuildPalettePrimitiveToProject(
-      project,
-      selection({ x: project.startPos.x - 1, y: project.startPos.y - 2, width: 3, height: 5 }),
-      "house"
-    );
+    const before = structuredClone(project);
+    const rect = selection({ x: project.startPos.x - 1, y: project.startPos.y - 2, width: 3, height: 5 });
+    const expected = structuredClone(project);
+    buildHouseKit(expected, {
+      mapId: MAP_ID, kitId: "blue-stone", wings: houseKitWingsFromSelection(rect, "rect"),
+      door: true, doorEvent: true, interior: true,
+    });
+    const result = applyBuildPalettePrimitiveToProject(project, rect, "house");
 
     expect(result.ok).toBe(true);
     expect(projectLint(result.project).some((issue) => issue.code === "start-position")).toBe(false);
     expect(result.toolResults.some((toolResult) => (toolResult.diff?.tilesChanged ?? 0) > 0)).toBe(true);
+    expect(captureHouseProtection(result.project)).toEqual(captureHouseProtection(expected));
+    expect(result.project.startPos).not.toEqual(before.startPos);
+    expect(project.startPos).toEqual(before.startPos);
+    const map = result.project.maps[MAP_ID];
+    const start = result.project.startPos;
+    const footprint = houseFootprintCells({ x: rect.x, y: rect.y, w: rect.width, h: rect.height }, map);
+    expect(footprint).not.toContainEqual(start);
+    expect(isPassableLanding(result.project, map, start.x, start.y)).toBe(true);
+    expect([[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) =>
+      !footprint.some((cell) => cell.x === start.x + dx && cell.y === start.y + dy)
+      && canMove(result.project, map, start.x, start.y, start.x + dx, start.y + dy))).toBe(true);
+
+    const ctx = { project: deserialize(serialize(result.project)) };
+    const accepted = serialize(ctx.project);
+    const erase = { mapId: MAP_ID, rect: { x: rect.x, y: rect.y, w: 3, h: 5 } };
+    const erased = runTool(ctx, "tile_erase", erase);
+    expect(erased.ok).toBe(false);
+    expect(erased.issues?.[0]?.code).toBe("protected-house-write");
+    expect(serialize(ctx.project)).toBe(accepted);
+
+    // Direct human painting remains allowed; AI must preserve those accepted values too.
+    const painted = applyBuildPalettePrimitiveToProject(ctx.project, rect, "river");
+    expect(painted.ok).toBe(true);
+    expect(captureHouseProtection(painted.project)).not.toEqual(captureHouseProtection(expected));
+    ctx.project = painted.project;
+    const humanAccepted = serialize(ctx.project);
+    expect(runTool(ctx, "tile_erase", erase).issues?.[0]?.code).toBe("protected-house-write");
+    expect(serialize(ctx.project)).toBe(humanAccepted);
+  });
+
+  it.each(["rect", "l", "u"] as const)("manual %s houses reserve the north ridge before choosing a safe start", (houseShapeId) => {
+    const project = largeProject();
+    project.startPos = { x: 14, y: 9 };
+    const result = applyBuildPalettePrimitiveToProject(project, selection({ x: 10, y: 10, width: 9, height: 8 }), "house", { houseShapeId, interior: false });
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.project.startPos).not.toEqual(project.startPos);
+    const map = result.project.maps[MAP_ID];
+    expect(houseFootprintCells({ x: 10, y: 10, w: 9, h: 8 }, map)).not.toContainEqual(result.project.startPos);
+    expect(isPassableLanding(result.project, map, result.project.startPos.x, result.project.startPos.y)).toBe(true);
+  });
+
+  it("manual house start relocation rolls back if construction is rejected", () => {
+    const project = largeProject();
+    const rect = selection({ x: 10, y: 10, width: 6, height: 5 });
+    buildHouseKit(project, {
+      mapId: MAP_ID, kitId: "blue-stone", wings: houseKitWingsFromSelection(rect, "rect"),
+      door: true, doorEvent: false, interior: false,
+    });
+    project.startPos = { x: 12, y: 12 };
+    ensureBuildPaletteTileGroups(project.tilesets[DEFAULT_TILESET_ID]);
+    const before = serialize(project);
+    const result = applyBuildPalettePrimitiveToProject(project, rect, "house");
+    expect(result.ok).toBe(false);
+    expect(result.toolResults[0]?.issues?.[0]?.code).toBe("house-overlap");
+    expect(result.project).toBe(project);
+    expect(serialize(result.project)).toBe(before);
+  });
+
+  it("manual house placement fails atomically when no safe start exists outside its footprint", () => {
+    const project = largeProject(10, 10);
+    const map = project.maps[MAP_ID];
+    map.lowerTiles.fill(120);
+    project.startPos = { x: 4, y: 4 };
+    map.lowerTiles[44] = 240;
+    const before = serialize(project);
+    const result = applyBuildPalettePrimitiveToProject(project, selection({ x: 3, y: 2, width: 3, height: 5 }), "house");
+    expect(result.ok).toBe(false);
+    expect(result.toolResults).toHaveLength(0);
+    expect(result.project).toBe(project);
+    expect(serialize(result.project)).toBe(before);
+  });
+
+  it("manual houses leave starts on another map unchanged", () => {
+    const project = largeProject();
+    const other = createBlankMap("Other", 60, 60);
+    other.id = "other";
+    project.maps.other = other;
+    project.mapTree.children.push({ mapId: other.id, children: [] });
+    project.startPos = { x: 12, y: 12 };
+    const result = applyBuildPalettePrimitiveToProject(project, selection({ mapId: "other", x: 10, y: 10 }), "house");
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.project.startMapId).toBe(MAP_ID);
+    expect(result.project.startPos).toEqual(project.startPos);
+  });
+
+  it("AI author_house still rejects restoration that would carve its sealed house", () => {
+    const ctx = { project: createBlankProject() };
+    const before = serialize(ctx.project);
+    const result = runTool(ctx, "author_house", {
+      kind: "single", mapId: MAP_ID, kitId: "blue-stone", interior: "linked-interior", yard: [],
+      wings: [{ x: ctx.project.startPos.x - 1, y: ctx.project.startPos.y - 2, w: 3, h: 5 }],
+    });
+    expect(result.ok).toBe(false);
+    expect(result.issues?.[0]?.code).toBe("protected-house-write");
+    expect(serialize(ctx.project)).toBe(before);
   });
 
   it("선재 무결성 오류가 있어도 무관한 영역의 시공은 허용한다", () => {

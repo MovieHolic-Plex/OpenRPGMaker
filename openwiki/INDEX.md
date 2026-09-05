@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **48쪽 / 1638KB / 약 468,129 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **47쪽 / 1620KB / 약 462,127 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,8 +15,8 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 260KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 475 | ~75,546 |
-| `openwiki/editor-ai-tools.md` | 88KB | 69KB ⚠상한 초과 — 절을 더 쪼개라 | 252 | ~25,651 |
+| `openwiki/editor-ai-panel.md` | 261KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 475 | ~75,839 |
+| `openwiki/editor-ai-tools.md` | 93KB | 69KB ⚠상한 초과 — 절을 더 쪼개라 | 318 | ~26,718 |
 | `openwiki/editor-database.md` | 221KB | 54KB ⚠상한 초과 — 절을 더 쪼개라 | 1027 | ~63,624 |
 | `openwiki/editor-event-authoring.md` | 118KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 564 | ~34,433 |
 | `openwiki/editor-pre-edit-routing.md` | 69KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 197 | ~19,760 |
@@ -32,7 +32,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | 페이지 | 깨진 줄 수 | 예시 줄 번호 |
 |---|---|---|
 | `openwiki/editor-ai-panel.md` | 25 | 240, 241, 242, 243, 244, 245, 257, 266 |
-| `openwiki/editor-ai-tools.md` | 6 | 104, 105, 109, 111, 113, 175 |
+| `openwiki/editor-ai-tools.md` | 6 | 170, 171, 175, 177, 179, 241 |
 | `openwiki/editor-database.md` | 7 | 257, 261, 262, 263, 272, 297, 300 |
 | `openwiki/editor-event-authoring.md` | 16 | 151, 152, 155, 160, 161, 162, 163, 164 |
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
@@ -50,7 +50,6 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/agent-worktrees.md` | 2 | `result.md`, `task.json` |
 | `openwiki/ai-workflow.md` | 4 | `index.json`, `latest.json`, `src/ai/plannerSkip.ts`, `test/volumeContractSession.test.ts` |
 | `openwiki/architecture.md` | 1 | `project.json` |
-| `openwiki/autotiles.md` | 6 | `before-v3/descriptions.json`, `before-v3/project.json`, `descriptions.json`, `expansion-checks.json`, `worldStructureRules.ts`, `worldTerrainAutotiles.ts` |
 | `openwiki/bgm-catalog.md` | 1 | `catalog.raw.json` |
 | `openwiki/community-site.md` | 1 | `project.json` |
 | `openwiki/editor-ai-panel.md` | 33 | `.omo/evidence/assistant-glass-fold/measure.json`, `.omo/evidence/autonomous-ai-rpg/task-8-autonomous-ai-rpg.md`, `15-assistant-readable.css`, `17-assistant-modern-shell.css`, `after/measure.json`, `aiCommandBar.ts`, `aiGlassPanelWidth.test.ts`, `aiSkillDrawer.ts`, `aiVolatileController.ts`, `assistant-skills.css`, `chat-dock-switch.spec.ts`, `chatDock.ts`, `intentClarify.ts`, `newmain-after-measure.json`, `output/evidence/assistant-ui-modern/newmain-before-measure.json`, `project.json`, `regionIntentRouter.ts`, `scripts/qa/assistant-side-seam-hittest.mjs`, `src/ai/intentClarify.ts`, `src/ai/plannerSkip.ts`, `src/ai/skills.ts`, `src/editor/chatDock.ts`, `test/aiGlassFold.test.ts`, `test/aiGlassPanelWidth.test.ts`, `test/chatDock.test.ts`, `test/e2e/_assistant-glass-shots.spec.ts`, `test/e2e/_glass-dock-report.spec.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/plannerSkip.test.ts`, `test/regionIntentExposure.test.ts`, `test/turnGuideSharedRules.test.ts`, `test/volumeContractSession.test.ts`, `test/workspaceBarAssistantDock.test.ts` |
@@ -73,7 +72,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/se-catalog.md` | 8 | `.mjs`, `audio-features.json`, `audition.html`, `cross-check.json`, `dist/se-staging/audition.html`, `inventory.json`, `labels.json`, `placed.json` |
 | `openwiki/testing.md` | 12 | `../dialogue.css`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/concept-expansion/README.md`, `output/evidence/concept-v2/validation.json`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `supabase-proof-first-save.json`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
 | `openwiki/town-tile-benchmark.md` | 1 | `combined-town-chipset-report.html` |
-| `openwiki/world-structure-authoring.md` | 2 | `verify-shots/runtime-qa/world-structure-tools/SUMMARY.md`, `worldTileDescriptions.ts` |
+| `openwiki/village-design.md` | 1 | `output/village-direction/index.html` |
 
 ## 페이지별 절 좌표
 
@@ -165,22 +164,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 절 제목 없음 (평면 목록 페이지).
 
-### `openwiki/autotiles.md` — 29KB · 286줄 · ~8,692 토큰
+### `openwiki/autotiles.md` — 11KB · 107줄 · ~3,371 토큰
 
-- `L3` World 공통 다리·다층 산 저작 도구
-- `L10` World 타일별 description 478개 (2026-09-05)
-- `L36` World 매핑 — 지형 11종·초원/눈 해안 (2026-09-05)
-  - `L69` 여울해 월드맵 v4 — 대각 능선·큰 산·유적 저작
-  - `L88` 여울해 월드맵 v3 — 고원·절벽·다리 저작
-  - `L107` 여울해 월드맵 v2 저작
-  - `L129` 흑일의 왕관 — 독립 JRPG 월드맵
-- `L171` 1. RM2K식 3×4 템플릿 블록 문법
-- `L187` 2. 지형 앵커 카탈로그 — 4행 밴드 × 열 0/3/6/9 격자
-- `L206` 3. 물 계열 — 오토타일 그룹이 아닌 별도 시스템
-- `L224` 3-1. 던전 칩셋 절벽(빙암) — 벽은 두 행이다
-- `L258` 4. 오토타일 등록 경로 3가지
-- `L266` 5. 검증
-- `L274` 캔버스 미리보기·미니맵의 투명색과 쿼터 (2026-09-05)
+- `L5` 1. RM2K식 3×4 템플릿 블록 문법
+- `L21` 2. 지형 앵커 카탈로그 — 4행 밴드 × 열 0/3/6/9 격자
+- `L40` 3. 물 계열 — 오토타일 그룹이 아닌 별도 시스템
+- `L58` 3-1. 던전 칩셋 절벽(빙암) — 벽은 두 행이다
+- `L92` 4. 오토타일 등록 경로 3가지
+- `L100` 5. 검증
 
 ### `openwiki/battler-idle-playbook.md` — 11KB · 176줄 · ~3,490 토큰
 
@@ -235,7 +226,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L18` Output limits
 - `L24` Practical tips
 
-### `openwiki/editor-ai-panel.md` — 260KB · 475줄 · ~75,546 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 261KB · 475줄 · ~75,839 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
 - `L3` 브라우저 포커스와 도구 실행 대기 (2026-09-05)
 - `L10` 계획 항목의 연속 실행 증거 (2026-09-05)
@@ -254,19 +245,19 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L468` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
 - `L472` 모험 완료와 실제 적용 횟수 (2026-09-05)
 
-### `openwiki/editor-ai-tools.md` — 88KB · 252줄 · ~25,651 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-ai-tools.md` — 93KB · 318줄 · ~26,718 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
-- `L3` World 석교·다층 산 공통 도구
-- `L12` 퀘스트 입력과 완주 증거 계약 (2026-09-05)
-- `L22` DB 조회 페이지와 마을 전체 범위 (2026-09-05)
-- `L129` Project-wide quality evaluation
-- `L137` prune_unused 의 참조 수집은 variableId 를 가진 명령 전부를 세야 한다 (2026-08-29 실측 결함 수정)
-- `L173` NPC 대사는 코드가 지어내지 않는다 — 캐스트 라이터 계약 (2026-09-03)
-- `L204` 「이 세계」 캐논은 문장 3채널에 강제된다 (2026-09-04)
-- `L219` 마을 설계서 (2026-09-05)
-- `L223` 저수준 이벤트 입력은 명령 위치를 검증한다 (2026-09-05)
-- `L230` 보물상자는 노출된 수면을 거부한다 (2026-09-05)
-- `L237` 모험 저작 완료와 재시도 (2026-09-05)
+- `L3` Completed-house transaction protection - Phase 1 (2026-09-05)
+- `L78` 퀘스트 입력과 완주 증거 계약 (2026-09-05)
+- `L88` DB 조회 페이지와 마을 전체 범위 (2026-09-05)
+- `L195` Project-wide quality evaluation
+- `L203` prune_unused 의 참조 수집은 variableId 를 가진 명령 전부를 세야 한다 (2026-08-29 실측 결함 수정)
+- `L239` NPC 대사는 코드가 지어내지 않는다 — 캐스트 라이터 계약 (2026-09-03)
+- `L270` 「이 세계」 캐논은 문장 3채널에 강제된다 (2026-09-04)
+- `L285` 마을 설계서 (2026-09-05)
+- `L289` 저수준 이벤트 입력은 명령 위치를 검증한다 (2026-09-05)
+- `L296` 보물상자는 노출된 수면을 거부한다 (2026-09-05)
+- `L303` 모험 저작 완료와 재시도 (2026-09-05)
 
 ### `openwiki/editor-database.md` — 221KB · 1027줄 · ~63,624 토큰 · 통째읽기 잘림 · 깨진 줄 7
 
@@ -375,13 +366,12 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L103` 회상 스틸과 AI 그림 (2026-09-03)
 - `L114` Recovered native emote command (2026-09-05)
 
-### `openwiki/editor-genre-packs.md` — 9KB · 52줄 · ~2,336 토큰
+### `openwiki/editor-genre-packs.md` — 7KB · 42줄 · ~1,837 토큰
 
 - `L5` Ownership
 - `L15` Safe blank-project system-preset flow
 - `L21` Vocabulary and readiness
 - `L32` Validation
-- `L44` 프로젝트 메뉴의 새 프로젝트 (2026-09-05)
 
 ### `openwiki/editor-interior-room-harness.md` — 40KB · 170줄 · ~11,885 토큰
 
@@ -486,32 +476,33 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L135` 안티-게이밍 규칙
 - `L145` 이 페이지를 갱신해야 하는 변경
 
-### `openwiki/large-village-generation.md` — 14KB · 352줄 · ~3,946 토큰
+### `openwiki/large-village-generation.md` — 15KB · 371줄 · ~4,236 토큰
 
 - `L9` 한 줄 요약
-- `L24` 관련 파일
-- `L43` 전체 그림
-- `L61` 단계별 설명
-  - `L63` 0단계 — 자리 잡기 (`planLargeVillageBboxes`)
-  - `L93` 1단계 — 맵 생성
-  - `L101` 2단계 — 물
-  - `L112` 3단계 — 집 (다양화)
-  - `L127` 4단계 — 구불구불 길
-  - `L143` 5단계 — 광장 + 시장 하네스
-  - `L154` 6단계 — 울타리 + 마당 (집과 별 개념)
-  - `L177` 7단계 — 나무·마을 소품
-  - `L189` 8단계 — NPC
-  - `L199` 9단계 — QA (품질 게이트)
-  - `L222` 10단계 — 저장
-- `L233` 데이터 개념 3개만 기억하기
-- `L252` 예전에 자주 깨지던 이유 (로직 이슈)
-- `L265` 로그 읽는 법
-- `L285` 다시 만들 때
-- `L301` 고칠 때 어디를 만지나
-- `L315` 아직 약한 부분 (솔직히)
-- `L332` 관련 위키
-- `L340` author_village 스코프 계약 (2026-09-04 적대 리뷰 반영)
-- `L349` 대로 병합 검증 (2026-09-05)
+- `L24` AI tree placement and completed houses (2026-09-05)
+- `L43` 관련 파일
+- `L62` 전체 그림
+- `L80` 단계별 설명
+  - `L82` 0단계 — 자리 잡기 (`planLargeVillageBboxes`)
+  - `L112` 1단계 — 맵 생성
+  - `L120` 2단계 — 물
+  - `L131` 3단계 — 집 (다양화)
+  - `L146` 4단계 — 구불구불 길
+  - `L162` 5단계 — 광장 + 시장 하네스
+  - `L173` 6단계 — 울타리 + 마당 (집과 별 개념)
+  - `L196` 7단계 — 나무·마을 소품
+  - `L208` 8단계 — NPC
+  - `L218` 9단계 — QA (품질 게이트)
+  - `L241` 10단계 — 저장
+- `L252` 데이터 개념 3개만 기억하기
+- `L271` 예전에 자주 깨지던 이유 (로직 이슈)
+- `L284` 로그 읽는 법
+- `L304` 다시 만들 때
+- `L320` 고칠 때 어디를 만지나
+- `L334` 아직 약한 부분 (솔직히)
+- `L351` 관련 위키
+- `L359` author_village 스코프 계약 (2026-09-04 적대 리뷰 반영)
+- `L368` 대로 병합 검증 (2026-09-05)
 
 ### `openwiki/night-monster.md` — 9KB · 120줄 · ~2,820 토큰
 
@@ -752,11 +743,3 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L87` 검증
 - `L95` 마을 설계서 (2026-09-05)
 - `L98` 저장·편집 검토 수정 복구 (2026-09-05)
-
-### `openwiki/world-structure-authoring.md` — 6KB · 104줄 · ~1,832 토큰
-
-- `L3` 정본과 진입점
-- `L15` 다리
-- `L38` 다층 산
-- `L70` 다른 맵과 사용자 설정 보호
-- `L89` 검증

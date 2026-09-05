@@ -3,7 +3,11 @@ import { isPassable, tilePassability } from "@/project/collision";
 import { TILE } from "@/project/defaults/constants";
 import type { GameEvent, GameMap, MapId, MapTreeNode, Project } from "@/project/types";
 import type { FootprintWing, HouseKitWindowsOption } from "@/editor/houseKit";
-import type { HouseStoryCount } from "@/editor/houseInteriors";
+import {
+  createHouseDoorEvent,
+  createHouseDoorStepEvent,
+  type HouseStoryCount,
+} from "@/editor/houseInteriors";
 import { houseBBox } from "./houseLotDecor";
 import { ToolError } from "./types";
 import { applyRoofDeck } from "./village/houses";
@@ -81,6 +85,27 @@ export function uniqueProjectId(draft: Project, prefix: string, body: string): s
 export function appendTreeChildOnce(root: MapTreeNode, mapId: MapId, parentId: MapId): void {
   if (treeContains(root, mapId)) return;
   appendToTree(root, mapId, parentId);
+}
+
+export function upsertHouseDoorEvents(
+  map: GameMap,
+  options: Parameters<typeof createHouseDoorEvent>[0],
+): void {
+  upsertEvent(map.events, createHouseDoorEvent(options));
+  // 열린 문 기본값: 문 앞 통행 칸에 밟으면 열리는 발판 — 문 칸은 벽이라 밟히지 않는다.
+  // 문 앞이 맵 밖이면 발판을 생략한다(문 스프라이트만 남는다).
+  if (options.y + 1 < map.height) {
+    upsertEvent(map.events, createHouseDoorStepEvent({
+      eventId: `${options.eventId}_step`,
+      doorEventId: options.eventId,
+      x: options.x,
+      y: options.y + 1,
+      interiorMapId: options.interiorMapId,
+      name: options.name,
+      entryX: options.entryX,
+      entryY: options.entryY,
+    }));
+  }
 }
 
 export function upsertEvent(events: GameEvent[], event: GameEvent): void {

@@ -1,5 +1,7 @@
 import { buildGroupSample, type GroupSample } from "@/ai/groupSampleBuilder";
 import { TILE } from "@/project/defaults/constants";
+import { tileAt, tilePassability } from "@/project/collision";
+import { protectedHouseCells } from "./houseProtection";
 import { isRoadTile } from "@/project/defaults/roadAutotile";
 import { isSandTile } from "@/project/defaults/sandAutotile";
 import { isCobbleTile } from "@/project/defaults/cobbleAutotile";
@@ -104,6 +106,21 @@ export function runScatterObject(draft: Project, rawArgs: Record<string, unknown
             patternGrammar: group.patternGrammar,
           }), group, tileset);
     const protectedCells = args.avoidProtected ? protectedEventCells(draft, map) : new Set<string>();
+    for (const cell of protectedHouseCells(map)) protectedCells.add(key(cell.x, cell.y));
+    if (footprint.lower.some(isTreeTrunkTileId)) {
+      // Tree pairs need valid ground across the whole object, not just at the trunk.
+      // Otherwise cleanup removes a canopy over a wall and runner repair recreates it
+      // after the house is sealed. A trunk write also clears upper, so occupied upper
+      // cells are not free ground. Existing lower trunks still allow canopy overlap.
+      for (let y = Math.max(0, args.area.y); y < Math.min(map.height, args.area.y + args.area.h); y += 1) {
+        for (let x = Math.max(0, args.area.x); x < Math.min(map.width, args.area.x + args.area.w); x += 1) {
+          const { lower, upper } = tileAt(map, x, y);
+          const pass = tilePassability(tileset, lower, TILE.EMPTY);
+          if (upper !== TILE.EMPTY || (lower !== TILE.EMPTY && !isTreeTrunkTileId(lower)
+            && !(pass.up || pass.down || pass.left || pass.right))) protectedCells.add(key(x, y));
+        }
+      }
+    }
     const candidates = origins(map, args.area, footprint).filter((origin) => footprintFits(map, footprint, origin, protectedCells));
     // 배치 면 채점용 프로브는 루프 밖에서 한 번 만든다 — 스텝마다 만들면 후보 수만큼 재생성된다.
     // 루프 안에서는 맵을 쓰지 않으므로(쓰기는 touched 로 뒤에 한 번) 찍기 전 지형을 보는 것이 맞다.
