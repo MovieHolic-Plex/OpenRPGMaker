@@ -13,7 +13,18 @@ const ANIMATION_PLAYBACK_FRAME_MS = Math.round(1000 / 15);
 
 let copiedAnimationCells: BattleAnimationCell[] | null = null;
 
+// Mutable, form-owned playback intent survives internal field/frame rerenders only.
+export type AnimationPlaybackState = {
+  playing: boolean;
+  dispose?: () => void;
+};
+
+export function createAnimationPlaybackState(): AnimationPlaybackState {
+  return { playing: !globalThis.window?.matchMedia?.("(prefers-reduced-motion: reduce)").matches };
+}
+
 export type AnimationPreviewContext = {
+  readonly playback?: AnimationPlaybackState;
   readonly animation: BattleAnimationRecord;
   readonly sheet: BattleAnimationSheet;
   readonly frames: readonly BattleAnimationFrame[];
@@ -213,8 +224,18 @@ function bindPlayback(
   context: AnimationPreviewContext,
   url: string | undefined
 ): void {
-  let timer: ReturnType<typeof window.setInterval> | null = null;
-  let frameIndex = context.selectedFrameIndex;
+  const playback = context.playback ?? createAnimationPlaybackState();
+  playback.dispose?.();
+  let timer: number | null = null;
+  let frameIndex = 0;
+  let ready = false;
+  let disposed = false;
+  const status = el("div", {
+    class: "empty-hint",
+    attrs: { role: "status" },
+    dataset: { testid: "db-animation-preview-status" },
+  });
+  panel.append(status);
 
   const stop = (restoreSelectedFrame: boolean): void => {
     if (timer !== null) {
@@ -223,46 +244,105 @@ function bindPlayback(
     }
     button.textContent = "▶ 재생";
     button.setAttribute("aria-pressed", "false");
-    if (restoreSelectedFrame) renderStageCells(cellLayer, context, context.selectedFrame, url);
+    if (ready) status.textContent = "선택 프레임 · 정지";
+    if (restoreSelectedFrame) {
+      renderStageCells(cellLayer, context, { cells: context.currentSelectedFrameCells() }, url);
+    }
   };
 
-  const tick = (): void => {
-    if (isDisconnected(panel)) {
-      stop(false);
-      return;
-    }
-    frameIndex += 1;
-    if (frameIndex >= context.frames.length) {
-      stop(true);
-      return;
-    }
-    renderStageCells(cellLayer, context, context.frames[frameIndex] ?? context.selectedFrame, url);
-  };
-
-  button.addEventListener("click", () => {
-    if (timer !== null) {
-      stop(true);
-      return;
-    }
-    // RM2003 재생 의미: 선택 프레임과 무관하게 항상 1프레임부터 전체를 1회 재생한다.
-    // (선택 프레임에서 시작하면 마지막 프레임 선택 시 즉시 종료돼 무반응처럼 보인다.)
+  const start = (): void => {
+    if (disposed || !ready || timer !== null || isDisconnected(panel)) return;
     frameIndex = 0;
     renderStageCells(cellLayer, context, context.frames[frameIndex] ?? context.selectedFrame, url);
     button.textContent = "■ 정지";
     button.setAttribute("aria-pressed", "true");
-    timer = window.setInterval(tick, ANIMATION_PLAYBACK_FRAME_MS);
+    status.textContent = "반복 재생 중";
+    timer = window.setInterval(() => {
+      if (isDisconnected(panel)) {
+        stop(false);
+        return;
+      }
+      frameIndex = (frameIndex + 1) % context.frames.length;
+      renderStageCells(cellLayer, context, context.frames[frameIndex] ?? context.selectedFrame, url);
+    }, ANIMATION_PLAYBACK_FRAME_MS);
+  };
+
+  // Database tabs cache detached DOM. Pause that cache, resume on attachment,
+  // and release the observer on record replacement or modal close.
+  let workspace: HTMLElement | null = null;
+  let modal: HTMLElement | null = null;
+  const observer = typeof MutationObserver === "undefined" ? undefined : new MutationObserver(() => {
+    if (panel.isConnected) {
+      workspace = panel.closest(".oprn-record-battleAnimations");
+      modal = panel.closest(".database-modal-backdrop");
+      if (playback.playing) start();
+    } else if (workspace?.contains(panel) && modal?.isConnected) {
+      stop(false);
+    } else {
+      dispose();
+    }
   });
+  const dispose = (): void => {
+    disposed = true;
+    stop(false);
+    observer?.disconnect();
+  };
+  playback.dispose = dispose;
+  observer?.observe(document.body, { childList: true, subtree: true });
+
+  button.addEventListener("click", () => {
+    if (!ready || disposed) return;
+    playback.playing = !playback.playing;
+    if (playback.playing) start();
+    else stop(true);
+  });
+
+  button.disabled = true;
+  status.dataset.state = url ? "loading" : "empty";
+  status.textContent = url ? "그래픽 불러오는 중" : "애니메이션 그래픽을 선택하세요.";
+  if (!url) {
+    cellLayer.replaceChildren();
+    return;
+  }
+  const image = new Image();
+  const empty = (): void => {
+    if (disposed) return;
+    ready = false;
+    stop(false);
+    button.disabled = true;
+    cellLayer.replaceChildren();
+    status.dataset.state = "empty";
+    status.textContent = "재생할 그래픽이나 표시할 셀이 없습니다.";
+  };
+  image.addEventListener("error", empty, { once: true });
+  image.addEventListener("load", () => {
+    if (disposed) return;
+    const hasVisibleCells = context.frames.some((frame) => frame.cells.some((cell) =>
+      cell.visible && cell.opacity > 0 && cell.zoom > 0 &&
+      (cell.pattern % context.sheet.columns + 1) * context.sheet.frameWidth <= image.naturalWidth &&
+      (Math.floor(cell.pattern / context.sheet.columns) + 1) * context.sheet.frameHeight <= image.naturalHeight
+    ));
+    if (!hasVisibleCells) {
+      empty();
+      return;
+    }
+    ready = true;
+    button.disabled = false;
+    status.dataset.state = "ready";
+    status.textContent = "선택 프레임 · 정지";
+    if (playback.playing) start();
+  }, { once: true });
+  image.src = url;
 }
 
 function renderStageCells(layer: HTMLElement, context: AnimationPreviewContext, frame: BattleAnimationFrame, url: string | undefined): void {
-  const cells = frame.cells.length > 0 ? frame.cells : [DEFAULT_CELL];
+  const cells = url ? frame.cells : [];
   layer.replaceChildren(...cells.map((cell, index) => stageCellSprite(context, cell, url, index)));
 }
 
 function stageCellSprite(context: AnimationPreviewContext, cell: BattleAnimationCell, url: string | undefined, index: number): HTMLElement {
   const sprite = el("div", {
     class: `db-animation-stage-cell db-animation-stage-cell-sprite${cell.visible ? "" : " muted"}`,
-    children: url ? [] : [el("span"), el("span"), el("span")],
   });
   if (index === 0) sprite.dataset.testid = "db-animation-stage-target";
   if (url) {
