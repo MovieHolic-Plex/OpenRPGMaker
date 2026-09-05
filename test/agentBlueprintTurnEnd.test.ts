@@ -78,21 +78,30 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-/**
- * 턴이 실제로 끝날 때까지 기다린다 — 마이크로태스크를 정해진 횟수만 비우는 방식은 이제 못 쓴다.
- *
- * 정산이 applyProposal 의 await **뒤**로 옮겨졌기 때문이다(적용 결과로 판정한다). 적용 경로는
- * 커밋 로그·영속화까지 실제 타이머를 태우고 401 경로는 재시도 백오프도 낀다 — 고정 횟수로는
- * 어떤 실행에서는 닿고 어떤 실행에서는 못 닿아 결과가 흔들렸다(실측: 같은 코드로 done/building
- * 이 번갈아 나왔다). 패널은 턴이 끝날 때 `finally` 에서 중단 버튼을 감추므로 그것을 신호로 쓴다.
- */
-async function flushUntilTurnEnd(panel: FakeElement): Promise<void> {
-  for (let round = 0; round < 300; round += 1) {
-    for (let i = 0; i < 50; i += 1) await Promise.resolve();
-    await new Promise<void>((resolve) => setTimeout(resolve, 1));
-    const abort = findByTestId(panel, "ai-abort") as unknown as FakeElement | null;
-    if (round >= 3 && abort?.hidden === true) return;
-  }
+/** Subscribe before send; the runner hides abort only after releasing its busy state. */
+function turnEndSignal(panel: FakeElement): Promise<void> {
+  const abort = findByTestId(panel, "ai-abort");
+  if (!abort) throw new Error("abort control missing");
+  let hidden = abort.hidden;
+  let started = false;
+  return new Promise<void>((resolve, reject) => {
+    const timeout = AbortSignal.timeout(15000);
+    const fail = (): void => reject(new Error("turn did not release abort control"));
+    timeout.addEventListener("abort", fail, { once: true });
+    Object.defineProperty(abort, "hidden", {
+      configurable: true,
+      get: () => hidden,
+      set: (value: boolean) => {
+        hidden = value;
+        if (!value) started = true;
+        if (value && started) {
+          timeout.removeEventListener("abort", fail);
+          Object.defineProperty(abort, "hidden", { configurable: true, writable: true, value });
+          resolve();
+        }
+      },
+    });
+  });
 }
 
 function sseToolCallsResponse(calls: readonly { readonly name: string; readonly args: unknown }[]): Response {
@@ -185,8 +194,9 @@ async function runTurn(panel: FakeElement, text = "야외에 집 한 채 지어�
   const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
   // "야외" 표지가 없으면 intentClarify 가 실내/야외를 되묻고 툴 라운드로 가지 않는다.
   input.value = text;
+  const ended = turnEndSignal(panel);
   (findByTestId(panel, "ai-send") as unknown as HTMLElement).click();
-  await flushUntilTurnEnd(panel);
+  await ended;
 }
 
 function statusById(): Record<string, string> {
@@ -213,10 +223,7 @@ describe("중단·오류로 끝난 턴의 청사진 정산", () => {
     expect(logText).not.toContain("적용했습니다");
     // 저장소는 한 글자도 안 바뀌었다 — applyProposedProject 만 store.replace 를 부른다.
     expect(store.getCurrent()).toBe(before);
-    expect(getAgentBlueprintState().entries).toHaveLength(1);
-    expect(statusById()).toEqual({ house_a: "planned" });
-    // 노란 "짓는 중" 도 남기지 않는다(1차 결함) — 되돌린 상태는 planned 다.
-    expect(getAgentBlueprintState().entries[0].status).not.toBe("building");
+    expect(getAgentBlueprintState().entries).toHaveLength(0);
   });
 
   it("턴이 오류로 끝나도 남은 제안은 적용되므로 그 칸은 done 으로 확정된다", async () => {
@@ -298,7 +305,7 @@ describe("중단·오류로 끝난 턴의 청사진 정산", () => {
     // 1라운드의 쓰기 제안은 살아 있었지만 중단은 적용 경로 앞에서 끝난다.
     expect((getLatestAiActivityLog()?.result.proposedCalls ?? 0) > 0).toBe(true);
     expect(store.getCurrent()).toBe(before);
-    expect(statusById()).toEqual({ house_a: "planned" });
+    expect(statusById()).toEqual({});
   });
 
   // 리뷰 지적: 캔버스가 다 지은 계획을 물러나게 하면 상태줄이 여전히 "밑그림 확정 — 에셋 N개" 를
@@ -345,7 +352,7 @@ describe("중단·오류로 끝난 턴의 청사진 정산", () => {
     expect(logText).not.toContain("적용했습니다");
     expect(store.getCurrent()).toBe(before);
     // 읽기는 진행을 올리지 않으므로 계획 그대로여야 한다 — 확인 호출이 완료를 찍으면 거짓이다.
-    expect(getAgentBlueprintState().entries).toHaveLength(1);
-    expect(statusById()).toEqual({ house_a: "planned" });
+    expect(getAgentBlueprintState().entries).toHaveLength(0);
+    expect(statusById()).toEqual({});
   });
 });

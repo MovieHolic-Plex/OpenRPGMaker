@@ -285,13 +285,13 @@ export function syncAgentBlueprintWithSpec(spec: BuildSpec | null): void {
 }
 
 /**
- * 이번 턴의 시공이 저장소에 들어갔다 — 밑그림은 할 일을 다 했으므로 캔버스에서 물러난다.
+ * The owner turn ended: retire its presentation, independently of write settlement.
  *
  * 지금 깔린 칸을 전부(진행 상태와 무관하게) 물러난 것으로 기록한다. 모델이 건너뛴 에셋은 채팅의
  * 「⚠ 미이행」 경고가 이미 말하고 있고, 시공이 끝난 맵 위에 파랑 계획을 계속 두는 것은 사용자가
  * 결과물을 보는 데 방해만 된다. 다음 턴이 같은 스펙을 다시 맞춰도(syncAgentBlueprintWithSpec) 이
  * 칸들은 그려지지 않는다 — 그 턴에 새로 덧붙은 칸(자동 확장)만 계획으로 나온다.
- * 적용되지 않은 턴(중단·오류·게이트 거부)은 부르지 않는다: 계획은 아직 유효하다.
+ * Also called after no-write, aborted, failed or rejected turns. BuildSpec remains in the session.
  */
 export function retireAgentBlueprint(): void {
   turnAdvanced = new Set();

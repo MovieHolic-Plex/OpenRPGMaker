@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **47쪽 / 1578KB / 약 449,368 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **47쪽 / 1581KB / 약 450,116 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,7 +15,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 260KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 475 | ~75,546 |
+| `openwiki/editor-ai-panel.md` | 262KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 505 | ~76,128 |
 | `openwiki/editor-ai-tools.md` | 88KB | 69KB ⚠상한 초과 — 절을 더 쪼개라 | 243 | ~25,441 |
 | `openwiki/editor-database.md` | 210KB | 54KB ⚠상한 초과 — 절을 더 쪼개라 | 984 | ~60,368 |
 | `openwiki/editor-event-authoring.md` | 118KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 564 | ~34,433 |
@@ -226,7 +226,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L18` Output limits
 - `L24` Practical tips
 
-### `openwiki/editor-ai-panel.md` — 260KB · 475줄 · ~75,546 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 262KB · 505줄 · ~76,128 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
 - `L3` 브라우저 포커스와 도구 실행 대기 (2026-09-05)
 - `L10` 계획 항목의 연속 실행 증거 (2026-09-05)
@@ -244,6 +244,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L434` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
 - `L468` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
 - `L472` 모험 완료와 실제 적용 횟수 (2026-09-05)
+- `L477` Assistant clean conversation — Phase 1 (2026-09-06)
 
 ### `openwiki/editor-ai-tools.md` — 88KB · 243줄 · ~25,441 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
@@ -437,11 +438,11 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L17` Quick routing
 - `L25` For AI agents
 
-### `openwiki/growth-trees.md` — 5KB · 61줄 · ~1,553 토큰
+### `openwiki/growth-trees.md` — 6KB · 67줄 · ~1,719 토큰
 
 - `L3` 소유권과 데이터
-- `L23` 런타임과 저장
-- `L46` 검증
+- `L29` 런타임과 저장
+- `L52` 검증
 
 ### `openwiki/horror-authoring.md` — 8KB · 97줄 · ~2,480 토큰
 
