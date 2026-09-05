@@ -1,0 +1,33 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/horrorObjectRuntime.test.ts test/runtimeEventState.test.ts test/eventPages.test.ts test/playerSaveSlotLoadGuard.test.ts test/eventEditorShellSurface.baseline.test.ts test/aiActivityNarration.test.ts test/projectLint.test.ts --maxWorkers=3
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/omo-2
+
+ ✓ test/projectLint.test.ts (15 tests) 4159ms
+   ✓ projectLint > (b) 기본 어드벤처 프로젝트도 error가 0건이다  365ms
+   ✓ projectLint > 런타임 지원 제한 명령을 맵/커먼 이벤트 warning으로 보고한다  330ms
+   ✓ projectLint > playerTouch-impassable > 통행 가능한 타일 위의 playerTouch 이벤트는 진단하지 않는다  314ms
+   ✓ projectLint > playerTouch-impassable > 통행 불가 타일이라도 priority same(차단형·부딪힘 발동)은 진단하지 않는다  328ms
+ ✓ test/aiActivityNarration.test.ts (7 tests) 41ms
+ ✓ test/horrorObjectRuntime.test.ts (9 tests) 779ms
+   ✓ horror authoring and runtime contracts > roundtrips authored properties and old projects without adding behavior  431ms
+ ✓ test/playerSaveSlotLoadGuard.test.ts (5 tests) 52ms
+ ✓ test/eventPages.test.ts (15 tests) 7155ms
+   ✓ event pages > 기지 id 가 사라진 붙여넣기는 맨 앞(낮은 우선순위)에 넣고 승자가 되지 않는다  469ms
+   ✓ event pages > clears a copied page when the project is switched  337ms
+   ✓ event pages > resolves the highest-number matching page by switch condition  542ms
+   ✓ event pages > selects an adjacent page after deleting the active page  382ms
+   ✓ event pages > selects the page now at the deleted index when deleting a middle page  319ms
+   ✓ event pages > avoids page name collision after delete and re-add  400ms
+   ✓ event pages > keeps duplicate and paste below the source priority at first, middle, and last positions  2220ms
+   ✓ event pages > moves a page to an arbitrary index and no-ops when already there  451ms
+   ✓ event pages > copies and reorders pages without corrupting sibling commands  412ms
+ ✓ test/runtimeEventState.test.ts (7 tests) 410ms
+ ✓ test/eventEditorShellSurface.baseline.test.ts (22 tests) 46ms
+
+ Test Files  7 passed (7)
+      Tests  80 passed (80)
+   Start at  18:27:32
+   Duration  27.01s (transform 19.40s, setup 0ms, collect 38.31s, tests 12.64s, environment 346ms, prepare 759ms)

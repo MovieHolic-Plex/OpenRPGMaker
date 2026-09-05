@@ -1,0 +1,49 @@
+{
+  "beforeCommit": "51717a61a5ddd0ac913d6d7688fd0a2ded88ea76",
+  "afterBaseCommit": "24a3186c79769d45c3c4942af6611ebaf6802a22",
+  "before": {
+    "exitCode": 1,
+    "failures": [
+      "표면 스냅샷 축 실패 (vitest exit=1)",
+      "check-css-live-classes.mjs exit=1"
+    ],
+    "failedTests": [
+      "FAIL  test/eventEditorCommitProbe.baseline.test.ts > 이벤트 편집기 커밋 프로브 축 > (1) 컨트롤 조작 → 저장 커맨드 스냅샷이 기준선과 같다",
+      "FAIL  test/eventEditorCommitProbe.baseline.test.ts > no-commit 래칫 > 무커밋 컨트롤 집합이 허용 목록과 정확히 일치한다",
+      "FAIL  test/eventEditorFormSurface.baseline.test.ts > 이벤트에디터 폼 표면 스냅샷 > 기준선과 일치한다",
+      "FAIL  test/eventEditorInteractionSurface.baseline.test.ts > 이벤트에디터 상호작용 후 폼 표면 스냅샷 > 기준선과 일치한다",
+      "FAIL  test/eventEditorM2Surface.baseline.test.ts > M2 명령 폼 표면 스냅샷 > 기준선과 일치한다",
+      "FAIL  test/eventEditorPortalSurface.baseline.test.ts > 포털(피커/모달) 표면 스냅샷 > 기준선과 일치한다",
+      "FAIL  test/eventEditorShellSurface.baseline.test.ts > 이벤트에디터 셸 표면 스냅샷 > 기준선과 일치한다"
+    ],
+    "totals": [
+      "Test Files  6 failed | 3 passed (9)",
+      "Tests  7 failed | 106 passed (113)"
+    ],
+    "liveClassFailure": [
+      ".selected — 속성 1종 소실 [bottom]"
+    ]
+  },
+  "afterSnapshotFix": {
+    "exitCode": 1,
+    "failures": [
+      "표면 스냅샷 축 실패 (vitest exit=1)",
+      "check-css-live-classes.mjs exit=1"
+    ],
+    "failedTests": [
+      "FAIL  test/eventEditorCommitProbe.baseline.test.ts > 이벤트 편집기 커밋 프로브 축 > (1) 컨트롤 조작 → 저장 커맨드 스냅샷이 기준선과 같다",
+      "FAIL  test/eventEditorCommitProbe.baseline.test.ts > no-commit 래칫 > 무커밋 컨트롤 집합이 허용 목록과 정확히 일치한다",
+      "FAIL  test/eventEditorFormSurface.baseline.test.ts > 이벤트에디터 폼 표면 스냅샷 > 기준선과 일치한다",
+      "FAIL  test/eventEditorInteractionSurface.baseline.test.ts > 이벤트에디터 상호작용 후 폼 표면 스냅샷 > 기준선과 일치한다",
+      "FAIL  test/eventEditorM2Surface.baseline.test.ts > M2 명령 폼 표면 스냅샷 > 기준선과 일치한다",
+      "FAIL  test/eventEditorPortalSurface.baseline.test.ts > 포털(피커/모달) 표면 스냅샷 > 기준선과 일치한다"
+    ],
+    "totals": [
+      "Test Files  5 failed | 4 passed (9)",
+      "Tests  6 failed | 107 passed (113)"
+    ],
+    "liveClassFailure": [
+      ".selected — 속성 1종 소실 [bottom]"
+    ]
+  }
+}
