@@ -136,6 +136,12 @@ export function showConfirm(opts: ConfirmOptions): Promise<boolean> {
   });
 }
 
+export interface PromptChoice {
+  readonly value: string;
+  readonly label: string;
+  readonly hint?: string;
+}
+
 export interface PromptOptions {
   readonly title?: string;
   readonly message: string;
@@ -143,12 +149,27 @@ export interface PromptOptions {
   readonly defaultValue?: string;
   readonly confirmLabel?: string;
   readonly cancelLabel?: string;
+  readonly choices?: readonly PromptChoice[];
+  readonly defaultChoice?: string;
+}
+
+export interface PromptResult {
+  readonly value: string;
+  readonly choice: string | null;
 }
 
 // 이름 입력 모달. resolve(문자열)=확인, resolve(null)=취소.
 // 헤드리스에서는 confirm→true 규약을 승계해 defaultValue(없으면 빈 문자열)로 통과한다.
-export function showPromptInput(opts: PromptOptions): Promise<string | null> {
-  if (!domAvailable()) return Promise.resolve(opts.defaultValue ?? "");
+export function showPromptInput(opts: PromptOptions & { readonly choices: readonly PromptChoice[] }): Promise<PromptResult | null>;
+export function showPromptInput(opts: PromptOptions): Promise<string | null>;
+export function showPromptInput(opts: PromptOptions): Promise<string | PromptResult | null> {
+  if (!domAvailable()) {
+    if (!opts.choices || opts.choices.length === 0) return Promise.resolve(opts.defaultValue ?? "");
+    return Promise.resolve({
+      value: opts.defaultValue ?? "",
+      choice: opts.defaultChoice ?? opts.choices[0]?.value ?? null,
+    });
+  }
   return new Promise((resolve) => {
     const modalId = nextModalId++;
     const titleId = `app-modal-title-${modalId}`;
@@ -159,7 +180,7 @@ export function showPromptInput(opts: PromptOptions): Promise<string | null> {
       dataset: { testid: "app-prompt-modal" },
     });
     let settled = false;
-    const done = (value: string | null): void => {
+    const done = (value: string | PromptResult | null): void => {
       if (settled) return;
       settled = true;
       unregisterModal(overlay);
@@ -167,6 +188,45 @@ export function showPromptInput(opts: PromptOptions): Promise<string | null> {
       resolve(value);
       restoreOpener(opener);
     };
+    const choiceValues = opts.choices ?? [];
+    let selectedChoice = opts.defaultChoice ?? choiceValues[0]?.value ?? null;
+    const choiceGroup = choiceValues.length > 0
+      ? el("div", {
+        class: "app-modal-choices",
+        attrs: { role: "radiogroup" },
+        dataset: { testid: "app-modal-choices" },
+        children: choiceValues.map((choice, index) => {
+          const radioId = `app-modal-choice-${modalId}-${index}`;
+          const radio = el("input", {
+            class: "app-modal-choice-input",
+            attrs: {
+              type: "radio",
+              id: radioId,
+              name: `app-modal-choice-${modalId}`,
+              value: choice.value,
+            },
+            dataset: { testid: "app-modal-choice" },
+            on: {
+              change: () => {
+                selectedChoice = choice.value;
+              },
+            },
+          }) as HTMLInputElement;
+          if (choice.value === selectedChoice) radio.checked = true;
+          return el("label", {
+            class: "app-modal-choice",
+            attrs: { for: radioId },
+            children: [
+              radio,
+              el("span", {
+                class: "app-modal-choice-label",
+                text: choice.hint ? `${choice.label} — ${choice.hint}` : choice.label,
+              }),
+            ],
+          });
+        }),
+      })
+      : null;
     const input = el("input", {
       class: "app-modal-input",
       attrs: {
@@ -182,7 +242,12 @@ export function showPromptInput(opts: PromptOptions): Promise<string | null> {
       text: opts.confirmLabel ?? "확인",
       attrs: { type: "button" },
       dataset: { testid: "app-modal-confirm" },
-      on: { click: () => done(input.value) },
+      on: {
+        click: () =>
+          done(
+            choiceGroup ? { value: input.value, choice: selectedChoice } : input.value,
+          ),
+      },
     });
     const cancelButton = el("button", {
       class: "app-modal-button",
@@ -194,7 +259,7 @@ export function showPromptInput(opts: PromptOptions): Promise<string | null> {
     input.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
         event.preventDefault();
-        done(input.value);
+        done(choiceGroup ? { value: input.value, choice: selectedChoice } : input.value);
       }
     });
     const card = el("div", {
@@ -209,6 +274,7 @@ export function showPromptInput(opts: PromptOptions): Promise<string | null> {
         el("div", { class: "app-modal-title", text: opts.title ?? "입력", attrs: { id: titleId } }),
         el("div", { class: "app-modal-message", text: opts.message, attrs: { id: messageId } }),
         input,
+        ...(choiceGroup ? [choiceGroup] : []),
         el("div", { class: "app-modal-actions", children: [cancelButton, confirmButton] }),
       ],
     });

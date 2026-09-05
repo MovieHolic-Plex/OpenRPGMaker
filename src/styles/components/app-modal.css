@@ -38,6 +38,22 @@
     gap: var(--space-2);
     justify-content: flex-end;
   }
+  .app-modal-choices {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .app-modal-choice {
+    align-items: center;
+    background: var(--bg-inset);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-m);
+    cursor: pointer;
+    display: flex;
+    font-size: 13px;
+    gap: var(--space-2);
+    padding: 8px 12px;
+  }
   .app-modal-button {
     background: var(--bg-inset);
     border: 1px solid var(--border-strong);
