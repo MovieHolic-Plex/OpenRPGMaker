@@ -854,6 +854,79 @@ describe("pathfinding through the real frame dispatcher", () => {
     } finally { vi.restoreAllMocks(); }
   });
 
+  it("retargets a walking player from the admitted landing tile without accelerating the active step", async () => {
+    const { s, tick } = setup();
+    try {
+      const first = playPathfindMove(s, { kind: "pathfindMove", target: "player", x: 9, y: 5, speed: 2, wait: false });
+      for (let i = 0; i < 5; i++) tick();
+      expect(s.moving).toBe(true);
+      const before = s.moveProgress;
+      const replacement = playPathfindMove(s, { kind: "pathfindMove", target: "player", x: 5, y: 8, speed: 5, wait: true });
+      tick();
+      expect(s.moveProgress - before).toBeLessThan(0.1);
+      for (let i = 0; i < 300; i++) tick();
+      await Promise.all([first, replacement]);
+      expect([s.tileX, s.tileY]).toEqual([5, 8]);
+      expect(s.session.flags.pathfindSucceeded).toBe(true);
+    } finally { vi.restoreAllMocks(); }
+  });
+
+  it("waits for landing when a moving player is retargeted to that very landing tile", async () => {
+    const { s, tick } = setup();
+    try {
+      const first = playPathfindMove(s, { kind: "pathfindMove", target: "player", x: 9, y: 5, speed: 2, wait: false });
+      for (let i = 0; i < 5; i++) tick();
+      const target = { ...s.movingTo };
+      let done = false;
+      const replacement = playPathfindMove(s, { kind: "pathfindMove", target: "player", ...target, speed: 5, wait: true }).then(() => { done = true; });
+      await Promise.resolve();
+      expect(done).toBe(false);
+      for (let i = 0; i < 300; i++) tick();
+      await Promise.all([first, replacement]);
+      expect([s.tileX, s.tileY]).toEqual([target.x, target.y]);
+      expect(s.session.flags.pathfindSucceeded).toBe(true);
+    } finally { vi.restoreAllMocks(); }
+  });
+
+  it("retargets a walking NPC without snapping its active tween or reporting arrival early", async () => {
+    const { s, tick } = setup();
+    try {
+      s.map.events.push(event("walker", 8, 5, [page("walker", "same", { kind: "action" })]));
+      const sprite = mockSprite(); s.eventSprites.set("walker", sprite as never);
+      const first = playPathfindMove(s, { kind: "pathfindMove", target: "walker", x: 12, y: 5, speed: 2, wait: false });
+      for (let i = 0; i < 5; i++) tick();
+      const before = sprite.x;
+      const landing = { ...s.eventPositions.walker };
+      let done = false;
+      const replacement = playPathfindMove(s, { kind: "pathfindMove", target: "walker", x: landing.x, y: landing.y, speed: 5, wait: true }).then(() => { done = true; });
+      await Promise.resolve(); expect(done).toBe(false);
+      tick(); expect(Math.abs(sprite.x - before)).toBeLessThan(2);
+      for (let i = 0; i < 300; i++) tick();
+      await Promise.all([first, replacement]);
+      expect(s.eventPositions.walker).toMatchObject({ x: landing.x, y: landing.y });
+      expect(sprite.x).toBe(footprintSpriteX(landing.x, { width: 1, height: 1 }));
+      expect(s.autonomousNPCs.has("walker")).toBe(false);
+    } finally { vi.restoreAllMocks(); }
+  });
+
+  it.each(["player", "walker"])("replaces a queued route to %s with a no-op destination before any step starts", async target => {
+    const { s, tick } = setup();
+    try {
+      const x = target === "player" ? 5 : 8;
+      if (target === "walker") {
+        s.map.events.push(event("walker", x, 5, [page("walker", "same", { kind: "action" })]));
+        s.eventSprites.set("walker", mockSprite() as never);
+      }
+      const first = playPathfindMove(s, { kind: "pathfindMove", target, x: x + 3, y: 5, speed: 2, wait: false });
+      const replacement = playPathfindMove(s, { kind: "pathfindMove", target, x, y: 5, speed: 5, wait: true });
+      for (let i = 0; i < 300; i++) tick();
+      await Promise.all([first, replacement]);
+      const position = target === "player" ? { x: s.tileX, y: s.tileY } : s.eventPositions.walker ?? { x, y: 5 };
+      expect(position).toMatchObject({ x, y: 5 });
+      expect(s.session.flags.pathfindSucceeded).toBe(true);
+    } finally { vi.restoreAllMocks(); }
+  });
+
   it("does not start a route outside the map and cancels its own route on abort", async () => {
     const { s } = setup();
     try {

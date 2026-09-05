@@ -122,6 +122,8 @@ export type TransferRequest = {
 export interface PlayerRouteState {
   stopOnBlocked?: boolean;
   moveDurationMs?: number;
+  /** Apply a retargeted route's speed only after the current step lands. */
+  nextMoveDurationMs?: number;
   moves: MoveCommand[];
   index: number;
   repeat: boolean;

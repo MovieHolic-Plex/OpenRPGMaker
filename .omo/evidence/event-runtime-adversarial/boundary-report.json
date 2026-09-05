@@ -1,0 +1,606 @@
+[
+  {
+    "id": "adversarial-retarget-player",
+    "errors": [],
+    "warnings": [
+      "[.WebGL-0x272c03eb1400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+      "[.WebGL-0x272c03eb1400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+      "[.WebGL-0x272c03eb1400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+      "[.WebGL-0x272c03eb1400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+    ],
+    "passed": true,
+    "state": {
+      "eventLocations": {},
+      "currentMapId": "map_blank_start",
+      "x": 3,
+      "y": 9,
+      "gold": 0,
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false,
+        "ready": false,
+        "path_done": false,
+        "menu_done": false,
+        "load_done": false,
+        "movie_done": false
+      },
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0,
+        "terrain_result": 0,
+        "event_result": 0
+      },
+      "selfSwitches": {},
+      "timers": {},
+      "inventory": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "npcActivities": {},
+      "friendship": {},
+      "rng": {
+        "seed": 4036921051,
+        "streams": {
+          "encounter": {
+            "seed": 3265175599,
+            "state": 3265175599
+          },
+          "battle": {
+            "seed": 323412504,
+            "state": 323412504
+          },
+          "movement": {
+            "seed": 577382387,
+            "state": 577382387
+          },
+          "fishing": {
+            "seed": 773764580,
+            "state": 773764580
+          },
+          "misc": {
+            "seed": 550462282,
+            "state": 550462282
+          }
+        }
+      }
+    },
+    "video": "/home/main/.herdr/worktrees/rpg-zzu/worktree-clear-field-df12/.omo/evidence/event-runtime-adversarial/videos/page@061840f69f0fa11a187ae45c1fb973b8.webm"
+  },
+  {
+    "id": "adversarial-landing-player",
+    "errors": [],
+    "warnings": [],
+    "passed": true,
+    "state": {
+      "eventLocations": {},
+      "currentMapId": "map_blank_start",
+      "x": 4,
+      "y": 6,
+      "gold": 0,
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false,
+        "ready": false,
+        "path_done": false,
+        "menu_done": false,
+        "load_done": false,
+        "movie_done": false
+      },
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0,
+        "terrain_result": 0,
+        "event_result": 0
+      },
+      "selfSwitches": {},
+      "timers": {},
+      "inventory": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "npcActivities": {},
+      "friendship": {},
+      "rng": {
+        "seed": 3899074136,
+        "streams": {
+          "encounter": {
+            "seed": 2639422428,
+            "state": 2639422428
+          },
+          "battle": {
+            "seed": 2135675701,
+            "state": 2135675701
+          },
+          "movement": {
+            "seed": 3582475054,
+            "state": 3582475054
+          },
+          "fishing": {
+            "seed": 3149428755,
+            "state": 3149428755
+          },
+          "misc": {
+            "seed": 2293757651,
+            "state": 2293757651
+          }
+        }
+      }
+    },
+    "video": "/home/main/.herdr/worktrees/rpg-zzu/worktree-clear-field-df12/.omo/evidence/event-runtime-adversarial/videos/page@8aa45fc0bd714c3901c8547fcbe97192.webm"
+  },
+  {
+    "id": "adversarial-queued-player",
+    "errors": [],
+    "warnings": [],
+    "passed": true,
+    "state": {
+      "eventLocations": {},
+      "currentMapId": "map_blank_start",
+      "x": 3,
+      "y": 6,
+      "gold": 0,
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false,
+        "ready": false,
+        "path_done": false,
+        "menu_done": false,
+        "load_done": false,
+        "movie_done": false
+      },
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0,
+        "terrain_result": 0,
+        "event_result": 0
+      },
+      "selfSwitches": {},
+      "timers": {},
+      "inventory": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "npcActivities": {},
+      "friendship": {},
+      "rng": {
+        "seed": 1803875622,
+        "streams": {
+          "encounter": {
+            "seed": 4025947432,
+            "state": 4025947432
+          },
+          "battle": {
+            "seed": 1492794065,
+            "state": 1492794065
+          },
+          "movement": {
+            "seed": 442065114,
+            "state": 442065114
+          },
+          "fishing": {
+            "seed": 3753199151,
+            "state": 3753199151
+          },
+          "misc": {
+            "seed": 2332746791,
+            "state": 2332746791
+          }
+        }
+      }
+    },
+    "video": "/home/main/.herdr/worktrees/rpg-zzu/worktree-clear-field-df12/.omo/evidence/event-runtime-adversarial/videos/page@4e7d62bab8be4ed3c737a065e33da465.webm"
+  },
+  {
+    "id": "adversarial-stop-player",
+    "errors": [],
+    "warnings": [],
+    "passed": true,
+    "state": {
+      "eventLocations": {},
+      "currentMapId": "map_blank_start",
+      "x": 3,
+      "y": 6,
+      "gold": 0,
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false,
+        "ready": false,
+        "path_done": false,
+        "menu_done": false,
+        "load_done": false,
+        "movie_done": false
+      },
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0,
+        "terrain_result": 0,
+        "event_result": 0
+      },
+      "selfSwitches": {},
+      "timers": {},
+      "inventory": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "npcActivities": {},
+      "friendship": {},
+      "rng": {
+        "seed": 4021671913,
+        "streams": {
+          "encounter": {
+            "seed": 700179878,
+            "state": 700179878
+          },
+          "battle": {
+            "seed": 803759987,
+            "state": 803759987
+          },
+          "movement": {
+            "seed": 1995917044,
+            "state": 1995917044
+          },
+          "fishing": {
+            "seed": 3236809585,
+            "state": 3236809585
+          },
+          "misc": {
+            "seed": 3451534973,
+            "state": 3451534973
+          }
+        }
+      }
+    },
+    "video": "/home/main/.herdr/worktrees/rpg-zzu/worktree-clear-field-df12/.omo/evidence/event-runtime-adversarial/videos/page@061c0159e00b776aa99a0840938c8e37.webm"
+  },
+  {
+    "id": "adversarial-landing-npc",
+    "errors": [],
+    "warnings": [],
+    "passed": true,
+    "state": {
+      "eventLocations": {},
+      "currentMapId": "map_blank_start",
+      "x": 3,
+      "y": 6,
+      "gold": 0,
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false,
+        "ready": false,
+        "path_done": false,
+        "menu_done": false,
+        "load_done": false,
+        "movie_done": false
+      },
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0,
+        "terrain_result": 0,
+        "event_result": 0
+      },
+      "selfSwitches": {},
+      "timers": {},
+      "inventory": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "npcActivities": {},
+      "friendship": {},
+      "rng": {
+        "seed": 3153548808,
+        "streams": {
+          "encounter": {
+            "seed": 1430759255,
+            "state": 1430759255
+          },
+          "battle": {
+            "seed": 2434217680,
+            "state": 2434217680
+          },
+          "movement": {
+            "seed": 200306747,
+            "state": 200306747
+          },
+          "fishing": {
+            "seed": 1749736220,
+            "state": 1749736220
+          },
+          "misc": {
+            "seed": 2958810482,
+            "state": 2958810482
+          }
+        }
+      }
+    },
+    "sprite": {
+      "alpha": 1,
+      "frame": 13,
+      "textureKey": "tex_easyrpg_charset_people2",
+      "x": 104,
+      "y": 112,
+      "depth": 200112,
+      "liftPx": 0
+    },
+    "video": "/home/main/.herdr/worktrees/rpg-zzu/worktree-clear-field-df12/.omo/evidence/event-runtime-adversarial/videos/page@d3069288605981f9295a0032cb8c7cb3.webm"
+  },
+  {
+    "id": "adversarial-unreachable-player",
+    "errors": [],
+    "warnings": [
+      "[player] pathfind destination unreachable: player (-1, 6)"
+    ],
+    "passed": true,
+    "state": {
+      "eventLocations": {},
+      "currentMapId": "map_blank_start",
+      "x": 3,
+      "y": 6,
+      "gold": 0,
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false,
+        "ready": false,
+        "path_done": false,
+        "menu_done": false,
+        "load_done": false,
+        "movie_done": false
+      },
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0,
+        "terrain_result": 0,
+        "event_result": 0
+      },
+      "selfSwitches": {},
+      "timers": {},
+      "inventory": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "npcActivities": {},
+      "friendship": {},
+      "rng": {
+        "seed": 2511007876,
+        "streams": {
+          "encounter": {
+            "seed": 3773935951,
+            "state": 3773935951
+          },
+          "battle": {
+            "seed": 863388344,
+            "state": 863388344
+          },
+          "movement": {
+            "seed": 422558355,
+            "state": 422558355
+          },
+          "fishing": {
+            "seed": 4037988612,
+            "state": 4037988612
+          },
+          "misc": {
+            "seed": 2819075818,
+            "state": 2819075818
+          }
+        }
+      }
+    },
+    "video": "/home/main/.herdr/worktrees/rpg-zzu/worktree-clear-field-df12/.omo/evidence/event-runtime-adversarial/videos/page@3609f36f3f84e8ba8b596081749007d5.webm"
+  }
+]

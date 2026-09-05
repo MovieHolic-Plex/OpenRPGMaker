@@ -1,0 +1,1341 @@
+{
+  "fixture": ".omo/evidence/event-runtime-adversarial/remote-project.json",
+  "lines": [
+    {
+      "speaker": "철수",
+      "text": "집을 비우러 왔다. 아버지가 떠난 뒤, 이 강변에는 처음이다.",
+      "mapId": "memory_present",
+      "gapMs": null
+    },
+    {
+      "speaker": "철수",
+      "text": "선착장 앞 나무 상자… 아직도 여기 있네.\n가까이에서 위를 보고 Enter로 열어 보자.",
+      "mapId": "memory_present",
+      "gapMs": 2092
+    },
+    {
+      "speaker": "철수",
+      "text": "상자 안에는 빛바랜 빨간 종이배가 있다.\n접힌 모서리마다 아버지의 손자국이 남아 있다.",
+      "mapId": "memory_present",
+      "gapMs": 2709
+    },
+    {
+      "speaker": "철수",
+      "text": "나는 그날, 배가 가라앉아서 울었던 걸까?",
+      "mapId": "memory_present",
+      "gapMs": 1293
+    },
+    {
+      "speaker": "그해 여름",
+      "text": "열 살의 여름.\n세상에서 가장 먼 곳이 강 건너 마을이던 시절.",
+      "mapId": "memory_summer",
+      "gapMs": 4065
+    },
+    {
+      "speaker": "어린 철수",
+      "text": "아빠, 내 배는 자꾸 가라앉아.\n아빠 것처럼 멀리 보내고 싶은데.",
+      "mapId": "memory_summer",
+      "gapMs": 1700
+    },
+    {
+      "speaker": "아버지",
+      "text": "이리 줘 봐. 여기를 한 번 더 접으면 돼.\n천천히. 잘못 접어도 다시 펴면 되니까.",
+      "mapId": "memory_summer",
+      "gapMs": 1763
+    },
+    {
+      "speaker": "어린 철수",
+      "text": "…아빠도 어릴 때 잘 못 접었어?",
+      "mapId": "memory_summer",
+      "gapMs": 954
+    },
+    {
+      "speaker": "아버지",
+      "text": "그럼. 네 할아버지랑 종이를 한 상자나 썼지.",
+      "mapId": "memory_summer",
+      "gapMs": 1320
+    },
+    {
+      "speaker": "어린 철수",
+      "text": "저기! 이번에는 떠 있어!\n…그런데 저 멀리 가면 다시 못 만나잖아.",
+      "mapId": "memory_summer",
+      "gapMs": 3182
+    },
+    {
+      "speaker": "아버지",
+      "text": "배는 돌아오지 않아도 괜찮아.\n우리 둘이 여기서 함께 접었다는 건 남으니까.",
+      "mapId": "memory_summer",
+      "gapMs": 1806
+    },
+    {
+      "speaker": "철수",
+      "text": "이제야 기억났다.\n그날 아버지는 배보다 내 얼굴을 오래 보고 있었다.",
+      "mapId": "memory_summer",
+      "gapMs": 2092
+    },
+    {
+      "speaker": "철수",
+      "text": "강물 소리가 다시 가까워졌다.\n돌아오지 않는 것만 세느라, 남아 있는 걸 잊고 살았구나.",
+      "mapId": "memory_present",
+      "gapMs": 5484
+    },
+    {
+      "speaker": "철수",
+      "text": "아빠. 이번에는 내가 먼저 접어 볼게.\n잘못 접으면… 다시 펴면 되니까.",
+      "mapId": "memory_present",
+      "gapMs": 2044
+    },
+    {
+      "speaker": "철수의 기억",
+      "text": "끝.\n잠시 강변을 걸어도 좋습니다. 상자를 다시 조사하면 철수의 마지막 생각을\n들을 수 있습니다.",
+      "mapId": "memory_present",
+      "gapMs": 2261
+    },
+    {
+      "speaker": "철수",
+      "text": "종이배는 상자에 두고, 빈 종이 한 장을 꺼냈다.",
+      "mapId": "memory_present",
+      "gapMs": 1351
+    },
+    {
+      "speaker": "철수",
+      "text": "다음에는 누군가와 함께 접어야지.\n아버지가 내게 그랬던 것처럼.",
+      "mapId": "memory_present",
+      "gapMs": 1489
+    }
+  ],
+  "errors": [],
+  "visualChecks": [
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "key": "ArrowRight",
+      "samples": 26,
+      "maxShortJump": 8,
+      "position": {
+        "eventLocations": {},
+        "currentMapId": "memory_present",
+        "x": 21,
+        "y": 13,
+        "gold": 0,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false,
+          "memory_seen": true,
+          "memory_closed": true
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "arrival": {
+            "A": true
+          },
+          "summer_scene": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {},
+        "partyActorIds": [
+          "actor_hero"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1563237346,
+          "streams": {
+            "encounter": {
+              "seed": 921306500,
+              "state": 921306500
+            },
+            "battle": {
+              "seed": 1096531213,
+              "state": 1096531213
+            },
+            "movement": {
+              "seed": 187789302,
+              "state": 187789302
+            },
+            "fishing": {
+              "seed": 2598590699,
+              "state": 2598590699
+            },
+            "misc": {
+              "seed": 1812267803,
+              "state": 1812267803
+            }
+          }
+        }
+      }
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "key": "ArrowDown",
+      "samples": 29,
+      "maxShortJump": 0,
+      "position": {
+        "eventLocations": {},
+        "currentMapId": "memory_present",
+        "x": 23,
+        "y": 17,
+        "gold": 0,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false,
+          "memory_seen": true,
+          "memory_closed": true
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "arrival": {
+            "A": true
+          },
+          "summer_scene": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {},
+        "partyActorIds": [
+          "actor_hero"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1563237346,
+          "streams": {
+            "encounter": {
+              "seed": 921306500,
+              "state": 921306500
+            },
+            "battle": {
+              "seed": 1096531213,
+              "state": 1096531213
+            },
+            "movement": {
+              "seed": 187789302,
+              "state": 187789302
+            },
+            "fishing": {
+              "seed": 2598590699,
+              "state": 2598590699
+            },
+            "misc": {
+              "seed": 1812267803,
+              "state": 1812267803
+            }
+          }
+        }
+      }
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "key": "ArrowLeft",
+      "samples": 29,
+      "maxShortJump": 0,
+      "position": {
+        "eventLocations": {},
+        "currentMapId": "memory_present",
+        "x": 22,
+        "y": 17,
+        "gold": 0,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false,
+          "memory_seen": true,
+          "memory_closed": true
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "arrival": {
+            "A": true
+          },
+          "summer_scene": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {},
+        "partyActorIds": [
+          "actor_hero"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1563237346,
+          "streams": {
+            "encounter": {
+              "seed": 921306500,
+              "state": 921306500
+            },
+            "battle": {
+              "seed": 1096531213,
+              "state": 1096531213
+            },
+            "movement": {
+              "seed": 187789302,
+              "state": 187789302
+            },
+            "fishing": {
+              "seed": 2598590699,
+              "state": 2598590699
+            },
+            "misc": {
+              "seed": 1812267803,
+              "state": 1812267803
+            }
+          }
+        }
+      }
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "key": "ArrowUp",
+      "samples": 28,
+      "maxShortJump": 9,
+      "position": {
+        "eventLocations": {},
+        "currentMapId": "memory_present",
+        "x": 22,
+        "y": 9,
+        "gold": 0,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false,
+          "memory_seen": true,
+          "memory_closed": true
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "arrival": {
+            "A": true
+          },
+          "summer_scene": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {},
+        "partyActorIds": [
+          "actor_hero"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1563237346,
+          "streams": {
+            "encounter": {
+              "seed": 921306500,
+              "state": 921306500
+            },
+            "battle": {
+              "seed": 1096531213,
+              "state": 1096531213
+            },
+            "movement": {
+              "seed": 187789302,
+              "state": 187789302
+            },
+            "fishing": {
+              "seed": 2598590699,
+              "state": 2598590699
+            },
+            "misc": {
+              "seed": 1812267803,
+              "state": 1812267803
+            }
+          }
+        }
+      }
+    },
+    {
+      "viewport": {
+        "width": 640,
+        "height": 480
+      },
+      "key": "ArrowRight",
+      "samples": 26,
+      "maxShortJump": 0,
+      "position": {
+        "eventLocations": {},
+        "currentMapId": "memory_present",
+        "x": 25,
+        "y": 9,
+        "gold": 0,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false,
+          "memory_seen": true,
+          "memory_closed": true
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "arrival": {
+            "A": true
+          },
+          "summer_scene": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {},
+        "partyActorIds": [
+          "actor_hero"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1563237346,
+          "streams": {
+            "encounter": {
+              "seed": 921306500,
+              "state": 921306500
+            },
+            "battle": {
+              "seed": 1096531213,
+              "state": 1096531213
+            },
+            "movement": {
+              "seed": 187789302,
+              "state": 187789302
+            },
+            "fishing": {
+              "seed": 2598590699,
+              "state": 2598590699
+            },
+            "misc": {
+              "seed": 1812267803,
+              "state": 1812267803
+            }
+          }
+        }
+      }
+    },
+    {
+      "viewport": {
+        "width": 640,
+        "height": 480
+      },
+      "key": "ArrowDown",
+      "samples": 27,
+      "maxShortJump": 9,
+      "position": {
+        "eventLocations": {},
+        "currentMapId": "memory_present",
+        "x": 25,
+        "y": 19,
+        "gold": 0,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false,
+          "memory_seen": true,
+          "memory_closed": true
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "arrival": {
+            "A": true
+          },
+          "summer_scene": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {},
+        "partyActorIds": [
+          "actor_hero"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1563237346,
+          "streams": {
+            "encounter": {
+              "seed": 921306500,
+              "state": 921306500
+            },
+            "battle": {
+              "seed": 1096531213,
+              "state": 1096531213
+            },
+            "movement": {
+              "seed": 187789302,
+              "state": 187789302
+            },
+            "fishing": {
+              "seed": 2598590699,
+              "state": 2598590699
+            },
+            "misc": {
+              "seed": 1812267803,
+              "state": 1812267803
+            }
+          }
+        }
+      }
+    },
+    {
+      "viewport": {
+        "width": 640,
+        "height": 480
+      },
+      "key": "ArrowLeft",
+      "samples": 23,
+      "maxShortJump": 1,
+      "position": {
+        "eventLocations": {},
+        "currentMapId": "memory_present",
+        "x": 15,
+        "y": 19,
+        "gold": 0,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false,
+          "memory_seen": true,
+          "memory_closed": true
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "arrival": {
+            "A": true
+          },
+          "summer_scene": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {},
+        "partyActorIds": [
+          "actor_hero"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1563237346,
+          "streams": {
+            "encounter": {
+              "seed": 921306500,
+              "state": 921306500
+            },
+            "battle": {
+              "seed": 1096531213,
+              "state": 1096531213
+            },
+            "movement": {
+              "seed": 187789302,
+              "state": 187789302
+            },
+            "fishing": {
+              "seed": 2598590699,
+              "state": 2598590699
+            },
+            "misc": {
+              "seed": 1812267803,
+              "state": 1812267803
+            }
+          }
+        }
+      }
+    },
+    {
+      "viewport": {
+        "width": 640,
+        "height": 480
+      },
+      "key": "ArrowUp",
+      "samples": 25,
+      "maxShortJump": 7,
+      "position": {
+        "eventLocations": {},
+        "currentMapId": "memory_present",
+        "x": 13,
+        "y": 8,
+        "gold": 0,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false,
+          "memory_seen": true,
+          "memory_closed": true
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "arrival": {
+            "A": true
+          },
+          "summer_scene": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {},
+        "partyActorIds": [
+          "actor_hero"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1563237346,
+          "streams": {
+            "encounter": {
+              "seed": 921306500,
+              "state": 921306500
+            },
+            "battle": {
+              "seed": 1096531213,
+              "state": 1096531213
+            },
+            "movement": {
+              "seed": 187789302,
+              "state": 187789302
+            },
+            "fishing": {
+              "seed": 2598590699,
+              "state": 2598590699
+            },
+            "misc": {
+              "seed": 1812267803,
+              "state": 1812267803
+            }
+          }
+        }
+      }
+    }
+  ],
+  "state": {
+    "state": {
+      "eventLocations": {},
+      "currentMapId": "memory_present",
+      "x": 13,
+      "y": 8,
+      "gold": 0,
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false,
+        "memory_seen": true,
+        "memory_closed": true
+      },
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "selfSwitches": {
+        "arrival": {
+          "A": true
+        },
+        "summer_scene": {
+          "A": true
+        }
+      },
+      "timers": {},
+      "inventory": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "npcActivities": {},
+      "friendship": {},
+      "rng": {
+        "seed": 1563237346,
+        "streams": {
+          "encounter": {
+            "seed": 921306500,
+            "state": 921306500
+          },
+          "battle": {
+            "seed": 1096531213,
+            "state": 1096531213
+          },
+          "movement": {
+            "seed": 187789302,
+            "state": 187789302
+          },
+          "fishing": {
+            "seed": 2598590699,
+            "state": 2598590699
+          },
+          "misc": {
+            "seed": 1812267803,
+            "state": 1812267803
+          }
+        }
+      }
+    },
+    "runtime": {
+      "mapId": "memory_present",
+      "inputEnabled": true,
+      "running": false,
+      "player": {
+        "x": 13,
+        "y": 8
+      },
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false,
+        "memory_seen": true,
+        "memory_closed": true
+      },
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "timers": {},
+      "timerActive": {},
+      "flags": {
+        "screen-effect:fadeOut": true,
+        "screen-effect:fadeIn": true,
+        "camera:panTo": true,
+        "camera:return": true
+      },
+      "mapOverrides": {},
+      "gold": 0,
+      "inventory": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "actorSkillIds": {},
+      "actorExperience": {
+        "actor_hero": 0
+      },
+      "actorLevels": {
+        "actor_hero": 1,
+        "actor_guardian": 1,
+        "actor_mage": 1,
+        "actor_scout": 1,
+        "actor_cleric": 1,
+        "actor_ranger": 1
+      },
+      "actorVitals": {
+        "actor_hero": {
+          "hp": 514,
+          "mp": 43,
+          "maxHp": 514,
+          "maxMp": 43
+        }
+      },
+      "eventLocations": {},
+      "followers": [],
+      "followerTrail": [],
+      "removedEventIds": {},
+      "spawnedEvents": {},
+      "camera": {
+        "mode": "follow",
+        "target": {
+          "kind": "player"
+        }
+      },
+      "lighting": {
+        "ambient": 0,
+        "sources": []
+      },
+      "actorEquipment": {
+        "actor_hero": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "actorRows": {
+        "actor_hero": "front"
+      },
+      "classOverrides": {},
+      "audio": {
+        "bgm": {
+          "resourceId": "cc0-bgm-rtp-emo-001",
+          "loop": true
+        }
+      },
+      "pictures": {},
+      "m2Runtime": {
+        "screen": {
+          "tint": "neutral",
+          "tintDurationMs": 0,
+          "hidden": false
+        },
+        "access": {},
+        "audio": {},
+        "actors": {},
+        "events": {},
+        "map": {},
+        "system": {},
+        "session": {},
+        "camera": {
+          "mode": "return",
+          "target": "player",
+          "x": 0,
+          "y": 0,
+          "zoom": 1,
+          "durationMs": 0
+        },
+        "screenEffects": [
+          {
+            "effect": "fadeOut",
+            "value": "",
+            "durationMs": 650
+          },
+          {
+            "effect": "fadeIn",
+            "value": "",
+            "durationMs": 600
+          },
+          {
+            "effect": "fadeOut",
+            "value": "",
+            "durationMs": 650
+          },
+          {
+            "effect": "fadeIn",
+            "value": "",
+            "durationMs": 600
+          }
+        ],
+        "pathfinding": [],
+        "waits": [],
+        "regions": [],
+        "quests": {},
+        "dialogue": [],
+        "cutscene": {
+          "lockPlayer": false,
+          "skippable": false
+        },
+        "checkpoints": [],
+        "ui": [],
+        "debug": [],
+        "expressions": [],
+        "fallbacks": []
+      },
+      "events": {
+        "arrival": {
+          "x": 11,
+          "y": 15,
+          "pageId": "도착 대사 끝",
+          "priority": "below",
+          "trigger": "action",
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "passRows": 1,
+          "bodyRect": {
+            "left": 11,
+            "right": 11,
+            "top": 15,
+            "bottom": 15
+          },
+          "passRect": {
+            "left": 11,
+            "right": 11,
+            "top": 15,
+            "bottom": 15
+          }
+        },
+        "keepsake": {
+          "x": 12,
+          "y": 12,
+          "pageId": "기억한 뒤의 상자",
+          "priority": "same",
+          "trigger": "action",
+          "direction": "down",
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "passRows": 1,
+          "bodyRect": {
+            "left": 12,
+            "right": 12,
+            "top": 12,
+            "bottom": 12
+          },
+          "passRect": {
+            "left": 12,
+            "right": 12,
+            "top": 12,
+            "bottom": 12
+          }
+        },
+        "return_scene": {
+          "x": 14,
+          "y": 15,
+          "pageId": "귀환 완료",
+          "priority": "below",
+          "trigger": "action",
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "passRows": 1,
+          "bodyRect": {
+            "left": 14,
+            "right": 14,
+            "top": 15,
+            "bottom": 15
+          },
+          "passRect": {
+            "left": 14,
+            "right": 14,
+            "top": 15,
+            "bottom": 15
+          }
+        },
+        "bench": {
+          "x": 6,
+          "y": 15,
+          "pageId": "오래된 벤치",
+          "priority": "same",
+          "trigger": "action",
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "passRows": 1,
+          "bodyRect": {
+            "left": 6,
+            "right": 6,
+            "top": 15,
+            "bottom": 15
+          },
+          "passRect": {
+            "left": 6,
+            "right": 6,
+            "top": 15,
+            "bottom": 15
+          }
+        }
+      },
+      "movers": {}
+    },
+    "text": "",
+    "speaker": "",
+    "ready": false
+  },
+  "video": "/home/main/.herdr/worktrees/rpg-zzu/worktree-clear-field-df12/.omo/evidence/cheolsu-memory/videos/page@ace20158de17f2c913fe3b8ee8d221a9.webm",
+  "keyboardOnly": true,
+  "maxDialogueGapMs": 5484
+}

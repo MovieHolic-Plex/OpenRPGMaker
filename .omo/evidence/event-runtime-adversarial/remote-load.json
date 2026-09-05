@@ -1,0 +1,11 @@
+{
+  "projectId": "rpg-zzu-cheolsu-memory-20260905-df12",
+  "loadedAt": "2026-09-05T12:55:52.157Z",
+  "sha256": "32625f7b4d717e4f708e57b90861f1546ca1d1b43cd410badd2e86f6004ae2b8",
+  "title": "철수의 기억",
+  "maps": [
+    "memory_summer",
+    "memory_present"
+  ],
+  "readOnly": true
+}

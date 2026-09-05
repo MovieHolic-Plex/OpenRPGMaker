@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **47쪽 / 1517KB / 약 431,389 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **47쪽 / 1518KB / 약 431,715 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -65,6 +65,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/large-village-generation.md` | 2 | `HANDOFF.json`, `src/project/defaults/largeRiverMarketVillageBuild.ts` |
 | `openwiki/night-monster.md` | 1 | `verify-shots/runtime-qa/night-monster/SUMMARY.md` |
 | `openwiki/runtime-battle.md` | 4 | `hero-03-battle-idle.png`, `raw.png`, `reference.png`, `starter/hires/hero-0N-battle.png` |
+| `openwiki/runtime-m2-flow-controls.md` | 1 | `.omo/evidence/event-runtime-adversarial/README.md` |
 | `openwiki/runtime-pre-edit-routing.md` | 1 | `verify-shots/runtime-qa/emote/SUMMARY.md` |
 | `openwiki/runtime-project-schema.md` | 2 | `.json`, `project.json` |
 | `openwiki/runtime-sessions.md` | 1 | `output/evidence/stardew/stardew-supabase.json` |
@@ -539,12 +540,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L229` 배틀러 idle 애니메이션 (2026-08-30)
 - `L355` 필드 아이템 상태 부여 복구 (2026-09-05)
 
-### `openwiki/runtime-m2-flow-controls.md` — 15KB · 57줄 · ~4,105 토큰
+### `openwiki/runtime-m2-flow-controls.md` — 17KB · 64줄 · ~4,431 토큰
 
 - `L5` M2 Runtime Flow Controls
 - `L35` Storage chest authoring
 - `L41` Page 3 location/vehicle compatibility (2026-07-30)
 - `L45` 저장된 M2 명령 실행 연결 복구 (2026-09-05)
+  - `L58` 이동 중 경로 재지정 — 2026-09-05 브라우저 적대적 QA
 
 ### `openwiki/runtime-pre-edit-routing.md` — 25KB · 143줄 · ~7,278 토큰
 
