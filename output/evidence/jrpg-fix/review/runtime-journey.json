@@ -1,0 +1,5933 @@
+{
+  "beats": [
+    {
+      "id": "start",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_blank_start",
+        "x": 14,
+        "y": 18,
+        "gold": 200,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {},
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 3
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 3353753583
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 1451955416
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 2016215453
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "guide",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_blank_start",
+        "x": 14,
+        "y": 18,
+        "gold": 200,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {},
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 3
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 3353753583
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 1451955416
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 3847781266
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "shop",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_blank_start",
+        "x": 16,
+        "y": 16,
+        "gold": 200,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 3
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 3353753583
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 1451955416
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 752544113
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "purchase",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_blank_start",
+        "x": 16,
+        "y": 16,
+        "gold": 150,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 4
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 3353753583
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 1451955416
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 752544113
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "house-1-entry",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_house_interior_1_map_blank_start_1",
+        "x": 10,
+        "y": 15,
+        "gold": 150,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 4
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 3353753583
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 1451955416
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 3783840069
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "house-1-return",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_blank_start",
+        "x": 15,
+        "y": 6,
+        "gold": 150,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 4
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 3353753583
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 1451955416
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 3783840069
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "house-2-entry",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_house_interior_1_map_blank_start_2",
+        "x": 10,
+        "y": 15,
+        "gold": 150,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 4
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 3353753583
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 1451955416
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 56767246
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "house-2-return",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_blank_start",
+        "x": 3,
+        "y": 6,
+        "gold": 150,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 4
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 3353753583
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 1451955416
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 56767246
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "dungeon-entry",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_forest_dungeon",
+        "x": 12,
+        "y": 17,
+        "gold": 150,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 4
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 3353753583
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 1451955416
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 4287793345
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "battle-9",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_forest_dungeon",
+        "x": 7,
+        "y": 17,
+        "gold": 150,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 4
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 1458246573
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 1451955416
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 4287793345
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "victory-10",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_forest_dungeon",
+        "x": 7,
+        "y": 17,
+        "gold": 180,
+        "battleResult": "victory",
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 4
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 1458246573
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 1955908692
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 4287793345
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "battle-11",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_forest_dungeon",
+        "x": 6,
+        "y": 7,
+        "gold": 180,
+        "battleResult": "victory",
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 4
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 1962199849
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 1955908692
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 4287793345
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "victory-12",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_forest_dungeon",
+        "x": 6,
+        "y": 7,
+        "gold": 210,
+        "battleResult": "victory",
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 4
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 1962199849
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 2459861968
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 4287793345
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "chest-open",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_forest_dungeon",
+        "x": 6,
+        "y": 6,
+        "gold": 310,
+        "battleResult": "victory",
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 4,
+          "item_adventurer_potion": 1
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 3793765662
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 2459861968
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 4287793345
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "chest-repeat",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_forest_dungeon",
+        "x": 6,
+        "y": 6,
+        "gold": 310,
+        "battleResult": "victory",
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          },
+          "ev_dungeon_chest_1": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 4,
+          "item_adventurer_potion": 1
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 3793765662
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 2459861968
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 4287793345
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "battle-15",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_forest_dungeon",
+        "x": 9,
+        "y": 6,
+        "gold": 310,
+        "battleResult": "victory",
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          },
+          "ev_dungeon_chest_1": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 4,
+          "item_adventurer_potion": 1
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 2530094322
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 2459861968
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 4287793345
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "victory-16",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_forest_dungeon",
+        "x": 9,
+        "y": 6,
+        "gold": 330,
+        "battleResult": "victory",
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          },
+          "ev_dungeon_chest_1": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 4,
+          "item_adventurer_potion": 1
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 2530094322
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 2963815244
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 4287793345
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "battle-17",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_forest_dungeon",
+        "x": 15,
+        "y": 10,
+        "gold": 330,
+        "battleResult": "victory",
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          },
+          "ev_dungeon_chest_1": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 4,
+          "item_adventurer_potion": 1
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 1202481785
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 2963815244
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 4287793345
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "victory-18",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_forest_dungeon",
+        "x": 15,
+        "y": 10,
+        "gold": 350,
+        "battleResult": "victory",
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          },
+          "ev_dungeon_chest_1": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 4,
+          "item_adventurer_potion": 1
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 1202481785
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 3467768520
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 4287793345
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "east-chest-open",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_forest_dungeon",
+        "x": 20,
+        "y": 7,
+        "gold": 450,
+        "battleResult": "victory",
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          },
+          "ev_dungeon_chest_1": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 4,
+          "item_adventurer_potion": 1,
+          "item_forest_dew": 1
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 2970106401
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 3467768520
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 4287793345
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "east-chest-repeat",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_forest_dungeon",
+        "x": 20,
+        "y": 7,
+        "gold": 450,
+        "battleResult": "victory",
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          },
+          "ev_dungeon_chest_1": {
+            "A": true
+          },
+          "ev_dungeon_chest_east": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 4,
+          "item_adventurer_potion": 1,
+          "item_forest_dew": 1
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 2970106401
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 3467768520
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 4287793345
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "battle-21",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_forest_dungeon",
+        "x": 19,
+        "y": 9,
+        "gold": 450,
+        "battleResult": "victory",
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          },
+          "ev_dungeon_chest_1": {
+            "A": true
+          },
+          "ev_dungeon_chest_east": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 4,
+          "item_adventurer_potion": 1,
+          "item_forest_dew": 1
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 1706435061
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 3467768520
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 4287793345
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "victory-22",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_forest_dungeon",
+        "x": 19,
+        "y": 9,
+        "gold": 470,
+        "battleResult": "victory",
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          },
+          "ev_dungeon_chest_1": {
+            "A": true
+          },
+          "ev_dungeon_chest_east": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 4,
+          "item_adventurer_potion": 1,
+          "item_forest_dew": 1
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 1706435061
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 3971721796
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 4287793345
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "battle-23",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_forest_dungeon",
+        "x": 12,
+        "y": 9,
+        "gold": 470,
+        "battleResult": "victory",
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          },
+          "ev_dungeon_chest_1": {
+            "A": true
+          },
+          "ev_dungeon_chest_east": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 4,
+          "item_adventurer_potion": 1,
+          "item_forest_dew": 1
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 2842224007
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 3971721796
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 4287793345
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "victory-24",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_forest_dungeon",
+        "x": 12,
+        "y": 9,
+        "gold": 500,
+        "battleResult": "victory",
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          },
+          "ev_dungeon_chest_1": {
+            "A": true
+          },
+          "ev_dungeon_chest_east": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 4,
+          "item_adventurer_potion": 1,
+          "item_forest_dew": 1
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 2842224007
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 180707776
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 4287793345
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "boss-introduction",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_forest_dungeon",
+        "x": 12,
+        "y": 9,
+        "gold": 500,
+        "battleResult": "victory",
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          },
+          "ev_dungeon_chest_1": {
+            "A": true
+          },
+          "ev_dungeon_chest_east": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 4,
+          "item_adventurer_potion": 1,
+          "item_forest_dew": 1
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 2842224007
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 180707776
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 4287793345
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "battle-26",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_forest_dungeon",
+        "x": 12,
+        "y": 9,
+        "gold": 500,
+        "battleResult": "victory",
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          },
+          "ev_dungeon_chest_1": {
+            "A": true
+          },
+          "ev_dungeon_chest_east": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 4,
+          "item_adventurer_potion": 1,
+          "item_forest_dew": 1
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 2842224007
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 180707776
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 4287793345
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "victory-27",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_forest_dungeon",
+        "x": 12,
+        "y": 9,
+        "gold": 530,
+        "battleResult": "victory",
+        "switches": {
+          "sw_0001": true,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          },
+          "ev_dungeon_chest_1": {
+            "A": true
+          },
+          "ev_dungeon_chest_east": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 4,
+          "item_adventurer_potion": 1,
+          "item_forest_dew": 1,
+          "item_adventurer_elixir": 1
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 2842224007
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 684661052
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 4287793345
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "boss-cleared",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_forest_dungeon",
+        "x": 12,
+        "y": 9,
+        "gold": 530,
+        "battleResult": "victory",
+        "switches": {
+          "sw_0001": true,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          },
+          "ev_dungeon_chest_1": {
+            "A": true
+          },
+          "ev_dungeon_chest_east": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 4,
+          "item_adventurer_potion": 1,
+          "item_forest_dew": 1,
+          "item_adventurer_elixir": 1
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 2842224007
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 684661052
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 4287793345
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "battle-29",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_forest_dungeon",
+        "x": 10,
+        "y": 10,
+        "gold": 530,
+        "battleResult": "victory",
+        "switches": {
+          "sw_0001": true,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          },
+          "ev_dungeon_chest_1": {
+            "A": true
+          },
+          "ev_dungeon_chest_east": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 4,
+          "item_adventurer_potion": 1,
+          "item_forest_dew": 1,
+          "item_adventurer_elixir": 1
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 1578552667
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 684661052
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 4287793345
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "victory-30",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_forest_dungeon",
+        "x": 10,
+        "y": 10,
+        "gold": 560,
+        "battleResult": "victory",
+        "switches": {
+          "sw_0001": true,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          },
+          "ev_dungeon_chest_1": {
+            "A": true
+          },
+          "ev_dungeon_chest_east": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 4,
+          "item_adventurer_potion": 1,
+          "item_forest_dew": 1,
+          "item_adventurer_elixir": 1
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 1578552667
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 1188614328
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 4287793345
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "battle-31",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_forest_dungeon",
+        "x": 10,
+        "y": 17,
+        "gold": 560,
+        "battleResult": "victory",
+        "switches": {
+          "sw_0001": true,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          },
+          "ev_dungeon_chest_1": {
+            "A": true
+          },
+          "ev_dungeon_chest_east": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 4,
+          "item_adventurer_potion": 1,
+          "item_forest_dew": 1,
+          "item_adventurer_elixir": 1
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 3346177283
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 1188614328
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 4287793345
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "victory-32",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_forest_dungeon",
+        "x": 10,
+        "y": 17,
+        "gold": 590,
+        "battleResult": "victory",
+        "switches": {
+          "sw_0001": true,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          },
+          "ev_dungeon_chest_1": {
+            "A": true
+          },
+          "ev_dungeon_chest_east": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 4,
+          "item_adventurer_potion": 1,
+          "item_forest_dew": 1,
+          "item_adventurer_elixir": 1
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 3346177283
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 1692567604
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 4287793345
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "save-menu",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_forest_dungeon",
+        "x": 10,
+        "y": 17,
+        "gold": 590,
+        "battleResult": "victory",
+        "switches": {
+          "sw_0001": true,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          },
+          "ev_dungeon_chest_1": {
+            "A": true
+          },
+          "ev_dungeon_chest_east": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 4,
+          "item_adventurer_potion": 1,
+          "item_forest_dew": 1,
+          "item_adventurer_elixir": 1
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 3346177283
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 1692567604
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 4287793345
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "saved",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_forest_dungeon",
+        "x": 10,
+        "y": 17,
+        "gold": 590,
+        "battleResult": "victory",
+        "switches": {
+          "sw_0001": true,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          },
+          "ev_dungeon_chest_1": {
+            "A": true
+          },
+          "ev_dungeon_chest_east": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 4,
+          "item_adventurer_potion": 1,
+          "item_forest_dew": 1,
+          "item_adventurer_elixir": 1
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 3346177283
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 1692567604
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 4287793345
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "loaded",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_forest_dungeon",
+        "x": 10,
+        "y": 17,
+        "gold": 590,
+        "battleResult": "victory",
+        "switches": {
+          "sw_0001": true,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          },
+          "ev_dungeon_chest_1": {
+            "A": true
+          },
+          "ev_dungeon_chest_east": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 4,
+          "item_adventurer_potion": 1,
+          "item_forest_dew": 1,
+          "item_adventurer_elixir": 1
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 3346177283
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 1692567604
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 4287793345
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "returned",
+      "state": {
+        "eventLocations": {},
+        "currentMapId": "map_blank_start",
+        "x": 20,
+        "y": 6,
+        "gold": 590,
+        "battleResult": "victory",
+        "switches": {
+          "sw_0001": true,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {
+          "ev_guild_guide": {
+            "A": true
+          },
+          "ev_village_merchant": {
+            "A": true
+          },
+          "ev_dungeon_chest_1": {
+            "A": true
+          },
+          "ev_dungeon_chest_east": {
+            "A": true
+          }
+        },
+        "timers": {},
+        "inventory": {
+          "item_ether": 2,
+          "item_potion": 4,
+          "item_adventurer_potion": 1,
+          "item_forest_dew": 1,
+          "item_adventurer_elixir": 1
+        },
+        "partyActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1,
+          "streams": {
+            "encounter": {
+              "seed": 3353753583,
+              "state": 2714341613
+            },
+            "battle": {
+              "seed": 1451955416,
+              "state": 1692567604
+            },
+            "movement": {
+              "seed": 2648051123,
+              "state": 4287793345
+            },
+            "fishing": {
+              "seed": 3770436772,
+              "state": 3770436772
+            },
+            "misc": {
+              "seed": 4250317066,
+              "state": 4250317066
+            }
+          }
+        }
+      }
+    }
+  ],
+  "errors": [],
+  "routes": [
+    {
+      "map": "map_blank_start",
+      "from": {
+        "x": 14,
+        "y": 18
+      },
+      "to": {
+        "x": 16,
+        "y": 16
+      },
+      "steps": [
+        {
+          "from": {
+            "x": 14,
+            "y": 18
+          },
+          "x": 15,
+          "y": 18,
+          "dir": "right",
+          "result": {
+            "kind": "moved",
+            "x": 15,
+            "y": 18,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 15,
+            "y": 18
+          },
+          "x": 15,
+          "y": 19,
+          "dir": "down",
+          "result": {
+            "kind": "moved",
+            "x": 15,
+            "y": 19,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 15,
+            "y": 19
+          },
+          "x": 16,
+          "y": 19,
+          "dir": "right",
+          "result": {
+            "kind": "moved",
+            "x": 16,
+            "y": 19,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 16,
+            "y": 19
+          },
+          "x": 17,
+          "y": 19,
+          "dir": "right",
+          "result": {
+            "kind": "moved",
+            "x": 17,
+            "y": 19,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 17,
+            "y": 19
+          },
+          "x": 17,
+          "y": 18,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 17,
+            "y": 18,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 17,
+            "y": 18
+          },
+          "x": 17,
+          "y": 17,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 17,
+            "y": 17,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 17,
+            "y": 17
+          },
+          "x": 16,
+          "y": 17,
+          "dir": "left",
+          "result": {
+            "kind": "moved",
+            "x": 16,
+            "y": 17,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 16,
+            "y": 17
+          },
+          "x": 16,
+          "y": 16,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 16,
+            "y": 16,
+            "map": "map_blank_start"
+          }
+        }
+      ]
+    },
+    {
+      "map": "map_blank_start",
+      "from": {
+        "x": 16,
+        "y": 16
+      },
+      "to": {
+        "x": 15,
+        "y": 6
+      },
+      "steps": [
+        {
+          "from": {
+            "x": 16,
+            "y": 16
+          },
+          "x": 16,
+          "y": 15,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 16,
+            "y": 15,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 16,
+            "y": 15
+          },
+          "x": 15,
+          "y": 15,
+          "dir": "left",
+          "result": {
+            "kind": "moved",
+            "x": 15,
+            "y": 15,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 15,
+            "y": 15
+          },
+          "x": 15,
+          "y": 14,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 15,
+            "y": 14,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 15,
+            "y": 14
+          },
+          "x": 15,
+          "y": 13,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 15,
+            "y": 13,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 15,
+            "y": 13
+          },
+          "x": 15,
+          "y": 12,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 15,
+            "y": 12,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 15,
+            "y": 12
+          },
+          "x": 15,
+          "y": 11,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 15,
+            "y": 11,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 15,
+            "y": 11
+          },
+          "x": 15,
+          "y": 10,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 15,
+            "y": 10,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 15,
+            "y": 10
+          },
+          "x": 15,
+          "y": 9,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 15,
+            "y": 9,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 15,
+            "y": 9
+          },
+          "x": 15,
+          "y": 8,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 15,
+            "y": 8,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 15,
+            "y": 8
+          },
+          "x": 15,
+          "y": 7,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 15,
+            "y": 7,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 15,
+            "y": 7
+          },
+          "x": 15,
+          "y": 6,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 15,
+            "y": 6,
+            "map": "map_blank_start"
+          }
+        }
+      ]
+    },
+    {
+      "map": "map_house_interior_1_map_blank_start_1",
+      "from": {
+        "x": 10,
+        "y": 15
+      },
+      "to": {
+        "x": 10,
+        "y": 16
+      },
+      "steps": [
+        {
+          "from": {
+            "x": 10,
+            "y": 15
+          },
+          "x": 10,
+          "y": 16,
+          "dir": "down",
+          "result": {
+            "kind": "moved",
+            "x": 10,
+            "y": 16,
+            "map": "map_house_interior_1_map_blank_start_1"
+          }
+        }
+      ]
+    },
+    {
+      "map": "map_blank_start",
+      "from": {
+        "x": 15,
+        "y": 6
+      },
+      "to": {
+        "x": 3,
+        "y": 6
+      },
+      "steps": [
+        {
+          "from": {
+            "x": 15,
+            "y": 6
+          },
+          "x": 15,
+          "y": 7,
+          "dir": "down",
+          "result": {
+            "kind": "moved",
+            "x": 15,
+            "y": 7,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 15,
+            "y": 7
+          },
+          "x": 14,
+          "y": 7,
+          "dir": "left",
+          "result": {
+            "kind": "moved",
+            "x": 14,
+            "y": 7,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 14,
+            "y": 7
+          },
+          "x": 13,
+          "y": 7,
+          "dir": "left",
+          "result": {
+            "kind": "moved",
+            "x": 13,
+            "y": 7,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 13,
+            "y": 7
+          },
+          "x": 12,
+          "y": 7,
+          "dir": "left",
+          "result": {
+            "kind": "moved",
+            "x": 12,
+            "y": 7,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 12,
+            "y": 7
+          },
+          "x": 11,
+          "y": 7,
+          "dir": "left",
+          "result": {
+            "kind": "moved",
+            "x": 11,
+            "y": 7,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 11,
+            "y": 7
+          },
+          "x": 10,
+          "y": 7,
+          "dir": "left",
+          "result": {
+            "kind": "moved",
+            "x": 10,
+            "y": 7,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 10,
+            "y": 7
+          },
+          "x": 9,
+          "y": 7,
+          "dir": "left",
+          "result": {
+            "kind": "moved",
+            "x": 9,
+            "y": 7,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 9,
+            "y": 7
+          },
+          "x": 8,
+          "y": 7,
+          "dir": "left",
+          "result": {
+            "kind": "moved",
+            "x": 8,
+            "y": 7,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 8,
+            "y": 7
+          },
+          "x": 7,
+          "y": 7,
+          "dir": "left",
+          "result": {
+            "kind": "moved",
+            "x": 7,
+            "y": 7,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 7,
+            "y": 7
+          },
+          "x": 6,
+          "y": 7,
+          "dir": "left",
+          "result": {
+            "kind": "moved",
+            "x": 6,
+            "y": 7,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 6,
+            "y": 7
+          },
+          "x": 5,
+          "y": 7,
+          "dir": "left",
+          "result": {
+            "kind": "moved",
+            "x": 5,
+            "y": 7,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 5,
+            "y": 7
+          },
+          "x": 5,
+          "y": 8,
+          "dir": "down",
+          "result": {
+            "kind": "moved",
+            "x": 5,
+            "y": 8,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 5,
+            "y": 8
+          },
+          "x": 4,
+          "y": 8,
+          "dir": "left",
+          "result": {
+            "kind": "moved",
+            "x": 4,
+            "y": 8,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 4,
+            "y": 8
+          },
+          "x": 3,
+          "y": 8,
+          "dir": "left",
+          "result": {
+            "kind": "moved",
+            "x": 3,
+            "y": 8,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 3,
+            "y": 8
+          },
+          "x": 3,
+          "y": 7,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 3,
+            "y": 7,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 3,
+            "y": 7
+          },
+          "x": 3,
+          "y": 6,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 3,
+            "y": 6,
+            "map": "map_blank_start"
+          }
+        }
+      ]
+    },
+    {
+      "map": "map_house_interior_1_map_blank_start_2",
+      "from": {
+        "x": 10,
+        "y": 15
+      },
+      "to": {
+        "x": 10,
+        "y": 16
+      },
+      "steps": [
+        {
+          "from": {
+            "x": 10,
+            "y": 15
+          },
+          "x": 10,
+          "y": 16,
+          "dir": "down",
+          "result": {
+            "kind": "moved",
+            "x": 10,
+            "y": 16,
+            "map": "map_house_interior_1_map_blank_start_2"
+          }
+        }
+      ]
+    },
+    {
+      "map": "map_blank_start",
+      "from": {
+        "x": 3,
+        "y": 6
+      },
+      "to": {
+        "x": 16,
+        "y": 0
+      },
+      "steps": [
+        {
+          "from": {
+            "x": 3,
+            "y": 6
+          },
+          "x": 2,
+          "y": 6,
+          "dir": "left",
+          "result": {
+            "kind": "moved",
+            "x": 2,
+            "y": 6,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 2,
+            "y": 6
+          },
+          "x": 1,
+          "y": 6,
+          "dir": "left",
+          "result": {
+            "kind": "moved",
+            "x": 1,
+            "y": 6,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 1,
+            "y": 6
+          },
+          "x": 1,
+          "y": 5,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 1,
+            "y": 5,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 1,
+            "y": 5
+          },
+          "x": 1,
+          "y": 4,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 1,
+            "y": 4,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 1,
+            "y": 4
+          },
+          "x": 1,
+          "y": 3,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 1,
+            "y": 3,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 1,
+            "y": 3
+          },
+          "x": 1,
+          "y": 2,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 1,
+            "y": 2,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 1,
+            "y": 2
+          },
+          "x": 2,
+          "y": 2,
+          "dir": "right",
+          "result": {
+            "kind": "moved",
+            "x": 2,
+            "y": 2,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 2,
+            "y": 2
+          },
+          "x": 2,
+          "y": 1,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 2,
+            "y": 1,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 2,
+            "y": 1
+          },
+          "x": 3,
+          "y": 1,
+          "dir": "right",
+          "result": {
+            "kind": "moved",
+            "x": 3,
+            "y": 1,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 3,
+            "y": 1
+          },
+          "x": 4,
+          "y": 1,
+          "dir": "right",
+          "result": {
+            "kind": "moved",
+            "x": 4,
+            "y": 1,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 4,
+            "y": 1
+          },
+          "x": 5,
+          "y": 1,
+          "dir": "right",
+          "result": {
+            "kind": "moved",
+            "x": 5,
+            "y": 1,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 5,
+            "y": 1
+          },
+          "x": 6,
+          "y": 1,
+          "dir": "right",
+          "result": {
+            "kind": "moved",
+            "x": 6,
+            "y": 1,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 6,
+            "y": 1
+          },
+          "x": 7,
+          "y": 1,
+          "dir": "right",
+          "result": {
+            "kind": "moved",
+            "x": 7,
+            "y": 1,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 7,
+            "y": 1
+          },
+          "x": 8,
+          "y": 1,
+          "dir": "right",
+          "result": {
+            "kind": "moved",
+            "x": 8,
+            "y": 1,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 8,
+            "y": 1
+          },
+          "x": 9,
+          "y": 1,
+          "dir": "right",
+          "result": {
+            "kind": "moved",
+            "x": 9,
+            "y": 1,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 9,
+            "y": 1
+          },
+          "x": 10,
+          "y": 1,
+          "dir": "right",
+          "result": {
+            "kind": "moved",
+            "x": 10,
+            "y": 1,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 10,
+            "y": 1
+          },
+          "x": 11,
+          "y": 1,
+          "dir": "right",
+          "result": {
+            "kind": "moved",
+            "x": 11,
+            "y": 1,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 11,
+            "y": 1
+          },
+          "x": 11,
+          "y": 0,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 11,
+            "y": 0,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 11,
+            "y": 0
+          },
+          "x": 12,
+          "y": 0,
+          "dir": "right",
+          "result": {
+            "kind": "moved",
+            "x": 12,
+            "y": 0,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 12,
+            "y": 0
+          },
+          "x": 13,
+          "y": 0,
+          "dir": "right",
+          "result": {
+            "kind": "moved",
+            "x": 13,
+            "y": 0,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 13,
+            "y": 0
+          },
+          "x": 14,
+          "y": 0,
+          "dir": "right",
+          "result": {
+            "kind": "moved",
+            "x": 14,
+            "y": 0,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 14,
+            "y": 0
+          },
+          "x": 15,
+          "y": 0,
+          "dir": "right",
+          "result": {
+            "kind": "moved",
+            "x": 15,
+            "y": 0,
+            "map": "map_blank_start"
+          }
+        },
+        {
+          "from": {
+            "x": 15,
+            "y": 0
+          },
+          "x": 16,
+          "y": 0,
+          "dir": "right",
+          "result": {
+            "kind": "moved",
+            "x": 16,
+            "y": 0,
+            "map": "map_blank_start"
+          }
+        }
+      ]
+    },
+    {
+      "map": "map_forest_dungeon",
+      "from": {
+        "x": 12,
+        "y": 17
+      },
+      "to": {
+        "x": 6,
+        "y": 6
+      },
+      "steps": [
+        {
+          "from": {
+            "x": 12,
+            "y": 17
+          },
+          "x": 11,
+          "y": 17,
+          "dir": "left",
+          "result": {
+            "kind": "moved",
+            "x": 11,
+            "y": 17,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 11,
+            "y": 17
+          },
+          "x": 10,
+          "y": 17,
+          "dir": "left",
+          "result": {
+            "kind": "moved",
+            "x": 10,
+            "y": 17,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 10,
+            "y": 17
+          },
+          "x": 9,
+          "y": 17,
+          "dir": "left",
+          "result": {
+            "kind": "moved",
+            "x": 9,
+            "y": 17,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 9,
+            "y": 17
+          },
+          "x": 8,
+          "y": 17,
+          "dir": "left",
+          "result": {
+            "kind": "moved",
+            "x": 8,
+            "y": 17,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 8,
+            "y": 17
+          },
+          "x": 7,
+          "y": 17,
+          "dir": "left",
+          "result": {
+            "kind": "moved",
+            "x": 7,
+            "y": 17,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 7,
+            "y": 17
+          },
+          "x": 6,
+          "y": 17,
+          "dir": "left",
+          "result": {
+            "kind": "battle",
+            "x": 7,
+            "y": 17,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 7,
+            "y": 17
+          },
+          "x": 6,
+          "y": 17,
+          "dir": "left",
+          "result": {
+            "kind": "moved",
+            "x": 6,
+            "y": 17,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 6,
+            "y": 17
+          },
+          "x": 6,
+          "y": 16,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 6,
+            "y": 16,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 6,
+            "y": 16
+          },
+          "x": 6,
+          "y": 15,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 6,
+            "y": 15,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 6,
+            "y": 15
+          },
+          "x": 6,
+          "y": 14,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 6,
+            "y": 14,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 6,
+            "y": 14
+          },
+          "x": 6,
+          "y": 13,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 6,
+            "y": 13,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 6,
+            "y": 13
+          },
+          "x": 6,
+          "y": 12,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 6,
+            "y": 12,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 6,
+            "y": 12
+          },
+          "x": 6,
+          "y": 11,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 6,
+            "y": 11,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 6,
+            "y": 11
+          },
+          "x": 6,
+          "y": 10,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 6,
+            "y": 10,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 6,
+            "y": 10
+          },
+          "x": 6,
+          "y": 9,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 6,
+            "y": 9,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 6,
+            "y": 9
+          },
+          "x": 6,
+          "y": 8,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 6,
+            "y": 8,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 6,
+            "y": 8
+          },
+          "x": 6,
+          "y": 7,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 6,
+            "y": 7,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 6,
+            "y": 7
+          },
+          "x": 6,
+          "y": 6,
+          "dir": "up",
+          "result": {
+            "kind": "battle",
+            "x": 6,
+            "y": 7,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 6,
+            "y": 7
+          },
+          "x": 6,
+          "y": 6,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 6,
+            "y": 6,
+            "map": "map_forest_dungeon"
+          }
+        }
+      ]
+    },
+    {
+      "map": "map_forest_dungeon",
+      "from": {
+        "x": 6,
+        "y": 6
+      },
+      "to": {
+        "x": 20,
+        "y": 7
+      },
+      "steps": [
+        {
+          "from": {
+            "x": 6,
+            "y": 6
+          },
+          "x": 7,
+          "y": 6,
+          "dir": "right",
+          "result": {
+            "kind": "moved",
+            "x": 7,
+            "y": 6,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 7,
+            "y": 6
+          },
+          "x": 8,
+          "y": 6,
+          "dir": "right",
+          "result": {
+            "kind": "moved",
+            "x": 8,
+            "y": 6,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 8,
+            "y": 6
+          },
+          "x": 9,
+          "y": 6,
+          "dir": "right",
+          "result": {
+            "kind": "moved",
+            "x": 9,
+            "y": 6,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 9,
+            "y": 6
+          },
+          "x": 10,
+          "y": 6,
+          "dir": "right",
+          "result": {
+            "kind": "battle",
+            "x": 9,
+            "y": 6,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 9,
+            "y": 6
+          },
+          "x": 10,
+          "y": 6,
+          "dir": "right",
+          "result": {
+            "kind": "moved",
+            "x": 10,
+            "y": 6,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 10,
+            "y": 6
+          },
+          "x": 11,
+          "y": 6,
+          "dir": "right",
+          "result": {
+            "kind": "moved",
+            "x": 11,
+            "y": 6,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 11,
+            "y": 6
+          },
+          "x": 12,
+          "y": 6,
+          "dir": "right",
+          "result": {
+            "kind": "moved",
+            "x": 12,
+            "y": 6,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 12,
+            "y": 6
+          },
+          "x": 13,
+          "y": 6,
+          "dir": "right",
+          "result": {
+            "kind": "moved",
+            "x": 13,
+            "y": 6,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 13,
+            "y": 6
+          },
+          "x": 14,
+          "y": 6,
+          "dir": "right",
+          "result": {
+            "kind": "moved",
+            "x": 14,
+            "y": 6,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 14,
+            "y": 6
+          },
+          "x": 14,
+          "y": 7,
+          "dir": "down",
+          "result": {
+            "kind": "moved",
+            "x": 14,
+            "y": 7,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 14,
+            "y": 7
+          },
+          "x": 14,
+          "y": 8,
+          "dir": "down",
+          "result": {
+            "kind": "moved",
+            "x": 14,
+            "y": 8,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 14,
+            "y": 8
+          },
+          "x": 14,
+          "y": 9,
+          "dir": "down",
+          "result": {
+            "kind": "moved",
+            "x": 14,
+            "y": 9,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 14,
+            "y": 9
+          },
+          "x": 15,
+          "y": 9,
+          "dir": "right",
+          "result": {
+            "kind": "moved",
+            "x": 15,
+            "y": 9,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 15,
+            "y": 9
+          },
+          "x": 15,
+          "y": 10,
+          "dir": "down",
+          "result": {
+            "kind": "moved",
+            "x": 15,
+            "y": 10,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 15,
+            "y": 10
+          },
+          "x": 16,
+          "y": 10,
+          "dir": "right",
+          "result": {
+            "kind": "battle",
+            "x": 15,
+            "y": 10,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 15,
+            "y": 10
+          },
+          "x": 16,
+          "y": 10,
+          "dir": "right",
+          "result": {
+            "kind": "moved",
+            "x": 16,
+            "y": 10,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 16,
+            "y": 10
+          },
+          "x": 17,
+          "y": 10,
+          "dir": "right",
+          "result": {
+            "kind": "moved",
+            "x": 17,
+            "y": 10,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 17,
+            "y": 10
+          },
+          "x": 18,
+          "y": 10,
+          "dir": "right",
+          "result": {
+            "kind": "moved",
+            "x": 18,
+            "y": 10,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 18,
+            "y": 10
+          },
+          "x": 19,
+          "y": 10,
+          "dir": "right",
+          "result": {
+            "kind": "moved",
+            "x": 19,
+            "y": 10,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 19,
+            "y": 10
+          },
+          "x": 19,
+          "y": 9,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 19,
+            "y": 9,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 19,
+            "y": 9
+          },
+          "x": 20,
+          "y": 9,
+          "dir": "right",
+          "result": {
+            "kind": "moved",
+            "x": 20,
+            "y": 9,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 20,
+            "y": 9
+          },
+          "x": 20,
+          "y": 8,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 20,
+            "y": 8,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 20,
+            "y": 8
+          },
+          "x": 20,
+          "y": 7,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 20,
+            "y": 7,
+            "map": "map_forest_dungeon"
+          }
+        }
+      ]
+    },
+    {
+      "map": "map_forest_dungeon",
+      "from": {
+        "x": 20,
+        "y": 7
+      },
+      "to": {
+        "x": 12,
+        "y": 9
+      },
+      "steps": [
+        {
+          "from": {
+            "x": 20,
+            "y": 7
+          },
+          "x": 20,
+          "y": 8,
+          "dir": "down",
+          "result": {
+            "kind": "moved",
+            "x": 20,
+            "y": 8,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 20,
+            "y": 8
+          },
+          "x": 20,
+          "y": 9,
+          "dir": "down",
+          "result": {
+            "kind": "moved",
+            "x": 20,
+            "y": 9,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 20,
+            "y": 9
+          },
+          "x": 19,
+          "y": 9,
+          "dir": "left",
+          "result": {
+            "kind": "moved",
+            "x": 19,
+            "y": 9,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 19,
+            "y": 9
+          },
+          "x": 19,
+          "y": 10,
+          "dir": "down",
+          "result": {
+            "kind": "battle",
+            "x": 19,
+            "y": 9,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 19,
+            "y": 9
+          },
+          "x": 19,
+          "y": 10,
+          "dir": "down",
+          "result": {
+            "kind": "moved",
+            "x": 19,
+            "y": 10,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 19,
+            "y": 10
+          },
+          "x": 18,
+          "y": 10,
+          "dir": "left",
+          "result": {
+            "kind": "moved",
+            "x": 18,
+            "y": 10,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 18,
+            "y": 10
+          },
+          "x": 17,
+          "y": 10,
+          "dir": "left",
+          "result": {
+            "kind": "moved",
+            "x": 17,
+            "y": 10,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 17,
+            "y": 10
+          },
+          "x": 16,
+          "y": 10,
+          "dir": "left",
+          "result": {
+            "kind": "moved",
+            "x": 16,
+            "y": 10,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 16,
+            "y": 10
+          },
+          "x": 15,
+          "y": 10,
+          "dir": "left",
+          "result": {
+            "kind": "moved",
+            "x": 15,
+            "y": 10,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 15,
+            "y": 10
+          },
+          "x": 14,
+          "y": 10,
+          "dir": "left",
+          "result": {
+            "kind": "moved",
+            "x": 14,
+            "y": 10,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 14,
+            "y": 10
+          },
+          "x": 13,
+          "y": 10,
+          "dir": "left",
+          "result": {
+            "kind": "moved",
+            "x": 13,
+            "y": 10,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 13,
+            "y": 10
+          },
+          "x": 12,
+          "y": 10,
+          "dir": "left",
+          "result": {
+            "kind": "moved",
+            "x": 12,
+            "y": 10,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 12,
+            "y": 10
+          },
+          "x": 12,
+          "y": 9,
+          "dir": "up",
+          "result": {
+            "kind": "moved",
+            "x": 12,
+            "y": 9,
+            "map": "map_forest_dungeon"
+          }
+        }
+      ]
+    },
+    {
+      "map": "map_forest_dungeon",
+      "from": {
+        "x": 12,
+        "y": 9
+      },
+      "to": {
+        "x": 10,
+        "y": 17
+      },
+      "steps": [
+        {
+          "from": {
+            "x": 12,
+            "y": 9
+          },
+          "x": 11,
+          "y": 9,
+          "dir": "left",
+          "result": {
+            "kind": "moved",
+            "x": 11,
+            "y": 9,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 11,
+            "y": 9
+          },
+          "x": 10,
+          "y": 9,
+          "dir": "left",
+          "result": {
+            "kind": "moved",
+            "x": 10,
+            "y": 9,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 10,
+            "y": 9
+          },
+          "x": 10,
+          "y": 10,
+          "dir": "down",
+          "result": {
+            "kind": "moved",
+            "x": 10,
+            "y": 10,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 10,
+            "y": 10
+          },
+          "x": 10,
+          "y": 11,
+          "dir": "down",
+          "result": {
+            "kind": "battle",
+            "x": 10,
+            "y": 10,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 10,
+            "y": 10
+          },
+          "x": 10,
+          "y": 11,
+          "dir": "down",
+          "result": {
+            "kind": "moved",
+            "x": 10,
+            "y": 11,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 10,
+            "y": 11
+          },
+          "x": 10,
+          "y": 12,
+          "dir": "down",
+          "result": {
+            "kind": "moved",
+            "x": 10,
+            "y": 12,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 10,
+            "y": 12
+          },
+          "x": 10,
+          "y": 13,
+          "dir": "down",
+          "result": {
+            "kind": "moved",
+            "x": 10,
+            "y": 13,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 10,
+            "y": 13
+          },
+          "x": 10,
+          "y": 14,
+          "dir": "down",
+          "result": {
+            "kind": "moved",
+            "x": 10,
+            "y": 14,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 10,
+            "y": 14
+          },
+          "x": 10,
+          "y": 15,
+          "dir": "down",
+          "result": {
+            "kind": "moved",
+            "x": 10,
+            "y": 15,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 10,
+            "y": 15
+          },
+          "x": 10,
+          "y": 16,
+          "dir": "down",
+          "result": {
+            "kind": "moved",
+            "x": 10,
+            "y": 16,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 10,
+            "y": 16
+          },
+          "x": 10,
+          "y": 17,
+          "dir": "down",
+          "result": {
+            "kind": "moved",
+            "x": 10,
+            "y": 17,
+            "map": "map_forest_dungeon"
+          }
+        }
+      ]
+    },
+    {
+      "map": "map_forest_dungeon",
+      "from": {
+        "x": 10,
+        "y": 17
+      },
+      "to": {
+        "x": 12,
+        "y": 18
+      },
+      "steps": [
+        {
+          "from": {
+            "x": 10,
+            "y": 17
+          },
+          "x": 11,
+          "y": 17,
+          "dir": "right",
+          "result": {
+            "kind": "moved",
+            "x": 11,
+            "y": 17,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 11,
+            "y": 17
+          },
+          "x": 12,
+          "y": 17,
+          "dir": "right",
+          "result": {
+            "kind": "moved",
+            "x": 12,
+            "y": 17,
+            "map": "map_forest_dungeon"
+          }
+        },
+        {
+          "from": {
+            "x": 12,
+            "y": 17
+          },
+          "x": 12,
+          "y": 18,
+          "dir": "down",
+          "result": {
+            "kind": "moved",
+            "x": 12,
+            "y": 18,
+            "map": "map_forest_dungeon"
+          }
+        }
+      ]
+    }
+  ]
+}

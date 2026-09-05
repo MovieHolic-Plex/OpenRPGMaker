@@ -1,0 +1,17 @@
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+import {serialize,deserialize} from '../../../src/project/io';
+import {loadSupabaseEnvironment} from '../../../scripts/lib/supabase-database-ops.mjs';
+const root=new URL('./',import.meta.url).pathname;
+const env=loadSupabaseEnvironment();
+const response=await fetch(env.VITE_SUPABASE_URL+'/rest/v1/projects?project_id=eq.oprn-399e312698&select=project_id,current_json,updated_at',{headers:{apikey:env.VITE_SUPABASE_ANON_KEY,Authorization:'Bearer '+env.VITE_SUPABASE_ANON_KEY,'Accept-Profile':'rpg_zzu'}});
+if(!response.ok)throw Error('Remote read HTTP '+response.status);
+const rows=await response.json();if(rows.length!==1)throw Error('Expected one project');
+const stable=(value:any):any=>Array.isArray(value)?value.map(stable):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).sort(([a],[b])=>a.localeCompare(b)).map(([k,v])=>[k,stable(v)])):value;
+const canonical=(value:any)=>JSON.stringify(stable(deserialize(serialize(value))));
+const snapshot=JSON.parse(fs.readFileSync(root+'final/project.json','utf8'));
+const before=canonical(snapshot),after=canonical(rows[0].current_json);
+const hash=(text:string)=>crypto.createHash('sha256').update(text).digest('hex');
+const evidence={projectId:rows[0].project_id,httpStatus:response.status,checkedAt:new Date().toISOString(),updatedAt:rows[0].updated_at,canonicalSnapshotSha256:hash(before),canonicalRemoteSha256:hash(after),equivalent:before===after,note:'Compare with shipping load/serialize normalization; explicit empty shop branches may be persisted after editor reload.'};
+fs.writeFileSync(root+'review/remote-recheck.json',JSON.stringify(evidence,null,2));console.log(evidence);
+if(!evidence.equivalent)throw Error('Remote project diverges from validated snapshot');

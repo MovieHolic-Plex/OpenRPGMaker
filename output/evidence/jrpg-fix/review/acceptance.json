@@ -1,0 +1,45 @@
+{
+  "passed": true,
+  "verdict": "수정·감독 보정 후 요청 체크리스트 및 플레이 가능한 모험 초안 합격",
+  "sourceHead": "c5f48f0bcf6f9cc3e4a671c612022df70b43932e",
+  "baselineHead": "6950be5d755c736cb6f5dae3a51c67a4ccf493ec",
+  "projectId": "oprn-399e312698",
+  "canonicalSha256": "ed254ee162e783808c4a3baef103e8dac7372e8ae3c2b68a4343dcc57c5111d2",
+  "runtime": {
+    "directExitCode": 0,
+    "beats": 37,
+    "browserErrors": 0,
+    "shippingPlayer": true,
+    "saveLoadStatePreserved": true,
+    "returnedToTown": true
+  },
+  "visual": {
+    "editorDatabaseScreens": 20,
+    "wholeMaps": 4,
+    "reportImages": 40,
+    "imagesLoaded": true,
+    "horizontalOverflow": false
+  },
+  "persistence": {
+    "savedAndReloaded": true,
+    "remoteRecheckHttpStatus": 200,
+    "canonicalEqual": true
+  },
+  "gates": {
+    "directExitCode": 1,
+    "changedTestFiles": 17,
+    "changedAssertionsPassed": 280,
+    "fullPassed": 13082,
+    "fullFailed": 169,
+    "fullSkipped": 15,
+    "baselineSharedFailed": 166,
+    "fullRunOnlyDbFailuresPassingFocusedOnBothHeads": 3,
+    "confirmedNewCodeRegressions": 0
+  },
+  "limitations": [
+    "AI 원문 단독 한 번의 무보정 성공이 아님",
+    "전체 게이트 실패 및 시간 의존 테스트 존재",
+    "정식 퀘스트 제출·보상 구현과 상용 게임 밸런스 검증은 범위 밖"
+  ],
+  "checkedAt": "2026-09-05T12:15:35.024696+00:00"
+}
