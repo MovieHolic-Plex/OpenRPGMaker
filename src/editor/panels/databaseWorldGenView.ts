@@ -63,6 +63,11 @@ let activeSection: SectionId = "examples";
 /** 미리보기에 태우는 프롬프트. 저자가 여기 말을 바꿔 규칙을 즉석에서 시험한다. */
 let previewQuery = "강촌마을";
 
+export function resetWorldGenTabViewState(): void {
+  activeSection = "examples";
+  previewQuery = "강촌마을";
+}
+
 export function renderWorldGenTab(host: HTMLElement, rerender: () => void): void {
   const project = store.getCurrent();
   const rules = resolveWorldGenRules(project.system.worldGen);
@@ -154,8 +159,8 @@ function previewBlock(rules: ResolvedWorldGenRules, rerender: () => void): HTMLE
               statStrip(
                 [
                   { label: "물", value: `${preview.facts.waterCells}칸`, tone: preview.facts.waterCells > 0 ? "good" : "neutral" },
-                  { label: "침엽수", value: `${preview.facts.coniferCount}그루` },
-                  { label: "활엽수", value: `${preview.facts.broadleafCount}그루` },
+                  { label: "침엽수 목표", value: `${preview.facts.coniferCount}그루` },
+                  { label: "활엽수 목표", value: `${preview.facts.broadleafCount}그루` },
                   { label: "집 지을 땅", value: `${preview.facts.buildable.w}×${preview.facts.buildable.h}` },
                 ],
                 { testid: "db-worldgen-preview-stats" },
@@ -248,7 +253,7 @@ function waterSection(rules: ResolvedWorldGenRules, rerender: () => void): reado
         sliderStepperField("가장 두꺼워도 이만큼", "db-worldgen-river-max", water.riverBandMax, (value) =>
           patchWater({ riverBandMax: value }, rerender), { ...WORLD_GEN_BOUNDS.riverBandMax, unit: "칸" }),
         segmentedControl("물이 붙는 쪽", "db-worldgen-water-side", water.side, sideOptions(), (value) =>
-          patchWater({ side: value as typeof water.side }, rerender)),
+          patchWater({ side: value as typeof water.side }, rerender, true)),
       ],
     }),
     sectionCard({
@@ -267,7 +272,7 @@ function waterSection(rules: ResolvedWorldGenRules, rerender: () => void): reado
           { id: "circle", name: "동그라미" },
           { id: "ellipse", name: "타원" },
           { id: "rect", name: "네모" },
-        ], (value) => patchWater({ shape: value as typeof water.shape }, rerender)),
+        ], (value) => patchWater({ shape: value as typeof water.shape }, rerender, true)),
       ],
     }),
   ];
@@ -285,7 +290,7 @@ function forestSection(rules: ResolvedWorldGenRules, rerender: () => void): read
         sliderStepperField("아무리 얕아도 이만큼", "db-worldgen-forest-min", forest.depthMin, (value) =>
           patchForest({ depthMin: value }, rerender), { ...WORLD_GEN_BOUNDS.depthMin, unit: "칸" }),
         segmentedControl("숲이 붙는 쪽", "db-worldgen-forest-side", forest.side, sideOptions(), (value) =>
-          patchForest({ side: value as typeof forest.side }, rerender)),
+          patchForest({ side: value as typeof forest.side }, rerender, true)),
       ],
     }),
     sectionCard({
@@ -453,15 +458,33 @@ function keywordRow(rule: WorldGenKeywordRule, rerender: () => void, builtin: bo
       el("div", {
         class: "wg-keyword-head",
         children: [
-          toggleSwitch("", `db-worldgen-keyword-toggle-${rule.id}`, enabled, (checked) => {
-            upsertRule(rule.id, (current) => ({ ...current, enabled: checked }), rerender, builtin, rule);
-          }),
+          (() => {
+            const toggle = toggleSwitch(`${rule.label} 규칙 쓰기`, `db-worldgen-keyword-toggle-${rule.id}`, enabled, (checked) => {
+              upsertRule(
+                rule.id,
+                (current) => ({ ...current, enabled: checked }),
+                rerender,
+                builtin,
+                rule,
+                { kind: "discrete", label: `${rule.label} 규칙 ${checked ? "켜기" : "끄기"}` },
+              );
+            });
+            toggle.classList.add("wg-keyword-toggle");
+            return toggle;
+          })(),
           builtin
             ? el("strong", { class: "wg-keyword-label", text: rule.label })
             : textControl(
                 "규칙 이름",
                 rule.label,
-                (value) => upsertRule(rule.id, (current) => ({ ...current, label: value }), rerender, builtin, rule),
+                (value) => upsertRule(
+                  rule.id,
+                  (current) => ({ ...current, label: value }),
+                  rerender,
+                  builtin,
+                  rule,
+                  { kind: "coalesced", key: `db-worldgen-rule-label:${rule.id}`, label: "낱말 규칙 이름 수정" },
+                ),
                 `db-worldgen-keyword-label-${rule.id}`,
               ),
           ...(builtin ? [] : [
@@ -490,7 +513,14 @@ function keywordRow(rule: WorldGenKeywordRule, rerender: () => void, builtin: bo
         rule.words.join(", "),
         (value) => {
           recordCoalescedSnapshot(`db-worldgen-words:${rule.id}`, "낱말 규칙 수정");
-          upsertRule(rule.id, (current) => ({ ...current, words: splitWords(value) }), rerender, builtin, rule);
+          upsertRule(
+            rule.id,
+            (current) => ({ ...current, words: splitWords(value) }),
+            rerender,
+            builtin,
+            rule,
+            { kind: "none" },
+          );
         },
         `db-worldgen-keyword-words-${rule.id}`,
       ),
@@ -499,7 +529,14 @@ function keywordRow(rule: WorldGenKeywordRule, rerender: () => void, builtin: bo
         (rule.exceptWords ?? []).join(", "),
         (value) => {
           recordCoalescedSnapshot(`db-worldgen-except:${rule.id}`, "낱말 규칙 수정");
-          upsertRule(rule.id, (current) => ({ ...current, exceptWords: splitWords(value) }), rerender, builtin, rule);
+          upsertRule(
+            rule.id,
+            (current) => ({ ...current, exceptWords: splitWords(value) }),
+            rerender,
+            builtin,
+            rule,
+            { kind: "none" },
+          );
         },
         `db-worldgen-keyword-except-${rule.id}`,
       ),
@@ -526,6 +563,7 @@ function keywordRow(rule: WorldGenKeywordRule, rerender: () => void, builtin: bo
                   rerender,
                   builtin,
                   rule,
+                  { kind: "discrete", label: `${rule.label} 지형 수정` },
                 );
               },
             },
@@ -536,33 +574,45 @@ function keywordRow(rule: WorldGenKeywordRule, rerender: () => void, builtin: bo
   });
 }
 
-function patchWater(patch: Partial<NonNullable<WorldGenRules["water"]>>, rerender: () => void): void {
-  recordCoalescedSnapshot("db-worldgen-water", "물 규칙 수정");
+function patchWater(
+  patch: Partial<NonNullable<WorldGenRules["water"]>>,
+  rerender: () => void,
+  discrete = false,
+): void {
+  const key = Object.keys(patch).sort().join(",");
+  if (discrete) recordProjectSnapshot("물 규칙 수정");
+  else recordCoalescedSnapshot(`db-worldgen-water:${key}`, "물 규칙 수정");
   store.update((draft) => {
     const next = { ...(draft.system.worldGen ?? {}) };
     next.water = { ...(next.water ?? {}), ...patch };
     draft.system.worldGen = next;
-  });
+  }, { scope: "project", label: "물 규칙 수정" });
   rerender();
 }
 
-function patchForest(patch: Partial<NonNullable<WorldGenRules["forest"]>>, rerender: () => void): void {
-  recordCoalescedSnapshot("db-worldgen-forest", "숲 규칙 수정");
+function patchForest(
+  patch: Partial<NonNullable<WorldGenRules["forest"]>>,
+  rerender: () => void,
+  discrete = false,
+): void {
+  const key = Object.keys(patch).sort().join(",");
+  if (discrete) recordProjectSnapshot("숲 규칙 수정");
+  else recordCoalescedSnapshot(`db-worldgen-forest:${key}`, "숲 규칙 수정");
   store.update((draft) => {
     const next = { ...(draft.system.worldGen ?? {}) };
     next.forest = { ...(next.forest ?? {}), ...patch };
     draft.system.worldGen = next;
-  });
+  }, { scope: "project", label: "숲 규칙 수정" });
   rerender();
 }
 
 function patchRoad(patch: Partial<NonNullable<WorldGenRules["road"]>>, rerender: () => void): void {
-  recordCoalescedSnapshot("db-worldgen-road", "길 규칙 수정");
+  recordProjectSnapshot("길 규칙 수정");
   store.update((draft) => {
     const next = { ...(draft.system.worldGen ?? {}) };
     next.road = { ...(next.road ?? {}), ...patch };
     draft.system.worldGen = next;
-  });
+  }, { scope: "project", label: "길 규칙 수정" });
   rerender();
 }
 
@@ -577,7 +627,10 @@ function upsertRule(
   rerender: () => void,
   builtin: boolean,
   fallback: WorldGenKeywordRule,
+  history: { readonly kind: "none" } | { readonly kind: "discrete"; readonly label: string } | { readonly kind: "coalesced"; readonly key: string; readonly label: string },
 ): void {
+  if (history.kind === "discrete") recordProjectSnapshot(history.label);
+  else if (history.kind === "coalesced") recordCoalescedSnapshot(history.key, history.label);
   store.update((draft) => {
     const next = { ...(draft.system.worldGen ?? {}) };
     const keywords = [...(next.keywords ?? [])];
@@ -588,7 +641,7 @@ function upsertRule(
     else keywords.push(updated);
     next.keywords = keywords;
     draft.system.worldGen = next;
-  });
+  }, { scope: "project", label: history.kind === "none" ? "낱말 규칙 수정" : history.label });
   rerender();
 }
 

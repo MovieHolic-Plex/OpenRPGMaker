@@ -38,10 +38,11 @@ import { interiorRoomKindCount, renderTilesetSpacesTab } from "@/editor/panels/t
 import { listUnlabeledTileIds } from "@/editor/panels/tilesetMetadataControls";
 import { renderWorldCanonTab } from "@/editor/panels/databaseWorldCanonView";
 import { renderWorldCodexTab } from "@/editor/panels/databaseWorldCodexView";
-import { renderWorldGenTab } from "@/editor/panels/databaseWorldGenView";
+import { renderWorldGenTab, resetWorldGenTabViewState } from "@/editor/panels/databaseWorldGenView";
 import { worldCanonHasContent } from "@/project/world/canon";
 import {} from "@/editor/uiCopy";
 import { DEFAULT_ENEMY_FACTION_ID, PLAYER_FACTION_ID } from "@/project/factions";
+import { BUILTIN_WORLD_GEN_KEYWORD_RULES } from "@/project/worldGenRules";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
@@ -321,6 +322,7 @@ export function databaseTabGroupLabel(tab: DatabaseTab): string | undefined {
   return groupForTab(tab)?.label;
 }
 export function switchDatabaseActiveTab(tab: DatabaseTab, panelRoot: HTMLElement): void {
+  if (tab === "worldGen" && activeTab !== tab) resetWorldGenTabViewState();
   setDatabaseActiveTab(tab);
   const header = panelRoot.querySelector(".db-tabs");
   if (header instanceof HTMLElement) updateTabButtons(header);
@@ -340,6 +342,7 @@ export function databaseTabLabel(tab: DatabaseTab): string {
 export function renderDatabasePanel(container: HTMLElement): void {
   clearChildren(container);
   tabRenderCaches.delete(container);
+  resetWorldGenTabViewState();
   // 타일셋 섹션 탭(타일 규칙·타일 지식·구성)과 좌측 폴더 자식(통행·미분류·오토타일)은 같은 것을
   // 가리키는 두 내비게이션이다. 섹션 탭을 누르면 좌측 선택도 따라오게 연결한다.
   setTilesetFolderTabRequestHandler((tab) => {
@@ -513,8 +516,10 @@ function databaseTabCount(tab: DatabaseTab): number | null {
       return worldCanonHasContent(project.worldCanon) ? 1 : 0;
     case "worldCodex":
       return project.world?.entities.length ?? 0;
-    case "worldGen":
-      return project.system.worldGen?.keywords?.length ?? 0;
+    case "worldGen": {
+      const builtinIds = new Set(BUILTIN_WORLD_GEN_KEYWORD_RULES.map((rule) => rule.id));
+      return (project.system.worldGen?.keywords ?? []).filter((rule) => !builtinIds.has(rule.id)).length;
+    }
     case "structureKits":
       return Object.values(project.tilesets).reduce(
         (sum, tileset) => sum + (tileset.structureKits?.length ?? 0),
@@ -725,11 +730,12 @@ function appendTabButton(
       on: {
         click: () => {
           if (activeTab === tab.id) return;
+          if (tab.id === "worldGen") resetWorldGenTabViewState();
           setDatabaseActiveTab(tab.id);
           expandGroupFor(header, tab.id);
           // 탭 헤더/스캐폴드는 유지하고 본문만 다시 그린다(전체 재빌드 회피).
           updateTabButtons(header);
-          renderActiveTab(body, container);
+          renderActiveTab(body, container, { forceFresh: tab.id === "worldGen" });
         },
       },
     }),

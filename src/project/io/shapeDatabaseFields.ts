@@ -83,6 +83,26 @@ export function validateSystem(value: unknown): void {
   if (system.monsterBattleParty !== undefined) requireBoolean("system.monsterBattleParty", system.monsterBattleParty);
   if (system.giftSystem !== undefined) requireBoolean("system.giftSystem", system.giftSystem);
   if (system.timeSystem !== undefined) validateTimeSystem(system.timeSystem);
+  if (system.worldGen !== undefined) {
+    const worldGen = requireRecord("system.worldGen", system.worldGen);
+    if (worldGen.water !== undefined) requireRecord("system.worldGen.water", worldGen.water);
+    if (worldGen.forest !== undefined) requireRecord("system.worldGen.forest", worldGen.forest);
+    if (worldGen.road !== undefined) requireRecord("system.worldGen.road", worldGen.road);
+    if (worldGen.useBuiltinKeywords !== undefined) requireBoolean("system.worldGen.useBuiltinKeywords", worldGen.useBuiltinKeywords);
+    if (worldGen.presetId !== undefined) requireString("system.worldGen.presetId", worldGen.presetId);
+    if (worldGen.keywords !== undefined) {
+      const keywords = requireArray("system.worldGen.keywords", worldGen.keywords);
+      for (const [index, raw] of keywords.entries()) {
+        const rule = requireRecord(`system.worldGen.keywords[${index}]`, raw);
+        requireString(`system.worldGen.keywords[${index}].id`, rule.id);
+        requireString(`system.worldGen.keywords[${index}].label`, rule.label);
+        requireArray(`system.worldGen.keywords[${index}].words`, rule.words);
+        requireArray(`system.worldGen.keywords[${index}].landmarks`, rule.landmarks);
+        if (rule.exceptWords !== undefined) requireArray(`system.worldGen.keywords[${index}].exceptWords`, rule.exceptWords);
+        if (rule.enabled !== undefined) requireBoolean(`system.worldGen.keywords[${index}].enabled`, rule.enabled);
+      }
+    }
+  }
   if (system.energy !== undefined) validateEnergySystem(system.energy);
   if (system.shipping !== undefined) validateShippingSystem(system.shipping);
   if (system.worldUnlocks !== undefined) validateWorldUnlocks(system.worldUnlocks);
