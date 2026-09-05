@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **47쪽 / 1517KB / 약 431,305 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **47쪽 / 1517KB / 약 431,389 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -539,7 +539,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L229` 배틀러 idle 애니메이션 (2026-08-30)
 - `L355` 필드 아이템 상태 부여 복구 (2026-09-05)
 
-### `openwiki/runtime-m2-flow-controls.md` — 15KB · 55줄 · ~4,021 토큰
+### `openwiki/runtime-m2-flow-controls.md` — 15KB · 57줄 · ~4,105 토큰
 
 - `L5` M2 Runtime Flow Controls
 - `L35` Storage chest authoring

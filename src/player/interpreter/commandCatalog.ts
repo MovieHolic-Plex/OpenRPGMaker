@@ -96,13 +96,15 @@ function executeM2Command(
   const m2Context = { currentEventId: state.currentEventId, project: state.project, eventPositions: state.eventPositions };
 
   if (entry.existingKind === "displayTextSettings") {
-    const format = fieldString(command.fields, "format", DEFAULT_MESSAGE_WINDOW_SETTINGS.format);
-    const position = fieldString(command.fields, "position", DEFAULT_MESSAGE_WINDOW_SETTINGS.position);
+    // Legacy commands may omit these optional settings; omission is not a malformed command.
+    const fields = { ...DEFAULT_MESSAGE_WINDOW_SETTINGS, ...command.fields };
+    const format = fieldString(fields, "format", DEFAULT_MESSAGE_WINDOW_SETTINGS.format);
+    const position = fieldString(fields, "position", DEFAULT_MESSAGE_WINDOW_SETTINGS.position);
     state.session.messageWindowSettings = {
       format: format === "transparent" ? format : "normal",
       position: position === "top" || position === "center" ? position : "bottom",
-      preventObscuringPlayer: fieldBoolean(command.fields, "preventObscuringPlayer", DEFAULT_MESSAGE_WINDOW_SETTINGS.preventObscuringPlayer),
-      allowEventMovementDuringWait: fieldBoolean(command.fields, "allowEventMovementDuringWait", DEFAULT_MESSAGE_WINDOW_SETTINGS.allowEventMovementDuringWait),
+      preventObscuringPlayer: fieldBoolean(fields, "preventObscuringPlayer", DEFAULT_MESSAGE_WINDOW_SETTINGS.preventObscuringPlayer),
+      allowEventMovementDuringWait: fieldBoolean(fields, "allowEventMovementDuringWait", DEFAULT_MESSAGE_WINDOW_SETTINGS.allowEventMovementDuringWait),
     };
     return resumeNext(frame);
   }

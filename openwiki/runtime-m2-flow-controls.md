@@ -52,3 +52,5 @@ M2 runtime commands: event processing, erase, graphic pattern, movement, checkpo
 - 지형 조회는 `terrainTagAt`과 세션 `mapOverrides`를 사용한다. 이벤트 조회는 `runtimeEventViewsForMap`과 인터프리터에 전달한 실제 `eventPositions`를 getter로 사용하여 필드 스폰 등으로 위치 맵 객체가 교체돼도 최신 좌표를 읽는다. 반환값은 현재 맵의 1-based 저작 이벤트 순번(없으면 0); 원격 이동/동적 이벤트는 저작 슬롯 뒤에 배정하며 런타임 제거로 기존 순번을 당기지 않는다.
 - 저장된 M2 동영상은 `resourceId`(legacy `value`)를 읽어 네이티브 `playMovie` 재생기와 대기/스킵 설정을 사용한다. 상태 기록만으로 실행되었다고 판정하지 않는다.
 - 회귀: `test/eventRuntimeExecution.test.ts`, `test/runtimeEventMenus.test.ts`, `test/runtimeMovementStability.test.ts`, `test/playMovieRuntime.test.ts`. 출하 플레이어 QA: `npx tsx scripts/prepare-event-runtime-qa.mts` → `node scripts/qa-event-runtime.mjs`; SUMMARY를 먼저 읽고 지정 PNG만 확인한다. headless `run_scene_test`는 새 경로/메뉴 단계를 화면 검증처럼 통과시키지 않는다.
+
+- 2026-09-05 검증 보완: `m2-002-display-text-settings`의 생략 가능한 필드는 기본값을 먼저 채워 missing-field 경고 없이 실행한다. `test/m2EventCommandCatalog.test.ts`와 `test/commandContracts/m2Command.contract.test.ts`의 기존 빈 필드 계약도 유지한다.
