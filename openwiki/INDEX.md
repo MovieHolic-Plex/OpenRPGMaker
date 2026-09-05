@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **47쪽 / 1532KB / 약 435,840 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **47쪽 / 1534KB / 약 436,562 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,7 +16,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/editor-ai-panel.md` | 253KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 447 | ~73,670 |
-| `openwiki/editor-ai-tools.md` | 76KB | 66KB ⚠상한 초과 — 절을 더 쪼개라 | 191 | ~21,880 |
+| `openwiki/editor-ai-tools.md` | 79KB | 69KB ⚠상한 초과 — 절을 더 쪼개라 | 201 | ~22,602 |
 | `openwiki/editor-database.md` | 191KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 919 | ~55,234 |
 | `openwiki/editor-event-authoring.md` | 118KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 564 | ~34,433 |
 | `openwiki/editor-pre-edit-routing.md` | 69KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 197 | ~19,760 |
@@ -32,7 +32,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | 페이지 | 깨진 줄 수 | 예시 줄 번호 |
 |---|---|---|
 | `openwiki/editor-ai-panel.md` | 25 | 218, 219, 220, 221, 222, 223, 235, 244 |
-| `openwiki/editor-ai-tools.md` | 6 | 75, 76, 80, 82, 84, 144 |
+| `openwiki/editor-ai-tools.md` | 6 | 85, 86, 90, 92, 94, 154 |
 | `openwiki/editor-database.md` | 7 | 177, 181, 182, 183, 191, 216, 219 |
 | `openwiki/editor-event-authoring.md` | 16 | 151, 152, 155, 160, 161, 162, 163, 164 |
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
@@ -239,13 +239,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L410` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
 - `L444` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
 
-### `openwiki/editor-ai-tools.md` — 76KB · 191줄 · ~21,880 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-ai-tools.md` — 79KB · 201줄 · ~22,602 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
-- `L100` Project-wide quality evaluation
-- `L106` prune_unused 의 참조 수집은 variableId 를 가진 명령 전부를 세야 한다 (2026-08-29 실측 결함 수정)
-- `L142` NPC 대사는 코드가 지어내지 않는다 — 캐스트 라이터 계약 (2026-09-03)
-- `L173` 「이 세계」 캐논은 문장 3채널에 강제된다 (2026-09-04)
-- `L188` 마을 설계서 (2026-09-05)
+- `L3` 퀘스트 입력과 완주 증거 계약 (2026-09-05)
+- `L110` Project-wide quality evaluation
+- `L116` prune_unused 의 참조 수집은 variableId 를 가진 명령 전부를 세야 한다 (2026-08-29 실측 결함 수정)
+- `L152` NPC 대사는 코드가 지어내지 않는다 — 캐스트 라이터 계약 (2026-09-03)
+- `L183` 「이 세계」 캐논은 문장 3채널에 강제된다 (2026-09-04)
+- `L198` 마을 설계서 (2026-09-05)
 
 ### `openwiki/editor-database.md` — 191KB · 919줄 · ~55,234 토큰 · 통째읽기 잘림 · 깨진 줄 7
 
