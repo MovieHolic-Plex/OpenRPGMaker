@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **47쪽 / 1516KB / 약 430,883 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **47쪽 / 1516KB / 약 430,929 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -23,7 +23,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/runtime-battle.md` | 118KB | 31KB | 358 | ~33,888 |
 | `openwiki/runtime-project-schema.md` | 58KB | 42KB | 207 | ~15,542 |
 | `openwiki/runtime-sessions.md` | 57KB | 45KB | 133 | ~15,015 |
-| `openwiki/testing.md` | 103KB | 45KB | 684 | ~29,126 |
+| `openwiki/testing.md` | 103KB | 45KB | 684 | ~29,172 |
 
 ## 한국어 산문이 깨진 페이지
 
@@ -628,7 +628,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L110` Files to inspect before editing
 - `L122` Related pages
 
-### `openwiki/testing.md` — 103KB · 684줄 · ~29,126 토큰 · 통째읽기 잘림
+### `openwiki/testing.md` — 103KB · 684줄 · ~29,172 토큰 · 통째읽기 잘림
 
 - `L3` P2 낚시·채집·도감·박물관 focused gate (2026-08-25)
 - `L10` Editor e2e boot-overlay determinism (2026-08-31)

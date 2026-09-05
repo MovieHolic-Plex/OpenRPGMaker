@@ -5,9 +5,6 @@ import { startPlayerQaServer } from "../../scripts/lib/runtimeQaRun.mjs";
 
 const OUT = "verify-shots/runtime-qa/status-menu-adversarial";
 const NAMESPACE = "runtime-menu-adversarial";
-// The shared Linux host churns network interfaces; Firefox avoids Chromium's
-// process-wide ERR_NETWORK_CHANGED cancellation during unbundled module loads.
-test.use({ browserName: "firefox", launchOptions: { args: [] } });
 let server: Awaited<ReturnType<typeof startPlayerQaServer>>;
 let project: Project;
 type QaWindow = Window & {

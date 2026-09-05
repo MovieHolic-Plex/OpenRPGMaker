@@ -1,0 +1,8 @@
+import { defineConfig } from "@playwright/test";
+import base from "../playwright.runtime.config";
+export default defineConfig({
+  ...base,
+  testDir: "../test/runtime",
+  retries: 0,
+  projects: [{ name: "firefox", use: { ...base.projects?.[0]?.use, browserName: "firefox", launchOptions: { args: [] } } }],
+});
