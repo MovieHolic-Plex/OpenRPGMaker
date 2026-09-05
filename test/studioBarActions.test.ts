@@ -19,8 +19,7 @@ const mocks = vi.hoisted(() => ({
   openMapEventSearchModal: vi.fn(),
   openAiSettingsModal: vi.fn(),
   saveProjectNow: vi.fn(async () => undefined),
-  showPromptInput: vi.fn(async () => ({ value: "새 프로젝트", choice: "blank" })),
-  showNewProjectDialog: vi.fn(async () => ({ title: "새 프로젝트", starter: { kind: "blank" } })),
+  showNewProjectDialog: vi.fn(async () => ({ title: "새 프로젝트", packId: null })),
 }));
 
 vi.mock("@/editor/panels/databaseModal", () => ({ openDatabaseModal: mocks.openDatabaseModal }));
@@ -33,9 +32,9 @@ vi.mock("@/editor/saveActions", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/editor/saveActions")>();
   return { ...actual, saveProjectNow: mocks.saveProjectNow };
 });
-vi.mock("@/editor/ui/modal", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@/editor/ui/modal")>();
-  return { ...actual, showPromptInput: mocks.showPromptInput };
+vi.mock("@/editor/ui/newProjectDialog", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/editor/ui/newProjectDialog")>();
+  return { ...actual, showNewProjectDialog: mocks.showNewProjectDialog };
 });
 
 vi.mock("@/editor/panels/newProjectDialog", async (importOriginal) => {
@@ -193,14 +192,17 @@ describe("스튜디오 바 — 한 줄, 집 하나", () => {
     expect(ids).not.toContain("menu-project-save");
   });
 
-  it("새 프로젝트 항목이 이름을 묻고 새 원격 프로젝트를 만든다", async () => {
+  it("새 프로젝트 항목이 이름·장르를 묻고 새 원격 프로젝트를 만든다", async () => {
     // Break: 클래식 툴바의 toolbar-new 와 함께 새 프로젝트 동작 자체가 사라진다.
+    // 장르를 고르면 genrePacks.ts 정본 씨앗이 loadNewRemoteProject 로 전달된다.
     const loadNew = vi.spyOn(store, "loadNewRemoteProject").mockResolvedValue({ projectId: "rpg-zzu-test" });
+    mocks.showNewProjectDialog.mockResolvedValueOnce({ title: "달빛 항구", packId: "monster-collect" as const });
     const topbar = render("expert");
     openMenu(topbar, "menu-project");
     findByTestId(fake(document.body as unknown as HTMLElement), "menu-project-new")?.click();
     await vi.waitFor(() => expect(loadNew).toHaveBeenCalledTimes(1));
-    expect(loadNew.mock.calls[0]?.[1]).toMatchObject({ title: "새 프로젝트" });
+    expect(loadNew.mock.calls[0]?.[1]).toMatchObject({ title: "달빛 항구" });
+    expect(loadNew.mock.calls[0]?.[0]?.system.genre).toBe("monster-collect");
   });
 
   it("저장 버튼: title 은 정확히 「프로젝트 저장 (Ctrl+S)」, 누르면 saveProjectNow, 점은 autosave 상태를 따른다", () => {

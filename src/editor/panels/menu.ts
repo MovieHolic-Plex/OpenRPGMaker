@@ -1,6 +1,8 @@
 import { getMode, toggleMode } from "@/app/mode";
 import { PRODUCT_TAGLINE } from "@/brand";
 import { showConfirm } from "@/editor/ui/modal";
+import { createNewProjectSeed } from "@/editor/genrePacks";
+import { newProjectPackLabel, showNewProjectDialog } from "@/editor/ui/newProjectDialog";
 import {
   EDITOR_PRODUCT_BRAND,
   getEditorChrome,
@@ -818,18 +820,21 @@ function playModeButton(mode: string): HTMLButtonElement {
 async function newProject(): Promise<void> {
   // 2026-08-18 UX 리뷰 P0: "현재 작업을 지우고" + 빨간 버튼은 위협적이고,
   // clearAll()은 열려 있던 원격 project id를 그대로 쓰며 공유 행을 덮어썼다.
-  // 새 프로젝트는 이름을 받고 새 project id를 발급해 새 원격 행으로 저장한다.
-const { showNewProjectDialog, resolveNewProjectStarterProject } = await import("@/editor/panels/newProjectDialog");
-  const choice = await showNewProjectDialog("새 프로젝트");
-  if (choice === null) return;
-  const title = choice.title.trim() || "새 프로젝트";
-  const result = await store.loadNewRemoteProject(resolveNewProjectStarterProject(choice.starter), { title });
+  // 새 프로젝트는 이름과 시작 장르를 받고 새 project id를 발급해 새 원격 행으로 저장한다.
+  // 장르가 있으면 genrePacks.ts 정본 경로로 시스템 프리셋을 씨앗에 적용한다 —
+  // 맵·이벤트·DB 레코드는 만들지 않고 system.* 토글만 설정된다.
+  const selection = await showNewProjectDialog({ defaultValue: "새 프로젝트" });
+  if (selection === null) return;
+  const title = selection.title.trim() || "새 프로젝트";
+  const seed = createNewProjectSeed(selection.packId);
+  const result = await store.loadNewRemoteProject(seed, { title });
   const { focusProjectStartMap } = await import("@/editor/mapSelection");
   focusProjectStartMap();
+  const genreSuffix = selection.packId ? ` — 시작 장르: ${newProjectPackLabel(selection.packId)}` : "";
   toast(
     result.projectId
-      ? `'${title}' 프로젝트를 만들었습니다 — 새 작업으로 온라인 저장됩니다`
-      : `'${title}' 프로젝트를 만들었습니다 (온라인 저장 미연결)`,
+      ? `'${title}' 프로젝트를 만들었습니다 — 새 작업으로 온라인 저장됩니다${genreSuffix}`
+      : `'${title}' 프로젝트를 만들었습니다 (온라인 저장 미연결)${genreSuffix}`,
     "ok",
   );
 }
