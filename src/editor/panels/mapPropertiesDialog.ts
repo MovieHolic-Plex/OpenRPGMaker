@@ -31,7 +31,7 @@ export function openMapPropertiesDialog(
     testId: `map-properties-modal-${mapId}`,
     title: "맵 설정",
     subtitle: mapName,
-    // 단일 화면 섹션형(2열 그리드)이므로 narrow(520px)로는 좁다 — wide.
+    // 고정 섹션 내비 + 본문. 맵 전용 크기는 map-props.css 에서 소유한다.
     width: "wide",
   });
   if (options.focus) focusMapPropertiesControl(mapId, FOCUS_TESTID[options.focus]);
