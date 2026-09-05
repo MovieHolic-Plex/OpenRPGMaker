@@ -62,6 +62,8 @@
 
 ## Database Studio chrome (2026-08-24)
 
+Party record tabs use the final section of `studio-v2.css`: actors, classes, skills, items, and equipment have an inset list, an indigo active rail, stronger headers and names, and neutral summaries. The local `--db-record-pane-bg` override is consumed by the existing theme declaration. The compact actor inspector uses a zero minimum grid track so it remains inside the fixed modal at 1024px.
+
 - The Database modal is a **neutral cool studio**, not the editor cream shell and not RM2k3. Tokens live in `src/styles/database/studio-theme.css` (`--db-studio-*`), scoped under `.database-modal-backdrop` and imported last among database CSS in `src/styles/index.css`. Do not put studio hex in `tokens.css`.
 - Nav is a **labeled 220px rail** (group headers visible) that collapses to 56px only below 800px. Tab `textContent` / `db-tab-*` testids stay. Each tab button's first child is an inline `svg.db-tab-icon` from `databaseTabIcons.ts`; CSS owns only its size and `color`.
 - Record lists are **name-first** with muted `#n` meta. Do not put `0001:` back in `databaseRecordViews.ts` / utility / common-event rows. Unused switch/variable reserve rows are not rendered.
