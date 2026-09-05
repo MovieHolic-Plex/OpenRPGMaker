@@ -1,6 +1,6 @@
 import { getMode, toggleMode } from "@/app/mode";
 import { PRODUCT_TAGLINE } from "@/brand";
-import { showConfirm, showPromptInput } from "@/editor/ui/modal";
+import { showConfirm, showNewProjectDialog } from "@/editor/ui/modal";
 import {
   EDITOR_PRODUCT_BRAND,
   getEditorChrome,
@@ -32,6 +32,7 @@ import {
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { createStandaloneHtmlExport } from "@/project/standaloneExport";
 import { createWebPlayerExportPackage, webExportFileName } from "@/project/webExport";
+import { createProjectFromGenreBlankProjectSystemPreset } from "@/editor/genrePacks";
 import { store, type AutoSaveState } from "@/project/store";
 import type { Project } from "@/project/types";
 import { downloadBlob } from "@/util/downloadBlob";
@@ -816,27 +817,37 @@ function playModeButton(mode: string): HTMLButtonElement {
 }
 
 async function newProject(): Promise<void> {
-  // 2026-08-18 UX 리뷰 P0: "현재 작업을 지우고" + 빨간 버튼은 위협적이고,
-  // clearAll()은 열려 있던 원격 project id를 그대로 쓰며 공유 행을 덮어썼다.
-  // 새 프로젝트는 이름을 받고 새 project id를 발급해 새 원격 행으로 저장한다.
-  const name = await showPromptInput({
-    title: "새 프로젝트",
-    message: "새 작업의 이름을 정해 주세요. 지금 열려 있는 작업은 그대로 저장된 채 유지됩니다.",
-    placeholder: "예: 나의 첫 RPG",
-    defaultValue: "새 프로젝트",
-    confirmLabel: "만들기",
-  });
-  if (name === null) return;
-  const title = name.trim() || "새 프로젝트";
-  const result = await store.loadNewRemoteProject(createBlankProject(), { title });
-  const { focusProjectStartMap } = await import("@/editor/mapSelection");
-  focusProjectStartMap();
-  toast(
-    result.projectId
-      ? `'${title}' 프로젝트를 만들었습니다 — 새 작업으로 온라인 저장됩니다`
-      : `'${title}' 프로젝트를 만들었습니다 (온라인 저장 미연결)`,
-    "ok",
-  );
+  const selection = await showNewProjectDialog({ defaultValue: "새 프로젝트" });
+  if (selection === null) return;
+  const base = selection.starter === "sample-adventure"
+    ? createSampleAdventureProject()
+    : selection.systemPresetPlan
+      ? createProjectFromGenreBlankProjectSystemPreset(selection.systemPresetPlan)
+      : createBlankProject();
+  try {
+    await store.loadNewRemoteProjectTransactionally(base, { title: selection.title });
+    if (selection.genrePresetId && selection.starter === "blank") {
+      const { applyWelcomeGenrePresetToOpenProject } = await import("@/editor/welcomeGenrePresetApply");
+      applyWelcomeGenrePresetToOpenProject(selection.genrePresetId);
+    }
+    const { focusProjectStartMap } = await import("@/editor/mapSelection");
+    focusProjectStartMap();
+    toast(`'${selection.title}' 프로젝트를 만들었습니다 — 새 작업으로 온라인 저장됩니다`, "ok");
+  } catch {
+    try {
+      const fallback = await store.loadNewRemoteProject(base, { title: selection.title });
+      const { focusProjectStartMap } = await import("@/editor/mapSelection");
+      focusProjectStartMap();
+      toast(
+        fallback.projectId
+          ? `'${selection.title}' 프로젝트를 만들었습니다 — 새 작업으로 온라인 저장됩니다`
+          : `'${selection.title}' 프로젝트를 만들었습니다 (온라인 저장 미연결)`,
+        fallback.projectId ? "ok" : "error",
+      );
+    } catch (error) {
+      toast(error instanceof Error ? error.message : "새 프로젝트를 만들지 못했습니다. 현재 프로젝트는 그대로 유지됩니다.", "error");
+    }
+  }
 }
 
 async function newSkyStairProject(): Promise<void> {

@@ -6,6 +6,14 @@
 
 import { el } from "@/util/dom";
 import { registerModal, unregisterModal } from "./modalStack";
+import {
+  NEW_PROJECT_DEFAULT_TITLE,
+  NEW_PROJECT_STARTER_OPTIONS,
+  newProjectGenreOptions,
+  resolveNewProjectSelection,
+  type NewProjectSelection,
+  type NewProjectStarterId,
+} from "@/editor/newProjectDialog";
 
 export interface ConfirmOptions {
   readonly title?: string;
@@ -228,5 +236,138 @@ export function showAlert(opts: AlertOptions): Promise<void> {
   if (!domAvailable()) return Promise.resolve();
   return new Promise((resolve) => {
     openModal("alert", opts.title, opts.message, [{ label: opts.confirmLabel ?? "확인", value: true, testid: "app-modal-confirm" }], () => resolve());
+  });
+}
+
+export interface NewProjectDialogOptions {
+  readonly defaultValue?: string;
+  readonly confirmLabel?: string;
+  readonly cancelLabel?: string;
+}
+
+export const NEW_PROJECT_DIALOG_TESTIDS = {
+  host: "app-new-project-modal",
+  input: "app-new-project-input",
+  genre: "app-new-project-genre",
+  starter: "app-new-project-starter",
+  confirm: "app-new-project-confirm",
+  cancel: "app-new-project-cancel",
+} as const;
+
+export function showNewProjectDialog(opts: NewProjectDialogOptions = {}): Promise<NewProjectSelection | null> {
+  const fallback: NewProjectSelection = resolveNewProjectSelection({
+    title: opts.defaultValue ?? NEW_PROJECT_DEFAULT_TITLE,
+    genrePresetId: null,
+    starter: "blank",
+  });
+  if (!domAvailable()) return Promise.resolve(fallback);
+  return new Promise((resolve) => {
+    const modalId = nextModalId++;
+    const titleId = `app-modal-title-${modalId}`;
+    const messageId = `app-modal-message-${modalId}`;
+    const opener = document.activeElement;
+    const overlay = el("div", {
+      class: "app-modal-overlay",
+      dataset: { testid: NEW_PROJECT_DIALOG_TESTIDS.host },
+    });
+    let settled = false;
+    const done = (value: NewProjectSelection | null): void => {
+      if (settled) return;
+      settled = true;
+      unregisterModal(overlay);
+      overlay.remove();
+      resolve(value);
+      restoreOpener(opener);
+    };
+    const input = el("input", {
+      class: "app-modal-input",
+      attrs: {
+        type: "text",
+        value: opts.defaultValue ?? NEW_PROJECT_DEFAULT_TITLE,
+        placeholder: "예: 나의 첫 RPG",
+        "aria-label": "새 프로젝트 이름",
+      },
+      dataset: { testid: NEW_PROJECT_DIALOG_TESTIDS.input },
+    }) as HTMLInputElement;
+    const genre = el("select", {
+      class: "app-modal-input",
+      attrs: { "aria-label": "장르 프리셋" },
+      dataset: { testid: NEW_PROJECT_DIALOG_TESTIDS.genre },
+    }) as HTMLSelectElement;
+    const noneOption = document.createElement("option");
+    noneOption.value = "";
+    noneOption.textContent = "장르 없음 (빈 프로젝트)";
+    genre.append(noneOption);
+    for (const option of newProjectGenreOptions()) {
+      const entry = document.createElement("option");
+      entry.value = option.id;
+      entry.textContent = `${option.label} — ${option.blurb}`;
+      genre.append(entry);
+    }
+    const starter = el("select", {
+      class: "app-modal-input",
+      attrs: { "aria-label": "시작 내용" },
+      dataset: { testid: NEW_PROJECT_DIALOG_TESTIDS.starter },
+    }) as HTMLSelectElement;
+    for (const option of NEW_PROJECT_STARTER_OPTIONS) {
+      const entry = document.createElement("option");
+      entry.value = option.id;
+      entry.textContent = `${option.label} — ${option.blurb}`;
+      starter.append(entry);
+    }
+    const confirmButton = el("button", {
+      class: "app-modal-button is-confirm",
+      text: opts.confirmLabel ?? "만들기",
+      attrs: { type: "button" },
+      dataset: { testid: NEW_PROJECT_DIALOG_TESTIDS.confirm },
+      on: {
+        click: () => {
+          try {
+            done(resolveNewProjectSelection({
+              title: input.value,
+              genrePresetId: genre.value ? genre.value : null,
+              starter: (starter.value || "blank") as NewProjectStarterId,
+            }));
+          } catch {
+            done(resolveNewProjectSelection({ title: input.value, genrePresetId: null, starter: "blank" }));
+          }
+        },
+      },
+    });
+    const cancelButton = el("button", {
+      class: "app-modal-button",
+      text: opts.cancelLabel ?? "취소",
+      attrs: { type: "button" },
+      dataset: { testid: NEW_PROJECT_DIALOG_TESTIDS.cancel },
+      on: { click: () => done(null) },
+    });
+    const card = el("div", {
+      class: "app-modal-card",
+      attrs: {
+        role: "dialog",
+        "aria-modal": "true",
+        "aria-labelledby": titleId,
+        "aria-describedby": messageId,
+      },
+      children: [
+        el("div", { class: "app-modal-title", text: "새 프로젝트", attrs: { id: titleId } }),
+        el("div", {
+          class: "app-modal-message",
+          text: "이름·장르·시작 내용을 정해 주세요. 지금 열려 있는 작업은 그대로 저장된 채 유지됩니다.",
+          attrs: { id: messageId },
+        }),
+        input,
+        genre,
+        starter,
+        el("div", { class: "app-modal-actions", children: [cancelButton, confirmButton] }),
+      ],
+    });
+    card.addEventListener("click", (event) => event.stopPropagation());
+    overlay.append(card);
+    overlay.addEventListener("click", () => done(null));
+    document.body.append(overlay);
+    registerModal(overlay, () => done(null));
+    if (typeof input.focus === "function") input.focus();
+    if (typeof input.select === "function") input.select();
   });
 }
