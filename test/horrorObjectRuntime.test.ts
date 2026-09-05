@@ -63,9 +63,19 @@ describe('horror authoring and runtime contracts', () => {
   });
   it('hiding behind furniture breaks detection, searches then returns, and can be exited', () => {
     const { world, view, mover } = fixture();
+    world.session.eventLocations.chair = { mapId: world.map.id, x: 8, y: 8 };
+    expect(pursuitTarget(world, view('monster'), mover, 20)).toMatchObject({ x: 3, y: 5, searching: false });
+    world.positions.monster = { x: 6, y: 5 };
+    world.session.eventLocations.monster = { mapId: world.map.id, x: 6, y: 5 };
+    world.session.eventLocations.chair = { mapId: world.map.id, x: 4, y: 5 };
     toggleHiding(world, view('closet'));
     expect(world.session.horror!.hiding!.witnessedBy).toEqual([]);
-    expect(pursuitTarget(world, view('monster'), mover, 1100)?.searching).toBeUndefined();
+    expect(pursuitTarget(world, view('monster'), mover, 500)).toEqual({ x: 3, y: 5, searching: true });
+    expect(pursuitTarget(world, view('monster'), mover, 600)).toEqual({ mapId: world.map.id, x: 7, y: 5, searching: true });
+    world.positions.monster = { x: 7, y: 5 };
+    world.session.eventLocations.monster = { mapId: world.map.id, x: 7, y: 5 };
+    expect(pursuitTarget(world, view('monster'), mover, 20)).toBeNull();
+    expect(world.session.horror!.pursuits.monster!.active).toBe(false);
     toggleHiding(world); expect(world.session.horror!.hiding).toBeUndefined();
   });
   it('a monster that saw entry can still capture; saved hiding state is restored', () => {

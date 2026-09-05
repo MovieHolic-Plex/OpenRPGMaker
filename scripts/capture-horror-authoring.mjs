@@ -1,0 +1,60 @@
+import { createServer } from 'vite';
+import { createServer as netServer } from 'node:net';
+import { chromium } from '@playwright/test';
+import fs from 'node:fs/promises';
+process.env.E2E_FREEZE_DEV_SERVER='1';
+process.env.VITE_CACHE_DIR='node_modules/.vite-horror-authoring';
+const freePort=await new Promise(resolve=>{const s=netServer();s.listen(0,'127.0.0.1',()=>{const p=s.address().port;s.close(()=>resolve(p));});});
+const server=await createServer({configFile:'vite.config.ts',server:{host:'127.0.0.1',port:freePort},logLevel:'error'});
+await server.listen();
+const port=server.httpServer.address().port;
+const browser=await chromium.launch({headless:true,args:['--no-sandbox','--use-gl=swiftshader','--disable-gpu']});
+const page=await browser.newPage({viewport:{width:1440,height:900}});
+const project=JSON.parse(await fs.readFile('output/evidence/night-monster-upgrade/project.json','utf8'));
+const out='output/evidence/night-monster-upgrade/editor';await fs.mkdir(out,{recursive:true});
+const errors=[];page.on('pageerror',e=>errors.push(String(e)));
+page.on('requestfailed',r=>console.log('requestfailed',new URL(r.url()).pathname,r.failure()?.errorText));
+try {
+ await page.addInitScript(seed=>{localStorage.clear();window.__RPG_ZZU_E2E_PROJECT__=seed;localStorage.setItem('oprn:editor-ui-mode','expert');},project);
+ await page.route(`http://127.0.0.1:${port}/**`, async route => {
+  const request=route.request();
+  const response=await fetch(request.url(),{method:request.method(),body:request.postDataBuffer()??undefined,headers:request.headers()});
+  await route.fulfill({status:response.status,headers:Object.fromEntries(response.headers),body:Buffer.from(await response.arrayBuffer())});
+ });
+ await page.goto(`http://127.0.0.1:${port}/`,{waitUntil:'domcontentloaded'});
+ await page.getByTestId('edit-canvas').waitFor({timeout:60000});
+ const open=async(map,id)=>{
+  await page.evaluate(async([map,id])=>{const m=await import('/src/editor/panels/eventEditor/modal.ts');m.openEventEditorModal(map,id);},[map,id]);
+  await page.getByTestId('event-editor-modal').waitFor();
+  await page.getByText('움직임과 속도',{exact:true}).click();
+ };
+ const monster=project.maps.map_night_corridor.events.find(e=>e.pages?.some(p=>p.movement.type==='chase'));
+ await open('map_night_corridor',monster.id);
+ await page.getByTestId('event-chase-scope').scrollIntoViewIfNeeded();
+ await page.getByTestId('event-chase-scope').selectOption('map');
+ await page.getByTestId('event-chase-scope').selectOption('connected');
+ await page.getByTestId('event-chase-doorDelayMs').fill('1.5');
+ await page.getByTestId('event-chase-doorDelayMs').press('Tab');
+ await page.screenshot({path:`${out}/01-chase-settings.png`});
+ await page.getByTestId('event-editor-save').click();
+ await page.getByTestId('event-editor-modal').waitFor({state:'hidden'});
+ await open('map_night_corridor',monster.id);
+ if(await page.getByTestId('event-chase-doorDelayMs').inputValue()!=='1.5')throw Error('editor pursuit value lost on reopen');
+ await page.getByTestId('event-editor-cancel').click();
+ await open('map_night_foyer','ev_night_movable_map_night_foyer');
+ await page.getByTestId('event-object-kind').scrollIntoViewIfNeeded();
+ await page.getByTestId('event-push-left').uncheck();
+ await page.screenshot({path:`${out}/02-push-settings.png`});
+ await page.getByTestId('event-editor-save').click();
+ await page.getByTestId('event-editor-modal').waitFor({state:'hidden'});
+ await open('map_night_bedroom','map_night_bedroom_ev_examine_2');
+ await page.getByTestId('event-object-kind').scrollIntoViewIfNeeded();
+ await page.screenshot({path:`${out}/03-hiding-settings.png`});
+ await page.setViewportSize({width:1024,height:768});
+ await page.getByTestId('event-object-kind').scrollIntoViewIfNeeded();
+ await page.screenshot({path:`${out}/04-hiding-1024.png`});
+ await fs.writeFile(`${out}/SUMMARY.md`,'# 에디터 공포 제작 기능 QA\n\n즉시 확인: 01-chase-settings.png, 02-push-settings.png, 03-hiding-settings.png, 04-hiding-1024.png\n\n추격 설정 변경→저장→재열기 값 유지 확인. 의자 방향 설정 변경 확인. 실제 게임 원격 저장과 분리한 UI 테스트 세션.\n');
+ if(errors.length)throw Error(errors.join('\n'));
+ console.log('Editor settings saved and reopened; 4 screenshots.');
+} catch(e){await page.screenshot({path:`${out}/failure.png`});console.error(e,errors);process.exitCode=1;}
+finally {await browser.close();await server.close();}

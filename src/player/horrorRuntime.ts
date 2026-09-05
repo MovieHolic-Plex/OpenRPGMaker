@@ -1,5 +1,7 @@
+import { isSpatialPlacementBlocking } from '@/project/spatialOccupancy';
+import { resolvePlayerBody } from '@/project/playerFootprint';
 import { canMoveFootprint, isPassable, isPassableLanding } from '@/project/collision';
-import { footprintBounds, pointRect, rectsOverlap } from '@/project/footprint';
+import { footprintBounds, pointRect, rectsOverlap, rectCells, passageBounds } from '@/project/footprint';
 import { resolveEventPage } from '@/project/io';
 import { runtimeEventViewById, runtimeEventViewsForMap, findBlockingEventOverlappingRect, type RuntimeEventView, type RuntimeEventPositions } from '@/project/runtimeEventState';
 import type { PlaySession } from '@/project/session';
@@ -21,7 +23,8 @@ export function pushObject(world: World, view: RuntimeEventView, dir: Dir): bool
   const x = view.x + d.x, y = view.y + d.y;
   if (!canMoveFootprint(world.project, world.map, view.x, view.y, view.footprint, x, y, view.passRows)) return false;
   const bounds = footprintBounds(x, y, view.footprint);
-  if (rectsOverlap(bounds, pointRect(world.session.x, world.session.y))) return false;
+  if (rectsOverlap(bounds, footprintBounds(world.session.x, world.session.y, resolvePlayerBody(world.project, world.session).footprint))) return false;
+  if (isSpatialPlacementBlocking(world.project, world.session, world.map.id, bounds)) return false;
   if (findBlockingEventOverlappingRect(world.project, world.map, world.session, world.positions, bounds, view.event.id)) return false;
   world.session.eventLocations[view.event.id] = { mapId: world.map.id, x, y, direction: view.direction };
   world.positions[view.event.id] = { x, y, direction: view.direction };
@@ -120,9 +123,16 @@ export function carryPursuitThroughDoor(world: World, movers: Map<string, Autono
     // Remember each room's entry as the local return point; returning never warps through a wall.
   }
   // Rapid consecutive transfers retain the door trail for pursuers still in transit.
-  for (const state of Object.values(world.session.horror?.pursuits ?? {})) {
+  for (const [id, state] of Object.entries(world.session.horror?.pursuits ?? {})) {
     const last = state.doors.at(-1);
-    if (last?.mapId === world.map.id && state.doors.length < 64) state.doors.push({ ...destination, remainingMs: last.remainingMs > 0 ? 1200 : 0 });
+    if (last?.mapId === world.map.id && state.doors.length < 64) {
+      const event = Object.values(world.project.maps).flatMap(m => m.events).find(e => e.id === id);
+      const page = event ? resolveEventPage(event, world.session) : undefined;
+      if (page?.movement.pursuit?.scope !== 'connected') continue;
+      const path = findChasePath(world.project, world.map, last, world.session);
+      if (!path.length && (last.x !== world.session.x || last.y !== world.session.y)) continue;
+      state.doors.push({ ...destination, remainingMs: page.movement.pursuit.doorDelayMs + path.length * Math.max(80, 640 - page.movement.speed * 80) });
+    }
   }
   if (world.session.horror) delete world.session.horror.hiding;
 }
@@ -146,9 +156,10 @@ export function advancePursuitDoors(world: World, deltaMs: number): boolean {
     // Never appear on the player or in furniture. A blocked doorway waits until it clears.
     const pos = { x: door.x, y: door.y };
     const bounds = footprintBounds(pos.x, pos.y, page.footprint ?? { width: 1, height: 1 });
-    if (!isPassableLanding(world.project, map, pos.x, pos.y)
+    if (!rectCells(passageBounds(pos.x, pos.y, page.footprint ?? { width: 1, height: 1 }, page.passRows ?? page.footprint?.height ?? 1)).every(c => isPassableLanding(world.project,map,c.x,c.y))
+      || isSpatialPlacementBlocking(world.project, world.session, map.id, bounds)
       || findBlockingEventOverlappingRect(world.project, map, world.session, world.positions, bounds, id)
-      || (map.id === world.map.id && rectsOverlap(bounds, pointRect(world.session.x, world.session.y)))) continue;
+      || (map.id === world.map.id && rectsOverlap(bounds, footprintBounds(world.session.x, world.session.y, resolvePlayerBody(world.project, world.session).footprint)))) continue;
     world.session.eventLocations[id] = { mapId: map.id, ...pos };
     world.positions[id] = pos;
     state.doors.shift();

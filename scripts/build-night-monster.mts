@@ -196,6 +196,10 @@ function verifyWalkthroughs(project: Project, manifest: NightMonsterManifest) {
   });
 }
 
+// Historical baseline builder must not erase the reviewed revision.
+const existing = await loadProjectFromSupabase(config);
+assert(!existing?.maps.map_night_basement?.events.some(e => e.id === "ev_night_basement_hiding"),
+  "개정된 밤의 괴물이 있습니다. scripts/revise-night-monster.mts를 사용하세요. 초기 제작기로 덮어쓸 수 없습니다.");
 const { project, manifest } = createNightMonsterProject();
 const localLint = projectLint(project);
 assert(localLint.filter(i => !i.code.startsWith("runtime-support:")).length === 0, `로컬 lint 실패: ${JSON.stringify(localLint)}`);

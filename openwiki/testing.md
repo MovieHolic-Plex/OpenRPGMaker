@@ -664,3 +664,14 @@ prune 판정 / 명시적 초안 저장 뒤 중복 쓰기.
 ## 마을 설계서 (2026-09-05)
 
 마을 설계서 집중 검증은 test/villageDesign.test.ts + databaseVillageView/villagePresetPreview/villageAuthoringData/villageBuilder다. 브라우저는 output/evidence/village-design에 실제 편집기 화면과 결과를 기록한다. 상세 계약과 경계는 [마을 설계서](village-design.md).
+
+
+## 공포 제작 개정 QA와 개발 서버 전송 (2026-09-05)
+
+`horror-authoring.md`의 전용 플레이어 probe와 `capture-horror-authoring.mjs`를 사용한다.
+이 호스트의 네트워크 변경 이벤트로 Chromium의 loopback 모듈 요청이 `ERR_NETWORK_CHANGED`로
+중단되었다. 두 캡처는 소유한 Vite URL만 Node fetch로 읽어 원본 응답을 전달한다.
+엔진 코드는 그대로이며 게임 데이터는 원격에서 읽어 개정한 검토 스냅샷이다.
+Chromium local network 검사만 캡처 실행 인자로 끈다. 일반 출하 설정은 바꾸지 않는다.
+`vite.player-qa.config.ts`는 기존 파일 감시 비활성화에 맞춰 HMR도 기본 비활성화하며,
+`PLAYER_QA_WATCH=1`이면 둘 다 다시 켠다. 실행 성공과 사람이 PNG를 본 시각 판정은 분리한다.

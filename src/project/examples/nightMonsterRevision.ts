@@ -69,11 +69,11 @@ export function reviseNightMonster(project: Project): Project {
   corridor.events=corridor.events.filter(e=>!e.id.startsWith('ev_horror_trap_'));
   corridor.safeZones=[];
   const monster=corridor.events.find(e=>e.pages?.some(p=>p.movement.type==='chase'))!;
-  for(const p of monster.pages!) if(p.movement.type==='chase') p.movement={...p.movement,speed:4,frequency:6,sightRange:9,giveUpRange:18,moveIntervalMs:100,pursuit:{scope:'connected',doorDelayMs:1200,searchMs:4500,onLost:'return'}};
+  for(const p of monster.pages!) if(p.movement.type==='chase') p.movement={...p.movement,speed:4,frequency:6,sightRange:9,giveUpRange:18,moveIntervalMs:100,pursuit:{scope:'connected',doorDelayMs:4000,searchMs:4500,onLost:'return'}};
   stamp(corridor,'armor',3,3);chair(corridor,20,9);
 
   const basement=room(ids.finale,{width:20,height:16,wings:[{x:2,y:4,w:16,h:8}],door:{x:10,y:11},theme:'storage',wallMaterial:'stone-brick'});
-  stamp(basement,'crate',5,5);stamp(basement,'barrel',17,8);stamp(basement,'crate',16,9);stamp(basement,'table_chairs',9,6);
+  for(let y=5;y<=9;y++) stamp(basement,'crate',5,y);stamp(basement,'barrel',17,8);stamp(basement,'crate',16,9);stamp(basement,'table_chairs',9,6);
   const rescue=basement.events.find(e=>e.id==='ev_restore_truth_ending')!;rescue.x=6;rescue.y=4;
   const escape=basement.events.find(e=>e.id==='ev_leave_blue_ending')!;escape.x=14;escape.y=4;
   const record=bind(basement,'낡은 카세트 녹음기',10,6);

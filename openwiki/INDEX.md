@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **45쪽 / 1484KB / 약 420,950 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **46쪽 / 1492KB / 약 423,577 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -18,12 +18,12 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-ai-panel.md` | 253KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 446 | ~73,568 |
 | `openwiki/editor-ai-tools.md` | 76KB | 66KB ⚠상한 초과 — 절을 더 쪼개라 | 191 | ~21,880 |
 | `openwiki/editor-database.md` | 184KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 891 | ~53,036 |
-| `openwiki/editor-event-authoring.md` | 117KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 557 | ~34,046 |
+| `openwiki/editor-event-authoring.md` | 117KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 562 | ~34,122 |
 | `openwiki/editor-pre-edit-routing.md` | 69KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 197 | ~19,760 |
 | `openwiki/runtime-battle.md` | 118KB | 31KB | 358 | ~33,888 |
-| `openwiki/runtime-project-schema.md` | 55KB | 42KB | 188 | ~14,834 |
-| `openwiki/runtime-sessions.md` | 54KB | 45KB | 119 | ~14,335 |
-| `openwiki/testing.md` | 101KB | 45KB | 667 | ~28,503 |
+| `openwiki/runtime-project-schema.md` | 56KB | 42KB | 193 | ~14,908 |
+| `openwiki/runtime-sessions.md` | 55KB | 45KB | 124 | ~14,409 |
+| `openwiki/testing.md` | 102KB | 45KB | 678 | ~28,756 |
 
 ## 한국어 산문이 깨진 페이지
 
@@ -66,7 +66,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/runtime-project-schema.md` | 2 | `.json`, `project.json` |
 | `openwiki/runtime-sessions.md` | 1 | `output/evidence/stardew/stardew-supabase.json` |
 | `openwiki/se-catalog.md` | 8 | `.mjs`, `audio-features.json`, `audition.html`, `cross-check.json`, `dist/se-staging/audition.html`, `inventory.json`, `labels.json`, `placed.json` |
-| `openwiki/testing.md` | 7 | `../dialogue.css`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts` |
+| `openwiki/testing.md` | 8 | `../dialogue.css`, `browser-play-start.png`, `browser-title.png`, `capture-horror-authoring.mjs`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts` |
 | `openwiki/town-tile-benchmark.md` | 1 | `combined-town-chipset-report.html` |
 | `openwiki/village-design.md` | 1 | `output/village-direction/index.html` |
 
@@ -289,7 +289,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L880` 구조물 증분 메타 정정 (2026-09-05)
 - `L888` 개념 회수 UI 직접 렌더 QA (2026-09-05)
 
-### `openwiki/editor-event-authoring.md` — 117KB · 557줄 · ~34,046 토큰 · 통째읽기 잘림 · 깨진 줄 16
+### `openwiki/editor-event-authoring.md` — 117KB · 562줄 · ~34,122 토큰 · 통째읽기 잘림 · 깨진 줄 16
 
 - `L3` 이벤트 편집기 가독성 — 읽는 글자와 꾸미는 글자 (2026-09-03 후속)
 - `L16` 이벤트 편집기 문법 고정 — P0 (2026-09-03)
@@ -319,6 +319,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L528` 참조를 비워도 조건을 삭제하지 않는다
   - `L535` 조건 미리보기는 모르면 모른다고 말한다
   - `L544` 조건 문구에 내부 토큰을 넣지 마라
+- `L559` 공포 게임 제작 기능 (2026-09-05)
 
 ### `openwiki/editor-event-command-fixes.md` — 13KB · 38줄 · ~3,273 토큰 · 깨진 줄 11
 
@@ -342,7 +343,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L21` Vocabulary and readiness
 - `L32` Validation
 
-### `openwiki/editor-interior-room-harness.md` — 18KB · 83줄 · ~4,991 토큰
+### `openwiki/editor-interior-room-harness.md` — 18KB · 88줄 · ~5,062 토큰
 
 - `L5` Tileset-specific map generation contract
 - `L15` Interior Room Session Harness (villager-room-v1)
@@ -352,6 +353,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L58` 개념 시설 시공 — place_concept 경로가 파이프라인에서 다른 점 (2026-09-02)
 - `L71` 도면 호환성과 외장 스탬프 후속 (2026-09-05)
 - `L77` 입구 예약·멀티타일 통행 복원 (2026-09-05)
+- `L85` 공포 게임 제작 기능 (2026-09-05)
 
 ### `openwiki/editor-observability.md` — 22KB · 248줄 · ~6,705 토큰 · 깨진 줄 1
 
@@ -409,6 +411,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L17` Quick routing
 - `L25` For AI agents
 
+### `openwiki/horror-authoring.md` — 5KB · 61줄 · ~1,444 토큰
+
+- `L6` 저작 표면
+- `L21` 데이터와 런타임
+- `L38` 실내 제작과 검증
+- `L49` 검증 경로
+
 ### `openwiki/interior-tile-benchmark.md` — 9KB · 149줄 · ~2,679 토큰
 
 - `L11` 왜 interior 를 정답지로 쓰는가
@@ -448,13 +457,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L332` 관련 위키
 - `L340` author_village 스코프 계약 (2026-09-04 적대 리뷰 반영)
 
-### `openwiki/night-monster.md` — 7KB · 90줄 · ~2,185 토큰
+### `openwiki/night-monster.md` — 9KB · 120줄 · ~2,820 토큰
 
-- `L7` 정본과 제작 경로
-- `L21` 게임 구성과 공략
-- `L39` 검증과 발견한 함정
-  - `L58` 2026-09-05 실측
-  - `L73` 사용자 플레이 후 체험 QA 정정 (2026-09-05)
+- `L7` 현재 개정본 (2026-09-05)
+- `L37` 초기판 정본과 제작 경로 (역사 기록)
+- `L51` 초기판 게임 구성과 공략 (현재 개정본에는 적용하지 않음)
+- `L69` 초기판 검증과 발견한 함정
+  - `L88` 2026-09-05 실측
+  - `L103` 사용자 플레이 후 체험 QA 정정 (2026-09-05)
 
 ### `openwiki/quickstart.md` — 12KB · 125줄 · ~3,459 토큰
 
@@ -524,7 +534,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 - `L130` Recovered head emotes (2026-09-05)
 
-### `openwiki/runtime-project-schema.md` — 55KB · 188줄 · ~14,834 토큰 · 통째읽기 잘림
+### `openwiki/runtime-project-schema.md` — 56KB · 193줄 · ~14,908 토큰 · 통째읽기 잘림
 
 - `L3` 전투 페이지 중복 ID 복구와 슬롯 참조 (2026-09-05)
 - `L14` 통행 컴포넌트 색인의 계약 (2026-08-30, PR #286)
@@ -536,8 +546,9 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L124` Boot normalizers must not create dangling references (2026-08-30)
 - `L150` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
 - `L184` 마을 설계서 (2026-09-05)
+- `L190` 공포 게임 제작 기능 (2026-09-05)
 
-### `openwiki/runtime-sessions.md` — 54KB · 119줄 · ~14,335 토큰 · 통째읽기 잘림
+### `openwiki/runtime-sessions.md` — 55KB · 124줄 · ~14,409 토큰 · 통째읽기 잘림
 
 - `L5` Roguelike run kernel and field rooms (Phase 0–3, 2026-08-24)
 - `L15` P1 daily-weather transition authority (2026-08-25)
@@ -546,6 +557,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L103` playerTouch trigger contract (2026-08-20)
 - `L107` Selected-event runtime sandbox (2026-07-30)
 - `L113` P2 spatial runtime and saves (2026-08-25)
+- `L121` 공포 게임 제작 기능 (2026-09-05)
 
 ### `openwiki/se-catalog.md` — 13KB · 228줄 · ~3,423 토큰
 
@@ -595,7 +607,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L110` Files to inspect before editing
 - `L122` Related pages
 
-### `openwiki/testing.md` — 101KB · 667줄 · ~28,503 토큰 · 통째읽기 잘림
+### `openwiki/testing.md` — 102KB · 678줄 · ~28,756 토큰 · 통째읽기 잘림
 
 - `L3` P2 낚시·채집·도감·박물관 focused gate (2026-08-25)
 - `L10` Editor e2e boot-overlay determinism (2026-08-31)
@@ -626,6 +638,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L630` fakeDom 은 프로덕션이 쓰는 브라우저 전역을 빠짐없이 준다 (2026-08-29)
 - `L651` bugfix-sweep 실제 표면 하네스 (2026-08-29)
 - `L664` 마을 설계서 (2026-09-05)
+- `L669` 공포 제작 개정 QA와 개발 서버 전송 (2026-09-05)
 
 ### `openwiki/town-tile-benchmark.md` — 10KB · 153줄 · ~3,010 토큰
 

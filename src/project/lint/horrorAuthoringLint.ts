@@ -28,8 +28,8 @@ export function lintHorrorAuthoring(project: Project): LintIssue[] {
       if (transfers.length && map.roomHarnessPlan && [[1,0],[-1,0],[0,1],[0,-1]].every(([dx,dy]) => isPassable(project, map, event.x+dx!, event.y+dy!))) add('interior-door', `${page.name}: 사방이 열린 바닥에 출입구가 있습니다. 벽·문 뒤 공간과 연결이 의도한 배치인지 확인하세요.`, event.x, event.y);
     }
     for (const names of images.values()) if (names.size >= 3) add('shared-object-graphic', `서로 다른 조사물 ${names.size}개가 같은 그림입니다 (${[...names].slice(0,3).join(', ')}). 임시 표식이면 실제 물체 그림으로 교체하세요.`);
-    const plan = map.roomHarnessPlan?.plan as { theme?: string; rooms?: unknown[] } | undefined;
-    if (plan && !plan.rooms?.length && map.width * map.height >= 300) add('interior-plan', '큰 실내를 단일 방으로 만들었습니다. 방의 용도·문 연결·우회 통로를 먼저 검토하세요. 가구 밀도만으로 완성도를 판정하지 마세요.');
+    const plan = map.roomHarnessPlan?.plan as { theme?: string; rooms?: unknown[]; wings?: {w:number;h:number}[] } | undefined;
+    if (plan && !plan.rooms?.length && plan.wings?.length === 1 && plan.wings[0]!.w * plan.wings[0]!.h >= 160) add('interior-plan', '큰 실내를 단일 방으로 만들었습니다. 방의 용도·문 연결·우회 통로를 먼저 검토하세요. 가구 밀도만으로 완성도를 판정하지 마세요.');
   }
   return issues;
 }

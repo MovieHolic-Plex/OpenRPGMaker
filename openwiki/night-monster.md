@@ -4,7 +4,37 @@
 파이프라인을 사용하며 원본 프로젝트는 수정하지 않는다. 친구의 목소리를 흉내 내는
 괴물을 소재로 만들었으나, 아래 체험 QA에서 저택 탐색·추격 게임으로서 불합격 판정을 받았다.
 
-## 정본과 제작 경로
+## 현재 개정본 (2026-09-05)
+
+초기판 체험 QA의 결함을 공용 [공포 제작 기능](horror-authoring.md)과 게임에 함께 반영했다.
+정본 project id는 `rpg-zzu-night-monster-20260905` 그대로다.
+
+- 현관·서재·침실·지하실 가구를 용도에 맞게 줄이고 조사 그림을 물체에 맞췄다.
+  현관문과 결말 문은 북쪽 벽에 배치했다. 복도는 가운데 벽을 돌아가는 순환 동선이다.
+- 괴물은 실제로 통과한 문을 따라 다음 맵에 들어온다. 문 대기 4초에 남은 이동 시간을 더한다.
+  시야를 잃으면 4.5초 수색하고 현재 방 진입점으로 돌아간다.
+- 세 방의 의자를 밀 수 있다. 침실 옷장과 지하실 보관장에는 실제로 숨을 수 있다.
+  지하실 상자 벽 뒤로 돌아 시야를 끊어야 한다. 목격된 은신은 포획을 피하지 못한다.
+- 초상 열쇠는 서재 (13,4), 버튼 순서는 가운데→왼쪽→오른쪽 그대로다.
+  침실 (6,6) 보관함에서 호루라기를 얻는다. 지하실 책상 (10,6) 기록을 읽고
+  북쪽 왼쪽 문 (6,4)에서 구출하거나 오른쪽 문 (14,4)에서 혼자 탈출한다.
+- 기존 안전구역과 즉사 압력판은 제거했다. 아래 초기판 공략의 좌표/기능은 역사 기록이다.
+
+현재 제작 경로:
+
+```bash
+npx tsx scripts/revise-night-monster.mts --read # 원격 존재 확인
+npx tsx scripts/revise-night-monster.mts        # 현재 DB/스킨을 보존하며 개정 준비
+node scripts/qa/runtime/night-monster-upgrade.probe.mjs
+npx tsx scripts/revise-night-monster.mts --save # 검토한 맵과 비교 후 원격 저장·재로드
+npx tsx scripts/verify-night-monster-progression.mts
+```
+
+시각 QA는 전용 `player.html`이며 요약을 먼저 읽고 PNG를 직접 검토한다.
+추적 증거는 `.omo/evidence/night-monster-upgrade/REPORT.md`.
+초기 제작기 `build-night-monster.mts`는 개정본이 있는 원격 프로젝트의 덮어쓰기를 거부한다.
+
+## 초기판 정본과 제작 경로 (역사 기록)
 
 - Supabase project id: `rpg-zzu-night-monster-20260905` / 제목: **밤의 괴물**.
 - 편집기: `/?project=rpg-zzu-night-monster-20260905`.
@@ -18,7 +48,7 @@
   `output/evidence/night-monster/{project.json,supabase-verification.json}`.
 - EasyRPG Interior/charset 및 번들 BGM·SE를 사용한다. 별도 미등록 외부 에셋이 없다.
 
-## 게임 구성과 공략
+## 초기판 게임 구성과 공략 (현재 개정본에는 적용하지 않음)
 
 1. **비 내리는 현관**: 오프닝, 조작 안내, 잠긴 현관과 끊긴 전화. 아래 통로로 서재에 간다.
 2. **잠긴 서재**: 움푹 팬 초상(10,8)에서 황동 열쇠를 얻고 문고리(16,10)에 사용한다.
@@ -36,7 +66,7 @@
 조사 표식·퍼즐 버튼·압력판·괴물·결말 선택물은 실제 charset 그래픽을 가진다.
 모든 방에 손전등 조명을 명시해 이전 맵의 어둠이 뜻하지 않게 남지 않도록 한다.
 
-## 검증과 발견한 함정
+## 초기판 검증과 발견한 함정
 
 - 저장 전과 Supabase 재로드 후에 다섯 시나리오를 실행한다: 다섯 방 연속 보행과 구출,
   열쇠/암호/문 통과, 추격 사망과 재시도, 구출 엔딩, 단독 탈출 엔딩.

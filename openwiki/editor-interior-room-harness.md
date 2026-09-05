@@ -80,3 +80,8 @@ The LLM-harnessed interior pipeline: start session, advance build per layer, eva
 - 저널은 맵 객체별 WeakMap이며 전체/방 가구 시공 시작 때 새로 만들고 통행 검사에 들어갈 때 소비·삭제한다. 개념 꾸러미 경로는 저널에 등록하지 않는다. 이전 맵/재시공의 기록을 다음 작업이 사용하지 않는다.
 - 실제 ㄱ자 서재 기본 플랜은 동쪽 포켓 앞 2×3 책장 때문에 개방 셀 9개가 고립돼 있었다. 이제 책장 6칸을 바닥으로 통째로 복원해 0개가 된다. 후속 공백 보정이 소품을 더해 조사 이벤트는 11→12개. 그 방의 단위 테스트 parity fixture만 실측대로 갱신했다(나머지 6개 플랜은 동일).
 - 계약: `test/interiorRoomWalkabilitySeal.test.ts`(입구 봉쇄, 실제 서재 세트 복원, 맵 간 독립), `test/interiorRoomPipelineParity.test.ts`, `test/interiorObjectCatalog.test.ts`.
+
+
+## 공포 게임 제작 기능 (2026-09-05)
+
+실내 평가 결과는 구조·통행 범위와 별도 시각 검토 필요를 명시한다. 데이터·런타임·저작·검증 계약은 [horror-authoring.md](horror-authoring.md) 참조.
