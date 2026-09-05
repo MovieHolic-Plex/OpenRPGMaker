@@ -1,3 +1,4 @@
+import { isInteriorRoomShape } from "@/project/interiorRoomFootprint";
 import {
   CONCEPT_PLACE_COUNT_MAX,
   CONCEPT_PLACE_LEVEL_MAX,
@@ -349,6 +350,7 @@ export function validateTileset(id: string, value: unknown): void {
           const role = requireString(`${placePath}.role`, entry.role);
           assert(isConceptPlaceRole(role), `${placePath}.role unknown role: ${role}`);
         }
+        if (entry.shape !== undefined) assert(isInteriorRoomShape(entry.shape), `${placePath}.shape unknown shape`);
         if (entry.size !== undefined) {
           const size = requireString(`${placePath}.size`, entry.size);
           assert(isConceptPlaceSize(size), `${placePath}.size unknown size: ${size}`);

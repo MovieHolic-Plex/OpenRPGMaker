@@ -157,7 +157,8 @@ function guardExistingMap(project: Project, mapId: string, args: Record<string, 
 export function startRoomSession(project: Project, kitId: string, args: Record<string, unknown>): ToolExecResult {
   const kit = requireKit(kitId);
   kit.ensureHarness(project);
-  const plan = kit.parsePlan(args);
+  const parsed = kit.parsePlan(args);
+  const plan = kit.preparePlan?.(parsed, project) ?? parsed;
   const mapId = kit.mapIdOf(plan);
   const sessionId = `room_${kit.kitId}_${mapId}_${Date.now().toString(36)}`;
   const checklist: RoomSession["checklist"] = Object.fromEntries(
@@ -404,6 +405,7 @@ export function runRoomPipeline(project: Project, kitId: string, args: Record<st
   } else {
     plan = kit.parsePlan(args);
   }
+  plan = kit.preparePlan?.(plan, project) ?? plan;
   const mapId = kit.mapIdOf(plan);
   const replaceWarnings = guardExistingMap(project, mapId, args);
   const result = kit.runPipeline(plan, project);

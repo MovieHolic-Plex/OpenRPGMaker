@@ -222,3 +222,10 @@ v4에 선택 필드 villagePresets[].design, defaultVillagePresetId, maps[].vill
 GameEvent.name은 선택적 표시 이름이다. place_npc가 저작한 이름을 상태 페이지의 name과 별도로 보존해 재시도 중 중복 생성되지 않게 한다. 기존 이름 없는 이벤트는 페이지 이름을 조회 폴백으로 유지한다. 저장→로드 뒤 동일 NPC 갱신 계약은 test/adventureCompletion.test.ts로 검증한다.
 
 `set_project_settings({startActorIds})`는 system 메타데이터와 저작 시작 상태 `project.session.partyActorIds`를 함께 갱신한다. 실제 새 게임은 `startStateOf(project)`를 사용한다. 시스템 필드만 변경하고 런타임 파티 인원까지 바뀌었다고 판정하지 않는다.
+## 연결 실내 도면의 영속성 (2026-09-05)
+
+집·마을에서 자동 생성한 실내도 기존 `GameMap.roomHarnessPlan`에 개념 오버레이가 포함된 플랜을 저장한다. 새 스키마 필드나 버전 증분은 없다. `createHouseInteriorMap`은 현재 프로젝트의 꾸러미·구조물 그림을 읽고, 재로드 후에는 이 플랜으로 방 세션을 복원할 수 있다. `test/interiorConceptRoutes.test.ts`가 실제 `serialize` → `deserialize` 후 장소·물건 오버레이 보존을 검증한다. 옛 플랜은 실내 재시공 때 꾸러미에 연결된다.
+
+## 개념 장소 형상 (2026-09-05)
+
+`ConceptPlaceRecord.shape?: "rect"|"l"|"alcove"`는 장소의 선택적 바닥 형태다. 생략은 이전 직사각형과 동일하다. cloneConceptBundle·plan 파서·validateTileset·방 하네스 플랜·serialize/deserialize가 보존/검증한다. 모양을 바꾸어도 장소 id나 이벤트 소유 공간이 여러 개로 분할되지 않는다. 구체 도면은 `project/interiorRoomFootprint.ts`의 사각형 합집합으로 해석한다.

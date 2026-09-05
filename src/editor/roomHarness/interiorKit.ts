@@ -1,3 +1,4 @@
+import { isInteriorRoomShape } from "@/project/interiorRoomFootprint";
 /** villager-room-v1 킷 — interiorRoomPipeline을 RoomHarnessKit로 래핑. */
 import {
   applyInteriorRoomLayer,
@@ -18,6 +19,7 @@ import {
   type Wing,
 } from "@/editor/interiorRoomPipeline";
 import type { ConceptOverlayRoom, ConceptOverlayThing } from "@/editor/conceptBundleResolve";
+import { bindInteriorConceptPlan } from "@/editor/interiorConceptPlan";
 import {
   resolveHouseInteriorProgram,
   resolveHouseInteriorScale,
@@ -200,6 +202,7 @@ export function parseInteriorPlan(args: Record<string, unknown>): ParsedInterior
           w: Math.floor(Number(r.w)),
           h: Math.floor(Number(r.h)),
           theme: roomTheme,
+          ...(r.shape === undefined ? {} : isInteriorRoomShape(r.shape) ? { shape: r.shape } : (() => { throw new ToolError("rooms.shape must be rect|l|alcove", { code: "invalid-args" }); })()),
           modifiers: parseThemeModifiers(r.modifiers, `rooms[${index}].modifiers`),
           floorTile: r.floorTile !== undefined ? Math.floor(Number(r.floorTile)) : undefined,
         };
@@ -301,6 +304,7 @@ export const INTERIOR_ROOM_KIT: RoomHarnessKit<InteriorRoomPlan> = {
   demoPlans: INTERIOR_ROOM_DEMO_PLANS,
   ensureHarness: ensureInteriorRoomHarness,
   parsePlan: parseInteriorPlan,
+  preparePlan: bindInteriorConceptPlan,
   mapIdOf: (plan) => plan.mapId,
   nameOf: (plan) => plan.name,
   createEmptyMap: createEmptyRoomMap,
