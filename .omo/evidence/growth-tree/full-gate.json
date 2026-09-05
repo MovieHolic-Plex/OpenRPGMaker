@@ -1,0 +1,9 @@
+{
+  "sourceCommit": "905c4e60",
+  "command": "VITEST_MAX_FORKS=8 VITEST_MIN_FORKS=1 npm run gates",
+  "status": "incomplete: timeboxed",
+  "elapsedSeconds": 619,
+  "vitestReportProduced": false,
+  "ownedProcessesStopped": 12,
+  "hostLoad": "65.82 75.12 98.12 48/11067 829836"
+}

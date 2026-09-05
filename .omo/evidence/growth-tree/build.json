@@ -1,0 +1,15 @@
+{
+  "sourceCommit": "32a66afb",
+  "command": "npm run build",
+  "exitCode": 0,
+  "stages": [
+    "typecheck:app",
+    "editor",
+    "player",
+    "standalone"
+  ],
+  "warnings": [
+    "existing starter battle-icon paths unresolved at build time",
+    "large chunks"
+  ]
+}
