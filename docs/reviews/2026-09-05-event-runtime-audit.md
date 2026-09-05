@@ -38,7 +38,7 @@
 - `npm run gates -- --only typecheck`: app 타입 오류 0, 기준선 대비 회귀 없음.
 - 출하 플레이어 계약 QA 통과: 조건 생산자, 장애물 우회 보행·중간 좌표, 실제 메뉴와 불러오기 패널, video playing/ended, 저장 슬롯 불러오기 후 이전 이벤트 종료와 입력 복구. 화면 6장도 확인했다. 불러오기 패널의 게임 영역 밖 배치도 고쳤다(`src/styles/runtime/title.css`). Chromium의 GPU ReadPixels 성능 경고 4건은 앱 오류와 구분해 report.json에 보존했다.
 - 후속 수정 뒤 「철수의 기억」 17개 대사·귀환·재조사·이동도 다시 통과했다.
-- 전체 저장소 게이트 결과는 별도 로그에 기록한다. 전체 명령의 화면·소리까지 검증한 결과로 확대 해석하면 안 된다.
+- 최종 런타임 관련 11파일 / 222개 통과. 전체 게이트는 exit 1(12,929 통과 / 208 실패, 표면 실패)이며 마지막 선택 필드 보정 전 실행이다. 기준선 밖 실패 30파일을 base `2489cfef`와 대조해 경고 회귀 2파일을 수정했다. 동시성에 따라 달랐던 편집기 3파일은 `--maxWorkers=1` 재실행에서 base/head 모두 28개 통과했다. 표면 검사 6개 실패와 CSS live-class 실패는 base에서도 동일하다. 전체 통과를 주장하지 않으며, 상세 비교와 제한은 `.omo/evidence/event-runtime-audit/README.md` 및 `gate-comparison.json`에 기록했다.
 - 원격 프로젝트: `rpg-zzu-cheolsu-memory-20260905-df12`. 기존 프로젝트의 `memory_summer/summer_scene`에 설정 명령 두 개만 추가하고 Supabase 저장 후 재로드 대조를 완료했다. 저장 결과 `saved`, 재로드 `true`, SHA-256 `32625f7b4d717e4f708e57b90861f1546ca1d1b43cd410badd2e86f6004ae2b8`.
 
 ```bash

@@ -1,0 +1,74 @@
+{
+  "sourceCommit": "24a02064",
+  "source": "Final targeted rerun with unchanged tracked timeout settings",
+  "files": [
+    {
+      "file": "test/eventRuntimeExecution.test.ts",
+      "status": "passed",
+      "tests": 13,
+      "failed": 0
+    },
+    {
+      "file": "test/interpreter.test.ts",
+      "status": "passed",
+      "tests": 46,
+      "failed": 0
+    },
+    {
+      "file": "test/m2EventCommandCatalog.test.ts",
+      "status": "passed",
+      "tests": 12,
+      "failed": 0
+    },
+    {
+      "file": "test/m2RuntimeSupportCompleteness.test.ts",
+      "status": "passed",
+      "tests": 12,
+      "failed": 0
+    },
+    {
+      "file": "test/persistedMessageSettings.test.ts",
+      "status": "passed",
+      "tests": 2,
+      "failed": 0
+    },
+    {
+      "file": "test/playMovieRuntime.test.ts",
+      "status": "passed",
+      "tests": 14,
+      "failed": 0
+    },
+    {
+      "file": "test/runtimeEventMenus.test.ts",
+      "status": "passed",
+      "tests": 4,
+      "failed": 0
+    },
+    {
+      "file": "test/runtimeMoveRouteCommands.test.ts",
+      "status": "passed",
+      "tests": 2,
+      "failed": 0
+    },
+    {
+      "file": "test/runtimeMovementStability.test.ts",
+      "status": "passed",
+      "tests": 45,
+      "failed": 0
+    },
+    {
+      "file": "test/runtimePageMovementAfterCommandRoute.test.ts",
+      "status": "passed",
+      "tests": 1,
+      "failed": 0
+    },
+    {
+      "file": "test/commandContracts/m2Command.contract.test.ts",
+      "status": "passed",
+      "tests": 71,
+      "failed": 0
+    }
+  ],
+  "total": 222,
+  "failed": 0
+}
