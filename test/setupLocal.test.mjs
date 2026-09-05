@@ -216,3 +216,37 @@ test('origin-only validation does not accept URL-normalized paths or empty crede
     assert.throws(() => validateConfig({ ...config, url }), { code: 'INVALID_URL' });
   }
 });
+
+
+test('generated private settings override conflicting base env through Vite without mutating the base file', async t => {
+  const { setupLocal, readConfiguration } = await api();
+  const root = await directory(t);
+  const base = [
+    'VITE_SUPABASE_URL=https://old.example',
+    'SUPABASE_UPSTREAM_URL=${VITE_SUPABASE_URL}',
+    'SUPABASE_ANON_KEY=sb_secret_old_admin_key',
+    'VITE_SUPABASE_ANON_KEY=old_browser_key',
+    'VITE_SUPABASE_PROJECT_ID=old-project',
+    'VITE_SUPABASE_USE_PROXY=0',
+    'UNRELATED="keep # base value"',
+    '',
+  ].join('\n');
+  const basePath = join(root, '.env');
+  await writeFile(basePath, base, { mode: 0o640 });
+  const before = await stat(basePath);
+  const requested = { ...config, projectId: '기존 프로젝트 #$HOME ${PATH} &=$SUPABASE_ANON_KEY' };
+  await setupLocal({ root, ask: async () => requested, probe: async actual => assert.deepEqual(actual, requested) });
+  assert.deepEqual(await readConfiguration(root), { ...requested, proxy: '1' });
+  const effective = loadEnv('development', root, '');
+  assert.equal(effective.VITE_SUPABASE_ANON_KEY, '');
+  assert.equal(effective.UNRELATED, 'keep # base value');
+  assert.equal(await readFile(basePath, 'utf8'), base);
+  const after = await stat(basePath);
+  assert.equal(after.ino, before.ino);
+  assert.equal(after.mode, before.mode);
+  assert.equal(after.mtimeMs, before.mtimeMs);
+  const privateBytes = await readFile(join(root, '.env.local'));
+  await assert.rejects(setupLocal({ root, ask: () => assert.fail('existing configuration must not prompt') }), { code: 'CONFIG_EXISTS' });
+  assert.deepEqual(await readFile(join(root, '.env.local')), privateBytes);
+  assert.equal(await readFile(basePath, 'utf8'), base);
+});

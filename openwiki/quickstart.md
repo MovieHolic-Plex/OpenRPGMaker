@@ -52,6 +52,7 @@ already provisioned Supabase access plus an **existing application project id**.
 - Terminal equivalents, from the checkout: `npm run setup:local` creates private settings;
   `npm run mac:launch` sets up if missing and launches. The `.command` resolves its own folder,
   including spaces/Unicode, regardless of the current working directory.
+  실행 명령은 `npm run mac:launch` 하나로 통일합니다. 설정 질문과 오류·복구 안내는 한국어로 표시됩니다.
 - The wizard masks the anon/publishable key and performs a bounded read-only GET against
   `rpg_zzu.projects`. Use an HTTPS Supabase **origin**, or HTTP loopback for a local service.
   Admin/service-role/database credentials, URL credentials, redirects and remote HTTP are rejected.

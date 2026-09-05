@@ -3,7 +3,8 @@
 `node --test test/macLauncher.test.mjs test/setupLocal.test.mjs` (also
 `npm run test:mac-onboarding`) is the focused Node 24 gate. Tests use empty temporary folders,
 synthetic anon credentials and local HTTP servers, never the provisioned private `.env.local`.
-They cover Vite env precedence/round-trip, exclusive 0600 creation, preservation and races,
+They cover Vite env precedence/round-trip (including conflicting base `.env` values with byte,
+inode, permission and modification-time preservation), exclusive 0600 creation, preservation and races,
 masked input/cancellation, unsafe origins/admin keys/redirects, read-only `rpg_zzu.projects`
 probes, npm install failure, quoted Finder paths, listen-before-open, startup signals, and a
 real Vite strict-port collision. The collision test remaps only the occupied port so it cannot

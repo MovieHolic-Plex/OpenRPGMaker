@@ -1,8 +1,20 @@
 # Phase 1 Mac onboarding producer evidence
 
+## Midpoint review revision (2026-09-06)
+
+The requested Korean-language revision is committed alongside this report update. All messages owned by the wrapper and launcher/setup entrypoints are now Korean: prerequisites, prompts, validation/probe errors, cancellation, private-file/recovery guidance, ready URL, browser fallback and optional Bun guidance. Error codes, command names and configuration values remain unchanged. Native npm/Vite output is not translated. No translation helpers or new runtime abstractions were added.
+
+**Canonical launcher command: `npm run mac:launch`**, consistently retained in code, quickstart, workflow labeling and this report; there is no alternate launcher alias. The Korean ready announcement is `RPG Maker 실행 주소: <URL>`. The local surface QA runner was adjusted to recognize this announcement; earlier English logs below are historical evidence, not current copy.
+
+- Added a characterization test with conflicting temporary base `.env` server URL/key, legacy browser key, project id and proxy mode. It invokes the actual setup writer, reloads through `readConfiguration` and Vite `loadEnv`, and proves correct literal Unicode/dollar/interpolation-like values, blank browser key, unrelated-value preservation, and unchanged base-file bytes, inode, mode and modification time. A second setup attempt preserves both files. The current implementation passed this characterization without a runtime change: [p1-base-env-characterization.log](p1-base-env-characterization.log).
+- Final midpoint focused command: `node --test test/macLauncher.test.mjs test/setupLocal.test.mjs`: **26 passed, 0 failed, 0 skipped, one run**, [p1-midpoint-tests.log](p1-midpoint-tests.log). No prose-lock tests were added.
+- Actual Linux PTY fresh setup and cancellation exercised the Korean prompts with synthetic credentials, preserved masking and `0600`, and wrote nothing on cancellation. A real launcher argument error is Korean as well: [p1-midpoint-terminal.json](p1-midpoint-terminal.json).
+- LSP diagnostics on both changed production scripts and the changed test: none. Node/Bash syntax, wrapper executable bit, workflow YAML, canonical package script, wiki verification/index freshness, and diff whitespace checks passed.
+- This revision changes product copy and adds coverage only. HTTPS/loopback validation, strict port 9999, read-only probe behavior and existing private configuration remain unchanged. The current revision did not access the provisioned backend or author content. Full supervisor gates/build were not duplicated; earlier browser limitations below still apply.
+
 ## Delivered
 
-Implementation commit: **`af52a52a1acee3cd415eea79bfde26294e4af163`** (`feat: add private Mac launcher and setup`).
+Initial implementation commit: **`af52a52a1acee3cd415eea79bfde26294e4af163`** (`feat: add private Mac launcher and setup`).
 Branch: `agent/mac-onboarding-p1`. Base: `f11d6febb662ce47c1737ac914258b0c886d4466`.
 Task: `st_01a072e7`. Execution date: 2026-09-06 UTC.
 Scoped worktree: `/home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1`.

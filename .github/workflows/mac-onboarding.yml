@@ -34,7 +34,7 @@ jobs:
           test -x 'Start RPG Maker.command'
           node --check scripts/mac-launch.mjs
           node --check scripts/setup-local.mjs
-      - name: Isolated onboarding contracts (no secrets or live database)
+      - name: mac:launch and setup:local contracts (no secrets or live database)
         run: npm run test:mac-onboarding
       - run: npm run typecheck:app
       - name: Existing configuration and same-origin proxy contracts
