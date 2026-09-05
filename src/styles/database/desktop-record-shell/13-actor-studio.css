@@ -91,7 +91,7 @@
     display: grid;
     gap: 8px;
     grid-template-columns: minmax(166px, 1.4fr) minmax(84px, 0.72fr) 42px 56px 56px;
-    min-width: 430px;
+    min-width: calc(166px + 84px + 42px + 56px + 56px + 4 * 8px + 2 * 18px);
   }
 
   .database-modal-body .db-actor-studio-workspace .db-actor-studio-table .db-actor-table-header {
@@ -424,7 +424,7 @@
 
   .database-modal-body .db-actor-studio-workspace .db-actor-studio-table .db-actor-table-row {
     grid-template-columns: minmax(132px, 1.4fr) minmax(58px, 0.7fr) 32px 42px 40px;
-    min-width: 0;
+    min-width: calc(132px + 58px + 32px + 42px + 40px + 4 * 6px + 2 * 10px);
   }
 
   .database-modal-body .db-actor-studio-workspace .db-actor-studio-table .db-actor-table-header,
