@@ -59,6 +59,11 @@ function ownerships(map: GameMap): Ownership[] {
   ];
 }
 
+/** The same accepted ownership geometry used by the final invariant, independent of passability. */
+export function protectedHouseCells(map: GameMap): readonly Cell[] {
+  return ownerships(map).flatMap((owner) => owner.cells);
+}
+
 type CellSnapshot = Cell & {
   readonly lower: number;
   readonly upper: number;

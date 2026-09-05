@@ -329,7 +329,12 @@ export interface AutotilePoint {
 // 8-이웃 variantMap 재계산 — 칠해진 셀 + 8-이웃 링을 재검사한다(기존 엔진의
 // autotileNeighborMask/autotileVariantForMask 재사용). 8비트 마스크 항목이 없으면
 // 4비트(외곽) 폴백으로 조회해 부분 정의 variantMap에도 안전하다.
-export function resolveAutotile(group: AutotileGroup, paintedCells: readonly AutotilePoint[], map: AutotileMapView): number {
+export function resolveAutotile(
+  group: AutotileGroup,
+  paintedCells: readonly AutotilePoint[],
+  map: AutotileMapView,
+  canWrite?: (x: number, y: number) => boolean
+): number {
   const members = new Set<number>(group.memberTileIds);
   const connect = new Set<number>(group.connectTileIds ?? group.memberTileIds);
   const isConnected = (tile: number): boolean => connect.has(tile);
@@ -344,6 +349,7 @@ export function resolveAutotile(group: AutotileGroup, paintedCells: readonly Aut
         const key = `${cx},${cy}`;
         if (visited.has(key)) continue;
         visited.add(key);
+        if (canWrite && !canWrite(cx, cy)) continue;
         const current = map.lowerTiles[cy * map.width + cx];
         if (!members.has(current)) continue;
         const mask = autotileNeighborMask(map, cx, cy, isConnected, 8);

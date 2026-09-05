@@ -16,6 +16,8 @@ import type { Point } from "@/editor/tools/mapHelpers";
 import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
 import { isRoadTile } from "@/project/defaults/roadAutotile";
+import { captureHouseProtection } from "@/editor/tools/houseProtection";
+import { DIRT_ROAD_TILE, SAND_TILE } from "@/project/defaults/chipsetMapping";
 import { isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
 
@@ -120,6 +122,7 @@ describe("도로 우회 — 건물 관통 방지", () => {
     const protectedCells = blockedCells(ctx.project, map);
     expect(protectedCells.size).toBeGreaterThan(20);
     const before = layerSnapshot(map, protectedCells);
+    const houses = captureHouseProtection(ctx.project);
 
     // 집 몸통을 정통으로 관통하는 폴리라인 — 벽·지붕이 이 경로상에 있다.
     const result = runTool(ctx, "paint_road", {
@@ -132,6 +135,7 @@ describe("도로 우회 — 건물 관통 방지", () => {
     expectOk(result);
     const after = mapOf(ctx);
     expect(changedCells(before, layerSnapshot(after, protectedCells))).toEqual([]);
+    expect(captureHouseProtection(ctx.project)).toEqual(houses);
     expect((result.data as { obstacleCells: number }).obstacleCells).toBeGreaterThan(0);
   });
 
@@ -317,6 +321,7 @@ describe("도로 우회 — 건물 관통 방지", () => {
     const protectedCells = blockedCells(ctx.project, mapOf(ctx));
     expect(protectedCells.size).toBeGreaterThan(20);
     const before = layerSnapshot(mapOf(ctx), protectedCells);
+    const houses = captureHouseProtection(ctx.project);
 
     const result = runTool(ctx, "lay_path", {
       mapId: MAP_ID,
@@ -328,6 +333,8 @@ describe("도로 우회 — 건물 관통 방지", () => {
 
     expectOk(result);
     expect(changedCells(before, layerSnapshot(mapOf(ctx), protectedCells))).toEqual([]);
+    expect(captureHouseProtection(ctx.project)).toEqual(houses);
+    expect(roadFragments(mapOf(ctx))).toBe(1);
     const data = result.data as { obstacleCells: number; structureCells: number; detouredSegments: number };
     expect(data.structureCells).toBeGreaterThan(0);
     expect(data.detouredSegments).toBeGreaterThan(0);
@@ -344,6 +351,7 @@ describe("도로 우회 — 건물 관통 방지", () => {
     });
     expect(structureGround.length).toBeGreaterThan(20);
     const before = groundSnapshot(mapOf(ctx), structureGround);
+    const houses = captureHouseProtection(ctx.project);
 
     // road 템플릿의 십자 길(원점 기준 y+14~15)이 집 몸통을 지나가게 원점을 잡는다.
     expectOk(runTool(ctx, "stamp_structure", {
@@ -354,5 +362,70 @@ describe("도로 우회 — 건물 관통 방지", () => {
     }));
 
     expect(changedCells(before, groundSnapshot(mapOf(ctx), structureGround))).toEqual([]);
+    expect(captureHouseProtection(ctx.project)).toEqual(houses);
+    // Fence rails/corners are independent single-cell units; keep the unprotected corner.
+    expect(mapOf(ctx).upperTiles[15 * mapOf(ctx).width + 17]).toBe(410);
+  });
+});
+
+describe("roads respect completed-house geometry", () => {
+  it("blocks passable bbox gaps, empty ridge, deck attachment, and recorded placements only", () => {
+    const { ctx } = context();
+    const map = mapOf(ctx);
+    map.layoutPlan = { version: 1, kind: "houses", regions: [
+      { id: "deck", role: "house", label: "Deck", x: 10, y: 5, w: 8, h: 8,
+        shape: "rooftop-deck", doorAt: { x: 12, y: 12 } },
+    ] };
+    map.upperTiles[13 * map.width + 15] = 322;
+    map.lowerTiles[4 * map.width + 10] = TILE.EMPTY;
+    map.structurePlacements = [{ id: "human", kitId: "human-kit", x: 25, y: 5, w: 2, h: 2,
+      before: { lower: [], upper: [] }, afterHash: "recorded" }];
+    const mask = roadObstacleMaskFor(ctx.project, map);
+    expect(isPassable(ctx.project, map, 12, 8)).toBe(true);
+    for (let y = 4; y < 13; y += 1) {
+      for (let x = 10; x < 18; x += 1) expect(mask(x, y), `${x},${y}`).toBe("structure");
+    }
+    expect(mask(15, 13)).toBe("structure");
+    expect(mask(14, 13)).toBe("open");
+    expect(mask(25, 5)).toBe("structure");
+    expect(mask(26, 6)).toBe("structure");
+    expect(mask(25, 4)).toBe("open");
+    expect(mask(9, 4)).toBe("open");
+  });
+
+  it.each([
+    { tool: "paint_road", args: { style: "dirt" }, tile: DIRT_ROAD_TILE.BODY },
+    { tool: "paint_road", args: { style: "sand" }, tile: SAND_TILE.BODY },
+    { tool: "lay_path", args: { material: "흙길" }, tile: DIRT_ROAD_TILE.BODY },
+  ])("$tool $tile preserves protected autotile neighbors and their stacks", ({ tool, args, tile }) => {
+    const { ctx } = context();
+    const map = mapOf(ctx);
+    map.layoutPlan = { version: 1, kind: "houses", regions: [
+      { id: "house", role: "house", label: "House", x: 10, y: 5, w: 8, h: 8 },
+    ] };
+    const ridge = 4 * map.width + 10;
+    map.lowerTiles[ridge] = tile;
+    map.lowerTileStacks = { [ridge]: [TILE.GRASS, tile] };
+    map.upperTileStacks = { [ridge]: [] };
+    const before = captureHouseProtection(ctx.project);
+    expectOk(runTool(ctx, tool, { mapId: MAP_ID, points: [{ x: 3, y: 3 }, { x: 30, y: 3 }],
+      naturalness: 0, ...args }));
+    expect(captureHouseProtection(ctx.project)).toEqual(before);
+    expect(mapOf(ctx).lowerTiles[3 * map.width + 3]).not.toBe(TILE.GRASS);
+    expect(mapOf(ctx).lowerTiles[3 * map.width + 30]).not.toBe(TILE.GRASS);
+  });
+
+  it.each(["paint_road", "lay_path"])("%s rejects a metadata-only barrier instead of committing disconnected pieces", (tool) => {
+    const { ctx } = context(12, 8);
+    mapOf(ctx).layoutPlan = { version: 1, kind: "houses", regions: [
+      { id: "barrier", role: "house", label: "Barrier", x: 6, y: 0, w: 1, h: 8 },
+    ] };
+    const before = structuredClone(ctx.project);
+    const result = runTool(ctx, tool, { mapId: MAP_ID, points: [{ x: 2, y: 4 }, { x: 10, y: 4 }],
+      naturalness: 0, ...(tool === "paint_road" ? { style: "dirt" } : { material: "흙길" }) });
+    expect(result.ok).toBe(false);
+    expect(result.issues?.[0]?.code).toBe(tool === "paint_road" ? "road-blocked" : "path-blocked");
+    expect(ctx.project).toEqual(before);
+    expect(roadKeys(mapOf(ctx)).size).toBe(0);
   });
 });
