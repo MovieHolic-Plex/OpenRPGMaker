@@ -1,4 +1,5 @@
-import { resolveEventSpriteTexture } from "@/player/eventSpriteResources";
+import { eventSpriteScale, resolveEventSpriteTexture } from "@/player/eventSpriteResources";
+import { isGeneratedMonsterSprite } from "@/assets/generatedMonsterSprites";
 import { resourceDisplayName } from "@/player/resourceDisplay";
 import type {
   AutonomousNpcSceneContext,
@@ -26,7 +27,11 @@ export function applyMoveRouteGraphicChange(
   const normalized = spriteId.trim();
   if (!normalized || !sprite) return;
   const texture = resolveEventSpriteTexture(store.getCurrent(), normalized, view.page?.graphic.pattern);
-  if (texture) sprite.setTexture(texture.texture, texture.frame);
+  if (texture) {
+    const wasMonster = isGeneratedMonsterSprite(sprite.texture.key);
+    sprite.setTexture(texture.texture, texture.frame);
+    if (texture.fitSize || wasMonster) sprite.setScale?.(eventSpriteScale(texture, sprite, view.scale));
+  }
 }
 
 export function playMoveRouteSound(scene: AutonomousNpcSceneContext, resourceId: string): void {

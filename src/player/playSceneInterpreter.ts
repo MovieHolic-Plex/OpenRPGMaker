@@ -10,6 +10,7 @@ import {
   showPictureState,
 } from "@/project/session";
 import { store } from "@/project/store";
+import { setEventSpritePattern } from "@/player/eventSpriteResources";
 import { playAudioCommand, stopAudioCommand } from "@/player/audio";
 import { resolveEventPage } from "@/project/io";
 import { createInterpreter, type StepResult } from "@/player/interpreter";
@@ -547,7 +548,7 @@ function applyEventGraphicPatternStep(
   if (!eventId) return;
   // Persist across refreshRuntimeSurfaces so door open frames survive wait/transfer mid-sequence.
   scene.eventGraphicPatternOverrides.set(eventId, step.pattern);
-  scene.eventSprites.get(eventId)?.setFrame(step.pattern);
+  setEventSpritePattern(store.getCurrent(), scene.eventSprites.get(eventId), step.pattern);
   scene.syncRuntimeState();
 }
 

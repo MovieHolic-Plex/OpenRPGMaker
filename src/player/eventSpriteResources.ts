@@ -1,4 +1,5 @@
 import { BUNDLED_EASYRPG_CHARSET_ASSETS } from "@/assets/bundled";
+import { isGeneratedMonsterSprite } from "@/assets/generatedMonsterSprites";
 import type { Project } from "@/project/types";
 import type { Dir } from "@/player/input";
 import { charsetIdleFrameIndex, isEasyRpgCharsetTextureKey } from "@/player/charsetMotion";
@@ -6,6 +7,8 @@ import { charsetIdleFrameIndex, isEasyRpgCharsetTextureKey } from "@/player/char
 export type EventSpriteTexture = {
   readonly texture: string;
   readonly frame: string | number;
+  /** Static battler art is fitted to a field-sized box before authored scale. */
+  readonly fitSize?: number;
 };
 
 export function resolveEventSpriteTexture(
@@ -27,7 +30,27 @@ export function resolveEventSpriteTexture(
   const bundledSprite = Object.values(project.assets.sprites).find(
     (sprite) => sprite.image.type === "bundled" && sprite.image.id === spriteId
   );
-  return bundledSprite ? { texture: spriteId, frame } : null;
+  if (bundledSprite) return { texture: spriteId, frame };
+  if (!uploadedKind && isGeneratedMonsterSprite(spriteId)) return { texture: spriteId, frame: "__BASE", fitSize: 32 };
+  return null;
+}
+
+export function eventSpriteScale(
+  texture: EventSpriteTexture | null,
+  sprite: { readonly width?: number; readonly height?: number },
+  authoredScale: number,
+): number {
+  if (!texture?.fitSize) return authoredScale;
+  const size = Math.max(sprite.width ?? 0, sprite.height ?? 0);
+  return Number.isFinite(size) && size > 0 ? authoredScale * texture.fitSize / size : authoredScale;
+}
+
+export function setEventSpritePattern(
+  project: Project,
+  sprite: { readonly texture: { readonly key: string }; setFrame(frame: string | number): unknown } | undefined,
+  pattern: number,
+): void {
+  if (sprite) sprite.setFrame(resolveEventSpriteTexture(project, sprite.texture.key, pattern)?.frame ?? pattern);
 }
 
 export function eventSpriteFrameForDirection(

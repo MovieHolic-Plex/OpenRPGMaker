@@ -6,6 +6,7 @@ import {
   showPictureState,
 } from "@/project/session";
 import { store } from "@/project/store";
+import { setEventSpritePattern } from "@/player/eventSpriteResources";
 import { playAudioCommand, stopAudioCommand } from "@/player/audio";
 import type { Command, CommonEvent, MoveCommand } from "@/project/types";
 import { createInterpreter, type StepResult } from "@/player/interpreter";
@@ -372,7 +373,7 @@ function applyEventGraphicPatternStep(
   const eventId = step.eventId || currentEventId;
   if (!eventId) return;
   scene.eventGraphicPatternOverrides.set(eventId, step.pattern);
-  scene.eventSprites.get(eventId)?.setFrame(step.pattern);
+  setEventSpritePattern(store.getCurrent(), scene.eventSprites.get(eventId), step.pattern);
   scene.syncRuntimeState();
 }
 
