@@ -200,6 +200,7 @@ export class EditScene extends PhaserRuntime.Scene {
    * 쌓으면 제스처가 끝나는 순간 카메라가 여러 번 튄다 — 마지막 요청만 사용자에게 의미가 있다.
    */
   private deferredCameraFocus: CameraFocusTarget | null = null;
+  private activeCameraFocus: { target: CameraFocusTarget; zoom: number } | null = null;
   /**
    * 게시된 뷰포트 스냅샷의 기하 서명 — 이것이 바뀔 만큼만 다시 게시한다.
    *
@@ -302,6 +303,7 @@ export class EditScene extends PhaserRuntime.Scene {
     this.agentFocusRenderer = new AgentFocusRenderer(this, this.agentFocusHighlightLayer, () => this.mapId());
     this.cameraPanController = new CameraPanController(this, {
       onPanStart: () => {
+        this.cancelCameraFocus();
         this.isPainting = false;
         this.lastPaintKey = "";
       },
@@ -389,6 +391,7 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private cleanup(): void {
+    this.cancelCameraFocus(false);
     this.unbindCanvasPanGuards();
     this.unbindBrowserContextMenuGuards();
     this.rightRegionGesture = null;
@@ -449,6 +452,7 @@ export class EditScene extends PhaserRuntime.Scene {
    * 바뀔 때 게시한다. 무변화 프레임은 수 번의 수치 복사·문자열 비교만 하고 끝난다.
    */
   update(): void {
+    if (this.activeCameraFocus && shouldDeferCameraFocus(this.pointerGestureState())) this.cancelCameraFocus();
     this.syncPublishedViewport();
   }
 
@@ -505,6 +509,7 @@ export class EditScene extends PhaserRuntime.Scene {
     this.bindBrowserContextMenuGuards();
     // 마우스 다운 → 드래그 중 계속 적용(페인트/충돌/지우개).
     this.input.on("pointerdown", (ptr: Phaser.Input.Pointer) => {
+      this.cancelCameraFocus(true, ptr);
       this.updatePointerStatus(ptr);
       // 붙여넣기 미리보기 모드: 좌클릭 → 확정, 우클릭 → 취소.
       if (editorState.get().pastePreview) {
@@ -1034,6 +1039,7 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private panCameraBy(deltaX: number, deltaY: number): void {
+    this.cancelCameraFocus();
     this.cameraPanController?.panBy(deltaX, deltaY);
   }
 
@@ -1304,6 +1310,7 @@ export class EditScene extends PhaserRuntime.Scene {
     this.lastRenderStateKey = this.renderStateKey(mid);
     const cameraViewKey = this.cameraViewKey(mid);
     const resetCamera = cameraViewKey !== this.lastCameraViewKey;
+    if (mapChanged || resetCamera) this.cancelCameraFocus(false);
     this.lastCameraViewKey = cameraViewKey;
     const tileLayer = this.tileLayer;
     const hoverPreviewLayer = this.hoverPreviewLayer;
@@ -1585,11 +1592,23 @@ export class EditScene extends PhaserRuntime.Scene {
       this.deferredCameraFocus = target;
       return;
     }
+    const active = this.activeCameraFocus;
+    if (active && JSON.stringify(active.target) === JSON.stringify(target)) return;
+    const camera = this.cameras.main;
+    camera.preRender();
     const plan = planCameraFocus(target, map, this.visibleTileRect(), 1, {
-      currentZoom: editorState.get().zoom,
+      currentZoom: camera.zoom,
       zoomLevels: EDITOR_ZOOM_LEVELS,
     });
-    if (!plan) return;
+    if (!plan) {
+      // A newer, already-visible destination also supersedes a previous trip.
+      if (target.onlyIfOffscreen && planCameraFocus({ ...target, onlyIfOffscreen: false }, map, null)) this.cancelCameraFocus();
+      return;
+    }
+    const startZoom = camera.zoom;
+    const startX = camera.scrollX + camera.width / 2;
+    const startY = camera.scrollY + camera.height / 2;
+    this.cancelCameraFocus(false);
     // 줌은 팬보다 **먼저** 바꾼다: editorState.set 이 redraw → applyCameraView 로 카메라를 다시 세우므로
     // 순서를 뒤집으면 방금 계산한 팬 목표가 리셋된 카메라에 덮인다. 줌이 바뀌면 worldView 크기도
     // 달라지므로 팬 목표는 줌 적용 뒤의 기하학으로 구한다.
@@ -1607,13 +1626,30 @@ export class EditScene extends PhaserRuntime.Scene {
         targetWorldY,
         canvas: area.canvas,
         unoccluded: area.unoccluded,
-        zoom: area.zoom,
+        zoom: nextZoom ?? editorState.get().zoom,
       })
       : { x: targetWorldX, y: targetWorldY };
+    const endZoom = nextZoom ?? editorState.get().zoom;
+    // State records the destination zoom once. Restore the live camera before the browser paints,
+    // then interpolate both zoom and look-at on the same clock (no snap before the pan).
+    camera.setZoom(startZoom);
+    camera.centerOn(startX, startY);
+    camera.preRender();
+    const motion = { target, zoom: endZoom };
+    this.activeCameraFocus = motion;
+    const distance = Math.hypot(lookAt.x - startX, lookAt.y - startY) * startZoom;
+    const duration = Math.min(650, Math.max(300, 300 + distance * 0.15));
+    const reducedMotion = typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     // 카메라가 움직이면 DOM 마커·선택 팔레트 오버레이·AI 뷰포트 스냅샷이 전부 낡는다.
     // 손 팬은 onPanMove 에서 이미 이 셋을 되맞추는데 프로그램 팬은 아무것도 하지 않아
     // 조수가 데려간 화면에서 마커가 엉뚱한 자리에 남고 AI 는 이전 위치를 계속 읽었다.
-    this.cameras.main.pan(lookAt.x, lookAt.y, 300, "Cubic.easeOut", true, (_camera, progress: number) => {
+    const advance = (_camera: unknown, progress: number): void => {
+      if (this.activeCameraFocus !== motion || this.mapId() !== mid) return;
+      const eased = progress * progress * (3 - 2 * progress);
+      camera.setZoom(startZoom * Math.pow(endZoom / startZoom, eased));
+      camera.centerOn(startX + (lookAt.x - startX) * eased, startY + (lookAt.y - startY) * eased);
+      // Phaser updates worldView during render, after effect callbacks. Publish this frame, not the last.
+      camera.preRender();
       // 6번째 인자는 onComplete 가 아니라 **onUpdate** 다(phaser Pan.js: "invoked every frame
       // for the duration of the effect"). DOM 마커·팔레트를 매 프레임 다시 만들면 영역 작업의
       // 인라인 승인 툴바가 그 사이에 갈려 pointerdown/up 이 다른 노드에 떨어질 수 있으므로
@@ -1623,8 +1659,32 @@ export class EditScene extends PhaserRuntime.Scene {
         this.publishMapViewport();
         return;
       }
+      this.activeCameraFocus = null;
       this.afterCameraMoved();
-    });
+    };
+    if (reducedMotion) advance(camera, 1);
+    else camera.pan(lookAt.x, lookAt.y, duration, "Sine.easeInOut", true, advance);
+  }
+
+  private cancelCameraFocus(settleZoom = true, pointer?: Phaser.Input.Pointer): void {
+    const motion = this.activeCameraFocus;
+    if (!motion) return;
+    this.activeCameraFocus = null;
+    const camera = this.cameras.main;
+    camera.panEffect.reset();
+    if (settleZoom) {
+      camera.preRender();
+      const anchor = pointer ? camera.getWorldPoint(pointer.x, pointer.y) : null;
+      camera.setZoom(motion.zoom);
+      camera.preRender();
+      // Finishing a fractional zoom must not move the tile the user just clicked.
+      if (anchor && pointer) {
+        const shifted = camera.getWorldPoint(pointer.x, pointer.y);
+        camera.setScroll(camera.scrollX + anchor.x - shifted.x, camera.scrollY + anchor.y - shifted.y);
+        camera.preRender();
+      }
+      this.afterCameraMoved();
+    }
   }
 
   /**

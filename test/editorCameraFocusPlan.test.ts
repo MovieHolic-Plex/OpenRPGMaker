@@ -193,3 +193,30 @@ describe("planCameraFocus — 줌 맞추기(fit)", () => {
     expect(plan).toEqual({ centerTileX: 20, centerTileY: 20 });
   });
 });
+
+
+describe("camera focus rejects poisoned geometry and respects map bounds", () => {
+  it.each([NaN, Infinity, -Infinity])("rejects non-finite bounds: %s", (value) => {
+    for (const key of ["x", "y", "width", "height"]) {
+      expect(planCameraFocus(target({ bounds: { x: 0, y: 0, width: 2, height: 2, [key]: value } }), MAP, VIEW)).toBeNull();
+    }
+    expect(planCameraFocus(target(), { width: value, height: 30 }, VIEW)).toBeNull();
+  });
+
+  it("clips an overlapping region before choosing its center and zoom", () => {
+    expect(planCameraFocus(target({ bounds: { x: 38, y: 28, width: 100, height: 100 } }), MAP, VIEW))
+      .toEqual({ centerTileX: 39, centerTileY: 29 });
+    expect(planCameraFocus(target({ bounds: { x: -10, y: -10, width: 12, height: 12 } }), MAP, VIEW))
+      .toEqual({ centerTileX: 1, centerTileY: 1 });
+  });
+
+  it("rejects disjoint and sub-tile bounds and negative fractional points", () => {
+    expect(planCameraFocus(target({ bounds: { x: 40, y: 0, width: 5, height: 5 } }), MAP, VIEW)).toBeNull();
+    expect(planCameraFocus(target({ bounds: { x: 2, y: 2, width: 0.2, height: 1 } }), MAP, VIEW)).toBeNull();
+    expect(planCameraFocus(target({ tileX: -0.2 }), MAP, VIEW)).toBeNull();
+  });
+
+  it("does not take over automatically when the viewport is non-finite", () => {
+    expect(planCameraFocus(target({ onlyIfOffscreen: true }), MAP, { ...VIEW, x: NaN })).toBeNull();
+  });
+});
