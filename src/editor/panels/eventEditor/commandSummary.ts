@@ -1,3 +1,4 @@
+import { equipmentSlotLabel as catalogSlotLabel } from "@/project/equipmentSlots";
 import {
   compareAmountLabel,
   pictureSlotCaption,
@@ -1229,7 +1230,7 @@ function className(id: string): string {
 }
 
 function equipmentSlotLabel(slot: Extract<Command, { kind: "changeEquipment" }>["slot"]): string {
-  return { weapon: "무기", shield: "방패", armor: "갑옷", helmet: "머리", accessory: "장신구" }[slot];
+  return catalogSlotLabel(store.getCurrent(), slot);
 }
 
 function formatActorVitalAmount(amount: number, amountMode?: "flat" | "percent"): string {

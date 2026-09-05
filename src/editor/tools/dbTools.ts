@@ -1,3 +1,4 @@
+import { hasEquipmentSlot } from "@/project/equipmentSlots";
 // editor/tools/dbTools.ts
 // DB 쓰기 툴: upsert_item / upsert_enemy / upsert_troop / upsert_actor / upsert_skill
 //            / upsert_equipment / upsert_class / define_promotion / upsert_state / upsert_common_event
@@ -366,13 +367,10 @@ const parameterCurvesSchema = objectSchema({
   agility: { type: "array", items: integerSchema() },
 });
 const expCurveSchema = objectSchema({ base: integerSchema(), extra: integerSchema(), acceleration: integerSchema() });
-const actorInitialEquipmentSchema = objectSchema({
-  weapon: stringSchema(),
-  shield: stringSchema(),
-  armor: stringSchema(),
-  helmet: stringSchema(),
-  accessory: stringSchema(),
-});
+const actorInitialEquipmentSchema: JsonSchema = {
+  type: "object", description: "{ equipment slot id: equipment id }; includes project-authored slots",
+  additionalProperties: true,
+};
 const actorOptionsSchema = objectSchema({ dualWield: booleanSchema(), autoBattle: booleanSchema(), fixedEquipment: booleanSchema(), mightyGuard: booleanSchema() });
 const learnedSkillSchema = objectSchema({ level: integerSchema(), skillId: stringSchema() });
 const promotionRequiresSchema = objectSchema({
@@ -603,7 +601,7 @@ const equipmentRecordSchema = objectSchema({
   name: stringSchema(),
   imageResourceId: stringSchema(),
   iconResourceId: stringSchema(),
-  slot: { type: "string", enum: ["weapon", "shield", "armor", "helmet", "accessory"] },
+  slot: stringSchema("database.equipmentSlots id or built-in weapon/shield/armor/helmet/accessory"),
   price: integerSchema(),
   skillId: stringSchema(),
   description: stringSchema(),
@@ -1187,6 +1185,7 @@ const upsertEquipment: ToolDefinition = {
   run(draft, args): ToolExecResult {
     const merged = mergeRecord(draft.database.equipment, args.equipment, "equipment", equipmentRecordSchema, { id: "equip_sword", name: "철검", slot: "weapon" });
     const record = normalizeEquipmentRecord(merged as Partial<EquipmentRecord> & Pick<EquipmentRecord, "id" | "name">);
+    if (!hasEquipmentSlot(draft, record.slot)) throw new Error(`Unknown equipment slot: ${record.slot}`);
     const outcome = upsertById(draft.database.equipment, record);
     return { summary: `장비 '${record.name}'(${record.slot}) ${outcome === "added" ? "추가" : "수정"}`, data: record };
   },

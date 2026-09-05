@@ -1,8 +1,62 @@
 # RPG ZZU Design System
 
+## Worldbuilding document workspace (2026-09-06)
+
+This slice follows the existing Database Studio primitives and tokens. It is a
+writing workspace, not a dashboard: a compact item browser, a white document,
+and a collapsible property inspector. No new theme, decorative hero, or card
+wall. This section overrides generic database control sizing only inside the
+worldbuilding workspace.
+
+- Typography: document title 26px/1.3, prose 16px/1.65, controls 13px/1.5,
+  metadata 12px/1.5, section headings 14px/600; all use `--font-ui`.
+- Color: `--db-studio-surface`, `--db-studio-canvas`, `--db-studio-inset`,
+  `--db-studio-text-1/2`, `--db-studio-border-subtle/default`,
+  `--db-studio-accent/soft/border`. Secondary text uses text-2, not pale text-3.
+- Geometry: 4/8/12/16/24/32px spacing; 6px controls, 8px document corners;
+  36px toolbar controls; 256px item list; 272px expanded properties.
+  The document editor is at least 320px high and grows with its text.
+- Scroll ownership: modal header/footer stay fixed. Item list and document
+  have independent vertical scrolls; an expanded property pane owns its scroll.
+  The document textarea grows instead of introducing a nested prose scrollbar.
+- Below 800px available workspace width, list and document are alternate views,
+  never two short stacked scroll boxes. A persistent list button returns to
+  browsing without losing the draft. Properties become an in-workspace overlay
+  below 1100px; Escape closes properties and restores their opener.
+- Reused primitives: `workspaceShell`, `sectionCard`, `segmentedControl`,
+  existing card media, markdown renderer, reference and relation editors.
+  Shared world document properties provide closed/open/focused states.
+  Item rows have default/hover/focus/selected/locked states; the optional gallery
+  uses the same item data and selection path.
+- Empty states distinguish no items, no search matches, and no selection.
+  Creation and search reset are explicit actions. Global lint is a separate
+  disclosure, not the first content in an empty document.
+- Filter changes clear out-of-filter reading selections. An active draft stays
+  open with an explicit out-of-filter marker. Relation navigation selects the
+  target's category and clears search. Search DOM and IME focus are preserved.
+- The main modal save remains the persistence authority. The document action is
+  labeled `편집 완료`, not a competing remote save. Draft discard and lock guards
+  retain their existing contracts.
+- World overview separates draft/confirmed status from public/secret visibility.
+  Legacy `status: secret` loads as a secret draft. AI inclusion remains explicit:
+  world overview fields plus the first 600 body characters; codex name/summary
+  only. The inspector can show the actual world overview prompt projection.
+- Accessibility: native buttons/inputs/details, visible indigo focus, associated
+  labels, no focus stolen while typing; 1024/1280/1440 desktop acceptance matrix.
+  No runtime/mobile-editor expansion is included.
+
 > **Status note:** The editor chrome is a cool white studio with one indigo accent. Runtime game surfaces keep their retro/pixel window presentation. The event-command editor is a cream-studio command editor: the event-command list, canvas, and every command form use cream tokens (`src/styles/tokens.css`), Korean-first modern labels, human sentences (named flags, no `Sw[0001]` / `◆` / `ON` / raw `\c[1]` chip walls), and the `cream form` field pattern — no RM2K3 retro command-list presentation. Shell tokens live in `src/styles/tokens.css` (single source of truth, imported first in `src/styles/index.css`) with `html { color-scheme: light; }` (`src/styles/index.css:75`); legacy names are aliased in `src/styles/editor/core.part-1.css`, `src/styles/database/tabs-b-shell-layout.css`, and `src/styles/shell/figma-editor/01-shell-topbar-team.css`. Warm cream elevation is `canvas < inset < base < surface < raised < overlay`. Previous dark values live in git history only. When the code changes, update this file — it is the source of truth, not an aspirational target.
 
 ## 1. Atmosphere & Identity
+
+### Equipment slot management
+
+Equipment uses a native labelled slot select so project-defined slots do not expand the fixed
+inspector header. The add/rename/remove disclosure lives in the scrolling inspector body, above
+the equipment cards. It uses existing Database Studio surface, border and text tokens, 12px
+control text, 8px corners and 12px internal spacing. Management rows keep the name and action
+together; the reason for a disabled delete spans the row. Built-in and referenced slots expose
+that reason as visible text. Each committed catalog operation is one undoable project edit.
 
 RPG ZZU is a compact game-making workbench. The user directs an agent named **감독**; the pixel map is the stage; the chrome is a warm cream tool shell. Korean-first labels. The signature is a faceset plate (name + presence + a one-line brief of map/layer/selection) plus an `@>` command log that defaults to a **float** over the canvas, a map/tile/event tool sidebar docked as the left column, and a recessed cream canvas well as the stage. The empty start surface is the map briefing (`지금 이 맵`) plus at most three next-move rows. Composer modes are **지시 / 질문 / 계획**. The left drawer uses a tab strip that reweights `left-map-root` / `left-palette-root` without hiding those testids. There is no theme toggle.
 
@@ -134,7 +188,7 @@ The Database > States editor uses RM2K3-style colored A-E rate grades and a smal
 
 ### Database battle animation editor tokens
 
-The Database > Battle Animations editor follows the RM2003 animation editor composition: a black target stage, green center guides, red cell selection, and teal pattern strip. Keep these scoped to the animation editor.
+The Database > Battle Animations editor is preview-first: the current graphic's catalog name and choose/change action precede a full-width dark stage, with playback and status in their own light transport row. Frame, cell, timing and sheet authoring follow in clearly titled studio sections. The existing detail form owns vertical scrolling; only wide cell tables and pattern strips own horizontal scrolling. At supported desktop sizes (1024×768, 1280×800, 1440×900) the stage is at least 280px high, rather than sharing its width with an inspector. Controls use the existing 32px / 8px-radius studio grammar, 13px text and indigo focus ring; labels/status use 12px text-2. The graphic name wraps, including long imported names. An unset graphic has an explicit choose action; unavailable graphics never manufacture an effect. Pattern thumbnails are read-only, not inert buttons. Existing RM animation tokens below remain legacy stage-only tokens, not control colors. No new motion or playback lifecycle is introduced. Independent visual approval is required; geometry alone is not a visual verdict.
 
 | Token | Value | Usage |
 |------|-------|-------|
@@ -317,7 +371,7 @@ The float assistant is **one glass instrument**, `div.ai-deck` inside the transp
 
 - **Topbar actions**: Resources (소재) opens `resourceModal`; Database (DB) opens `databaseModal`. They are the canonical editor paths for asset and database work.
 - Map properties and Event editing are not dock tabs: event editing lives in the left palette when the event layer is active and opens as a modal; map properties are edited via the map tree context menu / database.
-- **Database**: 15 tabs — 주인공/직업/스킬/아이템/장비/몬스터/적그룹/상태/전투애니메이션/타일셋/공통이벤트/시스템/용어/스위치/변수 (`db-tab-*`). Navigation follows the mode chrome contract: Beginner shows the `common` subset, Standard groups the navigation, and Expert exposes `all`.
+- **Database**: 15 tabs — 주인공/직업/스킬/아이템·장비/몬스터/적그룹/상태/전투애니메이션/타일셋/공통이벤트/시스템/용어/스위치/변수 (`db-tab-*`). Navigation follows the mode chrome contract: Beginner shows the `common` subset, Standard groups the navigation, and Expert exposes `all`.
 - **Event editor**: cream-studio command editor. Tree-style nested command list with **drag-to-reorder** (⠿ handle), up/down/delete buttons, command picker, per-page tabs, fork/choices branches.
 - **Event editor top/page controls**: cream-studio modal chrome. Page tabs show named condition sentences; validation is a titlebar bell whose summary carries the severity words `오류 N · 경고 N · 안내 N` alongside the count badge (hidden when clean), not a bare number and not `검사 !1 △1` — severity must be readable without opening the popover, because a colour-only signal fails WCAG 1.4.1 and an error (blocks commit) costs nothing like an info. Footer is `이벤트 삭제` pinned to the left cell, then `변경 있음/없음 · 취소 · 적용 · 저장하고 닫기` in the right cell. The destructive action never sits inside the save cluster, and its label names its target so it cannot be confused with the page toolbar's `페이지 삭제`. Bare `Delete` never deletes the event from anywhere in the modal; the labelled footer button is the only entry point. The titlebar name field edits the **active page's** name (`GameEvent` has no `name`); the event's display name is derived by `eventDisplayName()` from the last named page, so the field is labelled `페이지 N 이름`, never `이벤트 이름`. The view segment (`목록/스토리/미리보기/플로우`) is a `tablist` with `aria-selected` and one roving tab stop, matching the page tab strip — never `aria-pressed` toggles, which read as independent switches. Rail section headers are `언제 보이나요` / `반응 방식` / `움직임` (not `출현 조건` / `트리거·우선순위` / `이동/기타`). Event-card identity is name + coordinates; padded `ID 0001` is gone. Extra control-code chips (`\$` `\!` `\.` `\|` `\>` `\<` `\^` `\_` `\s[n]`) live behind closed `고급`. Density control stays and is labeled `간단히` (not `간단히 보기`). Picture summaries are a human sentence, never a raw slot/path dump as the scan line. Keep controls compact enough for scanning; avoid display-scale button typography inside the modal. Chrome uses cream tokens from `src/styles/tokens.css`; do not reintroduce `--rm2k3-event-page-*` or classic-gray `#eeeeee`/`#f4f4f4` fieldsets.
 - **Event editor sizing**: the event editor is a desktop-default work window at wide widths, but it must remain usable down to roughly `800px` viewport width. It opens with settings and a dominant command canvas; the command inspector is contextual and appears only after command selection. Wide layouts allocate it a fixed right track, while compact layouts overlay it on the right so the canvas does not permanently lose width. Around `900px` and below, the modal clamps to the viewport and compresses the left settings/conditions column while keeping the command contents as a second column; do not stack settings above commands unless the viewport is narrower than the supported editor width.
@@ -335,6 +389,9 @@ The float assistant is **one glass instrument**, `div.ai-deck` inside the transp
 
 ### Database panels
 
+- **Unified inventory catalog (2026-09-05):** one `아이템·장비` rail entry (`db-tab-items`), one search across both unchanged storage collections, All/Items/Equipment filter buttons with `aria-pressed`, and one compact subtype/slot select. Counts distinguish visible matches from the whole catalog. Search/filter changes retain the selected type-specific inspector, even when its row is outside the result; a selection notice can reveal it. Add actions explicitly name the collection. Existing guarded delete, duplicate, AI item generation, and gallery/list remain available. The list-detail spatial pattern uses `databaseWorkspace` primitives, 260px list + fluid inspector at supported 1024/1280/1440 desktops. Search, filters and actions are fixed; `.db-catalog-rows` owns list scroll and the existing `.db-ws-detail-body` owns inspector scroll. Modal geometry remains solely in `sidebar.css`. Tokens and focus treatment remain Database Studio v2; no new animation or palette. Legacy `equipment` navigation resolves to the same catalog with its remembered equipment selected. This is an editor-only projection, not a migration or an item-to-equipment conversion.
+
+- **Party record hierarchy (2026-09-05).** Actors, classes, skills, items, and equipment keep a visibly inset list pane, an indigo active rail, stronger record headers and name fields, and neutral read-only summaries. The final section of `studio-v2.css` scopes these rules to those five tabs; its local `--db-record-pane-bg` override passes through the existing Studio theme without another important declaration. At compact desktop widths the actor inspector may shrink within the fixed modal rather than extend beyond it.
 - **Database Studio v2 (2026-09-03) — one grammar for all 30 tabs.** `src/styles/database/studio-v2.css` is imported last among database sheets and restyles the classes every tab already emits (no new class vocabulary): the window is one white surface where rail | list | detail are divided by hairlines only; group cards inside the detail pane are `--db-studio-canvas` (light gray) with no border, title `600 13px` + hint `12px text-3`; every `.db-field` is a property row (label left in `minmax(min(96px, 38%), max-content)`, value right, labels **wrap — never ellipsis**), except dense numeric grids (`.db-enemy-stat-grid`, `.db-item-grid`, `.db-state-runtime-panel`, `.db-terrain-quick-row`) which stack label above value; list rows with a sub chip wrap the chip to a second line instead of truncating either the name or the chip; children of `.db-ws-detail-body` never flex-shrink (an `overflow:hidden` stats strip otherwise collapses to 2px); inputs/selects/textareas share one chrome (32px, 8px radius, `--db-studio-border-default`, accent ring on focus; `select` keeps the 24px chevron band via longhand padding); number steppers are one flex box `28px | 1fr | 28px` whose buttons fold under 120px (the fold rule is restated at v2 depth because `@container` adds no specificity); heroes (`.db-ws-hero`, `.db-record-hero`, item/equipment inspector headers) are 52px media + `700 18px` title + 11.5px Korean eyebrow + pills, and name inputs inside them render as the title (border only on hover/focus). The header shows `데이터베이스 | 그룹 › 탭` (`database-modal-crumb`, fed by `subscribeDatabaseActiveTab`), window controls are SVG (`database-modal-icon`), and the footer status is a 28px pill with a status dot, not a full-width band. Type scale: 11.5 badge · 12 label · 13 body/input/row · 13/600 card title · 15 list title · 18 hero title. No `!important`, no hex, no font-stack literals in the sheet (`test/databaseStudioV2.test.ts`); earlier layers' `!important` rules were re-valued in place (`studio-theme.css`, `sidebar.css`). English eyebrows/chips (`ELEMENT`, `GAME OVERVIEW`, `LIVE PREVIEW`, `GAUGE` …) are Korean.
 - Utilitarian split views: list on the left, form/details on the right (`db-detail-form`).
 - **Human-owned tileset knowledge**: Database > Tilesets keeps the selection/template/passage/layer/group editor visible as the default Knowledge surface. AI never replaces or collapses this manual editor. A bottom `AI 타일셋` action opens a separate workspace and leaves the normal editor dimmed underneath.
@@ -384,6 +441,7 @@ The float assistant is **one glass instrument**, `div.ai-deck` inside the transp
 - Animate only `transform`, `opacity`, `filter` — not layout properties.
 - Every interactive element needs hover/active/disabled/focus-visible states.
 - Respect `prefers-reduced-motion`.
+- Database battle-animation previews loop from the first frame on entry and record change once the graphic loads. Reduced motion starts on the selected editing frame with manual Play available. Stop and frame selection restore/preserve that editing frame; ordinary form rerenders and delayed parent-modal refreshes retain the stopped intent on the same record. Missing or unusable graphics show a nonplaying empty state, never a fabricated effect. Genuinely cached tabs pause while detached and resume only their prior playback intent; cache eviction and modal close release playback resources.
 - Keyboard workflows cover tool selection, tab changes, map-tree navigation, command-list navigation, and play input.
 
 ## 7. Depth & Surface

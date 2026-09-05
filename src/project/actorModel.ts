@@ -234,11 +234,7 @@ function normalizeExpCurve(expCurve: Partial<ActorExperienceCurve> | undefined):
 
 function normalizeInitialEquipment(equipment: Partial<ActorInitialEquipment> | undefined): ActorInitialEquipment {
   return {
-    weapon: cleanOptionalId(equipment?.weapon),
-    shield: cleanOptionalId(equipment?.shield),
-    armor: cleanOptionalId(equipment?.armor),
-    helmet: cleanOptionalId(equipment?.helmet),
-    accessory: cleanOptionalId(equipment?.accessory),
+    ...Object.fromEntries(Object.entries(equipment ?? {}).map(([slot, id]) => [slot, cleanOptionalId(id)])),
   };
 }
 

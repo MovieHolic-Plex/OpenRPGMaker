@@ -3581,14 +3581,14 @@
    "change-equipment-slot-select": [
     "weapon",
     "shield",
-    "armor",
     "helmet",
+    "armor",
     "accessory"
    ]
   },
   "labels": [
-   "갑옷",
    "머리",
+   "몸",
    "무기",
    "방패",
    "수습 지팡이무기 · 공격 +3 정신 +7",

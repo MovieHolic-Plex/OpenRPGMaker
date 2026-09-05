@@ -52,6 +52,7 @@ export type WorldCanon = {
   readonly laws?: WorldCanonLaws;
   readonly body?: string;
   readonly status?: WorldCanonStatus;
+  readonly visibility?: "public" | "secret";
 };
 
 export type WorldCanonLawState = {
@@ -75,7 +76,8 @@ export type ResolvedWorldCanon = {
   readonly absences: readonly string[];
   readonly laws: ResolvedWorldCanonLaws;
   readonly body: string;
-  readonly status: WorldCanonStatus;
+  readonly status: "draft" | "canon";
+  readonly visibility: "public" | "secret";
 };
 
 const EMPTY_LAW: WorldCanonLawState = { present: undefined, note: "" };
@@ -90,6 +92,7 @@ export const EMPTY_WORLD_CANON: ResolvedWorldCanon = {
   laws: { power: EMPTY_LAW, gods: EMPTY_LAW, death: EMPTY_LAW, money: EMPTY_LAW },
   body: "",
   status: "draft",
+  visibility: "public",
 };
 
 export function isWorldCanonTone(value: string): value is WorldCanonTone {
@@ -115,7 +118,8 @@ export function resolveWorldCanon(value: WorldCanon | undefined): ResolvedWorldC
       money: resolveLaw(value?.laws?.money),
     },
     body: value?.body ?? "",
-    status: value?.status ?? "draft",
+    status: value?.status === "canon" ? "canon" : "draft",
+    visibility: value?.visibility ?? (value?.status === "secret" ? "secret" : "public"),
   };
 }
 
@@ -139,6 +143,7 @@ export function compactWorldCanon(canon: ResolvedWorldCanon): WorldCanon | undef
     ...(laws ? { laws } : {}),
     ...(body ? { body } : {}),
     ...(status ? { status } : {}),
+    ...(canon.visibility === "secret" ? { visibility: canon.visibility } : {}),
   };
   return Object.keys(next).length > 0 ? next : undefined;
 }
@@ -147,7 +152,7 @@ export function worldCanonHasContent(value: WorldCanon | undefined): boolean {
   // 상태 껍데기({status:"canon"}만)까지 "저작됨"으로 세면 개요 카드가 거짓 저작을
   // 알리고 장르 시드가 건너뛰며 빈 프롬프트 블록이 나간다 — 상태는 내용으로 세지 않는다.
   if (!value) return false;
-  const { status: _status, ...rest } = value;
+  const { status: _status, visibility: _visibility, ...rest } = value;
   return compactWorldCanon(resolveWorldCanon(rest)) !== undefined;
 }
 

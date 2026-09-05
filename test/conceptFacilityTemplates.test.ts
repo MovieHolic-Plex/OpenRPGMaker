@@ -215,7 +215,7 @@ describe("개념 꾸러미 초안 묶음 — 시공", () => {
     expect(inn.map.lowerTiles.filter((tile) => [74, 75, 76, 77, 104, 105, 106, 107].includes(tile)).length).toBeGreaterThan(0);
   });
 
-  it("창고는 방 하나짜리 시설이고 상자·술통이 둘레를 따라 전부 놓인다", () => {
+  it("창고는 방 하나짜리 시설이고 상자·술통 적재와 노획 이벤트를 보존한다", () => {
     const built = buildTemplate(SCRATCH_WAREHOUSE_BUNDLE);
     expect(built.rooms).toHaveLength(1);
     expect(built.rooms[0]!.role).toBe("entrance");
@@ -223,8 +223,8 @@ describe("개념 꾸러미 초안 묶음 — 시공", () => {
     const barrel = objectTiles("barrel");
     const crates = built.map.lowerTiles.filter((tile) => crate.has(tile)).length;
     const barrels = built.map.upperTiles.filter((tile) => barrel.has(tile)).length;
-    expect(crates).toBe(2);
-    expect(barrels).toBe(2);
+    expect(crates).toBe(6);
+    expect(barrels).toBe(4);
     const loots = built.map.events.filter((event) => event.id.startsWith("ev_concept_") && (event.pages ?? []).length === 2);
     expect(loots.length).toBe(3);
   });

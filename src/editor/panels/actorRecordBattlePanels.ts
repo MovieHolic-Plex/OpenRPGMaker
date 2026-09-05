@@ -1,3 +1,5 @@
+import { equipmentSlots } from "@/project/equipmentSlots";
+import { equipmentSlotAccepts } from "@/project/equipmentRules";
 import { DEFAULT_ELEMENT_RATE_LABELS, stateRatePercentage } from "@/project/actorModel";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import {
@@ -10,16 +12,8 @@ import {
   selectRecord,
 } from "@/editor/panels/actorRecordControls";
 import { store } from "@/project/store";
-import type { ActorInitialEquipment, ActorOptions, ActorRateGrade, ActorRecord, EquipmentRecord } from "@/project/types";
+import type { ActorOptions, ActorRateGrade, ActorRecord } from "@/project/types";
 import { el } from "@/util/dom";
-
-const EQUIPMENT_SLOTS: readonly { readonly key: keyof ActorInitialEquipment; readonly label: string; readonly slot: EquipmentRecord["slot"] }[] = [
-  { key: "weapon", label: "무기", slot: "weapon" },
-  { key: "shield", label: "방패", slot: "shield" },
-  { key: "helmet", label: "머리", slot: "helmet" },
-  { key: "armor", label: "몸", slot: "armor" },
-  { key: "accessory", label: "장신구", slot: "accessory" },
-] as const;
 
 const OPTION_LABELS: readonly { readonly key: keyof ActorOptions; readonly label: string }[] = [
   { key: "dualWield", label: "이도류" },
@@ -66,12 +60,13 @@ export function ratesPanel(actor: ActorRecord): HTMLElement {
 }
 
 function equipmentPanel(actor: ActorRecord, refreshBuildPreview: () => void): HTMLElement {
-  const equipment = store.getCurrent().database.equipment;
-  return actorPanel("초기 장비", "actor-starting-equipment", EQUIPMENT_SLOTS.map((slot) => {
-    const options = equipment.filter((entry) => entry.slot === slot.slot);
-    return selectRecord(slot.label, `db-picker-actor-equipment-${slot.key}`, actor.initialEquipment[slot.key] ?? "", options, (id) => {
+  const project = store.getCurrent();
+  const equipment = project.database.equipment;
+  return actorPanel("초기 장비", "actor-starting-equipment", equipmentSlots(project).map((slot) => {
+    const options = equipment.filter((entry) => equipmentSlotAccepts(project, actor, slot.id, entry));
+    return selectRecord(slot.label, `db-picker-actor-equipment-${slot.id}`, actor.initialEquipment[slot.id] ?? "", options, (id) => {
       updateDatabaseRecord("actors", actor.id, {
-        initialEquipment: { ...currentActor(actor).initialEquipment, [slot.key]: emptyToUndefined(id) },
+        initialEquipment: { ...currentActor(actor).initialEquipment, [slot.id]: emptyToUndefined(id) },
       });
       refreshBuildPreview();
     });

@@ -91,7 +91,7 @@
     display: grid;
     gap: 8px;
     grid-template-columns: minmax(166px, 1.4fr) minmax(84px, 0.72fr) 42px 56px 56px;
-    min-width: 430px;
+    min-width: calc(166px + 84px + 42px + 56px + 56px + 4 * 8px + 2 * 18px);
   }
 
   .database-modal-body .db-actor-studio-workspace .db-actor-studio-table .db-actor-table-header {
@@ -419,12 +419,12 @@
 
 @media (max-width: 1180px) and (min-width: 901px) {
   .database-modal-body .oprn-record-workspace.oprn-record-actors.db-actor-studio-workspace {
-    grid-template-columns: minmax(360px, 0.76fr) minmax(500px, 1.24fr);
+    grid-template-columns: minmax(340px, 0.76fr) minmax(0, 1.24fr);
   }
 
   .database-modal-body .db-actor-studio-workspace .db-actor-studio-table .db-actor-table-row {
     grid-template-columns: minmax(132px, 1.4fr) minmax(58px, 0.7fr) 32px 42px 40px;
-    min-width: 0;
+    min-width: calc(132px + 58px + 32px + 42px + 40px + 4 * 6px + 2 * 10px);
   }
 
   .database-modal-body .db-actor-studio-workspace .db-actor-studio-table .db-actor-table-header,

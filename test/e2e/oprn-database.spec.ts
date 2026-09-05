@@ -96,7 +96,6 @@ test("RM2K3 database editor edits records, updates dependent pickers, and blocks
     "db-tab-classes",
     "db-tab-skills",
     "db-tab-items",
-    "db-tab-equipment",
     "db-tab-enemies",
     "db-tab-troops",
     "db-tab-states",
@@ -172,7 +171,9 @@ test("RM2K3 database editor edits records, updates dependent pickers, and blocks
   await page.getByTestId("db-field-item-occasion").selectOption("field");
   await expect(page.getByTestId("db-picker-skill")).toHaveCount(0);
 
-  await page.getByTestId("db-tab-equipment").click();
+  await page.getByTestId("db-tab-items").click();
+  await page.getByTestId("db-catalog-filter-equipment").click();
+  await page.locator('.db-catalog-rows [data-collection="equipment"]').first().click();
   await page.getByTestId("db-field-name").fill("Equipment QA");
   await page.getByTestId("db-field-equipment-description").fill("Cursed blade");
   await page.getByTestId("db-field-equipment-attack").fill("77");

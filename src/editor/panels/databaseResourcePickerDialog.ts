@@ -233,6 +233,8 @@ export function resourcePickerControl(input: {
   /** AI 큐 공유 키. 레코드별(record.id)로 주면 레코드 전환 시 오적용을 막는다.
    *  없으면 testid+kind(싱글턴 시스템 행용) 으로 공유한다. */
   readonly queueKey?: string;
+  /** Preview-first animation editor only; other picker presentation stays unchanged. */
+  readonly presentation?: "graphic";
 }): HTMLElement {
   const project = store.getCurrent();
   const preview = resourceVisual(
@@ -248,7 +250,8 @@ export function resourcePickerControl(input: {
   );
   const optionName = listDatabaseResourceOptions(input.kind, project).find((option) => option.id === input.resourceId)?.name;
   const rawName = optionName ?? (input.resourceId ? prettyId(input.resourceId) : "");
-  const displayName = input.resourceId ? "설정됨" : "(미설정)";
+  const graphic = input.presentation === "graphic";
+  const displayName = graphic ? rawName || "선택한 그래픽이 없습니다" : input.resourceId ? "설정됨" : "(미설정)";
   // Keep a real text input with the historical testid so e2e/unit fill() paths stay compatible.
   const idInput = el("input", {
     class: "db-resource-picker-inline-id db-authoring-id",
@@ -294,7 +297,7 @@ export function resourcePickerControl(input: {
     idInput,
     el("button", {
       class: "btn small",
-      text: "설정...",
+      text: graphic ? input.resourceId ? "그래픽 변경" : "그래픽 선택" : "설정...",
       attrs: { type: "button", "aria-label": `${input.label} 리소스 선택` },
       dataset: { testid: `${input.testid}-set` },
       on: { click: pick },
@@ -314,7 +317,7 @@ export function resourcePickerControl(input: {
     );
   }
   return el("div", {
-    class: "db-resource-picker-control",
+    class: `db-resource-picker-control${graphic ? " db-animation-graphic-control" : ""}`,
     children: [
       el("span", { class: "db-resource-picker-control-label", text: input.label }),
       el("div", {

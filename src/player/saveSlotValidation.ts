@@ -1,3 +1,4 @@
+import { isEquipmentSlotId } from "@/project/equipmentSlots";
 import type { ActorInitialEquipment, ActorParameterKey, LightSource, LightingState } from "@/project/types";
 import { GOLD_MAX, type AudioCommandState, type PictureState, type PlaySession } from "@/project/session";
 import type { ActorVitals } from "@/project/sessionVitals";
@@ -17,10 +18,9 @@ export function isActorEquipmentRecord(value: unknown): value is Record<string, 
   if (!isRecord(value)) return false;
   return Object.values(value).every((equipment) => {
     if (!isRecord(equipment)) return false;
-    return ["weapon", "shield", "armor", "helmet", "accessory"].every((slot) => {
-      const item = equipment[slot];
-      return item === undefined || typeof item === "string";
-    });
+    return Object.entries(equipment).every(([slot, item]) =>
+      isEquipmentSlotId(slot) && (item === undefined || typeof item === "string")
+    );
   });
 }
 

@@ -1,3 +1,4 @@
+import { equipmentSlots } from "@/project/equipmentSlots";
 import { actorDerivedStats, learnedSkillIds } from "@/battle/battleBattlers";
 import { ACTOR_PARAMETER_KEYS, clampLevel, normalizeActorRecord, parameterValueAtLevel } from "@/project/actorModel";
 import { effectiveActorEquipment, equipmentSlotAccepts } from "@/project/equipmentRules";
@@ -58,7 +59,6 @@ export type ClassBuildSummary = {
 };
 
 const CLASS_ROLE_LEVEL = 20;
-const EQUIPMENT_SLOTS = ["weapon", "shield", "armor", "helmet", "accessory"] as const satisfies readonly (keyof ActorInitialEquipment)[];
 
 /**
  * Builds the editor preview through the same derived-stat and learned-skill
@@ -172,7 +172,7 @@ function statPreview(
 
 function equipmentPreview(project: Project, equipment: ActorInitialEquipment): ActorBuildPreview["equipment"] {
   const byId = new Map<string, EquipmentRecord>(project.database.equipment.map((record) => [record.id, record]));
-  return EQUIPMENT_SLOTS.flatMap((slot) => {
+  return equipmentSlots(project).flatMap(({ id: slot }) => {
     const id = equipment[slot];
     if (!id) return [];
     return [{ slot, id, name: byId.get(id)?.name ?? id }];
@@ -188,7 +188,7 @@ function equipmentReferenceWarnings(
 ): ActorBuildReferenceWarning[] {
   const byId = new Map(project.database.equipment.map((record) => [record.id, record]));
   const warnings: ActorBuildReferenceWarning[] = [];
-  for (const slot of EQUIPMENT_SLOTS) {
+  for (const slot of Object.keys(requested)) {
     const id = requested[slot];
     if (!id) continue;
     const record = byId.get(id);
