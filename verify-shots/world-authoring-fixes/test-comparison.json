@@ -1,0 +1,274 @@
+{
+  "head": {
+    "commit": "5580a3c6",
+    "passed": 190,
+    "failed": 24
+  },
+  "base": {
+    "commit": "7e2e0242",
+    "passed": 190,
+    "failed": 24
+  },
+  "selectedFiles": [
+    "test/aiActivityLiveRow.test.ts",
+    "test/aiAutonomousRunSurface.test.ts",
+    "test/aiChatObservability.test.ts",
+    "test/aiChatPanelTransportError.test.ts",
+    "test/aiSelectionChipScope.test.ts",
+    "test/authorVillageFacade.test.ts",
+    "test/bootLoadFailureRecovery.test.ts",
+    "test/commitEditActivityAttachment.test.ts",
+    "test/databaseModalDirtySession.test.ts",
+    "test/databaseNavMode.test.ts",
+    "test/databaseOverviewDashboard.test.ts",
+    "test/databaseOverviewTab.test.ts",
+    "test/editorProjectE2EBridge.test.ts",
+    "test/eventEditorM2Surface.baseline.test.ts",
+    "test/eventEditorPortalSurface.baseline.test.ts",
+    "test/forestDensity.test.ts",
+    "test/gen1DemoContent.test.ts",
+    "test/leftDockPanels.test.ts",
+    "test/mapEditLockScratchSession.test.ts",
+    "test/mapScreenAuthoringSurface.test.ts",
+    "test/modalEscapeLayerGate.test.ts",
+    "test/noLocalProjectDb.test.ts",
+    "test/npcCastSession.test.ts",
+    "test/regionRightDragNotifications.test.ts",
+    "test/regionSelectionPastePreview.test.ts",
+    "test/roleNameComparisonGate.test.ts",
+    "test/uxcLoadFailure.test.ts"
+  ],
+  "headOnlyFailedTests": [],
+  "baseOnlyFailedTests": [],
+  "commonFailedTests": [
+    [
+      "aiActivityLiveRow.test.ts",
+      "AI 도구 라이브 활동 행 다음 도구 시작은 이전 예약을 먼저 확정하고 턴 종료는 마지막 예약까지 비운다"
+    ],
+    [
+      "aiActivityLiveRow.test.ts",
+      "AI 도구 라이브 활동 행 성공한 조회 도구는 완료 행을 남기지 않고 턴 종료 시 캔버스 칩 상태도 지운다"
+    ],
+    [
+      "aiAutonomousRunSurface.test.ts",
+      "할 일 목록 표면 (작업 계획 체크리스트) (a) emitWorkPlan 이벤트로 체크리스트가 렌더된다 — 항목별 진행 + 현재 레이어 표시"
+    ],
+    [
+      "aiAutonomousRunSurface.test.ts",
+      "할 일 목록 표면 (작업 계획 체크리스트) agentMode chat 에서도 할 일 목록은 뜨되 예산 없이 뜨고, 세션에 autonomous 플래그가 전달되지 않는다"
+    ],
+    [
+      "aiAutonomousRunSurface.test.ts",
+      "할 일 목록 표면 (작업 계획 체크리스트) 모든 항목이 끝난 계획은 「모두 완료」로 남고, 계획이 한 번도 안 온 턴은 목록을 만들지 않는다"
+    ],
+    [
+      "aiAutonomousRunSurface.test.ts",
+      "할 일 목록 표면 (작업 계획 체크리스트) 턴이 끝나도 할 일 목록은 남고, 다음 턴의 새 계획이 오면 그것으로 바뀐다"
+    ],
+    [
+      "aiChatObservability.test.ts",
+      "병합 추론 원문 전체 열람 (V3C ②) 도구 사이 추론이 한 블록으로 병합돼도 각 추론의 원문 전체가 아이템으로 남고 토글은 횟수를 표시한다"
+    ],
+    [
+      "aiChatObservability.test.ts",
+      "실시간 고스트 프리뷰 연결 채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다"
+    ],
+    [
+      "aiChatPanelTransportError.test.ts",
+      "transport failure paints recovery CTA and keeps Send mounted refused fetch: is-turn-running cleared, system error bubble + ai-error-open-settings, ai-send stays disabled with ai-abort visible"
+    ],
+    [
+      "aiSelectionChipScope.test.ts",
+      "대기 상태에서도 선택 칩은 보인다 idle 패널에서 has-selection-scope 칩 호스트의 사용 display 는 none 이 아니다"
+    ],
+    [
+      "aiSelectionChipScope.test.ts",
+      "컴포저 힌트는 숨을 때 자리를 비운다 입력 포커스가 없을 때 힌트의 사용 display 는 none 이다(visibility:hidden 은 156px 를 먹었다)"
+    ],
+    [
+      "authorVillageFacade.test.ts",
+      "author_village settlement scale and winter builds a deterministic 100x100 snow city with the requested population"
+    ],
+    [
+      "databaseNavMode.test.ts",
+      "database navigation by editor mode 그룹 헤더가 안에 든 탭 이름과 레코드 합계를 알려준다 — 라벨 텍스트는 그대로"
+    ],
+    [
+      "eventEditorM2Surface.baseline.test.ts",
+      "M2 명령 폼 표면 스냅샷 기준선과 일치한다"
+    ],
+    [
+      "eventEditorPortalSurface.baseline.test.ts",
+      "포털(피커/모달) 표면 스냅샷 기준선과 일치한다"
+    ],
+    [
+      "forestDensity.test.ts",
+      "place_props density — 모델이 실제로 닿는 라이브 툴 활엽수 density=dense 가 count 없이도 숲을 만든다"
+    ],
+    [
+      "forestDensity.test.ts",
+      "plant_tree_clusters 기본(dense)이 선언한 커버리지에 닿고 그 지대를 실제로 막는다"
+    ],
+    [
+      "gen1DemoContent.test.ts",
+      "Scarloxy Gen1 authored content authors persistent major statuses, finite PP, a Poke Ball, and trainer semantics"
+    ],
+    [
+      "leftDockPanels.test.ts",
+      "좌측 도크 구성은 워크스페이스 레이아웃을 따른다 초보 레일의 --editor-left-safe 는 실제 레일 폭에서 파생한다"
+    ],
+    [
+      "mapScreenAuthoringSurface.test.ts",
+      "picker tab 3 information architecture groups tab 3 by work surface, not by RM classification names"
+    ],
+    [
+      "modalEscapeLayerGate.test.ts",
+      "Escape 계층 게이트 body 에 오버레이를 붙이는 파일은 modalStack 에 참여하거나 이유와 함께 면제된다"
+    ],
+    [
+      "modalEscapeLayerGate.test.ts",
+      "Escape 계층 게이트 이번에 고친 표면들은 면제가 아니라 실제로 등록한다"
+    ],
+    [
+      "noLocalProjectDb.test.ts",
+      "canonical project persistence has no local DB fallback does not reference IndexedDB SQLite or local JSON fallback in runtime source"
+    ],
+    [
+      "roleNameComparisonGate.test.ts",
+      "A-2 게이트 — 역할 이름 비교 잔여 허용 목록 밖에서 타일 역할 이름을 직접 비교하지 않는다"
+    ]
+  ],
+  "fullRunFailuresPassingOnRecheck": [
+    [
+      "bootLoadFailureRecovery.test.ts",
+      "store.loadFallbackProject — 로드 실패 복구 예제 프로젝트를 메모리로 열고, 원격 저장은 꺼진 채(loaded=true) 시작한다"
+    ],
+    [
+      "commitEditActivityAttachment.test.ts",
+      "커밋 row 에 실리는 편집 행위 기록 AI 적용 커밋의 patch_json 에 그 행위가 origin·라벨과 함께 실린다"
+    ],
+    [
+      "databaseModalDirtySession.test.ts",
+      "database modal dirty session discards a session-only edit even when the undo stack was already saturated at MAX_HISTORY before the session opened"
+    ],
+    [
+      "databaseOverviewDashboard.test.ts",
+      "database overview dashboard renders stat chips immediately with counts from the project data"
+    ],
+    [
+      "databaseOverviewDashboard.test.ts",
+      "database overview dashboard lazy compute: charts container is empty before idle callback, populated after flush"
+    ],
+    [
+      "databaseOverviewDashboard.test.ts",
+      "database overview dashboard curve chart renders two non-empty SVG paths with gridlines and Lv1..Lv50 labels"
+    ],
+    [
+      "databaseOverviewDashboard.test.ts",
+      "database overview dashboard scatter chart draws one circle per enemy with a <title> tooltip and boss styling"
+    ],
+    [
+      "databaseOverviewDashboard.test.ts",
+      "database overview dashboard renders issue cards matching the detector output with jump buttons"
+    ],
+    [
+      "databaseOverviewDashboard.test.ts",
+      "database overview dashboard jump button switches to the target tab via switchDatabaseActiveTab (G006)"
+    ],
+    [
+      "databaseOverviewDashboard.test.ts",
+      "database overview dashboard attack-stagnation jump opens the classes tab, not skills"
+    ],
+    [
+      "databaseOverviewDashboard.test.ts",
+      "database overview dashboard curve section shows a visible HP/attack legend"
+    ],
+    [
+      "databaseOverviewDashboard.test.ts",
+      "database overview dashboard AI 분석 button dispatches the modal's database-ai-toggle click (aria-expanded)"
+    ],
+    [
+      "databaseOverviewTab.test.ts",
+      "database overview tab shell summarizes the authored game across world, story, cast, systems, and readiness"
+    ],
+    [
+      "databaseOverviewTab.test.ts",
+      "database overview tab shell empty project renders chips with 0 counts without crashing"
+    ],
+    [
+      "databaseOverviewTab.test.ts",
+      "database overview tab shell default open tab after modal open is the stored last tab, NOT overview unless stored"
+    ],
+    [
+      "databaseOverviewTab.test.ts",
+      "database overview tab shell persists across hard reload: stored 'overview' lands on the overview tab"
+    ],
+    [
+      "databaseOverviewTab.test.ts",
+      "database overview tab shell setDatabaseActiveTab('overview') + renderDatabasePanel renders the overview tab"
+    ],
+    [
+      "databaseOverviewTab.test.ts",
+      "database overview tab shell stat chips are buttons that switch to the matching tab (G006)"
+    ],
+    [
+      "editorProjectE2EBridge.test.ts",
+      "mounted project E2E bridge denies missing/wrong capability before invoking either remote store method"
+    ],
+    [
+      "editorProjectE2EBridge.test.ts",
+      "mounted project E2E bridge maps authorized initialization and reload to the mounted singleton with exact proof"
+    ],
+    [
+      "editorProjectE2EBridge.test.ts",
+      "mounted project E2E bridge cleanup removes only the bridge and remount consumes no stale capability"
+    ],
+    [
+      "mapEditLockScratchSession.test.ts",
+      "스크래치 세션(원격 저장 비활성)의 맵 편집 락 remotePersistenceEnabled=false 세션은 락을 취득하지 않고 idle을 유지한다"
+    ],
+    [
+      "npcCastSession.test.ts",
+      "캐스트 라이터 세션 훅 대사 없는 NPC 3명이 놓인 라운드 뒤 캐스트 시트가 적용되고 세계관에 주민이 등록된다"
+    ],
+    [
+      "npcCastSession.test.ts",
+      "캐스트 라이터 세션 훅 시트가 두 번 연속 깨지면 대체 문구 없이 모델에게 대사를 직접 쓰라고 재킥한다"
+    ],
+    [
+      "regionRightDragNotifications.test.ts",
+      "selectTileRegion 통지량 같은 사각형을 다시 넣으면 통지하지 않는다"
+    ],
+    [
+      "regionSelectionPastePreview.test.ts",
+      "북여넣기 미리보기 모드 복사 후 enterPastePreview → confirmPastePreview로 실제 붙여넣기"
+    ],
+    [
+      "regionSelectionPastePreview.test.ts",
+      "renderSelectionActionChips — 복사/붙여넣기/지우기/해제 버튼 AI 작업이 첫 버튼이고, 크기 텍스트는 바에 없다"
+    ],
+    [
+      "regionSelectionPastePreview.test.ts",
+      "renderSelectionActionChips — 복사/붙여넣기/지우기/해제 버튼 클립보드가 있으면 붙여넣기 버튼이 나타난다"
+    ],
+    [
+      "regionSelectionPastePreview.test.ts",
+      "renderSelectionActionChips — 복사/붙여넣기/지우기/해제 버튼 클립보드가 없으면 붙여넣기 버튼이 없다"
+    ],
+    [
+      "uxcLoadFailure.test.ts",
+      "UXC D01 프로젝트 로드 실패 폴백 오류 원문을 숨기고 안전한 복구 방법과 예제/새 프로젝트 CTA를 제공한다"
+    ],
+    [
+      "uxcLoadFailure.test.ts",
+      "UXC D01 프로젝트 로드 실패 폴백 예제 프로젝트 폴백은 저장본을 폐기하지 않고 메모리 프로젝트로 부팅한다"
+    ],
+    [
+      "uxcLoadFailure.test.ts",
+      "UXC D01 프로젝트 로드 실패 폴백 새 프로젝트 폴백도 기존 저장본을 폐기하지 않는다"
+    ]
+  ],
+  "normalizedFailureMessagesIdentical": true,
+  "failureMessageDifferences": [],
+  "workersPerRun": 4
+}

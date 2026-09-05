@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **47쪽 / 1509KB / 약 428,758 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **47쪽 / 1509KB / 약 428,831 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -21,7 +21,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-event-authoring.md` | 117KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 562 | ~34,122 |
 | `openwiki/editor-pre-edit-routing.md` | 69KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 197 | ~19,760 |
 | `openwiki/runtime-battle.md` | 118KB | 31KB | 358 | ~33,888 |
-| `openwiki/runtime-project-schema.md` | 57KB | 42KB | 207 | ~15,469 |
+| `openwiki/runtime-project-schema.md` | 58KB | 42KB | 207 | ~15,542 |
 | `openwiki/runtime-sessions.md` | 56KB | 45KB | 131 | ~14,753 |
 | `openwiki/testing.md` | 102KB | 45KB | 678 | ~28,756 |
 
@@ -546,7 +546,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 - `L130` Recovered head emotes (2026-09-05)
 
-### `openwiki/runtime-project-schema.md` — 57KB · 207줄 · ~15,469 토큰 · 통째읽기 잘림
+### `openwiki/runtime-project-schema.md` — 58KB · 207줄 · ~15,542 토큰 · 통째읽기 잘림
 
 - `L3` 기본 카탈로그 삭제 보존 (2026-09-05)
 - `L7` 전투 페이지 중복 ID 복구와 슬롯 참조 (2026-09-05)

@@ -1,0 +1,24 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/regionSelectionPastePreview.test.ts --maxWorkers=1 --reporter=verbose
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/omo-4
+
+ ✓ test/regionSelectionPastePreview.test.ts > 북여넣기 미리보기 모드 > 복사 후 enterPastePreview → confirmPastePreview로 실제 붙여넣기 6401ms
+ ✓ test/regionSelectionPastePreview.test.ts > 북여넣기 미리보기 모드 > cancelPastePreview로 미리보기 취소 — 맵 변화 없음 744ms
+ ✓ test/regionSelectionPastePreview.test.ts > 북여넣기 미리보기 모드 > 클립보드 없이 enterPastePreview → false + 안내 토스트 589ms
+ ✓ test/regionSelectionPastePreview.test.ts > 북여넣기 미리보기 모드 > movePastePreview로 위치 갱신 573ms
+ ✓ test/regionSelectionPastePreview.test.ts > 북여넣기 미리보기 모드 > movePastePreview가 맵 경계를 벗어나지 않게 클램프 691ms
+ ✓ test/regionSelectionPastePreview.test.ts > clearSelection / clearSelectionRegion > clearSelection이 selection과 pastePreview를 모두 해제 614ms
+ ✓ test/regionSelectionPastePreview.test.ts > clearSelection / clearSelectionRegion > clearSelectionRegion이 선택 영역을 빈 칸으로 723ms
+ ✓ test/regionSelectionPastePreview.test.ts > clearSelection / clearSelectionRegion > clearSelectionRegion 토스트에 '지우기' 포함 675ms
+ ✓ test/regionSelectionPastePreview.test.ts > copySelection 피드백 개선 > 복사 토스트에 크기 정보 포함 595ms
+ ✓ test/regionSelectionPastePreview.test.ts > renderSelectionActionChips — 복사/붙여넣기/지우기/해제 버튼 > AI 작업이 첫 버튼이고, 크기 텍스트는 바에 없다 8017ms
+ ✓ test/regionSelectionPastePreview.test.ts > renderSelectionActionChips — 복사/붙여넣기/지우기/해제 버튼 > 클립보드가 있으면 붙여넣기 버튼이 나타난다 844ms
+ ✓ test/regionSelectionPastePreview.test.ts > renderSelectionActionChips — 복사/붙여넣기/지우기/해제 버튼 > 클립보드가 없으면 붙여넣기 버튼이 없다 858ms
+
+ Test Files  1 passed (1)
+      Tests  12 passed (12)
+   Start at  18:20:28
+   Duration  22.23s (transform 10.03s, setup 0ms, collect 235ms, tests 21.33s, environment 0ms, prepare 213ms)

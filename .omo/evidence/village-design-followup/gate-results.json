@@ -1,0 +1,77 @@
+{
+  "command": "VITEST_MIN_THREADS=1 VITEST_MAX_THREADS=8 VITEST_MIN_FORKS=1 VITEST_MAX_FORKS=8 npm run gates",
+  "exitCode": 1,
+  "typecheckErrors": 0,
+  "cssExitCode": 0,
+  "surfaceExitCode": 1,
+  "totalTests": 12906,
+  "passed": 12708,
+  "failed": 183,
+  "failedFiles": 92,
+  "newFailedFilesAgainstStoredBaseline": [
+    "aiActivityLiveRow.test.ts",
+    "aiAutonomousRunSurface.test.ts",
+    "aiChatObservability.test.ts",
+    "aiChatPanelTransportError.test.ts",
+    "aiSelectionChipScope.test.ts",
+    "databaseActions.test.ts",
+    "databaseNavMode.test.ts",
+    "databaseOverviewDashboard.test.ts",
+    "databaseOverviewTab.test.ts",
+    "eventEditorM2Surface.baseline.test.ts",
+    "eventEditorPortalSurface.baseline.test.ts",
+    "forestDensity.test.ts",
+    "gen1DemoContent.test.ts",
+    "modalEscapeLayerGate.test.ts",
+    "noLocalProjectDb.test.ts",
+    "regionSelectionPastePreview.test.ts",
+    "roleNameComparisonGate.test.ts"
+  ],
+  "newFailedFilesVersusPreviousGate": [
+    "databaseActions.test.ts",
+    "databaseOverviewDashboard.test.ts",
+    "databaseOverviewTab.test.ts",
+    "regionSelectionPastePreview.test.ts"
+  ],
+  "relatedSuites": [
+    {
+      "file": "databaseVillageView.test.ts",
+      "status": "passed",
+      "tests": 36
+    },
+    {
+      "file": "villageAuthoringData.test.ts",
+      "status": "passed",
+      "tests": 19
+    },
+    {
+      "file": "villageBuildHistory.test.ts",
+      "status": "passed",
+      "tests": 2
+    },
+    {
+      "file": "villageBuilder.test.ts",
+      "status": "passed",
+      "tests": 33
+    },
+    {
+      "file": "villageDesign.test.ts",
+      "status": "passed",
+      "tests": 16
+    },
+    {
+      "file": "villagePresetPreview.test.ts",
+      "status": "passed",
+      "tests": 6
+    }
+  ],
+  "timingNote": "Full gate began before latest history-tab store refresh and last-design deletion fixes; those were verified separately with 3 focused UI tests, typecheck and Firefox.",
+  "additionalFailureRetry": {
+    "exitCode": 0,
+    "files": 4,
+    "passed": 44,
+    "failed": 0,
+    "codeChanged": false,
+    "log": "gate-retry.log"
+  }
+}
