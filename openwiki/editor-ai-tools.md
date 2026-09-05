@@ -232,3 +232,7 @@ author_village와 buildVillageDomain이 DB 설계서의 고정값·집 수 범�
 place_npc는 NPC의 name을 페이지 제목과 분리해 저장한다. 이름 없는 재시도는 가까운 동명 이벤트를, 같은 명시 ID는 해당 이벤트를 재사용하며 위치·일정을 보존한다. 다른 명시 ID는 의도적 복수 배치다. 새 착용 장비는 upsert_equipment를 써야 하며 upsert_item의 레거시 장비 종류 신규 생성은 거절한다(기존 레거시 수정은 허용). 저수준 text.body의 문자형 역슬래시+n은 실제 줄바꿈으로 고치도록 거절하되 배우 이름 제어문자는 유지한다.
 
 모험 보완 검사는 도달 가능한 보물/전투 이벤트 및 시작 맵 복귀 전이를 요구하고, 상호작용 이벤트의 타일 통행·접근을 검사한다. 던전 외형은 `list_dungeon_room_themes` → `run_dungeon_room_pipeline`로 저작하도록 안내하며 기존 맵 무단 교체는 금지한다. 이 검사는 동굴 미술을 자동 인증하지 않는다. 전체 맵 시각 조회는 반환 영역 기준으로 합산한다(1회 최대 24×24).
+
+`set_project_settings({startActorIds})`는 system 메타데이터와 `project.session.partyActorIds` 시작 상태를 함께 갱신한다. 런타임 `startSession` 및 모험 완료 검사는 `startStateOf(project)`를 정본으로 읽는다. system만 4인으로 바꿔도 실제 플레이가 1인으로 남던 오류를 저장/재로드/새 세션 테스트로 보호한다.
+
+NPC 고수준 commands의 `text.lines`는 실제 줄바꿈을 포함한 `text.body`로 정규화한다. 저수준 text 명령의 body 누락은 거절한다. 맵 충돌 검사는 스프라이트가 있는 NPC/상자의 막힌 바닥을 검사하며, 타일에 부착된 투명 조사 이벤트는 인접 접근을 허용한다.

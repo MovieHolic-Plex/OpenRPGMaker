@@ -1,6 +1,7 @@
 import type { Command, GameMap, Project } from "@/project/types";
 import { canMove, tileAt, tilePassability } from "@/project/collision";
 import { roleCapabilities } from "@/project/tileRoles";
+import { startStateOf } from "@/project/session";
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
 
 /** Declared by the intent model, never inferred from incidental NPC/building words. */
@@ -78,7 +79,7 @@ export function adventureCompletionProblems(project: Project, required: Adventur
   let battle = false;
   const explored = new Set<string>();
   const returnEdges = new Map<string, Set<string>>();
-  const party = new Set(project.system.startActorIds ?? []);
+  const party = new Set(startStateOf(project).partyActorIds);
   const actorIds = new Set(project.database.actors.map(a => a.id));
   const troops = new Set(project.database.troops.filter(t => t.enemyIds.length > 0 && t.enemyIds.every(id => project.database.enemies.some(e => e.id === id))).map(t => t.id));
   for (let i = 0; i < pending.length; i++) {
@@ -97,7 +98,8 @@ export function adventureCompletionProblems(project: Project, required: Adventur
       const tileset = project.tilesets[map.tilesetId];
       const tile = tileAt(map, event.x, event.y);
       const pass = tileset && tilePassability(tileset, tile.lower, tile.upper);
-      if (!accessible(cells, event) || !pass || !Object.values(pass).some(Boolean)) {
+      const occupiesFloor = event.pages?.some(page => page.graphic.sprite && !page.graphic.transparent);
+      if (!accessible(cells, event) || (occupiesFloor && (!pass || !Object.values(pass).some(Boolean)))) {
         const issue = `맵 ${map.id} 이벤트 ${event.id}가 막힌 타일 위이거나 접근 불가입니다. 건물/벽 겹침을 확인하고 통행 가능한 자리로 옮기세요.`;
         if (!problems.includes(issue)) problems.push(issue);
       }

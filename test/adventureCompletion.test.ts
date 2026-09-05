@@ -22,6 +22,7 @@ function connectedAdventure() {
   dungeon.events.push({ ...structuredClone(event), id: "treasure", x: p.startPos.x + 2, commands: [{ kind: "changeGold", op: "+=", amount: 10 }], pages: [] });
   dungeon.encounterRate = 10; dungeon.troopIds = [p.database.troops[0].id];
   p.system.startActorIds = p.database.actors.slice(0, 2).map(a => a.id);
+  p.session.partyActorIds = [...p.system.startActorIds];
   return p;
 }
 
@@ -36,6 +37,19 @@ describe("declared adventure completion", () => {
   it("accepts real structure, reachable transfer, connected encounters and a party", () => {
     expect(adventureCompletionProblems(connectedAdventure(), required)).toEqual([]);
   });
+  it("uses the runtime start state instead of decorative system party metadata", () => {
+    const p = connectedAdventure(); p.session.partyActorIds = p.session.partyActorIds.slice(0, 1);
+    expect(adventureCompletionProblems(p, required)).toContainEqual(expect.stringContaining("전투 파티가 1명"));
+  });
+  it("persists project-settings party changes into the actual new-game session", async () => {
+    const ctx = { project: createBlankProject() };
+    const ids = ctx.project.database.actors.slice(0, 3).map(a => a.id);
+    expect(runTool(ctx, "set_project_settings", { startActorIds: ids }).ok).toBe(true);
+    const { startSession } = await import("@/project/session");
+    const loaded = deserialize(serialize(ctx.project));
+    expect(startSession(loaded).partyActorIds).toEqual(ids);
+    expect(loaded.system.startActorIds).toEqual(ids);
+  });
   it("rejects a secondary map without an exploration objective or return route", () => {
     const p = connectedAdventure(); p.maps.test_dungeon.events = [];
     expect(adventureCompletionProblems(p, required)).toContainEqual(expect.stringContaining("복귀 경로"));
@@ -47,6 +61,7 @@ describe("declared adventure completion", () => {
     const solid = tileset.passability.findIndex(p => p && !Object.values(p).some(Boolean));
     expect(solid).toBeGreaterThanOrEqual(0);
     map.lowerTiles[chest.y * map.width + chest.x] = solid;
+    chest.pages = [{ ...structuredClone(map.events[0].pages![0]), graphic: { sprite: { type: "bundled", id: "test-chest" } }, commands: chest.commands }];
     expect(adventureCompletionProblems(p, required)).toContainEqual(expect.stringContaining("treasure가 막힌"));
   });
   it("cannot use an obsolete root transfer when the active pages contain only dialogue", () => {
@@ -82,6 +97,14 @@ import { defaultAiConfig } from "@/ai/llmClient";
 import { fixedDeclarer } from "./intentFixture";
 
 describe("completion and dialogue evidence", () => {
+  it("normalizes NPC command lines into the runtime dialogue body and rejects missing low-level bodies", () => {
+    const ctx = { project: createBlankProject() };
+    const result = runTool(ctx, "place_npc", { mapId: ctx.project.startMapId, x: 8, y: 8, name: "안내인", pages: [{ commands: [{ kind: "text", lines: ["던전 입구", "함께 가자"] }] }] });
+    expect(result.ok).toBe(true);
+    const page = ctx.project.maps[ctx.project.startMapId].events[0].pages![0];
+    expect(page.commands).toContainEqual({ kind: "text", body: "던전 입구\n함께 가자" });
+    expect(() => validateLowLevelCommandArray("commands", [{ kind: "text", lines: ["누락"] }])).toThrow("string body");
+  });
   it("rejects double-escaped line breaks but preserves the RPG actor-name escape", () => {
     expect(() => validateLowLevelCommandArray("text", [{ kind: "text", body: "입구\\n출발" }])).toThrow("실제 줄바꿈");
     expect(() => validateLowLevelCommandArray("text", [{ kind: "text", body: "입구\n\\n[1] 출발" }])).not.toThrow();

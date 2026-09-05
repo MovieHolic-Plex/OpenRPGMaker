@@ -299,6 +299,11 @@ function normalizeCommand(raw: unknown, path: string, warnings: string[] | undef
     warnings?.push(`SimplePage 정규화: ${path}.kind "${requestedKind}" 를 "${kind}" 로 해석했습니다.`);
   }
   command.kind = kind;
+  if (kind === "text" && command.body === undefined && Array.isArray(command.lines) && command.lines.every(line => typeof line === "string")) {
+    command.body = command.lines.join("\n");
+    delete command.lines;
+    warnings?.push(`SimplePage 정규화: ${path}.lines를 text.body로 변환했습니다.`);
+  }
   if (kind === "setSelfSwitch" && typeof command.key !== "string" && typeof command.id === "string") {
     command.key = command.id;
     delete command.id;

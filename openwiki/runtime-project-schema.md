@@ -212,3 +212,5 @@ v4에 선택 필드 villagePresets[].design, defaultVillagePresetId, maps[].vill
 ## NPC 표시 이름 (2026-09-05)
 
 GameEvent.name은 선택적 표시 이름이다. place_npc가 저작한 이름을 상태 페이지의 name과 별도로 보존해 재시도 중 중복 생성되지 않게 한다. 기존 이름 없는 이벤트는 페이지 이름을 조회 폴백으로 유지한다. 저장→로드 뒤 동일 NPC 갱신 계약은 test/adventureCompletion.test.ts로 검증한다.
+
+`set_project_settings({startActorIds})`는 system 메타데이터와 저작 시작 상태 `project.session.partyActorIds`를 함께 갱신한다. 실제 새 게임은 `startStateOf(project)`를 사용한다. 시스템 필드만 변경하고 런타임 파티 인원까지 바뀌었다고 판정하지 않는다.

@@ -2206,7 +2206,19 @@ export class AssistantSession {
       if (item && !item.iconResourceId) problems.push(`아이템 ${id}에 그림이 없습니다. list_resources로 아이템 그림을 조회하고 iconResourceId를 지정하세요.`);
     }
     const unseen = Object.values(project.maps).filter(m => (this.adventureInspectedMaps.get(m.id)?.size ?? 0) < m.width * m.height);
-    if (unseen.length) problems.push(`마지막 변경 후 맵 전체 시각 조회가 없습니다: ${unseen.map(m => m.id).join(", ")}. show_map_region(mapId,x:0,y:0,w:전체너비,h:전체높이)로 확인하세요. 최대 크기로 잘리면 나머지 영역을 분할 조회하세요.`);
+    for (const map of unseen) {
+      const coverage = this.adventureInspectedMaps.get(map.id);
+      const regions: string[] = [];
+      for (let y = 0; y < map.height; y += 24) for (let x = 0; x < map.width; x += 24) {
+        const w = Math.min(24, map.width - x), h = Math.min(24, map.height - y);
+        let missing = false;
+        for (let dy = 0; dy < h && !missing; dy++) for (let dx = 0; dx < w; dx++) {
+          if (!coverage?.has((y + dy) * map.width + x + dx)) { missing = true; break; }
+        }
+        if (missing) regions.push(JSON.stringify({ mapId: map.id, x, y, w, h }));
+      }
+      problems.push(`마지막 변경 후 맵 ${map.id}의 시각 확인 누락 영역입니다. 각각 show_map_region으로 조회하세요: ${regions.join("; ")}`);
+    }
     return problems;
   }
 
