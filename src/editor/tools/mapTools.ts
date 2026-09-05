@@ -5,9 +5,7 @@ import { isPassable } from "@/project/collision";
 import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { DIRT_ROAD_TILE, SAND_TILE } from "@/project/defaults/chipsetMapping";
-import { shapeRoadAround } from "@/project/defaults/roadAutotile";
-import { shapeSandAround } from "@/project/defaults/sandAutotile";
-import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
+import { autotileGroupsForTileset, DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAND_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
 import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { applyMapDeletion, planMapDeletion } from "@/project/mapDeletion";
 import { cloneGameMap } from "@/project/mapClone";
@@ -62,7 +60,7 @@ import { isSeason, isTimePhase, SEASONS, TIME_PHASES } from "@/project/gameTime"
 import { COORD_SCHEMA, RECT_SCHEMA } from "./schemaShapes";
 import { resolveEventPlacement } from "./eventTools";
 import { expandCellsAgainstWalls } from "./wallFlush";
-import { assertHousePlacement, registerCompletedHouse } from "./houseProtection";
+import { assertHousePlacement, protectedHouseCells, registerCompletedHouse } from "./houseProtection";
 
 // 맵 테두리를 벽으로 두른다.
 function borderWalls(map: GameMap): void {
@@ -504,8 +502,10 @@ const paintRoad: ToolDefinition = {
         { code: "road-blocked", mapId: map.id }
       );
     }
-    if (!picker && style === "dirt") shapeRoadAround(map, painted);
-    else if (!picker && style === "sand") shapeSandAround(map, painted);
+    if (!picker) {
+      const group = style === "dirt" ? DEFAULT_ROAD_AUTOTILE_GROUP : DEFAULT_SAND_AUTOTILE_GROUP;
+      shapeAutotileGroupAround(map, group, painted, (x, y) => mask(x, y) !== "structure");
+    }
     const source = picker ? `${picker.presetId}/${picker.role}` : style;
     const warnings = roadRepairWarnings(repair);
     return {
@@ -588,7 +588,10 @@ const stampStructure: ToolDefinition = {
     );
     const before = snapshotTiles(map);
     const structureMask = roadObstacleMaskFor(draft, map);
-    stampTownCityPlot(map, template, origin.x, origin.y, (x, y) => structureMask(x, y) !== "open");
+    const fenceProtection = new Set(protectedHouseCells(map).map((cell) => coordKey(cell.x, cell.y)));
+    stampTownCityPlot(map, template, origin.x, origin.y,
+      (x, y) => structureMask(x, y) !== "open",
+      (x, y) => fenceProtection.has(coordKey(x, y)));
     const paletteTiles = picker && tileset
       ? applyPaletteToChangedCells(map, tileset, before, { x: origin.x, y: origin.y, width: 18, height: 16 }, picker)
       : 0;

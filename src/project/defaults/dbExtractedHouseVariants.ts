@@ -16,6 +16,8 @@ export type DbHouseShapeVariant = "template" | PlannedHouseVariant;
 export type DbHouseVariantStampInput = {
   readonly approachHeight?: number;
   readonly includeFence?: boolean;
+  /** Optional road-template fence protection; other callers retain authored fence emission. */
+  readonly skipFence?: TownPathSkip;
   readonly material: SmallHouseMaterial;
   readonly origin: TilePoint;
   /** 문 앞 진입로가 덮지 않을 칸 — 기존 건물 보호용. */
@@ -137,6 +139,7 @@ export function stampDbHouseVariant(map: GameMap, input: DbHouseVariantStampInpu
         material: input.material,
         origin: input.origin,
         plan: VARIANT_PLANS[input.variant],
+        skipFence: input.skipFence,
       });
       break;
     default:
@@ -154,9 +157,9 @@ export function stampDbHouseVariant(map: GameMap, input: DbHouseVariantStampInpu
 
 function stampPlannedVariant(
   map: GameMap,
-  input: { readonly includeFence: boolean; readonly material: SmallHouseMaterial; readonly origin: TilePoint; readonly plan: HouseVariantPlan }
+  input: { readonly includeFence: boolean; readonly material: SmallHouseMaterial; readonly origin: TilePoint; readonly plan: HouseVariantPlan; readonly skipFence?: TownPathSkip }
 ): void {
-  if (input.includeFence) stampFence(map, offsetRect(input.origin, input.plan.fence));
+  if (input.includeFence) stampFence(map, offsetRect(input.origin, input.plan.fence), input.skipFence);
   for (const body of input.plan.bodies) stampBody(map, { body, material: input.material, origin: input.origin });
   for (const window of input.plan.windows) {
     placeTile(map, { layer: "upper", tile: WALL_TILES[input.material].window, ...offsetPoint(input.origin, window) });
@@ -193,21 +196,25 @@ function stampRoof(map: GameMap, roof: Rect): void {
   placeTile(map, { layer: "upper", tile: RIGHT_DIAGONAL_ROOF_BOTTOM, x: roof.x + roof.width - 1, y: roof.y + 3 });
 }
 
-function stampFence(map: GameMap, fence: Rect): void {
+function stampFence(map: GameMap, fence: Rect, skip?: TownPathSkip): void {
+  // Each rail/corner is one tile, not a multi-cell prop: its complete footprint is this cell.
+  const placeFenceTile = (tile: number, x: number, y: number): void => {
+    if (!skip?.(x, y)) placeTile(map, { layer: "upper", tile, x, y });
+  };
   const lastX = fence.x + fence.width - 1;
   const lastY = fence.y + fence.height - 1;
   for (let x = fence.x + 1; x < lastX; x += 1) {
-    placeTile(map, { layer: "upper", tile: FENCE_TOP_RAIL, x, y: fence.y });
-    placeTile(map, { layer: "upper", tile: FENCE_TOP_RAIL, x, y: lastY });
+    placeFenceTile(FENCE_TOP_RAIL, x, fence.y);
+    placeFenceTile(FENCE_TOP_RAIL, x, lastY);
   }
   for (let y = fence.y + 1; y < lastY; y += 1) {
-    placeTile(map, { layer: "upper", tile: FENCE_SIDE_RAIL, x: fence.x, y });
-    placeTile(map, { layer: "upper", tile: FENCE_SIDE_RAIL, x: lastX, y });
+    placeFenceTile(FENCE_SIDE_RAIL, fence.x, y);
+    placeFenceTile(FENCE_SIDE_RAIL, lastX, y);
   }
-  placeTile(map, { layer: "upper", tile: FENCE_TOP_LEFT, x: fence.x, y: fence.y });
-  placeTile(map, { layer: "upper", tile: FENCE_TOP_RIGHT, x: lastX, y: fence.y });
-  placeTile(map, { layer: "upper", tile: FENCE_BOTTOM_LEFT, x: fence.x, y: lastY });
-  placeTile(map, { layer: "upper", tile: FENCE_BOTTOM_RIGHT, x: lastX, y: lastY });
+  placeFenceTile(FENCE_TOP_LEFT, fence.x, fence.y);
+  placeFenceTile(FENCE_TOP_RIGHT, lastX, fence.y);
+  placeFenceTile(FENCE_BOTTOM_LEFT, fence.x, lastY);
+  placeFenceTile(FENCE_BOTTOM_RIGHT, lastX, lastY);
 }
 
 function stampRun(map: GameMap, run: TileRun): void {

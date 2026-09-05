@@ -1,0 +1,67 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/roadObstacleAvoidance.test.ts test/houseProtection.test.ts test/toolHouseProtection.test.ts test/autotileEngine.test.ts test/rmTypeExpanderV3.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-house-protection-p1-roads
+
+ ✓ test/autotileEngine.test.ts (15 tests) 1211ms
+   ✓ built-in default groups reproduce legacy road/sand behavior > autotileGroupsForTileset 는 기본 Combined Town에서만 내장 그룹으로 폴백한다  953ms
+ ✓ test/rmTypeExpanderV3.test.ts (6 tests) 3812ms
+   ✓ expandWall (RM-TYPE 전개기) > 9분할 4×4 전개: 모서리 4/변/center가 파츠 정의대로 매핑되고 벽은 lower로 간다  1497ms
+   ✓ expandWall (RM-TYPE 전개기) > 기둥(vertical) 1×N 전개: 위/아래 cap 보존 + 중간은 반복 몸통, 최소 크기 미달은 예시 동봉 거부  667ms
+   ✓ expandWall (RM-TYPE 전개기) > 패턴 파츠 미정의(patternDefined:false) 그룹은 T1b 안내와 함께 거부한다  510ms
+   ✓ expandRoof / resolveAutotile > 지붕은 벽 영역 바로 위에 전개되고 perCell/upper 홈 규약을 따른다  562ms
+   ✓ expandRoof / resolveAutotile > overlay_detail 지붕 어휘도 throw하지 않고 장식 가로 지붕으로 폴백한다  498ms
+ ✓ test/toolHouseProtection.test.ts (12 tests) 13460ms
+   ✓ completed house transaction invariant > rolls back maps, events and tree additions atomically (dryRun=false)  1248ms
+   ✓ completed house transaction invariant > rolls back maps, events and tree additions atomically (dryRun=true)  1319ms
+   ✓ completed house transaction invariant > catches global tree-repair spillover even when the tool edits another map  647ms
+   ✓ completed house transaction invariant > seals a newly built standalone house before global tree repair  1643ms
+   ✓ completed house transaction invariant > retains registration-time snapshots through later work in the same transaction  967ms
+   ✓ completed house transaction invariant > preflights author_house against a completed house without tile changes  776ms
+   ✓ completed house transaction invariant > preflights build_house against a completed house without tile changes  485ms
+   ✓ completed house transaction invariant > registers and reloads a standalone roof-deck attachment without claiming its yard  4515ms
+   ✓ completed house transaction invariant > allows unrelated edits and safe dry-run without changing the original project  1216ms
+ ✓ test/houseProtection.test.ts (23 tests) 16682ms
+   ✓ completed house geometry and exact cell ownership > protects bbox, full-width north ridge and empty cells at (3,2)  2429ms
+   ✓ completed house geometry and exact cell ownership > protects bbox, full-width north ridge and empty cells at (6,2)  1211ms
+   ✓ completed house geometry and exact cell ownership > protects bbox, full-width north ridge and empty cells at (3,3)  729ms
+   ✓ completed house geometry and exact cell ownership > protects bbox, full-width north ridge and empty cells at (6,6)  519ms
+   ✓ completed house geometry and exact cell ownership > protects bbox, full-width north ridge and empty cells at (4,4)  330ms
+   ✓ completed house geometry and exact cell ownership > protects lowerTileStacks contents, order and absence  1012ms
+   ✓ completed house geometry and exact cell ownership > protects upperTileStacks contents, order and absence  1070ms
+   ✓ completed house geometry and exact cell ownership > protects a human placement rectangle without adding a north ridge  749ms
+   ✓ completed house geometry and exact cell ownership > protects the existing roof-deck ladder attachment, not the entire yard  2912ms
+   ✓ completed house geometry and exact cell ownership > rejects structural metadata change: remove  315ms
+   ✓ completed house geometry and exact cell ownership > rejects structural metadata change: shrink  579ms
+   ✓ completed house geometry and exact cell ownership > rejects structural metadata change: move  309ms
+   ✓ completed house geometry and exact cell ownership > does not claim a raw adjacent ladder without roof-deck metadata  494ms
+   ✓ completed house geometry and exact cell ownership > allows descriptive metadata and unrelated stack changes  1221ms
+   ✓ completed house geometry and exact cell ownership > rejects protected map delete  490ms
+   ✓ completed house geometry and exact cell ownership > takes the current accepted human-edited tiles as truth, not original kit tiles  654ms
+ ✓ test/roadObstacleAvoidance.test.ts (19 tests) 21004ms
+   ✓ 도로 우회 — 건물 관통 방지 > 두 집 사이를 가로지르는 paint_road 가 집 칸을 한 칸도 덮지 않는다  3420ms
+   ✓ 도로 우회 — 건물 관통 방지 > 집을 피한 도로가 하나로 이어진다(우회로가 연결성을 지킨다)  949ms
+   ✓ 도로 우회 — 건물 관통 방지 > 집을 관통하던 칸 수를 결과 data 와 경고로 보고한다  2280ms
+   ✓ 도로 우회 — 건물 관통 방지 > 장애물이 없으면 경로 셀을 그대로 쓴다(기존 결과 유지)  409ms
+   ✓ 도로 우회 — 건물 관통 방지 > 빈 칸(EMPTY)은 장애물이 아니다 — 갓 만든 맵에서 길이 안 깔리는 퇴행 방지  384ms
+   ✓ 도로 우회 — 건물 관통 방지 > 폭 셀은 경로가 아니라 표본이므로 우회로를 만들지 않는다  810ms
+   ✓ 도로 우회 — 건물 관통 방지 > 자연도 높은 paint_road 가 요청 경로 주변만 칠한다(엉뚱한 들판 길 금지)  1189ms
+   ✓ 도로 우회 — 건물 관통 방지 > 건물에 완전히 막히면 끊긴 길을 커밋하지 않고 좌표와 함께 거절한다  854ms
+   ✓ 도로 우회 — 건물 관통 방지 > 끝점이 벽이면 벽 앞까지 깔고 endpointBlocked 로 알린다  564ms
+   ✓ 도로 우회 — 건물 관통 방지 > 나무는 길이 치운다 — 숲을 가로지르는 길이 뱀처럼 휘지 않는다  486ms
+   ✓ 도로 우회 — 건물 관통 방지 > 물은 마른 우회로가 있으면 살리고, 없으면 건너며 좌표로 알린다  651ms
+   ✓ 도로 우회 — 건물 관통 방지 > lay_path 도 집 칸을 덮지 않는다(두 레이어 바이트 동일)  1099ms
+   ✓ 도로 우회 — 건물 관통 방지 > stamp_structure road 템플릿의 길이 기존 집 지표면을 덮지 않는다  2064ms
+   ✓ roads respect completed-house geometry > blocks passable bbox gaps, empty ridge, deck attachment, and recorded placements only  493ms
+   ✓ roads respect completed-house geometry > 'paint_road' 421 preserves protected autotile neighbors and their stacks  1073ms
+   ✓ roads respect completed-house geometry > 'paint_road' 424 preserves protected autotile neighbors and their stacks  744ms
+   ✓ roads respect completed-house geometry > 'lay_path' 421 preserves protected autotile neighbors and their stacks  1045ms
+   ✓ roads respect completed-house geometry > paint_road rejects a metadata-only barrier instead of committing disconnected pieces  1214ms
+   ✓ roads respect completed-house geometry > lay_path rejects a metadata-only barrier instead of committing disconnected pieces  1239ms
+
+ Test Files  5 passed (5)
+      Tests  75 passed (75)
+   Start at  04:02:54
+   Duration  63.21s (transform 36.29s, setup 0ms, collect 149.73s, tests 56.17s, environment 13ms, prepare 3.51s)
