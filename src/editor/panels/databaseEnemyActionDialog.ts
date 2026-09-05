@@ -21,38 +21,41 @@ export function openActionDialog(record: EnemyRecord, index: number, action: Ene
   const skillHost = el("div", { class: "db-enemy-action-skill-host", dataset: { testid: "db-enemy-action-skill-host" } });
   const modeHost = el("div", { class: "db-enemy-behaviour-mode", dataset: { testid: "db-enemy-behaviour-mode" } });
 
-  const rebuildSkill = (): void => {
-    skillHost.replaceChildren(
-      selectField("스킬", "db-enemy-action-dialog-skill", nextAction.skillId ?? "", store.getCurrent().database.skills, (skillId) => {
-        nextAction = { ...nextAction, skillId: skillId as SkillId };
-        mode = "skill";
-        rebuildMode();
-      }),
-    );
-    const select = skillHost.querySelector("select");
-    if (select instanceof HTMLSelectElement) select.disabled = mode !== "skill";
+  // Keep the controls mounted and the skill draft independent of the committed mode.
+  const skills = store.getCurrent().database.skills;
+  let draftSkillId = nextAction.skillId || skills[0]?.id || "";
+  const skillField = selectField("스킬", "db-enemy-action-dialog-skill", draftSkillId, skills, (skillId) => {
+    draftSkillId = skillId;
+  });
+  const skillSelect = skillField.querySelector("select") as HTMLSelectElement;
+  skillSelect.querySelector('option[value=""]')?.remove();
+  if (draftSkillId && !skills.some((skill) => skill.id === draftSkillId)) {
+    skillSelect.append(el("option", { text: `현재 값:${draftSkillId}`, attrs: { value: draftSkillId } }));
+  }
+  skillSelect.value = draftSkillId;
+  const syncMode = (): void => {
+    skillSelect.disabled = mode !== "skill" || !draftSkillId;
   };
+  const basicRadio = behaviourRadio("basic", "기본 행동", mode === "basic", () => {
+    mode = "basic";
+    syncMode();
+  });
+  const skillRadio = behaviourRadio("skill", "스킬", mode === "skill", () => {
+    mode = "skill";
+    syncMode();
+  });
+  (skillRadio.querySelector("input") as HTMLInputElement).disabled = !draftSkillId;
+  skillHost.append(skillField);
+  modeHost.append(basicRadio, skillRadio, skillHost);
+  syncMode();
 
-  const rebuildMode = (): void => {
-    modeHost.replaceChildren(
-      behaviourRadio("basic", "기본 행동", mode === "basic", () => {
-        mode = "basic";
-        nextAction = applyEnemyActionBehaviourMode(nextAction, "basic");
-        rebuildMode();
-        rebuildSkill();
-      }),
-      behaviourRadio("skill", "스킬", mode === "skill", () => {
-        mode = "skill";
-        const fallback = store.getCurrent().database.skills[0]?.id ?? "";
-        nextAction = applyEnemyActionBehaviourMode(nextAction, "skill", nextAction.skillId || fallback);
-        rebuildMode();
-        rebuildSkill();
-      }),
-      skillHost,
-    );
-    rebuildSkill();
+  const syncCondition = (): void => {
+    start.disabled = interval.disabled = conditionType.value !== "turn";
+    validateNumber(start);
+    validateNumber(interval);
   };
-  rebuildMode();
+  conditionType.addEventListener("input", syncCondition);
+  conditionType.addEventListener("change", syncCondition);
 
   const switchOn = switchEffectField("db-enemy-action-switch-on", nextAction.switchOnAfterAction, (effect) => {
     nextAction = { ...nextAction, switchOnAfterAction: effect };
@@ -67,10 +70,9 @@ export function openActionDialog(record: EnemyRecord, index: number, action: Ene
     nextAction = applyEnemyActionBehaviourMode(
       { ...nextAction, priority: Number(rating.value), condition },
       mode,
-      nextAction.skillId ?? "",
+      draftSkillId as SkillId,
     );
   };
-  for (const input of [rating, conditionType, start, interval]) input.addEventListener("input", syncAction);
   openDialog("db-enemy-action-dialog", "공격 패턴", [
     panel("조건", [conditionHeader(conditionType, rating), conditionDetail(start, interval)]),
     panel("행동 후 스위치 ON", [switchOn]),
@@ -84,6 +86,20 @@ export function openActionDialog(record: EnemyRecord, index: number, action: Ene
     } },
     { label: "Cancel", testid: "db-enemy-action-cancel" },
   ]);
+  syncCondition();
+  // openDialog closes after its action callback; intercept invalid confirmation
+  // before that shared click handler without changing other dialog contracts.
+  const confirm = document.querySelector('[data-testid="db-enemy-action-ok"]') as HTMLButtonElement;
+  confirm.addEventListener("click", (event) => {
+    const invalid = [rating, start, interval].filter((input) => !validateNumber(input));
+    const first = invalid[0];
+    if (first) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      first.focus();
+      first.reportValidity();
+    }
+  }, { capture: true });
 }
 
 export function openActionContextMenu(record: EnemyRecord, index: number, action: EnemyActionPattern, event: MouseEvent, rerender: () => void): void {
@@ -166,22 +182,29 @@ function conditionDetail(start: HTMLInputElement, interval: HTMLInputElement): H
 
 function switchEffectField(testid: string, effect: EnemyActionSwitchEffect, onChange: (effect: EnemyActionSwitchEffect) => void): HTMLElement {
   const options = switchOptions();
-  const checkbox = el("input", { attrs: { type: "checkbox" }, dataset: { testid: `${testid}-enabled` } }) as HTMLInputElement;
+  const label = switchPickerLabel(testid);
+  const checkbox = el("input", { attrs: { type: "checkbox", "aria-label": `${label} 사용` }, dataset: { testid: `${testid}-enabled` } }) as HTMLInputElement;
   checkbox.checked = effect.enabled;
   checkbox.disabled = options.length === 0;
-  const select = el("select", { dataset: { testid: `${testid}-id` } }) as HTMLSelectElement;
+  const select = el("select", { attrs: { "aria-label": label }, dataset: { testid: `${testid}-id` } }) as HTMLSelectElement;
   for (const option of options) select.append(el("option", { text: option.name, attrs: { value: option.id } }));
   if (effect.switchId && !options.some((option) => option.id === effect.switchId)) {
     select.append(el("option", { text: `현재 값:${effect.switchId}`, attrs: { value: effect.switchId } }));
   }
   select.value = effect.switchId ?? options[0]?.id ?? "";
-  select.disabled = options.length === 0;
-  const sync = (): void => onChange({ enabled: checkbox.checked, switchId: select.value || undefined });
+  const sync = (): void => {
+    select.disabled = picker.disabled = !checkbox.checked || options.length === 0;
+    picker.setAttribute("aria-disabled", String(picker.disabled));
+    onChange({ enabled: checkbox.checked, switchId: select.value || undefined });
+  };
   const chooseSwitch = (switchId: string): void => {
     select.value = switchId;
     checkbox.checked = true;
     sync();
   };
+  const picker = switchPickerButton(`${testid}-picker`, label, options.length > 0, () => select.value, chooseSwitch);
+  select.disabled = picker.disabled = !checkbox.checked || options.length === 0;
+  picker.setAttribute("aria-disabled", String(picker.disabled));
   checkbox.addEventListener("change", sync);
   select.addEventListener("change", sync);
   return el("div", {
@@ -189,12 +212,12 @@ function switchEffectField(testid: string, effect: EnemyActionSwitchEffect, onCh
     children: [
       el("label", { class: "actor-check", children: [checkbox, el("span", { text: "사용" })] }),
       select,
-      switchPickerButton(`${testid}-picker`, switchPickerLabel(testid), options.length > 0, select.value, chooseSwitch),
+      picker,
     ],
   });
 }
 
-function switchPickerButton(testid: string, label: string, enabled: boolean, currentId: string, onSelect: (switchId: string) => void): HTMLButtonElement {
+function switchPickerButton(testid: string, label: string, enabled: boolean, currentId: () => string, onSelect: (switchId: string) => void): HTMLButtonElement {
   const explanation = enabled ? `${label} 목록 열기` : `${label}할 스위치가 없습니다.`;
   const button = el("button", {
     class: "btn small",
@@ -204,7 +227,7 @@ function switchPickerButton(testid: string, label: string, enabled: boolean, cur
     on: {
       click: () => {
         if (!enabled) return;
-        openRecordPickerPanel({ kind: "switch", currentId, onSelect });
+        openRecordPickerPanel({ kind: "switch", currentId: currentId(), onSelect });
       },
     },
   }) as HTMLButtonElement;
@@ -222,11 +245,34 @@ function switchOptions(): readonly { readonly id: string; readonly name: string 
 }
 
 function numberInput(testid: string, min: number, max: number, value: number): HTMLInputElement {
-  return el("input", { attrs: { type: "number", min: String(min), max: String(max) }, value, dataset: { testid } }) as HTMLInputElement;
+  return el("input", { attrs: { type: "number", min: String(min), max: String(max), step: "1", required: "true" }, value, dataset: { testid } }) as HTMLInputElement;
 }
 
 function numberFieldNode(label: string, input: HTMLInputElement): HTMLElement {
-  return el("label", { class: "db-field", children: [el("span", { text: label }), input] });
+  const errorId = `${input.dataset.testid}-error`;
+  const error = el("span", {
+    class: "db-field-error",
+    attrs: { id: errorId, "aria-live": "polite" },
+    text: `${label}: ${input.min}~${input.max} 사이의 정수를 입력하세요.`,
+  });
+  error.hidden = true;
+  input.setAttribute("aria-describedby", errorId);
+  input.addEventListener("input", () => validateNumber(input));
+  input.addEventListener("change", () => validateNumber(input));
+  return el("label", { class: "db-field", children: [el("span", { text: label }), input, error] });
+}
+
+function validateNumber(input: HTMLInputElement): boolean {
+  const value = input.valueAsNumber;
+  const valid = input.disabled || (input.value !== "" && Number.isInteger(value)
+    && value >= Number(input.min) && value <= Number(input.max));
+  input.setAttribute("aria-invalid", String(!valid));
+  const error = document.getElementById(`${input.dataset.testid}-error`);
+  if (error) {
+    error.hidden = valid;
+    input.setCustomValidity(valid ? "" : error.textContent ?? "");
+  }
+  return valid;
 }
 
 function removeAction(actions: readonly EnemyActionPattern[], index: number): EnemyActionPattern[] {

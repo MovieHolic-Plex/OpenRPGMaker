@@ -352,7 +352,7 @@
   .db-common-event-list-pane,
   .db-common-event-detail-pane
 ) {
-  background: var(--db-studio-surface) !important;
+  background: var(--db-record-pane-bg, var(--db-studio-surface)) !important;
   border: 0 !important;
   border-radius: 0 !important;
   box-shadow: none !important;
