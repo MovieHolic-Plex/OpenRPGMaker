@@ -1,3 +1,4 @@
+import { clearFurniturePush, furniturePushPosition } from './furniturePushAnimation';
 import { chipsetAnimationKey, TILE_SIZE } from "@/assets/bundled";
 import {
   isDefaultTilesetTexture,
@@ -485,7 +486,7 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
     // 걷는 중인 NPC 는 논리 위치가 이미 목적지다(playSceneAutonomous §moveAutonomousRuntimePosition).
     // 목적지에 새 스프라이트를 놓으면 이벤트가 열려 이동이 멎은 순간 NPC 가 한 칸 앞으로 튄다 —
     // 진행 중인 걸음의 보간 위치에 놓는다.
-    const position = renderedEventPosition(view, scene.autonomousNPCs?.get(event.id));
+    const position = furniturePushPosition(scene, event.id) ?? renderedEventPosition(view, scene.autonomousNPCs?.get(event.id));
     const marker = scene.add.sprite(
       footprintSpriteX(position.x, view.footprint),
       characterSpriteY(position.y),
@@ -515,6 +516,7 @@ function renderedEventPosition(
 }
 
 export function resetMapRuntime(scene: PlaySceneContext): void {
+  clearFurniturePush(scene);
   // 맵이 바뀌면 타일 서명도 버린다 — 같은 맵 객체를 다시 로드하는 경로에서도 반드시 다시 그린다.
   invalidateTileLayer(scene);
   scene.eventPositions = initialRuntimeEventPositions(scene.map.events);

@@ -1,3 +1,6 @@
+import { applySaveSnapshot, createSaveSnapshot } from '@/player/saveSlots';
+import { cancelFurniturePush, furniturePushPosition, furniturePushBlocks, furniturePushFrames } from '@/player/furniturePushAnimation';
+import { runtimeEventViewsForMap } from '@/project/runtimeEventState';
 /** @vitest-environment happy-dom */
 // 런타임 불안정 회귀 증거 — 2026-09-03 리뷰에서 실측한 세 결함을 고치기 **전 코드에서 실패**하도록 썼다.
 //
@@ -13,8 +16,8 @@ import { TILE_SIZE } from "@/assets/bundled";
 import { footprintSpriteX } from "@/player/characterDepth";
 import { Input, type InputState } from "@/player/input";
 import { applyStoredCameraState } from "@/player/playSceneCamera";
-import { renderTiles } from "@/player/playSceneMapRuntime";
-import { updatePlayScene } from "@/player/playSceneMovement";
+import { renderTiles, resetMapRuntime } from "@/player/playSceneMapRuntime";
+import { tryStartFurniturePush, updatePlayScene } from "@/player/playSceneMovement";
 import { resolvePlayerSpriteResource } from "@/player/playerSpriteResources";
 import { onRegistryValue } from "@/player/registryReady";
 import { createRuntimePerfCounters } from "@/player/runtimePerfCounters";
@@ -587,5 +590,149 @@ describe("registry 준비 대기", () => {
       calls += 1;
     });
     expect(calls).toBe(1);
+  });
+});
+
+
+function furnitureHarness(dir: 'up' | 'down' | 'left' | 'right' = 'up') {
+  const h = movementHarness();
+  const s = h.scene;
+  s.session.x = s.tileX; s.session.y = s.tileY;
+  s.player.x = (s.tileX + .5) * 16; s.player.y = (s.tileY + 1) * 16;
+  s.facing = dir;
+  const dx = dir === 'right' ? 1 : dir === 'left' ? -1 : 0;
+  const dy = dir === 'down' ? 1 : dir === 'up' ? -1 : 0;
+  const x = s.tileX + dx, y = s.tileY + dy;
+  const chair = { x: (x+.5)*16, y:(y+1)*16, frame:7, depth:0,
+    setDepth(d: number) { this.depth=d; }, setFrame(f: number) { this.frame=f; },
+  };
+  s.map.events.push({ id:'chair', x,y, trigger:{kind:'action'},commands:[],pages:[{
+    id:'chair_page',name:'chair',conditions:[],graphic:{},trigger:{kind:'action'},
+    priority:'same',overlapForbidden:true,movement:{type:'fixed',speed:3,frequency:3},
+    interaction:{kind:'pushable'},commands:[],
+  }] });
+  s.eventPositions.chair={x,y}; s.eventSprites.set('chair',chair as any);
+  const view=()=>runtimeEventViewsForMap(store.getCurrent(),s.map,s.session,s.eventPositions).find(e=>e.event.id==='chair')!;
+  return { ...h, chair, view, dx, dy, x, y };
+}
+
+describe('coordinated furniture pushing', () => {
+  it.each(['up','down','left','right'] as const)('action push %s follows the chair smoothly with fixed contact spacing', dir => {
+    const h=furnitureHarness(dir), s=h.scene;
+    const start={x:s.player.x,y:s.player.y,cx:h.chair.x,cy:h.chair.y};
+    h.hold({actionPressed:true}); h.tick(1); h.hold({});
+    expect(s.moving).toBe(true);
+    expect(h.chair).toMatchObject({x:start.cx,y:start.cy});
+    const xs:number[]=[],ys:number[]=[];
+    for(let i=0;i<19;i++) {
+      h.tick(1); xs.push(h.chair.x);ys.push(h.chair.y);
+      expect(h.chair.x-s.player.x).toBeCloseTo(h.dx*16);
+      expect(h.chair.y-s.player.y).toBeCloseTo(h.dy*16);
+      expect(h.chair.frame).toBe(7);
+      expect(h.chair.depth).toBeCloseTo(200000+h.chair.y);
+    }
+    expect(new Set(h.dx?xs:ys).size).toBeGreaterThan(10);
+    expect(s.moving).toBe(false);
+    expect(s.session).toMatchObject({x:h.x,y:h.y});
+    expect(h.chair.x).toBeCloseTo(start.cx+h.dx*16);
+    expect(h.chair.y).toBeCloseTo(start.cy+h.dy*16);
+    expect(furniturePushFrames(s)).toBeUndefined();
+    // Endpoints are exact; no residual animation after the input has stopped.
+    h.tick(30);expect(s.session).toMatchObject({x:h.x,y:h.y});
+  });
+
+  it('direction + dash uses the same slower push and ignores repeated action during it', () => {
+    const h=furnitureHarness();
+    h.hold({dir:'up',x:0,y:-1,dash:true});h.tick(1);
+    expect(h.scene.dashing).toBe(false);
+    h.hold({actionPressed:true});h.tick(8);h.hold({});
+    expect(h.chair.y).toBeGreaterThan((h.y)*16);
+    expect(h.chair.y).toBeLessThan((h.y+1)*16);
+    h.tick(10);
+    expect(h.scene.session.eventLocations.chair).toMatchObject({x:h.x,y:h.y-1});
+    expect(h.scene.session.y).toBe(h.y);
+  });
+
+  it.each([30,60,120])('finishes in 19 logic ticks at %i Hz with no chained motion', hz => {
+    const h=furnitureHarness();
+    expect(tryStartFurniturePush(h.scene,h.view())).toBe(true);
+    h.tick(hz/2,1000/hz);
+    expect(h.scene.moving).toBe(false);
+    expect(h.scene.session.y).toBe(h.y);
+    expect(h.chair.y).toBe(h.y*16);
+  });
+
+  it('menu freezes both participants and resume continues from the same pose', () => {
+    const h=furnitureHarness();tryStartFurniturePush(h.scene,h.view());h.tick(8);
+    const pose={chair:h.chair.y,player:h.scene.player.y};
+    const doc=h.scene.game.canvas.ownerDocument;
+    const query=doc.querySelector;
+    doc.querySelector=(()=>({})) as any;h.tick(120);
+    expect({chair:h.chair.y,player:h.scene.player.y}).toEqual(pose);
+    doc.querySelector=query;h.tick(11);expect(h.scene.moving).toBe(false);
+  });
+
+  it('preserves presentation when a refresh replaces the sprite mid-push', () => {
+    const h=furnitureHarness();tryStartFurniturePush(h.scene,h.view());h.tick(8);
+    const position=furniturePushPosition(h.scene,'chair')!;
+    expect(position.y*16+16).toBeCloseTo(h.chair.y);
+    const replacement={...h.chair};h.scene.eventSprites.set('chair',replacement as any);
+    h.tick(1);expect(replacement.y).toBeLessThan(h.chair.y);
+    expect(replacement.frame).toBe(7);
+  });
+
+  it('blocked destinations and disallowed directions leave both participants untouched', () => {
+    const h=furnitureHarness();h.scene.map.events[0]!.pages![0]!.interaction!.directions=['down'];
+    expect(tryStartFurniturePush(h.scene,h.view())).toBe(false);
+    delete h.scene.map.events[0]!.pages![0]!.interaction!.directions;
+    const blocker=structuredClone(h.scene.map.events[0]!);blocker.id='blocker';blocker.y--;
+    h.scene.map.events.push(blocker);
+    expect(tryStartFurniturePush(h.scene,h.view())).toBe(false);
+    expect(h.scene.moving).toBe(false);expect(h.scene.session.eventLocations.chair).toBeUndefined();
+  });
+
+  it('keeps the source reserved until cancellation rolls the furniture back', () => {
+    const h=furnitureHarness();tryStartFurniturePush(h.scene,h.view());h.tick(8);
+    const rect={left:h.x,right:h.x,top:h.y,bottom:h.y};
+    expect(furniturePushBlocks(h.scene,rect)).toBe(true);
+    expect(furniturePushBlocks(h.scene,rect,'chair')).toBe(false);
+    cancelFurniturePush(h.scene);
+    expect(h.scene.session.eventLocations.chair).toMatchObject({x:h.x,y:h.y});
+    expect(h.chair.y).toBe((h.y+1)*16);
+    expect(furniturePushBlocks(h.scene,rect)).toBe(false);
+    expect(furniturePushPosition(h.scene,'chair')).toBeUndefined();
+  });
+});
+
+
+describe('furniture animation lifecycle', () => {
+  it('action pressed on the final movement tick does not queue another push', () => {
+    const h=furnitureHarness();tryStartFurniturePush(h.scene,h.view());h.tick(18);
+    h.hold({actionPressed:true});h.tick(1);
+    expect(h.scene.moving).toBe(false);
+    expect(h.scene.session.eventLocations.chair!.y).toBe(h.y-1);
+  });
+
+  it('save during motion restores valid tile positions, without serializing animation state', () => {
+    const h=furnitureHarness();tryStartFurniturePush(h.scene,h.view());h.tick(8);
+    const project=store.getCurrent();
+    const restored=applySaveSnapshot(project,createSaveSnapshot(project,h.scene.session));
+    expect(restored.y).toBe(5);
+    expect(restored.eventLocations.chair).toMatchObject({x:h.x,y:h.y-1});
+    expect(Number.isInteger(restored.eventLocations.chair!.y)).toBe(true);
+  });
+
+  it('map reset removes the interpolation and footprint reservation before sprites are rebuilt', () => {
+    const h=furnitureHarness();tryStartFurniturePush(h.scene,h.view());h.tick(8);
+    Object.assign(h.chair,{destroy(){}});
+    Object.assign(h.scene,{
+      parallelProcesses:new Map(),autoStartedKeys:new Set(),pageMoveRouteKeys:new Set(),
+      pageMoveRouteEventIds:new Set(),commandMoveRouteEventIds:new Set(),eventGraphicPatternOverrides:new Map(),
+      activeMapAnimations:new Set(),missingResources:new Set(),runtimeDom:{clearEventMarkers(){}},
+    });
+    resetMapRuntime(h.scene);
+    expect(furniturePushPosition(h.scene,'chair')).toBeUndefined();
+    expect(furniturePushFrames(h.scene)).toBeUndefined();
+    expect(furniturePushBlocks(h.scene,{left:h.x,right:h.x,top:h.y,bottom:h.y})).toBe(false);
   });
 });

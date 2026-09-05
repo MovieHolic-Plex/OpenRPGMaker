@@ -132,3 +132,10 @@
 `playSceneEmotes.ts` owns transient target-keyed sprites/timers. Interpreter and parallel/common-event scheduler resume immediately after `showEmote`; gift rank and friendship changes use the same sprite path. Head anchoring follows displayHeight × originY, including hop lift. Replacement, target removal, map change and scene teardown cancel timers/tweens together. `runtimeAssets.json` includes the generated sheet for shipping exports; Phaser preload uses `withInlineAsset` for standalone HTML. `__oprnEmotes` is installed only by the existing QA instrumentation boundary.
 
 Validation: `showEmoteCommand`, `showEmoteCommandBody`, `playSceneEmotes`, `emoteSheet` and `commandContracts/showEmote` tests. `npx tsx scripts/qa/emote-runtime.mts` generates a transient minimal engine contract fixture and runs the shipping-player harness; it does not author/persist a demo game. Read `verify-shots/runtime-qa/emote/SUMMARY.md` first.
+
+- **가구 밀기는 주인공 걸음과 같은 틱의 별도 표현 상태다 (2026-09-05).**
+  `furniturePushAnimation.ts`와 `playSceneMovement.tryStartFurniturePush`가 소유한다.
+  조사/방향 입력 모두 몸과 가구가 같은 곡선으로 한 칸 움직인다. 가구 위치를 갱신했다고
+  `refreshRuntimeEntities`를 부르면 순간이동/스프라이트 재생성이 돌아온다. 맵 리셋은 표현 상태를
+  비우고 `stopCommandMovement`는 양쪽을 취소해야 한다. 자세한 계약과 연속 프레임 QA는
+  `horror-authoring.md`의 「가구 밀기 애니메이션」 절을 따른다.
