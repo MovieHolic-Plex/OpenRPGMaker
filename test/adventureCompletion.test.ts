@@ -17,6 +17,9 @@ function connectedAdventure() {
   p.maps[dungeon.id] = dungeon;
   const event = { id: "entrance", x: p.startPos.x, y: p.startPos.y - 1, trigger: { kind: "action" as const }, commands: [], pages: [{ id: "entrance_page", name: "入口", conditions: [], trigger: { kind: "action" as const }, priority: "same" as const, graphic: {}, movement: { type: "fixed" as const, speed: 3, frequency: 3 }, commands: [{ kind: "transfer" as const, mapId: dungeon.id, x: p.startPos.x, y: p.startPos.y }] }] };
   start.events.push(event);
+  const back = structuredClone(event); back.id = "return"; back.pages[0].commands[0].mapId = start.id;
+  dungeon.events.push(back);
+  dungeon.events.push({ ...structuredClone(event), id: "treasure", x: p.startPos.x + 2, commands: [{ kind: "changeGold", op: "+=", amount: 10 }], pages: [] });
   dungeon.encounterRate = 10; dungeon.troopIds = [p.database.troops[0].id];
   p.system.startActorIds = p.database.actors.slice(0, 2).map(a => a.id);
   return p;
@@ -32,6 +35,19 @@ describe("declared adventure completion", () => {
   });
   it("accepts real structure, reachable transfer, connected encounters and a party", () => {
     expect(adventureCompletionProblems(connectedAdventure(), required)).toEqual([]);
+  });
+  it("rejects a secondary map without an exploration objective or return route", () => {
+    const p = connectedAdventure(); p.maps.test_dungeon.events = [];
+    expect(adventureCompletionProblems(p, required)).toContainEqual(expect.stringContaining("복귀 경로"));
+  });
+  it("rejects a treasure buried in an impassable structure", () => {
+    const p = connectedAdventure(), map = p.maps.test_dungeon;
+    const chest = map.events.find(e => e.id === "treasure")!;
+    const tileset = p.tilesets[map.tilesetId];
+    const solid = tileset.passability.findIndex(p => p && !Object.values(p).some(Boolean));
+    expect(solid).toBeGreaterThanOrEqual(0);
+    map.lowerTiles[chest.y * map.width + chest.x] = solid;
+    expect(adventureCompletionProblems(p, required)).toContainEqual(expect.stringContaining("treasure가 막힌"));
   });
   it("cannot use an obsolete root transfer when the active pages contain only dialogue", () => {
     const p = connectedAdventure(); const e = p.maps[p.startMapId].events[0];
