@@ -1,16 +1,8 @@
 // 속성(elements) 탭 — 워크스페이스 프리미티브 기반 단일 레코드 편집기.
 //
-// 개편 이유(2026-08 DB 감사):
-//   - H 축 P0: 상세 카드의 65% 가 영구적으로 빈 흰색이었다. `.db-elements-editor` 가
-//     `grid-template-columns: minmax(320px,.9fr) minmax(360px,1.1fr)` +
-//     `grid-template-rows: 88px 160px minmax(0,1fr)` 로 못박혀 있고 대미지 상자만
-//     `grid-column:2; grid-row:1/4` 로 붙어 있어, 1열 3행에는 아무것도 놓이지 않았다.
-//     1680x1050 에서 대략 500x1050px 의 공백. → 하드코딩 그리드를 버리고 `db-ws-stack`
-//     (auto-fit minmax(400px,1fr)) 으로 폭이 되는 만큼 열을 채운다.
-//   - F 축 P0: 전부 숫자 배율뿐인 탭에 미리보기가 하나도 없었다. 200%/150%/100%/50%/0%
-//     가 실제로 얼마의 피해인지 알 수 없었다. → 기준 피해 대비 막대 + 결과값을 붙인다.
-//   - D 축: 검색이 없고, 레코드를 만드는 유일한 경로가 "최대 개수" 라는 모호한 버튼뿐.
-//     → 검색 + "+ 추가" 를 붙이고 "최대 개수" 는 보조 액션으로 남긴다.
+// 그림 목록 + 기본 정보 → 배율 예시와 A–E 편집 → 명시적 참조의 단일 열 워크시트.
+// 예시는 속성 배율만 계산하며 그림·기준 피해·선택 등급은 저작 데이터에 저장하지 않는다.
+// 검색과 필드 편집은 입력 노드를 유지하고, 레코드 선택/개수 변경만 구조를 다시 만든다.
 //
 // 테스트 계약(바꾸지 말 것): db-elements-classic / db-elements-list /
 // db-elements-list-title("속성") / db-elements-row-<i> + is-selected /
@@ -32,9 +24,9 @@ import {
   listSearch,
   listToolbar,
   sectionCard,
-  statStrip,
   workspaceShell,
 } from "@/editor/panels/databaseWorkspace";
+import { elementArtwork, elementDefenseContext, elementDefenseNote, elementOutcome } from "@/editor/panels/databaseElementPresentation";
 import { store } from "@/project/store";
 import type { ActorRateGrade, DatabaseElementRecord } from "@/project/types";
 import { el } from "@/util/dom";
@@ -42,16 +34,7 @@ import { toast } from "@/util/toast";
 import "@/styles/database/modern/utility-records.css";
 
 const ELEMENT_DAMAGE_GRADES: readonly ActorRateGrade[] = ["A", "B", "C", "D", "E"] as const;
-const GRADE_DISPLAY_LABEL: Record<ActorRateGrade, string> = {
-  A: "약함",
-  B: "조금 약함",
-  C: "보통",
-  D: "강함",
-  E: "무효",
-};
 const DEFAULT_MULTIPLIERS: Record<ActorRateGrade, number> = { A: 200, B: 150, C: 100, D: 50, E: 0 };
-/** 막대가 가득 차는 배율. 기본값 최대치(200%) 를 기준으로 잡는다. */
-const BAR_FULL_PERCENT = 200;
 
 let selectedElementIndex = 5;
 let elementQuery = "";
@@ -74,7 +57,7 @@ export function renderElementsTab(host: HTMLElement): void {
   form.append(
     workspaceShell({
       list: elementListPane(elements, rerender),
-      detail: elementDetailPane(elements[selectedElementIndex], selectedElementIndex, elements.length, rerender),
+      detail: elementDetailPane(elements[selectedElementIndex], selectedElementIndex, elements.length),
       testid: "db-elements-classic",
     }),
   );
@@ -85,11 +68,10 @@ function elementListPane(elements: readonly DatabaseElementRecord[], rerender: (
   const rows: HTMLElement[] = [];
   for (const [index, element] of elements.entries()) {
     const label = element.name?.trim() ? element.name : "(이름 없음)";
-    if (elementQuery && !matchesNameOrId(label, element.id, elementQuery)) continue;
     const row = listRow({
       name: label,
       number: index + 1,
-      thumb: kindThumb(element.kind),
+      thumb: elementArtwork(element, store.getCurrent(), 32),
       active: index === selectedElementIndex,
       title: `${label} #${index + 1} · ${element.id}`,
       testid: `db-elements-row-${index}`,
@@ -104,6 +86,31 @@ function elementListPane(elements: readonly DatabaseElementRecord[], rerender: (
     rows.push(row);
   }
 
+  const noMatch = emptyState({
+    title: "검색 결과가 없습니다",
+    body: elements.length ? "다른 이름이나 ID로 찾아보세요." : "속성을 추가해 보세요.",
+    compact: true,
+    action: { label: "검색 지우기", testid: "db-elements-search-clear", onClick: () => {
+      elementQuery = "";
+      const search = pane.querySelector<HTMLInputElement>("input[type=search]")!;
+      search.value = "";
+      refreshRows();
+      search.focus();
+    } },
+  });
+  const refreshRows = (): void => {
+    const current = store.getCurrent().database.elements ?? [];
+    const visible = rows.filter((row, index) => {
+      const element = current[index];
+      const name = element.name.trim() ? element.name : "(이름 없음)";
+      row.querySelector<HTMLElement>(".db-list-name")!.textContent = name;
+      row.title = `${name} #${index + 1} · ${element.id}`;
+      return matchesNameOrId(name, element.id, elementQuery);
+    });
+    const list = pane.querySelector<HTMLElement>(".db-ws-list")!;
+    list.classList.toggle("db-ws-list-empty", !visible.length);
+    list.replaceChildren(...(visible.length ? visible : [noMatch]));
+  };
   const pane = listPane({
     title: "속성",
     count: elements.length,
@@ -113,22 +120,18 @@ function elementListPane(elements: readonly DatabaseElementRecord[], rerender: (
       testid: "db-elements-search",
       onInput: (value) => {
         elementQuery = value;
-        rerender();
+        refreshRows();
       },
     }),
     rows,
-    empty: emptyState({
-      icon: "⌕",
-      title: "검색 결과가 없습니다",
-      body: elementQuery ? `"${elementQuery}" 와 일치하는 속성이 없습니다.` : "속성을 추가해 보세요.",
-      compact: true,
-    }),
+    empty: noMatch,
     toolbar: listToolbar([
       {
         label: "+ 추가",
         kind: "primary",
         testid: "db-elements-add",
-        title: "속성 목록 끝에 새 속성을 추가합니다",
+        disabled: elements.length >= 99,
+        title: elements.length >= 99 ? "속성은 최대 99개까지 만들 수 있습니다" : "속성 목록 끝에 새 속성을 추가합니다",
         onClick: () => {
           const next = elements.length + 1;
           applyElementCount(next, () => {
@@ -157,6 +160,8 @@ function elementListPane(elements: readonly DatabaseElementRecord[], rerender: (
   // 예전 마크업의 훅을 새 요소에 옮겨 붙인다(테스트 계약 유지).
   tagChild(pane, ".db-ws-list-title", "db-elements-list-title");
   tagChild(pane, ".db-ws-list", "db-elements-list");
+  refreshRows();
+  pane.addEventListener("element-identity-change", refreshRows);
   return pane;
 }
 
@@ -168,18 +173,9 @@ function applyElementCount(count: number, after: () => void): void {
     // B4: 축소로 잘린 속성 id 에 대한 actor/enemy/class elementRates 잔재를 즉시 제거.
     // 같은 ordinal 로 재생성 시 stale 등급이 소생하는 위험을 에디터 세션 내에서 차단.
     pruneDanglingElementRates(project);
-  }, { scope: "database", collection: "elements" });
+  }, { scope: "database", collection: "elements", label: "속성 개수 변경" });
   after();
   toast(`속성 개수를 ${clampElementListCount(count)}개로 맞췄습니다.`, "ok");
-}
-
-function kindThumb(kind: DatabaseElementRecord["kind"]): HTMLElement {
-  return el("span", {
-    class: `db-el-kind-thumb db-el-kind-${kind}`,
-    // 글리프(⚔/✦)는 한글 UI 폰트에서 두부로 떨어진다 — 한 글자 한글로 쓴다.
-    attrs: { "aria-hidden": "true", title: kind === "magical" ? "마법 계열" : "물리 계열" },
-    text: kind === "magical" ? "마" : "물",
-  });
 }
 
 function tagChild(root: HTMLElement, selector: string, testid: string): void {
@@ -251,7 +247,6 @@ function elementDetailPane(
   element: DatabaseElementRecord | undefined,
   index: number,
   total: number,
-  rerender: () => void,
 ): HTMLElement {
   if (!element) {
     return detailPane({
@@ -268,19 +263,19 @@ function elementDetailPane(
       eyebrow: "속성",
       title: element.name?.trim() ? element.name : "(이름 없음)",
       subtitle: element.id,
+      media: elementArtwork(element, store.getCurrent(), 52),
       tags: [
         `#${index + 1} / ${total}`,
         element.kind === "magical" ? "마법 계열" : "물리 계열",
-        element.kind === "magical" ? "정신력으로 경감" : "물리 방어력으로 경감",
       ],
       testid: "db-elements-hero",
     }),
     body: el("div", {
-      class: "db-ws-stack",
+      class: "db-ws-stack db-el-worksheet",
       children: [
         elementIdentityCard(element, index),
+        elementDamageCard(element, index),
         elementUsageCard(element),
-        elementDamageCard(element, index, rerender),
       ],
     }),
     testid: "db-elements-editor",
@@ -299,24 +294,24 @@ function elementUsageCard(element: DatabaseElementRecord): HTMLElement {
   const actors = database.actors.filter((actor) => hasRate(actor.elementRates)).length;
   const enemies = database.enemies.filter((enemy) => hasRate(enemy.elementRates)).length;
   const classes = database.classes.filter((klass) => hasRate(klass.elementRates)).length;
-  const unused = skills.length === 0 && actors + enemies + classes === 0;
+  const attack = database.equipment.filter((entry) => entry.attackElementIds?.[0] === element.id).length;
+  const defense = database.equipment.filter((entry) => entry.elementalDefenseIds?.includes(element.id)).length;
 
   return sectionCard({
     title: "사용처",
-    hint: unused ? "아직 아무 데도 연결되지 않았습니다" : "이 속성을 참조하는 레코드",
+    hint: "저작 데이터의 명시적 참조",
     children: [
-      statStrip([
-        { label: "스킬", value: `${skills.length}`, tone: skills.length > 0 ? "good" : "warn" },
-        { label: "배우 내성", value: `${actors}`, tone: actors > 0 ? "good" : "neutral" },
-        { label: "몬스터 내성", value: `${enemies}`, tone: enemies > 0 ? "good" : "neutral" },
-        { label: "직업 내성", value: `${classes}`, tone: classes > 0 ? "good" : "neutral" },
-      ], { testid: "db-elements-usage-stats" }),
+      el("p", {
+        class: "db-ws-usage",
+        dataset: { testid: "db-elements-usage-stats", skills: String(skills.length), actors: String(actors), enemies: String(enemies), classes: String(classes), attack: String(attack), defense: String(defense) },
+        text: `스킬 ${skills.length} · 장비 공격 ${attack} · 장비 방어 ${defense} · 배우 등급 ${actors} · 몬스터 등급 ${enemies} · 직업 참조 ${classes}`,
+      }),
       el("p", {
         class: "db-ws-usage",
         dataset: { testid: "db-elements-usage-skills" },
         text: skills.length > 0
           ? `스킬: ${skills.slice(0, 6).map((skill) => skill.name).join(", ")}${skills.length > 6 ? ` 외 ${skills.length - 6}` : ""}`
-          : "이 속성을 쓰는 스킬이 없습니다. 스킬 탭에서 속성을 지정하면 위 배율이 적용됩니다.",
+          : "이 속성을 참조하는 스킬이 없습니다. 등급이 없는 대상에 C를 자동 지정하지 않습니다.",
       }),
     ],
     testid: "db-elements-usage-card",
@@ -344,7 +339,8 @@ function elementIdentityCard(element: DatabaseElementRecord, index: number): HTM
     store.update((project) => {
       const target = project.database.elements?.[index];
       if (target) target.name = value;
-    });
+    }, { scope: "database", collection: "elements", label: "속성 이름 변경" });
+    refreshIdentity(input, index);
   });
 
   // 라디오 두 개를 감싸는 라벨은 클릭이 첫 라디오로 새기 때문에 div 로 만든다.
@@ -377,11 +373,9 @@ function elementIdentityCard(element: DatabaseElementRecord, index: number): HTM
       kindGroup,
       el("p", {
         class: "db-ws-usage",
-        text: element.kind === "magical"
-          ? "마법 계열: 대상의 정신력이 높을수록 피해가 줄어듭니다."
-          : "물리 계열: 대상의 물리 방어력이 높을수록 피해가 줄어듭니다.",
+        dataset: { testid: "db-elements-defense-context", context: elementDefenseContext(store.getCurrent(), element.id) },
+        text: elementDefenseNote(store.getCurrent(), element.id),
       }),
-      el("p", { class: "db-ws-usage", text: `속성 ID ${element.id}` }),
     ],
     testid: "db-elements-name-card",
   });
@@ -400,7 +394,8 @@ function elementKindRadio(kind: DatabaseElementRecord["kind"], checked: boolean,
     store.update((project) => {
       const target = project.database.elements?.[index];
       if (target) target.kind = isElementKind(input.value) ? input.value : "physical";
-    });
+    }, { scope: "database", collection: "elements", label: "속성 유형 변경" });
+    refreshIdentity(input, index);
   });
   return input;
 }
@@ -410,8 +405,35 @@ function elementKindRadio(kind: DatabaseElementRecord["kind"], checked: boolean,
  * 막대와 숫자로 같이 보여준다. 기준값과 배율 입력은 재렌더 없이 막대를 직접 갱신하므로
  * 타이핑 중 포커스가 튀지 않는다.
  */
-function elementDamageCard(element: DatabaseElementRecord, index: number, rerender: () => void): HTMLElement {
-  const refresh: ((reference: number) => void)[] = [];
+function elementDamageCard(element: DatabaseElementRecord, index: number): HTMLElement {
+  const refresh: ((reference: number, scale: number) => void)[] = [];
+  const gradeSelect = el("select", {
+    attrs: { "aria-label": "예시 내성 등급" },
+    dataset: { testid: "db-elements-preview-grade" },
+    children: ELEMENT_DAMAGE_GRADES.map((grade) => el("option", { attrs: { value: grade }, text: grade })),
+  });
+  gradeSelect.value = "C";
+  const result = el("output", { dataset: { testid: "db-elements-example-result" }, attrs: { "aria-live": "polite" } });
+  const artwork = elementArtwork(element, store.getCurrent(), 96, false);
+  const example = el("div", { class: "db-el-example", children: [
+    artwork,
+    el("div", { class: "db-el-example-copy", children: [
+      el("strong", { text: element.name || "(이름 없음)", dataset: { testid: "db-elements-example-name" } }),
+      el("span", { class: "db-ws-usage", text: artwork.title }),
+      result,
+    ] }),
+  ] });
+  const paintAll = (): void => {
+    const current = store.getCurrent().database.elements![index];
+    const scale = Math.max(100, ...ELEMENT_DAMAGE_GRADES.map((grade) => Math.abs(current.damageMultipliers[grade])));
+    for (const update of refresh) update(referenceDamage, scale);
+    const percentage = current.damageMultipliers[gradeSelect.value as ActorRateGrade];
+    const outcome = elementOutcome(referenceDamage, percentage);
+    result.dataset.value = String(outcome.value);
+    result.dataset.outcome = outcome.outcome;
+    result.textContent = `${referenceDamage} × ${percentage}% = ${outcome.text}`;
+  };
+  gradeSelect.addEventListener("change", paintAll);
   const reference = el("input", {
     class: "db-el-reference",
     attrs: { type: "number", min: "1", max: "9999", "aria-label": "기준 피해" },
@@ -421,7 +443,7 @@ function elementDamageCard(element: DatabaseElementRecord, index: number, rerend
   const applyReference = (): void => {
     const next = Number(reference.value);
     referenceDamage = Number.isFinite(next) && next > 0 ? Math.min(9999, Math.trunc(next)) : 100;
-    for (const update of refresh) update(referenceDamage);
+    paintAll();
   };
   reference.addEventListener("input", applyReference);
   reference.addEventListener("change", () => {
@@ -430,7 +452,10 @@ function elementDamageCard(element: DatabaseElementRecord, index: number, rerend
   });
 
   const rows = ELEMENT_DAMAGE_GRADES.map((grade) => {
-    const row = elementDamageRow(element, index, grade);
+    const row = elementDamageRow(element, index, grade, () => {
+      gradeSelect.value = grade;
+      paintAll();
+    }, paintAll);
     refresh.push(row.update);
     return row.node;
   });
@@ -446,67 +471,77 @@ function elementDamageCard(element: DatabaseElementRecord, index: number, rerend
     store.update((project) => {
       const target = project.database.elements?.[index];
       if (target) target.damageMultipliers = { ...DEFAULT_MULTIPLIERS };
-    });
-    rerender();
+    }, { scope: "database", collection: "elements", label: "속성 배율 초기화" });
+    for (const grade of ELEMENT_DAMAGE_GRADES) {
+      card.querySelector<HTMLInputElement>(`[data-testid="db-field-element-damage-${grade}"]`)!.value = String(DEFAULT_MULTIPLIERS[grade]);
+    }
+    paintAll();
   });
 
   const card = sectionCard({
     title: "대미지 배율",
-    hint: "대상의 내성 등급별로 이 속성 피해가 몇 %로 들어가는지",
+    hint: "속성 배율 예시 · 다른 전투 보정 전의 피해를 기준으로 계산",
     children: [
       el("div", {
         class: "db-el-scale-head",
         children: [
-          el("span", { text: "기준 피해" }),
-          reference,
+          field("기준 피해", reference),
+          field("예시 등급", gradeSelect),
         ],
       }),
+      example,
+      el("p", { class: "db-ws-usage", text: "공통 척도 · 가운데 0% / 오른쪽 기준선 100% · 왼쪽 회복 / 오른쪽 피해" }),
       ...rows,
       resetButton,
+      el("p", { class: "db-ws-usage", text: "방어·스킬 위력·타입 상성/STAB·장비·치명타·난수·HP 상한은 계산하지 않습니다." }),
     ],
     testid: "db-elements-damage-card",
   });
   // 다섯 등급 막대는 상세 창 폭을 다 쓸 때 비로소 눈금 구실을 한다.
   card.classList.add("db-ws-span");
+  paintAll();
   return card;
 }
 
-type DamageRow = { readonly node: HTMLElement; readonly update: (reference: number) => void };
+type DamageRow = { readonly node: HTMLElement; readonly update: (reference: number, scale: number) => void };
 
-function elementDamageRow(element: DatabaseElementRecord, index: number, grade: ActorRateGrade): DamageRow {
+function elementDamageRow(element: DatabaseElementRecord, index: number, grade: ActorRateGrade, selectGrade: () => void, refresh: () => void): DamageRow {
   const input = el("input", {
     class: "db-elements-damage-input",
-    attrs: { type: "number", step: "1" },
+    attrs: { type: "number", step: "1", min: "-9999", max: "99999", "aria-label": `${grade} 등급 대미지 배율 (%)` },
     dataset: { testid: `db-field-element-damage-${grade}` },
     value: element.damageMultipliers[grade],
   });
   const fill = el("span", { class: "db-el-bar-fill" });
   const bar = el("span", {
     class: "db-el-bar",
+    dataset: { testid: `db-elements-damage-bar-${grade}` },
     attrs: { "aria-hidden": "true" },
-    children: [fill],
+    children: [fill, el("span", { class: "db-el-baseline" })],
   });
   const result = el("span", { class: "db-el-result", dataset: { testid: `db-elements-damage-result-${grade}` } });
 
-  const paint = (multiplier: number, reference: number): void => {
-    const tone = damageTone(multiplier);
-    bar.className = `db-el-bar db-el-bar-${tone}`;
-    fill.style.width = `${Math.min(100, Math.abs(multiplier) / BAR_FULL_PERCENT * 100).toFixed(1)}%`;
-    const dealt = Math.round(reference * multiplier / 100);
-    result.className = `db-el-result db-el-result-${tone}`;
-    result.textContent = multiplier === 0 ? "피해 없음" : multiplier < 0 ? `${Math.abs(dealt)} 회복` : `${dealt} 피해`;
+  const paint = (multiplier: number, reference: number, scale: number): void => {
+    const outcome = elementOutcome(reference, multiplier);
+    bar.dataset.scale = String(scale);
+    bar.dataset.outcome = outcome.outcome;
+    fill.style.width = `${Math.abs(multiplier) / scale * 50}%`;
+    fill.style.left = multiplier < 0 ? `${50 - Math.abs(multiplier) / scale * 50}%` : "50%";
+    bar.style.setProperty("--element-baseline", `${50 + 100 / scale * 50}%`);
+    result.dataset.value = String(outcome.value);
+    result.dataset.outcome = outcome.outcome;
+    result.textContent = outcome.text;
   };
-  paint(element.damageMultipliers[grade], referenceDamage);
 
-  input.addEventListener("focus", () => selectUtilityRecord("elements", index));
+  input.addEventListener("focus", () => { selectUtilityRecord("elements", index); selectGrade(); });
   input.addEventListener("input", () => {
     const value = clampDamageMultiplier(Number(input.value));
-    paint(value, referenceDamage);
     recordCoalescedSnapshot(`db-utility:elements:${index}:damage:${grade}`);
     store.update((project) => {
       const target = project.database.elements?.[index];
       if (target) target.damageMultipliers = { ...target.damageMultipliers, [grade]: value };
-    });
+    }, { scope: "database", collection: "elements", label: `${grade} 속성 배율 변경` });
+    refresh();
   });
   // blur 시 클램프된 저장값을 입력창에 되써서 표시-저장 불일치를 없앤다(P4 계열).
   input.addEventListener("change", () => {
@@ -517,8 +552,8 @@ function elementDamageRow(element: DatabaseElementRecord, index: number, grade: 
     class: "db-el-damage-row",
     children: [
       el("span", {
-        class: `db-elements-grade grade-${grade.toLowerCase()}`,
-        text: GRADE_DISPLAY_LABEL[grade],
+        class: "db-el-grade",
+        text: grade,
         attrs: { title: `내성 등급 ${grade}` },
       }),
       input,
@@ -527,14 +562,26 @@ function elementDamageRow(element: DatabaseElementRecord, index: number, grade: 
       result,
     ],
   });
-  return { node, update: (nextReference) => paint(clampDamageMultiplier(Number(input.value)), nextReference) };
+  return { node, update: (nextReference, scale) => paint(clampDamageMultiplier(Number(input.value)), nextReference, scale) };
 }
 
-function damageTone(multiplier: number): "bad" | "neutral" | "good" | "none" {
-  if (multiplier <= 0) return "none";
-  if (multiplier > 100) return "bad";
-  if (multiplier === 100) return "neutral";
-  return "good";
+function refreshIdentity(source: HTMLElement, index: number): void {
+  const root = source.closest<HTMLElement>(".db-elements-classic")!;
+  const project = store.getCurrent();
+  const element = project.database.elements![index];
+  const name = element.name.trim() ? element.name : "(이름 없음)";
+  for (const selector of [".db-ws-hero-title", `[data-testid="db-elements-row-${index}"] .db-list-name`, '[data-testid="db-elements-example-name"]']) {
+    const target = root.querySelector<HTMLElement>(selector);
+    if (target) { target.textContent = name; target.title = name; }
+  }
+  const tags = root.querySelectorAll(".db-ws-hero-tags .db-ws-tag");
+  tags[1].textContent = element.kind === "magical" ? "마법 계열" : "물리 계열";
+  const note = root.querySelector<HTMLElement>('[data-testid="db-elements-defense-context"]')!;
+  note.textContent = elementDefenseNote(project, element.id);
+  note.dataset.context = elementDefenseContext(project, element.id);
+  const art = root.querySelector<HTMLElement>(".db-el-example [data-art-source]")!;
+  art.setAttribute("aria-label", `${name} · ${art.title}`);
+  root.querySelector<HTMLElement>('[data-testid="db-elements-list-pane"]')!.dispatchEvent(new Event("element-identity-change"));
 }
 
 function clampIndex(index: number, elements: readonly DatabaseElementRecord[]): number {

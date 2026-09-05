@@ -463,3 +463,71 @@ Legacy `--db-light-*` / `--bg-*` / `--db-modern-*` aliases remap to these inside
 - **Footer:** `닫기` is ghost (`transparent` + `border-default`), `지금 저장` is filled accent — enforced by `[data-testid]` selectors in `studio-theme.css` even if `.primary` class is on the other button.
 - **Empty:** card + one filled CTA on studio surface, never a cream void.
 - **Dirty / G006 / testids / AI dock / gallery toggle:** unchanged — chrome only.
+
+## 12. Elements editor redesign contract (2026-09-05, implemented; independent visual review pending)
+
+**Brief:** make an element recognizable from its game artwork, put the editable rule before reference counts, and show what each authored percentage means without pretending to run a battle. Scope is Database > 전투 규칙 > 속성, vanilla DOM/TypeScript. Preserve `DatabaseElementRecord`, all authored IDs/names/order/rate labels, default content, persistence, and the battle engine. Baselines, asset inventory, source caveats and binary implementation gates: [design evidence](output/evidence/battle-rules-ux/design.md).
+
+**People and direction:** a first-time Korean-speaking author needs to distinguish Ice from Fire without reading every row; an experienced balance author needs A-E, signed percentages and immediate numeric consequences; a keyboard/low-vision author needs stable focus, text outcomes and a usable 1024px layout. The signature is an illustrated element ledger beside a compact rule worksheet, not a decorative battle arena or another dashboard. Keep the project's font choice and cool-white/indigo studio; do not add a font, theme, gradient, letter badge, particle animation or fake KPI.
+
+### System and composition
+
+- Compose `workspaceShell`, `listPane`, `listSearch`, `listRow`, `listToolbar`, `detailPane`, `detailHero({ media })`, `sectionCard`, and `field` from `databaseWorkspace.ts` / `databaseControls.ts`. Keep their `db-ws-*` / `db-field` DOM grammar, existing testids and native controls. No framework or new parallel component system.
+- Use `--db-studio-*` for every chrome color, `--font-ui` / `--font-mono` for type, `--space-1..6` for spacing, `--db2-control-h` / `--db2-radius-control` / `--db2-radius-card` for control and card geometry, and `--focus-outline` for keyboard focus. Use Studio v2's existing 12/13/15/18px hierarchy through the primitives, not per-element type styles. Artwork keeps its original palette and aspect ratio.
+- List thumbnails use the existing 32px thumbnail size; hero media stays in the existing 52px Studio v2 slot. A selected-grade example may show the same image in a 96px square, derived from `3 * --space-6`; this is a rule example, not an additional editable resource. Gaps are `--space-2`, section padding `--space-3`, section separation `--space-4`. No new color or global typography tokens are required.
+- The Database window keeps its sole geometry owner in `sidebar.css`. Never resize/reposition it from an elements selector. Retain separate list/body scroll ownership and the fixed hero and shell footer. No empty fixed-height tracks or equal-height filler cards.
+
+### Individual element artwork, not kind badges
+
+The 17 shipped IDs get 17 distinct existing game images. Use an editor-local ID-to-resource map; do not add `iconResourceId` to the schema or mutate the defaults. Resolve through `resolveAssetResourceUrl(id, { project })`, reuse the existing thumbnail/chroma-key/failure behavior, and display the same resolved identity in list, hero and rule example.
+
+| Element ID | Existing resource ID | Meaning of the image |
+|---|---|---|
+| `sword` | `cc0-jetrel-gen-sword-bronze` | Cutting weapon |
+| `spear` | `cc0-jetrel-gen-spear-iron` | Piercing weapon |
+| `hit` | `cc0-jetrel-gen-hammer-war` | Blunt impact |
+| `bow` | `cc0-jetrel-gen-bow-short` | Bow attack |
+| `fire` | `cc0-jetrel-fire-bomb` | Fire source |
+| `ice` | `cc0-jetrel-ice-shard` | Ice shard |
+| `thunder` | `cc0-jetrel-thunder-stone` | Lightning stone |
+| `water` | `cc0-jetrel-water-flask` | Water vessel |
+| `earth` | `cc0-jetrel-earth-ore` | Earth/ore |
+| `wind` | `cc0-jetrel-wind-feather` | Wind feather |
+| `holy` | `cc0-jetrel-holy-water` | Holy water |
+| `dark` | `cc0-jetrel-gen-scythe-reaper` | Dark/reaper motif |
+| `atk` | `cc0-jetrel-book-sword` | Attack manual |
+| `def` | `cc0-jetrel-iron-shield` | Defense motif |
+| `int` | `cc0-jetrel-book-magic` | Magic manual |
+| `agi` | `cc0-jetrel-boots` | Agility motif |
+| `absorb` | `cc0-jetrel-fang` | Drain motif |
+
+These are illustrative motifs, not new mechanical behavior: an ATK image does not grant an attack buff; an Absorb name does not make a positive multiplier heal. Registry provenance marks these selected files as generated, despite the `cc0-jetrel` prefix; do not relabel generated art as third-party CC0. No new/downloaded art is needed.
+
+For an unknown/custom ID, use the first matching skill with a resolvable animation in authored database order, via `recordListThumbnail("skills", skill, project, size)`, and disclose that it is linked-skill art. If no such link resolves, show the existing neutral SVG image placeholder with an honest no-linked-art caption; never assign a random built-in image by ordinal, name substring or physical/magical kind. Existing built-in ID motifs remain stable after renaming. A missing/broken URL is a distinct image-load-failed state using `markDatabaseImageFailed`, not silent substitution with a slime or a letter. Decorative repetitions beside a visible name are hidden from assistive technology; the example's meaningful image has a descriptive accessible name. Asset resolution must never dirty the project.
+
+### Edit hierarchy and responsive reading order
+
+1. **Identity:** illustrated `detailHero` with live authored name and short kind metadata. The name field remains the single editable name in the compact 기본 section, followed by the existing 물리/마법 radios and a model-aware explanation. Stable ID appears once as secondary metadata. Typing updates hero/list without replacing the focused control or losing the caret.
+2. **Rule:** put 대미지 배율 immediately after identity, before usage. Keep all five A-E percentage inputs, explicit percent units, calculated outcomes, and the existing reset action. Grade letters are stable keys, not letter artwork. Outcome descriptors are computed from the percentage, not fixed labels such as E=무효 when E was changed to 150%.
+3. **Consequence:** inside that rule section, show the selected grade's artwork and equation, with an editor-only grade selector and reference-damage input. Focus on a grade input also selects that example. Initially select C, never silently change the target's authored grade. Keep all five results visible for comparison; do not require five clicks to see the rule.
+4. **Connections:** compact usage section after the rule, from real project references. Include skills, first attack element on equipment, equipment elemental defense, and explicit actor/enemy/class rate entries. Label class entries as authored references, not guaranteed runtime application. Absence of explicit grades is not proof the element is unused. Use real names/counts; zero usage is neutral, not an error. No decorative metric cards or fake links. If navigation is added, select the actual destination record and use `switchDatabaseActiveTab` in the same modal.
+
+At **1024x768** and **1280x800**, use a single content-sized detail column: identity, rule example + A-E worksheet, then connections. Keep art compact; never shrink type to fit. A grade row may wrap its bar/result to the next line rather than overflow; all five controls remain reachable by body scroll. At **1440x900**, only if the detail body's available width permits two usable columns, place the A-E worksheet beside the illustrated equation within the rule card; identity stays above and connections below. Use available pane width, not viewport alone, so the AI dock and floating/docked modes cannot squeeze a fixed grid. The first viewport at every target size must contain identity, the example and the start of A-E editing; usage must not push the main task below the fold.
+
+### Meaningful preview and mechanical honesty
+
+The preview is explicitly **속성 배율 예시**, not a battle simulator. Reference damage is the amount immediately before this isolated percentage is applied. Compute `round(referenceDamage * percentage / 100)` with the current authored integer percentage; preserve the existing reference range 1..9999 and multiplier clamp -9999..99999. Show the equation and outcome: reference 100 at 150% yields 150 피해; at 0%, 피해 없음; at -50%, 50 회복. A negative percentage remains labeled absorption even when rounding produces zero. Formatting and bars must not imply that absorption is positive damage.
+
+Use one shared scale across the five rows, `max(100, ...abs(percentages))`, with a labeled 100% baseline. Positive/negative direction and explicit 피해/회복/무효 text communicate sign; semantic color is supplementary. Do not cap every value above 200% to an indistinguishable full bar. The example updates in place after name, kind, grade, reference and percentage changes. Reference/grade selection never records a snapshot, writes the store, saves to the project, or changes runtime/session state. Percentage/name/kind/reset edits keep the existing coalesced/structural snapshot paths.
+
+Disclose excluded factors in one concise note: defense, skill power, type chart/STAB, equipment, critical hits, variance and HP caps are not simulated. The source authority is `battleDamage.ts::usesMagicalDefense`: only `system.battleModel === "gen1"` uses mental defense for magical elements; RM2k3 retains its existing defense formula. Use that predicate/model context for helper copy rather than the current unconditional mental-defense claim. Runtime `elementMultiplierFor` also distinguishes an absent explicit grade from C and applies equipment reduction only after a valid explicit grade; do not invent a simplified final-damage formula or repair the engine in this UI work.
+
+### Empty, custom and interaction states
+
+- Empty `elements` collection: no fake Ice row or numeric preview; `emptyState` explains the link between skills and resistances. The existing list-toolbar 추가 is the primary creation path; maximum count remains secondary. Do not create records while rendering. At the 99-record limit, disable 추가 with a reason rather than silently selecting the old last row.
+- Empty search: preserve collection, selection and detail; show a local no-match state with a clear-search action. Do not turn a filter miss into a no-record state. Search typing must preserve focus/caret across filtered-list refreshes.
+- Custom names, including empty names, Unicode and very long IDs: preserve their stored values; use the existing unnamed display fallback, wrapping metadata and title/accessible full names. Never translate or normalize authored content for presentation.
+- Keep native radio keyboard behavior, labelled percentage/reference inputs, text outcomes, visible token focus, and existing modal Escape/focus-trap behavior. Derived outcome announcements are polite and coalesced, not five competing live regions. Re-render only structural edits; preserve selection and scroll when possible.
+- Static art is sufficient. Use `--transition-fast` only for hover/focus or optional opacity changes; no layout/width animations and no autoplay particle stage. Respect reduced motion. All labels/control text must meet AA; screenshot-only inspection cannot certify keyboard or screen-reader behavior.
+
+**Delivery boundary:** the elements implementation now uses `databaseElementsClassic.ts`, editor-only `databaseElementPresentation.ts`, the existing shared image thumbnail helper, and element-scoped rules in `modern/utility-records.css`. It retains a single content-sized worksheet column at all three supported sizes; the optional wide two-column arrangement is not needed to expose the example and first grade before the fold. No schema, runtime, default-content or states implementation changes. Focused DOM/browser tests and app build evidence are recorded in `output/evidence/battle-rules-ux/verification.md`. Final visual/CJK review remains a supervisor check because this agent cannot decode images visually; numeric geometry and genuine PNG captures are not a substitute for that review.
