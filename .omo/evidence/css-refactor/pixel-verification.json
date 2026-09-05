@@ -1,0 +1,350 @@
+{
+  "comparison": "actual upstream-main CSS versus PR CSS on the same DOM",
+  "pairs": 68,
+  "exactPairs": 61,
+  "allDimensionsMatch": true,
+  "allAlphaIntact": true,
+  "note": "Nonidentical frames are retained and reported, not silently thresholded to zero. The separate browser verification checks exact computed styles and geometry for all 66 DB states plus two editor-shell states. No model visual certification is claimed.",
+  "results": {
+    "1024-actors": {
+      "diffPixels": 0,
+      "totalPixels": 786432,
+      "diffRatio": 0
+    },
+    "1024-animations": {
+      "diffPixels": 0,
+      "totalPixels": 786432,
+      "diffRatio": 0
+    },
+    "1024-battle-commands": {
+      "diffPixels": 0,
+      "totalPixels": 786432,
+      "diffRatio": 0
+    },
+    "1024-battle-screen": {
+      "diffPixels": 76369,
+      "totalPixels": 786432,
+      "diffRatio": 0.0971
+    },
+    "1024-characters": {
+      "diffPixels": 0,
+      "totalPixels": 786432,
+      "diffRatio": 0
+    },
+    "1024-classes": {
+      "diffPixels": 0,
+      "totalPixels": 786432,
+      "diffRatio": 0
+    },
+    "1024-common-events": {
+      "diffPixels": 0,
+      "totalPixels": 786432,
+      "diffRatio": 0
+    },
+    "1024-crops": {
+      "diffPixels": 0,
+      "totalPixels": 786432,
+      "diffRatio": 0
+    },
+    "1024-daily-weather": {
+      "diffPixels": 0,
+      "totalPixels": 786432,
+      "diffRatio": 0
+    },
+    "1024-editor": {
+      "diffPixels": 0,
+      "totalPixels": 786432,
+      "diffRatio": 0
+    },
+    "1024-elements": {
+      "diffPixels": 0,
+      "totalPixels": 786432,
+      "diffRatio": 0
+    },
+    "1024-enemies": {
+      "diffPixels": 0,
+      "totalPixels": 786432,
+      "diffRatio": 0
+    },
+    "1024-factions": {
+      "diffPixels": 0,
+      "totalPixels": 786432,
+      "diffRatio": 0
+    },
+    "1024-farm-animals": {
+      "diffPixels": 0,
+      "totalPixels": 786432,
+      "diffRatio": 0
+    },
+    "1024-farm-spatial": {
+      "diffPixels": 0,
+      "totalPixels": 786432,
+      "diffRatio": 0
+    },
+    "1024-items": {
+      "diffPixels": 0,
+      "totalPixels": 786432,
+      "diffRatio": 0
+    },
+    "1024-life-collections": {
+      "diffPixels": 0,
+      "totalPixels": 786432,
+      "diffRatio": 0
+    },
+    "1024-life-crafting": {
+      "diffPixels": 0,
+      "totalPixels": 786432,
+      "diffRatio": 0
+    },
+    "1024-monster-species": {
+      "diffPixels": 0,
+      "totalPixels": 786432,
+      "diffRatio": 0
+    },
+    "1024-overview": {
+      "diffPixels": 0,
+      "totalPixels": 786432,
+      "diffRatio": 0
+    },
+    "1024-skills": {
+      "diffPixels": 0,
+      "totalPixels": 786432,
+      "diffRatio": 0
+    },
+    "1024-states": {
+      "diffPixels": 0,
+      "totalPixels": 786432,
+      "diffRatio": 0
+    },
+    "1024-structure-kits": {
+      "diffPixels": 0,
+      "totalPixels": 786432,
+      "diffRatio": 0
+    },
+    "1024-switches": {
+      "diffPixels": 0,
+      "totalPixels": 786432,
+      "diffRatio": 0
+    },
+    "1024-system": {
+      "diffPixels": 0,
+      "totalPixels": 786432,
+      "diffRatio": 0
+    },
+    "1024-terms": {
+      "diffPixels": 0,
+      "totalPixels": 786432,
+      "diffRatio": 0
+    },
+    "1024-terrain": {
+      "diffPixels": 0,
+      "totalPixels": 786432,
+      "diffRatio": 0
+    },
+    "1024-tilesets": {
+      "diffPixels": 0,
+      "totalPixels": 786432,
+      "diffRatio": 0
+    },
+    "1024-troops": {
+      "diffPixels": 0,
+      "totalPixels": 786432,
+      "diffRatio": 0
+    },
+    "1024-variables": {
+      "diffPixels": 0,
+      "totalPixels": 786432,
+      "diffRatio": 0
+    },
+    "1024-villages": {
+      "diffPixels": 0,
+      "totalPixels": 786432,
+      "diffRatio": 0
+    },
+    "1024-world-canon": {
+      "diffPixels": 0,
+      "totalPixels": 786432,
+      "diffRatio": 0
+    },
+    "1024-world-codex": {
+      "diffPixels": 0,
+      "totalPixels": 786432,
+      "diffRatio": 0
+    },
+    "1024-world-gen": {
+      "diffPixels": 0,
+      "totalPixels": 786432,
+      "diffRatio": 0
+    },
+    "1440-actors": {
+      "diffPixels": 0,
+      "totalPixels": 1296000,
+      "diffRatio": 0
+    },
+    "1440-animations": {
+      "diffPixels": 0,
+      "totalPixels": 1296000,
+      "diffRatio": 0
+    },
+    "1440-battle-commands": {
+      "diffPixels": 0,
+      "totalPixels": 1296000,
+      "diffRatio": 0
+    },
+    "1440-battle-screen": {
+      "diffPixels": 50721,
+      "totalPixels": 1296000,
+      "diffRatio": 0.0391
+    },
+    "1440-characters": {
+      "diffPixels": 0,
+      "totalPixels": 1296000,
+      "diffRatio": 0
+    },
+    "1440-classes": {
+      "diffPixels": 0,
+      "totalPixels": 1296000,
+      "diffRatio": 0
+    },
+    "1440-common-events": {
+      "diffPixels": 0,
+      "totalPixels": 1296000,
+      "diffRatio": 0
+    },
+    "1440-crops": {
+      "diffPixels": 0,
+      "totalPixels": 1296000,
+      "diffRatio": 0
+    },
+    "1440-daily-weather": {
+      "diffPixels": 113658,
+      "totalPixels": 1296000,
+      "diffRatio": 0.0877
+    },
+    "1440-editor": {
+      "diffPixels": 0,
+      "totalPixels": 1296000,
+      "diffRatio": 0
+    },
+    "1440-elements": {
+      "diffPixels": 217,
+      "totalPixels": 1296000,
+      "diffRatio": 0.0002
+    },
+    "1440-enemies": {
+      "diffPixels": 0,
+      "totalPixels": 1296000,
+      "diffRatio": 0
+    },
+    "1440-factions": {
+      "diffPixels": 0,
+      "totalPixels": 1296000,
+      "diffRatio": 0
+    },
+    "1440-farm-animals": {
+      "diffPixels": 72454,
+      "totalPixels": 1296000,
+      "diffRatio": 0.0559
+    },
+    "1440-farm-spatial": {
+      "diffPixels": 0,
+      "totalPixels": 1296000,
+      "diffRatio": 0
+    },
+    "1440-items": {
+      "diffPixels": 0,
+      "totalPixels": 1296000,
+      "diffRatio": 0
+    },
+    "1440-life-collections": {
+      "diffPixels": 46493,
+      "totalPixels": 1296000,
+      "diffRatio": 0.0359
+    },
+    "1440-life-crafting": {
+      "diffPixels": 24686,
+      "totalPixels": 1296000,
+      "diffRatio": 0.019
+    },
+    "1440-monster-species": {
+      "diffPixels": 0,
+      "totalPixels": 1296000,
+      "diffRatio": 0
+    },
+    "1440-overview": {
+      "diffPixels": 0,
+      "totalPixels": 1296000,
+      "diffRatio": 0
+    },
+    "1440-skills": {
+      "diffPixels": 0,
+      "totalPixels": 1296000,
+      "diffRatio": 0
+    },
+    "1440-states": {
+      "diffPixels": 0,
+      "totalPixels": 1296000,
+      "diffRatio": 0
+    },
+    "1440-structure-kits": {
+      "diffPixels": 0,
+      "totalPixels": 1296000,
+      "diffRatio": 0
+    },
+    "1440-switches": {
+      "diffPixels": 0,
+      "totalPixels": 1296000,
+      "diffRatio": 0
+    },
+    "1440-system": {
+      "diffPixels": 0,
+      "totalPixels": 1296000,
+      "diffRatio": 0
+    },
+    "1440-terms": {
+      "diffPixels": 0,
+      "totalPixels": 1296000,
+      "diffRatio": 0
+    },
+    "1440-terrain": {
+      "diffPixels": 0,
+      "totalPixels": 1296000,
+      "diffRatio": 0
+    },
+    "1440-tilesets": {
+      "diffPixels": 0,
+      "totalPixels": 1296000,
+      "diffRatio": 0
+    },
+    "1440-troops": {
+      "diffPixels": 0,
+      "totalPixels": 1296000,
+      "diffRatio": 0
+    },
+    "1440-variables": {
+      "diffPixels": 0,
+      "totalPixels": 1296000,
+      "diffRatio": 0
+    },
+    "1440-villages": {
+      "diffPixels": 0,
+      "totalPixels": 1296000,
+      "diffRatio": 0
+    },
+    "1440-world-canon": {
+      "diffPixels": 0,
+      "totalPixels": 1296000,
+      "diffRatio": 0
+    },
+    "1440-world-codex": {
+      "diffPixels": 0,
+      "totalPixels": 1296000,
+      "diffRatio": 0
+    },
+    "1440-world-gen": {
+      "diffPixels": 0,
+      "totalPixels": 1296000,
+      "diffRatio": 0
+    }
+  }
+}

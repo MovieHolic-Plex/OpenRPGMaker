@@ -1,5 +1,6 @@
 {
-  "base": "0eb0a06c",
+  "base": "e07cd4f8",
+  "initialCharacterizationBase": "0eb0a06c",
   "scope": "database UI only; exact unconditional selectors and properties",
   "declarations": [
     {

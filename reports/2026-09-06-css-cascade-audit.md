@@ -96,8 +96,10 @@ it does not claim to eliminate the repository's accumulated CSS debt.
 
 The per-declaration inventory is
 [`.omo/evidence/css-refactor/declarations.json`](../.omo/evidence/css-refactor/declarations.json).
-Each record identifies the old declaration and its later owner at the starting
-revision. Independent lead verification parsed the original Git blobs with
+Each record identifies the old declaration and its later owner at upstream
+`e07cd4f8`; the initial local characterization revision is retained separately.
+The same eight source files and all 118 dominators were verified against both
+bases. Independent lead verification parsed the original Git blobs with
 PostCSS, removed exactly the inventory entries in memory, and compared the
 resulting AST with the actual files. All eight files matched; all surviving
 declarations, selectors, conditions and order were preserved, and every later
@@ -120,8 +122,8 @@ dominator still existed. No new cascade layer, token or selector was introduced.
   the same geometry and styles as the pruned CSS. Both closed-editor states
   matched, including the topbar, sidebar and assistant.
 - Initial full-frame PNG comparison found 56 of the 66 tab images exactly
-  identical. The remaining images include runtime artwork/rail-state changes;
-  these are not reported as zero-difference images. Full measurements and
+  identical. The remaining frames were not pixel-identical and are not
+  reported as zero-difference images. Full measurements and
   screenshots remain under `output/evidence/css-refactor/`.
 - The configured CSS language server could not run because Biome is not
   installed. PostCSS AST validation, CSS gates and Vite parsing were used;
@@ -130,6 +132,57 @@ dominator still existed. No new cascade layer, token or selector was introduced.
   screenshots are real browser captures, but were not visually interpreted by
   a model. PNG decoding, browser geometry/computed-style and pixel comparisons
   must be distinguished from a human visual review.
+
+## Final PR verification
+
+The CSS-only branch is `refactor/database-css-cascade`, based on upstream
+`e07cd4f8`. Its code commit is `5127fe62`. It excludes the starting branch's
+unrelated chipset-label changes.
+
+For the final browser check, the actual upstream-main Vite CSS was captured
+before applying the commit. On the PR's real editor page, each of 33 tabs was
+opened at 1024x768 and 1440x900. The existing main style element was switched
+between those two actual compiled CSS versions while keeping DOM, selection,
+scroll, component sheets and accordion state fixed.
+
+**All 66 DB comparisons matched exactly in measured geometry and computed
+styles.** The closed editor's topbar, sidebar and assistant also matched at
+both sizes. Per-state element counts and matching SHA-256 hashes are in
+[browser-verification.json](../.omo/evidence/css-refactor/browser-verification.json).
+The full measurements are retained locally at
+`output/evidence/css-refactor/pr-metrics.json`.
+
+Of the 68 final screenshot pairs, 61 are pixel-identical; seven are not.
+All dimensions and alpha channels match. These differences are retained in
+[pixel-verification.json](../.omo/evidence/css-refactor/pixel-verification.json),
+not hidden behind a permissive threshold or presented as visual certification.
+The declaration-level AST proof and exact DOM comparison are the preservation
+evidence; the full-frame pixel results are reported separately.
+
+| Check on the PR tree | Result |
+|---|---|
+| Exact deletion AST check | Passed: 8 files, 118 declarations, 16 empty rules |
+| `npm run typecheck:app` | Exit 0 |
+| Focused Studio v2 / sidebar / light-theme tests | 25 passed in 3 files |
+| `npm run build:app` | Exit 0 |
+| `npm run gates -- --only css` | Exit 0; no regressions |
+| `npm run gates -- --only surface` | Exit 1 on both clean main and PR: identical 6 failures, 107 passes; CSS live-class axis passes both |
+| `npm run gates` | Inconclusive: Vitest exceeded the 30-minute execution limit; no JSON result was produced |
+
+The full-suite timeout is a validation limitation, not a passing gate and not
+proof that every unrelated test passes. No test, warning or baseline was
+suppressed or weakened. The earlier full run on the inherited branch was
+cancelled when the final PR target was isolated; it is not counted as a pass.
+
+The surface failures were independently reproduced in a detached, unmodified
+worktree at `e07cd4f8`: the same six assertions fail in five event-editor test
+files, with 107 passing tests on both trees. No baseline was changed. Exact
+failure identities, command results and cleanup receipts are recorded in
+[validation.json](../.omo/evidence/css-refactor/validation.json).
+
+Cleanup: both browser contexts and the browser process were closed. Owned
+Vite sessions on 19841 and 19842 were terminated; `ss -ltnp` confirmed both
+ports unbound. The unrelated process on 9841 was untouched.
 
 ## Existing issues outside the deletion-only change
 
@@ -140,6 +193,5 @@ dominator still existed. No new cascade layer, token or selector was introduced.
 - The pre-existing `databaseRadioCustomGuard` failure concerns
   `growth-tree.css`'s bare-input focus selector. That file is outside this
   deletion set.
-- The starting branch includes unrelated chipset-label work. The PR must be
-  based on upstream main with only this CSS increment replayed, not include
-  those inherited changes.
+- The starting branch includes unrelated chipset-label work; it was excluded
+  by replaying only this increment onto the upstream-main PR branch.
