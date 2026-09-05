@@ -6,7 +6,7 @@
     "important": 988,
     "undefinedVars": 61,
     "globalRootFiles": 10,
-    "cssFileCount": 266
+    "cssFileCount": 267
   },
   "details": {
     "hexByFile": {
@@ -671,6 +671,7 @@
       "src/styles/editor/event-editor.part-3/08-inline-validation-badges.css",
       "src/styles/editor/event-editor.part-3/09-condition-groups.css",
       "src/styles/editor/event-editor.part-4.css",
+      "src/styles/editor/event-editor.shop.css",
       "src/styles/editor/event-editor.windowing.css",
       "src/styles/editor/event-marker-tooltip.css",
       "src/styles/editor/ghost-phase-chip.css",

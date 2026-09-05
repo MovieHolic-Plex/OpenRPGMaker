@@ -6,8 +6,16 @@ import { screenshotEvidence, writeEvidenceJson } from "./eventEditorCertEvidence
 const EVIDENCE_DIR = "output/evidence/shop-ux";
 test.setTimeout(180_000);
 
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({ page, baseURL }) => {
   await mkdir(EVIDENCE_DIR, { recursive: true });
+  // Host network changes can abort Chromium's localhost module requests. This
+  // optional transport forwards the real Vite responses through Node.
+  if (process.env.SHOP_QA_ROUTE_MODULES === "1") {
+    await page.route(url => url.origin === new URL(baseURL!).origin && !url.pathname.startsWith("/api/"), async route => {
+      if (route.request().method() !== "GET") return route.continue();
+      await route.fulfill({ response: await route.fetch({ maxRetries: 3 }) });
+    });
+  }
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/?blankProject=1", { waitUntil: "domcontentloaded" });
   await expect(page.getByTestId("edit-canvas").locator("canvas")).toBeVisible({ timeout: 60_000 });

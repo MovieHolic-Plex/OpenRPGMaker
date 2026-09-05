@@ -1,0 +1,35 @@
+[
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "width": 1390,
+    "scrollWidth": 1390,
+    "listHeight": 484,
+    "rowVisible": true,
+    "applyVisible": true
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "width": 1230,
+    "scrollWidth": 1230,
+    "listHeight": 384,
+    "rowVisible": true,
+    "applyVisible": true
+  },
+  {
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "width": 974,
+    "scrollWidth": 974,
+    "listHeight": 352,
+    "rowVisible": true,
+    "applyVisible": true
+  }
+]

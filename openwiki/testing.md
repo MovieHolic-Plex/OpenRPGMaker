@@ -675,6 +675,7 @@ prune 판정 / 명시적 초안 저장 뒤 중복 쓰기.
 Chromium local network 검사만 캡처 실행 인자로 끈다. 일반 출하 설정은 바꾸지 않는다.
 `vite.player-qa.config.ts`는 기존 파일 감시 비활성화에 맞춰 HMR도 기본 비활성화하며,
 `PLAYER_QA_WATCH=1`이면 둘 다 다시 켠다. 실행 성공과 사람이 PNG를 본 시각 판정은 분리한다.
+
 ## 상점 진열 중심 편집 검증 (2026-09-05)
 
 - `test/e2e/shop-command-fullscreen.spec.ts`: 실제 이벤트 피커에서 상점을 연다. 상품 추가창에서 전체 자료집의 마지막 행까지 도달하고 취소/일괄 추가/포커스 복원을 확인한다. 가격→계절→다른 상품→원래 상품, 거래 규칙→대사→거래 없음 분기→적용→재열기의 값을 검증한다.
@@ -682,3 +683,4 @@ Chromium local network 검사만 캡처 실행 인자로 끈다. 일반 출하 �
 - 상점의 `shop-item-check-*`는 상품 추가창에서만 찾는다. 진열 목록은 선택 버튼(`shop-item-row-*`)이다. 기존 저작 시나리오는 `test/e2e/shopAuthoring.ts`의 `addShopGoods`를 사용할 수 있다.
 - `event-view-toggle-list`는 role=tab, aria-selected 계약이다. `eventStoryboardPicker.showCommandList`도 이 속성을 검사한다.
 - 표면 기준선의 최소 shop은 `item_potion`을 진열한다(`item1`은 captureProject에 없는 ID). 활성 상품 탭만 초기 DOM에 마운트되므로 form/interaction/commit 축의 shop 항목을 함께 캡처하며, 탭과 추가창의 설정 도달성은 위 단위·브라우저 시나리오에서 검사한다. 하한선·반응/no-commit 목록 변경은 별도 커밋으로 검토한다.
+- Chromium의 `ERR_NETWORK_CHANGED`가 localhost 모듈을 취소하는 호스트에서는 `SHOP_QA_ROUTE_MODULES=1`을 추가한다. 소유한 baseURL의 GET 응답만 Playwright Node 전송으로 전달하며 앱 응답·편집 동작은 그대로다. 기본 실행은 일반 브라우저 전송을 사용한다.
