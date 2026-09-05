@@ -1,3 +1,4 @@
+import { isWorldTileset, isWorldAnimatedTile } from "@/project/defaults/worldCoastMapping";
 import { clearFurniturePush, furniturePushPosition } from './furniturePushAnimation';
 import { chipsetAnimationKey, TILE_SIZE } from "@/assets/bundled";
 import {
@@ -382,7 +383,7 @@ function renderTile<TImage extends RenderedTileImage, TSprite extends RenderedEv
   if (tile < 0) return;
   const textureKey = scene.resolveTilesetTexture?.(tileset) ?? tilesetTextureKey(tileset);
   // 호수 쿼터 렌더 — 물 블록 배치가 동일한 실내 타일 그림판도 포함.
-  if (supportsChipsetQuarterComposition(tileset) && isLakeAutotileTile(tile)) {
+  if (supportsChipsetQuarterComposition(tileset) && isLakeAutotileTile(tile, tileset)) {
     renderLakeAutotile(scene, tileset, textureKey, x, y, layer);
     return;
   }
@@ -403,7 +404,7 @@ function renderTile<TImage extends RenderedTileImage, TSprite extends RenderedEv
     const grass = scene.add.image(x * TILE_SIZE, y * TILE_SIZE, textureKey, `tile_${TILE.GRASS}`);
     placeMapTileImage(scene, grass, tileset, TILE.GRASS, x, y, layer);
   }
-  const baseAnimationKey = isDefaultTilesetTexture(tileset) ? animationKeyForTile(tile) : null;
+  const baseAnimationKey = (isDefaultTilesetTexture(tileset) || (isWorldTileset(tileset) && isWorldAnimatedTile(tile, tileset))) ? animationKeyForTile(tile) : null;
   const animationKey = baseAnimationKey ? chipsetAnimationKey(textureKey, baseAnimationKey) : null;
   const image = animationKey
     ? scene.add.sprite(x * TILE_SIZE, y * TILE_SIZE, textureKey, `tile_${tile}`).play(animationKey)
@@ -419,7 +420,7 @@ function renderLakeAutotile<TImage extends RenderedTileImage, TSprite extends Re
   y: number,
   layer: "lower" | "upper",
 ): void {
-  for (const part of lakeAutotileQuarterSources(scene.map, x, y)) {
+  for (const part of lakeAutotileQuarterSources(scene.map, x, y, tileset)) {
     const animationKey = quarterAnimationKey(textureKey, part.tile, part.quarter);
     const frameName = quarterFrameName(part.tile, part.quarter);
     const image = animationKey

@@ -13,6 +13,10 @@ import { RETRO_HOUSE_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsRetr
 import { RETRO_WORLD_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsRetroWorld";
 import { SHIP_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsShip";
 import { WORLD_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsWorld";
+import { seedWorldTerrainAutotiles, worldTerrainMetadata } from "@/project/defaults/worldTerrainAutotiles";
+import { hasWorldAutotileGraft, isWorldWaterTile, seedWorldCoastMapping, WORLD_PLAIN_TILE } from "@/project/defaults/worldCoastMapping";
+import { worldTileDescription } from "@/project/defaults/worldTileDescriptions";
+import { correctedWorldBridgeDescription } from "@/project/defaults/worldStructureRules";
 import { SCARLOXY_CHIPSET_ASSETS, scarloxyChipsetGroupSeeds } from "@/assets/scarloxyPack";
 import type { AutotileGroup, PassFlag, TileAiMetadata, TileGroupMetadata, TilesetDef } from "@/project/types";
 
@@ -324,7 +328,12 @@ function isInteriorPackTileset(tileset: Pick<TilesetDef, "image">): boolean {
 export function applyEasyRpgThemeMetadataPacks(tileset: TilesetDef): boolean {
   const pack = themePackForTileset(tileset);
   // 하니스 팝이 없는 번들 6종(레트로 4종·배·월드맵)은 시맨핅 테이버만으로 tileMeta 를 채운다.
-  if (!pack) return seedBundledSemanticTileMeta(tileset);
+  if (!pack) {
+    const seeded = seedBundledSemanticTileMeta(tileset);
+    const coast = seedWorldCoastMapping(tileset);
+    const terrain = seedWorldTerrainAutotiles(tileset);
+    return coast || terrain || seeded;
+  }
   let changed = applyThemeMetadataPack(tileset, pack);
   if (pack.textureKey === INTERIOR_TEXTURE_KEY) {
     // 그룹 밖 타일 시드 + 옛 팩 개정의 잔존 라벨 청소(그룹 순회는 group.tileIds만 돌기 때문).
@@ -563,20 +572,32 @@ function seedBundledSemanticTileMeta(tileset: TilesetDef): boolean {
     if (tile >= tileset.count) continue;
     const meta = tileset.tileMeta?.[tile];
     if (meta?.userLocked === true || meta?.source === "user") continue;
+    // A graft has different artwork; only fill untouched World slots, and keep
+    // existing prose through repeated ensure/load/save metadata seeding.
+    const description = tileset.image.id === WORLD_TEXTURE_KEY
+      ? meta?.description?.trim()
+        ? (meta?.origin === "user" || meta?.locked || hasWorldAutotileGraft(tileset, [tile]))
+          ? meta.description
+          : correctedWorldBridgeDescription(tile, meta.description) ?? meta.description
+        : hasWorldAutotileGraft(tileset, [tile]) ? "" : worldTileDescription(tile)
+      : "";
     const nextMeta: TileAiMetadata = {
       label: semantic.label,
-      description: "",
+      description,
       tags: [...semantic.tags],
       role: semantic.role,
       passage: semantic.passage,
       confidence: "high",
       source: "bundled-default",
+      ...(tileset.image.id === WORLD_TEXTURE_KEY && (isWorldWaterTile(tile) || tile === WORLD_PLAIN_TILE)
+        ? { defaultLayer: "lower" as const } : {}),
+      ...(tileset.image.id === WORLD_TEXTURE_KEY ? worldTerrainMetadata(tile) : {}),
     };
     if (JSON.stringify(meta) !== JSON.stringify(nextMeta)) {
       tileset.tileMeta![tile] = nextMeta;
       changed = true;
     }
-    const passability = semantic.passage === "solid" ? solid : passable;
+    const passability = nextMeta.passage === "solid" ? solid : passable;
     if (JSON.stringify(tileset.passability[tile]) !== JSON.stringify(passability)) {
       tileset.passability[tile] = { ...passability };
       changed = true;

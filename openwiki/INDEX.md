@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **47쪽 / 1578KB / 약 449,368 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **48쪽 / 1585KB / 약 451,714 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -50,6 +50,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/agent-worktrees.md` | 2 | `result.md`, `task.json` |
 | `openwiki/ai-workflow.md` | 4 | `index.json`, `latest.json`, `src/ai/plannerSkip.ts`, `test/volumeContractSession.test.ts` |
 | `openwiki/architecture.md` | 1 | `project.json` |
+| `openwiki/autotiles.md` | 3 | `worldCoastMapping.ts`, `worldStructureRules.ts`, `worldTerrainAutotiles.ts` |
 | `openwiki/bgm-catalog.md` | 1 | `catalog.raw.json` |
 | `openwiki/community-site.md` | 1 | `project.json` |
 | `openwiki/editor-ai-panel.md` | 33 | `.omo/evidence/assistant-glass-fold/measure.json`, `.omo/evidence/autonomous-ai-rpg/task-8-autonomous-ai-rpg.md`, `15-assistant-readable.css`, `17-assistant-modern-shell.css`, `after/measure.json`, `aiCommandBar.ts`, `aiGlassPanelWidth.test.ts`, `aiSkillDrawer.ts`, `aiVolatileController.ts`, `assistant-skills.css`, `chat-dock-switch.spec.ts`, `chatDock.ts`, `intentClarify.ts`, `newmain-after-measure.json`, `output/evidence/assistant-ui-modern/newmain-before-measure.json`, `project.json`, `regionIntentRouter.ts`, `scripts/qa/assistant-side-seam-hittest.mjs`, `src/ai/intentClarify.ts`, `src/ai/plannerSkip.ts`, `src/ai/skills.ts`, `src/editor/chatDock.ts`, `test/aiGlassFold.test.ts`, `test/aiGlassPanelWidth.test.ts`, `test/chatDock.test.ts`, `test/e2e/_assistant-glass-shots.spec.ts`, `test/e2e/_glass-dock-report.spec.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/plannerSkip.test.ts`, `test/regionIntentExposure.test.ts`, `test/turnGuideSharedRules.test.ts`, `test/volumeContractSession.test.ts`, `test/workspaceBarAssistantDock.test.ts` |
@@ -73,6 +74,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/testing.md` | 9 | `../dialogue.css`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
 | `openwiki/town-tile-benchmark.md` | 1 | `combined-town-chipset-report.html` |
 | `openwiki/village-design.md` | 1 | `output/village-direction/index.html` |
+| `openwiki/world-structure-authoring.md` | 2 | `verify-shots/runtime-qa/world-structure-tools/SUMMARY.md`, `worldTileDescriptions.ts` |
 
 ## 페이지별 절 좌표
 
@@ -164,14 +166,15 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 절 제목 없음 (평면 목록 페이지).
 
-### `openwiki/autotiles.md` — 11KB · 107줄 · ~3,371 토큰
+### `openwiki/autotiles.md` — 12KB · 125줄 · ~3,719 토큰
 
-- `L5` 1. RM2K식 3×4 템플릿 블록 문법
-- `L21` 2. 지형 앵커 카탈로그 — 4행 밴드 × 열 0/3/6/9 격자
-- `L40` 3. 물 계열 — 오토타일 그룹이 아닌 별도 시스템
-- `L58` 3-1. 던전 칩셋 절벽(빙암) — 벽은 두 행이다
-- `L92` 4. 오토타일 등록 경로 3가지
-- `L100` 5. 검증
+- `L3` World 지형과 공통 구조물
+- `L23` 1. RM2K식 3×4 템플릿 블록 문법
+- `L39` 2. 지형 앵커 카탈로그 — 4행 밴드 × 열 0/3/6/9 격자
+- `L58` 3. 물 계열 — 오토타일 그룹이 아닌 별도 시스템
+- `L76` 3-1. 던전 칩셋 절벽(빙암) — 벽은 두 행이다
+- `L110` 4. 오토타일 등록 경로 3가지
+- `L118` 5. 검증
 
 ### `openwiki/battler-idle-playbook.md` — 11KB · 176줄 · ~3,490 토큰
 
@@ -437,11 +440,11 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L17` Quick routing
 - `L25` For AI agents
 
-### `openwiki/growth-trees.md` — 5KB · 61줄 · ~1,553 토큰
+### `openwiki/growth-trees.md` — 6KB · 67줄 · ~1,719 토큰
 
 - `L3` 소유권과 데이터
-- `L23` 런타임과 저장
-- `L46` 검증
+- `L29` 런타임과 저장
+- `L52` 검증
 
 ### `openwiki/horror-authoring.md` — 8KB · 97줄 · ~2,480 토큰
 
@@ -725,3 +728,11 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L87` 검증
 - `L95` 마을 설계서 (2026-09-05)
 - `L98` 저장·편집 검토 수정 복구 (2026-09-05)
+
+### `openwiki/world-structure-authoring.md` — 6KB · 104줄 · ~1,832 토큰
+
+- `L3` 정본과 진입점
+- `L15` 다리
+- `L38` 다층 산
+- `L70` 다른 맵과 사용자 설정 보호
+- `L89` 검증

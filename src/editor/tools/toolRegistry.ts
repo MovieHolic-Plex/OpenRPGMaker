@@ -62,6 +62,7 @@ import { GAME_SYSTEM_TOGGLE_TOOLS } from "./gameSystemToggleTools";
 import { TILESET_ATLAS_TOOLS } from "./tilesetAtlasTools";
 import { AUTHORING_MISC_TOOLS } from "./authoringMiscTools";
 import { RESOURCE_TOOLS } from "./resourceTools";
+import { WORLD_STRUCTURE_TOOLS } from "./worldStructureTools";
 
 export { PLACEMENT_TOOLS };
 
@@ -154,6 +155,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(VOCABULARY_TOOLS_V3, "tile"),
   AUTHOR_HOUSE_TOOL,
   AUTHOR_VILLAGE_TOOL,
+  ...WORLD_STRUCTURE_TOOLS,
   ...withDomain(CONSTRUCTION_TOOLS_V3, "tile"),
   ...withDomain(HOUSE_VISION_TOOLS, "tile"),
   ...withDomain(VILLAGE_TOOLS, "tile"),

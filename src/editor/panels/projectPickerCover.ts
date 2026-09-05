@@ -118,7 +118,7 @@ async function renderMapCover(
   if (pixelWidth <= 0 || pixelHeight <= 0) return false;
 
   const image = await loadTilesetImage(tileset);
-  if (!image.complete || image.naturalWidth === 0) return false;
+  if ("complete" in image && (!image.complete || image.naturalWidth === 0)) return false;
 
   const scale = fitScale(pixelWidth, pixelHeight);
   const drawWidth = Math.max(1, Math.floor(pixelWidth * scale));

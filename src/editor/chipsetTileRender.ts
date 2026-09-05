@@ -1,3 +1,4 @@
+import { isWorldTileset, isWorldAnimatedTile } from "@/project/defaults/worldCoastMapping";
 import type Phaser from "phaser";
 import { chipsetAnimationKey, TILE_SIZE } from "@/assets/bundled";
 import {
@@ -57,7 +58,7 @@ export function createChipsetTileObject(
   if (!resolved) return createMissingTileObject(scene, xOrY, yOrTile);
   const { tile, tileset, x, y } = resolved;
   // 호수 쿼터 렌더 — 물 블록 배치가 동일한 실내 타일 그림판도 포함.
-  if (supportsChipsetQuarterComposition(tileset) && isLakeAutotileTile(tile)) {
+  if (supportsChipsetQuarterComposition(tileset) && isLakeAutotileTile(tile, tileset)) {
     return createLakeAutotileObject(scene, map, tileset, x, y);
   }
   if (supportsChipsetQuarterComposition(tileset) && map.lowerTiles[y * map.width + x] === tile) {
@@ -120,7 +121,7 @@ function createLakeAutotileObject(
   const container = scene.add.container(x * TILE_SIZE, y * TILE_SIZE);
   container.setSize(TILE_SIZE, TILE_SIZE);
   const textureKey = ensureTilesetTexture(scene, tileset);
-  for (const part of lakeAutotileQuarterSources(map, x, y)) {
+  for (const part of lakeAutotileQuarterSources(map, x, y, tileset)) {
     container.add(createLakeQuarterObject(scene, textureKey, part));
   }
   return container;
@@ -167,7 +168,7 @@ function createTerrainQuarterObject(
 
 function createRawTileObject(scene: Phaser.Scene, tileset: TilesetDef, pixelX: number, pixelY: number, tile: number): ChipsetTilePiece {
   const textureKey = ensureTilesetTexture(scene, tileset);
-  const baseAnimationKey = isDefaultTilesetTexture(tileset) ? animationKeyForTile(tile) : null;
+  const baseAnimationKey = (isDefaultTilesetTexture(tileset) || (isWorldTileset(tileset) && isWorldAnimatedTile(tile, tileset))) ? animationKeyForTile(tile) : null;
   const animationKey = baseAnimationKey ? chipsetAnimationKey(textureKey, baseAnimationKey) : null;
   const image = animationKey
     ? scene.add.sprite(pixelX, pixelY, textureKey, `tile_${tile}`).play(animationKey)
