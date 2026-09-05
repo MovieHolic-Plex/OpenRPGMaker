@@ -62,7 +62,20 @@ export function renderAnimationStagePanel(context: AnimationPreviewContext): HTM
   renderStageCells(cellLayer, context, context.selectedFrame, url);
   preview.append(stageCrosshair(), targetSilhouette(), cellLayer);
 
-  panel.append(commandGrid(context, panel, cellLayer, url), preview, statGrid([["시트", `${context.sheet.frameWidth}x${context.sheet.frameHeight}`], ["열", String(context.sheet.columns)], ["셀", String(context.selectedFrame.cells.length)]]));
+  const playButton = el("button", {
+    class: "btn db-animation-play-button",
+    text: "재생",
+    attrs: { type: "button", "aria-pressed": "false" },
+    dataset: { testid: "db-animation-play" },
+  });
+  const transport = el("div", {
+    class: "db-animation-transport",
+    dataset: { testid: "db-animation-transport" },
+    children: [playButton],
+  });
+  bindPlayback(playButton, panel, cellLayer, context, url, transport);
+  panel.append(el("h4", { text: "미리보기" }), preview, transport);
+
   return panel;
 }
 
@@ -73,9 +86,9 @@ export function renderAnimationPatternStripPanel(context: AnimationPreviewContex
   });
   const url = animationResourceUrl(context);
   for (let index = 0; index < PATTERN_PREVIEW_COUNT; index += 1) {
-    const cell = el("button", {
-      class: `db-animation-pattern-cell${index === 0 ? " active" : ""}`,
-      attrs: { type: "button", title: `패턴 ${index + 1}` },
+    const cell = el("div", {
+      class: "db-animation-pattern-cell",
+      attrs: { title: `패턴 ${index + 1} · 참고 이미지` },
       children: [el("span", { class: "db-animation-pattern-number", text: String(index + 1).padStart(3, "0") })],
     });
     const preview = el("span", { class: "db-animation-pattern-preview" });
@@ -86,7 +99,7 @@ export function renderAnimationPatternStripPanel(context: AnimationPreviewContex
   return panel;
 }
 
-function commandGrid(context: AnimationPreviewContext, panel: HTMLElement, cellLayer: HTMLElement, url: string | undefined): HTMLElement {
+export function renderAnimationCellCommands(context: AnimationPreviewContext): HTMLElement {
   const pasteButton = el("button", {
     text: "셀 붙여넣기",
     attrs: { type: "button", title: "복사한 셀을 현재 프레임에 덮어쓰기" },
@@ -98,14 +111,6 @@ function commandGrid(context: AnimationPreviewContext, panel: HTMLElement, cellL
     },
   });
   pasteButton.disabled = copiedAnimationCells === null;
-
-  const playButton = el("button", {
-    class: "db-animation-play-button",
-    text: "▶ 재생",
-    attrs: { type: "button", "aria-pressed": "false" },
-    dataset: { testid: "db-animation-play" },
-  });
-  bindPlayback(playButton, panel, cellLayer, context, url);
 
   const grid = el("div", {
     class: "db-animation-command-grid",
@@ -132,7 +137,6 @@ function commandGrid(context: AnimationPreviewContext, panel: HTMLElement, cellL
         },
       }),
       pasteButton,
-      playButton,
       el("button", {
         text: "보간",
         attrs: { type: "button", title: "이전·다음 프레임 사이 셀 보간" },
@@ -151,7 +155,6 @@ function commandGrid(context: AnimationPreviewContext, panel: HTMLElement, cellL
           },
         },
       }),
-      checkboxLabel("격자 사용", true),
     ],
   });
   return grid;
@@ -230,7 +233,8 @@ function bindPlayback(
   panel: HTMLElement,
   cellLayer: HTMLElement,
   context: AnimationPreviewContext,
-  url: string | undefined
+  url: string | undefined,
+  statusHost: HTMLElement,
 ): void {
   const playback = context.playback ?? createAnimationPlaybackState();
   playback.dispose?.();
@@ -243,14 +247,14 @@ function bindPlayback(
     attrs: { role: "status" },
     dataset: { testid: "db-animation-preview-status" },
   });
-  panel.append(status);
+  statusHost.append(status);
 
   const stop = (restoreSelectedFrame: boolean): void => {
     if (timer !== null) {
       window.clearInterval(timer);
       timer = null;
     }
-    button.textContent = "▶ 재생";
+    button.textContent = "재생";
     button.setAttribute("aria-pressed", "false");
     if (ready) status.textContent = "선택 프레임 · 정지";
     if (restoreSelectedFrame) {
@@ -262,7 +266,7 @@ function bindPlayback(
     if (disposed || !ready || timer !== null || isDisconnected(panel)) return;
     frameIndex = 0;
     renderStageCells(cellLayer, context, context.frames[frameIndex] ?? context.selectedFrame, url);
-    button.textContent = "■ 정지";
+    button.textContent = "정지";
     button.setAttribute("aria-pressed", "true");
     status.textContent = "반복 재생 중";
     timer = window.setInterval(() => {
@@ -408,23 +412,10 @@ function isDisconnected(element: HTMLElement): boolean {
   return "isConnected" in element && element.isConnected === false;
 }
 
-function checkboxLabel(label: string, checked: boolean): HTMLElement {
-  const input = el("input", { attrs: checked ? { checked: "true", disabled: "true", type: "checkbox" } : { disabled: "true", type: "checkbox" } });
-  return el("label", { class: "db-animation-checkbox", children: [input, el("span", { text: label })] });
-}
-
 function panelWrap(title: string, testid: string, className = ""): HTMLElement {
   return el("section", {
     class: `db-animation-panel${className ? ` ${className}` : ""}`,
     dataset: { testid },
     children: title ? [el("h4", { text: title })] : [],
   });
-}
-
-function statGrid(rows: readonly (readonly [string, string])[]): HTMLElement {
-  const grid = el("div", { class: "db-animation-stat-grid" });
-  for (const [label, value] of rows) {
-    grid.append(el("span", { text: label }), el("strong", { text: value }));
-  }
-  return grid;
 }

@@ -1,3 +1,4 @@
+import { equipmentSlots, equipmentSlotLabel, hasEquipmentSlot } from "@/project/equipmentSlots";
 import { el } from "@/util/dom";
 import { matchesNameOrId, textField } from "@/editor/panels/databaseControls";
 import { createVirtualList } from "@/editor/panels/databaseListVirtualizer";
@@ -84,14 +85,6 @@ const ITEM_TYPE_CHIP_LABELS: Record<(typeof ITEM_TYPES)[number], string> = {
   special: "특수",
   switch: "장치 작동",
 };
-
-const EQUIPMENT_SLOT_CHIPS: readonly { readonly slot: EquipmentRecord["slot"]; readonly label: string }[] = [
-  { slot: "weapon", label: "무기" },
-  { slot: "shield", label: "방패" },
-  { slot: "helmet", label: "머리" },
-  { slot: "armor", label: "몸" },
-  { slot: "accessory", label: "장신구" },
-];
 
 export function renderRecordTab(host: HTMLElement, collection: DatabaseCollection, rerender: () => void): void {
   const records = store.getCurrent().database[collection];
@@ -253,7 +246,7 @@ function toolbar(collection: DatabaseCollection, rerender: () => void): HTMLElem
   return wrap;
 }
 
-function aiGenerateButton(collection: "items" | "enemies", rerender: () => void): HTMLElement {
+export function aiGenerateButton(collection: "items" | "enemies", rerender: () => void): HTMLElement {
   const kind = collection === "items" ? "item" : "enemy";
   return el("button", {
     class: "btn small",
@@ -358,7 +351,7 @@ function disarmDelete(collection: DatabaseCollection): void {
   armed.button.classList.remove("confirming");
 }
 
-function deleteButton(collection: DatabaseCollection, rerender: () => void): HTMLElement {
+export function deleteButton(collection: DatabaseCollection, rerender: () => void): HTMLElement {
   // 툴바가 다시 그려지면 이전 버튼 참조는 죽는다 — 새 버튼이 주인이 되도록 등록을 비운다.
   disarmDelete(collection);
 
@@ -650,7 +643,7 @@ function galleryCategoryTag(
 }
 
 // 카테고리 라벨 — 갤러리 태그와 목록 서브라벨이 같은 소스를 공유한다.
-function recordCategoryLabel(
+export function recordCategoryLabel(
   collection: DatabaseCollection,
   record: DatabaseRecords[DatabaseCollection][number]
 ): string | null {
@@ -658,7 +651,7 @@ function recordCategoryLabel(
     return ITEM_TYPE_CHIP_LABELS[(record as ItemRecord).type] ?? null;
   }
   if (collection === "equipment") {
-    return EQUIPMENT_SLOT_CHIPS.find((entry) => entry.slot === (record as EquipmentRecord).slot)?.label ?? null;
+    return equipmentSlotLabel(store.getCurrent(), (record as EquipmentRecord).slot);
   }
   return null;
 }
@@ -708,7 +701,7 @@ function categoryFilterChips(collection: DatabaseCollection, rerender: () => voi
   });
   const row = el("div", { class: "db-filter-chips", attrs: { role: "group", "aria-label": "카테고리 필터" } });
   if (collection === "equipment") {
-    row.append(chipCluster("", [allChip, ...EQUIPMENT_SLOT_CHIPS.map(({ slot, label }) => chipFor(slot, label))]));
+    row.append(chipCluster("", [allChip, ...equipmentSlots(store.getCurrent()).map(({ id, label }) => chipFor(id, label))]));
     return row;
   }
   // 캡션은 **자기 묶음 위 줄**에 둔다. 캡션을 칩과 같은 줄에 흘려보내면 줄바꿈 위치에 따라
@@ -762,7 +755,7 @@ function effectiveCategoryFilter(collection: DatabaseCollection): string {
   const stored = categoryFilterForCollection(collection);
   if (stored === "all") return "all";
   if (collection === "items") return ITEM_TYPES.includes(stored as (typeof ITEM_TYPES)[number]) ? stored : "all";
-  if (collection === "equipment") return EQUIPMENT_SLOT_CHIPS.some((chip) => chip.slot === stored) ? stored : "all";
+  if (collection === "equipment") return hasEquipmentSlot(store.getCurrent(), stored) ? stored : "all";
   return "all";
 }
 
@@ -776,7 +769,7 @@ function matchesCategoryFilter(
   return true;
 }
 
-function recordForm(
+export function recordForm(
   collection: DatabaseCollection,
   record: DatabaseRecords[DatabaseCollection][number],
   rerender: () => void,

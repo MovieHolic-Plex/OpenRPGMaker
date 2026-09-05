@@ -45,41 +45,59 @@
 
 /* ── 속성: 대미지 배율 척도 ─────────────────────────────────────────────── */
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-el-scale-head {
-  align-items: center;
-  color: var(--db-studio-text-3);
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-worksheet {
   display: flex;
-  font: 400 11.5px/1.4 "Malgun Gothic", system-ui, sans-serif;
-  gap: 8px;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-scale-head,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-kind-choices {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
   min-width: 0;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-el-scale-head .db-el-reference {
-  background: var(--db-studio-surface);
-  border: 1px solid var(--db-studio-border-default);
-  border-radius: 6px;
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-scale-head > .db-field {
+  flex: 1;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-example {
+  align-items: center;
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--db-studio-inset);
+  border-radius: var(--db2-radius-card);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-example > .db-list-thumb {
+  width: calc(3 * var(--space-6));
+  height: calc(3 * var(--space-6));
+  flex: 0 0 auto;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-example-copy {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+  overflow-wrap: anywhere;
   color: var(--db-studio-text-1);
-  font: 400 12px/1.2 "Malgun Gothic", system-ui, sans-serif;
-  height: 26px;
-  padding: 0 6px;
-  width: 76px;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-el-damage-row {
   align-items: center;
-  border-bottom: 1px solid var(--db-studio-border-subtle);
+  border-bottom: var(--stroke-1) solid var(--db-studio-border-subtle);
   display: grid;
-  gap: 10px;
-  grid-template-columns: 76px 92px 14px minmax(90px, 1fr) 78px;
+  gap: var(--space-2);
+  grid-template-columns: var(--space-5) minmax(0, calc(3 * var(--space-6))) var(--space-4) minmax(var(--space-6), 1fr) minmax(0, calc(3 * var(--space-6)));
   margin: 0;
-  min-height: 38px;
+  min-height: calc(var(--db2-control-h) + var(--space-2));
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-el-damage-row:last-child {
-  border-bottom: 0;
-}
-
-/* 배율 입력은 그리드 열이 폭을 정한다 — elements.css 의 고정 112px 이 "%" 라벨을 덮었다. */
 .database-modal-backdrop .database-modal-window .database-modal-body .db-el-damage-row .db-elements-damage-input {
   box-sizing: border-box;
   min-width: 0;
@@ -88,60 +106,55 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-el-bar {
   background: var(--db-studio-well);
-  border-radius: 999px;
-  height: 8px;
+  height: var(--space-2);
   min-width: 0;
+  position: relative;
   overflow: hidden;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-el-bar-fill {
-  background: var(--db-studio-text-3);
-  border-radius: 999px;
-  display: block;
+  background: var(--db-studio-accent);
+  position: absolute;
   height: 100%;
-  transition: width 90ms linear;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-el-bar-bad .db-el-bar-fill { background: var(--db-studio-danger); }
-.database-modal-backdrop .database-modal-window .database-modal-body .db-el-bar-neutral .db-el-bar-fill { background: var(--db-studio-accent); }
-.database-modal-backdrop .database-modal-window .database-modal-body .db-el-bar-good .db-el-bar-fill { background: var(--db-studio-success); }
-.database-modal-backdrop .database-modal-window .database-modal-body .db-el-bar-none .db-el-bar-fill { background: var(--db-studio-muted-paint); }
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-bar[data-outcome="heal"] .db-el-bar-fill {
+  background: var(--db-studio-success);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-baseline,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-bar::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  height: 100%;
+  border-left: var(--stroke-1) solid var(--db-studio-text-2);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-baseline {
+  left: var(--element-baseline);
+  transform: translateX(-100%);
+}
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-el-result {
-  color: var(--db-studio-text-2);
-  font: 600 12px/1.2 "Cascadia Mono", Consolas, monospace;
+  color: var(--db-studio-text-1);
+  font-family: var(--font-mono);
   text-align: right;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-el-result-bad { color: var(--db-studio-danger); }
-.database-modal-backdrop .database-modal-window .database-modal-body .db-el-result-good { color: var(--db-studio-success); }
-.database-modal-backdrop .database-modal-window .database-modal-body .db-el-result-none { color: var(--db-studio-text-3); }
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-el-kind-choices {
-  display: flex;
-  gap: 18px;
-  min-width: 0;
+.database-modal-backdrop .database-modal-window .database-modal-body .db-elements-classic :focus-visible {
+  outline: var(--focus-outline);
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-el-kind-thumb {
-  align-items: center;
-  background: var(--db-studio-inset);
-  border: 1px solid var(--db-studio-border-subtle);
-  border-radius: 6px;
-  color: var(--db-studio-text-2);
-  display: inline-flex;
-  font: 600 10px/1 "Malgun Gothic", system-ui, sans-serif;
-  height: 24px;
-  justify-content: center;
+.database-modal-backdrop .database-modal-window .database-modal-body .db-elements-classic .db-ws-hero-sub {
+  overflow-wrap: anywhere;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-elements-classic .db-ws-hero-title {
   overflow: hidden;
-  width: 24px;
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-el-kind-magical {
-  background: var(--db-studio-accent-soft);
-  border-color: var(--db-studio-accent-border);
-  color: var(--db-studio-accent);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* ── 지형: 다른 지형 빠른 편집 표 ───────────────────────────────────────── */

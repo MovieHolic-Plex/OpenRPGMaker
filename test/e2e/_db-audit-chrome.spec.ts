@@ -53,7 +53,6 @@ const GROUP_ORDER_TEST_IDS = [
   "db-tab-classes",
   "db-tab-skills",
   "db-tab-items",
-  "db-tab-equipment",
   "db-tab-elements",
   "db-tab-states",
   "db-tab-animations",

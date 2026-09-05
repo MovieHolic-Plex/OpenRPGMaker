@@ -27,7 +27,6 @@ const DATABASE_TABS = [
   "db-tab-classes",
   "db-tab-skills",
   "db-tab-items",
-  "db-tab-equipment",
   "db-tab-enemies",
   "db-tab-troops",
   "db-tab-states",

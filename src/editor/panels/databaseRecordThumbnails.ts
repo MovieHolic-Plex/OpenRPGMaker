@@ -129,7 +129,7 @@ function animationThumbnail(record: BattleAnimationRecord, project: Project, siz
 
 // 이미지 썸네일은 <img> 가 슬롯(32px/갤러리 48px)을 CSS 100% 로 채우므로 JS 크롭 계산이
 // 필요 없다 — size 파라미터는 호출부 계약(recordListThumbnail 시그니처)을 위해 받는다.
-function imageThumbnail(resourceId: string | undefined, project: Project, alt: string, size: number): HTMLElement {
+export function imageThumbnail(resourceId: string | undefined, project: Project, alt: string, size: number): HTMLElement {
   const url = resolveAssetResourceUrl(resourceId, { project });
   if (!url) return resourceId ? imageFailureSlot(alt, size) : emptySlot(size);
   const slot = baseSlot("db-list-thumb-image", alt, size);

@@ -1,3 +1,4 @@
+import { equipmentSlots, hasEquipmentSlot } from "@/project/equipmentSlots";
 import { growthIssues } from "@/project/growth/validation";
 import type { Command, GameEvent, GameMap, NpcScheduleEntry, Project } from "../types";
 import { assert } from "./guards";
@@ -144,6 +145,7 @@ export function collectProjectReferenceIssues(project: Project): string[] {
   const itemIds = new Set(project.database.items.map((record) => record.id));
   const enemyIds = new Set(project.database.enemies.map((record) => record.id));
   const equipmentIds = new Set(project.database.equipment.map((record) => record.id));
+  const equipmentSlotIds = new Set(equipmentSlots(project).map((slot) => slot.id));
   const troopIds = new Set(project.database.troops.map((record) => record.id));
   const speciesIds = new Set((project.database.monsterSpecies ?? []).map((record) => record.id));
   const animationIds = new Set(project.database.battleAnimations.map((record) => record.id));
@@ -157,6 +159,7 @@ export function collectProjectReferenceIssues(project: Project): string[] {
     enemyIds,
     itemIds,
     equipmentIds,
+    equipmentSlotIds,
     skillIds,
     animationIds,
     switchIds,
@@ -510,6 +513,9 @@ function validateActorRecords(
     if (!classIds.has(actor.classId)) issues.push(`actor ${actor.id}: classId does not exist.`);
     collectExistingIdIssues(`actor ${actor.id}: skill`, actor.learnedSkills.map((entry) => entry.skillId), context.skillIds, issues);
     validateActorEquipment(actor.id, actor.initialEquipment, context.equipmentIds, issues);
+    for (const slot of Object.keys(actor.initialEquipment)) {
+      if (!hasEquipmentSlot(project, slot)) issues.push(`actor ${actor.id}: initialEquipment slot does not exist: ${slot}`);
+    }
     if (actor.unarmedAnimationId && !animationIds.has(actor.unarmedAnimationId)) issues.push(`actor ${actor.id}: unarmedAnimationId does not exist.`);
     capture(issues, () => validateActorResources(actor, context.resourceIds));
   }
@@ -588,6 +594,7 @@ function validateEquipmentRecords(
   issues: string[]
 ): void {
   for (const equipment of project.database.equipment) {
+    if (!hasEquipmentSlot(project, equipment.slot)) issues.push(`equipment ${equipment.id}: slot does not exist: ${equipment.slot}`);
     if (equipment.skillId && !skillIds.has(equipment.skillId)) issues.push(`equipment ${equipment.id}: skillId does not exist.`);
     if (equipment.usableAsItemSkillId && !skillIds.has(equipment.usableAsItemSkillId)) issues.push(`equipment ${equipment.id}: usableAsItemSkillId does not exist.`);
     capture(issues, () => validateEquipmentResources(equipment, resourceIds));

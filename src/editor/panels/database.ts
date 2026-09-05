@@ -11,6 +11,8 @@ import { renderFarmAnimalsTab } from "@/editor/panels/databaseFarmAnimalsView";
 import { renderFarmSpatialTab } from "@/editor/panels/databaseFarmSpatialView";
 import { renderFactionsTab } from "@/editor/panels/databaseFactionView";
 import { renderLifeCollectionsTab } from "@/editor/panels/databaseLifeCollectionsView";
+import { renderInventoryCatalog } from "@/editor/panels/databaseInventoryCatalog";
+import { inventoryCatalogSession, setSearchQueryForCollection } from "@/editor/panels/databaseRecordViewSession";
 import { renderRecordTab } from "@/editor/panels/databaseRecordViews";
 import { disposeAnimationPreviewsIn } from "@/editor/panels/databaseAnimationPreview";
 import {
@@ -95,7 +97,7 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "skillTrees", label: "스킬 트리", testid: "db-tab-skill-trees" },
   { id: "classes", label: "직업", testid: "db-tab-classes" },
   { id: "skills", label: "스킬", testid: "db-tab-skills" },
-  { id: "items", label: "아이템", testid: "db-tab-items" },
+  { id: "items", label: "아이템·장비", testid: "db-tab-items" },
   { id: "crops", label: "농사·작물", testid: "db-tab-crops" },
   { id: "characters", label: "주민 관계", testid: "db-tab-characters" },
   { id: "lifeCrafting", label: "생활 기술·제작", testid: "db-tab-life-crafting" },
@@ -103,7 +105,6 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "farmAnimals", label: "동물·축사", testid: "db-tab-farm-animals" },
   { id: "farmSpatial", label: "농장 건물·집 꾸미기", testid: "db-tab-farm-spatial" },
   { id: "lifeCollections", label: "낚시·채집·박물관", testid: "db-tab-life-collections" },
-  { id: "equipment", label: "장비", testid: "db-tab-equipment" },
   { id: "enemies", label: "몬스터", testid: "db-tab-enemies" },
   { id: "monsterSpecies", label: "몬스터 종족", testid: "db-tab-monster-species" },
   { id: "troops", label: "적 그룹", testid: "db-tab-troops" },
@@ -113,7 +114,7 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "tilesets", label: "통행", testid: "db-tab-tilesets" },
   { id: "tilesetAutotile", label: "오토타일 설정", testid: "db-tab-tileset-autotile" },
   { id: "tilesetUnlabeled", label: "미분류 모아보기", testid: "db-tab-tileset-unlabeled" },
-  { id: "worldCanon", label: "이 세계", testid: "db-tab-world-canon" },
+  { id: "worldCanon", label: "세계 개요", testid: "db-tab-world-canon" },
   { id: "worldCodex", label: "설정집", testid: "db-tab-world-codex" },
   { id: "worldGen", label: "생성 규칙", testid: "db-tab-world-gen" },
   { id: "structureKits", label: "구조물", testid: "db-tab-structure-kits" },
@@ -141,7 +142,7 @@ export type DatabaseTabGroup = {
 // 전투 그룹 끝). 한쪽만 고치면 조용히 다시 갈라지므로 파생으로 묶는다.
 export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
   { label: "세계관", slug: "lore", tabs: ["worldCanon", "worldCodex"] },
-  { label: "파티", slug: "party", tabs: ["actors", "classes", "promotionTree", "skills", "skillTrees", "items", "equipment"] },
+  { label: "파티", slug: "party", tabs: ["actors", "classes", "promotionTree", "skills", "skillTrees", "items"] },
   { label: "몬스터", slug: "monster", tabs: ["enemies", "monsterSpecies", "troops", "factions"] },
   {
     label: "전투 규칙",
@@ -318,14 +319,21 @@ export function subscribeDatabaseActiveTab(listener: (tab: DatabaseTab) => void)
 }
 
 export function setDatabaseActiveTab(tab: DatabaseTab): void {
-  activeTab = tab;
-  if (typeof window !== "undefined") window.localStorage.setItem(DATABASE_ACTIVE_TAB_KEY, tab);
-  for (const listener of activeTabListeners) listener(tab);
+  if (tab === "equipment") {
+    const catalog = inventoryCatalogSession();
+    catalog.collection = "equipment";
+    catalog.filter = "equipment";
+    catalog.subtype = "all";
+    setSearchQueryForCollection("items", "");
+  }
+  activeTab = tab === "equipment" ? "items" : tab;
+  if (typeof window !== "undefined") window.localStorage.setItem(DATABASE_ACTIVE_TAB_KEY, activeTab);
+  for (const listener of activeTabListeners) listener(activeTab);
 }
 
 /** 탭이 속한 사이드바 그룹 라벨. 개요처럼 그룹 밖 탭은 undefined. */
 export function databaseTabGroupLabel(tab: DatabaseTab): string | undefined {
-  return groupForTab(tab)?.label;
+  return groupForTab(tab === "equipment" ? "items" : tab)?.label;
 }
 export function switchDatabaseActiveTab(tab: DatabaseTab, panelRoot: HTMLElement): void {
   if (tab === "worldGen" && activeTab !== tab) resetWorldGenTabViewState();
@@ -342,7 +350,7 @@ export function getDatabaseActiveTab(): DatabaseTab {
 }
 
 export function databaseTabLabel(tab: DatabaseTab): string {
-  return tabs.find((entry) => entry.id === tab)?.label ?? tab;
+  return tabs.find((entry) => entry.id === (tab === "equipment" ? "items" : tab))?.label ?? tab;
 }
 
 export function renderDatabasePanel(container: HTMLElement): void {
@@ -455,12 +463,13 @@ function databaseTabCount(tab: DatabaseTab): number | null {
     case "actors":
     case "classes":
     case "skills":
-    case "items":
     case "equipment":
     case "enemies":
     case "troops":
     case "states":
       return database[tab].length;
+    case "items":
+      return database.items.length + database.equipment.length;
     case "animations":
       return database.battleAnimations.length;
     case "monsterSpecies":
@@ -818,12 +827,14 @@ function renderActiveTab(
     case "actors":
     case "classes":
     case "skills":
-    case "items":
-    case "equipment":
     case "enemies":
     case "troops":
     case "states":
       renderRecordTab(body, tab, rerender);
+      break;
+    case "items":
+    case "equipment":
+      renderInventoryCatalog(body, rerender);
       break;
     case "animations":
       renderRecordTab(body, "battleAnimations", rerender);
@@ -966,6 +977,11 @@ function collectionGateBanner(container: HTMLElement): HTMLElement | null {
 function readStoredActiveTab(): DatabaseTab {
   if (typeof window === "undefined") return "actors";
   const stored = window.localStorage.getItem(DATABASE_ACTIVE_TAB_KEY);
+  if (stored === "equipment") {
+    inventoryCatalogSession().collection = "equipment";
+    inventoryCatalogSession().filter = "equipment";
+    return "items";
+  }
   return isDatabaseTab(stored) ? stored : "actors";
 }
 

@@ -1,4 +1,4 @@
-import { createAnimationPlaybackState, renderAnimationPatternStripPanel, renderAnimationStagePanel, type AnimationPlaybackState } from "@/editor/panels/databaseAnimationPreview";
+import { createAnimationPlaybackState, renderAnimationCellCommands, renderAnimationPatternStripPanel, renderAnimationStagePanel, type AnimationPlaybackState } from "@/editor/panels/databaseAnimationPreview";
 import { battleStudioHeading } from "@/editor/panels/databaseBattleStudio";
 import { emptyToUndefined, field, numberField, selectLiteral } from "@/editor/panels/databaseControls";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
@@ -104,9 +104,9 @@ function animationEditor(context: AnimationEditorContext): HTMLElement {
     el("section", {
       class: "db-animation-studio-stage",
       dataset: { testid: "db-animation-studio-stage" },
-      children: [renderAnimationStagePanel(context)],
+      children: [graphicControl(context), renderAnimationStagePanel(context)],
     }),
-    el("aside", {
+    el("section", {
       class: "db-animation-studio-inspector",
       dataset: { testid: "db-animation-studio-inspector" },
       children: [topFieldGrid(context), cellTablePanel(context), referencePanel(context.animation)],
@@ -120,22 +120,26 @@ function animationEditor(context: AnimationEditorContext): HTMLElement {
   return editor;
 }
 
+function graphicControl(context: AnimationEditorContext): HTMLElement {
+  return resourcePickerControl({
+    presentation: "graphic",
+    label: "애니메이션 그래픽",
+    resourceId: context.animation.resourceId,
+    kind: "battle",
+    testid: "db-field-animation-resource",
+    allowClear: true,
+    dialogTitle: "애니메이션 그래픽",
+    onChange: (result) => {
+      updateDatabaseRecord("battleAnimations", context.animation.id, { resourceId: emptyToUndefined(result.resourceId) });
+    },
+    rerender: context.rerender,
+  });
+}
+
 function topFieldGrid(context: AnimationEditorContext): HTMLElement {
   const grid = el("div", { class: "db-animation-top-grid" });
   grid.append(
-    resourcePickerControl({
-      label: "애니메이션 그래픽",
-      resourceId: context.animation.resourceId,
-      kind: "battle",
-      testid: "db-field-animation-resource",
-      allowClear: true,
-      dialogTitle: "애니메이션 그래픽",
-      onChange: (result) => {
-        updateDatabaseRecord("battleAnimations", context.animation.id, { resourceId: emptyToUndefined(result.resourceId) });
-      },
-      rerender: context.rerender,
-    }),
-    readonlyField("대상", animationReferenceTarget(context.animation)),
+    readonlyField("사용하는 스킬 / 아이템", animationReferenceTarget(context.animation)),
     maxFrameField(context),
     animationFlagsPanel(context.animation, context.sheet)
   );
@@ -150,7 +154,7 @@ function animationFlagsPanel(animation: BattleAnimationRecord, sheet: BattleAnim
   large.checked = animation.large ?? false;
   large.addEventListener("change", () => updateDatabaseRecord("battleAnimations", animation.id, { large: large.checked }));
 
-  const panel = panelWrap("설정", "db-animation-setup", "db-animation-setup-panel");
+  const panel = panelWrap("시트와 표시 설정", "db-animation-setup", "db-animation-setup-panel");
   panel.append(
     selectLiteral("범위", "db-field-animation-scope", animation.scope ?? "singleTarget", SCOPE_OPTIONS, (scope) =>
       updateDatabaseRecord("battleAnimations", animation.id, { scope })
@@ -182,7 +186,7 @@ function maxFrameField(context: AnimationEditorContext): HTMLElement {
     dataset: { testid: "db-animation-add-frame" },
     on: { click: () => addAnimationFrame(context.animation.id, context.frames, context.rerender) },
   });
-  return field("최대 수", el("span", { class: "db-animation-inline-control", children: [input, addFrame] }));
+  return field("프레임 수", el("span", { class: "db-animation-inline-control", children: [input, addFrame] }));
 }
 
 function sheetFields(animation: BattleAnimationRecord, sheet: BattleAnimationSheet): HTMLElement {
@@ -272,7 +276,7 @@ function cellTablePanel(context: AnimationEditorContext): HTMLElement {
   cells.forEach((cell, index) => {
     body?.append(cellEditableRow(context, cell, index));
   });
-  panel.append(table);
+  panel.append(renderAnimationCellCommands(context), table);
   panel.append(
     el("div", {
       class: "db-animation-cell-actions",

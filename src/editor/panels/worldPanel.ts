@@ -37,11 +37,17 @@ export function renderWorldPanel(options: WorldPanelOptions = {}): HTMLElement {
       if (!state.editDraft) adoptCodexUrlEntry(state, world);
     }
     ensureSelectedEntity(state, world);
+    root.dataset.view = state.documentOpen ? "document" : "list";
+    root.dataset.gallery = String(state.gallery);
     syncCodexUrl(state);
     const previousMain = root.querySelector(".world-panel-main");
     const main = renderMain(state, world, project, lint, refresh);
     if (previousMain) previousMain.replaceWith(main);
     else root.append(renderHeader(state, refresh, options), main);
+    const search = root.querySelector<HTMLInputElement>("[data-testid='world-search']");
+    if (search && search.value !== state.search) search.value = state.search;
+    const addType = root.querySelector<HTMLSelectElement>("[data-testid='world-add-type']");
+    if (addType) addType.value = state.addType;
     state.onDraftChange?.();
   };
 
@@ -62,6 +68,7 @@ function adoptCodexUrlEntry(state: WorldPanelState, world: ReturnType<typeof cur
   if (!world.entities.some((entity) => entity.id === entry.entityId)) return;
   state.tab = entry.tab;
   state.selectedId = entry.entityId;
+  state.documentOpen = true;
   state.editDraft = null;
   state.editError = "";
   setPersistedCodexView(state.tab, state.selectedId);
@@ -70,7 +77,7 @@ function adoptCodexUrlEntry(state: WorldPanelState, world: ReturnType<typeof cur
 // 카드 클릭 같은 명시적 선택만 URL 에 기록한다 — 마운트 시 복원된 선택으로
 // URL 을 덮으면 새로고침·공유 링크가 깨진다. 이미 같은 값이 있으면 쓰지 않는다.
 function syncCodexUrl(state: WorldPanelState): void {
-  if (!state.selectedId || typeof window === "undefined") return;
+  if (typeof window === "undefined" || state.editDraft) return;
   const current = readCodexEntryFromUrl(window.location.search);
   if (current && current.tab === state.tab && current.entityId === state.selectedId) return;
   writeCodexEntryToUrl(state.tab, state.selectedId);
