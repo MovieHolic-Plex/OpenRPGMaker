@@ -1,5 +1,8 @@
 import { el } from "@/util/dom";
 import { store } from "@/project/store";
+import { shopGreetingText } from "@/project/shopMessages";
+import { resolveTerms } from "@/project/terms";
+import { shopCatalogRecords } from "./shopEditorModel";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { DEFAULT_BATTLE_FIELD_BACKGROUND_ID } from "@/project/databaseEnemyTroopRecordModel";
 import { parseDialogueText } from "@/player/dialogue";
@@ -788,12 +791,7 @@ function shopStage(cmd: Extract<Command, { kind: "shop" }>): HTMLElement {
   const win = el("div", { class: "ecp-shop-window ecp-shop-window-clean", dataset: { testid: "ecp-shop-window" } });
   const shopType =
     cmd.shopType === "buyOnly" ? "구매 전용" : cmd.shopType === "sellOnly" ? "판매 전용" : "구매/판매";
-  const message =
-    cmd.messageType === "business"
-      ? "무엇이 필요하신가요?"
-      : cmd.messageType === "direct"
-        ? "아이템을 선택하세요"
-        : "어서 오세요";
+  const message = shopGreetingText(cmd.messageType, resolveTerms(project));
   const merchantGold = typeof cmd.merchantGold === "number" && Number.isFinite(cmd.merchantGold)
     ? Math.max(0, Math.floor(cmd.merchantGold))
     : 100;
@@ -806,7 +804,7 @@ function shopStage(cmd: Extract<Command, { kind: "shop" }>): HTMLElement {
     el("div", {
       class: "ecp-shop-merchant-gold",
       dataset: { testid: "ecp-shop-merchant-gold" },
-      text: `상인 소지금 ${merchantGold.toLocaleString("ko-KR")} G`,
+      text: `상인의 매입 예산 ${merchantGold.toLocaleString("ko-KR")} G`,
     })
   );
   if (cmd.itemIds.length === 0) {
@@ -819,10 +817,12 @@ function shopStage(cmd: Extract<Command, { kind: "shop" }>): HTMLElement {
     );
   }
   const list = el("div", { class: "ecp-shop-item-list" });
+  const catalog = new Map(shopCatalogRecords(project).map((record) => [record.id, record]));
   for (const id of cmd.itemIds.slice(0, 8)) {
-    const record = project.database.items.find((item) => item.id === id);
-    const name = record?.name ?? id;
-    const price = record ? `${record.price.toLocaleString("ko-KR")} G` : "—";
+    const record = catalog.get(id);
+    const stock = cmd.stock?.find((entry) => entry.itemId === id);
+    const name = record?.name ?? "찾을 수 없는 상품";
+    const price = record ? `${(stock?.priceOverride ?? record.price).toLocaleString("ko-KR")} G` : "—";
     list.append(
       el("div", {
         class: "ecp-shop-item-row",
@@ -844,6 +844,7 @@ function shopStage(cmd: Extract<Command, { kind: "shop" }>): HTMLElement {
     list.append(el("div", { class: "ecp-shop-item-more", text: `외 ${cmd.itemIds.length - 8}개…` }));
   }
   win.append(list);
+  win.append(el("p", { class: "ecp-shop-branch-note", text: "진열 구성 · 기본 판매 가격 미리보기" }));
   if (cmd.branchOnTransaction) {
     win.append(el("div", { class: "ecp-shop-branch-note", text: "거래 후 분기 있음" }));
   }

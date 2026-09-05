@@ -133,11 +133,11 @@ test("quick authoring tab is a story work surface: speak, face, map, route, shop
   await expect(shopDialog.getByTestId("shop-header-badge")).toContainText("3");
   await expect(shopDialog.getByTestId("shop-empty-banner")).toHaveCount(0);
   await expect(shopDialog).toContainText("회복약");
-  // 목록은 하나뿐이고, 담긴 3행이 맨 위 «판매 중» 그룹을 차지한다 — DB 전체는
-  // 그 아래 «안 담음» 그룹에 이어지므로 첫 페인트가 아이콘 홍수가 되지 않는다.
+  // 첫 화면에는 진열한 상품만 있고 자료집은 상품 추가에서 연다.
   const saleRows = shopDialog.locator('[data-testid="shop-sale-list"] [data-testid^="shop-item-row-"]');
   await expect(saleRows).toHaveCount(3);
-  await expect(shopDialog.getByTestId("shop-stock-pool")).toBeVisible();
+  await expect(shopDialog.getByTestId("shop-stock-pool")).toHaveCount(0);
+  await expect(shopDialog.getByTestId("shop-add-goods")).toBeVisible();
   await expect(shopDialog.getByTestId("shop-item-catalog")).toBeVisible();
   await shot(page, shopDialog, "06-shop-stock.png");
 

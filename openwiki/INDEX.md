@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **47쪽 / 1512KB / 약 429,802 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **47쪽 / 1515KB / 약 430,808 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -23,7 +23,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/runtime-battle.md` | 118KB | 31KB | 358 | ~33,888 |
 | `openwiki/runtime-project-schema.md` | 58KB | 42KB | 207 | ~15,542 |
 | `openwiki/runtime-sessions.md` | 56KB | 45KB | 131 | ~14,753 |
-| `openwiki/testing.md` | 102KB | 45KB | 678 | ~28,756 |
+| `openwiki/testing.md` | 104KB | 45KB | 685 | ~29,202 |
 
 ## 한국어 산문이 깨진 페이지
 
@@ -36,7 +36,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-database.md` | 7 | 177, 181, 182, 183, 191, 216, 219 |
 | `openwiki/editor-event-authoring.md` | 16 | 151, 152, 155, 160, 161, 162, 163, 164 |
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
-| `openwiki/editor-event-commands.md` | 6 | 15, 28, 29, 31, 34, 35 |
+| `openwiki/editor-event-commands.md` | 6 | 26, 39, 40, 42, 45, 46 |
 | `openwiki/editor-observability.md` | 1 | 120 |
 | `openwiki/editor-pre-edit-routing.md` | 5 | 29, 38, 44, 46, 59 |
 | `openwiki/state-system.md` | 2 | 3, 84 |
@@ -333,14 +333,15 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L30` Show Picture preview opacity unit (2026-08-29)
 - `L35` 조명 백분율 입력 복구 (2026-09-05)
 
-### `openwiki/editor-event-commands.md` — 43KB · 106줄 · ~11,346 토큰 · 깨진 줄 6
+### `openwiki/editor-event-commands.md` — 44KB · 117줄 · ~11,906 토큰 · 깨진 줄 6
 
-- `L7` Roguelike run control (2026-08-24)
-- `L47` 얼굴 상자(faceset-crop-box) 페인트 계약 (2026-08-28)
-- `L78` Staged edit, history, and nested drag invariants (2026-07-30)
-- `L85` Command picker, validation, and preview trust (2026-07-30)
-- `L92` 회상 스틸과 AI 그림 (2026-09-03)
-- `L103` Recovered native emote command (2026-09-05)
+- `L7` 상점: 진열 상품과 상품 상세 중심 편집 (2026-09-05)
+- `L18` Roguelike run control (2026-08-24)
+- `L58` 얼굴 상자(faceset-crop-box) 페인트 계약 (2026-08-28)
+- `L89` Staged edit, history, and nested drag invariants (2026-07-30)
+- `L96` Command picker, validation, and preview trust (2026-07-30)
+- `L103` 회상 스틸과 AI 그림 (2026-09-03)
+- `L114` Recovered native emote command (2026-09-05)
 
 ### `openwiki/editor-genre-packs.md` — 7KB · 42줄 · ~1,837 토큰
 
@@ -626,7 +627,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L110` Files to inspect before editing
 - `L122` Related pages
 
-### `openwiki/testing.md` — 102KB · 678줄 · ~28,756 토큰 · 통째읽기 잘림
+### `openwiki/testing.md` — 104KB · 685줄 · ~29,202 토큰 · 통째읽기 잘림
 
 - `L3` P2 낚시·채집·도감·박물관 focused gate (2026-08-25)
 - `L10` Editor e2e boot-overlay determinism (2026-08-31)
@@ -658,6 +659,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L651` bugfix-sweep 실제 표면 하네스 (2026-08-29)
 - `L664` 마을 설계서 (2026-09-05)
 - `L669` 공포 제작 개정 QA와 개발 서버 전송 (2026-09-05)
+- `L678` 상점 진열 중심 편집 검증 (2026-09-05)
 
 ### `openwiki/town-tile-benchmark.md` — 10KB · 153줄 · ~3,010 토큰
 

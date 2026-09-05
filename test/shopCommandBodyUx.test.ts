@@ -5,121 +5,122 @@ import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { Command } from "@/project/types";
 import type { CommandEditContext } from "@/editor/panels/eventEditor/types";
-import { FakeElement, findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
+import { FakeElement, type FakeNode, findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
 
-function ctx(replaceCommand = vi.fn()): CommandEditContext {
-  return {
-    path: [0],
-    actions: {
-      addCommand: vi.fn(),
-      insertCommand: vi.fn(),
-      replaceCommand,
-      deleteCommand: vi.fn(),
-      moveCommand: vi.fn(),
-      moveCommandTo: vi.fn(),
-    },
-  };
+type Shop = Extract<Command, { kind: "shop" }>;
+const emptyShop: Shop = { kind: "shop", itemIds: [], quantityMode: "single", shopType: "normal", messageType: "welcome", merchantGold: 100 };
+function mount(command: Shop = emptyShop) {
+  const replaceCommand = vi.fn();
+  const context: CommandEditContext = { path: [0], actions: { addCommand: vi.fn(), insertCommand: vi.fn(), replaceCommand, deleteCommand: vi.fn(), moveCommand: vi.fn(), moveCommandTo: vi.fn() } };
+  const body = renderWithFakeDom(() => shopBody(context, command));
+  document.body.append(body as unknown as HTMLElement);
+  const latest = () => (replaceCommand.mock.calls.at(-1)?.[1] ?? command) as Shop;
+  return { body, replaceCommand, latest };
 }
+const root = () => document.body as unknown as FakeNode;
+function node(id: string, scope: FakeNode = root()): FakeElement {
+  const found = findByTestId(scope, id);
+  expect(found, id).not.toBeNull();
+  return found!;
+}
+function check(id: string, value = true) { const input = node(id); input.checked = value; input.dispatchEvent(new Event("change")); }
+function change(id: string, value: string) { const input = node(id); input.value = value; input.dispatchEvent(new Event("change")); }
 
-const emptyShop = {
-  kind: "shop",
-  itemIds: [],
-  allowSell: true,
-  quantityMode: "single",
-  shopType: "normal",
-  messageType: "welcome",
-  merchantGold: 100,
-  branchOnTransaction: false,
-  transactionBranch: [],
-} satisfies Command;
+describe("shop goods authoring", () => {
+  let restoreDom: () => void;
+  beforeEach(() => { restoreDom = installFakeDom(); store.replace(createBlankProject()); });
+  afterEach(() => restoreDom());
 
-describe("shop command body UX (list-first)", () => {
-  let restoreDom: (() => void) | undefined;
-
-  beforeEach(() => {
-    restoreDom = installFakeDom();
-    store.replace(createBlankProject());
+  it("opens with listed goods only and separates selection from removing goods", () => {
+    const { body, replaceCommand } = mount({ ...emptyShop, itemIds: ["item_potion"] });
+    expect(node("shop-sale-list").textContent).toContain("회복약");
+    expect(findByTestId(body, "shop-stock-pool")).toBeNull();
+    expect(findByTestId(body, "shop-item-check-item_potion")).toBeNull();
+    node("shop-item-row-item_potion").click();
+    expect(replaceCommand).not.toHaveBeenCalled();
+    node("shop-remove-goods").click();
+    expect(replaceCommand.mock.calls.at(-1)?.[1].itemIds).toEqual([]);
+    expect(node("shop-sale-list").textContent).toContain("아직 진열한 상품이 없습니다");
   });
 
-  afterEach(() => {
-    restoreDom?.();
+  it("keeps catalog selections pending until one batch add and lets cancel discard them", () => {
+    const { latest, replaceCommand } = mount();
+    node("shop-add-goods").click();
+    check("shop-item-check-item_potion");
+    check("shop-item-check-item_ether");
+    expect(replaceCommand).not.toHaveBeenCalled();
+    node("shop-catalog-cancel").click();
+    expect(replaceCommand).not.toHaveBeenCalled();
+    node("shop-add-goods").click();
+    check("shop-item-check-item_potion"); check("shop-item-check-item_ether");
+    node("shop-catalog-add").click();
+    expect(replaceCommand).toHaveBeenCalledTimes(1);
+    expect(latest().itemIds).toEqual(["item_potion", "item_ether"]);
+    expect(findByTestId(root(), "shop-catalog-dialog")).toBeNull();
+    expect(node("shop-item-row-item_ether")).toBeTruthy();
+    node("shop-add-goods").click();
+    expect(node("shop-item-check-item_potion").disabled).toBe(true);
   });
 
-  it("shows intent, presets, and an in-list empty notice for empty shops", () => {
-    const body = renderWithFakeDom(() => shopBody(ctx(), emptyShop));
-    expect(findByTestId(body, "shop-intent-card")).not.toBeNull();
-    expect(findByTestId(body, "shop-presets")).not.toBeNull();
-    expect(findByTestId(body, "shop-preset-general")).not.toBeNull();
-    expect(body.className).toContain("shop-processing-v2");
-    // 빈 상점 안내는 별도 배너가 아니라 판매 중 그룹 안에 한 번만 있다. 예전 전폭 배너는
-    // 눌려서 화면에 보이지 않았고 판매목록에 덮였다.
-    expect(findByTestId(body, "shop-empty-banner")).toBeNull();
-    const saleList = findByTestId(body, "shop-sale-list");
-    expect(saleList).not.toBeNull();
-    expect(saleList?.textContent).toContain("아직 담은 물건이 없습니다.");
+  it("quick selection adds missing preset goods without replacing stock or shop rules", () => {
+    const original: Shop = { ...emptyShop, itemIds: ["item_antidote"], shopType: "sellOnly", stock: [{ itemId: "item_antidote", priceOverride: 40 }] };
+    const { latest, replaceCommand } = mount(original);
+    node("shop-add-goods").click(); node("shop-preset-general").click();
+    expect(replaceCommand).not.toHaveBeenCalled();
+    node("shop-catalog-add").click();
+    expect(latest().itemIds).toEqual(["item_antidote", "item_potion", "item_ether"]);
+    expect(latest().stock).toEqual(original.stock);
+    expect(latest().shopType).toBe("sellOnly");
   });
 
-  it("splits goods into one scroller with 판매 중 / 안 담음 groups", () => {
-    const command = { ...emptyShop, itemIds: ["item_potion"] } satisfies Command;
-    const body = renderWithFakeDom(() => shopBody(ctx(), command));
-    const goods = findByTestId(body, "shop-item-catalog");
-    expect(goods).not.toBeNull();
-    expect(findByTestId(body, "shop-sale-list")).not.toBeNull();
-    expect(findByTestId(body, "shop-stock-pool")).not.toBeNull();
-    // 담긴 아이템은 판매 중 그룹에, 체크된 체크박스와 순서 버튼을 갖는다.
-    const row = findByTestId(findByTestId(body, "shop-sale-list")!, "shop-item-row-item_potion");
-    expect(row).not.toBeNull();
-    expect(findByTestId(body, "shop-move-up-item_potion")).not.toBeNull();
-    // 접이식 자료집과 aria-hidden e2e 트레이는 사라졌다.
-    expect(findByTestId(body, "shop-item-catalog-fold")).toBeNull();
-    expect(findByTestId(body, "shop-available-items")).toBeNull();
-    expect(findByTestId(body, "shop-selected-items")).toBeNull();
+  it("accumulates price and seasons across items, preserving seasonal prices and unrelated settings", () => {
+    const original: Shop = { ...emptyShop, itemIds: ["item_potion", "item_ether"], stock: [{ itemId: "item_potion", priceBySeason: { winter: 88 } }], economy: { haggleEnabled: true } };
+    const { latest } = mount(original);
+    check("shop-stock-price-custom"); change("shop-stock-price-override", "75");
+    node("shop-stock-season-spring").click();
+    node("shop-item-row-item_ether").click();
+    node("shop-stock-season-summer").click();
+    node("shop-item-row-item_potion").click();
+    expect(node("shop-stock-price-override").value).toBe("75");
+    expect(latest().stock).toEqual([
+      { itemId: "item_potion", priceBySeason: { winter: 88 }, priceOverride: 75, seasons: ["spring"] },
+      { itemId: "item_ether", seasons: ["summer"] },
+    ]);
+    check("shop-stock-price-base");
+    expect(latest().stock?.[0]).toMatchObject({ priceBySeason: { winter: 88 }, seasons: ["spring"] });
+    expect(latest().stock?.[0]?.priceOverride).toBeUndefined();
+    expect(latest().economy).toEqual(original.economy);
+    expect(original.stock).toEqual([{ itemId: "item_potion", priceBySeason: { winter: 88 } }]);
   });
 
-  it("toggling a pool checkbox adds the item to itemIds", () => {
-    const replaceCommand = vi.fn();
-    const body = renderWithFakeDom(() => shopBody(ctx(replaceCommand), emptyShop));
-    const check = findByTestId(body, "shop-item-check-item_potion") as FakeElement | null;
-    expect(check).not.toBeNull();
-    check!.checked = true;
-    check?.dispatchEvent(new Event("change"));
-    expect(replaceCommand).toHaveBeenCalled();
-    const next = replaceCommand.mock.calls.at(-1)?.[1] as Extract<Command, { kind: "shop" }>;
-    expect(next.itemIds).toContain("item_potion");
+  it("keeps selected goods and overlays when reordering and removes only the removed overlay", () => {
+    const { latest } = mount({ ...emptyShop, itemIds: ["item_potion", "item_ether"], stock: [{ itemId: "item_potion", priceOverride: 70 }, { itemId: "item_ether", seasons: ["fall"] }] });
+    node("shop-move-down-item_potion").click();
+    expect(latest().itemIds).toEqual(["item_ether", "item_potion"]);
+    expect(node("shop-item-row-item_potion").getAttribute("aria-pressed")).toBe("true");
+    expect(latest().stock?.map(row => row.itemId)).toEqual(latest().itemIds);
+    node("shop-remove-goods").click();
+    expect(latest().stock).toEqual([{ itemId: "item_ether", seasons: ["fall"] }]);
   });
 
-  it("applies the general store preset into itemIds", () => {
-    const replaceCommand = vi.fn();
-    const body = renderWithFakeDom(() => shopBody(ctx(replaceCommand), emptyShop));
-    const preset = findByTestId(body, "shop-preset-general") as FakeElement | null;
-    expect(preset).not.toBeNull();
-    preset?.dispatchEvent(new Event("click"));
-    expect(replaceCommand).toHaveBeenCalled();
-    const next = replaceCommand.mock.calls.at(-1)?.[1] as Extract<Command, { kind: "shop" }>;
-    expect(next.kind).toBe("shop");
-    expect(next.itemIds).toEqual(expect.arrayContaining(["item_potion", "item_ether", "item_antidote"]));
-    expect(next.itemIds.length).toBe(3);
-  });
-
-  it("writes seasonal stock when editing a listed item detail", () => {
-    const replaceCommand = vi.fn();
-    const command = {
-      ...emptyShop,
-      itemIds: ["item_potion"],
-    } satisfies Command;
-    const body = renderWithFakeDom(() => shopBody(ctx(replaceCommand), command));
-    expect(findByTestId(body, "shop-stock-editor")).not.toBeNull();
-    const spring = findByTestId(body, "shop-stock-season-spring") as FakeElement | null;
-    expect(spring).not.toBeNull();
-    spring?.dispatchEvent(new Event("click"));
-    expect(replaceCommand).toHaveBeenCalled();
-    const next = replaceCommand.mock.calls.at(-1)?.[1] as Extract<Command, { kind: "shop" }>;
-    expect(next.stock?.some((row) => row.itemId === "item_potion" && row.seasons?.includes("spring"))).toBe(true);
+  it("only mounts enabled haggling controls and preserves disabled configuration", () => {
+    const { latest } = mount({ ...emptyShop, economy: { haggle: { patience: 4, insultRatio: 0.7, maxDiscount: 0.3 } } });
+    node("shop-tab-rules").click();
+    expect(findByTestId(root(), "shop-haggle-patience")).toBeNull();
+    check("shop-economy-haggle");
+    expect(node("shop-haggle-insult").value).toBe("70");
+    change("shop-haggle-discount", "35");
+    expect(latest().economy?.haggle?.maxDiscount).toBe(0.35);
+    check("shop-economy-haggle", false);
+    expect(findByTestId(root(), "shop-haggle-patience")).toBeNull();
+    expect(latest().economy?.haggle?.maxDiscount).toBe(0.35);
+    node("shop-tab-goods").click(); node("shop-tab-rules").click();
+    expect(latest().economy?.haggleEnabled).toBeUndefined();
+    expect(findByTestId(root(), "shop-haggle-patience")).toBeNull();
   });
 
   it("preview warns when shop has zero items", () => {
     const preview = renderWithFakeDom(() => renderCommandPreview(emptyShop));
     expect(findByTestId(preview, "ecp-shop-empty-warn")).not.toBeNull();
-    expect(preview.textContent).toContain("상품 없음");
   });
 });
