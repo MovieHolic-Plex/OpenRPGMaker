@@ -22,6 +22,8 @@ export type RuntimeDebugHook = {
   applyPreset: (preset: StatePreset) => void;
   setSeed: (seed: number) => void;
   readState: () => {
+    horror: PlaySession["horror"];
+    eventLocations: PlaySession["eventLocations"];
     currentMapId: string;
     x: number;
     y: number;
@@ -116,6 +118,7 @@ type CharacterSpriteDebug = {
      *  0 으로 보일 수 있다 — 착지 판정은 이 값으로 한다. */
     readonly airborne: boolean;
     /** 스쿼시·스트레치 채널. 체공 중 1 초과(늘어남), 착지 순간 1 미만(눌림). */
+    readonly visible: boolean;
     readonly scaleX: number;
     readonly scaleY: number;
   };
@@ -252,6 +255,8 @@ export function installPlaySceneTestHooks(
     readState: () => {
       const session = getSession();
       return {
+        horror: session.horror ? structuredClone(session.horror) : undefined,
+        eventLocations: structuredClone(session.eventLocations),
         currentMapId: session.currentMapId,
         x: session.x,
         y: session.y,
@@ -410,6 +415,7 @@ function characterSpritesDebug(scene: Phaser.Scene): CharacterSpriteDebug | null
       depth: player.depth,
       liftPx: spriteLiftPx(player),
       airborne: scene.playerHop != null,
+      visible: player.visible,
       scaleX: player.scaleX,
       scaleY: player.scaleY,
     },

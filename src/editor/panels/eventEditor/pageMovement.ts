@@ -1,3 +1,4 @@
+import { renderChaseSettings } from "./pageHorror";
 import { updateEventPage } from "@/editor/eventPages";
 import { el } from "@/util/dom";
 import { selectedOptionValue, selectWithOptions } from "./dom";
@@ -57,6 +58,7 @@ export function renderPageMovement(mapId: MapId, eventId: string, page: EventPag
       ],
     })
   );
+  if (movement.type === "chase") wrap.append(renderChaseSettings(mapId, eventId, page));
   if (isCustom) {
     wrap.append(routeBlock(movement, openRouteDialog));
   }

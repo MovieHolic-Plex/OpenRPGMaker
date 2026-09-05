@@ -361,6 +361,22 @@ function validatePageShape(label: string, value: unknown): void {
   if (movement.sightRange !== undefined) requireNumber(`${label}.movement.sightRange`, movement.sightRange);
   if (movement.giveUpRange !== undefined) requireNumber(`${label}.movement.giveUpRange`, movement.giveUpRange);
   if (movement.pathfind !== undefined) requireBoolean(`${label}.movement.pathfind`, movement.pathfind);
+  if (movement.pursuit !== undefined) {
+    const pursuit = requireRecord(`${label}.movement.pursuit`, movement.pursuit);
+    assert(pursuit.scope === "map" || pursuit.scope === "connected", `${label}: 추격 범위 오류`);
+    assert(pursuit.onLost === "wait" || pursuit.onLost === "return", `${label}: 추격 복귀 오류`);
+    for (const key of ["doorDelayMs", "searchMs"]) {
+      const ms = requireNumber(`${label}.movement.pursuit.${key}`, pursuit[key]);
+      assert(Number.isFinite(ms) && ms >= 0 && ms <= 60000, `${label}: 추격 시간은 0~60000ms`);
+    }
+  }
+  if (page.interaction !== undefined) {
+    const interaction = requireRecord(`${label}.interaction`, page.interaction);
+    assert(interaction.kind === "pushable" || interaction.kind === "hiding", `${label}: 물체 상호작용 오류`);
+    if (interaction.directions !== undefined) {
+      for (const dir of requireArray(`${label}.interaction.directions`, interaction.directions)) validateDir(label, dir);
+    }
+  }
   validateCommandArray(`${label}.commands`, page.commands);
 }
 

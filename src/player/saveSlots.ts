@@ -1,3 +1,4 @@
+import { isHorrorState } from "@/project/horrorState";
 import { SCHEMA_VERSION, type ActorInitialEquipment, type CharacterFootprint, type Project } from "@/project/types";
 import { normalizeRelationships } from "@/project/relationshipState";
 import { normalizeCharacterFootprint } from "@/project/footprint";
@@ -172,6 +173,7 @@ export type SaveSnapshot = {
     readonly actorExperience?: Record<string, number>;
     readonly actorLevels?: Record<string, number>;
     readonly actorVitals?: Record<string, ActorVitals>;
+    readonly horror?: PlaySession["horror"];
     readonly eventLocations?: PlaySession["eventLocations"];
     readonly erasedEventIds?: readonly string[];
     readonly removedEventIds?: PlaySession["removedEventIds"];
@@ -347,6 +349,7 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       actorExperience: structuredClone(session.actorExperience),
       actorLevels: structuredClone(session.actorLevels),
       actorVitals: structuredClone(session.actorVitals),
+      horror: session.horror ? structuredClone(session.horror) : undefined,
       eventLocations: structuredClone(session.eventLocations),
       erasedEventIds: structuredClone(session.erasedEventIds),
       removedEventIds: structuredClone(session.removedEventIds),
@@ -552,6 +555,7 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.actorExperience) session.actorExperience = structuredClone(snapshot.session.actorExperience);
   if (snapshot.session.actorLevels) session.actorLevels = structuredClone(snapshot.session.actorLevels);
   if (snapshot.session.actorVitals) session.actorVitals = structuredClone(snapshot.session.actorVitals);
+  if (snapshot.session.horror) session.horror = structuredClone(snapshot.session.horror);
   if (snapshot.session.eventLocations) session.eventLocations = structuredClone(snapshot.session.eventLocations);
   if (snapshot.session.erasedEventIds) session.erasedEventIds = [...snapshot.session.erasedEventIds];
   if (snapshot.session.removedEventIds) session.removedEventIds = structuredClone(snapshot.session.removedEventIds);
@@ -890,6 +894,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       actorExperience: isNumberRecord(session.actorExperience) ? session.actorExperience : undefined,
       actorLevels: isNumberRecord(session.actorLevels) ? session.actorLevels : undefined,
       actorVitals: isActorVitalsRecord(session.actorVitals) ? session.actorVitals : undefined,
+      horror: isHorrorState(session.horror) ? session.horror : undefined,
       eventLocations: isRuntimeEventLocationRecord(session.eventLocations) ? session.eventLocations : undefined,
       erasedEventIds: isStringArray(session.erasedEventIds) ? session.erasedEventIds : undefined,
       removedEventIds: isRuntimeRemovedEventIds(session.removedEventIds) ? session.removedEventIds : undefined,

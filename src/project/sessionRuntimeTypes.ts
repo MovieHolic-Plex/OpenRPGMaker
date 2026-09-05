@@ -281,6 +281,7 @@ export interface PlaySessionLike {
   actorStateIds?: Record<ActorId, string[]>;
   actorVitals: Record<string, ActorVitals>;
   eventLocations?: Record<string, RuntimeEventLocation>;
+  horror?: import("./horrorState").HorrorState;
   erasedEventIds?: readonly string[];
   removedEventIds?: RuntimeRemovedEventIds;
   spawnedEvents?: Record<string, RuntimeSpawnedEventState>;

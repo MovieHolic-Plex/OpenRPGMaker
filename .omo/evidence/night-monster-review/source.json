@@ -1,0 +1,55 @@
+{
+  "projectId": "rpg-zzu-night-monster-20260905",
+  "title": "밤의 괴물",
+  "loadedAt": "2026-09-05T08:04:16.168Z",
+  "updatedAt": "2026-09-05T07:58:27.334+00:00",
+  "remoteSha256": "eae3760f5f768ccaa44f6e8f6e23b0be3652ffb115d421c8f0bc64ccb279eaca",
+  "localSha256": "6469a325420c9a891134e0152f17d214aafca37e02e42623183ac582c437e194",
+  "maps": [
+    {
+      "id": "map_night_foyer",
+      "name": "1 · 비 내리는 현관",
+      "size": [
+        22,
+        18
+      ],
+      "eventCount": 5
+    },
+    {
+      "id": "map_night_study",
+      "name": "2 · 잠긴 서재",
+      "size": [
+        26,
+        18
+      ],
+      "eventCount": 13
+    },
+    {
+      "id": "map_night_bedroom",
+      "name": "3 · 숨죽인 침실",
+      "size": [
+        20,
+        16
+      ],
+      "eventCount": 4
+    },
+    {
+      "id": "map_night_basement",
+      "name": "5 · 지하 격리실",
+      "size": [
+        20,
+        16
+      ],
+      "eventCount": 6
+    },
+    {
+      "id": "map_night_corridor",
+      "name": "4 · 괴물의 복도",
+      "size": [
+        28,
+        14
+      ],
+      "eventCount": 8
+    }
+  ]
+}

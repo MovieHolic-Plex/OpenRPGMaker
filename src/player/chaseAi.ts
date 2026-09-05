@@ -134,6 +134,7 @@ export function nextChaseDecision(input: {
  * `canMove` 1회로 환원된다 — 기존 추격 동작이 그대로다.
  */
 export type ChasePassSize = {
+  readonly blocked?: (x: number, y: number) => boolean;
   readonly footprint: CharacterFootprint;
   readonly passRows: number;
 };
@@ -161,6 +162,7 @@ function chasePassable(
   to: ChasePoint,
   pass: ChasePassSize | undefined
 ): boolean {
+  if (pass?.blocked?.(to.x, to.y)) return false;
   if (!pass) return canMove(project, map, from.x, from.y, to.x, to.y);
   return canMoveFootprint(project, map, from.x, from.y, pass.footprint, to.x, to.y, pass.passRows);
 }
