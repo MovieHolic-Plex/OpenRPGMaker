@@ -134,7 +134,7 @@ The Database > States editor uses RM2K3-style colored A-E rate grades and a smal
 
 ### Database battle animation editor tokens
 
-The Database > Battle Animations editor follows the RM2003 animation editor composition: a black target stage, green center guides, red cell selection, and teal pattern strip. Keep these scoped to the animation editor.
+The Database > Battle Animations editor is preview-first: the current graphic's catalog name and choose/change action precede a full-width dark stage, with playback and status in their own light transport row. Frame, cell, timing and sheet authoring follow in clearly titled studio sections. The existing detail form owns vertical scrolling; only wide cell tables and pattern strips own horizontal scrolling. At supported desktop sizes (1024×768, 1280×800, 1440×900) the stage is at least 280px high, rather than sharing its width with an inspector. Controls use the existing 32px / 8px-radius studio grammar, 13px text and indigo focus ring; labels/status use 12px text-2. The graphic name wraps, including long imported names. An unset graphic has an explicit choose action; unavailable graphics never manufacture an effect. Pattern thumbnails are read-only, not inert buttons. Existing RM animation tokens below remain legacy stage-only tokens, not control colors. No new motion or playback lifecycle is introduced. Independent visual approval is required; geometry alone is not a visual verdict.
 
 | Token | Value | Usage |
 |------|-------|-------|
