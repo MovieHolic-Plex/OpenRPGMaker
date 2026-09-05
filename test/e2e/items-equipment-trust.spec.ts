@@ -27,7 +27,9 @@ test("items and equipment expose usable settings and keep summaries synchronized
     for (const width of [1280, 1024, 1440]) {
       await page.setViewportSize({ width, height: width === 1024 ? 768 : width === 1280 ? 800 : 900 });
       for (const tab of ["items", "equipment"]) {
-        await page.getByTestId(`db-tab-${tab}`).click();
+        await page.getByTestId("db-tab-items").click();
+        await page.getByTestId(`db-catalog-filter-${tab}`).click();
+        await page.locator(`.db-catalog-rows [data-collection="${tab}"]`).first().click();
         console.log(`capturing ${tab} ${width}`);
         await page.screenshot({ path: `${evidence}/${tab}-${width}.png` });
         measurements.push(await page.evaluate(({ tab, width }) => {
@@ -46,6 +48,8 @@ test("items and equipment expose usable settings and keep summaries synchronized
       }
     }
     await page.getByTestId("db-tab-items").click();
+    await page.getByTestId("db-catalog-filter-items").click();
+    await page.locator('.db-catalog-rows [data-collection="items"]').first().click();
     await page.getByTestId("db-item-card-story").getByRole("button").click();
     await page.getByTestId("db-field-item-occasion").selectOption("field");
     await expect(page.getByTestId("db-item-story-occasion").locator("strong")).toHaveText("필드");

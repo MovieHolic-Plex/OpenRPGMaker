@@ -1,5 +1,21 @@
 # Editor Database
 
+## Custom equipment slot authoring (2026-09-05)
+
+The disclosure's open state belongs to `InventoryCatalogSession.slotManagerOpen`. Record it synchronously on the native summary click so a queued modal refresh cannot close the controls just opened by the user. The session reset clears it; a regression in `test/databaseInventoryCatalog.test.ts` forces the refresh rather than relying on a timer.
+
+The equipment header's native select consumes `equipmentSlots(project)` from `src/project/equipmentSlots.ts`, not a fixed five-slot list. Its inline `equipmentSlotManager` disclosure (`db-equipment-slot-manager`) lives in the scrolling body, not the fixed header. It adds and immediately selects a real generated-ID slot, renames labels without changing IDs, and disables removal with an explanation while referenced. Catalog mutators are `addEquipmentSlot(project, label)`, `renameEquipmentSlot(project, id, label)`, `equipmentSlotRemovalBlocker(project, id)`, and `removeEquipmentSlot(project, id)`; call them inside a labelled `store.update`, preceded by `recordProjectSnapshot` so each operation is atomic and undoable (`test/equipmentSlotHistory.test.ts`). Read labels with `equipmentSlotLabel(project, id)`. Stored shape and save compatibility are documented in `runtime-project-schema.md`.
+
+Actor initial-equipment pickers, build previews, equipment gallery/filter labels, change-equipment event authoring/previews, and the runtime menu enumerate the same catalog. Adding boots is not an accessory label alias. Built-in hand IDs retain their engine meaning even when renamed; selecting a non-weapon slot clears the incompatible two-handed flag. Existing art, effects, skills, and permission fields are otherwise preserved. Tests: `test/customEquipmentSlots.test.ts`, `test/playerEquipmentRules.test.ts`, `test/databaseEquipmentInspector.test.ts`.
+
+## 통합 아이템·장비 카탈로그 (2026-09-05)
+
+- 파티 레일은 `아이템·장비` (`db-tab-items`) 하나다. `databaseInventoryCatalog.ts`가 두 저장 컬렉션을 합쳐 표시하며 ID/저장 구조/장착 규칙은 바꾸지 않는다. `equipment`는 `setDatabaseActiveTab`/`switchDatabaseActiveTab`/`openDatabaseModal`에서 받는 호환 경로이며 별도 버튼이 아니다. 해당 경로는 기존 `selectedRecordIdForSession("equipment")`를 유지하고 장비 필터로 선택 항목을 연다. 새 모달의 세션 초기화도 이 대상 선택을 보존한다.
+- 검색 입력(`db-catalog-search`)은 두 컬렉션의 이름/ID를 함께 검색한다. 전체/아이템/장비 버튼(`db-catalog-filter-*`)과 종류·부위 선택(`db-catalog-subtype`)은 목록만 갱신한다. 검색 DOM/초점과 상세 폼은 유지되며 선택이 필터 밖으로 나가면 `db-catalog-reveal-selection`이 필터 해제 후 그 행을 보여준다. 카운트의 `data-visible-count`와 `data-total-count`는 실제 렌더 목록과 전체 카탈로그 수다. 종류 버튼의 수는 현재 검색에 해당하는 종류별 수다.
+- `db-catalog-add-items`/`db-catalog-add-equipment`는 생성 대상을 명시하고, 복제·AI 아이템 생성 뒤에는 새 항목이 보이도록 필터를 해제한다. 삭제는 기존 참조 검사/2회 확인을 그대로 쓰며 컬렉션 전환 뒤에는 새 확인이 필요하다. 갤러리/목록 선택은 기존 items 뷰 환경설정을 공유한다. 상세는 기존 아이템/장비 폼이 계속 소유하며 슬롯 관련 UI/런타임 권위자는 바뀌지 않는다.
+- 셸/행/툴바는 `databaseWorkspace` 프리미티브를 쓴다. `modern/equipment-items.css`의 카탈로그 영역이 260px 목록과 유동 상세를 배치한다. 목록 스크롤은 `.db-catalog-rows`, 상세 스크롤은 기존 `.db-ws-detail-body` 하나씩이며 모달 기하는 `sidebar.css` 그대로다. 1024/1280/1440 Firefox QA는 가로 넘침 0과 창 기하 불변을 검사한다.
+- 검증: `test/databaseInventoryCatalog.test.ts`, 기존 RecordPartialRender/ItemEquipmentAuthoringTrust/AiBar 테스트. 실제 화면 재현은 `CATALOG_QA_URL=http://127.0.0.1:<port> PLAYWRIGHT_MODULE=<playwright-core index.mjs> node scripts/qa/inventory-catalog.mjs`. 증거는 `output/evidence/inventory-catalog/`에 있다. 옛 `db-tab-equipment` 테스트는 통합 레일→장비 필터→행 선택으로 바뀌었다.
+
 ## 아이템·장비 저작 신뢰성 (2026-09-05)
 
 - `src/project/itemUsage.ts`의 `activeItemEffects`가 저장값에서 현재 종류의 실행 효과를 투영한다. 종류 변경은 이전 값을 보관하며, 메뉴·전투·편집기 효과 요약은 이 투영을 사용한다. 책→약 변경 뒤 숨은 스킬 습득, 성장 보정·회복의 다른 종류 누출을 금지한다. `stateEffects`는 약 또는 발동 스킬 없는 특수 아이템에서 지원한다. 기본 상태 부여 특수 아이템과 최신 main의 필드 상태 부여·행 편집기·전투 연출·돌봄 편집을 유지한다. 돌봄은 특수 종류에서 켜며, 설정 시 필드 사용으로 전환한다.

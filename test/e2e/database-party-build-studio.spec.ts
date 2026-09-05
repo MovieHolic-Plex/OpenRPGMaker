@@ -67,7 +67,7 @@ test("Party Studio follows exact non-first records and keeps broken references i
   await expect(page.getByTestId(`db-record-row-${actor.id}`)).toHaveAttribute("aria-selected", "true");
   await openPreviewSection(page);
   await page.getByTestId(`db-actor-build-open-equipment-${equipment.id}`).click();
-  await expect(page.getByTestId("db-tab-equipment")).toHaveClass(/active/);
+  await expect(page.getByTestId("db-tab-items")).toHaveClass(/active/);
   await expect(page.getByTestId(`db-record-row-${equipment.id}`)).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByTestId("db-field-name")).toHaveValue(equipment.name);
 

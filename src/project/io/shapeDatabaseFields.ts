@@ -1,3 +1,4 @@
+import { isEquipmentSlotId } from "@/project/equipmentSlots";
 import { isGenrePackId } from "@/project/genrePackId";
 import { TOOL_CAPABILITY_AXIS_MAX, TOOL_CAPABILITY_TILE_MAX } from "@/project/upgrades";
 import { ITEM_QUANTITY_MAX } from "@/project/itemQuantities";
@@ -41,6 +42,26 @@ export function validateDatabase(value: unknown): void {
     "battleAnimations",
   ]) {
     requireArray(`database.${key}`, database[key]);
+  }
+  if (database.equipmentSlots !== undefined) {
+    const slots = requireArray("database.equipmentSlots", database.equipmentSlots);
+    const ids = new Set<string>();
+    for (const raw of slots) {
+      const slot = requireRecord("equipment slot", raw);
+      const id = requireString("equipment slot.id", slot.id);
+      assert(isEquipmentSlotId(id), `Invalid equipment slot id: ${id}`);
+      assert(!ids.has(id), `Duplicate equipment slot id: ${id}`);
+      ids.add(id);
+      assert(requireString("equipment slot.label", slot.label).trim().length > 0, "Equipment slot label must not be blank");
+    }
+  }
+  for (const raw of database.actors as unknown[]) {
+    const actor = requireRecord("actor", raw);
+    if (actor.initialEquipment === undefined) continue;
+    for (const [slot, id] of Object.entries(requireRecord("actor.initialEquipment", actor.initialEquipment))) {
+      assert(isEquipmentSlotId(slot), `Invalid equipment slot id: ${slot}`);
+      if (id !== undefined) requireString(`actor.initialEquipment.${slot}`, id);
+    }
   }
   if (database.elements !== undefined) requireArray("database.elements", database.elements);
   if (database.terrains !== undefined) requireArray("database.terrains", database.terrains);
