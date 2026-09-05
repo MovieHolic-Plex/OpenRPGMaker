@@ -64,3 +64,14 @@ PR #605 corrected integration:
 - The image reader did not deliver pixels to the current model. Browser
   interaction and geometry are verified; independent aesthetic approval is
   not claimed.
+
+PR #607 integration:
+
+- Generated wiki index conflict resolved by regeneration.
+- Combined `database.ts` retains both the unified inventory routing and
+  the world overview label.
+- `npm run typecheck:app`: exit 0.
+- Twelve world-domain test files: 116 passed, exit 0.
+- Browser save/reopen/navigation/search/lock/deletion and narrow-width
+  document/list access scenarios both passed, with retries disabled.
+  Fresh screenshots are under `verify-shots/world-authoring-fixes/`.

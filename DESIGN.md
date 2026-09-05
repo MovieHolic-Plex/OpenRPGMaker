@@ -1,5 +1,50 @@
 # RPG ZZU Design System
 
+## Worldbuilding document workspace (2026-09-06)
+
+This slice follows the existing Database Studio primitives and tokens. It is a
+writing workspace, not a dashboard: a compact item browser, a white document,
+and a collapsible property inspector. No new theme, decorative hero, or card
+wall. This section overrides generic database control sizing only inside the
+worldbuilding workspace.
+
+- Typography: document title 26px/1.3, prose 16px/1.65, controls 13px/1.5,
+  metadata 12px/1.5, section headings 14px/600; all use `--font-ui`.
+- Color: `--db-studio-surface`, `--db-studio-canvas`, `--db-studio-inset`,
+  `--db-studio-text-1/2`, `--db-studio-border-subtle/default`,
+  `--db-studio-accent/soft/border`. Secondary text uses text-2, not pale text-3.
+- Geometry: 4/8/12/16/24/32px spacing; 6px controls, 8px document corners;
+  36px toolbar controls; 256px item list; 272px expanded properties.
+  The document editor is at least 320px high and grows with its text.
+- Scroll ownership: modal header/footer stay fixed. Item list and document
+  have independent vertical scrolls; an expanded property pane owns its scroll.
+  The document textarea grows instead of introducing a nested prose scrollbar.
+- Below 800px available workspace width, list and document are alternate views,
+  never two short stacked scroll boxes. A persistent list button returns to
+  browsing without losing the draft. Properties become an in-workspace overlay
+  below 1100px; Escape closes properties and restores their opener.
+- Reused primitives: `workspaceShell`, `sectionCard`, `segmentedControl`,
+  existing card media, markdown renderer, reference and relation editors.
+  Shared world document properties provide closed/open/focused states.
+  Item rows have default/hover/focus/selected/locked states; the optional gallery
+  uses the same item data and selection path.
+- Empty states distinguish no items, no search matches, and no selection.
+  Creation and search reset are explicit actions. Global lint is a separate
+  disclosure, not the first content in an empty document.
+- Filter changes clear out-of-filter reading selections. An active draft stays
+  open with an explicit out-of-filter marker. Relation navigation selects the
+  target's category and clears search. Search DOM and IME focus are preserved.
+- The main modal save remains the persistence authority. The document action is
+  labeled `편집 완료`, not a competing remote save. Draft discard and lock guards
+  retain their existing contracts.
+- World overview separates draft/confirmed status from public/secret visibility.
+  Legacy `status: secret` loads as a secret draft. AI inclusion remains explicit:
+  world overview fields plus the first 600 body characters; codex name/summary
+  only. The inspector can show the actual world overview prompt projection.
+- Accessibility: native buttons/inputs/details, visible indigo focus, associated
+  labels, no focus stolen while typing; 1024/1280/1440 desktop acceptance matrix.
+  No runtime/mobile-editor expansion is included.
+
 > **Status note:** The editor chrome is a cool white studio with one indigo accent. Runtime game surfaces keep their retro/pixel window presentation. The event-command editor is a cream-studio command editor: the event-command list, canvas, and every command form use cream tokens (`src/styles/tokens.css`), Korean-first modern labels, human sentences (named flags, no `Sw[0001]` / `◆` / `ON` / raw `\c[1]` chip walls), and the `cream form` field pattern — no RM2K3 retro command-list presentation. Shell tokens live in `src/styles/tokens.css` (single source of truth, imported first in `src/styles/index.css`) with `html { color-scheme: light; }` (`src/styles/index.css:75`); legacy names are aliased in `src/styles/editor/core.part-1.css`, `src/styles/database/tabs-b-shell-layout.css`, and `src/styles/shell/figma-editor/01-shell-topbar-team.css`. Warm cream elevation is `canvas < inset < base < surface < raised < overlay`. Previous dark values live in git history only. When the code changes, update this file — it is the source of truth, not an aspirational target.
 
 ## 1. Atmosphere & Identity

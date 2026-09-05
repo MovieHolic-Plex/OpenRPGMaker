@@ -98,7 +98,16 @@ Actor initial-equipment pickers, build previews, equipment gallery/filter labels
 - The hero owns selected-actor identity, class, level range, and start-party membership. The table owns selection and comparison only; do not restore duplicate current-selection/party summary metrics or analytics. System remains the authority for `startActorIds`.
 - Scroll ownership is explicit: list rows scroll inside `.db-actor-studio-table`; the actor hero and section tabs remain fixed; only `.actor-section-body` scrolls. Do not return to one long inspector document where category navigation depends on scrolling.
 
-## 세계관 그룹 — 이 세계 · 설정집 (2026-09-03)
+## 세계관 그룹 — 세계 개요 · 설정집 (2026-09-06)
+
+- **문서 작업실 개편:** `worldCanon`의 표시 이름은 「세계 개요」이며 stable tab/field testid는 유지한다. 제목·전제·본문이 중앙 문서를 구성하고 톤·시대·기술 수준·금지 항목·법칙은 `src/editor/panels/worldDocumentProperties.ts`의 접을 수 있는 속성에 둔다. 두 탭 모두 `workspaceShell`의 단일 루트/모달 크기 계약을 유지한다.
+- 설정집 기본 목록은 256px 행 목록이다. 인물·장소·세력·사건·아이템·개념·제작 노트를 따로 탐색하고, 같은 항목/선택 경로로 갤러리 보기를 전환한다. 예전 `place-faction`/`item-concept` URL은 읽을 수 있지만 새 UI는 분리된 분류를 사용한다. 전체 프로젝트 검사는 목록 아래의 별도 disclosure에 두며 빈 문서 앞에 경고 개수를 쌓지 않는다.
+- 읽기 선택이 검색/분류 밖으로 나가면 상세를 비운다. 편집 중 초안은 보존하고 필터 밖이라는 표시를 제공한다. 관계 이동은 대상 종류로 분류를 전환하고 검색을 지운다. 새 항목·종류 변경을 확정하면 결과가 보이는 분류로 이동한다.
+- `world-panel.css`의 **unlayered 문서 스코프**가 공용 DB 스타일보다 문서 크기에서 우선한다. `.world-edit-body`/`.db-world-canon-body`는 최소 320px, 16px/1.65이며 `field-sizing: content`로 장문만큼 늘어난다. 문서 영역이 스크롤을 소유한다. 제목은 26px이고 일반 DB 입력의 13px 규칙에 눌리지 않는다.
+- 800px 미만 **작업 공간 폭**에서는 목록과 문서를 번갈아 표시한다(`world-list-toggle`, `data-view`). 과거 세로 0.65fr/1fr 분할은 제거했다. 1100px 이하에서 펼친 속성은 작업 공간 안쪽 overlay가 되며 Escape로 속성만 닫고 opener에 포커스를 돌려준다. 1024/1280/1440 데스크톱이 주 검증 행렬이다.
+- 작성 상태(`status: draft/canon`)와 공개 범위(`visibility: public/secret`)는 독립이다. 예전 `status: secret`은 로드 정규화에서 `visibility: secret`인 초안으로 옮긴다. 기본 draft/public은 저장 키를 생략하며 상태/공개 범위만 있는 객체는 저작 내용으로 세지 않는다. AI는 비밀 여부와 확정 여부를 독립적으로 반영하고, 속성의 「AI 전달 내용」은 실제 `worldCanonPromptSection` 투영을 표시한다.
+- 설정집 내부 `world-edit-save`는 「편집 완료」로 부르며 원격 저장 버튼처럼 보이게 하지 않는다. 실제 저장은 기존 모달 footer의 `지금 저장`/세션 commit/flush가 소유한다. 잠금·취소·삭제·프로젝트 교체 가드는 그대로다.
+- 회귀: `test/worldDocumentWorkspace.test.ts`, `worldCanon.test.ts`, 기존 세계관 11개 테스트 파일과 `test/e2e/world-authoring-regression.spec.ts`. 수동 브라우저 증거: `output/evidence/world-document-workspace/`. 아래 2026-09-03/05 기록의 이름·배치 설명은 이 절보다 우선하지 않는다.
 
 - 자료집 레일 **첫 그룹** `세계관` (`slug: lore`). 탭 `이 세계` (`worldCanon`, `db-tab-world-canon`) 와 `설정집` (`worldCodex`, `db-tab-world-codex`). 예전에 「세계」이던 타일셋·생성 규칙 그룹은 **「맵」** 으로 개명했다 (`slug` 는 `world` 유지 — 접힌 타일셋 폴더 부제 계약).
 - `이 세계` 는 싱글톤 `project.worldCanon` 이다. 이름·한 줄 전제·톤 칩·시대·기술 천장·없는 것 태그·힘/신/죽음/돈 법칙·마크다운 본문. 비어 있으면 키를 저장하지 않는다 (`normalizeWorldCanon` / `compactWorldCanon`). 스키마는 `src/project/world/canon.ts`.
@@ -114,7 +123,7 @@ Actor initial-equipment pickers, build previews, equipment gallery/filter labels
 - 설정집 input/change는 초안을 갱신한다. 내부 카테고리·검색은 초안을 유지하고, 다른 카드 선택/새 카드 추가는 변경된 초안을 먼저 커밋한다. 검색창 DOM은 유지하고 본문만 갱신해 포커스와 IME 조합을 보존한다.
 - 카드 삭제는 잠금을 확인하고 관계·전투 진영의 worldEntityId 출처를 정리한다. 연결된 맵/이벤트/DB 레코드는 유지한다. 프로젝트 스냅샷으로 삭제/출처 정리를 함께 undo한다.
 - 설정집 NPC 미등록 검사는 `classifyMapEvent`를 사용한다. 문/상자는 제외하고 NPC·상점의 이름을 검사한다. 다른 카드와 무관한 전역 검사는 기본 접힌 details로 표시한다.
-- 임베드 설정집은 부모 폭을 사용한다. 760px 이하 컨테이너는 목록/상세를 세로 배치하고 카드도 작은 그림 옆에 제목이 보이는 가로 행으로 표시한다. 공용 `.db-ws-single`은 좁은 폭에서도 한 행 전체를 사용하며 없는 목록에 높이 34%를 예약하지 않는다. 잠금의 키보드 Enter/Space는 카드 선택 이벤트에 가로채이지 않으며 밝은 테마에서도 상태 글자가 보인다. `CameraPanController`도 캔버스가 keydown을 소유한 경우에만 Space keyup의 기본 동작을 막는다(모달 버튼의 기본 클릭 보존).
+- 임베드 설정집은 부모 폭을 사용한다. 현재 좁은 폭은 위 2026-09-06 문서/목록 전환 계약을 따른다. 공용 `.db-ws-single`은 좁은 폭에서도 한 행 전체를 사용하며 없는 목록에 높이 34%를 예약하지 않는다. 잠금의 키보드 Enter/Space는 카드 선택 이벤트에 가로채이지 않으며 밝은 테마에서도 상태 글자가 보인다. `CameraPanController`도 캔버스가 keydown을 소유한 경우에만 Space keyup의 기본 동작을 막는다(모달 버튼의 기본 클릭 보존).
 - AI 배제 계약은 유지한다. 화면 안내에 NPC 작성기는 카드 이름·요약을 읽고, 카드 본문·관계는 전달하지 않는다고 명시한다. 모든 작성 채널에 전달할 규칙은 「이 세계」가 소유한다.
 - 검증: `test/worldAuthoringRegression.test.ts`, 기존 worldCanon/worldPanel/worldSystem 및 자료집 모달 테스트, `test/e2e/world-authoring-regression.spec.ts`. 브라우저 증거는 `verify-shots/world-authoring-fixes/`.
 

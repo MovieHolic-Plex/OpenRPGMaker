@@ -37,7 +37,7 @@ export function worldCanonPromptSection(value: WorldCanon | undefined): string |
     "사용자가 자료집 「이 세계」에 적어 둔 세계다. 맵·NPC·대사·아이템·이름을 지을 때 이 절에 맞춘다.",
   ];
   if (canon.status === "canon") lines.push("- 상태: 확정 — 이 절을 세계의 정본으로 우선한다.");
-  if (canon.status === "secret") lines.push("- 상태: 비밀 — 이 절의 내용은 조수가 알되 플레이어용 문장에 직접 노출하지 않는다.");
+  if (canon.visibility === "secret") lines.push("- 상태: 비밀 — 이 절의 내용은 조수가 알되 플레이어용 문장에 직접 노출하지 않는다.");
   if (canon.name) lines.push(`- 세계 이름: ${canon.name}`);
   if (canon.premise) lines.push(`- 전제: ${canon.premise}`);
   if (canon.tones.length > 0) lines.push(`- 톤: ${canon.tones.map((tone) => TONE_WORDS[tone]).join(", ")}`);

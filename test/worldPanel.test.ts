@@ -29,10 +29,8 @@ describe("worldPanel", () => {
     const panel = renderPanel();
 
     expect(requireTestId(panel, "world-panel")).toBeTruthy();
-    expect(requireTestId(panel, "world-tab-overview").textContent).toBe("개요");
-    expect(panel.textContent).toContain("인물 1");
-    expect(panel.textContent).toContain("아이템 1");
-    expect(panel.textContent).toContain("개념 1");
+    expect(requireTestId(panel, "world-tab-overview").getAttribute("aria-pressed")).toBe("true");
+    expect(panel.querySelectorAll(".world-card")).toHaveLength(7);
     expect(findByTestId(panel, "world-card-w_item")).toBeTruthy();
     expect(findByTestId(panel, "world-card-w_concept")).toBeTruthy();
   });
@@ -53,13 +51,13 @@ describe("worldPanel", () => {
     expect(findByTestId(panel, "world-card-w_faction")).toBeNull();
   });
 
-  it("filters the place and faction tab together", () => {
+  it("filters places without mixing factions into the same category", () => {
     const panel = renderPanel();
 
-    requireTestId(panel, "world-tab-place-faction").click();
+    requireTestId(panel, "world-tab-place").click();
 
     expect(findByTestId(panel, "world-card-w_place")).toBeTruthy();
-    expect(findByTestId(panel, "world-card-w_faction")).toBeTruthy();
+    expect(findByTestId(panel, "world-card-w_faction")).toBeNull();
     expect(findByTestId(panel, "world-card-w_char")).toBeNull();
   });
 
@@ -78,7 +76,7 @@ describe("worldPanel", () => {
     store.replace(project);
     const panel = renderPanel();
 
-    requireTestId(panel, "world-tab-place-faction").click();
+    requireTestId(panel, "world-tab-faction").click();
     expect(requireTestId(panel, "world-faction-materialization")).toBeTruthy();
     requireTestId(panel, "world-faction-materialization-preview").click();
 
@@ -103,7 +101,7 @@ describe("worldPanel", () => {
     };
     store.replace(project);
     const panel = renderPanel();
-    requireTestId(panel, "world-tab-place-faction").click();
+    requireTestId(panel, "world-tab-faction").click();
     requireTestId(panel, "world-faction-materialization-preview").click();
 
     store.update((draft) => {
@@ -131,13 +129,13 @@ describe("worldPanel", () => {
     expect(findByTestId(panel, "world-card-w_char")).toBeNull();
   });
 
-  it("shows item and concept cards on their own tab", () => {
+  it("shows item cards without mixing concept cards", () => {
     const panel = renderPanel();
 
-    requireTestId(panel, "world-tab-item-concept").click();
+    requireTestId(panel, "world-tab-item").click();
 
     expect(findByTestId(panel, "world-card-w_item")).toBeTruthy();
-    expect(findByTestId(panel, "world-card-w_concept")).toBeTruthy();
+    expect(findByTestId(panel, "world-card-w_concept")).toBeNull();
     expect(findByTestId(panel, "world-card-w_char")).toBeNull();
   });
 
@@ -160,10 +158,10 @@ describe("worldPanel", () => {
   it("remembers tab and selection for the next codex render", () => {
     const panel = renderPanel();
 
-    requireTestId(panel, "world-tab-item-concept").click();
+    requireTestId(panel, "world-tab-item").click();
     requireTestId(panel, "world-card-w_item").click();
 
-    expect(getPersistedCodexView()).toEqual({ tab: "item-concept", selectedId: "w_item" });
+    expect(getPersistedCodexView()).toEqual({ tab: "item", selectedId: "w_item" });
 
     const revived = renderWithFakeDom(() =>
       renderWorldPanel({
@@ -172,7 +170,7 @@ describe("worldPanel", () => {
         initialEntityId: getPersistedCodexView().selectedId ?? undefined,
       })
     );
-    expect(requireTestId(revived, "world-tab-item-concept").className).toContain("active");
+    expect(requireTestId(revived, "world-tab-item").className).toContain("active");
     expect(requireTestId(revived, "world-wiki-view").dataset.entityId).toBe("w_item");
   });
 
@@ -279,7 +277,7 @@ describe("worldPanel", () => {
 
     requireTestId(panel, "world-card-w_broken").click();
 
-    const list = requireTestId(panel, "world-lint-list");
+    const list = requireTestId(requireTestId(panel, "world-wiki-view"), "world-lint-list");
     expect(list.textContent).toContain("설정집 w_broken");
     expect(list.textContent).toContain("actor:actor_missing");
   });

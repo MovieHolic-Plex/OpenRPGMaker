@@ -114,7 +114,7 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "tilesets", label: "통행", testid: "db-tab-tilesets" },
   { id: "tilesetAutotile", label: "오토타일 설정", testid: "db-tab-tileset-autotile" },
   { id: "tilesetUnlabeled", label: "미분류 모아보기", testid: "db-tab-tileset-unlabeled" },
-  { id: "worldCanon", label: "이 세계", testid: "db-tab-world-canon" },
+  { id: "worldCanon", label: "세계 개요", testid: "db-tab-world-canon" },
   { id: "worldCodex", label: "설정집", testid: "db-tab-world-codex" },
   { id: "worldGen", label: "생성 규칙", testid: "db-tab-world-gen" },
   { id: "structureKits", label: "구조물", testid: "db-tab-structure-kits" },
