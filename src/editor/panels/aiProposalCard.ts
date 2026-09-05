@@ -335,7 +335,7 @@ export function createProposalHost(options: {
   };
 
   const noteNoChanges = (result: TurnResult, extraWarnings: readonly string[] = []): void => {
-    if (result.proposedCalls.length > 0) return;
+    if (result.proposedCalls.length > 0 || (result.appliedCalls?.length ?? 0) > 0) return;
     const plainToolNames = getEditorChrome().jargonStyle === "plain";
     const lines = proposalSummaryLines(result.proposedCalls, extraWarnings)
       .map((line) => (plainToolNames ? sanitizeUserFacingToolId(line) : line));

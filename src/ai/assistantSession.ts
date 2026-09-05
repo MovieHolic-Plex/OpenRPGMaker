@@ -304,16 +304,16 @@ const VOCAB_SOFT_CONFIRM_APPROVAL_WARNING =
 const HARD_CLUSTER_RULE_WARNING = "⚠️ 강한 규칙: 이 타일셋을 쓰는 모든 맵의 저장(커밋)이 규칙 위반 시 거부됩니다.";
 export const TOKEN_BUDGET_STATUS_TEXT = "요청이 커서 이번 턴에는 일부만 제안합니다. 이어서 요청해 주세요.";
 
-// 예산 소진으로 잘린 턴은 모델이 마무리 문장을 낼 기회가 없어 assistantText 가 빈 채로 끝난다.
-// 그대로 반환하면 제안이 승인 대기로 떠 있는데도 화면에는 아무 말이 없다 — 2026-08-29 실측:
-// 영역 턴이 max-tool-calls 로 잘리며 313칸 제안 13건을 침묵으로 남겼고, 사용자에게는
-// "명령이 씹혔다"로 보였다. 최소한 왜 멈췄고 무엇이 대기 중인지는 말한다.
-export function truncatedTurnText(existing: string, proposals: number, budgetLabel: string): string {
+// 예산 소진으로 모델의 마무리가 없으면 실제 적용분과 아직 적용 전인 제안을 함께 알린다.
+// 마일스톤은 제안 큐를 비우므로 pending=0만으로 "변경 없음"을 판단하면 안 된다.
+export function truncatedTurnText(existing: string, proposals: number, budgetLabel: string, appliedCalls = 0): string {
   if (existing.trim().length > 0) return existing;
-  const pending = proposals > 0
-    ? `지금까지 만든 제안 ${proposals}건이 승인 대기 중입니다 — 수락하면 반영됩니다.`
-    : "적용할 만한 변경은 만들지 못했습니다.";
-  return `${budgetLabel}을 다 써서 이번 턴을 여기서 멈췄습니다. ${pending} 이어서 요청해 주세요.`;
+  const changes = [
+    ...(appliedCalls > 0 ? [`변경 ${appliedCalls}건은 이미 프로젝트에 적용했습니다.`] : []),
+    ...(proposals > 0 ? [`아직 적용 전인 제안 ${proposals}건이 남아 있습니다.`] : []),
+  ];
+  const progress = changes.length > 0 ? changes.join(" ") : "적용할 만한 변경은 만들지 못했습니다.";
+  return `${budgetLabel}을 다 써서 이번 턴을 여기서 멈췄습니다. ${progress} 이어서 요청해 주세요.`;
 }
 const EXECUTION_PHASE_HINT = "실행 단계: 계획을 충실히 수행, 누락 없이 완료 후 종료. 새 질문 금지. 한 응답에 여러 tool_calls를 배치해 라운드 수를 최소화하라(예: fill_region + author_house + paint_road를 동시에).";
 const ZERO_CHANGE_REKICK_HINT = "사용자는 변경을 기대합니다. 질문이 아니면 지금 계획을 세우고 실행하세요";
@@ -1507,8 +1507,11 @@ export class AssistantSession {
     // 의도 선언·툴 이름 언급·능력 승격의 입력은 사용자 말이어야 한다 — 기계 텍스트가 이 자리에
     // 섞여 들어 라우팅이 어긋났던 것이 2026-09-03 감사의 근인이었다.
     const instruction = (options.instruction ?? stripContextFooter(text)).trim();
-    this.currentTurnInstruction = instruction;
-    this.currentTurnRequestText = text;
+    // 합성 "계속"은 라우팅 입력일 뿐이다. 검수·완성도 검사에는 이 런의 원래 요청을 유지한다.
+    if (!options.driverContinue) {
+      this.currentTurnInstruction = instruction;
+      this.currentTurnRequestText = text;
+    }
     this.turnScope = options.scope ?? null;
     this.turnComposerMode = options.composerMode ?? "do";
     this.planAuthoredThisTurn = false;
@@ -3752,7 +3755,7 @@ export class AssistantSession {
         });
         this.pushAudit({ kind: "status", text: `턴 종료(token-budget) — 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}` });
         return {
-          assistantText: truncatedTurnText(assistantText, proposedByKey.size, "출력 토큰 예산"),
+          assistantText: truncatedTurnText(assistantText, proposedByKey.size, "출력 토큰 예산", this.turnAppliedMilestoneCalls.length),
           proposedCalls: this.finalizeProposals(proposedByKey),
           stoppedReason: "token-budget",
         };
@@ -3764,7 +3767,7 @@ export class AssistantSession {
     onEvent({ type: "status", text: TOKEN_BUDGET_STATUS_TEXT });
     this.pushAudit({ kind: "status", text: `턴 종료(max-tool-calls) — 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}` });
     return {
-      assistantText: truncatedTurnText(assistantText, proposedByKey.size, "도구 호출 예산"),
+      assistantText: truncatedTurnText(assistantText, proposedByKey.size, "도구 호출 예산", this.turnAppliedMilestoneCalls.length),
       proposedCalls: this.finalizeProposals(proposedByKey),
       stoppedReason: "max-tool-calls",
     };

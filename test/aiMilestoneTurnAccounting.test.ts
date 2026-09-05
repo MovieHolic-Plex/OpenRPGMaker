@@ -186,5 +186,11 @@ describe("마일스톤 턴 정산", () => {
 
     const items = store.getCurrent().database.items;
     expect(items.filter((item) => item.id.startsWith("item_ledger_"))).toHaveLength(WRITE_COUNT);
+    // 라우팅 선언은 "계속"을 읽어도 검수는 사용자의 원래 목표를 읽어야 한다.
+    const review = (session as unknown as {
+      buildReviewPrompt: (pending: [], repaired: boolean) => { prompt: string };
+    }).buildReviewPrompt([], false);
+    expect(review.prompt).toContain(`## 사용자 요청\n${GOAL}`);
+    expect(review.prompt).not.toContain("## 사용자 요청\n계속\n");
   }, 30000);
 });

@@ -189,6 +189,8 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
     let highlightedRegionThisTurn = false;
     let turnFailed = false; // 접힘 레일 알림 점의 색(완료=초록/오류=빨강) 결정용.
     let turnResult: TurnResult | null = null;
+    // 마일스톤 이벤트와 반환 원장은 같은 적용분이다. 합산하지 않고 최대값으로 맞춘다.
+    let appliedWriteCount = 0;
     let turnCatchError: string | undefined;
     let assistantBubble: HTMLElement | null = null;
     let reasoningBox: { box: HTMLElement; body: HTMLElement } | null = null;
@@ -398,6 +400,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         // 할 일 목록: emitWorkPlan 이벤트마다 항목 체크/현재 레이어를 갱신한다 — 자율 런뿐 아니라 모든 턴.
         deps.showWorkPlan(s);
       } else if (event.type === "milestone_applied") {
+        appliedWriteCount += event.toolCount;
         deps.appendMilestoneFeedLine("applied", event.title, `도구 ${event.toolCount}건${event.commitId ? ` · 커밋 ${event.commitId}` : ""}`);
         // 자율 런은 턴 도중에 저장소로 커밋한다 — 여기까지의 진행은 실제로 들어갔으므로 확정한다.
         // 확정하지 않으면 뒤이은 중단이 이미 들어간 시공까지 planned 로 되돌린다(마일스톤 적용은
@@ -442,6 +445,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         return;
       }
       turnResult = result;
+      appliedWriteCount = Math.max(appliedWriteCount, result.appliedCalls?.length ?? 0);
       deps.surface.endTurnProgress();
       if (abortController.signal.aborted || result.stoppedReason === "aborted") {
         ghostPreviewUpdater.cancel();
@@ -463,7 +467,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         //
         // main 이 executeTurn 을 이 러너로 추출하는 사이 #317 이 열려 있어 병합 시 여기로
         // 이사했다. 원래 자리는 aiChatPanel 의 executeTurn 이었다.
-        if (result.proposedCalls.length === 0) {
+        if (result.proposedCalls.length === 0 && appliedWriteCount === 0) {
           showAiGateNotice(turnErrorNotice({ message: result.error ?? "AI 작업이 오류로 끝났습니다." }));
         }
       } else {
@@ -511,6 +515,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         }
         const applied = outcome === "applied";
         if (!applied && deps.workPlanSurfaceState) deps.workPlanSurfaceState.stoppedReason = "apply-failed";
+        if (applied) appliedWriteCount += result.proposedCalls.length;
         // 적용 결과가 나온 다음에 청사진을 정산한다 — 배치 검증·커밋 게이트가 거부하면
         // (applied === false) 저장소는 그대로이므로 done 은 거짓이다.
         settleBlueprintForTurnEnd(applied ? result.proposedCalls : null);
@@ -610,6 +615,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
             error: turnCatchError ?? turnResult?.error,
             stoppedReason: turnResult?.stoppedReason ?? "ownership-lost",
             proposedCalls: turnResult?.proposedCalls.length,
+            appliedCalls: appliedWriteCount,
             assistantText: turnResult?.assistantText,
           },
           toolCalls: liveToolCalls.length > 0 ? liveToolCalls : toolCallsFromAudit(turnAudit),
@@ -645,7 +651,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       const cfg = loadAiConfig();
       const audit = turnAudit;
       const toolFromAudit = toolCallsFromAudit(audit);
-      const toolFromProposed = (turnResult?.proposedCalls ?? []).map((call) => ({
+      const toolFromWrites = [...(turnResult?.appliedCalls ?? []), ...(turnResult?.proposedCalls ?? [])].map((call) => ({
         name: call.name,
         args: call.args,
         ok: call.result.ok,
@@ -665,6 +671,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
           error: turnCatchError ?? turnResult?.error,
           stoppedReason: turnResult?.stoppedReason,
           proposedCalls: turnResult?.proposedCalls.length,
+          appliedCalls: appliedWriteCount,
           assistantText: turnResult?.assistantText,
           ...(turnResult?.recap
             ? {
@@ -681,7 +688,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
               }
             : {}),
         },
-        toolCalls: toolFromAudit.length > 0 ? toolFromAudit : toolFromProposed,
+        toolCalls: toolFromAudit.length > 0 ? toolFromAudit : toolFromWrites,
         audit,
         uiActions: turnUiActions,
       }).catch(() => {
@@ -690,11 +697,11 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       // 성향 관측 + 증류. 활동 로그와 같은 자리에서 돈다 — 이 지점이 "지시문·툴 호출·성패"가
       // 한꺼번에 확정되는 유일한 곳이다. 증류는 조건이 찼을 때만 lite 모델을 1회 부르고,
       // 실패는 조용히 넘긴다(결정론 집계는 이미 저장돼 있어 손실이 없다).
-      const turnToolNames = (toolFromAudit.length > 0 ? toolFromAudit : toolFromProposed).map((call) => call.name);
+      const turnToolNames = (toolFromAudit.length > 0 ? toolFromAudit : toolFromWrites).map((call) => call.name);
       const signalState = observeTurn({
         instruction: requestText,
         toolNames: turnToolNames,
-        changed: (turnResult?.proposedCalls.length ?? 0) > 0,
+        changed: appliedWriteCount > 0,
       });
       if (shouldDistillPreferences(signalState)) {
         void distillPreferences({ projectScopeKey: turnConversationScope })
