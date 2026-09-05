@@ -1,0 +1,30 @@
+{
+  "sourceCommit": "a713f717",
+  "pullRequests": [
+    584,
+    586,
+    587
+  ],
+  "build": "npm run build",
+  "buildExitCode": 0,
+  "tests": {
+    "total": 179,
+    "passed": 179,
+    "failed": 0,
+    "exitCode": 0
+  },
+  "cssGateExitCode": 0,
+  "runtime": {
+    "checks": [
+      "v3-migrate-play",
+      "locked-prerequisite",
+      "spend-points",
+      "learn-node",
+      "promote",
+      "deactivate-class-tree",
+      "refund-inactive-tree"
+    ],
+    "errors": []
+  },
+  "scope": "Focused combined verification; does not claim full baseline suite is green."
+}
