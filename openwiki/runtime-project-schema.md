@@ -1,5 +1,9 @@
 # Runtime Project Schema & Persistence
 
+## 전투 명령 CSS (2026-09-05)
+
+선택 필드 `system.battleCommandCss?: string`은 프로젝트 공통 메뉴 스타일이다. 기존 프로젝트는 필드 없이 기존 스킨을 유지한다. `validateSystem`은 문자열 타입을 검사하고 `normalizeSystemRecords`는 비어 있지 않은 원문을 보존한다. 버전 증가나 데이터 마이그레이션은 필요 없다. 저장/로드·패키지·출하 플레이어가 같은 프로젝트 필드를 사용한다. 지원 문법 밖의 가져온 문자열은 보존하되 렌더하지 않아 편집기에서 고칠 수 있다. `test/battleCommandCss.test.ts`가 직렬화 왕복·구형 프로젝트·잘못된 타입·CSS 격리를 검증한다.
+
 ## 기본 카탈로그 삭제 보존 (2026-09-05)
 
 로드의 `ensureDefaultDatabaseIconResources`는 기존 기본 행의 아이콘 연결만 보정한다. 누락 아이템·장비를 새로 주입하거나 그 종속 스킬·상태를 추가하지 않는다. 신규 생성은 기존 기본 카탈로그를 그대로 사용한다. `test/itemEquipmentAuthoringTrust.test.ts`는 삭제한 기본 행이 serialize→deserialize→부팅 정규화 후에도 없는 것을 확인한다. 종류 필드가 없던 v3 스킬 아이템은 `normalizeItemRecord`가 skillId를 보고 special로 복원한다. 명시된 종류는 추론으로 덮어쓰지 않으며 실제 v3 전투 fixture와 직렬화 왕복으로 검증한다. ItemRecord 종류 전환은 저장 필드를 삭제하지 않고 `itemUsage.activeItemEffects`로 실행만 제한하므로 스키마 버전 변경이 없다.

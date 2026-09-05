@@ -220,6 +220,23 @@ describe("studio DOM integration", () => {
     node("db-command-place-magic").dispatchEvent(new Event("click"));
     expect(store.getCurrent().database.classes[0]?.battleCommands).toEqual([{ ...attack, name: "override", skillId: "private_skill" }, { ...catalog, skillId: "latest_skill" }, footer]);
   });
+  it("resets an unapplied CSS preset without creating a project mutation", () => {
+    node("db-command-css-preset").dispatchEvent(new Event("click"));
+    expect(host.querySelector<HTMLTextAreaElement>('[data-testid="db-command-css-input"]')?.value).not.toBe("");
+    node("db-command-css-reset").dispatchEvent(new Event("click"));
+    expect(host.querySelector<HTMLTextAreaElement>('[data-testid="db-command-css-input"]')?.value).toBe("");
+    expect(store.getCurrent().system.battleCommandCss).toBeUndefined();
+    expect(history.getMapEditHistoryMarker()).toBe(0);
+  });
+  it("preserves a CSS draft across unrelated studio rerenders", () => {
+    const input = host.querySelector<HTMLTextAreaElement>('[data-testid="db-command-css-input"]');
+    if (!input) throw new Error("missing CSS input");
+    input.value = ".command { color: #123456; }";
+    input.dispatchEvent(new Event("input"));
+    rerender();
+    expect(host.querySelector<HTMLTextAreaElement>('[data-testid="db-command-css-input"]')?.value).toBe(".command { color: #123456; }");
+    expect(store.getCurrent().system.battleCommandCss).toBeUndefined();
+  });
   it("renders runtime-authority labels while preserving resolved command identity", async () => {
     const { battleCommandKindLabel } = await import("@/player/battleCommandDom");
     const { resolveTerms } = await import("@/project/terms");

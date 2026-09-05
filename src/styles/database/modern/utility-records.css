@@ -298,6 +298,41 @@
   margin: var(--space-2) 0;
   overflow-wrap: anywhere;
 }
+
+.db-command-placement > [data-testid="db-command-css-editor"] {
+  grid-column: 1 / -1;
+}
+.db-command-placement textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: var(--space-3);
+  font-family: monospace;
+  font-size: var(--font-size-sm);
+  color: var(--db-studio-text-1);
+  background: var(--db-studio-inset);
+  border: var(--stroke-1) solid var(--db-studio-border-default);
+  border-radius: var(--radius-s);
+  resize: vertical;
+}
+.db-command-css-preview .battle-command-menu {
+  display: grid;
+  gap: var(--space-2);
+}
+.db-command-css-preview .battle-command {
+  min-width: 0;
+  padding: var(--space-2) var(--space-3);
+  color: var(--db-studio-text-1);
+  background: var(--db-studio-surface);
+  border: var(--stroke-1) solid var(--db-studio-border-default);
+  border-radius: var(--radius-s);
+  text-align: start;
+  overflow-wrap: anywhere;
+}
+.db-command-css-preview .battle-command:focus-visible {
+  outline: var(--stroke-2) solid var(--db-studio-accent);
+  outline-offset: var(--stroke-2);
+}
 .database-modal-backdrop .database-modal-window .database-modal-body .db-command-placement :focus-visible {
   outline: var(--stroke-2) solid var(--db-studio-accent);
   outline-offset: var(--stroke-2);

@@ -1083,6 +1083,8 @@ export interface SystemRecords {
   initialTroopId?: TroopId;
   battleFlow?: BattleFlow;
   battleUiStyle?: BattleUiStyle;
+  /** Project-wide, scoped battle menu CSS; absent preserves the selected skin. */
+  battleCommandCss?: string;
   battleParty?: BattleParty;
   /** 전투 규칙 엔진 선택. "rm2k3"(기본/생략) 또는 "gen1"(포켓몬 레드 스타일).
    *  생략 시 기존 RM2k3 전투 규칙이 100% 유지된다. CSS·UI 게이팅은 body[data-battle-model] 속성으로 한다. */

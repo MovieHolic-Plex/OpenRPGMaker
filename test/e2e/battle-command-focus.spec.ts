@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { waitForEditorProject } from "../../scripts/lib/waitForEditorProject.mjs";
 
 test.use({ browserName: "firefox", launchOptions: {}, trace: "off", screenshot: "off" });
 test.setTimeout(240_000);
@@ -14,6 +15,7 @@ for (const [spelling, id] of [["quote", 'cmd_"quoted'], ["backslash", "cmd_\\bac
       });
       await page.goto("/?blankProject=1");
       await expect(page.getByTestId("toolbar-database")).toBeVisible({ timeout: 45_000 });
+      await waitForEditorProject(page);
       const before = await page.evaluate(async ({ id, action }) => {
         const path = "/src/project/store.ts";
         const { store } = await import(path);

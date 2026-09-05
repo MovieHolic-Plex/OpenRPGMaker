@@ -201,14 +201,23 @@ export function listSearch(options: {
  *
  * 테스트용 fake DOM 은 `focus()`/`requestAnimationFrame` 이 없을 수 있어 있을 때만 쓴다.
  */
+let focusRestoreGeneration = 0;
 export function restoreFocusAfterRerender(testid: string, frames = 8): void {
   if (typeof requestAnimationFrame !== "function") return;
+  const generation = ++focusRestoreGeneration;
+  let lastFocused = document.activeElement;
   const tick = (remaining: number): void => {
+    if (generation !== focusRestoreGeneration) return;
     const next = Array.from(document.querySelectorAll<HTMLElement>("[data-testid]"))
       .find((node) => node.dataset.testid === testid);
     // 대상이 사라졌으면 되돌릴 자리가 없다 — 조용히 끝낸다.
     if (!next) return;
+    const active = document.activeElement;
+    // A detached restored node leaves focus on body. A different live control means
+    // the author moved on; do not steal their next click or text input for eight frames.
+    if (active !== document.body && active !== lastFocused && active !== next) return;
     if (document.activeElement !== next && typeof next.focus === "function") next.focus();
+    lastFocused = next;
     if (remaining > 0) requestAnimationFrame(() => tick(remaining - 1));
   };
   requestAnimationFrame(() => tick(frames));

@@ -8,6 +8,7 @@ import { listToolbar, sectionCard, restoreFocusAfterRerender } from "./databaseW
 import { store } from "@/project/store";
 import type { ClassBattleCommand, ClassRecord, DatabaseBattleCommandRecord, Project } from "@/project/types";
 import { el } from "@/util/dom";
+import { battleCommandCssEditor } from "./databaseBattleCommandCss";
 
 let selectedClassId = "";
 let includeSwitch = false;
@@ -185,5 +186,6 @@ export function battleCommandPlacement(palette: HTMLElement, rerender: () => voi
     el("p", { class: "db-ws-usage", text: status, attrs: { role: "status", "aria-live": "polite" }, dataset: { testid: "db-command-status" } }),
     ...(klass ? [preview(klass, rerender)] : []),
   ] });
-  return el("div", { class: "db-command-placement", children: [palette, board] });
+  const labels = klass ? resolvedStudioCommands(project, klass.id, includeSwitch).map((row) => battleCommandKindLabel(row, resolveTerms(project))) : [];
+  return el("div", { class: "db-command-placement", children: [palette, board, battleCommandCssEditor(labels, rerender)] });
 }

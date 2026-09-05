@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
+import { waitForEditorProject } from "../../scripts/lib/waitForEditorProject.mjs";
 
 test.use({ browserName: "firefox", launchOptions: {} });
 
@@ -14,6 +15,7 @@ test("class command placement uses actual class menus", async ({ page }) => {
   });
   await page.goto("/?blankProject=1");
   await expect(page.getByTestId("toolbar-database")).toBeVisible({ timeout: 45_000 });
+  await waitForEditorProject(page);
   await page.evaluate(async () => {
     const path = "/src/project/store.ts";
     const { store } = await import(path);
