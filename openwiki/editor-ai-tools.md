@@ -217,3 +217,10 @@ author_village와 buildVillageDomain이 DB 설계서의 고정값·집 수 범�
 명령은 trigger와 같은 객체의 `commands`에 둔다. 검사는 입력 patch를 병합·정규화하기 전에 수행한다.
 실제 JRPG 재실행에서 잘못 중첩된 transfer를 도구가 무시하고 빈 commands로 저장해 던전 귀환이 사라졌기 때문이다.
 `test/toolsMapManagement.test.ts`는 두 잘못된 위치를 모두 거부하고 기존 귀환 이벤트가 그대로 남는지 검증한다.
+
+## 보물상자는 노출된 수면을 거부한다 (2026-09-05)
+
+`place_chest`는 요청 좌표와 자동 착지 결과를 모두 검사한다. 물 판정은 현재 타일셋의
+`roleCapabilities(...).terrainTag`를 사용하고, 메타가 없는 기본 칩셋에만 칩 번호 폴백을 적용한다.
+통행 가능한 O 상층 다리는 허용하지만 ★ 장식은 하층 물을 가리지 않는다. 벽감의 인접 조사 예외는 유지한다.
+`test/treasureChestPlacement.test.ts`가 물·다리·다른 타일셋·자동 착지를 검증한다.

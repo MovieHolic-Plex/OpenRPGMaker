@@ -8,6 +8,7 @@ import { isPassable, tileAt } from "@/project/collision";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { passageMarkForTile } from "@/project/tilesetPassage";
+import { roleCapabilities } from "@/project/tileRoles";
 import { isSeason, isTimePhase, resolveTimeSystem, type Season } from "@/project/gameTime";
 import { validateShopStock } from "@/project/io/shapeCommandFields";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
@@ -1866,8 +1867,8 @@ function assertChestDrySurface(project: Project, map: GameMap, x: number, y: num
   const waterTile = (tile: number): boolean => {
     if (tile < 0) return false;
     const role = tileset.tileMeta?.[tile]?.role;
-    if (role) return role === "water";
-    if (tileset.tileGroups?.some((group) => group.role === "water" && group.tileIds.includes(tile))) return true;
+    if (role) return roleCapabilities(tileset, role).terrainTag === "water";
+    if (tileset.tileGroups?.some((group) => roleCapabilities(tileset, group.role).terrainTag === "water" && group.tileIds.includes(tile))) return true;
     // 원시 칩 번호는 다른 타일셋에서 다른 그림이다. 메타 없는 기본 칩셋에만 폴백한다.
     return tileset.id === DEFAULT_TILESET_ID && isWaterChipsetTile(tile);
   };
