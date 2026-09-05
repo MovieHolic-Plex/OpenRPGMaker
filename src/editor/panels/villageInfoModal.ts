@@ -2,7 +2,7 @@ import { store } from "@/project/store";
 import type { Project, VillageInfoDocument } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { toast } from "@/util/toast";
-import { openWorldPanel } from "./worldPanel";
+import { openWorldPanel } from "./worldEntries";
 
 let selectedDocumentId = "";
 
