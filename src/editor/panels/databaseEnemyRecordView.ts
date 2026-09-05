@@ -982,6 +982,7 @@ function actionSkillField(record: EnemyRecord, rerender: () => void): HTMLElemen
     if (!live) return;
     updateDatabaseRecord("enemies", record.id, { actions: replaceAction(current.actions, index, { ...live, skillId }) });
     rerender();
+    restoreFocusAfterRerender("db-picker-enemy-action-skill");
   });
   const select = node.querySelector("select");
   if (select instanceof HTMLSelectElement) {

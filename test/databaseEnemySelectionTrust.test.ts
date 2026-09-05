@@ -80,6 +80,25 @@ describe("enemy action selection through the real record form and store", () => 
     selected(1);
   });
 
+  it("keeps the skill picker focused after changing the selected action and rerendering", async () => {
+    row(1).click();
+    const before = structuredClone(live().actions);
+    const select = picker();
+    select.focus();
+    expect(document.activeElement).toBe(select);
+    const changed = new Promise<void>((resolve) => {
+      select.addEventListener("change", () => queueMicrotask(resolve), { once: true });
+    });
+    changeSkill(skills[2]);
+    await changed;
+    vi.advanceTimersToNextFrame();
+    expect(picker()).not.toBe(select);
+    expect(select.isConnected).toBe(false);
+    expect(live().actions).toEqual([before[0], { ...before[1], skillId: skills[2] }]);
+    selected(1);
+    expect(document.activeElement).toBe(picker());
+  }, 1000);
+
   it("retargets the skill picker when a row receives keyboard focus", () => {
     row(1).focus();
     selected(1);
