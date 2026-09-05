@@ -969,6 +969,47 @@ function attackPatternTable(record: EnemyRecord, rerender: () => void, onSelect:
   });
 }
 
+// Direct and store-driven renders can both detach the picker. Only repair that
+// loss: subsequent input/focus owns navigation, even if it later lands on BODY.
+function restoreActionSkillFocus(original: HTMLSelectElement): void {
+  if (document.activeElement !== original || typeof requestAnimationFrame !== "function") return;
+  let last = original;
+  let cancelled = false;
+  let frame = 0;
+  const stop = (): void => {
+    cancelled = true;
+    cancelAnimationFrame(frame);
+    document.removeEventListener("keydown", stop, true);
+    document.removeEventListener("pointerdown", stop, true);
+    document.removeEventListener("focusin", onFocus, true);
+  };
+  const onFocus = (event: FocusEvent): void => {
+    if (event.target !== last) stop();
+  };
+  const tick = (remaining: number): void => {
+    if (cancelled) return;
+    const next = document.querySelector<HTMLSelectElement>('[data-testid="db-picker-enemy-action-skill"]');
+    if (!next || next.dataset.enemyId !== original.dataset.enemyId || next.dataset.skillActionIndex !== original.dataset.skillActionIndex || next.disabled) {
+      stop();
+      return;
+    }
+    if (document.activeElement !== last) {
+      if (last.isConnected || document.activeElement !== document.body) {
+        stop();
+        return;
+      }
+      last = next;
+      next.focus();
+    }
+    if (remaining > 0 && !cancelled) frame = requestAnimationFrame(() => tick(remaining - 1));
+    else stop();
+  };
+  document.addEventListener("keydown", stop, true);
+  document.addEventListener("pointerdown", stop, true);
+  document.addEventListener("focusin", onFocus, true);
+  frame = requestAnimationFrame(() => tick(8));
+}
+
 function actionSkillField(record: EnemyRecord, rerender: () => void): HTMLElement {
   const action = currentEnemy(record).actions[liveSelectedActionIndex(record)];
   const skills = store.getCurrent().database.skills;
@@ -980,12 +1021,14 @@ function actionSkillField(record: EnemyRecord, rerender: () => void): HTMLElemen
     const index = liveSelectedActionIndex(record);
     const live = current.actions[index];
     if (!live) return;
+    if (select instanceof HTMLSelectElement) restoreActionSkillFocus(select);
     updateDatabaseRecord("enemies", record.id, { actions: replaceAction(current.actions, index, { ...live, skillId }) });
     rerender();
-    restoreFocusAfterRerender("db-picker-enemy-action-skill");
   });
   const select = node.querySelector("select");
   if (select instanceof HTMLSelectElement) {
+    select.dataset.enemyId = record.id;
+    select.dataset.skillActionIndex = String(liveSelectedActionIndex(record));
     select.disabled = !action;
     const empty = select.querySelector("option");
     if (empty) empty.textContent = action ? "일반 공격" : "행동이 없습니다";

@@ -99,6 +99,104 @@ describe("enemy action selection through the real record form and store", () => 
     expect(document.activeElement).toBe(picker());
   }, 30_000);
 
+  it("restores a second same-record replacement after the first successful frame", () => {
+    picker().focus();
+    changeSkill(skills[2]);
+    vi.advanceTimersToNextFrame();
+    const firstRestored = picker();
+    expect(document.activeElement).toBe(firstRestored);
+    // The editor's store subscription can replace the form after the direct render.
+    render();
+    expect(firstRestored.isConnected).toBe(false);
+    expect(document.activeElement).toBe(document.body);
+    vi.advanceTimersToNextFrame();
+    expect(document.activeElement).toBe(picker());
+    for (let frame = 0; frame < 8; frame += 1) vi.advanceTimersToNextFrame();
+    expect(document.activeElement).toBe(picker());
+  });
+
+  it.each(["keyboard", "pointer", "focus"])("yields to %s navigation and then dialog focus after restoration", (navigation) => {
+    picker().focus();
+    changeSkill(skills[2]);
+    vi.advanceTimersToNextFrame();
+    expect(document.activeElement).toBe(picker());
+    const add = control("db-enemy-action-add");
+    if (navigation === "keyboard") picker().dispatchEvent(new KeyboardEvent("keydown", { key: "Tab", bubbles: true }));
+    if (navigation === "pointer") add.dispatchEvent(new MouseEvent("pointerdown", { bubbles: true }));
+    // happy-dom does not perform native Tab/pointer default focus movement.
+    add.focus();
+    vi.advanceTimersToNextFrame();
+    expect(document.activeElement).toBe(add);
+    row(1).dispatchEvent(new MouseEvent("dblclick", { bubbles: true }));
+    const rating = control("db-enemy-action-rating");
+    rating.focus();
+    for (let frame = 0; frame < 8; frame += 1) {
+      vi.advanceTimersToNextFrame();
+      expect(document.activeElement).toBe(rating);
+    }
+    control("db-enemy-action-cancel").click();
+  });
+
+  it("yields to a dialog opened directly after the first successful restoration", () => {
+    picker().focus();
+    changeSkill(skills[2]);
+    vi.advanceTimersToNextFrame();
+    expect(document.activeElement).toBe(picker());
+    row(1).dispatchEvent(new MouseEvent("dblclick", { bubbles: true }));
+    const rating = control("db-enemy-action-rating");
+    rating.focus();
+    for (let frame = 0; frame < 9; frame += 1) {
+      vi.advanceTimersToNextFrame();
+      expect(document.activeElement).toBe(rating);
+    }
+    control("db-enemy-action-cancel").click();
+  });
+
+  it.each(["keyboard", "pointer", "focus"])("does not resume after %s navigation leaves focus on BODY", (navigation) => {
+    picker().focus();
+    changeSkill(skills[2]);
+    vi.advanceTimersToNextFrame();
+    expect(document.activeElement).toBe(picker());
+    if (navigation === "keyboard") picker().dispatchEvent(new KeyboardEvent("keydown", { key: "Tab", bubbles: true }));
+    if (navigation === "pointer") form.dispatchEvent(new MouseEvent("pointerdown", { bubbles: true }));
+    if (navigation === "focus") control("db-enemy-action-add").focus();
+    render();
+    expect(document.activeElement).toBe(document.body);
+    for (let frame = 0; frame < 9; frame += 1) {
+      vi.advanceTimersToNextFrame();
+      expect(document.activeElement).toBe(document.body);
+    }
+  });
+
+  it("yields to navigation before the first restoration frame", () => {
+    picker().focus();
+    changeSkill(skills[2]);
+    const add = control("db-enemy-action-add");
+    add.focus();
+    for (let frame = 0; frame < 9; frame += 1) {
+      vi.advanceTimersToNextFrame();
+      expect(document.activeElement).toBe(add);
+    }
+  });
+
+  it.each([0, 1])("does not transfer restoration to another record after %s frames", (frames) => {
+    const other = { ...record, id: `${record.id}-other` };
+    store.update((project) => { project.database.enemies.push(other); });
+    picker().focus();
+    changeSkill(skills[2]);
+    if (frames) {
+      vi.advanceTimersToNextFrame();
+      expect(document.activeElement).toBe(picker());
+    }
+    record = other;
+    render();
+    expect(document.activeElement).toBe(document.body);
+    for (let frame = 0; frame < 9; frame += 1) {
+      vi.advanceTimersToNextFrame();
+      expect(document.activeElement).toBe(document.body);
+    }
+  });
+
   it("retargets the skill picker when a row receives keyboard focus", () => {
     row(1).focus();
     selected(1);
