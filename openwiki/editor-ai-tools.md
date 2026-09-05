@@ -10,6 +10,15 @@ selection, BuildSpec, map-target, or tool-name exemption. A rejected transaction
 returns `protected-house-write` or `house-overlap` and commits none of its maps,
 events, interiors, or map-tree additions. Human direct editing is unchanged.
 
+Final application also checks the current live store before history or replacement.
+`applyProposedProject` covers chat proposals, autonomous milestones, and cluster
+AI acceptance. `applyRegionProjectWithHistory` covers full and partial region
+approval after seam polishing. A safe detached tool result is not permission to
+overwrite a later human house edit or to commit protected-cell changes introduced
+by region postprocessing. Rejection leaves both the live project and undo history
+untouched; see `applyProposedProjectHouseProtection`, `regionTaskHouseProtection`,
+and `clusterAiModalHouseProtection` tests.
+
 Completion is metadata-defined: `layoutPlan.regions` with `role:"house"` protect
 the full bbox (including empty gaps between wings) plus its full-width north
 ridge row `y-1`, clipped to the map. Human `structurePlacements` protect their
