@@ -47,11 +47,12 @@ type CameraFocusHarness = {
   panCameraToTile(target: CameraFocusTarget): void;
   replayDeferredCameraFocus(): void;
   redraw(): void;
+  cancelCameraFocus(settleZoom?: boolean, pointer?: { x: number; y: number }): void;
   isPainting: boolean;
   rightRegionGesture: unknown;
   cameraPanController: { active(): boolean } | null;
   dragOperationHandler: { busy(): boolean } | null;
-  cameras: { main: { zoom: number; worldView: CanvasRect } };
+  cameras: { main: { zoom: number; worldView: CanvasRect; panEffect: { reset: ReturnType<typeof vi.fn> } } };
   readonly panCalls: PanCall[];
   readonly renderedBlueprints: number[];
   readonly renderedGhosts: number[];
@@ -127,12 +128,31 @@ function createHarness(options?: {
   const viewportPublishes: number[] = [];
   const canvasRect = options?.canvas ?? null;
   const overlays = options?.overlays ?? [];
+  const initialView = options?.worldView ?? { x: 0, y: 0, width: 10 * TILE_SIZE, height: 8 * TILE_SIZE };
+  const initialZoom = options?.zoom ?? 2;
+  const width = initialView.width * initialZoom;
+  const height = initialView.height * initialZoom;
   return Object.assign(Object.create(EditSceneCtor.prototype), {
     // 카메라: 빈 맵은 20×15 타일인데 화면에는 (0,0) 부터 10×8 타일만 들어와 있다.
     cameras: {
       main: {
-        zoom: options?.zoom ?? 1,
-        worldView: options?.worldView ?? { x: 0, y: 0, width: 10 * TILE_SIZE, height: 8 * TILE_SIZE },
+        zoom: initialZoom,
+        width, height,
+        scrollX: initialView.x + initialView.width / 2 - width / 2,
+        scrollY: initialView.y + initialView.height / 2 - height / 2,
+        worldView: { ...initialView },
+        panEffect: { reset: vi.fn() },
+        setZoom(value: number) { this.zoom = value; },
+        setScroll(x: number, y: number) { this.scrollX = x; this.scrollY = y; },
+        getWorldPoint(x: number, y: number) { return { x: this.worldView.x + x / this.zoom, y: this.worldView.y + y / this.zoom }; },
+        centerOn(x: number, y: number) { this.scrollX = x - width / 2; this.scrollY = y - height / 2; },
+        preRender() {
+          this.worldView = {
+            x: this.scrollX + width / 2 - width / (2 * this.zoom),
+            y: this.scrollY + height / 2 - height / (2 * this.zoom),
+            width: width / this.zoom, height: height / this.zoom,
+          };
+        },
         pan: (x: number, y: number, duration: number, _ease: string, _force: boolean, callback: PanCall["callback"]) => {
           panCalls.push({ x, y, duration, zoomAtPan: editorState.get().zoom, callback });
         },
@@ -281,7 +301,7 @@ describe("panCameraToTile 은 사용자 제스처 중에 카메라를 빼앗지 
     scene.panCameraToTile(focusTarget(store.getCurrent().startMapId));
 
     expect(scene.panCalls).toHaveLength(1);
-    expect(scene.panCalls[0]).toMatchObject({ x: 16.5 * TILE_SIZE, y: 12.5 * TILE_SIZE, duration: 300 });
+    expect(scene.panCalls[0]).toMatchObject({ x: 16.5 * TILE_SIZE, y: 12.5 * TILE_SIZE });
   });
 
   it.each([
@@ -662,5 +682,102 @@ describe("redraw 는 청사진도 다시 그린다", () => {
     // 청사진 레이어는 맵을 따라 비워지지 않으므로, 여기서 다시 그리지 않으면 옛 맵의 계획
     // 사각형이 새 맵 같은 타일 좌표 위에 남는다.
     expect(scene.renderedBlueprints).toHaveLength(1);
+  });
+});
+
+
+describe("camera motion adversarial cases", () => {
+  it("interpolates zoom without a first-frame snap and finishes at the addressed region", () => {
+    const scene = createHarness();
+    const before = { ...scene.cameras.main.worldView };
+    scene.panCameraToTile({ mapId: store.getCurrent().startMapId, tileX: 9, tileY: 7,
+      bounds: { x: 0, y: 0, width: 18, height: 14 } });
+    expect(scene.cameras.main.zoom).toBe(2);
+    expect(scene.cameras.main.worldView).toEqual(before);
+    const { callback } = scene.panCalls[0];
+    callback({}, 0.5);
+    expect(scene.cameras.main.zoom).toBeCloseTo(Math.sqrt(2));
+    callback({}, 1);
+    const view = scene.cameras.main.worldView;
+    expect(scene.cameras.main.zoom).toBe(1);
+    expect(view.x + view.width / 2).toBeCloseTo(9 * TILE_SIZE);
+    expect(view.y + view.height / 2).toBeCloseTo(7 * TILE_SIZE);
+  });
+
+  it("does not restart an identical target during a stream of tool results", () => {
+    const scene = createHarness();
+    const target = focusTarget(store.getCurrent().startMapId);
+    scene.panCameraToTile(target);
+    scene.panCalls[0].callback({}, 0.2);
+    scene.panCameraToTile({ ...target });
+    expect(scene.panCalls).toHaveLength(1);
+  });
+
+  it("a newer target invalidates the old callback", () => {
+    const scene = createHarness();
+    scene.panCameraToTile(focusTarget(store.getCurrent().startMapId));
+    const old = scene.panCalls[0];
+    old.callback({}, 0.4);
+    const before = { ...scene.cameras.main.worldView };
+    scene.panCameraToTile({ mapId: store.getCurrent().startMapId, tileX: 2, tileY: 2 });
+    expect(scene.cameras.main.worldView).toEqual(before);
+    old.callback({}, 1);
+    expect(scene.cameras.main.worldView).toEqual(before);
+    scene.panCalls[1].callback({}, 1);
+    expect(scene.cameras.main.worldView.x + scene.cameras.main.worldView.width / 2).toBe(2.5 * TILE_SIZE);
+  });
+
+  it("redrawing another map stops the old effect before it can move the new map", () => {
+    const scene = createHarness();
+    scene.redraw();
+    scene.panCameraToTile(focusTarget(store.getCurrent().startMapId));
+    const old = scene.panCalls[0];
+    const project = store.getCurrent();
+    project.maps.second = { ...project.maps[project.startMapId], id: "second" };
+    editorState.set({ currentMapId: "second" });
+    scene.redraw();
+    expect(scene.cameras.main.panEffect.reset).toHaveBeenCalledTimes(1);
+    const before = { ...scene.cameras.main.worldView };
+    old.callback({}, 1);
+    expect(scene.cameras.main.worldView).toEqual(before);
+    expect(scene.cameraMovedCalls).toEqual([]);
+  });
+
+  it("user cancellation stops the effect and prevents later callbacks from moving the camera", () => {
+    const scene = createHarness();
+    scene.panCameraToTile(focusTarget(store.getCurrent().startMapId));
+    const old = scene.panCalls[0];
+    old.callback({}, 0.3);
+    scene.cancelCameraFocus();
+    expect(scene.cameras.main.panEffect.reset).toHaveBeenCalledTimes(1);
+    const before = { ...scene.cameras.main.worldView };
+    old.callback({}, 1);
+    expect(scene.cameras.main.worldView).toEqual(before);
+  });
+
+  it("settling an interrupted zoom preserves the world point under the user's pointer", () => {
+    const scene = createHarness();
+    scene.panCameraToTile({ mapId: store.getCurrent().startMapId, tileX: 9, tileY: 7,
+      bounds: { x: 0, y: 0, width: 18, height: 14 } });
+    scene.panCalls[0].callback({}, 0.4);
+    const camera = scene.cameras.main;
+    const pointer = { x: 40, y: 60 };
+    const before = { x: camera.worldView.x + pointer.x / camera.zoom, y: camera.worldView.y + pointer.y / camera.zoom };
+    scene.cancelCameraFocus(true, pointer);
+    expect(camera.worldView.x + pointer.x / camera.zoom).toBeCloseTo(before.x);
+    expect(camera.worldView.y + pointer.y / camera.zoom).toBeCloseTo(before.y);
+  });
+
+  it("reduced motion lands immediately without starting a pan effect", () => {
+    Object.assign(window, { matchMedia: () => ({ matches: true }) });
+    try {
+      const scene = createHarness();
+      scene.panCameraToTile(focusTarget(store.getCurrent().startMapId));
+      expect(scene.panCalls).toEqual([]);
+      expect(scene.cameraMovedCalls).toEqual([1]);
+      expect(scene.cameras.main.worldView.x + scene.cameras.main.worldView.width / 2).toBe(16.5 * TILE_SIZE);
+    } finally {
+      delete (window as unknown as Record<string, unknown>).matchMedia;
+    }
   });
 });

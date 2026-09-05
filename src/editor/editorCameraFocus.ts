@@ -92,9 +92,12 @@ export function planCameraFocus(
   marginTiles = 1,
   fit?: { readonly currentZoom: number; readonly zoomLevels: readonly number[] }
 ): CameraFocusPlan | null {
-  const keep = focusRect(target);
+  const raw = focusRect(target);
+  if (![map.width, map.height].every(Number.isFinite) || map.width <= 0 || map.height <= 0) return null;
+  const keep = raw && clipCameraFocusBounds(raw, map);
   if (keep === null) return null;
-  if (map.width <= 0 || map.height <= 0) return null;
+  if (visible && ![visible.x, visible.y, visible.width, visible.height].every(Number.isFinite)) visible = null;
+  marginTiles = Number.isFinite(marginTiles) ? Math.max(0, marginTiles) : 1;
 
   const centerX = keep.x + keep.width / 2;
   const centerY = keep.y + keep.height / 2;
@@ -209,16 +212,23 @@ export function shouldDeferCameraFocus(gesture: PointerGestureState): boolean {
 
 function focusRect(target: CameraFocusTarget): CameraFocusBounds | null {
   const bounds = target.bounds;
-  if (bounds && bounds.width > 0 && bounds.height > 0) {
-    return {
-      x: Math.trunc(bounds.x),
-      y: Math.trunc(bounds.y),
-      width: Math.trunc(bounds.width),
-      height: Math.trunc(bounds.height),
-    };
+  if (bounds) {
+    if (![bounds.x, bounds.y, bounds.width, bounds.height].every(Number.isFinite)
+      || bounds.width < 1 || bounds.height < 1) return null;
+    return { x: Math.floor(bounds.x), y: Math.floor(bounds.y), width: Math.trunc(bounds.width), height: Math.trunc(bounds.height) };
   }
   // 정수를 요구하지 않는다 — 기존 소비자(이벤트 목록 행)의 값이 정수라고 타입에만 적혀 있고
   // 런타임 검증은 없었다. 여기서 새로 거부하면 조용히 이동이 사라진다.
   if (!Number.isFinite(target.tileX) || !Number.isFinite(target.tileY)) return null;
-  return { x: Math.trunc(target.tileX), y: Math.trunc(target.tileY), width: 1, height: 1 };
+  return { x: Math.floor(target.tileX), y: Math.floor(target.tileY), width: 1, height: 1 };
+}
+
+/** Intersect with the addressed map; never fit or highlight coordinates belonging outside it. */
+export function clipCameraFocusBounds(bounds: CameraFocusBounds, map: { width: number; height: number }): CameraFocusBounds | null {
+  const x = Math.max(0, bounds.x);
+  const y = Math.max(0, bounds.y);
+  const right = Math.min(map.width, bounds.x + bounds.width);
+  const bottom = Math.min(map.height, bounds.y + bounds.height);
+  if (right <= x || bottom <= y) return null;
+  return { x, y, width: right - x, height: bottom - y };
 }

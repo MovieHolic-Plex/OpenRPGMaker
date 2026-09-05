@@ -82,6 +82,19 @@ describe("event editor presentation", () => {
     expect(commandSummary({ kind: "setVariable", variableId: blankVariable.id, op: "=", value: 0 })).not.toContain(blankVariable.id);
   });
 
+  it("showEmote 요약은 이모트 이름과 대상을 함께 보여준다", () => {
+    expect(commandSummary({
+      kind: "showEmote",
+      target: { eventId: "town-npc" },
+      emote: "heart",
+    })).toBe("이모트 표시: 하트 / 이벤트 town-npc");
+    expect(commandSummary({
+      kind: "showEmote",
+      target: "player",
+      emote: "question",
+    })).toBe("이모트 표시: 물음표 / 주인공");
+  });
+
   it("스위치 조작 요약은 ON/OFF/전환/변수 값을 구분한다", () => {
     const project = store.getCurrent();
     const switchRecord = project.switches[0];

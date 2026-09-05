@@ -18,7 +18,7 @@ import {
 import { serializeStructureKitFile, structureKitFileName } from "@/editor/harnessSuggestion/structureKitFile";
 import { assembledKitCells, renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
 import { structureKitSize } from "@/editor/harnessSuggestion/structureKitModel";
-import type { InteriorObjectDef } from "@/editor/interiorObjectCatalog";
+import { interiorObjectById, type InteriorObjectDef } from "@/editor/interiorObjectCatalog";
 import { interiorFurnitureKits, kindsDerivedFromConceptBundles } from "@/editor/interiorRoomVocab";
 import { INTERIOR_ROOM_TILESET_ID, seedDefaultInteriorCatalog } from "@/editor/interiorRoomPipeline";
 import { makeDatabaseTabIcon } from "@/editor/panels/databaseTabIcons";
@@ -512,13 +512,18 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
                   }),
                   rowActionButton("✕", "삭제", `structure-kit-db-delete-${kit.id}`, () => {
                     const refs = conceptThingsReferencingKit(activeTileset!.id, kit.id);
+                    const kitLabel = kit.name ?? "구조물";
                     deleteStructureKit(activeTileset!.id, kit.id);
-                    toast(
-                      refs.length > 0
-                        ? `'${kit.name ?? "구조물"}" 삭제 — 개념 꾸러미 ${refs.length}개 물건('${refs[0]!.thingLabel}' 외)의 그림이 고아가 됐다`
-                        : `'${kit.name ?? "구조물"}" 삭제`,
-                      refs.length > 0 ? "error" : "info",
-                    );
+                    if (refs.length === 0) {
+                      toast(`'${kitLabel}' 삭제`, "info");
+                    } else {
+                      const labelList = refs.length === 1 ? `'${refs[0]!.thingLabel}'` : `'${refs[0]!.thingLabel}' 외 ${refs.length - 1}개`;
+                      if (interiorObjectById(kit.id)) {
+                        toast(`'${kitLabel}' 삭제 — 개념 물건 ${refs.length}개(${labelList})가 카탈로그 원본 그림을 쓴다`, "info");
+                      } else {
+                        toast(`'${kitLabel}' 삭제 — 개념 물건 ${refs.length}개(${labelList})의 그림이 없다`, "error");
+                      }
+                    }
                     setInspectorSelectedPartId(null);
                     rerender();
                     refresh(host, rerender);

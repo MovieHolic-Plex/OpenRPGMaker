@@ -50,6 +50,7 @@ import {
 } from "@/project/spatialPlacements";
 import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, StateRecord, SystemRecords, TitleBackgroundLayer, TitleIntroSettings, TitleParticleSettings, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
 import { normalizePlayResolution } from "@/project/playResolution";
+import { normalizeWorldGenRulesForStorage } from "@/project/worldGenRules";
 
 export { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 
@@ -202,6 +203,7 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     ...(system.giftSystem !== undefined ? { giftSystem: system.giftSystem === true } : {}),
     ...(typeChart ? { typeChart } : {}),
     ...(timeSystem ? { timeSystem } : {}),
+    ...(system.worldGen ? { worldGen: normalizeWorldGenRulesForStorage(system.worldGen) } : {}),
     ...(actionCombat ? { actionCombat } : {}),
     ...(Array.isArray(system.toolActions) ? { toolActions: system.toolActions } : {}),
     ...(Array.isArray(system.craftRecipes) ? { craftRecipes: system.craftRecipes } : {}),

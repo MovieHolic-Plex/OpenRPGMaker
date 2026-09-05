@@ -1,0 +1,13 @@
+{
+  "pickerHasEmote": true,
+  "count": 12,
+  "applied": {
+    "kind": "showEmote",
+    "target": {
+      "eventId": ""
+    },
+    "emote": "music",
+    "durationMs": 900
+  },
+  "errors": []
+}

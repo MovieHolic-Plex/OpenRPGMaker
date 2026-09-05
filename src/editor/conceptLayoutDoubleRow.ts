@@ -29,8 +29,9 @@ type Instance = {
 };
 
 function placeRole(place: ConceptPlaceRecord): ConceptPlaceRole {
+  // row 도면기의 하위호환과 동일. 명시한 entrance/room은 hall 라벨보다 우선한다.
   if (place.role) return place.role;
-  return /복도|통로|corridor/i.test(place.label) || place.id === "corridor" ? "walkway" : "room";
+  return /복도|통로|corridor|hall/i.test(place.label) || place.id === "corridor" ? "walkway" : "room";
 }
 
 function placeSize(place: ConceptPlaceRecord): ConceptPlaceSize {

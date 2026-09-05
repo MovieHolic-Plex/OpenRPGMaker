@@ -1,0 +1,17 @@
+{
+  "productionRenderer": true,
+  "remotePersistence": false,
+  "bootAttempts": 1,
+  "layoutFit": {
+    "textWidth": 27.3800048828125,
+    "available": 36
+  },
+  "state": {
+    "layout": "double-row",
+    "zone": "south",
+    "member": true,
+    "objectId": "kit_3fce63ea-d935-4ed1-b985-6c2a12bca728",
+    "seedPreserved": true
+  },
+  "errors": []
+}

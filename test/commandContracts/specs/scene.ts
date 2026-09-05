@@ -62,6 +62,12 @@ export const SCENE_SPECS = {
     animationId: "animation_contract",
     wait: false,
   }),
+  showEmote: nativeManifestEntry("scene", {
+    kind: "showEmote",
+    target: "player",
+    emote: "heart",
+    durationMs: 900,
+  }),
   showPicture: nativeManifestEntry("scene", {
     kind: "showPicture",
     pictureId: "picture_contract",

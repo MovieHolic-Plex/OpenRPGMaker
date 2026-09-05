@@ -302,8 +302,9 @@ describe("데이터베이스 「마을」탭 — 배치 프리셋", () => {
   function withTemplateAndPreset(): FakeElement {
     const host = renderView();
     findByTestId(host, "db-village-create")?.click();
+    // 기존 저장본의 희소 프리셋 호환성을 검사한다. 새 생성 UI는 설계서를 만든다.
+    store.update(draft => { draft.villagePresets = [{ id: "vpreset", name: "새 배치 프리셋" }]; delete draft.defaultVillagePresetId; });
     findByTestId(host, "db-village-kind-preset")?.click();
-    findByTestId(host, "db-village-create")?.click();
     return host;
   }
 
@@ -374,6 +375,7 @@ describe("데이터베이스 「마을」탭 — 배치 프리셋", () => {
       expect(findByTestId(host, `db-village-preset-template-${template.id}`), template.id).not.toBeNull();
     }
 
+    findByTestId(host, "db-village-design-tab-houses")?.click();
     toggle(findByTestId(host, "db-village-preset-template-my-house"), true);
     toggle(findByTestId(host, "db-village-preset-template-rect-small"), true);
     expect(store.getCurrent().villagePresets?.[0]?.templateIds?.sort()).toEqual(["my-house", "rect-small"]);
@@ -439,7 +441,9 @@ describe("데이터베이스 「마을」탭 — 마을 원형", () => {
     const archetype = VILLAGE_ARCHETYPES.find((entry) => entry.id === "harbor-coast")!;
     expect(records[0]).toMatchObject({ id: "harbor-coast", name: archetype.name, ...archetype.values });
     // 만든 프리셋이 곧바로 상세로 열려야 한다 — 값을 확인·수정하는 게 원형을 굽는 이유다.
+    findByTestId(host, "db-village-design-tab-mood")?.click();
     expect(findByTestId(host, "db-village-preset-name")?.value).toBe(archetype.name);
+    findByTestId(host, "db-village-design-tab-layout")?.click();
     expect(findByTestId(host, "db-village-preset-path-style")?.dataset.value).toBe("sand");
   });
 
@@ -448,6 +452,7 @@ describe("데이터베이스 「마을」탭 — 마을 원형", () => {
     findByTestId(host, "db-village-archetype-farm-rural")?.click();
     // 갤러리는 "무엇부터 만들지" 를 고르는 빈 상태 전용이다 — 상세에서는 자리를 차지하면 안 된다.
     expect(findByTestId(host, "db-village-archetypes")).toBeNull();
+    findByTestId(host, "db-village-design-tab-mood")?.click();
     const select = findByTestId(host, "db-village-archetype-source");
     expect(select?.querySelectorAll("button")).toHaveLength(VILLAGE_ARCHETYPES.length);
     expect(select?.dataset.value).toBe(VILLAGE_ARCHETYPES[0]!.id);
@@ -460,8 +465,10 @@ describe("데이터베이스 「마을」탭 — 마을 원형", () => {
   it("「값 가져오기」는 분위기만 덮고 규모는 남긴다", () => {
     const host = renderView("preset");
     findByTestId(host, "db-village-create")?.click();
-    change(findByTestId(host, "db-village-preset-house-count"), "7");
+    findByTestId(host, "db-village-design-tab-layout")?.click();
+    change(findByTestId(host, "db-village-design-count-min"), "7");
     pick(host, "db-village-preset-plaza-layout", "north");
+    findByTestId(host, "db-village-design-tab-mood")?.click();
     pick(host, "db-village-preset-ground", "snow");
 
     pick(host, "db-village-archetype-source", "mine-mountain");
@@ -509,6 +516,7 @@ describe("데이터베이스 「마을」탭 — 참조 정리", () => {
     findByTestId(host, "db-village-create")?.click();
     findByTestId(host, "db-village-kind-preset")?.click();
     findByTestId(host, "db-village-create")?.click();
+    findByTestId(host, "db-village-design-tab-houses")?.click();
     toggle(findByTestId(host, "db-village-preset-template-my-house"), true);
     toggle(findByTestId(host, "db-village-preset-template-rect-small"), true);
 
@@ -524,6 +532,7 @@ describe("데이터베이스 「마을」탭 — 참조 정리", () => {
     findByTestId(host, "db-village-create")?.click();
     findByTestId(host, "db-village-kind-preset")?.click();
     findByTestId(host, "db-village-create")?.click();
+    findByTestId(host, "db-village-design-tab-houses")?.click();
     toggle(findByTestId(host, "db-village-preset-template-my-house"), true);
 
     findByTestId(host, "db-village-kind-template")?.click();
@@ -542,5 +551,37 @@ describe("데이터베이스 「마을」탭 — 참조 정리", () => {
 
     change(findByTestId(host, "db-village-template-id"), "my-house");
     expect((store.getCurrent().villageTemplates ?? []).map((entry) => entry.id)).toEqual(ids);
+  });
+});
+
+describe("데이터베이스 마을 설계서", () => {
+  it("새 설계서의 범위·자연과 기본 참조를 같은 화면에서 편집한다", () => {
+    const host = renderView("preset");
+    findByTestId(host, "db-village-create")?.click();
+    expect(store.getCurrent().defaultVillagePresetId).toBe("vpreset");
+    findByTestId(host, "db-village-design-tab-layout")?.click();
+    change(findByTestId(host, "db-village-design-count-policy"), "range");
+    change(findByTestId(host, "db-village-design-count-max"), "10");
+    expect(store.getCurrent().villagePresets?.[0]?.design?.houseCount).toEqual({ mode: "range", min: 6, max: 10 });
+    findByTestId(host, "db-village-design-tab-nature")?.click();
+    change(findByTestId(host, "db-village-design-water-kind"), "river");
+    change(findByTestId(host, "db-village-design-water-side"), "west");
+    expect(store.getCurrent().villagePresets?.[0]?.design?.nature).toMatchObject({ water: "river", waterSide: "west" });
+    findByTestId(host, "db-village-design-default")?.click();
+    expect(store.getCurrent().defaultVillagePresetId).toBeUndefined();
+    findByTestId(host, "db-village-design-default")?.click();
+    findByTestId(host, "db-village-design-tab-mood")?.click();
+    change(findByTestId(host, "db-village-preset-id"), "my-design");
+    expect(store.getCurrent().defaultVillagePresetId).toBe("my-design");
+    findByTestId(host, "db-village-delete")?.click();
+    expect(store.getCurrent().defaultVillagePresetId).toBeUndefined();
+  });
+  it("기존 프리셋은 버튼을 눌러야 설계서가 된다", () => {
+    store.update(p => { p.villagePresets = [{ id: "legacy", name: "기존", kitMix: "blue-stone", houseCount: 4 }]; });
+    const host = renderView("preset");
+    expect(store.getCurrent().villagePresets?.[0]?.design).toBeUndefined();
+    findByTestId(host, "db-village-design-convert")?.click();
+    expect(store.getCurrent().villagePresets?.[0]).toMatchObject({ kitMix: "blue-stone", design: { revision: 1, houseCount: { mode: "fixed", min: 4, max: 4 } } });
+    expect(findByTestId(host, "db-village-design-studio")).not.toBeNull();
   });
 });

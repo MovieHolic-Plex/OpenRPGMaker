@@ -93,6 +93,7 @@ export const COMMAND_KIND_OPTIONS = [
   { value: "removeLight", label: "빛 끄기" },
   { value: "setWeather", label: "날씨 설정" },
   { value: "showAnimation", label: "애니메이션 표시" },
+  { value: "showEmote", label: "이모트 표시" },
   { value: "showPicture", label: "그림 표시" },
   { value: "erasePicture", label: "그림 지우기" },
   { value: "playAudio", label: "소리 재생" },

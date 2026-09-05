@@ -1,0 +1,190 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/villageBuilder.test.ts test/villageDesign.test.ts test/villageBoulevard.test.ts test/databaseVillageView.test.ts test/layerRouting.m1.test.ts test/eventEditorShellSurface.baseline.test.ts test/playerItemUse.test.ts test/structureKitEditorDialog.test.ts test/interiorRoomWalkabilitySeal.test.ts --maxWorkers=4
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-recover-main-20260905
+
+ ❯ test/layerRouting.m1.test.ts (20 tests | 1 failed) 10978ms
+   ✓ 레이어 독립성 — 한 레이어 편집이 다른 레이어를 침범하지 않는다 > lower에 페인트 후 upper를 페인트해도 lower는 유지된다  833ms
+   ✓ 레이어 독립성 — 한 레이어 편집이 다른 레이어를 침범하지 않는다 > 하위 지형 페인트는 기존 상위 오브젝트를 절대 덮지 않는다  326ms
+   ✓ 레이어 독립성 — 한 레이어 편집이 다른 레이어를 침범하지 않는다 > 하위 지형 페인트가 이웃 상위 수관을 재작성하지 않는다  941ms
+   ✓ 레이어 독립성 — 한 레이어 편집이 다른 레이어를 침범하지 않는다 > upper를 지워도 lower는 그대로다  394ms
+   ✓ 레이어 독립성 — 한 레이어 편집이 다른 레이어를 침범하지 않는다 > 두 레이어에 서로 다른 타일이 공존할 수 있다  673ms
+   ✓ eraseVisibleTile — 레이어별 지우개 범위 > upper가 비어 있어도 lower는 보존한다  1514ms
+   ✓ eraseVisibleTile — 레이어별 지우개 범위 > upper에 내용이 있으면 upper만 지우고 lower는 보존한다  1059ms
+   ✓ eraseVisibleTile — 레이어별 지우개 범위 > lower 선호 + lower가 점유면 기존과 동일하게 lower를 지운다  1810ms
+   ✓ eraseVisibleTile — 레이어별 지우개 범위 > 수관 아래 바닥이 비어 있으면 수관을 지운 뒤 그 칸을 지면으로 메운다  471ms
+   ✓ eraseVisibleTile — 레이어별 지우개 범위 > 수관(upper)을 지우면 밑동(lower)까지 같이 걷어 repair 복구를 막되 지면은 남긴다 114ms
+   ✓ eraseVisibleTile — 레이어별 지우개 범위 > 밑동(lower)을 지우면 수관(upper)도 같이 지우고 밑동 칸은 지면으로 되돌린다 216ms
+   ✓ eraseVisibleTile — 레이어별 지우개 범위 > 하위에 잘못 깔린 투명 소품을 지우면 구멍이 아니라 지면이 남는다  360ms
+   ✓ eraseVisibleTile — 레이어별 지우개 범위 > 덧그림 장식 아래 바닥이 비어 있으면 장식을 지운 뒤 지면을 메운다 198ms
+   ✓ eraseVisibleTile — 레이어별 지우개 범위 > 활엽수 2×2 수관 한쪽을 지우면 2×2 전체가 비워지고 밑동은 지면으로 돌아간다 145ms
+   ✓ editorState 레이어 전환 > layer를 upper로 전환해도 lower 데이터에 영향을 주지 않는다 263ms
+   ✓ editorState 레이어 전환 > event 레이어로 전환해도 lower/upper 타일은 보존된다 228ms
+   ✓ effectiveLayer — harness 라우팅 동작 > WATER(lower 고정 타일)를 upper로 요청해도 lower에 배치된다  480ms
+   ✓ effectiveLayer — harness 라우팅 동작 > FLOWERS(투명 칩)는 하위 요청에도 상위로 라우팅되어 지면을 보존한다 227ms
+   ✓ 소품(울타리)이 하위 지면을 지우지 않는다 > 잔디 위에 울타리를 칠해도 잔디(lower)가 보존된다 283ms
+   × 소품(울타리)이 하위 지면을 지우지 않는다 > 모든 울타리 타일이 지면을 보존한다 360ms
+     → expected 243 to be 303 // Object.is equality
+ ✓ test/structureKitEditorDialog.test.ts (45 tests) 19811ms
+   ✓ replaceStructureKit > 같은 id 의 킷을 통째로 갈아끼운다  2342ms
+   ✓ openStructureKitEditor > 다이얼로그를 열고 래스터·팔레트·크기 입력을 그린다  797ms
+   ✓ openStructureKitEditor > 캔버스에 pointerdown 핸들러가 실제로 붙어 있다  334ms
+   ✓ openStructureKitEditor > 팔레트에서 타일을 고르고 칸을 누르면 store 에 반영된다  459ms
+   ✓ openStructureKitEditor > 되돌리기 뒤 AI 메타를 수락하면 다시하기가 그것을 지우지 않는다  513ms
+   ✓ 편집기 크기 조절 > 줄여서 부위가 잘리면 개수를 보고한다  361ms
+   ✓ 편집기 부위 편집 > 부위 행의 ✕ 로 지우고, ✎ 로 종류 팝오버를 연다  432ms
+   ✓ AI 메타 탭 > 탭을 열면 폼이 나오고 초안은 자동 저장되지 않는다  353ms
+   ✓ AI 메타 탭 > 수락하면 폼 값이 저장되고 origin 이 user 가 된다  422ms
+   ✓ AI 메타 탭 — 반복·분류 > 반복에서 '한 채 완결'을 고르고 수락하면 repeatability 가 fixed 로 저장된다  488ms
+   ✓ AI 메타 탭 — 반복·분류 > 반복을 '미지정'으로 되돌리면 repeatability 키 자체가 사라진다  390ms
+   ✓ AI 메타 탭 — 반복·분류 > 분류에서 역할을 고르고 수락하면 role 이 저장된다  319ms
+   ✓ importStructureKits > origin 을 자동으로 user 로 올리지 않는다  349ms
+   ✓ AI 메타 초안 파싱 — 새 어휘 > 초안 프롬프트가 새 필드를 실제로 요구한다  659ms
+   ✓ AI 메타 탭 — 수정할 수 있는 축이 화면에 있다 > 증분 축·레이어·태그·테마 칸이 모두 있다  446ms
+   ✓ AI 메타 탭 — 수정할 수 있는 축이 화면에 있다 > 고친 값이 수락 뒤 store 에 남는다  339ms
+   ✓ AI 메타 탭 — 수정할 수 있는 축이 화면에 있다 > 증분 축을 골랐다 미지정으로 돌려도 기존 반복 값을 보존한다  867ms
+   ✓ AI 메타 탭 — 수정할 수 있는 축이 화면에 있다 > 증분 축과 반복 값이 함께 있으면 축을 우선하고 반복 값도 보존한다  899ms
+   ✓ AI 메타 탭 — 수정할 수 있는 축이 화면에 있다 > 비운 목록 칸은 키 자체를 지운다  1209ms
+   ✓ 칸 힌트 도구 > 도구를 잡고 칸을 누르면 가로 → 세로 → 양방향 → 없음 순으로 돈다  979ms
+   ✓ 칸 힌트 도구 > 힌트를 붙이면 목록에 축과 설명 칸이 생기고, 설명이 store 에 남는다  966ms
+   ✓ 칸 힌트 도구 > 삭제 버튼이 그 칸의 힌트만 지운다  364ms
+   ✓ 편집기 팔레트 안정성 > 도구·분류를 바꿔도 팔레트와 검색창 노드가 그대로다  520ms
+   ✓ 편집기 팔레트 안정성 > [안 쓴 타일만] 을 켜면 쓰인 타일이 숨고, 지금 잡은 붓은 남는다  504ms
+   ✓ 편집기 팔레트 안정성 > 칠하면 그 타일이 사용 표식을 얻는다  605ms
+ ✓ test/villageDesign.test.ts (12 tests) 9344ms
+   ✓ 마을 설계서 — DB 계약 > 집별 인자와 형태의 고정 재료도 설계서 외형을 우회할 수 없다  326ms
+   ✓ 마을 설계서 — DB 계약 > 설계서와 기본 참조는 저장·재로드를 통과하며 잘못된 범위는 거부된다  913ms
+   ✓ 마을 설계서 — DB 계약 > 실제 시공의 모든 집이 고정한 재료·층수를 따른다  1786ms
+   ✓ 마을 설계서 — DB 계약 > 미리보기와 같은 시드·크기의 실제 시공은 동일한 타일을 만든다  1710ms
+   ✓ 마을 설계서 — DB 계약 > 파사드의 고정값 충돌은 새 맵 생성 전에 끝난다  339ms
+   ✓ 마을 설계서 — DB 계약 > 설계서의 물과 숲이 실제 타일에 생긴다  754ms
+   ✓ 마을 설계서 — DB 계약 > 기존 맵을 재시공할 때도 설계서 기록과 범위 검사가 함께 동작한다  2365ms
+   ✓ 마을 설계서 — DB 계약 > 기존 레이어 세션은 설계서를 부분 적용하기 전에 안내하고 중단한다  508ms
+ ✓ test/playerItemUse.test.ts (10 tests) 3461ms
+   ✓ player menu item use > applies a guaranteed add-op state effect from the menu and consumes the item  509ms
+   ✓ player menu item use > replays the same partial-chance inflict outcome for the same session seed  564ms
+   ✓ player menu item use > does not advance the battle RNG for guaranteed, impossible, existing or missing states  855ms
+   ✓ player menu item use > does not consume a recovery item on a full-HP target  317ms
+   ✓ player menu item use > applies all-ally recovery to every eligible actor and consumes once  336ms
+ ✓ test/interiorRoomWalkabilitySeal.test.ts (4 tests) 397ms
+ ✓ test/villageBoulevard.test.ts (8 tests) 3003ms
+   ✓ build_village curved boulevard > keeps houses off the curved path band on an 80x80 village  2659ms
+ ✓ test/databaseVillageView.test.ts (36 tests) 71374ms
+   ✓ 데이터베이스 「마을」탭 — 뼈대 > 공용 워크스페이스 빌더를 쓰고 두 분류 칩을 낸다  1059ms
+   ✓ 데이터베이스 「마을」탭 — 뼈대 > 레코드가 없으면 빈 상태를 보여주고 삭제를 막는다  301ms
+   ✓ 데이터베이스 「마을」탭 — 집 형태 > 추가한 형태는 곧바로 규약을 통과한다  510ms
+   ✓ 데이터베이스 「마을」탭 — 집 형태 > 내장 형태 복제는 값을 굽고 시공 후보에 더해진다  604ms
+   ✓ 데이터베이스 「마을」탭 — 집 형태 > 크기·날개 편집이 프로젝트에 남고 규약 위반은 경고로 보인다  1306ms
+   ✓ 데이터베이스 「마을」탭 — 집 형태 > 날개를 더하고 박스 맞추기로 빈 줄을 없앤다  2296ms
+   ✓ 데이터베이스 「마을」탭 — 집 형태 > 열이 짧아 지붕이 안 들어가는 형태는 위반으로 잡는다  4214ms
+   ✓ 데이터베이스 「마을」탭 — 집 형태 > 빈 값 선택지가 중복되지 않는다  442ms
+   ✓ 데이터베이스 「마을」탭 — 집 형태 > 재료 킷을 「지정 안 함」으로 되돌리면 키가 사라진다  1001ms
+   ✓ 데이터베이스 「마을」탭 — 그림 > 아무것도 없으면 예시 그림부터 보여준다  445ms
+   ✓ 데이터베이스 「마을」탭 — 그림 > 시작 화면의 모양을 누르면 그 꼴로 레코드가 생긴다  549ms
+   ✓ 데이터베이스 「마을」탭 — 그림 > 상세·목록에 집 그림 캔버스가 붙는다  381ms
+   ✓ 데이터베이스 「마을」탭 — 그림 > 모양 팔레트와 내장 갤러리가 그림 카드로 뜬다  335ms
+   ✓ 데이터베이스 「마을」탭 — 그림 > 모양 카드를 누르면 값이 그 형태로 바뀐다  757ms
+   ✓ 데이터베이스 「마을」탭 — 그림 > 내장 갤러리에서 고른 형태가 규약을 통과한다  12264ms
+   ✓ 데이터베이스 「마을」탭 — 날개 격자 > 격자 조작면과 날개 상자를 낸다  1027ms
+   ✓ 데이터베이스 「마을」탭 — 날개 격자 > 숫자칸은 접힘 안에 그대로 남는다  1195ms
+   ✓ 데이터베이스 「마을」탭 — 배치 프리셋 > 프리셋 값은 전부 「지정 안 함」에서 시작한다  2464ms
+   ✓ 데이터베이스 「마을」탭 — 배치 프리셋 > 고른 값만 저장하고 되돌리면 키를 지운다  5771ms
+   ✓ 데이터베이스 「마을」탭 — 배치 프리셋 > 바닥을 고르면 저장하고 비움으로 되돌리면 키를 지운다  3116ms
+   ✓ 데이터베이스 「마을」탭 — 배치 프리셋 > 범위를 벗어난 숫자는 입력 단계에서 조여진다  3689ms
+   ✓ 데이터베이스 「마을」탭 — 배치 프리셋 > 형태 화이트리스트는 카탈로그 전체를 내주고 고른 것만 저장한다  3829ms
+   ✓ 데이터베이스 「마을」탭 — 배치 프리셋 > 「내 형태만 고르기」는 사용자 형태 id 만 넣는다  1643ms
+   ✓ 데이터베이스 「마을」탭 — 배치 프리셋 > 미리보기는 눌러야 돌고 초안에서만 시공한다  3573ms
+   ✓ 데이터베이스 「마을」탭 — 배치 프리셋 > 씨앗을 바꾸면 다시 시공하고 씨앗값을 알려준다  4804ms
+   ✓ 데이터베이스 「마을」탭 — 마을 원형 > 원형을 누르면 그 값이 든 프리셋이 생기고 선택된다  422ms
+   ✓ 데이터베이스 「마을」탭 — 마을 원형 > 프리셋이 생기면 갤러리 대신 상세의 「값 가져오기」로 옮겨간다  703ms
+   ✓ 데이터베이스 「마을」탭 — 마을 원형 > 「값 가져오기」는 분위기만 덮고 규모는 남긴다  1555ms
+   ✓ 데이터베이스 「마을」탭 — 내장 덮음 > 내장과 다른 id 면 「더함」으로 센다  533ms
+   ✓ 데이터베이스 「마을」탭 — 내장 덮음 > 내장과 같은 id 로 바꾸면 목록·요약·안내가 덮음이라고 말한다  3516ms
+   ✓ 데이터베이스 「마을」탭 — 참조 정리 > 형태를 지우면 프리셋 화이트리스트에서도 빠진다  1765ms
+   ✓ 데이터베이스 「마을」탭 — 참조 정리 > 형태 id 를 바꾸면 프리셋이 새 id 를 가리킨다  1162ms
+   ✓ 데이터베이스 「마을」탭 — 참조 정리 > 같은 id 를 두 번 쓰려 하면 되돌린다  1146ms
+   ✓ 데이터베이스 마을 설계서 > 새 설계서의 범위·자연과 기본 참조를 같은 화면에서 편집한다  2196ms
+   ✓ 데이터베이스 마을 설계서 > 기존 프리셋은 버튼을 눌러야 설계서가 된다  617ms
+ ✓ test/eventEditorShellSurface.baseline.test.ts (22 tests) 115ms
+ ✓ test/villageBuilder.test.ts (33 tests) 104649ms
+   ✓ build_village > 빈 프로젝트에서 seed만으로 50x50 마을을 완성한다  6549ms
+   ✓ build_village > pathStyle:dirt 로 흙길을 쓸 수 있다  2331ms
+   ✓ build_village > theme/housePlans 의도를 받아 집 수와 키트에 반영한다  5570ms
+   ✓ build_village > 강촌마을 쿼리는 강+숲 필수 스펙을 뽑고 맵에 수역·나무를 깐다  1241ms
+   ✓ build_village > run_village_session 이 멀티턴 체크리스트로 강촌을 시공하고 2×2 나무를 심는다  1186ms
+   ✓ build_village > run_village_pipeline 이 plan→build→spec→look 을 돌린다  1139ms
+   ✓ build_village > plan_village → build_village(planId) → critique_village 3층 흐름  2512ms
+   ✓ build_village > fences:false면 울타리를 깔지 않는다  2522ms
+   ✓ build_village > 기본 시드에서도 문 8개가 전부 온전하다 (진입로 관통 회귀)  2960ms
+   ✓ build_village > 같은 seed는 타일과 이벤트 좌표가 같고 다른 seed는 하위 타일이 달라진다  7817ms
+   ✓ build_village > NPC 그래픽을 주민형 후보에서 다양하게 순환 배정하고 같은 seed에서 고정한다  7434ms
+   ✓ build_village > 스케치가 이긴 집 배치는 격자 열에 서지 않는다  13274ms
+   ✓ build_village > 집 8채에 Object1 문 이벤트와 자식 내부 맵을 생성한다  3454ms
+   ✓ build_village > 대로·진입로가 집 footprint 내부를 침범하지 않는다  12319ms
+   ✓ build_village > interior:false면 내부 맵과 문 이벤트를 만들지 않는다  2363ms
+   ✓ build_village > 내부 맵 삭제 시 외부 문 transfer dangling 참조가 정리된다  3330ms
+   ✓ build_village > 하네싱 창문을 상위 레이어에 배치한다  3208ms
+   ✓ build_village > 기존 20x20 맵에는 한 채를 시공하고 최소 크기 미만인 19x19 맵은 거부한다  998ms
+   ✓ build_village > bounds 지정 시 기존 맵의 해당 영역 안에 광장·집·NPC를 배치한다  1126ms
+   ✓ build_village > 레지스트리에 등록되고(deprecated) runTool 경로로 실행된다  2313ms
+   ✓ build_village housePlans contract > forces housePlans[0].templateId=l and owner/program onto interiors  361ms
+   ✓ build_village housePlans contract > 파이프라인 재시도 정리가 기존 무관 맵을 보존한다 (스냅샷 와이프)  2759ms
+   ✓ build_village housePlans contract > 강+호수 테마에서 집이 물 마스크 셀 위에 배치되지 않는다  2801ms
+   ✓ build_village housePlans contract > 길·울타리·나무가 지붕 용마루 행(bbox.y-1)을 침범하지 않는다  6464ms
+   ✓ build_village housePlans contract > pathStyle:stone 은 포석(129 블록) 오토타일로 성형된 돌길을 깔고 불변식을 지킨다  4798ms
+   ✓ build_village housePlans contract > 길 시공 훅: bounds 밖으로 길이 새지 않는다 (침범 롤백 재시도)  2482ms
+   ✓ build_village housePlans contract > 문이 0개인 맵은 layoutPlan 없이도 evaluate 구조 게이트에서 떨어진다  661ms
+   ✓ exterior footprint area (wing-union) > housePlans t-hall workshop interior scale is cottage3 from union 60 not mansion bbox 80  484ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/layerRouting.m1.test.ts > 소품(울타리)이 하위 지면을 지우지 않는다 > 모든 울타리 타일이 지면을 보존한다
+AssertionError: expected 243 to be 303 // Object.is equality
+
+- Expected
++ Received
+
+- 303
++ 243
+
+ ❯ test/layerRouting.m1.test.ts:302:34
+    300|       paintTile(mapId, "lower", x, 8, fence);
+    301|       const map = currentMap();
+    302|       expect(lowerAt(map, x, 8)).toBe(TILE.DARK_GRASS);
+       |                                  ^
+    303|       expect(upperAt(map, x, 8)).toBe(fence);
+    304|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 2 unhandled errors during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: [vitest-worker]: Timeout calling "onTaskUpdate"
+ ❯ Object.onTimeoutError ../rpg-zzu/node_modules/vitest/dist/chunks/rpc.-pEldfrD.js:53:10
+ ❯ Timeout._onTimeout ../rpg-zzu/node_modules/vitest/dist/chunks/index.B521nVV-.js:59:62
+ ❯ listOnTimeout node:internal/timers:605:17
+ ❯ processTimers node:internal/timers:541:7
+
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: [vitest-worker]: Timeout calling "onTaskUpdate"
+ ❯ Object.onTimeoutError ../rpg-zzu/node_modules/vitest/dist/chunks/rpc.-pEldfrD.js:53:10
+ ❯ Timeout._onTimeout ../rpg-zzu/node_modules/vitest/dist/chunks/index.B521nVV-.js:59:62
+ ❯ listOnTimeout node:internal/timers:605:17
+ ❯ processTimers node:internal/timers:541:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  1 failed | 8 passed (9)
+      Tests  1 failed | 189 passed (190)
+     Errors  2 errors
+   Start at  17:09:30
+   Duration  142.82s (transform 74.32s, setup 0ms, collect 188.39s, tests 223.13s, environment 928ms, prepare 4.65s)
+

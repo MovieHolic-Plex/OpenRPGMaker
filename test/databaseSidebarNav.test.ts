@@ -158,6 +158,19 @@ describe("database sidebar navigation", () => {
     expect(findTab(panelRoot, "db-tab-farm-animals").textContent).toBe("동물·축사");
   });
 
+  it("counts only authored keyword rules, not builtin override rows", () => {
+    store.update((project) => {
+      project.system.worldGen = {
+        keywords: [
+          { id: "builtin-lake", label: "호수 끄기", words: ["호수"], landmarks: ["lake"], enabled: false },
+          { id: "custom-volcano", label: "화산", words: ["화산"], landmarks: ["forest"] },
+        ],
+      };
+    });
+    const panelRoot = renderPanelHost();
+    expect(findTab(panelRoot, "db-tab-world-gen").dataset.count).toBe("1");
+  });
+
   // Break caught: the new navigation entry has no aggregate count or routed view.
   it("shows the aggregate life-record count and opens its structured workspace", () => {
     store.update((project) => {

@@ -344,9 +344,10 @@ describe("side-view battle runtime", () => {
     expect(runtime.snapshot().enemies.map((enemy) => enemy.recordId)).toEqual(["enemy_slime"]);
   });
 
-  it("keeps rough fallback state behavior for empty legacy troop pages", () => {
-    // Given: a legacy troop page has no battle commands yet.
+  it("leaves enemies unchanged by empty troop event pages", () => {
+    // Given: an authored page contains no commands.
     const project = battleProject();
+    project.database.troops.find((record) => record.id === "troop_slime")!.battleEventPages = [{ id: "empty", conditions: [], span: "battle", commands: [] }];
     const enemy = project.database.enemies.find((record) => record.id === "enemy_slime");
     if (enemy) enemy.stats = { ...enemy.stats, maxHp: 9999 };
     const runtime = createBattleRuntime({
@@ -358,11 +359,11 @@ describe("side-view battle runtime", () => {
     });
     runtime.tick(1_000);
 
-    // When: the actor uses an item backed by a skill.
-    runtime.performActorCommand({ kind: "item", itemId: "item_bomb", targetEnemyId: "enemy-1" });
+    // When: an ordinary defense action evaluates the page.
+    runtime.performActorCommand({ kind: "defend" });
 
-    // Then: the runtime still surfaces a rough state effect for playable feedback.
-    expect(runtime.snapshot().enemies[0]?.stateIds).toContain("state_burn");
+    // Then: no state is invented as feedback for an empty command list.
+    expect(runtime.snapshot().enemies[0]?.stateIds).toEqual([]);
   });
 
   it("runs troop event commands once after an enemy skill turn", () => {

@@ -25,6 +25,7 @@ export type RuntimeQaOp =
   | { readonly kind: "skill" }
   | { readonly kind: "key"; readonly key: string; readonly times?: number }
   | { readonly kind: "teleport"; readonly mapId: string; readonly x: number; readonly y: number }
+  | { readonly kind: "waitForEmote"; readonly target: string; readonly frame: number; readonly timeoutMs?: number }
   | { readonly kind: "waitForRuntime"; readonly timeoutMs?: number }
   | {
       readonly kind: "waitForPosition";
@@ -113,6 +114,15 @@ export type RuntimeQaExpect = {
    */
   readonly visibleText?: Readonly<Record<string, string>>;
   readonly playerSpriteResourceNonEmpty?: boolean;
+  /** 정수리 이모트 개수 하한(__oprnEmotes 훅). */
+  readonly emoteCountAtLeast?: number;
+  /** 떠 있어야 하는 이모트 프레임 인덱스(EMOTE_KINDS 순서). */
+  readonly emoteFrames?: readonly (number | string)[];
+  /** 특정 주인에게 붙어 있어야 하는 이모트(target + EMOTE_KINDS 프레임 인덱스). */
+  readonly emoteTargets?: readonly {
+    readonly target: string;
+    readonly frame: number | string;
+  }[];
   /** Phaser 텍스처가 실제로 로드됐는지(__MISSING 플레이스홀더 검출). */
   readonly playerSpriteTextureLoaded?: boolean;
   /**
@@ -268,7 +278,16 @@ export type RuntimeQaBattleTextNode = {
   readonly clipper: string | null;
 };
 
+export type RuntimeQaEmote = {
+  readonly target: string;
+  readonly frame: string;
+  readonly x: number;
+  readonly y: number;
+  readonly alpha: number;
+};
+
 export type RuntimeQaObserved = {
+  readonly emotes?: readonly RuntimeQaEmote[] | null;
   /** 런타임 훅 설치 전(타이틀 화면 등)에는 null. */
   readonly state: RuntimeQaCompactState | null;
   /**
@@ -295,6 +314,7 @@ export type RuntimeQaObserved = {
 };
 
 export type RuntimeQaBeatReport = {
+  readonly emotes?: readonly RuntimeQaEmote[];
   readonly index: number;
   readonly id: string;
   readonly note?: string;

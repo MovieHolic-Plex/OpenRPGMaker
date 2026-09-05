@@ -74,12 +74,20 @@ export interface ConceptThingRecord {
 /** 장소의 도면 역할 — 정문을 품는 홀 / 방을 잇는 복도 / 일반 방. 생략 시 room. */
 export const CONCEPT_LAYOUT_KINDS = ["row", "double-row"] as const;
 export type ConceptLayoutKind = (typeof CONCEPT_LAYOUT_KINDS)[number];
+export const CONCEPT_LAYOUT_KIND_LABELS: Record<ConceptLayoutKind, string> = {
+  row: "한 줄",
+  "double-row": "두 줄",
+};
 export function isConceptLayoutKind(value: string): value is ConceptLayoutKind {
   return (CONCEPT_LAYOUT_KINDS as readonly string[]).includes(value);
 }
 
 export const CONCEPT_PLACE_ZONES = ["north", "south"] as const;
 export type ConceptPlaceZone = (typeof CONCEPT_PLACE_ZONES)[number];
+export const CONCEPT_PLACE_ZONE_LABELS: Record<ConceptPlaceZone, string> = {
+  north: "북쪽",
+  south: "남쪽",
+};
 export function isConceptPlaceZone(value: string): value is ConceptPlaceZone {
   return (CONCEPT_PLACE_ZONES as readonly string[]).includes(value);
 }

@@ -117,6 +117,14 @@ export interface StructureGrowthAxes {
   readonly y: boolean;
 }
 
+/** 네 축 상태를 목록과 인스펙터에서 같은 문구로 보여준다. */
+export function structureKitGrowthText(axes: StructureGrowthAxes): string {
+  if (axes.x && axes.y) return "가로·세로 증분";
+  if (axes.x) return "가로 증분";
+  if (axes.y) return "세로 증분";
+  return "한 채 완결";
+}
+
 /**
  * 증분 축 판정 — 세 층이 이 순서로 이긴다.
  *

@@ -104,6 +104,28 @@ describe("덧그림 공백 스포이트", () => {
     expect(tileAt(currentMap(mapId), "lower", 2, 2)).toBe(TILE.WATER);
   });
 
+  it("1×2 나무 수관을 공백 붓으로 지우면 밑동 구멍이 아니라 지면이 남는다", () => {
+    const project = store.getCurrent();
+    const mapId = project.startMapId;
+    const map = currentMap(mapId);
+    map.upperTiles[2 * map.width + 3] = 260;
+    map.lowerTiles[3 * map.width + 3] = 290;
+    editorState.set({
+      activePaletteStamp: null,
+      brushSize: 1,
+      currentMapId: mapId,
+      layer: "upper",
+      selectedTile: TILE.EMPTY,
+      tool: "paint",
+    });
+    const engine = createPaintEngine(mapId, project.tilesets[map.tilesetId]!);
+
+    engine.applyAtPointer({ x: 3, y: 2 } as never);
+
+    expect(tileAt(currentMap(mapId), "upper", 3, 2)).toBe(TILE.EMPTY);
+    expect(tileAt(currentMap(mapId), "lower", 3, 3)).toBe(TILE.GRASS);
+  });
+
   it("집기 도구로 덧그림 빈 칸을 찍어도 공백을 집는다", () => {
     const project = store.getCurrent();
     const mapId = project.startMapId;

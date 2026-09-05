@@ -145,6 +145,49 @@ export const INPUT_CAPTURING_SELECTOR = INPUT_CAPTURING_TEST_IDS.map((id) => `[d
 export function isInputCapturingSurfaceActive(root: { querySelector(selector: string): unknown } | null | undefined): boolean {
   return Boolean(root?.querySelector(INPUT_CAPTURING_SELECTOR));
 }
+
+// ── 텍스트 입력 컨트롤 ──
+// 글자를 받는 컨트롤(텍스트형 input·textarea·select·contentEditable)이 키 이벤트의 대상이면 그 키는
+// 게임 입력이 아니다. 편집기 테스트 플레이 창의 런타임 디버그 패널에서 실측(2026-09-03): 숫자 입력창에
+// 57 을 치면 손 슬롯 핸들러가 preventDefault 로 삼켜 값이 비었고, 방향키·w 는 캐릭터를 움직였고,
+// Escape 는 게임 메뉴를 열었다. 체크박스·라디오·버튼은 글자를 받지 않으므로 게임 키로 둔다 — 여기까지
+// 막으면 「타이틀 건너뛰기」 체크박스를 누른 뒤 Space/Enter 가 조용히 씹히는 새 함정이 생긴다.
+// 편집기 쪽 같은 규칙: src/editor/hotkeys.ts §isTextEditingElement (출하 번들이 편집기 코드를 끌어오지
+// 않도록 여기 따로 둔다).
+const NON_TEXT_INPUT_TYPES: ReadonlySet<string> = new Set([
+  "button",
+  "checkbox",
+  "color",
+  "file",
+  "hidden",
+  "image",
+  "radio",
+  "range",
+  "reset",
+  "submit",
+]);
+
+export function isTextEntryTarget(target: unknown): boolean {
+  if (!target || typeof target !== "object") return false;
+  const element = target as { tagName?: unknown; isContentEditable?: unknown; getAttribute?: unknown; type?: unknown };
+  if (typeof element.tagName !== "string") return false;
+  const tag = element.tagName.toUpperCase();
+  if (tag === "INPUT") {
+    const attrType = typeof element.getAttribute === "function" ? (element.getAttribute as (name: string) => string | null)("type") : null;
+    const rawType = attrType ?? (typeof element.type === "string" ? element.type : "");
+    return !NON_TEXT_INPUT_TYPES.has(String(rawType).toLowerCase());
+  }
+  if (tag === "TEXTAREA" || tag === "SELECT") return true;
+  if (element.isContentEditable === true) return true;
+  const editable = typeof element.getAttribute === "function" ? (element.getAttribute as (name: string) => string | null)("contenteditable") : null;
+  return editable !== null && editable !== "false";
+}
+
+/** 지금 포커스가 텍스트 입력 컨트롤에 있는가 — DOM 이 없는 환경(node 테스트)에서는 false. */
+export function isTextEntryFocused(): boolean {
+  if (typeof document === "undefined") return false;
+  return isTextEntryTarget(document.activeElement);
+}
   
 
 // ── 화면 안내 문구 ──

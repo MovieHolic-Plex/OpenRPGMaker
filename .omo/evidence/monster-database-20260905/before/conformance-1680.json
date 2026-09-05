@@ -1,0 +1,108 @@
+{
+  "enemies": {
+    "bodySize": [
+      1406,
+      802
+    ],
+    "scrollOverflow": 0,
+    "canon": true,
+    "hasListPane": true,
+    "search": true,
+    "rowCount": 29,
+    "emptyState": false,
+    "deadSpace": 0.326,
+    "detailDead": 0.36,
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "textClip": [],
+    "textClipCount": 0,
+    "nodeCount": 950,
+    "violations": []
+  },
+  "monster-species": {
+    "bodySize": [
+      1406,
+      802
+    ],
+    "scrollOverflow": 0,
+    "canon": true,
+    "hasListPane": true,
+    "search": true,
+    "rowCount": 9,
+    "emptyState": false,
+    "deadSpace": 0.482,
+    "detailDead": 0.49,
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "textClip": [],
+    "textClipCount": 0,
+    "nodeCount": 324,
+    "violations": []
+  },
+  "troops": {
+    "bodySize": [
+      1406,
+      802
+    ],
+    "scrollOverflow": 52,
+    "canon": true,
+    "hasListPane": true,
+    "search": true,
+    "rowCount": 6,
+    "emptyState": true,
+    "deadSpace": 0.526,
+    "detailDead": 0.525,
+    "clipped": [
+      {
+        "node": "div.db-troop-battle-preview-stage[db-troop-preview-stage]",
+        "overY": 10,
+        "overX": 0
+      }
+    ],
+    "clippedCount": 1,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "textClip": [],
+    "textClipCount": 0,
+    "nodeCount": 300,
+    "violations": [
+      "clipped:1"
+    ]
+  },
+  "factions": {
+    "bodySize": [
+      1406,
+      802
+    ],
+    "scrollOverflow": 0,
+    "canon": true,
+    "hasListPane": true,
+    "search": true,
+    "rowCount": 2,
+    "emptyState": false,
+    "deadSpace": 0.671,
+    "detailDead": 0.641,
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "textClip": [],
+    "textClipCount": 0,
+    "nodeCount": 160,
+    "violations": [
+      "detailDead:64%"
+    ]
+  }
+}

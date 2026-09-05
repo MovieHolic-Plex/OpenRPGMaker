@@ -1,3 +1,4 @@
+import { applyStampStructureKit } from "@/editor/tools/structureKitTools";
 import { describe, expect, it } from "vitest";
 import { createEmptyToolProject, getTool, runTool, toOpenAiTools } from "@/editor/tools";
 import { buildSystemPrompt } from "@/ai/contextBuilder";
@@ -353,6 +354,12 @@ describe("증분 축 — 세로로 무한히 이어지는 구조물", () => {
     expect(wall.cellHints).toEqual([{ dx: 0, dy: 1, growth: "vertical", note: "세로로 증분 가능" }]);
   });
 
+  it("목록과 인스펙터가 같은 세로 증분 어휘를 쓴다", () => {
+    const { context, mapId } = verticalWallProject();
+    const result = runTool(context, "list_structure_kits", { mapId });
+    expect(result.summary).toContain("성벽 기둥(kit_vwall, 1x3, 세로 증분)");
+  });
+
   it("세로 증분 킷의 growth 축을 조회로 확인한다", () => {
     const { context, mapId } = verticalWallProject();
     const before = [...context.project.maps[mapId]!.lowerTiles];
@@ -415,5 +422,21 @@ describe("제거된 구조물 스탬프 호출은 미등록으로 거부된다",
     });
     expectUnknownTool(result);
     expect(context.project.maps[mapId]!.lowerTiles).toEqual(before);
+  });
+});
+
+
+describe("human structure stamp repeat feedback", () => {
+  it.each([{}, { repeat: undefined, repeatY: undefined }])("omitted repeat arguments do not claim a clamp: %j", (args) => {
+    const { project, mapId } = projectWithDescribedKit();
+    const result = applyStampStructureKit(project, { mapId, kitId: "kit_well", origin: { x: 0, y: 0 }, ...args });
+    expect(result.summary).not.toContain("증분 축 제한");
+    expect((result.data as { repeatClamped?: string[] }).repeatClamped).toBeUndefined();
+  });
+
+  it("explicit unsupported repeats still explain both clamped axes", () => {
+    const { project, mapId } = projectWithDescribedKit();
+    const result = applyStampStructureKit(project, { mapId, kitId: "kit_well", origin: { x: 0, y: 0 }, repeat: 3, repeatY: 2 });
+    expect((result.data as { repeatClamped?: string[] }).repeatClamped).toHaveLength(2);
   });
 });

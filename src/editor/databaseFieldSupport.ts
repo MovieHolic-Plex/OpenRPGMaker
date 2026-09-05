@@ -52,6 +52,27 @@ export const DATABASE_FIELD_SUPPORT = Object.freeze([
     help: "공격·방어·정신·민첩 영구 보정을 성공한 메뉴 사용에 적용합니다.",
   },
   {
+    field: "stateEffects",
+    owner: "item",
+    support: "runtime",
+    label: "상태 변화",
+    help: "전투와 필드 둘 다 적용합니다. 부여는 확률 판정을 거치고(전투는 상태 저항까지 곱함), 해제는 걸린 상태를 지웁니다.",
+  },
+  {
+    field: "animationId",
+    owner: "item",
+    support: "runtime",
+    label: "전투 연출",
+    help: "전투에서 아이템을 사용하면 대상 위치에 지정한 전투 애니메이션을 재생합니다. 필드에서는 연출을 재생하지 않습니다.",
+  },
+  {
+    field: "careProfile",
+    owner: "item",
+    support: "runtime",
+    label: "몬스터 돌봄",
+    help: "필드 메뉴에서 파티 몬스터에게 사용해 친밀도와 경험치를 더합니다. 돌봄 아이템은 주인공 대상 효과를 갖지 않습니다.",
+  },
+  {
     field: "usageMessage",
     owner: "item",
     support: "editorOnly",

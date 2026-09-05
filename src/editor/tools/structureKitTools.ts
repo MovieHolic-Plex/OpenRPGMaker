@@ -5,6 +5,7 @@
 
 import {
   structureKitGrowthAxes,
+  structureKitGrowthText,
   structureKitLayerHome,
   structureKitRepeatable,
   structureKitSize,
@@ -118,7 +119,7 @@ const listStructureKits: ToolDefinition = {
       summary:
         entries.length === 0
           ? "등록된 구조 킷이 없습니다. 유저가 맵에 패턴을 반복해 찍고 제안 카드에서 [등록]하면 생깁니다."
-          : `구조 킷 ${entries.length}개: ${entries.map((entry) => `${entry.name}(${entry.kitId}, ${entry.width}x${entry.height}, ${entry.repeatable ? "반복" : "한 채 완결"})`).join(", ")}`,
+          : `구조 킷 ${entries.length}개: ${entries.map((entry) => `${entry.name}(${entry.kitId}, ${entry.width}x${entry.height}, ${structureKitGrowthText(entry.growth)})`).join(", ")}`,
       data: { kits: entries },
     };
   },
@@ -136,8 +137,8 @@ export function applyStampStructureKit(draft: Project, args: Record<string, unkn
   const repeat = axes.x ? requestedX : 1;
   const repeatY = axes.y ? requestedY : 1;
   const clampNotes = [
-    axes.x || requestedX === 1 ? "" : `가로 ${requestedX}회 요청 → 1회(가로 증분 불가)`,
-    axes.y || requestedY === 1 ? "" : `세로 ${requestedY}회 요청 → 1회(세로 증분 불가)`,
+    args.repeat === undefined || axes.x || requestedX === 1 ? "" : `가로 ${requestedX}회 요청 → 1회(가로 증분 불가)`,
+    args.repeatY === undefined || axes.y || requestedY === 1 ? "" : `세로 ${requestedY}회 요청 → 1회(세로 증분 불가)`,
   ].filter(Boolean);
   const size = structureKitSize(kit);
   const totalWidth = size.width * repeat;

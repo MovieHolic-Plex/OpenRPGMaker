@@ -225,31 +225,37 @@ export function eraseTilesBulk(
   const byKey = new Map<string, EraseStroke>();
   for (const s of expanded) byKey.set(`${s.layer}:${s.x},${s.y}`, s);
   const unique = [...byKey.values()];
+  const erasingLower = new Set(
+    unique.filter((stroke) => stroke.layer === "lower").map((stroke) => `${stroke.x},${stroke.y}`),
+  );
+  const writes = planEraseWrites(currentMap, tileset, unique, erasingLower);
 
-  const eraseEdits: PlannedTileEdit[] = unique.map((s) => ({
-    layer: s.layer,
-    x: s.x,
-    y: s.y,
-    tile: TILE.EMPTY,
+  const eraseEdits: PlannedTileEdit[] = writes.map((write) => ({
+    layer: write.layer,
+    x: write.x,
+    y: write.y,
+    tile: write.tile,
   }));
   const shapeAutotile = lowerEditsNeedAutotileShape(currentMap, tileset, eraseEdits, autoConnect);
 
   store.updateMap(mapId, (m) => {
     const lowerPoints: RoadPoint[] = [];
     let lowerPrevious: number | undefined;
-    for (const s of unique) {
-      const previousTile = tileAt(m, s.layer, s.x, s.y);
-      setTileSafe(m, s.layer, s.x, s.y, TILE.EMPTY);
-      if (s.layer === "lower") {
-        lowerPoints.push({ x: s.x, y: s.y });
+    let lowerNext: number | undefined;
+    for (const write of writes) {
+      const previousTile = tileAt(m, write.layer, write.x, write.y);
+      setTileSafe(m, write.layer, write.x, write.y, write.tile);
+      if (write.layer === "lower") {
+        lowerPoints.push({ x: write.x, y: write.y });
         if (lowerPrevious === undefined) lowerPrevious = previousTile;
+        lowerNext = write.tile;
       }
     }
     if (lowerPoints.length > 0 && shapeAutotile) {
       shapeTerrainAfterLowerEdit(m, tileset, {
         autoConnect: true,
         layer: "lower",
-        nextTile: TILE.EMPTY,
+        nextTile: lowerNext ?? TILE.EMPTY,
         points: lowerPoints,
         previousTile: lowerPrevious,
       });
@@ -259,8 +265,98 @@ export function eraseTilesBulk(
       canopyReplacementExemptTileIds: resolveForestCanopyReplacementExemptTileIds(current),
     });
   }, {
-    cells: unique.flatMap((s) => changedTileCellsForEdit(mapId, s.layer, [{ x: s.x, y: s.y }], shapeAutotile)),
+    cells: writes.flatMap((write) => changedTileCellsForEdit(mapId, write.layer, [{ x: write.x, y: write.y }], shapeAutotile)),
   });
+}
+
+type EraseWrite = {
+  readonly layer: TileLayer;
+  readonly x: number;
+  readonly y: number;
+  readonly tile: number;
+};
+
+/**
+ * 스프라이트(투명 칩·상위 전용 소품·나무 밑동)가 하위 슬롯을 차지한 채 EMPTY 로
+ * 지워지면 에디터 체커/플레이 검정이 드러난다. 지형(잔디·물) 지우기는 구멍을
+ * 남기고, 스프라이트 지우기는 주변 지면으로 되돌린다.
+ */
+function planEraseWrites(
+  map: GameMap,
+  tileset: TilesetDef | undefined,
+  strokes: readonly EraseStroke[],
+  erasingLower: ReadonlySet<string>,
+): readonly EraseWrite[] {
+  const writes: EraseWrite[] = strokes.map((stroke) => {
+    const previous = tileAt(map, stroke.layer, stroke.x, stroke.y);
+    const restoreGround = stroke.layer === "lower" && isSpriteOccupyingLower(tileset, previous);
+    return {
+      layer: stroke.layer,
+      x: stroke.x,
+      y: stroke.y,
+      tile: restoreGround
+        ? groundTileNear(map, tileset, stroke.x, stroke.y, erasingLower) ?? TILE.GRASS
+        : TILE.EMPTY,
+    };
+  });
+  const hasWrite = (layer: TileLayer, x: number, y: number): boolean =>
+    writes.some((write) => write.layer === layer && write.x === x && write.y === y);
+  for (const stroke of strokes) {
+    if (stroke.layer !== "upper") continue;
+    const previousUpper = tileAt(map, "upper", stroke.x, stroke.y);
+    if (previousUpper === undefined || previousUpper === TILE.EMPTY || previousUpper < 0) continue;
+    const lower = tileAt(map, "lower", stroke.x, stroke.y);
+    if (lower !== undefined && lower !== TILE.EMPTY && lower >= 0) continue;
+    if (hasWrite("lower", stroke.x, stroke.y)) continue;
+    const ground = groundTileNear(map, tileset, stroke.x, stroke.y, erasingLower);
+    if (ground === null) continue;
+    writes.push({
+      layer: "lower",
+      x: stroke.x,
+      y: stroke.y,
+      tile: ground,
+    });
+  }
+  return writes;
+}
+
+/** 하위 슬롯을 차지하면 안 되는 칩 — 밑동(하위 홈이지만 투명) + 상위 전용 소품. */
+function isSpriteOccupyingLower(tileset: TilesetDef | undefined, tile: number | undefined): boolean {
+  if (tile === undefined || tile < 0 || tile === TILE.EMPTY) return false;
+  if (isTreeTrunkTileId(tile)) return true;
+  if (!tileset) return false;
+  return tileLayerHome(tileset, tile) === "upper";
+}
+
+function groundTileNear(
+  map: GameMap,
+  tileset: TilesetDef | undefined,
+  x: number,
+  y: number,
+  skipLower: ReadonlySet<string>,
+): number | null {
+  const counts = new Map<number, number>();
+  const consider = (tx: number, ty: number): void => {
+    if (!inMap(map, tx, ty)) return;
+    if (skipLower.has(`${tx},${ty}`)) return;
+    const tile = map.lowerTiles[ty * map.width + tx];
+    if (isSpriteOccupyingLower(tileset, tile)) return;
+    if (tile === undefined || tile < 0 || tile === TILE.EMPTY) return;
+    counts.set(tile, (counts.get(tile) ?? 0) + 1);
+  };
+  for (const [dx, dy] of [[-1, 0], [1, 0], [0, -1], [0, 1]] as const) consider(x + dx, y + dy);
+  if (counts.size === 0) {
+    for (const [dx, dy] of [[-1, -1], [-1, 1], [1, -1], [1, 1]] as const) consider(x + dx, y + dy);
+  }
+  let best: number | null = null;
+  let bestCount = 0;
+  for (const [tile, count] of counts) {
+    if (count > bestCount) {
+      best = tile;
+      bestCount = count;
+    }
+  }
+  return best;
 }
 
 /**

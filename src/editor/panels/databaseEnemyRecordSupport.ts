@@ -36,15 +36,16 @@ const RATE_GRADE_LABEL: Record<ActorRateGrade, string> = {
   E: "무효",
 };
 
-export function rateField(label: string, testid: string, value: ActorRateGrade, onChange: (value: ActorRateGrade) => void): HTMLElement {
+export function rateField(label: string, testid: string, value: ActorRateGrade | undefined, onChange: (value: ActorRateGrade | undefined) => void, labels?: Readonly<Record<ActorRateGrade, string>>): HTMLElement {
   const select = el("select", { dataset: { testid } });
+  select.append(el("option", { text: "기본값 사용", attrs: { value: "" } }));
   for (const grade of ACTOR_RATE_GRADES) {
-    select.append(el("option", { text: RATE_GRADE_LABEL[grade], attrs: { value: grade } }));
+    select.append(el("option", { text: labels?.[grade] ?? RATE_GRADE_LABEL[grade], attrs: { value: grade } }));
   }
-  select.value = value;
+  select.value = value ?? "";
   select.addEventListener("change", () => {
     const next = ACTOR_RATE_GRADES.find((grade) => grade === select.value);
-    if (next) onChange(next);
+    if (next || select.value === "") onChange(next);
   });
   return el("label", { class: "db-enemy-rate-row", children: [el("span", { text: label }), select] });
 }

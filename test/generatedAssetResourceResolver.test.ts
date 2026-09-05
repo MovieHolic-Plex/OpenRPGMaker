@@ -193,3 +193,15 @@ describe("generatedAssetResourceResolver", () => {
     expect(generatedAssetPromotedPathToUrl("public/assets/generated/%2e%2e/x.png")).toBeNull();
   });
 });
+
+describe("enemy_extra 번호 → enemy-art 파일명", () => {
+  // 디스크 파일은 enemy-art-001.png … enemy-art-120.png(세 자리)다. 예전 프로젝트/픽스처의 몬스터 리소스 id 는
+  // enemy_extra_06 처럼 두 자리라서, 숫자를 그대로 붙이면 enemy-art-06.png 로 존재하지 않는 경로가 나왔다
+  // (실행형 HTML 빌드 「읽지 못한 에셋 24개」, 전투 몬스터 그림 404).
+  it("두 자리·한 자리 번호를 디스크 파일명과 같게 세 자리로 채운다", () => {
+    expect(resolveGeneratedAssetResourceUrl("generated-enemy-slime-01-enemy_extra_06")).toBe("/assets/generated/monsters/enemy-art-006.png");
+    expect(resolveGeneratedAssetResourceUrl("enemy_extra_6")).toBe("/assets/generated/monsters/enemy-art-006.png");
+    expect(resolveGeneratedAssetResourceUrl("generated-enemy-zombie-01-enemy_extra_016")).toBe("/assets/generated/monsters/enemy-art-016.png");
+    expect(resolveGeneratedAssetResourceUrl("legacy-enemy_extra_105")).toBe("/assets/generated/monsters/enemy-art-105.png");
+  });
+});

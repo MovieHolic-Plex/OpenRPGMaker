@@ -46,20 +46,27 @@ import {
   validateConceptChipId,
   CONCEPT_FLOOR_MATERIAL_LABELS,
   CONCEPT_FLOOR_MATERIALS,
+  CONCEPT_LAYOUT_KIND_LABELS,
+  CONCEPT_LAYOUT_KINDS,
   CONCEPT_PLACE_COUNT_MAX,
   CONCEPT_PLACE_LEVEL_MAX,
   CONCEPT_PLACE_ROLE_LABELS,
   CONCEPT_PLACE_ROLES,
   CONCEPT_PLACE_SIZE_LABELS,
   CONCEPT_PLACE_SIZES,
+  CONCEPT_PLACE_ZONE_LABELS,
+  CONCEPT_PLACE_ZONES,
   CONCEPT_WALL_MATERIAL_LABELS,
   CONCEPT_WALL_MATERIALS,
   isConceptFloorMaterial,
+  isConceptLayoutKind,
   isConceptPlaceRole,
   isConceptPlaceSize,
+  isConceptPlaceZone,
   isConceptWallMaterial,
 } from "@/project/types/conceptBundle";
 import { el } from "@/util/dom";
+import { toast } from "@/util/toast";
 
 interface ScratchSession {
   tilesetId: string | null;
@@ -111,15 +118,14 @@ export function renderScratchConceptTab(host: HTMLElement, rerender: () => void)
     ? bundle.facilities.find((entry) => entry.id === session.facilityId) ?? bundle.facilities[0] ?? null
     : null;
   session.facilityId = facility?.id ?? null;
-  const place = bundle
-    ? bundle.places.find((entry) => entry.id === session.placeId)
-      ?? bundle.places.find((entry) => facility?.placeIds.includes(entry.id))
-      ?? bundle.places[0]
+  const place = bundle && facility
+    ? bundle.places.find((entry) => entry.id === session.placeId && facility.placeIds.includes(entry.id))
+      ?? bundle.places.find((entry) => facility.placeIds.includes(entry.id))
       ?? null
     : null;
   session.placeId = place?.id ?? null;
-  const thing = bundle
-    ? bundle.things.find((entry) => entry.id === session.thingId)
+  const thing = bundle && facility
+    ? bundle.things.find((entry) => entry.id === session.thingId && entry.placeIds.some((id) => facility.placeIds.includes(id)))
       ?? bundle.things.find((entry) => place && entry.placeIds.includes(place.id))
       ?? null
     : null;
@@ -405,6 +411,52 @@ function renderToolbar(
   }
   wall.value = currentWall;
 
+  const layout = el("select", {
+    class: "scratch-concept-plan-select scratch-concept-layout-select",
+    attrs: { title: "도면 문법 — 한 줄은 방 줄→복도→홀, 두 줄은 객실은 복도 북쪽·날개(주방·창고)는 홀 옆" },
+    dataset: { testid: "scratch-concept-facility-layout" },
+    on: {
+      change: (event) => {
+        const next = (event.target as HTMLSelectElement).value;
+        if (isConceptLayoutKind(next)) patchFacility(tileset.id, bundle.id, facility.id, { layout: next === "row" ? undefined : next });
+        refresh(host, rerender);
+      },
+    },
+  }) as HTMLSelectElement;
+  const currentLayout = facility.layout ?? "row";
+  for (const value of CONCEPT_LAYOUT_KINDS) {
+    layout.append(el("option", { attrs: { value, ...(value === currentLayout ? { selected: "" } : {}) }, text: CONCEPT_LAYOUT_KIND_LABELS[value] }));
+  }
+  layout.value = currentLayout;
+
+  const membership = el("div", {
+    class: "scratch-concept-facility-places",
+    dataset: { testid: "scratch-concept-facility-places" },
+    children: [el("span", { class: "scratch-concept-quiet", text: "시설 장소" })],
+  });
+  for (const place of bundle.places) {
+    const on = facility.placeIds.includes(place.id);
+    membership.append(
+      el("button", {
+        class: `db-mini-btn${on ? " active" : ""}`,
+        attrs: { type: "button", "aria-pressed": String(on), title: on ? "시설에서 뺀다 — 꾸러미에는 남는다" : "시설에 넣는다" },
+        dataset: { testid: `scratch-concept-facility-place-${place.id}` },
+        text: place.label,
+        on: {
+          click: () => {
+            toggleFacilityPlace(tileset.id, bundle.id, facility.id, place.id);
+            if (session.placeId === place.id) {
+              const after = store.getCurrent().tilesets[tileset.id]?.scratchConceptBundles
+                ?.find((entry) => entry.id === bundle.id)?.facilities.find((entry) => entry.id === facility.id);
+              session.placeId = after?.placeIds[0] ?? null;
+            }
+            refresh(host, rerender);
+          },
+        },
+      }),
+    );
+  }
+
   return el("div", {
     class: "scratch-concept-toolbar",
     children: [
@@ -415,6 +467,8 @@ function renderToolbar(
       }),
       field("시설 이름", name),
       field("벽 재질", wall),
+      field("도면", layout),
+      membership,
       el("button", {
         class: "db-mini-btn",
         attrs: { type: "button" },
@@ -646,6 +700,27 @@ function renderPlacePlanRow(
   }
   level.value = String(currentLevel);
 
+  const zone = el("select", {
+    class: "scratch-concept-plan-select",
+    attrs: { title: "구역 — 두 줄 도면에서 북쪽은 복도 위 객실, 남쪽은 홀 옆 날개. 자동은 주방·창고 라벨을 남쪽으로 본다" },
+    dataset: { testid: `scratch-concept-place-zone-${place.id}` },
+    on: {
+      click: stop,
+      change: (event) => {
+        const next = (event.target as HTMLSelectElement).value;
+        if (next === "auto") patchPlace(tileset.id, bundle.id, place.id, { zone: undefined });
+        else if (isConceptPlaceZone(next)) patchPlace(tileset.id, bundle.id, place.id, { zone: next });
+        refresh(host, rerender);
+      },
+    },
+  });
+  const currentZone = place.zone;
+  zone.append(el("option", { attrs: { value: "auto", ...(currentZone === undefined ? { selected: "" } : {}) }, text: "자동" }));
+  for (const value of CONCEPT_PLACE_ZONES) {
+    zone.append(el("option", { attrs: { value, ...(value === currentZone ? { selected: "" } : {}) }, text: CONCEPT_PLACE_ZONE_LABELS[value] }));
+  }
+  zone.value = currentZone ?? "auto";
+
   return el("div", {
     class: "scratch-concept-place-plan",
     dataset: { testid: `scratch-concept-place-plan-${place.id}` },
@@ -655,6 +730,7 @@ function renderPlacePlanRow(
       el("label", { class: "scratch-concept-plan-field", children: [el("span", { text: "개수" }), count] }),
       el("label", { class: "scratch-concept-plan-field", children: [el("span", { text: "바닥" }), floor] }),
       el("label", { class: "scratch-concept-plan-field", children: [el("span", { text: "층" }), level] }),
+      el("label", { class: "scratch-concept-plan-field", children: [el("span", { text: "구역" }), zone] }),
     ],
   });
 }
@@ -693,7 +769,7 @@ function renderThingChip(
         attrs: {
           type: "button",
           title: object
-            ? "이 그림의 타일을 직접 칠한다 — 카탈로그 그림이면 사본을 만들어 이 물건에 붙이고, 타일셋 그림이면 그 그림을 바로 고친다"
+            ? "이 그림의 타일을 직접 칠한다 — 카탈로그·시드 그림이면 사본을 만들어 이 물건에 붙이고, 내가 만든 그림이면 그 그림을 바로 고친다"
             : "그림이 없어 칠할 수 없다",
           ...(object ? {} : { disabled: "" }),
         },
@@ -955,7 +1031,7 @@ function renderThingInspector(
             attrs: {
               type: "button",
               title: object
-                ? "이 그림의 타일을 직접 칠한다 — 카탈로그 그림이면 사본을 만들어 이 물건에 붙이고, 타일셋 그림이면 그 그림을 바로 고친다"
+                ? "이 그림의 타일을 직접 칠한다 — 카탈로그·시드 그림이면 사본을 만들어 이 물건에 붙이고, 내가 만든 그림이면 그 그림을 바로 고친다"
                 : "그림이 없어 칠할 수 없다 — 먼저 위 「그림」에서 골라라",
               ...(object ? {} : { disabled: "" }),
             },
@@ -969,7 +1045,7 @@ function renderThingInspector(
           }),
           ...(storedKitId(tileset, thing.objectId)
             ? []
-            : [el("span", { class: "scratch-concept-quiet", text: "카탈로그 그림은 사본을 만들어 고친다 — 원본은 그대로 둔다" })]),
+            : [el("span", { class: "scratch-concept-quiet", text: "카탈로그·시드 그림은 사본을 만들어 고친다 — 원본은 그대로 둔다" })]),
         ],
       }),
       el("p", {
@@ -1171,6 +1247,21 @@ function toggleThingPlace(tilesetId: string, bundleId: string, thingId: string, 
   }, "물건 장소");
 }
 
+function toggleFacilityPlace(tilesetId: string, bundleId: string, facilityId: string, placeId: string): void {
+  mutateBundle(tilesetId, bundleId, (bundle) => {
+    const facility = bundle.facilities.find((entry) => entry.id === facilityId);
+    if (!facility) return;
+    if (facility.placeIds.includes(placeId)) {
+      // 시설에서만 뺀다 — 꾸러미 장소·그 장소의 물건은 그대로 둔다.
+      facility.placeIds = facility.placeIds.filter((id) => id !== placeId);
+      return;
+    }
+    // 다시 넣을 때는 꾸러미 장소 순서를 따라 붙인다.
+    const wanted = new Set([...facility.placeIds, placeId]);
+    facility.placeIds = bundle.places.map((place) => place.id).filter((id) => wanted.has(id));
+  }, "시설 장소");
+}
+
 function patchBundle(tilesetId: string, bundleId: string, patch: Partial<ConceptBundleRecord>): void {
   mutateBundle(tilesetId, bundleId, (bundle) => {
     if (patch.label !== undefined) bundle.label = patch.label;
@@ -1190,6 +1281,10 @@ function patchFacility(
     if ("wall" in patch) {
       if (patch.wall) facility.wall = patch.wall;
       else delete facility.wall;
+    }
+    if ("layout" in patch) {
+      if (patch.layout) facility.layout = patch.layout;
+      else delete facility.layout;
     }
   }, "시설 수정");
 }
@@ -1223,6 +1318,10 @@ function patchPlace(
     if ("level" in patch) {
       if (patch.level !== undefined && patch.level > 1) place.level = patch.level;
       else delete place.level;
+    }
+    if ("zone" in patch) {
+      if (patch.zone) place.zone = patch.zone;
+      else delete place.zone;
     }
   }, "장소 도면");
 }
@@ -1270,15 +1369,15 @@ function removeThing(tilesetId: string, bundleId: string, thingId: string): void
   }, "물건 삭제");
 }
 
-/** 타일셋에 저장된 section 킷 id — 이 물건 그림을 직접 칠할 수 있다. 카탈로그 그림은 null. */
+/** 직접 칠할 사용자 section 킷 id. 카탈로그·interior-catalog 시드는 사본을 써야 하므로 null. */
 function storedKitId(tileset: TilesetDef, objectId: string): string | null {
   const kit = (tileset.structureKits ?? []).find((entry) => entry.id === objectId);
-  return kit?.kind === "section" ? kit.id : null;
+  return kit?.kind === "section" && kit.learnedFrom !== "interior-catalog" ? kit.id : null;
 }
 
 /**
  * 물건 그림을 칠 수 있는 타일셋 킷 id 를 확보한다 — UI 없음.
- * 저장 section 킷이면 그 id, 카탈로그면 사본을 만들어 thing.objectId 를 붙인 뒤 사본 id.
+ * 사용자 section 킷이면 그 id, 카탈로그·시드면 사본을 만들어 thing.objectId 를 붙인 뒤 사본 id.
  * 물건을 풀 수 없으면 null.
  */
 export function ensureThingKitForEdit(tilesetId: string, bundleId: string, thingId: string): string | null {
@@ -1312,6 +1411,8 @@ function paintThingGraphic(
     openStructureKitEditor(tileset.id, kitId, () => {
       refresh(host, rerender);
     });
+  }).catch(() => {
+    toast("그림 에디터를 열지 못했습니다. 다시 시도해 주세요.", "error");
   });
 }
 

@@ -95,6 +95,7 @@ Soft-confirm vocabulary, region task routing, AI visual polish, dock modes, tool
 - `author_village` pipeline ends with a placement-conflict scrub (`scrubPlacementConflicts` in `src/project/lint/layoutPlacementValidate.ts`, called from `village/builder.ts` after landscape): later stages (decor scatter, waterway/lake carving) can paint water or walls under tree canopies already in `upperTiles`, which the approval gate (`validateLayoutPlacement`) correctly rejects as `layout-prop-on-water` / `layout-tree-on-impassable`. The scrub removes exactly those upper cells with the same rule set as the gate, so a fresh `author_village` village passes first-accept without AI fix turns (verified: luna run17, T1 accepted on attempt 1).
 - `build_village` 간선은 4갈래 중 1갈래가 광장이 아니라 인접 축 간선에 T자로 붙는다 (2026-09-04): 예전엔 4갈래가 전부 광장 rect 변에 닿아 매번 같은 plus 위상(= 십자가로 보임)이 반복됐다. `villageArteryRoutes` 가 시드별 분기 갈래를 돌리고(4-cycle, [N,S,W,E]에서 +2라 정반대 축이 아님), N/S 앵커는 가장자리 1/5 폭으로 흩어 일직선 세로축을 깬다. 앵커·분기 갈래는 원본 시드에 묶고 흔들림만 재시도 시드에 맡겨 layoutPlan.roadAnchors와 exitRoads 게이트가 어긋나지 않는다. 4변 출구는 유지되므로 `exitRoads=4` 게이트는 그대로 통과한다. Tests: `test/villageCrossRoad.test.ts`.
 - `build_village`는 집을 찍기 전에 스케치 프리패스를 먼저 돌린다 (2026-09-04): `build_village`가 `buildHouses` 전에 `sketchHouseSites`를 뽑고, 스케치 후보를 분수 슬롯·격자보다 먼저 시도한다. 사이트 간격은 8폭+마진(10). 격자는 폴백이다. `villageArteryRoutes`는 다리당 내부 경유점 하나를 더 넣되 `host[1]` T-join과 4변 출구는 그대로 둔다. Tests: `test/villageSketch.test.ts`.
+- `build_village` 대형 맵 대로 골격은 이제 곡선이다 (2026-09-05): `villageBoulevardPath`가 시드 고정 경유점으로 동서·남북 곡선을 그리고, 예약과 시공은 `boulevardCells` 한 칸 함수를 같이 쓴다. Tests: `test/villageBoulevard.test.ts`.
 
 ## Project-wide quality evaluation
 
@@ -183,3 +184,7 @@ id 슬롯은 남긴다**(`def.name = ""`). id 가 지워지지 않으므로 `com
   선택지 질문/문구·숫자 입력 안내·여관 인사/질문·killPlayer 메시지·엔딩 제목/본문 (중첩 fork/choices/loop 포함,
   `commandBranches` 순회) 금지어 검사 — 자가수정 루프가 고친다. 비노출 필드(label 이름 등)는 검사하지 않는다.
 - 셋 다 빈 캐논이면 블록도 검증도 없이 기존과 동일. 테스트: 각 파일의 "worldCanon 강제" describe.
+
+## 마을 설계서 (2026-09-05)
+
+author_village와 buildVillageDomain이 DB 설계서의 고정값·집 수 범위·집 재료/층수 호환성을 시공 전에 검사한다. 기본 설계서가 있으면 ID·집 수 생략이 가능하다. 상세 계약과 경계는 [마을 설계서](village-design.md).

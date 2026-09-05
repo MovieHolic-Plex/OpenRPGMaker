@@ -1,0 +1,16 @@
+
+> rpg-zzu@0.1.0 gates
+> node scripts/verify-gates.mjs --only typecheck --json
+
+{
+  "ranAt": "2026-09-05T08:19:44.728Z",
+  "cwd": "/home/main/z-project/rpg-zzu-recover-main-20260905",
+  "typecheck": {
+    "name": "typecheck:app",
+    "exitCode": 0,
+    "errorCount": 0,
+    "files": {}
+  },
+  "baseline": "/home/main/z-project/rpg-zzu-recover-main-20260905/.omo/gates-baseline.json",
+  "regressions": []
+}

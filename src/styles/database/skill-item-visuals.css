@@ -205,11 +205,19 @@
   min-width: 0;
 }
 
-.database-modal-backdrop .db-skill-state-effects {
+.database-modal-backdrop .db-skill-state-effects,
+.database-modal-backdrop .db-item-state-effects {
   gap: 6px;
 }
 
-.database-modal-backdrop .db-skill-state-effects > .db-skill-state-effect-add {
+/* 아이템 탭은 같은 행 문법을 쓴다 — 컬렉션만 다르고 컬럼/간격 규칙은 공유한다. */
+.database-modal-backdrop .db-item-state-effects {
+  display: grid;
+  min-width: 0;
+}
+
+.database-modal-backdrop .db-skill-state-effects > .db-skill-state-effect-add,
+.database-modal-backdrop .db-item-state-effects > .db-item-state-effect-add {
   justify-self: start;
   margin-top: 2px;
 }
@@ -403,14 +411,16 @@
 }
 
 .db-skill-animation-preview-empty,
-.db-skill-state-effect-empty {
+.db-skill-state-effect-empty,
+.db-item-state-effect-empty {
   color: var(--db-studio-text-3);
   font-size: 12px;
   line-height: 1.35;
 }
 
 /* 상태 변화 행: 라벨+컨트롤 쌍을 한 줄에 정렬. grid 트랙 강제 대신 flex 로 자연 폭 유지. */
-.db-skill-state-effect-row {
+.db-skill-state-effect-row,
+.db-item-state-effect-row {
   display: flex;
   flex-wrap: wrap;
   gap: 8px 12px;
@@ -419,7 +429,8 @@
   border-bottom: 1px dashed var(--border-subtle);
 }
 
-.db-skill-state-effect-row .db-field {
+.db-skill-state-effect-row .db-field,
+.db-item-state-effect-row .db-field {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -428,19 +439,23 @@
   min-width: 0;
 }
 
-.db-skill-state-effect-row .db-field > span {
+.db-skill-state-effect-row .db-field > span,
+.db-item-state-effect-row .db-field > span {
   flex: 0 0 auto;
   white-space: nowrap;
 }
 
-.db-skill-state-effect-row select {
+.db-skill-state-effect-row select,
+.db-item-state-effect-row select {
   min-width: 96px;
 }
 
-.db-skill-state-effect-row input[type="number"] {
+.db-skill-state-effect-row input[type="number"],
+.db-item-state-effect-row input[type="number"] {
   width: 72px;
 }
 
-.db-skill-state-effect-row .db-skill-state-effect-delete {
+.db-skill-state-effect-row .db-skill-state-effect-delete,
+.db-item-state-effect-row .db-item-state-effect-delete {
   margin-left: auto;
 }

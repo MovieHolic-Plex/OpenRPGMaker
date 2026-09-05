@@ -41,7 +41,8 @@ export interface FocusEditorRegionOptions {
  */
 export function focusEditorRegion(region: EditorFocusRegion, options: FocusEditorRegionOptions = {}): boolean {
   const map = store.getCurrent().maps[region.mapId];
-  if (!map) return false;
+  if (!map || map.width <= 0 || map.height <= 0
+    || ![map.width, map.height, region.x, region.y, region.w, region.h].every(Number.isFinite)) return false;
   if (!selectEditorMap(region.mapId, { clearEventSelection: false })) return false;
 
   const width = Math.max(1, Math.trunc(region.w));

@@ -178,24 +178,6 @@ export function renderRecordTab(host: HTMLElement, collection: DatabaseCollectio
   renderDetail(selected?.id);
   const studioClass = actorStudioActive ? " db-actor-studio-workspace" : "";
   const workspace = el("div", { class: `db-record-workspace oprn-record-workspace oprn-record-${collection}${studioClass}`, children: [listPane, detailPane] });
-  if (collection === "enemies") {
-    // 몬스터(적) 탭과 종족 탭의 역할 구분 안내. height:100% 워크스페이스가 배너에 밀리지 않도록
-    // 셸(auto + 1fr)로 감싼다.
-    host.append(
-      el("div", {
-        class: "db-record-intro-shell",
-        children: [
-          el("p", {
-            class: "db-record-intro",
-            dataset: { testid: "db-enemies-intro" },
-            text: "이 탭은 전투에 등장하는 적·야생 몬스터의 스탯과 행동을 정의합니다. 잡아서 키우는 몬스터의 종족값·레벨업 스킬·진화는 [종족] 탭에서 설정합니다.",
-          }),
-          workspace,
-        ],
-      })
-    );
-    return;
-  }
   host.append(workspace);
 }
 
@@ -835,7 +817,7 @@ function recordForm(
       );
       return form;
     case "enemies":
-      renderEnemyRecordForm(form, store.getCurrent().database.enemies.find((entry) => entry.id === record.id) ?? store.getCurrent().database.enemies[0], rerender);
+      renderEnemyRecordForm(form, store.getCurrent().database.enemies.find((entry) => entry.id === record.id) ?? store.getCurrent().database.enemies[0], rerender, onRename);
       return form;
     case "troops":
       renderTroopRecordForm(form, store.getCurrent().database.troops.find((entry) => entry.id === record.id) ?? store.getCurrent().database.troops[0], rerender);

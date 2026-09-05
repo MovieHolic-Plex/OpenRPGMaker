@@ -1,3 +1,5 @@
+import { friendshipDeltaEmote } from "@/project/emotes";
+import { showSceneEmote } from "@/player/playSceneEmotes";
 import {
   clearAudioState,
   erasePictureState,
@@ -104,6 +106,7 @@ async function runTalkPath(
   if (trigger.kind !== "action") return;
   const result = trySocialTalk(scene.session, event);
   if (!result.ok) return;
+  showSceneEmote(scene, event.id, friendshipDeltaEmote(result.delta));
   scene.syncRuntimeState();
   const dialogue = dialogueUi(scene);
   if (!dialogue) return;
@@ -479,6 +482,14 @@ async function consumeBlockingStep(
       }
       return resumeAfterSurface(scene, interpreter);
     }
+    case "showEmote":
+      showSceneEmote(
+        scene,
+        step.target === "player" ? "player" : step.target.eventId || currentEventId || "",
+        step.emote,
+        step.durationMs,
+      );
+      return resumeAfterSurface(scene, interpreter);
     case "playMovie": {
       const played = playMovieOverlay(scene, step);
       if (step.wait) {

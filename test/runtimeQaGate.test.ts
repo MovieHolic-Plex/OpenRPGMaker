@@ -10,6 +10,14 @@ const observed = {
 };
 
 describe("evaluateExpect", () => {
+  it("emote expectations require a visible sprite on the requested target", () => {
+    const expected = { emoteTargets: [{ target: "npc", frame: 0 }] };
+    expect(evaluateExpect(expected, { ...observed, emotes: [{ target: "npc", frame: "0", alpha: 1 }] })).toEqual([]);
+    expect(evaluateExpect(expected, { ...observed, emotes: [{ target: "npc", frame: "0", alpha: 0 }] })).not.toEqual([]);
+    expect(evaluateExpect(expected, observed)).not.toEqual([]);
+    expect(evaluateExpect(expected, { ...observed, emotes: [{ target: "player", frame: "0", alpha: 1 }] })).not.toEqual([]);
+  });
+
   it("맵 ID 가 다르면 실패 사유를 낸다", () => {
     const failures = evaluateExpect({ mapId: "map_dungeon" }, observed);
 

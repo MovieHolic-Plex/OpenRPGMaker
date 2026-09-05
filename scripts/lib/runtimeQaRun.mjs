@@ -148,6 +148,13 @@ async function waitForRuntimePredicate(page, predicate, argument, timeoutMs = 30
 
 async function applyOp(page, op, runState) {
   switch (op.kind) {
+    case "waitForEmote":
+      await page.waitForFunction(
+        ({ target, frame }) => window.__oprnEmotes?.().some((emote) =>
+          emote.target === target && emote.frame === String(frame) && emote.alpha >= 0.9),
+        { target: op.target, frame: op.frame }, { timeout: op.timeoutMs ?? 30_000 },
+      );
+      return;
     case "waitForRuntime":
       await waitForRuntimePredicate(page, (state) => Boolean(state.currentMapId), null, op.timeoutMs);
       return;
@@ -436,6 +443,7 @@ async function readObserved(page, { auditBattleTextNodes = false, watchedEventId
       ),
       playerSpriteResourceId: sprite ? sprite.resourceId : null,
       playerSpriteTextureKey: sprite ? sprite.textureKey : null,
+      emotes: window.__oprnEmotes ? window.__oprnEmotes() : null,
       audioObserved: Array.isArray(window.__oprnAudioObserved) ? [...window.__oprnAudioObserved] : null,
       battlers: window.__oprnReadBattlerGeometry ? window.__oprnReadBattlerGeometry() : null,
     };
@@ -469,6 +477,7 @@ async function readShadowGeometry(page) {
         scrollY: camera.scrollY,
         zoom: camera.zoom,
       },
+
     };
   });
 }
@@ -657,6 +666,8 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
       state: observed.state,
       // 배치 근거는 리포트에 남긴다 — PNG 를 열지 않고도 수치로 판정할 수 있어야 한다.
       battlers: observed.battlers ?? undefined,
+      ...((beat.expect?.emoteCountAtLeast != null || beat.expect?.emoteFrames || beat.expect?.emoteTargets)
+        ? { emotes: observed.emotes ?? [] } : {}),
       // 발자국 사각은 단정한 비트에만 싣는다. 안 쓰는 비트에 빈 객체를 남기면 매니페스트가
       // "사각을 봤다" 처럼 읽힌다.
       ...(Object.keys(observed.events ?? {}).length > 0 ? { events: observed.events } : {}),

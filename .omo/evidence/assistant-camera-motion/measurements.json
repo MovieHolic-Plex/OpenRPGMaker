@@ -1,0 +1,725 @@
+{
+  "smooth": {
+    "before": {
+      "scrollX": 233,
+      "scrollY": 251,
+      "width": 1134,
+      "height": 777,
+      "zoom": 4,
+      "view": {
+        "x": 658,
+        "y": 543,
+        "width": 284,
+        "height": 194
+      },
+      "mapId": "camera-qa-a"
+    },
+    "immediate": {
+      "scrollX": 233,
+      "scrollY": 251,
+      "width": 1134,
+      "height": 777,
+      "zoom": 4,
+      "view": {
+        "x": 658,
+        "y": 543,
+        "width": 284,
+        "height": 194
+      },
+      "mapId": "camera-qa-a"
+    },
+    "frames": [
+      {
+        "time": 538.8000000119209,
+        "scrollX": 233,
+        "scrollY": 251,
+        "width": 1134,
+        "height": 777,
+        "zoom": 3.9892641607517207,
+        "view": {
+          "x": 658,
+          "y": 542,
+          "width": 284,
+          "height": 195
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 739.5,
+        "scrollX": 236,
+        "scrollY": 253,
+        "width": 1134,
+        "height": 777,
+        "zoom": 3.9579691389534304,
+        "view": {
+          "x": 660,
+          "y": 544,
+          "width": 287,
+          "height": 196
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 1301,
+        "scrollX": 240,
+        "scrollY": 257,
+        "width": 1134,
+        "height": 777,
+        "zoom": 3.9076945618461614,
+        "view": {
+          "x": 662,
+          "y": 546,
+          "width": 290,
+          "height": 199
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 1451.8999999761581,
+        "scrollX": 246,
+        "scrollY": 262,
+        "width": 1134,
+        "height": 777,
+        "zoom": 3.8402474582717843,
+        "view": {
+          "x": 666,
+          "y": 550,
+          "width": 295,
+          "height": 202
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 1695.699999988079,
+        "scrollX": 253,
+        "scrollY": 268,
+        "width": 1134,
+        "height": 777,
+        "zoom": 3.757595245139222,
+        "view": {
+          "x": 669,
+          "y": 553,
+          "width": 302,
+          "height": 207
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 1877.1000000238419,
+        "scrollX": 262,
+        "scrollY": 275,
+        "width": 1134,
+        "height": 777,
+        "zoom": 3.6618012329800966,
+        "view": {
+          "x": 674,
+          "y": 558,
+          "width": 310,
+          "height": 212
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 2106.5,
+        "scrollX": 272,
+        "scrollY": 283,
+        "width": 1134,
+        "height": 777,
+        "zoom": 3.554964855269759,
+        "view": {
+          "x": 680,
+          "y": 562,
+          "width": 319,
+          "height": 219
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 2347.100000023842,
+        "scrollX": 283,
+        "scrollY": 293,
+        "width": 1134,
+        "height": 777,
+        "zoom": 3.4391682842100235,
+        "view": {
+          "x": 685,
+          "y": 569,
+          "width": 330,
+          "height": 226
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 2629.600000023842,
+        "scrollX": 295,
+        "scrollY": 303,
+        "width": 1134,
+        "height": 777,
+        "zoom": 3.316430552272299,
+        "view": {
+          "x": 691,
+          "y": 575,
+          "width": 342,
+          "height": 234
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 2901.899999976158,
+        "scrollX": 308,
+        "scrollY": 314,
+        "width": 1134,
+        "height": 777,
+        "zoom": 3.1886697873539385,
+        "view": {
+          "x": 697,
+          "y": 581,
+          "width": 356,
+          "height": 244
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 3140.600000023842,
+        "scrollX": 322,
+        "scrollY": 325,
+        "width": 1134,
+        "height": 777,
+        "zoom": 3.057673714750084,
+        "view": {
+          "x": 704,
+          "y": 587,
+          "width": 371,
+          "height": 254
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 3261.5,
+        "scrollX": 337,
+        "scrollY": 338,
+        "width": 1134,
+        "height": 777,
+        "zoom": 2.9250781974688103,
+        "view": {
+          "x": 710,
+          "y": 594,
+          "width": 388,
+          "height": 266
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 3484.699999988079,
+        "scrollX": 353,
+        "scrollY": 351,
+        "width": 1134,
+        "height": 777,
+        "zoom": 2.7923532858468056,
+        "view": {
+          "x": 717,
+          "y": 601,
+          "width": 406,
+          "height": 278
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 3673.300000011921,
+        "scrollX": 369,
+        "scrollY": 364,
+        "width": 1134,
+        "height": 777,
+        "zoom": 2.660796029161376,
+        "view": {
+          "x": 723,
+          "y": 607,
+          "width": 426,
+          "height": 292
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 3846.800000011921,
+        "scrollX": 386,
+        "scrollY": 378,
+        "width": 1134,
+        "height": 777,
+        "zoom": 2.5315291616935407,
+        "view": {
+          "x": 729,
+          "y": 613,
+          "width": 448,
+          "height": 307
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 3959.800000011921,
+        "scrollX": 403,
+        "scrollY": 392,
+        "width": 1134,
+        "height": 777,
+        "zoom": 2.4055047052252494,
+        "view": {
+          "x": 735,
+          "y": 619,
+          "width": 471,
+          "height": 323
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 4137.699999988079,
+        "scrollX": 420,
+        "scrollY": 407,
+        "width": 1134,
+        "height": 777,
+        "zoom": 2.283511518515339,
+        "view": {
+          "x": 739,
+          "y": 626,
+          "width": 497,
+          "height": 340
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 4331.600000023842,
+        "scrollX": 438,
+        "scrollY": 422,
+        "width": 1134,
+        "height": 777,
+        "zoom": 2.1661858599860713,
+        "view": {
+          "x": 743,
+          "y": 631,
+          "width": 524,
+          "height": 359
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 4458.699999988079,
+        "scrollX": 456,
+        "scrollY": 437,
+        "width": 1134,
+        "height": 777,
+        "zoom": 2.0540241006659032,
+        "view": {
+          "x": 747,
+          "y": 637,
+          "width": 552,
+          "height": 378
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 4631.100000023842,
+        "scrollX": 473,
+        "scrollY": 451,
+        "width": 1134,
+        "height": 777,
+        "zoom": 1.9473968191041302,
+        "view": {
+          "x": 749,
+          "y": 640,
+          "width": 582,
+          "height": 399
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 4832.699999988079,
+        "scrollX": 491,
+        "scrollY": 466,
+        "width": 1134,
+        "height": 777,
+        "zoom": 1.8465636185187364,
+        "view": {
+          "x": 751,
+          "y": 644,
+          "width": 614,
+          "height": 421
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 5069.600000023842,
+        "scrollX": 509,
+        "scrollY": 481,
+        "width": 1134,
+        "height": 777,
+        "zoom": 1.751688120496394,
+        "view": {
+          "x": 753,
+          "y": 648,
+          "width": 647,
+          "height": 444
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 5315.199999988079,
+        "scrollX": 526,
+        "scrollY": 496,
+        "width": 1134,
+        "height": 777,
+        "zoom": 1.6628527025165156,
+        "view": {
+          "x": 752,
+          "y": 651,
+          "width": 682,
+          "height": 467
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 5476.100000023842,
+        "scrollX": 543,
+        "scrollY": 510,
+        "width": 1134,
+        "height": 777,
+        "zoom": 1.5800726535277532,
+        "view": {
+          "x": 751,
+          "y": 653,
+          "width": 718,
+          "height": 492
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 5655.300000011921,
+        "scrollX": 560,
+        "scrollY": 524,
+        "width": 1134,
+        "height": 777,
+        "zoom": 1.503309519467643,
+        "view": {
+          "x": 750,
+          "y": 654,
+          "width": 754,
+          "height": 517
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 5842,
+        "scrollX": 576,
+        "scrollY": 537,
+        "width": 1134,
+        "height": 777,
+        "zoom": 1.432483497082628,
+        "view": {
+          "x": 747,
+          "y": 655,
+          "width": 792,
+          "height": 542
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 6032,
+        "scrollX": 592,
+        "scrollY": 550,
+        "width": 1134,
+        "height": 777,
+        "zoom": 1.367484808939933,
+        "view": {
+          "x": 745,
+          "y": 655,
+          "width": 829,
+          "height": 568
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 6241.899999976158,
+        "scrollX": 607,
+        "scrollY": 563,
+        "width": 1134,
+        "height": 777,
+        "zoom": 1.3081840553176665,
+        "view": {
+          "x": 741,
+          "y": 655,
+          "width": 867,
+          "height": 594
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 6435.699999988079,
+        "scrollX": 621,
+        "scrollY": 574,
+        "width": 1134,
+        "height": 777,
+        "zoom": 1.2544415906167972,
+        "view": {
+          "x": 736,
+          "y": 653,
+          "width": 904,
+          "height": 619
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 6664.399999976158,
+        "scrollX": 634,
+        "scrollY": 585,
+        "width": 1134,
+        "height": 777,
+        "zoom": 1.206116014478079,
+        "view": {
+          "x": 731,
+          "y": 652,
+          "width": 940,
+          "height": 644
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 6913.600000023842,
+        "scrollX": 646,
+        "scrollY": 595,
+        "width": 1134,
+        "height": 777,
+        "zoom": 1.1630719026937055,
+        "view": {
+          "x": 726,
+          "y": 650,
+          "width": 975,
+          "height": 668
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 7144.899999976158,
+        "scrollX": 657,
+        "scrollY": 605,
+        "width": 1134,
+        "height": 777,
+        "zoom": 1.1251869323182013,
+        "view": {
+          "x": 720,
+          "y": 648,
+          "width": 1008,
+          "height": 691
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 7357.699999988079,
+        "scrollX": 667,
+        "scrollY": 613,
+        "width": 1134,
+        "height": 777,
+        "zoom": 1.0923585813380332,
+        "view": {
+          "x": 715,
+          "y": 646,
+          "width": 1038,
+          "height": 711
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 7549.600000023842,
+        "scrollX": 676,
+        "scrollY": 620,
+        "width": 1134,
+        "height": 777,
+        "zoom": 1.0645106082605225,
+        "view": {
+          "x": 711,
+          "y": 644,
+          "width": 1065,
+          "height": 730
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 7728.399999976158,
+        "scrollX": 683,
+        "scrollY": 626,
+        "width": 1134,
+        "height": 777,
+        "zoom": 1.041599543639854,
+        "view": {
+          "x": 706,
+          "y": 642,
+          "width": 1089,
+          "height": 746
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 7965.699999988079,
+        "scrollX": 689,
+        "scrollY": 631,
+        "width": 1134,
+        "height": 777,
+        "zoom": 1.0236214567676523,
+        "view": {
+          "x": 702,
+          "y": 640,
+          "width": 1108,
+          "height": 759
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 8179.899999976158,
+        "scrollX": 693,
+        "scrollY": 635,
+        "width": 1134,
+        "height": 777,
+        "zoom": 1.0106192998406458,
+        "view": {
+          "x": 699,
+          "y": 639,
+          "width": 1122,
+          "height": 769
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 8463,
+        "scrollX": 696,
+        "scrollY": 637,
+        "width": 1134,
+        "height": 777,
+        "zoom": 1.0026911828386555,
+        "view": {
+          "x": 698,
+          "y": 638,
+          "width": 1131,
+          "height": 775
+        },
+        "mapId": "camera-qa-a"
+      },
+      {
+        "time": 8703.600000023842,
+        "scrollX": 697,
+        "scrollY": 638,
+        "width": 1134,
+        "height": 777,
+        "zoom": 1,
+        "view": {
+          "x": 697,
+          "y": 638,
+          "width": 1134,
+          "height": 777
+        },
+        "mapId": "camera-qa-a"
+      }
+    ],
+    "final": {
+      "scrollX": 697,
+      "scrollY": 638,
+      "width": 1134,
+      "height": 777,
+      "zoom": 1,
+      "view": {
+        "x": 697,
+        "y": 638,
+        "width": 1134,
+        "height": 777
+      },
+      "mapId": "camera-qa-a"
+    },
+    "area": {
+      "canvas": {
+        "x": 306,
+        "y": 123,
+        "width": 1134,
+        "height": 777
+      },
+      "unoccluded": {
+        "x": 306,
+        "y": 123,
+        "width": 1134,
+        "height": 660
+      },
+      "worldView": {
+        "x": 697,
+        "y": 638,
+        "width": 1134,
+        "height": 777
+      },
+      "zoom": 1
+    },
+    "viewport": {
+      "mapId": "camera-qa-a",
+      "centerX": 79,
+      "centerY": 60,
+      "x": 71,
+      "y": 52,
+      "w": 16,
+      "h": 16,
+      "viewX": 43,
+      "viewY": 39,
+      "viewW": 57,
+      "viewH": 41
+    }
+  },
+  "switched": {
+    "before": {
+      "scrollX": -327,
+      "scrollY": -197,
+      "width": 1134,
+      "height": 777,
+      "zoom": 1
+    },
+    "after": {
+      "scrollX": -327,
+      "scrollY": -197,
+      "width": 1134,
+      "height": 777,
+      "zoom": 1
+    },
+    "viewport": {
+      "mapId": "camera-qa-b",
+      "centerX": 15,
+      "centerY": 8,
+      "x": 7,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "viewX": 0,
+      "viewY": 0,
+      "viewW": 30,
+      "viewH": 24
+    }
+  },
+  "stopped": {
+    "scrollX": -97,
+    "scrollY": -5,
+    "width": 1134,
+    "height": 777,
+    "zoom": 1
+  },
+  "reduced": {
+    "canvas": {
+      "x": 306,
+      "y": 123,
+      "width": 1134,
+      "height": 777
+    },
+    "unoccluded": {
+      "x": 306,
+      "y": 123,
+      "width": 1134,
+      "height": 660
+    },
+    "worldView": {
+      "x": -399,
+      "y": -162,
+      "width": 1134,
+      "height": 777
+    },
+    "zoom": 1
+  },
+  "errors": []
+}

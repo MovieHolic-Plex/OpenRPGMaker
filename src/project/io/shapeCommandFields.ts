@@ -1,3 +1,4 @@
+import { isEmoteKind } from "@/project/emotes";
 import { ProjectFormatError } from "./errors";
 import { commandKinds, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
 import { validateLightSource } from "./shapeLightingFields";
@@ -310,6 +311,11 @@ function validateCommandShape(label: string, value: unknown): void {
       requireString(`${label}.animationId`, command.animationId);
       if (command.wait !== undefined) requireBoolean(`${label}.wait`, command.wait);
       return;
+    case "showEmote":
+      validateEmoteTarget(`${label}.target`, command.target);
+      requireEmoteKind(`${label}.emote`, command.emote);
+      if (command.durationMs !== undefined) requireNumber(`${label}.durationMs`, command.durationMs);
+      return;
     case "playMovie":
       requireString(`${label}.resourceId`, command.resourceId);
       if (command.wait !== undefined) requireBoolean(`${label}.wait`, command.wait);
@@ -456,6 +462,18 @@ function validateShowAnimationTarget(label: string, value: unknown): void {
   }
   requireNumber(`${label}.x`, target.x);
   requireNumber(`${label}.y`, target.y);
+}
+
+function validateEmoteTarget(label: string, value: unknown): void {
+  if (value === "player") return;
+  const target = requireRecord(label, value);
+  requireString(`${label}.eventId`, target.eventId);
+}
+
+function requireEmoteKind(label: string, value: unknown): void {
+  if (!isEmoteKind(requireString(label, value))) {
+    throw new ProjectFormatError(`${label}가 잘못되었습니다.`);
+  }
 }
 
 function requireCutsceneControlMode(label: string, value: unknown): void {

@@ -413,6 +413,62 @@ export function resolveWorldGenRules(raw: WorldGenRules | undefined): ResolvedWo
   };
 }
 
+function hasOwn(value: object, key: PropertyKey): boolean {
+  return Object.prototype.hasOwnProperty.call(value, key);
+}
+
+/**
+ * 저장용 희소 정규화. 저자가 실제로 쓴 키만 보존하고, 생략된 값에 현재 기본값을 채우지 않는다.
+ * 기본값을 펼쳐 저장하면 이후 기본값이 바뀌어도 기존 프로젝트만 옛 값에 고정되므로 금지한다.
+ */
+export function normalizeWorldGenRulesForStorage(raw: WorldGenRules): WorldGenRules {
+  const resolved = resolveWorldGenRules(raw);
+  const water = raw.water && typeof raw.water === "object"
+    ? Object.fromEntries(
+        (Object.keys(DEFAULT_WORLD_GEN_WATER) as (keyof WorldGenWaterRules)[])
+          .filter((key) => hasOwn(raw.water!, key))
+          .map((key) => [key, resolved.water[key]]),
+      ) as WorldGenWaterRules
+    : undefined;
+  const forest = raw.forest && typeof raw.forest === "object"
+    ? Object.fromEntries(
+        (Object.keys(DEFAULT_WORLD_GEN_FOREST) as (keyof WorldGenForestRules)[])
+          .filter((key) => hasOwn(raw.forest!, key))
+          .map((key) => [key, resolved.forest[key]]),
+      ) as WorldGenForestRules
+    : undefined;
+  const road = raw.road && typeof raw.road === "object"
+    ? Object.fromEntries(
+        (Object.keys(DEFAULT_WORLD_GEN_ROAD) as (keyof WorldGenRoadRules)[])
+          .filter((key) => hasOwn(raw.road!, key))
+          .map((key) => [key, resolved.road[key]]),
+      ) as WorldGenRoadRules
+    : undefined;
+  const keywords = Array.isArray(raw.keywords)
+    ? raw.keywords.flatMap((entry) => {
+        const rule = normalizeKeywordRule(entry);
+        if (!rule) return [];
+        return [{
+          id: rule.id,
+          label: rule.label,
+          words: [...rule.words],
+          ...(rule.exceptWords ? { exceptWords: [...rule.exceptWords] } : {}),
+          landmarks: [...rule.landmarks],
+          ...(hasOwn(entry, "enabled") ? { enabled: rule.enabled !== false } : {}),
+          ...(hasOwn(entry, "builtin") ? { builtin: rule.builtin === true } : {}),
+        }];
+      })
+    : undefined;
+  return {
+    ...(water ? { water } : {}),
+    ...(forest ? { forest } : {}),
+    ...(road ? { road } : {}),
+    ...(keywords ? { keywords } : {}),
+    ...(hasOwn(raw, "useBuiltinKeywords") ? { useBuiltinKeywords: raw.useBuiltinKeywords !== false } : {}),
+    ...(typeof raw.presetId === "string" && raw.presetId.trim() ? { presetId: raw.presetId.trim() } : {}),
+  };
+}
+
 /** 낱말 규칙 발동 — 프롬프트 → 랜드마크 집합. 정규식이 아니라 부분 일치다. */
 export function matchWorldGenKeywords(
   query: string,

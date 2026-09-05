@@ -321,7 +321,9 @@ export function resolveGeneratedAssetResourceUrl(resourceId: string, manifest?: 
     if (direct) return direct;
     const numberedDefaultEnemy = resourceId.match(/(?:^|-)enemy_extra_(\d+)$/);
     if (numberedDefaultEnemy) {
-      return `/assets/generated/monsters/enemy-art-${numberedDefaultEnemy[1]}.png`;
+      // 디스크 파일은 enemy-art-001 … 120(세 자리)다. 예전 프로젝트의 enemy_extra_06 같은 두 자리 id 를
+      // 그대로 붙이면 없는 경로가 되어 전투 몬스터 그림이 404 였다(실행형 HTML 빌드가 24개를 못 읽었다).
+      return `/assets/generated/monsters/enemy-art-${numberedDefaultEnemy[1].padStart(3, "0")}.png`;
     }
     if (resourceId.includes("meadow")) return "/assets/generated/monsters/meadow_green_slime.jpg";
     if (resourceId.includes("slime")) return "/assets/generated/monsters/classic_blue_slime.jpg";

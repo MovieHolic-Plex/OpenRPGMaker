@@ -222,7 +222,7 @@ function balancePanel(record: TroopRecord): HTMLElement {
     const rewards = normalizeEnemyRecord(enemy).rewards;
     exp += rewards.exp;
     gold += rewards.gold;
-    if (rewards.dropItemId) dropItemIds.add(rewards.dropItemId);
+    if (rewards.dropItemId && rewards.dropRatePercent > 0) dropItemIds.add(rewards.dropItemId);
   }
 
   // 롤업은 타일 세 장으로 나눈다. 예전엔 "총 경험치 5 / 총 돈 4 / 드롭 후보 1종" 한 줄
@@ -264,7 +264,7 @@ function balancePanel(record: TroopRecord): HTMLElement {
               n: 10,
               seed: 12345,
             });
-            result.textContent = `승률 ${Math.round(outcome.winRate * 100)}% · 평균 ${outcome.avgTurns.toFixed(1)}턴 · 잔여 HP ${Math.round(outcome.avgHpRemaining)}`;
+            result.textContent = `10회 표본 · 승률 ${Math.round(outcome.winRate * 100)}% · 평균 ${outcome.avgTurns.toFixed(1)}턴 · 잔여 HP ${Math.round(outcome.avgHpRemaining)}`;
           } catch (error) {
             result.textContent = `추정 불가: ${error instanceof Error ? error.message : String(error)}`;
           }
@@ -528,7 +528,7 @@ function troopBattlePreview(record: TroopRecord, selectedIndex: number, rerender
 
 function previewHint(record: TroopRecord, skinId: string): string {
   if (record.autoAlign) return `현재 전투 스킨(${skinId})의 자동 진형으로 싸웁니다.`;
-  return `현재 전투 스킨(${skinId}) 기준 미리보기 — 수동 좌표는 측면 스킨에서 좌측 진형(x>150 재배치)으로, 정면 스킨에서 행 전체 오프셋으로 반영됩니다.`;
+  return `수동 배치 · ${skinId} 스킨의 실제 표시 위치입니다.`;
 }
 
 function legendChip(className: string, text: string): HTMLElement {
@@ -554,8 +554,8 @@ function partyMarkers(skinId: BattleSkinId): HTMLElement[] {
       dataset: { testid: `db-troop-preview-party-marker-${index + 1}` },
       text: String(index + 1),
     });
-    marker.style.left = `${(Math.max(0, Math.min(320, seat.x)) / 320) * 100}%`;
-    marker.style.top = `${(Math.max(0, Math.min(160, seat.y)) / 160) * 100}%`;
+    marker.style.setProperty("--troop-marker-x", `${(Math.max(0, Math.min(320, seat.x)) / 320) * 100}%`);
+    marker.style.setProperty("--troop-marker-y", `${(Math.max(0, Math.min(160, seat.y)) / 160) * 100}%`);
     marker.title = "아군 진형 위치(읽기 전용)";
     return marker;
   });
@@ -691,11 +691,13 @@ function enemyList(record: TroopRecord, selectedIndex: number, selectedEnemyId: 
 // ---------------------------------------------------------------------------
 
 function activeSlotsField(record: TroopRecord, rerender: () => void): HTMLElement {
-  const field = numberField("아군 참전 인원", "db-field-troop-active-slots", record.activeSlots ?? 0, (activeSlots) => {
+  const field = numberField("아군 인원 (0=기본)", "db-field-troop-active-slots", record.activeSlots ?? 0, (activeSlots) => {
     updateDatabaseRecord("troops", record.id, { activeSlots: optionalPositiveInteger(activeSlots) });
     rerender();
   });
-  field.title = "이 적 그룹과 싸울 때 동시에 참전할 아군 수입니다(적 수가 아닙니다). 0 이면 제한 없음.";
+  const system = store.getCurrent().system;
+  field.title = `동시 참전할 아군 수입니다. 0이면 시스템 설정 사용: ${system.activeSlots ?? (system.battleModel === "gen1" ? 1 : "파티 전원")}.`;
+  field.append(el("small", { class: "db-ws-usage", text: record.activeSlots ? `${record.activeSlots}명 지정` : `기본: ${system.activeSlots ?? (system.battleModel === "gen1" ? 1 : "파티 전원")}` }));
   return field;
 }
 
