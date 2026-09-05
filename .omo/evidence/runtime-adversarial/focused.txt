@@ -1,0 +1,23 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/playerMenuItemTargets.test.ts test/playerItemUse.test.ts test/itemRuntimeUsability.test.ts test/playerStatusMenu.test.ts test/playerLoadPanel.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-quiet-cloud-ad4d
+
+ ✓ test/playerItemUse.test.ts (10 tests) 1146ms
+   ✓ player menu item use > replays the same partial-chance inflict outcome for the same session seed  318ms
+ ✓ test/itemRuntimeUsability.test.ts (3 tests) 1367ms
+   ✓ default item runtime usability > uses every field or always item through the real menu authority  684ms
+   ✓ default item runtime usability > 기본 농기구 세 개로 경작, 물주기, 채굴 경로를 실행한다  331ms
+   ✓ default item runtime usability > lands a real effect and consumes one copy for every battle item  349ms
+ ✓ test/playerMenuItemTargets.test.ts (7 tests) 1397ms
+   ✓ item menu targets agree with executable effects > allows healStateIds cures at full HP/MP  488ms
+ ✓ test/playerLoadPanel.test.ts (12 tests) 848ms
+ ✓ test/playerStatusMenu.test.ts (17 tests) 1247ms
+
+ Test Files  5 passed (5)
+      Tests  49 passed (49)
+   Start at  18:56:33
+   Duration  18.06s (transform 17.25s, setup 0ms, collect 66.62s, tests 6.01s, environment 2ms, prepare 1.94s)
+

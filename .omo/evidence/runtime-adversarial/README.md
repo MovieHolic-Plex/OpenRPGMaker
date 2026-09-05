@@ -17,12 +17,15 @@ The shipping `player.html` path was exercised through the dedicated runtime QA s
 - [Load before](before-load.png) / [load after](after-load.png): the same 960×720 viewport. The after image also stresses long map names.
 - [State target before](before-state-target.png): every full-HP actor was unavailable despite an applicable state effect.
 - [Effects after](after-effects.png): one buff and one seed used through keyboard target selection; the browser test verifies their effects in the saved and reloaded session.
+- [Corrupt/incompatible save scrolling](load-errors-scroll.png): keyboard selection reaches the last slot while the header and Back action remain inside the stage.
 
 ## Verification
 
 - Focused unit suites: **49 passed**, including seven new regressions that all failed before the fix.
 - Runtime menu browser regressions: **3 passed in Firefox**. Real keyboard navigation verifies deliberate item consumption, state/seed effects, save → load → save persistence, title confirmation, and load geometry at 640×480, 960×720 and 1280×800.
+- Broader shipping runtime suite: **12 passed in Firefox** (`smoke`, `dialogue`, hit/critical battle flashes, dialogue nameplate geometry, instrumentation boundary, pointer exclusion on dialogue/shop/name entry/ending/battle).
+- The corrupt/incompatible save scroll stress case passed separately: all error rows remain in a scrolling list, the third slot is fully visible when selected, and Escape returns to title.
 - `npm run typecheck:app`: exit 0. CSS gates: exit 0.
-- Broader runtime and full repository gate results are recorded after the final run below.
+- Full repository gate results are recorded after the final run below. An initial full run received SIGTERM before emitting a report; the post-merge run limits Vitest to eight workers using its existing environment options.
 
 Chromium manual play produced the before screenshots and exposed the input defects. The initial broad Chromium run passed hit/critical-flash checks but repeatedly lost module requests to host-level `ERR_NETWORK_CHANGED`; those boot timeouts are not evidence of game logic failures. Firefox is used for the repeatable browser checks, even where the default Playwright project label says `chromium`. The old `_enemy-anchor-probe` also fails on intentional idle sprite motion because it demands identical image rectangles; it does not establish an anchor regression in this change.
