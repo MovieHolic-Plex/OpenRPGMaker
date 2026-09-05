@@ -256,6 +256,16 @@ export interface TurnResult {
   workPlan?: WorkPlan;
   /** 이 사용자 목표가 태운 토큰·경과·과정. 채팅에는 토큰 줄만, 로그에는 전부. */
   recap?: RunRecap;
+  /**
+   * 이 턴에 **마일스톤으로 이미 저장소에 적용된** 쓰기 툴콜. `proposedCalls` 와 서로 배타적이다:
+   * 마일스톤 적용은 `turnProposals` 를 비우므로(maybeAutoApplyMilestone) 적용된 몫은
+   * `proposedCalls` 에서 사라진다.
+   *
+   * 왜 노출하는가: 턴 끝 정산(완성도 린트·"변경 없음" 배너·상태줄)이 `proposedCalls` 만 보면
+   * 마일스톤으로 다 지은 턴을 **0-변경 턴으로 오판**한다. 소비자는 판정에는 두 배열의 합집합을,
+   * 재적용에는 `proposedCalls` 만 써야 한다.
+   */
+  appliedCalls?: ProposedCall[];
 }
 
 // 감사 로그 항목(Phase 1 헤드리스 러너로 리플레이 가능한 시퀀스).
@@ -831,6 +841,15 @@ export class AssistantSession {
   private lastRejectedSpecFingerprint: string | null = null;
   // 이번 턴에 누적된 제안 — 오류 후 재시도(retryLastTurn)에서도 이어진다(결함 ⑥).
   private turnProposals = new Map<string, ProposedCall>();
+  /**
+   * 이 턴에 마일스톤으로 저장소에 적용을 끝낸 쓰기 툴콜 원장.
+   *
+   * `maybeAutoApplyMilestone` 이 `turnProposals` 를 비우기 때문에, 이 원장이 없으면 턴 끝의
+   * 어떤 소비자도 "이 턴이 무엇을 지었는지" 를 알 수 없다. 청사진 정산은 이미
+   * `commitAgentBlueprintProgress()` 로 같은 구멍을 막고 있었고(aiTurnRunner), 검수·완성도
+   * 린트 경로만 막히지 않은 상태였다.
+   */
+  private turnAppliedMilestoneCalls: ProposedCall[] = [];
   /** place_props 등 산포 중복 호출 억제 — 같은 인자로 이미 성공한 쓰기는 재실행하지 않는다. */
   private turnWriteDedupe = new Map<string, ToolResult>();
   private turnEscalatedToolNames: string[] = [];
@@ -1528,6 +1547,7 @@ export class AssistantSession {
     this.specRejections = 0;
     this.lastRejectedSpecFingerprint = null;
     this.turnProposals = new Map();
+    this.turnAppliedMilestoneCalls = [];
     this.turnWriteDedupe = new Map();
     this.turnToolStartedCount = 0;
     this.turnEscalatedToolNames = [];
@@ -1626,7 +1646,7 @@ export class AssistantSession {
 
     try {
       const result = await this.runTurnLoop(onEvent, signal);
-      return this.withWorkPlanResult(result);
+      return this.withTurnLedger(this.withWorkPlanResult(result));
     } finally {
       this.removeOrchestrationMessages();
     }
@@ -2281,6 +2301,10 @@ export class AssistantSession {
     // 주의: 새 Map 으로 교체하면 runTurnLoop 가 잡아 둔 proposedByKey 참조가 stale 되어
     // 같은 턴의 후속 라운드 쓰기가 제안에서 사라진다(다중 마일스톤 자동 적용 누락) —
     // 제자리 clear 로 참조를 보존한다.
+    //
+    // clear 전에 원장에 남긴다: 이 호출들은 **저장소에 들어갔다**. 검수 단계와 패널의 완성도
+    // 린트가 `turnProposals` 만 보면 여기서 지운 몫이 "변경 없음" 으로 뒤집힌다.
+    this.turnAppliedMilestoneCalls.push(...calls);
     this.turnProposals.clear();
     this.rebaseProject(applied.applied);
   }
@@ -2459,6 +2483,17 @@ export class AssistantSession {
     }
   }
 
+  /**
+   * 마일스톤으로 이미 적용된 호출을 턴 결과에 싣는다. 모든 반환 경로가 지나는 한 자리다.
+   *
+   * 이게 없으면 패널(aiTurnRunner)은 `proposedCalls` 만 보고 마일스톤로 다 지은 턴을
+   * "변경 없음(0건)" 으로 보고하고, 밑그림 이행 여부도 지지 않은 것으로 판정한다.
+   */
+  private withTurnLedger(result: TurnResult): TurnResult {
+    if (this.turnAppliedMilestoneCalls.length === 0) return result;
+    return { ...result, appliedCalls: [...this.turnAppliedMilestoneCalls] };
+  }
+
   private withWorkPlanResult(result: TurnResult): TurnResult {
     if (!this.workPlan) return result;
     const hitCap =
@@ -2488,7 +2523,7 @@ export class AssistantSession {
     const usageBefore = this.usageTotals;
     const auditFrom = this.audit.length;
     try {
-      const result = await this.runTurnLoop(onEvent, signal);
+      const result = this.withTurnLedger(await this.runTurnLoop(onEvent, signal));
       return this.finishRunRecap(result, startedAt, usageBefore, auditFrom, onEvent);
     } finally {
       this.removeOrchestrationMessages();
@@ -3035,7 +3070,18 @@ export class AssistantSession {
     return null;
   }
 
-  private buildReviewPrompt(calls: readonly ProposedCall[], repairAlreadyUsed: boolean): { prompt: string; missingWarnings: string[] } {
+  /**
+   * 이 턴이 실제로 만든 쓰기 전체 — 마일스톤으로 적용을 끝낸 몫 + 아직 적용 전인 제안.
+   *
+   * 판정(완성도 린트·diff 요약·밑그림 이행)은 반드시 이 합집합을 봐야 한다. 적용(재실행)은
+   * `proposedCalls` 만 봐야 한다 — 원장의 호출은 이미 저장소에 들어가 있다.
+   */
+  private turnWriteLedger(pending: readonly ProposedCall[]): ProposedCall[] {
+    return [...this.turnAppliedMilestoneCalls, ...pending];
+  }
+
+  private buildReviewPrompt(pending: readonly ProposedCall[], repairAlreadyUsed: boolean): { prompt: string; missingWarnings: string[] } {
+    const calls = this.turnWriteLedger(pending);
     const lintWarnings = proposalCompletenessWarnings({
       requestText: this.currentTurnInstruction,
       intent: this.turnIntent,

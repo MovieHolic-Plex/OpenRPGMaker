@@ -468,15 +468,16 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         ghostPreviewUpdater.flush();
       }
       // 정산은 아래 적용 분기가 끝난 뒤에 한다 — 오류로 끝난 턴도 제안이 남아 있으면 적용된다.
-      // 질문·계획 턴은 변경이 없는 것이 정상이다 — 「미이행」 린트는 지시 턴에만 의미가 있다.
+      // Count applied milestones for accounting; only proposedCalls may be replayed.
       const changeExpectedByMode = (runOpts?.composerMode ?? "do") === "do";
+      const turnWrites = [...(result.appliedCalls ?? []), ...result.proposedCalls];
       const completenessWarnings = result.stoppedReason === "error" || !changeExpectedByMode
         ? []
         : proposalCompletenessWarnings({
             requestText,
             assistantText: result.assistantText,
-            buildSpec: completenessSpecForProposal(confirmedBuildSpecThisTurn, activeSpecAtTurnStart, result.proposedCalls, requestText),
-            calls: result.proposedCalls,
+            buildSpec: completenessSpecForProposal(confirmedBuildSpecThisTurn, activeSpecAtTurnStart, turnWrites, requestText),
+            calls: turnWrites,
       });
       attachCompletenessWarnings(result.proposedCalls, completenessWarnings);
       streamedBubbles.forEach((bubble) => {
@@ -522,13 +523,20 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       } else {
         // 쓰기 제안이 0건이면 적용할 것이 없다 — 진행 표시만 남으면 거짓이 된다.
         settleBlueprintForTurnEnd(null);
-        deps.noteNoChanges(result, completenessWarnings);
-        if (result.stoppedReason !== "error") {
-          const silenced = result.assistantText ? ` — ${result.assistantText.slice(0, 80)}` : "";
-          const emptyLabel = completenessWarnings.length > 0 ? `변경 없음(린트 경고 ${completenessWarnings.length}건)` : `변경 없음(0건)${silenced ? " · 되묻기/재시도 필요" : ""}`;
-          deps.surface.setStatus(emptyLabel);
+        // 단, 마일스톤으로 이미 들어간 쓰기가 있으면 이 턴은 "변경 없음" 이 아니다.
+        // 그 턴에 되묻기 배너를 띄우면 사용자가 방금 지어진 마을을 보면서 "변경 없음" 을 읽는다.
+        if (turnWrites.length > 0) {
+          if (completenessWarnings.length > 0) deps.surface.appendBubble("system", completenessWarnings.join("\n"));
+          deps.surface.setStatus(result.stoppedReason === "error" ? "오류" : "대기");
         } else {
-          deps.surface.setStatus("오류");
+          deps.noteNoChanges(result, completenessWarnings);
+          if (result.stoppedReason !== "error") {
+            const silenced = result.assistantText ? ` — ${result.assistantText.slice(0, 80)}` : "";
+            const emptyLabel = completenessWarnings.length > 0 ? `변경 없음(린트 경고 ${completenessWarnings.length}건)` : `변경 없음(0건)${silenced ? " · 되묻기/재시도 필요" : ""}`;
+            deps.surface.setStatus(emptyLabel);
+          } else {
+            deps.surface.setStatus("오류");
+          }
         }
       }
       if (result.assistantText) {
@@ -542,7 +550,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       // 끝난 뒤의 질문·조회 턴) 그대로 두면 오해만 남는다.
       const activeSpec = session.getActiveSpec();
       const planVisible = activeSpec !== null && agentBlueprintForMap(getAgentBlueprintState(), activeSpec.mapId).length > 0;
-      if (activeSpec && planVisible && result.proposedCalls.length === 0 && completenessWarnings.length === 0 && result.stoppedReason !== "error") {
+      if (activeSpec && planVisible && turnWrites.length === 0 && completenessWarnings.length === 0 && result.stoppedReason !== "error") {
         deps.surface.setStatus(`밑그림 확정 — 에셋 ${activeSpec.assets.length}개`);
       }
       if (result.error) appendErrorWithRetry(result.error, session, requestText);
