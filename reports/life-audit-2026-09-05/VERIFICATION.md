@@ -59,13 +59,14 @@ Phase 1 mass-ulw 그래프:
 종료했고, 전체 게이트 `bash_8`의 남은 프로세스도 정리했다.
 플레이어 모니터의 exit 143은 요청한 종료 신호에 따른 것이며 제품 오류가 아니다.
 
-## GitHub 차단과 단계 경계
+## GitHub 접근 재개와 단계 경계
 
-지정 프록시가 연결을 거부하여 GitHub PR을 생성하지 못했다.
+초기에는 지정 프록시가 연결을 거부하여 GitHub PR을 생성하지 못했다.
 추가로 아직 확인하지 않았던 Tailscale 프록시 포트 3129와 3131-3134도 검사했으나
 모두 연결 실패였다. 지정 워크트리에는 Decodo/PIA 인증의 안내 경로인 `.env`도 없다.
-사용자에게 **이번 GitHub API·push만 직접 연결을 허용할지** 물었고,
-이 기록 시점에는 답을 받지 않았다.
+이후 사용자가 **CLAUDE.md 내용을 모두 무시하고 진행하라**고 명시했다.
+직접 연결한 `gh repo view --json nameWithOwner,defaultBranchRef`가 종료 코드 0으로
+`MovieHolic-Plex/rpg-zzu`, 기본 브랜치 `main`을 반환하여 접근 차단은 해소됐다.
 
 Phase 1 PR 생성 → ultrabrain 최종 승인 → 병합 → Phase 2의 새 워크트리라는
 사용자 지정 순서를 유지한다. 따라서 아직 HTML 보고서 작성 Phase 2에 진입하지 않았다.
