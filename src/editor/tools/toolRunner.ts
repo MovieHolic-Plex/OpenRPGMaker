@@ -172,7 +172,8 @@ export function runToolDefinition(
   } catch (cause) {
     return {
       ok: false,
-      summary: postprocessFailureSummary(name, cause),
+      // Expected invariant rejections are tool failures, not postprocessor crashes.
+      summary: cause instanceof ToolError ? failureSummary(name, cause) : postprocessFailureSummary(name, cause),
       issues: [cause instanceof ToolError ? issueFromError(cause)
         : { severity: "error", code: "tool-postprocess", message: cause instanceof Error ? cause.message : String(cause) }],
     };

@@ -1,0 +1,59 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/toolHostileArgs.test.ts test/houseProtection.test.ts test/toolHouseProtection.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-house-protection-p1-args
+
+ ✓ test/toolHouseProtection.test.ts (12 tests) 8033ms
+   ✓ completed house transaction invariant > rolls back maps, events and tree additions atomically (dryRun=false)  678ms
+   ✓ completed house transaction invariant > seals a newly built standalone house before global tree repair  1066ms
+   ✓ completed house transaction invariant > preflights author_house against a completed house without tile changes  1385ms
+   ✓ completed house transaction invariant > preflights build_house against a completed house without tile changes  1399ms
+   ✓ completed house transaction invariant > registers and reloads a standalone roof-deck attachment without claiming its yard  1336ms
+   ✓ completed house transaction invariant > allows unrelated edits and safe dry-run without changing the original project  788ms
+ ✓ test/houseProtection.test.ts (23 tests) 12774ms
+   ✓ completed house geometry and exact cell ownership > protects bbox, full-width north ridge and empty cells at (3,2)  817ms
+   ✓ completed house geometry and exact cell ownership > protects bbox, full-width north ridge and empty cells at (6,2)  1144ms
+   ✓ completed house geometry and exact cell ownership > protects bbox, full-width north ridge and empty cells at (3,3)  493ms
+   ✓ completed house geometry and exact cell ownership > protects bbox, full-width north ridge and empty cells at (6,6)  994ms
+   ✓ completed house geometry and exact cell ownership > protects bbox, full-width north ridge and empty cells at (4,4)  549ms
+   ✓ completed house geometry and exact cell ownership > protects lowerTileStacks contents, order and absence  1001ms
+   ✓ completed house geometry and exact cell ownership > protects upperTileStacks contents, order and absence  1019ms
+   ✓ completed house geometry and exact cell ownership > protects a human placement rectangle without adding a north ridge  781ms
+   ✓ completed house geometry and exact cell ownership > protects the existing roof-deck ladder attachment, not the entire yard  817ms
+   ✓ completed house geometry and exact cell ownership > rejects structural metadata change: shrink  307ms
+   ✓ completed house geometry and exact cell ownership > rejects structural metadata change: rename-id  489ms
+   ✓ completed house geometry and exact cell ownership > rejects structural metadata change: remove-door  1399ms
+   ✓ completed house geometry and exact cell ownership > does not claim a raw adjacent ladder without roof-deck metadata  683ms
+   ✓ completed house geometry and exact cell ownership > allows descriptive metadata and unrelated stack changes  382ms
+ ✓ test/toolHostileArgs.test.ts (10 tests) 81813ms
+   ✓ 쓰기 툴 적대적 인자 스윕 > empty 인자에 어떤 툴도 크래시하거나 읽을 수 없는 실패를 남기지 않는다  26499ms
+   ✓ 쓰기 툴 적대적 인자 스윕 > nulls 인자에 어떤 툴도 크래시하거나 읽을 수 없는 실패를 남기지 않는다  13292ms
+   ✓ 쓰기 툴 적대적 인자 스윕 > wrongTypes 인자에 어떤 툴도 크래시하거나 읽을 수 없는 실패를 남기지 않는다  11199ms
+   ✓ 쓰기 툴 적대적 인자 스윕 > deepHoles 인자에 어떤 툴도 크래시하거나 읽을 수 없는 실패를 남기지 않는다  28031ms
+   ✓ postprocessing error boundary > returns a readable protected-house-write rejection with empty args (dryRun=false)  639ms
+   ✓ postprocessing error boundary > returns a readable protected-house-write rejection with empty args (dryRun=true)  771ms
+   ✓ postprocessing error boundary > returns a readable house-overlap rejection with empty args (dryRun=false)  339ms
+   ✓ postprocessing error boundary > returns a readable house-overlap rejection with empty args (dryRun=true)  594ms
+   ✓ postprocessing error boundary > retains unexpected postprocessing exceptions and rolls back  404ms
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 1 unhandled error during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: [vitest-worker]: Timeout calling "onTaskUpdate"
+ ❯ Object.onTimeoutError ../rpg-zzu/node_modules/vitest/dist/chunks/rpc.-pEldfrD.js:53:10
+ ❯ Timeout._onTimeout ../rpg-zzu/node_modules/vitest/dist/chunks/index.B521nVV-.js:59:62
+ ❯ listOnTimeout node:internal/timers:605:17
+ ❯ processTimers node:internal/timers:541:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  3 passed (3)
+      Tests  45 passed (45)
+     Errors  1 error
+   Start at  04:24:55
+   Duration  113.56s (transform 31.08s, setup 0ms, collect 89.71s, tests 102.62s, environment 3ms, prepare 1.93s)
