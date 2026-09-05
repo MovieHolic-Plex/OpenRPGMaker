@@ -6,6 +6,19 @@ Read this before editing editor-facing behavior. Identifies which workflow owns 
 
 ## Pre-edit routing
 
+### Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
+
+- `basicLeftRail.ts` now owns a **288px persistent beginner palette**: labeled tools, direct layers, visible `oprn-tool-undo`, selected tile and search, then the shared scrolling grid. `basic-rail-toggle-tiles` focuses the grid; it is not a visibility toggle. Tile activation preserves the sheet and uses the existing authored-layer/paint/pen/stamp-reset rules. Event mode replaces the tile body with its explanation/creation CTA; returning to a tile layer restores it.
+- Only Maps remains a nonmodal flyout (`basic-rail-toggle-maps`). Pin, outside dismissal, Escape and opener-focus restoration remain. Its width is clamped against the new panel width. `paletteRail` still pins the tiles dock host; no persistence migration or workspace key changes are required.
+- CSS `--basic-rail-width` owns the 288px geometry; `editor.ts` has the matching pre-layout fallback and still derives `--editor-left-safe` from measured width. The supported 1024px viewport trades 216px of the former narrow rail's canvas for persistent materials; browser acceptance must retain at least the existing 520px canvas minimum, not claim increased canvas area.
+- Standard retains daily tools plus labeled More. Expert's `advancedSidebarControls` flag adds direct labeled inspector/rule-audit/history dropdowns via existing `tileToolbarMenus.ts` renderers. Expert More retains copy/paste/brush sizes but never duplicates those three actions or their IDs. Direct dropdowns use the existing viewport anchoring and return Escape focus to their own trigger. Mode changes dismiss open menus.
+- Shared `makeGridPalette`/`makeCustomPalette`, source column geometry, tile selection, paint engine and history are unchanged. Beginner undo calls `undoMapEdit` and refreshes on `MAP_EDIT_HISTORY_EVENT`; no separate history stack. Tool/layer/panel groups and the tile grid each retain one roving tab stop.
+- New/modified chrome uses existing tokens and SVG icons. Touched selected-tile/tileset-name, auto-connect and map-menu targets have a 24px minimum; new labeled utility controls use 32px. Standard/expert sheet and map-height allocation remain owned by the existing layout.
+- The wrapping toolbar uses `flex: 1 1 0` for its daily-tool group so More stays beside it rather than consuming another row. `fitMapTreeHeight` derives a minimum from measured map chrome plus up to 108px of list content; the preferred tile-sheet reserve cannot starve a multi-map list when expert controls add height. The adversarial E2E preserves this minimum and subscribes to resize/layout events before changing the viewport.
+- Regression seam: `test/sidebarModeWorkflow.test.ts` exercises actual DOM renderers, editor state, custom atlas cells, map flyout focus, history-backed undo and expert menu uniqueness. History tests subscribe before mutation with a bounded event deadline, not sleeps/polling. Existing atlas/selection/grid-roving and dock-width suites remain regression gates. Evidence is under `output/evidence/mode-ux`; full build/gates/browser acceptance are lead-owned.
+- Separate known issue: the baseline audit's 1024px topbar save-error overflow is not addressed by this sidebar increment.
+
+
 - **조수 답변의 이름 → 내부 이동 링킬 (2026-08-30):** 답변 문장 속 맵·NPC 이름을 눌렀을 때 생기는 모든 일은 네 파일이 나눠 갖는다: 색인·탐색 `src/editor/aiAnswerLinks.ts`(순수), DOM 치환 `src/editor/panels/aiAnswerLinkRender.ts`, 이동 `src/editor/editorReferenceNavigation.ts`, 조수가 직접 화면을 여는 툴 `src/editor/tools/viewFocusTools.ts`(`focus_editor_view`). 상세·함정은 `openwiki/editor-ai-panel.md` 첨 항목 — 링킬을 마크다운 링킬 문법이나 `renderMarkdown` 자식으로 재구현하려면 반드시 그 항목을 먼저 읽었음을 전제로 한다(정책이 내부 ID 노출을 금지하고, 문법 기반은 지나간 대화에 링킬을 걸지 못한다).
 
 

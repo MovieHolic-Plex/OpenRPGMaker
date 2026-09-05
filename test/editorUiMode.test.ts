@@ -84,6 +84,9 @@ describe("editorUiMode", () => {
     const standard = chromeForMode("standard");
     const expert = chromeForMode("expert");
 
+    expect(beginner.advancedSidebarControls).toBe(false);
+    expect(standard.advancedSidebarControls).toBe(false);
+    expect(expert.advancedSidebarControls).toBe(true);
     expect(beginner.mapTree).toBe(false);
     expect(beginner.toolStrip).toBe(false);
     expect(beginner.canvasChromeDense).toBe(false);
