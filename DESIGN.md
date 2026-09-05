@@ -384,6 +384,7 @@ The float assistant is **one glass instrument**, `div.ai-deck` inside the transp
 - Animate only `transform`, `opacity`, `filter` — not layout properties.
 - Every interactive element needs hover/active/disabled/focus-visible states.
 - Respect `prefers-reduced-motion`.
+- Database battle-animation previews loop from the first frame on entry and record change once the graphic loads. Reduced motion starts on the selected editing frame with manual Play available. Stop and frame selection restore/preserve that editing frame; ordinary form rerenders and delayed parent-modal refreshes retain the stopped intent on the same record. Missing or unusable graphics show a nonplaying empty state, never a fabricated effect. Genuinely cached tabs pause while detached and resume only their prior playback intent; cache eviction and modal close release playback resources.
 - Keyboard workflows cover tool selection, tab changes, map-tree navigation, command-list navigation, and play input.
 
 ## 7. Depth & Surface

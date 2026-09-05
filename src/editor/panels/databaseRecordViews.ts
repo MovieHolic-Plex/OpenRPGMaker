@@ -113,7 +113,7 @@ export function renderRecordTab(host: HTMLElement, collection: DatabaseCollectio
       const selectedSummary = listPane.querySelector("[data-testid='db-actor-summary-selected']");
       if (selectedSummary instanceof HTMLElement) selectedSummary.textContent = next || "(이름 없음)";
     };
-    const form = recordForm(collection, record, rerender, onRename);
+    const form = recordForm(collection, record, rerender, host, onRename);
     form.classList.add("oprn-detail-form", `oprn-detail-${collection}`);
     stopSkillAnimationStagesIn(detailPane);
     detailPane.replaceChildren(recordIdentity(COLLECTION_LABELS[collection], record.id, record.name, index), form);
@@ -780,6 +780,7 @@ function recordForm(
   collection: DatabaseCollection,
   record: DatabaseRecords[DatabaseCollection][number],
   rerender: () => void,
+  playbackOwner: HTMLElement,
   onRename?: (name: string) => void
 ): HTMLElement {
   const form = el("section", { class: `db-detail-form oprn-detail-form oprn-detail-${collection}`, dataset: { testid: "db-detail-form" } });
@@ -829,7 +830,8 @@ function recordForm(
     case "battleAnimations":
       return renderBattleAnimationRecordForm(
         form,
-        store.getCurrent().database.battleAnimations.find((entry) => entry.id === record.id) ?? store.getCurrent().database.battleAnimations[0]
+        store.getCurrent().database.battleAnimations.find((entry) => entry.id === record.id) ?? store.getCurrent().database.battleAnimations[0],
+        playbackOwner
       );
   }
 }

@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **47쪽 / 1555KB / 약 443,076 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **47쪽 / 1557KB / 약 443,619 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -17,7 +17,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 |---|---|---|---|---|
 | `openwiki/editor-ai-panel.md` | 260KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 475 | ~75,546 |
 | `openwiki/editor-ai-tools.md` | 88KB | 69KB ⚠상한 초과 — 절을 더 쪼개라 | 243 | ~25,441 |
-| `openwiki/editor-database.md` | 193KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 928 | ~55,773 |
+| `openwiki/editor-database.md` | 196KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 935 | ~56,316 |
 | `openwiki/editor-event-authoring.md` | 118KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 564 | ~34,433 |
 | `openwiki/editor-pre-edit-routing.md` | 69KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 197 | ~19,760 |
 | `openwiki/runtime-battle.md` | 118KB | 31KB | 358 | ~33,888 |
@@ -54,7 +54,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/community-site.md` | 1 | `project.json` |
 | `openwiki/editor-ai-panel.md` | 33 | `.omo/evidence/assistant-glass-fold/measure.json`, `.omo/evidence/autonomous-ai-rpg/task-8-autonomous-ai-rpg.md`, `15-assistant-readable.css`, `17-assistant-modern-shell.css`, `after/measure.json`, `aiCommandBar.ts`, `aiGlassPanelWidth.test.ts`, `aiSkillDrawer.ts`, `aiVolatileController.ts`, `assistant-skills.css`, `chat-dock-switch.spec.ts`, `chatDock.ts`, `intentClarify.ts`, `newmain-after-measure.json`, `output/evidence/assistant-ui-modern/newmain-before-measure.json`, `project.json`, `regionIntentRouter.ts`, `scripts/qa/assistant-side-seam-hittest.mjs`, `src/ai/intentClarify.ts`, `src/ai/plannerSkip.ts`, `src/ai/skills.ts`, `src/editor/chatDock.ts`, `test/aiGlassFold.test.ts`, `test/aiGlassPanelWidth.test.ts`, `test/chatDock.test.ts`, `test/e2e/_assistant-glass-shots.spec.ts`, `test/e2e/_glass-dock-report.spec.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/plannerSkip.test.ts`, `test/regionIntentExposure.test.ts`, `test/turnGuideSharedRules.test.ts`, `test/volumeContractSession.test.ts`, `test/workspaceBarAssistantDock.test.ts` |
 | `openwiki/editor-ai-tools.md` | 4 | `aiCommandBar.ts`, `aiProposalModal.ts`, `test/intentClarify.test.ts`, `test/volumeContractSession.test.ts` |
-| `openwiki/editor-database.md` | 7 | `enemy-art-NNN.png`, `form-hierarchy-modern.css`, `output/evidence/system-studio/system-studio-backed-settings-1586x992.png`, `reports/generated-effect-showcase-2026-08-24.html`, `scripts/generate-default-item-icons.mts`, `scripts/lib/effectSheet/paintersMonster.mjs`, `scripts/lib/effectSheet/paintersUtility.mjs` |
+| `openwiki/editor-database.md` | 8 | `enemy-art-NNN.png`, `form-hierarchy-modern.css`, `output/evidence/battle-animation-ux/p1-implementation.md`, `output/evidence/system-studio/system-studio-backed-settings-1586x992.png`, `reports/generated-effect-showcase-2026-08-24.html`, `scripts/generate-default-item-icons.mts`, `scripts/lib/effectSheet/paintersMonster.mjs`, `scripts/lib/effectSheet/paintersUtility.mjs` |
 | `openwiki/editor-event-authoring.md` | 6 | `audit-before.md`, `new-editor/REPORT.html`, `output/evidence/event-ai-assist-ux/960x900-compact.png`, `scripts/generated/toolCatalog.json`, `verify-shots/page-preview-probe/02-preview-open.png`, `verify-shots/runtime-qa/cheolsu-keyboard-fixed/SUMMARY.md` |
 | `openwiki/editor-event-commands.md` | 7 | `07-identifiable-previews.css`, `choicesDialog.ts`, `command-preview.css`, `event-editor.part-2/3.css`, `messageCommandDialogs.ts`, `messageDialogControls.ts`, `textCommandDialog.ts` |
 | `openwiki/editor-pre-edit-routing.md` | 8 | `authoringTestGate.ts`, `dbConnectionAdvancedSettings.ts`, `figma-editor/10-map-tree.css`, `rm2k3.part-1.css`, `shell/editor-responsive-expert.css`, `src/editor/tools/worldTools.ts`, `surface.json`, `worldTools.ts` |
@@ -256,7 +256,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L221` 보물상자는 노출된 수면을 거부한다 (2026-09-05)
 - `L228` 모험 저작 완료와 재시도 (2026-09-05)
 
-### `openwiki/editor-database.md` — 193KB · 928줄 · ~55,773 토큰 · 통째읽기 잘림 · 깨진 줄 7
+### `openwiki/editor-database.md` — 196KB · 935줄 · ~56,316 토큰 · 통째읽기 잘림 · 깨진 줄 7
 
 - `L3` 아이템·장비 저작 신뢰성 (2026-09-05)
 - `L14` 몬스터 작업실 — 미리보기 · 행동 · 속성 (2026-09-05)
@@ -286,24 +286,25 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L435` 다 만들어 놓고 못 쓰던 이유 — `[편집]` 이 화면 밖 67px 에 있었다 (2026-08-29 실측)
   - `L447` 구조물 어휘 — 역할·레이어·테마·증분 축·칸 힌트 (2026-08-30)
   - `L498` 편집기를 맵 타일 편집기 수준으로 (2026-08-30 실측)
-- `L520` 스킬 탭 `연출` 카드 = 살아 있는 애니메이션 스테이지 (2026-08-30)
-- `L531` 데이터베이스 30탭 UI/UX 계약 (2026-08-30 실측)
-  - `L546` 헤더는 설명문이 아니라 아이콘 칩 한 줄이다
-  - `L624` 숫자 입력은 스테퍼를 먼저 붙이고 그다음 스피너를 지운다
-  - `L638` 줄상자 바닥은 1.35 다 (1.25 는 큰 한글 제목에서 깎인다)
-  - `L681` 이미지 실패는 빈 상자가 아니라 라벨 붙은 자리표시자다
-- `L690` '마을' 탭 — 마을 하네스 값을 사람이 저작한다 (2026-08-30)
-  - `L706` 붓을 고르면 화면이 흔들렸다 — 재부모가 스크롤·포커스를 지운다 (2026-08-30 실측)
-- `L749` '마을' 탭 — 숫자칸을 그림으로 바꾼다 (2026-08-31)
-  - `L765` AI로 몬스터·아이템 생성 (2026-08-30)
-  - `L786` AI 어시스턴트 바 — 진행·결과가 바 안에 보인다 (2026-09-03)
-  - `L820` AI로 몬스터·아이템 생성 — 대화상자 재작성 (2026-09-03)
-- `L836` Database Studio v2 — 30탭 셸·폼 문법 통일 (2026-09-03)
-- `L902` 직업 승급 트리 · 스킬 트리 (2026-09-05)
-- `L908` 미회수 편집 후속 통합 (2026-09-05)
-- `L912` 마을 설계서 (2026-09-05)
-- `L917` 구조물 증분 메타 정정 (2026-09-05)
-- `L925` 개념 회수 UI 직접 렌더 QA (2026-09-05)
+- `L520` Battle-animation editor autoplay (2026-09-05)
+- `L527` 스킬 탭 `연출` 카드 = 살아 있는 애니메이션 스테이지 (2026-08-30)
+- `L538` 데이터베이스 30탭 UI/UX 계약 (2026-08-30 실측)
+  - `L553` 헤더는 설명문이 아니라 아이콘 칩 한 줄이다
+  - `L631` 숫자 입력은 스테퍼를 먼저 붙이고 그다음 스피너를 지운다
+  - `L645` 줄상자 바닥은 1.35 다 (1.25 는 큰 한글 제목에서 깎인다)
+  - `L688` 이미지 실패는 빈 상자가 아니라 라벨 붙은 자리표시자다
+- `L697` '마을' 탭 — 마을 하네스 값을 사람이 저작한다 (2026-08-30)
+  - `L713` 붓을 고르면 화면이 흔들렸다 — 재부모가 스크롤·포커스를 지운다 (2026-08-30 실측)
+- `L756` '마을' 탭 — 숫자칸을 그림으로 바꾼다 (2026-08-31)
+  - `L772` AI로 몬스터·아이템 생성 (2026-08-30)
+  - `L793` AI 어시스턴트 바 — 진행·결과가 바 안에 보인다 (2026-09-03)
+  - `L827` AI로 몬스터·아이템 생성 — 대화상자 재작성 (2026-09-03)
+- `L843` Database Studio v2 — 30탭 셸·폼 문법 통일 (2026-09-03)
+- `L909` 직업 승급 트리 · 스킬 트리 (2026-09-05)
+- `L915` 미회수 편집 후속 통합 (2026-09-05)
+- `L919` 마을 설계서 (2026-09-05)
+- `L924` 구조물 증분 메타 정정 (2026-09-05)
+- `L932` 개념 회수 UI 직접 렌더 QA (2026-09-05)
 
 ### `openwiki/editor-event-authoring.md` — 118KB · 564줄 · ~34,433 토큰 · 통째읽기 잘림 · 깨진 줄 16
 
