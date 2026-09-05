@@ -16,6 +16,8 @@ import type { InteriorObjectDef } from "@/editor/interiorObjectCatalog";
 import { lootGrantCommands, lootRummageCommands } from "@/editor/lootFeedback";
 import type { Command, EventPage, EventPageCondition, GameEvent, GameMap } from "@/project/types";
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
+import { HOUSE_SHELL_TILE } from "@/project/defaults/interiorHouseWallTiles";
+import { shapeInteriorCeiling } from "@/editor/interiorHouseWallGrammar";
 
 export type ConceptTransferTarget = { readonly mapId: string; readonly x: number; readonly y: number };
 
@@ -57,52 +59,9 @@ function behaviorFor(chips: readonly string[]): Behavior | null {
   return null;
 }
 
-/** 조사 문장 — 물건 id 별 한 줄. 시설명이 들어가는 줄은 함수다. 없는 id 는 라벨로 만든다. */
-const FLAVOR: Readonly<Record<string, string | ((facility: string) => string)>> = {
-  counter: (facility) => `${facility} 카운터다. 주인은 잠시 자리를 비웠다.`,
-  clock: "괘종시계가 느리게 흔들린다.",
-  piano: "피아노다. 건반에 먼지가 앉았다.",
-  window: "창밖으로 길이 보인다.",
-  picture: "풍경화다. 먼 산이 그려져 있다.",
-  armor: "갑옷 전시대. 누군가의 가보 같다.",
-  bust: "흉상. 표정이 근엄하다.",
-  mirror: "거울. 여행에 지친 얼굴이 비친다.",
-  table_long: "긴 탁자. 술잔 자국이 남아 있다.",
-  table_chairs: "탁자와 의자. 방금 누가 앉았던 것 같다.",
-  display: "진열대. 약병과 작은 검이 놓여 있다.",
-  cabinet: "캐비닛. 잘 개어진 이불이 들어 있다.",
-  plant: "화분. 잎이 싱싱하다.",
-  stairs: "위층으로 오르는 계단이다.",
-  bookshelf: "책장. 여행기와 지도가 꽂혀 있다.",
-  bed_h: "침대. 잘 정돈되어 있다.",
-  bed_v: "침대. 잘 정돈되어 있다.",
-  stove: "화덕. 아직 온기가 남아 있다.",
-  hearth: "벽난로. 장작이 타닥거린다.",
-  cauldron: "가마솥. 무언가 끓고 있다.",
-  barrel: "술통. 두드리면 둔탁한 소리가 난다.",
-  crate: "나무 상자. 못이 단단히 박혀 있다.",
-  jars: "항아리. 소금과 곡물이 담겨 있다.",
-  box: "잡화 상자. 자잘한 도구가 들어 있다.",
-  grain: "곡물 자루. 거친 삼베 냄새.",
-  bucket: "물통. 물이 반쯤 차 있다.",
-  kettle: "주전자. 김이 오른다.",
-  stool: "스툴. 다리 하나가 짧다.",
-  sword_rack: "검 거치대. 손잡이가 닳아 있다.",
-  crystal: "수정구. 안개가 천천히 돈다.",
-  religious: (facility) => `${facility}의 성상이다. 잠시 고개를 숙인다.`,
-  fruit_shelf: "과일 선반. 사과 향이 난다.",
-  shelf_jars: "항아리 선반. 절임 냄새가 난다.",
-  tavern_sign: "간판. 오늘의 술이 적혀 있다.",
-  ladder: "사다리. 위 다락으로 이어진다.",
-  rug: "카펫. 발밑이 부드럽다.",
-  rug_red: "붉은 카펫. 귀한 손님을 맞는 길이다.",
-  rug_mat: "짚 돗자리. 바삭한 소리가 난다.",
-};
-
-function flavorFor(placement: ConceptPlacement, facility: string): string {
-  const entry = FLAVOR[placement.objectId];
-  if (typeof entry === "function") return entry(facility);
-  return entry ?? `${placement.label}이다.`;
+/** The authored thing label owns meaning even when several facilities share an object picture. */
+function flavorFor(placement: ConceptPlacement, _facility: string): string {
+  return `${placement.label}이다.`;
 }
 
 function lootGoldFor(placement: ConceptPlacement, ordinal: number): number {
@@ -145,6 +104,7 @@ export function buildConceptEvents(
   const price = options.innPrice ?? DEFAULT_INN_PRICE;
   const facility = options.facilityLabel?.trim() || "시설";
   let ordinal = 0;
+  const usedIds = new Set((map.events ?? []).map(event => event.id));
 
   for (const placement of placements) {
     const behavior = behaviorFor(placement.chips);
@@ -156,13 +116,20 @@ export function buildConceptEvents(
     // 앵커가 막혔으면(정문 등) 같은 행의 다른 칸.
     const bottomRow = Math.max(...placement.cells.map((cell) => cell.y));
     const rowCells = placement.cells.filter((cell) => cell.y === bottomRow);
-    const anchor = [placement.anchor, ...rowCells].find((cell) => !occupied.has(`${cell.x},${cell.y}`));
+    const preferred = placement.objectId === "stairs_down" ? rowCells[0] : placement.anchor;
+    const anchor = [preferred, ...rowCells].map(cell => {
+      if (!cell) return undefined;
+      const upperWall = [74, 75, 76, 77].includes(map.lowerTiles[cell.y * map.width + cell.x] ?? -1);
+      return { x: cell.x, y: cell.y + (placement.chips.includes("wall") && upperWall ? 1 : 0) };
+    }).find(cell => cell && !occupied.has(`${cell.x},${cell.y}`));
     if (!anchor) {
       warnings.push(`concept: ${placement.label} 자리에 이미 이벤트가 있어 칩을 달지 못했다`);
       continue;
     }
     ordinal += 1;
-    const id = `ev_concept_${map.id}_${placement.thingId}_${ordinal}`;
+    let id = `ev_concept_${map.id}_${placement.objectId === "stairs_down" ? "stairs_down_" : ""}${placement.thingId}_${ordinal}`;
+    while (usedIds.has(id)) id = `ev_concept_${map.id}_${placement.thingId}_${++ordinal}`;
+    usedIds.add(id);
     occupied.add(`${anchor.x},${anchor.y}`);
     const base: GameEvent = {
       id,
@@ -276,6 +243,24 @@ export function linkConceptTransfers(
 export function convertEntranceToDescent(map: GameMap, target: ConceptTransferTarget, facilityLabel?: string): boolean {
   const event = (map.events ?? []).find((entry) => entry.id === `ev_entrance_${map.id}`);
   if (!event) return false;
+  const landing = findConceptDescent(map);
+  if (landing) {
+    // Close the synthetic outside doorway; descending belongs to the authored stairwell.
+    map.upperTiles[event.y * map.width + event.x] = -1;
+    const outside = (event.y + 1) * map.width + event.x;
+    map.lowerTiles[outside] = HOUSE_SHELL_TILE.void;
+    map.upperTiles[outside] = -1;
+    event.x = landing.x;
+    event.y = landing.y;
+    map.events = map.events.filter(candidate => candidate !== landing);
+    if (event.pages?.[0]) {
+      event.pages[0].priority = "below";
+      event.pages[0].overlapForbidden = false;
+    }
+    shapeInteriorCeiling(map);
+  }
+  // 연결 이벤트와 그림을 같은 자리에 둔다. 문 밴드는 시공기가 비워 둔 통행 영역이다.
+  map.upperTiles[event.y * map.width + event.x] = 474;
   const facility = facilityLabel?.trim() || "시설";
   const commands: Command[] = [
     { kind: "text", body: `[계단] ${facility} 아래층으로 내려간다.` },
@@ -290,6 +275,11 @@ export function convertEntranceToDescent(map: GameMap, target: ConceptTransferTa
     event.pages = [page(`${event.id}_page`, "계단(아래)", commands)];
   }
   return true;
+}
+
+/** Authored downstairs object, before its inspection event becomes the floor return. */
+export function findConceptDescent(map: GameMap): GameEvent | undefined {
+  return map.events.find(event => event.id.startsWith(`ev_concept_${map.id}_stairs_down_`));
 }
 
 /** 맵의 개념 이벤트 중 맵 연결(transfer) 지점. 툴 결과 data.connections 가 이것을 싣는다. */

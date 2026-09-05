@@ -10,7 +10,7 @@ function ctx(): ToolContext {
 }
 
 type PlaceResult = {
-  rooms: { roomId: string; placeId: string; role: string; x: number; y: number; w: number; h: number }[];
+  rooms: { roomId: string; placeId: string; role: string; x: number; y: number; w: number; h: number; mapId?: string }[];
   door: { x: number; y: number };
   floors: { level: number; mapId: string }[];
   review?: { score: number; copiedTemplate: boolean; checks: { id: string; pass: boolean }[] };
@@ -52,7 +52,7 @@ describe("scoreConceptFacility", () => {
     const map = context.project.maps.map_inn_no_bed as GameMap;
     const review = scoreConceptFacility({
       map,
-      rooms: data.rooms,
+      rooms: data.rooms.filter(room => room.mapId === undefined || room.mapId === map.id),
       door: data.door,
       warnings: warningsOf(result),
       overlay: overlayOf(map),
@@ -69,7 +69,7 @@ describe("scoreConceptFacility", () => {
     const map = context.project.maps.map_inn_score as GameMap;
     const review = scoreConceptFacility({
       map,
-      rooms: data.rooms,
+      rooms: data.rooms.filter(room => room.mapId === undefined || room.mapId === map.id),
       door: data.door,
       warnings: warningsOf(result),
       levels: data.floors.map((floor) => floor.level),

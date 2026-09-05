@@ -1,3 +1,4 @@
+import type { InteriorRoomShape } from "@/project/interiorRoomFootprint";
 // 타일셋에 붙은 개념 꾸러미를 시공 입력으로 푼다.
 // 정본은 프로젝트가 들고 있는 값이다. 사용자가 데이터베이스에서 고친 나무가 그대로 쓰인다.
 //
@@ -43,6 +44,7 @@ export type ConceptLayoutRoom = {
   readonly w: number;
   readonly h: number;
   readonly theme: string;
+  readonly shape?: InteriorRoomShape;
   /** 장소 바닥 재질의 하부 타일. 나무(기본)면 생략 — 파이프라인이 72 로 채운다. */
   readonly floorTile?: number;
 };
@@ -294,10 +296,13 @@ export function layoutConceptFacility(
   const host = entrance ?? walkway ?? promoted;
   const doorBand = entrance ?? promoted;
 
-  const rowBoxes = rowInstances.map((entry) => ROOM_FOOTPRINT[conceptPlaceSize(entry.place)]);
+  const rowBoxes = rowInstances.map((entry) => {
+    const box = ROOM_FOOTPRINT[conceptPlaceSize(entry.place)];
+    return entry.place.shape && entry.place.shape !== "rect" ? { w: box.w + 2, h: box.h + 3 } : box;
+  });
   const rowH = rowBoxes.length > 0 ? Math.max(...rowBoxes.map((box) => box.h)) : 0;
   const rowW = rowBoxes.reduce((sum, box) => sum + box.w, 0) + Math.max(0, rowBoxes.length - 1) * H_GAP;
-  const bandOwnW = doorBand ? ROOM_FOOTPRINT[conceptPlaceSize(doorBand.place)].w : 0;
+  const bandOwnW = doorBand ? ROOM_FOOTPRINT[conceptPlaceSize(doorBand.place)].w + (doorBand.place.shape && doorBand.place.shape !== "rect" ? 4 : 0) : 0;
   // 복도 없이 방 둘 이상이 홀 바로 위에 서면 홀을 양쪽 1열씩 넓힌다 — 방문 착지 열이 홀 북벽을 2칸 조각으로 쪼개
   // 카운터·피아노 같은 3칸 가구가 설 자리가 없어진다(2026-09-02 술집·민가 초안 실측).
   const spread = !walkway && doorBand && rowInstances.length >= 2 ? BAND_SPREAD : 0;
@@ -320,9 +325,10 @@ export function layoutConceptFacility(
         placeId: entry.place.id,
         role: entry.role,
         x,
-        y: cursorY,
+        y: cursorY + rowH - box.h,
         w: box.w,
-        h: rowH,
+        h: box.h,
+        ...(entry.place.shape ? { shape: entry.place.shape } : {}),
         theme: roomTheme(entry.place.id, entry.role),
         ...(floorTile !== undefined ? { floorTile } : {}),
       });
@@ -347,12 +353,13 @@ export function layoutConceptFacility(
       x: MARGIN_X,
       y: cursorY,
       w: bandW,
-      h,
+      h: h + (entry.place.shape && entry.place.shape !== "rect" ? 3 : 0),
+      ...(entry.place.shape ? { shape: entry.place.shape } : {}),
       theme: roomTheme(entry.place.id, entry.role),
       ...(floorTile !== undefined ? { floorTile } : {}),
     };
     rooms.push(band);
-    cursorY += h;
+    cursorY += band.h;
     return band;
   };
 

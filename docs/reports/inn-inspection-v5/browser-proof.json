@@ -1,0 +1,45 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "name": "desktop",
+      "width": 1440,
+      "height": 960,
+      "decodedImages": 800,
+      "furnitureCards": 55,
+      "atlasTiles": 480,
+      "lodgingCases": 6,
+      "filters": true,
+      "keyboardZoom": true,
+      "horizontalOverflow": false,
+      "errors": []
+    },
+    {
+      "name": "tablet",
+      "width": 900,
+      "height": 1000,
+      "decodedImages": 800,
+      "furnitureCards": 55,
+      "atlasTiles": 480,
+      "lodgingCases": 6,
+      "filters": true,
+      "keyboardZoom": true,
+      "horizontalOverflow": false,
+      "errors": []
+    },
+    {
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "decodedImages": 800,
+      "furnitureCards": 55,
+      "atlasTiles": 480,
+      "lodgingCases": 6,
+      "filters": true,
+      "keyboardZoom": true,
+      "horizontalOverflow": false,
+      "errors": []
+    }
+  ],
+  "visualInterpretationApproved": false
+}

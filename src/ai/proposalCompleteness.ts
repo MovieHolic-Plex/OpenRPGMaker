@@ -191,7 +191,7 @@ function interiorCompletenessWarnings(
   const houseCalls = okCalls.filter((call) => call.name === "author_house");
   if (houseCalls.length > 0) {
     if (houseCalls.every((call) => houseCallUsedLinkedInterior(call))) return [];
-    return [`${PROPOSAL_COMPLETENESS_WARNING_PREFIX} 실내 요청인데 야외 집 외장(author_house)만 시공했습니다. 들어가서 걷는 집이면 author_house(interior:"linked-interior"), 외장 없는 독립 실내면 start_interior_room_session/run_interior_room_pipeline(새 mapId), 기존 실내 맵을 고치는 것이면 furnish_interior_space({mapId, roomId})를 쓰세요.`];
+    return [`${PROPOSAL_COMPLETENESS_WARNING_PREFIX} 실내 요청인데 야외 집 외장(author_house)만 시공했습니다. 들어가서 걷는 집이면 author_house(interior:"linked-interior"), 외장 없는 독립 실내면 get_concept_facility → place_concept(plan, 새 mapId), 기존 실내 맵을 고치는 것이면 furnish_interior_space({mapId, roomId})를 쓰세요.`];
   }
   const onlyEmptyMap =
     okCalls.length > 0

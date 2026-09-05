@@ -6,6 +6,8 @@ import { runTool } from "@/editor/tools/toolRunner";
 import { createBlankProject } from "@/project/defaults";
 import { CONCEPT_FACILITY_TEMPLATES, SCRATCH_HOUSE_BUNDLE } from "@/project/defaults/conceptFacilityTemplates";
 import type { GameMap } from "@/project/types";
+import { isPassable } from "@/project/collision";
+import { computeReachableCells, isAdjacentOrOn } from "@/project/lint/reachability";
 
 function build(query: string, seed = 7) {
   const context = { project: createBlankProject() };
@@ -15,7 +17,7 @@ function build(query: string, seed = 7) {
   expect(result.ok, result.summary).toBe(true);
   const map = context.project.maps.quality;
   if (!map) throw new Error("Missing generated map");
-  return { map, result };
+  return { map, result, project: context.project };
 }
 
 function objectOrigins(map: GameMap, id: string) {
@@ -59,14 +61,17 @@ describe("facility furniture composition", () => {
     const layout = layoutConceptFacility(bundle, facility);
     const room = layout.rooms[0];
     if (!room) throw new Error("Missing stockroom");
-    const { map } = build("창고");
+    const { map, project } = build("창고");
     const crates = objectOrigins(map, "crate");
     expect(crates).toHaveLength(6);
     expect(crates.every(({ x, y }) =>
       x > room.x && x < room.x + room.w - 1
       && y > room.y && y < room.y + room.h - 1)).toBe(true);
     for (let y = room.y; y < room.y + room.h; y += 1) {
-      expect(map.upperTiles[y * map.width + layout.door.x]).toBeLessThan(0);
+      const upper = map.upperTiles[y * map.width + layout.door.x];
+      if (y === layout.door.y) expect(upper).toBe(176);
+      else expect(upper).toBeLessThan(0);
+      expect(isPassable(project, map, layout.door.x, y)).toBe(true);
     }
   });
 
@@ -106,22 +111,10 @@ describe("facility furniture composition", () => {
     if (!event) throw new Error("Missing authored loot event");
     const door = map.events.find((entry) => entry.pages?.[0]?.name === "입구");
     if (!door) throw new Error("Missing warehouse entrance");
-    const queue = [{ x: door.x, y: door.y - 1 }];
-    const seen = new Set<number>();
-    for (let cursor = 0; cursor < queue.length; cursor += 1) {
-      const point = queue[cursor];
-      if (!point) throw new Error("Missing queued point");
-      const index = point.y * map.width + point.x;
-      if (seen.has(index) || map.lowerTiles[index] !== 102 || (map.upperTiles[index] ?? -1) >= 0) continue;
-      seen.add(index);
-      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
-        const x = point.x + dx;
-        const y = point.y + dy;
-        if (x >= 0 && x < map.width && y >= 0 && y < map.height) queue.push({ x, y });
-      }
-    }
-    expect([[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) =>
-      seen.has((event.y + dy) * map.width + event.x + dx))).toBe(true);
+    // Use the shipped collision contract: the new entrance marker is passable,
+    // even though its upper-layer tile is not empty.
+    const reachable = computeReachableCells(context.project, map, door.x, door.y - 1);
+    expect(isAdjacentOrOn(reachable, event.x, event.y)).toBe(true);
     expect(objectOrigins(map, "crate")).toHaveLength(9);
   });
 
@@ -131,7 +124,8 @@ describe("facility furniture composition", () => {
         const facility = bundle.facilities[0];
         if (!facility) throw new Error("Missing facility");
         const layout = layoutConceptFacility(bundle, facility);
-        const { map, result } = build(facility.label, seed);
+        const { map, result, project } = build(facility.label, seed);
+        expect(isPassable(project, map, layout.door.x, layout.door.y - 1)).toBe(true);
         const warnings = [...(result.warnings ?? []), ...(result.diff?.warnings ?? [])];
         expect(warnings.filter((line) => /자리 없음|walkability:|plan:/.test(line))).toEqual([]);
         for (const thing of bundle.things.filter((entry) => entry.required)) {

@@ -1,11 +1,10 @@
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio {
-    --growth-accent: var(--success);
-    --growth-tint: var(--success-muted);
+    --growth-accent: var(--accent);
+    --growth-tint: var(--accent-muted);
     display: grid; grid-template-rows: auto minmax(0, 1fr); height: 100%; min-height: 0;
     color: var(--text-1); background: var(--bg-base); overflow: hidden;
   }
-  .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio.growth-promotion { --growth-accent: var(--warning); --growth-tint: var(--warning-muted); }
-  .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-header { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 22px 24px; border-bottom: 1px solid var(--border-default); background: linear-gradient(115deg, var(--bg-raised), var(--growth-tint)); }
+  .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-header { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 22px 24px; border-bottom: 1px solid var(--border-default); background: var(--bg-raised); }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-heading { min-width: 0; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-heading h2 { font-size: 26px; line-height: 1.4; letter-spacing: -.7px; margin: 3px 0; color: var(--text-1); }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-eyebrow { color: var(--growth-accent); font-size: 11px; font-weight: 700; letter-spacing: 1.4px; }
@@ -16,15 +15,15 @@
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-metric span { font-size: 11px; color: var(--text-2); }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-body { display: grid; grid-template-columns: 190px minmax(260px, 1fr) 268px; min-height: 0; overflow: hidden; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-catalog, .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-inspector { overflow: auto; padding: 16px; min-height: 0; min-width: 0; background: var(--bg-raised); }
-  .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-catalog { border-right: 1px solid var(--border-default); display: flex; flex-direction: column; gap: 10px; }
+  .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-catalog { background: var(--bg-base); border-right: 1px solid var(--border-default); display: flex; flex-direction: column; gap: 10px; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-inspector { border-left: 1px solid var(--border-default); }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-catalog-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio h3 { margin: 0; font-size: 13px; line-height: 1.5; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-catalog-heading > span { color: var(--growth-accent); background: var(--growth-tint); border-radius: 6px; padding: 2px 7px; font-size: 12px; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-catalog-list { display: grid; gap: 6px; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-catalog-item { display: flex; align-items: center; gap: 10px; text-align: left; width: 100%; padding: 12px 8px; border: 1px solid transparent; border-radius: 9px; background: transparent; color: var(--text-1); cursor: pointer; }
-  .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-catalog-item.is-active { background: var(--growth-tint); border-color: color-mix(in srgb, var(--growth-accent) 35%, transparent); }
-  .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-catalog-item:hover { background: var(--bg-hover); }
+  .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-catalog-item.is-active { background: var(--growth-tint); border-color: var(--growth-accent); box-shadow: inset 3px 0 var(--growth-accent); }
+  .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-catalog-item:not(.is-active):hover { background: var(--bg-hover); }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-catalog-item > span:last-child { display: grid; gap: 4px; min-width: 0; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-catalog-item strong { font-size: 12px; overflow-wrap: anywhere; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-catalog-item small { font-size: 11px; color: var(--text-2); }
@@ -32,30 +31,31 @@
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-workspace { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; min-height: 0; min-width: 0; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 10px 12px; border-bottom: 1px solid var(--border-default); background: var(--bg-surface); }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-toolbar-title { flex: 1 1 100%; font-size: 12px; font-weight: 700; line-height: 1.5; overflow-wrap: anywhere; }
-  .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-button { min-height: 32px; padding: 6px 10px; font-size: 12px; line-height: 1.5; border: 1px solid var(--border-default); border-radius: 7px; color: var(--text-1); background: var(--bg-raised); cursor: pointer; }
+  .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-button { min-width: 32px; min-height: 32px; padding: 6px 10px; font-size: 12px; line-height: 1.5; border: 1px solid var(--border-default); border-radius: 7px; color: var(--text-1); background: var(--bg-raised); cursor: pointer; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-button:hover { border-color: var(--growth-accent); background: var(--growth-tint); }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-button.is-primary { background: var(--growth-accent); border-color: var(--growth-accent); color: var(--on-accent); }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-button:disabled { opacity: .45; cursor: not-allowed; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio :is(button, input, textarea, select):focus-visible { outline: 2px solid var(--growth-accent); outline-offset: 3px; }
-  .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-canvas { position: relative; min-width: 0; min-height: 0; overflow: hidden; background: radial-gradient(ellipse at 45% 35%, var(--growth-tint), transparent 65%), var(--bg-canvas); }
-  .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-viewport { width: 100%; height: 100%; overflow: auto; background-image: radial-gradient(var(--border-default) 1px, transparent 1px); background-size: 20px 20px; }
+  .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-viewport:focus-visible { outline: 2px solid var(--growth-accent); outline-offset: -2px; }
+  .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-canvas { position: relative; display: grid; grid-template-rows: minmax(0, 1fr) auto; min-width: 0; min-height: 0; overflow: hidden; background: var(--bg-inset); }
+  .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-viewport { position: relative; min-height: 0; width: 100%; height: 100%; overflow: auto; background-image: radial-gradient(var(--border-default) 1px, transparent 1px); background-size: 20px 20px; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-plane { position: relative; transform-origin: top left; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-spacer { position: relative; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-wires { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-wires path { fill: none; stroke: color-mix(in srgb, var(--growth-accent) 38%, var(--border-default)); stroke-width: 2; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-wires path.is-highlighted { stroke: var(--growth-accent); stroke-width: 3; filter: drop-shadow(0 0 3px var(--growth-tint)); }
-  .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-node { position: absolute; display: flex; align-items: center; gap: 12px; width: 180px; height: 98px; padding: 16px; border: 1px solid var(--border-strong); border-radius: 13px; background: linear-gradient(140deg, var(--bg-raised), var(--bg-surface)); color: var(--text-1); text-align: left; cursor: grab; touch-action: none; box-shadow: 0 5px 15px var(--border-subtle); transition: border-color .15s, box-shadow .15s; }
+  .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-node { position: absolute; display: flex; align-items: center; gap: 12px; width: 180px; height: 98px; padding: 16px; border: 1px solid var(--border-strong); border-radius: 13px; background: var(--bg-raised); color: var(--text-1); text-align: left; cursor: grab; touch-action: none; box-shadow: 0 5px 15px var(--border-subtle); transition: border-color .15s, box-shadow .15s; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-node:active { cursor: grabbing; }
-  .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-node.is-selected { border: 2px solid var(--growth-accent); box-shadow: 0 0 0 5px var(--growth-tint), 0 8px 24px var(--border-default); }
+  .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-node.is-selected { border: 2px solid var(--growth-accent); background: var(--growth-tint); box-shadow: 0 0 0 3px var(--growth-tint); }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-node.is-source { outline: 2px dashed var(--growth-accent); outline-offset: 6px; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-node.is-invalid { border-color: var(--danger); }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-node-emblem { display: grid; place-items: center; width: 42px; height: 48px; flex: 0 0 42px; border: 1px solid color-mix(in srgb, var(--growth-accent) 28%, transparent); border-radius: 10px; background: var(--growth-tint); color: var(--growth-accent); font-size: 25px; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-node-emblem img { width: 32px; height: 32px; object-fit: contain; image-rendering: pixelated; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-node-copy { display: grid; min-width: 0; gap: 7px; }
-  .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-node-copy strong { font-size: 14px; line-height: 1.4; overflow-wrap: anywhere; }
+  .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-node-copy strong { font-size: 14px; line-height: 1.4; overflow-wrap: anywhere; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-node-copy > span { font-size: 11px; line-height: 1.5; color: var(--text-2); }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-node-port { position: absolute; right: -5px; top: 43px; width: 9px; height: 9px; border: 2px solid var(--growth-accent); border-radius: 50%; background: var(--bg-raised); }
-  .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-canvas-controls { position: absolute; display: flex; align-items: center; gap: 6px; bottom: 14px; left: 14px; padding: 6px; border: 1px solid var(--border-default); border-radius: 10px; background: var(--bg-glass); box-shadow: 0 4px 16px var(--border-subtle); }
+  .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-canvas-controls { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-top: 1px solid var(--border-default); background: var(--bg-raised); }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-canvas-controls output { width: 42px; text-align: center; font-size: 12px; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-status { padding: 9px 12px; font-size: 11px; line-height: 1.5; color: var(--text-2); background: var(--bg-surface); border-top: 1px solid var(--border-default); }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-status.has-issue { color: var(--warning); background: var(--warning-muted); }
@@ -63,9 +63,10 @@
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-inspector-title small { display: block; color: var(--growth-accent); font-size: 11px; margin-bottom: 5px; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-inspector-title h3 { font-size: 19px; line-height: 1.45; overflow-wrap: anywhere; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-section { display: grid; gap: 10px; margin-bottom: 20px; }
-  .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-section > h3 { color: var(--text-2); font-weight: 600; }
+  .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-section > h3 { padding: 6px 8px; color: var(--text-1); background: var(--bg-inset); border-bottom: 1px solid var(--border-default); font-weight: 700; overflow-wrap: anywhere; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-section .growth-section { padding: 12px; border: 1px solid var(--border-default); border-radius: 10px; background: var(--bg-base); margin: 0; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .db-field { display: grid; gap: 6px; min-width: 0; }
+  .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-inspector .db-field { grid-template-columns: minmax(0, 1fr); }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .db-field > :first-child { font-size: 12px; line-height: 1.5; white-space: normal; overflow: visible; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio :is(input:not([type=checkbox]), textarea, select) { width: 100%; min-width: 0; max-width: 100%; min-height: 32px; padding: 6px 8px; font-size: 12px; line-height: 1.5; color: var(--text-1); background: var(--bg-base); border: 1px solid var(--border-default); border-radius: 6px; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio textarea { resize: vertical; }

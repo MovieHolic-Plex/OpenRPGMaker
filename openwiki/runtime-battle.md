@@ -1,5 +1,9 @@
 # Runtime Battle Behavior
 
+## 전투 명령 custom CSS (2026-09-05)
+
+`battleCommandDom.commandPanel`은 프로젝트의 `system.battleCommandCss`를 `mountBattleCommandCss`로 마운트한다. 내부 생성 scope 속성이 각 패널의 메뉴/버튼/라벨/포커스·disabled 상태만 겨냥한다. 패널이 재생성될 때 스타일도 함께 제거되며 타이틀·대화창·편집기 셸에는 적용되지 않는다. 하위 메뉴와 대상 선택도 같은 범위다. 파서는 8,000자 이하의 제한된 시각 속성만 허용하며 URL·CSS 변수·at-rule·임의 선택자를 거부한다. 실패한 스타일은 실행하지 않고 기본 스킨을 유지한다. 검증은 `node scripts/qa-battle-command-css.mjs`로 편집기 저작 후 별도 player.html 하네스에서 수행한다.
+
 ## 빈 페이지와 실행 빈도 계약 (2026-09-05)
 
 `battleEvents.ts`는 빈 `commands`를 부작용 없는 페이지로 실행한다. 과거의 첫 적/첫 상태 암묵 적용 폴백은 제거했다. 상태를 부여하려면 실제 명령을 저작해야 한다.

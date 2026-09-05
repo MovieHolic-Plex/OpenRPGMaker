@@ -143,6 +143,7 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
       const stories = houseInteriorStories(input.stories, input.wings);
       const interiorSeed = seedFromString(base);
       const interior = createHouseInteriorMap({
+        project: draft,
         id: interiorMapId,
         name: `${ownerName}의 집 내부`,
         returnMapId: map.id,

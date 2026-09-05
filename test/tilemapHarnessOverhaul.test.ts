@@ -151,9 +151,9 @@ describe("quota-independent connected room draft", () => {
     const exit = interior.events.find((event) => event.id === `ev_entrance_${interiorMapId}`);
     expect(exit).toBeDefined();
     expect(firstTransfer(exit!)?.mapId).toBe(base.startMapId);
-    // 예전에는 결정론 수리가 도달 불가 소품 조사 이벤트를 지워 소견이 비어 있었다. 이제 초안은
-    // 그대로 남고 소견만 뜬다(검증게이트 배제) — 적용 가능 여부는 이 소견과 무관하다.
-    expect(result.review?.issues.some((issue) => issue.code === "gameplay-event-unreachable")).toBe(true);
+    // Concept composition reserves access before attaching interactions, so this
+    // room no longer produces the legacy unreachable prop-inspection event.
+    expect(result.review?.issues.some((issue) => issue.code === "gameplay-event-unreachable")).toBe(false);
     expect(result.pending!.roomDrafts[0]?.rooms.some((room) => room.modifiers.includes("rustic"))).toBe(true);
     result.pending!.discard();
   });

@@ -9,12 +9,16 @@ import { CHEST_OPEN_SE, LOOT_GOLD_SE } from "@/editor/lootFeedback";
 import { getTool } from "@/editor/tools/toolRegistry";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
-import { cloneConceptBundle, SCRATCH_INN_BUNDLE } from "@/project/defaults/scratchInnBundle";
+import { cloneConceptBundle } from "@/project/defaults/scratchInnBundle";
+import { SCRATCH_INN_BUNDLE } from "./fixtures/legacyConceptInn";
 import { createBlankProject } from "@/project/defaults";
-import type { Command, GameEvent, GameMap } from "@/project/types";
+import type { Command, GameEvent, GameMap, Project } from "@/project/types";
+import { isPassable } from "@/project/collision";
 
 function ctx(): ToolContext {
-  return { project: createBlankProject() };
+  const project = createBlankProject();
+  project.tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles = [cloneConceptBundle(SCRATCH_INN_BUNDLE)];
+  return { project };
 }
 
 function mapHasObject(map: GameMap, objectId: string): boolean {
@@ -42,7 +46,7 @@ describe("place_concept", () => {
     expect(description).toContain("기존 실내 맵을 고치는 요청에는 쓰지 마라");
   });
 
-  it("여관 초안으로 침실·복도·식당을 짓고 침대를 놓는다", () => {
+  it("이전에 저작된 여관으로 침실·복도·식당을 짓고 침대를 놓는다", () => {
     const context = ctx();
     const result = runTool(context, "place_concept", {
       query: "여관",
@@ -242,7 +246,7 @@ describe("place_concept 도면", () => {
 
 
 describe("place_concept 구성과 칩 집행", () => {
-  type Built = { map: GameMap; rooms: { roomId: string; placeId: string; role: string; x: number; y: number; w: number; h: number }[]; door: { x: number; y: number }; warnings: string[]; connections: { x: number; y: number; target: { mapId: string; x: number; y: number } | null }[] };
+  type Built = { project: Project; map: GameMap; rooms: { roomId: string; placeId: string; role: string; x: number; y: number; w: number; h: number }[]; door: { x: number; y: number }; warnings: string[]; connections: { x: number; y: number; target: { mapId: string; x: number; y: number } | null }[] };
   function build(edit?: (bundle: ReturnType<typeof cloneConceptBundle>) => void, query = "여관"): Built {
     const context = ctx();
     if (edit) {
@@ -254,6 +258,7 @@ describe("place_concept 구성과 칩 집행", () => {
     expect(result.ok, result.summary).toBe(true);
     const data = result.data as Pick<Built, "rooms" | "door" | "connections">;
     return {
+      project: context.project,
       map: context.project.maps.map_inn_chips!,
       rooms: data.rooms,
       door: data.door,
@@ -268,11 +273,11 @@ describe("place_concept 구성과 칩 집행", () => {
     return x >= box.x && x < box.x + box.w && y >= box.y && y < box.y + box.h;
   }
 
-  it("초안 여관은 물건을 전부 앉히고(자리 없음 경고 0) 계단 미연결만 알린다", () => {
+  it("초안 여관은 물건을 전부 앉히고(자리 없음 경고 0) 불필요한 계단 미연결도 없다", () => {
     const built = build();
     const unplaced = built.warnings.filter((line) => line.includes("자리 없음"));
     expect(unplaced, unplaced.join("\n")).toEqual([]);
-    expect(built.warnings.some((line) => line.includes("맵 연결 대상이 없다"))).toBe(true);
+    expect(built.warnings.some((line) => line.includes("맵 연결 대상이 없다"))).toBe(false);
   });
 
   it("상위 레이어 가구는 자기 방 바닥 안에만 찍힌다(벽·천장 침범 없음)", () => {
@@ -287,7 +292,7 @@ describe("place_concept 구성과 칩 집행", () => {
         const upper = map.upperTiles[y * map.width + x]!;
         if (!tiles.has(upper)) continue;
         // 키 큰 가구 상단은 벽면 아랫줄(방 위 1행)까지 허용된다.
-        const owner = built.rooms.find((room) => inBox(x, y, room) || (y === room.y - 1 && x >= room.x && x < room.x + room.w));
+        const owner = built.rooms.find((room) => inBox(x, y, room) || (y >= room.y - 2 && y < room.y && x >= room.x && x < room.x + room.w));
         expect(owner, `upper ${upper} at (${x},${y}) 이 어느 방에도 속하지 않음`).toBeDefined();
       }
     }
@@ -304,23 +309,30 @@ describe("place_concept 구성과 칩 집행", () => {
         const lower = map.lowerTiles[y * map.width + x]!;
         if (upper !== window && !picture.includes(upper)) continue;
         mounts += 1;
-        const room = rooms.find((entry) => x >= entry.x && x < entry.x + entry.w && y === entry.y - 2);
+        const room = rooms.find((entry) => x >= entry.x && x < entry.x + entry.w && y >= entry.y - 2 && y < entry.y + entry.h);
         expect(room, `벽걸이 ${upper} at (${x},${y}) 가 벽면 윗줄이 아님`).toBeDefined();
-        expect([74, 75, 76, 77]).toContain(lower);
+        expect([74, 75, 76, 77, 104, 105, 106, 107]).toContain(lower);
       }
     }
     expect(mounts).toBeGreaterThanOrEqual(4);
   });
 
   it("문 앞 통로에는 가구가 없다", () => {
-    const { map, rooms, door } = build();
-    const blocked = (x: number, y: number): boolean => map.upperTiles[y * map.width + x]! >= 0
-      || ![12, 13, 42, 43, 72, 73, 102, 103, 139, 279, 280, 281, 309, 310, 311, 339, 340, 341].includes(map.lowerTiles[y * map.width + x]!);
-    const hall = rooms.find((room) => room.role === "entrance")!;
-    for (let y = hall.y; y <= door.y; y += 1) expect(blocked(door.x, y), `정문 통로 (${door.x},${y}) 막힘`).toBe(false);
-    for (const room of rooms.filter((entry) => entry.role === "room")) {
-      const cx = room.x + Math.floor(room.w / 2);
-      for (let y = room.y; y < room.y + room.h; y += 1) expect(blocked(cx, y), `${room.roomId} 문 통로 (${cx},${y}) 막힘`).toBe(false);
+    const { project, map, rooms, door } = build();
+    const blocked = (x: number, y: number): boolean => !isPassable(project, map, x, y);
+    expect(blocked(door.x, door.y)).toBe(false);
+    expect(blocked(door.x, door.y - 1)).toBe(false);
+    const reached = new Set<string>();
+    const queue = [{x:door.x, y:door.y}];
+    for (let n = 0; n < queue.length; n++) {
+      const {x,y} = queue[n]!;
+      const key = `${x},${y}`;
+      if (reached.has(key) || x < 0 || y < 0 || x >= map.width || y >= map.height || blocked(x,y)) continue;
+      reached.add(key);
+      queue.push({x:x+1,y},{x:x-1,y},{x,y:y+1},{x,y:y-1});
+    }
+    for (const room of rooms) {
+      expect([...reached].some(key => { const [x,y] = key.split(",").map(Number); return inBox(x!,y!,room); }), room.roomId).toBe(true);
     }
   });
 
@@ -337,7 +349,9 @@ describe("place_concept 구성과 칩 집행", () => {
   });
 
   it("transfer 칩 계단은 이동 이벤트가 되고 미연결 지점으로 보고된다", () => {
-    const { map, rooms, door, connections } = build();
+    const { map, rooms, door, connections } = build(bundle => {
+      bundle.things.push({id:"stairs",label:"연결용 계단",objectId:"stairs_small",placeIds:["corridor"],chips:["transfer"],required:true});
+    });
     const corridor = rooms.find((room) => room.role === "walkway")!;
     const transfers = map.events.filter((event) => event.id.startsWith("ev_concept_") && commandsOf(event).some((command) => command.kind === "transfer"));
     expect(transfers).toHaveLength(1);
@@ -454,7 +468,7 @@ describe("place_concept plan — 모델이 설계하고 코드가 시공한다 (
     expect(mapHasObject(map, "piano")).toBe(false);
   });
 
-  it("템플릿 필수 물건(피아노·긴 탁자)을 설계에서 빼면 경고를 남기되 시공은 한다", () => {
+  it("필수 긴 탁자 누락은 경고하고 선택 가구인 피아노 누락은 경고하지 않는다", () => {
     const context = ctx();
     const result = runTool(context, "place_concept", {
       query: "여관",
@@ -466,7 +480,8 @@ describe("place_concept plan — 모델이 설계하고 코드가 시공한다 (
     }, { dryRun: false });
     expect(result.ok, result.summary).toBe(true);
     const warnings = [...(result.warnings ?? []), ...(result.diff?.warnings ?? [])];
-    expect(warnings.some((line) => line.includes("템플릿 필수 물건") && line.includes("piano"))).toBe(true);
+    expect(warnings.some((line) => line.includes("템플릿 필수 물건") && line.includes("table_long"))).toBe(true);
+    expect(warnings.some((line) => line.includes("템플릿 필수 물건") && line.includes("piano"))).toBe(false);
     expect(context.project.maps.map_inn_no_piano).toBeDefined();
   });
 

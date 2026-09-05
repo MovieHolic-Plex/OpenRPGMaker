@@ -85,7 +85,7 @@ export const INTENT_SYSTEM_PROMPT = `You classify ONE user request addressed to 
 Fields:
 - "mode": "create" (새로 만든다) | "modify" (지금 있는 것을 고친다·지운다·옮긴다·추가로 얹는다) | "question" (질문·설명·조회, 변경 없음) | "other" (인사·진행 지시·판단 불가).
 - "space": 시설·집·방을 세울 때 어디에 — "interior" (외장 없이 새로 짓는 독립 실내 방·시설 실내. 예: 여관 실내만, 빈 방 꾸미기) | "outdoor" (지금 맵 위에 건물 외장) | "both" (야외 외곽+들어가서 걷는 실내 둘 다. 예: 집 지어줘+들어갈 수 있게, 민가·상점·대장간을 짓고 안에도 들어가게) | "none" (공간 시공이 아닌 요청) | "unclear" (집·건물·방을 만들라는데 어느 쪽인지 표지가 없음).
-- "facility": 입력의 개념 꾸러미 시설 라벨 중 하나를 만들라는 요청이면 그 라벨 그대로, 아니면 null. 개념 꾸러미 시설은 get_concept_facility 로 템플릿을 읽고 place_concept(plan) 로 실내를 짓는 것이 기본이다 — 야외 표지("맵 위에", "외장", "마을에 건물")가 없으면 space="interior".
+- "facility": 입력의 개념 꾸러미 시설 라벨 중 하나를 만들라는 요청이면 그 라벨 그대로, 아니면 null. 모든 신규 실내는 get_concept_facility 로 꾸러미를 읽고 place_concept(plan) 로 짓는다. 등록되지 않은 실내도 sources의 장소·물건을 조합한다 — 야외 표지("맵 위에", "외장", "마을에 건물")가 없으면 space="interior".
 - "targetMapId": mode=modify 이고 대상 맵을 알 수 있으면 id. 「여기/이 맵/이 마을/이 방」은 현재 열린 맵. 모르면 null.
 - "useSelection": 선택 영역이 주어졌고 그 안에서 작업해야 하면 true. 새 맵을 만드는 요청이면 false. 선택 영역이 없으면 false.
 - "clarify": 도구가 실제로 갈릴 만큼 모호할 때만(예: 실내/야외 표지 없는 「집 지어줘」) 사용자에게 할 한 문장 질문. 그 외 null. 진행할 수 있으면 되묻지 않는다.
@@ -397,7 +397,7 @@ export function formatIntentNote(intent: IntentDeclaration, options: { readonly 
         `[의도] 야외 외장과 실내 둘 다이다. ${how}. 이미 확인된 의도이므로 야외/실내를 다시 묻지 말고 진행하라.`,
       );
     } else if (intent.space === "interior") {
-      const how = facilityHow ?? "start_interior_room_session(새 mapId) 로 실내를 시공한다";
+      const how = facilityHow ?? "get_concept_facility로 꾸러미의 장소·물건을 읽고 place_concept(plan, 새 mapId)으로 실내를 시공한다. 등록된 시설이 없어도 sources를 조합해 설계한다";
       lines.push(
         `[의도] 실내 시공이다(외장 없는 독립 실내). ${how}. 외장과 함께 짓는 들어가서 걷는 집이면 author_house(interior:"linked-interior")가 정답이다. `
         + "이미 확인된 의도이므로 야외/실내를 다시 묻지 말고 진행하라.",

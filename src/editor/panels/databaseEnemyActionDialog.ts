@@ -73,6 +73,10 @@ export function openActionDialog(record: EnemyRecord, index: number, action: Ene
       draftSkillId as SkillId,
     );
   };
+  // Context-menu buttons disappear on entry; the original-array row is the opener.
+  const workbench = Array.from(document.querySelectorAll<HTMLElement>('[data-testid="db-enemies-bm101-workbench"]'))
+    .find((node) => node.dataset.enemyId === record.id);
+  const opener = workbench?.querySelector<HTMLElement>(`[data-testid="db-enemy-action-row-${index}"]`);
   openDialog("db-enemy-action-dialog", "공격 패턴", [
     panel("조건", [conditionHeader(conditionType, rating), conditionDetail(start, interval)]),
     panel("행동 후 스위치 ON", [switchOn]),
@@ -85,7 +89,7 @@ export function openActionDialog(record: EnemyRecord, index: number, action: Ene
       rerender();
     } },
     { label: "Cancel", testid: "db-enemy-action-cancel" },
-  ]);
+  ], opener);
   syncCondition();
   // openDialog closes after its action callback; intercept invalid confirmation
   // before that shared click handler without changing other dialog contracts.
