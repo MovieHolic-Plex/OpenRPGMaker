@@ -957,7 +957,7 @@ function addBattleCommand(rerender: () => void): void {
   let nextIndex = 0;
   store.update((project) => {
     const list = (project.database.battleCommands ??= []);
-    list.push({ id: uniqueBattleCommandId(list), name: "새 명령", kind: "attack" });
+    list.push({ id: uniqueBattleCommandId(list, project.database.classes.flatMap((klass) => klass.battleCommands)), name: "새 명령", kind: "attack" });
     nextIndex = list.length - 1;
   }, { scope: "database", collection: "battleCommands", label: "전투 명령 카탈로그 변경" });
   commandQuery = "";
@@ -973,7 +973,7 @@ function duplicateBattleCommand(index: number, rerender: () => void): void {
     const list = project.database.battleCommands;
     const source = list?.[index];
     if (!list || !source) return;
-    list.splice(index + 1, 0, { ...source, id: uniqueBattleCommandId(list), name: `${source.name} 복사` });
+    list.splice(index + 1, 0, { ...source, id: uniqueBattleCommandId(list, project.database.classes.flatMap((klass) => klass.battleCommands)), name: `${source.name} 복사` });
     nextIndex = index + 1;
   }, { scope: "database", collection: "battleCommands", label: "전투 명령 카탈로그 변경" });
   selectUtilityRecord("battleCommands", nextIndex);
@@ -1009,8 +1009,9 @@ function moveBattleCommand(index: number, delta: number, rerender: () => void): 
   restoreFocusAfterRerender(`db-field-battle-command-name-${target}`);
 }
 
-function uniqueBattleCommandId(list: readonly DatabaseBattleCommandRecord[]): string {
-  const used = new Set(list.map((record) => record.id));
+function uniqueBattleCommandId(list: readonly DatabaseBattleCommandRecord[], classCommands: readonly DatabaseBattleCommandRecord[]): string {
+  // Deleted catalog entries can still supply the identity of placed class commands.
+  const used = new Set([...list, ...classCommands].map((record) => record.id));
   let ordinal = list.length + 1;
   let candidate = `cmd_${String(ordinal).padStart(3, "0")}`;
   while (used.has(candidate)) {
