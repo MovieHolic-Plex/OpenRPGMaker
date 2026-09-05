@@ -1,5 +1,13 @@
 # DB 마을 설계서 검증 — 2026-09-05
 
+## 격리 워크트리
+
+- 작업 경로: `/home/main/z-project/rpg-zzu-village-design-db`
+- 브랜치: `agent/village-design-db`
+- 베이스: `7167ae65`와 동일한 파일 트리의 스냅샷 `797c2e82`. 메인의 미커밋 변경이 섞이지 않았음을 `git diff 7167ae65 797c2e82 --stat`로 확인했다.
+- 실행: 이 경로에서 `npm run dev:worktree` → `http://localhost:40261/`.
+- 자동 배정된 9841은 메인의 다른 서버가 이미 사용하고 있어, 이 워크트리의 gitignored `.env.local`에서 `DEV_SERVER_PORT=40261`로 보정했다. 다른 서버나 메인 파일은 변경하지 않았다.
+
 ## 확인 경로
 
 편집기 → DB → 맵 → 마을 → 마을 설계서 → 추가.
@@ -41,3 +49,7 @@
 마지막 ID 검증·문구 보완 뒤 8개 파일 156개 assertion은 통과했으나 Vitest `onTaskUpdate` RPC timeout 두 건으로 해당 실행은 exit 1이었다(`focused.log`). 이를 정상 종료로 취급하지 않고 변경한 3개 파일을 worker 1개로 다시 확인한다. 마지막 타입 검사 exit 0(`typecheck.log`).
 
 단일 worker 재검증도 3개 파일 / 52개 assertion 통과 후 `onTaskUpdate` RPC timeout 1건으로 exit 1이었다(`focused-retry.log`). 따라서 최종 집중 실행을 깨끗한 통과로 보고하지 않는다. 타입·CSS·브라우저 검증은 통과했으며 전체 게이트와 테스트 실행기 오류는 남아 있다.
+
+## 워크트리 분리 확인 뒤 재검증
+
+같은 8개 파일을 JSON reporter로 재검증: 155 통과 / 1 실패, exit 1. 실패한 기존 배치 테스트 `스케치가 이긴 집 배치는 격자 열에 서지 않는다`는 코드 변경 없이 단독 실행에서 통과(exit 0, 1 통과 / 32 선택 제외). 일괄 실행을 전체 통과로 바꾸어 기록하지 않는다. `isolated-validation.json`, `isolated-single-retry.log` 참조. 이 단계의 수정은 워크트리 포트 보정과 검증 문서뿐이며 메인에는 적용하지 않았다.
