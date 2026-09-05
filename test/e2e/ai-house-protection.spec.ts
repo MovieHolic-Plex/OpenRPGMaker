@@ -90,7 +90,7 @@ async function prepareEditor(page: Page, context: BrowserContext, permit: typeof
         // Vite closes idle HTTP sockets; never reuse a stale socket during a large
         // module graph load. This is transport isolation, not an ECONNRESET retry.
         return route.fulfill({ response: await route.fetch({
-          headers: { ...request.headers(), connection: "close" }, maxRetries: 0, timeout: 15_000,
+          headers: { ...request.headers(), connection: "close" }, maxRetries: 0, timeout: 60_000,
         }) });
       }
       return route.fallback();
