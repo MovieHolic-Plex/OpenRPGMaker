@@ -1,4 +1,4 @@
-﻿/**
+/**
  * villager-room-v1 procedural interior pipeline (village-session style layers).
  *
  * Layers (multi-turn / one-shot):
@@ -1154,6 +1154,7 @@ function paintRoomSpace(
         floor: mask,
         fullFloor: floor,
         roomId: room.id,
+        facilityId: plan.concept.facilityId,
         room,
         role: conceptRoom.role,
         door: plan.door,

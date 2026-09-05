@@ -75,3 +75,13 @@ PR #607 integration:
 - Browser save/reopen/navigation/search/lock/deletion and narrow-width
   document/list access scenarios both passed, with retries disabled.
   Fresh screenshots are under `verify-shots/world-authoring-fixes/`.
+
+PR #611 integration:
+
+- `npm run typecheck:app`: exit 0.
+- Six focused facility/concept tests: 110 passed, exit 0.
+- `vite-node scripts/qa-facility-quality.mts integration`: exit 0.
+- All eight changed facilities have zero placement/walkability warnings.
+  The unchanged inn fixture retains its existing unconnected stair warning.
+- Fresh map artifacts and manifest:
+  `output/evidence/facility-quality/integration/`.
