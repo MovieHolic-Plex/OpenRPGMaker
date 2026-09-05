@@ -24,6 +24,7 @@ import {
 import type { Command, Condition, EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { findLayoutRegions, rankRegionsByCenter } from "@/project/mapLayoutPlan";
 import { lintTilesetPalettes } from "@/editor/lint/tilesetPaletteLint";
+import { verifyPlacedTiles } from "@/project/lint/postTileVerify";
 import { passageMarkForTile } from "@/project/tilesetPassage";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
@@ -482,7 +483,7 @@ function toReachSpecs(value: unknown): Array<{ mapId: string; from: ReachPoint; 
 
 const runLint: ToolDefinition = {
   name: "run_lint",
-  description: "projectLint, 타일셋 팔레트 lint를 실행해 무결성 issue 목록(error/warning/info)을 반환한다.",
+  description: "projectLint, 타일셋 팔레트 lint, 타일 후검증을 실행해 무결성 issue 목록(error/warning/info)을 반환한다.",
   mode: "read",
   parameters: {
     type: "object",
@@ -506,6 +507,7 @@ const runLint: ToolDefinition = {
     const issues: LintIssue[] = [
       ...projectLint(project, { reachability: toReachSpecs(args.reachability) }),
       ...lintTilesetPalettes(project),
+      ...verifyPlacedTiles(project),
     ];
     const errors = issues.filter((issue) => issue.severity === "error").length;
     const warnings = issues.filter((issue) => issue.severity === "warning").length;
