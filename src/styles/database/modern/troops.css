@@ -489,13 +489,13 @@
   background: var(--db-studio-well, var(--db-studio-well));
   border-radius: 4px;
   color: var(--db-studio-text-3, var(--db-studio-text-3));
-  font: 600 9.5px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 600 11px/1.35 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   padding: 3px 5px;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-troop-member-coords {
   color: var(--db-studio-text-3, var(--db-studio-text-3));
-  font: 500 10.5px/1 ui-monospace, Consolas, monospace;
+  font: 500 11px/1.35 ui-monospace, Consolas, monospace;
   white-space: nowrap;
 }
 

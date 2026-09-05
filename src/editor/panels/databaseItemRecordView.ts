@@ -381,8 +381,9 @@ function itemHeader(record: ItemRecord): HTMLElement {
   const project = store.getCurrent();
   const url = resolveAssetResourceUrl(record.iconResourceId ?? record.imageResourceId, { project });
   const icon = el("div", {
-    class: "db-item-inspector-icon",
-    attrs: { role: "img", "aria-label": `${record.name} 아이콘` },
+    class: `db-item-inspector-icon${url ? "" : " db-image-placeholder"}`,
+    attrs: { role: "img", "aria-label": url ? `${record.name} 아이콘` : `${record.name} 이미지 없음` },
+    text: url ? undefined : "이미지 없음",
   });
   if (url) icon.style.backgroundImage = `url("${url}")`;
   const name = textField("이름", "db-field-name", record.name, (name) => updateDatabaseRecord("items", record.id, { name }));

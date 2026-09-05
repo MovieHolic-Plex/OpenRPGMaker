@@ -271,7 +271,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-cx-frame-btn small {
   color: var(--db-studio-text-3, var(--db-studio-text-3));
-  font: 600 9.5px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 600 11px/1.35 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-cx-frame-btn:hover {
@@ -332,7 +332,7 @@
   border: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
   border-radius: 999px;
   color: var(--db-studio-text-2, var(--db-studio-text-2));
-  font: 600 10.5px/1.6 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 600 11px/1.35 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   padding: 1px 9px;
 }
 

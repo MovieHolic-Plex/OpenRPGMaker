@@ -389,7 +389,8 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-passage-compass-hub {
   color: var(--text-3);
-  font-size: 10px;
+  font-size: 11px;
+  line-height: 1.35;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-db-preview-header.passage-chrome {

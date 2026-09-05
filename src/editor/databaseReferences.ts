@@ -165,7 +165,7 @@ export function databaseReferenceMessage(collection: DatabaseCollection, id: str
           record.equipmentProfile.stateDefenseIds.includes(id)
       );
       if (items.length) return namedReferenceMessage("아이템", items, "이 상태를 사용 중입니다.");
-      const equipment = project.database.equipment.filter((record) => record.stateInflictIds.includes(id));
+      const equipment = project.database.equipment.filter((record) => record.stateInflictIds.includes(id) || record.stateDefenseIds.includes(id));
       if (equipment.length) return namedReferenceMessage("장비", equipment, "이 상태를 사용 중입니다.");
       return null;
     }

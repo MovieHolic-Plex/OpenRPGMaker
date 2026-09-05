@@ -479,7 +479,7 @@
   border-radius: 6px;
   box-shadow: none;
   color: var(--db-studio-text-2);
-  font: 600 12px/1 var(--font-ui);
+  font: 600 12px/1.35 var(--font-ui);
   min-height: 26px;
   padding: 0 10px;
 }

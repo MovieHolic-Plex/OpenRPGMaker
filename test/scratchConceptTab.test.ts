@@ -540,3 +540,42 @@ describe("Phase 4 마이그레이션 계약 — 세 필드 공존", () => {
     expect(vocab.kindsById.get("bedroom")?.requiredRoles).toEqual([]);
   });
 });
+
+describe("scratchConceptTab 키보드 선택", () => {
+  function keydown(key: string): Event {
+    const event = new Event("keydown", { bubbles: true, cancelable: true });
+    Object.defineProperty(event, "key", { configurable: true, value: key });
+    return event;
+  }
+
+  it("물건 칩에 tabindex/role이 있고 Enter로 선택된다", () => {
+    const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
+    const chip = host.querySelector("[data-testid='scratch-concept-thing-bed_h']")!;
+    expect(chip.getAttribute("tabindex")).toBe("0");
+    expect(chip.getAttribute("role")).toBe("button");
+    host.querySelector("[data-testid='scratch-concept-facility-smithy']")!.click();
+    expect(host.querySelector("[data-testid='scratch-concept-thing-bed_h']")).toBeNull();
+    const workshopChip = host.querySelector("[data-testid='scratch-concept-thing-stove']")!;
+    workshopChip.dispatchEvent(keydown("Enter"));
+    expect(workshopChip.getAttribute("aria-label")).toContain("선택");
+  });
+
+  it("장소 카드는 Enter/Space로 선택되고 카드 안 입력에서는 무시된다", () => {
+    const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
+    const card = host.querySelector("[data-testid='scratch-concept-place-bedroom']")!;
+    expect(card.getAttribute("tabindex")).toBe("0");
+    expect(card.getAttribute("role")).toBe("button");
+    card.dispatchEvent(keydown("Enter"));
+    expect(host.querySelector("[data-testid='scratch-concept-place-bedroom']")).not.toBeNull();
+  });
+
+  it("아이템 헤더는 그림이 없을 때 자리표시자를 보인다", async () => {
+    const { renderItemRecordForm } = await import("@/editor/panels/databaseItemRecordView");
+    const record = store.getCurrent().database.items[0]!;
+    const form = new FakeElement("div");
+    renderItemRecordForm(form as unknown as HTMLElement, { ...record, iconResourceId: undefined, imageResourceId: undefined }, () => {});
+    const icon = form.querySelector(".db-item-inspector-icon")!;
+    expect(icon.textContent).toBe("이미지 없음");
+    expect(icon.getAttribute("aria-label")).toContain("이미지 없음");
+  });
+});

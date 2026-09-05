@@ -1126,7 +1126,8 @@
 
 .database-modal-body .oprn-record-actors .actor-build-natural-max {
   color: var(--db-modern-muted, #756a5b);
-  font-size: 9px;
+  font-size: 11px;
+  line-height: 1.35;
   max-width: 82px;
 }
 
@@ -1190,7 +1191,8 @@
 .database-modal-body .oprn-record-actors .actor-build-stat span,
 .database-modal-body .oprn-record-actors .actor-build-stat small {
   color: var(--db-modern-muted, #756a5b);
-  font-size: 9px;
+  font-size: 11px;
+  line-height: 1.35;
 }
 
 .database-modal-body .oprn-record-actors .actor-build-stat strong {

@@ -156,7 +156,7 @@
   border-radius: 6px;
   color: var(--db-studio-text-3);
   cursor: pointer;
-  font: 500 11px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 500 11px/1.35 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   padding: 5px 8px;
 }
 
