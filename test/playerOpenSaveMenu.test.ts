@@ -101,8 +101,8 @@ describe("event-opened save menu in the shipping player shell", () => {
 
     keyDown("Enter");
 
-    expect(window.localStorage.setItem).toBe(original);
     expect(await signal.completion).toBe("written");
+    expect(window.localStorage.setItem).toBe(original);
     expect(readSaveSlot(window.localStorage, 1)).toMatchObject({
       kind: "present", snapshot: { schemaVersion: 5, session: { switches: { sw_quest_key: true } } },
     });
