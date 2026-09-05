@@ -203,6 +203,14 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     return live;
   };
 
+  const openSaveMenu = (): void => {
+    reset();
+    // 이벤트 진입은 레일 선택만 바꾸지 않고 저장 슬롯에 바로 포커스를 준다.
+    // 저장 가능 여부는 렌더링과 saveSlot의 기존 맵/세션 제한을 그대로 따른다.
+    mode = "function";
+    options.emitMenuJuice("menu-open", renderMenu(undefined, "save"));
+  };
+
   const toggleMenu = (): void => {
     if (!options.getActiveScene()) return;
     const session = options.getActiveScene()?.getSession();
@@ -673,7 +681,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     return session.m2Runtime?.access.save !== false;
   }
 
-  return { reset, renderMenu, toggleMenu, handleKey };
+  return { reset, renderMenu, openSaveMenu, toggleMenu, handleKey };
 }
 
 function isRailNavKey(key: RuntimeMenuKey): boolean {

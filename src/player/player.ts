@@ -402,11 +402,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       game.registry.set("dialogue", dialogue);
       game.registry.set("dialogueHost", playStage);
       game.registry.set("returnToTitle", () => renderTitle());
-      game.registry.set("openSaveMenu", () => {
-        // 타자기 세이브: 이벤트가 세이브 화면을 연다. 전역 메뉴 세이브 비활성과 조합해 세이브 포인트 전용 설계가 가능하다.
-        statusMenu.reset();
-        statusMenu.renderMenu(undefined, "save");
-      });
+      game.registry.set("openSaveMenu", statusMenu.openSaveMenu);
       // create() 가 이미 끝났을 수도 있으므로 ready 콜백 + 폴링으로 모두 커버.
       const ready = await waitForPlaySceneReady(nextGame, () => startRun === run, readyPromise);
       if (run !== startRun) {
