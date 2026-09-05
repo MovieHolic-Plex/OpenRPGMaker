@@ -13,8 +13,9 @@ import { genId } from "@/util/id";
  * - DOM·스토어에 닿지 않는 순수 상태 기계. runner 가 실제 생성 한 건을 맡는다.
  * - 기본 runner 는 generateAiImage → dataUrl. 에셋 삽입(store.update)은 UI 층이
  *   done 전이를 구독해 처리한다(큐가 project/store 를 모르게 둔다).
- * - 실행 중 취소는 AbortController + cancelled 플래그 이중 처리. runner 가 signal 을
- *   무시하고 늦게 resolve/reject 해도 이미 cancelled 면 결과를 버린다.
+ * - 실행 중 취소는 AbortController identity 로 바인딩한다. runner 가 signal 을
+ *   무시하고 늦게 resolve/reject 해도, 그 사이 cancel·retry·dispose 로 controller 가
+ *   바뀌었으면 결과를 버린다.
  */
 export type ImageQueueJobStatus = "queued" | "running" | "done" | "error" | "cancelled";
 
@@ -85,7 +86,6 @@ type JobRecord = {
   result: string | null;
   createdAt: number;
   controller: AbortController | null;
-  cancelled: boolean;
 };
 
 const DEFAULT_CONCURRENCY = 1;
@@ -166,21 +166,23 @@ export function createImageGenerationQueue(options: ImageQueueOptions = {}): Ima
     record.status = "running";
     record.attempts += 1;
     record.error = null;
-    record.cancelled = false;
     record.controller = new AbortController();
-    const { signal } = record.controller;
+    const thisRun = record.controller;
+    const { signal } = thisRun;
     const frozen = freeze(record);
     notify();
     try {
       const result = await runner(frozen, { signal });
-      // 취소된 뒤 늦게 도착한 성공은 버린다 — 다음 작업은 cancel() 시점에 이미 시작했다.
-      if (record.cancelled) return;
+      // 이 실행이 끝난 뒤 cancel·retry·dispose 로 controller 가 바뀌었으면 늦은 결과는
+      // 버린다. cancel() 은 controller 를 null 로, 재실행은 새 controller 로 바꾸므로
+      // identity 비교 하나로 stale 성공·실패를 모두 버린다(취소 후 재시도 포함).
+      if (record.controller !== thisRun) return;
       record.status = "done";
       record.result = result;
       record.controller = null;
       notify();
     } catch (error) {
-      if (record.cancelled) return;
+      if (record.controller !== thisRun) return;
       record.status = "error";
       record.error = errorMessage(error);
       record.controller = null;
@@ -208,7 +210,6 @@ export function createImageGenerationQueue(options: ImageQueueOptions = {}): Ima
         result: null,
         createdAt: Date.now() * 1000 + sequence,
         controller: null,
-        cancelled: false,
       });
       notify();
       pump();
@@ -219,7 +220,6 @@ export function createImageGenerationQueue(options: ImageQueueOptions = {}): Ima
       const record = records.get(id);
       if (!record || record.status === "done" || record.status === "error") return false;
       if (record.status === "cancelled") return false;
-      record.cancelled = true;
       record.controller?.abort();
       record.controller = null;
       record.status = "cancelled";
@@ -234,7 +234,7 @@ export function createImageGenerationQueue(options: ImageQueueOptions = {}): Ima
       if (!record || (record.status !== "error" && record.status !== "cancelled")) return false;
       record.status = "queued";
       record.error = null;
-      record.cancelled = false;
+      record.result = null;
       notify();
       pump();
       return true;
@@ -266,7 +266,6 @@ export function createImageGenerationQueue(options: ImageQueueOptions = {}): Ima
       disposed = true;
       for (const record of records.values()) {
         if (record.status === "running" || record.status === "queued") {
-          record.cancelled = true;
           record.controller?.abort();
           record.controller = null;
           record.status = "cancelled";

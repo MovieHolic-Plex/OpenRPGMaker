@@ -108,6 +108,42 @@ describe("imageGenerationQueue", () => {
     queue.dispose();
   });
 
+  it("취소 후 재시도하면 이전 실행의 늦은 결과는 버린다", async () => {
+    const first = deferred<string>();
+    const second = deferred<string>();
+    let calls = 0;
+    const queue = createImageGenerationQueue({
+      runner: async () => {
+        calls += 1;
+        return calls === 1 ? first.promise : second.promise;
+      },
+    });
+    const id = queue.enqueue({ prompt: "느림" });
+    await vi.waitFor(() => {
+      expect(queue.getSnapshot().jobs[0]?.status).toBe("running");
+    });
+    expect(queue.cancel(id)).toBe(true);
+    expect(queue.retry(id)).toBe(true);
+    await vi.waitFor(() => {
+      expect(queue.getSnapshot().jobs[0]?.attempts).toBe(2);
+    });
+    // 취소된 첫 실행이 늦게 성공해도 재시도 실행에는 닿지 않는다. 첫 promise 의
+    // continuation 은 runOne 이 먼저 붙였으므로, 여기서 await 하면 stale 분기가
+    // 완전히 정착한 뒤에 깨어난다(고정 sleep 없이 결정적이다).
+    first.resolve("stale-data");
+    await first.promise;
+    const during = queue.getSnapshot().jobs[0]!;
+    expect(during.status).toBe("running");
+    expect(during.result).toBeNull();
+    // 재시도 실행의 결과만 적용된다.
+    second.resolve("fresh-data");
+    await vi.waitFor(() => {
+      expect(queue.getSnapshot().jobs[0]?.status).toBe("done");
+    });
+    expect(queue.getSnapshot().jobs[0]?.result).toBe("fresh-data");
+    queue.dispose();
+  });
+
   it("대기 중 취소는 runner 를 부르지 않고 재시도하면 다시 돈다", async () => {
     const gate = deferred<string>();
     let calls = 0;

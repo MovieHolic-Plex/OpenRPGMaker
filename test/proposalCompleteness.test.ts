@@ -240,7 +240,11 @@ describe("proposal completeness lint", () => {
 
 describe("완성도 린트 — 의도 선언이 있으면 선언 필드로 판정한다", () => {
   const emptyCall = (name: string): ProposalCompletenessCall => ({ name, args: {}, result: { ok: true, diff: changeSummary() } });
-  const okHouse = (): ProposalCompletenessCall => ({ name: "author_house", args: {}, result: { ok: true, diff: changeSummary({ tilesChanged: 40 }) } });
+  const okHouse = (interior: "exterior-only" | "linked-interior" | "omit" = "exterior-only"): ProposalCompletenessCall => ({
+    name: "author_house",
+    args: interior === "omit" ? {} : { interior },
+    result: { ok: true, diff: changeSummary({ tilesChanged: 40 }) },
+  });
 
   it("질문 선언은 변경 0건이어도 미이행이 아니다", () => {
     const warnings = proposalCompletenessWarnings({ requestText: "이 맵 이벤트 몇 개야?", intent: declaredIntent({ mode: "question" }), calls: [emptyCall("find_events")] });
@@ -265,5 +269,55 @@ describe("완성도 린트 — 의도 선언이 있으면 선언 필드로 판�
   it("원탭 선택지가 붙은 되묻기 응답은 변경 0건이 정상이다", () => {
     const warnings = proposalCompletenessWarnings({ requestText: "집 지어줘", intent: declaredIntent({ mode: "create", space: "unclear" }), calls: [], assistantText: "어디에 지을까요?\n[선택지] 실내 | 야외" });
     expect(warnings).toEqual([]);
+  });
+
+  it("실내 신축에 linked-interior 집을 지으면 경고하지 않는다", () => {
+    const warnings = proposalCompletenessWarnings({
+      requestText: "집 지어줘 들어가게",
+      intent: declaredIntent({ mode: "create", space: "interior" }),
+      calls: [call("author_house", { kind: "single", mapId: "m1", kitId: "blue-stone", wings: [{ x: 2, y: 2, w: 6, h: 6 }], interior: "linked-interior", door: true, yard: [] }, { tilesChanged: 40 })],
+    });
+    expect(warnings.some((warning) => warning.includes("실내 요청인데"))).toBe(false);
+  });
+
+  it("야외 집 시공에 외장만 지으면 경고한다", () => {
+    const warnings = proposalCompletenessWarnings({
+      requestText: "집 지어줘",
+      intent: declaredIntent({ mode: "create", space: "outdoor" }),
+      calls: [okHouse()],
+    });
+    expect(warnings.some((warning) => warning.includes("외장만"))).toBe(true);
+  });
+
+  it("야외 집 시공에서 interior 생략은 linked-interior로 보고 경고하지 않는다", () => {
+    const warnings = proposalCompletenessWarnings({
+      requestText: "집 지어줘",
+      intent: declaredIntent({ mode: "create", space: "outdoor" }),
+      calls: [okHouse("omit")],
+    });
+    expect(warnings.some((warning) => warning.includes("외장만"))).toBe(false);
+  });
+
+  it("space=both lots with all exterior-only houses fires a completeness warning", () => {
+    const warnings = proposalCompletenessWarnings({
+      requestText: "Build walk-in houses",
+      intent: declaredIntent({ mode: "create", space: "both" }),
+      calls: [
+        call(
+          "author_house",
+          {
+            kind: "lots",
+            mapId: "m1",
+            interior: "linked-interior",
+            houses: [
+              { kitId: "blue-stone", wings: [{ x: 2, y: 1, w: 6, h: 8 }], interior: "exterior-only", door: true, yard: [] },
+              { kitId: "bright-plaster", wings: [{ x: 12, y: 1, w: 7, h: 9 }], interior: "exterior-only", door: true, yard: [] },
+            ],
+          },
+          { tilesChanged: 80 },
+        ),
+      ],
+    });
+    expect(warnings.some((line) => line.includes("야외+실내") && line.includes("외장만"))).toBe(true);
   });
 });

@@ -137,6 +137,23 @@ const INTERIOR_ROOM_TOOL_NAMES = new Set([
   "furnish_interior_space",
 ]);
 
+function houseCallUsedLinkedInterior(call: ProposalCompletenessCall): boolean {
+  const args = call.args as { readonly interior?: unknown; readonly houses?: unknown };
+  // lots 정규화가 최상위 interior 를 버리므로 houses[] 가 있으면 그것만 본다.
+  // 생략은 파서가 linked-interior 로 기본한다.
+  if (Array.isArray(args.houses)) {
+    return args.houses.every((house) =>
+      typeof house === "object" && house !== null
+      && isLinkedInteriorArg((house as { readonly interior?: unknown }).interior),
+    );
+  }
+  return isLinkedInteriorArg(args.interior);
+}
+
+function isLinkedInteriorArg(value: unknown): boolean {
+  return value === undefined || value === null || value === "linked-interior";
+}
+
 function interiorCompletenessWarnings(
   _requestText: string,
   calls: readonly ProposalCompletenessCall[],
@@ -144,12 +161,37 @@ function interiorCompletenessWarnings(
 ): string[] {
   // 실내 신축 여부는 선언이 정한다. 선언이 없으면 이 경고를 내지 않는다 — 「여관」「침실」 낱말 정규식으로
   // 실내를 추측하던 경로가 수정 요청에 「새 실내 맵을 시공하세요」를 붙여 신축을 밀어붙였다(2026-08-29).
-  if (!intent || intent.space !== "interior" || intent.mode !== "create") return [];
+  if (!intent || intent.mode !== "create") return [];
+  // space:"both" — 들어가서 걷는 집이면 author_house(linked-interior) 한 번이 정답.
+  // 외장만 짓고 실내/전이 없이 끝내면 미이행으로 잡는다.
+  if (intent.space === "both") {
+    const okCalls = calls.filter((call) => call.result.ok);
+    const houseCalls = okCalls.filter((call) => call.name === "author_house");
+    if (houseCalls.length === 0) return [];
+    const linked = houseCalls.every((call) => houseCallUsedLinkedInterior(call));
+    const paired = okCalls.some((call) => call.name === "create_transfer_pair");
+    if (!linked && !paired) {
+      return [`${PROPOSAL_COMPLETENESS_WARNING_PREFIX} 야외+실내 요청인데 외장만 시공했습니다. author_house(interior:"linked-interior")로 짓거나 create_transfer_pair로 이으세요.`];
+    }
+    return [];
+  }
+  if (intent.space === "outdoor") {
+    const okCalls = calls.filter((call) => call.result.ok);
+    const houseCalls = okCalls.filter((call) => call.name === "author_house");
+    if (houseCalls.length === 0) return [];
+    const linked = houseCalls.every((call) => houseCallUsedLinkedInterior(call));
+    if (!linked) {
+      return [`${PROPOSAL_COMPLETENESS_WARNING_PREFIX} 집 시공인데 외장만 지었습니다. 들어가서 걷는 집이면 author_house(interior:"linked-interior")로 실내맵과 양방향 전이를 함께 지으세요.`];
+    }
+    return [];
+  }
+  if (intent.space !== "interior") return [];
   const okCalls = calls.filter((call) => call.result.ok);
   if (okCalls.some((call) => INTERIOR_ROOM_TOOL_NAMES.has(call.name))) return [];
-  const usedOutdoorHouse = okCalls.some((call) => call.name === "author_house");
-  if (usedOutdoorHouse) {
-    return [`${PROPOSAL_COMPLETENESS_WARNING_PREFIX} 실내 요청인데 야외 집 외장(author_house)만 시공했습니다. 새 실내 맵이 필요하면 start_interior_room_session/run_interior_room_pipeline(새 mapId), 기존 실내 맵을 고치는 것이면 furnish_interior_space({mapId, roomId})를 쓰세요.`];
+  const houseCalls = okCalls.filter((call) => call.name === "author_house");
+  if (houseCalls.length > 0) {
+    if (houseCalls.every((call) => houseCallUsedLinkedInterior(call))) return [];
+    return [`${PROPOSAL_COMPLETENESS_WARNING_PREFIX} 실내 요청인데 야외 집 외장(author_house)만 시공했습니다. 들어가서 걷는 집이면 author_house(interior:"linked-interior"), 외장 없는 독립 실내면 start_interior_room_session/run_interior_room_pipeline(새 mapId), 기존 실내 맵을 고치는 것이면 furnish_interior_space({mapId, roomId})를 쓰세요.`];
   }
   const onlyEmptyMap =
     okCalls.length > 0

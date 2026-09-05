@@ -74,6 +74,30 @@ describe("village cross-road fix", () => {
     }
   });
 
+  it("직선이 굳지 않는다 — 간선은 내부에서 꺾인다", () => {
+    // Given: 분기 갈래가 다른 시드들
+    // When: 간선 폴리라인을 뽑는다
+    for (const seed of [0, 1, 2, 3, 7, 42]) {
+      const routes = villageArteryRoutes(AREA, PLAZA, seed, 0.5);
+      const branchIndex = ((seed % 4) + 4) % 4;
+      // Then: 비분기는 5점, 분기는 4점. 실제 세 정점은 한 직선에 있지 않다
+      for (let index = 0; index < routes.length; index += 1) {
+        const route = routes[index]!;
+        if (index === branchIndex) {
+          expect(route.length).toBeGreaterThanOrEqual(4);
+          const [a, b, c] = route.slice(1);
+          const cross = (b!.x - a!.x) * (c!.y - b!.y) - (b!.y - a!.y) * (c!.x - b!.x);
+          expect(cross, `seed=${seed} branch`).not.toBe(0);
+        } else {
+          expect(route.length).toBeGreaterThanOrEqual(5);
+          const [a, b, c] = route.slice(1, -1);
+          const cross = (b!.x - a!.x) * (c!.y - b!.y) - (b!.y - a!.y) * (c!.x - b!.x);
+          expect(cross, `seed=${seed} route=${index}`).not.toBe(0);
+        }
+      }
+    }
+  });
+
   it("재시도 지터가 바뀌어도 앵커·분기 갈래는 원본 시드에 묶인다", () => {
     const base = villageArteryRoutes(AREA, PLAZA, 7, 0.5, 7);
     const retried = villageArteryRoutes(AREA, PLAZA, 7, 0.5, 7 + 7919);

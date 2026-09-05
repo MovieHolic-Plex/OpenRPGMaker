@@ -177,10 +177,32 @@ describe("formatIntentNote — 선언이 확정한 것을 본문 모델에게 �
   it("수정·질문·야외 선언은 각자의 경계를, 폴백·이어가기는 노트를 내지 않는다", () => {
     expect(formatIntentNote(declaredIntent({ mode: "modify", targetMapId: "map_a" }))).toContain("`map_a`");
     expect(formatIntentNote(declaredIntent({ mode: "question" }))).toContain("바꾸지 말고");
-    expect(formatIntentNote(declaredIntent({ mode: "create", space: "outdoor" }))).toContain("야외 시공");
+    const outdoor = formatIntentNote(declaredIntent({ mode: "create", space: "outdoor" }));
+    expect(outdoor).toContain("야외 시공");
+    expect(outdoor).toContain('interior:"linked-interior"');
+    expect(outdoor).not.toContain("실내 세션·새 실내 맵은 만들지 말 것");
     expect(formatIntentNote(declaredIntent({ mode: "create", space: "none" }))).toBeNull();
     expect(formatIntentNote(fallbackIntentDeclaration(FACTS))).toBeNull();
     expect(formatIntentNote(continuationIntentDeclaration(FACTS))).toBeNull();
+  });
+
+  it("space=interior 선언은 독립 실내이며 linked-interior 집을 막지 않는다", () => {
+    const note = formatIntentNote(declaredIntent({ mode: "create", space: "interior", facility: null, tools: ["start_interior_room_session"] }));
+    expect(note).toContain("독립 실내");
+    expect(note).toContain('interior:"linked-interior"');
+    expect(note).not.toContain("야외 집(author_house)을 대신 짓지 말 것");
+  });
+
+  it("space=both 선언은 linked-interior 한 번을 말한다", () => {
+    const note = formatIntentNote(declaredIntent({ mode: "create", space: "both", facility: null, tools: ["author_house"] }));
+    expect(note).toContain("author_house");
+    expect(note).toContain('interior:"linked-interior"');
+    expect(note).not.toContain("start_interior_room_session");
+    expect(note).not.toContain("둘은 create_transfer_pair 로 잇는다");
+    expect(note).not.toContain("create_transfer_pair 수동 연결은 불필요");
+    const facilityNote = formatIntentNote(declaredIntent({ mode: "create", space: "both", facility: "여관", tools: ["place_concept"] }));
+    expect(facilityNote).toContain("place_concept");
+    expect(facilityNote).not.toContain("create_transfer_pair");
   });
 
   it("auto 모드에서 건너뛴 되묻기는 「택하고 밝혀라」로 바뀐다", () => {

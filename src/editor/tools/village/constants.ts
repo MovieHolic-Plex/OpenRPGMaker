@@ -209,6 +209,8 @@ export interface HouseCandidate {
   readonly template: HouseTemplate;
   readonly bbox: Rect;
   readonly organic: boolean;
+  /** 스케치 프리패스 후보 — organic 분수 슬롯보다 먼저 시도한다. */
+  readonly sketch?: boolean;
 }
 
 export interface BuiltHouse {

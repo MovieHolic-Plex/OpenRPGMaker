@@ -282,6 +282,28 @@ export function villageArteryRoutes(area: Rect, plaza: Plaza, seed: number, natu
   const westAnchor = anchors[2]!;
   const eastAnchor = anchors[3]!;
   const q = (from: number, to: number, t: number): number => Math.floor(from + (to - from) * t);
+  const onLine = (a: Point, b: Point, p: Point): boolean =>
+    (b.x - a.x) * (p.y - a.y) === (b.y - a.y) * (p.x - a.x);
+  // [1]·[2] 중점 + 흔들림. 흔들림이 0으로 맞아떨어져 선 위에 떨어지면(축 평행 다리에서 흔함)
+  // 수직으로 2칸 밀어 비공선을 보장한다 — 직선 굳기 방지의 핵심이 우연에 맡겨지면 안 된다.
+  // 양쪽 부호를 시도하므로 가장자리 클램프에 뭉개져도 살아남는다.
+  const joggedMid = (a: Point, b: Point): Point => {
+    const mid = {
+      x: cx(Math.floor((a.x + b.x) / 2) + swing()),
+      y: cy(Math.floor((a.y + b.y) / 2) + swing()),
+    };
+    if (!onLine(a, b, mid)) return mid;
+    const sign = rng() < 0.5 ? -1 : 1;
+    const horizontal = Math.abs(b.x - a.x) >= Math.abs(b.y - a.y);
+    const nudges: readonly Point[] = horizontal
+      ? [{ x: mid.x, y: cy(mid.y + 2 * sign) }, { x: mid.x, y: cy(mid.y - 2 * sign) }]
+      : [{ x: cx(mid.x + 2 * sign), y: mid.y }, { x: cx(mid.x - 2 * sign), y: mid.y }];
+    for (const nudged of nudges) {
+      const distinct = (nudged.x !== a.x || nudged.y !== a.y) && (nudged.x !== b.x || nudged.y !== b.y);
+      if (distinct && !onLine(a, b, nudged)) return nudged;
+    }
+    return mid;
+  };
   const plazaRoutes: (readonly Point[])[] = [
     [
       northAnchor,
@@ -308,6 +330,15 @@ export function villageArteryRoutes(area: Rect, plaza: Plaza, seed: number, natu
       { x: plaza.rect.x + plaza.rect.w - 1, y: eastJoinY },
     ],
   ];
+  // 직선 4점 굳기 방지 — [1]과 [2] 사이에 흔들린 경유점 하나를 끼운다.
+  // [1]은 그대로라 T-분기 host[1] 조인은 그대로 통과한다.
+  const widened: (readonly Point[])[] = plazaRoutes.map((route) => {
+    const start = route[0]!;
+    const first = route[1]!;
+    const second = route[2]!;
+    const last = route[3]!;
+    return [start, first, joggedMid(first, second), second, last];
+  });
   // 분기 갈래: 자기 간선을 버리고 인접 축 간선 mid에 합류한다. 가장자리 출구는 유지되므로
   // exitRoads=4 게이트와 4변 출구 테스트는 그대로 통과한다.
   // [N,S,W,E] 순서에서 +2는 항상 인접 축(N→W, S→E, W→N, E→S)이다.
@@ -315,16 +346,12 @@ export function villageArteryRoutes(area: Rect, plaza: Plaza, seed: number, natu
   const branchIndex = ((seed % 4) + 4) % 4;
   const hostIndex = (branchIndex + 2) % 4;
   const branchAnchor = anchors[branchIndex]!;
-  const hostMid = plazaRoutes[hostIndex]![1]!;
-  const branched: (readonly Point[])[] = plazaRoutes.map((route, index) =>
-    index === branchIndex
-      ? [
-        branchAnchor,
-        { x: cx(q(branchAnchor.x, hostMid.x, 0.5) + swing()), y: cy(q(branchAnchor.y, hostMid.y, 0.5) + swing()) },
-        hostMid,
-      ]
-      : route,
-  );
+  const hostMid = widened[hostIndex]![1]!;
+  const branched: (readonly Point[])[] = widened.map((route, index) => {
+    if (index !== branchIndex) return route;
+    const mid = { x: cx(q(branchAnchor.x, hostMid.x, 0.5) + swing()), y: cy(q(branchAnchor.y, hostMid.y, 0.5) + swing()) };
+    return [branchAnchor, mid, joggedMid(mid, hostMid), hostMid];
+  });
   return branched;
 }
 

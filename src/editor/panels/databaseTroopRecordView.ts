@@ -448,6 +448,7 @@ function memberEditor(
             resourceId: record.previewBackgroundResourceId,
             kind: "backdrop",
             testid: "db-field-troop-backdrop",
+            queueKey: `troop-backdrop:${record.id}`,
             dialogTitle: "전투 배경",
             allowClear: true,
             onChange: (result) => {
