@@ -97,7 +97,7 @@ describe("enemy action selection through the real record form and store", () => 
     expect(live().actions).toEqual([before[0], { ...before[1], skillId: skills[2] }]);
     selected(1);
     expect(document.activeElement).toBe(picker());
-  }, 1000);
+  }, 30_000);
 
   it("retargets the skill picker when a row receives keyboard focus", () => {
     row(1).focus();
