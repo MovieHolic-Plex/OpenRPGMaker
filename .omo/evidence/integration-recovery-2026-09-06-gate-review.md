@@ -2,9 +2,42 @@
 
 recommendation: APPROVE
 
-Candidate: 46969b57cae1dd357b9b3b27b3c7100c36575e6b
-Comparison: 0182722b..HEAD
+Candidate: cfd88c99ab37eb56bdbe6e851cc66ba2814dce99
+Comparison: prior review 0182722b..46969b57; delta review 46969b57..cfd88c99
 Scope: pre-rollout integration review, not redesign or a requirement to eliminate baseline defects.
+
+## Final delta decision: upstream PR #609
+
+recommendation: APPROVE
+blockers: none
+
+Reviewed only 46969b57..cfd88c99; the prior full review below is retained as historical evidence for 46969b57, not rerun evidence for the new candidate. Prior built-asset names, port observations and pending-#609 intake state below are superseded by this addendum where applicable.
+
+### Delta and user outcome
+
+Git confirms HEAD cfd88c99ab37eb56bdbe6e851cc66ba2814dce99, initially clean status, and upstream merge 35b651bb in its history. The complete changed production/test diff was inspected: animation preview, record view, shared resource picker, both CSS sheets, frame-selection test and all three affected E2E tests. The animation production files, CSS and new UX test match upstream 35b651bb (the targeted upstream-to-candidate diff is empty). Generated INDEX merge resolution retains integrated inventory/world sections and adds the animation section. No schema, player, project-model or facility-composition delta exists in the checked paths.
+
+The animation graphic selector moves above the preview, transport remains bound to the same playback state/disposal logic, and cell commands move to their actual editing panel. Removed pattern buttons had no action handlers and the grid checkbox was disabled. Other resource-picker callers retain their default presentation because graphic presentation is opt-in. CSS changes remove competing animation layout rules, retain shared non-animation selectors, and explicitly exempt number-stepper buttons from the broad button padding rule. No integration contract loss or specific failed success criterion found.
+
+### Direct programming / slop / test pass
+
+Applied the previously consulted programming and remove-ai-slops criteria directly to the delta. No unnecessary parser, normalization, adapter or speculative abstraction added. The cell-command split reflects actual UI ownership. New tests exercise selected resource identity, cancel/clear, runtime preview state, real stored cell/column edits, keyboard transport and hit/clip geometry. Absence assertions for inert pattern buttons are part of this positive authoring scenario, not standalone removal-only tests. No excessive/useless or tautological test addition found. Comparing displayed catalog names to actual selected resource metadata is appropriate shipped-value equality, not a prose pin. Controlled 67ms clock advances test animation time itself; no fixed sleep was added. Removal of the local request proxy preserves direct browser networking rather than hiding errors. The raw store import is a known HMR-sensitive observation seam, not an integration product defect; the clean-server constraint must accompany its evidence. No new criterion-specific blocker follows from that limitation.
+
+The supervisor's Upstream #609 addendum in .omo/evidence/integration-recovery-code-review.md covers the new ownership, boundary/default behavior, test independence, timing and failure-observation concerns and supplements its complete criterion table. This satisfies review coverage without replacing this direct pass.
+
+### Checked delta evidence and limits
+
+- Read the full supervisor addendum and ledger Last upstream delta: PR #609 section.
+- Read .omo/evidence/integration-animation.config.ts: direct Firefox project, retries 0, original test directory. The config itself does not disable HMR; server restart/no-HMR is supervisor execution context.
+- Read output/evidence/battle-animation-ux/p2-browser-data.json: all three viewport records have unclipped/hittable controls; stage widths 404/660/820 and heights 280/280/315; motion background position changes; selected resource is generated-battle-anim-arcane-nova; storedX is 23. The source writes this final artifact after the authoring and stepper assertions. PNGs and geometry file exist; no pixel approval is claimed.
+- Read test-results/.last-run.json: status passed, failedTests []. This small status artifact alone does not identify candidate, browser or test count; source/config and supervisor ledger supply that context.
+- git diff --check 46969b57..cfd88c99 completed without diagnostics. No product/test changes or test/build reruns performed by gate reviewer.
+- Seven files/38 passing assertions, latest build and CSS exit 0, and clean-server UX 1/1 are supervisor execution claims supported in part by the final browser artifact/status, not independently rerun commands. Initial HMR failure is retained in the ledger, not counted as a clean pass. Its active/raw module observation was not independently replayed here.
+- Prior equipment/facility runtime evidence remains scoped to unchanged runtime domains. Earlier five compiled-tab checks do not independently verify this changed animation editor; the new animation UX artifact supplies the affected-editor evidence.
+- Intake is updated: #609 is included through upstream 35b651bb; #614/#615 remain unfinished Drafts; #608 remains held for regressions and #610/#612/#613 remain approval-pending per supervisor. No independent GitHub refresh performed.
+- Full-suite success, aesthetic approval, remote push, shared-root fingerprint preservation and completed deployment are still not claimed. No zero-preexisting-failures requirement imposed.
+
+Approval covers the new integration candidate for rollout. There are no outstanding gate blockers or requested product fixes.
 
 ## originalIntent
 

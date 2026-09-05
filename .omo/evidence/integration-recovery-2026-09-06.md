@@ -162,3 +162,23 @@ Only the generated wiki index conflicted and was regenerated. New #614 and
   This covers all three viewport sizes, graph selection/cancel/clear,
   keyboard playback, frame-cell editing and 14px working stepper icons.
   The source test and assertions were not changed.
+
+## Rollout decision
+
+Final gate reviewer approved product candidate
+`cfd88c99ab37eb56bdbe6e851cc66ba2814dce99`, including upstream #609.
+The final built editor additionally passed direct Firefox playback stop,
+graphic-picker cancel, and X=23 retention across adding a second cell.
+
+At the final fetch, the candidate contains all upstream main commits.
+Mergeable reviewed PRs #605, #607 and #611 are included; upstream #601,
+#602, #603, #604, #606 and #609 are also included.
+PRs #608, #610, #612 and #613 still explicitly await completion/owner approval.
+#614 and #615 remain unfinished Drafts. New Drafts #616 (growth trees) and
+#617 (concept-bundle map authoring) arrived during this integration and are
+reported separately, not represented as shipped.
+
+No whole-suite success is claimed: the pristine run reached its 30-minute
+limit, and intermediate integration runs were stopped when the source target
+changed through upstream merges. Domain, CSS, exact surface-baseline
+comparison, full production build and real-surface evidence are recorded above.
