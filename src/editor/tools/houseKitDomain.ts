@@ -27,6 +27,8 @@ import {
 } from "./houseKitDraftSupport";
 import { ToolError } from "./types";
 import { placeHouseLotFences } from "./village/fences";
+import { houseBBox } from "./houseLotDecor";
+import { assertHousePlacement, registerCompletedHouse } from "./houseProtection";
 
 const DOOR_TOP_TILE = 116;
 const DOOR_BOTTOM_TILE = 146;
@@ -111,6 +113,8 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
     );
   }
 
+  const bbox = houseBBox(input.wings);
+  assertHousePlacement(map, bbox);
   const shape = houseExteriorPlan(input);
   const result = stampFootprintHouseKit(map, { kitId: input.kitId, wings: input.wings, ...shape.stampOptions });
   if (!result.ok) throw new ToolError(result.reason ?? "집 시공 실패", { code: "house-kit-failed", mapId: input.mapId });
@@ -216,12 +220,8 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
       decorNotes.push("깃발 208/209");
     }
     if (input.fence) {
-      const minX = Math.min(...input.wings.map((wing) => wing.x));
-      const minY = Math.min(...input.wings.map((wing) => wing.y));
-      const maxX = Math.max(...input.wings.map((wing) => wing.x + wing.w));
-      const maxY = Math.max(...input.wings.map((wing) => wing.y + wing.h));
       placeHouseLotFences(map, [{
-        bbox: { x: minX, y: minY, w: maxX - minX, h: maxY - minY },
+        bbox,
         doorAt: { x: doorX, y: doorY },
         front: { x: doorX, y: doorY + 1 },
         kitId: input.kitId,
@@ -232,6 +232,11 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
     }
   }
 
+  registerCompletedHouse(draft, map, {
+    ...bbox, label: input.ownerName?.trim() || kit.name, kitId: input.kitId,
+    ...(result.doorAt ? { doorAt: result.doorAt, front: { x: result.doorAt.x, y: result.doorAt.y + 1 } } : {}),
+    ...(deckApplied ? { tags: ["roof-deck"] } : {}),
+  });
   if (deckApplied) decorNotes.push("옥상 데크+사다리");
   const windowNote = input.windows === false ? "창문 없음" : "창문 자동";
   const baseData: HouseKitBuildBaseData = {

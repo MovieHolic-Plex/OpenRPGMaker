@@ -62,6 +62,7 @@ import { isSeason, isTimePhase, SEASONS, TIME_PHASES } from "@/project/gameTime"
 import { COORD_SCHEMA, RECT_SCHEMA } from "./schemaShapes";
 import { resolveEventPlacement } from "./eventTools";
 import { expandCellsAgainstWalls } from "./wallFlush";
+import { assertHousePlacement, registerCompletedHouse } from "./houseProtection";
 
 // 맵 테두리를 벽으로 두른다.
 function borderWalls(map: GameMap): void {
@@ -839,11 +840,17 @@ const buildHouse: ToolDefinition = {
       (candidate) => houseFits(map, candidate, baseHouse.width, baseHouse.height)
     );
     const house = { ...baseHouse, origin };
+    const bbox = { ...origin, w: house.width, h: house.height };
+    assertHousePlacement(map, bbox);
     const before = snapshotTiles(map);
     const door = stampBuildHouse(map, house);
     const paletteTiles = picker && tileset
       ? applyPaletteToChangedCells(map, tileset, before, { x: house.origin.x, y: house.origin.y, width: house.width, height: house.height }, picker)
       : 0;
+    registerCompletedHouse(draft, map, {
+      ...bbox, label: `${house.material} 집`, kitId: kitIdForSmallHouseMaterial(house.material),
+      doorAt: door, front: { x: door.x, y: door.y + 1 },
+    });
     return {
       summary: `${map.name}에 ${house.width}×${house.height} ${house.material} 집 건설(${house.origin.x},${house.origin.y}) — 문 (${door.x},${door.y}) — 자연도 ${naturalnessLabel(naturalness)}${picker ? ` — 프리셋 ${picker.presetId}/${picker.role} ${paletteTiles}칸` : ""}`,
       data: { door, origin: house.origin, width: house.width, height: house.height, material: house.material, paletteTiles },

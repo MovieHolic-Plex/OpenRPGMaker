@@ -1,0 +1,129 @@
+$ npm test -- test/authorHouseFacade.test.ts
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/authorHouseFacade.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-house-protection-p1
+
+ ❯ test/authorHouseFacade.test.ts (12 tests | 4 failed) 7024ms
+   ✓ author_house canonical facade > is registered and executable via both runTool and the typed runner  1811ms
+   × author_house canonical facade > builds one exterior-only house with exact target and change evidence 838ms
+     → expected { executionOk: true, …(12) } to deeply equal { …(13) }
+   × author_house canonical facade > keeps a domain clearance warning in the shared construction outcome 739ms
+     → expected { executionOk: true, …(12) } to deeply equal { …(13) }
+   ✓ author_house canonical facade > builds one linked interior with a valid bidirectional transfer pair  560ms
+   ✓ author_house canonical facade > builds each requested lot directly through the lot domain and reports every house  585ms
+   ✓ author_house canonical facade > blocks 'missing target' atomically with a selected route  328ms
+   × author_house canonical facade > blocks 'invalid wing' atomically with a selected route 500ms
+     → expected true to be false // Object.is equality
+   ✓ author_house canonical facade > blocks 'legacy linked-interior booleans' atomically with a selected route 172ms
+   ✓ author_house canonical facade > rejects overlapping lot definitions atomically 201ms
+   ✓ author_house canonical facade > rejects an overlapping replay and preserves the first applied project exactly  645ms
+   ✓ author_house canonical facade > rolls back a real material-not-found yard failure before the outer commit 298ms
+   × author_house canonical facade > rolls back a zero-placement yard shortfall 338ms
+     → expected 'placement-zero' to be 'yard-placement-shortfall' // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/authorHouseFacade.test.ts > author_house canonical facade > builds one exterior-only house with exact target and change evidence
+AssertionError: expected { executionOk: true, …(12) } to deeply equal { …(13) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -10,10 +10,11 @@[39m
+[2m      "dbRecordsChanged": 0,[22m
+[2m      "endingsChanged": 0,[22m
+[2m      "eventsAdded": 0,[22m
+[2m      "eventsModified": 0,[22m
+[2m      "eventsRemoved": 0,[22m
+[31m+     "mapPropertiesChanged": 0,[39m
+[2m      "mapsAdded": 0,[22m
+[2m      "mapsRemoved": 0,[22m
+[2m      "palettePresetsAdded": 0,[22m
+[2m      "palettePresetsModified": 0,[22m
+[2m      "sessionChanged": false,[22m
+
+ ❯ test/authorHouseFacade.test.ts:55:57
+     53|       outcome: "applied",
+     54|     });
+     55|     expect(parseConstructionOutcome(data.construction)).toEqual(data.c…
+       |                                                         ^
+     56|     expect(data.houses).toHaveLength(1);
+     57|     expect(data.houses[0]?.interior).toBeUndefined();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  test/authorHouseFacade.test.ts > author_house canonical facade > keeps a domain clearance warning in the shared construction outcome
+AssertionError: expected { executionOk: true, …(12) } to deeply equal { …(13) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -10,10 +10,11 @@[39m
+[2m      "dbRecordsChanged": 0,[22m
+[2m      "endingsChanged": 0,[22m
+[2m      "eventsAdded": 0,[22m
+[2m      "eventsModified": 0,[22m
+[2m      "eventsRemoved": 0,[22m
+[31m+     "mapPropertiesChanged": 0,[39m
+[2m      "mapsAdded": 0,[22m
+[2m      "mapsRemoved": 0,[22m
+[2m      "palettePresetsAdded": 0,[22m
+[2m      "palettePresetsModified": 0,[22m
+[2m      "sessionChanged": false,[22m
+
+ ❯ test/authorHouseFacade.test.ts:83:57
+     81|     expect(result.diff?.warnings).toContain(warning);
+     82|     expect(data.construction.warnings).toContain(warning);
+     83|     expect(parseConstructionOutcome(data.construction)).toEqual(data.c…
+       |                                                         ^
+     84|   });
+     85| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  test/authorHouseFacade.test.ts > author_house canonical facade > blocks 'invalid wing' atomically with a selected route
+AssertionError: expected true to be false // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+ ❯ test/support/authorHouseFacadeFailureCases.ts:36:23
+     34| 
+     35|     const data = requireHouseData(result.data);
+     36|     expect(result.ok).toBe(false);
+       |                       ^
+     37|     expect(result.issues?.[0]?.code).toBe(issueCode);
+     38|     expect(data.construction).toMatchObject({
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  test/authorHouseFacade.test.ts > author_house canonical facade > rolls back a zero-placement yard shortfall
+AssertionError: expected 'placement-zero' to be 'yard-placement-shortfall' // Object.is equality
+
+Expected: [32m"[7myard-[27mplacement-[7mshortfall[27m"[39m
+Received: [31m"placement-[7mzero[27m"[39m
+
+ ❯ test/support/authorHouseFacadeFailureCases.ts:147:38
+    145| 
+    146|     expect(result.ok).toBe(false);
+    147|     expect(result.issues?.[0]?.code).toBe("yard-placement-shortfall");
+       |                                      ^
+    148|     expect(result.data.construction.counts).toEqual({ requested: 1, ac…
+    149|     expect(projectHash(ctx.project)).toBe(before);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 8 passed (12)
+   Start at  03:32:14
+   Duration  35.08s (transform 17.93s, setup 0ms, collect 26.15s, tests 7.02s, environment 0ms, prepare 649ms)
+
+
+EXIT_CODE=1
