@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **47쪽 / 1526KB / 약 434,051 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **47쪽 / 1527KB / 약 434,294 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -546,11 +546,12 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L35` Storage chest authoring
 - `L41` Page 3 location/vehicle compatibility (2026-07-30)
 
-### `openwiki/runtime-pre-edit-routing.md` — 27KB · 163줄 · ~7,908 토큰
+### `openwiki/runtime-pre-edit-routing.md` — 28KB · 169줄 · ~8,151 토큰
 
 - `L141` Recovered head emotes (2026-09-05)
 - `L147` 메뉴 입력·불러오기 배율 (2026-09-05)
 - `L155` 가구 밀기 애니메이션 (2026-09-05)
+- `L164` Recovered head emotes (2026-09-05)
 
 ### `openwiki/runtime-project-schema.md` — 58KB · 207줄 · ~15,542 토큰 · 통째읽기 잘림
 
