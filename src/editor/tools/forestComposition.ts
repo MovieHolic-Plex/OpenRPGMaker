@@ -378,8 +378,13 @@ function paintForestFloor(draft: Project, map: GameMap, area: Rect, seed: number
       ? access.group.tileIds.filter(inChipset)
       : [access.tileId];
   // 짙은 단색 변형이 있으면 그것만, 없으면 조회된 것을 그대로 쓴다.
-  const tone = FLOOR_DARK_GRASS.filter((tile) => tall.includes(tile));
-  const toneTiles = tone.length > 0 ? tone : tall;
+  // 1×1 풀(키큰 풀·잔디 변형)은 덩어리로 깔아도 오토타일 조각이 네모로 뜬다 — tone에서 뺀다.
+  const ONE_BY_ONE_GRASS_TILES = new Set([
+    243, 244, 245, 273, 274, 275, 303, 304, 305, 333, 334, 335,
+    270, 271, 272, 300, 301, 302, 330,
+  ]);
+  const tone = FLOOR_DARK_GRASS.filter((tile) => tall.includes(tile) && !ONE_BY_ONE_GRASS_TILES.has(tile));
+  const toneTiles = (tone.length > 0 ? tone : tall).filter((tile) => !ONE_BY_ONE_GRASS_TILES.has(tile));
 
   const protectedCells = protectedEventCells(draft, map);
   const rng = mulberry32((seed ^ 0x51f7) >>> 0);
