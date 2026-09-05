@@ -206,6 +206,7 @@ function drain(
       r.kind === "timer" ||
       r.kind === "changeTile" ||
       r.kind === "moveEvent" ||
+      r.kind === "pathfindMove" ||
       r.kind === "battleProcessing" ||
       r.kind === "showPicture" ||
       r.kind === "erasePicture" ||
@@ -982,7 +983,7 @@ describe("M2 generic map runtime executor", () => {
       "debug:info": true,
     });
     expect(session.switches.switch_square).toBe(true);
-    expect(session.eventLocations?.event_guard).toEqual({ mapId: session.currentMapId, x: 14, y: 2 });
+    expect(session.eventLocations?.event_guard).toBeUndefined(); // coordinates change only after scene playback
     expect(session.eventLocations?.spawn_guard).toBeUndefined();
     expect(session.m2Runtime?.expressions).toEqual([{ expression: "gold + 10", resultVariableId: "calc_result", evaluated: true }]);
     expect(session.variables.calc_result).toBe(35);

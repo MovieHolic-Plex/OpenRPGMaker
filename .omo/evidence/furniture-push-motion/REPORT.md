@@ -52,4 +52,24 @@ node scripts/qa/runtime/furniture-push.probe.mjs --project output/evidence/night
 연타·종료 틱 입력, 막힌 목적지, 30/60/120Hz, 메뉴 정지/재개, 재생성, 취소, 맵 리셋,
 이동 중 세이브 복원, 기존 점프·일반 보행·공포 상태 계약.
 
-전체 `npm run gates -- --json` 결과는 완료 후 이 절에 추가한다. 게이트 실행 중 소스/테스트는 변경하지 않았다.
+전체 `npm run gates -- --json` 완료: **exit 1**. 앱 타입 검사와 CSS 예산/그래프는 **exit 0**.
+Vitest는 **13,126개 중 12,941 통과 / 170 실패 / 15 pending**, 실패 파일 92개다.
+원본은 `gates.json`. 전체 실행에서도 관련 런타임 52개는 모두 통과했다.
+게이트 실행 중 런타임 소스/단위 테스트는 변경하지 않았다(런타임 커밋 `b3be4e7f`).
+
+이전 9월 5일 전체 실행(`fb53ccab`, `../night-monster-upgrade/gates-before-followup.json`)의
+실패 파일 목록에 없던 것은 아래 4개뿐이다. 모두 수정 전 커밋 **dff7f394**를 별도 워크트리에
+체크아웃해 직접 재현했다:
+
+- `databaseRadioCustomGuard.test.ts`
+- `databaseSidebarKeyboard.test.ts`
+- `databaseSidebarNav.test.ts`
+- `databaseTabIcons.test.ts`
+
+비교 실행은 위 4개와 표면 검사 축 9개, 총 134개 테스트다. **122 통과 / 12 실패**이며
+13개 파일 모두 현재 전체 실행과 실패 assertion 이름이 정확히 일치했다.
+표면 검사의 기존 6개 assertion 실패와 CSS `.selected`의 `bottom` 소실도 동일하다.
+근거는 `baseline-comparison.json`. 이 비교에서 확인된 밀기 변경의 새 회귀는 없다.
+저장소의 9월 2일 게이트 기준선은 갱신하지 않았고, 전체 게이트가 초록이라고 보고하지 않는다.
+
+수정 PR #590은 게이트 대기 중 별도 통합 작업에서 병합됐다. 본 후속 기록은 완료된 결과를 보존한다.

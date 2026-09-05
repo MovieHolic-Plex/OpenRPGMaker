@@ -1,0 +1,124 @@
+{
+  "baselineCommit": "dff7f394b5076f1e9e110641780c00314775de4f",
+  "runtimeCommit": "b3be4e7f",
+  "previousFullRunCommit": "fb53ccab",
+  "baselineExitCode": 1,
+  "newFailedFilesVsPreviousFullRun": [
+    "test/databaseRadioCustomGuard.test.ts",
+    "test/databaseSidebarKeyboard.test.ts",
+    "test/databaseSidebarNav.test.ts",
+    "test/databaseTabIcons.test.ts"
+  ],
+  "allNewFailuresReproduced": true,
+  "comparisons": {
+    "test/databaseRadioCustomGuard.test.ts": {
+      "baselineFailures": [
+        "database radio custom guard radio 제외 없는 bare input 결합이 없다"
+      ],
+      "currentFailures": [
+        "database radio custom guard radio 제외 없는 bare input 결합이 없다"
+      ],
+      "equal": true
+    },
+    "test/databaseSidebarKeyboard.test.ts": {
+      "baselineFailures": [
+        "database sidebar keyboard navigation keeps every sidebar tab reachable in sequence when walked with Tab-style focus",
+        "database sidebar keyboard navigation pins Tab focus order: sidebar DOM order = overview entry + TAB_GROUPS order"
+      ],
+      "currentFailures": [
+        "database sidebar keyboard navigation keeps every sidebar tab reachable in sequence when walked with Tab-style focus",
+        "database sidebar keyboard navigation pins Tab focus order: sidebar DOM order = overview entry + TAB_GROUPS order"
+      ],
+      "equal": true
+    },
+    "test/databaseSidebarNav.test.ts": {
+      "baselineFailures": [
+        "database sidebar navigation keeps all 38 tab testids, including lore, faction and life authoring surfaces"
+      ],
+      "currentFailures": [
+        "database sidebar navigation keeps all 38 tab testids, including lore, faction and life authoring surfaces"
+      ],
+      "equal": true
+    },
+    "test/databaseTabIcons.test.ts": {
+      "baselineFailures": [
+        "database tab icons covers every rail tab, overview included",
+        "database tab icons renders the icon as the first child while the label owns textContent"
+      ],
+      "currentFailures": [
+        "database tab icons covers every rail tab, overview included",
+        "database tab icons renders the icon as the first child while the label owns textContent"
+      ],
+      "equal": true
+    },
+    "test/eventEditorCommitProbe.baseline.test.ts": {
+      "baselineFailures": [
+        "no-commit 래칫 무커밋 컨트롤 집합이 허용 목록과 정확히 일치한다",
+        "이벤트 편집기 커밋 프로브 축 (1) 컨트롤 조작 → 저장 커맨드 스냅샷이 기준선과 같다"
+      ],
+      "currentFailures": [
+        "no-commit 래칫 무커밋 컨트롤 집합이 허용 목록과 정확히 일치한다",
+        "이벤트 편집기 커밋 프로브 축 (1) 컨트롤 조작 → 저장 커맨드 스냅샷이 기준선과 같다"
+      ],
+      "equal": true
+    },
+    "test/eventEditorConditionSurface.baseline.test.ts": {
+      "baselineFailures": [],
+      "currentFailures": [],
+      "equal": true
+    },
+    "test/eventEditorFormSurface.baseline.test.ts": {
+      "baselineFailures": [
+        "이벤트에디터 폼 표면 스냅샷 기준선과 일치한다"
+      ],
+      "currentFailures": [
+        "이벤트에디터 폼 표면 스냅샷 기준선과 일치한다"
+      ],
+      "equal": true
+    },
+    "test/eventEditorInteractionSurface.baseline.test.ts": {
+      "baselineFailures": [
+        "이벤트에디터 상호작용 후 폼 표면 스냅샷 기준선과 일치한다"
+      ],
+      "currentFailures": [
+        "이벤트에디터 상호작용 후 폼 표면 스냅샷 기준선과 일치한다"
+      ],
+      "equal": true
+    },
+    "test/eventEditorM2Surface.baseline.test.ts": {
+      "baselineFailures": [
+        "M2 명령 폼 표면 스냅샷 기준선과 일치한다"
+      ],
+      "currentFailures": [
+        "M2 명령 폼 표면 스냅샷 기준선과 일치한다"
+      ],
+      "equal": true
+    },
+    "test/eventEditorPortalSurface.baseline.test.ts": {
+      "baselineFailures": [
+        "포털(피커/모달) 표면 스냅샷 기준선과 일치한다"
+      ],
+      "currentFailures": [
+        "포털(피커/모달) 표면 스냅샷 기준선과 일치한다"
+      ],
+      "equal": true
+    },
+    "test/eventEditorShellSurface.baseline.test.ts": {
+      "baselineFailures": [],
+      "currentFailures": [],
+      "equal": true
+    },
+    "test/eventEditorStagedState.test.ts": {
+      "baselineFailures": [],
+      "currentFailures": [],
+      "equal": true
+    },
+    "test/surfaceGateSupport.test.ts": {
+      "baselineFailures": [],
+      "currentFailures": [],
+      "equal": true
+    }
+  },
+  "baselineCssExitCode": 1,
+  "baselineCssOutput": "FAIL: 렌더로 증명된 클래스 1종이 CSS 속성을 잃었다\n  .selected — 속성 1종 소실 [bottom]\n\n중복 제거로 의도한 감소라면: 같은 속성이 다른 시트에 남아 있는지 확인하라(남아 있으면 이 게이트는 통과한다).\n정말로 속성을 없애는 변경이면 스크린샷 대조 후 기준선 갱신을 리뷰에 포함하세요.\n"
+}

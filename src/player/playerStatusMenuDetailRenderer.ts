@@ -10,6 +10,23 @@ export type StatusMenuDetailPanelOptions = {
   readonly showcase?: boolean;
 };
 
+const detailContexts = new WeakMap<HTMLElement, { project: Project; detail: StatusMenuDetail; showcase: boolean }>();
+
+/** Cursor movement keeps the list, its focus and its scroll position alive. */
+export function updateStatusMenuDetailSelection(panel: HTMLElement, index: number): string | undefined {
+  const context = detailContexts.get(panel);
+  if (!context) return undefined;
+  const { project, detail } = context;
+  const tabCount = detail.tabs?.filter((tab) => tab.onActivate).length ?? 0;
+  const entry = detail.entries.filter((row) => row.onActivate && !row.disabled)[index - tabCount];
+  const existing = panel.querySelector(".status-menu-detail-showcase");
+  const next = context.showcase && entry ? renderDetailShowcase(project, entry) : null;
+  existing?.remove();
+  if (next) panel.append(next);
+  panel.classList.toggle("has-showcase", Boolean(next));
+  return entry?.unavailableReason ?? entry?.description ?? detail.hint;
+}
+
 export function renderStatusMenuDetailPanel(
   project: Project,
   detail: StatusMenuDetail,
@@ -21,6 +38,7 @@ export function renderStatusMenuDetailPanel(
     attrs: { tabindex: "-1" },
     dataset: { testid: "status-menu-detail" },
   });
+  detailContexts.set(panel, { project, detail, showcase: options.showcase ?? false });
   if (detail.tabs?.length) panel.classList.add("life-ledger-detail");
   panel.append(el("h2", {
     class: "status-menu-detail-title",
@@ -135,6 +153,8 @@ function renderDetailEntry(options: {
     inlineDescription ? "has-description" : "",
     entry.onActivate ? "status-menu-detail-row-compact" : "",
     entry.disabled ? "disabled" : "",
+    entry.unavailableReason ? "unavailable" : "",
+    entry.vitals ? "with-vitals" : "",
     entry.destructive ? "destructive" : "",
   ].filter(Boolean).join(" ");
   const row = entry.onActivate
@@ -148,9 +168,10 @@ function renderDetailEntry(options: {
           "aria-current": selected ? "true" : "false",
           "aria-label": [entry.label, entry.description].filter(Boolean).join(" — "),
           ...(entry.disabled ? { disabled: "true", "aria-disabled": "true" } : {}),
+          ...(entry.unavailableReason ? { "aria-disabled": "true" } : {}),
         },
         dataset: detailEntryDataset(entry, actionIndex),
-        on: { click: entry.onActivate },
+        on: { click: () => { if (!entry.unavailableReason) entry.onActivate?.(); } },
       })
     : el("div", {
         class: rowClasses,
@@ -158,6 +179,26 @@ function renderDetailEntry(options: {
         ...(entry.testId ? { dataset: { testid: entry.testId } } : {}),
       });
   if (selected) row.classList.add("selected");
+  if (entry.vitals) {
+    if (entry.face) row.append(renderDetailFace(project, entry.face, 24));
+    row.append(el("span", { class: "status-menu-target-name", text: entry.label }));
+    for (const kind of ["hp", "mp"] as const) {
+      const current = entry.vitals[kind];
+      const max = entry.vitals[kind === "hp" ? "maxHp" : "maxMp"];
+      const next = entry.vitals[kind === "hp" ? "hpAfter" : "mpAfter"];
+      row.append(el("span", {
+        class: `status-menu-target-vital ${kind}`,
+        children: [
+          el("span", { text: `${kind.toUpperCase()} ${current}/${max}${next > current ? ` → ${next}` : ""}` }),
+          el("span", { class: "status-menu-target-track", children: [
+            el("span", { class: "status-menu-target-preview", attrs: { style: `width:${max ? next / max * 100 : 0}%` } }),
+            el("span", { class: "status-menu-target-fill", attrs: { style: `width:${max ? current / max * 100 : 0}%` } }),
+          ] }),
+        ],
+      }));
+    }
+    return row;
+  }
   if (entry.icon) {
     row.append(renderDetailEntryIcon(project, entry.icon), renderDetailText(entry, inlineDescription));
     return row;
@@ -173,7 +214,7 @@ function renderDetailEntry(options: {
 
 /** 선택된 항목의 그림(아이콘/얼굴)을 크게, 이름·수치·설명 전문을 그린다. 그릴 것이 없으면(동작 확인문 등) null. */
 function renderDetailShowcase(project: Project, entry: StatusMenuDetailEntry): HTMLElement | null {
-  if (!entry.icon && !entry.face && !entry.description) return null;
+  if (!entry.icon && !entry.face && !entry.description && !entry.unavailableReason && !entry.statDelta) return null;
   const art = entry.icon
     ? renderDetailEntryIcon(project, { ...entry.icon, testId: "status-menu-showcase-art" })
     : entry.face
@@ -192,15 +233,28 @@ function renderDetailShowcase(project: Project, entry: StatusMenuDetailEntry): H
   if (entry.value) {
     children.push(el("div", { class: "status-menu-showcase-value", text: entry.value }));
   }
-  if (entry.description) {
+  if (entry.unavailableReason || entry.description) {
     children.push(el("p", {
       class: "status-menu-showcase-description",
-      text: entry.description,
+      text: entry.unavailableReason ?? (entry.statDelta ? entry.description?.split("/")[0]?.trim() : entry.description),
       dataset: { testid: "status-menu-showcase-description" },
     }));
   }
+  if (entry.statDelta?.length) {
+    children.push(el("section", {
+      class: "status-menu-stat-delta", dataset: { testid: "status-menu-stat-delta" },
+      children: entry.statDelta.map((delta) => el("div", {
+        class: `status-menu-stat-delta-row${delta.next > delta.current ? " up" : delta.next < delta.current ? " down" : ""}`,
+        dataset: { testid: `status-menu-stat-delta-${delta.label}` },
+        children: [
+          el("span", { class: "status-menu-stat-delta-label", text: delta.label }),
+          el("span", { class: "status-menu-stat-delta-value", text: `${delta.current} → ${delta.next}` }),
+        ],
+      })),
+    }));
+  }
   return el("aside", {
-    class: "status-menu-detail-showcase",
+    class: `status-menu-detail-showcase${entry.statDelta ? " has-stat-delta" : ""}`,
     attrs: { "aria-live": "polite" },
     dataset: { testid: "status-menu-detail-showcase" },
     children,
@@ -216,6 +270,7 @@ function detailEntryDataset(entry: StatusMenuDetailEntry, actionIndex?: number):
   return {
     ...(entry.testId ? { testid: entry.testId } : {}),
     ...(actionIndex === undefined ? {} : { actionIndex: String(actionIndex) }),
+    ...(entry.unavailableReason ? { unavailableReason: entry.unavailableReason } : {}),
   };
 }
 
@@ -267,7 +322,7 @@ function renderDetailEntryIcon(project: Project, icon: NonNullable<StatusMenuDet
   });
 }
 
-function renderDetailFace(project: Project, face: NonNullable<StatusMenuDetailEntry["face"]>): HTMLElement {
+function renderDetailFace(project: Project, face: NonNullable<StatusMenuDetailEntry["face"]>, size = 32): HTMLElement {
   const url = resolveAssetResourceUrl(face.resourceId, { project });
   if (!url) {
     return el("span", {
@@ -285,11 +340,11 @@ function renderDetailFace(project: Project, face: NonNullable<StatusMenuDetailEn
       "aria-label": face.alt,
       style: [
         `background-image:url("${url}")`,
-        "background-size:32px 32px",
+        `background-size:${size}px ${size}px`,
         "background-repeat:no-repeat",
         "image-rendering:pixelated",
-        "width:32px",
-        "height:32px",
+        `width:${size}px`,
+        `height:${size}px`,
       ].join(";"),
     },
     dataset: { testid: face.testId },

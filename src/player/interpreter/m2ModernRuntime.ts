@@ -1,4 +1,4 @@
-import type { M2CommandFields } from "@/project/types";
+import type { M2CommandFields, Project } from "@/project/types";
 import type { M2RuntimeState, PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import { nextSessionRandom } from "@/project/session";
 import { evaluateM2Expression } from "./m2Expression";
@@ -39,7 +39,6 @@ export function executeModernCommand(
         speed: fieldNumber(fields, "speed", 4),
         wait: fieldBoolean(fields, "wait", true),
       });
-      recordPathfindingTarget(session, fields);
       return true;
     case "Wait Until":
       recordWaitUntil(session, runtime, fields);
@@ -100,13 +99,19 @@ function recordWaitUntil(session: PlaySessionLike, runtime: M2RuntimeState, fiel
   session.flags[`m2-wait:${waitState.condition}:${waitState.target}`] = waitConditionMet(session, waitState);
 }
 
-function waitConditionMet(
+export function waitConditionMet(
   session: PlaySessionLike,
-  waitState: { readonly condition: string; readonly target: string; readonly value: string }
+  waitState: { readonly condition: string; readonly target: string; readonly value: string },
+  context: { project?: Project; isEventIdle?: (target: string) => boolean } = {}
 ): boolean {
   if (waitState.condition === "switchOn") return session.switches[waitState.target] === true;
   if (waitState.condition === "switchOff") return session.switches[waitState.target] !== true;
   if (waitState.condition === "variable") return String(session.variables[waitState.target] ?? 0) === waitState.value;
+  if (waitState.condition === "eventIdle") return context.isEventIdle?.(waitState.target) ?? false;
+  if (waitState.condition === "region") {
+    const region = context.project?.maps[session.currentMapId]?.layoutPlan?.regions.find(r => r.id === waitState.target);
+    return !!region && session.x >= region.x && session.x < region.x + region.w && session.y >= region.y && session.y < region.y + region.h;
+  }
   return false;
 }
 
@@ -235,19 +240,6 @@ function recordRemoveEvent(
   }
   delete session.eventLocations?.[eventId];
   session.flags[`event-removed:${eventId}`] = true;
-}
-
-function recordPathfindingTarget(session: PlaySessionLike, fields: M2CommandFields): void {
-  const target = fieldString(fields, "target", "this-event");
-  const x = fieldNumber(fields, "x", 0);
-  const y = fieldNumber(fields, "y", 0);
-  if (target === "player") {
-    session.x = x;
-    session.y = y;
-    return;
-  }
-  session.eventLocations ??= {};
-  session.eventLocations[target] = { mapId: session.currentMapId, x, y };
 }
 
 function recordRegionTrigger(session: PlaySessionLike, runtime: M2RuntimeState, fields: M2CommandFields): void {

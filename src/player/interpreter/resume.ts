@@ -11,6 +11,13 @@ export function advanceResume(
   const frame = topFrame(state.stack);
   if (!frame) return "done";
 
+  if (pending === "waitUntil" && state.waitUntil) {
+    state.waitUntil.elapsedMs += state.waitUntil.intervalMs;
+    // Polling a suspended instruction must not consume the script instruction budget.
+    state.instructionsExecuted -= 1;
+    return "continue";
+  }
+
   if (pending === "choices") {
     const command = frame.commands[frame.pc];
     if (command?.kind === "choices") {

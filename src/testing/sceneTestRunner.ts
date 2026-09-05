@@ -601,7 +601,7 @@ function runEventView(state: RunnerState, view: RuntimeEventView): string | null
     state.log.push(`event ${view.event.id}: no commands`);
     return null;
   }
-  const interp = createInterpreter([...commands], state.session, state.project, { currentEventId: view.event.id });
+  const interp = createInterpreter([...commands], state.session, state.project, { currentEventId: view.event.id, eventPositions: state.eventPositions });
   state.log.push(`event ${view.event.id} start`);
   const stop = pump(state, interp, interp.start());
   refreshRoguelikeRoomForRunner(state);
@@ -630,6 +630,10 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
       case "done":
         refreshRoguelikeRoomForRunner(state);
         return { stop: "done" };
+      case "pathfindMove":
+      case "openMenuScreen":
+      case "openLoadMenu":
+        return { stop: "failed", reason: `${step.kind}: 출하 플레이어 하네스로 검증해야 하는 명령` };
       case "choices":
         return { stop: "choices" };
       case "text":

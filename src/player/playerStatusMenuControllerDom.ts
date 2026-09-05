@@ -1,6 +1,6 @@
 export const STATUS_MENU_SELECTOR = "[data-testid='main-menu']";
 
-// 닫힘 juice 동안 패널은 250ms 더 DOM 에 남는다. 그 패널을 "열린 메뉴" 로 세면 ESC 로 닫자마자
+// 퇴장 애니메이션 동안 패널은 DOM 에 남는다. 그 패널을 "열린 메뉴" 로 세면 ESC 로 닫자마자
 // 누른 Z 가 필드 조사 대신 메뉴로 들어간다. 복합 선택자는 테스트 fake DOM 이 못 읽어 JS 로 가른다.
 export function markStatusMenuClosing(menu: HTMLElement): void {
   menu.dataset.statusMenuClosing = "1";
@@ -26,6 +26,22 @@ export function wrapStatusMenuIndex(index: number, length: number): number {
  * 켜기·끄기는 루트를 붙이거나 떼는 기존 경로를 탄다.
  */
 export function adoptStatusMenuPanel(existing: HTMLElement, next: HTMLElement): HTMLElement {
+  const rail = existing.querySelector<HTMLElement>(".status-menu-command-rail");
+  const nextRail = next.querySelector<HTMLElement>(".status-menu-command-rail");
+  const buttons = Array.from(rail?.querySelectorAll<HTMLElement>(".status-menu-command") ?? []);
+  const nextButtons = Array.from(nextRail?.querySelectorAll<HTMLElement>(".status-menu-command") ?? []);
+  if (rail && nextRail && buttons.length === nextButtons.length && buttons.every((button, i) => button.id === nextButtons[i]?.id)) {
+    buttons.forEach((button, i) => {
+      const updated = nextButtons[i]!;
+      button.className = updated.className;
+      button.tabIndex = updated.tabIndex;
+      button.setAttribute("aria-current", updated.getAttribute("aria-current") ?? "false");
+    });
+    rail.setAttribute("aria-activedescendant", nextRail.getAttribute("aria-activedescendant") ?? "");
+    rail.style.cssText = nextRail.style.cssText;
+    rail.remove();
+    nextRail.replaceWith(rail);
+  }
   existing.className = next.className;
   const nextCss = next.style.cssText;
   if (typeof nextCss === "string") existing.style.cssText = nextCss;

@@ -1,0 +1,11 @@
+CSS 실사용 클래스 게이트 통과: 보호 1004종 / 속성 7731 유지, 미스타일 124종
+  정본 축: eventEditorFormSurface.baseline.json(+522), eventEditorM2Surface.baseline.json(+75), eventEditorShellSurface.baseline.json(+303), eventEditorConditionSurface.baseline.json(+15), eventEditorPortalSurface.baseline.json(+205), eventEditorInteractionSurface.baseline.json(+19)
+  값 변경 8종 (속성은 유지 — 실패 아님):
+    .active — 값 변경 2건 [background:var(--surface-raised, #fffdf8) / border-color:var(--border-color, rgba(42, 37, 33, 0.20))]
+    .ai-event-preview-actions — 값 변경 1건 [padding:9px 14px 12px]
+    .ai-event-result — 값 변경 1건 [flex-direction:column]
+    .ai-event-result-header — 값 변경 3건 [gap:var(--space-2) / justify-content:space-between / padding:9px 14px 7px]
+    .disabled — 값 변경 1건 [color:rgba(247, 239, 226, 0.36)]
+    .is-active — 값 변경 3건 [border-color:var(--editor-blue, #4a57d6) / box-shadow:0 0 0 1px var(--editor-blue, #4a57d6) / box-shadow:0 0 0 2px var(--db-studio-accent-soft, rgb(0 0 0 / 8%))]
+    .is-quiet — 값 변경 2건 [color:color-mix(in srgb, var(--text-3) 72%, var(--bg-surface)) / color:var(--text-2)]
+    .selected — 값 변경 14건 [background:rgba(190, 55, 50, 0.22) / background:var(--status-edge-amber) / border-color:rgba(255, 126, 116, 0.82) / border-radius:10px]

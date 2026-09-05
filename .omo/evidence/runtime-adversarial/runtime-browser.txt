@@ -1,0 +1,19 @@
+
+Running 12 tests using 1 worker
+
+(node:1501845) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [firefox] › test/runtime/battle-flash-map.spec.ts:56:1 › hit flash keeps the battle scene opaque (31.7s)
+  ✓   2 [firefox] › test/runtime/battle-flash-map.spec.ts:77:1 › critical flash keeps the battle scene opaque and still renders the flash (17.5s)
+  ✓   3 [firefox] › test/runtime/dialogue-nameplate-geometry.spec.ts:79:1 › 화자 이름표가 본문 첫 줄을 덮지 않는다 (14.1s)
+  ✓   4 [firefox] › test/runtime/instrumentation-boundary.spec.ts:36:1 › a normal export boot ships no debug globals, hooks, or hidden state mirrors (15.6s)
+  ✓   5 [firefox] › test/runtime/instrumentation-boundary.spec.ts:80:1 › an explicit QA boot retains the read and mutate capability the harness needs (16.4s)
+  ✓   6 [firefox] › test/runtime/pointer-contract.spec.ts:117:1 › dialogue choices retain keyboard focus styling but expose no pointer affordance (14.2s)
+  ✓   7 [firefox] › test/runtime/pointer-contract.spec.ts:128:1 › shop buy list exposes no pointer affordance (1.3m)
+  ✓   8 [firefox] › test/runtime/pointer-contract.spec.ts:143:1 › name entry exposes no pointer affordance (1.6m)
+  ✓   9 [firefox] › test/runtime/pointer-contract.spec.ts:155:1 › terminal ending screen exposes no pointer affordance (16.6s)
+  ✓  10 [firefox] › test/runtime/pointer-contract.spec.ts:162:1 › battle surface exposes no pointer affordance (36.0s)
+  ✓  11 [firefox] › test/runtime/smoke.spec.ts:20:3 › 런타임 게이트: smoke (23.9s)
+  ✓  12 [firefox] › test/runtime/smoke.spec.ts:20:3 › 런타임 게이트: dialogue (49.7s)
+
+  12 passed (7.0m)

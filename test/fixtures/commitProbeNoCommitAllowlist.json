@@ -56,12 +56,6 @@
   ],
   "setEventGraphicPattern": [
    "set-event-graphic-pattern-frame-input"
-  ],
-  "shop": [
-   "shop-failed-branch-row>select#0",
-   "shop-item-search",
-   "shop-item-type-filter",
-   "shop-transaction-branch-row>select#0"
   ]
  },
  "UNTRIAGED": {}

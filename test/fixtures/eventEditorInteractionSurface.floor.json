@@ -372,10 +372,10 @@
   "initialTestidCount": 11
  },
  "shop": {
-  "probeCount": 20,
+  "probeCount": 4,
   "reactingCount": 3,
-  "classCount": 87,
-  "initialTestidCount": 56
+  "classCount": 43,
+  "initialTestidCount": 27
  },
  "inn": {
   "probeCount": 9,

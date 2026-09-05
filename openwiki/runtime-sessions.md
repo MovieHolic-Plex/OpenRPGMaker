@@ -1,3 +1,31 @@
+## Esc 메뉴 작업 프레임 (2026-09-05)
+
+이 절이 아래의 edge-dock / 상단 파티 고정 / 하위 창 숨김 설명을 대체한다.
+
+- `playerStatusMenu.ts` 는 320×240 논리 스테이지 안에 단일 프레임을 그린다. 가장자리에서 맵은
+  계속 보이고, 헤더(위치·소지금·시간), 좌측 여섯 메뉴, 우측 작업 본문, 하단 조작 안내를 분리한다.
+  파티 개요는 파티 그룹에만 나온다. 아이템 대상은 해당 행 안에 얼굴·현재 HP/MP·예상 회복량을
+  표시하고, 장비 능력치 비교는 후보 옆 설명 영역에 둔다.
+- 메인 단계에서도 본문 미리보기는 보인다(`inert`로 입력만 막는다). ↑↓/WS는 목록,
+  →/D는 본문 진입, ←/A는 메뉴로 포커스 복귀, Enter/Z는 결정, Esc/X는 기존 한 단계 취소다.
+  좌우키가 목록의 위아래 이동을 대신하지 않는다. 영역 간 이동·다시 열기에서 커서를 유지한다.
+- `playerStatusMenuDetailRenderer.updateStatusMenuDetailSelection` 이 커서 이동 때 설명 영역만
+  갱신한다. 목록 DOM·스크롤·포커스를 보존한다. 페이지 이동 때도 명령 레일 DOM은 보존한다.
+- `playerItemUse.menuItemUnavailableReason` / `previewMenuItemTarget` 는 실제 실행의
+  `activeItemEffects`, 사용 장소, 대상 제한, 회복·상태 효과 판정을 공유한다. 미리보기는 세션과
+  난수 상태를 바꾸지 않는다. 사용 불가 항목도 커서로 설명을 읽을 수 있고 결정 시 이유를 보여준다.
+  회복약 사용 후 수량이 남으면 대상과 커서를 유지하며, 마지막 한 개를 쓰면 목록으로 돌아간다.
+- `src/player/playerStatusMenuMotion.ts` 가 Esc 전용 모션과 시간을 소유한다. 열기 180ms, 닫기 120ms,
+  본문 전환 120ms, 커서 80ms, 수치 220ms. 일반 title/shop juice의 루트 변형을 적용하지 않는다.
+  닫기는 최종 opacity 0을 유지하고 Animation.finished 뒤 해당 요소만 제거한다. 이전 메뉴의
+  완료 콜백이 다시 연 메뉴를 지우면 안 된다. closing 표시는 필드 입력 소유권을 즉시 반환한다.
+  모션 감소에서는 이동 없이 40ms 페이드만 쓴다.
+- 검증: `npm run qa:runtime -- --scenario esc-menu`,
+  `npx playwright test --config playwright.runtime.config.ts test/runtime/esc-menu.spec.ts`.
+  전용 시나리오는 과거 QA 프로젝트의 사본에서 회복약 종류를 medicine으로 명시한다.
+  과거 item-runtime-qa-v3.json의 normalGoods 회복약은 저장된 회복 필드가 있어도 사용할 수 없다.
+  이것은 테스트 입력 보정이며 저작 게임이나 원격 프로젝트를 변경하지 않는다.
+
 # Runtime Sessions & State
 
 ## 아이템 종류 전환과 실행 효과 (2026-09-05)
@@ -5,6 +33,8 @@
 `src/project/itemUsage.ts`는 보관된 ItemRecord와 현재 종류의 활성 효과를 구분한다. `playerItemUse`와 `battle/runtime`은 활성 투영만 사용하며, `itemAllowsMenu`/`itemAllowsBattle`은 사용 시점과 지원 종류를 함께 검사한다. 이전 책의 learnedSkillId가 약으로 바꾼 뒤 학습을 실행하거나, 일반 물품이 이전 회복 효과를 실행하면 회귀다. 부활은 필드 전용이며 포획은 특수 아이템의 전투 사용 조건을 따른다. 특수 아이템의 스킬 없는 상태 부여는 유지한다. 저장 스키마는 그대로라 이전 종류로 돌아가면 보관된 설정을 다시 편집할 수 있다. UI는 미지원 특수 아이템의 배우·직업 제한을 제공하지 않는다.
 
 장비 상태 방어는 resist 행만 집계한다. 기존 inflict 행 하나가 다른 장비의 저항을 끄지 않으며, 편집기에서 명시적으로 저항으로 전환할 수 있다. 테스트: `itemEquipmentAuthoringTrust`, `itemRuntimeUsability`, `equipmentCatalogRuntimeAxes`.
+
+필드 메뉴 대상 판정은 `playerItemUse.canUseMenuItemOnActor`를 사용한다. HP/MP 회복뿐 아니라 상태 해제·부여, 책·씨앗, 배우·현재 직업 제한을 실제 사용 경로와 같이 판정하며, 미리보기는 RNG나 소지품을 바꾸지 않는다. `playerStatusMenuDetails`는 `activeItemEffects`를 적용한 뒤 대상 화면을 선택한다. 책·씨앗은 저장된 scope가 `none`이어도 파티원을 고르고, 일반 물품은 보관된 회복/돌봄 설정으로 대상 화면을 열지 않는다. 스위치 아이템은 이전 종류의 아군 scope가 남아 있어도 대상 선택 없이 바로 장치를 작동한다. 과거 HP/MP 전용 판정은 체력이 가득 찬 파티원의 해독·강화까지 모두 막았다. 회귀: `test/playerMenuItemTargets.test.ts`, `test/runtime/status-menu-adversarial.spec.ts`.
 
 
 Session state, save slots, farming, friendship, calendar, lighting, weather, field spawns, and NPC schedules.
@@ -128,3 +158,10 @@ Session state, save slots, farming, friendship, calendar, lighting, weather, fie
 ## 공포 게임 제작 기능 (2026-09-05)
 
 선택적 `session.horror`와 `eventLocations`로 추격·가구·은신 상태를 세이브에 보존한다. 데이터·런타임·저작·검증 계약은 [horror-authoring.md](horror-authoring.md) 참조.
+
+### 메뉴 PR 통합 검증 (2026-09-05)
+
+Esc 메뉴의 대상 유지·회복량 미리보기와 메뉴 입력 회귀 수정을 함께 적용한다. 대상 버튼의 사용 가능 여부는 `canUseMenuItemOnActor`를 따르고, 스위치 아이템은 남은 ally scope와 무관하게 바로 사용한다. 메뉴를 다시 열 때는 표시되는 레일 명령과 내부 명령을 동기화한다. `status-menu-adversarial.spec.ts`는 사용 뒤 유지되는 대상 화면에서 HP·잔량을 확인한 후 취소로 목록에 돌아오며, OS 키 반복 차단과 효과의 저장→로드→재저장을 계속 검사한다.
+
+
+#593 후속 커밋은 선택 행에 공통 규칙과 같은 `border-radius: 3px`, `margin: 0`, `min-height: 0` 및 `bottom: auto`를 명시한다. 따라서 CSS 실사용 기준선은 상점 PR의 원래 기준선을 유지하며 메뉴의 속성 누락 검사는 통과한다.

@@ -13,14 +13,14 @@ export type TerrainAtResult = {
 };
 
 /** Resolve the terrain tag at a map tile (tileMeta.terrainTag wins over tileset.terrain). */
-export function terrainTagAt(project: Project, location: TerrainLocation | undefined): number {
+export function terrainTagAt(project: Project, location: TerrainLocation | undefined, tileOverride?: number): number {
   if (!location) return 0;
   const map = project.maps[location.mapId];
   if (!map) return 0;
   const x = Math.trunc(location.x);
   const y = Math.trunc(location.y);
   if (x < 0 || y < 0 || x >= map.width || y >= map.height) return 0;
-  const tileIndex = map.lowerTiles[y * map.width + x];
+  const tileIndex = tileOverride ?? map.lowerTiles[y * map.width + x];
   if (typeof tileIndex !== "number" || tileIndex < 0) return 0;
   const tileset = project.tilesets[map.tilesetId];
   if (!tileset) return 0;

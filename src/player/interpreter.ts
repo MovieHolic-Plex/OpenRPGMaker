@@ -28,6 +28,8 @@ export function createInterpreter(
     maxInstructions: Math.max(1, Math.trunc(options?.maxInstructions ?? 100000)),
     instructionsExecuted: 0,
     currentEventId: options?.currentEventId,
+    get eventPositions() { return options?.getEventPositions?.() ?? options?.eventPositions; },
+    isEventIdle: options?.isEventIdle,
     onFactionStanceChanged: options?.onFactionStanceChanged,
     project,
   };
@@ -85,6 +87,7 @@ export function createInterpreter(
     },
     skip(): StepResult {
       if (done) return { kind: "done" };
+      state.waitUntil = undefined;
       // pending(블로킹 단계)을 무시하고 현재 프레임의 pc 만 전진시킨다.
       const frame = topFrame(state.stack);
       if (frame) frame.pc += 1;
@@ -93,6 +96,7 @@ export function createInterpreter(
     },
     jumpToLabel(name: string): StepResult {
       if (done) return { kind: "done" };
+      state.waitUntil = undefined;
       if (!gotoLabel(state.stack, name)) return { kind: "done" };
       pending = "none";
       return run();
