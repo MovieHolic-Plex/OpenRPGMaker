@@ -74,9 +74,9 @@ describe("sliderStepperField", () => {
     return { fieldNode, range, stepper, committed };
   }
 
-  it("renders a range + number pair under one label with testids", () => {
+  it("renders a range + number pair in a field with testids", () => {
     const { fieldNode, range, stepper } = render();
-    expect(fieldNode.tagName).toBe("LABEL");
+    expect(fieldNode.tagName).toBe("DIV");
     expect(fieldNode.className).toContain("db-field");
     expect(range.attrs.type).toBe("range");
     expect(stepper.attrs.type).toBe("number");
