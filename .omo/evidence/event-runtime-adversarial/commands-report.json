@@ -10,10 +10,10 @@
   ],
   "errors": [],
   "browserWarnings": [
-    "[.WebGL-0x6ec00176a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
-    "[.WebGL-0x6ec00176a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
-    "[.WebGL-0x6ec00176a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
-    "[.WebGL-0x6ec00176a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+    "[.WebGL-0x157c0017a600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x157c0017a600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x157c0017a600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x157c0017a600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
   ],
   "observations": {
     "positions": [
@@ -48,41 +48,6 @@
         "done": false
       },
       {
-        "x": 3,
-        "y": 6,
-        "done": false
-      },
-      {
-        "x": 3,
-        "y": 6,
-        "done": false
-      },
-      {
-        "x": 4,
-        "y": 6,
-        "done": false
-      },
-      {
-        "x": 4,
-        "y": 6,
-        "done": false
-      },
-      {
-        "x": 4,
-        "y": 6,
-        "done": false
-      },
-      {
-        "x": 4,
-        "y": 6,
-        "done": false
-      },
-      {
-        "x": 4,
-        "y": 6,
-        "done": false
-      },
-      {
         "x": 4,
         "y": 6,
         "done": false
@@ -124,36 +89,6 @@
       },
       {
         "x": 4,
-        "y": 7,
-        "done": false
-      },
-      {
-        "x": 4,
-        "y": 7,
-        "done": false
-      },
-      {
-        "x": 5,
-        "y": 7,
-        "done": false
-      },
-      {
-        "x": 5,
-        "y": 7,
-        "done": false
-      },
-      {
-        "x": 5,
-        "y": 7,
-        "done": false
-      },
-      {
-        "x": 5,
-        "y": 7,
-        "done": false
-      },
-      {
-        "x": 5,
         "y": 7,
         "done": false
       },
@@ -203,16 +138,6 @@
         "done": false
       },
       {
-        "x": 6,
-        "y": 7,
-        "done": false
-      },
-      {
-        "x": 6,
-        "y": 7,
-        "done": false
-      },
-      {
         "x": 7,
         "y": 7,
         "done": false
@@ -236,21 +161,6 @@
         "x": 7,
         "y": 7,
         "done": false
-      },
-      {
-        "x": 7,
-        "y": 6,
-        "done": true
-      },
-      {
-        "x": 7,
-        "y": 6,
-        "done": true
-      },
-      {
-        "x": 7,
-        "y": 6,
-        "done": true
       },
       {
         "x": 7,
@@ -291,7 +201,7 @@
     "media": [
       {
         "name": "playing",
-        "time": 0.001841
+        "time": 0.000539
       },
       {
         "name": "ended",
@@ -390,5 +300,5 @@
       }
     }
   },
-  "video": "/home/main/.herdr/worktrees/rpg-zzu/worktree-clear-field-df12/.omo/evidence/event-runtime-audit/videos/page@c6e25a160ea53c0afbd0e8022ba3eb65.webm"
+  "video": "/home/main/.herdr/worktrees/rpg-zzu/worktree-clear-field-df12/.omo/evidence/event-runtime-audit/videos/page@afc97010e5e32ddb3fd39b18f695e9b1.webm"
 }

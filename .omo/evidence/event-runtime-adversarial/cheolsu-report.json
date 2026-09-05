@@ -11,97 +11,97 @@
       "speaker": "철수",
       "text": "선착장 앞 나무 상자… 아직도 여기 있네.\n가까이에서 위를 보고 Enter로 열어 보자.",
       "mapId": "memory_present",
-      "gapMs": 2092
+      "gapMs": 1361
     },
     {
       "speaker": "철수",
       "text": "상자 안에는 빛바랜 빨간 종이배가 있다.\n접힌 모서리마다 아버지의 손자국이 남아 있다.",
       "mapId": "memory_present",
-      "gapMs": 2709
+      "gapMs": 1673
     },
     {
       "speaker": "철수",
       "text": "나는 그날, 배가 가라앉아서 울었던 걸까?",
       "mapId": "memory_present",
-      "gapMs": 1293
+      "gapMs": 690
     },
     {
       "speaker": "그해 여름",
       "text": "열 살의 여름.\n세상에서 가장 먼 곳이 강 건너 마을이던 시절.",
       "mapId": "memory_summer",
-      "gapMs": 4065
+      "gapMs": 3335
     },
     {
       "speaker": "어린 철수",
       "text": "아빠, 내 배는 자꾸 가라앉아.\n아빠 것처럼 멀리 보내고 싶은데.",
       "mapId": "memory_summer",
-      "gapMs": 1700
+      "gapMs": 1297
     },
     {
       "speaker": "아버지",
       "text": "이리 줘 봐. 여기를 한 번 더 접으면 돼.\n천천히. 잘못 접어도 다시 펴면 되니까.",
       "mapId": "memory_summer",
-      "gapMs": 1763
+      "gapMs": 1434
     },
     {
       "speaker": "어린 철수",
       "text": "…아빠도 어릴 때 잘 못 접었어?",
       "mapId": "memory_summer",
-      "gapMs": 954
+      "gapMs": 559
     },
     {
       "speaker": "아버지",
       "text": "그럼. 네 할아버지랑 종이를 한 상자나 썼지.",
       "mapId": "memory_summer",
-      "gapMs": 1320
+      "gapMs": 708
     },
     {
       "speaker": "어린 철수",
       "text": "저기! 이번에는 떠 있어!\n…그런데 저 멀리 가면 다시 못 만나잖아.",
       "mapId": "memory_summer",
-      "gapMs": 3182
+      "gapMs": 2736
     },
     {
       "speaker": "아버지",
       "text": "배는 돌아오지 않아도 괜찮아.\n우리 둘이 여기서 함께 접었다는 건 남으니까.",
       "mapId": "memory_summer",
-      "gapMs": 1806
+      "gapMs": 1175
     },
     {
       "speaker": "철수",
       "text": "이제야 기억났다.\n그날 아버지는 배보다 내 얼굴을 오래 보고 있었다.",
       "mapId": "memory_summer",
-      "gapMs": 2092
+      "gapMs": 1800
     },
     {
       "speaker": "철수",
       "text": "강물 소리가 다시 가까워졌다.\n돌아오지 않는 것만 세느라, 남아 있는 걸 잊고 살았구나.",
       "mapId": "memory_present",
-      "gapMs": 5484
+      "gapMs": 4848
     },
     {
       "speaker": "철수",
       "text": "아빠. 이번에는 내가 먼저 접어 볼게.\n잘못 접으면… 다시 펴면 되니까.",
       "mapId": "memory_present",
-      "gapMs": 2044
+      "gapMs": 1367
     },
     {
       "speaker": "철수의 기억",
       "text": "끝.\n잠시 강변을 걸어도 좋습니다. 상자를 다시 조사하면 철수의 마지막 생각을\n들을 수 있습니다.",
       "mapId": "memory_present",
-      "gapMs": 2261
+      "gapMs": 1662
     },
     {
       "speaker": "철수",
       "text": "종이배는 상자에 두고, 빈 종이 한 장을 꺼냈다.",
       "mapId": "memory_present",
-      "gapMs": 1351
+      "gapMs": 1004
     },
     {
       "speaker": "철수",
       "text": "다음에는 누군가와 함께 접어야지.\n아버지가 내게 그랬던 것처럼.",
       "mapId": "memory_present",
-      "gapMs": 1489
+      "gapMs": 1151
     }
   ],
   "errors": [],
@@ -112,8 +112,8 @@
         "height": 720
       },
       "key": "ArrowRight",
-      "samples": 26,
-      "maxShortJump": 8,
+      "samples": 36,
+      "maxShortJump": 7,
       "position": {
         "eventLocations": {},
         "currentMapId": "memory_present",
@@ -182,27 +182,27 @@
         "npcActivities": {},
         "friendship": {},
         "rng": {
-          "seed": 1563237346,
+          "seed": 785595685,
           "streams": {
             "encounter": {
-              "seed": 921306500,
-              "state": 921306500
+              "seed": 3728284728,
+              "state": 3728284728
             },
             "battle": {
-              "seed": 1096531213,
-              "state": 1096531213
+              "seed": 2232890785,
+              "state": 2232890785
             },
             "movement": {
-              "seed": 187789302,
-              "state": 187789302
+              "seed": 4158133226,
+              "state": 4158133226
             },
             "fishing": {
-              "seed": 2598590699,
-              "state": 2598590699
+              "seed": 4160286015,
+              "state": 4160286015
             },
             "misc": {
-              "seed": 1812267803,
-              "state": 1812267803
+              "seed": 1615679319,
+              "state": 1615679319
             }
           }
         }
@@ -214,7 +214,7 @@
         "height": 720
       },
       "key": "ArrowDown",
-      "samples": 29,
+      "samples": 36,
       "maxShortJump": 0,
       "position": {
         "eventLocations": {},
@@ -284,27 +284,27 @@
         "npcActivities": {},
         "friendship": {},
         "rng": {
-          "seed": 1563237346,
+          "seed": 785595685,
           "streams": {
             "encounter": {
-              "seed": 921306500,
-              "state": 921306500
+              "seed": 3728284728,
+              "state": 3728284728
             },
             "battle": {
-              "seed": 1096531213,
-              "state": 1096531213
+              "seed": 2232890785,
+              "state": 2232890785
             },
             "movement": {
-              "seed": 187789302,
-              "state": 187789302
+              "seed": 4158133226,
+              "state": 4158133226
             },
             "fishing": {
-              "seed": 2598590699,
-              "state": 2598590699
+              "seed": 4160286015,
+              "state": 4160286015
             },
             "misc": {
-              "seed": 1812267803,
-              "state": 1812267803
+              "seed": 1615679319,
+              "state": 1615679319
             }
           }
         }
@@ -316,7 +316,7 @@
         "height": 720
       },
       "key": "ArrowLeft",
-      "samples": 29,
+      "samples": 36,
       "maxShortJump": 0,
       "position": {
         "eventLocations": {},
@@ -386,27 +386,27 @@
         "npcActivities": {},
         "friendship": {},
         "rng": {
-          "seed": 1563237346,
+          "seed": 785595685,
           "streams": {
             "encounter": {
-              "seed": 921306500,
-              "state": 921306500
+              "seed": 3728284728,
+              "state": 3728284728
             },
             "battle": {
-              "seed": 1096531213,
-              "state": 1096531213
+              "seed": 2232890785,
+              "state": 2232890785
             },
             "movement": {
-              "seed": 187789302,
-              "state": 187789302
+              "seed": 4158133226,
+              "state": 4158133226
             },
             "fishing": {
-              "seed": 2598590699,
-              "state": 2598590699
+              "seed": 4160286015,
+              "state": 4160286015
             },
             "misc": {
-              "seed": 1812267803,
-              "state": 1812267803
+              "seed": 1615679319,
+              "state": 1615679319
             }
           }
         }
@@ -418,8 +418,8 @@
         "height": 720
       },
       "key": "ArrowUp",
-      "samples": 28,
-      "maxShortJump": 9,
+      "samples": 36,
+      "maxShortJump": 7,
       "position": {
         "eventLocations": {},
         "currentMapId": "memory_present",
@@ -488,27 +488,27 @@
         "npcActivities": {},
         "friendship": {},
         "rng": {
-          "seed": 1563237346,
+          "seed": 785595685,
           "streams": {
             "encounter": {
-              "seed": 921306500,
-              "state": 921306500
+              "seed": 3728284728,
+              "state": 3728284728
             },
             "battle": {
-              "seed": 1096531213,
-              "state": 1096531213
+              "seed": 2232890785,
+              "state": 2232890785
             },
             "movement": {
-              "seed": 187789302,
-              "state": 187789302
+              "seed": 4158133226,
+              "state": 4158133226
             },
             "fishing": {
-              "seed": 2598590699,
-              "state": 2598590699
+              "seed": 4160286015,
+              "state": 4160286015
             },
             "misc": {
-              "seed": 1812267803,
-              "state": 1812267803
+              "seed": 1615679319,
+              "state": 1615679319
             }
           }
         }
@@ -520,7 +520,7 @@
         "height": 480
       },
       "key": "ArrowRight",
-      "samples": 26,
+      "samples": 36,
       "maxShortJump": 0,
       "position": {
         "eventLocations": {},
@@ -590,27 +590,27 @@
         "npcActivities": {},
         "friendship": {},
         "rng": {
-          "seed": 1563237346,
+          "seed": 785595685,
           "streams": {
             "encounter": {
-              "seed": 921306500,
-              "state": 921306500
+              "seed": 3728284728,
+              "state": 3728284728
             },
             "battle": {
-              "seed": 1096531213,
-              "state": 1096531213
+              "seed": 2232890785,
+              "state": 2232890785
             },
             "movement": {
-              "seed": 187789302,
-              "state": 187789302
+              "seed": 4158133226,
+              "state": 4158133226
             },
             "fishing": {
-              "seed": 2598590699,
-              "state": 2598590699
+              "seed": 4160286015,
+              "state": 4160286015
             },
             "misc": {
-              "seed": 1812267803,
-              "state": 1812267803
+              "seed": 1615679319,
+              "state": 1615679319
             }
           }
         }
@@ -622,8 +622,8 @@
         "height": 480
       },
       "key": "ArrowDown",
-      "samples": 27,
-      "maxShortJump": 9,
+      "samples": 36,
+      "maxShortJump": 5,
       "position": {
         "eventLocations": {},
         "currentMapId": "memory_present",
@@ -692,27 +692,27 @@
         "npcActivities": {},
         "friendship": {},
         "rng": {
-          "seed": 1563237346,
+          "seed": 785595685,
           "streams": {
             "encounter": {
-              "seed": 921306500,
-              "state": 921306500
+              "seed": 3728284728,
+              "state": 3728284728
             },
             "battle": {
-              "seed": 1096531213,
-              "state": 1096531213
+              "seed": 2232890785,
+              "state": 2232890785
             },
             "movement": {
-              "seed": 187789302,
-              "state": 187789302
+              "seed": 4158133226,
+              "state": 4158133226
             },
             "fishing": {
-              "seed": 2598590699,
-              "state": 2598590699
+              "seed": 4160286015,
+              "state": 4160286015
             },
             "misc": {
-              "seed": 1812267803,
-              "state": 1812267803
+              "seed": 1615679319,
+              "state": 1615679319
             }
           }
         }
@@ -724,8 +724,8 @@
         "height": 480
       },
       "key": "ArrowLeft",
-      "samples": 23,
-      "maxShortJump": 1,
+      "samples": 36,
+      "maxShortJump": 5,
       "position": {
         "eventLocations": {},
         "currentMapId": "memory_present",
@@ -794,27 +794,27 @@
         "npcActivities": {},
         "friendship": {},
         "rng": {
-          "seed": 1563237346,
+          "seed": 785595685,
           "streams": {
             "encounter": {
-              "seed": 921306500,
-              "state": 921306500
+              "seed": 3728284728,
+              "state": 3728284728
             },
             "battle": {
-              "seed": 1096531213,
-              "state": 1096531213
+              "seed": 2232890785,
+              "state": 2232890785
             },
             "movement": {
-              "seed": 187789302,
-              "state": 187789302
+              "seed": 4158133226,
+              "state": 4158133226
             },
             "fishing": {
-              "seed": 2598590699,
-              "state": 2598590699
+              "seed": 4160286015,
+              "state": 4160286015
             },
             "misc": {
-              "seed": 1812267803,
-              "state": 1812267803
+              "seed": 1615679319,
+              "state": 1615679319
             }
           }
         }
@@ -826,13 +826,13 @@
         "height": 480
       },
       "key": "ArrowUp",
-      "samples": 25,
-      "maxShortJump": 7,
+      "samples": 36,
+      "maxShortJump": 5,
       "position": {
         "eventLocations": {},
         "currentMapId": "memory_present",
         "x": 13,
-        "y": 8,
+        "y": 10,
         "gold": 0,
         "switches": {
           "sw_0001": false,
@@ -896,27 +896,27 @@
         "npcActivities": {},
         "friendship": {},
         "rng": {
-          "seed": 1563237346,
+          "seed": 785595685,
           "streams": {
             "encounter": {
-              "seed": 921306500,
-              "state": 921306500
+              "seed": 3728284728,
+              "state": 3728284728
             },
             "battle": {
-              "seed": 1096531213,
-              "state": 1096531213
+              "seed": 2232890785,
+              "state": 2232890785
             },
             "movement": {
-              "seed": 187789302,
-              "state": 187789302
+              "seed": 4158133226,
+              "state": 4158133226
             },
             "fishing": {
-              "seed": 2598590699,
-              "state": 2598590699
+              "seed": 4160286015,
+              "state": 4160286015
             },
             "misc": {
-              "seed": 1812267803,
-              "state": 1812267803
+              "seed": 1615679319,
+              "state": 1615679319
             }
           }
         }
@@ -928,7 +928,7 @@
       "eventLocations": {},
       "currentMapId": "memory_present",
       "x": 13,
-      "y": 8,
+      "y": 9,
       "gold": 0,
       "switches": {
         "sw_0001": false,
@@ -992,27 +992,27 @@
       "npcActivities": {},
       "friendship": {},
       "rng": {
-        "seed": 1563237346,
+        "seed": 785595685,
         "streams": {
           "encounter": {
-            "seed": 921306500,
-            "state": 921306500
+            "seed": 3728284728,
+            "state": 3728284728
           },
           "battle": {
-            "seed": 1096531213,
-            "state": 1096531213
+            "seed": 2232890785,
+            "state": 2232890785
           },
           "movement": {
-            "seed": 187789302,
-            "state": 187789302
+            "seed": 4158133226,
+            "state": 4158133226
           },
           "fishing": {
-            "seed": 2598590699,
-            "state": 2598590699
+            "seed": 4160286015,
+            "state": 4160286015
           },
           "misc": {
-            "seed": 1812267803,
-            "state": 1812267803
+            "seed": 1615679319,
+            "state": 1615679319
           }
         }
       }
@@ -1023,7 +1023,7 @@
       "running": false,
       "player": {
         "x": 13,
-        "y": 8
+        "y": 9
       },
       "switches": {
         "sw_0001": false,
@@ -1335,7 +1335,7 @@
     "speaker": "",
     "ready": false
   },
-  "video": "/home/main/.herdr/worktrees/rpg-zzu/worktree-clear-field-df12/.omo/evidence/cheolsu-memory/videos/page@ace20158de17f2c913fe3b8ee8d221a9.webm",
+  "video": "/home/main/.herdr/worktrees/rpg-zzu/worktree-clear-field-df12/.omo/evidence/cheolsu-memory/videos/page@94df11f0e1491852835c1a88270321d6.webm",
   "keyboardOnly": true,
-  "maxDialogueGapMs": 5484
+  "maxDialogueGapMs": 4848
 }

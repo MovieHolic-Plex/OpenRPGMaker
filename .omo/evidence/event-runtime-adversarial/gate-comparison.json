@@ -1,0 +1,34 @@
+{
+  "testedSource": "ed47e1d0 (before latest main integration)",
+  "toolSessionExit": 143,
+  "logReported": {
+    "typecheckExit": 0,
+    "typecheckErrors": 0,
+    "vitestExit": 1,
+    "passed": 12973,
+    "failed": 170,
+    "cssExit": 0,
+    "surfaceExit": 1
+  },
+  "outsideTrackedBaseline": [
+    "test/aiActivityLiveRow.test.ts",
+    "test/aiAutonomousRunSurface.test.ts",
+    "test/aiChatObservability.test.ts",
+    "test/aiChatPanelTransportError.test.ts",
+    "test/aiSelectionChipScope.test.ts",
+    "test/databaseNavMode.test.ts",
+    "test/databaseRadioCustomGuard.test.ts",
+    "test/databaseSidebarKeyboard.test.ts",
+    "test/databaseSidebarNav.test.ts",
+    "test/databaseTabIcons.test.ts",
+    "test/eventEditorM2Surface.baseline.test.ts",
+    "test/eventEditorPortalSurface.baseline.test.ts",
+    "test/forestDensity.test.ts",
+    "test/gen1DemoContent.test.ts",
+    "test/modalEscapeLayerGate.test.ts",
+    "test/noLocalProjectDb.test.ts",
+    "test/roleNameComparisonGate.test.ts"
+  ],
+  "outsidePreviouslyComparedFailures": [],
+  "note": "The captured complete gate output reports baseline failures. The tool session returned 143, so do not claim a clean overall gate process exit. After integration a624f926, focused tests, typecheck and shipping-player QA were rerun separately."
+}
