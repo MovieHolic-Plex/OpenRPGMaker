@@ -1,5 +1,10 @@
 # Phase 1 actual-editor house protection - PASS
 
+> Historical worker receipt: commit `02b496ae`, 4.9m, port 52385. The body below
+> is preserved as that run's record, not final-candidate supervisor evidence.
+> See `SUPERVISOR-E2E.md` for the separate `238d6f4f` supervisor run (5.8m,
+> port 34535) and hashes of its fresh absolute-path artifacts.
+
 Final gate: **4 passed, 0 failed, zero retries, exit 0 (4.9m)** against production
 commit `02b496aec6c331d0cc33b19217765e2b0b2e967b`. See `playwright.log` and
 `e2e-receipt.json` (spec hash, outcome summary, JSON/screenshot hashes).
