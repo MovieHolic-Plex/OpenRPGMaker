@@ -5,8 +5,6 @@ import {
   type HouseKitId,
 } from "@/editor/houseKit";
 import {
-  createHouseDoorEvent,
-  createHouseDoorStepEvent,
   createHouseInteriorMap,
   registerInteriorMaps,
   type HouseInteriorProgram,
@@ -22,7 +20,7 @@ import {
   houseInteriorStories,
   seedFromString,
   uniqueProjectId,
-  upsertEvent,
+  upsertHouseDoorEvents,
   type HouseShapeOptions,
 } from "./houseKitDraftSupport";
 import { ToolError } from "./types";
@@ -162,7 +160,7 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
         appendTreeChildOnce(draft.mapTree, floor.mapId, parentFloorId);
         parentFloorId = floor.mapId;
       }
-      upsertEvent(map.events, createHouseDoorEvent({
+      upsertHouseDoorEvents(map, {
         eventId: doorEventId,
         x,
         y,
@@ -172,21 +170,7 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
         entryX: interior.entry.x,
         entryY: interior.entry.y,
         seed: interiorSeed,
-      }));
-      // 열린 문 기본값: 문 앞 통행 칸에 밟으면 열리는 발판 — 문 칸은 벽이라 밟히지 않는다.
-      // 문 앞이 맵 밖이면 발판을 생략한다(문 스프라이트만 남는다).
-      if (y + 1 < map.height) {
-        upsertEvent(map.events, createHouseDoorStepEvent({
-          eventId: `${doorEventId}_step`,
-          doorEventId,
-          x,
-          y: y + 1,
-          interiorMapId,
-          name: `${ownerName}의 집 문`,
-          entryX: interior.entry.x,
-          entryY: interior.entry.y,
-        }));
-      }
+      });
       interiorData = {
         interiorMapId,
         floorMapIds: interior.floors.map((floor) => floor.mapId),
