@@ -163,4 +163,5 @@ Session state, save slots, farming, friendship, calendar, lighting, weather, fie
 
 Esc 메뉴의 대상 유지·회복량 미리보기와 메뉴 입력 회귀 수정을 함께 적용한다. 대상 버튼의 사용 가능 여부는 `canUseMenuItemOnActor`를 따르고, 스위치 아이템은 남은 ally scope와 무관하게 바로 사용한다. 메뉴를 다시 열 때는 표시되는 레일 명령과 내부 명령을 동기화한다. `status-menu-adversarial.spec.ts`는 사용 뒤 유지되는 대상 화면에서 HP·잔량을 확인한 후 취소로 목록에 돌아오며, OS 키 반복 차단과 효과의 저장→로드→재저장을 계속 검사한다.
 
-CSS 실사용 클래스 게이트의 `.selected` 전용 `border-radius`·`margin`·`min-height` 기록은 새 Esc 메뉴에서 공통 `.status-menu-command` 규칙으로 이동했다. 세 화면 크기와 선택 커서·스크롤을 실제 브라우저로 확인한 뒤 이 세 속성만 기준선에서 제거했다. 기존 `bottom` 실패와 비상점 표면 스냅샷 6개 assertion은 그대로 남긴다.
+
+#593 후속 커밋은 선택 행에 공통 규칙과 같은 `border-radius: 3px`, `margin: 0`, `min-height: 0` 및 `bottom: auto`를 명시한다. 따라서 CSS 실사용 기준선은 상점 PR의 원래 기준선을 유지하며 메뉴의 속성 누락 검사는 통과한다.
