@@ -1,5 +1,9 @@
 # Runtime Project Schema & Persistence
 
+## New-project save/reload verification (2026-09-05)
+
+`store.loadNewRemoteProjectTransactionally` compares draft-free projects with `serializeForComparison`, not raw wire bytes. The comparison runs both sides through the project loader's normalization and recursively sorts object keys; arrays and authored non-default values remain significant. New blank/preset seeds contain the default `system.titleScreen.titleGraphic = { mode: "text", x: 32, y: 62 }`, which normalization omits, and the farm preset gains `system.timeSystem.forceSleep = false` on load. PostgreSQL JSONB also changes object-key order. These representation differences must not reject a successful save/reload. Wire serialization and SHA-256 persistence remain unchanged; actual mismatches still reject before adopting the new project or changing drafts, config, or URL. `test/transactionalNewRemoteProject.test.ts` exercises all five presets plus blank creation through real save/load functions with a JSONB-like transport, and rejects changed titles, map tiles, and array order.
+
 ## Project-authored equipment slots (2026-09-05)
 
 `ProjectDatabaseRecords.equipmentSlots?: EquipmentSlotRecord[]` is an additive v4 catalog of `{ id, label }`. Omission keeps the five built-ins. `src/project/equipmentSlots.ts` merges built-ins with authored label overrides and custom slots; built-in IDs cannot be removed. IDs are stable ASCII identifiers, not labels. `EquipmentRecord.slot`, `ActorInitialEquipment`, and `changeEquipment.slot` reference these IDs. Actor normalization preserves every slot key; shape/reference validation rejects duplicate/unsafe catalog IDs, empty labels, and dangling equipment/actor/event slot references. No migration or schema bump is needed for catalog-free projects.
