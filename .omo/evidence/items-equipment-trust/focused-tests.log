@@ -110,4 +110,3 @@
       Tests  100 passed (100)
    Start at  17:52:51
    Duration  81.99s (transform 37.12s, setup 0ms, collect 103.48s, tests 45.12s, environment 3ms, prepare 3.79s)
-
