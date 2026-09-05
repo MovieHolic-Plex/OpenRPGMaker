@@ -1,5 +1,4 @@
-// QA-only native-fetch transport for Chromium hosts with unstable netlink notifications.
-// Every response is fetched from the actual Vite URL; no application modules are mocked.
+// QA uses direct Chromium navigation to the real local app; no request relay.
 import assert from "node:assert/strict";
 import { chromium } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
@@ -12,17 +11,6 @@ const errors = [];
 const checks = [];
 try {
   const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
-  await context.route(origin + "/**", async route => {
-    const req = route.request();
-    const resp = await fetch(req.url(), {
-      method: req.method(), headers: req.headers(),
-      ...(req.postDataBuffer() ? { body: req.postDataBuffer() } : {}),
-      signal: AbortSignal.timeout(120_000),
-    });
-    const headers = Object.fromEntries(resp.headers);
-    for (const h of ["content-encoding", "content-length", "transfer-encoding"]) delete headers[h];
-    await route.fulfill({ status: resp.status, headers, body: Buffer.from(await resp.arrayBuffer()) });
-  });
   const page = await context.newPage();
   page.setDefaultTimeout(120_000);
   page.on("pageerror", error => errors.push(error.message));

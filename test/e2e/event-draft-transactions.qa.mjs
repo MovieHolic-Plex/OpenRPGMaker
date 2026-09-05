@@ -1,5 +1,4 @@
-// QA-only transport workaround for Chromium netlink ERR_NETWORK_CHANGED.
-// Every same-origin response comes from the real Vite server via native fetch.
+// QA uses direct Chromium navigation to the real local app; no request relay.
 import assert from "node:assert/strict";
 import { chromium } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
@@ -12,18 +11,6 @@ const context = await browser.newContext({ viewport: { width: 1440, height: 1000
 const errors = [];
 const results = [];
 try {
-  await context.route("**/*", async (route) => {
-    const req = route.request();
-    if (!req.url().startsWith(origin + "/")) return route.abort("blockedbyclient");
-    const resp = await fetch(req.url(), {
-      method: req.method(), headers: req.headers(),
-      ...(req.postDataBuffer() ? { body: req.postDataBuffer() } : {}),
-      signal: AbortSignal.timeout(180000),
-    });
-    const headers = Object.fromEntries(resp.headers);
-    for (const name of ["content-encoding", "content-length", "transfer-encoding"]) delete headers[name];
-    await route.fulfill({ status: resp.status, headers, body: Buffer.from(await resp.arrayBuffer()) });
-  });
   const page = await context.newPage();
   page.on("pageerror", (error) => errors.push(error.message));
   await page.addInitScript(() => {
@@ -159,6 +146,7 @@ try {
   results.push("field template parent Cancel leaves no switch/session/event/history leak");
 
   await writeFile(evidence + "/transactions-browser.json", JSON.stringify({ origin, results, errors }, null, 2));
+  assert.deepEqual(errors, []);
   console.log(JSON.stringify({ results, errors }, null, 2));
 } finally {
   await writeFile(evidence + "/transactions-browser.json", JSON.stringify({ origin, results, errors }, null, 2));

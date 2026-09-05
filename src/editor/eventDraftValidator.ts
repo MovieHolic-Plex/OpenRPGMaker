@@ -8,8 +8,10 @@ import { DEFAULT_ENEMY_FACTION_ID, PLAYER_FACTION_ID } from "@/project/factions"
 import { resolveTimeSystem } from "@/project/gameTime";
 import { planScreenEffect } from "@/player/interpreter/screenEffectPlan";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
+import { projectWithEventDraftAuthoredWrites } from "@/project/eventDraftAuthored";
 import { hasCharacterId } from "@/project/socialKey";
 import { collectNpcActivitySuggestions } from "@/editor/panels/eventEditor/options";
+import { advancedConditionEntries, pageConditionField } from "@/editor/panels/eventEditor/pageConditionLayout";
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
 import type {
   Command,
@@ -25,6 +27,8 @@ export type EventDraftIssueSeverity = "error" | "warning" | "info";
 
 export type EventDraftFieldLocator = {
   readonly testId: string;
+  /** Scopes reusable condition-form controls to their exact authored row. */
+  readonly scopeTestId?: string;
 };
 
 export type EventDraftIssue = {
@@ -109,8 +113,9 @@ export function validateEventDraftBody(
   mapId: MapId,
   event: GameEvent,
 ): EventDraftValidation {
+  const working = projectWithEventDraftAuthoredWrites(project, mapId, event.id);
   const issues: EventDraftIssue[] = [];
-  const refs = referenceSets(project, mapId, event);
+  const refs = referenceSets(working, mapId, event);
   const pages = event.pages ?? [];
 
   if (pages.length === 0) {
@@ -125,7 +130,7 @@ export function validateEventDraftBody(
   }
 
   const firstPageId = pages[0]!.id;
-  const map = project.maps[mapId];
+  const map = working.maps[mapId];
   if (!map || event.x < 0 || event.y < 0 || event.x >= map.width || event.y >= map.height) {
     issues.push({
       severity: "error",
@@ -139,10 +144,10 @@ export function validateEventDraftBody(
   if (event.condition) validateCondition(event.condition, firstPageId, refs, issues);
 
   for (const page of pages) {
-    validatePage(project, mapId, event, page, refs, issues);
+    validatePage(working, mapId, event, page, refs, issues);
   }
-  checkCallDepth(project, issues);
-  validateSchedule(project, event, refs, firstPageId, issues);
+  checkCallDepth(working, issues);
+  validateSchedule(working, event, refs, firstPageId, issues);
   return validationFromIssues(issues);
 }
 
@@ -217,7 +222,12 @@ function validatePage(
     });
   }
 
-  conditions.forEach((condition) => validateCondition(condition, page.id, refs, issues));
+  const advanced = advancedConditionEntries({ conditions });
+  conditions.forEach((condition, index) => {
+    const advancedIndex = advanced.findIndex((entry) => entry.index === index);
+    const switchSlot = conditions.slice(0, index).filter((entry) => entry.kind === "switch").length;
+    validatePageCondition(condition, page.id, refs, issues, advancedIndex < 0 ? undefined : String(advancedIndex), switchSlot);
+  });
   if (page.movement) validateMovement(project, page, refs, issues);
 
   const riskyTrigger = trigger.kind === "auto" || trigger.kind === "parallel";
@@ -356,6 +366,30 @@ function validateMovement(
       );
     }
   }
+}
+
+/** Keep page-condition position through recursion instead of reusing command-form anchors. */
+function validatePageCondition(
+  condition: Condition,
+  pageId: string,
+  refs: ReferenceSets,
+  issues: EventDraftIssue[],
+  advancedSuffix?: string,
+  switchSlot = 0,
+): void {
+  if ((condition.kind === "all" || condition.kind === "any") && condition.conditions.length > 0) {
+    condition.conditions.forEach((child, index) =>
+      validatePageCondition(child, pageId, refs, issues, `${advancedSuffix}-${index}`));
+    return;
+  }
+  if (condition.kind === "not") {
+    validatePageCondition(condition.condition, pageId, refs, issues, `${advancedSuffix}-0`);
+    return;
+  }
+  const found: EventDraftIssue[] = [];
+  validateCondition(condition, pageId, refs, found);
+  const field = pageConditionField(condition, advancedSuffix, switchSlot);
+  issues.push(...found.map((issue) => field ? { ...issue, field } : issue));
 }
 
 function validateCondition(

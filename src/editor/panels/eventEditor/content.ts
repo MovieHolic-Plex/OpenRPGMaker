@@ -22,6 +22,7 @@ import {
   replaceEventPageCommandAt,
 } from "@/editor/eventPages";
 import { commandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
+import { eventDraftCharacterName } from "@/project/eventDraftAuthored";
 import { store } from "@/project/store";
 import type { Command, EventPage, MapId } from "@/project/types";
 import { el } from "@/util/dom";
@@ -363,7 +364,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   const scheduleEditor = renderEventScheduleEditor(mapId, evForRender);
   const pageSettings = renderEventPageProps(mapId, evForRender.id, activePage, evForRender);
   const npcName = ev.characterId
-    ? store.getCurrent().characters?.[ev.characterId]?.displayName?.trim() || ev.characterId
+    ? eventDraftCharacterName(store.getCurrent(), ev, ev.characterId).trim() || ev.characterId
     : "연결 안 됨";
   appendEventRailGroup(
     pageSettings,
