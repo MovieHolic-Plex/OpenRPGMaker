@@ -17,7 +17,7 @@ The original audit covered 157 history-unmerged tips and 414 branch-only commits
 - Lighting number/slider percentages and presets; actual 50% input saves ambient 0.5. All thirteen current condition rows and existing flow coverage are exercised; historical twelve-row fixture was adapted to the added relationship row.
 - Native NPC/player emotes with editor, serialization, reference repair, shipping-player lifecycle and standalone asset inclusion (`c5fbbb5f`). No authored demo project was imported.
 - Village design authoring/contracts (`831aab0a`, `20340577`, `5c5d6801`) recovered without the branch's unrelated dirty snapshot base.
-- PR #577 monster studio, #578 assistant camera motion, #579 map settings, #580 sidebar navigation integrated with their original commits. PR #581 monster authoring and battle-event fixes, opened during the audit, were merged while retaining the #577 studio. Their combined focused run passed 70 tests.
+- PR #577 monster studio, #578 assistant camera motion, #579 map settings, #580 sidebar navigation integrated with their original commits. PR #581 monster authoring and battle-event fixes, opened during the audit, were merged while retaining the #577 studio. Their combined focused run passed 70 tests. Supervisor production-modal browser QA passed all twelve field hit-tests across 1024/1280/1680px and live HP preview updates (`scripts/qa/recovery-enemies.mjs`, `verify-shots/recovery-enemies/`).
 
 ## Preservation boundaries
 
