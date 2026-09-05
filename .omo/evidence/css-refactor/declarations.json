@@ -1,0 +1,1186 @@
+{
+  "base": "0eb0a06c",
+  "scope": "database UI only; exact unconditional selectors and properties",
+  "declarations": [
+    {
+      "file": "src/styles/database/desktop-record-shell/11-life-authoring.css",
+      "line": 33,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-life-panel-heading h3",
+      "property": "color",
+      "earlier": "var(--db-studio-text-1)",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 1493,
+      "later": "var(--db-studio-text-1)"
+    },
+    {
+      "file": "src/styles/database/desktop-record-shell/11-life-authoring.css",
+      "line": 34,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-life-panel-heading h3",
+      "property": "font",
+      "earlier": "var(--font-weight-bold) var(--font-size-sm)/var(--line-height-tight) var(--font-ui)",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 1494,
+      "later": "600 13px/1.35 var(--font-ui)"
+    },
+    {
+      "file": "src/styles/database/desktop-record-shell/11-life-authoring.css",
+      "line": 63,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-life-card-grid",
+      "property": "display",
+      "earlier": "flex",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 1435,
+      "later": "flex"
+    },
+    {
+      "file": "src/styles/database/desktop-record-shell/11-life-authoring.css",
+      "line": 65,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-life-card-grid",
+      "property": "gap",
+      "earlier": "var(--space-2)",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 1437,
+      "later": "0"
+    },
+    {
+      "file": "src/styles/database/desktop-record-shell/11-life-authoring.css",
+      "line": 105,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body button.db-life-card:hover",
+      "property": "border-color",
+      "earlier": "var(--db-studio-accent-border)",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 1460,
+      "later": "var(--db2-hairline)"
+    },
+    {
+      "file": "src/styles/database/desktop-record-shell/11-life-authoring.css",
+      "line": 121,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-life-card-label",
+      "property": "color",
+      "earlier": "var(--db-studio-text-2)",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 1464,
+      "later": "var(--db-studio-text-3)"
+    },
+    {
+      "file": "src/styles/database/desktop-record-shell/11-life-authoring.css",
+      "line": 122,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-life-card-label",
+      "property": "font",
+      "earlier": "var(--font-weight-semibold) var(--font-size-sm)/var(--line-height-tight) var(--font-ui)",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 1465,
+      "later": "600 11.5px/1.35 var(--font-ui)"
+    },
+    {
+      "file": "src/styles/database/desktop-record-shell/11-life-authoring.css",
+      "line": 130,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-life-card-value",
+      "property": "color",
+      "earlier": "var(--db-studio-text-1)",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 1469,
+      "later": "var(--db-studio-text-1)"
+    },
+    {
+      "file": "src/styles/database/desktop-record-shell/11-life-authoring.css",
+      "line": 132,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-life-card-value",
+      "property": "font",
+      "earlier": "var(--font-weight-bold) var(--font-size-sm)/var(--line-height-tight) var(--font-ui)",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 1470,
+      "later": "700 13px/1.35 var(--font-ui)"
+    },
+    {
+      "file": "src/styles/database/desktop-record-shell/11-life-authoring.css",
+      "line": 144,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-life-card-action",
+      "property": "color",
+      "earlier": "currentColor",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 1489,
+      "later": "var(--db-studio-text-3)"
+    },
+    {
+      "file": "src/styles/database/desktop-record-shell/11-life-authoring.css",
+      "line": 388,
+      "selector": ".database-modal-backdrop .db-studio-empty",
+      "property": "background",
+      "earlier": "var(--db-studio-surface) !important",
+      "laterFile": "src/styles/database/desktop-record-shell/12-spatial-authoring.css",
+      "laterLine": 15,
+      "later": "var(--db-studio-surface) !important"
+    },
+    {
+      "file": "src/styles/database/desktop-record-shell/11-life-authoring.css",
+      "line": 389,
+      "selector": ".database-modal-backdrop .db-studio-empty",
+      "property": "border",
+      "earlier": "1px solid var(--db-studio-border-subtle) !important",
+      "laterFile": "src/styles/database/desktop-record-shell/12-spatial-authoring.css",
+      "laterLine": 16,
+      "later": "1px solid var(--db-studio-border-subtle) !important"
+    },
+    {
+      "file": "src/styles/database/desktop-record-shell/11-life-authoring.css",
+      "line": 392,
+      "selector": ".database-modal-backdrop .db-studio-empty .empty-state__action--primary",
+      "property": "background",
+      "earlier": "var(--db-studio-accent) !important",
+      "laterFile": "src/styles/database/desktop-record-shell/12-spatial-authoring.css",
+      "laterLine": 23,
+      "later": "var(--db-studio-accent) !important"
+    },
+    {
+      "file": "src/styles/database/desktop-record-shell/11-life-authoring.css",
+      "line": 393,
+      "selector": ".database-modal-backdrop .db-studio-empty .empty-state__action--primary",
+      "property": "border-color",
+      "earlier": "var(--db-studio-accent) !important",
+      "laterFile": "src/styles/database/desktop-record-shell/12-spatial-authoring.css",
+      "laterLine": 24,
+      "later": "var(--db-studio-accent) !important"
+    },
+    {
+      "file": "src/styles/database/desktop-record-shell/11-life-authoring.css",
+      "line": 394,
+      "selector": ".database-modal-backdrop .db-studio-empty .empty-state__action--primary",
+      "property": "color",
+      "earlier": "#fff !important",
+      "laterFile": "src/styles/database/desktop-record-shell/12-spatial-authoring.css",
+      "laterLine": 25,
+      "later": "#fff !important"
+    },
+    {
+      "file": "src/styles/database/desktop-record-shell/14-party-ux-fixes.css",
+      "line": 34,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-view-toggle",
+      "property": "background",
+      "earlier": "var(--bg-raised, #fff)",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 477,
+      "later": "transparent"
+    },
+    {
+      "file": "src/styles/database/desktop-record-shell/14-party-ux-fixes.css",
+      "line": 35,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-view-toggle",
+      "property": "border",
+      "earlier": "1px solid var(--border-subtle, rgba(15, 23, 42, 0.16))",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 478,
+      "later": "0"
+    },
+    {
+      "file": "src/styles/database/desktop-record-shell/14-party-ux-fixes.css",
+      "line": 36,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-view-toggle",
+      "property": "border-radius",
+      "earlier": "4px",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 479,
+      "later": "6px"
+    },
+    {
+      "file": "src/styles/database/desktop-record-shell/14-party-ux-fixes.css",
+      "line": 37,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-view-toggle",
+      "property": "color",
+      "earlier": "var(--text-2, #475569)",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 481,
+      "later": "var(--db-studio-text-2)"
+    },
+    {
+      "file": "src/styles/database/desktop-record-shell/14-party-ux-fixes.css",
+      "line": 39,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-view-toggle",
+      "property": "font",
+      "earlier": "500 12px/18px \"Malgun Gothic\", \"Segoe UI\", system-ui, sans-serif",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 482,
+      "later": "600 12px/1.35 var(--font-ui)"
+    },
+    {
+      "file": "src/styles/database/desktop-record-shell/14-party-ux-fixes.css",
+      "line": 40,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-view-toggle",
+      "property": "min-height",
+      "earlier": "28px",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 483,
+      "later": "26px"
+    },
+    {
+      "file": "src/styles/database/desktop-record-shell/14-party-ux-fixes.css",
+      "line": 41,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-view-toggle",
+      "property": "padding",
+      "earlier": "4px 10px",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 484,
+      "later": "0 10px"
+    },
+    {
+      "file": "src/styles/database/desktop-record-shell/14-party-ux-fixes.css",
+      "line": 46,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-view-toggle:hover",
+      "property": "color",
+      "earlier": "var(--text-1, #0f172a)",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 488,
+      "later": "var(--db-studio-text-1)"
+    },
+    {
+      "file": "src/styles/database/light-theme.css",
+      "line": 18,
+      "selector": ".database-modal-backdrop",
+      "property": "color-scheme",
+      "earlier": "light",
+      "laterFile": "src/styles/database/studio-theme.css",
+      "laterLine": 9,
+      "later": "light"
+    },
+    {
+      "file": "src/styles/database/light-theme.css",
+      "line": 163,
+      "selector": ".database-modal-backdrop .database-modal-window",
+      "property": "background",
+      "earlier": "var(--db-light-bg-base)",
+      "laterFile": "src/styles/database/studio-theme.css",
+      "laterLine": 247,
+      "later": "var(--db-studio-surface) !important"
+    },
+    {
+      "file": "src/styles/database/light-theme.css",
+      "line": 165,
+      "selector": ".database-modal-backdrop .database-modal-window",
+      "property": "box-shadow",
+      "earlier": "0 2px 0 rgba(42, 37, 33, 0.12), 0 10px 24px rgba(60, 48, 32, 0.10)",
+      "laterFile": "src/styles/database/studio-theme.css",
+      "laterLine": 250,
+      "later": "var(--db-studio-shadow-pop) !important"
+    },
+    {
+      "file": "src/styles/database/light-theme.css",
+      "line": 166,
+      "selector": ".database-modal-backdrop .database-modal-window",
+      "property": "color",
+      "earlier": "var(--db-light-text-1)",
+      "laterFile": "src/styles/database/studio-theme.css",
+      "laterLine": 251,
+      "later": "var(--db-studio-text-1) !important"
+    },
+    {
+      "file": "src/styles/database/light-theme.css",
+      "line": 173,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-header",
+      "property": "background",
+      "earlier": "linear-gradient(180deg, #f5f0e1 0%, #ece5cf 100%)",
+      "laterFile": "src/styles/database/studio-theme.css",
+      "laterLine": 255,
+      "later": "var(--db-studio-surface) !important"
+    },
+    {
+      "file": "src/styles/database/light-theme.css",
+      "line": 174,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-header",
+      "property": "border-bottom",
+      "earlier": "1px solid var(--db-light-border-default)",
+      "laterFile": "src/styles/database/studio-theme.css",
+      "laterLine": 256,
+      "later": "1px solid var(--db-studio-border-default) !important"
+    },
+    {
+      "file": "src/styles/database/light-theme.css",
+      "line": 175,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-header",
+      "property": "color",
+      "earlier": "var(--db-light-text-1)",
+      "laterFile": "src/styles/database/studio-theme.css",
+      "laterLine": 257,
+      "later": "var(--db-studio-text-1) !important"
+    },
+    {
+      "file": "src/styles/database/light-theme.css",
+      "line": 179,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-header h2",
+      "property": "color",
+      "earlier": "var(--db-light-text-1)",
+      "laterFile": "src/styles/database/studio-theme.css",
+      "laterLine": 264,
+      "later": "var(--db-studio-text-1) !important"
+    },
+    {
+      "file": "src/styles/database/light-theme.css",
+      "line": 180,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-header h2",
+      "property": "text-shadow",
+      "earlier": "none",
+      "laterFile": "src/styles/database/studio-theme.css",
+      "laterLine": 267,
+      "later": "none !important"
+    },
+    {
+      "file": "src/styles/database/light-theme.css",
+      "line": 208,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body",
+      "property": "background",
+      "earlier": "var(--db-light-bg-base)",
+      "laterFile": "src/styles/database/studio-theme.css",
+      "laterLine": 271,
+      "later": "var(--db-studio-canvas) !important"
+    },
+    {
+      "file": "src/styles/database/light-theme.css",
+      "line": 212,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-tabs",
+      "property": "background",
+      "earlier": "var(--db-light-bg-surface)",
+      "laterFile": "src/styles/database/sidebar.css",
+      "laterLine": 24,
+      "later": "var(--db-studio-surface, var(--db-light-bg-surface, #FFFFFF))"
+    },
+    {
+      "file": "src/styles/database/light-theme.css",
+      "line": 213,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-tabs",
+      "property": "border-bottom",
+      "earlier": "1px solid var(--db-light-border-default)",
+      "laterFile": "src/styles/database/sidebar.css",
+      "laterLine": 25,
+      "later": "none"
+    },
+    {
+      "file": "src/styles/database/light-theme.css",
+      "line": 217,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-tab",
+      "property": "background",
+      "earlier": "var(--db-light-bg-surface)",
+      "laterFile": "src/styles/database/sidebar.css",
+      "laterLine": 455,
+      "later": "transparent"
+    },
+    {
+      "file": "src/styles/database/light-theme.css",
+      "line": 221,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-tab",
+      "property": "color",
+      "earlier": "var(--db-light-text-1)",
+      "laterFile": "src/styles/database/sidebar.css",
+      "laterLine": 458,
+      "later": "var(--db-studio-text-2, #475569)"
+    },
+    {
+      "file": "src/styles/database/light-theme.css",
+      "line": 225,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-tab:hover",
+      "property": "background",
+      "earlier": "var(--db-light-bg-raised)",
+      "laterFile": "src/styles/database/sidebar.css",
+      "laterLine": 522,
+      "later": "var(--db-studio-inset, #F1F5F9)"
+    },
+    {
+      "file": "src/styles/database/light-theme.css",
+      "line": 229,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-tab.active",
+      "property": "background",
+      "earlier": "linear-gradient(var(--db-light-accent), var(--db-light-accent))",
+      "laterFile": "src/styles/database/sidebar.css",
+      "laterLine": 533,
+      "later": "var(--db-studio-accent-soft, rgba(74,87,214,.08))"
+    },
+    {
+      "file": "src/styles/database/light-theme.css",
+      "line": 230,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-tab.active",
+      "property": "border-color",
+      "earlier": "var(--db-light-accent-border) var(--db-light-accent-border) var(--db-light-accent-border) var(--db-light-accent-border)",
+      "laterFile": "src/styles/database/sidebar.css",
+      "laterLine": 534,
+      "later": "var(--db-studio-accent-border, rgba(74,87,214,.16))"
+    },
+    {
+      "file": "src/styles/database/light-theme.css",
+      "line": 231,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-tab.active",
+      "property": "color",
+      "earlier": "var(--db-light-on-accent)",
+      "laterFile": "src/styles/database/sidebar.css",
+      "laterLine": 536,
+      "later": "var(--db-studio-accent, #4A57D6)"
+    },
+    {
+      "file": "src/styles/database/light-theme.css",
+      "line": 237,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-footer",
+      "property": "background",
+      "earlier": "var(--db-light-bg-surface)",
+      "laterFile": "src/styles/database/studio-theme.css",
+      "laterLine": 286,
+      "later": "var(--db-studio-surface) !important"
+    },
+    {
+      "file": "src/styles/database/light-theme.css",
+      "line": 238,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-footer",
+      "property": "border-top",
+      "earlier": "1px solid var(--db-light-border-default)",
+      "laterFile": "src/styles/database/studio-theme.css",
+      "laterLine": 287,
+      "later": "1px solid var(--db-studio-border-default) !important"
+    },
+    {
+      "file": "src/styles/database/light-theme.css",
+      "line": 242,
+      "selector": ".database-modal-backdrop .database-modal-window .database-footer-status",
+      "property": "color",
+      "earlier": "var(--db-light-text-2)",
+      "laterFile": "src/styles/database/studio-theme.css",
+      "laterLine": 297,
+      "later": "var(--db-studio-success) !important"
+    },
+    {
+      "file": "src/styles/database/sidebar.css",
+      "line": 18,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body",
+      "property": "overflow",
+      "earlier": "hidden",
+      "laterFile": "src/styles/database/studio-theme.css",
+      "laterLine": 283,
+      "later": "auto !important"
+    },
+    {
+      "file": "src/styles/database/sidebar.css",
+      "line": 190,
+      "selector": ".database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-modal-footer",
+      "property": "display",
+      "earlier": "flex",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 166,
+      "later": "flex"
+    },
+    {
+      "file": "src/styles/database/sidebar.css",
+      "line": 192,
+      "selector": ".database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-modal-footer",
+      "property": "gap",
+      "earlier": "var(--space-2)",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 167,
+      "later": "8px"
+    },
+    {
+      "file": "src/styles/database/sidebar.css",
+      "line": 240,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group",
+      "property": "color",
+      "earlier": "var(--db-studio-text-3)",
+      "laterFile": "src/styles/database/studio-theme.css",
+      "laterLine": 459,
+      "later": "var(--db-studio-text-3) !important"
+    },
+    {
+      "file": "src/styles/database/sidebar.css",
+      "line": 243,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group",
+      "property": "font",
+      "earlier": "600 11px/1.2 \"Malgun Gothic\", system-ui, sans-serif",
+      "laterFile": "src/styles/database/studio-theme.css",
+      "laterLine": 460,
+      "later": "600 12px/1.3 var(--font-ui) !important"
+    },
+    {
+      "file": "src/styles/database/sidebar.css",
+      "line": 244,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group",
+      "property": "letter-spacing",
+      "earlier": "0.04em",
+      "laterFile": "src/styles/database/studio-theme.css",
+      "laterLine": 458,
+      "later": "0 !important"
+    },
+    {
+      "file": "src/styles/database/sidebar.css",
+      "line": 247,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group",
+      "property": "text-transform",
+      "earlier": "uppercase",
+      "laterFile": "src/styles/database/studio-theme.css",
+      "laterLine": 457,
+      "later": "none !important"
+    },
+    {
+      "file": "src/styles/database/sidebar.css",
+      "line": 250,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group",
+      "property": "padding",
+      "earlier": "12px 8px 4px",
+      "laterFile": "src/styles/database/studio-theme.css",
+      "laterLine": 461,
+      "later": "12px 8px 4px !important"
+    },
+    {
+      "file": "src/styles/database/sidebar.css",
+      "line": 253,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group",
+      "property": "overflow",
+      "earlier": "hidden",
+      "laterFile": "src/styles/database/studio-theme.css",
+      "laterLine": 456,
+      "later": "visible !important"
+    },
+    {
+      "file": "src/styles/database/sidebar.css",
+      "line": 472,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-tab",
+      "property": "overflow",
+      "earlier": "hidden",
+      "laterFile": "src/styles/database/sidebar.css",
+      "laterLine": 493,
+      "later": "hidden"
+    },
+    {
+      "file": "src/styles/database/record-list-modern.css",
+      "line": 10,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-list-row",
+      "property": "border-radius",
+      "earlier": "6px",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 367,
+      "later": "var(--db2-radius-control)"
+    },
+    {
+      "file": "src/styles/database/record-list-modern.css",
+      "line": 16,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-list-row",
+      "property": "font",
+      "earlier": "500 13px/1.4 \"Malgun Gothic\", \"Segoe UI\", system-ui, sans-serif",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 368,
+      "later": "500 13px/1.35 var(--font-ui)"
+    },
+    {
+      "file": "src/styles/database/record-list-modern.css",
+      "line": 20,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-list-row",
+      "property": "min-height",
+      "earlier": "36px",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 369,
+      "later": "36px"
+    },
+    {
+      "file": "src/styles/database/record-list-modern.css",
+      "line": 22,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-list-row",
+      "property": "padding",
+      "earlier": "4px 10px",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 370,
+      "later": "4px 10px"
+    },
+    {
+      "file": "src/styles/database/record-list-modern.css",
+      "line": 49,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-list-row .db-list-name",
+      "property": "flex",
+      "earlier": "1 1 auto",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 384,
+      "later": "1 1 auto"
+    },
+    {
+      "file": "src/styles/database/record-list-modern.css",
+      "line": 50,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-list-row .db-list-name",
+      "property": "font-weight",
+      "earlier": "600",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 385,
+      "later": "500"
+    },
+    {
+      "file": "src/styles/database/record-list-modern.css",
+      "line": 51,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-list-row .db-list-name",
+      "property": "min-width",
+      "earlier": "0",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 386,
+      "later": "0"
+    },
+    {
+      "file": "src/styles/database/record-list-modern.css",
+      "line": 62,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-list-row .db-list-number",
+      "property": "font",
+      "earlier": "500 11px/1.4 \"Cascadia Mono\", Consolas, monospace",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 394,
+      "later": "500 11.5px/1.35 var(--font-mono)"
+    },
+    {
+      "file": "src/styles/database/record-list-modern.css",
+      "line": 87,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-list-row .db-list-sub",
+      "property": "flex",
+      "earlier": "0 0 auto",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 401,
+      "later": "0 1 auto"
+    },
+    {
+      "file": "src/styles/database/record-list-modern.css",
+      "line": 88,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-list-row .db-list-sub",
+      "property": "font",
+      "earlier": "600 10.5px/1.5 \"Malgun Gothic\", \"Segoe UI\", system-ui, sans-serif",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 402,
+      "later": "600 11px/18px var(--font-ui)"
+    },
+    {
+      "file": "src/styles/database/modern-controls.css",
+      "line": 440,
+      "selector": ".database-modal-backdrop .database-modal-window .db-segmented-pill > input[type=\"radio\"]",
+      "property": "height",
+      "earlier": "12px",
+      "laterFile": "src/styles/database/modern-controls.css",
+      "laterLine": 548,
+      "later": "12px"
+    },
+    {
+      "file": "src/styles/database/modern-controls.css",
+      "line": 441,
+      "selector": ".database-modal-backdrop .database-modal-window .db-segmented-pill > input[type=\"radio\"]",
+      "property": "margin",
+      "earlier": "0",
+      "laterFile": "src/styles/database/modern-controls.css",
+      "laterLine": 549,
+      "later": "0"
+    },
+    {
+      "file": "src/styles/database/modern-controls.css",
+      "line": 443,
+      "selector": ".database-modal-backdrop .database-modal-window .db-segmented-pill > input[type=\"radio\"]",
+      "property": "width",
+      "earlier": "12px",
+      "laterFile": "src/styles/database/modern-controls.css",
+      "laterLine": 550,
+      "later": "12px"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 43,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-frame",
+      "property": "gap",
+      "earlier": "10px",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 284,
+      "later": "0"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 250,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-detail-body",
+      "property": "gap",
+      "earlier": "10px",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 528,
+      "later": "12px"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 256,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-detail-body",
+      "property": "padding",
+      "earlier": "12px 14px 16px",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 529,
+      "later": "14px 16px 18px"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 266,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-hero",
+      "property": "align-items",
+      "earlier": "center",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 543,
+      "later": "center"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 268,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-hero",
+      "property": "border-bottom",
+      "earlier": "1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08))",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 544,
+      "later": "1px solid var(--db2-hairline)"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 271,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-hero",
+      "property": "gap",
+      "earlier": "14px",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 545,
+      "later": "14px"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 273,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-hero",
+      "property": "padding",
+      "earlier": "12px 14px",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 546,
+      "later": "14px 16px"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 283,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-hero-media img,\n.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-hero-media canvas",
+      "property": "border-radius",
+      "earlier": "8px",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 551,
+      "later": "var(--db2-radius-control)"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 284,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-hero-media img,\n.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-hero-media canvas",
+      "property": "height",
+      "earlier": "56px",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 552,
+      "later": "52px"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 287,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-hero-media img,\n.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-hero-media canvas",
+      "property": "width",
+      "earlier": "56px",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 553,
+      "later": "52px"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 297,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-hero-eyebrow",
+      "property": "color",
+      "earlier": "var(--db-studio-text-3, var(--db-studio-text-3))",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 557,
+      "later": "var(--db-studio-text-3)"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 298,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-hero-eyebrow",
+      "property": "font",
+      "earlier": "700 10px/1.4 \"Malgun Gothic\", \"Segoe UI\", system-ui, sans-serif",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 558,
+      "later": "600 11.5px/1.35 var(--font-ui)"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 299,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-hero-eyebrow",
+      "property": "letter-spacing",
+      "earlier": "0.08em",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 559,
+      "later": "0"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 300,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-hero-eyebrow",
+      "property": "text-transform",
+      "earlier": "uppercase",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 560,
+      "later": "none"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 305,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-hero-title",
+      "property": "font",
+      "earlier": "700 17px/1.3 \"Malgun Gothic\", \"Segoe UI\", system-ui, sans-serif",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 564,
+      "later": "700 18px/1.3 var(--font-ui)"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 315,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-hero-sub",
+      "property": "color",
+      "earlier": "var(--db-studio-text-2, var(--db-studio-text-2))",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 569,
+      "later": "var(--db-studio-text-2)"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 316,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-hero-sub",
+      "property": "font",
+      "earlier": "400 12px/1.5 \"Malgun Gothic\", \"Segoe UI\", system-ui, sans-serif",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 570,
+      "later": "400 12.5px/1.45 var(--font-ui)"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 332,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tag",
+      "property": "font",
+      "earlier": "600 11px/18px \"Malgun Gothic\", \"Segoe UI\", system-ui, sans-serif",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 574,
+      "later": "600 11.5px/20px var(--font-ui)"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 333,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tag",
+      "property": "padding",
+      "earlier": "0 8px",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 575,
+      "later": "0 9px"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 355,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-section-tabs",
+      "property": "gap",
+      "earlier": "2px",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 996,
+      "later": "4px"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 368,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-section-tab",
+      "property": "font",
+      "earlier": "600 12.5px/1 \"Malgun Gothic\", \"Segoe UI\", system-ui, sans-serif",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 991,
+      "later": "600 13px/1 var(--font-ui)"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 371,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-section-tab",
+      "property": "min-height",
+      "earlier": "32px",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 992,
+      "later": "34px"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 428,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-card-head",
+      "property": "align-items",
+      "earlier": "baseline",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 969,
+      "later": "baseline"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 430,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-card-head",
+      "property": "gap",
+      "earlier": "8px",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 970,
+      "later": "8px"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 443,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-card-hint",
+      "property": "color",
+      "earlier": "var(--db-studio-text-3, var(--db-studio-text-3))",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 975,
+      "later": "var(--db-studio-text-3)"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 444,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-card-hint",
+      "property": "font",
+      "earlier": "400 11.5px/1.5 \"Malgun Gothic\", \"Segoe UI\", system-ui, sans-serif",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 976,
+      "later": "400 12px/1.45 var(--font-ui)"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 460,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-card-body",
+      "property": "gap",
+      "earlier": "8px",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 980,
+      "later": "6px"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 715,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-empty-title",
+      "property": "font",
+      "earlier": "700 14px/1.4 \"Malgun Gothic\", \"Segoe UI\", system-ui, sans-serif",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 1110,
+      "later": "600 14px/1.35 var(--font-ui)"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 726,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-empty-desc",
+      "property": "font",
+      "earlier": "400 12px/1.6 \"Malgun Gothic\", \"Segoe UI\", system-ui, sans-serif",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 1114,
+      "later": "400 12.5px/1.5 var(--font-ui)"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 741,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stats",
+      "property": "display",
+      "earlier": "grid",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 1004,
+      "later": "flex"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 742,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stats",
+      "property": "gap",
+      "earlier": "8px",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 1006,
+      "later": "0"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 748,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat",
+      "property": "background",
+      "earlier": "var(--db-studio-surface, var(--db-studio-surface))",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 1013,
+      "later": "transparent"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 749,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat",
+      "property": "border",
+      "earlier": "1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08))",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 1014,
+      "later": "0"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 750,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat",
+      "property": "border-left",
+      "earlier": "3px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.1))",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 1015,
+      "later": "1px solid var(--db2-hairline)"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 751,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat",
+      "property": "border-radius",
+      "earlier": "9px",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 1016,
+      "later": "0"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 753,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat",
+      "property": "display",
+      "earlier": "grid",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 1018,
+      "later": "flex"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 754,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat",
+      "property": "gap",
+      "earlier": "2px",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 1021,
+      "later": "4px 8px"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 755,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat",
+      "property": "min-width",
+      "earlier": "0",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 1023,
+      "later": "0"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 756,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat",
+      "property": "padding",
+      "earlier": "10px 12px",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 1024,
+      "later": "8px 14px"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 765,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat-clickable:hover",
+      "property": "background",
+      "earlier": "var(--db-studio-inset, var(--db-studio-inset))",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 1032,
+      "later": "var(--db-studio-inset)"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 773,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat-label",
+      "property": "color",
+      "earlier": "var(--db-studio-text-3, var(--db-studio-text-3))",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 1036,
+      "later": "var(--db-studio-text-3)"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 774,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat-label",
+      "property": "font",
+      "earlier": "600 10.5px/1.4 \"Malgun Gothic\", \"Segoe UI\", system-ui, sans-serif",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 1037,
+      "later": "600 11.5px/1.35 var(--font-ui)"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 775,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat-label",
+      "property": "letter-spacing",
+      "earlier": "0.02em",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 1038,
+      "later": "0"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 779,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat-value",
+      "property": "color",
+      "earlier": "var(--db-studio-text-1, var(--db-studio-text-1))",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 1043,
+      "later": "var(--db-studio-text-1)"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 780,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat-value",
+      "property": "font",
+      "earlier": "700 17px/1.25 \"Malgun Gothic\", \"Segoe UI\", system-ui, sans-serif",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 1044,
+      "later": "700 13px/1.35 var(--font-ui)"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 784,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat-hint",
+      "property": "color",
+      "earlier": "var(--db-studio-text-2, var(--db-studio-text-2))",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 1049,
+      "later": "var(--db-studio-text-3)"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 785,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat-hint",
+      "property": "font",
+      "earlier": "400 11px/1.45 \"Malgun Gothic\", \"Segoe UI\", system-ui, sans-serif",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 1051,
+      "later": "400 11.5px/1.35 var(--font-ui)"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 792,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-notice",
+      "property": "border-radius",
+      "earlier": "9px",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 1071,
+      "later": "var(--db2-radius-card)"
+    },
+    {
+      "file": "src/styles/database/workspace-modern.css",
+      "line": 798,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-notice",
+      "property": "padding",
+      "earlier": "8px 12px",
+      "laterFile": "src/styles/database/studio-v2.css",
+      "laterLine": 1073,
+      "later": "8px 12px"
+    },
+    {
+      "file": "src/styles/database/modern/troops.css",
+      "line": 353,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-troop-preview-caption",
+      "property": "text-overflow",
+      "earlier": "ellipsis",
+      "laterFile": "src/styles/database/modern/troops.css",
+      "laterLine": 838,
+      "later": "clip"
+    },
+    {
+      "file": "src/styles/database/modern/troops.css",
+      "line": 354,
+      "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-troop-preview-caption",
+      "property": "white-space",
+      "earlier": "nowrap",
+      "laterFile": "src/styles/database/modern/troops.css",
+      "laterLine": 836,
+      "later": "normal"
+    }
+  ]
+}

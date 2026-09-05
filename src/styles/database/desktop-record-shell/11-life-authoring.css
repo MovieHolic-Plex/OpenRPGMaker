@@ -30,8 +30,6 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-life-panel-heading h3 {
-  color: var(--db-studio-text-1);
-  font: var(--font-weight-bold) var(--font-size-sm)/var(--line-height-tight) var(--font-ui);
   margin: 0;
   max-width: 10rem;
   overflow: hidden;
@@ -60,9 +58,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-life-card-grid {
-  display: flex;
   flex: 1 1 auto;
-  gap: var(--space-2);
   min-width: 0;
 }
 
@@ -101,9 +97,6 @@
   font-family: var(--font-ui);
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body button.db-life-card:hover {
-  border-color: var(--db-studio-accent-border);
-}
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-life-card:focus-within,
 .database-modal-backdrop .database-modal-window .database-modal-body button.db-life-card:focus-visible {
@@ -118,8 +111,6 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-life-card-label {
-  color: var(--db-studio-text-2);
-  font: var(--font-weight-semibold) var(--font-size-sm)/var(--line-height-tight) var(--font-ui);
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -127,9 +118,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-life-card-value {
-  color: var(--db-studio-text-1);
   flex: 0 0 auto;
-  font: var(--font-weight-bold) var(--font-size-sm)/var(--line-height-tight) var(--font-ui);
   margin-left: auto;
   max-width: 60%;
   overflow: hidden;
@@ -141,7 +130,6 @@
   align-items: center;
   background: transparent;
   border: 0;
-  color: currentColor;
   cursor: pointer;
   display: inline-flex;
   flex: 0 0 auto;
@@ -384,15 +372,6 @@
 }
 
 /* studio empty card — single filled CTA */
-.database-modal-backdrop .db-studio-empty {
-  background: var(--db-studio-surface) !important;
-  border: 1px solid var(--db-studio-border-subtle) !important;
-}
-.database-modal-backdrop .db-studio-empty .empty-state__action--primary {
-  background: var(--db-studio-accent) !important;
-  border-color: var(--db-studio-accent) !important;
-  color: #fff !important;
-}
 
 .database-modal-backdrop .db-life-toolbar > span {
   color: var(--text-muted);

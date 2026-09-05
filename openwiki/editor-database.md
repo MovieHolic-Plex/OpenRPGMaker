@@ -890,6 +890,17 @@ MS PGothic·420px 창이 30탭 스튜디오 안에서 유일하게 다른 시대
 **값만** 고쳤다 — 예산 래칫(important 988 · hex 1677 · 파일 266)은 main 과 같거나 낮다.
 `form-hierarchy-modern.css` 는 여기로 흡수해 삭제했다(파일 수 +1 −1).
 
+**중복 선언 정리 (2026-09-06).** `light-theme.css`, `sidebar.css`, `record-list-modern.css`,
+`modern-controls.css`, `workspace-modern.css`, `desktop-record-shell/11-life-authoring.css`,
+`14-party-ux-fixes.css`, `modern/troops.css`에서 동일한 선택자·속성의 뒤쪽 선언에 가려지는
+118개 선언과 빈 규칙 16개를 제거했다. 살아 있는 규칙의 위치나 import 순서는 바꾸지 않았다.
+주석뿐이던 `troops.part-1.css`와 그 import도 제거했다. 선언별 근거는
+`.omo/evidence/css-refactor/declarations.json`, 감사와 검증 요약은
+`reports/2026-09-06-css-cascade-audit.md`를 본다. 앞으로 공용 문법을 고칠 때는
+Studio v2의 최종 소유 규칙을 먼저 확인하고 앞선 시트에 같은 속성을 다시 추가하지 않는다.
+일반 `.database-modal-window`는 다른 작업 창도 사용하므로 DB 전용으로 간주해 삭제하지 않는다.
+테마의 살아 있는 important 규칙, 동적 import 시트, 도킹·최대화 예외와 호환 폴백은 별도 계약이다.
+
 **셸.** 헤더는 `데이터베이스 | 그룹 › 탭`(`database-modal-crumb`). 활성 탭은 `database.ts` 의
 `subscribeDatabaseActiveTab` 으로 따라간다 — 레일 클릭·G006 점프·Ctrl+T 가 전부 `setDatabaseActiveTab`
 한 곳을 지나므로 DOM 이벤트가 필요 없고 fake DOM 에서도 돈다. 창 컨트롤은 `⇥ □ x` 글리프가 아니라
