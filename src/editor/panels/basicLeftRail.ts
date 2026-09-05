@@ -11,9 +11,9 @@ import { uiLabel } from "@/editor/uiCopy";
 import { subscribeEditorUiMode } from "@/editor/editorUiMode";
 import { openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { canEditMap } from "@/editor/mapEditLocks";
-import { TILE_SIZE } from "@/assets/bundled";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
-import { tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
+import { basicTileLabel, makeBasicTilePalette } from "@/editor/panels/basicTilePalette";
+import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
@@ -68,7 +68,6 @@ const BASIC_LAYERS: readonly BasicLayerRow[] = [
   { id: "event", label: "이벤트", hint: "NPC·문·보물상자 등 상호작용 레이어", hotkey: "F7", icon: "layerEvent" },
 ] as const;
 
-const BASIC_TILE_CAP = 48;
 const FLYOUT_TITLES: Record<BasicFlyoutId, string> = { tiles: "타일", maps: "맵" };
 const RAIL_GROUP_LABELS = { tools: "그리기 도구", layers: "레이어", panels: "타일·맵 패널" } as const;
 const EVENT_LAYER_TILE_REASON = "이벤트 레이어에서는 타일을 선택하지 않습니다";
@@ -80,6 +79,7 @@ const FLYOUT_TOGGLE_TESTIDS: Record<BasicFlyoutId, string> = {
 // 재렌더에도 살아남는 모듈 상태. tilePalette의 activeWorkTab 패턴과 동일.
 let flyoutState: BasicFlyoutState = INITIAL_BASIC_FLYOUT_STATE;
 let lastContainer: HTMLElement | null = null;
+let tileSearchQuery = "";
 let documentListenersInstalled = false;
 
 function dispatchFlyout(action: BasicFlyoutAction): void {
@@ -117,10 +117,13 @@ function installDocumentListeners(): void {
 export function resetBasicLeftRailForTests(): void {
   flyoutState = INITIAL_BASIC_FLYOUT_STATE;
   lastContainer = null;
+  tileSearchQuery = "";
 }
 
 export function renderBasicLeftRail(container: HTMLElement): void {
   const focusSnapshot = captureFocus(container);
+  const previousSheet = container.querySelector<HTMLElement>('[data-testid="basic-tile-grid"]');
+  const scroll = { top: previousSheet?.scrollTop ?? 0, left: previousSheet?.scrollLeft ?? 0 };
   if (isStaleFlyoutState(container)) flyoutState = INITIAL_BASIC_FLYOUT_STATE;
   clearChildren(container);
   lastContainer = container;
@@ -152,6 +155,11 @@ export function renderBasicLeftRail(container: HTMLElement): void {
   // 도구·레이어·패널 그룹을 각각 한 개의 탭 스톱으로 만들고 화살표 이동을 준다 — 표준 모드
   // 도구막대와 같은 헬퍼다(이전엔 레일 버튼 11개가 전부 별도 탭 스톱이었다).
   applyRovingTabindex(container);
+  const sheet = container.querySelector<HTMLElement>('[data-testid="basic-tile-grid"]');
+  if (sheet) {
+    sheet.scrollTop = scroll.top;
+    sheet.scrollLeft = scroll.left;
+  }
 }
 
 /**
@@ -291,7 +299,7 @@ function makePanelToggles(selectedTile: number, activeLayer: Layer, tileset: Til
     class: "basic-rail-btn basic-rail-tile-toggle" + (flyoutState.open === "tiles" ? " is-open" : ""),
     attrs: {
       type: "button",
-      title: tileDisabledReason ?? `타일 — 현재: ${selectedTile} ${tileDisplayLabelForIndex(selectedTile)}`,
+      title: tileDisabledReason ?? `타일 — 현재: ${tileset ? basicTileLabel(tileset, selectedTile) : "공백"}`,
       "aria-label": "타일 패널",
       "aria-expanded": String(flyoutState.open === "tiles"),
     },
@@ -359,7 +367,7 @@ function makeFlyout(id: BasicFlyoutId, selectedTile: number, activeLayer: Layer,
     } else if (!tileset) {
       body.append(el("div", { class: "empty-hint", text: uiLabel("tilesetMissing") }));
     } else {
-      body.append(makeTilesBody(selectedTile, tileset));
+      body.append(makeTilesBody(selectedTile, activeLayer, tileset));
     }
   } else {
     const host = el("div", { class: "basic-flyout-map-host", dataset: { testid: "basic-map-list-host" } });
@@ -381,58 +389,22 @@ function makeFlyout(id: BasicFlyoutId, selectedTile: number, activeLayer: Layer,
   return shell;
 }
 
-function makeTilesBody(selectedTile: number, tileset: TilesetDef): HTMLElement {
-  const section = el("div", { class: "basic-rail-section", dataset: { testid: "basic-tiles-section" } });
-  section.append(
-    el("div", {
-      class: "basic-selected-tile",
-      text: selectedTile >= 0 && selectedTile < tileset.count ? `${selectedTile} ${tileDisplayLabelForIndex(selectedTile)}` : "공백",
-      dataset: { testid: "selected-tile-status" },
-    }),
-  );
-  const grid = el("div", { class: "basic-tile-grid", dataset: { testid: "basic-tile-grid" } });
-  for (const index of pickBasicTileIndexes(tileset, selectedTile)) {
-    const active = index === selectedTile;
-    const cellSize = TILE_SIZE * 2;
-    grid.append(
-      el("button", {
-        class: "basic-tile-cell" + (active ? " is-active" : ""),
-        attrs: {
-          type: "button",
-          title: `${index} ${tileDisplayLabelForIndex(index)}`,
-          "aria-label": `타일 ${index}`,
-          "aria-pressed": String(active),
-          style: `width:${cellSize}px;height:${cellSize}px;${tilesetTileBackgroundStyle(tileset, index, cellSize)}`,
-        },
-        dataset: { testid: `basic-tile-${index}`, tileIndex: String(index) },
-        on: {
-          click: () => {
-            const layer = editorState.get().layer === "event" ? "lower" : editorState.get().layer;
-            editorState.set({ selectedTile: index, tool: "paint", paintShape: "pen", layer });
-            // 고르면 물러난다 — 이 플라이아웃은 캔버스를 덮으므로 열려 있으면 방금 고른 타일을
-            // 가려진 자리에 칠할 수 없다. 계속 고르고 싶으면 핀을 쓴다(dismiss 는 핀을 존중).
-            // 예전에는 isStaleFlyoutState 오진이 이 닫기를 «우연히» 해 주고 있었다.
-            dispatchFlyout({ type: "dismiss" });
-          },
-        },
-      }),
-    );
-  }
-  section.append(grid);
-  return section;
-}
-
-/** Prefer terrain-looking low indexes + keep current selection visible. (기존 로직 유지) */
-function pickBasicTileIndexes(tileset: TilesetDef, selectedTile: number): number[] {
-  const out: number[] = [];
-  const seen = new Set<number>();
-  const push = (n: number): void => {
-    if (n < 0 || n >= tileset.count || seen.has(n)) return;
-    seen.add(n);
-    out.push(n);
-  };
-  if (selectedTile >= 0) push(selectedTile);
-  for (let i = 0; i < Math.min(tileset.count, 80); i += 1) push(i);
-  for (let i = 80; i < tileset.count && out.length < BASIC_TILE_CAP; i += 8) push(i);
-  return out.slice(0, BASIC_TILE_CAP);
+function makeTilesBody(selectedTile: number, layer: "lower" | "upper", tileset: TilesetDef): HTMLElement {
+  return makeBasicTilePalette({
+    selectedTile, layer, tileset, query: tileSearchQuery,
+    onQuery: (query) => {
+      tileSearchQuery = query;
+      if (lastContainer?.isConnected) renderBasicLeftRail(lastContainer);
+      const sheet = lastContainer?.querySelector<HTMLElement>('[data-testid="basic-tile-grid"]');
+      if (sheet) sheet.scrollTop = 0;
+    },
+    onSelect: (index) => {
+      const home = tileLayerHome(tileset, index);
+      editorState.set({
+        selectedTile: index, tool: "paint", paintShape: "pen", activePaletteStamp: null,
+        layer: home === "both" ? layer : home,
+      });
+      dispatchFlyout({ type: "dismiss" });
+    },
+  });
 }

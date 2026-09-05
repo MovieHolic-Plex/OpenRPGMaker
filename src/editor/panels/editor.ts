@@ -571,8 +571,9 @@ function applyLayout(): void {
   // 뷰포트가 열을 display:none 으로 지울 수 없다.
   if (chrome.paletteRail) {
     leftRoot.style.display = "";
-    // 폭은 CSS(`--basic-rail-width`, `min-width … !important`)가 소유한다 — inline width 는
-    // 무시당하면서 "48px 이다"는 거짓 근거만 남긴다(실제 렌더 폭 72px).
+    // Standard/expert leave an inline width. min-width in the rail stylesheet
+    // cannot override it: clear it before measuring the 72px CSS-owned rail.
+    leftRoot.style.width = "";
     leftResizer.style.display = "none";
     // `--editor-left-safe` 는 실폭에서 파생한다. 리사이저 여유는 비-레일 분기와 같은 계산이고
     // 여긴 숨겼으니 0 이다 → 어시스턴트 오버레이의 12px 여백이 마침내 12px 이 된다.
@@ -684,7 +685,10 @@ function paletteSheetReserveCap(panelHeight: number): number {
   if (hostHeight <= 0 || sheetHeight <= 0) return Number.POSITIVE_INFINITY;
   const chrome = Math.max(0, hostHeight - sheetHeight);
   const resizerHeight = mapTreeResizer ? measuredHeight(mapTreeResizer, 6) : 6;
-  return Math.floor(panelHeight - resizerHeight - chrome - PALETTE_SHEET_RESERVE_HEIGHT);
+  // On short desktops, reserving 280px left only one map row below the
+  // filter (48px at 1024×768). Keep roughly five tile rows and three map rows.
+  const reserve = panelHeight < 800 ? 200 : PALETTE_SHEET_RESERVE_HEIGHT;
+  return Math.floor(panelHeight - resizerHeight - chrome - reserve);
 }
 
 /**

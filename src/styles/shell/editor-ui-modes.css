@@ -434,12 +434,15 @@ body:has(.test-play-modal-backdrop) .coach-mark-card {
   min-height: 0;
 }
 
-.basic-rail-flyout.is-tiles .basic-tile-grid {
+.basic-rail-flyout.is-tiles .tile-palette {
   flex: 1 1 auto;
-  grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
   max-height: min(56vh, 480px);
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: auto;
+}
+
+.basic-rail-flyout.is-tiles .tile-search-input,
+.basic-rail-flyout.is-tiles .basic-selected-tile {
+  flex: 0 0 auto;
 }
 
 /* 짧은 뷰포트: 맵 트리가 시트 공간을 잡아먹지 않게 */
@@ -686,30 +689,6 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
 .basic-selected-tile {
   color: var(--editor-text-muted, var(--text-2));
   font: 500 12px/1.3 var(--font-ui, system-ui, sans-serif);
-}
-
-.basic-tile-grid {
-  display: grid;
-  gap: 6px;
-  grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
-}
-
-.basic-tile-cell {
-  background-color: var(--bg-well);
-  background-repeat: no-repeat;
-  border: 1px solid var(--editor-line, var(--border-subtle));
-  border-radius: 6px;
-  cursor: pointer;
-  image-rendering: pixelated;
-  padding: 0;
-}
-
-.basic-tile-cell.is-active,
-.basic-tile-cell:hover,
-.basic-tile-cell:focus-visible {
-  border-color: var(--editor-blue, #4A57D6);
-  box-shadow: 0 0 0 1px var(--editor-blue, #4A57D6);
-  outline: none;
 }
 
 .basic-rail-hint {

@@ -318,6 +318,7 @@ function makePaletteCell(
       title,
       type: "button",
       "aria-label": title,
+      "aria-pressed": String(args.selectedTile === tileId),
       style: tilesetTileBackgroundStyle(args.tileset, tileId, "var(--chipset-cell)"),
     },
     dataset: { testid: `chipset-tile-${tileId}`, tileIndex: String(tileId) },
@@ -327,9 +328,14 @@ function makePaletteCell(
         event.preventDefault();
         args.onSelectTile(tileId);
       },
-      click: (event) => event.preventDefault(),
-      // Enter/Space — 네이티브 button 의 click 은 위에서 preventDefault 되므로
-      // 키보드 활성화 경로를 여기서 명시한다(포인터와 같은 onSelectTile).
+      click: (event) => {
+        event.preventDefault();
+        // Assistive technology activates buttons with a zero-detail click and
+        // no pointerdown. Physical clicks were already handled above.
+        if (!Reflect.get(event, "detail")) args.onSelectTile(tileId);
+      },
+      // Enter/Space selects immediately; preventDefault suppresses the later
+      // native click so this path does not activate the same tile twice.
       keydown: (event) => {
         const key = Reflect.get(event, "key");
         if (key !== "Enter" && key !== " " && key !== "Spacebar") return;
