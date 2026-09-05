@@ -1,0 +1,26 @@
+{
+  "host": "Linux PTY, not macOS Terminal",
+  "results": [
+    {
+      "scenario": "fresh setup",
+      "exitCode": 0,
+      "keyEchoed": false,
+      "configCreated": true,
+      "mode": "0o600"
+    },
+    {
+      "scenario": "cancel",
+      "exitCode": 1,
+      "keyEchoed": false,
+      "configCreated": false,
+      "mode": null
+    }
+  ],
+  "probeRequests": [
+    {
+      "method": "GET",
+      "schema": "rpg_zzu",
+      "projectFilterExact": true
+    }
+  ]
+}

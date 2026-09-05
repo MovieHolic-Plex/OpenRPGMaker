@@ -1,0 +1,35 @@
+✖ CLI pins the validated normalized configuration snapshot for Vite after the probe (1015.664424ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1167.663546
+
+✖ failing tests:
+
+test at test/macLauncher.test.mjs:179:1
+✖ CLI pins the validated normalized configuration snapshot for Vite after the probe (1015.664424ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+    {
+      clientKey: '',
+  -   key: 'sb_publishable_fixture',
+  -   project: 'existing',
+  -   proxy: '1',
+  -   url: 'http://127.0.0.1:42789'
+    }
+
+      at TestContext.<anonymous> (file:///home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/test/macLauncher.test.mjs:204:10)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { clientKey: '' },
+    expected: { url: 'http://127.0.0.1:42789', key: 'sb_publishable_fixture', project: 'existing', proxy: '1', clientKey: '' },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

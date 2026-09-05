@@ -1,0 +1,105 @@
+{
+  "host": "linux",
+  "browser": "Firefox (headless)",
+  "projectId": "rpg-zzu-house-template-gallery",
+  "readOnlyBridge": true,
+  "forwarded": [
+    {
+      "method": "GET",
+      "table": "/rest/v1/projects",
+      "status": 200,
+      "projectFilter": "eq.rpg-zzu-house-template-gallery",
+      "select": "project_id"
+    },
+    {
+      "method": "GET",
+      "table": "/rest/v1/projects",
+      "status": 200,
+      "projectFilter": "eq.rpg-zzu-house-template-gallery",
+      "select": "current_json,current_sha256"
+    },
+    {
+      "method": "GET",
+      "table": "/rest/v1/maps",
+      "status": 200,
+      "projectFilter": "eq.rpg-zzu-house-template-gallery",
+      "select": "map_id,map_json"
+    },
+    {
+      "method": "GET",
+      "table": "/rest/v1/project_commits",
+      "status": 200,
+      "projectFilter": "eq.rpg-zzu-house-template-gallery",
+      "select": "commit_id,message,summary,review_status,author_id,author_label,author_kind,agent_name,created_at"
+    },
+    {
+      "method": "GET",
+      "table": "/rest/v1/map_edit_locks",
+      "status": 200,
+      "projectFilter": "eq.rpg-zzu-house-template-gallery",
+      "select": "owner_session_id,owner_label,expires_at,updated_at"
+    }
+  ],
+  "blockedWrites": [
+    {
+      "method": "POST",
+      "path": "/rest/v1/map_edit_locks"
+    }
+  ],
+  "browserErrors": [],
+  "failedRequests": [
+    {
+      "path": "/v1/browser/hello",
+      "error": "NS_ERROR_DOM_BAD_URI"
+    },
+    {
+      "path": "/v1/browser/hello",
+      "error": "NS_ERROR_DOM_BAD_URI"
+    }
+  ],
+  "launcherUrl": "http://127.0.0.1:9999/?project=rpg-zzu-house-template-gallery",
+  "http": {
+    "index": 200,
+    "authProviders": 200,
+    "providersResponseKind": "object"
+  },
+  "loaded": {
+    "title": "호수 마을",
+    "mapCount": 2,
+    "persistence": {
+      "kind": "ready",
+      "projectId": "rpg-zzu-house-template-gallery",
+      "source": "env",
+      "url": "/supabase"
+    }
+  },
+  "sameOriginSupabase": [
+    {
+      "path": "/supabase/rest/v1/projects",
+      "status": 200
+    },
+    {
+      "path": "/supabase/rest/v1/maps",
+      "status": 200
+    },
+    {
+      "path": "/supabase/rest/v1/project_commits",
+      "status": 200
+    },
+    {
+      "path": "/supabase/rest/v1/map_edit_locks",
+      "status": 200
+    },
+    {
+      "path": "/supabase/rest/v1/map_edit_locks",
+      "status": 405
+    }
+  ],
+  "termination": {
+    "signalSent": "SIGINT",
+    "exitCode": 0,
+    "signal": null
+  },
+  "privateEnvUnchanged": true,
+  "result": "PASS"
+}
