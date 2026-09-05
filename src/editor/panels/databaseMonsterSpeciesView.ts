@@ -22,7 +22,7 @@ import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDia
 import { setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
 import { imageIconOf, recordIconElement } from "@/editor/panels/eventEditor/recordPicker";
 import { applyMagentaChromaKey } from "@/editor/panels/chromaKey";
-import { DEFAULT_MONSTER_EXP_CURVE, monsterEvolutionCycleSpeciesIds, normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
+import { DEFAULT_MONSTER_EXP_CURVE, monsterBattleStatsForSpecies, monsterEvolutionCycleSpeciesIds, normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { capturePreviewLine } from "@/editor/panels/databaseCapturePreview";
 import { renderExperienceCurvePanel } from "@/editor/panels/databaseClassExperienceCurveEditor";
 import { store } from "@/project/store";
@@ -189,7 +189,7 @@ function speciesHero(
   const tags = [
     `#${index + 1}`,
     ...(record.types ?? []),
-    `포획률 ${Math.round(record.captureRate * 100)}%`,
+    `포획 계수 ${record.captureRate}`,
     `레벨별 스킬 ${skills}개`,
     `진화 ${evolutions}개`,
   ];
@@ -211,7 +211,7 @@ function addSpecies(rerender: () => void): void {
   store.update((project) => {
     project.database.monsterSpecies ??= [];
     project.database.monsterSpecies.push(normalizeMonsterSpeciesRecord({ id, name: "새 species" }));
-  }, { scope: "database", collection: "monsterSpecies" });
+  }, { scope: "database", collection: "monsterSpecies", label: "몬스터 종족 편집" });
   selectedSpeciesId = id;
   // 새 레코드가 검색 필터에 걸려 안 보이는 상황을 만들지 않는다.
   speciesSearch = "";
@@ -226,7 +226,7 @@ function duplicateSpecies(rerender: () => void): void {
   store.update((project) => {
     project.database.monsterSpecies ??= [];
     duplicateInto(project.database.monsterSpecies, id, copyId);
-  }, { scope: "database", collection: "monsterSpecies" });
+  }, { scope: "database", collection: "monsterSpecies", label: "몬스터 종족 편집" });
   selectedSpeciesId = copyId;
   speciesSearch = "";
   rerender();
@@ -380,7 +380,7 @@ function deleteSpeciesButton(rerender: () => void): HTMLElement {
         recordProjectSnapshot();
         store.update((project) => {
           project.database.monsterSpecies = (project.database.monsterSpecies ?? []).filter((record) => record.id !== id);
-        }, { scope: "database", collection: "monsterSpecies" });
+        }, { scope: "database", collection: "monsterSpecies", label: "몬스터 종족 편집" });
         selectedSpeciesId = undefined;
         toast("삭제했습니다 — Ctrl+Z로 되돌릴 수 있습니다.", "ok");
         rerender();
@@ -392,6 +392,7 @@ function deleteSpeciesButton(rerender: () => void): HTMLElement {
 
 /** 상세 인스펙터 — 제목 있는 카드 스택. 카드는 폭이 되는 만큼 2 열로 흐른다. */
 function speciesInspector(record: MonsterSpeciesRecord, rerender: () => void): HTMLElement {
+  const preview = speciesStatsPreview(record);
   return el("div", {
     class: "db-ws-stack",
     children: [
@@ -414,7 +415,7 @@ function speciesInspector(record: MonsterSpeciesRecord, rerender: () => void): H
         title: "포획",
         hint: "0에 가까울수록 잡기 어렵습니다.",
         children: [
-          numberField("포획률(0~1)", "db-monster-species-capture-rate", record.captureRate, (value) => {
+          numberField("기본 포획 계수", "db-monster-species-capture-rate", record.captureRate, (value) => {
             updateSpecies(record.id, { captureRate: value });
           }, { min: 0, max: 1, step: 0.01 }),
           capturePreviewLine(record.captureRate, "db-monster-species-capture-preview"),
@@ -422,9 +423,9 @@ function speciesInspector(record: MonsterSpeciesRecord, rerender: () => void): H
         testid: "db-monster-species-capture-card",
       }),
       sectionCard({
-        title: "기본 능력치",
-        hint: "포획한 개체의 1레벨 기준값입니다. 전투 몬스터 스탯은 [몬스터] 탭에서 따로 잡습니다.",
-        children: statFields(record),
+        title: "종족값과 실제 능력치",
+        hint: "성장 공식에 쓰는 종족값입니다. 아래에서 레벨별 실제 능력치를 확인하세요.",
+        children: [...statFields(record, preview.refresh), preview.element],
         testid: "db-monster-species-stats-card",
       }),
       skillsByLevelCard(record, rerender),
@@ -565,12 +566,13 @@ function currentSpecies(id: string, fallback: MonsterSpeciesRecord): MonsterSpec
   return store.getCurrent().database.monsterSpecies?.find((record) => record.id === id) ?? fallback;
 }
 
-function statFields(record: MonsterSpeciesRecord): HTMLElement[] {
+function statFields(record: MonsterSpeciesRecord, refresh: () => void): HTMLElement[] {
   // bounds 는 normalizeSpeciesStats(monsterCollection.ts)의 clamp 범위와 숫자까지 일치해야 한다.
   const field = (label: string, key: keyof EnemyStats, testid: string, bounds: { min: number; max: number }): HTMLElement =>
     numberField(label, testid, record.baseStats[key], (value) => {
       const current = currentSpecies(record.id, record);
       updateSpecies(record.id, { baseStats: { ...current.baseStats, [key]: value } });
+      refresh();
     }, bounds);
   return [
     field("HP", "maxHp", "db-monster-species-hp", { min: 1, max: 99999 }),
@@ -580,6 +582,21 @@ function statFields(record: MonsterSpeciesRecord): HTMLElement[] {
     field("정신", "mind", "db-monster-species-mind", { min: 1, max: 999 }),
     field("민첩", "agility", "db-monster-species-agi", { min: 1, max: 999 }),
   ];
+}
+
+function speciesStatsPreview(record: MonsterSpeciesRecord): { element: HTMLElement; refresh: () => void } {
+  let previewLevel = 1;
+  const result = el("p", { class: "db-ws-usage", dataset: { testid: "db-monster-species-stats-preview" } });
+  const paint = (level: number): void => {
+    previewLevel = level;
+    const stats = monsterBattleStatsForSpecies(currentSpecies(record.id, record), level, { hp: 0, atk: 0, def: 0, spd: 0 });
+    result.textContent = `Lv${level} · 개체값 0 기준 — HP ${stats.maxHp} / MP ${stats.maxMp} / 공격 ${stats.attack} / 방어 ${stats.defense} / 정신 ${stats.mind} / 민첩 ${stats.agility}`;
+  };
+  paint(1);
+  return { refresh: () => paint(previewLevel), element: el("div", { class: "db-ws-stack", children: [
+    numberField("미리보기 레벨", "db-monster-species-preview-level", 1, paint, { min: 1, max: 99 }),
+    result,
+  ] }) };
 }
 
 /**
@@ -612,7 +629,21 @@ function inlineNumber(label: string, input: HTMLInputElement): HTMLElement {
 // 스테일 스냅샷 위에 덮이지 않게 한다.
 function skillsByLevelCard(record: MonsterSpeciesRecord, rerender: () => void): HTMLElement {
   const skills = store.getCurrent().database.skills;
-  const entries = record.skillsByLevel ?? [];
+  // Keep row identities in this mounted editor while normalization sorts the saved array.
+  // Never write an entire stale draft over a change from undo, another panel, or remote sync.
+  const entries = (record.skillsByLevel ?? []).map((entry) => ({ ...entry }));
+  let saved = JSON.stringify(record.skillsByLevel ?? []);
+  const commit = (mutate: () => void): void => {
+    const live = currentSpecies(record.id, record).skillsByLevel ?? [];
+    if (JSON.stringify(live) !== saved) {
+      toast("스킬 목록이 변경되어 새로 표시합니다. 다시 편집해 주세요.", "info");
+      rerender();
+      return;
+    }
+    mutate();
+    updateSpecies(record.id, { skillsByLevel: entries });
+    saved = JSON.stringify(currentSpecies(record.id, record).skillsByLevel ?? []);
+  };
   const rows = entries.map((entry, index) =>
     // `.db-monster-species-evo-row` 는 record-thumbs.css 가 이미 "편집 가능한 행"(flex-wrap,
     // 테두리, select flex, 삭제 버튼 우측 정렬)으로 스타일링해 둔 클래스다 — 스킬 행에도
@@ -621,18 +652,10 @@ function skillsByLevelCard(record: MonsterSpeciesRecord, rerender: () => void): 
       class: "db-monster-species-evo-row db-monster-species-skill-row",
       children: [
         inlineNumber("Lv", boundedNumberInput(`db-monster-species-skill-level-${index}`, entry.level, 1, 99, (level) => {
-          updateSpecies(record.id, {
-            skillsByLevel: (currentSpecies(record.id, record).skillsByLevel ?? []).map((item, i) =>
-              i === index ? { ...item, level } : item
-            ),
-          });
+          commit(() => { entry.level = Math.round(level); });
         })),
         selectInput(`db-monster-species-skill-${index}`, entry.skillId, skills, (skillId) => {
-          updateSpecies(record.id, {
-            skillsByLevel: (currentSpecies(record.id, record).skillsByLevel ?? []).map((item, i) =>
-              i === index ? { ...item, skillId } : item
-            ),
-          });
+          commit(() => { entry.skillId = skillId; });
         }),
         el("button", {
           class: "db-ws-btn db-ws-btn-danger",
@@ -643,9 +666,7 @@ function skillsByLevelCard(record: MonsterSpeciesRecord, rerender: () => void): 
           dataset: { testid: `db-monster-species-skill-delete-${index}` },
           on: {
             click: () => {
-              updateSpecies(record.id, {
-                skillsByLevel: (currentSpecies(record.id, record).skillsByLevel ?? []).filter((_, i) => i !== index),
-              });
+              commit(() => { const index = entries.indexOf(entry); if (index >= 0) entries.splice(index, 1); });
               rerender();
             },
           },
@@ -772,7 +793,7 @@ function evolutionsCard(record: MonsterSpeciesRecord, rerender: () => void): HTM
     : [];
   return sectionCard({
     title: "진화",
-    hint: "조건(레벨/아이템/친밀도)을 비우면(0/없음) 그 조건은 무시됩니다.",
+    hint: "입력한 조건은 모두 충족해야 합니다. 여러 진화가 가능하면 위의 규칙부터 적용됩니다. 0/없음은 조건을 사용하지 않습니다.",
     children: [
       el("div", {
         class: "db-monster-species-evo-list",
@@ -922,7 +943,7 @@ function typesField(record: MonsterSpeciesRecord, rerender: () => void): HTMLEle
   const selected = record.types ?? [];
   const chartSet = new Set(chartTypes);
   const outliers = selected.filter((type) => !chartSet.has(type));
-  const chips = chartTypes.map((type) => {
+  const chips = [...chartTypes, ...outliers].map((type) => {
     const input = el("input", {
       attrs: { type: "checkbox" },
       dataset: { testid: `db-monster-species-type-${type}` },
@@ -951,7 +972,7 @@ function typesField(record: MonsterSpeciesRecord, rerender: () => void): HTMLEle
     });
     return el("label", {
       class: "actor-check db-monster-species-type-chip",
-      children: [input, el("span", { text: type })],
+      children: [input, el("span", { text: chartSet.has(type) ? type : `${type} (미등록 · 해제 가능)` })],
     });
   });
 
@@ -984,5 +1005,5 @@ function updateSpecies(id: string, patch: Partial<MonsterSpeciesRecord>): void {
     if (index < 0) return;
     records[index] = normalizeMonsterSpeciesRecord({ ...records[index], ...patch });
     project.database.monsterSpecies = records;
-  }, { scope: "database", collection: "monsterSpecies" });
+  }, { scope: "database", collection: "monsterSpecies", label: "몬스터 종족 편집" });
 }

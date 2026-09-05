@@ -1085,7 +1085,7 @@ function validateTroopRecords(project: Project, enemyIds: ReadonlySet<string>, c
   for (const troop of project.database.troops) {
     collectExistingIdIssues(`troop ${troop.id}: enemy`, troop.enemyIds, enemyIds, issues);
     if (troop.members) validateTroopMembers(troop.id, troop.members, enemyIds, issues);
-    capture(issues, () => validateBattleEventPages(troop.battleEventPages, context));
+    capture(issues, () => validateBattleEventPages(troop.battleEventPages, { ...context, enemySlotIds: new Set(troop.enemyIds.map((_, index) => `enemy-${index + 1}`)) }));
   }
 }
 

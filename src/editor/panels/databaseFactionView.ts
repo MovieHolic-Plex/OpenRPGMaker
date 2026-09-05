@@ -5,6 +5,7 @@
 // 대칭으로 편집하고 프로젝트에는 관계 한 항목만 쓴다. 런타임의 보수적 판정은 안내문으로
 // 드러내고, 가져온 비대칭 데이터도 authoredFactionStance 로 실제 저작 결과를 보여 준다.
 
+import { factionReputationPreview, factionUsageCard } from "@/editor/panels/databaseFactionPreview";
 import { field } from "@/editor/panels/databaseControls";
 import {
   detailHero,
@@ -169,10 +170,11 @@ export function renderFactionsTab(host: HTMLElement, rerender: () => void): void
             children: behaviorFields(selected, rerender),
             testid: "db-faction-behavior",
           }),
+          factionUsageCard(selectedId),
           sectionCard({
-            title: "플레이어 처치 평판",
+            title: "플레이어 처치 평판 · 전체 설정",
             hint: "프로젝트 전체 규칙",
-            children: reputationFields(factions, rerender),
+            children: [...reputationFields(factions, rerender), factionReputationPreview()],
             testid: "db-faction-reputation",
           }),
           span(matrixCard(factions, rerender)),
@@ -320,7 +322,17 @@ function relationList(
       wraps.style.setProperty("--db-faction-stance-color", cssColor(stanceBarColor(cell.stance)));
       return wraps;
     });
-  return el("div", { class: "db-faction-relations", children: rows });
+  const matches = el("div", { class: "db-ws-stack", children: rows });
+  const search = listSearch({
+    value: "",
+    placeholder: "상대 진영 이름 또는 ID 검색",
+    testid: "db-faction-relation-search",
+    onInput: (value) => {
+      const query = value.trim().toLowerCase();
+      matches.replaceChildren(...rows.filter((row) => !query || `${row.textContent} ${row.dataset.testid}`.toLowerCase().includes(query)));
+    },
+  });
+  return el("div", { class: "db-faction-relations", children: [search, matches] });
 }
 
 function reputationFields(factions: ProjectFactions | undefined, rerender: () => void): HTMLElement[] {

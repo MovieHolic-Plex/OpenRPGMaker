@@ -915,10 +915,10 @@ function collectionGateBanner(container: HTMLElement): HTMLElement | null {
   const hasCaptureItem = project.database.items.some((item) => item.captureProfile !== undefined);
   if (!hasSpecies && !hasCaptureItem) return null;
   return el("div", {
-    class: "db-collection-gate-warn",
+    class: "db-collection-gate-warn is-info",
     dataset: { testid: "db-collection-gate-warn" },
     children: [
-      el("span", { text: "몬스터 수집이 시스템 탭에서 꺼져 있어 포획 명령이 전투에 나오지 않습니다." }),
+      el("span", { text: "전투 중심 모드입니다. 포획을 사용하려면 시스템에서 몬스터 수집을 켜세요." }),
       el("button", {
         class: "btn small",
         attrs: { type: "button" },

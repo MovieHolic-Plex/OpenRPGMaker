@@ -1,5 +1,14 @@
 # Runtime Project Schema & Persistence
 
+## 전투 페이지 중복 ID 복구와 슬롯 참조 (2026-09-05)
+
+`normalizeTroopRecord`는 옛 길이 기반 생성기가 남긴 중복 페이지 ID를 결정적으로 복구한다. 첫 ID는 보존하고 이후 중복은 사용되지 않은 `_2`, `_3` 등의 접미사로 바꾼다. 입력 전체의 기존 ID도 예약하므로 뒤에 나오는 정상 ID를 빼앗지 않는다. 여러 번 정규화·저장·로드해도 결과가 같다. 옛 모호한 ID를 참조하던 명령은 첫 페이지를 계속 가리킨다. 새 스키마 필드나 버전 증가는 없다.
+
+프로젝트 참조 검증은 각 적 그룹의 편성 수만큼 `enemy-1`…`enemy-N`을 범위화하여 HP 조건에 허용한다. 몬스터 레코드 ID 조건도 기존대로 허용한다. 슬롯 참조를 전역 enemy ID 집합에 넣으면 다른 그룹의 잘못된 슬롯을 통과시키므로 `ReferenceContext.enemySlotIds`로 분리한다.
+
+`test/monsterBattleAuthoringContract.test.ts`는 중복 ID 복구의 충돌 회피·멱등성, serialize→deserialize 반복, 두 번째 중복 몬스터 슬롯의 실제 조건 실행까지 검증한다.
+
+
 Authored project schema, defaults, validation, migration, references, and persistence boundaries.
 
 ## 통행 컴포넌트 색인의 계약 (2026-08-30, PR #286)

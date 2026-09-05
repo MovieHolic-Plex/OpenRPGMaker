@@ -1,5 +1,18 @@
 # Runtime Battle Behavior
 
+## 빈 페이지와 실행 빈도 계약 (2026-09-05)
+
+`battleEvents.ts`는 빈 `commands`를 부작용 없는 페이지로 실행한다. 과거의 첫 적/첫 상태 암묵 적용 폴백은 제거했다. 상태를 부여하려면 실제 명령을 저작해야 한다.
+
+`span:"turn"` 자체가 라운드당 최대 1회 실행을 보장한다. `moment`는 평가마다 실행 가능하며 기존 turn/onRound/everyRound/actorTurn/enemyTurn 조건의 라운드 제한도 유지한다. `runOnce`는 명시 boolean이 우선이고 생략 시 `span === "battle"`가 기본이다. 따라서 `runOnce:false`를 undefined로 바꾸면 안 된다.
+
+적 HP 조건의 `enemy-N`은 N번째 편성 슬롯이다. 동일 몬스터가 두 번 출전해도 슬롯별 HP를 판단한다. 기존 몬스터 레코드 ID 조건은 첫 일치 배틀러를 가리키는 호환 동작을 유지한다. `enemyTurn`은 기존 레코드 ID 의미를 유지한다.
+
+`troopBattlePageTools.ts`의 반복 방지 검증도 turn span을 안전한 라운드 주기로 인정한다. 저작 도구는 실행할 명령을 요구하므로 빈 페이지를 거부하지만, 이미 저장된 빈 페이지가 런타임 부작용을 일으키지는 않는다. HP 조건은 도구에서도 그룹 범위의 슬롯 참조를 허용한다.
+
+검증: `test/monsterBattleAuthoringContract.test.ts` (빈 페이지, span/runOnce 조합, 반복 평가, 슬롯별 HP 및 저장 왕복), `test/troopBattlePageTools.test.ts`.
+
+
 Battle rules, turn flow, damage, rewards, battle events, snapshots, monster collection, and Gen 1 rules.
 
 For real-time action combat on action maps (`system.actionCombat` + `map.actionCombat`), see **`openwiki/runtime-action-combat.md`**.

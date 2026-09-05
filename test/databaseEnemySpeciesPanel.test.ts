@@ -76,8 +76,9 @@ function firstEnemy(): EnemyRecord {
 }
 
 describe("enemy species panel (G002 Phase 2d)", () => {
-  it("warns when speciesId is empty and the project has monsterSpecies", () => {
+  it("warns when speciesId is empty and monster collection is enabled", () => {
     store.update((project) => {
+      project.system.monsterCollection = true;
       const enemy = project.database.enemies[0];
       if (enemy) enemy.speciesId = undefined;
     });
@@ -177,4 +178,25 @@ describe("enemy species panel (G002 Phase 2d)", () => {
     const host = renderEnemyForm();
     expect(findByTestId(host, "db-enemy-species-unset-warn")).toBeNull();
   });
+  it("distinguishes implicit state effectiveness from explicit C and supports clearing", () => {
+    const enemyId = firstEnemy().id;
+    const stateId = store.getCurrent().database.states[0]!.id;
+    store.update((project) => { project.database.enemies[0]!.stateRates = {}; });
+    const host = renderEnemyForm(enemyId);
+    const control = findByTestId(host, `db-picker-enemy-state-rate-${stateId}`)!;
+    expect(control.value).toBe("");
+    expect(control.textContent).toContain("미지정 · 적용 100%");
+    expect(control.textContent).toContain("C · 적용 60%");
+    expect(firstEnemy().stateRates[stateId]).toBeUndefined();
+    control.value = "C"; control.dispatchEvent(new Event("change"));
+    expect(firstEnemy().stateRates[stateId]).toBe("C");
+    control.value = ""; control.dispatchEvent(new Event("change"));
+    expect(firstEnemy().stateRates[stateId]).toBeUndefined();
+  });
+
+  it("does not warn about uncapturable enemies in a combat-only project", () => {
+    store.update((project) => { project.system.monsterCollection = false; project.database.enemies[0]!.speciesId = undefined; });
+    expect(findByTestId(renderEnemyForm(), "db-enemy-species-unset-warn")).toBeNull();
+  });
+
 });

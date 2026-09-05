@@ -183,6 +183,10 @@ describe("database monster species view", () => {
     expect(warn?.textContent).toContain("ghost");
     expect(findByTestId(refreshed, "db-monster-species-type-fire")?.checked).toBe(true);
     expect(findByTestId(refreshed, "db-monster-species-type-water")?.checked).toBe(false);
+    const orphan = findByTestId(refreshed, "db-monster-species-type-ghost")!;
+    orphan.checked = false;
+    orphan.dispatchEvent(new Event("change"));
+    expect(store.getCurrent().database.monsterSpecies?.find((row) => row.id === id)?.types).toEqual(["fire"]);
   });
 
   it("falls back to free-text types when the type chart is empty", () => {
@@ -223,4 +227,41 @@ describe("database monster species view", () => {
     expect(findByTestId(host, "db-monster-pipeline-spawns-action")).toBeTruthy();
     expect(findByTestId(host, "db-monster-pipeline-drops-action")).toBeTruthy();
   });
+  it("keeps skill row identity through sorting, blur, a later skill edit and deletion", () => {
+    const initial = renderUtility(renderMonsterSpeciesTab);
+    findByTestId(initial, "db-monster-species-add")!.click();
+    const id = store.getCurrent().database.monsterSpecies!.at(-1)!.id;
+    const [a, b, c] = store.getCurrent().database.skills;
+    store.update((project) => {
+      project.database.monsterSpecies!.find((row) => row.id === id)!.skillsByLevel = [
+        { level: 1, skillId: a!.id }, { level: 10, skillId: b!.id },
+      ];
+    });
+    const host = renderUtility(renderMonsterSpeciesTab);
+    const first = findByTestId(host, "db-monster-species-skill-level-0")!;
+    first.value = "20";
+    first.dispatchEvent(new Event("input"));
+    first.dispatchEvent(new Event("change"));
+    const saved = () => store.getCurrent().database.monsterSpecies!.find((row) => row.id === id)!.skillsByLevel;
+    expect(saved()).toEqual([{ level: 10, skillId: b!.id }, { level: 20, skillId: a!.id }]);
+    const skill = findByTestId(host, "db-monster-species-skill-0")!;
+    skill.value = c!.id;
+    skill.dispatchEvent(new Event("change"));
+    expect(saved()).toEqual([{ level: 10, skillId: b!.id }, { level: 20, skillId: c!.id }]);
+    findByTestId(host, "db-monster-species-skill-delete-0")!.click();
+    expect(saved()).toEqual([{ level: 10, skillId: b!.id }]);
+  });
+
+  it("does not overwrite externally changed skill rows", () => {
+    const initial = renderUtility(renderMonsterSpeciesTab);
+    findByTestId(initial, "db-monster-species-add")!.click();
+    findByTestId(initial, "db-monster-species-skill-add")!.click();
+    const id = store.getCurrent().database.monsterSpecies!.at(-1)!.id;
+    const input = findByTestId(initial, "db-monster-species-skill-level-0")!;
+    store.update((project) => { project.database.monsterSpecies!.find((row) => row.id === id)!.skillsByLevel[0]!.level = 30; });
+    input.value = "20";
+    input.dispatchEvent(new Event("input"));
+    expect(store.getCurrent().database.monsterSpecies!.find((row) => row.id === id)!.skillsByLevel[0]!.level).toBe(30);
+  });
+
 });

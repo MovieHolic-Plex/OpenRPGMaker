@@ -1,0 +1,37 @@
+[
+  {
+    "id": "db-field-troop-event-condition-kind",
+    "value": "enemyHp",
+    "width": 350
+  },
+  {
+    "id": "db-field-troop-event-page-name",
+    "value": "두 번째 적이 약해졌을 때",
+    "width": 197
+  },
+  {
+    "id": "db-field-troop-event-span",
+    "value": "turn",
+    "width": 197
+  },
+  {
+    "id": "db-field-troop-event-run-once",
+    "value": "on",
+    "width": 15
+  },
+  {
+    "id": "db-field-troop-event-condition-enemy-hp-target",
+    "value": "enemy-2",
+    "width": 197
+  },
+  {
+    "id": "db-field-troop-event-condition-enemy-hp-min",
+    "value": "0",
+    "width": 139
+  },
+  {
+    "id": "db-field-troop-event-condition-enemy-hp-max",
+    "value": "50",
+    "width": 139
+  }
+]
