@@ -1,107 +1,221 @@
-/* animation-editor.css — studio chrome around the black animation stage.
- * Restyle controls/inspector/timeline to --db-studio-* tokens.
- * Keep black canvas (#171a1d / #1d2024) intact — chrome only. */
-
-.database-modal-backdrop .database-modal-body .animation-detail-form {
+/* Animation-only studio composition. This sheet owns stage/authoring geometry;
+ * battle-studio.css owns shared navigation, never a competing animation grid. */
+.database-modal-backdrop .database-modal-window .animation-detail-form {
   background: var(--db-studio-canvas);
   color: var(--db-studio-text-1);
+  grid-template-columns: minmax(0, 1fr);
+  grid-auto-rows: max-content;
+  overflow: auto;
 }
-
-/* Inspector inputs/selects -> studio surface */
-.database-modal-backdrop .database-modal-body .db-animation-top-grid :is(input:not([type="radio"]), select),
-.database-modal-backdrop .database-modal-body .db-animation-panel :is(input[type="text"], input[type="number"], select) {
+.database-modal-backdrop .database-modal-window .db-animation-studio-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  padding: 0 16px 16px;
+}
+.database-modal-backdrop .database-modal-window .db-animation-studio-stage,
+.database-modal-backdrop .database-modal-window .db-animation-studio-inspector,
+.database-modal-backdrop .database-modal-window .db-animation-studio-timeline {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.database-modal-backdrop .database-modal-window .db-animation-panel {
+  background: var(--db-studio-surface);
+  border: 0;
+  border-radius: 8px;
+  box-shadow: none;
+  grid-area: auto;
+  max-height: none;
+  min-height: 0;
+  padding: 12px;
+}
+.database-modal-backdrop .database-modal-window .db-animation-panel h4 {
+  color: var(--db-studio-text-1);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  margin: 0 0 8px;
+}
+.database-modal-backdrop .database-modal-window .db-animation-stage-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+}
+.database-modal-backdrop .database-modal-window .db-animation-stage-panel h4 {
+  margin: 0;
+  padding: 8px 12px;
+}
+.database-modal-backdrop .database-modal-window .db-animation-stage-surface {
+  background-color: var(--db-studio-dark);
+  background-image: none;
+  border: 0;
+  min-height: 280px;
+  height: clamp(280px, 35vh, 360px);
+  flex: 0 0 auto;
+}
+.database-modal-backdrop .database-modal-window .db-animation-transport {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 8px 12px;
+}
+.database-modal-backdrop .database-modal-window .db-animation-transport .empty-hint {
+  color: var(--db-studio-text-2);
+  font-size: 12px;
+  padding: 0;
+  margin: 0;
+}
+.database-modal-backdrop .database-modal-window .db-animation-graphic-control {
+  background: var(--db-studio-surface);
+  border-radius: 8px;
+  padding: 12px;
+}
+.database-modal-backdrop .database-modal-window .db-animation-graphic-control .db-resource-picker-control-label {
+  color: var(--db-studio-text-2);
+  font-size: 12px;
+}
+.database-modal-backdrop .database-modal-window .db-animation-graphic-control .db-resource-picker-control-body {
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: 12px;
+}
+.database-modal-backdrop .database-modal-window .db-animation-graphic-control .db-resource-picker-control-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  min-width: 0;
+}
+.database-modal-backdrop .database-modal-window .db-animation-graphic-control .db-resource-picker-inline-name {
+  flex: 1 1 200px;
+  color: var(--db-studio-text-1);
+  font-size: 14px;
+  font-weight: 600;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  overflow: visible;
+}
+/* Match the shared studio readability-floor context, then scope to this editor. */
+.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-modal-body .animation-detail-form .db-animation-studio-editor :is(button, input, select, h4) {
+  font-size: 13px;
+}
+.database-modal-backdrop .database-modal-window .animation-detail-form button:not(.db-battle-studio-nav-button) {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-strong);
+  border-radius: 8px;
+  color: var(--db-studio-text-1);
+  min-height: 32px;
+  padding: 4px 12px;
+  line-height: 1.5;
+}
+.database-modal-backdrop .database-modal-window .animation-detail-form button:not(:disabled):hover {
+  background: var(--db-studio-inset);
+}
+.database-modal-backdrop .database-modal-window .animation-detail-form :is(button, input:not([type="radio"]), select):focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: 2px;
+}
+.database-modal-backdrop .database-modal-window .animation-detail-form button.db-animation-play-button,
+.database-modal-backdrop .database-modal-window .animation-detail-form .db-animation-graphic-control button {
+  background: var(--db-studio-accent);
+  border-color: var(--db-studio-accent);
+  color: var(--db-studio-surface);
+}
+.database-modal-backdrop .database-modal-window .animation-detail-form :is(.db-animation-play-button, .db-animation-graphic-control button):hover {
+  background: var(--db-studio-accent);
+}
+.database-modal-backdrop .database-modal-window .db-animation-command-grid,
+.database-modal-backdrop .database-modal-window .db-animation-frame-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.database-modal-backdrop .database-modal-window .db-animation-top-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  align-items: start;
+  gap: 12px;
+}
+.database-modal-backdrop .database-modal-window .db-animation-setup-panel {
+  display: grid;
+  gap: 8px;
+  grid-column: 1 / -1;
+}
+.database-modal-backdrop .database-modal-window .db-animation-sheet-fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.database-modal-backdrop .database-modal-window .db-animation-sheet-fields .db-field {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.database-modal-backdrop .database-modal-window .db-animation-panel :is(input[type="text"], input[type="number"], select) {
   background-color: var(--db-studio-surface);
   border: 1px solid var(--db-studio-border-default);
-  border-radius: 6px;
-  color: var(--db-studio-text-1);
-}
-
-.database-modal-backdrop .database-modal-body .db-animation-top-grid :is(label, .db-field) span:first-child,
-.database-modal-backdrop .database-modal-body .db-animation-panel :is(label, .db-field) span:first-child {
-  color: var(--db-studio-text-3);
-}
-
-.database-modal-backdrop .database-modal-body .db-animation-panel {
-  background: var(--db-studio-surface);
-  border: 1px solid var(--db-studio-border-subtle);
   border-radius: 8px;
-  box-shadow: var(--db-studio-shadow);
-}
-
-.database-modal-backdrop .database-modal-body .db-animation-panel h4 {
   color: var(--db-studio-text-1);
+  min-height: 32px;
 }
-
-.database-modal-backdrop .database-modal-body .db-animation-table th {
+.database-modal-backdrop .database-modal-window .db-animation-panel input[type="checkbox"] {
+  width: 16px;
+  min-height: 16px;
+}
+.database-modal-backdrop .database-modal-window .db-animation-panel .db-field > span:first-child {
+  color: var(--db-studio-text-2);
+  font-size: 12px;
+}
+.database-modal-backdrop .database-modal-window [data-testid="db-animation-cell-table"] {
+  max-height: none;
+  overflow-x: auto;
+}
+.database-modal-backdrop .database-modal-window .db-animation-table {
+  border-collapse: collapse;
+  min-width: 620px;
+  width: 100%;
+}
+.database-modal-backdrop .database-modal-window .db-animation-table :is(th, td) {
+  color: var(--db-studio-text-2);
+  font-size: 12px;
+  line-height: 1.5;
+  padding: 8px;
+  border-bottom: 1px solid var(--db-studio-border-subtle);
+}
+.database-modal-backdrop .database-modal-window .db-animation-frame-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0;
+}
+.database-modal-backdrop .database-modal-window .animation-detail-form .db-animation-frame-row.active {
+  background: var(--db-studio-accent-soft);
+  border-color: var(--db-studio-accent);
+  color: var(--db-studio-accent);
+}
+.database-modal-backdrop .database-modal-window .db-animation-pattern-strip-panel {
+  display: flex;
+  gap: 8px;
+  grid-area: auto;
   background: var(--db-studio-inset);
-  color: var(--db-studio-text-3);
+  border-radius: 8px;
+  max-height: none;
+  overflow-x: auto;
+  padding: 12px;
 }
-
-.database-modal-backdrop .database-modal-body .db-animation-table td {
-  color: var(--db-studio-text-1);
+.database-modal-backdrop .database-modal-window .db-animation-pattern-cell {
+  flex: 0 0 96px;
+  color: var(--db-studio-text-2);
+  font-size: 12px;
 }
-
-@media (min-width: 901px) {
-  .database-modal-backdrop .database-modal-body .animation-detail-form {
-    grid-auto-rows: max-content;
-  }
-
-  .database-modal-backdrop .database-modal-body .db-animation-rm2003-editor {
-    grid-template-columns: minmax(150px, 0.42fr) minmax(0, 1fr) minmax(200px, 0.6fr);
-    grid-template-rows: minmax(170px, auto) minmax(248px, auto) minmax(150px, auto) minmax(64px, auto);
-    min-height: max-content;
-  }
-
-  .database-modal-backdrop .database-modal-body .db-animation-top-grid {
-    min-height: auto;
-  }
-
-  .database-modal-backdrop .database-modal-body .db-animation-frame-list-panel,
-  .database-modal-backdrop .database-modal-body .db-animation-stage-panel,
-  .database-modal-backdrop .database-modal-body .db-animation-timing-panel {
-    max-height: none;
-    min-height: 248px;
-  }
-
-  .database-modal-backdrop .database-modal-body [data-testid="db-animation-cell-table"] {
-    max-height: none;
-    min-height: 150px;
-    overflow: auto;
-  }
-
-  .database-modal-backdrop .database-modal-body .db-animation-stage-panel {
-    display: grid;
-    gap: 8px;
-    grid-template-rows: auto minmax(154px, 1fr) auto;
-    overflow: hidden;
-  }
-
-  .database-modal-backdrop .database-modal-body .db-animation-stage-panel .db-animation-stage-surface {
-    min-height: 154px;
-  }
-
-  .database-modal-backdrop .database-modal-body .db-animation-pattern-strip-panel {
-    align-items: stretch;
-    background: var(--db-studio-surface);
-    border: 1px solid var(--db-studio-border-subtle);
-    border-radius: 8px;
-    box-sizing: border-box;
-    display: flex;
-    gap: 6px;
-    max-height: none;
-    min-height: 64px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    padding: 8px;
-  }
-
-  .database-modal-backdrop .database-modal-body .db-animation-pattern-cell {
-    flex: 0 0 auto;
-    min-width: 56px;
-  }
-
-  .database-modal-backdrop .database-modal-body .db-animation-frame-list {
-    max-height: 150px;
-    overflow-y: auto;
-  }
+.database-modal-backdrop .database-modal-window .db-animation-pattern-preview {
+  display: block;
+  height: 96px;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
 }
