@@ -1,0 +1,208 @@
+{
+  "codeCommit": "80df0c23cd131564b333adcbf32f33750726ae30",
+  "baseCommit": "7167ae65c79887b238c5e4137d1a44a1e61efd82",
+  "browser": {
+    "engine": "Chromium",
+    "modes": [
+      "expert",
+      "standard",
+      "beginner"
+    ],
+    "viewports": [
+      [
+        1440,
+        900
+      ],
+      [
+        1280,
+        800
+      ],
+      [
+        1024,
+        768
+      ]
+    ],
+    "scenario": "test/e2e/left-sidebar-adversarial.spec.ts",
+    "exitCode": 0,
+    "durationMinutes": 8.7,
+    "serverPort": 9858,
+    "checkout": "/tmp/rpg-zzu-sidebar-integration"
+  },
+  "focusedTests": {
+    "files": 8,
+    "passed": 77,
+    "exitCode": 0,
+    "testFiles": [
+      "test/sidebarFocus.test.ts",
+      "test/basicRailFlyout.test.ts",
+      "test/tilePaletteGrid.test.ts",
+      "test/basicTilePalette.test.ts",
+      "test/sidebarKeyboardNav.test.ts",
+      "test/tilePaletteGridRoving.test.ts",
+      "test/basicLeftRail.test.ts",
+      "test/editorLayoutPersist.test.ts"
+    ]
+  },
+  "typecheckApp": {
+    "exitCode": 0
+  },
+  "artifacts": {
+    "integration-focused.log": {
+      "sha256": "87ed0ddf1bcf6ed3bae3c162b543c15431f364e96d5fbfa50f5e0dd1ccbf67d3",
+      "bytes": 3482
+    },
+    "integration-browser.log": {
+      "sha256": "f152e277d96e68c42cb00542af9d6bac6e360f352470b1f30668838250af3cdc",
+      "bytes": 556
+    },
+    "integration-typecheck.log": {
+      "sha256": "9e2e881b46f10347e10261b098fd6171273d8f45b9a5d52fc81a8473a713bdfe",
+      "bytes": 68
+    },
+    "css.log": {
+      "sha256": "45fefaf9e35bdc825f4c7e5932defea4ac68b9ba7d2d064dab76e9ce8b504f45",
+      "bytes": 209
+    },
+    "wiki-verify.log": {
+      "sha256": "530b4872edf656763b2d9f9eaac52afba2e5d0fa2f8fc9f7901da8a5761e62f3",
+      "bytes": 2846
+    },
+    "delta-comparison.json": {
+      "sha256": "ad42e6b152050c7c71f5ea4873fb9404c560df723c6bb4d5613ef2340c3fbe23",
+      "bytes": 17264
+    },
+    "delta-timing-check.log": {
+      "sha256": "03c5334255b6cbd7aef336800cec3311b56797fdc68861c3bdabd2a465e3bbe5",
+      "bytes": 4719
+    },
+    "surface-main-baseline.json": {
+      "sha256": "df6182a594392b37786edf4811e166bd060e09ce000862f1712e32fe2a8dd424",
+      "bytes": 26207
+    },
+    "integration-gates.json": {
+      "sha256": "eb07ad562353ce9930bae05844cbb2fd50bf96643ecdc202ef2a6c378774ec62",
+      "bytes": 34038
+    },
+    "integration-vitest-report.json": {
+      "sha256": "5a7ae7ebe179e9061c04cc334a5395919c64ceed65ad1c5ff1bb737e6cef418c",
+      "bytes": 4763145
+    },
+    "final-delta-baseline.json": {
+      "sha256": "38b9d291b1a813f9e6415eb32e40de9eca450d9726cc8f250a9b6e8e65a82208",
+      "bytes": 24618
+    },
+    "final-sidebar-check.json": {
+      "sha256": "d2424f0ed89883024e38fbe4e5f10abd8c50709eaf3acb8cda85900f5b423b45",
+      "bytes": 5923
+    },
+    "final-width-check.log": {
+      "sha256": "cc809ba48a6d61b7d863ac82ff3ee33b707390ca24b416ea218cc2163ebf6e01",
+      "bytes": 1491
+    }
+  },
+  "surfaceBaseline": {
+    "commit": "7167ae65c79887b238c5e4137d1a44a1e61efd82",
+    "exitCode": 1,
+    "failedTests": 6,
+    "passedTests": 106,
+    "failedCases": [
+      "test/eventEditorCommitProbe.baseline.test.ts > 이벤트 편집기 커밋 프로브 축 > (1) 컨트롤 조작 → 저장 커맨드 스냅샷이 기준선과 같다",
+      "test/eventEditorCommitProbe.baseline.test.ts > no-commit 래칫 > 무커밋 컨트롤 집합이 허용 목록과 정확히 일치한다",
+      "test/eventEditorFormSurface.baseline.test.ts > 이벤트에디터 폼 표면 스냅샷 > 기준선과 일치한다",
+      "test/eventEditorInteractionSurface.baseline.test.ts > 이벤트에디터 상호작용 후 폼 표면 스냅샷 > 기준선과 일치한다",
+      "test/eventEditorM2Surface.baseline.test.ts > M2 명령 폼 표면 스냅샷 > 기준선과 일치한다",
+      "test/eventEditorPortalSurface.baseline.test.ts > 포털(피커/모달) 표면 스냅샷 > 기준선과 일치한다"
+    ],
+    "cssFailure": ".selected: missing bottom"
+  },
+  "artifactNote": "Artifact hashes identify local ignored logs under output/evidence/sidebar-audit; screenshots and this compact receipt are committed.",
+  "fullGates": {
+    "codeCommit": "80df0c23cd131564b333adcbf32f33750726ae30",
+    "exitCode": 1,
+    "typecheckExitCode": 0,
+    "cssExitCode": 0,
+    "surfaceExitCode": 1,
+    "vitest": {
+      "name": "vitest",
+      "exitCode": 1,
+      "totalCount": 12891,
+      "failedCount": 213,
+      "passedCount": 12663
+    },
+    "failedFileCount": 102,
+    "surfaceFailedCases": [
+      "test/eventEditorCommitProbe.baseline.test.ts > 이벤트 편집기 커밋 프로브 축 > (1) 컨트롤 조작 → 저장 커맨드 스냅샷이 기준선과 같다",
+      "test/eventEditorCommitProbe.baseline.test.ts > no-commit 래칫 > 무커밋 컨트롤 집합이 허용 목록과 정확히 일치한다",
+      "test/eventEditorFormSurface.baseline.test.ts > 이벤트에디터 폼 표면 스냅샷 > 기준선과 일치한다",
+      "test/eventEditorInteractionSurface.baseline.test.ts > 이벤트에디터 상호작용 후 폼 표면 스냅샷 > 기준선과 일치한다",
+      "test/eventEditorM2Surface.baseline.test.ts > M2 명령 폼 표면 스냅샷 > 기준선과 일치한다",
+      "test/eventEditorPortalSurface.baseline.test.ts > 포털(피커/모달) 표면 스냅샷 > 기준선과 일치한다"
+    ],
+    "note": "The full run predates the follow-up correction of the fakeDom-only undefined inline-width expectation in leftDockPanels.test.ts. Application code remained unchanged."
+  },
+  "additionalBaselineComparison": {
+    "commit": "7167ae65c79887b238c5e4137d1a44a1e61efd82",
+    "exitCode": 1,
+    "passed": 37,
+    "failed": 8,
+    "failures": [
+      {
+        "file": "test/aiAutonomousRunSurface.test.ts",
+        "case": "할 일 목록 표면 (작업 계획 체크리스트) (a) emitWorkPlan 이벤트로 체크리스트가 렌더된다 — 항목별 진행 + 현재 레이어 표시",
+        "error": "AssertionError: expected null not to be null"
+      },
+      {
+        "file": "test/aiAutonomousRunSurface.test.ts",
+        "case": "할 일 목록 표면 (작업 계획 체크리스트) 턴이 끝나도 할 일 목록은 남고, 다음 턴의 새 계획이 오면 그것으로 바뀐다",
+        "error": "AssertionError: expected [] to have a length of 4 but got +0"
+      },
+      {
+        "file": "test/aiAutonomousRunSurface.test.ts",
+        "case": "할 일 목록 표면 (작업 계획 체크리스트) 모든 항목이 끝난 계획은 「모두 완료」로 남고, 계획이 한 번도 안 온 턴은 목록을 만들지 않는다",
+        "error": "AssertionError: expected [] to deeply equal [ 'done', 'done', 'done', 'done' ]"
+      },
+      {
+        "file": "test/aiAutonomousRunSurface.test.ts",
+        "case": "할 일 목록 표면 (작업 계획 체크리스트) agentMode chat 에서도 할 일 목록은 뜨되 예산 없이 뜨고, 세션에 autonomous 플래그가 전달되지 않는다",
+        "error": "AssertionError: expected [] to have a length of 4 but got +0"
+      },
+      {
+        "file": "test/forestDensity.test.ts",
+        "case": "plant_tree_clusters 기본(dense)이 선언한 커버리지에 닿고 그 지대를 실제로 막는다",
+        "error": "AssertionError: 영역의 30% 가 아직 걸어서 통과된다: expected 0.3003472222222222 to be less than 0.3"
+      },
+      {
+        "file": "test/forestDensity.test.ts",
+        "case": "place_props density — 모델이 실제로 닿는 라이브 툴 활엽수 density=dense 가 count 없이도 숲을 만든다",
+        "error": "AssertionError: expected 0.3003472222222222 to be less than 0.3"
+      },
+      {
+        "file": "test/gen1DemoContent.test.ts",
+        "case": "Scarloxy Gen1 authored content authors persistent major statuses, finite PP, a Poke Ball, and trainer semantics",
+        "error": "TypeError: actual value must be number or bigint, received \"undefined\""
+      },
+      {
+        "file": "test/roleNameComparisonGate.test.ts",
+        "case": "A-2 게이트 — 역할 이름 비교 잔여 허용 목록 밖에서 타일 역할 이름을 직접 비교하지 않는다",
+        "error": "AssertionError: expected [ …(2) ] to deeply equal []"
+      }
+    ]
+  },
+  "followupAssertions": {
+    "files": [
+      "test/leftDockPanels.test.ts",
+      "test/mapEditLockScratchSession.test.ts"
+    ],
+    "passed": 12,
+    "failed": 0,
+    "exitCode": 1,
+    "note": "JSON reporter says success=true, but process exit was 1 with no error diagnostic in its log. Do not count this invocation as exit-0 validation."
+  },
+  "finalWidthCheck": {
+    "file": "test/leftDockPanels.test.ts",
+    "exitCode": 0,
+    "passed": 8,
+    "failed": 0,
+    "includes": "Standard-to-beginner mode round trip clears inline width and preserves measured rail safe area."
+  }
+}
