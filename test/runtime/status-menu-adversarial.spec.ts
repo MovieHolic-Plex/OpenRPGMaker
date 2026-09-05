@@ -101,7 +101,7 @@ async function choose(page: Page, id: string) {
 }
 
 async function stored(page: Page) {
-  return page.evaluate((namespace) => JSON.parse(localStorage.getItem(`${namespace}:save-slot:1`)!), NAMESPACE);
+  return page.evaluate((namespace) => JSON.parse(localStorage.getItem(`${namespace}:save-slot:v5:1`)!), NAMESPACE);
 }
 
 test("held confirm/cancel cannot consume items, reopen a menu or bypass title confirmation", async ({ page }) => {
@@ -200,9 +200,9 @@ test("title load keeps the game scale and every error/slot reachable by keyboard
   await choose(page, "status-menu-group-command-save");
   await choose(page, "save-slot-1");
   await page.evaluate((namespace) => {
-    const saved = JSON.parse(localStorage.getItem(`${namespace}:save-slot:1`)!);
+    const saved = JSON.parse(localStorage.getItem(`${namespace}:save-slot:v5:1`)!);
     saved.mapName = "아주 긴 지도 이름 ".repeat(10);
-    for (const slot of [1, 2, 3]) localStorage.setItem(`${namespace}:save-slot:${slot}`, JSON.stringify(saved));
+    for (const slot of [1, 2, 3]) localStorage.setItem(`${namespace}:save-slot:v5:${slot}`, JSON.stringify(saved));
   }, NAMESPACE);
   await page.keyboard.press("x");
   await choose(page, "status-menu-group-command-to-title");
@@ -224,10 +224,10 @@ test("title load keeps the game scale and every error/slot reachable by keyboard
   }
   // Corrupt/incompatible saves must scroll inside the stage, retaining the title and Back action.
   await page.evaluate((namespace) => {
-    const incompatible = JSON.parse(localStorage.getItem(`${namespace}:save-slot:1`)!);
+    const incompatible = JSON.parse(localStorage.getItem(`${namespace}:save-slot:v5:1`)!);
     incompatible.session.currentMapId = `map_removed_${"very_long_name_".repeat(20)}`;
-    for (const slot of [2, 3]) localStorage.setItem(`${namespace}:save-slot:${slot}`, JSON.stringify(incompatible));
-    localStorage.setItem(`${namespace}:save-slot:1`, "{broken");
+    for (const slot of [2, 3]) localStorage.setItem(`${namespace}:save-slot:v5:${slot}`, JSON.stringify(incompatible));
+    localStorage.setItem(`${namespace}:save-slot:v5:1`, "{broken");
   }, NAMESPACE);
   await page.keyboard.press("z");
   await expect(page.getByTestId("title-screen")).toContainText("불러올 수 없습니다");

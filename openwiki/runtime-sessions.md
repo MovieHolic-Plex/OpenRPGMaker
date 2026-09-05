@@ -1,3 +1,11 @@
+## Save5 session boundary (2026-09-06)
+
+This section supersedes the historical schemaVersion 3 / mutual-reader-compatibility statements below. The shared writer now produces Save5; the reader accepts Save4 and Save5 and upgrades only in memory. Project version remains 4. Manual/autosave keys insert `v5:` after `save-slot:` while retaining the namespace. Missing new keys alone enable legacy fallback; corrupt new keys never silently resume older progress. Legacy raw bytes remain untouched on reads, writes, and quota failures.
+
+`src/player/checkpoints.ts` stores snapshots in a `WeakMap<PlaySession, SaveSnapshot>`, not browser storage: there is no existing checkpoint disk key to version or migrate. Checkpoints inherit Save5 through the shared writer and restore an independent session. They are intentionally not serialized inside normal slots. A failed checkpoint construction leaves the prior checkpoint intact.
+
+Autosave policy is unchanged: save-access/map/cutscene gates and the five-second debounce still apply. Snapshot construction remains outside `performAutosave`'s storage catch: construction (including future reconciliation) failure throws explicitly, never returns a successful snapshot or consumes the debounce window. Storage failure warns and returns `null`; `maybeAutosave` returns false. Only a successful write updates its debounce timestamp. Later reconciliation work must retain this distinction and keep live session/disk ownership intact. Tests: `test/lifeSaveVersion.test.ts`, `autosave.test.ts`, P0/P1/P2 session persistence, `checkpointEndingRuntime.test.ts`.
+
 ## Esc 메뉴 작업 프레임 (2026-09-05)
 
 이 절이 아래의 edge-dock / 상단 파티 고정 / 하위 창 숨김 설명을 대체한다.

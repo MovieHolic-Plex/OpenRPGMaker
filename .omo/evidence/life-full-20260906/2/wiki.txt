@@ -1,0 +1,138 @@
+
+> rpg-zzu@0.1.0 openwiki:verify
+> node scripts/verify-openwiki-editor-wiki.mjs
+
+{
+  "ok": true,
+  "agentEntry": {
+    "file": "AGENTS.md",
+    "exists": true,
+    "missingTerms": []
+  },
+  "requiredPages": [
+    {
+      "file": "PROJECT_WIKI.md",
+      "exists": true,
+      "bytes": 9917,
+      "hasHeading": true,
+      "missingTerms": [],
+      "hasSecret": false
+    },
+    {
+      "file": "ai-workflow.md",
+      "exists": true,
+      "bytes": 19744,
+      "hasHeading": true,
+      "missingTerms": [],
+      "hasSecret": false
+    },
+    {
+      "file": "quickstart.md",
+      "exists": true,
+      "bytes": 12010,
+      "hasHeading": true,
+      "missingTerms": [],
+      "hasSecret": false
+    },
+    {
+      "file": "architecture.md",
+      "exists": true,
+      "bytes": 9810,
+      "hasHeading": true,
+      "missingTerms": [],
+      "hasSecret": false
+    },
+    {
+      "file": "editor-workflows.md",
+      "exists": true,
+      "bytes": 2361,
+      "hasHeading": true,
+      "missingTerms": [],
+      "hasSecret": false
+    },
+    {
+      "file": "runtime-and-data.md",
+      "exists": true,
+      "bytes": 2945,
+      "hasHeading": true,
+      "missingTerms": [],
+      "hasSecret": false
+    },
+    {
+      "file": "testing.md",
+      "exists": true,
+      "bytes": 109626,
+      "hasHeading": true,
+      "missingTerms": [],
+      "hasSecret": false
+    },
+    {
+      "file": "cpen-openwiki.md",
+      "exists": true,
+      "bytes": 1511,
+      "hasHeading": true,
+      "missingTerms": [],
+      "hasSecret": false
+    }
+  ],
+  "allWikiFiles": [
+    "INDEX.md",
+    "PROJECT_WIKI.md",
+    "agent-tile-benchmark.md",
+    "agent-worktrees.md",
+    "ai-context-compaction.md",
+    "ai-tools-deprecation-roadmap.md",
+    "ai-workflow.md",
+    "architecture.md",
+    "autotiles.md",
+    "battler-idle-playbook.md",
+    "bgm-catalog.md",
+    "castle-map.md",
+    "community-site.md",
+    "cpen-openwiki.md",
+    "editor-ai-panel.md",
+    "editor-ai-tools.md",
+    "editor-database.md",
+    "editor-event-authoring.md",
+    "editor-event-command-fixes.md",
+    "editor-event-commands.md",
+    "editor-genre-packs.md",
+    "editor-interior-room-harness.md",
+    "editor-observability.md",
+    "editor-pre-edit-routing.md",
+    "editor-storage-chest.md",
+    "editor-validation.md",
+    "editor-workflows-misc.md",
+    "editor-workflows.md",
+    "growth-trees.md",
+    "horror-authoring.md",
+    "interior-tile-benchmark.md",
+    "large-village-generation.md",
+    "night-monster.md",
+    "quickstart.md",
+    "runtime-action-combat.md",
+    "runtime-and-data.md",
+    "runtime-battle.md",
+    "runtime-m2-flow-controls.md",
+    "runtime-pre-edit-routing.md",
+    "runtime-project-schema.md",
+    "runtime-sessions.md",
+    "se-catalog.md",
+    "stardew-core-elements-research.md",
+    "state-system.md",
+    "testing.md",
+    "town-tile-benchmark.md",
+    "village-design.md",
+    "world-generation-rules.md"
+  ],
+  "failures": []
+}
+
+VERIFY_EXIT=0
+
+> rpg-zzu@0.1.0 openwiki:index
+> node scripts/openwiki-index.mjs --check
+
+openwiki/INDEX.md 최신.
+
+INDEX_CHECK_EXIT=0

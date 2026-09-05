@@ -146,7 +146,7 @@ async function writeText(name: string, value: string): Promise<void> {
 
 async function saveSlot(page: Page, slot: 1): Promise<{ readonly session: { readonly actorSkillIds?: Record<string, readonly string[]> } }> {
   return page.evaluate((slotIndex) => {
-    const text = window.localStorage.getItem(`oprn:save-slot:${slotIndex}`);
+    const text = window.localStorage.getItem(`oprn:save-slot:v5:${slotIndex}`);
     if (!text) throw new Error("missing save snapshot");
     return JSON.parse(text) as { readonly session: { readonly actorSkillIds?: Record<string, readonly string[]> } };
   }, slot);

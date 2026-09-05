@@ -1,7 +1,7 @@
 import { hasEquipmentSlot } from "@/project/equipmentSlots";
 import { isHorrorState } from "@/project/horrorState";
 import { isGrowthProgress } from "@/project/growth/validation";
-import type { ActorInitialEquipment, CharacterFootprint, Project } from "@/project/types";
+import { SCHEMA_VERSION, type ActorInitialEquipment, type CharacterFootprint, type Project } from "@/project/types";
 import { normalizeRelationships } from "@/project/relationshipState";
 import { normalizeCharacterFootprint } from "@/project/footprint";
 import {
@@ -107,9 +107,8 @@ export {
   type SystemShellState,
 } from "@/player/systemShellState";
 
-export const SAVE_SCHEMA_VERSION = 5;
 export const SAVE_SLOT_COUNT = 3;
-const SAVE_SLOT_PREFIX = "oprn:save-slot:v5:";
+const SAVE_SLOT_PREFIX = "oprn:save-slot:";
 let saveSlotStorageNamespace: string | null = null;
 
 export type SaveSlotIndex = 1 | 2 | 3;
@@ -120,13 +119,13 @@ export type SaveOrigin = "manual" | "auto";
 export type AutosaveTrigger = "transfer" | "battleVictory";
 
 export type SaveSnapshot = {
-  readonly schemaVersion: typeof SAVE_SCHEMA_VERSION;
+  readonly schemaVersion: typeof SCHEMA_VERSION;
   readonly projectTitle: string;
   readonly savedAt: string;
   readonly mapName?: string;
   readonly partyLevel?: number;
   readonly playTimeSeconds?: number;
-  /** Optional metadata shared by supported Save4 and Save5 snapshots. */
+  /** optional 확장 — 알려진-필드 픽 파싱이라 구 스냅샷(schemaVersion 3)과 전후방 호환. */
   readonly savedBy?: SaveOrigin;
   readonly autosaveTrigger?: AutosaveTrigger;
   readonly session: {
@@ -249,13 +248,13 @@ export type SaveSlotReadResult =
   | { readonly kind: "present"; readonly slot: SaveSlotIndex; readonly snapshot: SaveSnapshot };
 
 export function saveSlotKey(slot: SaveSlotIndex): string {
-  if (saveSlotStorageNamespace) return `${saveSlotStorageNamespace}:save-slot:v5:${slot}`;
+  if (saveSlotStorageNamespace) return `${saveSlotStorageNamespace}:save-slot:${slot}`;
   return `${SAVE_SLOT_PREFIX}${slot}`;
 }
 
 /** 전용 오토세이브 키 — 수동 3슬롯(SaveSlotIndex)과 완전히 분리된 별도 칸. */
 export function autosaveKey(): string {
-  if (saveSlotStorageNamespace) return `${saveSlotStorageNamespace}:save-slot:v5:auto`;
+  if (saveSlotStorageNamespace) return `${saveSlotStorageNamespace}:save-slot:auto`;
   return `${SAVE_SLOT_PREFIX}auto`;
 }
 
@@ -264,17 +263,13 @@ export type AutosaveReadResult =
   | { readonly kind: "corrupt"; readonly message: string }
   | { readonly kind: "present"; readonly snapshot: SaveSnapshot };
 
-function legacySaveKey(slot: SaveSlotIndex | "auto"): string {
-  return `${saveSlotStorageNamespace ?? "oprn"}:save-slot:${slot}`;
-}
-
 export function writeAutosave(storage: Storage, snapshot: SaveSnapshot): void {
   storage.setItem(autosaveKey(), JSON.stringify(snapshot));
 }
 
 export function readAutosave(storage: Storage): AutosaveReadResult {
-  const text = storage.getItem(autosaveKey()) ?? storage.getItem(legacySaveKey("auto"));
-  if (text === null) return { kind: "empty" };
+  const text = storage.getItem(autosaveKey());
+  if (!text) return { kind: "empty" };
   let value: unknown;
   try {
     value = JSON.parse(text);
@@ -298,7 +293,7 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
     homeDecorationPlacements: parseHomeDecorationPlacementRecord(session.homeDecorationPlacements),
   });
   return {
-    schemaVersion: SAVE_SCHEMA_VERSION,
+    schemaVersion: SCHEMA_VERSION,
     projectTitle: project.meta.title,
     savedAt: new Date().toISOString(),
     mapName: project.maps[session.currentMapId]?.name ?? "",
@@ -460,8 +455,8 @@ export function snapshotLoadBlocker(project: Project, snapshot: SaveSnapshot): s
 }
 
 export function readSaveSlot(storage: Storage, slot: SaveSlotIndex): SaveSlotReadResult {
-  const text = storage.getItem(saveSlotKey(slot)) ?? storage.getItem(legacySaveKey(slot));
-  if (text === null) return { kind: "empty", slot };
+  const text = storage.getItem(saveSlotKey(slot));
+  if (!text) return { kind: "empty", slot };
   let value: unknown;
   try {
     value = JSON.parse(text);
@@ -758,10 +753,10 @@ type ParsedSnapshotResult =
   | { readonly ok: true; readonly snapshot: SaveSnapshot }
   | { readonly ok: false; readonly message: string };
 
-// Save4 migrates in memory; Save5 is intentionally unreadable by the previous reader.
+// 수동 슬롯/오토세이브 공용 코어 파서 — 알려진 필드만 골라 담아 전후방 호환을 유지한다.
 function parseSnapshotValue(value: unknown): ParsedSnapshotResult {
   if (!isRecord(value)) return { ok: false, message: "Save slot is not an object" };
-  if (value.schemaVersion !== 4 && value.schemaVersion !== SAVE_SCHEMA_VERSION) return { ok: false, message: "Unsupported save schema" };
+  if (value.schemaVersion !== SCHEMA_VERSION) return { ok: false, message: "Unsupported save schema" };
   if (typeof value.projectTitle !== "string") return { ok: false, message: "Missing project title" };
   if (typeof value.savedAt !== "string") return { ok: false, message: "Missing saved time" };
   if (!isRecord(value.session)) return { ok: false, message: "Missing session" };
@@ -770,7 +765,7 @@ function parseSnapshotValue(value: unknown): ParsedSnapshotResult {
   return {
     ok: true,
     snapshot: {
-      schemaVersion: SAVE_SCHEMA_VERSION,
+      schemaVersion: SCHEMA_VERSION,
       projectTitle: value.projectTitle,
       savedAt: value.savedAt,
       mapName: typeof value.mapName === "string" ? value.mapName : undefined,
