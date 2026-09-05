@@ -133,6 +133,16 @@
 
 Validation: `showEmoteCommand`, `showEmoteCommandBody`, `playSceneEmotes`, `emoteSheet` and `commandContracts/showEmote` tests. `npx tsx scripts/qa/emote-runtime.mts` generates a transient minimal engine contract fixture and runs the shipping-player harness; it does not author/persist a demo game. Read `verify-shots/runtime-qa/emote/SUMMARY.md` first.
 
+## 메뉴 입력·불러오기 배율 (2026-09-05)
+
+`player.ts`의 전역 키 처리기는 IME 조합을 양보하고, 결정/취소 키의 OS 반복을 소비하되 실행하지 않는다. 방향키 반복은 목록 탐색에 그대로 사용한다. 이 가드가 없으면 Z 유지가 아이템 목록→대상→소모를 한 번에 실행하고, X 유지가 닫은 메뉴를 다시 열거나 타이틀 복귀 확인까지 통과한다.
+
+슬롯 로드처럼 하위 화면에서 메뉴가 직접 닫혔으면, 다시 열 때 `selectedCommand`를 `statusMenuRailIdForCommand`로 레일 항목에 맞추고 이전 그룹을 비운다. 그렇지 않으면 화면은 「시스템」을 선택한 채 결정 키가 숨은 「로드」를 실행해 시스템 그룹으로 돌아갈 수 없었다. 일반 취소로 레일에 복귀할 때도 같은 변환을 쓴다.
+
+타이틀에서 여는 `renderLoad`도 `createPlaySurface`의 stage에 붙인다. layout에 직접 붙이면 논리 px를 화면 px로 그려 3배 게임에서 불러오기만 11px 글자가 된다. surface cleanup·호스트 전체화면 제어도 타이틀과 같은 수명을 갖는다. `runtime/title.css`는 불러오기 창 높이를 stage 안으로 제한하고 저장 칸 목록을 스크롤한다. 긴 오류나 자동 저장 카드가 있어도 제목·뒤로는 남고 키보드 커서가 선택 슬롯을 노출해야 한다.
+
+## 가구 밀기 애니메이션 (2026-09-05)
+
 - **가구 밀기는 주인공 걸음과 같은 틱의 별도 표현 상태다 (2026-09-05).**
   `furniturePushAnimation.ts`와 `playSceneMovement.tryStartFurniturePush`가 소유한다.
   조사/방향 입력 모두 몸과 가구가 같은 곡선으로 한 칸 움직인다. 가구 위치를 갱신했다고

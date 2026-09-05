@@ -47,8 +47,7 @@ export function useItemFromMenu(
 
   let changed = false;
   for (const actorId of targets) {
-    if (!isItemActorEligible(project, item, actorId, effectiveActorClassId(project, session, actorId))) continue;
-    if (!canApplyItemEffects(project, item, session, actorId)) continue;
+    if (!canUseMenuItemOnActor(project, session, item, actorId)) continue;
     changed = applyItemEffects(project, item, session, actorId) || changed;
   }
   if (!changed) return { kind: "unusable", message: `${item.name}의 효과가 없습니다` };
@@ -107,6 +106,16 @@ function useSkillBook(
   return { kind: "used", message: `${item.name}으로 기술을 익혔습니다` };
 }
 
+/** Read-only target preview shared by the menu and its mutation path. Never rolls RNG. */
+export function canUseMenuItemOnActor(project: Project, session: PlaySession, authoredItem: ItemRecord, actorId: string): boolean {
+  const item = activeItemEffects(authoredItem);
+  if (!itemAllowsMenu(item) || item.careProfile || (session.inventory[item.id] ?? 0) <= 0) return false;
+  if (!isItemActorEligible(project, item, actorId, effectiveActorClassId(project, session, actorId))) return false;
+  const learnedSkillId = item.learnedSkillId ?? (item.type === "book" ? item.skillId : undefined);
+  if (learnedSkillId) return !(session.actorSkillIds[actorId] ?? []).includes(learnedSkillId);
+  return canApplyItemEffects(project, item, session, actorId);
+}
+
 function canApplyItemEffects(project: Project, item: ItemRecord, session: PlaySession, actorId: string): boolean {
   const vitals = session.actorVitals[actorId];
   if (!vitals) return false;
@@ -125,7 +134,7 @@ function canApplyItemEffects(project: Project, item: ItemRecord, session: PlaySe
   }
   // 부여(add) 후보가 하나라도 아직 걸리지 않았으면 사용을 시도할 수 있다 — 확률 판정은
   // applyItemEffects 가 굴리고, 실패하면 changed=false 라 공통 소모 경로가 물리지 않는다.
-  return inflictStateEffectsOf(project, item).some((effect) => !states.includes(effect.stateId));
+  return inflictStateEffectsOf(project, item).some((effect) => effect.chance > 0 && !states.includes(effect.stateId));
 }
 
 function canUseItemInMenu(item: ItemRecord): boolean {

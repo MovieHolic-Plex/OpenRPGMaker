@@ -217,6 +217,8 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       return;
     }
     mode = "main";
+    selectedCommand = statusMenuRailIdForCommand(selectedCommand);
+    openGroupId = undefined;
     resetSubscreenState();
     options.emitMenuJuice("menu-open", renderMenu());
   };
@@ -469,7 +471,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       options.emitMenuJuice("menu-back", renderMenu(undefined, selectedCommand));
       return;
     }
-    if (isStatusMenuGroupEntryId(selectedCommand)) selectedCommand = statusMenuRailIdForCommand(selectedCommand);
+    selectedCommand = statusMenuRailIdForCommand(selectedCommand);
     openGroupId = undefined;
     mode = "main";
     options.emitMenuJuice("menu-back", renderMenu(undefined, selectedCommand));

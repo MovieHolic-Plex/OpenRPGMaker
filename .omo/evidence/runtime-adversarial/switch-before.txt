@@ -1,0 +1,57 @@
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-quiet-cloud-ad4d
+
+ ❯ test/playerMenuItemTargets.test.ts (8 tests | 1 failed) 702ms
+   ✓ item menu targets agree with executable effects > allows healStateIds cures at full HP/MP 187ms
+   ✓ item menu targets agree with executable effects > allows remove cures at full HP/MP 67ms
+   ✓ item menu targets agree with executable effects > allows an add-state item at full HP without rolling RNG while browsing 83ms
+   ✓ item menu targets agree with executable effects > selects a recipient for a book even when its stored scope is none 73ms
+   ✓ item menu targets agree with executable effects > selects a recipient for a seed even when its stored scope is none 62ms
+   ✓ item menu targets agree with executable effects > does not enter a stale recovery target screen for ordinary goods 83ms
+   × item menu targets agree with executable effects > activates a switch directly despite a stale ally scope 76ms
+     → expected "spy" to not be called at all, but actually been called 1 times
+
+Received: 
+
+  1st spy call:
+
+    Array [
+      "item_potion",
+    ]
+
+
+Number of calls: 1
+
+   ✓ item menu targets agree with executable effects > honors actor and effective class restrictions before a target can be selected 64ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/playerMenuItemTargets.test.ts > item menu targets agree with executable effects > activates a switch directly despite a stale ally scope
+AssertionError: expected "spy" to not be called at all, but actually been called 1 times
+
+Received: 
+
+  1st spy call:
+
+    Array [
+      "item_potion",
+    ]
+
+
+Number of calls: 1
+
+ ❯ test/playerMenuItemTargets.test.ts:91:26
+     89|     const f = fixture({ type: "switch", scope: "ally", switchId: "qa_d…
+     90|     f.detail().entries.find((entry) => entry.testId === `status-menu-i…
+     91|     expect(f.select).not.toHaveBeenCalled();
+       |                          ^
+     92|     expect(f.use.mock.results[0]?.value.kind).toBe("used");
+     93|     expect(f.session.switches.qa_device).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 7 passed (8)
+   Start at  19:16:00
+   Duration  7.98s (transform 4.84s, setup 0ms, collect 6.54s, tests 702ms, environment 0ms, prepare 167ms)

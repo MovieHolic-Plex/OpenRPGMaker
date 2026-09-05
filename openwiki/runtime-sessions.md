@@ -6,6 +6,8 @@
 
 장비 상태 방어는 resist 행만 집계한다. 기존 inflict 행 하나가 다른 장비의 저항을 끄지 않으며, 편집기에서 명시적으로 저항으로 전환할 수 있다. 테스트: `itemEquipmentAuthoringTrust`, `itemRuntimeUsability`, `equipmentCatalogRuntimeAxes`.
 
+필드 메뉴 대상 판정은 `playerItemUse.canUseMenuItemOnActor`를 사용한다. HP/MP 회복뿐 아니라 상태 해제·부여, 책·씨앗, 배우·현재 직업 제한을 실제 사용 경로와 같이 판정하며, 미리보기는 RNG나 소지품을 바꾸지 않는다. `playerStatusMenuDetails`는 `activeItemEffects`를 적용한 뒤 대상 화면을 선택한다. 책·씨앗은 저장된 scope가 `none`이어도 파티원을 고르고, 일반 물품은 보관된 회복/돌봄 설정으로 대상 화면을 열지 않는다. 스위치 아이템은 이전 종류의 아군 scope가 남아 있어도 대상 선택 없이 바로 장치를 작동한다. 과거 HP/MP 전용 판정은 체력이 가득 찬 파티원의 해독·강화까지 모두 막았다. 회귀: `test/playerMenuItemTargets.test.ts`, `test/runtime/status-menu-adversarial.spec.ts`.
+
 
 Session state, save slots, farming, friendship, calendar, lighting, weather, field spawns, and NPC schedules.
 

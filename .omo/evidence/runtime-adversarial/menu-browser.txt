@@ -1,0 +1,10 @@
+
+Running 3 tests using 1 worker
+
+(node:1872068) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [firefox] › test/runtime/status-menu-adversarial.spec.ts:107:1 › held confirm/cancel cannot consume items, reopen a menu or bypass title confirmation (24.6s)
+  ✓  2 [firefox] › test/runtime/status-menu-adversarial.spec.ts:145:1 › state items, seeds and switches work through the menu and survive save/load (20.7s)
+  ✓  3 [firefox] › test/runtime/status-menu-adversarial.spec.ts:189:1 › title load keeps the game scale and every error/slot reachable by keyboard (13.7s)
+
+  3 passed (1.1m)

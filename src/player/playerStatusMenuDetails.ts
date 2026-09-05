@@ -1,4 +1,6 @@
 import { createGrowthMenu, growthMenuTabs } from "@/player/playerGrowthMenu";
+import { canUseMenuItemOnActor } from "@/player/playerItemUse";
+import { activeItemEffects, itemAllowsMenu } from "@/project/itemUsage";
 import { growthEffects } from "@/project/growth/runtime";
 import type { SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
 import { canEquip, effectiveActorEquipment, equipmentSlotAccepts } from "@/project/equipmentRules";
@@ -121,8 +123,9 @@ function toTitleDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
 function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   const { project, session } = options;
   if (options.targetItemId) {
-    const item = project.database.items.find((record) => record.id === options.targetItemId);
-    if (!item) return { title: "대상 선택", entries: [], emptyLabel: "아이템을 찾을 수 없습니다" };
+    const authoredItem = project.database.items.find((record) => record.id === options.targetItemId);
+    if (!authoredItem) return { title: "대상 선택", entries: [], emptyLabel: "아이템을 찾을 수 없습니다" };
+    const item = activeItemEffects(authoredItem);
     const careProfile = item.careProfile;
     if (careProfile) {
       return {
@@ -145,7 +148,7 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
       title: `대상 선택: ${item.name}`,
       entries: partyActors(project, session).map((actor) => {
         const vitals = session.actorVitals[actor.id];
-        const eligible = itemTargetEligibility(item, session, actor.id);
+        const eligible = canUseMenuItemOnActor(project, session, item, actor.id);
         return {
           label: actor.name,
           value: vitals ? `HP ${vitals.hp}/${vitals.maxHp}  MP ${vitals.mp}/${vitals.maxMp}` : "HP 0/0  MP 0/0",
@@ -160,13 +163,13 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   }
 
   const inventory = new Map(Object.entries(session.inventory).filter(([, count]) => count > 0));
-  const itemEntries = project.database.items.filter((item) => inventory.has(item.id)).map((item) => ({
+  const itemEntries = project.database.items.filter((item) => inventory.has(item.id)).map(activeItemEffects).map((item) => ({
     label: item.name,
     icon: itemEntryIcon(item),
     value: `${inventory.get(item.id) ?? 0}개`,
     description: item.description,
     testId: `status-menu-item-${item.id}`,
-    onActivate: (item.scope === "ally" || item.scope === "allAllies" || Boolean(item.careProfile)) && options.onSelectItemTarget
+    onActivate: item.type !== "switch" && itemAllowsMenu(item) && (item.type === "book" || item.type === "seed" || item.scope === "ally" || item.scope === "allAllies" || Boolean(item.careProfile)) && options.onSelectItemTarget
       ? () => options.onSelectItemTarget?.(item.id)
       : options.onUseItem ? () => options.onUseItem?.(item.id) : undefined,
   }));
@@ -557,32 +560,12 @@ function learnedSkills(project: Project, session: PlaySession, actor: ActorRecor
   return project.database.skills.filter((skill) => skillIds.has(skill.id));
 }
 
-function itemTargetEligibility(item: Project["database"]["items"][number], session: PlaySession, actorId: string): boolean {
-  const vitals = session.actorVitals[actorId];
-  if (!vitals) return false;
-  const dead = vitals.hp <= 0;
-  if (item.onlyEffectiveOnDeadActors) return dead && hasRecoveryEffect(item);
-  if (dead) return false;
-  const hp = recoveryAmount(item.hpRecovery, vitals.maxHp);
-  const mp = recoveryAmount(item.mpRecovery, vitals.maxMp);
-  return (hp > 0 && vitals.hp < vitals.maxHp) || (mp > 0 && vitals.mp < vitals.maxMp);
-}
-
 function itemTargetHint(item: Project["database"]["items"][number]): string {
+  if (item.type === "book") return "기술을 배울 파티원을 선택하세요.";
+  if (item.type === "seed") return "능력치를 올릴 파티원을 선택하세요.";
   if (item.scope === "allAllies") return "전체 효과는 사용 가능한 파티원에게만 적용됩니다.";
   if (item.onlyEffectiveOnDeadActors) return "전투불능 대상에게만 사용할 수 있습니다.";
-  return "HP/MP가 이미 가득 찬 대상이나 전투불능 대상은 선택할 수 없습니다.";
-}
-
-function hasRecoveryEffect(item: Project["database"]["items"][number]): boolean {
-  return item.hpRecovery.flat > 0 ||
-    item.hpRecovery.percentMax > 0 ||
-    item.mpRecovery.flat > 0 ||
-    item.mpRecovery.percentMax > 0;
-}
-
-function recoveryAmount(recovery: Project["database"]["items"][number]["hpRecovery"], maxValue: number): number {
-  return Math.max(0, Math.floor(maxValue * recovery.percentMax / 100) + recovery.flat);
+  return "효과를 받을 파티원을 선택하세요.";
 }
 
 function actorLevel(session: PlaySession, actor: ActorRecord): number {
