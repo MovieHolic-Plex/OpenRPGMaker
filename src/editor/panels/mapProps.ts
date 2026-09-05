@@ -3,24 +3,25 @@ import {
   setMapTroopIds, setStartMap, setStartPos, setMapBackground, setMapBgm, setMapBattleBackground, setMapFlags, setMapMinimap,
 } from "@/editor/actions";
 import { appendGroupedTilesetOptions } from "@/editor/tilesetSelectOptions";
-import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
+import { openDatabaseResourcePickerDialog, listDatabaseResourceOptions, type DatabaseResourcePickerKind } from "@/editor/panels/databaseResourcePickerDialog";
 import { editorState } from "@/editor/editorState";
 import { DEFAULT_ENEMY_FACTION_ID, factionName, resolveFactionTable } from "@/project/factions";
 import { SEASONS, TIME_PHASES, type Season, type TimePhase } from "@/project/gameTime";
 import { store } from "@/project/store";
 import type { EncounterTableEntry, FieldSpawnDef, MapBgmSetting } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
+import { showConfirm } from "@/editor/ui/modal";
 import { toast } from "@/util/toast";
 
 type MapPropsTab = "general" | "background" | "bgm" | "battle" | "restrictions" | "encounter" | "spawns" | "minimap";
 
 const TAB_LABELS: Record<MapPropsTab, string> = {
-  general: "일반",
-  background: "배경",
-  bgm: "BGM",
-  battle: "전투",
-  restrictions: "제한",
-  encounter: "인카운터",
+  general: "기본 설정",
+  background: "맵 배경",
+  bgm: "배경 음악",
+  battle: "전투 배경",
+  restrictions: "행동 제한",
+  encounter: "랜덤 전투",
   spawns: "필드 스폰",
   minimap: "미니맵",
 };
@@ -29,12 +30,25 @@ const SECTION_ORDER: readonly MapPropsTab[] = [
   "general", "background", "bgm", "battle", "restrictions", "encounter", "spawns", "minimap",
 ];
 
-/** 2열 그리드에서 한 줄을 통째로 쓰는 섹션 — 인카운터 행(트룹 select+가중치+삭제)이
- *  300px 칼럼에서 뭉개지고, 스폰 JSON·미니맵 프리뷰도 좁게 찍히므로 전폭으로 펼친다. */
-const FULL_ROW_SECTIONS: ReadonlySet<MapPropsTab> = new Set(["encounter", "spawns", "minimap"]);
+const SECTION_DESCRIPTIONS: Record<MapPropsTab, string> = {
+  general: "맵의 이름, 타일 그림판과 크기를 설정합니다.",
+  background: "투명한 타일 뒤에 표시할 그림과 움직임을 설정합니다.",
+  bgm: "이 맵에 들어왔을 때 재생할 음악을 고릅니다.",
+  battle: "이 맵에서 전투가 시작되면 표시할 배경입니다.",
+  restrictions: "체크한 행동을 이 맵에서 제한합니다.",
+  encounter: "걸어 다닐 때 만나는 적 그룹과 출현 조건을 설정합니다.",
+  spawns: "맵 위에 배치된 적의 소속 진영을 설정합니다.",
+  minimap: "플레이 화면에 표시할 작은 지도를 설정합니다.",
+};
 
-/** 마지막으로 고른 섹션 바로가기 — rerender 가 DOM 을 통째로 갈아끼워도
- *  aria-current 표시가 유지되도록 모듈 상태에 둔다. */
+const SECTION_RENDERERS: Record<MapPropsTab, (host: HTMLElement, map: import("@/project/types").GameMap) => void> = {
+  general: renderGeneralTab, background: renderBackgroundTab, bgm: renderBgmTab,
+  battle: renderBattleTab, restrictions: renderRestrictionsTab, encounter: renderEncounterTab,
+  spawns: renderSpawnsTab, minimap: renderMinimapTab,
+};
+const lastChangedControl = new WeakMap<HTMLElement, string>();
+
+/** Current navigation location, reset when opening a map settings window. */
 let currentSection: MapPropsTab | null = null;
 
 export function resetMapPropsTabForTests(): void {
@@ -63,7 +77,7 @@ export function renderMapProps(container: HTMLElement): void {
 
   // 섹션 바로가기 줄 — 구 탭 버튼과 같은 testid 를 유지하므로 기존 테스트·e2e 가 그대로 통한다.
   // 클릭은 다시 그리지 않고 해당 섹션으로 스크롤만 한다(입력 포커스·스크롤 위치 보존).
-  // 내비는 flex 고정 영역이라 스크롤해도 자리에 남는다(스크롤러는 아래 .map-props-body 하나).
+  // 내비는 독립 열이라 스크롤해도 자리에 남는다(본문 스크롤러는 .map-props-body).
   const nav = el("nav", {
     class: "map-props-tabs",
     attrs: { "aria-label": "맵 설정 섹션 바로가기" },
@@ -86,7 +100,10 @@ export function renderMapProps(container: HTMLElement): void {
             if (key === tab) other.setAttribute("aria-current", "location");
             else other.removeAttribute("aria-current");
           }
-          wrapper.querySelector(`[data-testid="${sectionId}"]`)?.scrollIntoView?.();
+          const target = wrapper.querySelector<HTMLElement>(`[data-testid="${sectionId}"]`);
+          if (!target) return;
+          body.scrollTop += target.getBoundingClientRect().top - body.getBoundingClientRect().top - 20;
+          target.querySelector<HTMLElement>("h2")?.focus({ preventScroll: true });
         },
       },
     });
@@ -95,33 +112,52 @@ export function renderMapProps(container: HTMLElement): void {
   }
   wrapper.append(nav);
 
-  // 전 섹션 단일 화면 — 8탭을 오가며 비교하던 불편을 없앤다.
+  // One scroll surface; navigation remains reachable at every section.
   const body = el("div", { class: "map-props-body is-single-view" });
-  const renderers: Record<MapPropsTab, (host: HTMLElement, m: typeof map) => void> = {
-    general: renderGeneralTab,
-    background: renderBackgroundTab,
-    bgm: renderBgmTab,
-    battle: renderBattleTab,
-    restrictions: renderRestrictionsTab,
-    encounter: renderEncounterTab,
-    spawns: renderSpawnsTab,
-    minimap: renderMinimapTab,
-  };
   for (const tab of SECTION_ORDER) {
     const block = el("section", {
-      class: `map-props-section-block${FULL_ROW_SECTIONS.has(tab) ? " is-full-row" : ""}`,
-      attrs: { id: `map-props-section-${tab}` },
-      dataset: { testid: `map-props-section-${tab}` },
+      class: "map-props-section-block",
+      attrs: { id: `map-props-section-${tab}`, "aria-labelledby": `map-props-heading-${tab}` },
+      dataset: { testid: `map-props-section-${tab}`, section: tab, mapId },
     });
-    block.append(el("h2", {
-      class: "map-props-section-title",
-      text: TAB_LABELS[tab],
-    }));
-    renderers[tab](block, map);
+    block.addEventListener("change", (event) => {
+      const id = (event.target as HTMLElement).dataset?.testid;
+      if (id) lastChangedControl.set(block, id);
+    }, true);
+    renderSection(block, tab, map);
     body.append(block);
   }
+  body.addEventListener("scroll", () => {
+    const top = body.getBoundingClientRect().top + 24;
+    let active: MapPropsTab = "general";
+    for (const tab of SECTION_ORDER) {
+      const section = body.querySelector<HTMLElement>(`#map-props-section-${tab}`);
+      if (section && section.getBoundingClientRect().top <= top) active = tab;
+    }
+    if (body.scrollTop + body.clientHeight >= body.scrollHeight - 2) active = "minimap";
+    currentSection = active;
+    for (const [key, button] of navButtons) {
+      if (key === active) button.setAttribute("aria-current", "location");
+      else button.removeAttribute("aria-current");
+    }
+  });
+  if (currentSection === null) navButtons.get("general")?.setAttribute("aria-current", "location");
   wrapper.append(body);
+  const footer = el("p", {
+    class: "map-props-save-hint",
+    text: "설정은 변경 즉시 반영됩니다. 크기와 JSON 편집은 적용 버튼을 눌러 주세요.",
+  });
+  wrapper.append(footer);
   container.append(wrapper);
+}
+
+function renderSection(host: HTMLElement, tab: MapPropsTab, map: import("@/project/types").GameMap): void {
+  clearChildren(host);
+  host.append(el("h2", {
+    class: "map-props-section-title", text: TAB_LABELS[tab],
+    attrs: { id: `map-props-heading-${tab}`, tabindex: "-1" },
+  }), el("p", { class: "map-props-hint", text: SECTION_DESCRIPTIONS[tab] }));
+  SECTION_RENDERERS[tab](host, map);
 }
 
 // ── 일반 탭 ──
@@ -133,7 +169,11 @@ function renderGeneralTab(host: HTMLElement, map: import("@/project/types").Game
     attrs: { type: "text", placeholder: "맵 이름" },
     value: map.name,
     dataset: { testid: "map-name-input" },
-    on: { change: (e: Event) => renameMap(map.id, (e.target as HTMLInputElement).value) },
+    on: { change: (e: Event) => {
+      renameMap(map.id, (e.target as HTMLInputElement).value);
+      const subtitle = host.closest(".event-subdialog-window")?.querySelector(".event-subdialog-header p");
+      if (subtitle) subtitle.textContent = store.getCurrent().maps[map.id]?.name ?? map.name;
+    } },
   })));
 
   // 타일 그림판
@@ -152,12 +192,12 @@ function renderGeneralTab(host: HTMLElement, map: import("@/project/types").Game
 
   // 크기
   const wInput = el("input", {
-    attrs: { type: "number", min: "4", max: "128" },
+    attrs: { type: "number", min: "4", max: "128", "aria-label": "가로 (칸)" },
     value: String(map.width),
     dataset: { testid: "map-width-input" },
   });
   const hInput = el("input", {
-    attrs: { type: "number", min: "4", max: "128" },
+    attrs: { type: "number", min: "4", max: "128", "aria-label": "세로 (칸)" },
     value: String(map.height),
     dataset: { testid: "map-height-input" },
   });
@@ -168,19 +208,41 @@ function renderGeneralTab(host: HTMLElement, map: import("@/project/types").Game
     text: "크기 적용",
     dataset: { testid: "map-resize-apply" },
     on: {
-      click: () => {
-        const w = Math.max(4, Math.min(128, parseInt(wInput.value, 10) || map.width));
-        const h = Math.max(4, Math.min(128, parseInt(hInput.value, 10) || map.height));
+      click: async () => {
+        const w = Number(wInput.value);
+        const h = Number(hInput.value);
+        if (![w, h].every((value) => Number.isInteger(value) && value >= 4 && value <= 128)) {
+          toast("가로와 세로는 4~128칸 사이의 정수로 입력하세요.", "error");
+          return;
+        }
+        const fresh = store.getCurrent().maps[map.id];
+        if (!fresh || (fresh.width === w && fresh.height === h)) return;
+        if ((w < fresh.width || h < fresh.height) && !await showConfirm({
+          title: "맵 크기 줄이기",
+          message: `${fresh.width} × ${fresh.height} → ${w} × ${h}칸으로 줄입니다. 범위 밖 타일은 삭제되고 이벤트와 시작 위치는 안쪽으로 이동합니다.`,
+          confirmLabel: "크기 줄이기", danger: true,
+        })) return;
         resizeMap(map.id, w, h);
+        const resized = store.getCurrent().maps[map.id];
+        if (resized?.width !== w || resized.height !== h) return;
+        toast(`맵 크기를 ${w} × ${h}칸으로 변경했습니다.`, "ok");
       },
     },
   }));
   section.append(fieldRow("크기 (가로 × 세로)", sizeLine));
 
+  section.append(el("p", { class: "map-props-hint", text: "가로·세로 각각 4~128칸. 크기를 줄이면 범위 밖 타일이 삭제됩니다." }));
+
   // 시작 위치
+  const selection = editorState.get().selection;
+  const canSetStart = selection?.mapId === map.id;
+  section.append(el("p", { class: "map-props-hint", text: canSetStart
+    ? `선택한 칸: (${selection.x}, ${selection.y}) — 이 맵을 게임 시작 맵으로 지정합니다.`
+    : "시작 위치를 바꾸려면 창을 닫고 맵에서 칸을 먼저 선택하세요." }));
   section.append(el("button", {
     class: "btn",
     text: "선택 칸을 시작 위치로",
+    attrs: { type: "button", ...(canSetStart ? {} : { disabled: "" }) },
     dataset: { testid: "map-start-pos-button" },
     on: {
       click: () => {
@@ -218,45 +280,42 @@ function renderBackgroundTab(host: HTMLElement, map: import("@/project/types").G
     }
     rerender(host);
   });
-  section.append(fieldRow("배경 사용", enableCheck));
+  const enableRow = el("label", { class: "map-props-check-row" });
+  enableRow.append(enableCheck, el("span", { text: "맵 배경 사용" }));
+  section.append(enableRow);
 
   if (bg) {
-    section.append(fieldRow("이미지 ID", el("input", {
-      attrs: { type: "text", placeholder: "배경 리소스 ID" },
-      value: bg.imageId,
-      dataset: { testid: "map-bg-image" },
-      on: {
-        change: (e: Event) => {
-          setMapBackground(map.id, { ...bg, imageId: (e.target as HTMLInputElement).value });
-        },
-      },
-    })));
+    section.append(mapResourceField({
+      label: "배경 그림", resourceId: bg.imageId, kind: "backdrop", testid: "map-bg-image",
+      dialogTitle: "맵 배경 그림", allowClear: true,
+      onChange: ({ resourceId }) => setMapBackground(map.id, {
+        ...store.getCurrent().maps[map.id]!.background!, imageId: resourceId,
+      }),
+      rerender: () => rerender(host, "map-bg-image-set"),
+    }));
 
     const scrollLine = el("div", { class: "map-props-size-row" });
     const sxInput = el("input", {
-      attrs: { type: "number", min: "-10", max: "10", step: "0.5" },
+      attrs: { type: "number", min: "-10", max: "10", step: "0.5", "aria-label": "가로 스크롤 속도" },
       value: String(bg.scrollX ?? 0),
       dataset: { testid: "map-bg-scroll-x" },
     });
     const syInput = el("input", {
-      attrs: { type: "number", min: "-10", max: "10", step: "0.5" },
+      attrs: { type: "number", min: "-10", max: "10", step: "0.5", "aria-label": "세로 스크롤 속도" },
       value: String(bg.scrollY ?? 0),
       dataset: { testid: "map-bg-scroll-y" },
     });
     scrollLine.append(el("span", { text: "X" }), sxInput, el("span", { text: "Y" }), syInput);
-    scrollLine.append(el("button", {
-      class: "btn btn-sm",
-      text: "적용",
-      on: {
-        click: () => {
-          setMapBackground(map.id, {
-            ...bg,
-            scrollX: parseFloat(sxInput.value) || 0,
-            scrollY: parseFloat(syInput.value) || 0,
-          });
-        },
-      },
-    }));
+    const updateScroll = (key: "scrollX" | "scrollY", input: HTMLInputElement): void => {
+      const value = Number(input.value);
+      if (!Number.isFinite(value) || value < -10 || value > 10) {
+        toast("스크롤 속도는 -10~10 사이로 입력하세요.", "error");
+        return;
+      }
+      setMapBackground(map.id, { ...store.getCurrent().maps[map.id]!.background!, [key]: value });
+    };
+    sxInput.addEventListener("change", () => updateScroll("scrollX", sxInput));
+    syInput.addEventListener("change", () => updateScroll("scrollY", syInput));
     section.append(fieldRow("스크롤 속도", scrollLine));
   }
 
@@ -287,15 +346,11 @@ function renderBgmTab(host: HTMLElement, map: import("@/project/types").GameMap)
   section.append(fieldRow("BGM 모드", modeSelect));
 
   if (mode === "custom") {
-    // 생 텍스트 입력에서 리소스 피커로 바꿨다. 기본 BGM 카탈로그가 281곡이라
-    // 리소스 id 를 외워 타이핑하는 건 실질적으로 불가능하다 — 피커에서 검색·미리듣기로 고른다.
-    // resourcePickerControl 은 같은 testid 의 숨은 텍스트 입력을 유지하므로 기존 e2e 는 그대로 통한다.
-    // 다시 그리기는 모듈 공용 rerender(host) 를 쓴다 — 여기서 const rerender 를 두면
-    // 자기 자신을 재귀 호출하므로 금지(섀도잉 실측).
+    // Shared catalog dialog provides search and audio preview.
     const rerenderBgm = (): void => {
-      rerender(host);
+      rerender(host, "map-bgm-resource-set");
     };
-    section.append(resourcePickerControl({
+    section.append(mapResourceField({
       label: "BGM",
       resourceId: bgm?.resourceId,
       kind: "music",
@@ -303,7 +358,7 @@ function renderBgmTab(host: HTMLElement, map: import("@/project/types").GameMap)
       dialogTitle: "맵 BGM",
       allowClear: true,
       onChange: (result) => {
-        setMapBgm(map.id, { mode: "custom", resourceId: result.resourceId, fadeInMs: bgm?.fadeInMs });
+        setMapBgm(map.id, { mode: "custom", resourceId: result.resourceId, fadeInMs: store.getCurrent().maps[map.id]?.bgm?.fadeInMs });
       },
       rerender: rerenderBgm,
     }));
@@ -313,7 +368,7 @@ function renderBgmTab(host: HTMLElement, map: import("@/project/types").GameMap)
       dataset: { testid: "map-bgm-fadein" },
       on: {
         change: (e: Event) => {
-          setMapBgm(map.id, { mode: "custom", resourceId: bgm?.resourceId, fadeInMs: parseInt((e.target as HTMLInputElement).value, 10) || 0 });
+          setMapBgm(map.id, { mode: "custom", resourceId: store.getCurrent().maps[map.id]?.bgm?.resourceId, fadeInMs: parseInt((e.target as HTMLInputElement).value, 10) || 0 });
         },
       },
     })));
@@ -325,17 +380,12 @@ function renderBgmTab(host: HTMLElement, map: import("@/project/types").GameMap)
 // ── 전투 탭 ──
 function renderBattleTab(host: HTMLElement, map: import("@/project/types").GameMap): void {
   const section = el("div", { class: "panel-section map-props-section" });
-  section.append(fieldRow("전투 배경", el("input", {
-    attrs: { type: "text", placeholder: "전투 배경 리소스 ID (비우면 기본)" },
-    value: map.battleBackground ?? "",
-    dataset: { testid: "map-battle-bg" },
-    on: {
-      change: (e: Event) => {
-        const val = (e.target as HTMLInputElement).value.trim();
-        setMapBattleBackground(map.id, val || null);
-      },
-    },
-  })));
+  section.append(mapResourceField({
+    label: "전투 배경", resourceId: map.battleBackground, kind: "backdrop", testid: "map-battle-bg",
+    dialogTitle: "전투 배경", allowClear: true,
+    onChange: ({ resourceId }) => setMapBattleBackground(map.id, resourceId || null),
+    rerender: () => rerender(host, "map-battle-bg-set"),
+  }));
   section.append(el("p", { class: "map-props-hint", text: "비워두면 타일셋 기본 전투 배경을 사용합니다." }));
   host.append(section);
 }
@@ -356,14 +406,14 @@ function renderRestrictionsTab(host: HTMLElement, map: import("@/project/types")
     return row;
   };
 
-  section.append(makeCheck("세이브 금지", "map-disable-save", Boolean(map.disableSave), (v) => {
-    setMapFlags(map.id, { disableSave: v, disableTeleport: map.disableTeleport, disableEscape: map.disableEscape });
+  section.append(makeCheck("저장 금지", "map-disable-save", Boolean(map.disableSave), (v) => {
+    setMapFlags(map.id, { disableSave: v, disableTeleport: store.getCurrent().maps[map.id]?.disableTeleport, disableEscape: store.getCurrent().maps[map.id]?.disableEscape });
   }));
-  section.append(makeCheck("텔레포트 금지", "map-disable-teleport", Boolean(map.disableTeleport), (v) => {
-    setMapFlags(map.id, { disableSave: map.disableSave, disableTeleport: v, disableEscape: map.disableEscape });
+  section.append(makeCheck("순간 이동 금지", "map-disable-teleport", Boolean(map.disableTeleport), (v) => {
+    setMapFlags(map.id, { disableSave: store.getCurrent().maps[map.id]?.disableSave, disableTeleport: v, disableEscape: store.getCurrent().maps[map.id]?.disableEscape });
   }));
   section.append(makeCheck("도주 금지", "map-disable-escape", Boolean(map.disableEscape), (v) => {
-    setMapFlags(map.id, { disableSave: map.disableSave, disableTeleport: map.disableTeleport, disableEscape: v });
+    setMapFlags(map.id, { disableSave: store.getCurrent().maps[map.id]?.disableSave, disableTeleport: store.getCurrent().maps[map.id]?.disableTeleport, disableEscape: v });
   }));
 
   host.append(section);
@@ -386,14 +436,14 @@ function renderEncounterTab(host: HTMLElement, map: import("@/project/types").Ga
   // ── 인카운트율 ──
   const rateSection = el("div", { class: "panel-section map-props-section" });
   const rateNumber = el("input", {
-    attrs: { type: "number", min: "0", max: "100", step: "1" },
+    attrs: { type: "number", min: "0", max: "100", step: "1", "aria-label": "출현 빈도" },
     value: String(rate),
     dataset: { testid: "map-encounter-rate-input" },
   }) as HTMLInputElement;
   const rateSlider = el("input", {
     class: "map-encounter-slider",
-    attrs: { type: "range", min: "0", max: "40", step: "1", "aria-label": "인카운트율" },
-    value: String(Math.min(40, rate)),
+    attrs: { type: "range", min: "0", max: "100", step: "1", "aria-label": "출현 빈도" },
+    value: String(rate),
     dataset: { testid: "map-encounter-rate-slider" },
   }) as HTMLInputElement;
   const rateHint = el("p", { class: "map-props-hint" });
@@ -406,7 +456,7 @@ function renderEncounterTab(host: HTMLElement, map: import("@/project/types").Ga
   const applyRate = (value: number): void => {
     const clamped = Math.max(0, Math.min(100, Math.trunc(value)));
     rateNumber.value = String(clamped);
-    rateSlider.value = String(Math.min(40, clamped));
+    rateSlider.value = String(clamped);
     rateHint.textContent = describeRate(clamped);
     setMapEncounterRate(map.id, clamped);
   };
@@ -415,7 +465,7 @@ function renderEncounterTab(host: HTMLElement, map: import("@/project/types").Ga
 
   const rateRow = el("div", { class: "map-encounter-rate-row" });
   rateRow.append(rateSlider, rateNumber);
-  rateSection.append(fieldRow("인카운트율", rateRow));
+  rateSection.append(fieldRow("출현 빈도", rateRow));
   rateSection.append(rateHint);
   host.append(rateSection);
 
@@ -456,7 +506,7 @@ function renderEncounterTab(host: HTMLElement, map: import("@/project/types").Ga
   // ── 인카운터 테이블 ──
   const tableSection = el("div", { class: "panel-section map-props-section" });
   const heading = el("div", { class: "map-encounter-table-head" });
-  heading.append(el("label", { class: "map-encounter-heading", text: "인카운터 테이블 (확률·조건)" }));
+  heading.append(el("label", { class: "map-encounter-heading", text: "출현 규칙 (가중치·조건)" }));
   heading.append(el("button", {
     class: "btn btn-sm",
     text: "+ 행 추가",
@@ -498,19 +548,43 @@ function commitTable(mapId: string, entries: EncounterTableEntry[], host: HTMLEl
   rerender(host);
 }
 
-// 섹션 블록(host)은 .map-props-dialog > .map-props-body 안에 있으므로
-// closest 로 다이얼로그를 찾아 그 부모(컨테이너)에 다시 그린다.
-// 다시 그리기 전 스크롤 위치를 저장했다가 복구한다 — clearChildren 으로 바디를
-// 통째로 비우면 스크롤이 0으로 돌아가 토글 한 번에 맨 위로 튕기던 후퇴를 막는다.
-function rerender(host: HTMLElement): void {
+// Refresh only the changed section: unrelated size/JSON drafts and focus stay intact.
+function rerender(host: HTMLElement, preferredFocusId?: string): void {
+  const tab = host.dataset.section as MapPropsTab;
+  const map = store.getCurrent().maps[host.dataset.mapId ?? ""];
   const dialog = host.closest(".map-props-dialog");
-  const container = dialog?.parentElement;
   const scroller = dialog?.querySelector(".map-props-body");
-  if (!container || !scroller) return;
+  if (!map || !scroller || !SECTION_RENDERERS[tab]) return;
   const scrollTop = scroller.scrollTop;
-  renderMapProps(container as HTMLElement);
-  const nextScroller = (container as HTMLElement).querySelector(".map-props-dialog .map-props-body");
-  if (nextScroller) nextScroller.scrollTop = scrollTop;
+  const active = typeof document !== "undefined" ? document.activeElement as HTMLElement | null : null;
+  const focusId = preferredFocusId ?? active?.dataset?.customSelectFor ?? active?.dataset?.testid ?? lastChangedControl.get(host);
+  const drafts = Array.from(host.querySelectorAll("textarea"))
+    .filter((input) => input.value !== input.defaultValue)
+    .map((input) => ({ id: input.dataset.testid, value: input.value }));
+  const detailsKey = (details: HTMLDetailsElement): string =>
+    details.querySelector<HTMLElement>("summary")?.dataset.testid ?? details.className;
+  const openDetails = new Map(Array.from(host.querySelectorAll("details"))
+    .map((details) => [detailsKey(details), details.open]));
+  renderSection(host, tab, map);
+  Array.from(host.querySelectorAll("details")).forEach((details) => {
+    const wasOpen = openDetails.get(detailsKey(details));
+    if (wasOpen !== undefined) details.open = wasOpen;
+  });
+  for (const input of Array.from(host.querySelectorAll("textarea"))) {
+    const draft = drafts.find((item) => item.id === input.dataset.testid);
+    if (draft) input.value = draft.value;
+  }
+  scroller.scrollTop = scrollTop;
+  // Custom selects are enhanced by the subdialog's MutationObserver after rendering.
+  queueMicrotask(() => {
+    if (!host.isConnected) return;
+    const controls = Array.from(host.querySelectorAll<HTMLElement>("[data-testid], [data-custom-select-for]"));
+    const target = controls.find((node) => focusId && node.dataset.customSelectFor === focusId)
+      ?? controls.find((node) => focusId && node.dataset.testid === focusId)
+      ?? host.querySelector<HTMLElement>("h2");
+    target?.focus?.({ preventScroll: true });
+    scroller.scrollTop = scrollTop;
+  });
 }
 
 function encounterRow(
@@ -642,7 +716,7 @@ function encounterRow(
     const rectRow = el("div", { class: "map-encounter-rect-row" });
     const rectField = (key: "x" | "y" | "w" | "h", label: string, max: number): void => {
       const input = el("input", {
-        attrs: { type: "number", min: key === "w" || key === "h" ? "1" : "0", max: String(max), "aria-label": label },
+        attrs: { type: "number", min: key === "w" || key === "h" ? "1" : "0", max: String(max), "aria-label": label, id: `map-encounter-region-${key}-${index}` },
         value: String(region[key]),
         dataset: { testid: `map-encounter-region-${key}-${index}` },
         on: {
@@ -654,7 +728,7 @@ function encounterRow(
         },
       });
       const cell = el("div", { class: "map-encounter-rect-cell" });
-      cell.append(el("label", { text: label }), input);
+      cell.append(el("label", { text: label, attrs: { for: input.dataset.testid ?? "" } }), input);
       rectRow.append(cell);
     };
     rectField("x", "X", map.width - 1);
@@ -681,7 +755,7 @@ function selectField(
   onChange: (value: string) => void
 ): HTMLElement {
   const select = el("select", {
-    attrs: { "aria-label": label },
+    attrs: { "aria-label": label, id: testid },
     dataset: { testid },
     on: { change: (e: Event) => onChange((e.target as HTMLSelectElement).value) },
   }) as HTMLSelectElement;
@@ -690,7 +764,7 @@ function selectField(
   }
   select.value = value;
   const cell = el("div", { class: "map-encounter-cond-cell" });
-  cell.append(el("label", { text: label }), select);
+  cell.append(el("label", { text: label, attrs: { for: testid } }), select);
   return cell;
 }
 
@@ -701,7 +775,7 @@ function numberField(
   onChange: (value: number | undefined) => void
 ): HTMLElement {
   const input = el("input", {
-    attrs: { type: "number", min: "0", step: "1", placeholder: "—", "aria-label": label },
+    attrs: { type: "number", min: "0", step: "1", placeholder: "—", "aria-label": label, id: testid },
     value: value === undefined ? "" : String(value),
     dataset: { testid },
     on: {
@@ -714,7 +788,7 @@ function numberField(
     },
   });
   const cell = el("div", { class: "map-encounter-cond-cell" });
-  cell.append(el("label", { text: label }), input);
+  cell.append(el("label", { text: label, attrs: { for: input.dataset.testid ?? "" } }), input);
   return cell;
 }
 
@@ -740,7 +814,7 @@ function renderMinimapTab(host: HTMLElement, map: import("@/project/types").Game
   const enableRow = el("label", { class: "map-props-check-row" });
   enableRow.append(enableCheck, el("span", { text: "이 맵에서 미니맵 사용" }));
   section.append(enableRow);
-  section.append(el("p", { class: "map-props-hint", text: enabled ? "플레이 중 이 맵에 진입하면 미니맵이 뜹니다. M 키로 켜고 끌 수 있습니다." : "체크하면 플레이 중 이 맵에서 미니맵이 뜹니다. (기존 맵은 기본 off)" }));
+  section.append(el("p", { class: "map-props-hint", text: enabled ? "플레이 중 이 맵에 진입하면 미니맵이 뜹니다. M 키로 켜고 끌 수 있습니다." : "체크하면 플레이 중 이 맵에서 미니맵이 표시됩니다." }));
 
   if (cfg?.enabled) {
     const corner = (cfg.corner ?? "topRight") as NonNullable<import("@/project/types").MapMinimapSetting["corner"]>;
@@ -770,7 +844,7 @@ function renderMinimapTab(host: HTMLElement, map: import("@/project/types").Game
       dataset: { testid: "map-minimap-scale" },
     }) as HTMLInputElement;
     const num = el("input", {
-      attrs: { type: "number", min: "8", max: "35", step: "1" },
+      attrs: { type: "number", min: "8", max: "35", step: "1", "aria-label": "미니맵 크기 (%)" },
       value: String(Math.round(effective * 100)),
       dataset: { testid: "map-minimap-scale-number" },
     }) as HTMLInputElement;
@@ -820,11 +894,9 @@ function renderMinimapTab(host: HTMLElement, map: import("@/project/types").Game
     evRow.append(evCheck, el("span", { text: "이벤트 마커 표시" }));
     section.append(evRow);
 
-    section.append(el("p", { class: "map-props-hint", text: "안개(fog)는 v1에서 자리만 두고, 추후 탐험형 미니맵으로 확장합니다." }));
-
-    // 미리보기 — drawTransferMapPreview를 그대로 재사용 (96px 박스).
+    // 참고 이미지도 제한된 상자에 맞춰 그린다. 원본 맵 크기의 CSS 높이를 그대로 쓰지 않는다.
     const previewWrap = el("div", { class: "map-minimap-preview", dataset: { testid: "map-minimap-preview" } });
-    previewWrap.append(el("div", { class: "map-minimap-preview-label", text: "미리보기" }));
+    previewWrap.append(el("div", { class: "map-minimap-preview-label", text: "맵 참고 이미지 · 실제 미니맵 크기와 마커는 플레이에서 확인하세요" }));
     const canvas = document.createElement("canvas");
     canvas.dataset.testid = "map-minimap-preview-canvas";
     canvas.className = "map-minimap-preview-canvas";
@@ -842,7 +914,7 @@ function renderMinimapTab(host: HTMLElement, map: import("@/project/types").Game
         const selection = { x: -1, y: -1, zoom };
         // transferMapPreview가 이벤트를 항상 그리므로, showEvents=false일 땐 잠시 필터하려면
         // 별도 분기 없이 그대로 두되 문구로만 구분 — v1 스코프에선 썸네일이니 허용.
-        void drawTransferMapPreview({ canvas, project, mapId: map.id, selection, isCurrent: () => canvas.isConnected }).catch(() => {
+        void drawTransferMapPreview({ canvas, project, mapId: map.id, selection, fitDisplay: { maxWidth: 240, maxHeight: 180 }, isCurrent: () => canvas.isConnected }).catch(() => {
           const ctx = canvas.getContext("2d");
           if (!ctx) return;
           ctx.fillStyle = "#0f1217";
@@ -874,7 +946,7 @@ function renderSpawnsTab(host: HTMLElement, map: import("@/project/types").GameM
   if (spawns.length === 0) {
     section.append(el("p", {
       class: "map-props-hint",
-      text: "이 맵에는 필드 스폰이 없습니다. 아래 JSON으로 추가하거나 맵 툴로 배치하세요.",
+      text: "아직 배치된 적이 없습니다. 적을 배치하면 이곳에서 진영을 바꿀 수 있습니다.",
       dataset: { testid: "map-spawn-empty" },
     }));
   } else {
@@ -883,7 +955,7 @@ function renderSpawnsTab(host: HTMLElement, map: import("@/project/types").GameM
     }
     section.append(el("p", {
       class: "map-props-hint",
-      text: "상속(기본값)은 스폰에 값을 저장하지 않는다는 뜻입니다 — 몬스터 레코드의 소속 진영이 적용되고, 그것도 없으면 예약 진영 적(enemy)으로 싸웁니다.",
+      text: "상속(기본값)은 몬스터의 소속 진영을 따릅니다. 몬스터에도 진영이 없으면 적 진영으로 적용됩니다.",
       dataset: { testid: "map-spawn-inherit-hint" },
     }));
   }
@@ -978,9 +1050,42 @@ function spawnFactionRow(
 
 // ── 헬퍼 ──
 
+function mapResourceField(input: {
+  label: string; resourceId: string | undefined; kind: DatabaseResourcePickerKind;
+  testid: string; dialogTitle: string; allowClear: boolean;
+  onChange: (result: { resourceId: string }) => void; rerender: () => void;
+}): HTMLElement {
+  const resource = listDatabaseResourceOptions(input.kind, store.getCurrent()).find((item) => item.id === input.resourceId);
+  const row = el("div", { class: "map-props-resource" });
+  row.append(el("span", {
+    class: "map-props-resource-name",
+    text: resource?.name ?? (input.resourceId ? `현재 리소스: ${input.resourceId}` : "선택한 리소스 없음"),
+    dataset: { testid: input.testid },
+  }), el("button", {
+    class: "btn", text: input.kind === "music" ? "곡 선택" : "그림 선택",
+    attrs: { type: "button", "aria-label": `${input.label} 선택` },
+    dataset: { testid: `${input.testid}-set` },
+    on: { click: () => openDatabaseResourcePickerDialog({
+      kind: input.kind, title: input.dialogTitle, currentId: input.resourceId,
+      allowClear: input.allowClear, testidPrefix: `${input.testid}-dialog`,
+      onConfirm: (result) => { input.onChange(result); input.rerender(); },
+    }) },
+  }));
+  return fieldRow(input.label, row);
+}
+
 function fieldRow(label: string, control: HTMLElement): HTMLElement {
   const row = el("div", { class: "field map-props-field" });
-  row.append(el("label", { text: label }));
+  const id = control.dataset.testid;
+  const isInput = ["INPUT", "SELECT", "TEXTAREA"].includes(control.tagName.toUpperCase());
+  if (isInput && id) {
+    control.setAttribute("id", id);
+    row.append(el("label", { text: label, attrs: { for: id } }));
+  } else {
+    row.setAttribute("role", "group");
+    row.setAttribute("aria-label", label);
+    row.append(el("span", { class: "map-props-field-label", text: label }));
+  }
   row.append(control);
   return row;
 }
@@ -995,9 +1100,10 @@ function jsonArrayField(
   row.append(el("label", { text: label }));
   const textarea = el("textarea", {
     value: JSON.stringify(value, null, 2),
-    attrs: { rows: "6", spellcheck: "false" },
+    attrs: { rows: "6", spellcheck: "false", "aria-label": label },
     dataset: { testid },
   }) as HTMLTextAreaElement;
+  textarea.defaultValue = JSON.stringify(value, null, 2);
   const button = el("button", {
     class: "btn btn-sm",
     text: "적용",
@@ -1007,6 +1113,7 @@ function jsonArrayField(
         try {
           const parsed = JSON.parse(textarea.value) as unknown;
           if (!Array.isArray(parsed)) throw new Error("배열 JSON이 필요합니다.");
+          textarea.defaultValue = textarea.value;
           onApply(parsed);
           toast("적용되었습니다.", "ok");
         } catch (error) {
