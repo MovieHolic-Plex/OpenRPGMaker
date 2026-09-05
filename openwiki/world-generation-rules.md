@@ -102,3 +102,5 @@ npx vitest run --configLoader bundle test/worldGenRules.test.ts test/villageBuil
 숫자 입력의 undo 병합 키는 그룹과 필드별로 나뉜다. 방향·모양·길 선택 및 낱말 규칙 토글/지형 변경은 각각 이산 스냅샷이다. 규칙 토글에는 `<규칙 이름> 규칙 쓰기` 접근성 이름을 제공한다. 탭 재진입은 예시 섹션과 미리보기 문장을 초기화하며, 사이드바 사용자 규칙 개수에서 내장 규칙 덮어쓰기는 제외한다. 최신 타일셋 폴더와 세계관 내비게이션은 유지한다. 실제 undo 계약은 `test/databaseWorldGenView.test.ts`, 브라우저 증거는 `test/e2e/worldgen-review-recovery.spec.ts`와 `verify-shots/worldgen-review-recovery/`에 있다.
 
 미리보기 나무 수는 산포 성공 수가 아닌 엔진 헬퍼의 **목표** 수로 표시한다. 기본 타일셋이 없으면 빈 캔버스 대신 상태 안내를 표시하며, 이미지가 늦게 로드되어도 분리된 캔버스에는 그리지 않는다. 시공기·숲 알고리즘은 이 복구에서 변경하지 않는다.
+
+브라우저 검증은 `recovered-database-harness.ts`의 전용 Vite 페이지에서 실제 `openDatabaseModal`과 출하 CSS를 사용한다. dev-project factory로 원격 저장을 끄며, 정본 직렬화·역직렬화를 실행한다. 전체 앱 부팅의 호스트 네트워크 실패와 성공한 2개 브라우저 계약의 구분은 `verify-shots/recovery-database-20260905.md`에 기록했다.

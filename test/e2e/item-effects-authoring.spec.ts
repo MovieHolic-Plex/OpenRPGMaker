@@ -1,13 +1,13 @@
 import { expect, test } from "@playwright/test";
-import { exportedProject, openDatabase, switchDatabaseTab } from "./oprn-database-helpers";
+import { switchDatabaseTab } from "./oprn-database-helpers";
+import { openRecoveredDatabase, recoveredDatabaseExport } from "./recovered-database-harness";
 
-// Temporary freshProject data exercises editor controls only; this test never saves authored content remotely.
+// Temporary dev-factory data exercises editor controls only; this test never saves authored content remotely.
 test("item state, animation and care controls persist across tab changes and export", async ({ page }) => {
   test.setTimeout(240_000);
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.setViewportSize({ width: 1600, height: 1000 });
-  await page.goto("/?freshProject=1");
-  await openDatabase(page);
+  await openRecoveredDatabase(page, String(test.info().project.use.baseURL));
   const items = { label: "Items", slug: "items", testId: "db-tab-items" };
   await switchDatabaseTab(page, items);
   await page.getByTestId("db-add-record").click();
@@ -36,7 +36,7 @@ test("item state, animation and care controls persist across tab changes and exp
   await expect(page.getByTestId("db-field-item-care-kind")).toHaveValue("feed");
   await expect(page.getByTestId("db-field-item-care-friendship")).toHaveValue("8");
   await expect(page.getByTestId("db-field-item-care-exp")).toHaveValue("20");
-  const project = await exportedProject(page);
+  const project = await recoveredDatabaseExport(page);
   expect(project.database.items.find((item) => item.name === "QA 상태와 돌봄")).toMatchObject({
     stateEffects: [{ stateId, chance: 75, operation: "add" }],
     animationId,
