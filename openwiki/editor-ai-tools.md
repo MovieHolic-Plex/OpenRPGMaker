@@ -1,5 +1,15 @@
 # Editor AI Tools & Vocabulary
 
+## 퀘스트 입력과 완주 증거 계약 (2026-09-05)
+
+`create_quest`는 `QuestDef`의 단계 정의와 이벤트/플래그를 만들며 graph를 만들지 않는다. `questToolSchemas.ts`가 giver/target의 `{mapId,eventId}` 또는 `{create:{mapId,x,y,name}}`, collect의 `itemId/count/sources`, kill의 `troopId/at`, reach의 `mapId/x/y`를 모델 스키마에 모두 노출한다. 공통 runner의 검사는 얕으므로 `parseQuestDef`가 실제 kind별 중첩 구조를 컴파일 전에 검증한다. 오류에는 `def.steps[0].at.mapId` 같은 경로와 올바른 형태를 싣는다. provider용 키 합집합 때문에 공통 좌표 정규화가 reach/talk에도 `at`를 합성할 수 있어, 단계 파서는 해당 kind의 필드만 검증한다.
+
+`define_quest.completesWhen`은 이벤트용 `CONDITION_SCHEMA`와 다르다. **switch/variable/storyFlag 3종**과 `{all:[조건,...]}`만 모델에 노출한다. gold/item/selfSwitch 또는 `{kind:"all",conditions:[...]}`는 지원하지 않는다. 아이템 획득이나 전투 결과를 조건으로 쓰려면 이벤트가 switch/variable에 기록한 값을 참조한다. 같은 ID의 단계 정의를 graph로 교체하는 호출은 `quest-kind-conflict`로 거부한다. 성공을 만들기 위해 원래 단계 메타를 지울 수 없다.
+
+`verify_quest`는 **선언된 graph 노드만** 검사한다. 미선언 목표의 완성도나 전체 게임 완주를 뜻하지 않는다. walkthrough에 `manualHints` 또는 debug `set` 단계가 있으면 read 도구 실행은 정상이어도 `data.ok=false`, `verificationStatus:"manual-required"`이며 요약은 `미검증`이다. `simulationOk`는 디버그 대체를 포함한 시뮬레이션 결과이고, `verifiedNodeIds`는 완주 증거가 있는 노드 목록이다. `workItemOutcome.verifyAuthoredQuestsPlayable`도 동일하게 수동/강제 세팅을 완료 근거에서 제외한다. 단계형 퀘스트의 자동 완주 검증은 아직 지원하지 않으며, 기존 정의를 보존한 실제 플레이 검증이 필요하다고 안내한다. 같은 ID의 `define_quest` 재등록을 권하지 않는다.
+
+회귀: `test/questToolContract.test.ts`(중첩 입력·실제 예시·overwrite 거부), `test/questGraph.test.ts`(전투·맵 이동의 debug 대체는 미검증), `test/bossPhaseQuestOutcomeGate.test.ts`(직접 완료 게이트). Provider 계약은 `test/toolSchemaProviderCompat.test.ts`.
+
 > **Encoding note:** Some Korean descriptive text has EUC-KR→UTF-8 mojibake from the original source commit. English terms, file paths, and code references are intact. For accurate Korean, consult the referenced source files. Partial automated restoration applied; remaining garbled CJK is irreversibly corrupted.
 
 Soft-confirm vocabulary, region task routing, AI visual polish, dock modes, tool exposure caps, and MCP bridge.
