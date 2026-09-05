@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **47쪽 / 1535KB / 약 436,823 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **47쪽 / 1536KB / 약 437,031 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -21,7 +21,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-event-authoring.md` | 118KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 564 | ~34,433 |
 | `openwiki/editor-pre-edit-routing.md` | 69KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 197 | ~19,760 |
 | `openwiki/runtime-battle.md` | 118KB | 31KB | 358 | ~33,888 |
-| `openwiki/runtime-project-schema.md` | 58KB | 42KB | 207 | ~15,542 |
+| `openwiki/runtime-project-schema.md` | 58KB | 42KB | 211 | ~15,750 |
 | `openwiki/runtime-sessions.md` | 60KB | 45KB | 168 | ~16,122 |
 | `openwiki/testing.md` | 106KB | 45KB | 707 | ~30,073 |
 
@@ -555,7 +555,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L156` 가구 밀기 애니메이션 (2026-09-05)
 - `L165` Recovered head emotes (2026-09-05)
 
-### `openwiki/runtime-project-schema.md` — 58KB · 207줄 · ~15,542 토큰 · 통째읽기 잘림
+### `openwiki/runtime-project-schema.md` — 58KB · 211줄 · ~15,750 토큰 · 통째읽기 잘림
 
 - `L3` 기본 카탈로그 삭제 보존 (2026-09-05)
 - `L7` 전투 페이지 중복 ID 복구와 슬롯 참조 (2026-09-05)
@@ -571,6 +571,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L192` 성장 트리 선택 확장 (2026-09-05)
 - `L198` 마을 설계서 (2026-09-05)
 - `L204` 공포 게임 제작 기능 (2026-09-05)
+  - `L208` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
 
 ### `openwiki/runtime-sessions.md` — 60KB · 168줄 · ~16,122 토큰 · 통째읽기 잘림
 

@@ -1,3 +1,4 @@
+import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
 import {
   adjustEffectiveFactionStance,
   setEffectiveFactionStance,
@@ -407,7 +408,7 @@ export function executeCommand(
       return pause("text", {
         kind: "text",
         speaker: command.speaker,
-        body: command.body,
+        body: textBodyOf(command),
         face: state.currentFace,
         settings: state.session.messageWindowSettings,
         autoAdvance: command.autoAdvance === true,
