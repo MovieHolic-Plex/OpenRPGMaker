@@ -236,3 +236,5 @@ place_npc는 NPC의 name을 페이지 제목과 분리해 저장한다. 이름 �
 `set_project_settings({startActorIds})`는 system 메타데이터와 `project.session.partyActorIds` 시작 상태를 함께 갱신한다. 런타임 `startSession` 및 모험 완료 검사는 `startStateOf(project)`를 정본으로 읽는다. system만 4인으로 바꿔도 실제 플레이가 1인으로 남던 오류를 저장/재로드/새 세션 테스트로 보호한다.
 
 NPC 고수준 commands의 `text.lines`는 실제 줄바꿈을 포함한 `text.body`로 정규화한다. 저수준 text 명령의 body 누락은 거절한다. 맵 충돌 검사는 스프라이트가 있는 NPC/상자의 막힌 바닥을 검사하며, 타일에 부착된 투명 조사 이벤트는 인접 접근을 허용한다.
+
+선언된 adventure 계약의 도구는 `adventureToolNames`에서 실제 호출 스키마로 승격되어 첫 실행부터 노출된다. 안내문에서 언급만 하고 도메인 쿼터에 숨기는 것을 금지한다. 조건 kind 누락 오류는 실행 가능한 selfSwitch/switch 예시를 반환한다.

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { adventureCompletionProblems } from "@/ai/adventureCompletion";
+import { adventureCompletionProblems, adventureToolNames } from "@/ai/adventureCompletion";
 import { createBlankProject } from "@/project/defaults";
 import { roleCapabilities } from "@/project/tileRoles";
 import { runTool } from "@/editor/tools";
@@ -27,6 +27,19 @@ function connectedAdventure() {
 }
 
 describe("declared adventure completion", () => {
+  it("exposes every promised tool as a real registered schema before authoring", async () => {
+    const { getTool } = await import("@/editor/tools");
+    expect(adventureToolNames(undefined)).toEqual([]);
+    for (const name of adventureToolNames(required)) expect(getTool(name), name).toBeDefined();
+    let names: string[] = [];
+    const session = new AssistantSession(createBlankProject(), {
+      config: { ...defaultAiConfig(), agentMode: "chat", model: "test", liteModel: "test", apiKey: "test", maxToolCalls: 1 },
+      declareIntent: fixedDeclarer({ mode: "modify", adventure: required }),
+      chat: async (_config, request) => { names = request.tools?.map(t => t.function.name) ?? [];return { message: { role: "assistant", content: "확인 중" }, finishReason: "stop" }; },
+    });
+    await session.sendUserMessage("모험 시작 구성을 만들어줘");
+    expect(names).toEqual(expect.arrayContaining(adventureToolNames(required)));
+  });
   it("does not impose a genre contract on an unrelated edit", () => {
     expect(adventureCompletionProblems(createBlankProject(), undefined)).toEqual([]);
   });

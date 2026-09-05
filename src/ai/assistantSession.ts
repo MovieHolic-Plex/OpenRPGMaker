@@ -1,4 +1,4 @@
-import { adventureCompletionProblems, ADVENTURE_AUTHORING_GUIDE, type AdventureRequirements } from "./adventureCompletion";
+import { adventureToolNames, adventureCompletionProblems, ADVENTURE_AUTHORING_GUIDE, type AdventureRequirements } from "./adventureCompletion";
 // ai/assistantSession.ts
 // 어시스턴트 세션: user msg → LLM → tool_calls → runTool(dryRun 누적) → tool 메시지 → … → 최종 응답.
 // - 쓰기 툴은 로컬 draft(ctx.project)에 누적되어 연쇄 툴콜이 이전 결과를 본다(store는 건드리지 않음).
@@ -3321,6 +3321,7 @@ export class AssistantSession {
         [
           ...mentioned,
           ...declared,
+          ...toolSchemasForNames(adventureToolNames(this.adventureRequirements)),
           ...toolSchemasForNames(this.readEvidence.requiredReadTools()),
           ...planRequired,
           ...questPersist,

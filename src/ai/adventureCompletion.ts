@@ -12,6 +12,17 @@ export interface AdventureRequirements {
   battle: boolean;
 }
 
+/** Tools promised by the declared contract must be callable before the first write. */
+export function adventureToolNames(required: AdventureRequirements | undefined): string[] {
+  if (!required) return [];
+  return ["get_project_summary", "get_database_records", "find_events", "list_resources", "show_map_region", "upsert_event", "upsert_item", "upsert_equipment",
+    ...(required.village ? ["author_house"] : []),
+    ...(required.dungeon ? ["list_dungeon_room_themes", "run_dungeon_room_pipeline", "create_transfer_pair", "place_chest"] : []),
+    ...(required.party ? ["set_project_settings"] : []),
+    ...(required.battle ? ["upsert_enemy", "upsert_troop", "set_encounter_table"] : []),
+  ];
+}
+
 export const ADVENTURE_AUTHORING_GUIDE = `요청한 모험의 완료 조건은 실제 플레이 연결이다. 먼저 기존 맵·DB를 조회한다.
 마을은 author_village/author_house 등으로 건물과 길을 실제 시공한다. 잔디+흙길+사람은 마을 완성이 아니다.
 던전 탐험을 요청했다면 list_dungeon_room_themes 조회 후 run_dungeon_room_pipeline({mapId,name,theme:"stone",hazard:true})로 별도 동굴을 먼저 시공한다. 잔디 맵에 주택 벽 한 줄을 두는 것은 동굴이 아니다. 기존 맵의 무단 교체는 금지한다. 생성 결과의 통행 칸을 조회한 뒤 보물·적을 배치하고 create_transfer_pair로 왕복 연결하고 입구의 동굴/문/계단 외형을 조회해 사용한다. 사람 그림을 관문으로 쓰지 않는다.
