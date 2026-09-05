@@ -733,6 +733,9 @@ const upsertItem: ToolDefinition = {
     const existing = typeof itemPatch?.id === "string"
       ? draft.database.items.find((item) => item.id === itemPatch.id)
       : undefined;
+    if (!existing && ["weapon", "shield", "body", "head", "accessory"].includes(String(itemPatch?.type))) {
+      throw new ToolError("착용 장비는 upsert_equipment로 등록하세요. items의 레거시 장비 종류는 실제 착용 장비가 아닙니다. 기존 레거시 아이템 수정만 허용합니다.", { code: "legacy-equipment-item" });
+    }
     const capturePatch = itemPatch?.captureProfile;
     const nestedPatch = existing?.captureProfile && capturePatch && typeof capturePatch === "object" && !Array.isArray(capturePatch)
       ? { ...itemPatch, captureProfile: { ...existing.captureProfile, ...capturePatch as Record<string, unknown> } }

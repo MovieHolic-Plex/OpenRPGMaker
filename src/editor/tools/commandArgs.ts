@@ -91,6 +91,9 @@ function collectKindShapeFailures(label: string, value: unknown): string[] {
       failures.push(`${path}.kind: 기대 형식 string, 실제 타입 ${describeValue(raw.kind)}`);
       continue;
     }
+    if (raw.kind === "text" && typeof raw.body === "string" && /\\n(?!\[)/u.test(raw.body)) {
+      failures.push(`${path}.body: 문자형 역슬래시+n 대신 실제 줄바꿈을 넣으세요. 배우 이름 제어문자 \\n[번호]는 그대로 사용할 수 있습니다.`);
+    }
     failures.push(...nestedKindShapeFailures(path, raw));
   }
   return failures;

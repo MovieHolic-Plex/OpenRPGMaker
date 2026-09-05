@@ -491,7 +491,7 @@ function findNearbySimilarNpc(
   let bestDist = Infinity;
   for (const event of map.events) {
     const pageName = event.pages?.[0]?.name?.trim() ?? "";
-    const eventName = pageName || event.id;
+    const eventName = event.name?.trim() || pageName || event.id;
     const hay = eventName.toLowerCase().replace(/\s+/g, "");
     // 상점/상인/주인 등 역할 유사 또는 부분 일치
     const roleSimilar =
@@ -548,7 +548,8 @@ const placeNpc: ToolDefinition = {
       throw new ToolError(`NPC 위치가 맵 밖입니다: (${requestedX}, ${requestedY})`, { code: "npc-out-of-bounds", mapId: map.id, x: requestedX, y: requestedY });
     }
     // 에이전틱 편의: 통행 불가 칸을 지정하면 실패 대신 근처(반경 3) 통행 가능 칸으로 자동 착지.
-    const landing = nearestPassableCell(draft, map, requestedX, requestedY, 3, explicitId);
+    const existingNpc = explicitId ? map.events.find(e => e.id === explicitId) : findNearbySimilarNpc(map, requestedX, requestedY, name, 2);
+    const landing = existingNpc ? { x: existingNpc.x, y: existingNpc.y } : nearestPassableCell(draft, map, requestedX, requestedY, 3, explicitId);
     if (!landing) {
       throw new ToolError(
         `NPC를 놓을 통행 가능 칸이 없습니다: (${requestedX}, ${requestedY}) 주변 반경 3칸까지 전부 통행 불가입니다. get_map_region으로 지형을 확인하세요.`,
@@ -566,9 +567,9 @@ const placeNpc: ToolDefinition = {
     });
     // 근접 유사 NPC: 상점 역할이면 id가 달라도 기존 이벤트로 합친다(상점 주인+상인 thrash).
     // 일반 NPC는 id 생략일 때만 병합 — 명시 id 2개는 의도적 복수 배치.
-    const similar = findNearbySimilarNpc(map, x, y, name, 2);
+    const similar = existingNpc ?? findNearbySimilarNpc(map, x, y, name, 2);
     const shopRole = isShopRoleNpcName(name);
-    const mergeSimilar = Boolean(similar) && (shopRole || !explicitId);
+    const mergeSimilar = Boolean(similar) && (similar?.id === explicitId || shopRole || !explicitId);
     const id = mergeSimilar ? similar!.id : (explicitId ?? genId("ev_npc"));
     const reused = mergeSimilar;
     const movement = (args.movement as string | undefined) === "random" ? WANDER : PASSIVE;
@@ -593,6 +594,7 @@ const placeNpc: ToolDefinition = {
     } else {
       event = { id, x, y, trigger: { kind: "action" }, commands: [], pages };
     }
+    event.name = name;
     const requestedCharacterId = typeof args.characterId === "string" && args.characterId.trim()
       ? args.characterId.trim()
       : undefined;

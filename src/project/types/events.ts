@@ -549,6 +549,8 @@ export interface EventDraftMeta {
 
 export interface GameEvent {
   id: string;
+  /** Stable authored display identity, independent of state page titles. */
+  name?: string;
   /** Opt-in relationship identity for friendship/gifts (shared across multi-map copies). Empty/omit = no social self-key. */
   characterId?: string;
   x: number;

@@ -468,3 +468,7 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 ## 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
 
 `TurnResult.appliedCalls`는 같은 사용자 목표에서 이미 저장한 마일스톤 호출이며, `proposedCalls`와 함께 완료 집계에만 사용한다. 재적용에는 `proposedCalls`만 사용한다. 드라이버의 합성 계속은 원장을 보존하고 새 사용자 메시지만 초기화한다. recap·질문 모드·맵별 밑그림 표시를 유지하며 수동 재시도에도 원래 composer 옵션을 전달한다. 질문 중 미완료 계획은 자동 재개하지 않는다. 계약: `aiMilestoneTurnAccounting`, `aiAskPendingPlan`, `aiComposerModeSession`.
+
+## 모험 완료와 실제 적용 횟수 (2026-09-05)
+
+모험 저작 의도 선언이 있을 때 세션은 최종 응답 전 구조적 플레이 연결과 마지막 시각 조회를 확인한다. 계획 3/3 또는 lint 0만으로 완료 응답을 허용하지 않는다. 부족하면 보완 지시를 주고, 남으면 미완성 항목을 최종 응답으로 표시한다. run recap writes는 아직 적용하지 않은 제안과 이미 적용한 마일스톤 호출을 함께 센다.
