@@ -1,3 +1,18 @@
+## 전투 명령 배치 스튜디오 (2026-09-05)
+
+- Custom CSS는 `databaseBattleCommandCss.ts`가 소유한다. 직업 배치 아래의 프로젝트 공통 편집기로 유효한 입력만 스타일 샘플에 즉시 반영하며 적용 시 history + store 변경을 남긴다. 잘못된 입력은 적용을 막고 마지막 유효 미리보기를 유지한다. 저장된 CSS 복원·다크 프리셋·기본 스킨 복귀를 제공한다.
+- 미적용 초안과 마지막 유효 미리보기는 프로젝트 식별자·저장된 CSS가 같은 동안 재렌더링에 보존한다. 직업 배치 직후 예약된 DB 렌더나 미리보기 토글이 입력을 지우면 안 된다. 프로젝트 또는 저장된 CSS가 바뀌면 초안을 새 기준으로 초기화한다. 기본 스킨 복귀는 아직 적용하지 않은 프리셋도 지우며 이 경우 불필요한 history를 만들지 않는다.
+- 공용 `restoreFocusAfterRerender`는 두 번의 DOM 교체를 계속 지원하되, 사용자가 다른 살아 있는 컨트롤로 포커스를 옮기면 남은 복귀 프레임을 중단한다. 새 복귀 요청은 이전 요청을 대체한다. 이전의 무조건 8프레임 복귀는 빠른 다음 클릭과 CSS 타이핑을 빼앗았다. `test/databaseFocusRestoration.test.ts`는 프레임 큐를 직접 진행해 타이밍 운에 기대지 않고 검증한다.
+- 저장 필드는 `system.battleCommandCss`이며 `battleCommandCss.ts`의 제한된 선택자·시각 속성 문법을 편집기/출하 플레이어가 공유한다. 임의 선택자, URL, CSS 변수, at-rule은 허용하지 않는다. `test/e2e/battle-command-css.spec.ts`는 패키지 내보내기/재가져오기, `scripts/qa-battle-command-css.mjs`는 편집한 데이터를 별도 player.html 하네스로 넘겨 실제 메뉴·키보드 실행을 검증한다.
+- `databaseUtilityRecordViews.ts`는 기존 카탈로그 CRUD/필드/testid와 지형·전투 화면을 유지한다. 새 `databaseBattleCommandStudio.ts`가 직업 선택, 네이티브 드래그 배치/재정렬, 버튼 대안, 상태 안내와 실제 메뉴 해석을 소유한다.
+- 카탈로그 팔레트와 선택한 직업의 저장된 `battleCommands` 보드가 나란히 온다. 카탈로그 편집은 그 아래의 기존 입력 필드이며 카드의 `원본 편집`으로 바로 이동한다. 카탈로그 순서는 직업 메뉴 순서가 아니다. 배치는 id를 유지한 값 복사이며 기존 직업 덮어쓰기를 전역 편집으로 동기화하지 않는다.
+- 직업 선택과 교체 가능 상황 체크는 편집기 상태뿐이다. `insertCatalogClassCommand` / `reorderEditableClassCommand`의 검증 모델을 사용하고 성공 때만 snapshot + labeled `store.update`를 남긴다. 제거는 남은 배열(기존 초과 행 포함)을 보존한다. 고정 `cmd_change`는 이동/제거 불가, 편집 가능한 행은 최대 6개다.
+- 드래그는 인메모리 세션 토큰과 DataTransfer 값, 시작 당시 직업 배열/카탈로그를 현재 store와 비교한다. malformed/stale/cross-class/duplicate/full은 데이터·history 무변경이다. 삽입 위치에 텍스트와 indigo 선을 표시하며 추가/위/아래/제거 버튼, 포커스 복귀, polite live 상태가 같은 편집 경로를 제공한다.
+- 리뷰 후 안전성 계약: 삭제된 선택 직업의 남은 버튼은 다른 직업으로 대체하지 않고 편집을 거부한 뒤 화면만 갱신한다. 기존 중복 ID 행은 직업 ID·메뉴 스냅샷·편집 행 인덱스로 구분하여 한 행만 삭제/이동하며, 모호한 ID 전용 이동은 거부한다. 카탈로그 새 ID는 모든 직업의 잔존 참조까지 예약한다. 포커스 복귀는 `data-testid` 문자열을 정확히 비교하므로 따옴표·역슬래시가 있는 저작 ID도 바꾸지 않는다.
+- 미리보기는 `battleCommandsForActor`를 선택 직업으로 호출한다. 주인공이 없는 프로젝트는 저장되지 않는 임시 주인공으로 해석한다. 빈 배열 기본 행동, 포획 gate, 교체 상황을 그대로 반영하며 실행 버튼처럼 보이지 않는다. 몬스터 전용 메뉴/스킨 및 실제 동료 상태는 이 편집기 미리보기와 별도다. 스키마/전투 런타임은 변경하지 않는다.
+- 집중 계약: `test/databaseBattleCommandStudio.test.ts`, `test/databaseBattleCommandsTab.test.ts`, `test/databaseBattleStudio.test.ts`, `test/e2e/battle-command-studio.spec.ts`. 브라우저는 실제 편집기, dragTo, 키보드, 제거/undo, 프로젝트 패키지 다운로드/재가져오기를 사용한다. evidence: `output/evidence/battle-command-studio-p1`.
+- 리뷰 회귀: `databaseBattleCommandStaleClass.test.ts`, `databaseBattleCommandDuplicateRows.test.ts`, `databaseBattleCommandCatalogIds.test.ts`, `test/e2e/battle-command-focus.spec.ts`. 미리보기 표시 이름은 `battleCommandKindLabel`과 프로젝트 용어를 사용한다.
+
 # Editor Database
 
 ## Graphic 칩 사용자 교정 29건 (2026-09-05)
