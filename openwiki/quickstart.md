@@ -39,6 +39,41 @@ npm run wt -- adopt <이름> --path <워크트리 절대경로>   # node_modules
 콘텐츠(맵·이벤트·데모) 작업이면 `.env.local` 의 `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` /
 `VITE_SUPABASE_PROJECT_ID` 가 있어야 하고, 저장+재로드까지 증명해야 끝이다 — 루트 `AGENTS.md` 의 하드 룰.
 
+## 1a. Mac novice launcher / private setup (Phase 1, 2026-09-06)
+
+This path is for a person's own downloaded checkout, **not** agent worktree adoption above.
+Do not copy a maintainer's `.env.local` or use a maintainer project. It requires manually
+installed **Node.js 24 LTS including npm**, a writable extracted folder, and the owner's
+already provisioned Supabase access plus an **existing application project id**.
+
+- Double-click `Start RPG Maker.command`, or in Terminal type `/bin/bash ` and drag that
+  file into the window, then press Return (works when ZIP extraction lost the executable bit).
+  Optional: `chmod +x "Start RPG Maker.command"`. Do not disable Gatekeeper or use sudo.
+- Terminal equivalents, from the checkout: `npm run setup:local` creates private settings;
+  `npm run mac:launch` sets up if missing and launches. The `.command` resolves its own folder,
+  including spaces/Unicode, regardless of the current working directory.
+- The wizard masks the anon/publishable key and performs a bounded read-only GET against
+  `rpg_zzu.projects`. Use an HTTPS Supabase **origin**, or HTTP loopback for a local service.
+  Admin/service-role/database credentials, URL credentials, redirects and remote HTTP are rejected.
+  It does not create projects, run migrations, or write to Supabase.
+- Existing `.env*` files are never rewritten. New `.env.local` uses exclusive creation with mode
+  `0600`, a server-only `SUPABASE_ANON_KEY`, and proxy mode. Failure/cancellation writes nothing.
+  `.env.development*` and shell overrides take precedence in Vite; setup refuses to silently write
+  shadowed settings. Existing/incomplete `.env.local` needs private correction by its owner,
+  followed by a restart. Do not paste keys into command arguments, chat, screenshots or issues.
+- `npm ci` runs **only** when `node_modules` is absent. Existing or broken installs are preserved;
+  recovery is to move the broken folder aside yourself and run `npm ci`. No system tools are installed.
+- The launcher owns only `http://127.0.0.1:9999/?project=<encoded-existing-id>`, with a strict port,
+  TLS disabled and Vite's `configLoader: "runner"`. It opens the browser only after its own listen
+  succeeds. A collision does not open/reuse/kill the other server or choose another port.
+  Browser-open failure prints the same URL; `npm run mac:launch -- --no-open` supports headless QA.
+- Keep the Terminal open; Ctrl-C stops the owned server. Bookmark the same origin and project id.
+  Online saving depends on Supabase availability; export JSON for a separate backup.
+  Bun is optional for editing and Node provider login, but needed for AI completions along with a
+  configured provider. `npm start` is the separate production preview, not this novice launcher.
+- Linux verification does **not** establish Finder/macOS behavior. The narrow
+  `.github/workflows/mac-onboarding.yml` job is dormant while Actions are disabled.
+
 ## 2. 검증 — 무엇이 진짜 게이트인가
 
 | 명령 | 무엇을 재나 | 기준선 (실측) | 언제 쓰나 |

@@ -1,0 +1,41 @@
+name: Mac onboarding
+
+# Dormant while repository Actions are disabled. This is not evidence of Mac QA.
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'Start RPG Maker.command'
+      - 'scripts/mac-launch.mjs'
+      - 'scripts/setup-local.mjs'
+      - 'test/macLauncher.test.mjs'
+      - 'test/setupLocal.test.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/mac-onboarding.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  launcher-and-private-setup:
+    runs-on: macos-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Syntax and executable wrapper
+        run: |
+          /bin/bash -n 'Start RPG Maker.command'
+          test -x 'Start RPG Maker.command'
+          node --check scripts/mac-launch.mjs
+          node --check scripts/setup-local.mjs
+      - name: Isolated onboarding contracts (no secrets or live database)
+        run: npm run test:mac-onboarding
+      - run: npm run typecheck:app
+      - name: Existing configuration and same-origin proxy contracts
+        run: npm test -- test/supabaseProjectConfig.test.ts test/supabaseProxyPath.test.ts test/vitePreviewProxy.test.ts
