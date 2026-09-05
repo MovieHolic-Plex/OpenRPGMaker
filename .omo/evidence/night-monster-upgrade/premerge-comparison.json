@@ -1,0 +1,95 @@
+{
+  "baselineCommit": "7e2e02425e03f1081b3cab949d10a065b9f3f67c",
+  "testedFeatureCommit": "fb53ccabb213a2b32fd3e3f2f4e72f231f38c791",
+  "baselineSubset": {
+    "total": 145,
+    "passed": 123,
+    "failed": 22
+  },
+  "rows": [
+    {
+      "file": "aiActivityLiveRow.test.ts",
+      "failedBefore": true,
+      "newAssertions": []
+    },
+    {
+      "file": "aiActivityNarration.test.ts",
+      "failedBefore": false,
+      "newAssertions": [
+        "AI 도구 활동 문장 레지스트리에 등록된 모든 도구에서 내부 이름을 노출하지 않는다"
+      ]
+    },
+    {
+      "file": "aiAutonomousRunSurface.test.ts",
+      "failedBefore": true,
+      "newAssertions": []
+    },
+    {
+      "file": "aiChatObservability.test.ts",
+      "failedBefore": true,
+      "newAssertions": []
+    },
+    {
+      "file": "aiChatPanelTransportError.test.ts",
+      "failedBefore": true,
+      "newAssertions": []
+    },
+    {
+      "file": "aiSelectionChipScope.test.ts",
+      "failedBefore": true,
+      "newAssertions": []
+    },
+    {
+      "file": "authorVillageFacade.test.ts",
+      "failedBefore": true,
+      "newAssertions": []
+    },
+    {
+      "file": "databaseNavMode.test.ts",
+      "failedBefore": true,
+      "newAssertions": []
+    },
+    {
+      "file": "forestDensity.test.ts",
+      "failedBefore": true,
+      "newAssertions": []
+    },
+    {
+      "file": "gen1DemoContent.test.ts",
+      "failedBefore": true,
+      "newAssertions": []
+    },
+    {
+      "file": "leftDockPanels.test.ts",
+      "failedBefore": true,
+      "newAssertions": []
+    },
+    {
+      "file": "mapScreenAuthoringSurface.test.ts",
+      "failedBefore": true,
+      "newAssertions": []
+    },
+    {
+      "file": "modalEscapeLayerGate.test.ts",
+      "failedBefore": true,
+      "newAssertions": []
+    },
+    {
+      "file": "noLocalProjectDb.test.ts",
+      "failedBefore": true,
+      "newAssertions": []
+    },
+    {
+      "file": "projectLint.test.ts",
+      "failedBefore": false,
+      "newAssertions": [
+        "projectLint 비배열 page.commands는 순회 예외 대신 command-shape warning으로 건너뛴다"
+      ]
+    },
+    {
+      "file": "roleNameComparisonGate.test.ts",
+      "failedBefore": true,
+      "newAssertions": []
+    }
+  ]
+}

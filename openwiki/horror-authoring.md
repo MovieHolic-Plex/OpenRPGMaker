@@ -58,3 +58,14 @@ AI도 `make_chase_scene.pursuit`와 `configure_object_behavior`로 같은 페이
 - `scripts/revise-night-monster.mts --read`: 현재 Supabase 게임 확인.
   인자 없음은 현재 게임의 개정본 준비, `--save`는 저장과 재로드 비교까지 실행한다.
   제작 중 원격 값이 바뀌면 저장을 중단한다. 기존 DB·스킨·에셋은 보존한다.
+
+
+## 전체 게이트 후속 수정 (2026-09-05)
+
+전체 실행에서 새 도구의 활동 문구 등록 누락과 malformed `page.commands` 순회 예외를 찾았다.
+`aiActivityNarration.ts`의 이벤트 패밀리에 `configure_object_behavior`를 등록한다.
+실내 경고 검사는 명령 배열이 아닌 값을 빈 명령 목록으로 다루며, 기존 `command-shape` 경고를
+보존한다. 오류 데이터를 검증하는 과정 자체가 예외로 중단되면 안 된다.
+`eventEditorShellSurface.baseline.json`은 브라우저로 검토한 물체 상호작용 컨트롤의 추가만 반영했다.
+검증: `aiActivityNarration.test.ts`, `projectLint.test.ts`, `eventEditorShellSurface.baseline.test.ts`와
+기존 공포 런타임/세이브 계약. 통합된 main 위에서도 관련 80개와 앱 타입 검사가 통과했다.
