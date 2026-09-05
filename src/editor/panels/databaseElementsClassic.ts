@@ -119,6 +119,11 @@ function elementListPane(elements: readonly DatabaseElementRecord[], rerender: (
       value: elementQuery,
       testid: "db-elements-search",
       onInput: (value) => {
+        // The shared debounce can outlive this pane or a synchronous search clear.
+        // Only the attached pane's current input may update query state and rows.
+        if (!pane.isConnected) return;
+        const search = pane.querySelector<HTMLInputElement>("input[type=search]")!;
+        if (value !== search.value) return;
         elementQuery = value;
         refreshRows();
       },

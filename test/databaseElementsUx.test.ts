@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderElementsTab } from "@/editor/panels/databaseElementsClassic";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -162,5 +162,74 @@ describe("elements worksheet", () => {
     project.database.elements = []; store.replace(project); mount();
     expect(document.querySelector('[data-testid="db-elements-reference-damage"]')).toBeNull();
     expect((get("db-elements-add") as HTMLButtonElement).disabled).toBe(false);
+  });
+
+  describe("pending search lifecycle", () => {
+    beforeEach(() => { vi.useFakeTimers(); });
+    afterEach(() => {
+      // Reset the module-owned query through the same control, even after a failed assertion.
+      mount();
+      input("db-elements-search", "");
+      vi.runOnlyPendingTimers();
+      vi.useRealTimers();
+    });
+
+    it("does not reapply a queued query after clearing search", () => {
+      const detail = get("db-field-element-name-selected");
+      const search = input("db-elements-search", "not-a-real-element");
+      vi.advanceTimersByTime(90);
+      expect(get("db-elements-list").querySelectorAll(".db-ws-row")).toHaveLength(0);
+
+      input("db-elements-search", "fire");
+      get("db-elements-search-clear").click();
+      expect(search.value).toBe("");
+      expect(document.activeElement).toBe(search);
+      expect(get("db-elements-list").querySelectorAll(".db-ws-row")).toHaveLength(17);
+
+      vi.advanceTimersByTime(90);
+      expect(search.value).toBe("");
+      expect(get("db-elements-list").querySelectorAll(".db-ws-row")).toHaveLength(17);
+      expect(get("db-field-element-name-selected")).toBe(detail);
+      mount();
+      expect((get("db-elements-search") as HTMLInputElement).value).toBe("");
+      expect(get("db-elements-list").querySelectorAll(".db-ws-row")).toHaveLength(17);
+    });
+
+    it("does not refresh replaced rows when maximum count shrinks during a queued search", () => {
+      const oldList = get("db-elements-list");
+      input("db-elements-search", "fire");
+      get("db-elements-maximum-number").click();
+      input("db-elements-max-count-input", "1");
+      get("db-elements-max-ok").click();
+      expect(store.getCurrent().database.elements).toHaveLength(1);
+      expect(oldList.isConnected).toBe(false);
+      const list = get("db-elements-list");
+      expect(list.querySelectorAll(".db-ws-row")).toHaveLength(1);
+
+      expect(() => vi.advanceTimersByTime(90)).not.toThrow();
+      expect(get("db-elements-list")).toBe(list);
+      expect(list.querySelectorAll(".db-ws-row")).toHaveLength(1);
+      expect(oldList.querySelectorAll(".db-ws-row")).toHaveLength(17);
+      mount();
+      expect((get("db-elements-search") as HTMLInputElement).value).toBe("");
+      expect(get("db-elements-list").querySelectorAll(".db-ws-row")).toHaveLength(1);
+    });
+
+    it("does not update a detached pane or leak its queued query into the next mount", () => {
+      const oldList = get("db-elements-list");
+      input("db-elements-search", "fire");
+      document.body.replaceChildren();
+      expect(oldList.isConnected).toBe(false);
+
+      vi.advanceTimersByTime(90);
+      expect(oldList.querySelectorAll(".db-ws-row")).toHaveLength(17);
+      expect(document.body.childElementCount).toBe(0);
+      mount();
+      expect((get("db-elements-search") as HTMLInputElement).value).toBe("");
+      expect(get("db-elements-list").querySelectorAll(".db-ws-row")).toHaveLength(17);
+      input("db-elements-search", "fire");
+      vi.advanceTimersByTime(90);
+      expect(get("db-elements-list").querySelectorAll(".db-ws-row")).toHaveLength(1);
+    });
   });
 });
