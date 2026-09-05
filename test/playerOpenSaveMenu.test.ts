@@ -102,8 +102,11 @@ describe("event-opened save menu in the shipping player shell", () => {
 
     keyDown("Escape");
     expect(menu().dataset.statusMenuScreen).toBe("main");
+    const closingMenu = menu();
     keyDown("Escape");
-    expect(menu().dataset.statusMenuClosing).toBe("1");
+    expect(closingMenu.dataset.statusMenuClosing).toBe("1");
+    // The shipping close helper removes immediately when Web Animations is unavailable.
+    expect(closingMenu.isConnected).toBe(false);
   });
 
   it("keeps overwrite confirmation cancellable and resets it on direct re-entry", () => {
