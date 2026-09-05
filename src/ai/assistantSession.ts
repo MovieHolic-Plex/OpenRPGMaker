@@ -2209,7 +2209,7 @@ export class AssistantSession {
   /** Keep transport/execution ok intact; only actual passing checks satisfy successTools. */
   private recordToolResult(name: string, args: Record<string, unknown>, result: ToolResult, countAsSuccess = true): void {
     this.syncSuccessfulToolsToCurrentWorkItem();
-    this.verificationEvidence.observe(name, args, result);
+    this.verificationEvidence.observe(name, args, result, countAsSuccess ? "explicit" : "advisory");
     if (!countAsSuccess) return;
     const verdict = this.workItemVerificationEvidence.observe(name, args, result);
     if (verdict && !this.workItemVerificationEvidence.passed(name)) {

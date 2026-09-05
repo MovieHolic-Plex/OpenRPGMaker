@@ -3,6 +3,7 @@ import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
 import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
 import { ToolVerificationEvidence } from "@/ai/toolVerificationEvidence";
 import { getTool, runTool } from "@/editor/tools";
+import * as applyStore from "@/editor/tools/applyChangesetToStore";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { fixedDeclarer } from "./intentFixture";
@@ -16,11 +17,14 @@ const broken = { summary: "lint: error 14건", data: { counts: { errors: 14 }, i
 
 afterEach(() => vi.restoreAllMocks());
 
-function scriptedSession(required: string[], rounds: Call[][], nextRequired?: string[]) {
+function scriptedSession(required: string[], rounds: Call[][], nextRequired?: string[], separateLayers = false) {
   let cursor = 0;
+  const items = [required, ...(nextRequired ? [nextRequired] : [])]
+    .map((successTools, index) => ({ title: `확인 ${index + 1}`, instruction: "필수 검사 통과", successTools }));
   const plan: Call = { name: "set_work_plan", args: {
-    goal: "검증 계약 확인", layers: [{ title: "검증", items: [required, ...(nextRequired ? [nextRequired] : [])]
-      .map((successTools, index) => ({ title: `확인 ${index + 1}`, instruction: "필수 검사 통과", successTools })) }],
+    goal: "검증 계약 확인", layers: separateLayers
+      ? items.map((item, index) => ({ title: `레이어 ${index + 1}`, items: [item] }))
+      : [{ title: "검증", items }],
   } };
   const steps = [[plan], ...rounds];
   const session = new AssistantSession(createBlankProject(), {
@@ -136,6 +140,29 @@ describe("필수 검증의 실행 성공과 통과는 별도 계약", () => {
     expect(result.assistantText).toContain("lint 오류 14건");
   });
 
+  it.each([false, true])("레이어 자동 통과는 재검증 의무를 만들지 않고 명시 검사만 유지한다 (explicit=%s)", async (explicit) => {
+    const quality = vi.spyOn(getTool("evaluate_game_quality")!, "run")
+      .mockReturnValue({ summary: "품질 통과", data: { verdict: { blocked: false } } });
+    const lintRun = vi.spyOn(getTool("run_lint")!, "run").mockReturnValue(clean);
+    vi.spyOn(store, "isRemotePersistenceEnabled").mockReturnValue(false);
+    // Persistence is outside this test: keep the real tool/plan/advisory order,
+    // but apply the second layer's draft through an in-memory boundary.
+    vi.spyOn(applyStore, "applyProposedProject").mockImplementation(async (applied) => ({
+      ok: true, applied,
+      commit: { commitId: null, persisted: false, reviewStatus: "approved", summary: "test", toolNames: [], recordedAt: "2026-09-05T00:00:00.000Z" },
+    }));
+    const session = scriptedSession(["get_project_summary"], [
+      [...(explicit ? [{ name: "evaluate_game_quality", args: {} }] : []), { name: "get_project_summary", args: {} }, complete],
+      [write, complete],
+    ], ["set_title_screen"], true);
+    const result = await session.sendUserMessage("프로젝트 확인 후 제목을 수정해줘", () => {}, undefined, { autonomous: true });
+    expect(result.workPlan?.layers.flatMap((layer) => layer.items.map((item) => item.status))).toEqual(["done", "done"]);
+    expect(quality).toHaveBeenCalledTimes(explicit ? 2 : 1);
+    expect(lintRun).toHaveBeenCalledTimes(2);
+    expect(result.assistantText.includes("evaluate_game_quality: 변경 후 재검증 필요")).toBe(explicit);
+    expect(result.assistantText.includes("검증이 아직 통과되지 않았습니다")).toBe(explicit);
+  });
+
   it("다음 항목은 자기 대상의 검증으로 완료하며 이전 항목의 stale 검사는 최종 보고에 보존한다", async () => {
     vi.spyOn(getTool("verify_quest")!, "run").mockReturnValue({ summary: "완주", data: { ok: true } });
     const events: SessionEvent[] = [];
@@ -166,6 +193,16 @@ describe("필수 검증의 실행 성공과 통과는 별도 계약", () => {
 });
 
 describe("검증 근거의 대상과 변경 수명", () => {
+  it("실제 advisory 실패는 보고하며 같은 대상의 자동 재통과로 해소한다", () => {
+    const evidence = new ToolVerificationEvidence();
+    evidence.observe("run_lint", {}, { ok: true, ...broken }, "advisory");
+    evidence.invalidateAfterWrite();
+    expect(evidence.problems()).toEqual(["run_lint: lint 오류 14건"]);
+    evidence.observe("run_lint", {}, { ok: true, ...clean }, "advisory");
+    evidence.invalidateAfterWrite();
+    expect(evidence.problems()).toEqual([]);
+  });
+
   it("다른 대상의 성공은 실패를 덮지 않으며, 인자 키 순서가 달라도 같은 대상을 재검증한다", () => {
     const evidence = new ToolVerificationEvidence();
     evidence.observe("check_reachability", { mapId: "a", from: { x: 0, y: 0 } }, { ok: true, data: { reachable: false } });
