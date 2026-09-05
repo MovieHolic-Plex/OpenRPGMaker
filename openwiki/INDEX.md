@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **44쪽 / 1476KB / 약 418,545 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **44쪽 / 1477KB / 약 418,799 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,7 +15,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 253KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 446 | ~73,568 |
+| `openwiki/editor-ai-panel.md` | 253KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 447 | ~73,670 |
 | `openwiki/editor-ai-tools.md` | 76KB | 66KB ⚠상한 초과 — 절을 더 쪼개라 | 191 | ~21,880 |
 | `openwiki/editor-database.md` | 184KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 891 | ~53,036 |
 | `openwiki/editor-event-authoring.md` | 117KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 557 | ~34,046 |
@@ -220,7 +220,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L18` Output limits
 - `L24` Practical tips
 
-### `openwiki/editor-ai-panel.md` — 253KB · 446줄 · ~73,568 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 253KB · 447줄 · ~73,670 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
 - `L3` 조수 카메라 이동 수명·부드러운 줌 (2026-09-05)
 - `L19` 패널 셸 · 도크 · 접기 · 컴포저
@@ -233,7 +233,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L372` 저장 · 내보내기 · 프로젝트 생성
 - `L380` 제공자 · OAuth · 동반 서비스
 - `L410` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
-- `L443` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
+- `L444` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
 
 ### `openwiki/editor-ai-tools.md` — 76KB · 191줄 · ~21,880 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
@@ -325,7 +325,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L30` Show Picture preview opacity unit (2026-08-29)
 - `L35` 조명 백분율 입력 복구 (2026-09-05)
 
-### `openwiki/editor-event-commands.md` — 43KB · 106줄 · ~11,332 토큰 · 깨진 줄 6
+### `openwiki/editor-event-commands.md` — 43KB · 106줄 · ~11,346 토큰 · 깨진 줄 6
 
 - `L7` Roguelike run control (2026-08-24)
 - `L47` 얼굴 상자(faceset-crop-box) 페인트 계약 (2026-08-28)
@@ -421,7 +421,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L135` 안티-게이밍 규칙
 - `L145` 이 페이지를 갱신해야 하는 변경
 
-### `openwiki/large-village-generation.md` — 13KB · 348줄 · ~3,808 토큰
+### `openwiki/large-village-generation.md` — 14KB · 352줄 · ~3,946 토큰
 
 - `L9` 한 줄 요약
 - `L24` 관련 파일
@@ -446,6 +446,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L315` 아직 약한 부분 (솔직히)
 - `L332` 관련 위키
 - `L340` author_village 스코프 계약 (2026-09-04 적대 리뷰 반영)
+- `L349` 대로 병합 검증 (2026-09-05)
 
 ### `openwiki/quickstart.md` — 12KB · 125줄 · ~3,459 토큰
 

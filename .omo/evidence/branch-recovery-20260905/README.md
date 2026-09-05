@@ -35,3 +35,11 @@ Final application typecheck and CSS gates pass with zero regressions. Item/world
 
 External verified backup: `/home/main/z-project/rpg-zzu-branch-backups/20260905/`.
 `deleted-refs.json` records each name/SHA/reason/archive ref. Recreate a local branch with `git branch <name> <archive-ref>` using that manifest; push if the original remote branch is needed. The initial incremental bundle requires main history through the audited base. Original audit and disposition documents are retained in the same backup directory.
+
+## Full supervisor comparison and follow-up
+
+The full supervisor gate completed with exit 1: 13,059 tests, 12,837 passed, 207 failed, 15 pending. The pristine audited commit had 12,886 tests, 12,620 passed, 251 failed, 15 pending. Exact file/test-name comparison found 48 previously failing assertions absent from the failure set and four newly failing assertions (`full-comparison.json`). These are measurements, not a claim that every baseline failure was fixed; host load can affect results.
+
+The four follow-ups are explicit: preserve straight boulevard reservation/painting for an authored `street-grid` (the 100×100 snow city must retain 20 houses and 50 NPCs); place native emotes in the existing tab-3 staging group; align the troop movie test with the unsupported executor contract; assert an empty CSSOM width rather than fakeDom's undefined field. Synthetic autonomous continuation also now overrides the original explicit instruction with 「계속」 while preserving scope/composer mode and the applied-call ledger. Focused final verification is recorded separately.
+
+Raw pristine and integrated Vitest reports and gate output are retained in the external branch backup directory, not the tracked source tree. The full run preceded these follow-up fixes; their final results must be read together with the focused verification rather than presented as a second full run.

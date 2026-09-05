@@ -119,7 +119,6 @@ describe("native command guarantee registry", () => {
       "getFriendship",
       "wait",
       "playAudio",
-      "playMovie",
       "stopAudio",
       "setSelfSwitch",
       "label",
@@ -141,6 +140,8 @@ describe("native command guarantee registry", () => {
     ).sort();
 
     expect(actual).toEqual(expected);
+    // Troop execution has no movie playback executor.
+    expect(COMMAND_GUARANTEES.playMovie.supportByContext.troop).toBe("partial");
     expect(COMMAND_GUARANTEES.m2Command.supportByContext).toEqual({
       map: "partial",
       common: "partial",

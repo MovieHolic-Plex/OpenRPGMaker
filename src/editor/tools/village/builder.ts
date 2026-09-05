@@ -225,7 +225,7 @@ export function buildVillageDomain(
   const boulevard = villageBoulevard(area, plaza);
   const houseBlockedIdx = new Set<number>(terrainBlockedCells(terrainMasks) ?? []);
   if (boulevard) {
-    for (const cell of boulevardCells(area, boulevard, seed)) {
+    for (const cell of boulevardCells(area, boulevard, intent.settlementLayout === "street-grid" ? undefined : seed)) {
       if (cell.x >= 0 && cell.y >= 0 && cell.x < map.width && cell.y < map.height) {
         houseBlockedIdx.add(cell.y * map.width + cell.x);
       }

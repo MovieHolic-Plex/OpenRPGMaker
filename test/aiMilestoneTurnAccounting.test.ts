@@ -122,7 +122,16 @@ describe("마일스톤 턴 정산", () => {
       vi.spyOn(session as unknown as { shouldAutoContinue: () => boolean }, "shouldAutoContinue")
         .mockReturnValueOnce(true).mockReturnValue(false);
     }
-    const result = await session.sendUserMessage(GOAL, () => {}, undefined, { autonomous: true });
+    const intentInputs = vi.spyOn(session as unknown as {
+      declareTurnIntent: (instruction: string, ...args: unknown[]) => Promise<unknown>;
+    }, "declareTurnIntent");
+    const result = await session.sendUserMessage(GOAL, () => {}, undefined, {
+      autonomous: true, instruction: GOAL, composerMode: "do",
+    });
+    // The original explicit instruction must not turn synthetic continuation into a new create request.
+    expect(intentInputs.mock.calls.map(([instruction]) => instruction)).toEqual(
+      continueOnce ? [GOAL, "계속"] : [GOAL],
+    );
 
     const statuses = session.getAuditEntries().filter((e) => e.kind === "status").map((e) => String(e.text ?? ""));
     // 전제: 마일스톤이 실제로 적용되어 제안이 비워졌다(이 결함의 발생 조건).

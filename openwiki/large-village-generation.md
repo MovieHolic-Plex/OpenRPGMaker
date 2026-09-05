@@ -17,7 +17,7 @@
 
 > AI 경로 메모 (2026-09-04): 위 순서는 100×100 bbox 하네스 전용이다. AI `author_village` / `build_village`는 다르다. 지금은 스케치 후보(`sketchHouseSites`)를 먼저 뽑고 집을 찍은 뒤 길을 잇는다. 즉 sketch sites → houses → roads다.
 >
-> AI `build_village` 대로 (2026-09-05): 72칸 이상 맵의 골격은 이제 곡선이다. `villageBoulevardPath`가 시드 고정 경유점을 잡고, 집 예약과 길 칠하기는 `boulevardCells` 한 칸 함수를 같이 쓴다.
+> AI `build_village` 대로 (2026-09-05): 72칸 이상 맵의 자연형 골격은 이제 곡선이다. 명시적인 `street-grid`는 직선 밴드를 유지한다. `villageBoulevardPath`가 시드 고정 경유점을 잡고, 집 예약과 길 칠하기는 `boulevardCells` 한 칸 함수를 같이 쓴다.
 
 ---
 
@@ -345,3 +345,7 @@ npx tsx scripts/diagnose-road-through-house.mts
 - NPC 수는 하한 90%(최소 2명 관용)로 판정한다. best-effort 집 수는 4채 이하에서 exact와 같다.
 - 기존 맵 bounds 하한 16·맵 전체 하한 20·새 맵 20×20 이상. new 타깃의 plannedMap은 생략 가능(생략하면 target 값).
 - 길 재시도 리포트가 warnings에 기계 가독으로 남는다(시도·침범 추이·잔존 분류).
+
+## 대로 병합 검증 (2026-09-05)
+
+시드 곡선 대로는 자연형 배치에 적용한다. 명시적 `settlementLayout: "street-grid"`는 예약과 시공 모두 직선 밴드를 사용해 격자 전면과 집 수를 유지한다. `authorVillageFacade.test.ts`의 100×100 눈 도시·집 20채·NPC 50명 계약과 `villageBoulevard.test.ts`의 곡선 연결성을 함께 검증한다.
