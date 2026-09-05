@@ -29,7 +29,7 @@ import { deterministicRng, type Rng } from "@/util/rng";
 export const OUTSIDE_VOID_TILE = 116;
 
 /** 상단이 벽면 아랫줄에 겹치는 키 큰 가구(정본: placeTallPairU / placeStovePair). */
-const TALL_FACE_OVERLAP_IDS: ReadonlySet<string> = new Set(["clock", "armor", "bust", "mirror", "display", "stove"]);
+const TALL_FACE_OVERLAP_IDS: ReadonlySet<string> = new Set(["armor", "bust", "mirror", "display", "stove", "flue"]);
 
 const CREAM_FACE_TILES: ReadonlySet<number> = new Set([
   HOUSE_SHELL_TILE.creamUpperL,
@@ -98,11 +98,11 @@ export type ConceptComposeResult = {
   readonly warnings: readonly string[];
 };
 
-type SlotClass = "face" | "tall-face" | "north-end" | "north" | "floor" | "rug" | "corner";
+type SlotClass = "stair-face" | "face" | "tall-face" | "north-end" | "north" | "floor" | "rug" | "corner";
 
 // 큰 가구(북벽)가 먼저 자리를 잡고 장식(키 큰 가구·벽걸이)이 남은 틈을 채운다. 계단은 복도 끝을 가장 먼저 받는다.
 // 러그는 바닥 가구보다 먼저 깔린다 — 탁자·소품(상위 레이어)이 러그 위에 앉을 수 있다(정본 placeRugUnder 의 「탁자 밑 러그」).
-const CLASS_ORDER: readonly SlotClass[] = ["north-end", "north", "face", "tall-face", "rug", "floor", "corner"];
+const CLASS_ORDER: readonly SlotClass[] = ["stair-face", "north-end", "north", "face", "tall-face", "rug", "floor", "corner"];
 
 type Point = { readonly x: number; readonly y: number };
 
@@ -146,7 +146,8 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
   const laneFrom = (x: number, y: number, dx: number, dy: number): void => {
     let cx = x;
     let cy = y;
-    while (inRoomFloor(cx, cy)) {
+    let steps = 0;
+    while (inRoomFloor(cx, cy) && (input.role === "walkway" || steps++ < 1)) {
       lane.add(idx(cx, cy));
       cx += dx;
       cy += dy;
@@ -182,7 +183,8 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
   const faceFree = (x: number, y: number, loose = false): boolean =>
     inBounds(x, y)
     && x >= room.x && x < room.x + room.w
-    && (y === room.y - 1 || y === room.y - 2)
+    && y >= room.y - 2 && y < room.y + room.h
+    && (inRoomFloor(x, y + 1) || inRoomFloor(x, y + 2))
     && CREAM_FACE_TILES.has(lowerAt(x, y))
     && upperEmpty(x, y)
     && !blocked(x, y, loose);
@@ -197,7 +199,9 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
     && (bedCells.some((cell) => cell.x === x && cell.y === y) || (!floorTaken.has(idx(x, y)) && upperEmptyOrEntry(x, y)));
 
   const classify = (thing: ConceptOverlayThing, object: InteriorObjectDef): SlotClass => {
-    if (object.snap === "wall-any") return "face";
+    if (object.id === "stairs_horizontal") return "stair-face";
+    if (object.id === "stairs_down") return "north-end";
+    if (object.id === "clock" || object.snap === "wall-any") return "face";
     if (object.snap === "wall-north") {
       return object.height === 2 && TALL_FACE_OVERLAP_IDS.has(object.id) ? "tall-face" : "north";
     }
@@ -297,42 +301,94 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
     if (job.object.role === "bed") bedCells = [...bedCells, ...placed.map((cell) => ({ x: cell.x, y: cell.y }))];
   };
 
+  // Evaluate an entire furniture assembly before committing it. Keep existing reachable
+  // floor reachable; table legs/seats must never be repaired by deleting one tile.
+  const reachable = (extra: ReadonlySet<number>): Set<number> => {
+    const seen = new Set<number>();
+    const queue: number[] = [];
+    const open = (i:number):boolean => {
+      const upper = map.upperTiles[i] ?? TILE.EMPTY;
+      return input.fullFloor[i] === true && !extra.has(i)
+        && input.isFloorTile(map.lowerTiles[i] ?? TILE.EMPTY)
+        && (upper < 0 || upper === input.entrySentinel);
+    };
+    for (const y of [door.y,door.y-1,door.y+1]) {
+      const i=idx(door.x,y); if (inBounds(door.x,y) && open(i)) {seen.add(i);queue.push(i);}
+    }
+    for(let n=0;n<queue.length;n++) {
+      const i=queue[n]!,x=i%W,y=Math.floor(i/W);
+      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]) {
+        const nx=x+dx!,ny=y+dy!,next=idx(nx,ny);
+        if(inBounds(nx,ny)&&!seen.has(next)&&open(next)){seen.add(next);queue.push(next);}
+      }
+    }
+    return seen;
+  };
+  const preservesAccess = (cells:readonly InteriorObjectCell[],x:number,y:number,baseline:ReadonlySet<number>):boolean => {
+    const blocked = new Set(cells.map(cell=>idx(x+cell.dx,y+cell.dy)));
+    const after = reachable(blocked);
+    return [...baseline].every(i=>blocked.has(i)||after.has(i));
+  };
+
   const cellsFit = (cells: readonly InteriorObjectCell[], ox: number, oy: number, test: (x: number, y: number) => boolean): boolean =>
     cells.every((cell) => test(ox + cell.dx, oy + cell.dy));
   /** 간격을 지키는 후보가 없으면 간격을 양보한 후보로 다시 찾는다. */
   const withRetry = (candidatesFor: (loose: boolean) => Point[], pickFrom: (candidates: Point[]) => Point | null): Point | null =>
     pickFrom(candidatesFor(false)) ?? pickFrom(candidatesFor(true));
 
-  const northRowY = room.y;
   const interiorRows = room.h > 1 ? { from: room.y + 1, to: room.y + room.h - 1 } : { from: room.y, to: room.y };
 
   for (const job of jobs) {
     const { object, thing } = job;
+    const baselineReach = reachable(new Set());
     let done = false;
     switch (job.slot) {
+      case "stair-face": {
+        // The flight rises from the first floor row through both north wall-face rows.
+        const pick = withRetry((loose) => {
+          const candidates: Point[] = [];
+          for (let y = room.y; y < room.y + room.h; y++) {
+            for (let x = room.x; x <= room.x + room.w - object.width; x++) {
+              if (inRoomFloor(x, y - 1)) continue;
+              const fits = object.cells.every(cell => {
+                const cy = y - 2 + cell.dy;
+                return cell.dy < 2 ? faceFree(x + cell.dx, cy, loose) : freeFor(cell, x + cell.dx, cy, loose);
+              });
+              if (fits) candidates.push({ x, y: y - 2 });
+            }
+          }
+          return candidates;
+        }, candidates => candidates[flip ? 0 : candidates.length - 1] ?? null);
+        if (pick) {
+          paint(job, pick.x, pick.y, object.cells);
+          done = true;
+        }
+        break;
+      }
       case "face": {
         // 벽걸이: 벽면 윗줄, 상위 레이어(정본 placeWallMount). 카탈로그 셀이 lower 여도 벽면 위에 얹는다.
         const cells = object.cells.map((cell) => ({ ...cell, layer: "upper" as const }));
-        const y = room.y - 2;
         const pick = withRetry((loose) => {
           const candidates: Point[] = [];
-          for (let x = room.x; x <= room.x + room.w - object.width; x += 1) {
+          for (let y = room.y - 2; y < room.y + room.h; y += 1) for (let x = room.x; x <= room.x + room.w - object.width; x += 1) {
+            if (inRoomFloor(x, y + 1) || !inRoomFloor(x, y + 2)) continue;
+            if (thing.chips.includes("event") && !free(x + Math.floor(object.width / 2), y + 2, true)) continue;
             if (cellsFit(cells, x, y, (cx, cy) => faceFree(cx, cy, loose))) candidates.push({ x, y });
           }
           return candidates;
         }, (candidates) => spreadPick(candidates, "face", "center"));
         if (pick) {
           paint(job, pick.x, pick.y, cells);
+          if (thing.chips.includes("event")) lane.add(idx(pick.x + Math.floor(object.width / 2), pick.y + 2));
           done = true;
         }
         break;
       }
       case "tall-face": {
         // 상단이 벽면 아랫줄, 하단이 북쪽 바닥 행.
-        const oy = northRowY - 1;
         const pick = withRetry((loose) => {
           const candidates: Point[] = [];
-          for (let x = room.x; x <= room.x + room.w - object.width; x += 1) {
+          for (let oy = room.y - 1; oy < room.y + room.h - 1; oy += 1) for (let x = room.x; x <= room.x + room.w - object.width; x += 1) {
             const ok = object.cells.every((cell) => {
               const cx = x + cell.dx;
               const cy = oy + cell.dy;
@@ -352,8 +408,9 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
       case "north": {
         const pick = withRetry((loose) => {
           const candidates: Point[] = [];
-          for (let x = room.x; x <= room.x + room.w - object.width; x += 1) {
-            if (object.cells.every((cell) => freeFor(cell, x + cell.dx, northRowY + cell.dy, loose))) candidates.push({ x, y: northRowY });
+          for (let northY = room.y; northY < room.y + room.h; northY += 1) for (let x = room.x; x <= room.x + room.w - object.width; x += 1) {
+            if (inRoomFloor(x, northY - 1)) continue;
+            if (object.cells.every((cell) => freeFor(cell, x + cell.dx, northY + cell.dy, loose)) && preservesAccess(object.cells,x,northY,baselineReach)) candidates.push({ x, y: northY });
           }
           return candidates;
         }, (candidates) => (job.slot === "north-end"
@@ -378,7 +435,7 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
             const crowded = object.cells.some((cell) =>
               ([[1, 0], [-1, 0], [0, 1], [0, -1]] as const).some(([dx, dy]) =>
                 floorTaken.has(idx(x + cell.dx + dx, y + cell.dy + dy))));
-            if (crowded) continue;
+            if (crowded || !preservesAccess(object.cells,x,y,baselineReach)) continue;
             candidates.push({ x, y, score: Math.abs(x - centerX) + Math.abs(y - centerY) });
           }
         }

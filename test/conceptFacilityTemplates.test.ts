@@ -1,16 +1,17 @@
-// 개념 꾸러미 시설 초안 묶음 — 여관 하나가 아니라 시설 아홉 종을 place_concept 이 짓는다.
+// 개념 꾸러미 시설 초안 묶음 — 여관 하나가 아니라 확장 시설을 place_concept 이 짓는다.
 // 초안마다: 스키마 검증 통과 · 카탈로그 id 정합 · 시공 시 plan/walkability 경고 0 · 물건 전부 앉음 · 필수 물건이 맵에 있음.
 import { describe, expect, it } from "vitest";
 import { capabilityEscalatedToolNames } from "@/ai/capabilityEscalation";
 import { buildSystemPrompt } from "@/ai/contextBuilder";
 import {
   CONCEPT_FLOOR_TILES,
+  conceptFacilityLevels,
   ensureConceptBundles,
   layoutConceptFacility,
   liveBundlesForTileset,
   resolveConceptFacility,
 } from "@/editor/conceptBundleResolve";
-import { INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
+import { INTERIOR_ROOM_TILESET_ID, VR } from "@/editor/interiorRoomPipeline";
 import { interiorObjectById } from "@/editor/interiorObjectCatalog";
 import { PLACE_CONCEPT_TOOL } from "@/editor/tools/placeConceptTool";
 import { runTool } from "@/editor/tools/toolRunner";
@@ -30,6 +31,7 @@ import type { ConceptBundleRecord, GameMap } from "@/project/types";
 
 type Built = {
   readonly map: GameMap;
+  readonly maps: Record<string, GameMap>;
   readonly warnings: readonly string[];
   readonly rooms: readonly { roomId: string; placeId: string; role: string; x: number; y: number; w: number; h: number; floorTile?: number }[];
   readonly wallMaterial: string;
@@ -43,6 +45,7 @@ function buildTemplate(bundle: ConceptBundleRecord, seed = 7): Built {
   const data = result.data as { rooms: Built["rooms"]; wallMaterial: string };
   return {
     map: context.project.maps[mapId]!,
+    maps: context.project.maps,
     warnings: [...(result.warnings ?? []), ...(result.diff?.warnings ?? [])],
     rooms: data.rooms,
     wallMaterial: data.wallMaterial,
@@ -59,11 +62,11 @@ function mapHasObject(map: GameMap, objectId: string): boolean {
 }
 
 describe("개념 꾸러미 초안 묶음 — 데이터 정합", () => {
-  it("아홉 시설이고 여관이 첫째다", () => {
-    expect(CONCEPT_FACILITY_TEMPLATES.length).toBe(9);
+  it("열아홉 시설이고 기존 아홉 시설의 순서를 보존한다", () => {
+    expect(CONCEPT_FACILITY_TEMPLATES.length).toBe(19);
     expect(CONCEPT_FACILITY_TEMPLATES[0]).toBe(SCRATCH_INN_BUNDLE);
-    expect(new Set(CONCEPT_FACILITY_TEMPLATES.map((bundle) => bundle.id)).size).toBe(9);
-    expect(conceptFacilityTemplateLabels()).toEqual(["여관", "민가", "상점", "술집", "서재", "대장간", "교회", "창고", "길드"]);
+    expect(new Set(CONCEPT_FACILITY_TEMPLATES.map((bundle) => bundle.id)).size).toBe(19);
+    expect(conceptFacilityTemplateLabels().slice(0, 9)).toEqual(["여관", "민가", "상점", "술집", "서재", "대장간", "교회", "창고", "길드"]);
   });
 
   it("모든 초안이 타일셋 검증을 통과한다(역할·크기·개수·바닥·벽)", () => {
@@ -106,7 +109,32 @@ describe("개념 꾸러미 초안 묶음 — 데이터 정합", () => {
 });
 
 describe("개념 꾸러미 초안 묶음 — 시드와 호출", () => {
-  it("실내 칩셋에 꾸러미가 없으면 아홉 초안을 전부 시드하고 빈 배열은 두지 않는다", () => {
+  it("재사용한 접수실을 고쳐도 다른 시설로 번지지 않는다", () => {
+    const copies = cloneConceptFacilityTemplates();
+    const clinic = copies.find((bundle) => bundle.id === "clinic")!;
+    const townhall = copies.find((bundle) => bundle.id === "townhall")!;
+    const clinicCounter = clinic.things.find((thing) => thing.placeIds.includes("reception") && thing.objectId === "counter")!;
+    const townhallCounter = townhall.things.find((thing) => thing.placeIds.includes("reception") && thing.objectId === "counter")!;
+    clinicCounter.chips.length = 0;
+    clinicCounter.placeIds.length = 0;
+    clinic.places.find((place) => place.id === "reception")!.size = "s";
+    expect(townhallCounter.chips).toEqual(["block", "event"]);
+    expect(townhallCounter.placeIds).toEqual(["reception"]);
+    expect(townhall.places.find((place) => place.id === "reception")!.size).toBe("l");
+    expect(CONCEPT_FACILITY_TEMPLATES.find((bundle) => bundle.id === "clinic")!.things.find((thing) => thing.id === clinicCounter.id)!.chips).toEqual(["block", "event"]);
+  });
+
+  it("옛 프로젝트에 사용자가 고친 여관만 있으면 확장 초안을 자동으로 끼워 넣지 않는다", () => {
+    const project = createBlankProject();
+    const inn = cloneConceptFacilityTemplates()[0]!;
+    inn.label = "내 여관";
+    inn.things = inn.things.filter((thing) => thing.objectId !== "piano");
+    const authored = structuredClone([inn]);
+    project.tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles = [inn];
+    ensureConceptBundles(project);
+    expect(liveBundlesForTileset(project, INTERIOR_ROOM_TILESET_ID)).toEqual(authored);
+  });
+  it("실내 칩셋에 꾸러미가 없으면 등록된 초안을 전부 시드하고 빈 배열은 두지 않는다", () => {
     const project = createBlankProject();
     expect(project.tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles).toBeUndefined();
     expect(liveBundlesForTileset(project, INTERIOR_ROOM_TILESET_ID).map((bundle) => bundle.id)).toEqual(CONCEPT_FACILITY_TEMPLATES.map((bundle) => bundle.id));
@@ -160,16 +188,53 @@ describe("개념 꾸러미 초안 묶음 — 시드와 호출", () => {
 });
 
 describe("개념 꾸러미 초안 묶음 — 시공", () => {
+  it.each([7, 19, 42])("학교 책상·걸상은 최종 맵에서도 한 쌍으로 남는다(seed %s)", (seed) => {
+    const school = CONCEPT_FACILITY_TEMPLATES.find((bundle) => bundle.id === "school")!;
+    const { map, rooms } = buildTemplate(school, seed);
+    for (const room of rooms.filter((entry) => entry.placeId === "classroom")) {
+      let desks = 0;
+      let stools = 0;
+      for (let y = room.y; y < room.y + room.h; y += 1) {
+        for (let x = room.x; x < room.x + room.w; x += 1) {
+          const tile = map.upperTiles[y * map.width + x];
+          if (tile === VR.SQUARE_TABLE) {
+            desks += 1;
+            expect(map.upperTiles[(y + 1) * map.width + x]).toBe(VR.STOOL);
+          }
+          if (tile === VR.STOOL) {
+            stools += 1;
+            expect(map.upperTiles[(y - 1) * map.width + x]).toBe(VR.SQUARE_TABLE);
+          }
+        }
+      }
+      expect(desks).toBe(2);
+      expect(stools).toBe(2);
+    }
+  });
+
+  it.each(["clinic", "barracks", "farmhouse", "manor", "hunter"])("%s의 침대에 유료 숙박을 자동으로 붙이지 않는다", (id) => {
+    const bundle = CONCEPT_FACILITY_TEMPLATES.find((entry) => entry.id === id)!;
+    const built = buildTemplate(bundle);
+    const commands = built.map.events.flatMap((event) => [...event.commands, ...(event.pages ?? []).flatMap((page) => page.commands)]);
+    expect(commands.some((command) => command.kind === "inn")).toBe(false);
+    expect(built.map.events.some((event) => event.id.includes("bed_"))).toBe(true);
+  });
+
   for (const bundle of CONCEPT_FACILITY_TEMPLATES) {
     it(`${bundle.label}: plan/walkability 경고 없이 서고 물건이 전부 앉는다`, () => {
       const built = buildTemplate(bundle);
       const bad = built.warnings.filter((line) => line.startsWith("plan:") || line.startsWith("walkability:") || line.includes("자리 없음") || line.includes("정의를 찾지 못함"));
       expect(bad, `${bundle.label}\n${built.warnings.join("\n")}`).toEqual([]);
       for (const thing of bundle.things.filter((entry) => entry.required)) {
-        expect(mapHasObject(built.map, thing.objectId), `${bundle.label}: 필수 ${thing.label}(${thing.objectId}) 없음`).toBe(true);
+        for (const placeId of thing.placeIds) {
+          const level = bundle.places.find(place => place.id === placeId)?.level ?? 1;
+          const mapId = `map_${bundle.id}_tpl${level > 1 ? `_${level}f` : ""}`;
+          expect(mapHasObject(built.maps[mapId]!, thing.objectId), `${bundle.label}/${placeId}: 필수 ${thing.label}(${thing.objectId}) 없음`).toBe(true);
+        }
       }
-      const layout = layoutConceptFacility(bundle, bundle.facilities[0]!);
-      expect(built.rooms.length).toBe(layout.rooms.length);
+      const roomCount = conceptFacilityLevels(bundle, bundle.facilities[0]!).reduce((count, level) =>
+        count + layoutConceptFacility(bundle, bundle.facilities[0]!, { level }).rooms.length, 0);
+      expect(built.rooms.length).toBe(roomCount);
       expect(built.map.events.some((event) => event.id.startsWith("ev_concept_")), `${bundle.label}: 칩 이벤트 없음`).toBe(true);
     });
   }
@@ -180,8 +245,10 @@ describe("개념 꾸러미 초안 묶음 — 시공", () => {
       const right = Math.max(...layout.rooms.map((room) => room.x + room.w));
       // 구조물 오른쪽 끝에서 맵 오른쪽 끝까지 2열 이하 (벽+천장 보더 1 + 여유 1).
       expect(layout.width - right, `${bundle.id} 가로 여백`).toBeLessThanOrEqual(2);
-      // 정문 아래는 출구 계단+천장 여백 2행이면 충분하다.
-      expect(layout.height - layout.door.y, `${bundle.id} 세로 여백`).toBeLessThanOrEqual(3);
+      // Unequal room depths need their full footprint, not the entrance room's depth.
+      const bottom = Math.max(...layout.rooms.map(room => room.y + room.h));
+      expect(layout.height - bottom, `${bundle.id} 세로 여백`).toBeLessThanOrEqual(2);
+      expect(layout.height).toBeGreaterThan(bottom);
     }
   });
 

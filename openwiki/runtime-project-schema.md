@@ -171,3 +171,11 @@ states 5)에 아이템만 넣으면 **프로젝트가 부팅 중에 스스로 �
 내보낸 파일명 어간과 일치) → 같은 파일을 빈 프로젝트 편집기로 되가져와 맵 수가 원본과 같아짐.
 세이브 네임스페이스의 파일/번들 분기는 `test/oprnGameFile.test.ts` 가 고정한다. 증거 PNG 는
 `verify-shots/oprn-single-file-game/`.
+
+## 연결 실내 도면의 영속성 (2026-09-05)
+
+집·마을에서 자동 생성한 실내도 기존 `GameMap.roomHarnessPlan`에 개념 오버레이가 포함된 플랜을 저장한다. 새 스키마 필드나 버전 증분은 없다. `createHouseInteriorMap`은 현재 프로젝트의 꾸러미·구조물 그림을 읽고, 재로드 후에는 이 플랜으로 방 세션을 복원할 수 있다. `test/interiorConceptRoutes.test.ts`가 실제 `serialize` → `deserialize` 후 장소·물건 오버레이 보존을 검증한다. 옛 플랜은 실내 재시공 때 꾸러미에 연결된다.
+
+## 개념 장소 형상 (2026-09-05)
+
+`ConceptPlaceRecord.shape?: "rect"|"l"|"alcove"`는 장소의 선택적 바닥 형태다. 생략은 이전 직사각형과 동일하다. cloneConceptBundle·plan 파서·validateTileset·방 하네스 플랜·serialize/deserialize가 보존/검증한다. 모양을 바꾸어도 장소 id나 이벤트 소유 공간이 여러 개로 분할되지 않는다. 구체 도면은 `project/interiorRoomFootprint.ts`의 사각형 합집합으로 해석한다.

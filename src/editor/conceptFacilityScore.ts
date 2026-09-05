@@ -163,7 +163,7 @@ export function scoreConceptFacility(input: ConceptFacilityScoreInput): ConceptF
   const entrances = input.rooms.filter((room) => room.role === "entrance");
   const entrancesMissingCounter = entrances.filter((room) => {
     const overlay = overlayRoom(input, room.roomId);
-    return !(overlay?.things.some((thing) => thing.objectId.includes("counter")) ?? false);
+    return !roomHasInn(input, room) && !(overlay?.things.some((thing) => thing.objectId.includes("counter")) ?? false);
   });
   const maxLevel = Math.max(1, ...(input.levels ?? [1]));
   const hasStairs = Object.values(input.overlay?.rooms ?? {}).some((room) =>

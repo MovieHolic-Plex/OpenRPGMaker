@@ -24,6 +24,7 @@ import {
 } from "@/editor/roomHarness/engine";
 import { INTERIOR_ROOM_KIT } from "@/editor/roomHarness/interiorKit";
 import { GET_CONCEPT_FACILITY_TOOL, PLACE_CONCEPT_TOOL } from "./placeConceptTool";
+import { bindInteriorConceptPlan } from "@/editor/interiorConceptPlan";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { COORD_SCHEMA, RECT_SCHEMA, REPLACE_EXISTING_SCHEMA } from "./schemaShapes";
 
@@ -39,6 +40,7 @@ const INTERIOR_ROOM_RECT_SCHEMA: JsonSchema = {
     w: { type: "integer" },
     h: { type: "integer" },
     theme: { type: "string" },
+    shape: { type: "string", enum: ["rect", "l", "alcove"] },
     floorTile: { type: "integer" },
   },
   required: ["x", "y", "w", "h"],
@@ -90,7 +92,7 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
   {
     name: "start_interior_room_session",
     description:
-      "**새** 주민 집 실내(villager-room-v1)를 새 mapId 로 시공하는 멀티턴 세션을 시작한다.  개념 꾸러미에 없는 실내(rooms[] 역할 테마 bedroom|study|dining|kitchen|storage|tavern|corridor, door, wallMaterial)에 쓴다 → advance_interior_room_build 반복 → evaluate_interior_room. create_map 만 하고 멈추지 말 것. **기존 실내 맵을 고치는 요청에는 금지** — 그 맵의 타일·이벤트가 전부 삭제된다. 기존 실내는 furnish_interior_space({mapId, roomId})." +
+      "**새** 주민 집 실내(villager-room-v1)를 새 mapId 로 시공하는 멀티턴 세션을 시작한다.  개념 꾸러미의 장소를 지정한 도면(rooms[] theme=장소 id, door, wallMaterial)에 쓴다. 내용물은 꾸러미에서 읽는다. 없는 장소는 get_concept_facility의 sources를 조합해 place_concept(plan)으로 설계한다 → advance_interior_room_build 반복 → evaluate_interior_room. create_map 만 하고 멈추지 말 것. **기존 실내 맵을 고치는 요청에는 금지** — 그 맵의 타일·이벤트가 전부 삭제된다. 기존 실내는 furnish_interior_space({mapId, roomId})." +
       "절차: plan → floor(bbox 바닥) → walls → furniture → entrance(입구 이벤트) → critique. " +
       "wings는 통행 바닥 bbox 합집합. 벽은 floor 이후 세운다. 침대 355|356은 hard 좌우 쌍. " +
       "이어서 advance_interior_room_build 반복 또는 run_interior_room_pipeline 원샷. " +
@@ -197,7 +199,7 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
   {
     name: "run_interior_room_pipeline",
     description:
-      "**새** 실내 방을 새 mapId 로 원샷 절차 생성한다(floor bbox→walls→furniture→entrance→critique).  기존 실내 맵을 고치는 요청에는 금지(타일·이벤트 전부 삭제) — furnish_interior_space 를 쓸 것. 개념 꾸러미 시설은 place_concept." +
+      "**새** 실내 방을 새 mapId 로 원샷 절차 생성한다(floor bbox→walls→furniture→entrance→critique).  기존 실내 맵을 고치는 요청에는 금지(타일·이벤트 전부 삭제) — furnish_interior_space 를 쓸 것. 모든 신규 실내의 기본 경로는 get_concept_facility → place_concept(plan). 이 도구도 꾸러미의 장소·물건을 읽는다." +
       "멀티턴 품질 경로가 기본이면 start_interior_room_session을 써라. " +
       "침대는 355|356 hard 쌍, 벽면 장식과 바닥 잔해(깨진 유리 등)를 구분한다. " +
       "**기존 실내 맵 수정에는 쓰지 마라** — 이미 있는 mapId 는 map-exists 로 거부되고, " +
@@ -217,6 +219,7 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
         innerDoors: { type: "array", items: COORD_SCHEMA, description: "파티션 개구부 [{x,y}]" },
         door: COORD_SCHEMA,
         theme: { type: "string" },
+    shape: { type: "string", enum: ["rect", "l", "alcove"] },
         tilesetId: { type: "string" },
         themeModifiers: {
           type: "array",
@@ -302,7 +305,7 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
       const sessionId = session.id;
       const map = draft.maps[session.mapId];
       if (!map) throw new ToolError(`map 없음: ${session.mapId}`, { code: "map-not-found" });
-      const plan = session.plan as InteriorRoomPlan;
+      let plan = bindInteriorConceptPlan(session.plan as InteriorRoomPlan, draft);
       if (!plan.rooms || plan.rooms.length === 0) {
         throw new ToolError("rooms 플랜이 아닌 세션 — 공간 단위 재시공은 rooms 구조에서만 가능", { code: "invalid-args" });
       }
@@ -313,6 +316,11 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
       const theme = args.theme !== undefined ? String(args.theme).trim() : undefined;
       if (theme !== undefined && !theme) {
         throw new ToolError("theme 이 비어 있다", { code: "invalid-args" });
+      }
+      if (theme && plan.rooms?.some(room => room.id === roomId)) {
+        const target = plan.rooms.find(room => room.id === roomId)!;
+        const rebound = bindInteriorConceptPlan({ ...plan, concept: undefined, rooms: [{ ...target, theme }] }, draft);
+        plan = { ...plan, concept: { ...plan.concept!, rooms: { ...plan.concept!.rooms, ...rebound.concept!.rooms } } };
       }
       const seed = args.seed !== undefined ? Math.floor(Number(args.seed)) : undefined;
       const modifiers = args.modifiers === undefined

@@ -54,6 +54,7 @@ export function interiorObjectFromKit(kit: SectionStructureKitDef): InteriorObje
   return {
     id: kit.id,
     label: kit.name ?? kit.id,
+    ...(kit.ai?.description ? { description: kit.ai.description } : {}),
     role,
     width: size.width,
     height: size.height,
@@ -162,7 +163,7 @@ export function seedInteriorTilesetCatalog(
         ...kit,
         learnedFrom: "interior-catalog" as const,
         ai: {
-          description: "",
+          description: object.description ?? "",
           placementRules: "",
           ...(object.role ? { interiorRole: object.role } : {}),
           snap: object.snap,

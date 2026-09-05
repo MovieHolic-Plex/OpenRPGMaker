@@ -49,6 +49,7 @@ export function createVillageHouseInteriors(
     const footprintArea = exteriorFootprintArea(house.templateId, house.bbox);
     const interiorSeed = (seed ^ Math.imul(index + 1, 0x9e3779b1)) >>> 0;
     const interior = createHouseInteriorMap({
+      project: draft,
       id: interiorMapId,
       name: `${owner}의 집 내부`,
       returnMapId: map.id,

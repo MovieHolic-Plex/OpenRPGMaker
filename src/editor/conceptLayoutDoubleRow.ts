@@ -37,6 +37,11 @@ function placeSize(place: ConceptPlaceRecord): ConceptPlaceSize {
   return place.size ?? "m";
 }
 
+function placeBox(place: ConceptPlaceRecord): { w: number; h: number } {
+  const box = ROOM_FOOTPRINT[placeSize(place)];
+  return place.shape && place.shape !== "rect" ? { w: box.w + 2, h: box.h + 3 } : box;
+}
+
 function placeCount(place: ConceptPlaceRecord): number {
   const count = place.count ?? 1;
   return Math.min(CONCEPT_PLACE_COUNT_MAX, Math.max(1, count));
@@ -69,6 +74,7 @@ function layoutRoom(instance: Instance, x: number, y: number, w: number, h: numb
   const floorTile = floorTileOf(instance.place);
   return {
     id: instance.id,
+    ...(instance.place.shape ? { shape: instance.place.shape } : {}),
     placeId: instance.place.id,
     role: instance.role,
     x,
@@ -82,21 +88,21 @@ function layoutRoom(instance: Instance, x: number, y: number, w: number, h: numb
 
 function rowWidth(instances: readonly Instance[]): number {
   if (instances.length === 0) return 0;
-  const boxes = instances.map((entry) => ROOM_FOOTPRINT[placeSize(entry.place)]);
+  const boxes = instances.map((entry) => placeBox(entry.place));
   return boxes.reduce((sum, box) => sum + box.w, 0) + Math.max(0, boxes.length - 1) * H_GAP;
 }
 
 function rowHeight(instances: readonly Instance[]): number {
   if (instances.length === 0) return 0;
-  return Math.max(...instances.map((entry) => ROOM_FOOTPRINT[placeSize(entry.place)].h));
+  return Math.max(...instances.map((entry) => placeBox(entry.place).h));
 }
 
-function placeRow(instances: readonly Instance[], originX: number, y: number, h: number): ConceptLayoutRoom[] {
+function placeRow(instances: readonly Instance[], originX: number, y: number, h: number, align: "north" | "south"): ConceptLayoutRoom[] {
   const rooms: ConceptLayoutRoom[] = [];
   let x = originX;
   for (const instance of instances) {
-    const box = ROOM_FOOTPRINT[placeSize(instance.place)];
-    rooms.push(layoutRoom(instance, x, y, box.w, h));
+    const box = placeBox(instance.place);
+    rooms.push(layoutRoom(instance, x, y + (align === "south" ? h - box.h : 0), box.w, box.h));
     x += box.w + H_GAP;
   }
   return rooms;
@@ -122,6 +128,23 @@ export function layoutConceptFacilityDoubleRow(
     }
   }
 
+  // 방 하나만 있는 층(다락 등)은 연결할 이웃이 없으므로 복도 밴드를 만들지 않는다.
+  const only = instances.length === 1 ? instances[0] : undefined;
+  if (only) {
+    const box = placeBox(only.place);
+    const room = layoutRoom(only, MARGIN_X, ORIGIN_Y, box.w, box.h);
+    const door = { x: room.x + Math.floor(room.w / 2), y: room.y + room.h - 1 };
+    return {
+      width: room.x + room.w + MARGIN_X - 1,
+      height: door.y + 3,
+      door,
+      rooms: [room],
+      innerDoors: [],
+      ...(facility.wall && facility.wall !== "cream" ? { wallMaterial: facility.wall } : {}),
+      ...(level !== undefined && level > 1 ? { level } : {}),
+    };
+  }
+
   const entrance = instances.find((entry) => entry.role === "entrance") ?? null;
   const walkway = instances.find((entry) => entry.role === "walkway") ?? null;
   const rooms = instances.filter((entry) => entry !== entrance && entry !== walkway);
@@ -137,7 +160,7 @@ export function layoutConceptFacilityDoubleRow(
   const southW = rowWidth(southBand);
   const bandW = Math.max(northW, southW, MIN_BAND_W, options.minBandWidth ?? 0);
   const northH = rowHeight(north);
-  const southH = Math.max(rowHeight(southBand), hallInstance ? ROOM_FOOTPRINT[placeSize(hallInstance.place)].h : 0);
+  const southH = Math.max(rowHeight(southBand), hallInstance ? placeBox(hallInstance.place).h : 0);
 
   const laid: ConceptLayoutRoom[] = [];
   const innerDoors: { x: number; y: number }[] = [];
@@ -145,7 +168,7 @@ export function layoutConceptFacilityDoubleRow(
 
   if (north.length > 0) {
     const x = MARGIN_X + Math.floor((bandW - northW) / 2);
-    const northRooms = placeRow(north, x, cursorY, northH);
+    const northRooms = placeRow(north, x, cursorY, northH, "south");
     laid.push(...northRooms);
     cursorY += northH;
     for (const room of northRooms) innerDoors.push({ x: room.x + Math.floor(room.w / 2), y: cursorY });
@@ -163,13 +186,13 @@ export function layoutConceptFacilityDoubleRow(
 
   if (southBand.length > 0) {
     const x = MARGIN_X + Math.floor((bandW - southW) / 2);
-    const southRooms = placeRow(southBand, x, cursorY + V_GAP, southH);
+    const southRooms = placeRow(southBand, x, cursorY + V_GAP, southH, "north");
     for (const room of southRooms) innerDoors.push({ x: room.x + Math.floor(room.w / 2), y: cursorY });
     cursorY += V_GAP;
-    laid.push(...placeRow(southBand, x, cursorY, southH));
+    laid.push(...southRooms);
     cursorY += southH;
   } else if (hallInstance) {
-    const box = ROOM_FOOTPRINT[placeSize(hallInstance.place)];
+    const box = placeBox(hallInstance.place);
     innerDoors.push({ x: MARGIN_X + Math.floor(bandW / 2), y: cursorY });
     cursorY += V_GAP;
     laid.push(layoutRoom(hallInstance, MARGIN_X, cursorY, bandW, box.h));
@@ -199,7 +222,7 @@ export function layoutConceptFacilityDoubleRow(
   const right = Math.max(...laid.map((room) => room.x + room.w));
   return {
     width: right + MARGIN_X - 1,
-    height: door.y + 3,
+    height: Math.max(...laid.map(room => room.y + room.h)) + 2,
     door,
     rooms: laid,
     innerDoors,

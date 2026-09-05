@@ -324,7 +324,7 @@ export function bakeInteriorObject(object: InteriorObjectDef, id: string, name: 
     ),
     learnedFrom: "db-authored",
     ai: {
-      description: "",
+      description: object.description ?? "",
       placementRules: "",
       ...(object.role ? { interiorRole: object.role } : {}),
       snap: object.snap,

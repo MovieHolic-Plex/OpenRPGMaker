@@ -373,7 +373,7 @@ for (const plan of PLANS) {
 
 // 계단 스탬프 — 파이프라인 이후에 찍으므로 그 칸의 가구를 걷어낸다.
 // 465~467 붉은 카펫 대계단은 귀족 전용(사용자 확정)이라 서민 여관에는 쓰지 않는다:
-// 하행은 어둠 하강 계단 474|475 쌍, 상행은 대각 계단 444 한 칸(전형적 쯔꾸르 문법).
+// 하행은 독립 계단 474 한 칸, 상행은 대각 계단 444 한 칸.
 const TALL_PAIR_TOPS = new Set([263, 269, 389, 88, 87]);
 function stampStairs(map: GameMap, cells: ReadonlyArray<{ x: number; y: number; tile: number }>): void {
   for (const { x, y, tile } of cells) {
@@ -384,16 +384,15 @@ function stampStairs(map: GameMap, cells: ReadonlyArray<{ x: number; y: number; 
   }
 }
 
-// 여관 '2층' 설정 보정: 남쪽 출구를 아래층으로 내려가는 어둠 계단참으로 표현(474|475 쌍).
+// 여관 '2층' 설정 보정: 남쪽 출구의 하강 계단은 474 한 칸이다.
 {
   const inn = maps.find((m) => m.id === "map_rp_inn_floor_v1");
   const plan = PLANS.find((p) => p.mapId === "map_rp_inn_floor_v1");
   if (inn && plan) {
     stampStairs(inn, [
       { x: plan.door.x, y: plan.door.y, tile: 474 },
-      { x: plan.door.x + 1, y: plan.door.y, tile: 475 },
     ]);
-    console.log(`inn descending stairs (474|475) at (${plan.door.x}~${plan.door.x + 1}, ${plan.door.y})`);
+    console.log(`inn descending stair (474) at (${plan.door.x}, ${plan.door.y})`);
   }
 }
 
