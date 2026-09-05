@@ -13,6 +13,7 @@ import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
 import { eventDisplayName } from "@/project/eventDisplayName";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
+import { EMOTE_LABELS } from "@/project/emotes";
 import type { Command, SwitchValue, VariableOperand } from "@/project/types";
 
 import { relationshipStateName } from "@/project/relationshipState";
@@ -325,6 +326,12 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     valuePart(animationName(cmd.animationId)),
     ...(cmd.wait ? [plainPart(" / "), valuePart("대기")] : [])
   ),
+  showEmote: (cmd) => commandLine(
+    "이모트 표시",
+    valuePart(EMOTE_LABELS[cmd.emote]),
+    plainPart(" / "),
+    valuePart(emoteTargetSummary(cmd.target))
+  ),
   showPicture: (cmd) =>
     commandLine(
       "그림 표시",
@@ -488,6 +495,11 @@ function animationTargetSummary(target: Extract<Command, { kind: "showAnimation"
   if (target === "player") return "주인공";
   if ("eventId" in target) return `이벤트 ${target.eventId || "현재"}`;
   return `(${target.x},${target.y})`;
+}
+
+function emoteTargetSummary(target: Extract<Command, { kind: "showEmote" }>["target"]): string {
+  if (target === "player") return "주인공";
+  return target.eventId ? `이벤트 ${target.eventId}` : "이 이벤트";
 }
 
 function weatherLabel(kind: Extract<Command, { kind: "setWeather" }>["weather"]): string {

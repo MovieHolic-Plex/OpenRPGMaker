@@ -175,3 +175,4 @@ states 5)에 아이템만 넣으면 **프로젝트가 부팅 중에 스스로 �
 ## 마을 설계서 (2026-09-05)
 
 v4에 선택 필드 villagePresets[].design, defaultVillagePresetId, maps[].villageDesignSource를 추가했다. 레거시 프리셋은 자동 전환하지 않는다. 설계서·기본 참조는 load validator가 검사하며 JSON 저장/재로드 계약 테스트가 있다. 상세 계약과 경계는 [마을 설계서](village-design.md).
+- 2026-09-05 emote recovery: native `showEmote` retains target/emote/durationMs through serialize/deserialize. `repairProjectReferences` (via `pruneDanglingCommandRefs`) recursively converts missing named event targets to `{eventId:""}`; native validation checks icon vocabulary, target shape and numeric duration. No stored project version bump is required for this additive command.

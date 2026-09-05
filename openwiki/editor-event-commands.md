@@ -99,3 +99,7 @@ Event command edit dialogs, cutscene/horror/puzzle authoring tools, place_npc/ma
   `project.assets.uploaded` 그림 리소스 id 를 `resourceId` 에 넣는다.
 - 커버: `test/recollectionBeats.test.ts`, `test/showPictureForm.test.ts`,
   `test/eventEditorMemoryOpeningTemplate.test.ts`, `test/scriptCutsceneIntegration.test.ts`.
+
+## Recovered native emote command (2026-09-05)
+
+`showEmote` displays one of the 12 `src/project/emotes.ts` icons above the player or an event, then immediately continues. An empty eventId means the executing event. The native picker/schema/factory, `showEmoteBody` pictorial radio grid, command summary, draft validator and interpreter share that contract. Duration defaults to 1200ms and clamps to 200–10000ms. Invalid named event references warn during authoring; load repair converts removed targets to the current-event sentinel without making the project unloadable. Troop context explicitly reports unsupported.

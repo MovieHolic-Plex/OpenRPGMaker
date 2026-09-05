@@ -6,6 +6,7 @@
 // 등록 기준: 필드가 12종 어휘로 표현되는 명령. 표현되지 않는 부분은
 // f.custom() 으로 전용 위젯에 위임한다 (moveRoute / choiceOptions / condition / shopStock).
 
+import { EMOTE_KINDS, EMOTE_LABELS, EMOTE_MAX_DURATION_MS, EMOTE_MIN_DURATION_MS, isEmoteKind } from "@/project/emotes";
 import { defineCommand, type BranchSpec } from "./defineCommand";
 import { f } from "./fieldTypes";
 
@@ -598,6 +599,17 @@ defineCommand({
     transitionMs: f.number("전환 시간", { min: 0, unit: "ms", optional: true }),
   },
   summary: (c) => `환경광 ${num(c.ambient)}%`,
+});
+
+defineCommand({
+  kind: "showEmote",
+  family: "atmosphere",
+  label: "이모트 표시",
+  fields: {
+    emote: f.enum("이모트", EMOTE_KINDS.map((kind) => ({ value: kind, label: EMOTE_LABELS[kind] }))),
+    durationMs: f.number("표시 시간", { min: EMOTE_MIN_DURATION_MS, max: EMOTE_MAX_DURATION_MS, unit: "ms", optional: true }),
+  },
+  summary: (c) => `${EMOTE_LABELS[isEmoteKind(c.emote) ? c.emote : "heart"]} 띄우기`,
 });
 
 defineCommand({

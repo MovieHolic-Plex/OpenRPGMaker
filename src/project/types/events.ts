@@ -17,6 +17,8 @@ import type { Season, TimePhase } from "../gameTime";
 import type { FieldSpawnDef } from "./project";
 import type { RoguelikeRunCondition } from "../roguelikeRun";
 import type { RelationshipCondition, RelationshipState } from "../relationshipState";
+import type { EmoteKind } from "@/project/emotes";
+
 
 export type Trigger =
   | { kind: "action" }
@@ -219,6 +221,8 @@ export type LightingState = {
 
 export type WeatherKind = "none" | "rain" | "storm" | "snow" | "fog";
 
+export type EmoteTarget = "player" | { readonly eventId: string };
+
 export type ShowAnimationTarget =
   | "player"
   | { readonly eventId: string }
@@ -330,6 +334,8 @@ export type Command =
   | { kind: "removeLight"; id?: string; all?: boolean }
   | { kind: "setWeather"; weather: WeatherKind; intensity?: number; transitionMs?: number }
   | { kind: "showAnimation"; target: ShowAnimationTarget; animationId: BattleAnimationId; wait?: boolean }
+  // 정수리 이모트: 대사창을 열지 않고 감정만 보여준다. emote 어휘는 @/project/emotes 가 소유한다.
+  | { kind: "showEmote"; target: EmoteTarget; emote: EmoteKind; durationMs?: number }
   // 동영상 리소스는 아직 ResourceKind 에 없다(다른 레인이 확장 중) — 지금은 리소스 id 문자열만 받는다.
   | { kind: "playMovie"; resourceId: string; wait?: boolean; skippable?: boolean }
   | {

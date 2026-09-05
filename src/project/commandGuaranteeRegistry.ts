@@ -210,6 +210,8 @@ export const COMMAND_GUARANTEES = {
   setWeather: guarantee("atmosphere", { ...playerPause, quick: true }),
   // showAnimation: battleEvents.ts 가 showBattleAnimation 콜백(m2-103 동일 경로)으로 실제 실행(Step 3).
   showAnimation: guarantee("media", { ...playerPause, quick: true, support: troopFull }),
+  // showEmote: 슬이 정수리 스프라이트를 띄우고 직시 재개한다(대기 없음).
+  showEmote: guarantee("media", { ...playerPause, quick: true }),
   showPicture: guarantee("media", { ...playerPause, quick: true }),
   erasePicture: guarantee("media", playerPause),
   // playAudio/stopAudio: battleEvents.ts 가 호스트 오디오 콜백으로 실제 실행(troop-full).

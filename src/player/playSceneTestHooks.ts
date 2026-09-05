@@ -1,4 +1,5 @@
 import type Phaser from "phaser";
+import { describeSceneEmotes, type SceneEmoteDebug } from "@/player/playSceneEmotes";
 import type { Dir, Input } from "@/player/input";
 import { reseedSessionRng, type PlaySession } from "@/project/session";
 import { applyDebugOp, applyStatePreset, type DebugOp, type StatePreset } from "@/testing/debugSession";
@@ -54,6 +55,8 @@ type TestHookWindow = Window & {
   __oprnCamera?: () => CameraDebug;
   /** 재생성·카메라 스냅 계수기 스냅숏. 값이 없으면(계측 없는 씬) null. */
   __oprnPerf?: () => RuntimePerfCounters | null;
+  __oprnEmotes?: () => readonly SceneEmoteDebug[];
+
   __oprnSetActorVitals?: (actorId: string, hp: number, mp: number) => void;
   __oprnSetMediaState?: (state: MediaStateDebug) => void;
   __oprnDebug?: RuntimeDebugHook;
@@ -205,6 +208,8 @@ export function installPlaySceneTestHooks(
   w.__oprnCharacterSprites = () => characterSpritesDebug(scene);
   w.__oprnCamera = () => cameraDebug(scene);
   w.__oprnPerf = () => perfCountersDebug(scene);
+  w.__oprnEmotes = () => describeSceneEmotes(scene as unknown as Parameters<typeof describeSceneEmotes>[0]);
+
   w.__oprnActionCombat = () => actionCombatDebug(scene);
   // 런타임 디버그 쓰기 훅(항상 활성). 조작 후 syncRuntimeState로 화면/상태 JSON을 갱신한다.
   const applyAndSync = (op: DebugOp): void => {
@@ -276,6 +281,8 @@ export function installPlaySceneTestHooks(
     delete w.__oprnCharacterSprites;
     delete w.__oprnCamera;
     delete w.__oprnPerf;
+    delete w.__oprnEmotes;
+
     delete w.__oprnSetActorVitals;
     delete w.__oprnSetMediaState;
     delete w.__oprnDebug;

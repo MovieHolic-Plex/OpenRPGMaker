@@ -27,6 +27,7 @@ export type ReferenceContext = {
   resourceIds: ReadonlySet<string>;
   /** 생략하면 기존 호출자처럼 진영 명령을 참조 없는 명령으로 취급한다. */
   factionIds?: ReadonlySet<string>;
+
 };
 
 export function validateEventPages(pages: readonly EventPage[], context: ReferenceContext): void {
@@ -303,12 +304,15 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
     case "showAnimation":
       assert(context.animationIds.has(command.animationId), `showAnimation: animationId가 존재하지 않습니다: ${command.animationId}`);
       return;
+    case "showEmote":
+      return;
     case "shop": {
       // 상점은 아이템 탭과 장비 탭을 함께 진열한다 — 예전에는 items 만 대조해서
       // 무기점(장비 id)을 만들면 프로젝트가 참조 검증에서 걸려 아예 로드되지 않았다.
       const sellable = union(context.itemIds, context.equipmentIds);
       requireExistingIds("shop: item", command.itemIds, sellable);
       if (command.stock) requireExistingIds("shop stock: item", command.stock.map((entry) => entry.itemId), sellable);
+
       return;
     }
   }

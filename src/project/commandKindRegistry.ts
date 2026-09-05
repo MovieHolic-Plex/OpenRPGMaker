@@ -67,6 +67,7 @@ export const COMMAND_KINDS = [
   "removeLight",
   "setWeather",
   "showAnimation",
+  "showEmote",
   "showPicture",
   "erasePicture",
   "playAudio",

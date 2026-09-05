@@ -746,6 +746,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       case "setLighting":
       case "addLight":
       case "removeLight":
+      case "showEmote":
       case "setWeather":
       case "addFollower":
       case "removeFollower":

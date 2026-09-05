@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **44쪽 / 1463KB / 약 414,522 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **44쪽 / 1468KB / 약 416,113 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -17,11 +17,11 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 |---|---|---|---|---|
 | `openwiki/editor-ai-panel.md` | 253KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 441 | ~73,372 |
 | `openwiki/editor-ai-tools.md` | 76KB | 66KB ⚠상한 초과 — 절을 더 쪼개라 | 191 | ~21,880 |
-| `openwiki/editor-database.md` | 180KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 864 | ~51,627 |
+| `openwiki/editor-database.md` | 181KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 872 | ~51,874 |
 | `openwiki/editor-event-authoring.md` | 117KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 557 | ~34,046 |
 | `openwiki/editor-pre-edit-routing.md` | 69KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 197 | ~19,760 |
 | `openwiki/runtime-battle.md` | 117KB | 31KB | 345 | ~33,437 |
-| `openwiki/runtime-project-schema.md` | 54KB | 42KB | 178 | ~14,388 |
+| `openwiki/runtime-project-schema.md` | 54KB | 42KB | 179 | ~14,484 |
 | `openwiki/runtime-sessions.md` | 54KB | 45KB | 119 | ~14,335 |
 | `openwiki/testing.md` | 101KB | 45KB | 661 | ~28,283 |
 
@@ -62,6 +62,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-workflows-misc.md` | 1 | `src/editor/authoringTestGate.ts` |
 | `openwiki/large-village-generation.md` | 2 | `HANDOFF.json`, `src/project/defaults/largeRiverMarketVillageBuild.ts` |
 | `openwiki/runtime-battle.md` | 4 | `hero-03-battle-idle.png`, `raw.png`, `reference.png`, `starter/hires/hero-0N-battle.png` |
+| `openwiki/runtime-pre-edit-routing.md` | 1 | `verify-shots/runtime-qa/emote/SUMMARY.md` |
 | `openwiki/runtime-project-schema.md` | 2 | `.json`, `project.json` |
 | `openwiki/runtime-sessions.md` | 1 | `output/evidence/stardew/stardew-supabase.json` |
 | `openwiki/se-catalog.md` | 8 | `.mjs`, `audio-features.json`, `audition.html`, `cross-check.json`, `dist/se-staging/audition.html`, `inventory.json`, `labels.json`, `placed.json` |
@@ -242,7 +243,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L173` 「이 세계」 캐논은 문장 3채널에 강제된다 (2026-09-04)
 - `L188` 마을 설계서 (2026-09-05)
 
-### `openwiki/editor-database.md` — 180KB · 864줄 · ~51,627 토큰 · 통째읽기 잘림 · 깨진 줄 7
+### `openwiki/editor-database.md` — 181KB · 872줄 · ~51,874 토큰 · 통째읽기 잘림 · 깨진 줄 7
 
 - `L3` 몬스터 작업실 — 미리보기 · 행동 · 속성 (2026-09-05)
 - `L29` Database Studio chrome (2026-08-24)
@@ -283,6 +284,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L790` Database Studio v2 — 30탭 셸·폼 문법 통일 (2026-09-03)
 - `L857` 미회수 편집 후속 통합 (2026-09-05)
 - `L861` 마을 설계서 (2026-09-05)
+- `L866` 구조물 증분 메타 정정 (2026-09-05)
 
 ### `openwiki/editor-event-authoring.md` — 117KB · 557줄 · ~34,046 토큰 · 통째읽기 잘림 · 깨진 줄 16
 
@@ -320,13 +322,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L25` Page 3 canonical fields and staged commits (2026-07-30)
 - `L30` Show Picture preview opacity unit (2026-08-29)
 
-### `openwiki/editor-event-commands.md` — 42KB · 102줄 · ~11,178 토큰 · 깨진 줄 6
+### `openwiki/editor-event-commands.md` — 43KB · 106줄 · ~11,332 토큰 · 깨진 줄 6
 
 - `L7` Roguelike run control (2026-08-24)
 - `L47` 얼굴 상자(faceset-crop-box) 페인트 계약 (2026-08-28)
 - `L78` Staged edit, history, and nested drag invariants (2026-07-30)
 - `L85` Command picker, validation, and preview trust (2026-07-30)
 - `L92` 회상 스틸과 AI 그림 (2026-09-03)
+- `L103` Recovered native emote command (2026-09-05)
 
 ### `openwiki/editor-genre-packs.md` — 7KB · 42줄 · ~1,837 토큰
 
@@ -335,7 +338,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L21` Vocabulary and readiness
 - `L32` Validation
 
-### `openwiki/editor-interior-room-harness.md` — 16KB · 75줄 · ~4,627 토큰
+### `openwiki/editor-interior-room-harness.md` — 18KB · 83줄 · ~4,991 토큰
 
 - `L5` Tileset-specific map generation contract
 - `L15` Interior Room Session Harness (villager-room-v1)
@@ -344,6 +347,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L45` 소품 표면 어휘가 `PlacementZone` 으로 통일됐다 (2026-08-30, PR #316)
 - `L58` 개념 시설 시공 — place_concept 경로가 파이프라인에서 다른 점 (2026-09-02)
 - `L71` 도면 호환성과 외장 스탬프 후속 (2026-09-05)
+- `L77` 입구 예약·멀티타일 통행 복원 (2026-09-05)
 
 ### `openwiki/editor-observability.md` — 22KB · 248줄 · ~6,705 토큰 · 깨진 줄 1
 
@@ -503,11 +507,11 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L35` Storage chest authoring
 - `L41` Page 3 location/vehicle compatibility (2026-07-30)
 
-### `openwiki/runtime-pre-edit-routing.md` — 22KB · 129줄 · ~6,513 토큰
+### `openwiki/runtime-pre-edit-routing.md` — 23KB · 135줄 · ~6,756 토큰
 
-절 제목 없음 (평면 목록 페이지).
+- `L130` Recovered head emotes (2026-09-05)
 
-### `openwiki/runtime-project-schema.md` — 54KB · 178줄 · ~14,388 토큰 · 통째읽기 잘림
+### `openwiki/runtime-project-schema.md` — 54KB · 179줄 · ~14,484 토큰 · 통째읽기 잘림
 
 - `L5` 통행 컴포넌트 색인의 계약 (2026-08-30, PR #286)
 - `L13` Project schema & persistence
@@ -630,7 +634,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L34` 현재 경계
 - `L40` 검증
 
-### `openwiki/world-generation-rules.md` — 6KB · 98줄 · ~1,791 토큰
+### `openwiki/world-generation-rules.md` — 8KB · 105줄 · ~2,278 토큰
 
 - `L7` 소유 경계
 - `L20` 절대 하지 말 것 — 미리보기 전용 계산식
@@ -640,3 +644,4 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L71` 필수 랜드마크 하드 게이트 (2026-09-04)
 - `L87` 검증
 - `L95` 마을 설계서 (2026-09-05)
+- `L98` 저장·편집 검토 수정 복구 (2026-09-05)

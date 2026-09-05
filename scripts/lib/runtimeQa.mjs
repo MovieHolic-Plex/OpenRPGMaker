@@ -27,6 +27,7 @@ export const OP_KINDS = [
   "key",
   "teleport",
   "waitForRuntime",
+  "waitForEmote",
   "waitForPosition",
   // 조건 대기. 고정 sleep 만으로 UI 전이를 기다리면 느린 호스트에서 flaky 해지고,
   // 키를 정해진 횟수만큼 눌러 대사를 소진하려 하면 **NPC 를 재발동시켜 초과 입력**이 된다
@@ -402,6 +403,38 @@ export function evaluateExpect(expected, observed) {
     for (const resourceId of expected.audioObservedIncludes) {
       if (seen?.includes(resourceId)) continue;
       failures.push(`audio 미재생: ${resourceId} (관측: ${seen && seen.length > 0 ? seen.join(", ") : "없음"})`);
+    }
+  }
+
+  // 이모트는 Phaser 스프라이트라 testid 로 볼 수 없다 — __oprnEmotes 훅 관측치로 판정한다.
+  if (expected.emoteCountAtLeast !== undefined) {
+    const emotes = observed.emotes;
+    if (emotes === null || emotes === undefined) failures.push("이모트 훅 없음 — 정수리 이모트를 확인할 수 없다");
+    else if (emotes.length < expected.emoteCountAtLeast) {
+      failures.push(`emoteCountAtLeast: 기대 ${expected.emoteCountAtLeast} 이상, 실제 ${emotes.length}`);
+    }
+  }
+  if (expected.emoteFrames !== undefined) {
+    const frames = (observed.emotes ?? []).map((emote) => emote.frame);
+    for (const frame of expected.emoteFrames) {
+      if (!frames.includes(String(frame))) failures.push(`이모트 프레임 누락: ${frame} (실제 ${frames.join(",") || "없음"})`);
+    }
+  }
+  if (expected.emoteTargets !== undefined) {
+    const emotes = observed.emotes;
+    if (emotes === null || emotes === undefined) failures.push("이모트 훅 없음 — 대상별 정수리 이모트를 확인할 수 없다");
+    else {
+      for (const expectedEmote of expected.emoteTargets) {
+        const found = emotes.some(
+          (emote) => emote.target === expectedEmote.target && emote.frame === String(expectedEmote.frame) && emote.alpha > 0.05,
+        );
+        if (!found) {
+          const actual = emotes.map((emote) => `${emote.target}:${emote.frame}`).join(",") || "없음";
+          failures.push(
+            `대상별 이모트 누락: ${expectedEmote.target}:${expectedEmote.frame} (실제 ${actual})`,
+          );
+        }
+      }
     }
   }
 
