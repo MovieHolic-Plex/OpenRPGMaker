@@ -40,7 +40,6 @@ describe("worldCanon → assistant context", () => {
     expect(section).not.toBeNull();
     expect((section ?? "").length).toBeLessThan(1400);
   });
-
   it("treats a status-only shell as empty so it never emits a phantom block", () => {
     expect(worldCanonPromptSection({ status: "canon" })).toBeNull();
     const project = createBlankProject();

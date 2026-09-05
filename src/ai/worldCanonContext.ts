@@ -61,7 +61,6 @@ export function findWorldCanonAbsenceHits(text: string, value: WorldCanon | unde
   const absences = resolveWorldCanon(value).absences;
   return absences.filter((absence) => absence.length > 0 && text.includes(absence));
 }
-
 function excerpt(body: string): string {
   const flat = body.trim();
   if (flat.length <= BODY_EXCERPT_CHARS) return flat;
