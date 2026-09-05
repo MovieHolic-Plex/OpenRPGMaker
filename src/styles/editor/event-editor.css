@@ -1,4 +1,3 @@
-@import "./event-editor-horror.css";
 /* Split wrapper: preserves event-editor.css cascade order. */
 @import "./event-editor.part-1.css";
 @import "./event-editor.part-2.css";
@@ -110,3 +109,28 @@
 }
 .event-command-text-limit-hint{margin-top:4px;font-size:11px;color:var(--text-2);}
 .event-command-text-limit-hint[data-over="1"]{color:var(--danger,#f0716f);font-weight:600;}
+
+/* These controls live in the narrow event rail: show each complete choice. */
+.event-editor .event-horror-field {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  min-width: 0;
+  margin: 0;
+}
+.event-editor .event-horror-field select,
+.event-editor .event-horror-field input[type="number"] {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+.event-editor .event-horror-field:has(input[type="checkbox"]) {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.event-editor .event-horror-settings .empty-hint {
+  text-align: start;
+  line-height: 1.5;
+}
