@@ -2,6 +2,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { AssistantSession, ProposedCall, TurnResult } from "@/ai/assistantSession";
 import { buildAiActivityLogRecord } from "@/ai/activityLog";
 import { createAiTurnRunner, type AiTurnRunnerDeps } from "@/editor/panels/aiTurnRunner";
+import { createAiRegionTaskRunner } from "@/editor/panels/aiRegionTaskRunner";
+import { editorState } from "@/editor/editorState";
+import { clearAgentGhostPreview, getAgentGhostPreviewState, type AgentGhostPreviewState } from "@/editor/agentGhostPreview";
 import { createProposalHost } from "@/editor/panels/aiProposalCard";
 import type { AiRunSurface } from "@/editor/panels/aiRunSurface";
 import { createBlankProject } from "@/project/defaults";
@@ -29,7 +32,7 @@ beforeEach(() => {
   store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
   store.replace(createBlankProject());
 });
-afterEach(() => { restoreDom?.(); vi.restoreAllMocks(); });
+afterEach(() => { clearAgentGhostPreview(); editorState.set({ currentMapId: null }); restoreDom?.(); vi.restoreAllMocks(); });
 
 function titleCall(title: string): ProposedCall {
   const args = { title };
@@ -51,6 +54,7 @@ function setup() {
     turnBusy: false, disposed: false, collapsed: false, conversationId: "test-turn", conversationScope: "test-scope",
     appendBubble, setStatus: vi.fn(), expandForAiWork: vi.fn(), beginTurnProgress: vi.fn(), endTurnProgress: vi.fn(),
     refreshAbortButton: vi.fn(), persistConversation: vi.fn(), notifyIfObscuredByTestPlay: vi.fn(), drainPendingSends: vi.fn(),
+    startLiveActivity: vi.fn(), closeToolActivity: vi.fn(),
   } as unknown as AiRunSurface;
   const deps = {
     surface, applyingProposal: false, projectIdentityId: "test", workPlanSurfaceState: null,
@@ -61,6 +65,55 @@ function setup() {
   } satisfies AiTurnRunnerDeps;
   return { deps, session, log, appendBubble, runner: createAiTurnRunner(deps) };
 }
+
+describe("running-tool event target forwarding", () => {
+  it.each([
+    [{ mapId: "a" }, "a"],
+    [{ target: { kind: "existing", mapId: "a" } }, "a"],
+    [undefined, null],
+  ] as const)("uses event target %j rather than the viewed map in chat", async (args, owner) => {
+    // Given: the user is now viewing B, but the event may target A.
+    const h = setup();
+    editorState.set({ currentMapId: "b" });
+    let observedState: AgentGhostPreviewState | undefined;
+    // When: an in-flight turn delivers tool_started.
+    await h.runner.executeTurn(h.session, "inspect target", async onEvent => {
+      onEvent({ type: "tool_started", name: "get_map_region", index: 1, args });
+      observedState = getAgentGhostPreviewState();
+      return { assistantText: "", proposedCalls: [], stoppedReason: "final" };
+    });
+    // Then: ownership comes from the event; even unknown activity stays in chat.
+    expect(observedState).toMatchObject({ runningToolMapId: owner });
+    expect(h.deps.surface.startLiveActivity).toHaveBeenCalledWith("get_map_region", 1);
+  });
+
+  it("forwards the tool target instead of the viewed map or selected region map", async () => {
+    // Given: B is viewed and the region request originated on C.
+    const h = setup();
+    editorState.set({ currentMapId: "b" });
+    let observedState: AgentGhostPreviewState | undefined;
+    const regionRunner = createAiRegionTaskRunner({
+      surface: h.deps.surface, status: document.createElement("div"), selectionTaskActive: false,
+      activeSelectionRegionController: null, activeSelectionRegionKey: null,
+      currentSelectionForRegionTask: () => ({ mapId: "c", region: { x: 0, y: 0, width: 2, height: 2 } }),
+      refreshContextChips: vi.fn(),
+      declareIntent: async () => ({ elapsedMs: 0, intent: {
+        mode: "question", space: "none", facility: null, targetMapId: "c", useSelection: true,
+        clarify: null, clarifyOptions: [], needsPlan: false, resetsContext: false, tools: [], summary: "", source: "llm",
+      } }),
+      runRegion: async options => {
+        options.onEvent?.({ type: "tool_started", name: "get_map_region", index: 1, args: { mapId: "a" } });
+        observedState = getAgentGhostPreviewState();
+        return { ok: true, applied: false, changedCells: 0, changedEvents: 0, clippedCells: 0, proposedCalls: 0, assistantText: "" };
+      },
+    });
+    // When: the region runner delivers activity targeting A.
+    await regionRunner.sendSelectionRegionTask("inspect target");
+    // Then: neither the viewed map nor the selection replaces the tool target.
+    expect(observedState).toMatchObject({ runningToolMapId: "a" });
+    expect(h.deps.surface.startLiveActivity).toHaveBeenCalledWith("get_map_region", 1);
+  });
+});
 
 describe("턴 표면의 이미 적용된 쓰기 정산", () => {
   it("활동 로그 변환기와 JSON 왕복이 적용 건수를 보존한다", () => {

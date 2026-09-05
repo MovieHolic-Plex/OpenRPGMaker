@@ -225,7 +225,7 @@ export type SessionEvent =
   | { type: "tool_call"; name: string; args: Record<string, unknown>; result: ToolResult; reason?: string }
   // 툴 실행 직전에 나가는 신호 이벤트 — 결과 도착 전에 "지금 무엇을 하는 중"을 그릴 수 있게 한다.
   // index는 이번 턴의 1-based 실행 서수.
-  | { type: "tool_started"; name: string; index: number }
+  | { type: "tool_started"; name: string; index: number; args?: Record<string, unknown> }
   | { type: "phase"; value: "plan" | "execute" | "review" }
   | { type: "status"; text: string }
   | { type: "work_plan"; plan: WorkPlan }
@@ -2390,9 +2390,9 @@ export class AssistantSession {
   }
 
   /** 툴 실행 직전 신호를 알린다(1-based 서수). 실행 로직은 건드리지 않는다. */
-  private emitToolStarted(onEvent: (event: SessionEvent) => void, name: string): void {
+  private emitToolStarted(onEvent: (event: SessionEvent) => void, name: string, args: Record<string, unknown>): void {
     this.turnToolStartedCount += 1;
-    onEvent({ type: "tool_started", name, index: this.turnToolStartedCount });
+    onEvent({ type: "tool_started", name, args, index: this.turnToolStartedCount });
   }
 
   /** 라이브 행·고스트가 한 프레임을 그릴 틈을 준다. 중단이면 양보하지 않는다. */
@@ -2447,7 +2447,7 @@ export class AssistantSession {
     const calls = selectVerificationCalls(layer, this.verificationHistory);
     const results: LayerVerdictInput[] = [];
     for (const call of calls) {
-      this.emitToolStarted(onEvent, call.name);
+      this.emitToolStarted(onEvent, call.name, call.args);
       await this.yieldForUi();
       const reason = harnessToolReason("verification", call.name);
       const result = runTool(this.ctx, call.name, call.args);
@@ -3007,7 +3007,7 @@ export class AssistantSession {
       if (SHOP_ROLE_NAME.test(name)) {
         this.pushAudit({ kind: "status", text: `spec-npc:shop-stock-missing ${name} — 상점 재고는 set_shop_stock 으로 채워야 상점이 열린다` });
       }
-      this.emitToolStarted(onEvent, "place_npc");
+      this.emitToolStarted(onEvent, "place_npc", args);
       const reason = harnessToolReason("spec-npc", name);
       const result = this.readEvidence.beforeWrite(this.ctx.project, "place_npc", args)
         ?? runTool(this.ctx, "place_npc", args, { dryRun: false });
@@ -3085,7 +3085,7 @@ export class AssistantSession {
         continue;
       }
       const args: Record<string, unknown> = { mapId, residents: sheet.sheet.residents };
-      this.emitToolStarted(onEvent, "author_npc_cast");
+      this.emitToolStarted(onEvent, "author_npc_cast", args);
       const reason = harnessToolReason("npc-cast", `${ctx.mapName} 주민 ${residents.length}명`);
       const result = this.readEvidence.beforeWrite(this.ctx.project, "author_npc_cast", args)
         ?? runTool(this.ctx, "author_npc_cast", args, { dryRun: false });
@@ -3586,7 +3586,7 @@ export class AssistantSession {
         const callReason = split.reason;
         const tool = getTool(name);
         if (typeof args.theme === "string" && args.theme.trim()) turnTheme = args.theme.trim();
-        this.emitToolStarted(onEvent, name);
+        this.emitToolStarted(onEvent, name, args);
         await this.yieldForUi(signal);
         if (tool?.mode === "write") writeToolAttempts += 1;
         // 프로토콜 보장: 이 호출에 대한 role:"tool" 응답을 반드시 남긴다. 응답 없이 라운드를 벗어나면

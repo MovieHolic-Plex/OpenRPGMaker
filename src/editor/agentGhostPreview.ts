@@ -80,6 +80,8 @@ export interface AgentGhostPreviewState {
   readonly revision: number;
   /** 툴 시작 직전(tool_started)에 세팅되는 실행 중 도구 — 상태칩 라벨 원천. */
   readonly runningToolName: string;
+  /** Explicit tool target; null activity belongs in chat, not on any canvas. */
+  readonly runningToolMapId: MapId | null;
 }
 
 type Listener = (state: AgentGhostPreviewState) => void;
@@ -114,6 +116,7 @@ const listeners = new Set<Listener>();
 let previews: AgentGhostPreview[] = [];
 let revision = 0;
 let runningToolName = "";
+let runningToolMapId: MapId | null = null;
 
 // 원본 보기(꾹 누름) 동안 렌더만 숨긴다 — 프리뷰 데이터는 유지(시각 토글).
 let hidden = false;
@@ -139,19 +142,23 @@ export function hasAgentGhostPreviewSubscribers(): boolean {
 }
 
 export function getAgentGhostPreviewState(): AgentGhostPreviewState {
-  return { previews: [...previews], revision, runningToolName };
+  return { previews: [...previews], revision, runningToolName, runningToolMapId };
 }
 
 /** tool_started 직전에 패널이 호출 — 렌더러 상태칩이 실행 중 도구를 즉시 반영한다. */
-export function setAgentGhostRunningTool(name: string): void {
-  if (runningToolName === name) return;
+export function setAgentGhostRunningTool(name: string, args?: Record<string, unknown>): void {
+  // Capture the tool's target at delivery, never the map the user happens to view.
+  const mapId = name ? stringValue(args?.mapId) ?? nestedTargetMapId(args?.target) : null;
+  if (runningToolName === name && runningToolMapId === mapId) return;
   runningToolName = name;
+  runningToolMapId = mapId;
   emit();
 }
 
 export function clearAgentGhostRunningTool(): void {
   if (runningToolName === "") return;
   runningToolName = "";
+  runningToolMapId = null;
   emit();
 }
 
@@ -183,6 +190,7 @@ export function clearAgentGhostPreview(): void {
   if (previews.length === 0 && runningToolName === "") return;
   previews = [];
   runningToolName = "";
+  runningToolMapId = null;
   emit();
 }
 

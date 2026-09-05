@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { AssistantSession } from "@/ai/assistantSession";
+import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
 import { defaultAiConfig } from "@/ai/llmClient";
 import { createBlankProject } from "@/project/defaults";
 
@@ -20,7 +20,7 @@ describe("AssistantSession yieldToUi", () => {
             role: "assistant",
             content: null,
             tool_calls: [
-              { id: "call_1", type: "function", function: { name: "get_project_summary", arguments: "{}" } },
+              { id: "call_1", type: "function", function: { name: "get_map_region", arguments: JSON.stringify({ mapId: "map_blank_start", x: 0, y: 0, w: 2, h: 2 }) } },
             ],
           },
           finishReason: "tool_calls",
@@ -37,13 +37,16 @@ describe("AssistantSession yieldToUi", () => {
       },
     });
 
-    const started: string[] = [];
+    const started: SessionEvent[] = [];
     const result = await session.sendUserMessage("프로젝트 요약해줘", (event) => {
-      if (event.type === "tool_started") started.push(event.name);
+      if (event.type === "tool_started") started.push(event);
     });
 
     expect(result.stoppedReason).toBe("final");
-    expect(started).toEqual(["get_project_summary"]);
+    expect(started).toEqual([{
+      type: "tool_started", name: "get_map_region", index: 1,
+      args: { mapId: "map_blank_start", x: 0, y: 0, w: 2, h: 2 },
+    }]);
     expect(yields).toEqual(["yield"]);
   });
 });
