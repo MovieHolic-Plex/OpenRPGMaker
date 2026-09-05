@@ -125,12 +125,12 @@ describe("safe CC0 item and equipment icons", () => {
     });
   });
 
-  it("expands sparse existing projects with the default JRPG item catalog without duplicates", () => {
+  it("keeps sparse existing catalogs unchanged instead of resurrecting deleted items", () => {
     const project = createBlankProject();
     project.database.items = project.database.items.slice(0, 1);
 
-    expect(ensureDefaultDatabaseIconResources(project)).toBe(true);
-    expect(project.database.items.length).toBeGreaterThanOrEqual(100);
+    expect(ensureDefaultDatabaseIconResources(project)).toBe(false);
+    expect(project.database.items.length).toBe(1);
     expect(new Set(project.database.items.map((item) => item.id)).size).toBe(project.database.items.length);
     expect(ensureDefaultDatabaseIconResources(project)).toBe(false);
   });

@@ -33,6 +33,8 @@ describe("database field support descriptor", () => {
     expect(DATABASE_FIELD_SUPPORT.map((entry) => entry.field)).toEqual(EXPECTED_FIELDS);
     expect(new Set(DATABASE_FIELD_SUPPORT.map((entry) => entry.field)).size).toBe(21);
     expect(DATABASE_FIELD_SUPPORT.filter((entry) => entry.support === "runtime").map((entry) => entry.field)).toEqual([
+      "imageResourceId",
+      "iconResourceId",
       "consumptionLimit",
       "usableActorIds",
       "usableClassIds",
@@ -52,7 +54,7 @@ describe("database field support descriptor", () => {
     expect(databaseFieldSupport("equipmentProfile").support).toBe("editorOnly");
   });
 
-  it("names the supported authoring imagery consumers and unsupported runtime surfaces", () => {
+  it("describes imagery in the current inventory, equipment menu and shop", () => {
     for (const field of ["imageResourceId", "iconResourceId"]) {
       const help = databaseFieldSupport(field).help;
       expect(help).toContain("데이터베이스");
@@ -62,8 +64,9 @@ describe("database field support descriptor", () => {
       expect(help).toContain("요약");
       expect(help).toContain("인벤토리");
       expect(help).toContain("전투");
-      expect(help).toContain("상태");
-      expect(help).toContain("지원하지 않습니다");
+      expect(help).toContain("장비 메뉴");
+      expect(help).toContain("아이콘을 우선");
+      expect(databaseFieldSupport(field).support).toBe("runtime");
     }
   });
 

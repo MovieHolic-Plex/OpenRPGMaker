@@ -1,3 +1,4 @@
+import { activeItemEffects, itemAllowsMenu } from "@/project/itemUsage";
 import { applyCareItem } from "@/project/monsterCare";
 import { learnSkill, nextSessionRandom, setSwitch, type PlaySession } from "@/project/session";
 import { effectiveActorClassId } from "@/project/sessionClass";
@@ -16,7 +17,8 @@ export function useItemFromMenu(
   targetActorId?: string,
   targetMonsterInstanceId?: string
 ): MenuItemUseResult {
-  const item = project.database.items.find((record) => record.id === itemId);
+  const authoredItem = project.database.items.find((record) => record.id === itemId);
+  const item = authoredItem ? activeItemEffects(authoredItem) : undefined;
   if (!item || (session.inventory[item.id] ?? 0) <= 0) return { kind: "unusable", message: "사용할 수 없습니다" };
   if (!canUseItemInMenu(item)) return { kind: "unusable", message: `${item.name}은(는) 지금 사용할 수 없습니다` };
 
@@ -127,10 +129,7 @@ function canApplyItemEffects(project: Project, item: ItemRecord, session: PlaySe
 }
 
 function canUseItemInMenu(item: ItemRecord): boolean {
-  if (item.occasion === "never" || item.occasion === "battle") return false;
-  if (item.onlyUsableInMenu) return true;
-  if (item.occasionField === false && item.occasion !== "field" && item.occasion !== "always") return false;
-  return item.occasion === "always" || item.occasion === "field" || item.occasionField === true;
+  return itemAllowsMenu(item);
 }
 
 function applyItemEffects(project: Project, item: ItemRecord, session: PlaySession, actorId: string): boolean {

@@ -1,5 +1,9 @@
 # Runtime Project Schema & Persistence
 
+## 기본 카탈로그 삭제 보존 (2026-09-05)
+
+로드의 `ensureDefaultDatabaseIconResources`는 기존 기본 행의 아이콘 연결만 보정한다. 누락 아이템·장비를 새로 주입하거나 그 종속 스킬·상태를 추가하지 않는다. 신규 생성은 기존 기본 카탈로그를 그대로 사용한다. `test/itemEquipmentAuthoringTrust.test.ts`는 삭제한 기본 행이 serialize→deserialize→부팅 정규화 후에도 없는 것을 확인한다. ItemRecord 종류 전환은 저장 필드를 삭제하지 않고 `itemUsage.activeItemEffects`로 실행만 제한하므로 스키마 버전 변경이 없다.
+
 ## 전투 페이지 중복 ID 복구와 슬롯 참조 (2026-09-05)
 
 `normalizeTroopRecord`는 옛 길이 기반 생성기가 남긴 중복 페이지 ID를 결정적으로 복구한다. 첫 ID는 보존하고 이후 중복은 사용되지 않은 `_2`, `_3` 등의 접미사로 바꾼다. 입력 전체의 기존 ID도 예약하므로 뒤에 나오는 정상 ID를 빼앗지 않는다. 여러 번 정규화·저장·로드해도 결과가 같다. 옛 모호한 ID를 참조하던 명령은 첫 페이지를 계속 가리킨다. 새 스키마 필드나 버전 증가는 없다.

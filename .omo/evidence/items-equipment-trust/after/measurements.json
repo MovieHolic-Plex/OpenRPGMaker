@@ -1,0 +1,47 @@
+{
+  "measurements": [
+    {
+      "tab": "items",
+      "width": 1280,
+      "visible": 577,
+      "total": 1001,
+      "documentOverflow": false
+    },
+    {
+      "tab": "equipment",
+      "width": 1280,
+      "visible": 537,
+      "total": 796,
+      "documentOverflow": false
+    },
+    {
+      "tab": "items",
+      "width": 1024,
+      "visible": 545,
+      "total": 1318,
+      "documentOverflow": false
+    },
+    {
+      "tab": "equipment",
+      "width": 1024,
+      "visible": 475,
+      "total": 916,
+      "documentOverflow": false
+    },
+    {
+      "tab": "items",
+      "width": 1440,
+      "visible": 677,
+      "total": 1001,
+      "documentOverflow": false
+    },
+    {
+      "tab": "equipment",
+      "width": 1440,
+      "visible": 637,
+      "total": 769,
+      "documentOverflow": false
+    }
+  ],
+  "errors": []
+}

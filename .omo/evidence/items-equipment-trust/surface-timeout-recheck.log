@@ -1,0 +1,24 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/eventEditorM2Surface.baseline.test.ts --testNamePattern 모든 별칭 대상 --maxWorkers=1 --reporter=verbose
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/omo-4
+
+ ↓ test/eventEditorM2Surface.baseline.test.ts > M2 명령 폼 표면 스냅샷 > 카탈로그 전량이 예외 없이 렌더된다
+ ↓ test/eventEditorM2Surface.baseline.test.ts > M2 명령 폼 표면 스냅샷 > 스냅샷 = 카탈로그 전량 − 빈 껍데기 별칭
+ ↓ test/eventEditorM2Surface.baseline.test.ts > M2 명령 폼 표면 스냅샷 > 빈 껍데기 제외 목록이 정본과 정확히 일치한다
+ ↓ test/eventEditorM2Surface.baseline.test.ts > M2 명령 폼 표면 스냅샷 > existing 이면서 전용 폼을 갖는 항목은 반드시 스냅샷에 있다
+ ↓ test/eventEditorM2Surface.baseline.test.ts > M2 명령 폼 표면 스냅샷 > 카탈로그 규모가 고정 수치와 일치한다
+ ↓ test/eventEditorM2Surface.baseline.test.ts > M2 명령 폼 표면 스냅샷 > 별칭 → kind 대응이 정본과 정확히 일치한다
+ ↓ test/eventEditorM2Surface.baseline.test.ts > M2 명령 폼 표면 스냅샷 > 모든 별칭의 existingKind 가 COMMAND_KINDS 에 실재한다
+ ✓ test/eventEditorM2Surface.baseline.test.ts > M2 명령 폼 표면 스냅샷 > 모든 별칭 대상 kind 가 실제로 렌더되는 폼을 갖는다 9671ms
+ ↓ test/eventEditorM2Surface.baseline.test.ts > M2 명령 폼 표면 스냅샷 > 필드가 있는 M2 항목은 반드시 컨트롤을 낸다 (control 0 ⟹ fields 0)
+ ↓ test/eventEditorM2Surface.baseline.test.ts > M2 명령 폼 표면 스냅샷 > 필드가 없는데 컨트롤을 내는 항목은 손수 작성 폼 목록과 정확히 같다 (fields 0 ⟹ control 0)
+ ↓ test/eventEditorM2Surface.baseline.test.ts > M2 명령 폼 표면 스냅샷 > 기준선과 일치한다
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 10 skipped (11)
+   Start at  17:48:22
+   Duration  62.06s (transform 19.67s, setup 0ms, collect 49.95s, tests 9.68s, environment 715ms, prepare 199ms)
+
