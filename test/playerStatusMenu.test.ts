@@ -65,6 +65,7 @@ describe("player status menu", () => {
           project,
           session: startSession(project),
           slots: [],
+          selectedCommand: "party-menu",
           actions: noopActions,
         }),
       );
@@ -119,7 +120,7 @@ describe("player status menu", () => {
       // 25% 이하 → crit. 게이지 색만이 아니라 모델의 임계 판정을 함께 굳힌다.
       session.actorVitals[actorId] = { ...vitals, hp: Math.floor(vitals.maxHp * 0.1) };
       const menu = renderWithFakeDom(() =>
-        renderPlayerStatusMenu({ project, session, slots: [], actions: noopActions }),
+        renderPlayerStatusMenu({ project, session, slots: [], selectedCommand: "party-menu", actions: noopActions }),
       );
 
       const hpGauge = findByTestId(menu, "status-menu-hp-gauge-0");
@@ -144,7 +145,7 @@ describe("player status menu", () => {
       const actorId = session.partyActorIds[0]!;
       session.actorVitals[actorId] = { hp: 0, maxHp: 0, mp: 0, maxMp: 0 };
       const menu = renderWithFakeDom(() =>
-        renderPlayerStatusMenu({ project, session, slots: [], actions: noopActions }),
+        renderPlayerStatusMenu({ project, session, slots: [], selectedCommand: "party-menu", actions: noopActions }),
       );
 
       expect(findByTestId(menu, "status-menu-hp-gauge-0")?.getAttribute("aria-valuenow")).toBe("0");
@@ -421,7 +422,7 @@ describe("player status menu", () => {
         }),
       );
 
-      expect(findByTestId(menu, "status-menu-detail-title")?.textContent).toBe("대상 선택: 테스트 회복약");
+      expect(findByTestId(menu, "status-menu-detail-title")?.textContent).toBe("테스트 회복약 · 0개");
       const target = findByTestId(menu, `status-menu-item-target-${session.partyActorIds[0]}`);
       expect(target?.textContent).toMatch(/HP \d+\/\d+.*MP \d+\/\d+/);
       expect(target?.textContent).not.toContain("사용할 대상을 선택하세요");

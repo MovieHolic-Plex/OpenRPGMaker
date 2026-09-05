@@ -252,6 +252,7 @@ export type RuntimeFollowerTrailPointLike = {
 // 인터프리터가 요구하는 세션 인터페이스.
 // project/session.ts의 PlaySession이 이를 만족.
 export interface PlaySessionLike {
+  mapOverrides?: Record<string, { lower: Record<number, number>; upper: Record<number, number> }>;
   flags: Record<string, boolean>; // 레거시 호환
   switches: Record<string, boolean>;
   selfSwitches?: Record<string, Partial<Record<string, boolean>>>;

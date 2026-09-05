@@ -1230,7 +1230,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 턴이 끝나도 목록은 남아 있다(active=false — 「모두 완료」 또는 「… 대기 중」). 걷히는 것은 대화 경계만다
   // (새 대화·대화 전환·되감기·패널 해제). 마일스톤 피드(milestone_applied/proposal_paused)와 예산(used/48)은
   // 자율 런에만 있고 「자세히」 서랍에 든다. active 인 동안은 패널 자동 접기(AUTO_COLLAPSE_AFTER_AI_MS)를 막는다.
-  let workPlanSurfaceState: { active: boolean; plan: WorkPlan | null; budget: AutonomousRunBudget | null } | null = null;
+  let workPlanSurfaceState: { active: boolean; stoppedReason?: string; plan: WorkPlan | null; budget: AutonomousRunBudget | null } | null = null;
   let workPlanSurface: HTMLElement | null = null;
   let workPlanFeedHost: HTMLElement | null = null;
   // 진행 중 항목 아래 보이는 현재 툴 라벨 — tool_started 마다 그 줄만 갈아 끼운다(체크리스트 전체 재렌더 금지 — 툴콜은 수백 번 온다).
@@ -1319,6 +1319,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const surface = ensureWorkPlanSurface();
     const checklist = renderWorkPlanChecklist(workPlanSurfaceState.plan, {
       active: workPlanSurfaceState.active,
+      stoppedReason: workPlanSurfaceState.stoppedReason,
       budget: workPlanSurfaceState.budget ?? undefined,
       activity: workPlanActivity,
       onStop: () => abortActiveTurn(),

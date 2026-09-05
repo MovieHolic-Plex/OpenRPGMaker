@@ -1,0 +1,38 @@
+{
+  "scenarioId": "generated-monster-field",
+  "projectPath": "../worktree-calm-cloud-6e89/output/evidence/jrpg-adversarial-review/project-final.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "start",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 15,
+        "y": 18,
+        "gold": 0,
+        "battleResult": null
+      }
+    },
+    {
+      "index": 1,
+      "id": "dungeon-monsters",
+      "shot": "02-dungeon-monsters.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_forest_dungeon",
+        "x": 4,
+        "y": 8,
+        "gold": 0,
+        "battleResult": null
+      }
+    }
+  ]
+}

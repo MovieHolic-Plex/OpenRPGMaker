@@ -29,6 +29,8 @@ export type AiActivityResult = {
   readonly changedEvents?: number;
   readonly clippedCells?: number;
   readonly proposedCalls?: number;
+  /** 마일스톤 및 턴 종료 적용에 성공한 쓰기 호출 수. 미적용 제안과 별도로 센다. */
+  readonly appliedCalls?: number;
   readonly assistantText?: string;
   /**
    * 턴이 아직 안 끝났다. 시작 시점에 먼저 쓰는 행의 표시 — 새로고침·크래시·강제 종료로

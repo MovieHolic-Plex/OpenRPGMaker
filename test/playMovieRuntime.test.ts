@@ -161,11 +161,14 @@ describe("playMovie 재생 URL 해석", () => {
 });
 
 describe("playMovie 런타임 배선", () => {
-  it("wait:true 는 video ended 까지 다음 커맨드를 막는다", async () => {
+  it.each<Command>([
+    { kind: "playMovie", resourceId: "video_intro" },
+    { kind: "m2Command", commandId: "m2-066-play-movie", fields: { value: "video_intro", wait: true } },
+  ])("wait:true blocks until video ended: $kind", async (command) => {
     const { project, session, scene, host } = mkFixture();
     store.replaceProject(project);
     const running = runCommands(scene, [
-      { kind: "playMovie", resourceId: "video_intro" },
+      command,
       { kind: "setSwitch", switchId: AFTER_MOVIE, value: true },
     ]);
 

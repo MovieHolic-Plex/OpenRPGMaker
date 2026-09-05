@@ -431,6 +431,7 @@ export function buildAiActivityLogRecord(input: AiActivityLogInput): AiActivityL
       ...(input.result.changedEvents === undefined ? {} : { changedEvents: input.result.changedEvents }),
       ...(input.result.clippedCells === undefined ? {} : { clippedCells: input.result.clippedCells }),
       ...(input.result.proposedCalls === undefined ? {} : { proposedCalls: input.result.proposedCalls }),
+      ...(input.result.appliedCalls === undefined ? {} : { appliedCalls: input.result.appliedCalls }),
       ...(input.result.assistantText
         ? { assistantText: clipText(input.result.assistantText, 2000) }
         : {}),

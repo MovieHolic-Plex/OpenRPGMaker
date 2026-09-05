@@ -44,38 +44,21 @@ describe("shop command dialog is fullscreen", () => {
   });
 });
 
-describe("shop options live in one compact rail", () => {
+describe("shop settings are grouped by task", () => {
   let restoreDom: (() => void) | undefined;
-
-  beforeEach(() => {
-    restoreDom = installFakeDom();
-    store.replace(createBlankProject());
-  });
-
-  afterEach(() => {
-    restoreDom?.();
-  });
-
-  it("puts every shop option inside the shop-options-rail container", () => {
+  beforeEach(() => { restoreDom = installFakeDom(); store.replace(createBlankProject()); });
+  afterEach(() => restoreDom?.());
+  it("mounts only the selected task and keeps all existing settings reachable", () => {
     const body = renderWithFakeDom(() => shopBody(ctx(), shopCommand));
-    const rail = findByTestId(body, "shop-options-rail");
-    expect(rail).not.toBeNull();
-    for (const testId of [
-      "shop-type-select",
-      "shop-quantity-mode",
-      "shop-message-type",
-      "shop-merchant-gold",
-      "shop-branch-on-transaction",
-      "shop-branch-on-failed-transaction",
-      "shop-serviceKind",
-      "shop-investmentLevel",
-      "shop-mileageRate",
-      "shop-economy-haggle",
-      "shop-economy-dynamic",
-      "shop-economy-shopkeeper",
-      "shop-economy-restock",
-    ]) {
-      expect(findByTestId(rail!, testId), `${testId} missing from options rail`).not.toBeNull();
-    }
+    expect(findByTestId(body, "shop-type-select")).toBeNull();
+    findByTestId(body, "shop-tab-rules")!.click();
+    for (const id of ["shop-type-select", "shop-quantity-mode", "shop-merchant-gold", "shop-serviceKind", "shop-investmentLevel", "shop-mileageRate", "shop-economy-haggle", "shop-economy-dynamic", "shop-economy-shopkeeper", "shop-economy-restock"])
+      expect(findByTestId(body, id), id).not.toBeNull();
+    findByTestId(body, "shop-tab-messages")!.click();
+    expect(findByTestId(body, "shop-type-select")).toBeNull();
+    expect(findByTestId(body, "shop-message-type")).not.toBeNull();
+    findByTestId(body, "shop-tab-branches")!.click();
+    expect(findByTestId(body, "shop-branch-on-transaction")).not.toBeNull();
+    expect(findByTestId(body, "shop-branch-on-failed-transaction")).not.toBeNull();
   });
 });

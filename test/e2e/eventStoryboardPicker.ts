@@ -79,7 +79,7 @@ export async function pickCommand(page: Page, picker: Locator, label: string): P
 /** 목록은 보조 뷰다. 인라인 편집/우클릭 메뉴를 보려면 명시적으로 전환한다. */export async function showCommandList(editor: Locator): Promise<void> {
   const toggle = editor.getByTestId("event-view-toggle-list");
   await toggle.click();
-  await expect(toggle).toHaveAttribute("aria-pressed", "true");
+  await expect(toggle).toHaveAttribute("aria-selected", "true");
   await expect(editor.locator(".cmd-list")).toBeVisible();
 }
 

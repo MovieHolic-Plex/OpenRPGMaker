@@ -20,6 +20,7 @@ export type PlayerStatusMenuControllerOptions = {
 export type PlayerStatusMenuController = {
   readonly reset: () => void;
   readonly renderMenu: (message?: string, selectedCommand?: StatusMenuCommandId) => HTMLElement | null;
+  readonly openSaveMenu: () => void;
   readonly toggleMenu: () => void;
   readonly handleKey: (key: RuntimeMenuKey) => boolean;
 };

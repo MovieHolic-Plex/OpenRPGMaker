@@ -185,7 +185,8 @@ export function findChasePath(
   map: GameMap,
   from: ChasePoint,
   to: ChasePoint,
-  pass?: ChasePassSize
+  pass?: ChasePassSize,
+  canEnter?: (point: ChasePoint) => boolean
 ): ChasePoint[] {
   if (!inBounds(map, from.x, from.y) || !inBounds(map, to.x, to.y)) return [];
   if (from.x === to.x && from.y === to.y) return [];
@@ -226,6 +227,7 @@ export function findChasePath(
       // closed 를 통행 판정 앞에 둔다 — 판정의 절반은 이미 처리한 칸에 쓰이고 있었다.
       if (closed.has(key)) continue;
       const next = { x: nx, y: ny };
+      if (canEnter && !canEnter(next)) continue;
       if (!chasePassable(project, map, current.point, next, pass)) continue;
       const g = current.g + 1;
       const existing = nodes.get(key);
@@ -247,7 +249,7 @@ export function findChasePath(
   // 성분 색인으로 남겨 같은 질의가 반복될 때 다시 훑지 않게 한다. 1x1 보다 큰 통행 사각은
   // 색인의 대칭 전제를 만족하지 않으므로 남기지 않는다. closed.size 는 방금 훑은 성분의
   // 크기다 — 그게 면적에 비해 작으면 색인이 손해라 만들지 않는다.
-  if (unitPass) armTerrainComponents(project, map, closed.size);
+  if (unitPass && !canEnter) armTerrainComponents(project, map, closed.size);
   return [];
 }
 

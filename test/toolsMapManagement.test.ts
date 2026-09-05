@@ -198,6 +198,27 @@ describe("get_event", () => {
     expect(event?.pages?.[0]?.commands).toContainEqual({ kind: "setSelfSwitch", key: "A", value: true });
   });
 
+  it.each(["event", "page"])("upsert_event는 %s trigger 안에 잘못 넣은 명령을 거부하고 기존 귀환을 보존한다", (level) => {
+    const { context, mapId } = ctxWithMap();
+    const commands = [{ kind: "transfer", mapId, x: 1, y: 1, fade: "black" }];
+    const created = runTool(context, "upsert_event", {
+      mapId,
+      event: { id: "ev_return", x: 6, y: 8, pages: [{ id: "return_page", trigger: { kind: "playerTouch" }, priority: "below", commands }] },
+    });
+    expect(created.ok, created.summary).toBe(true);
+    const before = structuredClone(context.project);
+    const nested = { kind: "playerTouch", commands: [{ kind: "transfer", mapId, x: 2, y: 2 }] };
+    const result = runTool(context, "upsert_event", {
+      mapId,
+      event: { id: "ev_return", ...(level === "event" ? { trigger: nested } : { pages: [{ id: "return_page", trigger: nested }] }) },
+    });
+    expect(result.ok).toBe(false);
+    expect(result.issues?.[0]).toMatchObject({ code: "invalid-args" });
+    expect(result.summary).toContain(level === "event" ? "event.trigger.commands" : "event.pages[0].trigger.commands");
+    expect(context.project).toEqual(before);
+    expect(context.project.maps[mapId].events.find((event) => event.id === "ev_return")?.pages[0].commands).toEqual(commands);
+  });
+
   it("upsert_event commands kind 오류는 인덱스와 기대 형식을 invalid-args에 담는다", () => {
     const { context, mapId } = ctxWithMap();
     const result = runTool(context, "upsert_event", {

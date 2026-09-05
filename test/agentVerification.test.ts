@@ -246,6 +246,24 @@ describe("selectVerificationCalls — canonical layer→tools table", () => {
 // ── verdict parsing ──────────────────────────────────────────────
 
 describe("parseToolVerdict — tool result → {pass, blockingIssues[], warnings[]}", () => {
+  it("run_lint counts still block when detailed issues are absent or truncated", () => {
+    for (const issues of [undefined, [], [{ severity: "warning", message: "비차단 경고" }]]) {
+      const result = { ok: true, data: { counts: { errors: 14 }, issues } };
+      expect(parseToolVerdict(RUN_LINT_TOOL, result)).toMatchObject({ pass: false, blockingIssues: ["lint 오류 14건"] });
+      expect(result.ok).toBe(true);
+    }
+  });
+
+  it("check_reachability uses reachable, not execution ok", () => {
+    expect(parseToolVerdict("check_reachability", { ok: true, data: { reachable: false } }).pass).toBe(false);
+    expect(parseToolVerdict("check_reachability", { ok: true, data: { reachable: true } }).pass).toBe(true);
+  });
+
+  it("run_scene_test uses its scenario verdict", () => {
+    expect(parseToolVerdict("run_scene_test", scenarioResult(false, "문을 통과하지 못함")))
+      .toMatchObject({ pass: false, blockingIssues: ["문을 통과하지 못함"] });
+  });
+
   it("run_lint error (inside data.issues, real shape) blocks", () => {
     const result = lintResult([
       { severity: "error", code: "tileset-missing", message: "타일셋 참조 없음" },

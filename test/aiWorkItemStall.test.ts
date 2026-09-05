@@ -234,11 +234,11 @@ describe("진행이 멈춘 항목은 사람에게 넘긴다", () => {
     expect(store.getCurrent().meta?.title).toBe("중간");
   }, 30000);
 
-  it("(e) 이름이 어긋난 successTools 여도 명시 complete_work_item 은 성공한 쓰기를 근거로 통과한다", async () => {
+  it("(e) 다른 쓰기가 성공해도 필수 도구를 실행하지 않은 항목은 완료할 수 없다", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const project = createBlankProject();
     installHermeticEnv(project);
-    // 계획은 fill_region 을 요구하는데 모델은 set_title_screen 을 쓴다 — 옛 계약이면 영원히 완료 불가.
+    // 타이틀 변경은 연못 시공의 증거가 아니다. 계획 수정 또는 실제 시공이 필요하다.
     const { chat } = scriptedChat([
       final(JSON.stringify({ action: "new_plan", ...STUCK_PLAN })),
       toolCall("set_work_plan", STUCK_PLAN, "c_plan"),
@@ -250,11 +250,12 @@ describe("진행이 멈춘 항목은 사람에게 넘긴다", () => {
 
     const result = await session.sendUserMessage("광장에 연못 만들어줘", () => {}, undefined, { autonomous: true });
 
-    expect(result.workPlan?.layers[0]?.items[0]?.status).toBe("done");
+    expect(result.workPlan?.layers[0]?.items[0]?.status).not.toBe("done");
     const audits = statusTexts(session);
     const evidence = audits.find((t) => t.startsWith("work-item:complete-by-write-evidence"));
-    expect(evidence).toBeTruthy();
-    expect(evidence!).toContain("fill_region");
-    expect(audits.some((t) => t.startsWith("ralph:stalled"))).toBe(false);
+    expect(evidence).toBeUndefined();
+    const completion = session.getAuditEntries().find((entry) => entry.kind === "tool" && entry.name === "complete_work_item");
+    expect(completion).toMatchObject({ ok: false });
+    expect(completion?.summary).toContain("fill_region");
   }, 30000);
 });

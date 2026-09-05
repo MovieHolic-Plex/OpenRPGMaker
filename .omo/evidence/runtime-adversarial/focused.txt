@@ -1,0 +1,18 @@
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-quiet-cloud-ad4d
+
+ ✓ test/playerItemUse.test.ts (10 tests) 1236ms
+   ✓ player menu item use > replays the same partial-chance inflict outcome for the same session seed  313ms
+ ✓ test/playerMenuItemTargets.test.ts (8 tests) 1460ms
+   ✓ item menu targets agree with executable effects > allows healStateIds cures at full HP/MP  427ms
+ ✓ test/playerLoadPanel.test.ts (12 tests) 1516ms
+   ✓ player load panel > renders a present slot as a card with map name, level, play time, and saved-at  318ms
+ ✓ test/itemRuntimeUsability.test.ts (3 tests) 683ms
+ ✓ test/playerStatusMenu.test.ts (17 tests) 3168ms
+   ✓ player status menu > keeps function mode in the unified Korean menu  489ms
+   ✓ player status menu > renders the folded rail and full party vitals  312ms
+
+ Test Files  5 passed (5)
+      Tests  50 passed (50)
+   Start at  19:16:39
+   Duration  20.12s (transform 16.62s, setup 0ms, collect 58.29s, tests 8.06s, environment 42ms, prepare 2.21s)

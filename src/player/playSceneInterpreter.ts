@@ -1,3 +1,4 @@
+import { cancelFurniturePush } from './furniturePushAnimation';
 import { friendshipDeltaEmote } from "@/project/emotes";
 import { showSceneEmote } from "@/player/playSceneEmotes";
 import {
@@ -9,6 +10,7 @@ import {
   showPictureState,
 } from "@/project/session";
 import { store } from "@/project/store";
+import { setEventSpritePattern } from "@/player/eventSpriteResources";
 import { playAudioCommand, stopAudioCommand } from "@/player/audio";
 import { resolveEventPage } from "@/project/io";
 import { createInterpreter, type StepResult } from "@/player/interpreter";
@@ -30,6 +32,8 @@ import { abortHop, PLAYER_SHADOW_KEY } from "@/player/characterHopRuntime";
 import { applyCameraControl } from "@/player/playSceneCamera";
 import { applyLightingStep } from "@/player/playSceneLighting";
 import { playMapAnimation } from "@/player/playSceneMapAnimations";
+import { playPathfindMove } from "@/player/playScenePathfinding";
+import { conditionWaitScenes, isRuntimeEventIdle } from "@/player/runtimeConditionWait";
 import { playMovieOverlay } from "@/player/playSceneMovies";
 import { applyWeatherStep } from "@/player/playSceneWeather";
 import { runtimeEventViewsForMap, type RuntimeEventView } from "@/project/runtimeEventState"
@@ -189,13 +193,16 @@ export async function runCommands(
   scene.session.commonEvents = project.commonEvents;
   const interpreter = createInterpreter([...commands], scene.session, project, {
     currentEventId,
+    getEventPositions: () => scene.eventPositions,
+    isEventIdle: target => isRuntimeEventIdle(scene, target),
     onFactionStanceChanged: () => invalidateFactionRetargetCache(scene),
   });
+  const activeSession = scene.session;
   const skipController = createCutsceneSkipController(scene, interpreter);
   try {
     let result = interpreter.start();
     scene.refreshRuntimeSurfaces();
-    while (result.kind !== "done") {
+    while (result.kind !== "done" && scene.session === activeSession) {
       if (isCutsceneSkippable(scene.session)) {
         scene.showRuntimeOverlay("cutscene-skip-hint", "Esc Esc: 컷신 건너뛰기");
       }
@@ -203,13 +210,15 @@ export async function runCommands(
     }
   } finally {
     skipController.dispose();
-    scene.clearRuntimeOverlay("cutscene-skip-hint");
-    releaseCutsceneControlForOwner(scene.session, currentEventId);
-    scene.running = options.allowNested === true ? previousRunning : false;
-    scene.lastActionTargetKey = "";
-    scene.setInputEnabled(options.allowNested === true ? previousInputEnabled : true);
-    dialogue.close();
-    scene.refreshRuntimeSurfaces();
+    releaseCutsceneControlForOwner(activeSession, currentEventId);
+    if (scene.session === activeSession) {
+      scene.clearRuntimeOverlay("cutscene-skip-hint");
+      scene.running = options.allowNested === true ? previousRunning : false;
+      scene.lastActionTargetKey = "";
+      scene.setInputEnabled(options.allowNested === true ? previousInputEnabled : true);
+      dialogue.close();
+      scene.refreshRuntimeSurfaces();
+    }
   }
 }
 
@@ -309,7 +318,9 @@ async function consumeBlockingStep(
         return resumeWithChoice(scene, interpreter, choice);
       }
     case "wait":
-      await waitWithCutsceneSkip(step.ms, skipController);
+      if (step.allowParallelEvents) conditionWaitScenes.add(scene);
+      try { await waitWithCutsceneSkip(step.ms, skipController); }
+      finally { if (step.allowParallelEvents) conditionWaitScenes.delete(scene); }
       {
         const skipped = skipController.takeResult();
         if (skipped) return skipped;
@@ -364,10 +375,14 @@ async function consumeBlockingStep(
     case "changeTile":
       scene.applyChangeTileStep(step);
       return resumeAfterSurface(scene, interpreter);
-    case "openSaveMenu": {
-      const callback: unknown = scene.game.registry.get("openSaveMenu");
-      if (typeof callback === "function") callback();
-      return resumeInterpreter(interpreter);
+    case "openSaveMenu":
+    case "openMenuScreen":
+    case "openLoadMenu": {
+      dialogue.hide();
+      const session = scene.session;
+      const callback: unknown = scene.game.registry.get(step.kind);
+      if (typeof callback === "function") await callback();
+      return scene.session === session ? resumeInterpreter(interpreter) : { kind: "done" };
     }
     case "spawnFieldEnemy":
       spawnFieldEnemyForScene(scene, step.spawn);
@@ -378,6 +393,16 @@ async function consumeBlockingStep(
     case "setEventGraphicPattern":
       applyEventGraphicPatternStep(scene, step, currentEventId);
       return resumeInterpreter(interpreter);
+    case "pathfindMove": {
+      const abort = new AbortController();
+      const pending = playPathfindMove(scene, step, currentEventId, abort.signal);
+      if (step.wait) {
+        await Promise.race([pending, skipController.waitForSkip()]);
+        const skipped = skipController.takeResult();
+        if (skipped) { abort.abort(); return skipped; }
+      }
+      return resumeAfterSurface(scene, interpreter);
+    }
     case "moveEvent": {
       const target = resolveMoveEventTarget(step.eventId, currentEventId);
       if (target === PLAYER_MOVE_TARGET) {
@@ -546,7 +571,7 @@ function applyEventGraphicPatternStep(
   if (!eventId) return;
   // Persist across refreshRuntimeSurfaces so door open frames survive wait/transfer mid-sequence.
   scene.eventGraphicPatternOverrides.set(eventId, step.pattern);
-  scene.eventSprites.get(eventId)?.setFrame(step.pattern);
+  setEventSpritePattern(store.getCurrent(), scene.eventSprites.get(eventId), step.pattern);
   scene.syncRuntimeState();
 }
 
@@ -631,6 +656,7 @@ function removeRuntimeEvent(scene: PlaySceneContext, eventId: string | undefined
 }
 
 function stopCommandMovement(scene: PlaySceneContext): void {
+  cancelFurniturePush(scene);
   for (const eventId of scene.commandMoveRouteEventIds) scene.autonomousNPCs.delete(eventId);
   scene.commandMoveRouteEventIds.clear();
   scene.playerRoute = null;

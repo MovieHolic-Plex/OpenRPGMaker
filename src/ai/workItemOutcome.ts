@@ -319,7 +319,7 @@ export function authoredQuestIdFrom(name: string, args: Record<string, unknown> 
 /**
  * 이번 항목이 만든 퀘스트가 **완주 가능한지** 본다.
  * ① project.quests 메타 존재 ② 그래프 존재(검증 가능한 형태) ③ lint error 0
- * ④ walkthrough 생성 ⑤ 그 walkthrough 로 씬을 실제로 돌려 완주.
+ * ④ 수동 debug set 없는 walkthrough 생성 ⑤ 그 walkthrough 로 씬을 실제로 돌려 완주.
  */
 export function verifyAuthoredQuestsPlayable(
   project: Project,
@@ -342,9 +342,9 @@ export function verifyAuthoredQuestsPlayable(
       return {
         ok: false,
         reason:
-          `검증 불가: 퀘스트 '${questId}'는 컴파일 메타만 있고 그래프가 없어 완주 검증을 할 수 없습니다 — ` +
-          `define_quest{id:'${questId}', nodes:[단계별 completesWhen 은 sw_${questId}_step0.. / sw_${questId}_done]} ` +
-          `로 그래프를 등록한 뒤 verify_quest 로 확인하세요.`,
+          `자동 완주 미검증: 퀘스트 '${questId}'의 단계 정의와 이벤트는 저장됐지만 현재 검증기는 graph 형식만 지원합니다. ` +
+          `동일 ID로 define_quest를 호출하면 단계 정의를 덮어쓰므로 허용되지 않습니다. ` +
+          `원래 단계를 보존하고 실제 플레이로 수락·각 목표·보상 수령을 확인해야 합니다.`,
       };
     }
     const errors = lintQuestGraph(project, graph).filter((issue) => issue.severity === "error");
@@ -361,6 +361,15 @@ export function verifyAuthoredQuestsPlayable(
     let start: { readonly x: number; readonly y: number };
     try {
       const walkthrough = generateQuestWalkthrough(project, questId);
+      if (walkthrough.manualHints.length > 0 || walkthrough.scenario.steps.some((step) => step.kind === "set")) {
+        return {
+          ok: false,
+          reason:
+            `자동 완주 미검증: 퀘스트 '${questId}' walkthrough에 수동 검증 또는 debug set 단계가 있습니다. ` +
+            `상태·위치 강제 변경으로 통과한 결과는 완주 증거가 아닙니다. ` +
+            `${walkthrough.manualHints.slice(0, 2).join(" / ")}`,
+        };
+      }
       steps = walkthrough.scenario.steps as readonly SceneStep[];
       startMapId = walkthrough.scenario.mapId;
       start = walkthrough.scenario.start;

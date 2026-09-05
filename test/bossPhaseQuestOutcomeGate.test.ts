@@ -165,6 +165,7 @@ describe("추적 헬퍼", () => {
 // ────────────────────────────────────────────────────────────────────────────
 
 const QUEST_KEY = "mayor_errand";
+const QUEST_GRAPH_ID = `${QUEST_KEY}_graph`;
 
 const STARTED = `sw_${QUEST_KEY}_started`;
 const STEP0 = `sw_${QUEST_KEY}_step0`;
@@ -199,7 +200,7 @@ function defineErrandGraph(ctx: ToolContext, nodes: readonly GraphNode[], edges:
   const result = runTool(
     ctx,
     "define_quest",
-    { id: QUEST_KEY, title: "촌장의 부탁", nodes, edges },
+    { id: QUEST_GRAPH_ID, title: "촌장의 부탁", nodes, edges },
     { dryRun: false },
   );
   expect(result.ok, JSON.stringify(result.issues ?? result.summary)).toBe(true);
@@ -237,7 +238,10 @@ describe("퀘스트 게이트 — 컴파일됐다 ≠ 완주 가능하다", () =
     const verdict = verifyAuthoredQuestsPlayable(ctx.project, [QUEST_KEY]);
     expect(verdict.ok).toBe(false);
     if (verdict.ok) return;
-    expect(verdict.reason).toContain("define_quest");
+    expect(verdict.reason).toContain("자동 완주 미검증");
+    expect(verdict.reason).toContain("동일 ID로 define_quest");
+    expect(verdict.reason).toContain("허용되지 않습니다");
+    expect(verdict.reason).not.toContain("define_quest{");
   });
 
   it("나중에 write site 이벤트가 지워지면 lint 오류로 막는다", () => {
@@ -247,7 +251,7 @@ describe("퀘스트 게이트 — 컴파일됐다 ≠ 완주 가능하다", () =
     // 다른 항목이 목표 지점 이벤트를 지우면 그래프는 그대로 남고 퀘스트만 조용히 죽는다.
     const map = ctx.project.maps[ctx.project.startMapId]!;
     map.events = map.events.filter((event) => event.id !== `ev_${QUEST_KEY}_reach0`);
-    const verdict = verifyAuthoredQuestsPlayable(ctx.project, [QUEST_KEY]);
+    const verdict = verifyAuthoredQuestsPlayable(ctx.project, [QUEST_GRAPH_ID]);
     expect(verdict.ok).toBe(false);
     if (verdict.ok) return;
     expect(verdict.reason).toContain("lint error");
@@ -258,7 +262,7 @@ describe("퀘스트 게이트 — 컴파일됐다 ≠ 완주 가능하다", () =
     compileErrand(ctx);
     // reach 이벤트는 '퀘스트 시작' 스위치가 켜져야 단계를 올린다 — 기버 노드를 빼면 완주가 안 된다.
     defineErrandGraph(ctx, [{ id: "reach-outskirts", description: "마을 밖으로 나간다", completesWhen: switchOn(STEP0) }], []);
-    const verdict = verifyAuthoredQuestsPlayable(ctx.project, [QUEST_KEY]);
+    const verdict = verifyAuthoredQuestsPlayable(ctx.project, [QUEST_GRAPH_ID]);
     expect(verdict.ok).toBe(false);
     if (verdict.ok) return;
     expect(verdict.reason).toContain("완주 실패");
@@ -269,7 +273,7 @@ describe("퀘스트 게이트 — 컴파일됐다 ≠ 완주 가능하다", () =
     const ctx = emberCtx();
     compileErrand(ctx);
     defineFullErrandGraph(ctx);
-    const verdict = verifyAuthoredQuestsPlayable(ctx.project, [QUEST_KEY]);
+    const verdict = verifyAuthoredQuestsPlayable(ctx.project, [QUEST_GRAPH_ID]);
     expect(verdict.ok, verdict.ok ? "" : verdict.reason).toBe(true);
   });
 });

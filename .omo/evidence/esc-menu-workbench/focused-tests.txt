@@ -1,0 +1,23 @@
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-green-field-8353
+
+ ✓ test/playerMenuItemPreview.test.ts (5 tests) 612ms
+   ✓ menu item previews share the execution rules > predicts clamped recovery without mutating the session or its random stream  355ms
+ ✓ test/playerItemUse.test.ts (10 tests) 1625ms
+   ✓ player menu item use > applies a guaranteed add-op state effect from the menu and consumes the item  378ms
+   ✓ player menu item use > replays the same partial-chance inflict outcome for the same session seed  315ms
+   ✓ player menu item use > does not advance the battle RNG for guaranteed, impossible, existing or missing states  457ms
+ ✓ test/systemShell.test.ts (9 tests) 670ms
+ ✓ test/playerStatusMenuEntryIcons.test.ts (4 tests) 507ms
+ ✓ test/playerStatusMenuEdgeDock.test.ts (6 tests) 721ms
+ ✓ test/playerStatusMenuClosingGuard.test.ts (2 tests) 27ms
+ ✓ test/playerStatusMenu.test.ts (17 tests) 1548ms
+ ✓ test/runtimeJuiceSelectCss.test.ts (3 tests) 12ms
+ ✓ test/playerStatusMenuMotion.test.ts (1 test) 9ms
+ ✓ test/runtimeJuice.test.ts (2 tests) 7ms
+ ✓ test/playerStatusMenuPortrait.test.ts (5 tests) 438ms
+
+ Test Files  11 passed (11)
+      Tests  64 passed (64)
+   Start at  19:27:39
+   Duration  16.56s (transform 10.24s, setup 0ms, collect 47.14s, tests 6.18s, environment 3ms, prepare 1.98s)

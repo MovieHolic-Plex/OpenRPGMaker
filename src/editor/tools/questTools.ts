@@ -5,6 +5,7 @@
 import { compileQuest } from "@/project/quest/questCompiler";
 import {
   extractQuestGraphConditions,
+  findQuestById,
   generateQuestWalkthrough,
   lintQuestById,
   normalizeQuestGraph,
@@ -12,10 +13,10 @@ import {
 import { runSceneTest, type SceneStep } from "@/testing/sceneTestRunner";
 import { storyFlagById } from "@/project/storyFlags";
 import type { Project } from "@/project/types";
-import { questDefId, type QuestDef, type QuestGraphDef } from "@/project/quest/questDef";
+import { isStepQuestDef, questDefId, type QuestGraphDef } from "@/project/quest/questDef";
 import { ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
-import { CONDITION_SCHEMA } from "./schemaShapes";
+import { parseQuestDef, QUEST_DEF_SCHEMA, QUEST_DEF_HINT, QUEST_DEF_EXAMPLE, QUEST_GRAPH_CONDITION_SCHEMA, QUEST_GRAPH_HINT } from "./questToolSchemas";
 
 // 호환용 재수출(기존 소비자 대비).
 export { ensureNamedVariable };
@@ -57,88 +58,22 @@ const createQuestFlags: ToolDefinition = {
 
 const createQuest: ToolDefinition = {
   name: "create_quest",
-  description: "선언적 QuestDef를 컴파일한다 — 스위치/변수 + 기버 다중 페이지 + 수집물/블로커/게이트 이벤트 생성 + project.quests 메타 보존. 퀘스트·의뢰 요청은 create_quest/define_quest 로 등록하고 verify_quest 로 완주를 확인한다 — upsert_event 로 손으로 조립하지 말 것. 플래그는 declare_story_flag.",
+  description: "선언적 QuestDef로 퀘스트 이벤트·진행 플래그·단계 메타를 함께 만든다. talk는 target, collect는 sources, kill은 at가 필수. 생성 후 같은 ID로 define_quest를 호출하지 마세요. 그래프를 저장하는 도구는 define_quest이고 create_quest는 단계 정의를 보존한다. 단계형 자동 완주 검증은 현재 지원하지 않는다.",
   mode: "write",
+  invalidArgsExample: QUEST_DEF_EXAMPLE,
+  invalidArgsHint: QUEST_DEF_HINT,
   parameters: {
     type: "object",
-    properties: {
-      def: {
-        type: "object",
-        description: "QuestDef(key/title/summary/giver/steps/rewards?/gates?)",
-        properties: {
-          key: { type: "string", description: "영문/숫자/밑줄" },
-          title: { type: "string" },
-          summary: { type: "string" },
-          giver: {
-            type: "object",
-            description: "기존 이벤트 참조 {mapId,eventId} 또는 신규 생성 {create:{...}}",
-            properties: {
-              mapId: { type: "string" },
-              eventId: { type: "string" },
-              create: { type: "object", description: "QuestNpcSpec", additionalProperties: true },
-            },
-          },
-          steps: {
-            type: "array",
-            description: "QuestStep[] — kind: talk|collect|kill|reach",
-            items: {
-              type: "object",
-              properties: {
-                kind: { type: "string", enum: ["talk", "collect", "kill", "reach"] },
-                mapId: { type: "string" },
-                x: { type: "integer" },
-                y: { type: "integer" },
-                itemId: { type: "string" },
-                troopId: { type: "string" },
-                lines: { type: "array", items: { type: "string" } },
-              },
-              required: ["kind"],
-              additionalProperties: true,
-            },
-          },
-          rewards: {
-            type: "object",
-            properties: {
-              gold: { type: "integer" },
-              items: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: { itemId: { type: "string" }, count: { type: "integer" } },
-                  required: ["itemId", "count"],
-                },
-              },
-            },
-          },
-          gates: {
-            type: "array",
-            description: "단계 게이트",
-            items: {
-              type: "object",
-              properties: {
-                mapId: { type: "string" },
-                x: { type: "integer" },
-                y: { type: "integer" },
-                requiresStep: { type: "integer", description: "0-기반 단계 인덱스" },
-                lockedText: { type: "string" },
-              },
-              required: ["mapId", "x", "y", "requiresStep", "lockedText"],
-            },
-          },
-        },
-        required: ["key", "title", "summary", "giver", "steps"],
-      },
-    },
+    properties: { def: QUEST_DEF_SCHEMA },
     required: ["def"],
   },
   run(draft, args): ToolExecResult {
-    const def = args.def as QuestDef;
-    if (!def || typeof def.key !== "string") throw new ToolError("def.key(문자열)가 필요합니다.", { code: "quest-def" });
+    const def = parseQuestDef(args.def);
     try {
       const result = compileQuest(draft, def);
       return {
         summary: `퀘스트 '${def.title}' 컴파일 — 이벤트 ${result.eventsCreated}개, 단계 ${def.steps.length}개`,
-        data: { flags: result.flags, eventsCreated: result.eventsCreated },
+        data: { questId: def.key, kind: "steps", stepCount: def.steps.length, flags: result.flags, eventsCreated: result.eventsCreated },
         ...(result.warnings.length > 0 ? { warnings: [...result.warnings] } : {}),
       };
     } catch (cause) {
@@ -157,7 +92,7 @@ const defineQuest: ToolDefinition = {
     nodes: [{ id: "talk-chief", description: "촌장과 대화", completesWhen: { kind: "storyFlag", flagId: "talked-chief", value: true } }],
     edges: [],
   },
-  invalidArgsHint: "id/title/nodes/edges가 필요하고 completesWhen은 조건 객체 또는 {all:[조건...]}입니다.",
+  invalidArgsHint: QUEST_GRAPH_HINT,
   parameters: {
     type: "object",
     properties: {
@@ -171,10 +106,7 @@ const defineQuest: ToolDefinition = {
           properties: {
             id: { type: "string" },
             description: { type: "string" },
-            completesWhen: {
-              ...CONDITION_SCHEMA,
-              description: "조건 객체 또는 {kind:'all', conditions:[...]}",
-            },
+            completesWhen: QUEST_GRAPH_CONDITION_SCHEMA,
             activatesFlags: { type: "array", items: { type: "string" } },
           },
           required: ["id", "description", "completesWhen"],
@@ -196,7 +128,10 @@ const defineQuest: ToolDefinition = {
     try {
       graph = normalizeQuestGraph(draft, args);
     } catch (cause) {
-      throw new ToolError(`퀘스트 그래프 정의 실패: ${cause instanceof Error ? cause.message : String(cause)}`, { code: "quest-graph-define" });
+      throw new ToolError(`퀘스트 그래프 정의 실패: ${cause instanceof Error ? cause.message : String(cause)} — ${QUEST_GRAPH_HINT}`, { code: "quest-graph-define" });
+    }
+    if (isStepQuestDef(findQuestById(draft, graph.id))) {
+      throw new ToolError(`퀘스트 '${graph.id}'는 create_quest로 저작한 단계 정의입니다. define_quest로 덮으면 기존 단계가 사라지므로 교체할 수 없습니다. 수정은 create_quest의 전체 def를 사용하세요.`, { code: "quest-kind-conflict" });
     }
     linkStoryFlagsToQuest(draft, graph);
     draft.quests = [...(draft.quests ?? []).filter((quest) => questDefId(quest) !== graph.id), graph];
@@ -254,7 +189,7 @@ const generateWalkthroughTool: ToolDefinition = {
 
 const verifyQuestTool: ToolDefinition = {
   name: "verify_quest",
-  description: "generate_walkthrough 결과를 즉시 run_scene_test로 실행해 성공/실패와 실패 스텝을 반환한다.",
+  description: "퀘스트 그래프의 선언된 노드를 run_scene_test로 실행한다. 수동 debug set이 필요한 구간은 미검증(data.ok=false)이며, 그래프에 선언하지 않은 목표는 검증 범위에 포함되지 않는다.",
   mode: "read",
   parameters: {
     type: "object",
@@ -270,12 +205,21 @@ const verifyQuestTool: ToolDefinition = {
         start: walkthrough.scenario.start,
         steps: walkthrough.scenario.steps as SceneStep[],
       });
+      const manualCount = Math.max(walkthrough.manualHints.length, walkthrough.scenario.steps.filter((step) => step.kind === "set").length);
+      const manual = manualCount > 0;
+      const verified = result.ok && !manual;
       return {
-        summary: result.ok
-          ? `quest verify 성공: ${questId} (${result.stepsRun}/${result.totalSteps} steps)`
-          : `quest verify 실패: ${questId} step ${result.failedStepIndex} — ${result.failureReason}`,
+        summary: manual
+          ? `quest verify 미검증: ${questId} — 수동 검증 ${manualCount}건. debug set으로 대체한 단계는 완주 증거가 아닙니다.`
+          : result.ok
+            ? `quest verify 성공: ${questId} (선언된 노드 ${walkthrough.nodes.length}개, ${result.stepsRun}/${result.totalSteps} steps)`
+            : `quest verify 실패: ${questId} step ${result.failedStepIndex} — ${result.failureReason}`,
+        ...(manual ? { warnings: [...walkthrough.manualHints] } : {}),
         data: {
-          ok: result.ok,
+          ok: verified,
+          simulationOk: result.ok,
+          verificationStatus: manual ? "manual-required" : result.ok ? "verified" : "failed",
+          verifiedNodeIds: walkthrough.nodes.filter((node) => node.automatic && verified).map((node) => node.nodeId),
           walkthrough,
           failedStepIndex: result.failedStepIndex,
           failedStep: result.failedStep,

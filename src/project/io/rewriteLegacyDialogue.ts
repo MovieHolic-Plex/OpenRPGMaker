@@ -56,8 +56,13 @@ export function rewriteLegacyAdvancedDialogueInProject(project: Project): boolea
  * 빈 문자열 대신 실제 대사로 돌려준다 — 렌더가 `body.replace` 에서 터지지 않게. */
 export function textBodyOf(command: { readonly kind: string } & Record<string, unknown>): string {
   if (typeof command.body === "string") return command.body;
+  if (typeof command.text === "string") return command.text;
   if (Array.isArray(command.lines)) {
     return command.lines.filter((line): line is string => typeof line === "string").join("\n");
+  }
+  const dialogue = command.dialogue;
+  if (dialogue && typeof dialogue === "object" && "lines" in dialogue && Array.isArray(dialogue.lines)) {
+    return dialogue.lines.filter((line): line is string => typeof line === "string").join("\n");
   }
   return "";
 }
@@ -88,9 +93,15 @@ function rewriteCommand(command: Command): Command {
  * 로드 시 1회 정규화 — 고친 뒤에는 렌더·검증·저장이 전부 body 경로를 탄다. */
 function normalizeLegacyTextLines(command: Extract<Command, { kind: "text" }>): Command {
   if (typeof command.body === "string") return command;
-  const raw = command as unknown as { readonly lines?: unknown };
-  if (!Array.isArray(raw.lines)) return command;
-  const { lines: _dropped, ...kept } = command as unknown as Record<string, unknown>;
-  void _dropped;
+  const raw = command as unknown as Record<string, unknown>;
+  const nested = raw.dialogue && typeof raw.dialogue === "object" && "lines" in raw.dialogue && Array.isArray(raw.dialogue.lines);
+  if (typeof raw.text !== "string" && !Array.isArray(raw.lines) && !nested) return command;
+  const { lines: _lines, text: _text, ...kept } = raw;
+  // Retain unrelated dialogue metadata; only its legacy body alias is removed.
+  if (nested) {
+    const { lines: _nestedLines, ...metadata } = raw.dialogue as Record<string, unknown>;
+    if (Object.keys(metadata).length) kept.dialogue = metadata;
+    else delete kept.dialogue;
+  }
   return { ...kept, kind: "text", body: textBodyOf(command) } as Command;
 }

@@ -205,23 +205,19 @@ test("상점 미리보기에 판매 목록 ≥ 1 — 빈 상점 + 아이콘 홍�
   const saleRows = dialog.locator('[data-testid="shop-sale-list"] [data-testid^="shop-item-row-"]');
   await expect(saleRows.first()).toBeVisible();
   expect(await saleRows.count()).toBeGreaterThanOrEqual(1);
-  // 목록은 하나뿐이다: 담긴 행이 맨 위 «판매 중» 그룹, DB 나머지는 그 아래 «안 담음».
-  const pool = dialog.getByTestId("shop-stock-pool");
-  await expect(pool).toBeVisible();
-  // 「보인다」로는 부족하다 — DB 전체가 목록 안에 있고 실제로 스크롤돼야 6번째 이후에 닿는다.
-  // 예전 `<details>` 자료집은 스크롤바를 그려 놓고도 scrollTop 이 0 에 못 박혀 있었다.
-  const catalog = dialog.getByTestId("shop-item-catalog");
+  await expect(dialog.getByTestId("shop-stock-pool")).toHaveCount(0);
+  await dialog.getByTestId("shop-add-goods").click();
+  const picker = page.getByTestId("shop-catalog-dialog");
+  const catalog = picker.getByTestId("shop-catalog-list");
   await expect(catalog).toBeVisible();
-  const catalogScroll = await catalog.evaluate((node) => ({
-    clientH: node.clientHeight,
-    scrollH: node.scrollHeight,
-  }));
+  const catalogScroll = await catalog.evaluate((node) => ({ clientH: node.clientHeight, scrollH: node.scrollHeight }));
   expect(catalogScroll.scrollH).toBeGreaterThan(catalogScroll.clientH);
-  await dumpEvidence(page, "shop-stocked-single-list", {
+  await dumpEvidence(page, "shop-stocked-catalog", {
     saleRows: await saleRows.count(),
-    poolRows: await pool.locator('[data-testid^="shop-item-row-"]').count(),
+    catalogRows: await catalog.locator('[data-testid^="shop-catalog-item-"]').count(),
     catalogScroll,
   });
+  await picker.getByTestId("shop-catalog-cancel").click();
 });
 
 test("말하기·이동·상점·선택지 각 1회 삽입 — 28행 카탈로그 아님 + pageerror 0", async ({ page }) => {

@@ -1,0 +1,17 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/runtimeMovementStability.test.ts test/horrorObjectRuntime.test.ts test/runtimePlayerHop.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/omo-2
+
+ ✓ test/horrorObjectRuntime.test.ts (9 tests) 1193ms
+   ✓ horror authoring and runtime contracts > roundtrips authored properties and old projects without adding behavior  607ms
+ ✓ test/runtimePlayerHop.test.ts (5 tests) 761ms
+ ✓ test/runtimeMovementStability.test.ts (38 tests) 3792ms
+
+ Test Files  3 passed (3)
+      Tests  52 passed (52)
+   Start at  18:40:46
+   Duration  25.14s (transform 24.63s, setup 0ms, collect 51.31s, tests 5.75s, environment 1.17s, prepare 1.13s)
+
