@@ -5,6 +5,7 @@ import {
   registerStructureKit,
   renameStructureKit,
 } from "@/editor/harnessSuggestion/structureKitActions";
+import { interiorObjectById } from "@/editor/interiorObjectCatalog";
 import { store } from "@/project/store";
 import type { SectionStructureKitDef } from "@/project/types";
 
@@ -67,5 +68,26 @@ describe("structureKit DB 관리 액션 — 등록/개명/삭제", () => {
     expect(refs[0]).toMatchObject({ bundleId: "bundle_t", thingId: "thing_t", thingLabel: "시험 침대" });
     expect(conceptThingsReferencingKit(tilesetId, "kit_nope")).toEqual([]);
     expect(tileset.id).toBe(tilesetId);
+  });
+
+  it("시드된 카탈로그 id 킷도 조인된다 — bed_h 물건은 kit bed_h를 가리킨다", () => {
+    const tilesetId = Object.keys(store.getCurrent().tilesets)[0]!;
+    // 카탈로그에 실제로 있는 id를 쓴다 — 카탈로그 폴백 렌더 경로의 조인 계약.
+    const catalogId = interiorObjectById("bed_h") ? "bed_h" : "bed";
+    const kit: SectionStructureKitDef = { ...bedKit(catalogId), id: catalogId };
+    const registered = registerStructureKit(tilesetId, kit);
+    store.update((draft) => {
+      draft.tilesets[tilesetId]!.scratchConceptBundles = [{
+        id: "bundle_c",
+        label: "시험 시설",
+        facilities: [{ id: "facility_c", label: "시험", placeIds: ["place_c"] }],
+        places: [{ id: "place_c", label: "시험실" }],
+        things: [{ id: "thing_c", label: "시험 침대", objectId: registered.id, placeIds: ["place_c"], chips: ["block"] }],
+      }];
+    });
+    const refs = conceptThingsReferencingKit(tilesetId, registered.id);
+    expect(refs).toHaveLength(1);
+    expect(refs[0]!.thingId).toBe("thing_c");
+    deleteStructureKit(tilesetId, registered.id);
   });
 });

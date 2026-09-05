@@ -95,6 +95,9 @@ export function updateItemRecord(database: DatabaseRecords, id: string, patch: P
   if ("equipmentProfile" in patch && patch.equipmentProfile !== undefined) record.equipmentProfile = patch.equipmentProfile;
   if ("farmTool" in patch) record.farmTool = patch.farmTool;
   if ("captureProfile" in patch) record.captureProfile = patch.captureProfile;
+  // careProfile 은 monsterCare 런타임이 읽는 필드다. 화이트리스트에 빠져 있어서 어떤
+  // 에디터 경로로도 저장되지 않았다(기본 카탈로그만 가질 수 있는 값이었다).
+  if ("careProfile" in patch) record.careProfile = patch.careProfile;
   database.items[index] = normalizeItemRecord(record);
 }
 

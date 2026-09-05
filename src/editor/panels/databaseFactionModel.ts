@@ -246,7 +246,7 @@ function withProjectFactions(project: Project, factions: ProjectFactions | undef
   return next;
 }
 
-function factionReferenceLabels(project: Project, factionId: string): string[] {
+export function factionReferenceLabels(project: Project, factionId: string): string[] {
   const labels = project.database.enemies
     .filter((enemy) => enemy.factionId === factionId)
     .map((enemy) => `몬스터 '${enemy.name}' (${enemy.id})`);

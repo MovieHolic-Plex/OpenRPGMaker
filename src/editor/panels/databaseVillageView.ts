@@ -1,3 +1,5 @@
+import { asVillageDesign } from "@/project/villageDesign";
+import { renderVillageDesignDetail } from "./villageDesignPanel";
 // 마을 탭 — 마을 하네스가 읽는 값을 사람이 저작하는 화면.
 //
 // 이 탭이 없던 동안 마을 생성의 모든 값(집 형태 34종, 길 폭, 광장 모양, 마당 스타일…)은
@@ -80,7 +82,7 @@ import "@/styles/database/modern/village.css";
 
 type VillageKind = "template" | "preset";
 
-const KIND_LABEL: Readonly<Record<VillageKind, string>> = { template: "집 형태", preset: "배치 프리셋" };
+const KIND_LABEL: Readonly<Record<VillageKind, string>> = { template: "집 형태", preset: "마을 설계서" };
 
 // 사용자에게 보여줄 한국어 이름. 값(=하네스가 받는 문자열)은 그대로 저장한다.
 const PATH_LABEL: Readonly<Record<string, string>> = { sand: "모래길", dirt: "흙길", stone: "돌길" };
@@ -99,7 +101,7 @@ const GROUND_LABEL: Readonly<Record<string, string>> = { grass: "풀", snow: "�
 
 const UNSET = "";
 
-let selectedKind: VillageKind = "template";
+let selectedKind: VillageKind = "preset";
 let selectedTemplateId = "";
 let selectedPresetId = "";
 let villageSearch = "";
@@ -314,10 +316,10 @@ function startScreen(project: Project, rerender: () => void): HTMLElement {
             children: [
               emptyState({
                 icon: "⌖",
-                title: "배치 프리셋을 만들어 보세요",
-                body: "길 폭·광장 모양·마당 스타일 같은 값을 한 묶음으로 저장합니다. AI 에게 “이 프리셋으로 마을 깔아 줘”라고 하면 그대로 쓰입니다.",
+                title: "마을 설계서를 만들어 보세요",
+                body: "집의 생김새·길·물과 숲을 한곳에서 정합니다. AI가 지킬 고정값과 바꿔도 되는 범위를 선택하세요.",
                 action: {
-                  label: "+ 빈 프리셋 추가",
+                  label: "+ 마을 설계서 추가",
                   kind: "primary",
                   testid: "db-village-preset-blank-create",
                   onClick: () => { selectedKind = "preset"; createRecord(rerender); },
@@ -1147,16 +1149,16 @@ function presetDetail(
       body: [
         emptyState({
           icon: "⌖",
-          title: "배치 프리셋을 만들어 보세요",
-          body: "길 폭·광장 모양·마당 스타일 같은 값을 한 묶음으로 저장합니다. AI 에게 “이 프리셋으로 마을 깔아 줘”라고 하면 그대로 쓰입니다.",
-          action: { label: "+ 빈 프리셋 추가", kind: "primary", testid: "db-village-preset-blank-create", onClick: () => createRecord(rerender) },
+          title: "마을 설계서를 만들어 보세요",
+          body: "집의 생김새·길·물과 숲을 한곳에서 정합니다. AI가 지킬 고정값과 바꿔도 되는 범위를 선택하세요.",
+          action: { label: "+ 마을 설계서 추가", kind: "primary", testid: "db-village-preset-blank-create", onClick: () => createRecord(rerender) },
           testid: "db-village-preset-blank",
         }),
         el("div", {
           class: "db-ws-stack db-village-inspector",
           children: [span(sectionCard({
             title: "마을 원형에서 시작하기",
-            hint: "AI 가 테마 문장으로 고르던 값 묶음. 골라서 프리셋으로 굽습니다",
+            hint: "분위기를 고른 뒤 집과 길, 자연 설정을 설계서에서 조정합니다",
             children: archetypeGallery(rerender),
             testid: "db-village-archetype-gallery",
           }))],
@@ -1166,6 +1168,30 @@ function presetDetail(
     });
   }
 
+  if (record.design) {
+    return renderVillageDesignDetail(project, record, {
+      basics: presetBasicFields(record, records, rerender),
+      scale: presetScaleFields(project, record, rerender),
+      road: presetRoadFields(project, record, rerender),
+      layout: presetLayoutFields(project, record, rerender),
+      templates: presetTemplateWhitelist(project, record, rerender),
+      archetype: archetypeImportFields(record, rerender),
+      preview: presetPreviewFields(project, record),
+      patch: (patch) => {
+        recordProjectSnapshot("마을 설계서 변경");
+        patchPreset(record.id, () => patch);
+        rerender();
+      },
+      setDefault: () => {
+        recordProjectSnapshot("기본 마을 설계서 지정");
+        store.update(draft => {
+          if (draft.defaultVillagePresetId === record.id) delete draft.defaultVillagePresetId;
+          else draft.defaultVillagePresetId = record.id;
+        }, { scope: "database", collection: "villagePresets", label: "기본 마을 설계서 지정" });
+        rerender();
+      },
+    });
+  }
   const applied = presetOverrides(record);
   const catalog = villageTemplateCatalog(project, applied.templateIds);
   return detailPane({
@@ -1181,6 +1207,15 @@ function presetDetail(
       testid: "db-village-preset-hero",
     }),
     body: [
+      el("button", {
+        class: "db-ws-btn db-ws-btn-primary", text: "마을 설계서로 전환", attrs: { type: "button" },
+        dataset: { testid: "db-village-design-convert" },
+        on: { click: () => {
+          recordProjectSnapshot("마을 설계서로 전환");
+          patchPreset(record.id, () => asVillageDesign(record));
+          rerender();
+        } },
+      }),
       statStrip([
         { label: "적용되는 값", value: String(Object.keys(applied).length), hint: "범위·열거형을 통과한 값만", tone: "good" },
         { label: "형태 후보", value: String(catalog.templates.length), hint: applied.templateIds ? "화이트리스트 적용" : "카탈로그 전체" },
@@ -1268,9 +1303,13 @@ function presetPreviewFields(project: Project, record: VillageLayoutPresetRecord
     dataset: { testid: "db-village-preset-preview-note" },
     text: "「미리보기 만들기」를 누르면 이 프리셋으로 마을 한 판을 시공해 그림으로 보여줍니다. 초안에서만 돌기 때문에 프로젝트에는 맵이 생기지 않습니다.",
   });
+  const warnings = el("details", { dataset: { testid: "db-village-preset-preview-warnings" } });
+  warnings.hidden = true;
 
   const run = (): void => {
     clearChildren(stage);
+    clearChildren(warnings);
+    warnings.hidden = true;
     const result = buildPresetPreview(project, record.id, presetPreviewSeed);
     if (!result.ok) {
       stage.dataset.previewState = "none";
@@ -1285,8 +1324,12 @@ function presetPreviewFields(project: Project, record: VillageLayoutPresetRecord
       // 좌우에 빈 띠가 남아 그림이 작아 보인다.
       height: 320,
     }));
-    const warn = result.warnings.length > 0 ? ` · 경고 ${result.warnings.length}건: ${result.warnings.join(" / ")}` : "";
-    note.textContent = `씨앗 ${presetPreviewSeed} · 집 ${result.housesBuilt}채${warn}`;
+    const visibleWarnings = [...new Set(result.warnings.filter(message => !message.startsWith("[vperf]") && !message.startsWith("마을 프리셋 적용:") && !message.startsWith("상점가 지정:")).map(message => message.split(/tile_query| — 다시 보낼/)[0]!.trim()))];
+    note.textContent = `씨앗 ${presetPreviewSeed} · 집 ${result.housesBuilt}채${visibleWarnings.length ? ` · 확인할 사항 ${visibleWarnings.length}건` : ""}`;
+    if (visibleWarnings.length) {
+      warnings.hidden = false;
+      warnings.append(el("summary", { text: "시공 결과 자세히 보기" }), el("ul", { children: visibleWarnings.map(text => el("li", { text })) }));
+    }
   };
 
   return [
@@ -1316,6 +1359,7 @@ function presetPreviewFields(project: Project, record: VillageLayoutPresetRecord
       ],
     }),
     note,
+    warnings,
   ];
 }
 
@@ -1517,7 +1561,7 @@ function presetTemplateWhitelist(
               h: template.h,
               stories: template.stories ?? 1,
               ...(template.lowWall ? { lowWall: true } : {}),
-              ...(template.kitId ? { kitId: template.kitId } : {}),
+              ...(template.kitId ? { kitId: template.kitId } : record.kitMix && record.kitMix !== "mixed" ? { kitId: record.kitMix } : {}),
               ...(template.roofDeck ? { roofDeck: true } : {}),
               wings: template.wings.map((wing) => ({ x: wing.x, y: wing.y, w: wing.w, h: wing.h })),
             }, project, "card", {
@@ -1709,8 +1753,9 @@ function createPresetFromArchetype(archetypeId: string, rerender: () => void): v
   const id = nextVillageId(used, archetype.id);
   recordProjectSnapshot("원형에서 배치 프리셋 만들기");
   store.update((draft) => {
-    draft.villagePresets = [...(draft.villagePresets ?? []), presetRecordFromArchetype(archetype, id)];
-  }, { scope: "database", collection: "villagePresets" });
+    draft.villagePresets = [...(draft.villagePresets ?? []), asVillageDesign(presetRecordFromArchetype(archetype, id))];
+    draft.defaultVillagePresetId ??= id;
+  }, { scope: "database", collection: "villagePresets", label: "마을 설계서 변경" });
   selectedKind = "preset";
   selectedPresetId = id;
   villageSearch = "";
@@ -1870,8 +1915,14 @@ function patchPreset(
     const records = draft.villagePresets ?? [];
     const index = records.findIndex((entry) => entry.id === id);
     if (index < 0) return;
-    draft.villagePresets = records.map((entry, at) => (at === index ? prune({ ...entry, ...patch(entry) }) : entry));
-  }, { scope: "database", collection: "villagePresets" });
+    draft.villagePresets = records.map((entry, at) => {
+      if (at !== index) return entry;
+      const next = prune({ ...entry, ...patch(entry) });
+      if (next.design) next.design = { ...next.design, revision: (entry.design?.revision ?? 0) + 1 };
+      if (draft.defaultVillagePresetId === id) draft.defaultVillagePresetId = next.id;
+      return next;
+    });
+  }, { scope: "database", collection: "villagePresets", label: "마을 설계서 변경" });
 }
 
 /** `undefined` 를 키째 지운다 — 직렬화 왕복에서 `"kitId": undefined` 는 살아남지 않으므로
@@ -1896,8 +1947,9 @@ function createRecord(rerender: () => void): void {
     const id = nextVillageId((project.villagePresets ?? []).map((entry) => entry.id), "vpreset");
     recordProjectSnapshot("배치 프리셋 추가");
     store.update((draft) => {
-      draft.villagePresets = [...(draft.villagePresets ?? []), blankPresetRecord(id)];
-    }, { scope: "database", collection: "villagePresets" });
+      draft.villagePresets = [...(draft.villagePresets ?? []), asVillageDesign({ ...blankPresetRecord(id), name: "새 마을 설계서" })];
+      draft.defaultVillagePresetId ??= id;
+    }, { scope: "database", collection: "villagePresets", label: "마을 설계서 변경" });
     selectedPresetId = id;
   }
   villageSearch = "";
@@ -1938,7 +1990,7 @@ function duplicateRecord(
     recordProjectSnapshot("배치 프리셋 복제");
     store.update((draft) => {
       draft.villagePresets = [...(draft.villagePresets ?? []), duplicatePresetRecord(source, id)];
-    }, { scope: "database", collection: "villagePresets" });
+    }, { scope: "database", collection: "villagePresets", label: "마을 설계서 변경" });
     selectedPresetId = id;
   }
   villageSearch = "";
@@ -1967,7 +2019,8 @@ function deleteRecord(rerender: () => void): void {
     recordProjectSnapshot("배치 프리셋 삭제");
     store.update((draft) => {
       draft.villagePresets = (draft.villagePresets ?? []).filter((entry) => entry.id !== id);
-    }, { scope: "database", collection: "villagePresets" });
+      if (draft.defaultVillagePresetId === id) delete draft.defaultVillagePresetId;
+    }, { scope: "database", collection: "villagePresets", label: "마을 설계서 변경" });
     selectedPresetId = "";
     toast("배치 프리셋을 삭제했습니다. Ctrl+Z 로 되돌릴 수 있습니다.", "ok");
   }
@@ -1981,7 +2034,7 @@ function renamePresetReferences(from: string, to: string): void {
       if (!preset.templateIds?.includes(from)) return preset;
       return { ...preset, templateIds: preset.templateIds.map((entry) => (entry === from ? to : entry)) };
     });
-  }, { scope: "database", collection: "villagePresets" });
+  }, { scope: "database", collection: "villagePresets", label: "마을 설계서 변경" });
 }
 
 function updateVisibleName(rowTestid: string, name: string): void {

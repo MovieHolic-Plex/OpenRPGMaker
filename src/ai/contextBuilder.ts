@@ -25,6 +25,7 @@ import {
 } from "@/project/types/conceptBundle";
 import { HOUSE_TEMPLATE_DEFS } from "@/project/defaults/houseTemplateCatalog";
 import { villageAuthoringData } from "@/editor/tools/village/authoringData";
+import { villageDesignContext } from "./villageDesignContext";
 import { describePlacementSurface, surfaceRuleFromClusterRule } from "@/project/placementSurface";
 import type { Project, TileGroupMetadata } from "@/project/types";
 import { confidenceScore } from "@/project/tilesetPalette";
@@ -697,6 +698,8 @@ export function buildSystemPrompt(project: Project, options: ContextOptions = {}
   // 감독 지침도 능력 색인·성향 기억과 같은 **예산 밖 고정분**이다. 예산 안에 두면 tokenBudget 보정이
   // 예산을 6,000자까지 줄인 세션에서 슬라이싱에 통째로 잘려, 사용자가 박아 둔 규칙이 조용히
   // 사라진다 — 사라진 줄 아무도 모르는 것이 이 블록의 최악 실패다(색인을 예산 밖에 둔 이유와 동일).
+  const designContract = villageDesignContext(project);
+  if (designContract) assembled += `\n\n${designContract}`;
   return withProjectInstructions(
     withWorldCanon(withFixedBlocks(assembled, options.preferenceMemorySection), project.worldCanon),
     project.aiInstructions,

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { installFakeDom } from "./fakeDom";
 import {
   BUILTIN_WORLD_GEN_KEYWORD_RULES,
   broadleafCountFor,
@@ -9,6 +10,7 @@ import {
   matchWorldGenKeywords,
   resolveWorldGenKeywordRules,
   resolveWorldGenRules,
+  normalizeWorldGenRulesForStorage,
   riverBandDepth,
   waterShapeFor,
   WORLD_GEN_BOUNDS,
@@ -16,6 +18,11 @@ import {
 import { WORLD_GEN_PRESETS } from "@/project/worldGenPresets";
 import { inferRequirementsFromQuery } from "@/editor/tools/villageRequirements";
 import { buildTerrainConstraintMasks } from "@/editor/tools/villageTerrainPass";
+import { renderWorldGenPreview } from "@/editor/panels/worldGenPreview";
+import { createBlankProject } from "@/project/defaults";
+import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { deserialize, serialize } from "@/project/io";
+import { store } from "@/project/store";
 
 const MAP = { width: 60, height: 44 } as const;
 
@@ -143,6 +150,43 @@ describe("규칙이 실제 마스크를 움직인다", () => {
 });
 
 describe("정규화", () => {
+  it("저작한 희소 규칙을 serialize/deserialize 왕복으로 그대로 보존한다", () => {
+    const project = createBlankProject();
+    const authored = {
+      water: { riverBandRatio: 0.33, side: "east" as const },
+      forest: { coniferGap: 5 },
+      road: { pathStyle: "stone" as const },
+      keywords: [
+        { id: "mine", label: "광산", words: ["광산"], exceptWords: ["폐광"], landmarks: ["forest" as const] },
+        { id: "explicit", label: "명시값", words: ["켜기"], landmarks: ["forest" as const], enabled: true },
+      ],
+      useBuiltinKeywords: true,
+      presetId: "custom",
+    };
+    project.system.worldGen = authored;
+
+    expect(deserialize(serialize(project)).system.worldGen).toEqual(authored);
+  });
+
+  it("keeps omitted groups absent while normalizing only authored numeric keys", () => {
+    expect(normalizeWorldGenRulesForStorage({})).toEqual({});
+    expect(normalizeWorldGenRulesForStorage({ water: { riverBandRatio: 99 } })).toEqual({
+      water: { riverBandRatio: WORLD_GEN_BOUNDS.riverBandRatio.max },
+    });
+    const project = createBlankProject();
+    expect(deserialize(serialize(project)).system.worldGen).toBeUndefined();
+    project.system.worldGen = { water: { riverBandRatio: 99 } };
+    expect(deserialize(serialize(project)).system.worldGen).toEqual({
+      water: { riverBandRatio: WORLD_GEN_BOUNDS.riverBandRatio.max },
+    });
+  });
+
+  it("잘못된 worldGen 컨테이너는 shape guard에서 거부한다", () => {
+    const project = createBlankProject();
+    project.system.worldGen = { keywords: {} as never };
+    expect(() => deserialize(serialize(project))).toThrow(/system\.worldGen\.keywords/);
+  });
+
   it("범위를 벗어난 값은 경계로 잘린다", () => {
     const rules = resolveWorldGenRules({
       water: { riverBandRatio: 99, lakeMinSize: -5 },
@@ -170,6 +214,36 @@ describe("정규화", () => {
     expect(rules.water.riverBandRatio).toBe(0.12);
     expect(rules.water.shape).toBe("auto");
     expect(rules.water.side).toBe("auto");
+  });
+});
+
+describe("미리보기와 시공 계산 패리티", () => {
+  it("미리보기 facts는 산포 성공 수가 아니라 엔진 헬퍼의 목표 수를 합산한다", () => {
+    const project = createBlankProject();
+    delete project.tilesets[DEFAULT_TILESET_ID];
+    store.replace(project);
+    const rules = resolveWorldGenRules({ forest: { coniferGap: 8, coniferAreaPerTree: 3 } });
+    const query = "깊은 숲 마을";
+    const requirements = inferRequirementsFromQuery(query, rules);
+    const masks = buildTerrainConstraintMasks(MAP, requirements, undefined, rules);
+    const restoreDom = installFakeDom();
+    try {
+      const preview = renderWorldGenPreview({ rules, query, cols: MAP.width, rows: MAP.height, testid: "worldgen-parity" });
+      const expectedConifers = masks.forestRects.reduce(
+        (sum, rect) => sum + coniferCountFor(rect.w * rect.h, rules.forest),
+        0,
+      );
+      const expectedBroadleaves = masks.forestRects.reduce(
+        (sum, rect) => sum + broadleafCountFor(rect.w * rect.h, rules.forest),
+        0,
+      );
+
+      expect(preview.facts.coniferCount).toBe(expectedConifers);
+      expect(preview.facts.broadleafCount).toBe(expectedBroadleaves);
+      expect(preview.element.textContent).toContain("기본 타일셋이 없어");
+    } finally {
+      restoreDom();
+    }
   });
 });
 

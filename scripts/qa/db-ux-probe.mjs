@@ -43,6 +43,8 @@ const TABS = [
   "life-crafting", "life-collections", "farm-animals", "farm-spatial",
   "daily-weather", "factions", "structure-kits", "common-events",
   "switches", "variables", "terms", "system",
+  "tileset-autotile", "tileset-unlabeled", "world-canon", "world-codex",
+  "world-gen", "tileset-spaces", "scratch-concepts", "villages",
 ];
 
 mkdirSync(OUT, { recursive: true });

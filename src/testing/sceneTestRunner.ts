@@ -733,6 +733,9 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
         applyWeatherStepToRunner(state, step);
         step = interp.resume(undefined);
         break;
+      case "showEmote":
+        step = interp.resume(undefined);
+        break;
       case "showAnimation":
         startSceneAnimation(state, step.animationId);
         if (step.wait) {

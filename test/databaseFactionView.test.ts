@@ -98,4 +98,16 @@ describe("database faction authoring view", () => {
     expect(store.getCurrent().factions?.relations).toEqual([{ a: "player", b: "guard", stance: 1 }]);
     expect(findByTestId(host, "db-faction-stance-player-guard")?.dataset.authored).toBe("true");
   });
+  it("previews kill reputation without changing authored data", () => {
+    store.update((project) => { project.factions = { defs: [{ id: "guard", name: "경비병" }], relations: [{ a: "guard", b: "enemy", stance: -1 }], playerKillReputation: { weight: 0.25 } }; });
+    const before = JSON.stringify(store.getCurrent());
+    const host = renderView();
+    const count = findByTestId(host, "db-faction-preview-count")!;
+    count.value = "4"; count.dispatchEvent(new Event("input"));
+    expect(findByTestId(host, "db-faction-reputation-preview-result")?.textContent).toContain("경비병: 0 → 1");
+    expect(JSON.stringify(store.getCurrent())).toBe(before);
+    findByTestId(host, "db-faction-row-enemy")!.click();
+    expect(findByTestId(host, `db-faction-use-enemy-${store.getCurrent().database.enemies[0]!.id}`)).toBeTruthy();
+  });
+
 });

@@ -199,7 +199,7 @@ function makeBasicHeader(mapCount: number): HTMLElement {
       class: "map-tree-basic-meta",
       children: [
         el("span", { class: "map-tree-basic-count", text: `${mapCount}개 맵` }),
-        el("span", { class: "map-tree-basic-hint", text: "고르면 오른쪽에 상세" }),
+        el("span", { class: "map-tree-basic-hint", text: "선택한 맵의 상세 정보" }),
       ],
     }),
   );

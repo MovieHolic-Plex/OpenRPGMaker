@@ -66,7 +66,7 @@ const PAGE_SCHEMA: JsonSchema = {
     conditions: { type: "array", items: BATTLE_CONDITION_SCHEMA },
     span: { type: "string", enum: [...SPANS], description: "battle=전투당 1회, turn=라운드당, moment=조건 충족 즉시" },
     runOnce: { type: "boolean", description: "생략 시 span==='battle' 이면 true" },
-    commands: { type: "array", items: COMMAND_SCHEMA, description: "Command[]. 빈 배열은 거부(런타임이 레거시 폴백으로 빠진다)" },
+    commands: { type: "array", items: COMMAND_SCHEMA, description: "Command[]. 빈 배열은 거부(저작 도구는 실행할 명령을 요구한다)" },
   },
   required: ["id", "commands"],
 };
@@ -104,11 +104,12 @@ function percentField(raw: Record<string, unknown>, key: string, label: string):
   return value;
 }
 
-function requireTroopEnemy(troop: TroopRecord, enemyId: unknown, label: string): string {
+function requireTroopEnemy(troop: TroopRecord, enemyId: unknown, label: string, allowSlot = false): string {
   if (typeof enemyId !== "string" || enemyId.trim().length === 0) {
     throw new ToolError(`${label}.enemyId(문자열)가 필요합니다.`, { code: "invalid-battle-condition" });
   }
   const ids = troopEnemyIds(troop);
+  if (allowSlot) troop.enemyIds.forEach((_, index) => ids.add(`enemy-${index + 1}`));
   if (!ids.has(enemyId)) {
     throw new ToolError(
       `${label}.enemyId '${enemyId}'는 트룹 '${troop.id}'의 적이 아닙니다 — 이 트룹의 적: ${[...ids].join(", ") || "없음"}. ` +
@@ -154,14 +155,14 @@ function normalizeBattleCondition(project: Project, troop: TroopRecord, raw: unk
     case "enemyHp":
       return {
         kind: "enemyHp",
-        enemyId: requireTroopEnemy(troop, record.enemyId, label),
+        enemyId: requireTroopEnemy(troop, record.enemyId, label, true),
         minPercent: percentField(record, "minPercent", label),
         maxPercent: percentField(record, "maxPercent", label),
       };
     case "enemyHpBelow":
       return {
         kind: "enemyHpBelow",
-        ...(record.enemyId === undefined ? {} : { enemyId: requireTroopEnemy(troop, record.enemyId, label) }),
+        ...(record.enemyId === undefined ? {} : { enemyId: requireTroopEnemy(troop, record.enemyId, label, true) }),
         percent: percentField(record, "percent", label),
       };
     case "actorHp":
@@ -194,21 +195,14 @@ function normalizeBattleCondition(project: Project, troop: TroopRecord, raw: unk
   }
 }
 
-/**
- * 무한 반복 게이트.
- *
- * 런타임 계약(battleEvents.shouldRunBattleEventPage): 1회성 판정은 `runOnce ?? span === "battle"` 이고,
- * 라운드 throttle 은 라운드 조건(turn/onRound/…)이 있는 페이지에만 걸린다. 그래서
- * `enemyHpBelow` 만 달고 span:"turn" + runOnce:false 인 페이지는 조건이 참인 동안 **매 평가마다** 발동해
- * 같은 대사를 도배한다. 저작 시점에 막는다.
- */
+/** Reject unrestricted evaluation loops; turn span and round conditions are throttled by runtime. */
 function assertNotRepeatingForever(page: BattleEventPageRecord, label: string): void {
   const runsOnce = page.runOnce ?? page.span === "battle";
-  if (runsOnce) return;
+  if (runsOnce || page.span === "turn") return;
   if (page.conditions.some((condition) => ROUND_CADENCE_KINDS.has(condition.kind))) return;
   throw new ToolError(
     `${label}: 이 페이지는 조건이 참인 동안 무한 반복 발동합니다(같은 대사·연출이 도배됩니다). ` +
-      `span:"battle" 또는 runOnce:true 로 1회성으로 만들거나, turn/onRound/everyRound 조건을 함께 넣어 라운드당 1회로 제한하세요.`,
+      `span:"battle" 또는 runOnce:true 로 1회성으로 만들거나, span:"turn" 또는 turn/onRound/everyRound 조건으로 라운드당 1회로 제한하세요.`,
     { code: "battle-page-repeats-forever" },
   );
 }
@@ -230,7 +224,7 @@ function normalizePage(project: Project, troop: TroopRecord, raw: unknown, warni
   const commands = normalizeLowLevelCommandArray(record.commands, `${label}.commands`, warnings);
   if (commands.length === 0) {
     throw new ToolError(
-      `${label}.commands가 비었습니다. 빈 페이지는 런타임이 레거시 폴백(기본 메시지)으로 빠져 저작 의도가 사라집니다 — ` +
+      `${label}.commands가 비었습니다. 이 저작 도구는 실행할 명령을 요구합니다 — ` +
         `text/setSwitch/m2Command 등 최소 1개를 넣으세요.`,
       { code: "battle-page-empty" },
     );

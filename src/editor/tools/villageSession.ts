@@ -1,3 +1,4 @@
+import { assertLegacyVillageSession } from "./village/designContract";
 // Multi-turn village build: living checklist + one layer per advance.
 // Voyager/SceneCraft-style: observe → act(skill) → verify → next open item.
 
@@ -169,6 +170,7 @@ export const VILLAGE_SESSION_TOOLS: readonly ToolDefinition[] = [
       buildOrder: ["plan", "map", "water", "settlement", "forest_conifer", "forest_big", "critique", "look"],
     },
     run(draft, args): ToolExecResult {
+      assertLegacyVillageSession(draft, args);
       return startVillageSession(draft, args);
     },
   },
@@ -276,6 +278,7 @@ export const VILLAGE_SESSION_TOOLS: readonly ToolDefinition[] = [
     },
     invalidArgsExample: { sessionId: "vses_1" },
     run(draft, args): ToolExecResult {
+      assertLegacyVillageSession(draft, args);
       return advanceVillageBuild(draft, args);
     },
   },
@@ -315,6 +318,7 @@ export const VILLAGE_SESSION_TOOLS: readonly ToolDefinition[] = [
       buildOrder: ["plan", "map", "water", "settlement", "forest_conifer", "forest_big", "critique", "look"],
     },
     run(draft, args): ToolExecResult {
+      assertLegacyVillageSession(draft, args);
       return runVillageSession(draft, args);
     },
   },

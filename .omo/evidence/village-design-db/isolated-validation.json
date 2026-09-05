@@ -1,0 +1,15 @@
+{
+  "command": "node scripts/run-vitest.mjs run <8 village-related files> --configLoader bundle --reporter=json --maxWorkers=2",
+  "exitCode": 1,
+  "passed": 155,
+  "failed": 1,
+  "failedTests": [
+    "build_village 스케치가 이긴 집 배치는 격자 열에 서지 않는다"
+  ],
+  "isolatedRetry": {
+    "exitCode": 0,
+    "passed": 1,
+    "skipped": 32,
+    "log": "isolated-single-retry.log"
+  }
+}

@@ -1,0 +1,170 @@
+{
+  "baseCommit": "7167ae65",
+  "implementationCommit": "b1d805fb",
+  "fullGate": {
+    "exitCode": 1,
+    "passedTests": 12650,
+    "failedTests": 221,
+    "typecheckErrors": 0,
+    "cssBudgetAndGraphPassed": true,
+    "storedBaselineNewFailedFiles": 34
+  },
+  "comparisonCommand": "node scripts/run-vitest.mjs run --configLoader bundle --maxWorkers=4 --reporter=json --outputFile <report> <34 flagged test files>",
+  "baseRetest": {
+    "passed": 218,
+    "failed": 27
+  },
+  "currentRetest": {
+    "passed": 217,
+    "failed": 28
+  },
+  "identicalFailures": [
+    {
+      "file": "test/aiActivityLiveRow.test.ts",
+      "test": "AI 도구 라이브 활동 행 다음 도구 시작은 이전 예약을 먼저 확정하고 턴 종료는 마지막 예약까지 비운다"
+    },
+    {
+      "file": "test/aiActivityLiveRow.test.ts",
+      "test": "AI 도구 라이브 활동 행 성공한 조회 도구는 완료 행을 남기지 않고 턴 종료 시 캔버스 칩 상태도 지운다"
+    },
+    {
+      "file": "test/aiAutonomousRunSurface.test.ts",
+      "test": "할 일 목록 표면 (작업 계획 체크리스트) (a) emitWorkPlan 이벤트로 체크리스트가 렌더된다 — 항목별 진행 + 현재 레이어 표시"
+    },
+    {
+      "file": "test/aiAutonomousRunSurface.test.ts",
+      "test": "할 일 목록 표면 (작업 계획 체크리스트) agentMode chat 에서도 할 일 목록은 뜨되 예산 없이 뜨고, 세션에 autonomous 플래그가 전달되지 않는다"
+    },
+    {
+      "file": "test/aiAutonomousRunSurface.test.ts",
+      "test": "할 일 목록 표면 (작업 계획 체크리스트) 모든 항목이 끝난 계획은 「모두 완료」로 남고, 계획이 한 번도 안 온 턴은 목록을 만들지 않는다"
+    },
+    {
+      "file": "test/aiAutonomousRunSurface.test.ts",
+      "test": "할 일 목록 표면 (작업 계획 체크리스트) 턴이 끝나도 할 일 목록은 남고, 다음 턴의 새 계획이 오면 그것으로 바뀐다"
+    },
+    {
+      "file": "test/aiChatObservability.test.ts",
+      "test": "병합 추론 원문 전체 열람 (V3C ②) 도구 사이 추론이 한 블록으로 병합돼도 각 추론의 원문 전체가 아이템으로 남고 토글은 횟수를 표시한다"
+    },
+    {
+      "file": "test/aiChatObservability.test.ts",
+      "test": "실시간 고스트 프리뷰 연결 채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다"
+    },
+    {
+      "file": "test/aiChatPanelTransportError.test.ts",
+      "test": "transport failure paints recovery CTA and keeps Send mounted refused fetch: is-turn-running cleared, system error bubble + ai-error-open-settings, ai-send stays disabled with ai-abort visible"
+    },
+    {
+      "file": "test/aiSelectionChipScope.test.ts",
+      "test": "대기 상태에서도 선택 칩은 보인다 idle 패널에서 has-selection-scope 칩 호스트의 사용 display 는 none 이 아니다"
+    },
+    {
+      "file": "test/aiSelectionChipScope.test.ts",
+      "test": "컴포저 힌트는 숨을 때 자리를 비운다 입력 포커스가 없을 때 힌트의 사용 display 는 none 이다(visibility:hidden 은 156px 를 먹었다)"
+    },
+    {
+      "file": "test/databaseNavMode.test.ts",
+      "test": "database navigation by editor mode 그룹 헤더가 안에 든 탭 이름과 레코드 합계를 알려준다 — 라벨 텍스트는 그대로"
+    },
+    {
+      "file": "test/databaseOverviewDashboard.test.ts",
+      "test": "database overview dashboard lazy compute: charts container is empty before idle callback, populated after flush"
+    },
+    {
+      "file": "test/databaseOverviewDashboard.test.ts",
+      "test": "database overview dashboard renders stat chips immediately with counts from the project data"
+    },
+    {
+      "file": "test/databaseOverviewTab.test.ts",
+      "test": "database overview tab shell summarizes the authored game across world, story, cast, systems, and readiness"
+    },
+    {
+      "file": "test/eventEditorM2Surface.baseline.test.ts",
+      "test": "M2 명령 폼 표면 스냅샷 기준선과 일치한다"
+    },
+    {
+      "file": "test/eventEditorPortalSurface.baseline.test.ts",
+      "test": "포털(피커/모달) 표면 스냅샷 기준선과 일치한다"
+    },
+    {
+      "file": "test/forestDensity.test.ts",
+      "test": "place_props density — 모델이 실제로 닿는 라이브 툴 활엽수 density=dense 가 count 없이도 숲을 만든다"
+    },
+    {
+      "file": "test/forestDensity.test.ts",
+      "test": "plant_tree_clusters 기본(dense)이 선언한 커버리지에 닿고 그 지대를 실제로 막는다"
+    },
+    {
+      "file": "test/gen1DemoContent.test.ts",
+      "test": "Scarloxy Gen1 authored content authors persistent major statuses, finite PP, a Poke Ball, and trainer semantics"
+    },
+    {
+      "file": "test/modalEscapeLayerGate.test.ts",
+      "test": "Escape 계층 게이트 body 에 오버레이를 붙이는 파일은 modalStack 에 참여하거나 이유와 함께 면제된다"
+    },
+    {
+      "file": "test/modalEscapeLayerGate.test.ts",
+      "test": "Escape 계층 게이트 이번에 고친 표면들은 면제가 아니라 실제로 등록한다"
+    },
+    {
+      "file": "test/noLocalProjectDb.test.ts",
+      "test": "canonical project persistence has no local DB fallback does not reference IndexedDB SQLite or local JSON fallback in runtime source"
+    },
+    {
+      "file": "test/regionSelectionPastePreview.test.ts",
+      "test": "북여넣기 미리보기 모드 cancelPastePreview로 미리보기 취소 — 맵 변화 없음"
+    },
+    {
+      "file": "test/regionSelectionPastePreview.test.ts",
+      "test": "북여넣기 미리보기 모드 복사 후 enterPastePreview → confirmPastePreview로 실제 붙여넣기"
+    },
+    {
+      "file": "test/roleNameComparisonGate.test.ts",
+      "test": "A-2 게이트 — 역할 이름 비교 잔여 허용 목록 밖에서 타일 역할 이름을 직접 비교하지 않는다"
+    }
+  ],
+  "currentOnlyRetestFailures": [
+    {
+      "file": "test/regionSelectionPastePreview.test.ts",
+      "test": "북여넣기 미리보기 모드 클립보드 없이 enterPastePreview → false + 안내 토스트"
+    },
+    {
+      "file": "test/villageBuilder.test.ts",
+      "test": "build_village 대로·진입로가 집 footprint 내부를 침범하지 않는다"
+    }
+  ],
+  "baseOnlyRetestFailures": [
+    {
+      "file": "test/regionSelectionPastePreview.test.ts",
+      "test": "renderSelectionActionChips — 복사/붙여넣기/지우기/해제 버튼 AI 작업이 첫 버튼이고, 크기 텍스트는 바에 없다"
+    }
+  ],
+  "isolatedChecks": [
+    {
+      "file": "test/regionSelectionPastePreview.test.ts",
+      "filter": "클립보드 없이 enterPastePreview",
+      "passed": true,
+      "timeoutMs": 15000,
+      "durationMs": 1955
+    },
+    {
+      "file": "test/villageBuilder.test.ts",
+      "filter": "대로·진입로",
+      "passed": true,
+      "timeoutMs": 60000,
+      "durationMs": 16807,
+      "note": "Default 15-second limit timed out. CLI limit only; repository test unchanged."
+    }
+  ],
+  "surfaceFailuresReproducedOnBase": [
+    "test/eventEditorCommitProbe.baseline.test.ts > no-commit 래칫 > 무커밋 컨트롤 집합이 허용 목록과 정확히 일치한다",
+    "test/eventEditorCommitProbe.baseline.test.ts > 이벤트 편집기 커밋 프로브 축 > (1) 컨트롤 조작 → 저장 커맨드 스냅샷이 기준선과 같다",
+    "test/eventEditorFormSurface.baseline.test.ts > 이벤트에디터 폼 표면 스냅샷 > 기준선과 일치한다",
+    "test/eventEditorInteractionSurface.baseline.test.ts > 이벤트에디터 상호작용 후 폼 표면 스냅샷 > 기준선과 일치한다",
+    "test/eventEditorM2Surface.baseline.test.ts > M2 명령 폼 표면 스냅샷 > 기준선과 일치한다",
+    "test/eventEditorPortalSurface.baseline.test.ts > 포털(피커/모달) 표면 스냅샷 > 기준선과 일치한다"
+  ],
+  "cssLiveFailureReproducedOnBase": ".selected — lost bottom property",
+  "conclusion": "No additional functional failure observed after focused rechecks. The full repository gate remains red; its stored baselines were not modified."
+}

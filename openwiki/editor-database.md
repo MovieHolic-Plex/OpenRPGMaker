@@ -1,5 +1,45 @@
 # Editor Database
 
+## 몬스터 작업실 — 미리보기 · 행동 · 속성 (2026-09-05)
+
+- `databaseEnemyRecordView.ts`는 기존 11개 필드 패널과 `updateDatabaseRecord` 경로를 유지하고,
+  `databaseEnemyStudio.ts`가 중앙 미리보기·공격 패턴·접힌 연결 데이터와 우측 `기본 / 외형 / 전투 / 보상`
+  속성 탭을 구성한다. 예전 멀티컬럼 카드 스택은 `modern/enemies.css`에서 제거했다.
+- 슬롯·검색·선택·복제·삭제는 `databaseRecordViews.ts` 소유다. 목록 폭은 220px, 속성 폭은 340px.
+  상세 영역이 650px 이하인 도크/작은 화면에서는 하나의 세로 스크롤로 전환한다. 모달 창 기하는
+  여전히 `sidebar.css`만 소유한다. 다른 DB 탭과 전역 맵/데이터 작업 공간 전환은 이번 슬라이스 범위 밖이다.
+- 대기 애니메이션은 기존 `battlerIdleAnimations` 카탈로그의 프레임 수·시간을 그대로 쓰는 CSS 스트립이다.
+  등록되지 않았거나 스트립 로드가 실패하면 기존 크로마키 정적 그림이 남는다. 동작 줄이기 환경에서는
+  일시 정지로 시작한다. 별도 타이머·전역 리스너는 없다.
+  연관 적 그룹에 지정된 배경을 표시하며, 배경이 없으면 중립 스테이지를 쓴다.
+- 편집 이벤트가 버블링할 때 현재 store에서 헤더·능력치·미리보기·연결 데이터를 갱신한다.
+  입력 컨트롤은 재생성하지 않는다. 이름 변경은 목록 행에도 전파된다. 속성 탭과 미리보기 일시 정지는 레코드별
+  `databaseRecordViewSession`에 기억되며 전체 세션 리셋에서 지운다. 방향키/Home/End로 이동한다.
+- 연결 데이터는 적 그룹·드롭 아이템·스킬을 동일 DB 창에서 선택해 연다. 진영 설명은 기본 속성의
+  `진영 관계와 설정` disclosure 안에 있다. 종족 안내를 창 전체 배너로 중복하지 않는다.
+- `시험 전투` → `testPlayModal.openEnemyBattleTestModal` → `prepareEnemyBattleTest`는 현재 프로젝트를
+  복제한 뒤 테스트 전용 1인 적 그룹을 넣고 기존 전투 엔진/세션 경로를 실행한다. 적 그룹은 store와
+  원격 DB에 들어가지 않는다. authored troop이 없어도 시험 가능하고, 같은 ID가 있으면 충돌을 피한다.
+  이 중첩 시험 창은 modalStack에 등록해 Escape가 DB 대신 시험 창만 닫고, 닫으면 시험 버튼에
+  포커스를 복귀한다. 준비 중 닫힌 창에는 뒤늦게 전투 컨트롤러를 마운트하지 않는다.
+- 검증: `test/enemyBattleTest.test.ts`(실제 엔진 HP 반영·원본 격리),
+  `test/e2e/database-enemy-studio.spec.ts`(1680/1280/1024 hit-test·키보드·선택·연결·시험 복귀),
+  기존 EnemySpecies/Faction/ResourceSlot, RecordPartialRender, PanelGridClasses 계약.
+## 몬스터 그룹 저작 신뢰성 (2026-09-05)
+
+대상은 몬스터·몬스터 종족·적 그룹·진영 네 탭이다.
+
+- 종족의 레벨별 스킬은 마운트된 행 객체를 편집한다. 저장 정규화가 레벨순 정렬을 해도 `input` 뒤 `change`/스킬 교체/삭제가 다른 행을 가리키지 않는다. 외부 수정·undo로 목록이 바뀌면 오래된 초안을 덮어쓰지 않고 다시 표시한다. 타입 상성표에서 삭제된 타입도 선택 칩으로 남아 해제할 수 있다.
+- 종족값은 Lv1의 실제 능력치가 아니다. `monsterBattleStatsForSpecies`를 사용하는 레벨별 미리보기(개체값 0)를 제공하며 종족값 수정도 즉시 반영한다. 포획 계수와 실제 성공 확률을 구분한다.
+- 몬스터 상태 유효도는 미지정(100%)과 명시 C(60%)를 구분하고 미지정으로 되돌릴 수 있다. 속성은 실제 피해 배율을 표시한다. 액션 전투의 생략된 공격 대기시간/탄속은 런타임 기본값 1200ms/6타일·초로 표시한다. 포획 기능이 꺼진 프로젝트는 안내 상태다.
+- 적 그룹 페이지 ID는 `genId`로 생성한다. `runOnce:false`를 보존하며 빈도를 바꿀 때 개별 override를 초기화한다. 첫 조건 교체는 추가 AND 조건을 보존한다. 스위치 ON/OFF, 변수 비교 연산, 그룹 내 적 슬롯별 HP 조건을 편집할 수 있다. HP 범위의 양 끝은 저장값과 표시값을 함께 조정한다.
+- `activeSlots`의 0 입력은 시스템 기본값 상속이다. 추가 이벤트가 없어도 기본 EXP/돈/드롭 보상은 동작한다. 밸런스 추정은 10회 표본임을 표시한다.
+- 적 그룹 워크벤치의 영역 배치는 `modern/troops.css`가 소유한다. 상세 패널 폭 760px 이하에서 단일 열로 전환한다. 뷰포트 폭만으로 판단하면 목록·내비게이션 레일 때문에 1024px에서 입력이 겹친다.
+- 진영은 기본·상속 소속을 포함한 몬스터/필드 스폰 사용처 이동, 상대 진영 검색, 초기 저작 관계에서 N회 처치한 결과 미리보기를 제공한다. 평판 설정은 프로젝트 전체 규칙이다. 미리보기는 `applyPlayerKillReputation`/`effectiveFactionStance`를 사용하며 프로젝트·런타임 세션을 수정하지 않는다.
+
+회귀: `test/monsterBattleAuthoringContract.test.ts`, `test/databaseMonsterEventEditing.test.ts`, 기존 종족/몬스터/진영 뷰 테스트. 브라우저 재현: `AUDIT_BASE=http://127.0.0.1:<port>/ node scripts/qa/monster-database.mjs` (임시 프로젝트, 원격 저장 없음).
+
+
 ## Database Studio chrome (2026-08-24)
 
 - The Database modal is a **neutral cool studio**, not the editor cream shell and not RM2k3. Tokens live in `src/styles/database/studio-theme.css` (`--db-studio-*`), scoped under `.database-modal-backdrop` and imported last among database CSS in `src/styles/index.css`. Do not put studio hex in `tokens.css`.
@@ -91,6 +131,11 @@ Database tabs, record views, battle database records, utility records, reference
 - The generated catalog currently contains **34 audiovisual sets**. The 12 genre-generic monster-battler additions live in `scripts/lib/effectSheet/paintersMonster.mjs`: tackle impact, claw rake, bite crunch, projectile shot, leaf volley, psychic wave, shadow pulse, holy beam, sleep dust, power aura, guard barrier, and capture seal. The next 12 reusable combat/utility additions live in `scripts/lib/effectSheet/paintersUtility.mjs`: critical burst, sonic wave, drain orbs, revive rise, cleanse sparkle, paralysis bind, blind veil, confusion spiral, silence lock, summon portal, smoke vanish, and meteor fall. They deliberately use generic geometric silhouettes rather than copied commercial-game move art. Physical/projectile effects use 8 frames, elemental/status/support effects use 10, and large ritual/seal/meteor effects use 12; every entry owns one bundled sound timed to its impact frame.
 - New projects bind the starter actors, classes, skills, and battle-usable items to purpose-specific generated effects through `generatedBattleEffectBindings.ts`; creating animation records alone is insufficient because runtime playback follows those authored references. Existing Supabase rows remain load-authoritative and receive no silent default backfill. Their explicit upgrade path is Database → Battle Animations → `이펙트 34종 적용` (`db-install-generated-effects`): `installGeneratedBattleEffectPack()` adds missing generated records, upgrades the three retained legacy aliases when they still use old art, and changes only known starter record ids. It preserves unrelated/custom records, records one undo snapshot, and becomes a disabled `적용됨` button when no changes remain.
 - Database workflows live in `src/editor/databaseActions.ts`, `src/editor/databaseRecordMutators.ts`, `src/editor/databaseReferences.ts`, and `src/editor/databaseCopy.ts`.
+- **상태 변화 · 전투 연출 · 몬스터 돌봄 저작 (2026-09-05 복구):** `databaseItemRecordView.ts`의 현재 카드 계층에 누락 브랜치의 세 컨트롤을 통합했다. 효과 구역은 종류별 패널 → 상태 변화 → 전투 연출 → 연결 스킬, 사용 제한 구역 끝에는 몬스터 돌봄 카드가 온다. 기존 아이템 요약과 최신 `modern/equipment-items.css`는 유지한다.
+  - `medicine`/`special`의 상태 변화 행은 상태·확률·부여/해제·삭제를 저작한다(`db-item-state-effect-row-<i>`, `db-field-item-state-effect-{state,chance,op}-<i>`, `db-item-state-effect-add`). 부여 확률은 0..100으로 제한한다. 기존 `healStateIds` 회복 체크박스도 유지한다. CSS는 `skill-item-visuals.css`의 상태 행 규칙을 아이템에도 공유한다.
+  - `db-picker-item-animation`은 `animationId`를 선택하거나 비운다. 전투에서 대상 위치에 재생하며 필드 메뉴에서는 재생하지 않는다.
+  - `db-field-item-care-kind`/`-friendship`/`-exp`는 `careProfile`을 저작한다. 없음은 프로필 삭제, 경험치 0은 `expDelta` 생략이다. `databaseRecordMutators.updateItemRecord` 화이트리스트에 이 필드를 포함해야 UI 편집이 저장된다.
+  - `itemEffectStory`는 상태 부여 확률과 연출 이름을 설명하며 `databaseFieldSupport`의 21개 필드 중 세 필드를 런타임 지원으로 공개한다. `test/databaseItemInspector.test.ts`는 조작과 직렬화→재로드→필드 삭제를, `test/e2e/item-effects-authoring.spec.ts`는 실제 브라우저 조작·탭 왕복·내보내기를 검증한다. 복구 화면은 `verify-shots/item-editor-modern/recovered-*.png`다. `recovered-database-harness.ts`는 실제 CSS와 `openDatabaseModal`을 전용 Vite 페이지에서 실행하고, dev-project factory로 원격 저장을 끈다. 로컬 요청만 Node `route.fetch`로 전달해 호스트의 Chromium 네트워크 변경 오류를 우회하며, 내보내기는 정본 `serialize`/`deserialize` 경로를 검증한다.
 - Item types `weapon|shield|body|head|accessory` no longer open a live equipment form. The Items tab shows a door (`db-item-open-equipment-tab`) to the Equipment tab (G006). Runtime gear stays on `database.equipment`.
 - **Items tab information hierarchy (2026-08-29):** the inspector's card order *is* the hierarchy and is asserted by `test/databaseItemInspector.test.ts` ("orders workbench cards"): 요약(`db-item-card-story`) → `db-item-section-definition` → 기본/그래픽 → `db-item-section-effect` → 대상과 사용 시점 + 종루별 효과 패넬 + 연결 스킬 → `db-item-section-limits` → 사용 가능 + 포획 → 공시. Four defects this replaced: the grab-bag `수치` card (가격+범위+포획 배율+볼 등급+스킬 in one card whose title explained nothing), the graphic card wedged between effect cards, four duplicate `db-item-card-usable` copies (one per type panel), and **two live scope controls on one screen**. Scope now has exactly one owner per type: `medicine` uses its 2-way `db-field-item-scope` segment, every other non-equipment type uses the shared `db-field-scope` select — never both (same failure shape as the equipment `slot` duplication). `itemFields` in `databaseBasicRecordFields.ts` stays as the aggregate for existing callers, but the view composes `itemPriceField` / `itemScopeField` / `itemCaptureFields` / `skillPicker` into separate cards. Capture fields stay visible for every non-equipment type (a new record is `normalGoods` and `test/e2e/qa-items.spec.ts` authors capture on it) but sit last under `db-item-card-capture` with a scope hint.
 - **Category filter chips carry counts and cluster order (2026-08-29):** `categoryFilterChips` in `databaseRecordViews.ts` renders `db-filter-chip-<id>` with a `.db-filter-chip-count` badge counted from the **unfiltered** collection (counting the filtered array collapses every other chip to 0 after one click). Items group through `ITEM_CHIP_CLUSTERS` — 무분류 물품, then `소비`, then `장비`, with `.db-filter-cluster` captions; `test/databaseFilterChips.test.ts` fails if a new `ItemType` is missing from a cluster. Zero-count chips are dimmed (`is-empty`) and keep no badge, but stay rendered and clickable — hiding them makes the row reflow as the filter changes, and every `db-filter-chip-*` testid must exist on first paint (audit specs click `db-filter-chip-medicine` straight after opening the tab).
@@ -272,11 +317,12 @@ The Database modal was modernized in six waves while keeping every hard contract
 - 화면: 타일셋 레일 + 장소 카드(가구 썸네일) + 인스펙터(큰 미리보기·이름·그림·그림 칠하기·칩 토글/자유 칩 편집·장소 소속).
 - 사용자가 고친다: 시설명, 장소 추가/삭제/이름, 물건 추가/삭제/이름/그림/그림 직접 칠하기, 칩 토글/자유 칩 추가·이름 변경·삭제, 장소 소속, 필수 여부. 모두 `store.update` 로 `scratchConceptBundles` 에 남고, 다음 `place_concept` 가 그 나무를 읽는다.
 - 물건 그림(2026-09-04): 인스펙터의 「그림」 셀렉트(`scratch-concept-thing-graphic`)가 같은 타일셋 가구 목록(`objectsForTileset` — 프로젝트 킷 → 카탈로그 순)에서 `thing.objectId` 를 갈아 끼운다. 모르는 id(옛 나무·지운 킷)는 「그림 없음」 옵션으로 남아 미리보기에 「그림 없음」이 뜬다. 이름과 달리 물건 id 는 그대로라 시공·이벤트·필수 판정이 갈라지지 않는다.
-- 그림 직접 칠하기(2026-09-05): 인스펙터의 「그림 칠하기/사본 만들어 칠하기」(`scratch-concept-thing-paint`)가 구조물 타일 에디터(`openStructureKitEditor`)를 연다. 타일셋 저장 그림이면 그 킷을 바로 고치고, 카탈로그 그림이면 사본(`duplicateIntoTileset`)을 만들어 이 물건에 붙인 뒤 연다 — 원본 카탈로그는 그대로 둔다. 저장은 에디터가 즉시 하고 닫히면 인스펙터를 다시 그린다.
-- 장소 카드 물건마다 바로 칠하기(2026-09-05): 각 물건 칩에 `scratch-concept-thing-paint-<thingId>` 가 있다. `ensureThingKitForEdit(tilesetId, bundleId, thingId)` 가 저장 킷 id 를 돌려주거나 카탈로그면 사본을 만들어 `thing.objectId` 를 붙인다 — 인스펙터 버튼과 같은 경로. 피커 항목은 아직 물건이 아니라 칠하기가 없다. 계약: `test/scratchConceptTab.test.ts`.
+- 그림 직접 칠하기(2026-09-05): 인스펙터의 「그림 칠하기/사본 만들어 칠하기」(`scratch-concept-thing-paint`)가 구조물 타일 에디터(`openStructureKitEditor`)를 연다. 사용자 저장 그림이면 그 킷을 바로 고치고, 카탈로그·시드(`learnedFrom: interior-catalog`) 그림이면 사본(`duplicateIntoTileset`)을 만들어 이 물건에 붙인 뒤 연다 — 원본 카탈로그는 그대로 둔다. 저장은 에디터가 즉시 하고 닫히면 인스펙터를 다시 그린다.
+- 장소 카드 물건마다 바로 칠하기(2026-09-05): 각 물건 칩에 `scratch-concept-thing-paint-<thingId>` 가 있다. `ensureThingKitForEdit(tilesetId, bundleId, thingId)` 가 사용자 저장 킷 id 를 돌려주거나 카탈로그·시드면 사본을 만들어 `thing.objectId` 를 붙인다 — 인스펙터 버튼과 같은 경로. 피커 항목은 아직 물건이 아니라 칠하기가 없다. 계약: `test/scratchConceptTab.test.ts`.
 - **장소 도면 필드 (2026-09-02 시공 개편):** 장소 레코드에 선택 필드 `role`(`entrance` 홀·정문 / `walkway` 복도 / `room` 방), `size`(`s` 5×3 · `m` 7×4 · `l` 9×5), `count`(1..4, 같은 장소 여러 개) 가 붙었다. 장소 카드의 도면 열(`scratch-concept-place-role-<id>` / `-size-<id>` / `-count-<id>`)에서 고친다. 필드가 없는 옛 나무는 기본값(방·보통·1)으로 읽고, 복도는 라벨(복도·통로) 폴백으로 알아본다. 검증기(`shapeResourceFields`)가 모르는 role/size 와 범위 밖 count 를 거절한다.
 - 여관 초안 시드: 침실 `room·m·count 2`, 복도 `walkway`, 식당/홀 `entrance·l`. 도면은 남→북으로 홀(정문) → 복도 → 객실 ×2.
 - **시설 띠·재질 (2026-09-02 시설 다양화):** 보드 위에 시설 띠(`scratch-concept-facilities`)가 이 타일셋의 꾸러미를 칩(`scratch-concept-facility-<bundleId>`)으로 늘어놓는다. `+ 시설`(`scratch-concept-facility-add`)은 빈 꾸러미를 만들고, 아직 없는 초안이 있으면 `초안 넣기…` 셀렉트(`scratch-concept-template-select`)가 그것만 보여 준다. 도구줄의 `시설 삭제`(`scratch-concept-facility-remove`)는 꾸러미를 지운다 — 마지막 것을 지우면 빈 배열이 남고 다시 시드하지 않는다(빈 화면의 `초안 N종 넣기`(`scratch-concept-seed-templates`)가 다시 넣는 유일한 길). 시설에 **벽 재질** `wall`(`cream`·`gold-brick`·`stone-brick`, `scratch-concept-facility-wall`), 장소에 **바닥 재질** `floor`(`wood`·`stone`·`plank`·`mat`, `scratch-concept-place-floor-<id>`)가 붙었다. 기본값(크림·나무)은 필드를 지운다. 시공 뒤 파이프라인 리틴트가 그 방 바닥·그 시설 벽면을 갈아 끼운다. 장소 카드에 **층** `level`(1~3, `scratch-concept-place-level-<id>`, 2026-09-03)이 더 붙었다 — 2층 이상 장소는 `place_concept` 이 `<mapId>_2f` 별도 맵으로 짓고 계단(맵 연결 칩) 물건이 층을 잇는다. 1층은 필드를 지운다.
+- **도면 문법·구역·시설 소속 (2026-09-05):** 도구줄의 「도면」 셀렉트(`scratch-concept-facility-layout`)가 시설 `layout`(`row` 한 줄 / `double-row` 두 줄)을 고친다 — 기본 한 줄은 필드를 지운다. 장소 카드 도면 열에 「구역」 셀렉트(`scratch-concept-place-zone-<id>`)가 붙어 `zone`(`north` 북쪽 / `south` 남쪽 / 자동)을 고친다 — 자동은 필드를 지우고 두 줄 도면이 주방·창고 라벨을 남쪽으로 본다. 도구줄의 「시설 장소」 토글(`scratch-concept-facility-place-<id>`)이 꾸러미 장소 중 이 시설에 드는 것만 도면에 들인다 — 빼도 꾸러미 장소·물건은 남고 다시 넣으면 꾸러미 순서대로 붙는다. 계약: `test/scratchConceptTab.test.ts` 「도면·구역·소속」.
 - 피커는 프로젝트 킷 뒤에 카탈로그에만 있는 소품(성상·과일 선반·항아리 선반·곡물 자루·잡화 상자·물통·주전자·스툴·붉은 카펫·짚 돗자리)을 이어 보여 준다 — 킷을 옛 카탈로그로 시드한 프로젝트에서도 고를 수 있다. 러그류(`rug*`)는 기본 칩이 통행 가능·바닥, 계단류(`stairs*`)는 통행 가능·맵 연결.
 - 진입: `src/editor/panels/scratchConceptTab.ts`. 초안 데이터: `src/project/defaults/conceptFacilityTemplates.ts`. 계약: `test/scratchConceptTab.test.ts`, `test/conceptFacilityTemplates.test.ts`, `test/placeConceptTool.test.ts`. 시공 쪽 설명은 `openwiki/editor-interior-room-harness.md` 「개념 시설 시공」. 갤러리 보고서: `npx tsx scripts/gen-concept-facility-gallery.mts` → `reports/concept-facilities/index.html`.
 
@@ -826,3 +872,24 @@ TURN/BATTLE MENU` 칩. 전투 애니메이션 타이밍 표 헤더 `사운드...
 파티 그룹에 별도 그래프 저작 탭 두 개가 있다. 승급 간선은 기존 `ClassRecord.promotions`,
 스킬 트리는 선택적 `Project.growth`를 쓴다. 소유권·저장·미리보기·런타임 계약은
 [성장 트리](growth-trees.md)를 먼저 읽는다.
+
+## 미회수 편집 후속 통합 (2026-09-05)
+
+- 구조물 삭제 토스트는 개념 물건 참조가 있어도 카탈로그 id가 남으면 원본 그림으로 돌아갔다고 안내한다. UUID 사본처럼 폴백이 없을 때만 그림 부재 오류를 표시한다. 기존 가져오기·가구 분류 경로는 유지한다. 계약: `test/structureKitDbTab.test.ts`.
+- 구형 전투 명령 안내는 실제 동작인 `방어(구형)`·`교체(구형)`으로 표기한다. 설명 글꼴은 DB 모달 규칙보다 우선하며 안내 열은 88px로 긴 이름을 담는다.
+## 마을 설계서 (2026-09-05)
+
+마을 탭에 설계서 저작 화면을 연결했다. 기존 프리셋은 명시적으로 전환하며, 새 설계서는 외형·배치·자연·실내·주민 설정과 기본 설계서 선택을 한곳에서 다룬다. 상세 계약과 경계는 [마을 설계서](village-design.md).
+
+
+## 구조물 증분 메타 정정 (2026-09-05)
+
+- AI 초안은 growthAxis가 있으면 모순되는 repeatability를 버린다. 사람 저작값은 보존하고 축이 설정된 동안 반복 셀렉트만 비활성화한다. 축을 비우면 원래 반복값으로 돌아간다. 축을 바꿀 때 즉시 다시 그린다.
+- 칸 힌트가 없으면 힌트 도구를 고르기 전까지 빈 목록을 접고, 도구 설명과 실제 아이콘(grid/rectangle)을 쓴다.
+- 목록·인스펙터는 `structureKitGrowthText`로 같은 축 문구를 쓴다. 사람 스탬프 `applyStampStructureKit`의 조인 안내는 실제로 보낸 repeat/repeatY에만 붙인다(undefined도 생략이다). AI stamp 툴을 부활시키지 않는다.
+- 계약: `test/structureKitEditorDialog.test.ts`, `test/structureKitTools.test.ts`.
+
+
+## 개념 회수 UI 직접 렌더 QA (2026-09-05)
+
+`DEV_SERVER_PORT=9901 node scripts/qa/concept-recovery-editor.mjs`는 실제 CSS와 `renderScratchConceptTab`·구조물 편집기를 작은 HTML 호스트에 열어 도면·구역·시설 소속·시드 그림 사본·증분 축 반복값 보존을 검증한다. 원격 저장은 꺼 둔 단위 QA 프로젝트이며 게임 콘텐츠 저작 산출물이 아니다. 결과는 `verify-shots/concept-recovery-editor/`(1024·1440 화면, 구조물 증분 화면, result.json). 시각 확인에서 「두 줄」이 잘리던 도면 선택기에만 최소 폭 72px를 주었다. 전체 편집기 부팅은 호스트 ERR_NETWORK_CHANGED 때문에 별도 검증하지 못했지만, 이 경로는 실제 프로덕션 렌더러와 저장 뮤테이터를 실행하며 pageerror 0건을 확인한다.

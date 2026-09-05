@@ -1,5 +1,15 @@
 # Editor AI Panel & Tools
 
+## 조수 카메라 이동 수명·부드러운 줌 (2026-09-05)
+
+- `EditScene.panCameraToTile`은 목적지 줌을 `editorState`에 한 번 기록하고, 같은 호출 안에서 실제 카메라를 출발 위치·줌으로 복원한다. 이후 팬의 progress로 look-at과 로그 배율 줌을 함께 보간한다. 거리별 300–650ms, 시작·끝 속도 0의 smoothstep을 쓰며 `prefers-reduced-motion: reduce`면 즉시 도착한다. `onlyIfOffscreen` 판정은 상태의 목적지 줌이 아니라 **현재 카메라 줌**을 쓴다.
+- 이동 중 같은 요청은 재시작하지 않는다. 새 요청은 현재 보이는 위치에서 출발한다. 맵·카메라 크기·수동 줌 변경과 씬 정리는 `panEffect.reset()`으로 이전 효과를 실제로 중단한다. 콜백의 맵 검사만으로는 부족하다: Phaser Pan은 **콜백 전에** scroll을 쓴다.
+- 이미 시작한 자동 이동도 캔버스 pointerdown, 손 팬, 휠·방향키 입력에 양보한다. 취소 때 목적지 줌을 확정하되 pointerdown은 포인터 아래 월드 좌표를 보존한 뒤 타일을 구한다. 기존 제스처 중 들어온 요청은 마지막 하나만 보관해 종료 때 재생하는 계약을 유지한다.
+- `camera.preRender()` 후 뷰포트를 게시해야 같은 프레임의 `worldView`가 반영된다. 효과 콜백은 렌더보다 먼저 실행되므로 기존 worldView를 그대로 읽으면 이전 프레임 좌표다. DOM 마커 재생성은 완료·취소 시에만 한다.
+- `planCameraFocus`는 비유한 맵·좌표, 1칸 미만 영역, 맵과 겹치지 않는 영역을 거부하고, 일부 겹친 영역은 해당 맵과의 교집합으로 중심·fit을 계산한다. `focusEditorRegion`도 비유한 입력을 **맵 선택 전에** 거부한다.
+- 검증: `test/editSceneCameraFocus.test.ts`, `test/editorCameraFocusPlan.test.ts`, `test/editorReferenceNavigation.test.ts`; 실제 Phaser 프레임·맵 전환·휠 중단·동작 줄이기는 `test/e2e/assistant-camera-motion.spec.ts`, 증거 `.omo/evidence/assistant-camera-motion/`.
+
+
 AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, visual polish, dock modes, and harness integration.
 
 > **Encoding note:** Some Korean descriptive text has EUC-KR→UTF-8 mojibake from the original source commit. English terms, file paths, and code references are intact. For accurate Korean, consult the referenced source files. Partial automated restoration applied; remaining garbled CJK is irreversibly corrupted.
@@ -428,3 +438,8 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 - **MCP bridge unchanged:** `src/editor/aiAssistantBridge.ts` still long-polls `127.0.0.1:17831` and drives the same `sendUserMessage` entrypoint — `assistant_send` messages land in `pendingSends` between turns, the peek hook sees them, and the driver yields; no bridge code changed.
 
 - **Demo evidence:** the todo-8 autonomous JRPG run evidence lives at `.omo/evidence/autonomous-ai-rpg/task-8-autonomous-ai-rpg.md` — *not yet present as of this sync (todo 8 still running in parallel); the link is added once it lands.*
+
+
+## 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
+
+`TurnResult.appliedCalls`는 같은 사용자 목표에서 이미 저장한 마일스톤 호출이며, `proposedCalls`와 함께 완료 집계에만 사용한다. 재적용에는 `proposedCalls`만 사용한다. 드라이버의 합성 계속은 원장을 보존하고 새 사용자 메시지만 초기화한다. recap·질문 모드·맵별 밑그림 표시를 유지하며 수동 재시도에도 원래 composer 옵션을 전달한다. 질문 중 미완료 계획은 자동 재개하지 않는다. 계약: `aiMilestoneTurnAccounting`, `aiAskPendingPlan`, `aiComposerModeSession`.

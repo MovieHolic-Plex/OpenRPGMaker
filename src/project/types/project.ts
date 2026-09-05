@@ -83,6 +83,14 @@ export interface GameMap {
    * "가운데 파란 집 옮겨줘" 같은 영역 쿼리에 쓴다. 선택 필드 — 옛 맵 호환.
    */
   layoutPlan?: MapLayoutPlan;
+  /** 시공 당시 설계서와 시드. 원본 변경이 기존 맵을 바꾸지 않는다. */
+  villageDesignSource?: {
+    preset: VillageLayoutPresetRecord;
+    seed: number;
+    houseCount: number;
+    /** 시공 시 확정된 재료·형태·자연 규칙. 원본 자산 수정과 독립된 기록. */
+    resolvedSettings?: Record<string, unknown>;
+  };
   /**
    * 방 하네스(실내 villager-room-v1 / 던전 dungeon-room-v1)가 이 맵을 시공할 때 쓴 플랜 원본.
    *
@@ -494,6 +502,8 @@ export interface Project {
   // optional이라 마이그레이션 불필요.
   villageTemplates?: VillageHouseTemplateRecord[];
   villagePresets?: VillageLayoutPresetRecord[];
+  /** AI가 설계서를 생략할 때 사용하는 사용자 지정 기본 설계서. */
+  defaultVillagePresetId?: string;
   // AI 리치 설명 문서(채팅 present_doc 툴 산출물). optional이라 마이그레이션 불필요.
   aiDocuments?: AiDocument[];
   // 조수에게 항상 주는 사용자 고정 지침(ai/projectInstructions.ts). 시스템 프롬프트의 예산 밖

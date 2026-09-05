@@ -1,0 +1,16 @@
+{
+  "applied": {
+    "kind": "setLighting",
+    "ambient": 0.5,
+    "color": "#1a1020",
+    "transitionMs": 400
+  },
+  "errors": [],
+  "checks": [
+    "numeric 50",
+    "slider 75",
+    "dusk preset 35",
+    "preview",
+    "apply"
+  ]
+}

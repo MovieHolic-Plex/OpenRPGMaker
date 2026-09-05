@@ -78,12 +78,12 @@ const BATTLE_COMMAND_KIND_HELP: readonly { readonly label: string; readonly help
   { label: "공격", help: "장비 무기로 단일 대상 통상 공격" },
   { label: "특수기능", help: "직업이 배운 스킬 전체를 목록으로" },
   { label: "특수계열", help: "이름이 일치하는 스킬 묶음만 목록으로" },
-  { label: "방어", help: "이번 턴 받는 피해를 줄임 — 현행 종류" },
-  { label: "수호", help: "방어와 동일 효과의 구형 별칭 — 신규 명령은 방어로" },
+  { label: "방어", help: "이번 턴 받는 피해를 줄임" },
+  { label: "방어(구형)", help: "방어와 같은 효과 — 새로 쓸 때는 방어를 고르세요" },
   { label: "아이템", help: "소지품에서 전투용 아이템 사용" },
   { label: "도망", help: "전투 이탈 시도" },
   { label: "교체", help: "대기 중인 동료와 자리 교대" },
-  { label: "이벤트", help: "이벤트 실행이 아니라 교체와 동일하게 동작하는 구형 별칭 — 신규는 교체로" },
+  { label: "교체(구형)", help: "교체와 같은 효과 — 새로 쓸 때는 교체를 고르세요" },
 ];
 
 let terrainQuery = "";

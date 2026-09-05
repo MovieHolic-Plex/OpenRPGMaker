@@ -152,6 +152,15 @@ describe("editor reference navigation", () => {
     expect(cameraRequests[0]?.bounds).toEqual({ x: 2, y: 3, width: 4, height: 4 });
   });
 
+  it.each([NaN, Infinity, -Infinity])("rejects invalid geometry before changing maps: %s", (value) => {
+    for (const key of ["x", "y", "w", "h"]) {
+      expect(focusEditorRegion({ mapId: "map_house_interior_1", x: 0, y: 0, w: 1, h: 1, [key]: value })).toBe(false);
+    }
+    expect(editorState.get().currentMapId).toBe(project.startMapId);
+    expect(cameraRequests).toEqual([]);
+    expect(highlights).toEqual([]);
+  });
+
   it("clamps a region that runs past the map edge", () => {
     focusEditorRegion({ mapId: "map_house_interior_1", x: 18, y: 15, w: 10, h: 10 });
 

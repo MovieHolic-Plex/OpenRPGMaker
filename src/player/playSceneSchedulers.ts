@@ -1,3 +1,4 @@
+import { showSceneEmote } from "@/player/playSceneEmotes";
 import {
   clearAudioState,
   erasePictureState,
@@ -278,6 +279,14 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
       return true;
     case "showAnimation":
       void playMapAnimation(scene, { ...step, wait: false }, currentEventId);
+      return true;
+    case "showEmote":
+      showSceneEmote(
+        scene,
+        step.target === "player" ? "player" : step.target.eventId || currentEventId || "",
+        step.emote,
+        step.durationMs,
+      );
       return true;
     case "playMovie":
       void playMovieOverlay(scene, { ...step, wait: false });

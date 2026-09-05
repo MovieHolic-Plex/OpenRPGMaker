@@ -225,17 +225,19 @@ function stampHouse(
 ): boolean {
   const wings = houseKitWingsFromSelection(rect, shapeId);
   const windows = options.windows === undefined ? {} : normalizeWindowsArg(options.windows);
+  // author_house single에는 doorEvent 키가 없다 — 문 이벤트는 interior 모드에서 파생된다.
+  // 두 토글이 모두 켜져 있을 때만 linked-interior, 하나라도 꺼지면 exterior-only.
+  const withDoorEvent = options.interior !== false && options.doorEvent !== false;
   const args: Record<string, unknown> = {
     kind: "single",
     mapId: rect.mapId,
     kitId,
     wings,
-    interior: options.interior === false ? "exterior-only" : "linked-interior",
+    interior: withDoorEvent ? "linked-interior" : "exterior-only",
     door: true,
     windows,
     yard: [],
   };
-  if (options.doorEvent === false) args.doorEvent = false;
   return run("author_house", args);
 }
 

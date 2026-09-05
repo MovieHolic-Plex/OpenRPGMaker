@@ -266,7 +266,8 @@ describe("eraseTile", () => {
 
     eraseTile(mapId, "lower", 7, 6);
 
-    expect(at(currentMap(), 7, 6)).toBe(TILE.EMPTY);
+    // 꽃이 하위 슬롯을 차지한 채 EMPTY 로 비우면 검정이 드러나므로 주변 지면으로 되돌린다.
+    expect(at(currentMap(), 7, 6)).toBe(TILE.GRASS);
     expect(currentMap().lowerTileStacks?.[index]).toBeUndefined();
   });
 });

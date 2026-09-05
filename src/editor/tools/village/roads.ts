@@ -8,7 +8,7 @@ import { shapeRoadAround } from "@/project/defaults/roadAutotile";
 import { shapeSandAround } from "@/project/defaults/sandAutotile";
 import type { GameMap, Project } from "@/project/types";
 import { mulberry32 } from "@/util/rng";
-import { inMapBounds } from "../mapHelpers";
+import { inMapBounds, lineCells } from "../mapHelpers";
 import { wobblePath } from "../naturalScatter";
 import type { RoadStyle } from "../villagePlan";
 import {
@@ -28,7 +28,7 @@ import { paintMarketDeck } from "./plaza";
 /**
  * 대로(boulevard) — 대형 맵(72+)의 골격 (2026-07-17, 외부 리서치 반영: spine-first).
  * 동서 대로는 광장 남쪽(게이트 앞)을 전폭으로 관통, 남북 대로는 광장 동쪽에서 교차.
- * 대로 밴드는 집 배치 전에 예약되어(builder) 구멍 없는 직선 대로가 보장된다.
+ * 대로 밴드는 집 배치 전에 예약되어(builder) 구멍 없는 곡선 대로가 보장된다.
  */
 export type Boulevard = {
   readonly ewRow: number;
@@ -45,15 +45,82 @@ export function villageBoulevard(area: Rect, plaza: Plaza): Boulevard | null {
   };
 }
 
-/** 대로 밴드 전체 칸(폭 width, 전 구간). 집 예약·시공 양쪽이 같은 계산을 쓴다. */
-export function boulevardCells(area: Rect, boulevard: Boulevard): Point[] {
-  const half = Math.floor(boulevard.width / 2);
-  const cells: Point[] = [];
-  for (let x = area.x; x < area.x + area.w; x += 1) {
-    for (let dy = -half; dy <= half; dy += 1) cells.push({ x, y: boulevard.ewRow + dy });
+function stitchBoulevard(waypoints: readonly Point[], alongX: boolean): Point[] {
+  const first = waypoints[0];
+  if (first === undefined) return [];
+  const cells: Point[] = [first];
+  for (let i = 1; i < waypoints.length; i += 1) {
+    const target = waypoints[i];
+    if (target === undefined) continue;
+    const from = cells[cells.length - 1];
+    if (from === undefined) continue;
+    const seg = lineCells(from, target);
+    for (let j = 1; j < seg.length; j += 1) {
+      const cell = seg[j];
+      if (cell === undefined) continue;
+      const prev = cells[cells.length - 1];
+      if (prev === undefined || (prev.x === cell.x && prev.y === cell.y)) continue;
+      if (Math.abs(cell.x - prev.x) + Math.abs(cell.y - prev.y) > 1) {
+        cells.push(alongX ? { x: cell.x, y: prev.y } : { x: prev.x, y: cell.y });
+      }
+      cells.push(cell);
+    }
   }
-  for (let y = area.y; y < area.y + area.h; y += 1) {
-    for (let dx = -half; dx <= half; dx += 1) cells.push({ x: boulevard.nsCol + dx, y });
+  return cells;
+}
+
+function boulevardPathAt(area: Rect, axes: { readonly ewRow: number; readonly nsCol: number }, seed: number): {
+  readonly ew: readonly Point[];
+  readonly ns: readonly Point[];
+} {
+  const rng = mulberry32(seed >>> 0);
+  const yLo = area.y + 2;
+  const yHi = area.y + area.h - 1 - 2;
+  const xLo = area.x + 2;
+  const xHi = area.x + area.w - 1 - 2;
+  const xEnd = area.x + area.w - 1;
+  const yEnd = area.y + area.h - 1;
+  const ewWay: Point[] = [];
+  for (let x = area.x; ; x = Math.min(xEnd, x + 12)) {
+    ewWay.push({ x, y: clamp(axes.ewRow + Math.floor(rng() * 9) - 4, yLo, yHi) });
+    if (x >= xEnd) break;
+  }
+  const nsWay: Point[] = [];
+  for (let y = area.y; ; y = Math.min(yEnd, y + 12)) {
+    nsWay.push({ x: clamp(axes.nsCol + Math.floor(rng() * 9) - 4, xLo, xHi), y });
+    if (y >= yEnd) break;
+  }
+  return { ew: stitchBoulevard(ewWay, true), ns: stitchBoulevard(nsWay, false) };
+}
+
+/** 시드 고정 곡선 골격. 예약·시공이 같은 경로를 쓴다. */
+export function villageBoulevardPath(area: Rect, plaza: Plaza, seed: number): {
+  readonly ew: readonly Point[];
+  readonly ns: readonly Point[];
+} {
+  return boulevardPathAt(area, { ewRow: plaza.rect.y + plaza.rect.h + 1, nsCol: plaza.rect.x + plaza.rect.w + 2 }, seed);
+}
+
+/** 대로 밴드 전체 칸(폭 width, 전 구간). 집 예약·시공 양쪽이 같은 계산을 쓴다. seed가 있으면 곡선 경로 주변, 없으면 옛 직선. */
+export function boulevardCells(area: Rect, boulevard: Boulevard, seed?: number): Point[] {
+  const half = Math.floor(boulevard.width / 2);
+  if (seed === undefined) {
+    const cells: Point[] = [];
+    for (let x = area.x; x < area.x + area.w; x += 1) {
+      for (let dy = -half; dy <= half; dy += 1) cells.push({ x, y: boulevard.ewRow + dy });
+    }
+    for (let y = area.y; y < area.y + area.h; y += 1) {
+      for (let dx = -half; dx <= half; dx += 1) cells.push({ x: boulevard.nsCol + dx, y });
+    }
+    return cells;
+  }
+  const path = boulevardPathAt(area, boulevard, seed);
+  const cells: Point[] = [];
+  for (const cell of path.ew) {
+    for (let dy = -half; dy <= half; dy += 1) cells.push({ x: cell.x, y: cell.y + dy });
+  }
+  for (const cell of path.ns) {
+    for (let dx = -half; dx <= half; dx += 1) cells.push({ x: cell.x + dx, y: cell.y });
   }
   return cells;
 }
@@ -112,15 +179,14 @@ export function paintVillageRoadsChecked(args: {
   const MAX_RETRY = 100;
   const baseLower = [...map.lowerTiles];
   const baseUpper = [...map.upperTiles];
-  // 대로 칸은 조그 분절·가지치기에서 보호한다 — 대로는 곧고 온전해야 한다.
-  const boulevardProtected = boulevard
-    ? new Set(boulevardCells(area, boulevard).map((cell) => coordKey(cell.x, cell.y)))
-    : new Set<string>();
+  // 대로 칸은 조그 분절·가지치기에서 보호한다 — 곡선 골격이 끊기거나 곧게 펴지면 안 된다.
+  const boulevardBand = boulevard ? boulevardCells(area, boulevard, seed) : [];
+  const boulevardProtected = new Set(boulevardBand.map((cell) => coordKey(cell.x, cell.y)));
 
   const paintOnce = (runIntent: VillageIntent, runSeed: number): void => {
     if (boulevard) {
       // 대로 먼저(spine-first) — 밴드는 집 배치 전에 예약돼 있어 구멍이 없다.
-      paintRoadCellsAvoidingHouses(map, runIntent.pathStyle, boulevardCells(area, boulevard), hardBlocked);
+      paintRoadCellsAvoidingHouses(map, runIntent.pathStyle, boulevardBand, hardBlocked);
     }
     paintPlazaAndAvenue(draft, map, plaza, area, runIntent, runSeed, warnings, throughBlocked, boulevard, seed);
     connectHousesToRoads(draft, map, area, plaza, houses, runIntent, runSeed, warnings, hardBlocked);

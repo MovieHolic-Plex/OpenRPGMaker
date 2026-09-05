@@ -372,6 +372,28 @@ describe("event draft aggregate validator", () => {
     expect(result.canCommit).toBe(false);
   });
 
+  it("showEmote 대상은 없는 이벤트만 거부하고 현재 이벤트와 주인공은 허용한다", () => {
+    const project = createBlankProject();
+    const mapId = project.startMapId;
+    const event = gameEvent(page({
+      commands: [
+        { kind: "showEmote", target: { eventId: "does-not-exist" }, emote: "heart" },
+        { kind: "showEmote", target: { eventId: "" }, emote: "smile" },
+        { kind: "showEmote", target: "player", emote: "question" },
+      ],
+    }));
+    project.maps[mapId].events = [event];
+
+    const result = validateEventDraftBody(project, mapId, event);
+    const missing = result.issues.filter((issue) => issue.code === "reference.event.missing");
+
+    expect(missing).toEqual([
+      expect.objectContaining({ commandPath: [0], message: expect.stringContaining("이모트 대상 이벤트") }),
+    ]);
+    expect(missing.some((issue) => issue.commandPath?.[0] === 1)).toBe(false);
+    expect(missing.some((issue) => issue.commandPath?.[0] === 2)).toBe(false);
+  });
+
   it("validates every authored map position and field-spawn area family", () => {
     const project = createBlankProject();
     const mapId = project.startMapId;

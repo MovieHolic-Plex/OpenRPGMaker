@@ -619,3 +619,47 @@
     opacity: 0.5;
   }
 }
+
+/* 이모트 선택 격자 — 실제 시트를 배경으로 깔아 그림으로 고르게 한다.
+   확대 배율은 정수(3배)여야 한다. 소수 배율이면 16px 픽셀아트가 뭉개진다. */
+.emote-swatch-grid {
+  display: grid;
+  gap: var(--space-1);
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.emote-swatch {
+  align-items: center;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  display: grid;
+  gap: 2px;
+  justify-items: center;
+  padding: var(--space-1);
+}
+
+.emote-swatch:hover {
+  border-color: var(--border-strong);
+}
+
+.emote-swatch.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.emote-swatch-icon {
+  background-repeat: no-repeat;
+  background-size: 576px 48px;
+  block-size: 48px;
+  image-rendering: pixelated;
+  inline-size: 48px;
+}
+
+.emote-swatch-label {
+  color: var(--text-2);
+  font: 500 11px/1.4 var(--font-ui);
+  margin-block-start: var(--space-2);
+  text-align: center;
+}

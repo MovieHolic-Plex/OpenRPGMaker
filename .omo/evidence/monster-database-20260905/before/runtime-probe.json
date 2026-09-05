@@ -1,0 +1,29 @@
+{
+  "sameRoundTwice": {
+    "gold": 2,
+    "fires": 2
+  },
+  "emptyPage": {
+    "stateIds": [
+      "state_poison"
+    ]
+  },
+  "speciesLevelOne": {
+    "base": {
+      "maxHp": 36,
+      "maxMp": 6,
+      "attack": 7,
+      "defense": 13,
+      "mind": 9,
+      "agility": 12
+    },
+    "computed": {
+      "maxHp": 11,
+      "maxMp": 6,
+      "attack": 5,
+      "defense": 5,
+      "mind": 5,
+      "agility": 5
+    }
+  }
+}

@@ -325,7 +325,7 @@ function allowedTargetTilesetChange(before: TilesetDef, after: TilesetDef): bool
 }
 
 function mapDescriptor(map: GameMap) {
-  const { lowerTiles: _lower, upperTiles: _upper, events: _events, layoutPlan: _plan, ...descriptor } = map;
+  const { lowerTiles: _lower, upperTiles: _upper, events: _events, layoutPlan: _plan, villageDesignSource: _design, ...descriptor } = map;
   return descriptor;
 }
 

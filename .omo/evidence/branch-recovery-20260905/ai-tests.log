@@ -1,0 +1,27 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiMilestoneTurnAccounting.test.ts test/aiComposerModeSession.test.ts test/aiAutonomousRunSmoke.test.ts --maxWorkers=3
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-recover-main-20260905
+
+ ✓ test/aiComposerModeSession.test.ts (6 tests) 3193ms
+   ✓ 컴포저 모드 — 질문(ask) > 쓰기 툴 스키마를 모델에 노출하지 않는다 (읽기 툴은 남는다)  394ms
+   ✓ 컴포저 모드 — 질문(ask) > 모델이 쓰기 툴을 불러도 거부하고 프로젝트 초안은 불변이다  801ms
+   ✓ 컴포저 모드 — 계획(plan) > 플래너만 돌려 계획 카드를 내고 그 턴은 실행 없이 끝난다 (자율 진입도 자동 계속 0회)  535ms
+   ✓ 컴포저 모드 — 계획(plan) > 플래너가 direct 를 내도 1항목 계획을 세우고 멈춘다  316ms
+   ✓ 컴포저 모드 — 계획(plan) > 계획 뒤 「계속」은 툴 루프를 돌려 실행한다  898ms
+ ✓ test/aiMilestoneTurnAccounting.test.ts (2 tests) 16844ms
+   ✓ 마일스톤 턴 정산 > 마일스톤 쓰기는 자동 계속(false) 후에도 정산에 남는다  12325ms
+   ✓ 마일스톤 턴 정산 > 마일스톤 쓰기는 자동 계속(true) 후에도 정산에 남는다  4517ms
+ ✓ test/aiAutonomousRunSmoke.test.ts (4 tests) 36146ms
+   ✓ 자율 런 통합 스모크 (todo 7) > 자동 모드의 무표지 집 요청은 의도 확인을 건너뛰고 계획으로 진행한다  17403ms
+   ✓ 자율 런 통합 스모크 (todo 7) > 작은 목표 — plan→build→verify→apply→save-audit 전체 생명주기 (remote OFF → agent_run_local_only)  6180ms
+   ✓ 자율 런 통합 스모크 (todo 7) > remote enabled(mocked) → run-end 저장 증명 agent_run_saved(projectId+sha256), flush/reload 1회씩  7295ms
+   ✓ 파괴적 마일스톤 즉시 적용 계약 > reset_project 마일스톤도 pause 없이 적용되고 다음 마일스톤을 계속한다  5258ms
+
+ Test Files  3 passed (3)
+      Tests  12 passed (12)
+   Start at  17:14:30
+   Duration  57.94s (transform 29.09s, setup 0ms, collect 94.27s, tests 56.18s, environment 1ms, prepare 999ms)
+

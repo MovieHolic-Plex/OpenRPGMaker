@@ -654,3 +654,7 @@ prune 판정 / 명시적 초안 저장 뒤 중복 쓰기.
 `env` 기본값이 `import.meta.env` 라서 tsx 에서 `undefined` 로 터진다 — Vite 파이프라인을 타면 앱과
 같은 해석 경로가 된다. `createServer` 에 `watch: null` 을 준 이유는 워처가 시스템 inotify 한도를
 넘겨(ENOSPC) 죽었기 때문이다(스위트와 동시에 돌 때 특히).
+
+## 마을 설계서 (2026-09-05)
+
+마을 설계서 집중 검증은 test/villageDesign.test.ts + databaseVillageView/villagePresetPreview/villageAuthoringData/villageBuilder다. 브라우저는 output/evidence/village-design에 실제 편집기 화면과 결과를 기록한다. 상세 계약과 경계는 [마을 설계서](village-design.md).

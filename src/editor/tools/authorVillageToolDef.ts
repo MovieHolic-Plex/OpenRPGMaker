@@ -23,6 +23,8 @@ import { RECT_SCHEMA } from "./schemaShapes";
 import { villageTemplateCatalog } from "./village/authoringData";
 import { HOUSE_TEMPLATES, MIN_BOUNDS_SIZE } from "./village/constants";
 
+import { resolveVillageDesignInput } from "./village/designContract";
+
 export type AuthorVillageDependencies = {
   readonly build: (project: Parameters<typeof buildVillageDomain>[0], args: VillageBuildDomainArgs) => ToolExecResult;
   readonly inspect: (project: Parameters<typeof inspectVillageBuild>[0], result: ToolExecResult) => VillageBuildInspection;
@@ -67,7 +69,7 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
   return {
     name: "author_village",
     description:
-      "Canonical village facade. Builds an exact or explicit best-effort house count on one locked existing/new target. 마을 숲은 forestDensity 를 반드시 넣는다(테마 문장만 쓰고 density 를 빼지 말 것). 사용자가 선택 영역을 준 턴은 target:{kind:\"existing\", mapId, bounds} 로 그 맵 그 사각형만 대상으로 하고 새 맵을 만들지 말 것. 「이 마을 정리」처럼 수량이 없어도 같다.",
+      "마을 설계서가 있으면 presetId 또는 기본 설계서를 사용한다. 고정값은 생략하고 범위 안의 값만 요청한다. 충돌(village-design-conflict)은 DB 설계서를 바꾸기 전까지 재시공하지 말고 사용자에게 차이를 알린다. houseCount는 설계서가 없을 때 필수다. Canonical village facade. Builds an exact or explicit best-effort house count on one locked existing/new target. 마을 숲은 forestDensity 를 반드시 넣는다(테마 문장만 쓰고 density 를 빼지 말 것). 사용자가 선택 영역을 준 턴은 target:{kind:\"existing\", mapId, bounds} 로 그 맵 그 사각형만 대상으로 하고 새 맵을 만들지 말 것. 「이 마을 정리」처럼 수량이 없어도 같다.",
     mode: "write",
     domains: ["tile", "map"],
     parameters: {
@@ -173,7 +175,7 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
             + "빈 맵은 없이도 전체 시공, bounds가 있으면 불필요하다.",
         },
       },
-      required: ["target", "houseCount", "countPolicy"],
+      required: ["target", "countPolicy"],
     },
     invalidArgsExample: {
       target: { kind: "existing", mapId: "map_town" },
@@ -183,7 +185,8 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
       interior: false,
     },
     run(draft, args): ToolExecResult {
-      const normalized = normalizeUnknownHouseTemplates(args, knownTemplateIds(draft));
+      const designed = resolveVillageDesignInput(draft, args, true);
+      const normalized = normalizeUnknownHouseTemplates(designed, knownTemplateIds(draft));
       const request = parseAuthorVillageRequest(normalized.args);
       // 검증 후 변이: 맵 생성(createExactVillageMap)보다 먼저 타일셋·수용성을 검사한다.
       // 기존 맵 타일셋이 combined_town이 아니면 시공 전에 거부 — 반쯤 지은 draft를 피한다.

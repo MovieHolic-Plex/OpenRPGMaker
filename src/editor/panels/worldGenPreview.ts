@@ -70,7 +70,7 @@ export function renderWorldGenPreview(options: WorldGenPreviewOptions): {
   const plan = buildPreviewPlan(masks, options.rules, cols, rows);
   canvas.setAttribute(
     "aria-label",
-    `미리보기: 물 ${plan.waterCells}칸, 침엽수 ${plan.coniferCount}그루, 활엽수 ${plan.broadleafCount}그루`,
+    `미리보기: 물 ${plan.waterCells}칸, 침엽수 목표 ${plan.coniferCount}그루, 활엽수 목표 ${plan.broadleafCount}그루`,
   );
 
   if (tileset) paintWithChipset(canvas, tileset, plan, cellPx);
@@ -78,7 +78,15 @@ export function renderWorldGenPreview(options: WorldGenPreviewOptions): {
   const element = el("div", {
     class: "wg-preview",
     dataset: { testid: options.testid, landmarks: requirements.landmarks.join(",") || "none" },
-    children: [canvas],
+    children: tileset
+      ? [canvas]
+      : [
+          el("div", {
+            class: "wg-preview-fallback",
+            attrs: { role: "status" },
+            text: "기본 타일셋이 없어 그림 미리보기를 표시할 수 없습니다.",
+          }),
+        ],
   });
 
   return {
@@ -155,6 +163,8 @@ function buildPreviewPlan(
     const areaTiles = rect.w * rect.h;
     const conifers = coniferCountFor(areaTiles, rules.forest);
     const broadleaves = broadleafCountFor(areaTiles, rules.forest);
+    coniferCount += conifers;
+    broadleafCount += broadleaves;
     const rng = mulberry(7700 + index * 13 + rect.x * 31 + rect.y * 17);
 
     for (const spot of scatter(rect, broadleaves, rules.forest.broadleafGap + 1, rng, occupied, water, 2, 2)) {
@@ -162,12 +172,10 @@ function buildPreviewPlan(
       overlay.push({ x: spot.x + 1, y: spot.y, tile: BROADLEAF_TOP_RIGHT });
       overlay.push({ x: spot.x, y: spot.y + 1, tile: BROADLEAF_BOTTOM_LEFT });
       overlay.push({ x: spot.x + 1, y: spot.y + 1, tile: BROADLEAF_BOTTOM_RIGHT });
-      broadleafCount += 1;
     }
     for (const spot of scatter(rect, conifers, rules.forest.coniferGap, rng, occupied, water, 1, 2)) {
       overlay.push({ x: spot.x, y: spot.y, tile: CONIFER_TOP });
       overlay.push({ x: spot.x, y: spot.y + 1, tile: CONIFER_BOTTOM });
-      coniferCount += 1;
     }
   }
 
@@ -288,6 +296,7 @@ function paintWithChipset(
   const image = new Image();
   image.decoding = "async";
   image.onload = () => {
+    if (!canvas.isConnected) return;
     ctx.imageSmoothingEnabled = false;
     const size = tileset.tileSize;
     const perRow = tileset.tilesPerRow;

@@ -1,0 +1,147 @@
+{
+  "enemies": {
+    "bodySize": [
+      778,
+      646
+    ],
+    "scrollOverflow": 0,
+    "canon": true,
+    "hasListPane": true,
+    "search": true,
+    "rowCount": 29,
+    "emptyState": false,
+    "deadSpace": 0.219,
+    "detailDead": 0.29,
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "textClip": [],
+    "textClipCount": 0,
+    "nodeCount": 950,
+    "violations": []
+  },
+  "monster-species": {
+    "bodySize": [
+      778,
+      646
+    ],
+    "scrollOverflow": 0,
+    "canon": true,
+    "hasListPane": true,
+    "search": true,
+    "rowCount": 9,
+    "emptyState": false,
+    "deadSpace": 0.381,
+    "detailDead": 0.445,
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "textClip": [],
+    "textClipCount": 0,
+    "nodeCount": 324,
+    "violations": []
+  },
+  "troops": {
+    "bodySize": [
+      778,
+      646
+    ],
+    "scrollOverflow": 52,
+    "canon": true,
+    "hasListPane": true,
+    "search": true,
+    "rowCount": 6,
+    "emptyState": true,
+    "deadSpace": 0.381,
+    "detailDead": 0.451,
+    "clipped": [
+      {
+        "node": "div.db-troop-battle-preview-stage[db-troop-preview-stage]",
+        "overY": 10,
+        "overX": 0
+      },
+      {
+        "node": "div.db-troop-preview-caption[db-troop-preview-caption]",
+        "overY": 0,
+        "overX": 18
+      },
+      {
+        "node": "button.db-troop-member-row.active[db-troop-member-row-1]",
+        "overY": 0,
+        "overX": 35
+      },
+      {
+        "node": "span.db-resource-picker-inline-name",
+        "overY": 0,
+        "overX": 13
+      },
+      {
+        "node": "input.db-resource-picker-inline-id.db-authoring-id[db-field-troop-backdrop]",
+        "overY": 0,
+        "overX": 147
+      }
+    ],
+    "clippedCount": 5,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "textClip": [
+      {
+        "kind": "ellipsis",
+        "node": "div.db-troop-preview-caption[db-troop-preview-caption]",
+        "text": "슬라임 정찰대 / 슬라임 / 숲",
+        "over": 18
+      },
+      {
+        "kind": "ancestor",
+        "node": "span.db-troop-member-coords",
+        "by": "button.db-troop-member-row.active[db-troop-member-row-1]",
+        "text": "X168 Y112",
+        "over": 26
+      },
+      {
+        "kind": "ellipsis",
+        "node": "span.db-resource-picker-inline-name",
+        "text": "설정됨",
+        "over": 13
+      }
+    ],
+    "textClipCount": 3,
+    "nodeCount": 300,
+    "violations": [
+      "clipped:5",
+      "textClip:3"
+    ]
+  },
+  "factions": {
+    "bodySize": [
+      778,
+      646
+    ],
+    "scrollOverflow": 0,
+    "canon": true,
+    "hasListPane": true,
+    "search": true,
+    "rowCount": 2,
+    "emptyState": false,
+    "deadSpace": 0.406,
+    "detailDead": 0.229,
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "textClip": [],
+    "textClipCount": 0,
+    "nodeCount": 160,
+    "violations": []
+  }
+}

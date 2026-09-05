@@ -311,3 +311,22 @@
   border-color: var(--db-studio-accent);
   background: color-mix(in srgb, var(--db-studio-accent) 16%, transparent);
 }
+
+/* 시설 장소 소속 — 꾸러미 장소 중 이 시설에 드는 것만 도면에 든다. */
+.scratch-concept-facility-places {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  flex: 1 1 100%;
+}
+
+.scratch-concept-facility-places .db-mini-btn.active {
+  border-color: var(--db-studio-accent);
+  color: var(--db-studio-text-1);
+}
+
+/* Leave room for the two-word layout label and the select arrow. */
+.scratch-concept-layout-select {
+  min-width: 72px;
+}

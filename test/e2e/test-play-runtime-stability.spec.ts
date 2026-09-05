@@ -119,3 +119,47 @@ test("편집기 테스트 플레이: 짧은 탭도 한 걸음 · 편집기 게�
     .toBe(false);
   await expect(page.getByTestId("edit-canvas")).toBeVisible();
 });
+
+test("런타임 디버그 패널의 숫자 입력창에 치는 글자는 게임 키가 아니다", async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:test-play-auto-start", "1");
+  });
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await seedProjectFromSupabaseCanonical(page, openFieldProject());
+  await page.getByTestId("mode-play").click({ force: true });
+  await expect(page.getByTestId("test-play-window")).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByTestId("runtime-state-json")).toBeVisible({ timeout: 30_000 });
+  await expect.poll(async () => (await runtimeState(page)).player.y, { timeout: 15_000 }).toBe(10);
+  await page.waitForTimeout(500);
+
+  // 디버그 패널은 접힌 <details> 로 시작한다 — 접힌 채로는 안의 입력창에 포커스가 가지 않는다.
+  await page.getByTestId("runtime-debug-toggle").click({ force: true });
+  const field = page.locator(".runtime-debug-input[type='number']").first();
+  await expect(field).toHaveCount(1);
+  await field.evaluate((node) => {
+    const input = node as HTMLInputElement;
+    input.scrollIntoView({ block: "center" });
+    input.focus();
+    input.value = "";
+  });
+  // 실측(고치기 전): 손 슬롯 숫자키 핸들러가 preventDefault 로 글자를 삼켜 value 가 비었다.
+  await page.keyboard.type("57");
+  await expect(field).toHaveValue("57");
+
+  // 실측(고치기 전): 입력창 포커스 중 방향키·w 가 캐릭터를 움직이고 Escape 가 게임 메뉴를 열었다.
+  const before = await runtimeState(page);
+  await page.keyboard.press("ArrowRight");
+  await page.keyboard.press("w");
+  await page.waitForTimeout(600);
+  const after = await runtimeState(page);
+  expect(after.player).toEqual(before.player);
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(400);
+  await expect(page.getByTestId("main-menu")).toHaveCount(0);
+
+  // 포커스를 빼면 다시 게임 키다.
+  await field.evaluate((node) => (node as HTMLInputElement).blur());
+  await page.keyboard.press("ArrowRight");
+  await expect.poll(async () => (await runtimeState(page)).player.x, { timeout: 5_000 }).toBe(before.player.x + 1);
+});
