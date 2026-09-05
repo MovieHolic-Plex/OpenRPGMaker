@@ -1,0 +1,57 @@
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-clear-field-df12
+
+----------------------------------------------xx--
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/runtimeMovementStability.test.ts > pathfinding through the real frame dispatcher > replaces a queued route to player with a no-op destination before any step starts
+AssertionError: expected { x: 8, y: 5 } to match object { x: 5, y: 5 }
+
+- Expected
++ Received
+
+  {
+-   "x": 5,
++   "x": 8,
+    "y": 5,
+  }
+
+ ❯ test/runtimeMovementStability.test.ts:925:24
+    923|       await Promise.all([first, replacement]);
+    924|       const position = target === "player" ? { x: s.tileX, y: s.tileY …
+    925|       expect(position).toMatchObject({ x, y: 5 });
+       |                        ^
+    926|     } finally { vi.restoreAllMocks(); }
+    927|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/runtimeMovementStability.test.ts > pathfinding through the real frame dispatcher > replaces a queued route to walker with a no-op destination before any step starts
+AssertionError: expected { x: 11, y: 5, direction: 'right' } to match object { x: 8, y: 5 }
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "x": 8,
++   "x": 11,
+    "y": 5,
+  }
+
+ ❯ test/runtimeMovementStability.test.ts:925:24
+    923|       await Promise.all([first, replacement]);
+    924|       const position = target === "player" ? { x: s.tileX, y: s.tileY …
+    925|       expect(position).toMatchObject({ x, y: 5 });
+       |                        ^
+    926|     } finally { vi.restoreAllMocks(); }
+    927|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 48 skipped (50)
+   Start at  22:10:41
+   Duration  7.37s (transform 4.39s, setup 0ms, collect 6.25s, tests 243ms, environment 335ms, prepare 139ms)

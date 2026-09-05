@@ -5,7 +5,7 @@ import {startPlayerQaServer,runRuntimeQa} from './lib/runtimeQaRun.mjs';
 const id='event-runtime-commands',out=`verify-shots/runtime-qa/${id}`;
 const fixture='.omo/evidence/event-runtime-audit/runtime-project.json';
 const server=await startPlayerQaServer();
-const browser=await chromium.launch({headless:true,args:['--no-sandbox','--use-gl=swiftshader','--disable-gpu','--disable-features=LocalNetworkAccessChecks,LocalNetworkAccessChecksWebRTC']});
+const browser=await chromium.launch({headless:process.env.RUNTIME_QA_HEADED !== "1",args:['--no-sandbox','--use-gl=swiftshader','--disable-gpu','--disable-features=LocalNetworkAccessChecks,LocalNetworkAccessChecksWebRTC']});
 const context=await browser.newContext({recordVideo:{dir:'.omo/evidence/event-runtime-audit/videos',size:{width:1024,height:768}}});
 const page=await context.newPage(); const errors=[]; const checks=[]; const browserWarnings=[];
 const state=()=>page.evaluate(()=>window.__oprnDebug.readState());

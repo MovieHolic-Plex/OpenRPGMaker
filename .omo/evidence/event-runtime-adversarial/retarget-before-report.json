@@ -1,0 +1,104 @@
+{
+  "id": "adversarial-retarget-player",
+  "errors": [],
+  "warnings": [
+    "[.WebGL-0x156c01950400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x156c01950400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x156c01950400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x156c01950400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+  ],
+  "passed": false,
+  "state": {
+    "eventLocations": {},
+    "currentMapId": "map_blank_start",
+    "x": 4,
+    "y": 9,
+    "gold": 0,
+    "switches": {
+      "sw_0001": false,
+      "sw_0002": false,
+      "sw_0003": false,
+      "sw_0004": false,
+      "sw_0005": false,
+      "sw_0006": false,
+      "sw_0007": false,
+      "sw_0008": false,
+      "sw_0009": false,
+      "sw_0010": false,
+      "sw_0011": false,
+      "sw_0012": false,
+      "sw_0013": false,
+      "sw_0014": false,
+      "sw_0015": false,
+      "sw_0016": false,
+      "sw_0017": false,
+      "sw_0018": false,
+      "sw_0019": false,
+      "sw_0020": false,
+      "ready": false,
+      "path_done": false,
+      "menu_done": false,
+      "load_done": false,
+      "movie_done": false
+    },
+    "variables": {
+      "var_0001": 0,
+      "var_0002": 0,
+      "var_0003": 0,
+      "var_0004": 0,
+      "var_0005": 0,
+      "var_0006": 0,
+      "var_0007": 0,
+      "var_0008": 0,
+      "var_0009": 0,
+      "var_0010": 0,
+      "var_0011": 0,
+      "var_0012": 0,
+      "var_0013": 0,
+      "var_0014": 0,
+      "var_0015": 0,
+      "var_0016": 0,
+      "var_0017": 0,
+      "var_0018": 0,
+      "var_0019": 0,
+      "var_0020": 0,
+      "terrain_result": 0,
+      "event_result": 0
+    },
+    "selfSwitches": {},
+    "timers": {},
+    "inventory": {},
+    "partyActorIds": [
+      "actor_hero"
+    ],
+    "npcActivities": {},
+    "friendship": {},
+    "rng": {
+      "seed": 1296592046,
+      "streams": {
+        "encounter": {
+          "seed": 1115490592,
+          "state": 1115490592
+        },
+        "battle": {
+          "seed": 3341631129,
+          "state": 3341631129
+        },
+        "movement": {
+          "seed": 2668202194,
+          "state": 2668202194
+        },
+        "fishing": {
+          "seed": 1110150967,
+          "state": 1110150967
+        },
+        "misc": {
+          "seed": 2603300607,
+          "state": 2603300607
+        }
+      }
+    }
+  },
+  "failure": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n4 !== 3\n\n    at file:///home/main/.herdr/worktrees/rpg-zzu/worktree-clear-field-df12/scripts/qa-event-runtime-adversarial.mjs:40:44",
+  "video": "/home/main/.herdr/worktrees/rpg-zzu/worktree-clear-field-df12/.omo/evidence/event-runtime-adversarial/videos/page@dab219ee1ff85723b7d147fe5231385f.webm"
+}

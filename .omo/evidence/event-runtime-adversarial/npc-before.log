@@ -1,0 +1,31 @@
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-clear-field-df12
+
+---------------------------------------------x--
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/runtimeMovementStability.test.ts > pathfinding through the real frame dispatcher > retargets a walking NPC without snapping its active tween or reporting arrival early
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ test/runtimeMovementStability.test.ts:902:45
+    900|       let done = false;
+    901|       const replacement = playPathfindMove(s, { kind: "pathfindMove", …
+    902|       await Promise.resolve(); expect(done).toBe(false);
+       |                                             ^
+    903|       tick(); expect(Math.abs(sprite.x - before)).toBeLessThan(2);
+    904|       for (let i = 0; i < 300; i++) tick();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 47 skipped (48)
+   Start at  22:03:02
+   Duration  8.46s (transform 5.10s, setup 0ms, collect 7.29s, tests 130ms, environment 357ms, prepare 217ms)

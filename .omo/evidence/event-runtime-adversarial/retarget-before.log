@@ -1,0 +1,46 @@
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-clear-field-df12
+
+-------------------------------------------xx--
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/runtimeMovementStability.test.ts > pathfinding through the real frame dispatcher > retargets a walking player from the admitted landing tile without accelerating the active step
+AssertionError: expected 0.25615763546798026 to be less than 0.1
+ ❯ test/runtimeMovementStability.test.ts:866:39
+    864|       const replacement = playPathfindMove(s, { kind: "pathfindMove", …
+    865|       tick();
+    866|       expect(s.moveProgress - before).toBeLessThan(0.1);
+       |                                       ^
+    867|       for (let i = 0; i < 300; i++) tick();
+    868|       await Promise.all([first, replacement]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/runtimeMovementStability.test.ts > pathfinding through the real frame dispatcher > waits for landing when a moving player is retargeted to that very landing tile
+AssertionError: expected [ 7, 5 ] to deeply equal [ 6, 5 ]
+
+- Expected
++ Received
+
+  [
+-   6,
++   7,
+    5,
+  ]
+
+ ❯ test/runtimeMovementStability.test.ts:886:34
+    884|       for (let i = 0; i < 300; i++) tick();
+    885|       await Promise.all([first, replacement]);
+    886|       expect([s.tileX, s.tileY]).toEqual([target.x, target.y]);
+       |                                  ^
+    887|       expect(s.session.flags.pathfindSucceeded).toBe(true);
+    888|     } finally { vi.restoreAllMocks(); }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 45 skipped (47)
+   Start at  22:01:55
+   Duration  10.60s (transform 6.31s, setup 0ms, collect 9.07s, tests 304ms, environment 403ms, prepare 227ms)

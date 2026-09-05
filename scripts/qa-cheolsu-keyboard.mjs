@@ -6,9 +6,9 @@ const fixture=process.argv[2]||'.omo/evidence/cheolsu-memory/project.json';
 const variant=process.argv[3]||'fixed';
 const id=`cheolsu-keyboard-${variant}`,out=`verify-shots/runtime-qa/${id}`;
 const server=await startPlayerQaServer();
-const browser=await chromium.launch({headless:true,args:['--no-sandbox','--use-gl=swiftshader','--disable-gpu','--disable-features=LocalNetworkAccessChecks,LocalNetworkAccessChecksWebRTC']});
+const browser=await chromium.launch({headless:process.env.RUNTIME_QA_HEADED !== "1",args:['--no-sandbox','--use-gl=swiftshader','--disable-gpu','--disable-features=LocalNetworkAccessChecks,LocalNetworkAccessChecksWebRTC']});
 const context=await browser.newContext({recordVideo:{dir:'.omo/evidence/cheolsu-memory/videos',size:{width:1024,height:768}}});
-const page=await context.newPage();const lines=[];const errors=[];let lastAdvance=0;
+const page=await context.newPage();const lines=[];const errors=[];const visualChecks=[];let lastAdvance=0;
 const read=()=>page.evaluate(()=>({state:window.__oprnDebug?.readState(),runtime:JSON.parse(document.querySelector('[data-testid="runtime-state-json"]')?.textContent||'null'),text:document.querySelector('[data-testid="dialogue-box"] .body')?.textContent||'',speaker:document.querySelector('[data-testid="dialogue-speaker"]')?.textContent||'',ready:!!document.querySelector('[data-testid="dialogue-box"].page-ready')}));
 try {
  await page.route(url=>url.origin===new URL(server.url).origin&&!url.pathname.startsWith('/api/'),async r=>{try{await r.fulfill({response:await r.fetch({maxRetries:3})});}catch(e){errors.push(String(e));await r.abort().catch(()=>{});}});
@@ -52,13 +52,44 @@ try {
  await page.waitForFunction(()=>window.__oprnDebug.readState().x!==12);
  s=await read();assert(s.state.switches.memory_seen&&s.state.switches.memory_closed);assert.equal(s.state.currentMapId,'memory_present');
  assert(lines.some(l=>l.speaker==='아버지'&&l.text.includes('함께 접었다')));
+ if(process.env.RUNTIME_QA_VISUAL_SWEEP === '1') {
+  const project=JSON.parse(await fs.readFile(fixture,'utf8'));
+  for(const viewport of [{width:1280,height:720},{width:640,height:480}]) {
+   await page.setViewportSize(viewport);
+   for(const key of ['ArrowRight','ArrowDown','ArrowLeft','ArrowUp']) {
+    await page.keyboard.down(key);
+    const samples=await page.evaluate(async()=>{
+     const rows=[];const start=performance.now();
+     while(performance.now()-start<1800) {
+      rows.push({time:performance.now(),camera:window.__oprnCamera(),state:window.__oprnDebug.readState(),sprite:window.__oprnPlayerSprite()});
+      await new Promise(r=>setTimeout(r,50));
+     }
+     return rows;
+    });
+    await page.keyboard.up(key);
+    for(const sample of samples) {
+     const map=project.maps[sample.state.currentMapId],camera=sample.camera;
+     assert(Number.isFinite(camera.scrollX)&&Number.isFinite(camera.scrollY));
+     const left=camera.scrollX+(camera.width-camera.width/camera.zoom)/2;
+     const top=camera.scrollY+(camera.height-camera.height/camera.zoom)/2;
+     assert(left>=-0.1&&top>=-0.1&&left+camera.width/camera.zoom<=map.width*16+0.1&&top+camera.height/camera.zoom<=map.height*16+0.1,'camera must stay within map');
+     assert(sample.state.x>=0&&sample.state.y>=0&&sample.state.x<map.width&&sample.state.y<map.height);
+    }
+    const deltas=samples.slice(1).map((sample,i)=>({dt:sample.time-samples[i].time,delta:Math.hypot(sample.camera.scrollX-samples[i].camera.scrollX,sample.camera.scrollY-samples[i].camera.scrollY)}));
+    const maxShortJump=Math.max(0,...deltas.filter(d=>d.dt<=100).map(d=>d.delta));
+    assert(maxShortJump<24,'camera must not snap during walking');
+    visualChecks.push({viewport,key,samples:samples.length,maxShortJump,position:samples.at(-1).state});
+   }
+   await page.screenshot({path:`${out}/sweep-${viewport.width}x${viewport.height}.png`});
+  }
+ }
  assert.deepEqual(errors,[]);
 } catch(e) {errors.push(e.message);process.exitCode=1;await page.screenshot({path:`${out}/failure.png`}).catch(()=>{});console.error(e.message,JSON.stringify(await read()));}
 finally {
  const state=await read().catch(()=>null);
  await fs.mkdir(out,{recursive:true});
  await context.close();const video=await page.video()?.path();
- await fs.writeFile(`${out}/report.json`,JSON.stringify({fixture,lines,errors,state,video,keyboardOnly:true,maxDialogueGapMs:Math.max(...lines.map(l=>l.gapMs||0))},null,2));
- await fs.writeFile(`${out}/SUMMARY.md`, `# 철수의 기억 — 일반 키보드 플레이 (${variant})\n\n결과: ${errors.length?'실패':'통과'}\n\n- 입력: 방향키와 Enter만 사용. 디버그 조작·텔레포트·이동 루트 주입 없음.\n- 대사 ${lines.length}개 확인; 대사 없는 정지 5.5초 상한, 별도로 글자 출력 완료를 기다림.\n- 영상: ${video}\n- 즉시 확인: ${errors.length?'failure.png':'12-dialogue.png, 16-dialogue.png'}\n\n${errors.join('\n')}\n`);
+ await fs.writeFile(`${out}/report.json`,JSON.stringify({fixture,lines,errors,visualChecks,state,video,keyboardOnly:true,maxDialogueGapMs:Math.max(...lines.map(l=>l.gapMs||0))},null,2));
+ await fs.writeFile(`${out}/SUMMARY.md`, `# 철수의 기억 — 일반 키보드 플레이 (${variant})\n\n결과: ${errors.length?'실패':'통과'}\n\n- 입력: 방향키와 Enter만 사용. 디버그 조작·텔레포트·이동 루트 주입 없음.\n- 대사 ${lines.length}개 확인; 대사 없는 정지 5.5초 상한, 별도로 글자 출력 완료를 기다림.\n- 영상: ${video}\n- 즉시 확인: ${errors.length?'failure.png':'12-dialogue.png, 16-dialogue.png'+(visualChecks.length?', sweep-1280x720.png, sweep-640x480.png':'')}\n\n${errors.join('\n')}\n`);
  await browser.close();await server.close();
 }

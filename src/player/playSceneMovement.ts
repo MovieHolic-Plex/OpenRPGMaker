@@ -344,6 +344,10 @@ function advancePlayerRoute(scene: PlaySceneContext): void {
   while (scene.playerRoute && !scene.moving && !scene.playerHop && guard < 64) {
     guard += 1;
     const route = scene.playerRoute;
+    if (route.nextMoveDurationMs !== undefined) {
+      route.moveDurationMs = route.nextMoveDurationMs;
+      delete route.nextMoveDurationMs;
+    }
     if (route.index >= route.moves.length) {
       if (route.repeat && route.moves.length > 0) {
         route.index = 0;
