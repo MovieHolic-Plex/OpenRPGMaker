@@ -26,7 +26,9 @@ const DEFAULT_FRAME: BattleAnimationFrame = { cells: [{ ...DEFAULT_CELL }] };
 const SCOPE_OPTIONS = ["singleTarget", "allTargets", "screen"] as const satisfies readonly BattleAnimationScope[];
 const POSITION_OPTIONS = ["head", "center", "feet", "screen"] as const satisfies readonly BattleAnimationPosition[];
 
-const formPlayback = new WeakMap<HTMLElement, { readonly animationId: string; readonly playback: AnimationPlaybackState }>();
+// The modal's retained workspace owns intent across replacement forms. Standalone
+// forms own their own intent; another record or a new modal starts fresh.
+const playbackByOwner = new WeakMap<HTMLElement, { readonly animationId: string; readonly playback: AnimationPlaybackState }>();
 
 type AnimationEditorContext = {
   readonly playback: AnimationPlaybackState;
@@ -45,11 +47,15 @@ type AnimationEditorContext = {
   readonly currentSelectedFrameCells: () => BattleAnimationCell[];
 };
 
-export function renderBattleAnimationRecordForm(form: HTMLElement, animation: BattleAnimationRecord): HTMLElement {
-  const previous = formPlayback.get(form);
+export function renderBattleAnimationRecordForm(
+  form: HTMLElement,
+  animation: BattleAnimationRecord,
+  playbackOwner: HTMLElement = form,
+): HTMLElement {
+  const previous = playbackByOwner.get(playbackOwner);
   previous?.playback.dispose?.();
   const playback = previous?.animationId === animation.id ? previous.playback : createAnimationPlaybackState();
-  formPlayback.set(form, { animationId: animation.id, playback });
+  playbackByOwner.set(playbackOwner, { animationId: animation.id, playback });
   const project = store.getCurrent();
   const sheet = animation.sheet ?? DEFAULT_SHEET;
   const frames = normalizedFrames(animation.frames);
@@ -60,7 +66,7 @@ export function renderBattleAnimationRecordForm(form: HTMLElement, animation: Ba
   const rerender = () => {
     form.replaceChildren();
     const next = store.getCurrent().database.battleAnimations.find((entry) => entry.id === animation.id) ?? animation;
-    renderBattleAnimationRecordForm(form, next);
+    renderBattleAnimationRecordForm(form, next, playbackOwner);
   };
   const context: AnimationEditorContext = {
     playback,
