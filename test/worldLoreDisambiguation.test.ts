@@ -38,8 +38,10 @@ describe("world lore copy disambiguation", () => {
     expect(selfName).toContain("이 세계");
   });
 
-  it("canon hero still routes loose cards to the 설정집 tab", () => {
+  it("keeps the canon body in the document rather than the property inspector", () => {
     const host = renderTab();
-    expect(findByTestId(host, "db-world-canon-hero")?.textContent ?? "").toContain("설정집");
+    const body = findByTestId(host, "db-world-canon-body");
+    expect(host.querySelector(".world-document-content")?.querySelector("[data-testid='db-world-canon-body']")).toBe(body);
+    expect(findByTestId(host, "world-document-properties")?.querySelector("[data-testid='db-world-canon-body']")).toBeNull();
   });
 });

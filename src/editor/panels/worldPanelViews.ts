@@ -33,6 +33,7 @@ import {
 } from "./worldManager";
 import { renderRefEditor, renderRefJumps } from "./worldRefEditor";
 import { renderRelationEditor } from "./worldRelationEditor";
+import { worldDocumentProperties } from "./worldDocumentProperties";
 
 export function renderHeader(state: WorldPanelState, refresh: () => void, options: WorldPanelOptions): HTMLElement {
   const search = el("input", {
@@ -43,12 +44,14 @@ export function renderHeader(state: WorldPanelState, refresh: () => void, option
   }) as HTMLInputElement;
   search.addEventListener("input", () => {
     state.search = search.value;
+    state.documentOpen = false;
     refresh();
   });
 
   const addType = el("select", {
     class: "world-add-type",
     attrs: { "aria-label": "추가할 카드 종류" },
+    dataset: { testid: "world-add-type" },
   }) as HTMLSelectElement;
   for (const type of WORLD_ENTITY_TYPES) addType.append(option(type, ENTITY_TYPE_LABELS[type], type === state.addType));
   addType.value = state.addType;
@@ -57,11 +60,18 @@ export function renderHeader(state: WorldPanelState, refresh: () => void, option
   });
 
   const controls: HTMLElement[] = [
+    el("button", {
+      class: "btn small world-list-toggle",
+      text: "목록",
+      attrs: { type: "button" },
+      dataset: { testid: "world-list-toggle" },
+      on: { click: () => { state.documentOpen = !state.documentOpen; refresh(); } },
+    }),
     search,
     addType,
     el("button", {
       class: "btn small primary world-add-button",
-      text: "+ 추가",
+      text: "+ 새 항목",
       attrs: { type: "button" },
       dataset: { testid: "world-add-entity" },
       on: {
@@ -71,6 +81,17 @@ export function renderHeader(state: WorldPanelState, refresh: () => void, option
           refresh();
         },
       },
+    }),
+    el("button", {
+      class: "btn small world-gallery-toggle",
+      text: "갤러리",
+      attrs: { type: "button", "aria-pressed": String(state.gallery) },
+      dataset: { testid: "world-gallery-toggle" },
+      on: { click: (event) => {
+        state.gallery = !state.gallery;
+        if (event.currentTarget instanceof HTMLElement) event.currentTarget.setAttribute("aria-pressed", String(state.gallery));
+        refresh();
+      } },
     }),
   ];
   if (options.onClose) {
@@ -114,9 +135,21 @@ export function renderMain(
     class: "world-browser",
     children: [
       renderTabs(state, refresh),
-      ...(state.tab === "overview" ? [renderOverview(world, state, refresh)] : []),
-      ...(state.tab === "place-faction" ? [renderFactionMaterialization(refresh)] : []),
+      el("span", {
+        class: "world-result-count",
+        text: `${visibleEntities(world.entities, state.tab, state.search).length}개 항목`,
+        attrs: { role: "status" },
+        dataset: { testid: "world-result-count" },
+      }),
       renderCardGrid(state, world, project, lint, refresh),
+      ...(state.tab === "faction" || state.tab === "place-faction" ? [el("details", {
+        class: "world-browser-tools",
+        children: [el("summary", { text: "전투 진영으로 반영" }), renderFactionMaterialization(refresh)],
+      })] : []),
+      el("details", {
+        class: "world-browser-tools",
+        children: [el("summary", { text: "프로젝트 검사" }), renderGlobalLint(lint)],
+      }),
     ],
   });
   return el("div", {
@@ -138,47 +171,14 @@ function renderTabs(state: WorldPanelState, refresh: () => void): HTMLElement {
         on: {
           click: () => {
             state.tab = tab.key;
+            state.documentOpen = false;
+            if (isWorldEntityType(tab.key)) state.addType = tab.key;
             setPersistedCodexView(state.tab, state.selectedId);
             refresh();
           },
         },
       })
     ),
-  });
-}
-
-function renderOverview(world: ProjectWorld, state: WorldPanelState, refresh: () => void): HTMLElement {
-  const countItems = WORLD_ENTITY_TYPES.map((type) => `${ENTITY_TYPE_LABELS[type]} ${world.entities.filter((entity) => entity.type === type).length}`);
-  const recent = world.entities.slice(-5).reverse();
-  return el("section", {
-    class: "world-overview",
-    children: [
-      el("div", { class: "world-counts", text: countItems.join(" · ") }),
-      el("div", {
-        class: "world-recent",
-        children: [
-          el("strong", { text: "최근 항목" }),
-          ...(recent.length > 0
-            ? recent.map((entity) =>
-              el("button", {
-                class: "world-recent-chip",
-                text: entity.name || "(이름 없음)",
-                attrs: { type: "button" },
-                on: {
-                  click: () => {
-                    if (!finishWorldDraft(state)) { refresh(); return; }
-                    state.selectedId = entity.id;
-                    state.editDraft = null;
-                    setPersistedCodexView(state.tab, state.selectedId);
-                    refresh();
-                  },
-                },
-              })
-            )
-            : [el("span", { class: "world-muted", text: "아직 항목이 없습니다." })]),
-        ],
-      }),
-    ],
   });
 }
 
@@ -191,7 +191,23 @@ function renderCardGrid(
 ): HTMLElement {
   const entities = visibleEntities(world.entities, state.tab, state.search);
   if (entities.length === 0) {
-    return el("div", { class: "world-card-grid empty", text: "표시할 카드가 없습니다." });
+    return el("div", { class: "world-card-grid empty", children: [
+      el("p", { text: state.search ? "검색 결과가 없습니다." : "아직 등록한 항목이 없습니다." }),
+      el("button", {
+        class: "btn small",
+        text: state.search ? "검색 초기화" : `${ENTITY_TYPE_LABELS[state.addType]} 추가`,
+        attrs: { type: "button" },
+        dataset: { testid: "world-empty-action" },
+        on: { click: () => {
+          if (state.search) state.search = "";
+          else {
+            if (!finishWorldDraft(state)) { refresh(); return; }
+            startNewDraft(state, world, state.addType);
+          }
+          refresh();
+        } },
+      }),
+    ] });
   }
   return el("div", {
     class: "world-card-grid",
@@ -231,6 +247,7 @@ function renderWorldCard(
   const selectCard = (): void => {
     if (!finishWorldDraft(state)) { refresh(); return; }
     state.selectedId = entity.id;
+    state.documentOpen = true;
     state.editDraft = null;
     state.editError = "";
     setPersistedCodexView(state.tab, state.selectedId);
@@ -292,8 +309,8 @@ function renderWikiPane(
       class: "world-wiki-view empty",
       dataset: { testid: "world-wiki-view" },
       children: [
-        renderGlobalLint(lint),
-        el("p", { text: "카드를 선택하면 내용을 볼 수 있습니다." }),
+        el("h3", { text: world.entities.length ? "읽고 쓸 문서를 선택하세요" : "세계의 첫 이야기를 남겨보세요" }),
+        el("p", { text: world.entities.length ? "목록에서 항목을 열거나 새 항목을 추가할 수 있습니다." : "인물, 장소, 사건을 하나씩 연결해 설정집을 만듭니다." }),
       ],
     });
   }
@@ -357,11 +374,21 @@ function renderWikiPane(
           }),
         ],
       }),
-      renderIssueList(issues, lint.global),
-      renderTagList(entity.tags ?? []),
-      renderMarkdownBody(entity.body ?? ""),
-      renderRelationChips(relations, world, entity.id, state, refresh),
-      renderRefJumps(entity.refs ?? [], project),
+      el("div", {
+        class: "world-document-layout",
+        children: [
+          el("div", { class: "world-document-content", children: [
+            ...(issues.length ? [renderIssueList(issues, [])] : []),
+            renderMarkdownBody(entity.body ?? ""),
+          ] }),
+          worldDocumentProperties([
+            renderTagList(entity.tags ?? []),
+            renderRelationChips(relations, world, entity.id, state, refresh),
+            renderRefJumps(entity.refs ?? [], project),
+            el("p", { class: "world-muted", text: "NPC 대사 AI는 이름과 요약만 참고합니다. 본문과 관계는 전달하지 않습니다." }),
+          ], state.propertiesOpen, (open) => { state.propertiesOpen = open; }),
+        ],
+      }),
     ],
   });
 }
@@ -371,8 +398,8 @@ function renderEditPane(state: WorldPanelState, world: ProjectWorld, project: Pr
   if (!draft) throw new Error("missing world draft");
 
   const nameInput = el("input", {
-    class: "world-edit-input",
-    attrs: { type: "text", "aria-label": "이름" },
+    class: "world-edit-input world-document-title",
+    attrs: { type: "text", "aria-label": "이름", placeholder: "문서 제목" },
     value: draft.name,
     dataset: { testid: "world-edit-name" },
   }) as HTMLInputElement;
@@ -431,7 +458,6 @@ function renderEditPane(state: WorldPanelState, world: ProjectWorld, project: Pr
             class: "world-wiki-heading",
             children: [
               el("span", { class: "world-type-badge", text: draft.isNew ? "새 항목" : "편집 중" }),
-              el("h3", { text: draft.name.trim() || "새 카드" }),
             ],
           }),
           el("div", {
@@ -439,7 +465,7 @@ function renderEditPane(state: WorldPanelState, world: ProjectWorld, project: Pr
             children: [
               el("button", {
                 class: "btn small primary",
-                text: "저장",
+                text: "편집 완료",
                 attrs: { type: "button" },
                 dataset: { testid: "world-edit-save" },
                 on: {
@@ -468,19 +494,31 @@ function renderEditPane(state: WorldPanelState, world: ProjectWorld, project: Pr
         ],
       }),
       ...(state.editError ? [el("div", { class: "world-edit-error", dataset: { testid: "world-edit-error" }, text: state.editError })] : []),
+      ...(!visibleEntities([{ id: draft.id, type: draft.type, name: draft.name, summary: draft.summary, body: draft.body, tags: draft.tagsText.split(","), origin: draft.origin }], state.tab, state.search).length ? [
+        el("p", {
+          class: "world-draft-context",
+          text: "작성 중인 문서는 현재 필터 밖에 있습니다. 입력은 유지됩니다.",
+          dataset: { testid: "world-draft-outside-filter", entityId: draft.id },
+        }),
+      ] : []),
       el("div", {
-        class: "world-edit-fields",
+        class: "world-document-layout",
         children: [
-          field("타입", typeSelect),
-          field("이름", nameInput),
-          field("요약", summaryInput),
-          field("태그", tagsInput),
-          labelWithControl("잠금", lockedInput),
-          field("본문", bodyInput),
+          el("div", { class: "world-document-content world-edit-fields", children: [
+            nameInput,
+            field("한 줄 요약", summaryInput),
+            field("본문", bodyInput),
+          ] }),
+          worldDocumentProperties([
+            field("종류", typeSelect),
+            field("태그", tagsInput),
+            labelWithControl("편집 잠금", lockedInput),
+            renderRefEditor(draft, project, syncDraft, refresh),
+            renderRelationEditor(draft, world, syncDraft, refresh),
+            el("p", { class: "world-muted", text: "NPC 대사 AI는 이름과 요약만 참고합니다. 본문과 관계는 전달하지 않습니다." }),
+          ], state.propertiesOpen, (open) => { state.propertiesOpen = open; }),
         ],
       }),
-      renderRefEditor(draft, project, syncDraft, refresh),
-      renderRelationEditor(draft, world, syncDraft, refresh),
     ],
   });
 }
@@ -555,6 +593,9 @@ function renderRelationChips(
             on: {
               click: () => {
                 state.selectedId = otherId;
+                state.tab = other?.type ?? "overview";
+                state.search = "";
+                state.documentOpen = true;
                 state.editDraft = null;
                 state.editError = "";
                 setPersistedCodexView(state.tab, state.selectedId);
