@@ -1,0 +1,675 @@
+[
+  {
+    "phase": "final-content",
+    "identity": {
+      "kind": "remote",
+      "id": "oprn-399e312698"
+    },
+    "flush": {
+      "kind": "saved"
+    },
+    "calls": [
+      {
+        "name": "get_project_summary",
+        "args": {},
+        "ok": true,
+        "summary": "프로젝트 '새 프로젝트' — 맵 4개, 아이템 232, 트룹 13"
+      },
+      {
+        "name": "get_map_region",
+        "args": {
+          "mapId": "map_blank_start",
+          "x": 0,
+          "y": 0,
+          "w": 30,
+          "h": 25
+        },
+        "ok": true,
+        "summary": "푸른나무 마을(map_blank_start) 영역 (0,0)~(30,25) — 이벤트 18개, 물 22칸 bounds=(23,13) 5×5"
+      },
+      {
+        "name": "find_events",
+        "args": {
+          "mapId": "map_blank_start"
+        },
+        "ok": true,
+        "summary": "이벤트 18개 검색됨"
+      },
+      {
+        "name": "get_map_region",
+        "args": {
+          "mapId": "map_forest_dungeon",
+          "x": 0,
+          "y": 0,
+          "w": 24,
+          "h": 20
+        },
+        "ok": true,
+        "summary": "어두운 숲 던전(map_forest_dungeon) 영역 (0,0)~(24,20) — 이벤트 6개, 물 21칸 bounds=(15,5) 5×5"
+      },
+      {
+        "name": "find_events",
+        "args": {
+          "mapId": "map_forest_dungeon"
+        },
+        "ok": true,
+        "summary": "이벤트 6개 검색됨"
+      },
+      {
+        "name": "get_database_records",
+        "args": {
+          "collection": "items",
+          "include": "full",
+          "limit": 500
+        },
+        "ok": true,
+        "summary": "items 232건 / 232건"
+      },
+      {
+        "name": "upsert_item",
+        "args": {
+          "item": {
+            "id": "item_forest_herb",
+            "imageResourceId": "cc0-jetrel-herb-green",
+            "iconResourceId": "cc0-jetrel-herb-green"
+          },
+          "reason": "시각 QA에서 누락된 아이템 그림을 조회한 실존 리소스로 보완"
+        },
+        "ok": true,
+        "summary": "아이템 '숲의 약초' 수정"
+      },
+      {
+        "name": "upsert_item",
+        "args": {
+          "item": {
+            "id": "item_forest_dew",
+            "imageResourceId": "cc0-jetrel-gen2-life-dew",
+            "iconResourceId": "cc0-jetrel-gen2-life-dew"
+          },
+          "reason": "시각 QA에서 누락된 아이템 그림을 조회한 실존 리소스로 보완"
+        },
+        "ok": true,
+        "summary": "아이템 '숲의 이슬' 수정"
+      },
+      {
+        "name": "upsert_event",
+        "args": {
+          "mapId": "map_forest_dungeon",
+          "event": {
+            "id": "ev_dungeon_chest_east",
+            "x": 20,
+            "y": 6
+          }
+        },
+        "ok": true,
+        "summary": "어두운 숲 던전에 이벤트 'ev_dungeon_chest_east' 수정 — 미지원 커맨드 3건"
+      },
+      {
+        "name": "run_lint",
+        "args": {},
+        "ok": true,
+        "summary": "lint: error 0건 / warning 33건 / info 52건"
+      }
+    ]
+  },
+  {
+    "phase": "final-graphics",
+    "identity": {
+      "kind": "remote",
+      "id": "oprn-399e312698"
+    },
+    "flush": {
+      "kind": "saved"
+    },
+    "calls": [
+      {
+        "name": "get_project_summary",
+        "args": {},
+        "ok": true,
+        "summary": "프로젝트 '새 프로젝트' — 맵 4개, 아이템 232, 트룹 13"
+      },
+      {
+        "name": "get_map_region",
+        "args": {
+          "mapId": "map_blank_start",
+          "x": 0,
+          "y": 0,
+          "w": 30,
+          "h": 25
+        },
+        "ok": true,
+        "summary": "푸른나무 마을(map_blank_start) 영역 (0,0)~(30,25) — 이벤트 18개, 물 22칸 bounds=(23,13) 5×5"
+      },
+      {
+        "name": "find_events",
+        "args": {
+          "mapId": "map_blank_start"
+        },
+        "ok": true,
+        "summary": "이벤트 18개 검색됨"
+      },
+      {
+        "name": "get_map_region",
+        "args": {
+          "mapId": "map_forest_dungeon",
+          "x": 0,
+          "y": 0,
+          "w": 24,
+          "h": 20
+        },
+        "ok": true,
+        "summary": "어두운 숲 던전(map_forest_dungeon) 영역 (0,0)~(24,20) — 이벤트 6개, 물 21칸 bounds=(15,5) 5×5"
+      },
+      {
+        "name": "find_events",
+        "args": {
+          "mapId": "map_forest_dungeon"
+        },
+        "ok": true,
+        "summary": "이벤트 6개 검색됨"
+      },
+      {
+        "name": "get_database_records",
+        "args": {
+          "collection": "enemies",
+          "include": "full",
+          "limit": 500
+        },
+        "ok": true,
+        "summary": "enemies 113건 / 113건"
+      },
+      {
+        "name": "list_npc_graphics",
+        "args": {
+          "query": "학자"
+        },
+        "ok": true,
+        "summary": "NPC 그래픽 1개 조회(\"학자\")"
+      },
+      {
+        "name": "upsert_event",
+        "args": {
+          "mapId": "map_forest_dungeon",
+          "event": {
+            "id": "ev_dungeon_sign_intro",
+            "name": "숲길 조사원",
+            "pages": [
+              {
+                "id": "ev_dungeon_sign_intro_p0",
+                "name": "기본 안내",
+                "graphic": {
+                  "sprite": {
+                    "type": "bundled",
+                    "id": "tex_easyrpg_charset_people5"
+                  },
+                  "direction": "down",
+                  "pattern": 82
+                },
+                "trigger": {
+                  "kind": "action"
+                },
+                "commands": [
+                  {
+                    "body": "'주의: 깊은 숲속에는 독거미와 거대 말벌이 무리지어 다닙니다. 준비되지 않은 자는 돌아가십시오.'\n표지판 하단에 누군가 작은 글씨로 덧붙여 놓았다: '동쪽 호숫가 근처에 보물상자가 숨겨져 있다.'",
+                    "kind": "text",
+                    "speaker": "숲길 조사원"
+                  },
+                  {
+                    "key": "A",
+                    "kind": "setSelfSwitch",
+                    "value": true
+                  }
+                ],
+                "movement": {
+                  "type": "fixed",
+                  "speed": 3,
+                  "frequency": 3
+                },
+                "priority": "same",
+                "conditions": [],
+                "overlapForbidden": true
+              },
+              {
+                "id": "ev_dungeon_sign_intro_p1",
+                "name": "조사 후 안내",
+                "graphic": {
+                  "sprite": {
+                    "type": "bundled",
+                    "id": "tex_easyrpg_charset_people5"
+                  },
+                  "direction": "down",
+                  "pattern": 82
+                },
+                "trigger": {
+                  "kind": "action"
+                },
+                "commands": [
+                  {
+                    "body": "'동쪽 호숫가 근처에 보물상자가 숨겨져 있다.' (이미 내용을 확인했다.)",
+                    "kind": "text",
+                    "speaker": "숲길 조사원"
+                  }
+                ],
+                "movement": {
+                  "type": "fixed",
+                  "speed": 3,
+                  "frequency": 3
+                },
+                "priority": "same",
+                "conditions": [
+                  {
+                    "key": "A",
+                    "kind": "selfSwitch",
+                    "value": true
+                  }
+                ],
+                "overlapForbidden": true
+              }
+            ]
+          }
+        },
+        "ok": true,
+        "summary": "어두운 숲 던전에 이벤트 'ev_dungeon_sign_intro' 수정 — 미지원 커맨드 1건"
+      },
+      {
+        "name": "upsert_event",
+        "args": {
+          "mapId": "map_forest_dungeon",
+          "event": {
+            "id": "ev_forest_boss",
+            "name": "숲 늑대 우두머리",
+            "pages": [
+              {
+                "id": "ev_forest_boss_fight",
+                "name": "숲 늑대 우두머리",
+                "graphic": {
+                  "sprite": {
+                    "id": "generated-enemy-wolf-01",
+                    "type": "bundled"
+                  },
+                  "direction": "down"
+                },
+                "trigger": {
+                  "kind": "action"
+                },
+                "commands": [
+                  {
+                    "body": "크르르... 숲의 우두머리 늑대가 앞길을 막아섰다!",
+                    "kind": "text"
+                  },
+                  {
+                    "kind": "battleProcessing",
+                    "canLose": false,
+                    "troopId": "troop_forest_wolves",
+                    "canEscape": true
+                  },
+                  {
+                    "kind": "fork",
+                    "then": [
+                      {
+                        "kind": "setSwitch",
+                        "value": true,
+                        "switchId": "sw_0001"
+                      },
+                      {
+                        "kind": "m2Command",
+                        "fields": {},
+                        "commandId": "m2-086-erase-event"
+                      },
+                      {
+                        "op": "+=",
+                        "kind": "changeItem",
+                        "amount": 1,
+                        "itemId": "item_adventurer_elixir"
+                      },
+                      {
+                        "body": "숲 늑대 무리를 성공적으로 토벌했다! 길드로 돌아가자.",
+                        "kind": "text"
+                      }
+                    ],
+                    "condition": {
+                      "kind": "battleResult",
+                      "result": "victory"
+                    }
+                  }
+                ],
+                "movement": {
+                  "type": "fixed",
+                  "speed": 3,
+                  "frequency": 3
+                },
+                "priority": "same",
+                "conditions": [],
+                "overlapForbidden": true
+              },
+              {
+                "id": "ev_forest_boss_cleared",
+                "name": "토벌 완료",
+                "graphic": {
+                  "transparent": true
+                },
+                "trigger": {
+                  "kind": "action"
+                },
+                "commands": [
+                  {
+                    "kind": "text",
+                    "body": "숲 늑대 무리를 토벌했다. 이제 마을의 길드 안내소에 보고할 수 있다."
+                  }
+                ],
+                "movement": {
+                  "type": "fixed",
+                  "speed": 3,
+                  "frequency": 3
+                },
+                "priority": "below",
+                "conditions": [
+                  {
+                    "kind": "switch",
+                    "value": true,
+                    "switchId": "sw_0001"
+                  }
+                ],
+                "overlapForbidden": false
+              }
+            ]
+          }
+        },
+        "ok": true,
+        "summary": "어두운 숲 던전에 이벤트 'ev_forest_boss' 수정 — 미지원 커맨드 0건"
+      },
+      {
+        "name": "run_lint",
+        "args": {},
+        "ok": true,
+        "summary": "lint: error 0건 / warning 33건 / info 52건"
+      }
+    ]
+  },
+  {
+    "phase": "final-backdrops",
+    "identity": {
+      "kind": "remote",
+      "id": "oprn-399e312698"
+    },
+    "flush": {
+      "kind": "saved"
+    },
+    "calls": [
+      {
+        "name": "get_project_summary",
+        "args": {},
+        "ok": true,
+        "summary": "프로젝트 '새 프로젝트' — 맵 4개, 아이템 232, 트룹 13"
+      },
+      {
+        "name": "get_map_region",
+        "args": {
+          "mapId": "map_blank_start",
+          "x": 0,
+          "y": 0,
+          "w": 30,
+          "h": 25
+        },
+        "ok": true,
+        "summary": "푸른나무 마을(map_blank_start) 영역 (0,0)~(30,25) — 이벤트 18개, 물 22칸 bounds=(23,13) 5×5"
+      },
+      {
+        "name": "find_events",
+        "args": {
+          "mapId": "map_blank_start"
+        },
+        "ok": true,
+        "summary": "이벤트 18개 검색됨"
+      },
+      {
+        "name": "get_map_region",
+        "args": {
+          "mapId": "map_forest_dungeon",
+          "x": 0,
+          "y": 0,
+          "w": 24,
+          "h": 20
+        },
+        "ok": true,
+        "summary": "어두운 숲 던전(map_forest_dungeon) 영역 (0,0)~(24,20) — 이벤트 6개, 물 21칸 bounds=(15,5) 5×5"
+      },
+      {
+        "name": "find_events",
+        "args": {
+          "mapId": "map_forest_dungeon"
+        },
+        "ok": true,
+        "summary": "이벤트 6개 검색됨"
+      },
+      {
+        "name": "get_database_records",
+        "args": {
+          "collection": "troops",
+          "include": "full",
+          "limit": 500
+        },
+        "ok": true,
+        "summary": "troops 13건 / 13건"
+      },
+      {
+        "name": "list_resources",
+        "args": {
+          "kind": "backdrop",
+          "query": "숲"
+        },
+        "ok": true,
+        "summary": "리소스 1개 검색됨(\"숲\", backdrop)"
+      },
+      {
+        "name": "upsert_troop",
+        "args": {
+          "troop": {
+            "id": "troop_forest_spiders",
+            "previewBackgroundResourceId": "scarloxy-backdrop-forest"
+          }
+        },
+        "ok": true,
+        "summary": "트룹 '숲 독거미 무리'(2마리) 수정"
+      },
+      {
+        "name": "upsert_troop",
+        "args": {
+          "troop": {
+            "id": "troop_forest_hornets_duo",
+            "previewBackgroundResourceId": "scarloxy-backdrop-forest"
+          }
+        },
+        "ok": true,
+        "summary": "트룹 '숲 말벌 편대'(2마리) 수정"
+      },
+      {
+        "name": "run_lint",
+        "args": {},
+        "ok": true,
+        "summary": "lint: error 0건 / warning 33건 / info 52건"
+      }
+    ]
+  },
+  {
+    "phase": "final-naming",
+    "identity": {
+      "kind": "remote",
+      "id": "oprn-399e312698"
+    },
+    "flush": {
+      "kind": "saved"
+    },
+    "calls": [
+      {
+        "name": "get_project_summary",
+        "args": {},
+        "ok": true,
+        "summary": "프로젝트 '새 프로젝트' — 맵 4개, 아이템 232, 트룹 13"
+      },
+      {
+        "name": "get_map_region",
+        "args": {
+          "mapId": "map_blank_start",
+          "x": 0,
+          "y": 0,
+          "w": 30,
+          "h": 25
+        },
+        "ok": true,
+        "summary": "푸른나무 마을(map_blank_start) 영역 (0,0)~(30,25) — 이벤트 18개, 물 22칸 bounds=(23,13) 5×5"
+      },
+      {
+        "name": "find_events",
+        "args": {
+          "mapId": "map_blank_start"
+        },
+        "ok": true,
+        "summary": "이벤트 18개 검색됨"
+      },
+      {
+        "name": "get_map_region",
+        "args": {
+          "mapId": "map_forest_dungeon",
+          "x": 0,
+          "y": 0,
+          "w": 24,
+          "h": 20
+        },
+        "ok": true,
+        "summary": "어두운 숲 던전(map_forest_dungeon) 영역 (0,0)~(24,20) — 이벤트 6개, 물 21칸 bounds=(15,5) 5×5"
+      },
+      {
+        "name": "find_events",
+        "args": {
+          "mapId": "map_forest_dungeon"
+        },
+        "ok": true,
+        "summary": "이벤트 6개 검색됨"
+      },
+      {
+        "name": "get_database_records",
+        "args": {
+          "collection": "troops",
+          "include": "full",
+          "limit": 500
+        },
+        "ok": true,
+        "summary": "troops 13건 / 13건"
+      },
+      {
+        "name": "get_database_records",
+        "args": {
+          "collection": "enemies",
+          "include": "full",
+          "limit": 500
+        },
+        "ok": true,
+        "summary": "enemies 113건 / 113건"
+      },
+      {
+        "name": "upsert_troop",
+        "args": {
+          "troop": {
+            "id": "troop_forest_hornets",
+            "name": "숲 슬라임·박쥐 무리"
+          }
+        },
+        "ok": true,
+        "summary": "트룹 '숲 슬라임·박쥐 무리'(3마리) 수정"
+      },
+      {
+        "name": "run_lint",
+        "args": {},
+        "ok": true,
+        "summary": "lint: error 0건 / warning 33건 / info 52건"
+      }
+    ]
+  },
+  {
+    "phase": "final-roster",
+    "identity": {
+      "kind": "remote",
+      "id": "oprn-399e312698"
+    },
+    "flush": {
+      "kind": "saved"
+    },
+    "calls": [
+      {
+        "name": "get_project_summary",
+        "args": {},
+        "ok": true,
+        "summary": "프로젝트 '새 프로젝트' — 맵 4개, 아이템 232, 트룹 13"
+      },
+      {
+        "name": "get_map_region",
+        "args": {
+          "mapId": "map_blank_start",
+          "x": 0,
+          "y": 0,
+          "w": 30,
+          "h": 25
+        },
+        "ok": true,
+        "summary": "푸른나무 마을(map_blank_start) 영역 (0,0)~(30,25) — 이벤트 18개, 물 22칸 bounds=(23,13) 5×5"
+      },
+      {
+        "name": "find_events",
+        "args": {
+          "mapId": "map_blank_start"
+        },
+        "ok": true,
+        "summary": "이벤트 18개 검색됨"
+      },
+      {
+        "name": "get_map_region",
+        "args": {
+          "mapId": "map_forest_dungeon",
+          "x": 0,
+          "y": 0,
+          "w": 24,
+          "h": 20
+        },
+        "ok": true,
+        "summary": "어두운 숲 던전(map_forest_dungeon) 영역 (0,0)~(24,20) — 이벤트 6개, 물 21칸 bounds=(15,5) 5×5"
+      },
+      {
+        "name": "find_events",
+        "args": {
+          "mapId": "map_forest_dungeon"
+        },
+        "ok": true,
+        "summary": "이벤트 6개 검색됨"
+      },
+      {
+        "name": "get_database_records",
+        "args": {
+          "collection": "actors",
+          "include": "full",
+          "limit": 500
+        },
+        "ok": true,
+        "summary": "actors 6건 / 6건"
+      },
+      {
+        "name": "set_project_settings",
+        "args": {
+          "startActorIds": [
+            "actor_hero",
+            "actor_guardian",
+            "actor_cleric"
+          ]
+        },
+        "ok": true,
+        "summary": "프로젝트 설정 변경 — 초기 파티"
+      },
+      {
+        "name": "run_lint",
+        "args": {},
+        "ok": true,
+        "summary": "lint: error 0건 / warning 33건 / info 52건"
+      }
+    ]
+  }
+]

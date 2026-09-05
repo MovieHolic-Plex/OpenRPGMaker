@@ -1,0 +1,3582 @@
+{
+  "projectId": "oprn-399e312698",
+  "startMapId": "map_blank_start",
+  "startPos": {
+    "x": 14,
+    "y": 18
+  },
+  "database": {
+    "items": [
+      {
+        "id": "item_adventurer_potion",
+        "name": "모험가 회복약",
+        "imageResourceId": "cc0-jetrel-hi-potion",
+        "iconResourceId": "cc0-jetrel-hi-potion",
+        "scope": "ally",
+        "price": 80,
+        "description": "모험가들을 위한 기본 회복약. HP를 150 회복시켜 준다.",
+        "type": "medicine",
+        "occasion": "always",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 150,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "usageMessage": "normal",
+        "occasionField": true,
+        "occasionBattle": true,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_adventurer_elixir",
+        "name": "모험가의 영약",
+        "imageResourceId": "cc0-jetrel-ether-blue",
+        "iconResourceId": "cc0-jetrel-ether-blue",
+        "scope": "ally",
+        "price": 150,
+        "description": "모험가의 체력과 마력을 동시에 채워주는 귀중한 영약. HP 150, MP 30 회복.",
+        "type": "medicine",
+        "occasion": "always",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 150,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 30,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "usageMessage": "normal",
+        "occasionField": true,
+        "occasionBattle": true,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_adventurer_ration",
+        "name": "모험가의 비상식량",
+        "imageResourceId": "cc0-jetrel-bread",
+        "iconResourceId": "cc0-jetrel-bread",
+        "scope": "ally",
+        "price": 60,
+        "description": "던전 탐험 중 체력과 기력을 보충해주는 휴대용 식량입니다. HP 150 회복.",
+        "type": "medicine",
+        "occasion": "always",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 150,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "usageMessage": "normal",
+        "occasionField": true,
+        "occasionBattle": true,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_forest_herb",
+        "name": "숲의 약초",
+        "imageResourceId": "cc0-jetrel-herb-green",
+        "iconResourceId": "cc0-jetrel-herb-green",
+        "scope": "ally",
+        "price": 30,
+        "description": "모험가가 비상시 사용하는 숲의 약초. HP를 60 회복한다.",
+        "type": "medicine",
+        "occasion": "always",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 60,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "usageMessage": "normal",
+        "occasionField": true,
+        "occasionBattle": true,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_forest_dew",
+        "name": "숲의 이슬",
+        "imageResourceId": "cc0-jetrel-gen2-life-dew",
+        "iconResourceId": "cc0-jetrel-gen2-life-dew",
+        "scope": "ally",
+        "price": 50,
+        "description": "던전 탐험가가 사용하는 맑은 이슬. MP를 30 회복한다.",
+        "type": "medicine",
+        "occasion": "always",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 30,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "usageMessage": "normal",
+        "occasionField": true,
+        "occasionBattle": true,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      }
+    ],
+    "enemies": [
+      {
+        "id": "enemy_forest_slime",
+        "name": "숲길 슬라임",
+        "level": 1,
+        "monsterResourceId": "generated-enemy-slime-green",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": false,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [],
+        "stats": {
+          "maxHp": 45,
+          "maxMp": 0,
+          "attack": 15,
+          "defense": 10,
+          "mind": 5,
+          "agility": 10
+        },
+        "rewards": {
+          "exp": 5,
+          "gold": 8,
+          "dropRatePercent": 0
+        },
+        "actions": [],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {
+          "sword": "C",
+          "spear": "C",
+          "hit": "C",
+          "bow": "C",
+          "fire": "C",
+          "ice": "C",
+          "thunder": "C",
+          "water": "C",
+          "earth": "C",
+          "wind": "C",
+          "holy": "C",
+          "dark": "C"
+        }
+      },
+      {
+        "id": "enemy_forest_wolf",
+        "name": "숲 늑대",
+        "level": 2,
+        "monsterResourceId": "generated-enemy-wolf-01",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": false,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [],
+        "stats": {
+          "maxHp": 120,
+          "maxMp": 20,
+          "attack": 28,
+          "defense": 15,
+          "mind": 10,
+          "agility": 18
+        },
+        "rewards": {
+          "exp": 12,
+          "gold": 15,
+          "dropRatePercent": 0
+        },
+        "actions": [],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {
+          "sword": "C",
+          "spear": "C",
+          "hit": "C",
+          "bow": "C",
+          "fire": "C",
+          "ice": "C",
+          "thunder": "C",
+          "water": "C",
+          "earth": "C",
+          "wind": "C",
+          "holy": "C",
+          "dark": "C"
+        }
+      },
+      {
+        "id": "enemy_forest_goblin",
+        "name": "숲 고블린",
+        "level": 2,
+        "monsterResourceId": "generated-enemy-goblin-scout",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": false,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [
+          "skill_attack",
+          "skill_sword_slash"
+        ],
+        "stats": {
+          "maxHp": 120,
+          "maxMp": 20,
+          "attack": 24,
+          "defense": 18,
+          "mind": 10,
+          "agility": 14
+        },
+        "rewards": {
+          "exp": 12,
+          "gold": 10,
+          "dropRatePercent": 0
+        },
+        "actions": [
+          {
+            "skillId": "skill_attack",
+            "priority": 50,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          },
+          {
+            "skillId": "skill_sword_slash",
+            "priority": 40,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          }
+        ],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {
+          "sword": "C",
+          "spear": "C",
+          "hit": "C",
+          "bow": "C",
+          "fire": "C",
+          "ice": "C",
+          "thunder": "C",
+          "water": "C",
+          "earth": "C",
+          "wind": "C",
+          "holy": "C",
+          "dark": "C"
+        }
+      },
+      {
+        "id": "enemy_forest_goblin_shaman",
+        "name": "숲 고블린 주술사",
+        "level": 3,
+        "monsterResourceId": "generated-enemy-goblin-brute",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": false,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [
+          "skill_attack",
+          "skill_arcane_bolt",
+          "skill_earth"
+        ],
+        "stats": {
+          "maxHp": 90,
+          "maxMp": 50,
+          "attack": 18,
+          "defense": 14,
+          "mind": 28,
+          "agility": 12
+        },
+        "rewards": {
+          "exp": 18,
+          "gold": 15,
+          "dropRatePercent": 0
+        },
+        "actions": [
+          {
+            "skillId": "skill_attack",
+            "priority": 30,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          },
+          {
+            "skillId": "skill_arcane_bolt",
+            "priority": 50,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          },
+          {
+            "skillId": "skill_earth",
+            "priority": 40,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          }
+        ],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {
+          "sword": "C",
+          "spear": "C",
+          "hit": "C",
+          "bow": "C",
+          "fire": "C",
+          "ice": "C",
+          "thunder": "C",
+          "water": "C",
+          "earth": "C",
+          "wind": "C",
+          "holy": "C",
+          "dark": "C"
+        }
+      },
+      {
+        "id": "enemy_forest_spider",
+        "name": "숲 독거미",
+        "level": 2,
+        "monsterResourceId": "generated-enemy-spider-01",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": false,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [],
+        "stats": {
+          "maxHp": 85,
+          "maxMp": 10,
+          "attack": 22,
+          "defense": 16,
+          "mind": 12,
+          "agility": 14
+        },
+        "rewards": {
+          "exp": 15,
+          "gold": 12,
+          "dropItemId": "item_forest_herb",
+          "dropRatePercent": 30
+        },
+        "actions": [],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {
+          "sword": "C",
+          "spear": "C",
+          "hit": "C",
+          "bow": "C",
+          "fire": "C",
+          "ice": "C",
+          "thunder": "C",
+          "water": "C",
+          "earth": "C",
+          "wind": "C",
+          "holy": "C",
+          "dark": "C"
+        }
+      },
+      {
+        "id": "enemy_forest_hornet",
+        "name": "숲 말벌",
+        "level": 2,
+        "monsterResourceId": "generated-enemy-sylph-hornet",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": true,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [],
+        "stats": {
+          "maxHp": 70,
+          "maxMp": 15,
+          "attack": 25,
+          "defense": 14,
+          "mind": 10,
+          "agility": 18
+        },
+        "rewards": {
+          "exp": 18,
+          "gold": 15,
+          "dropItemId": "item_forest_dew",
+          "dropRatePercent": 25
+        },
+        "actions": [],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {
+          "sword": "C",
+          "spear": "C",
+          "hit": "C",
+          "bow": "C",
+          "fire": "C",
+          "ice": "C",
+          "thunder": "C",
+          "water": "C",
+          "earth": "C",
+          "wind": "C",
+          "holy": "C",
+          "dark": "C"
+        }
+      }
+    ],
+    "troops": [
+      {
+        "id": "troop_forest_hornets",
+        "name": "숲 슬라임·박쥐 무리",
+        "enemyIds": [
+          "enemy_meadow_slime",
+          "enemy_cave_bat",
+          "enemy_meadow_slime"
+        ],
+        "members": [
+          {
+            "enemyId": "enemy_meadow_slime",
+            "x": 104,
+            "y": 96,
+            "hidden": false
+          },
+          {
+            "enemyId": "enemy_cave_bat",
+            "x": 160,
+            "y": 96,
+            "hidden": false
+          },
+          {
+            "enemyId": "enemy_meadow_slime",
+            "x": 216,
+            "y": 96,
+            "hidden": false
+          }
+        ],
+        "autoAlign": true,
+        "uncapturable": false,
+        "previewBackgroundResourceId": "generated-battle-reference-forest",
+        "battleEventPages": []
+      },
+      {
+        "id": "troop_forest_slimes",
+        "name": "초록 슬라임 무리",
+        "enemyIds": [
+          "enemy_forest_slime",
+          "enemy_forest_slime"
+        ],
+        "members": [
+          {
+            "enemyId": "enemy_forest_slime",
+            "x": 100,
+            "y": 120,
+            "hidden": false
+          },
+          {
+            "enemyId": "enemy_forest_slime",
+            "x": 220,
+            "y": 120,
+            "hidden": false
+          }
+        ],
+        "autoAlign": true,
+        "uncapturable": false,
+        "battleEventPages": []
+      },
+      {
+        "id": "troop_forest_wolves",
+        "name": "숲 늑대 무리",
+        "enemyIds": [
+          "enemy_forest_wolf",
+          "enemy_forest_wolf"
+        ],
+        "members": [
+          {
+            "enemyId": "enemy_forest_wolf",
+            "x": 104,
+            "y": 96,
+            "hidden": false
+          },
+          {
+            "enemyId": "enemy_forest_wolf",
+            "x": 160,
+            "y": 96,
+            "hidden": false
+          }
+        ],
+        "autoAlign": true,
+        "uncapturable": false,
+        "battleEventPages": []
+      },
+      {
+        "id": "troop_forest_goblin_patrol",
+        "name": "숲 고블린 순찰대",
+        "enemyIds": [
+          "enemy_forest_goblin",
+          "enemy_forest_goblin"
+        ],
+        "members": [
+          {
+            "enemyId": "enemy_forest_goblin",
+            "x": 110,
+            "y": 140,
+            "hidden": false
+          },
+          {
+            "enemyId": "enemy_forest_goblin",
+            "x": 210,
+            "y": 140,
+            "hidden": false
+          }
+        ],
+        "autoAlign": true,
+        "uncapturable": false,
+        "battleEventPages": []
+      },
+      {
+        "id": "troop_forest_spiders",
+        "name": "숲 독거미 무리",
+        "enemyIds": [
+          "enemy_forest_spider",
+          "enemy_forest_spider"
+        ],
+        "members": [
+          {
+            "enemyId": "enemy_forest_spider",
+            "x": 180,
+            "y": 210,
+            "hidden": false
+          },
+          {
+            "enemyId": "enemy_forest_spider",
+            "x": 300,
+            "y": 210,
+            "hidden": false
+          }
+        ],
+        "autoAlign": true,
+        "uncapturable": false,
+        "previewBackgroundResourceId": "scarloxy-backdrop-forest",
+        "battleFlow": "gauge",
+        "activeSlots": 2,
+        "battleEventPages": []
+      },
+      {
+        "id": "troop_forest_hornets_duo",
+        "name": "숲 말벌 편대",
+        "enemyIds": [
+          "enemy_forest_hornet",
+          "enemy_forest_hornet"
+        ],
+        "members": [
+          {
+            "enemyId": "enemy_forest_hornet",
+            "x": 180,
+            "y": 200,
+            "hidden": false
+          },
+          {
+            "enemyId": "enemy_forest_hornet",
+            "x": 300,
+            "y": 200,
+            "hidden": false
+          }
+        ],
+        "autoAlign": true,
+        "uncapturable": false,
+        "previewBackgroundResourceId": "scarloxy-backdrop-forest",
+        "battleFlow": "gauge",
+        "activeSlots": 2,
+        "battleEventPages": []
+      }
+    ]
+  },
+  "events": {
+    "map_blank_start": [
+      {
+        "id": "ev_house_door_1_map_blank_start_1",
+        "name": null,
+        "x": 15,
+        "y": 5,
+        "pages": [
+          {
+            "id": "ev_house_door_1_map_blank_start_1_page",
+            "name": "주민 1의 집 문",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_object1",
+                "type": "bundled"
+              },
+              "pattern": 24
+            },
+            "trigger": {
+              "kind": "playerTouch"
+            },
+            "commands": [
+              {
+                "kind": "playAudio",
+                "loop": false,
+                "resourceId": "cc0-se-kra-dooropen-2"
+              },
+              {
+                "kind": "setEventGraphicPattern",
+                "eventId": "ev_house_door_1_map_blank_start_1",
+                "pattern": 24
+              },
+              {
+                "ms": 100,
+                "kind": "wait"
+              },
+              {
+                "kind": "setEventGraphicPattern",
+                "eventId": "ev_house_door_1_map_blank_start_1",
+                "pattern": 12
+              },
+              {
+                "ms": 100,
+                "kind": "wait"
+              },
+              {
+                "kind": "setEventGraphicPattern",
+                "eventId": "ev_house_door_1_map_blank_start_1",
+                "pattern": 0
+              },
+              {
+                "ms": 180,
+                "kind": "wait"
+              },
+              {
+                "x": 10,
+                "y": 15,
+                "fade": "black",
+                "kind": "transfer",
+                "mapId": "map_house_interior_1_map_blank_start_1"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "below",
+            "conditions": [],
+            "animationType": "fixedGraphic",
+            "overlapForbidden": false
+          }
+        ]
+      },
+      {
+        "id": "ev_house_door_1_map_blank_start_1_step",
+        "name": null,
+        "x": 15,
+        "y": 6,
+        "pages": [
+          {
+            "id": "ev_house_door_1_map_blank_start_1_step_page",
+            "name": "주민 1의 집 문 발판",
+            "graphic": {
+              "transparent": true
+            },
+            "trigger": {
+              "kind": "playerTouch"
+            },
+            "commands": [
+              {
+                "kind": "callMapEvent",
+                "eventId": "ev_house_door_1_map_blank_start_1"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "below",
+            "conditions": [],
+            "overlapForbidden": false
+          }
+        ]
+      },
+      {
+        "id": "ev_house_door_1_map_blank_start_2",
+        "name": null,
+        "x": 3,
+        "y": 5,
+        "pages": [
+          {
+            "id": "ev_house_door_1_map_blank_start_2_page",
+            "name": "주민 2의 집 문",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_object1",
+                "type": "bundled"
+              },
+              "pattern": 72
+            },
+            "trigger": {
+              "kind": "playerTouch"
+            },
+            "commands": [
+              {
+                "kind": "playAudio",
+                "loop": false,
+                "resourceId": "cc0-se-kra-dooropen-2"
+              },
+              {
+                "kind": "setEventGraphicPattern",
+                "eventId": "ev_house_door_1_map_blank_start_2",
+                "pattern": 72
+              },
+              {
+                "ms": 100,
+                "kind": "wait"
+              },
+              {
+                "kind": "setEventGraphicPattern",
+                "eventId": "ev_house_door_1_map_blank_start_2",
+                "pattern": 60
+              },
+              {
+                "ms": 100,
+                "kind": "wait"
+              },
+              {
+                "kind": "setEventGraphicPattern",
+                "eventId": "ev_house_door_1_map_blank_start_2",
+                "pattern": 48
+              },
+              {
+                "ms": 180,
+                "kind": "wait"
+              },
+              {
+                "x": 10,
+                "y": 15,
+                "fade": "black",
+                "kind": "transfer",
+                "mapId": "map_house_interior_1_map_blank_start_2"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "below",
+            "conditions": [],
+            "animationType": "fixedGraphic",
+            "overlapForbidden": false
+          }
+        ]
+      },
+      {
+        "id": "ev_house_door_1_map_blank_start_2_step",
+        "name": null,
+        "x": 3,
+        "y": 6,
+        "pages": [
+          {
+            "id": "ev_house_door_1_map_blank_start_2_step_page",
+            "name": "주민 2의 집 문 발판",
+            "graphic": {
+              "transparent": true
+            },
+            "trigger": {
+              "kind": "playerTouch"
+            },
+            "commands": [
+              {
+                "kind": "callMapEvent",
+                "eventId": "ev_house_door_1_map_blank_start_2"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "below",
+            "conditions": [],
+            "overlapForbidden": false
+          }
+        ]
+      },
+      {
+        "id": "ev_village_1_map_blank_start_1",
+        "name": null,
+        "x": 13,
+        "y": 6,
+        "pages": [
+          {
+            "id": "ev_village_1_map_blank_start_1_p0",
+            "name": "주민 1",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_people4",
+                "type": "bundled"
+              },
+              "pattern": 34,
+              "direction": "down"
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "주민: 안녕하신가, 여행자! 여긴 푸른나무 마을이라네. 북쪽 숲은 몬스터가 나오니 조심하게.",
+                "kind": "text"
+              },
+              {
+                "key": "A",
+                "kind": "setSelfSwitch",
+                "value": true
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "same",
+            "conditions": [],
+            "overlapForbidden": true
+          },
+          {
+            "id": "ev_village_1_map_blank_start_1_p1",
+            "name": "주민 1 (재방문)",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_people4",
+                "type": "bundled"
+              },
+              "pattern": 34,
+              "direction": "down"
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "주민: 북쪽 숲으로 가기 전에 마을 광장의 상점에서 회복약을 넉넉히 챙겨두게나.",
+                "kind": "text"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "same",
+            "conditions": [
+              {
+                "key": "A",
+                "kind": "selfSwitch",
+                "value": true
+              }
+            ],
+            "overlapForbidden": true
+          }
+        ]
+      },
+      {
+        "id": "ev_village_1_map_blank_start_2",
+        "name": null,
+        "x": 3,
+        "y": 7,
+        "pages": [
+          {
+            "id": "ev_village_1_map_blank_start_2_p0",
+            "name": "주민 2",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_people5",
+                "type": "bundled"
+              },
+              "pattern": 79,
+              "direction": "down"
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "주민: 우리 집 앞 골목에 오신 걸 환영해요. 민가 안도 자유롭게 둘러보셔도 돼요.",
+                "kind": "text"
+              },
+              {
+                "key": "A",
+                "kind": "setSelfSwitch",
+                "value": true
+              }
+            ],
+            "movement": {
+              "type": "random",
+              "speed": 2,
+              "frequency": 3
+            },
+            "priority": "same",
+            "conditions": [],
+            "overlapForbidden": true
+          },
+          {
+            "id": "ev_village_1_map_blank_start_2_p1",
+            "name": "주민 2 (재방문)",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_people5",
+                "type": "bundled"
+              },
+              "pattern": 79,
+              "direction": "down"
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "주민: 집 안에는 따뜻한 화덕과 잠자리가 있답니다. 여행 중에 편히 쉬어가세요.",
+                "kind": "text"
+              }
+            ],
+            "movement": {
+              "type": "random",
+              "speed": 2,
+              "frequency": 3
+            },
+            "priority": "same",
+            "conditions": [
+              {
+                "key": "A",
+                "kind": "selfSwitch",
+                "value": true
+              }
+            ],
+            "overlapForbidden": true
+          }
+        ]
+      },
+      {
+        "id": "ev_village_1_map_blank_start_3",
+        "name": null,
+        "x": 10,
+        "y": 9,
+        "pages": [
+          {
+            "id": "ev_village_1_map_blank_start_3_p0",
+            "name": "주민 3",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_people1",
+                "type": "bundled"
+              },
+              "pattern": 28,
+              "direction": "down"
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "주민: 남쪽 광장으로 가시면 잡화상과 약초상이 있어요. 모험 준비를 단단히 하세요!",
+                "kind": "text"
+              },
+              {
+                "key": "A",
+                "kind": "setSelfSwitch",
+                "value": true
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "same",
+            "conditions": [],
+            "overlapForbidden": true
+          },
+          {
+            "id": "ev_village_1_map_blank_start_3_p1",
+            "name": "주민 3 (재방문)",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_people1",
+                "type": "bundled"
+              },
+              "pattern": 28,
+              "direction": "down"
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "주민: 광장의 상인들이 다양한 물품을 팔고 있으니 꼭 들러보세요.",
+                "kind": "text"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "same",
+            "conditions": [
+              {
+                "key": "A",
+                "kind": "selfSwitch",
+                "value": true
+              }
+            ],
+            "overlapForbidden": true
+          }
+        ]
+      },
+      {
+        "id": "ev_village_1_map_blank_start_4",
+        "name": null,
+        "x": 11,
+        "y": 10,
+        "pages": [
+          {
+            "id": "ev_village_1_map_blank_start_4_p0",
+            "name": "주민 4",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_people2",
+                "type": "bundled"
+              },
+              "pattern": 28,
+              "direction": "down"
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "주민: 던전 깊은 곳에는 마수의 흔적이 많다고 들었어요. 파티원들과 호흡을 맞춰 전진하세요.",
+                "kind": "text"
+              },
+              {
+                "key": "A",
+                "kind": "setSelfSwitch",
+                "value": true
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "same",
+            "conditions": [],
+            "overlapForbidden": true
+          },
+          {
+            "id": "ev_village_1_map_blank_start_4_p1",
+            "name": "주민 4 (재방문)",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_people2",
+                "type": "bundled"
+              },
+              "pattern": 28,
+              "direction": "down"
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "주민: 던전 입구에 세이브포인트가 있으니 꼭 저장하고 진입하세요!",
+                "kind": "text"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "same",
+            "conditions": [
+              {
+                "key": "A",
+                "kind": "selfSwitch",
+                "value": true
+              }
+            ],
+            "overlapForbidden": true
+          }
+        ]
+      },
+      {
+        "id": "ev_guild_guide",
+        "name": null,
+        "x": 14,
+        "y": 17,
+        "pages": [
+          {
+            "id": "ev_guild_guide_p0",
+            "name": "길드 안내인 로렌스",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_actor1",
+                "type": "bundled"
+              },
+              "pattern": 34,
+              "direction": "down"
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "kind": "changeFace",
+                "position": "left",
+                "resourceId": "easyrpg-faceset-actor1-03",
+                "flipHorizontally": false
+              },
+              {
+                "body": "어서 오게나, 신입 모험가여! 마을 북쪽 숲에 슬라임들이 출몰하고 있네. 자네가 조사해 주겠나?",
+                "kind": "text"
+              },
+              {
+                "key": "A",
+                "kind": "setSelfSwitch",
+                "value": true
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "same",
+            "conditions": [],
+            "overlapForbidden": true
+          },
+          {
+            "id": "ev_guild_guide_p1",
+            "name": "길드 안내인 로렌스",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_actor1",
+                "type": "bundled"
+              },
+              "pattern": 34,
+              "direction": "down"
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "kind": "changeFace",
+                "position": "left",
+                "resourceId": "easyrpg-faceset-actor1-03",
+                "flipHorizontally": false
+              },
+              {
+                "body": "북쪽 숲으로 가기 전에 마을 상인에게서 회복약을 충분히 챙겨가도록 하게!",
+                "kind": "text"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "same",
+            "conditions": [
+              {
+                "key": "A",
+                "kind": "selfSwitch",
+                "value": true
+              }
+            ],
+            "overlapForbidden": true
+          }
+        ]
+      },
+      {
+        "id": "ev_village_merchant",
+        "name": null,
+        "x": 15,
+        "y": 16,
+        "pages": [
+          {
+            "id": "ev_village_merchant_p0",
+            "name": "잡화상 에반",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_people1",
+                "type": "bundled"
+              },
+              "pattern": 34,
+              "direction": "down"
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "kind": "changeFace",
+                "position": "left",
+                "resourceId": "easyrpg-faceset-people1-03",
+                "flipHorizontally": false
+              },
+              {
+                "body": "어서 오세요! 모험을 떠나기 전 필수품인 회복약을 판매하고 있어요.",
+                "kind": "text"
+              },
+              {
+                "key": "A",
+                "kind": "setSelfSwitch",
+                "value": true
+              },
+              {
+                "kind": "shop",
+                "stock": [
+                  {
+                    "itemId": "item_potion",
+                    "priceOverride": 50
+                  },
+                  {
+                    "itemId": "item_ether",
+                    "priceOverride": 80
+                  },
+                  {
+                    "itemId": "item_antidote",
+                    "priceOverride": 30
+                  },
+                  {
+                    "itemId": "item_adventurer_elixir",
+                    "priceOverride": 150
+                  }
+                ],
+                "itemIds": [
+                  "item_potion",
+                  "item_ether",
+                  "item_antidote",
+                  "item_adventurer_elixir"
+                ],
+                "shopType": "normal",
+                "allowSell": true,
+                "messageType": "welcome",
+                "quantityMode": "select"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "same",
+            "conditions": [],
+            "overlapForbidden": true
+          },
+          {
+            "id": "ev_village_merchant_p1",
+            "name": "잡화상 에반",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_people1",
+                "type": "bundled"
+              },
+              "pattern": 34,
+              "direction": "down"
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "kind": "changeFace",
+                "position": "left",
+                "resourceId": "easyrpg-faceset-people1-03",
+                "flipHorizontally": false
+              },
+              {
+                "body": "초보 모험가의 회복약은 상처를 빠르게 치료해 준답니다. 잊지 말고 챙기세요!",
+                "kind": "text"
+              },
+              {
+                "kind": "shop",
+                "stock": [
+                  {
+                    "itemId": "item_potion",
+                    "priceOverride": 50
+                  },
+                  {
+                    "itemId": "item_ether",
+                    "priceOverride": 80
+                  },
+                  {
+                    "itemId": "item_antidote",
+                    "priceOverride": 30
+                  },
+                  {
+                    "itemId": "item_adventurer_elixir",
+                    "priceOverride": 150
+                  }
+                ],
+                "itemIds": [
+                  "item_potion",
+                  "item_ether",
+                  "item_antidote",
+                  "item_adventurer_elixir"
+                ],
+                "shopType": "normal",
+                "allowSell": true,
+                "messageType": "welcome",
+                "quantityMode": "select"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "same",
+            "conditions": [
+              {
+                "key": "A",
+                "kind": "selfSwitch",
+                "value": true
+              }
+            ],
+            "overlapForbidden": true
+          }
+        ]
+      },
+      {
+        "id": "ev_dungeon_guard",
+        "name": null,
+        "x": 16,
+        "y": 6,
+        "pages": [
+          {
+            "id": "ev_dungeon_guard_p0",
+            "name": "숲길 경비병",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_people4",
+                "type": "bundled"
+              },
+              "pattern": 31,
+              "direction": "down"
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "kind": "changeFace",
+                "position": "left",
+                "resourceId": "easyrpg-faceset-people1-02",
+                "flipHorizontally": false
+              },
+              {
+                "body": "이 앞은 슬라임 몬스터가 출몰하는 어두운 숲입니다. 위험하니 단단히 준비하세요.",
+                "kind": "text"
+              },
+              {
+                "key": "A",
+                "kind": "setSelfSwitch",
+                "value": true
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "same",
+            "conditions": [],
+            "overlapForbidden": true
+          },
+          {
+            "id": "ev_dungeon_guard_p1",
+            "name": "숲길 경비병",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_people4",
+                "type": "bundled"
+              },
+              "pattern": 31,
+              "direction": "down"
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "kind": "changeFace",
+                "position": "left",
+                "resourceId": "easyrpg-faceset-people1-02",
+                "flipHorizontally": false
+              },
+              {
+                "body": "준비를 마치셨다면 북쪽 숲길로 진입하십시오. 행운을 빕니다!",
+                "kind": "text"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "same",
+            "conditions": [
+              {
+                "key": "A",
+                "kind": "selfSwitch",
+                "value": true
+              }
+            ],
+            "overlapForbidden": true
+          }
+        ]
+      },
+      {
+        "id": "ev_gate_89deab11-bd6c-44ad-8588-227e8ce88287",
+        "name": null,
+        "x": 16,
+        "y": 0,
+        "pages": [
+          {
+            "id": "ev_gate_89deab11-bd6c-44ad-8588-227e8ce88287_page",
+            "name": "출입구",
+            "graphic": {
+              "transparent": true
+            },
+            "trigger": {
+              "kind": "playerTouch"
+            },
+            "commands": [
+              {
+                "x": 12,
+                "y": 17,
+                "fade": "black",
+                "kind": "transfer",
+                "mapId": "map_forest_dungeon"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "below",
+            "conditions": [],
+            "overlapForbidden": false
+          }
+        ]
+      },
+      {
+        "id": "ev_npc_d812b0c5-6dfb-4f38-a0aa-e733ae56b675",
+        "name": null,
+        "x": 13,
+        "y": 17,
+        "pages": [
+          {
+            "id": "ev_npc_d812b0c5-6dfb-4f38-a0aa-e733ae56b675_p0",
+            "name": "길드 안내원 셀린",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_people1",
+                "type": "bundled"
+              },
+              "pattern": 25,
+              "direction": "down"
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "kind": "changeFace",
+                "position": "left",
+                "resourceId": "easyrpg-faceset-people1-00",
+                "flipHorizontally": false
+              },
+              {
+                "body": "어서 오세요, 모험가님! 북쪽 출구를 통해 어두운 숲 던전으로 갈 수 있습니다. 숲 깊은 곳에 나타난 위험한 몬스터를 물리쳐 주세요!",
+                "kind": "text",
+                "speaker": "길드 안내원 셀린"
+              },
+              {
+                "body": "어서 오세요, 모험가님! 북쪽 출구를 통해 어두운 숲 던전으로 갈 수 있습니다. 숲 깊은 곳에 나타난 위험한 몬스터를 물리쳐 주세요!",
+                "kind": "text"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "same",
+            "conditions": [],
+            "overlapForbidden": true
+          },
+          {
+            "id": "ev_npc_d812b0c5-6dfb-4f38-a0aa-e733ae56b675_p1",
+            "name": "길드 안내원 셀린",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_people1",
+                "type": "bundled"
+              },
+              "pattern": 25,
+              "direction": "down"
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "kind": "changeFace",
+                "position": "left",
+                "resourceId": "easyrpg-faceset-people1-00",
+                "flipHorizontally": false
+              },
+              {
+                "body": "숲 늑대 무리를 토벌하셨군요! 숲의 평화를 되찾아 주셔서 진심으로 감사드립니다. 앞으로의 모험도 응원할게요!",
+                "kind": "text",
+                "speaker": "길드 안내원 셀린"
+              },
+              {
+                "body": "숲 늑대 무리를 토벌하셨군요! 숲의 평화를 되찾아 주셔서 진심으로 감사드립니다. 앞으로의 모험도 응원할게요!",
+                "kind": "text"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "same",
+            "conditions": [
+              {
+                "kind": "switch",
+                "value": true,
+                "switchId": "sw_0001"
+              }
+            ],
+            "overlapForbidden": true
+          }
+        ]
+      },
+      {
+        "id": "ev_npc_e8c31080-02b1-4f0b-b69f-e0603013871f",
+        "name": null,
+        "x": 18,
+        "y": 17,
+        "pages": [
+          {
+            "id": "ev_npc_e8c31080-02b1-4f0b-b69f-e0603013871f_p0",
+            "name": "약초상 릴리",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_people1",
+                "type": "bundled"
+              },
+              "pattern": 76,
+              "direction": "down"
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "kind": "changeFace",
+                "position": "left",
+                "resourceId": "easyrpg-faceset-people1-05",
+                "flipHorizontally": false
+              },
+              {
+                "kind": "text",
+                "text": "약초상 릴리: 숲에 가시나요? 싱싱한 약초와 회복약을 구비해두었답니다!"
+              },
+              {
+                "kind": "shop",
+                "itemIds": [
+                  "item_potion",
+                  "item_ether",
+                  "item_antidote",
+                  "item_hi_potion"
+                ]
+              },
+              {
+                "key": "A",
+                "kind": "setSelfSwitch",
+                "value": true
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "same",
+            "conditions": [],
+            "overlapForbidden": true
+          },
+          {
+            "id": "ev_npc_e8c31080-02b1-4f0b-b69f-e0603013871f_p1",
+            "name": "약초상 릴리",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_people1",
+                "type": "bundled"
+              },
+              "pattern": 76,
+              "direction": "down"
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "kind": "changeFace",
+                "position": "left",
+                "resourceId": "easyrpg-faceset-people1-05",
+                "flipHorizontally": false
+              },
+              {
+                "kind": "text",
+                "text": "약초상 릴리: 다시 오셨군요! 필요한 약초가 있으신가요?"
+              },
+              {
+                "kind": "shop",
+                "itemIds": [
+                  "item_potion",
+                  "item_ether",
+                  "item_antidote",
+                  "item_hi_potion"
+                ]
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "same",
+            "conditions": [
+              {
+                "key": "A",
+                "kind": "selfSwitch",
+                "value": true
+              }
+            ],
+            "overlapForbidden": true
+          }
+        ]
+      },
+      {
+        "id": "ev_npc_be03c648-04c2-4a19-bc52-489ced527227",
+        "name": null,
+        "x": 12,
+        "y": 18,
+        "pages": [
+          {
+            "id": "ev_npc_be03c648-04c2-4a19-bc52-489ced527227_p0",
+            "name": "수습 사제 에이라",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_people2",
+                "type": "bundled"
+              },
+              "pattern": 31,
+              "direction": "down"
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "kind": "changeFace",
+                "position": "left",
+                "resourceId": "easyrpg-faceset-people1-02",
+                "flipHorizontally": false
+              },
+              {
+                "body": "숲 던전으로 향하시는군요! 모험 중 위험할 땐 반드시 비상식량이나 마력 앰플을 챙기세요. 빛의 가호가 함께하길!",
+                "kind": "text",
+                "speaker": "수습 사제 에이라"
+              },
+              {
+                "body": "숲 던전으로 향하시는군요! 모험 중 위험할 땐 반드시 비상식량이나 마력 앰플을 챙기세요. 빛의 가호가 함께하길!",
+                "kind": "text"
+              },
+              {
+                "key": "A",
+                "kind": "setSelfSwitch",
+                "value": true
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "same",
+            "conditions": [],
+            "overlapForbidden": true
+          },
+          {
+            "id": "ev_npc_be03c648-04c2-4a19-bc52-489ced527227_p1",
+            "name": "수습 사제 에이라",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_people2",
+                "type": "bundled"
+              },
+              "pattern": 31,
+              "direction": "down"
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "kind": "changeFace",
+                "position": "left",
+                "resourceId": "easyrpg-faceset-people1-02",
+                "flipHorizontally": false
+              },
+              {
+                "body": "상처 입지 않도록 조심하세요. 준비를 철저히 마친 모험가만이 던전의 보물을 얻을 수 있습니다.",
+                "kind": "text",
+                "speaker": "수습 사제 에이라"
+              },
+              {
+                "body": "상처 입지 않도록 조심하세요. 준비를 철저히 마친 모험가만이 던전의 보물을 얻을 수 있습니다.",
+                "kind": "text"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "same",
+            "conditions": [
+              {
+                "key": "A",
+                "kind": "selfSwitch",
+                "value": true
+              }
+            ],
+            "overlapForbidden": true
+          }
+        ]
+      },
+      {
+        "id": "ev_npc_3664ac65-e699-41ae-8912-874b10669b18",
+        "name": null,
+        "x": 15,
+        "y": 17,
+        "pages": [
+          {
+            "id": "ev_npc_3664ac65-e699-41ae-8912-874b10669b18_p0",
+            "name": "베테랑 용병 바르크",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_people5",
+                "type": "bundled"
+              },
+              "pattern": 31,
+              "direction": "down"
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "kind": "changeFace",
+                "position": "left",
+                "resourceId": "easyrpg-faceset-people1-02",
+                "flipHorizontally": false
+              },
+              {
+                "body": "어이, 신입! 북쪽 숲길로 가면 위험한 마물들이 우글거리는 어두운 숲 던전이다. 장비는 든든히 챙겼겠지?",
+                "kind": "text",
+                "speaker": "베테랑 용병 바르크"
+              },
+              {
+                "body": "어이, 신입! 북쪽 숲길로 가면 위험한 마물들이 우글거리는 어두운 숲 던전이다. 장비는 든든히 챙겼겠지?",
+                "kind": "text"
+              },
+              {
+                "key": "A",
+                "kind": "setSelfSwitch",
+                "value": true
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "same",
+            "conditions": [],
+            "overlapForbidden": true
+          },
+          {
+            "id": "ev_npc_3664ac65-e699-41ae-8912-874b10669b18_p1",
+            "name": "베테랑 용병 바르크",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_people5",
+                "type": "bundled"
+              },
+              "pattern": 31,
+              "direction": "down"
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "kind": "changeFace",
+                "position": "left",
+                "resourceId": "easyrpg-faceset-people1-02",
+                "flipHorizontally": false
+              },
+              {
+                "body": "고블린이나 늑대 무리와 마주치면 후열의 주술사부터 빠르게 제압하는 게 기본 중의 기본이다!",
+                "kind": "text",
+                "speaker": "베테랑 용병 바르크"
+              },
+              {
+                "body": "고블린이나 늑대 무리와 마주치면 후열의 주술사부터 빠르게 제압하는 게 기본 중의 기본이다!",
+                "kind": "text"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "same",
+            "conditions": [
+              {
+                "key": "A",
+                "kind": "selfSwitch",
+                "value": true
+              }
+            ],
+            "overlapForbidden": true
+          }
+        ]
+      },
+      {
+        "id": "ev_adventurer_officer",
+        "name": null,
+        "x": 10,
+        "y": 18,
+        "pages": [
+          {
+            "id": "ev_adventurer_officer_p0",
+            "name": "기본 안내",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_people2",
+                "type": "bundled"
+              },
+              "pattern": 25,
+              "direction": "down"
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "kind": "changeFace",
+                "position": "left",
+                "resourceId": "easyrpg-faceset-people1-00",
+                "flipHorizontally": false
+              },
+              {
+                "body": "새로 오신 모험가님이시군요! 환영합니다.\n북쪽 길을 따라 올라가면 '어두운 숲 던전'이 있습니다.\n숲에는 사나운 늑대와 독거미가 서식하니 약초를 충분히 챙겨가세요.",
+                "kind": "text",
+                "speaker": "길드 접수원 로안"
+              },
+              {
+                "key": "A",
+                "kind": "setSelfSwitch",
+                "value": true
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "same",
+            "conditions": [],
+            "overlapForbidden": true
+          },
+          {
+            "id": "ev_adventurer_officer_p1",
+            "name": "재방문 안내",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_people2",
+                "type": "bundled"
+              },
+              "pattern": 25,
+              "direction": "down"
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "kind": "changeFace",
+                "position": "left",
+                "resourceId": "easyrpg-faceset-people1-00",
+                "flipHorizontally": false
+              },
+              {
+                "body": "던전 깊은 곳에는 위험한 마물이 있으니 동료들과 철저히 준비하세요!",
+                "kind": "text",
+                "speaker": "길드 접수원 로안"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "same",
+            "conditions": [
+              {
+                "key": "A",
+                "kind": "selfSwitch",
+                "value": true
+              }
+            ],
+            "overlapForbidden": true
+          }
+        ]
+      },
+      {
+        "id": "ev_village_potion_merchant",
+        "name": null,
+        "x": 8,
+        "y": 16,
+        "pages": [
+          {
+            "id": "ev_village_potion_merchant_p0",
+            "name": "기본 방문",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_people2",
+                "type": "bundled"
+              },
+              "pattern": 34,
+              "direction": "down"
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "kind": "changeFace",
+                "position": "left",
+                "resourceId": "easyrpg-faceset-people1-03",
+                "flipHorizontally": false
+              },
+              {
+                "kind": "text",
+                "dialogue": {
+                  "lines": [
+                    "어서 오세요! 숲으로 모험을 떠나시나요? 모험에 필요한 회복 물품을 챙겨가세요."
+                  ]
+                }
+              },
+              {
+                "kind": "shop",
+                "itemIds": [
+                  "item_potion",
+                  "item_antidote",
+                  "item_forest_herb"
+                ]
+              },
+              {
+                "key": "A",
+                "kind": "setSelfSwitch",
+                "value": true
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "same",
+            "conditions": [],
+            "overlapForbidden": true
+          },
+          {
+            "id": "ev_village_potion_merchant_p1",
+            "name": "재방문",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_people2",
+                "type": "bundled"
+              },
+              "pattern": 34,
+              "direction": "down"
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "kind": "changeFace",
+                "position": "left",
+                "resourceId": "easyrpg-faceset-people1-03",
+                "flipHorizontally": false
+              },
+              {
+                "kind": "text",
+                "dialogue": {
+                  "lines": [
+                    "모험 준비는 든든하게 하셨나요? 모자란 물품이 있다면 언제든 말씀하세요!"
+                  ]
+                }
+              },
+              {
+                "kind": "shop",
+                "itemIds": [
+                  "item_potion",
+                  "item_antidote",
+                  "item_forest_herb"
+                ]
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "same",
+            "conditions": [
+              {
+                "key": "A",
+                "kind": "selfSwitch",
+                "value": true
+              }
+            ],
+            "overlapForbidden": true
+          }
+        ]
+      }
+    ],
+    "map_forest_dungeon": [
+      {
+        "id": "ev_gate_870ffc57-13cf-494d-892a-2544650fbc48",
+        "name": "출입구",
+        "x": 12,
+        "y": 18,
+        "pages": [
+          {
+            "id": "ev_gate_870ffc57-13cf-494d-892a-2544650fbc48_page",
+            "name": "출입구",
+            "graphic": {
+              "transparent": true
+            },
+            "trigger": {
+              "kind": "playerTouch",
+              "commands": []
+            },
+            "commands": [
+              {
+                "x": 20,
+                "y": 6,
+                "fade": "black",
+                "kind": "transfer",
+                "mapId": "map_blank_start"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "below",
+            "conditions": [],
+            "overlapForbidden": false
+          }
+        ]
+      },
+      {
+        "id": "ev_dungeon_chest_1",
+        "name": null,
+        "x": 6,
+        "y": 5,
+        "pages": [
+          {
+            "id": "ev_dungeon_chest_1_closed",
+            "name": "모험가의 보물상자(닫힘)",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_object1",
+                "type": "bundled"
+              },
+              "pattern": 79,
+              "direction": "down"
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "kind": "playAudio",
+                "loop": false,
+                "resourceId": "cc0-se-osx-wooded-box-open"
+              },
+              {
+                "kind": "setEventGraphicPattern",
+                "eventId": "ev_dungeon_chest_1",
+                "pattern": 67
+              },
+              {
+                "ms": 120,
+                "kind": "wait"
+              },
+              {
+                "kind": "setEventGraphicPattern",
+                "eventId": "ev_dungeon_chest_1",
+                "pattern": 55
+              },
+              {
+                "ms": 260,
+                "kind": "wait"
+              },
+              {
+                "kind": "playAudio",
+                "loop": false,
+                "resourceId": "cc0-se-kjg-8-bit-jingles-jingles-nes09"
+              },
+              {
+                "op": "+=",
+                "kind": "changeItem",
+                "amount": 1,
+                "itemId": "item_adventurer_potion"
+              },
+              {
+                "ms": 420,
+                "kind": "wait"
+              },
+              {
+                "kind": "playAudio",
+                "loop": false,
+                "resourceId": "cc0-se-orp-inventory-coin"
+              },
+              {
+                "op": "+=",
+                "kind": "changeGold",
+                "amount": 100
+              },
+              {
+                "body": "보물상자를 열었다! 초보 모험가의 회복약 · 100G 를 손에 넣었다.",
+                "kind": "text"
+              },
+              {
+                "key": "A",
+                "kind": "setSelfSwitch",
+                "value": true
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "same",
+            "conditions": [
+              {
+                "key": "A",
+                "kind": "selfSwitch",
+                "value": false
+              }
+            ],
+            "animationType": "fixedGraphic",
+            "overlapForbidden": true
+          },
+          {
+            "id": "ev_dungeon_chest_1_opened",
+            "name": "모험가의 보물상자(열림)",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_object1",
+                "type": "bundled"
+              },
+              "pattern": 55,
+              "direction": "up"
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "상자는 비어 있다.",
+                "kind": "text"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "same",
+            "conditions": [
+              {
+                "key": "A",
+                "kind": "selfSwitch",
+                "value": true
+              }
+            ],
+            "animationType": "fixedGraphic",
+            "overlapForbidden": true
+          }
+        ]
+      },
+      {
+        "id": "ev_dungeon_savepoint",
+        "name": "던전 입구 세이브포인트",
+        "x": 10,
+        "y": 17,
+        "pages": [
+          {
+            "id": "ev_dungeon_savepoint_page",
+            "name": "던전 입구 세이브포인트",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_object2",
+                "type": "bundled"
+              },
+              "pattern": 79,
+              "direction": "down"
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "신비로운 기운이 감도는 마력석이다. 이곳에서 휴식하거나 모험을 저장할 수 있다.",
+                "kind": "text"
+              },
+              {
+                "kind": "checkpointSave",
+                "label": "savepoint"
+              },
+              {
+                "kind": "openSaveMenu"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "below",
+            "conditions": [],
+            "animationType": "fixedGraphic",
+            "overlapForbidden": false
+          }
+        ]
+      },
+      {
+        "id": "ev_forest_boss",
+        "name": "숲 늑대 우두머리",
+        "x": 12,
+        "y": 8,
+        "pages": [
+          {
+            "id": "ev_forest_boss_fight",
+            "name": "숲 늑대 우두머리",
+            "graphic": {
+              "sprite": {
+                "id": "generated-enemy-wolf-01",
+                "type": "bundled"
+              },
+              "direction": "down"
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "크르르... 숲의 우두머리 늑대가 앞길을 막아섰다!",
+                "kind": "text"
+              },
+              {
+                "kind": "battleProcessing",
+                "canLose": false,
+                "troopId": "troop_forest_wolves",
+                "canEscape": true
+              },
+              {
+                "kind": "fork",
+                "then": [
+                  {
+                    "kind": "setSwitch",
+                    "value": true,
+                    "switchId": "sw_0001"
+                  },
+                  {
+                    "kind": "m2Command",
+                    "fields": {},
+                    "commandId": "m2-086-erase-event"
+                  },
+                  {
+                    "op": "+=",
+                    "kind": "changeItem",
+                    "amount": 1,
+                    "itemId": "item_adventurer_elixir"
+                  },
+                  {
+                    "body": "숲 늑대 무리를 성공적으로 토벌했다! 길드로 돌아가자.",
+                    "kind": "text"
+                  }
+                ],
+                "condition": {
+                  "kind": "battleResult",
+                  "result": "victory"
+                }
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "same",
+            "conditions": [],
+            "overlapForbidden": true
+          },
+          {
+            "id": "ev_forest_boss_cleared",
+            "name": "토벌 완료",
+            "graphic": {
+              "transparent": true
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "숲 늑대 무리를 토벌했다. 이제 마을의 길드 안내소에 보고할 수 있다.",
+                "kind": "text"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "below",
+            "conditions": [
+              {
+                "kind": "switch",
+                "value": true,
+                "switchId": "sw_0001"
+              }
+            ],
+            "overlapForbidden": false
+          }
+        ]
+      },
+      {
+        "id": "ev_dungeon_chest_east",
+        "name": null,
+        "x": 20,
+        "y": 6,
+        "pages": [
+          {
+            "id": "ev_dungeon_chest_east_closed",
+            "name": "숲속의 보물상자(닫힘)",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_object1",
+                "type": "bundled"
+              },
+              "pattern": 79,
+              "direction": "down"
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "kind": "playAudio",
+                "loop": false,
+                "resourceId": "cc0-se-osx-wooded-box-open"
+              },
+              {
+                "kind": "setEventGraphicPattern",
+                "eventId": "ev_dungeon_chest_east",
+                "pattern": 67
+              },
+              {
+                "ms": 120,
+                "kind": "wait"
+              },
+              {
+                "kind": "setEventGraphicPattern",
+                "eventId": "ev_dungeon_chest_east",
+                "pattern": 55
+              },
+              {
+                "ms": 260,
+                "kind": "wait"
+              },
+              {
+                "kind": "playAudio",
+                "loop": false,
+                "resourceId": "cc0-se-kjg-8-bit-jingles-jingles-nes09"
+              },
+              {
+                "op": "+=",
+                "kind": "changeItem",
+                "amount": 1,
+                "itemId": "item_forest_dew"
+              },
+              {
+                "ms": 420,
+                "kind": "wait"
+              },
+              {
+                "kind": "playAudio",
+                "loop": false,
+                "resourceId": "cc0-se-orp-inventory-coin"
+              },
+              {
+                "op": "+=",
+                "kind": "changeGold",
+                "amount": 100
+              },
+              {
+                "body": "보물상자를 열었다! 숲의 이슬 · 100G 를 손에 넣었다.",
+                "kind": "text"
+              },
+              {
+                "key": "A",
+                "kind": "setSelfSwitch",
+                "value": true
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "same",
+            "conditions": [
+              {
+                "key": "A",
+                "kind": "selfSwitch",
+                "value": false
+              }
+            ],
+            "animationType": "fixedGraphic",
+            "overlapForbidden": true
+          },
+          {
+            "id": "ev_dungeon_chest_east_opened",
+            "name": "숲속의 보물상자(열림)",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_object1",
+                "type": "bundled"
+              },
+              "pattern": 55,
+              "direction": "up"
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "상자는 비어 있다.",
+                "kind": "text"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "same",
+            "conditions": [
+              {
+                "key": "A",
+                "kind": "selfSwitch",
+                "value": true
+              }
+            ],
+            "animationType": "fixedGraphic",
+            "overlapForbidden": true
+          }
+        ]
+      },
+      {
+        "id": "ev_dungeon_sign_intro",
+        "name": "숲길 조사원",
+        "x": 11,
+        "y": 16,
+        "pages": [
+          {
+            "id": "ev_dungeon_sign_intro_p0",
+            "name": "기본 안내",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_people5",
+                "type": "bundled"
+              },
+              "pattern": 82,
+              "direction": "down"
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "'주의: 깊은 숲속에는 독거미와 거대 말벌이 무리지어 다닙니다. 준비되지 않은 자는 돌아가십시오.'\n표지판 하단에 누군가 작은 글씨로 덧붙여 놓았다: '동쪽 호숫가 근처에 보물상자가 숨겨져 있다.'",
+                "kind": "text",
+                "speaker": "숲길 조사원"
+              },
+              {
+                "key": "A",
+                "kind": "setSelfSwitch",
+                "value": true
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "same",
+            "conditions": [],
+            "overlapForbidden": true
+          },
+          {
+            "id": "ev_dungeon_sign_intro_p1",
+            "name": "조사 후 안내",
+            "graphic": {
+              "sprite": {
+                "id": "tex_easyrpg_charset_people5",
+                "type": "bundled"
+              },
+              "pattern": 82,
+              "direction": "down"
+            },
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "'동쪽 호숫가 근처에 보물상자가 숨겨져 있다.' (이미 내용을 확인했다.)",
+                "kind": "text",
+                "speaker": "숲길 조사원"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "same",
+            "conditions": [
+              {
+                "key": "A",
+                "kind": "selfSwitch",
+                "value": true
+              }
+            ],
+            "overlapForbidden": true
+          }
+        ]
+      }
+    ],
+    "map_house_interior_1_map_blank_start_1": [
+      {
+        "id": "ev_inspect_map_house_interior_1_map_blank_start_1_1",
+        "name": null,
+        "x": 2,
+        "y": 3,
+        "pages": [
+          {
+            "id": "ev_inspect_map_house_interior_1_map_blank_start_1_1_p",
+            "name": "상자",
+            "graphic": {},
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "나무 상자를 열어본다. 잡화가 들어 있다.",
+                "kind": "text"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "below",
+            "conditions": [],
+            "overlapForbidden": false
+          }
+        ]
+      },
+      {
+        "id": "ev_inspect_map_house_interior_1_map_blank_start_1_2",
+        "name": null,
+        "x": 12,
+        "y": 3,
+        "pages": [
+          {
+            "id": "ev_inspect_map_house_interior_1_map_blank_start_1_2_p",
+            "name": "상자",
+            "graphic": {},
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "나무 상자를 열어본다. 잡화가 들어 있다.",
+                "kind": "text"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "below",
+            "conditions": [],
+            "overlapForbidden": false
+          }
+        ]
+      },
+      {
+        "id": "ev_inspect_map_house_interior_1_map_blank_start_1_3",
+        "name": null,
+        "x": 17,
+        "y": 3,
+        "pages": [
+          {
+            "id": "ev_inspect_map_house_interior_1_map_blank_start_1_3_p",
+            "name": "수납장",
+            "graphic": {},
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "수납장. 옷가지와 수건이 개어져 있다.",
+                "kind": "text"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "below",
+            "conditions": [],
+            "overlapForbidden": false
+          }
+        ]
+      },
+      {
+        "id": "ev_inspect_map_house_interior_1_map_blank_start_1_4",
+        "name": null,
+        "x": 3,
+        "y": 7,
+        "pages": [
+          {
+            "id": "ev_inspect_map_house_interior_1_map_blank_start_1_4_p",
+            "name": "수납장",
+            "graphic": {},
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "수납장. 옷가지와 수건이 개어져 있다.",
+                "kind": "text"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "below",
+            "conditions": [],
+            "overlapForbidden": false
+          }
+        ]
+      },
+      {
+        "id": "ev_inspect_map_house_interior_1_map_blank_start_1_5",
+        "name": null,
+        "x": 4,
+        "y": 7,
+        "pages": [
+          {
+            "id": "ev_inspect_map_house_interior_1_map_blank_start_1_5_p",
+            "name": "상자",
+            "graphic": {},
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "나무 상자를 열어본다. 잡화가 들어 있다.",
+                "kind": "text"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "below",
+            "conditions": [],
+            "overlapForbidden": false
+          }
+        ]
+      },
+      {
+        "id": "ev_inspect_map_house_interior_1_map_blank_start_1_6",
+        "name": null,
+        "x": 2,
+        "y": 12,
+        "pages": [
+          {
+            "id": "ev_inspect_map_house_interior_1_map_blank_start_1_6_p",
+            "name": "상자",
+            "graphic": {},
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "나무 상자. 못이 삐져나와 있다.",
+                "kind": "text"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "below",
+            "conditions": [],
+            "overlapForbidden": false
+          }
+        ]
+      },
+      {
+        "id": "ev_inspect_map_house_interior_1_map_blank_start_1_7",
+        "name": null,
+        "x": 3,
+        "y": 16,
+        "pages": [
+          {
+            "id": "ev_inspect_map_house_interior_1_map_blank_start_1_7_p",
+            "name": "통",
+            "graphic": {},
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "술통을 두드려 본다. 텅 빈 울림.",
+                "kind": "text"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "below",
+            "conditions": [],
+            "overlapForbidden": false
+          }
+        ]
+      },
+      {
+        "id": "ev_inspect_map_house_interior_1_map_blank_start_1_8",
+        "name": null,
+        "x": 4,
+        "y": 16,
+        "pages": [
+          {
+            "id": "ev_inspect_map_house_interior_1_map_blank_start_1_8_p",
+            "name": "통",
+            "graphic": {},
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "술통을 두드려 본다. 텅 빈 울림.",
+                "kind": "text"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "below",
+            "conditions": [],
+            "overlapForbidden": false
+          }
+        ]
+      },
+      {
+        "id": "ev_inspect_map_house_interior_1_map_blank_start_1_9",
+        "name": null,
+        "x": 5,
+        "y": 16,
+        "pages": [
+          {
+            "id": "ev_inspect_map_house_interior_1_map_blank_start_1_9_p",
+            "name": "상자",
+            "graphic": {},
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "나무 상자. 못이 삐져나와 있다.",
+                "kind": "text"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "below",
+            "conditions": [],
+            "overlapForbidden": false
+          }
+        ]
+      },
+      {
+        "id": "ev_house_exit_1_map_blank_start_1",
+        "name": null,
+        "x": 10,
+        "y": 16,
+        "pages": [
+          {
+            "id": "ev_house_exit_1_map_blank_start_1_page",
+            "name": "집 출구",
+            "graphic": {
+              "transparent": true
+            },
+            "trigger": {
+              "kind": "playerTouch"
+            },
+            "commands": [
+              {
+                "kind": "playAudio",
+                "loop": false,
+                "resourceId": "cc0-se-kra-doorclose-2"
+              },
+              {
+                "x": 15,
+                "y": 6,
+                "fade": "black",
+                "kind": "transfer",
+                "mapId": "map_blank_start"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "below",
+            "conditions": []
+          }
+        ]
+      }
+    ],
+    "map_house_interior_1_map_blank_start_2": [
+      {
+        "id": "ev_inspect_map_house_interior_1_map_blank_start_2_1",
+        "name": null,
+        "x": 2,
+        "y": 3,
+        "pages": [
+          {
+            "id": "ev_inspect_map_house_interior_1_map_blank_start_2_1_p",
+            "name": "상자",
+            "graphic": {},
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "나무 상자를 열어본다. 잡화가 들어 있다.",
+                "kind": "text"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "below",
+            "conditions": [],
+            "overlapForbidden": false
+          }
+        ]
+      },
+      {
+        "id": "ev_inspect_map_house_interior_1_map_blank_start_2_2",
+        "name": null,
+        "x": 6,
+        "y": 3,
+        "pages": [
+          {
+            "id": "ev_inspect_map_house_interior_1_map_blank_start_2_2_p",
+            "name": "상자",
+            "graphic": {},
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "나무 상자를 열어본다. 잡화가 들어 있다.",
+                "kind": "text"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "below",
+            "conditions": [],
+            "overlapForbidden": false
+          }
+        ]
+      },
+      {
+        "id": "ev_inspect_map_house_interior_1_map_blank_start_2_3",
+        "name": null,
+        "x": 17,
+        "y": 3,
+        "pages": [
+          {
+            "id": "ev_inspect_map_house_interior_1_map_blank_start_2_3_p",
+            "name": "수납장",
+            "graphic": {},
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "수납장. 옷가지와 수건이 개어져 있다.",
+                "kind": "text"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "below",
+            "conditions": [],
+            "overlapForbidden": false
+          }
+        ]
+      },
+      {
+        "id": "ev_inspect_map_house_interior_1_map_blank_start_2_4",
+        "name": null,
+        "x": 3,
+        "y": 7,
+        "pages": [
+          {
+            "id": "ev_inspect_map_house_interior_1_map_blank_start_2_4_p",
+            "name": "수납장",
+            "graphic": {},
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "수납장. 옷가지와 수건이 개어져 있다.",
+                "kind": "text"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "below",
+            "conditions": [],
+            "overlapForbidden": false
+          }
+        ]
+      },
+      {
+        "id": "ev_inspect_map_house_interior_1_map_blank_start_2_5",
+        "name": null,
+        "x": 4,
+        "y": 7,
+        "pages": [
+          {
+            "id": "ev_inspect_map_house_interior_1_map_blank_start_2_5_p",
+            "name": "상자",
+            "graphic": {},
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "나무 상자를 열어본다. 잡화가 들어 있다.",
+                "kind": "text"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "below",
+            "conditions": [],
+            "overlapForbidden": false
+          }
+        ]
+      },
+      {
+        "id": "ev_inspect_map_house_interior_1_map_blank_start_2_6",
+        "name": null,
+        "x": 2,
+        "y": 11,
+        "pages": [
+          {
+            "id": "ev_inspect_map_house_interior_1_map_blank_start_2_6_p",
+            "name": "통",
+            "graphic": {},
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "술통을 두드려 본다. 텅 빈 울림.",
+                "kind": "text"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "below",
+            "conditions": [],
+            "overlapForbidden": false
+          }
+        ]
+      },
+      {
+        "id": "ev_inspect_map_house_interior_1_map_blank_start_2_7",
+        "name": null,
+        "x": 17,
+        "y": 11,
+        "pages": [
+          {
+            "id": "ev_inspect_map_house_interior_1_map_blank_start_2_7_p",
+            "name": "상자",
+            "graphic": {},
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "나무 상자를 열어본다. 잡화가 들어 있다.",
+                "kind": "text"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "below",
+            "conditions": [],
+            "overlapForbidden": false
+          }
+        ]
+      },
+      {
+        "id": "ev_inspect_map_house_interior_1_map_blank_start_2_8",
+        "name": null,
+        "x": 2,
+        "y": 14,
+        "pages": [
+          {
+            "id": "ev_inspect_map_house_interior_1_map_blank_start_2_8_p",
+            "name": "자루",
+            "graphic": {},
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "곡물 자루. 거친 삼베 냄새.",
+                "kind": "text"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "below",
+            "conditions": [],
+            "overlapForbidden": false
+          }
+        ]
+      },
+      {
+        "id": "ev_inspect_map_house_interior_1_map_blank_start_2_9",
+        "name": null,
+        "x": 3,
+        "y": 16,
+        "pages": [
+          {
+            "id": "ev_inspect_map_house_interior_1_map_blank_start_2_9_p",
+            "name": "수납장",
+            "graphic": {},
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "수납장. 옷가지와 수건이 개어져 있다.",
+                "kind": "text"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "below",
+            "conditions": [],
+            "overlapForbidden": false
+          }
+        ]
+      },
+      {
+        "id": "ev_inspect_map_house_interior_1_map_blank_start_2_10",
+        "name": null,
+        "x": 4,
+        "y": 16,
+        "pages": [
+          {
+            "id": "ev_inspect_map_house_interior_1_map_blank_start_2_10_p",
+            "name": "통",
+            "graphic": {},
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "술통을 두드려 본다. 텅 빈 울림.",
+                "kind": "text"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "below",
+            "conditions": [],
+            "overlapForbidden": false
+          }
+        ]
+      },
+      {
+        "id": "ev_inspect_map_house_interior_1_map_blank_start_2_11",
+        "name": null,
+        "x": 5,
+        "y": 16,
+        "pages": [
+          {
+            "id": "ev_inspect_map_house_interior_1_map_blank_start_2_11_p",
+            "name": "상자",
+            "graphic": {},
+            "trigger": {
+              "kind": "action"
+            },
+            "commands": [
+              {
+                "body": "나무 상자. 못이 삐져나와 있다.",
+                "kind": "text"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "below",
+            "conditions": [],
+            "overlapForbidden": false
+          }
+        ]
+      },
+      {
+        "id": "ev_house_exit_1_map_blank_start_2",
+        "name": null,
+        "x": 10,
+        "y": 16,
+        "pages": [
+          {
+            "id": "ev_house_exit_1_map_blank_start_2_page",
+            "name": "집 출구",
+            "graphic": {
+              "transparent": true
+            },
+            "trigger": {
+              "kind": "playerTouch"
+            },
+            "commands": [
+              {
+                "kind": "playAudio",
+                "loop": false,
+                "resourceId": "cc0-se-kra-doorclose-2"
+              },
+              {
+                "x": 3,
+                "y": 6,
+                "fade": "black",
+                "kind": "transfer",
+                "mapId": "map_blank_start"
+              }
+            ],
+            "movement": {
+              "type": "fixed",
+              "speed": 3,
+              "frequency": 3
+            },
+            "priority": "below",
+            "conditions": []
+          }
+        ]
+      }
+    ]
+  }
+}

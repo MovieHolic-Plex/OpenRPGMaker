@@ -1,0 +1,52 @@
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiChatPanelUxRepairs.test.ts > 진행 상태와 중단 > AssistantSession은 AbortSignal을 LLM 호출에 전달하고 중단 결과로 종료한다
+Error: Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ test/aiChatPanelUxRepairs.test.ts:210:3
+    208|   });
+    209| 
+    210|   it("AssistantSession은 AbortSignal을 LLM 호출에 전달하고 중단 결과로 종료한다", async …
+       |   ^
+    211|     const controller = new AbortController();
+    212|     let receivedSignal: AbortSignal | undefined;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  test/modeTransitions.test.ts > mode transitions > mounts play when a newer same-mode request overlaps an in-flight switch
+TypeError: Cannot set properties of undefined (setting 'testid')
+ ❯ renderLoadFailureScreen src/app/mode.ts:308:17
+    306|   const panel = document.createElement("section");
+    307|   panel.className = "db-required-panel db-required-hero project-load-e…
+    308|   panel.dataset.testid = "project-load-error-panel";
+       |                 ^
+    309| 
+    310|   const hero = document.createElement("div");
+ ❯ bootApp src/app/mode.ts:124:7
+ ❯ test/modeTransitions.test.ts:162:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  test/roleNameComparisonGate.test.ts > A-2 게이트 — 역할 이름 비교 잔여 > 허용 목록 밖에서 타일 역할 이름을 직접 비교하지 않는다
+AssertionError: expected [ …(2) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "src/project/lint/postTileVerify.ts:129  role !== \"wall\"",
++   "src/project/lint/postTileVerify.ts:138  role !== \"roof\"",
++ ]
+
+ ❯ test/roleNameComparisonGate.test.ts:154:23
+    152|       .filter((file) => !ALLOWED.has(file))
+    153|       .flatMap(offendingMatches);
+    154|     expect(offenders).toEqual([]);
+       |                       ^
+    155|   });
+    156| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+

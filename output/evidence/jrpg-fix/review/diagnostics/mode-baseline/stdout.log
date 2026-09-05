@@ -1,0 +1,13 @@
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194
+
+ ❯ test/modeTransitions.test.ts (1 test | 1 failed) 9020ms
+   × mode transitions > mounts play when a newer same-mode request overlaps an in-flight switch 9019ms
+     → Cannot set properties of undefined (setting 'testid')
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  21:13:41
+   Duration  9.54s (transform 6.65s, setup 0ms, collect 62ms, tests 9.02s, environment 0ms, prepare 120ms)
+
+JSON report written to /home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/output/evidence/final-c5f48f0b-comparison/mode-baseline/vitest-report.json

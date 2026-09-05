@@ -1,0 +1,24 @@
+{
+  "command": [
+    "node",
+    "scripts/run-vitest.mjs",
+    "run",
+    "test/databaseOverviewDashboard.test.ts",
+    "test/databaseOverviewTab.test.ts",
+    "test/aiChatPanelUxRepairs.test.ts",
+    "test/databaseViewToggle.test.ts",
+    "test/modeTransitions.test.ts",
+    "test/roleNameComparisonGate.test.ts",
+    "--configLoader",
+    "bundle",
+    "--reporter=default",
+    "--reporter=json",
+    "--outputFile",
+    "/home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/output/evidence/final-c5f48f0b-comparison/focused-final/vitest-report.json"
+  ],
+  "returncode": 1,
+  "head": "c5f48f0bcf6f9cc3e4a671c612022df70b43932e",
+  "cwd": "/home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-final-validation",
+  "duration_seconds": 38.76797914505005,
+  "git_status_after": ""
+}

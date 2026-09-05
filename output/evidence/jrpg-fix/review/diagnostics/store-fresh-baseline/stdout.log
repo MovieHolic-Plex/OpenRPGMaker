@@ -1,0 +1,23 @@
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194
+
+ ❯ test/storePersistence.test.ts (11 tests | 1 failed | 10 skipped) 6277ms
+   ↓ Project store remote persistence > does not write to Supabase before the canonical project has loaded
+   ↓ Project store remote persistence > does not auto-save local dev showcase projects to Supabase
+   × Project store remote persistence > always creates a new fresh project instead of reloading local dev overrides 6275ms
+     → Cannot read properties of undefined (reading 'ok')
+   ↓ Project store remote persistence > saves and reloads local edits for dev showcase projects without Supabase
+   ↓ Project store remote persistence > reports why DB persistence is unavailable for local dev showcase projects
+   ↓ Project store remote persistence > requires DB configuration before opening a project
+   ↓ Project store remote persistence > marks the project loaded when reconnect recovers a blocked first boot
+   ↓ Project store remote persistence > does not create a DB project when the selected project row is missing
+   ↓ Project store remote persistence > skips remote flush when there are no unsaved changes
+   ↓ Project store remote persistence > keeps local map paint when remote save finishes with a stale snapshot
+   ↓ Project store remote persistence > does not apply stale map-patch response over newer local paint
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 10 skipped (11)
+   Start at  21:07:40
+   Duration  7.22s (transform 4.37s, setup 0ms, collect 142ms, tests 6.28s, environment 0ms, prepare 315ms)
+
+JSON report written to /home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/output/evidence/final-c5f48f0b-comparison/store-fresh-baseline/vitest-report.json

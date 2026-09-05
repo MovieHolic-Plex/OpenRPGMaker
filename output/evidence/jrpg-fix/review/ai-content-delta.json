@@ -1,0 +1,109 @@
+{
+  "projectId": "oprn-399e312698",
+  "sameMapIds": true,
+  "maps": [
+    {
+      "id": "map_blank_start",
+      "name": "푸른나무 마을",
+      "beforeSize": [
+        30,
+        25
+      ],
+      "afterSize": [
+        30,
+        25
+      ],
+      "beforeTilesHash": "b0fe9f0133ad2f754032ef81519aeeef8b5154c4d303700b398effdeba54728e",
+      "afterTilesHash": "b0fe9f0133ad2f754032ef81519aeeef8b5154c4d303700b398effdeba54728e",
+      "allTilesEqual": true,
+      "eventCountBefore": 16,
+      "eventCountAfter": 18
+    },
+    {
+      "id": "map_forest_dungeon",
+      "name": "어두운 숲 던전",
+      "beforeSize": [
+        24,
+        20
+      ],
+      "afterSize": [
+        24,
+        20
+      ],
+      "beforeTilesHash": "fbdd4e5c64d8897728909b9e1a7c9e4992fafd55f236fb85dbacb79595c575fe",
+      "afterTilesHash": "fbdd4e5c64d8897728909b9e1a7c9e4992fafd55f236fb85dbacb79595c575fe",
+      "allTilesEqual": true,
+      "eventCountBefore": 4,
+      "eventCountAfter": 6
+    },
+    {
+      "id": "map_house_interior_1_map_blank_start_1",
+      "name": "주민 1의 집 내부",
+      "beforeSize": [
+        20,
+        20
+      ],
+      "afterSize": [
+        20,
+        20
+      ],
+      "beforeTilesHash": "cc6355f349d0f6cbaf63579a4ee7d45f4ee2647b1b19e8534cb74ac4669411c8",
+      "afterTilesHash": "cc6355f349d0f6cbaf63579a4ee7d45f4ee2647b1b19e8534cb74ac4669411c8",
+      "allTilesEqual": true,
+      "eventCountBefore": 10,
+      "eventCountAfter": 10
+    },
+    {
+      "id": "map_house_interior_1_map_blank_start_2",
+      "name": "주민 2의 집 내부",
+      "beforeSize": [
+        20,
+        20
+      ],
+      "afterSize": [
+        20,
+        20
+      ],
+      "beforeTilesHash": "7349e0c379d7611db4ae2a13895cac110239504194dc7e790c0175ab0943451e",
+      "afterTilesHash": "7349e0c379d7611db4ae2a13895cac110239504194dc7e790c0175ab0943451e",
+      "allTilesEqual": true,
+      "eventCountBefore": 12,
+      "eventCountAfter": 12
+    }
+  ],
+  "database": [
+    {
+      "collection": "items",
+      "countBefore": 230,
+      "countAfter": 232,
+      "addedIds": [
+        "item_forest_dew",
+        "item_forest_herb"
+      ],
+      "deletedIds": [],
+      "updatedIds": []
+    },
+    {
+      "collection": "enemies",
+      "countBefore": 111,
+      "countAfter": 113,
+      "addedIds": [
+        "enemy_forest_hornet",
+        "enemy_forest_spider"
+      ],
+      "deletedIds": [],
+      "updatedIds": []
+    },
+    {
+      "collection": "troops",
+      "countBefore": 11,
+      "countAfter": 13,
+      "addedIds": [
+        "troop_forest_hornets_duo",
+        "troop_forest_spiders"
+      ],
+      "deletedIds": [],
+      "updatedIds": []
+    }
+  ]
+}

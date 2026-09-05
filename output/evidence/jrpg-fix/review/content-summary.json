@@ -1,0 +1,196 @@
+{
+  "projectId": "oprn-399e312698",
+  "maps": [
+    {
+      "id": "map_blank_start",
+      "name": "푸른나무 마을",
+      "width": 30,
+      "height": 25,
+      "events": 18
+    },
+    {
+      "id": "map_forest_dungeon",
+      "name": "어두운 숲 던전",
+      "width": 24,
+      "height": 20,
+      "events": 6
+    },
+    {
+      "id": "map_house_interior_1_map_blank_start_1",
+      "name": "주민 1의 집 내부",
+      "width": 20,
+      "height": 20,
+      "events": 10
+    },
+    {
+      "id": "map_house_interior_1_map_blank_start_2",
+      "name": "주민 2의 집 내부",
+      "width": 20,
+      "height": 20,
+      "events": 12
+    }
+  ],
+  "startMapId": "map_blank_start",
+  "startPos": {
+    "x": 14,
+    "y": 18
+  },
+  "startActorIds": [
+    "actor_hero",
+    "actor_guardian",
+    "actor_cleric"
+  ],
+  "sessionParty": [
+    "actor_hero",
+    "actor_guardian",
+    "actor_cleric"
+  ],
+  "gold": 200,
+  "inventory": {
+    "item_ether": 2,
+    "item_potion": 3
+  },
+  "databaseCounts": {
+    "crops": 0,
+    "items": 232,
+    "actors": 6,
+    "skills": 33,
+    "states": 12,
+    "troops": 13,
+    "classes": 6,
+    "enemies": 113,
+    "elements": 17,
+    "terrains": 3,
+    "equipment": 86,
+    "lifeSkills": 0,
+    "battleCommands": 4,
+    "monsterSpecies": 10,
+    "battleAnimations": 43
+  },
+  "system": {
+    "startActorIds": [
+      "actor_hero",
+      "actor_guardian",
+      "actor_cleric"
+    ],
+    "genre": "adventure-jrpg",
+    "titleResourceId": "oprn-title-field",
+    "systemResourceId": "windowskin-warm",
+    "battleSystemResourceId": "easyrpg-system2-system2-c",
+    "battleBgmResourceId": "cc0-bgm-rtp-btl-001",
+    "defaultBgmResourceId": "cc0-bgm-rtp-fld-003",
+    "initialTroopId": "troop_slime",
+    "battleFlow": "gauge",
+    "typeChart": {
+      "types": [
+        "fire",
+        "water",
+        "grass"
+      ],
+      "multipliers": {
+        "fire": {
+          "fire": 0.5,
+          "water": 0.5,
+          "grass": 2
+        },
+        "water": {
+          "fire": 2,
+          "water": 0.5,
+          "grass": 0.5
+        },
+        "grass": {
+          "fire": 0.5,
+          "water": 2,
+          "grass": 0.5
+        }
+      }
+    },
+    "titleScreen": {
+      "title": "새 프로젝트",
+      "backgroundResourceId": "oprn-title-field",
+      "layout": {
+        "titleX": 32,
+        "titleY": 48,
+        "menuX": 34,
+        "menuY": 128
+      },
+      "menuLabels": {
+        "newGame": "새 게임",
+        "continueGame": "불러오기",
+        "quit": "종료"
+      },
+      "menuVisibility": {
+        "newGame": true,
+        "continueGame": true,
+        "quit": true
+      },
+      "showInputHint": true
+    }
+  },
+  "mapSettings": {
+    "map_blank_start": {
+      "name": "푸른나무 마을",
+      "width": 30,
+      "height": 25,
+      "encounterRate": null,
+      "encounterTable": null,
+      "fieldSpawns": null,
+      "bgm": null,
+      "battleBackground": null
+    },
+    "map_forest_dungeon": {
+      "name": "어두운 숲 던전",
+      "width": 24,
+      "height": 20,
+      "encounterRate": 25,
+      "encounterTable": [
+        {
+          "weight": 50,
+          "troopId": "troop_forest_goblin_patrol"
+        },
+        {
+          "weight": 50,
+          "troopId": "troop_forest_wolves"
+        }
+      ],
+      "fieldSpawns": [
+        {
+          "id": "hunt_troop_forest_slimes",
+          "area": {
+            "h": 16,
+            "w": 20,
+            "x": 2,
+            "y": 2
+          },
+          "chase": false,
+          "troopId": "troop_forest_slimes"
+        }
+      ],
+      "bgm": {
+        "mode": "custom",
+        "resourceId": "cc0-bgm-rtp-rui-001"
+      },
+      "battleBackground": null
+    },
+    "map_house_interior_1_map_blank_start_1": {
+      "name": "주민 1의 집 내부",
+      "width": 20,
+      "height": 20,
+      "encounterRate": null,
+      "encounterTable": null,
+      "fieldSpawns": null,
+      "bgm": null,
+      "battleBackground": null
+    },
+    "map_house_interior_1_map_blank_start_2": {
+      "name": "주민 2의 집 내부",
+      "width": 20,
+      "height": 20,
+      "encounterRate": null,
+      "encounterTable": null,
+      "fieldSpawns": null,
+      "bgm": null,
+      "battleBackground": null
+    }
+  }
+}
