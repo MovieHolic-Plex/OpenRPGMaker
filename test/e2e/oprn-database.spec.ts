@@ -169,8 +169,8 @@ test("RM2K3 database editor edits records, updates dependent pickers, and blocks
   // 대상은 T9 이후 세그먼트 컨트롤(네이티브 radio) — 레이블 클릭으로 선택.
   await page.getByTestId("db-field-item-scope").getByText("아군 전체").click();
   await page.getByTestId("db-field-item-hp-flat").fill("25");
-  await page.getByTestId("db-field-item-only-menu").check();
-  await page.getByTestId("db-picker-skill").selectOption({ label: "Spark QA" });
+  await page.getByTestId("db-field-item-occasion").selectOption("field");
+  await expect(page.getByTestId("db-picker-skill")).toHaveCount(0);
 
   await page.getByTestId("db-tab-equipment").click();
   await page.getByTestId("db-field-name").fill("Equipment QA");

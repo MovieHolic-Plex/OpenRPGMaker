@@ -12,16 +12,16 @@ export const DATABASE_FIELD_SUPPORT = Object.freeze([
   {
     field: "imageResourceId",
     owner: "itemAndEquipment",
-    support: "authoringOnly",
-    label: "저작 이미지",
-    help: "데이터베이스·상점·피커·미리보기·요약에서 사용합니다. 런타임 인벤토리·전투·상태 화면 이미지는 지원하지 않습니다.",
+    support: "runtime",
+    label: "이미지",
+    help: "데이터베이스·피커·미리보기·요약에 사용합니다. 게임 인벤토리·장비 메뉴·상점은 아이콘을 우선하고 없으면 이미지를 사용합니다. 전투 연출은 별도 애니메이션 설정을 따릅니다.",
   },
   {
     field: "iconResourceId",
     owner: "itemAndEquipment",
-    support: "authoringOnly",
-    label: "저작 아이콘",
-    help: "데이터베이스·상점·피커·미리보기·요약에서 사용합니다. 런타임 인벤토리·전투·상태 화면 아이콘은 지원하지 않습니다.",
+    support: "runtime",
+    label: "아이콘",
+    help: "데이터베이스·피커·미리보기·요약에 사용합니다. 게임 인벤토리·장비 메뉴·상점은 아이콘을 우선하고 없으면 이미지를 사용합니다. 전투 연출은 별도 애니메이션 설정을 따릅니다.",
   },
   {
     field: "consumptionLimit",
@@ -175,8 +175,7 @@ export function databaseFieldSupportNotice(...fields: readonly string[]): HTMLEl
   // 아무 정보도 주지 않아, 런타임이 읽지 않는 필드가 평범한 컨트롤로 보였다(2026-09-01 실측).
   //
   // 문구는 행 배지와 같은 어휘("런타임 적용" 여부)로만 말한다. "게임에 아무 영향 없음"
-  // 까지 단정하면 과하다 — 예: imageResourceId 는 authoringOnly 이지만 자기 help 에서
-  // 상점·피커·요약에 쓰인다고 밝힌다. 정확한 범위는 펼친 행이 필드별로 말한다.
+  // 까지 단정하면 과하다. 정확한 사용 범위는 펼친 행이 필드별로 말한다.
   const inert = descriptors.filter((descriptor) => descriptor.support !== "runtime");
   host.dataset.inertFields = String(inert.length);
   summary.textContent = inert.length === 0

@@ -1,6 +1,7 @@
+import { activeItemEffects, itemAllowsBattle } from "@/project/itemUsage";
 // SIZE_OK: Battle runtime keeps turn state, troop-event callbacks, and snapshot
 // assembly together so battle-event regressions can verify one state machine.
-import type { ActorId, EnemyId, ItemId, SkillId } from "@/project/types";
+import type { ActorId, EnemyId, ItemId, ItemRecord, SkillId } from "@/project/types";
 import { startStateOf } from "@/project/session";
 import { transitionItemState } from "@/project/itemTransitions";
 import { isItemActorEligible } from "@/project/itemEligibility";
@@ -797,7 +798,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       }
       case "capture": {
         const item = options.project.database.items.find((record) => record.id === command.captureItemId);
-        if (!item?.captureProfile || (battleEventState.inventory[command.captureItemId] ?? 0) <= 0) return false;
+        if (!item?.captureProfile || item.type !== "special" || !itemAllowsBattle(item) || (battleEventState.inventory[command.captureItemId] ?? 0) <= 0) return false;
         break;
       }
     }
@@ -1557,7 +1558,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function applyItem(itemId: ItemId, target: MutableBattler, user: MutableBattler): void {
-    const item = options.project.database.items.find((record) => record.id === itemId);
+    const authoredItem = options.project.database.items.find((record) => record.id === itemId);
+    const item = authoredItem ? activeItemEffects(authoredItem) : undefined;
     if (!item) return;
     const count = battleEventState.inventory[itemId] ?? 0;
     if (count <= 0) return;
@@ -1597,20 +1599,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     replaceItemTransitionState(consumed);
   }
 
-  function itemIsBattleUsable(item: {
-    readonly occasion?: string;
-    readonly occasionBattle?: boolean;
-    readonly skillId?: string;
-    readonly activateSkillId?: string;
-    readonly captureProfile?: unknown;
-    readonly hpRecovery?: { flat: number; percentMax: number };
-    readonly mpRecovery?: { flat: number; percentMax: number };
-    readonly healStateIds?: readonly string[];
-    readonly stateEffects?: readonly { operation: string }[];
-  }): boolean {
-    if (item.occasion === "never" || item.occasion === "field") return false;
-    if (item.occasionBattle === false && item.occasion !== "battle" && item.occasion !== "always") return false;
-    if (item.captureProfile) return false;
+  function itemIsBattleUsable(authoredItem: ItemRecord): boolean {
+    const item = activeItemEffects(authoredItem);
+    if (!itemAllowsBattle(item) || item.captureProfile) return false;
     return Boolean(
       item.skillId ||
         item.activateSkillId ||
@@ -1706,7 +1697,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }
     const item = options.project.database.items.find((record) => record.id === captureItemId);
     const count = battleEventState.inventory[captureItemId] ?? 0;
-    if (!item?.captureProfile || count <= 0) {
+    if (!item?.captureProfile || item.type !== "special" || !itemAllowsBattle(item) || count <= 0) {
       finish({ targetId: target.id, captureItemId, success: false, rate: 0, blockedReason: "missingItem" });
       return;
     }

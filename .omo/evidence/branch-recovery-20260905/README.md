@@ -17,7 +17,7 @@ The original audit covered 157 history-unmerged tips and 414 branch-only commits
 - Lighting number/slider percentages and presets; actual 50% input saves ambient 0.5. All thirteen current condition rows and existing flow coverage are exercised; historical twelve-row fixture was adapted to the added relationship row.
 - Native NPC/player emotes with editor, serialization, reference repair, shipping-player lifecycle and standalone asset inclusion (`c5fbbb5f`). No authored demo project was imported.
 - Village design authoring/contracts (`831aab0a`, `20340577`, `5c5d6801`) recovered without the branch's unrelated dirty snapshot base.
-- PR #577 monster studio, #578 assistant camera motion, #579 map settings, #580 sidebar navigation integrated with their original commits. PR #581 monster authoring and battle-event fixes, opened during the audit, were merged while retaining the #577 studio. Their combined focused run passed 70 tests.
+- PR #577 monster studio, #578 assistant camera motion, #579 map settings, #580 sidebar navigation integrated with their original commits. PR #581 monster authoring and battle-event fixes, opened during the audit, were merged while retaining the #577 studio. Their combined focused run passed 70 tests. Supervisor production-modal browser QA passed all twelve field hit-tests across 1024/1280/1680px and live HP preview updates (`scripts/qa/recovery-enemies.mjs`, `verify-shots/recovery-enemies/`).
 
 ## Preservation boundaries
 
@@ -35,3 +35,21 @@ Final application typecheck and CSS gates pass with zero regressions. Item/world
 
 External verified backup: `/home/main/z-project/rpg-zzu-branch-backups/20260905/`.
 `deleted-refs.json` records each name/SHA/reason/archive ref. Recreate a local branch with `git branch <name> <archive-ref>` using that manifest; push if the original remote branch is needed. The initial incremental bundle requires main history through the audited base. Original audit and disposition documents are retained in the same backup directory.
+
+## Full supervisor comparison and follow-up
+
+The full supervisor gate completed with exit 1: 13,059 tests, 12,837 passed, 207 failed, 15 pending. The pristine audited commit had 12,886 tests, 12,620 passed, 251 failed, 15 pending. Exact file/test-name comparison found 48 previously failing assertions absent from the failure set and four newly failing assertions (`full-comparison.json`). These are measurements, not a claim that every baseline failure was fixed; host load can affect results.
+
+The four follow-ups are explicit: preserve straight boulevard reservation/painting for an authored `street-grid` (the 100×100 snow city must retain 20 houses and 50 NPCs); place native emotes in the existing tab-3 staging group; align the troop movie test with the unsupported executor contract; assert an empty CSSOM width rather than fakeDom's undefined field. Synthetic autonomous continuation also now overrides the original explicit instruction with 「계속」 while preserving scope/composer mode and the applied-call ledger. Focused final verification is recorded separately.
+
+Raw pristine and integrated Vitest reports and gate output are retained in the external branch backup directory, not the tracked source tree. The full run preceded these follow-up fixes; their final results must be read together with the focused verification rather than presented as a second full run.
+
+## PRs arriving during final validation
+
+PR582 (monster verification evidence), PR583 (sidebar verification plus a real CSSOM mode-round-trip assertion) and PR585 (item/equipment settings aligned with runtime and deletion-preserving boot normalization) were integrated with their original ancestry. PR585 overlapped only the generated OpenWiki index, which was regenerated. Supervisor combined focused verification passed all 110 tests. PR584 remained a draft under its own verification when this recovery scope closed; its checked-out branch is protected.
+
+Final PR585 supervisor checks: application typecheck and CSS exit 0; both browser scenarios pass (Chromium recovered-state/animation/care serialization; Firefox three widths, capture/skill/state/care summaries, no page errors or horizontal overflow). The supervisor inspected the refreshed state/care screenshots and the 1024px equipment screenshot. Browser measurements are in `pr585-integrated-validation.json`; raw logs/screenshots are preserved in the external backup.
+
+Original branch cleanup removed 134 local and 443 remote refs. Completed temporary recovery branches are additional removals recorded in the external `deleted-refs.json`; checked-out user/agent branches remain protected.
+
+Publication cutoff: reviewed PRs through #585 (excluding draft #584). New PR586 and PR587 appeared after publication; their active work branches remain intact for separate review. The report does not claim that concurrently submitted PRs were all merged.

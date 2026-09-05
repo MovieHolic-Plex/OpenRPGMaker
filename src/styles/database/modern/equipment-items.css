@@ -362,3 +362,20 @@
   flex: 1 1 auto;
   height: 1px;
 }
+
+/* 기본·회복은 넓은 행에, 접힌 보조 카드는 별도 행에 둬 빈 반쪽 카드를 없앤다. */
+.database-modal-backdrop .db-item-basics > .db-ws-card-body,
+.database-modal-backdrop .db-equipment-rules > .db-ws-card-body,
+.database-modal-backdrop .db-item-ws .db-ws-card-body:has(> .db-item-subgroup) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
+  gap: 10px 16px;
+}
+.database-modal-backdrop .db-item-basics > .db-ws-card-body > p,
+.database-modal-backdrop .db-equipment-rules > .db-ws-card-body > .db-eq-grid {
+  grid-column: 1 / -1;
+}
+.database-modal-backdrop .db-item-ws .db-ws-card.collapsed,
+.database-modal-backdrop .db-eq-ws .db-ws-card.collapsed {
+  align-self: start;
+}

@@ -1,5 +1,12 @@
 # Runtime Sessions & State
 
+## 아이템 종류 전환과 실행 효과 (2026-09-05)
+
+`src/project/itemUsage.ts`는 보관된 ItemRecord와 현재 종류의 활성 효과를 구분한다. `playerItemUse`와 `battle/runtime`은 활성 투영만 사용하며, `itemAllowsMenu`/`itemAllowsBattle`은 사용 시점과 지원 종류를 함께 검사한다. 이전 책의 learnedSkillId가 약으로 바꾼 뒤 학습을 실행하거나, 일반 물품이 이전 회복 효과를 실행하면 회귀다. 부활은 필드 전용이며 포획은 특수 아이템의 전투 사용 조건을 따른다. 특수 아이템의 스킬 없는 상태 부여는 유지한다. 저장 스키마는 그대로라 이전 종류로 돌아가면 보관된 설정을 다시 편집할 수 있다. UI는 미지원 특수 아이템의 배우·직업 제한을 제공하지 않는다.
+
+장비 상태 방어는 resist 행만 집계한다. 기존 inflict 행 하나가 다른 장비의 저항을 끄지 않으며, 편집기에서 명시적으로 저항으로 전환할 수 있다. 테스트: `itemEquipmentAuthoringTrust`, `itemRuntimeUsability`, `equipmentCatalogRuntimeAxes`.
+
+
 Session state, save slots, farming, friendship, calendar, lighting, weather, field spawns, and NPC schedules.
 
 ## Roguelike run kernel and field rooms (Phase 0–3, 2026-08-24)

@@ -80,9 +80,9 @@ const ITEM_TYPE_CHIP_LABELS: Record<(typeof ITEM_TYPES)[number], string> = {
   accessory: "장신구",
   medicine: "약",
   book: "책",
-  seed: "씨앗",
+  seed: "능력치 성장",
   special: "특수",
-  switch: "스위치",
+  switch: "장치 작동",
 };
 
 const EQUIPMENT_SLOT_CHIPS: readonly { readonly slot: EquipmentRecord["slot"]; readonly label: string }[] = [
@@ -716,6 +716,7 @@ function categoryFilterChips(collection: DatabaseCollection, rerender: () => voi
   const [lead, ...rest] = ITEM_CHIP_CLUSTERS;
   row.append(chipCluster("", [allChip, ...(lead?.types ?? []).map((type) => chipFor(type, ITEM_TYPE_CHIP_LABELS[type]))]));
   for (const cluster of rest) {
+    if (cluster.caption === "장비" && !cluster.types.some((type) => (counts.get(type) ?? 0) > 0)) continue;
     row.append(chipCluster(cluster.caption, cluster.types.map((type) => chipFor(type, ITEM_TYPE_CHIP_LABELS[type]))));
   }
   return row;

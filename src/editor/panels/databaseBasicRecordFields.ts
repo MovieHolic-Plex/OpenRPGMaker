@@ -32,14 +32,15 @@ export function itemPriceField(id: string): HTMLElement {
   return numberField("가격", "db-field-price", item?.price ?? 0, (value) => updateDatabaseRecord("items", id, { price: value }), { min: 0, max: 999999 });
 }
 
-export function itemScopeField(id: string): HTMLElement {
+export function itemScopeField(id: string, onChange?: () => void): HTMLElement {
   const item = store.getCurrent().database.items.find((record) => record.id === id);
-  return selectLiteral("범위", "db-field-scope", item?.scope ?? "none", ["none", "ally", "allAllies", "enemy"], (value) =>
-    updateDatabaseRecord("items", id, { scope: value })
-  );
+  return selectLiteral("범위", "db-field-scope", item?.scope ?? "none", ["none", "ally", "allAllies", "enemy"], (value) => {
+    updateDatabaseRecord("items", id, { scope: value });
+    onChange?.();
+  });
 }
 
-export function itemCaptureFields(id: string): HTMLElement[] {
+export function itemCaptureFields(id: string, onChange?: () => void, minimumMultiplier = 0): HTMLElement[] {
   const item = store.getCurrent().database.items.find((record) => record.id === id);
   const currentCaptureProfile = () => store.getCurrent().database.items.find((record) => record.id === id)?.captureProfile;
   return [
@@ -50,7 +51,8 @@ export function itemCaptureFields(id: string): HTMLElement[] {
           ? { multiplier: value, ...(profile?.ballClass ? { ballClass: profile.ballClass } : {}) }
           : undefined,
       });
-    }, { min: 0, max: 100 }),
+      onChange?.();
+    }, { min: minimumMultiplier, max: 100 }),
     selectLiteral("볼 등급", "db-field-item-ball-class", item?.captureProfile?.ballClass ?? "none", ["none", "poke", "great", "ultra", "master"], (ballClass) => {
       const profile = currentCaptureProfile();
       updateDatabaseRecord("items", id, {
@@ -58,6 +60,7 @@ export function itemCaptureFields(id: string): HTMLElement[] {
           ? profile ? { multiplier: profile.multiplier } : undefined
           : { multiplier: profile?.multiplier ?? 1, ballClass },
       });
+      onChange?.();
     }),
   ];
 }
@@ -71,7 +74,6 @@ export function equipmentFields(form: HTMLElement, id: string): void {
   const equipment = store.getCurrent().database.equipment.find((record) => record.id === id);
   if (!equipment) return;
   form.append(numberField("가격", "db-field-price", equipment.price, (value) => updateDatabaseRecord("equipment", id, { price: value }), { min: 0, max: 999999 }));
-  skillPicker(form, "equipment", id);
 }
 
 export function enemyFields(form: HTMLElement, id: string): void {

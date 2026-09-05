@@ -299,6 +299,7 @@ const MAP_SCREEN_NATIVE_GROUPS: Readonly<Record<string, M2CommandPickerGroup>> =
   erasePicture: M2_PICKER_PICTURE_GROUP,
   showAnimation: M2_PICKER_STAGING_GROUP,
   playMovie: M2_PICKER_STAGING_GROUP,
+  showEmote: M2_PICKER_STAGING_GROUP,
   changeTile: M2_PICKER_MAP_GROUP,
 };
 

@@ -1,0 +1,66 @@
+{
+  "checks": [
+    {
+      "width": 1680,
+      "field": "db-field-enemy-max-hp",
+      "reachable": true
+    },
+    {
+      "width": 1680,
+      "field": "db-enemy-graphic-set",
+      "reachable": true
+    },
+    {
+      "width": 1680,
+      "field": "db-field-enemy-move-interval-ms",
+      "reachable": true
+    },
+    {
+      "width": 1680,
+      "field": "db-field-enemy-drop-rate",
+      "reachable": true
+    },
+    {
+      "width": 1280,
+      "field": "db-field-enemy-max-hp",
+      "reachable": true
+    },
+    {
+      "width": 1280,
+      "field": "db-enemy-graphic-set",
+      "reachable": true
+    },
+    {
+      "width": 1280,
+      "field": "db-field-enemy-move-interval-ms",
+      "reachable": true
+    },
+    {
+      "width": 1280,
+      "field": "db-field-enemy-drop-rate",
+      "reachable": true
+    },
+    {
+      "width": 1024,
+      "field": "db-field-enemy-max-hp",
+      "reachable": true
+    },
+    {
+      "width": 1024,
+      "field": "db-enemy-graphic-set",
+      "reachable": true
+    },
+    {
+      "width": 1024,
+      "field": "db-field-enemy-move-interval-ms",
+      "reachable": true
+    },
+    {
+      "width": 1024,
+      "field": "db-field-enemy-drop-rate",
+      "reachable": true
+    }
+  ],
+  "errors": [],
+  "remotePersistence": false
+}

@@ -1422,7 +1422,7 @@ export class AssistantSession {
         type: "status",
         text: `자율 실행 계속 (${this.autoRunSteps}/${AGENT_RUN_MAX_TOTAL_STEPS})`,
       });
-      const next = await this.executeUserTurn("계속", onEvent, signal, { ...options, driverContinue: true });
+      const next = await this.executeUserTurn("계속", onEvent, signal, { ...options, instruction: "계속", driverContinue: true });
       if (next.stoppedReason === "aborted" || next.stoppedReason === "error") return next;
       last = next;
     }

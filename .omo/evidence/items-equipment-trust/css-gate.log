@@ -1,0 +1,7 @@
+
+> rpg-zzu@0.1.0 gates
+> node scripts/verify-gates.mjs --only css
+
+css            exit=0  budget=0  graph=0
+
+기준선 대비 회귀 없음 (/home/main/.herdr/worktrees/rpg-zzu/omo-4/.omo/gates-baseline.json)

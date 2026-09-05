@@ -17,6 +17,7 @@ import { actorDerivedStats } from "@/battle/battleBattlers";
 import { normalizeActorRecord } from "@/project/actorModel";
 import { DEFAULT_SWING_COOLDOWN_MS, DEFAULT_SWING_RANGE } from "@/project/actionCombat";
 import {
+  canEquip,
   effectiveActorEquipment,
   logicalEquipmentIds,
   transitionActorEquipment,
@@ -68,7 +69,7 @@ export type EquipmentActorComparison = {
 };
 
 // 아이템 탭 equipmentEffectFields(databaseItemRecordView.ts)와 동일한 9종 플래그.
-const EFFECT_FLAG_FIELDS: readonly { readonly key: keyof ItemEquipmentEffectFlags; readonly label: string; readonly testid: string }[] = [
+const LEGACY_EFFECT_FLAG_FIELDS: readonly { readonly key: keyof ItemEquipmentEffectFlags; readonly label: string; readonly testid: string }[] = [
   { key: "preemptive", label: "선제 공격", testid: "db-field-equipment-effect-preemptive" },
   { key: "doubleAttack", label: "2회 공격", testid: "db-field-equipment-effect-double" },
   { key: "attackAll", label: "전체 공격", testid: "db-field-equipment-effect-all" },
@@ -80,6 +81,10 @@ const EFFECT_FLAG_FIELDS: readonly { readonly key: keyof ItemEquipmentEffectFlag
   { key: "fixedEquipment", label: "장비 해제 불가", testid: "db-field-equipment-effect-fixed" },
 ];
 
+const EFFECT_FLAG_FIELDS = LEGACY_EFFECT_FLAG_FIELDS.filter(({ key }) =>
+  key === "doubleAttack" || key === "attackAll" || key === "fixedEquipment"
+);
+
 // 부위 세그먼트 옵션 — EquipmentRecord.slot 실값(weapon/shield/armor/helmet/accessory)
 // 기준. 라벨은 갤러리 필터 칩(databaseRecordViews EQUIPMENT_SLOT_CHIPS)과 동일.
 const EQUIPMENT_SLOT_OPTIONS: readonly { readonly id: EquipmentRecord["slot"]; readonly name: string }[] = [
@@ -88,12 +93,6 @@ const EQUIPMENT_SLOT_OPTIONS: readonly { readonly id: EquipmentRecord["slot"]; r
   { id: "helmet", name: "머리" },
   { id: "armor", name: "몸" },
   { id: "accessory", name: "장신구" },
-];
-
-// 방어 방식 — 이진 enum(resist/inflict)이라 세그먼트로. 라벨은 기존 selectLiteral 과 동일.
-const STATE_DEFENSE_MODE_OPTIONS: readonly { readonly id: EquipmentRecord["stateDefenseMode"]; readonly name: string }[] = [
-  { id: "resist", name: "저항" },
-  { id: "inflict", name: "공격 시 부여" },
 ];
 
 const STAT_FIELDS = [
@@ -112,13 +111,13 @@ export function equipmentEffectStory(project: Project, record: EquipmentRecord):
   effects.push(`치명타율 +${record.criticalRate}%p`);
   if (record.twoHanded) effects.push("양손 장비 · 방패 해제");
   if (record.cursed) effects.push("저주 · 장착 후 해제 제한");
-  if (record.attackElementIds.length > 0) effects.push(`공격 속성: ${namedIds(record.attackElementIds, project.database.elements ?? [])}`);
+  if (record.attackElementIds.length > 0) effects.push(`공격 속성: ${namedIds(record.attackElementIds.slice(0, 1), project.database.elements ?? [])}`);
   if (record.elementalDefenseIds.length > 0) effects.push(`속성 방어: ${namedIds(record.elementalDefenseIds, project.database.elements ?? [])}`);
   if (record.stateInflictIds.length > 0) {
     effects.push(`상태 부여 ${record.stateInflictionChance}%: ${namedIds(record.stateInflictIds, project.database.states)}`);
   }
-  if (record.stateDefenseIds.length > 0) {
-    const label = record.stateDefenseMode === "resist" ? "상태 저항" : "공격 시 상태";
+  if (record.stateDefenseIds.length > 0 && record.stateDefenseMode === "resist") {
+    const label = "상태 저항";
     effects.push(`${label} ${record.stateResistanceChance}%: ${namedIds(record.stateDefenseIds, project.database.states)}`);
   }
   if (record.usableAsItemSkillId) {
@@ -207,10 +206,10 @@ export function equipmentEffectSummaryChips(record: EquipmentRecord): EquipmentE
     `명중률 ${record.accuracy}%`,
     `치명타율 +${record.criticalRate}%p`,
   ];
-  if (record.attackElementIds.length > 0) counts.push(`공격 속성 ${record.attackElementIds.length}`);
+  if (record.attackElementIds.length > 0) counts.push("공격 속성 1");
   if (record.elementalDefenseIds.length > 0) counts.push(`속성 방어 ${record.elementalDefenseIds.length}`);
   if (record.stateInflictIds.length > 0) counts.push(`상태 부여 ${record.stateInflictIds.length}`);
-  if (record.stateDefenseIds.length > 0) counts.push(`상태 방어 ${record.stateDefenseIds.length}`);
+  if (record.stateDefenseIds.length > 0 && record.stateDefenseMode === "resist") counts.push(`상태 방어 ${record.stateDefenseIds.length}`);
   return { flags, badges, counts };
 }
 
@@ -231,9 +230,12 @@ export function renderEquipmentRecordForm(form: HTMLElement, record: EquipmentRe
     dataset: { testid: "db-equipment-comparison-result" },
   });
   let selectedActorId = store.getCurrent().database.actors[0]?.id ?? "";
+  const permissions = el("p", { class: "db-field-hint", dataset: { testid: "db-equipment-permission-result" } });
   const refreshOverview = (): void => {
     const project = store.getCurrent();
     const current = currentEquipment(record);
+    const allowed = project.database.actors.filter((actor) => canEquip(project, actor, current));
+    permissions.textContent = `최종 허용: ${allowed.length ? allowed.map((actor) => actor.name).join(", ") : "없음"} (주인공·직업의 허용 설정 포함)`;
     fillEquipmentSummaryChips(summaryHost, current);
     fillEquipmentEffectStory(storyHost, project, current);
     fillEquipmentComparison(comparisonResultHost, equipmentActorComparison(project, current, selectedActorId));
@@ -253,7 +255,7 @@ export function renderEquipmentRecordForm(form: HTMLElement, record: EquipmentRe
   // 라 카드가 열 사이에 흩어지고 라벨이 82px 열에 눌려 잘렸다.
   form.classList.add("db-eq-ws");
   form.append(
-    equipmentHeader(record, summaryHost, refreshOverview),
+    equipmentHeader(record, summaryHost, () => { refreshOverview(); rerender(); }),
     el("div", {
       class: "db-ws-detail-body",
       children: [
@@ -261,21 +263,13 @@ export function renderEquipmentRecordForm(form: HTMLElement, record: EquipmentRe
           class: "db-ws-stack db-eq-stack",
           children: [
             spanCard(sectionCard({
-              title: "이 장비를 착용하면",
+              title: "효과 요약과 착용 비교",
+              collapsible: true,
+              collapsed: true,
               hint: "DB 초기 레벨·초기 장비 기준 시뮬레이션",
               testid: "db-equipment-card-overview",
               children: [storyHost, comparisonPanel],
             })),
-            sectionCard({
-              title: "기본",
-              testid: "db-equipment-card-basics",
-              children: [
-                equipmentSpecStrip(record),
-                textField("설명", "db-field-equipment-description", record.description, (description) =>
-                  updateDatabaseRecord("equipment", record.id, { description })
-                ),
-              ],
-            }),
             sectionCard({
               title: "능력치 보정",
               hint: "착용 중에만 더해집니다",
@@ -293,7 +287,17 @@ export function renderEquipmentRecordForm(form: HTMLElement, record: EquipmentRe
               ],
             }),
             sectionCard({
-              title: "장착 규칙",
+              title: "기본",
+              testid: "db-equipment-card-basics",
+              children: [
+                equipmentSpecStrip(record),
+                textField("설명", "db-field-equipment-description", record.description, (description) =>
+                  updateDatabaseRecord("equipment", record.id, { description })
+                ),
+              ],
+            }),
+            sectionCard({
+              title: "전투·장착 규칙",
               testid: "db-equipment-card-rules",
               children: [
                 el("div", {
@@ -317,13 +321,15 @@ export function renderEquipmentRecordForm(form: HTMLElement, record: EquipmentRe
                 }),
               ],
             }),
-            graphicCard(record, rerender),
             twoColumnCard(spanCard(sectionCard({
               title: "장착 허용",
               // 기본 데이터에서 배우명=직업명이라 어느 쪽인지 구분 불가했다(P10) — 소제목으로 구분.
-              hint: "아무것도 체크하지 않으면 누구도 장착할 수 없습니다",
+              collapsible: true,
+              collapsed: true,
+              hint: "주인공 또는 직업 중 하나가 허용하면 장착 가능. 직업 탭에서 허용한 장비도 포함됩니다.",
               testid: "db-equipment-card-permissions",
               children: [
+                permissions,
                 choiceGroup("주인공별 허용", "db-equipment-actor-permission-group", actorChoices(record, refreshOverview)),
                 choiceGroup("직업별 허용", "db-equipment-class-permission-group", classChoices(record, refreshOverview)),
               ],
@@ -332,43 +338,61 @@ export function renderEquipmentRecordForm(form: HTMLElement, record: EquipmentRe
             // 이미 지원하는데 UI 만 없어 AI 도구로만 편집 가능했다).
             spanCard(sectionCard({
               title: "전투 효과",
+              collapsible: true,
+              collapsed: !EFFECT_FLAG_FIELDS.some(({ key }) => record.effectFlags[key]),
               testid: "db-equipment-card-effects",
-              children: [el("div", { class: "db-eq-grid", children: equipmentEffectFields(record, refreshOverview) })],
+              children: [
+                el("div", { class: "db-eq-grid", children: equipmentEffectFields(record, refreshOverview) }),
+                ...unsupportedEffectNotice(record),
+              ],
             })),
             twoColumnCard(spanCard(sectionCard({
               title: "공격/방어 속성",
+              collapsible: true,
+              collapsed: record.attackElementIds.length === 0 && record.elementalDefenseIds.length === 0,
               testid: "db-equipment-card-elements",
               children: [
-                choiceGroup("공격 속성", "db-equipment-attack-element-group", elementChoices(record, "attackElementIds", refreshOverview)),
+                selectField("공격 속성 (하나)", "db-field-equipment-attack-element", record.attackElementIds[0] ?? "", store.getCurrent().database.elements ?? [], (id) => {
+                  updateDatabaseRecord("equipment", record.id, { attackElementIds: id ? [id] : [] });
+                  refreshOverview();
+                }),
+                ...(record.attackElementIds.length > 1 ? [el("p", { class: "db-field-hint", text: "이전 복수 속성은 첫 속성만 적용됩니다. 다시 선택하면 한 속성으로 정리됩니다." })] : []),
                 choiceGroup("속성 방어", "db-equipment-defense-element-group", elementChoices(record, "elementalDefenseIds", refreshOverview)),
               ],
             }))),
-            sectionCard({
+            ...(store.getCurrent().system.actionCombat?.enabled && record.slot === "weapon" ? [sectionCard({
               title: "액션 전투 스윙",
+              collapsible: true,
+              collapsed: !record.actionWeapon,
               hint: "실시간 액션 전투에서만 쓰입니다 — 비우면 시스템 기본값",
               testid: "db-equipment-card-action-weapon",
               children: actionWeaponFields(record),
-            }),
+            })] : []),
             spanCard(sectionCard({
-              title: "상태 이상",
+              title: "상태 부여·저항",
+              collapsible: true,
+              collapsed: record.stateInflictIds.length === 0 && record.stateDefenseIds.length === 0,
               testid: "db-equipment-card-states",
               children: [
                 choiceGroup("상태 부여", "db-equipment-state-inflict-group", stateChoices(record, "stateInflictIds", refreshOverview)),
                 statePercentField(record, "stateInflictionChance", "db-field-equipment-state-infliction", "상태 부여율(%)", refreshOverview),
-                choiceGroup("상태 방어", "db-equipment-state-defense-group", stateChoices(record, "stateDefenseIds", refreshOverview)),
-                segmentedControl("방어 방식", "db-field-equipment-state-defense-mode", record.stateDefenseMode, STATE_DEFENSE_MODE_OPTIONS, (stateDefenseMode) => {
-                  updateDatabaseRecord("equipment", record.id, { stateDefenseMode: stateDefenseMode as EquipmentRecord["stateDefenseMode"] });
-                  refreshOverview();
-                }),
-                statePercentField(record, "stateResistanceChance", "db-field-equipment-state-resistance", "상태 저항률(%)", refreshOverview),
+                ...(record.stateDefenseMode === "resist" ? [choiceGroup("상태 방어", "db-equipment-state-defense-group", stateChoices(record, "stateDefenseIds", refreshOverview))] : []),
+                ...(record.stateDefenseMode === "inflict" ? [el("p", { class: "db-field-hint", text: "이전 ‘공격 시 부여’ 방어 설정은 적용되지 않습니다. 공격 효과는 위 상태 부여에서 설정하세요." }),
+                  el("button", { text: "선택한 상태를 저항으로 적용", attrs: { type: "button" }, dataset: { testid: "db-equipment-enable-state-resistance" }, on: { click: () => {
+                    updateDatabaseRecord("equipment", record.id, { stateDefenseMode: "resist" });
+                    rerender();
+                  } } })] : []),
+                ...(record.stateDefenseMode === "resist" ? [statePercentField(record, "stateResistanceChance", "db-field-equipment-state-resistance", "상태 저항률(%)", refreshOverview)] : []),
               ],
             })),
+            graphicCard(record, rerender),
             spanCard(databaseFieldSupportNotice("imageResourceId", "iconResourceId", "twoHanded", "accuracy", "criticalRate", "usableAsItemSkillId", "stateInflictIds", "stateInflictionChance", "stateResistanceChance")),
           ],
         }),
       ],
     }),
   );
+  form.querySelector("[data-testid=\"db-equipment-card-rules\"]")?.classList.add("db-equipment-rules", "db-ws-span");
 }
 
 /** `db-ws-stack` 안에서 한 행을 다 쓰는 카드로 표시한다. */
@@ -567,11 +591,14 @@ function comparisonStatRow(
 // (아이콘 "설정…" 버튼을 이 카드 안에서 찾을 수 있어야 한다).
 function graphicCard(record: EquipmentRecord, rerender: () => void): HTMLElement {
   const card = sectionCard({
-    title: "장비 그래픽",
+    title: "외형",
+    collapsible: true,
+    collapsed: true,
+    hint: "목록·게임 인벤토리·장비 메뉴·상점은 아이콘을 우선하며, 없으면 이미지를 사용합니다.",
     testid: "db-equipment-card-graphic",
     children: [resourcePanel(record, rerender)],
   });
-  card.classList.add("db-advanced-panel", "db-panel-equipment-graphic");
+  card.classList.add("db-advanced-panel", "db-panel-equipment-graphic", "db-ws-span");
   return card;
 }
 
@@ -699,6 +726,11 @@ function elementChoices(
       testid: `db-field-equipment-${key}-${element.id}`,
     })
   );
+}
+
+function unsupportedEffectNotice(record: EquipmentRecord): HTMLElement[] {
+  const labels = LEGACY_EFFECT_FLAG_FIELDS.filter(({ key }) => record.effectFlags[key] && !EFFECT_FLAG_FIELDS.some((entry) => entry.key === key)).map(({ label }) => label);
+  return labels.length ? [el("p", { class: "db-field-hint", dataset: { testid: "db-equipment-unsupported-effects" }, text: `이전 설정 중 적용되지 않는 효과: ${labels.join(", ")}. 저장값은 보관되지만 전투 효과에는 포함되지 않습니다.` })] : [];
 }
 
 function equipmentEffectFields(record: EquipmentRecord, onChange?: () => void): HTMLElement[] {

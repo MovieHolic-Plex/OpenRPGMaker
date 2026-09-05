@@ -12,10 +12,10 @@ test("Database Items tab follows RM2K3 item types and Korean type-specific panel
   await page.getByTestId("db-tab-items").click();
 
   await expect(page.getByTestId("db-items-oprn-workbench")).toBeVisible();
-  await expect(page.getByTestId("db-field-item-type")).toContainText("무기");
-  await expect(page.getByTestId("db-field-item-type")).toContainText("방패");
+  await expect(page.getByTestId("db-field-item-type")).not.toContainText("무기");
+  await expect(page.getByTestId("db-field-item-type")).not.toContainText("방패");
   await expect(page.getByTestId("db-field-item-type")).toContainText("약");
-  await expect(page.getByTestId("db-field-item-type")).toContainText("스위치");
+  await expect(page.getByTestId("db-field-item-type")).toContainText("장치 작동");
 
   await page.getByTestId("db-field-name").fill("QA 회복약");
   await page.getByTestId("db-field-item-type").selectOption("medicine");
@@ -26,48 +26,37 @@ test("Database Items tab follows RM2K3 item types and Korean type-specific panel
   await page.getByTestId("db-field-item-hp-percent-stepper").fill("10");
   await page.getByTestId("db-field-item-hp-flat").fill("50");
   await page.getByTestId("db-field-item-mp-percent-stepper").fill("25");
-  await page.getByTestId("db-field-item-only-menu").check();
+  await page.getByTestId("db-field-item-occasion").selectOption("field");
   await expect(page.getByTestId("db-items-medicine-panel")).toContainText("HP 회복");
   // "사용 가능"은 약/책/씨앗/특수 패널에 각각 복제되지 않고 "사용 제한" 구역의 공용 카드
   // 한 장이 소유한다 — 패널 안이 아니라 해당 카드로 확인한다.
-  await expect(page.getByTestId("db-item-card-usable")).toContainText("사용 가능");
+  await expect(page.getByTestId("db-item-card-usable")).toContainText("사용 대상 제한");
 
   await page.getByTestId("db-field-item-type").selectOption("special");
   await page.getByTestId("db-picker-item-activate-skill").selectOption({ label: "치유" });
-  await page.getByTestId("db-field-item-usage-message").selectOption("skill");
+  await expect(page.getByTestId("db-field-item-usage-message")).toHaveCount(0);
   await expect(page.getByTestId("db-items-special-panel")).toContainText("발동 스킬");
 
   await page.getByTestId("db-field-item-type").selectOption("switch");
   await page.getByTestId("db-picker-item-switch").selectOption({ index: 1 });
-  // occasion 배치: 두 플래그 모두 켜짐을 보장한다. 원본 레코드가 이미 켜진 상태면
-  // check() 가 no-op(change 없음)라서 occasion 재계산이 안 일어난다 — 껐다 켜서
-  // occasionFromFlags(true,true)="always" 를 실제 UI 경로로 만들게 한다.
-  for (const id of ["db-field-item-occasion-field", "db-field-item-occasion-battle"]) {
-    const toggle = page.getByTestId(id);
-    if (await toggle.isChecked()) await toggle.uncheck();
-    await toggle.check();
-  }
-  await expect(page.getByTestId("db-items-switch-panel")).toContainText("스위치 토글 ON/OFF");
+  await page.getByTestId("db-field-item-occasion").selectOption("field");
+  await expect(page.getByTestId("db-items-switch-panel")).toContainText("장치 켜기 (ON)");
   await page.getByTestId("database-modal").screenshot({
     path: testInfo.outputPath("items-tab-switch-panel.png"),
   });
 
-  await page.getByTestId("db-field-item-type").selectOption("weapon");
-  await expect(page.getByTestId("db-item-open-equipment-tab")).toBeVisible();
-  await page.getByTestId("db-item-open-equipment-tab").click();
-  await expect(page.getByTestId("db-tab-equipment")).toHaveClass(/active/);
-
+  await page.getByTestId("db-tab-equipment").click();
   const project = await exportedProject(page);
   const item = project.database.items.find((record) => record.name === "QA 회복약");
   expect(item).toMatchObject({
-    type: "weapon",
-    occasion: "always",
+    type: "switch",
+    occasion: "field",
     consumptionLimit: 1,
     scope: "allAllies",
     hpRecovery: { percentMax: 10, flat: 50 },
     mpRecovery: { percentMax: 25, flat: 0 },
     onlyUsableInMenu: true,
-    usageMessage: "skill",
+    usageMessage: "normal",
   });
   expect(item?.skillId).toBe("skill_heal");
   expect(item?.switchId).toBeTruthy();

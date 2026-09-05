@@ -37,8 +37,6 @@ test.describe("QA sweep: items tab", () => {
 
     await page.getByTestId("db-field-name").fill("QA아이템경계값");
     await page.getByTestId("db-field-price").fill("999999");
-    await page.getByTestId("db-field-item-capture-multiplier").fill("3.5");
-    await page.getByTestId("db-field-scope").selectOption("allAllies");
     await page.getByTestId("db-field-item-description").fill("QA 설명 텍스트 경계값 테스트 30자 이상 아주 길게 길게 길게 작성합니다 반복 반복");
     await page.getByTestId("db-field-item-type").selectOption("medicine");
     // 대상은 T9 이후 세그먼트 컨트롤(네이티브 radio) — 레이블 클릭으로 선택.
@@ -48,7 +46,7 @@ test.describe("QA sweep: items tab", () => {
     await page.getByTestId("db-field-item-hp-percent-stepper").fill("20");
     await page.getByTestId("db-field-item-hp-flat").fill("30");
     await page.getByTestId("db-field-item-mp-percent-stepper").fill("10");
-    await page.getByTestId("db-field-item-only-menu").check();
+    await page.getByTestId("db-field-item-occasion").selectOption("field");
 
     await page.getByTestId("database-modal").screenshot({ path: ".superpowers/sdd/qa-shots/items-medicine-filled.png" });
 
@@ -113,21 +111,19 @@ test.describe("QA sweep: items tab", () => {
     await page.getByTestId("db-field-price").fill("999999999");
     await page.getByTestId("db-field-price").blur();
 
-    // boundary: negative capture multiplier
+    await page.getByTestId("db-field-item-type").selectOption("special");
+    await page.getByTestId("db-item-card-capture").getByRole("button").click();
+    await page.getByTestId("db-field-item-capture-enabled").check();
     await page.getByTestId("db-field-item-capture-multiplier").fill("-2");
     await page.getByTestId("db-field-item-capture-multiplier").blur();
-
-    await page.getByTestId("db-field-item-type").selectOption("weapon");
-    await expect(page.getByTestId("db-item-open-equipment-tab")).toBeVisible();
-    await expect(page.getByTestId("db-field-item-wield-type")).toHaveCount(0);
-
-    await page.getByTestId("database-modal").screenshot({ path: ".superpowers/sdd/qa-shots/items-weapon-boundary.png" });
+    await expect(page.getByTestId("db-field-item-type").locator('option[value="weapon"]')).toHaveCount(0);
 
     // Key/switch type
     await page.getByTestId("db-field-item-type").selectOption("switch");
     await expect(page.getByTestId("db-items-switch-panel")).toBeVisible();
 
     // Farm tool (농사 도구)
+    await page.getByTestId("db-field-item-type").selectOption("normalGoods");
     await page.getByTestId("db-field-item-farm-tool").selectOption("hoe");
     await expect(page.getByTestId("db-field-item-farm-tool")).toHaveValue("hoe");
 
@@ -148,6 +144,7 @@ test.describe("QA sweep: items tab", () => {
     await switchDatabaseTab(page, ITEMS_TAB);
     await page.getByTestId("db-add-record").click();
 
+    await page.getByTestId("db-item-card-graphic").getByRole("button").click();
     await expect(page.getByTestId("db-field-item-image-resource-set")).toBeVisible();
     await page.getByTestId("db-field-item-image-resource-set").click();
     await expect(page.getByTestId("db-field-item-image-resource-dialog-cancel")).toBeVisible();

@@ -1,0 +1,11 @@
+{
+  "tests": 84,
+  "passed": 83,
+  "failed": 1,
+  "exitCode": 1,
+  "newRegressions": 0,
+  "existingFailure": "test/commandContracts/registry.test.ts: has one valid guarantee for every command and condition",
+  "allFourNewFullRunFailuresPass": true,
+  "typecheckExitCode": 0,
+  "note": "Executed after continuation/grid/emote fixes. The dock test fix is superseded by PR583, whose stronger mode-round-trip test is checked after merging."
+}

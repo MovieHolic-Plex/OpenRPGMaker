@@ -180,7 +180,10 @@ export function paintVillageRoadsChecked(args: {
   const baseLower = [...map.lowerTiles];
   const baseUpper = [...map.upperTiles];
   // 대로 칸은 조그 분절·가지치기에서 보호한다 — 곡선 골격이 끊기거나 곧게 펴지면 안 된다.
-  const boulevardBand = boulevard ? boulevardCells(area, boulevard, seed) : [];
+  // Explicit street grids retain straight frontage; organic layouts use the seeded curve.
+  const boulevardBand = boulevard
+    ? boulevardCells(area, boulevard, intent.settlementLayout === "street-grid" ? undefined : seed)
+    : [];
   const boulevardProtected = new Set(boulevardBand.map((cell) => coordKey(cell.x, cell.y)));
 
   const paintOnce = (runIntent: VillageIntent, runSeed: number): void => {

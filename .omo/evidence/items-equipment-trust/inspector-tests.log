@@ -1,0 +1,52 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/itemEquipmentAuthoringTrust.test.ts test/databaseItemInspector.test.ts test/databaseWave2BatchC.test.ts test/itemRuntimeUsability.test.ts test/battleTargetResolver.test.ts --maxWorkers=2 --reporter=verbose
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/omo-4
+
+ ✓ test/databaseWave2BatchC.test.ts > state reference panel shows actual stateEffects references (P10) > lists skills whose stateEffects target this state, not switch-kind skills 572ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > summarizes a finite-use party medicine from live item fields 623ms
+ ✓ test/databaseWave2BatchC.test.ts > state reference panel shows actual stateEffects references (P10) > shows the empty hint for a state no skill references 748ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > resolves a special item's triggered skill name 719ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > does not present special item actor and class ids as runtime restrictions 360ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > keeps an always item battle-usable when the legacy menu-only flag is also set 1153ms
+ ✓ test/databaseWave2BatchC.test.ts > state numeric fields clamp at the view level (P10) > clamps 회복 확률 999 → 100 and 명중률 보정 -50 → 0 with display write-back 1941ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > renders the effect story and refreshes it in place after recovery edits 729ms
+ ✓ test/databaseWave2BatchC.test.ts > equipment effect field group ported from the item tab (P10) > renders all 9 effect flags and commits toggles to the store 1322ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > renders the inspector header with 96px icon, name edit (db-field-name), and type tag 2171ms
+ ✓ test/databaseWave2BatchC.test.ts > equipment effect field group ported from the item tab (P10) > renders attack/defense element choices and state defense fields 3418ms
+ ✓ test/databaseWave2BatchC.test.ts > equipment effect field group ported from the item tab (P10) > separates equippable actors and classes with group headings 259ms
+ ✓ test/databaseWave2BatchC.test.ts > class equipment permissions keep the array intact (P10 Critical) > renders one checkbox per equipment and toggling one preserves the others 464ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > HP/MP recovery % slider/stepper writes clamped step-5 values to the store 3021ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > keeps the base percent testid on the field wrapper while inputs use -slider/-stepper 430ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > segmented scope radio rewrites the stored ItemScope enum 1281ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > avatar chip toggles an actor id in usableActorIds and keeps class checkboxes 1093ms
+ ✓ test/itemRuntimeUsability.test.ts > default item runtime usability > uses every field or always item through the real menu authority 311ms
+ ✓ test/itemRuntimeUsability.test.ts > default item runtime usability > 기본 농기구 세 개로 경작, 물주기, 채굴 경로를 실행한다 147ms
+ ✓ test/itemRuntimeUsability.test.ts > default item runtime usability > lands a real effect and consumes one copy for every battle item 241ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > occasion selection synchronizes menu and battle flags 1963ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > switch items use the same occasion authority 1097ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > type change calls updateItemType + full rerender and swaps type panels 304ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > draws one scope control for usable items and none for ordinary goods 401ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > renders one shared usable card placed under the limits section 137ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > orders workbench cards as summary → definition → effect → limits 552ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > keeps price and consumption in basics, without unrelated farming options on medicine 306ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > weapon type shows an equipment-tab door instead of the legacy equipment form 432ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > legacy weapon item keeps its price but has no scope/capture editors 416ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > farm tool dropdown offers every canonical FARM_TOOLS value with Korean labels 607ms
+ ✓ test/itemEquipmentAuthoringTrust.test.ts > uses one occasion control and restores field+battle after a field-only edit 1690ms
+ ✓ test/itemEquipmentAuthoringTrust.test.ts > preserves inactive book settings through serialization without teaching a skill as medicine 1420ms
+ ✓ test/itemEquipmentAuthoringTrust.test.ts > inactive recovery and seed settings cannot be used by a normal good 801ms
+ ✓ test/itemEquipmentAuthoringTrust.test.ts > preserves deleted default rows through save/load and the boot normalizer 319ms
+ ✓ test/itemEquipmentAuthoringTrust.test.ts > has a single special-item skill selector and refreshes scope immediately 832ms
+ ✓ test/itemEquipmentAuthoringTrust.test.ts > makes reusable/finite/single use explicit and the runtime respects them 383ms
+ ✓ test/itemEquipmentAuthoringTrust.test.ts > does not offer new equipment types in Items 185ms
+ ✓ test/itemEquipmentAuthoringTrust.test.ts > does not advertise unsupported flags and keeps one attack element input 307ms
+ ✓ test/itemEquipmentAuthoringTrust.test.ts > a legacy inflict record cannot disable another equipment's state resistance 221ms
+
+ Test Files  4 passed (4)
+      Tests  39 passed (39)
+   Start at  17:39:14
+   Duration  89.75s (transform 46.67s, setup 0ms, collect 131.55s, tests 33.39s, environment 2ms, prepare 1.25s)
+

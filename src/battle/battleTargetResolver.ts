@@ -25,7 +25,7 @@ export function targetScopeForCommand(project: Project, command: TargetedActorCo
       const item = project.database.items.find((record) => record.id === command.itemId);
       if (!item) return "self";
       if (item.scope === "ally" || item.scope === "allAllies" || item.scope === "enemy") return item.scope;
-      const skillId = item.activateSkillId ?? item.skillId;
+      const skillId = item.type === "special" ? item.activateSkillId ?? item.skillId : undefined;
       return project.database.skills.find((skill) => skill.id === skillId)?.scope ?? "self";
     }
   }

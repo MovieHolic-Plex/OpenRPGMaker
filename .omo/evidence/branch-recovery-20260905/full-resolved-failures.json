@@ -1,0 +1,194 @@
+[
+  {
+    "file": "test/databaseBattleCommandsTab.test.ts",
+    "test": "battle commands tab copy and class door drops RM2003 path copy, keeps catalog fields, and labels kinds in Korean"
+  },
+  {
+    "file": "test/databaseOverviewDashboard.test.ts",
+    "test": "database overview dashboard scatter chart draws one circle per enemy with a <title> tooltip and boss styling"
+  },
+  {
+    "file": "test/databaseOverviewTab.test.ts",
+    "test": "database overview tab shell renders stat chips for all 9 collections with counts from the project data"
+  },
+  {
+    "file": "test/databaseVillageView.test.ts",
+    "test": "\ub370\uc774\ud130\ubca0\uc774\uc2a4 \u300c\ub9c8\uc744\u300d\ud0ed \u2014 \uadf8\ub9bc \ub0b4\uc7a5 \uac24\ub7ec\ub9ac\uc5d0\uc11c \uace0\ub978 \ud615\ud0dc\uac00 \uaddc\uc57d\uc744 \ud1b5\uacfc\ud55c\ub2e4"
+  },
+  {
+    "file": "test/editorProjectE2EBridge.test.ts",
+    "test": "mounted project E2E bridge cleanup removes only the bridge and remount consumes no stale capability"
+  },
+  {
+    "file": "test/editorProjectE2EBridge.test.ts",
+    "test": "mounted project E2E bridge maps authorized initialization and reload to the mounted singleton with exact proof"
+  },
+  {
+    "file": "test/houseKit.test.ts",
+    "test": "author_house single exterior-only\ub294 \ub0b4\ubd80 \ub9f5\uacfc \ubb38 \uc774\ubca4\ud2b8\ub97c \ub9cc\ub4e4\uc9c0 \uc54a\ub294\ub2e4"
+  },
+  {
+    "file": "test/houseKit.test.ts",
+    "test": "author_house single windows {enabled:false} \ub85c \ucc3d\ubb38 \uc790\ub3d9 \ubc30\uce58\ub97c \ub048\ub2e4"
+  },
+  {
+    "file": "test/houseKit.test.ts",
+    "test": "author_house single \ubb38 \uc55e \uce68\uc5fd\uc218\ub294 \uc9c0\uba74\uc73c\ub85c \uc815\ub9ac\ud558\uace0 \ub0b4\ubd80 \ubcf5\uadc0 transfer\ub97c \ud1b5\ud589 \uac00\ub2a5\ud558\uac8c \uc720\uc9c0\ud55c\ub2e4"
+  },
+  {
+    "file": "test/houseKit.test.ts",
+    "test": "author_house single \ubb38 \uc55e\uc774 \ub9f5 \ubc16\uc774\uba74 \ub0a8\ucabd \uc5ec\uc720 \uc548\ub0b4\uc640 \ud568\uaed8 \uc2e4\ud328\ud55c\ub2e4"
+  },
+  {
+    "file": "test/houseKit.test.ts",
+    "test": "author_house single \uc54c \uc218 \uc5c6\ub294 \ud0a4\ud2b8\ub294 \uac70\ubd80\ud55c\ub2e4"
+  },
+  {
+    "file": "test/loadNewRemoteProject.test.ts",
+    "test": "store.loadNewRemoteProject \u2014 welcome genre remote branch keeps remote persistence on, mints a new project id, and does not disable DB"
+  },
+  {
+    "file": "test/loadNewRemoteProject.test.ts",
+    "test": "store.loadNewRemoteProject \u2014 welcome genre remote branch without DB config stays not-configured rather than load-failed disabled"
+  },
+  {
+    "file": "test/manualCommitDiff.test.ts",
+    "test": "dedup baseline \uc740 \uc2e4\uc81c \uae30\ub85d\uc5d0\ub9cc \uc804\uc9c4\ud55c\ub2e4 saved \ub85c resolve \ub418\uba74 baseline \uc774 \uc804\uc9c4\ud574 \ub3d9\uc77c \ub0b4\uc6a9 \uc7ac\uc800\uc7a5\uc744 \uac74\ub108\ub6f4\ub2e4"
+  },
+  {
+    "file": "test/manualCommitDiff.test.ts",
+    "test": "\uc218\ub3d9 \uc800\uc7a5 \ucee4\ubc0b summary \ub294 \uc2e4\uc81c diff \ub2e4 baseline \uc774 \uc5c6\ub294 \uccab \uc800\uc7a5\uc740 \ub358\uc9c0\uc9c0 \uc54a\uace0 \uae30\uc874 \ud3f4\ubc31(\uc2dc\uc2a4\ud15c)\uc73c\ub85c \uae30\ub85d\ud55c\ub2e4"
+  },
+  {
+    "file": "test/manualCommitDiff.test.ts",
+    "test": "\uc218\ub3d9 \uc800\uc7a5 \ucee4\ubc0b summary \ub294 \uc2e4\uc81c diff \ub2e4 \ud0c0\uc77c\uc744 \uce60\ud558\uace0 \uc800\uc7a5\ud558\uba74 summary \uac00 '\uc2dc\uc2a4\ud15c' \uc774 \uc544\ub2c8\ub77c \ud0c0\uc77c \ubcc0\uacbd\uc744 \ub2f4\ub294\ub2e4"
+  },
+  {
+    "file": "test/mapClipboardFeedback.test.ts",
+    "test": "\ub9f5 \ud074\ub9bd\ubcf4\ub4dc \ud53c\ub4dc\ubc31 \uc120\ud0dd \uc601\uc5ed \uc5c6\uc774 \ubcf5\uc0ac\ud558\uba74 false\uc640 \uc548\ub0b4 \ud1a0\uc2a4\ud2b8\ub97c \ubc18\ud658\ud55c\ub2e4"
+  },
+  {
+    "file": "test/mapClipboardFeedback.test.ts",
+    "test": "\ub9f5 \ud074\ub9bd\ubcf4\ub4dc \ud53c\ub4dc\ubc31 \ud074\ub9bd\ubcf4\ub4dc \uc5c6\uc774 \ubd99\uc5ec\ub123\uc73c\uba74 false\uc640 \uc548\ub0b4 \ud1a0\uc2a4\ud2b8\ub97c \ubc18\ud658\ud55c\ub2e4"
+  },
+  {
+    "file": "test/mapEditLockScratchSession.test.ts",
+    "test": "\uc2a4\ud06c\ub798\uce58 \uc138\uc158(\uc6d0\uaca9 \uc800\uc7a5 \ube44\ud65c\uc131)\uc758 \ub9f5 \ud3b8\uc9d1 \ub77d remotePersistenceEnabled=true \uc138\uc158\uc740 \uae30\uc874\ucc98\ub7fc \ub77d\uc744 \ucde8\ub4dd\ud55c\ub2e4"
+  },
+  {
+    "file": "test/mapEditLockScratchSession.test.ts",
+    "test": "\uc2a4\ud06c\ub798\uce58 \uc138\uc158(\uc6d0\uaca9 \uc800\uc7a5 \ube44\ud65c\uc131)\uc758 \ub9f5 \ud3b8\uc9d1 \ub77d \uc2a4\ud06c\ub798\uce58 \uc138\uc158\uc740 \uac15\uc81c \ud0c8\ucde8(takeover)\ub3c4 \uc6d0\uaca9 \ud638\ucd9c \uc5c6\uc774 \ubb34\uc2dc\ub41c\ub2e4"
+  },
+  {
+    "file": "test/mapEditLockScratchSession.test.ts",
+    "test": "\uc2a4\ud06c\ub798\uce58 \uc138\uc158(\uc6d0\uaca9 \uc800\uc7a5 \ube44\ud65c\uc131)\uc758 \ub9f5 \ud3b8\uc9d1 \ub77d \ucde8\ub4dd \ub300\uae30 \uc911 \uc2a4\ud06c\ub798\uce58 \uc804\ud658\ub418\uba74 \uc7a1\uc740 \ub77d\uc744 \uc989\uc2dc \ubc18\ub0a9\ud55c\ub2e4"
+  },
+  {
+    "file": "test/mapEditLocks.test.ts",
+    "test": "\ub9f5 \ud3b8\uc9d1 \uc7a0\uae08 \uac00\uc838\uc624\uae30 \uae30\uc874 \uc18c\uc720\uc790 \uc870\ud68c \uc5c6\uc774 \ud604\uc7ac \uc138\uc158\uc73c\ub85c upsert\ud558\uace0 held \uc0c1\ud0dc\ub85c \ubc14\uafbc\ub2e4"
+  },
+  {
+    "file": "test/mapEditLocks.test.ts",
+    "test": "\uc7a0\uae08 \uc18c\uc720\uc790 \ub77c\ubca8 \ub0b4\ubd80 '\ube0c\ub77c\uc6b0\uc800 xxxx' \ub77c\ubca8\uc744 \uc0ac\ub78c\uc774 \uc77d\uc744 \ubb38\uad6c\ub85c \ubc14\uafbc\ub2e4"
+  },
+  {
+    "file": "test/moveRouteCatalogPersistence.test.ts",
+    "test": "\uc774\ub3d9 \uacbd\ub85c \ud314\ub808\ud2b8 persistence BREAK: \ud314\ub808\ud2b8\uc758 \ubaa8\ub4e0 \uba85\ub839\uc774 \ud558\ub098\uc529 serialize\u2192deserialize \ub97c \ud1b5\uacfc\ud55c\ub2e4"
+  },
+  {
+    "file": "test/playerBootFactory.test.ts",
+    "test": "player Phaser boot contract boots Phaser with the current project's authored play resolution"
+  },
+  {
+    "file": "test/playerBootFactory.test.ts",
+    "test": "player Phaser boot contract keeps editor and export Phaser config and registry contracts identical"
+  },
+  {
+    "file": "test/regionRightDragNotifications.test.ts",
+    "test": "selectTileRegion \ud1b5\uc9c0\ub7c9 \ub4dc\ub798\uadf8\ub85c \uc0ac\uac01\ud615\uc774 \uc2e4\uc81c\ub85c \ucee4\uc9c0\uba74 \uadf8 \ub2e8\uacc4\ub9c8\ub2e4 \ud55c \ubc88\uc529\ub9cc \ud1b5\uc9c0\ud55c\ub2e4"
+  },
+  {
+    "file": "test/regionSelectionPastePreview.test.ts",
+    "test": "clearSelection / clearSelectionRegion clearSelectionRegion \ud1a0\uc2a4\ud2b8\uc5d0 '\uc9c0\uc6b0\uae30' \ud3ec\ud568"
+  },
+  {
+    "file": "test/regionSelectionPastePreview.test.ts",
+    "test": "clearSelection / clearSelectionRegion clearSelectionRegion\uc774 \uc120\ud0dd \uc601\uc5ed\uc744 \ube48 \uce78\uc73c\ub85c"
+  },
+  {
+    "file": "test/regionSelectionPastePreview.test.ts",
+    "test": "clearSelection / clearSelectionRegion clearSelection\uc774 selection\uacfc pastePreview\ub97c \ubaa8\ub450 \ud574\uc81c"
+  },
+  {
+    "file": "test/regionSelectionPastePreview.test.ts",
+    "test": "copySelection \ud53c\ub4dc\ubc31 \uac1c\uc120 \ubcf5\uc0ac \ud1a0\uc2a4\ud2b8\uc5d0 \ud06c\uae30 \uc815\ubcf4 \ud3ec\ud568"
+  },
+  {
+    "file": "test/regionSelectionPastePreview.test.ts",
+    "test": "renderSelectionActionChips \u2014 \ubcf5\uc0ac/\ubd99\uc5ec\ub123\uae30/\uc9c0\uc6b0\uae30/\ud574\uc81c \ubc84\ud2bc \ud074\ub9bd\ubcf4\ub4dc\uac00 \uc5c6\uc73c\uba74 \ubd99\uc5ec\ub123\uae30 \ubc84\ud2bc\uc774 \uc5c6\ub2e4"
+  },
+  {
+    "file": "test/regionSelectionPastePreview.test.ts",
+    "test": "renderSelectionActionChips \u2014 \ubcf5\uc0ac/\ubd99\uc5ec\ub123\uae30/\uc9c0\uc6b0\uae30/\ud574\uc81c \ubc84\ud2bc \ud074\ub9bd\ubcf4\ub4dc\uac00 \uc788\uc73c\uba74 \ubd99\uc5ec\ub123\uae30 \ubc84\ud2bc\uc774 \ub098\ud0c0\ub09c\ub2e4"
+  },
+  {
+    "file": "test/regionSelectionPastePreview.test.ts",
+    "test": "\ubd81\uc5ec\ub123\uae30 \ubbf8\ub9ac\ubcf4\uae30 \ubaa8\ub4dc cancelPastePreview\ub85c \ubbf8\ub9ac\ubcf4\uae30 \ucde8\uc18c \u2014 \ub9f5 \ubcc0\ud654 \uc5c6\uc74c"
+  },
+  {
+    "file": "test/regionSelectionPastePreview.test.ts",
+    "test": "\ubd81\uc5ec\ub123\uae30 \ubbf8\ub9ac\ubcf4\uae30 \ubaa8\ub4dc movePastePreview\uac00 \ub9f5 \uacbd\uacc4\ub97c \ubc97\uc5b4\ub098\uc9c0 \uc54a\uac8c \ud074\ub7a8\ud504"
+  },
+  {
+    "file": "test/regionSelectionPastePreview.test.ts",
+    "test": "\ubd81\uc5ec\ub123\uae30 \ubbf8\ub9ac\ubcf4\uae30 \ubaa8\ub4dc movePastePreview\ub85c \uc704\uce58 \uac31\uc2e0"
+  },
+  {
+    "file": "test/regionSelectionPastePreview.test.ts",
+    "test": "\ubd81\uc5ec\ub123\uae30 \ubbf8\ub9ac\ubcf4\uae30 \ubaa8\ub4dc \ud074\ub9bd\ubcf4\ub4dc \uc5c6\uc774 enterPastePreview \u2192 false + \uc548\ub0b4 \ud1a0\uc2a4\ud2b8"
+  },
+  {
+    "file": "test/storeFlushShaEvidence.test.ts",
+    "test": "Project store flush sha256 evidence \ubcc0\uacbd \uc5c6\uc74c fast path \ub294 saved(sha256 \uc5c6\uc74c) \u2014 sha256 \uc740 \uc120\ud0dd \ud544\ub4dc \uacc4\uc57d \uadf8\ub300\ub85c"
+  },
+  {
+    "file": "test/storeFlushShaEvidence.test.ts",
+    "test": "Project store flush sha256 evidence \uc804\uccb4 \uc800\uc7a5 \uacbd\ub85c: saveProjectToSupabase \uc758 sha256 \uc774 flush \uacb0\uacfc(saved.sha256)\ub85c \ud758\ub7ec\ub4e0\ub2e4"
+  },
+  {
+    "file": "test/storePersistence.test.ts",
+    "test": "Project store remote persistence does not apply stale map-patch response over newer local paint"
+  },
+  {
+    "file": "test/storePersistence.test.ts",
+    "test": "Project store remote persistence keeps local map paint when remote save finishes with a stale snapshot"
+  },
+  {
+    "file": "test/storePersistence.test.ts",
+    "test": "Project store remote persistence marks the project loaded when reconnect recovers a blocked first boot"
+  },
+  {
+    "file": "test/storePersistence.test.ts",
+    "test": "Project store remote persistence requires DB configuration before opening a project"
+  },
+  {
+    "file": "test/toolCatalog.test.ts",
+    "test": "toolCatalog docs/tool-catalog.md\uac00 \ub808\uc9c0\uc2a4\ud2b8\ub9ac\uc640 \ub3d9\uae30\ud654\ub418\uc5b4 \uc788\ub2e4"
+  },
+  {
+    "file": "test/transactionalNewRemoteProject.test.ts",
+    "test": "transactional new remote project switch BREAK: save failure leaves the open project, drafts, config, and URL untouched"
+  },
+  {
+    "file": "test/transactionalNewRemoteProject.test.ts",
+    "test": "transactional new remote project switch commits locally only after flush, explicit-target save, and matching reload"
+  },
+  {
+    "file": "test/walkthroughRunner.test.ts",
+    "test": "walkthroughRunner \u2014 \uc7bf\ubd88\uc758 \uc720\uc0b0 \uc644\uc8fc 3\ud018\uc2a4\ud2b8 + \uc5d4\ub529\uc744 \ud5e4\ub4dc\ub9ac\uc2a4\ub85c \uc644\uc8fc\ud55c\ub2e4"
+  },
+  {
+    "file": "test/walkthroughRunner.test.ts",
+    "test": "walkthroughRunner \u2014 \uc7bf\ubd88\uc758 \uc720\uc0b0 \uc644\uc8fc kind \ubaa8\uc591\uacfc do/expect \ud63c\ud569 \uc624\ub958\ub97c \ud55c \uc2a4\ud15d\ub3c4 \uc2e4\ud589\ud558\uae30 \uc804\uc5d0 \uac70\ubd80\ud55c\ub2e4"
+  }
+]
