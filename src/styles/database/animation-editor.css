@@ -103,7 +103,7 @@
 .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-modal-body .animation-detail-form .db-animation-studio-editor :is(button, input, select, h4) {
   font-size: 13px;
 }
-.database-modal-backdrop .database-modal-window .animation-detail-form button:not(.db-battle-studio-nav-button) {
+.database-modal-backdrop .database-modal-window .animation-detail-form button:not(.db-battle-studio-nav-button, .db-number-stepper-button) {
   background: var(--db-studio-surface);
   border: 1px solid var(--db-studio-border-strong);
   border-radius: 8px;

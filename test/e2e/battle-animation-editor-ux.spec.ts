@@ -7,15 +7,13 @@ const sizes = [{ width: 1024, height: 768 }, { width: 1280, height: 800 }, { wid
 test.setTimeout(240_000);
 
 async function openAnimations(page: Page): Promise<void> {
-  await page.route("**/*", async (route) => {
+  await page.route("https://*.supabase.co/**", async (route) => {
     const request = route.request();
     const url = new URL(request.url());
     if (url.hostname.endsWith("supabase.co") && !["GET", "HEAD", "OPTIONS"].includes(request.method())) {
       throw new Error(`Unexpected remote write: ${request.method()} ${url.origin}`);
     }
-    if (url.port === (process.env.DEV_SERVER_PORT ?? "9173") && request.method() === "GET") {
-      await route.fulfill({ response: await route.fetch({ maxRetries: 2 }) });
-    } else await route.continue();
+    await route.continue();
   });
   await page.goto("/?freshProject=1", { waitUntil: "domcontentloaded" });
   await expect(page.getByTestId("toolbar-database")).toBeVisible({ timeout: 60_000 });
@@ -146,5 +144,30 @@ test("preview-first graphic, transport, authoring and desktop geometry", async (
   await expect(page.getByTestId("db-animation-cell-x-0")).toHaveValue("23");
   await expect(page.getByTestId("db-animation-cell-x-1")).toBeVisible();
   await page.screenshot({ path: resolve(evidence, "p2-authoring.png") });
+  // At 1024px the shared narrow-container rule intentionally hides steppers.
+  for (const size of sizes.slice(1)) {
+    await page.setViewportSize(size);
+    await test.step(`uncompressed, working sheet steppers at ${size.width}px`, async () => {
+      for (const field of ["frame-width", "frame-height", "columns"]) {
+        for (const direction of ["inc", "dec"]) {
+          const button = page.getByTestId(`db-field-animation-${field}-${direction}`);
+          await button.scrollIntoViewIfNeeded();
+          const icon = button.locator("svg");
+          await expect(icon).toBeVisible();
+          await expect(icon).toBeInViewport();
+          expect.soft(await icon.evaluate((node) => node.getBoundingClientRect().width), `${field}-${direction} at ${size.width}px`).toBe(14);
+        }
+      }
+      const columns = page.getByTestId("db-field-animation-columns");
+      const initialColumns = Number(await columns.inputValue());
+      for (const [direction, expected] of [["inc", initialColumns + 1], ["dec", initialColumns]] as const) {
+        await page.getByTestId(`db-field-animation-columns-${direction}`).click();
+        await expect(columns).toHaveValue(String(expected));
+        // numberField dispatches input and updates the real store synchronously.
+        const storedColumns = await page.evaluate<number>(`import('/src/project/store.ts').then(({store}) => store.getCurrent().database.battleAnimations[0].sheet.columns)`);
+        expect(storedColumns).toBe(expected);
+      }
+    });
+  }
   await writeFile(resolve(evidence, "p2-browser-data.json"), JSON.stringify({ measurements, motion: { before, after, stopped }, focus, initial, selected, storedX }, null, 2));
 });
