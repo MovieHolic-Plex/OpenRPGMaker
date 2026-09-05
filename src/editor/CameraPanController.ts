@@ -107,7 +107,8 @@ export class CameraPanController {
   }
 
   handleSpaceKeyUp(event: KeyboardEvent): boolean {
-    if (event.code !== "Space") return false;
+    // Modal buttons own their Space release when the canvas never took keydown.
+    if (event.code !== "Space" || !this.spacePanActive) return false;
     event.preventDefault();
     this.spacePanActive = false;
     this.stop();

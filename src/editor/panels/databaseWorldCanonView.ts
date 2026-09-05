@@ -1,7 +1,8 @@
-import { segmentedControl, textControl } from "@/editor/panels/databaseControls";
+import { segmentedControl } from "@/editor/panels/databaseControls";
 import {
   absenceEditor,
   bodyField,
+  boundedCanonText,
   lawRow,
   toneRow,
   WORLD_CANON_TONE_LABELS,
@@ -14,6 +15,7 @@ import {
   isWorldCanonStatus,
   resolveWorldCanon,
   WORLD_CANON_LAW_KINDS,
+  WORLD_CANON_BOUNDS,
   type ResolvedWorldCanon,
 } from "@/project/world/canon";
 import { el } from "@/util/dom";
@@ -56,8 +58,8 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
             testid: "db-world-canon-frame",
             children: [
               toneRow(canon.tones, rerender),
-              textControl("시대", canon.era, (value) => writeCanon({ era: value }, "db-world-canon-era"), "db-world-canon-era"),
-              textControl("기술 천장", canon.techCeiling, (value) => writeCanon({ techCeiling: value }, "db-world-canon-tech"), "db-world-canon-tech"),
+              boundedCanonText("시대", canon.era, (value) => writeCanon({ era: value }, "db-world-canon-era"), "db-world-canon-era", WORLD_CANON_BOUNDS.era),
+              boundedCanonText("기술 천장", canon.techCeiling, (value) => writeCanon({ techCeiling: value }, "db-world-canon-tech"), "db-world-canon-tech", WORLD_CANON_BOUNDS.techCeiling),
               absenceEditor(canon.absences, rerender),
             ],
           }),
@@ -65,7 +67,7 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
             title: "법칙",
             hint: "힘 · 신 · 죽음 · 돈",
             testid: "db-world-canon-laws",
-            children: WORLD_CANON_LAW_KINDS.map((kind) => lawRow(kind, canon.laws[kind], canon.laws, rerender)),
+            children: WORLD_CANON_LAW_KINDS.map((kind) => lawRow(kind, canon.laws[kind], rerender)),
           }),
           bodyCard,
         ],
@@ -88,6 +90,8 @@ function identityCard(canon: ResolvedWorldCanon): HTMLElement {
       type: "text",
       placeholder: "이 세계의 이름",
       "aria-label": "세계 이름",
+      maxlength: String(WORLD_CANON_BOUNDS.name),
+      title: `세계 이름: ${WORLD_CANON_BOUNDS.name}자까지`,
     },
     value: canon.name,
     dataset: { testid: "db-world-canon-name" },
@@ -99,6 +103,8 @@ function identityCard(canon: ResolvedWorldCanon): HTMLElement {
       rows: "2",
       placeholder: "한 줄로, 이 세계는 어떤 곳인가",
       "aria-label": "한 줄 전제",
+      maxlength: String(WORLD_CANON_BOUNDS.premise),
+      title: `한 줄 전제: ${WORLD_CANON_BOUNDS.premise}자까지`,
     },
     value: canon.premise,
     dataset: { testid: "db-world-canon-premise" },

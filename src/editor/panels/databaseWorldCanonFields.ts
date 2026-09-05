@@ -9,7 +9,6 @@ import {
   WORLD_CANON_BOUNDS,
   WORLD_CANON_TONES,
   type ResolvedWorldCanon,
-  type ResolvedWorldCanonLaws,
   type WorldCanonLawKind,
   type WorldCanonLawState,
   type WorldCanonTone,
@@ -41,14 +40,15 @@ const LAW_HINTS: Record<WorldCanonLawKind, string> = {
   money: "무엇이 돈인지",
 };
 
-export function writeCanon(patch: Partial<ResolvedWorldCanon>, coalesceKey?: string): void {
+export function writeCanon(patch: Partial<ResolvedWorldCanon> | ((current: ResolvedWorldCanon) => Partial<ResolvedWorldCanon>), coalesceKey?: string): void {
   if (coalesceKey) recordCoalescedSnapshot(coalesceKey, "세계관 편집");
   store.update((draft) => {
     const current = resolveWorldCanon(draft.worldCanon);
+    const changes = typeof patch === "function" ? patch(current) : patch;
     const next = compactWorldCanon({
       ...current,
-      ...patch,
-      laws: patch.laws ?? current.laws,
+      ...changes,
+      laws: changes.laws ?? current.laws,
     });
     if (next === undefined) delete draft.worldCanon;
     else draft.worldCanon = next;
@@ -115,7 +115,7 @@ export function absenceEditor(absences: readonly string[], rerender: () => void)
     rerender();
   };
   input.addEventListener("keydown", (event) => {
-    if (event.key !== "Enter") return;
+    if (event.key !== "Enter" || event.isComposing) return;
     event.preventDefault();
     add();
   });
@@ -168,7 +168,6 @@ export function absenceEditor(absences: readonly string[], rerender: () => void)
 export function lawRow(
   kind: WorldCanonLawKind,
   law: WorldCanonLawState,
-  laws: ResolvedWorldCanonLaws,
   rerender: () => void,
 ): HTMLElement {
   return el("div", {
@@ -178,22 +177,24 @@ export function lawRow(
       segmentedControl(
         LAW_LABELS[kind],
         `db-world-canon-law-${kind}-present`,
-        law.present ? "yes" : "no",
+        law.present === undefined ? "unset" : law.present ? "yes" : "no",
         [
+          { id: "unset", name: "미정" },
           { id: "no", name: "없음" },
           { id: "yes", name: "있음" },
         ],
         (value) => {
           recordProjectSnapshot("세계관 법칙");
-          writeCanon({ laws: { ...laws, [kind]: { ...law, present: value === "yes" } } });
+          writeCanon((current) => ({ laws: { ...current.laws, [kind]: { ...current.laws[kind], present: value === "unset" ? undefined : value === "yes" } } }));
           rerender();
         },
       ),
-      textControl(
+      boundedCanonText(
         LAW_HINTS[kind],
         law.note,
-        (note) => writeCanon({ laws: { ...laws, [kind]: { ...law, note } } }, `db-world-canon-law-${kind}-note`),
+        (note) => writeCanon((current) => ({ laws: { ...current.laws, [kind]: { ...current.laws[kind], note } } }), `db-world-canon-law-${kind}-note`),
         `db-world-canon-law-${kind}-note`,
+        WORLD_CANON_BOUNDS.lawNote,
       ),
     ],
   });
@@ -209,6 +210,8 @@ export function bodyField(body: string, onBodyInput?: () => void): HTMLElement {
     class: "db-world-canon-body",
     attrs: {
       rows: "14",
+      maxlength: String(WORLD_CANON_BOUNDS.body),
+      title: `본문은 ${WORLD_CANON_BOUNDS.body.toLocaleString()}자까지 적을 수 있습니다`,
       placeholder: "이 세계의 이야기를 자유롭게 적으세요. 역사, 땅, 문화, 숨겨 둔 것.",
       "aria-label": "이 세계 본문",
     },
@@ -260,4 +263,12 @@ export function bodyField(body: string, onBodyInput?: () => void): HTMLElement {
   if (canonPreviewOpen) showPreview();
   wrap.append(area, preview, pane);
   return wrap;
+}
+
+export function boundedCanonText(label: string, value: string, onInput: (value: string) => void, testid: string, max: number): HTMLElement {
+  const control = textControl(label, value, onInput, testid);
+  const input = control.querySelector("input");
+  input?.setAttribute("maxlength", String(max));
+  input?.setAttribute("title", `${label}: ${max}자까지`);
+  return control;
 }

@@ -151,7 +151,7 @@ export function collectMapInspection(
 }
 
 /** 한 이벤트를 어느 칸에 넣을지 — 앞에 오는 것이 이긴다. 문이 달린 상점은 문으로 센다. */
-function classifyEvent(event: GameEvent): keyof Omit<MapEventBreakdown, "total"> {
+export function classifyMapEvent(event: GameEvent): keyof Omit<MapEventBreakdown, "total"> {
   const kinds = new Set<string>();
   for (const command of collectCommands([event])) kinds.add(command.kind);
   if (kinds.has("transfer")) return "door";
@@ -168,7 +168,7 @@ function breakdownEvents(events: readonly GameEvent[]): MapEventBreakdown {
   let npc = 0;
   let other = 0;
   for (const event of events) {
-    const bucket = classifyEvent(event);
+    const bucket = classifyMapEvent(event);
     if (bucket === "door") door += 1;
     else if (bucket === "shop") shop += 1;
     else if (bucket === "chest") chest += 1;

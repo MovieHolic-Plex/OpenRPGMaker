@@ -8,11 +8,13 @@ import {
   refreshDatabasePanel,
   renderDatabasePanel,
   setDatabaseActiveTab,
+  switchDatabaseActiveTab,
   subscribeDatabaseActiveTab,
   type DatabaseTab,
 } from "@/editor/panels/database";
 import { createDatabaseAiBar, type DatabaseAiRecordRef } from "@/editor/panels/databaseAiBar";
 import { createDatabaseModalDirtySession } from "@/editor/panels/databaseModalDirtySession";
+import { worldCodexSessionFor } from "./worldCodexSession";
 import { applyDatabaseChanges } from "@/editor/panels/databaseModalPersistence";
 import { startModalDrag, stopModalDrag } from "@/editor/panels/databaseModalWindowDrag";
 import { resetDatabaseRecordViewSession } from "@/editor/panels/databaseRecordViews";
@@ -76,6 +78,7 @@ function writeCrumb(crumb: HTMLElement, tab: DatabaseTab): void {
 }
 
 type ActiveDatabaseModalHandle = {
+  readonly navigate: (tab: DatabaseTab) => void;
   readonly close: () => void;
   readonly requestClose: (attempt: EditorModalCloseAttempt) => void;
 };
@@ -103,8 +106,11 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
   // 목록 제목과 탭 검색을 가리는 사고가 있었다 — 모달이 열리면 화면을 모달에게 넘긴다.
   // 본 것으로 기록하지는 않는다(welcome intent 와 같은 정책).
   dismissCoachMarks();
-  // 재오픈 경로: DOM 만 뜯어내면 이전 인스턴스의 document keydown 리스너 2개가 남는다
-  // (M11 과 동일 원리) — 반드시 기존 인스턴스의 정식 close() 를 경유해 정리한다.
+  // Reuse the open session for cross-tab links; rebuilding it would discard staged cards.
+  if (activeModal && document.querySelector("[data-testid='database-modal']")) {
+    if (initialTab) activeModal.navigate(initialTab);
+    return;
+  }
   activeModal?.close();
   // close() 가 backdrop 을 지우지만, 혹시 핸들 없이 남은 고아 DOM 도 방어적으로 제거.
   document.querySelector("[data-testid='database-modal']")?.remove();
@@ -115,6 +121,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
   let dockMode = false;
 
   const body = el("div", { class: "database-modal-body" });
+  const codexSession = worldCodexSessionFor(body);
   const maximizeButton = el("button", {
     class: "database-modal-maximize",
     attrs: { type: "button", title: "전체 화면", "aria-label": "데이터베이스 전체 화면" },
@@ -263,6 +270,9 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
     else if (!isEditingInsideModalBody()) flushPendingRefresh();
   });
   const unsubscribeStore = store.subscribe((_project, change) => {
+    // A project switch ends this modal's snapshot/draft ownership. Never allow
+    // its Save or Discard actions to write the previous project into the new one.
+    if (change.projectSwitch) { close(); return; }
     if (change.scope !== "database" && change.scope !== "project") return;
     if (isEditingInsideModalBody() || withinInteractionGrace()) {
       pendingRefresh = true;
@@ -274,6 +284,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
   const close = (): void => {
     modalClosed = true;
     if (graceFlushTimer !== null) clearTimeout(graceFlushTimer);
+    unsubscribeCodex();
     unsubscribeStore(); // 구독 해제 — 리스너 누수 금지(1파 M11 교훈).
     unsubscribeActiveTab();
     aiBar.dispose();
@@ -286,6 +297,13 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
   };
   const hideDirtyPrompt = (): void => dirtyPrompt.replaceChildren();
   const saveAndMarkClean = async (): Promise<boolean> => {
+    if (!codexSession.commit()) {
+      footerStatus.textContent = codexSession.state.editError || "설정집 카드 내용을 확인하세요.";
+      switchDatabaseActiveTab("worldCodex", body);
+      refreshDatabasePanel(body);
+      return false;
+    }
+    refreshDatabasePanel(body);
     footerStatus.textContent = "변경 내용을 저장하는 중입니다.";
     const saved = await applyDatabaseChanges(footerStatus);
     if (saved) dirtySession.markClean();
@@ -299,6 +317,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
         });
         return;
       case EDITOR_MODAL_DIRTY_DECISION.Discard:
+        codexSession.discard();
         dirtySession.discard();
         close();
         return;
@@ -313,16 +332,16 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
     return EDITOR_MODAL_DIRTY_DECISION.KeepEditing;
   };
   const controller = createEditorModalDirtyCloseController({
-    isDirty: dirtySession.isDirty,
+    isDirty: () => codexSession.isDirty() || dirtySession.isDirty(),
     promptUnsavedChanges: showDirtyPrompt,
     save: () => {
       void saveAndMarkClean();
     },
-    discard: dirtySession.discard,
+    discard: () => { codexSession.discard(); dirtySession.discard(); },
     close,
   });
 
-  activeModal = { close, requestClose: controller.requestClose };
+  activeModal = { close, requestClose: controller.requestClose, navigate: (tab) => switchDatabaseActiveTab(tab, body) };
   controller.bindCloseButton(closeButton);
   // 도크 모드에서는 최대화·드래그를 비활성, 바깥 클릭 닫기도 끈다(맵 조작이 곧 바깥 클릭).
   maximizeButton.addEventListener("click", () => {
@@ -344,6 +363,14 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
     attrs: { "aria-live": "polite" },
     dataset: { testid: "db-footer-status" },
     text: databaseFooterStatusText(),
+  });
+  let codexDraftPending = codexSession.isDirty();
+  const unsubscribeCodex = codexSession.subscribe(() => {
+    const pending = codexSession.isDirty();
+    if (pending) footerStatus.textContent = "설정집 카드 저장 전";
+    else if (codexDraftPending) footerStatus.textContent = databaseFooterStatusText();
+    // A queued tab refresh must not replace the result of an async save.
+    codexDraftPending = pending;
   });
   const dirtyPrompt = el("div", {
     class: "database-modal-dirty-prompt-region",
