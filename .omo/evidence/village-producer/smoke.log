@@ -1,0 +1,150 @@
+4:43:32 AM [vite] (client) Re-optimizing dependencies because vite config has changed
+[
+  {
+    "mapId": "map_existing",
+    "width": 50,
+    "height": 50,
+    "ok": true,
+    "houses": 4,
+    "protectedCells": 191,
+    "exactLayersAndStacksRetained": true,
+    "jsonReloadAndRepairRetained": true,
+    "formerConflict": {
+      "x": 28,
+      "y": 8,
+      "lower": 76,
+      "upper": -1
+    },
+    "construction": {
+      "requestedEntrypoint": "author_village",
+      "canonicalRoute": "author_village",
+      "selectedImplementation": "buildVillageDomain",
+      "routeChanges": [],
+      "activityPersistence": "not-recorded",
+      "projectPersistence": "not-requested",
+      "target": {
+        "kind": "new",
+        "mapId": "map_existing"
+      },
+      "counts": {
+        "requested": 4,
+        "actual": 4
+      },
+      "diff": {
+        "tilesChanged": 0,
+        "mapPropertiesChanged": 1,
+        "eventsAdded": 6,
+        "eventsModified": 0,
+        "eventsRemoved": 0,
+        "mapsAdded": 1,
+        "mapsRemoved": 0,
+        "dbRecordsChanged": 0,
+        "tilesetsChanged": 1,
+        "switchesAdded": 0,
+        "variablesAdded": 0,
+        "worldEntitiesAdded": 0,
+        "worldEntitiesModified": 0,
+        "palettePresetsAdded": 0,
+        "palettePresetsModified": 0,
+        "endingsChanged": 0,
+        "sessionChanged": false,
+        "systemChanged": false
+      },
+      "warnings": [
+        "계획/의도 없이 기본 레시피로 시공했다. plan_village → build_village({ planId }) 또는 theme·housePlans·npcs를 넘겨라.",
+        "상점가 지정: 1:shop, 3:shop, 2:inn (광장 근접순)",
+        "우편함를 1개 요청했지만 영역 (1,45) 10×3 에 한 개도 놓지 못했습니다 — 상위 레이어 소품/키큰 풀·물·길·통행 불가 칸이 영역을 덮고 있습니다. tile_erase 로 상위 레이어를 비우고 다시 시도하거나, 다른 영역을 쓰세요.",
+        "라벨/설명이 \"꽃\" 인 타일을 찾지 못했습니다. tile_query ask:\"labels\" 로 후보를 확인하세요. tile_query ask:\"labels\" 로 조회 — 다시 보낼 형식 예시: {\"mapId\":\"map_1\",\"area\":{\"x\":2,\"y\":2,\"w\":18,\"h\":12},\"material\":\"침엽수\",\"count\":8,\"naturalness\":0.6}",
+        "장작 더미를 1개 요청했지만 영역 (19,45) 7×3 에 한 개도 놓지 못했습니다 — 상위 레이어 소품/키큰 풀·물·길·통행 불가 칸이 영역을 덮고 있습니다. tile_erase 로 상위 레이어를 비우고 다시 시도하거나, 다른 영역을 쓰세요.",
+        "경고: 19개 칸이 통행 불가가 되었습니다(map_existing).",
+        "시간 시스템이 꺼져 있어 이 시간표는 실행되지 않습니다 — NPC 가 제자리에 머무릅니다. system.timeSystem.enabled 를 켜면 시간표대로 이동합니다.",
+        "NPC '주민 5' 위치 자동 조정: (24, 25) → (23, 25)",
+        "NPC '주민 6' 위치 자동 조정: (26, 25) → (26, 24)",
+        "주민 시간표를 저장했지만 시간 시스템이 꺼져 있어 실행되지 않습니다 — 주민이 제자리에 머무릅니다. system.timeSystem.enabled 를 켜면 시간표대로 이동합니다.",
+        "[vperf] houses=0.0s roads=0.1s terrain=0.0s decor=1.6s landscape=0.0s interiors=0.0s audit=0.0s",
+        "대사 없는 NPC: 6명"
+      ],
+      "executionOk": true,
+      "applied": true,
+      "outcome": "applied"
+    }
+  },
+  {
+    "mapId": "map_winter_city",
+    "width": 100,
+    "height": 100,
+    "ok": true,
+    "houses": 20,
+    "protectedCells": 1026,
+    "exactLayersAndStacksRetained": true,
+    "jsonReloadAndRepairRetained": true,
+    "formerConflict": {
+      "x": 72,
+      "y": 42,
+      "lower": 76,
+      "upper": -1
+    },
+    "construction": {
+      "requestedEntrypoint": "author_village",
+      "canonicalRoute": "author_village",
+      "selectedImplementation": "buildVillageDomain",
+      "routeChanges": [],
+      "activityPersistence": "not-recorded",
+      "projectPersistence": "not-requested",
+      "target": {
+        "kind": "new",
+        "mapId": "map_winter_city"
+      },
+      "counts": {
+        "requested": 20,
+        "actual": 20
+      },
+      "diff": {
+        "tilesChanged": 0,
+        "mapPropertiesChanged": 1,
+        "eventsAdded": 50,
+        "eventsModified": 0,
+        "eventsRemoved": 0,
+        "mapsAdded": 1,
+        "mapsRemoved": 0,
+        "dbRecordsChanged": 0,
+        "tilesetsChanged": 1,
+        "switchesAdded": 0,
+        "variablesAdded": 0,
+        "worldEntitiesAdded": 0,
+        "worldEntitiesModified": 0,
+        "palettePresetsAdded": 0,
+        "palettePresetsModified": 0,
+        "endingsChanged": 0,
+        "sessionChanged": false,
+        "systemChanged": false
+      },
+      "warnings": [
+        "계획/의도 없이 기본 레시피로 시공했다. plan_village → build_village({ planId }) 또는 theme·housePlans·npcs를 넘겨라.",
+        "상점가 지정: 9:shop, 2:shop, 3:inn (광장 근접순)",
+        "라벨/설명이 \"꽃\" 인 타일을 찾지 못했습니다. tile_query ask:\"labels\" 로 후보를 확인하세요. tile_query ask:\"labels\" 로 조회 — 다시 보낼 형식 예시: {\"mapId\":\"map_1\",\"area\":{\"x\":2,\"y\":2,\"w\":18,\"h\":12},\"material\":\"침엽수\",\"count\":8,\"naturalness\":0.6}",
+        "나무 상자를 1개 요청했지만 영역 (60,53) 10×3 에 한 개도 놓지 못했습니다 — 상위 레이어 소품/키큰 풀·물·길·통행 불가 칸이 영역을 덮고 있습니다. tile_erase 로 상위 레이어를 비우고 다시 시도하거나, 다른 영역을 쓰세요.",
+        "나무 상자를 1개 요청했지만 영역 (27,49) 8×3 에 한 개도 놓지 못했습니다 — 상위 레이어 소품/키큰 풀·물·길·통행 불가 칸이 영역을 덮고 있습니다. tile_erase 로 상위 레이어를 비우고 다시 시도하거나, 다른 영역을 쓰세요.",
+        "팻말를 1개 요청했지만 영역 (68,78) 8×3 에 한 개도 놓지 못했습니다 — 상위 레이어 소품/키큰 풀·물·길·통행 불가 칸이 영역을 덮고 있습니다. tile_erase 로 상위 레이어를 비우고 다시 시도하거나, 다른 영역을 쓰세요.",
+        "술통를 1개 요청했지만 영역 (27,32) 10×3 에 한 개도 놓지 못했습니다 — 상위 레이어 소품/키큰 풀·물·길·통행 불가 칸이 영역을 덮고 있습니다. tile_erase 로 상위 레이어를 비우고 다시 시도하거나, 다른 영역을 쓰세요.",
+        "화분를 1개 요청했지만 영역 (45,41) 8×3 에 한 개도 놓지 못했습니다 — 상위 레이어 소품/키큰 풀·물·길·통행 불가 칸이 영역을 덮고 있습니다. tile_erase 로 상위 레이어를 비우고 다시 시도하거나, 다른 영역을 쓰세요.",
+        "우편함를 1개 요청했지만 영역 (60,30) 10×3 에 한 개도 놓지 못했습니다 — 상위 레이어 소품/키큰 풀·물·길·통행 불가 칸이 영역을 덮고 있습니다. tile_erase 로 상위 레이어를 비우고 다시 시도하거나, 다른 영역을 쓰세요.",
+        "나무 상자를 1개 요청했지만 영역 (70,64) 6×3 에 한 개도 놓지 못했습니다 — 상위 레이어 소품/키큰 풀·물·길·통행 불가 칸이 영역을 덮고 있습니다. tile_erase 로 상위 레이어를 비우고 다시 시도하거나, 다른 영역을 쓰세요.",
+        "목업 확인 대기 재료: 팻말 — 적용하면 이 재료를 합의합니다",
+        "술통를 1개 요청했지만 영역 (61,45) 7×3 에 한 개도 놓지 못했습니다 — 상위 레이어 소품/키큰 풀·물·길·통행 불가 칸이 영역을 덮고 있습니다. tile_erase 로 상위 레이어를 비우고 다시 시도하거나, 다른 영역을 쓰세요.",
+        "화분를 1개 요청했지만 영역 (70,34) 8×3 에 한 개도 놓지 못했습니다 — 상위 레이어 소품/키큰 풀·물·길·통행 불가 칸이 영역을 덮고 있습니다. tile_erase 로 상위 레이어를 비우고 다시 시도하거나, 다른 영역을 쓰세요.",
+        "경고: 81개 칸이 통행 불가가 되었습니다(map_winter_city).",
+        "조경: 호수 잔교 3칸(판자 199)",
+        "조경 지구 453칸",
+        "배치 정리: 물 위 3칸·통행불가 위 0칸 소품/수관 제거",
+        "시간 시스템이 꺼져 있어 이 시간표는 실행되지 않습니다 — NPC 가 제자리에 머무릅니다. system.timeSystem.enabled 를 켜면 시간표대로 이동합니다.",
+        "주민 시간표를 저장했지만 시간 시스템이 꺼져 있어 실행되지 않습니다 — 주민이 제자리에 머무릅니다. system.timeSystem.enabled 를 켜면 시간표대로 이동합니다.",
+        "[vperf] houses=0.0s roads=0.1s terrain=0.0s decor=20.6s landscape=0.0s interiors=0.0s audit=0.1s",
+        "대사 없는 NPC: 50명"
+      ],
+      "executionOk": true,
+      "applied": true,
+      "outcome": "applied"
+    }
+  }
+]
