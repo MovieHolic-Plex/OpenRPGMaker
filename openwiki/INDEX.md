@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **44쪽 / 1475KB / 약 418,067 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **44쪽 / 1476KB / 약 418,545 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -17,7 +17,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 |---|---|---|---|---|
 | `openwiki/editor-ai-panel.md` | 253KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 446 | ~73,568 |
 | `openwiki/editor-ai-tools.md` | 76KB | 66KB ⚠상한 초과 — 절을 더 쪼개라 | 191 | ~21,880 |
-| `openwiki/editor-database.md` | 183KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 886 | ~52,680 |
+| `openwiki/editor-database.md` | 184KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 891 | ~53,036 |
 | `openwiki/editor-event-authoring.md` | 117KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 557 | ~34,046 |
 | `openwiki/editor-pre-edit-routing.md` | 69KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 197 | ~19,760 |
 | `openwiki/runtime-battle.md` | 118KB | 31KB | 358 | ~33,888 |
@@ -243,7 +243,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L173` 「이 세계」 캐논은 문장 3채널에 강제된다 (2026-09-04)
 - `L188` 마을 설계서 (2026-09-05)
 
-### `openwiki/editor-database.md` — 183KB · 886줄 · ~52,680 토큰 · 통째읽기 잘림 · 깨진 줄 7
+### `openwiki/editor-database.md` — 184KB · 891줄 · ~53,036 토큰 · 통째읽기 잘림 · 깨진 줄 7
 
 - `L3` 몬스터 작업실 — 미리보기 · 행동 · 속성 (2026-09-05)
 - `L28` 몬스터 그룹 저작 신뢰성 (2026-09-05)
@@ -286,6 +286,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L871` 미회수 편집 후속 통합 (2026-09-05)
 - `L875` 마을 설계서 (2026-09-05)
 - `L880` 구조물 증분 메타 정정 (2026-09-05)
+- `L888` 개념 회수 UI 직접 렌더 QA (2026-09-05)
 
 ### `openwiki/editor-event-authoring.md` — 117KB · 557줄 · ~34,046 토큰 · 통째읽기 잘림 · 깨진 줄 16
 
@@ -638,7 +639,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L34` 현재 경계
 - `L40` 검증
 
-### `openwiki/world-generation-rules.md` — 8KB · 105줄 · ~2,278 토큰
+### `openwiki/world-generation-rules.md` — 8KB · 107줄 · ~2,400 토큰
 
 - `L7` 소유 경계
 - `L20` 절대 하지 말 것 — 미리보기 전용 계산식

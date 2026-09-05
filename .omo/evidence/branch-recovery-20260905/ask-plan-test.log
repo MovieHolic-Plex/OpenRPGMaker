@@ -1,0 +1,14 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiAskPendingPlan.test.ts --maxWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-recover-main-20260905
+
+ ✓ test/aiAskPendingPlan.test.ts (1 test) 249ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  17:14:57
+   Duration  33.76s (transform 22.41s, setup 0ms, collect 32.02s, tests 249ms, environment 0ms, prepare 327ms)
+

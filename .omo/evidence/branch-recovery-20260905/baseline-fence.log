@@ -1,0 +1,54 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/layerRouting.m1.test.ts --maxWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-recover-baseline-20260905
+
+ ❯ test/layerRouting.m1.test.ts (17 tests | 1 failed) 7488ms
+   ✓ 레이어 독립성 — 한 레이어 편집이 다른 레이어를 침범하지 않는다 > lower에 페인트 후 upper를 페인트해도 lower는 유지된다 235ms
+   ✓ 레이어 독립성 — 한 레이어 편집이 다른 레이어를 침범하지 않는다 > 하위 지형 페인트는 기존 상위 오브젝트를 절대 덮지 않는다  335ms
+   ✓ 레이어 독립성 — 한 레이어 편집이 다른 레이어를 침범하지 않는다 > 하위 지형 페인트가 이웃 상위 수관을 재작성하지 않는다  1068ms
+   ✓ 레이어 독립성 — 한 레이어 편집이 다른 레이어를 침범하지 않는다 > upper를 지워도 lower는 그대로다  717ms
+   ✓ 레이어 독립성 — 한 레이어 편집이 다른 레이어를 침범하지 않는다 > 두 레이어에 서로 다른 타일이 공존할 수 있다  606ms
+   ✓ eraseVisibleTile — 레이어별 지우개 범위 > upper가 비어 있어도 lower는 보존한다  615ms
+   ✓ eraseVisibleTile — 레이어별 지우개 범위 > upper에 내용이 있으면 upper만 지우고 lower는 보존한다  1055ms
+   ✓ eraseVisibleTile — 레이어별 지우개 범위 > lower 선호 + lower가 점유면 기존과 동일하게 lower를 지운다  324ms
+   ✓ eraseVisibleTile — 레이어별 지우개 범위 > 수관(upper)을 지우면 밑동(lower)까지 같이 지워 repair 복구를 막는다 297ms
+   ✓ eraseVisibleTile — 레이어별 지우개 범위 > 밑동(lower)을 지우면 수관(upper)도 같이 지운다 180ms
+   ✓ eraseVisibleTile — 레이어별 지우개 범위 > 활엽수 2×2 수관 한쪽을 지우면 2×2 전체가 비워진다  462ms
+   ✓ editorState 레이어 전환 > layer를 upper로 전환해도 lower 데이터에 영향을 주지 않는다 242ms
+   ✓ editorState 레이어 전환 > event 레이어로 전환해도 lower/upper 타일은 보존된다 124ms
+   ✓ effectiveLayer — harness 라우팅 동작 > WATER(lower 고정 타일)를 upper로 요청해도 lower에 배치된다 102ms
+   ✓ effectiveLayer — harness 라우팅 동작 > FLOWERS(투명 칩)는 하위 요청에도 상위로 라우팅되어 지면을 보존한다 143ms
+   ✓ 소품(울타리)이 하위 지면을 지우지 않는다 > 잔디 위에 울타리를 칠해도 잔디(lower)가 보존된다 243ms
+   × 소품(울타리)이 하위 지면을 지우지 않는다 > 모든 울타리 타일이 지면을 보존한다 733ms
+     → expected 243 to be 303 // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/layerRouting.m1.test.ts > 소품(울타리)이 하위 지면을 지우지 않는다 > 모든 울타리 타일이 지면을 보존한다
+AssertionError: expected 243 to be 303 // Object.is equality
+
+- Expected
++ Received
+
+- 303
++ 243
+
+ ❯ test/layerRouting.m1.test.ts:260:34
+    258|       paintTile(mapId, "lower", x, 8, fence);
+    259|       const map = currentMap();
+    260|       expect(lowerAt(map, x, 8)).toBe(TILE.DARK_GRASS);
+       |                                  ^
+    261|       expect(upperAt(map, x, 8)).toBe(fence);
+    262|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 16 passed (17)
+   Start at  17:12:10
+   Duration  29.18s (transform 13.85s, setup 0ms, collect 19.90s, tests 7.49s, environment 0ms, prepare 467ms)
+
