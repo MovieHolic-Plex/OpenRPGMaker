@@ -1,3 +1,4 @@
+import { adventureCompletionProblems, ADVENTURE_AUTHORING_GUIDE, type AdventureRequirements } from "./adventureCompletion";
 // ai/assistantSession.ts
 // 어시스턴트 세션: user msg → LLM → tool_calls → runTool(dryRun 누적) → tool 메시지 → … → 최종 응답.
 // - 쓰기 툴은 로컬 draft(ctx.project)에 누적되어 연쇄 툴콜이 이전 결과를 본다(store는 건드리지 않음).
@@ -863,6 +864,10 @@ export class AssistantSession {
   private currentTurnRequestText = "";
   /** 이번 턴의 사용자 발화만(가이드·footer 없음) — 툴 이름 언급·능력 승격·의도 선언의 입력. */
   private currentTurnInstruction = "";
+  private adventureRequirements: AdventureRequirements | undefined;
+  private adventureRepairAttempts = 0;
+  private readonly adventureInspectedMaps = new Map<string, Set<number>>();
+  private readonly adventureItemIds = new Set<string>();
   /** 이번 턴의 의도 선언. 턴 시작에 한 번 정해지고 라우팅(되묻기·플래너·툴 노출·대상 맵)이 이것만 읽는다. */
   private turnIntent: IntentDeclaration | null = null;
   private readonly readEvidence = new ToolReadEvidence();
@@ -1543,6 +1548,12 @@ export class AssistantSession {
     const intent = this.applyComposerModeToIntent(await this.declareTurnIntent(instruction, onEvent, signal));
     this.turnIntent = intent;
     if (!this.turnIsDriverContinue && intent.source !== "continuation") {
+      this.adventureRequirements = intent.adventure;
+      this.adventureRepairAttempts = 0;
+      this.adventureInspectedMaps.clear();
+      this.adventureItemIds.clear();
+    }
+    if (!this.turnIsDriverContinue && intent.source !== "continuation") {
       this.readEvidence.begin(intent.readBeforeWrite);
       this.verificationEvidence.clear();
     }
@@ -2186,9 +2197,23 @@ export class AssistantSession {
     };
   }
 
+  private adventureProblems(): string[] {
+    if (!this.adventureRequirements || this.turnComposerMode === "ask") return [];
+    const project = this.getProposedProject();
+    const problems = adventureCompletionProblems(project, this.adventureRequirements);
+    for (const id of this.adventureItemIds) {
+      const item = project.database.items.find(i => i.id === id);
+      if (item && !item.iconResourceId) problems.push(`아이템 ${id}에 그림이 없습니다. list_resources로 아이템 그림을 조회하고 iconResourceId를 지정하세요.`);
+    }
+    const unseen = Object.values(project.maps).filter(m => (this.adventureInspectedMaps.get(m.id)?.size ?? 0) < m.width * m.height);
+    if (unseen.length) problems.push(`마지막 변경 후 맵 전체 시각 조회가 없습니다: ${unseen.map(m => m.id).join(", ")}. show_map_region(mapId,x:0,y:0,w:전체너비,h:전체높이)로 확인하세요. 최대 크기로 잘리면 나머지 영역을 분할 조회하세요.`);
+    return problems;
+  }
+
   private recordSuccessfulTool(name: string): void {
     this.syncSuccessfulToolsToCurrentWorkItem();
     if (getTool(name)?.mode === "write") {
+      this.adventureInspectedMaps.clear();
       this.verificationEvidence.invalidateAfterWrite();
       this.workItemVerificationEvidence.invalidateAfterWrite();
       for (const previous of this.turnSuccessfulTools) {
@@ -2209,6 +2234,18 @@ export class AssistantSession {
   /** Keep transport/execution ok intact; only actual passing checks satisfy successTools. */
   private recordToolResult(name: string, args: Record<string, unknown>, result: ToolResult, countAsSuccess = true): void {
     this.syncSuccessfulToolsToCurrentWorkItem();
+    if (name === "show_map_region" && result.ok && result.data && typeof result.data === "object") {
+      const region = result.data as { mapId?: string; x?: number; y?: number; w?: number; h?: number };
+      const map = region.mapId ? this.getProposedProject().maps[region.mapId] : undefined;
+      if (map && [region.x, region.y, region.w, region.h].every(v => typeof v === "number" && Number.isInteger(v))) {
+        const cells = this.adventureInspectedMaps.get(map.id) ?? new Set<number>();
+        for (let y = Math.max(0, region.y!); y < Math.min(map.height, region.y! + region.h!); y++) {
+          for (let x = Math.max(0, region.x!); x < Math.min(map.width, region.x! + region.w!); x++) cells.add(y * map.width + x);
+        }
+        this.adventureInspectedMaps.set(map.id, cells);
+      }
+    }
+    if (name === "upsert_item" && result.ok && args.item && typeof args.item === "object" && typeof (args.item as { id?: unknown }).id === "string") this.adventureItemIds.add((args.item as { id: string }).id);
     this.verificationEvidence.observe(name, args, result, countAsSuccess ? "explicit" : "advisory");
     if (!countAsSuccess) return;
     const verdict = this.workItemVerificationEvidence.observe(name, args, result);
@@ -2568,6 +2605,11 @@ export class AssistantSession {
     auditFrom: number,
     onEvent: (event: SessionEvent) => void,
   ): TurnResult {
+    const adventureProblems = this.adventureProblems();
+    if (adventureProblems.length) {
+      result = { ...result, assistantText: `모험 구성이 아직 미완성입니다.\n${adventureProblems.map(p => `- ${p}`).join("\n")}` };
+      onEvent({ type: "assistant_message", content: result.assistantText });
+    }
     const verificationProblems = this.verificationEvidence.problems();
     if (verificationProblems.length > 0) {
       const notice = `검증이 아직 통과되지 않았습니다.\n${verificationProblems.slice(0, 8).map((problem) => `- ${problem}`).join("\n")}`;
@@ -2579,7 +2621,7 @@ export class AssistantSession {
       usage: usageDelta(usageBefore, this.usageTotals),
       audit: this.audit.slice(auditFrom),
       stoppedReason: result.stoppedReason,
-      proposedWrites: result.proposedCalls.length,
+      proposedWrites: result.proposedCalls.length + (result.appliedCalls?.length ?? 0),
     });
     this.pushAudit({ kind: "status", text: `run-recap ${serializeRunRecap(recap)}` });
     onEvent({ type: "run_recap", recap });
@@ -3356,6 +3398,18 @@ export class AssistantSession {
         text: messageText ?? "",
         toolCalls: assistantMsg.tool_calls?.map((tc) => ({ name: tc.function.name, args: tc.function.arguments })),
       });
+
+      // Goal-level contract survives plan replacement and applies to both final paths.
+      if ((phase === "review" || !(assistantMsg.tool_calls?.length)) && !this.milestoneApplyFailed) {
+        const problems = this.adventureProblems();
+        if (problems.length && this.adventureRepairAttempts < 4) {
+          this.adventureRepairAttempts += 1;
+          phase = "execute";
+          this.emitPhase(onEvent, "execute");
+          this.pushOrchestrationMessage(`모험 완료 검사 미통과 (${this.adventureRepairAttempts}/4). 완료라고 보고하지 말고 누락을 실제 도구로 보완하세요. 기존 산출물을 다시 만들지 마세요.\n${problems.join("\n")}\n${ADVENTURE_AUTHORING_GUIDE}`);
+          continue;
+        }
+      }
 
       if (phase === "review") {
         const reviewText = messageText ?? "";

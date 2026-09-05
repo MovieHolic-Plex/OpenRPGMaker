@@ -208,3 +208,7 @@ v4에 선택 필드 villagePresets[].design, defaultVillagePresetId, maps[].vill
 ### 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
 
 `oprn-399e312698` 약초상 릴리는 `{kind:"text", text:"..."}`가 저장돼 `body`가 undefined인 채 대화 렌더에 도달했다. `textBodyOf`와 ProjectStore의 로드 후 정규화는 `body`(빈 문자열 포함) → `text` → `lines` → `dialogue.lines` 순서로 원문을 읽는다. 인터프리터도 같은 읽기 함수를 사용해 maps-table 오버레이·기존 세션이 정규화를 건너뛰어도 대사에서 멈추지 않는다. 잘못된 객체는 문자열로 강제 변환하지 않는다. `test/textLegacyLines.test.ts`가 저장→로드 후 정규화→재저장과 원시 명령 실행을 검증한다.
+
+## NPC 표시 이름 (2026-09-05)
+
+GameEvent.name은 선택적 표시 이름이다. place_npc가 저작한 이름을 상태 페이지의 name과 별도로 보존해 재시도 중 중복 생성되지 않게 한다. 기존 이름 없는 이벤트는 페이지 이름을 조회 폴백으로 유지한다. 저장→로드 뒤 동일 NPC 갱신 계약은 test/adventureCompletion.test.ts로 검증한다.

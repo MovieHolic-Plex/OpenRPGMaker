@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **47쪽 / 1546KB / 약 440,257 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **47쪽 / 1548KB / 약 440,992 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,13 +15,13 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 257KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 464 | ~74,820 |
-| `openwiki/editor-ai-tools.md` | 85KB | 69KB ⚠상한 초과 — 절을 더 쪼개라 | 227 | ~24,429 |
+| `openwiki/editor-ai-panel.md` | 258KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 468 | ~74,973 |
+| `openwiki/editor-ai-tools.md` | 86KB | 69KB ⚠상한 초과 — 절을 더 쪼개라 | 233 | ~24,888 |
 | `openwiki/editor-database.md` | 191KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 919 | ~55,234 |
 | `openwiki/editor-event-authoring.md` | 118KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 564 | ~34,433 |
 | `openwiki/editor-pre-edit-routing.md` | 69KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 197 | ~19,760 |
 | `openwiki/runtime-battle.md` | 118KB | 31KB | 358 | ~33,888 |
-| `openwiki/runtime-project-schema.md` | 58KB | 42KB | 211 | ~15,750 |
+| `openwiki/runtime-project-schema.md` | 59KB | 42KB | 215 | ~15,873 |
 | `openwiki/runtime-sessions.md` | 60KB | 45KB | 168 | ~16,122 |
 | `openwiki/testing.md` | 107KB | 45KB | 715 | ~30,300 |
 
@@ -47,7 +47,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 | 페이지 | 건수 | 참조 |
 |---|---|---|
-| `openwiki/agent-worktrees.md` | 3 | `result.md`, `status.json`, `task.json` |
+| `openwiki/agent-worktrees.md` | 2 | `result.md`, `task.json` |
 | `openwiki/ai-workflow.md` | 4 | `index.json`, `latest.json`, `src/ai/plannerSkip.ts`, `test/volumeContractSession.test.ts` |
 | `openwiki/architecture.md` | 1 | `project.json` |
 | `openwiki/bgm-catalog.md` | 1 | `catalog.raw.json` |
@@ -224,7 +224,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L18` Output limits
 - `L24` Practical tips
 
-### `openwiki/editor-ai-panel.md` — 257KB · 464줄 · ~74,820 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 258KB · 468줄 · ~74,973 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
 - `L3` 계획 항목의 연속 실행 증거 (2026-09-05)
 - `L9` 조회 선행·계획 완료와 실행 종료 (2026-09-05)
@@ -240,8 +240,9 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L397` 제공자 · OAuth · 동반 서비스
 - `L427` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
 - `L461` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
+- `L465` 모험 완료와 실제 적용 횟수 (2026-09-05)
 
-### `openwiki/editor-ai-tools.md` — 85KB · 227줄 · ~24,429 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-ai-tools.md` — 86KB · 233줄 · ~24,888 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` 퀘스트 입력과 완주 증거 계약 (2026-09-05)
 - `L13` DB 조회 페이지와 마을 전체 범위 (2026-09-05)
@@ -252,6 +253,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L210` 마을 설계서 (2026-09-05)
 - `L214` 저수준 이벤트 입력은 명령 위치를 검증한다 (2026-09-05)
 - `L221` 보물상자는 노출된 수면을 거부한다 (2026-09-05)
+- `L228` 모험 저작 완료와 재시도 (2026-09-05)
 
 ### `openwiki/editor-database.md` — 191KB · 919줄 · ~55,234 토큰 · 통째읽기 잘림 · 깨진 줄 7
 
@@ -560,7 +562,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L163` 가구 밀기 애니메이션 (2026-09-05)
 - `L172` Recovered head emotes (2026-09-05)
 
-### `openwiki/runtime-project-schema.md` — 58KB · 211줄 · ~15,750 토큰 · 통째읽기 잘림
+### `openwiki/runtime-project-schema.md` — 59KB · 215줄 · ~15,873 토큰 · 통째읽기 잘림
 
 - `L3` 기본 카탈로그 삭제 보존 (2026-09-05)
 - `L7` 전투 페이지 중복 ID 복구와 슬롯 참조 (2026-09-05)
@@ -577,6 +579,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L198` 마을 설계서 (2026-09-05)
 - `L204` 공포 게임 제작 기능 (2026-09-05)
   - `L208` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
+- `L212` NPC 표시 이름 (2026-09-05)
 
 ### `openwiki/runtime-sessions.md` — 60KB · 168줄 · ~16,122 토큰 · 통째읽기 잘림
 

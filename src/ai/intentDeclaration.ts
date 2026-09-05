@@ -9,6 +9,8 @@
 // 경계: 「무엇을 원하나」(수정/생성, 실내/야외, 시설, 되묻기, 계획 필요, 쓸 툴)는 이 선언이 정한다.
 // 「무엇이 사실인가」(열린 모달, 선택 사각형, 현재 맵, 타일셋 라벨)와 「지켜졌나」(승인·클립·스펙·검증)는
 // 코드가 그대로 맡는다. 이 모듈은 순수 함수만 둔다 — 네트워크는 intentDeclarationClient 가 안다.
+import type { AdventureRequirements } from "./adventureCompletion";
+import { ADVENTURE_AUTHORING_GUIDE } from "./adventureCompletion";
 import type { ToolDomain } from "@/editor/tools/types";
 import { QUICK_REPLY_MARKER } from "./interviewPrompt";
 
@@ -42,6 +44,7 @@ export interface IntentDeclaration {
     readonly collections: readonly string[];
     readonly references: boolean;
   };
+  readonly adventure?: AdventureRequirements;
   readonly summary: string;
   readonly source: IntentSource;
 }
@@ -91,6 +94,7 @@ Fields:
 - "resetsContext": 사용자가 이전 작업과 무관한 새 작업·처음부터·프로젝트 초기화를 명시하면 true.
 - "tools": 입력 툴 목록에서 이 요청에 쓸 가능성이 높은 이름만, 최대 8개. 모르면 [].
 - "readBeforeWrite": 사용자가 '기존 데이터를 먼저 읽고 이어 작업', '조회 후 실제 ID만 참조'를 명시하면 {"project":true,"collections":["items","enemies","troops"],"references":true}. project 는 프로젝트/기존 맵·이벤트 선행 조회, collections 는 작업에 필요한 DB 컬렉션 이름(실제 조회가 모두 성공하기 전 첫 쓰기 금지), references 는 참조 ID 조회 증거를 뜻한다. 필요한 컬렉션만 선택한다. 그런 조건이 없으면 생략한다. 이것은 작성 요청의 절차 계약이며 별도 허락 질문이 아니다.
+- "adventure": 시작 마을·던전 탐험·파티 모험을 구성하라는 전체 모험 저작 요청이면 {"village":true,"dungeon":true,"party":true,"battle":true}. 각 항목은 요청한 것만 true. 단순 NPC 추가/질문/DB 시드만/입구 표지판만 요청은 생략한다. 모험 JRPG 장르 프리셋 + 파티·던전 탐험 + 시작 마을·기본 전투 적은 네 항목 모두 true다.
 - "summary": 요청을 한 문장으로.
 
 Rules:
@@ -214,6 +218,7 @@ export function parseIntentDeclaration(raw: string, facts: IntentFacts): IntentP
           ["actors", "classes", "skills", "items", "equipment", "enemies", "troops", "states", "battleAnimations", "switches", "variables", "commonEvents", "quests", "maps", "elements", "monsterSpecies", "lifeSkills", "farmAnimalSpecies", "crops"].includes(name)),
         references: parsed.readBeforeWrite.references === true,
       } } : {}),
+      ...(isRecord(parsed.adventure) && (mode === "create" || mode === "modify") ? { adventure: { village: parsed.adventure.village === true, dungeon: parsed.adventure.dungeon === true, party: parsed.adventure.party === true, battle: parsed.adventure.battle === true } } : {}),
       summary: readString(parsed.summary, 200) ?? facts.userText.trim().slice(0, 200),
       source: "llm",
     },
@@ -366,6 +371,7 @@ export function formatScopeNote(scope: ScopeNoteInput, intent: IntentDeclaration
 export function formatIntentNote(intent: IntentDeclaration, options: { readonly clarifyBypassed?: boolean } = {}): string | null {
   if (intent.source !== "llm") return null;
   const lines: string[] = [];
+  if (intent.adventure) lines.push(ADVENTURE_AUTHORING_GUIDE);
   if (intent.readBeforeWrite) {
     lines.push(`[조회 선행 계약] 첫 쓰기 전에 ${intent.readBeforeWrite.project ? "get_project_summary와 대상 get_map_region, find_events, " : ""}${intent.readBeforeWrite.collections.map((name) => `get_database_records(collection:"${name}")`).join(", ")}를 성공시켜 반환값을 읽어라. 기존 DB 수정은 include:"full", ids:[실제 ID]로 원본을 확인한다. 새 레코드도 참조 전에 다시 조회한다. 조회 실패와 같은 응답의 쓰기는 실행되지 않는다.`);
   }

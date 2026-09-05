@@ -227,3 +227,10 @@ describe("formatIntentNote — 선언이 확정한 것을 본문 모델에게 �
     expect(formatIntentNote(intent, { clarifyBypassed: true })).toContain("되묻지 않는다");
   });
 });
+
+it("full-adventure contracts come from declared intent and cannot affect question mode", () => {
+  const adventure = { village: true, dungeon: true, party: true, battle: true };
+  expect(parseIntentDeclaration(JSON.stringify({ mode: "modify", adventure }), FACTS).intent?.adventure).toEqual(adventure);
+  expect(parseIntentDeclaration(JSON.stringify({ mode: "question", adventure }), FACTS).intent?.adventure).toBeUndefined();
+  expect(parseIntentDeclaration('{"mode":"modify"}', { ...FACTS, userText: "마을 NPC 추가" }).intent?.adventure).toBeUndefined();
+});
