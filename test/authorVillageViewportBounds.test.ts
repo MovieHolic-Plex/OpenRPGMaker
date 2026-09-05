@@ -154,6 +154,31 @@ describe("author_village + 뷰포트 bounds", () => {
     expect(secondRegion).toEqual(firstRegion);
   }, 30_000);
 
+  it.each(["target", "root"])("%s 의 fullMap:true는 뷰포트 20×20 보정에 축소되지 않는다", async (location) => {
+    const baseline = createExistingProject(30);
+    let round = 0;
+    const args = {
+      target: { ...EXISTING_TARGET, ...(location === "target" ? { fullMap: true } : {}) },
+      ...(location === "root" ? { fullMap: true } : {}),
+      houseCount: 2, countPolicy: "exact", seed: 7, interior: false, npcCount: 0,
+    };
+    const session = new AssistantSession(baseline, {
+      config: SESSION_CONFIG,
+      contextOptions: { getCurrentMapId: () => "map_existing", getViewport: () => ({ mapId: "map_existing", centerX: 15, centerY: 15, x: 7, y: 7, w: 16, h: 16 }) },
+      chat: async (): Promise<ChatResult> => round++ === 0 ? {
+        message: { role: "assistant", content: null, tool_calls: [{ id: "full_map", type: "function", function: {
+          name: "author_village", arguments: JSON.stringify(args),
+        } }] }, finishReason: "tool_calls",
+      } : { message: { role: "assistant", content: "마을을 구성했습니다." }, finishReason: "stop" },
+    });
+    await session.sendUserMessage("맵 전체에 마을을 지어줘\n\n[컨텍스트] 현재 맵: Existing village (map_existing) · 사용자 선택 영역: (0,0) 30×30");
+    const entry = session.getAuditEntries().find((entry) => entry.kind === "tool" && entry.name === "author_village");
+    expect(entry?.kind === "tool" && entry.ok, entry?.kind === "tool" ? entry.summary : "호출 없음").toBe(true);
+    expect(entry?.kind === "tool" ? entry.args.target : null).toEqual(args.target);
+    const map = session.getProposedProject().maps.map_existing;
+    expect(changedCellIndexes(baseline.maps.map_existing, map).some((index) => index % map.width < 5 || index % map.width >= 25)).toBe(true);
+  }, 30_000);
+
   it("도구에 bounds 가 없으면 기존 전체 재포장 동작이 그대로다", () => {
     const project = createExistingProject(50);
     publishViewport("map_existing", 34, 34);

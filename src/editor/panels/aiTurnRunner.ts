@@ -73,6 +73,7 @@ export interface AiTurnRunnerDeps {
   /** 할 일 목록(작업 계획 체크리스트) 상태 — 소유자는 패널. 턴이 시작되면 존재하고, 대화 경계에서만 null 이 된다. */
   readonly workPlanSurfaceState: {
     active: boolean;
+    stoppedReason?: string;
     plan: WorkPlan | null;
     budget: AutonomousRunBudget | null;
   } | null;
@@ -409,6 +410,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         body.classList.add("ai-run-recap");
         body.dataset.testid = "ai-run-recap";
       } else if (event.type === "proposal_paused") {
+        if (deps.workPlanSurfaceState) deps.workPlanSurfaceState.stoppedReason = "apply-failed";
         deps.appendMilestoneFeedLine("apply-failed", event.reason, "프로젝트 저장소 변경 없음");
       }
     };
@@ -508,6 +510,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
           deps.projectIdentityId = store.getProjectIdentity().id;
         }
         const applied = outcome === "applied";
+        if (!applied && deps.workPlanSurfaceState) deps.workPlanSurfaceState.stoppedReason = "apply-failed";
         // 적용 결과가 나온 다음에 청사진을 정산한다 — 배치 검증·커밋 게이트가 거부하면
         // (applied === false) 저장소는 그대로이므로 done 은 거짓이다.
         settleBlueprintForTurnEnd(applied ? result.proposedCalls : null);
@@ -629,6 +632,11 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       deps.refreshContextMeter();
       // 턴 종료(정상 완료·중단·적용 실패 포함): 할 일 목록은 남기고 활동만 끈다 — 사용자가 뭐가 됐고
       // 뭐가 남았는지 읽어야 한다. 자동 접기는 active 가 꺼지면서 재개된다. 다음 턴은 beginWorkPlanTurn 이 이어받는다.
+      if (deps.workPlanSurfaceState) {
+        deps.workPlanSurfaceState.stoppedReason ??= abortController.signal.aborted
+          ? "aborted"
+          : turnCatchError || turnFailed ? "error" : turnResult?.stoppedReason ?? "error";
+      }
       deps.settleWorkPlanTurn();
       // 접힌 채로 턴이 끝나면 레일 점으로 알린다(초록=완료, 빨강=오류 — 펼치는 순간 소거).
       if (deps.surface.collapsed) deps.surface.panel.classList.add(turnFailed ? "is-turn-error" : "is-turn-attention");

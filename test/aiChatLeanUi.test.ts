@@ -136,6 +136,36 @@ describe("작업 계획 앞면 렌더", () => {
     }
   });
 
+  it.each([
+    { active: true, stoppedReason: undefined, status: "마무리 확인 중", complete: false },
+    { active: false, stoppedReason: "max-tool-calls", status: "작업 중단 — 실행 한도 도달", complete: false },
+    { active: false, stoppedReason: "token-budget", status: "작업 중단 — 실행 한도 도달", complete: false },
+    { active: false, stoppedReason: "error", status: "작업 중단 — 오류", complete: false },
+    { active: false, stoppedReason: "apply-failed", status: "작업 중단 — 적용 실패", complete: false },
+    { active: false, stoppedReason: "final", status: "모두 완료", complete: true },
+  ])("체크가 끝나도 실행 상태 $stoppedReason / active=$active 를 반영한다", (state) => {
+    const restore = installFakeDom();
+    try {
+      const plan = samplePlan();
+      for (const item of plan.layers.flatMap((layer) => layer.items)) item.status = "done";
+      const node = renderWithFakeDom(() => renderWorkPlanChecklist(plan, state)) as FakeElement;
+      expect(node.querySelector("[data-testid='ai-run-status']")?.textContent).toBe(state.status);
+      expect(node.dataset.complete).toBe(String(state.complete));
+    } finally { restore(); }
+  });
+
+  it("건너뛴 항목이 남은 계획을 모두 완료로 표시하지 않는다", () => {
+    const restore = installFakeDom();
+    try {
+      const plan = samplePlan();
+      plan.layers[0]!.items[0]!.status = "done";
+      plan.layers[0]!.items[1]!.status = "skipped";
+      const node = renderWithFakeDom(() => renderWorkPlanChecklist(plan, { active: false, stoppedReason: "final" })) as FakeElement;
+      expect(node.querySelector("[data-testid='ai-run-status']")?.textContent).toBe("계획 종료 — 건너뛴 항목 있음");
+      expect(node.dataset.complete).toBe("false");
+    } finally { restore(); }
+  });
+
   it("필드가 빠진(망가진) 계획 페이로드도 안전하게 렌더한다 — 예외 없음", () => {
     const restore = installFakeDom();
     try {

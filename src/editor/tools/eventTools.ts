@@ -405,6 +405,22 @@ const upsertEvent: ToolDefinition = {
     const patch = args.event as Partial<GameEvent> | undefined;
     const warnings: string[] = [];
     if (!patch || typeof patch.id !== "string" || !patch.id.trim()) throw new ToolError("event.id(문자열)가 필요합니다.");
+    // A trigger describes when to run; commands belong beside it. Do this on the
+    // incoming patch before normalization can turn an omitted command list into [].
+    const commandOwners = [
+      { path: "event", value: patch },
+      ...(Array.isArray(patch.pages) ? patch.pages.map((page, index) => ({ path: `event.pages[${index}]`, value: page })) : []),
+    ];
+    for (const { path, value } of commandOwners) {
+      const trigger = value?.trigger;
+      if (trigger && typeof trigger === "object" && Object.prototype.hasOwnProperty.call(trigger, "commands")) {
+        throw new ToolError(
+          `${path}.trigger.commands는 지원하지 않습니다. 명령을 ${path}.commands로 옮기세요. ` +
+          '예: {"trigger":{"kind":"playerTouch"},"commands":[{"kind":"transfer","mapId":"조회한 맵 ID","x":1,"y":1}]}',
+          { code: "invalid-args" },
+        );
+      }
+    }
     const existing = map.events.find((entry) => entry.id === patch.id);
     let event: GameEvent;
     let adjusted = false;

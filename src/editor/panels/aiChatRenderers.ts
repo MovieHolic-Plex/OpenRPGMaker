@@ -116,11 +116,18 @@ function blockedItem(items: readonly WorkItem[]): WorkItem | null {
   return items.find((item) => item.status === "blocked") ?? null;
 }
 
-/** 앞줄 한 문장 — 막힘 > 모두 완료 > 진행 중 > 대기 중 순으로 사용자에게 중요한 것을 말한다. */
-function workPlanStatusLine(plan: WorkPlan, items: readonly WorkItem[], active: boolean): string {
+/** 계획의 체크와 실제 실행 종료는 별개다. 후속 검증·예산 중단을 완료로 표시하지 않는다. */
+function workPlanStatusLine(plan: WorkPlan, items: readonly WorkItem[], active: boolean, stoppedReason?: string): string {
   const blocked = blockedItem(items);
   if (blocked) return `막힘 — ${blocked.title ?? "항목"}`;
-  if (isPlanComplete(items)) return "모두 완료";
+  if (active && isPlanComplete(items)) return "마무리 확인 중";
+  if (!active && stoppedReason && stoppedReason !== "final") {
+    if (stoppedReason === "max-tool-calls" || stoppedReason === "token-budget") return "작업 중단 — 실행 한도 도달";
+    if (stoppedReason === "apply-failed") return "작업 중단 — 적용 실패";
+    if (stoppedReason === "error") return "작업 중단 — 오류";
+    return "작업 중단 — 완료 확인 필요";
+  }
+  if (isPlanComplete(items)) return items.some((item) => item.status === "skipped") ? "계획 종료 — 건너뛴 항목 있음" : "모두 완료";
   const current = currentRunItemTitle(plan);
   return active ? `${current} 중` : `${current} — 대기 중`;
 }
@@ -142,6 +149,7 @@ export function renderWorkPlanChecklist(
   plan: WorkPlan,
   opts: {
     readonly active?: boolean;
+    readonly stoppedReason?: string;
     readonly budget?: AutonomousRunBudget;
     readonly onStop?: () => void;
     readonly onOpenBook?: () => void;
@@ -152,9 +160,10 @@ export function renderWorkPlanChecklist(
   const done = items.filter(isItemFinished).length;
   const active = opts.active !== false;
   const budget = opts.budget;
-  const complete = isPlanComplete(items);
+  const complete = !active && isPlanComplete(items) && items.every((item) => item.status === "done")
+    && (!opts.stoppedReason || opts.stoppedReason === "final");
   const percent = items.length === 0 ? 0 : Math.round((done / items.length) * 100);
-  const statusLine = workPlanStatusLine(plan, items, active);
+  const statusLine = workPlanStatusLine(plan, items, active, opts.stoppedReason);
   const running = active && items.some((item) => item.status === "in_progress");
   const progressFill = el("span", { class: "ai-run-progress-fill" });
   progressFill.style.width = `${percent}%`;

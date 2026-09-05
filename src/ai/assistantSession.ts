@@ -4,6 +4,7 @@
 // - 커밋 게이트/인자 검증 실패 시 issues를 tool 메시지로 모델에 되돌려 자가수정을 유도(최대 maxToolCalls 왕복).
 // - 브라우저 비의존(순수). chat 함수는 주입 가능(테스트에서 모킹).
 
+import { ToolReadEvidence } from "./toolReadEvidence";
 import { getTool, normalizeToolArgs, runTool } from "@/editor/tools";
 import { viewportVillageBounds } from "@/editor/tools/authorVillageSupport";
 import { toOpenAiTools } from "@/editor/tools";
@@ -862,6 +863,7 @@ export class AssistantSession {
   private currentTurnInstruction = "";
   /** 이번 턴의 의도 선언. 턴 시작에 한 번 정해지고 라우팅(되묻기·플래너·툴 노출·대상 맵)이 이것만 읽는다. */
   private turnIntent: IntentDeclaration | null = null;
+  private readonly readEvidence = new ToolReadEvidence();
   /** 이번 턴이 손댈 선택 사각형(있으면). 패널·영역 작업이 사실로 넘긴다. */
   private turnScope: SessionTurnScope | null = null;
   // 직전 턴이 LLM 오류로 끊겼는가(수동 재시도 허용 플래그).
@@ -1533,6 +1535,7 @@ export class AssistantSession {
     // 질문 모드는 사용자가 직접 고른 사실이라 선언의 create/modify 를 덮어쓴다 — 안 그러면 플래너·쓰기 기대가 문장 판정으로 돈다.
     const intent = this.applyComposerModeToIntent(await this.declareTurnIntent(instruction, onEvent, signal));
     this.turnIntent = intent;
+    if (!this.turnIsDriverContinue && intent.source !== "continuation") this.readEvidence.begin(intent.readBeforeWrite);
     beginAssistantToolDomainTurn(intent);
     this.currentTurnToolDomains = computeActiveToolDomains(intent);
 
@@ -1547,24 +1550,21 @@ export class AssistantSession {
     this.carryoverWarningAdded = false;
     this.specRejections = 0;
     this.lastRejectedSpecFingerprint = null;
-    this.turnProposals = new Map();
+    const continuesGoal = this.turnIsDriverContinue || intent.source === "continuation";
+    // A tool budget splits execution, not the work item. Keep unapplied calls and
+    // artifact evidence until that item completes (or a different goal starts).
+    if (!continuesGoal) this.turnProposals = new Map();
     // Synthetic continuations belong to the same user goal and retain its applied ledger.
     if (!options.driverContinue) this.turnAppliedMilestoneCalls = [];
     this.turnWriteDedupe = new Map();
     this.turnToolStartedCount = 0;
     this.turnEscalatedToolNames = [];
     this.compactionAttemptedThisTurn = false;
-    this.turnSuccessfulTools = new Set();
-    this.turnItemCreatedMapIds = new Set();
-    this.turnItemAuthoredTroopIds = new Set();
-    this.turnItemBattleSimulations = new Map();
-    this.turnItemQuestIds = new Set();
-    this.turnItemPlacedNpcIds = new Set();
-    this.lastOutcomeBlockedKey = null;
+    if (!continuesGoal) this.resetWorkItemEvidence();
+    this.syncSuccessfulToolsToCurrentWorkItem();
     // 볼륨 막대는 플래너가 계획과 함께 선언한 것만 남는다. 이어가기(계속)는 유지, 새 요청은 풀어 준다.
     this.releaseVolumeContractForNewRequest(intent);
     this.volumeContinueUsed = 0;
-    this.successfulToolsWorkItemId = this.workPlan?.currentItemId ?? null;
     this.eventBaseProposalKeys = new Map();
     this.skipPlannerThisTurn = false;
 
@@ -1843,6 +1843,8 @@ export class AssistantSession {
     // 수정 요청이면 대상 맵 id 를 계획에 박아 매 스프린트 재주입한다 — footer 가 없는
     // 자율 계속 턴에도 대상이 남아야 한다(진단 근본원인 14).
     this.workPlan = workPlanFromOrchestratorDecision(decision, new Date(), this.planTargetMapId(text));
+    this.resetWorkItemEvidence();
+    this.lastMilestoneCompletionItemId = null;
     this.planAuthoredThisTurn = true;
     // 볼륨 막대는 플래너가 계획과 함께 선언한 값만 쓴다 — 문장 정규식으로 막대를 씌우지 않는다.
     this.armVolumeContractFromPlanner(decision.volume ?? null);
@@ -1862,6 +1864,8 @@ export class AssistantSession {
   /** 플래너가 계획을 내지 못했을 때(오류·해석 실패·계획 모드의 direct) 코드가 최소 계획을 세운다. */
   private adoptFallbackWorkPlan(text: string, onEvent: (event: SessionEvent) => void, statusText: string): void {
     this.workPlan = buildDefaultWorkPlan(text, new Date(), { modifies: this.turnIntent?.mode === "modify" });
+    this.resetWorkItemEvidence();
+    this.lastMilestoneCompletionItemId = null;
     this.planAuthoredThisTurn = true;
     this.emitWorkPlan(onEvent);
     this.injectWorkPlanOrchestration();
@@ -2038,8 +2042,7 @@ export class AssistantSession {
       this.workPlan = plan;
       // 새 계획 — 항목 id 는 위치 기반("L1-1")이라 이전 계획과 겹칠 수 있다. 중복 완료 방지 추적을 초기화한다.
       this.lastMilestoneCompletionItemId = null;
-      this.turnSuccessfulTools.clear();
-      this.successfulToolsWorkItemId = plan.currentItemId;
+      this.resetWorkItemEvidence();
       // 새 계획 = 새 검증 주기: 증명 상태만 리셋한다(툴콜 히스토리는 런 전체 누적 —
       // questId/시나리오 선택이 이전 레이어 저작물을 계속 본다).
       this.runEndProofPlanId = null;
@@ -2073,23 +2076,10 @@ export class AssistantSession {
       if (!id) return { ok: false, summary: "완료할 항목 id가 없습니다." };
       const note = typeof args.note === "string" ? args.note : undefined;
       this.syncSuccessfulToolsToCurrentWorkItem();
-      const beforeStatus = this.workPlan.layers.flatMap((layer) => layer.items).find((item) => item.id === id)?.status;
       const result = completeWorkItemById(this.workPlan, id, note, {
         successfulTools: [...this.turnSuccessfulTools],
         outcomeGate: this.outcomeGate(),
-        // 이름이 어긋난 successTools 로 교착되지 않게, 명시 완료는 「성공한 쓰기 + 산출물 게이트 통과」를 근거로 인정한다.
-        allowWriteEvidenceFallback: true,
       });
-      if (result.ok && !result.alreadyDone && beforeStatus !== "done") {
-        const needed = result.item.successTools ?? [];
-        const missing = needed.filter((name) => !this.turnSuccessfulTools.has(name));
-        if (missing.length > 0) {
-          this.pushAudit({
-            kind: "status",
-            text: `work-item:complete-by-write-evidence ${result.item.id} — successTools 미기록 ${missing.join(", ")}`,
-          });
-        }
-      }
       if (!result.ok) {
         this.lastBlockReasonByItemId.set(id, result.reason);
         return {
@@ -2138,6 +2128,10 @@ export class AssistantSession {
   private syncSuccessfulToolsToCurrentWorkItem(): void {
     const currentItemId = this.workPlan?.currentItemId ?? null;
     if (currentItemId === this.successfulToolsWorkItemId) return;
+    this.resetWorkItemEvidence();
+  }
+
+  private resetWorkItemEvidence(): void {
     this.turnSuccessfulTools.clear();
     // 산출물 추적도 항목 단위다 — 이전 항목이 만든 맵을 다음 항목이 채울 책임으로 물려받지 않는다.
     this.turnItemCreatedMapIds.clear();
@@ -2146,7 +2140,7 @@ export class AssistantSession {
     this.turnItemQuestIds.clear();
     this.turnItemPlacedNpcIds.clear();
     this.lastOutcomeBlockedKey = null;
-    this.successfulToolsWorkItemId = currentItemId;
+    this.successfulToolsWorkItemId = this.workPlan?.currentItemId ?? null;
   }
 
   /**
@@ -2704,6 +2698,7 @@ export class AssistantSession {
     if (name !== "author_village") return args;
     const target = args.target;
     if (!isRecord(target) || target.kind !== "existing" || target.bounds !== undefined) return args;
+    if (target.fullMap === true || args.fullMap === true) return args;
     const mapId = target.mapId;
     if (typeof mapId !== "string") return args;
     const snapshot = resolveContextViewport(this.contextOptions);
@@ -2917,7 +2912,8 @@ export class AssistantSession {
       }
       this.emitToolStarted(onEvent, "place_npc");
       const reason = harnessToolReason("spec-npc", name);
-      const result = runTool(this.ctx, "place_npc", args, { dryRun: false });
+      const result = this.readEvidence.beforeWrite(this.ctx.project, "place_npc", args)
+        ?? runTool(this.ctx, "place_npc", args, { dryRun: false });
       onEvent({ type: "tool_call", name: "place_npc", args, result, reason });
       this.pushAudit({
         kind: "tool",
@@ -2994,7 +2990,8 @@ export class AssistantSession {
       const args: Record<string, unknown> = { mapId, residents: sheet.sheet.residents };
       this.emitToolStarted(onEvent, "author_npc_cast");
       const reason = harnessToolReason("npc-cast", `${ctx.mapName} 주민 ${residents.length}명`);
-      const result = runTool(this.ctx, "author_npc_cast", args, { dryRun: false });
+      const result = this.readEvidence.beforeWrite(this.ctx.project, "author_npc_cast", args)
+        ?? runTool(this.ctx, "author_npc_cast", args, { dryRun: false });
       onEvent({ type: "tool_call", name: "author_npc_cast", args, result, reason });
       this.pushAudit({
         kind: "tool",
@@ -3230,6 +3227,7 @@ export class AssistantSession {
         [
           ...mentioned,
           ...declared,
+          ...toolSchemasForNames(this.readEvidence.requiredReadTools()),
           ...planRequired,
           ...questPersist,
           ...discoveryEscalated,
@@ -3464,6 +3462,11 @@ export class AssistantSession {
       const roundImages: RenderedToolImage[] = [];
       // Capture before any complete/skip/set tools mutate the cursor.
       const workItemIdAtRoundStart = this.workPlan?.currentItemId ?? null;
+      // 이 응답 안의 읽기가 실패하면 이후 쓰기는 다음 모델 응답까지 보류한다.
+      // 같은 배치의 인자는 실패 결과를 보기 전에 만들어졌다. 뒤쪽 읽기가 성공해도
+      // 모델이 그 결과를 소비한 것은 아니므로 현재 배치의 쓰기를 다시 열지 않는다.
+      let failedReadInBatch: string | null = null;
+      const batchReads: { name: string; args: Record<string, unknown>; result: ToolResult }[] = [];
       // 각 tool_call 실행 → role:"tool" 메시지로 결과 반환.
       for (const call of toolCalls) {
         const parsedCall = parseToolCall(call);
@@ -3507,6 +3510,9 @@ export class AssistantSession {
             // 노출 목록은 감사용이고 실행은 이름으로 한다 — 모델이 외워 둔 쓰기 툴을 불러도 여기서 막는다.
             toolResult = composerAskRefusal(name);
             this.pushAudit({ kind: "status", text: `composer:ask 쓰기 툴 거부 ${name}` });
+          } else if (failedReadInBatch && isWriteToolName(name)) {
+            const summary = `${failedReadInBatch} 조회가 실패하여 같은 응답의 ${name} 실행을 보류했습니다. 조회를 성공시키고 반환값을 확인한 다음 다시 호출하세요.`;
+            toolResult = { ok: false, summary, issues: [{ severity: "error", code: "read-dependency-failed", message: summary }] };
           } else if (name === "set_build_spec") {
             toolResult = this.applyBuildSpec(args);
           } else if (
@@ -3534,9 +3540,12 @@ export class AssistantSession {
               }
             }
           } else {
+            const readGate = tool?.mode === "write" ? this.readEvidence.beforeWrite(this.ctx.project, name, args) : null;
             const dedupeKey = writeDedupeKey(name, args);
             const cached = dedupeKey ? this.turnWriteDedupe.get(dedupeKey) : undefined;
-            if (cached) {
+            if (readGate) {
+              toolResult = readGate;
+            } else if (cached) {
               toolResult = {
                 ...cached,
                 summary: `${cached.summary} (이번 턴 동일 배치 재호출 — 건너뜀)`,
@@ -3554,6 +3563,10 @@ export class AssistantSession {
                 : gate;
               if (dedupeKey && toolResult.ok) this.turnWriteDedupe.set(dedupeKey, toolResult);
             }
+          }
+          if (tool?.mode === "read") {
+            batchReads.push({ name, args, result: toolResult });
+            if (!toolResult.ok) failedReadInBatch ??= name;
           }
           // 읽기 툴도 기록한다 — 플래너가 `successTools:["get_map_region"]` 같은 확인 항목을 자주 쓰는데
           // 쓰기만 세면 그 항목은 무슨 짓을 해도 완료할 수 없는 게이트가 된다(2026-08-23 실측: 2회 거부 후 skip).
@@ -3682,6 +3695,8 @@ export class AssistantSession {
         this.addExecutionHintIfNeeded();
       }
 
+      // 반환된 조회 결과는 다음 모델 응답에서만 참조 근거로 쓴다.
+      for (const read of batchReads) this.readEvidence.observe(read.name, read.args, read.result);
       // WorkPlan advance: successTools auto-complete OR complete/skip tools moved the cursor.
       await this.noteSuccessfulTools([...this.turnSuccessfulTools], onEvent);
       const afterItemId = this.workPlan?.currentItemId ?? null;

@@ -106,6 +106,21 @@ describe("폴백·이어가기·빈 선언", () => {
   });
 });
 
+describe("사용자가 명시한 조회 계약", () => {
+  it("프로젝트/DB/ID 조회 요구를 실행부에 구조화해 전달한다", () => {
+    const parsed = parseIntentDeclaration(JSON.stringify({ mode: "modify", readBeforeWrite: {
+      project: true, collections: ["items", "enemies", "troops", "invented"], references: true,
+    } }), FACTS);
+    expect(parsed.intent?.readBeforeWrite).toEqual({ project: true, collections: ["items", "enemies", "troops"], references: true });
+    expect(formatIntentNote(parsed.intent!)).toContain("조회 선행 계약");
+    expect(formatIntentNote(parsed.intent!)).toContain('include:"full"');
+  });
+  it("선언하지 않은 계약을 키워드로 추측해서 추가하지 않는다", () => {
+    const parsed = parseIntentDeclaration('{"mode":"modify"}', { ...FACTS, userText: "먼저 읽고 조회 후 써라" });
+    expect(parsed.intent?.readBeforeWrite).toBeUndefined();
+  });
+});
+
 describe("선언 → 도메인·영역 탈출", () => {
   const domainsOf = (name: string) =>
     ({ place_concept: ["tile"], place_npc: ["event"], define_quest: ["quest"], get_project_summary: ["core"] } as Record<string, readonly ("tile" | "event" | "quest" | "core")[]>)[name];

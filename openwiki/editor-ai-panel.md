@@ -1,5 +1,20 @@
 # Editor AI Panel & Tools
 
+## 계획 항목의 연속 실행 증거 (2026-09-05)
+
+실행 예산으로 나뉜 driverContinue 또는 continuation은 같은 항목의 성공 툴·생성 맵/퀘스트/NPC·전투 검증과 미적용 제안을 보존한다. 새 목표·새 계획·현재 항목 변경에서만 resetWorkItemEvidence로 비운다. 테스트 `aiMilestoneTurnAccounting`은 maxToolCalls=1로 upsert_item과 set_title_screen을 서로 다른 턴에 실행하고 두 변경이 실제 마일스톤으로 적용되는지 확인한다.
+
+미등록 successTools 이름은 삭제하지 않는다. 남은 필수 조건과 잘못된 이름을 실행 문맥에 표시하고 find_tools/set_work_plan으로 계획을 수리하도록 안내한다. 플래너는 레지스트리 실제 이름 목록을 받으며 장르명만으로 퀘스트 그래프·보스를 필수화하지 않는다. 명시 조회 계약의 도구는 노출 상한에서도 유지된다.
+
+## 조회 선행·계획 완료와 실행 종료 (2026-09-05)
+
+사용자가 명시한 읽기 선행은 `intentDeclaration.readBeforeWrite`로 구조화한다. `ToolReadEvidence`는 성공한 get_project_summary/get_map_region/find_events/get_database_records 결과를 기록하고, 결과를 모델이 읽을 수 있는 다음 응답부터 쓰기를 허용한다. DB ID 목록은 참조 근거이며 기존 레코드 갱신은 `include:full`의 현재 값 일치가 필요하다. 실패한 조회와 같은 응답의 후속 쓰기·complete/skip은 계약 선언 여부와 무관하게 보류한다. 직접 NPC 시공·캐스트 라이터도 같은 읽기 게이트를 통과한다. 자동 계속과 수동 continuation은 계약을 보존하고 새 요청은 초기화한다. 이 경계는 사용자 자연어를 정규식으로 재분류하지 않는다.
+
+`complete_work_item`의 `allowWriteEvidenceFallback`은 제거했다. 필수 successTools 전부와 산출물 게이트가 필요하고 현재 항목만 완료할 수 있다. 잘못된 계획은 set_work_plan으로 수정해야 하며 다른 쓰기 성공으로 누락 도구를 대신할 수 없다. 완료 항목 재호출의 idempotence는 유지한다.
+
+체크리스트는 실행 중 모든 체크가 끝나도 ‘마무리 확인 중’, max-tool-calls/token-budget은 ‘작업 중단 — 실행 한도 도달’, 오류·적용 실패는 각 중단 사유를 보여 준다. 건너뛴 항목은 ‘모두 완료’로 세지 않는다. `aiTurnRunner`가 실제 종료·적용 결과를 표면에 전달한다. Tests: `assistantReadContract`, `workPlan`, `aiChatLeanUi`, `aiAutonomousRunSurface`.
+
+
 ## 조수 카메라 이동 수명·부드러운 줌 (2026-09-05)
 
 - `EditScene.panCameraToTile`은 목적지 줌을 `editorState`에 한 번 기록하고, 같은 호출 안에서 실제 카메라를 출발 위치·줌으로 복원한다. 이후 팬의 progress로 look-at과 로그 배율 줌을 함께 보간한다. 거리별 300–650ms, 시작·끝 속도 0의 smoothstep을 쓰며 `prefers-reduced-motion: reduce`면 즉시 도착한다. `onlyIfOffscreen` 판정은 상태의 목적지 줌이 아니라 **현재 카메라 줌**을 쓴다.

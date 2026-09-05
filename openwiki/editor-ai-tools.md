@@ -10,6 +10,14 @@
 
 회귀: `test/questToolContract.test.ts`(중첩 입력·실제 예시·overwrite 거부), `test/questGraph.test.ts`(전투·맵 이동의 debug 대체는 미검증), `test/bossPhaseQuestOutcomeGate.test.ts`(직접 완료 게이트). Provider 계약은 `test/toolSchemaProviderCompat.test.ts`.
 
+## DB 조회 페이지와 마을 전체 범위 (2026-09-05)
+
+`get_database_records`는 collection/include 외에 `ids`, `limit`(1~500), `offset`을 받는다. 응답은 실제 `records`, 필터 후 `total`, 이어 읽을 `nextOffset`(없으면 null)이다. 대규모 DB에서 ID 목록을 먼저 읽고 기존 레코드 변경 직전 `ids:[실제 ID], include:"full"`로 필요한 원본만 조회할 수 있다. 페이지에 반환되지 않은 ID는 조회 증거로 인정하지 않는다.
+
+`author_village`의 target.fullMap 또는 루트 fullMap이 true이면 세션이 뷰포트 20×20 bounds를 끼워 넣지 않는다. 전체 맵 요청과 부분 bounds를 함께 전달하면 `village-scope-conflict`로 거부해 둘 중 하나를 고르게 한다(사람 승인 단계가 아니라 모델의 인자 수정). bounds를 조용히 넓히거나 전체 요청을 부분 시공으로 완료하지 않는다. Tests: `authorVillageViewportBounds`, `authorVillageScopeGate`.
+
+
+
 > **Encoding note:** Some Korean descriptive text has EUC-KR→UTF-8 mojibake from the original source commit. English terms, file paths, and code references are intact. For accurate Korean, consult the referenced source files. Partial automated restoration applied; remaining garbled CJK is irreversibly corrupted.
 
 Soft-confirm vocabulary, region task routing, AI visual polish, dock modes, tool exposure caps, and MCP bridge.
@@ -198,3 +206,10 @@ id 슬롯은 남긴다**(`def.name = ""`). id 가 지워지지 않으므로 `com
 ## 마을 설계서 (2026-09-05)
 
 author_village와 buildVillageDomain이 DB 설계서의 고정값·집 수 범위·집 재료/층수 호환성을 시공 전에 검사한다. 기본 설계서가 있으면 ID·집 수 생략이 가능하다. 상세 계약과 경계는 [마을 설계서](village-design.md).
+
+## 저수준 이벤트 입력은 명령 위치를 검증한다 (2026-09-05)
+
+`upsert_event`의 `event.trigger.commands` 또는 `event.pages[n].trigger.commands`는 `invalid-args`로 거부한다.
+명령은 trigger와 같은 객체의 `commands`에 둔다. 검사는 입력 patch를 병합·정규화하기 전에 수행한다.
+실제 JRPG 재실행에서 잘못 중첩된 transfer를 도구가 무시하고 빈 commands로 저장해 던전 귀환이 사라졌기 때문이다.
+`test/toolsMapManagement.test.ts`는 두 잘못된 위치를 모두 거부하고 기존 귀환 이벤트가 그대로 남는지 검증한다.
