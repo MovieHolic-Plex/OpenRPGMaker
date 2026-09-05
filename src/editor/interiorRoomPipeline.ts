@@ -1285,7 +1285,7 @@ export function furnishInteriorSpace(
   return { plan: nextPlan, warnings };
 }
 
-// 통행 확보를 위해 걷어낼 수 있는 단일 소품(하드 쌍/멀티타일 세트는 절대 제거하지 않는다).
+// 통행 확보를 위해 걷어낼 수 있는 단일 소품. 멀티타일 세트는 배치 저널로 별도 복원한다.
 const REMOVABLE_SINGLE_PROPS = new Set<number>([
   VR.CHAIR_LEFT, VR.CHAIR_RIGHT, VR.STOOL, VR.SQUARE_TABLE, VR.CRYSTAL_BALL,
   VR.BARREL, VR.CRATE, VR.GRAIN, VR.BOX, VR.JARS, VR.BUCKET, VR.KETTLE, VR.CAULDRON,
@@ -1295,7 +1295,7 @@ const REMOVABLE_SINGLE_PROPS = new Set<number>([
 /**
  * 통행 연결성 강제(사용자 지적: "통행 불가능한 공간이 너무 많다") — 가구를 전부 장애물로 보고
  * 문에서 BFS. 도달 불가 개방 셀이 남으면 경계의 단일 소품을 걷어내 길을 뚫는다(최대 12개).
- * 하드 쌍(침대/긴 탁자/피아노/카운터/거울 등)은 제거하지 않고, 그래도 막히면 경고를 남긴다.
+ * 단일 소품으로 뚫리지 않으면 저널의 책장·화덕·카운터를 통째로 복원한다. 다른 하드 쌍은 유지한다.
  */
 /** 개방 셀 판정: 마스크 내 바닥(러그 포함)이고 upper가 비어 있다(가구=장애물 보수 가정). */
 function isOpenCell(map: GameMap, floor: boolean[], x: number, y: number): boolean {

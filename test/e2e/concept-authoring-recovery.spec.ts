@@ -13,8 +13,7 @@ test("concept layout, zone, membership and seed painting remain editable", async
     const button = page.getByTestId(id);
     if (await button.isVisible().catch(() => false)) await button.click();
   }
-  await page.getByTestId("menu-tools").click();
-  await page.getByTestId("menu-tools-database").click();
+  await page.getByTestId("toolbar-database").click();
   await expect(page.getByTestId("database-modal")).toBeVisible();
   const tab = page.getByTestId("db-tab-scratch-concepts");
   if (!(await tab.isVisible())) await page.getByTestId("db-tab-group-world").click();
