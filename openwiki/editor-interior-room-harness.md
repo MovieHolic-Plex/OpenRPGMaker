@@ -85,3 +85,13 @@ The LLM-harnessed interior pipeline: start session, advance build per layer, eva
 ## 공포 게임 제작 기능 (2026-09-05)
 
 실내 평가 결과는 구조·통행 범위와 별도 시각 검토 필요를 명시한다. 데이터·런타임·저작·검증 계약은 [horror-authoring.md](horror-authoring.md) 참조.
+
+## 여관 외 시설의 공간 구성 (2026-09-05)
+
+- `interiorConceptCompose`는 `facilityId`가 `house|shop|tavern|library|smithy|church|warehouse|guild`인 경우에만 가구 묶음 선호를 적용한다. 방 크기·문 예약·가구 셀·레이어는 기존 계약을 유지한다. 여관과 알 수 없는 사용자 시설은 기존 배치 경로다.
+- 침대가 없는 방의 러그는 탁자가 실제로 앉을 수 있는 자리를 먼저 고르고, 탁자는 러그 위를 선호한다. 조리·작업 소품은 화덕, 침실 상자는 침대, 스툴은 좌석군 가까이에 둔다. 같은 종류 재고는 흩어진 모서리 대신 묶어서 놓는다. 후보가 기존 충돌·문 예약 검사를 통과해야 한다.
+- 창고 상자·술통은 가운데 반출 통로 양옆의 짧은 적재열을 선호한다. 1칸 소품 후보는 BFS로 기존·신규 `event|loot|sleep|transfer` 물건의 접근 가능한 인접 칸을 보존한다. 가운데 통로만 열려 있어도 3×3 상자의 중앙 노획 상자는 갇힐 수 있으므로 바닥 통행 검사만으로 대체하지 않는다. 한 줄 좌석군은 한 행씩 띄워 정렬해 특정 seed가 중간 행을 먼저 소비하고 후속 좌석을 탈락시키지 않게 한다.
+- 기본 초안 8종의 좌석·상품·작업 공간을 보강했다. 길드는 비어 있던 복도 밴드 대신 회의실과 의뢰 기록실을 접수홀에 연결한다. `scratchInnBundle`은 수정하지 않는다.
+- `get_concept_facility`는 `conceptFacilityVariants.ts`를 통해 여관 외 8종에도 시공 가능한 공간 구성 참고안을 제공한다. 현재 `template`은 계속 프로젝트의 저작 데이터다. 참고안을 자동 적용하거나 기존 `scratchConceptBundles` 배열·기존 맵을 기본값으로 교체하지 않는다. 기존 프로젝트에서도 배치 개선은 다음 시공에 적용되며, 새 초안의 추가 물건은 참고안 또는 명시적 초안 재삽입으로 선택한다.
+- 재현: `node_modules/.bin/vite-node scripts/qa-facility-quality.mts verified`로 실제 `runTool(place_concept)` 결과와 무표식 전체 맵 PNG를 만든다. `npm run build:player` 후 `node scripts/qa-facility-player.mjs verified`로 같은 결과를 빌드된 `player.html`에서 검증한다. 출하 플레이어의 store shim을 그대로 쓰고 패키징할 번들 애셋만 `public/assets`에서 제공한다. 수백 개 Vite 개발 모듈을 반복 로딩하지 않는다. 산출물은 `output/evidence/facility-quality/verified/`, 런타임 판정은 `player/SUMMARY.md`부터 읽는다. 이는 게임으로 출하하거나 사용자 DB를 대체하는 콘텐츠가 아니라 생성기 회귀 QA fixture다.
+- 회귀: `test/conceptFacilityComposition.test.ts`는 8종×3개 seed의 필수 가구 전체 셀, 사용자 가구 삭제 보존, 탁자·러그 묶음, 적재열·중앙 통로, 9개 상자 중 가운데 노획 상자의 실제 접근 가능성을 확인한다. 기존 여관·실내 패리티·실외 칩셋 거절 계약도 함께 돌린다.
