@@ -25,6 +25,9 @@ export type AutonomousNpcSceneContext = Pick<
 
 export type AutonomousNpcSprite = CharacterSprite & {
   readonly texture: { readonly key: string };
+  readonly width?: number;
+  readonly height?: number;
+  setScale?(scale: number): void;
   setPosition(x: number, y: number): void;
   setFrame(frame: string | number): void;
   setAlpha(alpha: number): void;

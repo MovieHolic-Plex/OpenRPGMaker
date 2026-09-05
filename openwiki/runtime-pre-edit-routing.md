@@ -9,7 +9,7 @@
     `assets.sprites`·`assets.uploaded`·`resourceProfiles[].assetId`·**모든 타일셋 이미지 id**·EasyRPG RTP 전량
     (칩셋·얼굴·오디오 포함)·CC0 아이콘·BGM/SE 카탈로그까지 알려진 리소스로 받아들인다. 반면 렌더 시점의
     `resolveEventSpriteTexture`(`src/player/eventSpriteResources.ts`)는 `assets.sprites`, 스프라이트류
-    `assets.uploaded`, **EasyRPG charset 텍스처 키**, 번들 스프라이트 역참조만 푼다. 그래서 칩셋 이미지나
+    `assets.uploaded`, **EasyRPG charset 텍스처 키**, 번들 스프라이트 역참조와 **등록된 생성 몬스터**를 푼다. 그래서 칩셋 이미지나
     아이콘 id 를 이벤트 그래픽으로 지정한 프로젝트는 **역직렬화를 통과하고 부팅도 되면서 알림만** 뜬다.
     두 집합의 폭이 다른 것이 원인이다 — 알림을 지우려면 저작을 charset 으로 바꿔야 한다.
   - **왜 "크게" 떴는가:** 노드는 `transform: scale(var(--play-scale))` 가 걸린 `.play-stage` 의 자식이다.
@@ -25,6 +25,17 @@
     `.runtime-missing-resource` 가 실리고 모든 길이 선언이 역스케일되는지). 규칙이 편집기 시트에만 있던 동안 출하 플레이어에서는 스타일
     없는 static 블록이 **1280×272px 로 무대 아래(y=960) 에 깔려 `overflow: hidden` 에 잘려 사라졌다** —
     저작자에게 필요한 신호가 출하물에서 통째로 죽어 있었다.
+- **생성 몬스터의 필드 외형 (2026-09-05):** `fieldSpawns.defaultFieldSpawnGraphic`이 첫 적의
+  `monsterResourceId`를 넘길 때 `generated-enemy-slime-green` 같은 생성 카탈로그 ID도 그대로 그린다.
+  `src/assets/generatedMonsterSprites.ts`는 `builtinGeneratedResourceIds()`의 실제 몬스터 항목만 인정한다.
+  일반 URL 해석기의 이름 추측 폴백을 허용하지 않아 알 수 없는 생성 ID는 기존 누락 경고/charset 폴백을 유지한다.
+  `loadBundledAssets`는 프로젝트에 참조된 생성 몬스터를 `load.image`로 먼저 읽는다(적 DB 참조만 있고
+  필드 이벤트는 아직 생성되지 않은 부팅도 포함). URL은 `resolveAssetResourceUrl`을 거쳐 단일 HTML의
+  인라인 자산 표를 따른다. 별도 시트 절단 없이 `__BASE` 프레임을 쓰고, `eventSpriteScale`이 원본 비율을
+  유지하며 32×32 논리 px 안에 맞춘 뒤 저작 `graphic.scale`을 곱한다. 프레임/방향 변경으로 시트처럼
+  잘라 그리지 않는다. 이벤트·동료·이동 루트 외형 교체에 같은 크기 규칙을 적용한다. 기존 프로젝트
+  sprite/upload 정의가 같은 ID를 소유하면 그 정의가 우선한다. 회귀: `test/generatedMonsterFieldSprites.test.ts`
+  (실제 PNG 치수, 필드 스폰→렌더, 사전 로딩, 내보내기/인라인, 미등록 ID 경고, 기존 소유권).
 - **QA instrumentation is an explicit boot capability (2026-08-28).** `__OPENRPG_BOOT__.qaInstrumentation` → `renderPlayer({ qaInstrumentation })` → `createPlayGame` registry → `PlayScene`. When it is off (every normal exported/community player boot) the runtime installs **no** `__oprnDebug`/`__oprnInput`/`__oprnCamera`/`__oprnPlayerSprite`/`__oprnCharacterSprites`/`__oprnActionCombat`/`__oprnSetActorVitals`/`__oprnSetMediaState` globals, creates **no** `runtime-state-json` / `audio-state-json` mirrors and no `.runtime-debug-marker` hitboxes, and never builds or serializes the broad debug snapshot; `syncRuntimeState` takes a narrow visible-HUD path instead (timer, calendar, picture layer keep working). When it is on, all of that is retained unchanged. Opted in by: `scripts/lib/runtimeQaRun.mjs` (the mandated runtime QA harness depends on `__oprnDebug` for `setSeed`/`teleport`/`readState`), editor play mode (`src/app/mode.ts`), and both editor Test Play modals — those are authoring surfaces, not the shipped player, so the existing editor e2e suite keeps its state dump. Regression: `test/runtimeQaInstrumentationBoundary.test.ts`, `test/runtime/instrumentation-boundary.spec.ts`. The QA `teleport` hook must load a changed destination map **exactly once** — a merge once duplicated that branch and loaded it twice.
 - **테스트 플레이 부팅 복구 경로 (2026-08-29):** `player.ts` 는 Phaser 기동 전에 `preflightProjectForPlay` 를 실행한다. 예비검사 차단·ready 타임아웃·부팅 예외의 단일 실패 출구는 `playBootRecovery.describeBootFailure` 의 설명을 받은 `playLoadingOverlay.showRecovery` 다. 고친 프로젝트는 세션 생성에 명시적으로 전달되고 `beginReadOnlyProjectSnapshot` 을 통해 `PlayScene` 에 전달된다. 내보내기 대역 `exportProjectStoreShim` 도 `currentProject` 를 복제 스냅숏으로 교체하며, 멱등 해제 시 다른 교체가 없었을 때만 이전 프로젝트를 복원한다. 안전 모드는 auto/parallel 트리거를 action 으로 낮추고 자율 이동·일정을 제거하되 action 이벤트는 유지한다.
 - **엔진 조각 fetch 실패는 재시도·한 번 새로고침 (2026-09-02):** `createPlayGame` 의 `import("@/player/PlayScene")` 와 `startEditGame` 의 `EditScene` import 는 Vite 가 `assets/PlayScene-<hash>.js` 로 쪼갠다. 재빌드 뒤 옛 해시 404 또는 일시적 네트워크면 `TypeError: Failed to fetch dynamically imported module` 가 나고, 브라우저는 그 specifier 의 거부를 페이지 수명 동안 캐시한다 — 복구 「다시 시도」가 같은 `import()` 를 부르면 즉시 같은 화면이 된다. `importWithRetry`(`src/util/dynamicImport.ts`) 가 URL 에 `?t=` 를 붙여 캐시를 우회하고, 그래도 실패하면 `moduleLoadRecovery` 가 sessionStorage 가드로 페이지를 한 번만 새로고침한다(`vite:preloadError` 도 같은 손잡이). Phaser `<script>` 로드 실패도 rejected Promise 를 붙잡지 않는다(`ensurePhaser` 가 손잡이를 비우고 한 번 더 받는다). 회귀: `test/dynamicImport.test.ts`, `test/moduleLoadRecovery.test.ts`, `test/phaserRuntime.test.ts`, `test/playBootRecovery.test.ts`.
