@@ -92,3 +92,5 @@ AI도 `make_chase_scene.pursuit`와 `configure_object_behavior`로 같은 페이
 `eventEditorShellSurface.baseline.json`은 브라우저로 검토한 물체 상호작용 컨트롤의 추가만 반영했다.
 검증: `aiActivityNarration.test.ts`, `projectLint.test.ts`, `eventEditorShellSurface.baseline.test.ts`와
 기존 공포 런타임/세이브 계약. 통합된 main 위에서도 관련 80개와 앱 타입 검사가 통과했다.
+
+- 가구 밀기 QA (`furniture-push.probe.mjs`)는 부하가 큰 호스트에서 실제 종료 좌표까지 최대 10초 기다린다. 중간 프레임 수·16px 접촉 간격·정확한 종료 좌표·가구 프레임 고정 assertion은 유지한다. 기준선 촬영은 기존 900ms다.

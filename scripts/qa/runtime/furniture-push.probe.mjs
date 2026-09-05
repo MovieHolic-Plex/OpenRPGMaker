@@ -80,7 +80,7 @@ try {
   await dismiss();
   await setup('map_night_foyer', 14, 11);
   const beforePng = await page.locator('canvas').screenshot();
-  report.probes.frames = await page.evaluate(async directionInput => {
+  report.probes.frames = await page.evaluate(async ({ directionInput, baseline }) => {
     const frames = [];
     const canvas = document.querySelector('canvas');
     const start = performance.now();
@@ -94,11 +94,15 @@ try {
     sample();
     if(directionInput) { window.__oprnInput.dir('up'); window.__oprnInput.dir(null); }
     else window.__oprnInput.action();
-    while(performance.now()-start < 900) {
+    // A loaded CI host may render fewer than 20 logic ticks in 900 ms.
+    // Await the same exact endpoints asserted below, with a bounded timeout.
+    while(performance.now()-start < (baseline ? 900 : 10000)) {
       await new Promise(requestAnimationFrame); sample();
+      const last = frames.at(-1);
+      if (!baseline && last.ms >= 900 && last.player.y === 176 && last.chair.y === 160) break;
     }
     return frames;
-  },directionInput);
+  },{ directionInput, baseline: label === 'before' });
   const frames = report.probes.frames;
   frames[0].png = `data:image/png;base64,${beforePng.toString('base64')}`;
   const selected = [frames[0]];
