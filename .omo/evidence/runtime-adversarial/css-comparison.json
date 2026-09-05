@@ -1,0 +1,23 @@
+{
+  "baseCommit": "2489cfef0325cfea9d2c4366a50d9e569efdfb44",
+  "featureCommit": "29718f268559a8be500f0b80155c8d01b0b93bf8",
+  "file": "test/playerRuntimeCss.test.ts",
+  "rows": [
+    {
+      "revision": "base",
+      "passed": 5,
+      "failed": 1,
+      "failedAssertions": [
+        "exported player runtime CSS detects an omitted required import in a disposable built entry"
+      ]
+    },
+    {
+      "revision": "current",
+      "passed": 5,
+      "failed": 1,
+      "failedAssertions": [
+        "exported player runtime CSS detects an omitted required import in a disposable built entry"
+      ]
+    }
+  ]
+}
