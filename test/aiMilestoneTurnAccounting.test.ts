@@ -125,7 +125,8 @@ describe("마일스톤 턴 정산", () => {
     expect(result.proposedCalls).toHaveLength(0);
 
     // 1) 턴 결과가 "이 턴이 무엇을 지었는지" 를 계속 들고 있다.
-    const applied = result.appliedCalls ?? [];    expect(applied.map((call) => call.name)).toEqual([
+    const applied = result.appliedCalls ?? [];
+    expect(applied.map((call) => call.name)).toEqual([
       ...Array.from({ length: WRITE_COUNT }, () => "upsert_item"),
       "set_title_screen",
     ]);

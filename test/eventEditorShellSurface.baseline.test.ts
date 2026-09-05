@@ -76,13 +76,13 @@ const PAGE2_CONDITIONS: EventPageCondition[] = [
 ];
 
 /**
- * 고정 조건 12행을 **전부** 켜는 묶음.
+ * 고정 조건 13행을 **전부** 켜는 묶음.
  *
  * 왜 필요한가(실측): main 의 칩 재설계(fbc32034) 이후 조건 행은 «켠 것만» 렌더된다. 그래서
  * page1+page2 가 켜지 않는 kind 는 표면에서 통째로 사라졌고, CSS 실사용 정본이 5종을 잃었다 —
  * `.timer` `.friendship` `.npc-activity` `.event-condition-time-unit`
  * `.event-condition-friendship-hint`. **제품에서 죽은 게 아니라 픽스처가 도달하지 못한 것**이라
- * 기준선을 갱신하면 안 되고 픽스처가 12행을 다 켜야 한다. 예전의 «12행 상시 펼침» 은 이
+ * 기준선을 갱신하면 안 되고 픽스처가 13행을 다 켜야 한다. 예전의 «13행 상시 펼침» 은 이
  * 커버리지를 공짜로 줬고, 칩 UI 에서는 명시적으로 켜야 한다.
  *
  * `captureShell` 이 이 변형에 `characterId` 를 **일부러 붙이지 않는다** —
@@ -105,6 +105,7 @@ const ALL_ROW_CONDITIONS: EventPageCondition[] = [
   { kind: "npcActivity", activity: "work" },
   // npcKey 빈칸 = 항상 거짓 경고 분기(위 주석 참고).
   { kind: "friendshipAtLeast", npcKey: "", value: 200 },
+  { kind: "relationshipAtLeast", npcKey: "", state: "dating" },
   { kind: "selfSwitch", key: "B", value: true },
 ];
 
@@ -359,7 +360,7 @@ function formatCaptureError(e: unknown): string {
  * 분기를 **한 번도 타지 않는다**. CSS 실사용 정본 래칫이 이 두 클래스의 소실로 잡아냈다.
  * 사용자가 이벤트를 만들면 가장 먼저 보는 화면이라 엣지 케이스가 아니다.
  *
- * `allRows: true` 는 **고정 조건 12행을 전부 켠 상태**다(ALL_ROW_CONDITIONS 주석 참고).
+ * `allRows: true` 는 **고정 조건 13행을 전부 켠 상태**다(ALL_ROW_CONDITIONS 주석 참고).
  * 칩 재설계 이후 «켜지 않은 kind 는 아예 렌더되지 않는다» 는 성질 때문에, 이 변형이 없으면
  * timer·friendship·npcActivity 행의 표면이 어느 축에도 남지 않는다.
  */
@@ -731,24 +732,24 @@ describe("이벤트에디터 셸 표면 스냅샷", () => {
   });
 
   /**
-   * `allRows` 변형이 정말 12행을 다 켜는지 못 박는다. bare 계약과 같은 이유이지만, 여기서는
+   * `allRows` 변형이 정말 13행을 다 켜는지 못 박는다. bare 계약과 같은 이유이지만, 여기서는
    * **칩 UI 의 성질 때문에 훨씬 조용히 죽는다** — 픽스처에서 조건 하나를 빼면 그 행의 표면 전체가
    * 사라지는데, 개수 단정이 없으면 기준선 갱신 한 번으로 초록이 된다. 실측으로 그 경로를 밟았다:
    * page1+page2 만 있던 시절 정본이 `.timer` `.friendship` `.npc-activity`
    * `.event-condition-time-unit` `.event-condition-friendship-hint` 5종을 잃었다.
    */
-  it("allRows 변형이 고정 조건 12행을 전부 켠다", () => {
+  it("allRows 변형이 고정 조건 13행을 전부 켠다", () => {
     if (crashed.length) return;
     const chips = actual.allRows.testids.filter((t) => t.startsWith("event-condition-chip-"));
-    expect(chips.length, "조건 칩이 12개가 아니다 — pageConditions.ts 의 행 정의가 바뀌었다").toBe(12);
-    // 12행인데 testid 는 11종이다 — switch1·switch2 가 라벨 "스위치" 를 공유해
+    expect(chips.length, "조건 칩이 13개가 아니다 — pageConditions.ts 의 행 정의가 바뀌었다").toBe(13);
+    // 13행인데 testid 는 12종이다 — switch1·switch2 가 라벨 "스위치" 를 공유해
     // `event-condition-row-스위치` 로 겹친다(pageConditions.ts:53,62). 선행 문제이고
     // 아래 컨트롤 키의 `~1` 접미사가 두 행이 다 렌더됐음을 증명한다.
     const rows = actual.allRows.testids.filter((t) => t.startsWith("event-condition-row-"));
     expect(
       rows.length,
-      `켜진 조건 행 testid 가 11종이 아니다(${rows.length}종) — ALL_ROW_CONDITIONS 가 어떤 kind 를 놓쳤다`,
-    ).toBe(11);
+      `켜진 조건 행 testid 가 12종이 아니다(${rows.length}종) — ALL_ROW_CONDITIONS 가 어떤 kind 를 놓쳤다`,
+    ).toBe(12);
     expect(
       Object.keys(actual.allRows.controls),
       "스위치 행이 하나뿐이다 — switch1/switch2 두 행이 다 켜졌는지 확인하라",

@@ -2516,7 +2516,7 @@ export class AssistantSession {
   // 이미 누적된 제안(turnProposals)과 대화 문맥은 그대로 유지된다.
   async retryLastTurn(onEvent: (event: SessionEvent) => void = () => {}, signal?: AbortSignal): Promise<TurnResult> {
     if (!this.lastTurnFailed) {
-      return { assistantText: "", proposedCalls: this.finalizeProposals(this.turnProposals), stoppedReason: "final" };
+      return this.withTurnLedger({ assistantText: "", proposedCalls: this.finalizeProposals(this.turnProposals), stoppedReason: "final" });
     }
     this.pushAudit({ kind: "status", text: "오류 후 재시도(retryLastTurn)" });
     const startedAt = Date.now();
