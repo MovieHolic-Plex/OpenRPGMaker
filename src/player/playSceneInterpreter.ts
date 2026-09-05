@@ -1,3 +1,4 @@
+import { cancelFurniturePush } from './furniturePushAnimation';
 import { friendshipDeltaEmote } from "@/project/emotes";
 import { showSceneEmote } from "@/player/playSceneEmotes";
 import {
@@ -631,6 +632,7 @@ function removeRuntimeEvent(scene: PlaySceneContext, eventId: string | undefined
 }
 
 function stopCommandMovement(scene: PlaySceneContext): void {
+  cancelFurniturePush(scene);
   for (const eventId of scene.commandMoveRouteEventIds) scene.autonomousNPCs.delete(eventId);
   scene.commandMoveRouteEventIds.clear();
   scene.playerRoute = null;

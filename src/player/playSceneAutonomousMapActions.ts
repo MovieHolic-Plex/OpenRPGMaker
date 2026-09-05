@@ -1,3 +1,4 @@
+import { furniturePushBlocks } from './furniturePushAnimation';
 import { canMoveFootprint, inBounds } from "@/project/collision";
 import { UNIT_FOOTPRINT, passageBounds } from "@/project/footprint";
 import { isSpatialPlacementBlocking } from "@/project/spatialOccupancy";
@@ -117,6 +118,7 @@ function isCharacterBlockedRect(
   y: number
 ): boolean {
   const rect = passageBounds(x, y, self.fp, self.passRows);
+  if (furniturePushBlocks(request.scene, rect, request.eventId)) return true;
   for (let cy = rect.top; cy <= rect.bottom; cy += 1) {
     for (let cx = rect.left; cx <= rect.right; cx += 1) {
       if (isPlayerOccupyingTile(request.scene, cx, cy)) return true;
