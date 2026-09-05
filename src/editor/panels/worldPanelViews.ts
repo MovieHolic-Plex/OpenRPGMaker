@@ -11,6 +11,8 @@ import {
   type WorldPanelState,
   currentWorld,
   draftFromEntity,
+  finishWorldDraft,
+  deleteWorldEntity,
   ENTITY_TYPE_LABELS,
   field,
   highestSeverity,
@@ -64,6 +66,7 @@ export function renderHeader(state: WorldPanelState, refresh: () => void, option
       dataset: { testid: "world-add-entity" },
       on: {
         click: () => {
+          if (!finishWorldDraft(state)) { refresh(); return; }
           startNewDraft(state, currentWorld(store.getCurrent()), state.addType);
           refresh();
         },
@@ -163,6 +166,7 @@ function renderOverview(world: ProjectWorld, state: WorldPanelState, refresh: ()
                 attrs: { type: "button" },
                 on: {
                   click: () => {
+                    if (!finishWorldDraft(state)) { refresh(); return; }
                     state.selectedId = entity.id;
                     state.editDraft = null;
                     setPersistedCodexView(state.tab, state.selectedId);
@@ -225,6 +229,7 @@ function renderWorldCard(
     : null;
 
   const selectCard = (): void => {
+    if (!finishWorldDraft(state)) { refresh(); return; }
     state.selectedId = entity.id;
     state.editDraft = null;
     state.editError = "";
@@ -238,7 +243,7 @@ function renderWorldCard(
     on: {
       click: selectCard,
       keydown: (event) => {
-        if (event instanceof KeyboardEvent && (event.key === "Enter" || event.key === " ")) {
+        if (event.target === event.currentTarget && event instanceof KeyboardEvent && (event.key === "Enter" || event.key === " ")) {
           event.preventDefault();
           selectCard();
         }
@@ -337,6 +342,17 @@ function renderWikiPane(
                   },
                 },
               }),
+              el("button", {
+                class: "btn small",
+                text: "삭제",
+                attrs: { type: "button", ...(entity.locked ? { disabled: "", title: "잠금을 푼 뒤 삭제하세요" } : {}) },
+                dataset: { testid: "world-delete-entity" },
+                on: { click: () => {
+                  const count = relationsForEntity(currentWorld(store.getCurrent()), entity.id).length;
+                  if (!globalThis.confirm(`「${entity.name}」 카드를 삭제할까요? 관계 ${count}개도 제거됩니다. 연결된 게임 항목은 유지되며 실행 취소로 복원할 수 있습니다.`)) return;
+                  if (deleteWorldEntity(entity.id)) { state.selectedId = null; refresh(); }
+                } },
+              }),
             ],
           }),
         ],
@@ -397,7 +413,12 @@ function renderEditPane(state: WorldPanelState, world: ProjectWorld, project: Pr
     draft.body = bodyInput.value;
     if (isWorldEntityType(typeSelect.value)) draft.type = typeSelect.value;
     draft.locked = lockedInput.checked;
+    state.onDraftChange?.();
   };
+  for (const control of [nameInput, summaryInput, tagsInput, bodyInput, typeSelect, lockedInput]) {
+    control.addEventListener("input", syncDraft);
+    control.addEventListener("change", syncDraft);
+  }
 
   return el("article", {
     class: "world-wiki-view world-edit-view",
@@ -465,22 +486,23 @@ function renderEditPane(state: WorldPanelState, world: ProjectWorld, project: Pr
 }
 
 function renderIssueList(entityIssues: readonly LintIssue[], globalIssues: readonly LintIssue[]): HTMLElement {
-  const issues = [...entityIssues, ...globalIssues];
-  if (issues.length === 0) return el("section", { class: "world-lint-list empty", dataset: { testid: "world-lint-list" }, text: "설정집 검사 이슈 없음" });
+  const items = (issues: readonly LintIssue[]): HTMLElement => el("ul", {
+    children: issues.map((issue) => el("li", {
+      class: `world-lint-item ${issue.severity}`,
+      text: `${SEVERITY_LABELS[issue.severity]} · ${issue.message}`,
+      dataset: { severity: issue.severity },
+    })),
+  });
   return el("section", {
-    class: "world-lint-list",
+    class: `world-lint-list${entityIssues.length + globalIssues.length === 0 ? " empty" : ""}`,
     dataset: { testid: "world-lint-list" },
     children: [
-      el("strong", { text: "설정집 검사" }),
-      el("ul", {
-        children: issues.map((issue) =>
-          el("li", {
-            class: `world-lint-item ${issue.severity}`,
-            text: `${SEVERITY_LABELS[issue.severity]} · ${issue.message}`,
-            dataset: { severity: issue.severity },
-          })
-        ),
-      }),
+      ...(entityIssues.length ? [el("strong", { text: "이 카드 검사" }), items(entityIssues)] : []),
+      ...(globalIssues.length ? [el("details", {
+        dataset: { testid: "world-global-lint" },
+        children: [el("summary", { text: `전체 프로젝트 확인 사항 ${globalIssues.length}개` }), items(globalIssues)],
+      })] : []),
+      ...(entityIssues.length + globalIssues.length === 0 ? [el("span", { text: "설정집 검사 이슈 없음" })] : []),
     ],
   });
 }

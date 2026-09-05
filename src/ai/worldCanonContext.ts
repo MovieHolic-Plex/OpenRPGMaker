@@ -48,8 +48,8 @@ export function worldCanonPromptSection(value: WorldCanon | undefined): string |
   }
   for (const kind of WORLD_CANON_LAW_KINDS) {
     const law = canon.laws[kind];
-    if (!law.present && !law.note) continue;
-    lines.push(`- ${LAW_WORDS[kind]}: ${law.present ? "있음" : "없음"}${law.note ? ` — ${law.note}` : ""}`);
+    if (law.present === undefined && !law.note) continue;
+    lines.push(`- ${LAW_WORDS[kind]}: ${law.present === undefined ? "미정" : law.present ? "있음" : "없음"}${law.note ? ` — ${law.note}` : ""}`);
   }
   if (canon.body) lines.push("", excerpt(canon.body));
   return lines.join("\n");

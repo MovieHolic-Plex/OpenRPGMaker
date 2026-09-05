@@ -879,7 +879,7 @@ function renderActiveTab(
       renderWorldCanonTab(body, rerender);
       break;
     case "worldCodex":
-      renderWorldCodexTab(body);
+      renderWorldCodexTab(body, container);
       break;
     case "worldGen":
       renderWorldGenTab(body, rerender);

@@ -1,3 +1,4 @@
+import { classifyMapEvent } from "../mapInspection";
 import type { GameEvent, Project } from "../types";
 import type { LintIssue } from "../lint/projectLint";
 import type { ProjectWorld, WorldRef } from "./types";
@@ -115,6 +116,8 @@ function refIds(world: ProjectWorld, kind: WorldRef["kind"]): ReadonlySet<string
 }
 
 function namedNpcEventName(event: GameEvent): string | null {
+  const role = classifyMapEvent(event);
+  if (role !== "npc" && role !== "shop") return null;
   for (const page of event.pages ?? []) {
     const name = page.name.trim();
     if (!name || DEFAULT_PAGE_NAME_RE.test(name)) continue;

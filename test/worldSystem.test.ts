@@ -64,7 +64,7 @@ function addNamedNpc(project: Project, id = "ev_sera"): void {
         trigger: { kind: "action" },
         priority: "same",
         movement: { type: "fixed", speed: 3, frequency: 3 },
-        commands: [],
+        commands: [{ kind: "text", body: "안녕하세요." }],
       },
     ],
   });

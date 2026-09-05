@@ -55,7 +55,7 @@ export type WorldCanon = {
 };
 
 export type WorldCanonLawState = {
-  readonly present: boolean;
+  readonly present: boolean | undefined;
   readonly note: string;
 };
 
@@ -78,7 +78,7 @@ export type ResolvedWorldCanon = {
   readonly status: WorldCanonStatus;
 };
 
-const EMPTY_LAW: WorldCanonLawState = { present: false, note: "" };
+const EMPTY_LAW: WorldCanonLawState = { present: undefined, note: "" };
 
 export const EMPTY_WORLD_CANON: ResolvedWorldCanon = {
   name: "",
@@ -153,7 +153,7 @@ export function worldCanonHasContent(value: WorldCanon | undefined): boolean {
 
 function resolveLaw(value: WorldCanonLaw | undefined): WorldCanonLawState {
   return {
-    present: value?.present === true,
+    present: value?.present,
     note: value?.note ?? "",
   };
 }
@@ -174,9 +174,9 @@ function compactLaws(laws: ResolvedWorldCanonLaws): WorldCanonLaws | undefined {
 
 function compactLaw(law: WorldCanonLawState): WorldCanonLaw | undefined {
   const note = clampText(law.note, WORLD_CANON_BOUNDS.lawNote);
-  if (!law.present && !note) return undefined;
+  if (law.present === undefined && !note) return undefined;
   return {
-    ...(law.present ? { present: true } : {}),
+    ...(law.present !== undefined ? { present: law.present } : {}),
     ...(note ? { note } : {}),
   };
 }

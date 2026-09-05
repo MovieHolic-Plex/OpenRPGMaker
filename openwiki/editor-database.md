@@ -81,6 +81,18 @@
 - `설정집` 은 세계관 카드 위키를 `workspaceShell` 셸에 심은 것이다 (`world-panel-embedded` + `db-world-codex-workspace`). 본문은 레이아웃 루트 하나만 자식으로 둬 `.db-body` 자체 스크롤을 만들지 않는다 — 계약 `test/databaseWorldCodexStructure.test.ts`. 톱바 세계관 버튼은 이 그룹의 `이 세계` 탭으로 점프한다.
 - **소바자 세 곳 (2026-09-03).** (1) 조수: `src/ai/worldCanonContext.ts` 의 `worldCanonPromptSection` 이 `## 이 세계(세계관 고정)` 블록을 감독 지침과 같은 **예산 밖 고정분**으로 넣는다 — 이름·전제·톤·없는 것(절대 금지)·법칙 + 본문 600자. 엔티티 다이제스트 배제(`worldAiExclusion`)는 그대로다. (2) 개요 탭 `db-overview-canon` 카드가 이름·전제를 보이고 이 세계 탭으로 점프한다. (3) 환영 장르 포스터(`applyWelcomeGenrePresetToOpenProject`)가 세계관이 뱄 때만 톤·전제 초안을 심는다. 계약 `test/worldCanonConsumers.test.ts`.
 
+### 세계관 입력 보존·설정집 저장 계약 (2026-09-05)
+
+- 「이 세계」 법칙은 `미정 / 없음 / 있음` 세 상태다. `present: undefined`는 미정, 명시적 `false`는 저장하고 AI 프롬프트에도 전달한다. `writeCanon` 함수 패치는 store 안의 최신 값을 받는다. 법칙 입력/토글이 렌더 당시의 다른 법칙이나 같은 법칙 설명을 되돌리지 않는다.
+- 이름·전제·시대·기술·법칙 설명·본문 입력의 `maxlength`는 `WORLD_CANON_BOUNDS`와 같다. 미리보기/600자 발췌 안내는 유지한다.
+- `worldCodexSession.ts`는 자료집 컨테이너별 WeakMap으로 초안 상태를 소유한다. DOM 캐시가 무효화되어도 입력이 유지된다. 모달의 전체 저장은 카드 초안을 먼저 커밋하고 flush하며, 잠긴 카드 변경 같은 실패가 있으면 저장 성공으로 표시하거나 닫지 않는다. 닫기 경고는 프로젝트 변경과 카드 초안을 함께 본다. 명시적 폐기는 둘 다 폐기한다. 열린 자료집으로 점프하는 경로는 기존 모달 세션에서 탭만 바꾼다. 프로젝트 교체 시 모달을 닫고 이전 초안의 새 프로젝트 커밋을 거부한다.
+- 설정집 input/change는 초안을 갱신한다. 내부 카테고리·검색은 초안을 유지하고, 다른 카드 선택/새 카드 추가는 변경된 초안을 먼저 커밋한다. 검색창 DOM은 유지하고 본문만 갱신해 포커스와 IME 조합을 보존한다.
+- 카드 삭제는 잠금을 확인하고 관계·전투 진영의 worldEntityId 출처를 정리한다. 연결된 맵/이벤트/DB 레코드는 유지한다. 프로젝트 스냅샷으로 삭제/출처 정리를 함께 undo한다.
+- 설정집 NPC 미등록 검사는 `classifyMapEvent`를 사용한다. 문/상자는 제외하고 NPC·상점의 이름을 검사한다. 다른 카드와 무관한 전역 검사는 기본 접힌 details로 표시한다.
+- 임베드 설정집은 부모 폭을 사용한다. 760px 이하 컨테이너는 목록/상세를 세로 배치하고 카드도 작은 그림 옆에 제목이 보이는 가로 행으로 표시한다. 공용 `.db-ws-single`은 좁은 폭에서도 한 행 전체를 사용하며 없는 목록에 높이 34%를 예약하지 않는다. 잠금의 키보드 Enter/Space는 카드 선택 이벤트에 가로채이지 않으며 밝은 테마에서도 상태 글자가 보인다. `CameraPanController`도 캔버스가 keydown을 소유한 경우에만 Space keyup의 기본 동작을 막는다(모달 버튼의 기본 클릭 보존).
+- AI 배제 계약은 유지한다. 화면 안내에 NPC 작성기는 카드 이름·요약을 읽고, 카드 본문·관계는 전달하지 않는다고 명시한다. 모든 작성 채널에 전달할 규칙은 「이 세계」가 소유한다.
+- 검증: `test/worldAuthoringRegression.test.ts`, 기존 worldCanon/worldPanel/worldSystem 및 자료집 모달 테스트, `test/e2e/world-authoring-regression.spec.ts`. 브라우저 증거는 `verify-shots/world-authoring-fixes/`.
+
 ## '생성 규칙' 탭 — AI 마을 생성의 물·숲·길 (2026-08-30)
 
 - `맵` 그룹 첫 탭 `생성 규칙` (`worldGen`, testid `db-tab-world-gen`) 은 `project.system.worldGen` 을 저작한다. 강 띠 두께·호수 지름·수면 모양·숲 깊이·나무 밀도·간격·길 재료·광장 자리, 그리고 "이 말이 나오면 이 지형" 낱말 규칙이 전부 이 한 탭에 있다.

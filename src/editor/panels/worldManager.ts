@@ -38,6 +38,7 @@ export type WorldPanelOptions = {
   readonly onClose?: () => void;
   /** 자료집 탭 안에 심을 때. 제목/닫기를 빼고 셸 크기를 따른다. */
   readonly embedded?: boolean;
+  readonly state?: WorldPanelState;
 };
 
 export type WorldPanelState = {
@@ -47,7 +48,31 @@ export type WorldPanelState = {
   addType: WorldEntityType;
   editDraft: WorldEditDraft | null;
   editError: string;
+  onDraftChange?: () => void;
 };
+
+export function createWorldPanelState(options: WorldPanelOptions = {}): WorldPanelState {
+  return { tab: options.initialTab ?? "overview", search: "", selectedId: options.initialEntityId ?? null,
+    addType: "character", editDraft: null, editError: "" };
+}
+
+export function hasWorldDraftChanges(state: WorldPanelState): boolean {
+  const draft = state.editDraft;
+  if (!draft) return false;
+  if (draft.isNew) return Boolean(draft.name.trim() || draft.summary.trim() || draft.body.trim() || draft.tagsText.trim() || draft.refs.length
+    || draft.locked || draft.type !== "character" || draft.relations.some((relation) => relation.a === draft.id || relation.b === draft.id));
+  const world = store.getCurrent().world;
+  const stored = world?.entities.find((entity) => entity.id === draft.id);
+  return !stored || JSON.stringify(draftFromEntity(stored, world?.relations ?? [])) !== JSON.stringify(draft);
+}
+
+/** Card navigation commits a changed draft; validation failures keep the editor open. */
+export function finishWorldDraft(state: WorldPanelState): boolean {
+  if (hasWorldDraftChanges(state)) saveDraft(state, currentWorld(store.getCurrent()));
+  else state.editDraft = null;
+  state.onDraftChange?.();
+  return state.editDraft === null;
+}
 
 export type WorldEditDraft = {
   id: string;
@@ -183,7 +208,8 @@ export function jumpToWorldRefTarget(ref: WorldRef, project: Project = store.get
   }
 }
 
-export function saveDraft(state: WorldPanelState, world: ProjectWorld): void {
+export function saveDraft(state: WorldPanelState, _world: ProjectWorld): void {
+  const world = currentWorld(store.getCurrent());
   const draft = state.editDraft;
   if (!draft) return;
   if (!draft.isNew) {
@@ -209,11 +235,14 @@ export function saveDraft(state: WorldPanelState, world: ProjectWorld): void {
     ? world.entities.map((entry) => (entry.id === entity.id ? entity : entry))
     : [...world.entities, entity];
   try {
-    const normalized = normalizeWorld({ entities, relations: draft.relations });
+    const normalized = normalizeWorld({ entities, relations: [
+      ...world.relations.filter((relation) => relation.a !== draft.id && relation.b !== draft.id),
+      ...draft.relations.filter((relation) => relation.a === draft.id || relation.b === draft.id),
+    ] });
     recordProjectSnapshot(draft.isNew ? "세계관 추가" : "세계관 편집");
     store.update((project) => {
       project.world = normalized;
-    }, { scope: "project" });
+    }, { scope: "project", label: draft.isNew ? "설정집 카드 추가" : "설정집 카드 편집" });
     state.selectedId = entity.id;
     state.editDraft = null;
     state.editError = "";
@@ -221,6 +250,24 @@ export function saveDraft(state: WorldPanelState, world: ProjectWorld): void {
   } catch (error) {
     state.editError = error instanceof Error ? error.message : "세계관 저장에 실패했습니다.";
   }
+}
+
+export function deleteWorldEntity(entityId: string): boolean {
+  const world = currentWorld(store.getCurrent());
+  const entity = world.entities.find((entry) => entry.id === entityId);
+  if (!entity) return false;
+  if (entity.locked) { toast("잠금을 푼 뒤 삭제하세요", "error"); return false; }
+  recordProjectSnapshot("설정집 카드 삭제");
+  store.update((project) => {
+    project.world = normalizeWorld({
+      entities: world.entities.filter((entry) => entry.id !== entityId),
+      relations: world.relations.filter((relation) => relation.a !== entityId && relation.b !== entityId),
+    });
+    for (const faction of project.factions?.defs ?? []) {
+      if (faction.worldEntityId === entityId) delete faction.worldEntityId;
+    }
+  }, { scope: "project", label: "설정집 카드 삭제" });
+  return true;
 }
 
 export function toggleEntityLock(entityId: string): void {
@@ -233,7 +280,7 @@ export function toggleEntityLock(entityId: string): void {
   recordProjectSnapshot("세계관 잠금 변경");
   store.update((project) => {
     project.world = normalized;
-  }, { scope: "project" });
+  }, { scope: "project", label: "설정집 카드 잠금 변경" });
 }
 
 export function startNewDraft(state: WorldPanelState, world: ProjectWorld, type: WorldEntityType): void {

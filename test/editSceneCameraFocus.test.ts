@@ -562,6 +562,10 @@ describe("제스처가 미룬 초점은 실제 종료 진입점에서 한 번 �
       } as never,
     );
     scene.cameraPanController = controller;
+    const modalKey = new Event("keyup", { cancelable: true });
+    Object.defineProperty(modalKey, "code", { value: "Space" });
+    expect(controller.handleSpaceKeyUp(modalKey as KeyboardEvent)).toBe(false);
+    expect(modalKey.defaultPrevented).toBe(false);
     controller.handleSpaceKeyDown({ code: "Space", preventDefault: () => undefined } as KeyboardEvent);
     controller.start(pointerAt() as never);
     scene.panCameraToTile(focusTarget(store.getCurrent().startMapId));

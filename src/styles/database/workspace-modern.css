@@ -58,6 +58,8 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws.db-ws-single {
   grid-template-columns: minmax(0, 1fr);
+  /* A detail-only tab has no list row to reserve at narrow widths. */
+  grid-template-rows: minmax(0, 1fr);
 }
 
 /* ── 목록 창 ─────────────────────────────────────────────────────────────── */

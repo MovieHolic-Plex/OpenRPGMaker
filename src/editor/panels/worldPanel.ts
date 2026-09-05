@@ -1,12 +1,13 @@
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import type { WorldRef } from "@/project/world/types";
-import { clearChildren, el } from "@/util/dom";
+import { el } from "@/util/dom";
 import {
   type WorldLintSummary,
   type WorldPanelOptions,
   type WorldPanelState,
   currentWorld,
+  createWorldPanelState,
   ensureSelectedEntity,
   jumpToWorldRefTarget,
   setPersistedCodexView,
@@ -18,14 +19,7 @@ import { readCodexEntryFromUrl, writeCodexEntryToUrl } from "./worldEntries";
 export { openWorldCodexPanel, openWorldPanel } from "./worldEntries";
 
 export function renderWorldPanel(options: WorldPanelOptions = {}): HTMLElement {
-  const state: WorldPanelState = {
-    tab: options.initialTab ?? "overview",
-    search: "",
-    selectedId: options.initialEntityId ?? null,
-    addType: "character",
-    editDraft: null,
-    editError: "",
-  };
+  const state = options.state ?? createWorldPanelState(options);
   const root = el("section", {
     class: options.embedded ? "world-panel world-panel-embedded" : "world-panel",
     attrs: { role: options.embedded ? "region" : "dialog", "aria-label": "설정집" },
@@ -40,12 +34,15 @@ export function renderWorldPanel(options: WorldPanelOptions = {}): HTMLElement {
     const lint = memoWorldLint(project, world);
     if (!urlAdopted) {
       urlAdopted = true;
-      adoptCodexUrlEntry(state, world);
+      if (!state.editDraft) adoptCodexUrlEntry(state, world);
     }
     ensureSelectedEntity(state, world);
     syncCodexUrl(state);
-    clearChildren(root);
-    root.append(renderHeader(state, refresh, options), renderMain(state, world, project, lint, refresh));
+    const previousMain = root.querySelector(".world-panel-main");
+    const main = renderMain(state, world, project, lint, refresh);
+    if (previousMain) previousMain.replaceWith(main);
+    else root.append(renderHeader(state, refresh, options), main);
+    state.onDraftChange?.();
   };
 
   refresh();
