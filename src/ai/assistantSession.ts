@@ -5,6 +5,7 @@
 // - 브라우저 비의존(순수). chat 함수는 주입 가능(테스트에서 모킹).
 
 import { ToolReadEvidence } from "./toolReadEvidence";
+import { ToolVerificationEvidence } from "./toolVerificationEvidence";
 import { getTool, normalizeToolArgs, runTool } from "@/editor/tools";
 import { viewportVillageBounds } from "@/editor/tools/authorVillageSupport";
 import { toOpenAiTools } from "@/editor/tools";
@@ -44,6 +45,7 @@ import { store } from "@/project/store";
 import { supabaseProjectConfigDraft } from "@/project/supabaseProjectConfig";
 import {
   PLAY_WALKTHROUGH_TOOL,
+  VERIFICATION_TOOL_NAMES,
   parseLayerVerdict,
   selectVerificationCalls,
   type LayerDescriptor,
@@ -864,6 +866,8 @@ export class AssistantSession {
   /** 이번 턴의 의도 선언. 턴 시작에 한 번 정해지고 라우팅(되묻기·플래너·툴 노출·대상 맵)이 이것만 읽는다. */
   private turnIntent: IntentDeclaration | null = null;
   private readonly readEvidence = new ToolReadEvidence();
+  private readonly verificationEvidence = new ToolVerificationEvidence();
+  private readonly workItemVerificationEvidence = new ToolVerificationEvidence();
   /** 이번 턴이 손댈 선택 사각형(있으면). 패널·영역 작업이 사실로 넘긴다. */
   private turnScope: SessionTurnScope | null = null;
   // 직전 턴이 LLM 오류로 끊겼는가(수동 재시도 허용 플래그).
@@ -1538,7 +1542,10 @@ export class AssistantSession {
     // 질문 모드는 사용자가 직접 고른 사실이라 선언의 create/modify 를 덮어쓴다 — 안 그러면 플래너·쓰기 기대가 문장 판정으로 돈다.
     const intent = this.applyComposerModeToIntent(await this.declareTurnIntent(instruction, onEvent, signal));
     this.turnIntent = intent;
-    if (!this.turnIsDriverContinue && intent.source !== "continuation") this.readEvidence.begin(intent.readBeforeWrite);
+    if (!this.turnIsDriverContinue && intent.source !== "continuation") {
+      this.readEvidence.begin(intent.readBeforeWrite);
+      this.verificationEvidence.clear();
+    }
     beginAssistantToolDomainTurn(intent);
     this.currentTurnToolDomains = computeActiveToolDomains(intent);
 
@@ -2136,6 +2143,7 @@ export class AssistantSession {
 
   private resetWorkItemEvidence(): void {
     this.turnSuccessfulTools.clear();
+    this.workItemVerificationEvidence.clear();
     // 산출물 추적도 항목 단위다 — 이전 항목이 만든 맵을 다음 항목이 채울 책임으로 물려받지 않는다.
     this.turnItemCreatedMapIds.clear();
     this.turnItemAuthoredTroopIds.clear();
@@ -2180,6 +2188,13 @@ export class AssistantSession {
 
   private recordSuccessfulTool(name: string): void {
     this.syncSuccessfulToolsToCurrentWorkItem();
+    if (getTool(name)?.mode === "write") {
+      this.verificationEvidence.invalidateAfterWrite();
+      this.workItemVerificationEvidence.invalidateAfterWrite();
+      for (const previous of this.turnSuccessfulTools) {
+        if (VERIFICATION_TOOL_NAMES.has(previous)) this.turnSuccessfulTools.delete(previous);
+      }
+    }
     this.turnSuccessfulTools.add(name);
     // 교착 판정은 **연속** 무진행이다 — 이 항목에서 쓰기가 하나라도 성공했으면 진행이 있었으므로
     // 시도 수를 0으로 돌린다. 그러지 않으면 여러 턴에 걸쳐 정상 진행하는 큰 항목이 누적으로 막힌다.
@@ -2188,6 +2203,20 @@ export class AssistantSession {
       this.ralphAttemptsByItemId.delete(currentItemId);
       this.lastBlockReasonByItemId.delete(currentItemId);
       this.repeatedToolFailures.delete(currentItemId);
+    }
+  }
+
+  /** Keep transport/execution ok intact; only actual passing checks satisfy successTools. */
+  private recordToolResult(name: string, args: Record<string, unknown>, result: ToolResult, countAsSuccess = true): void {
+    this.syncSuccessfulToolsToCurrentWorkItem();
+    this.verificationEvidence.observe(name, args, result);
+    if (!countAsSuccess) return;
+    const verdict = this.workItemVerificationEvidence.observe(name, args, result);
+    if (verdict && !this.workItemVerificationEvidence.passed(name)) {
+      this.turnSuccessfulTools.delete(name);
+      this.pushAudit({ kind: "status", text: `verification:unmet ${name} — ${this.workItemVerificationEvidence.problems().join("; ")}` });
+    } else if (result.ok) {
+      this.recordSuccessfulTool(name);
     }
   }
 
@@ -2370,6 +2399,8 @@ export class AssistantSession {
       await this.yieldForUi();
       const reason = harnessToolReason("verification", call.name);
       const result = runTool(this.ctx, call.name, call.args);
+      // Advisory checks report problems but never donate success to another work item.
+      this.recordToolResult(call.name, call.args, result, false);
       onEvent({ type: "tool_call", name: call.name, args: call.args, result, reason });
       this.pushAudit({
         kind: "tool",
@@ -2537,6 +2568,12 @@ export class AssistantSession {
     auditFrom: number,
     onEvent: (event: SessionEvent) => void,
   ): TurnResult {
+    const verificationProblems = this.verificationEvidence.problems();
+    if (verificationProblems.length > 0) {
+      const notice = `검증이 아직 통과되지 않았습니다.\n${verificationProblems.slice(0, 8).map((problem) => `- ${problem}`).join("\n")}`;
+      result = { ...result, assistantText: `${result.assistantText.trim()}\n\n${notice}`.trim() };
+      onEvent({ type: "assistant_message", content: result.assistantText });
+    }
     const recap = buildRunRecap({
       elapsedMs: Date.now() - startedAt,
       usage: usageDelta(usageBefore, this.usageTotals),
@@ -3573,8 +3610,8 @@ export class AssistantSession {
           }
           // 읽기 툴도 기록한다 — 플래너가 `successTools:["get_map_region"]` 같은 확인 항목을 자주 쓰는데
           // 쓰기만 세면 그 항목은 무슨 짓을 해도 완료할 수 없는 게이트가 된다(2026-08-23 실측: 2회 거부 후 skip).
-          if (toolResult.ok) this.recordSuccessfulTool(name);
-          else this.noteRepeatedToolFailure(name, toolResult);
+          this.recordToolResult(name, args, toolResult);
+          if (!toolResult.ok) this.noteRepeatedToolFailure(name, toolResult);
           if (toolResult.ok) {
             // 이 항목이 새로 만든 맵을 기록한다 — 산출물 게이트가 "만들고 안 채운 맵"을 여기서 잡는다.
             const createdMapId = createdMapIdFrom(name, args, toolResult.data);
@@ -3622,7 +3659,11 @@ export class AssistantSession {
           // 검증 히스토리 기록(todo 5): 쓰기 툴 + play_walkthrough 만 — questId/시나리오 선택에 쓴다.
           // (검증 게이트가 직접 실행한 툴콜은 여기로 오지 않는다 — 모델 저작 히스토리만.)
           if (tool && (tool.mode === "write" || name === PLAY_WALKTHROUGH_TOOL)) {
-            this.verificationHistory.push({ name, args, ok: toolResult.ok, layerId: this.verificationLayerId() });
+            this.verificationHistory.push({
+              name, args,
+              ok: toolResult.ok && (name !== PLAY_WALKTHROUGH_TOOL || this.workItemVerificationEvidence.passed(name)),
+              layerId: this.verificationLayerId(),
+            });
           }
 
           // 성공한 쓰기 툴콜만 제안에 누적(동일 좌표 재편집은 최신 것으로 갱신).
