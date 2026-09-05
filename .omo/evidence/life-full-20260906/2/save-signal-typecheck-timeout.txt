@@ -1,0 +1,6 @@
+
+> rpg-zzu@0.1.0 typecheck:app
+> tsc --noEmit -p tsconfig.app.json
+
+
+Tool timed out at 120 seconds; no child exit captured, NOT a pass. Follow-up ps found no task2 tsc process. Other worktrees had three concurrent tsc processes; system memory used 74807 MiB, swap used 21849 MiB. No production changes in this follow-up. Final typecheck uses explicit timeout 300s with actual exit capture.

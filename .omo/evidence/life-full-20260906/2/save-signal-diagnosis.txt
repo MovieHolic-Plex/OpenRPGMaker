@@ -1,0 +1,69 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/playerOpenSaveMenu.test.ts -t signals the exact --silent=false
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+stdout | test/playerOpenSaveMenu.test.ts > event-opened save menu in the shipping player shell > signals the exact Save5 write from the real save entry point without a delay
+[play-boot] [play-boot] stage=engine ok map=map_blank_start startPlayGame
+
+stdout | test/playerOpenSaveMenu.test.ts > event-opened save menu in the shipping player shell > signals the exact Save5 write from the real save entry point without a delay
+[play-boot] [play-boot] stage=refresh ok map=map_blank_start refreshRuntimeSurfaces
+[play-boot] [play-boot] stage=ready ok map=map_blank_start boot complete
+
+stdout | test/playerOpenSaveMenu.test.ts > event-opened save menu in the shipping player shell > signals the exact Save5 write from the real save entry point without a delay
+STORAGE_REALM {
+  same: [33mtrue[39m,
+  own: [90mundefined[39m,
+  methodSame: [33mfalse[39m,
+  proto: [
+    [32m'constructor'[39m,
+    [32m'length'[39m,
+    [32m'key'[39m,
+    [32m'setItem'[39m,
+    [32m'getItem'[39m,
+    [32m'removeItem'[39m,
+    [32m'clear'[39m
+  ]
+}
+
+ ❯ test/playerOpenSaveMenu.test.ts (7 tests | 1 failed | 6 skipped) 383ms
+   × event-opened save menu in the shipping player shell > signals the exact Save5 write from the real save entry point without a delay 379ms
+     → expected [Function] to be [Function setItem] // Object.is equality
+   ↓ event-opened save menu in the shipping player shell > ignores other keys and sessionStorage, then times out and restores instrumentation
+   ↓ event-opened save menu in the shipping player shell > does not report a failed write as complete and disposes a cancelled observation
+   ↓ event-opened save menu in the shipping player shell > shows slots immediately and saves, navigates and backs out through the keyboard
+   ↓ event-opened save menu in the shipping player shell > keeps overwrite confirmation cancellable and resets it on direct re-entry
+   ↓ event-opened save menu in the shipping player shell > preserves the map save restriction on direct entry
+   ↓ event-opened save menu in the shipping player shell > preserves the session save restriction on direct entry
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/playerOpenSaveMenu.test.ts > event-opened save menu in the shipping player shell > signals the exact Save5 write from the real save entry point without a delay
+AssertionError: expected [Function] to be [Function setItem] // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [Function setItem][39m
+[31m+ [Function anonymous][39m
+
+ ❯ test/playerOpenSaveMenu.test.ts:105:46
+    103|     keyDown("Enter");
+    104|
+    105|     expect(window.Storage.prototype.setItem).toBe(original);
+       |                                              ^
+    106|     expect(await signal.completion).toBe("written");
+    107|     expect(readSaveSlot(window.localStorage, 1)).toMatchObject({
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 6 skipped (7)
+   Start at  07:15:00
+   Duration  12.13s (transform 6.99s, setup 0ms, collect 10.15s, tests 383ms, environment 691ms, prepare 273ms)
+
+
+ACTUAL_EXIT=1

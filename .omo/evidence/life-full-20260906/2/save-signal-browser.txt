@@ -1,0 +1,4 @@
+{"browser":"chromium","exactAdventureHelper":true,"armedBeforeClick":true,"result":"written","originalKeyAssertion":true,"unrelatedWrites":"cancelled","scope":"browser instrumentation; real player save authority separately exercised by playerOpenSaveMenu.test.ts"}
+Teardown: browser closed; no server, network request, or persistent storage.
+
+ACTUAL_EXIT=0

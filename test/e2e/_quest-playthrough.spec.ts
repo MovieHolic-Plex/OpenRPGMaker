@@ -9,6 +9,7 @@
 //   - 우물을 만복 상태에서 쓴다
 import { expect, test, type Page } from "@playwright/test";
 import { startNewGameFromTitle } from "./runtimeInput";
+import { armSaveWriteSignal } from "./saveWriteSignal";
 
 const SHOT = { x: 320, y: 190, width: 640, height: 520 };
 type InputHandle = { dir: (d: string | null) => void; attack: () => void };
@@ -349,8 +350,13 @@ test("완주: 마을 → 폐허 → 보스 → 엔딩", async ({ page }, testInf
     await page.waitForTimeout(700);
     const slot = page.getByTestId("save-slot-1");
     if ((await slot.count()) > 0) {
-      await slot.click({ force: true });
-      await page.waitForTimeout(1200);
+      await page.evaluate(armSaveWriteSignal, "oprn:save-slot:v5:1");
+      try {
+        await slot.click({ force: true });
+        expect(await page.evaluate(() => window.__saveWriteSignal?.completion)).toBe("written");
+      } finally {
+        await page.evaluate(() => window.__saveWriteSignal?.dispose());
+      }
       const saved = await page.evaluate(() => {
         const raw = window.localStorage.getItem("oprn:save-slot:v5:1");
         if (!raw) return null;

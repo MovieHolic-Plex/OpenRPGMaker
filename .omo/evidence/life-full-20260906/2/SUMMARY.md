@@ -13,7 +13,7 @@ No task3+ life recovery implementation is claimed.
 - Base commit: `87de73785d1c309bbbe975636414f70bbc73a4b9` (verified phase1/main integration).
 - Base tree: `1b248f0fd4411ab953a2a61ade9470f5d4fcf9eb`.
 - Verified code/tests/wiki tree before adding task2 evidence: `0eecfffc6839471ed9093ea1bbe55a3ecd53636e`.
-- Atomic commit subject: `feat(save): version and preserve life-system saves`. Resolve its immutable commit ID using `git log -1 --format=%H -- .omo/evidence/life-full-20260906/2/SUMMARY.md` (a commit cannot embed its own hash).
+- Atomic commit subject: `feat(save): version and preserve life-system saves`. Original implementation commit: `573a418e01c9eb97dda0df033c21e2d5985b0102`. The save-signal follow-up below is a separate test-only increment.
 - Initial target worktree was clean; no upstream configured. Parent worktree's unrelated WISH.md was not edited or staged.
 - Read AGENTS, quickstart, PROJECT_WIKI, focused runtime guidance, programming/TypeScript, debugging, git-master, and prior task1 SUMMARY.txt. No previous task2/verify SUMMARY existed. All CLAUDE.md ignored.
 - Node v24.11.1; repository npm and installed dependency symlink used. No package changes. Inherited port setting was 9841; no HTTP listener was started or needed.
@@ -95,7 +95,7 @@ All source/wiki/test edits and evidence additions used an `apply_patch` compatib
   "baseCommit": "87de73785d1c309bbbe975636414f70bbc73a4b9",
   "verifiedCodeTestsWikiTree": "0eecfffc6839471ed9093ea1bbe55a3ecd53636e",
   "commitSubject": "feat(save): version and preserve life-system saves",
-  "commitLookup": "git log -1 --format=%H -- .omo/evidence/life-full-20260906/2/SUMMARY.md",
+  "commitLookup": "git log -1 --format=%H -- src/player/saveSlots.ts",
   "projectSchemaVersion": 4,
   "saveSchemaVersion": 5,
   "legacyReader": "byte-identical phase1 module; actual Save5 rejection proven",
@@ -113,3 +113,22 @@ All source/wiki/test edits and evidence additions used an `apply_patch` compatib
   "teardown": "complete"
 }
 ```
+
+## Parent-requested deterministic save signal follow-up
+
+Base: `573a418e01c9eb97dda0df033c21e2d5985b0102`. Commit subject: `test(save): await exact quest save completion`.
+
+The changed save seam in `test/e2e/_quest-playthrough.spec.ts` no longer waits 1200ms after clicking slot 1. It awaits `page.evaluate(armSaveWriteSignal, "oprn:save-slot:v5:1")` **before** clicking, then awaits that exact observation. The test-only, browser-serializable helper wraps the actual localStorage instance setter, delegates the real write first, and completes only after a successful write of the exact key. Other keys, sessionStorage, and pre-existing bytes cannot satisfy it. A five-second failure bound returns timeout, which fails the explicit outcome assertion; this is not a sleep or polling retry. The finally block disposes the signal and restores the original setter. No production module or unrelated adventure sleep changed. The original stored `sw_quest_key` parsing and complaint/assertion are preserved verbatim.
+
+`test/playerOpenSaveMenu.test.ts` adds three checks using the actual exported player shell, registry openSaveMenu callback, controller, and save codec (only the existing Phaser/audio boot substitutes remain). They prove the exact Save5 key and quest switch signal through Enter, timeout after unrelated storage writes, and quota failure never reporting completion plus cancellation cleanup. Existing assertions remain untouched. The timeout case uses fake time because the timeout itself is the behavior under test.
+
+Verification:
+- `npm test -- test/playerOpenSaveMenu.test.ts`: **7 passed / 0 failed / 0 skipped**, actual exit 0 (`save-signal-green.txt`).
+- `timeout --signal=TERM --kill-after=5s 90s node .omo/evidence/life-full-20260906/2/save-signal-browser.mjs`: actual exit 0 (`save-signal-browser.txt`). Real Chromium evaluates the **same helper function** used by the adventure, arms it before a button click, observes the exact storage write, verifies the original quest-switch value, rejects unrelated writes/stale contents, and disposes storage/browser resources. The browser probe tests the instrumentation; the focused player test supplies the real save-entry-point integration. Neither claims the full adventure ran.
+- Fresh LSP diagnostics on `test/e2e/saveWriteSignal.ts`, `test/e2e/_quest-playthrough.spec.ts`, and `test/playerOpenSaveMenu.test.ts`: no diagnostics.
+- `timeout --signal=TERM --kill-after=10s 300s npm run typecheck:app`: actual exit 0 (`save-signal-typecheck.txt`). An earlier tool call hit its 120-second bound without capturing a child exit; preserved as **not a pass** in `save-signal-typecheck-timeout.txt`. Process inspection found no surviving task2 tsc and three other-worktree tsc processes during high memory/swap use; nothing outside task2 was stopped.
+- `git diff --check`: exit 0. No full suite, full adventure, broad architecture pass, or new production build performed for this test-only follow-up; the previously verified production tree is unchanged.
+
+Intermediate failures are retained, not hidden: the initial prototype hook missed happy-dom's already instance-bound setter (2 failures); qualifying window.Storage did not fix it (same 2 failures). A targeted diagnostic observed identical prototypes but a different instance method. Reading happy-dom Storage's ClassMethodBinder-backed proxy confirmed that binding behavior. The final helper uses Object.defineProperty on the instance; a real Chromium experiment also confirmed this intercepts native Storage calls. `save-signal-initial-failure.txt`, `save-signal-realm-failure.txt`, and `save-signal-diagnosis.txt` retain those results. The diagnostic name-filter excluded six tests for investigation only; the final full focused file ran all seven without skips. The temporary STORAGE_REALM console probe was removed.
+
+Follow-up DoneClaim: exact pre-action subscription and bounded failure are implemented; original E2E progress assertion retained; real save-entry test 7/7 and Chromium helper probe pass; changed-file diagnostics/typecheck pass; temporary instrumentation is disposed; no remote writes or application-code changes; full51 remains not-run.
