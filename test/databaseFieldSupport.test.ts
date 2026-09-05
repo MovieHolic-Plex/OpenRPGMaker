@@ -9,6 +9,10 @@ const EXPECTED_FIELDS = [
   "usableActorIds",
   "usableClassIds",
   "seedParameterBonuses",
+  // 스키마·런타임에는 있었으나 저작 UI 가 없어 공시도 없던 세 필드(아이템 탭 기능 추가).
+  "stateEffects",
+  "animationId",
+  "careProfile",
   "usageMessage",
   "equipmentProfile",
   "twoHanded",
@@ -25,14 +29,17 @@ const EXPECTED_FIELDS = [
 ];
 
 describe("database field support descriptor", () => {
-  it("is the unique exhaustive source for the eighteen-field truth contract", () => {
+  it("is the unique exhaustive source for the twenty-one-field truth contract", () => {
     expect(DATABASE_FIELD_SUPPORT.map((entry) => entry.field)).toEqual(EXPECTED_FIELDS);
-    expect(new Set(DATABASE_FIELD_SUPPORT.map((entry) => entry.field)).size).toBe(18);
+    expect(new Set(DATABASE_FIELD_SUPPORT.map((entry) => entry.field)).size).toBe(21);
     expect(DATABASE_FIELD_SUPPORT.filter((entry) => entry.support === "runtime").map((entry) => entry.field)).toEqual([
       "consumptionLimit",
       "usableActorIds",
       "usableClassIds",
       "seedParameterBonuses",
+      "stateEffects",
+      "animationId",
+      "careProfile",
       "twoHanded",
       "accuracy",
       "criticalRate",
