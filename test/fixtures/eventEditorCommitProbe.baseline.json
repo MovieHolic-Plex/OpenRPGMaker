@@ -521,11 +521,11 @@
  },
  "setLighting": {
   "probes": {
-   "set-lighting-ambient-slider": "replaceCommand {\"ambient\":0.05,\"color\":\"#000000\",\"kind\":\"setLighting\"}",
-   "set-lighting-ambient-input": "replaceCommand {\"ambient\":1,\"color\":\"#000000\",\"kind\":\"setLighting\"}",
-   "set-lighting-color-picker": "replaceCommand {\"ambient\":1,\"color\":\"#123456\",\"kind\":\"setLighting\"}",
-   "set-lighting-color-input": "replaceCommand {\"ambient\":1,\"color\":\"__p_b22163__\",\"kind\":\"setLighting\"}",
-   "set-lighting-transition-input": "replaceCommand {\"ambient\":1,\"color\":\"#000000\",\"kind\":\"setLighting\",\"transitionMs\":7152}"
+   "set-lighting-ambient-slider": "replaceCommand {\"ambient\":0.81,\"color\":\"#000000\",\"kind\":\"setLighting\"}",
+   "set-lighting-ambient-input": "replaceCommand {\"ambient\":0.75,\"color\":\"#000000\",\"kind\":\"setLighting\"}",
+   "set-lighting-color-picker": "replaceCommand {\"ambient\":0.8,\"color\":\"#123456\",\"kind\":\"setLighting\"}",
+   "set-lighting-color-input": "replaceCommand {\"ambient\":0.8,\"color\":\"__p_b22163__\",\"kind\":\"setLighting\"}",
+   "set-lighting-transition-input": "replaceCommand {\"ambient\":0.8,\"color\":\"#000000\",\"kind\":\"setLighting\",\"transitionMs\":7152}"
   },
   "probeCount": 5,
   "commitCount": 5,
