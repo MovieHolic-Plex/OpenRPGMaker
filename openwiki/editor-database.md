@@ -269,23 +269,31 @@ The Database modal was modernized in six waves while keeping every hard contract
 - Product artwork is `/assets/farming/life-ui/decorating-card.png` (`db-spatial-hero-image`). CSS is isolated in `styles/database/desktop-record-shell/12-spatial-authoring.css`: a two-column 1440 layout collapses at a 980px container and again at 680px for the 1024 acceptance lane.
 - Stable browser entry points: `db-spatial-workspace`, `db-spatial-add-building-type`, `db-spatial-add-decoration-type`, `db-spatial-add-building-placement`, `db-spatial-add-decoration-placement`, plus record IDs prefixed `db-spatial-building-*` / `db-spatial-decoration-*`. Focused coverage: `test/p2SpatialEditorAuthoring.test.ts` and the Database sidebar suites.
 
-## 세계 그룹 — 타일셋이 중간 카테고리 (2026-09-01)
+## 맵 그룹 — 개념 우선 탐색 Phase 1 (2026-09-05)
 
-`세계` 레일은 `생성 규칙`(프로젝트 전역) 다음에 **타일셋 폴더**를 둔다. 폴더 자식은
-통행(`db-tab-tilesets`, testid 유지 — e2e 가 이 버튼을 누른다) · 오토타일 설정 ·
-미분류 모아보기 · 구조물 · 공간 종류. 마을·지형 효과·공용 이벤트는 폴더 밖 형제다.
+주 레일은 **개념 꾸러미**(`scratchConcepts`)와 **타일셋**(`tilesets`)뿐이다. 타일셋 폴더
+DOM은 삭제했고 CSS로 숨기지 않는다. `commonEvents`는 시스템 그룹으로 옮겼다.
+기존 탭 id와 렌더러는 유지한다. 검색은 새 이름·옛 이름·id를 찾으며 보조 목적지는
+검색할 때만 결과 버튼으로 만든다(검색을 비우면 제거).
 
-칩셋 선택은 `oprn:database.selectedTilesetId` 한 키를 공유한다. 「방」 단독 탭은 없다 —
-공간 종류는 통행과 같은 층의 이 칩셋 면이다. 폴더 버튼 testid `db-tileset-folder` 는
-`.db-tab` 이 아니다(키보드/DOM 순서 계약은 자식 탭만 센다). 접힌 「세계」 부제는
-자식 다섯을 나열하지 않고 「타일셋」 한 낱말로 접는다.
+본문 위 문맥 도구줄: 개념 꾸러미 → **부품 보관함**(`structureKits`)·**기존 방 규칙**
+(`tilesetSpaces`)·**기존 마을 설계**(`villages`); 마을 → **공통 생성 기본값**(`worldGen`);
+타일셋 → **지형 효과**(`terrain`). 자식은 부모로 돌아가며 주 레일 강조와 모달 경로도 부모를
+따른다. 칩셋 선택은 `oprn:database.selectedTilesetId` 한 키를 계속 공유한다.
 
-타일셋 워크스페이스 **안쪽** 섹션 탭(타일 규칙/단어장/구성)은 그대로 둔다. 레일 면은
-그 모드의 바로가기이고, 안쪽 탭을 없애면 기존 e2e 가 깨진다.
+타일셋 내부 탐색은 **통행·지형 / 자동 연결 / 타일 설명** 하나다. 옛 `tilesetAutotile`과
+`tilesetUnlabeled` 점프는 각각 autotile, ai+미분류 필터로 들어가되 주 강조는 타일셋이다.
+모드는 진입 시에만 맞추며 로컬 재렌더에서는 덮지 않는다. 맵 면은 공유 선택/모드 세션을
+반영해 새로 렌더하고, 다른 도메인의 DOM 캐시·애니메이션 정지 의도는 그대로 둔다.
+문맥 도구줄은 로컬 렌더러 호스트 밖에 있어 개념 편집 재렌더로 사라지지 않는다.
+
+Phase 1은 탐색·선택·표현 변경뿐이다. 방 마이그레이션과 마을 합성은 후속 단계이며
+`structureKits`·`interiorRoomKinds`·`scratchConceptBundles`·지형·마을 데이터는 그대로 둔다.
+회귀: `databaseConceptFirstNav`, `databaseTilesetFolder`, `tilesetTabActivation`, `scratchConceptTab`.
 
 ## 오토타일 설정 — 9칸/11칸/커스텀 카드 (2026-09-01)
 
-`db-tab-tileset-autotile` 과 구성 탭은 같은 면이다. 예전의 멤버 번호 나열·16칸
+옛 `tilesetAutotile` 경로와 내부 자동 연결 탭은 같은 면이다. 예전의 멤버 번호 나열·16칸
 비트마스크·「템플릿에서 만들기」숫자 위저드는 기본 표면이 아니다.
 
 - **형식 카드:** 워크벤치 맨 위 전폭. 9칸(3×3) · 11칸(3×4, 외딴 점·오목 코너) · 커스텀.
@@ -323,11 +331,11 @@ The Database modal was modernized in six waves while keeping every hard contract
 `test/databaseTilesetFolder.test.ts`, `test/structureKitDbTab.test.ts` 의
 「구조물 탭은 공간 종류를 그리지 않는다」.
 
-## 맵 → 타일셋 → 개념 꾸러미 (2026-09-02 시작, Phase 4 졸업)
+## 맵 → 개념 꾸러미 (2026-09-02 시작, 2026-09-05 개념 우선 Phase 1)
 
 ~~데이터베이스 레일에 **임시** 그룹을 두고, 그 안에 `개념 꾸러미`(`scratchConcepts`) 한 탭만 둔다.~~
-**Phase 4(개념 통합)에서 임시 그룹을 졸업했다** — `개념 꾸러미`(`scratchConcepts`)는
-「맵」 그룹 타일셋 폴더(통행·오토타일·미분류·구조물·공간 종류 옆)에 있다.
+**Phase 4(개념 통합)에서 임시 그룹을 졸업했고, 개념 우선 Phase 1에서는 맵의 주 진입점이다.**
+`개념 꾸러미`(`scratchConcepts`)는 타일셋 폴더 안에 있지 않다.
 세계·공간 종류·구조물과 아직 합치지 않는다 — 시설→장소→물건→칩 나무를 그림으로
 저작하는 실험 면이다. `place_concept(query)` 가 이 필드를 읽어 시공한다.
 
@@ -337,7 +345,7 @@ The Database modal was modernized in six waves while keeping every hard contract
 - 실내 칩셋만 **시설 초안 묶음 아홉 종**을 시드한다(`CONCEPT_FACILITY_TEMPLATES`: 여관·민가·상점·술집·서재·대장간·교회·창고·길드, 여관이 첫째). 마을 칩셋에는 얹지 않는다. 옛 프로젝트에 여관만 시드돼 있으면 그대로다 — 나머지는 시설 띠의 「초안 넣기」로 골라 넣는다(재시드 아님, 사용자 선택).
 - 물건의 그림은 같은 타일셋 가구 킷/`INTERIOR_OBJECT_CATALOG` id 를 가리킨다. 픽셀을 복제하지 않는다.
 - 칩은 내장 8종(`pass`/`block`/`event`/`transfer`/`loot`/`sleep`/`floor`/`wall`) + 사용자 자유 칩. 산문 배치 규칙이 아니다. 자유 칩은 엔진 무동작 메모 태그 — 시공 분류·이벤트·점수·컨텍스트가 모르는 칩을 무시한다. 규칙은 `src/project/types/conceptBundle.ts` 의 `CONCEPT_FREE_CHIP_PATTERN` / `validateConceptChipId` 한 곳이다: 빈 id·32자 초과·영문·숫자·-_ 외 문자를 한글 이유로 거절하고, 내장 칩은 항상 통과한다. 인스펙터 추가·이름 변경(`scratchConceptTab`), plan `parseChips`, 타일셋 검증(`shapeResourceFields`)이 같은 검증기를 쓴다. 화면에서 내장 칩은 토글 버튼, 자유 칩은 id 입력으로 이름을 바꾸고 지우기 버튼으로 삭제한다. 잘못된 입력은 `scratch-concept-chip-error` 에 이유를 보여 주고 저장하지 않으며, 이름 변경 실패는 예전 id 로 되돌린다.
-- 화면: 타일셋 레일 + 장소 카드(가구 썸네일) + 인스펙터(큰 미리보기·이름·그림·그림 칠하기·칩 토글/자유 칩 편집·장소 소속).
+- 화면: 작은 타일셋 셀렉트(`scratch-concept-tileset-select`) + 기존 물건 그림을 쓰는 시설 선택 + 장소 카드 + 물건 인스펙터. 옛 `scratch-concept-tileset-<id>`는 옵션 testid로 남는다. 장소 선택은 그 장소 소속 물건만 검사하고, 물건 칩·칠하기는 그 칩이 있는 장소도 선택한다. 빈 장소에는 다른 장소의 인스펙터를 남기지 않는다. 좁은 데스크톱에서는 인스펙터가 장소 아래로 이어지고 문맥 도구줄은 줄바꿈한다.
 - 사용자가 고친다: 시설명, 장소 추가/삭제/이름, 물건 추가/삭제/이름/그림/그림 직접 칠하기, 칩 토글/자유 칩 추가·이름 변경·삭제, 장소 소속, 필수 여부. 모두 `store.update` 로 `scratchConceptBundles` 에 남고, 다음 `place_concept` 가 그 나무를 읽는다.
 - 물건 그림(2026-09-04): 인스펙터의 「그림」 셀렉트(`scratch-concept-thing-graphic`)가 같은 타일셋 가구 목록(`objectsForTileset` — 프로젝트 킷 → 카탈로그 순)에서 `thing.objectId` 를 갈아 끼운다. 모르는 id(옛 나무·지운 킷)는 「그림 없음」 옵션으로 남아 미리보기에 「그림 없음」이 뜬다. 이름과 달리 물건 id 는 그대로라 시공·이벤트·필수 판정이 갈라지지 않는다.
 - 그림 직접 칠하기(2026-09-05): 인스펙터의 「그림 칠하기/사본 만들어 칠하기」(`scratch-concept-thing-paint`)가 구조물 타일 에디터(`openStructureKitEditor`)를 연다. 사용자 저장 그림이면 그 킷을 바로 고치고, 카탈로그·시드(`learnedFrom: interior-catalog`) 그림이면 사본(`duplicateIntoTileset`)을 만들어 이 물건에 붙인 뒤 연다 — 원본 카탈로그는 그대로 둔다. 저장은 에디터가 즉시 하고 닫히면 인스펙터를 다시 그린다.
