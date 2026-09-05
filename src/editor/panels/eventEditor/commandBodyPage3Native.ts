@@ -79,14 +79,14 @@ export function setLightingBody(
   cmd: Extract<Command, { kind: "setLighting" }>
 ): HTMLElement {
   const wrap = shell("page3-command-body actor-m2-command-body", "set-lighting-command-body");
-  const ambient = numberInput(Math.round(clamp01(cmd.ambient) * 100), "밝기 (%)", "set-lighting-ambient-input");
+  const ambient = numberInput(Math.round(clamp01(cmd.ambient) * 100), "암전 (%)", "set-lighting-ambient-input");
   ambient.setAttribute("step", "1");
   ambient.setAttribute("min", "0");
   ambient.setAttribute("max", "100");
   const ambientSlider = el("input", {
     class: "page3-range-input",
-    attrs: { type: "range", min: "0", max: "1", step: "0.05", "aria-label": "암전 슬라이더" },
-    value: String(clamp01(cmd.ambient)),
+    attrs: { type: "range", min: "0", max: "100", step: "1", "aria-label": "암전 슬라이더" },
+    value: String(Math.round(clamp01(cmd.ambient) * 100)),
     dataset: { testid: "set-lighting-ambient-slider" },
   }) as HTMLInputElement;
   const color = textInput(cmd.color ?? "#000000", "어둠 색", "set-lighting-color-input");
@@ -114,7 +114,7 @@ export function setLightingBody(
     const nextTransition = Math.max(0, parseInt(transitionMs.value, 10) || 0);
     context.actions.replaceCommand(context.path, {
       kind: "setLighting",
-      ambient: clamp01(parseFloat(ambient.value)),
+      ambient: clamp01(parseFloat(ambient.value) / 100),
       color: color.value.trim() || undefined,
       ...(nextTransition > 0 ? { transitionMs: nextTransition } : {}),
     });
@@ -122,7 +122,7 @@ export function setLightingBody(
   };
 
   const renderPreview = () => {
-    const ambientValue = clamp01(parseFloat(ambient.value));
+    const ambientValue = clamp01(parseFloat(ambient.value) / 100);
     const pct = Math.round(ambientValue * 100);
     const hex = color.value.trim() || "#000000";
     const ms = Math.max(0, parseInt(transitionMs.value, 10) || 0);
@@ -157,8 +157,8 @@ export function setLightingBody(
         dataset: { testid: `set-lighting-preset-${preset.id}` },
         on: {
           click: () => {
-            ambient.value = String(preset.ambient);
-            ambientSlider.value = String(preset.ambient);
+            ambient.value = String(Math.round(preset.ambient * 100));
+            ambientSlider.value = String(Math.round(preset.ambient * 100));
             color.value = preset.color;
             colorPicker.value = normalizeHexColor(preset.color);
             transitionMs.value = String(preset.transitionMs);
@@ -170,11 +170,11 @@ export function setLightingBody(
   }
 
   ambient.addEventListener("change", () => {
-    ambientSlider.value = String(clamp01(parseFloat(ambient.value)));
+    ambientSlider.value = String(clamp01(parseFloat(ambient.value) / 100) * 100);
     commit();
   });
   ambient.addEventListener("input", () => {
-    ambientSlider.value = String(clamp01(parseFloat(ambient.value)));
+    ambientSlider.value = String(clamp01(parseFloat(ambient.value) / 100) * 100);
     renderPreview();
   });
   ambientSlider.addEventListener("input", () => {

@@ -75,6 +75,39 @@ const PAGE2_CONDITIONS: EventPageCondition[] = [
   },
 ];
 
+/**
+ * 고정 조건 12행을 **전부** 켜는 묶음.
+ *
+ * 왜 필요한가(실측): main 의 칩 재설계(fbc32034) 이후 조건 행은 «켠 것만» 렌더된다. 그래서
+ * page1+page2 가 켜지 않는 kind 는 표면에서 통째로 사라졌고, CSS 실사용 정본이 5종을 잃었다 —
+ * `.timer` `.friendship` `.npc-activity` `.event-condition-time-unit`
+ * `.event-condition-friendship-hint`. **제품에서 죽은 게 아니라 픽스처가 도달하지 못한 것**이라
+ * 기준선을 갱신하면 안 되고 픽스처가 12행을 다 켜야 한다. 예전의 «12행 상시 펼침» 은 이
+ * 커버리지를 공짜로 줬고, 칩 UI 에서는 명시적으로 켜야 한다.
+ *
+ * `captureShell` 이 이 변형에 `characterId` 를 **일부러 붙이지 않는다** —
+ * friendshipAlwaysFalseHint(conditionForm.ts:1079-1090)는 `hostHasCharacterId === false` 이고
+ * npcKey 가 빈칸일 때만 나오는 경고라, 연결된 픽스처로는 절대 렌더되지 않는다.
+ *
+ * switch/timer 는 kind 하나가 두 행(switch1·switch2, timer1·timer2)으로 갈리므로 두 개씩 넣는다.
+ */
+const ALL_ROW_CONDITIONS: EventPageCondition[] = [
+  { kind: "switch", switchId: "sw_0001", value: true },
+  { kind: "switch", switchId: "sw_0002", value: false },
+  { kind: "variable", variableId: "var_shell_a", op: ">=", value: 3 },
+  { kind: "item", itemId: "item_shell_a", present: true },
+  { kind: "actor", actorId: "actor_hero", present: true },
+  // seconds 는 분/초 두 입력으로 갈라 렌더된다 — 60 을 넘겨 둘 다 채운다(event-condition-time-unit).
+  { kind: "timer", timerId: "timer1", seconds: 90 },
+  { kind: "timer", timerId: "timer2", seconds: 30 },
+  { kind: "timePhase", phase: "night" },
+  { kind: "season", season: "winter" },
+  { kind: "npcActivity", activity: "work" },
+  // npcKey 빈칸 = 항상 거짓 경고 분기(위 주석 참고).
+  { kind: "friendshipAtLeast", npcKey: "", value: 200 },
+  { kind: "selfSwitch", key: "B", value: true },
+];
+
 /** 1페이지 명령 — 2페이지가 갖지 않는 kind 만 쓴다(D-3 의 페이지 diff 단정에 쓰인다). */
 const PAGE1_COMMANDS: Command[] = [
   { kind: "text", body: "1페이지 대사" },
@@ -325,6 +358,10 @@ function formatCaptureError(e: unknown): string {
  * `.is-unlinked`(pageProps.ts:395,404) 와 `.event-condition-summary-empty`(pageProps.ts:977)
  * 분기를 **한 번도 타지 않는다**. CSS 실사용 정본 래칫이 이 두 클래스의 소실로 잡아냈다.
  * 사용자가 이벤트를 만들면 가장 먼저 보는 화면이라 엣지 케이스가 아니다.
+ *
+ * `allRows: true` 는 **고정 조건 12행을 전부 켠 상태**다(ALL_ROW_CONDITIONS 주석 참고).
+ * 칩 재설계 이후 «켜지 않은 kind 는 아예 렌더되지 않는다» 는 성질 때문에, 이 변형이 없으면
+ * timer·friendship·npcActivity 행의 표면이 어느 축에도 남지 않는다.
  */
 /**
  * `flow: true` 는 **플로우 보기를 켠 상태**다.
@@ -338,7 +375,7 @@ function formatCaptureError(e: unknown): string {
  * 회귀» 를 앞으로 못 잡는다 — 그래서 하한선을 낮추는 대신 **플로우를 켠 표본을 추가**해
  * 가드가 계속 그 마크업을 세게 한다.
  */
-type ShellVariant = { readonly bare?: boolean; readonly flow?: boolean };
+type ShellVariant = { readonly bare?: boolean; readonly flow?: boolean; readonly allRows?: boolean };
 
 /** selectedPageIndex 를 지정해 렌더한다. index 1 = 2페이지 선택(다중 페이지 사각 차단). */
 function captureShell(selectedPageIndex: number, variant: ShellVariant = {}): ShellSurface {
@@ -346,10 +383,15 @@ function captureShell(selectedPageIndex: number, variant: ShellVariant = {}): Sh
   const mapId = Object.keys(project.maps)[0];
   const pages = variant.bare
     ? [page("shell_p1", "EV001", [], PAGE1_COMMANDS), page("shell_p2", "EV002", [], PAGE2_COMMANDS)]
-    : [
-        page("shell_p1", "EV001", PAGE1_CONDITIONS, PAGE1_COMMANDS),
-        page("shell_p2", "EV002", PAGE2_CONDITIONS, PAGE2_COMMANDS),
-      ];
+    : variant.allRows
+      ? [
+          page("shell_p1", "EV001", ALL_ROW_CONDITIONS, PAGE1_COMMANDS),
+          page("shell_p2", "EV002", PAGE2_CONDITIONS, PAGE2_COMMANDS),
+        ]
+      : [
+          page("shell_p1", "EV001", PAGE1_CONDITIONS, PAGE1_COMMANDS),
+          page("shell_p2", "EV002", PAGE2_CONDITIONS, PAGE2_COMMANDS),
+        ];
   // trigger/commands 는 GameEvent 필수 필드다. 페이지 기반 이벤트라 레거시 최상위
   // commands 는 비워 두고, 편집 대상은 pages 쪽이다.
   const ev: GameEvent = {
@@ -361,7 +403,9 @@ function captureShell(selectedPageIndex: number, variant: ShellVariant = {}): Sh
     pages,
     // NPC 관계를 연결해야 renderEventCharacterSocialExtras 가 details 를 낸다 →
     // content.ts:228 후처리가 실제로 변환할 입력이 생긴다(예전 픽스처는 변환 0건이었다).
-    ...(variant.bare ? {} : { characterId: CHARACTER_ID, talkFriendship: true }),
+    // allRows 도 미연결로 둔다 — friendship 행의 «항상 거짓» 경고가 미연결에서만 나온다
+    // (conditionForm.ts:1084). details 후처리 입력은 page1/page2 변형이 계속 덮는다.
+    ...(variant.bare || variant.allRows ? {} : { characterId: CHARACTER_ID, talkFriendship: true }),
   };
   // 맵에 이벤트 2개 — 목록/선택 UI 가 «단일 항목» 특수 경로를 타지 않게 한다.
   const other: GameEvent = {
@@ -608,6 +652,7 @@ const actual = {
   // #364 가 플로우를 지연 렌더로 바꾼 뒤 기본 표본이 event-flow-* 를 못 본다. 플로우를 켠
   // 표본을 따로 잡아 가드가 그 마크업을 계속 세게 한다.
   flow: captureShell(0, { flow: true }),
+  allRows: captureShell(0, { allRows: true }),
 };
 const crashed = Object.entries(actual).filter(([, surface]) => surface.error);
 
@@ -683,6 +728,48 @@ describe("이벤트에디터 셸 표면 스냅샷", () => {
     expect(actual.page1.testids).not.toContain("event-condition-summary-empty");
     expect(actual.page1.classes).not.toContain("is-unlinked");
     expect(actual.page1.classes, "연결 상태 클래스가 사라졌다").toContain("is-linked");
+  });
+
+  /**
+   * `allRows` 변형이 정말 12행을 다 켜는지 못 박는다. bare 계약과 같은 이유이지만, 여기서는
+   * **칩 UI 의 성질 때문에 훨씬 조용히 죽는다** — 픽스처에서 조건 하나를 빼면 그 행의 표면 전체가
+   * 사라지는데, 개수 단정이 없으면 기준선 갱신 한 번으로 초록이 된다. 실측으로 그 경로를 밟았다:
+   * page1+page2 만 있던 시절 정본이 `.timer` `.friendship` `.npc-activity`
+   * `.event-condition-time-unit` `.event-condition-friendship-hint` 5종을 잃었다.
+   */
+  it("allRows 변형이 고정 조건 12행을 전부 켠다", () => {
+    if (crashed.length) return;
+    const chips = actual.allRows.testids.filter((t) => t.startsWith("event-condition-chip-"));
+    expect(chips.length, "조건 칩이 12개가 아니다 — pageConditions.ts 의 행 정의가 바뀌었다").toBe(12);
+    // 12행인데 testid 는 11종이다 — switch1·switch2 가 라벨 "스위치" 를 공유해
+    // `event-condition-row-스위치` 로 겹친다(pageConditions.ts:53,62). 선행 문제이고
+    // 아래 컨트롤 키의 `~1` 접미사가 두 행이 다 렌더됐음을 증명한다.
+    const rows = actual.allRows.testids.filter((t) => t.startsWith("event-condition-row-"));
+    expect(
+      rows.length,
+      `켜진 조건 행 testid 가 11종이 아니다(${rows.length}종) — ALL_ROW_CONDITIONS 가 어떤 kind 를 놓쳤다`,
+    ).toBe(11);
+    expect(
+      Object.keys(actual.allRows.controls),
+      "스위치 행이 하나뿐이다 — switch1/switch2 두 행이 다 켜졌는지 확인하라",
+    ).toContain("event-condition-row-스위치>input#0~1");
+    // 정본이 실제로 잃었던 5종을 이름으로 다시 못 박는다 — 개수만 보면 다른 행으로 채워도 통과한다.
+    for (const cls of [
+      "timer",
+      "friendship",
+      "npc-activity",
+      "event-condition-time-unit",
+      "event-condition-friendship-hint",
+    ]) {
+      expect(actual.allRows.classes, `allRows 에 .${cls} 가 없다`).toContain(cls);
+    }
+    // 반대 방향: 이 5종은 page1/page2/bare 로는 도달할 수 없다(그래서 이 변형이 필요하다).
+    for (const key of ["page1", "page2", "bare"] as const) {
+      expect(
+        actual[key].classes,
+        `${key} 가 .event-condition-friendship-hint 를 렌더한다 — allRows 변형이 불필요해졌으니 이 계약을 다시 써라`,
+      ).not.toContain("event-condition-friendship-hint");
+    }
   });
 
   it("기준선과 일치한다", () => {
