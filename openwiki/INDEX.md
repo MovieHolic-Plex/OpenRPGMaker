@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **47쪽 / 1509KB / 약 428,831 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **47쪽 / 1512KB / 약 429,713 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -61,9 +61,10 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-validation.md` | 2 | `final-layout.json`, `viewport-matrix.json` |
 | `openwiki/editor-workflows-misc.md` | 1 | `src/editor/authoringTestGate.ts` |
 | `openwiki/growth-trees.md` | 1 | `verify-shots/runtime-qa/growth-tree/SUMMARY.md` |
+| `openwiki/horror-authoring.md` | 2 | `furniturePushAnimation.ts`, `motion-sheet.png` |
 | `openwiki/large-village-generation.md` | 2 | `HANDOFF.json`, `src/project/defaults/largeRiverMarketVillageBuild.ts` |
 | `openwiki/runtime-battle.md` | 4 | `hero-03-battle-idle.png`, `raw.png`, `reference.png`, `starter/hires/hero-0N-battle.png` |
-| `openwiki/runtime-pre-edit-routing.md` | 1 | `verify-shots/runtime-qa/emote/SUMMARY.md` |
+| `openwiki/runtime-pre-edit-routing.md` | 2 | `furniturePushAnimation.ts`, `verify-shots/runtime-qa/emote/SUMMARY.md` |
 | `openwiki/runtime-project-schema.md` | 2 | `.json`, `project.json` |
 | `openwiki/runtime-sessions.md` | 1 | `output/evidence/stardew/stardew-supabase.json` |
 | `openwiki/se-catalog.md` | 8 | `.mjs`, `audio-features.json`, `audition.html`, `cross-check.json`, `dist/se-staging/audition.html`, `inventory.json`, `labels.json`, `placed.json` |
@@ -421,13 +422,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L23` 런타임과 저장
 - `L46` 검증
 
-### `openwiki/horror-authoring.md` — 5KB · 72줄 · ~1,698 토큰
+### `openwiki/horror-authoring.md` — 8KB · 95줄 · ~2,391 토큰
 
 - `L6` 저작 표면
 - `L21` 데이터와 런타임
-- `L38` 실내 제작과 검증
-- `L49` 검증 경로
-- `L63` 전체 게이트 후속 수정 (2026-09-05)
+- `L38` 가구 밀기 애니메이션 (2026-09-05 후속 체험 수정)
+- `L61` 실내 제작과 검증
+- `L72` 검증 경로
+- `L86` 전체 게이트 후속 수정 (2026-09-05)
 
 ### `openwiki/interior-tile-benchmark.md` — 9KB · 149줄 · ~2,679 토큰
 
@@ -542,7 +544,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L35` Storage chest authoring
 - `L41` Page 3 location/vehicle compatibility (2026-07-30)
 
-### `openwiki/runtime-pre-edit-routing.md` — 23KB · 135줄 · ~6,756 토큰
+### `openwiki/runtime-pre-edit-routing.md` — 24KB · 142줄 · ~6,945 토큰
 
 - `L130` Recovered head emotes (2026-09-05)
 
