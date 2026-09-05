@@ -4,10 +4,18 @@
 //  - 숫자를 치면 손 슬롯 핸들러가 preventDefault 로 삼켜 값이 비었다(player.ts 쪽 — e2e 가 잠근다).
 // 런타임 키 계약(keyBindings)에 「텍스트 입력 컨트롤이 대상이면 게임 키가 아니다」 규칙을 두고
 // Input 이 그 규칙을 따르는지 본다.
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { createDialogueUI } from "@/player/dialogue";
 import type Phaser from "phaser";
 import { Input } from "@/player/input";
 import { isTextEntryTarget } from "@/player/keyBindings";
+
+const detachInputs: Array<() => void> = [];
+afterEach(() => {
+  for (const detach of detachInputs.splice(0)) detach();
+  vi.useRealTimers();
+  document.body.replaceChildren();
+});
 
 function keyboardStubScene(cursorState: { right: boolean } = { right: false }): Phaser.Scene {
   const key = (down = false): { isDown: boolean } => ({ isDown: down });
@@ -28,7 +36,7 @@ function keyboardStubScene(cursorState: { right: boolean } = { right: false }): 
         on: () => undefined,
       },
     },
-    events: { once: () => undefined },
+    events: { once: (_event: string, detach: () => void) => { detachInputs.push(detach); } },
   } as unknown as Phaser.Scene;
 }
 
@@ -110,33 +118,26 @@ describe("Input 은 텍스트 입력 컨트롤에 친 키를 게임 입력으로
 
 describe("대사창도 텍스트 입력 컨트롤에 친 키를 받지 않는다", () => {
   it("입력창에서 친 Enter 는 대사를 넘기지 않고, 문서에서 친 Enter 는 넘긴다", async () => {
-    const { createDialogueUI } = await import("@/player/dialogue");
+    vi.useFakeTimers();
     const host = document.createElement("div");
     document.body.append(host);
     const field = document.createElement("input");
     document.body.append(field);
     const dialogue = createDialogueUI(host);
     let resolved = false;
-    const shown = dialogue.showText({ body: "짧은 문장", playerTileY: 0, mapHeight: 10 } as never).then(() => {
+    const shown = dialogue.showText({ body: "A", playerTileY: 0, mapHeight: 10 }).then(() => {
       resolved = true;
     });
-    const settle = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, 40));
-    // 타자기가 끝나도록 잠시 기다린 뒤 입력창에서 Enter 를 여러 번 친다 — 절대 닫히면 안 된다.
-    await settle();
-    for (let i = 0; i < 6; i += 1) {
-      field.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
-      await settle();
-    }
+    // One page and a controlled clock keep this about event ownership, not typing speed.
+    await vi.runAllTimersAsync();
+    expect(host.querySelector(".dialogue-box .body")?.textContent).toBe("A");
+    field.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    await Promise.resolve();
     expect(resolved).toBe(false);
-    // 문서(게임)에서 친 Enter 는 타자기 스킵 → 다음 페이지/닫기.
-    for (let i = 0; i < 6 && !resolved; i += 1) {
-      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-      await settle();
-    }
-    await shown.catch(() => undefined);
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+    await shown;
     expect(resolved).toBe(true);
-    dialogue.close?.();
-    host.remove();
-    field.remove();
+    dialogue.close();
+    await vi.runAllTimersAsync();
   });
 });
