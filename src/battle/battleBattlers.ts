@@ -289,7 +289,7 @@ function equipmentRuntimeEffects(project: Project, equipment: ActorInitialEquipm
   let accuracy = 100;
   let criticalRate = 0;
   let stateResistanceChance = 0;
-  let stateDefenseMode: "resist" | "inflict" = "resist";
+  const stateDefenseMode = "resist" as const;
   for (const equipmentId of logicalEquipmentIds(project, equipment)) {
     if (!equipmentId) continue;
     const record = project.database.equipment.find((entry) => entry.id === equipmentId);
@@ -300,9 +300,10 @@ function equipmentRuntimeEffects(project: Project, equipment: ActorInitialEquipm
     criticalRate += record.criticalRate;
     for (const elementId of record.attackElementIds) attackElementIds.add(elementId);
     for (const elementId of record.elementalDefenseIds) elementalDefenseIds.add(elementId);
-    for (const stateId of record.stateDefenseIds) stateDefenseIds.add(stateId);
-    if (record.stateDefenseMode === "inflict") stateDefenseMode = "inflict";
-    stateResistanceChance = Math.max(stateResistanceChance, record.stateResistanceChance);
+    if (record.stateDefenseMode === "resist") {
+      for (const stateId of record.stateDefenseIds) stateDefenseIds.add(stateId);
+      stateResistanceChance = Math.max(stateResistanceChance, record.stateResistanceChance);
+    }
   }
   return {
     doubleAttack,

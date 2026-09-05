@@ -1,0 +1,113 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/itemEquipmentAuthoringTrust.test.ts test/databaseItemInspector.test.ts test/databaseEquipmentInspector.test.ts test/databaseFieldSupport.test.ts test/databaseWave2BatchC.test.ts test/playerItemUse.test.ts test/defaultFeatureItemRuntime.test.ts test/itemRuntimeUsability.test.ts test/itemAuthorityIntegration.test.ts test/bootNormalizerReferenceSafety.test.ts test/equipmentCatalogRuntimeAxes.test.ts --maxWorkers=2 --reporter=verbose
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/omo-4
+
+ ✓ test/databaseEquipmentInspector.test.ts > equipment inspector header > switches the actor comparison between eligible and ineligible actors 369ms
+ ✓ test/databaseEquipmentInspector.test.ts > equipment inspector header > refreshes actor stat deltas in place when an equipment bonus changes 716ms
+ ✓ test/databaseEquipmentInspector.test.ts > equipment inspector header > labels an already-equipped candidate instead of claiming the slot is empty 324ms
+ ✓ test/databaseEquipmentInspector.test.ts > equipment inspector header > renders a named effect story beside the existing summary chips 935ms
+ ✓ test/databaseEquipmentInspector.test.ts > equipment inspector header > renders icon, name edit (db-field-name), slot segmented, and the summary chips host 519ms
+ ✓ test/databaseEquipmentInspector.test.ts > equipment inspector header > segmented slot change rewrites slot and refreshes chips without a full form rebuild 345ms
+ ✓ test/databaseEquipmentInspector.test.ts > equipment inspector header > name edit rewrites the name field and keeps the header intact 308ms
+ ✓ test/databaseEquipmentInspector.test.ts > summary chips partial refresh (refreshSummaryChips closure) > toggle twoHanded switch adds the 양손 장비 chip without a rebuild 972ms
+ ✓ test/databaseEquipmentInspector.test.ts > summary chips partial refresh (refreshSummaryChips closure) > effect flag toggleSwitch writes effectFlags and refreshes the chip row 433ms
+ ✓ test/databaseEquipmentInspector.test.ts > state percent sliders (0-100%) > clamps out-of-range input with display write-back (150 → 100) 390ms
+ ✓ test/databaseEquipmentInspector.test.ts > state percent sliders (0-100%) > state infliction chance uses the same slider/stepper pair contract 507ms
+ ✓ test/databaseEquipmentInspector.test.ts > state defense mode + effect flags (modern controls) > offers only an explicit repair for legacy inflict defense settings 491ms
+ ✓ test/databaseEquipmentInspector.test.ts > state defense mode + effect flags (modern controls) > keeps actor/class permission checkbox testids (e2e contract) 726ms
+ ✓ test/databaseWave2BatchC.test.ts > state reference panel shows actual stateEffects references (P10) > lists skills whose stateEffects target this state, not switch-kind skills 1007ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > summarizes a finite-use party medicine from live item fields 1100ms
+ ✓ test/databaseWave2BatchC.test.ts > state reference panel shows actual stateEffects references (P10) > shows the empty hint for a state no skill references 600ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > resolves a special item's triggered skill name 541ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > does not present special item actor and class ids as runtime restrictions 424ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > keeps an always item battle-usable when the legacy menu-only flag is also set 287ms
+ ✓ test/databaseWave2BatchC.test.ts > state numeric fields clamp at the view level (P10) > clamps 회복 확률 999 → 100 and 명중률 보정 -50 → 0 with display write-back 1195ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > renders the effect story and refreshes it in place after recovery edits 320ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > renders the inspector header with 96px icon, name edit (db-field-name), and type tag 336ms
+ ✓ test/databaseWave2BatchC.test.ts > equipment effect field group ported from the item tab (P10) > renders the three supported effect flags and commits toggles to the store 418ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > HP/MP recovery % slider/stepper writes clamped step-5 values to the store 662ms
+ ✓ test/databaseWave2BatchC.test.ts > equipment effect field group ported from the item tab (P10) > renders attack/defense element choices and state defense fields 588ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > keeps the base percent testid on the field wrapper while inputs use -slider/-stepper 115ms
+ ✓ test/databaseWave2BatchC.test.ts > equipment effect field group ported from the item tab (P10) > separates equippable actors and classes with group headings 152ms
+ ✓ test/databaseWave2BatchC.test.ts > class equipment permissions keep the array intact (P10 Critical) > renders one checkbox per equipment and toggling one preserves the others 523ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > segmented scope radio rewrites the stored ItemScope enum 569ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > avatar chip toggles an actor id in usableActorIds and keeps class checkboxes 1891ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > occasion selection synchronizes menu and battle flags 1241ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > switch items use the same occasion authority 704ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > type change calls updateItemType + full rerender and swaps type panels 624ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > draws one scope control for usable items and none for ordinary goods 430ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > renders one shared usable card placed under the limits section 103ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > orders workbench cards as summary → definition → effect → limits 163ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > authors item state effects through add, edit and delete rows 1043ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > assigns and clears the battle animation played when the item is used 761ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > authors the monster care profile and removes it when set to none 768ms
+ ✓ test/itemEquipmentAuthoringTrust.test.ts > uses one occasion control and restores field+battle after a field-only edit 956ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > round-trips edited state effects, animation and care profile through project persistence 1069ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > narrates inflicted states with their chance and names the battle animation 114ms
+ ✓ test/itemEquipmentAuthoringTrust.test.ts > preserves inactive book settings through serialization without teaching a skill as medicine 1125ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > omits the chance when an inflicted state always lands 105ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > keeps price and consumption in basics, without unrelated farming options on medicine 152ms
+ ✓ test/itemEquipmentAuthoringTrust.test.ts > inactive recovery and seed settings cannot be used by a normal good 302ms
+ ✓ test/itemEquipmentAuthoringTrust.test.ts > preserves deleted default rows through save/load and the boot normalizer 461ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > weapon type shows an equipment-tab door instead of the legacy equipment form 385ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > legacy weapon item keeps its price but has no scope/capture editors 593ms
+ ✓ test/itemEquipmentAuthoringTrust.test.ts > has a single special-item skill selector and refreshes scope immediately 995ms
+ ✓ test/databaseItemInspector.test.ts > database item inspector form > farm tool dropdown offers every canonical FARM_TOOLS value with Korean labels 779ms
+ ✓ test/itemEquipmentAuthoringTrust.test.ts > makes reusable/finite/single use explicit and the runtime respects them 431ms
+ ✓ test/itemEquipmentAuthoringTrust.test.ts > capture mode hides the saved skill effect and does not hide medicine controls after a type change 759ms
+ ✓ test/itemEquipmentAuthoringTrust.test.ts > does not offer new equipment types in Items 820ms
+ ✓ test/itemEquipmentAuthoringTrust.test.ts > does not advertise unsupported flags and keeps one attack element input 754ms
+ ✓ test/itemEquipmentAuthoringTrust.test.ts > a legacy inflict record cannot disable another equipment's state resistance 300ms
+ ✓ test/bootNormalizerReferenceSafety.test.ts > boot normalizers keep reference integrity > 예제 어드벤처: 정규화 전 0건 → 정규화 후에도 참조 위반 0건 698ms
+ ✓ test/bootNormalizerReferenceSafety.test.ts > boot normalizers keep reference integrity > 빈 프로젝트도 정규화 후 참조 위반 0건 (기본 세트 자체는 자기충족적이다) 158ms
+ ✓ test/bootNormalizerReferenceSafety.test.ts > boot normalizers keep reference integrity > 아이콘 보정은 삭제한 카탈로그 행이나 그 의존성을 재주입하지 않는다 157ms
+ ✓ test/bootNormalizerReferenceSafety.test.ts > boot normalizers keep reference integrity > 기존 아이템의 스킬·상태 참조를 유지한다 95ms
+ ✓ test/itemAuthorityIntegration.test.ts > finite-use item authority integration > threads a battle successful-use cursor through event snapshot and back to session 158ms
+ ✓ test/itemAuthorityIntegration.test.ts > finite-use item authority integration > rejects an actor-restricted battle item without changing effects or finite-use state 80ms
+ ✓ test/itemAuthorityIntegration.test.ts > finite-use item authority integration > rejects a class-restricted battle item without changing effects or finite-use state 252ms
+ ✓ test/itemAuthorityIntegration.test.ts > finite-use item authority integration > applies and advances finite-use state for an eligible restricted battle item 142ms
+ ✓ test/itemAuthorityIntegration.test.ts > finite-use item authority integration > routes battle-event item changes through the finite-use transition authority 190ms
+ ✓ test/itemAuthorityIntegration.test.ts > finite-use item authority integration > counts mirrored two-handed equipment stats once in battle 182ms
+ ✓ test/itemAuthorityIntegration.test.ts > finite-use item authority integration > persists defeat-branch item consumption without granting victory rewards 216ms
+ ✓ test/itemAuthorityIntegration.test.ts > finite-use item authority integration > round-trips finite-use state through a save snapshot 64ms
+ ✓ test/itemAuthorityIntegration.test.ts > finite-use item authority integration > preserves the FIFO cursor when a partially charged final care-item copy is used 171ms
+ ✓ test/itemAuthorityIntegration.test.ts > finite-use item authority integration > finishes a charged FIFO care-item copy without consuming its uncharged tail 80ms
+ ✓ test/defaultFeatureItemRuntime.test.ts > 확장 기본 아이템 실행 경로 > 아이템 고유 상태 효과 경로로 전투 강화 상태를 부여한다 350ms
+ ✓ test/defaultFeatureItemRuntime.test.ts > 확장 기본 아이템 실행 경로 > 아군 전체 회복을 모든 대상에 적용하고 한 개만 소모한다 240ms
+ ✓ test/defaultFeatureItemRuntime.test.ts > 확장 기본 아이템 실행 경로 > 사료와 장난감의 돌봄 수치를 파티 몬스터에게 적용한다 206ms
+ ✓ test/defaultFeatureItemRuntime.test.ts > 확장 기본 아이템 실행 경로 > 성장 씨앗은 선택한 배우의 영구 능력 보너스를 올린다 141ms
+ ✓ test/defaultFeatureItemRuntime.test.ts > 확장 기본 아이템 실행 경로 > 카탈로그의 작물 씨앗은 농사 데모의 밭에 실제로 심어진다 283ms
+ ✓ test/defaultFeatureItemRuntime.test.ts > 확장 기본 아이템 실행 경로 > 스위치 아이템은 서로 겹치지 않는 전용 스위치를 켜고 재사용을 거부한다 277ms
+ ✓ test/defaultFeatureItemRuntime.test.ts > 확장 기본 아이템 실행 경로 > 유한 사용 횟수를 메뉴와 전투 모두 같은 충전 권위자로 계산한다 274ms
+ ✓ test/defaultFeatureItemRuntime.test.ts > 확장 기본 아이템 실행 경로 > 네 속성 아이템 스킬과 두 상태 공격 아이템이 실제 적에게 효과를 남긴다 247ms
+ ✓ test/equipmentCatalogRuntimeAxes.test.ts > 기본 장비가 사용하는 전투 런타임 축 > 장비 명중률 차이가 같은 난수에서 일반 공격의 적중 여부를 바꾼다 569ms
+ ✓ test/equipmentCatalogRuntimeAxes.test.ts > 기본 장비가 사용하는 전투 런타임 축 > 장비 치명타율 차이가 같은 난수에서 일반 공격 피해를 바꾼다 322ms
+ ✓ test/equipmentCatalogRuntimeAxes.test.ts > 기본 장비가 사용하는 전투 런타임 축 > 장비 상태 부여가 적중한 일반 공격 뒤 실제 대상 상태가 된다 75ms
+ ✓ test/equipmentCatalogRuntimeAxes.test.ts > 기본 장비가 사용하는 전투 런타임 축 > 장비 공격 속성이 대상의 일치 속성 등급으로 일반 공격 피해를 줄인다 288ms
+ ✓ test/equipmentCatalogRuntimeAxes.test.ts > 기본 장비가 사용하는 전투 런타임 축 > 일치하는 장비 속성 방어가 실제 속성 피해를 줄인다 105ms
+ ✓ test/equipmentCatalogRuntimeAxes.test.ts > 기본 장비가 사용하는 전투 런타임 축 > 일치하는 장비 상태 방어가 실제 상태 부여를 저항한다 128ms
+ ✓ test/playerItemUse.test.ts > player menu item use > applies a guaranteed add-op state effect from the menu and consumes the item 538ms
+ ✓ test/playerItemUse.test.ts > player menu item use > refuses an add-op state item when the target already carries the state 141ms
+ ✓ test/itemRuntimeUsability.test.ts > default item runtime usability > uses every field or always item through the real menu authority 551ms
+ ✓ test/itemRuntimeUsability.test.ts > default item runtime usability > 기본 농기구 세 개로 경작, 물주기, 채굴 경로를 실행한다 133ms
+ ✓ test/itemRuntimeUsability.test.ts > default item runtime usability > lands a real effect and consumes one copy for every battle item 320ms
+ ✓ test/playerItemUse.test.ts > player menu item use > replays the same partial-chance inflict outcome for the same session seed 1013ms
+ ✓ test/playerItemUse.test.ts > player menu item use > keeps a zero-chance add-op state item unused instead of burning a copy 284ms
+ ✓ test/databaseFieldSupport.test.ts > database field support descriptor > is the unique exhaustive source for the twenty-one-field truth contract 3ms
+ ✓ test/databaseFieldSupport.test.ts > database field support descriptor > describes imagery in the current inventory, equipment menu and shop 3ms
+ ✓ test/databaseFieldSupport.test.ts > database field support descriptor > renders support state directly from the descriptor 3ms
+ ✓ test/playerItemUse.test.ts > player menu item use > does not advance the battle RNG for guaranteed, impossible, existing or missing states 1132ms
+ ✓ test/playerItemUse.test.ts > player menu item use > applies a party state item to each eligible actor and spends one charge for the whole use 121ms
+ ✓ test/playerItemUse.test.ts > player menu item use > does not consume a recovery item on a full-HP target 208ms
+ ✓ test/playerItemUse.test.ts > player menu item use > does not let a normal recovery item revive a dead actor 395ms
+ ✓ test/playerItemUse.test.ts > player menu item use > applies all-ally recovery to every eligible actor and consumes once 197ms
+ ✓ test/playerItemUse.test.ts > player menu item use > removes cured states from the menu and refuses battle-only items 125ms
+
+ Test Files  11 passed (11)
+      Tests  100 passed (100)
+   Start at  17:52:51
+   Duration  81.99s (transform 37.12s, setup 0ms, collect 103.48s, tests 45.12s, environment 3ms, prepare 3.79s)
+

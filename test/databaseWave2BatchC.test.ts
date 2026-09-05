@@ -104,17 +104,11 @@ describe("equipment effect field group ported from the item tab (P10)", () => {
     return form;
   }
 
-  it("renders all 9 effect flags and commits toggles to the store", () => {
+  it("renders the three supported effect flags and commits toggles to the store", () => {
     const form = renderEquipmentForm("equip_sword");
     for (const testid of [
-      "db-field-equipment-effect-preemptive",
       "db-field-equipment-effect-double",
       "db-field-equipment-effect-all",
-      "db-field-equipment-effect-ignore-dodge",
-      "db-field-equipment-effect-prevent-critical",
-      "db-field-equipment-effect-dodge",
-      "db-field-equipment-effect-half-mp",
-      "db-field-equipment-effect-terrain",
       "db-field-equipment-effect-fixed",
     ]) {
       expect(findByTestId(form, testid), testid).not.toBeNull();
@@ -128,9 +122,9 @@ describe("equipment effect field group ported from the item tab (P10)", () => {
 
   it("renders attack/defense element choices and state defense fields", () => {
     const form = renderEquipmentForm("equip_sword");
-    const attackElement = findByTestId(form, "db-field-equipment-attackElementIds-element_fire");
-    if (!attackElement) throw new Error("missing attack element checkbox");
-    attackElement.checked = true;
+    const attackElement = findByTestId(form, "db-field-equipment-attack-element");
+    if (!attackElement) throw new Error("missing attack element select");
+    attackElement.value = "element_fire";
     attackElement.dispatchEvent(new Event("change"));
     expect(store.getCurrent().database.equipment[0]?.attackElementIds).toEqual(["element_fire"]);
 
@@ -140,7 +134,7 @@ describe("equipment effect field group ported from the item tab (P10)", () => {
     stateDefense.dispatchEvent(new Event("change"));
     expect(store.getCurrent().database.equipment[0]?.stateDefenseIds).toEqual(["state_poison"]);
 
-    expect(findByTestId(form, "db-field-equipment-state-defense-mode")).not.toBeNull();
+    expect(findByTestId(form, "db-field-equipment-state-defense-mode")).toBeNull();
     const resistance = findByTestId(form, "db-field-equipment-state-resistance");
     if (!resistance) throw new Error("missing state resistance field");
     resistance.value = "250";

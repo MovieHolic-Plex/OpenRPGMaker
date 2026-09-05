@@ -1,0 +1,15 @@
+
+Running 1 test using 1 worker
+
+(node:519896) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+editor ready
+capturing items 1280
+capturing equipment 1280
+capturing items 1024
+capturing equipment 1024
+capturing items 1440
+capturing equipment 1440
+  ✓  1 [chromium] › test/e2e/items-equipment-trust.spec.ts:4:1 › items and equipment expose usable settings and keep summaries synchronized (3.7m)
+
+  1 passed (3.8m)

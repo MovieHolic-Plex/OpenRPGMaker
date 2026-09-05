@@ -1,3 +1,4 @@
+import { activeItemEffects, itemAllowsMenu, itemAllowsBattle } from "@/project/itemUsage";
 import "@/styles/database/modern/equipment-items.css";
 import {
   avatarChipRow,
@@ -15,7 +16,7 @@ import {
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { emptyState, sectionCard } from "@/editor/panels/databaseWorkspace";
 import { switchDatabaseActiveTab } from "@/editor/panels/database";
-import { itemCaptureFields, itemPriceField, itemScopeField, skillPicker } from "@/editor/panels/databaseBasicRecordFields";
+import { itemCaptureFields, itemPriceField, itemScopeField } from "@/editor/panels/databaseBasicRecordFields";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { FARM_TOOLS, isFarmTool } from "@/project/farmModel";
@@ -56,7 +57,6 @@ export const ITEM_TYPES = [
   "switch",
 ] as const satisfies readonly ItemType[];
 
-const CONSUMPTION_LIMITS = ["noLimit", "1", "2", "3", "4", "5"] as const;
 const STATE_EFFECT_OPERATIONS = ["add", "remove"] as const satisfies readonly DatabaseStateEffect["operation"][];
 const CARE_KIND_OPTIONS: readonly { readonly id: "none" | ItemCareProfile["kind"]; readonly name: string }[] = [
   { id: "none", name: "(없음)" },
@@ -74,9 +74,9 @@ const ITEM_TYPE_LABELS: Record<(typeof ITEM_TYPES)[number], string> = {
   accessory: "장신구",
   medicine: "약",
   book: "책",
-  seed: "씨앗",
+  seed: "능력치 성장",
   special: "특수",
-  switch: "스위치",
+  switch: "장치 작동",
 };
 
 const FARM_TOOL_LABELS: Record<FarmTool, string> = {
@@ -101,7 +101,8 @@ export type ItemEffectStory = {
 };
 
 /** Pure, schema-preserving projection of the fields the live item runtimes consume. */
-export function itemEffectStory(project: Project, record: ItemRecord): ItemEffectStory {
+export function itemEffectStory(project: Project, authoredRecord: ItemRecord): ItemEffectStory {
+  const record = activeItemEffects(authoredRecord);
   const effects: string[] = [];
   const notes: string[] = [];
   const hpRecovery = recoveryStory("HP", record.hpRecovery);
@@ -211,6 +212,8 @@ function itemWorkbenchCards(
   const story = spanCard(sectionCard({
     title: "이 아이템을 사용하면",
     testid: "db-item-card-story",
+    collapsible: true,
+    collapsed: true,
     children: [storyHost],
   }));
   if (isEquipmentItemType(record.type)) {
@@ -220,16 +223,16 @@ function itemWorkbenchCards(
     story,
     sectionLabel("정의", "definition"),
     basicsCard(record, rerender, refreshStory),
-    graphicCard(record, rerender),
     sectionLabel("효과", "effect"),
-    targetingCard(record, refreshStory),
     ...typePanels(record, refreshStory),
-    ...(hasUseEffects(record.type) ? [stateEffectsCard(record, rerender, refreshStory), animationCard(record, refreshStory)] : []),
-    linkedSkillCard(record),
+    ...(record.type === "medicine" || (record.type === "special" && !record.captureProfile && !record.careProfile) ? [stateEffectsCard(record, rerender, refreshStory)] : []),
+    ...(hasUseEffects(record.type) && (record.type === "medicine" || (!record.captureProfile && !record.careProfile)) ? [animationCard(record, refreshStory)] : []),
+    ...(record.type !== "normalGoods" ? [targetingCard(record, refreshStory)] : []),
     sectionLabel("사용 제한", "limits"),
     ...(hasActorRestrictions(record.type) ? [usableCard(record, refreshStory)] : []),
-    captureCard(record),
-    careCard(record, rerender, refreshStory),
+    ...(record.type === "special" && !record.careProfile ? [captureCard(record, refreshStory, rerender)] : []),
+    ...(record.type === "special" && !record.captureProfile ? [careCard(record, rerender, refreshStory)] : []),
+    graphicCard(record, rerender),
     supportNotice(),
   ];
 }
@@ -244,30 +247,43 @@ function sectionLabel(text: string, slug: string): HTMLElement {
 }
 
 function basicsCard(record: ItemRecord, rerender: () => void, refreshStory: () => void): HTMLElement {
-  return sectionCard({
+  const card = sectionCard({
     title: "기본",
     testid: "db-item-card-basics",
     children: [
       textField("설명", "db-field-item-description", record.description, (description) =>
         updateDatabaseRecord("items", record.id, { description })
       ),
-      selectLiteral("종류", "db-field-item-type", record.type, ITEM_TYPES, (type) => {
-        updateItemType(record, type);
-        rerender();
-      }),
-      ...(isEquipmentItemType(record.type)
-        ? []
-        : [itemPriceField(record.id), consumptionLimitField(record, refreshStory), farmToolField(record, refreshStory)]),
+      itemTypeField(record, rerender),
+      el("p", { class: "db-field-hint", text: "종류를 바꾸면 이전 종류의 효과는 보관되며 적용되지 않습니다. 착용 장비는 장비 탭에서 추가하세요." }),
+      itemPriceField(record.id),
+      ...(!isEquipmentItemType(record.type) ? [consumptionLimitField(record, refreshStory)] : []),
+      ...(record.type === "normalGoods" || record.farmTool ? [farmToolField(record, refreshStory)] : []),
     ],
   });
+  card.classList.add("db-item-basics", "db-ws-span");
+  return card;
+}
+
+function itemTypeField(record: ItemRecord, rerender: () => void): HTMLElement {
+  const control = selectLiteral("종류", "db-field-item-type", record.type,
+    ITEM_TYPES.filter((type) => !isEquipmentItemType(type) || type === record.type), (type) => {
+      updateItemType(record, type);
+      rerender();
+    });
+  for (const option of control.querySelectorAll("option")) option.textContent = ITEM_TYPE_LABELS[option.value as ItemType];
+  return control;
 }
 
 function graphicCard(record: ItemRecord, rerender: () => void): HTMLElement {
-  return sectionCard({
-    title: "아이템 그래픽",
+  return spanCard(sectionCard({
+    title: "외형",
+    collapsible: true,
+    collapsed: true,
+    hint: "목록·게임 인벤토리·장비 메뉴·상점은 아이콘을 우선하며, 없으면 이미지를 사용합니다.",
     testid: "db-item-card-graphic",
     children: [resourcePanel(record, rerender)],
-  });
+  }));
 }
 
 /**
@@ -281,63 +297,55 @@ function targetingCard(record: ItemRecord, refreshStory: () => void): HTMLElemen
     ? [segmentedControl("대상", "db-field-item-scope", record.scope, MEDICINE_SCOPE_OPTIONS, (scope) =>
       updateItemAndRefresh(record, { scope: scope as ItemScope }, refreshStory)
     )]
-    : [itemScopeField(record.id)];
+    : [itemScopeField(record.id, refreshStory)];
+  children.push(itemOccasionField(record, refreshStory));
   if (record.type === "medicine") {
     children.push(
-      toggleSwitch("메뉴에서만 사용", "db-field-item-only-menu", record.onlyUsableInMenu, (onlyUsableInMenu) => {
-        updateDatabaseRecord("items", record.id, { onlyUsableInMenu, occasion: onlyUsableInMenu ? "field" : currentItem(record).occasion });
-        refreshStory();
-      }),
       toggleSwitch("전투불능 대상에게만 유효", "db-field-item-only-dead", record.onlyEffectiveOnDeadActors, (onlyEffectiveOnDeadActors) =>
         updateItemAndRefresh(record, { onlyEffectiveOnDeadActors }, refreshStory)
       ),
     );
   }
-  if (record.type === "switch") {
-    children.push(
-      toggleSwitch("필드", "db-field-item-occasion-field", record.occasionField, (occasionField) => {
-        updateDatabaseRecord("items", record.id, {
-          occasionField,
-          occasion: occasionFromFlags(occasionField, currentItem(record).occasionBattle),
-        });
-        refreshStory();
-      }),
-      toggleSwitch("전투", "db-field-item-occasion-battle", record.occasionBattle, (occasionBattle) => {
-        updateDatabaseRecord("items", record.id, {
-          occasionBattle,
-          occasion: occasionFromFlags(currentItem(record).occasionField, occasionBattle),
-        });
-        refreshStory();
-      }),
-    );
-  }
+  children.push(el("p", { class: "db-field-hint", text: "책·능력치 성장·장치 작동은 필드 전용, 스킬 발동·포획은 전투 전용입니다. 부활은 필드에서만 사용할 수 있습니다." }));
   return sectionCard({ title: "대상과 사용 시점", testid: "db-item-card-targeting", children });
 }
 
-/** 레거시 공유 필드 `item.skillId`. 상점·이벤트가 참조하는 보조 필드라 효과 구역 끝에 둔다. */
-function linkedSkillCard(record: ItemRecord): HTMLElement {
-  const host = el("div", { class: "db-item-grid" });
-  skillPicker(host, "items", record.id);
-  return sectionCard({
-    title: "연결 스킬",
-    testid: "db-item-card-skill",
-    children: [host],
-  });
+function itemOccasionField(record: ItemRecord, refreshStory: () => void): HTMLElement {
+  return selectLiteral("사용 시점", "db-field-item-occasion", record.occasion,
+    ["always", "field", "battle", "never"], (occasion) => {
+      updateDatabaseRecord("items", record.id, {
+        occasion, occasionField: occasion === "always" || occasion === "field",
+        occasionBattle: occasion === "always" || occasion === "battle",
+        onlyUsableInMenu: occasion === "field",
+      });
+      refreshStory();
+    });
 }
 
-/** 포획 수치는 어떤 종류든 가질 수 있지만 대부분의 아이템에서 0 이다 — 맨 뒤로 물러난다. */
-function captureCard(record: ItemRecord): HTMLElement {
+/** 포획은 특수 아이템에서 명시적으로 켠 뒤 수치를 편집한다. */
+function captureCard(record: ItemRecord, refreshStory: () => void, rerender: () => void): HTMLElement {
   return sectionCard({
-    title: "포획",
+    title: "몬스터 포획",
+    collapsible: true,
+    collapsed: !record.captureProfile,
     hint: "몬스터 포획용 아이템일 때만 적용됩니다",
     testid: "db-item-card-capture",
-    children: [el("div", { class: "db-item-grid", children: itemCaptureFields(record.id) })],
+    children: [
+      toggleSwitch("포획 기능 사용", "db-field-item-capture-enabled", Boolean(record.captureProfile), (enabled) => {
+        updateDatabaseRecord("items", record.id, { captureProfile: enabled ? { multiplier: 1 } : undefined });
+        rerender();
+      }),
+      ...(record.captureProfile ? [el("div", { class: "db-item-grid", children: itemCaptureFields(record.id, refreshStory, 0.01) })] : []),
+    ],
   });
 }
 
 function usableCard(record: ItemRecord, refreshStory: () => void): HTMLElement {
   return spanCard(sectionCard({
-    title: "사용 가능",
+    title: "사용 대상 제한",
+    collapsible: true,
+    collapsed: record.usableActorIds.length === 0 && record.usableClassIds.length === 0,
+    hint: "필드: 사용 대상 / 전투: 아이템을 사용하는 주인공",
     testid: "db-item-card-usable",
     children: actorClassChoices(record, refreshStory),
   }));
@@ -373,7 +381,9 @@ function stateEffectsCard(record: ItemRecord, rerender: () => void, refreshStory
   const body = rows.length > 0 ? rows : [el("div", { class: "db-item-state-effect-empty", text: "상태 변화 없음" })];
   return spanCard(sectionCard({
     title: "상태 변화",
-    hint: "부여는 확률 판정, 해제는 걸린 상태를 지웁니다",
+    collapsible: true,
+    collapsed: record.stateEffects.length === 0,
+    hint: "필드·전투에 적용됩니다. 특수 아이템에 발동 스킬이 있으면 스킬 효과를 사용합니다.",
     testid: "db-item-card-state-effects",
     children: [el("div", { class: "db-item-state-effects", children: [...body, add] })],
   }));
@@ -433,6 +443,8 @@ function clampPercent(value: number): number {
 function animationCard(record: ItemRecord, refreshStory: () => void): HTMLElement {
   return sectionCard({
     title: "전투 연출",
+    collapsible: true,
+    collapsed: !record.animationId,
     hint: "전투에서 사용할 때 대상 위치에 재생됩니다",
     testid: "db-item-card-animation",
     children: [
@@ -452,7 +464,7 @@ function careCard(record: ItemRecord, rerender: () => void, refreshStory: () => 
       const next: ItemCareProfile | undefined = kind !== "feed" && kind !== "toy"
         ? undefined
         : { kind, friendshipDelta: current?.friendshipDelta ?? 0, ...(current?.expDelta !== undefined ? { expDelta: current.expDelta } : {}) };
-      updateItemAndRefresh(record, { careProfile: next }, refreshStory);
+      updateItemAndRefresh(record, { careProfile: next, ...(next ? { occasion: "field", occasionField: true, occasionBattle: false, onlyUsableInMenu: true } : {}) }, refreshStory);
       rerender();
     }),
   ];
@@ -471,6 +483,8 @@ function careCard(record: ItemRecord, rerender: () => void, refreshStory: () => 
   }
   return sectionCard({
     title: "몬스터 돌봄",
+    collapsible: true,
+    collapsed: !care,
     hint: "파티 몬스터에게 먹이·장난감으로 쓰는 아이템일 때만 적용됩니다",
     testid: "db-item-card-care",
     children: [el("div", { class: "db-item-grid", children })],
@@ -479,11 +493,11 @@ function careCard(record: ItemRecord, rerender: () => void, refreshStory: () => 
 
 /** 배우/직업 허용 목록이 의미를 갖는 종류 — 사용자가 직접 쓰는 아이템만. */
 function hasActorRestrictions(type: ItemType): boolean {
-  return type === "medicine" || type === "book" || type === "seed" || type === "special";
+  return type === "medicine" || type === "book" || type === "seed";
 }
 
 function supportNotice(): HTMLElement {
-  return spanCard(databaseFieldSupportNotice("imageResourceId", "iconResourceId", "consumptionLimit", "usableActorIds", "usableClassIds", "seedParameterBonuses", "stateEffects", "animationId", "careProfile", "usageMessage", "equipmentProfile"));
+  return spanCard(databaseFieldSupportNotice("consumptionLimit", "usableActorIds", "usableClassIds", "seedParameterBonuses", "stateEffects", "animationId", "careProfile"));
 }
 
 /** `db-ws-stack` 안에서 한 행을 다 쓰는 카드로 표시한다. */
@@ -514,10 +528,10 @@ function equipmentRedirect(form: HTMLElement): HTMLElement {
       emptyState({
         icon: "⚔",
         title: "장비 스탯은 장비 탭에서 만듭니다",
-        body: "무기·방패·갑옷·머리·장신구의 전투 스탯은 이 탭에서 적용되지 않습니다. 여기서는 이름·가격·아이콘만 관리합니다.",
+        body: "이 항목은 이전 형식의 비착용 물품입니다. 장비로 변환되거나 연결되지 않습니다. 착용할 물건은 장비 탭에서 새로 추가하세요.",
         testid: "db-item-equipment-redirect-empty",
         action: {
-          label: "장비 탭 열기",
+          label: "장비 목록에서 새로 만들기",
           testid: "db-item-open-equipment-tab",
           onClick: () => {
             const root = databasePanelRootFrom(form);
@@ -604,7 +618,7 @@ function medicinePanels(record: ItemRecord, refreshStory: () => void): HTMLEleme
     typePanelGroup("db-items-medicine-panel", [
       // HP·MP 는 같은 두 필드(%, 고정값)라 카드 두 장으로 나누면 격자에 홀수 칸이
       // 남는다 — 한 카드 안에서 소제목으로 나눈다.
-      sectionCard({
+      spanCard(sectionCard({
         title: "회복량",
         hint: "% 는 최대치 기준, 고정값과 합산됩니다",
         testid: "db-item-card-recovery",
@@ -612,9 +626,11 @@ function medicinePanels(record: ItemRecord, refreshStory: () => void): HTMLEleme
           fieldGroup("HP 회복", recoveryFields(record, "hpRecovery", "hp", refreshStory)),
           fieldGroup("MP 회복", recoveryFields(record, "mpRecovery", "mp", refreshStory)),
         ],
-      }),
+      })),
       spanCard(sectionCard({
         title: "상태 회복",
+        collapsible: true,
+        collapsed: record.healStateIds.length === 0 && !record.stateEffects.some((effect) => effect.operation === "remove"),
         testid: "db-item-card-heal-states",
         children: [choiceList("상태", healStateChoices(record, refreshStory))],
       })),
@@ -652,25 +668,19 @@ function seedPanels(record: ItemRecord, refreshStory: () => void): HTMLElement[]
 }
 
 function specialPanels(record: ItemRecord, refreshStory: () => void): HTMLElement[] {
+  if (record.careProfile) return [];
+  if (record.captureProfile) return [];
   return [
     typePanelGroup("db-items-special-panel", [
       sectionCard({
-        title: "발동 스킬",
+        title: "전투에서 발동할 스킬",
+        hint: "스킬 발동은 전투 전용입니다. 스킬 없는 상태 변화와 몬스터 돌봄은 필드에서도 사용할 수 있습니다.",
         testid: "db-item-card-activate-skill",
         children: [
           selectField("발동 스킬", "db-picker-item-activate-skill", record.activateSkillId ?? record.skillId ?? "", store.getCurrent().database.skills, (skillId) => {
             updateDatabaseRecord("items", record.id, { activateSkillId: emptyToUndefined(skillId), skillId: emptyToUndefined(skillId) });
             refreshStory();
           }),
-        ],
-      }),
-      sectionCard({
-        title: "사용 메시지",
-        testid: "db-item-card-usage-message",
-        children: [
-          selectLiteral("메시지", "db-field-item-usage-message", record.usageMessage, ["normal", "skill"], (usageMessage) =>
-            updateDatabaseRecord("items", record.id, { usageMessage })
-          ),
         ],
       }),
     ]),
@@ -681,7 +691,8 @@ function switchPanels(record: ItemRecord, refreshStory: () => void): HTMLElement
   return [
     typePanelGroup("db-items-switch-panel", [
       sectionCard({
-        title: "스위치 토글 ON/OFF",
+        title: "장치 켜기 (ON)",
+        hint: "선택한 스위치를 켭니다. 이미 켜져 있으면 사용하지 않습니다.",
         testid: "db-item-card-switch",
         children: [
           selectField("스위치", "db-picker-item-switch", record.switchId ?? "", switchOptions(), (switchId) =>
@@ -757,7 +768,8 @@ function percentRecoveryField(record: ItemRecord, key: "hpRecovery" | "mpRecover
 function actorClassChoices(record: ItemRecord, refreshStory: () => void): HTMLElement[] {
   const project = store.getCurrent();
   return [
-    avatarChipRow("사용 가능 배우", "db-field-item-usable-actors", actorChips(project.database.actors), record.usableActorIds, (actorId, checked) => {
+    el("p", { class: "db-field-hint", text: "주인공과 직업 목록은 각각 비어 있으면 제한 없습니다. 둘 다 선택하면 두 조건을 모두 만족해야 합니다." }),
+    avatarChipRow("허용 주인공", "db-field-item-usable-actors", actorChips(project.database.actors), record.usableActorIds, (actorId, checked) => {
       updateDatabaseRecord("items", record.id, { usableActorIds: toggleActorIds(currentItem(record).usableActorIds, actorId, checked) });
       refreshStory();
     }),
@@ -782,23 +794,30 @@ function actorChips(actors: readonly ActorRecord[]): AvatarChipActor[] {
 
 function healStateChoices(record: ItemRecord, refreshStory: () => void): HTMLElement[] {
   return store.getCurrent().database.states.map((state) =>
-    checkboxField(state.name, `db-field-item-state-${state.id}`, record.healStateIds.includes(state.id), (checked) => {
-      updateDatabaseRecord("items", record.id, { healStateIds: toggleStateIds(currentItem(record).healStateIds, state.id, checked) });
+    checkboxField(state.name, `db-field-item-state-${state.id}`, (record.healStateIds.includes(state.id) || record.stateEffects.some((effect) => effect.stateId === state.id && effect.operation === "remove")), (checked) => {
+      updateDatabaseRecord("items", record.id, {
+        healStateIds: toggleStateIds(currentItem(record).healStateIds, state.id, checked),
+        stateEffects: currentItem(record).stateEffects.filter((effect) => effect.stateId !== state.id || effect.operation !== "remove"),
+      });
       refreshStory();
     })
   );
 }
 
 function consumptionLimitField(record: ItemRecord, refreshStory: () => void): HTMLElement {
-  const value = String(record.consumptionLimit);
-  const select = el("select", { dataset: { testid: "db-field-item-consumption-limit" } });
-  for (const option of CONSUMPTION_LIMITS) select.append(el("option", { attrs: { value: option }, text: option === "noLimit" ? "제한 없음" : `${option}회` }));
-  select.value = value;
-  select.addEventListener("change", () => {
-    updateDatabaseRecord("items", record.id, { consumptionLimit: parseConsumptionLimit(select.value) });
+  const value = !record.consumable ? "reusable" : record.consumptionLimit === "noLimit" ? "1" : String(record.consumptionLimit);
+  const options = [
+    { id: "reusable", name: "소모하지 않음" },
+    ...[1, 2, 3, 4, 5].map((n) => ({ id: String(n), name: n === 1 ? "매회 1개 소모" : `한 개를 ${n}회 사용` })),
+  ];
+  return selectField("소모 방식", "db-field-item-consumption-limit", value, options, (next) => {
+    if (!options.some((option) => option.id === next)) return;
+    updateDatabaseRecord("items", record.id, {
+      consumable: next !== "reusable",
+      consumptionLimit: next === "reusable" ? record.consumptionLimit : parseConsumptionLimit(next),
+    });
     refreshStory();
   });
-  return field("사용 횟수", select);
 }
 
 // 농사 도구 옵션은 FARM_TOOLS(정본)에서 파생한다 — 하드코딩하면 axe/pickaxe 처럼
@@ -888,20 +907,8 @@ function itemOccasionLabel(record: ItemRecord): string {
   return "사용 불가";
 }
 
-/** Mirrors playerItemUse.canUseItemInMenu, including its occasion-first precedence. */
-function itemIsFieldUsable(record: ItemRecord): boolean {
-  if (record.occasion === "never" || record.occasion === "battle") return false;
-  if (record.onlyUsableInMenu) return true;
-  if (record.occasionField === false && record.occasion !== "field" && record.occasion !== "always") return false;
-  return record.occasion === "always" || record.occasion === "field" || record.occasionField === true;
-}
-
-/** Mirrors battle/runtime.itemIsBattleUsable's occasion gate (before effect checks). */
-function itemIsBattleUsable(record: ItemRecord): boolean {
-  if (record.occasion === "never" || record.occasion === "field") return false;
-  if (record.occasionBattle === false && record.occasion !== "battle" && record.occasion !== "always") return false;
-  return true;
-}
+function itemIsFieldUsable(record: ItemRecord): boolean { return itemAllowsMenu(record); }
+function itemIsBattleUsable(record: ItemRecord): boolean { return itemAllowsBattle(record); }
 
 function statStory(bonuses: EquipmentStatBonuses): string[] {
   const labels: readonly [keyof EquipmentStatBonuses, string][] = [
@@ -932,10 +939,13 @@ function updateItemAndRefresh(record: ItemRecord, patch: Partial<ItemRecord>, re
 
 function updateItemType(record: ItemRecord, type: ItemType): void {
   const current = currentItem(record);
+  const occasion: ItemRecord["occasion"] = type === "normalGoods" || isEquipmentItemType(type) ? "never" : type === "special" && !current.careProfile ? "battle" : type === "medicine" ? "always" : "field";
   updateDatabaseRecord("items", record.id, {
     type,
     scope: type === "medicine" || type === "book" || type === "seed" ? "ally" : current.scope,
-    consumable: type !== "normalGoods" && type !== "weapon" && type !== "shield" && type !== "body" && type !== "head" && type !== "accessory",
+    occasion, occasionField: occasion === "always" || occasion === "field",
+    occasionBattle: occasion === "always" || occasion === "battle",
+    onlyUsableInMenu: occasion === "field",
   });
 }
 
@@ -953,13 +963,6 @@ function switchOptions(): readonly { readonly id: string; readonly name: string 
   const labeled = switches.map((entry, index) => ({ id: entry.id, name: storyFlagOptionLabel(project, "switch", entry, index) }));
   if (labeled.length > 0) return labeled;
   return [{ id: "switch_original", name: "0001:오리지널" }];
-}
-
-function occasionFromFlags(fieldEnabled: boolean, battleEnabled: boolean): ItemRecord["occasion"] {
-  if (fieldEnabled && battleEnabled) return "always";
-  if (fieldEnabled) return "field";
-  if (battleEnabled) return "battle";
-  return "never";
 }
 
 function parseConsumptionLimit(value: string): ItemConsumptionLimit {

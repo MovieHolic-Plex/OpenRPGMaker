@@ -1,3 +1,4 @@
+import { updateDatabaseRecord } from "@/editor/databaseActions";
 // DB UI 현대화 W4 P3 — 장비 폼 인스펙터 전환 계약 검증(fakeDom).
 //
 // todo 10: databaseEquipmentRecordView.ts 가 모던 컨트롤(T8 프리미티브)로 전환된 뒤에도
@@ -280,18 +281,12 @@ describe("state percent sliders (0-100%)", () => {
 });
 
 describe("state defense mode + effect flags (modern controls)", () => {
-  it("segmented 방어 방식 writes the resist/inflict enum", () => {
+  it("offers only an explicit repair for legacy inflict defense settings", () => {
+    updateDatabaseRecord("equipment", store.getCurrent().database.equipment[0]!.id, { stateDefenseMode: "inflict" });
     const form = renderForm();
-    const modeRadios = form.querySelectorAll("[data-testid='db-field-equipment-state-defense-mode-option']");
-    expect(modeRadios).toHaveLength(2);
-    expect(modeRadios.map((radio) => radio.attrs.value)).toEqual(["resist", "inflict"]);
-    expect(modeRadios[0].checked).toBe(true);
-
-    const inflict = modeRadios.find((radio) => radio.attrs.value === "inflict");
-    if (!inflict) throw new Error("missing inflict option");
-    inflict.checked = true;
-    inflict.dispatchEvent(new Event("change", { bubbles: true }));
-    expect(store.getCurrent().database.equipment[0]?.stateDefenseMode).toBe("inflict");
+    expect(findByTestId(form, "db-field-equipment-state-defense-mode")).toBeNull();
+    byTestId(form, "db-equipment-enable-state-resistance").click();
+    expect(store.getCurrent().database.equipment[0]?.stateDefenseMode).toBe("resist");
   });
 
   it("keeps actor/class permission checkbox testids (e2e contract)", () => {

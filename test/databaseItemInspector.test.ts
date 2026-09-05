@@ -248,44 +248,27 @@ describe("database item inspector form", () => {
     }
   });
 
-  it("toggle switches write the stored boolean fields (onlyUsableInMenu / onlyEffectiveOnDeadActors)", () => {
+  it("occasion selection synchronizes menu and battle flags", () => {
     const form = renderForm();
-    const menuToggle = byTestId(form, "db-field-item-only-menu");
-    expect(menuToggle.attrs.type).toBe("checkbox");
-    expect(menuToggle.checked).toBe(false);
-    menuToggle.checked = true;
-    menuToggle.dispatchEvent(new Event("change", { bubbles: true }));
-    expect(currentItem().onlyUsableInMenu).toBe(true);
-    expect(currentItem().occasion).toBe("field");
-
-    menuToggle.checked = false;
-    menuToggle.dispatchEvent(new Event("change", { bubbles: true }));
-    expect(currentItem().onlyUsableInMenu).toBe(false);
-
+    const occasion = byTestId(form, "db-field-item-occasion");
+    occasion.value = "field";
+    occasion.dispatchEvent(new Event("change"));
+    expect(currentItem()).toMatchObject({ occasion: "field", onlyUsableInMenu: true, occasionField: true, occasionBattle: false });
+    occasion.value = "always";
+    occasion.dispatchEvent(new Event("change"));
+    expect(currentItem()).toMatchObject({ occasion: "always", onlyUsableInMenu: false, occasionField: true, occasionBattle: true });
     const deadToggle = byTestId(form, "db-field-item-only-dead");
     deadToggle.checked = true;
-    deadToggle.dispatchEvent(new Event("change", { bubbles: true }));
+    deadToggle.dispatchEvent(new Event("change"));
     expect(currentItem().onlyEffectiveOnDeadActors).toBe(true);
   });
 
-  it("battle/field occasion toggles write the stored occasionBattle/occasionField flags", () => {
-    const item = firstItem();
-    updateDatabaseRecord("items", item.id, { type: "switch", occasionField: false, occasionBattle: false, occasion: "never" });
-    const form = renderForm();
-    expect(findByTestId(form, "db-items-switch-panel")).not.toBeNull();
-
-    const battleToggle = byTestId(form, "db-field-item-occasion-battle");
-    expect(battleToggle.checked).toBe(false);
-    battleToggle.checked = true;
-    battleToggle.dispatchEvent(new Event("change", { bubbles: true }));
-    expect(currentItem().occasionBattle).toBe(true);
-    expect(currentItem().occasion).toBe("battle");
-
-    const fieldToggle = byTestId(form, "db-field-item-occasion-field");
-    fieldToggle.checked = true;
-    fieldToggle.dispatchEvent(new Event("change", { bubbles: true }));
-    expect(currentItem().occasionField).toBe(true);
-    expect(currentItem().occasion).toBe("always");
+  it("switch items use the same occasion authority", () => {
+    updateDatabaseRecord("items", firstItem().id, { type: "switch", occasion: "never" });
+    const occasion = byTestId(renderForm(), "db-field-item-occasion");
+    occasion.value = "field";
+    occasion.dispatchEvent(new Event("change"));
+    expect(currentItem()).toMatchObject({ occasion: "field", occasionField: true, occasionBattle: false });
   });
 
   it("type change calls updateItemType + full rerender and swaps type panels", () => {
@@ -313,7 +296,7 @@ describe("database item inspector form", () => {
   // Break caught: 같은 record.scope 를 쓰는 컨트롤이 한 화면에 둘(수치 카드의 "범위"
   // 셀렉트 + 대상 세그먼트) 있으면 한쪽을 바꿔도 다른 쪽은 재렌더 전까지 옛 값을 보여준다
   // — 장비 부위(slot) 중복 P0 와 같은 모양이다.
-  it("draws exactly one scope control per item type", () => {
+  it("draws one scope control for usable items and none for ordinary goods", () => {
     // 픽스처 item[0] 은 약 계열 — 2지 세그먼트가 권위자다.
     const medicineForm = renderForm();
     expect(findByTestId(medicineForm, "db-field-item-scope")).not.toBeNull();
@@ -321,7 +304,7 @@ describe("database item inspector form", () => {
 
     updateDatabaseRecord("items", firstItem().id, { type: "normalGoods" });
     const goodsForm = renderForm();
-    expect(findByTestId(goodsForm, "db-field-scope")).not.toBeNull();
+    expect(findByTestId(goodsForm, "db-field-scope")).toBeNull();
     expect(findByTestId(goodsForm, "db-field-item-scope")).toBeNull();
   });
 
@@ -341,17 +324,14 @@ describe("database item inspector form", () => {
       "db-item-card-story",
       "db-item-section-definition",
       "db-item-card-basics",
-      "db-item-card-graphic",
       "db-item-section-effect",
-      "db-item-card-targeting",
       "db-items-medicine-panel",
       "db-item-card-state-effects",
       "db-item-card-animation",
-      "db-item-card-skill",
+      "db-item-card-targeting",
       "db-item-section-limits",
       "db-item-card-usable",
-      "db-item-card-capture",
-      "db-item-card-care",
+      "db-item-card-graphic",
       "db-field-support-notice",
     ]);
   });
@@ -407,6 +387,7 @@ describe("database item inspector form", () => {
   // Break caught: careProfile 은 monsterCare 런타임이 소비하는데 저작 UI 가 없어 먹이·장난감
   // 아이템은 기본 카탈로그에만 존재하고 사용자가 새로 만들 수 없었다.
   it("authors the monster care profile and removes it when set to none", () => {
+    updateDatabaseRecord("items", firstItem().id, { type: "special" });
     const form = renderLiveForm();
 
     const kind = byTestId(form, "db-field-item-care-kind");
@@ -484,12 +465,12 @@ describe("database item inspector form", () => {
   });
 
   // 가격은 "수치" 대신 정의(기본) 카드가 소유한다. 종류를 바꿔도 사라지지 않아야 한다.
-  it("keeps price, consumption limit and farm tool inside the basics card", () => {
+  it("keeps price and consumption in basics, without unrelated farming options on medicine", () => {
     const basics = byTestId(renderForm(), "db-item-card-basics");
     expect(findByTestId(basics, "db-field-price")).not.toBeNull();
     expect(findByTestId(basics, "db-field-item-type")).not.toBeNull();
     expect(findByTestId(basics, "db-field-item-consumption-limit")).not.toBeNull();
-    expect(findByTestId(basics, "db-field-item-farm-tool")).not.toBeNull();
+    expect(findByTestId(basics, "db-field-item-farm-tool")).toBeNull();
   });
 
   it("weapon type shows an equipment-tab door instead of the legacy equipment form", () => {
@@ -505,19 +486,20 @@ describe("database item inspector form", () => {
     expect(findByTestId(form, "db-item-equipment-redirect")?.textContent).toContain("장비 탭");
   });
 
-  it("weapon type record tab drops stacked price/scope/capture fields", async () => {
+  it("legacy weapon item keeps its price but has no scope/capture editors", async () => {
     const { renderRecordTab } = await import("@/editor/panels/databaseRecordViews");
     updateDatabaseRecord("items", firstItem().id, { type: "weapon" });
     const host = document.createElement("div") as unknown as FakeElement;
     renderRecordTab(host as unknown as HTMLElement, "items", () => undefined);
     expect(findByTestId(host, "db-item-open-equipment-tab")).not.toBeNull();
-    expect(findByTestId(host, "db-field-price")).toBeNull();
+    expect(findByTestId(host, "db-field-price")).not.toBeNull();
     expect(findByTestId(host, "db-field-item-capture-multiplier")).toBeNull();
   });
 
   // 농사 도구 드롭다운은 FARM_TOOLS 정본에서 파생되어야 한다. 하드코딩이면 axe/pickaxe 가
   // 빠져 나무 베기·채굴이 저작 불가가 된다(회귀 방지).
   it("farm tool dropdown offers every canonical FARM_TOOLS value with Korean labels", () => {
+    updateDatabaseRecord("items", firstItem().id, { type: "normalGoods" });
     const form = renderForm();
     const select = byTestId(form, "db-field-item-farm-tool");
     expect(select.children.map((option) => option.attrs.value)).toEqual(["", ...FARM_TOOLS]);
