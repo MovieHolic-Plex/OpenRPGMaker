@@ -204,7 +204,8 @@ export function listSearch(options: {
 export function restoreFocusAfterRerender(testid: string, frames = 8): void {
   if (typeof requestAnimationFrame !== "function") return;
   const tick = (remaining: number): void => {
-    const next = document.querySelector<HTMLElement>(`[data-testid="${testid}"]`);
+    const next = Array.from(document.querySelectorAll<HTMLElement>("[data-testid]"))
+      .find((node) => node.dataset.testid === testid);
     // 대상이 사라졌으면 되돌릴 자리가 없다 — 조용히 끝낸다.
     if (!next) return;
     if (document.activeElement !== next && typeof next.focus === "function") next.focus();
