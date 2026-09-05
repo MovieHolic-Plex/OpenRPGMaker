@@ -17,9 +17,13 @@ type Drag = { readonly source: "catalog" | "menu"; readonly id: string; readonly
 let drag: Drag | undefined;
 let sequence = 0;
 
-function selectedClass(): ClassRecord | undefined {
-  const classes = store.getCurrent().database.classes;
-  return classes.find((entry) => entry.id === selectedClassId) ?? classes[0];
+function selectedClass(rerender?: () => void): ClassRecord | undefined {
+  const klass = store.getCurrent().database.classes.find((entry) => entry.id === selectedClassId);
+  if (!klass && rerender) {
+    announce("편집하지 않았습니다. 선택한 직업이 없어져 목록을 새로 표시합니다. 직업을 확인해 주세요.");
+    refresh(rerender, "db-command-class-select");
+  }
+  return klass;
 }
 function editable(klass: ClassRecord): ClassBattleCommand[] {
   return klass.battleCommands.filter((row) => row.id !== "cmd_change");
@@ -44,21 +48,21 @@ function commit(klass: ClassRecord, commands: ClassBattleCommand[], label: strin
   refresh(rerender, focus);
 }
 function place(id: string, index: number, rerender: () => void): void {
-  const klass = selectedClass();
-  if (!klass) return announce("먼저 직업을 만드세요.");
+  const klass = selectedClass(rerender);
+  if (!klass) return;
   const result = insertCatalogClassCommand(klass.battleCommands, store.getCurrent().database.battleCommands?.find((row) => row.id === id), index);
   if (!result.ok) return announce("추가하지 않았습니다. 중복 명령, 고정 교체 또는 6개 제한을 확인하세요.");
   commit(klass, result.commands, "직업 메뉴에 명령 추가", rerender, `db-command-remove-${id}`);
 }
 function move(id: string, index: number, rerender: () => void): void {
-  const klass = selectedClass();
+  const klass = selectedClass(rerender);
   if (!klass) return;
   const result = reorderEditableClassCommand(klass.battleCommands, id, index);
   if (!result.ok) return announce("순서를 바꾸지 않았습니다. 현재 위치와 6개 제한을 확인하세요.");
   commit(klass, result.commands, "직업 메뉴 순서 변경", rerender, `db-command-remove-${id}`);
 }
 function remove(id: string, rerender: () => void): void {
-  const klass = selectedClass();
+  const klass = selectedClass(rerender);
   if (!klass || id === "cmd_change" || !klass.battleCommands.some((row) => row.id === id)) return;
   // Preserve every remaining authored row, including over-cap legacy arrays and footer overrides.
   commit(klass, klass.battleCommands.filter((row) => row.id !== id).map((row) => ({ ...row })), "직업 메뉴에서 명령 제거", rerender, "db-command-class-select");
@@ -81,7 +85,7 @@ function draggable(node: HTMLElement, source: Drag["source"], id: string): void 
   });
 }
 export function attachCatalogPlacement(card: HTMLElement, command: DatabaseBattleCommandRecord, rerender: () => void): void {
-  const klass = selectedClass();
+  const klass = selectedClass() ?? store.getCurrent().database.classes[0];
   const reason = !klass ? "직업 없음" : command.id === "cmd_change" ? "마지막 교체는 고정" : klass.battleCommands.some((row) => row.id === command.id) ? "이미 배치됨" : editable(klass).length >= 6 ? "6개 모두 사용 중" : "";
   draggable(card, "catalog", command.id);
   card.append(listToolbar([{ label: reason || "메뉴에 추가", ariaLabel: `${command.name} 메뉴에 추가${reason ? `: ${reason}` : ""}`, disabled: Boolean(reason), testid: `db-command-place-${command.id}`, onClick: () => { const current = selectedClass(); place(command.id, current ? editable(current).length : 0, rerender); } }]));
@@ -146,7 +150,8 @@ function preview(klass: ClassRecord, rerender: () => void): HTMLElement {
 }
 export function battleCommandPlacement(palette: HTMLElement, rerender: () => void): HTMLElement {
   const project = store.getCurrent();
-  const klass = selectedClass();
+  // Only a newly rendered view may select a replacement for a deleted class.
+  const klass = selectedClass() ?? project.database.classes[0];
   selectedClassId = klass?.id ?? "";
   const select = el("select", { dataset: { testid: "db-command-class-select" }, attrs: { "aria-label": "메뉴를 편집할 직업" }, children: project.database.classes.map((row) => el("option", { value: row.id, text: row.name })) });
   select.value = selectedClassId;
