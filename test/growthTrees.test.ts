@@ -10,7 +10,7 @@ import { assertGrowthShape, growthIssues, isGrowthProgress } from '@/project/gro
 import { activeSkillTrees, growthEffects, growthPoints, investSkillNode, resetSkillTree } from '@/project/growth/runtime';
 import { refreshGrowthVitals } from '@/project/growth/vitals';
 import { actorBattlers, refreshActorBattlerDerivedStats } from '@/battle/battleBattlers';
-import { createSaveSnapshot, applySaveSnapshot } from '@/player/saveSlots';
+import { createSaveSnapshot, applySaveSnapshot, saveToSlot, readSaveSlot } from '@/player/saveSlots';
 import { changeActorClass, promoteActor } from '@/project/sessionClass';
 import { createStatusMenuDetail } from '@/player/playerStatusMenuDetails';
 import { connectPromotion, connectSkillNodes, deleteSkillNode } from '@/editor/panels/growthTree/actions';
@@ -159,7 +159,18 @@ describe('growth progression through shipped runtime consumers', () => {
   });
   it('round trips investments and skill points through actual save snapshots', () => {
     const {project,session,actor,tree}=fixture(); investSkillNode(project,session,actor.id,tree.id,'root');
-    const snapshot=createSaveSnapshot(project,session); const restored=applySaveSnapshot(project,snapshot);
+    session.horror = {
+      pursuits: { pursuer: { home: { mapId: project.startMapId, x: 1, y: 1 }, active: true, searchMs: 500, doors: [] } },
+      hiding: { mapId: project.startMapId, eventId: 'hiding-place', witnessedBy: ['pursuer'] },
+    };
+    const data = new Map<string, string>();
+    const storage = { getItem: (key: string) => data.get(key) ?? null, setItem: (key: string, value: string) => data.set(key, value) } as Storage;
+    saveToSlot(storage, 1, createSaveSnapshot(project, session));
+    const saved = readSaveSlot(storage, 1);
+    expect(saved.kind).toBe('present');
+    if (saved.kind !== 'present') throw new Error('combined save missing');
+    const restored = applySaveSnapshot(project, saved.snapshot);
+    expect(restored.horror).toEqual(session.horror);
     expect(restored.growthProgress).toEqual(session.growthProgress); expect(growthPoints(project,restored,actor.id)).toEqual(growthPoints(project,session,actor.id));
   });
   it('rejects malformed save progress rather than accepting negative or infinite spending', () => {
