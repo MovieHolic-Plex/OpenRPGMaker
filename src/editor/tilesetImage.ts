@@ -17,6 +17,7 @@ import { DUNGEON_TEXTURE_KEY, INTERIOR_TEXTURE_KEY } from "@/project/tilesetHarn
 import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
 import type Phaser from "phaser";
+import { animationStripForTile } from "@/project/defaults/chipsetAnimation";
 
 const DEFAULT_TILESET_IMAGE_URL = `/${ASSET_TILESET}`;
 
@@ -65,6 +66,13 @@ export function supportsChipsetQuarterComposition(tileset: TilesetDef): boolean 
   return isDefaultTilesetTexture(tileset)
     || (tileset.image.type === "bundled" && tileset.image.id === INTERIOR_TEXTURE_KEY)
     || (tileset.image.type === "bundled" && tileset.image.id === DUNGEON_TEXTURE_KEY);
+}
+
+/** Interior fire uses the existing four-frame strip without enabling town road/tree rules. */
+export function supportsChipsetTileAnimation(tileset: TilesetDef, tile: number): boolean {
+  return isDefaultTilesetTexture(tileset)
+    || (tileset.image.type === "bundled" && tileset.image.id === INTERIOR_TEXTURE_KEY
+      && animationStripForTile(tile)?.baseTile === 124);
 }
 
 function baseTilesetTextureKey(tileset: TilesetDef): string {

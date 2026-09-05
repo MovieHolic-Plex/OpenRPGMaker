@@ -712,3 +712,12 @@ Chromium local network 검사만 캡처 실행 인자로 끈다. 일반 출하 �
 - `event-view-toggle-list`는 role=tab, aria-selected 계약이다. `eventStoryboardPicker.showCommandList`도 이 속성을 검사한다.
 - 표면 기준선의 최소 shop은 `item_potion`을 진열한다(`item1`은 captureProject에 없는 ID). 활성 상품 탭만 초기 DOM에 마운트되므로 form/interaction/commit 축의 shop 항목을 함께 캡처하며, 탭과 추가창의 설정 도달성은 위 단위·브라우저 시나리오에서 검사한다. 하한선·반응/no-commit 목록 변경은 별도 커밋으로 검토한다.
 - Chromium의 `ERR_NETWORK_CHANGED`가 localhost 모듈을 취소하는 호스트에서는 `SHOP_QA_ROUTE_MODULES=1`을 추가한다. 소유한 baseURL의 GET 응답만 Playwright Node 전송으로 전달하며 앱 응답·편집 동작은 그대로다. 기본 실행은 일반 브라우저 전송을 사용한다.
+## 실제 DB로 나가는 전체 검사 요청 (2026-09-05 실측)
+
+- `.env.local`에 실 Supabase 키가 있는 상태의 전체 검사 중 `rpg-zzu-house-template-gallery`에 테스트 문구(`증발 위험 변경`, `마일스톤: 1차 제목` 등)가 저장되고 저작한 꾸러미가 다시 사라졌다. 여러 워크트리에서 동시에 전체 검사가 돌았으므로 어느 실행이 썼는지는 확정하지 못했다. `lakeVillageRebuildFinal`만 제외돼 있어도 안전하다고 보지 마라.
+- 이 세션의 무격리 게이트를 중단하고, 환경의 Supabase URL/키/프록시를 비운 뒤 Node `--import`로 **실 네트워크 fetch 차단**을 설치해 다시 실행했다. `.env.local`을 직접 읽는 테스트도 있으므로 환경 변수만 비우는 것으로 충분하지 않다. 네트워크 모의 응답은 그대로 쓰며 실 DB URL과 외부 주소 요청을 거절한다. 로컬 HTTP 하네스는 허용하되 `.env.local`의 실제 DB origin은 로컬이어도 막는다.
+- 세션 증거: `output/evidence/concept-expansion/README.md`, 원격 저장 직후 증명 `supabase-proof-first-save.json`. 후속 저장에서는 CAS가 동시 변경을 감지해 덮어쓰기를 거절했다. 실 콘텐츠 작업과 전체 검사를 같은 공유 프로젝트에서 병행하지 말고, 외부 쓰기가 끝난 뒤 최신 스냅샷으로 추가하고 재로드하라.
+
+## 실내 조립·형상 검증 (2026-09-05)
+
+`test/interiorConceptAssemblies.test.ts`가 19시설×3seed 시공, 상판 소품의 전체 셀, 벽시계 위치, 장소 shape 직렬화·검증, 메타/통행 사용자 오버라이드 보존을 검사한다. 관련 13파일·253테스트 및 앱 타입 게이트가 통과했다. 이번 전체 gates 실행은 최종 리포트를 남기기 전 exit 143으로 종료되어 전체 기준선 비교를 완료하지 못했다. 원인 미확정이며 전체 통과로 보고하지 않는다. 로컬 증거는 `output/evidence/concept-v2/validation.json` 및 `focused-tests.log`.

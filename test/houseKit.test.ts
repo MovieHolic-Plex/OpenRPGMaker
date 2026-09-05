@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { runTool } from "@/editor/tools";
 import { HOUSE_DOOR_CHARSET_TEXTURE, HOUSE_DOOR_FRAME_WAIT_MS, HOUSE_DOOR_OPEN_SE, houseDoorFrameIndex, createHouseInteriorMap, resolveHouseInteriorProgram, resolveHouseInteriorScale, wallMaterialForKit } from "@/editor/houseInteriors";
 import { seCatalogResourceIds } from "@/assets/seCatalogRuntime";
 import { VR } from "@/editor/interiorRoomPipeline";
@@ -277,7 +278,6 @@ describe("house kit — 창문 자동 배치", () => {
 
 describe("author_house single", () => {
   it("정본 경로(runTool)로 집을 짓는다", async () => {
-    const { runTool } = await import("@/editor/tools");
     const project = createBlankProject();
     const ctx = { project };
     const mapId = project.startMapId;
@@ -307,8 +307,11 @@ describe("author_house single", () => {
     expect(house.doorEventId).toMatch(/^ev_house_door_/);
     const interior = ctx.project.maps[house.interiorMapId];
     expect(interior.tilesetId).toBe(INTERIOR_HOUSE_TILESET_ID);
-    expect(interior.width).toBe(20);
-    expect(interior.height).toBe(20); // 천장 정본 v2: +1행(벽 위 천장) + 수평 벽 3행 갭
+    // Linked interiors now use the authored house facility, not the old 20×20 L plan.
+    expect(interior.roomHarnessPlan?.plan).toMatchObject({
+      width: interior.width, height: interior.height,
+      concept: { facilityId: "house", rooms: expect.any(Object) },
+    });
     expect(treeContains(ctx.project.mapTree, house.interiorMapId)).toBe(true);
     const door = map.events.find((event) => event.id === house.doorEventId);
     expect(door?.pages?.[0]?.commands.at(-1)).toMatchObject({ kind: "transfer", mapId: house.interiorMapId });
@@ -320,7 +323,6 @@ describe("author_house single", () => {
   });
 
   it("windows {enabled:false} 로 창문 자동 배치를 끈다", async () => {
-    const { runTool } = await import("@/editor/tools");
     const project = createBlankProject();
     const ctx = { project };
     const mapId = project.startMapId;
@@ -340,7 +342,6 @@ describe("author_house single", () => {
   });
 
   it("알 수 없는 키트는 거부한다", async () => {
-    const { runTool } = await import("@/editor/tools");
     const ctx = { project: createBlankProject() };
     const result = runTool(ctx, "author_house", {
       kind: "single",
@@ -355,7 +356,6 @@ describe("author_house single", () => {
   });
 
   it("exterior-only는 내부 맵과 문 이벤트를 만들지 않는다", async () => {
-    const { runTool } = await import("@/editor/tools");
     const project = createBlankProject();
     const ctx = { project };
     const mapId = project.startMapId;
@@ -377,7 +377,6 @@ describe("author_house single", () => {
   });
 
   it("문 앞 침엽수는 지면으로 정리하고 내부 복귀 transfer를 통행 가능하게 유지한다", async () => {
-    const { runTool } = await import("@/editor/tools");
     const project = createBlankProject();
     const mapId = "map_mist_forest";
     const map = createBlankMap("안개 숲", 32, 30);
@@ -414,7 +413,6 @@ describe("author_house single", () => {
   });
 
   it("문 앞이 맵 밖이면 남쪽 여유 안내와 함께 실패한다", async () => {
-    const { runTool } = await import("@/editor/tools");
     const project = createBlankProject();
     const result = runTool({ project }, "author_house", {
       kind: "single",
@@ -525,4 +523,3 @@ describe("house interior — L cottage (reference plan)", () => {
     expect(resolveHouseInteriorProgram({ ownerName: "촌장 로안" }, 1)).toBe("manor");
   });
 });
-

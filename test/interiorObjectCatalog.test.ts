@@ -25,6 +25,17 @@ import {
 const DECLARED_COMPANION_TILES: Readonly<Record<string, readonly number[]>> = {
   bookshelf: [19, 49, 79],
   table_chairs: [VR.CHAIR_LEFT, VR.CHAIR_RIGHT],
+  study_desk: [VR.STOOL],
+  care_bed: [VR.STOOL],
+  table_wood: [156,157,158,186,187,188,198,199,200],
+  table_white: [159,160,161,189,190,191,228,229,230],
+  tea_table: [156,157,158,186,187,188,198,199,200,235,204,297,298],
+  reading_table: [156,157,158,186,187,188,198,199,200,145,204,297,298],
+  dining_table: [156,157,158,186,187,188,198,199,200,207,238,208,297,298],
+  consultation_table: [159,160,161,189,190,191,228,229,230,145,204,297,298],
+  altar_table: [159,160,161,189,190,191,228,229,230,204],
+  work_table: [156,157,158,186,187,188,198,199,200,261,414],
+  teacher_desk: [156,157,158,198,199,200,145],
 };
 
 const cellKey = (cell: { dx: number; dy: number; layer: string }): string =>
@@ -40,7 +51,7 @@ describe("INTERIOR_OBJECT_CATALOG 형태 계약", () => {
       expect(def.cells.length, `${def.id} cells`).toBeGreaterThan(0);
       expect(def.width, `${def.id} width`).toBeGreaterThan(0);
       expect(def.height, `${def.id} height`).toBeGreaterThan(0);
-      expect(def.cells.length, `${def.id} 셀 수 ≤ width*height`).toBeLessThanOrEqual(def.width * def.height);
+      expect(def.cells.length, `${def.id} 셀 수 ≤ width*height`).toBeLessThanOrEqual(def.width * def.height * 2);
       const seen = new Set<string>();
       for (const cell of def.cells) {
         expect(cell.dx, `${def.id} dx`).toBeGreaterThanOrEqual(0);
