@@ -1,6 +1,7 @@
 import { addEquipmentSlot, equipmentSlots, equipmentSlotRemovalBlocker, removeEquipmentSlot, renameEquipmentSlot } from "@/project/equipmentSlots";
 import { store } from "@/project/store";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
+import { inventoryCatalogSession } from "@/editor/panels/databaseRecordViewSession";
 import { el } from "@/util/dom";
 
 /** Inline catalog management beside the equipment's real slot selector. */
@@ -56,14 +57,20 @@ export function equipmentSlotManager(equipmentId: string, refresh: () => void): 
       ...(blocker ? [el("small", { text: blocker === "builtin" ? "기본 부위 · 이름만 변경 가능" : "사용 중 · 장비, 초기 장비와 이벤트 참조를 먼저 변경하세요" })] : []),
     ] });
   });
-  return el("details", {
+  const manager = el("details", {
     class: "db-equipment-slot-manager db-ws-span",
     dataset: { testid: "db-equipment-slot-manager" },
+    attrs: inventoryCatalogSession().slotManagerOpen ? { open: "" } : {},
     children: [
-      el("summary", { text: "부위 추가 · 관리", dataset: { testid: "db-equipment-slot-manage" } }),
+      el("summary", {
+        text: "부위 추가 · 관리", dataset: { testid: "db-equipment-slot-manage" },
+        // Record the native toggle synchronously, before a queued modal refresh.
+        on: { click: () => { inventoryCatalogSession().slotManagerOpen = !manager.open; } },
+      }),
       el("div", { class: "db-ws-stack", children: [
         el("div", { class: "db-eq-grid", children: [name, add] }), ...rows,
       ] }),
     ],
   });
+  return manager;
 }

@@ -23,7 +23,6 @@ const EXPECTED_TABS = [
   "db-tab-classes",
   "db-tab-skills",
   "db-tab-items",
-  "db-tab-equipment",
   // 몬스터 — 포획 종족도 이 도메인에 둔다
   "db-tab-enemies",
   "db-tab-monster-species",
@@ -127,14 +126,14 @@ describe("database sidebar navigation", () => {
   });
 
   // Break caught: life-skill, weather, and animal records remain hidden behind System counts.
-  it("keeps all 38 tab testids, including lore, faction and life authoring surfaces", () => {
+  it("keeps all registered tab testids, including the unified inventory catalog", () => {
     const panelRoot = renderPanelHost();
     const buttons = panelRoot.querySelectorAll(".db-tab");
     expect(buttons.length).toBe(EXPECTED_TABS.length);
-    expect(EXPECTED_TABS.length).toBe(38);
+    expect(EXPECTED_TABS.length).toBe(37);
     expect(buttons.map((button) => button.dataset.testid)).toEqual(EXPECTED_TABS);
     // 중복 없음 — 등장 순서 자체가 기대 순서와 일치하면 중복이 섞일 수 없다(배열 비교).
-    expect(new Set(EXPECTED_TABS).size).toBe(38);
+    expect(new Set(EXPECTED_TABS).size).toBe(37);
     for (const button of buttons) {
       expect(button.tagName).toBe("BUTTON");
       const label = (button.textContent ?? "").trim();

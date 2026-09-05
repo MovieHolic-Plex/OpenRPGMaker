@@ -13,7 +13,6 @@ const ALL_TABS: readonly DatabaseTabSpec[] = [
   { label: "Items", slug: "items", testId: "db-tab-items" },
   { label: "Crops", slug: "crops", testId: "db-tab-crops" },
   { label: "Characters", slug: "characters", testId: "db-tab-characters" },
-  { label: "Equipment", slug: "equipment", testId: "db-tab-equipment" },
   { label: "Enemies", slug: "enemies", testId: "db-tab-enemies" },
   { label: "Monster Species", slug: "monster-species", testId: "db-tab-monster-species" },
   { label: "Troops", slug: "troops", testId: "db-tab-troops" },

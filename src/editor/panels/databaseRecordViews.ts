@@ -246,7 +246,7 @@ function toolbar(collection: DatabaseCollection, rerender: () => void): HTMLElem
   return wrap;
 }
 
-function aiGenerateButton(collection: "items" | "enemies", rerender: () => void): HTMLElement {
+export function aiGenerateButton(collection: "items" | "enemies", rerender: () => void): HTMLElement {
   const kind = collection === "items" ? "item" : "enemy";
   return el("button", {
     class: "btn small",
@@ -351,7 +351,7 @@ function disarmDelete(collection: DatabaseCollection): void {
   armed.button.classList.remove("confirming");
 }
 
-function deleteButton(collection: DatabaseCollection, rerender: () => void): HTMLElement {
+export function deleteButton(collection: DatabaseCollection, rerender: () => void): HTMLElement {
   // 툴바가 다시 그려지면 이전 버튼 참조는 죽는다 — 새 버튼이 주인이 되도록 등록을 비운다.
   disarmDelete(collection);
 
@@ -643,7 +643,7 @@ function galleryCategoryTag(
 }
 
 // 카테고리 라벨 — 갤러리 태그와 목록 서브라벨이 같은 소스를 공유한다.
-function recordCategoryLabel(
+export function recordCategoryLabel(
   collection: DatabaseCollection,
   record: DatabaseRecords[DatabaseCollection][number]
 ): string | null {
@@ -769,7 +769,7 @@ function matchesCategoryFilter(
   return true;
 }
 
-function recordForm(
+export function recordForm(
   collection: DatabaseCollection,
   record: DatabaseRecords[DatabaseCollection][number],
   rerender: () => void,
