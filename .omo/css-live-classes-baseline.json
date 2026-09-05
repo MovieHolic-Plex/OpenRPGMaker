@@ -1,9 +1,9 @@
 {
- "ranAt": "2026-09-03T08:27:38.344Z",
+ "ranAt": "2026-09-05T09:53:17.988Z",
  "canon": [
   {
    "path": "test/fixtures/eventEditorFormSurface.baseline.json",
-   "added": 518
+   "added": 487
   },
   {
    "path": "test/fixtures/eventEditorM2Surface.baseline.json",
@@ -11,7 +11,7 @@
   },
   {
    "path": "test/fixtures/eventEditorShellSurface.baseline.json",
-   "added": 293
+   "added": 301
   },
   {
    "path": "test/fixtures/eventEditorConditionSurface.baseline.json",
@@ -23,7 +23,7 @@
   },
   {
    "path": "test/fixtures/eventEditorInteractionSurface.baseline.json",
-   "added": 19
+   "added": 18
   }
  ],
  "live": {
@@ -21613,17 +21613,6 @@
     "src/styles/editor/event-editor.mockup.css"
    ]
   },
-  "is-locked": {
-   "props": [
-    "opacity"
-   ],
-   "decls": [
-    "opacity:0.55"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
   "is-missing": {
    "props": [
     "border",
@@ -26508,430 +26497,677 @@
     "src/styles/editor/event-editor.modern/06-event-editor-modal-footer.css"
    ]
   },
-  "shop-advanced": {
+  "shop-editor": {
    "props": [
-    "border-top",
-    "display",
-    "gap",
-    "padding-top"
-   ],
-   "decls": [
-    "border-top:1px solid var(--border-subtle, rgba(42, 37, 33, 0.2))",
-    "display:grid",
-    "gap:6px",
-    "padding-top:8px"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-advanced-body": {
-   "props": [
-    "display",
-    "gap"
-   ],
-   "decls": [
-    "display:grid",
-    "display:none",
-    "gap:6px"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-advanced-label": {
-   "props": [
-    "color",
-    "font"
-   ],
-   "decls": [
-    "color:var(--text-2, #5c5348)",
-    "font:600 11px/1.2 inter, \"segoe ui\", \"malgun gothic\", system-ui, sans-serif"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-advanced-row": {
-   "props": [
-    "align-items",
-    "display",
-    "gap",
-    "grid-template-columns"
-   ],
-   "decls": [
-    "align-items:center",
-    "display:grid",
-    "gap:8px",
-    "grid-template-columns:minmax(64px, auto) minmax(0, 1fr)"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-advanced-toggle": {
-   "props": [
+    "accent-color",
     "background",
     "border",
     "color",
-    "content",
-    "cursor",
-    "font",
-    "justify-self",
-    "letter-spacing",
-    "padding",
-    "text-transform"
-   ],
-   "decls": [
-    "background:transparent",
-    "border:0",
-    "color:var(--text-2, #5c5348)",
-    "content:\"▸ \"",
-    "content:\"▾ \"",
-    "cursor:pointer",
-    "font:800 11px/1 inter, \"segoe ui\", \"malgun gothic\", system-ui, sans-serif",
-    "justify-self:start",
-    "letter-spacing:0.04em",
-    "padding:4px 2px",
-    "text-transform:uppercase"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-branch-card": {
-   "props": [
-    "border-color",
-    "color"
-   ],
-   "decls": [
-    "border-color:var(--border-default)",
-    "color:var(--text-1)"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-goods": {
-   "props": [
-    "background",
-    "border",
-    "border-radius",
+    "display",
+    "flex",
+    "font-size",
+    "gap",
+    "grid-template-columns",
+    "grid-template-rows",
+    "height",
+    "line-height",
+    "margin",
     "min-height",
     "min-width",
-    "overflow",
-    "padding"
+    "outline",
+    "outline-offset",
+    "padding",
+    "white-space",
+    "width"
    ],
    "decls": [
-    "background:var(--bg-inset, #efe9dc)",
-    "border-radius:8px",
-    "border:1px solid var(--border-default, rgba(42,37,33,.20))",
+    "accent-color:var(--accent)",
+    "background:var(--bg-inset)",
+    "background:var(--bg-surface)",
+    "border:0",
+    "color:var(--text-1)",
+    "color:var(--text-2)",
+    "display:block",
+    "display:grid",
+    "display:none",
+    "flex:0 0 16px",
+    "font-size:12px",
+    "font-size:14px",
+    "font-size:16px",
+    "gap:0",
+    "grid-template-columns:minmax(0, 1fr)",
+    "grid-template-rows:auto auto minmax(0, 1fr)",
+    "height:16px",
+    "line-height:1.5",
+    "margin:0",
+    "margin:0 0 22px",
     "min-height:0",
-    "min-height:180px",
+    "min-height:34px",
+    "min-height:36px",
     "min-width:0",
-    "overflow:auto",
-    "padding:0 0 4px"
+    "outline-offset:-2px",
+    "outline:2px solid var(--accent)",
+    "padding:0",
+    "white-space:nowrap",
+    "width:16px",
+    "width:94px",
+    "width:auto"
    ],
    "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
+    "src/styles/editor/event-editor.shop.css"
    ]
   },
-  "shop-goods-check": {
+  "shop-editor-choice": {
    "props": [
+    "align-items",
     "cursor",
+    "display",
+    "gap",
     "margin"
    ],
    "decls": [
+    "align-items:center",
     "cursor:pointer",
-    "margin:0 2px"
+    "display:flex",
+    "gap:8px",
+    "margin:9px 0"
    ],
    "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
+    "src/styles/editor/event-editor.shop.css"
    ]
   },
-  "shop-goods-empty": {
-   "props": [
-    "color",
-    "font",
-    "margin",
-    "padding"
-   ],
-   "decls": [
-    "color:var(--text-2, #5c5348)",
-    "font:500 12px/1.4 inter, \"segoe ui\", \"malgun gothic\", system-ui, sans-serif",
-    "margin:0",
-    "padding:12px 10px"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-goods-facts": {
-   "props": [
-    "color",
-    "flex",
-    "font",
-    "white-space"
-   ],
-   "decls": [
-    "color:var(--accent)",
-    "color:var(--text-2, #5c5348)",
-    "flex:none",
-    "font:600 11px/1.3 inter, \"segoe ui\", \"malgun gothic\", system-ui, sans-serif",
-    "white-space:nowrap"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-goods-group": {
-   "props": [
-    "border-top"
-   ],
-   "decls": [
-    "border-top:1px solid var(--border-subtle, rgba(42,37,33,.20))"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-goods-head": {
+  "shop-editor-column-head": {
    "props": [
     "align-items",
-    "background",
     "border-bottom",
+    "color",
     "display",
+    "font-size",
     "gap",
-    "justify-content",
+    "grid-template-columns",
     "padding",
-    "position",
-    "top",
-    "z-index"
+    "text-align"
    ],
    "decls": [
     "align-items:center",
-    "background:var(--bg-inset, #efe9dc)",
-    "border-bottom:1px solid var(--border-subtle, rgba(42,37,33,.20))",
-    "display:flex",
-    "gap:8px",
-    "justify-content:space-between",
-    "padding:6px 10px",
-    "position:sticky",
-    "top:0",
-    "z-index:1"
+    "border-bottom:1px solid var(--border-default)",
+    "color:var(--text-2)",
+    "display:grid",
+    "font-size:12px",
+    "gap:10px",
+    "gap:14px",
+    "grid-template-columns:minmax(0, 1fr) 110px 128px",
+    "grid-template-columns:minmax(0, 1fr) 90px 100px",
+    "padding:9px 12px",
+    "text-align:right"
    ],
    "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
+    "src/styles/editor/event-editor.shop.css"
    ]
   },
-  "shop-goods-head-count": {
+  "shop-editor-count": {
    "props": [
-    "background",
+    "color",
+    "font-size",
+    "font-weight",
+    "line-height"
+   ],
+   "decls": [
+    "color:var(--text-2)",
+    "font-size:12px",
+    "font-weight:400",
+    "line-height:1.5"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.shop.css"
+   ]
+  },
+  "shop-editor-description": {
+   "props": [
+    "color",
+    "margin",
+    "overflow-wrap"
+   ],
+   "decls": [
+    "color:var(--text-2)",
+    "margin:17px 0 22px",
+    "overflow-wrap:anywhere"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.shop.css"
+   ]
+  },
+  "shop-editor-fieldset": {
+   "props": [
     "border",
-    "border-radius",
+    "border-top",
     "color",
-    "font",
-    "padding"
+    "display",
+    "font-size",
+    "font-weight",
+    "margin",
+    "min-width",
+    "padding",
+    "padding-top"
    ],
    "decls": [
-    "background:var(--bg-raised, #fffdf8)",
-    "border-radius:999px",
-    "border:1px solid var(--border-subtle, rgba(42,37,33,.20))",
-    "color:var(--text-2, #5c5348)",
-    "font:700 11px/1 inter, \"segoe ui\", system-ui, sans-serif",
-    "padding:3px 7px"
+    "border-top:1px solid var(--border-default)",
+    "border:0",
+    "color:var(--text-1)",
+    "display:block",
+    "font-size:14px",
+    "font-weight:700",
+    "margin:0 0 22px",
+    "min-width:0",
+    "padding-top:18px",
+    "padding:0",
+    "padding:0 0 10px"
    ],
    "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
+    "src/styles/editor/event-editor.shop.css"
    ]
   },
-  "shop-goods-head-label": {
+  "shop-editor-goods": {
    "props": [
-    "color",
-    "font"
+    "display",
+    "grid-template-columns",
+    "height",
+    "min-height",
+    "min-width"
    ],
    "decls": [
-    "color:var(--text-1, #2a2521)",
-    "font:700 12px/1.2 inter, \"segoe ui\", \"malgun gothic\", system-ui, sans-serif"
+    "display:grid",
+    "grid-template-columns:minmax(0, 1fr)",
+    "grid-template-columns:minmax(0, 1fr) 290px",
+    "grid-template-columns:minmax(0, 1fr) minmax(290px, 340px)",
+    "height:100%",
+    "height:auto",
+    "min-height:0",
+    "min-width:0"
    ],
    "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
+    "src/styles/editor/event-editor.shop.css"
    ]
   },
-  "shop-goods-name": {
+  "shop-editor-goods-name": {
    "props": [
-    "font",
-    "overflow",
-    "text-overflow",
-    "white-space"
+    "align-items",
+    "display",
+    "font-weight",
+    "gap",
+    "min-width",
+    "overflow-wrap"
    ],
    "decls": [
-    "font:700 12px/1.3 inter, \"segoe ui\", \"malgun gothic\", system-ui, sans-serif",
-    "overflow:hidden",
-    "text-overflow:ellipsis",
-    "white-space:nowrap"
+    "align-items:center",
+    "display:block",
+    "display:flex",
+    "font-weight:600",
+    "gap:12px",
+    "min-width:0",
+    "overflow-wrap:anywhere"
    ],
    "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
+    "src/styles/editor/event-editor.shop.css"
    ]
   },
-  "shop-goods-pick": {
+  "shop-editor-goods-price": {
+   "props": [
+    "font-variant-numeric",
+    "text-align"
+   ],
+   "decls": [
+    "font-variant-numeric:tabular-nums",
+    "text-align:right"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.shop.css"
+   ]
+  },
+  "shop-editor-goods-row": {
    "props": [
     "align-items",
     "background",
     "border",
+    "border-bottom",
+    "box-shadow",
     "color",
     "cursor",
     "display",
+    "font",
+    "font-size",
     "gap",
-    "justify-content",
-    "min-width",
+    "grid-template-columns",
+    "min-height",
     "padding",
+    "padding-inline",
     "text-align",
     "width"
    ],
    "decls": [
-    "align-items:baseline",
+    "align-items:center",
     "background:transparent",
+    "background:var(--accent-muted)",
+    "background:var(--bg-hover)",
+    "border-bottom:1px solid var(--border-subtle)",
     "border:0",
-    "color:var(--text-1, #2a2521)",
+    "box-shadow:inset 3px 0 var(--accent)",
+    "color:var(--text-1)",
+    "color:var(--text-2)",
     "cursor:pointer",
-    "display:flex",
-    "gap:8px",
-    "justify-content:space-between",
-    "min-width:0",
-    "padding:4px 2px",
+    "display:block",
+    "display:grid",
+    "font-size:12px",
+    "font:inherit",
+    "gap:10px",
+    "gap:14px",
+    "grid-template-columns:minmax(0, 1fr) 110px 128px",
+    "grid-template-columns:minmax(0, 1fr) 90px 100px",
+    "min-height:62px",
+    "padding-inline:9px",
+    "padding:10px 12px",
     "text-align:left",
     "width:100%"
    ],
    "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
+    "src/styles/editor/event-editor.shop.css"
    ]
   },
-  "shop-goods-row": {
+  "shop-editor-goods-season": {
    "props": [
-    "align-items",
+    "color",
+    "font-size",
+    "text-align"
+   ],
+   "decls": [
+    "color:var(--text-2)",
+    "font-size:12px",
+    "text-align:right"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.shop.css"
+   ]
+  },
+  "shop-editor-icon": {
+   "props": [
     "background",
     "border",
-    "border-color",
     "border-radius",
     "display",
-    "gap",
-    "grid-template-columns",
+    "flex",
+    "height",
+    "place-items",
+    "width"
+   ],
+   "decls": [
+    "background:var(--bg-raised)",
+    "border-radius:8px",
+    "border:1px solid var(--border-subtle)",
+    "display:grid",
+    "flex:0 0 38px",
+    "height:28px",
+    "height:38px",
+    "place-items:center",
+    "width:28px",
+    "width:38px"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.shop.css"
+   ]
+  },
+  "shop-editor-inspector": {
+   "props": [
+    "background",
+    "border-left",
+    "border-top",
+    "min-height",
     "min-width",
-    "outline",
-    "outline-offset",
-    "padding"
+    "overflow",
+    "padding",
+    "padding-inline"
+   ],
+   "decls": [
+    "background:var(--bg-raised)",
+    "border-left:0",
+    "border-left:1px solid var(--border-default)",
+    "border-top:1px solid var(--border-default)",
+    "min-height:0",
+    "min-width:0",
+    "overflow:auto",
+    "padding-inline:14px",
+    "padding:22px 20px"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.shop.css"
+   ]
+  },
+  "shop-editor-item-actions": {
+   "props": [
+    "align-items",
+    "display",
+    "flex-wrap",
+    "gap",
+    "margin-top"
    ],
    "decls": [
     "align-items:center",
-    "background:color-mix(in srgb, var(--accent-muted, rgba(74, 87, 214, 0.12)) 80%, transparent)",
-    "background:color-mix(in srgb, var(--accent-muted, rgba(74, 87, 214, 0.2)) 90%, transparent)",
-    "border-color:var(--accent)",
-    "border-radius:6px",
-    "border:1px solid transparent",
-    "display:grid",
-    "gap:6px",
-    "grid-template-columns:auto minmax(0, 1fr)",
-    "grid-template-columns:auto minmax(0, 1fr) auto auto",
-    "min-width:0",
-    "outline-offset:-1px",
-    "outline:2px solid color-mix(in srgb, var(--accent) 40%, transparent)",
-    "padding:1px 4px"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-goods-rows": {
-   "props": [
-    "display",
-    "flex-direction",
-    "list-style",
-    "margin",
-    "padding"
-   ],
-   "decls": [
     "display:flex",
-    "flex-direction:column",
-    "list-style:none",
-    "margin:0",
-    "padding:2px 4px"
+    "flex-wrap:wrap",
+    "gap:6px",
+    "margin-top:20px"
    ],
    "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
+    "src/styles/editor/event-editor.shop.css"
    ]
   },
-  "shop-header-badge": {
+  "shop-editor-item-detail": {
    "props": [
-    "border",
-    "border-radius",
-    "font",
-    "padding",
-    "white-space"
+    "display"
    ],
    "decls": [
-    "border-radius:999px",
-    "border:1px solid var(--border, rgba(42,37,33,.20))",
-    "font:700 11px/1 inter, \"segoe ui\", sans-serif",
-    "padding:6px 10px",
-    "white-space:nowrap"
+    "display:none"
    ],
    "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
+    "src/styles/editor/event-editor.shop.css"
    ]
   },
-  "shop-header-badge-ok": {
+  "shop-editor-item-hero": {
    "props": [
-    "background",
-    "border-color",
-    "color"
+    "align-items",
+    "display",
+    "font-size",
+    "gap",
+    "margin",
+    "overflow-wrap"
    ],
    "decls": [
-    "background:var(--bg-surface)",
-    "border-color:var(--border-default)",
-    "color:var(--text-1)"
+    "align-items:center",
+    "display:flex",
+    "font-size:18px",
+    "gap:12px",
+    "margin:0 0 3px",
+    "overflow-wrap:anywhere"
    ],
    "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
+    "src/styles/editor/event-editor.shop.css"
    ]
   },
-  "shop-intent-header": {
+  "shop-editor-list-head": {
    "props": [
     "align-items",
     "display",
     "gap",
-    "justify-content"
+    "justify-content",
+    "margin",
+    "margin-bottom"
    ],
    "decls": [
     "align-items:center",
     "display:flex",
     "gap:10px",
-    "justify-content:space-between"
+    "justify-content:space-between",
+    "margin-bottom:18px",
+    "margin:0"
    ],
    "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
+    "src/styles/editor/event-editor.shop.css"
    ]
   },
-  "shop-processing-badge": {
+  "shop-editor-list-note": {
+   "props": [
+    "color",
+    "font-size",
+    "font-weight",
+    "line-height",
+    "margin"
+   ],
+   "decls": [
+    "color:var(--text-2)",
+    "font-size:12px",
+    "font-weight:400",
+    "line-height:1.5",
+    "margin:12px 0 0"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.shop.css"
+   ]
+  },
+  "shop-editor-list-scroll": {
+   "props": [
+    "max-height",
+    "min-height",
+    "overflow",
+    "scrollbar-gutter"
+   ],
+   "decls": [
+    "max-height:360px",
+    "min-height:0",
+    "overflow:auto",
+    "scrollbar-gutter:stable"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.shop.css"
+   ]
+  },
+  "shop-editor-listing": {
+   "props": [
+    "background",
+    "display",
+    "grid-template-rows",
+    "min-height",
+    "min-width",
+    "padding",
+    "padding-inline"
+   ],
+   "decls": [
+    "background:var(--bg-base)",
+    "display:grid",
+    "grid-template-rows:auto auto minmax(0, 1fr) auto",
+    "min-height:0",
+    "min-width:0",
+    "padding-inline:14px",
+    "padding:22px 20px 12px"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.shop.css"
+   ]
+  },
+  "shop-editor-muted": {
+   "props": [
+    "color",
+    "font-size",
+    "font-weight",
+    "line-height"
+   ],
+   "decls": [
+    "color:var(--text-2)",
+    "font-size:12px",
+    "font-weight:400",
+    "line-height:1.5"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.shop.css"
+   ]
+  },
+  "shop-editor-panel": {
+   "props": [
+    "min-height",
+    "min-width",
+    "overflow"
+   ],
+   "decls": [
+    "min-height:0",
+    "min-width:0",
+    "overflow:auto",
+    "overflow:hidden"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.shop.css"
+   ]
+  },
+  "shop-editor-preview-slot": {
    "props": [
     "background",
     "border",
-    "border-radius",
+    "display",
+    "max-height",
+    "padding",
+    "width"
+   ],
+   "decls": [
+    "background:transparent",
+    "border:0",
+    "display:block",
+    "display:none",
+    "max-height:none",
+    "padding:0",
+    "width:100%"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.shop.css"
+   ]
+  },
+  "shop-editor-price-input": {
+   "props": [
+    "min-width",
+    "width"
+   ],
+   "decls": [
+    "min-width:0",
+    "width:94px"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.shop.css"
+   ]
+  },
+  "shop-editor-price-row": {
+   "props": [
+    "align-items",
+    "display",
+    "gap"
+   ],
+   "decls": [
+    "align-items:center",
+    "display:flex",
+    "gap:8px"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.shop.css"
+   ]
+  },
+  "shop-editor-price-warning": {
+   "props": [
     "color",
-    "font",
+    "font-size",
+    "margin"
+   ],
+   "decls": [
+    "color:var(--danger)",
+    "font-size:12px",
+    "margin:8px 0 0"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.shop.css"
+   ]
+  },
+  "shop-editor-remove": {
+   "props": [
+    "color",
+    "margin-left"
+   ],
+   "decls": [
+    "color:var(--danger)",
+    "margin-left:auto"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.shop.css"
+   ]
+  },
+  "shop-editor-seasons": {
+   "props": [
+    "background",
+    "border-color",
+    "color",
+    "display",
+    "flex-wrap",
+    "gap"
+   ],
+   "decls": [
+    "background:var(--accent-muted)",
+    "border-color:var(--accent)",
+    "color:var(--accent)",
+    "display:flex",
+    "flex-wrap:wrap",
+    "gap:6px"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.shop.css"
+   ]
+  },
+  "shop-editor-summary": {
+   "props": [
+    "color",
+    "font-size",
+    "margin",
     "padding"
    ],
    "decls": [
-    "background:var(--bg-inset, #efe9dc)",
-    "border-radius:999px",
-    "border:1px solid var(--border-subtle, rgba(42,37,33,.20))",
-    "color:var(--text-2, #5c5348)",
-    "font:700 10px/1 inter, \"segoe ui\", system-ui, sans-serif",
-    "padding:4px 8px"
+    "color:var(--text-2)",
+    "font-size:12px",
+    "margin:0",
+    "padding:8px 20px 12px"
    ],
    "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
+    "src/styles/editor/event-editor.shop.css"
+   ]
+  },
+  "shop-editor-tab": {
+   "props": [
+    "background",
+    "border",
+    "border-bottom",
+    "border-bottom-color",
+    "border-radius",
+    "color",
+    "cursor",
+    "font",
+    "font-weight",
+    "padding",
+    "white-space"
+   ],
+   "decls": [
+    "background:transparent",
+    "border-bottom-color:var(--accent)",
+    "border-bottom:3px solid transparent",
+    "border-radius:0",
+    "border:0",
+    "color:var(--accent)",
+    "color:var(--text-2)",
+    "cursor:pointer",
+    "font-weight:700",
+    "font:inherit",
+    "padding:11px 2px",
+    "white-space:nowrap"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.shop.css"
+   ]
+  },
+  "shop-editor-tabs": {
+   "props": [
+    "border-bottom",
+    "display",
+    "gap",
+    "padding"
+   ],
+   "decls": [
+    "border-bottom:1px solid var(--border-default)",
+    "display:flex",
+    "gap:24px",
+    "padding:0 20px"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.shop.css"
    ]
   },
   "shop-processing-branch-add": {
@@ -26958,15 +27194,18 @@
    "decls": [
     "background:var(--bg-raised, #fffdf8)",
     "border-radius:8px",
+    "border:0",
     "border:1px solid var(--border-soft, var(--border-subtle, rgba(42,37,33,.20)))",
     "display:flex",
     "display:none",
     "flex-direction:column",
     "gap:8px",
+    "padding:0",
     "padding:10px 12px"
    ],
    "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
+    "src/styles/editor/event-editor.commerce.css",
+    "src/styles/editor/event-editor.shop.css"
    ]
   },
   "shop-processing-branch-head": {
@@ -27015,17 +27254,6 @@
    "decls": [
     "color:var(--oprn-command-blue, var(--accent))",
     "font:700 12px/1.2 inter, \"segoe ui\", \"malgun gothic\", system-ui, sans-serif"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-processing-check": {
-   "props": [
-    "width"
-   ],
-   "decls": [
-    "width:100%"
    ],
    "sheets": [
     "src/styles/editor/event-editor.commerce.css"
@@ -27088,718 +27316,6 @@
     "src/styles/editor/event-editor.commerce.css",
     "src/styles/editor/event-editor.css",
     "src/styles/editor/event-editor.part-3/04-auto-fit.css"
-   ]
-  },
-  "shop-processing-fieldset": {
-   "props": [
-    "background",
-    "border",
-    "border-radius",
-    "color",
-    "font",
-    "letter-spacing",
-    "margin",
-    "min-width",
-    "padding"
-   ],
-   "decls": [
-    "background:var(--bg-raised, #fffdf8)",
-    "border-radius:8px",
-    "border:1px solid var(--border-soft, var(--border-subtle, rgba(42,37,33,.20)))",
-    "color:var(--oprn-command-blue, var(--accent))",
-    "font:700 11px/1.2 inter, \"segoe ui\", \"malgun gothic\", system-ui, sans-serif",
-    "letter-spacing:0.02em",
-    "margin:0",
-    "min-width:0",
-    "padding:0 4px",
-    "padding:10px 12px 12px",
-    "padding:8px 10px 10px"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-processing-filter-bar": {
-   "props": [
-    "align-items",
-    "display",
-    "gap",
-    "grid-template-columns",
-    "margin-left",
-    "min-width"
-   ],
-   "decls": [
-    "align-items:end",
-    "display:grid",
-    "gap:8px",
-    "grid-template-columns:minmax(0, 1fr)",
-    "grid-template-columns:minmax(110px, 150px) minmax(120px, 1fr)",
-    "margin-left:auto",
-    "min-width:0"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-processing-filter-field": {
-   "props": [
-    "display",
-    "gap",
-    "min-width"
-   ],
-   "decls": [
-    "display:grid",
-    "gap:4px",
-    "min-width:0"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-processing-filter-label": {
-   "props": [
-    "color",
-    "font"
-   ],
-   "decls": [
-    "color:var(--text-2, #5c5348)",
-    "font:700 11px/1.2 inter, \"segoe ui\", \"malgun gothic\", system-ui, sans-serif"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-processing-filter-search": {
-   "props": [
-    "min-width"
-   ],
-   "decls": [
-    "min-width:0"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-processing-intent": {
-   "props": [
-    "background",
-    "border",
-    "border-radius",
-    "display",
-    "gap",
-    "padding"
-   ],
-   "decls": [
-    "background:color-mix(in srgb, var(--accent-muted, rgba(74, 87, 214, 0.14)) 88%, transparent)",
-    "border-radius:8px",
-    "border:1px solid color-mix(in srgb, var(--accent) 35%, transparent)",
-    "display:grid",
-    "gap:4px",
-    "padding:8px 10px"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-processing-item-detail": {
-   "props": [
-    "align-items",
-    "background",
-    "border",
-    "border-radius",
-    "column-gap",
-    "display",
-    "grid-template-columns",
-    "margin-top",
-    "max-height",
-    "overflow",
-    "padding",
-    "row-gap"
-   ],
-   "decls": [
-    "align-items:start",
-    "background:color-mix(in srgb, var(--bg-raised, #fffdf8) 92%, var(--accent-muted, rgba(74, 87, 214, 0.12)))",
-    "border-radius:8px",
-    "border:1px solid var(--border-soft, var(--border-subtle, rgba(42,37,33,.20)))",
-    "column-gap:14px",
-    "display:grid",
-    "display:none",
-    "grid-template-columns:minmax(0, 1fr)",
-    "grid-template-columns:minmax(0, 1fr) minmax(0, 1fr)",
-    "margin-top:4px",
-    "max-height:clamp(84px, 18vh, 190px)",
-    "overflow:auto",
-    "padding:10px 12px",
-    "row-gap:8px"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-processing-item-detail-badges": {
-   "props": [
-    "display",
-    "flex-wrap",
-    "gap",
-    "margin-top"
-   ],
-   "decls": [
-    "display:flex",
-    "flex-wrap:wrap",
-    "gap:6px",
-    "margin-top:6px"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-processing-item-detail-desc": {
-   "props": [
-    "color",
-    "font",
-    "margin"
-   ],
-   "decls": [
-    "color:var(--text-1, #2a2521)",
-    "font:500 12px/1.45 inter, \"segoe ui\", \"malgun gothic\", system-ui, sans-serif",
-    "margin:8px 0 0"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-processing-item-detail-icon": {
-   "props": [
-    "height",
-    "image-rendering",
-    "width"
-   ],
-   "decls": [
-    "height:32px !important",
-    "image-rendering:pixelated",
-    "width:32px !important"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-processing-item-detail-icon-wrap": {
-   "props": [
-    "background",
-    "border",
-    "border-radius",
-    "display",
-    "height",
-    "image-rendering",
-    "place-items",
-    "width"
-   ],
-   "decls": [
-    "background:var(--bg-inset, #efe9dc)",
-    "border-radius:8px",
-    "border:1px solid var(--border-default, rgba(42,37,33,.20))",
-    "display:grid",
-    "height:32px !important",
-    "height:48px",
-    "image-rendering:pixelated",
-    "place-items:center",
-    "width:32px !important",
-    "width:48px"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-processing-item-detail-main": {
-   "props": [
-    "align-items",
-    "display",
-    "gap",
-    "grid-template-columns"
-   ],
-   "decls": [
-    "align-items:flex-start",
-    "display:grid",
-    "gap:12px",
-    "grid-template-columns:48px minmax(0, 1fr)"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-processing-item-detail-price": {
-   "props": [
-    "color",
-    "font"
-   ],
-   "decls": [
-    "color:var(--text-1)",
-    "font:700 13px/1.2 inter, \"segoe ui\", system-ui, sans-serif"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-processing-item-detail-title": {
-   "props": [
-    "align-items",
-    "display",
-    "font",
-    "gap",
-    "justify-content"
-   ],
-   "decls": [
-    "align-items:baseline",
-    "display:flex",
-    "font:750 14px/1.25 inter, \"segoe ui\", \"malgun gothic\", system-ui, sans-serif",
-    "gap:10px",
-    "justify-content:space-between"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-processing-item-search": {
-   "props": [
-    "min-width",
-    "width"
-   ],
-   "decls": [
-    "min-width:0",
-    "width:100%"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-processing-item-type-filter": {
-   "props": [
-    "min-width",
-    "width"
-   ],
-   "decls": [
-    "min-width:0",
-    "width:100%"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-processing-layout": {
-   "props": [
-    "align-items",
-    "display",
-    "gap",
-    "grid-template-columns",
-    "grid-template-rows",
-    "min-height",
-    "min-width",
-    "overflow",
-    "width"
-   ],
-   "decls": [
-    "align-items:start",
-    "align-items:stretch",
-    "display:grid",
-    "gap:12px",
-    "gap:14px",
-    "gap:8px",
-    "grid-template-columns:minmax(0, 1fr)",
-    "grid-template-columns:minmax(0, 1fr) minmax(300px, 340px)",
-    "grid-template-rows:minmax(0, 1fr) auto",
-    "min-height:0",
-    "min-width:0",
-    "overflow:auto",
-    "width:100%"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css",
-    "src/styles/editor/event-editor.css"
-   ]
-  },
-  "shop-processing-main": {
-   "props": [
-    "display",
-    "gap",
-    "grid-template-columns",
-    "grid-template-rows",
-    "min-height",
-    "min-width"
-   ],
-   "decls": [
-    "display:grid",
-    "gap:8px",
-    "grid-template-columns:minmax(0, 1fr)",
-    "grid-template-rows:auto minmax(160px, 1fr) auto auto",
-    "min-height:0",
-    "min-width:0"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css",
-    "src/styles/editor/event-editor.css"
-   ]
-  },
-  "shop-processing-merchant-gold": {
-   "props": [
-    "grid-column"
-   ],
-   "decls": [
-    "grid-column:1 / -1",
-    "grid-column:auto"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-processing-merchant-gold-row": {
-   "props": [
-    "align-items",
-    "display",
-    "gap",
-    "grid-template-columns"
-   ],
-   "decls": [
-    "align-items:center",
-    "display:grid",
-    "gap:8px",
-    "grid-template-columns:minmax(0, 160px) auto"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-processing-merchant-gold-unit": {
-   "props": [
-    "color",
-    "font"
-   ],
-   "decls": [
-    "color:var(--text-1)",
-    "font:700 13px/1 inter, \"segoe ui\", system-ui, sans-serif"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-processing-message": {
-   "props": [
-    "margin-top"
-   ],
-   "decls": [
-    "margin-top:2px"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-processing-message-select": {
-   "props": [
-    "background",
-    "border",
-    "border-color",
-    "border-radius",
-    "color",
-    "font",
-    "margin-top",
-    "min-height",
-    "outline",
-    "outline-offset",
-    "padding",
-    "width"
-   ],
-   "decls": [
-    "background:var(--bg-inset, #efe9dc)",
-    "border-color:var(--accent)",
-    "border-radius:6px",
-    "border:1px solid var(--border-default, rgba(42,37,33,.20))",
-    "color:var(--text-1, #2a2521)",
-    "font:500 13px/1.3 inter, \"segoe ui\", \"malgun gothic\", system-ui, sans-serif",
-    "margin-top:2px",
-    "min-height:32px",
-    "outline-offset:0",
-    "outline:2px solid color-mix(in srgb, var(--accent) 28%, transparent)",
-    "padding:6px 10px",
-    "width:100%"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-processing-option": {
-   "props": [
-    "grid-column"
-   ],
-   "decls": [
-    "grid-column:1 / -1",
-    "grid-column:auto"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-processing-preset-btn": {
-   "props": [
-    "white-space"
-   ],
-   "decls": [
-    "white-space:nowrap"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-processing-presets": {
-   "props": [
-    "align-items",
-    "display",
-    "flex-wrap",
-    "gap"
-   ],
-   "decls": [
-    "align-items:center",
-    "display:flex",
-    "flex-wrap:wrap",
-    "gap:6px"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-processing-presets-label": {
-   "props": [
-    "color",
-    "font",
-    "margin-right"
-   ],
-   "decls": [
-    "color:var(--text-2, #5c5348)",
-    "font:700 11px/1 inter, \"segoe ui\", \"malgun gothic\", system-ui, sans-serif",
-    "margin-right:4px"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-processing-settings": {
-   "props": [
-    "display",
-    "gap",
-    "grid-column",
-    "grid-template-columns",
-    "min-width"
-   ],
-   "decls": [
-    "display:grid",
-    "gap:10px",
-    "gap:8px",
-    "grid-column:1 / -1",
-    "grid-column:auto",
-    "grid-template-columns:1fr",
-    "grid-template-columns:minmax(0, 1.4fr) minmax(0, 1fr)",
-    "grid-template-columns:minmax(0, 1fr)",
-    "min-width:0"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css",
-    "src/styles/editor/event-editor.css"
-   ]
-  },
-  "shop-processing-side": {
-   "props": [
-    "align-content",
-    "background",
-    "border",
-    "border-radius",
-    "display",
-    "gap",
-    "grid-template-columns",
-    "margin",
-    "max-height",
-    "min-width",
-    "overflow",
-    "padding",
-    "position"
-   ],
-   "decls": [
-    "align-content:start",
-    "background:var(--bg-surface)",
-    "border-radius:10px",
-    "border:1px solid var(--border-default, rgba(42, 37, 33, 0.2))",
-    "display:grid",
-    "gap:10px",
-    "gap:8px",
-    "grid-template-columns:minmax(0, 1fr)",
-    "margin:0",
-    "max-height:100%",
-    "min-width:0",
-    "overflow:auto",
-    "padding:10px",
-    "position:static"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css",
-    "src/styles/editor/event-editor.css"
-   ]
-  },
-  "shop-processing-toolbar": {
-   "props": [
-    "align-items",
-    "display",
-    "flex-wrap",
-    "gap",
-    "margin-left"
-   ],
-   "decls": [
-    "align-items:center",
-    "display:flex",
-    "flex-wrap:wrap",
-    "gap:8px 12px",
-    "margin-left:auto"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-processing-type-field": {
-   "props": [
-    "display",
-    "gap"
-   ],
-   "decls": [
-    "display:grid",
-    "gap:4px"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-processing-type-select": {
-   "props": [
-    "width"
-   ],
-   "decls": [
-    "width:100%"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-processing-v2": {
-   "props": [
-    "display",
-    "font-size",
-    "gap",
-    "grid-column",
-    "grid-template-columns",
-    "line-height",
-    "min-height",
-    "padding"
-   ],
-   "decls": [
-    "display:grid",
-    "font-size:11px",
-    "gap:8px",
-    "grid-column:auto",
-    "grid-template-columns:minmax(0, 1fr)",
-    "line-height:1.35",
-    "min-height:180px",
-    "padding:8px 10px 10px"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-stock-editor": {
-   "props": [
-    "align-items",
-    "border-left",
-    "border-top",
-    "column-gap",
-    "display",
-    "grid-template-columns",
-    "opacity",
-    "padding-left",
-    "padding-top",
-    "row-gap"
-   ],
-   "decls": [
-    "align-items:end",
-    "border-left:1px solid var(--border-subtle, rgba(42,37,33,.20))",
-    "border-top:0",
-    "border-top:1px solid var(--border-subtle, rgba(42,37,33,.20))",
-    "column-gap:12px",
-    "display:grid",
-    "grid-template-columns:auto minmax(88px, 120px) minmax(0, 1fr)",
-    "opacity:0.55",
-    "padding-left:14px",
-    "padding-top:0",
-    "padding-top:8px",
-    "row-gap:6px"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-stock-price-field": {
-   "props": [
-    "color",
-    "display",
-    "font",
-    "gap"
-   ],
-   "decls": [
-    "color:var(--text-2, #5c5348)",
-    "display:grid",
-    "font:600 11px/1.2 inter, \"segoe ui\", \"malgun gothic\", system-ui, sans-serif",
-    "gap:4px"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-stock-season-chip": {
-   "props": [
-    "border-color",
-    "box-shadow",
-    "color",
-    "white-space"
-   ],
-   "decls": [
-    "border-color:var(--accent)",
-    "box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent)",
-    "color:var(--text-1, #2a2521)",
-    "white-space:nowrap"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-stock-season-chips": {
-   "props": [
-    "display",
-    "flex-wrap",
-    "gap"
-   ],
-   "decls": [
-    "display:flex",
-    "flex-wrap:wrap",
-    "gap:6px"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
-   ]
-  },
-  "shop-stock-warning": {
-   "props": [
-    "align-self",
-    "margin"
-   ],
-   "decls": [
-    "align-self:center",
-    "margin:0"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.commerce.css"
    ]
   },
   "small": {
@@ -29598,12 +29114,7 @@
   "schema-field",
   "schema-field-hint",
   "schema-operand",
-  "shop-economy-card",
-  "shop-goods-empty-all",
-  "shop-processing-failed-branch-row",
-  "shop-processing-item-detail-copy",
-  "shop-processing-merchant-gold-input",
-  "shop-processing-settings-compact",
-  "shop-stock-price-input"
+  "shop-editor-rows",
+  "shop-editor-stock"
  ]
 }

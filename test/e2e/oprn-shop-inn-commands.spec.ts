@@ -1,3 +1,4 @@
+import { addShopGoods } from "./shopAuthoring";
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 import {
@@ -115,14 +116,12 @@ test("shop and inn commands are readable in the editor and playable at runtime",
   await expect(page.getByTestId("event-command-add")).toHaveCount(0);
 
   const shopCommand = await addCommerceCommand(page, { kind: "shop", testId: "command-picker-add-shop" });
-  await shopCommand.getByTestId("shop-item-check-item_potion").check();
+  await addShopGoods(page, shopCommand, "item_potion");
   await expect(
     shopCommand.locator('[data-testid="shop-sale-list"] [data-testid="shop-item-row-item_potion"]')
   ).toBeVisible();
-  await expect(shopCommand).toContainText("상점 종류");
-  // 단일 목록의 두 그룹 머리글이 진열 상태를 말해 준다.
-  await expect(shopCommand.getByTestId("shop-sale-list")).toContainText("판매 중");
-  await expect(shopCommand.getByTestId("shop-stock-pool")).toContainText("안 담음");
+  await expect(shopCommand.getByTestId("shop-tab-rules")).toBeVisible();
+  await expect(shopCommand.getByTestId("shop-stock-pool")).toHaveCount(0);
   await page.screenshot({ path: testInfo.outputPath("shop-editor-readable.png"), fullPage: true });
   await shopCommand.getByTestId("event-command-edit-ok").click();
   await expect(shopCommand).toHaveCount(0);
@@ -163,7 +162,10 @@ test("shop and inn commands are readable in the editor and playable at runtime",
   await shopRow.locator(".cmd-head").dblclick();
   const shopEditDialog = page.getByTestId("event-command-edit-dialog");
   await expect(shopEditDialog).toBeVisible();
-  await shopEditDialog.getByTestId("shop-type-select").selectOption("sellOnly");
+  await shopEditDialog.getByTestId("shop-tab-rules").click();
+  await shopEditDialog.locator('[data-custom-select-for="shop-type-select"]').click();
+  await page.getByRole("option", { name: "판매만 가능", exact: true }).click();
+  await shopEditDialog.getByTestId("shop-tab-branches").click();
   await shopEditDialog.getByTestId("shop-branch-on-transaction").check();
   await expect(shopEditDialog.getByTestId("shop-transaction-branch-controls")).toBeVisible();
   await shopEditDialog.getByTestId("shop-add-transaction-branch-command").click();

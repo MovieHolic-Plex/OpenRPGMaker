@@ -118,6 +118,8 @@ function focusableControls(root: HTMLElement): HTMLElement[] {
   const visit = (parent: HTMLElement): void => {
     for (const child of Array.from(parent.children)) {
       if (!(child instanceof HTMLElement)) continue;
+      if (child.hidden || child.getAttribute("aria-hidden") === "true" || child.classList.contains("is-hidden")) continue;
+      if (typeof getComputedStyle === "function" && getComputedStyle(child).display === "none") continue;
       const isControl = ["BUTTON", "INPUT", "SELECT", "TEXTAREA"].includes(child.tagName)
         || child.getAttribute("tabindex") !== null;
       const disabled = "disabled" in child && child.disabled === true;

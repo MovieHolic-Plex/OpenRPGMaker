@@ -81,10 +81,12 @@ describe("event command staged-state regressions", () => {
     const staged = stagedContext(initial);
     const body = renderWithFakeDom(() => shopBody(staged.context, initial));
 
+    findByTestId(body, "shop-tab-rules")!.click();
     change(findByTestId(body, "shop-quantity-mode"), "select");
-    change(findByTestId(body, "shop-type-select"), "buyOnly");
-    change(findByTestId(body, "shop-message-type"), "direct");
     change(findByTestId(body, "shop-merchant-gold"), "777");
+    change(findByTestId(body, "shop-type-select"), "buyOnly");
+    findByTestId(body, "shop-tab-messages")!.click();
+    change(findByTestId(body, "shop-message-type"), "direct");
 
     expect(staged.current()).toMatchObject({
       kind: "shop",
