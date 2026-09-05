@@ -1,0 +1,13 @@
+{
+  "baseCommit": "7e2e0242",
+  "numTotalTests": 10,
+  "numPassedTests": 9,
+  "numFailedTests": 1,
+  "failedAssertions": [
+    {
+      "file": "test/io.test.ts",
+      "name": "serialize → deserialize 왕복 빈 프로젝트가 동일하게 복원된다",
+      "message": "AssertionError: expected '{\"version\":4,\"meta\":{\"title\":\"새 프로젝트\"…' to be '{\"version\":4,\"meta\":{\"title\":\"새 프로젝트\"…' // Object.is equality"
+    }
+  ]
+}

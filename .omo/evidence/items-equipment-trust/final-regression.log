@@ -1,0 +1,38 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/battleRuntime.test.ts test/itemEquipmentAuthoringTrust.test.ts --maxWorkers=2 --reporter=verbose
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/omo-4
+
+ ✓ test/battleRuntime.test.ts > side-view battle runtime > system.battleFlow 미설정 프로젝트는 strict 플로우로 시작한다 38ms
+ ✓ test/battleRuntime.test.ts > side-view battle runtime > fills active-time gauges in actor-before-enemy order 9ms
+ ✓ test/battleRuntime.test.ts > side-view battle runtime > applies attack damage from actor commands 8ms
+ ✓ test/battleRuntime.test.ts > side-view battle runtime > records skill animation and defeats an enemy into victory 7ms
+ ✓ test/battleRuntime.test.ts > side-view battle runtime > applies all-enemies skills to every visible enemy 6ms
+ ✓ test/battleRuntime.test.ts > side-view battle runtime > supports item skill use and command-backed troop event triggers 7ms
+ ✓ test/battleRuntime.test.ts > side-view battle runtime > runs Change Enemy HP from M2 battle event commands 5ms
+ ✓ test/battleRuntime.test.ts > side-view battle runtime > runs Force Escape from M2 battle event commands without random chance 4ms
+ ✓ test/battleRuntime.test.ts > side-view battle runtime > runs Action Times + from M2 battle event commands 6ms
+ ✓ test/battleRuntime.test.ts > side-view battle runtime > reveals hidden troop members and changes battleback from M2 battle event commands 5ms
+ ✓ test/battleRuntime.test.ts > side-view battle runtime > keeps Enemy Encounter and Change Battleback no-ops safe for invalid battle event fields 4ms
+ ✓ test/battleRuntime.test.ts > side-view battle runtime > leaves enemies unchanged by empty troop event pages 4ms
+ ✓ test/battleRuntime.test.ts > side-view battle runtime > runs troop event commands once after an enemy skill turn 6ms
+ ✓ test/battleRuntime.test.ts > side-view battle runtime > returns defeat when all actors fall and losing is allowed 4ms
+ ✓ test/battleRuntime.test.ts > side-view battle runtime > rejects missing troop references during project validation 4ms
+ ✓ test/itemEquipmentAuthoringTrust.test.ts > uses one occasion control and restores field+battle after a field-only edit 437ms
+ ✓ test/itemEquipmentAuthoringTrust.test.ts > preserves inactive book settings through serialization without teaching a skill as medicine 550ms
+ ✓ test/itemEquipmentAuthoringTrust.test.ts > inactive recovery and seed settings cannot be used by a normal good 165ms
+ ✓ test/itemEquipmentAuthoringTrust.test.ts > infers legacy skill items without overriding an explicitly authored ordinary-good kind 252ms
+ ✓ test/itemEquipmentAuthoringTrust.test.ts > preserves deleted default rows through save/load and the boot normalizer 263ms
+ ✓ test/itemEquipmentAuthoringTrust.test.ts > has a single special-item skill selector and refreshes scope immediately 542ms
+ ✓ test/itemEquipmentAuthoringTrust.test.ts > makes reusable/finite/single use explicit and the runtime respects them 320ms
+ ✓ test/itemEquipmentAuthoringTrust.test.ts > capture mode hides the saved skill effect and does not hide medicine controls after a type change 376ms
+ ✓ test/itemEquipmentAuthoringTrust.test.ts > does not offer new equipment types in Items 92ms
+ ✓ test/itemEquipmentAuthoringTrust.test.ts > does not advertise unsupported flags and keeps one attack element input 233ms
+ ✓ test/itemEquipmentAuthoringTrust.test.ts > a legacy inflict record cannot disable another equipment's state resistance 96ms
+
+ Test Files  2 passed (2)
+      Tests  26 passed (26)
+   Start at  18:21:05
+   Duration  24.66s (transform 16.58s, setup 0ms, collect 25.45s, tests 3.45s, environment 1ms, prepare 206ms)

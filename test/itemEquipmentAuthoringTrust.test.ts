@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import { normalizeEquipmentRecord } from "@/project/databaseRecordModel";
+import { normalizeEquipmentRecord, normalizeItemRecord } from "@/project/databaseRecordModel";
 import { ensureDefaultDatabaseIconResources } from "@/project/defaults/defaultDatabaseIconResources";
 import { serialize, deserialize } from "@/project/io";
 import { actorBattlers } from "@/battle/battleBattlers";
@@ -71,6 +71,18 @@ it("inactive recovery and seed settings cannot be used by a normal good", () => 
   session.actorVitals[actor.id]!.hp = 1;
   expect(useItemFromMenu(project, session, item().id, actor.id).kind).toBe("unusable");
   expect(session.inventory[item().id]).toBe(1);
+});
+
+it("infers legacy skill items without overriding an explicitly authored ordinary-good kind", () => {
+  const skillId = store.getCurrent().database.skills[0]!.id;
+  const legacy = normalizeItemRecord({ id: "legacy_skill_item", name: "이전 스킬 물품", skillId });
+  expect(legacy.type).toBe("special");
+  const project = store.getCurrent();
+  project.database.items.push(legacy);
+  expect(deserialize(serialize(project)).database.items.find((entry) => entry.id === legacy.id)?.type).toBe("special");
+  const explicit = normalizeItemRecord({ ...legacy, type: "normalGoods" });
+  expect(explicit.type).toBe("normalGoods");
+  expect(itemEffectStory(project, explicit).effects).toEqual(["직접 효과 없음"]);
 });
 
 it("preserves deleted default rows through save/load and the boot normalizer", () => {

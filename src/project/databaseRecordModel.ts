@@ -529,7 +529,9 @@ export function normalizeItemRecord(record: Partial<ItemRecord> & Pick<ItemRecor
     price: clampInteger(record.price ?? 0, 0, 999999),
     skillId: cleanOptionalId(record.skillId),
     description: record.description ?? "",
-    type: normalizeItemType(record.type),
+    // Before item kinds existed, skill-backed items only stored skillId (v3).
+    // Infer only an absent kind; an explicitly authored kind must remain authoritative.
+    type: record.type === undefined && cleanOptionalId(record.skillId) ? "special" : normalizeItemType(record.type),
     occasion: record.occasion ?? "always",
     consumable: record.consumable ?? true,
     animationId: cleanOptionalId(record.animationId),

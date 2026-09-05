@@ -2,7 +2,7 @@
 
 ## 기본 카탈로그 삭제 보존 (2026-09-05)
 
-로드의 `ensureDefaultDatabaseIconResources`는 기존 기본 행의 아이콘 연결만 보정한다. 누락 아이템·장비를 새로 주입하거나 그 종속 스킬·상태를 추가하지 않는다. 신규 생성은 기존 기본 카탈로그를 그대로 사용한다. `test/itemEquipmentAuthoringTrust.test.ts`는 삭제한 기본 행이 serialize→deserialize→부팅 정규화 후에도 없는 것을 확인한다. ItemRecord 종류 전환은 저장 필드를 삭제하지 않고 `itemUsage.activeItemEffects`로 실행만 제한하므로 스키마 버전 변경이 없다.
+로드의 `ensureDefaultDatabaseIconResources`는 기존 기본 행의 아이콘 연결만 보정한다. 누락 아이템·장비를 새로 주입하거나 그 종속 스킬·상태를 추가하지 않는다. 신규 생성은 기존 기본 카탈로그를 그대로 사용한다. `test/itemEquipmentAuthoringTrust.test.ts`는 삭제한 기본 행이 serialize→deserialize→부팅 정규화 후에도 없는 것을 확인한다. 종류 필드가 없던 v3 스킬 아이템은 `normalizeItemRecord`가 skillId를 보고 special로 복원한다. 명시된 종류는 추론으로 덮어쓰지 않으며 실제 v3 전투 fixture와 직렬화 왕복으로 검증한다. ItemRecord 종류 전환은 저장 필드를 삭제하지 않고 `itemUsage.activeItemEffects`로 실행만 제한하므로 스키마 버전 변경이 없다.
 
 ## 전투 페이지 중복 ID 복구와 슬롯 참조 (2026-09-05)
 
