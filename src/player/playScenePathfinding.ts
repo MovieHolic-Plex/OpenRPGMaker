@@ -12,6 +12,8 @@ import type { PlaySceneContext } from "@/player/playSceneTypes";
 import type { MoveCommand } from "@/project/types";
 
 type PathfindStep = Extract<StepResult, { kind: "pathfindMove" }>;
+// The public result flag belongs to the latest request, including immediate no-ops.
+const latestPathfind = new WeakMap<object, object>();
 
 /** Plan against terrain, authored footprints, live solid events and spatial objects. */
 export function planPathfindMove(scene: PlaySceneContext, step: PathfindStep, currentEventId?: string) {
@@ -21,7 +23,8 @@ export function planPathfindMove(scene: PlaySceneContext, step: PathfindStep, cu
   const player = target === PLAYER_MOVE_TARGET;
   const view = player ? undefined : runtimeEventViewById(project, scene.map, scene.session, scene.eventPositions, target);
   if (!player && !view) return null;
-  const from = player ? { x: scene.tileX, y: scene.tileY } : { x: view!.x, y: view!.y };
+  // An admitted step still lands before the replacement route can start.
+  const from = player ? (scene.moving ? { ...scene.movingTo } : { x: scene.tileX, y: scene.tileY }) : { x: view!.x, y: view!.y };
   const body = player ? resolvePlayerBody(project, scene.session) : { footprint: view!.footprint, passRows: view!.passRows };
   const blockers = runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions)
     .filter(v => v.event.id !== target && v.priority === "same" && v.overlapForbidden);
@@ -48,16 +51,35 @@ export async function playPathfindMove(scene: PlaySceneContext, step: PathfindSt
   const plan = planPathfindMove(scene, step, currentEventId);
   const session = scene.session;
   const map = scene.map;
+  const request = {};
+  latestPathfind.set(session, request);
+  const reportArrival = (arrived: boolean) => {
+    if (latestPathfind.get(session) === request) session.flags.pathfindSucceeded = arrived;
+  };
   session.flags.pathfindSucceeded = false;
   if (!plan || (!plan.moves.length && (plan.from.x !== step.x || plan.from.y !== step.y))) {
     console.warn(`[player] pathfind destination unreachable: ${step.target} (${step.x}, ${step.y})`);
     return;
   }
-  if (!plan.moves.length) { session.flags.pathfindSucceeded = true; return; }
+  const previousMover = plan.player ? undefined : scene.autonomousNPCs.get(plan.target);
+  const inFlight = plan.player ? scene.moving || !!scene.playerHop : !!previousMover?.activeMove;
+  if (!plan.moves.length && !inFlight) {
+    if (plan.player) scene.playerRoute = null;
+    else { scene.autonomousNPCs.delete(plan.target); scene.commandMoveRouteEventIds.delete(plan.target); }
+    reportArrival(true);
+    return;
+  }
   if (plan.player) {
+    const activeDuration = scene.playerRoute?.moveDurationMs ?? scene.moveDurationMs;
     startPlayerRoute(scene, plan.moves, false);
+    // An empty replacement still owns and waits for the already admitted step.
+    scene.playerRoute ??= { moves: [], index: 0, repeat: false };
     scene.playerRoute!.stopOnBlocked = true;
     scene.playerRoute!.moveDurationMs = npcMoveDurationMs(step.speed);
+    if (scene.moving) {
+      scene.playerRoute.nextMoveDurationMs = scene.playerRoute.moveDurationMs;
+      scene.playerRoute.moveDurationMs = activeDuration;
+    }
   } else {
     scene.registerAutonomousMover(plan.target, plan.moves, false);
     const mover = scene.autonomousNPCs.get(plan.target);
@@ -65,6 +87,12 @@ export async function playPathfindMove(scene: PlaySceneContext, step: PathfindSt
     mover.stopOnBlocked = true;
     mover.moveDurationMs = npcMoveDurationMs(step.speed);
     mover.moveIntervalMs = 0;
+    if (previousMover?.activeMove) {
+      mover.activeMove = { ...previousMover.activeMove, durationMs: previousMover.activeMove.durationMs ?? previousMover.moveDurationMs };
+      mover.facing = previousMover.facing;
+      mover.opacity = previousMover.opacity;
+      mover.animationEnabled = previousMover.animationEnabled;
+    }
     scene.commandMoveRouteEventIds.add(plan.target);
   }
   const route = plan.player ? scene.playerRoute : scene.autonomousNPCs.get(plan.target);
@@ -84,7 +112,7 @@ export async function playPathfindMove(scene: PlaySceneContext, step: PathfindSt
       if (!ownsRoute()) {
         const position = plan.player ? { x: scene.tileX, y: scene.tileY }
           : runtimeEventViewById(store.getCurrent(), map, session, scene.eventPositions, plan.target);
-        session.flags.pathfindSucceeded = position?.x === step.x && position?.y === step.y;
+        reportArrival(position?.x === step.x && position?.y === step.y);
         finish();
         return;
       }

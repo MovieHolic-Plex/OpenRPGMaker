@@ -54,3 +54,10 @@ M2 runtime commands: event processing, erase, graphic pattern, movement, checkpo
 - 회귀: `test/eventRuntimeExecution.test.ts`, `test/runtimeEventMenus.test.ts`, `test/runtimeMovementStability.test.ts`, `test/playMovieRuntime.test.ts`. 출하 플레이어 QA: `npx tsx scripts/prepare-event-runtime-qa.mts` → `node scripts/qa-event-runtime.mjs`; SUMMARY를 먼저 읽고 지정 PNG만 확인한다. headless `run_scene_test`는 새 경로/메뉴 단계를 화면 검증처럼 통과시키지 않는다.
 
 - 2026-09-05 검증 보완: `m2-002-display-text-settings`의 생략 가능한 필드는 기본값을 먼저 채워 missing-field 경고 없이 실행한다. `test/m2EventCommandCatalog.test.ts`와 `test/commandContracts/m2Command.contract.test.ts`의 기존 빈 필드 계약도 유지한다.
+
+### 이동 중 경로 재지정 — 2026-09-05 브라우저 적대적 QA
+
+- `Pathfind Move`를 걷는 중 재호출하면 플레이어의 이미 허용된 착지 좌표(`movingTo`)에서 다음 경로를 계산한다. 현재 걸음의 속도는 유지하고 새 속도는 `PlayerRouteState.nextMoveDurationMs`를 통해 다음 걸음부터 적용한다.
+- 새 목적지가 현재 착지 칸이면 빈 경로도 현재 보행/체공 종료까지 기다린다. NPC는 기존 `activeMove`의 위치·경과 시간·지속 시간을 이어 받아 화면에서 튀지 않는다.
+- 첫 걸음 전 현재 칸을 목적지로 다시 지정하면 이전 예약 루트를 취소한다. `pathfindSucceeded`는 세션의 **가장 최근 경로 명령** 결과이며, 교체된 작업의 완료 콜백이 덮어쓰지 않는다.
+- 회귀: `test/runtimeMovementStability.test.ts`의 retarget/queued 사례 5개. 브라우저: `scripts/qa-event-runtime-adversarial.mjs`(테스트 전용 픽스처, 조작은 키보드만). 시각 근거: `.omo/evidence/event-runtime-adversarial/README.md`.

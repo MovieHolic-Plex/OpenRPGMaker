@@ -1,0 +1,9 @@
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-clear-field-df12
+
+···································································································································································································································
+
+ Test Files  11 passed (11)
+      Tests  227 passed (227)
+   Start at  22:21:43
+   Duration  13.58s (transform 15.16s, setup 0ms, collect 76.29s, tests 9.72s, environment 646ms, prepare 2.28s)
