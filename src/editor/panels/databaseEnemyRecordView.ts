@@ -113,7 +113,7 @@ export function renderEnemyRecordForm(form: HTMLElement, record: EnemyRecord, re
   ], actions);
   form.append(el("div", {
     class: "db-enemy-workbench",
-    dataset: { testid: "db-enemies-bm101-workbench" },
+    dataset: { testid: "db-enemies-bm101-workbench", enemyId: record.id },
     children: [hero.node, studio],
   }));
   const refreshHero = (): void => {
