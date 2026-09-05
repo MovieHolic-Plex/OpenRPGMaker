@@ -26,15 +26,17 @@ export function insertCatalogClassCommand(
   return { ok: true, commands: finalizeCommands(editable) };
 }
 
-/** Move by stable row ID to a final editable index (0..count-1), not a drop gap. */
+/** Move by unique ID or editable occurrence index to a final index, not a drop gap. */
 export function reorderEditableClassCommand(
   commands: readonly ClassBattleCommand[],
-  commandId: string,
+  commandId: string | number,
   index: number,
 ): ClassCommandPlacementResult {
   if (commandId === CHANGE_COMMAND_ID) return { ok: false, reason: "locked-command" };
   const editable = commands.filter((command) => command.id !== CHANGE_COMMAND_ID);
-  const source = editable.findIndex((command) => command.id === commandId);
+  if (typeof commandId === "string" && editable.filter((command) => command.id === commandId).length > 1) return { ok: false, reason: "duplicate-command" };
+  const source = typeof commandId === "number" ? commandId : editable.findIndex((command) => command.id === commandId);
+  if (!Number.isInteger(source)) return { ok: false, reason: "invalid-index" };
   const row = editable[source];
   if (!row) return { ok: false, reason: "missing-command" };
   if (editable.length > 6) return { ok: false, reason: "capacity" };

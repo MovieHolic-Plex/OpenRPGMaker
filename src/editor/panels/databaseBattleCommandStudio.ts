@@ -13,7 +13,8 @@ let selectedClassId = "";
 let includeSwitch = false;
 let status = "명령을 빈 위치로 끌거나 메뉴에 추가를 누르세요.";
 const MIME = "application/x-rpg-zzu-battle-command";
-type Drag = { readonly source: "catalog" | "menu"; readonly id: string; readonly classId: string; readonly menu: string; readonly catalog: string; readonly token: string };
+type RowOccurrence = { readonly classId: string; readonly menu: string; readonly index: number };
+type Drag = { readonly source: "catalog" | "menu"; readonly id: string; readonly classId: string; readonly menu: string; readonly catalog: string; readonly token: string; readonly occurrence?: RowOccurrence };
 let drag: Drag | undefined;
 let sequence = 0;
 
@@ -27,6 +28,17 @@ function selectedClass(rerender?: () => void): ClassRecord | undefined {
 }
 function editable(klass: ClassRecord): ClassBattleCommand[] {
   return klass.battleCommands.filter((row) => row.id !== "cmd_change");
+}
+function occurrenceClass(occurrence: RowOccurrence, rerender?: () => void): ClassRecord | undefined {
+  const klass = selectedClass(rerender);
+  if (!klass) return undefined;
+  if (klass?.id === occurrence.classId && JSON.stringify(klass.battleCommands) === occurrence.menu) return klass;
+  announce("편집하지 않았습니다. 직업 메뉴가 바뀌었습니다. 다시 선택해 주세요.");
+  return undefined;
+}
+function rowTestId(action: string, rows: readonly ClassBattleCommand[], index: number): string {
+  const id = rows[index]!.id;
+  return rows.filter((row) => row.id === id).length > 1 ? `db-command-occurrence-${index}-${action}` : `db-command-${action}-${id}`;
 }
 function announce(message: string): void {
   status = message;
@@ -54,26 +66,28 @@ function place(id: string, index: number, rerender: () => void): void {
   if (!result.ok) return announce("추가하지 않았습니다. 중복 명령, 고정 교체 또는 6개 제한을 확인하세요.");
   commit(klass, result.commands, "직업 메뉴에 명령 추가", rerender, `db-command-remove-${id}`);
 }
-function move(id: string, index: number, rerender: () => void): void {
-  const klass = selectedClass(rerender);
+function move(occurrence: RowOccurrence, index: number, rerender: () => void): void {
+  const klass = occurrenceClass(occurrence, rerender);
   if (!klass) return;
-  const result = reorderEditableClassCommand(klass.battleCommands, id, index);
+  const result = reorderEditableClassCommand(klass.battleCommands, occurrence.index, index);
   if (!result.ok) return announce("순서를 바꾸지 않았습니다. 현재 위치와 6개 제한을 확인하세요.");
-  commit(klass, result.commands, "직업 메뉴 순서 변경", rerender, `db-command-remove-${id}`);
+  commit(klass, result.commands, "직업 메뉴 순서 변경", rerender, rowTestId("remove", result.commands.filter((row) => row.id !== "cmd_change"), index));
 }
-function remove(id: string, rerender: () => void): void {
-  const klass = selectedClass(rerender);
-  if (!klass || id === "cmd_change" || !klass.battleCommands.some((row) => row.id === id)) return;
+function remove(occurrence: RowOccurrence, rerender: () => void): void {
+  const klass = occurrenceClass(occurrence, rerender);
+  if (!klass) return;
   // Preserve every remaining authored row, including over-cap legacy arrays and footer overrides.
-  commit(klass, klass.battleCommands.filter((row) => row.id !== id).map((row) => ({ ...row })), "직업 메뉴에서 명령 제거", rerender, "db-command-class-select");
+  let index = 0;
+  commit(klass, klass.battleCommands.filter((row) => row.id === "cmd_change" || index++ !== occurrence.index).map((row) => ({ ...row })), "직업 메뉴에서 명령 제거", rerender, "db-command-class-select");
 }
 
-function draggable(node: HTMLElement, source: Drag["source"], id: string): void {
+function draggable(node: HTMLElement, source: Drag["source"], id: string, occurrence?: RowOccurrence): void {
   node.setAttribute("draggable", "true");
   node.addEventListener("dragstart", (event) => {
-    const klass = selectedClass();
+    drag = undefined;
+    const klass = occurrence ? occurrenceClass(occurrence) : selectedClass();
     if (!klass || !event.dataTransfer) { event.preventDefault(); return; }
-    drag = { source, id, classId: klass.id, menu: JSON.stringify(klass.battleCommands), catalog: JSON.stringify(store.getCurrent().database.battleCommands), token: String(++sequence) };
+    drag = { source, id, occurrence, classId: klass.id, menu: JSON.stringify(klass.battleCommands), catalog: JSON.stringify(store.getCurrent().database.battleCommands), token: String(++sequence) };
     event.dataTransfer.setData(MIME, drag.token);
     event.dataTransfer.effectAllowed = source === "catalog" ? "copy" : "move";
     node.classList.add("is-dragging");
@@ -109,24 +123,26 @@ function slot(index: number, rerender: () => void): HTMLElement {
       return;
     }
     if (active.source === "catalog") place(active.id, index, rerender);
-    else {
-      const from = editable(klass).findIndex((row) => row.id === active.id);
-      move(active.id, index > from ? index - 1 : index, rerender);
+    else if (active.occurrence) {
+      const from = active.occurrence.index;
+      move(active.occurrence, index > from ? index - 1 : index, rerender);
     }
   });
   return node;
 }
-function menuRow(row: ClassBattleCommand, index: number, count: number, rerender: () => void): HTMLElement {
+function menuRow(row: ClassBattleCommand, index: number, klass: ClassRecord, rerender: () => void): HTMLElement {
+  const rows = editable(klass);
+  const occurrence: RowOccurrence = { classId: klass.id, menu: JSON.stringify(klass.battleCommands), index };
   const node = el("article", { class: "db-command-menu-row", dataset: { testid: "db-command-menu-row", commandId: row.id }, children: [
     el("span", { class: "db-command-drag-label", text: "끌기", attrs: { "aria-hidden": "true" } }),
     el("strong", { text: `${index + 1}. ${row.name || row.id}` }),
     listToolbar([
-      { label: "위", ariaLabel: `${row.name} 위로`, disabled: index === 0, testid: `db-command-up-${row.id}`, onClick: () => move(row.id, index - 1, rerender) },
-      { label: "아래", ariaLabel: `${row.name} 아래로`, disabled: index === count - 1, testid: `db-command-down-${row.id}`, onClick: () => move(row.id, index + 1, rerender) },
-      { label: "제거", ariaLabel: `${row.name} 메뉴에서 제거`, kind: "danger", testid: `db-command-remove-${row.id}`, onClick: () => remove(row.id, rerender) },
+      { label: "위", ariaLabel: `${row.name} 위로`, disabled: index === 0, testid: rowTestId("up", rows, index), onClick: () => move(occurrence, index - 1, rerender) },
+      { label: "아래", ariaLabel: `${row.name} 아래로`, disabled: index === rows.length - 1, testid: rowTestId("down", rows, index), onClick: () => move(occurrence, index + 1, rerender) },
+      { label: "제거", ariaLabel: `${row.name} 메뉴에서 제거`, kind: "danger", testid: rowTestId("remove", rows, index), onClick: () => remove(occurrence, rerender) },
     ]),
   ] });
-  draggable(node, "menu", row.id);
+  draggable(node, "menu", row.id, occurrence);
   return node;
 }
 
@@ -161,7 +177,7 @@ export function battleCommandPlacement(palette: HTMLElement, rerender: () => voi
     el("label", { class: "db-field", children: [el("span", { text: "직업" }), select] }),
     ...(!klass ? [el("p", { text: "직업 탭에서 직업을 먼저 만드세요." })] : [
       ...(rows.length === 0 ? [el("p", { class: "db-ws-usage", text: "아직 배치한 명령이 없습니다. 아래 미리보기는 기본 행동입니다." })] : []),
-      ...rows.flatMap((row, index) => [slot(index, rerender), menuRow(row, index, rows.length, rerender)]), slot(rows.length, rerender),
+      ...rows.flatMap((row, index) => [slot(index, rerender), menuRow(row, index, klass, rerender)]), slot(rows.length, rerender),
       el("p", { class: "db-command-fixed", text: "교체 · 마지막 고정 — 직업 편집 규칙이며 6개 제한에 포함되지 않습니다." }),
       ...(rows.length >= 6 ? [el("p", { class: "db-ws-usage", text: "6개를 모두 사용했습니다. 새 명령을 넣으려면 하나를 제거하세요." })] : []),
     ]),
