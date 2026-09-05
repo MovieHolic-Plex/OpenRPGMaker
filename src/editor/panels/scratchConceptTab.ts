@@ -412,7 +412,7 @@ function renderToolbar(
   wall.value = currentWall;
 
   const layout = el("select", {
-    class: "scratch-concept-plan-select",
+    class: "scratch-concept-plan-select scratch-concept-layout-select",
     attrs: { title: "도면 문법 — 한 줄은 방 줄→복도→홀, 두 줄은 객실은 복도 북쪽·날개(주방·창고)는 홀 옆" },
     dataset: { testid: "scratch-concept-facility-layout" },
     on: {

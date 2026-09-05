@@ -883,3 +883,8 @@ TURN/BATTLE MENU` 칩. 전투 애니메이션 타이밍 표 헤더 `사운드...
 - 칸 힌트가 없으면 힌트 도구를 고르기 전까지 빈 목록을 접고, 도구 설명과 실제 아이콘(grid/rectangle)을 쓴다.
 - 목록·인스펙터는 `structureKitGrowthText`로 같은 축 문구를 쓴다. 사람 스탬프 `applyStampStructureKit`의 조인 안내는 실제로 보낸 repeat/repeatY에만 붙인다(undefined도 생략이다). AI stamp 툴을 부활시키지 않는다.
 - 계약: `test/structureKitEditorDialog.test.ts`, `test/structureKitTools.test.ts`.
+
+
+## 개념 회수 UI 직접 렌더 QA (2026-09-05)
+
+`DEV_SERVER_PORT=9901 node scripts/qa/concept-recovery-editor.mjs`는 실제 CSS와 `renderScratchConceptTab`·구조물 편집기를 작은 HTML 호스트에 열어 도면·구역·시설 소속·시드 그림 사본·증분 축 반복값 보존을 검증한다. 원격 저장은 꺼 둔 단위 QA 프로젝트이며 게임 콘텐츠 저작 산출물이 아니다. 결과는 `verify-shots/concept-recovery-editor/`(1024·1440 화면, 구조물 증분 화면, result.json). 시각 확인에서 「두 줄」이 잘리던 도면 선택기에만 최소 폭 72px를 주었다. 전체 편집기 부팅은 호스트 ERR_NETWORK_CHANGED 때문에 별도 검증하지 못했지만, 이 경로는 실제 프로덕션 렌더러와 저장 뮤테이터를 실행하며 pageerror 0건을 확인한다.

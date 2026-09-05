@@ -325,3 +325,8 @@
   border-color: var(--db-studio-accent);
   color: var(--db-studio-text-1);
 }
+
+/* Leave room for the two-word layout label and the select arrow. */
+.scratch-concept-layout-select {
+  min-width: 72px;
+}
