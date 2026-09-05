@@ -6,6 +6,14 @@ This section supersedes the historical schemaVersion 3 / mutual-reader-compatibi
 
 Autosave policy is unchanged: save-access/map/cutscene gates and the five-second debounce still apply. Snapshot construction remains outside `performAutosave`'s storage catch: construction (including future reconciliation) failure throws explicitly, never returns a successful snapshot or consumes the debounce window. Storage failure warns and returns `null`; `maybeAutosave` returns false. Only a successful write updates its debounce timestamp. Later reconciliation work must retain this distinction and keep live session/disk ownership intact. Tests: `test/lifeSaveVersion.test.ts`, `autosave.test.ts`, P0/P1/P2 session persistence, `checkpointEndingRuntime.test.ts`.
 
+## Life recovery primitives and maker evidence (2026-09-06)
+
+Task3 introduces optional runtime `PlaySession.lifeRecovery`: `{nextSequence, claims}`. `src/project/lifeRecovery.ts` owns deterministic `recovery:N` IDs, draft-atomic source removal/claim creation and explicit `collectLifeRecoveryClaim` payout/removal. It checks 4096 claims, 64 distinct items per claim, safe positive item counts capped by ITEM_QUANTITY_MAX, 64 KiB UTF-8 unresolved JSON and 8 MiB total recovery JSON. Large proven quantities split; capacity or validation failure changes neither owner nor sequence. Unknown items retain raw source evidence and cannot pay until the item is defined and the player explicitly collects. Empty/unproven evidence never pays. The exported save-boundary predicate rejects rather than trims malformed/excess records.
+
+`moveLifeRecoverySource` reads the actual named session owner, not caller-supplied quantities. Shipping and incomplete bundle records supply their own amounts; completed bundle receipts reject refunds. Maker cancellation accepts an explicit cutoff in the ORIGINAL job time basis and selects only the completed outputs or unfinished inputs. Missing legacy definitions and old spatial/animal records become unresolved evidence, not guessed refunds. Automatic reconciliation, partial donation excess, claim persistence and ledger UI remain later tasks; the existing Save5 codec is NOT yet wired to persist recovery claims.
+
+New maker jobs copy inputs actually consumed, promised outputs, duration and resolved `{dayStartHour,dayEndHour,daysPerSeason}`. Definition edits affect only the next job; legacy jobs without contracts still use the current definition. New contracts survive the existing compatible maker save path and are checked by `isMakerInstancesRecord`. Runtime spatial state types add optional `paymentReceipt:{gold,items}` and decoration `recoveryItem`; start/legacy placements invent neither. Payment capture and spatial refund policy are not wired by this foundation increment. Tests: `test/lifeRecovery.test.ts`, `test/p0Makers.test.ts`.
+
 ## Esc 메뉴 작업 프레임 (2026-09-05)
 
 이 절이 아래의 edge-dock / 상단 파티 고정 / 하위 창 숨김 설명을 대체한다.
