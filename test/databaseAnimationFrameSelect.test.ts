@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { renderBattleAnimationRecordForm } from "@/editor/panels/databaseAnimationRecordView";
+import { listDatabaseResourceOptions } from "@/editor/panels/databaseResourcePickerDialog";
 import { editorState } from "@/editor/editorState";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { createBlankProject } from "@/project/defaults";
@@ -42,6 +43,28 @@ function requireTestId(root: FakeElement, testid: string): FakeElement {
 }
 
 describe("battle animation frame selection rerenders the form", () => {
+  it("binds the visible graphic name to catalog selection, cancel and clear", () => {
+    const form = renderForm();
+    const catalog = listDatabaseResourceOptions("battle", store.getCurrent());
+    const selectedId = store.getCurrent().database.battleAnimations[0].resourceId;
+    const selected = catalog.find((entry) => entry.id === selectedId)!;
+    expect(form.querySelector(".db-resource-picker-inline-name")?.textContent).toBe(selected.name);
+    const body = document.body as unknown as FakeElement;
+    const next = catalog.find((entry) => entry.id !== selectedId)!;
+    const open = () => requireTestId(form, "db-field-animation-resource-set").dispatchEvent(new Event("click"));
+    const action = (suffix: string) => requireTestId(body, `db-field-animation-resource-dialog-${suffix}`).dispatchEvent(new Event("click"));
+    open(); action(`option-${next.id}`); action("cancel");
+    expect(store.getCurrent().database.battleAnimations[0].resourceId).toBe(selectedId);
+    expect(form.querySelector(".db-resource-picker-inline-name")?.textContent).toBe(selected.name);
+    open(); action(`option-${next.id}`); action("ok");
+    expect(store.getCurrent().database.battleAnimations[0].resourceId).toBe(next.id);
+    expect(form.querySelector(".db-resource-picker-inline-name")?.textContent).toBe(next.name);
+    open(); action("clear");
+    expect(store.getCurrent().database.battleAnimations[0].resourceId).toBeUndefined();
+    expect(requireTestId(form, "db-field-animation-resource").value).toBe("");
+    expect(form.querySelector(".db-animation-stage-cell")).toBeNull();
+  });
+
   it("row click marks the row active and swaps the cell table to that frame", () => {
     const form = renderForm();
     expect(requireTestId(form, "db-animation-frame-0").classList.contains("active")).toBe(true);

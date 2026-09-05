@@ -88,7 +88,7 @@ export function absenceEditor(absences: readonly string[], rerender: () => void)
     class: "db-world-canon-absence-input",
     attrs: {
       type: "text",
-      placeholder: "예: 총, 엘프, 부활",
+      placeholder: "예: 현대식 총기, 엘프, 죽은 자의 부활",
       title: "부분일치입니다. 「총」은 「총각」에도 걸립니다 — 더 긴 낱말을 적으세요.",
       "aria-label": "없는 것 추가",
       maxlength: String(WORLD_CANON_BOUNDS.absence),
@@ -261,7 +261,7 @@ export function bodyField(body: string, onBodyInput?: () => void): HTMLElement {
     if (typeof pane.scrollIntoView === "function") pane.scrollIntoView({ block: "nearest" });
   });
   if (canonPreviewOpen) showPreview();
-  wrap.append(area, preview, pane);
+  wrap.append(preview, area, pane);
   return wrap;
 }
 

@@ -1,3 +1,4 @@
+import { hasEquipmentSlot } from "@/project/equipmentSlots";
 import { isHorrorState } from "@/project/horrorState";
 import { isGrowthProgress } from "@/project/growth/validation";
 import { SCHEMA_VERSION, type ActorInitialEquipment, type CharacterFootprint, type Project } from "@/project/types";
@@ -447,6 +448,9 @@ function isQuotaExceededError(error: unknown): boolean {
 // 터져 배포 플레이어가 "맵·에셋 불러오는 중…" 화면에 영구히 갇혔다. 적용 전에 막는다.
 export function snapshotLoadBlocker(project: Project, snapshot: SaveSnapshot): string | null {
   if (!project.maps[snapshot.session.currentMapId]) return "저장 당시의 맵이 이 프로젝트에 없습니다";
+  for (const equipment of Object.values(snapshot.session.actorEquipment ?? {})) {
+    if (Object.keys(equipment).some((slot) => !hasEquipmentSlot(project, slot))) return "저장 당시의 장비 부위가 이 프로젝트에 없습니다";
+  }
   return null;
 }
 
@@ -817,6 +821,9 @@ type ParsedSessionResult =
   | { readonly ok: false; readonly message: string };
 
 function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResult {
+  if (session.actorEquipment !== undefined && !isActorEquipmentRecord(session.actorEquipment)) {
+    return { ok: false, message: "Invalid actor equipment" };
+  }
   if (!isBooleanRecord(session.switches)) return { ok: false, message: "Invalid switches" };
   if (!isNumberRecord(session.variables)) return { ok: false, message: "Invalid variables" };
   if (!isNumberRecord(session.timers)) return { ok: false, message: "Invalid timers" };

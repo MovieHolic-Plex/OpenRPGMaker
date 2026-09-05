@@ -143,7 +143,7 @@ describe("equipment inspector header", () => {
     expect(byTestId(form, "db-equipment-story-stats")).toBeTruthy();
   });
 
-  it("renders icon, name edit (db-field-name), slot segmented, and the summary chips host", () => {
+  it("renders icon, name edit, catalog slot select, and the summary chips host", () => {
     const form = renderForm();
     expect(findByTestId(form, "db-equipment-inspector-header")).not.toBeNull();
     expect(form.querySelector(".db-equipment-inspector-icon")).toBeTruthy();
@@ -154,11 +154,10 @@ describe("equipment inspector header", () => {
     nameInput.dispatchEvent(new Event("input"));
     expect(store.getCurrent().database.equipment[0]?.name).toBe("강철검");
 
-    // 부위 세그먼트 — EquipmentRecord.slot 실값 5종, 기본값 weapon 체크.
-    const slotRadios = form.querySelectorAll("[data-testid='db-field-equipment-slot-option']");
-    expect(slotRadios).toHaveLength(5);
-    expect(slotRadios.map((radio) => radio.attrs.value)).toEqual(["weapon", "shield", "helmet", "armor", "accessory"]);
-    expect(slotRadios[0].checked).toBe(true);
+    const slotSelect = byTestId(form, "db-field-equipment-slot");
+    expect(slotSelect.querySelectorAll("option").map((option) => option.attrs.value))
+      .toEqual(["weapon", "shield", "helmet", "armor", "accessory"]);
+    expect(slotSelect.value).toBe("weapon");
 
     const chipsHost = findByTestId(form, "db-equipment-summary-chips");
     expect(chipsHost).not.toBeNull();
@@ -167,7 +166,7 @@ describe("equipment inspector header", () => {
     expect(form.querySelector(".db-equipment-inspector-header")?.querySelector(".db-equipment-summary-chips")).toBeTruthy();
   });
 
-  it("segmented slot change rewrites slot and refreshes chips without a full form rebuild", () => {
+  it("slot selection rewrites slot and refreshes chips without a full form rebuild", () => {
     const form = renderForm();
     const chipsHost = byTestId(form, "db-equipment-summary-chips");
     const firstChip = chipsHost.childNodes[0];
@@ -179,11 +178,9 @@ describe("equipment inspector header", () => {
     const header = byTestId(form, "db-equipment-inspector-header");
     header.dataset.sentinel = "header-alive";
 
-    const slotRadios = form.querySelectorAll("[data-testid='db-field-equipment-slot-option']");
-    const shield = slotRadios.find((radio) => radio.attrs.value === "shield");
-    if (!shield) throw new Error("missing shield slot option");
-    shield.checked = true;
-    shield.dispatchEvent(new Event("change", { bubbles: true }));
+    const slotSelect = byTestId(form, "db-field-equipment-slot");
+    slotSelect.value = "shield";
+    slotSelect.dispatchEvent(new Event("change", { bubbles: true }));
 
     expect(store.getCurrent().database.equipment[0]?.slot).toBe("shield");
     // 칩 호스트는 같은 노드, 자식만 교체(부분 갱신 경로).

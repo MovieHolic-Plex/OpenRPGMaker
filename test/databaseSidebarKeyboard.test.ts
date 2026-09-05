@@ -23,7 +23,6 @@ const TAB_TESTID: Record<string, string> = {
   classes: "db-tab-classes",
   skills: "db-tab-skills",
   items: "db-tab-items",
-  equipment: "db-tab-equipment",
   elements: "db-tab-elements",
   states: "db-tab-states",
   animations: "db-tab-animations",

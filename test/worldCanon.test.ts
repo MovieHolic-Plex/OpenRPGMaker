@@ -11,6 +11,20 @@ import {
 import { normalizeWorldCanon } from "@/project/world/canonNormalize";
 
 describe("worldCanon", () => {
+  it("migrates legacy secret status into independent visibility", () => {
+    expect(normalizeWorldCanon({ name: "해안", status: "secret" })).toEqual({
+      name: "해안", visibility: "secret",
+    });
+  });
+
+  it("round-trips a confirmed secret without losing either axis", () => {
+    const project = createBlankProject();
+    project.worldCanon = normalizeWorldCanon({ name: "해안", status: "canon", visibility: "secret" });
+    expect(deserialize(serialize(project)).worldCanon).toEqual({
+      name: "해안", status: "canon", visibility: "secret",
+    });
+  });
+
   it("resolves a missing canon to empty defaults", () => {
     const resolved = resolveWorldCanon(undefined);
     expect(resolved).toEqual(EMPTY_WORLD_CANON);

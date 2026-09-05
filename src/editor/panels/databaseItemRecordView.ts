@@ -144,7 +144,7 @@ export function itemEffectStory(project: Project, authoredRecord: ItemRecord): I
   }
   if (record.farmTool) effects.push(`농사 도구: ${FARM_TOOL_LABELS[record.farmTool]}`);
   if (record.animationId) notes.push(`전투 연출: ${namedId(record.animationId, project.database.battleAnimations)}`);
-  if (isEquipmentItemType(record.type)) notes.push("전투 효과는 장비 탭의 장비 레코드에서 설정합니다.");
+  if (isEquipmentItemType(record.type)) notes.push("착용 효과는 카탈로그의 장비 항목에서 설정합니다.");
   if (record.onlyEffectiveOnDeadActors) notes.push("전투불능 대상에게만 유효");
   const runtimeAppliesActorRestrictions = !isItemActorEligible(project, record, undefined);
   if (runtimeAppliesActorRestrictions && (record.usableActorIds.length > 0 || record.usableClassIds.length > 0)) {
@@ -255,7 +255,7 @@ function basicsCard(record: ItemRecord, rerender: () => void, refreshStory: () =
         updateDatabaseRecord("items", record.id, { description })
       ),
       itemTypeField(record, rerender),
-      el("p", { class: "db-field-hint", text: "종류를 바꾸면 이전 종류의 효과는 보관되며 적용되지 않습니다. 착용 장비는 장비 탭에서 추가하세요." }),
+      el("p", { class: "db-field-hint", text: "종류를 바꾸면 이전 효과는 보관되며 적용되지 않습니다. 착용할 물건은 목록 아래의 ‘+ 장비’로 만드세요." }),
       itemPriceField(record.id),
       ...(!isEquipmentItemType(record.type) ? [consumptionLimitField(record, refreshStory)] : []),
       ...(record.type === "normalGoods" || record.farmTool ? [farmToolField(record, refreshStory)] : []),
@@ -527,8 +527,8 @@ function equipmentRedirect(form: HTMLElement): HTMLElement {
     children: [
       emptyState({
         icon: "⚔",
-        title: "장비 스탯은 장비 탭에서 만듭니다",
-        body: "이 항목은 이전 형식의 비착용 물품입니다. 장비로 변환되거나 연결되지 않습니다. 착용할 물건은 장비 탭에서 새로 추가하세요.",
+        title: "착용 장비는 별도 항목으로 만듭니다",
+        body: "이 항목은 이전 형식의 비착용 물품입니다. 장비로 변환되거나 연결되지 않습니다. 목록 아래의 ‘+ 장비’로 착용할 물건을 만드세요.",
         testid: "db-item-equipment-redirect-empty",
         action: {
           label: "장비 목록에서 새로 만들기",

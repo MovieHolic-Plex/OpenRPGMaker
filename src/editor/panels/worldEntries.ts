@@ -8,6 +8,10 @@ const CODEX_URL_TABS: readonly WorldTabKey[] = [
   "event",
   "item-concept",
   "guideline",
+  "place",
+  "faction",
+  "item",
+  "concept",
 ];
 
 export const WORLD_ENTRY_TAB: DatabaseTab = "worldCanon";
@@ -42,12 +46,17 @@ export function readCodexEntryFromUrl(search: string): CodexUrlEntry | null {
   return { tab: tab as WorldTabKey, entityId };
 }
 
-export function writeCodexEntryToUrl(tab: WorldTabKey, entityId: string): void {
+export function writeCodexEntryToUrl(tab: WorldTabKey, entityId: string | null): void {
   if (typeof window === "undefined" || !window.history?.replaceState) return;
   try {
     const url = new URL(window.location.href);
-    url.searchParams.set(CODEX_URL_TAB_PARAM, tab);
-    url.searchParams.set(CODEX_URL_ENTITY_PARAM, entityId);
+    if (entityId) {
+      url.searchParams.set(CODEX_URL_TAB_PARAM, tab);
+      url.searchParams.set(CODEX_URL_ENTITY_PARAM, entityId);
+    } else {
+      url.searchParams.delete(CODEX_URL_TAB_PARAM);
+      url.searchParams.delete(CODEX_URL_ENTITY_PARAM);
+    }
     window.history.replaceState({ codexTab: tab, codexEntityId: entityId }, "", `${url.pathname}${url.search}${url.hash}`);
   } catch {
     /* malformed location — deep link is best-effort */

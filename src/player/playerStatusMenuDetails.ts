@@ -1,3 +1,4 @@
+import { equipmentSlots, equipmentSlotLabel } from "@/project/equipmentSlots";
 import { createGrowthMenu, growthMenuTabs } from "@/player/playerGrowthMenu";
 import { canUseMenuItemOnActor } from "@/player/playerItemUse";
 import { activeItemEffects, itemAllowsMenu } from "@/project/itemUsage";
@@ -34,14 +35,6 @@ import {
 } from "@/player/playerStatusMenuModel";
 
 export type { StatusMenuDetail, StatusMenuDetailEntry, StatusMenuDetailOptions, StatusMenuStatDelta } from "@/player/playerStatusMenuDetailTypes";
-
-const EQUIPMENT_SLOTS = [
-  { id: "weapon", label: "무기" },
-  { id: "shield", label: "방패" },
-  { id: "armor", label: "갑옷" },
-  { id: "helmet", label: "투구" },
-  { id: "accessory", label: "장식품" },
-] as const satisfies readonly { readonly id: keyof ActorInitialEquipment; readonly label: string }[];
 
 const STAT_LABELS = [
   ["attack", "공격"],
@@ -203,7 +196,7 @@ function ownedEquipmentEntries(options: StatusMenuDetailOptions): {
   const seenWorn = new Set<string>();
   for (const actor of party) {
     const worn = actorEquipment(project, session, actor);
-    for (const slot of EQUIPMENT_SLOTS) {
+    for (const slot of equipmentSlots(project)) {
       const equipmentId = worn[slot.id];
       if (!equipmentId || seenWorn.has(equipmentId)) continue;
       seenWorn.add(equipmentId);
@@ -287,7 +280,7 @@ function equipmentDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
       // 부위 전체를 설명 줄에 늘어놓아도 -webkit-line-clamp:2 에 걸려 잘린다.
       // 이 패널의 역할은 "누구 장비를 볼지" 고르는 것이므로 무기만 보이고,
       // 부위별 목록은 선택 후 화면(슬롯당 한 줄)에서 제대로 보여준다.
-      const weaponSlot = EQUIPMENT_SLOTS[0];
+      const weaponSlot = { id: "weapon" };
       return {
         label: actor.name,
         value: equipmentName(equipmentById, worn[weaponSlot.id]),
@@ -303,7 +296,7 @@ function equipmentDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   if (!actor) return { title: "장비", entries: [], emptyLabel: "파티원을 찾을 수 없습니다" };
   if (!options.equipmentSlotId) {
     const worn = actorEquipment(project, session, actor);
-    const entries = EQUIPMENT_SLOTS.map((slot) => ({
+    const entries = equipmentSlots(project).map((slot) => ({
       label: slot.label,
       value: equipmentName(equipmentById, worn[slot.id]),
       icon: equipmentEntryIcon(equipmentById.get(worn[slot.id] ?? "")),
@@ -333,7 +326,7 @@ function equipmentDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
       }]
     : [];
   return {
-    title: `${actor.name}: ${slotLabel(options.equipmentSlotId)}`,
+    title: `${actor.name}: ${equipmentSlotLabel(project, options.equipmentSlotId)}`,
     entries: [
       ...unequipEntry,
       ...choices.map((equipment) => ({
@@ -630,10 +623,6 @@ function skillEntryIcon(project: Project, skill: SkillRecord): NonNullable<Statu
   };
 }
 
-function slotLabel(slotId: keyof ActorInitialEquipment): string {
-  return EQUIPMENT_SLOTS.find((slot) => slot.id === slotId)?.label ?? "장비";
-}
-
 // 메타가 길면 value(우측 1줄)가 아니라 description(전폭 2줄) 행으로 내려 라벨과 겹치지 않게 한다.
 function saveSlotEntryParts(
   slot: SaveSlotReadResult,
@@ -701,7 +690,7 @@ function actorStatTotal(
   const level = session.actorLevels[actor.id] ?? actor.initialLevel;
   const curves = normalizeActorRecord(actor).parameterCurves;
   const worn: ActorInitialEquipment = { ...actorEquipment(project, session, actor), [slotId]: candidateId };
-  return EQUIPMENT_SLOTS.reduce(
+  return equipmentSlots(project).reduce(
     (total, slot) => total + equipmentStats(project, worn[slot.id])[statKey],
     parameterValueAtLevel(curves[statKey], level) + (session.actorParamBonuses?.[actor.id]?.[statKey] ?? 0) + growthEffects(project, session, actor.id).bonuses[statKey]
   );

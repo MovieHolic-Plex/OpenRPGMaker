@@ -11,8 +11,7 @@ export const DATABASE_TAB_SPECS = [
   { label: "Actors", slug: "actors", testId: "db-tab-actors" },
   { label: "Classes", slug: "classes", testId: "db-tab-classes" },
   { label: "Skills", slug: "skills", testId: "db-tab-skills" },
-  { label: "Items", slug: "items", testId: "db-tab-items" },
-  { label: "Equipment", slug: "equipment", testId: "db-tab-equipment" },
+  { label: "Items & Equipment", slug: "items", testId: "db-tab-items" },
   { label: "Enemies", slug: "enemies", testId: "db-tab-enemies" },
   { label: "Monster Species", slug: "monster-species", testId: "db-tab-monster-species" },
   { label: "Troops", slug: "troops", testId: "db-tab-troops" },
@@ -219,6 +218,11 @@ export async function switchDatabaseTab(page: Page, tab: DatabaseTabSpec): Promi
   if (!(await button.isVisible())) await revealCollapsedSidebarTab(page, button);
   await button.click({ force: true });
   await expect(button).toHaveClass(/active/);
+  if (tab.slug === "equipment") {
+    await page.getByTestId("db-catalog-filter-equipment").click();
+    const selected = page.locator('.db-catalog-rows [data-collection="equipment"][aria-pressed="true"]');
+    if (await selected.count() === 0) await page.locator('.db-catalog-rows [data-collection="equipment"]').first().click();
+  }
 }
 
 async function revealCollapsedSidebarTab(page: Page, button: Locator): Promise<void> {

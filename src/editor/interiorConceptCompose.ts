@@ -70,6 +70,8 @@ export type ConceptPlacement = {
 
 export type ConceptComposeInput = {
   readonly map: GameMap;
+  /** Built-in facility identity; other facilities retain the legacy slot grammar. */
+  readonly facilityId?: string;
   /** 이 방의 바닥 마스크(맵 크기). */
   readonly floor: readonly boolean[];
   /** 맵 전체 바닥 마스크 — 방 밖 바닥(문 개구부)을 보고 통로를 잡는다. */
@@ -108,6 +110,8 @@ type Point = { readonly x: number; readonly y: number };
 
 export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeResult {
   const { map, floor, room, door } = input;
+  const grouped = ["house", "shop", "tavern", "library", "smithy", "church", "warehouse", "guild"]
+    .includes(input.facilityId ?? "");
   const W = map.width;
   const idx = (x: number, y: number): number => y * W + x;
   const inBounds = (x: number, y: number): boolean => x >= 0 && y >= 0 && x < W && y < map.height;
@@ -305,6 +309,49 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
 
   const northRowY = room.y;
   const interiorRows = room.h > 1 ? { from: room.y + 1, to: room.y + room.h - 1 } : { from: room.y, to: room.y };
+  const floorObjectFits = (object: InteriorObjectDef, x: number, y: number): boolean =>
+    object.cells.every((cell) => freeFor(cell, x + cell.dx, y + cell.dy))
+    && !object.cells.some((cell) =>
+      ([[1, 0], [-1, 0], [0, 1], [0, -1]] as const).some(([dx, dy]) =>
+        floorTaken.has(idx(x + cell.dx + dx, y + cell.dy + dy))));
+  const preservesInteractionAccess = (x: number, y: number, thing: ConceptOverlayThing): boolean => {
+    if (!grouped) return true;
+    const interactive = (chips: readonly ConceptChipId[]): boolean =>
+      chips.some((chip) => ["event", "loot", "sleep", "transfer"].includes(chip));
+    const targets = placements
+      .filter((placement) => interactive(placement.chips) && inRoomFloor(placement.anchor.x, placement.anchor.y))
+      .map((placement) => placement.anchor);
+    if (interactive(thing.chips)) targets.push({ x, y });
+    if (targets.length === 0) return true;
+    const candidate = idx(x, y);
+    const canReach = (index: number): boolean => {
+      const cx = index % W;
+      const cy = Math.floor(index / W);
+      return index !== candidate && inRoomFloor(cx, cy) && !taken.has(index)
+        && (input.isFloorTile(lowerAt(cx, cy)) || rugCells.has(index))
+        && upperEmptyOrEntry(cx, cy);
+    };
+    const start = inRoomFloor(door.x, door.y) ? idx(door.x, door.y) : [...lane].find(canReach);
+    if (start === undefined || !canReach(start)) return false;
+    const queue = [start];
+    const reached = new Set(queue);
+    for (let head = 0; head < queue.length; head += 1) {
+      const index = queue[head];
+      if (index === undefined) break;
+      const cx = index % W;
+      const cy = Math.floor(index / W);
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+        const next = idx(cx + dx, cy + dy);
+        if (!reached.has(next) && canReach(next)) {
+          reached.add(next);
+          queue.push(next);
+        }
+      }
+    }
+    return targets.every((target) =>
+      [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) =>
+        reached.has(idx(target.x + dx, target.y + dy))));
+  };
 
   for (const job of jobs) {
     const { object, thing } = job;
@@ -373,13 +420,15 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
         const candidates: Array<Point & { score: number }> = [];
         for (let y = interiorRows.from; y <= interiorRows.to - object.height + 1; y += 1) {
           for (let x = room.x; x <= room.x + room.w - object.width; x += 1) {
-            if (!object.cells.every((cell) => freeFor(cell, x + cell.dx, y + cell.dy))) continue;
-            // 좌석군 사이 통로: 이웃 칸에 다른 바닥 물건이 붙지 않게.
-            const crowded = object.cells.some((cell) =>
-              ([[1, 0], [-1, 0], [0, 1], [0, -1]] as const).some(([dx, dy]) =>
-                floorTaken.has(idx(x + cell.dx + dx, y + cell.dy + dy))));
-            if (crowded) continue;
-            candidates.push({ x, y, score: Math.abs(x - centerX) + Math.abs(y - centerY) });
+            if (!floorObjectFits(object, x, y)) continue;
+            const rugCoverage = grouped && object.role === "table"
+              ? object.cells.filter((cell) => rugCells.has(idx(x + cell.dx, y + cell.dy))).length
+              : 0;
+            // Align one-row seating into alternate rows. A centered random row
+            // can consume both remaining rows and strand a third seating group.
+            const rowPenalty = grouped && object.role === "table" && object.height === 1
+              ? ((y - room.y) % 2) * 2 : 0;
+            candidates.push({ x, y, score: Math.abs(x - centerX) + Math.abs(y - centerY) - rugCoverage * 10 + rowPenalty });
           }
         }
         candidates.sort((a, b) => a.score - b.score || a.y - b.y || a.x - b.x);
@@ -401,17 +450,60 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
             })
           : perimeterCandidates(room);
         const cell = object.cells[0]!;
+        const propFree = (x: number, y: number, loose = false): boolean =>
+          freeFor(cell, x, y, loose) && preservesInteractionAccess(x, y, thing);
+        // Warehouse stock sits in short rows on either side of the loading
+        // aisle, with a one-cell perimeter so every group can be approached.
+        const stockRows: Point[] = [];
+        if (input.facilityId === "warehouse" && ["crate", "barrel"].includes(object.id)) {
+          const middle = room.x + Math.floor(room.w / 2);
+          const fromX = object.id === "crate" ? room.x + 1 : middle + 1;
+          const toX = object.id === "crate" ? middle - 1 : Math.min(middle + 2, room.x + room.w - 2);
+          for (let y = room.y + 1; y < room.y + room.h - 1; y += 1) {
+            for (let x = fromX; x <= toX; x += 1) {
+              if (propFree(x, y)) stockRows.push({ x, y });
+            }
+          }
+        }
+        // Work tools accompany the forge; a bedside box and seating accompany
+        // their furniture. Repeated stock forms a group instead of four corners.
+        const anchorIds = ["cauldron", "kettle", "bucket"].includes(object.id)
+          ? ["stove"]
+          : object.id === "box" && bedCells.length > 0
+            ? ["bed_h", "bed_v"]
+            : object.id === "stool"
+              ? ["table_long", "table_chairs", "counter"]
+              : ["crate", "barrel", "grain", "jars"].includes(object.id) ? [object.id] : [];
+        const related = grouped && input.role !== "walkway"
+          ? placements.filter((placement) => anchorIds.includes(placement.objectId))
+          : [];
+        const clustered: Array<Point & { distance: number }> = [];
+        if (related.length > 0) {
+          for (let y = room.y; y < room.y + room.h; y += 1) {
+            for (let x = room.x; x < room.x + room.w; x += 1) {
+              if (!propFree(x, y)) continue;
+              // Leave the interaction approach directly below a related object.
+              if (related.some((placement) =>
+                placement.anchor.x === x && placement.anchor.y + 1 === y
+                && placement.chips.includes("event"))) continue;
+              const distance = Math.min(...related.flatMap((placement) => placement.cells.map((placed) =>
+                Math.abs(placed.x - x) + Math.abs(placed.y - y))));
+              clustered.push({ x, y, distance });
+            }
+          }
+          clustered.sort((a, b) => a.distance - b.distance || a.y - b.y || a.x - b.x);
+        }
         // 시드가 있으면 네 구석(복도는 양 끝) 중 비어 있는 것을 하나 뽑고, 없으면 종전 순서의 첫 자리.
         const cornerCount = input.role === "walkway" ? ends.length : 4;
-        const openCorners = ends.slice(0, cornerCount).filter((point) => freeFor(cell, point.x, point.y));
-        let pick = (rng ? pickAmong(openCorners) : null)
-          ?? ends.find((point) => freeFor(cell, point.x, point.y))
-          ?? ends.find((point) => freeFor(cell, point.x, point.y, true))
+        const openCorners = ends.slice(0, cornerCount).filter((point) => propFree(point.x, point.y));
+        let pick: Point | null = stockRows[0] ?? clustered[0] ?? (rng ? pickAmong(openCorners) : null)
+          ?? ends.find((point) => propFree(point.x, point.y))
+          ?? ends.find((point) => propFree(point.x, point.y, true))
           ?? null;
         if (!pick && input.role !== "walkway") {
           for (let y = interiorRows.from; y <= interiorRows.to && !pick; y += 1) {
             for (let x = room.x; x < room.x + room.w; x += 1) {
-              if (!freeFor(cell, x, y)) continue;
+              if (!propFree(x, y)) continue;
               const crowded = ([[1, 0], [-1, 0], [0, 1], [0, -1]] as const).some(([dx, dy]) => floorTaken.has(idx(x + dx, y + dy)));
               if (crowded) continue;
               pick = { x, y };
@@ -445,7 +537,17 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
               if (!cellsFit(object.cells, x, y, rugFree)) continue;
               // 북쪽 행(가구 줄)보다 방 안쪽을 선호한다.
               const northPenalty = y === room.y ? 1.5 : 0;
-              scored.push({ x, y, score: Math.abs(x - centerX) + Math.abs(y - centerY) + northPenalty });
+              const table = grouped && !bed ? jobs.find((entry) => entry.slot === "floor" && entry.object.role === "table") : undefined;
+              let tableFits = false;
+              if (table) {
+                for (let ty = Math.max(y, interiorRows.from); ty <= y + object.height - table.object.height; ty += 1) {
+                  for (let tx = x; tx <= x + object.width - table.object.width; tx += 1) {
+                    if (floorObjectFits(table.object, tx, ty)) tableFits = true;
+                  }
+                }
+              }
+              const ungroupedPenalty = table && !tableFits ? 100 : 0;
+              scored.push({ x, y, score: Math.abs(x - centerX) + Math.abs(y - centerY) + northPenalty + ungroupedPenalty });
             }
           }
           scored.sort((a, b) => a.score - b.score || a.y - b.y || a.x - b.x);
