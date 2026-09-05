@@ -4,9 +4,11 @@ import { readStoredZipEntry } from "../../src/project/packageZip";
 
 // Optional transport workaround for Chromium ERR_NETWORK_CHANGED; preserve server responses.
 test.beforeEach(async ({ page, baseURL }) => {
-  if (!process.env.ELEMENTS_QA_TRANSPORT) return;
+  const upstream = process.env.ELEMENTS_QA_UPSTREAM;
+  if (!upstream && !process.env.ELEMENTS_QA_TRANSPORT) return;
   await page.route(`${baseURL}/**`, async (route) => {
-    const response = await route.fetch({ timeout: 90_000 });
+    const url = upstream ? route.request().url().replace(baseURL!, upstream.replace(/\/$/, "")) : route.request().url();
+    const response = await route.fetch({ url, timeout: 90_000 });
     await route.fulfill({ response });
   });
 });
@@ -43,7 +45,10 @@ test("elements real editor: recognition, filtering, editing and project export",
       const first = root.querySelector('[data-testid="db-field-element-damage-A"]')!;
       const overlaps = [...root.querySelectorAll(".db-el-damage-row")].some((row) => {
         const children = [...row.children].map((child) => child.getBoundingClientRect());
-        return children.slice(1).some((box, index) => box.left < children[index].right - 1);
+        return children.some((box, index) => children.slice(index + 1).some((other) =>
+          Math.min(box.right, other.right) - Math.max(box.left, other.left) > 1 &&
+          Math.min(box.bottom, other.bottom) - Math.max(box.top, other.top) > 1,
+        ));
       });
       return { overflow: document.documentElement.scrollWidth > innerWidth, firstTop: first.getBoundingClientRect().top, bottom: body.getBoundingClientRect().bottom, bodyOverflow: body.scrollWidth > body.clientWidth, overlaps };
     });
@@ -107,8 +112,8 @@ test("elements real editor: recognition, filtering, editing and project export",
   await expect(name).toBeFocused();
   await page.setViewportSize({ width: 1024, height: 768 });
   await page.screenshot({ path: `${directory}/elements-custom-no-art.png`, animations: "disabled" });
-  // Explicit image-network failure injection, not a fabricated app or database response.
-  await page.route("**/assets/cc0/jetrel/icons/fire-bomb.png", (route) => route.abort("failed"));
+  // Intentional missing-image response exercises the adversarial failure state.
+  await page.route("**/assets/cc0/jetrel/icons/fire-bomb.png", (route) => route.fulfill({ status: 404, body: "missing" }));
   await page.getByTestId("db-elements-row-4").click();
   await expect(page.getByTestId("db-elements-hero").locator(".db-image-load-failed")).toBeVisible();
   await expect(name).toBeVisible();
