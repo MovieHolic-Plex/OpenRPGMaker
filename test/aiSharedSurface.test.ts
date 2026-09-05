@@ -50,7 +50,10 @@ describe("AI shared surface", () => {
     expect(findByTestId(basicPanel, "ai-start-visual-gallery")).toBeNull();
     expect(findByTestId(basicPanel, "ai-empty-cta")).toBeNull();
     expect(findByTestId(basicPanel, "ai-expert-board")).toBeNull();
-    expect(findByTestId(basicPanel, "ai-composer-chips")).toBeTruthy();
+    expect(findByTestId(basicPanel, "ai-composer-chips")).toBeNull();
+    expect(findByTestId(basicPanel, "ai-input")).toBeTruthy();
+    expect(findByTestId(basicPanel, "ai-chat-log")).toBeTruthy();
+    expect(findByTestId(basicPanel, "ai-send")).toBeTruthy();
     expect(basicPanel.dataset.uiDensity).toBe("shared");
 
     document.body.classList.remove("editor-ui-beginner");
@@ -61,7 +64,10 @@ describe("AI shared surface", () => {
     expect(findByTestId(expertPanel, "ai-start-visual-gallery")).toBeNull();
     expect(findByTestId(expertPanel, "ai-empty-cta")).toBeNull();
     expect(findByTestId(expertPanel, "ai-expert-board")).toBeNull();
-    expect(findByTestId(expertPanel, "ai-composer-chips")).toBeTruthy();
+    expect(findByTestId(expertPanel, "ai-composer-chips")).toBeNull();
+    expect(findByTestId(expertPanel, "ai-input")).toBeTruthy();
+    expect(findByTestId(expertPanel, "ai-chat-log")).toBeTruthy();
+    expect(findByTestId(expertPanel, "ai-send")).toBeTruthy();
     expect(expertPanel.dataset.uiDensity).toBe("shared");
   });
 
