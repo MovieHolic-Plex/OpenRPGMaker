@@ -17,7 +17,13 @@ approval after seam polishing. A safe detached tool result is not permission to
 overwrite a later human house edit or to commit protected-cell changes introduced
 by region postprocessing. Rejection leaves both the live project and undo history
 untouched; see `applyProposedProjectHouseProtection`, `regionTaskHouseProtection`,
-and `clusterAiModalHouseProtection` tests.
+and `clusterAiModalHouseProtection` tests. Region tasks also retain newly completed
+house snapshots from the full session proposal before clipping. Full, partial,
+and immediate application check those snapshots after review polishing, so a
+selection that excludes the north ridge cannot commit a damaged new house.
+The selection is not expanded; unsafe candidates reject atomically.
+`regionTaskCompletedHouse` covers clipping, approval-time re-polishing, and intact
+house controls.
 
 Completion is metadata-defined: `layoutPlan.regions` with `role:"house"` protect
 the full bbox (including empty gaps between wings) plus its full-width north
