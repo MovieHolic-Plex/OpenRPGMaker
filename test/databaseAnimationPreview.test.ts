@@ -5,6 +5,8 @@ import { createBlankProject } from "@/project/defaults";
 import type { BattleAnimationFrame, BattleAnimationRecord, BattleAnimationSheet } from "@/project/types";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
+vi.mock("@/editor/panels/chromaKey", () => ({ applyAutoChromaKeyToBackground: vi.fn() }));
+
 type FakeBrowserGlobals = {
   readonly Image: typeof globalThis.Image | undefined;
   readonly window: typeof globalThis.window | undefined;
@@ -19,9 +21,10 @@ beforeEach(() => {
   vi.useFakeTimers();
   Object.defineProperty(globalThis, "Image", {
     configurable: true,
-    value: class {
-      addEventListener(): void {}
-      set src(_value: string) {}
+    value: class extends EventTarget {
+      readonly naturalWidth = 1920;
+      readonly naturalHeight = 1920;
+      set src(_value: string) { this.dispatchEvent(new Event("load")); }
     },
   });
   Object.defineProperty(globalThis, "window", {
@@ -42,7 +45,7 @@ afterEach(() => {
 });
 
 describe("database animation preview", () => {
-  it("renders a playback button that toggles to stop while frames are playing", () => {
+  it("autoplays visible frames in a loop and restores the editing frame on stop", () => {
     const project = createBlankProject();
     const animation = project.database.battleAnimations[0] as BattleAnimationRecord;
     const sheet: BattleAnimationSheet = animation.sheet ?? { frameWidth: 96, frameHeight: 96, columns: 5 };
@@ -65,14 +68,16 @@ describe("database animation preview", () => {
     if (!(panel instanceof FakeElement)) throw new Error("Expected fake animation panel");
 
     const play = findByTestId(panel, "db-animation-play");
-    expect(play?.textContent).toBe("▶ 재생");
-
-    play?.click();
-    expect(play?.textContent).toBe("■ 정지");
+    expect(play?.attrs["aria-pressed"]).toBe("true");
+    expect(findByTestId(panel, "db-animation-stage-target")?.style.backgroundPosition).toBe("-0px -0px");
+    vi.advanceTimersByTime(67);
+    expect(findByTestId(panel, "db-animation-stage-target")?.style.backgroundPosition).toBe("-96px -0px");
     expect(play?.attrs["aria-pressed"]).toBe("true");
 
-    vi.advanceTimersByTime(140);
-    expect(play?.textContent).toBe("▶ 재생");
+    vi.advanceTimersByTime(67);
+    expect(play?.attrs["aria-pressed"]).toBe("true");
+    expect(findByTestId(panel, "db-animation-stage-target")?.style.backgroundPosition).toBe("-0px -0px");
+    play?.click();
     expect(play?.attrs["aria-pressed"]).toBe("false");
   });
 

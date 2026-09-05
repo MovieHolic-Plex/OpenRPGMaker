@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **47쪽 / 1556KB / 약 443,220 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **47쪽 / 1560KB / 약 444,401 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -17,7 +17,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 |---|---|---|---|---|
 | `openwiki/editor-ai-panel.md` | 260KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 475 | ~75,546 |
 | `openwiki/editor-ai-tools.md` | 88KB | 69KB ⚠상한 초과 — 절을 더 쪼개라 | 243 | ~25,441 |
-| `openwiki/editor-database.md` | 194KB | 54KB ⚠상한 초과 — 절을 더 쪼개라 | 920 | ~55,917 |
+| `openwiki/editor-database.md` | 199KB | 54KB ⚠상한 초과 — 절을 더 쪼개라 | 938 | ~57,098 |
 | `openwiki/editor-event-authoring.md` | 118KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 564 | ~34,433 |
 | `openwiki/editor-pre-edit-routing.md` | 69KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 197 | ~19,760 |
 | `openwiki/runtime-battle.md` | 118KB | 31KB | 358 | ~33,888 |
@@ -33,7 +33,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 |---|---|---|
 | `openwiki/editor-ai-panel.md` | 25 | 240, 241, 242, 243, 244, 245, 257, 266 |
 | `openwiki/editor-ai-tools.md` | 6 | 95, 96, 100, 102, 104, 166 |
-| `openwiki/editor-database.md` | 7 | 177, 181, 182, 183, 192, 217, 220 |
+| `openwiki/editor-database.md` | 7 | 188, 192, 193, 194, 203, 228, 231 |
 | `openwiki/editor-event-authoring.md` | 16 | 151, 152, 155, 160, 161, 162, 163, 164 |
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
 | `openwiki/editor-event-commands.md` | 6 | 26, 39, 40, 42, 45, 46 |
@@ -54,7 +54,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/community-site.md` | 1 | `project.json` |
 | `openwiki/editor-ai-panel.md` | 33 | `.omo/evidence/assistant-glass-fold/measure.json`, `.omo/evidence/autonomous-ai-rpg/task-8-autonomous-ai-rpg.md`, `15-assistant-readable.css`, `17-assistant-modern-shell.css`, `after/measure.json`, `aiCommandBar.ts`, `aiGlassPanelWidth.test.ts`, `aiSkillDrawer.ts`, `aiVolatileController.ts`, `assistant-skills.css`, `chat-dock-switch.spec.ts`, `chatDock.ts`, `intentClarify.ts`, `newmain-after-measure.json`, `output/evidence/assistant-ui-modern/newmain-before-measure.json`, `project.json`, `regionIntentRouter.ts`, `scripts/qa/assistant-side-seam-hittest.mjs`, `src/ai/intentClarify.ts`, `src/ai/plannerSkip.ts`, `src/ai/skills.ts`, `src/editor/chatDock.ts`, `test/aiGlassFold.test.ts`, `test/aiGlassPanelWidth.test.ts`, `test/chatDock.test.ts`, `test/e2e/_assistant-glass-shots.spec.ts`, `test/e2e/_glass-dock-report.spec.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/plannerSkip.test.ts`, `test/regionIntentExposure.test.ts`, `test/turnGuideSharedRules.test.ts`, `test/volumeContractSession.test.ts`, `test/workspaceBarAssistantDock.test.ts` |
 | `openwiki/editor-ai-tools.md` | 4 | `aiCommandBar.ts`, `aiProposalModal.ts`, `test/intentClarify.test.ts`, `test/volumeContractSession.test.ts` |
-| `openwiki/editor-database.md` | 7 | `enemy-art-NNN.png`, `form-hierarchy-modern.css`, `output/evidence/system-studio/system-studio-backed-settings-1586x992.png`, `reports/generated-effect-showcase-2026-08-24.html`, `scripts/generate-default-item-icons.mts`, `scripts/lib/effectSheet/paintersMonster.mjs`, `scripts/lib/effectSheet/paintersUtility.mjs` |
+| `openwiki/editor-database.md` | 8 | `enemy-art-NNN.png`, `form-hierarchy-modern.css`, `output/evidence/battle-animation-ux/p1-implementation.md`, `output/evidence/system-studio/system-studio-backed-settings-1586x992.png`, `reports/generated-effect-showcase-2026-08-24.html`, `scripts/generate-default-item-icons.mts`, `scripts/lib/effectSheet/paintersMonster.mjs`, `scripts/lib/effectSheet/paintersUtility.mjs` |
 | `openwiki/editor-event-authoring.md` | 6 | `audit-before.md`, `new-editor/REPORT.html`, `output/evidence/event-ai-assist-ux/960x900-compact.png`, `scripts/generated/toolCatalog.json`, `verify-shots/page-preview-probe/02-preview-open.png`, `verify-shots/runtime-qa/cheolsu-keyboard-fixed/SUMMARY.md` |
 | `openwiki/editor-event-commands.md` | 7 | `07-identifiable-previews.css`, `choicesDialog.ts`, `command-preview.css`, `event-editor.part-2/3.css`, `messageCommandDialogs.ts`, `messageDialogControls.ts`, `textCommandDialog.ts` |
 | `openwiki/editor-pre-edit-routing.md` | 8 | `authoringTestGate.ts`, `dbConnectionAdvancedSettings.ts`, `figma-editor/10-map-tree.css`, `rm2k3.part-1.css`, `shell/editor-responsive-expert.css`, `src/editor/tools/worldTools.ts`, `surface.json`, `worldTools.ts` |
@@ -256,53 +256,55 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L221` 보물상자는 노출된 수면을 거부한다 (2026-09-05)
 - `L228` 모험 저작 완료와 재시도 (2026-09-05)
 
-### `openwiki/editor-database.md` — 194KB · 920줄 · ~55,917 토큰 · 통째읽기 잘림 · 깨진 줄 7
+### `openwiki/editor-database.md` — 199KB · 938줄 · ~57,098 토큰 · 통째읽기 잘림 · 깨진 줄 7
 
 - `L3` 아이템·장비 저작 신뢰성 (2026-09-05)
 - `L14` 몬스터 작업실 — 미리보기 · 행동 · 속성 (2026-09-05)
-- `L39` 몬스터 그룹 저작 신뢰성 (2026-09-05)
-- `L54` Database Studio chrome (2026-08-24)
-  - `L66` Actor data-table slice (2026-08-25)
-- `L76` 세계관 그룹 — 이 세계 · 설정집 (2026-09-03)
-  - `L84` 세계관 입력 보존·설정집 저장 계약 (2026-09-05)
-- `L96` '생성 규칙' 탭 — AI 마을 생성의 물·숲·길 (2026-08-30)
-- `L104` P2 낚시·채집·박물관 저작 표면 (2026-08-25)
-- `L109` 계절·날씨 / 동물·축사 저작 표면 (2026-08-25)
-- `L119` 생활 기술·제작 저작 표면 (2026-08-24)
-- `L136` Database Editor
-- `L225` Beginner-centric adversarial review (2026-08)
-- `L229` DB UI modernization (2026-08)
-- `L265` P2 spatial authoring (2026-08-25)
-- `L273` 세계 그룹 — 타일셋이 중간 카테고리 (2026-09-01)
-- `L287` 오토타일 설정 — 9칸/11칸/커스텀 카드 (2026-09-01)
-- `L308` 공간 종류와 구조물은 다른 면이다 (2026-09-01)
-- `L327` 맵 → 타일셋 → 개념 꾸러미 (2026-09-02 시작, Phase 4 졸업)
-- `L353` '구조물' 탭 — 두 출처 앨범 + 방 종류 문법 (2026-08-28)
-- `L365` '구조물' 편집기와 파일 입출력 (2026-08-29)
-- `L384` 삭제 가드는 묶음 조건(all/any/not) 안까지 본다 (2026-08-29 실측 결함 수정)
-- `L404` '진영' 탭과 몬스터 소속 진영 (2026-08-29)
-  - `L419` 몬스터 폼의 소속 진영 (`databaseEnemyRecordView.ts`)
-  - `L427` 다 만들어 놓고 못 쓰던 이유 — `[편집]` 이 화면 밖 67px 에 있었다 (2026-08-29 실측)
-  - `L439` 구조물 어휘 — 역할·레이어·테마·증분 축·칸 힌트 (2026-08-30)
-  - `L490` 편집기를 맵 타일 편집기 수준으로 (2026-08-30 실측)
-- `L512` 스킬 탭 `연출` 카드 = 살아 있는 애니메이션 스테이지 (2026-08-30)
-- `L523` 데이터베이스 30탭 UI/UX 계약 (2026-08-30 실측)
-  - `L538` 헤더는 설명문이 아니라 아이콘 칩 한 줄이다
-  - `L616` 숫자 입력은 스테퍼를 먼저 붙이고 그다음 스피너를 지운다
-  - `L630` 줄상자 바닥은 1.35 다 (1.25 는 큰 한글 제목에서 깎인다)
-  - `L673` 이미지 실패는 빈 상자가 아니라 라벨 붙은 자리표시자다
-- `L682` '마을' 탭 — 마을 하네스 값을 사람이 저작한다 (2026-08-30)
-  - `L698` 붓을 고르면 화면이 흔들렸다 — 재부모가 스크롤·포커스를 지운다 (2026-08-30 실측)
-- `L741` '마을' 탭 — 숫자칸을 그림으로 바꾼다 (2026-08-31)
-  - `L757` AI로 몬스터·아이템 생성 (2026-08-30)
-  - `L778` AI 어시스턴트 바 — 진행·결과가 바 안에 보인다 (2026-09-03)
-  - `L812` AI로 몬스터·아이템 생성 — 대화상자 재작성 (2026-09-03)
-- `L828` Database Studio v2 — 30탭 셸·폼 문법 통일 (2026-09-03)
-- `L894` 직업 승급 트리 · 스킬 트리 (2026-09-05)
-- `L900` 미회수 편집 후속 통합 (2026-09-05)
-- `L904` 마을 설계서 (2026-09-05)
-- `L909` 구조물 증분 메타 정정 (2026-09-05)
-- `L917` 개념 회수 UI 직접 렌더 QA (2026-09-05)
+  - `L39` Monster action input trust (Phase 1, 2026-09-05)
+- `L48` 몬스터 그룹 저작 신뢰성 (2026-09-05)
+- `L63` Database Studio chrome (2026-08-24)
+  - `L77` Actor data-table slice (2026-08-25)
+- `L87` 세계관 그룹 — 이 세계 · 설정집 (2026-09-03)
+  - `L95` 세계관 입력 보존·설정집 저장 계약 (2026-09-05)
+- `L107` '생성 규칙' 탭 — AI 마을 생성의 물·숲·길 (2026-08-30)
+- `L115` P2 낚시·채집·박물관 저작 표면 (2026-08-25)
+- `L120` 계절·날씨 / 동물·축사 저작 표면 (2026-08-25)
+- `L130` 생활 기술·제작 저작 표면 (2026-08-24)
+- `L147` Database Editor
+- `L236` Beginner-centric adversarial review (2026-08)
+- `L240` DB UI modernization (2026-08)
+- `L276` P2 spatial authoring (2026-08-25)
+- `L284` 세계 그룹 — 타일셋이 중간 카테고리 (2026-09-01)
+- `L298` 오토타일 설정 — 9칸/11칸/커스텀 카드 (2026-09-01)
+- `L319` 공간 종류와 구조물은 다른 면이다 (2026-09-01)
+- `L338` 맵 → 타일셋 → 개념 꾸러미 (2026-09-02 시작, Phase 4 졸업)
+- `L364` '구조물' 탭 — 두 출처 앨범 + 방 종류 문법 (2026-08-28)
+- `L376` '구조물' 편집기와 파일 입출력 (2026-08-29)
+- `L395` 삭제 가드는 묶음 조건(all/any/not) 안까지 본다 (2026-08-29 실측 결함 수정)
+- `L415` '진영' 탭과 몬스터 소속 진영 (2026-08-29)
+  - `L430` 몬스터 폼의 소속 진영 (`databaseEnemyRecordView.ts`)
+  - `L438` 다 만들어 놓고 못 쓰던 이유 — `[편집]` 이 화면 밖 67px 에 있었다 (2026-08-29 실측)
+  - `L450` 구조물 어휘 — 역할·레이어·테마·증분 축·칸 힌트 (2026-08-30)
+  - `L501` 편집기를 맵 타일 편집기 수준으로 (2026-08-30 실측)
+- `L523` Battle-animation editor autoplay (2026-09-05)
+- `L530` 스킬 탭 `연출` 카드 = 살아 있는 애니메이션 스테이지 (2026-08-30)
+- `L541` 데이터베이스 30탭 UI/UX 계약 (2026-08-30 실측)
+  - `L556` 헤더는 설명문이 아니라 아이콘 칩 한 줄이다
+  - `L634` 숫자 입력은 스테퍼를 먼저 붙이고 그다음 스피너를 지운다
+  - `L648` 줄상자 바닥은 1.35 다 (1.25 는 큰 한글 제목에서 깎인다)
+  - `L691` 이미지 실패는 빈 상자가 아니라 라벨 붙은 자리표시자다
+- `L700` '마을' 탭 — 마을 하네스 값을 사람이 저작한다 (2026-08-30)
+  - `L716` 붓을 고르면 화면이 흔들렸다 — 재부모가 스크롤·포커스를 지운다 (2026-08-30 실측)
+- `L759` '마을' 탭 — 숫자칸을 그림으로 바꾼다 (2026-08-31)
+  - `L775` AI로 몬스터·아이템 생성 (2026-08-30)
+  - `L796` AI 어시스턴트 바 — 진행·결과가 바 안에 보인다 (2026-09-03)
+  - `L830` AI로 몬스터·아이템 생성 — 대화상자 재작성 (2026-09-03)
+- `L846` Database Studio v2 — 30탭 셸·폼 문법 통일 (2026-09-03)
+- `L912` 직업 승급 트리 · 스킬 트리 (2026-09-05)
+- `L918` 미회수 편집 후속 통합 (2026-09-05)
+- `L922` 마을 설계서 (2026-09-05)
+- `L927` 구조물 증분 메타 정정 (2026-09-05)
+- `L935` 개념 회수 UI 직접 렌더 QA (2026-09-05)
 
 ### `openwiki/editor-event-authoring.md` — 118KB · 564줄 · ~34,433 토큰 · 통째읽기 잘림 · 깨진 줄 16
 

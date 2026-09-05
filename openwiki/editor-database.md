@@ -36,6 +36,15 @@
 - 검증: `test/enemyBattleTest.test.ts`(실제 엔진 HP 반영·원본 격리),
   `test/e2e/database-enemy-studio.spec.ts`(1680/1280/1024 hit-test·키보드·선택·연결·시험 복귀),
   기존 EnemySpecies/Faction/ResourceSlot, RecordPartialRender, PanelGridClasses 계약.
+### Monster action input trust (Phase 1, 2026-09-05)
+
+- `databaseEnemyRecordView.ts` binds the skill field to the selected original-array action index, not priority-sorted display position. Click, focus, Enter/Space, double-click and context-menu entry select that target; selection preserves row nodes and exposes `aria-pressed`. Row rendering and dialog entry read current store actions. Skill changes merge only `skillId` into the live selected action through `updateDatabaseRecord`.
+- Add/duplicate select the new row; toolbar deletion selects the preceding original row (or the first remaining row). With no actions, skill/duplicate/delete are disabled and Add remains available. An obsolete skill picker cannot recreate a removed action list.
+- Inline skill focus restoration is local to the same enemy/action and only repairs focus lost when its owned picker is detached. Keyboard, pointer or external focus navigation cancels it permanently; pending frames cannot steal focus from another control, dialog or record. Do not use the unconditional shared restoration helper for this picker.
+- `databaseEnemyActionDialog.ts` keeps inactive turn inputs disabled while retaining their raw drafts, including empty values. OK requires integer priority 1–100 and, only for turn conditions, integer start/interval 1–999, matching `databaseEnemyTroopRecordModel.ts`. Invalid active fields show associated inline errors, focus the first invalid input, and prevent mutation/closure; Cancel discards the draft.
+- Basic/skill switching preserves mounted radio/select nodes and the selected skill draft; basic confirmation still writes the empty-skill sentinel. Named ON/OFF controls disable unused selectors/pickers, retain the chosen switch across use toggles, and open the picker at its current selection. Confirmation retains the existing action replacement/normalization path; runtime, shared controls and CSS are unchanged.
+- Focused contracts: `test/databaseEnemySelectionTrust.test.ts` and `test/databaseEnemyActionDialogTrust.test.ts`; browser workflows: `test/e2e/database-enemy-selection-trust.spec.ts` and `test/e2e/database-enemy-action-trust.spec.ts`.
+
 ## 몬스터 그룹 저작 신뢰성 (2026-09-05)
 
 대상은 몬스터·몬스터 종족·적 그룹·진영 네 탭이다.
@@ -52,6 +61,8 @@
 
 
 ## Database Studio chrome (2026-08-24)
+
+Party record tabs use the final section of `studio-v2.css`: actors, classes, skills, items, and equipment have an inset list, an indigo active rail, stronger headers and names, and neutral summaries. The local `--db-record-pane-bg` override is consumed by the existing theme declaration. The compact actor inspector uses a zero minimum grid track so it remains inside the fixed modal at 1024px.
 
 - The Database modal is a **neutral cool studio**, not the editor cream shell and not RM2k3. Tokens live in `src/styles/database/studio-theme.css` (`--db-studio-*`), scoped under `.database-modal-backdrop` and imported last among database CSS in `src/styles/index.css`. Do not put studio hex in `tokens.css`.
 - Nav is a **labeled 220px rail** (group headers visible) that collapses to 56px only below 800px. Tab `textContent` / `db-tab-*` testids stay. Each tab button's first child is an inline `svg.db-tab-icon` from `databaseTabIcons.ts`; CSS owns only its size and `color`.
@@ -509,11 +520,18 @@ leaf 조건에서 멈추고 `default: return false` 했다:
 - 새 testid: `-tool-rect/-ellipse/-fill/-pick`, `-undo`, `-redo`, `-zoom-in/-out/-fit/-value`, `-grid-toggle`, `-search`, `-category-<id>`. 기존 `-tile-<n>` · `-tool-paint/erase/part` · `-layer-*` 는 유지해 테스트 변경이 없다.
 - 실측(1440×900): 창 1424×884 · 배경 불투명 · 창밖 삐짐 0 · 캔버스 720×640(5x) · 팔레트 300×596/480칸 · 드래그 한 번에 6칸 · 검색 "문" 9칸 · 분류 "집" 75칸 · 팔레트 스크롤 300 유지. 1366×768 / 1280×720 에서도 도구·분류칩·보기 줄이 한 줄에 들어간다.
 
+## Battle-animation editor autoplay (2026-09-05)
+
+- `databaseAnimationRecordView.ts` owns playback intent in a WeakMap keyed by the retained record host passed from `databaseRecordViews.ts` (standalone forms default to owning themselves), not project data. This survives the real modal's 450ms interaction-grace flush and replacement form. Entry/new record starts looping at frame zero after a usable graphic loads; reduced motion starts stopped with manual Play available. The existing editor 67ms cadence, `assetScale` geometry and runtime contracts are unchanged.
+- Stop restores the selected editing frame using current store cells. Frame row/previous/next selection stops playback before the form rerender; field rerenders keep that stopped intent. Empty/missing/failed graphics and frames without usable visible cells disable Play and render no substitute effect.
+- `databaseAnimationPreview.ts` disposes the prior binding on rerender, ignores obsolete image completions, pauses genuinely cached detached tabs, and resumes only their retained playback intent. `database.ts` explicitly calls `disposeAnimationPreviewsIn` on cache eviction, project invalidation, force-fresh rendering and whole-panel replacement; detached DOM ancestry alone is not proof of cache membership. Record replacement and modal close release intervals and the DOM lifecycle observer. No mutation, schema change or remote persistence is added by preview playback.
+- Regression coverage: `test/databaseAnimationPreview.test.ts`, `test/databaseAnimationAutoplay.test.ts`, `test/databaseAnimationModalIntent.test.ts`, `test/databaseAnimationCacheLifecycle.test.ts`, existing frame-select/stale-cell/sheet-scale tests, and the autoplay/modal-intent browser specs. The modal regressions subscribe before the actual parent refresh and deliver its grace timer plus scheduled frame; the old 402ms-only advance missed that path. Cache tests count observers across repeated real invalidations, cached-tab resume and close. Evidence and RED/GREEN output: `output/evidence/battle-animation-ux/p1-implementation.md`.
+
 ## 스킬 탭 `연출` 카드 = 살아 있는 애니메이션 스테이지 (2026-08-30)
 
 - 스킬을 고르면 `연출` 카드가 시트 첫 칸을 자른 정지 이미지 1장이 아니라 **자동 반복 재생 스테이지**다. `renderSkillAnimationStage`(`src/editor/panels/databaseSkillAnimationStage.ts`)가 `db-skill-animation-preview` 안에 인셋 스테이지 웰 `db-skill-animation-stage`(픽셀 그리드 + 중심 십자선), 셀 레이어 `db-skill-animation-cells`(`data-frame-index`), 프레임 카운터 `db-skill-animation-frame-counter`(`3 / 12`), 시트 메타 칩 `db-skill-animation-sheet-meta`(`96×96 · 5열 · 15fps`), 재생/정지 토글 `db-skill-animation-toggle`(`aria-pressed`)을 렌더한다. 기존 `db-skill-animation-preview` testid 와 `.db-skill-animation-preview-frame` 클래스는 그대로 유지된다.
 - 프레임 전진의 정본은 `src/editor/panels/eventEditor/showAnimationPlayback.ts` **하나**다. `playShowAnimation(stage, layer, source, { loop, onFrame, onStop })` 이 15fps(`SHOW_ANIMATION_FRAME_MS = 1000/15`)·시트 좌표·크로마키 규약을 소유하고 이벤트 편집기 표시면과 스킬 스테이지가 그걸 공유한다. `playShowAnimationOnce` 는 그 위의 얇은 래퍼다.
-- **스킬·이벤트 표시면에 새 `setInterval` 재생 루프를 만들면 결함이다.** 애니메이션 탭의 수동 1회 재생(`databaseAnimationPreview.ts`)은 그보다 먼저 있던 별개 화면이고, 재생기를 여기서 더 늘리지 않는다.
+- **스킬·이벤트 표시면에 새 `setInterval` 재생 루프를 만들면 결함이다.** 애니메이션 탭의 기존 재생기(`databaseAnimationPreview.ts`)는 별개 편집 화면이며, 2026-09-05부터 아래 폼 수명 계약으로 자동 반복한다. 스킬·이벤트 재생기를 여기서 더 늘리지 않는다.
 - 타이머 수명은 하드룰이다. `renderPreviewPanel` 은 표시면을 `replaceChildren` 하기 **전에** 이전 핸들의 `stop()` 을 부르고, `renderSkillRecordForm` 은 폼 단위 `WeakMap`(`activeAnimationStages`)으로 레코드 폼이 교체될 때 이전 스테이지를 죽인다. 픽커 변경도 `bindAnimationPreviewRefresh` → `renderPreviewPanel` 로 같은 경로를 탄다.
 - 왜 이렇게 엄한가: 분리된 DOM 에 인터벌이 살아남는 것은 이미 한 번 출하된 실측 결함이다(커밋 `2ed96476`, 미부착 유예가 무한이어서 버려진 표시면에 프레임을 계속 그렸다. 2틱 상한으로 고쳤다). `test/e2e/zz-qa-dbmodal-attacks.spec.ts:168` 은 모달을 10회 열고 닫은 뒤 stray timer 0 을 단정한다.
 - 정지 상태도 1급이다. `animationId` 가 없으면 기존 `(애니메이션 없음)` 빈 상태를 유지하고, 프레임이 1장이면 첫 프레임 정지 렌더 + 토글 `disabled`, `prefers-reduced-motion: reduce`(또는 `window.setInterval` 이 없는 헤드리스 호스트)면 자동재생하지 않고 첫 프레임에 서서 토글로만 재생한다.
