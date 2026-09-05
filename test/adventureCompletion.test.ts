@@ -110,6 +110,25 @@ import { defaultAiConfig } from "@/ai/llmClient";
 import { fixedDeclarer } from "./intentFixture";
 
 describe("completion and dialogue evidence", () => {
+  it("cannot claim completion after creating equipment without its icon", async () => {
+    let call = 0;
+    const steps = [
+      { name: "get_database_records", args: { collection: "equipment", limit: 1 } },
+      { name: "upsert_equipment", args: { equipment: { id: "test_iconless_sword", name: "아이콘 없는 검", slot: "weapon" } } },
+    ];
+    const session = new AssistantSession(createBlankProject(), {
+      config: { ...defaultAiConfig(), agentMode: "chat", model: "test", liteModel: "test", apiKey: "test", maxToolCalls: 10 },
+      declareIntent: fixedDeclarer({ mode: "modify", adventure: required }),
+      chat: async () => {
+        const step = steps[call++];
+        return step ? { message: { role: "assistant", content: null, tool_calls: [{ id: `call_${call}`, type: "function", function: { name: step.name, arguments: JSON.stringify(step.args) } }] }, finishReason: "tool_calls" }
+          : { message: { role: "assistant", content: "모두 완료" }, finishReason: "stop" };
+      },
+    });
+    const result = await session.sendUserMessage("모험 장비를 구성해줘");
+    expect(result.assistantText).toContain("equipment test_iconless_sword에 그림이 없습니다");
+    expect(result.assistantText).not.toContain("모두 완료");
+  });
   it("normalizes NPC command lines into the runtime dialogue body and rejects missing low-level bodies", () => {
     const ctx = { project: createBlankProject() };
     const result = runTool(ctx, "place_npc", { mapId: ctx.project.startMapId, x: 8, y: 8, name: "안내인", pages: [{ commands: [{ kind: "text", lines: ["던전 입구", "함께 가자"] }] }] });
