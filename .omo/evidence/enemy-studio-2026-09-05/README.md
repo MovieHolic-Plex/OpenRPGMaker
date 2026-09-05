@@ -30,3 +30,21 @@ VITEST_MAX_FORKS=4 VITEST_MIN_FORKS=1 VITEST_MAX_THREADS=4 VITEST_MIN_THREADS=1 
 The interaction test covers live values and names, pause state across deferred
 refreshes, keyboard tabs, per-record selection, reference navigation, and returning
 from a disposable test battle without modifying the authored project.
+
+## Verification results
+
+- `typecheck:app`: passed.
+- Focused unit tests above: 7 files, 41 tests passed.
+- Browser viewport matrix: passed for all three sizes.
+- Browser interaction flow: passed separately after fixing preview pause state
+  across deferred refreshes. This includes opening the real battle test shell,
+  Escape/focus restoration, and unchanged project data.
+- `gates -- --only css`: passed (budget and dependency graph).
+- `gates -- --only surface`: six failing event-editor snapshot assertions and
+  the live-class `.selected` / `bottom` property check. The same command in a
+  separately adopted worktree at original commit `3ab8ebb5` reproduced all six
+  failure names and identical AssertionError summaries, plus the same CSS
+  property failure. These are existing failures; no baseline was changed.
+
+The full gate run is still pending. The focused results above do not imply that
+all repository tests pass.
