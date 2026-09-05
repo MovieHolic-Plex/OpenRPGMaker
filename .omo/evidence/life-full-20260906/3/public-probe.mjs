@@ -67,6 +67,20 @@ try {
   assert.equal(validation.isLifeRecoveryState(JSON.parse(storage.getItem("recovery-boundary-input"))), false);
   assert.equal(storage.getItem("recovery-boundary-input"), raw);
   console.log(JSON.stringify({ surface: "actual public recovery source/receipt/boundary imports (not UI or future save wiring)", inputSpent: 3, canceledInputs: 3, paidOnce: 3, overflowUnchanged: true, unknownPreserved: true, nextSequence: session.lifeRecovery.nextSequence, malformedRawUnchanged: true }));
+  const legacy = startSession(project, 4);
+  legacy.inventory = {};
+  const original = { instanceId: "old", makerId: "maker", status: "processing", startedAtMinute: 10, readyAtMinute: 40 };
+  legacy.makerInstances = { old: original };
+  project.system.makers = [{ id: "maker", inputs: [{ itemId: "raw", count: 7 }], outputs: [{ itemId: "product", count: 2 }], durationMinutes: 30 }];
+  assert.equal(recovery.moveLifeRecoverySource(project, legacy, { sourceKind: "makerInstances", sourceId: "old", reason: "canceled", absoluteMinute: 39 }).ok, true);
+  assert.deepEqual(legacy.makerInstances, {});
+  assert.deepEqual(legacy.lifeRecovery.claims["recovery:1"].items, []);
+  assert.deepEqual(legacy.lifeRecovery.claims["recovery:1"].unresolved.record, original);
+  const preserved = structuredClone(legacy);
+  assert.deepEqual(recovery.collectLifeRecoveryClaim(project, legacy, "recovery:1"), { ok: false, reason: "unresolved" });
+  assert.deepEqual(legacy, preserved);
+  assert.deepEqual(legacy.inventory, {});
+  console.log(JSON.stringify({ legacyEditedInputs: 7, inferredRefund: 0, originalPreserved: true, receiptRejected: true }));
 } finally {
   storage.clear();
   await window.happyDOM.close();

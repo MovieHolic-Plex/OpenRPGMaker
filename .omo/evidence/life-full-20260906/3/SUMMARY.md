@@ -1,6 +1,6 @@
 # Task3: recoverable life transaction evidence
 
-Task3 is implemented and verified as one local atomic increment on `agent/life-full-p2`.
+Task3 is implemented on `agent/life-full-p2`: initial increment `5388715a` plus the focused legacy-input correction recorded at the end of this SUMMARY. The correction receipts and DoneClaim supersede the initial verification counts for the current tree.
 This replaces the stale blocked producer SUMMARY; it does not rewrite the previous independent VERIFY.
 The parent must obtain fresh task3 verification before starting task4.
 
@@ -185,5 +185,81 @@ work and do not qualify this task's verified primitive contracts.
   "pushPrMerge": false,
   "teardown": "complete",
   "independentTask3Verification": "parent must refresh stale VERIFY before downstream execution"
+}
+```
+
+
+## Parent-requested legacy input evidence correction
+
+The parent correctly identified a gap in `5388715a`: unfinished legacy jobs with no frozen contract
+used current-definition inputs as a refund. An edited definition is not evidence of what was spent.
+The actual regression returned a payable raw7 claim where unresolved original evidence was required.
+
+- Base commit: `5388715a6d560d8329e6375d752ab55e93f928bd`; tree: `4099fcbe3e661deb33a11c9c9d01f72e20331453`.
+- Verified product/probe/wiki tree before adding correction receipts: `3cb34288724f7b372ed8a125e5d20bfc6276d42a`.
+- Commit subject: `fix(life): retain unproven legacy maker inputs`.
+- Commit lookup: `git log -1 --format=%H -- src/project/lifeRecovery.ts`.
+- Gate2 was reread as confirmed/blockers0 and ancestor check exited0 before edits. Entry worktree was clean.
+
+The production fix changes only the unfinished-input selection: use `job.contract?.inputs ?? []`,
+never the fallback current definition's inputs. The existing unresolved-claim path then preserves the
+entire original job, provides no payable items and rejects receipt without modifying the session.
+Frozen new-job input refunds, completed output selection and normal legacy collection are unchanged.
+No save reconciliation, refund guessing or future UI was added.
+
+The regression constructs a legacy processing job, changes current inputs to7, cancels at39 before
+deadline40, and asserts original preservation, empty payable items, no inventory change and refused
+receipt. Existing characterization still proves legacy normal output collection. The real public
+probe repeats this scenario using actual recovery/session modules and the actual atomic inventory API.
+
+Fresh receipts were written DIRECTLY under this task3 directory as commands ran, including RED before
+production editing. `legacy-input-receipts.json` records exact commands, exits, raw output and hashes.
+The directory already contained the initial committed task3 implementation/evidence, not just blocked
+SUMMARY/VERIFY; the previous independent VERIFY is intentionally left untouched for the parent to refresh.
+
+| Receipt | Actual result |
+| --- | --- |
+| `legacy-input-red.log` | Required two-file suite: 1 failed /61 passed, exit1; incorrect payable raw7 shown in assertion diff. |
+| `legacy-input-green.log` | Same exact suite: 2 files /62 passed /0 failed /0 skipped, exit0 in one final execution. |
+| `legacy-input-diagnostics.log` | Direct TypeScript language-service diagnostics on all five task3 TS files: 0, exit0. Public probe LSP: no diagnostics. |
+| `legacy-input-public.log` | Real public imports: edited inputs7, inferred refund0, original preserved, receipt rejected; all previous probe assertions also pass, exit0. |
+| `legacy-input-typecheck.log` | `npm run typecheck:app` after diagnostics, exit0. |
+| `legacy-input-wiki.log` | Wiki verification and regenerated-index check both exit0. |
+
+This is a V2 single-domain behavioral correction: one production expression plus comment, direct
+regression and executable public scenario. The eight-file broader suite and full build above remain
+historical evidence for5388715a, not newly rerun claims for this correction. No timing wait, test skip,
+weakened assertion or dependency change was added. Normal staging of the ignored evidence path initially
+returned1; explicit force-add of that named evidence file resolved staging without changing any product
+content or ignore rule. Staged diff check passes.
+
+Adversarial keys: cancel/resume and stale edited definition are the regression; malformed inputs remain
+covered by the62-test suite; no flaky timing dependencies; clean entry and only named paths staged;
+RED/initial-build/current-validation distinctions prevent misleading output. Probe storage/window/Vite
+server close in finally, no HTTP listener or remote write. No temporary probe or process remains pending.
+Full51 coverage remains unchanged/not-run; parent plan/Boulder and independent VERIFY are untouched.
+
+### Correction DoneClaim
+
+```json
+{
+  "taskId": "st_01a073c7",
+  "taskNumber": 3,
+  "status": "done",
+  "done": true,
+  "correction": "unfinished legacy maker inputs are unproven; preserve original unresolved",
+  "baseCommit": "5388715a6d560d8329e6375d752ab55e93f928bd",
+  "verifiedProductProbeWikiTree": "3cb34288724f7b372ed8a125e5d20bfc6276d42a",
+  "commitSubject": "fix(life): retain unproven legacy maker inputs",
+  "commitLookup": "git log -1 --format=%H -- src/project/lifeRecovery.ts",
+  "red": { "exit": 1, "failed": 1, "passed": 61 },
+  "green": { "exit": 0, "files": 2, "passed": 62, "failed": 0, "skipped": 0 },
+  "diagnostics": 0,
+  "publicProbeExit": 0,
+  "typecheckExit": 0,
+  "fullBuildThisCorrection": "not-run; prior full build belongs to initial commit",
+  "full51coverage": "not-run; unchanged",
+  "remoteWrites": 0,
+  "teardown": "complete"
 }
 ```

@@ -115,7 +115,8 @@ export function moveLifeRecoverySource(project: Project, session: PlaySession, s
       const contract = job.contract ?? project.system.makers?.find((maker) => maker.id === job.makerId);
       if (contract) {
         if (source.absoluteMinute === undefined || !Number.isSafeInteger(source.absoluteMinute) || source.absoluteMinute < 0 || job.readyAtMinute === undefined || !Number.isSafeInteger(job.readyAtMinute)) return { ok: false, reason: "invalid-source" };
-        items = job.status === "ready" || source.absoluteMinute >= job.readyAtMinute ? contract.outputs : contract.inputs;
+        // Current legacy inputs do not prove what this job spent before a definition edit.
+        items = job.status === "ready" || source.absoluteMinute >= job.readyAtMinute ? contract.outputs : job.contract?.inputs ?? [];
       }
       break;
     }

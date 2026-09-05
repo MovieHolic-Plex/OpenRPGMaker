@@ -270,6 +270,20 @@ describe("maker contract ownership and resume", () => {
     expect(session.lifeRecovery?.claims["recovery:1"]?.items).toEqual(absoluteMinute < 40 ? [{ itemId: "raw", count: 3 }] : [{ itemId: "product", count: 2 }]);
     expect(session.inventory).toEqual({});
   });
+  it("preserves legacy cancellation unresolved when current inputs changed after the job began", () => {
+    const { project, session } = fixture();
+    const original = { instanceId: "old", makerId: "maker", status: "processing", startedAtMinute: 10, readyAtMinute: 40 } as const;
+    session.inventory = {};
+    session.makerInstances = { old: original };
+    project.system.makers = [{ id: "maker", inputs: [{ itemId: "raw", count: 7 }], outputs: [{ itemId: "product", count: 2 }], durationMinutes: 30 }];
+    expect(moveLifeRecoverySource(project, session, { sourceKind: "makerInstances", sourceId: "old", reason: "canceled", absoluteMinute: 39 })).toEqual({ ok: true, claimIds: ["recovery:1"] });
+    expect(session.makerInstances).toEqual({});
+    expect(session.lifeRecovery?.claims["recovery:1"]).toMatchObject({ items: [], unresolved: { record: original } });
+    expect(session.inventory).toEqual({});
+    const beforeReceipt = structuredClone(session);
+    expect(collectLifeRecoveryClaim(project, session, "recovery:1")).toEqual({ ok: false, reason: "unresolved" });
+    expect(session).toEqual(beforeReceipt);
+  });
   it("retains unproven legacy jobs verbatim without guessing a refund", () => {
     const { project, session } = fixture();
     const old = { instanceId: "old", makerId: "deleted", status: "processing", startedAtMinute: 10, readyAtMinute: 40 } as const;

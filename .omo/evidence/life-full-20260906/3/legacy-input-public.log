@@ -1,0 +1,6 @@
+{"surface":"actual public Vite SSR maker/save imports + local Storage","frozenPromise":2,"editedPromise":9,"resumedPayout":2,"liveJobUnchanged":true}
+{"surface":"actual public recovery source/receipt/boundary imports (not UI or future save wiring)","inputSpent":3,"canceledInputs":3,"paidOnce":3,"overflowUnchanged":true,"unknownPreserved":true,"nextSequence":3,"malformedRawUnchanged":true}
+{"legacyEditedInputs":7,"inferredRefund":0,"originalPreserved":true,"receiptRejected":true}
+{"teardown":"storage cleared, window and middleware-only Vite server closed","httpListener":false,"remoteWrites":0}
+
+EXIT=0
