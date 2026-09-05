@@ -12,6 +12,7 @@ import { renderFarmSpatialTab } from "@/editor/panels/databaseFarmSpatialView";
 import { renderFactionsTab } from "@/editor/panels/databaseFactionView";
 import { renderLifeCollectionsTab } from "@/editor/panels/databaseLifeCollectionsView";
 import { renderRecordTab } from "@/editor/panels/databaseRecordViews";
+import { disposeAnimationPreviewsIn } from "@/editor/panels/databaseAnimationPreview";
 import {
   resumeSkillAnimationStagesIn,
   stopSkillAnimationStagesIn,
@@ -345,6 +346,8 @@ export function databaseTabLabel(tab: DatabaseTab): string {
 }
 
 export function renderDatabasePanel(container: HTMLElement): void {
+  const cache = tabRenderCaches.get(container);
+  if (cache) for (const tab of cache.views.keys()) evictDatabaseTabView(cache, tab);
   clearChildren(container);
   tabRenderCaches.delete(container);
   resetWorldGenTabViewState();
@@ -780,7 +783,8 @@ function renderActiveTab(
 ): void {
   const tab = activeTab;
   let cache = tabRenderCacheFor(container);
-  const cached = options.forceFresh ? undefined : cache.views.get(tab);
+  if (options.forceFresh) evictDatabaseTabView(cache, tab);
+  const cached = cache.views.get(tab);
   if (cached) {
     stopSkillAnimationStagesIn(body);
     body.replaceChildren(...cached);
@@ -794,7 +798,7 @@ function renderActiveTab(
     // A debounced callback from a tab that has since been detached must not repaint
     // whichever tab is currently visible. Its cache entry is simply made cold.
     if (activeTab !== tab) {
-      tabRenderCacheFor(container).views.delete(tab);
+      evictDatabaseTabView(tabRenderCacheFor(container), tab);
       return;
     }
     renderActiveTab(body, container, { forceFresh: true });
@@ -916,10 +920,18 @@ function renderActiveTab(
   cache.views.set(tab, Array.from(body.childNodes));
 }
 
+function evictDatabaseTabView(cache: DatabaseTabRenderCache, tab: DatabaseTab): void {
+  for (const node of cache.views.get(tab) ?? []) {
+    if (node instanceof HTMLElement) disposeAnimationPreviewsIn(node);
+  }
+  cache.views.delete(tab);
+}
+
 function tabRenderCacheFor(container: HTMLElement): DatabaseTabRenderCache {
   const project = store.getCurrent();
   const current = tabRenderCaches.get(container);
   if (current?.project === project) return current;
+  if (current) for (const tab of current.views.keys()) evictDatabaseTabView(current, tab);
   const next: DatabaseTabRenderCache = { project, views: new Map() };
   tabRenderCaches.set(container, next);
   return next;

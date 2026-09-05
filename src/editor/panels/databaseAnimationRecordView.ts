@@ -1,4 +1,4 @@
-import { renderAnimationPatternStripPanel, renderAnimationStagePanel } from "@/editor/panels/databaseAnimationPreview";
+import { createAnimationPlaybackState, renderAnimationPatternStripPanel, renderAnimationStagePanel, type AnimationPlaybackState } from "@/editor/panels/databaseAnimationPreview";
 import { battleStudioHeading } from "@/editor/panels/databaseBattleStudio";
 import { emptyToUndefined, field, numberField, selectLiteral } from "@/editor/panels/databaseControls";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
@@ -26,7 +26,12 @@ const DEFAULT_FRAME: BattleAnimationFrame = { cells: [{ ...DEFAULT_CELL }] };
 const SCOPE_OPTIONS = ["singleTarget", "allTargets", "screen"] as const satisfies readonly BattleAnimationScope[];
 const POSITION_OPTIONS = ["head", "center", "feet", "screen"] as const satisfies readonly BattleAnimationPosition[];
 
+// The modal's retained workspace owns intent across replacement forms. Standalone
+// forms own their own intent; another record or a new modal starts fresh.
+const playbackByOwner = new WeakMap<HTMLElement, { readonly animationId: string; readonly playback: AnimationPlaybackState }>();
+
 type AnimationEditorContext = {
+  readonly playback: AnimationPlaybackState;
   readonly animation: BattleAnimationRecord;
   readonly sheet: BattleAnimationSheet;
   readonly frames: readonly BattleAnimationFrame[];
@@ -42,7 +47,15 @@ type AnimationEditorContext = {
   readonly currentSelectedFrameCells: () => BattleAnimationCell[];
 };
 
-export function renderBattleAnimationRecordForm(form: HTMLElement, animation: BattleAnimationRecord): HTMLElement {
+export function renderBattleAnimationRecordForm(
+  form: HTMLElement,
+  animation: BattleAnimationRecord,
+  playbackOwner: HTMLElement = form,
+): HTMLElement {
+  const previous = playbackByOwner.get(playbackOwner);
+  previous?.playback.dispose?.();
+  const playback = previous?.animationId === animation.id ? previous.playback : createAnimationPlaybackState();
+  playbackByOwner.set(playbackOwner, { animationId: animation.id, playback });
   const project = store.getCurrent();
   const sheet = animation.sheet ?? DEFAULT_SHEET;
   const frames = normalizedFrames(animation.frames);
@@ -53,9 +66,10 @@ export function renderBattleAnimationRecordForm(form: HTMLElement, animation: Ba
   const rerender = () => {
     form.replaceChildren();
     const next = store.getCurrent().database.battleAnimations.find((entry) => entry.id === animation.id) ?? animation;
-    renderBattleAnimationRecordForm(form, next);
+    renderBattleAnimationRecordForm(form, next, playbackOwner);
   };
   const context: AnimationEditorContext = {
+    playback,
     animation,
     sheet,
     frames,
@@ -200,13 +214,13 @@ function frameListPanel(context: AnimationEditorContext): HTMLElement {
     text: "↑ 이전",
     attrs: { type: "button", ...disabledAttr(context.selectedFrameIndex <= 0) },
     dataset: { testid: "db-animation-frame-prev" },
-    on: { click: () => selectFrame(context.selectedFrameIndex - 1, context.rerender) },
+    on: { click: () => selectFrame(context.selectedFrameIndex - 1, context) },
   });
   const next = el("button", {
     text: "↓ 다음",
     attrs: { type: "button", ...disabledAttr(context.selectedFrameIndex >= context.frames.length - 1) },
     dataset: { testid: "db-animation-frame-next" },
-    on: { click: () => selectFrame(context.selectedFrameIndex + 1, context.rerender) },
+    on: { click: () => selectFrame(context.selectedFrameIndex + 1, context) },
   });
   const list = el("div", { class: "db-animation-frame-list", dataset: { testid: "db-animation-frame-list" } });
   context.frames.forEach((frame, index) => {
@@ -215,7 +229,7 @@ function frameListPanel(context: AnimationEditorContext): HTMLElement {
       text: `< ${index + 1}>`,
       attrs: { type: "button", title: `${frame.cells.length}개 셀` },
       dataset: { testid: `db-animation-frame-${index}` },
-      on: { click: () => selectFrame(index, context.rerender) },
+      on: { click: () => selectFrame(index, context) },
     });
     list.append(row);
   });
@@ -392,9 +406,10 @@ function timingTablePanel(context: AnimationEditorContext): HTMLElement {
 
 // 프레임 선택 — editorState에 저장하고 셀 인덱스 초기화한 뒤 폼을 다시 그린다.
 // 상태만 바꾸면 목록 .active / 셀 테이블이 이전 프레임에 남는다.
-function selectFrame(index: number, rerender: () => void): void {
+function selectFrame(index: number, context: AnimationEditorContext): void {
+  context.playback.playing = false;
   editorState.set({ selectedAnimationFrameIndex: Math.max(0, index), selectedAnimationCellIndex: 0 });
-  rerender();
+  context.rerender();
 }
 
 // 프레임 추가 — 마지막 프레임을 복제하거나 빈 프레임.
