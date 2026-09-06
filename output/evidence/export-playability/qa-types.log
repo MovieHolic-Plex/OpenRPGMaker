@@ -1,0 +1,3 @@
+
+> rpg-zzu@0.1.0 typecheck:export-qa
+> tsc -p scripts/tsconfig.json

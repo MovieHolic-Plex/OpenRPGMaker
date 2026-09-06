@@ -1,0 +1,12 @@
+{
+  "results": [
+    {
+      "kind": "harness",
+      "pass": false,
+      "error": "Error: 게임 내보내기 실패: The player deployment manifest is malformed. Rebuild and redeploy the player."
+    }
+  ],
+  "cleanup": [
+    "editor context, browser, and temporary downloads removed"
+  ]
+}

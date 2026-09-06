@@ -6,6 +6,12 @@ Map/event search, audio test, help modal, themed dungeons, resource manager, vil
 
 ## Other Editor Workflows
 
+### Game export delivery (2026-09-06)
+
+- Project menu web ZIP and standalone HTML exports use real production player builds even during ordinary Vite development. `scripts/lib/devPlayerBundles.ts`, registered by `vite.config.ts`, builds both player variants on the first export request; no manual `build:player` step is needed.
+- Builds run in production child processes, not inside the editor's development module environment. Concurrent requests share one build; relevant source/public changes invalidate it. Each server owns a temporary output directory under its cache and removes it on close.
+- `/export-player/` and `/standalone-player/` requests are handled before SPA fallback. Build failure or an absent file returns an error rather than editor HTML or stale output. The existing menu catches rejected exports before `downloadBlob`; required media failures are no longer an informational warning after a broken HTML download.
+- Browser acceptance must begin with these menu buttons and play the downloaded files outside the editor server. See `npm run qa:export` in `openwiki/testing.md`; normal Test Play is a separate adjacent-surface regression.
 
 ### Genre-neutral authoring launcher and journey (2026-08-24)
 

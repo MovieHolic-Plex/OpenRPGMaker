@@ -3,19 +3,31 @@ import { test } from "node:test";
 import { createHash } from "node:crypto";
 import { createServer } from "vite";
 import path from "node:path";
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
 
 // Real normal-dev configuration, not a static mount or an already-built dist.
-// The strict, explicit port and cache are owned by this test alone.
+// Each process owns an ephemeral port and cache; parallel worktrees cannot collide.
 test("normal dev delivers current, verifiable player bundles on a cold export", { timeout: 240_000 }, async (t) => {
-  process.env.DEV_SERVER_NO_TLS = "1";
-  process.env.VITE_CACHE_DIR = path.resolve(".vite-cache/export-delivery-16477");
-  const server = await createServer({
-    configLoader: "runner",
-    server: { host: "127.0.0.1", port: 16477, strictPort: true, open: false },
+  const previousTls = process.env.DEV_SERVER_NO_TLS;
+  const cacheDir = await mkdtemp(path.join(tmpdir(), "rpg-export-delivery-"));
+  let server;
+  t.after(async () => {
+    await server?.close();
+    await rm(cacheDir, { recursive: true, force: true });
+    if (previousTls === undefined) delete process.env.DEV_SERVER_NO_TLS;
+    else process.env.DEV_SERVER_NO_TLS = previousTls;
   });
-  t.after(() => server.close());
+  process.env.DEV_SERVER_NO_TLS = "1";
+  server = await createServer({
+    configLoader: "runner",
+    cacheDir,
+    server: { host: "127.0.0.1", port: 0, strictPort: true, open: false },
+  });
   await server.listen();
-  const get = (url) => fetch(`http://127.0.0.1:16477${url}`, { signal: AbortSignal.timeout(180_000) });
+  const address = server.httpServer.address();
+  assert.ok(address && typeof address !== "string");
+  const get = (url) => fetch(`http://127.0.0.1:${address.port}${url}`, { signal: AbortSignal.timeout(180_000) });
   const cases = [
     ["/export-player/sdk-manifest.json", "application/json"],
     ["/standalone-player/standalone.js", "javascript"],
