@@ -1,0 +1,145 @@
+{
+  "surface": "actual ProjectStore API via Vite SSR; deterministic HTTP boundary",
+  "steps": [
+    {
+      "mode": "matched",
+      "kind": "verified",
+      "isCurrent": true
+    },
+    {
+      "mode": "content",
+      "kind": "mismatch",
+      "reason": "content"
+    },
+    {
+      "mode": "target",
+      "kind": "mismatch",
+      "reason": "target"
+    },
+    {
+      "mode": "failed",
+      "kind": "failed"
+    },
+    {
+      "mode": "matched",
+      "kind": "verified",
+      "isCurrent": true
+    },
+    {
+      "mode": "local-edit-during-read",
+      "kind": "verified",
+      "isCurrent": false,
+      "title": "newer-surface-edit",
+      "dirty": true
+    }
+  ],
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/rest/v1/projects",
+      "projectId": null
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/v1/maps",
+      "projectId": "eq.p1-surface-fixture"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/v1/maps",
+      "projectId": null
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/v1/tilesets",
+      "projectId": "eq.p1-surface-fixture"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/v1/tilesets",
+      "projectId": null
+    },
+    {
+      "method": "POST",
+      "path": "/rest/v1/project_commits",
+      "projectId": null
+    },
+    {
+      "method": "POST",
+      "path": "/rest/v1/project_changes",
+      "projectId": null
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/projects",
+      "projectId": "eq.p1-surface-fixture"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/maps",
+      "projectId": "eq.p1-surface-fixture"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/projects",
+      "projectId": "eq.p1-surface-fixture"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/maps",
+      "projectId": "eq.p1-surface-fixture"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/projects",
+      "projectId": "eq.p1-surface-fixture"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/maps",
+      "projectId": "eq.p1-surface-fixture"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/projects",
+      "projectId": "eq.p1-surface-fixture"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/projects",
+      "projectId": "eq.p1-surface-fixture"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/maps",
+      "projectId": "eq.p1-surface-fixture"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/projects",
+      "projectId": "eq.p1-surface-fixture"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/maps",
+      "projectId": "eq.p1-surface-fixture"
+    }
+  ],
+  "cleanup": {
+    "viteClosed": true,
+    "transportRestored": true,
+    "autosaveCleared": true,
+    "activityTimersCleared": true,
+    "deferredSettled": true,
+    "remoteFixturesCreated": 0,
+    "listenerStarted": false
+  },
+  "receipt": {
+    "revisionId": "c1d503a1-f442-49bc-86a9-3f34552d95cf",
+    "projectId": "p1-surface-fixture",
+    "mutationGeneration": 1,
+    "contentIdentity": "dac30007d07d7b580bff02002d857b7fbae02371d7ca9d2a5af8d28e514a2ee3",
+    "sha256": "f7340bde371aaf12a5e246e7b152126b565c2c2cb2bd1836a9b1259abf741b3b"
+  },
+  "pass": true
+}
