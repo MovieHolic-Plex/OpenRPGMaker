@@ -4,6 +4,7 @@ import { normalizeArgsForSchema, validateArgs } from "@/editor/tools/jsonSchema"
 import { COMMAND_SCHEMA, CONDITION_SCHEMA, SIMPLE_PAGE_SCHEMA } from "@/editor/tools/schemaShapes";
 import { generateToolCatalogMarkdown } from "@/editor/tools/toolCatalog";
 import { runTool } from "@/editor/tools/toolRunner";
+import { getTool } from "@/editor/tools/toolRegistry";
 import type { JsonSchema, SimplePage, ToolContext } from "@/editor/tools/types";
 import { COMMAND_KINDS, CONDITION_KINDS } from "@/project/commandKindRegistry";
 import { createBlankProject } from "@/project/defaults";
@@ -49,6 +50,24 @@ describe("NPC model-visible command contract", () => {
     expect(COMMAND_SCHEMA.properties?.op?.enum).toEqual(["=", "+=", "-=", "*=", "/="]);
     expect(COMMAND_SCHEMA.properties?.value).toBeDefined();
     expect(CONDITION_SCHEMA.properties?.value).toBeDefined();
+  });
+
+  it("exposes the canonical monster grant fields used by the compiler", () => {
+    const command = { kind: "giveMonster", speciesId: "species_leafling", level: 5 } satisfies Command;
+    expect(COMMAND_SCHEMA.properties?.speciesId?.type).toBe("string");
+    expect(COMMAND_SCHEMA.properties?.level?.type).toBe("integer");
+    expect(schemaErrors(COMMAND_SCHEMA, command)).toEqual([]);
+    const pages = compileSimplePages("npc", "Guide", [{ commands: [command] }], graphic);
+    expect(pages[0]?.commands).toEqual([command]);
+    expect(() => validateCommandArray("commands", pages[0]?.commands)).not.toThrow();
+  });
+
+  it("exposes navigation and choice operands in scene-test steps", () => {
+    const step = getTool("run_scene_test")?.parameters.properties?.steps?.items;
+    expect(step?.properties?.dir?.enum).toEqual(["up", "down", "left", "right"]);
+    expect(step?.properties?.to?.required).toEqual(["x", "y"]);
+    expect(step?.properties?.ticks?.type).toBe("integer");
+    expect(step?.properties?.index?.type).toBe("integer");
   });
 
   it.each([

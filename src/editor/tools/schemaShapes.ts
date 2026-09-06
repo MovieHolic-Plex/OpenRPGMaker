@@ -56,6 +56,8 @@ export const COMMAND_SCHEMA: JsonSchema = {
     y: { type: "integer" },
     amount: { type: "integer" },
     itemId: { type: "string" },
+    speciesId: { type: "string", description: "giveMonster: 조회한 monsterSpecies ID" },
+    level: { type: "integer", description: "giveMonster: 지급할 몬스터의 레벨" },
     switchId: { type: "string" },
     variableId: { type: "string" },
     label: { type: "string" },

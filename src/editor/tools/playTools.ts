@@ -95,6 +95,10 @@ const runSceneTestTool: ToolDefinition = {
           type: "object",
           properties: {
             kind: { type: "string", description: "스텝 종류" },
+            dir: { type: "string", enum: ["up", "down", "left", "right"] },
+            to: COORD_SCHEMA,
+            ticks: { type: "integer" },
+            index: { type: "integer" },
             mapId: { type: "string" },
             x: { type: "integer" },
             y: { type: "integer" },
