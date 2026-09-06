@@ -1,5 +1,63 @@
 # Runtime Project Schema & Persistence
 
+## Project audio description overrides
+
+`Project.audioDescriptions` is an optional v4 field, defined in
+`src/project/types/base.ts` and `src/project/types/project.ts`:
+
+```ts
+audioDescriptions?: {
+  music?: Record<string, string>;
+  sound?: Record<string, string>;
+};
+```
+
+Keys are raw resource IDs, not `bgm:`/`se:` search IDs, filenames or URLs. A missing key
+inherits the catalog default; an own key with `""` explicitly clears it; another string
+is project-authored text. Reset removes only the override, pruning empty containers.
+An explicit value equal to today's default stays an override.
+
+`src/project/audioDescriptions.ts` is the catalog/DOM/store/player-independent authority.
+New writes trim surrounding whitespace and enforce 4,000 UTF-16 code units after trimming,
+preserving internal line breaks. `src/project/io/shape.ts` validates stored strings without
+rewriting them, rejects malformed partitions/values and overlong strings, and accepts field
+absence. Unknown IDs survive loading as metadata but don't become selectable resources.
+`src/project/io/serialize.ts` preserves raw dictionary keys even when they resemble a
+legacy field name.
+
+Defaults remain in immutable catalogs; overrides aren't duplicated in upload `meta`,
+profiles or browser-global localStorage. Existing projects need no default backfill,
+schema-version bump, new SQL table or live-project rewrite.
+
+### Concurrent persistence
+
+`applyAudioDescriptionDelta(base, local, latest)` starts from the latest stored descriptions
+and applies only kind/raw-ID states that changed locally relative to base. Different-key
+edits survive together; a changed local key wins a same-key conflict. Absence is reset,
+not clear. Unchanged local keys retain remote edits and remote resets.
+
+`src/project/supabaseProjectSync.ts` uses this delta for map-patch saves. A project-scoped
+description mutation doesn't force a full save: `src/project/store.ts` chooses the save API
+from the persisted baseline. After success, the store reconciles descriptions with
+`base=submitted`, `local=current`, `latest=saved`. This preserves typing during the request,
+adopts remote-only changes and avoids resending stale metadata on the next map save.
+It replaces only the necessary root/description state, keeps live maps and mutation-generation
+handling, and emits synchronization without counting a new authored edit.
+
+### Editor preservation and playable export
+
+Editor JSON, backups and `src/project/package.ts` packages preserve absent, empty, authored
+and orphan states. `src/project/webExport.ts` removes the entire field from the playable
+export clone before loading/validation, without changing the source project.
+`src/project/webExportAssets.ts` excludes the description subtree from usage traversal:
+neither a description key nor text equal to an upload ID keeps an unused upload alive.
+Real playback references still retain their assets and IDs.
+
+`test/audioDescriptions.test.ts`, `test/audioDescriptionPersistence.test.ts`,
+`test/audioDescriptionConcurrentPersistence.test.ts` and
+`test/audioDescriptionExport.test.ts` exercise these boundaries. Transport-mocked tests
+using real save/load/merge functions aren't evidence of a live Supabase write.
+
 ## New-project save/reload verification (2026-09-05)
 
 `store.loadNewRemoteProjectTransactionally` compares draft-free projects with `serializeForComparison`, not raw wire bytes. The comparison runs both sides through the project loader's normalization and recursively sorts object keys; arrays and authored non-default values remain significant. New blank/preset seeds contain the default `system.titleScreen.titleGraphic = { mode: "text", x: 32, y: 62 }`, which normalization omits, and the farm preset gains `system.timeSystem.forceSleep = false` on load. PostgreSQL JSONB also changes object-key order. These representation differences must not reject a successful save/reload. Wire serialization and SHA-256 persistence remain unchanged; actual mismatches still reject before adopting the new project or changing drafts, config, or URL. `test/transactionalNewRemoteProject.test.ts` exercises all five presets plus blank creation through real save/load functions with a JSONB-like transport, and rejects changed titles, map tiles, and array order.

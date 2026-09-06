@@ -1,3 +1,103 @@
+## Audio description verification
+
+These are reproducible verification requirements, not a claim that every gate has passed.
+Record commands, exit codes and evidence under `output/evidence/audio-descriptions/`;
+keep baseline failures and unverified visual review separate from feature results.
+No live project backfill, SQL migration, asset conversion or catalog regeneration is needed.
+
+Focused model, persistence, tool, UI, prompt and export gates:
+
+```sh
+npm test -- test/audioDescriptions.test.ts test/audioDescriptionPersistence.test.ts test/audioDescriptionConcurrentPersistence.test.ts test/audioResourceCatalog.test.ts
+npm test -- test/audioDescriptionTools.test.ts test/audioDescriptionDiff.test.ts test/audioDescriptionToolStore.test.ts test/audioDescriptionToolExposure.test.ts test/audioResourceToolPagination.test.ts
+npm test -- test/audioDescriptionEditor.test.ts test/audioDescriptionLifecycle.test.ts test/audioDescriptionPickerSurfaces.test.ts test/audioDescriptionCommandSurfaces.test.ts test/audioDescriptionResourceLifecycle.test.ts test/audioResourceSearchContract.test.ts
+npm test -- test/audioDescriptionPrompt.test.ts test/audioDescriptionPromptTransport.test.ts test/audioDescriptionSessionPrompt.test.ts
+npm test -- test/audioDescriptionExport.test.ts test/projectPackage.test.ts test/webExportUsagePruning.test.ts test/cc0AudioPlayback.test.ts test/playerRuntimeAudioIds.test.ts test/runtimeQaAudioContract.test.ts
+npm run build
+```
+
+Assert machine-consumed fields, raw IDs, source values, truncation, input sentinels and
+state changes, not exact explanatory prose. Persistence coverage must include deferred
+save responses, repeated map saves, same/different-key conflicts, clear/reset, and edits
+made after submission. Mock only transport when asserting real serialization/load/merge
+behavior; label that evidence as mocked transport rather than live Supabase persistence.
+
+### Real editor surfaces
+
+```sh
+npx playwright test --config playwright.audio.config.ts
+```
+
+`playwright.audio.config.ts` scopes Firefox, zero retries and an isolated Vite cache to
+`test/e2e/audio-descriptions.spec.ts` and `test/e2e/audio-description-search.spec.ts`.
+It defaults to port 19847 and `.omo/audio-e2e-vite-cache`; `DEV_SERVER_PORT` and
+`VITE_CACHE_DIR` can override those values. A reused server must use the same isolated
+cache/setup. This local Firefox choice addresses Chromium module requests failing with
+host `ERR_NETWORK_CHANGED`; it doesn't change global browser policy.
+
+`test/e2e/audioDescriptionHarness.ts` waits for DOMContentLoaded, the real toolbar and
+the loaded store, rejects remote persistence, then installs a normal blank project through
+the real store. Readiness comes from actual state, not page-load timing or fixed sleeps.
+Subscribe before triggering asynchronous edits/imports/playback, then await their exact
+signal with a bounded timeout.
+
+At 1024x768 and 1440x900, verify save/reopen/search, clear/reset, modal undo/redo, dirty
+cancellation, real WAV import/edit/delete and project-import isolation. Also exercise live
+picker refresh, removed-ID confirmation blocking, listener cleanup, project-switch close,
+audio test, normal/M2 event forms and actual registered AI tool parity.
+Capture screenshots/traces with selected IDs and worktree/port information. Capturing an
+image isn't visual-review approval; keyboard/focus and layout inspection remain separate.
+Don't claim Lighthouse approval from this scoped suite.
+
+### Exported-player playback and dependency evidence
+
+`scripts/qa/prepare-audio-descriptions.mts` uses
+`test/fixtures/audioDescriptions.ts` and the real `prepareWebExport()` boundary.
+It checks source immutability and removed metadata, then writes a new fixture path with
+exclusive-create semantics. Use a fresh evidence directory for each run:
+
+```sh
+EVIDENCE=output/evidence/audio-descriptions/08-export
+mkdir -p "$EVIDENCE"
+RUN="$(mktemp -d "$EVIDENCE/run-XXXXXX")"
+CACHE="$(mktemp -d /tmp/oprn-audio-qa-cache-XXXXXX)"
+trap 'rm -rf -- "$CACHE"' EXIT
+bun scripts/qa/prepare-audio-descriptions.mts "$RUN/project.json"
+VITE_CACHE_DIR="$CACHE" npm run qa:runtime -- --scenario audio-descriptions --browser firefox --project "$RUN/project.json" --out "$RUN/runtime"
+AUDIO_QA_BROWSER=firefox AUDIO_QA_PROJECT="$PWD/$RUN/project.json" AUDIO_QA_FAILURE_OUT="$PWD/$RUN/runtime-failure" VITE_CACHE_DIR="$CACHE" node --test test/runtimeQaAudioFailure.test.mjs
+node scripts/qa/check-player-audio-dependencies.mjs "$RUN/player-dependencies.json"
+```
+
+The fixture preparer and dependency checker refuse to overwrite their output files.
+`scripts/runtime-qa.mjs` runs the dedicated `player.html` surface, not editor play mode.
+`scripts/qa/runtime/audio-descriptions.scenario.mjs` starts starter BGM
+`cc0-bgm-rtp-fld-003` through title input, then triggers local SE `cc0-sound-ui-confirm`
+through an interaction. The commands above select Firefox for this host; the runtime CLI
+defaults to Chromium. Its optional `--browser firefox` and the failure test's
+`AUDIO_QA_BROWSER=firefox` are separate from the editor Playwright configuration.
+
+`scripts/lib/runtimeQaAudio.mjs` installs native `playing`/`error` listeners before the
+action. Evidence requires a trusted event from the matching engine-owned, same-origin audio
+element, valid ready/paused/ended state, expected loop/mute state, the engine-requested ID
+and an engine snapshot. It doesn't replace `Audio`, `play()` or engine methods. A requested-ID
+log alone isn't playback evidence. `test/runtimeQaAudioFailure.test.mjs` aborts the real SE
+request and requires failed playback evidence while BGM succeeds.
+
+This proves native playback start, not human listening, full-track playback or label accuracy.
+Inspect the runtime `SUMMARY.md` and machine-readable audio evidence, including failures.
+`test/runtimeQaAudioContract.test.ts` covers the report contract.
+
+`scripts/qa/check-player-audio-dependencies.mjs` performs a production player build with
+`write: false` and records modules with positive rendered length. It rejects
+`src/assets/audioResourceCatalog.ts`, `bgmCatalog.ts` and `seCatalog.ts`, while requiring
+`src/assets/bgmCatalogRuntime.ts` and `seCatalogRuntime.ts`. This is rendered-bundle evidence,
+not a source-grep claim. Keep prompt descriptions in `src/ai/eventAudioPrompt.ts`, separate
+from shared event eligibility and player dependencies.
+
+Close owned browsers/servers and remove only owned temporary caches after verification.
+After applying documentation, the integrating lead runs `npm run openwiki:index`, then
+`npm run openwiki:index -- --check` and `npm run openwiki:verify`. Don't hand-edit INDEX.md.
+
 ## Mac onboarding Phase 1 contracts (2026-09-06)
 
 `node --test test/macLauncher.test.mjs test/setupLocal.test.mjs` (also

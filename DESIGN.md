@@ -532,10 +532,15 @@ The float assistant is **one glass instrument**, `div.ai-deck` inside the transp
   outside text controls. The existing modal stack owns Escape, including repeated
   Escape after cancellation. Dirty dialogs trap focus and return to the editor;
   final close restores the attached opener. Source and user text are text nodes.
-- Verification debt: this contract is supplied in a read-only patch bundle, not
-  visually approved. The implementing lead owns fresh 1024x768 / 1440x900 captures,
-  keyboard/playback checks and independent visual review. No accessibility debt
-  or visual deviation is accepted by this document.
+- Verification requires fresh 1024x768 / 1440x900 captures, keyboard/focus and
+  dirty-draft checks, native preview playback, and independent visual review.
+  Use real state-based readiness, not fixed sleeps or retry-based acceptance.
+  The scoped `playwright.audio.config.ts` uses Firefox, zero retries and an
+  isolated Vite cache for host Chromium `ERR_NETWORK_CHANGED` failures.
+  Captures and automated checks don't imply visual-review or Lighthouse approval.
+  Exported-player native playback and metadata dependency checks remain separate
+  requirements in `openwiki/testing.md`. No accessibility debt or visual deviation
+  is accepted by this document.
 
 ### Play presentation
 

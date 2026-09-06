@@ -198,17 +198,43 @@ the `RULES` table in `build-se-labels.py`, then re-run the last two scripts.
 ## How authors reach the sounds
 
 - **Resource picker (`kind: "sound"`)** lists the catalog first, then the old single CC0 tone, then
-  EasyRPG RTP. Labels are `title — category (s)`. Options carry `searchTerms` (tags + category +
-  base name) so "결정", "동전", or "포효" all hit.
+  EasyRPG RTP, registered generated resources, project profiles and uploads. Search includes
+  names, raw IDs, independent tags and the effective description. The selected sound displays
+  its description and source.
 - **Event `playAudio` form** consumes that same `listDatabaseResourceOptions()` result instead of
   maintaining a second audio list. Its inline select therefore exposes all 635 CC0 sounds in the
   same order, accepts the same scene/action tags (for example "구매"), shows the filtered count,
   and keeps generated/uploaded sound resources reachable. The command palette's separate
   **BGM 재생** and **SE 재생** entries must preserve the selected channel when the edit form opens.
-- **Preview playback** in the picker calls the same `playAudioCommand()` the runtime uses — there is
-  no separate editor preview path, so if it plays in the dialog it plays in the game.
+- **Preview playback** in the picker uses the existing audio playback path. Editor preview
+  success isn't evidence that an exported player has started playback; use the dedicated
+  runtime scenario described in `openwiki/testing.md`.
 - **`searchResources("se", query)`** exposes the catalog to AI tools (`list_resources`), catalog
   before RTP.
+
+## Project sound descriptions
+
+`src/assets/audioResourceCatalog.ts` derives SE defaults from existing title, category,
+duration and tags, with `descriptionSource: "metadata-derived"`. This preserves the limits
+of the underlying provisional labels. It doesn't add listening verification or infer new
+instruments, moods or acoustic properties. Don't hand-edit generated `src/assets/seCatalog.ts`
+or rerun asset pipelines just to author a project description.
+
+`Project.audioDescriptions.sound[rawId]` is the only project override store. A missing key
+inherits the derived default; `""` explicitly clears it and still has source `project`;
+reset removes the key. Uploads without trusted description data have an empty description
+and source `missing`. Neither upload `meta` nor `ResourceProfile` stores a duplicate override.
+Search uses the effective description while retaining independent tags.
+
+The shared catalog feeds the Resource Manager, sound picker, audio test dialog, normal/M2
+event forms, command previews, AI search and event prompt projection. BGM/BGS/ME/SE remain
+playback channels over `music`/`sound`, not new description partitions. See
+`openwiki/editor-workflows-misc.md` and `openwiki/editor-ai-tools.md` for those consumers.
+
+`test/audioResourceCatalog.test.ts`, `test/audioResourceSearchContract.test.ts` and
+`test/audioDescriptionCommandSurfaces.test.ts` cover source identity and consumer parity.
+Playback IDs, assets and codecs stay unchanged. Player code uses
+`src/assets/seCatalogRuntime.ts`, not the generated editor metadata catalog.
 
 ## Traps
 
