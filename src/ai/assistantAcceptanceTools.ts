@@ -1,19 +1,26 @@
 import type { OpenAiToolSchema } from "./llmClient";
-const target = { oneOf: [
-  { type: "object", properties: { mapId: { type: "string" } }, required: ["mapId"], additionalProperties: false },
-  { type: "object", properties: { newMapName: { type: "string" } }, required: ["newMapName"], additionalProperties: false },
-] };
+const target = {
+  type: "object", description: "Exactly one nonempty mapId (existing map) or newMapName (unique newly authored map); never both.",
+  properties: { mapId: { type: "string" }, newMapName: { type: "string" } }, additionalProperties: false,
+};
 const point = { type: "object", properties: { x: { type: "integer", minimum: 0 }, y: { type: "integer", minimum: 0 } }, required: ["x", "y"] };
 const region = { type: "object", properties: { ...point.properties, w: { type: "integer", minimum: 1 }, h: { type: "integer", minimum: 1 } }, required: ["x", "y", "w", "h"] };
 const count = { type: "integer", minimum: 0 };
-export const ACCEPTANCE_CRITERIA_SCHEMA = { type: "array", minItems: 1, items: { oneOf: [
-  { type: "object", properties: { kind: { const: "toolVerdict" }, tool: { type: "string" }, args: { type: "object" } }, required: ["kind", "tool", "args"], additionalProperties: false },
-  { type: "object", properties: { kind: { const: "mapDimensions" }, target, width: { type: "integer", minimum: 1 }, height: { type: "integer", minimum: 1 } }, required: ["kind", "target", "width", "height"], additionalProperties: false },
-  { type: "object", properties: { kind: { const: "mapCount" }, targets: { type: "array", minItems: 1, items: target }, count }, required: ["kind", "targets", "count"], additionalProperties: false },
-  { type: "object", properties: { kind: { const: "eventCount" }, target, region, count }, required: ["kind", "target", "count"], additionalProperties: false },
-  { type: "object", properties: { kind: { enum: ["targetChange", "preserve", "imageReviewed"] }, target, region }, required: ["kind", "target"], additionalProperties: false },
-  { type: "object", properties: { kind: { const: "reachability" }, target, from: point, to: { type: "array", minItems: 1, items: point } }, required: ["kind", "target", "from", "to"], additionalProperties: false },
-] } };
+// Strict providers cannot expose unions. parseAcceptanceCriteria enforces each kind's
+// required/allowed keys and exclusive target shape; only the provider shape is flattened.
+export const ACCEPTANCE_CRITERIA_SCHEMA = { type: "array", minItems: 1, items: {
+  type: "object",
+  description: "Send only fields for the chosen kind. Required: toolVerdict: tool,args; mapDimensions: target,width,height; mapCount: targets,count; eventCount: target,count; targetChange/preserve/imageReviewed: target; reachability: target,from,to. Optional region only for eventCount/targetChange/preserve/imageReviewed. Missing or mixed-kind fields fail closed.",
+  properties: {
+    kind: { type: "string", enum: ["toolVerdict", "mapDimensions", "mapCount", "eventCount", "targetChange", "preserve", "imageReviewed", "reachability"] },
+    tool: { type: "string" },
+    args: { type: "object", additionalProperties: true, description: "Full exact verification-tool arguments, with original keys and nested JSON values; use {} for no arguments. Not evidence or a verdict." },
+    target, targets: { type: "array", minItems: 1, items: target },
+    width: { type: "integer", minimum: 1 }, height: { type: "integer", minimum: 1 },
+    count, region, from: point, to: { type: "array", minItems: 1, items: point },
+  },
+  required: ["kind"], additionalProperties: false,
+} };
 export const ACCEPTANCE_SCHEMA = { type: "array", minItems: 1, items: {
   type: "object", properties: { id: { type: "string" }, title: { type: "string" }, required: { type: "boolean", default: true }, criteria: ACCEPTANCE_CRITERIA_SCHEMA }, required: ["id", "title", "criteria"], additionalProperties: false,
 } };
