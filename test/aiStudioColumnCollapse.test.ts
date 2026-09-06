@@ -1,0 +1,113 @@
+// @vitest-environment happy-dom
+import { readFileSync } from "node:fs";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { createStudioShell, type StudioShell } from "@/editor/panels/aiStudioShell";
+
+// Tool execution is unrelated to column layout; keep shell controls and CSS real.
+vi.mock("@/editor/tools/toolRegistry", () => ({ activeTools: () => [] }));
+
+const css = readFileSync("src/styles/database/tabs-b-assistant-panel/08-studio-mode-start-screen.css", "utf8");
+const layoutKey = "oprn:ai-studio-layout";
+let shell: StudioShell;
+let style: HTMLStyleElement;
+
+beforeEach(() => {
+  localStorage.clear();
+  style = document.createElement("style");
+  style.textContent = css;
+  document.head.append(style);
+});
+
+afterEach(() => {
+  shell?.dispose();
+  style.remove();
+  document.body.replaceChildren();
+  localStorage.clear();
+});
+
+function boot(sizes?: { scenes: number; chat: number; deck: number }): void {
+  if (sizes) localStorage.setItem(layoutKey, JSON.stringify(sizes));
+  shell = createStudioShell({ onExit: () => {}, onFontZoom: () => {} });
+  document.body.append(shell.root);
+}
+
+function control(id: string): HTMLElement {
+  const node = shell.root.querySelector<HTMLElement>(`[data-testid="ai-studio-${id}"]`);
+  if (!node) throw new Error(`Missing studio control: ${id}`);
+  return node;
+}
+
+function expectColumns(scenes: number, chat: number): void {
+  // Happy DOM resolves the real cascade and var() references, not pixel geometry.
+  // Assert both grid tracks and pane widths: a class-only test missed this defect.
+  expect(getComputedStyle(shell.root).gridTemplateColumns)
+    .toBe(`${scenes}px 8px minmax(0, 1fr) 8px ${chat}px`);
+  expect(getComputedStyle(shell.root.querySelector<HTMLElement>(".ai-studio-scenes")!).width).toBe(`${scenes}px`);
+  expect(getComputedStyle(control("chat")).width).toBe(`${chat}px`);
+}
+
+function key(column: "scenes" | "chat", value: string, shiftKey = false): void {
+  const event = new KeyboardEvent("keydown", { key: value, shiftKey, cancelable: true });
+  control(`split-${column}`).dispatchEvent(event);
+  expect(event.defaultPrevented).toBe(true);
+}
+
+describe("studio column collapse layout", () => {
+  it("reclaims both default column tracks and restores them independently", () => {
+    boot();
+    expectColumns(252, 400);
+    control("scenes-collapse").click();
+    expectColumns(52, 400);
+    expect(getComputedStyle(control("split-scenes")).display).toBe("none");
+    control("chat-collapse").click();
+    expectColumns(52, 52);
+    expect(getComputedStyle(control("split-chat")).display).toBe("none");
+    control("scenes-collapse").click();
+    expectColumns(252, 52);
+    control("chat-collapse").click();
+    expectColumns(252, 400);
+    expect(getComputedStyle(control("split-scenes")).display).not.toBe("none");
+    expect(getComputedStyle(control("split-chat")).display).not.toBe("none");
+    expect(localStorage.getItem(layoutKey)).toBeNull();
+  });
+
+  it("preserves saved expanded sizes through collapse and resizing after restore", () => {
+    const saved = { scenes: 316, chat: 464, deck: 300 };
+    boot(saved);
+    expectColumns(316, 464);
+    control("scenes-collapse").click();
+    control("chat-collapse").click();
+    expectColumns(52, 52);
+    expect(JSON.parse(localStorage.getItem(layoutKey)!)).toEqual(saved);
+    control("scenes-collapse").click();
+    control("chat-collapse").click();
+    expectColumns(316, 464);
+
+    key("scenes", "ArrowRight");
+    key("chat", "ArrowLeft", true);
+    expectColumns(332, 400);
+    expect(JSON.parse(localStorage.getItem(layoutKey)!)).toEqual({ scenes: 332, chat: 400, deck: 300 });
+    // The right handle grows leftwards; the left handle grows rightwards.
+    for (const [column, endX] of [["scenes", 132], ["chat", 68]] as const) {
+      control(`split-${column}`).dispatchEvent(new PointerEvent("pointerdown", { button: 0, clientX: 100 }));
+      document.dispatchEvent(new PointerEvent("pointermove", { clientX: endX }));
+      document.dispatchEvent(new PointerEvent("pointerup"));
+    }
+    expectColumns(364, 432);
+    expect(JSON.parse(localStorage.getItem(layoutKey)!)).toEqual({ scenes: 364, chat: 432, deck: 300 });
+    control("scenes-collapse").click();
+    control("chat-collapse").click();
+    expectColumns(52, 52);
+    control("scenes-collapse").click();
+    control("chat-collapse").click();
+    expectColumns(364, 432);
+
+    key("scenes", "Home");
+    key("chat", "End");
+    expectColumns(180, 640);
+    control("split-scenes").dispatchEvent(new MouseEvent("dblclick"));
+    control("split-chat").dispatchEvent(new MouseEvent("dblclick"));
+    expectColumns(252, 400);
+    expect(JSON.parse(localStorage.getItem(layoutKey)!)).toEqual({ scenes: 252, chat: 400, deck: 300 });
+  });
+});
