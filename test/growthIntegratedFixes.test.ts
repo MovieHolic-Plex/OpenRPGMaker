@@ -103,6 +103,36 @@ it.each([
   expect(session.actorVitals[actor.id]?.hp).toBe(beforeHp + 10);
 });
 
+it('R2 keeps authored initial levels authoritative without party or session-state seeds', () => {
+  const { project, actor, session } = fixture();
+  const troop = project.database.troops[0];
+  if (!troop) throw new Error('troop missing');
+  project.system.battleFlow = 'strict';
+  actor.parameterCurves.maxHp = Array.from({ length: 99 }, (_, i) => 100 + i);
+  const earnedExp = totalExpForLevel(actor.expCurve, 3);
+  for (const enemy of project.database.enemies) enemy.rewards.exp = earnedExp;
+  troop.battleEventPages = [{
+    id: 'default-growth', name: 'default-growth', span: 'battle',
+    conditions: [{ kind: 'actorCommand', actorId: actor.id, commandId: 'defend' }],
+    commands: [{ kind: 'm2Command', commandId: 'm2-098-change-enemy-hp', fields: { target: 'all', operation: 'remove', value: 999999 } }],
+  }];
+  const runtime = createBattleRuntime({ project, troopId: troop.id, canEscape: true, canLose: true, rng: () => 0.5 });
+  const initial = runtime.snapshot();
+  expect(initial.actors[0]?.level).toBe(3);
+  expect(session.actorLevels[actor.id]).toBe(3);
+  runtime.performActorCommand({ kind: 'defend' });
+  const snapshot = runtime.snapshot();
+  expect(snapshot.result).toBe('victory');
+  expect(snapshot.rewards.exp).toBe(earnedExp);
+  const applied = applyBattleRewardsToSession(session, { ...snapshot, result: 'victory' }, project);
+  expect(applied).toEqual([]);
+  expect(snapshot.rewards.levelUps).toEqual(applied);
+  expect(initial.eventState.actorLevels?.[actor.id]).toBe(3);
+  expect(snapshot.eventState.actorLevels?.[actor.id]).toBe(3);
+  expect(session.actorLevels[actor.id]).toBe(3);
+  expect(session.actorExperience[actor.id]).toBe(earnedExp);
+});
+
 it.each(['lowered rank', 'deleted node', 'invalid override', 'unchanged'] as const)('R3 restores effective growth maxima without healing after %s', change => {
   const { project, actor, session, trees } = fixture();
   const root = trees[0]?.nodes[0];

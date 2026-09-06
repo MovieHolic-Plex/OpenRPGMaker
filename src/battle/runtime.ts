@@ -312,7 +312,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       Object.entries(sessionState.actorSkillIds ?? options.party?.skillIds ?? {}).map(([id, skills]) => [id, [...skills]])
     ),
     actorExperience: { ...(sessionState.actorExperience ?? options.party?.experience ?? {}) },
-    actorLevels: { ...(sessionState.actorLevels ?? options.party?.levels ?? {}) },
+    actorLevels: {
+      // Default-state battles still have authored levels on their actor battlers.
+      // Seed the shared preview/write-back authority, never monster instance levels.
+      ...Object.fromEntries(usePartyMonsters ? [] : actors.map(actor => [actor.recordId, actor.level!])),
+      ...(sessionState.actorLevels ?? options.party?.levels ?? {}),
+    },
     actorBattleCommands: Object.fromEntries(
       Object.entries(
         sessionState.actorBattleCommands
