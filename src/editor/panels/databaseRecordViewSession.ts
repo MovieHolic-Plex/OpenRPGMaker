@@ -3,6 +3,7 @@ import type { DatabaseRecords } from "@/project/types";
 
 type RecordViewSessionState = {
   selectedIds: Partial<Record<DatabaseCollection, string>>;
+  revealIds: Partial<Record<DatabaseCollection, string>>;
   searchQueries: Partial<Record<DatabaseCollection, string>>;
   scrollTops: Partial<Record<DatabaseCollection, number>>;
   catalog: InventoryCatalogSession;
@@ -97,13 +98,25 @@ export function selectedRecordIdForSession(collection: DatabaseCollection): stri
   return state.selectedIds[collection];
 }
 
-export function setSelectedRecordId(collection: DatabaseCollection, id: string | undefined): void {
+export function setSelectedRecordId(collection: DatabaseCollection, id: string | undefined, options?: { reveal: boolean }): void {
   if (id) {
     if (collection === "items" || collection === "equipment") state.catalog.collection = collection;
     state.selectedIds[collection] = id;
+    if (options?.reveal) {
+      setSearchQueryForCollection(collection, "");
+      state.revealIds[collection] = id;
+    }
     return;
   }
   delete state.selectedIds[collection];
+  delete state.revealIds[collection];
+}
+
+/** One render request, not a persistent change to ordinary selection/scroll restoration. */
+export function takeRecordRevealForSession(collection: DatabaseCollection): string | undefined {
+  const id = state.revealIds[collection];
+  delete state.revealIds[collection];
+  return id;
 }
 
 export function searchQueryForCollection(collection: DatabaseCollection): string {
@@ -131,7 +144,7 @@ export function setListScrollTopForCollection(collection: DatabaseCollection, sc
 }
 
 function createRecordViewSessionState(): RecordViewSessionState {
-  return { searchQueries: {}, selectedIds: {}, scrollTops: {}, catalog: { collection: "items", filter: "all", subtype: "all", slotManagerOpen: false } };
+  return { searchQueries: {}, selectedIds: {}, revealIds: {}, scrollTops: {}, catalog: { collection: "items", filter: "all", subtype: "all", slotManagerOpen: false } };
 }
 
 export function viewModeForCollection(collection: DatabaseCollection): RecordViewMode {

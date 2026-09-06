@@ -494,7 +494,7 @@ function speciesNavActions(record: EnemyRecord, rerender: () => void): HTMLEleme
             if (!target) return;
             const speciesId = target.id;
             const panelRoot = databasePanelRootFrom(event.currentTarget as HTMLElement | null);
-            setSelectedMonsterSpeciesId(speciesId);
+            setSelectedMonsterSpeciesId(speciesId, { reveal: true });
             if (!panelRoot) {
               toast(`포획·성장 종족 탭에서 ${speciesId}를 선택하세요`, "ok");
               return;
@@ -594,7 +594,7 @@ async function createSpeciesFromEnemy(enemyId: string, panelRoot: HTMLElement | 
     { scope: "database", collection: "monsterSpecies", label: "몬스터에서 종족 생성 및 연결" }
   );
 
-  setSelectedMonsterSpeciesId(id);
+  setSelectedMonsterSpeciesId(id, { reveal: true });
   if (!panelRoot) {
     toast(`포획·성장 종족 탭에서 ${id}를 선택하세요`, "ok");
     return true;

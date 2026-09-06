@@ -6,7 +6,7 @@ import { TILE } from "@/project/defaults/constants";
 import type { GameMap } from "@/project/types";
 import type { Rng } from "@/util/rng";
 import { ToolError } from "../types";
-import { houseFootprintCells, HOUSE_WALL_LADDER, roofDeckLadderAttachment } from "../houseProtection";
+import { houseFootprintCells, protectedHouseCells, HOUSE_WALL_LADDER, roofDeckLadderAttachment } from "../houseProtection";
 import type { TerrainConstraintMasks } from "../villageTerrainPass";
 import type { VillageSketchSite } from "./sketch";
 import {
@@ -19,6 +19,7 @@ import {
   HOUSE_MARGIN,
   pointInMap,
   rectsOverlap,
+  ROAD_TILES,
   shuffled,
   type BuiltHouse,
   type HouseCandidate,
@@ -29,8 +30,8 @@ import {
   type VillageIntent,
 } from "./constants";
 
-export function houseBlockedCells(houses: readonly BuiltHouse[]): Set<string> {
-  const blocked = new Set<string>();
+export function houseBlockedCells(houses: readonly BuiltHouse[], map?: GameMap): Set<string> {
+  const blocked = new Set((map ? protectedHouseCells(map) : []).map(({ x, y }) => coordKey(x, y)));
   for (const house of houses) {
     for (const cell of houseFootprintCells(house.bbox)) blocked.add(`${cell.x},${cell.y}`);
   }
@@ -201,6 +202,7 @@ export function buildHouses(
   paintDoorTiles = false,
   sketchSites?: readonly VillageSketchSite[],
 ): BuiltHouse[] {
+  const existing = new Set(protectedHouseCells(map).map(({ x, y }) => y * map.width + x));
   const available = houseCandidates(area, plaza, target, intent.templateCatalog, intent.settlementLayout, boulevard, sketchSites);
   const candidates = [
     ...shuffled(available.filter((candidate) => candidate.sketch === true), rng),
@@ -218,6 +220,7 @@ export function buildHouses(
     for (const candidate of list) {
       if (houses.length >= target) break;
       if (!canPlaceHouse(area, plaza.rect, houses, candidate.bbox)) continue;
+      if (bboxTouchesBlocked(candidate.bbox, existing, map.width)) continue;
       // 물 마스크 셀과 겹치는 후보는 버린다 — 나중에 지형 패스가 집을 침수시키지 않도록.
       if (terrainBlocked && bboxTouchesBlocked(candidate.bbox, terrainBlocked, map.width)) continue;
       const forced = intent.houseKits[houses.length];
@@ -246,6 +249,12 @@ export function buildHouses(
       if (!result.ok || !result.doorAt) {
         warnings.push(`집 시공 실패(${candidate.template.name}): ${result.reason ?? "문 좌표 없음"}`);
         continue;
+      }
+      // Only a successfully stamped new house replaces leftover streets under ridge caps/wing gaps.
+      // Existing ownership is excluded above; finish before sealing, never repair a completed house.
+      for (const { x, y } of houseFootprintCells(candidate.bbox, map)) {
+        const index = y * map.width + x;
+        if (ROAD_TILES.has(map.lowerTiles[index] ?? TILE.EMPTY)) map.lowerTiles[index] = TILE.GRASS;
       }
       const doorAt = result.doorAt;
       const topIndex = (doorAt.y - 1) * map.width + doorAt.x;

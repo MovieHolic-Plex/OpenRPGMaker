@@ -15,6 +15,67 @@
 
 # Editor Database
 
+## System settings workspace (2026-09-06)
+
+`databaseSystemView.ts` and `databaseSystemStudio.ts` own all ten mounted System
+sections: overview, party, display, font, resources, startup, optin, time,
+typechart and title. This contract supersedes the older nine-section/card-grid
+notes below. The shared Database header/rail/footer/save path is unchanged.
+
+- Section navigation is a nonshrinking horizontal reel. `.db-system-section-nav`
+  belongs only to the container; buttons use `.db-system-section-button` and
+  `aria-current`. `.db-system-sections` owns vertical scrolling; matrix content
+  alone owns horizontal scrolling. `requestSystemSection` and host dataset state
+  remain the navigation boundary; switching sections never creates history.
+- Overview indexes every editing destination, with authored summaries and a
+  searchable no-results/reset state. Progress state links are subordinate. Title
+  summary and workbench both call `listTitleMenuOptions` with an explicit
+  autosave-available preview context: resume is configured, not always available
+  in a real runtime. Optional initial troop/day-end event are not warnings.
+- Party is four numbered face/selector rows. Clearing a slot compacts the roster
+  in existing order and synchronizes `session.partyActorIds`. Fonts keep registry
+  IDs/default omission and pair each selector with its role specimen. Display
+  keeps custom resolution, bounds and real partial-tile/small-map diagnostics.
+- System-local resource presentation wraps the shared picker, shows catalog
+  names and explicit clear/change controls, and preserves historic ID testids.
+  Legacy title-resource changes still update the title background; background
+  override changes do not delete `system.titleResourceId`.
+- Action combat remains a support-ended legacy feature. Enabling applies the
+  requested boolean after the stored config, and disabling preserves all details.
+  Supported RM and Gen1 rule choices are distinct from the battle skin selector.
+- Time disable now stores `enabled:false` rather than deleting its config. This
+  intentionally fixes the audit's silent 31-day-to-28-day reset. The normalizer
+  preserves disabled calendars; `resolveTimeSystem` returns undefined while off.
+  The summary reports the configured day, not a running clock.
+- Matrix clicks retain multiplier cycling and disabled diagonals. A visible
+  direct-entry action and F2 open the same labelled 0–4 entry group; Enter applies,
+  Escape cancels and restores focus. Clearing types still requires confirmation.
+- Title keeps display/menu/audio/effects and all layer/parallax/audio hooks.
+  Explicit `undefined` patches clear logo/sound keys; omitted patch keys preserve
+  them. Coordinates remain legacy 320×240 proportions at any authored resolution.
+  Nonstructural typing updates preview output without replacing the focused field;
+  native numeric typing commits on change while shared steppers commit immediately.
+- Each System numeric binding supplies a canonical-value reader. After a commit,
+  the same input and its steppers reflect domain normalization and default
+  omission; intermediate native digits remain untouched. Action/care fields reuse
+  their existing project normalizers rather than inventing editor-only bounds.
+- Title value refresh updates the live stage's ratio and proportional positions.
+  Effect refresh and Replay share a stage controller that replaces only the
+  stage, never Play/Stop/Replay controls. Replacing the whole preview during blur
+  would swallow the pending pointer click. Do not infer refresh kind from the
+  transient `document.activeElement`, which can be BODY during native change.
+- CSS ownership is consolidated in `system-studio.css`. Only conflicting System
+  declarations were removed from older sheets; outer modal/global controls and
+  runtime preview styling remain shared. Responsive rows use available pane width.
+- Regression coverage: `databaseSystemModern`, `databaseSystemSections`,
+  `databaseSystemView`, `databaseSystemStudio`, related font/resolution/title tests,
+  and `test/e2e/system-studio-visual.spec.ts`,
+  `system-interaction-regressions.spec.ts`, `system-round2-regressions.spec.ts`.
+  Evidence lives under
+  `.omo/evidence/system-modern/`; frozen BEFORE is never overwritten. Firefox
+  supplies real geometry/interactions/screenshots; no pixel visual approval or
+  Lighthouse score is inferred on this host. Final gates and review are supervisor-owned.
+
 ## Graphic 칩 사용자 교정 29건 (2026-09-05)
 
 - 정본은 `src/project/defaults/chipsetLabelCorrections.ts`. 사용자 교정 보고서
@@ -64,8 +125,18 @@ Actor initial-equipment pickers, build previews, equipment gallery/filter labels
 - 관계 표시는 `monsterSpeciesForEnemy`를 따른다. 명시적 연결, 미설정, 누락된 ID, 같은 ID 호환 연결을 구분하며 렌더링으로 저장값을 쓰지 않는다. `연결된 종족 열기`는 실제 연결을 연다.
 - 미연결은 `이 몬스터로 종족 만들기`, 연결됨은 `새 종족으로 연결 교체`다. 생성은 이름·외형·고정 능력치를 새 종족의 이름·외형·종족값으로 한 번 복사한다. 같은 레벨의 전투 수치가 같다는 뜻은 아니다. 교체 확인은 기존 종족을 보존하고 새 종족 생성과 링크 교체를 한 번에 실행 취소한다. 취소는 데이터를 바꾸지 않는다.
 - 외형 차이는 리소스·색조·투명·비행 네 필드를 비교한다. `종족 외형을 이 몬스터로 복사`는 이 네 필드만 한 번 덮어쓰며 능력치와 종족 원본을 바꾸지 않는다.
-- 종족 상단 준비 상태는 프로젝트 전체 집계다. 명시적 연결 수와 선택 종족 연결 목록은 같은 ID 호환 연결을 제외한다고 밝힌다. 상단 연결/드롭 액션은 `전투 몬스터 탭 열기`, 출현 액션은 `첫 출현 맵 선택`, 시스템 액션은 `시스템 포획 설정 열기`로 실제 목적지를 표시한다. 선택 종족 목록의 `전투 몬스터 열기`는 해당 레코드를 선택한다. 검색 복구·탭 이동 동작 자체는 Phase 2 범위로 남긴다.
+- 종족 상단 준비 상태는 프로젝트 전체 집계다. 명시적 연결 수와 선택 종족 연결 목록은 같은 ID 호환 연결을 제외한다고 밝힌다. 상단 연결/드롭 액션은 `전투 몬스터 탭 열기`, 출현 액션은 `첫 출현 맵 선택`, 시스템 액션은 `시스템 포획 설정 열기`로 실제 목적지를 표시한다. 선택 종족 목록의 `전투 몬스터 열기`는 해당 레코드를 선택한다.
 - 안내는 기존 hero/section hint/버튼에 배치한다. Studio 토큰·모달 크기·스크롤·키보드 계약은 그대로다. 관계 회귀는 `test/databaseEnemyRelationship.test.ts`; 문구 자체를 새 테스트로 고정하지 않는다.
+
+### 종족 검색과 관련 레코드 노출 (Phase 2)
+
+- `databaseMonsterSpeciesView.ts`의 검색은 카탈로그와 같은 부분 갱신 패턴이다. 입력 즉시 목록·개수·선택 안내만 갱신하며 검색 입력 노드/포커스/캐럿과 현재 인스펙터의 드래프트·스킬 행 신원·미리보기 레벨·스크롤은 그대로 둔다. 검색 결과가 없어도 선택 ID를 바꾸지 않는다.
+- 목록 필터 슬롯의 `db-monster-species-selection-notice`는 선택 종족이 검색 결과 밖임을 표시한다. `db-monster-species-reveal-selection`은 검색을 지우고 활성 행을 스크롤로 노출한다. 무결과 상태의 `db-monster-species-empty-clear`도 같은 복구 경로를 쓰며, 사라진 버튼 대신 유지된 검색 입력으로 포커스를 돌린다.
+- `setSelectedMonsterSpeciesId(id, { reveal: true })`는 종족 검색을 지우고 다음 렌더에서 선택 행을 노출한다. 전투 몬스터 → 종족, 진화 역참조, 종족 추가/복제, 몬스터에서 종족 생성이 이 경로를 쓴다. 진화 역참조는 선택+토스트만 내지 않고 기존 `rerender`를 즉시 호출한다.
+- 종족 목록의 스크롤은 뷰 호스트별 `WeakMap`에 보관한다. 모달의 지연 store 갱신이 목록을 다시 만들어도 마지막 위치를 복원하고, 명시적 노출은 그 위치보다 우선한 뒤 즉시 새 위치를 기록한다(비동기 scroll 이벤트에 의존하지 않는다). 노출 요청 자체는 여전히 일회성이며 사용자가 이후 스크롤한 위치(0 포함)를 존중한다. 교체되어 분리된 목록의 늦은 이벤트는 무시하고 새 모달 호스트로 위치를 넘기지 않는다. 실제 모달/스토어 구독과 101종족 회귀: `test/databaseSpeciesModalRefresh.test.ts`; B1 RED/GREEN 근거: `output/evidence/monster-concepts/b1/fix.md`.
+- 실행 취소 등으로 선택 ID가 사라져 유효한 첫 종족으로 대체되면 기존 일회성 노출 경로를 요청한다. 검색을 지우고 이전 깊은 스크롤보다 대체 행 노출을 우선하며, 결과 위치는 즉시 저장한다. 유효한 선택의 일반 갱신은 다시 노출하지 않는다. 세 생성 경로의 실제 모달 갱신 후 대체 선택 가시성 회귀와 RED/GREEN: `output/evidence/monster-concepts/r1/fix.md`.
+- 종족 → 전투 몬스터는 `setSelectedRecordId("enemies", id, { reveal: true })`와 기존 `switchDatabaseActiveTab`을 쓴다. 세션의 일회성 노출 요청은 대상 검색을 비우고 `databaseRecordViews.ts`에서 소비한다. 전투 몬스터 목록/갤러리는 가상화를 유지한 채 `databaseListVirtualizer.ts`의 `scrollToIndex`로 대상 윈도우를 만든 뒤 네이티브 스크롤로 노출한다. `enemies.part-2.css`는 바깥 스크롤 컨테이너를 block, 안쪽 행 호스트를 grid로 두어 스페이서 사이의 추가 gap을 없앤다. 실제 행 border-box 높이 + 안쪽 grid gap이 윈도우·스페이서·노출의 공통 pitch이며, 패딩은 한 번만 계산한다. 갤러리 열 수를 먼저 적용한 뒤 높이를 재측정하고 새 전체 높이로 스크롤을 clamp하므로 리사이즈 때 빈 윈도우가 되지 않는다. 일반 선택·탭 복귀의 검색/스크롤 복원은 바꾸지 않는다. 기하 회귀: `test/databaseListGeometry.test.ts`; 브라우저 RED와 수정 결과: `output/evidence/monster-concepts/p2/verification.md`, `reveal-fix.md`.
+- 탐색은 프로젝트 쓰기나 실행 취소 항목을 만들지 않는다. Phase 1의 관계 해석·확인·복사·참조 삭제 가드·원자적 실행 취소와 준비 상태/선택 종족 목적지 문구는 유지한다. 회귀 테스트: `test/databaseSpeciesSearchNavigation.test.ts` (happy-dom, 실제 패널/스토어, DOM 변경 구독과 제한 시간; 고정 sleep 없음). 브라우저 검증은 동일한 세 데스크톱 크기로 수행한다.
 
 ## 몬스터 작업실 — 미리보기 · 행동 · 속성 (2026-09-05)
 

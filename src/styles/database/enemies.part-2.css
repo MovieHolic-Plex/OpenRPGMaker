@@ -1,3 +1,16 @@
+/* Virtual geometry: spacers are plain blocks; only the inner grid owns
+   row gaps. Keep gallery's existing grid/padding and measure its real pitch. */
+.database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-enemies .db-list:has(> .db-virtual-rows) {
+  display: block;
+  overflow-anchor: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-enemies .db-list:not(.db-gallery) > .db-virtual-rows {
+  display: grid;
+  gap: inherit;
+  grid-auto-rows: max-content;
+}
+
 @media (min-width: 901px) {
   .database-modal-backdrop:has(.oprn-record-enemies) {
     background: rgba(42, 37, 33, 0.06);

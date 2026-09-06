@@ -5,6 +5,7 @@ import type { TreeEdge } from '@/project/growth/graph';
 import { button } from './controls';
 export interface GraphNode extends TreePosition { id: string; name: string; subtitle: string; badge: string; iconUrl?: string; invalid?: boolean }
 export interface GraphOptions {
+  readOnly?: boolean;
   nodes: GraphNode[]; edges: TreeEdge[]; selected?: string; connecting?: string; zoom: number;
   onSelect: (id: string) => void; onMove: (id: string, p: TreePosition) => void;
   onZoom: (zoom: number) => void; onArrange: () => void;
@@ -52,7 +53,7 @@ export function renderGrowthCanvas(o: GraphOptions): HTMLElement {
     let start: { x: number; y: number; position: TreePosition; moved: boolean } | undefined;
     let suppressClick = false;
     card.addEventListener('pointerdown', e => {
-      if (e.button !== 0 || o.connecting) return;
+      if (e.button !== 0 || o.connecting || o.readOnly) return;
       start = { x: e.clientX, y: e.clientY, position: { x: n.x, y: n.y }, moved: false };
       card.setPointerCapture(e.pointerId);
     });
@@ -75,7 +76,7 @@ export function renderGrowthCanvas(o: GraphOptions): HTMLElement {
     });
     card.addEventListener('click', () => { if (suppressClick) { suppressClick = false; return; } o.onSelect(n.id); });
     card.addEventListener('keydown', e => {
-      if (!e.altKey || !['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return;
+      if (o.readOnly || !e.altKey || !['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return;
       e.preventDefault(); e.stopPropagation();
       o.onMove(n.id, { x: Math.max(0, Math.min(10000, n.x + (e.key === 'ArrowLeft' ? -24 : e.key === 'ArrowRight' ? 24 : 0))), y: Math.max(0, Math.min(10000, n.y + (e.key === 'ArrowUp' ? -24 : e.key === 'ArrowDown' ? 24 : 0))) });
     });
@@ -86,5 +87,7 @@ export function renderGrowthCanvas(o: GraphOptions): HTMLElement {
   const zoom = (delta: number): void => o.onZoom(Math.max(.4, Math.min(1.6, Math.round((o.zoom + delta) * 10) / 10)));
   viewport.addEventListener('wheel', e => { if (e.ctrlKey || e.metaKey) { e.preventDefault(); zoom(e.deltaY > 0 ? -.1 : .1); } }, { passive: false });
   const controls = el('div', { class: 'growth-canvas-controls', children: [button('−', 'growth-zoom-out', () => zoom(-.1)), el('output', { text: `${Math.round(o.zoom * 100)}%`, attrs: { 'aria-label': '확대 비율' } }), button('+', 'growth-zoom-in', () => zoom(.1)), button('자동 배치', 'growth-arrange', o.onArrange)] });
+  const arrange = controls.querySelector<HTMLButtonElement>('[data-testid="growth-arrange"]');
+  if (arrange) arrange.disabled = Boolean(o.readOnly);
   return el('section', { class: 'growth-canvas', children: [viewport, controls] });
 }

@@ -1,5 +1,51 @@
 # RPG ZZU Design System
 
+## System settings workspace (2026-09-06)
+
+Database > System is a settings worksheet in the existing cool-white, slate and
+indigo Studio, not a dashboard. Shared modal header, rail, footer and save stay
+unchanged. Vanilla DOM, databaseControls, databaseWorkspace sections and resource
+pickers remain the component system; no dependencies or theme are added.
+
+- Ten native navigation buttons occupy a fixed single-line horizontal reel.
+  Container/button classes are distinct; selected is aria-current, focus indigo.
+  All sections stay mounted and inactive sections hidden. Navigation is history-free.
+- `.db-system-sections` owns vertical scrolling in the bounded form; only the
+  type matrix owns horizontal content scrolling. Structural references:
+  [scroll-body-shell](https://github.com/changeroa/StyleGallery/blob/main/patterns/viewport-shell/scroll-body-shell.md)
+  and [reel](https://github.com/changeroa/StyleGallery/blob/main/patterns/in-line-grouping/reel.md).
+- Controls: --font-ui, 13px/1.5, 32–36px targets; help 12px/1.5; headings 18px/1.5.
+  Aligned label/help/control rows, 6px controls, 8px sections, 4/8/12/16/24px spaces.
+  Chrome uses existing --db-studio-* tokens. No gradients, glyph icons or lifts.
+  Rows stack below 600px available content width, never by shrinking text.
+- Overview is a searchable index for all nine editing destinations with authored
+  summaries, no-results/reset, subordinate progress links and play-test. Optional
+  initial troop and day-end event are not warnings. Title summary includes resume
+  and explains its runtime autosave condition rather than claiming a live preview.
+- Party uses four numbered face/selector rows and explicit empty slots. Removal
+  compacts the roster while preserving order/session sync. Display has presets,
+  bounded pixel dimensions, ratio frame and actual map/tile analysis. Fonts pair
+  each selector with Korean/Latin/numeric specimens and keep the default reset.
+- Resources show named assets, choose/change/clear and real empty/failure states;
+  legacy title linkage is explained. Startup groups battle/audio/rewards and
+  explains automatic active slots at zero. Features retain legacy action-combat
+  details, support-ended context, monster care and linked data counts.
+- Time reports the configured day, not a live clock. Disabling sets enabled:false
+  and preserves authored configuration (normalizer supports it); this deliberately
+  fixes the audit's destructive off/on reset. Undo remains available.
+- Type-chart direct entry has a visible action and F2 on each editable cell,
+  Escape and focus restoration. Cycling, diagonal and 0–4 semantics stay intact.
+- Title composition plus display/menu/audio/effects preserve every field/hook.
+  Coordinates remain proportional to legacy 320×240. Resume is previewed under
+  an explicit autosave-available assumption. Layer parallax remains preserved.
+  Text typing updates derived preview nodes without replacing the focused input;
+  structural edits restore focus/scroll where the control survives.
+- Accessibility: native labels, explicit disabled reasons, readable Korean and
+  keyboard-complete actions. Personas: new author, dense-data author, keyboard
+  author. Verify Firefox at 1440×900/1024×768 and populated/empty/edit/undo/reopen.
+  Chromium fails ERR_NETWORK_CHANGED here; no Lighthouse score or pixel visual
+  approval is claimed. Independent visual review is owned by the supervisor.
+
 ## Monster role clarity (Phase 1)
 
 - Visible tabs are `전투 몬스터` (`enemies`) and `포획·성장 종족` (`monsterSpecies`); IDs and testids remain stable.
@@ -7,8 +53,15 @@
 - Keep role guidance in the existing hero subtitle and local section hints, not new banners/cards. Reuse `detailHero`, `sectionCard`, native controls and `db-ws-btn`; Studio tokens, typography, focus behavior, scroll ownership and modal geometry remain unchanged.
 - Effective links expose open-linked-species; creation without a link names the enemy as source. Linked creation explicitly replaces the link with a new species, preserving the old record, with the existing confirmation and atomic undo.
 - Creation copies enemy name/appearance/fixed stats once into species name/appearance/base values, not equal stats at the same level. Appearance copying names species-to-enemy direction and resource/hue/transparency/flying fields; stats remain unchanged.
-- The readiness strip is project-wide. Explicit-link counts and selected-species usage exclude same-ID compatibility links and say so. Destination labels distinguish a whole tab from a selected record and the first spawn map from all maps. No Phase 2 search/navigation changes belong here.
+- The readiness strip is project-wide. Explicit-link counts and selected-species usage exclude same-ID compatibility links and say so. Destination labels distinguish a whole tab from a selected record and the first spawn map from all maps.
 - Browser acceptance remains 1024x768, 1280x800 and 1440x900: local guidance/actions must wrap and remain reachable in existing scroll containers, without horizontal overflow or focus regressions.
+
+## Species search and related-record reveal (Phase 2)
+
+- Species search updates only list rows, count and selection notice. Keep the same mounted native search input (focus/caret) and inspector (draft controls, skill-row identity, preview level and scroll); filtering never changes the selected record or writes project data.
+- A selected species outside the results is identified in the existing list filter slot. `검색 지우고 보기` clears the search and scrolls its active row into view; no-results `검색 지우기` offers the same recovery without replacing the inspector. Return focus to the retained search input when the recovery button disappears.
+- Related enemy/species links clear the destination search, select the destination and reveal its active row in the same Database panel. Enemy reveal retains virtualization and uses measured uniform row/card heights, inner-grid gaps and padding for both spacers and target scrolling. Responsive gallery columns are applied before measurement; ordinary tab returns retain their scroll restoration. Evolution-referrer actions rerender immediately through the existing callback; species add, duplicate and creation from an enemy reveal the new selection.
+- Reuse the current workspace, session and switch-tab functions. Keep Phase 1 project-wide destination wording and selected-species explicit-link usage; no bulk workflow, schema, runtime, data or undo semantics change. Search recovery uses existing Studio controls and the species-only stylesheet rule for wrapping the notice. The desktop acceptance matrix remains 1024x768, 1280x800 and 1440x900.
 
 ## Worldbuilding document workspace (2026-09-06)
 
@@ -405,6 +458,8 @@ The float assistant is **one glass instrument**, `div.ai-deck` inside the transp
 - At compact widths the picker becomes a single-column scroll surface with full-width actions. Technical fields remain keyboard reachable only after the disclosure is opened.
 
 ### Database panels
+
+- **Growth preset collection, Phase 2 (2026-09-06).** The existing studio header opens an in-studio collection, not another modal framework. Three equal-width role cards compose the growth button and art slot; landscape covers use a 3:2 slot, original pixels, `--radius-s`, and the existing spacing scale. Selected cards use indigo border/tint/focus ring. Existing typography and system font remain unchanged. The read-only graph reuses 180×98 semantic-art nodes at readable zoom and an independently scrollable viewport; a text ledger repeats prerequisites, levels and costs for accessible reading. The collection/details scroll together above a separate always-visible footer, at 1024/1280/1440 desktop widths. Escape/cancel restore the opener. Preview has no project mutations; explicit addition is a single undo boundary. Failed art retains a labelled fallback, and failed allocation is visible text, never fabricated preview content.
 
 - **Party growth trees (2026-09-05).** `growth-tree.css` keeps promotion and skill trees in the same indigo selection/focus language: neutral list pane, recessed graph, white toolbar and inspector, and inset 700-weight inspector group headers. Zoom/arrange controls occupy their own bottom grid row, never the scrollable node area; buttons are at least 32px square. Graph names clamp to two lines within the existing fixed node geometry, while full names remain in the accessible label and wrapping inspector title. No graph coordinates, controls, or persistence behavior change.
 - **Growth art, Phase 1 (2026-09-05).** Existing bundled semantic role icons populate graph emblems, catalog rows, selected inspector heroes, and runtime growth entries. Classes distinguish warrior/mage/healer/ranger/rogue/guardian; skill effects and all six parameters have meaningful symbols. No raw animation sheets, new art fields, preset UI, or global theme changes. Keep the current token source (cool-white/indigo despite historical cream wording), 180×98 graph nodes, existing typography, and independent pane scrolling. Catalog art uses 32px slots/24px images; inspector art uses 48px slots/32px images, expressed through the existing spacing scale and radius tokens. Images are decorative and non-draggable; failed editor loads restore a text badge while adjacent names and accessible labels remain intact. Runtime reuses the existing single-image icon contract and keyboard-only controls. Browser acceptance at 1024×768 and shipped export coverage remain part of surface proof, not inferred from DOM unit tests.
