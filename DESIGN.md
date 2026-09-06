@@ -7,8 +7,15 @@
 - Keep role guidance in the existing hero subtitle and local section hints, not new banners/cards. Reuse `detailHero`, `sectionCard`, native controls and `db-ws-btn`; Studio tokens, typography, focus behavior, scroll ownership and modal geometry remain unchanged.
 - Effective links expose open-linked-species; creation without a link names the enemy as source. Linked creation explicitly replaces the link with a new species, preserving the old record, with the existing confirmation and atomic undo.
 - Creation copies enemy name/appearance/fixed stats once into species name/appearance/base values, not equal stats at the same level. Appearance copying names species-to-enemy direction and resource/hue/transparency/flying fields; stats remain unchanged.
-- The readiness strip is project-wide. Explicit-link counts and selected-species usage exclude same-ID compatibility links and say so. Destination labels distinguish a whole tab from a selected record and the first spawn map from all maps. No Phase 2 search/navigation changes belong here.
+- The readiness strip is project-wide. Explicit-link counts and selected-species usage exclude same-ID compatibility links and say so. Destination labels distinguish a whole tab from a selected record and the first spawn map from all maps.
 - Browser acceptance remains 1024x768, 1280x800 and 1440x900: local guidance/actions must wrap and remain reachable in existing scroll containers, without horizontal overflow or focus regressions.
+
+## Species search and related-record reveal (Phase 2)
+
+- Species search updates only list rows, count and selection notice. Keep the same mounted native search input (focus/caret) and inspector (draft controls, skill-row identity, preview level and scroll); filtering never changes the selected record or writes project data.
+- A selected species outside the results is identified in the existing list filter slot. `검색 지우고 보기` clears the search and scrolls its active row into view; no-results `검색 지우기` offers the same recovery without replacing the inspector. Return focus to the retained search input when the recovery button disappears.
+- Related enemy/species links clear the destination search, select the destination and reveal its active row in the same Database panel. Enemy reveal retains virtualization and uses measured uniform row/card heights, inner-grid gaps and padding for both spacers and target scrolling. Responsive gallery columns are applied before measurement; ordinary tab returns retain their scroll restoration. Evolution-referrer actions rerender immediately through the existing callback; species add, duplicate and creation from an enemy reveal the new selection.
+- Reuse the current workspace, session and switch-tab functions. Keep Phase 1 project-wide destination wording and selected-species explicit-link usage; no bulk workflow, schema, runtime, data or undo semantics change. Search recovery uses existing Studio controls and the species-only stylesheet rule for wrapping the notice. The desktop acceptance matrix remains 1024x768, 1280x800 and 1440x900.
 
 ## Worldbuilding document workspace (2026-09-06)
 

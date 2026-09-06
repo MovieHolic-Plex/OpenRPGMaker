@@ -38,6 +38,7 @@ import {
   setSearchQueryForCollection,
   setSelectedRecordId,
   setViewModeForCollection,
+  takeRecordRevealForSession,
   viewModeForCollection,
   type RecordViewMode,
 } from "@/editor/panels/databaseRecordViewSession";
@@ -547,8 +548,12 @@ function recordList(
 
   // 갤러리 모드 = 카드 그리드 + columns 가상화, 리스트 모드 = 기존 행 렌더 그대로.
   const isGallery = viewModeForCollection(collection) === "gallery";
+  const revealId = takeRecordRevealForSession(collection);
+  const revealIndex = visible.findIndex((entry) => entry.record.id === revealId);
+  const reveal = revealIndex >= 0;
   const virtualList = createVirtualList<VisibleRow>({
     items: visible,
+    measureRows: collection === "enemies",
     className: isGallery ? "db-list db-gallery" : "db-list",
     rowHeight: isGallery ? GALLERY_ROW_HEIGHT : undefined,
     columns: isGallery ? (container) => galleryColumnsFor(container) : undefined,
@@ -557,12 +562,19 @@ function recordList(
       isGallery ? recordGalleryCard(collection, entry, onSelect) : recordListRow(collection, entry, records.length, onSelect),
   });
 
-  // 탭 전환 후 되돌아올 때 리스트 스크롤 위치를 복원한다.
+  // Related-record jumps override stale scroll once. Ordinary tab returns
+  // retain their remembered position and virtual window.
   const restoredScrollTop = listScrollTopForCollection(collection);
-  if (restoredScrollTop > 0) {
+  if (reveal || restoredScrollTop > 0) {
     scheduleFrame(() => {
-      virtualList.element.scrollTop = restoredScrollTop;
-      virtualList.render();
+      if (reveal) {
+        virtualList.scrollToIndex(revealIndex);
+        virtualList.element.querySelector<HTMLElement>('[aria-pressed="true"]')?.scrollIntoView?.({ block: "nearest", behavior: "instant" });
+        setListScrollTopForCollection(collection, virtualList.element.scrollTop);
+      } else {
+        virtualList.element.scrollTop = restoredScrollTop;
+        virtualList.render();
+      }
     });
   }
   return virtualList.element;
