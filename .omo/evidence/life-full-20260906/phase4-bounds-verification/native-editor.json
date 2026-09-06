@@ -1,0 +1,23 @@
+{
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "600s",
+    "node",
+    ".omo/evidence/life-full-20260906/phase4-initial-verification/editor.mjs"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p4-bounds-verify",
+  "head": "e486e536954d69c59c7bcc82602646cc6712c445",
+  "tree": "7a6a7b107ab05b34991440eccb559db3e1a81969",
+  "started": "2026-09-06T19:54:39.412Z",
+  "finished": "2026-09-06T20:00:49.555Z",
+  "exit": 0,
+  "signal": null,
+  "stdout": "",
+  "stderr": "[rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.\n[rpg-zzu] QWENCLOUD_API_KEY 가 없어 /api/qwen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.\n[rpg-zzu] CPENROUTER_API_KEY 가 없어 /api/cpen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.\n"
+}

@@ -1,0 +1,52 @@
+{
+  "task": "st_01a07843",
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p4-bounds-verify",
+  "head": "e486e536954d69c59c7bcc82602646cc6712c445",
+  "tree": "7a6a7b107ab05b34991440eccb559db3e1a81969",
+  "trackedDiff": "",
+  "sourceHashMismatches": [],
+  "producerHeadAtCleanup": "e486e536954d69c59c7bcc82602646cc6712c445",
+  "lockedDetached": true,
+  "parentOwnsWorktreeRemoval": true,
+  "ownedPorts": {
+    "39912": "bind succeeded; no listener",
+    "39913": "bind succeeded; no listener"
+  },
+  "removedOwnedPaths": [
+    "/home/main/z-project/rpg-zzu-life-full-p4-bounds-verify/.omo/evidence/life-full-20260906/phase4-initial-verification/cache",
+    "/home/main/z-project/rpg-zzu-life-full-p4-bounds-verify/.omo/evidence/life-full-20260906/phase4-initial-verification/node_modules"
+  ],
+  "localEditorAuditArchived": [
+    {
+      "source": "output/edit-activity/latest.json",
+      "artifact": "local-edit-audit/latest.json",
+      "sha256": "e30d012336364a7a41224f03a8623965f9f9659fc96cc55b757e398d9c3491a5"
+    },
+    {
+      "source": "output/edit-activity/edits.jsonl",
+      "artifact": "local-edit-audit/edits.jsonl",
+      "sha256": "501662aba98c5a5ad59dc0f046dab3ee38b53591c14cd7e1dd0fe4cfcc1b469a"
+    },
+    {
+      "source": "output/edit-activity/index.json",
+      "artifact": "local-edit-audit/index.json",
+      "sha256": "86f9cbd43d5d99add6f59695797fa5d62af02d1b02d6ca9ba32d748fe71cb2d6"
+    }
+  ],
+  "browserServerCloseReceipts": [
+    "editor-state.json",
+    "player-state.json"
+  ],
+  "buildExecuted": false,
+  "distCreated": false,
+  "remoteContentWrites": 0,
+  "producerTreeWrites": 0,
+  "productTestEdits": 0,
+  "commitsMergesPushes": 0,
+  "adoptionNodeModulesLinkAndEnvPreserved": true,
+  "evidenceIsGitignored": true,
+  "ownJobCompletion": "pidfd process completion observed for 2630762/2645667/2661898/2685995; corrected payment command foreground completed exit1",
+  "planSha256": "701d97b0962d023c465470801f8f6dc36b988901168632d4e11095cc42e335af",
+  "phase3VerdictSha256": "80837f040f59d59a5ed0c9a440ae0efa9251e0e0d41d8b44580e67ffd5988bb9",
+  "producerSummarySha256": "32710e5648cf37db5bf647699d0580b5bfdc937187fca72cf2611f48afea5626"
+}

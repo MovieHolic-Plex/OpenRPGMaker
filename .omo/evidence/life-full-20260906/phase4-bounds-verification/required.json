@@ -1,0 +1,27 @@
+{
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "240s",
+    "npm",
+    "test",
+    "--",
+    "test/lifeAuthoringBounds.test.ts",
+    "--config",
+    ".omo/evidence/life-full-20260906/phase4-initial-verification/vitest.config.ts"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p4-bounds-verify",
+  "head": "e486e536954d69c59c7bcc82602646cc6712c445",
+  "tree": "7a6a7b107ab05b34991440eccb559db3e1a81969",
+  "started": "2026-09-06T20:02:54.544Z",
+  "finished": "2026-09-06T20:04:56.538Z",
+  "exit": 0,
+  "signal": null,
+  "stdout": "\n> rpg-zzu@0.1.0 test\n> node scripts/run-vitest.mjs run --configLoader bundle test/lifeAuthoringBounds.test.ts --config .omo/evidence/life-full-20260906/phase4-initial-verification/vitest.config.ts\n\n\n RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p4-bounds-verify\n\n ✓ test/lifeAuthoringBounds.test.ts (14 tests) 20455ms\n   ✓ authoring bounds > accepts day40 in a 40-day calendar and bounds new input to that calendar  4658ms\n   ✓ authoring bounds > diagnoses day29 in a 28-day calendar without silently changing it  1151ms\n   ✓ authoring bounds > shows effective omitted weather values without authoring them  322ms\n   ✓ authoring bounds > rejects both 129th-rule add controls without mutation or an undo entry  1260ms\n   ✓ authoring bounds > caps skill input at10, starts new rewards at2, and retains legacy level1  3321ms\n   ✓ authoring bounds > refuses a new level-up reward when maxLevel is1  580ms\n   ✓ authoring bounds > does not author crop graphics during rendering (undefined)  944ms\n   ✓ authoring bounds > does not author crop graphics during rendering ([])  2355ms\n   ✓ authoring bounds > does not author crop graphics during rendering ([ { frame: +0, label: 'Editor-only' } ])  1563ms\n   ✓ legacy characterization > uses effective forecast 1 and rain intensity 0.5 without backfilling  445ms\n   ✓ legacy characterization > retains explicit forecast 3 and intensity 0.65 through render and roundtrip  829ms\n   ✓ legacy characterization > preserves the legacy level1 reward and authored birthday on render/serialize  2465ms\n\n Test Files  1 passed (1)\n      Tests  14 passed (14)\n   Start at  05:03:49\n   Duration  65.89s (transform 31.33s, setup 0ms, collect 43.34s, tests 20.45s, environment 498ms, prepare 334ms)\n\n",
+  "stderr": ""
+}

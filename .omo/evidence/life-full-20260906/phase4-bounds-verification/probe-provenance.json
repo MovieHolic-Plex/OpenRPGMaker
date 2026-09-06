@@ -1,0 +1,22 @@
+[
+  {
+    "producerProbe": ".omo/evidence/life-full-20260906/14/editor.mjs",
+    "originalSha256": "2d74abe6bc8dd3a895ce196be6e6f4366f762ac27e13671531467d3c5f53d24f",
+    "verificationProbe": "editor.mjs",
+    "adaptations": [
+      "own output/cache directory",
+      "fixed strict unused port",
+      "runner config loader avoids shared node_modules temp writes; player config and authorities unchanged"
+    ]
+  },
+  {
+    "producerProbe": ".omo/evidence/life-full-20260906/14/player.mjs",
+    "originalSha256": "a6a85e788a5eb4f6dc325d172d3f4058f97d3666fffd177fa6960e8b04da0e85",
+    "verificationProbe": "player.mjs",
+    "adaptations": [
+      "own output/cache directory",
+      "fixed strict unused port",
+      "runner config loader avoids shared node_modules temp writes; player config and authorities unchanged"
+    ]
+  }
+]

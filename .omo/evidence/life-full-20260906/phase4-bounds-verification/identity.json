@@ -1,0 +1,26 @@
+{
+  "task": "st_01a07843",
+  "lane": "bounds",
+  "head": "e486e536954d69c59c7bcc82602646cc6712c445",
+  "tree": "7a6a7b107ab05b34991440eccb559db3e1a81969",
+  "base": "966f414c07729e7d9474c568cbaf19a94d2bc740",
+  "reviewedPhase3": "bd81a933cbecfeb8b25ef15bf57bc24911011aa8",
+  "ancestors": {
+    "966f414c07729e7d9474c568cbaf19a94d2bc740": 0,
+    "bd81a933cbecfeb8b25ef15bf57bc24911011aa8": 0
+  },
+  "sourceSha256": {
+    "openwiki/editor-database.md": "28db016701b0782db7eff0a2402aabce19ffb3cf2905e5da287bf6ab057dcfd8",
+    "src/editor/panels/databaseCharacterView.ts": "c84a69a34f52c02cf1d45cdd3150be49aeec74d5f4024038ba8c145cdedc6823",
+    "src/editor/panels/databaseCropView.ts": "05d46492af06d139d2130728816f8e4bacb7b4ebec5bbad3836cdff3ba5005df",
+    "src/editor/panels/databaseDailyWeatherView.ts": "ff1a98cb8e21238bb2edd45a03ca5757b85a36436d5989e84bbd123dfbf1d074",
+    "src/editor/panels/databaseLifeCraftingView.ts": "86d80f2362090d3def89a22edf574c77ae95e09b483fb2a7f6431a91f959e53d",
+    "src/player/playSceneGift.ts": "282e0a3c6c33aca06fff14deae821e151e2c4a9bc5e80383db095a266e00ff5e",
+    "src/player/playSceneInterpreter.ts": "a32e7416cba8898aeba6eca737c902e470b539263f728024e488bbac0c47448f",
+    "src/project/characterProfiles.ts": "45f1a04611f2524d0bb8c6ea6700c43f6967c10b2cc9a9909f47f7e5376b9c2c",
+    "src/project/dailyWeather.ts": "c0d823d8534eb21f2772d6619e53a952e1c738d1ba125b7517700b35e1d9206a",
+    "test/lifeAuthoringBounds.test.ts": "1133a8c47e56606ee67fb994db00d96ae1e8eaa3d303d248febd233987cc7c86"
+  },
+  "entryStatus": "",
+  "sourceProducer": "/home/main/z-project/rpg-zzu-life-full-authoring-bounds"
+}
