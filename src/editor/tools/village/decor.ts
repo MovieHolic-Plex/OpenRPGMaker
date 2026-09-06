@@ -1,6 +1,7 @@
 // editor/tools/village/decor.ts
 // 마을 소품 레이어 — 마당 꾸밈, 길 옆 벤치, 우물, 깃발, 바위 노두, 활엽수 군락, place_props 위임.
 
+import { HOUSE_KITS } from "@/editor/houseKit";
 import { COBBLE_TILE } from "@/project/defaults/chipsetMapping";
 import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { DEFAULT_COBBLE_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
@@ -381,14 +382,8 @@ function placeVillageWell(
 }
 
 /**
- * 화려한 깃발(208/209) — 가장 중요한 집(다층 우선)의 "지붕 바로 아래 최상단 벽" 행에 건다.
- * (2026-07-16 사용자 하네싱 지시: 깃발은 벽 최상단 행에 걸리는 장식이다.)
- */
-/**
- * 상점 간판(2026-07-17, 사용자 규약 2차) — 벽에 파묻히면 안 보인다:
- * **벽 최상단 높이의 집 바깥 열**(벽 아닌 잔디 칸)에 걸이 간판을 내민다.
- * 무기점 방패(472)·잡화점 물약(473) 번갈아, 광장 게이트를 향한 쪽 우선.
- * 도로 위 장식 금지 룰에 따라 잔디 칸만 쓰고, 실패 시 반대편 → 문 옆 벽면 폴백.
+ * Finish house-owned banners and signs before sealing the fixed house geometry.
+ * Signs stay visible on empty upper cells over actual kit walls, never in the yard.
  */
 export function finishVillageHouseDecor(map: GameMap, houses: readonly BuiltHouse[], plaza: Plaza): number {
   return placeEntranceBanners(map, houses) + placeShopSigns(map, houses, plaza);
@@ -410,27 +405,22 @@ function placeShopSigns(map: GameMap, houses: readonly BuiltHouse[], plaza: Plaz
     const { doorAt, bbox, stories } = house;
     const wallBandRows = 2 + (2 * stories - 1);
     const topWallY = bbox.y + bbox.h - wallBandRows;
-    // 게이트 쪽 측면 우선 — 플레이어 접근 방향에서 먼저 보인다.
-    const sides = gate.x >= bbox.x + Math.floor(bbox.w / 2)
-      ? [bbox.x + bbox.w, bbox.x - 1]
-      : [bbox.x - 1, bbox.x + bbox.w];
-    const tryPlace = (x: number, y: number, requireGrass: boolean): boolean => {
-      if (!inMapBounds(map, x, y) || blocked.has(coordKey(x, y))) return false;
-      const cellIndex = y * map.width + x;
-      if ((map.upperTiles[cellIndex] ?? TILE.EMPTY) !== TILE.EMPTY) return false;
-      if (requireGrass && (map.lowerTiles[cellIndex] ?? TILE.EMPTY) !== TILE.GRASS) return false;
-      map.upperTiles[cellIndex] = tile;
-      placed += 1;
-      return true;
-    };
-    for (const x of sides) {
-      if (tryPlace(x, topWallY, true)) return;
-    }
-    // 폴백: 문 옆 벽면(구 규약)
-    for (const dx of [1, -1]) {
-      const x = doorAt.x + dx;
-      if (x <= bbox.x || x >= bbox.x + bbox.w - 1) continue;
-      if (tryPlace(x, doorAt.y, false)) return;
+    const { wall, postColumn } = HOUSE_KITS[house.kitId];
+    const wallTiles = new Set([...wall.top, ...wall.mid, ...wall.bottom, ...(postColumn?.tiles ?? [])]);
+    // Gate-facing wall first; other rows cover narrow houses, low walls and uneven wings.
+    const columns = Array.from({ length: bbox.w }, (_, i) => bbox.x + i);
+    if (gate.x >= bbox.x + Math.floor(bbox.w / 2)) columns.reverse();
+    const rows = [topWallY, ...Array.from({ length: bbox.h }, (_, i) => bbox.y + i).filter((y) => y !== topWallY)];
+    for (const y of rows) {
+      for (const x of columns) {
+        if (!pointInRect({ x, y }, bbox) || !inMapBounds(map, x, y) || blocked.has(coordKey(x, y))) continue;
+        if (x === doorAt.x && (y === doorAt.y || y === doorAt.y - 1)) continue;
+        const index = y * map.width + x;
+        if (!wallTiles.has(map.lowerTiles[index]) || map.upperTiles[index] !== TILE.EMPTY) continue;
+        map.upperTiles[index] = tile;
+        placed += 1;
+        return;
+      }
     }
   });
   return placed;
