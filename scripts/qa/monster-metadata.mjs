@@ -4,10 +4,12 @@ import { once } from 'node:events';
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { chromium, firefox } from 'playwright';
 
-const out = 'output/evidence/monster-ui/browser';
+const out = process.env.MONSTER_QA_OUT ?? 'output/evidence/monster-ui/browser';
+const port = process.env.MONSTER_QA_PORT ?? '11942';
+const baseUrl = `http://127.0.0.1:${port}`;
 await mkdir(out, { recursive: true });
-const server = spawn(process.execPath, ['node_modules/vite/bin/vite.js', '--configLoader', 'runner', '--host', '127.0.0.1', '--port', '11942', '--strictPort'], {
-  env: { ...process.env, DEV_SERVER_PORT: '11942', DEV_SERVER_NO_TLS: '1', E2E_FREEZE_DEV_SERVER: '1', VITE_CACHE_DIR: `${process.cwd()}/output/evidence/monster-ui/vite-cache` },
+const server = spawn(process.execPath, ['node_modules/vite/bin/vite.js', '--configLoader', 'runner', '--host', '127.0.0.1', '--port', port, '--strictPort'], {
+  env: { ...process.env, DEV_SERVER_PORT: port, DEV_SERVER_NO_TLS: '1', E2E_FREEZE_DEV_SERVER: '1', VITE_CACHE_DIR: `${process.cwd()}/${out}/vite-cache` },
   stdio: ['ignore', 'pipe', 'pipe'],
 });
 let serverLog = '';
@@ -21,13 +23,13 @@ try {
     server.once('exit', code => { clearTimeout(deadline); reject(new Error(`Owned Vite exited before ready: ${code}`)); });
     server.stdout.on('data', data => {
       serverLog += data.toString();
-      if (serverLog.includes('11942') && serverLog.includes('Local:')) { clearTimeout(deadline); resolve(); }
+      if (serverLog.includes(port) && serverLog.includes('Local:')) { clearTimeout(deadline); resolve(); }
     });
     server.stderr.on('data', data => { serverLog += data.toString(); });
   });
   // Finish the multi-megabyte stylesheet transform before the browser requests the
   // entire editor module graph. This awaits actual HTTP completion, never a delay.
-  const stylesheet = await fetch('http://127.0.0.1:11942/src/styles/index.css', { signal: AbortSignal.timeout(60000) });
+  const stylesheet = await fetch(`${baseUrl}/src/styles/index.css`, { signal: AbortSignal.timeout(60000) });
   assert.equal(stylesheet.status, 200);
   results.stylesheetBytes = (await stylesheet.arrayBuffer()).byteLength;
   browser = await (results.browser === 'firefox' ? firefox : chromium).launch();
@@ -47,7 +49,7 @@ try {
   await page.addInitScript(() => {
     localStorage.setItem('rpg-zzu:editor-ui-mode', 'expert');
   });
-  await page.goto('http://127.0.0.1:11942/?freshProject=1', { waitUntil: 'load', timeout: 90000 });
+  await page.goto(`${baseUrl}/?freshProject=1`, { waitUntil: 'load', timeout: 90000 });
   await page.getByTestId('toolbar-database').waitFor({ state: 'visible', timeout: Number(process.env.MONSTER_BOOT_TIMEOUT ?? '120000') });
   assert.equal(await page.evaluate(async () => {
     const { store } = await import('/src/project/store.ts');
@@ -70,31 +72,67 @@ try {
     return listMonsterResources(store.getCurrent()).length;
   }));
   const capture = async label => {
-    const images = await page.locator('.db-monster-resource-identity img').evaluateAll(async nodes => Promise.all(nodes.filter(image => {
-      const rect = image.getBoundingClientRect();
-      const clip = image.closest('.db-ws-detail-body').getBoundingClientRect();
+    const images = await page.locator('.db-monster-resource-dialog .db-monster-resource-preview img').evaluateAll(async nodes => Promise.all(nodes.filter(image => {
+      const rect = image.parentElement.getBoundingClientRect();
+      const clip = image.closest('.db-ws-detail-body, .db-ws-list').getBoundingClientRect();
       return rect.bottom > clip.top && rect.top < clip.bottom && rect.right > clip.left && rect.left < clip.right;
     }).map(async image => {
       let deadline;
       try {
-        await Promise.race([image.decode(), new Promise((_, reject) => { deadline = setTimeout(() => reject(new Error('Visible preview decode deadline')), 15000); })]);
-        return { width: image.naturalWidth, height: image.naturalHeight, complete: image.complete };
+        // The component's load handler may replace src with a chroma-keyed PNG.
+        // Await that real load before decoding the final source, with one deadline.
+        await Promise.race([(async () => {
+          if (!image.complete) await new Promise((resolve, reject) => {
+            image.addEventListener('load', resolve, { once: true });
+            image.addEventListener('error', () => reject(new Error('Visible preview load failed')), { once: true });
+          });
+          await image.decode();
+        })(), new Promise((_, reject) => { deadline = setTimeout(() => reject(new Error('Visible preview decode deadline')), 15000); })]);
+        const frame = image.parentElement;
+        const identity = image.closest('.db-monster-resource-identity');
+        const id = identity?.querySelector('[data-testid="db-monster-resource-id"]');
+        return {
+          width: image.naturalWidth, height: image.naturalHeight, complete: image.complete,
+          kind: identity ? 'selected' : 'thumbnail',
+          resourceId: id?.textContent ?? image.closest('[data-resource-id]').dataset.resourceId,
+          frame: frame.getBoundingClientRect().toJSON(), image: image.getBoundingClientRect().toJSON(),
+          id: id?.getBoundingClientRect().toJSON(), objectFit: getComputedStyle(image).objectFit,
+        };
       } finally { clearTimeout(deadline); }
     })));
-    if (label.startsWith('catalog-')) assert.equal(images.length, 1, 'Catalog capture must include the selected preview');
-    assert.ok(images.every(image => image.complete && image.width > 0 && image.height > 0));
+    results.imageChecks.push({ label, images, dimensions: page.viewportSize() });
+    if (label.startsWith('catalog-')) {
+      assert.equal(images.filter(image => image.kind === 'selected').length, 1, 'Catalog capture must include the selected preview');
+      assert.ok(images.some(image => image.kind === 'thumbnail' && image.resourceId === 'generated-enemy-goblin-scout'), 'Catalog capture must include the goblin thumbnail');
+    }
+    for (const image of images) {
+      const context = `${label}: ${image.kind} ${image.resourceId}`;
+      assert.ok(image.complete && image.width > 0 && image.height > 0, `${context}: decoded image`);
+      assert.equal(image.objectFit, 'contain', `${context}: preserve full artwork and aspect ratio`);
+      assert.ok(image.image.width > 0 && image.image.height > 0, `${context}: nonempty image box`);
+      for (const edge of ['left', 'top']) assert.ok(image.image[edge] >= image.frame[edge] - 1, `${context}: image ${edge} outside frame`);
+      for (const edge of ['right', 'bottom']) assert.ok(image.image[edge] <= image.frame[edge] + 1, `${context}: image ${edge} outside frame`);
+      if (image.id) {
+        assert.ok(image.frame.bottom <= image.id.top + 1, `${context}: frame overlaps ID`);
+        assert.ok(image.image.bottom <= image.id.top + 1, `${context}: image overlaps ID`);
+      }
+    }
     const path = `${out}/${label}.png`;
     await page.screenshot({ path });
     const bytes = await readFile(path);
     assert.equal(bytes.subarray(0, 8).toString('hex'), '89504e470d0a1a0a');
     assert.equal(bytes.readUInt32BE(16), page.viewportSize().width);
     assert.equal(bytes.readUInt32BE(20), page.viewportSize().height);
-    results.imageChecks.push({ label, images, signature: 'PNG', dimensions: page.viewportSize() });
+    results.imageChecks.at(-1).signature = 'PNG';
     results.captures.push(path);
     console.log(`Captured ${label}`);
   };
-  for (const width of [375, 768, 1024, 1280, 1440]) {
-    await page.setViewportSize({ width, height: 900 });
+  const goblin = page.locator('[data-testid="db-monster-resource-row"][data-resource-id="generated-enemy-goblin-scout"]');
+  await goblin.click();
+  assert.equal(await page.getByTestId('db-monster-resource-id').innerText(), 'generated-enemy-goblin-scout');
+  for (const [width, height] of [[375, 900], [768, 900], [1024, 768], [1280, 800], [1440, 900]]) {
+    await page.setViewportSize({ width, height });
+    await goblin.scrollIntoViewIfNeeded();
     await page.locator('.db-monster-resource-dialog .db-ws-detail-body').evaluate(node => { node.scrollTop = 0; });
     // Native resize event delivered before capture; font readiness is semantic, not a sleep.
     await page.evaluate(() => document.fonts.ready);
@@ -106,7 +144,7 @@ try {
     assert.ok(geometry.overflow <= 1, `dialog overflow at ${width}`);
     results.viewports.push({ viewport: width, ...geometry });
     await capture(`catalog-${width}`);
-    for (const field of ['name', 'tags', 'description', 'apply', 'close']) {
+    for (const field of ['search', 'name', 'tags', 'description', 'apply', 'reset', 'close']) {
       const control = page.getByTestId(`db-monster-resource-${field}`);
       await control.scrollIntoViewIfNeeded();
       const geometry = await control.evaluate(node => {
@@ -187,7 +225,7 @@ try {
   const exited = once(server, 'exit');
   if (server.exitCode === null && server.signalCode === null) { server.kill('SIGTERM'); await exited; }
   results.serverStopped = server.exitCode !== null || server.signalCode !== null;
-  await rm('output/evidence/monster-ui/vite-cache', { recursive: true, force: true });
+  await rm(`${out}/vite-cache`, { recursive: true, force: true });
   await writeFile(`${out}/server.log`, serverLog);
   await writeFile(`${out}/results.json`, JSON.stringify(results, null, 2));
   console.log(JSON.stringify(results, null, 2));
