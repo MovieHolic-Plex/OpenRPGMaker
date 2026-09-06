@@ -107,8 +107,8 @@ npcRewards?: readonly {
   as plans. Captured JSON is appended to each compacted model request and the planner summary, so
   disposable orchestration messages, retry and replan cannot drop or weaken it. No reward inference
   from commands or changes to retry/spec/auto-completion accounting are involved.
-- Each NPC gets a fresh local scene starting on a passable unoccupied adjacent tile. The gate checks
-  local interaction, not travel from the game start or quest prerequisites. `oneTime:true` runs two
+- Without a selected prerequisite witness, each NPC gets a fresh local scene starting on a
+  passable unoccupied adjacent tile. `oneTime:true` runs two
   interactions in the SAME session, with runtime page re-selection and the declared zero-based
   choices. First deltas must match; the repeat must change no gold balance or item/species counts,
   including currency paid on the repeat of an item-only obligation. Text, claimed
@@ -133,11 +133,53 @@ npcRewards?: readonly {
   `sendUserMessage`, real authoring tools, and the real scene verifier with a scripted model boundary.
   Evidence: `.omo/evidence/assistant-tool-reliability/rewards` (session follow-up: `session-wiring/`). Existing unrelated capture failures in
   `monsterCollection.test.ts:125,166` remain untouched; no battle or content/DB changes.
-- Currency support does not add prerequisite/journey acceptance. A chief that pays only after a
-  key is acquired still fails this fresh local gate until that separate contract is implemented;
-  do not move reward timing or seed switches to hide the limitation. Archived Round8's item
-  substitution remains failed currency evidence. No live declaration/ledger/game is repaired by
-  this source change. Evidence: `.omo/evidence/npc-gold-0907/`.
+- Currency evidence remains `.omo/evidence/npc-gold-0907/`. Archived Round8's item substitution
+  is still failed currency evidence; neither that change nor the prerequisite extension repairs
+  a live declaration, ledger or game.
+
+### Request-bound NPC prerequisite proof (CR-NPC-PREREQ-01, 2026-09-07)
+
+- `verify_npc_reward({requirementIndex, prelude})` is an AssistantSession tool, not a general
+  editor mutation or a historical scene receipt. The contract note lists zero-based indices
+  and exact selectors. The complete raw input is validated before execution. Unknown fields,
+  including generic `reason`, are rejected; this tool alone bypasses reason-schema decoration.
+- Actions: `walk {mapId,to,adjacent?}`, one-tile `move {mapId,dir}`, `face {mapId,dir}`,
+  `interact {mapId,eventId}` and `choose {mapId,index}`. Every mapId asserts the current map,
+  never teleports. No state, start position, RNG, grants/counts, choices for protected phases,
+  expectations, snapshots, receipts or caller verdicts are admitted. Limits: 256 actions,
+  4096 movement steps and 100000 total interpreter instructions over the entire replay.
+- `npcRewardWitnesses` binds the cloned program to the captured requirement object's lifetime
+  and index, plus the original uniquely resolved map/event pair. A same-named or same-ID
+  replacement elsewhere cannot inherit it. New requests/ask mode clear candidates; continuation,
+  retry, replan and work-item/milestone evidence resets do not. A valid replacement is selected
+  before execution; its failure never falls back to an old pass or fresh-local verification.
+- `verifyNpcRewardsPlayable` replays every selected witness on a private current-project clone
+  at every applicable completion gate. One actual authored-start session runs prelude, claim
+  and repeat. Changed keys, chest pages, links, landings, collision, NPCs, DB or start state
+  therefore receive fresh execution, not a cached verdict. The result reports phase, compiled
+  failed-step index, counters, claim/repeat deltas and final reward counts, all host-generated.
+- Pending choices cannot be abandoned. Cancellation/invalid choices and unfinished interactions
+  are unverified. Each earlier bound-NPC interaction must pay zero requested components. Claim
+  baselines are taken after the route and host approach; repeat immediately re-interacts with
+  no navigation and must change no gold, inventory or owned-monster counts, even undeclared ones.
+- `SceneRewardProof` is a host-only runner capability, outside ordinary scene-input schemas.
+  Restrictions execute at `runEventView` and interpreter `executeCommand`, not a page scan or
+  log parser. Protected transfers and foreign event/autorun/chaser entry are denied; callMapEvent
+  is unsupported throughout witness execution, including nested/common-event frames. Optional
+  interpreter hooks make instruction/loop/stack exhaustion unverified instead of normal done.
+  Ordinary scene/game execution has no such hooks and retains its behavior.
+- Native text, choices, supported state/reward/flow commands and cosmetic chest frame changes
+  work. Native authored waits up to 60000ms each are simulated, not wall-clock sleeps. Battle,
+  shop, number/key/name input, calendar hooks, movement-route/relocation, M2 fallback and other
+  unsupported operations fail closed. Common-event state is not seeded or repaired: the current
+  scene start does not populate session.commonEvents, so a missing common call is unverified.
+- Schedule prerequisite map/chest authoring first, separate transfer linking next, NPC authoring
+  and journey verification last via set_work_plan. Keep one-map authoring targets and all existing
+  completion, immutable-promise, unrelated failed-check, image, history and baseline obligations.
+  Do not remove a gate, synthesize a key or move reward timing to obtain completion.
+- This proves a reachable reward claim on the supplied legitimate route, not whole-game or
+  universal-path correctness. Regression seams: `npcPrerequisite.test.ts`,
+  `npcPrerequisiteSession.test.ts`; evidence: `.omo/evidence/npc-prerequisite-0907/`.
 
 ## After changing files
 

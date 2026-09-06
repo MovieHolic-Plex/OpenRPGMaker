@@ -1,0 +1,46 @@
+{
+  "proof": {
+    "executed": true,
+    "requirementIndex": 0,
+    "target": {
+      "mapId": "map_blank_start",
+      "eventId": "ev_chief"
+    },
+    "ok": true,
+    "evidence": [
+      {
+        "target": {
+          "mapId": "map_blank_start",
+          "eventId": "ev_chief"
+        },
+        "phase": "repeat",
+        "instructions": 14,
+        "movementSteps": 16,
+        "claim": {
+          "gold": 20,
+          "inventory": {
+            "item_brass_key": 0
+          },
+          "monsters": {}
+        },
+        "repeat": {
+          "gold": 0,
+          "inventory": {
+            "item_brass_key": 0
+          },
+          "monsters": {}
+        },
+        "final": {
+          "gold": 57,
+          "inventory": {
+            "item_brass_key": 1
+          },
+          "monsters": {}
+        }
+      }
+    ]
+  },
+  "afterChestMutationCompleted": false,
+  "originalProjectUnchanged": true,
+  "stoppedReason": "final"
+}
