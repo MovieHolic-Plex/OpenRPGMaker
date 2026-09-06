@@ -63,14 +63,29 @@ describe("AI assistant UX P0–P2", () => {
     expect(barSettings).toBeNull();
     expect(headerSettings).toBeNull();
     expect(newChat?.getAttribute("aria-label")).toContain("새 대화");
-    expect(more?.textContent).toContain("☰");
-    // 내보내기는 햄버거 안 작업 접기. (도크 전환 항목은 도크 축과 함께 삭제됐다.)
-    findByTestId(panel, "ai-more-menu-toggle")?.click();
+    expect(more?.tagName.toLowerCase()).toBe("button");
+    expect(more?.getAttribute("aria-label")?.trim()).toBeTruthy();
+    expect(more?.getAttribute("aria-haspopup")).toBe("menu");
+    expect(more?.getAttribute("aria-expanded")).toBe("false");
+    const icon = more?.querySelector("svg");
+    expect(icon?.getAttribute("data-icon")).toBe("more");
+    expect(icon?.getAttribute("aria-hidden")).toBe("true");
+    // FakeElement does not reflect the hidden attribute into the native property.
     const moreMenu = findByTestId(panel, "ai-more-menu");
+    expect(moreMenu?.getAttribute("hidden")).not.toBeNull();
+    moreMenu!.hidden = true;
+    // Export and settings remain in the existing disclosure, not duplicate chrome buttons.
+    more?.click();
+    expect(more?.getAttribute("aria-expanded")).toBe("true");
+    expect(moreMenu!.hidden).toBe(false);
     const fold = findByTestId(moreMenu!, "ai-more-actions");
     expect(fold).not.toBeNull();
     expect(findByTestId(fold!, "ai-more-export")).not.toBeNull();
     expect(findByTestId(fold!, "ai-more-dock")).toBeNull();
+    const settings = findByTestId(fold!, "ai-more-settings");
+    expect(settings?.getAttribute("aria-label")?.trim()).toBeTruthy();
+    settings?.click();
+    expect(findByTestId(document.body as unknown as FakeElement, "ai-settings-modal")).not.toBeNull();
   });
 
   it("opens a dedicated settings modal with config fields", () => {

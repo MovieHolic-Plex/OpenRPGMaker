@@ -1,0 +1,20 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiAssistantUxP0P2.test.ts test/aiDeckCss.test.ts test/aiDeckIcons.test.ts test/aiBackgroundOpacity.test.ts test/aiComposerDeck.test.ts test/aiDeckRail.test.ts test/aiDockMetaReach.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-assistant-glass-p2-contrast
+
+ ✓ test/aiDeckCss.test.ts (6 tests) 15ms
+ ✓ test/aiDeckRail.test.ts (5 tests) 26ms
+ ✓ test/aiDeckIcons.test.ts (3 tests) 11ms
+ ✓ test/aiComposerDeck.test.ts (7 tests) 21ms
+ ✓ test/aiBackgroundOpacity.test.ts (25 tests) 147ms
+ ✓ test/aiDockMetaReach.test.ts (4 tests) 822ms
+ ✓ test/aiAssistantUxP0P2.test.ts (3 tests) 808ms
+   ✓ AI assistant UX P0–P2 > keeps routine AI settings out of the assistant panel chrome  359ms
+
+ Test Files  7 passed (7)
+      Tests  53 passed (53)
+   Start at  11:42:30
+   Duration  37.19s (transform 28.11s, setup 0ms, collect 73.90s, tests 1.85s, environment 2ms, prepare 2.55s)

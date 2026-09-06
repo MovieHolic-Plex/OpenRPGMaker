@@ -1,0 +1,20 @@
+market-idle 11 labels; 0 failures
+market-conversation 25 labels; 0 failures
+market-run 26 labels; 0 failures
+market-attention 26 labels; 0 failures
+market-done 26 labels; 0 failures
+market-error 26 labels; 0 failures
+market-metadata 18 labels; 0 failures
+black-metadata 18 labels; 0 failures
+white-metadata 18 labels; 0 failures
+market-pill-idle 1 labels; 0 failures
+market-pill-run 2 labels; 0 failures
+market-pill-done 2 labels; 0 failures
+market-pill-attention 3 labels; 0 failures
+market-pill-error 2 labels; 0 failures
+black-pill-error 2 labels; 0 failures
+white-pill-error 2 labels; 0 failures
+{
+  "failures": [],
+  "min": 4.589972785807559
+}
