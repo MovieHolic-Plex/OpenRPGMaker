@@ -40,8 +40,8 @@ describe("적 세로 배치 기하", () => {
     });
   }
 
-  it("rm2000 정면 구도는 아군을 뒷모습으로 세운다(2026-09-03 전까지는 숨겼다)", () => {
-    expect(BATTLER_PLACEMENTS.rm2000.partyFacing).toBe("back");
+  it("rm2000 정면 구도는 아군을 숨기고 기존 좌표 계약은 유지한다", () => {
+    expect(BATTLER_PLACEMENTS.rm2000.partyFacing).toBe("hidden");
     // 4인: 가운데(적 자리)를 비우고 좌우 두 쌍, 발끝은 필드 바닥.
     const slots = [0, 1, 2, 3].map((i) => BATTLER_PLACEMENTS.rm2000.party(i, 4));
     expect(slots.map((s) => s.y)).toEqual([160, 160, 160, 160]);

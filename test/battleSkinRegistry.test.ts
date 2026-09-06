@@ -35,6 +35,7 @@ describe("battle skin registry", () => {
   it("rm2000 이 기본 스킨이다", () => {
     expect(DEFAULT_BATTLE_SKIN_ID).toBe("rm2000");
     expect(resolveSkinId(undefined)).toBe("rm2000");
+    expect(getBattleSkin("rm2000").showAllySprites).toBe(false);
   });
 
   it("rm2003 은 측면 스킨 자기 자신으로 풀리고, 옛 별칭 classic 만 rm2000 으로 간다", () => {
@@ -48,8 +49,7 @@ describe("battle skin registry", () => {
     expect(resolveSkinId("vxace")).toBe("vxace");
     expect(getBattleSkin("vxace").layout).toBe("frontview");
     expect(getBattleSkin("vxace").showAllySprites).toBe(false);
-    // 2026-09-03: rm2000 은 정면 구도를 유지하되 아군을 뒷모습으로 필드 하단에 세운다(battleFieldDom rm2000 배치).
-    expect(getBattleSkin("rm2000").showAllySprites).toBe(true);
+    expect(getBattleSkin("rm2000").showAllySprites).toBe(false);
     expect(getBattleSkin("rm2000").layout).toBe("frontview");
   });
 
