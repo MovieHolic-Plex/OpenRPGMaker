@@ -498,3 +498,17 @@ NPC 고수준 commands의 `text.lines`는 실제 줄바꿈을 포함한 `text.bo
 선언된 adventure 계약의 도구는 `adventureToolNames`에서 실제 호출 스키마로 승격되어 첫 실행부터 노출된다. 안내문에서 언급만 하고 도메인 쿼터에 숨기는 것을 금지한다. 조건 kind 누락 오류는 실행 가능한 selfSwitch/switch 예시를 반환한다.
 
 시각 재검증에서 장비 아이콘 누락이 발견돼 모험 완료 검사의 저작 레코드 추적을 items와 equipment로 확장했다. 두 컬렉션의 동일 ID도 따로 추적한다. 그림 없는 장비를 생성하고 완료라고 답하는 통합 회귀를 유지한다.
+
+## 실제 이미지 입력 보존 (2026-09-07)
+
+`scripts/lib/ohMyPiPiAiRuntime.ts`의 `openaiToContext`는 사용자 메시지의 텍스트와
+`image_url` 순서를 보존한다. PNG/JPEG/WebP base64 data URL을 pi-ai의 이미지 블록으로
+변환하며 바이트를 텍스트 요약으로 대체하지 않는다. 잘못된 base64, 지원하지 않는 MIME,
+원격 이미지 URL과 잘못된 detail 값은 HTTP 400 입력 오류로 거부한다.
+
+이전 구현은 `textOf`로 이미지 부분을 버렸다. HTTP 200과 그럴듯한 외형 설명만으로는
+이미지를 실제로 전달했다는 증거가 아니다. `test/ohMyPiVision.bun.test.ts`가 바이트·순서,
+실제 pi-ai 직렬화와 worker의 잘못된 입력 거부를 검증한다. 실제 제공자 검증에서는
+서로 다른 단색 이미지가 구분되는지 먼저 확인한 뒤 원본 그림을 전달한다.
+몬스터 카탈로그의 원본 해시와 관측 근거는 `src/assets/monsterCatalogReview.json` 및
+`output/evidence/monster-catalog/README.md`를 참조한다.
