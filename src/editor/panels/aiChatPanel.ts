@@ -1231,11 +1231,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   /** End live chrome, retaining plan/budget state for history and continuation. */
   const settleWorkPlanTurn = (): void => {
+    const focused = document.activeElement;
+    const restoreComposerFocus = workPlanSurface?.contains(focused)
+      || document.querySelector("[data-testid='ai-plan-book-overlay']")?.contains(focused);
     if (workPlanSurfaceState) workPlanSurfaceState.active = false;
     workPlanActivity = "";
     closeWorkPlanBook();
     removeWorkPlanSurfaceDom();
     studioShell?.setWorkPlan(null, false);
+    if (restoreComposerFocus) input.focus();
   };
   const ensureWorkPlanSurface = (): HTMLElement => {
     if (!workPlanSurface) {
