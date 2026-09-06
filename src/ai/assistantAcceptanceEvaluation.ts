@@ -62,6 +62,9 @@ export function evaluateAcceptanceCriterion(criterion: AcceptanceCriterion, inpu
     }
     case "targetChange": case "preserve": {
       const before = input.baseline.maps[map.id];
+      if (!before && criterion.kind === "targetChange" && "newMapName" in criterion.target) {
+        return { expected, observed: "Uniquely bound map created since original baseline", passed: true };
+      }
       const same = Boolean(before && (!region || validRegion(before, region))
         && acceptanceFingerprint(scopedMapContent(before, region)) === acceptanceFingerprint(scopedMapContent(map, region)));
       const passed = criterion.kind === "preserve" ? same : Boolean(before && !same);

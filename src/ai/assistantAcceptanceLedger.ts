@@ -1,7 +1,7 @@
 import type { Project } from "@/project/types";
 import {
   ACCEPTANCE_EXAMPLES, parseAcceptanceCriteriaResult,
-  type AcceptancePromise, type AcceptanceSnapshot, type AcceptanceItemSnapshot, type AcceptanceIssue,
+  type AcceptancePromise, type AcceptanceSnapshot, type AcceptanceItemSnapshot, type AcceptanceIssue, type AcceptanceCriterion,
 } from "./assistantAcceptance";
 import {
   acceptanceFingerprint, criterionTargets, evaluateAcceptanceCriterion, resolveAcceptanceMap,
@@ -40,7 +40,10 @@ export class AssistantAcceptanceLedger {
     if (additions.length === 0) return;
     const baseline = structuredClone(requestBaseline);
     for (const promise of additions) {
-      if (!this.promises.has(promise.id)) this.promises.set(promise.id, { ...structuredClone(promise), baseline });
+      if (this.promises.has(promise.id)) continue;
+      const issues = promise.criteria ? this.originalTargetIssues(promise.criteria, baseline) : [];
+      this.promises.set(promise.id, { ...structuredClone(promise), baseline,
+        ...(issues.length ? { criteria: null, issues } : {}) });
     }
   }
 
@@ -52,8 +55,24 @@ export class AssistantAcceptanceLedger {
     }] };
     const parsed = parseAcceptanceCriteriaResult(criteria);
     if (!parsed.criteria) return { ok: false, code: "malformed-criteria", issues: parsed.issues };
+    const issues = this.originalTargetIssues(parsed.criteria, promise.baseline);
+    if (issues.length) return { ok: false, code: "malformed-criteria", issues };
     this.promises.set(promise.id, { ...promise, criteria: parsed.criteria, issues: undefined });
     return { ok: true, code: "repaired", issues: [] };
+  }
+
+  /** Validate against the owning request, never a later draft or applied rebase. */
+  private originalTargetIssues(criteria: readonly AcceptanceCriterion[], baseline: Project): AcceptanceIssue[] {
+    return criteria.flatMap((criterion, criterionIndex) => {
+      if (criterion.kind !== "preserve" && criterion.kind !== "targetChange") return [];
+      if (criterion.kind === "targetChange" && "newMapName" in criterion.target) return [];
+      if (resolveAcceptanceMap(baseline, criterion.target, this.bindings)) return [];
+      return [{ criterionIndex, field: `criteria[${criterionIndex}].target`, code: "unsupported-original-target",
+        expected: criterion.kind === "preserve"
+          ? "target present in the original request baseline; use an existing mapId (or previously bound name). A newly created map has no original content to preserve"
+          : "mapId present in the original request baseline; for creation use an explicit newMapName selector",
+        example: ACCEPTANCE_EXAMPLES[criterion.kind] }];
+    });
   }
 
   private unavailableItem(): AcceptanceToolResult {

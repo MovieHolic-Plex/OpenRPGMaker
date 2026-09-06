@@ -73,8 +73,19 @@ and `assistantAcceptanceSession` replay the five round-2 repair calls.
 Checks inspect actual scoped map dimensions, map/event counts, original target
 changes, protected map/region content, conservative static reachability and
 explicit image review. New-map names bind once to a unique new ID relative to the
-first promise for that name; later baselines cannot resolve its ambiguity. Static route
-checks do not claim conditional transfer or runtime playthrough support.
+first promise for that name; later baselines cannot resolve its ambiguity.
+`targetChange` with explicit `newMapName` also recognizes original absence ->
+uniquely bound applied-map presence as creation, after normal region validation.
+Draft-only creation, existing same-name maps, ambiguous names and replacement IDs
+cannot verify it. Existing-map change comparisons remain scoped to original content.
+Ledger adoption and repair reject baseline-dependent targets without original
+content (`preserve`, or `targetChange` with a missing original `mapId`) atomically
+with criterion-indexed `unsupported-original-target` issues. These items remain
+repairable; valid siblings, captured baselines and bindings stay immutable. A name
+bound in an earlier request can still refer to original content in a later request's
+baseline. Regression: `assistantAcceptanceNewMapCharacterization` replays the
+captured round5 contract through both plan parsers and the real session/tool path.
+Static route checks do not claim conditional transfer or runtime playthrough support.
 Image checks require successfully rendered and delivered `show_map_region`
 coverage (actual clipped bounds, exact union), then a later explicit
 `review_acceptance({itemId, verdict:"pass"|"fail", note})`. Only an explicit pass
