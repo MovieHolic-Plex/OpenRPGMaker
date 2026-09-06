@@ -145,6 +145,7 @@ import {
   proposalHasChangedMap,
   proposalScopeCarryoverWarning,
   requestLikelyExpectsChange,
+  type ProposalCompletenessCall,
 } from "./proposalCompleteness";
 import { defaultYieldToUi, type YieldToUi } from "./yieldToUi";
 import {
@@ -838,16 +839,16 @@ export class AssistantSession {
   // 세션 시작 시점 스냅샷(수락 시 store와 대조/리플레이용). rebaseProject로 갱신될 수 있다.
   baselineProject: Project;
   // 스펙 게이트 상태: 확정된 밑그림은 턴 간 유지된다(사용자가 "계속해"로 이어가도 재제출 불필요).
-  // 새 set_build_spec이 검증을 통과하면 교체된다.
-  private activeSpec: BuildSpec | null = null;
-  private activeSpecTurnIndex = 0;
+  // 같은 맵의 성공한 제출만 교체한다. 삽입 순서는 최근 확정/확장 순서다.
+  private readonly specsByMap = new Map<string, { spec: BuildSpec; turnIndex: number }>();
+  private latestSpecMapId: string | null = null;
   private currentTurnIndex = 0;
   // 이번 턴 사용자 메시지의 [컨텍스트] 선택 영역에서 파생된 암묵적 명세(턴마다 재계산).
   private turnImplicitSpec: BuildSpec | null = null;
   // 이번 턴 시작 전에 이미 존재하던 명시 스펙. 이 스펙으로 변경 제안이 만들어지면
   // 카드에 이전 계획 포함 경고를 붙인다(D06).
-  private carryoverSpecForTurn: BuildSpec | null = null;
-  private carryoverWarningAdded = false;
+  private carryoverSpecsForTurn = new Map<string, BuildSpec>();
+  private readonly carryoverWarningsAdded = new Set<string>();
   // 이번 턴의 명세 검증 실패 횟수 — MAX_SPEC_REJECTIONS 초과 시 폐기 지시.
   private specRejections = 0;
   // 직전에 거부된 명세의 정규화 지문. 키 순서만 바꾼 같은 명세를 재제출하는 공회전을
@@ -1144,6 +1145,7 @@ export class AssistantSession {
   // 제안 수락/거부 후, 대화(메시지·감사 로그)를 유지한 채 프로젝트 기준만 store 최신 상태로 갱신한다.
   // 세션 폐기(dropSession)와 달리 대화 기억을 잃지 않는다 — "채팅 세션 단위 전체 기억"(#6)의 핵심.
   rebaseProject(project: Project): void {
+    this.pruneRemovedMapSpecs(this.ctx.project, project);
     this.baselineProject = structuredClone(project);
     this.ctx = { project: cloneDetachedDraft(project) };
     // rebase = 적용 성공 후 세션이 store와 재동기화됐다는 신호다. 현재 턴의 적용 실패 상태를 버린다.
@@ -1172,8 +1174,32 @@ export class AssistantSession {
   }
 
   // 현재 확정된 밑그림(없으면 null). 패널이 상태 표시/카드 렌더에 쓴다.
-  getActiveSpec(): BuildSpec | null {
-    return this.activeSpec;
+  getActiveSpec(mapId: string | null = this.latestSpecMapId): BuildSpec | null {
+    return mapId === null ? null : this.specsByMap.get(mapId)?.spec ?? null;
+  }
+
+  private rememberSpec(spec: BuildSpec): void {
+    this.specsByMap.delete(spec.mapId);
+    this.specsByMap.set(spec.mapId, { spec, turnIndex: this.currentTurnIndex });
+    this.latestSpecMapId = spec.mapId;
+  }
+
+  /** Never-created planned maps survive normal rebases; removed identities do not. */
+  private pruneRemovedMapSpecs(before: Project, after: Project, reset = false): void {
+    const removed = (mapId: string): boolean => reset || Boolean(before.maps[mapId] && !after.maps[mapId]);
+    for (const mapId of this.specsByMap.keys()) {
+      if (removed(mapId)) this.specsByMap.delete(mapId);
+    }
+    for (const mapId of this.carryoverSpecsForTurn.keys()) {
+      if (removed(mapId)) {
+        this.carryoverSpecsForTurn.delete(mapId);
+        this.carryoverWarningsAdded.delete(mapId);
+      }
+    }
+    if (this.turnImplicitSpec && removed(this.turnImplicitSpec.mapId)) this.turnImplicitSpec = null;
+    if (this.latestSpecMapId !== null && !this.specsByMap.has(this.latestSpecMapId)) {
+      this.latestSpecMapId = [...this.specsByMap.keys()].at(-1) ?? null;
+    }
   }
 
   getWorkPlan(): WorkPlan | null {
@@ -1288,11 +1314,8 @@ export class AssistantSession {
     }
     // 검증기는 "22" 같은 숫자 문자열을 받아주지만 게이트는 저장된 값을 그대로 더한다 — 경계에서 정수로 굳혀 저장한다.
     const normalized = normalizeBuildSpec(spec);
-    this.activeSpec = normalized;
-    this.activeSpecTurnIndex = this.currentTurnIndex;
-    // carryoverSpecForTurn은 previous-turn 스펙을 다음 턴으로 넘기는 슬롯이라
-    // 현재 턴에서 새로 확정된 스펙이 이전 계획을 덮으면 다음 턴 carryover가 끊긴다.
-    // previous-turn carryover는 다음 sendUserMessage 초입에서 세팅되므로 여기서 null로 비우지 않는다.
+    this.rememberSpec(normalized);
+    // Preserve the map-keyed turn-start snapshots for historical scope warnings.
     this.specRejections = 0;
     this.lastRejectedSpecFingerprint = null;
     const kinds = [...new Set(normalized.assets.map((asset) => asset.kind))].join("·");
@@ -1329,7 +1352,8 @@ export class AssistantSession {
     const regions = this.gateRegions(name, args);
     if (regions.length === 0) return { warnings: [] }; // mapId 없는 인자 형태 — 현 공간 툴셋엔 없음.
     const mapId = regions[0].mapId;
-    const specs = [this.activeSpec, this.turnImplicitSpec]
+    const activeSpec = this.getActiveSpec(mapId);
+    const specs = [activeSpec, this.turnImplicitSpec]
       .filter((spec): spec is BuildSpec => spec !== null && spec.mapId === mapId);
     if (scoped && specs.length === 0) {
       return specGateResult(`스펙 게이트: '${name}' 차단 — 이 맵의 밑그림(스펙)이 없습니다`, [
@@ -1338,8 +1362,8 @@ export class AssistantSession {
         "현재 컨텍스트 선택 영역이 있으면 암묵적 명세로 인정됩니다. 없으면 필요한 영역을 직접 산정해 set_build_spec으로 제출하세요.",
       ]);
     }
-    if (scoped && this.activeSpec?.mapId === mapId) {
-      const mismatch = plannedTargetMismatch(this.activeSpec, args);
+    if (scoped && activeSpec) {
+      const mismatch = plannedTargetMismatch(activeSpec, args);
       if (mismatch) {
         return specGateResult(`스펙 게이트: '${name}' 차단 — plannedMap 불일치`, [
           mismatch,
@@ -1398,11 +1422,8 @@ export class AssistantSession {
     uncovered: readonly AffectedRegion[]
   ): SpecGatePass {
     if (uncovered.length === 0) return { warnings: [] };
-    const target = this.activeSpec?.mapId === mapId
-      ? this.activeSpec
-      : this.turnImplicitSpec?.mapId === mapId
-      ? this.turnImplicitSpec
-      : null;
+    const activeSpec = this.getActiveSpec(mapId);
+    const target = activeSpec ?? (this.turnImplicitSpec?.mapId === mapId ? this.turnImplicitSpec : null);
     if (target === null) return { warnings: [] };
 
     const additions = regions
@@ -1429,9 +1450,8 @@ export class AssistantSession {
       }],
       // The gate only prepares expansion; failed or throwing writes must leave no spec debt.
       commitExpansion: () => {
-        if (target === this.activeSpec) {
-          this.activeSpec = expanded;
-          this.activeSpecTurnIndex = this.currentTurnIndex;
+        if (target === activeSpec) {
+          this.rememberSpec(expanded);
         } else {
           // 선택 영역 암묵 스펙은 이 턴의 것이다 — activeSpec 으로 승격하지 않는다.
           this.turnImplicitSpec = expanded;
@@ -1667,10 +1687,10 @@ export class AssistantSession {
     this.turnImplicitSpec = implicitSpecFromContext(text)
       ?? implicitSpecFromScope(options.scope)
       ?? this.implicitSpecFromViewPhrase(instruction);
-    this.carryoverSpecForTurn = this.activeSpec && this.activeSpecTurnIndex < this.currentTurnIndex
-      ? structuredClone(this.activeSpec)
-      : null;
-    this.carryoverWarningAdded = false;
+    this.carryoverSpecsForTurn = new Map([...this.specsByMap]
+      .filter(([, entry]) => entry.turnIndex < this.currentTurnIndex)
+      .map(([mapId, entry]) => [mapId, structuredClone(entry.spec)]));
+    this.carryoverWarningsAdded.clear();
     this.specRejections = 0;
     this.lastRejectedSpecFingerprint = null;
     const continuesGoal = this.turnIsDriverContinue || intent.source === "continuation";
@@ -2460,7 +2480,7 @@ export class AssistantSession {
       const warnings = proposalCompletenessWarnings({
         requestText: this.currentTurnInstruction,
         intent: this.turnIntent,
-        buildSpec: this.reviewBuildSpecForProposal(calls),
+        buildSpecs: this.getCompletionSpecs(calls),
         calls,
       });
       if (warnings.length === 0) return { ok: true };
@@ -2990,9 +3010,10 @@ export class AssistantSession {
   }
 
   private withCarryoverWarningIfNeeded(proposal: ProposedCall): ProposedCall {
-    const spec = this.carryoverSpecForTurn;
-    if (spec === null || this.carryoverWarningAdded) return proposal;
     if (!SPATIAL_BUILD_TOOLS.has(proposal.name)) return proposal;
+    const mapId = toolTargetMapId(proposal.args);
+    const spec = mapId ? this.carryoverSpecsForTurn.get(mapId) : undefined;
+    if (!spec || this.carryoverWarningsAdded.has(spec.mapId)) return proposal;
     // carryover는 diff 생성 전 시점에 붙는다 — tilesChanged 기준으로 거르면 아직 0이라 누락된다.
     // previous-turn spec의 같은 맵에 다시 쓰는 공간 쓰기면 1회 경고를 붙인다.
     // paint_tiles 등 from/to 직사각형이 regionsFromKnownCall에서 0-폭으로 잡히는 레거시
@@ -3001,8 +3022,9 @@ export class AssistantSession {
     const isSameMapWrite = typeof callerMapId === "string" && callerMapId === spec.mapId;
     if (!isSameMapWrite && !proposalHasChangedMap([proposal], spec.mapId)) return proposal;
 
-    this.carryoverWarningAdded = true;
-    const warning = proposalScopeCarryoverWarning(buildSpecPlanLabel(spec));
+    this.carryoverWarningsAdded.add(spec.mapId);
+    const label = buildSpecPlanLabel(spec);
+    const warning = proposalScopeCarryoverWarning(this.carryoverSpecsForTurn.size > 1 ? `${spec.mapId}: ${label}` : label);
     return { ...proposal, result: appendDiffWarning(proposal.result, warning) };
   }
 
@@ -3140,9 +3162,7 @@ export class AssistantSession {
    * 이쪽은 "에셋 명세를 확정해 두고 실행을 건너뛴" 상태라 사용자에게 아무 결과도 남지 않는다.
    */
   private hasUnbuiltSpecThisTurn(): boolean {
-    if (this.activeSpecTurnIndex !== this.currentTurnIndex) return false;
-    const assets = this.activeSpec?.assets ?? [];
-    return assets.length > 0;
+    return [...this.specsByMap.values()].some(({ spec, turnIndex }) => turnIndex === this.currentTurnIndex && spec.assets.length > 0);
   }
 
   /**
@@ -3163,12 +3183,12 @@ export class AssistantSession {
     onEvent: (event: SessionEvent) => void,
     proposedByKey: Map<string, ProposedCall>
   ): number {
-    const assets = (this.activeSpec?.assets ?? []).filter((asset) => asset.kind === "npc");
-    const mapId = this.activeSpec?.mapId;
-    if (!mapId || assets.length === 0) return 0;
+    const assets = [...this.specsByMap.values()]
+      .filter(({ turnIndex }) => turnIndex === this.currentTurnIndex)
+      .flatMap(({ spec }) => spec.assets.filter(asset => asset.kind === "npc").map(asset => ({ mapId: spec.mapId, asset })));
 
     let placed = 0;
-    for (const asset of assets) {
+    for (const { mapId, asset } of assets) {
       const name = specNpcName(asset);
       const args: Record<string, unknown> = {
         mapId,
@@ -3328,19 +3348,23 @@ export class AssistantSession {
     onEvent({ type: "status", text: `주민 대사 생성 실패 — 모델이 직접 씁니다 (${eventIds.length}명)` });
   }
 
-  private reviewBuildSpecForProposal(calls: readonly ProposedCall[]): BuildSpec | null {
-    const currentSpec = this.activeSpec && this.activeSpecTurnIndex === this.currentTurnIndex ? this.activeSpec : null;
-    if (currentSpec && proposalHasChangedMap(calls, currentSpec.mapId)) return currentSpec;
-    if (this.turnImplicitSpec && proposalHasChangedMap(calls, this.turnImplicitSpec.mapId)) return this.turnImplicitSpec;
-    if (this.carryoverSpecForTurn && proposalHasChangedMap(calls, this.carryoverSpecForTurn.mapId)) return this.carryoverSpecForTurn;
-    if (
-      this.activeSpec &&
-      this.turnExpectsChange() &&
-      proposalHasChangedMap(calls, this.activeSpec.mapId)
-    ) {
-      return this.activeSpec;
+  /** Shared by session review/auto-completion and panel completion accounting.
+   * Only changed maps participate; precedence is applied independently per map.
+   */
+  getCompletionSpecs(calls: readonly ProposalCompletenessCall[]): BuildSpec[] {
+    const mapIds = new Set([...this.specsByMap.keys(), ...this.carryoverSpecsForTurn.keys()]);
+    if (this.turnImplicitSpec) mapIds.add(this.turnImplicitSpec.mapId);
+    const specs: BuildSpec[] = [];
+    for (const mapId of [...mapIds].sort()) {
+      if (!proposalHasChangedMap(calls, mapId)) continue;
+      const entry = this.specsByMap.get(mapId);
+      const spec = (entry?.turnIndex === this.currentTurnIndex ? entry.spec : null)
+        ?? (this.turnImplicitSpec?.mapId === mapId ? this.turnImplicitSpec : null)
+        ?? this.carryoverSpecsForTurn.get(mapId)
+        ?? (this.turnExpectsChange() ? entry?.spec : null);
+      if (spec) specs.push(spec);
     }
-    return null;
+    return specs;
   }
 
   /**
@@ -3358,7 +3382,7 @@ export class AssistantSession {
     const lintWarnings = proposalCompletenessWarnings({
       requestText: this.currentTurnInstruction,
       intent: this.turnIntent,
-      buildSpec: this.reviewBuildSpecForProposal(calls),
+      buildSpecs: this.getCompletionSpecs(calls),
       calls,
     });
     const diffWarnings = calls.flatMap((call) => call.result.diff?.warnings ?? []);
@@ -3647,7 +3671,7 @@ export class AssistantSession {
         }
         // 레이어 검증(자문): 지적을 감사에 남기되 최종화를 막지 않는다.
         await this.sweepFinishedLayers(onEvent);
-        await this.authorPendingNpcCast(onEvent, signal, proposedByKey, turnTheme || this.activeSpec?.title || "");
+        await this.authorPendingNpcCast(onEvent, signal, proposedByKey, turnTheme || this.getActiveSpec()?.title || "");
         assistantText = this.npcRewardFinalText(sanitizeAssistantText(stripReviewCompletePrefix(reviewText)));
         onEvent({ type: "assistant_message", content: assistantText });
         this.pushAudit({ kind: "status", text: `턴 종료(final) — 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}` });
@@ -3757,7 +3781,7 @@ export class AssistantSession {
         }
         // 캐스트 라이터: 이 턴이 남긴 대사 없는 NPC 를 한 장의 시트로 채운다. 실패하면 모델에게 한 번 되돌린다.
         if (!npcCastRekickUsed) {
-          const cast = await this.authorPendingNpcCast(onEvent, signal, proposedByKey, turnTheme || this.activeSpec?.title || "");
+          const cast = await this.authorPendingNpcCast(onEvent, signal, proposedByKey, turnTheme || this.getActiveSpec()?.title || "");
           if (cast === "rekick") {
             npcCastRekickUsed = true;
             phase = "execute";
@@ -3893,8 +3917,12 @@ export class AssistantSession {
                 ? this.specGate(name, args)
                 : { warnings: [] };
               if (isSpecGatePass(gate)) {
+                const before = this.ctx.project;
                 toolResult = runTool(this.ctx, name, args, { dryRun: false });
-                if (toolResult.ok) gate.commitExpansion?.();
+                if (toolResult.ok) {
+                  gate.commitExpansion?.();
+                  this.pruneRemovedMapSpecs(before, this.ctx.project, name === "reset_project");
+                }
                 toolResult = withSpecGateWarnings(toolResult, gate.warnings);
               } else {
                 toolResult = gate;
@@ -4106,7 +4134,7 @@ export class AssistantSession {
 
       // 출력 토큰 예산 확인(라운드의 툴 실행까지 마친 뒤). 예산 소진이 유일한 사용자 제한.
       if (spentOutputTokens >= this.config.maxTokens) {
-        await this.authorPendingNpcCast(onEvent, signal, proposedByKey, turnTheme || this.activeSpec?.title || "");
+        await this.authorPendingNpcCast(onEvent, signal, proposedByKey, turnTheme || this.getActiveSpec()?.title || "");
         onEvent({
           type: "status",
           text: TOKEN_BUDGET_STATUS_TEXT,
@@ -4121,7 +4149,7 @@ export class AssistantSession {
     }
 
     // 라운드 안전핀 도달(기본 200 — 정상 작업에선 도달하지 않음) — 현재까지의 changeset을 제시.
-    await this.authorPendingNpcCast(onEvent, signal, proposedByKey, turnTheme || this.activeSpec?.title || "");
+    await this.authorPendingNpcCast(onEvent, signal, proposedByKey, turnTheme || this.getActiveSpec()?.title || "");
     onEvent({ type: "status", text: TOKEN_BUDGET_STATUS_TEXT });
     this.pushAudit({ kind: "status", text: `턴 종료(max-tool-calls) — 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}` });
     return {

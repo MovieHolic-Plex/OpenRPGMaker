@@ -24,6 +24,8 @@ export interface ProposalCompletenessInput {
   readonly requestText?: string;
   readonly assistantText?: string;
   readonly buildSpec?: BuildSpec | null;
+  /** Plural session-owned selection; when supplied, supersedes the legacy single spec. */
+  readonly buildSpecs?: readonly BuildSpec[];
   /**
    * 이번 턴의 의도 선언(모델이 읽은 것). 있으면 「변경을 기대하는 요청인가」「실내 신축인가」「수정인가」를
    * 선언 필드로 판정한다. 없을 때만(선언자 없는 세션·단독 테스트) 문장 휴리스틱으로 떨어진다.
@@ -34,8 +36,9 @@ export interface ProposalCompletenessInput {
 
 export function proposalCompletenessWarnings(input: ProposalCompletenessInput): string[] {
   const intent = input.intent && input.intent.source === "llm" ? input.intent : null;
-  const base = input.buildSpec
-    ? buildSpecCompletenessWarnings(input.buildSpec, input.calls)
+  const specs = input.buildSpecs ?? (input.buildSpec ? [input.buildSpec] : []);
+  const base = specs.length > 0
+    ? specs.flatMap(spec => buildSpecCompletenessWarnings(spec, input.calls, input.buildSpecs !== undefined))
     : heuristicCompletenessWarnings(input.requestText ?? "", input.calls, input.assistantText ?? "", intent);
   return dedupe([
     ...base,
@@ -93,11 +96,11 @@ export function requestLikelyExpectsChange(text: string): boolean {
   return /(해줘|해주세요|만들|생성|추가|배치|놓아|놔|꾸며|장식|칠해|그려|지어|파줘|깔아|정리|삭제|수정|바꿔|설정)/.test(normalized);
 }
 
-function buildSpecCompletenessWarnings(buildSpec: BuildSpec, calls: readonly ProposalCompletenessCall[]): string[] {
+function buildSpecCompletenessWarnings(buildSpec: BuildSpec, calls: readonly ProposalCompletenessCall[], qualifyMap: boolean): string[] {
   const touchedRegions = calls.flatMap(changedRegionsForCall);
   const missing = buildSpec.assets.filter((asset) => !assetTouched(buildSpec.mapId, asset, touchedRegions));
   if (missing.length === 0) return [];
-  return [`${PROPOSAL_COMPLETENESS_WARNING_PREFIX} ${formatMissingSpecAssets(missing)}`];
+  return [`${PROPOSAL_COMPLETENESS_WARNING_PREFIX} ${qualifyMap ? `${buildSpec.mapId}: ` : ""}${formatMissingSpecAssets(missing)}`];
 }
 
 function heuristicCompletenessWarnings(

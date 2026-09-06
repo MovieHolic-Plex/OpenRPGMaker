@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { AssistantSession, ProposedCall, TurnResult } from "@/ai/assistantSession";
+import { AssistantSession, type ProposedCall, type TurnResult } from "@/ai/assistantSession";
 import { buildAiActivityLogRecord } from "@/ai/activityLog";
 import { createAiTurnRunner, type AiTurnRunnerDeps } from "@/editor/panels/aiTurnRunner";
 import { createAiRegionTaskRunner } from "@/editor/panels/aiRegionTaskRunner";
@@ -8,6 +8,8 @@ import { clearAgentGhostPreview, getAgentGhostPreviewState, type AgentGhostPrevi
 import { createProposalHost } from "@/editor/panels/aiProposalCard";
 import type { AiRunSurface } from "@/editor/panels/aiRunSurface";
 import { createBlankProject } from "@/project/defaults";
+import { proposalCompletenessWarnings } from "@/ai/proposalCompleteness";
+import { fixedDeclarer } from "./intentFixture";
 import { runTool } from "@/editor/tools/toolRunner";
 import { store } from "@/project/store";
 import { installFakeDom } from "./fakeDom";
@@ -40,12 +42,13 @@ function titleCall(title: string): ProposedCall {
   expect(result.ok, result.summary).toBe(true);
   return { name: "set_title_screen", args, result, summary: result.summary };
 }
-function setup() {
+function setup(sessionOverride?: AssistantSession) {
   const log = document.createElement("div");
   const appendBubble = vi.fn((_role: unknown, text: string) => {
     const bubble = document.createElement("div"); bubble.textContent = text; log.append(bubble); return bubble;
   });
-  const session = {
+  const session = sessionOverride ?? {
+    getCompletionSpecs: () => [],
     getWorkPlan: () => null,
     getActiveSpec: () => null, getAuditEntries: () => [], getProposedProject: () => store.getCurrent(),
   } as unknown as AssistantSession;
@@ -67,6 +70,36 @@ function setup() {
   } satisfies AiTurnRunnerDeps;
   return { deps, session, log, appendBubble, runner: createAiTurnRunner(deps) };
 }
+
+describe("panel map completeness selection", () => {
+  it("uses the real session's plural selection instead of the most recent spec", async () => {
+    const ctx = { project: store.getCurrent() };
+    for (const id of ["a", "b"]) expect(runTool(ctx, "create_map", { id, name: id, width: 20, height: 20 }).ok).toBe(true);
+    store.replace(ctx.project);
+    const calls = [...["a", "b"].map(mapId => ({ name: "set_build_spec", args: { mapId, assets: [
+      { id: "paint", kind: "terrain", x: 3, y: 3, w: 3, h: 3 },
+      { id: "missing", kind: "prop", x: 15, y: 15, w: 1, h: 1 },
+    ] } })), ...["a", "b"].map(mapId => ({ name: "paint_tiles", args: { mapId, from: { x: 3, y: 3 }, to: { x: 4, y: 4 }, mode: "rect", layer: "lower", tile: 281 } }))];
+    const session = new AssistantSession(ctx.project, {
+      config: { authMode: "apiKey", baseUrl: "x", model: "stub", apiKey: "test", maxToolCalls: 1, maxTokens: 8192 },
+      declareIntent: fixedDeclarer({ mode: "modify" }),
+      chat: async () => ({ message: { role: "assistant", content: null, tool_calls: calls.map((entry, index) => ({
+        id: `c${index}`, type: "function", function: { name: entry.name, arguments: JSON.stringify(entry.args) },
+      })) }, finishReason: "tool_calls" }),
+    });
+    const result = await session.sendUserMessage("Edit both maps");
+    expect(result.proposedCalls).toHaveLength(2);
+    const expected = proposalCompletenessWarnings({ calls: result.proposedCalls, buildSpecs: session.getCompletionSpecs(result.proposedCalls) });
+    expect(expected).toHaveLength(2);
+    const selection = vi.spyOn(session, "getCompletionSpecs");
+    const h = setup(session);
+    await h.runner.executeTurn(session, "Edit both maps", async () => result);
+    expect(selection).toHaveBeenCalledWith(result.proposedCalls);
+    expect(result.proposedCalls[0].result.diff?.warnings).toEqual(expect.arrayContaining(expected));
+    for (const warning of expected) expect(h.log.textContent).toContain(warning);
+    expect(h.deps.applyProposal).toHaveBeenCalledWith(result.proposedCalls, expect.anything());
+  });
+});
 
 describe("running-tool event target forwarding", () => {
   it.each([

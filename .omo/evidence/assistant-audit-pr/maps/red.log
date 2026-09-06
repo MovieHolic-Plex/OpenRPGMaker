@@ -1,0 +1,406 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/assistantMultiMapSpec.test.ts --pool=threads --maxWorkers=2 --testTimeout=60000
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-rapid-harbor-7ca6
+
+ ❯ test/assistantMultiMapSpec.test.ts (17 tests | 13 failed) 33551ms
+   × map-owned construction contracts through AssistantSession > retains A after B, including a continued turn=false 5328ms
+     → expected [ false, true ] to deeply equal [ true, true ]
+   × map-owned construction contracts through AssistantSession > retains A after B, including a continued turn=true 4113ms
+     → expected [ false, true ] to deeply equal [ true, true ]
+   × map-owned construction contracts through AssistantSession > isolates failed updates, keeps both historical warnings, and selects both changed maps 1489ms
+     → expected { mapId: 'b', title: 'b', …(1) } to deeply equal { mapId: 'a', title: 'a', …(1) }
+   × map-owned construction contracts through AssistantSession > commits only successful map-local expansion after invalid-args 893ms
+     → expected { mapId: 'b', title: 'b', …(1) } to deeply equal { mapId: 'a', title: 'a', …(1) }
+   × map-owned construction contracts through AssistantSession > commits only successful map-local expansion after throwing-runner 3266ms
+     → promise resolved "{ …(4) }" instead of rejecting
+   × map-owned construction contracts through AssistantSession > expires implicit A selection without evicting explicit B 3245ms
+     → expected { mapId: 'b', title: 'b', …(1) } to be null
+   × map-owned construction contracts through AssistantSession > uses per-map completeness precedence and does not merge identical asset IDs 1534ms
+     → h.session.getCompletionSpecs is not a function
+   × map-owned construction contracts through AssistantSession > preserves future planned maps through rebase and checks their own dimensions after B 1803ms
+     → expected { mapId: 'b', title: 'b', …(1) } to deeply equal { mapId: 'future', …(3) }
+   × map-owned construction contracts through AssistantSession > prunes a successful removal before ID reuse, not failed removal or surviving maps 4099ms
+     → expected { mapId: 'b', title: 'b', …(1) } to deeply equal { mapId: 'map_blank_start', …(2) }
+   × map-owned construction contracts through AssistantSession > prunes external rebase deletions while preserving surviving and never-created maps 5073ms
+     → expected { mapId: 'future', …(3) } to be null
+   × map-owned construction contracts through AssistantSession > clears every spec on successful reset, including reused start ID and future plans 1188ms
+     → expected { mapId: 'future', …(3) } to deeply equal { mapId: 'map_blank_start', …(2) }
+   ✓ ordered terrain background and road overlay > validates explicit order undefined without weakening house overlap 114ms
+   ✓ ordered terrain background and road overlay > validates explicit order %j without weakening house overlap 149ms
+   ✓ ordered terrain background and road overlay > validates explicit order "road" without weakening house overlap 60ms
+   ✓ ordered terrain background and road overlay > validates explicit order "terrain" without weakening house overlap 80ms
+   × ordered terrain background and road overlay > validates explicit order "terrain" without weakening house overlap 103ms
+     → expected true to be false // Object.is equality
+   × ordered terrain background and road overlay > executes the terrain then road batch with no dependency deferral 1012ms
+     → expected [ false, false, false ] to deeply equal [ true, true, true ]
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 13 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/assistantMultiMapSpec.test.ts > map-owned construction contracts through AssistantSession > retains A after B, including a continued turn=false
+ FAIL  test/assistantMultiMapSpec.test.ts > map-owned construction contracts through AssistantSession > retains A after B, including a continued turn=true
+AssertionError: expected [ false, true ] to deeply equal [ true, true ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[32m-   true,[39m
+[31m+   false,[39m
+[2m    true,[22m
+[2m  ][22m
+
+ ❯ test/assistantMultiMapSpec.test.ts:49:98
+     47|     if (continued) await h.send([setSpec(spec("a")), setSpec(spec("b")…
+     48|     const result = await h.send([...(continued ? [] : [setSpec(spec("a…
+     49|     expect(h.events.filter(event => event.name === "paint_tiles").map(…
+       |                                                                                                  ^
+     50|     expect(result.proposedCalls.map(entry => entry.args.mapId)).toEqua…
+     51|     expect(h.session.getActiveSpec("a")).toEqual(spec("a"));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/13]⎯
+
+ FAIL  test/assistantMultiMapSpec.test.ts > map-owned construction contracts through AssistantSession > isolates failed updates, keeps both historical warnings, and selects both changed maps
+AssertionError: expected { mapId: 'b', title: 'b', …(1) } to deeply equal { mapId: 'a', title: 'a', …(1) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -7,8 +7,8 @@[39m
+[2m        "w": 3,[22m
+[2m        "x": 3,[22m
+[2m        "y": 3,[22m
+[2m      },[22m
+[2m    ],[22m
+[32m-   "mapId": "a",[39m
+[32m-   "title": "a",[39m
+[31m+   "mapId": "b",[39m
+[31m+   "title": "b",[39m
+[2m  }[22m
+
+ ❯ test/assistantMultiMapSpec.test.ts:63:42
+     61|     await h.send([setSpec({ ...spec("a"), assets: [{ ...spec("a").asse…
+     62|     expect(h.events.find(event => event.name === "set_build_spec" && !…
+     63|     expect(h.session.getActiveSpec("a")).toEqual(spec("a"));
+       |                                          ^
+     64|     expect(h.session.getActiveSpec("b")).toEqual(spec("b"));
+     65|     const result = await h.send([paint("a"), paint("b", 4), paint("a",…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/13]⎯
+
+ FAIL  test/assistantMultiMapSpec.test.ts > map-owned construction contracts through AssistantSession > commits only successful map-local expansion after invalid-args
+AssertionError: expected { mapId: 'b', title: 'b', …(1) } to deeply equal { mapId: 'a', title: 'a', …(1) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -7,8 +7,8 @@[39m
+[2m        "w": 3,[22m
+[2m        "x": 3,[22m
+[2m        "y": 3,[22m
+[2m      },[22m
+[2m    ],[22m
+[32m-   "mapId": "a",[39m
+[32m-   "title": "a",[39m
+[31m+   "mapId": "b",[39m
+[31m+   "title": "b",[39m
+[2m  }[22m
+
+ ❯ test/assistantMultiMapSpec.test.ts:86:42
+     84|       await h.send([fill("a", "invalid")]);
+     85|     }
+     86|     expect(h.session.getActiveSpec("a")).toEqual(spec("a"));
+       |                                          ^
+     87|     expect(h.session.getActiveSpec("b")).toEqual(spec("b"));
+     88|     const result = await h.send([fill("a")]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/13]⎯
+
+ FAIL  test/assistantMultiMapSpec.test.ts > map-owned construction contracts through AssistantSession > commits only successful map-local expansion after throwing-runner
+AssertionError: promise resolved "{ …(4) }" instead of rejecting
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- Error {[39m
+[32m-   "message": "rejected promise",[39m
+[31m+ {[39m
+[31m+   "assistantText": "완료 검증이 아직 미완성입니다.[39m
+[31m+ - Edit the requested maps: Missing or malformed criteria: repair_acceptance required[39m
+[31m+ ",[39m
+[31m+   "proposedCalls": [],[39m
+[31m+   "recap": {[39m
+[31m+     "elapsedMs": 899,[39m
+[31m+     "process": [[39m
+[31m+       {[39m
+[31m+         "at": "2026-09-06T12:17:57.058Z",[39m
+[31m+         "kind": "planner",[39m
+[31m+         "text": "planner:skip single-step",[39m
+[31m+       },[39m
+[31m+       {[39m
+[31m+         "at": "2026-09-06T12:17:57.947Z",[39m
+[31m+         "kind": "tool",[39m
+[31m+         "text": "fill_region fail",[39m
+[31m+       },[39m
+[31m+       {[39m
+[31m+         "at": "2026-09-06T12:17:57.947Z",[39m
+[31m+         "kind": "end",[39m
+[31m+         "text": "턴 종료(max-tool-calls) — 제안 0건 · 출력 토큰 ~30",[39m
+[31m+       },[39m
+[31m+     ],[39m
+[31m+     "proposedWrites": 0,[39m
+[31m+     "ralphContinues": 0,[39m
+[31m+     "stoppedReason": "max-tool-calls",[39m
+[31m+     "toolCalls": 1,[39m
+[31m+     "toolFailures": 1,[39m
+[31m+     "usage": {[39m
+[31m+       "byModel": [[39m
+[31m+         {[39m
+[31m+           "calls": 1,[39m
+[31m+           "callsWithoutUsage": 1,[39m
+[31m+           "completionTokens": 0,[39m
+[31m+           "model": "stub",[39m
+[31m+           "promptTokens": 0,[39m
+[31m+         },[39m
+[31m+       ],[39m
+[31m+       "calls": 1,[39m
+[31m+       "callsWithoutUsage": 1,[39m
+[31m+       "completionTokens": 0,[39m
+[31m+       "promptTokens": 0,[39m
+[31m+     },[39m
+[31m+     "volumeContinues": 0,[39m
+[31m+   },[39m
+[31m+   "stoppedReason": "max-tool-calls",[39m
+[2m  }[22m
+
+ ❯ test/assistantMultiMapSpec.test.ts:81:39
+     79|         return original(ctx, name, args, options);
+     80|       });
+     81|       await expect(h.send([fill("a")])).rejects.toThrow("injected runn…
+       |                                       ^
+     82|       spy.mockRestore();
+     83|     } else {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/13]⎯
+
+ FAIL  test/assistantMultiMapSpec.test.ts > map-owned construction contracts through AssistantSession > expires implicit A selection without evicting explicit B
+AssertionError: expected { mapId: 'b', title: 'b', …(1) } to be null
+
+[32m- Expected:[39m
+null
+
+[31m+ Received:[39m
+{
+  "assets": [
+    {
+      "h": 3,
+      "id": "terrain",
+      "kind": "terrain",
+      "w": 3,
+      "x": 3,
+      "y": 3,
+    },
+  ],
+  "mapId": "b",
+  "title": "b",
+}
+
+ ❯ test/assistantMultiMapSpec.test.ts:99:42
+     97|     await h.send([setSpec(spec("b")), fill("a")], { scope: { mapId: "a…
+     98|     expect(h.events.at(-1)?.result.ok).toBe(true);
+     99|     expect(h.session.getActiveSpec("a")).toBeNull();
+       |                                          ^
+    100|     const result = await h.send([paint("a", 12, 12), paint("b")]);
+    101|     expect(h.events.slice(-2).map(event => event.result.ok)).toEqual([…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/13]⎯
+
+ FAIL  test/assistantMultiMapSpec.test.ts > map-owned construction contracts through AssistantSession > uses per-map completeness precedence and does not merge identical asset IDs
+TypeError: h.session.getCompletionSpecs is not a function
+ ❯ test/assistantMultiMapSpec.test.ts:112:29
+    110|     await h.send([setSpec(full("a")), setSpec(full("b"))]);
+    111|     const result = await h.send([paint("a"), paint("b")]);
+    112|     const specs = h.session.getCompletionSpecs(result.proposedCalls);
+       |                             ^
+    113|     expect(specs).toEqual([full("a"), full("b")]);
+    114|     const warnings = proposalCompletenessWarnings({ buildSpecs: specs,…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/13]⎯
+
+ FAIL  test/assistantMultiMapSpec.test.ts > map-owned construction contracts through AssistantSession > preserves future planned maps through rebase and checks their own dimensions after B
+AssertionError: expected { mapId: 'b', title: 'b', …(1) } to deeply equal { mapId: 'future', …(3) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -7,13 +7,8 @@[39m
+[2m        "w": 3,[22m
+[2m        "x": 3,[22m
+[2m        "y": 3,[22m
+[2m      },[22m
+[2m    ],[22m
+[32m-   "mapId": "future",[39m
+[32m-   "plannedMap": {[39m
+[32m-     "height": 20,[39m
+[32m-     "mapId": "future",[39m
+[32m-     "width": 20,[39m
+[32m-   },[39m
+[32m-   "title": "future",[39m
+[31m+   "mapId": "b",[39m
+[31m+   "title": "b",[39m
+[2m  }[22m
+
+ ❯ test/assistantMultiMapSpec.test.ts:131:47
+    129|     await h.send([setSpec(future), setSpec(spec("b"))]);
+    130|     h.session.rebaseProject(h.session.getProposedProject());
+    131|     expect(h.session.getActiveSpec("future")).toEqual(future);
+       |                                               ^
+    132|     await h.send([call("author_village", { target: { kind: "new", mapI…
+    133|     expect(h.events.at(-1)?.result).toMatchObject({ ok: false, issues:…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/13]⎯
+
+ FAIL  test/assistantMultiMapSpec.test.ts > map-owned construction contracts through AssistantSession > prunes a successful removal before ID reuse, not failed removal or surviving maps
+AssertionError: expected { mapId: 'b', title: 'b', …(1) } to deeply equal { mapId: 'map_blank_start', …(2) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -7,8 +7,8 @@[39m
+[2m        "w": 3,[22m
+[2m        "x": 3,[22m
+[2m        "y": 3,[22m
+[2m      },[22m
+[2m    ],[22m
+[32m-   "mapId": "map_blank_start",[39m
+[32m-   "title": "map_blank_start",[39m
+[31m+   "mapId": "b",[39m
+[31m+   "title": "b",[39m
+[2m  }[22m
+
+ ❯ test/assistantMultiMapSpec.test.ts:144:44
+    142|     await h.send([setSpec(spec(start)), setSpec(spec("a")), setSpec(sp…
+    143|     expect(h.events.at(-1)?.result.ok).toBe(false);
+    144|     expect(h.session.getActiveSpec(start)).toEqual(spec(start));
+       |                                            ^
+    145|     await h.send([call("remove_map", { mapId: "a" }), call("create_map…
+    146|     expect(h.events.slice(-4).map(event => event.result.ok)).toEqual([…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/13]⎯
+
+ FAIL  test/assistantMultiMapSpec.test.ts > map-owned construction contracts through AssistantSession > prunes external rebase deletions while preserving surviving and never-created maps
+AssertionError: expected { mapId: 'future', …(3) } to be null
+
+[32m- Expected:[39m
+null
+
+[31m+ Received:[39m
+{
+  "assets": [
+    {
+      "h": 3,
+      "id": "terrain",
+      "kind": "terrain",
+      "w": 3,
+      "x": 3,
+      "y": 3,
+    },
+  ],
+  "mapId": "future",
+  "plannedMap": {
+    "height": 20,
+    "mapId": "future",
+    "width": 20,
+  },
+  "title": "future",
+}
+
+ ❯ test/assistantMultiMapSpec.test.ts:159:42
+    157|     expect(tools.runTool(ctx, "remove_map", { mapId: "a" }).ok).toBe(t…
+    158|     h.session.rebaseProject(ctx.project);
+    159|     expect(h.session.getActiveSpec("a")).toBeNull();
+       |                                          ^
+    160|     expect(h.session.getActiveSpec("future")).toEqual(future);
+    161|     await h.send([paint("b")]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/13]⎯
+
+ FAIL  test/assistantMultiMapSpec.test.ts > map-owned construction contracts through AssistantSession > clears every spec on successful reset, including reused start ID and future plans
+AssertionError: expected { mapId: 'future', …(3) } to deeply equal { mapId: 'map_blank_start', …(2) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -7,8 +7,13 @@[39m
+[2m        "w": 3,[22m
+[2m        "x": 3,[22m
+[2m        "y": 3,[22m
+[2m      },[22m
+[2m    ],[22m
+[32m-   "mapId": "map_blank_start",[39m
+[32m-   "title": "map_blank_start",[39m
+[31m+   "mapId": "future",[39m
+[31m+   "plannedMap": {[39m
+[31m+     "height": 20,[39m
+[31m+     "mapId": "future",[39m
+[31m+     "width": 20,[39m
+[31m+   },[39m
+[31m+   "title": "future",[39m
+[2m  }[22m
+
+ ❯ test/assistantMultiMapSpec.test.ts:171:44
+    169|     await h.send([setSpec(spec(start)), setSpec({ ...spec("future"), p…
+    170|     expect(h.events.at(-1)?.result.ok).toBe(false);
+    171|     expect(h.session.getActiveSpec(start)).toEqual(spec(start));
+       |                                            ^
+    172|     await h.send([call("reset_project", { title: "Fresh", prompt: "Dis…
+    173|     expect(h.events.slice(-2).map(event => event.result.ok)).toEqual([…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/13]⎯
+
+ FAIL  test/assistantMultiMapSpec.test.ts > ordered terrain background and road overlay > validates explicit order "terrain" without weakening house overlap
+AssertionError: expected true to be false // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+ ❯ test/assistantMultiMapSpec.test.ts:188:88
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/13]⎯
+
+ FAIL  test/assistantMultiMapSpec.test.ts > ordered terrain background and road overlay > executes the terrain then road batch with no dependency deferral
+AssertionError: expected [ false, false, false ] to deeply equal [ true, true, true ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[32m-   true,[39m
+[32m-   true,[39m
+[32m-   true,[39m
+[31m+   false,[39m
+[31m+   false,[39m
+[31m+   false,[39m
+[2m  ][22m
+
+ ❯ test/assistantMultiMapSpec.test.ts:199:52
+    197|     ] }), call("fill_region", { mapId: "a", rect: { x: 2, y: 2, w: 14,…
+    198|     call("paint_road", { mapId: "a", points: [{ x: 3, y: 5 }, { x: 12,…
+    199|     expect(h.events.map(event => event.result.ok)).toEqual([true, true…
+       |                                                    ^
+    200|     expect(h.events.slice(1).every(event => (event.result.diff?.tilesC…
+    201|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/13]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  13 failed | 4 passed (17)
+   Start at  21:17:00
+   Duration  76.18s (transform 30.94s, setup 0ms, collect 40.46s, tests 33.55s, environment 0ms, prepare 896ms)
