@@ -1,5 +1,5 @@
 type InlineToken = { readonly index: number; readonly marker: string };
-type InlineDelimiter = { readonly marker: string; readonly tagName: "strong" | "em" | "code" };
+type InlineDelimiter = { readonly marker: string; readonly tagName: "strong" | "em" };
 
 type InlineSpan = {
   readonly parent: HTMLElement;
@@ -57,12 +57,116 @@ export function renderMarkdown(text: string): HTMLElement {
       continue;
     }
 
-    const block = readParagraph(lines, index);
+    const table = tableHeader(lines, index);
+    const block = table ? readTable(lines, index, table) : readParagraph(lines, index);
     root.append(block.element);
     index = block.nextIndex;
   }
 
   return root;
+}
+
+type TableHeader = {
+  readonly cells: readonly string[];
+  readonly alignments: readonly ("left" | "center" | "right" | "")[];
+};
+
+function tableHeader(lines: readonly string[], index: number): TableHeader | null {
+  const delimiter = lines[index + 1] ?? "";
+  if (!/^[\s|:-]+$/u.test(delimiter)) return null;
+  const markers = splitTableRow(delimiter);
+  if (!markers || !markers.every((cell) => /^:?-{3,}:?$/u.test(cell))) return null;
+  const cells = splitTableRow(lines[index] ?? "");
+  if (!cells || cells.length !== markers.length) return null;
+  return {
+    cells,
+    alignments: markers.map((cell) => cell.endsWith(":") ? (cell.startsWith(":") ? "center" : "right") : cell.startsWith(":") ? "left" : ""),
+  };
+}
+
+function splitTableRow(line: string): string[] | null {
+  const text = line.trim();
+  const cells: string[] = [];
+  let cell = "";
+  let lastPipe = -1;
+  let index = 0;
+  while (index < text.length) {
+    const char = text.charAt(index);
+    if (char === "\\" && index + 1 < text.length) {
+      const next = text.charAt(index + 1);
+      cell += next === "|" ? next : char + next;
+      index += 2;
+      continue;
+    }
+    if (char === "`") {
+      const span = readCodeSpan(text, index);
+      if (span) {
+        cell += text.slice(index, span.nextIndex);
+        index = span.nextIndex;
+        continue;
+      }
+      // An unmatched run is literal; do not reinterpret its suffix as an opener.
+      do { cell += text.charAt(index++); } while (text.charAt(index) === "`");
+      continue;
+    }
+    if (char === "|") {
+      cells.push(cell.trim());
+      cell = "";
+      lastPipe = index;
+    } else {
+      cell += char;
+    }
+    index += 1;
+  }
+  if (lastPipe < 0) return null;
+  cells.push(cell.trim());
+  if (text.startsWith("|")) cells.shift();
+  if (lastPipe === text.length - 1) cells.pop();
+  return cells.length > 0 ? cells : null;
+}
+
+function readTable(lines: readonly string[], startIndex: number, header: TableHeader): { readonly element: HTMLElement; readonly nextIndex: number } {
+  const table = document.createElement("table");
+  const head = document.createElement("thead");
+  const body = document.createElement("tbody");
+  const appendRow = (parent: HTMLElement, cells: readonly string[], tag: "th" | "td"): void => {
+    const row = document.createElement("tr");
+    cells.forEach((text, index) => {
+      const cell = document.createElement(tag);
+      if (tag === "th") cell.setAttribute("scope", "col");
+      const alignment = header.alignments[index];
+      if (alignment) cell.style.textAlign = alignment;
+      appendInline(cell, text);
+      row.append(cell);
+    });
+    parent.append(row);
+  };
+  appendRow(head, header.cells, "th");
+  let index = startIndex + 2;
+  while (index < lines.length) {
+    const line = lines[index] ?? "";
+    if (isBlank(line) || isFence(line) || startsBlock(line)) break;
+    const cells = splitTableRow(line);
+    if (!cells || cells.length !== header.cells.length) break;
+    appendRow(body, cells, "td");
+    index += 1;
+  }
+  table.append(head, body);
+  return { element: table, nextIndex: index };
+}
+
+function readCodeSpan(text: string, startIndex: number): { readonly content: string; readonly nextIndex: number } | null {
+  const runs = /`+/gu;
+  runs.lastIndex = startIndex;
+  const opening = runs.exec(text);
+  if (!opening || opening.index !== startIndex) return null;
+  const contentStart = runs.lastIndex;
+  for (let closing = runs.exec(text); closing; closing = runs.exec(text)) {
+    if (closing[0].length === opening[0].length) {
+      return { content: text.slice(contentStart, closing.index), nextIndex: runs.lastIndex };
+    }
+  }
+  return null;
 }
 
 function readFencedCode(lines: readonly string[], startIndex: number): { readonly element: HTMLElement; readonly nextIndex: number } {
@@ -127,7 +231,7 @@ function readParagraph(lines: readonly string[], startIndex: number): { readonly
 
   while (index < lines.length) {
     const line = lines[index] ?? "";
-    if (isBlank(line) || isFence(line) || startsBlock(line)) break;
+    if (isBlank(line) || isFence(line) || startsBlock(line) || tableHeader(lines, index)) break;
     paragraphLines.push(line);
     index += 1;
   }
@@ -180,7 +284,18 @@ function appendInline(parent: HTMLElement, text: string): void {
 
 function appendInlineToken(parent: HTMLElement, text: string, token: InlineToken): number {
   if (token.marker === "[") return appendLink(parent, text, token.index);
-  if (token.marker === "`") return appendDelimited({ parent, text, startIndex: token.index, delimiter: { marker: "`", tagName: "code" } });
+  if (token.marker === "`") {
+    const span = readCodeSpan(text, token.index);
+    if (!span) {
+      const marker = text.slice(token.index).match(/^`+/u)?.[0] ?? "`";
+      appendText(parent, marker);
+      return token.index + marker.length;
+    }
+    const code = document.createElement("code");
+    code.textContent = span.content;
+    parent.append(code);
+    return span.nextIndex;
+  }
   if (token.marker === "**") return appendDelimited({ parent, text, startIndex: token.index, delimiter: { marker: "**", tagName: "strong" } });
   if (token.marker === "__") return appendDelimited({ parent, text, startIndex: token.index, delimiter: { marker: "__", tagName: "strong" } });
   if (token.marker === "*") return appendDelimited({ parent, text, startIndex: token.index, delimiter: { marker: "*", tagName: "em" } });
@@ -220,11 +335,7 @@ function appendDelimited(span: InlineSpan): number {
 
   const element = document.createElement(span.delimiter.tagName);
   const content = span.text.slice(contentStart, contentEnd);
-  if (span.delimiter.tagName === "code") {
-    element.textContent = content;
-  } else {
-    appendInline(element, content);
-  }
+  appendInline(element, content);
   span.parent.append(element);
   return contentEnd + span.delimiter.marker.length;
 }
