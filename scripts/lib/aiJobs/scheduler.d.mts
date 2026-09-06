@@ -14,6 +14,7 @@ export interface AiJobHost {
 }
 export type AiReportHost = Omit<AiJobHost, 'providerOperation' | 'loadCheckpoint' | 'saveCheckpoint'>;
 export interface AiJobsRuntime {
+  readonly unavailableReason?: string;
   readonly executeJob?: (input: AiJobInput, host: AiJobHost, signal: AbortSignal) => Promise<AiJobResult>;
   readonly renderReport?: (result: AiJobResult, host: AiReportHost, signal: AbortSignal) => Promise<{ readonly state: 'ready' | 'partial'; readonly document: JsonObject }>;
   /** Trusted Node-only adapter. Owns existing provider auth and accepts NO caller-selected fetch URL. */
@@ -26,7 +27,7 @@ export interface AiJobsScheduler {
   getJob(id: string): AiJob;
   change(callback: (draft: AiJobsDraft) => void): Promise<AiJobsSnapshot>;
   publish(): void;
-  status(): { generationAvailable: boolean; reportAvailable: boolean; requiresRestart: boolean };
+  status(): { generationAvailable: boolean; reportAvailable: boolean; requiresRestart: boolean; unavailableReason?: string };
   subscribe(listener: (event: AiJobEvent) => void): () => void;
   admit(request: { readonly idempotencyKey: string; readonly input: AiJobInput }): Promise<{ readonly created: boolean; readonly job: AiJob }>;
   cancel(id: string): Promise<AiJob>;

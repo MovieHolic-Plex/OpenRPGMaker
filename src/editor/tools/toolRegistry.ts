@@ -49,7 +49,7 @@ import { VISION_QUERY_TOOLS } from "./visionQueryTools";
 import { VIEW_FOCUS_TOOLS } from "./viewFocusTools";
 import { WORLD_GRAPH_TOOLS } from "./worldGraphTools";
 import { TILE_QUERY_TOOLS } from "./tileQueryTool";
-import { getActiveToolDomainInfo } from "@/editor/assistantToolMode";
+import { getActiveToolDomainInfo } from "@/ai/toolDomainState";
 import { AUTHOR_HOUSE_TOOL } from "./authorHouseToolDef";
 import { AUTHOR_VILLAGE_TOOL } from "./authorVillageToolDef";
 import { PROJECT_TOOLS } from "./projectTools";

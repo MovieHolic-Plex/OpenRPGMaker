@@ -1,3 +1,4 @@
+import { once } from 'node:events';
 import { aiJobsDirectory, openAiJobsService } from './service.mjs';
 
 /** Task 3 injects its managed browser executor here; never fall back to page-owned work. */
@@ -10,7 +11,13 @@ export function aiJobsPlugin(runtime = {}) {
       const protocol = (preview ? server.config.preview.https : server.config.server.https) ? 'https' : 'http';
       return ['127.0.0.1', 'localhost', '[::1]'].map(host => `${protocol}://${host}:${address.port}`);
     };
-    const service = await openAiJobsService({ directory: aiJobsDirectory(server.config.root), origins, ...runtime });
+    const execution = typeof runtime === 'function' ? await runtime({ origin: () => origins()[0] }) : runtime;
+    const executeJob = execution.executeJob && (async (input, host, signal) => {
+      if (!server.httpServer.listening) await once(server.httpServer, 'listening', { signal });
+      signal.throwIfAborted();
+      return execution.executeJob(input, host, signal);
+    });
+    const service = await openAiJobsService({ directory: aiJobsDirectory(server.config.root), origins, ...execution, executeJob });
     services.add(service);
     server.middlewares.use(service.handler);
     // Preview does not run Rollup closeBundle. Await durable shutdown BEFORE closing

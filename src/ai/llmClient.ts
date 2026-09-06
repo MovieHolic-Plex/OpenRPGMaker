@@ -507,7 +507,7 @@ function stripMessageNames(messages: readonly ChatMessage[]): readonly ChatMessa
   });
 }
 
-function requestBody(config: AiConfig, req: ChatRequest, stream: boolean): string {
+export function requestBody(config: AiConfig, req: ChatRequest, stream: boolean): string {
   const capability = providerCapability(config, { hasTools: Boolean(req.tools && req.tools.length > 0) });
   // 공급자 max_tokens 상한이 있으면 클램프한다(실측: cpen 은 32768 → 422, 8192 → 200).
   let maxTokens = config.maxTokens;
@@ -713,7 +713,7 @@ async function parseSseStream(
 }
 
 // 비스트리밍 응답 파싱.
-function parseNonStream(json: Record<string, unknown>, requestedModel?: string): ChatResult {
+export function parseNonStream(json: Record<string, unknown>, requestedModel?: string): ChatResult {
   // 응답의 model 은 **해석된** 모델이다 — 요청한 것과 다르면 제공자가 조용히 바꾼 것이다.
   if (requestedModel && typeof json.model === "string") reportModelDemotion(requestedModel, json.model);
   const choices = json.choices as Array<Record<string, unknown>> | undefined;

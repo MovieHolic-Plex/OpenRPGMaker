@@ -1,3 +1,5 @@
+import { npcMoveDurationMs, npcMoveIntervalMs, clampSetting } from "./npcMovementTiming";
+export { npcMoveDurationMs, npcMoveIntervalMs } from "./npcMovementTiming";
 import type { EventAnimationType, EventPageMovement, MoveCommand } from "@/project/types";
 import { store } from "@/project/store";
 import type { AutonomousMover, PlaySceneContext } from "@/player/playSceneTypes";
@@ -66,16 +68,6 @@ export function registerPageMoveRoutes(scene: PageMoveRouteSceneContext): void {
   }
 }
 
-export function npcMoveDurationMs(speed: number): number {
-  const rank = clampSetting(speed);
-  return Math.max(80, 640 - rank * 80);
-}
-
-export function npcMoveIntervalMs(frequency: number): number {
-  const rank = clampSetting(frequency);
-  return Math.max(80, 1040 - rank * 160);
-}
-
 function routeForPageMovement(
   movement: EventPageMovement
 ): (Pick<AutonomousMover, "moves" | "repeat" | "strategy">) | null {
@@ -124,11 +116,6 @@ function removePageRouteForEvent(scene: PageMoveRouteSceneContext, eventId: stri
   for (const key of [...scene.pageMoveRouteKeys]) {
     if (key.startsWith(`${eventId}:`)) scene.pageMoveRouteKeys.delete(key);
   }
-}
-
-function clampSetting(value: number): number {
-  if (!Number.isFinite(value)) return 3;
-  return Math.min(8, Math.max(1, Math.trunc(value)));
 }
 
 function normalizeOptionalRange(value: number | undefined): number | undefined {

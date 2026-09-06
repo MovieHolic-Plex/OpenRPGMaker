@@ -29,7 +29,7 @@ import { kitIdForSmallHouseMaterial, type SmallHouseMaterial } from "@/editor/co
 import { recommendMapBgm } from "@/assets/bgmThemeRecommendation";
 import { genId } from "@/util/id";
 import type { EncounterTableEntry, FieldSpawnDef, GameEvent, GameMap, PaletteSlotRole, Project, Rect, RoguelikeRoomDef, TilesetDef } from "@/project/types";
-import { applyMapShift } from "@/editor/mapShiftActions";
+import { applyMapShift } from "@/project/mapShift";
 import { visitProjectCommands } from "./commandTraversal";
 import {
   MAP_ID_TAKEN_GUIDANCE,

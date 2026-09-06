@@ -41,7 +41,7 @@
   - Local dev `?blankProject=1` means a true blank project. `?freshProject=1` keeps its legacy meaning (sample adventure, no persisted override) because 32+ e2e specs and playtest drivers depend on it; example flags `sampleAdventure=1`/`defaultAdventure=1`/`defaultAdventureVisual` also remain.
   - `src/project/types.ts` defines the shared project schema used by editor, player, and battle systems, including authored ending definitions and optional `system.timeSystem` consumed by the player interpreter.
 
-- Durable AI job foundation (2026-09-06; local service wired, executor/UI integration pending):
+- Durable AI job foundation (2026-09-06; isolated assistant executor wired, remaining family/UI integration pending):
   - `src/ai/jobs/contracts.ts` defines versioned six-family JSON input/results and distinct generation, report, application and save states. Family-specific semantic validation belongs to adapters; repository ingress rejects lossy/non-plain JSON.
   - `scripts/lib/aiJobs/repository.mjs` exposes `openAiJobsRepository({ directory })`, durable `admit`, immutable `putBlob`/`putJson` and reads, a synchronous validated `transaction` callback, `snapshot`, `markInboxRead`, and `close`. Transactions own jobs/attempts/provider operations; events and outcome inbox entries are derived and committed together.
   - A private local directory outside `public`/`dist` holds SHA-256 blobs and one checksummed `metadata.json`. Admission resolves only after blob and metadata file sync, atomic rename and directory sync. No implicit retention eviction. Post-rename sync failure fences the writer as `DURABILITY_UNKNOWN`; reopen reconciles the visible snapshot, rather than claiming rollback or dispatching work.
@@ -53,6 +53,13 @@
   - `executeJob(input, host, signal)` and a separate provider-free `renderReport` are injection boundaries. Without the managed executor, admission returns `503 EXECUTOR_UNAVAILABLE`; it never falls back to browser-owned execution. Checkpoints are private draft progress, not project application.
   - Application preparation/evidence reserves and records editor-owned work only. `/application/save-evidence` permits save-only recovery for the same immutable application receipt and exact applied snapshot hash. Neither these receipts nor test fixtures prove an actual project save; the editor must supply real reload evidence.
   - Focused regressions: `test/aiJobsRepository.test.mjs`, `test/aiJobsScheduler.test.mjs`, `test/aiJobsHttp.test.mjs`.
+
+- Isolated AI execution:
+  - `ai-job-worker.html` loads `src/ai/jobs/workerEntry.ts`, never the editor entry. `browserExecutor.mjs` owns a fresh managed Chromium realm per attempt; only allowlisted local bootstrap/assets and job-scoped bindings are available. Installed-browser absence prevents admission. Queued restart execution waits for the server's listening event.
+  - `assistantSessionCore.ts` consumes `SessionExecutionHost`; the existing `assistantSession.ts` is the foreground wrapper with `editorSessionHost.ts`. Job hosts use submitted snapshots, captured settings and durable private checkpoints. `milestone_checkpointed` is not `milestone_applied`, and worker persistence proof is explicitly not applicable.
+  - `jobs/sessionHost.ts` stores tool results and project deltas by immutable reference plus one current draft. Retried tools preserve allocated IDs; completed retries return the saved snapshot reference. Budget or unfinished-plan stops retain partial output and do not claim completed generation.
+  - `providerAdapter.mjs` keeps Node authentication outside Chromium and owns the Bun provider process for each physical request. Its single-dispatch transport prevents hidden SDK retries; uncertain outcomes remain explicit. Current queued assistant transport supports existing Antigravity/Codex OAuth, not arbitrary gateway URLs or submitted API keys.
+  - Store-free shared seams include tool-domain state, history access, project map shifting, movement timing, snapshot tileset resolution and project-aware command defaults. The source and emitted worker import closure are tested; foreground wrappers retain existing behavior. `test/aiJobWorkerIsolation.test.ts`, `test/aiSessionJobHost.test.ts` and `test/aiJobsBrowserExecutor.test.mjs` cover these boundaries.
 
 - `src/battle` boundary:
   - `src/battle/runtime.ts` is the battle state machine and should be treated as the core battle boundary.

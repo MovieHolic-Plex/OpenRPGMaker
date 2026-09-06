@@ -1,0 +1,42 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiJobWorkerIsolation.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-silver-harbor-d2a7
+
+ ❯ test/aiJobWorkerIsolation.test.ts (1 test | 1 failed) 11208ms
+   × isolated real session import graph > has no runtime editor/store/persistence boot edges 11206ms
+     → expected [ 'src/project/store.ts', …(3) ] to deeply equal []
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiJobWorkerIsolation.test.ts > isolated real session import graph > has no runtime editor/store/persistence boot edges
+AssertionError: expected [ 'src/project/store.ts', …(3) ] to deeply equal []
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   "src/project/store.ts",[39m
+[31m+   "src/editor/mapEditHistory.ts",[39m
+[31m+   "src/editor/editorState.ts",[39m
+[31m+   "src/editor/tools/applyChangesetToStore.ts",[39m
+[31m+ ][39m
+
+ ❯ test/aiJobWorkerIsolation.test.ts:39:163
+     37|     const graph = runtimeGraph(entry);
+     38|     expect(graph.some(p => /assistantSession(?:Core)?\.ts$/.test(p))).…
+     39|     expect(graph.filter(p => /src\/main\.ts$|project\/store\.ts$|edito…
+       |                                                                                                                                                                   ^
+     40|   });
+     41| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  18:59:25
+   Duration  13.91s (transform 155ms, setup 0ms, collect 1.26s, tests 11.21s, environment 0ms, prepare 301ms)

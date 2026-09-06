@@ -1,4 +1,4 @@
-import { getMapEditHistoryEntries, peekPreviousProject } from "@/editor/mapEditHistory";
+import { readEditorHistory } from "./historyAccess";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import type { Project } from "@/project/types";
 
@@ -36,9 +36,9 @@ const revertLastEdit: ToolDefinition = {
   },
   run(draft, args): ToolExecResult {
     const steps = positiveInteger(optionalNumber(args, "steps"), 1);
-    const previous = peekPreviousProject(steps);
+    const previous = readEditorHistory().previous(steps);
     if (!previous) throw new ToolError("되돌릴 이전 상태가 없습니다", { code: "history-empty" });
-    const label = getMapEditHistoryEntries()[steps - 1]?.label ?? "편집";
+    const label = readEditorHistory().entries()[steps - 1]?.label ?? "편집";
     replaceProjectContents(draft, previous);
     return { summary: `직전 변경을 되돌립니다 — ${label}` };
   },
@@ -58,7 +58,7 @@ const listEditHistory: ToolDefinition = {
   run(_project, args): ToolExecResult {
     const mapId = optionalString(args, "mapId");
     const limit = positiveInteger(optionalNumber(args, "limit"), 10);
-    const entries = getMapEditHistoryEntries()
+    const entries = readEditorHistory().entries()
       .filter((entry) => mapId === undefined || entry.mapId === mapId)
       .slice(0, limit);
     return {

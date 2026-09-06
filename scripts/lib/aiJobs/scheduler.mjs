@@ -3,7 +3,7 @@ import { canonicalJson, requireValue, validateCheckpoint, validateResult } from 
 import { AiJobsServiceError, conflict, createProviderOperations, DUPLICATE_SPEND_ACKNOWLEDGED, rejectSecrets } from './providerOperations.mjs';
 
 /** The scheduler is the service's only metadata writer. Subscribers observe durable events. */
-export function createAiJobsScheduler({ repository, executeJob, renderReport, dispatchProvider, onError = console.error }) {
+export function createAiJobsScheduler({ repository, executeJob, renderReport, dispatchProvider, unavailableReason, onError = console.error }) {
   const listeners = new Set();
   let published = repository.snapshot().events.length;
   let stopped = false;
@@ -23,7 +23,7 @@ export function createAiJobsScheduler({ repository, executeJob, renderReport, di
   const providers = createProviderOperations({ repository, change, dispatchProvider });
   function available(stage = 'generation') {
     if (fatal || stopped || !(stage === 'generation' ? executeJob : renderReport)) {
-      throw new AiJobsServiceError('EXECUTOR_UNAVAILABLE', 503, fatal ? 'Local job service requires restart; durable records are retained' : `${stage} executor unavailable; install and wire the local runtime`);
+      throw new AiJobsServiceError('EXECUTOR_UNAVAILABLE', 503, fatal ? 'Local job service requires restart; durable records are retained' : unavailableReason ?? `${stage} executor unavailable; install and wire the local runtime`);
     }
   }
   function getJob(id) {
@@ -172,7 +172,7 @@ export function createAiJobsScheduler({ repository, executeJob, renderReport, di
   }
   return {
     start: kick, available, getJob, change, publish,
-    status() { return { generationAvailable: Boolean(executeJob) && !fatal && !stopped, reportAvailable: Boolean(renderReport) && !fatal && !stopped, requiresRestart: Boolean(fatal) }; },
+    status() { return { generationAvailable: Boolean(executeJob) && !fatal && !stopped, reportAvailable: Boolean(renderReport) && !fatal && !stopped, requiresRestart: Boolean(fatal), ...(unavailableReason ? { unavailableReason } : {}) }; },
     subscribe(listener) { listeners.add(listener); return () => listeners.delete(listener); },
     async admit(request) { available(); rejectSecrets(request.input); const receipt = await repository.admit(request); publish(); kick(); return receipt; },
     async cancel(id) { const job = await interrupt(id, 'cancelled'); kick(); return job; },

@@ -22,7 +22,7 @@ import { createInterpreter, type Interpreter, type StepResult } from "@/player/i
 import { restoreSessionCheckpoint } from "@/player/checkpoints";
 import { nextChaseDecision, type ChaseRuntimeState } from "@/player/chaseAi";
 import { followerPositions, recordFollowerPlayerStep, removeFollowerFromSession, resetFollowerTrailNearPlayer, resolveCompanionRules, type FollowerWorld } from "@/project/followers";
-import { npcMoveIntervalMs } from "@/player/playScenePageMoveRoutes";
+import { npcMoveIntervalMs } from "@/player/npcMovementTiming";
 import type { RuntimeCameraSessionState, RuntimeCameraTarget } from "@/project/sessionRuntimeTypes"
 import {
   advanceLightingAmbientTransition,

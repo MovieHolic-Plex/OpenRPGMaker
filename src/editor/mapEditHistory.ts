@@ -1,3 +1,4 @@
+import { installEditorHistory } from "./tools/historyAccess";
 import type { GameMap, MapId, Project } from "@/project/types";
 import { mapWithCommittedEvents, projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { store } from "@/project/store";
@@ -368,3 +369,5 @@ function emitHistoryChange(): void {
     window.dispatchEvent(new CustomEvent(MAP_EDIT_HISTORY_EVENT));
   });
 }
+
+installEditorHistory({ entries: getMapEditHistoryEntries, previous: peekPreviousProject });

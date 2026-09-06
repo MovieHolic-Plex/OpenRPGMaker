@@ -1,4 +1,4 @@
-import { tilesetImageUrl } from "@/editor/tilesetImage";
+import { snapshotTilesetImageUrl } from "@/assets/snapshotTilesetImage";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
 
 export type RenderedToolImage = { readonly dataUrl: string; readonly label: string };
@@ -63,7 +63,7 @@ async function renderShowTiles(project: Project, data: unknown): Promise<Rendere
   const visibleTiles = tiles.filter((tile) => tile >= 0).slice(0, MAX_TILE_SWATCHES);
   if (visibleTiles.length === 0) return [];
 
-  const image = await loadTilesetImage(tileset);
+  const image = await loadTilesetImage(project, tileset);
   const swatchSize = Math.max(tileset.tileSize * TILE_SWATCH_SCALE, MIN_SWATCH_SIZE);
   const captionHeight = 20;
   const gap = 8;
@@ -101,11 +101,11 @@ async function renderShowTiles(project: Project, data: unknown): Promise<Rendere
 async function renderTileGrid(project: Project, data: unknown, label = "영역"): Promise<RenderedToolImage[]> {
   const payload = tileGridPayload(project, data);
   if (!payload) return [];
-  return renderTileGridPayload(payload, `${label} (${payload.x},${payload.y}) ${payload.w}×${payload.h}`);
+  return renderTileGridPayload(project, payload, `${label} (${payload.x},${payload.y}) ${payload.w}×${payload.h}`);
 }
 
-async function renderTileGridPayload(payload: TileGridPayload, label: string): Promise<RenderedToolImage[]> {
-  const image = await loadTilesetImage(payload.tileset);
+async function renderTileGridPayload(project: Project, payload: TileGridPayload, label: string): Promise<RenderedToolImage[]> {
+  const image = await loadTilesetImage(project, payload.tileset);
   const drawSize = payload.tileset.tileSize * TILE_GRID_SCALE;
   const canvasPair = createCanvas(payload.w * drawSize, payload.h * drawSize);
   if (!canvasPair) return [];
@@ -141,7 +141,7 @@ async function renderGroupSamples(project: Project, data: unknown): Promise<Rend
     if (!w || !h) continue;
     const grid = tileGridPayload(project, { h, lower: record.lower, tilesetId, upper: record.upper, w, x: 0, y: 0 });
     if (!grid) continue;
-    images.push(...(await renderTileGridPayload(grid, label)));
+    images.push(...(await renderTileGridPayload(project, grid, label)));
   }
   return images;
 }
@@ -269,8 +269,8 @@ function canvasDataUrl(canvas: HTMLCanvasElement): string | null {
   return scaledPair.canvas.toDataURL("image/png");
 }
 
-function loadTilesetImage(tileset: TilesetDef): Promise<HTMLImageElement> {
-  const url = tilesetImageUrl(tileset);
+async function loadTilesetImage(project: Project, tileset: TilesetDef): Promise<HTMLImageElement> {
+  const url = await snapshotTilesetImageUrl(project, tileset);
   const existing = tilesetImagePromises.get(url);
   if (existing) return existing;
   const promise = new Promise<HTMLImageElement>((resolve, reject) => {

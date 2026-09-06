@@ -1,3 +1,4 @@
+export { isDefaultTilesetTexture, supportsChipsetQuarterComposition, supportsChipsetTileAnimation } from "@/assets/tilesetRenderPredicates";
 import {
   ASSET_TILESET,
   BUNDLED_EASYRPG_CHIPSET_ASSETS,
@@ -9,16 +10,9 @@ import { graftedTilesetImageUrl } from "@/assets/tileGraftImageCache";
 import { tileGraftsTextureSuffix } from "@/assets/tileGrafts";
 import { bakeTilesetTextureCanvas, tilesetTextureNeedsBake } from "@/assets/tileGraftTexture";
 import { normalizeRgbHexColor } from "@/assets/transparentColorKey";
-import {
-  DEFAULT_TILESET_TEXTURE_KEY,
-  LEGACY_RM_TILESET_TEXTURE_KEY,
-} from "@/project/defaults/constants";
-import { DUNGEON_TEXTURE_KEY, INTERIOR_TEXTURE_KEY } from "@/project/tilesetHarness/themePacks";
-import { isWorldTileset, isWorldAnimatedTile } from "@/project/defaults/worldCoastMapping";
 import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
 import type Phaser from "phaser";
-import { animationStripForTile } from "@/project/defaults/chipsetAnimation";
 
 const DEFAULT_TILESET_IMAGE_URL = `/${ASSET_TILESET}`;
 
@@ -54,27 +48,6 @@ export function ensureTilesetTexture(scene: Phaser.Scene, tileset: TilesetDef): 
   // 확장 타일셋(count > 480)은 확장분 프레임까지 등록한다(기본 480 은 불변).
   registerTilesetTextureFrames(scene, textureKey, Math.max(TILE_FRAME_COUNT, tileset.count));
   return textureKey;
-}
-
-export function isDefaultTilesetTexture(tileset: TilesetDef): boolean {
-  return (
-    tileset.image.type === "bundled" &&
-    (tileset.image.id === DEFAULT_TILESET_TEXTURE_KEY || tileset.image.id === LEGACY_RM_TILESET_TEXTURE_KEY)
-  );
-}
-
-export function supportsChipsetQuarterComposition(tileset: TilesetDef): boolean {
-  return isWorldTileset(tileset) || isDefaultTilesetTexture(tileset)
-    || (tileset.image.type === "bundled" && tileset.image.id === INTERIOR_TEXTURE_KEY)
-    || (tileset.image.type === "bundled" && tileset.image.id === DUNGEON_TEXTURE_KEY);
-}
-
-/** Interior fire and ungrafted World strips animate without enabling town road/tree rules. */
-export function supportsChipsetTileAnimation(tileset: TilesetDef, tile: number): boolean {
-  return isDefaultTilesetTexture(tileset)
-    || (isWorldTileset(tileset) && isWorldAnimatedTile(tile, tileset))
-    || (tileset.image.type === "bundled" && tileset.image.id === INTERIOR_TEXTURE_KEY
-      && animationStripForTile(tile)?.baseTile === 124);
 }
 
 function baseTilesetTextureKey(tileset: TilesetDef): string {

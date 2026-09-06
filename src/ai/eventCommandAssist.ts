@@ -15,7 +15,7 @@
 // 기존 목록이 컨텍스트 예산에 안 들어가면 "append" scope 로 내려간다 — 전체를 못 보여준
 // 상태로 최종 목록을 받으면 모델이 못 본 명령을 지워버린다.
 
-import { newCommand } from "@/editor/eventCommandFactory";
+import { newCommand } from "@/editor/eventCommandFactoryCore";
 import { commandBranches } from "@/editor/tools/commandTraversal";
 import { isPassableLanding } from "@/project/collision";
 import { resolvePictureSource } from "@/player/pictures/pictureResources";
@@ -116,9 +116,9 @@ export function aiCommandKinds(project: Project): readonly Command["kind"][] {
 // ── 프롬프트 조립 ────────────────────────────────────────────────────────────
 
 // newCommand 기본값들을 그대로 직렬화한 kind별 JSON 예시(단일 진실 소스 유지).
-function commandExampleLines(kinds: readonly Command["kind"][]): string[] {
+function commandExampleLines(project: Project, kinds: readonly Command["kind"][]): string[] {
   return kinds.map(
-    (kind) => `- ${kind}: ${JSON.stringify(newCommand(kind))}`
+    (kind) => `- ${kind}: ${JSON.stringify(newCommand(kind, project))}`
   );
 }
 
@@ -285,7 +285,7 @@ export function buildEventAssistPrompt(context: EventAssistContext): string {
       `사용 가능한 kind: ${kinds.join(", ")}`,
       "",
       "kind별 기본값 JSON 예시(필드 구조 참고 — 값은 요청에 맞게 채울 것):",
-      ...commandExampleLines(kinds),
+      ...commandExampleLines(project, kinds),
       "",
       "중첩 규칙:",
       '- fork: {"kind":"fork","condition":<Condition>,"then":[<Command>...],"else":[<Command>...]} (else는 선택).',

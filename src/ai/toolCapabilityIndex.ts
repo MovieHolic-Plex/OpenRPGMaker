@@ -7,7 +7,7 @@
 // 스키마는 라운드마다 바뀌어도 **존재 목록**은 고정이므로, 이름만 담은 색인을 상시 싣는다.
 // 설명·스키마는 넣지 않는다 — 이 섹션은 문서가 아니라 존재 색인이다(예산 절약).
 
-import { activeTools } from "@/editor/tools";
+import { activeTools } from "@/editor/tools/toolRegistry";
 import type { ToolDefinition, ToolDomain } from "@/editor/tools";
 
 export const TOOL_CAPABILITY_INDEX_HEADING = "## 툴 능력 색인";

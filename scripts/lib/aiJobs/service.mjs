@@ -13,9 +13,9 @@ export function aiJobsDirectory(root = process.cwd()) {
   if (within === '' || !within.startsWith(`..${process.platform === 'win32' ? '\\' : '/'}`) && !isAbsolute(within)) throw new Error('AI_JOBS_DIRECTORY must be outside the served project root');
   return directory;
 }
-export async function openAiJobsService({ directory, origins, executeJob, renderReport, dispatchProvider, onError }) {
+export async function openAiJobsService({ directory, origins, executeJob, renderReport, dispatchProvider, unavailableReason, onError }) {
   const repository = await openAiJobsRepository({ directory });
-  const scheduler = createAiJobsScheduler({ repository, executeJob, renderReport, dispatchProvider, onError });
+  const scheduler = createAiJobsScheduler({ repository, executeJob, renderReport, dispatchProvider, unavailableReason, onError });
   const handler = createAiJobsHttpHandler({ repository, scheduler, origins, onError });
   scheduler.start();
   let closing;

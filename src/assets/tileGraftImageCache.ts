@@ -58,7 +58,8 @@ function scheduleGraftImageBake(cacheKey: string, tileset: TilesetDef, baseUrl: 
 
 async function bakeGraftedTilesetImage(
   tileset: Pick<TilesetDef, "count" | "tileSize" | "tilesPerRow" | "tileGrafts">,
-  baseUrl: string
+  baseUrl: string,
+  requireAllSources = false,
 ): Promise<string | null> {
   const grafts = activeTileGrafts(tileset);
   const sourceKeys = [...new Set(grafts.map((graft) => graft.sourceChipset))];
@@ -67,6 +68,7 @@ async function bakeGraftedTilesetImage(
     ...sourceKeys.map((key) => loadChipsetSourceImage(key)),
   ]);
   if (!base) return null;
+  if (requireAllSources && sources.some(source => !source)) throw new Error("Missing tileset graft source image");
   const sourceByKey = new Map<string, HTMLImageElement | HTMLCanvasElement>();
   sourceKeys.forEach((key, index) => {
     const image = sources[index];
@@ -109,4 +111,11 @@ function loadImage(url: string): Promise<HTMLImageElement | null> {
     };
     image.src = url;
   });
+}
+
+export async function awaitGraftedTilesetImageUrl(tileset: TilesetDef, baseUrl: string): Promise<string> {
+  if (activeTileGrafts(tileset).length === 0) return baseUrl;
+  const result = await bakeGraftedTilesetImage(tileset, baseUrl, true);
+  if (!result) throw new Error("Tileset graft image bake failed");
+  return result;
 }

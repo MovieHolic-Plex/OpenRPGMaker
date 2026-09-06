@@ -4,7 +4,7 @@
 //       ④ 자주 쓰는 리소스 시맨틱 요약 ⑤ 게임 스타일 문서 발췌 ⑥ 밸런스 상수.
 // 토큰 예산(문자 수 근사) 상한을 넘으면 조회 툴 안내로 대체한다.
 
-import { runTool } from "@/editor/tools";
+import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools";
 import { HOUSE_KITS } from "@/editor/houseKit";
 import {

@@ -3,7 +3,8 @@
 // 적힌 툴을 노출에서 떨어뜨렸다(plan_world/play_walkthrough 등). 모델이 "툴이 없다"고
 // 항목을 스킵해 전체 DAG 가 수행 불가능해졌다. 계획이 활성이면 계획에 명시된 툴을
 // 도메인 상한과 무관하게 반드시 노출한다(CPEN 128툴 상한 내 — 40+α).
-import { activeTools, getTool, toOpenAiTools, type ToolDefinition } from "@/editor/tools";
+import { activeTools, getTool, toOpenAiTools } from "@/editor/tools/toolRegistry";
+import type { ToolDefinition } from "@/editor/tools/types";
 import type { OpenAiToolSchema } from "./llmClient";
 import type { WorkPlan } from "./workPlan";
 

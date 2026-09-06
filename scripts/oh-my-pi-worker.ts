@@ -1,3 +1,4 @@
+import { singleDispatchFetch } from "./lib/aiJobs/singleDispatchFetch.mjs";
 // Bun 전용 완성 워커. `@oh-my-pi/pi-ai` 가 bun:sqlite · type:text import 를 쓰므로
 // Node/tsx 에선 로드되지 않아, 모델 호출만 이 루프백 프로세스에 남긴다.
 //
@@ -28,14 +29,16 @@ const server = Bun.serve({
         const provider = typeof body.provider === "string" ? body.provider : "google-antigravity";
         const payload = body.body && typeof body.body === "object" ? body.body as Record<string, unknown> : body;
         const apiKey = typeof body.apiKey === "string" ? body.apiKey : undefined;
-        return json(await completeProvider(provider, payload, { apiKey }));
+        const jobFetch = process.env.RPG_ZZU_AI_JOB_SINGLE_DISPATCH === "1" ? singleDispatchFetch(fetch) : undefined;
+        return json(await completeProvider(provider, payload, { apiKey, fetch: jobFetch }));
       }
       if (request.method === "POST" && url.pathname === "/image") {
         const body = await request.json() as Record<string, unknown>;
         const provider = typeof body.provider === "string" ? body.provider : "google-antigravity";
         const payload = body.body && typeof body.body === "object" ? body.body as Record<string, unknown> : body;
         const apiKey = typeof body.apiKey === "string" ? body.apiKey : undefined;
-        return json(await generateProviderImage(provider, payload, { apiKey }));
+        const jobFetch = process.env.RPG_ZZU_AI_JOB_SINGLE_DISPATCH === "1" ? singleDispatchFetch(fetch) : undefined;
+        return json(await generateProviderImage(provider, payload, { apiKey, fetch: jobFetch }));
       }
       return json({ error: "Not found" }, 404);
     } catch (error) {

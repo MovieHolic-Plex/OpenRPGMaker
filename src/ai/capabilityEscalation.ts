@@ -6,7 +6,7 @@
 // 여기서는 요청 문장을 find_tools 와 **같은 매처**(discoveryTools.matchScore)로 전체 활성 레지스트리에
 // 채점해 같은 라운드에 최대 6개를 되살린다. 매처가 하나여야 모델이 find_tools 로 찾는 결과와
 // 자동 승격 결과가 어긋나지 않는다.
-import { activeTools } from "@/editor/tools";
+import { activeTools } from "@/editor/tools/toolRegistry";
 import { matchScore } from "@/editor/tools/discoveryTools";
 import type { OpenAiToolSchema } from "./llmClient";
 import { toolSchemasForNames } from "./planToolExposure";

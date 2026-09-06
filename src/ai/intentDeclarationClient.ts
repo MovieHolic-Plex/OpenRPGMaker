@@ -7,7 +7,7 @@
 //
 // 같은 문장을 영역 작업 러너와 세션이 연달아 읽으므로 짧은 캐시를 둔다(선언 두 번 = 호출 두 번).
 import { listLiveConceptFacilityLabels } from "@/editor/conceptBundleResolve";
-import { activeTools } from "@/editor/tools";
+import { activeTools } from "@/editor/tools/toolRegistry";
 import type { Project } from "@/project/types";
 import {
   buildIntentUserPayload,
