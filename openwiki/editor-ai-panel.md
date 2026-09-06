@@ -20,6 +20,16 @@ Bridge/history consumers therefore receive the same final verdict as the panel.
 `ok` only means the RPC completed, not that the authored goal was verified.
 Failed final verification replaces a model success claim rather than appending
 contradictory failure text below it.
+For authoring requests, failed or stale explicit checks now trigger the existing
+bounded final-repair loop and continuation before finalization. Advisory-only
+findings do not create automatic authoring requirements. Run-end proof waits for
+explicit revalidation after the final write.
+
+`paint_tiles` is active again: replacing it with semantic `fill_region` removed
+numeric-tile rect/line/cell painting, leaving planned snow terrain impossible for
+the executor even though the primitive existed. The planner's canonical tool
+list now uses active tools, not hidden legacy names. Spec, read and house-protection
+gates still apply to raw painting.
 
 Explicit autonomous/max settings now retain the saved reasoning effort during
 execution. Balanced retains its existing fast executor policy. This honors the

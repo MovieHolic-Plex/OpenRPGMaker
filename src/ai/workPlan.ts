@@ -27,7 +27,7 @@ import {
 } from "./narrativeHorrorWorkPlan";
 import { QUICK_REPLY_MARKER } from "@/ai/interviewPrompt";
 import { VERIFICATION_TOOL_NAMES } from "./agentVerification";
-import { allTools, getTool } from "@/editor/tools/toolRegistry";
+import { activeTools, getTool } from "@/editor/tools/toolRegistry";
 import { parseAcceptance, type AcceptancePromise } from "./assistantAcceptance";
 import { ACCEPTANCE_PLANNER_GUIDE } from "./assistantAcceptanceTools";
 export type WorkItemStatus = "pending" | "in_progress" | "done" | "skipped" | "blocked";
@@ -226,7 +226,7 @@ export function buildOrchestratorUserPayload(input: {
   // create_map/author_village 항목으로 분해되고, successTools 에 생성툴이 박히면 그 툴이 성공할
   // 때까지 항목이 완료되지 않아 신축이 강제됐다.
   parts.push(TARGET_SELECTION_RULE);
-  parts.push(`## Canonical tool names\n${allTools().map((tool) => tool.name).join(", ")}\nUse exact names in successTools; unknown requirements block completion and require correcting the plan.`);
+  parts.push(`## Canonical tool names\n${activeTools().map((tool) => tool.name).join(", ")}\nUse exact names in successTools; unknown requirements block completion and require correcting the plan.`);
   parts.push("Respond with JSON only.");
   return parts.join("\n\n");
 }
