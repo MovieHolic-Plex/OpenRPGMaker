@@ -1,0 +1,60 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiRunOutcomeOwnership.test.ts --maxWorkers 2 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-20260906
+
+ ❯ test/aiRunOutcomeOwnership.test.ts (2 tests | 2 failed) 3956ms
+   × does not settle a newer query when an old run's proof is cancelled 3316ms
+     → expected { execution: 'cancelled', …(2) } to deeply equal { execution: 'response-final', …(2) }
+   × rechecks a canonical no-write pass when the live assessed map changes 638ms
+     → expected 'satisfied' to be 'incomplete' // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiRunOutcomeOwnership.test.ts > does not settle a newer query when an old run's proof is cancelled
+AssertionError: expected { execution: 'cancelled', …(2) } to deeply equal { execution: 'response-final', …(2) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "delivery": "no-change",[22m
+[32m-   "execution": "response-final",[39m
+[31m+   "execution": "cancelled",[39m
+[2m    "goal": "unassessed",[22m
+[2m  }[22m
+
+ ❯ test/aiRunOutcomeOwnership.test.ts:32:29
+     30|   await f.session.proveAppliedRevision(undefined, controller.signal);
+     31|   // Then only the old operation was cancelled, never the new query.
+     32|   expect(query?.runOutcome).toEqual({ execution: "response-final", goa…
+       |                             ^
+     33|   expect(f.session.getRunOutcome()).toEqual(query?.runOutcome);
+     34| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/aiRunOutcomeOwnership.test.ts > rechecks a canonical no-write pass when the live assessed map changes
+AssertionError: expected 'satisfied' to be 'incomplete' // Object.is equality
+
+Expected: [32m"incomplete"[39m
+Received: [31m"satisfied"[39m
+
+ ❯ test/aiRunOutcomeOwnership.test.ts:60:43
+     58|   });
+     59|   // Then a read-only projection cannot reuse the old pass or mutate t…
+     60|   expect(f.session.getRunOutcome()?.goal).toBe("incomplete");
+       |                                           ^
+     61|   expect(f.session.getAcceptanceSnapshot()).toBe(snapshot);
+     62|   expect(f.events).toHaveLength(events);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  02:43:43
+   Duration  27.60s (transform 15.55s, setup 0ms, collect 22.40s, tests 3.96s, environment 0ms, prepare 327ms)
+

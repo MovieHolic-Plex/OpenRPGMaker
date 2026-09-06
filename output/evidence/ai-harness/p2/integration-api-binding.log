@@ -1,0 +1,18 @@
+source-bound src/ai/assistantSession.ts 5fa97b2d07d3478cade067c6b776393d3f7b68b243b9bad603ce39baac1be03e
+source-bound src/ai/workPlan.ts 7a1891cc2e07456b029018e9c108a013a8378e63e0e95ae566d5314708534600
+source-bound src/ai/assistantAcceptanceLedger.ts a4fdf4a5535116df492499e3b890da65268e6098973150baade1aa0a2d78abd4
+source-bound src/project/store.ts 8d8bea0ae98fb42b4e3c1e9f0eaa71bba6176eb84475832d15395384415312b9
+source-bound src/editor/panels/aiTurnRunner.ts 249f14ba2c31a39d734f4afcb78c01d4d9bcfd5003079f15d743765c7ec51170
+source-bound src/editor/aiAssistantBridge.ts 221260ab53900ea000f3f1cf99487ef47b041dd2a0b549f908ed20eb309a85f7
+source-bound src/ai/activityLog.ts 3d27d741243093428fde5798ef38a83fd5b755893abd7edffc4dd91bd92bc323
+source-bound src/ai/runRecap.ts 66b59b0c4b4205955b278bc500b08676b559048714cb2a821366d6130fd2e3ae
+source-bound scripts/qa/ai-harness-contracts.mjs a4f89eade69c9ab9c7d167f40924561ab487a070b2da2e9868957439919be569
+source-bound scripts/qa/ai-harness-browser.mjs ddce9bf11db3e242af86e80ccd56958339ab8b4e7aa4e1b664ccf123566c3c83
+source-bound scripts/qa/ai-harness-proof-failure.mjs 0e2fcc85ce1d867f24c355a13999b3ab8865623e60d40630426a5d6a06c03507
+source-bound scripts/qa/ai-harness-cleanup.mjs cca421282dda00bfb1773268c8378e00c71ab44d1aff3c42d0056ca6d5f5fa07
+source-bound scripts/qa/ai-harness-p2.mjs 81c7b57d1cecb3c3cdc18db4e3f46aaa82ae2358af24e7c2a9b76d384cc52326
+source-bound scripts/qa/ai-harness-p2-scenarios.mjs c20959243619beca413d44e3005f46c0b3a9f2229a860bbec7d3358cefa4ce3a
+source-bound scripts/qa/ai-harness-p2-observe.mjs 56b650dd393b9713f895144f6cbbfda687941ec60f2a34bd895a78f2260596a6
+source-bound scripts/qa/ai-harness-p2-resume.mjs a94c816a7ad82d0f118982f122aa66fe6235d132f43c47133219ebdae2b3a589
+{"backendPassed":138,"uiPending":10,"fixture":"qa-ai-surface-f43709da-1298-4d84-a8e0-9d1aa8530466","cleanup":{"absentBeforeRun":true,"pageListenersAndTimersClosed":true,"browserClosed":true,"serverClosed":true,"cacheRemoved":true,"portReleased":true,"remote":{"projectId":"qa-ai-surface-f43709da-1298-4d84-a8e0-9d1aa8530466","kind":"deleted-and-absence-verified","commitIds":["509686c5-f5b6-4001-bcd8-34bc1020775e","94f2edd7-8d74-4f28-bffd-76afaab5581f","7dc28823-77ac-4ae6-94c7-d17d6ecbaea2","12853082-4646-47bd-aa35-e547a40ef4e6","69b704ea-56b5-4156-8d53-c9544acaabb6","c07c4931-85a7-436e-9acf-a47a8b141f23","43778100-ab7b-4ac0-b991-2e35e230ee10","431c22ab-58a5-42b7-9105-aed3cb08b736","cd3f4f18-3a39-4877-8bc3-5884421967e2","b3086d5c-9429-4cb9-aa7c-70589fcfccb3"]},"remoteDeletedAndAbsent":true,"reusedListener":false,"activeRoutes":0}}
+Configured key-value scan passed for integration text evidence.
