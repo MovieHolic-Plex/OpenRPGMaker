@@ -394,6 +394,7 @@ function safeUploadedResourceUrl(dataUrl: string): string | null {
   if (normalizedUrl.startsWith("data:audio/mpeg;")) return dataUrl;
   if (normalizedUrl.startsWith("data:audio/wav;")) return dataUrl;
   if (normalizedUrl.startsWith("data:audio/ogg;")) return dataUrl;
+  if (/^data:video\/(mp4|webm|ogg);/.test(normalizedUrl)) return dataUrl;
   return null;
 }
 

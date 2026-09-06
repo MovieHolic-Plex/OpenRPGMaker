@@ -10,6 +10,7 @@
 @import "../database/tabs-b-status-menu-main.css";
 @import "./statusMenuEdgeDock.css";
 @import "./playLoading.css";
+@import "./cinematics.css";
 @import "./actionHud.css";
 @import "./timer.css";
 @import "./touchpad.css";

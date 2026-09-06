@@ -148,6 +148,11 @@ async function waitForRuntimePredicate(page, predicate, argument, timeoutMs = 30
 
 async function applyOp(page, op, runState) {
   switch (op.kind) {
+    case "cinematic": {
+      const { cinematicQaOp } = await import("./runtimeQaCinematics.mjs");
+      await cinematicQaOp(page, op);
+      return;
+    }
     case "waitForEmote":
       await page.waitForFunction(
         ({ target, frame }) => window.__oprnEmotes?.().some((emote) =>
