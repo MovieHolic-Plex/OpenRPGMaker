@@ -164,6 +164,7 @@ function validateRect(label: string, value: unknown): void {
 
 function validateEventGraphic(label: string, value: unknown): void {
   const graphic = requireRecord(label, value);
+  if (graphic.appearanceId !== undefined) assert(requireString(`${label}.appearanceId`, graphic.appearanceId).trim().length > 0, `${label}.appearanceId is blank`);
   if (graphic.sprite !== undefined) {
     const sprite = requireRecord(`${label}.sprite`, graphic.sprite);
     requireString(`${label}.sprite.type`, sprite.type);
@@ -336,6 +337,7 @@ function validatePageShape(label: string, value: unknown): void {
     validatePageConditionShape(`${label}.conditions[${index}]`, condition);
   }
   const graphic = requireRecord(`${label}.graphic`, page.graphic);
+  if (graphic.appearanceId !== undefined) assert(requireString(`${label}.graphic.appearanceId`, graphic.appearanceId).trim().length > 0, `${label}.graphic.appearanceId is blank`);
   // 페이지 그림은 예전부터 `requireRecord` 만 거쳤다. 전체를 validateEventGraphic 으로
   // 올리면 sprite.type 이 없는 기존 프로젝트를 새로 거부하게 되므로, 2차가 도입한 배율만
   // 검증한다 — 새 필드에만 새 계약을 건다.

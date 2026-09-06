@@ -1,5 +1,42 @@
 # Runtime Project Schema & Persistence
 
+## Character appearance sets v1 (2026-09-06)
+
+`database.characterAppearances?` is an additive v4 catalog of
+`{id,name,description,charset?:{resourceId,characterIndex},face?:{resourceId},bust?:{resourceId}}`.
+It is independent of social `project.characters` / `characterId`. All graphic
+slots are optional; legacy projects keep the catalog absent. Actors and active
+event-page graphics reference a set with optional `appearanceId`, retaining their
+direct graphic fields for unlink/fallback. Both `actorModel` normalization and
+`databaseActions`' actor patch whitelist must preserve that link.
+
+`characterAppearanceValidation.ts` validates shape, unique IDs, slot bounds,
+resource kinds and dangling links. Face resources are standalone facesets, busts
+are pictures, charsets use the supported 288x256 sheet with eight 24x32-frame
+characters. Known mismatched uploaded metadata is rejected; actual decoded
+dimensions are checked before runtime frame registration. Built-in bust/full
+aliases and promoted portrait metadata match the resource picker. No migration,
+SQL table, or save-slot field is added.
+
+`characterAppearances.ts` owns shared projections and usage scanning. Session
+actor overrides still win; linked slots override legacy actor/page resources,
+and missing slots keep their legacy fallback. The player now uses the selected
+charset index rather than always cell zero. Uploaded charsets are loaded and
+registered by the existing asset loader and recognized by NPC animation.
+
+An event starts with its active page's set face as default. Explicit `changeFace`,
+including clear, takes precedence. The existing command supports optional
+`appearanceId` and `presentation:"face"|"bust"`; a missing bust uses that set's
+face, then no portrait. Explicit presentation takes precedence over old filename
+inference. Names are never used to infer speaker identity.
+
+Contracts: `characterAppearanceSets`, `characterAppearanceRuntime`, and
+`characterAppearanceScenario` tests; the dedicated
+`scripts/qa/runtime/character-appearance-sets.scenario.mjs` exercises player.html.
+`node scripts/qa/appearance-runtime-proof.mjs` uses that same harness with an
+isolated Firefox context where Chromium has host-level ERR_NETWORK_CHANGED
+asset failures. The scenario removes its temporary fixture on cleanup/exit.
+
 ## New-project save/reload verification (2026-09-05)
 
 `store.loadNewRemoteProjectTransactionally` compares draft-free projects with `serializeForComparison`, not raw wire bytes. The comparison runs both sides through the project loader's normalization and recursively sorts object keys; arrays and authored non-default values remain significant. New blank/preset seeds contain the default `system.titleScreen.titleGraphic = { mode: "text", x: 32, y: 62 }`, which normalization omits, and the farm preset gains `system.timeSystem.forceSleep = false` on load. PostgreSQL JSONB also changes object-key order. These representation differences must not reject a successful save/reload. Wire serialization and SHA-256 persistence remain unchanged; actual mismatches still reject before adopting the new project or changing drafts, config, or URL. `test/transactionalNewRemoteProject.test.ts` exercises all five presets plus blank creation through real save/load functions with a JSONB-like transport, and rejects changed titles, map tiles, and array order.

@@ -1,4 +1,5 @@
 import { growthEffects } from "@/project/growth/runtime";
+import { resolveActorFaceResourceId } from "@/project/sessionActorCommands";
 import type { GrowthProgress } from "@/project/growth/types";
 import { clampLevel, normalizeActorRecord, parameterValueAtLevel } from "@/project/actorModel";
 import { normalizeEnemyRecord } from "@/project/databaseEnemyTroopRecordModel";
@@ -115,7 +116,7 @@ export function actorBattlers(
       recordId: actor.id,
       classId: derived.effectiveClassId,
       level,
-      faceResourceId: overrides?.faceResourceIds?.[actorId] ?? normalizedActor.faceResourceId,
+      faceResourceId: resolveActorFaceResourceId({ actorFaceResourceIds: overrides?.faceResourceIds }, normalizedActor, project),
       battleCharacterResourceId: normalizedActor.battleCharacterResourceId,
       name: overrides?.names?.[actorId] ?? normalizedActor.name,
       maxHp: derived.maxHp,

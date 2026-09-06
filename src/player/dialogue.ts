@@ -1,4 +1,4 @@
-﻿// player/dialogue.ts
+// player/dialogue.ts
 // DOM dialogue and choices overlay used by the runtime interpreter.
 // It resolves text advancement and choice selection through promises.
 
@@ -898,6 +898,7 @@ function cancelChoiceIndex(
 
 function dialoguePortraitMode(face: FaceGraphic | undefined): "face" | "bust" | "full" {
   if (!face?.resourceId) return "face";
+  if (face.presentation) return face.presentation;
   const id = face.resourceId.trim().toLowerCase();
   if (id.includes("-full") || id.includes("fullbody") || id.includes("-body") || id.endsWith("/full")) {
     return "full";

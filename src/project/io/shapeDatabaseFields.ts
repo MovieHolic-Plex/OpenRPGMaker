@@ -27,9 +27,11 @@ import {
 import { GOLD_MAX } from "@/project/economyValues";
 import { assert, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
 import { validateFootprintPair } from "./shapeEventFields";
+import { validateCharacterAppearances } from "./characterAppearanceValidation";
 
 export function validateDatabase(value: unknown): void {
   const database = requireRecord("database", value);
+  if (database.characterAppearances !== undefined) validateCharacterAppearances(database.characterAppearances);
   for (const key of [
     "actors",
     "classes",
@@ -57,6 +59,9 @@ export function validateDatabase(value: unknown): void {
   }
   for (const raw of database.actors as unknown[]) {
     const actor = requireRecord("actor", raw);
+    if (actor.appearanceId !== undefined) {
+      assert(requireString("actor.appearanceId", actor.appearanceId).trim().length > 0, "actor.appearanceId is blank");
+    }
     if (actor.initialEquipment === undefined) continue;
     for (const [slot, id] of Object.entries(requireRecord("actor.initialEquipment", actor.initialEquipment))) {
       assert(isEquipmentSlotId(slot), `Invalid equipment slot id: ${slot}`);

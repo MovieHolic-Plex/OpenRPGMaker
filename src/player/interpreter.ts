@@ -1,4 +1,6 @@
 import type { Command, Project } from "@/project/types";
+import { resolveAppearancePortrait } from "@/project/characterAppearances";
+import { runtimeEventViewById } from "@/project/runtimeEventState";
 import { executeCommand } from "@/player/interpreter/commandCatalog";
 import { advanceResume } from "@/player/interpreter/resume";
 import { advanceCompletedFrame, gotoLabel, topFrame } from "@/player/interpreter/stack";
@@ -20,7 +22,12 @@ export function createInterpreter(
   project?: Project,
   options?: InterpreterOptions
 ): Interpreter {
+  const map = project?.maps[session.currentMapId];
+  const event = project && map && options?.currentEventId
+    ? runtimeEventViewById(project, map, session, options.eventPositions ?? {}, options.currentEventId)
+    : undefined;
   const state: InterpreterState = {
+    currentFace: project ? resolveAppearancePortrait(project, event?.page?.graphic.appearanceId, "face") : undefined,
     stack: [{ commands, pc: 0 }],
     session,
     maxStackDepth: 1000,
