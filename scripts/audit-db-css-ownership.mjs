@@ -5,11 +5,17 @@ import { dirname, resolve, relative } from 'node:path';
 import postcss from 'postcss';
 import { designatedDeclarations, selectorIdentity } from './lib/db-css-owner-proof.mjs';
 
-const base = process.argv[2] ?? '49067218aebf889d98c2dc05be08231787483427';
+const base = process.argv[2] ?? execFileSync('git', ['merge-base', 'HEAD', 'origin/main'], { encoding: 'utf8' }).trim();
+// Validate and inventory the tree before treating an absent baseline path as empty.
+// Git failures for invalid revisions, unreadable trees or existing blobs still fail.
+const baseTree = execFileSync('git', ['rev-parse', '--verify', '--end-of-options', `${base}^{tree}`], { encoding: 'utf8' }).trim();
+const baseFiles = new Set(execFileSync('git', ['ls-tree', '-r', '--name-only', '-z', baseTree, '--', 'src'], { encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 }).split('\0'));
 const output = resolve(process.argv[3] ?? '.omo/evidence/db-css-ownership/ownership-inventory.json');
 const files = execFileSync('git', ['ls-files', 'src/**/*.css'], { encoding: 'utf8' }).trim().split('\n');
 const sourceFiles = execFileSync('git', ['ls-files', 'src/**/*.ts'], { encoding: 'utf8' }).trim().split('\n');
-const readBase = path => execFileSync('git', ['show', `${base}:${path}`], { encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 });
+const readBase = path => baseFiles.has(path)
+  ? execFileSync('git', ['show', `${baseTree}:${path}`], { encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 })
+  : '';
 const shared = 'src/styles/database/studio-v2.css';
 const navigation = 'src/styles/database/workspace-modern.css';
 const declarations = (css, file) => {
@@ -82,6 +88,13 @@ const intrinsic = {
   'text-shadow': { value: 'none', reason: 'Modern text has no decorative shadow.' },
 };
 function ownerFor(d) {
+  // These four shared rules only lower exclusion specificity; they still exclude steppers.
+  const controlState = `${db} :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):where(:not(.db-number-stepper input)), select, textarea)`;
+  const controlSelectors = [inputSelector, ...[':hover:not(:disabled):not(:focus-visible)', ':focus-visible', ':disabled'].map(state => controlState + state)];
+  const loweredSelector = selectorIdentity(d.selector).replace(':not(.db-number-stepper input)', ':where(:not(.db-number-stepper input))');
+  if (d.file === shared && d.context === '' && controlSelectors.includes(loweredSelector)) {
+    return { kind: 'specificity-adjusted', declarations: designatedDeclarations(after, exact(shared, loweredSelector, 'same ordinary-control consumers with zero-specificity stepper exclusion'), d.property) };
+  }
   if (d.file.endsWith('/growth-tree.css') && d.selector === `${db} .growth-studio :is(button, input, textarea, select):focus-visible`) {
     const retained = exact(d.file, `${db} .growth-studio :is(button, input:not([type="radio"]), textarea, select):focus-visible`, 'retained non-radio focus', d.context);
     const radio = exact('src/styles/database/modern-controls.css', '.database-modal-backdrop .database-modal-window input[type="radio"]:focus-visible', 'native radio focus');

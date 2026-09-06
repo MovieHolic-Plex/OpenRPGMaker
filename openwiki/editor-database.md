@@ -32,6 +32,12 @@ valid shorthand coverage); descendant/prefix matches are not replacements.
 Narrowed rules split retained and excluded consumers rather than assigning an
 unrelated intrinsic default. Required DB surface execution consumes per-file
 Vitest results and rejects missing, zero-assertion, skipped or failed coverage.
+The audit defaults to the merge-base with `origin/main`, so unrelated upstream
+style changes are not attributed to this branch. An explicit positional revision
+replays a historical comparison. A valid baseline missing a newly added sheet
+contributes zero declarations; invalid revisions and unreadable existing blobs
+remain errors. Historical comparisons spanning unrelated removals fail closed
+until those removals have real ownership evidence.
 
 ## 전투 명령 배치 스튜디오 (2026-09-05)
 

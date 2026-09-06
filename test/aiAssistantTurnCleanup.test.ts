@@ -51,7 +51,7 @@ function setup() {
   const deps = {
     surface, applyingProposal: false, projectIdentityId: "cleanup", workPlanSurfaceState: null,
     applyProposal: vi.fn<AiTurnRunnerDeps["applyProposal"]>(async () => "applied"),
-    beginWorkPlanTurn: vi.fn(),
+    beginWorkPlanTurn: vi.fn(), showAcceptance: vi.fn(),
     noteNoChanges: vi.fn(), settleWorkPlanTurn: vi.fn(), refreshWorkPlanSurface: vi.fn(), showWorkPlan: vi.fn(),
     noteWorkPlanActivity: vi.fn(), appendMilestoneFeedLine: vi.fn(), appendTileThumbs: vi.fn(), appendTileGrid: vi.fn(),
     appendAiDocument: vi.fn(), hasPendingQuestion: () => false, openAiSettings: vi.fn(), renderQuickReplies: vi.fn(), refreshContextMeter: vi.fn(),

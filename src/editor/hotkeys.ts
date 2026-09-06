@@ -15,6 +15,8 @@ import { EDITOR_ZOOM_LEVELS, editorState, type EditorState, type Layer, type Too
 import { pendingHistoryLabels, redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
 import { toast } from "@/util/toast";
 
+const WALK_ENCOUNTER_DIALOG_SELECTOR = '[data-testid="walk-encounter-modal"], [data-testid="walk-encounter-list"]';
+
 /**
  * 플레이 서피스가 키보드를 소유하고 있는가 — 시연 실행 / 이벤트 테스트 / 전투 테스트 창,
  * 또는 플레이 셸이 마운트된 모든 경우.
@@ -62,6 +64,7 @@ export function shouldIgnoreEditorShortcut(event: KeyboardEvent): boolean {
   }
   // 데이터베이스/리소스/이벤트 명령 모달이 열려 있으면 document 기준으로 가드.
   if (typeof document !== "undefined") {
+    if (document.querySelector(WALK_ENCOUNTER_DIALOG_SELECTOR)) return true;
     if (document.querySelector("[data-testid='database-modal']")) return true;
     if (document.querySelector("[data-testid='resource-modal']")) return true;
     if (document.querySelector("[data-testid='world-panel-modal']")) return true;
@@ -134,6 +137,7 @@ export function historyHotkeyOwnedByPanel(): boolean {
   // 이 함수가 소유권을 넘기면 handleKeyDown 이 자연스럽게 shouldIgnoreEditorShortcut 로
   // 내려가 전적으로 침묵한다 — EditScene 에 별도 가드를 넣지 않는 이유다.
   if (isPlaySurfaceOwningKeyboard()) return true;
+  if (document.querySelector(WALK_ENCOUNTER_DIALOG_SELECTOR)) return true;
   if (document.querySelector("[data-testid='database-modal']")) return true;
   return Boolean(document.querySelector("[data-testid='event-editor-modal']"));
 }

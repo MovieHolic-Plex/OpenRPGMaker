@@ -1,0 +1,186 @@
+[
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "url": "file:///home/main/.herdr/worktrees/rpg-zzu/worktree-clear-harbor-3da2/reports/ingame-shop-2026-09-06/index.html",
+    "images": [
+      {
+        "src": "rich/1024x768/04-equipment.png",
+        "width": 1024,
+        "height": 768
+      },
+      {
+        "src": "before/02-shop-open.png",
+        "width": 1024,
+        "height": 768
+      },
+      {
+        "src": "after/02-shop-open.png",
+        "width": 1024,
+        "height": 768
+      },
+      {
+        "src": "rich/1024x768/00-entrance.png",
+        "width": 1024,
+        "height": 768
+      },
+      {
+        "src": "rich/1024x768/01-stock.png",
+        "width": 1024,
+        "height": 768
+      },
+      {
+        "src": "rich/1024x768/02-quantity.png",
+        "width": 1024,
+        "height": 768
+      },
+      {
+        "src": "rich/1024x768/03-purchased.png",
+        "width": 1024,
+        "height": 768
+      },
+      {
+        "src": "rich/1024x768/05-equipment-bought.png",
+        "width": 1024,
+        "height": 768
+      },
+      {
+        "src": "rich/1024x768/06-insufficient-gold.png",
+        "width": 1024,
+        "height": 768
+      },
+      {
+        "src": "rich/1024x768/07-sold.png",
+        "width": 1024,
+        "height": 768
+      },
+      {
+        "src": "rich/1024x768/08-last-copy.png",
+        "width": 1024,
+        "height": 768
+      },
+      {
+        "src": "rich/640x480/04-equipment.png",
+        "width": 640,
+        "height": 480
+      },
+      {
+        "src": "rich/640x480/06-insufficient-gold.png",
+        "width": 640,
+        "height": 480
+      },
+      {
+        "src": "rich/320x240/01-stock.png",
+        "width": 320,
+        "height": 240
+      },
+      {
+        "src": "rich/320x240/06-insufficient-gold.png",
+        "width": 320,
+        "height": 240
+      }
+    ],
+    "linkCount": 46,
+    "compareControls": "passed",
+    "geometry": {
+      "width": 1440,
+      "scrollWidth": 1440,
+      "imageCount": 15
+    },
+    "errors": []
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 1000
+    },
+    "url": "file:///home/main/.herdr/worktrees/rpg-zzu/worktree-clear-harbor-3da2/reports/ingame-shop-2026-09-06/index.html",
+    "images": [
+      {
+        "src": "rich/1024x768/04-equipment.png",
+        "width": 1024,
+        "height": 768
+      },
+      {
+        "src": "before/02-shop-open.png",
+        "width": 1024,
+        "height": 768
+      },
+      {
+        "src": "after/02-shop-open.png",
+        "width": 1024,
+        "height": 768
+      },
+      {
+        "src": "rich/1024x768/00-entrance.png",
+        "width": 1024,
+        "height": 768
+      },
+      {
+        "src": "rich/1024x768/01-stock.png",
+        "width": 1024,
+        "height": 768
+      },
+      {
+        "src": "rich/1024x768/02-quantity.png",
+        "width": 1024,
+        "height": 768
+      },
+      {
+        "src": "rich/1024x768/03-purchased.png",
+        "width": 1024,
+        "height": 768
+      },
+      {
+        "src": "rich/1024x768/05-equipment-bought.png",
+        "width": 1024,
+        "height": 768
+      },
+      {
+        "src": "rich/1024x768/06-insufficient-gold.png",
+        "width": 1024,
+        "height": 768
+      },
+      {
+        "src": "rich/1024x768/07-sold.png",
+        "width": 1024,
+        "height": 768
+      },
+      {
+        "src": "rich/1024x768/08-last-copy.png",
+        "width": 1024,
+        "height": 768
+      },
+      {
+        "src": "rich/640x480/04-equipment.png",
+        "width": 640,
+        "height": 480
+      },
+      {
+        "src": "rich/640x480/06-insufficient-gold.png",
+        "width": 640,
+        "height": 480
+      },
+      {
+        "src": "rich/320x240/01-stock.png",
+        "width": 320,
+        "height": 240
+      },
+      {
+        "src": "rich/320x240/06-insufficient-gold.png",
+        "width": 320,
+        "height": 240
+      }
+    ],
+    "linkCount": 46,
+    "compareControls": "passed",
+    "geometry": {
+      "width": 390,
+      "scrollWidth": 390,
+      "imageCount": 15
+    },
+    "errors": []
+  }
+]

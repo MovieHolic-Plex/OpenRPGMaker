@@ -46,7 +46,7 @@ async function bootEditor(page: Page) {
     else await route.continue();
   });
   await page.addInitScript(() => {
-    localStorage.setItem('rpg-zzu:editor-ui-mode', 'expert');
+    localStorage.setItem('oprn:editor-ui-mode', 'expert');
     localStorage.setItem('oprn:standard-welcome-seen', '1');
     localStorage.setItem('oprn:editor-welcome-dismissed', '1');
   });
@@ -63,6 +63,7 @@ async function bootEditor(page: Page) {
     observer.observe(node, { childList: true, characterData: true, subtree: true });
     finish();
   }));
+  await expect(page.locator('body')).toHaveClass(/editor-ui-expert/);
 }
 
 async function openDatabase(page: Page) {

@@ -4,7 +4,8 @@ import { normalizeClassRecord, normalizeSkillRecord } from '@/project/databaseRe
 import type { SkillTree, SkillTreeNode } from './types';
 
 export type GrowthPresetRole = 'vanguard' | 'arcane' | 'ranger';
-export type GrowthPresetKind = 'promotion' | 'skill';
+export type GrowthStudioMode = 'promotion' | 'skill';
+export type GrowthPresetKind = GrowthStudioMode | 'bundle';
 export interface GrowthPresetMetadata {
   readonly id: string;
   readonly kind: GrowthPresetKind;
@@ -68,13 +69,13 @@ const roles = {
 } as const;
 
 export const GROWTH_PRESETS: readonly GrowthPresetMetadata[] = Object.freeze(
-  (['promotion', 'skill'] as const).flatMap(kind =>
+  (['bundle', 'promotion', 'skill'] as const).flatMap(kind =>
     (['vanguard', 'arcane', 'ranger'] as const).map(role => Object.freeze({
-      id: `${kind}-${role}`, kind, role, name: roles[role][kind],
-      description: kind === 'promotion' ? roles[role].promotionDescription : roles[role].skillDescription,
+      id: `${kind}-${role}`, kind, role, name: kind === 'bundle' ? `${roles[role].promotion} · 연결 성장` : roles[role][kind],
+      description: kind === 'bundle' ? '직업별 트리를 계승하며 5레벨과 12레벨에 승급하는 연결 성장 묶음입니다.' : kind === 'promotion' ? roles[role].promotionDescription : roles[role].skillDescription,
       coverUrl: `/assets/generated/growth-presets/${role}.png`,
-      nodeCount: kind === 'promotion' ? 5 : 7, edgeCount: kind === 'promotion' ? 4 : 7,
-      classCount: kind === 'promotion' ? 5 : 0, skillCount: 3,
+      nodeCount: kind === 'bundle' ? 15 : kind === 'promotion' ? 5 : 7, edgeCount: kind === 'bundle' ? 13 : kind === 'promotion' ? 4 : 7,
+      classCount: kind !== 'skill' ? 5 : 0, skillCount: 3,
     }))),
 );
 
@@ -90,7 +91,7 @@ export function createGrowthPresetTemplate(preset: GrowthPresetMetadata): {
     effect: skill.effect === 'healing' ? { kind: 'healing', statistic: 'mind', affects: 'hp' }
       : { kind: 'damage', statistic: preset.role === 'arcane' ? 'mind' : 'attack', affects: 'hp' },
   }));
-  if (preset.kind === 'promotion') {
+  if (preset.kind !== 'skill') {
     const classes = role.classes.map((name, index) => {
       const tier = index === 0 ? 0 : index < 3 ? 1 : 2;
       const specialty = role.specialties[index];
@@ -117,7 +118,33 @@ export function createGrowthPresetTemplate(preset: GrowthPresetMetadata): {
       });
       return klass;
     });
-    return { skills, classes, trees: [] };
+    if (preset.kind === 'promotion') return { skills, classes, trees: [] };
+    // Each source tree costs 3 P (rank 2 + skill 1). Both paths cost 3 P at
+    // Lv.5 and 6 P at Lv.12; all final-tree nodes fit the 13 P budget at Lv.12.
+    const trees: SkillTree[] = classes.map((klass, index) => {
+      const parent = index === 0 ? undefined : index < 3 ? 0 : index - 2;
+      const level = index === 0 ? 1 : index < 3 ? 5 : 12;
+      const skillIndex = index === 0 ? 0 : index === 2 || index === 4 ? 1 : 2;
+      const treeId = `tree-${index}`;
+      klass.skillIds = []; klass.learnedSkills = [];
+      for (const edge of klass.promotions ?? []) edge.requires = {
+        ...edge.requires,
+        requiredSkillIds: [`skill-${skillIndex}`],
+        requiredNodes: [{ treeId, nodeId: 'root', rank: 2 }],
+        requiredTreePoints: [{ treeId, points: 3 }],
+      };
+      return { id: treeId, name: `${klass.name} · ${role.skill}`, description: '기초 2등급과 스킬을 익혀 다음 직업으로 승급하세요. 실제 승급 경로에서 계승됩니다.',
+        classIds: [klass.id], inheritOnPromotion: true, allowReset: true, nodes: [
+          { id: 'root', name: role.passives[index === 0 ? 0 : index === 2 || index === 4 ? 1 : 2], description: '',
+            x: 56, y: 60, cost: 1, level, maxRank: 2, prerequisites: [],
+            ...(parent === undefined ? {} : { requiredNodes: [{ treeId: `tree-${parent}`, nodeId: 'root', rank: 2 }] }),
+            effect: { kind: 'parameter', parameter: role.parameters[index === 0 ? 0 : index === 2 || index === 4 ? 1 : 2], amount: role.amounts[index === 0 ? 0 : index === 2 || index === 4 ? 1 : 2] } },
+          { id: 'technique', name: role.skills[skillIndex].name, description: role.skills[skillIndex].description,
+            x: 304, y: 60, cost: 1, level: Math.max(2, level), maxRank: 1, prerequisites: ['root'],
+            requiredNodes: [{ treeId, nodeId: 'root', rank: 2 }], effect: { kind: 'skill', skillId: `skill-${skillIndex}` } },
+        ] };
+    });
+    return { skills, classes, trees };
   }
   const passive = (index: 0 | 1 | 2 | 3): SkillTreeNode['effect'] => ({
     kind: 'parameter', parameter: role.parameters[index], amount: role.amounts[index],

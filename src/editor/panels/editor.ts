@@ -8,7 +8,7 @@ import {
 import { collectProjectReferenceIssues } from "@/project/io/references";
 import { editorState } from "@/editor/editorState";
 import { registerAiBootIntentTarget, clearPendingAiBootIntent } from "@/editor/aiBootIntent";
-import { dismissCoachMarks, maybeStartBasicCoachMarks, maybeStartStandardWelcomeCard } from "@/editor/coachMarks";
+import { dismissCoachMarks } from "@/editor/coachMarks";
 import { installSelectionChipHint } from "@/editor/selectionChipHint";
 import { installToolCursor } from "@/editor/toolCursor";
 import {
@@ -249,8 +249,6 @@ export function renderEditor(main: HTMLElement): void {
   // 각 게이트가 허용하므로 느린 companion 조회가 사용자를 잠그지는 않는다.
   void refreshAiConnectionStatus();
   scheduleEditorAssetWarmup();
-  maybeStartBasicCoachMarks();
-  maybeStartStandardWelcomeCard();
 }
 
 /** 좌측 도크에 마운트할 패널. 규칙은 `workspace/leftDockPanels.ts` 가 소유한다(패널 메뉴와 공유). */

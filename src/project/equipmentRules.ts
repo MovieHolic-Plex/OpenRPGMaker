@@ -110,7 +110,7 @@ export function transitionActorEquipment(input: EquipmentTransitionInput): Equip
   const actor = project.database.actors.find((record) => record.id === input.actorId);
   if (!actor) return rejected("missingActor");
 
-  const classId = input.classId ?? actor.classId;
+  const classId = input.classId && project.database.classes.some(c => c.id === input.classId) ? input.classId : actor.classId;
   const classRecord = project.database.classes.find((record) => record.id === classId);
   if (actor.options.fixedEquipment || classRecord?.options.fixedEquipment) return rejected("fixedEquipment");
 

@@ -1,6 +1,7 @@
 import type {
   ActorRecord,
   BattleAnimationRecord,
+  CinematicSequence,
   EnemyRecord,
   EquipmentRecord,
   ItemRecord,
@@ -98,6 +99,17 @@ export function validateSystemResources(system: SystemRecords, resourceIds: Read
   validateOptionalResource("system.titleScreen.titleGraphic.resourceId", system.titleScreen?.titleGraphic?.resourceId, resourceIds);
   for (const [index, layer] of (system.titleScreen?.backgroundLayers ?? []).entries()) {
     validateOptionalResource(`system.titleScreen.backgroundLayers[${index}].resourceId`, layer.resourceId, resourceIds);
+  }
+  validateCinematicResources("system.opening", system.opening, resourceIds);
+  validateCinematicResources("system.gameOver.sequence", system.gameOver?.sequence, resourceIds);
+  validateOptionalResource("system.gameOver.backgroundResourceId", system.gameOver?.backgroundResourceId, resourceIds);
+}
+
+function validateCinematicResources(label: string, sequence: CinematicSequence | undefined, resourceIds: ReadonlySet<string>): void {
+  for (const [index, scene] of (sequence?.scenes ?? []).entries()) {
+    const sceneLabel = `${label}.scenes[${index}]`;
+    if (scene.kind !== "text") validateOptionalResource(`${sceneLabel}.resourceId`, scene.resourceId, resourceIds);
+    validateOptionalResource(`${sceneLabel}.narrationAudioResourceId`, scene.narrationAudioResourceId, resourceIds);
   }
 }
 

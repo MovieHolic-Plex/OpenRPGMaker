@@ -278,11 +278,11 @@ describe("event command staged-state regressions", () => {
       ...afterLabel,
       fields: { ...afterLabel.fields, stagedBetweenEdits: "keep" },
     });
-    change(findByTestId(body, "weighted-branch-weight-0"), "3");
+    change(findByTestId(body, "weighted-branch-chance-0"), "75");
 
     expect(staged.current()).toMatchObject({
       fields: {
-        table: "대성공=3\n실패=1",
+        table: "대성공=75\n실패=25",
         stagedBetweenEdits: "keep",
       },
     });

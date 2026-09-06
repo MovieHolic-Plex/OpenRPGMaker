@@ -49,7 +49,7 @@ export type EditorWelcomeResult = {
 };
 
 export type EditorWelcomeOptions = {
-  /** Required by production for the remote-verified manual path; AI cards do not use it. */
+  /** Creates and verifies the preset project before either manual completion or AI handoff. */
   readonly applySystemPreset?: (plan: GenreBlankProjectSystemPresetPlan) => Promise<unknown>;
 };
 
@@ -193,7 +193,7 @@ function syncBriefingPosition(root: HTMLElement): void {
 
 /**
  * Mount the canvas briefing under `host` and resolve when the user starts or skips.
- * Always removes the overlay. Start sends to the current map — it does not mint a blank project.
+ * Removes the overlay on success/skip. Presets create a verified project first; free text uses the current map.
  */
 export function presentEditorWelcome(
   host: HTMLElement,
@@ -234,26 +234,12 @@ export function presentEditorWelcome(
 
     const startFreeText = (label: string): void => {
       const trimmed = label.trim();
-      if (!trimmed) return;
+      if (!trimmed || applyingSystemPreset) return;
       settle({
         intent: trimmed,
         prompt: buildWelcomeFreeTextPrompt(trimmed),
         autoSend: true,
         source: "free-text",
-        dismiss: true,
-        action: "start",
-      });
-    };
-
-    const startPreset = (presetId: WelcomeGenrePresetId, label: string): void => {
-      const preset = WELCOME_GENRE_PRESETS.find((entry) => entry.id === presetId);
-      if (!preset) return;
-      settle({
-        intent: label,
-        prompt: buildWelcomeGenrePresetPrompt(preset),
-        autoSend: true,
-        presetId,
-        source: "chip",
         dismiss: true,
         action: "start",
       });
@@ -266,15 +252,19 @@ export function presentEditorWelcome(
       dataset: { testid: EDITOR_WELCOME_TESTIDS.systemPresetError },
     });
 
-    const startManualPreset = async (presetId: WelcomeGenrePresetId, label: string): Promise<void> => {
+    const startPreset = async (presetId: WelcomeGenrePresetId, label: string, autoSend: boolean): Promise<void> => {
       if (applyingSystemPreset) return;
       const systemPresetPlan = welcomeGenreSystemPresetPlanById(presetId);
-      const confirmed = await showConfirm({
-        title: "빈 프로젝트에 시스템 프리셋 적용",
-        message: "현재 프로젝트를 먼저 저장한 뒤, 선택한 시스템 설정으로 별도 프로젝트를 만들고 재로드를 확인합니다.",
-        confirmLabel: "저장하고 새 프로젝트 만들기",
-      });
-      if (!confirmed || settled) return;
+      if (!autoSend) {
+        const confirmed = await showConfirm({
+          title: "빈 프로젝트에 시스템 프리셋 적용",
+          message: "현재 프로젝트를 먼저 저장한 뒤, 선택한 시스템 설정으로 별도 프로젝트를 만들고 재로드를 확인합니다.",
+          confirmLabel: "저장하고 새 프로젝트 만들기",
+        });
+        if (!confirmed || settled || applyingSystemPreset) return;
+      }
+      const preset = WELCOME_GENRE_PRESETS.find((entry) => entry.id === presetId);
+      if (!preset || settled) return;
       if (!options.applySystemPreset) {
         systemPresetError.hidden = false;
         systemPresetError.textContent = "원격 저장 경로를 준비하지 못했습니다. 프로젝트 연결을 확인하세요.";
@@ -283,18 +273,18 @@ export function presentEditorWelcome(
       applyingSystemPreset = true;
       systemPresetError.hidden = true;
       systemPresetError.textContent = "";
-      const controls = Array.from(root.querySelectorAll<HTMLButtonElement>("button"));
+      const controls = Array.from(root.querySelectorAll<HTMLButtonElement | HTMLInputElement>("button, input"));
       controls.forEach((button) => { button.disabled = true; });
       try {
         await options.applySystemPreset(systemPresetPlan);
         if (settled) return;
         settle({
           intent: label,
-          prompt: null,
-          autoSend: false,
+          prompt: autoSend ? buildWelcomeGenrePresetPrompt(preset) : null,
+          autoSend,
           presetId,
-          source: "manual-system-preset",
-          systemPresetPlan,
+          source: autoSend ? "chip" : "manual-system-preset",
+          ...(autoSend ? {} : { systemPresetPlan }),
           dismiss: true,
           action: "start",
         });
@@ -356,7 +346,7 @@ export function presentEditorWelcome(
               templateId: preset.id,
             },
             on: {
-              click: () => startPreset(preset.id, preset.label),
+              click: () => void startPreset(preset.id, preset.label, true),
             },
             children: [
               posterImage(preset.thumb),
@@ -385,7 +375,7 @@ export function presentEditorWelcome(
               testid: `${EDITOR_WELCOME_TESTIDS.starterCard}-${index}`,
               templateId: preset.id,
             },
-            on: { click: () => void startManualPreset(preset.id, preset.label) },
+            on: { click: () => void startPreset(preset.id, preset.label, false) },
           }),
         ],
       });

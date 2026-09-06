@@ -1,5 +1,41 @@
 # RPG ZZU Design System
 
+## In-game shop trade counter (2026-09-06)
+
+Runtime only: this is not the shop-command editor. `runtime/shop.css` owns a
+single inset glass counter, with a single-column stock list and a generous
+selected-item display. The existing DOM slots, authored item resources, currency,
+quantity, affordability and keyboard/gamepad controller remain authoritative.
+No merchant artwork is inferred from the player's party: the brand uses the
+existing purse emblem; actual party faces remain explicitly labelled as party.
+
+- Local `--shop-*` aliases inherit `--runtime-glass-*` surface, inset, card,
+  text, muted, hairline, accent, shadow and radius tokens. No global game reskin.
+  Category display washes derive from glass accent (equipment), success
+  (consumable), warning (material), and glass muted (special); labels carry the
+  identity as well as color. These are material lighting, not rarity claims.
+- Local geometry scale: 4/8/12/16/24/32px spacing; 1px hairlines, 2px focus,
+  shared 4/6px corners. Local screen-pixel type: 12 metadata, 14 body, 16 section,
+  24 item heading, 32 entry heading; compact 10/12/14/16. Font remains the authored
+  `--runtime-ui-font`. Numeric values use tabular figures.
+- Local size tokens: stock art 48px (compact 32px, minimum viewport 24px),
+  display art 224px (compact 96px, minimum viewport identity strip 24px), party
+  art 32px, control 32px (minimum viewport 24px); display column 38%. The display uses
+  recessed glass, category light and a fine inset frame, not additional cards.
+- Buying/selling has a persistent explicit label even for one-mode shops. Price
+  leads owned count in stock rows; quantity-mode totals remain next to confirm.
+  Unaffordable items retain readable art/text and selectable rows; lock and price
+  color express the restriction. Selected rows use a solid leading rule and ring,
+  never movement, hover or pointer-only cues.
+- Overlay stays outside `.play-stage` scale. At 1280x960 the display and inventory
+  share the counter. At 640x480 they remain side by side with compact art. At
+  320x240 the display becomes a compact identity/description strip; secondary
+  party and equipment stats give way to stock, wallet, quantity and controls.
+  List scrolling remains controller-owned; no multi-column item navigation.
+- No new motion lifetime: existing entry fade and transaction feedback remain,
+  with reduced-motion support. Validate through shipping `player.html`, not the
+  editor shell; supervisor owns final screenshots and visual acceptance.
+
 ## Database CSS ownership (2026-09-06)
 
 - `studio-v2.css` owns shared DB shell spacing, ordinary 12.5px captions,
@@ -26,6 +62,44 @@
   11.5px mono list ordinals. Workspace grid actions retain `justify-self: start`.
 - Destructive text uses the Studio danger token #B91C1C so its hover/confirmation
   tint retains normal-text contrast, not just contrast on white.
+
+## Weighted outcome worksheet (2026-09-06)
+
+- `m2-211-weighted-branch` uses a task-first `확률로 결과 뽑기` form; the catalog retains `가중 분기` for discovery. Outcomes precede the destination variable. Each repeated row composes a labelled name, direct percent input, single-accent proportional meter, and `저장값` number. No instructional card, duplicated legend, raw table or automatic action-branch promise.
+- Editing one percent redistributes the remaining chance proportionally among other rows; if all other rows are zero, split the remainder equally. A compact `나머지 자동 조정` label makes that behavior explicit. One remaining outcome stays at 100%. Add assigns an equal share to the new row while retaining existing relative chances; remove renormalizes remaining rows. Named zero-percent rows persist and remain editable after Confirm/reopen, but have no stored result value because runtime ignores them. Removing the last positive row is disabled rather than enabling zero-chance rows. Authored all-zero tables remain unchanged and visibly block Confirm until a chance is set; a lone zero row can be repaired to 100%.
+- Native labelled controls, existing `databasePicker` and `editorIcons`, existing draft update path. Inputs remain mounted while typing; composition commits only when complete. Add focuses the new name, delete focuses the nearest remaining name. Invalid percentages show a local 0–100% error and leave persisted values unchanged. A Weighted Branch-only Confirm guard keeps the modal open and focuses the invalid control; other command forms are unaffected. The empty variable trigger is an explicit selection action; no variable is auto-picked.
+- Existing cream-form tokens only: `--bg-raised/inset`, `--text-1/2`, `--accent`, `--border-default`, `--danger`, `--focus-outline`; `--font-ui/mono`, 12px metadata, 13px controls, 14px names; `--space-1/2/3/4/6`, `--radius-s`, 32px minimum targets. Row meter is 4px, result-value chip uses the 4px inner radius. Fluid name track and wrapping destination retain the existing modal scroll owner, no new nested scroller or motion.
+- Persistence remains `table` + `resultVariableId`. Open and variable-only edits preserve authored table bytes. Name edits preserve numeric precision; storage-safe names replace equals with fullwidth equals and line breaks with spaces. Numeric parsing mirrors the runtime's first numeric field, including blank names/extra separators. Tiny positive percentages use significant digits rather than integer rounding; near-100% counterparts retain enough decimals to avoid false certainty (100% only within floating-point epsilon).
+- Personas: first-time author, keyboard/IME author, existing-project author. No extra theme, runtime change or dependency. Lead owns full build/gates and browser accessibility/geometry acceptance at 1024/1280/1440; unit DOM tests alone are not visual approval.
+
+## Walk encounters from a rectangle (2026-09-06)
+
+- Primary action: `걸을 때 적 만나기`. Use the existing left-drag selection tool,
+  then the visible selection chip. Explanation: `포켓몬 풀숲처럼, 이 안에서 걷다
+  보면 전투가 시작됩니다.` No tile painting, new schema, or runtime overlay.
+- Native modal-stack worksheet: named enemy artwork/checkbox search, selected
+  count, frequency presets, then `완료`. Reuse subdialog, `btn`, thumbnail and
+  labelled native controls; advanced weights/conditions use `details`.
+  Personas: first-time author, existing-table author, keyboard-only author.
+- Studio tokens (`--bg-raised`, `--bg-inset`, `--text-1/2`, `--accent`,
+  `--border-soft`), --font-ui 13px/1.5, help 12px/1.5, 32px minimum controls,
+  4/8/12/16/24 spacing, 6px controls and 8px groups. No decorative motion.
+  Width at most 760px; bounded scrolling body, fixed action footer. Desktop
+  acceptance 1024x768, 1280x800, 1440x900; controls wrap rather than shrink.
+- Canvas has a persistent labelled region-list button and translucent indigo
+  rectangle outlines; list entries identify coordinates and enemy names. Edit,
+  delete, reuse last settings and replace bounds from a fresh selection are
+  explicit actions. Identical rectangles form one editable group; overlaps mix
+  eligible entries according to relative weights, never an exclusive layer.
+- Frequency is map-wide. Preserve a positive rate until explicitly changed;
+  zero defaults to normal. Existing legacy encounters require an explicit
+  keep-everywhere or replace-with-regions choice. Other table entries survive.
+- Fields are local drafts. Cancel/Escape write nothing. Apply validates bounds,
+  references, conditions, locks, project identity and encounter-state freshness,
+  then records one project snapshot and one labelled store mutation including
+  generated troops. Delete removes rules, not tiles/troops. Empty catalog/search,
+  invalid input, stale state and lock errors have visible recovery text.
+  No fake loading. Real browser review is supervisor-owned.
 
 ## System settings workspace (2026-09-06)
 
@@ -509,8 +583,10 @@ The float assistant is **one glass instrument**, `div.ai-deck` inside the transp
 
 ### Database panels
 
-- **Growth preset collection, Phase 2 (2026-09-06).** The existing studio header opens an in-studio collection, not another modal framework. Three equal-width role cards compose the growth button and art slot; landscape covers use a 3:2 slot, original pixels, `--radius-s`, and the existing spacing scale. Selected cards use indigo border/tint/focus ring. Existing typography and system font remain unchanged. The read-only graph reuses 180×98 semantic-art nodes at readable zoom and an independently scrollable viewport; a text ledger repeats prerequisites, levels and costs for accessible reading. The collection/details scroll together above a separate always-visible footer, at 1024/1280/1440 desktop widths. Escape/cancel restore the opener. Preview has no project mutations; explicit addition is a single undo boundary. Failed art retains a labelled fallback, and failed allocation is visible text, never fabricated preview content.
+- **Connected growth presets (2026-09-06; supersedes Phase 2 cover-first collection).** Both studios mount a clearly labelled, detached preset graph immediately, below the primary authored workspace. The 264px preview region has its own native-size 180×98 semantic-art nodes, contained graph scrolling, separate zoom row and scrollable condition summary. Default zoom is 100%; never fit the entire graph by shrinking text. A native preset selector chooses three connected roles or the three legacy entries appropriate to that studio; skill mode also selects among all five nonempty class trees. The header's Presets action expands the same selection into an in-studio graph/condition ledger, with compact catalogue buttons rather than covers consuming the first screen. Escape restores the opener. Preview selection, zoom, scrolling and inspection have no project/dirty/history effects; destination allocation runs only on explicit Apply, failures preserve the graph, and success is one undo boundary. Existing budgets including zero, records and actor curves remain unchanged.
+- **Growth graph navigation and density.** Cross-tree prerequisites are dashed, named portal nodes with real edges and required rank, plus an explicit source-tree/node link in the condition summary; activation opens that exact tree/node, not a new import. Authored coordinates remain 0–10000 even when a presentation-only portal gutter is present. Added bundles expose same-import links between both studios and a separate actor-start-class route that never assigns automatically. Preserve native focus, modal undo/save and independently scrolling inspectors. Use the existing 18px heading, 12–14px control/node typography, 32px targets, 4/8/12/16px spacing and Studio tokens; no new theme or dependency. Compact toolbar labels prevent wrapping from starving the 1024px authored graph. Personas are first-time authors learning from nodes, existing-project authors retaining their work, and keyboard authors. Objective Firefox acceptance at 1024×768, 1280×800 and 1440×900 is recorded by `scripts/qa/growth-connected-studio.mjs` (private port 9897). Image loading, geometry, focus, apply/navigation/undo are measured; subjective visual approval and final player/DB evidence remain lead-owned.
 
+- **Integrated growth controls (2026-09-06).** Inheritance is a native labelled checkbox in tree settings. Qualified prerequisites use tree/node selects and a bounded rank input; promotion requirements reuse these controls beside skill ownership and historical tree-point requirements. Keep them in the existing independently scrolling white inspector, using growth sections/buttons and the current type/spacing/focus tokens; no CSS layer or new theme. Both studios offer read-only runtime simulation with separate actual-promotion actions and an explicitly labelled arbitrary-reclass selector. Runtime blockers are visible text, and referenced deletes fail before the undo boundary. Connected-tree navigation uses the existing Database tab switch and preserves the selected tree. Connected preset previews use the detached, default-visible region above.
 - **Party growth trees (2026-09-05).** `growth-tree.css` keeps promotion and skill trees in the same indigo selection/focus language: neutral list pane, recessed graph, white toolbar and inspector, and inset 700-weight inspector group headers. Zoom/arrange controls occupy their own bottom grid row, never the scrollable node area; buttons are at least 32px square. Graph names clamp to two lines within the existing fixed node geometry, while full names remain in the accessible label and wrapping inspector title. No graph coordinates, controls, or persistence behavior change.
 - **Growth art, Phase 1 (2026-09-05).** Existing bundled semantic role icons populate graph emblems, catalog rows, selected inspector heroes, and runtime growth entries. Classes distinguish warrior/mage/healer/ranger/rogue/guardian; skill effects and all six parameters have meaningful symbols. No raw animation sheets, new art fields, preset UI, or global theme changes. Keep the current token source (cool-white/indigo despite historical cream wording), 180×98 graph nodes, existing typography, and independent pane scrolling. Catalog art uses 32px slots/24px images; inspector art uses 48px slots/32px images, expressed through the existing spacing scale and radius tokens. Images are decorative and non-draggable; failed editor loads restore a text badge while adjacent names and accessible labels remain intact. Runtime reuses the existing single-image icon contract and keyboard-only controls. Browser acceptance at 1024×768 and shipped export coverage remain part of surface proof, not inferred from DOM unit tests.
 - **Unified inventory catalog (2026-09-05):** one `아이템·장비` rail entry (`db-tab-items`), one search across both unchanged storage collections, All/Items/Equipment filter buttons with `aria-pressed`, and one compact subtype/slot select. Counts distinguish visible matches from the whole catalog. Search/filter changes retain the selected type-specific inspector, even when its row is outside the result; a selection notice can reveal it. Add actions explicitly name the collection. Existing guarded delete, duplicate, AI item generation, and gallery/list remain available. The list-detail spatial pattern uses `databaseWorkspace` primitives, 260px list + fluid inspector at supported 1024/1280/1440 desktops. Search, filters and actions are fixed; `.db-catalog-rows` owns list scroll and the existing `.db-ws-detail-body` owns inspector scroll. Modal geometry remains solely in `sidebar.css`. Tokens and focus treatment remain Database Studio v2; no new animation or palette. Legacy `equipment` navigation resolves to the same catalog with its remembered equipment selected. This is an editor-only projection, not a migration or an item-to-equipment conversion.
@@ -534,6 +610,23 @@ The float assistant is **one glass instrument**, `div.ai-deck` inside the transp
 - Deletion is disabled for bundled defaults and confirm-gated for uploaded assets referenced by maps/events.
 - The Resource Manager modal follows the classic RM2K3 resource window composition: left category list, center resource list, right command/format/preview rail, and bottom close/help controls.
 - Resource Manager clone metrics live as local `--rm-resource-*` CSS variables on `.resource-modal-window`; use those variables for pane widths, row height, command button height, preview height, and footer button width rather than scattering one-off dimensions.
+
+### Cinematic playback (2026-09-06)
+
+- Shared opening/game-over playback uses the existing logical play stage, native
+  image/video/text elements and runtime typography, never editor Studio chrome.
+  Black letterboxing preserves image/video aspect ratios; narration is 14 logical
+  pixels/1.5 with 8px padding and an 80% black caption backing. Keyboard hints are
+  9px/1.5; the fullscreen overlay has 16px inset content and 8px gaps.
+- Authored image motion is transform/opacity only: fade 0..1, pan -3%..3% at
+  1.1 scale, zoom 1..1.12. Duration comes from the authored scene (8s for a manual
+  scene), plays once and holds its last frame. Reduced motion removes all three.
+  These are authored slideshow motions, not interface spring transitions.
+- States are ready/loading/playing/blocked/error. Blocked media exposes R retry
+  and confirm continuation; missing/broken media still permits continuation in
+  an unskippable sequence. There are no pointer controls or native title tooltips.
+- Game-over labels retain the current terminal cursor menu and system graphic;
+  the optional authored background fills the stage beneath it at 65% opacity.
 
 ### Play presentation
 
@@ -729,3 +822,35 @@ Disclose excluded factors in one concise note: defense, skill power, type chart/
 - Reuse studio section cards, labeled buttons, 4px spacing, shared radius and monospace code text. The preview is explicitly a style sample, not a simulated battle. The runtime resolver supplies its labels.
 - CSS has a deliberately small vocabulary: `.menu`, `.command`, `.label`, `.command:focus-visible`, `.command:disabled`. Only visual properties are accepted; no URLs, external resources, arbitrary selectors, at-rules, positioning or scripts. Valid edits preview immediately. Invalid drafts keep the last valid preview and disable Apply with a visible error.
 - Apply makes one undoable project change. Revert restores the saved text; reset removes the override. A preset is only a draft until Apply. Scoped runtime styles are mounted and removed with each command panel; they never target editor chrome or other game windows.
+
+## AI acceptance sticky note (2026-09-06)
+
+- A read-only session note lives outside the chat deck, aligned to the measured
+  `--editor-left-safe` canvas edge plus `--space-3`. It never covers the 288px
+  palette. Its top clears the measured canvas toolbar; fallback is 112px.
+  Width is 272px, bounded by remaining viewport space; maximum height is 480px
+  and the viewport remainder. New local geometry tokens own these dimensions.
+- Reuse vanilla `el`, `deckIcon`, native button/details and the Studio palette:
+  raised white paper, subtle border, indigo top rule, `--shadow-pop`, radius-m,
+  `--font-ui`, 12px metadata, 13px body, 14px goal, line-height 1.5 and existing
+  4/8/12/16px spacing tokens. No yellow paper, rotation, emoji or new dependency.
+- Fixed header (goal, verified/total, collapse) and a single scrolling body follow
+  StyleGallery scroll-body-shell. Each keyed disclosure retains its open state
+  and keyboard focus across updates; expected/observed/reason are plain text.
+  Map actions resolve current project maps and use `focusEditorRegion`.
+- Pending, working, verifying, verified and blocked are backend truth, not editable
+  checkboxes. Status text accompanies every icon/color. Only verified counts.
+  Current activity is subordinate to the goal; a completed note remains after
+  turn completion while existing work-plan/book chrome keeps its ephemeral life.
+- Collapse becomes a compact goal/count chip. At <=1100px width or <=700px height
+  default to compact, without overriding a manual expansion/collapse choice.
+  New chat, history/rewind, project/reset and teardown clear note and preference.
+- Motion adapts beui checkbox/raw: a short check-stroke reveal only on entry to
+  verified, using `--transition-med`; reduced motion removes it entirely. No
+  looping animation. Native keyboard actions, `--focus-outline`, overflow wrapping
+  for long Korean/IDs, and opaque text-1/text-2 backgrounds serve novice authors,
+  keyboard authors and dense-project authors. Body owns editor navigation keys.
+- Backend owns `AcceptanceSnapshot`, acceptance events and refresh on store/undo.
+  UI never synthesizes verification or persists snapshots into project/history.
+  Browser matrix: 1024x768, 1280x800, 1440x900 plus narrow component showcase.
+  Independent final visual review and integrated backend typecheck are lead-owned.

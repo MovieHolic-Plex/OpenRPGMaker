@@ -18,13 +18,12 @@ describe("isCellInsideSelection", () => {
 });
 
 describe("regionTaskMenuItems", () => {
-  it("AI 작업 항목 1개를 만들고 action이 선택 영역으로 모달을 연다", () => {
+  it("keeps AI routing alongside the encounter action", () => {
     const openModal = vi.fn();
     const items = regionTaskMenuItems(SELECTION, openModal);
-    expect(items).toHaveLength(1);
-    const [item] = items;
-    expect(item.testId).toBe("region-ai-task-menu-item");
-    expect(item.label).toContain("AI 작업");
+    expect(items.map((item) => item.testId)).toEqual(["region-walk-encounter-menu-item", "region-ai-task-menu-item"]);
+    const item = items.find((candidate) => candidate.id === "region-ai-task");
+    if (!item) throw new Error("Missing AI action");
 
     item.action();
     expect(openModal).toHaveBeenCalledTimes(1);

@@ -1,3 +1,4 @@
+import { assertPromotionExtensions } from '@/project/growth/requirements';
 import {
   ACTOR_LEVEL_MAX,
   ACTOR_RATE_GRADES,
@@ -51,6 +52,7 @@ import {
 import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, StateRecord, SystemRecords, TitleBackgroundLayer, TitleIntroSettings, TitleParticleSettings, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
 import { normalizePlayResolution } from "@/project/playResolution";
 import { normalizeWorldGenRulesForStorage } from "@/project/worldGenRules";
+import { normalizeCinematicSequence, normalizeGameOverSettings } from "@/project/cinematicSettings";
 
 export { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 
@@ -228,6 +230,8 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
       return monsterCare ? { monsterCare } : {};
     })(),
     titleScreen: normalizeTitleScreenSettings(system.titleScreen, titleResourceId),
+    ...(system.opening !== undefined ? { opening: normalizeCinematicSequence(system.opening) } : {}),
+    ...(system.gameOver !== undefined ? { gameOver: normalizeGameOverSettings(system.gameOver) } : {}),
   };
 }
 
@@ -603,8 +607,12 @@ function normalizePromotions(promotions: readonly Partial<ClassPromotion>[] | un
 }
 
 function normalizePromotionRequirement(requires: Partial<ClassPromotionRequirement> | undefined): ClassPromotionRequirement {
+  assertPromotionExtensions(requires);
   const variableId = cleanOptionalId(requires?.variableId);
   return {
+    ...(requires?.requiredSkillIds !== undefined ? { requiredSkillIds: [...requires.requiredSkillIds] } : {}),
+    ...(requires?.requiredNodes !== undefined ? { requiredNodes: structuredClone(requires.requiredNodes) } : {}),
+    ...(requires?.requiredTreePoints !== undefined ? { requiredTreePoints: structuredClone(requires.requiredTreePoints) } : {}),
     level: typeof requires?.level === "number" ? clampInteger(requires.level, 1, ACTOR_LEVEL_MAX) : undefined,
     switchId: cleanOptionalId(requires?.switchId),
     itemId: cleanOptionalId(requires?.itemId),
