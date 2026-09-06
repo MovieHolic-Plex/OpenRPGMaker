@@ -1,5 +1,37 @@
 # Editor AI Tools & Vocabulary
 
+## Pre-write original grounding (2026-09-06)
+
+`originalContext.ts` exports a detached authored-state extractor reusable for before/after
+review. The session captures it before planning or tools, retains its snapshot ID across
+continuations, and recaptures on a new request. Target selection uses structured intent,
+actual selection and current map, never new natural-language keyword routing. A missing
+explicit target is reported, not replaced with the start map. Target map metadata, complete
+tile layers/stacks, complete events/pages/commands, authored system settings and relevant
+full database records are included. Actual record IDs are followed transitively, including
+common-event cycles; declared database/battle/system and quest/world tasks broaden the
+authored context. Runtime session, credentials/configuration and asset transport blobs are
+outside this projection. Existing resource tools remain the resource lookup surface.
+
+`buildGroundedRequest` appends JSON `originalContext` after history compaction, so the
+first writer sees its original values even with `budgetChars: 1`. It accounts for complete
+native schemas, history, originals and the existing 16,384-token response reserve against
+the actual supported bundled model window. The small browser-safe capacity table is
+checked against installed pi-catalog; the 9 MB provider catalog/runtime is not bundled.
+Unknown native IDs use the companion's provider-default fallback; injected unknown models
+retain the conservative legacy estimate. Token counting remains an estimate, not a tokenizer.
+
+Whole entries that do not fit remain explicitly omitted with a `get_original_context`
+list/read route, stable entry paths, snapshot ID and UTF-16 offsets. Concatenate exact JSON
+pages before parsing. Only successfully delivered whole originals or fully covered page
+ranges count at the existing `ToolReadEvidence` seam; partial/omitted/failed reads do not.
+Original receipts cannot replace a subsequent fresh read; existing fingerprint/reference
+checks and ask-mode refusal remain. Irreducible mandatory requests fail explicitly without
+pruning tools. A huge latest write result may still exceed a small window; paging originals
+does not claim arbitrary tool-result paging. Task recipes accompany the catalog for NPC,
+map/interior, database/battle, quest/world and life read-write-verify work. Tests:
+`originalContext`, `assistantOriginalContext`, `assistantReadContract`, `aiToolDiscoveryEscalation`.
+
 ## Full native tool exposure (2026-09-06)
 
 `AssistantSession.runTurnLoop` sends every active editor tool's complete native description

@@ -63,7 +63,8 @@ import { beginAssistantToolDomainTurn, recordAssistantToolDomainUse } from "@/ed
 import { cloneDetachedDraft } from "@/editor/detachedDraftMemory";
 import { extractVocabSoftConfirm } from "@/project/tileVocabulary";
 import type { Project } from "@/project/types";
-import { buildSystemPrompt, DEFAULT_BUDGET_CHARS, resolveContextMapId, resolveContextViewport, type ContextOptions } from "./contextBuilder";
+import { buildGroundedRequest, buildSystemPrompt, DEFAULT_BUDGET_CHARS, resolveContextMapId, resolveContextViewport, type ContextOptions } from "./contextBuilder";
+import { extractOriginalContext, GET_ORIGINAL_CONTEXT_TOOL, OriginalContextStore } from "./originalContext";
 import {
   buildConversationTurnContext,
   mapTransitionNote,
@@ -71,7 +72,7 @@ import {
   type TurnSelectionSnapshot,
 } from "./conversationTurnContext";
 import { buildPreferenceMemorySection } from "./preferenceMemory";
-import { compactMessagesForRequest, resolveRequestCharBudget, resolveWorkingContextTokens } from "./messageBudget";
+import { resolveWorkingContextTokens } from "./messageBudget";
 import {
   buildCompactedMessages,
   buildSummarizationRequest,
@@ -893,6 +894,7 @@ export class AssistantSession {
   /** 이번 턴의 의도 선언. 턴 시작에 한 번 정해지고 라우팅(되묻기·플래너·툴 노출·대상 맵)이 이것만 읽는다. */
   private turnIntent: IntentDeclaration | null = null;
   private readonly readEvidence = new ToolReadEvidence();
+  private originalContext: OriginalContextStore | null = null;
   private readonly verificationEvidence = new ToolVerificationEvidence();
   private readonly workItemVerificationEvidence = new ToolVerificationEvidence();
   /** 이번 턴이 손댈 선택 사각형(있으면). 패널·영역 작업이 사실로 넘긴다. */
@@ -1710,6 +1712,15 @@ export class AssistantSession {
     this.specRejections = 0;
     this.lastRejectedSpecFingerprint = null;
     const continuesGoal = this.turnIsDriverContinue || intent.source === "continuation";
+    if (!continuesGoal || !this.originalContext) {
+      const scope = this.turnScope;
+      this.originalContext = new OriginalContextStore(extractOriginalContext(this.ctx.project, {
+        snapshotId: `original-${this.currentTurnIndex}`,
+        currentMapId: resolveContextMapId(this.contextOptions) ?? turnContext.mapId ?? undefined,
+        selection: scope ? { mapId: scope.mapId, ...scope.region } : turnContext.selection,
+        intent,
+      }));
+    }
     // A tool budget splits execution, not the work item. Keep unapplied calls and
     // artifact evidence until that item completes (or a different goal starts).
     if (!continuesGoal) this.turnProposals = new Map();
@@ -1943,7 +1954,7 @@ export class AssistantSession {
       const result = await this.chatWithTransientRetry(
         this.config,
         {
-          messages: [
+          messages: buildGroundedRequest([
             { role: "system", content: ORCHESTRATOR_SYSTEM_PROMPT },
             {
               role: "user",
@@ -1953,7 +1964,7 @@ export class AssistantSession {
                 projectSummary,
               }),
             },
-          ],
+          ], [], this.config, this.originalContext!).messages,
         },
         onEvent,
         signal,
@@ -3567,6 +3578,7 @@ export class AssistantSession {
       // Session-only tools retain their lifecycle gates; ask mode removes every write.
       const tools = [
         ...toOpenAiTools(),
+        GET_ORIGINAL_CONTEXT_TOOL,
         SET_BUILD_SPEC_TOOL,
         ...(planToolsOn ? WORK_PLAN_TOOLS : []),
         ...(this.acceptance ? ACCEPTANCE_TOOLS : []),
@@ -3581,14 +3593,17 @@ export class AssistantSession {
       // 컨텍스트 압축(요약)은 요청 조립보다 **먼저** 돈다: 대화 자체를 줄이지 못하면
       // 아래 문자 클램프가 오래된 assistant/tool 을 통째로 버려 기억이 소리 없이 사라진다.
       await this.maybeCompactConversation(onEvent, signal);
-      // 요청 문자 클램프: 예산은 모델 창에서 끌어낸다(resolveRequestCharBudget) — 고정 52,000 은
-      // 사라진 공급자(CPEN)의 검증 상한이라 창 1M 짜리 모델의 기억까지 잘라냈다.
-      // 원본(this.messages)은 감사/하네스용으로 유지된다.
-      const requestMessages = compactMessagesForRequest(this.messages, resolveRequestCharBudget(this.config));
-      // Captured obligations are request state, not disposable orchestration history.
-      const rewardNote = this.npcRewardNote();
-      if (rewardNote) requestMessages.push({ role: "user", content: rewardNote });
+      let requestMessages: ChatMessage[] = [];
       try {
+        const rewardNote = this.npcRewardNote();
+        const grounded = buildGroundedRequest(
+          rewardNote ? [...this.messages, { role: "user", content: rewardNote }] : this.messages,
+          phase === "review" ? [] : tools,
+          this.phaseConfig(phase),
+          this.originalContext!,
+        );
+        requestMessages = grounded.messages;
+        this.pushAudit({ kind: "status", text: `context:grounded ${JSON.stringify(grounded.budget)} originals=${grounded.includedIds.length}/${this.originalContext!.context.entries.length}` });
         result = await this.chatWithTransientRetry(
           this.phaseConfig(phase),
           phase === "review"
@@ -3598,6 +3613,8 @@ export class AssistantSession {
           signal,
           phase !== "execute"
         );
+        // Only exact originals delivered to the writer count at the existing read seam.
+        this.originalContext!.observeDelivered(requestMessages, grounded.includedIds, this.readEvidence);
       } catch (cause) {
         if (isLlmAbortError(cause) || signal?.aborted) {
           this.lastTurnFailed = false;
@@ -3878,6 +3895,8 @@ export class AssistantSession {
             toolResult = deferredToolResult("work-dependency-failed", `이 응답에서 ${[...new Set(failedWriteTargets.values())].join(", ")} 실행이 실패하여 완료 처리를 보류했습니다. 실패를 교정한 뒤 완료하세요.`);
           } else if (this.repeatedToolFailureStall(toolRetryTarget(name, args))) {
             toolResult = deferredToolResult("tool-retry-exhausted", `${name}: 같은 대상의 실패 상한에 도달하여 실행을 보류했습니다. 사용자 지시가 필요합니다.`);
+          } else if (name === "get_original_context") {
+            toolResult = this.originalContext!.read(args);
           } else if (name === "repair_acceptance" || name === "review_acceptance") {
             toolResult = this.applyAcceptanceTool(name, args);
             this.publishAcceptance(onEvent);
@@ -3965,7 +3984,7 @@ export class AssistantSession {
               else if (!this.ctx.project.database[record.collection].some((entry) => entry.id === record.id)) failedRecords.set(record.key, record);
             }
           }
-          if (tool?.mode === "read") {
+          if (tool?.mode === "read" || name === "get_original_context") {
             batchReads.push({ name, args, result: toolResult });
             if (!toolResult.ok) failedReadInBatch ??= name;
           }
