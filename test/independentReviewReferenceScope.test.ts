@@ -114,7 +114,7 @@ describe("independent review map reference scope", () => {
     }
   });
 
-  it("follows relevant map/common-event cycles and record references without expanding unrelated preset maps", () => {
+  it("preserves writer transitive closure while review stops at the changed preset map", () => {
     const before = fixture();
     const map = before.maps.map_0;
     const linked = before.maps.map_1;
@@ -137,12 +137,20 @@ describe("independent review map reference scope", () => {
     for (const side of ["before", "after"] as const) {
       const entries = delivered[side].flatMap(context => context.entries);
       expect(entries.find(entry => entry.id === "/maps/map_0/events/entry")?.value).toMatchObject({ event: map.events[0] });
-      expect(entries.find(entry => entry.id === "/maps/map_1/events/return")?.value).toMatchObject({ event: linked.events[0] });
+      expect(entries.find(entry => entry.id === "/maps/map_1/events/return")).toBeUndefined();
       expect(entries.filter(entry => entry.id === "/database/commonEvents/common_link")).toHaveLength(1);
-      expect(entries.find(entry => entry.id === "/database/items/item_potion")?.value)
-        .toMatchObject(JSON.parse(JSON.stringify({ records: [before.database.items.find(item => item.id === "item_potion")] })));
+      expect(entries.find(entry => entry.id === "/database/items/item_potion")).toBeUndefined();
       expect(entries.some(entry => entry.id.startsWith("/maps/map_4"))).toBe(false);
       expect(new Set(entries.map(entry => entry.id)).size).toBe(entries.length);
     }
+    const writerProject = structuredClone(before);
+    writerProject.testPresets = before.testPresets?.slice(0, 1);
+    const writer = extractOriginalContext(writerProject, { snapshotId: "writer" });
+    expect(writer.entries.find(entry => entry.id === "/maps/map_1/events/return")?.value).toMatchObject({ event: linked.events[0] });
+    expect(writer.entries.filter(entry => entry.id === "/database/commonEvents/common_link")).toHaveLength(1);
+    expect(writer.entries.find(entry => entry.id === "/database/items/item_potion")?.value)
+      .toMatchObject({ records: [before.database.items.find(item => item.id === "item_potion")] });
+    expect(writer.entries.some(entry => entry.id.startsWith("/maps/map_4"))).toBe(false);
+    expect(new Set(writer.entries.map(entry => entry.id)).size).toBe(writer.entries.length);
   });
 });

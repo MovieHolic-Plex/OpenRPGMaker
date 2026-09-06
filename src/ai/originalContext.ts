@@ -80,7 +80,7 @@ export interface OriginalContextOptions {
   currentMapId?: string;
   selection?: IntentSelectionFact | null;
   intent?: IntentDeclaration | null;
-  /** Review-only map relevance roots. Omission preserves the complete writer start/preset closure. */
+  /** Review roots include maps as evidence, not traversal roots. Omission retains writer transitive closure. */
   readonly mapReferenceRoots?: readonly unknown[];
 }
 
@@ -211,7 +211,7 @@ export function extractOriginalContext(project: Project, options: OriginalContex
       if (followMaps && referencedMap && !followedMaps.has(value)) {
         followedMaps.add(value);
         addMap(value);
-        queue.push(referencedMap);
+        if (options.mapReferenceRoots === undefined) queue.push(referencedMap);
       }
     } else if (Array.isArray(value)) for (const child of value) visit(child, followMaps);
     else if (object(value)) for (const [key, child] of Object.entries(value)) { visit(key, followMaps); visit(child, followMaps); }

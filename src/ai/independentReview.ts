@@ -67,6 +67,43 @@ export function reviewChanges(before: Project, after: Project): ReviewInput["cha
   });
 }
 
+/** Cancel unchanged array members with multiplicity, so inserting/reordering a
+ * record or command does not turn its unchanged siblings into reference roots.
+ */
+function unmatchedValues(values: readonly unknown[], other: readonly unknown[]): unknown[] {
+  const counts = new Map<string | undefined, number>();
+  for (const value of other) {
+    const text = JSON.stringify(value);
+    counts.set(text, (counts.get(text) ?? 0) + 1);
+  }
+  return values.filter(value => {
+    const text = JSON.stringify(value), count = counts.get(text) ?? 0;
+    if (count === 0) return true;
+    counts.set(text, count - 1);
+    return false;
+  });
+}
+
+/** Only relevance is reduced; reviewChanges still carries complete old/new values. */
+function changedReferenceValues(before: unknown, after: unknown): unknown[] {
+  if (JSON.stringify(before) === JSON.stringify(after)) return [];
+  if (Array.isArray(before) && Array.isArray(after)) {
+    const oldValues = unmatchedValues(before, after), newValues = unmatchedValues(after, before);
+    return Array.from({ length: Math.max(oldValues.length, newValues.length) }, (_, i) =>
+      changedReferenceValues(oldValues[i], newValues[i])).flat();
+  }
+  if (record(before) && record(after)) {
+    // A coordinate-only edit still needs its containing target; world entity
+    // edits keep that entity's refs, never the other entities in its collection.
+    const roots = ["mapId", "startMapId", "commonEventId", "refs"].flatMap(key => [before[key], after[key]]);
+    for (const key of new Set([...Object.keys(before), ...Object.keys(after)])) {
+      for (const value of changedReferenceValues(before[key], after[key])) roots.push(value);
+    }
+    return roots;
+  }
+  return [before, after];
+}
+
 /** Scope map closure to actual edits, not every unchanged authored start/preset.
  * Both sides seed both projections so removed/replaced references remain reviewable.
  * Presets are independent starts: a changed preset needs its complete old/new roots,
@@ -85,7 +122,7 @@ export function reviewMapReferenceRoots(before: Project, after: Project, changes
         if (newPreset) roots.push(newPreset, newPreset.startMapId ?? after.startMapId);
       }
     } else {
-      roots.push(change.before, change.after);
+      for (const value of changedReferenceValues(change.before, change.after)) roots.push(value);
       if (["/session", "/startMapId", "/startPos"].includes(change.path)) roots.push(before.startMapId, after.startMapId);
     }
   }

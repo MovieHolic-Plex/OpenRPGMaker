@@ -30,11 +30,17 @@ Independent review supplies explicit `mapReferenceRoots` from the current/change
 and actual before/after edits. `reviewMapReferenceRoots` compares presets by authored ID:
 changed/added/deleted presets include their complete old/new references and effective start
 maps, not unchanged sibling maps. Changed start state/position includes the effective start
-maps; relevant map/common-event references still close transitively. Complete `/session`
+maps. Other changed collections are compared recursively, cancelling unchanged array
+members with multiplicity before descending into changed records/commands. Coordinate-only
+edits retain their containing map target; edited world entities retain their own refs,
+not unchanged sibling entities. Explicit review roots can follow common-event call chains,
+but an included map is evidence, not a traversal root for its unchanged transfers or calls.
+Only the default writer mode traverses referenced map contents transitively. Complete `/session`
 and `/testPresets` values and record references remain in both projections. The writer's
 default start/preset closure and exact paging are unchanged. This prevents the R5+R6
 six-map rename overflow without a map cap, truncation or capacity-guard change. Contracts:
-`independentReviewMapDeltas`, `independentReviewReferenceScope`, `assistantIndependentReviewCapacity`.
+`independentReviewMapDeltas`, `independentReviewReferenceScope`, `assistantIndependentReviewCapacity`,
+`independentReviewLinkedMaps` (chain/star rename, changed transfers/calls, world-record scope).
 
 `buildGroundedRequest` appends JSON `originalContext` after history compaction, so the
 first writer sees its original values even with `budgetChars: 1`. It accounts for complete
