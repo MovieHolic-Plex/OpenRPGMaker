@@ -7,7 +7,7 @@ import { adventureToolNames, adventureCompletionProblems, ADVENTURE_AUTHORING_GU
 
 import { ToolReadEvidence } from "./toolReadEvidence";
 import { APPEARANCE_GENERATION_TOOL } from "@/editor/tools/characterAppearanceTools";
-import { startAppearanceGenerationFromAssistant, type AppearanceGenerationHandoff } from "@/editor/characterAppearanceGeneration";
+import type { AppearanceGenerationHandoff } from "@/editor/characterAppearanceGeneration";
 import { ToolVerificationEvidence } from "./toolVerificationEvidence";
 import { getTool, normalizeToolArgs, runTool } from "@/editor/tools";
 import { viewportVillageBounds } from "@/editor/tools/authorVillageSupport";
@@ -3640,6 +3640,7 @@ export class AssistantSession {
           } else if (name === "set_build_spec") {
             toolResult = this.applyBuildSpec(args);
           } else if (name === APPEARANCE_GENERATION_TOOL) {
+            const { startAppearanceGenerationFromAssistant } = await import("@/editor/characterAppearanceGeneration");
             const handoff = await startAppearanceGenerationFromAssistant(this.ctx.project, args, this.appearanceProjectIdentity, signal);
             toolResult = handoff;
             if (handoff.ok && handoff.data?.status === "generating") this.turnAppearanceGeneration = handoff.data;

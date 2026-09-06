@@ -16,7 +16,7 @@ export function prepareAppearanceGeneration(project: Project, args: Record<strin
 }
 
 export const CHARACTER_APPEARANCE_TOOLS: readonly ToolDefinition[] = [{
-  name: APPEARANCE_GENERATION_TOOL,
+  name: "generate_character_appearance",
   description: "캐릭터 외형의 비어 있는 얼굴 또는 상반신 그림 후보를 만든다. 편집기에서는 캐릭터 외형 DB를 열고 생성을 시작한다. 후보는 사용자가 DB에서 적용해야 저장된다. 걷기 캐릭터칩은 생성·변경하지 않는다. 헤드리스에서는 UI 필요 상태만 반환한다.",
   // Pure synchronous preparation in generic runners. The session treats this as
   // a write capability and invokes the specific editor handoff only outside Ask.

@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **48쪽 / 1680KB / 약 478,939 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **48쪽 / 1681KB / 약 478,991 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,7 +16,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/editor-ai-panel.md` | 268KB | 95KB ⚠상한 초과 — 절을 더 쪼개라 | 521 | ~77,917 |
-| `openwiki/editor-ai-tools.md` | 97KB | 69KB ⚠상한 초과 — 절을 더 쪼개라 | 389 | ~27,860 |
+| `openwiki/editor-ai-tools.md` | 97KB | 69KB ⚠상한 초과 — 절을 더 쪼개라 | 392 | ~27,912 |
 | `openwiki/editor-database.md` | 236KB | 54KB ⚠상한 초과 — 절을 더 쪼개라 | 1180 | ~68,076 |
 | `openwiki/editor-event-authoring.md` | 119KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 564 | ~34,648 |
 | `openwiki/editor-pre-edit-routing.md` | 72KB | 55KB ⚠상한 초과 — 절을 더 쪼개라 | 210 | ~20,571 |
@@ -32,7 +32,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | 페이지 | 깨진 줄 수 | 예시 줄 번호 |
 |---|---|---|
 | `openwiki/editor-ai-panel.md` | 25 | 248, 249, 250, 251, 252, 253, 265, 274 |
-| `openwiki/editor-ai-tools.md` | 6 | 241, 242, 246, 248, 250, 312 |
+| `openwiki/editor-ai-tools.md` | 6 | 244, 245, 249, 251, 253, 315 |
 | `openwiki/editor-database.md` | 7 | 391, 395, 396, 397, 406, 431, 434 |
 | `openwiki/editor-event-authoring.md` | 16 | 151, 152, 155, 160, 161, 162, 163, 164 |
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
@@ -249,21 +249,21 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L480` 모험 완료와 실제 적용 횟수 (2026-09-05)
 - `L485` Assistant clean conversation — Phase 1 (2026-09-06)
 
-### `openwiki/editor-ai-tools.md` — 97KB · 389줄 · ~27,860 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-ai-tools.md` — 97KB · 392줄 · ~27,912 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` Character appearance image candidates v1 (2026-09-06)
-- `L36` Completed-house transaction protection - Phase 1 (2026-09-05)
-- `L110` Completed-house construction protection - Phase 2 (2026-09-06)
-- `L149` 퀘스트 입력과 완주 증거 계약 (2026-09-05)
-- `L159` DB 조회 페이지와 마을 전체 범위 (2026-09-05)
-- `L266` Project-wide quality evaluation
-- `L274` prune_unused 의 참조 수집은 variableId 를 가진 명령 전부를 세야 한다 (2026-08-29 실측 결함 수정)
-- `L310` NPC 대사는 코드가 지어내지 않는다 — 캐스트 라이터 계약 (2026-09-03)
-- `L341` 「이 세계」 캐논은 문장 3채널에 강제된다 (2026-09-04)
-- `L356` 마을 설계서 (2026-09-05)
-- `L360` 저수준 이벤트 입력은 명령 위치를 검증한다 (2026-09-05)
-- `L367` 보물상자는 노출된 수면을 거부한다 (2026-09-05)
-- `L374` 모험 저작 완료와 재시도 (2026-09-05)
+- `L39` Completed-house transaction protection - Phase 1 (2026-09-05)
+- `L113` Completed-house construction protection - Phase 2 (2026-09-06)
+- `L152` 퀘스트 입력과 완주 증거 계약 (2026-09-05)
+- `L162` DB 조회 페이지와 마을 전체 범위 (2026-09-05)
+- `L269` Project-wide quality evaluation
+- `L277` prune_unused 의 참조 수집은 variableId 를 가진 명령 전부를 세야 한다 (2026-08-29 실측 결함 수정)
+- `L313` NPC 대사는 코드가 지어내지 않는다 — 캐스트 라이터 계약 (2026-09-03)
+- `L344` 「이 세계」 캐논은 문장 3채널에 강제된다 (2026-09-04)
+- `L359` 마을 설계서 (2026-09-05)
+- `L363` 저수준 이벤트 입력은 명령 위치를 검증한다 (2026-09-05)
+- `L370` 보물상자는 노출된 수면을 거부한다 (2026-09-05)
+- `L377` 모험 저작 완료와 재시도 (2026-09-05)
 
 ### `openwiki/editor-database.md` — 236KB · 1180줄 · ~68,076 토큰 · 통째읽기 잘림 · 깨진 줄 7
 

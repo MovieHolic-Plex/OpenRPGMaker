@@ -10,6 +10,9 @@ The in-app assistant awaits the registered Database-opening callback, checks
 the session's actual ProjectIdentity and current record, then starts the shared
 `characterAppearanceGeneration` controller. Ask mode excludes and rejects this
 capability even though its generic preparation is read-only.
+`AssistantSession` imports the generation controller only inside this tool's
+execution branch. Ordinary sessions and load-recovery imports must not initialize
+the image UI or its history/store subscriptions.
 
 Candidates remain outside the project until explicit DB Apply. Occupied slots
 can only be replaced through the human slot action; fresh asset IDs preserve

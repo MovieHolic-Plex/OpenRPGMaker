@@ -48,6 +48,7 @@
    "command",
    "companion-portrait",
    "danger",
+   "db-field",
    "disabled",
    "ee-icon",
    "ee-icon-arrowDown",
@@ -371,6 +372,7 @@
    "event-page-advanced-condition-list",
    "event-page-advanced-conditions",
    "event-page-animation-type",
+   "event-page-appearance-select",
    "event-page-body-height",
    "event-page-body-scale",
    "event-page-body-scale-manual",
@@ -496,16 +498,16 @@
    "i": 3,
    "input": 16,
    "kbd": 1,
-   "label": 14,
+   "label": 15,
    "legend": 9,
-   "option": 115,
+   "option": 116,
    "p": 9,
    "path": 53,
    "rect": 1,
    "section": 1,
-   "select": 14,
+   "select": 15,
    "small": 2,
-   "span": 162,
+   "span": 163,
    "strong": 3,
    "summary": 10,
    "svg": 55,
@@ -725,7 +727,8 @@
    "follower-preset-chip-preset-pet-dog": "button",
    "follower-preset-thumb-actor_guardian": "span",
    "follower-preset-thumb-actor_hero": "span",
-   "follower-preset-thumb-actor_mage": "span"
+   "follower-preset-thumb-actor_mage": "span",
+   "event-page-appearance-select": "select"
   },
   "controls": {
    "ai-event-apply": "button[button]{inHidden}",
@@ -792,7 +795,7 @@
    "event-page-delete": "button[button]",
    "event-page-duplicate": "button[button]",
    "event-page-graphic-control>input#0": "input[checkbox]",
-   "event-page-graphic-set": "button",
+   "event-page-graphic-set": "button[button]",
    "event-page-item-condition-input": "select",
    "event-page-item-condition-picker-open": "button[button]",
    "event-page-item-condition-present": "select",
@@ -850,7 +853,8 @@
    "follower-preset-chip-preset-companion-hero": "button",
    "follower-preset-chip-preset-pet-cat": "button",
    "follower-preset-chip-preset-pet-chick": "button",
-   "follower-preset-chip-preset-pet-dog": "button"
+   "follower-preset-chip-preset-pet-dog": "button",
+   "event-page-appearance-select": "select"
   },
   "selectOptions": {
    "event-object-kind": [
@@ -995,6 +999,9 @@
     ">",
     "<",
     "!="
+   ],
+   "event-page-appearance-select": [
+    ""
    ]
   },
   "labels": [
@@ -1021,6 +1028,7 @@
    "고급 설정npc_shell_probe",
    "고급 조건 (#)",
    "고양이 동료",
+   "공유 캐릭터 외형연결 안 함 · 직접 지정한 그림",
    "관계",
    "다시 실행",
    "닭 동료",
@@ -1092,13 +1100,13 @@
    "활동"
   ],
   "counts": {
-   "testidCount": 214,
-   "controlCount": 123,
-   "classCount": 266,
-   "labelCount": 92,
+   "testidCount": 215,
+   "controlCount": 124,
+   "classCount": 267,
+   "labelCount": 93,
    "detailsConverted": 4,
    "detailsUnconverted": 0,
-   "selectCount": 14
+   "selectCount": 15
   }
  },
  "page2": {
@@ -1157,6 +1165,7 @@
    "command",
    "companion-portrait",
    "danger",
+   "db-field",
    "disabled",
    "ee-icon",
    "ee-icon-arrowDown",
@@ -1523,6 +1532,7 @@
    "event-page-advanced-condition-summary-0",
    "event-page-advanced-conditions",
    "event-page-animation-type",
+   "event-page-appearance-select",
    "event-page-body-height",
    "event-page-body-scale",
    "event-page-body-scale-manual",
@@ -1663,16 +1673,16 @@
    "i": 3,
    "input": 15,
    "kbd": 1,
-   "label": 14,
+   "label": 15,
    "legend": 9,
-   "option": 124,
+   "option": 125,
    "p": 6,
    "path": 97,
    "rect": 1,
    "section": 1,
-   "select": 15,
+   "select": 16,
    "small": 2,
-   "span": 230,
+   "span": 231,
    "strong": 3,
    "summary": 10,
    "svg": 102,
@@ -1935,7 +1945,8 @@
    "follower-preset-thumb-actor_guardian": "span",
    "follower-preset-thumb-actor_hero": "span",
    "follower-preset-thumb-actor_mage": "span",
-   "self-switch-control": "span"
+   "self-switch-control": "span",
+   "event-page-appearance-select": "select"
   },
   "controls": {
    "ai-event-apply": "button[button]{inHidden}",
@@ -2028,7 +2039,7 @@
    "event-page-delete": "button[button]",
    "event-page-duplicate": "button[button]",
    "event-page-graphic-control>input#0": "input[checkbox]",
-   "event-page-graphic-set": "button",
+   "event-page-graphic-set": "button[button]",
    "event-page-move-back": "button[button]",
    "event-page-move-forward": "button[button]{disabled}",
    "event-page-movement-frequency": "select{disabled}",
@@ -2103,7 +2114,8 @@
    "follower-preset-chip-preset-companion-hero": "button",
    "follower-preset-chip-preset-pet-cat": "button",
    "follower-preset-chip-preset-pet-chick": "button",
-   "follower-preset-chip-preset-pet-dog": "button"
+   "follower-preset-chip-preset-pet-dog": "button",
+   "event-page-appearance-select": "select"
   },
   "selectOptions": {
    "event-object-kind": [
@@ -2259,6 +2271,9 @@
     "eventTouch",
     "auto",
     "parallel"
+   ],
+   "event-page-appearance-select": [
+    ""
    ]
   },
   "labels": [
@@ -2286,6 +2301,7 @@
    "고급 설정npc_shell_probe",
    "고급 조건 (#)",
    "고양이 동료",
+   "공유 캐릭터 외형연결 안 함 · 직접 지정한 그림",
    "관계",
    "다시 실행",
    "닭 동료",
@@ -2360,13 +2376,13 @@
    "활동"
   ],
   "counts": {
-   "testidCount": 257,
-   "controlCount": 166,
-   "classCount": 288,
-   "labelCount": 96,
+   "testidCount": 258,
+   "controlCount": 167,
+   "classCount": 289,
+   "labelCount": 97,
    "detailsConverted": 4,
    "detailsUnconverted": 0,
-   "selectCount": 15
+   "selectCount": 16
   }
  },
  "bare": {
@@ -2416,6 +2432,7 @@
    "cmd-summary-token",
    "command",
    "companion-portrait",
+   "db-field",
    "disabled",
    "ee-icon",
    "ee-icon-arrowDown",
@@ -2698,6 +2715,7 @@
    "event-page-advanced-condition-list",
    "event-page-advanced-conditions",
    "event-page-animation-type",
+   "event-page-appearance-select",
    "event-page-body-height",
    "event-page-body-scale",
    "event-page-body-scale-manual",
@@ -2804,16 +2822,16 @@
    "i": 1,
    "input": 9,
    "kbd": 1,
-   "label": 11,
+   "label": 12,
    "legend": 9,
-   "option": 56,
+   "option": 57,
    "p": 6,
    "path": 53,
    "rect": 1,
    "section": 1,
-   "select": 8,
+   "select": 9,
    "small": 1,
-   "span": 137,
+   "span": 138,
    "strong": 1,
    "summary": 8,
    "svg": 55,
@@ -3006,7 +3024,8 @@
    "follower-preset-chip-preset-pet-dog": "button",
    "follower-preset-thumb-actor_guardian": "span",
    "follower-preset-thumb-actor_hero": "span",
-   "follower-preset-thumb-actor_mage": "span"
+   "follower-preset-thumb-actor_mage": "span",
+   "event-page-appearance-select": "select"
   },
   "controls": {
    "ai-event-apply": "button[button]{inHidden}",
@@ -3067,7 +3086,7 @@
    "event-page-delete": "button[button]",
    "event-page-duplicate": "button[button]",
    "event-page-graphic-control>input#0": "input[checkbox]",
-   "event-page-graphic-set": "button",
+   "event-page-graphic-set": "button[button]",
    "event-page-move-back": "button[button]{disabled}",
    "event-page-move-forward": "button[button]",
    "event-page-movement-frequency": "select{disabled}",
@@ -3114,7 +3133,8 @@
    "follower-preset-chip-preset-companion-hero": "button",
    "follower-preset-chip-preset-pet-cat": "button",
    "follower-preset-chip-preset-pet-chick": "button",
-   "follower-preset-chip-preset-pet-dog": "button"
+   "follower-preset-chip-preset-pet-dog": "button",
+   "event-page-appearance-select": "select"
   },
   "selectOptions": {
    "event-object-kind": [
@@ -3188,6 +3208,9 @@
     "eventTouch",
     "auto",
     "parallel"
+   ],
+   "event-page-appearance-select": [
+    ""
    ]
   },
   "labels": [
@@ -3208,6 +3231,7 @@
    "계절",
    "고급 조건 (#)",
    "고양이 동료",
+   "공유 캐릭터 외형연결 안 함 · 직접 지정한 그림",
    "관계",
    "다시 실행",
    "닭 동료",
@@ -3275,13 +3299,13 @@
    "활동"
   ],
   "counts": {
-   "testidCount": 187,
-   "controlCount": 106,
-   "classCount": 233,
-   "labelCount": 82,
+   "testidCount": 188,
+   "controlCount": 107,
+   "classCount": 234,
+   "labelCount": 83,
    "detailsConverted": 2,
    "detailsUnconverted": 0,
-   "selectCount": 8
+   "selectCount": 9
   }
  },
  "flow": {
@@ -3332,6 +3356,7 @@
    "command",
    "companion-portrait",
    "danger",
+   "db-field",
    "disabled",
    "ee-icon",
    "ee-icon-arrowDown",
@@ -3654,6 +3679,7 @@
    "event-page-advanced-condition-list",
    "event-page-advanced-conditions",
    "event-page-animation-type",
+   "event-page-appearance-select",
    "event-page-body-height",
    "event-page-body-scale",
    "event-page-body-scale-manual",
@@ -3761,16 +3787,16 @@
    "i": 3,
    "input": 16,
    "kbd": 1,
-   "label": 14,
+   "label": 15,
    "legend": 9,
-   "option": 115,
+   "option": 116,
    "p": 9,
    "path": 33,
    "rect": 1,
    "section": 2,
-   "select": 14,
+   "select": 15,
    "small": 2,
-   "span": 155,
+   "span": 156,
    "strong": 3,
    "summary": 10,
    "svg": 35,
@@ -3977,7 +4003,8 @@
    "follower-preset-chip-preset-pet-dog": "button",
    "follower-preset-thumb-actor_guardian": "span",
    "follower-preset-thumb-actor_hero": "span",
-   "follower-preset-thumb-actor_mage": "span"
+   "follower-preset-thumb-actor_mage": "span",
+   "event-page-appearance-select": "select"
   },
   "controls": {
    "ai-event-apply": "button[button]{inHidden}",
@@ -4048,7 +4075,7 @@
    "event-page-delete": "button[button]",
    "event-page-duplicate": "button[button]",
    "event-page-graphic-control>input#0": "input[checkbox]",
-   "event-page-graphic-set": "button",
+   "event-page-graphic-set": "button[button]",
    "event-page-item-condition-input": "select",
    "event-page-item-condition-picker-open": "button[button]",
    "event-page-item-condition-present": "select",
@@ -4089,7 +4116,8 @@
    "follower-preset-chip-preset-companion-hero": "button",
    "follower-preset-chip-preset-pet-cat": "button",
    "follower-preset-chip-preset-pet-chick": "button",
-   "follower-preset-chip-preset-pet-dog": "button"
+   "follower-preset-chip-preset-pet-dog": "button",
+   "event-page-appearance-select": "select"
   },
   "selectOptions": {
    "event-object-kind": [
@@ -4234,6 +4262,9 @@
     ">",
     "<",
     "!="
+   ],
+   "event-page-appearance-select": [
+    ""
    ]
   },
   "labels": [
@@ -4263,6 +4294,7 @@
    "고급 설정npc_shell_probe",
    "고급 조건 (#)",
    "고양이 동료",
+   "공유 캐릭터 외형연결 안 함 · 직접 지정한 그림",
    "관계",
    "다시 실행",
    "닭 동료",
@@ -4334,13 +4366,13 @@
    "활동"
   ],
   "counts": {
-   "testidCount": 201,
-   "controlCount": 110,
-   "classCount": 259,
-   "labelCount": 95,
+   "testidCount": 202,
+   "controlCount": 111,
+   "classCount": 260,
+   "labelCount": 96,
    "detailsConverted": 4,
    "detailsUnconverted": 0,
-   "selectCount": 14
+   "selectCount": 15
   }
  },
  "allRows": {
@@ -4389,6 +4421,7 @@
    "cmd-summary-token",
    "command",
    "companion-portrait",
+   "db-field",
    "disabled",
    "ee-icon",
    "ee-icon-arrowDown",
@@ -4719,6 +4752,7 @@
    "event-page-advanced-condition-list",
    "event-page-advanced-conditions",
    "event-page-animation-type",
+   "event-page-appearance-select",
    "event-page-body-height",
    "event-page-body-scale",
    "event-page-body-scale-manual",
@@ -4845,16 +4879,16 @@
    "i": 2,
    "input": 31,
    "kbd": 1,
-   "label": 11,
+   "label": 12,
    "legend": 9,
-   "option": 155,
+   "option": 156,
    "p": 10,
    "path": 33,
    "rect": 1,
    "section": 2,
-   "select": 21,
+   "select": 22,
    "small": 1,
-   "span": 202,
+   "span": 203,
    "strong": 1,
    "summary": 8,
    "svg": 35,
@@ -5089,7 +5123,8 @@
    "follower-preset-thumb-actor_guardian": "span",
    "follower-preset-thumb-actor_hero": "span",
    "follower-preset-thumb-actor_mage": "span",
-   "self-switch-control": "span"
+   "self-switch-control": "span",
+   "event-page-appearance-select": "select"
   },
   "controls": {
    "ai-event-apply": "button[button]{inHidden}",
@@ -5172,7 +5207,7 @@
    "event-page-friendship-condition-npc-key": "input[text]",
    "event-page-friendship-condition-value": "input[number]",
    "event-page-graphic-control>input#0": "input[checkbox]",
-   "event-page-graphic-set": "button",
+   "event-page-graphic-set": "button[button]",
    "event-page-item-condition-input": "select",
    "event-page-item-condition-picker-open": "button[button]",
    "event-page-item-condition-present": "select",
@@ -5229,7 +5264,8 @@
    "follower-preset-chip-preset-companion-hero": "button",
    "follower-preset-chip-preset-pet-cat": "button",
    "follower-preset-chip-preset-pet-chick": "button",
-   "follower-preset-chip-preset-pet-dog": "button"
+   "follower-preset-chip-preset-pet-dog": "button",
+   "event-page-appearance-select": "select"
   },
   "selectOptions": {
    "event-object-kind": [
@@ -5428,6 +5464,9 @@
     ">",
     "<",
     "!="
+   ],
+   "event-page-appearance-select": [
+    ""
    ]
   },
   "labels": [
@@ -5459,6 +5498,7 @@
    "계절",
    "고급 조건 (#)",
    "고양이 동료",
+   "공유 캐릭터 외형연결 안 함 · 직접 지정한 그림",
    "관계",
    "다시 실행",
    "닭 동료",
@@ -5527,13 +5567,13 @@
    "활동"
   ],
   "counts": {
-   "testidCount": 229,
-   "controlCount": 138,
-   "classCount": 256,
-   "labelCount": 94,
+   "testidCount": 230,
+   "controlCount": 139,
+   "classCount": 257,
+   "labelCount": 95,
    "detailsConverted": 2,
    "detailsUnconverted": 0,
-   "selectCount": 21
+   "selectCount": 22
   }
  }
 }
