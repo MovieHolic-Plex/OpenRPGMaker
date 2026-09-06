@@ -1,0 +1,4 @@
+command: QA_PORT=19846 EVIDENCE_DIR=output/evidence/ai-harness/p1/baseline-editor xvfb-run -a node scripts/qa/map-owned-ai-turns.mjs
+started: 2026-09-06T08:46:22Z
+exit_code: 1
+finished: 2026-09-06T08:47:48Z

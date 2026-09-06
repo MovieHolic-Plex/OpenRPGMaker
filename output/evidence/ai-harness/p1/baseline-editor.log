@@ -1,0 +1,6 @@
+{"sequence":1,"type":"port-verified-free","base":"http://127.0.0.1:19846","root":"/home/main/z-project/rpg-zzu-ai-harness-p1-20260906/"}
+{"sequence":2,"scenario":"completed","type":"boot-start"}
+{"sequence":3,"scenario":"completed","type":"FAIL","error":"Error: expect(locator).toBeVisible() failed\n\nLocator: locator('.phaser-container canvas')\nExpected: visible\nTimeout: 60000ms\nError: element(s) not found\n\nCall log:\n  - Expect \"to.be.visible\" with timeout 60000ms\n  - waiting for locator('.phaser-container canvas')\n\n    at captureRawStack (/home/main/z-project/rpg-zzu/node_modules/playwright-core/lib/coreBundle.js:3172:17)\n    at callMatcherAsStep (/home/main/z-project/rpg-zzu/node_modules/playwright/lib/matchers/expect.js:12875:57)\n    at Object.toBeVisible (/home/main/z-project/rpg-zzu/node_modules/playwright/lib/matchers/expect.js:12865:23)\n    at boot (/home/main/z-project/rpg-zzu-ai-harness-p1-20260906/scripts/qa/map-owned-ai-turns.mjs:282:58)\n    at async file:///home/main/z-project/rpg-zzu-ai-harness-p1-20260906/scripts/qa/map-owned-ai-turns.mjs:75:5"}
+{"sequence":4,"scenario":"completed","type":"failure-body","body":""}
+{"sequence":5,"scenario":"completed","type":"failure-events","evidence":null}
+{"sequence":6,"scenario":"completed","type":"cleanup","browserClosed":true,"ownedServerStopped":true,"reusedListener":false}

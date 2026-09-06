@@ -1,0 +1,13 @@
+{
+  "checkedAt": "2026-09-06T08:48:23.622Z",
+  "host": "127.0.0.1",
+  "port": 19846,
+  "exclusiveBindSucceeded": true,
+  "probeClosed": true,
+  "ssOutput": "State Recv-Q Send-Q Local Address:Port Peer Address:PortProcess\n",
+  "browserCloseSource": "baseline-editor/actions.json log sequence 6",
+  "browserClosed": true,
+  "ownedServerStopped": true,
+  "reusedListener": false,
+  "otherBrowserProcessesNotTouched": true
+}
