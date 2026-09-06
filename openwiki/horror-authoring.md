@@ -41,7 +41,7 @@ AI도 `make_chase_scene.pursuit`와 `configure_object_behavior`로 같은 페이
   결정적 순서로 수색한다. `persistent`는 한 번 발견한 플레이어의 현재 위치를 시야가 끊겨도
   추적하지만 은신·안전 구역은 이 정책을 중단한다. 미목격 은신은 새 표적이 아니며,
   목격한 은신 진입의 기존 포획 규칙은 유지한다. 추격 속성 없는 구버전 chase는 바꾸지 않는다.
-  이 증분은 데이터/런타임 계약이며 tracking 편집기 컨트롤은 아직 추가하지 않았다.
+  편집기의 「놓친 뒤 추적」에서 마지막 목격 수색/현재 위치 추적을 선택한다.
 - 수색 제한 시간은 이동 보간 중에도 허용된 업데이트마다 한 번 증가한다. `searchTarget`과
   `searchCursor`(0~11)는 `session.horror.pursuits`에 선택적으로 저장한다. 대상·수색 단계가
   바뀌면 임시 경로 캐시를 버리고, 수색 종료 후 기존 wait/현재 방 진입점 return을 따른다.
@@ -52,12 +52,74 @@ AI도 `make_chase_scene.pursuit`와 `configure_object_behavior`로 같은 페이
 - 한 프레임의 남은 시간은 이미 예약된 다음 구간에만 이월한다. 막힌 도착점에서는 기다리되
   그 프레임의 남은 시간을 버려 문이 열린 뒤 누적 시간으로 여러 방을 순간 통과하지 않는다.
 - `project/runtimeMap.ts`가 로드된 맵 적용과 미로드 목적지 조회의 타일 오버라이드를 공유한다.
+  로드된 맵은 `applyRuntimeMapOverrides`로 객체와 타일 배열의 동일성을 유지하여 제자리 갱신한다.
+  시간표·통행 성분 소비자가 보관한 참조를 끊으면 문 개폐를 보지 못한다. 미로드 조회만 복사본을 만든다.
   저작 배열은 변경하지 않으며, 미로드 맵에는 현재 맵의 `eventPositions`를 넘기지 않는다.
   실제 `transferTo`는 목적지 런타임 타일과 플레이어 통행 사각으로 최종 착지점을 먼저 구하고
   그 좌표를 추격 대기열과 플레이어 양쪽에 사용한다.
 - 계약 테스트: `npcPursuitRegression.test.ts`, `npcPursuitBoundaries.test.ts`,
   `horrorObjectRuntime.test.ts`, `playerFootprint.test.ts`의 실제 transfer 착지 회귀.
   출하 플레이어 브라우저 승인은 별도이며 단위 테스트 통과로 대체하지 않는다.
+
+## NPC 발견 이벤트와 공통 전투 소유권 (2026-09-06)
+
+- `movement.sight?: {range, lineOfSight, facing}`와 `EventPage.detectionEncounter?`는 선택 필드다.
+  발견 이벤트는 `{sight, emote: EmoteKind|null, emoteMs, approachSpeed}`를 가진다.
+  거리(0~999), 대기(ms, 0~60000), 접근 속도(1~8)는 정수이며 JSON 경계에서 검증한다.
+  `forward`는 현재 런타임 방향의 같은 행/열 직선이다. 원뿔 시야가 아니다.
+  LOS는 모서리에 닿는 타일, 이벤트 통행 사각, 공간 배치를 포함한다(`npcPerception.ts`).
+- 새로 추격을 선택하면 거리 8/LOS/모든 방향과 맵 범위/1200ms/4000ms/대기를 명시한다.
+  기존 chase를 열거나 빈도만 바꿔도 현대 정책을 자동 추가하지 않는다. 정책 없는 페이지는
+  기존 동작과 명시적 활성화 버튼을 보여 준다. `normalizeEventPage`는 저작 sight를 보존한다.
+- 「움직임과 속도 → 플레이어 발견」은 정지 페이지에도 제공한다. 활성화 기본값은
+  거리 6/LOS/정면 직선/느낌표/600ms/속도 4다. 대기 입력은 ms, 문 대기는 기존 초 단위다.
+  `pageNpcBehavior.ts`/`pageHorror.ts`는 기존 label/input/select와 `updateEventPage`만 사용하여
+  드래프트 적용·취소와 감사 로그를 공유한다. 전투를 자동 생성하지 않고 페이지 명령을 실행한다.
+  자동·병렬 트리거 또는 밀기/은신 상호작용과 발견 이벤트를 함께 저작할 수는 없다.
+  JSON 경계가 이 조합을 거부하고 편집기는 새 활성화를 막는다. 이미 켠 뒤 트리거를 바꿨으면
+  발견 설정을 해제하여 충돌을 해결할 수 있다.
+- `updatePlayScene`은 입력·자율 이동 전에 `npcDetectionEncounter.ts`를 호출한다. 처음 감지한
+  활성 이벤트 하나가 즉시 foreground/input을 잡고, 표시→실제 경로 이동→인접 확인→명령 순서로
+  진행한다. 멀리서 전투하거나 순간이동하지 않는다. 길이 막히면 실행/완료 기록 없이 해제하고,
+  시야를 벗어났다 다시 들어와야 재시도한다. 은신 중인 플레이어를 새로 감지하지 않는다.
+  기존 컷신 입력 잠금과 해당 NPC의 명령 이동 루트 소유권이 있으면 새 발견 실행을 시작하지 않는다.
+- 정상 종료한 이벤트/페이지는 선택적 `session.detectionEncounterCompletions[eventId][pageId]=true`
+  영수증으로 기록한다. 생성·JSON 파싱·복원을 모두 거치며 다른 값의 영수증은 거부한다.
+  이 이름이 저장 계약의 정본이다(`detectionEncounters`가 아님). 임의 문자열 ID를 허용하며
+  constructor/prototype/__proto__ 같은 키도 own-property와 정확한 true 판정으로 읽고 쓴다.
+  저장 중 접근/전투는 완료가 아니므로 재개 시 다시 감지할 수 있다. 임시 소유 토큰은 저장하지 않는다.
+  발견 설정이 있는 페이지를 조사/접촉으로 먼저 실행해도 같은 완료 영수증을 남긴다.
+  수동 전투 후 자동 감지로 같은 전투를 다시 거는 일을 막으며, 명시적인 수동 재조사는 기존처럼 허용한다.
+- `foregroundControl.ts`의 토큰이 늦은 finally가 다른 실행자의 입력을 해제하지 못하게 한다.
+  페이지 비활성화, 세션/맵 교체, shutdown은 접근을 취소한다. 이동은 기존 pathfinding/tween을
+  사용하고 일반 action/contact, 생활 이동, 진영 추격의 기본 소유 경로는 유지한다.
+  단, 인접 확인 후 명령 실행이 시작되면 원래 목록이 소유권을 유지한다. 저작 셀프 스위치로
+  페이지가 바뀌거나 transfer로 이동해도 남은 명령을 실행하고 원래 이벤트/페이지의 완료를 기록한다.
+  발견 목록만 continueAfterTransfer를 사용하며 기존 인터프리터 호출자의 전이 종료 기본값은 유지한다.
+  전이 명령은 시작 전에 목적지를 한정해 승인하고, 완료 시 소유 맵 객체를 확정한 뒤 승인을 해제한다.
+  외부 맵 교체는 같은 ID의 새 객체여도 진행 중 명령과 그 소유 대화를 취소한다.
+  늦은 비동기 해제는 토큰·세션·맵도 같을 때만 입력을 복구한다.
+  shutdown과 세션 교체는 진행 중 명령의 결과를 무효화한다.
+- `commandBattle.ts`는 일반 인터프리터와 병렬 스케줄러의 실제 전투 경로를 공유한다.
+  병렬 프로세스는 foreground가 비면 `scene.playBattle`을 호출하고 승패를 기다린 후 같은
+  인터프리터를 재개한다. 변수 troop, 결과 분기, 셀프 스위치, 패배 허용 정책을 전달하며
+  overlay-only 실행이나 프로세스 재시작을 하지 않는다. `branchOnResult:true`가 분기를 활성화한다.
+  페이지가 없는 레거시 이벤트는 `legacy` 식별자와 루트 조건을 일관되게 판정한다.
+  페이지가 있지만 조건에 맞는 페이지가 없는 이벤트는 레거시로 되돌려 실행하지 않는다.
+- 실제 `playSceneBattle`도 소유 세션/맵/페이지/프로세스와 shutdown을 확인한다. 전환 중 취소하면
+  전투 UI와 전환을 정리하고 낡은 결과로 새 세션에 보상·오디오·포획 상태를 쓰지 않는다.
+- 회귀: `npcTrainerEncounter`, `npcBehaviorAuthoring`, `npcScheduledBattle`, `npcEncounterBoundaries`,
+  `npcBattleLifecycle`, `npcEncounterOwnershipBoundaries`. 늦은 해제 검증은 전체 체인의 마지막
+  lease.release 호출 뒤를 관찰하며 임의 마이크로태스크 횟수에 의존하지 않는다. 프레임·인터프리터·경로·저장 경계는 실제 모듈이며 브라우저 승인은 별도다.
+- 브라우저 재현: `node scripts/qa/npc-behavior.mjs --scenario pursuit|trainer|editor`.
+  각 이름을 하나씩 지정하며 결과는 `output/evidence/npc-behavior/<이름>/SUMMARY.md`부터 읽는다.
+  게임은 출하 별칭을 쓰는 `player.html`, 편집기는 별도 서버의 실제 모달을 사용한다.
+  이 스크립트는 최소 엔진 픽스처만 사용하고 원격 프로젝트에 저장하지 않는다.
+  `ERR_NETWORK_CHANGED`가 반복되는 호스트의 `--relay`는 실제 로컬 Vite 응답을
+  Playwright HTTP 요청으로 전달한다. `NPC_QA_ROOT`로 검증할 워크트리를 명시할 수 있다.
+  고정 sleep 없이 DOM/렌더 신호를 먼저 구독하며, 보고서에 입력·상태·스크린샷·trace와
+  컨텍스트/서버/포트 정리 증거를 함께 남긴다. 음악은 맵의 정식 `bgm.mode="none"`으로 끄고,
+  편집기에서는 개발용 AI 브리지·디스크 미러만 비활성화한다. 게임 동작과 요청 오류는 대역 처리하지 않는다.
 
 ## 가구 밀기 애니메이션 (2026-09-05 후속 체험 수정)
 

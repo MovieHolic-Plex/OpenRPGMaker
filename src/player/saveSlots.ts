@@ -1,3 +1,4 @@
+import { isDetectionEncounterCompletions } from '@/project/npcBehavior';
 import { hasEquipmentSlot } from "@/project/equipmentSlots";
 import { isHorrorState } from "@/project/horrorState";
 import { isGrowthProgress } from "@/project/growth/validation";
@@ -176,6 +177,7 @@ export type SaveSnapshot = {
     readonly actorLevels?: Record<string, number>;
     readonly actorVitals?: Record<string, ActorVitals>;
     readonly horror?: PlaySession["horror"];
+    readonly detectionEncounterCompletions?: PlaySession["detectionEncounterCompletions"];
     readonly eventLocations?: PlaySession["eventLocations"];
     readonly erasedEventIds?: readonly string[];
     readonly removedEventIds?: PlaySession["removedEventIds"];
@@ -353,6 +355,7 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       actorLevels: structuredClone(session.actorLevels),
       actorVitals: structuredClone(session.actorVitals),
       horror: session.horror ? structuredClone(session.horror) : undefined,
+      detectionEncounterCompletions: structuredClone(session.detectionEncounterCompletions),
       eventLocations: structuredClone(session.eventLocations),
       erasedEventIds: structuredClone(session.erasedEventIds),
       removedEventIds: structuredClone(session.removedEventIds),
@@ -563,6 +566,7 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.actorLevels) session.actorLevels = structuredClone(snapshot.session.actorLevels);
   if (snapshot.session.actorVitals) session.actorVitals = structuredClone(snapshot.session.actorVitals);
   if (snapshot.session.horror) session.horror = structuredClone(snapshot.session.horror);
+  session.detectionEncounterCompletions = structuredClone(snapshot.session.detectionEncounterCompletions);
   if (snapshot.session.eventLocations) session.eventLocations = structuredClone(snapshot.session.eventLocations);
   if (snapshot.session.erasedEventIds) session.erasedEventIds = [...snapshot.session.erasedEventIds];
   if (snapshot.session.removedEventIds) session.removedEventIds = structuredClone(snapshot.session.removedEventIds);
@@ -821,6 +825,9 @@ type ParsedSessionResult =
   | { readonly ok: false; readonly message: string };
 
 function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResult {
+  if (session.detectionEncounterCompletions !== undefined && !isDetectionEncounterCompletions(session.detectionEncounterCompletions)) {
+    return { ok: false, message: "Invalid detection completion state" };
+  }
   if (session.horror !== undefined && !isHorrorState(session.horror)) {
     return { ok: false, message: "Invalid pursuit state" };
   }
@@ -909,6 +916,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       actorLevels: isNumberRecord(session.actorLevels) ? session.actorLevels : undefined,
       actorVitals: isActorVitalsRecord(session.actorVitals) ? session.actorVitals : undefined,
       horror: isHorrorState(session.horror) ? session.horror : undefined,
+      detectionEncounterCompletions: session.detectionEncounterCompletions,
       eventLocations: isRuntimeEventLocationRecord(session.eventLocations) ? session.eventLocations : undefined,
       erasedEventIds: isStringArray(session.erasedEventIds) ? session.erasedEventIds : undefined,
       removedEventIds: isRuntimeRemovedEventIds(session.removedEventIds) ? session.removedEventIds : undefined,

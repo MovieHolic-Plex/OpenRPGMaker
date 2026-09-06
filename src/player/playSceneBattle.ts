@@ -42,73 +42,79 @@ export function showBattleScene(scene: PlaySceneContext, troopId: string): void 
 export function playBattle(
   scene: PlaySceneContext,
   step: Extract<StepResult, { kind: "battleProcessing" }>,
-  startedAt: number
+  startedAt: number,
+  isCurrent: () => boolean = () => true
 ): Promise<BattleResult> {
   const host = dialogueHost(scene);
   if (!host) return Promise.resolve("defeat");
+  if (!isCurrent()) return Promise.resolve("escape");
   const project = store.getCurrent();
+  const session = scene.session, mapId = scene.map?.id;
+  let closed = false;
+  const current = () => !closed && scene.session === session && scene.map?.id === mapId && isCurrent();
   // canonical/legacy 선택자를 한 번만 해석하고 같은 파티를 모든 전투 소비자에게 넘긴다.
-  const { requested: usePartyMonsters, partyMonsters, monsterPartyMode } = resolveMonsterBattleParty(project, scene.session);
+  const { requested: usePartyMonsters, partyMonsters, monsterPartyMode } = resolveMonsterBattleParty(project, session);
   // 나설 몬스터가 없으면(스타터 지급 전) 전투를 건너뛴다 — 파티 0으로 즉시 패배하는 사고 방지.
   if (usePartyMonsters && !monsterPartyMode) {
     return Promise.resolve("escape");
   }
-  const savedAudio = enterBattleAudio(project, scene.session);
+  const savedAudio = enterBattleAudio(project, session);
   const runtime = createBattleRuntime({
     project,
     troopId: step.troopId,
-    canEscape: step.canEscape && scene.session.m2Runtime?.access?.escape !== false,
+    canEscape: step.canEscape && session.m2Runtime?.access?.escape !== false,
     canLose: step.canLose,
     battleFlow: step.battleFlow,
     party: {
-      levels: scene.session.actorLevels,
-      experience: scene.session.actorExperience,
-      names: scene.session.actorNames,
-      faceResourceIds: scene.session.actorFaceResourceIds,
-      vitals: scene.session.actorVitals,
-      paramBonuses: scene.session.actorParamBonuses,
-      equipment: scene.session.actorEquipment,
-      skillIds: scene.session.actorSkillIds,
-      skillPp: scene.session.actorSkillPp,
-      classOverrides: scene.session.classOverrides,
-      growthProgress: scene.session.growthProgress,
-      stateIds: scene.session.actorStateIds,
-      partyActorIds: scene.session.partyActorIds,
+      levels: session.actorLevels,
+      experience: session.actorExperience,
+      names: session.actorNames,
+      faceResourceIds: session.actorFaceResourceIds,
+      vitals: session.actorVitals,
+      paramBonuses: session.actorParamBonuses,
+      equipment: session.actorEquipment,
+      skillIds: session.actorSkillIds,
+      skillPp: session.actorSkillPp,
+      classOverrides: session.classOverrides,
+      growthProgress: session.growthProgress,
+      stateIds: session.actorStateIds,
+      partyActorIds: session.partyActorIds,
       monsterParty: monsterPartyMode ? partyMonsters : undefined,
-      battleCommands: scene.session.actorBattleCommands,
+      battleCommands: session.actorBattleCommands,
     },
     // battleProcessing 스텝을 만든 맵 이벤트. 트룹 배틀 이벤트의 selfSwitch 소유 이벤트가 된다.
     // 랜덤 인카운터/필드 스폰(playSceneMovement/playSceneFieldSpawns) 스텝에는 없어 undefined 유지.
     ownerEventId: step.ownerEventId,
     sessionState: {
-      switches: scene.session.switches,
-      variables: scene.session.variables,
-      inventory: scene.session.inventory,
-      selfSwitches: scene.session.selfSwitches,
-      battleResult: scene.session.battleResult,
-      roguelikeRun: scene.session.roguelikeRun,
-      itemUseCharges: scene.session.itemUseCharges,
-      gold: scene.session.gold,
-      partyActorIds: scene.session.partyActorIds,
-      actorSkillIds: scene.session.actorSkillIds,
-      actorExperience: scene.session.actorExperience,
-      actorLevels: scene.session.actorLevels,
-      actorBattleCommands: scene.session.actorBattleCommands,
+      switches: session.switches,
+      variables: session.variables,
+      inventory: session.inventory,
+      selfSwitches: session.selfSwitches,
+      battleResult: session.battleResult,
+      roguelikeRun: session.roguelikeRun,
+      itemUseCharges: session.itemUseCharges,
+      gold: session.gold,
+      partyActorIds: session.partyActorIds,
+      actorSkillIds: session.actorSkillIds,
+      actorExperience: session.actorExperience,
+      actorLevels: session.actorLevels,
+      actorBattleCommands: session.actorBattleCommands,
       // Step 3d: 전투 이벤트 changeEquipment/promoteActor 의 기준 상태(오버레이 시드).
-      actorEquipment: scene.session.actorEquipment,
-      classOverrides: scene.session.classOverrides,
-      growthProgress: scene.session.growthProgress,
-      timers: scene.session.timers,
-      gameTime: scene.session.gameTime,
-      npcActivities: scene.session.npcActivities,
-      friendship: scene.session.friendship,
-      relationships: scene.session.relationships,
+      actorEquipment: session.actorEquipment,
+      classOverrides: session.classOverrides,
+      growthProgress: session.growthProgress,
+      timers: session.timers,
+      gameTime: session.gameTime,
+      npcActivities: session.npcActivities,
+      friendship: session.friendship,
+      relationships: session.relationships,
     },
     partyMonsters: monsterPartyMode ? partyMonsters : undefined,
     // Terrain at the player's tile feeds battle backdrop when troop has no preview.
-    captureLocation: { mapId: scene.session.currentMapId, x: scene.session.x, y: scene.session.y },
+    captureLocation: { mapId: session.currentMapId, x: session.x, y: session.y },
     onMonsterCaptured: (capture) => {
-      giveMonster(project, scene.session, {
+      if (!current()) return;
+      giveMonster(project, session, {
         speciesId: capture.speciesId,
         level: capture.level,
         caughtAt: capture.caughtAt,
@@ -120,48 +126,63 @@ export function playBattle(
         skillPp: capture.skillPp,
       });
     },
-    rng: () => nextSessionRandom(scene.session, "battle"),
+    rng: () => current() ? nextSessionRandom(session, "battle") : 0.5,
     playAudio: (resourceId, loop) => {
+      if (!current()) return;
       playAudioCommand({ resourceId, loop }, project);
-      scene.session.audio.bgm = { resourceId, loop };
+      session.audio.bgm = { resourceId, loop };
     },
     stopAudio: () => {
+      if (!current()) return;
       stopAudioCommand();
-      scene.session.audio.bgm = undefined;
+      session.audio.bgm = undefined;
     },
   });
-  return new Promise<BattleResult>((resolve) => {
+  return new Promise<BattleResult>((resolve, reject) => {
     let battleScene: BattleDomController | undefined;
-    let settled = false;
-    const entrySkin = getBattleSkin(resolveSkinId(store.getCurrent().system.battleUiStyle));
+    let resultChosen = false, finished = false;
+    let exitTransition: ReturnType<typeof createSkinBattleTransition> | undefined;
+    const entrySkin = getBattleSkin(resolveSkinId(project.system.battleUiStyle));
     const entryTransition = createSkinBattleTransition(host, entrySkin.transition);
+    const cleanup = () => {
+      scene.events?.off('shutdown', cancel); scene.events?.off('destroy', cancel); scene.events?.off('update', checkOwner);
+      battleScene?.destroy(); battleScene = undefined;
+      entryTransition.destroy(); exitTransition?.destroy();
+    };
+    const finish = (result: BattleResult) => {
+      if (finished) return;
+      finished = true; cleanup(); resolve(result);
+    };
+    const cancel = () => { closed = true; finish('escape'); };
+    const checkOwner = () => { if (!current()) cancel(); };
+    const fail = (error: unknown) => { if (!finished) { finished = true; cleanup(); reject(error); } };
+    scene.events?.once('shutdown', cancel); scene.events?.once('destroy', cancel); scene.events?.on('update', checkOwner);
     void entryTransition.cover().then(() => {
-      if (settled) return;
+      if (finished) return;
+      if (!current()) { cancel(); return; }
       battleScene = mountBattleScene({
-        host,
-        runtime,
+        host, runtime,
         onResult: (result, snapshot) => {
-          if (settled) return;
-          settled = true;
-          const exitTransition = createSkinBattleTransition(host, entrySkin.transition);
-          void exitTransition.exit().then(() => {
-            exitBattleAudio(project, scene.session, savedAudio);
-            applyBattleRewardsToSession(
-              scene.session,
-              { result, canLose: snapshot.canLose, rewards: snapshot.rewards, actors: [...snapshot.actors, ...snapshot.reserveActors], eventState: snapshot.eventState, participatingActorIds: snapshot.participatingActorIds, monsterPartyMode },
-              project
-            );
-            // 오토세이브 훅(PlayScene 경로 전용): 승리 보상이 세션에 반영된 직후.
-            // sceneTestRunner/walkthroughRunner 는 applyBattleRewardsToSession 을 직접 부르므로
-            // 헤드리스 테스트가 localStorage 를 오염시키지 않는다.
-            if (result === "victory") maybeAutosave(project, scene.session, "battleVictory");
-            battleScene?.destroy();
-            void exitTransition.reveal().then(() => resolve(result));
-          });
+          if (finished || resultChosen) return;
+          if (!current()) { cancel(); return; }
+          resultChosen = true;
+          const transition = createSkinBattleTransition(host, entrySkin.transition);
+          exitTransition = transition;
+          void transition.exit().then(async () => {
+            if (finished) return;
+            if (!current()) { cancel(); return; }
+            exitBattleAudio(project, session, savedAudio);
+            applyBattleRewardsToSession(session,
+              { result, canLose: snapshot.canLose, rewards: snapshot.rewards, actors: [...snapshot.actors, ...snapshot.reserveActors], eventState: snapshot.eventState, participatingActorIds: snapshot.participatingActorIds, monsterPartyMode }, project);
+            if (result === 'victory') maybeAutosave(project, session, 'battleVictory');
+            battleScene?.destroy(); battleScene = undefined;
+            await transition.reveal();
+            finish(current() ? result : 'escape');
+          }).catch(fail);
         },
       });
       markBattleEntry(startedAt);
-      void entryTransition.reveal();
-    });
+      void entryTransition.reveal().catch(fail);
+    }).catch(fail);
   });
 }

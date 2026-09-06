@@ -454,10 +454,10 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     this.showRuntimeOverlay("battle-scene", troopId || "battle");
   }
 
-  playBattle(step: Extract<StepResult, { kind: "battleProcessing" }>): Promise<BattleResult> {
+  playBattle(step: Extract<StepResult, { kind: "battleProcessing" }>, isCurrent?: () => boolean): Promise<BattleResult> {
     const startedAt = performance.now();
     return import("@/player/playSceneBattle").then(({ playBattle }) => {
-      return playBattle(this, step, startedAt);
+      return playBattle(this, step, startedAt, isCurrent);
     });
   }
 

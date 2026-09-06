@@ -1,7 +1,8 @@
+import { npcSeesPoint } from './npcPerception';
 import { isSpatialPlacementBlocking } from '@/project/spatialOccupancy';
 import { resolvePlayerBody } from '@/project/playerFootprint';
-import { canMoveFootprint, isPassable } from '@/project/collision';
-import { footprintBounds, pointRect, rectsOverlap } from '@/project/footprint';
+import { canMoveFootprint } from '@/project/collision';
+import { footprintBounds, rectsOverlap } from '@/project/footprint';
 import { runtimeEventViewById, runtimeEventViewsForMap, findBlockingEventOverlappingRect, type RuntimeEventView } from '@/project/runtimeEventState';
 import type { Dir } from '@/project/types';
 import type { AutonomousMover } from './playSceneTypes';
@@ -53,20 +54,8 @@ export function isPlayerHiding(world: World): boolean {
 }
 
 export function seesPlayer(world: World, view: RuntimeEventView): boolean {
-  const { x, y } = world.session;
-  if (isInSafeZone(world.map.safeZones, { x, y })) return false;
-  if (Math.abs(view.x - x) + Math.abs(view.y - y) > (view.movement.sightRange ?? 8)) return false;
-  // Conservative supercover sampling: walls and movable furniture break sight.
-  const count = Math.max(Math.abs(view.x - x), Math.abs(view.y - y)) * 2;
-  for (let i = 1; i < count; i++) {
-    const px = Math.round(view.x + (x - view.x) * i / count);
-    const py = Math.round(view.y + (y - view.y) * i / count);
-    if (px === x && py === y) continue;
-    if (px === view.x && py === view.y) continue;
-    if (!isPassable(world.project, world.map, px, py)
-      || findBlockingEventOverlappingRect(world.project, world.map, world.session, world.positions, pointRect(px, py), view.event.id)) return false;
-  }
-  return true;
+  return npcSeesPoint(world, view, world.session,
+    view.movement.sight ?? { range: view.movement.sightRange ?? 8, lineOfSight: true, facing: 'any' });
 }
 
 type PursuitTarget = { x: number; y: number; searching: boolean } | null | undefined;
@@ -88,7 +77,7 @@ export function pursuitTarget(world: World, view: RuntimeEventView, mover: Auton
 function trackedPursuitTarget(world: World, view: RuntimeEventView, mover: AutonomousMover, deltaMs: number): PursuitTarget {
   const config = view.movement.pursuit;
   const hiding = isPlayerHiding(world) ? world.session.horror?.hiding : undefined;
-  if (!config && !hiding) return undefined;
+  if (!config && !hiding && !view.movement.sight) return undefined;
   const state = pursuitState(world, view);
   if (state.doors.length) return null; // Transit, not an independently walking duplicate.
   if (config) world.session.eventLocations[view.event.id] = { mapId: world.map.id, x: view.x, y: view.y, direction: view.direction };

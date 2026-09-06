@@ -1,3 +1,5 @@
+import { resetDetectionForMap } from "./npcDetectionEncounter";
+import { evalCondition } from "@/project/session";
 import { clearFurniturePush, furniturePushPosition } from './furniturePushAnimation';
 import { chipsetAnimationKey, TILE_SIZE } from "@/assets/bundled";
 import {
@@ -19,7 +21,7 @@ import {
   type ChipsetQuarterComposition,
 } from "@/project/defaults/terrainQuarterAutotile";
 import { mapWithCommittedEvents } from "@/project/eventDrafts";
-import { runtimeMap } from "@/project/runtimeMap";
+import { applyRuntimeMapOverrides } from "@/project/runtimeMap";
 import { tileStackAt } from "@/project/mapOverlayTiles";
 import { invalidateTilePassabilityComponents } from "@/project/tilePassabilityComponents";
 import { isTreeTrunkTileId } from "@/project/tilesetHarness";
@@ -522,6 +524,7 @@ function renderedEventPosition(
 }
 
 export function resetMapRuntime(scene: PlaySceneContext): void {
+  resetDetectionForMap(scene);
   clearFurniturePush(scene);
   // 맵이 바뀌면 타일 서명도 버린다 — 같은 맵 객체를 다시 로드하는 경로에서도 반드시 다시 그린다.
   invalidateTileLayer(scene);
@@ -556,7 +559,10 @@ export function activeRuntimeEvents(
   triggerKind: "action" | "touch" | "playerTouch" | "eventTouch" | "auto" | "parallel"
 ): RuntimeEventView[] {
   return runtimeEventViewsForMap(store.getCurrent(), scene.map, scene.session, scene.eventPositions)
-    .filter((event) => event.trigger.kind === triggerKind);
+    .filter((event) => event.trigger.kind === triggerKind
+      && (event.event.pages?.length
+        ? event.page !== undefined
+        : evalCondition(scene.session, event.event.condition, event.event)));
 }
 
 export function syncRuntimeState(scene: PlaySceneContext): void {
@@ -722,5 +728,5 @@ export async function fireAutoTriggers(scene: PlaySceneContext): Promise<void> {
 export function applyMapOverrides(scene: PlaySceneContext): void {
   if (!scene.session.mapOverrides[scene.getMapId()]) return;
   invalidateTilePassabilityComponents(scene.map);
-  scene.map = runtimeMap(scene.map, scene.session);
+  applyRuntimeMapOverrides(scene.map, scene.session);
 }
