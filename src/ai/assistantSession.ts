@@ -737,6 +737,7 @@ function specGateResult(summary: string, guidance: readonly string[]): ToolResul
 
 interface SpecGatePass {
   warnings: LintIssue[];
+  commitExpansion?: () => void;
 }
 
 /** 이번 턴이 손댈 범위 — 현재 맵의 선택 사각형. 사실이지 의도가 아니다. */
@@ -1293,8 +1294,8 @@ export class AssistantSession {
     if (coverage.covered) return { warnings: [] };
 
     const uncovered = uncoveredRegionsBySpec(assets, regions);
-    const warnings = this.expandSpecWithRegions(mapId, name, regions, uncovered);
-    if (warnings.length > 0) return { warnings };
+    const expansion = this.expandSpecWithRegions(mapId, name, regions, uncovered);
+    if (expansion.warnings.length > 0) return expansion;
     if (slackCells > 0 && coverage.slackWarning) {
       return { warnings: [{ severity: "warning", code: "spec-gate-auto-expand", message: `명세를 자동 확장했습니다: ${coverage.slackWarning}` }] };
     }
@@ -1315,14 +1316,14 @@ export class AssistantSession {
     toolName: string,
     regions: readonly AffectedRegion[],
     uncovered: readonly AffectedRegion[]
-  ): LintIssue[] {
-    if (uncovered.length === 0) return [];
+  ): SpecGatePass {
+    if (uncovered.length === 0) return { warnings: [] };
     const target = this.activeSpec?.mapId === mapId
       ? this.activeSpec
       : this.turnImplicitSpec?.mapId === mapId
       ? this.turnImplicitSpec
       : null;
-    if (target === null) return [];
+    if (target === null) return { warnings: [] };
 
     const additions = regions
       .filter((region) => region.w > 0 && region.h > 0 && uncovered.some((cell) => regionContains(region, cell.x, cell.y)))
@@ -1335,24 +1336,28 @@ export class AssistantSession {
         h: region.h,
         note: "스펙 게이트 자동 확장",
       }));
-    if (additions.length === 0) return [];
+    if (additions.length === 0) return { warnings: [] };
 
     const expanded = { ...target, assets: [...target.assets, ...additions] };
-    if (target === this.activeSpec) {
-      this.activeSpec = expanded;
-      this.activeSpecTurnIndex = this.currentTurnIndex;
-    } else {
-      // 선택 영역 암묵 스펙은 이 턴의 것이다 — activeSpec 으로 승격하면 다음 턴부터 그 맵의 게이트가
-      // 밑그림 없이 열린다(2026-09-03 적대적 리뷰 P3). 확장도 그 턴 안에서만 유효하다.
-      this.turnImplicitSpec = expanded;
-    }
     const listed = additions.slice(0, 3).map((asset) => `(${asset.x},${asset.y}) ${asset.w}×${asset.h}`).join(", ");
     const extra = additions.length > 3 ? ` 외 ${additions.length - 3}개` : "";
-    return [{
-      severity: "warning",
-      code: "spec-gate-auto-expand",
-      message: `명세를 자동 확장했습니다: ${toolName} ${listed}${extra}.`,
-    }];
+    return {
+      warnings: [{
+        severity: "warning",
+        code: "spec-gate-auto-expand",
+        message: `명세를 자동 확장했습니다: ${toolName} ${listed}${extra}.`,
+      }],
+      // The gate only prepares expansion; failed or throwing writes must leave no spec debt.
+      commitExpansion: () => {
+        if (target === this.activeSpec) {
+          this.activeSpec = expanded;
+          this.activeSpecTurnIndex = this.currentTurnIndex;
+        } else {
+          // 선택 영역 암묵 스펙은 이 턴의 것이다 — activeSpec 으로 승격하지 않는다.
+          this.turnImplicitSpec = expanded;
+        }
+      },
+    };
   }
 
   exportAudit(): string {
@@ -2288,7 +2293,7 @@ export class AssistantSession {
     return (item) => {
       const verdict = outcome(item);
       if (!verdict.ok) return verdict;
-      const calls = this.finalizeProposals(this.turnProposals);
+      const calls = this.turnWriteLedger(this.finalizeProposals(this.turnProposals));
       if (calls.length === 0) return { ok: true };
       const warnings = proposalCompletenessWarnings({
         requestText: this.currentTurnInstruction,
@@ -3670,9 +3675,13 @@ export class AssistantSession {
               const gate = tool?.mode === "write" && (SPATIAL_BUILD_TOOLS.has(name) || TILE_WRITE_TOOLS.has(name))
                 ? this.specGate(name, args)
                 : { warnings: [] };
-              toolResult = isSpecGatePass(gate)
-                ? withSpecGateWarnings(runTool(this.ctx, name, args, { dryRun: false }), gate.warnings)
-                : gate;
+              if (isSpecGatePass(gate)) {
+                toolResult = runTool(this.ctx, name, args, { dryRun: false });
+                if (toolResult.ok) gate.commitExpansion?.();
+                toolResult = withSpecGateWarnings(toolResult, gate.warnings);
+              } else {
+                toolResult = gate;
+              }
               if (dedupeKey && toolResult.ok) this.turnWriteDedupe.set(dedupeKey, toolResult);
             }
           }
