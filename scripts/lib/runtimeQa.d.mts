@@ -4,6 +4,9 @@
 export type RuntimeQaDir = "up" | "down" | "left" | "right";
 
 export type RuntimeQaOp =
+  | { readonly kind: "cinematic"; readonly action: "key"; readonly key: string; readonly selector: string; readonly absent?: boolean }
+  | { readonly kind: "cinematic"; readonly action: "input"; readonly beforeMap?: boolean }
+  | { readonly kind: "cinematic"; readonly action: "reduced-motion" | "video-error" | "video-end" | "detach" | "reject-autoplay" | "geometry" }
   | { readonly kind: "seed"; readonly seed: number }
   | {
       readonly kind: "setVitals";

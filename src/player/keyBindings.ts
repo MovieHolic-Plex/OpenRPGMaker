@@ -38,6 +38,11 @@ export function isConfirmKey(key: string): boolean {
   return CONFIRM_KEYS.has(normalizeKey(key));
 }
 
+/** Cinematic advance deliberately excludes the legacy field-interaction E alias. */
+export function isCinematicAdvanceKey(key: string): boolean {
+  return ["z", "enter", " "].includes(normalizeKey(key));
+}
+
 export function isCancelKey(key: string): boolean {
   return CANCEL_KEYS.has(normalizeKey(key));
 }

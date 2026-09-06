@@ -12,6 +12,8 @@ const REQUIRED_RUNTIME_SELECTORS = [
   ".play-stage",
   ".rm-title-menu",
   ".play-loading-overlay",
+  ".cinematic-sequence",
+  ".cinematic-terminal",
   ".dialogue-overlay",
   // 대화창 연출. 에디터 테스트플레이는 에디터 CSS 가 함께 로드돼 정상으로 보이므로
   // 익스포트 플레이어에 규칙이 실렸는지는 이 빌드 검사만 판정할 수 있다.

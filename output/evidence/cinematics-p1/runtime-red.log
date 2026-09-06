@@ -1,0 +1,1486 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/cinematicSequence.test.ts test/playerCinematics.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-wish-cinematics-p1
+
+ ❯ test/cinematicSequence.test.ts (1 test | 1 failed) 7ms
+   × exposes shared cancellable playback for runtime and preview 6ms
+     → Cannot convert undefined or null to object
+ ❯ test/playerCinematics.test.ts (6 tests | 3 failed) 987ms
+   × opening at the real player shell seam > defers New Game boot until opening completes without input fallthrough 199ms
+     → expected "spy" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st spy call:
+
+    Array [
+      <div
+        class="phaser-container"
+        data-testid="play-canvas"
+        style="width: 320px; height: 240px;"
+      />,
+      Object {
+        "actorCharacterResourceIds": Object {},
+        "actorEquipment": Object {
+          "actor_cleric": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "shield": "equip_oak_shield",
+            "weapon": "equip_mage_staff",
+          },
+          "actor_guardian": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "shield": "equip_oak_shield",
+            "weapon": "equip_sword",
+          },
+          "actor_hero": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "shield": "equip_oak_shield",
+            "weapon": "equip_sword",
+          },
+          "actor_mage": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "weapon": "equip_mage_staff",
+          },
+          "actor_ranger": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "weapon": "equip_scout_dagger",
+          },
+          "actor_scout": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "weapon": "equip_scout_dagger",
+          },
+        },
+        "actorExperience": Object {
+          "actor_hero": 0,
+        },
+        "actorLevels": Object {
+          "actor_cleric": 1,
+          "actor_guardian": 1,
+          "actor_hero": 1,
+          "actor_mage": 1,
+          "actor_ranger": 1,
+          "actor_scout": 1,
+        },
+        "actorNames": Object {},
+        "actorParamBonuses": Object {},
+        "actorRows": Object {
+          "actor_hero": "front",
+        },
+        "actorSkillIds": Object {},
+        "actorSkillPp": Object {},
+        "actorStateIds": Object {},
+        "actorVitals": Object {
+          "actor_hero": Object {
+            "hp": 514,
+            "maxHp": 514,
+            "maxMp": 43,
+            "mp": 43,
+          },
+        },
+        "audio": Object {},
+        "bundleContributions": Object {},
+        "bundleRewardAppliedIds": Array [],
+        "camera": Object {
+          "mode": "follow",
+          "target": Object {
+            "kind": "player",
+          },
+        },
+        "classOverrides": Object {},
+        "collections": undefined,
+        "completedBundleIds": Array [],
+        "currentMapId": "map_blank_start",
+        "dailyGifts": Object {},
+        "dailyTalks": Object {},
+        "dailyWeather": undefined,
+        "energy": undefined,
+        "erasedEventIds": Array [],
+        "eventLocations": Object {},
+        "factionStanceOverrides": Object {},
+        "farmAnimals": undefined,
+        "farmBuildingPlacements": undefined,
+        "farmPlots": Object {},
+        "farmPlotsAdvancedThrough": undefined,
+        "flags": Object {},
+        "followerTrail": Array [],
+        "followers": Array [],
+        "friendship": Object {},
+        "gameTime": undefined,
+        "gold": 0,
+        "homeDecorationPlacements": undefined,
+        "inventory": Object {},
+        "itemUseCharges": Object {},
+        "lifeSkills": Object {},
+        "lighting": Object {
+          "ambient": 0,
+          "sources": Array [],
+        },
+        "makerInstances": Object {},
+        "mapOverrides": Object {},
+        "messageWindowSettings": Object {
+          "allowEventMovementDuringWait": false,
+          "format": "normal",
+          "position": "bottom",
+          "preventObscuringPlayer": true,
+        },
+        "monsterBox": Array [],
+        "monsterInstances": Object {},
+        "monsterParty": Array [],
+        "museumRewardAppliedIds": undefined,
+        "npcActivities": Object {},
+        "npcScheduleStates": Object {},
+        "npcTravelStates": Object {},
+        "partyActorIds": Array [
+          "actor_hero",
+        ],
+        "pictures": Object {},
+        "placeables": Object {},
+        "playTimeSeconds": 0,
+        "relationships": Object {},
+        "removedEventIds": Object {},
+        "rng": Object {
+          "seed": 3718153838,
+          "streams": Object {
+            "battle": Object {
+              "seed": 882447212,
+              "state": 882447212,
+            },
+            "encounter": Object {
+              "seed": 264784819,
+              "state": 264784819,
+            },
+            "fishing": Object {
+              "seed": 1269905320,
+              "state": 1269905320,
+            },
+            "misc": Object {
+              "seed": 1894012518,
+              "state": 1894012518,
+            },
+            "movement": Object {
+              "seed": 646209655,
+              "state": 646209655,
+            },
+          },
+        },
+        "selfSwitches": Object {},
+        "shippingHistory": Array [],
+        "shippingQueue": Object {},
+        "spawnedEvents": Object {},
+        "switches": Object {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false,
+        },
+        "timers": Object {},
+        "unlockedRecipeIds": Array [],
+        "unlockedRegionIds": Array [],
+        "variables": Object {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0,
+        },
+        "x": 10,
+        "y": 8,
+      },
+      Object {
+        "initialEventTestId": "",
+        "keyboardOnly": true,
+        "onPlayLoadProgress": [Function onPlayLoadProgress],
+        "onPlayLoadStage": [Function onPlayLoadStage],
+        "onPlaySceneReady": [Function onPlaySceneReady],
+        "qaInstrumentation": undefined,
+        "trackGlobalGame": false,
+      },
+    ]
+
+
+Number of calls: 1
+
+   × opening at the real player shell seam > runs autoStart and fresh restart but cancels stale openings on title return 144ms
+     → expected "spy" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st spy call:
+
+    Array [
+      <div
+        class="phaser-container"
+        data-testid="play-canvas"
+        style="width: 320px; height: 240px;"
+      />,
+      Object {
+        "actorCharacterResourceIds": Object {},
+        "actorEquipment": Object {
+          "actor_cleric": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "shield": "equip_oak_shield",
+            "weapon": "equip_mage_staff",
+          },
+          "actor_guardian": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "shield": "equip_oak_shield",
+            "weapon": "equip_sword",
+          },
+          "actor_hero": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "shield": "equip_oak_shield",
+            "weapon": "equip_sword",
+          },
+          "actor_mage": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "weapon": "equip_mage_staff",
+          },
+          "actor_ranger": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "weapon": "equip_scout_dagger",
+          },
+          "actor_scout": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "weapon": "equip_scout_dagger",
+          },
+        },
+        "actorExperience": Object {
+          "actor_hero": 0,
+        },
+        "actorLevels": Object {
+          "actor_cleric": 1,
+          "actor_guardian": 1,
+          "actor_hero": 1,
+          "actor_mage": 1,
+          "actor_ranger": 1,
+          "actor_scout": 1,
+        },
+        "actorNames": Object {},
+        "actorParamBonuses": Object {},
+        "actorRows": Object {
+          "actor_hero": "front",
+        },
+        "actorSkillIds": Object {},
+        "actorSkillPp": Object {},
+        "actorStateIds": Object {},
+        "actorVitals": Object {
+          "actor_hero": Object {
+            "hp": 514,
+            "maxHp": 514,
+            "maxMp": 43,
+            "mp": 43,
+          },
+        },
+        "audio": Object {},
+        "bundleContributions": Object {},
+        "bundleRewardAppliedIds": Array [],
+        "camera": Object {
+          "mode": "follow",
+          "target": Object {
+            "kind": "player",
+          },
+        },
+        "classOverrides": Object {},
+        "collections": undefined,
+        "completedBundleIds": Array [],
+        "currentMapId": "map_blank_start",
+        "dailyGifts": Object {},
+        "dailyTalks": Object {},
+        "dailyWeather": undefined,
+        "energy": undefined,
+        "erasedEventIds": Array [],
+        "eventLocations": Object {},
+        "factionStanceOverrides": Object {},
+        "farmAnimals": undefined,
+        "farmBuildingPlacements": undefined,
+        "farmPlots": Object {},
+        "farmPlotsAdvancedThrough": undefined,
+        "flags": Object {},
+        "followerTrail": Array [],
+        "followers": Array [],
+        "friendship": Object {},
+        "gameTime": undefined,
+        "gold": 0,
+        "homeDecorationPlacements": undefined,
+        "inventory": Object {},
+        "itemUseCharges": Object {},
+        "lifeSkills": Object {},
+        "lighting": Object {
+          "ambient": 0,
+          "sources": Array [],
+        },
+        "makerInstances": Object {},
+        "mapOverrides": Object {},
+        "messageWindowSettings": Object {
+          "allowEventMovementDuringWait": false,
+          "format": "normal",
+          "position": "bottom",
+          "preventObscuringPlayer": true,
+        },
+        "monsterBox": Array [],
+        "monsterInstances": Object {},
+        "monsterParty": Array [],
+        "museumRewardAppliedIds": undefined,
+        "npcActivities": Object {},
+        "npcScheduleStates": Object {},
+        "npcTravelStates": Object {},
+        "partyActorIds": Array [
+          "actor_hero",
+        ],
+        "pictures": Object {},
+        "placeables": Object {},
+        "playTimeSeconds": 0,
+        "relationships": Object {},
+        "removedEventIds": Object {},
+        "rng": Object {
+          "seed": 1598574328,
+          "streams": Object {
+            "battle": Object {
+              "seed": 2590876287,
+              "state": 2590876287,
+            },
+            "encounter": Object {
+              "seed": 280899826,
+              "state": 280899826,
+            },
+            "fishing": Object {
+              "seed": 1296934365,
+              "state": 1296934365,
+            },
+            "misc": Object {
+              "seed": 2448010817,
+              "state": 2448010817,
+            },
+            "movement": Object {
+              "seed": 1443727024,
+              "state": 1443727024,
+            },
+          },
+        },
+        "selfSwitches": Object {},
+        "shippingHistory": Array [],
+        "shippingQueue": Object {},
+        "spawnedEvents": Object {},
+        "switches": Object {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false,
+        },
+        "timers": Object {},
+        "unlockedRecipeIds": Array [],
+        "unlockedRegionIds": Array [],
+        "variables": Object {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0,
+        },
+        "x": 10,
+        "y": 8,
+      },
+      Object {
+        "initialEventTestId": "",
+        "keyboardOnly": true,
+        "onPlayLoadProgress": [Function onPlayLoadProgress],
+        "onPlayLoadStage": [Function onPlayLoadStage],
+        "onPlaySceneReady": [Function onPlaySceneReady],
+        "qaInstrumentation": undefined,
+        "trackGlobalGame": false,
+      },
+    ]
+
+
+Number of calls: 1
+
+   ✓ opening at the real player shell seam > bypasses opening for loaded 171ms
+   ✓ opening at the real player shell seam > bypasses opening for test-here 181ms
+   ✓ opening at the real player shell seam > bypasses opening for selected-event 172ms
+   × opening at the real player shell seam > never boots after teardown during opening or pending title confirmation 117ms
+     → expected "spy" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st spy call:
+
+    Array [
+      <div
+        class="phaser-container"
+        data-testid="play-canvas"
+        style="width: 320px; height: 240px;"
+      />,
+      Object {
+        "actorCharacterResourceIds": Object {},
+        "actorEquipment": Object {
+          "actor_cleric": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "shield": "equip_oak_shield",
+            "weapon": "equip_mage_staff",
+          },
+          "actor_guardian": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "shield": "equip_oak_shield",
+            "weapon": "equip_sword",
+          },
+          "actor_hero": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "shield": "equip_oak_shield",
+            "weapon": "equip_sword",
+          },
+          "actor_mage": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "weapon": "equip_mage_staff",
+          },
+          "actor_ranger": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "weapon": "equip_scout_dagger",
+          },
+          "actor_scout": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "weapon": "equip_scout_dagger",
+          },
+        },
+        "actorExperience": Object {
+          "actor_hero": 0,
+        },
+        "actorLevels": Object {
+          "actor_cleric": 1,
+          "actor_guardian": 1,
+          "actor_hero": 1,
+          "actor_mage": 1,
+          "actor_ranger": 1,
+          "actor_scout": 1,
+        },
+        "actorNames": Object {},
+        "actorParamBonuses": Object {},
+        "actorRows": Object {
+          "actor_hero": "front",
+        },
+        "actorSkillIds": Object {},
+        "actorSkillPp": Object {},
+        "actorStateIds": Object {},
+        "actorVitals": Object {
+          "actor_hero": Object {
+            "hp": 514,
+            "maxHp": 514,
+            "maxMp": 43,
+            "mp": 43,
+          },
+        },
+        "audio": Object {},
+        "bundleContributions": Object {},
+        "bundleRewardAppliedIds": Array [],
+        "camera": Object {
+          "mode": "follow",
+          "target": Object {
+            "kind": "player",
+          },
+        },
+        "classOverrides": Object {},
+        "collections": undefined,
+        "completedBundleIds": Array [],
+        "currentMapId": "map_blank_start",
+        "dailyGifts": Object {},
+        "dailyTalks": Object {},
+        "dailyWeather": undefined,
+        "energy": undefined,
+        "erasedEventIds": Array [],
+        "eventLocations": Object {},
+        "factionStanceOverrides": Object {},
+        "farmAnimals": undefined,
+        "farmBuildingPlacements": undefined,
+        "farmPlots": Object {},
+        "farmPlotsAdvancedThrough": undefined,
+        "flags": Object {},
+        "followerTrail": Array [],
+        "followers": Array [],
+        "friendship": Object {},
+        "gameTime": undefined,
+        "gold": 0,
+        "homeDecorationPlacements": undefined,
+        "inventory": Object {},
+        "itemUseCharges": Object {},
+        "lifeSkills": Object {},
+        "lighting": Object {
+          "ambient": 0,
+          "sources": Array [],
+        },
+        "makerInstances": Object {},
+        "mapOverrides": Object {},
+        "messageWindowSettings": Object {
+          "allowEventMovementDuringWait": false,
+          "format": "normal",
+          "position": "bottom",
+          "preventObscuringPlayer": true,
+        },
+        "monsterBox": Array [],
+        "monsterInstances": Object {},
+        "monsterParty": Array [],
+        "museumRewardAppliedIds": undefined,
+        "npcActivities": Object {},
+        "npcScheduleStates": Object {},
+        "npcTravelStates": Object {},
+        "partyActorIds": Array [
+          "actor_hero",
+        ],
+        "pictures": Object {},
+        "placeables": Object {},
+        "playTimeSeconds": 0,
+        "relationships": Object {},
+        "removedEventIds": Object {},
+        "rng": Object {
+          "seed": 1515914831,
+          "streams": Object {
+            "battle": Object {
+              "seed": 3638782973,
+              "state": 3638782973,
+            },
+            "encounter": Object {
+              "seed": 3107066868,
+              "state": 3107066868,
+            },
+            "fishing": Object {
+              "seed": 2424888283,
+              "state": 2424888283,
+            },
+            "misc": Object {
+              "seed": 2587762603,
+              "state": 2587762603,
+            },
+            "movement": Object {
+              "seed": 162004966,
+              "state": 162004966,
+            },
+          },
+        },
+        "selfSwitches": Object {},
+        "shippingHistory": Array [],
+        "shippingQueue": Object {},
+        "spawnedEvents": Object {},
+        "switches": Object {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false,
+        },
+        "timers": Object {},
+        "unlockedRecipeIds": Array [],
+        "unlockedRegionIds": Array [],
+        "variables": Object {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0,
+        },
+        "x": 10,
+        "y": 8,
+      },
+      Object {
+        "initialEventTestId": "",
+        "keyboardOnly": true,
+        "onPlayLoadProgress": [Function onPlayLoadProgress],
+        "onPlayLoadStage": [Function onPlayLoadStage],
+        "onPlaySceneReady": [Function onPlaySceneReady],
+        "qaInstrumentation": undefined,
+        "trackGlobalGame": false,
+      },
+    ]
+
+
+Number of calls: 1
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/cinematicSequence.test.ts > exposes shared cancellable playback for runtime and preview
+TypeError: Cannot convert undefined or null to object
+ ❯ test/cinematicSequence.test.ts:5:57
+      3| it("exposes shared cancellable playback for runtime and preview", () =…
+      4|   const modules = import.meta.glob("../src/player/cinematicSequence.ts…
+      5|   expect(modules["../src/player/cinematicSequence.ts"]).toHaveProperty…
+       |                                                         ^
+      6| });
+      7|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  test/playerCinematics.test.ts > opening at the real player shell seam > defers New Game boot until opening completes without input fallthrough
+AssertionError: expected "spy" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st spy call:
+
+    Array [
+      <div
+        class="phaser-container"
+        data-testid="play-canvas"
+        style="width: 320px; height: 240px;"
+      />,
+      Object {
+        "actorCharacterResourceIds": Object {},
+        "actorEquipment": Object {
+          "actor_cleric": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "shield": "equip_oak_shield",
+            "weapon": "equip_mage_staff",
+          },
+          "actor_guardian": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "shield": "equip_oak_shield",
+            "weapon": "equip_sword",
+          },
+          "actor_hero": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "shield": "equip_oak_shield",
+            "weapon": "equip_sword",
+          },
+          "actor_mage": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "weapon": "equip_mage_staff",
+          },
+          "actor_ranger": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "weapon": "equip_scout_dagger",
+          },
+          "actor_scout": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "weapon": "equip_scout_dagger",
+          },
+        },
+        "actorExperience": Object {
+          "actor_hero": 0,
+        },
+        "actorLevels": Object {
+          "actor_cleric": 1,
+          "actor_guardian": 1,
+          "actor_hero": 1,
+          "actor_mage": 1,
+          "actor_ranger": 1,
+          "actor_scout": 1,
+        },
+        "actorNames": Object {},
+        "actorParamBonuses": Object {},
+        "actorRows": Object {
+          "actor_hero": "front",
+        },
+        "actorSkillIds": Object {},
+        "actorSkillPp": Object {},
+        "actorStateIds": Object {},
+        "actorVitals": Object {
+          "actor_hero": Object {
+            "hp": 514,
+            "maxHp": 514,
+            "maxMp": 43,
+            "mp": 43,
+          },
+        },
+        "audio": Object {},
+        "bundleContributions": Object {},
+        "bundleRewardAppliedIds": Array [],
+        "camera": Object {
+          "mode": "follow",
+          "target": Object {
+            "kind": "player",
+          },
+        },
+        "classOverrides": Object {},
+        "collections": undefined,
+        "completedBundleIds": Array [],
+        "currentMapId": "map_blank_start",
+        "dailyGifts": Object {},
+        "dailyTalks": Object {},
+        "dailyWeather": undefined,
+        "energy": undefined,
+        "erasedEventIds": Array [],
+        "eventLocations": Object {},
+        "factionStanceOverrides": Object {},
+        "farmAnimals": undefined,
+        "farmBuildingPlacements": undefined,
+        "farmPlots": Object {},
+        "farmPlotsAdvancedThrough": undefined,
+        "flags": Object {},
+        "followerTrail": Array [],
+        "followers": Array [],
+        "friendship": Object {},
+        "gameTime": undefined,
+        "gold": 0,
+        "homeDecorationPlacements": undefined,
+        "inventory": Object {},
+        "itemUseCharges": Object {},
+        "lifeSkills": Object {},
+        "lighting": Object {
+          "ambient": 0,
+          "sources": Array [],
+        },
+        "makerInstances": Object {},
+        "mapOverrides": Object {},
+        "messageWindowSettings": Object {
+          "allowEventMovementDuringWait": false,
+          "format": "normal",
+          "position": "bottom",
+          "preventObscuringPlayer": true,
+        },
+        "monsterBox": Array [],
+        "monsterInstances": Object {},
+        "monsterParty": Array [],
+        "museumRewardAppliedIds": undefined,
+        "npcActivities": Object {},
+        "npcScheduleStates": Object {},
+        "npcTravelStates": Object {},
+        "partyActorIds": Array [
+          "actor_hero",
+        ],
+        "pictures": Object {},
+        "placeables": Object {},
+        "playTimeSeconds": 0,
+        "relationships": Object {},
+        "removedEventIds": Object {},
+        "rng": Object {
+          "seed": 3718153838,
+          "streams": Object {
+            "battle": Object {
+              "seed": 882447212,
+              "state": 882447212,
+            },
+            "encounter": Object {
+              "seed": 264784819,
+              "state": 264784819,
+            },
+            "fishing": Object {
+              "seed": 1269905320,
+              "state": 1269905320,
+            },
+            "misc": Object {
+              "seed": 1894012518,
+              "state": 1894012518,
+            },
+            "movement": Object {
+              "seed": 646209655,
+              "state": 646209655,
+            },
+          },
+        },
+        "selfSwitches": Object {},
+        "shippingHistory": Array [],
+        "shippingQueue": Object {},
+        "spawnedEvents": Object {},
+        "switches": Object {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false,
+        },
+        "timers": Object {},
+        "unlockedRecipeIds": Array [],
+        "unlockedRegionIds": Array [],
+        "variables": Object {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0,
+        },
+        "x": 10,
+        "y": 8,
+      },
+      Object {
+        "initialEventTestId": "",
+        "keyboardOnly": true,
+        "onPlayLoadProgress": [Function onPlayLoadProgress],
+        "onPlayLoadStage": [Function onPlayLoadStage],
+        "onPlaySceneReady": [Function onPlaySceneReady],
+        "qaInstrumentation": undefined,
+        "trackGlobalGame": false,
+      },
+    ]
+
+
+Number of calls: 1
+
+ ❯ test/playerCinematics.test.ts:45:36
+     43|     key("Enter");
+     44|     await vi.advanceTimersByTimeAsync(180);
+     45|     expect(mode.startPlayGame).not.toHaveBeenCalled();
+       |                                    ^
+     46|     expect(main.querySelector('[data-testid="cinematic-sequence"]')).n…
+     47|     expect(key("Enter", true).defaultPrevented).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  test/playerCinematics.test.ts > opening at the real player shell seam > runs autoStart and fresh restart but cancels stale openings on title return
+AssertionError: expected "spy" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st spy call:
+
+    Array [
+      <div
+        class="phaser-container"
+        data-testid="play-canvas"
+        style="width: 320px; height: 240px;"
+      />,
+      Object {
+        "actorCharacterResourceIds": Object {},
+        "actorEquipment": Object {
+          "actor_cleric": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "shield": "equip_oak_shield",
+            "weapon": "equip_mage_staff",
+          },
+          "actor_guardian": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "shield": "equip_oak_shield",
+            "weapon": "equip_sword",
+          },
+          "actor_hero": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "shield": "equip_oak_shield",
+            "weapon": "equip_sword",
+          },
+          "actor_mage": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "weapon": "equip_mage_staff",
+          },
+          "actor_ranger": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "weapon": "equip_scout_dagger",
+          },
+          "actor_scout": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "weapon": "equip_scout_dagger",
+          },
+        },
+        "actorExperience": Object {
+          "actor_hero": 0,
+        },
+        "actorLevels": Object {
+          "actor_cleric": 1,
+          "actor_guardian": 1,
+          "actor_hero": 1,
+          "actor_mage": 1,
+          "actor_ranger": 1,
+          "actor_scout": 1,
+        },
+        "actorNames": Object {},
+        "actorParamBonuses": Object {},
+        "actorRows": Object {
+          "actor_hero": "front",
+        },
+        "actorSkillIds": Object {},
+        "actorSkillPp": Object {},
+        "actorStateIds": Object {},
+        "actorVitals": Object {
+          "actor_hero": Object {
+            "hp": 514,
+            "maxHp": 514,
+            "maxMp": 43,
+            "mp": 43,
+          },
+        },
+        "audio": Object {},
+        "bundleContributions": Object {},
+        "bundleRewardAppliedIds": Array [],
+        "camera": Object {
+          "mode": "follow",
+          "target": Object {
+            "kind": "player",
+          },
+        },
+        "classOverrides": Object {},
+        "collections": undefined,
+        "completedBundleIds": Array [],
+        "currentMapId": "map_blank_start",
+        "dailyGifts": Object {},
+        "dailyTalks": Object {},
+        "dailyWeather": undefined,
+        "energy": undefined,
+        "erasedEventIds": Array [],
+        "eventLocations": Object {},
+        "factionStanceOverrides": Object {},
+        "farmAnimals": undefined,
+        "farmBuildingPlacements": undefined,
+        "farmPlots": Object {},
+        "farmPlotsAdvancedThrough": undefined,
+        "flags": Object {},
+        "followerTrail": Array [],
+        "followers": Array [],
+        "friendship": Object {},
+        "gameTime": undefined,
+        "gold": 0,
+        "homeDecorationPlacements": undefined,
+        "inventory": Object {},
+        "itemUseCharges": Object {},
+        "lifeSkills": Object {},
+        "lighting": Object {
+          "ambient": 0,
+          "sources": Array [],
+        },
+        "makerInstances": Object {},
+        "mapOverrides": Object {},
+        "messageWindowSettings": Object {
+          "allowEventMovementDuringWait": false,
+          "format": "normal",
+          "position": "bottom",
+          "preventObscuringPlayer": true,
+        },
+        "monsterBox": Array [],
+        "monsterInstances": Object {},
+        "monsterParty": Array [],
+        "museumRewardAppliedIds": undefined,
+        "npcActivities": Object {},
+        "npcScheduleStates": Object {},
+        "npcTravelStates": Object {},
+        "partyActorIds": Array [
+          "actor_hero",
+        ],
+        "pictures": Object {},
+        "placeables": Object {},
+        "playTimeSeconds": 0,
+        "relationships": Object {},
+        "removedEventIds": Object {},
+        "rng": Object {
+          "seed": 1598574328,
+          "streams": Object {
+            "battle": Object {
+              "seed": 2590876287,
+              "state": 2590876287,
+            },
+            "encounter": Object {
+              "seed": 280899826,
+              "state": 280899826,
+            },
+            "fishing": Object {
+              "seed": 1296934365,
+              "state": 1296934365,
+            },
+            "misc": Object {
+              "seed": 2448010817,
+              "state": 2448010817,
+            },
+            "movement": Object {
+              "seed": 1443727024,
+              "state": 1443727024,
+            },
+          },
+        },
+        "selfSwitches": Object {},
+        "shippingHistory": Array [],
+        "shippingQueue": Object {},
+        "spawnedEvents": Object {},
+        "switches": Object {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false,
+        },
+        "timers": Object {},
+        "unlockedRecipeIds": Array [],
+        "unlockedRegionIds": Array [],
+        "variables": Object {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0,
+        },
+        "x": 10,
+        "y": 8,
+      },
+      Object {
+        "initialEventTestId": "",
+        "keyboardOnly": true,
+        "onPlayLoadProgress": [Function onPlayLoadProgress],
+        "onPlayLoadStage": [Function onPlayLoadStage],
+        "onPlaySceneReady": [Function onPlaySceneReady],
+        "qaInstrumentation": undefined,
+        "trackGlobalGame": false,
+      },
+    ]
+
+
+Number of calls: 1
+
+ ❯ test/playerCinematics.test.ts:60:36
+     58|   it("runs autoStart and fresh restart but cancels stale openings on t…
+     59|     renderPlayer(main, { autoStartRun: true, trackGlobalGame: false, o…
+     60|     expect(mode.startPlayGame).not.toHaveBeenCalled();
+       |                                    ^
+     61|     controls.restartRun();
+     62|     expect(main.querySelectorAll('[data-testid="cinematic-sequence"]')…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  test/playerCinematics.test.ts > opening at the real player shell seam > never boots after teardown during opening or pending title confirmation
+AssertionError: expected "spy" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st spy call:
+
+    Array [
+      <div
+        class="phaser-container"
+        data-testid="play-canvas"
+        style="width: 320px; height: 240px;"
+      />,
+      Object {
+        "actorCharacterResourceIds": Object {},
+        "actorEquipment": Object {
+          "actor_cleric": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "shield": "equip_oak_shield",
+            "weapon": "equip_mage_staff",
+          },
+          "actor_guardian": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "shield": "equip_oak_shield",
+            "weapon": "equip_sword",
+          },
+          "actor_hero": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "shield": "equip_oak_shield",
+            "weapon": "equip_sword",
+          },
+          "actor_mage": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "weapon": "equip_mage_staff",
+          },
+          "actor_ranger": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "weapon": "equip_scout_dagger",
+          },
+          "actor_scout": Object {
+            "accessory": "equip_focus_charm",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "weapon": "equip_scout_dagger",
+          },
+        },
+        "actorExperience": Object {
+          "actor_hero": 0,
+        },
+        "actorLevels": Object {
+          "actor_cleric": 1,
+          "actor_guardian": 1,
+          "actor_hero": 1,
+          "actor_mage": 1,
+          "actor_ranger": 1,
+          "actor_scout": 1,
+        },
+        "actorNames": Object {},
+        "actorParamBonuses": Object {},
+        "actorRows": Object {
+          "actor_hero": "front",
+        },
+        "actorSkillIds": Object {},
+        "actorSkillPp": Object {},
+        "actorStateIds": Object {},
+        "actorVitals": Object {
+          "actor_hero": Object {
+            "hp": 514,
+            "maxHp": 514,
+            "maxMp": 43,
+            "mp": 43,
+          },
+        },
+        "audio": Object {},
+        "bundleContributions": Object {},
+        "bundleRewardAppliedIds": Array [],
+        "camera": Object {
+          "mode": "follow",
+          "target": Object {
+            "kind": "player",
+          },
+        },
+        "classOverrides": Object {},
+        "collections": undefined,
+        "completedBundleIds": Array [],
+        "currentMapId": "map_blank_start",
+        "dailyGifts": Object {},
+        "dailyTalks": Object {},
+        "dailyWeather": undefined,
+        "energy": undefined,
+        "erasedEventIds": Array [],
+        "eventLocations": Object {},
+        "factionStanceOverrides": Object {},
+        "farmAnimals": undefined,
+        "farmBuildingPlacements": undefined,
+        "farmPlots": Object {},
+        "farmPlotsAdvancedThrough": undefined,
+        "flags": Object {},
+        "followerTrail": Array [],
+        "followers": Array [],
+        "friendship": Object {},
+        "gameTime": undefined,
+        "gold": 0,
+        "homeDecorationPlacements": undefined,
+        "inventory": Object {},
+        "itemUseCharges": Object {},
+        "lifeSkills": Object {},
+        "lighting": Object {
+          "ambient": 0,
+          "sources": Array [],
+        },
+        "makerInstances": Object {},
+        "mapOverrides": Object {},
+        "messageWindowSettings": Object {
+          "allowEventMovementDuringWait": false,
+          "format": "normal",
+          "position": "bottom",
+          "preventObscuringPlayer": true,
+        },
+        "monsterBox": Array [],
+        "monsterInstances": Object {},
+        "monsterParty": Array [],
+        "museumRewardAppliedIds": undefined,
+        "npcActivities": Object {},
+        "npcScheduleStates": Object {},
+        "npcTravelStates": Object {},
+        "partyActorIds": Array [
+          "actor_hero",
+        ],
+        "pictures": Object {},
+        "placeables": Object {},
+        "playTimeSeconds": 0,
+        "relationships": Object {},
+        "removedEventIds": Object {},
+        "rng": Object {
+          "seed": 1515914831,
+          "streams": Object {
+            "battle": Object {
+              "seed": 3638782973,
+              "state": 3638782973,
+            },
+            "encounter": Object {
+              "seed": 3107066868,
+              "state": 3107066868,
+            },
+            "fishing": Object {
+              "seed": 2424888283,
+              "state": 2424888283,
+            },
+            "misc": Object {
+              "seed": 2587762603,
+              "state": 2587762603,
+            },
+            "movement": Object {
+              "seed": 162004966,
+              "state": 162004966,
+            },
+          },
+        },
+        "selfSwitches": Object {},
+        "shippingHistory": Array [],
+        "shippingQueue": Object {},
+        "spawnedEvents": Object {},
+        "switches": Object {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false,
+        },
+        "timers": Object {},
+        "unlockedRecipeIds": Array [],
+        "unlockedRegionIds": Array [],
+        "variables": Object {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0,
+        },
+        "x": 10,
+        "y": 8,
+      },
+      Object {
+        "initialEventTestId": "",
+        "keyboardOnly": true,
+        "onPlayLoadProgress": [Function onPlayLoadProgress],
+        "onPlayLoadStage": [Function onPlayLoadStage],
+        "onPlaySceneReady": [Function onPlaySceneReady],
+        "qaInstrumentation": undefined,
+        "trackGlobalGame": false,
+      },
+    ]
+
+
+Number of calls: 1
+
+ ❯ test/playerCinematics.test.ts:82:36
+     80|     teardownPlayer();
+     81|     await Promise.resolve();
+     82|     expect(mode.startPlayGame).not.toHaveBeenCalled();
+       |                                    ^
+     83|     renderPlayer(main, { trackGlobalGame: false });
+     84|     key("Enter");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  4 failed | 3 passed (7)
+   Start at  14:52:44
+   Duration  7.26s (transform 3.84s, setup 0ms, collect 5.47s, tests 994ms, environment 478ms, prepare 326ms)

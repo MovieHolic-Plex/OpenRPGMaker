@@ -1,0 +1,18 @@
+
+> rpg-zzu@0.1.0 qa:runtime
+> node scripts/runtime-qa.mjs --scenario cinematic-sequences
+
+[rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] QWENCLOUD_API_KEY 가 없어 /api/qwen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] CPENROUTER_API_KEY 가 없어 /api/cpen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+Cinematic input: {"escaped":0,"consumed":[true,true,true,true,true,true,true],"pointerBlocked":true,"unchanged":true,"editor":false,"canvas":false}
+Cinematic geometry: {"images":[],"nodes":[{"className":"cinematic-narration","x":277.4375,"y":276.75,"width":469.125,"height":126,"inside":true},{"className":"cinematic-hint","x":300.828125,"y":426.75,"width":422.34375,"height":64.5,"inside":true}]}
+Cinematic geometry: {"images":[{"width":320,"height":240}],"nodes":[{"className":"cinematic-narration","x":218.5625,"y":496.5,"width":586.828125,"height":111,"inside":true},{"className":"cinematic-hint","x":300.828125,"y":631.5,"width":422.34375,"height":64.5,"inside":true}]}
+Cinematic native ended: map booted, media paused and source released
+Cinematic input: {"escaped":0,"consumed":[true,true,true,true,true,true,true],"pointerBlocked":true,"unchanged":true,"editor":false,"canvas":true}
+Cinematic geometry: {"images":[{"width":320,"height":240}],"nodes":[{"className":"runtime-overlay game-over-panel","x":179,"y":179.5546875,"width":666,"height":408.890625,"inside":true}]}
+Cinematic host teardown: {"paused":true,"source":null}
+
+리포트: verify-shots/runtime-qa/cinematic-sequences/SUMMARY.md  ← 먼저 읽어라
+게이트: 통과
+Cinematic fixture cleanup: removed .omo/runtime-qa/cinematics-LkMJHp
