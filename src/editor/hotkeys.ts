@@ -53,6 +53,9 @@ export function shouldIgnoreEditorShortcut(event: KeyboardEvent): boolean {
     const tag = target.tagName;
     if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return true;
     if (target.isContentEditable) return true;
+    // 대화 스크롤러와 자식은 탐색 키만 소유한다. 저장·도구·히스토리는 계속 라우팅한다.
+    if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " "].includes(event.key)
+      && target.closest('[data-editor-navigation-owner="true"]')) return true;
     // 모달/팝업/메뉴가 열려 있으면 충돌 방지를 위해 단축키를 끈다.
     if (target.closest("[data-testid^='menu-popup-']")) return true;
     if (target.closest(".oprn-modal") || target.closest(".modal-backdrop")) return true;

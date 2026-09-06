@@ -305,7 +305,7 @@ export function createProposalHost(options: {
       setStatus("적용 실패");
       toast(`적용 실패: ${applied.issue ?? "무결성 오류"}`, "error");
       // 예전에는 이 게이트만 채팅에 아무 기록도 남기지 않았다 — 토스트가 사라지면 흔적이 없다.
-      appendBubble("system", `❌ 무결성 검사에 막혀 적용하지 않았습니다: ${applied.issue ?? "무결성 오류"}`);
+      appendBubble("system", `무결성 검사에 막혀 적용하지 않았습니다: ${applied.issue ?? "무결성 오류"}`);
       showAiGateNotice(commitGateNotice(applied.issues ?? (applied.issue ? [applied.issue] : [])));
       return "rejected";
     }
@@ -316,7 +316,7 @@ export function createProposalHost(options: {
     appendBubble("system", `변경 ${calls.length}건을 프로젝트에 적용했습니다. 되돌리려면 [되돌리기](Ctrl+Z).`);
     // 배치 진단은 숨기지 않고 남긴다 — 타일은 이미 깔렸고, 마음에 안 들면 되돌리기가 답이다.
     if (layoutIssues.length > 0) {
-      appendBubble("system", `⚠️ ${formatLayoutValidationSummary(layoutIssues)}`);
+      appendBubble("system", `배치 진단: ${formatLayoutValidationSummary(layoutIssues)}`);
     }
     if (softMarked > 0) {
       appendBubble("system", `재료 ${softMarked}건 합의: ${softList.map((entry) => entry.name).join(", ")}`);

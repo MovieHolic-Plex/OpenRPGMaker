@@ -11,6 +11,7 @@
 // 라벨이 없으면 무엇을 여는 점인지 알 수 없다. 얼굴이 아니라 글자다.
 
 import { el } from "@/util/dom";
+import { deckIcon } from "./aiDeckIcons";
 import type { DeckState } from "./aiDeckRail";
 
 const DIRECTOR_NAME = "조수";
@@ -77,7 +78,7 @@ export function setRestoreButtonState(
 export function createCollapsedUndoButton(onUndo: () => void): HTMLButtonElement {
   return el("button", {
     class: "ai-collapsed-undo",
-    text: "↶",
+    children: [deckIcon("undo")],
     attrs: {
       type: "button",
       hidden: "",

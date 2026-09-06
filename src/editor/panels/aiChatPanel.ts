@@ -108,6 +108,8 @@ import {
 import { registerAiBootIntentTarget } from "@/editor/aiBootIntent";
 import { createChatResizeChrome } from "./aiChatResizeChrome";
 import {
+  applyAiBackgroundOpacity,
+  loadAiBackgroundOpacity,
   applyAiFontSize,
   loadAiFontSize,
   loadPanelCollapsed,
@@ -363,7 +365,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     syncDeckState();
     if (record) controller.statusTimeline.push({ at: new Date().toISOString(), status: text });
   };
-  const log = el("div", { class: "ai-chat-log", dataset: { testid: "ai-chat-log" } });
+  const log = el("div", { class: "ai-chat-log", attrs: { tabindex: "0", role: "region", "aria-label": "조수 대화" }, dataset: { testid: "ai-chat-log", editorNavigationOwner: "true" } });
   let panelRoot: HTMLElement | null = null;
   let studioShell: StudioShell | null = null;
   const studioToolLines: string[] = [];
@@ -1725,7 +1727,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         el("span", { text: `선택 (${selection.region.x},${selection.region.y}) ${selection.region.width}×${selection.region.height}` }),
         el("button", {
           class: "ai-selection-chip-clear",
-          text: "×",
+          children: [deckIcon("x", { size: 15 })],
           attrs: { type: "button", title: "선택 영역 AI 작업 해제", "aria-label": "선택 영역 AI 작업 해제" },
           dataset: { testid: "ai-selection-chip-clear" },
           on: {
@@ -1761,7 +1763,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (currentKey && currentKey !== dismissedSelectionKey) selectionTaskActive = true;
     if (!currentKey) dismissedSelectionKey = null;
     const ctx = mapContext();
-    const chips = [el("span", { class: "ai-context-chip", text: `🗺 ${ctx.mapName ?? "맵 없음"}` })];
+    const chips = [el("span", { class: "ai-context-chip", text: ctx.mapName ?? "맵 없음" })];
     const selection = currentSelectionForRegionTask();
     if (selectionTaskActive && !selection) selectionTaskActive = false;
     if (selection) {
@@ -1859,14 +1861,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // testid 호환용 숨은 트리거 (메뉴/테스트가 click 위임).
   const toolsButton = el("button", {
     class: "ai-chat-tools-button",
-    text: "🧰",
+    text: "도구",
     attrs: { type: "button", hidden: "", "aria-hidden": "true" },
     dataset: { testid: "ai-tools-browser" },
     on: { click: openToolsBrowser },
   });
   const harnessButton = el("button", {
     class: "ai-chat-tools-button",
-    text: "🔬",
+    text: "진단",
     attrs: { type: "button", hidden: "", "aria-hidden": "true" },
     dataset: { testid: "ai-harness" },
     on: { click: openHarness },
@@ -2004,7 +2006,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   });
   const newSessionButton = el("button", {
     class: "ai-chat-icon-btn ai-new-session",
-    text: "＋",
+    children: [deckIcon("plus")],
     attrs: {
       type: "button",
       title: "새 대화",
@@ -2073,7 +2075,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   const moreMenuToggle = el("button", {
     class: "ai-chat-icon-btn",
-    text: "☰",
+    children: [deckIcon("more")],
     attrs: { type: "button", title: "더보기", "aria-label": "더보기 메뉴", "aria-expanded": "false", "aria-haspopup": "menu" },
     dataset: { testid: "ai-more-menu-toggle" },
     on: {
@@ -2365,6 +2367,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   commandBarClearanceObserver?.observe(deck);
   // 저장된 글자 크기를 부팅 시 즉시 적용(영속 — V3C).
   applyAiFontSize(panel, loadAiFontSize());
+  applyAiBackgroundOpacity(panel, loadAiBackgroundOpacity());
   // 헤드리스/콘솔 디버깅용 하네스 접근점: window.__oprnAiHarness() → 주입 포함 원본 메시지 + 감사 로그.
   const harnessAccessor = () => controller.session?.getHarnessSnapshot() ?? null;
   if (typeof window !== "undefined") {
@@ -2577,12 +2580,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (historyOpen) {
       panel.classList.add("is-history-open");
       panel.classList.add("is-docked");
-      historyButton.textContent = "×";
+      historyButton.replaceChildren(deckIcon("x"));
       historyButton.setAttribute("title", "전체 기록 닫기");
       historyButton.setAttribute("aria-label", "전체 기록 닫기");
     } else {
       panel.classList.remove("is-history-open", "is-docked");
-      historyButton.textContent = "🕒";
+      historyButton.replaceChildren(deckIcon("clock"));
       historyButton.setAttribute("title", "전체 기록 열기");
       historyButton.setAttribute("aria-label", "전체 기록 열기");
     }
@@ -2609,7 +2612,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         applyCollapsed();
       }
       panel.classList.add("is-studio");
-      panel.setAttribute("style", ""); // 커스텀 크기 대신 전체 폭.
+      applySize(); // 크기만 해제하고 배경 농도·글자 크기 설정은 유지한다.
       // 로그 슬롯은 기록 마운트. is-history-open 은 다른 오버레이라 붙이지 않는다.
       historyOpen = true;
       panel.classList.remove("is-docked");

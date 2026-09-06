@@ -106,6 +106,30 @@ export function saveDockWidth(width: number): void {
   localStorage.setItem(DOCK_WIDTH_KEY, String(clampDockWidth(width)));
 }
 
+// Background-only glass density; shared by the deck and collapsed pill.
+export const AI_BACKGROUND_OPACITY_KEY = "oprn:ai-background-opacity";
+export const AI_BACKGROUND_OPACITY_LIMITS = { min: 78, max: 100, default: 82 } as const;
+
+export function clampAiBackgroundOpacity(value: number): number {
+  if (!Number.isFinite(value)) return AI_BACKGROUND_OPACITY_LIMITS.default;
+  return Math.round(Math.min(AI_BACKGROUND_OPACITY_LIMITS.max, Math.max(AI_BACKGROUND_OPACITY_LIMITS.min, value)));
+}
+
+export function loadAiBackgroundOpacity(): number {
+  if (typeof localStorage === "undefined") return AI_BACKGROUND_OPACITY_LIMITS.default;
+  const raw = localStorage.getItem(AI_BACKGROUND_OPACITY_KEY);
+  return raw?.trim() ? clampAiBackgroundOpacity(Number(raw)) : AI_BACKGROUND_OPACITY_LIMITS.default;
+}
+
+export function saveAiBackgroundOpacity(value: number): void {
+  if (typeof localStorage === "undefined") return;
+  localStorage.setItem(AI_BACKGROUND_OPACITY_KEY, String(clampAiBackgroundOpacity(value)));
+}
+
+export function applyAiBackgroundOpacity(target: HTMLElement, value: number): void {
+  target.style.setProperty("--ai-background-opacity", `${clampAiBackgroundOpacity(value)}%`);
+}
+
 // ── 글자 크기 3단(V3C 채팅 관측성) ──────────────────────────────
 // 채팅 로그·프로포절 카드·도구 로그가 패널의 data-ai-font-size + CSS 변수(--ai-font-scale)로 함께 스케일된다.
 export const AI_FONT_SIZE_KEY = "oprn:ai-font-size";

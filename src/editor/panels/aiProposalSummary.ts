@@ -216,7 +216,7 @@ export function proposalSummaryLines(calls: readonly ProposedCall[], extraWarnin
 
 export function proposalTechnicalDetailLines(calls: readonly ProposedCall[]): string[] {
   return calls.map((call) => {
-    const flag = call.destructive ? "⚠️ 파괴적 " : "";
+    const flag = call.destructive ? "파괴적 " : "";
     return `${flag}${call.name} — ${call.summary}`;
   });
 }

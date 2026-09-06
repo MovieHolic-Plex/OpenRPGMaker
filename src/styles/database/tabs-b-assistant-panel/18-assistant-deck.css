@@ -11,9 +11,9 @@
            └ div.ai-command-bar > (.ai-composer-suggest[흐름] · 팝오버들 · .ai-composer)
 
    규칙:
-   - 색은 tokens.css 변수만(hex 0). !important 0. 유리는 --bg-raised 90% + blur 20 · saturate 1.08
+   - 색은 tokens.css 변수만(hex 0). !important 0. 유리는 --bg-raised 78–100%(기본 82%) + blur 20 · saturate 1.08
      (saturate 1.4 는 잔디 위에서 패널을 초록으로 물들여 대비를 4.22:1 로 떨어뜨렸다 — 2026-08-28 실측).
-   - 유리 위 보조 글자는 --text-2. --text-3 은 순백 위에서도 4.75:1 뿐이라 반투명 위에서 AA 미달.
+   - 유리 위 보조 글자는 --ai-deck-secondary(--text-2 85% + --text-1). 최소 농도와 모드 틴트에서도 AA 유지.
    - 팝오버는 닫히면 hidden. 투명 전면 레이어 금지(2026-08-19 히트테스트 P0).
    - 앞 레이어(02·03·04·09·assistant-command-bar·assistant-composer)의 같은 선택자는 특이도로 이긴다 —
      `.ai-chat-panel.chat-dock-float .ai-deck …` (0,3,0)+ 를 쓴다. import 순서에 기대지 않는다. */
@@ -23,12 +23,17 @@
   --ai-deck-open-width: 760px;
   --ai-deck-radius: 20px;
   --ai-deck-log-max: min(660px, 62vh);
-  --ai-deck-glass: color-mix(in srgb, var(--bg-raised) 90%, transparent);
+  --ai-deck-glass: color-mix(in srgb, var(--bg-raised) var(--ai-background-opacity, 82%), transparent);
   --ai-deck-shadow:
     0 28px 64px -28px color-mix(in srgb, var(--text-1) 38%, transparent),
     0 2px 8px color-mix(in srgb, var(--text-1) 6%, transparent),
     0 0 0 1px color-mix(in srgb, var(--text-1) 6%, transparent);
   --ai-deck-line: color-mix(in srgb, var(--text-1) 6%, transparent);
+}
+
+/* Minimum glass over black, including the mode segment's 6% ink tint: AA text, not element opacity. */
+.ai-chat-panel.chat-dock-float:not(.is-studio):not(.is-history-open) {
+  --ai-deck-secondary: color-mix(in srgb, var(--text-2) 85%, var(--text-1));
 }
 
 @media (max-width: 1300px) {
@@ -182,19 +187,19 @@
 }
 
 .ai-deck-rail-ctx {
-  color: var(--text-2);
+  color: var(--ai-deck-secondary, var(--text-2));
   font-weight: 400;
 }
 
 .ai-deck-rail-ctx:not(:empty)::before {
-  color: var(--text-2);
+  color: var(--ai-deck-secondary, var(--text-2));
   content: "·";
   margin-right: 6px;
 }
 
 /* 상태 문장 — 기존 ai-status 엘리먼트가 이 슬롯에 들어온다. 유휴 톤이면 비운다. */
 .ai-deck-rail-state {
-  color: var(--text-2);
+  color: var(--ai-deck-secondary, var(--text-2));
   display: inline-flex;
   flex: 1 1 auto;
   font-size: 12px;
@@ -220,16 +225,16 @@
 }
 
 .ai-deck-rail[data-ai-state="attention"] .ai-deck-rail-state {
-  color: var(--warning);
+  color: color-mix(in srgb, var(--warning) 60%, var(--text-1));
   font-weight: 600;
 }
 
 .ai-deck-rail[data-ai-state="done"] .ai-deck-rail-state {
-  color: var(--success);
+  color: color-mix(in srgb, var(--success) 60%, var(--text-1));
 }
 
 .ai-deck-rail[data-ai-state="error"] .ai-deck-rail-state {
-  color: var(--danger);
+  color: color-mix(in srgb, var(--danger) 60%, var(--text-1));
   font-weight: 600;
 }
 
@@ -250,7 +255,7 @@
   background: transparent;
   border: 1px solid transparent;
   border-radius: 8px;
-  color: var(--text-2);
+  color: var(--ai-deck-secondary, var(--text-2));
   height: 30px;
   min-height: 0;
   min-width: 30px;
@@ -350,6 +355,61 @@
   padding: 14px 16px 6px;
   scrollbar-color: var(--border-strong) transparent;
   scrollbar-width: thin;
+  scrollbar-gutter: stable;
+}
+
+.ai-deck .ai-chat-log:hover,
+.ai-deck .ai-chat-log:focus-within {
+  scrollbar-color: var(--text-2) transparent;
+}
+
+.ai-deck .ai-chat-log:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: calc(-1 * var(--stroke-2));
+}
+
+.ai-deck .ai-chat-log::-webkit-scrollbar {
+  width: var(--space-2);
+}
+
+.ai-deck .ai-chat-log::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ai-deck .ai-chat-log::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: var(--radius-pill);
+}
+
+.ai-deck .ai-chat-log:hover::-webkit-scrollbar-thumb,
+.ai-deck .ai-chat-log:focus-within::-webkit-scrollbar-thumb {
+  background: var(--text-2);
+}
+
+/* Existing settings display section, never another row on the deck. */
+.ai-settings-window .ai-background-opacity-control {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+}
+
+.ai-settings-window .ai-background-opacity-range {
+  accent-color: var(--accent);
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+}
+
+.ai-settings-window .ai-background-opacity-range:focus-visible {
+  border-radius: var(--radius-s);
+  outline: var(--focus-outline);
+  outline-offset: var(--stroke-2);
+}
+
+.ai-settings-window .ai-background-opacity-control output {
+  color: var(--text-1);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 /* ── 4. 대화 행 — 사용자 우측 말풍선, 조수 좌측 산문, 시스템은 메타 ──
@@ -390,9 +450,15 @@
   padding-right: 8px;
 }
 
+/* User-bubble + control tints need stronger quiet ink, never a faded enabled action. */
+.ai-deck .ai-turn-rewind:not(:disabled) {
+  color: color-mix(in srgb, var(--text-2) 60%, var(--text-1));
+  opacity: 1;
+}
+
 .ai-chat-log .ai-command-row[data-role="system"],
 .ai-chat-log .ai-command-row[data-role="tool"] {
-  color: var(--text-2);
+  color: var(--ai-deck-secondary, var(--text-2));
   font-size: calc(12px * var(--ai-font-scale, 1));
 }
 
@@ -428,6 +494,13 @@
   overflow-x: auto;
 }
 
+.ai-chat-log .ai-command-row-body :is(th, td),
+.ai-chat-log .md :is(th, td) {
+  overflow-wrap: normal;
+  white-space: nowrap;
+  word-break: normal;
+}
+
 /* 답변 속 이름 링크 — 본문 흐름 안의 낱말이므로 버튼 크롬을 걷고 점선 밑줄만. */
 .ai-chat-log .ai-answer-link {
   background: none;
@@ -453,7 +526,8 @@
 }
 
 .ai-chat-log .ai-answer-link[data-ref-kind="ambiguous"] {
-  color: var(--gold-deep);
+  /* AA at 78% glass over black, including the hover/focus accent tint. */
+  color: color-mix(in srgb, var(--gold-deep) 75%, var(--text-1));
 }
 
 /* 언급된 자료 썸네일(14 레이어에서 이관). 픽셀 아트라 보간하지 않는다. */
@@ -499,8 +573,16 @@
 }
 
 .ai-run-recap {
-  color: var(--text-2);
+  color: var(--ai-deck-secondary, var(--text-2));
   font-size: 11px;
+}
+
+/* Legacy metadata also sits on glass; never inherit the opaque-surface hint color. */
+.ai-deck .ai-reasoning-toggle,
+.ai-deck .ai-reasoning-body,
+.ai-deck .ai-tile-thumb-caption,
+.ai-deck .ai-tile-grid-caption {
+  color: var(--ai-deck-secondary, var(--text-2));
 }
 
 /* ── 5. 작업 타임라인 — 툴 호출은 각주가 아니라 「무엇을 했는가」 의 행이다 ── */
@@ -623,7 +705,7 @@
 }
 
 .ai-act-sum {
-  color: var(--text-2);
+  color: var(--ai-deck-secondary, var(--text-2));
   font-size: calc(12.5px * var(--ai-font-scale, 1));
   line-height: 1.4;
   overflow: hidden;
@@ -644,7 +726,7 @@
 }
 
 .ai-deck .ai-tool-failure {
-  color: var(--text-2);
+  color: var(--ai-deck-secondary, var(--text-2));
 }
 
 .ai-deck .ai-tool-failure > summary {
@@ -653,7 +735,7 @@
 }
 
 .ai-deck .ai-tool-failure-body {
-  color: var(--text-2);
+  color: var(--ai-deck-secondary, var(--text-2));
   padding: 2px 0 2px 8px;
 }
 
@@ -664,7 +746,7 @@
 }
 
 .ai-deck .ai-tool-detail-label {
-  color: var(--text-2);
+  color: var(--ai-deck-secondary, var(--text-2));
 }
 
 .ai-deck .ai-tool-detail-pre {
@@ -725,7 +807,7 @@
 
 /* 날짜 구분선 */
 .ai-chat-log .ai-day-divider-label {
-  color: var(--text-2);
+  color: var(--ai-deck-secondary, var(--text-2));
   font-size: 11.5px;
   font-weight: 600;
 }
@@ -847,7 +929,7 @@
   background: transparent;
   border: 0;
   border-radius: 7px;
-  color: var(--text-2);
+  color: var(--ai-deck-secondary, var(--text-2));
   cursor: pointer;
   display: inline-flex;
   font: inherit;
@@ -905,7 +987,7 @@
 }
 
 :is(.ai-deck, .ai-studio-composer) .ai-pending-queue {
-  color: var(--text-2);
+  color: var(--ai-deck-secondary, var(--text-2));
   font-size: 12px;
   white-space: nowrap;
 }
@@ -915,7 +997,7 @@
   background: transparent;
   border: 1px solid var(--border-default);
   border-radius: 999px;
-  color: var(--text-2);
+  color: var(--ai-deck-secondary, var(--text-2));
   flex: 0 0 auto;
   font: inherit;
   font-size: 12px;
@@ -928,7 +1010,7 @@
 .ai-composer-model {
   align-items: center;
   border-radius: 7px;
-  color: var(--text-2);
+  color: var(--ai-deck-secondary, var(--text-2));
   display: inline-flex;
   font-size: 12px;
   height: 28px;
@@ -945,7 +1027,7 @@
   background: transparent;
   border: 1px solid var(--border-default);
   border-radius: 999px;
-  color: var(--text-2);
+  color: var(--ai-deck-secondary, var(--text-2));
   font-size: 12px;
   height: 28px;
 }
@@ -1055,7 +1137,7 @@
 
 :is(.ai-deck, .ai-studio-composer) .ai-next-steps-hint {
   align-items: center;
-  color: var(--text-2);
+  color: var(--ai-deck-secondary, var(--text-2));
   display: flex;
   font: 500 12.5px/1.4 var(--font-ui);
   gap: 8px;
@@ -1112,7 +1194,7 @@
 }
 
 .ai-suggest-row-why {
-  color: var(--text-2);
+  color: var(--ai-deck-secondary, var(--text-2));
   flex: none;
   font-size: 12px;
 }
@@ -1140,7 +1222,7 @@
 }
 
 :is(.ai-deck, .ai-studio-composer) .ai-authoring-examples-title {
-  color: var(--text-2);
+  color: var(--ai-deck-secondary, var(--text-2));
   font-size: 12px;
   font-weight: 600;
   padding: 0 8px;
@@ -1254,8 +1336,8 @@
 /* ── 8. 접힘 알약 ─────────────────────────────────────────────── */
 .ai-chat-panel.chat-dock-float.is-collapsed > .ai-collapsed-restore {
   align-items: center;
-  backdrop-filter: blur(16px) saturate(1.08);
-  -webkit-backdrop-filter: blur(16px) saturate(1.08);
+  backdrop-filter: blur(20px) saturate(1.08);
+  -webkit-backdrop-filter: blur(20px) saturate(1.08);
   background: var(--ai-deck-glass);
   border: 0;
   border-radius: 999px;
@@ -1323,7 +1405,7 @@
 }
 
 .ai-collapsed-restore-state {
-  color: var(--text-2);
+  color: var(--ai-deck-secondary, var(--text-2));
   font-size: 12.5px;
   font-weight: 500;
   max-width: 220px;
@@ -1337,11 +1419,11 @@
 }
 
 .ai-collapsed-restore[data-ai-state="attention"] .ai-collapsed-restore-state {
-  color: var(--warning);
+  color: color-mix(in srgb, var(--warning) 60%, var(--text-1));
 }
 
 .ai-collapsed-restore[data-ai-state="error"] .ai-collapsed-restore-state {
-  color: var(--danger);
+  color: color-mix(in srgb, var(--danger) 60%, var(--text-1));
 }
 
 .ai-collapsed-restore-count {

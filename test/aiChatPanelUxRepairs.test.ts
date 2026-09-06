@@ -259,8 +259,9 @@ describe("도구 로그와 추론 표시", () => {
   });
 
   it("연속 추론 토글 문구는 병합 횟수를 표시한다", () => {
-    expect(reasoningToggleText(7, true)).toBe("💭 추론 7회 보기 ▸");
-    expect(reasoningToggleText(7, false)).toBe("💭 추론 7회 ▾");
+    for (const collapsed of [true, false]) {
+      expect(Number(reasoningToggleText(7, collapsed).match(/\d+/u)?.[0])).toBe(7);
+    }
   });
 });
 

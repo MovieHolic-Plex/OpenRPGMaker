@@ -22,6 +22,11 @@ import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel } from "@/ai/auton
 import { defaultModelForAuthMode, isModelValidForAuthMode, modelCatalogForAuthMode } from "@/ai/modelCatalog";
 import { parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 import {
+  AI_BACKGROUND_OPACITY_LIMITS,
+  applyAiBackgroundOpacity,
+  clampAiBackgroundOpacity,
+  loadAiBackgroundOpacity,
+  saveAiBackgroundOpacity,
   applyAiFontSize,
   loadAiFontSize,
   saveAiFontSize,
@@ -31,6 +36,7 @@ import { registerModal } from "@/editor/ui/modalStack";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { renderAiAuthSettings } from "./aiAuthSettings";
+import { deckIcon } from "./aiDeckIcons";
 import { installEventEditorCustomSelects } from "./eventEditor/customSelect";
 
 export type AiSettingsFocus = "first" | "apiKey";
@@ -66,6 +72,12 @@ export function openAiSettingsModal(options: OpenAiSettingsModalOptions = {}): H
   closeAiSettingsModal();
   const form = renderAiSettingsForm({
     onSaved: options.onSaved,
+    onBackgroundOpacityChange: (value) => {
+      // Topbar settings has no injected panel; update mounted roots as well.
+      const roots = new Set(document.querySelectorAll<HTMLElement>(".ai-chat-panel"));
+      if (options.fontRoot) roots.add(options.fontRoot);
+      for (const root of roots) applyAiBackgroundOpacity(root, value);
+    },
     onFontSizeChange: (size) => {
       options.onFontSizeChange?.(size);
       if (options.fontRoot) applyAiFontSize(options.fontRoot, size);
@@ -75,7 +87,7 @@ export function openAiSettingsModal(options: OpenAiSettingsModalOptions = {}): H
 
   const closeButton = el("button", {
     class: "database-modal-close",
-    text: "×",
+    children: [deckIcon("x")],
     attrs: { type: "button", "aria-label": "설정 닫기" },
     dataset: { testid: "ai-settings-close" },
   });
@@ -130,6 +142,7 @@ export function openAiSettingsModal(options: OpenAiSettingsModalOptions = {}): H
 
 export function renderAiSettingsForm(options: {
   readonly onSaved?: (config: AiConfig) => void;
+  readonly onBackgroundOpacityChange?: (value: number) => void;
   readonly onFontSizeChange?: (size: AiFontSize) => void;
   readonly extraSections?: readonly AiSettingsExtraSection[];
 }): { element: HTMLElement; focusFirstInput: () => void; focusApiKey: () => void; dispose: () => void } {
@@ -241,6 +254,41 @@ export function renderAiSettingsForm(options: {
   const fontSizeDescription = "채팅 로그, 제안 카드, 도구 로그의 글자 크기입니다. 바꾸면 즉시 적용되고 저장됩니다.";
   const fontSizeRow = settingsRow("글자 크기", fontSizeDescription, fontSizeSelect);
   fontSizeRow.setAttribute("title", fontSizeDescription);
+
+  const backgroundOpacity = el("input", {
+    class: "ai-background-opacity-range",
+    attrs: {
+      id: "ai-background-opacity", type: "range",
+      min: String(AI_BACKGROUND_OPACITY_LIMITS.min), max: String(AI_BACKGROUND_OPACITY_LIMITS.max), step: "1",
+      "aria-describedby": "ai-background-opacity-help",
+    },
+    value: String(loadAiBackgroundOpacity()),
+    dataset: { testid: "ai-background-opacity" },
+  }) as HTMLInputElement;
+  const backgroundOpacityValue = el("output", {
+    attrs: { for: "ai-background-opacity" },
+    text: `${backgroundOpacity.value}%`,
+    dataset: { testid: "ai-background-opacity-value" },
+  });
+  const backgroundOpacityRow = el("div", {
+    class: "ai-config-row",
+    children: [
+      el("span", { class: "ai-config-row-copy", children: [
+        el("label", { class: "ai-config-label", attrs: { for: "ai-background-opacity" }, text: "배경 농도" }),
+        el("span", { class: "ai-config-help", attrs: { id: "ai-background-opacity-help" }, text: "78–100%. 높을수록 배경이 불투명해집니다. 글자는 흐려지지 않습니다." }),
+      ] }),
+      el("span", { class: "ai-config-control ai-background-opacity-control", children: [backgroundOpacity, backgroundOpacityValue] }),
+    ],
+  });
+  const persistBackgroundOpacity = (): void => {
+    const value = clampAiBackgroundOpacity(Number(backgroundOpacity.value));
+    backgroundOpacity.value = String(value);
+    backgroundOpacityValue.textContent = `${value}%`;
+    saveAiBackgroundOpacity(value);
+    options.onBackgroundOpacityChange?.(value);
+  };
+  backgroundOpacity.addEventListener("input", persistBackgroundOpacity);
+  backgroundOpacity.addEventListener("change", persistBackgroundOpacity);
 
   const savedHint = el("span", {
     class: "ai-config-saved-hint",
@@ -440,7 +488,7 @@ export function renderAiSettingsForm(options: {
         "display",
         "표시",
         "AI 패널의 읽기 환경을 조정합니다.",
-        [fontSizeRow],
+        [fontSizeRow, backgroundOpacityRow],
       ),
       ...(options.extraSections ?? []).map((section) =>
         settingsSection(section.id, section.title, section.description, [section.content])),
