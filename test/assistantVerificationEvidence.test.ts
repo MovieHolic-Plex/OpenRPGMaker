@@ -66,7 +66,10 @@ describe("필수 검증의 실행 성공과 통과는 별도 계약", () => {
     expect(call?.type === "tool_call" && call.result.ok).toBe(true);
     expect(result.assistantText).toContain("검증이 아직 통과되지 않았습니다");
     expect(result.assistantText).toContain(name);
-    expect(events.at(-2)).toMatchObject({ type: "assistant_message", content: result.assistantText });
+    const finalMessage = events.filter((event) => event.type === "assistant_message").at(-1);
+    expect(finalMessage).toMatchObject({ type: "assistant_message", content: result.assistantText });
+    expect(result.runOutcome).toBeDefined();
+    expect(events.at(-1)).toEqual({ type: "run_outcome", runOutcome: result.runOutcome });
   }, 30000);
 
   it("run_lint 실제 실행 결과도 ok:true를 유지한다", () => {
