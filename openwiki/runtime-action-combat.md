@@ -1,6 +1,11 @@
 # Runtime Action Combat
 
-> **지원 종료 (deprecated, 2026-08-28).** 액션 전투는 더 이상 지원 대상이 아니다. 이미 저작된 액션 맵은 계속 동작하고, 아래 런타임 라우팅 계약도 바뀌지 않았다. 달라진 것은 저작 표면이다. 프로젝트 린트가 `system.actionCombat.enabled === true` 인 프로젝트에 `deprecated:action-combat` 코드로 경고를 남긴다. 새 프로젝트는 RM식(`rm2k3`) 또는 포켓몬식(`gen1`) 턴제 전투를 쓴다. 지원 전투 2종 정책과 지원 종료 목록은 `openwiki/runtime-battle.md` 의 "지원 전투 시스템은 둘뿐이다 (2026-08-28)" 절이 권위자다. 이 문서의 나머지는 현재 구현에 대한 정확한 참조로 그대로 유지된다.
+> **2D 타일 액션 전투 지원 (2026-09-07).** 기존 액션 런타임을 신규 저작에도 사용한다. `action-rpg` 장르는 시스템 설정을 켜며, 개별 맵의 옵트인은 계속 명시적으로 지정한다. RM식(`rm2k3`)과 포켓몬식(`gen1`)은 턴제 전투 모델이고, 액션 전투는 별도의 이중 옵트인 패키지다. 스폰 수·대기·턴제 씬 테스트는 액션 검증이 아니다. 브라우저 AI의 완료 판정은 현재 프로젝트에 귀속된 실제 플레이어 전투 증거를 요구한다.
+
+The action HUD displays the lead actor's effective equipped weapon and the
+canonical attack/moving-dodge bindings. The farming hand chip is hidden on
+action maps without farmable areas; mixed maps keep an explicitly labelled
+farming chip. Menus and dialogue retain their existing HUD suppression.
 
 This page is the authority for the real-time action-combat package in RPG ZZU. It documents the activation contract, pure rule modules under `src/battle/action/`, the scene integration layer, player and enemy capabilities, schema definitions, authoring boundaries, and verification targets.
 
@@ -233,7 +238,9 @@ stamina recovered, enemy projectile creation and reward grant. They come from
 the real combat mutation sites, not UI snapshots or guessed state deltas.
 `subscribeActionCombatObservations` is QA-capability gated; normal exports
 install no proof globals or observers. The scenario has a 45-second deadline;
-the transport defaults to 60 seconds and caps a caller override at 120 seconds.
+the transport defaults to 120 seconds, including a cold development-player build,
+and caps caller overrides at the same 120 seconds. An explicit shorter deadline
+still cancels and cleans up the owned frame.
 Outcome/post-frame listeners are removed on completion or abort, and every
 transport exit removes its iframe, timer, abort/message listeners and blob URL.
 Execution unavailable or incomplete returns `unverified`, never simulated success.
