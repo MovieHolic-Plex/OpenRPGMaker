@@ -1,0 +1,45 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiApplyCommitCorrelation.test.ts test/applyChangesetToStore.test.ts test/applyProposedProjectHouseProtection.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p1-r1-commit-20260906
+
+ ✓ test/applyChangesetToStore.test.ts (6 tests) 2988ms
+   ✓ applyProposedProject shared apply path > 스냅샷 → store.replace → await 커밋 순서로 제안 프로젝트를 적용한다  1124ms
+   ✓ applyProposedProject shared apply path > 린트 차단 제안은 스토어를 건드리지 않고 commit-rejected를 돌려준다  1247ms
+ ✓ test/aiApplyCommitCorrelation.test.ts (6 tests) 27134ms
+   ✓ actual apply commit correlation (resetProject=false) > proves synchronous-subscriber content without donating commit identity  5739ms
+   ✓ actual apply commit correlation (resetProject=false) > proves healthy content without donating commit identity  3698ms
+   ✓ actual apply commit correlation (resetProject=false) > proves async-commit-edit content without donating commit identity  4075ms
+   ✓ actual apply commit correlation (resetProject=true) > proves synchronous-subscriber content without donating commit identity  5411ms
+   ✓ actual apply commit correlation (resetProject=true) > proves healthy content without donating commit identity  4158ms
+   ✓ actual apply commit correlation (resetProject=true) > proves async-commit-edit content without donating commit identity  4049ms
+ ✓ test/applyProposedProjectHouseProtection.test.ts (21 tests) 28137ms
+   ✓ agent live house baseline > atomically rejects a stale preview after human lowerTiles edits  1618ms
+   ✓ agent live house baseline > atomically rejects a stale preview after human upperTiles edits  1556ms
+   ✓ agent live house baseline > atomically rejects a stale preview after human lowerTileStacks edits  1104ms
+   ✓ agent live house baseline > atomically rejects a stale preview after human upperTileStacks edits  1317ms
+   ✓ agent live house baseline > retains a house completed after preview, including resetProject=false  1290ms
+   ✓ agent live house baseline > retains a house completed after preview, including resetProject=true  1083ms
+   ✓ agent live house baseline > applies an unchanged-store preview with one undo entry and one commit  1229ms
+   ✓ agent live house baseline > uses current human tile and stack edits as the next accepted baseline  2262ms
+   ✓ agent live house baseline > does not turn raw walls or non-house regions into a stale-project lock  1874ms
+   ✓ agent-milestone live house baseline > atomically rejects a stale preview after human lowerTiles edits  1107ms
+   ✓ agent-milestone live house baseline > atomically rejects a stale preview after human upperTiles edits  1155ms
+   ✓ agent-milestone live house baseline > atomically rejects a stale preview after human lowerTileStacks edits  879ms
+   ✓ agent-milestone live house baseline > atomically rejects a stale preview after human upperTileStacks edits  1243ms
+   ✓ agent-milestone live house baseline > retains a house completed after preview, including resetProject=false  743ms
+   ✓ agent-milestone live house baseline > retains a house completed after preview, including resetProject=true  892ms
+   ✓ agent-milestone live house baseline > applies an unchanged-store preview with one undo entry and one commit  1847ms
+   ✓ agent-milestone live house baseline > uses current human tile and stack edits as the next accepted baseline  1352ms
+   ✓ agent-milestone live house baseline > does not turn raw walls or non-house regions into a stale-project lock  1198ms
+   ✓ real autonomous milestone application > checks the live store at completion: human-edit  1244ms
+   ✓ real autonomous milestone application > checks the live store at completion: new-house  1436ms
+   ✓ real autonomous milestone application > checks the live store at completion: unchanged  1700ms
+
+ Test Files  3 passed (3)
+      Tests  33 passed (33)
+   Start at  21:31:55
+   Duration  60.84s (transform 21.55s, setup 0ms, collect 92.10s, tests 58.26s, environment 1ms, prepare 1.69s)
+

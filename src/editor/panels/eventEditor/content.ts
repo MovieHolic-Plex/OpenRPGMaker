@@ -21,7 +21,6 @@ import {
   replaceEventPageCommands,
   replaceEventPageCommandAt,
 } from "@/editor/eventPages";
-import { commandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
 import { eventDraftCharacterName } from "@/project/eventDraftAuthored";
 import { store } from "@/project/store";
 import type { Command, EventPage, MapId } from "@/project/types";
@@ -196,7 +195,6 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   renderCommandList(cmdList, activePage.commands, [], actions, {
     selectionScope: selectionKey,
     issues: activePageIssues,
-    runtimeSupport: (command) => commandRuntimeSupport(command, "map"),
     pickerContext: "map",
     openCommandPicker: (containerPath) => openCommandPickerForActions(actions, containerPath),
   });

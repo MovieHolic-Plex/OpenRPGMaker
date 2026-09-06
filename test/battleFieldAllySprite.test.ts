@@ -1,7 +1,7 @@
 /** @vitest-environment happy-dom */
 import { describe, expect, it } from "vitest";
 import { createBattleRuntime, type BattleSnapshot } from "@/battle/runtime";
-import { battleField } from "@/player/battleFieldDom";
+import { battleField, battlePartyStatus, syncBattleField } from "@/player/battleFieldDom";
 import { deserialize } from "@/project/io";
 import { store } from "@/project/store";
 import battleFixture from "./fixtures/projects/battle-v3.json";
@@ -15,10 +15,10 @@ import battleFixture from "./fixtures/projects/battle-v3.json";
 // 순서가 네 단계라 회귀가 조용히 난다 — 액터별 뒷모습이 빠져도 공용 한 장으로 "그려지긴"
 // 하므로 렌더 성공만 보는 테스트는 통과한다. 그래서 **어느 파일이 붙었는지**를 못 박는다.
 
-type Skin = "pokemon" | "rm2000";
+type Skin = "pokemon" | "rm2000" | "rm2003" | "classic";
 
 function renderField(options: {
-  readonly skin: Skin;
+  readonly skin?: Skin;
   readonly battleCharacterResourceId?: string;
 }): HTMLElement {
   const project = deserialize(JSON.stringify(battleFixture));
@@ -40,7 +40,9 @@ function renderField(options: {
     (actor as { battleCharacterResourceId?: string }).battleCharacterResourceId =
       options.battleCharacterResourceId;
   }
-  return battleField(snapshot);
+  const field = battleField(snapshot);
+  syncBattleField(field, snapshot);
+  return field;
 }
 
 function allyImage(field: HTMLElement): HTMLImageElement | null {
@@ -106,22 +108,60 @@ describe("아군 배틀러 스프라이트 선택", () => {
     expect(node?.dataset.actorBackBattler).toBeUndefined();
   });
 
-  it("rm2000 정면 구도는 파티를 뒷모습(액터별 back 배틀러)으로 하단에 세운다 — 2026-09-03 전까지는 그리지 않았다", () => {
+  it.each([undefined, "classic", "rm2000"] as const)(
+    "기본 정면 구도(%s)는 아군을 그리지 않고 적을 유지한다",
+    (skin) => {
+      const field = renderField({
+        skin,
+        battleCharacterResourceId: "generated-actor-hero-02-battle",
+      });
+
+      const group = field.querySelector<HTMLElement>(".battle-actor-group");
+      expect(group?.dataset.partyFacing).toBe("hidden");
+      expect(group?.dataset.hidden).toBe("true");
+      expect(field.querySelectorAll(".battle-actor")).toHaveLength(0);
+      expect(allyImage(field)).toBeNull();
+      expect(field.querySelectorAll(".battle-enemy").length).toBeGreaterThan(0);
+    },
+  );
+
+  it("기본 정면 구도에서도 파티 상태창의 이름과 HP/MP를 표시한다", () => {
+    const project = deserialize(JSON.stringify(battleFixture));
+    delete project.system.battleUiStyle;
+    store.replace(project);
+    const snapshot = createBattleRuntime({
+      project,
+      troopId: "troop_slime",
+      canEscape: true,
+      canLose: true,
+      rng: () => 0.5,
+    }).snapshot();
+
+    const party = battlePartyStatus(snapshot);
+
+    expect(party.querySelectorAll(".battle-actor-status")).toHaveLength(snapshot.actors.length);
+    for (const actor of snapshot.actors) {
+      const row = party.querySelector(`[data-record-id="${actor.recordId}"]`);
+      expect(row?.textContent).toContain(actor.name);
+      expect(row?.querySelector(".battle-actor-hp")?.textContent).toContain(String(actor.hp));
+      expect(row?.querySelector(".battle-actor-mp")?.textContent).toContain(String(actor.mp));
+    }
+  });
+
+  it("명시적 측면 구도는 저작된 아군 전투 시트를 표시한다", () => {
     const field = renderField({
-      skin: "rm2000",
+      skin: "rm2003",
       battleCharacterResourceId: "generated-actor-hero-02-battle",
     });
     const group = field.querySelector<HTMLElement>(".battle-actor-group");
-    expect(group?.dataset.partyFacing).toBe("back");
+    expect(group?.dataset.partyFacing).toBe("front");
     expect(group?.dataset.hidden).not.toBe("true");
     const nodes = field.querySelectorAll<HTMLElement>(".battle-actor-group .battle-actor");
     expect(nodes.length).toBeGreaterThan(0);
     const first = nodes[0]!;
-    expect(first.dataset.partyFacing).toBe("back");
-    expect(first.dataset.actorBackBattler).toBe("true");
-    expect(allyImage(field)?.getAttribute("src")).toBe("/assets/generated/battle-skins/sprites/hero-02-back.png");
-    // 발끝은 필드 바닥, 가운데(적 자리)는 비운다 — 첫 슬롯은 왼쪽이다.
-    expect(first.style.getPropertyValue("--battle-node-y")).toBe("100%");
-    expect(Number.parseFloat(first.style.getPropertyValue("--battle-node-x"))).toBeLessThan(50);
+    expect(first.dataset.partyFacing).toBe("front");
+    expect(first.dataset.authoredBattler).toBe("true");
+    expect(first.dataset.battleCharsetResourceId).toBe("generated-actor-hero-02-battle");
+    expect(first.querySelector(".battle-actor-sprite")).not.toBeNull();
   });
 });

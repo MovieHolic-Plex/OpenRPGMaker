@@ -1,0 +1,72 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/storePersistenceLineage.test.ts test/workPlanSize.test.ts test/runtimeQaGate.test.ts test/runtimeQaAudioContract.test.ts test/sceneVerificationRepair.test.ts test/webExportUsagePruning.test.ts test/audioDescriptionEditor.test.ts --maxWorkers=2 --testTimeout=60000
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-sweep4-audio-ai
+
+ ✓ test/runtimeQaGate.test.ts (56 tests) 97ms
+ ✓ test/webExportUsagePruning.test.ts (5 tests) 6075ms
+   ✓ web export usage pruning > ships exactly the tracks the project plays plus the ones the player hardcodes  2398ms
+   ✓ web export usage pruning > does not ship the file behind a catalog row that nothing references  1407ms
+   ✓ web export usage pruning > starts shipping a catalog track once the project points at it  1011ms
+   ✓ web export usage pruning > leaves the image catalog alone while pruning the audio catalog  622ms
+   ✓ web export usage pruning > still prunes uploaded assets by static reference  625ms
+ ✓ test/sceneVerificationRepair.test.ts (6 tests) 4832ms
+   ✓ corrected scene navigation retains the same verification obligation > replaces a failed navigation attempt with the passing same-target assertions: []  1348ms
+   ✓ corrected scene navigation retains the same verification obligation > replaces a failed navigation attempt with the passing same-target assertions: [ { kind: 'face', text: 'up' } ]  384ms
+   ✓ corrected scene navigation retains the same verification obligation > replaces a failed navigation attempt with the passing same-target assertions: [ { kind: 'move', text: 'up' } ]  338ms
+   ✓ corrected scene navigation retains the same verification obligation > replaces a failed navigation attempt with the passing same-target assertions: [ { kind: 'set', x: 10, y: 8 } ]  1201ms
+   ✓ corrected scene navigation retains the same verification obligation > cannot erase a different assertion by weakening its expected reward  641ms
+   ✓ corrected scene navigation retains the same verification obligation > keeps distinct explicit NPC targets separate  906ms
+ ✓ test/workPlanSize.test.ts (5 tests) 25ms
+ ✓ test/runtimeQaAudioContract.test.ts (2 tests) 31ms
+ ✓ test/audioDescriptionEditor.test.ts (15 tests) 13541ms
+   ✓ audio description manager > owns history shortcuts while the resource modal is open  1180ms
+   ✓ audio description manager > releases history shortcut ownership when the resource modal closes  1073ms
+   ✓ audio description manager > renders an editable description when the visible music category is selected  916ms
+   ✓ audio description manager > enumerates the complete music catalog without mutations  1121ms
+   ✓ audio description manager > enumerates the complete sound catalog without mutations  575ms
+   ✓ audio description manager > commits normalized input once when Save is activated  508ms
+   ✓ audio description manager > retains a saved description when the manager is reopened  1167ms
+   ✓ audio description manager > stores an explicit clear when an empty draft is saved  451ms
+   ✓ audio description manager > removes only the selected override when Restore default is activated  584ms
+   ✓ audio description manager > restores the prior override when project Undo runs  1648ms
+   ✓ audio description manager > restores the authored override when project Redo runs  1975ms
+   ✓ audio description manager > retains draft DOM, caret and focus during an unrelated store rerender  522ms
+   ✓ audio description manager > finds a resource by description without changing the project  539ms
+   ✓ audio description manager > filters effective empty descriptions without changing the current draft  606ms
+   ✓ audio description manager > rejects an over-limit programmatic draft without recording history  671ms
+ ❯ test/storePersistenceLineage.test.ts (8 tests | 1 failed) 199593ms
+   × accepted receipt content lineage > does not resurrect saved authority after reload during PATCH 60377ms
+     → Test timed out in 60000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+   ✓ accepted receipt content lineage > does not resurrect saved authority after load during PATCH  34166ms
+   ✓ accepted receipt content lineage > does not resurrect saved authority after reconnect during PATCH  21806ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on reload even for identical content  20178ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on load even for identical content  16868ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on reconnect even for identical content  18748ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on adopt even for identical content  16011ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on fallback even for identical content  11432ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/storePersistenceLineage.test.ts > accepted receipt content lineage > does not resurrect saved authority after reload during PATCH
+Error: Test timed out in 60000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ test/storePersistenceLineage.test.ts:124:42
+    122|   });
+    123| 
+    124|   it.each(["reload", "load", "reconnect"])("does not resurrect saved a…
+       |                                          ^
+    125|     const f = await fixture();
+    126|     f.store.update((draft) => { draft.meta.title = "accepted-pending-s…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 6 passed (7)
+      Tests  1 failed | 96 passed (97)
+   Start at  00:56:15
+   Duration  201.62s (transform 46.28s, setup 0ms, collect 64.43s, tests 224.19s, environment 1.45s, prepare 1.81s)
+

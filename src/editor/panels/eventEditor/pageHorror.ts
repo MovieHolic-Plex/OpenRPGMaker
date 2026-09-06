@@ -1,3 +1,4 @@
+import { defaultChaseSight, defaultChasePursuit } from '@/project/npcBehavior';
 import { updateEventPage } from '@/editor/eventPages';
 import { el } from '@/util/dom';
 import type { ChaseAcrossMaps, Dir, EventPage, MapId } from '@/project/types';
@@ -14,9 +15,22 @@ function select(id: string, value: string, options: [string, string][], change: 
 }
 
 export function renderChaseSettings(mapId: MapId, eventId: string, page: EventPage): HTMLElement {
-  const config: ChaseAcrossMaps = page.movement.pursuit ?? { scope: 'map', doorDelayMs: 1200, searchMs: 4000, onLost: 'wait' };
+  const config = page.movement.pursuit;
+  if (!config) {
+    return el('div', { class: 'event-page-movement-stack', children: [
+      el('p', { class: 'empty-hint', text: '기존 추격 동작을 유지합니다. 문 추격과 수색 정책은 아직 설정하지 않았습니다.' }),
+      el('button', { class: 'btn', text: '시야와 수색 설정 사용', attrs: { type: 'button' },
+        dataset: { testid: 'event-chase-enable-policy' }, on: { click: () => updateEventPage(mapId, eventId, page.id, {
+          movement: { ...page.movement, sight: page.movement.sight ?? defaultChaseSight(), pursuit: defaultChasePursuit() },
+        }, '추격 시야와 수색 설정 사용') } }),
+    ] });
+  }
   const set = (patch: Partial<ChaseAcrossMaps>) => updateEventPage(mapId, eventId, page.id, { movement: { ...page.movement, pursuit: { ...config, ...patch } } });
   const wrap = el('div', { class: 'event-page-movement-stack event-horror-settings', dataset: { testid: 'event-chase-settings' } });
+  wrap.append(field('놓친 뒤 추적', select('event-chase-tracking', config.tracking ?? 'lastSeen',
+    [['lastSeen', '마지막 목격 위치 수색'], ['persistent', '현재 위치 계속 추적']], tracking => {
+      if (tracking === 'lastSeen' || tracking === 'persistent') set({ tracking });
+    })));
   wrap.append(field('추격 범위', select('event-chase-scope', config.scope, [['map', '현재 맵'], ['connected', '문으로 연결된 방']], scope => set({ scope: scope as ChaseAcrossMaps['scope'] }))));
   for (const [key, label] of [['doorDelayMs', '문 통과 대기 (초)'], ['searchMs', '놓친 뒤 수색 (초)']] as const) {
     const input = el('input', { attrs: { type: 'number', min: '0', max: '60', step: '0.1' }, dataset: { testid: `event-chase-${key}` } });

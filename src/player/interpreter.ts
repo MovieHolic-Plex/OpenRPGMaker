@@ -21,6 +21,7 @@ export function createInterpreter(
   options?: InterpreterOptions
 ): Interpreter {
   const state: InterpreterState = {
+    continueAfterTransfer: options?.continueAfterTransfer,
     stack: [{ commands, pc: 0 }],
     session,
     maxStackDepth: 1000,

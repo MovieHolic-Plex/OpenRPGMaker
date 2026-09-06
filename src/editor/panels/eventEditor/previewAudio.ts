@@ -1,5 +1,8 @@
 import { el } from "@/util/dom";
 import type { Command } from "@/project/types";
+import { store } from "@/project/store";
+import { listAudioResources } from "@/assets/audioResourceCatalog";
+import { audioDescriptionView, audioPlaybackBadge } from "@/editor/panels/audioResourcePresentation";
 
 // 오디오 명령(재생/정지) 프리뷰. 자동 재생은 하지 않는다(누수·의도치 않은 소리 방지) —
 // 파일명·반복 배지 + 정적 파형 장식만 시각 요약으로 보여준다.
@@ -10,8 +13,13 @@ export function previewAudio(cmd: Extract<Command, { kind: "playAudio" | "stopAu
     root.append(el("div", { class: "ecp-audio-name", text: "재생 중인 소리를 정지합니다" }));
     return root;
   }
+  const project = store.getCurrent();
+  const resource = listAudioResources("music", project).find(entry => entry.id === cmd.resourceId)
+    ?? listAudioResources("sound", project).find(entry => entry.id === cmd.resourceId);
   root.append(el("div", { class: "ecp-audio-icon play", text: "▶" }));
-  root.append(el("div", { class: "ecp-audio-name", text: cmd.resourceId || "(소리 선택 없음)" }));
+  root.append(el("div", { class: "ecp-audio-name", text: resource?.name ?? (cmd.resourceId || "(소리 선택 없음)") }));
+  root.append(audioDescriptionView(resource));
+  root.append(audioPlaybackBadge(cmd.resourceId, project));
   root.append(renderWaveform());
   root.append(
     el("div", {

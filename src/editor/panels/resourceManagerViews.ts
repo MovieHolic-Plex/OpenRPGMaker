@@ -24,6 +24,10 @@ export type ResourceWorkbenchOptions = {
   readonly kindSelect: HTMLSelectElement;
   readonly fileInput: HTMLInputElement;
   readonly actions: UploadedAssetActions;
+  readonly audioPanes?: {
+    readonly entries: HTMLElement;
+    readonly commands: HTMLElement;
+  };
   readonly onSelectKind: (kind: ResourceProfile["kind"]) => void;
   readonly onImport: () => void;
 };
@@ -36,8 +40,8 @@ export function renderResourceWorkbench(container: HTMLElement, options: Resourc
       class: "rm-classic-shell",
       children: [
         resourceCategoryList(options),
-        resourceEntryList(selectedProfiles, selectedUploaded, options.actions),
-        resourceCommandPanel(options),
+        options.audioPanes?.entries ?? resourceEntryList(selectedProfiles, selectedUploaded, options.actions),
+        options.audioPanes?.commands ?? resourceCommandPanel(options),
       ],
     }),
     options.kindSelect,

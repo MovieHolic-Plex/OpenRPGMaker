@@ -1,0 +1,17 @@
+[edit-activity] (라벨 없음: project)
+[project-commits] 저장 baseline 이 없어 실제 diff 를 못 낸다 — 시스템 변경으로 기록한다 { summary: '변경 저장: 시스템' }
+[edit-activity] 프로젝트 정규화 (1종) · [bundledTilesets] · (system) [ { path: 'bundledTilesets', after: true } ]
+[project-commits] 수동 저장 커밋 diff { summary: '변경 저장: 타일셋 12, 시스템' }
+[edit-activity] (라벨 없음: project)
+[edit-activity] 프로젝트 정규화 (1종) · [bundledTilesets] · (system) [ { path: 'bundledTilesets', after: true } ]
+[project-commits] 수동 저장 커밋 diff { summary: '변경 저장' }
+{"name":"reload-during-save","reload":"reloaded","result":{"status":"succeeded","verified":true,"receipt":{"revisionId":"85d83ec4-0732-44ba-9334-d8bb9bd07f86","projectId":"p1-review-boundary-fixture","mutationGeneration":2,"contentIdentity":"0b6574efd1bb51dae10e4f3ed891c1155cdb200a691a2503bf8ecc3bc9f39c51","sha256":"d6b0bd4f8c41628a4f4b857231aff12ab943509ab9b3de0a3505349959e48635"},"commitId":null,"proof":{"kind":"verified","receipt":{"revisionId":"85d83ec4-0732-44ba-9334-d8bb9bd07f86","projectId":"p1-review-boundary-fixture","mutationGeneration":2,"contentIdentity":"0b6574efd1bb51dae10e4f3ed891c1155cdb200a691a2503bf8ecc3bc9f39c51","sha256":"d6b0bd4f8c41628a4f4b857231aff12ab943509ab9b3de0a3505349959e48635"},"isCurrent":true}},"liveTitle":"before-pending-save","remoteTitle":"accepted-pending-save","liveIdentity":"20b4dde8c0a99a5602db2488bbbdb87067ed2234fd0f07adce944bd1f93aa7f9","remoteIdentity":"0b6574efd1bb51dae10e4f3ed891c1155cdb200a691a2503bf8ecc3bc9f39c51","savedAuditCount":1}
+P1-R1-001
+AssertionError [ERR_ASSERTION]: Reload during save must invalidate current proof
+
+true !== false
+
+    at checks (file:///home/main/z-project/rpg-zzu-ai-harness-p1-r1-lineage-20260906/output/evidence/ai-harness/p1/r1-001-probe.mjs:98:32)
+    at file:///home/main/z-project/rpg-zzu-ai-harness-p1-r1-lineage-20260906/output/evidence/ai-harness/p1/r1-001-probe.mjs:102:11
+AggregateError: P1 contract regression probes failed
+    at file:///home/main/z-project/rpg-zzu-ai-harness-p1-r1-lineage-20260906/output/evidence/ai-harness/p1/r1-001-probe.mjs:108:45

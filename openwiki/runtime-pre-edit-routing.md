@@ -147,6 +147,17 @@
   정지 애니메이션은 무버 없는 이벤트에도 프레임 클록이 필요하므로 별도 작업이다.
 - **Action combat runtime:** for real-time action combat (`system.actionCombat` + `map.actionCombat`), routing, pure rule modules in `src/battle/action/`, and scene integration in `src/player/playSceneActionCombat.ts`, see `openwiki/runtime-action-combat.md`.
 
+## ESC skill thumbnails (2026-09-06)
+
+`playerStatusMenuDetails.skillEntryIcon` passes the referenced battle animation's sheet geometry
+to `playerStatusMenuDetailRenderer`. Skills show pattern 0, not the whole sprite sheet.
+The renderer centers a cell-sized background inside the existing icon box, preserving rectangular
+cell proportions and excluding neighboring rows/columns at both list and showcase sizes.
+Legacy animations without sheet metadata use 96x96 cells and five columns, matching the editor.
+Item/equipment images retain whole-image `contain`; missing animation resources retain their placeholder.
+Regression coverage: `test/playerStatusMenuEntryIcons.test.ts`; shipping keyboard/screenshot coverage:
+`scripts/qa/runtime/esc-menu.scenario.mjs` (`skills`, `next-skill`, `return-to-items`).
+
 ## Recovered head emotes (2026-09-05)
 
 `playSceneEmotes.ts` owns transient target-keyed sprites/timers. Interpreter and parallel/common-event scheduler resume immediately after `showEmote`; gift rank and friendship changes use the same sprite path. Head anchoring follows displayHeight × originY, including hop lift. Replacement, target removal, map change and scene teardown cancel timers/tweens together. `runtimeAssets.json` includes the generated sheet for shipping exports; Phaser preload uses `withInlineAsset` for standalone HTML. `__oprnEmotes` is installed only by the existing QA instrumentation boundary.

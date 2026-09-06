@@ -676,6 +676,40 @@ The float assistant is **one glass instrument**, `div.ai-deck` inside the transp
 - Game-over labels retain the current terminal cursor menu and system graphic;
   the optional authored background fills the stage beneath it at 65% opacity.
 
+#### Resource Manager audio descriptions
+
+- Preserve the existing category / resource-list / command-detail rail. The
+  audio list uses the complete shared catalog, raw resource IDs, selected native
+  buttons, and an effective-empty-description checkbox. Filtering never changes
+  selection or commits a draft. The list remains its own scroll owner.
+- The existing command rail contains identity, native audio preview, source,
+  labelled textarea, Save, Restore default, status and upload-only Delete.
+  The rail owns vertical overflow within the existing bounded shell. Text wraps;
+  the textarea owns its text overflow. No pane-width, theme or global CSS change.
+- Reuse resource command buttons, existing 12/13px typography, `--font-ui`,
+  `--space-1/2`, resource command height, control/radius/focus tokens and the
+  existing surface ladder. No new animation, decorative icons or audio waveform.
+- Drafts belong to the open manager, not Project or localStorage. Save writes a
+  normalized override, including an explicit empty string. Restore removes only
+  the override. Each successful edit is one labelled project-history operation.
+- Row/kind/close transitions protect dirty input with Save / Discard / Cancel.
+  Cancel preserves the input node, caret and selected resource. A store refresh
+  retains dirty draft DOM; project replacement ends ownership without writing the
+  old draft into the new project. A pending import cannot cross project identity.
+- Keyboard authors retain native text undo in the textarea; project undo applies
+  outside text controls. The existing modal stack owns Escape, including repeated
+  Escape after cancellation. Dirty dialogs trap focus and return to the editor;
+  final close restores the attached opener. Source and user text are text nodes.
+- Verification requires fresh 1024x768 / 1440x900 captures, keyboard/focus and
+  dirty-draft checks, native preview playback, and independent visual review.
+  Use real state-based readiness, not fixed sleeps or retry-based acceptance.
+  The scoped `playwright.audio.config.ts` uses Firefox, zero retries and an
+  isolated Vite cache for host Chromium `ERR_NETWORK_CHANGED` failures.
+  Captures and automated checks don't imply visual-review or Lighthouse approval.
+  Exported-player native playback and metadata dependency checks remain separate
+  requirements in `openwiki/testing.md`. No accessibility debt or visual deviation
+  is accepted by this document.
+
 ### Play presentation
 
 - Play viewport is `320×240` logical pixels (`PLAY_RESOLUTION.width`/`PLAY_RESOLUTION.height`), then scaled by the largest whole-number factor that fits inside the test-play/player shell with nearest-neighbor rendering.

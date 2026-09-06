@@ -1,0 +1,69 @@
+{
+  "base": "d1d5e7e98dd0c6c5ef837db2a1456e280359be42",
+  "productionHead": "df8e37340d81e2d8085acd5c3b319516022e41b0",
+  "scope": "Engine/editor code and test-only fixtures; no authored project DB writes",
+  "map": {
+    "initialRed": { "failed": 22, "total": 27 },
+    "supervisorGreenTests": 99,
+    "finalSurface": "output/evidence/event-command-repairs/map/surface/report.json"
+  },
+  "audio": {
+    "initialRed": { "failed": 12, "total": 12 },
+    "supervisorGreenTests": 134,
+    "finalSurface": "output/evidence/event-command-repairs/audio/surface/report.json"
+  },
+  "battleFlow": {
+    "initialRed": { "failed": 66, "total": 69 },
+    "supervisorGreenTests": 188,
+    "finalPlayerCases": 20,
+    "finalSurface": "output/evidence/event-command-repairs/battle-flow-final/summary.json"
+  },
+  "battleState": {
+    "expandedRed": { "failed": 7, "total": 8 },
+    "supervisorGreenTests": 43,
+    "finalSurface": "output/evidence/event-command-repairs/battle-state/surface/report.json"
+  },
+  "support": {
+    "initialRed": { "failed": 89, "total": 92 },
+    "supervisorGreenTests": 387,
+    "actualPickerPanels": 12,
+    "commandRowsPerContext": 128,
+    "finalSurface": "output/evidence/event-command-repairs/editor/green/report.json"
+  },
+  "completeGates": {
+    "baseline": { "passed": 14440, "failed": 167, "skipped": 15, "total": 14622 },
+    "integrated": { "passed": 14739, "failed": 158, "skipped": 15, "total": 14912 },
+    "newFailedAssertionIdentities": 0,
+    "changedTestFileFailures": 0,
+    "bothExitCodes": 1,
+    "typecheckApp": "passed",
+    "css": "passed",
+    "fullBuild": "passed",
+    "comparison": "output/evidence/event-command-repairs/gates/comparison.json"
+  },
+  "portalContractFollowup": {
+    "passed": 117,
+    "failed": 1,
+    "skipped": 0,
+    "immutableControlDigests": 9,
+    "realCommandOmissionDetected": true,
+    "productionRestored": true,
+    "residualPortalDifferences": "Same two pre-existing d1 differences",
+    "surfaceGate": "Same six pre-existing assertions across nine axes; exit 1"
+  },
+  "cleanup": {
+    "browsersClosed": true,
+    "serversClosed": true,
+    "battleContextsClosed": 20,
+    "remainingBattlePages": 0,
+    "pendingBattleObservers": 0,
+    "temporaryWorktreesRemoved": 4,
+    "sourceArchivesPreserved": true
+  },
+  "limitations": [
+    "System BGM/SE metadata and narrower troop behavior remain explicitly labeled",
+    "VX Ace hides maximum-vital text; maxima were verified in DOM/session state",
+    "The tested branch was not merged with newer origin/main; conflicts require separate integration",
+    "The complete repository gates are not universally green; pre-existing failures remain"
+  ]
+}

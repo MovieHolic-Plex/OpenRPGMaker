@@ -6,6 +6,7 @@ import type { FootprintWing, HouseKitWindowsOption } from "@/editor/houseKit";
 import {
   createHouseDoorEvent,
   createHouseDoorStepEvent,
+  stampHouseDoorBackground,
   type HouseStoryCount,
 } from "@/editor/houseInteriors";
 import { houseBBox } from "./houseLotDecor";
@@ -91,6 +92,7 @@ export function upsertHouseDoorEvents(
   map: GameMap,
   options: Parameters<typeof createHouseDoorEvent>[0],
 ): void {
+  stampHouseDoorBackground(map, options);
   upsertEvent(map.events, createHouseDoorEvent(options));
   // 열린 문 기본값: 문 앞 통행 칸에 밟으면 열리는 발판 — 문 칸은 벽이라 밟히지 않는다.
   // 문 앞이 맵 밖이면 발판을 생략한다(문 스프라이트만 남는다).

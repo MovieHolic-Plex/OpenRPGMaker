@@ -10,6 +10,9 @@ export interface PursuitState {
   active: boolean;
   searchMs: number;
   lastSeen?: { x: number; y: number };
+  /** Deterministic local search survives saving, unlike the transient path cache. */
+  searchTarget?: { x: number; y: number };
+  searchCursor?: number;
   doors: PursuitDoor[];
 }
 export interface HorrorState {
@@ -24,7 +27,10 @@ export function isHorrorState(value: unknown): value is HorrorState {
   if (!record(value) || !record(value.pursuits)) return false;
   if (!Object.values(value.pursuits).every(p => record(p) && point(p.home) && record(p.home)
     && typeof p.home.mapId === 'string' && typeof p.active === 'boolean' && finite(p.searchMs)
-    && (p.lastSeen === undefined || point(p.lastSeen)) && Array.isArray(p.doors) && p.doors.length <= 64
+    && (p.lastSeen === undefined || point(p.lastSeen))
+    && (p.searchTarget === undefined || point(p.searchTarget))
+    && (p.searchCursor === undefined || (finite(p.searchCursor) && Number.isInteger(p.searchCursor) && p.searchCursor < 12))
+    && Array.isArray(p.doors) && p.doors.length <= 64
     && p.doors.every(d => point(d) && record(d) && typeof d.mapId === 'string' && finite(d.remainingMs)))) return false;
   const h = value.hiding;
   return h === undefined || (record(h) && typeof h.mapId === 'string' && typeof h.eventId === 'string'

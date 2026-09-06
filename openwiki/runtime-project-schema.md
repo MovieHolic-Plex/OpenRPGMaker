@@ -16,8 +16,8 @@ editor. The optional wire/server hash alone doesn't establish content equality.
 If accepted content can't normalize, saving logs the error and returns no receipt.
 
 `store.verifyPersistedRevision(receipt, { signal? })` accepts the exact
-store-issued object. A private WeakMap holds its captured Supabase configuration;
-copied or reconstructed tokens fail. `loadProjectForPersistenceProof` reuses the
+store-issued object. A private WeakMap holds its captured Supabase configuration
+and load/adoption lineage; copied or reconstructed tokens fail. `loadProjectForPersistenceProof` reuses the
 normalized/hybrid loader with observed `project_id` and cancellation, without
 commit-tip hydration. It performs a remote read, not `reloadFromRemote()`: no
 live-project replacement, dirty reset, draft change, URL change, or store event.
@@ -27,11 +27,16 @@ Results are `verified` with `isCurrent`, `mismatch` with `reason: target | conte
 `disabled`, `cancelled`, or `failed` with a message. Missing rows and read errors
 fail. Each verifier call makes a fresh attempt, so a failed receipt can retry.
 `isPersistenceReceiptCurrent(receipt)` checks loaded/enabled state, the latest
-receipt reference, mutation generation and captured target configuration. A
-matching historical read may return `verified` with `isCurrent:false`; consumers
-mustn't promote newer live state from that result and must recheck currentness
-when consuming it after an await. Neither save responses nor proof reads replace
-newer local edits.
+receipt reference, mutation generation, load/adoption lineage and captured target
+configuration. Adoption, successful remote reload and reconnect advance lineage
+and clear the current receipt. Saves capture lineage before submission; a late
+receipt from an earlier lineage remains available for historical verification,
+but can't become current again or overwrite a replacement lineage's receipt.
+This separate counter leaves local-edit generation and local-first catch-up saves
+unchanged. A matching historical read may return `verified` with `isCurrent:false`;
+consumers mustn't promote newer live state from that result and must recheck
+currentness when consuming it after an await. Neither save responses nor proof
+reads replace newer local edits.
 
 Sources: [store types and methods](../src/project/store.ts) and
 [proof loader](../src/project/supabaseProjectSync.ts). The
@@ -60,6 +65,74 @@ The duration contract for playback consumers is: zero means keyboard advance for
 ## 적 전투 이미지 크기 (2026-09-06)
 
 `EnemyRecord.battleScalePercent?: number`는 선택적인 전투 표시 백분율이다. `normalizeEnemyRecord`는 유한 숫자를 반올림해 정수 10~300에 제한하고, 누락·비숫자·비유한 값은 100으로 처리한다. 100은 키를 생략해 기존 프로젝트를 희소하게 유지한다. 기존 editor mutation allowlist와 `upsert_enemy` 정수 스키마에 포함되며 `serialize`/`deserialize`가 비기본값을 보존한다. 기존 로드 정규화를 재사용하는 additive 필드라 스키마 버전 변경이나 SQL migration은 없다. `test/enemyBattleScale.test.ts`가 실제 편집→저장→로드→재저장과 손상된 입력/기본값 복귀를 검증한다. 원격 DB 쓰기 없이 엔진·편집기 코드만 변경한 계약이다.
+
+## Project audio description overrides
+
+`Project.audioDescriptions` is an optional v4 field, defined in
+`src/project/types/base.ts` and `src/project/types/project.ts`:
+
+```ts
+audioDescriptions?: {
+  music?: Record<string, string>;
+  sound?: Record<string, string>;
+};
+```
+
+Keys are raw resource IDs, not `bgm:`/`se:` search IDs, filenames or URLs. A missing key
+inherits the catalog default; an own key with `""` explicitly clears it; another string
+is project-authored text. Reset removes only the override, pruning empty containers.
+An explicit value equal to today's default stays an override.
+
+`src/project/audioDescriptions.ts` is the catalog/DOM/store/player-independent authority.
+New writes trim surrounding whitespace and enforce 4,000 UTF-16 code units after trimming,
+preserving internal line breaks. `src/project/io/shape.ts` validates stored strings without
+rewriting them, rejects malformed partitions/values and overlong strings, and accepts field
+absence. Unknown IDs survive loading as metadata but don't become selectable resources.
+`src/project/io/serialize.ts` preserves raw dictionary keys even when they resemble a
+legacy field name.
+
+Defaults remain in immutable catalogs; overrides aren't duplicated in upload `meta`,
+profiles or browser-global localStorage. Existing projects need no default backfill,
+schema-version bump, new SQL table or live-project rewrite.
+
+### Concurrent persistence
+
+`applyAudioDescriptionDelta(base, local, latest)` starts from the latest stored descriptions
+and applies only kind/raw-ID states that changed locally relative to base. Different-key
+edits survive together; a changed local key wins a same-key conflict. Absence is reset,
+not clear. Unchanged local keys retain remote edits and remote resets.
+
+`src/project/supabaseProjectSync.ts` uses this delta for map-patch saves. A project-scoped
+description mutation doesn't force a full save: `src/project/store.ts` chooses the save API
+from the persisted baseline. After success, the store reconciles descriptions with
+`base=submitted`, `local=current`, `latest=saved`. This preserves typing during the request,
+adopts remote-only changes and avoids resending stale metadata on the next map save.
+It replaces only the necessary root/description state, keeps live maps and mutation-generation
+handling, and emits synchronization without counting a new authored edit.
+
+Reconciliation uses the same content-lineage counter as accepted-save receipts.
+Full project replacement/reset advances lineage, invalidates current proof and clears
+the old persisted baseline, so its next save is authoritative
+rather than a merge with the previous project. A late completion from an earlier epoch
+cannot reinstall that baseline or copy remote descriptions into the replacement.
+Accepted historical saves still issue verifiable, non-current receipts and commit records.
+The ownership check runs after receipt hashing and again after synchronization callbacks;
+neither boundary may reset a replacement's dirty state.
+Ordinary edits and undo within one project keep the per-key reconciliation contract.
+
+### Editor preservation and playable export
+
+Editor JSON, backups and `src/project/package.ts` packages preserve absent, empty, authored
+and orphan states. `src/project/webExport.ts` removes the entire field from the playable
+export clone before loading/validation, without changing the source project.
+`src/project/webExportAssets.ts` excludes the description subtree from usage traversal:
+neither a description key nor text equal to an upload ID keeps an unused upload alive.
+Real playback references still retain their assets and IDs.
+
+`test/audioDescriptions.test.ts`, `test/audioDescriptionPersistence.test.ts`,
+`test/audioDescriptionConcurrentPersistence.test.ts` and
+`test/audioDescriptionExport.test.ts` exercise these boundaries. Transport-mocked tests
+using real save/load/merge functions aren't evidence of a live Supabase write.
 
 ## New-project save/reload verification (2026-09-05)
 

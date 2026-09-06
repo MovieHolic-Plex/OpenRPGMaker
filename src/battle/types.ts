@@ -6,6 +6,7 @@ import type {
   BattleAnimationPosition,
   BattleAnimationScope,
   BattleFlow,
+  ChoiceCancelBehavior,
   EnemyId,
   ItemId,
   MonsterSpeciesId,
@@ -23,7 +24,16 @@ import type { RoguelikeRunState } from "@/project/roguelikeRun";
 
 export type { BattleFlow } from "@/project/types";
 
-export type BattlePhase = "charging" | "actorCommand" | "targetSelect" | "roundResolve" | "resolved";
+export type BattlePhase = "charging" | "actorCommand" | "targetSelect" | "roundResolve" | "eventChoice" | "resolved";
+
+export interface BattleEventChoiceSnapshot {
+  readonly id: number;
+  readonly pageId: string;
+  readonly round: number;
+  readonly prompt?: string;
+  readonly options: readonly { readonly text: string }[];
+  readonly cancelBehavior?: ChoiceCancelBehavior;
+}
 export type { BattleResult } from "@/project/gameTime";
 
 export type EquipmentUseTarget =
@@ -387,6 +397,8 @@ export interface BattleEventStateSnapshot {
   readonly actorExperience?: Readonly<Record<string, number>>;
   readonly actorLevels?: Readonly<Record<string, number>>;
   readonly actorBattleCommands?: Readonly<Record<string, readonly string[]>>;
+  /** Only friendship keys written by this battle, not its entire input snapshot. */
+  readonly friendship?: Readonly<Record<string, number>>;
   // 이산 관계 상태(setRelationship) — applyBattleRewardsToSession 이 세션 relationships 로 되돌려 쓴다.
   readonly relationships?: Readonly<Record<string, RelationshipState>>;
   // 레거시 호환 플래그(setFlag) — applyBattleRewardsToSession 이 세션 flags 로 되돌려 쓴다.
@@ -403,6 +415,7 @@ export interface BattleEventStateSnapshot {
 }
 
 export interface BattleSnapshot {
+  readonly eventChoice?: BattleEventChoiceSnapshot;
   readonly phase: BattlePhase;
   readonly battleFlow: BattleFlow;
   readonly activeActorId?: ActorId;
@@ -440,6 +453,9 @@ export interface BattleSnapshot {
 }
 
 export interface BattleRuntime {
+  resumeEventChoice(requestId: number, index: number): boolean;
+  /** Dispose suspended execution without creating a battle outcome. */
+  cancel(): void;
   tick(deltaMs: number): void;
   beginActorCommand(command: ActorCommandDraft): void;
   selectTarget(targetId: string): void;

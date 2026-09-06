@@ -537,7 +537,14 @@ const placeNpc: ToolDefinition = {
     },
     required: ["mapId", "x", "y", "name", "pages"],
   },
-  invalidArgsHint: PLACE_NPC_OBJECT_GIMMICK_HINT,
+  invalidArgsHint: "대화 NPC는 pages:[{lines:[원래 대사]}]가 필수입니다. dialogue.text는 pages의 lines로 옮기세요. 오브젝트 기믹을 만들려는 경우에만 place_chest/place_storage_chest/place_savepoint를 사용하세요.",
+  invalidArgsRepair(args) {
+    const dialogue = args.dialogue;
+    if (args.pages !== undefined || typeof dialogue !== "object" || dialogue === null || Array.isArray(dialogue)) return undefined;
+    if (Object.keys(args).some(key => key !== "dialogue" && !(key in (placeNpc.parameters.properties ?? {})))) return undefined;
+    if (Object.keys(dialogue).length !== 1 || !("text" in dialogue) || typeof dialogue.text !== "string" || !dialogue.text.trim()) return undefined;
+    return { path: "pages", example: [{ lines: [dialogue.text] }] };
+  },
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
     const requestedX = args.x as number;

@@ -484,7 +484,22 @@ export interface NpcScheduleEntry {
   readonly activity?: string;
 }
 
+export interface NpcSight {
+  range: number;
+  lineOfSight: boolean;
+  /** Forward is a same-row/column ray, not a cone. */
+  facing: "any" | "forward";
+}
+export interface DetectionEncounter {
+  sight: NpcSight;
+  emote: EmoteKind | null;
+  emoteMs: number;
+  approachSpeed: number;
+}
+
 export interface ChaseAcrossMaps {
+  /** Omitted preserves finite last-seen search; persistent still respects hiding and safe zones. */
+  tracking?: "lastSeen" | "persistent";
   scope: "map" | "connected";
   doorDelayMs: number;
   searchMs: number;
@@ -504,6 +519,7 @@ export interface EventPageMovement {
   route?: MoveRoute;
   living?: NpcLivingMovement;
   pursuit?: ChaseAcrossMaps;
+  sight?: NpcSight;
   sightRange?: number;
   giveUpRange?: number;
   pathfind?: boolean;
@@ -537,6 +553,7 @@ export interface EventPage {
    */
   passRows?: number;
   interaction?: EventObjectInteraction;
+  detectionEncounter?: DetectionEncounter;
   movement: EventPageMovement;
   commands: Command[];
 }

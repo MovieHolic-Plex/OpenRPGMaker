@@ -1,0 +1,21 @@
+{
+  "origin": "http://127.0.0.1:43791",
+  "entry": "/?blankProject=1",
+  "remoteDatabaseAndModel": "HTTP responses intercepted; no real writes",
+  "narration": {
+    "action": "Fill ai-input with author_world_bridge 도구로 다리를 만들어줘 and click ai-send",
+    "tool": "author_world_bridge",
+    "observedLiveText": "월드를 구성하는 중",
+    "pageErrors": [],
+    "screenshot": ".omo/evidence/ai-seven/narration.png",
+    "pass": true
+  },
+  "conversationPersistence": {
+    "backend": "indexeddb",
+    "beforeIds": ["conv_f813857b-60ff-4e8c-b5fc-7bb8ea803c08"],
+    "afterReloadIds": ["conv_f813857b-60ff-4e8c-b5fc-7bb8ea803c08"],
+    "userMarkerDisplayedAfterReload": true,
+    "screenshot": ".omo/evidence/ai-seven/history-reloaded.png",
+    "pass": true
+  }
+}

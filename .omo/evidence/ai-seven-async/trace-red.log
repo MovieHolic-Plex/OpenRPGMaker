@@ -1,0 +1,241 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiChatObservability.test.ts test/aiChatPanelTransportError.test.ts --silent=false --reporter=default --reporter=json --outputFile=.omo/evidence/ai-seven-async/trace-red.json
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-clear-field-e552-ai-seven-async
+
+stdout | test/aiChatObservability.test.ts > 글자 크기 3단 (V3C ①) > 기본값은 '보통'이고 저장하면 localStorage(oprn:ai-font-size)에 영속된다 — 무효값은 보통으로 방어
+[edit-activity] (라벨 없음: project)
+
+stdout | test/aiChatPanelTransportError.test.ts > transport failure paints recovery CTA and keeps Send mounted > refused fetch: is-turn-running cleared, system error bubble + ai-error-open-settings, ai-send stays disabled with ai-abort visible
+[edit-activity] (라벨 없음: project)
+
+stdout | test/aiChatPanelTransportError.test.ts > transport failure paints recovery CTA and keeps Send mounted > refused fetch: is-turn-running cleared, system error bubble + ai-error-open-settings, ai-send stays disabled with ai-abort visible
+TRACE_ACTIVITY {"result":{"ok":false,"pending":true}}
+
+stdout | test/aiChatPanelTransportError.test.ts > transport failure paints recovery CTA and keeps Send mounted > refused fetch: is-turn-running cleared, system error bubble + ai-error-open-settings, ai-send stays disabled with ai-abort visible
+TRACE_FETCH 1788708389138 /v1/chat/completions {"model":"gemini-3.7-flash","messages":[{"role":"system","content":"You classify ONE user request addressed to an RPG map/event editor assistant. Output JSON only — no prose, no fe
+
+stdout | test/aiChatPanelTransportError.test.ts > transport failure paints recovery CTA and keeps Send mounted > refused fetch: is-turn-running cleared, system error bubble + ai-error-open-settings, ai-send stays disabled with ai-abort visible
+TRACE_FETCH 1788708389138 /v1/chat/completions {"model":"gemini-3.7-flash","messages":[{"role":"system","content":"You are the **planner** agent in a modern RPG map/event editor harness (Anthropic planner–generator–evaluator /
+
+stdout | test/aiChatPanelTransportError.test.ts > transport failure paints recovery CTA and keeps Send mounted > refused fetch: is-turn-running cleared, system error bubble + ai-error-open-settings, ai-send stays disabled with ai-abort visible
+TRACE_FETCH 1788708390638 /v1/chat/completions {"model":"gemini-3.7-flash","messages":[{"role":"system","content":"You are the **planner** agent in a modern RPG map/event editor harness (Anthropic planner–generator–evaluator /
+
+stdout | test/aiChatPanelTransportError.test.ts > transport failure paints recovery CTA and keeps Send mounted > refused fetch: is-turn-running cleared, system error bubble + ai-error-open-settings, ai-send stays disabled with ai-abort visible
+TRACE_FETCH 1788708393638 /v1/chat/completions {"model":"gemini-3.7-flash","messages":[{"role":"system","content":"You are the **planner** agent in a modern RPG map/event editor harness (Anthropic planner–generator–evaluator /
+
+stdout | test/aiChatPanelTransportError.test.ts > transport failure paints recovery CTA and keeps Send mounted > refused fetch: is-turn-running cleared, system error bubble + ai-error-open-settings, ai-send stays disabled with ai-abort visible
+TRACE_FETCH 1788708398138 /v1/chat/completions {"model":"gemini-3.7-flash","messages":[{"role":"system","content":"You are the **planner** agent in a modern RPG map/event editor harness (Anthropic planner–generator–evaluator /
+
+stdout | test/aiChatPanelTransportError.test.ts > transport failure paints recovery CTA and keeps Send mounted > refused fetch: is-turn-running cleared, system error bubble + ai-error-open-settings, ai-send stays disabled with ai-abort visible
+TRACE_FETCH 1788708398138 /v1/chat/completions {"model":"gemini-3.7-flash","messages":[{"role":"system","content":"당신은 브라우저 기반 2D RPG 에디터의 개발 어시스턴트입니다.\n맵·이벤트·데이터베이스(아이템/장비/스킬/클래스/상태/적/액터/트룹/커먼이벤트)·퀘스트를 '툴 호출'로 편집합니다.\n\n## UX
+
+stdout | test/aiChatPanelTransportError.test.ts > transport failure paints recovery CTA and keeps Send mounted > refused fetch: is-turn-running cleared, system error bubble + ai-error-open-settings, ai-send stays disabled with ai-abort visible
+TRACE_FETCH 1788708399638 /v1/chat/completions {"model":"gemini-3.7-flash","messages":[{"role":"system","content":"당신은 브라우저 기반 2D RPG 에디터의 개발 어시스턴트입니다.\n맵·이벤트·데이터베이스(아이템/장비/스킬/클래스/상태/적/액터/트룹/커먼이벤트)·퀘스트를 '툴 호출'로 편집합니다.\n\n## UX
+
+stdout | test/aiChatPanelTransportError.test.ts > transport failure paints recovery CTA and keeps Send mounted > 401 also mounts settings opener
+[edit-activity] (라벨 없음: project)
+
+stdout | test/aiChatPanelTransportError.test.ts > transport failure paints recovery CTA and keeps Send mounted > 401 also mounts settings opener
+TRACE_ACTIVITY {"result":{"ok":false,"pending":true}}
+
+stderr | test/aiChatPanelTransportError.test.ts > transport failure paints recovery CTA and keeps Send mounted > 401 also mounts settings opener
+[ai-conversation] Supabase mirror failed: SupabaseProjectSyncError: no
+    at upsertRows (/home/main/.herdr/worktrees/rpg-zzu/worktree-clear-field-e552-ai-seven-async/src/project/supabaseProjectSync.ts:904:11)
+    at recordSupabaseConversation (/home/main/.herdr/worktrees/rpg-zzu/worktree-clear-field-e552-ai-seven-async/src/project/supabaseProjectSync.ts:499:5) {
+  status: 401
+}
+
+stdout | test/aiChatObservability.test.ts > 도구 호출 상세 아코디언 (V3C ③) > 복원된 대화의 도구 로그는 한 줄 요약으로 남고 JSON 상세는 숨긴다
+TRACE_ACTIVITY {"result":{"ok":false,"pending":true}}
+
+stdout | test/aiChatPanelTransportError.test.ts > transport failure paints recovery CTA and keeps Send mounted > 401 also mounts settings opener
+TRACE_ACTIVITY {"result":{"ok":false,"error":"Google Gemini 로그인이 필요합니다(401). AI 설정에서 Google 계정으로 로그인하세요. — no","stoppedReason":"error","proposedCalls":0,"appliedCalls":0,"assistantText":"","recap":{"elapsedMs":111,"promptTokens":0,"completionTokens":0,"llmCalls":0,"toolCalls":0,"ralphContinues":0,"volumeContinues":0,"process":["planner:start","planner:error Google Gemini 로그인이 필요합니다(401). AI 설정에서 Google 계정으로 로그인하세요. — no","phase:execute","턴 중단(error): Google Gemini 로그인이 필요합니다(401). AI 설정에서 Google 계정으로 로그인하세요. — no · 출력 토큰 ~0"]}},"audit":[{"kind":"user","text":"hello\n\n[컨텍스트] 현재 맵: 빈 맵 (map_blank_start) · 소품·지형 material 라벨 예(place_props/fill_region — 가방·그룹 id 금지, 미합의는 목업 확인): 침엽수(prop), 나무 상자(prop), 과일박스(prop), 흙길 오토타일(terrain), 애니메이션 물 오토타일(water), 잔디(terrain), 키큰 풀(terrain), 모래(terrain), 울타리(fence), 창문(prop)","context":{"mapId":null,"mapName":null},"at":"2026-09-06T15:26:30.287Z"},{"kind":"status","text":"intent:fallback mode=other space=unclear plan 8ms — 폴백 사유: Google Gemini 로그인이 필요합니다(401). AI 설정에서 Google 계정으로 로그인하세요. — no","at":"2026-09-06T15:26:30.296Z"},{"kind":"status","text":"planner:start","at":"2026-09-06T15:26:30.346Z"},{"kind":"status","text":"planner:error Google Gemini 로그인이 필요합니다(401). AI 설정에서 Google 계정으로 로그인하세요. — no","at":"2026-09-06T15:26:30.366Z"},{"kind":"status","text":"오케스트레이션 주입: HARNESS (plan-execute-verify / Ralph): execute ONLY the current work item this burst. Do not skip ahead.\nGoal: hello\n\n[컨텍스트] 현재 맵: 빈 맵 (map_blank_start) · 소품·지형 material 라벨 예(place_props/fill_region — 가방·그룹 id 금지, 미합의는 목업 확인): 침엽수(prop), 나무 상자(prop), 과일박스(prop), 흙길 오토타일(terrain), 애니메이션 물 오토타일(water), 잔디(terrain), 키큰 풀(terrain), 모래(terrain), 울타리(fence), 창문(prop)\nProgress: layers 0/1, items 0/1\nPlanner note: fallback template (planner parse/API failed)\nCurrent layer: 실행\nCurrent item: 요청 처리\nWorker instruction:\nhello\n\n[컨텍스트] 현재 맵: 빈 맵 (map_blank_start) · 소품·지형 material 라벨 예(place_props/fill_region…","at":"2026-09-06T15:26:30.367Z"},{"kind":"status","text":"phase:execute","at":"2026-09-06T15:26:30.368Z"},{"kind":"status","text":"오케스트레이션 주입: 실행 단계: 계획을 충실히 수행, 누락 없이 완료 후 종료. 새 질문 금지. 한 응답에 여러 tool_calls를 배치해 라운드 수를 최소화하라(예: fill_region + author_house + paint_road를 동시에).","at":"2026-09-06T15:26:30.368Z"},{"kind":"status","text":"tools:exposed 45 — author_house,author_village,get_world_structure_rules,author_world_bridge,author_world_mountain,build_wall,build_roof,place_door,lay_path,tile_erase,start_interior_room_session,advance_interior_room_build,run_interior_room_pipeline,furnish_interior_space,evaluate_interior_room,build_castle,tile_query,create_map,duplicate_map,manage_map_tree,paint_road,preview_house,mirror_region,copy_map_region,set_start_position,set_map_properties,set_encounter_table,make_hunting_ground,create_farm_plot,resize_map,make_action_enemy,get_project_summary,get_map_region,list_resources,get_database_records,show_map_region,focus_editor_view,place_props,fill_region,set_build_spec,get_work_plan,set_work_plan,complete_work_item,skip_work_item,find_tools","at":"2026-09-06T15:26:30.385Z"},{"kind":"status","text":"턴 중단(error): Google Gemini 로그인이 필요합니다(401). AI 설정에서 Google 계정으로 로그인하세요. — no · 출력 토큰 ~0","at":"2026-09-06T15:26:30.393Z"},{"kind":"status","text":"run-recap {\"elapsedMs\":111,\"prompt\":0,\"completion\":0,\"calls\":0,\"missingUsage\":0,\"byModel\":[],\"tools\":0,\"toolFail\":0,\"ralph\":0,\"volume\":0,\"writes\":0,\"stopped\":\"error\",\"process\":[\"planner\",\"planner\",\"phase\",\"end\"]}","at":"2026-09-06T15:26:30.398Z"}]}
+
+stderr | test/aiChatPanelTransportError.test.ts > transport failure paints recovery CTA and keeps Send mounted > 401 also mounts settings opener
+[ai-conversation] Supabase mirror failed: SupabaseProjectSyncError: no
+    at upsertRows (/home/main/.herdr/worktrees/rpg-zzu/worktree-clear-field-e552-ai-seven-async/src/project/supabaseProjectSync.ts:904:11)
+    at recordSupabaseConversation (/home/main/.herdr/worktrees/rpg-zzu/worktree-clear-field-e552-ai-seven-async/src/project/supabaseProjectSync.ts:499:5) {
+  status: 401
+}
+
+ ❯ test/aiChatPanelTransportError.test.ts (2 tests | 1 failed) 1590ms
+   × transport failure paints recovery CTA and keeps Send mounted > refused fetch: is-turn-running cleared, system error bubble + ai-error-open-settings, ai-send stays disabled with ai-abort visible 983ms
+     → expected null to be truthy
+   ✓ transport failure paints recovery CTA and keeps Send mounted > 401 also mounts settings opener  606ms
+stderr | test/aiChatObservability.test.ts > 도구 호출 상세 아코디언 (V3C ③) > 복원된 대화의 도구 로그는 한 줄 요약으로 남고 JSON 상세는 숨긴다
+[ai-activity] 디스크 미러 실패 (/__oprn/ai-activity: Failed to parse URL from /__oprn/ai-activity) — output/ai-activity/ 가 갱신되지 않는다.
+
+stdout | test/aiChatObservability.test.ts > 병합 추론 원문 전체 열람 (V3C ②) > 도구 사이 추론이 한 블록으로 병합돼도 각 추론의 원문 전체가 아이템으로 남고 토글은 횟수를 표시한다
+[edit-activity] (라벨 없음: project)
+
+stdout | test/aiChatObservability.test.ts > 병합 추론 원문 전체 열람 (V3C ②) > 도구 사이 추론이 한 블록으로 병합돼도 각 추론의 원문 전체가 아이템으로 남고 토글은 횟수를 표시한다
+TRACE_ACTIVITY {"result":{"ok":false,"pending":true}}
+
+stdout | test/aiChatObservability.test.ts > 병합 추론 원문 전체 열람 (V3C ②) > 도구 사이 추론이 한 블록으로 병합돼도 각 추론의 원문 전체가 아이템으로 남고 토글은 횟수를 표시한다
+TRACE_FETCH /v1/chat/completions {"model":"gemini-3.7-flash","messages":[{"role":"system","content":"You classify ONE user request addressed to an RPG map/event editor assistant. Output JSON only — no prose, no fe
+
+stdout | test/aiChatObservability.test.ts > 병합 추론 원문 전체 열람 (V3C ②) > 도구 사이 추론이 한 블록으로 병합돼도 각 추론의 원문 전체가 아이템으로 남고 토글은 횟수를 표시한다
+TRACE_FETCH /v1/chat/completions {"model":"gemini-3.7-flash","messages":[{"role":"system","content":"You are the **planner** agent in a modern RPG map/event editor harness (Anthropic planner–generator–evaluator /
+
+stdout | test/aiChatObservability.test.ts > 병합 추론 원문 전체 열람 (V3C ②) > 도구 사이 추론이 한 블록으로 병합돼도 각 추론의 원문 전체가 아이템으로 남고 토글은 횟수를 표시한다
+TRACE_FETCH /v1/chat/completions {"model":"gemini-3.7-flash","messages":[{"role":"system","content":"당신은 브라우저 기반 2D RPG 에디터의 개발 어시스턴트입니다.\n맵·이벤트·데이터베이스(아이템/장비/스킬/클래스/상태/적/액터/트룹/커먼이벤트)·퀘스트를 '툴 호출'로 편집합니다.\n\n## UX
+
+stdout | test/aiChatObservability.test.ts > 병합 추론 원문 전체 열람 (V3C ②) > 도구 사이 추론이 한 블록으로 병합돼도 각 추론의 원문 전체가 아이템으로 남고 토글은 횟수를 표시한다
+TRACE_ACTIVITY {"result":{"ok":false,"error":"Unexpected token 'd', \"data: {\"ch\"... is not valid JSON","stoppedReason":"error","proposedCalls":0,"appliedCalls":0,"assistantText":"","recap":{"elapsedMs":107,"promptTokens":0,"completionTokens":0,"llmCalls":0,"toolCalls":0,"ralphContinues":0,"volumeContinues":0,"process":["planner:start","planner:error Unexpected token 'd', \"data: {\"ch\"... is not valid JSON","phase:execute","턴 중단(error): Unexpected token 'd', \"data: {\"ch\"... is not valid JSON · 출력 토큰 ~0"]}},"audit":[{"kind":"user","text":"요약해줘\n\n[컨텍스트] 현재 맵: 빈 맵 (map_blank_start) · 소품·지형 material 라벨 예(place_props/fill_region — 가방·그룹 id 금지, 미합의는 목업 확인): 침엽수(prop), 나무 상자(prop), 과일박스(prop), 흙길 오토타일(terrain), 애니메이션 물 오토타일(water), 잔디(terrain), 키큰 풀(terrain), 모래(terrain), 울타리(fence), 창문(prop)","context":{"mapId":null,"mapName":null},"at":"2026-09-06T15:26:30.989Z"},{"kind":"status","text":"intent:fallback mode=other space=unclear plan 4ms — 폴백 사유: Unexpected token 'd', \"data: {\"ch\"... is not valid JSON","at":"2026-09-06T15:26:30.993Z"},{"kind":"status","text":"planner:start","at":"2026-09-06T15:26:31.038Z"},{"kind":"status","text":"planner:error Unexpected token 'd', \"data: {\"ch\"... is not valid JSON","at":"2026-09-06T15:26:31.042Z"},{"kind":"status","text":"오케스트레이션 주입: HARNESS (plan-execute-verify / Ralph): execute ONLY the current work item this burst. Do not skip ahead.\nGoal: 요약해줘\n\n[컨텍스트] 현재 맵: 빈 맵 (map_blank_start) · 소품·지형 material 라벨 예(place_props/fill_region — 가방·그룹 id 금지, 미합의는 목업 확인): 침엽수(prop), 나무 상자(prop), 과일박스(prop), 흙길 오토타일(terrain), 애니메이션 물 오토타일(water), 잔디(terrain), 키큰 풀(terrain), 모래(terrain), 울타리(fence), 창문(prop)\nProgress: layers 0/1, items 0/1\nPlanner note: fallback template (planner parse/API failed)\nCurrent layer: 실행\nCurrent item: 요청 처리\nWorker instruction:\n요약해줘\n\n[컨텍스트] 현재 맵: 빈 맵 (map_blank_start) · 소품·지형 material 라벨 예(place_props/fill_region —…","at":"2026-09-06T15:26:31.048Z"},{"kind":"status","text":"phase:execute","at":"2026-09-06T15:26:31.052Z"},{"kind":"status","text":"오케스트레이션 주입: 실행 단계: 계획을 충실히 수행, 누락 없이 완료 후 종료. 새 질문 금지. 한 응답에 여러 tool_calls를 배치해 라운드 수를 최소화하라(예: fill_region + author_house + paint_road를 동시에).","at":"2026-09-06T15:26:31.052Z"},{"kind":"status","text":"tools:exposed 45 — author_house,author_village,get_world_structure_rules,author_world_bridge,author_world_mountain,build_wall,build_roof,place_door,lay_path,tile_erase,start_interior_room_session,advance_interior_room_build,run_interior_room_pipeline,furnish_interior_space,evaluate_interior_room,build_castle,tile_query,create_map,duplicate_map,manage_map_tree,paint_road,preview_house,mirror_region,copy_map_region,set_start_position,set_map_properties,set_encounter_table,make_hunting_ground,create_farm_plot,resize_map,make_action_enemy,get_project_summary,get_map_region,list_resources,get_database_records,show_map_region,focus_editor_view,place_props,fill_region,set_build_spec,get_work_plan,set_work_plan,complete_work_item,skip_work_item,find_tools","at":"2026-09-06T15:26:31.090Z"},{"kind":"status","text":"턴 중단(error): Unexpected token 'd', \"data: {\"ch\"... is not valid JSON · 출력 토큰 ~0","at":"2026-09-06T15:26:31.095Z"},{"kind":"status","text":"run-recap {\"elapsedMs\":107,\"prompt\":0,\"completion\":0,\"calls\":0,\"missingUsage\":0,\"byModel\":[],\"tools\":0,\"toolFail\":0,\"ralph\":0,\"volume\":0,\"writes\":0,\"stopped\":\"error\",\"process\":[\"planner\",\"planner\",\"phase\",\"end\"]}","at":"2026-09-06T15:26:31.097Z"}]}
+
+stdout | test/aiChatObservability.test.ts > 병합 추론 원문 전체 열람 (V3C ②) > 도구 사이 추론이 한 블록으로 병합돼도 각 추론의 원문 전체가 아이템으로 남고 토글은 횟수를 표시한다
+TRACE_FETCH http://dbserver:8100/rest/v1/ai_conversations?on_conflict=conversation_id [{"conversation_id":"conv_d9f9f3ff-629c-4932-b908-9b33fc778723","project_id":"rpg-zzu-house-template-gallery","title":"요약해줘","model":"gemini-3.7-flash","project_context_key":"local
+
+stdout | test/aiChatObservability.test.ts > 실시간 고스트 프리뷰 연결 > 채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다
+[edit-activity] (라벨 없음: project)
+
+stderr | test/aiChatObservability.test.ts > 실시간 고스트 프리뷰 연결 > 채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다
+[llmClient] authMode(chatgpt)에서 쓸 수 없는 모델 'ghost-test-model' 을(를) 권장 기본 'gemini-3.7-flash' 으로 바꿨습니다.
+[llmClient] authMode(chatgpt)에서 쓸 수 없는 실행 모델 'ghost-test-model' 을(를) 권장 기본 'gemini-3.7-flash' 으로 바꿨습니다.
+[llmClient] authMode(chatgpt)에서 쓸 수 없는 모델 'ghost-test-model' 을(를) 권장 기본 'gemini-3.7-flash' 으로 바꿨습니다.
+[llmClient] authMode(chatgpt)에서 쓸 수 없는 실행 모델 'ghost-test-model' 을(를) 권장 기본 'gemini-3.7-flash' 으로 바꿨습니다.
+[llmClient] authMode(chatgpt)에서 쓸 수 없는 모델 'ghost-test-model' 을(를) 권장 기본 'gemini-3.7-flash' 으로 바꿨습니다.
+[llmClient] authMode(chatgpt)에서 쓸 수 없는 실행 모델 'ghost-test-model' 을(를) 권장 기본 'gemini-3.7-flash' 으로 바꿨습니다.
+[llmClient] authMode(chatgpt)에서 쓸 수 없는 모델 'ghost-test-model' 을(를) 권장 기본 'gemini-3.7-flash' 으로 바꿨습니다.
+[llmClient] authMode(chatgpt)에서 쓸 수 없는 실행 모델 'ghost-test-model' 을(를) 권장 기본 'gemini-3.7-flash' 으로 바꿨습니다.
+[llmClient] authMode(chatgpt)에서 쓸 수 없는 모델 'ghost-test-model' 을(를) 권장 기본 'gemini-3.7-flash' 으로 바꿨습니다.
+[llmClient] authMode(chatgpt)에서 쓸 수 없는 실행 모델 'ghost-test-model' 을(를) 권장 기본 'gemini-3.7-flash' 으로 바꿨습니다.
+[llmClient] authMode(chatgpt)에서 쓸 수 없는 모델 'ghost-test-model' 을(를) 권장 기본 'gemini-3.7-flash' 으로 바꿨습니다.
+[llmClient] authMode(chatgpt)에서 쓸 수 없는 실행 모델 'ghost-test-model' 을(를) 권장 기본 'gemini-3.7-flash' 으로 바꿨습니다.
+[llmClient] authMode(chatgpt)에서 쓸 수 없는 모델 'ghost-test-model' 을(를) 권장 기본 'gemini-3.7-flash' 으로 바꿨습니다.
+[llmClient] authMode(chatgpt)에서 쓸 수 없는 실행 모델 'ghost-test-model' 을(를) 권장 기본 'gemini-3.7-flash' 으로 바꿨습니다.
+
+stdout | test/aiChatObservability.test.ts > 실시간 고스트 프리뷰 연결 > 채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다
+TRACE_ACTIVITY {"result":{"ok":false,"pending":true}}
+
+stderr | test/aiChatObservability.test.ts > 실시간 고스트 프리뷰 연결 > 채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다
+[llmClient] authMode(chatgpt)에서 쓸 수 없는 모델 'ghost-test-model' 을(를) 권장 기본 'gemini-3.7-flash' 으로 바꿨습니다.
+[llmClient] authMode(chatgpt)에서 쓸 수 없는 실행 모델 'ghost-test-model' 을(를) 권장 기본 'gemini-3.7-flash' 으로 바꿨습니다.
+
+stdout | test/aiChatObservability.test.ts > 실시간 고스트 프리뷰 연결 > 채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다
+TRACE_FETCH /v1/chat/completions {"model":"gemini-3.7-flash","messages":[{"role":"system","content":"You classify ONE user request addressed to an RPG map/event editor assistant. Output JSON only — no prose, no fe
+
+stdout | test/aiChatObservability.test.ts > 실시간 고스트 프리뷰 연결 > 채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다
+TRACE_FETCH /v1/chat/completions {"model":"gemini-3.7-flash","messages":[{"role":"system","content":"You are the **planner** agent in a modern RPG map/event editor harness (Anthropic planner–generator–evaluator /
+
+stderr | test/aiChatObservability.test.ts > 실시간 고스트 프리뷰 연결 > 채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다
+[llmClient] authMode(chatgpt)에서 쓸 수 없는 모델 'ghost-test-model' 을(를) 권장 기본 'gemini-3.7-flash' 으로 바꿨습니다.
+[llmClient] authMode(chatgpt)에서 쓸 수 없는 실행 모델 'ghost-test-model' 을(를) 권장 기본 'gemini-3.7-flash' 으로 바꿨습니다.
+
+stdout | test/aiChatObservability.test.ts > 실시간 고스트 프리뷰 연결 > 채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다
+TRACE_FETCH /v1/chat/completions {"model":"gemini-3.7-flash","messages":[{"role":"system","content":"당신은 브라우저 기반 2D RPG 에디터의 개발 어시스턴트입니다.\n맵·이벤트·데이터베이스(아이템/장비/스킬/클래스/상태/적/액터/트룹/커먼이벤트)·퀘스트를 '툴 호출'로 편집합니다.\n\n## UX
+
+stderr | test/aiChatObservability.test.ts > 실시간 고스트 프리뷰 연결 > 채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다
+[llmClient] authMode(chatgpt)에서 쓸 수 없는 모델 'ghost-test-model' 을(를) 권장 기본 'gemini-3.7-flash' 으로 바꿨습니다.
+[llmClient] authMode(chatgpt)에서 쓸 수 없는 실행 모델 'ghost-test-model' 을(를) 권장 기본 'gemini-3.7-flash' 으로 바꿨습니다.
+[llmClient] authMode(chatgpt)에서 쓸 수 없는 모델 'ghost-test-model' 을(를) 권장 기본 'gemini-3.7-flash' 으로 바꿨습니다.
+[llmClient] authMode(chatgpt)에서 쓸 수 없는 실행 모델 'ghost-test-model' 을(를) 권장 기본 'gemini-3.7-flash' 으로 바꿨습니다.
+[llmClient] authMode(chatgpt)에서 쓸 수 없는 모델 'ghost-test-model' 을(를) 권장 기본 'gemini-3.7-flash' 으로 바꿨습니다.
+[llmClient] authMode(chatgpt)에서 쓸 수 없는 실행 모델 'ghost-test-model' 을(를) 권장 기본 'gemini-3.7-flash' 으로 바꿨습니다.
+
+stdout | test/aiChatObservability.test.ts > 실시간 고스트 프리뷰 연결 > 채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다
+TRACE_ACTIVITY {"result":{"ok":false,"error":"Unexpected token 'd', \"data: {\"ch\"... is not valid JSON","stoppedReason":"error","proposedCalls":0,"appliedCalls":0,"assistantText":"","recap":{"elapsedMs":144,"promptTokens":0,"completionTokens":0,"llmCalls":0,"toolCalls":0,"ralphContinues":0,"volumeContinues":0,"process":["planner:start","planner:error Unexpected token 'd', \"data: {\"ch\"... is not valid JSON","phase:execute","턴 중단(error): Unexpected token 'd', \"data: {\"ch\"... is not valid JSON · 출력 토큰 ~0"]}},"audit":[{"kind":"user","text":"새 맵 만들어줘\n\n[컨텍스트] 현재 맵: 빈 맵 (map_blank_start) · 소품·지형 material 라벨 예(place_props/fill_region — 가방·그룹 id 금지, 미합의는 목업 확인): 침엽수(prop), 나무 상자(prop), 과일박스(prop), 흙길 오토타일(terrain), 애니메이션 물 오토타일(water), 잔디(terrain), 키큰 풀(terrain), 모래(terrain), 울타리(fence), 창문(prop)","context":{"mapId":null,"mapName":null},"at":"2026-09-06T15:26:31.635Z"},{"kind":"status","text":"intent:fallback mode=other space=unclear plan 3ms — 폴백 사유: Unexpected token 'd', \"data: {\"ch\"... is not valid JSON","at":"2026-09-06T15:26:31.641Z"},{"kind":"status","text":"planner:start","at":"2026-09-06T15:26:31.714Z"},{"kind":"status","text":"planner:error Unexpected token 'd', \"data: {\"ch\"... is not valid JSON","at":"2026-09-06T15:26:31.719Z"},{"kind":"status","text":"오케스트레이션 주입: HARNESS (plan-execute-verify / Ralph): execute ONLY the current work item this burst. Do not skip ahead.\nGoal: 새 맵 만들어줘\n\n[컨텍스트] 현재 맵: 빈 맵 (map_blank_start) · 소품·지형 material 라벨 예(place_props/fill_region — 가방·그룹 id 금지, 미합의는 목업 확인): 침엽수(prop), 나무 상자(prop), 과일박스(prop), 흙길 오토타일(terrain), 애니메이션 물 오토타일(water), 잔디(terrain), 키큰 풀(terrain), 모래(terrain), 울타리(fence), 창문(prop)\nProgress: layers 0/1, items 0/1\nPlanner note: fallback template (planner parse/API failed)\nCurrent layer: 실행\nCurrent item: 요청 처리\nWorker instruction:\n새 맵 만들어줘\n\n[컨텍스트] 현재 맵: 빈 맵 (map_blank_start) · 소품·지형 material 라벨 예(place_props/fill_…","at":"2026-09-06T15:26:31.720Z"},{"kind":"status","text":"phase:execute","at":"2026-09-06T15:26:31.721Z"},{"kind":"status","text":"오케스트레이션 주입: 실행 단계: 계획을 충실히 수행, 누락 없이 완료 후 종료. 새 질문 금지. 한 응답에 여러 tool_calls를 배치해 라운드 수를 최소화하라(예: fill_region + author_house + paint_road를 동시에).","at":"2026-09-06T15:26:31.721Z"},{"kind":"status","text":"tools:escalated place_concept,get_concept_facility,add_companion,configure_companion_rules (capability)","at":"2026-09-06T15:26:31.773Z"},{"kind":"status","text":"tools:exposed 48 — author_house,author_village,get_world_structure_rules,author_world_bridge,author_world_mountain,build_wall,build_roof,place_door,lay_path,tile_erase,start_interior_room_session,advance_interior_room_build,run_interior_room_pipeline,furnish_interior_space,evaluate_interior_room,build_castle,tile_query,create_map,duplicate_map,manage_map_tree,paint_road,preview_house,mirror_region,copy_map_region,set_start_position,set_map_properties,set_encounter_table,make_hunting_ground,create_farm_plot,resize_map,make_action_enemy,get_project_summary,get_map_region,list_resources,get_database_records,show_map_region,place_props,fill_region,set_build_spec,get_work_plan,set_work_plan,complete_work_item,skip_work_item,place_concept,get_concept_facility,add_companion,configure_companion_rules,find_tools | capability:place_concept,get_concept_facility,add_companion,configure_companion_rules","at":"2026-09-06T15:26:31.773Z"},{"kind":"status","text":"턴 중단(error): Unexpected token 'd', \"data: {\"ch\"... is not valid JSON · 출력 토큰 ~0","at":"2026-09-06T15:26:31.778Z"},{"kind":"status","text":"run-recap {\"elapsedMs\":144,\"prompt\":0,\"completion\":0,\"calls\":0,\"missingUsage\":0,\"byModel\":[],\"tools\":0,\"toolFail\":0,\"ralph\":0,\"volume\":0,\"writes\":0,\"stopped\":\"error\",\"process\":[\"planner\",\"planner\",\"phase\",\"end\"]}","at":"2026-09-06T15:26:31.779Z"}]}
+
+stdout | test/aiChatObservability.test.ts > 실시간 고스트 프리뷰 연결 > 채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다
+TRACE_FETCH http://dbserver:8100/rest/v1/ai_conversations?on_conflict=conversation_id [{"conversation_id":"conv_4d03811f-4f8b-4e4c-9dc4-bc422927f209","project_id":"rpg-zzu-house-template-gallery","title":"새 맵 만들어줘","model":"gemini-3.7-flash","project_context_key":"l
+
+stderr | test/aiChatObservability.test.ts > 실시간 고스트 프리뷰 연결 > 채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다
+[llmClient] authMode(chatgpt)에서 쓸 수 없는 모델 'ghost-test-model' 을(를) 권장 기본 'gemini-3.7-flash' 으로 바꿨습니다.
+[llmClient] authMode(chatgpt)에서 쓸 수 없는 실행 모델 'ghost-test-model' 을(를) 권장 기본 'gemini-3.7-flash' 으로 바꿨습니다.
+
+stderr | test/aiChatObservability.test.ts
+[edit-activity] 디스크 미러 실패 (/__oprn/edit-activity: Failed to parse URL from /__oprn/edit-activity) — output/edit-activity/ 가 갱신되지 않는다.
+
+ ❯ test/aiChatObservability.test.ts (9 tests | 2 failed) 2999ms
+   ✓ 글자 크기 3단 (V3C ①) > 기본값은 '보통'이고 저장하면 localStorage(oprn:ai-font-size)에 영속된다 — 무효값은 보통으로 방어 235ms
+   ✓ 글자 크기 3단 (V3C ①) > 설정의 글자 크기 select(ai-font-size)를 바꾸면 즉시 패널에 반영·영속되고, 재부팅 시 다시 적용된다 268ms
+   ✓ 글자 크기 3단 (V3C ①) > applyAiFontSize는 data 속성과 CSS 변수(--ai-font-scale)를 함께 설정한다 150ms
+   ✓ 글자 크기 3단 (V3C ①) > 기록 줌 스테퍼는 없다 — Ctrl+휠이 글자 크기를 바꾸고 영속한다 136ms
+   ✓ 도구 호출 상세 아코디언 (V3C ③) > 성공 라인은 한 줄 요약만 보여 JSON 인자/결과 원문 노이즈를 숨긴다 133ms
+   ✓ 도구 호출 상세 아코디언 (V3C ③) > 실패 라인은 기존 testid를 유지하면서 아코디언 안에 오류 원문(summary/issues)을 그대로 담는다 156ms
+   ✓ 도구 호출 상세 아코디언 (V3C ③) > 복원된 대화의 도구 로그는 한 줄 요약으로 남고 JSON 상세는 숨긴다  600ms
+   × 병합 추론 원문 전체 열람 (V3C ②) > 도구 사이 추론이 한 블록으로 병합돼도 각 추론의 원문 전체가 아이템으로 남고 토글은 횟수를 표시한다 654ms
+     → expected null to be truthy
+   × 실시간 고스트 프리뷰 연결 > 채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다 664ms
+     → expected [] to deeply equal ArrayContaining{…}
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiChatObservability.test.ts > 병합 추론 원문 전체 열람 (V3C ②) > 도구 사이 추론이 한 블록으로 병합돼도 각 추론의 원문 전체가 아이템으로 남고 토글은 횟수를 표시한다
+AssertionError: expected null to be truthy
+
+- Expected:
+true
+
++ Received:
+null
+
+ ❯ test/aiChatObservability.test.ts:223:26
+    221|
+    222|     const reasoningBox = findByTestId(panel, "ai-reasoning") as unknow…
+    223|     expect(reasoningBox).toBeTruthy();
+       |                          ^
+    224|     const body = findByTestId(panel, "ai-reasoning-body") as unknown a…
+    225|     const items = body.querySelectorAll(".ai-reasoning-item");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  test/aiChatObservability.test.ts > 실시간 고스트 프리뷰 연결 > 채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다
+AssertionError: expected [] to deeply equal ArrayContaining{…}
+
+- Expected
++ Received
+
+- ArrayContaining [
+-   {
+-     "bounds": {
+-       "height": 5,
+-       "width": 6,
+-       "x": 0,
+-       "y": 0,
+-     },
+-     "mapId": "map_live_ghost",
+-     "toolName": "live_project_diff",
+-   },
+- ]
++ []
+
+ ❯ test/aiChatObservability.test.ts:311:22
+    309|     unsubscribe();
+    310|
+    311|     expect(observed).toEqual(
+       |                      ^
+    312|       expect.arrayContaining([
+    313|         {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  test/aiChatPanelTransportError.test.ts > transport failure paints recovery CTA and keeps Send mounted > refused fetch: is-turn-running cleared, system error bubble + ai-error-open-settings, ai-send stays disabled with ai-abort visible
+AssertionError: expected null to be truthy
+
+- Expected:
+true
+
++ Received:
+null
+
+ ❯ test/aiChatPanelTransportError.test.ts:74:59
+     72|       await flushAsync();
+     73|     }
+     74|     expect(findByTestId(panel, "ai-error-open-settings")).toBeTruthy();
+       |                                                           ^
+     75|     expect(panel.classList.contains("is-turn-running")).toBe(false);
+     76|     expect((status.textContent ?? "")).not.toContain("계획 중");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  3 failed | 8 passed (11)
+   Start at  00:25:56
+   Duration  35.20s (transform 22.83s, setup 0ms, collect 62.08s, tests 4.59s, environment 1ms, prepare 621ms)
+
+JSON report written to /home/main/.herdr/worktrees/rpg-zzu/worktree-clear-field-e552-ai-seven-async/.omo/evidence/ai-seven-async/trace-red.json

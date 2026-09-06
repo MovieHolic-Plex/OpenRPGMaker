@@ -193,6 +193,21 @@ describe("필수 검증의 실행 성공과 통과는 별도 계약", () => {
 });
 
 describe("검증 근거의 대상과 변경 수명", () => {
+  it("reports the exact stale scope when a different destination is rechecked", () => {
+    const evidence = new ToolVerificationEvidence();
+    const frontage = { mapId: "world", targets: [{ x: 24, y: 115 }] };
+    const guide = { mapId: "world", targets: [{ x: 24, y: 116 }] };
+    const passing = { ok: true, data: { reachable: true } };
+    evidence.observe("check_reachability", frontage, passing);
+    evidence.invalidateAfterWrite();
+    evidence.observe("check_reachability", guide, passing);
+    expect(evidence.passed("check_reachability")).toBe(false);
+    expect(evidence.problems().join("\n")).toContain(JSON.stringify(["check_reachability", frontage]));
+    expect(evidence.problems().join("\n")).not.toContain(JSON.stringify(["check_reachability", guide]));
+    evidence.observe("check_reachability", frontage, passing);
+    expect(evidence.problems()).toEqual([]);
+  });
+
   it("실제 advisory 실패는 보고하며 같은 대상의 자동 재통과로 해소한다", () => {
     const evidence = new ToolVerificationEvidence();
     evidence.observe("run_lint", {}, { ok: true, ...broken }, "advisory");

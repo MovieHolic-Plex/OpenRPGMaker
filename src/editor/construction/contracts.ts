@@ -185,6 +185,7 @@ export type ConstructionDiffTotals = {
   readonly palettePresetsModified: number;
   readonly endingsChanged: number;
   readonly mapPropertiesChanged?: number;
+  readonly audioDescriptionsChanged?: number;
   readonly sessionChanged: boolean;
   readonly systemChanged: boolean;
 };
