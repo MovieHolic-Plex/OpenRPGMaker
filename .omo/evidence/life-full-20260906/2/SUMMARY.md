@@ -1,5 +1,89 @@
 # Task2: version and preserve life-system saves
 
+## Current execution: st_01a07433 (2026-09-06)
+
+Task2 was already implemented when dispatched again. Its code remains working on the integrated tree. This execution preserves the existing atomic implementation and adds a public autosave failure/retry probe plus fresh verification receipts, rather than undoing working code to manufacture RED. The report below is historical: its statement that autosave.ts is untouched no longer describes the task4-integrated tree.
+
+- Parent/root: 01a0727b-398a-7481-b557-b198013542c1. Worktree: /home/main/z-project/rpg-zzu-life-full-p2. Branch: agent/life-full-p2; no upstream configured.
+- Base and verified product commit: 596eab9a865257197e67992cc0eec4e45239ad34; tree: b3ca75034e7956fe318673bd5bed8fc69e42d8c1.
+- Existing atomic implementation: 573a418e01c9eb97dda0df033c21e2d5985b0102. Consumer repair f1024a2202ab6205591af630aeb53b0bc3445669 is an actual ancestor; task2 VERIFY confirms it with zero blockers.
+- Read full Scope/task2, task1/task2 SUMMARY, task2 VERIFY, current task4 SUMMARY/VERIFY, AGENTS/quickstart/wiki, programming/TypeScript, debugging and git-master. All CLAUDE.md ignored. Parent plan/Boulder and other-task sources untouched.
+- No production/test-suite/wiki changes were needed. The only new executable is reexecution-autosave-probe.mjs. Existing support and assertions are retained.
+
+### Fresh commands and results
+
+Every command ran in the worktree above. reexecution-*.json contains exact command, actual child status and full stdout/stderr. GNU timeout supplied bounded foreground execution with TERM/10s kill grace; no monitor was available. Each suite ran once, without retries or skipped tests.
+
+| Receipt | Command | Result |
+| --- | --- | --- |
+| reexecution-required.json | npm test -- test/lifeSaveVersion.test.ts test/autosave.test.ts test/p0SessionPersistence.test.ts test/p1SessionPersistence.test.ts test/p2SessionPersistence.test.ts | Exit0; 5 files/50 passed; zero failed/skipped; no path substitutions |
+| reexecution-related.json | npm test -- test/lifeSaveConsumers.test.ts test/customEquipmentSlots.test.ts test/checkpointEndingRuntime.test.ts test/systemShell.test.ts test/playerOpenSaveMenu.test.ts test/p2SpatialPersistence.test.ts test/customSeasonSave.test.ts | Exit0; 7 files/50 passed; zero failed/skipped |
+| reexecution-diagnostics.json | node .omo/evidence/life-full-20260906/2/diagnostics.mjs | Exit0; syntactic/semantic language-service diagnostics0 across29 TS files changed since phase1; complete production writer/key references |
+| reexecution-typecheck.json | npm run typecheck:app | Exit0, after diagnostics |
+| reexecution-public.json | node .omo/evidence/life-full-20260906/2/public-probe.mjs | Exit0; real codec/Storage roundtrip, frozen old reader, malformed-current rejection, namespaces and clone/checkpoint policy |
+| reexecution-autosave.json | node .omo/evidence/life-full-20260906/2/reexecution-autosave-probe.mjs | Exit0; typed recovery failure false, native DataCloneError thrown, same-time retry true; both namespaces |
+| reexecution-provenance.json | node --check on new probe; wiki index/verify; diff check; ancestor/blob/tree checks | All exit0; src/test/wiki diff from base empty |
+
+Project SCHEMA_VERSION stays4; independent SAVE_SCHEMA_VERSION stays5. Both manual/autosave keys retain namespaces and legacy raw bytes, fallback only for absent current keys, and reject corrupt/future current payloads. The frozen phase1 reader's blob is still exactly d47f58197b24f781635cde0a2152a5bde0c3f689; fresh tests feed actual new writer bytes through its real parser. Custom equipment parser/load blocker are covered by10 passing equipment tests. Checkpoints remain memory-only WeakMap snapshots: there is no existing checkpoint disk key to migrate. Their prior identity survives failed construction.
+
+The new probe supplies malformed boundary input, never mocked targets or injected success. After a valid save17/checkpoint, invalid recovery sequence0 at current gold99 makes maybeAutosave return false and preserves disk, legacy bytes, current live and checkpoint. An actual uncloneable function then throws native DataCloneError. Removing the fault succeeds at the exact same synthetic timestamp, proving neither failure consumed debounce. The default and custom namespace both pass; expected typed warnings remain in stderr.
+
+### RED provenance, adversarial checks and teardown
+
+Original red.json/red.txt were read: historical exit1, 11 failed/7 passed before the original production edit, with writer4 versus5, old-reader acceptance, corrupt-new fallback and overwritten legacy bytes. Construction-failure characterization already passed. This is historical producer evidence, not RED newly witnessed by this child. Current five-file GREEN was executed once here. No production behavior changed, so no new failing-first fix is claimed.
+
+- cancel/resume: real save-menu keyboard cancellation/re-entry passes; independent session and checkpoint resume pass.
+- malformed/stale: corrupt/future current bytes cannot choose older legacy progress or another namespace; typed and native construction failures cannot report success.
+- flaky: no sleeps/polling added; synthetic timestamps prove immediate retry. Existing exact-key pre-action save-signal tests pass.
+- dirty: target began clean; only task2 evidence changed. No parent plan/Boulder, src/test/wiki, dependencies, remote writes, push/PR/merge or unrelated processes touched.
+- misleading output: historical RED is labeled, fresh exits are direct child statuses, public imports are not player.html evidence. Full build/gates/browser/full51 journeys were not rerun for this evidence-only increment. An initial SUMMARY patch had an incorrect hunk count (exit2); corrected patch generation only, with no product change or hidden test failure.
+- teardown: both public processes exited after Storage/windows/middleware Vite cleanup; original global Storage descriptor restored. No HTTP listener or build output was created and no probe cache directory remained. All additions/edits use /tmp/apply_patch (GNU patch wrapper).
+
+Task4 VERIFY still refuses older 8c4f4f57 while its producer reports corrections at this base; this execution neither clears that independent gate nor approves downstream work. Full51 remains unchanged, all51 feature rows not-run. This separate task4 verification remains parent-owned; no task2 defect was observed.
+
+### Current DoneClaim
+
+```json
+{
+  "taskId": "st_01a07433",
+  "taskNumber": 2,
+  "status": "done",
+  "delivery": "existing atomic implementation retained; fresh executable evidence increment",
+  "branch": "agent/life-full-p2",
+  "baseCommit": "596eab9a865257197e67992cc0eec4e45239ad34",
+  "verifiedProductTree": "b3ca75034e7956fe318673bd5bed8fc69e42d8c1",
+  "implementationCommit": "573a418e01c9eb97dda0df033c21e2d5985b0102",
+  "evidenceCommitLookup": "git log -1 --format=%H -- .omo/evidence/life-full-20260906/2/reexecution-autosave-probe.mjs",
+  "requiredTests": {
+    "files": 5,
+    "passed": 50,
+    "failed": 0,
+    "skipped": 0
+  },
+  "relatedTests": {
+    "files": 7,
+    "passed": 50,
+    "failed": 0,
+    "skipped": 0
+  },
+  "languageServiceDiagnostics": 0,
+  "typecheckExit": 0,
+  "publicProbeExits": [
+    0,
+    0
+  ],
+  "projectSchemaVersion": 4,
+  "saveSchemaVersion": 5,
+  "full51coverage": "not-run",
+  "task4IndependentGate": "unchanged",
+  "remoteWrites": 0,
+  "pushPrMerge": false,
+  "teardown": "complete"
+}
+```
+
+## Historical original implementation report
+
 Task2 is complete in one local atomic increment on `agent/life-full-p2`.
 Only the Save5 boundary, its storage consumers, direct tests, wiki, and evidence are changed.
 No task3+ life recovery implementation is claimed.
