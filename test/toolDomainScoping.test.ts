@@ -11,7 +11,7 @@ import {
   resetAssistantToolDomainMemory,
 } from "@/editor/assistantToolMode";
 import { editorState } from "@/editor/editorState";
-import { allTools, getTool, toOpenAiTools, LEGACY_TILE_KNOWLEDGE_SUPERSEDED, type ToolDefinition, type ToolDomain } from "@/editor/tools";
+import { activeTools, allTools, getTool, toOpenAiTools, LEGACY_TILE_KNOWLEDGE_SUPERSEDED, type ToolDefinition, type ToolDomain } from "@/editor/tools";
 import { CONSTRUCTION_WRITE_ROUTE_MANIFEST, PUBLIC_CONSTRUCTION_READ_DIAGNOSTICS } from "@/editor/construction/routeManifest";
 import { TOOL_CATEGORIES } from "@/editor/panels/toolBrowserModal";
 import { el } from "@/util/dom";
@@ -50,7 +50,7 @@ describe("T4 — toOpenAiTools 모드 스코핑", () => {
       expect(exposed.has(name), name).toBe(false);
     }
     expect(exposed.size).toBeGreaterThanOrEqual(12);
-    expect(exposed.size).toBeLessThanOrEqual(40);
+    expect([...exposed]).toEqual(eligibleNames(activeTools(), new Set(["tile"])));
   });
 
   it("event 모드: 이벤트 툴 포함, 타일 프리미티브 제외, 코어는 상시", () => {
@@ -110,19 +110,18 @@ describe("T4 — toOpenAiTools 모드 스코핑", () => {
     expect(toOpenAiTools().length).toBe(exposedCount);
   });
 
-  it("다도메인 유니온은 노출 상한(40)을 지키고 weak-only 도메인부터 제거하며 database 활성 시 DB 툴 전량을 유지한다", () => {
+  it("multi-domain filters retain every eligible tool, including database tools", () => {
     const tools = makeExposureTestTools();
     resetAssistantToolDomainMemory();
     const domains = computeActiveToolDomains(declaredIntent({ tools: ["upsert_item", "build_wall", "define_quest", "plan_world"] }));
     const exposed = toOpenAiTools(tools, { domains });
     const names = new Set(exposed.map((tool) => tool.function.name));
 
-    expect(exposed.length).toBeLessThanOrEqual(40);
+    expect([...names]).toEqual(eligibleNames(tools, domains));
     expect(names.has("deprecated_tool")).toBe(false);
     for (let index = 0; index < 8; index += 1) {
       expect(names.has(`database_tool_${index}`), `database_tool_${index}`).toBe(true);
     }
-    // 스킬 키워드가 battle weak 도 열 수 있음 — 상한 내 DB 전량 유지가 핵심
   });
 });
 
@@ -177,28 +176,32 @@ describe("T4 — computeActiveToolDomains (선언 유니온 + TTL)", () => {
     expect(names.has("author_village")).toBe(true);
   });
 
-  it("수정 선언은 편집 3도메인을 열고 상한(40) 안에서 채우기 툴이 노출된다", () => {
+  it("modify intent exposes all three editing domains without pruning", () => {
     const domains = computeActiveToolDomains(declaredIntent({ mode: "modify" }));
     for (const domain of ["tile", "map", "event"] as const) expect(domains.has(domain)).toBe(true);
     const list = toOpenAiTools(undefined, { domains }).map((tool) => tool.function.name);
-    expect(list.length).toBeLessThanOrEqual(40);
+    expect(list).toEqual(eligibleNames(activeTools(), domains));
     expect(list).toContain("fill_region");
   });
 
-  it("system 툴을 선언하면 canonical 툴이 cap 안에서 노출된다", () => {
+  it("system intent exposes every system capability", () => {
     const resetDomains = computeActiveToolDomains(declaredIntent({ tools: ["reset_project"], resetsContext: true }));
     const resetExposed = toOpenAiTools(undefined, { domains: resetDomains });
     expect(resetDomains.has("system")).toBe(true);
-    expect(resetExposed.length).toBeLessThanOrEqual(40);
+    expect(resetExposed.map((tool) => tool.function.name)).toEqual(eligibleNames(activeTools(), resetDomains));
     expect(resetExposed.some((tool) => tool.function.name === "reset_project")).toBe(true);
 
     const nightDomains = computeActiveToolDomains(declaredIntent({ tools: ["configure_time_system"] }));
     const nightExposed = toOpenAiTools(undefined, { domains: nightDomains });
     expect(nightDomains.has("system")).toBe(true);
-    expect(nightExposed.length).toBeLessThanOrEqual(40);
+    expect(nightExposed.map((tool) => tool.function.name)).toEqual(eligibleNames(activeTools(), nightDomains));
     expect(nightExposed.some((tool) => tool.function.name === "configure_time_system")).toBe(true);
   });
 });
+
+function eligibleNames(tools: readonly ToolDefinition[], domains: ReadonlySet<ToolDomain>): string[] {
+  return tools.filter((tool) => !tool.deprecated && (!tool.domains || tool.domains.includes("core") || tool.domains.some((domain) => domains.has(domain)))).map((tool) => tool.name);
+}
 
 function makeExposureTestTools(): ToolDefinition[] {
   const make = (name: string, domain: ToolDomain, deprecated = false): ToolDefinition => ({

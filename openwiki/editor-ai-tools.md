@@ -5,6 +5,65 @@ an explicit `face` still uses the normal authoring contract. This avoids shippin
 an inferred faceset ID absent from the project while preserving the canonical
 controls, existing guide identity and position.
 
+## Pre-write original grounding (2026-09-06)
+
+`originalContext.ts` exports a detached authored-state extractor reusable for before/after
+review. The session captures it before planning or tools, retains its snapshot ID across
+continuations, and recaptures on a new request. Target selection uses structured intent,
+actual selection and current map, never new natural-language keyword routing. A missing
+explicit target is reported, not replaced with the start map. Target map metadata, complete
+tile layers/stacks, complete events/pages/commands, authored system settings and relevant
+full database records are included. Actual record IDs are followed transitively, including
+common-event cycles; declared database/battle/system and quest/world tasks broaden the
+authored context. Runtime session, credentials/configuration and asset transport blobs are
+outside this projection. Existing resource tools remain the resource lookup surface.
+
+`buildGroundedRequest` appends JSON `originalContext` after history compaction, so the
+first writer sees its original values even with `budgetChars: 1`. It accounts for complete
+native schemas, history, originals and the existing 16,384-token response reserve against
+the actual supported bundled model window. The small browser-safe capacity table is
+checked against installed pi-catalog; the 9 MB provider catalog/runtime is not bundled.
+Unknown native IDs use the companion's provider-default fallback; injected unknown models
+retain the conservative legacy estimate. Token counting remains an estimate, not a tokenizer.
+
+Whole entries that do not fit remain explicitly omitted with a `get_original_context`
+list/read route, stable entry paths, snapshot ID and UTF-16 offsets. Concatenate exact JSON
+pages before parsing. Only successfully delivered whole originals or fully covered page
+ranges count at the existing `ToolReadEvidence` seam; partial/omitted/failed reads do not.
+Original receipts cannot replace a subsequent fresh read; existing fingerprint/reference
+checks and ask-mode refusal remain. Irreducible mandatory requests fail explicitly without
+pruning tools. A huge latest write result may still exceed a small window; paging originals
+does not claim arbitrary tool-result paging. Task recipes accompany the catalog for NPC,
+map/interior, database/battle, quest/world and life read-write-verify work. Tests:
+`originalContext`, `assistantOriginalContext`, `assistantReadContract`, `aiToolDiscoveryEscalation`.
+
+## Full native tool exposure (2026-09-06)
+
+`AssistantSession.runTurnLoop` sends every active editor tool's complete native description
+and input schema from the first working request. It no longer uses UI/intent domains,
+40-tool quotas, natural-language promotion slots, or a global 128-tool tail clamp to choose
+capabilities. `toolRegistry.toOpenAiTools` still honors an explicit domain filter for scoped
+callers, but retains **every** eligible definition in registry order. There is no pin list.
+Deprecated tools remain hidden; ask mode removes registry and session write schemas and
+still rejects attempted writes at execution. WorkPlan and acceptance tools retain their
+existing lifecycle gates. Schema validation, read-evidence gates, detached drafts,
+cancellation and usage accounting stay in the existing execution pipeline.
+
+The capability index is navigation alongside native schemas, not a promise to unlock
+missing tools later. `find_tools` is optional search, not an exposure prerequisite.
+The supported subscription adapters have no local function-count clipping: Antigravity
+uses Cloud Code Assist `functionDeclarations`; Codex uses a zstd Responses request with
+`input` entries of type `additional_tools`. Do not impose old CPEN/Chat Completions/Vertex
+limits on these transports. Lead evidence accepted 198 native definitions on Antigravity
+with HTTP 200; Codex live acceptance remains unverified without connected credentials.
+An upstream rejection is surfaced unchanged, never retried with a smaller capability set.
+No domain delegation is needed for the supported, observed full-native path.
+
+Regression seams: `aiToolDiscoveryEscalation`, `toolExposureQuota`, `toolDomainScoping`,
+`aiToolCapabilityIndex`, `aiComposerModeSession`, and `ohMyPiFullCatalog.bun.test.ts`.
+The transport fixture crosses counts 40/41, 127/128/129 and 198/207 using the installed
+adapters and verifies names, descriptions, nested schemas and explicit upstream errors.
+
 ## Audio description tools and event candidates
 
 Audio identity is `{ kind: "music" | "sound", resourceId: rawId }`. Search-result prefixes
