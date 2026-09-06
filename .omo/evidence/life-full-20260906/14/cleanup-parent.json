@@ -1,0 +1,17 @@
+{
+  "removed": [
+    {
+      "path": "/home/main/z-project/rpg-zzu-life-full-authoring-bounds",
+      "exit": 0,
+      "allRequiredEvidenceArchived": true,
+      "commitsPreservedIn": "8c944b28748dd87d2d0ae3bf75429f56d18f5d04"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-life-full-p4-bounds-verify",
+      "exit": 0,
+      "allRequiredEvidenceArchived": true,
+      "commitsPreservedIn": "8c944b28748dd87d2d0ae3bf75429f56d18f5d04"
+    }
+  ],
+  "branchesPreserved": true
+}
