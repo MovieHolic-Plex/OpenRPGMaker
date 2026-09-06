@@ -1,3 +1,9 @@
+## QA-only life observation (2026-09-06)
+
+`buildLifeRuntimeSnapshot` in `src/player/runtimeDom.ts` copies the current `farmPlots`, `energy`, `makerInstances`, `farmAnimals`, `farmBuildingPlacements`, and `lifeRecovery` owners. The existing runtime DOM snapshot, `__oprnDebug.readState()`, and headless runner final state share it. Reads do not advance deadlines, reconcile records, collect claims, or fill missing optional owners. Plot remaining time and linked-housing fields are not implemented by this increment and are not synthesized; later owner extensions can travel in the same detached copies.
+
+Each instrumented PlayScene owns its RuntimeDomOverlay and its increasing `actionReceipt`. `handleAction` records the actual synchronous dispatch result and ordered farm attempts (including ignored/rejected outcomes), then synchronizes the mirror before emitting `oprn:action` on the scene's overlay host. `handled` means input consumption, **not** completion of an asynchronous NPC/chest event or acceptance of every life action. The counter never enters PlaySession or SaveSnapshot. A new scene starts without a receipt. Normal exported-player boot keeps the existing QA capability off: no debug hooks/mirrors, no action collection or event emission. See `openwiki/testing.md` for prearmed observation and executable evidence.
+
 ## Save5 session boundary (2026-09-06)
 
 This section supersedes the historical schemaVersion 3 / mutual-reader-compatibility statements below. The shared writer now produces Save5; the reader accepts Save4 and Save5 and upgrades only in memory. Project version remains 4. Manual/autosave keys insert `v5:` after `save-slot:` while retaining the namespace. Missing new keys alone enable legacy fallback; corrupt new keys never silently resume older progress. Legacy raw bytes remain untouched on reads, writes, and quota failures.

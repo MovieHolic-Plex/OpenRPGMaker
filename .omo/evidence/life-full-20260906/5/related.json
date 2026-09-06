@@ -1,0 +1,30 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p2",
+  "head": "b7b02d97ad6cb3b493bd60691ec61970e8a0e37e",
+  "tree": "63ea1d26f87d4a82d9ff925071582abdae01b354",
+  "command": [
+    "npm",
+    "test",
+    "--",
+    "test/runtimeQaInstrumentationBoundary.test.ts",
+    "test/runtimeQaReport.test.ts",
+    "test/runtimeQaGate.test.ts",
+    "test/sceneTestRunner.test.ts",
+    "test/debugSession.test.ts",
+    "test/runtimeDebugPanel.test.ts",
+    "test/playSceneFarmFeedback.test.ts",
+    "test/npcActionFacing.test.ts",
+    "test/runtimeMovementStability.test.ts",
+    "test/actionDebounceFootprint.test.ts",
+    "test/lifeSaveVersion.test.ts",
+    "test/lifeRecoveryPersistence.test.ts",
+    "test/p0SessionPersistence.test.ts",
+    "test/p2SpatialPersistence.test.ts",
+    "test/autosave.test.ts"
+  ],
+  "started": "2026-09-06T01:25:46.421Z",
+  "exit": 1,
+  "signal": null,
+  "output": "\n> rpg-zzu@0.1.0 test\n> node scripts/run-vitest.mjs run --configLoader bundle test/runtimeQaInstrumentationBoundary.test.ts test/runtimeQaReport.test.ts test/runtimeQaGate.test.ts test/sceneTestRunner.test.ts test/debugSession.test.ts test/runtimeDebugPanel.test.ts test/playSceneFarmFeedback.test.ts test/npcActionFacing.test.ts test/runtimeMovementStability.test.ts test/actionDebounceFootprint.test.ts test/lifeSaveVersion.test.ts test/lifeRecoveryPersistence.test.ts test/p0SessionPersistence.test.ts test/p2SpatialPersistence.test.ts test/autosave.test.ts\n\n\n RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2\n\n ✓ test/runtimeQaReport.test.ts (18 tests) 20ms\n ✓ test/runtimeQaGate.test.ts (52 tests) 22ms\n ✓ test/p2SpatialPersistence.test.ts (3 tests) 272ms\n ✓ test/autosave.test.ts (16 tests) 784ms\n ✓ test/p0SessionPersistence.test.ts (9 tests) 614ms\n ✓ test/lifeSaveVersion.test.ts (18 tests) 1016ms\n ✓ test/runtimeDebugPanel.test.ts (17 tests) 1709ms\n ✓ test/runtimeQaInstrumentationBoundary.test.ts (3 tests) 18ms\n ✓ test/debugSession.test.ts (4 tests) 8505ms\n   ✓ debugSession — 런타임 디버그 조작 > applyDebugOp가 스위치/변수/아이템/골드/텔레포트를 반영한다  8285ms\n ✓ test/lifeRecoveryPersistence.test.ts (40 tests) 3625ms\n   ✓ adversarial life codec boundaries > refuses all conversions on claim exhaustion without moving a prefix  715ms\n   ✓ bounded animal restoration > quarantines animals beyond the runtime bound instead of dropping a saved suffix  628ms\n ❯ test/actionDebounceFootprint.test.ts (5 tests | 2 failed) 602ms\n   ✓ 조사 연타 디바운스는 이벤트 단위다 > 몸 안에서 방향만 바꿔도 같은 이벤트는 다시 발동하지 않는다 126ms\n   ✓ 조사 연타 디바운스는 이벤트 단위다 > 서로 다른 이벤트로 방향을 바꾸면 각각 발동한다 117ms\n   ✓ 조사 연타 디바운스는 이벤트 단위다 > 1x1 이벤트를 같은 방향으로 연타하면 한 번만 발동한다 — 항등 138ms\n   × __oprnDebug 스냅샷이 두 사각을 실어 보낸다 > 3x3 + passRows 1 이면 몸 사각과 통행 사각이 다르게 실린다 125ms\n     → Cannot read properties of undefined (reading 'registry')\n   × __oprnDebug 스냅샷이 두 사각을 실어 보낸다 > 발자국 저작이 없으면 두 사각이 앵커 한 칸으로 같다 — 항등 94ms\n     → Cannot read properties of undefined (reading 'registry')\n ✓ test/npcActionFacing.test.ts (9 tests) 1449ms\n   ✓ NPC action facing > respects move route direction fix on autonomous action NPCs  300ms\n ✓ test/playSceneFarmFeedback.test.ts (5 tests) 437ms\n ✓ test/sceneTestRunner.test.ts (2 tests) 162ms\n ✓ test/runtimeMovementStability.test.ts (50 tests) 4152ms\n\n Test Files  1 failed | 14 passed (15)\n      Tests  2 failed | 249 passed (251)\n   Start at  10:25:47\n   Duration  18.81s (transform 29.18s, setup 0ms, collect 110.58s, tests 23.39s, environment 1.03s, prepare 3.44s)\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  test/actionDebounceFootprint.test.ts > __oprnDebug 스냅샷이 두 사각을 실어 보낸다 > 3x3 + passRows 1 이면 몸 사각과 통행 사각이 다르게 실린다\nTypeError: Cannot read properties of undefined (reading 'registry')\n ❯ syncCutsceneHudVisibility src/player/playSceneMapRuntime.ts:657:27\n    655|   readonly session: PlaySceneContext[\"session\"];\n    656| }): void {\n    657|   const host = scene.game.registry.get(\"dialogueHost\");\n       |                           ^\n    658|   if (!isCutsceneHudHost(host)) return;\n    659|   host.classList.toggle(CUTSCENE_HUD_HIDDEN_CLASS, isCutsceneHudHidden…\n ❯ syncRuntimeState src/player/playSceneMapRuntime.ts:563:3\n ❯ captureScene test/actionDebounceFootprint.test.ts:139:5\n ❯ test/actionDebounceFootprint.test.ts:145:19\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯\n\n FAIL  test/actionDebounceFootprint.test.ts > __oprnDebug 스냅샷이 두 사각을 실어 보낸다 > 발자국 저작이 없으면 두 사각이 앵커 한 칸으로 같다 — 항등\nTypeError: Cannot read properties of undefined (reading 'registry')\n ❯ syncCutsceneHudVisibility src/player/playSceneMapRuntime.ts:657:27\n    655|   readonly session: PlaySceneContext[\"session\"];\n    656| }): void {\n    657|   const host = scene.game.registry.get(\"dialogueHost\");\n       |                           ^\n    658|   if (!isCutsceneHudHost(host)) return;\n    659|   host.classList.toggle(CUTSCENE_HUD_HIDDEN_CLASS, isCutsceneHudHidden…\n ❯ syncRuntimeState src/player/playSceneMapRuntime.ts:563:3\n ❯ captureScene test/actionDebounceFootprint.test.ts:139:5\n ❯ test/actionDebounceFootprint.test.ts:158:19\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯\n\n",
+  "sha256": "82b6cbe09722371625e09f06f9c48dfe84dc00bbd1e5e0af3d4d8bf422ab95c4"
+}

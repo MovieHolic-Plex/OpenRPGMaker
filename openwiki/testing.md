@@ -1,3 +1,11 @@
+## Life QA observation and action receipts (2026-09-06)
+
+- `npm test -- test/lifeQaObservability.test.ts` characterizes real till/rejection behavior and tests detached life snapshots, optional absence, per-scene receipts and instrumentation-off behavior. Observation is not save reconciliation or gameplay mutation.
+- For a synchronous field action, use `performObservedAction(page, () => page.keyboard.press("z"))` from `scripts/lib/runtimeQaRun.mjs`. It arms the exact scene-host `oprn:action` listener **before** input and returns `{receipt, state, mirror}` after the action's mirror sync, even when the game state did not change. The bounded timeout/cancel path removes the listener and disposes its JS handle. No extra browser global is installed. State and receipt reads are detached copies.
+- Existing runtime scenarios may opt into the same contract with `{kind:"action", observe:true}` instead of an action followed by a settling sleep. The manifest includes existing life owners and the receipt when present. Hook readiness uses the boot/mirror DOM mutation signal, not a polling interval. Other scenario waits are unchanged; no pre-existing life scenario was rewritten or credited with a journey it did not run.
+- Receipts describe synchronous input dispatch and actual farm attempt results. Event/chest dispatch must still await that surface's own DOM completion; `handled:true` is not an asynchronous completion receipt. Future fishing, linked housing, regrowth and ledger integrations are not claimed by this foundation.
+- Task5 reproducible public-module and shipped-player proof scripts are under `.omo/evidence/life-full-20260906/5/`; `public-probe.mjs` generates the minimal local contract fixture, `browser-proof.mjs` drives actual keyboard input with QA off/on, and `harness-proof.mjs` exercises the dedicated runtime runner's observed action op. No editor play, remote authored content or injected successful outcomes are used. Full 51-feature coverage remains not-run until the later journeys.
+
 ## 기존 실패 비교는 진단 내용까지 확인한다 (2026-09-05)
 
 같은 main의 실패 파일·테스트 이름·중복 횟수가 같아도 회귀가 없다는 충분한 증거는 아니다.
