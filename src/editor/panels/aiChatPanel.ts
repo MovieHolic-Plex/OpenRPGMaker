@@ -365,7 +365,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     syncDeckState();
     if (record) controller.statusTimeline.push({ at: new Date().toISOString(), status: text });
   };
-  const log = el("div", { class: "ai-chat-log", attrs: { tabindex: "0", role: "region", "aria-label": "조수 대화" }, dataset: { testid: "ai-chat-log" } });
+  const log = el("div", { class: "ai-chat-log", attrs: { tabindex: "0", role: "region", "aria-label": "조수 대화" }, dataset: { testid: "ai-chat-log", editorNavigationOwner: "true" } });
   let panelRoot: HTMLElement | null = null;
   let studioShell: StudioShell | null = null;
   const studioToolLines: string[] = [];
