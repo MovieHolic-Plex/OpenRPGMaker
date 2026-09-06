@@ -1,0 +1,37 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiOutcomePresentation.test.ts test/aiStickyChecklist.test.ts test/aiAutonomousRunSurface.test.ts test/aiWorkPlanTerminalFocus.test.ts test/aiRetryWorkPlanLifecycle.test.ts --maxWorkers 1 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-20260906
+
+ ✓ test/aiWorkPlanTerminalFocus.test.ts (7 tests) 20238ms
+   ✓ terminal work-plan focus ownership > returns removed ai-plan-book focus to the stable composer  4170ms
+   ✓ terminal work-plan focus ownership > returns removed ai-plan-book-close focus to the stable composer  1225ms
+   ✓ terminal work-plan focus ownership > returns removed ai-plan-book-open focus to the stable composer  1887ms
+   ✓ terminal work-plan focus ownership > restores composer focus on an aborted terminal result  2181ms
+   ✓ terminal work-plan focus ownership > does not steal focus from an unrelated control while removing an open book  3717ms
+   ✓ terminal work-plan focus ownership > preserves the error dialog's focus when it supersedes the focused book  4196ms
+   ✓ terminal work-plan focus ownership > keeps manual close notification distinct from terminal programmatic close  2852ms
+ ✓ test/aiRetryWorkPlanLifecycle.test.ts (7 tests) 14991ms
+   ✓ manual retry work-plan ownership > reopens live checklist on actual retry and removes it at 'final' ('chat'/'do', completed=undefined)  5671ms
+   ✓ manual retry work-plan ownership > reopens live checklist on actual retry and removes it at 'final' ('auto'/'do', completed=undefined)  1984ms
+   ✓ manual retry work-plan ownership > reopens live checklist on actual retry and removes it at 'final' ('auto'/'plan', completed=undefined)  1019ms
+   ✓ manual retry work-plan ownership > reopens live checklist on actual retry and removes it at 'error' ('chat'/'ask', completed=undefined)  2265ms
+   ✓ manual retry work-plan ownership > reopens live checklist on actual retry and removes it at 'aborted' ('chat'/'do', completed=undefined)  1349ms
+   ✓ manual retry work-plan ownership > reopens live checklist on actual retry and removes it at 'throw' ('chat'/'do', completed=undefined)  1728ms
+   ✓ manual retry work-plan ownership > reopens live checklist on actual retry and removes it at 'final' ('chat'/'do', completed=true)  961ms
+ ✓ test/aiStickyChecklist.test.ts (13 tests) 9798ms
+   ✓ renders acceptance outside chat and retains verified evidence after the turn  1804ms
+   ✓ projects pending without a mutable checkbox  767ms
+   ✓ projects working without a mutable checkbox  454ms
+   ✓ projects verifying without a mutable checkbox  309ms
+   ✓ projects verified without a mutable checkbox  464ms
+   ✓ projects blocked without a mutable checkbox  491ms
+   ✓ ignores late acceptance events after the real new-chat boundary  1170ms
+   ✓ refreshes backend acceptance on a store mutation without manufacturing verification  2064ms
+   ✓ retains the backend blocked snapshot when the actual abort button ends a held turn  1550ms
+ ✓ test/aiOutcomePresentation.test.ts (93 tests) 3698ms
+   ✓ withdraws the exact real requirement only on user activation, retaining source and failed evidence  1273ms
+   ✓ keeps rejected and busy actions from changing the canonical obligation  1457ms
+   ✓ does not offer a user action for legacy read-only callers  560ms
