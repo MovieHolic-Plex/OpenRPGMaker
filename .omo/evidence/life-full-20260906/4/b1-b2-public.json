@@ -1,0 +1,18 @@
+{
+  "command": "node .omo/evidence/life-full-20260906/4/b1-b2-public-probe.mjs",
+  "wrapper": [
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=10s",
+    "180s",
+    "bash",
+    "-lc",
+    "node .omo/evidence/life-full-20260906/4/b1-b2-public-probe.mjs"
+  ],
+  "exit": 0,
+  "durationSeconds": 18.79938817024231,
+  "head": "8c4f4f57c1473f024ee7bf9dad50cf859459f30d",
+  "tree": "f4876f1c27ec0cd5799d20b184470097acd2d304",
+  "capturedText": "{\"blocker\":\"B1\",\"writer\":\"quarantined\",\"readerOriginalIntact\":true,\"originalOwners\":1,\"fullOriginal\":{\"id\":\"legacy\",\"mapId\":\"map_blank_start\",\"x\":2,\"y\":2,\"kind\":\"legacy-machine\",\"paid\":{\"itemId\":\"old-input\",\"count\":3},\"oldJob\":{\"progress\":7}},\"payableItems\":[],\"receiptRefused\":true,\"repeatedRoundtrips\":2,\"reissued\":false,\"liveUnchanged\":true,\"inputDiskUnchanged\":true}\n[autosave] failed to reconcile life state: LifeReconciliationError: Life recovery farmPlots/farmPlots: invalid-occupancy\n    at parseLifeState (/home/main/z-project/rpg-zzu-life-full-p2/src/project/lifeStateReconciliation.ts:36:102)\n    at prepareLifeSnapshot (/home/main/z-project/rpg-zzu-life-full-p2/src/player/saveSlots.ts:834:89)\n    at createSaveSnapshot (/home/main/z-project/rpg-zzu-life-full-p2/src/player/saveSlots.ts:142:19)\n    at Module.performAutosave (/home/main/z-project/rpg-zzu-life-full-p2/src/player/autosave.ts:26:54)\n    at file:///home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/4/b1-b2-public-probe.mjs:95:25 {\n  sourceKind: 'farmPlots',\n  sourceId: 'farmPlots',\n  reason: 'invalid-occupancy'\n}\n{\"blocker\":\"B2\",\"reader\":\"corrupt\",\"apply\":\"refused\",\"writer\":\"refused\",\"autosave\":null,\"day\":{\"ok\":false,\"reason\":\"recovery\",\"stage\":\"recovery\",\"sourceKind\":\"farmPlots\",\"sourceId\":\"farmPlots\"},\"priorDiskUnchanged\":true,\"currentLiveAndReceiptsUnchanged\":true}\n{\"control\":\"valid occupancy\",\"plotRetained\":true,\"collidingShed\":\"quarantined\",\"occupancyWeakened\":false}\n{\"teardown\":\"Storage cleared; happy-dom and middleware-only Vite closed\",\"httpListener\":false,\"remoteWrites\":0}\n",
+  "sha256": "2875d1cecca2202eb5506f0848e70dbc049da382beefa8d33be94b94bd341516"
+}

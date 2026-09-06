@@ -28,10 +28,12 @@ export { computeFadeVolume, isFadeComplete, clampVolume } from "./fade";
 let engine: AudioEngine | null = null;
 
 // 엔진 싱글턴. 최초 접근 시 자동재생 언락 리스너 설치.
-export function getAudioEngine(): AudioEngine {
+export function getAudioEngine(options?: { readonly qaInstrumentation: boolean }): AudioEngine {
   if (engine === null) {
-    engine = new AudioEngine();
+    engine = new AudioEngine(options);
     engine.installUnlockListeners();
+  } else if (options !== undefined) {
+    engine.setQaInstrumentation(options.qaInstrumentation);
   }
   return engine;
 }

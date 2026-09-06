@@ -33,7 +33,8 @@ export default defineConfig({
     emptyOutDir: true,
     sourcemap: false,
     cssCodeSplit: false,
-    assetsInlineLimit: 0,
+    // CSS imports (including HUD icons) must not leave sibling files beside one HTML.
+    assetsInlineLimit: Number.POSITIVE_INFINITY,
     rollupOptions: {
       input: src("player/exportEntry.ts"),
       output: {

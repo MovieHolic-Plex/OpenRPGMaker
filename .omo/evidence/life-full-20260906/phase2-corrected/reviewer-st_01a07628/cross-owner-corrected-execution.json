@@ -1,0 +1,25 @@
+{
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "180s",
+    "node",
+    ".omo/evidence/life-full-20260906/phase2-corrected/reviewer-st_01a07628/cross-owner-probe.mjs"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p2-corrected-review",
+  "head": "d84001e88b5e0b7f8ff3074de0ec5f6cdbcbf41e",
+  "tree": "7b9fd7d4cbc04e99f3f7a2ed9005e8eb91ea3345",
+  "scriptSha256": "9680b59f0489e87fdb51d1d9f38349ccb1661cc720198eaae3d629728d8830a1",
+  "started": "2026-09-06T10:08:11.632347+00:00",
+  "finished": "2026-09-06T10:08:20.824655+00:00",
+  "exit": 0,
+  "stdout": "{\"case\":\"simultaneous-content-churn\",\"actualTransactions\":[\"grant12\",\"deposit2\",\"contribute5\",\"startMaker3\"],\"inventoryBeforeReceipt\":2,\"claims\":[2,3,3],\"retainedProgress\":2,\"inventoryAfterReceipt\":10,\"conserved\":12,\"repeatedRoundtrips\":2,\"duplicatePayout\":false,\"writerInputUnchanged\":true}\n{\"case\":\"last-owner-capacity-refusal\",\"existingClaims\":4094,\"requiredConversions\":3,\"refusedOwner\":\"makerInstances/job\",\"wholeSessionUnchanged\":true,\"priorManualBytesUnchanged\":true,\"priorCheckpointUnchanged\":true,\"dayUnchanged\":true}\n{\"cleanup\":\"Storage cleared; Happy DOM and middleware-only Vite closed; reviewer SSR cache removed\",\"httpListenerStarted\":false,\"remoteWrites\":0,\"playerHtml\":\"not executed by this public-module probe\"}\n",
+  "stderr": "",
+  "syntaxExit": 0,
+  "supersedesHarnessOnly": "cross-owner-first-execution.json (native null prototypes compared to structuredClone-normalized expected prototypes)"
+}

@@ -29,6 +29,8 @@ export const DATABASE_PRIMARY_SENTINELS: Readonly<Record<string, string>> = {
   tilesets: '[data-testid="tileset-db-search"]',
   commonEvents: '[data-testid="db-common-event-search"]',
   system: '[data-testid="db-system-nav-font"]',
+  opening: '[data-testid="db-cinematic-opening"] [data-testid="db-cinematic-enabled"]',
+  gameOver: '[data-testid="db-cinematic-game-over"] [data-testid="db-cinematic-game-over-title"]',
   terms: '[data-testid="db-terms-search"]',
   switches: '[data-testid="db-switch-search"]',
   variables: '[data-testid="db-variable-search"]',

@@ -1,0 +1,20 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeRecovery.test.ts test/p0Makers.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+ ✓ test/p0Makers.test.ts (8 tests) 784ms
+ ✓ test/lifeRecovery.test.ts (54 tests) 4387ms
+   ✓ bounded recovery ownership > accepts claim 4096 then refuses claim 4097 without removing its owner or sequence  584ms
+   ✓ adversarial source conversion > validates a large JSON array without overflowing the call stack  563ms
+   ✓ adversarial source conversion > rejects total recovery overflow without removing the owner or advancing sequence  491ms
+
+ Test Files  2 passed (2)
+      Tests  62 passed (62)
+   Start at  08:33:15
+   Duration  15.03s (transform 8.05s, setup 0ms, collect 18.28s, tests 5.17s, environment 1ms, prepare 608ms)
+
+
+EXIT=0

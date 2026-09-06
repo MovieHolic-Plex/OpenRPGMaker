@@ -1,0 +1,19 @@
+{
+  "reviewedHead": "d84001e88b5e0b7f8ff3074de0ec5f6cdbcbf41e",
+  "reviewedTree": "7b9fd7d4cbc04e99f3f7a2ed9005e8eb91ea3345",
+  "reviewWorktree": "/home/main/z-project/rpg-zzu-life-full-p2-corrected-review",
+  "archiveManifest": "archive-manifest.json",
+  "verifiedArchivedFiles": 35,
+  "verifiedArchivedBytes": 232946,
+  "allCopiesMatchSourceSha256": true,
+  "configuredSecretLiteralHits": 0,
+  "trackedTreeAndCachesUnchanged": true,
+  "ownedLiveRuntimes": 0,
+  "unresolvedProcessResolution": "Remaining observed entries were zombies or had exited, not live processes.",
+  "unlockExit": 0,
+  "removeExit": 0,
+  "ownedGeneratedResources": "Worktree removal removed parent-generated dist and all cache/output directories within the dedicated review tree after evidence archival. Shared dependency caches were not deleted.",
+  "sourceTaskWorktrees": "Previously removed after merged ancestry and evidence checks.",
+  "remoteMergePerformed": false,
+  "limitations": "Full Vitest remains incomplete; six matched baseline surface failures remain failures; scoped approval only."
+}

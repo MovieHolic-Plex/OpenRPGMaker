@@ -1,0 +1,12 @@
+{"file":"src/player/audio/audioEngine.ts","diagnostics":[]}
+{"file":"src/player/audio/index.ts","diagnostics":[]}
+{"file":"src/player/player.ts","diagnostics":[]}
+{"file":"test/audioQaInstrumentation.test.ts","diagnostics":[]}
+{"file":"test/playerAudioQaLifecycle.test.ts","diagnostics":[]}
+{"file":"test/audioEnginePlaybackControls.test.ts","diagnostics":[]}
+{"file":"test/playerRunControls.test.ts","diagnostics":[]}
+{"file":"test/playerKeydownSessionGuard.test.ts","diagnostics":[]}
+{"file":"test/playBootRecovery.test.ts","diagnostics":[]}
+{"file":"test/playerOpenSaveMenu.test.ts","diagnostics":[]}
+{"file":"test/e2e/oprn-audio-test-dialog.spec.ts","diagnostics":[]}
+{"files":11,"diagnostics":0}

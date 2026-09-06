@@ -1,0 +1,101 @@
+{
+  "scenarioId": "life-qa-observability",
+  "projectPath": ".omo/evidence/life-full-20260906/5/project.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "till",
+      "shot": "01-till.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 2,
+        "y": 2,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {
+          "map_blank_start": {
+            "2,3": {
+              "tilled": true,
+              "watered": false
+            }
+          }
+        },
+        "energy": 0,
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_blank_start",
+          "handled": true,
+          "farmAttempts": [
+            {
+              "kind": "tilled",
+              "x": 2,
+              "y": 3,
+              "itemId": "qa-hoe",
+              "energySpent": 1,
+              "xpAwarded": {},
+              "affectedTiles": [
+                {
+                  "x": 2,
+                  "y": 3,
+                  "kind": "tilled"
+                }
+              ]
+            }
+          ],
+          "sequence": 1
+        }
+      }
+    },
+    {
+      "index": 1,
+      "id": "reject",
+      "shot": "02-reject.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 2,
+        "y": 2,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {
+          "map_blank_start": {
+            "2,3": {
+              "tilled": true,
+              "watered": false
+            }
+          }
+        },
+        "energy": 0,
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_blank_start",
+          "handled": false,
+          "farmAttempts": [
+            {
+              "kind": "ignored",
+              "x": 2,
+              "y": 3,
+              "reason": "missing-seed"
+            },
+            {
+              "kind": "ignored",
+              "x": 2,
+              "y": 2,
+              "reason": "insufficient-energy"
+            }
+          ],
+          "sequence": 2
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "sources": [
+    "phase2-corrected/remaining-surface.json",
+    "phase2-integration/base-full-gates.json",
+    "phase2-integration/final-gates.json"
+  ],
+  "fullFailureBlocks": 6,
+  "equalAfterAnsiAndOnlyWorktreeRoots": true,
+  "rows": [
+    {
+      "name": "test/eventEditorCommitProbe.baseline.test.ts > 이벤트 편집기 커밋 프로브 축 > (1) 컨트롤 조작 → 저장 커맨드 스냅샷이 기준선과 같다",
+      "normalizedSha256": "942941461e3c947907ddcf48ee8967cc301aa2250a91204b066a3fa95698198b"
+    },
+    {
+      "name": "test/eventEditorCommitProbe.baseline.test.ts > no-commit 래칫 > 무커밋 컨트롤 집합이 허용 목록과 정확히 일치한다",
+      "normalizedSha256": "4bbd64947147caca10f99df069aa479b9621b211c21f3d19bf92cdbdf8c30cfa"
+    },
+    {
+      "name": "test/eventEditorFormSurface.baseline.test.ts > 이벤트에디터 폼 표면 스냅샷 > 기준선과 일치한다",
+      "normalizedSha256": "8c861a2a16859190ef0c8b136892bf2e259809991774440cf99ee7367c338724"
+    },
+    {
+      "name": "test/eventEditorInteractionSurface.baseline.test.ts > 이벤트에디터 상호작용 후 폼 표면 스냅샷 > 기준선과 일치한다",
+      "normalizedSha256": "7f6aff992dc3091d62367f48cbbf67ffbfdff19f0104d81445dabc2660c8bcc9"
+    },
+    {
+      "name": "test/eventEditorM2Surface.baseline.test.ts > M2 명령 폼 표면 스냅샷 > 기준선과 일치한다",
+      "normalizedSha256": "aeb91af55f25bbb2e83cb6e5262b4dc5cf1b5eef57ffe535e001a11e13d84b8e"
+    },
+    {
+      "name": "test/eventEditorPortalSurface.baseline.test.ts > 포털(피커/모달) 표면 스냅샷 > 기준선과 일치한다",
+      "normalizedSha256": "7b009ebeddf73a8036bb4ad60792b991b32a9c995821729a91b0337104e6b8d9"
+    }
+  ]
+}

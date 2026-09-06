@@ -1,0 +1,2 @@
+command=npm run typecheck:app
+exit=0

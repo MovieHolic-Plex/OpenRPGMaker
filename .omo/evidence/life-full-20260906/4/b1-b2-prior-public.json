@@ -1,0 +1,18 @@
+{
+  "command": "node .omo/evidence/life-full-20260906/4/public-probe.mjs",
+  "wrapper": [
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=10s",
+    "180s",
+    "bash",
+    "-lc",
+    "node .omo/evidence/life-full-20260906/4/public-probe.mjs"
+  ],
+  "exit": 0,
+  "durationSeconds": 22.33745288848877,
+  "head": "8c4f4f57c1473f024ee7bf9dad50cf859459f30d",
+  "tree": "f4876f1c27ec0cd5799d20b184470097acd2d304",
+  "capturedText": "{\"surface\":\"real public contribute -> Save5 Storage -> read/apply -> claim receipt\",\"donated\":5,\"progress\":2,\"claim\":3,\"inventoryBeforeReceipt\":5,\"inventoryAfterReceipt\":8,\"conservedTotal\":10,\"reloads\":2,\"duplicatePayout\":false,\"liveUnchanged\":true}\n{\"completedTombstone\":true,\"dormantRights\":2,\"repeatedReward\":false,\"earnedGold\":9}\n{\"oldClockMinute\":29,\"changedStart\":8,\"canceled\":[{\"itemId\":\"raw\",\"count\":3}],\"reissued\":false}\n{\"oldClockMinute\":30,\"changedStart\":8,\"canceled\":[{\"itemId\":\"product\",\"count\":2}],\"reissued\":false}\n[autosave] failed to reconcile life state: LifeReconciliationError: Life recovery lifeRecovery/claims: invalid-state\n    at parseLifeState (/home/main/z-project/rpg-zzu-life-full-p2/src/project/lifeStateReconciliation.ts:37:110)\n    at prepareLifeSnapshot (/home/main/z-project/rpg-zzu-life-full-p2/src/player/saveSlots.ts:834:89)\n    at createSaveSnapshot (/home/main/z-project/rpg-zzu-life-full-p2/src/player/saveSlots.ts:142:19)\n    at Module.performAutosave (/home/main/z-project/rpg-zzu-life-full-p2/src/player/autosave.ts:26:54)\n    at file:///home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/4/public-probe.mjs:96:25 {\n  sourceKind: 'lifeRecovery',\n  sourceId: 'claims',\n  reason: 'invalid-state'\n}\n{\"reconciliationFailure\":\"reported\",\"currentLiveUnchanged\":true,\"priorAutosaveUnchanged\":true,\"priorCheckpointUnchanged\":true,\"dayRollback\":true,\"malformedRead\":\"corrupt\",\"malformedRawUnchanged\":true}\n[autosave] failed to write autosave (ignored): DOMException [QuotaExceededError]: quota\n    at new DOMException (node:internal/per_context/domexception:76:18)\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/4/public-probe.mjs:123:49)\n    at writeAutosave (/home/main/z-project/rpg-zzu-life-full-p2/src/player/saveSlots.ts:123:11)\n    at Module.performAutosave (/home/main/z-project/rpg-zzu-life-full-p2/src/player/autosave.ts:36:44)\n    at file:///home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/4/public-probe.mjs:127:25\n{\"laterStage\":\"energy\",\"wholeDayRolledBack\":true,\"quotaFailure\":true,\"successfulClaimNotRolledBack\":true,\"currentInventory\":3}\n{\"teardown\":\"Storage cleared; happy-dom and middleware-only Vite closed\",\"httpListener\":false,\"remoteWrites\":0,\"playerHtml\":\"not-run; public persistence seam exercised\"}\n",
+  "sha256": "358d29a5428f06db3e7f212088bf640f9aeb53050bec1d34863362c96d34fa91"
+}

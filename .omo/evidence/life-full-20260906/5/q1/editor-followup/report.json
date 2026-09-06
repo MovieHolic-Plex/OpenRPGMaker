@@ -1,0 +1,269 @@
+{
+  "config": {
+    "argv": [
+      "/usr/local/bin/node",
+      "/home/main/z-project/rpg-zzu-life-full-p2/node_modules/.bin/playwright",
+      "test",
+      "--config",
+      ".omo/evidence/life-full-20260906/5/q1/editor-followup/playwright.config.ts",
+      "test/e2e/oprn-audio-test-dialog.spec.ts",
+      "--project=chromium",
+      "--workers=1",
+      "--retries=0"
+    ],
+    "configFile": "/home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/5/q1/editor-followup/playwright.config.ts",
+    "rootDir": "/home/main/z-project/rpg-zzu-life-full-p2/test/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/5/q1/editor-followup/results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/home/main/z-project/rpg-zzu-life-full-p2/test/e2e",
+        "testIgnore": [
+          "**/_*.spec.ts"
+        ],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "/home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/5/q1/editor-followup/report.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.61.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "oprn-audio-test-dialog.spec.ts",
+      "file": "oprn-audio-test-dialog.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "audio dialog uses the canonical 음악·효과음 title and modern control layout",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 17141,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-06T03:04:25.531Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "22747036b96660d0f99b-0f32f180c92bd6c29093",
+          "file": "oprn-audio-test-dialog.spec.ts",
+          "line": 53,
+          "column": 1
+        },
+        {
+          "title": "moving the sliders changes the values actually applied to playback",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 12955,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-06T03:04:42.843Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "22747036b96660d0f99b-487ae033786b2c86c442",
+          "file": "oprn-audio-test-dialog.spec.ts",
+          "line": 101,
+          "column": 1
+        },
+        {
+          "title": "list filter keeps (꺼짐) first and MIDI rows are marked unplayable",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 12792,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-06T03:04:55.815Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "22747036b96660d0f99b-1467a3fbfeee6bce4bdd",
+          "file": "oprn-audio-test-dialog.spec.ts",
+          "line": 140,
+          "column": 1
+        },
+        {
+          "title": "Escape closes the audio dialog through the shared modal stack",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 63272,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByTestId('edit-canvas')\nExpected: visible\nTimeout: 60000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 60000ms\u001b[22m\n\u001b[2m  - waiting for getByTestId('edit-canvas')\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByTestId('edit-canvas')\nExpected: visible\nTimeout: 60000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 60000ms\u001b[22m\n\u001b[2m  - waiting for getByTestId('edit-canvas')\u001b[22m\n\n    at openAudioDialog (/home/main/z-project/rpg-zzu-life-full-p2/test/e2e/oprn-audio-test-dialog.spec.ts:41:49)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/e2e/oprn-audio-test-dialog.spec.ts:162:3",
+                    "location": {
+                      "file": "/home/main/z-project/rpg-zzu-life-full-p2/test/e2e/oprn-audio-test-dialog.spec.ts",
+                      "column": 49,
+                      "line": 41
+                    },
+                    "snippet": "  39 | async function openAudioDialog(page: Page): Promise<void> {\n  40 |   await page.goto(\"/?freshProject=1&audioTestDialog=1\", { timeout: 90_000 });\n> 41 |   await expect(page.getByTestId(\"edit-canvas\")).toBeVisible({ timeout: 60_000 });\n     |                                                 ^\n  42 |   await expect(page.getByTestId(\"toolbar-sound-test\")).toBeVisible({ timeout: 30_000 });\n  43 |   // This editor-only probe deliberately opts into the same audio QA capability.\n  44 |   await page.evaluate(async () => {"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/home/main/z-project/rpg-zzu-life-full-p2/test/e2e/oprn-audio-test-dialog.spec.ts",
+                        "column": 49,
+                        "line": 41
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByTestId('edit-canvas')\nExpected: visible\nTimeout: 60000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 60000ms\u001b[22m\n\u001b[2m  - waiting for getByTestId('edit-canvas')\u001b[22m\n\n\n  39 | async function openAudioDialog(page: Page): Promise<void> {\n  40 |   await page.goto(\"/?freshProject=1&audioTestDialog=1\", { timeout: 90_000 });\n> 41 |   await expect(page.getByTestId(\"edit-canvas\")).toBeVisible({ timeout: 60_000 });\n     |                                                 ^\n  42 |   await expect(page.getByTestId(\"toolbar-sound-test\")).toBeVisible({ timeout: 30_000 });\n  43 |   // This editor-only probe deliberately opts into the same audio QA capability.\n  44 |   await page.evaluate(async () => {\n    at openAudioDialog (/home/main/z-project/rpg-zzu-life-full-p2/test/e2e/oprn-audio-test-dialog.spec.ts:41:49)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/e2e/oprn-audio-test-dialog.spec.ts:162:3"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-06T03:05:08.624Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/5/q1/editor-followup/results/oprn-audio-test-dialog-Esc-27ed7-ough-the-shared-modal-stack-chromium/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/5/q1/editor-followup/results/oprn-audio-test-dialog-Esc-27ed7-ough-the-shared-modal-stack-chromium/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/5/q1/editor-followup/results/oprn-audio-test-dialog-Esc-27ed7-ough-the-shared-modal-stack-chromium/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/home/main/z-project/rpg-zzu-life-full-p2/test/e2e/oprn-audio-test-dialog.spec.ts",
+                    "column": 49,
+                    "line": 41
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "22747036b96660d0f99b-16481fedfb901c1f5f23",
+          "file": "oprn-audio-test-dialog.spec.ts",
+          "line": 161,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-09-06T03:04:24.804Z",
+    "duration": 107324.21699999999,
+    "expected": 3,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

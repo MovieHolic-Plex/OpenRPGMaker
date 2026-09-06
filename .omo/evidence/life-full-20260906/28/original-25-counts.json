@@ -1,0 +1,236 @@
+{
+  "sourcePath": "/home/main/z-project/rpg-zzu-life-full-p2/.omo/gates-vitest-report.json",
+  "sourceSha256": "a36b2120415caf4e3587ebd33b7939a69c58b0f33be5aeb71d0d9c334324a6d3",
+  "currentCommit": "4e2d1762264533a5826c48686648093c3fe69ebd",
+  "phaseBase": "87de73785d1c309bbbe975636414f70bbc73a4b9",
+  "recordedAt": "2026-09-06T02:29:36.325822+00:00",
+  "method": "Count every assertionResults entry in each of the 25 selected testResults from the original full Vitest JSON report; do not use filtered failedResults as collection evidence.",
+  "historicalFilteredInput": {
+    "path": "/home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/28/input-selected.json",
+    "sha256": "bac52f503e74edcc752b6aa87392f81647f432787595ba109d9677a2a7e0b859",
+    "scope": "Failed assertions only; preserved unchanged, not a source for collected totals."
+  },
+  "totals": {
+    "files": 25,
+    "collected": 183,
+    "failed": 43,
+    "passed": 140,
+    "pendingOrSkipped": 0
+  },
+  "files": [
+    {
+      "file": "test/aiActivityLiveRow.test.ts",
+      "collected": 3,
+      "failed": 2,
+      "passed": 1,
+      "pendingOrSkipped": 0
+    },
+    {
+      "file": "test/aiChatObservability.test.ts",
+      "collected": 9,
+      "failed": 2,
+      "passed": 7,
+      "pendingOrSkipped": 0
+    },
+    {
+      "file": "test/aiChatPanelTransportError.test.ts",
+      "collected": 2,
+      "failed": 1,
+      "passed": 1,
+      "pendingOrSkipped": 0
+    },
+    {
+      "file": "test/aiSelectionChipScope.test.ts",
+      "collected": 5,
+      "failed": 2,
+      "passed": 3,
+      "pendingOrSkipped": 0
+    },
+    {
+      "file": "test/databaseItemInspector.test.ts",
+      "collected": 26,
+      "failed": 1,
+      "passed": 25,
+      "pendingOrSkipped": 0
+    },
+    {
+      "file": "test/databaseModalDirtySession.test.ts",
+      "collected": 5,
+      "failed": 1,
+      "passed": 4,
+      "pendingOrSkipped": 0
+    },
+    {
+      "file": "test/databaseNavMode.test.ts",
+      "collected": 4,
+      "failed": 1,
+      "passed": 3,
+      "pendingOrSkipped": 0
+    },
+    {
+      "file": "test/databaseOverviewDashboard.test.ts",
+      "collected": 11,
+      "failed": 8,
+      "passed": 3,
+      "pendingOrSkipped": 0
+    },
+    {
+      "file": "test/databaseOverviewTab.test.ts",
+      "collected": 8,
+      "failed": 5,
+      "passed": 3,
+      "pendingOrSkipped": 0
+    },
+    {
+      "file": "test/databaseRadioCustomGuard.test.ts",
+      "collected": 4,
+      "failed": 1,
+      "passed": 3,
+      "pendingOrSkipped": 0
+    },
+    {
+      "file": "test/databaseSidebarKeyboard.test.ts",
+      "collected": 4,
+      "failed": 2,
+      "passed": 2,
+      "pendingOrSkipped": 0
+    },
+    {
+      "file": "test/databaseSidebarNav.test.ts",
+      "collected": 7,
+      "failed": 1,
+      "passed": 6,
+      "pendingOrSkipped": 0
+    },
+    {
+      "file": "test/databaseTabIcons.test.ts",
+      "collected": 6,
+      "failed": 2,
+      "passed": 4,
+      "pendingOrSkipped": 0
+    },
+    {
+      "file": "test/debugSession.test.ts",
+      "collected": 4,
+      "failed": 1,
+      "passed": 3,
+      "pendingOrSkipped": 0
+    },
+    {
+      "file": "test/editorProjectE2EBridge.test.ts",
+      "collected": 5,
+      "failed": 1,
+      "passed": 4,
+      "pendingOrSkipped": 0
+    },
+    {
+      "file": "test/eventEditorM2Surface.baseline.test.ts",
+      "collected": 11,
+      "failed": 1,
+      "passed": 10,
+      "pendingOrSkipped": 0
+    },
+    {
+      "file": "test/eventEditorPortalSurface.baseline.test.ts",
+      "collected": 15,
+      "failed": 1,
+      "passed": 14,
+      "pendingOrSkipped": 0
+    },
+    {
+      "file": "test/forestDensity.test.ts",
+      "collected": 25,
+      "failed": 2,
+      "passed": 23,
+      "pendingOrSkipped": 0
+    },
+    {
+      "file": "test/gen1DemoContent.test.ts",
+      "collected": 3,
+      "failed": 1,
+      "passed": 2,
+      "pendingOrSkipped": 0
+    },
+    {
+      "file": "test/modalEscapeLayerGate.test.ts",
+      "collected": 3,
+      "failed": 2,
+      "passed": 1,
+      "pendingOrSkipped": 0
+    },
+    {
+      "file": "test/moveRouteCatalogPersistence.test.ts",
+      "collected": 3,
+      "failed": 1,
+      "passed": 2,
+      "pendingOrSkipped": 0
+    },
+    {
+      "file": "test/noLocalProjectDb.test.ts",
+      "collected": 2,
+      "failed": 1,
+      "passed": 1,
+      "pendingOrSkipped": 0
+    },
+    {
+      "file": "test/regionSelectionPastePreview.test.ts",
+      "collected": 12,
+      "failed": 1,
+      "passed": 11,
+      "pendingOrSkipped": 0
+    },
+    {
+      "file": "test/roleNameComparisonGate.test.ts",
+      "collected": 3,
+      "failed": 1,
+      "passed": 2,
+      "pendingOrSkipped": 0
+    },
+    {
+      "file": "test/uxcLoadFailure.test.ts",
+      "collected": 3,
+      "failed": 1,
+      "passed": 2,
+      "pendingOrSkipped": 0
+    }
+  ],
+  "preservedEvidenceSha256": {
+    "base-surface.stderr.txt": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "surface-comparison.json": "fa542fc5fd6b7b017b477ae9227903e1a6eba86dab2d384dd26a5d712d0180dc",
+    "original-gate.stdout.txt": "dad9180f59e29238886283966a4e4e28e081fc844b98023fd74e4c1860db2d61",
+    "current-25.stderr.txt": "e435f8890490e47f0a1677c9f20a60af4e97b560dca341dc33ec363d16539027",
+    "move-current.stderr.txt": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "base-25.stderr.txt": "061dc21ef152e3d10423a9de1886a8a0952c33e23ec9a92b77414ee43c2847f9",
+    "input-selected.json": "bac52f503e74edcc752b6aa87392f81647f432787595ba109d9677a2a7e0b859",
+    "base-25.receipt.json": "048e1ecd43a927c3b01779381fd35a447287d025c0afb37d8a6b78b2ef0a19e3",
+    "move-base.stderr.txt": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "current-surface.report.json": "d65f20c6d2eab164db88f201ddf4f0c631c12b5c815d197fb6aca2bc4fab9a76",
+    "move-current.stdout.txt": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "current-surface.receipt.json": "5baca970885a26d21b13f2848846233b64851f6ea771e4db0b5f04da46bc19a2",
+    "move-base.stdout.txt": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "create-base.stdout.txt": "01f89db8fee2c486ee04938a9d1b66882c79f828085be15b45aae59f7bba3d09",
+    "create-base.receipt.json": "8244487ed8613277ea14a7077957b9fa1816dc176e6c4de5fad31cfb2b60d32b",
+    "base-surface.report.json": "d432072aca96ffd7840dd10fcfc9fac4aa16923023ba98cf65c88fceb2625187",
+    "base-25.stdout.txt": "a26f49e22152f711931c38535f86fb8035e869b38aaf45e1b9c6ed0110d63f3e",
+    "current-25.report.json": "bdfdfac9f92394ec39b6a9874a9422d9a9efbd84c044dea3cbf3ee290522569a",
+    "create-current.receipt.json": "f891c6b3866ed605d9359161a56d9b05aa493ab64f5cf622605ff92fa97e5965",
+    "base-surface.decoded.txt": "7929f755808c96bcaf443c3b4c4727ad0c9e50f3968247bced7584031e725fcc",
+    "base-surface.stdout.txt": "53bf72c42561968a76ee0d7bfdb1a0daa5de55118429a1d1b1e83752805de0ea",
+    "validation.stderr.txt": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "current-surface.decoded.txt": "91147b381d27bc831973c976f79902256575c1fb63ad35e42336f56f6c200f8a",
+    "create-current.stderr.txt": "8559ee9b34b9f9b997c59a918de502d9b49d7264d9e5bb17eb7c4000d81f2b8f",
+    "validation.receipt.json": "2ae0375e3fff1e8d67dd32044f7c584ea97e1602fbd33e2287fbd555d580a844",
+    "create-base.stderr.txt": "dd3876a38764901a1e7a42397cfd7a91d62945727a0938da44eff5f276e40ff0",
+    "current-surface.stderr.txt": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "base-25.report.json": "227228127be7cb5deeb09e4c30bb18d87d9c464630df1cf7e8692e34ce902c9d",
+    "move-base.receipt.json": "e6a992f97eebd5ae93c67c332bb2a4675d3aed561f00e84b21c5834bfde56651",
+    "current-25.receipt.json": "dd290eb8a8bb145ac3ca9c81c88c8ef31f8c1d6610a7af853209b04723d06f3c",
+    "move-current.receipt.json": "d86d5f1af9b45daf82e0884473c90abc6f896cbbe08a8c8657df74ae216d8537",
+    "current-surface.stdout.txt": "84f3632c4ce158c9777392121ddebca835fc931d83b88bbd6d750429fc1aef0b",
+    "create-current.stdout.txt": "db9c34c026c2ba6fa57560f70f0395b9bee48e6285edd83530fd5bfd152b44b2",
+    "console-values-comparison.json": "f6f8e17f4ed990c8c3ed7a8990a6c0cdb149b294d9da9de9ad811f39111cf5cd",
+    "current-25.stdout.txt": "0f4a1c5ed881e234a118f5a7b9410411841d0ccfcb4e4395390543d398bfcebe",
+    "validation.stdout.txt": "cf55f9a0ce2ba739d4c688c1ba7a96c1d0d0212ac29cb28b542e86d569e823e3",
+    "base-surface.receipt.json": "474f626a57b5db1ff81f4a30a249804458e42217257cc28a951b54aee5cd3a21"
+  }
+}

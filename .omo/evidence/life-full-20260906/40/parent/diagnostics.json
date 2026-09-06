@@ -1,0 +1,36 @@
+{
+  "pageErrors": [],
+  "failedRequests": [
+    {
+      "url": "http://127.0.0.1:42201/src/project/session.ts",
+      "failure": {
+        "errorText": "net::ERR_NETWORK_CHANGED"
+      }
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/factionRuntime.ts",
+      "failure": {
+        "errorText": "net::ERR_NETWORK_CHANGED"
+      }
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/factions.ts",
+      "failure": {
+        "errorText": "net::ERR_NETWORK_CHANGED"
+      }
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/itemTransitions.ts",
+      "failure": {
+        "errorText": "net::ERR_NETWORK_CHANGED"
+      }
+    }
+  ],
+  "httpErrors": [],
+  "consoleErrors": [
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED"
+  ]
+}

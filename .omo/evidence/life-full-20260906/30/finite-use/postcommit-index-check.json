@@ -1,0 +1,29 @@
+{
+  "label": "postcommit-index-check",
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p2-life-full-record-keys",
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "120s",
+    "npm",
+    "run",
+    "openwiki:index",
+    "--",
+    "--check"
+  ],
+  "started": "2026-09-06T04:34:20.152Z",
+  "finished": "2026-09-06T04:34:20.892Z",
+  "base": "f86474547028cddf795c8e431b2195b7edccd201",
+  "head": "6ac1eedb89c0fcefccfa585d2c00fd8b000daa4b",
+  "headTree": "2f2814726f754865ea780ca790ccab4418001129",
+  "codeTree": "2f2814726f754865ea780ca790ccab4418001129",
+  "stdout": "\n> rpg-zzu@0.1.0 openwiki:index\n> node scripts/openwiki-index.mjs --check\n\nopenwiki/INDEX.md 최신.\n",
+  "stderr": "",
+  "exit": 0,
+  "signal": null
+}

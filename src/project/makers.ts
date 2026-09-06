@@ -7,7 +7,7 @@ import {
   type GameTime,
   type TimeSystemConfig,
 } from "@/project/gameTime";
-import { changeItemsAtomically, type MakerInstanceState, type PlaySession } from "@/project/session";
+import { changeItemsAtomically, type MakerContract, type MakerInstanceState, type PlaySession } from "@/project/session";
 import { isItemQuantity, isPositiveItemQuantity, ITEM_QUANTITY_MAX } from "@/project/itemQuantities";
 import type { MakerDefinition, Project } from "@/project/types";
 
@@ -89,6 +89,17 @@ export function startMaker(
   if (!changeItemsAtomically(session, maker.inputs.map((input) => ({ itemId: input.itemId, op: "-=", amount: input.count })))) {
     return { ok: false, reason: "invalid-state", instanceId, makerId };
   }
+  const time = resolveTimeSystem(project.system.timeSystem);
+  const contract: MakerContract = {
+    inputs: maker.inputs.map((item) => ({ ...item })),
+    outputs: maker.outputs.map((item) => ({ ...item })),
+    durationMinutes: maker.durationMinutes,
+    timeBasis: {
+      dayStartHour: time?.dayStartHour ?? DEFAULT_DAY_START_HOUR,
+      dayEndHour: time?.dayEndHour ?? DEFAULT_DAY_END_HOUR,
+      daysPerSeason: time?.daysPerSeason ?? DEFAULT_DAYS_PER_SEASON,
+    },
+  };
   session.makerInstances ??= {};
   session.makerInstances[instanceId] = {
     instanceId,
@@ -96,6 +107,7 @@ export function startMaker(
     status: "processing",
     startedAtMinute: absoluteMinute,
     readyAtMinute,
+    contract,
   };
   return { ok: true, instanceId, makerId, readyAtMinute };
 }
@@ -124,15 +136,20 @@ export function collectMaker(project: Project, session: PlaySession, instanceId:
   if (!instance) return { ok: false, reason: "missing-instance", instanceId };
   if (instance.status !== "ready") return { ok: false, reason: "not-ready", instanceId };
   const maker = project.system.makers?.find((entry) => entry.id === instance.makerId);
-  if (!maker || !validMakerDefinition(project, maker)) return { ok: false, reason: "invalid-definition", instanceId };
-  for (const output of maker.outputs) {
+  if (!maker) return { ok: false, reason: "invalid-definition", instanceId };
+  const promise = instance.contract ?? maker;
+  if (instance.contract ? !isMakerContract(instance.contract) : !validMakerDefinition(project, maker)) return { ok: false, reason: "invalid-definition", instanceId };
+  if (!validMakerInstance(instanceId, instance, new Set([maker.id]))) return { ok: false, reason: "invalid-state", instanceId };
+  const known = new Set(project.database.items.map((item) => item.id));
+  if (promise.outputs.some((item) => !known.has(item.itemId))) return { ok: false, reason: "invalid-definition", instanceId };
+  for (const output of promise.outputs) {
     const current = session.inventory[output.itemId] ?? 0;
     if (!isItemQuantity(current) || current + output.count > ITEM_QUANTITY_MAX) {
       return { ok: false, reason: "inventory-overflow", instanceId };
     }
   }
 
-  if (!changeItemsAtomically(session, maker.outputs.map((output) => ({ itemId: output.itemId, op: "+=", amount: output.count })))) {
+  if (!changeItemsAtomically(session, promise.outputs.map((output) => ({ itemId: output.itemId, op: "+=", amount: output.count })))) {
     return { ok: false, reason: "inventory-overflow", instanceId };
   }
   session.makerInstances![instanceId] = {
@@ -140,7 +157,7 @@ export function collectMaker(project: Project, session: PlaySession, instanceId:
     makerId: instance.makerId,
     status: "idle",
   };
-  return { ok: true, instanceId, makerId: maker.id, outputs: maker.outputs.map((entry) => ({ ...entry })) };
+  return { ok: true, instanceId, makerId: maker.id, outputs: promise.outputs.map((entry) => ({ ...entry })) };
 }
 
 function validMakerDefinition(project: Project, maker: MakerDefinition): boolean {
@@ -159,7 +176,9 @@ function validMakerDefinition(project: Project, maker: MakerDefinition): boolean
 
 function validMakerInstance(instanceId: string, instance: MakerInstanceState, makerIds: ReadonlySet<string>): boolean {
   if (instance.instanceId !== instanceId || !makerIds.has(instance.makerId)) return false;
-  if (instance.status === "idle") return instance.startedAtMinute === undefined && instance.readyAtMinute === undefined;
+  if (instance.status === "idle") return instance.startedAtMinute === undefined && instance.readyAtMinute === undefined && instance.contract === undefined;
+  if (instance.status !== "processing" && instance.status !== "ready") return false;
+  if (instance.contract !== undefined && (!isMakerContract(instance.contract) || instance.readyAtMinute !== (instance.startedAtMinute ?? NaN) + instance.contract.durationMinutes)) return false;
   return isNonNegativeSafeInteger(instance.startedAtMinute) &&
     isNonNegativeSafeInteger(instance.readyAtMinute) &&
     instance.readyAtMinute >= instance.startedAtMinute;
@@ -171,4 +190,24 @@ function isPositiveSafeInteger(value: unknown): value is number {
 
 function isNonNegativeSafeInteger(value: unknown): value is number {
   return typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
+}
+
+/** Structural save-boundary contract; item definition availability is checked only at payout. */
+export function isMakerContract(value: unknown): value is MakerContract {
+  if (typeof value !== "object" || value === null || !("inputs" in value) || !("outputs" in value) || !("durationMinutes" in value) || !("timeBasis" in value)) return false;
+  const amounts = (entries: unknown): boolean => {
+    if (!Array.isArray(entries)) return false;
+    const seen = new Set<string>();
+    return entries.every((entry: unknown) => {
+      if (typeof entry !== "object" || entry === null || !("itemId" in entry) || typeof entry.itemId !== "string" || !entry.itemId.trim() || seen.has(entry.itemId) || !("count" in entry) || !isPositiveItemQuantity(entry.count)) return false;
+      seen.add(entry.itemId);
+      return true;
+    });
+  };
+  const time = value.timeBasis;
+  return amounts(value.inputs) && amounts(value.outputs) && Array.isArray(value.outputs) && value.outputs.length > 0 && isPositiveSafeInteger(value.durationMinutes)
+    && typeof time === "object" && time !== null
+    && "dayStartHour" in time && isNonNegativeSafeInteger(time.dayStartHour) && time.dayStartHour <= 23
+    && "dayEndHour" in time && isPositiveSafeInteger(time.dayEndHour) && time.dayEndHour > time.dayStartHour && time.dayEndHour <= 48
+    && "daysPerSeason" in time && isPositiveSafeInteger(time.daysPerSeason) && time.daysPerSeason <= 99;
 }

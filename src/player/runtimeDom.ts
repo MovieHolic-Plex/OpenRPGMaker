@@ -83,7 +83,34 @@ export interface RuntimeEventSnapshot {
   readonly passRect: FootprintRect;
 }
 
-export interface RuntimeStateSnapshot {
+export type LifeRuntimeSnapshot = Readonly<Pick<PlaySession,
+  "farmPlots" | "energy" | "makerInstances" | "farmAnimals" | "farmBuildingPlacements" | "lifeRecovery"
+>>;
+
+/** Observation only: retain optional absence and copy owners, never reconcile or advance them.
+ * Future plot remaining / linked housing fields travel with their owners when implemented. */
+export function buildLifeRuntimeSnapshot(session: LifeRuntimeSnapshot): LifeRuntimeSnapshot {
+  return structuredClone({
+    ...(session.farmPlots !== undefined ? { farmPlots: session.farmPlots } : {}),
+    ...(session.energy !== undefined ? { energy: session.energy } : {}),
+    ...(session.makerInstances !== undefined ? { makerInstances: session.makerInstances } : {}),
+    ...(session.farmAnimals !== undefined ? { farmAnimals: session.farmAnimals } : {}),
+    ...(session.farmBuildingPlacements !== undefined ? { farmBuildingPlacements: session.farmBuildingPlacements } : {}),
+    ...(session.lifeRecovery !== undefined ? { lifeRecovery: session.lifeRecovery } : {}),
+  });
+}
+
+export type RuntimeActionReceipt = {
+  readonly sequence: number;
+  readonly kind: "action";
+  readonly mapId: string;
+  /** Input was consumed, not a claim that an asynchronous event has finished. */
+  readonly handled: boolean;
+  readonly farmAttempts: readonly import("@/player/farming").FarmInteractionResult[];
+};
+
+export interface RuntimeStateSnapshot extends LifeRuntimeSnapshot {
+  readonly actionReceipt?: RuntimeActionReceipt;
   readonly mapId: string;
   readonly inputEnabled: boolean;
   readonly running: boolean;
@@ -153,6 +180,7 @@ export class RuntimeDomOverlay {
   private stateJsonText: string | undefined;
   private audioJsonNode: HTMLElement | undefined;
   private audioJsonText: string | undefined;
+  private lastActionReceipt?: RuntimeActionReceipt;
 
   constructor(
     private readonly host: () => HTMLElement | undefined,
@@ -171,6 +199,18 @@ export class RuntimeDomOverlay {
   /** True only under an explicit export-QA boot capability. Never true for a shipped player. */
   get instrumented(): boolean {
     return this.qaInstrumentation;
+  }
+
+  get actionReceipt(): RuntimeActionReceipt | undefined {
+    return this.lastActionReceipt ? structuredClone(this.lastActionReceipt) : undefined;
+  }
+
+  /** Scene-local QA evidence, emitted only after the actual action and mirror sync. */
+  recordAction(action: Omit<RuntimeActionReceipt, "sequence">, sync: () => void): void {
+    if (!this.qaInstrumentation) return;
+    this.lastActionReceipt = structuredClone({ ...action, sequence: (this.lastActionReceipt?.sequence ?? 0) + 1 });
+    sync();
+    this.host()?.dispatchEvent(new CustomEvent("oprn:action", { detail: this.actionReceipt }));
   }
 
   /**

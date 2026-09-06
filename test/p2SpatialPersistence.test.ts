@@ -119,8 +119,10 @@ describe("P2 spatial persistence", () => {
     expect(read.kind).toBe("present");
     if (read.kind !== "present") throw new Error("expected present save");
     const parsed = applySaveSnapshot(project, read.snapshot);
-    const direct = applySaveSnapshot(project, snapshot);
-    for (const restored of [parsed, direct]) {
+    // Non-JSON Infinity cannot be preserved losslessly on direct apply; reject the whole draft.
+    expect(() => applySaveSnapshot(project, snapshot)).toThrow();
+    expect(Object.values(parsed.lifeRecovery?.claims ?? {})).toHaveLength(5);
+    for (const restored of [parsed]) {
       expect(restored.farmBuildingPlacements).toEqual({
         shed_valid: expect.objectContaining({ instanceId: "shed_valid", x: 2, y: 2 }),
       });

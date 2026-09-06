@@ -1,0 +1,43 @@
+[edit-activity] (라벨 없음: project)
+[project-commits] 저장 baseline 이 없어 실제 diff 를 못 낸다 — 시스템 변경으로 기록한다 { summary: '변경 저장: 시스템' }
+{
+  "pass": false,
+  "projectId": "qa-ai-proof-8d2e2286-25df-4ad1-945d-0bad4e416fec",
+  "report": "/home/main/z-project/rpg-zzu-ai-harness-p1-remote-20260906/output/evidence/ai-harness/p1/remote-red-content.json",
+  "failure": {
+    "name": "AssertionError",
+    "message": "changed-real-content: false verified or wrong typed outcome\n+ actual - expected\n\n+ 'verified'\n- 'mismatch'\n"
+  },
+  "cleanup": {
+    "localTimersCleared": true,
+    "deferredSettled": true,
+    "ownership": {
+      "absentBeforeRun": true,
+      "projectId": "qa-ai-proof-8d2e2286-25df-4ad1-945d-0bad4e416fec",
+      "ownerTitle": "QA persistence proof 8d2e2286-25df-4ad1-945d-0bad4e416fec",
+      "observed": {
+        "project_id": "qa-ai-proof-8d2e2286-25df-4ad1-945d-0bad4e416fec",
+        "title": "QA persistence proof 8d2e2286-25df-4ad1-945d-0bad4e416fec"
+      }
+    },
+    "remote": {
+      "kind": "deleted-and-absence-verified",
+      "projectId": "qa-ai-proof-8d2e2286-25df-4ad1-945d-0bad4e416fec",
+      "commitIds": [
+        "562accb3-1ef7-497c-b97d-37c27dcbd1a6"
+      ]
+    },
+    "viteClosed": true,
+    "listenerStarted": false,
+    "globalsRestored": true,
+    "activeTransports": 0,
+    "pendingProofs": 0
+  },
+  "receipt": {
+    "revisionId": "920884c1-6e96-41c2-9fa7-a2adca49f002",
+    "projectId": "qa-ai-proof-8d2e2286-25df-4ad1-945d-0bad4e416fec",
+    "mutationGeneration": 1,
+    "contentIdentity": "ee0ce1bbc10582ef09a1413708b32cf2bc70b512e504a5c78ad13d625a6269ef",
+    "sha256": "0d4321627378549d7e5d7c51406ca553f11a739f221666e32cf14b2347960d29"
+  }
+}

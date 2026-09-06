@@ -1,0 +1,14 @@
+import { spawnSync, execFileSync } from 'node:child_process';
+import { writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+const [label, command, ...args] = process.argv.slice(2);
+const head = execFileSync('git', ['rev-parse', 'HEAD'], {encoding:'utf8'}).trim();
+const tree = execFileSync('git', ['rev-parse', 'HEAD^{tree}'], {encoding:'utf8'}).trim();
+const diff = execFileSync('git', ['diff', 'HEAD'], {encoding:'utf8', maxBuffer:32*1024*1024});
+const started = new Date().toISOString();
+const run = spawnSync(command, args, {encoding:'utf8', timeout:900000, maxBuffer:32*1024*1024});
+const output = (run.stdout ?? '') + (run.stderr ?? '');
+writeFileSync(new URL(`${label}.txt`, import.meta.url), output ? output.split('\n').map(line => line.trimEnd()).join('\n').trimEnd() + '\n' : '');
+writeFileSync(new URL(`${label}.json`, import.meta.url), JSON.stringify({cwd:process.cwd(), head, tree, diffSha256:createHash('sha256').update(diff).digest('hex'), command:[command,...args], started, exit:run.status, signal:run.signal, error:run.error?.message, output, sha256:createHash('sha256').update(output).digest('hex')},null,2)+'\n');
+console.log(output); console.log(JSON.stringify({label,exit:run.status,signal:run.signal}));
+process.exitCode = run.status ?? 1;

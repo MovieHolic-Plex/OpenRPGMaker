@@ -1,0 +1,13 @@
+> node scripts/run-vitest.mjs run --configLoader bundle test/exportBattleAssetUrls.test.ts -t high resolution
+ ❯ test/exportBattleAssetUrls.test.ts (6 tests | 2 failed | 4 skipped) 21ms
+     → expected '/assets/generated/starter/hires/hero-…' to be 'https://games.example.test/games/demo…' // Object.is equality
+     → expected '/assets/generated/starter/hires/hero-…' to be 'data:image/png;base64,AQ==' // Object.is equality
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  test/exportBattleAssetUrls.test.ts > export battle asset URLs > resolves high resolution sheets for nested exports
+AssertionError: expected '/assets/generated/starter/hires/hero-…' to be 'https://games.example.test/games/demo…' // Object.is equality
+     28|     expect(url).toBe(expected);
+ FAIL  test/exportBattleAssetUrls.test.ts > export battle asset URLs > resolves high resolution sheets for embedded exports
+AssertionError: expected '/assets/generated/starter/hires/hero-…' to be 'data:image/png;base64,AQ==' // Object.is equality
+     28|     expect(url).toBe(expected);
+ Test Files  1 failed (1)
+      Tests  2 failed | 4 skipped (6)

@@ -1,0 +1,32 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiStickyChecklist.test.ts test/aiRegionPreviewHandoff.test.ts test/aiTurnAppliedAccounting.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p1-20260906
+
+ ✓ test/aiRegionPreviewHandoff.test.ts (5 tests) 2421ms
+   ✓ pending region preview handoff > supplies the region water neighborhood during the restoration notification after final  562ms
+   ✓ pending region preview handoff > supplies the region water neighborhood during the restoration notification after error  624ms
+   ✓ pending region preview handoff > supplies the region water neighborhood during the restoration notification after aborted  376ms
+   ✓ pending region preview handoff > supplies the region water neighborhood during the restoration notification after throw  395ms
+   ✓ pending region preview handoff > supplies the region water neighborhood during the restoration notification after abort-throw  459ms
+ ✓ test/aiTurnAppliedAccounting.test.ts (11 tests) 5096ms
+   ✓ running-tool event target forwarding > uses event target {"mapId":"a"} rather than the viewed map in chat  347ms
+   ✓ running-tool event target forwarding > uses event target {"target":{"kind":"existing","mapId":"a"}} rather than the viewed map in chat  338ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > max-tool-calls 이후 원장만 남아도 변경 없음으로 기록하지 않는다  895ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > token-budget 이후 원장만 남아도 변경 없음으로 기록하지 않는다  762ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > error 이후 원장만 남아도 변경 없음으로 기록하지 않는다  721ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > 적용이 거부된 제안은 실제 변경으로 세지 않는다  560ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > 원장과 종료 시 적용한 제안을 모두 세되 원장은 다시 적용하지 않는다  606ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > 제안 호스트를 직접 호출해도 적용된 턴에는 변경 없음 알림을 만들지 않는다  444ms
+ ✓ test/aiStickyChecklist.test.ts (13 tests) 5144ms
+   ✓ renders acceptance outside chat and retains verified evidence after the turn  1361ms
+   ✓ ignores late acceptance events after the real new-chat boundary  558ms
+   ✓ refreshes backend acceptance on a store mutation without manufacturing verification  785ms
+   ✓ retains the backend blocked snapshot when the actual abort button ends a held turn  1051ms
+
+ Test Files  3 passed (3)
+      Tests  29 passed (29)
+   Start at  20:30:03
+   Duration  57.82s (transform 60.25s, setup 0ms, collect 112.41s, tests 12.66s, environment 1.06s, prepare 796ms)

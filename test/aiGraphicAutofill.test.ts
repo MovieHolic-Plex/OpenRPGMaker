@@ -45,17 +45,15 @@ describe("upsert_enemy 외형 자동 부여", () => {
     expect((result.diff?.warnings ?? []).join(" ")).toContain("monsterResourceId");
   });
 
-  it("이름으로 못 찾아도 비어 있게 두지 않고, 다른 적끼리 외형이 갈린다", () => {
+  it("unknown names fail without persisting arbitrary or missing art", () => {
     const ctx = context();
-    const first = runTool(ctx, "upsert_enemy", { enemy: { id: "enemy_zzz_one", name: "이름없는것" } });
-    const second = runTool(ctx, "upsert_enemy", { enemy: { id: "enemy_qqq_two", name: "정체불명" } });
-
-    expect(first.ok && second.ok, `${first.summary} / ${second.summary}`).toBe(true);
-    const ids = ["enemy_zzz_one", "enemy_qqq_two"].map(
-      (id) => ctx.project.database.enemies.find((entry) => entry.id === id)?.monsterResourceId,
-    );
-    for (const resourceId of ids) expect(resourceId).toMatch(/^generated-enemy-/);
-    expect(ids[0]).not.toBe(ids[1]);
+    const before = ctx.project;
+    for (const [id, name] of [["enemy_zzz_one", "이름없는것"], ["enemy_qqq_two", "정체불명"]]) {
+      const result = runTool(ctx, "upsert_enemy", { enemy: { id, name } });
+      expect(result.ok).toBe(false);
+      expect(result.issues?.[0]?.code).toBe("monster-graphic-required");
+      expect(ctx.project).toBe(before);
+    }
   });
 
   it("같은 적을 다시 저장하면 이미 붙은 외형을 유지한다", () => {
@@ -102,14 +100,14 @@ describe("make_action_enemy 외형 자동 부여", () => {
     const troopId = "troop_action_visible";
     const created = runTool(ctx, "make_action_enemy", {
       enemyId,
-      name: "돌진 슬라임",
+      name: "슬라임",
       actionProfile: { contactDamage: 3 },
     });
 
     expect(created.ok, created.summary).toBe(true);
     expect(ctx.project.database.enemies.find((entry) => entry.id === enemyId)?.monsterResourceId)
       .toMatch(/^generated-enemy-/);
-    expect((created.diff?.warnings ?? []).join(" ")).toContain("enemy.monsterResourceId");
+    expect((created.diff?.warnings ?? []).join(" ")).toContain("monsterResourceId");
 
     ctx.project.database.troops.push({
       id: troopId,

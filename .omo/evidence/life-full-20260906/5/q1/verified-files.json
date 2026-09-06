@@ -1,0 +1,20 @@
+{
+  "parent": "62c70a3093f6a891f209cc9c3d02a6140dccffed",
+  "parentTree": "e6fb5e9a92ad4c570420e4755880d78d532c7d68",
+  "verifiedProductTestWikiTreeBeforeEvidence": "be75ff0fc01771669cb8b07da9f4d4d29fceb238",
+  "files": {
+    "openwiki/runtime-sessions.md": "6246fc476095420147e09ea54c6d60c9945549af75c9c1bbcc73ea312b4e81af",
+    "openwiki/testing.md": "95918cae991049fd20390b4f90cbba098933d48565418cfbd3e8641e70b8737e",
+    "src/player/audio/audioEngine.ts": "66df11799dd1e712b808fb703e67ec9c1b2d246af151d2a3cb206c251a5e2ec6",
+    "src/player/audio/index.ts": "d3581807208efc4e1dc190733c9c42feb8fe18666d1c11b65e0cba90ee4e7530",
+    "src/player/player.ts": "2f3d2ba74d64e3c3b1d6f0b8f9c58e7f58e3a6a01782c924fbb3391d020ab84c",
+    "test/audioEnginePlaybackControls.test.ts": "32ab026c2b8d7f9f614f5406b8c22cc3a025a70ab3c4cc4825b19d2c688d4bdf",
+    "test/audioQaInstrumentation.test.ts": "26dec86b82973f3ae7028be21847f9ec31ccb3ed2886611df72f2433bc382614",
+    "test/e2e/oprn-audio-test-dialog.spec.ts": "fcb6392d3971d817908e2024bb62f3a5e11681216db15110331118eee4bf8833",
+    "test/playBootRecovery.test.ts": "87c2244224b8f8b01a2b5567fcc20c48dce4cdc127244d8c2a8a62fb63206f72",
+    "test/playerAudioQaLifecycle.test.ts": "8208c5014f94a5f48cb466ce123d4ae157902bada7b3ef2fc243479589414794",
+    "test/playerKeydownSessionGuard.test.ts": "5b5684c2447fe58c3c5d4a2412b0fa250cbff26d39e0316608a7a1d2207ad8e9",
+    "test/playerOpenSaveMenu.test.ts": "918c886d7dc2c8779bdd82232b24b2238cd763f33a3b377f745ef02276656327",
+    "test/playerRunControls.test.ts": "8e126e1bb49764e79efeb25c159eae2dcfefb0ce8ebed999accfbdb5fb97ba8a"
+  }
+}

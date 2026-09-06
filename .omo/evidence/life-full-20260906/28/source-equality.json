@@ -1,0 +1,1058 @@
+[
+  {
+    "path": "test/aiActivityLiveRow.test.ts",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "test/aiActivityLiveRow.test.ts"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "11a12a0259f646c77d4011a5ca536bd9bcaa0400"
+      },
+      "current": {
+        "exit": 0,
+        "object": "11a12a0259f646c77d4011a5ca536bd9bcaa0400"
+      }
+    }
+  },
+  {
+    "path": "test/aiChatObservability.test.ts",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "test/aiChatObservability.test.ts"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "feba8e5080d9723ad7c2de0eee3594c80b7f566e"
+      },
+      "current": {
+        "exit": 0,
+        "object": "feba8e5080d9723ad7c2de0eee3594c80b7f566e"
+      }
+    }
+  },
+  {
+    "path": "test/aiChatPanelTransportError.test.ts",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "test/aiChatPanelTransportError.test.ts"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "12b9e85d4abc5308c13aab4b0997890fbe90ade1"
+      },
+      "current": {
+        "exit": 0,
+        "object": "12b9e85d4abc5308c13aab4b0997890fbe90ade1"
+      }
+    }
+  },
+  {
+    "path": "test/aiSelectionChipScope.test.ts",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "test/aiSelectionChipScope.test.ts"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "8d8cd0564ade35cc74c8adc1a14889a9050039df"
+      },
+      "current": {
+        "exit": 0,
+        "object": "8d8cd0564ade35cc74c8adc1a14889a9050039df"
+      }
+    }
+  },
+  {
+    "path": "test/databaseItemInspector.test.ts",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "test/databaseItemInspector.test.ts"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "def3d053c54a10a3ae9e6919c10e580ae6b97b61"
+      },
+      "current": {
+        "exit": 0,
+        "object": "def3d053c54a10a3ae9e6919c10e580ae6b97b61"
+      }
+    }
+  },
+  {
+    "path": "test/databaseModalDirtySession.test.ts",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "test/databaseModalDirtySession.test.ts"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "9f271cce8c1e55e15c64c8f4e987a66409302e6c"
+      },
+      "current": {
+        "exit": 0,
+        "object": "9f271cce8c1e55e15c64c8f4e987a66409302e6c"
+      }
+    }
+  },
+  {
+    "path": "test/databaseNavMode.test.ts",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "test/databaseNavMode.test.ts"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "7a88123566792f5bf54726e5a26a243fd05fcabb"
+      },
+      "current": {
+        "exit": 0,
+        "object": "7a88123566792f5bf54726e5a26a243fd05fcabb"
+      }
+    }
+  },
+  {
+    "path": "test/databaseOverviewDashboard.test.ts",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "test/databaseOverviewDashboard.test.ts"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "4606b663cc0fe5754a47e962ce61725e86bcf2d1"
+      },
+      "current": {
+        "exit": 0,
+        "object": "4606b663cc0fe5754a47e962ce61725e86bcf2d1"
+      }
+    }
+  },
+  {
+    "path": "test/databaseOverviewTab.test.ts",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "test/databaseOverviewTab.test.ts"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "f6547991c0cc2ed90a2fbc81fcaa8e2b5f8b6a82"
+      },
+      "current": {
+        "exit": 0,
+        "object": "f6547991c0cc2ed90a2fbc81fcaa8e2b5f8b6a82"
+      }
+    }
+  },
+  {
+    "path": "test/databaseRadioCustomGuard.test.ts",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "test/databaseRadioCustomGuard.test.ts"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "799d4e7ce6ac250532458a91b6a4656d8faf65fd"
+      },
+      "current": {
+        "exit": 0,
+        "object": "799d4e7ce6ac250532458a91b6a4656d8faf65fd"
+      }
+    }
+  },
+  {
+    "path": "test/databaseSidebarKeyboard.test.ts",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "test/databaseSidebarKeyboard.test.ts"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "7de06e8a4b7fead71b47068681c3d6ab4c7e292a"
+      },
+      "current": {
+        "exit": 0,
+        "object": "7de06e8a4b7fead71b47068681c3d6ab4c7e292a"
+      }
+    }
+  },
+  {
+    "path": "test/databaseSidebarNav.test.ts",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "test/databaseSidebarNav.test.ts"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "29450cdb7cd62bad71b31f5cf9c4c6909a630329"
+      },
+      "current": {
+        "exit": 0,
+        "object": "29450cdb7cd62bad71b31f5cf9c4c6909a630329"
+      }
+    }
+  },
+  {
+    "path": "test/databaseTabIcons.test.ts",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "test/databaseTabIcons.test.ts"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "2fde7b312ee40fb94d59ac767202818602a09b40"
+      },
+      "current": {
+        "exit": 0,
+        "object": "2fde7b312ee40fb94d59ac767202818602a09b40"
+      }
+    }
+  },
+  {
+    "path": "test/debugSession.test.ts",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "test/debugSession.test.ts"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "78bb8cbcbac4ee8e11553fee5ca8631d77fa2a8d"
+      },
+      "current": {
+        "exit": 0,
+        "object": "78bb8cbcbac4ee8e11553fee5ca8631d77fa2a8d"
+      }
+    }
+  },
+  {
+    "path": "test/editorProjectE2EBridge.test.ts",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "test/editorProjectE2EBridge.test.ts"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "285e7f6ec7aab035ac464a6c3023205c862fec70"
+      },
+      "current": {
+        "exit": 0,
+        "object": "285e7f6ec7aab035ac464a6c3023205c862fec70"
+      }
+    }
+  },
+  {
+    "path": "test/eventEditorM2Surface.baseline.test.ts",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "test/eventEditorM2Surface.baseline.test.ts"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "b7f110ebe6f23739daa2a94dd6fb2ae7f0d7bb91"
+      },
+      "current": {
+        "exit": 0,
+        "object": "b7f110ebe6f23739daa2a94dd6fb2ae7f0d7bb91"
+      }
+    }
+  },
+  {
+    "path": "test/eventEditorPortalSurface.baseline.test.ts",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "test/eventEditorPortalSurface.baseline.test.ts"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "298486e30d0be2753fc6a83144a1fd6a18ecedf9"
+      },
+      "current": {
+        "exit": 0,
+        "object": "298486e30d0be2753fc6a83144a1fd6a18ecedf9"
+      }
+    }
+  },
+  {
+    "path": "test/forestDensity.test.ts",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "test/forestDensity.test.ts"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "ef4519e093603b38987e80324db5fbd270735952"
+      },
+      "current": {
+        "exit": 0,
+        "object": "ef4519e093603b38987e80324db5fbd270735952"
+      }
+    }
+  },
+  {
+    "path": "test/gen1DemoContent.test.ts",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "test/gen1DemoContent.test.ts"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "d775eb29120f02b6cd05f6a70141983b872acaf7"
+      },
+      "current": {
+        "exit": 0,
+        "object": "d775eb29120f02b6cd05f6a70141983b872acaf7"
+      }
+    }
+  },
+  {
+    "path": "test/modalEscapeLayerGate.test.ts",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "test/modalEscapeLayerGate.test.ts"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "121b4265a2746d291a78c5944367e91422d752b8"
+      },
+      "current": {
+        "exit": 0,
+        "object": "121b4265a2746d291a78c5944367e91422d752b8"
+      }
+    }
+  },
+  {
+    "path": "test/moveRouteCatalogPersistence.test.ts",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "test/moveRouteCatalogPersistence.test.ts"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "14c1ef1380e4c9cca0d82ff5cc4cd72c34ac6001"
+      },
+      "current": {
+        "exit": 0,
+        "object": "14c1ef1380e4c9cca0d82ff5cc4cd72c34ac6001"
+      }
+    }
+  },
+  {
+    "path": "test/noLocalProjectDb.test.ts",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "test/noLocalProjectDb.test.ts"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "8232ecdbca7446f257fad3c64252f792573a9ebf"
+      },
+      "current": {
+        "exit": 0,
+        "object": "8232ecdbca7446f257fad3c64252f792573a9ebf"
+      }
+    }
+  },
+  {
+    "path": "test/regionSelectionPastePreview.test.ts",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "test/regionSelectionPastePreview.test.ts"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "e13ebb7159a698c2204e172e3c42e16013464c21"
+      },
+      "current": {
+        "exit": 0,
+        "object": "e13ebb7159a698c2204e172e3c42e16013464c21"
+      }
+    }
+  },
+  {
+    "path": "test/roleNameComparisonGate.test.ts",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "test/roleNameComparisonGate.test.ts"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "3dfeebf3438b6df4f2053c78bac3d34d7f867a7c"
+      },
+      "current": {
+        "exit": 0,
+        "object": "3dfeebf3438b6df4f2053c78bac3d34d7f867a7c"
+      }
+    }
+  },
+  {
+    "path": "test/uxcLoadFailure.test.ts",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "test/uxcLoadFailure.test.ts"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "43a8269479a26ee2ec6f36c7be2105685691a1fe"
+      },
+      "current": {
+        "exit": 0,
+        "object": "43a8269479a26ee2ec6f36c7be2105685691a1fe"
+      }
+    }
+  },
+  {
+    "path": "src/editor",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "src/editor"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "03f86ce30588874f9b302cd9f5847466c0541ed8"
+      },
+      "current": {
+        "exit": 0,
+        "object": "03f86ce30588874f9b302cd9f5847466c0541ed8"
+      }
+    }
+  },
+  {
+    "path": "src/ai",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "src/ai"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "03a481a9980f8f475ad8ed964852a26883252322"
+      },
+      "current": {
+        "exit": 0,
+        "object": "03a481a9980f8f475ad8ed964852a26883252322"
+      }
+    }
+  },
+  {
+    "path": "src/styles",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "src/styles"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "34c085bff5566a58c337a754d69a1a337de96302"
+      },
+      "current": {
+        "exit": 0,
+        "object": "34c085bff5566a58c337a754d69a1a337de96302"
+      }
+    }
+  },
+  {
+    "path": "src/project/defaults",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "src/project/defaults"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "3ec35d7719b376efb97d164416359272efae09e2"
+      },
+      "current": {
+        "exit": 0,
+        "object": "3ec35d7719b376efb97d164416359272efae09e2"
+      }
+    }
+  },
+  {
+    "path": "src/project/io",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "src/project/io"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "d15f56ef55f9e4db9ce2dc2bbf6fa01db2cb6a02"
+      },
+      "current": {
+        "exit": 0,
+        "object": "d15f56ef55f9e4db9ce2dc2bbf6fa01db2cb6a02"
+      }
+    }
+  },
+  {
+    "path": "src/project/lint/postTileVerify.ts",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "src/project/lint/postTileVerify.ts"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "edd6d3713fd58a34ddfceb01af292896bcdac035"
+      },
+      "current": {
+        "exit": 0,
+        "object": "edd6d3713fd58a34ddfceb01af292896bcdac035"
+      }
+    }
+  },
+  {
+    "path": "src/project/collision.ts",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "src/project/collision.ts"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "a07290fbda6b307a36c136aa8cc47e50cbeadea8"
+      },
+      "current": {
+        "exit": 0,
+        "object": "a07290fbda6b307a36c136aa8cc47e50cbeadea8"
+      }
+    }
+  },
+  {
+    "path": "scripts/check-surface-gates.mjs",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "scripts/check-surface-gates.mjs"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "2eeadbb8bbb2246a63e7b2d0fb3b652c3ac1a389"
+      },
+      "current": {
+        "exit": 0,
+        "object": "2eeadbb8bbb2246a63e7b2d0fb3b652c3ac1a389"
+      }
+    }
+  },
+  {
+    "path": "scripts/check-css-live-classes.mjs",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "scripts/check-css-live-classes.mjs"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "0cd98c242210de1194ecd24fa25109a732a989c5"
+      },
+      "current": {
+        "exit": 0,
+        "object": "0cd98c242210de1194ecd24fa25109a732a989c5"
+      }
+    }
+  },
+  {
+    "path": "scripts/verify-gates.mjs",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "scripts/verify-gates.mjs"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "5a4d49e1afd6b55c511a44663ac89e7b2a7e07bf"
+      },
+      "current": {
+        "exit": 0,
+        "object": "5a4d49e1afd6b55c511a44663ac89e7b2a7e07bf"
+      }
+    }
+  },
+  {
+    "path": "scripts/run-vitest.mjs",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "scripts/run-vitest.mjs"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "f37e9e9a1d060e8e41a7b581405add50d19184ca"
+      },
+      "current": {
+        "exit": 0,
+        "object": "f37e9e9a1d060e8e41a7b581405add50d19184ca"
+      }
+    }
+  },
+  {
+    "path": "vitest.config.ts",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "vitest.config.ts"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "1b76124dbc5020af562e5baf372371b15b5d85de"
+      },
+      "current": {
+        "exit": 0,
+        "object": "1b76124dbc5020af562e5baf372371b15b5d85de"
+      }
+    }
+  },
+  {
+    "path": "package.json",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "package.json"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "a4a612dd75f79f37b5a0cdb8eae04d52ebe15066"
+      },
+      "current": {
+        "exit": 0,
+        "object": "a4a612dd75f79f37b5a0cdb8eae04d52ebe15066"
+      }
+    }
+  },
+  {
+    "path": "package-lock.json",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "package-lock.json"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "dcec58c1cbf16f178c49b6f01cf8fc9e9889c1f1"
+      },
+      "current": {
+        "exit": 0,
+        "object": "dcec58c1cbf16f178c49b6f01cf8fc9e9889c1f1"
+      }
+    }
+  },
+  {
+    "path": "test/fixtures/eventEditorFormSurface.baseline.json",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "test/fixtures/eventEditorFormSurface.baseline.json"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "e2e5b625592610402e8523828df5dfdbe97886c9"
+      },
+      "current": {
+        "exit": 0,
+        "object": "e2e5b625592610402e8523828df5dfdbe97886c9"
+      }
+    }
+  },
+  {
+    "path": "test/fixtures/eventEditorM2Surface.baseline.json",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "test/fixtures/eventEditorM2Surface.baseline.json"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "e079c263a92870188b9c3930d6ed37c4304c217c"
+      },
+      "current": {
+        "exit": 0,
+        "object": "e079c263a92870188b9c3930d6ed37c4304c217c"
+      }
+    }
+  },
+  {
+    "path": "test/fixtures/eventEditorPortalSurface.baseline.json",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "test/fixtures/eventEditorPortalSurface.baseline.json"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "0fa4644a584f0af4f11dda53e4e19d009ab4244d"
+      },
+      "current": {
+        "exit": 0,
+        "object": "0fa4644a584f0af4f11dda53e4e19d009ab4244d"
+      }
+    }
+  },
+  {
+    "path": "test/fixtures/eventEditorCommitProbe.baseline.json",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "test/fixtures/eventEditorCommitProbe.baseline.json"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "5f707a254869c3bb58892985e75a886cb6071eae"
+      },
+      "current": {
+        "exit": 0,
+        "object": "5f707a254869c3bb58892985e75a886cb6071eae"
+      }
+    }
+  },
+  {
+    "path": "test/fixtures/eventEditorInteractionSurface.baseline.json",
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "test/fixtures/eventEditorInteractionSurface.baseline.json"
+    ],
+    "exit": 0,
+    "out": "",
+    "objects": {
+      "base": {
+        "exit": 0,
+        "object": "f52b73f26d800b63248d03b95cc05a473e88cd9e"
+      },
+      "current": {
+        "exit": 0,
+        "object": "f52b73f26d800b63248d03b95cc05a473e88cd9e"
+      }
+    }
+  }
+]

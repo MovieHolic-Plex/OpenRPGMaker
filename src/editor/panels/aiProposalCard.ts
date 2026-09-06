@@ -309,6 +309,7 @@ export function createProposalHost(options: {
       showAiGateNotice(commitGateNotice(applied.issues ?? (applied.issue ? [applied.issue] : [])));
       return "rejected";
     }
+    session.recordAppliedProject(applied);
     setStatus("대기");
     setAssistantMessageBadge(assistantBubble, "applied");
     lastAppliedProposalMessage = pendingProposalMessage;

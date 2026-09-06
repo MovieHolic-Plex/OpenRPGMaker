@@ -1,0 +1,5 @@
+{
+  "command": "npm test -- test/lifeRecoveryPersistence.test.ts test/p0SessionPersistence.test.ts test/p1SessionPersistence.test.ts test/p2SessionPersistence.test.ts test/p2SpatialPersistence.test.ts test/p0RuntimeIntegration.test.ts",
+  "exit": 1,
+  "durationSeconds": 17.42987585067749
+}

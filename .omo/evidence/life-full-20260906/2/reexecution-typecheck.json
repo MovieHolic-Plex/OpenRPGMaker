@@ -1,0 +1,7 @@
+{
+  "command": "npm run typecheck:app",
+  "exit": 0,
+  "signal": null,
+  "stdout": "\n> rpg-zzu@0.1.0 typecheck:app\n> tsc --noEmit -p tsconfig.app.json\n\n",
+  "stderr": ""
+}

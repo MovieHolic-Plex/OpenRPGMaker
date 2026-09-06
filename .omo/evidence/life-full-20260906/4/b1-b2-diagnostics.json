@@ -1,0 +1,18 @@
+{
+  "command": "node .omo/evidence/life-full-20260906/4/diagnostics.mjs",
+  "wrapper": [
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=10s",
+    "240s",
+    "bash",
+    "-lc",
+    "node .omo/evidence/life-full-20260906/4/diagnostics.mjs"
+  ],
+  "exit": 0,
+  "durationSeconds": 63.609110832214355,
+  "head": "8c4f4f57c1473f024ee7bf9dad50cf859459f30d",
+  "tree": "f4876f1c27ec0cd5799d20b184470097acd2d304",
+  "capturedText": "{\"file\":\"src/project/lifeStateReconciliation.ts\",\"diagnostics\":[]}\n{\"file\":\"src/player/autosave.ts\",\"diagnostics\":[]}\n{\"file\":\"src/player/dayTransition.ts\",\"diagnostics\":[]}\n{\"file\":\"src/player/saveSlots.ts\",\"diagnostics\":[]}\n{\"file\":\"src/project/lifeRecovery.ts\",\"diagnostics\":[]}\n{\"file\":\"src/project/p1FoundationRecords.ts\",\"diagnostics\":[]}\n{\"file\":\"src/project/spatialPlacementRestore.ts\",\"diagnostics\":[]}\n{\"file\":\"test/p0DayTransitionSceneFailure.test.ts\",\"diagnostics\":[]}\n{\"file\":\"test/p0RuntimeIntegration.test.ts\",\"diagnostics\":[]}\n{\"file\":\"test/p0SessionPersistence.test.ts\",\"diagnostics\":[]}\n{\"file\":\"test/p1DayTransitionIntegration.test.ts\",\"diagnostics\":[]}\n{\"file\":\"test/p2DayTransition.test.ts\",\"diagnostics\":[]}\n{\"file\":\"test/p2SpatialPersistence.test.ts\",\"diagnostics\":[]}\n{\"file\":\"test/lifeRecoveryPersistence.test.ts\",\"diagnostics\":[]}\n{\"files\":14,\"diagnostics\":0}\n",
+  "sha256": "5c71a4ccde34e275542c2b241ff8a3cea1ed7466ada1770d28a75becc39020bb"
+}

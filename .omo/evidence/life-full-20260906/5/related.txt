@@ -1,0 +1,71 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/runtimeQaInstrumentationBoundary.test.ts test/runtimeQaReport.test.ts test/runtimeQaGate.test.ts test/sceneTestRunner.test.ts test/debugSession.test.ts test/runtimeDebugPanel.test.ts test/playSceneFarmFeedback.test.ts test/npcActionFacing.test.ts test/runtimeMovementStability.test.ts test/actionDebounceFootprint.test.ts test/lifeSaveVersion.test.ts test/lifeRecoveryPersistence.test.ts test/p0SessionPersistence.test.ts test/p2SpatialPersistence.test.ts test/autosave.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+ ✓ test/runtimeQaReport.test.ts (18 tests) 20ms
+ ✓ test/runtimeQaGate.test.ts (52 tests) 22ms
+ ✓ test/p2SpatialPersistence.test.ts (3 tests) 272ms
+ ✓ test/autosave.test.ts (16 tests) 784ms
+ ✓ test/p0SessionPersistence.test.ts (9 tests) 614ms
+ ✓ test/lifeSaveVersion.test.ts (18 tests) 1016ms
+ ✓ test/runtimeDebugPanel.test.ts (17 tests) 1709ms
+ ✓ test/runtimeQaInstrumentationBoundary.test.ts (3 tests) 18ms
+ ✓ test/debugSession.test.ts (4 tests) 8505ms
+   ✓ debugSession — 런타임 디버그 조작 > applyDebugOp가 스위치/변수/아이템/골드/텔레포트를 반영한다  8285ms
+ ✓ test/lifeRecoveryPersistence.test.ts (40 tests) 3625ms
+   ✓ adversarial life codec boundaries > refuses all conversions on claim exhaustion without moving a prefix  715ms
+   ✓ bounded animal restoration > quarantines animals beyond the runtime bound instead of dropping a saved suffix  628ms
+ ❯ test/actionDebounceFootprint.test.ts (5 tests | 2 failed) 602ms
+   ✓ 조사 연타 디바운스는 이벤트 단위다 > 몸 안에서 방향만 바꿔도 같은 이벤트는 다시 발동하지 않는다 126ms
+   ✓ 조사 연타 디바운스는 이벤트 단위다 > 서로 다른 이벤트로 방향을 바꾸면 각각 발동한다 117ms
+   ✓ 조사 연타 디바운스는 이벤트 단위다 > 1x1 이벤트를 같은 방향으로 연타하면 한 번만 발동한다 — 항등 138ms
+   × __oprnDebug 스냅샷이 두 사각을 실어 보낸다 > 3x3 + passRows 1 이면 몸 사각과 통행 사각이 다르게 실린다 125ms
+     → Cannot read properties of undefined (reading 'registry')
+   × __oprnDebug 스냅샷이 두 사각을 실어 보낸다 > 발자국 저작이 없으면 두 사각이 앵커 한 칸으로 같다 — 항등 94ms
+     → Cannot read properties of undefined (reading 'registry')
+ ✓ test/npcActionFacing.test.ts (9 tests) 1449ms
+   ✓ NPC action facing > respects move route direction fix on autonomous action NPCs  300ms
+ ✓ test/playSceneFarmFeedback.test.ts (5 tests) 437ms
+ ✓ test/sceneTestRunner.test.ts (2 tests) 162ms
+ ✓ test/runtimeMovementStability.test.ts (50 tests) 4152ms
+
+ Test Files  1 failed | 14 passed (15)
+      Tests  2 failed | 249 passed (251)
+   Start at  10:25:47
+   Duration  18.81s (transform 29.18s, setup 0ms, collect 110.58s, tests 23.39s, environment 1.03s, prepare 3.44s)
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/actionDebounceFootprint.test.ts > __oprnDebug 스냅샷이 두 사각을 실어 보낸다 > 3x3 + passRows 1 이면 몸 사각과 통행 사각이 다르게 실린다
+TypeError: Cannot read properties of undefined (reading 'registry')
+ ❯ syncCutsceneHudVisibility src/player/playSceneMapRuntime.ts:657:27
+    655|   readonly session: PlaySceneContext["session"];
+    656| }): void {
+    657|   const host = scene.game.registry.get("dialogueHost");
+       |                           ^
+    658|   if (!isCutsceneHudHost(host)) return;
+    659|   host.classList.toggle(CUTSCENE_HUD_HIDDEN_CLASS, isCutsceneHudHidden…
+ ❯ syncRuntimeState src/player/playSceneMapRuntime.ts:563:3
+ ❯ captureScene test/actionDebounceFootprint.test.ts:139:5
+ ❯ test/actionDebounceFootprint.test.ts:145:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/actionDebounceFootprint.test.ts > __oprnDebug 스냅샷이 두 사각을 실어 보낸다 > 발자국 저작이 없으면 두 사각이 앵커 한 칸으로 같다 — 항등
+TypeError: Cannot read properties of undefined (reading 'registry')
+ ❯ syncCutsceneHudVisibility src/player/playSceneMapRuntime.ts:657:27
+    655|   readonly session: PlaySceneContext["session"];
+    656| }): void {
+    657|   const host = scene.game.registry.get("dialogueHost");
+       |                           ^
+    658|   if (!isCutsceneHudHost(host)) return;
+    659|   host.classList.toggle(CUTSCENE_HUD_HIDDEN_CLASS, isCutsceneHudHidden…
+ ❯ syncRuntimeState src/player/playSceneMapRuntime.ts:563:3
+ ❯ captureScene test/actionDebounceFootprint.test.ts:139:5
+ ❯ test/actionDebounceFootprint.test.ts:158:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯

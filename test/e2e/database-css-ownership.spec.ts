@@ -225,7 +225,7 @@ async function renderedReady(page: Page) {
 }
 
 for (const viewportWidth of [1440, 1024]) {
- test(`required 32-primary destination matrix at ${viewportWidth}`, async ({ page }) => {
+ test(`required registered-primary destination matrix at ${viewportWidth}`, async ({ page }) => {
   test.setTimeout(600_000);
   const directory = evidenceDirectory;
   await mkdir(directory, { recursive: true });
@@ -243,7 +243,7 @@ for (const viewportWidth of [1440, 1024]) {
     const { TAB_GROUPS } = await import('/src/editor/panels/database.ts');
     return ['overview', ...TAB_GROUPS.flatMap(group => group.tabs)];
   });
-  expect(destinations).toHaveLength(32);
+  expect(destinations.length).toBeGreaterThanOrEqual(34);
   expect(new Set(destinations)).toEqual(new Set(Object.keys(DATABASE_PRIMARY_SENTINELS)));
   expect(new Set(destinations).size).toBe(destinations.length);
   const rail = await page.locator('.db-tab[data-tab]').evaluateAll(nodes => nodes.map(node => node.getAttribute('data-tab')));
@@ -288,8 +288,67 @@ for (const viewportWidth of [1440, 1024]) {
       expect(measured.body.height, destination).toBeGreaterThan(0);
     }
   expect(cases).toHaveLength(destinations.length);
-  expect(new Set(cases.map(entry => `${entry.destination}:${entry.viewport.width}`)).size).toBe(32);
+  expect(new Set(cases.map(entry => `${entry.destination}:${entry.viewport.width}`)).size).toBe(destinations.length);
  });
+}
+
+
+for (const width of [1440, 1024]) {
+  for (const tab of ['opening', 'gameOver']) {
+    test(`cinematic ${tab} pane geometry and native focus at ${width}`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await openDatabase(page);
+      const before = await page.evaluate(async () => {
+        const { store } = await import('/src/project/store.ts');
+        return JSON.stringify(store.getCurrent().system);
+      });
+      await navigate(page, tab);
+      const pane = page.getByTestId(`db-cinematic-${tab === 'opening' ? 'opening' : 'game-over'}`);
+      const geometry = await pane.evaluate(root => {
+        const measure = (node: Element) => {
+          const rect = node.getBoundingClientRect();
+          return { x: rect.x, right: rect.right, y: rect.y, bottom: rect.bottom,
+            width: rect.width, height: rect.height, clientWidth: node.clientWidth, scrollWidth: node.scrollWidth };
+        };
+        const list = root.querySelector('.db-ws-list-pane');
+        const detail = root.querySelector('.db-ws-detail');
+        const body = root.querySelector('.db-ws-detail-body');
+        if (!list || !detail || !body) throw new Error('Missing cinematic list/detail scroll surfaces');
+        return { root: measure(root), list: measure(list), detail: measure(detail), body: measure(body), overflowY: getComputedStyle(body).overflowY };
+      });
+      expect(geometry.overflowY).toMatch(/^(auto|scroll)$/);
+      expect(geometry.list.right).toBeLessThanOrEqual(geometry.detail.x);
+      for (const region of [geometry.root, geometry.list, geometry.detail, geometry.body]) {
+        expect(region.width).toBeGreaterThan(0);
+        expect(region.height).toBeGreaterThan(0);
+        expect(region.x).toBeGreaterThanOrEqual(geometry.root.x);
+        expect(region.right).toBeLessThanOrEqual(geometry.root.right + 1);
+        expect(region.y).toBeGreaterThanOrEqual(geometry.root.y);
+        expect(region.bottom).toBeLessThanOrEqual(geometry.root.bottom + 1);
+        expect(region.scrollWidth).toBeLessThanOrEqual(region.clientWidth + 1);
+      }
+      const first = page.locator(DATABASE_PRIMARY_SENTINELS[tab]);
+      const next = pane.getByTestId(tab === 'opening' ? 'db-cinematic-skippable' : 'db-cinematic-game-over-message');
+      expect(await first.evaluate(node => node.tagName)).toBe('INPUT');
+      await expect(first).toHaveAttribute('type', tab === 'opening' ? 'checkbox' : 'text');
+      await expect(first).toBeVisible();
+      await expect(first).toBeEnabled();
+      await first.focus();
+      await expect(first).toBeFocused();
+      await first.press('Tab');
+      await expect(next).toBeFocused();
+      await expect(next).toBeInViewport();
+      expect(await next.evaluate(node => {
+        const rect = node.getBoundingClientRect();
+        const hit = document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
+        return hit === node || (hit !== null && node.contains(hit));
+      })).toBe(true);
+      expect(await page.evaluate(async () => {
+        const { store } = await import('/src/project/store.ts');
+        return JSON.stringify(store.getCurrent().system);
+      })).toBe(before);
+    });
+  }
 }
 
 

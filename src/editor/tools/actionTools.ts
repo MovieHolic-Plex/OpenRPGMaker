@@ -2,7 +2,7 @@ import { normalizeEnemyRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { normalizeActionCombatConfig, normalizeEnemyActionProfile } from "@/project/actionCombat";
 import { normalizeProjectFactions, PLAYER_FACTION_ID } from "@/project/factions";
 import { requireMap } from "./mapHelpers";
-import { assignMonsterResourceId, monsterGraphicAssignmentWarning } from "./monsterGraphicAssignment";
+import { ensureMonsterGraphic } from "./monsterGraphicAssignment";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import type { EnemyActionProfile, EnemyRecord, FactionDef, FactionRelationDef, FieldSpawnDef, Project } from "@/project/types";
 
@@ -93,6 +93,9 @@ function upsertActionEnemy(
   if (existing) {
     existing.actionProfile = profile;
     if (factionId !== undefined) existing.factionId = factionId;
+    if (args.monsterResourceId !== undefined) existing.monsterResourceId = args.monsterResourceId as string;
+    if (args.transparent !== undefined) existing.transparent = args.transparent as boolean;
+    ensureMonsterGraphic(draft, existing, existing, "monsterResourceId", warnings);
     return { enemy: existing, outcome: "modified" };
   }
   if (typeof args.name !== "string" || args.name.length === 0) {
@@ -102,6 +105,8 @@ function upsertActionEnemy(
   const enemy = normalizeEnemyRecord({
     id: enemyId,
     name: args.name,
+    monsterResourceId: args.monsterResourceId as string | undefined,
+    transparent: args.transparent as boolean | undefined,
     stats: {
       maxHp: stats.maxHp ?? 30,
       maxMp: stats.maxMp ?? 0,
@@ -113,11 +118,7 @@ function upsertActionEnemy(
   });
   enemy.actionProfile = profile;
   if (factionId !== undefined) enemy.factionId = factionId;
-  const assignment = assignMonsterResourceId(draft, enemy);
-  if (assignment) {
-    enemy.monsterResourceId = assignment.resourceId;
-    warnings.push(monsterGraphicAssignmentWarning("enemy.monsterResourceId", enemy, assignment));
-  }
+  ensureMonsterGraphic(draft, enemy, enemy, "monsterResourceId", warnings);
   draft.database.enemies.push(enemy);
   return { enemy, outcome: "added" };
 }
@@ -132,6 +133,8 @@ const makeActionEnemy: ToolDefinition = {
     properties: {
       enemyId: { type: "string" },
       name: { type: "string" },
+      monsterResourceId: { type: "string", description: "명시할 몬스터 리소스 ID. 이름으로 확실히 매칭되지 않으면 필수(list_resources로 조회)." },
+      transparent: { type: "boolean", description: "의도적으로 외형을 숨길 때만 true." },
       stats: {
         type: "object",
         properties: {

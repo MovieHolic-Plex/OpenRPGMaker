@@ -1,5 +1,6 @@
 import { editorState } from "@/editor/editorState";
 import type { EditorBrushSize, PaintShape, Tool } from "@/editor/editorState";
+import type { PaletteStamp } from "@/editor/tilePaletteStamp";
 
 export type TileToolId = "select" | "pen" | "rect" | "round" | "fill" | "erase";
 
@@ -39,6 +40,10 @@ export function selectMapModeTool(tool: MapModeToolId): void {
 
 export function selectEyedropperTool(): void {
   selectMapModeTool("eyedropper");
+}
+
+export function selectPaletteStamp(stamp: PaletteStamp): void {
+  editorState.set({ activePaletteStamp: stamp, tool: "paint", paintShape: "pen", selection: null });
 }
 
 export function setTileBrushSize(size: EditorBrushSize): void {

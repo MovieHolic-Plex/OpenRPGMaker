@@ -1,0 +1,63 @@
+{
+  "sourceSha": "057b5427cc5d32da657e9c35b2e442c4af526f7e",
+  "cleanBefore": true,
+  "originalStoreSha256": "7823f05b36f84ef5e2cf4532b6b3e11331228a650c7973117ce6c7f35f5c9645",
+  "mutationMechanism": "temporary single-line verifier-seam changes using apply_patch; exact byte restoration in finally",
+  "runs": [
+    {
+      "name": "content",
+      "sourceSha256": "6c7e446355db6dc0a1053cd7218fd19e05c9a8a346d68428ba2bdde2c2668fa4",
+      "exit": 1,
+      "actual": "verified",
+      "expected": "mismatch",
+      "assertion": {
+        "name": "AssertionError",
+        "message": "changed-real-content: false verified or wrong typed outcome\n+ actual - expected\n\n+ 'verified'\n- 'mismatch'\n"
+      },
+      "projectId": "qa-ai-proof-8d2e2286-25df-4ad1-945d-0bad4e416fec",
+      "cleanup": {
+        "kind": "deleted-and-absence-verified",
+        "projectId": "qa-ai-proof-8d2e2286-25df-4ad1-945d-0bad4e416fec",
+        "commitIds": [
+          "562accb3-1ef7-497c-b97d-37c27dcbd1a6"
+        ]
+      }
+    },
+    {
+      "name": "transport",
+      "sourceSha256": "18a51202a6d80257eccca5565be3d68dceebfd045c827503f14d09bb624fde99",
+      "exit": 1,
+      "actual": "verified",
+      "expected": "failed",
+      "assertion": {
+        "name": "AssertionError",
+        "message": "injected-transport-503: false verified or wrong typed outcome\n+ actual - expected\n\n+ 'verified'\n- 'failed'\n"
+      },
+      "projectId": "qa-ai-proof-57fbf00a-da11-4589-8625-7267edff5874",
+      "cleanup": {
+        "kind": "deleted-and-absence-verified",
+        "projectId": "qa-ai-proof-57fbf00a-da11-4589-8625-7267edff5874",
+        "commitIds": [
+          "fbd10a79-25f2-45ab-998f-8b006360db4d"
+        ]
+      }
+    }
+  ],
+  "restoredStoreSha256": "7823f05b36f84ef5e2cf4532b6b3e11331228a650c7973117ce6c7f35f5c9645",
+  "cleanAfterMutations": true,
+  "restoredGreen": {
+    "exit": 0,
+    "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
+    "sourceSha": "057b5427cc5d32da657e9c35b2e442c4af526f7e",
+    "storeSourceSha256": "7823f05b36f84ef5e2cf4532b6b3e11331228a650c7973117ce6c7f35f5c9645",
+    "cleanup": {
+      "kind": "deleted-and-absence-verified",
+      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
+      "commitIds": [
+        "318a8c38-3d7a-430e-8f70-ea46515717a3"
+      ]
+    }
+  },
+  "pass": true,
+  "restored": true
+}

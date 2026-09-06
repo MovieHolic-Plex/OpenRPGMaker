@@ -1,0 +1,28 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p2",
+  "head": "34c279bb6a481b18bf428fb985bc4fa4916d1e29",
+  "tree": "6590d367eea64d35431ea0e8324c1bfebaffc7f2",
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "300s",
+    "npm",
+    "test",
+    "--",
+    "test/p1FoundationSchema.test.ts",
+    "test/p1SessionPersistence.test.ts",
+    "test/lifeRecoveryPersistence.test.ts",
+    "test/lifeRecoveryRecordKeys.test.ts"
+  ],
+  "started": "2026-09-06T06:15:13.222Z",
+  "finished": "2026-09-06T06:15:21.261Z",
+  "exit": 0,
+  "signal": null,
+  "stdout": "\n> rpg-zzu@0.1.0 test\n> node scripts/run-vitest.mjs run --configLoader bundle test/p1FoundationSchema.test.ts test/p1SessionPersistence.test.ts test/lifeRecoveryPersistence.test.ts test/lifeRecoveryRecordKeys.test.ts\n\n\n RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2\n\n ✓ test/p1SessionPersistence.test.ts (3 tests) 233ms\n ✓ test/p1FoundationSchema.test.ts (9 tests) 1820ms\n   ✓ P1 weather and farm-animal authored schema > keeps legacy projects byte-stable without optional P1 authored fields  386ms\n   ✓ P1 weather and farm-animal authored schema > rejects unknown weather kinds, unsafe numbers, duplicate ids, and oversized arrays  935ms\n ✓ test/lifeRecoveryPersistence.test.ts (40 tests) 2665ms\n   ✓ adversarial life codec boundaries > refuses all conversions on claim exhaustion without moving a prefix  447ms\n   ✓ bounded animal restoration > quarantines animals beyond the runtime bound instead of dropping a saved suffix  502ms\n ✓ test/lifeRecoveryRecordKeys.test.ts (37 tests) 2927ms\n\n Test Files  4 passed (4)\n      Tests  89 passed (89)\n   Start at  15:15:13\n   Duration  7.28s (transform 3.58s, setup 0ms, collect 13.86s, tests 7.64s, environment 1ms, prepare 535ms)\n\n",
+  "stderr": ""
+}

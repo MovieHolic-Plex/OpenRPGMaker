@@ -1,0 +1,282 @@
+{
+  "baseUrl": "http://127.0.0.1:19841",
+  "scope": "all",
+  "results": [
+    {
+      "name": "C1-size-2",
+      "status": "PASS",
+      "observed": {
+        "size": 2,
+        "painted": 4,
+        "anchor": {
+          "x": 44,
+          "y": 48
+        }
+      },
+      "screenshot": "C1-size-2.png"
+    },
+    {
+      "name": "C1-size-4",
+      "status": "PASS",
+      "observed": {
+        "size": 4,
+        "painted": 16,
+        "anchor": {
+          "x": 44,
+          "y": 48
+        }
+      },
+      "screenshot": "C1-size-4.png"
+    },
+    {
+      "name": "C2-sparse-stroke",
+      "status": "PASS",
+      "observed": {
+        "painted": 13,
+        "oneUndoRestored": true
+      },
+      "screenshot": "C2-sparse-stroke.png"
+    },
+    {
+      "name": "C3-noop-redo",
+      "status": "PASS",
+      "observed": {
+        "unchangedClick": true,
+        "redoRestored": true
+      },
+      "screenshot": "C3-noop-redo.png"
+    },
+    {
+      "name": "C6-picking-parity",
+      "status": "PASS",
+      "observed": {
+        "toolbar": [
+          85,
+          "upper"
+        ],
+        "right": [
+          85,
+          "upper"
+        ]
+      },
+      "screenshot": "C6-picking-parity.png"
+    },
+    {
+      "name": "C8b-kit-after-rect",
+      "status": "PASS",
+      "observed": {
+        "shape": "rect",
+        "stampCells": 4,
+        "placed": true
+      },
+      "screenshot": "C8b-kit-after-rect.png"
+    },
+    {
+      "name": "C8b-kit-after-round",
+      "status": "PASS",
+      "observed": {
+        "shape": "round",
+        "stampCells": 4,
+        "placed": true
+      },
+      "screenshot": "C8b-kit-after-round.png"
+    },
+    {
+      "name": "C8c-keyboard-stamp-reset",
+      "status": "PASS",
+      "observed": {
+        "keyboardClears": true,
+        "buttonClears": true
+      },
+      "screenshot": "C8c-keyboard-stamp-reset.png"
+    },
+    {
+      "name": "C4-modes-and-viewports",
+      "status": "PASS",
+      "observed": [
+        {
+          "mode": "beginner",
+          "width": 1440,
+          "height": 900,
+          "canvasWidth": 1152,
+          "size": {
+            "x": 139,
+            "y": 187,
+            "width": 32,
+            "height": 32,
+            "top": 187,
+            "right": 171,
+            "bottom": 219,
+            "left": 139
+          },
+          "overflow": false
+        },
+        {
+          "mode": "beginner",
+          "width": 1280,
+          "height": 800,
+          "canvasWidth": 992,
+          "size": {
+            "x": 139,
+            "y": 187,
+            "width": 32,
+            "height": 32,
+            "top": 187,
+            "right": 171,
+            "bottom": 219,
+            "left": 139
+          },
+          "overflow": false
+        },
+        {
+          "mode": "beginner",
+          "width": 1024,
+          "height": 768,
+          "canvasWidth": 736,
+          "size": {
+            "x": 139,
+            "y": 187,
+            "width": 32,
+            "height": 32,
+            "top": 187,
+            "right": 171,
+            "bottom": 219,
+            "left": 139
+          },
+          "overflow": false
+        },
+        {
+          "mode": "standard",
+          "width": 1440,
+          "height": 900,
+          "canvasWidth": 1134,
+          "size": {
+            "x": 141,
+            "y": 212,
+            "width": 32,
+            "height": 32,
+            "top": 212,
+            "right": 173,
+            "bottom": 244,
+            "left": 141
+          },
+          "overflow": false
+        },
+        {
+          "mode": "standard",
+          "width": 1280,
+          "height": 800,
+          "canvasWidth": 974,
+          "size": {
+            "x": 141,
+            "y": 212,
+            "width": 32,
+            "height": 32,
+            "top": 212,
+            "right": 173,
+            "bottom": 244,
+            "left": 141
+          },
+          "overflow": false
+        },
+        {
+          "mode": "standard",
+          "width": 1024,
+          "height": 768,
+          "canvasWidth": 718,
+          "size": {
+            "x": 141,
+            "y": 212,
+            "width": 32,
+            "height": 32,
+            "top": 212,
+            "right": 173,
+            "bottom": 244,
+            "left": 141
+          },
+          "overflow": false
+        },
+        {
+          "mode": "expert",
+          "width": 1440,
+          "height": 900,
+          "canvasWidth": 1114,
+          "size": {
+            "x": 141,
+            "y": 254,
+            "width": 32,
+            "height": 32,
+            "top": 254,
+            "right": 173,
+            "bottom": 286,
+            "left": 141
+          },
+          "overflow": false
+        },
+        {
+          "mode": "expert",
+          "width": 1280,
+          "height": 800,
+          "canvasWidth": 954,
+          "size": {
+            "x": 141,
+            "y": 254,
+            "width": 32,
+            "height": 32,
+            "top": 254,
+            "right": 173,
+            "bottom": 286,
+            "left": 141
+          },
+          "overflow": false
+        },
+        {
+          "mode": "expert",
+          "width": 1024,
+          "height": 768,
+          "canvasWidth": 698,
+          "size": {
+            "x": 141,
+            "y": 254,
+            "width": 32,
+            "height": 32,
+            "top": 254,
+            "right": 173,
+            "bottom": 286,
+            "left": 141
+          },
+          "overflow": false
+        }
+      ],
+      "screenshot": "C4-modes-and-viewports.png"
+    },
+    {
+      "name": "C5-representative-selection",
+      "status": "PASS",
+      "observed": {
+        "picked": 423,
+        "representative": 363,
+        "pressed": true
+      },
+      "screenshot": "C5-representative-selection.png"
+    },
+    {
+      "name": "C7-beginner-search",
+      "status": "PASS",
+      "observed": {
+        "matchCount": 0,
+        "reset": true,
+        "focusRestored": true
+      },
+      "screenshot": "C7-beginner-search.png"
+    },
+    {
+      "name": "C8a-custom-atlas-stamp",
+      "status": "FAIL",
+      "error": "scrollIntoViewIfNeeded: Element is not attached to the DOM\nCall log:\n\u001b[2m  - attempting scroll into view action\u001b[22m\n\u001b[2m    - waiting for element to be stable\u001b[22m\n",
+      "screenshot": "C8a-custom-atlas-stamp.png"
+    }
+  ],
+  "errors": [],
+  "cleanup": true
+}

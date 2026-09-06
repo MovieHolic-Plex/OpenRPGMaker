@@ -248,6 +248,16 @@ const TAB_ICONS: Record<DatabaseTab, readonly SvgNodeSpec[]> = {
     { tag: "circle", attrs: { cx: "14.2", cy: "11", r: "1.9" } },
     { tag: "circle", attrs: { cx: "9.6", cy: "15.4", r: "1.9" } },
   ],
+  // 오프닝 — 재생 프레임
+  opening: [
+    { tag: "rect", attrs: { x: "3", y: "4", width: "16", height: "14", rx: "2" } },
+    { tag: "path", attrs: { d: "m9 8 5 3-5 3Z" } },
+  ],
+  // 게임 오버 — 종료 프레임
+  gameOver: [
+    { tag: "rect", attrs: { x: "3", y: "4", width: "16", height: "14", rx: "2" } },
+    { tag: "path", attrs: { d: "m8 8 6 6m0-6-6 6" } },
+  ],
   // 용어 — 펼친 책
   terms: [
     { tag: "path", attrs: { d: "M11 6.4v11.2" } },

@@ -1,0 +1,19 @@
+{
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "300",
+    "npm",
+    "run",
+    "typecheck:app"
+  ],
+  "started": "2026-09-06T07:38:51.283Z",
+  "finished": "2026-09-06T07:40:17.884Z",
+  "exit": 0,
+  "signal": null,
+  "head": "b7f68fe23e1e1670e0d1d4bbc329708a69256f16",
+  "tree": "28354fe57c7928181ccad11ef40a0186e05757da"
+}

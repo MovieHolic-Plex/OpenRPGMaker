@@ -1,0 +1,46 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeRecovery.test.ts test/lifeSaveVersion.test.ts test/autosave.test.ts test/p0Makers.test.ts test/p0Shipping.test.ts test/p0Bundles.test.ts test/p1FarmAnimals.test.ts test/p1DayTransitionIntegration.test.ts test/p1WeatherDayTransition.test.ts test/p2DayTransition.test.ts test/p0DayTransitionSceneFailure.test.ts test/p2SpatialTransactions.test.ts test/checkpointEndingRuntime.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+ ✓ test/p2SpatialTransactions.test.ts (3 tests) 428ms
+ ✓ test/p2DayTransition.test.ts (2 tests) 904ms
+   ✓ P2 forage day-transition integration > settles the source day then spawns destination-day forage through the one transition authority  738ms
+ ✓ test/p0Bundles.test.ts (9 tests) 1018ms
+ ✓ test/p1WeatherDayTransition.test.ts (4 tests) 979ms
+   ✓ P1 weather watering handoff > marks dry destination-day plots before farm growth synchronization for rain  610ms
+ ✓ test/p0Shipping.test.ts (9 tests) 1287ms
+ ✓ test/autosave.test.ts (16 tests) 2134ms
+   ✓ autosave policy (shouldAutosave) > saves by default with no prior autosave  734ms
+ ✓ test/p1DayTransitionIntegration.test.ts (5 tests) 1803ms
+   ✓ P1 daily weather transition integration > initializes today's weather and visual state when a new session starts  764ms
+   ✓ P1 daily weather transition integration > advances calendar, resolves forecast-matching rain, waters, then grows in one transaction  316ms
+ ✓ test/p0Makers.test.ts (8 tests) 2304ms
+   ✓ P0 timed makers > uses a monotonic absolute game-minute clock across a season/day boundary  779ms
+   ✓ P0 timed makers > preserves a processing timer through the shared save snapshot path  422ms
+ ✓ test/p1FarmAnimals.test.ts (16 tests) 2679ms
+   ✓ P1 farm-animal runtime authority > assigns and moves an animal only to a compatible home with remaining capacity  494ms
+   ✓ P1 farm-animal runtime authority > rejects missing, incompatible, and full homes without mutating the session  374ms
+   ✓ P1 farm-animal runtime authority > rejects empty and unsafe feed stacks without changing inventory or animal care  344ms
+ ✓ test/lifeSaveVersion.test.ts (18 tests) 3694ms
+   ✓ Save5 version and original ownership boundary > writes independent Save5 even without life packages, leaving Project4 and live state unchanged  1028ms
+   ✓ Save5 version and original ownership boundary > migrates manual and auto only in memory in namespace null  466ms
+ ✓ test/lifeRecovery.test.ts (54 tests) 5445ms
+   ✓ bounded recovery ownership > accepts claim 4096 then refuses claim 4097 without removing its owner or sequence  753ms
+   ✓ bounded recovery ownership > rejects a multi-claim split in advance when only one slot remains  329ms
+   ✓ adversarial source conversion > validates a large JSON array without overflowing the call stack  321ms
+   ✓ adversarial source conversion > rejects total recovery overflow without removing the owner or advancing sequence  576ms
+   ✓ adversarial source conversion > rejects malformed persisted claims before any inventory payout  304ms
+ ✓ test/p0DayTransitionSceneFailure.test.ts (4 tests) 2175ms
+   ✓ P0 day-transition scene failure handling > keeps natural clock state unchanged and exposes a visible error  949ms
+   ✓ P0 day-transition scene failure handling > preflights sleep before fade/hooks and does not refresh as though sleep succeeded  686ms
+   ✓ P0 day-transition scene failure handling > rolls back a partially mutating day-end hook, fades in, and refreshes error surfaces  391ms
+ ✓ test/checkpointEndingRuntime.test.ts (5 tests) 2064ms
+   ✓ checkpointSave / killPlayer / triggerEnding > define_ending은 같은 조건 집합의 낮은 priority 엔딩을 warning으로 보고한다  1073ms
+
+ Test Files  13 passed (13)
+      Tests  153 passed (153)
+   Start at  09:06:38
+   Duration  39.27s (transform 42.49s, setup 0ms, collect 234.88s, tests 26.91s, environment 14ms, prepare 5.26s)

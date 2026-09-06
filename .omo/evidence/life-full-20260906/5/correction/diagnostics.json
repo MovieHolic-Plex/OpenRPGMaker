@@ -1,0 +1,14 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p2",
+  "head": "4e2d1762264533a5826c48686648093c3fe69ebd",
+  "tree": "234c0e9c391276f082efb61e2abff2e0a8d7e634",
+  "command": [
+    "node",
+    ".omo/evidence/life-full-20260906/5/correction/diagnostics.mjs"
+  ],
+  "started": "2026-09-06T02:07:29.555Z",
+  "exit": 0,
+  "signal": null,
+  "output": "{\"file\":\"src/player/runtimeDom.ts\",\"diagnostics\":[]}\n{\"file\":\"src/player/playSceneMovement.ts\",\"diagnostics\":[]}\n{\"file\":\"src/player/playSceneMapRuntime.ts\",\"diagnostics\":[]}\n{\"file\":\"src/player/playSceneTestHooks.ts\",\"diagnostics\":[]}\n{\"file\":\"src/testing/sceneTestRunner.ts\",\"diagnostics\":[]}\n{\"file\":\"test/lifeQaObservability.test.ts\",\"diagnostics\":[]}\n{\"file\":\"test/fixtures/life-full/qaObservability.ts\",\"diagnostics\":[]}\n{\"file\":\"test/debugSession.test.ts\",\"diagnostics\":[]}\n{\"files\":8,\"diagnostics\":0}\n",
+  "sha256": "eebbea846eaa4fd7366708bdfaef5d074ed36784960a6631f268e79e214180b0"
+}

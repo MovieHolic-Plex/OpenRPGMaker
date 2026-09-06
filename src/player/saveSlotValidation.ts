@@ -1,3 +1,5 @@
+export { isLifeRecoveryState } from "@/project/lifeRecovery";
+import { isMakerContract } from "@/project/makers";
 import { isEquipmentSlotId } from "@/project/equipmentSlots";
 import type { ActorInitialEquipment, ActorParameterKey, LightSource, LightingState } from "@/project/types";
 import { GOLD_MAX, type AudioCommandState, type PictureState, type PlaySession } from "@/project/session";
@@ -174,7 +176,8 @@ export function isMakerInstancesRecord(value: unknown): value is NonNullable<Pla
   return Object.entries(value).every(([instanceId, instance]) => {
     if (!isRecord(instance) || instance.instanceId !== instanceId || typeof instance.makerId !== "string") return false;
     if (instance.status !== "idle" && instance.status !== "processing" && instance.status !== "ready") return false;
-    if (instance.status === "idle") return instance.startedAtMinute === undefined && instance.readyAtMinute === undefined;
+    if (instance.status === "idle") return instance.startedAtMinute === undefined && instance.readyAtMinute === undefined && instance.contract === undefined;
+    if (instance.contract !== undefined && (!isMakerContract(instance.contract) || !isNonNegativeSafeInteger(instance.startedAtMinute) || instance.readyAtMinute !== instance.startedAtMinute + instance.contract.durationMinutes)) return false;
     return isNonNegativeSafeInteger(instance.startedAtMinute) &&
       isNonNegativeSafeInteger(instance.readyAtMinute) &&
       instance.readyAtMinute >= instance.startedAtMinute;

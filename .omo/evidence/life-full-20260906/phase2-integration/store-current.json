@@ -1,0 +1,33 @@
+{
+  "label": "store-current",
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p2",
+  "head": "66f2cdb756a5a95eda07cae6103b82dfe7298b8a",
+  "tree": "944315667d23fd9d65de95d33a35215e7f925e68",
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "300s",
+    "npm",
+    "test",
+    "--",
+    "test/autosaveStatus.test.ts",
+    "test/storePersistence.test.ts",
+    "test/unsavedChangesGuard.test.ts",
+    "--maxWorkers=2",
+    "--minWorkers=1",
+    "--reporter=json",
+    "--outputFile",
+    "/home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/phase2-integration/store-current.report.json"
+  ],
+  "started": "2026-09-06T05:23:28.240Z",
+  "finished": "2026-09-06T05:23:46.767Z",
+  "exit": 1,
+  "signal": null,
+  "stdout": "\n> rpg-zzu@0.1.0 test\n> node scripts/run-vitest.mjs run --configLoader bundle test/autosaveStatus.test.ts test/storePersistence.test.ts test/unsavedChangesGuard.test.ts --maxWorkers=2 --minWorkers=1 --reporter=json --outputFile /home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/phase2-integration/store-current.report.json\n\nJSON report written to /home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/phase2-integration/store-current.report.json\n",
+  "stderr": ""
+}

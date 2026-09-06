@@ -35,6 +35,8 @@ type RoadPoint = { readonly x: number; readonly y: number };
 export type TileLayer = "lower" | "upper";
 export type TilePaintOptions = {
   readonly autoConnect?: boolean;
+  /** Source stamps keep authored cells without terrain shaping or tree-pair repair. */
+  readonly preservePattern?: boolean;
   /** false면 hard 클러스터 동반 타일 확장을 건너뛴다 — 스탬프처럼 "고른 그대로" 찍는 도구용. */
   readonly clusterExpand?: boolean;
 };
@@ -114,8 +116,9 @@ export function paintTilesBulk(
 
   // Pre-check: any lower stroke that paints/overwrites an autotile trigger must reshape
   // even when UI Manual is on (RM brush contract). Dirty-cell expansion follows.
-  const shapeAutotile = lowerEditsNeedAutotileShape(currentMap, tileset, edits, autoConnect);
-  const repairTrees = !lowerTerrainOnly && editsNeedTreePairRepair(edits);
+  const shapeAutotile = !options.preservePattern
+    && lowerEditsNeedAutotileShape(currentMap, tileset, edits, autoConnect);
+  const repairTrees = !options.preservePattern && !lowerTerrainOnly && editsNeedTreePairRepair(edits);
 
   store.updateMap(mapId, (m) => {
     const lowerPoints: RoadPoint[] = [];

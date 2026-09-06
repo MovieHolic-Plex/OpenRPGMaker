@@ -211,7 +211,7 @@ export interface ApplyProposedProjectOptions {
 }
 
 export type ApplyProposedProjectResult =
-  | { readonly ok: true; readonly commit: CommitRow; readonly applied: Project }
+  | { readonly ok: true; readonly commit: CommitRow; readonly applied: Project; readonly commitProject?: Project }
   | {
     readonly ok: false;
     readonly reason: "commit-rejected";
@@ -270,6 +270,8 @@ export async function applyProposedProject(
   );
   if (options.resetProject === true) store.replaceProject(proposed, { ...change, projectSwitch: false });
   else store.replace(proposed, { change });
+  // Capture the actual apply before the asynchronous commit can outlive a human edit.
+  const commitProject = store.getCurrent();
   focusAcceptedAgentChanges(before, proposed);
   const commitInput: CommitLogInput = {
     project: proposed,
@@ -294,5 +296,5 @@ export async function applyProposedProject(
     };
   }
   resetManualProjectCommitBaseline(proposed);
-  return { ok: true, commit: commitRow, applied: store.getCurrent() };
+  return { ok: true, commit: commitRow, applied: store.getCurrent(), commitProject };
 }

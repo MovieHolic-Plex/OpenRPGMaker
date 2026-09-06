@@ -1,0 +1,15 @@
+{
+  "sourcePath": "/home/main/z-project/rpg-zzu-life-full-p2/.omo/gates-vitest-report.json",
+  "sourceSha256": "a36b2120415caf4e3587ebd33b7939a69c58b0f33be5aeb71d0d9c334324a6d3",
+  "archivePath": "/home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/phase2-gates-pre-task30-full.json",
+  "archiveSha256": "71e06a6a8243793735f6b473bcf6da58fde5730405dcab2307cc0ea17ae01044",
+  "appendedTrailingNewline": true,
+  "reconstruction": "If appendedTrailingNewline is true, remove exactly the final LF to reconstruct the original source bytes; all JSON content is unchanged.",
+  "counts": {
+    "total": 13624,
+    "passed": 13422,
+    "failed": 187,
+    "pending": 15
+  },
+  "knownEnvironmentCredentialMatches": 0
+}

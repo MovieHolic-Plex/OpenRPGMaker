@@ -1,0 +1,59 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiComposerModeSession.test.ts test/assistantVerificationEvidence.test.ts test/applyProposedProjectHouseProtection.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p1-20260906
+
+ ✓ test/aiComposerModeSession.test.ts (6 tests) 3661ms
+   ✓ 컴포저 모드 — 질문(ask) > 쓰기 툴 스키마를 모델에 노출하지 않는다 (읽기 툴은 남는다)  631ms
+   ✓ 컴포저 모드 — 질문(ask) > 모델이 쓰기 툴을 불러도 거부하고 프로젝트 초안은 불변이다  1152ms
+   ✓ 컴포저 모드 — 계획(plan) > 플래너만 돌려 계획 카드를 내고 그 턴은 실행 없이 끝난다 (자율 진입도 자동 계속 0회)  321ms
+   ✓ 컴포저 모드 — 계획(plan) > 계획 뒤 「계속」은 툴 루프를 돌려 실행한다  1061ms
+   ✓ 컴포저 모드 — 지시(do) > 기본/지시 모드는 쓰기 툴을 그대로 노출한다  355ms
+ ✓ test/assistantVerificationEvidence.test.ts (20 tests) 26684ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > run_lint ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  2168ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > check_reachability ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  903ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > verify_quest ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  1105ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > play_walkthrough ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  1169ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > run_scene_test ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  1034ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > evaluate_game_quality ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  2267ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > run_lint 실제 실행 결과도 ok:true를 유지한다  777ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 같은 검사 재실패는 앞선 성공을 제거하고, 이후 실제 재통과는 복구한다  2349ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 쓰기 이후에는 이전 검증 성공으로 완료할 수 없고 다시 검사해야 한다  2646ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 재검사 없는 쓰기는 최종 보고에서도 검증 통과로 남지 않는다  858ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 실행되지 않은 잘못된 인자는 고친 호출로 복구할 수 있다  920ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > warning-only lint는 통과하며 거부된 쓰기는 성공 근거를 무효화하지 않는다  1807ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 레이어의 선재 lint 오류는 자문을 유지하면서 최종 응답에 보고한다  1104ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 레이어 자동 통과는 재검증 의무를 만들지 않고 명시 검사만 유지한다 (explicit=false)  2078ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 레이어 자동 통과는 재검증 의무를 만들지 않고 명시 검사만 유지한다 (explicit=true)  1865ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 다음 항목은 자기 대상의 검증으로 완료하며 이전 항목의 stale 검사는 최종 보고에 보존한다  1338ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 실패한 walkthrough 실행은 레이어의 성공 시나리오로 기록하지 않는다  2257ms
+ ✓ test/applyProposedProjectHouseProtection.test.ts (21 tests) 32700ms
+   ✓ agent live house baseline > atomically rejects a stale preview after human lowerTiles edits  1946ms
+   ✓ agent live house baseline > atomically rejects a stale preview after human upperTiles edits  785ms
+   ✓ agent live house baseline > atomically rejects a stale preview after human lowerTileStacks edits  1138ms
+   ✓ agent live house baseline > atomically rejects a stale preview after human upperTileStacks edits  584ms
+   ✓ agent live house baseline > retains a house completed after preview, including resetProject=false  642ms
+   ✓ agent live house baseline > retains a house completed after preview, including resetProject=true  722ms
+   ✓ agent live house baseline > applies an unchanged-store preview with one undo entry and one commit  1593ms
+   ✓ agent live house baseline > uses current human tile and stack edits as the next accepted baseline  1418ms
+   ✓ agent live house baseline > does not turn raw walls or non-house regions into a stale-project lock  1280ms
+   ✓ agent-milestone live house baseline > atomically rejects a stale preview after human lowerTiles edits  1324ms
+   ✓ agent-milestone live house baseline > atomically rejects a stale preview after human upperTiles edits  1409ms
+   ✓ agent-milestone live house baseline > atomically rejects a stale preview after human lowerTileStacks edits  916ms
+   ✓ agent-milestone live house baseline > atomically rejects a stale preview after human upperTileStacks edits  758ms
+   ✓ agent-milestone live house baseline > retains a house completed after preview, including resetProject=false  2241ms
+   ✓ agent-milestone live house baseline > retains a house completed after preview, including resetProject=true  1974ms
+   ✓ agent-milestone live house baseline > applies an unchanged-store preview with one undo entry and one commit  2387ms
+   ✓ agent-milestone live house baseline > uses current human tile and stack edits as the next accepted baseline  2019ms
+   ✓ agent-milestone live house baseline > does not turn raw walls or non-house regions into a stale-project lock  1535ms
+   ✓ real autonomous milestone application > checks the live store at completion: human-edit  2531ms
+   ✓ real autonomous milestone application > checks the live store at completion: new-house  2433ms
+   ✓ real autonomous milestone application > checks the live store at completion: unchanged  3060ms
+
+ Test Files  3 passed (3)
+      Tests  47 passed (47)
+   Start at  19:16:39
+   Duration  80.60s (transform 29.87s, setup 0ms, collect 137.19s, tests 63.05s, environment 4ms, prepare 1.33s)
+

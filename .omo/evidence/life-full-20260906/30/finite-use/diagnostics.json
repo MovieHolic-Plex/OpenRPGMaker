@@ -1,0 +1,26 @@
+{
+  "label": "diagnostics",
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p2-life-full-record-keys",
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "300s",
+    "node",
+    ".omo/evidence/life-full-20260906/30/finite-use/diagnostics.mjs"
+  ],
+  "started": "2026-09-06T04:19:02.899Z",
+  "finished": "2026-09-06T04:19:11.633Z",
+  "base": "f86474547028cddf795c8e431b2195b7edccd201",
+  "head": "7c19e5edc5849e800db81b4af0c3f26504401bc1",
+  "headTree": "7c013a59633197ca8031b856e9b1dcd79dba5bff",
+  "codeTree": "677c5ed187cac197030bb847da1d89fa4698c6cb",
+  "stdout": "{\"path\":\"src/project/itemTransitions.ts\",\"diagnostics\":[]}\n{\"path\":\"test/lifeRecoveryRecordKeys.test.ts\",\"diagnostics\":[{\"code\":2769,\"category\":1,\"start\":9203,\"message\":\"No overload matches this call.\\n  Overload 1 of 2, '(o: {}): string[]', gave the following error.\\n    Argument of type 'Record<string, number> | undefined' is not assignable to parameter of type '{}'.\\n      Type 'undefined' is not assignable to type '{}'.\\n  Overload 2 of 2, '(o: object): string[]', gave the following error.\\n    Argument of type 'Record<string, number> | undefined' is not assignable to parameter of type 'object'.\\n      Type 'undefined' is not assignable to type 'object'.\"},{\"code\":2345,\"category\":1,\"start\":10385,\"message\":\"Argument of type '{ readonly switches: Record<string, boolean>; readonly selfSwitches?: Record<string, Partial<Record<string, boolean>>> | undefined; readonly variables: Record<...>; ... 94 more ...; readonly access?: Partial<...> | undefined; }' is not assignable to parameter of type '{ inventory: Readonly<Record<string, number>>; itemUseCharges?: Readonly<Record<string, number>> | undefined; }'.\\n  Types of property 'inventory' are incompatible.\\n    Type 'Record<string, number> | undefined' is not assignable to type 'Readonly<Record<string, number>>'.\\n      Type 'undefined' is not assignable to type 'Readonly<Record<string, number>>'.\"},{\"code\":2345,\"category\":1,\"start\":10705,\"message\":\"Argument of type '{ readonly switches: Record<string, boolean>; readonly selfSwitches?: Record<string, Partial<Record<string, boolean>>> | undefined; readonly variables: Record<...>; ... 94 more ...; readonly access?: Partial<...> | undefined; }' is not assignable to parameter of type '{ inventory: Readonly<Record<string, number>>; itemUseCharges?: Readonly<Record<string, number>> | undefined; }'.\\n  Types of property 'inventory' are incompatible.\\n    Type 'Record<string, number> | undefined' is not assignable to type 'Readonly<Record<string, number>>'.\\n      Type 'undefined' is not assignable to type 'Readonly<Record<string, number>>'.\"}]}\n{\"command\":[\"/usr/local/bin/node\",\"--check\",\".omo/evidence/life-full-20260906/30/finite-use/diagnostics.mjs\"],\"exit\":0,\"stdout\":\"\",\"stderr\":\"\"}\n{\"command\":[\"/usr/local/bin/node\",\"--check\",\".omo/evidence/life-full-20260906/30/finite-use/run.mjs\"],\"exit\":0,\"stdout\":\"\",\"stderr\":\"\"}\n{\"command\":[\"/usr/local/bin/node\",\"--check\",\".omo/evidence/life-full-20260906/30/finite-use/public-roundtrip.mjs\"],\"exit\":0,\"stdout\":\"\",\"stderr\":\"\"}\n{\"command\":[\"/usr/local/bin/node\",\"--check\",\".omo/evidence/life-full-20260906/30/finite-use/vitest.config.mjs\"],\"exit\":0,\"stdout\":\"\",\"stderr\":\"\"}\n",
+  "stderr": "",
+  "exit": 1,
+  "signal": null
+}

@@ -1,0 +1,85 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiRunEndProof.test.ts -t retryLastTurn
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p1-20260906
+
+ ❯ test/aiRunEndProof.test.ts (14 tests | 2 failed | 12 skipped) 4763ms
+   ↓ AssistantSession accepted-revision proof > does not claim verified after a failed proof read through actual session completion
+   ↓ AssistantSession accepted-revision proof > retries failed proof for the same plan/revision, deduplicates success, and reproves a changed revision
+   ↓ AssistantSession accepted-revision proof > does not promote cancelled during the read or replace editor state
+   ↓ AssistantSession accepted-revision proof > does not promote disabled during the read or replace editor state
+   ↓ AssistantSession accepted-revision proof > does not promote target during the read or replace editor state
+   ↓ AssistantSession accepted-revision proof > does not promote content during the read or replace editor state
+   ↓ AssistantSession accepted-revision proof > does not promote local-edit during the read or replace editor state
+   ↓ AssistantSession accepted-revision proof > uses the real apply commit, not a newest remote commit read
+   ↓ AssistantSession accepted-revision proof > project proof can succeed when the separate commit log fails
+   ↓ AssistantSession accepted-revision proof > proves a normal no-plan apply through the reusable path without replaying the tool
+   ↓ AssistantSession accepted-revision proof > does not correlate a later human edit with an in-flight apply commit
+   × AssistantSession accepted-revision proof > retryLastTurn retries failed proof without replaying the LLM or applied tools 2789ms
+     → expected { status: 'failed', …(5) } to match object { status: 'succeeded', …(2) }
+(6 matching properties omitted from actual)
+   × AssistantSession accepted-revision proof > retryLastTurn proves already applied milestones after a recovered LLM failure 1973ms
+     → expected null to match object { status: 'succeeded', verified: true }
+   ↓ AssistantSession accepted-revision proof > a clean saved response without an accepted receipt cannot become proof
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiRunEndProof.test.ts > AssistantSession accepted-revision proof > retryLastTurn retries failed proof without replaying the LLM or applied tools
+AssertionError: expected { status: 'failed', …(5) } to match object { status: 'succeeded', …(2) }
+(6 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -4,8 +4,8 @@[39m
+[2m      "mutationGeneration": 2,[22m
+[2m      "projectId": "p1-session-proof-fixture",[22m
+[2m      "revisionId": "36550a5d-c137-41d6-a7ae-b47d83ad2f1d",[22m
+[2m      "sha256": "98e70173e679f661b60cd99fb3a9b314754224d3050474c015d0990eeefe2f40",[22m
+[2m    },[22m
+[32m-   "status": "succeeded",[39m
+[32m-   "verified": true,[39m
+[31m+   "status": "failed",[39m
+[31m+   "verified": false,[39m
+[2m  }[22m
+
+ ❯ test/aiRunEndProof.test.ts:218:40
+    216|     f.setRead(async () => Response.json([f.row()]));
+    217|     await f.session.retryLastTurn();
+    218|     expect(f.session.getRunEndProof()).toMatchObject({ status: "succee…
+       |                                        ^
+    219|     expect(f.chatCalls()).toBe(chats);
+    220|     expect(f.commits).toHaveLength(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/aiRunEndProof.test.ts > AssistantSession accepted-revision proof > retryLastTurn proves already applied milestones after a recovered LLM failure
+AssertionError: expected null to match object { status: 'succeeded', verified: true }
+
+[32m- Expected:[39m 
+{
+  "status": "succeeded",
+  "verified": true,
+}
+
+[31m+ Received:[39m 
+null
+
+ ❯ test/aiRunEndProof.test.ts:230:40
+    228|     const commits = f.commits.length;
+    229|     expect((await f.session.retryLastTurn()).stoppedReason).toBe("fina…
+    230|     expect(f.session.getRunEndProof()).toMatchObject({ status: "succee…
+       |                                        ^
+    231|     expect(f.commits).toHaveLength(commits);
+    232|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 12 skipped (14)
+   Start at  19:04:20
+   Duration  24.78s (transform 13.11s, setup 0ms, collect 18.37s, tests 4.76s, environment 0ms, prepare 589ms)
+

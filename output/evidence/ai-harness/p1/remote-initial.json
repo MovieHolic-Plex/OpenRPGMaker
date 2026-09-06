@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "runId": "55f68b30-bf63-49fc-b517-80039c9cfb03",
+  "projectId": "qa-ai-proof-55f68b30-bf63-49fc-b517-80039c9cfb03",
+  "startedAt": "2026-09-06T09:45:38.817Z",
+  "surface": "actual ProjectStore flush/verifyPersistedRevision via Vite SSR and live Supabase REST",
+  "sourceSha": "3eccfb89f36daae1826d7b93f51bea5a4ac3d40a",
+  "storeSourceSha256": "7823f05b36f84ef5e2cf4532b6b3e11331228a650c7973117ce6c7f35f5c9645",
+  "harnessSha256": "b1f1550e35a3a1a97646d2e564966b4faf340b2131bd7b3f5c0439360218a333",
+  "scenario": "all",
+  "pass": false,
+  "actions": [],
+  "steps": [],
+  "cleanup": {
+    "localTimersCleared": true,
+    "deferredSettled": true,
+    "remote": {
+      "kind": "not-created"
+    },
+    "viteClosed": true,
+    "listenerStarted": false,
+    "globalsRestored": true,
+    "activeTransports": 0,
+    "pendingProofs": 0
+  },
+  "failure": {
+    "name": "Error",
+    "message": "본인에게 제공된 HTTPS Supabase 기본 주소만 입력하세요. 주소에 계정 정보, 경로, 쿼리 또는 # 조각을 넣을 수 없습니다. HTTP는 이 컴퓨터의 루프백 주소에서만 허용됩니다."
+  },
+  "finishedAt": "2026-09-06T09:45:38.868Z"
+}

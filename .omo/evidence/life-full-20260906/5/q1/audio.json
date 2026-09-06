@@ -1,0 +1,355 @@
+{
+  "head": "62c70a3093f6a891f209cc9c3d02a6140dccffed",
+  "tree": "e6fb5e9a92ad4c570420e4755880d78d532c7d68",
+  "assertionAudit": [
+    {
+      "path": "test/audioEnginePlaybackControls.test.ts",
+      "unchangedAssertionLines": 34
+    },
+    {
+      "path": "test/e2e/oprn-audio-test-dialog.spec.ts",
+      "unchangedAssertionLines": 54
+    },
+    {
+      "path": "test/playBootRecovery.test.ts",
+      "unchangedAssertionLines": 25
+    },
+    {
+      "path": "test/playerKeydownSessionGuard.test.ts",
+      "unchangedAssertionLines": 3
+    },
+    {
+      "path": "test/playerOpenSaveMenu.test.ts",
+      "unchangedAssertionLines": 31
+    },
+    {
+      "path": "test/playerRunControls.test.ts",
+      "unchangedAssertionLines": 17
+    }
+  ],
+  "receipts": [
+    {
+      "name": "browser-execution.json",
+      "command": [
+        "flock",
+        "--timeout",
+        "900",
+        "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+        "env",
+        "VITE_CACHE_DIR=.omo/evidence/life-full-20260906/5/q1/browser-cache",
+        "node",
+        ".omo/evidence/life-full-20260906/5/q1/browser-proof.mjs"
+      ],
+      "exit": 0,
+      "signal": null
+    },
+    {
+      "name": "build.json",
+      "command": [
+        "flock",
+        "--timeout",
+        "900",
+        "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+        "npm",
+        "run",
+        "build"
+      ],
+      "exit": 0,
+      "signal": null
+    },
+    {
+      "name": "cleanup-execution.json",
+      "command": [
+        "node",
+        ".omo/evidence/life-full-20260906/5/q1/cleanup.mjs"
+      ],
+      "exit": 0,
+      "signal": null
+    },
+    {
+      "name": "diagnostics.json",
+      "command": [
+        "flock",
+        "--timeout",
+        "900",
+        "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+        "node",
+        ".omo/evidence/life-full-20260906/5/q1/diagnostics.mjs"
+      ],
+      "exit": 0,
+      "signal": null
+    },
+    {
+      "name": "green.json",
+      "command": [
+        "flock",
+        "--timeout",
+        "900",
+        "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+        "npm",
+        "test",
+        "--",
+        "test/audioQaInstrumentation.test.ts",
+        "test/playerAudioQaLifecycle.test.ts",
+        "test/audioEnginePlaybackControls.test.ts",
+        "test/lifeQaObservability.test.ts"
+      ],
+      "exit": 0,
+      "signal": null
+    },
+    {
+      "name": "lifecycle-red.json",
+      "command": [
+        "flock",
+        "--timeout",
+        "900",
+        "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+        "npm",
+        "test",
+        "--",
+        "test/playerAudioQaLifecycle.test.ts"
+      ],
+      "exit": 1,
+      "signal": null
+    },
+    {
+      "name": "red.json",
+      "command": [
+        "flock",
+        "--timeout",
+        "900",
+        "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+        "npm",
+        "test",
+        "--",
+        "test/audioQaInstrumentation.test.ts",
+        "test/audioEnginePlaybackControls.test.ts"
+      ],
+      "exit": 1,
+      "signal": null
+    },
+    {
+      "name": "related.json",
+      "command": [
+        "flock",
+        "--timeout",
+        "900",
+        "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+        "npm",
+        "test",
+        "--",
+        "test/audioEngine.test.ts",
+        "test/cc0AudioPlayback.test.ts",
+        "test/battleAudio.test.ts",
+        "test/runtimeAudioIndicator.test.ts",
+        "test/playerRuntimeAudioIds.test.ts",
+        "test/playAudioCommandBody.test.ts",
+        "test/runtimeJuice.test.ts",
+        "test/playBootDiagnostics.test.ts",
+        "test/playBootRecovery.test.ts",
+        "test/playerRunControls.test.ts",
+        "test/playerKeydownSessionGuard.test.ts",
+        "test/playerOpenSaveMenu.test.ts",
+        "test/runtimeQaInstrumentationBoundary.test.ts",
+        "test/runtimeQaReport.test.ts",
+        "test/runtimeQaGate.test.ts",
+        "test/sceneTestRunner.test.ts",
+        "test/debugSession.test.ts",
+        "test/runtimeDebugPanel.test.ts",
+        "test/playSceneFarmFeedback.test.ts",
+        "test/npcActionFacing.test.ts",
+        "test/runtimeMovementStability.test.ts",
+        "test/actionDebounceFootprint.test.ts",
+        "test/lifeSaveVersion.test.ts",
+        "test/lifeRecoveryPersistence.test.ts",
+        "test/p0SessionPersistence.test.ts",
+        "test/p2SpatialPersistence.test.ts",
+        "test/autosave.test.ts"
+      ],
+      "exit": 1,
+      "signal": null
+    },
+    {
+      "name": "syntax.json",
+      "command": [
+        "bash",
+        "-c",
+        "for file in .omo/evidence/life-full-20260906/5/q1/*.mjs; do node --check \"$file\" || exit $?; done"
+      ],
+      "exit": 0,
+      "signal": null
+    },
+    {
+      "name": "typecheck.json",
+      "command": [
+        "flock",
+        "--timeout",
+        "900",
+        "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+        "npm",
+        "run",
+        "typecheck:app"
+      ],
+      "exit": 0,
+      "signal": null
+    }
+  ],
+  "browserUrl": "http://127.0.0.1:44517/player.html",
+  "browserVersion": "149.0.7827.55",
+  "audio": [
+    {
+      "bootFlag": "omitted",
+      "nativePlayback": {
+        "event": "playing",
+        "src": "http://127.0.0.1:44517/assets/cc0/audio/catalog/rtp-fld-003-amber-meadow-end-final_f5dafd12.mp3",
+        "loop": true,
+        "paused": false,
+        "readyState": 4,
+        "currentTime": 0.001423,
+        "volume": 0.09601666675011317,
+        "playbackRate": 1,
+        "error": null
+      },
+      "audioObservation": {
+        "publicState": {
+          "volume": {
+            "bgm": 0.7,
+            "se": 0.8
+          },
+          "playbackRate": 1,
+          "pan": 0,
+          "fadeInMs": 600
+        },
+        "allOprnGlobals": [
+          "__oprnJuiceLog",
+          "__oprnPlayBootLog",
+          "__oprnRuntimeJuice"
+        ]
+      },
+      "audioCleanup": {
+        "globals": [],
+        "audioElements": 0
+      },
+      "postAssertionRequestFailures": [
+        {
+          "url": "http://127.0.0.1:44517/assets/cc0/audio/catalog/rtp-fld-003-amber-meadow-end-final_f5dafd12.mp3",
+          "failure": {
+            "errorText": "net::ERR_ABORTED"
+          }
+        }
+      ]
+    },
+    {
+      "bootFlag": "false",
+      "nativePlayback": {
+        "event": "playing",
+        "src": "http://127.0.0.1:44517/assets/cc0/audio/catalog/rtp-fld-003-amber-meadow-end-final_f5dafd12.mp3",
+        "loop": true,
+        "paused": false,
+        "readyState": 4,
+        "currentTime": 0,
+        "volume": 0.154,
+        "playbackRate": 1,
+        "error": null
+      },
+      "audioObservation": {
+        "publicState": {
+          "volume": {
+            "bgm": 0.7,
+            "se": 0.8
+          },
+          "playbackRate": 1,
+          "pan": 0,
+          "fadeInMs": 600
+        },
+        "allOprnGlobals": [
+          "__oprnJuiceLog",
+          "__oprnPlayBootLog",
+          "__oprnRuntimeJuice"
+        ]
+      },
+      "audioCleanup": {
+        "globals": [],
+        "audioElements": 0
+      },
+      "postAssertionRequestFailures": [
+        {
+          "url": "http://127.0.0.1:44517/assets/cc0/audio/catalog/rtp-fld-003-amber-meadow-end-final_f5dafd12.mp3",
+          "failure": {
+            "errorText": "net::ERR_ABORTED"
+          }
+        }
+      ]
+    },
+    {
+      "bootFlag": "true",
+      "nativePlayback": {
+        "event": "playing",
+        "src": "http://127.0.0.1:44517/assets/cc0/audio/catalog/rtp-fld-003-amber-meadow-end-final_f5dafd12.mp3",
+        "loop": true,
+        "paused": false,
+        "readyState": 4,
+        "currentTime": 0,
+        "volume": 0.15364999991655348,
+        "playbackRate": 1,
+        "error": null
+      },
+      "audioObservation": {
+        "publicState": {
+          "volume": {
+            "bgm": 0.7,
+            "se": 0.8
+          },
+          "playbackRate": 1,
+          "pan": 0,
+          "fadeInMs": 600
+        },
+        "qaState": {
+          "volume": {
+            "bgm": 0.7,
+            "se": 0.8
+          },
+          "playbackRate": 1,
+          "pan": 0,
+          "fadeInMs": 600
+        },
+        "resources": [
+          "cc0-bgm-rtp-fld-003"
+        ],
+        "allOprnGlobals": [
+          "__oprnAudioState",
+          "__oprnAudioObserved",
+          "__oprnRuntimeJuice",
+          "__oprnJuiceLog",
+          "__oprnPlayBootLog",
+          "__oprnInput",
+          "__oprnPlayerSprite",
+          "__oprnCharacterSprites",
+          "__oprnCamera",
+          "__oprnPerf",
+          "__oprnEmotes",
+          "__oprnActionCombat",
+          "__oprnDebug"
+        ]
+      },
+      "audioCleanup": {
+        "globals": [],
+        "audioElements": 0
+      },
+      "postAssertionRequestFailures": [
+        {
+          "url": "http://127.0.0.1:44517/assets/cc0/audio/catalog/rtp-fld-003-amber-meadow-end-final_f5dafd12.mp3",
+          "failure": {
+            "errorText": "net::ERR_ABORTED"
+          }
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "No audible speaker-output claim",
+    "Screenshots captured but this model cannot view images",
+    "Editor audio-dialog spec opt-in is diagnostic-checked; its full editor journey was not rerun",
+    "Two existing registry-fixture failures retained; full gates/later life journeys not rerun"
+  ]
+}

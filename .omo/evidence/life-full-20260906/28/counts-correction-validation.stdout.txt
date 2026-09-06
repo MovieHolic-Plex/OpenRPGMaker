@@ -1,0 +1,17 @@
+{
+  "completeFileRows": 25,
+  "originalCollectedTests": 183,
+  "originalFailedTests": 43,
+  "originalPassedTests": 140,
+  "originalReportSha256Verified": true,
+  "preservedEvidenceFiles": 37,
+  "pairedCollectedTests": 183,
+  "sharedExactFailureValues": 24,
+  "surfaceAxes": 9,
+  "surfaceExactFailureBlocks": 6,
+  "confirmedIntroducedFocusedFailures": 0,
+  "sourceEqualityPathsVerified": 44,
+  "pinnedTreesClean": true,
+  "taskProcessGroupExited": true,
+  "evidenceJsonAndPythonSyntaxValid": true
+}

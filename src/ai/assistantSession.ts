@@ -29,7 +29,7 @@ import {
   type CastContext,
 } from "@/ai/npcCast";
 import { buildWorldDigest, normalizeProjectWorld } from "@/project/world";
-import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
+import { applyProposedProject, type ApplyProposedProjectResult } from "@/editor/tools/applyChangesetToStore";
 import { isDestructiveOutcome } from "@/ai/approvalPolicy";
 import { contextFooterMapId, stripContextFooter } from "@/ai/contextFooter";
 import {
@@ -45,8 +45,7 @@ import {
 } from "@/ai/intentDeclaration";
 import { buildIntentFacts, declareIntentCached, type IntentDeclarer } from "@/ai/intentDeclarationClient";
 import type { ComposerMode } from "@/ai/composerMode";
-import { store } from "@/project/store";
-import { supabaseProjectConfigDraft } from "@/project/supabaseProjectConfig";
+import { store, type ProjectPersistenceReceipt, type ProjectPersistenceProof } from "@/project/store";
 import {
   PLAY_WALKTHROUGH_TOOL,
   VERIFICATION_TOOL_NAMES,
@@ -219,6 +218,16 @@ function discoveredToolNames(result: ToolResult): string[] {
   });
 }
 
+/** Persistence evidence only; execution and goal outcomes remain separate. */
+export interface RunEndProofState {
+  readonly status: "attempted" | "failed" | "succeeded";
+  readonly verified: boolean;
+  readonly receipt?: ProjectPersistenceReceipt;
+  readonly commitId?: string | null;
+  readonly proof?: ProjectPersistenceProof;
+  readonly reason?: string;
+}
+
 // UI 스트리밍/로그용 이벤트.
 export type SessionEvent =
   | { type: "assistant_token"; delta: string }
@@ -240,7 +249,8 @@ export type SessionEvent =
   // 사용자 승인을 기다린다(런 일시정지).
   | { type: "proposal_paused"; reason: string; warnings?: readonly string[] }
   /** 사용자 목표(자율 런이면 드라이버 전체)가 끝났을 때 토큰·경과·과정 계량. */
-  | { type: "run_recap"; recap: RunRecap };
+  | { type: "run_recap"; recap: RunRecap }
+  | { type: "persistence_proof"; state: RunEndProofState };
 
 // 제안(changeset)에 담기는 개별 쓰기 툴콜.
 export interface ProposedCall {
@@ -294,6 +304,7 @@ export interface HarnessSnapshot {
   readonly messages: readonly ChatMessage[];
   readonly audit: readonly AuditEntry[];
   readonly workPlan?: WorkPlan | null;
+  readonly runEndProof?: RunEndProofState | null;
 }
 
 type ChatFn = (config: AiConfig, req: ChatRequest) => Promise<ChatResult>;
@@ -907,8 +918,8 @@ export class AssistantSession {
   /** 이 플랜에서 이미 자문 검증을 돌린 레이어 id(플랜 id 기준 — replan 시 자연 리셋). */
   private verifiedPlanId: string | null = null;
   private verifiedLayerIds = new Set<string>();
-  /** run-end 저장 증명(flush+reload)을 처리한 플랜 id — 플랜당 1회. */
-  private runEndProofPlanId: string | null = null;
+  private runEndProof: RunEndProofState | null = null;
+  private lastAppliedProject: { project: Project; commitId: string | null } | null = null;
   // 현재 시스템 프롬프트에 적용된 문자 예산(토큰 보정). 관측으로 값이 바뀌면 턴 시작 시 재조립한다.
   private appliedBudgetChars: number;
   /** 직전 요청에 공급자가 실제로 과금한 프롬프트 토큰 — 컨텍스트 압축 임계 판정의 실측 입력. */
@@ -1447,6 +1458,7 @@ export class AssistantSession {
       messages: this.messages.map((message) => ({ ...message })),
       audit: [...this.audit],
       workPlan: this.workPlan ? structuredClone(this.workPlan) : null,
+      runEndProof: this.getRunEndProof(),
     };
   }
 
@@ -1512,9 +1524,9 @@ export class AssistantSession {
       if (next.stoppedReason === "aborted" || next.stoppedReason === "error") return next;
       last = next;
     }
-    // run-end 저장 증명(todo 5): 플랜 완료 + remote persistence 활성이면 flush → reload →
-    // agent_run_saved 감사(projectId + sha256 + 최신 커밋 row).
-    await this.maybeRunEndProof(onEvent);
+    if (last.stoppedReason !== "aborted" && last.stoppedReason !== "error") {
+      await this.maybeRunEndProof(onEvent, signal);
+    }
     return last;
   }
 
@@ -2155,9 +2167,6 @@ export class AssistantSession {
       // 새 계획 — 항목 id 는 위치 기반("L1-1")이라 이전 계획과 겹칠 수 있다. 중복 완료 방지 추적을 초기화한다.
       this.lastMilestoneCompletionItemId = null;
       this.resetWorkItemEvidence();
-      // 새 계획 = 새 검증 주기: 증명 상태만 리셋한다(툴콜 히스토리는 런 전체 누적 —
-      // questId/시나리오 선택이 이전 레이어 저작물을 계속 본다).
-      this.runEndProofPlanId = null;
       const progress = summarizeWorkPlan(plan);
       return {
         ok: true,
@@ -2457,6 +2466,7 @@ export class AssistantSession {
       this.failMilestoneApply(completed, `적용 검증 실패: ${applied.issue ?? "무결성 오류"}`, [], onEvent);
       return;
     }
+    this.recordAppliedProject(applied);
     this.pushAudit({
       kind: "status",
       text: `agent_run:milestone-applied "${completed.title}" calls=${calls.length} commit=${applied.commit.commitId ?? "local-only"} persisted=${String(applied.commit.persisted)}`,
@@ -2598,62 +2608,84 @@ export class AssistantSession {
     }
   }
 
-  /**
-   * run-end 저장 증명(todo 5): 자율 런에서 플랜이 완료됐고 remote persistence 가 켜져 있으면
-   * store.flush() → store.reloadFromRemote() 를 실행하고, flush 결과의 sha256 + 프로젝트 id 로
-   * agent_run_saved 감사를 남긴다. commitId 는 기존 list_project_commits 읽기 툴로 최신 row 를
-   * 조회해 기록한다(브라우저 전용 툴 — node/테스트에선 unavailable 로 우아하게 기록).
-   */
-  private async maybeRunEndProof(onEvent: (event: SessionEvent) => void): Promise<void> {
-    const plan = this.workPlan;
-    if (!plan || !this.milestoneAutoApply) return;
-    if (this.milestoneApplyFailed) return;
-    if (!isWorkPlanComplete(plan) || this.acceptanceOpen()) return;
-    if (this.runEndProofPlanId === plan.id) return;
-    this.runEndProofPlanId = plan.id;
+  /** Completion schedules proof only after all pending writes have actually been applied. */
+  private async maybeRunEndProof(onEvent: (event: SessionEvent) => void, signal?: AbortSignal): Promise<void> {
+    if (!this.workPlan || !this.milestoneAutoApply || this.milestoneApplyFailed) return;
+    if (!isWorkPlanComplete(this.workPlan) || this.acceptanceOpen() || this.turnProposals.size > 0 || signal?.aborted) return;
+    await this.proveAppliedRevision(onEvent, signal);
+  }
+
+  /** Keep only metadata from the actual apply, never a newest-commit query. */
+  recordAppliedProject(applied: Extract<ApplyProposedProjectResult, { ok: true }>): void {
+    this.lastAppliedProject = applied.commitProject
+      ? { project: applied.commitProject, commitId: applied.commit.commitId }
+      : null;
+  }
+
+  /** Historical success is not authority for a newer editor revision. */
+  getRunEndProof(): RunEndProofState | null {
+    const state = this.runEndProof;
+    return state ? this.projectRunEndProof(state) : null;
+  }
+
+  private projectRunEndProof(state: RunEndProofState): RunEndProofState {
+    return { ...state, verified: state.status === "succeeded" && !!state.receipt
+      && store.isPersistenceReceiptCurrent(state.receipt) };
+  }
+
+  private emitRunEndProof(state: RunEndProofState, onEvent: (event: SessionEvent) => void): void {
+    onEvent({ type: "persistence_proof", state: this.projectRunEndProof(state) });
+  }
+
+  /** Shared by autonomous completion and ordinary applied proposals; failures remain retryable. */
+  async proveAppliedRevision(
+    onEvent: (event: SessionEvent) => void = () => {},
+    signal?: AbortSignal,
+  ): Promise<RunEndProofState> {
+    const previous = this.getRunEndProof();
+    if (!signal?.aborted && previous?.verified) return previous;
+    let receipt: ProjectPersistenceReceipt | undefined;
+    let commitId: string | null = null;
+    const fail = (reason: string, proof?: ProjectPersistenceProof): RunEndProofState => {
+      const state: RunEndProofState = { status: "failed", verified: false, reason, receipt, commitId, proof };
+      this.emitRunEndProof(this.runEndProof = state, onEvent);
+      this.pushAudit({ kind: "status", text: `agent_run:proof-failed reason=${reason} revision=${receipt?.revisionId ?? "none"}` });
+      onEvent({ type: "status", text: `저장 증명 미완료(${reason}) — 다시 검증할 수 있습니다.` });
+      return state;
+    };
+    if (signal?.aborted) return fail("cancelled");
     if (!store.isRemotePersistenceEnabled()) {
       this.pushAudit({ kind: "status", text: "agent_run_local_only — remote persistence 비활성으로 저장 증명을 건너뜁니다" });
-      onEvent({ type: "status", text: "자율 런 완료 — 로컬 전용 저장(remote persistence 비활성)입니다." });
-      return;
+      return fail("disabled");
     }
+    this.emitRunEndProof(this.runEndProof = { status: "attempted", verified: false }, onEvent);
     try {
+      const applied = this.lastAppliedProject;
       const flushResult = await store.flush();
-      if (flushResult.kind !== "saved") {
-        this.pushAudit({ kind: "status", text: `agent_run:save-skipped kind=${flushResult.kind}` });
-        onEvent({ type: "status", text: `자율 런 저장 건너뜀(${flushResult.kind}) — 저장 증명이 없습니다.` });
-        return;
-      }
-      const reloadResult = await store.reloadFromRemote();
-      const projectId = supabaseProjectConfigDraft().projectId || "(unknown)";
-      const sha256 = flushResult.sha256 ?? null;
-      let commitId: string | null = null;
-      try {
-        const commitResult = runTool(this.ctx, "list_project_commits", { limit: 1 });
-        if (commitResult.ok) {
-          const data = isRecord(commitResult.data) ? commitResult.data : null;
-          const commits = Array.isArray(data?.commits) ? data.commits : [];
-          const newest = commits[0];
-          commitId = isRecord(newest) && typeof newest.commit_id === "string" ? newest.commit_id : null;
-        } else {
-          this.pushAudit({ kind: "status", text: `agent_run:commit-evidence-unavailable — ${commitResult.summary}` });
-        }
-      } catch (error) {
-        this.pushAudit({
-          kind: "status",
-          text: `agent_run:commit-evidence-unavailable — ${error instanceof Error ? error.message : String(error)}`,
-        });
-      }
+      if (signal?.aborted) return fail("cancelled");
+      if (flushResult.kind !== "saved") return fail(flushResult.kind);
+      receipt = flushResult.receipt;
+      if (!receipt) return fail("missing-receipt");
+      // Concurrent edits during apply/flush cannot borrow that apply's commit metadata.
+      if (applied?.project === store.getCurrent() && store.isPersistenceReceiptCurrent(receipt)) commitId = applied.commitId;
+      this.emitRunEndProof(this.runEndProof = { status: "attempted", verified: false, receipt, commitId }, onEvent);
+      const proof = await store.verifyPersistedRevision(receipt, { signal });
+      if (signal?.aborted) return fail("cancelled", proof);
+      if (proof.kind !== "verified") return fail(proof.kind === "mismatch" ? `mismatch-${proof.reason}` : proof.kind, proof);
+      if (!proof.isCurrent || !store.isPersistenceReceiptCurrent(receipt)) return fail("stale", proof);
+      const state: RunEndProofState = { status: "succeeded", verified: true, receipt, commitId, proof };
+      this.emitRunEndProof(this.runEndProof = state, onEvent);
+      // Recheck after synchronous event subscribers as well as the awaited read.
+      if (!store.isPersistenceReceiptCurrent(receipt) || signal?.aborted) return fail(signal?.aborted ? "cancelled" : "stale", proof);
       this.pushAudit({
         kind: "status",
-        text: `agent_run_saved projectId=${projectId} sha256=${sha256 ?? "none"} commit=${commitId ?? "unavailable"} reload=${reloadResult.kind}`,
+        text: `agent_run_saved projectId=${receipt.projectId} revision=${receipt.revisionId} contentIdentity=${receipt.contentIdentity} sha256=${receipt.sha256 ?? "none"} commit=${commitId ?? "unavailable"} verified=true`,
       });
-      onEvent({ type: "status", text: `자율 런 저장 증명 완료 — projectId=${projectId} sha256=${sha256 ?? "none"} reload=${reloadResult.kind}` });
+      onEvent({ type: "status", text: `저장 증명 완료 — projectId=${receipt.projectId} revision=${receipt.revisionId}` });
+      return this.projectRunEndProof(this.runEndProof);
     } catch (error) {
-      this.pushAudit({
-        kind: "status",
-        text: `agent_run:save-failed — ${error instanceof Error ? error.message : String(error)}`,
-      });
-      onEvent({ type: "status", text: "자율 런 원격 저장 실패 — 감사 로그를 확인하세요." });
+      this.pushAudit({ kind: "status", text: `agent_run:save-failed — ${error instanceof Error ? error.message : String(error)}` });
+      return fail(signal?.aborted ? "cancelled" : "failed");
     }
   }
 
@@ -2690,6 +2722,10 @@ export class AssistantSession {
   // 이미 누적된 제안(turnProposals)과 대화 문맥은 그대로 유지된다.
   async retryLastTurn(onEvent: (event: SessionEvent) => void = () => {}, signal?: AbortSignal): Promise<TurnResult> {
     if (!this.lastTurnFailed) {
+      if (this.runEndProof?.status === "failed" && this.turnProposals.size === 0
+        && this.turnComposerMode !== "ask" && !this.lastTurnPlanOnly) {
+        await this.proveAppliedRevision(onEvent, signal);
+      }
       return this.withTurnLedger({ assistantText: "", proposedCalls: this.finalizeProposals(this.turnProposals), stoppedReason: "final" });
     }
     this.pushAudit({ kind: "status", text: "오류 후 재시도(retryLastTurn)" });
@@ -2698,6 +2734,10 @@ export class AssistantSession {
     const auditFrom = this.audit.length;
     try {
       const result = this.withTurnLedger(await this.runTurnLoop(onEvent, signal));
+      if (result.stoppedReason !== "aborted" && result.stoppedReason !== "error"
+        && this.turnComposerMode !== "ask" && !this.lastTurnPlanOnly) {
+        await this.maybeRunEndProof(onEvent, signal);
+      }
       return this.finishRunRecap(result, startedAt, usageBefore, auditFrom, onEvent);
     } finally {
       this.removeOrchestrationMessages();

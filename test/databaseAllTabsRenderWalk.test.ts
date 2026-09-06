@@ -20,7 +20,7 @@ afterEach(() => {
 describe("database all-tabs render walk", () => {
   it("every registered tab renders a non-empty body without throwing", () => {
     const all: DatabaseTab[] = ["overview", ...TAB_GROUPS.flatMap((g) => g.tabs)];
-    expect(all).toHaveLength(32);
+    expect(all.length).toBeGreaterThanOrEqual(34);
     expect(new Set(all).size).toBe(all.length);
     expect(new Set(all)).toEqual(new Set(Object.keys(DATABASE_PRIMARY_SENTINELS)));
     const failures: string[] = [];
