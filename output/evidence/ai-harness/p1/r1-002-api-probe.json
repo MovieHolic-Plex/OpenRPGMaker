@@ -1,0 +1,162 @@
+{
+  "sha": "7671a7dcb0fce1d52d05d1eb95ee38bc21e7688e",
+  "tree": "f904c90fad5e09dcbea1e791cd7fc323939843d4",
+  "transport": "deterministic HTTP only; no real remote or product edits",
+  "scenarios": [
+    {
+      "name": "synchronous-store-subscriber-during-apply",
+      "result": {
+        "status": "succeeded",
+        "verified": true,
+        "receipt": {
+          "revisionId": "8223e545-9048-4b2b-938a-43c4c052d139",
+          "projectId": "p1-review-boundary-fixture",
+          "mutationGeneration": 3,
+          "contentIdentity": "856dc5c6e04e765f048b1736ac4b319baffc2f250e159e9bda43ff3f13846789",
+          "sha256": "90e3c11f04d3a92c4c05997015b96308d45010204c530f22b892d845b6a6c90d"
+        },
+        "commitId": null,
+        "proof": {
+          "kind": "verified",
+          "receipt": {
+            "revisionId": "8223e545-9048-4b2b-938a-43c4c052d139",
+            "projectId": "p1-review-boundary-fixture",
+            "mutationGeneration": 3,
+            "contentIdentity": "856dc5c6e04e765f048b1736ac4b319baffc2f250e159e9bda43ff3f13846789",
+            "sha256": "90e3c11f04d3a92c4c05997015b96308d45010204c530f22b892d845b6a6c90d"
+          },
+          "isCurrent": true
+        }
+      },
+      "actualCommitId": "0e4a1024-fa06-4327-aa1c-a1bf4b3462ca",
+      "committedProjectTitle": "actual-ai-apply",
+      "appliedCaptureTitle": "actual-ai-apply",
+      "liveTitle": "subscriber-edit-not-in-ai-commit",
+      "proofReusesApplyCommit": false,
+      "recordedCommitWireHash": "8856fb8663109de6d0b787b7a90b19c478fc9b7dbaefd609f2fb8546c3846bee",
+      "actualApplyWireHash": "8856fb8663109de6d0b787b7a90b19c478fc9b7dbaefd609f2fb8546c3846bee"
+    }
+  ],
+  "requests": [
+    {
+      "path": "/rest/v1/projects",
+      "query": "?on_conflict=project_id",
+      "method": "POST"
+    },
+    {
+      "path": "/rest/v1/maps",
+      "query": "?project_id=eq.p1-review-boundary-fixture",
+      "method": "DELETE"
+    },
+    {
+      "path": "/rest/v1/maps",
+      "query": "?on_conflict=project_id%2Cmap_id",
+      "method": "POST"
+    },
+    {
+      "path": "/rest/v1/tilesets",
+      "query": "?project_id=eq.p1-review-boundary-fixture",
+      "method": "DELETE"
+    },
+    {
+      "path": "/rest/v1/tilesets",
+      "query": "?on_conflict=project_id%2Ctileset_id",
+      "method": "POST"
+    },
+    {
+      "path": "/rest/v1/projects",
+      "query": "?select=current_json%2Ccurrent_sha256&project_id=eq.p1-review-boundary-fixture",
+      "method": "GET"
+    },
+    {
+      "path": "/rest/v1/maps",
+      "query": "?project_id=eq.p1-review-boundary-fixture&select=map_id%2Cmap_json",
+      "method": "GET"
+    },
+    {
+      "path": "/rest/v1/project_commits",
+      "query": "?project_id=eq.p1-review-boundary-fixture&limit=1&order=created_at.desc&select=commit_id%2Cmessage%2Csummary%2Creview_status%2Cauthor_id%2Cauthor_label%2Cauthor_kind%2Cagent_name%2Ccreated_at",
+      "method": "GET"
+    },
+    {
+      "path": "/rest/v1/projects",
+      "query": "?select=current_json%2Ccurrent_sha256&project_id=eq.p1-review-boundary-fixture",
+      "method": "GET"
+    },
+    {
+      "path": "/rest/v1/project_commits",
+      "query": "",
+      "method": "POST"
+    },
+    {
+      "path": "/rest/v1/project_changes",
+      "query": "",
+      "method": "POST"
+    },
+    {
+      "path": "/rest/v1/projects",
+      "query": "?project_id=eq.p1-review-boundary-fixture&current_sha256=eq.1027a255f20c8a2883d764c68a75cd6d593a9fda38b56cba3fb69c4169d8abc0",
+      "method": "PATCH"
+    },
+    {
+      "path": "/rest/v1/project_commits",
+      "query": "",
+      "method": "POST"
+    },
+    {
+      "path": "/rest/v1/project_changes",
+      "query": "",
+      "method": "POST"
+    },
+    {
+      "path": "/rest/v1/project_commits",
+      "query": "",
+      "method": "POST"
+    },
+    {
+      "path": "/rest/v1/project_changes",
+      "query": "",
+      "method": "POST"
+    },
+    {
+      "path": "/rest/v1/projects",
+      "query": "?select=current_json%2Ccurrent_sha256&project_id=eq.p1-review-boundary-fixture",
+      "method": "GET"
+    },
+    {
+      "path": "/rest/v1/projects",
+      "query": "?project_id=eq.p1-review-boundary-fixture&current_sha256=eq.9c2f5ce5c96a561b868b2066871a6f04e6afb590660adb7268906e6ecda20dcb",
+      "method": "PATCH"
+    },
+    {
+      "path": "/rest/v1/projects",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.p1-review-boundary-fixture",
+      "method": "GET"
+    },
+    {
+      "path": "/rest/v1/maps",
+      "query": "?project_id=eq.p1-review-boundary-fixture&select=map_id%2Cmap_json",
+      "method": "GET"
+    },
+    {
+      "path": "/rest/v1/project_commits",
+      "query": "",
+      "method": "POST"
+    },
+    {
+      "path": "/rest/v1/project_changes",
+      "query": "",
+      "method": "POST"
+    }
+  ],
+  "cleanup": {
+    "serverClosed": true,
+    "listenerStarted": false,
+    "timersCleared": true,
+    "globalsRestored": true,
+    "pendingTransports": 0,
+    "realRemoteWrites": 0
+  },
+  "completed": true,
+  "contractFailures": []
+}

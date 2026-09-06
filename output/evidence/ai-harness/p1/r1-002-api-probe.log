@@ -1,0 +1,8 @@
+[edit-activity] (라벨 없음: project)
+[project-commits] 저장 baseline 이 없어 실제 diff 를 못 낸다 — 시스템 변경으로 기록한다 { summary: '변경 저장: 시스템' }
+[edit-activity] 프로젝트 정규화 (1종) · [bundledTilesets] · (system) [ { path: 'bundledTilesets', after: true } ]
+[project-commits] 수동 저장 커밋 diff { summary: '변경 저장: 타일셋 12, 시스템' }
+[edit-activity] AI 제안 적용: review callback boundary · [tools] · (ai) [ { path: 'tools', after: 'set_title_screen' } ]
+[edit-activity] (라벨 없음: project)
+[project-commits] 수동 저장 커밋 diff { summary: '변경 저장' }
+{"name":"synchronous-store-subscriber-during-apply","result":{"status":"succeeded","verified":true,"receipt":{"revisionId":"8223e545-9048-4b2b-938a-43c4c052d139","projectId":"p1-review-boundary-fixture","mutationGeneration":3,"contentIdentity":"856dc5c6e04e765f048b1736ac4b319baffc2f250e159e9bda43ff3f13846789","sha256":"90e3c11f04d3a92c4c05997015b96308d45010204c530f22b892d845b6a6c90d"},"commitId":null,"proof":{"kind":"verified","receipt":{"revisionId":"8223e545-9048-4b2b-938a-43c4c052d139","projectId":"p1-review-boundary-fixture","mutationGeneration":3,"contentIdentity":"856dc5c6e04e765f048b1736ac4b319baffc2f250e159e9bda43ff3f13846789","sha256":"90e3c11f04d3a92c4c05997015b96308d45010204c530f22b892d845b6a6c90d"},"isCurrent":true}},"actualCommitId":"0e4a1024-fa06-4327-aa1c-a1bf4b3462ca","committedProjectTitle":"actual-ai-apply","appliedCaptureTitle":"actual-ai-apply","liveTitle":"subscriber-edit-not-in-ai-commit","proofReusesApplyCommit":false,"recordedCommitWireHash":"8856fb8663109de6d0b787b7a90b19c478fc9b7dbaefd609f2fb8546c3846bee","actualApplyWireHash":"8856fb8663109de6d0b787b7a90b19c478fc9b7dbaefd609f2fb8546c3846bee"}

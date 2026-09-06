@@ -739,11 +739,12 @@ class ProjectStore {
   /**
    * `change` 는 관측용 주석이다 — undo/AI 적용/원격 병합이 서로 구분되게 라벨을 실어 보낸다.
    * 생략하면 라벨 없는 project 스코프 변경으로 기록된다(`__oprnUnlabeledEditCount()` 에 집계).
+   * Returns the applied project captured before synchronous mutation subscribers run.
    */
   replace(
     project: Project,
     options: { readonly preserveEventDrafts?: boolean; readonly change?: ProjectChangeAnnotation } = {},
-  ): void {
+  ): Project {
     ensureSwitchVariableSlots(project);
     removeLegacySpriteReferences(project);
     if (options.change?.projectSwitch === true) clearCopiedEventPage();
@@ -757,18 +758,20 @@ class ProjectStore {
       this.current = preserveEventDraftsOnProject(project, this.current);
       syncEventDraftVaultFromProject(this.current);
     }
+    const applied = this.current;
     this.markLocalMutation({ scope: "project", ...(options.change ?? {}) });
     this.emit({ scope: "project", ...(options.change ?? {}) });
     this.scheduleAutoSave();
+    return applied;
   }
 
   /** Full project switch (new/import/sample). Drops event-draft vault for the previous project. */
-  replaceProject(project: Project, change?: ProjectChangeAnnotation): void {
+  replaceProject(project: Project, change?: ProjectChangeAnnotation): Project {
     clearEventDraftVault();
     clearCopiedEventPage();
     persistEventDraftVaultNow();
     if (this.loadedRemoteProjectId === null) this.beginLocalProjectSession();
-    this.replace(project, {
+    return this.replace(project, {
       preserveEventDrafts: false,
       change: { label: "프로젝트 교체", projectSwitch: true, ...(change ?? {}) },
     });
