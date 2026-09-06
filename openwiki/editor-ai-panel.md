@@ -1,5 +1,24 @@
 # Editor AI Panel & Tools
 
+## Plan authoring has no small-plan quota (2026-09-06)
+
+`workPlan.ts` no longer recommends 8 todos, 4 items for a village, fixed layer
+counts or 200-character instructions. Independently executable/retryable/verifiable
+results remain separate items; layers group them without reducing the requested
+scope. Large plans are permitted, not padded with invented work.
+
+Planner and `set_work_plan` retain complete goals and item fields. Emergency
+fallbacks retain the full original request rather than its first 400/600/800
+characters. Current instructions and remaining titles are not locally shortened
+when presenting the plan to the model. Declared volume is no longer capped at 50;
+negative/nonfinite values retain their existing boundary normalization.
+
+Execution budgets, user abort and repeated-failure guards are separate and remain
+in force. Provider context/output capacity is still a transport constraint, not
+permission to shrink the authored plan. `test/workPlanSize.test.ts` covers 320
+independent items, complete parsed payloads and declared volume above 50; prompt
+prose is reviewed rather than pinned by string tests.
+
 ## Acceptance sticky note (2026-09-06)
 
 `aiStickyChecklist.ts` is a body-mounted read-only projection of backend
