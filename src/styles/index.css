@@ -68,7 +68,6 @@
    두 세대(.oprn-record-* / .db-ws-*)를 같은 규칙으로 덮는다. !important 없음 — 앞선 층의
    !important 는 그 층(studio-theme.css · sidebar.css)에서 값을 고쳤다. */
 @import "./database/studio-v2.css";
-@import "./database/cinematics.css";
 /* DB AI 표면(바·생성 대화상자)은 studio-v2 뒤에 읽어 같은 특이성의 옛 오버라이드를 소스 순서로 이긴다. */
 @import "./database/ai-bar.css";
 @import "./resources/resource-manager.css";

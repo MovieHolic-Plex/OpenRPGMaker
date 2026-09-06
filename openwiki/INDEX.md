@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **48쪽 / 1715KB / 약 488,482 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **48쪽 / 1715KB / 약 488,483 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -17,7 +17,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 |---|---|---|---|---|
 | `openwiki/editor-ai-panel.md` | 271KB | 95KB ⚠상한 초과 — 절을 더 쪼개라 | 574 | ~78,779 |
 | `openwiki/editor-ai-tools.md` | 95KB | 69KB ⚠상한 초과 — 절을 더 쪼개라 | 356 | ~27,345 |
-| `openwiki/editor-database.md` | 239KB | 54KB ⚠상한 초과 — 절을 더 쪼개라 | 1221 | ~68,783 |
+| `openwiki/editor-database.md` | 239KB | 54KB ⚠상한 초과 — 절을 더 쪼개라 | 1221 | ~68,784 |
 | `openwiki/editor-event-authoring.md` | 119KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 564 | ~34,648 |
 | `openwiki/editor-pre-edit-routing.md` | 73KB | 55KB ⚠상한 초과 — 절을 더 쪼개라 | 220 | ~20,713 |
 | `openwiki/runtime-battle.md` | 119KB | 31KB | 362 | ~34,124 |
@@ -266,7 +266,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L334` 보물상자는 노출된 수면을 거부한다 (2026-09-05)
 - `L341` 모험 저작 완료와 재시도 (2026-09-05)
 
-### `openwiki/editor-database.md` — 239KB · 1221줄 · ~68,783 토큰 · 통째읽기 잘림 · 깨진 줄 7
+### `openwiki/editor-database.md` — 239KB · 1221줄 · ~68,784 토큰 · 통째읽기 잘림 · 깨진 줄 7
 
 - `L1` Shared database CSS ownership (2026-09-06)
 - `L15` 전투 명령 배치 스튜디오 (2026-09-05)

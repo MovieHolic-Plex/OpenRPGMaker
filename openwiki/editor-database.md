@@ -78,7 +78,7 @@ truth is `project.system.opening` and `project.system.gameOver`, never
 - `database.ts` and `databaseModal.ts` call `disposeDatabaseCinematicsIn` before
   leaving/evicting/closing cinematic views. These views are not reused from
   detached cache. Other Database caching stays unchanged.
-- Scoped editor presentation lives in `src/styles/database/cinematics.css`;
+- Scoped editor presentation lives in `src/styles/database/system-studio.css`;
   runtime stage presentation still belongs to the existing runtime CSS closure.
 
 Tests: `databaseCinematics.test.ts`, `cinematicMediaImport.test.ts`,
