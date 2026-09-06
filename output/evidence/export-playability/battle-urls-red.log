@@ -1,0 +1,14 @@
+> node scripts/run-vitest.mjs run --configLoader bundle test/exportBattleAssetUrls.test.ts
+ ❯ test/exportBattleAssetUrls.test.ts (3 tests | 3 failed) 269ms
+     → expected '/assets/generated/battle-skins/sprite…' to be 'https://games.example.test/games/demo…' // Object.is equality
+     → expected '/assets/generated/battle-skins/sprite…' to be 'data:image/png;base64,AQ==' // Object.is equality
+     → expected [ …(11) ] to deeply equal []
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  test/exportBattleAssetUrls.test.ts > export battle asset URLs > resolves the actual idle producer against the exported directory
+AssertionError: expected '/assets/generated/battle-skins/sprite…' to be 'https://games.example.test/games/demo…' // Object.is equality
+ FAIL  test/exportBattleAssetUrls.test.ts > export battle asset URLs > resolves the actual idle producer from the HTML asset table
+AssertionError: expected '/assets/generated/battle-skins/sprite…' to be 'data:image/png;base64,AQ==' // Object.is equality
+ FAIL  test/exportBattleAssetUrls.test.ts > export battle asset URLs > builds HUD icon URLs through Vite rather than keeping origin-root paths
+AssertionError: expected [ …(11) ] to deeply equal []
+ Test Files  1 failed (1)
+      Tests  3 failed (3)

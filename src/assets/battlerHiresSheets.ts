@@ -8,6 +8,7 @@
 // 이 카탈로그가 유일한 정본이다. 등록되지 않은 시트(사용자 저작 48px 캐릭터셋)는 지금까지처럼
 // 원본을 pixelated 로 그린다 — 옵트인이라 줄만 늘리면 된다(idle 스트립 카탈로그와 같은 규약).
 import { BATTLE_ASSET_PIXEL_SCALE } from "@/player/battleStageScale";
+import { withInlineAsset } from "@/assets/inlineAssetStore";
 
 export type BattlerHiresSheet = {
   /** 원본 시트의 리소스 id(`generated-actor-hero-0N-battle`). 이 id 로 조회한다. */
@@ -41,7 +42,7 @@ export function battlerHiresSheet(resourceId: string | undefined): BattlerHiresS
 }
 
 export function battlerHiresSheetUrl(entry: BattlerHiresSheet): string {
-  return `/${entry.path}`;
+  return withInlineAsset(`/${entry.path}`);
 }
 
 /**

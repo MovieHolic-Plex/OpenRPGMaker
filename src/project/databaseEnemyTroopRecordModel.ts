@@ -22,12 +22,16 @@ export function normalizeEnemyRecord(
   const legacy = record as Partial<EnemyRecord> & { critical?: EnemyCritical; options?: EnemyOptions };
   const critical = normalizeCritical(legacy.critical ?? record.criticalHit);
   const options = normalizeOptions(legacy.options ?? record.attackOptions);
+  const battleScalePercent = typeof record.battleScalePercent === "number" && Number.isFinite(record.battleScalePercent)
+    ? Math.round(Math.max(10, Math.min(300, record.battleScalePercent)))
+    : 100;
   return {
     id: record.id,
     name: record.name,
     speciesId: cleanOptionalId(record.speciesId),
     level: typeof record.level === "number" && Number.isFinite(record.level) ? clampInteger(record.level, 1, 99) : undefined,
     monsterResourceId: cleanOptionalId(record.monsterResourceId),
+    ...(battleScalePercent === 100 ? {} : { battleScalePercent }),
     graphicHue: clampInteger(record.graphicHue ?? 0, 0, 360),
     transparent: record.transparent ?? false,
     flying: record.flying ?? false,

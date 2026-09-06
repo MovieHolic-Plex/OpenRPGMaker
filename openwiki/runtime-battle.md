@@ -1,5 +1,15 @@
 # Runtime Battle Behavior
 
+## 적별 전투 표시 크기 (2026-09-06)
+
+`battleFieldDom.enemyButton`은 해당 적의 `battleScalePercent ?? 100`을 100으로 나눈 값을 노드의 `--battle-enemy-scale`에 넣는다. RM 정면/측면은 `_rm2000.css`의 glass 공용 이미지 크기(다수 160×180, 단독 200×240), 몬스터 대치는 `_battlers.css`의 Pokemon 이미지 크기(148×148)에 곱한다. 부모 이동/피격 `transform`, 이미지 숨쉬기 `scale`, 사망/포획 애니메이션은 변경하지 않는다. 이름·HP 글자 크기와 맵 외형은 배율 대상이 아니다. 기본 100% 이하의 치수·진형은 그대로 둔다. 100% 초과는 `battleEnemyFit.ts`가 필드 논리 크기에서 좌우 16px·상단 32px·하단 24px를 뺀 영역에 이미지를 균일 축소하고 발 앵커를 보정한다. 저장된 요청 백분율은 그대로이고 `--battle-enemy-fit`만 표현용으로 추가한다. 세 스킨의 `--battle-enemy-base-width/height`가 기본 치수의 단일 원천이다. 이미지 width/height에만 요청 배율×fit을 곱하며 이름·HP는 축소하지 않는다. 이웃 배틀러와의 겹침 방지는 별도 진형 작업이다.
+
+단독 골렘 175% 회귀: 640×360 필드에서 200×240×1.75=350×420 이미지를 발 y≈290에 고정하면 top≈−130이라 머리가 잘렸다. 현재는 253.33×304, top32/bottom336으로 맞춘다. 100%는 200×240과 원래 발 위치를 보존한다. 기존 `syncBattleField`의 mounted render 경로가 매번 저작 진형과 CSS 기본 치수로 다시 계산하므로 fit이 누적되거나 HP 공개로 위치가 바뀌지 않는다. 화면 리사이즈는 기존 `bindBattleStageScale`이 고정 논리 무대 전체를 확대하므로 새 observer/타이머가 없다. controller의 기존 cleanup 그대로이며, 분리된 필드는 레이아웃이 생긴 다음 sync까지 계산하지 않는다.
+
+`test/battleEnemyFit.test.ts`는 실제 `mountBattleScene`/runtime 경로에 측정된 논리 레이아웃만 주입해 175% clipping RED, 세 스킨 100% 보존·300% containment, 125% 정확 배율, hit/HP 안정성, 필드 폭 변경 후 재계산, destroy 후 타이머 정리를 검증한다.
+
+회귀는 `test/enemyBattleScale.test.ts`: 실제 정규화된 프로젝트→전투 엔진→DOM, Gen1의 선두 적 단독 표시, hit/idle 동기화 후 크기 유지, 출하 CSS 치수 선언을 검사한다. happy-dom은 calc 곱셈/`:where` 특정도를 정확히 계산하지 못하므로 CSS는 PostCSS로 선언을 검사하고, 실제 캐스케이드·사각형·동작 검증은 별도 `player.html` 런타임 QA에서 한다.
+
 ## 전투 명령 custom CSS (2026-09-05)
 
 `battleCommandDom.commandPanel`은 프로젝트의 `system.battleCommandCss`를 `mountBattleCommandCss`로 마운트한다. 내부 생성 scope 속성이 각 패널의 메뉴/버튼/라벨/포커스·disabled 상태만 겨냥한다. 패널이 재생성될 때 스타일도 함께 제거되며 타이틀·대화창·편집기 셸에는 적용되지 않는다. 하위 메뉴와 대상 선택도 같은 범위다. 파서는 8,000자 이하의 제한된 시각 속성만 허용하며 URL·CSS 변수·at-rule·임의 선택자를 거부한다. 실패한 스타일은 실행하지 않고 기본 스킨을 유지한다. 검증은 `node scripts/qa-battle-command-css.mjs`로 편집기 저작 후 별도 player.html 하네스에서 수행한다.

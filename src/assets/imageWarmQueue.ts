@@ -14,6 +14,8 @@
 // 이유가 없어서 받기만 하고 놓는다. 색키 처리를 거치는 캐릭셋은 editorAssetWarmup 이 JS 캐시
 // (`transparentColorKeyDataUrl`) 를 녹이는 쪽으로 다룬다.
 
+import { withInlineAsset } from "@/assets/inlineAssetStore";
+
 const DEFAULT_CONCURRENCY = 6;
 const LOAD_TIMEOUT_MS = 2_000;
 
@@ -75,10 +77,10 @@ export function imageWarmCount(): number {
   return inFlight.size;
 }
 
-// Phaser scene.load 와 같은 URL 공간(Vite public/ 루트 기준 절대경로)이어야 HTTP 캐시가 맞는다.
+// 편집기는 public 루트, 내보내기는 게임 디렉터리: 실제 로더와 같은 URL 로 워밍한다.
 export function normalizeWarmUrl(url: string): string {
-  if (url.startsWith("/") || /^(?:https?:|data:|blob:)/i.test(url)) return url;
-  return `/${url}`;
+  const path = url.startsWith("/") || /^(?:https?:|data:|blob:)/i.test(url) ? url : `/${url}`;
+  return withInlineAsset(path);
 }
 
 // 그림을 직접 반환해야 하는 색키 워밍도 같은 슬롯을 쓰도록 작업 단위 진입점을 둔다.

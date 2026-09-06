@@ -1,0 +1,48 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/standaloneCli.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-silver-stone-6077-export-delivery-6077
+
+ ❯ test/standaloneCli.test.ts (1 test | 1 failed) 18967ms
+   × CLI rejects missing project media without writing an HTML artifact 18965ms
+     → promise resolved "{ …(2) }" instead of rejecting
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/standaloneCli.test.ts > CLI rejects missing project media without writing an HTML artifact
+AssertionError: promise resolved "{ …(2) }" instead of rejecting
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- Error {[39m
+[32m-   "message": "rejected promise",[39m
+[31m+ {[39m
+[31m+   "stderr": "",[39m
+[31m+   "stdout": "파일      : /home/main/.herdr/worktrees/rpg-zzu/worktree-silver-stone-6077-export-delivery-6077/.vite-cache/standalone-cli-w75doa/game.html[39m
+[31m+ 크기      : 2.34 MB[39m
+[31m+   코드    : 0.00 MB (Phaser 포함)[39m
+[31m+   스타일  : 0.00 MB[39m
+[31m+   프로젝트: 2.07 MB[39m
+[31m+   에셋    : 0개 원본 0.00 MB[39m
+[31m+ 읽지 못한 에셋 714개: assets/cc0/audio/bgm/field-of-dreams.mp3, assets/cc0/audio/catalog/rtp-btl-001-vanguard-signal_fc54007f.mp3, assets/cc0/audio/catalog/rtp-fld-003-amber-meadow-end-final_f5dafd12.mp3, assets/cc0/jetrel/icons/ale.png, assets/cc0/jetrel/icons/antidote-green.png[39m
+[31m+ ",[39m
+[2m  }[22m
+
+ ❯ test/standaloneCli.test.ts:24:23
+     22|     resolve("scripts/build-standalone-html.mts"), "--out", out,
+     23|   ], { cwd: root, timeout: 60_000 });
+     24|   await expect(attempt).rejects.toMatchObject({ stderr: expect.stringC…
+       |                       ^
+     25|   await expect(stat(out)).rejects.toMatchObject({ code: "ENOENT" });
+     26| }, 90_000);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  17:53:51
+   Duration  21.06s (transform 268ms, setup 0ms, collect 172ms, tests 18.97s, environment 0ms, prepare 460ms)

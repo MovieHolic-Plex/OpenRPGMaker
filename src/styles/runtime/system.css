@@ -6,7 +6,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: block;
-  src: url("/assets/fonts/neodgm.woff2") format("woff2");
+  src: url("../../../public/assets/fonts/neodgm.woff2") format("woff2");
 }
 
 @font-face {
@@ -14,7 +14,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: block;
-  src: url("/assets/fonts/Galmuri9.woff2") format("woff2");
+  src: url("../../../public/assets/fonts/Galmuri9.woff2") format("woff2");
 }
 
 @font-face {
@@ -22,7 +22,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: block;
-  src: url("/assets/fonts/Galmuri11.woff2") format("woff2");
+  src: url("../../../public/assets/fonts/Galmuri11.woff2") format("woff2");
 }
 
 @font-face {
@@ -30,7 +30,7 @@
   font-style: normal;
   font-weight: 700;
   font-display: block;
-  src: url("/assets/fonts/Galmuri11-Bold.woff2") format("woff2");
+  src: url("../../../public/assets/fonts/Galmuri11-Bold.woff2") format("woff2");
 }
 
 :root {
@@ -74,7 +74,7 @@
   --runtime-glass-radius-small: 4px;
   /* 저작 기본 스킨이 따뜻한 갈색이다. 런타임에서는 applySystemGraphic 이
      system.systemResourceId 를 읽어 이 변수를 덮어쓴다 — 여기 값은 그 전의 기본값이다. */
-  --runtime-window-skin: url("/assets/ui/windowskin-warm.png");
+  --runtime-window-skin: url("../../../public/assets/ui/windowskin-warm.png");
   --runtime-window-slice: 24 fill;
   --runtime-window-border: 8px;
   --runtime-window-border-tight: 6px;
