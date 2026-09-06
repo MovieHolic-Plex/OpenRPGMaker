@@ -1,6 +1,6 @@
 {
-  "base": "5384e607b6d4495b6c1fde998fe49901550653af",
-  "revision": "d8d7a1df2884501f6d03373f3097111ff173639e",
+  "base": "c26f7398d0e731da3204b5070b4760c9de33e710",
+  "revision": "6205c4b5f95487cfc407131179a81565e4da9437",
   "definitions": {
     "functionalDeclarations": "PostCSS declaration nodes including custom properties; excludes comments. Selector narrowing is recorded as replacement, not automatically counted as net deletion.",
     "ownershipMetric": "Explicit shared-role chrome declarations/contributor files, not a claim of full computed cascade equivalence."
@@ -59,6 +59,12 @@
       "classification": "domain composition",
       "before": 402,
       "after": 402
+    },
+    {
+      "file": "src/styles/database/cinematics.css",
+      "classification": "domain composition",
+      "before": 79,
+      "after": 79
     },
     {
       "file": "src/styles/database/core.css",
@@ -1060,6 +1066,11 @@
     },
     {
       "from": "src/styles/index.css",
+      "to": "src/styles/database/cinematics.css",
+      "kind": "CSS import"
+    },
+    {
+      "from": "src/styles/index.css",
       "to": "src/styles/database/ai-bar.css",
       "kind": "CSS import"
     },
@@ -1255,8 +1266,8 @@
     }
   },
   "metrics": {
-    "before": 22046,
-    "after": 21861,
+    "before": 22125,
+    "after": 21940,
     "netRemoved": 185,
     "removedOrReplaced": 641,
     "explicitRolesBefore": {
@@ -1293,9 +1304,10 @@
         ]
       },
       "crudChrome": {
-        "declarations": 78,
+        "declarations": 79,
         "contributorFiles": [
           "src/styles/database/actors.css",
+          "src/styles/database/cinematics.css",
           "src/styles/database/desktop-record-shell/04-modern-records.css",
           "src/styles/database/desktop-record-shell/10-tab-chrome-unify.css",
           "src/styles/database/desktop-record-shell/14-party-ux-fixes.css",
@@ -1332,8 +1344,9 @@
         ]
       },
       "crudChrome": {
-        "declarations": 18,
+        "declarations": 19,
         "contributorFiles": [
+          "src/styles/database/cinematics.css",
           "src/styles/database/modern/tilesets.css",
           "src/styles/database/studio-v2.css"
         ]
