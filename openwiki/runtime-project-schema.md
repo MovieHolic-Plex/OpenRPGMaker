@@ -1,5 +1,9 @@
 # Runtime Project Schema & Persistence
 
+## 적 전투 이미지 크기 (2026-09-06)
+
+`EnemyRecord.battleScalePercent?: number`는 선택적인 전투 표시 백분율이다. `normalizeEnemyRecord`는 유한 숫자를 반올림해 정수 10~300에 제한하고, 누락·비숫자·비유한 값은 100으로 처리한다. 100은 키를 생략해 기존 프로젝트를 희소하게 유지한다. 기존 editor mutation allowlist와 `upsert_enemy` 정수 스키마에 포함되며 `serialize`/`deserialize`가 비기본값을 보존한다. 기존 로드 정규화를 재사용하는 additive 필드라 스키마 버전 변경이나 SQL migration은 없다. `test/enemyBattleScale.test.ts`가 실제 편집→저장→로드→재저장과 손상된 입력/기본값 복귀를 검증한다. 원격 DB 쓰기 없이 엔진·편집기 코드만 변경한 계약이다.
+
 ## New-project save/reload verification (2026-09-05)
 
 `store.loadNewRemoteProjectTransactionally` compares draft-free projects with `serializeForComparison`, not raw wire bytes. The comparison runs both sides through the project loader's normalization and recursively sorts object keys; arrays and authored non-default values remain significant. New blank/preset seeds contain the default `system.titleScreen.titleGraphic = { mode: "text", x: 32, y: 62 }`, which normalization omits, and the farm preset gains `system.timeSystem.forceSleep = false` on load. PostgreSQL JSONB also changes object-key order. These representation differences must not reject a successful save/reload. Wire serialization and SHA-256 persistence remain unchanged; actual mismatches still reject before adopting the new project or changing drafts, config, or URL. `test/transactionalNewRemoteProject.test.ts` exercises all five presets plus blank creation through real save/load functions with a JSONB-like transport, and rejects changed titles, map tiles, and array order.

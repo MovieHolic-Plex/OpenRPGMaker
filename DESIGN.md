@@ -524,6 +524,7 @@ The float assistant is **one glass instrument**, `div.ai-deck` inside the transp
 - Target selection keeps field brackets, a short target prompt, key hints, and clickable target rows. Victory/result uses a compact reward summary only.
 - Battle is database-driven: actor stats from parameter curves, enemy stats/rewards from records, skill effects (damage/healing/support/switch), agility-derived ATB charge, defense + defend halving.
 - Battle sprites must be original or permissively licensed. Do not reproduce RM2K3 battlers, animations, icons, or window graphics.
+- Enemy battle-size requests above 100% fit uniformly within the logical battlefield: 16px side gutters, 32px top motion clearance, 24px bottom information-card clearance. Clamp the visual ground anchor without changing authored troop positions or requested percentages. Default 100% geometry and HUD typography remain unchanged; fit affects image dimensions, never motion transforms. The appearance inspector explains the fit ceiling and directs authors to the existing battle test.
 
 ## 6. Motion & Interaction
 

@@ -457,6 +457,7 @@ const enemyRecordSchema = objectSchema({
   name: stringSchema(),
   speciesId: stringSchema(),
   monsterResourceId: stringSchema(),
+  battleScalePercent: integerSchema("전투 표시 크기(%). 10~300으로 제한, 기본 100."),
   graphicHue: integerSchema(),
   transparent: booleanSchema(),
   flying: booleanSchema(),

@@ -99,7 +99,7 @@ export function renderEnemyRecordForm(form: HTMLElement, record: EnemyRecord, re
       enemyCard("포획·성장 종족", "species", speciesFields(record, rerender), { hint: "포획·성장 정보를 연결합니다. 능력치·외형은 자동 상속되지 않습니다." }),
     ] },
     { id: "appearance", label: "외형", cards: [
-      enemyCard("그래픽", "graphic", graphicFields(record, rerender)),
+      enemyCard("그래픽", "graphic", graphicFields(record, rerender), { hint: "100%는 기본 크기입니다. 큰 값은 전투 화면 안에 맞춰 표시됩니다. 실제 크기는 시험 전투에서 확인하세요. 맵 외형은 바뀌지 않습니다." }),
     ] },
     { id: "combat", label: "전투", cards: [
       enemyCard("치명타 확률", "critical", [el("div", { class: "db-enemy-critical-row", children: criticalFields(record, rerender) })], { hint: record.criticalHit.enabled ? `1/${record.criticalHit.oneIn} = ${(100 / record.criticalHit.oneIn).toFixed(2)}%` : "치명타 사용 안 함" }),
@@ -665,6 +665,10 @@ function graphicFields(record: EnemyRecord, rerender: () => void): HTMLElement[]
   // 스프라이트 미리보기는 히어로가 갖는다 — 같은 그림을 두 번 그리면
   // updateGraphicPreviewState 가 어느 쪽을 갱신할지 모호해진다.
   return [
+    sliderStepperField("전투 표시 크기 (%)", "db-field-enemy-battle-scale", record.battleScalePercent ?? 100, (battleScalePercent) =>
+      updateDatabaseRecord("enemies", record.id, { battleScalePercent }),
+      { min: 10, max: 300, step: 1, unit: "%" }
+    ),
     el("div", {
       class: "db-enemy-graphic-actions",
       children: [
