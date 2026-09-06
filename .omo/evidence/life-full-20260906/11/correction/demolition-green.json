@@ -1,0 +1,18 @@
+{
+  "head": "0acaa19b96e4c87684c64bbb9b53307f56064974",
+  "sourceHash": "e580b07d9b353cc79c13ea18725d13d1c06f56f178715ebe83a18d0bfd297bc0",
+  "result": {
+    "ok": true
+  },
+  "claimsBefore": 4096,
+  "claimsAfter": 4096,
+  "goldBefore": 90,
+  "goldAfter": 90,
+  "placementStillPresent": false,
+  "sessionUnchanged": false,
+  "pass": true,
+  "cleanup": {
+    "serverClosed": true,
+    "cacheRemoved": true
+  }
+}

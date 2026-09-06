@@ -5,7 +5,7 @@ import { createHash } from "node:crypto";
 import { firefox } from "@playwright/test";
 import { startPlayerQaServer, performObservedAction } from "../../../../scripts/lib/runtimeQaRun.mjs";
 
-const out = `${process.cwd()}/.omo/evidence/life-full-20260906/11/native`;
+const out = `${process.cwd()}/.omo/evidence/life-full-20260906/11/correction/native`;
 const cache = `${out}/cache`;
 await mkdir(out, { recursive: true });
 process.env.VITE_CACHE_DIR = cache;
@@ -139,12 +139,21 @@ try {
     const project = store.getCurrent(), session = scene.session, actions = [];
     const check = (condition, label) => { if (!condition) throw new Error(label); };
     check(session.farmAnimals.a.readyProductCount === 1 && session.farmAnimals.a.lastAdvancedDayKey === "1:spring:1", "native sleep did not produce");
-    const animal = structuredClone(session.farmAnimals.a);
     const before = structuredClone(session);
+    check(before.farmBuildingPlacements.home1.paymentReceipt.gold === 30, "active paid gold evidence lost");
+    check(before.farmBuildingPlacements.home1.paymentReceipt.items[0].count === 5, "active paid items evidence lost");
+    const expected = structuredClone(before);
+    delete expected.farmBuildingPlacements.home1;
+    for (const [id, animal] of Object.entries(expected.farmAnimals)) {
+      if (animal.housingPlacementId !== "home1") continue;
+      const { housingPlacementId, ...unassigned } = animal;
+      expected.farmAnimals[id] = unassigned;
+    }
     const removed = removeFarmBuilding(session, "home1"); check(removed.ok, "demolition refused");
     actions.push({ name: "demolish", result: removed, before, after: structuredClone(session) });
-    const { housingPlacementId, ...unassigned } = animal;
-    check(JSON.stringify(session.farmAnimals.a) === JSON.stringify(unassigned), "demolition changed progression");
+    check(JSON.stringify(session) === JSON.stringify(expected), "demolition changed more than placement and housing links");
+    check(session.lifeRecovery === undefined, "voluntary demolition created recovery clutter");
+    check(session.gold === before.gold && JSON.stringify(session.inventory) === JSON.stringify(before.inventory), "voluntary demolition refunded costs");
     const rejectedBefore = structuredClone(session);
     const rejected = animals.feedFarmAnimal(project, session, "a", "1:spring:2");
     check(!rejected.ok && rejected.reason === "unassigned", "unassigned care succeeded");
@@ -159,7 +168,8 @@ try {
     const read = saves.readSaveSlot(localStorage, 1); check(read.kind === "present", "native Storage read failed");
     const restored = saves.applySaveSnapshot(project, read.snapshot);
     check(JSON.stringify(restored.farmAnimals) === JSON.stringify(session.farmAnimals), "resume changed animals");
-    check(JSON.stringify(restored.lifeRecovery) === JSON.stringify(session.lifeRecovery), "resume lost paid evidence");
+    check(restored.lifeRecovery === undefined, "resume invented a demolition claim");
+    check(JSON.stringify(restored.farmBuildingPlacements) === JSON.stringify(session.farmBuildingPlacements), "resume lost remaining active placement/payment evidence");
     check(JSON.stringify(session) === JSON.stringify(beforeSave), "save mutated live state");
     scene.session = restored; refreshRuntimeEntities(scene);
     const key = saves.saveSlotKey(1), goodRaw = localStorage.getItem(key);

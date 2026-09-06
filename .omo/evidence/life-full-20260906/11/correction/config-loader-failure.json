@@ -1,0 +1,27 @@
+{
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "180s",
+    "npm",
+    "test",
+    "--",
+    "test/linkedAnimalHousing.test.ts",
+    "--config",
+    ".omo/evidence/life-full-20260906/11/correction/vitest.config.ts",
+    "--configLoader",
+    "runner"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-housing",
+  "head": "0acaa19b96e4c87684c64bbb9b53307f56064974",
+  "sourceHash": "188fd3a41f6ee54671bdc6ab5df3fdb4061a49ed5f11976c01dfe9f32c4326eb",
+  "exit": 1,
+  "signal": null,
+  "stdout": "\n> rpg-zzu@0.1.0 test\n> node scripts/run-vitest.mjs run --configLoader bundle test/linkedAnimalHousing.test.ts --config .omo/evidence/life-full-20260906/11/correction/vitest.config.ts --configLoader runner\n\n",
+  "stderr": "file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/cac.Cb-PYCCB.js:1267\n\t\t\tthrow new Error(`Expected a single value for option \"${command}\", received [${received}]`);\n\t\t\t      ^\n\nError: Expected a single value for option \"--configLoader <loader>\", received [\"bundle\", \"runner\"]\n    at transform (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/cac.Cb-PYCCB.js:1267:10)\n    at setDotProp (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/cac.Cb-PYCCB.js:207:22)\n    at CAC.mri (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/cac.Cb-PYCCB.js:591:9)\n    at CAC.parse (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/cac.Cb-PYCCB.js:508:27)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/cli.js:27:13\n    at ModuleJob.run (node:internal/modules/esm/module_job:377:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:671:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\n\nNode.js v24.11.1\n"
+}

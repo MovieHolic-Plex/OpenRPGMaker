@@ -2,70 +2,13 @@
 
 Task11 is implemented and scoped verification passes in `/home/main/z-project/rpg-zzu-life-full-housing`, branch `agent/life-full-housing`. This is the engine/schema/save lifecycle increment, not completion of tasks12/13, the all51 life-system goal, or the parent-owned full repository gates.
 
-## Mandatory demolition correction - current result
-
-The parent correctly identified an unrequested recovery dependency in `0acaa19b96e4c87684c64bbb9b53307f56064974`. Voluntary demolition is **not recovery**. The implementation now removes only the building placement and its animal housing links: it refunds no gold/items, adds no claim, leaves existing claims/sequence unchanged, and succeeds with all4096 claim slots occupied. Active construction/move/upgrade payment receipts and content-incompatible recovery are unchanged. The former passing assertion "demolition recovery exhaustion refuses" encoded the implementation bug, not the approved contract; it was replaced by whole-session conservation tests at0 and4096 claims, including real earned products and save/resume.
-
-Correction evidence is in `correction/`. The original raw evidence files remain untouched; the exact original summary is additionally preserved as `correction/original-SUMMARY.md`. Historical counts below describe the initial increment and are superseded for current verification by these results:
-
-| Correction receipt | Actual result |
-| --- | --- |
-| `demolition-red.json`, `demolition-probe.mjs` | Byte-preserved parent counterexample and public probe from the parent phase4 tree. Parent RED at0acaa19b9:4096 claims, demolition invalid, placement/link retained. |
-| `red.json`, `red-test-source.txt` | Before product correction: **3 failed /17 passed**, exit1. Ordinary demolition adds a claim; zero-claim whole-state equality fails; full-capacity demolition refuses. |
-| `config-loader-failure.json` | Initial QA configuration attempt failed before test discovery because npm already specifies bundle and the CLI rejects a second configLoader. Not behavioral RED. Resolved by an owned config/cache and an empty owned node_modules directory for Vite config temporary output, preserving npm's original bundle loader and all test deadlines. |
-| `green.json` | Required housing target: **20 passed /1 file**, exit0 in one final run. Only `--config` points to the owned cache wrapper; test configuration/deadlines otherwise unchanged. |
-| `related.json` | **204 passed /13 files**, exit0; same affected housing/save/recovery/reference/play-integration selection. |
-| `diagnostics.json`, `diagnostic-results.json`, `typecheck.json` | Both changed product/test TypeScript files have zero syntactic/semantic diagnostics; app typecheck exit0. Diagnostics precede build. Updated executable QA scripts also passed `node --check`. |
-| `parent-replay.json`, `demolition-green.json` | Exact parent public probe replay, exit0:4096->4096 claims, gold90->90, identical inventory/claims, removed placement and housing link. |
-| `native.json`, `native/public-lifecycle.json` | Updated real Firefox player.html probe, exit0/pass:true: actual public lifecycle APIs, native keyboard sleep earns product, voluntary demolition makes no claim, unassigned care refuses, product collection succeeds, native Storage Save5/read/apply retains remaining active payment receipt and invents no demolition claim. No page errors or remote writes. |
-| `build.json`, `build-timeout-diagnosis.json` | Additional full build **exit124 at600 seconds**, after app typecheck/app build/export-player build/player SDK completed; standalone Vite transformation had not completed. Raw output/warnings retained. No product error was printed; cause/baseline attribution is not established. High host load was observed, not asserted as a proven cause. No timing retry or deadline increase. |
-
-All correction heavy commands used `flock --timeout 900 /tmp/rpg-zzu-life-full-qa-01a0727b.lock` followed by a bounded `timeout`, with no nested blocking locks. No test deadlines, product/cache configuration, shared node_modules bytes or tracked cache files were changed. Only task-owned outputs/caches are cleaned. Full repository gates remain parent-owned and were not rerun.
-
-Current correction DoneClaim: task11 demolition correction done; required20/20, related204/204, parent public replay/native lifecycle/Save5 proof/typecheck/changed-file diagnostics all pass; additional full build incomplete with retained exit124 as above. No task12/13, remote writes, push, merge, PR or amendment. This is a new correction commit, resolvable by `git log -1 --format=%H -- src/project/spatialPlacementTransactions.ts`. It does not claim overall life-system completion or standalone-build verification.
-
-```json
-{
-  "taskId": "st_01a07801",
-  "taskNumber": 11,
-  "increment": "mandatory voluntary-demolition correction",
-  "status": "done-with-build-timeout-disclosed",
-  "done": true,
-  "branch": "agent/life-full-housing",
-  "baseCommit": "0acaa19b96e4c87684c64bbb9b53307f56064974",
-  "sourceSha256": "e580b07d9b353cc79c13ea18725d13d1c06f56f178715ebe83a18d0bfd297bc0",
-  "commitSubject": "fix(life): keep voluntary demolition independent of recovery",
-  "implementationCommitLookup": "git log -1 --format=%H -- src/project/spatialPlacementTransactions.ts",
-  "red": { "failed": 3, "passed": 17, "exit": 1 },
-  "requiredTests": { "passed": 20, "failed": 0, "skipped": 0, "exit": 0, "singleFinalRun": true },
-  "relatedTests": { "files": 13, "passed": 204, "failed": 0, "skipped": 0, "exit": 0 },
-  "diagnostics": { "changedProductTestFiles": 2, "count": 0, "beforeBuild": true },
-  "typecheckExit": 0,
-  "parentCounterexampleReplayExit": 0,
-  "nativeLifecycleSaveProofExit": 0,
-  "voluntaryDemolition": { "fullCapacitySucceeds": true, "newClaims": 0, "refundGold": 0, "refundItems": 0, "existingClaimsUnchanged": true, "allAnimalsAndReceiptsPreserved": true },
-  "activeReceiptsAndIncompatibleRecovery": "unchanged",
-  "additionalBuild": { "exit": 124, "deadlineSeconds": 600, "appAndExportPlayerCompleted": true, "standaloneComplete": false, "baselineAttribution": "not established; no timing retry" },
-  "wikiChecksExit": 0,
-  "lock": "flock --timeout 900 /tmp/rpg-zzu-life-full-qa-01a0727b.lock; bounded command timeout; no nested locks",
-  "cleanupReceipt": "correction/identity-cleanup.json",
-  "originalRedPreserved": true,
-  "imageApproval": "not claimed",
-  "task12or13Implemented": false,
-  "remoteWrites": 0,
-  "amendPushPrMerge": false,
-  "overallLifeSystemCompletion": false,
-  "independentVerification": "parent-owned"
-}
-```
-
 ## Identity and approved scope
 
 - Task: `st_01a07801`; parent/root `01a0727b-398a-7481-b557-b198013542c1`.
 - Source base HEAD: `966f414c07729e7d9474c568cbaf19a94d2bc740`; base tree: `6ff79d95e11ba95ae47a9db97e106936728088fa`.
 - Read the complete canonical plan, AGENTS, quickstart, INDEX, PROJECT_WIKI, runtime routing, focused schema/session/testing material, and Phase3 `VERDICT.md`. No CLAUDE.md was read.
 - The verdict's exact reviewed HEAD `bd81a933cbecfeb8b25ef15bf57bc24911011aa8` is an ancestor, actual `git merge-base --is-ancestor` exit0. `source-manifest.json` records the check and all changed source/test/wiki SHA256 values.
-- Initial verified code/tests/wiki staged tree before evidence: `3ae60b4c128faa3d7494db08bb86a561e9d13640`, delivered by `0acaa19b96e4c87684c64bbb9b53307f56064974`. Current correction identity/receipts are recorded separately under `correction/`.
+- Verified code/tests/wiki staged Git tree before adding evidence: `3ae60b4c128faa3d7494db08bb86a561e9d13640`. The delivering commit is the commit that adds this summary; resolve with `git log -1 --format=%H -- .omo/evidence/life-full-20260906/11/SUMMARY.md`.
 - No UI, live player/NPC placement safety, characterProfiles/dailyWeather/skillModel, playSceneGift/Interpreter, WISH.md, dependency/service, remote content, main checkout, push, merge or PR changes. INDEX was regenerated because the assigned schema wiki changed; unrelated content was retained.
 
 ## Delivered contracts
@@ -73,11 +16,11 @@ Current correction DoneClaim: task11 demolition correction done; required20/20, 
 1. Project4 optional `animalHousing.allowedSpeciesIds`, explicit per-level `animalCapacity` integer0..9999, and animal `housingPlacementId`. Generic capacity is independent. Shape/normalization/reference boundaries preserve valid fields and refuse malformed/dual/new dangling refs rather than silently erasing them.
 2. `src/project/animalHousing.ts` is the canonical derived-home module. `resolveAnimalHome(project, state, animal)` uses actual placement instance/map/x/y/current level. `reconcileLinkedAnimalHousing` handles missing/type-removed/disabled/species-incompatible homes and stable Unicode code-point capacity selection, without automatic relocation.
 3. `assignFarmAnimalToHousingPlacement` is the new public runtime assignment entry point. Existing `assignFarmAnimalToBuilding` remains the independent legacy-home entry point. Both preserve progress and daily-care receipts and remove the other reference only on successful explicit reassignment.
-4. Move keeps placement ID and payment receipt. Upgrade preserves animals while increasing 2 to5 slots or unassigning a shrinking level's overflow. Demolition retains every animal/progress/product/care cursor and clears only its home link, without refunds or any recovery claim dependency. Unassigned collection works; unassigned care refuses with zero side effects.
-5. New building transactions record actual aggregate paid gold/items while active. Voluntary demolition does not create a recovery record or preserve its voluntarily discarded placement as ledger clutter. Only content incompatibility recovers proved paid items and retains original placement/payment JSON including gold evidence. **No gold claim/payout schema was added**, and no legacy historical costs are inferred. The approved existing claim schema only pays item quantities; paid gold in incompatible-content records remains evidence, not an invented item or refund.
+4. Move keeps placement ID and payment receipt. Upgrade preserves animals while increasing 2 to5 slots or unassigning a shrinking level's overflow. Demolition retains every animal/progress/product/care cursor, removes only its home link, and keeps non-refundable paid-cost evidence. Unassigned collection works; unassigned care refuses with zero side effects.
+5. New building transactions record actual aggregate paid gold/items. Demolition moves its receipt into an unpayable `demolished-no-refund` recovery record atomically; claim-capacity failure refuses the whole demolition. Content incompatibility recovers only proved paid items and retains original placement/payment JSON including gold evidence. **No gold claim/payout schema was added**, and no legacy historical costs are inferred. The approved existing claim schema only pays item quantities; paid gold remains evidence, not an invented item or refund.
 6. Save5/new-key/raw-preservation boundaries remain. Parser/writer/direct apply refuse dual refs and invalid receipts. Persistent occupancy is restored before spatial recovery, then linked homes/animals, then remaining life reconciliation and restored-clock processing. Missing explicit housing never falls back to an authored legacy home, including repeated unassigned save/resume. Map deletion clears only affected authored home links. Special animal record keys and non-BMP sorting are covered.
 
-## Initial RED/GREEN and exact validators (historical)
+## RED/GREEN and exact validators
 
 All JSON receipts retain the actual command, exit, stdout and stderr; no pipe exit is substituted.
 
@@ -100,8 +43,8 @@ The Phase3 verdict's full-gate disposition remains unchanged: whole wrapper time
 ## Actual public/native lifecycle receipt
 
 Executable: `node .omo/evidence/life-full-20260906/11/public-player.mjs`.
-Current correction command receipt: `correction/native.json` (**exit0**).
-Current complete before/after session owners, results, good/invalid raw Save5 strings and cleanup: `correction/native/public-lifecycle.json` (**pass:true**). Initial native logs/receipts remain preserved in their original paths; they do not establish the corrected no-claim contract.
+Final raw command log/exit: `native-command.log`, `native-command.exit` (**0**).
+Complete before/after session owners, results, good/invalid raw Save5 strings and cleanup: `native/public-lifecycle.json` (**pass:true**).
 
 Authority distinction:
 
@@ -110,13 +53,13 @@ Authority distinction:
 - Build/assignment/care/move/upgrade/demolition/collection use actual imported public modules against that live scene session. These are **public authority calls, not keyboard assignment/authoring UI**. That UI belongs to task13.
 - Native Enter starts play. Native Z executes the authored sleep event through the real player input/interpreter/day transition. The exact action and day-completion observers are armed before input and have bounded deadlines; no sleeps/polling/retries are used.
 - After the real daily transition, `a` has friendship10, readyProductCount1 and source-day feed/pet/advance receipts. No ready product state was injected. Demolition keeps the product and care state, refuses next-day unassigned care with entire-session equality, and collection grants exactly one `item_ether` while unassigned.
-- Native Storage uses real create/saveToSlot/read/apply entry points and the returned restored session is applied to the live scene. Animal state and the remaining active placement/payment receipt roundtrip through namespace `task11-local-proof:save-slot:v5:1`; no demolition claim is created or resurrected. A raw dual-ref save is rejected without rewriting its bytes or replacing live state. This is **public save/load API exercise**, not native save-menu navigation.
+- Native Storage uses real create/saveToSlot/read/apply entry points and the returned restored session is applied to the live scene. Animal state and non-refundable payment evidence roundtrip through namespace `task11-local-proof:save-slot:v5:1`. A raw dual-ref save is rejected without rewriting its bytes or replacing live state. This is **public save/load API exercise**, not native save-menu navigation.
 
 The receipt records 16 public pre-sleep actions (including full, wrong species, collision, insufficient cost and repeated-care refusals with full-session equality), one native sleep action, and demolition/unassigned-care/collection. Two home instances remain independent; home1 upgrades 2-to5, moves to y8 with its ID and paid costs intact. Starting authored gold40 is naturally spent by construction/upgrading to0 for the cost refusal; inventory/ready results are not injected.
 
 The first native harness attempt incorrectly expected `window.Phaser.GAMES`; that export does not exist. `native-harness-failure/`, `.log`, `.exit` retain the exit1 and cleanup. The corrected probe captures the actual constructor-created instance and passed on its first execution. This is a diagnosed harness correction, not a timing retry or fabricated success.
 
-Current screenshots: `correction/native/earned-product.png`, `correction/native/resumed-unassigned.png`. Initial screenshots remain in `native/`. The available image read tool reported that this model cannot display images. **No aesthetic/readability/image approval is claimed**; authoritative state/native input evidence is separate.
+Screenshots: `native/earned-product.png`, `native/resumed-unassigned.png`. The available image read tool reported that this model cannot display images. **No aesthetic/readability/image approval is claimed**; authoritative state/native input evidence is separate.
 
 ## Cleanup and handoff
 
@@ -124,7 +67,7 @@ Current screenshots: `correction/native/earned-product.png`, `correction/native/
 
 Parent integration should consume the new public assignment/resolver APIs for task13 and keep task12's persistent-versus-live occupancy distinction, including the previously documented farming self-plot integration obligation. This task did not edit those surfaces. Independent parent verification and integration remain parent-owned.
 
-## Initial verification DoneClaim (superseded by correction results above)
+## DoneClaim
 
 ```json
 {
@@ -157,7 +100,7 @@ Parent integration should consume the new public assignment/resolver APIs for ta
   "projectVersion": 4,
   "saveVersion": 5,
   "rawPreservation": true,
-  "paidEvidence": "corrected: active placement receipts and incompatible-content recovery only; voluntary demolition creates no claim",
+  "paidEvidence": "actual gold/items receipt; normal demolition unpayable; incompatible recovery proved items only with original gold evidence retained",
   "newSchemaOutsideApprovedHousing": false,
   "fullRepositoryGates": "not rerun; parent-owned existing red/timeout disposition retained",
   "full51coverage": "not completed by task11",

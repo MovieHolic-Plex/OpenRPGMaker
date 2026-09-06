@@ -2,7 +2,6 @@ import { GOLD_MAX } from "@/project/economyValues";
 import { isItemQuantity, ITEM_QUANTITY_MAX, type ItemQuantityOperation } from "@/project/itemQuantities";
 import { changeItemsAtomically, type PlaySession, type SpatialPaymentReceipt } from "@/project/session";
 import { reconcileLinkedAnimalHousing } from "./animalHousing";
-import { LifeReconciliationError, preserveUnresolvedLifeSource } from "./lifeStateReconciliation";
 import { isSpatialPaymentReceipt } from "./lifeRecovery";
 import { canOccupySpatialFootprint } from "@/project/spatialOccupancy";
 import {
@@ -92,11 +91,7 @@ export function removeFarmBuilding(session: PlaySession, instanceId: string): Sp
   const placement = session.farmBuildingPlacements?.[instanceId];
   if (!placement) return missing();
   const draft = structuredClone(session);
-  // Normal demolition never refunds, but the paid-cost evidence remains durable.
-  if (placement.paymentReceipt) {
-    try { preserveUnresolvedLifeSource(draft, { sourceKind: "farmBuildingPlacements", sourceId: instanceId, reason: "demolished-no-refund" }, placement); }
-    catch (error) { if (error instanceof LifeReconciliationError) return invalid(); throw error; }
-  }
+  // Voluntary demolition is nonrefundable and independent of recovery capacity.
   delete draft.farmBuildingPlacements![instanceId];
   if (draft.farmAnimals) draft.farmAnimals = Object.fromEntries(Object.entries(draft.farmAnimals).map(([id, animal]) => {
     if (animal.housingPlacementId !== instanceId) return [id, animal];

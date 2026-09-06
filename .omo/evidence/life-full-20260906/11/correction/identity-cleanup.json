@@ -1,0 +1,52 @@
+{
+  "head": "0acaa19b96e4c87684c64bbb9b53307f56064974",
+  "baseTree": "88cb3b69c9a7dffaacf54198227e8ba2bb090470",
+  "sourceFiles": {
+    ".omo/evidence/life-full-20260906/11/SUMMARY.md": "36d6526a07aa238aa5869bfeb0bc7f04083039697319ff4211c3c3e2333f06cc",
+    ".omo/evidence/life-full-20260906/11/public-player.mjs": "fa3122ab86a9cce5da8d0070a2d37bd306bda25ee0c4207d31c1a8659c7795e4",
+    "openwiki/INDEX.md": "9571854dfdd05f548a1e6ed60b94bf5651f8d5b25bd87b3409d396157a83062e",
+    "openwiki/runtime-project-schema.md": "f0ea24deb97f65726496a492c4c4f19ee944040ec8e253b9a4885d54c1e37d5e",
+    "src/project/spatialPlacementTransactions.ts": "e580b07d9b353cc79c13ea18725d13d1c06f56f178715ebe83a18d0bfd297bc0",
+    "test/linkedAnimalHousing.test.ts": "2b35592d46062f2d5fd9f2986efe6151cec463de67c0fb4127ea8387e0c00577"
+  },
+  "parentCopies": {
+    "demolition-probe.mjs": {
+      "copySha256": "294f51d667beb1d12a24b6b0b266e28a0d793854a3c1c16f942587a098179d5d",
+      "parentSha256": "294f51d667beb1d12a24b6b0b266e28a0d793854a3c1c16f942587a098179d5d",
+      "equal": true
+    },
+    "demolition-red.json": {
+      "copySha256": "cf88a55cf6f0ce2decfa1532c4e683906b5278548eda9b65d63bb5e980d76299",
+      "parentSha256": "cf88a55cf6f0ce2decfa1532c4e683906b5278548eda9b65d63bb5e980d76299",
+      "equal": true
+    }
+  },
+  "removedOwnedPaths": [
+    {
+      "path": "/home/main/z-project/rpg-zzu-life-full-housing/dist",
+      "absent": true
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-life-full-housing/.omo/evidence/life-full-20260906/11/correction/cache",
+      "absent": true
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-life-full-housing/.omo/evidence/life-full-20260906/11/correction/node_modules",
+      "absent": true
+    }
+  ],
+  "protectedTrackedCacheDiffExit": 0,
+  "nativeCleanup": {
+    "contextClosed": true,
+    "browserClosed": true,
+    "serverClosed": true,
+    "ownedCacheRemoved": "/home/main/z-project/rpg-zzu-life-full-housing/.omo/evidence/life-full-20260906/11/correction/native/cache",
+    "fixtureNotShipped": true
+  },
+  "parentReplayCleanup": {
+    "serverClosed": true,
+    "cacheRemoved": true
+  },
+  "originalSummaryPreserved": true,
+  "remainingProductChange": "Only voluntary-demolition claim creation/import removed; active receipts and incompatible recovery implementation unchanged."
+}
