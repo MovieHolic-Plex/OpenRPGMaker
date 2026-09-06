@@ -1,0 +1,28 @@
+{
+  "platform": "linux",
+  "node": "24.11.1",
+  "playwright": "1.61.0",
+  "chromium": "149.0.7827.55",
+  "installedBefore": true,
+  "setupResult": {
+    "installed": false
+  },
+  "guardedProbeChildren": [
+    {
+      "pid": 1389559,
+      "closed": true,
+      "code": 0,
+      "signal": null
+    }
+  ],
+  "npmCommand": "npm run setup:ai-runtime",
+  "npmExit": 0,
+  "npmOutput": "> rpg-zzu@0.1.0 setup:ai-runtime\n> node scripts/setup-local.mjs --ai-runtime\n\n관리형 Chromium 실행 확인을 마쳤습니다. 다운로드 없이 확인용 브라우저를 종료했습니다.",
+  "browserDisconnected": true,
+  "executableUnchanged": true,
+  "envFileCount": 2,
+  "envFilesAndProcessEnvironmentUnchanged": true,
+  "installerCalls": 0,
+  "appServersStarted": 0,
+  "providerOrSupabaseRequests": 0
+}

@@ -1,3 +1,23 @@
+## Explicit AI runtime setup contracts (2026-09-06)
+
+Focused Node 24 check:
+`node --test test/aiJobsRuntimeSetup.test.mjs test/setupLocal.test.mjs test/macLauncher.test.mjs test/aiJobsBrowserExecutor.test.mjs`.
+The runtime setup tests copy the real setup entry into temporary npm-layout fixtures and run
+its actual CLI. Synthetic nested Playwright packages record exact installer arguments and
+probe/close events; a decoy version and NODE_PATH packages must not be selected. Tests cover
+no-op provisioning, missing package/browser, installer failure/false success, probe/close
+failure, invalid arguments, ordinary private-setup preservation, byte/metadata preservation
+of all env variants, and no process-env mutation. Real fixture subprocess readiness plus
+injected process events drive cancellation; no sleeps, polling or actual browser downloads.
+
+For real-runtime evidence, first establish that the project's managed executable already
+exists, then run `npm run setup:ai-runtime`. Record the no-download result and child/browser
+closure, without printing env values or contacting providers/Supabase. Missing-runtime
+installation QA uses the fixtures, not a maintainer's cache or real download. Evidence for
+this independent provisioning slice is `.omo/evidence/ai-job-queue/runtime-setup/`.
+Full Task9 dev/preview integration, app/player builds and final gates remain supervisor-owned.
+Linux checks do not establish macOS/Finder behavior.
+
 ## Mac onboarding Phase 1 contracts (2026-09-06)
 
 `node --test test/macLauncher.test.mjs test/setupLocal.test.mjs` (also

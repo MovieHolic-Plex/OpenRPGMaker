@@ -75,6 +75,33 @@ already provisioned Supabase access plus an **existing application project id**.
 - Linux verification does **not** establish Finder/macOS behavior. The narrow
   `.github/workflows/mac-onboarding.yml` job is dormant while Actions are disabled.
 
+## 1b. Explicit AI job browser runtime setup (2026-09-06)
+
+After installing the checkout's locked npm dependencies, run **`npm run setup:ai-runtime`**
+(or `node scripts/setup-local.mjs --ai-runtime`) with Node 24. This runtime-only mode does
+not ask for Supabase settings, load/write `.env*`, run `npm ci`, or launch the app/server.
+Ordinary `npm run setup:local` and the Mac launcher retain their private-setup behavior;
+neither automatically provisions Chromium.
+
+- It uses the existing installed `@playwright/test` and matching transitive `playwright`,
+  including an adopted worktree's shared `node_modules`. No new dependency, global CLI or
+  `npx`/latest-version fallback is used.
+- An existing managed Chromium is launched headlessly with a 15-second launch bound, then
+  closed. Success is a no-download operation. A missing executable triggers only the local
+  Playwright CLI's `install chromium` (including its Chromium support artifacts), followed
+  by the same execution check. No Firefox/WebKit or system packages are installed.
+- Browser downloads use Playwright's normal cache (and any existing shell Playwright proxy/cache
+  settings); installation needs network access and writable cache space. Raw subprocess output
+  is withheld because it can contain private proxy values. Errors identify package, access,
+  install or probe failure without echoing values. A present but unusable browser is not
+  silently reinstalled: check cache permissions and supported OS/runtime libraries first.
+- Ctrl-C/SIGTERM cancels owned work and waits for its child to close. Partial download/cache
+  files may remain; correct the reported prerequisite and rerun the same command. Setup does
+  not delete or repair existing caches, install OS libraries, or use sudo.
+- Restart an already-running local server after successful provisioning so its unavailable
+  executor state is refreshed. AI job admission/generation never downloads browsers; missing
+  Chromium remains an explicit unavailable state, not a browser-owned fallback.
+
 ## 2. 검증 — 무엇이 진짜 게이트인가
 
 | 명령 | 무엇을 재나 | 기준선 (실측) | 언제 쓰나 |

@@ -12,7 +12,7 @@ export async function createBrowserRuntime({ origin, cacheDir, executablePath, c
     executablePath ??= chromium.executablePath();
     await access(executablePath, constants.X_OK);
   } catch {
-    return { unavailableReason: 'Managed Chromium is unavailable. Install the project Playwright Chromium runtime before submitting AI jobs.' };
+    return { unavailableReason: 'Managed Chromium is unavailable. Run npm run setup:ai-runtime in the project folder, then restart the local server before submitting AI jobs.' };
   }
   return {
     dispatchProvider,

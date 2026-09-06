@@ -1,5 +1,7 @@
-import { lstatSync, openSync, fchmodSync, writeFileSync, fsyncSync, closeSync, unlinkSync } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
+import { lstatSync, openSync, fchmodSync, writeFileSync, fsyncSync, closeSync, unlinkSync, constants } from 'node:fs';
+import { access } from 'node:fs/promises';
+import { createRequire } from 'node:module';
+import { dirname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
 
@@ -15,21 +17,88 @@ function exists(path) {
   try { lstatSync(path); return true; }
   catch (error) { if (error.code === 'ENOENT') return false; throw new SetupError('CONFIG_IO', '이 폴더를 읽을 수 없습니다. 본인이 쓰기 권한을 가진 폴더에 압축을 풀어 주세요.'); }
 }
-export function runCommand(command, args, options = {}) {
+const commandCancelled = () => new SetupError('CANCELLED', '명령을 취소했습니다. 기존 설정과 설치 중 생성된 파일은 그대로 두었습니다. 준비되면 같은 설정 명령을 다시 실행하세요.');
+export function runCommand(command, args, { signal, signals = process, spawnProcess = spawn, ...options } = {}) {
+  if (signal?.aborted) return Promise.reject(commandCancelled());
   return new Promise((resolveCommand, reject) => {
-    const child = spawn(command, args, { shell: false, stdio: 'ignore', ...options });
-    const interrupt = () => child.kill('SIGINT');
-    const terminate = () => child.kill('SIGTERM');
-    const cleanup = () => { process.off('SIGINT', interrupt); process.off('SIGTERM', terminate); };
-    process.on('SIGINT', interrupt); process.on('SIGTERM', terminate);
+    const child = spawnProcess(command, args, { shell: false, stdio: 'ignore', ...options });
+    let cancelled = false;
+    const stop = name => { cancelled = true; child.kill(name); };
+    const interrupt = () => stop('SIGINT');
+    const terminate = () => stop('SIGTERM');
+    const cleanup = () => {
+      signals.off('SIGINT', interrupt); signals.off('SIGTERM', terminate);
+      signal?.removeEventListener('abort', terminate);
+    };
+    // A supplied controller owns OS signal forwarding; avoid sending two signals.
+    if (!signal) { signals.on('SIGINT', interrupt); signals.on('SIGTERM', terminate); }
+    signal?.addEventListener('abort', terminate, { once: true });
     child.once('error', error => { cleanup(); reject(error); });
-    child.once('close', (code, signal) => {
+    child.once('close', (code, exitSignal) => {
       cleanup();
-      if (signal) reject(new SetupError('CANCELLED', '명령을 취소했습니다. 기존 설치 파일과 설치 중 생성된 파일은 그대로 두었습니다.'));
+      if (cancelled || exitSignal) reject(commandCancelled());
       else if (code === 0) resolveCommand();
       else reject(new Error('명령 실행에 실패했습니다'));
     });
+    // Abort can race with spawning; always wait for close before reporting cancellation.
+    if (signal?.aborted) terminate();
   });
+}
+
+/** Explicit provisioning only. Never loads env, asks for credentials, or installs npm/system packages. */
+export async function setupAiRuntime({ root, signal, run = runCommand, log = console.log } = {}) {
+  const checkCancelled = () => { if (signal?.aborted) throw commandCancelled(); };
+  checkCancelled();
+  let runtimeEntry, cli, executablePath;
+  try {
+    const project = createRequire(join(root, 'package.json'));
+    const testPackage = project.resolve(join(root, 'node_modules/@playwright/test/package.json'));
+    const installed = createRequire(testPackage);
+    const packagePath = installed.resolve('playwright/package.json');
+    // npm may hoist or nest this dependency. Neither NODE_PATH nor a global
+    // package is a substitute for the dependency in this installed npm tree.
+    const modules = resolve(dirname(testPackage), '../..');
+    if (!packagePath.startsWith(modules + sep) || installed(packagePath).version !== installed(testPackage).version) throw new Error('Playwright dependency mismatch');
+    runtimeEntry = installed.resolve('playwright');
+    cli = resolve(dirname(packagePath), installed(packagePath).bin.playwright);
+    executablePath = installed(runtimeEntry).chromium.executablePath();
+  } catch {
+    throw new SetupError('AI_RUNTIME_PACKAGE', '프로젝트의 Playwright 패키지를 불러올 수 없습니다. 이 폴더에서 npm ci로 잠금 파일의 패키지를 준비한 뒤 npm run setup:ai-runtime을 다시 실행하세요. 기존 설치와 설정은 변경하지 않았습니다.');
+  }
+  let missing = false;
+  try { await access(executablePath, constants.X_OK); }
+  catch (error) {
+    if (error.code === 'ENOENT') missing = true;
+    else throw new SetupError('AI_RUNTIME_ACCESS', '관리형 Chromium 실행 파일에 접근할 수 없습니다. 브라우저 캐시의 파일 권한을 확인한 뒤 npm run setup:ai-runtime을 다시 실행하세요. 파일이나 시스템 패키지는 변경하지 않았습니다.');
+  }
+  checkCancelled();
+  if (missing) {
+    log('프로젝트 버전에 맞는 관리형 Chromium을 설치합니다. 네트워크 연결이 필요합니다. Ctrl-C로 취소할 수 있습니다.');
+    try { await run(process.execPath, [cli, 'install', 'chromium'], { cwd: root, signal, stdio: 'ignore' }); }
+    catch (error) {
+      if (signal?.aborted || error?.code === 'CANCELLED') throw commandCancelled();
+      throw new SetupError('AI_RUNTIME_INSTALL', 'Chromium 설치에 실패했습니다. 네트워크, 프록시, 브라우저 캐시 권한과 여유 공간을 확인한 뒤 npm run setup:ai-runtime을 다시 실행하세요. 일부 다운로드 파일은 남아 있을 수 있습니다. 시스템 패키지는 설치하지 않았습니다.');
+    }
+  }
+  checkCancelled();
+  // A child owns the bounded launch and Playwright signal cleanup. Its raw output
+  // stays private: launch/download errors may contain proxy credentials or paths.
+  const probe = `
+    const { chromium } = require(process.argv[1]);
+    let browser;
+    try { browser = await chromium.launch({ headless: true, executablePath: process.argv[2], timeout: 15000 }); }
+    finally { if (browser) await browser.close(); }
+  `;
+  try {
+    await access(executablePath, constants.X_OK);
+    await run(process.execPath, ['--input-type=commonjs', '-e', `(async () => { ${probe} })().catch(() => { process.exitCode = 1; });`, runtimeEntry, executablePath], { cwd: root, signal, stdio: 'ignore' });
+  } catch (error) {
+    if (signal?.aborted || error?.code === 'CANCELLED') throw commandCancelled();
+    throw new SetupError('AI_RUNTIME_PROBE', 'Chromium 실행 확인에 실패했습니다. 지원되는 운영체제인지, 브라우저 캐시 권한과 필요한 OS 라이브러리가 준비되었는지 확인한 뒤 npm run setup:ai-runtime을 다시 실행하세요. 기존 브라우저와 시스템 패키지는 자동 복구하지 않습니다.');
+  }
+  checkCancelled();
+  log(missing ? '관리형 Chromium 설치와 실행 확인을 마쳤습니다. 확인용 브라우저를 종료했습니다.' : '관리형 Chromium 실행 확인을 마쳤습니다. 다운로드 없이 확인용 브라우저를 종료했습니다.');
+  return { installed: missing };
 }
 export async function ensureDependencies(root, run = runCommand) {
   try { await run('npm', ['--version'], { cwd: root }); }
@@ -181,12 +250,17 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   process.on('SIGINT', abort); process.on('SIGTERM', abort);
   try {
     requireNode24();
-    if (process.argv.length > 2) throw new SetupError('ARGUMENTS', '설정 명령은 인자를 받지 않습니다. 키는 터미널의 입력 숨김 안내가 나왔을 때만 입력하세요.');
+    const args = process.argv.slice(2);
+    if (args.length && (args.length !== 1 || args[0] !== '--ai-runtime')) throw new SetupError('ARGUMENTS', '설정 명령은 인자 없이 실행하거나 --ai-runtime만 지정하세요. 키나 접속 정보를 명령 인자로 전달하지 마세요.');
     const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
     process.chdir(root);
-    await ensureDependencies(root);
-    await setupLocal({ root, signal: controller.signal });
-    console.log('개인 설정 .env.local을 권한 0600으로 저장했습니다. Start RPG Maker.command 또는 npm run mac:launch로 실행하세요.');
+    if (args[0] === '--ai-runtime') {
+      await setupAiRuntime({ root, signal: controller.signal });
+    } else {
+      await ensureDependencies(root);
+      await setupLocal({ root, signal: controller.signal });
+      console.log('개인 설정 .env.local을 권한 0600으로 저장했습니다. Start RPG Maker.command 또는 npm run mac:launch로 실행하세요.');
+    }
   } catch (error) { reportError(error); }
   finally { process.off('SIGINT', abort); process.off('SIGTERM', abort); }
 }

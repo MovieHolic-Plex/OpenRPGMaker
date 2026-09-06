@@ -7,6 +7,7 @@
   "scripts": {
     "mac:launch": "node scripts/mac-launch.mjs",
     "setup:local": "node scripts/setup-local.mjs",
+    "setup:ai-runtime": "node scripts/setup-local.mjs --ai-runtime",
     "test:mac-onboarding": "node --test test/macLauncher.test.mjs test/setupLocal.test.mjs",
     "dev": "vite --configLoader runner --host 0.0.0.0 --port 9999 --strictPort",
     "dev:worktree": "vite --configLoader runner --host 127.0.0.1 --strictPort",

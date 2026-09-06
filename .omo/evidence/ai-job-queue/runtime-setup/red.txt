@@ -1,0 +1,32 @@
+✖ explicit runtime CLI installs the exact project Chromium without private setup (198.405725ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 394.485159
+
+✖ failing tests:
+
+test at test/aiJobsRuntimeSetup.test.mjs:80:1
+✖ explicit runtime CLI installs the exact project Chromium without private setup (198.405725ms)
+  AssertionError [ERR_ASSERTION]: ARGUMENTS: 설정 명령은 인자를 받지 않습니다. 키는 터미널의 입력 숨김 안내가 나왔을 때만 입력하세요.
+
+
+  1 !== 0
+
+      at TestContext.<anonymous> (file:///home/main/.herdr/worktrees/rpg-zzu/worktree-ai-runtime-setup-0906/test/aiJobsRuntimeSetup.test.mjs:84:10)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+exit=1
