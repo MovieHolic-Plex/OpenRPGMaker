@@ -1,0 +1,152 @@
+{
+  "unit": "U01",
+  "findingIds": [
+    "G1-F3"
+  ],
+  "base": "ed276cd58899d6ca9bf8c6af6d7f2570c48f29a0",
+  "status": "verified-ready-to-commit",
+  "red": {
+    "command": "npm test -- test/eventCommandRemediationShopMessages.test.ts --maxWorkers=2 --reporter=verbose --reporter=json --outputFile=.omo/evidence/event-command-remediation/shop/red.json",
+    "exitCode": 1,
+    "failed": 3,
+    "passed": 4,
+    "expectedFailures": [
+      "festival",
+      "closingSale",
+      "vip"
+    ],
+    "error": "ProjectFormatError: commonEvents[0].commands[0].messageType가 잘못되었습니다.",
+    "artifact": "red.json"
+  },
+  "green": {
+    "command": "npm test -- test/eventCommandRemediationShopMessages.test.ts test/shopProcessingCommand.test.ts --maxWorkers=2 --reporter=verbose --reporter=json --outputFile=.omo/evidence/event-command-remediation/shop/green.json",
+    "exitCode": 0,
+    "passed": 11,
+    "artifact": "green.json"
+  },
+  "diagnostics": "No LSP errors on changed source and test",
+  "typecheck": {
+    "command": "npm run typecheck:app",
+    "exitCode": 0
+  },
+  "editor": {
+    "browser": "Firefox",
+    "url": "http://127.0.0.1:39861/?blankProject=1",
+    "viewport": [
+      1440,
+      900
+    ],
+    "actions": [
+      "layer-event -> canvas tile10,7 -> event-storyboard-add -> search 상점 -> choose shop",
+      "shop-tab-messages -> custom shop-message-type -> festival/closingSale/vip",
+      "event-command-edit-ok -> list row focus+Space -> same messageType retained",
+      "event-editor-apply -> real serialize/deserialize of store project -> same full shop command",
+      "change vip to welcome -> event-command-edit-cancel -> reopen via Space -> vip retained"
+    ],
+    "results": [
+      {
+        "value": "festival",
+        "confirmed": true,
+        "reopened": true
+      },
+      {
+        "value": "closingSale",
+        "confirmed": true,
+        "reopened": true
+      },
+      {
+        "value": "vip",
+        "confirmed": true,
+        "reopened": true
+      }
+    ],
+    "serializedBefore": [
+      {
+        "kind": "shop",
+        "itemIds": [
+          "item_potion",
+          "item_ether",
+          "item_antidote"
+        ],
+        "allowSell": true,
+        "quantityMode": "single",
+        "shopType": "normal",
+        "messageType": "vip",
+        "merchantGold": 100,
+        "branchOnTransaction": false,
+        "transactionBranch": [],
+        "branchOnFailedTransaction": false,
+        "failedTransactionBranch": []
+      }
+    ],
+    "serializedAfter": [
+      {
+        "kind": "shop",
+        "itemIds": [
+          "item_potion",
+          "item_ether",
+          "item_antidote"
+        ],
+        "allowSell": true,
+        "quantityMode": "single",
+        "shopType": "normal",
+        "messageType": "vip",
+        "merchantGold": 100,
+        "branchOnTransaction": false,
+        "transactionBranch": [],
+        "branchOnFailedTransaction": false,
+        "failedTransactionBranch": []
+      }
+    ],
+    "pageErrors": []
+  },
+  "player": {
+    "browser": "Firefox",
+    "url": "http://127.0.0.1:39862/player.html",
+    "serverOwner": "startPlayerQaServer, vite.player-qa.config.ts export store shim",
+    "viewport": [
+      1024,
+      768
+    ],
+    "actions": [
+      "route temporary project JSON into __OPENRPG_BOOT__ before navigation",
+      "Enter on title -> MutationObserver waits for runtime hook/currentMapId",
+      "__oprnInput.face(up) -> observe shop-scene before real z key",
+      "shop-scene visible with no editor shell -> screenshot -> close page"
+    ],
+    "results": [
+      {
+        "value": "festival",
+        "loaded": true,
+        "shopVisible": true,
+        "rendered": "상점\n물건을 사고팝니다.\nVIP 고객님, 어서 오세요.\n소지금\n0G\n구입\n진열된 물건을 산다\n판매\n가진 물건을 넘긴다\n취소\n가게에서 나간다\n↑↓\n선택\nEnter\n결정\nEsc\n나가기",
+        "editorShell": 0
+      },
+      {
+        "value": "closingSale",
+        "loaded": true,
+        "shopVisible": true,
+        "rendered": "상점\n물건을 사고팝니다.\nVIP 고객님, 어서 오세요.\n소지금\n0G\n구입\n진열된 물건을 산다\n판매\n가진 물건을 넘긴다\n취소\n가게에서 나간다\n↑↓\n선택\nEnter\n결정\nEsc\n나가기",
+        "editorShell": 0
+      },
+      {
+        "value": "vip",
+        "loaded": true,
+        "shopVisible": true,
+        "rendered": "상점\n물건을 사고팝니다.\nVIP 고객님, 어서 오세요.\n소지금\n0G\n구입\n진열된 물건을 산다\n판매\n가진 물건을 넘긴다\n취소\n가게에서 나간다\n↑↓\n선택\nEnter\n결정\nEsc\n나가기",
+        "editorShell": 0
+      }
+    ]
+  },
+  "cleanup": [
+    "closed editor and all player pages/browser contexts",
+    "killed owned editor bash_8 and player bash_11; both exited143",
+    "removed /tmp/event-remediation-shop-vite-39861",
+    "old pre-fix editor bash_6 already killed before current-source QA"
+  ],
+  "limits": [
+    "Temporary engine QA project; no Supabase content writes",
+    "No pixel/auditory model judgment claimed",
+    "Pre-fix broad integration gates timedout30m, not a passing baseline; independent of this unit focused proofs"
+  ]
+}
