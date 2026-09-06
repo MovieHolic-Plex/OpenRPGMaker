@@ -1,21 +1,17 @@
-import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { getTool } from "@/editor/tools/toolRegistry";
 import { store } from "@/project/store";
-import type { MapId } from "@/project/types";
+import type { Command, MapId } from "@/project/types";
 
-export function applyMemoryOpeningTemplate(mapId: MapId, eventId: string, pageId: string): void {
+export function applyMemoryOpeningTemplate(
+  mapId: MapId, eventId: string, replaceCommands: (commands: Command[]) => void,
+): void {
   const tool = getTool("script_cutscene_preset");
   if (!tool) return;
-  recordProjectSnapshot("회상 오프닝 템플릿", mapId, { kind: "map" });
-  store.update((draft) => {
-    tool.run(draft, { mapId, preset: "memory_opening", eventId });
-    const event = draft.maps[mapId]?.events.find((entry) => entry.id === eventId);
-    const pages = event?.pages;
-    if (!event || !pages) return;
-    const compiled = pages.find((page) => page.name === "컷신") ?? pages.at(-1);
-    const target = pages.find((page) => page.id === pageId) ?? pages[0];
-    if (!compiled || !target) return;
-    target.commands = [...compiled.commands];
-    event.pages = pages.filter((page) => page.id === target.id);
-  });
+  // Compile on a scratch project: this command preset must not delete sibling
+  // pages or write a global snapshot underneath the live event draft.
+  const draft = structuredClone(store.getCurrent());
+  tool.run(draft, { mapId, preset: "memory_opening", eventId });
+  const pages = draft.maps[mapId]?.events.find(entry => entry.id === eventId)?.pages;
+  const compiled = pages?.find(page => page.name === "컷신");
+  if (compiled) replaceCommands(compiled.commands);
 }

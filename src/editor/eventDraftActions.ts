@@ -1,3 +1,4 @@
+import { stageEventDraftAuthoredWrite } from "@/project/eventDraftAuthored";
 import { editorState } from "@/editor/editorState";
 import { createDefaultGameEvent } from "@/editor/eventActions";
 import { describeEventDiff, eventDiffFields } from "@/editor/eventDiffLabel";
@@ -74,6 +75,18 @@ export function beginExistingEventDraft(mapId: MapId, eventId: string): boolean 
   return opened;
 }
 
+/** Stage the field, not a whole profile: unrelated profile edits survive Apply/Cancel. */
+export function setEventDraftCharacterName(mapId: MapId, eventId: string, characterId: string, name: string): void {
+  const event = store.getCurrent().maps[mapId]?.events.find((entry) => entry.id === eventId);
+  if (!event) return;
+  if (!event.draft) beginExistingEventDraft(mapId, eventId);
+  const before = store.getCurrent().characters?.[characterId]?.displayName ?? null;
+  store.updateMap(mapId, (map) => {
+    const target = map.events.find((entry) => entry.id === eventId);
+    if (target) stageEventDraftAuthoredWrite(target, { kind: "characterName", id: characterId, before, after: name.trim() || null });
+  }, { eventId, label: "NPC 표시 이름 편집" });
+}
+
 export function saveEventDraft(mapId: MapId, eventId: string): EventDiff | null {
   const event = store.getCurrent().maps[mapId]?.events.find((item) => item.id === eventId);
   if (!event?.draft) return null;
@@ -83,15 +96,17 @@ export function saveEventDraft(mapId: MapId, eventId: string): EventDiff | null 
   const preview = eventDraftDiffById(store.getCurrent(), mapId, eventId);
   const label = describeEventDiff(preview, eventDisplayName(event));
   const fields = eventDiffFields(preview);
-  recordProjectSnapshot(label, mapId, { kind: "map" });
+  const linked = (event.draft.authoredWrites?.length ?? 0) > 0;
+  recordProjectSnapshot(label, mapId, linked ? { kind: "project" } : { kind: "map" });
+  // Subscribers may recover a missing draft synchronously during the commit emit.
+  forgetEventDraftVaultEntry(mapId, eventId);
   let diff: EventDiff | null = null;
   store.update(
     (project) => {
       diff = commitEventDraft(project, mapId, eventId);
     },
-    { scope: "map", mapId, label, eventId, ...(fields.length > 0 ? { fields } : {}) },
+    { scope: linked ? "project" : "map", mapId, label, eventId, ...(fields.length > 0 ? { fields } : {}) },
   );
-  forgetEventDraftVaultEntry(mapId, eventId);
   persistEventDraftVaultNow();
   selectEventPage(mapId, eventId, preferredPageId);
   return diff;
