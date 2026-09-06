@@ -1,5 +1,6 @@
 import { tilesetImageUrl } from "@/editor/tilesetImage";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
+import { mapVisualEvidenceUnavailable } from "./mapVisualEvidence";
 
 export type RenderedToolImage = { readonly dataUrl: string; readonly label: string };
 
@@ -99,6 +100,9 @@ async function renderShowTiles(project: Project, data: unknown): Promise<Rendere
 }
 
 async function renderTileGrid(project: Project, data: unknown, label = "영역"): Promise<RenderedToolImage[]> {
+  const raw = toolPayload(data), map = raw ? mapField(project, raw) : undefined;
+  const unavailable = map ? mapVisualEvidenceUnavailable(map) : null;
+  if (unavailable) throw new Error(unavailable);
   const payload = tileGridPayload(project, data);
   if (!payload) return [];
   return renderTileGridPayload(payload, `${label} (${payload.x},${payload.y}) ${payload.w}×${payload.h}`);

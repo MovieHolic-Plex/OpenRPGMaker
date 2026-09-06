@@ -3,6 +3,7 @@ import type { AiConfig, ChatRequest, ChatResult, ContentPart } from "./llmClient
 import type { OriginalContext } from "./originalContext";
 import { originalContextWindow } from "./originalContext";
 import { estimateContextTokens } from "./contextCompaction";
+import { mapVisualContent } from "./mapVisualEvidence";
 
 export interface ReviewFinding {
   readonly id: string;
@@ -131,10 +132,7 @@ export function reviewMapReferenceRoots(before: Project, after: Project, changes
 
 /** Dialogue/record edits are reviewable as text; placement and graphics need images. */
 export function requiresVisualReview(before: GameMap | undefined, after: GameMap): boolean {
-  const visual = (map: GameMap) => [map.width, map.height, map.tilesetId, map.lowerTiles, map.upperTiles,
-    map.lowerTileStacks, map.upperTileStacks, map.events.map(event => ({ id: event.id, x: event.x, y: event.y,
-      pages: event.pages?.map(page => ({ graphic: page.graphic, priority: page.priority, footprint: page.footprint })) }))];
-  return !before || JSON.stringify(visual(before)) !== JSON.stringify(visual(after));
+  return !before || JSON.stringify(mapVisualContent(before)) !== JSON.stringify(mapVisualContent(after));
 }
 
 const REVIEW_SYSTEM = `You are an independent read-only result reviewer, not the writer.

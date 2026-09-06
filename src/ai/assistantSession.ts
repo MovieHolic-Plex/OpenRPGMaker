@@ -1,5 +1,6 @@
 import { buildIndependentReviewRequest, parseIndependentReview, reviewChanges, reviewMapReferenceRoots, requiresVisualReview, type ResultReview } from "./independentReview";
 import { acceptanceFingerprint } from "./assistantAcceptanceEvaluation";
+import { mapVisualEvidenceUnavailable } from "./mapVisualEvidence";
 import { missingAcceptance, type AcceptanceSnapshot, type AcceptancePromise } from "./assistantAcceptance";
 import { AssistantAcceptanceLedger } from "./assistantAcceptanceLedger";
 import { AssistantImageEvidence, coveredByImages, type AcceptanceImageReceipt } from "./assistantImageEvidence";
@@ -3690,6 +3691,8 @@ export class AssistantSession {
         const before = this.reviewBaseline.maps[mapId], after = this.ctx.project.maps[mapId];
         if (!after) continue;
         const visualChanged = requiresVisualReview(before, after);
+        const unavailable = visualChanged ? mapVisualEvidenceUnavailable(after, before) : null;
+        if (unavailable) requiredProblems.push(unavailable);
         if (visualChanged && !coveredByImages(receipts, after, { x: 0, y: 0, w: after.width, h: after.height })) {
           requiredProblems.push(`show_map_region: current rendered coverage of changed map ${mapId} required`);
         }
