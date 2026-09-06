@@ -610,14 +610,14 @@ function equipmentEntryIcon(equipment: EquipmentRecord | undefined): NonNullable
   };
 }
 
-// SkillRecord 는 icon/image 필드가 없다. 유일한 그래픽 경로는 animationId 가
-// 가리키는 battleAnimations 레코드의 resourceId 다(에디톰도 그렇게 잡는다).
+// 스킬은 애니메이션 시트의 첫 셀을 썸네일로 쓴다. 시트 전체를 축소하지 않도록 규격도 넘긴다.
 function skillEntryIcon(project: Project, skill: SkillRecord): NonNullable<StatusMenuDetailEntry["icon"]> {
   const animation = skill.animationId
     ? project.database.battleAnimations.find((entry) => entry.id === skill.animationId)
     : undefined;
   return {
     resourceId: animation?.resourceId,
+    sheet: animation ? animation.sheet ?? { frameWidth: 96, frameHeight: 96, columns: 5 } : undefined,
     alt: skill.name,
     testId: `status-menu-entry-icon-skill-${skill.id}`,
   };
