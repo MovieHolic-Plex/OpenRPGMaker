@@ -7,14 +7,24 @@ import { clearConversations, conversationScopeKey, saveConversation } from "@/ai
 import { clearAgentGhostPreview, getAgentGhostPreviewState, subscribeAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
+import { closeAiSettingsModal } from "@/editor/panels/aiSettingsModal";
 import { editorState } from "@/editor/editorState";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
+
+import * as activityLog from "@/ai/activityLog";
+import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
 
 let restoreDom: (() => void) | null = null;
 let storage: Map<string, string>;
 
 beforeEach(async () => {
+  vi.spyOn(activityLog, "recordAiActivity").mockImplementation(async (entry) => {
+    return activityLog.buildAiActivityLogRecord(entry);
+  });
+  vi.stubGlobal("fetch", vi.fn(async () => new Response("{}")));
+  resetIntentDeclarationCache();
+  store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
   clearAgentGhostPreview();
   store.replace(createBlankProject());
   editorState.set({ currentMapId: null, selection: null });
@@ -36,7 +46,10 @@ beforeEach(async () => {
 
 afterEach(async () => {
   // 진행 중 턴이 패널보다 오래 살아 죽은 DOM 에 쓰는 것을 막는다(위 uxRepairs 와 동일 이유).
+  closeAiSettingsModal();
+  findByTestId(document.body as unknown as FakeElement, "ai-gate-modal-close")?.click();
   teardownAiChatPanel();
+  await whenAiChatPanelSettled();
   await clearConversations();
   clearAgentGhostPreview();
   restoreDom?.();
@@ -46,12 +59,55 @@ afterEach(async () => {
   vi.unstubAllGlobals();
 });
 
-async function flushAsync(): Promise<void> {
-  for (let i = 0; i < 40; i += 1) await Promise.resolve();
+// Subscribe before clicking. The runner publishes this after terminal UI cleanup;
+// storage/restore settlement alone does not mean the chat turn has completed.
+function nextTerminalActivity(): Promise<activityLog.AiActivityLogInput> {
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => reject(new Error("Chat turn did not publish terminal activity")), 10_000);
+    vi.mocked(activityLog.recordAiActivity).mockImplementation(async (entry) => {
+      if (entry.channel === "chat" && entry.result.pending !== true) {
+        clearTimeout(timeout);
+        resolve(entry);
+      }
+      return activityLog.buildAiActivityLogRecord(entry);
+    });
+  });
 }
 
 function renderPanel(): FakeElement {
-  return renderAiChatPanel({ getChatDock: () => "side" }) as unknown as FakeElement;
+  return renderAiChatPanel() as unknown as FakeElement;
+}
+
+const sse = (lines: string[]): string => [...lines.map((line) => `data: ${line}`), "data: [DONE]", ""].join("\n\n");
+const toolCallLine = (id: string, name: string, args = "{}"): string =>
+  JSON.stringify({ choices: [{ delta: { tool_calls: [{ index: 0, id, type: "function", function: { name, arguments: args } }] } }] });
+const reasoningLine = (text: string): string => JSON.stringify({ choices: [{ delta: { reasoning: text } }] });
+
+function stubChat(tools: readonly string[], bodies: readonly string[]): { intent: number; chat: number } {
+  const requests = { intent: 0, chat: 0 };
+  // OAuth is the shipped config contract. agentMode:chat alone no longer disables
+  // planning: the balanced autonomy dial enables it unless intent says single-step.
+  storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), agentMode: "chat" }));
+  vi.stubGlobal("fetch", vi.fn(async (url: unknown, init?: RequestInit) => {
+    if (!String(url).endsWith("/v1/chat/completions")) return new Response("{}");
+    const payload: { stream: boolean; response_format?: { type: string }; messages: { role: string }[] } = JSON.parse(String(init?.body));
+    if (payload.response_format?.type === "json_object") {
+      requests.intent += 1;
+      expect(payload.stream).toBe(false);
+      return new Response(JSON.stringify({ choices: [{ message: {
+        role: "assistant", content: JSON.stringify({ mode: tools.includes("create_map") ? "create" : "question", space: "none", needsPlan: false, tools }),
+      }, finish_reason: "stop" }] }), { headers: { "Content-Type": "application/json" } });
+    }
+    requests.chat += 1;
+    expect(payload.stream).toBe(true);
+    // Route by actual tool results, not by a shared fetch queue. Intent/persistence
+    // traffic cannot steal a chat response; unexpected extra rounds fail loudly.
+    const completedTools = payload.messages.filter((message) => message.role === "tool").length;
+    const body = bodies[completedTools];
+    if (body === undefined) throw new Error(`Unexpected chat round after ${completedTools} tools`);
+    return new Response(body, { headers: { "Content-Type": "text/event-stream" } });
+  }));
+  return requests;
 }
 
 describe("글자 크기 3단 (V3C ①)", () => {
@@ -175,66 +231,46 @@ describe("도구 호출 상세 아코디언 (V3C ③)", () => {
 
 describe("병합 추론 원문 전체 열람 (V3C ②)", () => {
   it("도구 사이 추론이 한 블록으로 병합돼도 각 추론의 원문 전체가 아이템으로 남고 토글은 횟수를 표시한다", async () => {
-    // 환경 고정: .env/.env.local 의 VITE_LLM_API_URL 이 있으면 apiKey+cpen 모드가 되어
-    // 스트리밍(이 테스트의 SSE 픽스처 전제)이 꺼진다. aiChatPanelSettings 와 동일하게 스텁한다.
-    // agentMode:chat — 이 테스트는 단일 모델·플래너 없는 본문 루프의 SSE 본문 3개를 순서대로
-    // 소비한다. 기본 auto 면 플래너 라운드가 첫 본문을 가져가 스트림이 한 칸씩 밀린다.
-    vi.stubEnv("VITE_LLM_API_URL", "");
-    vi.stubEnv("VITE_LLM_API_KEY", "");
-    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), agentMode: "chat", apiKey: "sk-test" }));
-    const sse = (lines: string[]): string => [...lines.map((line) => `data: ${line}`), "data: [DONE]", ""].join("\n\n");
-    // 두 호출은 **서로 다른 조회 도구**다: 상류 #315 가 같은 이름·같은 인자의 반복 툴콜을 하나로
-    // 합치므로(조용한 병합 결함 수정), 같은 호출을 두 번 보내면 활동 그룹 카운트가 1로 접힌다.
-    // 이 테스트의 관심사는 "라운드 두 번 사이의 추론이 병합돼도 원문이 각각 남는가" 이므로
-    // 호출만 구분해 라운드 수를 유지한다.
-    const toolCallLine = (id: string, name: string, args = "{}"): string =>
-      JSON.stringify({ choices: [{ delta: { tool_calls: [{ index: 0, id, type: "function", function: { name, arguments: args } }] } }] });
-    const reasoningLine = (text: string): string => JSON.stringify({ choices: [{ delta: { reasoning: text } }] });
-    const bodies = [
+    const regionArgs = { mapId: store.getCurrent().startMapId, x: 0, y: 0, w: 2, h: 2 };
+    const requests = stubChat(["get_project_summary", "get_map_region"], [
       sse([toolCallLine("c1", "get_project_summary")]),
-      sse([reasoningLine("첫 번째 추론 원문입니다."), toolCallLine("c2", "get_project_summary")]),
-      sse([reasoningLine("두 번째 추론 원문입니다."), JSON.stringify({ choices: [{ delta: { content: "완료했습니다" } }] })]),
-    ];
-    // SSE 본문은 **LLM 호출(chat/completions)에만** 내준다. 다른 fetch(예: `.env.local` 에 Supabase 키가
-    // 있을 때 패널 부팅이 보내는 요청)가 본문 하나를 가져가면 추론이 2회 → 1회로 조용히 밀렸다
-    // (2026-09-03 실측: `.env.local` 있는 워크트리에서만 실패, 키를 지우면 통과).
-    vi.stubGlobal(
-      "fetch",
-      vi.fn(async (url: unknown) => {
-        if (!String(url).includes("chat/completions")) return new Response("{}", { status: 200, headers: { "Content-Type": "application/json" } });
-        return new Response(bodies.shift() ?? sse([]), { status: 200, headers: { "Content-Type": "text/event-stream" } });
-      })
-    );
+      sse([reasoningLine("reasoning-first-sentinel"), toolCallLine("c2", "get_map_region", JSON.stringify(regionArgs))]),
+      sse([reasoningLine("reasoning-second-sentinel"), JSON.stringify({ choices: [{ delta: { content: "answer-sentinel" } }] })]),
+    ]);
 
     const panel = renderPanel();
+    await whenAiChatPanelSettled();
+    const terminal = nextTerminalActivity();
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     input.value = "요약해줘";
     (findByTestId(panel, "ai-send") as unknown as HTMLElement).click();
-    for (let i = 0; i < 10; i += 1) await flushAsync();
+    const result = await terminal;
+    expect(result.result).toMatchObject({ ok: true, stoppedReason: "final" });
+    expect(requests).toEqual({ intent: 1, chat: 3 });
+    expect(result.toolCalls).toMatchObject([
+      { name: "get_project_summary", ok: true },
+      { name: "get_map_region", ok: true },
+    ]);
 
     const reasoningBox = findByTestId(panel, "ai-reasoning") as unknown as FakeElement;
     expect(reasoningBox).toBeTruthy();
     const body = findByTestId(panel, "ai-reasoning-body") as unknown as FakeElement;
     const items = body.querySelectorAll(".ai-reasoning-item");
     expect(items.length).toBe(2);
-    expect(items[0]?.textContent).toBe("첫 번째 추론 원문입니다.");
-    expect(items[1]?.textContent).toBe("두 번째 추론 원문입니다.");
+    expect(items[0]?.textContent).toBe("reasoning-first-sentinel");
+    expect(items[1]?.textContent).toBe("reasoning-second-sentinel");
     // 병합 카운트가 토글 문구에 반영된다(💭 추론 2회).
-    expect(reasoningBox.textContent).toContain("추론 2회");
+    expect(reasoningBox.querySelector(".ai-reasoning-toggle")?.textContent).toMatch(/\b2\b/);
+    expect(body.hidden).toBe(true);
+    reasoningBox.querySelector(".ai-reasoning-toggle")?.click();
+    expect(body.hidden).toBe(false);
     // 조회성 툴(get_*)은 목록 줄 없이 카운트만 — 활동 그룹은 남는다.
     const activity = findByTestId(panel, "ai-tool-activity");
     expect(activity).toBeTruthy();
-    // 조회성 툴은 목록 줄 없이 **카운트만** 남는다("조회 N"; 쓰기 그룹은 "작업 N").
-    //
-    // 숫자를 못박지 않는 이유: 상류 병합(#283/#315) 뒤 활동 그룹의 누적 의미가 바뀌었다. 실측 —
-    // 같은 조회 도구를 두 라운드에 걸쳐 부르면 그룹은 하나이고 "조회 1" 이며, 2라운드에 다른
-    // 도구(find_tools)를 부르면 그룹이 그 호출 하나만 담아 "작업 1" 로 바뀐다. 즉 그룹이
-    // 마지막 라운드의 호출만 보여주는 것으로 보인다(1라운드 줄이 사라진다). 이 테스트의 주제는
-    // 추론 병합이므로 여기서는 안정된 계약만 본다: 그룹이 하나 있고, 카운트 요약이며, JSON
-    // 상세 줄이 없다. 누적 의미는 별도 조사 대상이다(PR 코멘트에 남긴다).
+    // Distinct reads preserve two real tool rounds without duplicate-call merging.
     const activityLog = findByTestId(panel, "ai-chat-log") as unknown as FakeElement;
     const toggle = findByTestId(panel, "ai-tool-activity-toggle");
-    expect(toggle?.textContent).toMatch(/(조회|작업)\s*\d+/);
+    expect(toggle?.textContent).toMatch(/\b2\b/);
     expect(activityLog.textContent ?? "").not.toContain("get_project_summary");
     expect(findByTestId(panel, "ai-tool-detail-1")).toBeNull();
   });
@@ -242,49 +278,15 @@ describe("병합 추론 원문 전체 열람 (V3C ②)", () => {
 
 describe("실시간 고스트 프리뷰 연결", () => {
   it("채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다", async () => {
-    // 환경 고정(위와 동일) + agentMode:chat — model===liteModel 단일 모델(플래너 없음)의
-    // 본문 루프 동작을 고정하는 형상 테스트다. 기본 auto 는 이 판정을 우회해 플래너 라운드가
-    // 첫 SSE 본문을 소비한다.
-    vi.stubEnv("VITE_LLM_API_URL", "");
-    vi.stubEnv("VITE_LLM_API_KEY", "");
-    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), agentMode: "chat", model: "ghost-test-model", liteModel: "ghost-test-model", apiKey: "sk-test" }));
-    const sse = (lines: string[]): string => [...lines.map((line) => `data: ${line}`), "data: [DONE]", ""].join("\n\n");
     const createMapArgs = { id: "map_live_ghost", name: "라이브 고스트", width: 6, height: 5 };
-    // 응답은 **요청 내용으로** 고른다(라운드 순서가 아니라). 상류가 오케스트레이션 라운드를
-    // 한 번 더 넣으면 순서 기반 픽스처는 조용히 한 칸 밀려 툴콜이 사라진다(실측: 병합 후
-    // "변경 제안 없음(0건)"). tool 역할 메시지가 요청에 들어온 뒤부터 최종 텍스트를 준다.
-    let rounds = 0;
-    vi.stubGlobal(
-      "fetch",
-      vi.fn(async (_url: unknown, init?: { body?: unknown }) => {
-        rounds += 1;
-        const payload = JSON.parse(typeof init?.body === "string" ? init.body : "{}") as {
-          messages?: { role?: string }[];
-        };
-        const toolRan = (payload.messages ?? []).some((message) => message?.role === "tool");
-        // rounds 상한은 무한 루프 방지용 안전핀이다(스텁이 계속 툴콜을 주면 세션이 계속 돈다).
-        const body = toolRan || rounds > 3
-          ? sse([JSON.stringify({ choices: [{ delta: { content: "초안을 만들었습니다." }, finish_reason: "stop" }] })])
-          : sse([
-              JSON.stringify({
-                choices: [{
-                  delta: {
-                    tool_calls: [{
-                      index: 0,
-                      id: "c_live",
-                      type: "function",
-                      function: { name: "create_map", arguments: JSON.stringify(createMapArgs) },
-                    }],
-                  },
-                  finish_reason: "tool_calls",
-                }],
-              }),
-            ]);
-        return new Response(body, { status: 200, headers: { "Content-Type": "text/event-stream" } });
-      })
-    );
+    const requests = stubChat(["create_map"], [
+      sse([toolCallLine("c_live", "create_map", JSON.stringify(createMapArgs))]),
+      sse([JSON.stringify({ choices: [{ delta: { content: "draft-complete-sentinel" }, finish_reason: "stop" }] })]),
+    ]);
 
     const panel = renderPanel();
+    await whenAiChatPanelSettled();
+    const terminal = nextTerminalActivity();
     // 턴 **도중** 발행된 초안 고스트를 구독으로 잡는다. 턴이 정상 종료되면 적용 경로가
     // 고스트를 걷어내므로(aiProposalCard.ts:277 clearAgentGhostPreview → applyProposedProject)
     // 턴이 끝난 뒤의 상태로는 이 배선을 관측할 수 없다.
@@ -297,8 +299,16 @@ describe("실시간 고스트 프리뷰 연결", () => {
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     input.value = "새 맵 만들어줘";
     (findByTestId(panel, "ai-send") as unknown as HTMLElement).click();
-    for (let i = 0; i < 16; i += 1) await flushAsync();
-    unsubscribe();
+    let result: activityLog.AiActivityLogInput;
+    try {
+      result = await terminal;
+    } finally {
+      unsubscribe();
+    }
+    expect(result.result).toMatchObject({ ok: true, stoppedReason: "final", appliedCalls: 1 });
+    expect(requests).toEqual({ intent: 1, chat: 2 });
+    expect(result.toolCalls).toEqual(expect.arrayContaining([expect.objectContaining({ name: "create_map", ok: true })]));
+    expect(store.getCurrent().maps.map_live_ghost).toMatchObject(createMapArgs);
 
     expect(observed).toEqual(
       expect.arrayContaining([

@@ -1,5 +1,14 @@
 # Editor AI Panel & Tools
 
+## World structure activity labels (2026-09-06)
+
+`author_world_bridge` and `author_world_mountain` explicitly use the world activity
+family in `aiActivityNarration.ts`. They must not fall through the `author_` prefix
+rule, which describes story authoring. The live panel's `ai-activity-live` row and
+the map ghost label consume the same narration function. The registry-wide
+`aiActivityNarration.test.ts` contract requires an explicit classification for
+every registered tool; adding a tool requires checking this contract too.
+
 ## Multi-map construction specifications (2026-09-06)
 
 `AssistantSession` owns one `Map<mapId, {spec, turnIndex}>`; `getActiveSpec()`

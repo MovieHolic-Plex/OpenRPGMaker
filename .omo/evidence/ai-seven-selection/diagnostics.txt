@@ -1,0 +1,12 @@
+Language server: test/aiSelectionChipScope.test.ts, severity=all
+Final result: No diagnostics found
+Earlier resource-concurrent requests timed out; final standalone requests succeeded.
+
+Mutation evidence runner: python3 -m py_compile .omo/evidence/ai-seven-selection/mutation-proof.py
+Result: exit 0
+
+Production restoration: git diff --exit-code -- src
+Result: exit 0
+
+Whitespace: git diff --check
+Result: exit 0

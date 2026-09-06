@@ -1,89 +1,134 @@
-// aiChatPanel transport failure — P0 regression: any /api/ai failure must stop running,
-// clear pending, append system bubble with settings CTA, and keep ai-send mounted disabled
-// alongside ai-abort (not hidden swap).
+// Transport failures must finish the real panel/session turn and expose recovery.
+// Send remains mounted beside Abort while running, then becomes usable again.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { AI_CONFIG_STORAGE_KEY, defaultAiConfig, LLM_RETRY_BACKOFF_MS } from "@/ai/llmClient";
-import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
+import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
+import * as activityLog from "@/ai/activityLog";
+import { clearConversations } from "@/ai/conversationStore";
+import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
+import { renderAiChatPanel, teardownAiChatPanel, whenAiChatPanelSettled } from "@/editor/panels/aiChatPanel";
+import { closeAiSettingsModal } from "@/editor/panels/aiSettingsModal";
+import { editorState } from "@/editor/editorState";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
-import { findByTestId, installFakeDom, renderWithFakeDom, type FakeElement } from "./fakeDom";
+import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
 let restoreDom: (() => void) | null = null;
-let storage: Map<string, string>;
 
-beforeEach(() => {
-  store.replace(createBlankProject());
-  vi.stubEnv("VITE_LLM_API_URL", "");
-  vi.stubEnv("VITE_LLM_API_KEY", "");
+beforeEach(async () => {
   restoreDom = installFakeDom();
-  storage = new Map();
-  Object.defineProperty(globalThis, "localStorage", {
-    configurable: true,
-    writable: true,
-    value: {
-      getItem: (k: string) => storage.get(k) ?? null,
-      setItem: (k: string, v: string) => void storage.set(k, String(v)),
-      removeItem: (k: string) => void storage.delete(k),
-      clear: () => storage.clear(),
-    },
+  const storage = new Map<string, string>();
+  vi.stubGlobal("localStorage", {
+    getItem: (key: string) => storage.get(key) ?? null,
+    setItem: (key: string, value: string) => { storage.set(key, String(value)); },
+    removeItem: (key: string) => { storage.delete(key); },
+    clear: () => storage.clear(),
   });
+  // All network boundaries stay local, including background conversation writes.
+  vi.stubGlobal("fetch", vi.fn(async () => new Response("{}")));
+  vi.spyOn(activityLog, "recordAiActivity").mockImplementation(async (entry) => activityLog.buildAiActivityLogRecord(entry));
+  resetIntentDeclarationCache();
+  store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
+  store.replace(createBlankProject());
+  editorState.set({ currentMapId: null, selection: null });
   storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), agentMode: "chat" }));
+  await clearConversations();
 });
 
-afterEach(() => {
-  vi.useRealTimers();
+afterEach(async () => {
+  closeAiSettingsModal();
+  findByTestId(document.body as unknown as FakeElement, "ai-gate-modal-close")?.click();
+  teardownAiChatPanel();
+  await whenAiChatPanelSettled();
+  await clearConversations();
   restoreDom?.();
   restoreDom = null;
-  Reflect.deleteProperty(globalThis, "localStorage");
   vi.restoreAllMocks();
-  vi.unstubAllEnvs();
   vi.unstubAllGlobals();
 });
 
-async function flushAsync(): Promise<void> {
-  for (let i = 0; i < 80; i++) await Promise.resolve();
+function nextTerminalActivity(): Promise<activityLog.AiActivityLogInput> {
+  return new Promise((resolve, reject) => {
+    // The production session retries at 1.5/3/4.5s. Await its terminal publication,
+    // not a guessed microtask count or a loop that polls for a recovery element.
+    const timeout = setTimeout(() => reject(new Error("Transport turn did not publish terminal activity")), 15_000);
+    vi.mocked(activityLog.recordAiActivity).mockImplementation(async (entry) => {
+      if (entry.channel === "chat" && entry.result.pending !== true) {
+        clearTimeout(timeout);
+        resolve(entry);
+      }
+      return activityLog.buildAiActivityLogRecord(entry);
+    });
+  });
+}
+
+function stubTransport(fail: () => Promise<Response>): { intent: number; chat: number } {
+  const requests = { intent: 0, chat: 0 };
+  vi.stubGlobal("fetch", vi.fn(async (url: unknown, init?: RequestInit) => {
+    if (!String(url).endsWith("/v1/chat/completions")) return new Response("{}");
+    const payload: { response_format?: { type: string } } = JSON.parse(String(init?.body));
+    if (payload.response_format?.type === "json_object") {
+      requests.intent += 1;
+      // A single-step request isolates chat transport recovery, not planner retries.
+      return new Response(JSON.stringify({ choices: [{ message: {
+        role: "assistant", content: JSON.stringify({ mode: "question", needsPlan: false }),
+      }, finish_reason: "stop" }] }), { headers: { "Content-Type": "application/json" } });
+    }
+    requests.chat += 1;
+    return fail();
+  }));
+  return requests;
+}
+
+function expectRecovery(panel: FakeElement): void {
+  expect(panel.classList.contains("is-turn-running")).toBe(false);
+  expect(findByTestId(panel, "ai-send")?.hidden).toBe(false);
+  expect(findByTestId(panel, "ai-send")?.disabled).toBe(false);
+  expect(findByTestId(panel, "ai-abort")?.hidden).toBe(true);
+  expect(findByTestId(panel, "ai-retry-turn")).toBeTruthy();
+  const settings = findByTestId(panel, "ai-error-open-settings");
+  expect(settings).toBeTruthy();
+  findByTestId(document.body as unknown as FakeElement, "ai-gate-modal-close")?.click();
+  settings?.click();
+  expect(findByTestId(document.body as unknown as FakeElement, "ai-settings-modal")).toBeTruthy();
 }
 
 describe("transport failure paints recovery CTA and keeps Send mounted", () => {
   it("refused fetch: is-turn-running cleared, system error bubble + ai-error-open-settings, ai-send stays disabled with ai-abort visible", async () => {
-    vi.useFakeTimers();
-    // Any transport failure counts — network throw
-    vi.stubGlobal("fetch", vi.fn(async () => { throw new TypeError("Failed to fetch"); }));
-    const panel = renderWithFakeDom(() => renderAiChatPanel({ clock: () => 37_000, getChatDock: () => "glass" })) as unknown as FakeElement;
-    // expand if collapsed
-    findByTestId(panel, "ai-collapsed-restore")?.click();
+    const requests = stubTransport(async () => { throw new TypeError("Failed to fetch"); });
+    const panel = renderAiChatPanel() as unknown as FakeElement;
+    await whenAiChatPanelSettled();
+    const terminal = nextTerminalActivity();
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
-    const send = findByTestId(panel, "ai-send") as unknown as FakeElement;
-    const abort = findByTestId(panel, "ai-abort") as unknown as FakeElement;
-    const status = findByTestId(panel, "ai-status") as unknown as FakeElement;
-    expect(send).toBeTruthy();
-    expect(abort).toBeTruthy();
+    const send = findByTestId(panel, "ai-send") as FakeElement;
     input.value = "hello";
     send.click();
-    expect(findByTestId(panel, "ai-send")).toBeTruthy();
-    for (let attempt = 0; attempt < 8 && !findByTestId(panel, "ai-error-open-settings"); attempt += 1) {
-      await vi.advanceTimersByTimeAsync(LLM_RETRY_BACKOFF_MS);
-      await flushAsync();
-    }
-    expect(findByTestId(panel, "ai-error-open-settings")).toBeTruthy();
-    expect(panel.classList.contains("is-turn-running")).toBe(false);
-    expect((status.textContent ?? "")).not.toContain("계획 중");
-    expect(findByTestId(panel, "ai-error-open-settings")).toBeTruthy();
-    expect((findByTestId(panel, "ai-chat-log")?.textContent ?? "")).toContain("오류");
-    // send still mounted, not hidden prolonge
-    expect(findByTestId(panel, "ai-send")).toBeTruthy();
-    expect((findByTestId(panel, "ai-send") as unknown as FakeElement).hidden).toBe(false);
-  });
+    expect(panel.classList.contains("is-turn-running")).toBe(true);
+    expect(findByTestId(panel, "ai-send")).toBe(send);
+    expect(send.hidden).toBe(false);
+    expect(send.disabled).toBe(true);
+    expect(findByTestId(panel, "ai-abort")?.hidden).toBe(false);
+
+    const result = await terminal;
+    expect(result.result).toMatchObject({ ok: false, stoppedReason: "error", proposedCalls: 0, appliedCalls: 0 });
+    expect(result.result.error).toContain("Failed to fetch");
+    expect(requests).toEqual({ intent: 1, chat: 4 });
+    expect(findByTestId(panel, "ai-chat-log")?.textContent).toContain(result.result.error?.replaceAll("\n", ""));
+    expectRecovery(panel);
+  }, 20_000);
 
   it("401 also mounts settings opener", async () => {
-    vi.stubGlobal("fetch", vi.fn(async () => new Response("no", { status: 401, headers: { "Content-Type": "text/plain" } })));
-    const panel = renderWithFakeDom(() => renderAiChatPanel({ clock: () => 37_000, getChatDock: () => "glass" })) as unknown as FakeElement;
-    findByTestId(panel, "ai-collapsed-restore")?.click();
+    const requests = stubTransport(async () => new Response("unauthorized-sentinel", { status: 401 }));
+    const panel = renderAiChatPanel() as unknown as FakeElement;
+    await whenAiChatPanelSettled();
+    const terminal = nextTerminalActivity();
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     input.value = "hello";
-    (findByTestId(panel, "ai-send") as unknown as HTMLElement).click();
-    await flushAsync();
-    expect(findByTestId(panel, "ai-error-open-settings")).toBeTruthy();
-    expect(panel.classList.contains("is-turn-running")).toBe(false);
+    findByTestId(panel, "ai-send")?.click();
+    const result = await terminal;
+    expect(result.result).toMatchObject({ ok: false, stoppedReason: "error", proposedCalls: 0, appliedCalls: 0 });
+    expect(result.result.error).toContain("401");
+    expect(requests).toEqual({ intent: 1, chat: 1 });
+    expect(findByTestId(panel, "ai-chat-log")?.textContent).toContain(result.result.error?.replaceAll("\n", ""));
+    expectRecovery(panel);
   });
 });

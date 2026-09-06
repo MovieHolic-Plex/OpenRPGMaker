@@ -10,6 +10,58 @@ still fail. Import-graph and live-class checks remain separate active gates.
 Run `node --test test/cssBudget.test.mjs` for isolated CLI regression coverage,
 then `npm run gates:css` and `npm run gates -- --only css` on the real repository.
 
+## Selection and composer surface contracts (2026-09-06)
+
+`aiSelectionChipScope.test.ts` mounts the real panel/composer in happy-dom and
+processes the ordered assistant stylesheet imports with Vite, including tokens
+and the late editor UI-mode constraints. Do not test fabricated chips against
+one historical CSS fragment or load the deleted repair stylesheet.
+
+Idle current-map pins remain visible. Selection prioritizes the scope pin and
+hides only its nonselection siblings; clearing restores the map pin and removes
+the AI scope without clearing the editor selection. Keyboard help is the
+textarea title, not a separate action-row hint. Focus and blur retain the
+shipped row layout and controls.
+
+Routing tests subscribe to the panel's running-to-terminal class transition
+before clicking Send, including old attribute values for transitions batched
+into one observer delivery. The bounded timer only rejects a missing transition;
+the observer and timer are always disposed. CSS/DOM mutation probes confirm
+that the visibility and row-layout assertions reject actual regressions.
+
+## AI turn observation contracts (2026-09-06)
+
+`aiChatObservability.test.ts` and `aiChatPanelTransportError.test.ts` exercise the
+real panel/session/parser/tool pipeline. HTTP fixtures distinguish the
+non-streaming `response_format: { type: "json_object" }` intent request from chat
+responses. A single-step `needsPlan: false` intent is required when the test is
+about one chat loop: `agentMode: "chat"` alone does not disable the balanced
+autonomy planner. Do not restore obsolete API-key configuration to avoid this
+contract; the editor uses OAuth.
+
+Subscribe to terminal `recordAiActivity` publication before clicking Send.
+`whenAiChatPanelSettled()` covers boot and persistence, not an active chat turn.
+Do not replace the terminal signal with microtask counts, sleep loops or guessed
+retry durations. Reasoning coverage uses two distinct successful query tools;
+ghost coverage subscribes during the write and also verifies its final apply and
+cleanup; transport coverage verifies that settings recovery actually opens.
+Mutation evidence breaks those production connections independently and restores
+them before the final passing run.
+
+## Canonical project storage versus AI history (2026-09-06)
+
+`test/noLocalProjectDb.test.ts` guards project/editor source against a local
+canonical-project database. A direct `typeof indexedDB` capability check does not
+read or write project data and is allowed. Every actual IndexedDB reference,
+including an alias, guarded open, window property or computed property access,
+remains rejected by the TypeScript AST check. SQLite and removed JSON fallback
+restrictions remain unchanged.
+
+Do not remove the guard to accommodate AI history: its IndexedDB implementation
+belongs to `src/ai/aiRecordDb.ts`. The editor may report whether that history is
+durable. Negative guard fixtures and a temporary actual project-source mutation
+prove that allowing capability detection does not allow a local project store.
+
 ## Database CSS ownership contracts (2026-09-06)
 
 The required surface gate includes `databaseAllTabsRenderWalk`, using the actual
