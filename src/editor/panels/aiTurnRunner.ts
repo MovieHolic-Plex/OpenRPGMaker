@@ -623,8 +623,8 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       const pendingRegion = getPendingRegionApply();
       if (pendingRegion) {
         // Region approval owns its own draft. Return the shared preview surface to it.
-        replaceAgentGhostPreviewFromProjectDiff(pendingRegion.baseProject, pendingRegion.clippedProject);
         setAgentGhostDraftMapProvider((mapId) => pendingRegion.clippedProject.maps[mapId]);
+        replaceAgentGhostPreviewFromProjectDiff(pendingRegion.baseProject, pendingRegion.clippedProject);
       } else {
         setAgentGhostDraftMapProvider(null);
       }
