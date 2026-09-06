@@ -68,6 +68,13 @@ function registeredToolNames(): string[] {
 }
 
 describe("AI 도구 활동 문장", () => {
+  it.each([
+    ["get_audio_resource", "read-only"],
+    ["set_audio_description", "mapped"],
+  ] as const)("classifies audio tool %s explicitly", (name, expected) => {
+    expect(aiActivityFamilySource(name)).toBe(expected);
+  });
+
   it("실행 중인 길 그리기를 맵과 영역이 포함된 한 문장으로 설명한다", () => {
     expect(narrateAiActivity({
       toolName: "paint_road",
