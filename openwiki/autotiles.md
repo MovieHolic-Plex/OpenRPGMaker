@@ -1,5 +1,23 @@
 # Autotiles (지형 자동 성형)
 
+## World 지형과 공통 구조물
+
+World 칩셋의 해안·설원 해안은 `worldCoastMapping.ts`, 연결 지형 11종은
+`worldTerrainAutotiles.ts`가 소유한다. 다른 칩셋의 같은 번호 문법으로 내려가지 않는다.
+렌더러와 캔버스 미리보기·미니맵은 같은 쿼터 합성/투명키 처리를 사용한다.
+사용자 그룹·이식·잠금은 원본 전용 규칙보다 우선한다.
+
+재사용 가능한 석교와 다층 산 시공은
+[world-structure-authoring.md](world-structure-authoring.md)를 따른다.
+`get_world_structure_rules`, `author_world_bridge`, `author_world_mountain`이
+`worldStructureRules.ts`의 공통 규칙을 사용한다. 교량 412·442를 긴 세로 다리 양끝에
+붙이지 않는다. 통행 가능한 upper 바닥/다리는 캐릭터 아래에 그린다.
+
+World 설명은 원본의 유효 슬롯 478개를 제공한다.
+빈 설명만 채우고, 정확히 알려진 옛 다리 설명만 교정한다. 사용자 잠금/문구/이식은 보존한다.
+관련 회귀: `worldCoastMapping`, `worldTerrainAutotiles`, `worldTileDescriptions`,
+`mapCanvasTexture`, `characterDepthYSort`, `worldStructureTools`.
+
 combined_town 칩셋의 지형 오토타일 정본 가이드. 붓·`fill_region`·`lay_path`·마을 하네스(`src/editor/tools/village/`)·DB 타일셋 위저드가 전부 이 체계 위에서 동작한다. **기계 정본은 코드다** — 이 문서는 개념·카탈로그·포인터를 제공하고, 수치가 갈리면 코드와 `test/builtinAutotileGroups.test.ts` 가 이긴다.
 
 ## 1. RM2K식 3×4 템플릿 블록 문법
@@ -96,6 +114,20 @@ T+3R:   [SW T+90]     [S T+91]        [SE T+92]
 3. **API** — `addAutotileGroupFromTemplate` (`tilesetActions.ts`). 첫 커스텀 그룹 추가 시 내장 그룹 전체가 tileset 에 승계된다(내장 흙길/모래가 죽는 회귀 방지 규약 — 절대 생략 금지).
 
 등록만 하면 붓(`shapeTerrainAfterLowerEdit`)·`fill_region`(vocab 겹침 최대 그룹)·`lay_path` 가 자동으로 성형한다. 추가 배선 불필요.
+
+## Integrated World snapshot (2026-09-06)
+
+- PR621 snapshot rendering shares `supportsChipsetTileAnimation(tileset, tile)` with
+  the existing interior fire path. World water/effect strips use the graft-aware
+  `isWorldAnimatedTile`; interior fire still requires strip base 124. Neither path
+  broadens `isDefaultTilesetTexture` or enables town road/tree rules on World/interior.
+- World metadata seeding retains the approved `chipsetLabelCorrections` overrides
+  after generic World descriptions/terrain metadata, including their existing
+  user/locked/graft guards. The World description test compares shipped-copy
+  precedence rather than replacing approved corrections with older snapshot prose.
+- Snapshot integration validation and dirty-replay boundaries:
+  `reports/pr617-621-integration.md`. No remote content writes or browser/build/full
+  gates were run by the integration child.
 
 ## 5. 검증
 

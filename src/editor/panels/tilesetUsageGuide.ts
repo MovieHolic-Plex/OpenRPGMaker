@@ -40,9 +40,9 @@ export const TILESET_EDIT_MODES: readonly ModeGuide[] = [
 ] as const;
 
 export const TILESET_SECTION_TABS: readonly TabGuide[] = [
-  { id: "rules", label: "타일 규칙" },
-  { id: "knowledge", label: "타일 지식(단어장)" },
-  { id: "compose", label: "구성" },
+  { id: "rules", label: "통행·지형" },
+  { id: "compose", label: "자동 연결" },
+  { id: "knowledge", label: "타일 설명" },
 ] as const;
 
 export const TILESET_TAB_MODES: Record<TilesetSectionTab, readonly TilesetEditMode[]> = {

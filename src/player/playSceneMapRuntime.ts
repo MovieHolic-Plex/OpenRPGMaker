@@ -383,7 +383,7 @@ function renderTile<TImage extends RenderedTileImage, TSprite extends RenderedEv
   if (tile < 0) return;
   const textureKey = scene.resolveTilesetTexture?.(tileset) ?? tilesetTextureKey(tileset);
   // 호수 쿼터 렌더 — 물 블록 배치가 동일한 실내 타일 그림판도 포함.
-  if (supportsChipsetQuarterComposition(tileset) && isLakeAutotileTile(tile)) {
+  if (supportsChipsetQuarterComposition(tileset) && isLakeAutotileTile(tile, tileset)) {
     renderLakeAutotile(scene, tileset, textureKey, x, y, layer);
     return;
   }
@@ -420,7 +420,7 @@ function renderLakeAutotile<TImage extends RenderedTileImage, TSprite extends Re
   y: number,
   layer: "lower" | "upper",
 ): void {
-  for (const part of lakeAutotileQuarterSources(scene.map, x, y)) {
+  for (const part of lakeAutotileQuarterSources(scene.map, x, y, tileset)) {
     const animationKey = quarterAnimationKey(textureKey, part.tile, part.quarter);
     const frameName = quarterFrameName(part.tile, part.quarter);
     const image = animationKey

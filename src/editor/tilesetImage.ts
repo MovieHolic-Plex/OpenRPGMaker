@@ -14,6 +14,7 @@ import {
   LEGACY_RM_TILESET_TEXTURE_KEY,
 } from "@/project/defaults/constants";
 import { DUNGEON_TEXTURE_KEY, INTERIOR_TEXTURE_KEY } from "@/project/tilesetHarness/themePacks";
+import { isWorldTileset, isWorldAnimatedTile } from "@/project/defaults/worldCoastMapping";
 import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
 import type Phaser from "phaser";
@@ -63,14 +64,15 @@ export function isDefaultTilesetTexture(tileset: TilesetDef): boolean {
 }
 
 export function supportsChipsetQuarterComposition(tileset: TilesetDef): boolean {
-  return isDefaultTilesetTexture(tileset)
+  return isWorldTileset(tileset) || isDefaultTilesetTexture(tileset)
     || (tileset.image.type === "bundled" && tileset.image.id === INTERIOR_TEXTURE_KEY)
     || (tileset.image.type === "bundled" && tileset.image.id === DUNGEON_TEXTURE_KEY);
 }
 
-/** Interior fire uses the existing four-frame strip without enabling town road/tree rules. */
+/** Interior fire and ungrafted World strips animate without enabling town road/tree rules. */
 export function supportsChipsetTileAnimation(tileset: TilesetDef, tile: number): boolean {
   return isDefaultTilesetTexture(tileset)
+    || (isWorldTileset(tileset) && isWorldAnimatedTile(tile, tileset))
     || (tileset.image.type === "bundled" && tileset.image.id === INTERIOR_TEXTURE_KEY
       && animationStripForTile(tile)?.baseTile === 124);
 }

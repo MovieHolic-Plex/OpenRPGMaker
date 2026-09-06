@@ -77,8 +77,8 @@ describe("database navigation by editor mode", () => {
     // 라벨은 `.db-tab-group-label` 로 읽는다. 헤더에는 접힌 동에만 보이는 부제
     // (`.db-tab-group-peek`)도 들어 있어서, 헤더 textContent 를 그대로 재면 라벨 계약이 아니라
     // 헤더 전체를 재게 된다. 잡으려는 것은 "라벨이 그대로인가" 이므로 이게 맞다.
-    expect(world.querySelector(".db-tab-group-label")?.textContent).toBe("세계");
-    expect(world.getAttribute("title")).toContain("마을");
+    expect(world.querySelector(".db-tab-group-label")?.textContent).toBe("맵");
+    expect(world.getAttribute("title")).toContain("개념 꾸러미");
     expect(world.getAttribute("title")).toContain("타일셋");
 
     // 빈 프로젝트도 타일셋·공통 이벤트가 있으므로 세계 그룹은 합계를 들고 있다.

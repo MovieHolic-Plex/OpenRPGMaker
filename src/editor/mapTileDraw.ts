@@ -10,9 +10,13 @@ import {
   type ChipsetQuarterComposition,
 } from "@/project/defaults/terrainQuarterAutotile";
 import { tileStackAt } from "@/project/mapOverlayTiles";
+import { createTransparentColorKeyCanvas, isColorKeyedChipsetTextureKey } from "@/assets/chipsetTransparency";
+import { normalizeRgbHexColor } from "@/assets/transparentColorKey";
 import type { GameMap, TilesetDef } from "@/project/types";
 
-const tilesetImagePromises = new Map<string, Promise<HTMLImageElement>>();
+export type TilesetCanvasImage = HTMLImageElement | HTMLCanvasElement;
+
+const tilesetImagePromises = new Map<string, Promise<TilesetCanvasImage>>();
 
 export class MapTileDrawError extends Error {
   constructor(message: string) {
@@ -24,7 +28,7 @@ export class MapTileDrawError extends Error {
 /** lower→lower스택→upper→upper스택 순서로 모든 타일 레이어를 그린다. */
 export function drawMapTileLayers(
   context: CanvasRenderingContext2D,
-  image: HTMLImageElement,
+  image: TilesetCanvasImage,
   map: GameMap,
   tileset: TilesetDef,
   scale: number,
@@ -37,7 +41,7 @@ export function drawMapTileLayers(
 
 function drawStackLayer(
   context: CanvasRenderingContext2D,
-  image: HTMLImageElement,
+  image: TilesetCanvasImage,
   map: GameMap,
   tileset: TilesetDef,
   layer: "lower" | "upper",
@@ -52,7 +56,7 @@ function drawStackLayer(
 
 function drawLayer(
   context: CanvasRenderingContext2D,
-  image: HTMLImageElement,
+  image: TilesetCanvasImage,
   map: GameMap,
   tileset: TilesetDef,
   tiles: readonly number[],
@@ -64,7 +68,7 @@ function drawLayer(
     const x = index % map.width;
     const y = Math.floor(index / map.width);
     // 호수 쿼터 렌더 — 물 블록 배치가 동일한 실내 타일 그림판도 포함(supportsChipsetQuarterComposition).
-    if (tiles === map.lowerTiles && supportsChipsetQuarterComposition(tileset) && isLakeAutotileTile(tile)) {
+    if (tiles === map.lowerTiles && supportsChipsetQuarterComposition(tileset) && isLakeAutotileTile(tile, tileset)) {
       drawLakeAutotile(context, image, map, tileset, x, y, scale);
       continue;
     }
@@ -81,14 +85,14 @@ function drawLayer(
 
 function drawLakeAutotile(
   context: CanvasRenderingContext2D,
-  image: HTMLImageElement,
+  image: TilesetCanvasImage,
   map: GameMap,
   tileset: TilesetDef,
   x: number,
   y: number,
   scale: number,
 ): void {
-  for (const part of lakeAutotileQuarterSources(map, x, y)) {
+  for (const part of lakeAutotileQuarterSources(map, x, y, tileset)) {
     const sourceX = (part.tile % tileset.tilesPerRow) * tileset.tileSize + part.offsetX;
     const sourceY = Math.floor(part.tile / tileset.tilesPerRow) * tileset.tileSize + part.offsetY;
     const targetX = (x * tileset.tileSize + part.offsetX) * scale;
@@ -102,7 +106,7 @@ function drawLakeAutotile(
 // 모래/흙길 지형 쿼터 합성: 각 쿼터는 계산된 소스 타일의 같은 위치를 사용한다.
 function drawTerrainQuarter(
   context: CanvasRenderingContext2D,
-  image: HTMLImageElement,
+  image: TilesetCanvasImage,
   tileset: TilesetDef,
   x: number,
   y: number,
@@ -125,7 +129,7 @@ function drawTerrainQuarter(
 
 function drawRawTile(
   context: CanvasRenderingContext2D,
-  image: HTMLImageElement,
+  image: TilesetCanvasImage,
   tileset: TilesetDef,
   tile: number,
   x: number,
@@ -140,16 +144,30 @@ function drawRawTile(
   context.drawImage(image, sourceX, sourceY, tileset.tileSize, tileset.tileSize, targetX, targetY, drawSize, drawSize);
 }
 
-export function loadTilesetImage(tileset: TilesetDef): Promise<HTMLImageElement> {
+/** Canvas previews share the same explicit/known color-key contract as Phaser textures. */
+export function loadTilesetImage(tileset: TilesetDef): Promise<TilesetCanvasImage> {
   const url = tilesetImageUrl(tileset);
-  const existing = tilesetImagePromises.get(url);
+  const color = normalizeRgbHexColor(tileset.transparentColor ?? "");
+  // Unknown sheets without an explicit key stay untouched: their top-left pixel may be water.
+  const knownKey = tileset.image.type === "bundled" && isColorKeyedChipsetTextureKey(tileset.image.id)
+    ? tileset.image.id : null;
+  const sourceKey = color ? { image: { ...tileset.image }, transparentColor: color } : knownKey;
+  const cacheKey = JSON.stringify([url, color ?? knownKey]);
+  const existing = tilesetImagePromises.get(cacheKey);
   if (existing) return existing;
-  const promise = new Promise<HTMLImageElement>((resolve, reject) => {
+  const promise = new Promise<TilesetCanvasImage>((resolve, reject) => {
     const image = new Image();
-    image.onload = () => resolve(image);
+    image.onload = () => {
+      try {
+        resolve(sourceKey ? createTransparentColorKeyCanvas(sourceKey, image) ?? image : image);
+      } catch {
+        reject(new MapTileDrawError("타일셋 투명색을 처리하지 못했습니다."));
+      }
+    };
     image.onerror = () => reject(new MapTileDrawError("타일셋 이미지를 읽지 못했습니다."));
     image.src = url;
   });
-  tilesetImagePromises.set(url, promise);
+  tilesetImagePromises.set(cacheKey, promise);
+  void promise.catch(() => { tilesetImagePromises.delete(cacheKey); });
   return promise;
 }
