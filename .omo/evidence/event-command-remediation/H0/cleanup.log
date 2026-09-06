@@ -1,0 +1,13 @@
+State Recv-Q Send-Q Local Address:Port Peer Address:PortProcess
+
+Owned temporary fixture, Vite caches, build-player output removed.
+ABSENT /tmp/event-command-remediation-h0-01a0760f
+ABSENT /tmp/event-command-h0-editor-loader-01a0760f
+ABSENT /tmp/event-command-h0-editor-01a0760f
+ABSENT /tmp/event-command-h0-player-01a0760f
+ABSENT /tmp/event-command-h0-build-01a0760f
+ABSENT dist/export-player
+EXIT_CODE=0
+ABSENT output/ai-activity (owned editor disk mirror)
+ABSENT output/edit-activity (owned editor disk mirror)
+RETAINED .vite-cache/deps: pre-existing tracked metadata restored unchanged; no owned cache data remains

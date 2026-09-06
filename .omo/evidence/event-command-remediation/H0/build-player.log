@@ -1,0 +1,62 @@
+
+> rpg-zzu@0.1.0 build:player
+> vite build --config vite.player.config.ts --configLoader runner && node scripts/build-player-sdk.mjs
+
+vite v6.4.3 building for production...
+transforming...
+
+/assets/fonts/neodgm.woff2 referenced in /assets/fonts/neodgm.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/fonts/Galmuri9.woff2 referenced in /assets/fonts/Galmuri9.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/fonts/Galmuri11.woff2 referenced in /assets/fonts/Galmuri11.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/fonts/Galmuri11-Bold.woff2 referenced in /assets/fonts/Galmuri11-Bold.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/ui/windowskin-warm.png referenced in /assets/ui/windowskin-warm.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/generated/battle-reference-forest.png referenced in /generated/battle-reference-forest.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-sword.png referenced in /assets/generated/starter/battle-icon-sword.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-fire.png referenced in /assets/generated/starter/battle-icon-fire.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-shield.png referenced in /assets/generated/starter/battle-icon-shield.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-cross.png referenced in /assets/generated/starter/battle-icon-cross.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-bag.png referenced in /assets/generated/starter/battle-icon-bag.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-boot.png referenced in /assets/generated/starter/battle-icon-boot.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-exp.png referenced in /assets/generated/starter/battle-icon-exp.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-gold.png referenced in /assets/generated/starter/battle-icon-gold.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-shard.png referenced in /assets/generated/starter/battle-icon-shard.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-world.png referenced in /assets/generated/starter/battle-icon-world.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-next.png referenced in /assets/generated/starter/battle-icon-next.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+✓ 542 modules transformed.
+rendering chunks...
+[plugin vite:reporter]
+(!) /home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-h0/src/player/playSceneInterpreter.ts is dynamically imported by /home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-h0/src/player/PlayScene.ts but also statically imported by /home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-h0/src/player/PlayScene.ts, /home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-h0/src/player/playSceneMapRuntime.ts, dynamic import will not move module into another chunk.
+
+computing gzip size...
+dist/export-player/player.html                             0.38 kB │ gzip:   0.26 kB
+dist/export-player/player-manifest.json                    1.02 kB │ gzip:   0.33 kB
+dist/export-player/assets/phaser.min-CwlHMuXa.js       1,196.12 kB
+dist/export-player/assets/player-Cnb73_rz.css            291.50 kB │ gzip:  46.40 kB
+dist/export-player/assets/playSceneBattle-CA6TEw8o.js      4.93 kB │ gzip:   1.90 kB
+dist/export-player/assets/PlayScene-C0FNaSyW.js          406.62 kB │ gzip: 124.68 kB
+dist/export-player/player.js                           1,642.22 kB │ gzip: 409.81 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 30.55s
+sdk-manifest: 7 files + 60 runtime assets, artifact 653fc8e69dc8a0bf, source d6dd4f7eb7a1a340, schema v4
+
+EXIT_CODE=0

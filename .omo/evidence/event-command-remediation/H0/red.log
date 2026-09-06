@@ -1,0 +1,35 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/eventCommandRemediation/harness.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-h0
+
+ ❯ test/eventCommandRemediation/harness.test.ts (1 test | 1 failed) 97ms
+   × event-command remediation harness > accepts observe-before-trigger operations at the existing scenario seam 95ms
+     → 알 수 없는 op: eventCommand
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/eventCommandRemediation/harness.test.ts > event-command remediation harness > accepts observe-before-trigger operations at the existing scenario seam
+Error: 알 수 없는 op: eventCommand
+ ❯ scripts/lib/runtimeQa.mjs:77:46
+     75|       // 시간 자체가 자극인 경우(막힘 검증)는 이름이 붙은 `hold` 를 쓴다.
+     76|       if (op.kind === "wait") throw new Error(`고정 wait op 은 런타임 게이트에서 …
+     77|       if (!OP_KINDS.includes(op.kind)) throw new Error(`알 수 없는 op: ${o…
+       |                                              ^
+     78|     }
+     79|     return { ...beat, ops: beat.ops ?? [], shot: beat.shot ?? false };
+ ❯ normalizeScenario scripts/lib/runtimeQa.mjs:69:33
+ ❯ test/eventCommandRemediation/harness.test.ts:12:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  18:34:12
+   Duration  2.01s (transform 521ms, setup 0ms, collect 460ms, tests 97ms, environment 0ms, prepare 499ms)
+
+
+EXIT_CODE=1

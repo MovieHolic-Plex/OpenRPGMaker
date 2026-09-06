@@ -3,7 +3,49 @@
 
 export type RuntimeQaDir = "up" | "down" | "left" | "right";
 
+export type RuntimeQaEventObservation =
+  | { readonly source: "state"; readonly selector?: string; readonly path: readonly (string | number)[]; readonly equals: unknown }
+  | { readonly source: "dom"; readonly selector: string; readonly read: "present" | "text"; readonly equals: unknown }
+  | { readonly source: "dom"; readonly selector: string; readonly read: "attribute" | "property"; readonly name: string; readonly equals: unknown };
+
+export type RuntimeQaEventCommandOp = {
+  readonly kind: "eventCommand";
+  readonly trigger: { readonly kind: "key"; readonly key: string }
+    | { readonly kind: "click"; readonly selector: string }
+    | { readonly kind: "action" | "none" };
+  readonly observe: readonly RuntimeQaEventObservation[];
+  /** Optional exact native scene/media DOM event, captured even on newly mounted elements. */
+  readonly event?: { readonly selector: string; readonly type: string };
+  /** Require a post-trigger mutation within this exact DOM selector (e.g. export acknowledgement). */
+  readonly mutation?: string;
+  readonly timeoutMs: number;
+};
+
+export type RuntimeQaEventCommandTrace = {
+  readonly op: RuntimeQaEventCommandOp;
+  readonly status: "success" | "timeout" | "aborted" | "error";
+  readonly before: readonly ({ readonly value: unknown } | { readonly missing: true })[];
+  readonly after: readonly ({ readonly value: unknown } | { readonly missing: true })[];
+  readonly event: { readonly type: string; readonly selector: string } | null;
+  readonly cleanup: { readonly observer: boolean; readonly timer: boolean; readonly event: boolean; readonly pagehide: boolean; readonly abort: boolean };
+  readonly error?: string;
+};
+
+/** QA-only browser state; removed after each operation. */
+declare global {
+  interface Window {
+    __eventCommandQa?: {
+      readonly result: Promise<Omit<RuntimeQaEventCommandTrace, "op">>;
+      readonly trace: { readonly status: string };
+      readonly start: () => void;
+      readonly check: () => void;
+      readonly abort: () => void;
+    };
+  }
+}
+
 export type RuntimeQaOp =
+  | RuntimeQaEventCommandOp
   | { readonly kind: "cinematic"; readonly action: "key"; readonly key: string; readonly selector: string; readonly absent?: boolean }
   | { readonly kind: "cinematic"; readonly action: "input"; readonly beforeMap?: boolean }
   | { readonly kind: "cinematic"; readonly action: "reduced-motion" | "video-error" | "video-end" | "detach" | "reject-autoplay" | "geometry" }
@@ -317,6 +359,7 @@ export type RuntimeQaObserved = {
 };
 
 export type RuntimeQaBeatReport = {
+  readonly eventCommands?: readonly RuntimeQaEventCommandTrace[];
   readonly emotes?: readonly RuntimeQaEmote[];
   readonly index: number;
   readonly id: string;

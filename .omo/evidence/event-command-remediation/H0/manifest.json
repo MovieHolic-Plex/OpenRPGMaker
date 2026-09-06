@@ -1,0 +1,168 @@
+{
+  "schema_version": 1,
+  "unit": "H0",
+  "status": "green",
+  "base": "ed276cd58899d6ca9bf8c6af6d7f2570c48f29a0",
+  "branch": "agent/event-remediation-h0",
+  "commit_subject": "feat(qa): add event-driven event command remediation harness",
+  "commit_receipt": "commit-receipt.json (written after atomic commit; not part of its own hash)",
+  "consumers": "U02-U36 per-unit runtime scenarios, fixture builders and editor specs; U01 remains independent",
+  "owned_files": [
+    "scripts/lib/runtimeQaEventCommands.mjs",
+    "scripts/lib/runtimeQaEventCommands.d.mts",
+    "scripts/lib/runtimeQaRun.mjs",
+    "scripts/lib/runtimeQa.mjs",
+    "scripts/lib/runtimeQa.d.mts",
+    "scripts/prepare-event-command-remediation.mts",
+    "test/eventCommandRemediation/harness.test.ts",
+    "test/e2e/eventCommandRemediationHarness.ts"
+  ],
+  "narrow_addition": "runtimeQaEventCommands.d.mts is required for strict TS consumers of the new .mjs module; no app or other-worktree edits",
+  "api": {
+    "runtime": {
+      "operation": "{kind:\"eventCommand\", trigger, observe:nonempty[], timeoutMs:positiveNumber, event?, mutation?}",
+      "trigger": "{kind:\"key\",key} | {kind:\"click\",selector} | {kind:\"action\"} (existing __oprnInput.action, after hooks) | {kind:\"none\"} (readiness)",
+      "state": "{source:\"state\",path:[string|number,...],equals:JSONValue,selector?}; defaults to runtime-state-json; array path preserves IDs containing dots",
+      "dom": "{source:\"dom\",selector,read:\"present\"|\"text\"|\"attribute\"|\"property\",equals:JSONValue,name?:attributeOrProperty}",
+      "event": "{selector,type}: exact native DOM event target, capture subscription before input; works for subsequently mounted media; not a Phaser EventEmitter adapter",
+      "mutation": "CSS selector requiring a post-trigger mutation inside an existing matching element, e.g. project-export-json acknowledgement",
+      "equality": "Exact recursive value/key-set equality; every observation must match. Use JSON wire values, not undefined-bearing normalized objects. This is equality, not an arbitrary renderer predicate evaluator.",
+      "report": "report.beats[].eventCommands[] = {op,status,before,after,event,cleanup,error?}; status success/timeout/aborted/error; wrapper rejects non-success",
+      "abort": "armEventCommandObservation(op) installs window.__eventCommandQa; .abort() uses AbortController. Native pagehide also aborts. result resolves to trace; wrapper removes the handle in finally.",
+      "limits": "One active observation per page; no automatic input retries or poll loops. none can accept existing state. Use event/mutation when an acknowledgement is required."
+    },
+    "fixtures": {
+      "exports": [
+        "buildHarnessFixture(): Project",
+        "loadUnitFixture(\"H0\"|\"U01\"..\"U36\"): Promise<Project>",
+        "prepareUnitFixture(unit,temporaryDirectory?): Promise<path>"
+      ],
+      "unit_contract": "test/eventCommandRemediation/Uxx.fixture.ts exports buildFixture(): Project|Promise<Project>; imports only when requested, then serialize/deserialize. No fabricated U02+ modules.",
+      "cli": "node node_modules/vite-node/vite-node.mjs --script scripts/prepare-event-command-remediation.mts U02 /tmp/event-command-remediation/U02",
+      "ownership": "Writes project.json exclusively (wx), never overwrites. Caller removes its temporary directory. H0 uses a single blank 8x8 map, host2,2, player2,3 and authored changeGold/text; scenario faces up through existing hook."
+    },
+    "editor": {
+      "exports": [
+        "enterLocalEditor(page,project,url) -> {assertNoRemoteWrites,dispose}",
+        "openMapCommand(page,eventId=\"host\",path=[0])",
+        "openCommandRow(page,scope,path=[0])",
+        "openDatabaseCommand(page,\"common\"|\"troop\",id,path=[0])",
+        "pickCommand(page,{search,commandId},addLocator)",
+        "observeEditorAction(page,{observe,event?,mutation?,timeoutMs},realActionCallback)",
+        "projectObservation(path,equals)",
+        "readEditorProject(page)",
+        "confirmCommand(page,\"map\"|\"common\"|\"troop\",observations)",
+        "cancelCommand(page,savedProject)",
+        "reimportProject(page,savedProject)"
+      ],
+      "launch": "Fresh disposable context, local origin, explicit free port and unique VITE_CACHE_DIR, E2E_FREEZE_DEV_SERVER=1. Set page action timeout. Blank VITE_SUPABASE_URL/ANON_KEY and VITE_SUPABASE_USE_PROXY=0 in owned QA Vite process to disable unrelated AI telemetry; guard still fails attempted Supabase/project writes.",
+      "selectors": "# in the plan means getByTestId. Expert DB entry is toolbar-database, not beginner menu-tools-database. Select cmd-head then Space (Enter inserts). Scope form controls to event-command-edit-dialog because inspector duplicates them.",
+      "save": "Map Confirm only edits draft; helper waits dialog removal, then real event-editor-apply and exact export mutation. Common/troop Confirm waits close+export predicate directly. Export mirror shape is {project,editor,history}.",
+      "import": "Real menu-project -> menu-project-import -> filechooser. Serialized expected JSON is compared to JSON mirror; normalized undefined keys are not wire keys.",
+      "coverage": "Real map editor roundtrip verified. Common/troop/picker helpers are source-traced, not claimed browser-certified by H0; each owning unit supplies its own fixture and proof. Empty DB command row requires its product doubleclick before picker use."
+    }
+  },
+  "verification": [
+    {
+      "command": "npm test -- test/eventCommandRemediation/harness.test.ts --maxWorkers=2",
+      "result": "RED exit1; exactly one normalization assertion: 알 수 없는 op: eventCommand",
+      "artifact": "red.log"
+    },
+    {
+      "command": "npm test -- test/eventCommandRemediation/harness.test.ts test/runtimeQaReport.test.ts --maxWorkers=2",
+      "result": "GREEN exit0, 28/28 (10 H0 +18 report regression); native Chromium observations and zero actual active observers/listeners/timers on success/timeout/abort/pagehide/failed input",
+      "artifact": "green.log"
+    },
+    {
+      "command": "node node_modules/vite-node/vite-node.mjs --script scripts/prepare-event-command-remediation.mts H0 /tmp/event-command-remediation-h0-01a0760f",
+      "result": "exit0; temporary project reloaded by real serializer",
+      "artifact": "fixture.log"
+    },
+    {
+      "command": "node .omo/evidence/event-command-remediation/H0/player-proof.mjs /tmp/event-command-remediation-h0-01a0760f/project.json",
+      "result": "exit0; dedicated real player.html; Enter boot + Z gold0->7, player2,3 unchanged and dialogue present; second real Z with wrong gold8 rejects, actual7; cleanup verified",
+      "artifact": "player-final.log"
+    },
+    {
+      "command": "E2E_FREEZE_DEV_SERVER=1 VITE_CACHE_DIR=/tmp/event-command-h0-editor-loader-01a0760f node node_modules/vite-node/vite-node.mjs --script .omo/evidence/event-command-remediation/H0/editor-proof.mts",
+      "result": "exit0; explicitly Firefox, separate ordinary Node Vite CLI; Confirm/Apply7->8, Space reopen8, cancel9 retains8, serializer and real file import/reopen8; no Supabase/project writes; three viewport geometry checks",
+      "artifact": "editor.log"
+    },
+    {
+      "command": "VITE_CACHE_DIR=/tmp/event-command-h0-build-01a0760f npm run build:player",
+      "result": "exit0; shipping export-player/SDK built; existing unresolved asset/dynamic-import/chunk-size warnings retained",
+      "artifact": "build-player.log"
+    },
+    {
+      "command": "TypeScript compiler API: syntactic+semantic diagnostics for all changed TS/declaration files plus editor proof, using repository tsconfig (no emit)",
+      "result": "exit0, zero changed-file errors; supplements unreliable LSP results",
+      "artifact": "types-final.log"
+    },
+    {
+      "command": "lsp_diagnostics on every changed source and proof file before build; final helper refresh",
+      "result": "Initial calls reported no diagnostics. Last helper refresh timed out3000ms; subsequent/current exact TypeScript compiler diagnostics zero. No errors suppressed."
+    },
+    {
+      "command": "git diff --check; owned resource absence checks",
+      "result": "exit0",
+      "artifact": "cleanup.log"
+    }
+  ],
+  "preserved": [
+    "cinematic operation/case/types unchanged",
+    "player export boot shim and player.html route unchanged",
+    "no application feature/schema/content fix",
+    "no CLI browser option needed: player Chromium passed; editor proof selected Firefox explicitly",
+    "no full test/gates/editor build, no wiki/Design edit, no push/PR/merge/rebase"
+  ],
+  "failed_attempts": "diagnostics.json records all discovered setup/helper failures; initial fixture error corrected. None is presented as GREEN. Large raw debug logs stay local, not committed.",
+  "artifacts": {
+    "player": "player/manifest.json",
+    "surface": "player/surface.json",
+    "negative": "player/negative-observation.json",
+    "editor": "editor-observation.json",
+    "screenshots": [
+      {
+        "path": "player/02-h0-real-input.png",
+        "sha256": "2989806824542215965b8d456e255ea8586c1bcef70e41cdd537915dbe281c8e",
+        "committed": false
+      },
+      {
+        "path": "editor-confirm.png",
+        "sha256": "5dc3780fd38ceab51c952b766f419c1c5c18017035c4aaba52c5899328aea480",
+        "committed": false
+      },
+      {
+        "path": "editor-reopen-1024.png",
+        "sha256": "1ccfd543b2f54b954ca64528a5381323b103b5c41890ced932cfaedb46e8a739",
+        "committed": false
+      },
+      {
+        "path": "editor-reopen-1280.png",
+        "sha256": "e482e45faf438a9464db24c835ae278efd989c384c208a23636f9be10885e268",
+        "committed": false
+      },
+      {
+        "path": "editor-reopen-1440.png",
+        "sha256": "66eebb4ae43e294b799c1e1f1932d6b2eaf3ee5f4ab9b4e87988f42966331570",
+        "committed": false
+      }
+    ]
+  },
+  "cleanup": {
+    "ports": [
+      39879,
+      39881
+    ],
+    "collision_avoided": 9841,
+    "browser_contexts": "closed in finally; memory-only saveNamespaces disposed",
+    "temporary_fixture": "removed",
+    "vite_caches": "removed",
+    "player_build_output": "removed",
+    "owned_editor_disk_mirrors": "removed",
+    "screenshots": "Retained only as ignored evidence, not committed",
+    "receipt": "cleanup.log"
+  },
+  "visual_limit": "Screenshot files captured and geometry asserted; image attachments are unsupported by this model, so no human-equivalent pixel review is claimed.",
+  "wiki_amendment": "Add QA-only eventCommand operation to runtime QA docs: subscribe before real player input; exact state/DOM/native-event observations; bounded timeout and abort cleanup; per-beat before/after traces. Editor remediation uses local seeded expert mode, Space to edit a selected cmd-head, toolbar-database for DB, Confirm then Apply for map drafts, and real file chooser import. New scenarios must not copy legacy polling waits; retain cinematic lifecycle. Unit fixtures are lazy buildFixture modules and remain temporary."
+}

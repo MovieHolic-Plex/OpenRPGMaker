@@ -1,0 +1,25 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/eventCommandRemediation/harness.test.ts test/runtimeQaReport.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-h0
+
+ ✓ test/runtimeQaReport.test.ts (18 tests) 47ms
+ ✓ test/eventCommandRemediation/harness.test.ts (10 tests) 5971ms
+   ✓ native event subscriptions > observes the exact target before real key input, retains untouched target and disposes  638ms
+   ✓ native event subscriptions > rejects wrong-target and disconnects on the bounded timeout  405ms
+   ✓ native event subscriptions > requires the exact media event target, including newly mounted media  567ms
+   ✓ native event subscriptions > cleans every subscription on abort  386ms
+   ✓ native event subscriptions > cleans every subscription on pagehide  346ms
+   ✓ native event subscriptions > cleans on failed input instead of leaving the observation armed  444ms
+   ✓ native event subscriptions > does not accept an equal pre-existing export without its subscribed acknowledgement  344ms
+   ✓ lazy temporary fixture preparation > loads H0 without importing nonexistent later units and writes a reloadable fixture only on request  2085ms
+
+ Test Files  2 passed (2)
+      Tests  28 passed (28)
+   Start at  18:47:48
+   Duration  21.29s (transform 8.14s, setup 0ms, collect 14.31s, tests 6.02s, environment 1ms, prepare 606ms)
+
+
+EXIT_CODE=0

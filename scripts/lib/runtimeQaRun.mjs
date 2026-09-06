@@ -148,6 +148,16 @@ async function waitForRuntimePredicate(page, predicate, argument, timeoutMs = 30
 
 async function applyOp(page, op, runState) {
   switch (op.kind) {
+    case "eventCommand": {
+      const { eventCommandQaOp } = await import("./runtimeQaEventCommands.mjs");
+      try {
+        runState.eventCommands.push({ op, ...await eventCommandQaOp(page, op) });
+      } catch (error) {
+        if (error.observation) runState.eventCommands.push({ op, ...error.observation });
+        throw error;
+      }
+      return;
+    }
     case "cinematic": {
       const { cinematicQaOp } = await import("./runtimeQaCinematics.mjs");
       await cinematicQaOp(page, op);
@@ -608,6 +618,7 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
     // 계속 진행해야 리포트·샷이 남는다 — 초기 구현은 raw 스택만 남기고 죽어서
     // 정작 진단할 증거가 하나도 없었다(실측).
     const opFailures = [];
+    runState.eventCommands = [];
     for (const op of beat.ops) {
       try {
         if (!hooksReady && HOOK_OPS.has(op.kind)) {
@@ -668,6 +679,7 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
       shot,
       failures,
       shadowInk: shadowInk ?? undefined,
+      ...(runState.eventCommands.length ? { eventCommands: runState.eventCommands } : {}),
       state: observed.state,
       // 배치 근거는 리포트에 남긴다 — PNG 를 열지 않고도 수치로 판정할 수 있어야 한다.
       battlers: observed.battlers ?? undefined,

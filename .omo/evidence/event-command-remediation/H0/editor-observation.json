@@ -1,0 +1,79 @@
+{
+  "source": {
+    "kind": "changeGold",
+    "op": "+=",
+    "amount": 7
+  },
+  "confirmed": {
+    "kind": "changeGold",
+    "op": "+=",
+    "amount": 8
+  },
+  "confirm": {
+    "status": "success",
+    "before": [
+      {
+        "value": {
+          "kind": "changeGold",
+          "op": "+=",
+          "amount": 7
+        }
+      }
+    ],
+    "after": [
+      {
+        "value": {
+          "kind": "changeGold",
+          "op": "+=",
+          "amount": 8
+        }
+      }
+    ],
+    "event": null,
+    "cleanup": {
+      "observer": true,
+      "timer": true,
+      "event": true,
+      "pagehide": true,
+      "abort": true
+    }
+  },
+  "reopened": 8,
+  "cancelled": 9,
+  "retained": 8,
+  "serializedReload": true,
+  "realFileChooserImport": true,
+  "remoteWrites": [],
+  "geometry": [
+    {
+      "left": 0,
+      "right": 1024,
+      "top": 0,
+      "bottom": 768,
+      "width": 1024,
+      "height": 768,
+      "overflow": false,
+      "confirmBottom": 529.5
+    },
+    {
+      "left": 0,
+      "right": 1280,
+      "top": 0,
+      "bottom": 800,
+      "width": 1280,
+      "height": 800,
+      "overflow": false,
+      "confirmBottom": 545.5
+    },
+    {
+      "left": 0,
+      "right": 1440,
+      "top": 0,
+      "bottom": 900,
+      "width": 1440,
+      "height": 900,
+      "overflow": false,
+      "confirmBottom": 595.5
+    }
+  ]
+}

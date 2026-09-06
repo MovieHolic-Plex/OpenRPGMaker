@@ -1,0 +1,34 @@
+[rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] QWENCLOUD_API_KEY 가 없어 /api/qwen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] CPENROUTER_API_KEY 가 없어 /api/cpen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] QWENCLOUD_API_KEY 가 없어 /api/qwen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] CPENROUTER_API_KEY 가 없어 /api/cpen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+
+  VITE v6.4.3  ready in 2292 ms
+
+  ➜  Local:   http://127.0.0.1:39881/
+Editor CSS served: 7321261
+REQUESTFAILED /v1/browser/hello { errorText: 'NS_ERROR_DOM_BAD_URI' }
+CONSOLE [JavaScript Error: "Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null)."]
+CONSOLE [JavaScript Error: "Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null)."]
+Editor ready; remote persistence disabled
+REQUESTFAILED /v1/browser/hello { errorText: 'NS_ERROR_DOM_BAD_URI' }
+CONSOLE [JavaScript Error: "Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null)."]
+CONSOLE [JavaScript Error: "Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null)."]
+REQUESTFAILED /v1/browser/hello { errorText: 'NS_ERROR_DOM_BAD_URI' }
+CONSOLE [JavaScript Error: "Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null)."]
+CONSOLE [JavaScript Error: "Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null)."]
+Confirmed and applied amount 8
+REQUESTFAILED /v1/browser/hello { errorText: 'NS_ERROR_DOM_BAD_URI' }
+CONSOLE [JavaScript Error: "Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null)."]
+CONSOLE [JavaScript Error: "Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null)."]
+Cancelled amount 9; importing saved amount 8
+REQUESTFAILED /v1/browser/hello { errorText: 'NS_ERROR_DOM_BAD_URI' }
+CONSOLE [JavaScript Error: "Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null)."]
+CONSOLE [JavaScript Error: "Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null)."]
+Real file import acknowledged
+Editor Confirm/Apply, Space reopen, Cancel, serializer and real file-chooser import: PASS
+Cleanup: editor browser/context closed, port 39881 server closed, owned Vite cache removed
+
+EXIT_CODE=0

@@ -26,6 +26,7 @@ export const OP_KINDS = [
   "skill",
   "key",
   "cinematic",
+  "eventCommand",
   "teleport",
   "waitForRuntime",
   "waitForEmote",

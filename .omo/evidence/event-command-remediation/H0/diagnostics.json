@@ -1,0 +1,53 @@
+{
+  "unit": "H0",
+  "failures": [
+    {
+      "artifact": "fixture-diagnostic.log",
+      "result": "27 pass/1 fail: fixture passed GameMap instead of mapId to singleNodeTree; fixed map.id, += gold operation, text.body; subsequent28/28 green"
+    },
+    {
+      "artifact": "types-diagnostic.log",
+      "result": "Initial13 compiler errors; corrected fixture fields, added .d.mts companion, safe native timer proxies, optional browser handle narrowing and literal typed operation; final0"
+    },
+    {
+      "artifact": "second-player-boot-diagnostic.log",
+      "result": "Positive player succeeded; unrelated second title boot timed out120s. Negative moved to same live successful player; no product boot change."
+    },
+    {
+      "artifact": "editor-chromium-transport.log",
+      "result": "Chromium ERR_NETWORK_CHANGED on module loads; explicitly selected Firefox for editor only."
+    },
+    {
+      "artifact": "editor-css-ssr-diagnostic.log",
+      "result": "Nested Vite under vite-node left CSS pending/aborted. Evidence runner now uses separate normal Vite CLI, isolated cache and acknowledged CSS response."
+    },
+    {
+      "artifact": "editor-import-diagnostic.log",
+      "result": "__vite_ssr_dynamic_import__ undefined inside serialized callback. Browser import moved to static-string IIFE; no product change."
+    },
+    {
+      "artifact": "editor-import-patch-diagnostic.log",
+      "result": "Patch command malformed, so previous import error remained in one run; corrected patch with generated unified diff."
+    },
+    {
+      "artifact": "editor-iife-diagnostic.log",
+      "result": "Uninvoked function expression returned undefined instead of remote=false; IIFE executes native import."
+    },
+    {
+      "artifact": "editor-navigation-diagnostic.log",
+      "result": "Cold module navigation exceeded default30s; explicit120s matches bounded boot observation."
+    },
+    {
+      "artifact": "editor-guard-diagnostic.log",
+      "result": "Overbroad write guard classified local companion hello as project persistence. Guard now targets Supabase/dbserver/rest/project endpoints. Form edits scope the real dialog, not duplicate inspector controls."
+    },
+    {
+      "artifact": "editor-import-wire-diagnostic.log",
+      "result": "Normalized Project contained undefined keys, unlike JSON mirror: exact wire compare fixed via JSON.parse(serialize(saved)); telemetry write attempted and blocked, so QA process now has Supabase config explicitly blank. Guard remains strict."
+    },
+    {
+      "artifact": "editor-cold-css-diagnostic.log / editor-locator-diagnostic.log",
+      "result": "Tool timeouts120/180s terminated owned process groups. Added explicit proof locator timeout10s. Final complete editor process exited0 and resources cleaned."
+    }
+  ]
+}
