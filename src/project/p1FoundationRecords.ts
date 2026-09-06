@@ -124,12 +124,17 @@ export function normalizeFarmAnimalStartInstances(
     seen.add(instanceId);
     const eventId = cleanId(raw.eventId);
     const buildingId = cleanId(raw.buildingId);
+    const housingPlacementId = cleanId(raw.housingPlacementId);
+    if (raw.housingPlacementId !== undefined && (!housingPlacementId || housingPlacementId !== raw.housingPlacementId || raw.buildingId !== undefined)) {
+      throw new Error("Invalid housingPlacementId or simultaneous buildingId");
+    }
     result.push({
       instanceId,
       speciesId,
       name: cleanText(raw.name) ?? instanceId,
       ...(eventId ? { eventId } : {}),
       ...(buildingId ? { buildingId } : {}),
+      ...(housingPlacementId ? { housingPlacementId } : {}),
     });
   }
   return result;
@@ -158,7 +163,7 @@ export function normalizeDailyWeatherState(value: unknown): DailyWeatherState | 
 /** Project-independent parser used at the save boundary; project ids are filtered during apply. */
 export function parseFarmAnimalStateRecord(value: unknown): Record<string, FarmAnimalState> | undefined {
   if (!isRecord(value)) return undefined;
-  const result: Record<string, FarmAnimalState> = {};
+  const result: Record<string, FarmAnimalState> = Object.create(null);
   for (const [instanceId, raw] of Object.entries(value).slice(0, FARM_ANIMAL_RECORD_LIMIT)) {
     const state = normalizeFarmAnimalState(raw, instanceId);
     if (state) result[instanceId] = state;
@@ -177,7 +182,7 @@ export function restoreFarmAnimalStates(
   const startById = new Map(normalizedStarts.map((animal) => [animal.instanceId, animal] as const));
   const buildingById = new Map((normalizeFarmAnimalBuildingDefinitions(buildings) ?? [])
     .map((building) => [building.id, building] as const));
-  const restored: Record<string, FarmAnimalState> = {};
+  const restored: Record<string, FarmAnimalState> = Object.create(null);
 
   if (saved === undefined) for (const start of normalizedStarts) {
     if (knownSpeciesIds.has(start.speciesId)) restored[start.instanceId] = initialFarmAnimalState(start);
@@ -185,15 +190,17 @@ export function restoreFarmAnimalStates(
   for (const [instanceId, state] of Object.entries(saved ?? {}).slice(0, FARM_ANIMAL_RECORD_LIMIT)) {
     if (!knownSpeciesIds.has(state.speciesId)) continue;
     const start = startById.get(instanceId);
-    const identity = start?.speciesId === state.speciesId ? start : state;
-    const buildingId = compatibleBuildingId(state.buildingId, state.speciesId, buildingById)
-      ?? compatibleBuildingId(start?.buildingId, state.speciesId, buildingById);
+    const identity = !state.housingPlacementId && start?.speciesId === state.speciesId ? start : state;
+    const buildingId = state.housingPlacementId || state.buildingId === undefined ? undefined
+      : compatibleBuildingId(state.buildingId, state.speciesId, buildingById)
+        ?? compatibleBuildingId(start?.buildingId, state.speciesId, buildingById);
     restored[instanceId] = {
       instanceId,
       speciesId: identity.speciesId,
       name: identity.name,
       ...(identity.eventId ? { eventId: identity.eventId } : {}),
       ...(buildingId ? { buildingId } : {}),
+      ...(state.housingPlacementId ? { housingPlacementId: state.housingPlacementId } : {}),
       friendship: state.friendship,
       productionProgress: state.productionProgress,
       readyProductCount: state.readyProductCount,
@@ -212,6 +219,7 @@ function normalizeFarmAnimalBuildingCapacity(
 ): Record<string, FarmAnimalState> {
   const occupancy = new Map<string, number>();
   return Object.fromEntries(Object.entries(restored).map(([instanceId, state]) => {
+    if (state.housingPlacementId || state.buildingId === undefined) return [instanceId, state];
     const candidates = [state.buildingId, starts.get(instanceId)?.buildingId]
       .filter((candidate, index, values): candidate is string => Boolean(candidate) && values.indexOf(candidate) === index);
     const buildingId = candidates.find((candidate) => {
@@ -267,12 +275,15 @@ function normalizeFarmAnimalState(value: unknown, recordKey: string): FarmAnimal
   }
   const eventId = cleanId(value.eventId);
   const buildingId = cleanId(value.buildingId);
+  const housingPlacementId = cleanId(value.housingPlacementId);
+  if (value.housingPlacementId !== undefined && (!housingPlacementId || housingPlacementId !== value.housingPlacementId || value.buildingId !== undefined)) return undefined;
   return {
     instanceId,
     speciesId,
     name,
     ...(eventId ? { eventId } : {}),
     ...(buildingId ? { buildingId } : {}),
+    ...(housingPlacementId ? { housingPlacementId } : {}),
     friendship: value.friendship,
     productionProgress: value.productionProgress,
     readyProductCount: value.readyProductCount,

@@ -1,4 +1,5 @@
-import { changeItemsAtomically, type LifeRecoveryClaim, type LifeRecoveryJson, type LifeRecoveryState, type PlaySession } from "./session";
+import { changeItemsAtomically, type LifeRecoveryClaim, type LifeRecoveryJson, type LifeRecoveryState, type PlaySession, type SpatialPaymentReceipt } from "./session";
+import { GOLD_MAX } from "./economyValues";
 import { isPositiveItemQuantity, ITEM_QUANTITY_MAX } from "./itemQuantities";
 import { isMakerContract } from "./makers";
 import type { ItemAmount, Project } from "./types";
@@ -74,6 +75,11 @@ export function isRecoveryItems(value: unknown): value is readonly ItemAmount[] 
   });
 }
 
+export function isSpatialPaymentReceipt(value: unknown): value is SpatialPaymentReceipt {
+  return record(value) && Number.isSafeInteger(value.gold) && (value.gold as number) >= 0
+    && (value.gold as number) <= GOLD_MAX && isRecoveryItems(value.items);
+}
+
 /** Boundary predicate: unknown item/source IDs are valid evidence, invalid quantities are not. */
 export function isLifeRecoveryState(value: unknown): value is LifeRecoveryState {
   if (!record(value) || !positiveSafe(value.nextSequence) || !record(value.claims)) return false;
@@ -121,8 +127,13 @@ export function moveLifeRecoverySource(project: Project, session: PlaySession, s
       }
       break;
     }
-    // Spatial/animal recovery policy and receipt consumption are downstream. Preserve raw evidence, never guess a cost.
-    case "farmBuildingPlacements": case "homeDecorationPlacements": case "farmAnimals": case "placeables": break;
+    case "farmBuildingPlacements": {
+      const receipt = session.farmBuildingPlacements?.[source.sourceId]?.paymentReceipt;
+      if (receipt !== undefined && !isSpatialPaymentReceipt(receipt)) return { ok: false, reason: "invalid-source" };
+      items = receipt?.items ?? [];
+      break;
+    }
+    case "homeDecorationPlacements": case "farmAnimals": case "placeables": break;
     default: { const exhaustive: never = source.sourceKind; return exhaustive; }
   }
   const totals = new Map<string, number>();
@@ -133,7 +144,7 @@ export function moveLifeRecoverySource(project: Project, session: PlaySession, s
     totals.set(item.itemId, total);
   }
   const known = new Set(project.database.items.map((item) => item.id));
-  const unresolved = items.length === 0 || items.some((item) => !known.has(item.itemId))
+  const unresolved = source.sourceKind === "farmBuildingPlacements" || items.length === 0 || items.some((item) => !known.has(item.itemId))
     ? { record: structuredClone(original), detail: source.reason } : undefined;
   if (unresolved && jsonBytes(original) > LIFE_RECOVERY_RAW_BYTES_MAX) return { ok: false, reason: "capacity" };
   const batches: ItemAmount[][] = [[]];

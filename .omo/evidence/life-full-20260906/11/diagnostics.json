@@ -1,0 +1,22 @@
+{
+  "command": "TypeScript compiler API: syntactic + semantic diagnostics on all changed source/test files, tsconfig.json context",
+  "files": [
+    "src/player/saveSlotSpatialValidation.ts",
+    "src/project/farmAnimals.ts",
+    "src/project/io/references.ts",
+    "src/project/io/shapeDatabaseFields.ts",
+    "src/project/lifeRecovery.ts",
+    "src/project/lifeStateReconciliation.ts",
+    "src/project/mapDeletion.ts",
+    "src/project/p1FoundationRecords.ts",
+    "src/project/session.ts",
+    "src/project/spatialPlacementTransactions.ts",
+    "src/project/spatialPlacements.ts",
+    "src/project/types/database.ts",
+    "src/project/types/project.ts",
+    "src/project/animalHousing.ts",
+    "test/linkedAnimalHousing.test.ts"
+  ],
+  "exit": 0,
+  "diagnostics": ""
+}

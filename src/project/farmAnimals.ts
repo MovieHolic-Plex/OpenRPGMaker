@@ -6,6 +6,7 @@ import {
   isCalendarDayKey,
 } from "@/project/p1FoundationRecords";
 import { calendarDayKey, daysPerSeasonOf, SEASONS } from "@/project/gameTime";
+import { reconcileLinkedAnimalHousing, resolveAnimalHome } from "./animalHousing";
 import { isItemQuantity, isPositiveItemQuantity, ITEM_QUANTITY_MAX } from "@/project/itemQuantities";
 import { changeItemsAtomically, type FarmAnimalState, type PlaySession } from "@/project/session";
 import type {
@@ -97,11 +98,30 @@ export function assignFarmAnimalToBuilding(
   }
 
   const previousBuildingId = animal.buildingId;
+  const { housingPlacementId: _previousPlacement, ...independent } = animal;
   session.farmAnimals = {
     ...context.animals,
-    [instanceId]: { ...animal, buildingId },
+    [instanceId]: { ...independent, buildingId },
   };
   return { ok: true, instanceId, buildingId, previousBuildingId };
+}
+
+export function assignFarmAnimalToHousingPlacement(
+  project: Project, session: PlaySession, instanceId: string, housingPlacementId: string,
+): { readonly ok: true; readonly instanceId: string; readonly housingPlacementId: string }
+  | { readonly ok: false; readonly reason: FarmAnimalFailureReason } {
+  const context = farmAnimalContext(project, session);
+  if (!context.ok) return { ok: false, reason: context.reason };
+  const animal = context.animals[instanceId];
+  if (!animal) return { ok: false, reason: "missing-animal" };
+  const home = resolveAnimalHome(project, session, { housingPlacementId });
+  if (!home) return { ok: false, reason: "missing-building" };
+  if (!home.allowedSpeciesIds.includes(animal.speciesId)) return { ok: false, reason: "species-not-allowed" };
+  const count = Object.values(context.animals).filter((other) => other.instanceId !== instanceId && other.housingPlacementId === housingPlacementId).length;
+  if (count >= home.capacity) return { ok: false, reason: "building-full" };
+  const { buildingId: _legacy, ...linked } = animal;
+  session.farmAnimals = { ...context.animals, [instanceId]: { ...linked, housingPlacementId } };
+  return { ok: true, instanceId, housingPlacementId };
 }
 
 export function feedFarmAnimal(
@@ -117,7 +137,7 @@ export function feedFarmAnimal(
   }
   const animal = context.animals[instanceId];
   if (!animal) return { ok: false, reason: "missing-animal", instanceId };
-  if (!animal.buildingId) return { ok: false, reason: "unassigned", instanceId };
+  if (!resolveAnimalHome(project, session, animal)) return { ok: false, reason: "unassigned", instanceId };
   if (animal.lastAdvancedDayKey && compareDayKeys(animal.lastAdvancedDayKey, dayKey) >= 0) {
     return { ok: false, reason: "already-advanced", instanceId };
   }
@@ -151,7 +171,7 @@ export function petFarmAnimal(
   }
   const animal = context.animals[instanceId];
   if (!animal) return { ok: false, reason: "missing-animal", instanceId };
-  if (!animal.buildingId) return { ok: false, reason: "unassigned", instanceId };
+  if (!resolveAnimalHome(project, session, animal)) return { ok: false, reason: "unassigned", instanceId };
   if (animal.lastAdvancedDayKey && compareDayKeys(animal.lastAdvancedDayKey, dayKey) >= 0) {
     return { ok: false, reason: "already-advanced", instanceId };
   }
@@ -198,13 +218,13 @@ export function advanceFarmAnimalProduction(
   }
   if (pending.length === 0) return { ok: false, reason: "already-advanced" };
 
-  const replacements: Record<string, FarmAnimalState> = {};
+  const replacements: Record<string, FarmAnimalState> = Object.create(null);
   const products: Array<{ instanceId: string; itemId: string; count: number }> = [];
   for (const [instanceId, animal] of pending) {
     const species = context.species.get(animal.speciesId)!;
     let productionProgress = animal.productionProgress;
     let readyProductCount = animal.readyProductCount;
-    const cared = animal.buildingId !== undefined
+    const cared = resolveAnimalHome(project, session, animal) !== undefined
       && animal.lastFedDayKey === dayKey
       && animal.lastPettedDayKey === dayKey;
     if (cared) {
@@ -351,7 +371,7 @@ function farmAnimalContext(project: Project, session: PlaySession): FarmAnimalCo
   for (const [buildingId, count] of occupancy) {
     if (count > buildings.get(buildingId)!.capacity) return { ok: false, reason: "invalid-state" };
   }
-  return { ok: true, animals, species, buildings };
+  return { ok: true, animals: reconcileLinkedAnimalHousing(project, session, animals)!, species, buildings };
 }
 
 function validSpecies(species: FarmAnimalSpeciesRecord, itemIds: ReadonlySet<string>): boolean {
@@ -396,6 +416,7 @@ function validAnimalState(animal: FarmAnimalState, species: FarmAnimalSpeciesRec
   if (!validText(animal.name)) return false;
   if (animal.eventId !== undefined && !validId(animal.eventId)) return false;
   if (animal.buildingId !== undefined && !validId(animal.buildingId)) return false;
+  if (animal.housingPlacementId !== undefined && (!validId(animal.housingPlacementId) || animal.buildingId !== undefined)) return false;
   if (!Number.isSafeInteger(animal.friendship)
     || animal.friendship < 0
     || animal.friendship > FARM_ANIMAL_FRIENDSHIP_MAX) return false;

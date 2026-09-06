@@ -1,6 +1,9 @@
 import { GOLD_MAX } from "@/project/economyValues";
 import { isItemQuantity, ITEM_QUANTITY_MAX, type ItemQuantityOperation } from "@/project/itemQuantities";
-import { changeItemsAtomically, type PlaySession } from "@/project/session";
+import { changeItemsAtomically, type PlaySession, type SpatialPaymentReceipt } from "@/project/session";
+import { reconcileLinkedAnimalHousing } from "./animalHousing";
+import { LifeReconciliationError, preserveUnresolvedLifeSource } from "./lifeStateReconciliation";
+import { isSpatialPaymentReceipt } from "./lifeRecovery";
 import { canOccupySpatialFootprint } from "@/project/spatialOccupancy";
 import {
   isSpatialFootprint,
@@ -10,7 +13,6 @@ import {
 } from "@/project/spatialPlacements";
 import type {
   Dir,
-  FarmBuildingPlacement,
   HomeDecorationPlacement,
   Project,
   SpatialPlacementCost,
@@ -34,6 +36,7 @@ export function placeFarmBuilding(project: Project, session: PlaySession, input:
   const type = types.find((entry) => entry.id === input.typeId);
   const firstLevel = type?.levels.find((entry) => entry.level === 1);
   if (!type || !firstLevel || !validPlacementInput(input) || !isSpatialFootprint(firstLevel.footprint)) return invalid();
+  if (type.animalHousing && !validAnimalCapacity(firstLevel.animalCapacity)) return invalid();
   const placements = session.farmBuildingPlacements ?? {};
   if (Object.keys(placements).length >= SPATIAL_PLACEMENT_LIMIT || placements[input.instanceId]) return invalid();
   if (!mapAllowed(type.allowedMapIds, input.mapId)) return invalid();
@@ -41,7 +44,9 @@ export function placeFarmBuilding(project: Project, session: PlaySession, input:
   const payment = preflightCost(project, session, firstLevel.cost);
   if (!payment.ok) return payment.result;
 
-  const placement: FarmBuildingPlacement = { ...input, level: 1 };
+  const paymentReceipt = addPaymentReceipt(undefined, firstLevel.cost);
+  if (!paymentReceipt) return invalid();
+  const placement = { ...input, level: 1, paymentReceipt };
   return commitWithInventory(session, payment.operations, () => {
     session.gold = payment.nextGold;
     session.farmBuildingPlacements = { ...placements, [input.instanceId]: placement };
@@ -56,7 +61,9 @@ export function moveFarmBuilding(project: Project, session: PlaySession, instanc
   if (!type || !level || !validCoordinates(mapId, x, y) || !mapAllowed(type.allowedMapIds, mapId)) return invalid();
   const next = { ...placement, mapId, x, y };
   if (!canOccupySpatialFootprint(project, session, next, level.footprint, { kind: "farmBuilding", instanceId })) return blocked();
-  session.farmBuildingPlacements = { ...session.farmBuildingPlacements, [instanceId]: next };
+  const draft = { ...session, farmBuildingPlacements: { ...session.farmBuildingPlacements, [instanceId]: next } };
+  draft.farmAnimals = reconcileLinkedAnimalHousing(project, draft, draft.farmAnimals);
+  Object.assign(session, draft);
   return success();
 }
 
@@ -66,24 +73,49 @@ export function upgradeFarmBuilding(project: Project, session: PlaySession, inst
   const type = project.database.farmBuildingTypes?.find((entry) => entry.id === placement.typeId);
   const level = type?.levels.find((entry) => entry.level === placement.level + 1);
   if (!type || !level || !isSpatialFootprint(level.footprint)) return missing();
+  if (type.animalHousing && !validAnimalCapacity(level.animalCapacity)) return invalid();
   if (!canOccupySpatialFootprint(project, session, placement, level.footprint, { kind: "farmBuilding", instanceId })) return blocked();
   const payment = preflightCost(project, session, level.cost);
   if (!payment.ok) return payment.result;
-  return commitWithInventory(session, payment.operations, () => {
-    session.gold = payment.nextGold;
-    session.farmBuildingPlacements = {
-      ...session.farmBuildingPlacements,
-      [instanceId]: { ...placement, level: level.level },
-    };
-  });
+  const paymentReceipt = addPaymentReceipt(placement.paymentReceipt, level.cost);
+  if (!paymentReceipt) return invalid();
+  const draft = structuredClone(session);
+  draft.farmBuildingPlacements = { ...draft.farmBuildingPlacements, [instanceId]: { ...placement, level: level.level, paymentReceipt } };
+  draft.farmAnimals = reconcileLinkedAnimalHousing(project, draft, draft.farmAnimals);
+  if (!changeItemsAtomically(draft, payment.operations)) return invalid();
+  draft.gold = payment.nextGold;
+  Object.assign(session, draft);
+  return success();
 }
 
 export function removeFarmBuilding(session: PlaySession, instanceId: string): SpatialMutationResult {
-  if (!session.farmBuildingPlacements?.[instanceId]) return missing();
-  const next = { ...session.farmBuildingPlacements };
-  delete next[instanceId];
-  session.farmBuildingPlacements = next;
+  const placement = session.farmBuildingPlacements?.[instanceId];
+  if (!placement) return missing();
+  const draft = structuredClone(session);
+  // Normal demolition never refunds, but the paid-cost evidence remains durable.
+  if (placement.paymentReceipt) {
+    try { preserveUnresolvedLifeSource(draft, { sourceKind: "farmBuildingPlacements", sourceId: instanceId, reason: "demolished-no-refund" }, placement); }
+    catch (error) { if (error instanceof LifeReconciliationError) return invalid(); throw error; }
+  }
+  delete draft.farmBuildingPlacements![instanceId];
+  if (draft.farmAnimals) draft.farmAnimals = Object.fromEntries(Object.entries(draft.farmAnimals).map(([id, animal]) => {
+    if (animal.housingPlacementId !== instanceId) return [id, animal];
+    const { housingPlacementId: _removed, ...unassigned } = animal;
+    return [id, unassigned];
+  }));
+  Object.assign(session, draft);
   return success();
+}
+
+function validAnimalCapacity(value: number | undefined): boolean {
+  return Number.isSafeInteger(value) && value! >= 0 && value! <= 9999;
+}
+
+function addPaymentReceipt(previous: SpatialPaymentReceipt | undefined, cost: SpatialPlacementCost | undefined): SpatialPaymentReceipt | undefined {
+  if (previous !== undefined && !isSpatialPaymentReceipt(previous)) return undefined;
+  const items = aggregateCosts([...(previous?.items ?? []), ...(cost?.items ?? [])]);
+  const receipt = { gold: (previous?.gold ?? 0) + (cost?.gold ?? 0), items };
+  return isSpatialPaymentReceipt(receipt) ? receipt : undefined;
 }
 
 export function placeHomeDecoration(project: Project, session: PlaySession, input: NewSpatialPlacement): SpatialMutationResult {

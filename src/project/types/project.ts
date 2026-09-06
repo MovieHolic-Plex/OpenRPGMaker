@@ -345,6 +345,8 @@ export interface FarmAnimalStartInstance {
   readonly name: string;
   readonly eventId?: string;
   readonly buildingId?: string;
+  /** Actual farm-building placement instance; mutually exclusive with buildingId. */
+  readonly housingPlacementId?: string;
 }
 
 export interface FarmBuildingPlacement {

@@ -1,0 +1,21 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-housing",
+  "head": "966f414c07729e7d9474c568cbaf19a94d2bc740",
+  "diffSha256": "f728d327ca5b64fdf8d266a0d18f4d521f9068afed302a937a3665b9a674731d",
+  "fixtureSha256": "b08419a703680ca7bbf34780060b37e19c255c9b832b6a82ac556b7889628441",
+  "surface": "Native Firefox player.html/exportProjectStoreShim. Public imported transactions on the actual PlayScene session; native Z sleep. Local fixture GET substituted; no action endpoints mocked, no ready state injected.",
+  "errors": [
+    "can't access property \"find\", window.Phaser.GAMES is undefined"
+  ],
+  "writes": [],
+  "port": 37069,
+  "browser": "151.0",
+  "failure": "page.evaluate: can't access property \"find\", window.Phaser.GAMES is undefined\n@debugger eval code line 303 > eval:7:19\nasync*evaluate@debugger eval code:305:16\n@debugger eval code:1:44\n@debugger eval code:1:62\n\n    at /home/main/z-project/rpg-zzu-life-full-housing/.omo/evidence/life-full-20260906/11/public-player.mjs:78:35",
+  "cleanup": {
+    "contextClosed": true,
+    "browserClosed": true,
+    "serverClosed": true,
+    "ownedCacheRemoved": "/home/main/z-project/rpg-zzu-life-full-housing/.omo/evidence/life-full-20260906/11/native/cache",
+    "fixtureNotShipped": true
+  }
+}

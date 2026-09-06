@@ -30,6 +30,7 @@ import { evalRoguelikeRunCondition, type RoguelikeRunState } from "@/project/rog
 import { resolveItemQuantity, type ItemQuantityOperation } from "@/project/itemQuantities";
 import { GOLD_MAX, type ShopHaggleVisitState } from "@/project/economyValues";
 import { initialFarmAnimalStates } from "@/project/p1FoundationRecords";
+import { reconcileLinkedAnimalHousing } from "./animalHousing";
 import { applyDailyWeatherForDate } from "@/project/dailyWeather";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import { weatherToRuntimeString } from "@/player/weather/weatherModel";
@@ -473,6 +474,7 @@ export function startSession(project: Project, seed?: number): PlaySession {
   if (weather) {
     ensureM2Runtime(session).screen.weather = weatherToRuntimeString(weather);
   }
+  session.farmAnimals = reconcileLinkedAnimalHousing(project, session, session.farmAnimals);
   return session;
 }
 

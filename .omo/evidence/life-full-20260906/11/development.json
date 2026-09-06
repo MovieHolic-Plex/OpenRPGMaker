@@ -1,0 +1,6 @@
+{
+  "command": "npm test -- test/linkedAnimalHousing.test.ts",
+  "exit": 0,
+  "stdout": "\n> rpg-zzu@0.1.0 test\n> node scripts/run-vitest.mjs run --configLoader bundle test/linkedAnimalHousing.test.ts\n\n\n RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-housing\n\n ✓ test/linkedAnimalHousing.test.ts (17 tests) 5052ms\n   ✓ linked animal housing > characterizes legacy independent home care, reassignment receipts and production  636ms\n   ✓ linked animal housing > keeps two instance capacities independent, upgrades 2 to 5 and moves the same home with its receipts  513ms\n   ✓ linked animal housing > type-deletion preserves all animals and earned products without auto relocation  364ms\n   ✓ linked animal housing > disabled preserves all animals and earned products without auto relocation  312ms\n   ✓ linked animal housing > roundtrips authored Project4 homes and rejects dual references, missing capacity and unknown species  1592ms\n\n Test Files  1 passed (1)\n      Tests  17 passed (17)\n   Start at  03:47:36\n   Duration  16.63s (transform 6.72s, setup 0ms, collect 10.10s, tests 5.05s, environment 0ms, prepare 331ms)\n\n",
+  "stderr": ""
+}
