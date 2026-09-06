@@ -61,7 +61,7 @@ export interface AiRunSurface {
   // ── 큐 · 저장 · 재전송 ───────────────────────────────────
   readonly drainPendingSends: () => void;
   readonly persistConversation: (target?: ConversationPersistTarget) => void;
-  readonly sendText: (text: string, displayAs?: string, opts?: { readonly replay?: boolean }) => Promise<void>;
+  readonly sendText: (text: string, displayAs?: string, opts?: { readonly replay?: boolean; readonly userResume?: true }) => Promise<void>;
 
   // ── 대화 로그 렌더(conversationLog 위임) ─────────────────
   readonly appendBubble: (role: AiBubbleRole, text: string) => HTMLElement;

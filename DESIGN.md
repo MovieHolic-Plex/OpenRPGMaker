@@ -893,8 +893,11 @@ Disclose excluded factors in one concise note: defense, skill power, type chart/
   success. Withdrawn actions stay disabled and labelled as user exclusions.
   Existing keyed details, manual collapse, map navigation and sticky count stay
   intact. Native focus returns to the summary when its focused action disables.
-- The existing Continue button explicitly selects Do through the real composer
-  before sending the resume token; ordinary Ask/Plan sends keep their modes.
+- Only the existing Continue button carries the explicit `userResume` UI action
+  through RunSurface. The Panel selects Do in its mode owner and real composer
+  before normal dispatch. Token text alone never changes mode: typed, bridge and
+  ordinary RunSurface sends retain Ask/Plan. Existing blocked/budget availability
+  and the single visible Continue control remain integration-owned.
 - Personas: Korean-first author distinguishing response from result, keyboard
   author withdrawing one named requirement, existing-project author retaining
   acceptance history and undo. Supported desktop sizes remain 1024/1280/1440.

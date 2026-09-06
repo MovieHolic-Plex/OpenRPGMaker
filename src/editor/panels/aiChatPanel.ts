@@ -1575,7 +1575,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     persistConversation: (target) => persistConversation(target),
     sendText: (text, displayAs, opts) => {
       // The existing Continue control is explicit user authorization, not an Ask query.
-      if (text === "계속" && !turnBusy) {
+      if (opts?.userResume && !turnBusy) {
         composerMode = "do";
         composerShell.setMode(composerMode);
       }

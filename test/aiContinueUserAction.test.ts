@@ -4,6 +4,8 @@ import { AssistantSession } from "@/ai/assistantSession";
 import { buildAiActivityLogRecord, recordAiActivity } from "@/ai/activityLog";
 import { clearConversations } from "@/ai/conversationStore";
 import { renderAiChatPanel, teardownAiChatPanel, whenAiChatPanelSettled } from "@/editor/panels/aiChatPanel";
+import * as turnRunner from "@/editor/panels/aiTurnRunner";
+import { sendAiAssistantMessage } from "@/editor/aiAssistantBridge";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 
@@ -45,13 +47,25 @@ it("the real Continue control updates both the panel send mode and composer pres
     onEvent?.({ type: "status", text: "자율 실행 예산 소진" });
     return { assistantText: "", proposedCalls: [], stoppedReason: "max-tool-calls" };
   });
+  const factory = vi.spyOn(turnRunner, "createAiTurnRunner");
   document.body.append(renderAiChatPanel()); await bounded(whenAiChatPanelSettled());
   node("ai-composer-mode-ask").click();
   node<HTMLTextAreaElement>("ai-input").value = "QUERY_FIXTURE";
   const asked = terminalSignal(); node("ai-send").click(); await bounded(asked);
   expect(send.mock.calls[0]?.[3]?.composerMode).toBe("ask");
+  // A continuation string is not permission to change an Ask composer.
+  node<HTMLTextAreaElement>("ai-input").value = "계속";
+  const typed = terminalSignal(); node("ai-send").click(); await bounded(typed);
+  expect(send.mock.lastCall?.[3]?.composerMode).toBe("ask");
+  await bounded(sendAiAssistantMessage("계속"));
+  expect(send.mock.lastCall?.[3]?.composerMode).toBe("ask");
+  const surface = factory.mock.calls[0]?.[0].surface;
+  if (!surface) throw new Error("Missing actual Panel run surface");
+  await bounded(surface.sendText("계속"));
+  expect(send.mock.lastCall?.[3]?.composerMode).toBe("ask");
+  expect(node("ai-composer-mode").dataset.mode).toBe("ask");
   const resumed = terminalSignal(); node("ai-continue-run").click(); await bounded(resumed);
-  expect(send.mock.calls[1]?.[3]?.composerMode).toBe("do");
+  expect(send.mock.lastCall?.[3]?.composerMode).toBe("do");
   expect(node("ai-composer-mode").dataset.mode).toBe("do");
   expect(node("ai-composer-mode-do").getAttribute("aria-checked")).toBe("true");
   expect(node("ai-composer-mode-ask").getAttribute("aria-checked")).toBe("false");

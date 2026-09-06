@@ -136,7 +136,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       text: "계속",
       attrs: { type: "button" },
       dataset: { testid: "ai-continue-run" },
-      on: { click: () => { void deps.surface.sendText("계속"); } },
+      on: { click: () => { void deps.surface.sendText("계속", undefined, { userResume: true }); } },
     });
     continueRow.append(continueBtn);
     deps.surface.log.append(continueRow);
