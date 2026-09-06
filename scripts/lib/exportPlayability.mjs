@@ -242,7 +242,7 @@ export async function exerciseExport(page, { url, kind, outDir }) {
   const actions = [];
   const failures = [];
   const errors = [];
-  page.on("requestfailed", (r) => failures.push({ url: r.url().slice(0, 200), type: r.resourceType(), error: r.failure()?.errorText }));
+  page.on("requestfailed", (r) => failures.push({ url: r.url(), type: r.resourceType(), error: r.failure()?.errorText }));
   page.on("response", (r) => { if (r.status() >= 400) failures.push({ url: r.url(), status: r.status() }); });
   page.on("pageerror", (error) => errors.push(String(error)));
   const shot = async (name) => page.screenshot({ path: join(outDir, `${kind}-${name}.png`) });
