@@ -1,0 +1,335 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/toolSchemaProviderCompat.test.ts test/assistantAcceptance.test.ts test/assistantAcceptanceSession.test.ts test/assistantAcceptanceRequestBaseline.test.ts test/assistantAcceptancePromiseBaseline.test.ts test/assistantAcceptanceCost.test.ts test/aiRequiredOutcomes.test.ts test/workPlan.test.ts test/agentVerification.test.ts --maxWorkers 1 --minWorkers 1 --no-cache --reporter default --reporter json --outputFile output/evidence/ai-harness/p2/schema-compat-fix/red-regression-vitest.json
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-outcome-20260906
+
+ ✓ test/workPlan.test.ts (40 tests) 23ms
+ ✓ test/aiRequiredOutcomes.test.ts (39 tests) 12657ms
+   ✓ canonical requirements > keeps required skipped obligations when a replan tries to weaken them  509ms
+   ✓ canonical requirements > allows optional skipped work without labeling it verified  359ms
+   ✓ canonical requirements > fails closed for malformed declarations null  348ms
+   ✓ canonical requirements > fails closed for malformed declarations %j  406ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"mapDimensions","target":{"mapId":"map_blank_start"},"width":99,"height":99}],"required":"false"}  411ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"invented","passed":true}]}  382ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":null,"required":false}  388ms
+   ✓ canonical requirements > assesses existing explicit acceptance without requiring the new field  387ms
+   ✓ canonical requirements > retains an unlinked required obligation when replan drops links=false  395ms
+   ✓ canonical requirements > retains an unlinked required obligation when replan drops links=true  381ms
+   ✓ canonical requirements > binds original text and scope at the host boundary despite fabricated source and withdrawal  365ms
+   ✓ canonical requirements > retains only the original user utterance through replan with instruction override=false  390ms
+   ✓ canonical requirements > retains only the original user utterance through replan with instruction override=true  447ms
+   ✓ canonical requirements > withdraws only the named current requirement through the user-only API  361ms
+   ✓ canonical requirements > keeps sibling obligations when the user withdraws just one  372ms
+   ✓ canonical requirements > rejects model tool withdrawal even with fabricated user provenance  355ms
+   ✓ canonical requirements > rejects stale goal withdrawal actions  382ms
+   ✓ canonical requirements > does not erase old obligations on a model resetsContext claim  385ms
+   ✓ canonical requirements > archives an incomplete goal when the user explicitly starts a new goal  411ms
+   ✓ exact scoped verdict authority > does not verify an unapplied draft from a passing scoped verdict  334ms
+   ✓ exact scoped verdict authority > retires scoped verdicts after applied content changes even if later undone  780ms
+   ✓ exact scoped verdict authority > rejects pre-declaration evidence after an external rebase  745ms
+   ✓ exact scoped verdict authority > credits a real scoped tool response through the session dispatcher  379ms
+   ✓ question-safe continuation > preserves repeated failure counters while answering a question  548ms
+   ✓ question-safe continuation > retains goal evidence and repair counters during ask  382ms
+ ✓ test/agentVerification.test.ts (41 tests) 28ms
+ ✓ test/assistantAcceptanceSession.test.ts (12 tests) 6441ms
+   ✓ acceptance controls actual session termination > does not schedule run-end persistence proof for a completed plan with unmet acceptance  438ms
+   ✓ acceptance controls actual session termination > does not turn a review without an explicit passing verdict into completion  560ms
+   ✓ acceptance controls actual session termination > withdraws an earlier pass when a later explicit review fails  594ms
+   ✓ acceptance controls actual session termination > continues then blocks insufficient dimensions and quantity even after skip completes the plan  382ms
+   ✓ acceptance controls actual session termination > retains original denominator when skip and set_work_plan try to shrink promises  458ms
+   ✓ acceptance controls actual session termination > invalidates an attributed image review after a subsequent real map write  790ms
+   ✓ applied acceptance lifecycle through real tools > repairs exact dimensions after plan completion and invalidates on applied undo  1772ms
+   ✓ applied acceptance lifecycle through real tools > blocks and retains the ledger when aborted while the next model response is held  352ms
+   ✓ applied acceptance lifecycle through real tools > never credits a review authored in the same response as the image request  444ms
+   ✓ applied acceptance lifecycle through real tools > requires visible contract repair for a spatial plan missing criteria  334ms
+ ❯ test/toolSchemaProviderCompat.test.ts (69 tests | 29 failed) 84ms
+   × 툴 스키마 프로바이더 호환(Gemini 엄격 검증) > 전 툴 파라미터가 union type/비객체 properties/비배열 items 를 쓰지 않는다 19ms
+     → expected [ …(18) ] to deeply equal []
+   × 툴 스키마 프로바이더 호환(Gemini 엄격 검증) > 객체 타입 파라미터는 properties 를 선언한다 (모델이 {} 만 보내는 벽 방지) 5ms
+     → expected [ …(3) ] to deeply equal []
+   × 툴 스키마 프로바이더 호환(Gemini 엄격 검증) > 노출 스키마 어디에도 provider 금지 oneOf/anyOf 가 없다 7ms
+     → expected [ …(18) ] to deeply equal []
+   ✓ 툴 스키마 프로바이더 호환(Gemini 엄격 검증) > 실측 회귀: set_work_plan.layers 와 set_build_spec.assets 가 항목 필드를 노출한다 2ms
+   ✓ 툴 스키마 프로바이더 호환(Gemini 엄격 검증) > 실측 회귀: 검증기가 재제출을 요구하는 필드(SPEC_REMEDY_FIELDS)가 set_build_spec.assets 에 선언돼 있다 0ms
+   ✓ 툴 스키마 프로바이더 호환(Gemini 엄격 검증) > overExisting 은 clear|keep 로 열거돼 모델이 값까지 정확히 낼 수 있다 0ms
+   × acceptance and requirement schema/runtime contract > represents and roundtrips 'toolVerdict' {"kind":"toolVerdict","tool":"run_lint","args":{}} on every exposed surface 3ms
+     → expected undefined to be 'object' // Object.is equality
+   × acceptance and requirement schema/runtime contract > represents and roundtrips 'toolVerdict' {"kind":"toolVerdict","tool":"play_walkthrough","args":{"mapId":"map_start","scenario":[{"do":"setVariable","id":"progress","value":0},{"expect":"variable","id":"progress","value":0}],"runtimeKeys":{"authored-id":[null,false,0,"0",{"nested":{}}]}}} on every exposed surface 2ms
+     → expected undefined to be 'object' // Object.is equality
+   × acceptance and requirement schema/runtime contract > represents and roundtrips 'mapDimensions' {"kind":"mapDimensions","target":{"mapId":"map_start"},"width":20,"height":15} on every exposed surface 2ms
+     → expected undefined to be 'object' // Object.is equality
+   × acceptance and requirement schema/runtime contract > represents and roundtrips 'mapCount' {"kind":"mapCount","targets":[{"mapId":"map_start"}],"count":1} on every exposed surface 1ms
+     → expected undefined to be 'object' // Object.is equality
+   × acceptance and requirement schema/runtime contract > represents and roundtrips 'reachability' {"kind":"reachability","target":{"mapId":"map_start"},"from":{"x":0,"y":0},"to":[{"x":1,"y":0}]} on every exposed surface 1ms
+     → expected undefined to be 'object' // Object.is equality
+   × acceptance and requirement schema/runtime contract > represents and roundtrips 'eventCount' {"kind":"eventCount","target":{"mapId":"map_start"},"count":0} on every exposed surface 1ms
+     → expected undefined to be 'object' // Object.is equality
+   × acceptance and requirement schema/runtime contract > represents and roundtrips 'targetChange' {"kind":"targetChange","target":{"mapId":"map_start"}} on every exposed surface 2ms
+     → expected undefined to be 'object' // Object.is equality
+   × acceptance and requirement schema/runtime contract > represents and roundtrips 'preserve' {"kind":"preserve","target":{"mapId":"map_start"}} on every exposed surface 1ms
+     → expected undefined to be 'object' // Object.is equality
+   × acceptance and requirement schema/runtime contract > represents and roundtrips 'imageReviewed' {"kind":"imageReviewed","target":{"mapId":"map_start"}} on every exposed surface 1ms
+     → expected undefined to be 'object' // Object.is equality
+   × acceptance and requirement schema/runtime contract > represents and roundtrips 'eventCount' {"kind":"eventCount","target":{"mapId":"map_start"},"count":0,"region":{"x":0,"y":1,"w":2,"h":3}} on every exposed surface 1ms
+     → expected undefined to be 'object' // Object.is equality
+   × acceptance and requirement schema/runtime contract > represents and roundtrips 'targetChange' {"kind":"targetChange","target":{"mapId":"map_start"},"region":{"x":0,"y":1,"w":2,"h":3}} on every exposed surface 1ms
+     → expected undefined to be 'object' // Object.is equality
+   × acceptance and requirement schema/runtime contract > represents and roundtrips 'preserve' {"kind":"preserve","target":{"mapId":"map_start"},"region":{"x":0,"y":1,"w":2,"h":3}} on every exposed surface 1ms
+     → expected undefined to be 'object' // Object.is equality
+   × acceptance and requirement schema/runtime contract > represents and roundtrips 'imageReviewed' {"kind":"imageReviewed","target":{"mapId":"map_start"},"region":{"x":0,"y":1,"w":2,"h":3}} on every exposed surface 1ms
+     → expected undefined to be 'object' // Object.is equality
+   × acceptance and requirement schema/runtime contract > represents and roundtrips 'mapDimensions' {"kind":"mapDimensions","target":{"newMapName":"New room"},"width":20,"height":15} on every exposed surface 1ms
+     → expected undefined to be 'object' // Object.is equality
+   × acceptance and requirement schema/runtime contract > represents and roundtrips 'mapCount' {"kind":"mapCount","targets":[{"newMapName":"New room"}],"count":1} on every exposed surface 1ms
+     → expected undefined to be 'object' // Object.is equality
+   × acceptance and requirement schema/runtime contract > represents and roundtrips 'reachability' {"kind":"reachability","target":{"newMapName":"New room"},"from":{"x":0,"y":0},"to":[{"x":1,"y":0}]} on every exposed surface 1ms
+     → expected undefined to be 'object' // Object.is equality
+   × acceptance and requirement schema/runtime contract > represents and roundtrips 'eventCount' {"kind":"eventCount","target":{"newMapName":"New room"},"count":0} on every exposed surface 1ms
+     → expected undefined to be 'object' // Object.is equality
+   × acceptance and requirement schema/runtime contract > represents and roundtrips 'targetChange' {"kind":"targetChange","target":{"newMapName":"New room"}} on every exposed surface 1ms
+     → expected undefined to be 'object' // Object.is equality
+   × acceptance and requirement schema/runtime contract > represents and roundtrips 'preserve' {"kind":"preserve","target":{"newMapName":"New room"}} on every exposed surface 1ms
+     → expected undefined to be 'object' // Object.is equality
+   × acceptance and requirement schema/runtime contract > represents and roundtrips 'imageReviewed' {"kind":"imageReviewed","target":{"newMapName":"New room"}} on every exposed surface 1ms
+     → expected undefined to be 'object' // Object.is equality
+   × acceptance and requirement schema/runtime contract > represents and roundtrips 'eventCount' {"kind":"eventCount","target":{"newMapName":"New room"},"count":0,"region":{"x":0,"y":1,"w":2,"h":3}} on every exposed surface 1ms
+     → expected undefined to be 'object' // Object.is equality
+   × acceptance and requirement schema/runtime contract > represents and roundtrips 'targetChange' {"kind":"targetChange","target":{"newMapName":"New room"},"region":{"x":0,"y":1,"w":2,"h":3}} on every exposed surface 1ms
+     → expected undefined to be 'object' // Object.is equality
+   × acceptance and requirement schema/runtime contract > represents and roundtrips 'preserve' {"kind":"preserve","target":{"newMapName":"New room"},"region":{"x":0,"y":1,"w":2,"h":3}} on every exposed surface 1ms
+     → expected undefined to be 'object' // Object.is equality
+   × acceptance and requirement schema/runtime contract > represents and roundtrips 'imageReviewed' {"kind":"imageReviewed","target":{"newMapName":"New room"},"region":{"x":0,"y":1,"w":2,"h":3}} on every exposed surface 1ms
+     → expected undefined to be 'object' // Object.is equality
+   × acceptance and requirement schema/runtime contract > represents and roundtrips 'mapCount' {"kind":"mapCount","targets":[{"mapId":"map_start"},{"newMapName":"New room"}],"count":2} on every exposed surface 1ms
+     → expected undefined to be 'object' // Object.is equality
+   × acceptance and requirement schema/runtime contract > keeps the shared discriminator, closed structural keys and genuine dynamic args 1ms
+     → expected undefined to be 'object' // Object.is equality
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'toolVerdict' {"kind":"toolVerdict","tool":"run_lint","args":{}} 1ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'toolVerdict' {"kind":"toolVerdict","tool":"play_walkthrough","args":{"mapId":"map_start","scenario":[{"do":"setVariable","id":"progress","value":0},{"expect":"variable","id":"progress","value":0}],"runtimeKeys":{"authored-id":[null,false,0,"0",{"nested":{}}]}}} 1ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'mapDimensions' {"kind":"mapDimensions","target":{"mapId":"map_start"},"width":20,"height":15} 1ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'mapCount' {"kind":"mapCount","targets":[{"mapId":"map_start"}],"count":1} 1ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'reachability' {"kind":"reachability","target":{"mapId":"map_start"},"from":{"x":0,"y":0},"to":[{"x":1,"y":0}]} 1ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'eventCount' {"kind":"eventCount","target":{"mapId":"map_start"},"count":0} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'targetChange' {"kind":"targetChange","target":{"mapId":"map_start"}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'preserve' {"kind":"preserve","target":{"mapId":"map_start"}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'imageReviewed' {"kind":"imageReviewed","target":{"mapId":"map_start"}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'eventCount' {"kind":"eventCount","target":{"mapId":"map_start"},"count":0,"region":{"x":0,"y":1,"w":2,"h":3}} 1ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'targetChange' {"kind":"targetChange","target":{"mapId":"map_start"},"region":{"x":0,"y":1,"w":2,"h":3}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'preserve' {"kind":"preserve","target":{"mapId":"map_start"},"region":{"x":0,"y":1,"w":2,"h":3}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'imageReviewed' {"kind":"imageReviewed","target":{"mapId":"map_start"},"region":{"x":0,"y":1,"w":2,"h":3}} 1ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'mapDimensions' {"kind":"mapDimensions","target":{"newMapName":"New room"},"width":20,"height":15} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'mapCount' {"kind":"mapCount","targets":[{"newMapName":"New room"}],"count":1} 1ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'reachability' {"kind":"reachability","target":{"newMapName":"New room"},"from":{"x":0,"y":0},"to":[{"x":1,"y":0}]} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'eventCount' {"kind":"eventCount","target":{"newMapName":"New room"},"count":0} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'targetChange' {"kind":"targetChange","target":{"newMapName":"New room"}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'preserve' {"kind":"preserve","target":{"newMapName":"New room"}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'imageReviewed' {"kind":"imageReviewed","target":{"newMapName":"New room"}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'eventCount' {"kind":"eventCount","target":{"newMapName":"New room"},"count":0,"region":{"x":0,"y":1,"w":2,"h":3}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'targetChange' {"kind":"targetChange","target":{"newMapName":"New room"},"region":{"x":0,"y":1,"w":2,"h":3}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'preserve' {"kind":"preserve","target":{"newMapName":"New room"},"region":{"x":0,"y":1,"w":2,"h":3}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'imageReviewed' {"kind":"imageReviewed","target":{"newMapName":"New room"},"region":{"x":0,"y":1,"w":2,"h":3}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'mapCount' {"kind":"mapCount","targets":[{"mapId":"map_start"},{"newMapName":"New room"}],"count":2} 0ms
+   ✓ acceptance and requirement schema/runtime contract > rejects malformed or ambiguous target {} 0ms
+   ✓ acceptance and requirement schema/runtime contract > rejects malformed or ambiguous target {"mapId":"map_start","newMapName":"New room"} 0ms
+   ✓ acceptance and requirement schema/runtime contract > rejects malformed or ambiguous target {"mapId":""} 0ms
+   ✓ acceptance and requirement schema/runtime contract > rejects malformed or ambiguous target {"newMapName":" "} 0ms
+   ✓ acceptance and requirement schema/runtime contract > rejects malformed or ambiguous target {"mapId":"map_start","passed":true} 0ms
+   ✓ acceptance and requirement schema/runtime contract > rejects non-object exact args undefined 0ms
+   ✓ acceptance and requirement schema/runtime contract > rejects non-object exact args null 0ms
+   ✓ acceptance and requirement schema/runtime contract > rejects non-object exact args %j 0ms
+   ✓ acceptance and requirement schema/runtime contract > rejects non-object exact args "{}" 0ms
+   ✓ acceptance and requirement schema/runtime contract > rejects non-object exact args 0 0ms
+   ✓ acceptance and requirement schema/runtime contract > rejects non-object exact args false 0ms
+   ✓ acceptance and requirement schema/runtime contract > preserves required defaults and never accepts an unregistered verification tool 1ms
+ ✓ test/assistantAcceptance.test.ts (23 tests) 1559ms
+ ✓ test/assistantAcceptanceRequestBaseline.test.ts (6 tests) 10921ms
+   ✓ per-request acceptance baselines > preserves a map created in A while B changes another map  2124ms
+   ✓ per-request acceptance baselines > does not credit A's change toward a newly accepted B change promise  1387ms
+   ✓ per-request acceptance baselines > late adoption cannot baseline away B's earlier write (applied=false)  1772ms
+   ✓ per-request acceptance baselines > late adoption cannot baseline away B's earlier write (applied=true)  1978ms
+   ✓ per-request acceptance baselines > retains B's pre-write baseline across budget-driven synthetic continuation  1761ms
+   ✓ per-request acceptance baselines > retains B's baseline when a manual continuation repairs and replans after application  1897ms
+ ✓ test/assistantAcceptancePromiseBaseline.test.ts (13 tests) 1688ms
+ ✓ test/assistantAcceptanceCost.test.ts (6 tests) 2727ms
+   ✓ bounded canonical project comparisons > compares shared project content once for same-content  342ms
+   ✓ bounded canonical project comparisons > compares shared project content once for changed-content  302ms
+   ✓ bounded canonical project comparisons > preserves late-adoption freshness when content changed=false  822ms
+   ✓ bounded canonical project comparisons > preserves late-adoption freshness when content changed=true  876ms
+
+ Test Files  1 failed | 8 passed (9)
+      Tests  29 failed | 220 passed (249)
+   Start at  07:52:40
+   Duration  61.15s (transform 7.80s, setup 0ms, collect 21.89s, tests 36.13s, environment 2ms, prepare 626ms)
+
+JSON report written to /home/main/z-project/rpg-zzu-ai-harness-p2-outcome-20260906/output/evidence/ai-harness/p2/schema-compat-fix/red-regression-vitest.json
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 29 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/toolSchemaProviderCompat.test.ts > 툴 스키마 프로바이더 호환(Gemini 엄격 검증) > 전 툴 파라미터가 union type/비객체 properties/비배열 items 를 쓰지 않는다
+AssertionError: expected [ …(18) ] to deeply equal []
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   "set_work_plan.acceptance[].criteria[]: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.acceptance[].criteria[].oneOf[1].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.acceptance[].criteria[].oneOf[2].targets[]: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.acceptance[].criteria[].oneOf[3].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.acceptance[].criteria[].oneOf[4].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.acceptance[].criteria[].oneOf[5].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.requirements[].criteria[]: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.requirements[].criteria[].oneOf[1].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.requirements[].criteria[].oneOf[2].targets[]: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.requirements[].criteria[].oneOf[3].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.requirements[].criteria[].oneOf[4].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.requirements[].criteria[].oneOf[5].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "repair_acceptance.criteria[]: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "repair_acceptance.criteria[].oneOf[1].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "repair_acceptance.criteria[].oneOf[2].targets[]: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "repair_acceptance.criteria[].oneOf[3].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "repair_acceptance.criteria[].oneOf[4].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "repair_acceptance.criteria[].oneOf[5].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+ ][39m
+
+ ❯ test/toolSchemaProviderCompat.test.ts:82:72
+     80|     const violations: string[] = [];
+     81|     for (const { name, parameters } of exposedSchemas()) walk(paramete…
+     82|     expect(violations.filter((v) => !v.includes("properties 가 없습니다")))…
+       |                                                                        ^
+     83|   });
+     84| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/29]⎯
+
+ FAIL  test/toolSchemaProviderCompat.test.ts > 툴 스키마 프로바이더 호환(Gemini 엄격 검증) > 객체 타입 파라미터는 properties 를 선언한다 (모델이 {} 만 보내는 벽 방지)
+AssertionError: expected [ …(3) ] to deeply equal []
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   "set_work_plan.acceptance[].criteria[].oneOf[0].args: type:\"object\" 인데 properties 가 없습니다 — 모델이 {} 밖에 보낼 수 없습니다. 허용 필드를 properties 로 선언하거나(유니온은 키 합집합을 선택 필드로), 진짜 동적 키 맵이면 additionalProperties:true 를 명시하세요.",[39m
+[31m+   "set_work_plan.requirements[].criteria[].oneOf[0].args: type:\"object\" 인데 properties 가 없습니다 — 모델이 {} 밖에 보낼 수 없습니다. 허용 필드를 properties 로 선언하거나(유니온은 키 합집합을 선택 필드로), 진짜 동적 키 맵이면 additionalProperties:true 를 명시하세요.",[39m
+[31m+   "repair_acceptance.criteria[].oneOf[0].args: type:\"object\" 인데 properties 가 없습니다 — 모델이 {} 밖에 보낼 수 없습니다. 허용 필드를 properties 로 선언하거나(유니온은 키 합집합을 선택 필드로), 진짜 동적 키 맵이면 additionalProperties:true 를 명시하세요.",[39m
+[31m+ ][39m
+
+ ❯ test/toolSchemaProviderCompat.test.ts:88:71
+     86|     const violations: string[] = [];
+     87|     for (const { name, parameters } of exposedSchemas()) walk(paramete…
+     88|     expect(violations.filter((v) => v.includes("properties 가 없습니다"))).…
+       |                                                                       ^
+     89|   });
+     90| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/29]⎯
+
+ FAIL  test/toolSchemaProviderCompat.test.ts > 툴 스키마 프로바이더 호환(Gemini 엄격 검증) > 노출 스키마 어디에도 provider 금지 oneOf/anyOf 가 없다
+AssertionError: expected [ …(18) ] to deeply equal []
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   "set_work_plan.acceptance[].criteria[]: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.acceptance[].criteria[].oneOf[1].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.acceptance[].criteria[].oneOf[2].targets[]: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.acceptance[].criteria[].oneOf[3].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.acceptance[].criteria[].oneOf[4].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.acceptance[].criteria[].oneOf[5].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.requirements[].criteria[]: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.requirements[].criteria[].oneOf[1].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.requirements[].criteria[].oneOf[2].targets[]: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.requirements[].criteria[].oneOf[3].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.requirements[].criteria[].oneOf[4].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.requirements[].criteria[].oneOf[5].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "repair_acceptance.criteria[]: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "repair_acceptance.criteria[].oneOf[1].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "repair_acceptance.criteria[].oneOf[2].targets[]: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "repair_acceptance.criteria[].oneOf[3].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "repair_acceptance.criteria[].oneOf[4].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "repair_acceptance.criteria[].oneOf[5].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+ ][39m
+
+ ❯ test/toolSchemaProviderCompat.test.ts:94:65
+     92|     const violations: string[] = [];
+     93|     for (const { name, parameters } of exposedSchemas()) walk(paramete…
+     94|     expect(violations.filter((v) => v.includes("oneOf/anyOf"))).toEqua…
+       |                                                                 ^
+     95|   });
+     96| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/29]⎯
+
+ FAIL  test/toolSchemaProviderCompat.test.ts > acceptance and requirement schema/runtime contract > represents and roundtrips 'toolVerdict' {"kind":"toolVerdict","tool":"run_lint","args":{}} on every exposed surface
+ FAIL  test/toolSchemaProviderCompat.test.ts > acceptance and requirement schema/runtime contract > represents and roundtrips 'toolVerdict' {"kind":"toolVerdict","tool":"play_walkthrough","args":{"mapId":"map_start","scenario":[{"do":"setVariable","id":"progress","value":0},{"expect":"variable","id":"progress","value":0}],"runtimeKeys":{"authored-id":[null,false,0,"0",{"nested":{}}]}}} on every exposed surface
+ FAIL  test/toolSchemaProviderCompat.test.ts > acceptance and requirement schema/runtime contract > represents and roundtrips 'mapDimensions' {"kind":"mapDimensions","target":{"mapId":"map_start"},"width":20,"height":15} on every exposed surface
+ FAIL  test/toolSchemaProviderCompat.test.ts > acceptance and requirement schema/runtime contract > represents and roundtrips 'mapCount' {"kind":"mapCount","targets":[{"mapId":"map_start"}],"count":1} on every exposed surface
+ FAIL  test/toolSchemaProviderCompat.test.ts > acceptance and requirement schema/runtime contract > represents and roundtrips 'reachability' {"kind":"reachability","target":{"mapId":"map_start"},"from":{"x":0,"y":0},"to":[{"x":1,"y":0}]} on every exposed surface
+ FAIL  test/toolSchemaProviderCompat.test.ts > acceptance and requirement schema/runtime contract > represents and roundtrips 'eventCount' {"kind":"eventCount","target":{"mapId":"map_start"},"count":0} on every exposed surface
+ FAIL  test/toolSchemaProviderCompat.test.ts > acceptance and requirement schema/runtime contract > represents and roundtrips 'targetChange' {"kind":"targetChange","target":{"mapId":"map_start"}} on every exposed surface
+ FAIL  test/toolSchemaProviderCompat.test.ts > acceptance and requirement schema/runtime contract > represents and roundtrips 'preserve' {"kind":"preserve","target":{"mapId":"map_start"}} on every exposed surface
+ FAIL  test/toolSchemaProviderCompat.test.ts > acceptance and requirement schema/runtime contract > represents and roundtrips 'imageReviewed' {"kind":"imageReviewed","target":{"mapId":"map_start"}} on every exposed surface
+ FAIL  test/toolSchemaProviderCompat.test.ts > acceptance and requirement schema/runtime contract > represents and roundtrips 'eventCount' {"kind":"eventCount","target":{"mapId":"map_start"},"count":0,"region":{"x":0,"y":1,"w":2,"h":3}} on every exposed surface
+ FAIL  test/toolSchemaProviderCompat.test.ts > acceptance and requirement schema/runtime contract > represents and roundtrips 'targetChange' {"kind":"targetChange","target":{"mapId":"map_start"},"region":{"x":0,"y":1,"w":2,"h":3}} on every exposed surface
+ FAIL  test/toolSchemaProviderCompat.test.ts > acceptance and requirement schema/runtime contract > represents and roundtrips 'preserve' {"kind":"preserve","target":{"mapId":"map_start"},"region":{"x":0,"y":1,"w":2,"h":3}} on every exposed surface
+ FAIL  test/toolSchemaProviderCompat.test.ts > acceptance and requirement schema/runtime contract > represents and roundtrips 'imageReviewed' {"kind":"imageReviewed","target":{"mapId":"map_start"},"region":{"x":0,"y":1,"w":2,"h":3}} on every exposed surface
+ FAIL  test/toolSchemaProviderCompat.test.ts > acceptance and requirement schema/runtime contract > represents and roundtrips 'mapDimensions' {"kind":"mapDimensions","target":{"newMapName":"New room"},"width":20,"height":15} on every exposed surface
+ FAIL  test/toolSchemaProviderCompat.test.ts > acceptance and requirement schema/runtime contract > represents and roundtrips 'mapCount' {"kind":"mapCount","targets":[{"newMapName":"New room"}],"count":1} on every exposed surface
+ FAIL  test/toolSchemaProviderCompat.test.ts > acceptance and requirement schema/runtime contract > represents and roundtrips 'reachability' {"kind":"reachability","target":{"newMapName":"New room"},"from":{"x":0,"y":0},"to":[{"x":1,"y":0}]} on every exposed surface
+ FAIL  test/toolSchemaProviderCompat.test.ts > acceptance and requirement schema/runtime contract > represents and roundtrips 'eventCount' {"kind":"eventCount","target":{"newMapName":"New room"},"count":0} on every exposed surface
+ FAIL  test/toolSchemaProviderCompat.test.ts > acceptance and requirement schema/runtime contract > represents and roundtrips 'targetChange' {"kind":"targetChange","target":{"newMapName":"New room"}} on every exposed surface
+ FAIL  test/toolSchemaProviderCompat.test.ts > acceptance and requirement schema/runtime contract > represents and roundtrips 'preserve' {"kind":"preserve","target":{"newMapName":"New room"}} on every exposed surface
+ FAIL  test/toolSchemaProviderCompat.test.ts > acceptance and requirement schema/runtime contract > represents and roundtrips 'imageReviewed' {"kind":"imageReviewed","target":{"newMapName":"New room"}} on every exposed surface
+ FAIL  test/toolSchemaProviderCompat.test.ts > acceptance and requirement schema/runtime contract > represents and roundtrips 'eventCount' {"kind":"eventCount","target":{"newMapName":"New room"},"count":0,"region":{"x":0,"y":1,"w":2,"h":3}} on every exposed surface
+ FAIL  test/toolSchemaProviderCompat.test.ts > acceptance and requirement schema/runtime contract > represents and roundtrips 'targetChange' {"kind":"targetChange","target":{"newMapName":"New room"},"region":{"x":0,"y":1,"w":2,"h":3}} on every exposed surface
+ FAIL  test/toolSchemaProviderCompat.test.ts > acceptance and requirement schema/runtime contract > represents and roundtrips 'preserve' {"kind":"preserve","target":{"newMapName":"New room"},"region":{"x":0,"y":1,"w":2,"h":3}} on every exposed surface
+ FAIL  test/toolSchemaProviderCompat.test.ts > acceptance and requirement schema/runtime contract > represents and roundtrips 'imageReviewed' {"kind":"imageReviewed","target":{"newMapName":"New room"},"region":{"x":0,"y":1,"w":2,"h":3}} on every exposed surface
+ FAIL  test/toolSchemaProviderCompat.test.ts > acceptance and requirement schema/runtime contract > represents and roundtrips 'mapCount' {"kind":"mapCount","targets":[{"mapId":"map_start"},{"newMapName":"New room"}],"count":2} on every exposed surface
+AssertionError: expected undefined to be 'object' // Object.is equality
+
+[32m- Expected:[39m 
+"object"
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ expectRepresentable test/toolSchemaProviderCompat.test.ts:155:25
+    153|     for (const entry of value) expectRepresentable(schema.items, entry…
+    154|   } else if (typeof value === "object" && value !== null) {
+    155|     expect(schema.type).toBe("object");
+       |                         ^
+    156|     for (const key of schema.required ?? []) expect(value).toHavePrope…
+    157|     for (const [key, entry] of Object.entries(value)) {
+ ❯ expectRepresentable test/toolSchemaProviderCompat.test.ts:153:32
+ ❯ expectRepresentable test/toolSchemaProviderCompat.test.ts:159:18
+ ❯ expectRepresentable test/toolSchemaProviderCompat.test.ts:153:32
+ ❯ expectRepresentable test/toolSchemaProviderCompat.test.ts:159:18
+ ❯ test/toolSchemaProviderCompat.test.ts:181:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/29]⎯
+
+ FAIL  test/toolSchemaProviderCompat.test.ts > acceptance and requirement schema/runtime contract > keeps the shared discriminator, closed structural keys and genuine dynamic args
+AssertionError: expected undefined to be 'object' // Object.is equality
+
+[32m- Expected:[39m 
+"object"
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ test/toolSchemaProviderCompat.test.ts:191:24
+    189|   it("keeps the shared discriminator, closed structural keys and genui…
+    190|     const item = (ACCEPTANCE_CRITERIA_SCHEMA as SchemaNode).items;
+    191|     expect(item?.type).toBe("object");
+       |                        ^
+    192|     expect(item?.required).toEqual(["kind"]);
+    193|     expect(item?.additionalProperties).toBe(false);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/29]⎯
+
