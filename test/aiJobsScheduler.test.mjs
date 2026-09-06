@@ -208,7 +208,7 @@ test('automatic report has separate state and no provider authority; partial ret
     async executeJob(input, host) { generations++; return resultFor(input, host, { text: 'retained' }); },
     async renderReport(result, host) {
       renders++; assert.equal('providerOperation' in host, false); assert.equal(result.payload.text, 'retained');
-      return { state: renders === 1 ? 'partial' : 'ready', document: { artifacts: [], missing: renders === 1 ? ['preview'] : [] } };
+      return { state: renders === 1 ? 'partial' : 'ready', document: host.report.document };
     },
   });
   const partial = waitFor(f.scheduler, e => e.states.report === 'partial');
@@ -244,7 +244,7 @@ test('renderer failure preserves generated result and permits only report retry'
   let generated = 0, rendered = 0;
   const f = await fixture(t, {
     async executeJob(input, host) { generated++; return resultFor(input, host); },
-    async renderReport() { rendered++; if (rendered === 1) throw new Error('renderer unavailable'); return { state: 'ready', document: { artifacts: [] } }; },
+    async renderReport(_result, host) { rendered++; if (rendered === 1) throw new Error('renderer unavailable'); return { state: 'ready', document: host.report.document }; },
   });
   const failure = waitFor(f.scheduler, e => e.states.report === 'failed');
   const { job } = await f.scheduler.admit({ idempotencyKey: 'render-failed', input: await inputFor(f.repository) }); await failure;

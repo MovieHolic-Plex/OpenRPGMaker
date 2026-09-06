@@ -18,12 +18,17 @@ export function aiJobsPlugin(runtime = {}) {
       signal.throwIfAborted();
       return execution.executeJob(input, host, signal);
     });
+    const renderReport = execution.renderReport && (async (result, host, signal) => {
+      if (!server.httpServer.listening) await once(server.httpServer, 'listening', { signal });
+      signal.throwIfAborted();
+      return execution.renderReport(result, host, signal);
+    });
     const proxy = (preview ? server.config.preview.proxy : server.config.server.proxy)?.['/supabase'];
     const target = typeof proxy === 'object' ? proxy.target : null;
     const normalizedTarget = target ? new URL(String(target)) : null;
     if (normalizedTarget) { normalizedTarget.username = ''; normalizedTarget.password = ''; normalizedTarget.search = ''; normalizedTarget.hash = ''; }
     const configuredBackend = normalizedTarget ? `supabase-proxy:${createHash('sha256').update(normalizedTarget.href.replace(/\/+$/, '') + ':rpg_zzu').digest('hex')}` : null;
-    const service = await openAiJobsService({ configuredBackend, directory: aiJobsDirectory(server.config.root), origins, ...execution, executeJob });
+    const service = await openAiJobsService({ configuredBackend, directory: aiJobsDirectory(server.config.root), origins, ...execution, executeJob, renderReport });
     services.add(service);
     server.middlewares.use(service.handler);
     // Preview does not run Rollup closeBundle. Await durable shutdown BEFORE closing

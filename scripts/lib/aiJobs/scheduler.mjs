@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { createReportShell, reportEvidenceKey, validateReportDocument } from './reports.mjs';
 import { canonicalJson, requireValue, validateCheckpoint, validateResult } from './validation.mjs';
 import { AiJobsServiceError, conflict, createProviderOperations, DUPLICATE_SPEND_ACKNOWLEDGED, rejectSecrets } from './providerOperations.mjs';
 
@@ -19,7 +20,20 @@ export function createAiJobsScheduler({ repository, executeJob, renderReport, di
       try { listener(event); } catch (error) { onError(error); }
     }
   }
-  async function change(callback) { const state = await repository.transaction(callback); publish(); return state; }
+  async function change(callback) {
+    let refresh = false;
+    const state = await repository.transaction(draft => {
+      const before = new Map(draft.jobs.map(job => [job.id, reportEvidenceKey(job)]));
+      callback(draft);
+      for (const job of draft.jobs) if (job.generation === 'succeeded' && before.get(job.id) !== reportEvidenceKey(job)) {
+        if (job.report !== 'running') job.report = 'pending';
+        refresh = true;
+      }
+    });
+    publish();
+    if (refresh) kick();
+    return state;
+  }
   const providers = createProviderOperations({ repository, change, dispatchProvider });
   function available(stage = 'generation') {
     if (fatal || stopped || !(stage === 'generation' ? executeJob : renderReport)) {
@@ -65,8 +79,21 @@ export function createAiJobsScheduler({ repository, executeJob, renderReport, di
       async putJson(value) { fence(); const ref = await repository.putJson(value); fence(); allowed.set(ref.sha256, ref); return ref; },
       dependencies: [],
     };
+    let reportShell;
+    let latestReport;
+    async function saveReport(document) {
+      fence(); validateReportDocument(document, reportShell, allowed); rejectSecrets(document);
+      const previous = getJob(job.id).reportRef;
+      const artifacts = [...new Map([...document.artifacts, ...(latestReport?.artifacts ?? []), previous].filter(Boolean).map(ref => [ref.sha256, ref])).values()];
+      const next = { ...document, previous, artifacts };
+      const ref = await repository.putJson(next);
+      fence(); allowed.set(ref.sha256, ref);
+      await change(draft => { fence(); draft.jobs.find(j => j.id === job.id).reportRef = ref; });
+      latestReport = next;
+      return ref;
+    }
     try {
-      for (const id of input.dependsOn) {
+      for (const id of stage === 'generation' ? input.dependsOn : []) {
         const predecessor = getJob(id);
         const result = await repository.readJson(predecessor.resultRef);
         host.dependencies.push(result);
@@ -104,22 +131,40 @@ export function createAiJobsScheduler({ repository, executeJob, renderReport, di
           current.resultRef = resultRef; current.application = input.mode === 'auto' ? 'awaiting-editor' : 'awaiting-review'; current.save = 'unsaved';
         });
       } else {
-        const result = await repository.readJson(getJob(job.id).resultRef);
-        for (const ref of [result.baseSnapshot, result.generatedSnapshot, ...result.artifacts].filter(Boolean)) allowed.set(ref.sha256, ref);
+        const captured = getJob(job.id);
+        const result = captured.resultRef ? await repository.readJson(captured.resultRef) : null;
+        const checkpoint = captured.checkpointRef ? await repository.readJson(captured.checkpointRef) : null;
+        const previous = captured.reportRef ? await repository.readJson(captured.reportRef) : null;
+        reportShell = createReportShell(captured, result, attemptId, previous, input, checkpoint);
+        for (const ref of [...reportShell.artifacts, reportShell.applied.artifact].filter(Boolean)) allowed.set(ref.sha256, ref);
+        // A readable shell is durable BEFORE launching Chromium. Each completed preview
+        // publishes a new immutable revision; crashes cannot orphan earlier successes.
+        await saveReport(reportShell);
+        host.report = { input, result, checkpoint, document: latestReport };
+        host.saveReport = saveReport;
         const report = await renderReport(result, host, controller.signal);
         fence(); requireValue(['ready', 'partial'].includes(report.state), 'Renderer must return ready or partial');
-        const reportRef = await repository.putJson(report.document);
+        requireValue(report.state !== 'ready' || !report.document.failure && report.document.applied.status !== 'unavailable'
+          && report.document.sections.every(section => section.previews.every(preview => preview.status === 'ready')), 'Ready report contains unfinished previews');
+        await saveReport(report.document);
         await change(draft => {
           if (!owns(draft, job.id, attemptId)) return;
           finish(draft, job.id, attemptId, 'succeeded');
           const current = draft.jobs.find(j => j.id === job.id);
-          current.report = report.state; current.reportRef = reportRef;
+          current.report = reportEvidenceKey(current) === reportShell.evidenceKey ? report.state : 'pending';
         });
       }
     } catch (error) {
       if (['PERSISTENCE_FAILED', 'DURABILITY_UNKNOWN', 'CORRUPT_STORAGE', 'REPOSITORY_CLOSED'].includes(error?.code)) throw error;
+      if (stage === 'report' && latestReport && !controller.signal.aborted && getJob(job.id).activeAttemptId === attemptId) {
+        await saveReport({ ...latestReport, failure: { stage: 'renderer', message: error instanceof Error ? error.message : String(error) } });
+      }
       await change(draft => {
-        if (owns(draft, job.id, attemptId)) finish(draft, job.id, attemptId, 'failed', stage === 'generation' ? 'generation-executor-failed' : 'report-renderer-failed');
+        if (owns(draft, job.id, attemptId)) {
+          finish(draft, job.id, attemptId, 'failed', stage === 'generation' ? 'generation-executor-failed' : 'report-renderer-failed');
+          const current = draft.jobs.find(j => j.id === job.id);
+          if (stage === 'report' && reportShell && reportEvidenceKey(current) !== reportShell.evidenceKey) current.report = 'pending';
+        }
       });
     } finally {
       await providers.drain();
@@ -131,12 +176,13 @@ export function createAiJobsScheduler({ repository, executeJob, renderReport, di
       let selected;
       for (const job of repository.snapshot().jobs) {
         const stage = job.generation === 'queued' && executeJob ? 'generation'
-          : job.generation === 'succeeded' && job.report === 'pending' && renderReport ? 'report' : null;
+          : ['succeeded', 'failed', 'cancelled', 'interrupted'].includes(job.generation) && job.report === 'pending' && renderReport ? 'report' : null;
         if (!stage) continue;
         const input = await repository.readJson(job.inputRef);
-        const dependencies = input.dependsOn.map(getJob);
+        const dependencies = stage === 'generation' ? input.dependsOn.map(getJob) : [];
         if (dependencies.some(j => ['failed', 'cancelled', 'interrupted'].includes(j.generation))) {
           await change(draft => { const current = draft.jobs.find(j => j.id === job.id); if (current.generation === 'queued') current.generation = 'failed'; });
+          if (renderReport) { selected = { job: getJob(job.id), input, stage: 'report' }; break; }
           continue;
         }
         if (dependencies.some(j => j.generation !== 'succeeded')) continue;
@@ -164,7 +210,7 @@ export function createAiJobsScheduler({ repository, executeJob, renderReport, di
         for (const operation of draft.operations) if (operation.attemptId === attemptId && operation.status === 'dispatched') operation.status = 'outcome-unknown';
       } else if (status === 'cancelled') {
         if (job.generation === 'queued') job.generation = 'cancelled';
-        else if (job.generation === 'succeeded' && job.report === 'pending') job.report = 'interrupted';
+        else if (job.report === 'pending') job.report = 'interrupted';
       }
     });
     if (active?.jobId === id) active.controller.abort(new AiJobsServiceError('ATTEMPT_CANCELLED', 409, 'Attempt stopped'));
@@ -181,13 +227,14 @@ export function createAiJobsScheduler({ repository, executeJob, renderReport, di
       available(stage); getJob(id);
       await change(draft => {
         const job = draft.jobs.find(j => j.id === id);
-        if (job.activeAttemptId || !(stage === 'generation' ? ['failed', 'interrupted', 'cancelled'].includes(job.generation) : job.generation === 'succeeded' && ['failed', 'partial', 'interrupted'].includes(job.report))) conflict('RETRY_NOT_ALLOWED', 'Only failed, interrupted or cancelled stages can be retried');
+        if (job.activeAttemptId || !(stage === 'generation' ? ['failed', 'interrupted', 'cancelled'].includes(job.generation) : ['succeeded', 'failed', 'cancelled', 'interrupted'].includes(job.generation) && ['failed', 'partial', 'interrupted'].includes(job.report))) conflict('RETRY_NOT_ALLOWED', 'Only failed, interrupted or cancelled stages can be retried');
         const unknown = draft.operations.filter(o => o.jobId === id && ['dispatched', 'outcome-unknown'].includes(o.status));
         if (stage === 'generation' && unknown.length) {
           if (!acknowledgeDuplicateSpend) conflict('DUPLICATE_SPEND_ACK_REQUIRED', 'Provider outcome is unknown; retry may spend again');
           for (const operation of unknown) operation.error = DUPLICATE_SPEND_ACKNOWLEDGED;
         }
         job[stage] = stage === 'generation' ? 'queued' : 'pending';
+        if (stage === 'generation') job.report = 'pending';
       });
       kick(); return getJob(id);
     },

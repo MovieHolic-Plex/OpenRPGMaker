@@ -16,7 +16,10 @@ export async function createBrowserRuntime({ origin, cacheDir, executablePath, c
   }
   return {
     dispatchProvider,
-    async executeJob(input, host, signal) {
+    executeJob: (input, host, signal) => run('generation', input, host, signal),
+    renderReport: (result, host, signal) => run('report', result, host, signal),
+  };
+  async function run(stage, input, host, signal) {
       signal.throwIfAborted();
       const base = new URL(typeof origin === 'function' ? origin() : origin);
       if (!['http:', 'https:'].includes(base.protocol) || !['127.0.0.1', 'localhost', '[::1]'].includes(base.hostname)) throw new Error('Worker bootstrap must be a local server origin');
@@ -92,7 +95,9 @@ export async function createBrowserRuntime({ origin, cacheDir, executablePath, c
           await page.exposeBinding('__aiJobHost', async (source, method, args) => {
             checkSource(source);
             if (!Array.isArray(args)) throw new Error('Invalid job binding arguments');
+            if (stage === 'report' && !['readBlob', 'readJson', 'putBlob', 'putJson', 'saveReport'].includes(method)) throw new Error('Report worker has no generation/provider authority');
             switch (method) {
+              case 'saveReport': return host.saveReport(args[0]);
               case 'readBlob': return Array.from(await host.readBlob(args[0]));
               case 'readJson': return host.readJson(args[0]);
               case 'putBlob': return host.putBlob(new Uint8Array(args[0]), args[1]);
@@ -105,14 +110,15 @@ export async function createBrowserRuntime({ origin, cacheDir, executablePath, c
           });
           await awaitWorker(page.goto(bootstrap, { waitUntil: 'domcontentloaded' }));
           await awaitWorker(ready);
-          return await awaitWorker(page.evaluate(({ input, identity }) => window.__executeAiJob(input, identity), {
-            input, identity: { jobId: host.jobId, attemptId: host.attemptId, dependencies: host.dependencies },
+          return await awaitWorker(page.evaluate(({ stage, input, identity, report }) => stage === 'report'
+            ? window.__renderAiJobReport(report, identity) : window.__executeAiJob(input, identity), {
+            stage, input, report: stage === 'report' ? host.report : null,
+            identity: { jobId: host.jobId, attemptId: host.attemptId, dependencies: host.dependencies },
           }));
         } finally { clearTimeout(timer); }
       } finally {
         signal.removeEventListener('abort', abort);
         await dispose();
       }
-    },
-  };
+  }
 }

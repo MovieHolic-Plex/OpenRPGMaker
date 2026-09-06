@@ -73,7 +73,8 @@ export function jobStates(job) { return Object.fromEntries(Object.keys(states).m
 function validateStates(v) { for (const [key, values] of Object.entries(states)) requireValue(values.includes(v[key]), `Invalid ${key} state`); }
 export function isOutcome(before, after) {
   return (!before || before.generation !== after.generation) && ['succeeded', 'failed', 'cancelled', 'interrupted'].includes(after.generation)
-    || ['report', 'application', 'save'].some(k => before?.[k] !== after[k] && ({ report: ['ready', 'partial', 'failed', 'interrupted'], application: ['applied', 'conflict', 'outcome-unknown'], save: ['saved', 'failed', 'unknown'] })[k].includes(after[k]));
+    // Preview revisions update the original result; they are not new completions.
+    || ['application', 'save'].some(k => before?.[k] !== after[k] && ({ application: ['applied', 'conflict', 'outcome-unknown'], save: ['saved', 'failed', 'unknown'] })[k].includes(after[k]));
 }
 export function validateSnapshot(s) {
   canonicalJson(s);

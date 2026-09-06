@@ -46,7 +46,14 @@ export async function openAiJobsRepository(options) {
         requireValue(snapshot.attempts.some(a => a.id === result.attemptId && a.jobId === job.id && a.stage === 'generation'), 'Result attempt mismatch');
         for (const ref of [result.baseSnapshot, ...result.artifacts, ...(result.generatedSnapshot ? [result.generatedSnapshot] : [])]) await check(ref);
       }
-      if (job.reportRef) await check(job.reportRef);
+      if (job.reportRef) {
+        await check(job.reportRef);
+        const report = await storage.readJson(job.reportRef);
+        // Legacy report documents remain readable. All explicitly listed immutable
+        // preview/revision bytes must survive restart, not just the head JSON.
+        for (const ref of report.artifacts ?? []) await check(ref);
+      }
+      if (job.applicationEvidence?.artifact?.ref) await check(job.applicationEvidence.artifact.ref);
       if (job.checkpointRef) {
         const checkpoint = await storage.readJson(job.checkpointRef);
         validateCheckpoint(checkpoint);

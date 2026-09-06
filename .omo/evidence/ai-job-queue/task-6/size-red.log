@@ -1,0 +1,41 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle --maxWorkers=1 --no-file-parallelism test/aiJobReports.test.ts -t does not repeat
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-silver-harbor-d2a7
+
+ ❯ test/aiJobReports.test.ts (2 tests | 1 failed | 1 skipped) 5809ms
+   ↓ persists a useful immutable shell before a browser failure
+   × does not repeat captured binary artwork in gallery revisions 5806ms
+     → expected true to be false // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiJobReports.test.ts > does not repeat captured binary artwork in gallery revisions
+AssertionError: expected true to be false // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+ ❯ test/aiJobReports.test.ts:66:46
+     64|   expect(report.sections.filter(s => s.kind === "artwork")).toHaveLeng…
+     65|   const serialized = JSON.stringify(report);
+     66|   expect(serialized.includes("data:image/")).toBe(false);
+       |                                              ^
+     67|   expect(serialized.length).toBeLessThan(24_000);
+     68|   for (const r of report.artifacts.filter(r => r.mediaType === "applic…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 skipped (2)
+   Start at  01:09:36
+   Duration  16.17s (transform 6.42s, setup 0ms, collect 9.05s, tests 5.81s, environment 0ms, prepare 266ms)
+
+
+EXIT=1

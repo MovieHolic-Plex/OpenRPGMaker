@@ -1,0 +1,508 @@
+{
+  "origin": "http://127.0.0.1:19841",
+  "providerCalls": 0,
+  "reportCount": 16,
+  "managedRealms": 17,
+  "labels": [
+    "assistant-map-event-quest",
+    "region-aligned",
+    "database-art-gallery",
+    "event-command-flow",
+    "tileset-cluster-edit",
+    "tileset-range-classify",
+    "tileset-unclassified-analysis",
+    "tileset-knowledge-analysis",
+    "tileset-question-followup",
+    "tileset-proposal-draft",
+    "tileset-structure-kit-metadata",
+    "image-output",
+    "read-only-answer",
+    "staged-failed",
+    "staged-cancelled",
+    "receipt-bound-applied-after"
+  ],
+  "pixelAssertions": {
+    "before": [
+      220,
+      50,
+      40,
+      255
+    ],
+    "generated": [
+      40,
+      90,
+      220,
+      255
+    ],
+    "applied": [
+      220,
+      50,
+      40,
+      255
+    ],
+    "tilesetCrop": [
+      40,
+      90,
+      220,
+      255
+    ],
+    "dbArtwork": [
+      200,
+      40,
+      180,
+      255
+    ],
+    "transparent": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "geometry": {
+    "images": [
+      {
+        "sha256": "21eb8dc7fe82aca0541566b04b9de9d6ac76c32367085644cade2f2d8f1480f9",
+        "width": 24,
+        "height": 24,
+        "alt": "generated: Captured gallery artwork 0 / artwork"
+      },
+      {
+        "sha256": "21eb8dc7fe82aca0541566b04b9de9d6ac76c32367085644cade2f2d8f1480f9",
+        "width": 24,
+        "height": 24,
+        "alt": "generated: Captured gallery artwork 1 / artwork"
+      },
+      {
+        "sha256": "21eb8dc7fe82aca0541566b04b9de9d6ac76c32367085644cade2f2d8f1480f9",
+        "width": 24,
+        "height": 24,
+        "alt": "generated: Captured item 0 / iconResourceId"
+      },
+      {
+        "sha256": "21eb8dc7fe82aca0541566b04b9de9d6ac76c32367085644cade2f2d8f1480f9",
+        "width": 24,
+        "height": 24,
+        "alt": "generated: Captured item 0 / imageResourceId"
+      },
+      {
+        "sha256": "21eb8dc7fe82aca0541566b04b9de9d6ac76c32367085644cade2f2d8f1480f9",
+        "width": 24,
+        "height": 24,
+        "alt": "generated: Captured item 1 / iconResourceId"
+      },
+      {
+        "sha256": "21eb8dc7fe82aca0541566b04b9de9d6ac76c32367085644cade2f2d8f1480f9",
+        "width": 24,
+        "height": 24,
+        "alt": "generated: Captured item 1 / imageResourceId"
+      },
+      {
+        "sha256": "ccf87094810ee820899f14cf13bb7fc3ec88f8e8ff6acc3bd7dac00b8d673aff",
+        "width": 32,
+        "height": 16,
+        "alt": "before: Captured red/blue atlas / atlas"
+      },
+      {
+        "sha256": "0372f2046ca854640355cfc38615d8e3af727bc37dd057de431941f1ecaa9080",
+        "width": 16,
+        "height": 16,
+        "alt": "before: Captured red/blue atlas / tile/1"
+      },
+      {
+        "sha256": "21eb8dc7fe82aca0541566b04b9de9d6ac76c32367085644cade2f2d8f1480f9",
+        "width": 24,
+        "height": 24,
+        "alt": "generated: Actual image output / image"
+      },
+      {
+        "sha256": "21eb8dc7fe82aca0541566b04b9de9d6ac76c32367085644cade2f2d8f1480f9",
+        "width": 24,
+        "height": 24,
+        "alt": "staged: Retained database/artwork artifact / artwork"
+      },
+      {
+        "sha256": "9f6e3477574e5c5076084bb94f60da9ff6488a332cf7a2e189919c535b264642",
+        "width": 128,
+        "height": 128,
+        "alt": "before: map-a / map"
+      },
+      {
+        "sha256": "279ae7c541b01c96abcbcb1a9e662e62e4a872090c295ccd4c671acd33bbc251",
+        "width": 128,
+        "height": 128,
+        "alt": "generated: map-a generated / map"
+      },
+      {
+        "sha256": "9f6e3477574e5c5076084bb94f60da9ff6488a332cf7a2e189919c535b264642",
+        "width": 128,
+        "height": 128,
+        "alt": "applied: Actual synchronous applied snapshot / map"
+      }
+    ],
+    "bounds": [
+      {
+        "text": "commands/0",
+        "right": 64.68951416015625,
+        "width": 566
+      },
+      {
+        "text": "text: 아주 긴 한국어 대사도 실제 저장된 명령과 같은 ...",
+        "right": 323.9410705566406,
+        "width": 566
+      },
+      {
+        "text": "commands/1",
+        "right": 64.68951416015625,
+        "width": 566
+      },
+      {
+        "text": "choices: 실제 선택",
+        "right": 111.80632019042969,
+        "width": 566
+      },
+      {
+        "text": "commands/1/0/0",
+        "right": 83.00790405273438,
+        "width": 566
+      },
+      {
+        "text": "text: 진행한 결과",
+        "right": 100.20455932617188,
+        "width": 566
+      },
+      {
+        "text": "commands/1/-4/0",
+        "right": 86.66514587402344,
+        "width": 566
+      },
+      {
+        "text": "text: 취소한 결과",
+        "right": 100.20455932617188,
+        "width": 566
+      }
+    ],
+    "states": [
+      "result | generation: succeeded | application: awaiting-review | save: unsaved | usage: unknown",
+      "result | generation: succeeded | application: awaiting-review | save: unsaved | usage: unknown",
+      "result | generation: succeeded | application: awaiting-review | save: unsaved | usage: unknown",
+      "result | generation: succeeded | application: awaiting-review | save: unsaved | usage: unknown",
+      "result | generation: succeeded | application: awaiting-review | save: unsaved | usage: unknown",
+      "checkpoint | generation: failed | application: not-requested | save: not-requested | usage: unknown",
+      "result | generation: succeeded | application: applied | save: unsaved | usage: unknown"
+    ],
+    "scrollWidth": 1280,
+    "viewport": 1280
+  },
+  "reports": [
+    {
+      "label": "assistant-map-event-quest",
+      "jobId": "df10fe3a-a0f4-4229-aa86-9125846acdd8",
+      "sections": 8,
+      "states": {
+        "application": "awaiting-review",
+        "generation": "succeeded",
+        "save": "unsaved"
+      },
+      "applied": {
+        "artifact": null,
+        "hashScheme": null,
+        "noChanges": false,
+        "reason": null,
+        "receiptId": null,
+        "scope": null,
+        "status": "not-applied"
+      }
+    },
+    {
+      "label": "region-aligned",
+      "jobId": "202d759e-db42-40f9-882f-40a309dbd4f5",
+      "sections": 4,
+      "states": {
+        "application": "awaiting-review",
+        "generation": "succeeded",
+        "save": "unsaved"
+      },
+      "applied": {
+        "artifact": null,
+        "hashScheme": null,
+        "noChanges": false,
+        "reason": null,
+        "receiptId": null,
+        "scope": null,
+        "status": "not-applied"
+      }
+    },
+    {
+      "label": "database-art-gallery",
+      "jobId": "963e5ede-e910-4a0c-9e36-945a652679a4",
+      "sections": 4,
+      "states": {
+        "application": "awaiting-review",
+        "generation": "succeeded",
+        "save": "unsaved"
+      },
+      "applied": {
+        "artifact": null,
+        "hashScheme": null,
+        "noChanges": false,
+        "reason": null,
+        "receiptId": null,
+        "scope": null,
+        "status": "not-applied"
+      }
+    },
+    {
+      "label": "event-command-flow",
+      "jobId": "af531281-b45f-40ca-9d7a-cf0cd0db0c42",
+      "sections": 1,
+      "states": {
+        "application": "awaiting-review",
+        "generation": "succeeded",
+        "save": "unsaved"
+      },
+      "applied": {
+        "artifact": null,
+        "hashScheme": null,
+        "noChanges": false,
+        "reason": null,
+        "receiptId": null,
+        "scope": null,
+        "status": "not-applied"
+      }
+    },
+    {
+      "label": "tileset-cluster-edit",
+      "jobId": "995b9676-5f66-4d04-b8e1-02cbaa6e03fb",
+      "sections": 1,
+      "states": {
+        "application": "awaiting-review",
+        "generation": "succeeded",
+        "save": "unsaved"
+      },
+      "applied": {
+        "artifact": null,
+        "hashScheme": null,
+        "noChanges": false,
+        "reason": null,
+        "receiptId": null,
+        "scope": null,
+        "status": "not-applied"
+      }
+    },
+    {
+      "label": "tileset-range-classify",
+      "jobId": "1bbfa79a-1040-489e-a6ed-956e76730b0f",
+      "sections": 1,
+      "states": {
+        "application": "awaiting-review",
+        "generation": "succeeded",
+        "save": "unsaved"
+      },
+      "applied": {
+        "artifact": null,
+        "hashScheme": null,
+        "noChanges": false,
+        "reason": null,
+        "receiptId": null,
+        "scope": null,
+        "status": "not-applied"
+      }
+    },
+    {
+      "label": "tileset-unclassified-analysis",
+      "jobId": "8419e5e4-71a9-41d9-987f-72702a94faaa",
+      "sections": 1,
+      "states": {
+        "application": "awaiting-review",
+        "generation": "succeeded",
+        "save": "unsaved"
+      },
+      "applied": {
+        "artifact": null,
+        "hashScheme": null,
+        "noChanges": false,
+        "reason": null,
+        "receiptId": null,
+        "scope": null,
+        "status": "not-applied"
+      }
+    },
+    {
+      "label": "tileset-knowledge-analysis",
+      "jobId": "ab1f2923-2a07-4952-97a5-efa30356e49c",
+      "sections": 1,
+      "states": {
+        "application": "awaiting-review",
+        "generation": "succeeded",
+        "save": "unsaved"
+      },
+      "applied": {
+        "artifact": null,
+        "hashScheme": null,
+        "noChanges": false,
+        "reason": null,
+        "receiptId": null,
+        "scope": null,
+        "status": "not-applied"
+      }
+    },
+    {
+      "label": "tileset-question-followup",
+      "jobId": "4ccfe3fb-2ea4-4513-a4ff-1fff5b1c1a1e",
+      "sections": 1,
+      "states": {
+        "application": "awaiting-review",
+        "generation": "succeeded",
+        "save": "unsaved"
+      },
+      "applied": {
+        "artifact": null,
+        "hashScheme": null,
+        "noChanges": false,
+        "reason": null,
+        "receiptId": null,
+        "scope": null,
+        "status": "not-applied"
+      }
+    },
+    {
+      "label": "tileset-proposal-draft",
+      "jobId": "93346ece-010d-4933-9f96-6ec695f963ea",
+      "sections": 1,
+      "states": {
+        "application": "awaiting-review",
+        "generation": "succeeded",
+        "save": "unsaved"
+      },
+      "applied": {
+        "artifact": null,
+        "hashScheme": null,
+        "noChanges": false,
+        "reason": null,
+        "receiptId": null,
+        "scope": null,
+        "status": "not-applied"
+      }
+    },
+    {
+      "label": "tileset-structure-kit-metadata",
+      "jobId": "7926740d-e70a-4f47-9af0-3704eef418d9",
+      "sections": 1,
+      "states": {
+        "application": "awaiting-review",
+        "generation": "succeeded",
+        "save": "unsaved"
+      },
+      "applied": {
+        "artifact": null,
+        "hashScheme": null,
+        "noChanges": false,
+        "reason": null,
+        "receiptId": null,
+        "scope": null,
+        "status": "not-applied"
+      }
+    },
+    {
+      "label": "image-output",
+      "jobId": "cb656d7f-fd01-434b-9fe3-260a20c9f7b1",
+      "sections": 1,
+      "states": {
+        "application": "awaiting-review",
+        "generation": "succeeded",
+        "save": "unsaved"
+      },
+      "applied": {
+        "artifact": null,
+        "hashScheme": null,
+        "noChanges": false,
+        "reason": null,
+        "receiptId": null,
+        "scope": null,
+        "status": "not-applied"
+      }
+    },
+    {
+      "label": "read-only-answer",
+      "jobId": "3efc4187-8301-47ab-a160-7cb4e02430d4",
+      "sections": 0,
+      "states": {
+        "application": "awaiting-review",
+        "generation": "succeeded",
+        "save": "unsaved"
+      },
+      "applied": {
+        "artifact": null,
+        "hashScheme": null,
+        "noChanges": false,
+        "reason": null,
+        "receiptId": null,
+        "scope": null,
+        "status": "not-applied"
+      }
+    },
+    {
+      "label": "staged-failed",
+      "jobId": "5daec32e-8aa8-457a-85bd-9f3083a25646",
+      "sections": 1,
+      "states": {
+        "application": "not-requested",
+        "generation": "failed",
+        "save": "not-requested"
+      },
+      "applied": {
+        "artifact": null,
+        "hashScheme": null,
+        "noChanges": false,
+        "reason": null,
+        "receiptId": null,
+        "scope": null,
+        "status": "not-applied"
+      }
+    },
+    {
+      "label": "staged-cancelled",
+      "jobId": "5382fec3-64f5-46c8-8cd4-ec3eaf2c0df0",
+      "sections": 1,
+      "states": {
+        "application": "not-requested",
+        "generation": "cancelled",
+        "save": "not-requested"
+      },
+      "applied": {
+        "artifact": null,
+        "hashScheme": null,
+        "noChanges": false,
+        "reason": null,
+        "receiptId": null,
+        "scope": null,
+        "status": "not-applied"
+      }
+    },
+    {
+      "label": "receipt-bound-applied-after",
+      "jobId": "df10fe3a-a0f4-4229-aa86-9125846acdd8",
+      "sections": 13,
+      "states": {
+        "application": "applied",
+        "generation": "succeeded",
+        "save": "unsaved"
+      },
+      "applied": {
+        "artifact": {
+          "byteLength": 684780,
+          "mediaType": "application/json",
+          "sha256": "c299f3a7d03618e893ebe1ebbde53f175fb9f044cce5a356527808f5b97062ba"
+        },
+        "hashScheme": "project-canonical-json-no-event-drafts-v1",
+        "noChanges": false,
+        "reason": null,
+        "receiptId": "2a5c2725-2976-489e-bae0-fb5c8543a43e",
+        "scope": "project",
+        "status": "available"
+      }
+    }
+  ],
+  "errors": []
+}

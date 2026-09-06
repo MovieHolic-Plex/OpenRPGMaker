@@ -5,11 +5,14 @@ import { executeImageJob } from "./executors/imageJob";
 import { executeTilesetJob } from "./executors/tilesetJob";
 import { executeRegionJob } from "./executors/regionJob";
 import type { AiJobInput, AiJobResult } from "./contracts";
-import type { AiJobHost } from "../../../scripts/lib/aiJobs/scheduler.mjs";
+import type { AiJobHost, AiReportHost } from "../../../scripts/lib/aiJobs/scheduler.mjs";
+import { renderJobReport } from "./renderJobReport";
+import type { ReportContext } from "./reportModel";
 
 declare global {
   interface Window {
     __aiJobReady(): Promise<void>;
+    __renderAiJobReport(report: ReportContext, identity: Pick<AiJobHost, "jobId" | "attemptId" | "dependencies">): ReturnType<typeof renderJobReport>;
     __aiJobHost(method: string, args: unknown[]): Promise<unknown>;
     __executeAiJob(input: AiJobInput, identity: Pick<AiJobHost, "jobId" | "attemptId" | "dependencies">): Promise<AiJobResult>;
   }
@@ -38,5 +41,17 @@ window.__executeAiJob = async (input, identity) => {
       throw new Error(`Unsupported AI job family: ${String(unexpected)}`);
     }
   }
+};
+window.__renderAiJobReport = async (report, identity) => {
+  const call = <T>(method: string, ...args: unknown[]) => window.__aiJobHost(method, args) as Promise<T>;
+  const host: AiReportHost = {
+    ...identity, report,
+    readBlob: async ref => new Uint8Array(await call<number[]>("readBlob", ref)),
+    readJson: ref => call("readJson", ref),
+    putBlob: (bytes, mediaType) => call("putBlob", Array.from(bytes), mediaType),
+    putJson: value => call("putJson", value),
+    saveReport: document => call("saveReport", document),
+  };
+  return renderJobReport(report.result, host);
 };
 if (window.__aiJobReady) await window.__aiJobReady();

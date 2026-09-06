@@ -1,4 +1,4 @@
-import type { AiJob, AiJobCheckpoint, AiJobEvent, AiJobInput, AiJobResult, AiJobsDraft, AiJobsRepository, AiJobsSnapshot, BlobRef, JsonObject, JsonValue } from '../../../src/ai/jobs/contracts';
+import type { AiJob, AiJobCheckpoint, AiJobEvent, AiJobInput, AiJobResult, AiJobsDraft, AiJobsRepository, AiJobsSnapshot, BlobRef, JsonValue } from '../../../src/ai/jobs/contracts';
 export interface AiJobHost {
   readonly jobId: string;
   readonly attemptId: string;
@@ -12,11 +12,14 @@ export interface AiJobHost {
   /** Unique deterministic step path per job; replay MUST use identical request JSON. */
   providerOperation(operation: { readonly key: string; readonly request: JsonValue }): Promise<JsonValue>;
 }
-export type AiReportHost = Omit<AiJobHost, 'providerOperation' | 'loadCheckpoint' | 'saveCheckpoint'>;
+export interface AiReportHost extends Omit<AiJobHost, 'providerOperation' | 'loadCheckpoint' | 'saveCheckpoint'> {
+  readonly report: import('../../../src/ai/jobs/reportModel').ReportContext;
+  saveReport(document: import('../../../src/ai/jobs/reportModel').JobReport): Promise<BlobRef>;
+}
 export interface AiJobsRuntime {
   readonly unavailableReason?: string;
   readonly executeJob?: (input: AiJobInput, host: AiJobHost, signal: AbortSignal) => Promise<AiJobResult>;
-  readonly renderReport?: (result: AiJobResult, host: AiReportHost, signal: AbortSignal) => Promise<{ readonly state: 'ready' | 'partial'; readonly document: JsonObject }>;
+  readonly renderReport?: (result: AiJobResult | null, host: AiReportHost, signal: AbortSignal) => Promise<{ readonly state: 'ready' | 'partial'; readonly document: import('../../../src/ai/jobs/reportModel').JobReport }>;
   /** Trusted Node-only adapter. Owns existing provider auth and accepts NO caller-selected fetch URL. */
   readonly dispatchProvider?: (request: JsonValue, context: { readonly jobId: string; readonly attemptId: string; readonly operationId: string; readonly key: string; readonly signal: AbortSignal }) => Promise<JsonValue>;
   readonly onError?: (error: unknown) => void;

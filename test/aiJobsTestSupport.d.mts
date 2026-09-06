@@ -16,6 +16,8 @@ export interface JobsHttpFixture extends JobsFixture {
   request(path?: string, options?: { method?: string; body?: unknown; headers?: Record<string, string> }): Promise<Response>;
   post(path: string, body: unknown, headers?: Record<string, string>): Promise<Response>;
 }
+export function fixture(t: TestCleanup, runtime?: AiJobsRuntime, options?: object): Promise<JobsFixture>;
+export function inputFor(repository: AiJobsRepository, overrides?: Partial<AiJobInput>): Promise<AiJobInput>;
 export function httpFixture(t: TestCleanup, runtime?: AiJobsRuntime, options?: object, httpOptions?: Partial<Parameters<typeof createAiJobsHttpHandler>[0]>): Promise<JobsHttpFixture>;
 export function waitFor(scheduler: AiJobsScheduler, predicate: (event: AiJobEvent) => boolean): Promise<AiJobEvent>;
 export function resultFor(input: AiJobInput, host: AiJobHost, payload?: JsonObject): AiJobResult;
