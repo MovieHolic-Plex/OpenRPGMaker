@@ -120,7 +120,7 @@ addFamily(ACTIONS.battle, "set_action_combat make_action_enemy set_factions simu
 addFamily(ACTIONS.world, "build_world link_maps");
 addFamily(ACTIONS.resource, "upsert_resource delete_resource upsert_resource_profile delete_resource_profile create_tileset set_tileset_properties upsert_autotile_group delete_autotile_group upsert_palette_preset upsert_tile_group delete_tile_group");
 addFamily(ACTIONS.export, "export_game");
-addFamily(ACTIONS.play, "play_walkthrough run_scene_test");
+addFamily(ACTIONS.play, "play_walkthrough run_scene_test run_action_combat_test");
 addFamily(ACTIONS.history, "revert_last_edit");
 addFamily(ACTIONS.focusView, "focus_editor_view");
 

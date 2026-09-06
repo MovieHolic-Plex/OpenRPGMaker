@@ -37,9 +37,7 @@ describe("structured action arena recipe selection", () => {
     expect(recipe.guide).toEqual({ tool: "place_npc", option: "action-controls", count: 1 });
     for (const step of recipe.steps) {
       for (const name of step.tools) {
-        // Async acceptance tool is integrated by the lead in a separate lane.
-        if (name === "run_action_combat_test") expect(step.id).toBe("combat-proof");
-        else expect(getTool(name), name).toBeDefined();
+        expect(getTool(name), name).toBeDefined();
       }
     }
     expect(recipe.steps.find((step) => step.id === "combat-proof")?.tools).toContain("run_action_combat_test");
