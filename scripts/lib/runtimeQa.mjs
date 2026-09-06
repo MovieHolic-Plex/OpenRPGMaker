@@ -331,6 +331,17 @@ export function evaluateExpect(expected, observed) {
   scalar("gold", (s) => s.gold);
   scalar("battleResult", (s) => s.battleResult);
 
+  for (const key of ["inventoryCounts", "ownedMonsterCounts"]) {
+    for (const [id, wanted] of Object.entries(expected[key] ?? {})) {
+      const actual = state?.[key]?.[id];
+      if (actual === undefined) {
+        failures.push(`${key}[${id}]: runtime state/counts unavailable`);
+      } else if (actual !== wanted) {
+        failures.push(`${key}[${id}]: expected ${wanted}, actual ${actual}`);
+      }
+    }
+  }
+
   // 부등 기대치 — "값이 **아니어야** 한다". 동등만으로는 대조군을 표현할 수 없다:
   // "골렘이 있으면 안 움직인다"(x 동등)는 입력이 아예 죽어도 통과하므로, 골렘 없는 대조군에서
   // "움직였다"를 단정해야 비로소 증거가 된다. 그것이 `xNot`/`yNot` 이다.

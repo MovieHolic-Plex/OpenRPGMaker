@@ -35,6 +35,9 @@ export type RuntimeDebugHook = {
     selfSwitches: PlaySession["selfSwitches"];
     timers: Record<string, number>;
     inventory: Record<string, number>;
+    monsterInstances: PlaySession["monsterInstances"];
+    monsterParty: PlaySession["monsterParty"];
+    monsterBox: PlaySession["monsterBox"];
     partyActorIds: string[];
     gameTime: PlaySession["gameTime"];
     npcActivities: PlaySession["npcActivities"];
@@ -272,6 +275,9 @@ export function installPlaySceneTestHooks(
         selfSwitches: structuredClone(session.selfSwitches),
         timers: { ...session.timers },
         inventory: { ...session.inventory },
+        monsterInstances: structuredClone(session.monsterInstances),
+        monsterParty: [...session.monsterParty],
+        monsterBox: [...session.monsterBox],
         partyActorIds: [...session.partyActorIds],
         gameTime: session.gameTime ? { ...session.gameTime } : undefined,
         npcActivities: { ...(session.npcActivities ?? {}) },

@@ -786,6 +786,14 @@ Chromium local network 검사만 캡처 실행 인자로 끈다. 일반 출하 �
 - 이 세션의 무격리 게이트를 중단하고, 환경의 Supabase URL/키/프록시를 비운 뒤 Node `--import`로 **실 네트워크 fetch 차단**을 설치해 다시 실행했다. `.env.local`을 직접 읽는 테스트도 있으므로 환경 변수만 비우는 것으로 충분하지 않다. 네트워크 모의 응답은 그대로 쓰며 실 DB URL과 외부 주소 요청을 거절한다. 로컬 HTTP 하네스는 허용하되 `.env.local`의 실제 DB origin은 로컬이어도 막는다.
 - 세션 증거: `output/evidence/concept-expansion/README.md`, 원격 저장 직후 증명 `supabase-proof-first-save.json`. 후속 저장에서는 CAS가 동시 변경을 감지해 덮어쓰기를 거절했다. 실 콘텐츠 작업과 전체 검사를 같은 공유 프로젝트에서 병행하지 말고, 외부 쓰기가 끝난 뒤 최신 스냅샷으로 추가하고 재로드하라.
 
+## 조수 보상 저작과 출하 플레이어 검증 (2026-09-06)
+
+`npcCommandContract`, `aiCompletionAccounting`, `assistantDependencyRetry`, `npcRewardAcceptance`, `npcRewardSession`은 각각 명령 규격, 적용 완료 원장, 종속 보류/재시도, 실제 장면 보상, 세션 완료 판정을 검사한다. 보상 요구는 `IntentDeclaration.npcRewards`에서 오며 최종 이벤트 명령으로 역산하지 않는다. 페이지 두 개나 도구 성공 횟수는 지급 증거가 아니다.
+
+실제 모델 검증은 별도 원격 QA 프로젝트에서 조수를 실행하고 정상 저장 후 같은 project id로 다시 읽는다. 재로드한 JSON을 `npm run qa:runtime -- --scenario assistant-reward --project <path>`에 전달한다. 이 시나리오는 `player.html`에서 실제 상호작용 두 번으로 `item_capture_orb`와 `species_leafling`이 각각 `0/0 → 5/1 → 5/1`인지 검사한다. 맵은 `map_blank_start`, 시작점은 `(10,8)`, 고정 보상 NPC는 `(10,7)`이다. 장면 테스트가 통과해도 출하 플레이어 검증을 생략하지 않는다.
+
+런타임 QA의 선택적 `inventoryCounts`/`ownedMonsterCounts`는 요청한 ID만 manifest에 기록한다. 몬스터 수는 파티와 보관함의 소유 인스턴스를 합쳐 세며, 훅이나 관측 데이터가 없으면 0으로 간주하지 않고 실패한다. 관련 회귀는 `runtimeQaGate`, `runtimeQaInstrumentationBoundary`, `runtimeQaReport`다.
+
 ## 실내 조립·형상 검증 (2026-09-05)
 
 `test/interiorConceptAssemblies.test.ts`가 19시설×3seed 시공, 상판 소품의 전체 셀, 벽시계 위치, 장소 shape 직렬화·검증, 메타/통행 사용자 오버라이드 보존을 검사한다. 관련 13파일·253테스트 및 앱 타입 게이트가 통과했다. 이번 전체 gates 실행은 최종 리포트를 남기기 전 exit 143으로 종료되어 전체 기준선 비교를 완료하지 못했다. 원인 미확정이며 전체 통과로 보고하지 않는다. 로컬 증거는 `output/evidence/concept-v2/validation.json` 및 `focused-tests.log`.

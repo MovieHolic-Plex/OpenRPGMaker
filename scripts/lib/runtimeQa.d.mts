@@ -93,6 +93,10 @@ export type RuntimeQaExpect = {
   /** y 의 부등 기대치. {@link RuntimeQaExpect.xNot} 참조. */
   readonly yNot?: number;
   readonly gold?: number;
+  /** Exact inventory quantities keyed by item ID; only requested IDs are observed. */
+  readonly inventoryCounts?: Readonly<Record<string, number>>;
+  /** Owned instances in monsterParty + monsterBox, keyed by species ID. */
+  readonly ownedMonsterCounts?: Readonly<Record<string, number>>;
   /**
    * 이 버트까지 오디오 엔진이 **재생 지시를 받은** 리소스 id 가 전부 포함되어야 한다
    * (`window.__oprnAudioObserved`). 스크린샷은 소리를 못 잡으므로 SE 경로가 실제로 도달했는지는 이 축만이 증명한다.
@@ -267,6 +271,9 @@ export type RuntimeQaCompactState = {
   readonly x: number;
   readonly y: number;
   readonly gold: number;
+  /** Present only when requested; null means the runtime collection is unavailable. */
+  readonly inventoryCounts?: Readonly<Record<string, number>> | null;
+  readonly ownedMonsterCounts?: Readonly<Record<string, number>> | null;
 };
 
 export type RuntimeQaBattleTextNode = {
