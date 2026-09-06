@@ -46,7 +46,7 @@ export function buildToolCapabilityIndex(tools: readonly ToolDefinition[] = acti
   }
 
   const lines: string[] = [
-    `${TOOL_CAPABILITY_INDEX_HEADING}(활성 ${live.length}개 · 이름만)`,
+    `${TOOL_CAPABILITY_INDEX_HEADING}(활성 ${live.length}개 · 전체 스키마는 tools 참조)`,
     "활성 도구의 전체 설명과 입력 스키마는 처음부터 tools에 제공된다. 질문 모드에서는 조회 도구만 호출할 수 있다.",
   ];
   for (const { label } of AREA_ORDER) {

@@ -88,3 +88,18 @@ The temporary baseline worktree was removed after verification; shared main was 
   and independent-review components were not implemented. Existing context/window accounting
   must incorporate the larger native schema payload in the subsequent context component.
 - No user game content, live database writes, push, PR or merge performed by this component.
+
+## Final provider-audit handoff
+
+- Parent audit confirms neither supported subscription endpoint has a verified numeric
+  cap: Antigravity uses Cloud Code Assist (`daily-cloudcode-pa.googleapis.com`), Codex
+  uses `chatgpt.com/backend-api/codex/responses`. Vertex/Chat Completions limits are not
+  evidence for these endpoints. No speculative limit or delegation layer was added.
+- Full schemas are a separate `ChatRequest.tools` field. `compactMessagesForRequest`
+  receives only `this.messages`; the same complete tools array is attached after that
+  clamp. Prompt-character trimming therefore cannot truncate native definitions.
+- Grounding component handoff: reserve/account for full serialized native tools when
+  budgeting the combined model window. Do not move schemas into a trimmable text index
+  or reintroduce name-only discovery as the authoritative catalog.
+- The index heading now identifies the native tools field as the full schema source.
+  This follow-up changes only prose/handoff documentation; no new prose-pinning test.
