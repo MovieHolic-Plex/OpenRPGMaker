@@ -1,9 +1,10 @@
 // editor/tools/playTools.ts
 // Play validation tools. They create their own runtime sessions and never mutate the project.
 
-import { runSceneTest, type SceneStep } from "@/testing/sceneTestRunner";
+import { isSceneTestInput, runSceneTest } from "@/testing/sceneTestRunner";
 import { runWalkthrough } from "@/testing/walkthroughRunner";
 import type { ToolDefinition, ToolExecResult } from "./types";
+import { ToolError } from "./types";
 import { COORD_SCHEMA } from "./schemaShapes";
 
 const playWalkthrough: ToolDefinition = {
@@ -80,7 +81,7 @@ const runSceneTestTool: ToolDefinition = {
   description:
     "브라우저 없이 장면을 고정 tick으로 실행해 컷신/카메라/스폰/픽처/오디오 상태를 검증한다. 입력: " +
     "{mapId,start:{x,y},steps:[{kind:'wait',ticks}|{kind:'face',dir}|{kind:'set',switches?,variables?,inventory?,mapId?,x?,y?}|{kind:'move',dir|to}|{kind:'interact'}|{kind:'gift',eventId?,itemId}|{kind:'choose',index}|{kind:'retryCheckpoint'}|{kind:'advanceDays',days}|{kind:'expect',...}]}." +
-    " expect는 playerAt, switchOn/Off, variableEquals, variableAtLeast, eventAt, eventOnMap, eventDistanceToPlayerLessThan, followerCount, followerAt, cameraAt, lightingAmbient, lightAt, lightCount, weatherKind, animationPlaying, fieldSpawnCount, spawnedCount, pictureVisible, bgmPlaying, gameOver, endingReached, cutsceneLocked, mapId, gameTimeAt, timePhase, cropStageAt, inventoryCount, friendshipAtLeast, shopStock를 지원한다.",
+    " expect는 playerAt, switchOn/Off, variableEquals, variableAtLeast, eventAt, eventOnMap, eventDistanceToPlayerLessThan, followerCount, followerAt, cameraAt, lightingAmbient, lightAt, lightCount, weatherKind, animationPlaying, fieldSpawnCount, spawnedCount, pictureVisible, bgmPlaying, gameOver, endingReached, cutsceneLocked, mapId, gameTimeAt, timePhase, cropStageAt, inventoryCount, friendshipAtLeast, shopStock를 지원한다. 필드 액션 전투는 실행하지 않으며, wait/스폰 성공은 전투 증거가 아니다. 액션 전투는 run_action_combat_test로 검증한다.",
   mode: "read",
   parameters: {
     type: "object",
@@ -108,12 +109,8 @@ const runSceneTestTool: ToolDefinition = {
     required: ["mapId", "start", "steps"],
   },
   run(project, args): ToolExecResult {
-    const input = {
-      mapId: args.mapId as string,
-      start: args.start as { x: number; y: number },
-      steps: Array.isArray(args.steps) ? (args.steps as SceneStep[]) : [],
-    };
-    const result = runSceneTest(project, input);
+    if (!isSceneTestInput(args)) throw new ToolError("Malformed scene test input: use supported step fields, integer coordinates, and exactly one move dir or to.", { code: "invalid-scene-test" });
+    const result = runSceneTest(project, args);
     return {
       summary: result.ok
         ? `scene test 성공 (${result.stepsRun}/${result.totalSteps} 스텝)`
@@ -132,4 +129,19 @@ const runSceneTestTool: ToolDefinition = {
   },
 };
 
-export const PLAY_TOOLS: readonly ToolDefinition[] = [playWalkthrough, runSceneTestTool];
+const runActionCombatTestTool: ToolDefinition = {
+  name: "run_action_combat_test",
+  description: "전용 브라우저 플레이어에서 필드 액션 공격·처치·피격·회피·스태미나·적 투사체·보상을 실제 실행한다. 현재 맵/프로젝트에 귀속된 하네스 증거만 완료 조건을 통과한다. 장면 테스트나 모델 제공 증거로 대체할 수 없다.",
+  mode: "read",
+  parameters: {
+    type: "object",
+    properties: { mapId: { type: "string", minLength: 1 } },
+    required: ["mapId"],
+    additionalProperties: false,
+  },
+  run(): ToolExecResult {
+    throw new ToolError("Action combat proof requires the asynchronous browser harness.", { code: "async-harness-required" });
+  },
+};
+
+export const PLAY_TOOLS: readonly ToolDefinition[] = [playWalkthrough, runSceneTestTool, runActionCombatTestTool];
