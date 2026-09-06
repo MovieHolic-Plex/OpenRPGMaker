@@ -1,0 +1,1003 @@
+{
+  "commit": "f86474547028cddf795c8e431b2195b7edccd201",
+  "tree": "8386dd1efe4338f705d6a7accdbdefaa3b0beb6a",
+  "actualMonitorOutput": "status: completed exit_code: 0\n\n> rpg-zzu@0.1.0 test\n> node scripts/run-vitest.mjs run --configLoader bundle test/audioQaInstrumentation.test.ts test/playerAudioQaLifecycle.test.ts test/audioEnginePlaybackControls.test.ts test/lifeQaObservability.test.ts\n\n\n RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2\n\n ✓ test/audioEnginePlaybackControls.test.ts (11 tests) 16ms\n ✓ test/audioQaInstrumentation.test.ts (5 tests) 23ms\n ✓ test/playerAudioQaLifecycle.test.ts (3 tests) 259ms\n ✓ test/lifeQaObservability.test.ts (7 tests) 344ms\n\n Test Files  4 passed (4)\n      Tests  26 passed (26)\n   Start at  12:06:17\n   Duration  9.85s (transform 10.38s, setup 0ms, collect 16.63s, tests 642ms, environment 947ms, prepare 480ms)\n\n{\"supervisorAudio\":true,\"head\":\"f86474547028cddf795c8e431b2195b7edccd201\",\"ok\":true,\"runs\":[{\"bootFlag\":\"omitted\",\"observed\":{\"globals\":[],\"mirrors\":0,\"markers\":0},\"nativePlayback\":{\"event\":\"playing\",\"src\":\"http://127.0.0.1:33943/assets/cc0/audio/catalog/rtp-fld-003-amber-meadow-end-final_f5dafd12.mp3\",\"loop\":true,\"paused\":false,\"readyState\":4,\"currentTime\":0,\"volume\":0.1512000000278155,\"playbackRate\":1,\"error\":null},\"audioObservation\":{\"publicState\":{\"volume\":{\"bgm\":0.7,\"se\":0.8},\"playbackRate\":1,\"pan\":0,\"fadeInMs\":600},\"allOprnGlobals\":[\"__oprnRuntimeJuice\",\"__oprnJuiceLog\",\"__oprnPlayBootLog\"]},\"audioCleanup\":{\"globals\":[],\"audioElements\":0},\"errors\":[],\"failedRequests\":[],\"httpErrors\":[],\"consoleErrors\":[],\"contextClosed\":true},{\"bootFlag\":\"false\",\"observed\":{\"globals\":[],\"mirrors\":0,\"markers\":0},\"nativePlayback\":{\"event\":\"playing\",\"src\":\"http://127.0.0.1:33943/assets/cc0/audio/catalog/rtp-fld-003-amber-meadow-end-final_f5dafd12.mp3\",\"loop\":true,\"paused\":false,\"readyState\":4,\"currentTime\":0,\"volume\":0.09158333333333332,\"playbackRate\":1,\"error\":null},\"audioObservation\":{\"publicState\":{\"volume\":{\"bgm\":0.7,\"se\":0.8},\"playbackRate\":1,\"pan\":0,\"fadeInMs\":600},\"allOprnGlobals\":[\"__oprnRuntimeJuice\",\"__oprnJuiceLog\",\"__oprnPlayBootLog\"]},\"audioCleanup\":{\"globals\":[],\"audioElements\":0},\"errors\":[],\"failedRequests\":[{\"url\":\"http://127.0.0.1:33943/assets/cc0/audio/catalog/rtp-fld-003-amber-meadow-end-final_f5dafd12.mp3\",\"failure\":{\"errorText\":\"net::ERR_ABORTED\"}}],\"httpErrors\":[],\"consoleErrors\":[],\"contextClosed\":true},{\"bootFlag\":\"true\",\"nativePlayback\":{\"event\":\"playing\",\"src\":\"http://127.0.0.1:33943/assets/cc0/audio/catalog/rtp-fld-003-amber-meadow-end-final_f5dafd12.mp3\",\"loop\":true,\"paused\":false,\"readyState\":4,\"currentTime\":0,\"volume\":0.1077999999721845,\"playbackRate\":1,\"error\":null},\"audioObservation\":{\"publicState\":{\"volume\":{\"bgm\":0.7,\"se\":0.8},\"playbackRate\":1,\"pan\":0,\"fadeInMs\":600},\"qaState\":{\"volume\":{\"bgm\":0.7,\"se\":0.8},\"playbackRate\":1,\"pan\":0,\"fadeInMs\":600},\"resources\":[\"cc0-bgm-rtp-fld-003\"],\"allOprnGlobals\":[\"__oprnAudioState\",\"__oprnAudioObserved\",\"__oprnRuntimeJuice\",\"__oprnJuiceLog\",\"__oprnPlayBootLog\",\"__oprnInput\",\"__oprnPlayerSprite\",\"__oprnCharacterSprites\",\"__oprnCamera\",\"__oprnPerf\",\"__oprnEmotes\",\"__oprnActionCombat\",\"__oprnDebug\"]},\"audioCleanup\":{\"globals\":[],\"audioElements\":0},\"rejectedObservedStateUnchanged\":true,\"errors\":[],\"failedRequests\":[{\"url\":\"http://127.0.0.1:33943/assets/cc0/audio/catalog/rtp-fld-003-amber-meadow-end-final_f5dafd12.mp3\",\"failure\":{\"errorText\":\"net::ERR_ABORTED\"}}],\"httpErrors\":[],\"consoleErrors\":[],\"contextClosed\":true}],\"cleanup\":{\"browserClosed\":true,\"contextsClosed\":true,\"serverClosed\":true,\"cacheRemoved\":true,\"remoteWrites\":0}}",
+  "exit": 0,
+  "tests": {
+    "files": 4,
+    "passed": 26
+  },
+  "browser": {
+    "head": "f86474547028cddf795c8e431b2195b7edccd201",
+    "tree": "8386dd1efe4338f705d6a7accdbdefaa3b0beb6a",
+    "deadlineMs": 120000,
+    "surface": "shipped player.html through vite.player-qa.config.ts/exportProjectStoreShim",
+    "cwd": "/home/main/z-project/rpg-zzu-life-full-p2",
+    "url": "http://127.0.0.1:33943/player.html",
+    "port": 33943,
+    "browser": "chromium",
+    "project": "Life QA observability fixture",
+    "projectPath": ".omo/evidence/life-full-20260906/5/project.json",
+    "viewport": {
+      "width": 1280,
+      "height": 960
+    },
+    "runs": [
+      {
+        "qa": false,
+        "bootFlag": "omitted",
+        "milestones": [
+          {
+            "phase": "navigation-trigger",
+            "elapsedMs": 96.03206899999998
+          },
+          {
+            "phase": "domcontentloaded",
+            "elapsedMs": 2277.3582749999996
+          },
+          {
+            "phase": "title-present",
+            "elapsedMs": 2645.684271
+          },
+          {
+            "phase": "scene-ready",
+            "elapsedMs": 5150.441428
+          },
+          {
+            "phase": "menu-present",
+            "elapsedMs": 5512.8326400000005
+          },
+          {
+            "phase": "native-bgm-playing",
+            "elapsedMs": 5513.009944
+          }
+        ],
+        "errors": [],
+        "failedRequests": [],
+        "httpErrors": [],
+        "consoleErrors": [],
+        "audioEvents": [
+          {
+            "event": "playing",
+            "src": "http://127.0.0.1:33943/assets/cc0/audio/catalog/rtp-fld-003-amber-meadow-end-final_f5dafd12.mp3",
+            "loop": true,
+            "paused": false,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0.1512000000278155,
+            "playbackRate": 1,
+            "error": null
+          }
+        ],
+        "navigationStatus": 200,
+        "observed": {
+          "globals": [],
+          "mirrors": 0,
+          "markers": 0
+        },
+        "actions": [
+          "Enter: new game",
+          "Escape: visible menu"
+        ],
+        "nativePlayback": {
+          "event": "playing",
+          "src": "http://127.0.0.1:33943/assets/cc0/audio/catalog/rtp-fld-003-amber-meadow-end-final_f5dafd12.mp3",
+          "loop": true,
+          "paused": false,
+          "readyState": 4,
+          "currentTime": 0,
+          "volume": 0.1512000000278155,
+          "playbackRate": 1,
+          "error": null
+        },
+        "audioObservation": {
+          "publicState": {
+            "volume": {
+              "bgm": 0.7,
+              "se": 0.8
+            },
+            "playbackRate": 1,
+            "pan": 0,
+            "fadeInMs": 600
+          },
+          "allOprnGlobals": [
+            "__oprnRuntimeJuice",
+            "__oprnJuiceLog",
+            "__oprnPlayBootLog"
+          ]
+        },
+        "audioCleanup": {
+          "globals": [],
+          "audioElements": 0
+        },
+        "contextClosed": true
+      },
+      {
+        "qa": false,
+        "bootFlag": "false",
+        "milestones": [
+          {
+            "phase": "navigation-trigger",
+            "elapsedMs": 22.859561000000213
+          },
+          {
+            "phase": "domcontentloaded",
+            "elapsedMs": 1332.301829
+          },
+          {
+            "phase": "title-present",
+            "elapsedMs": 1661.6446660000001
+          },
+          {
+            "phase": "scene-ready",
+            "elapsedMs": 3766.809078
+          },
+          {
+            "phase": "menu-present",
+            "elapsedMs": 4060.5797359999997
+          },
+          {
+            "phase": "native-bgm-playing",
+            "elapsedMs": 4060.612067
+          }
+        ],
+        "errors": [],
+        "failedRequests": [
+          {
+            "url": "http://127.0.0.1:33943/assets/cc0/audio/catalog/rtp-fld-003-amber-meadow-end-final_f5dafd12.mp3",
+            "failure": {
+              "errorText": "net::ERR_ABORTED"
+            }
+          }
+        ],
+        "httpErrors": [],
+        "consoleErrors": [],
+        "audioEvents": [
+          {
+            "event": "playing",
+            "src": "http://127.0.0.1:33943/assets/cc0/audio/catalog/rtp-fld-003-amber-meadow-end-final_f5dafd12.mp3",
+            "loop": true,
+            "paused": false,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0.09158333333333332,
+            "playbackRate": 1,
+            "error": null
+          }
+        ],
+        "navigationStatus": 200,
+        "observed": {
+          "globals": [],
+          "mirrors": 0,
+          "markers": 0
+        },
+        "actions": [
+          "Enter: new game",
+          "Escape: visible menu"
+        ],
+        "nativePlayback": {
+          "event": "playing",
+          "src": "http://127.0.0.1:33943/assets/cc0/audio/catalog/rtp-fld-003-amber-meadow-end-final_f5dafd12.mp3",
+          "loop": true,
+          "paused": false,
+          "readyState": 4,
+          "currentTime": 0,
+          "volume": 0.09158333333333332,
+          "playbackRate": 1,
+          "error": null
+        },
+        "audioObservation": {
+          "publicState": {
+            "volume": {
+              "bgm": 0.7,
+              "se": 0.8
+            },
+            "playbackRate": 1,
+            "pan": 0,
+            "fadeInMs": 600
+          },
+          "allOprnGlobals": [
+            "__oprnRuntimeJuice",
+            "__oprnJuiceLog",
+            "__oprnPlayBootLog"
+          ]
+        },
+        "audioCleanup": {
+          "globals": [],
+          "audioElements": 0
+        },
+        "contextClosed": true
+      },
+      {
+        "qa": true,
+        "bootFlag": "true",
+        "milestones": [
+          {
+            "phase": "navigation-trigger",
+            "elapsedMs": 22.599255000000994
+          },
+          {
+            "phase": "domcontentloaded",
+            "elapsedMs": 1332.4508619999997
+          },
+          {
+            "phase": "title-present",
+            "elapsedMs": 1629.5194300000003
+          },
+          {
+            "phase": "scene-ready",
+            "elapsedMs": 3783.8655959999996
+          },
+          {
+            "phase": "accepted-and-rejected-actions-observed",
+            "elapsedMs": 4005.1530299999995
+          },
+          {
+            "phase": "native-bgm-playing",
+            "elapsedMs": 4005.266592
+          }
+        ],
+        "errors": [],
+        "failedRequests": [
+          {
+            "url": "http://127.0.0.1:33943/assets/cc0/audio/catalog/rtp-fld-003-amber-meadow-end-final_f5dafd12.mp3",
+            "failure": {
+              "errorText": "net::ERR_ABORTED"
+            }
+          }
+        ],
+        "httpErrors": [],
+        "consoleErrors": [],
+        "audioEvents": [
+          {
+            "event": "playing",
+            "src": "http://127.0.0.1:33943/assets/cc0/audio/catalog/rtp-fld-003-amber-meadow-end-final_f5dafd12.mp3",
+            "loop": true,
+            "paused": false,
+            "readyState": 4,
+            "currentTime": 0,
+            "volume": 0.1077999999721845,
+            "playbackRate": 1,
+            "error": null
+          }
+        ],
+        "navigationStatus": 200,
+        "actions": [
+          "Enter: new game",
+          "prearmed oprn:action -> keyboard z: till",
+          "prearmed oprn:action -> keyboard z: rejected"
+        ],
+        "first": {
+          "receipt": {
+            "kind": "action",
+            "mapId": "map_blank_start",
+            "handled": true,
+            "farmAttempts": [
+              {
+                "kind": "tilled",
+                "x": 2,
+                "y": 3,
+                "itemId": "qa-hoe",
+                "energySpent": 1,
+                "xpAwarded": {},
+                "affectedTiles": [
+                  {
+                    "x": 2,
+                    "y": 3,
+                    "kind": "tilled"
+                  }
+                ]
+              }
+            ],
+            "sequence": 1
+          },
+          "state": {
+            "farmPlots": {
+              "map_blank_start": {
+                "2,3": {
+                  "tilled": true,
+                  "watered": false
+                }
+              }
+            },
+            "energy": 0,
+            "makerInstances": {},
+            "actionReceipt": {
+              "kind": "action",
+              "mapId": "map_blank_start",
+              "handled": true,
+              "farmAttempts": [
+                {
+                  "kind": "tilled",
+                  "x": 2,
+                  "y": 3,
+                  "itemId": "qa-hoe",
+                  "energySpent": 1,
+                  "xpAwarded": {},
+                  "affectedTiles": [
+                    {
+                      "x": 2,
+                      "y": 3,
+                      "kind": "tilled"
+                    }
+                  ]
+                }
+              ],
+              "sequence": 1
+            },
+            "eventLocations": {},
+            "currentMapId": "map_blank_start",
+            "x": 2,
+            "y": 2,
+            "gold": 0,
+            "switches": {
+              "sw_0001": false,
+              "sw_0002": false,
+              "sw_0003": false,
+              "sw_0004": false,
+              "sw_0005": false,
+              "sw_0006": false,
+              "sw_0007": false,
+              "sw_0008": false,
+              "sw_0009": false,
+              "sw_0010": false,
+              "sw_0011": false,
+              "sw_0012": false,
+              "sw_0013": false,
+              "sw_0014": false,
+              "sw_0015": false,
+              "sw_0016": false,
+              "sw_0017": false,
+              "sw_0018": false,
+              "sw_0019": false,
+              "sw_0020": false
+            },
+            "variables": {
+              "var_0001": 0,
+              "var_0002": 0,
+              "var_0003": 0,
+              "var_0004": 0,
+              "var_0005": 0,
+              "var_0006": 0,
+              "var_0007": 0,
+              "var_0008": 0,
+              "var_0009": 0,
+              "var_0010": 0,
+              "var_0011": 0,
+              "var_0012": 0,
+              "var_0013": 0,
+              "var_0014": 0,
+              "var_0015": 0,
+              "var_0016": 0,
+              "var_0017": 0,
+              "var_0018": 0,
+              "var_0019": 0,
+              "var_0020": 0
+            },
+            "selfSwitches": {},
+            "timers": {},
+            "inventory": {
+              "qa-hoe": 1
+            },
+            "partyActorIds": [
+              "actor_hero"
+            ],
+            "npcActivities": {},
+            "friendship": {},
+            "rng": {
+              "seed": 775811385,
+              "streams": {
+                "encounter": {
+                  "seed": 610575609,
+                  "state": 610575609
+                },
+                "battle": {
+                  "seed": 2749751422,
+                  "state": 2749751422
+                },
+                "movement": {
+                  "seed": 2694878313,
+                  "state": 2694878313
+                },
+                "fishing": {
+                  "seed": 3003318042,
+                  "state": 3003318042
+                },
+                "misc": {
+                  "seed": 1317704724,
+                  "state": 1317704724
+                }
+              }
+            }
+          },
+          "mirror": {
+            "farmPlots": {
+              "map_blank_start": {
+                "2,3": {
+                  "tilled": true,
+                  "watered": false
+                }
+              }
+            },
+            "energy": 0,
+            "makerInstances": {},
+            "actionReceipt": {
+              "kind": "action",
+              "mapId": "map_blank_start",
+              "handled": true,
+              "farmAttempts": [
+                {
+                  "kind": "tilled",
+                  "x": 2,
+                  "y": 3,
+                  "itemId": "qa-hoe",
+                  "energySpent": 1,
+                  "xpAwarded": {},
+                  "affectedTiles": [
+                    {
+                      "x": 2,
+                      "y": 3,
+                      "kind": "tilled"
+                    }
+                  ]
+                }
+              ],
+              "sequence": 1
+            },
+            "mapId": "map_blank_start",
+            "inputEnabled": true,
+            "running": false,
+            "player": {
+              "x": 2,
+              "y": 2
+            },
+            "switches": {
+              "sw_0001": false,
+              "sw_0002": false,
+              "sw_0003": false,
+              "sw_0004": false,
+              "sw_0005": false,
+              "sw_0006": false,
+              "sw_0007": false,
+              "sw_0008": false,
+              "sw_0009": false,
+              "sw_0010": false,
+              "sw_0011": false,
+              "sw_0012": false,
+              "sw_0013": false,
+              "sw_0014": false,
+              "sw_0015": false,
+              "sw_0016": false,
+              "sw_0017": false,
+              "sw_0018": false,
+              "sw_0019": false,
+              "sw_0020": false
+            },
+            "variables": {
+              "var_0001": 0,
+              "var_0002": 0,
+              "var_0003": 0,
+              "var_0004": 0,
+              "var_0005": 0,
+              "var_0006": 0,
+              "var_0007": 0,
+              "var_0008": 0,
+              "var_0009": 0,
+              "var_0010": 0,
+              "var_0011": 0,
+              "var_0012": 0,
+              "var_0013": 0,
+              "var_0014": 0,
+              "var_0015": 0,
+              "var_0016": 0,
+              "var_0017": 0,
+              "var_0018": 0,
+              "var_0019": 0,
+              "var_0020": 0
+            },
+            "timers": {},
+            "timerActive": {},
+            "flags": {},
+            "mapOverrides": {},
+            "gold": 0,
+            "inventory": {
+              "qa-hoe": 1
+            },
+            "partyActorIds": [
+              "actor_hero"
+            ],
+            "actorSkillIds": {},
+            "actorExperience": {
+              "actor_hero": 0
+            },
+            "actorLevels": {
+              "actor_hero": 1,
+              "actor_guardian": 1,
+              "actor_mage": 1,
+              "actor_scout": 1,
+              "actor_cleric": 1,
+              "actor_ranger": 1
+            },
+            "actorVitals": {
+              "actor_hero": {
+                "hp": 514,
+                "mp": 43,
+                "maxHp": 514,
+                "maxMp": 43
+              }
+            },
+            "eventLocations": {},
+            "followers": [],
+            "followerTrail": [],
+            "removedEventIds": {},
+            "spawnedEvents": {},
+            "camera": {
+              "mode": "follow",
+              "target": {
+                "kind": "player"
+              }
+            },
+            "lighting": {
+              "ambient": 0,
+              "sources": []
+            },
+            "actorEquipment": {
+              "actor_hero": {
+                "weapon": "equip_sword",
+                "shield": "equip_oak_shield",
+                "armor": "equip_leather_armor",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_guardian": {
+                "weapon": "equip_sword",
+                "shield": "equip_oak_shield",
+                "armor": "equip_leather_armor",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_mage": {
+                "weapon": "equip_mage_staff",
+                "armor": "equip_mystic_robe",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_scout": {
+                "weapon": "equip_scout_dagger",
+                "armor": "equip_leather_armor",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_cleric": {
+                "weapon": "equip_mage_staff",
+                "shield": "equip_oak_shield",
+                "armor": "equip_mystic_robe",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_ranger": {
+                "weapon": "equip_scout_dagger",
+                "armor": "equip_leather_armor",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              }
+            },
+            "actorRows": {
+              "actor_hero": "front"
+            },
+            "classOverrides": {},
+            "audio": {
+              "bgm": {
+                "resourceId": "cc0-bgm-rtp-fld-003",
+                "loop": true
+              }
+            },
+            "pictures": {},
+            "events": {},
+            "movers": {}
+          }
+        },
+        "second": {
+          "receipt": {
+            "kind": "action",
+            "mapId": "map_blank_start",
+            "handled": false,
+            "farmAttempts": [
+              {
+                "kind": "ignored",
+                "x": 2,
+                "y": 3,
+                "reason": "missing-seed"
+              },
+              {
+                "kind": "ignored",
+                "x": 2,
+                "y": 2,
+                "reason": "insufficient-energy"
+              }
+            ],
+            "sequence": 2
+          },
+          "state": {
+            "farmPlots": {
+              "map_blank_start": {
+                "2,3": {
+                  "tilled": true,
+                  "watered": false
+                }
+              }
+            },
+            "energy": 0,
+            "makerInstances": {},
+            "actionReceipt": {
+              "kind": "action",
+              "mapId": "map_blank_start",
+              "handled": false,
+              "farmAttempts": [
+                {
+                  "kind": "ignored",
+                  "x": 2,
+                  "y": 3,
+                  "reason": "missing-seed"
+                },
+                {
+                  "kind": "ignored",
+                  "x": 2,
+                  "y": 2,
+                  "reason": "insufficient-energy"
+                }
+              ],
+              "sequence": 2
+            },
+            "eventLocations": {},
+            "currentMapId": "map_blank_start",
+            "x": 2,
+            "y": 2,
+            "gold": 0,
+            "switches": {
+              "sw_0001": false,
+              "sw_0002": false,
+              "sw_0003": false,
+              "sw_0004": false,
+              "sw_0005": false,
+              "sw_0006": false,
+              "sw_0007": false,
+              "sw_0008": false,
+              "sw_0009": false,
+              "sw_0010": false,
+              "sw_0011": false,
+              "sw_0012": false,
+              "sw_0013": false,
+              "sw_0014": false,
+              "sw_0015": false,
+              "sw_0016": false,
+              "sw_0017": false,
+              "sw_0018": false,
+              "sw_0019": false,
+              "sw_0020": false
+            },
+            "variables": {
+              "var_0001": 0,
+              "var_0002": 0,
+              "var_0003": 0,
+              "var_0004": 0,
+              "var_0005": 0,
+              "var_0006": 0,
+              "var_0007": 0,
+              "var_0008": 0,
+              "var_0009": 0,
+              "var_0010": 0,
+              "var_0011": 0,
+              "var_0012": 0,
+              "var_0013": 0,
+              "var_0014": 0,
+              "var_0015": 0,
+              "var_0016": 0,
+              "var_0017": 0,
+              "var_0018": 0,
+              "var_0019": 0,
+              "var_0020": 0
+            },
+            "selfSwitches": {},
+            "timers": {},
+            "inventory": {
+              "qa-hoe": 1
+            },
+            "partyActorIds": [
+              "actor_hero"
+            ],
+            "npcActivities": {},
+            "friendship": {},
+            "rng": {
+              "seed": 775811385,
+              "streams": {
+                "encounter": {
+                  "seed": 610575609,
+                  "state": 610575609
+                },
+                "battle": {
+                  "seed": 2749751422,
+                  "state": 2749751422
+                },
+                "movement": {
+                  "seed": 2694878313,
+                  "state": 2694878313
+                },
+                "fishing": {
+                  "seed": 3003318042,
+                  "state": 3003318042
+                },
+                "misc": {
+                  "seed": 1317704724,
+                  "state": 1317704724
+                }
+              }
+            }
+          },
+          "mirror": {
+            "farmPlots": {
+              "map_blank_start": {
+                "2,3": {
+                  "tilled": true,
+                  "watered": false
+                }
+              }
+            },
+            "energy": 0,
+            "makerInstances": {},
+            "actionReceipt": {
+              "kind": "action",
+              "mapId": "map_blank_start",
+              "handled": false,
+              "farmAttempts": [
+                {
+                  "kind": "ignored",
+                  "x": 2,
+                  "y": 3,
+                  "reason": "missing-seed"
+                },
+                {
+                  "kind": "ignored",
+                  "x": 2,
+                  "y": 2,
+                  "reason": "insufficient-energy"
+                }
+              ],
+              "sequence": 2
+            },
+            "mapId": "map_blank_start",
+            "inputEnabled": true,
+            "running": false,
+            "player": {
+              "x": 2,
+              "y": 2
+            },
+            "switches": {
+              "sw_0001": false,
+              "sw_0002": false,
+              "sw_0003": false,
+              "sw_0004": false,
+              "sw_0005": false,
+              "sw_0006": false,
+              "sw_0007": false,
+              "sw_0008": false,
+              "sw_0009": false,
+              "sw_0010": false,
+              "sw_0011": false,
+              "sw_0012": false,
+              "sw_0013": false,
+              "sw_0014": false,
+              "sw_0015": false,
+              "sw_0016": false,
+              "sw_0017": false,
+              "sw_0018": false,
+              "sw_0019": false,
+              "sw_0020": false
+            },
+            "variables": {
+              "var_0001": 0,
+              "var_0002": 0,
+              "var_0003": 0,
+              "var_0004": 0,
+              "var_0005": 0,
+              "var_0006": 0,
+              "var_0007": 0,
+              "var_0008": 0,
+              "var_0009": 0,
+              "var_0010": 0,
+              "var_0011": 0,
+              "var_0012": 0,
+              "var_0013": 0,
+              "var_0014": 0,
+              "var_0015": 0,
+              "var_0016": 0,
+              "var_0017": 0,
+              "var_0018": 0,
+              "var_0019": 0,
+              "var_0020": 0
+            },
+            "timers": {},
+            "timerActive": {},
+            "flags": {},
+            "mapOverrides": {},
+            "gold": 0,
+            "inventory": {
+              "qa-hoe": 1
+            },
+            "partyActorIds": [
+              "actor_hero"
+            ],
+            "actorSkillIds": {},
+            "actorExperience": {
+              "actor_hero": 0
+            },
+            "actorLevels": {
+              "actor_hero": 1,
+              "actor_guardian": 1,
+              "actor_mage": 1,
+              "actor_scout": 1,
+              "actor_cleric": 1,
+              "actor_ranger": 1
+            },
+            "actorVitals": {
+              "actor_hero": {
+                "hp": 514,
+                "mp": 43,
+                "maxHp": 514,
+                "maxMp": 43
+              }
+            },
+            "eventLocations": {},
+            "followers": [],
+            "followerTrail": [],
+            "removedEventIds": {},
+            "spawnedEvents": {},
+            "camera": {
+              "mode": "follow",
+              "target": {
+                "kind": "player"
+              }
+            },
+            "lighting": {
+              "ambient": 0,
+              "sources": []
+            },
+            "actorEquipment": {
+              "actor_hero": {
+                "weapon": "equip_sword",
+                "shield": "equip_oak_shield",
+                "armor": "equip_leather_armor",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_guardian": {
+                "weapon": "equip_sword",
+                "shield": "equip_oak_shield",
+                "armor": "equip_leather_armor",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_mage": {
+                "weapon": "equip_mage_staff",
+                "armor": "equip_mystic_robe",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_scout": {
+                "weapon": "equip_scout_dagger",
+                "armor": "equip_leather_armor",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_cleric": {
+                "weapon": "equip_mage_staff",
+                "shield": "equip_oak_shield",
+                "armor": "equip_mystic_robe",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_ranger": {
+                "weapon": "equip_scout_dagger",
+                "armor": "equip_leather_armor",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              }
+            },
+            "actorRows": {
+              "actor_hero": "front"
+            },
+            "classOverrides": {},
+            "audio": {
+              "bgm": {
+                "resourceId": "cc0-bgm-rtp-fld-003",
+                "loop": true
+              }
+            },
+            "pictures": {},
+            "events": {},
+            "movers": {}
+          }
+        },
+        "rejectedObservedStateUnchanged": true,
+        "detachedReads": true,
+        "nativePlayback": {
+          "event": "playing",
+          "src": "http://127.0.0.1:33943/assets/cc0/audio/catalog/rtp-fld-003-amber-meadow-end-final_f5dafd12.mp3",
+          "loop": true,
+          "paused": false,
+          "readyState": 4,
+          "currentTime": 0,
+          "volume": 0.1077999999721845,
+          "playbackRate": 1,
+          "error": null
+        },
+        "audioObservation": {
+          "publicState": {
+            "volume": {
+              "bgm": 0.7,
+              "se": 0.8
+            },
+            "playbackRate": 1,
+            "pan": 0,
+            "fadeInMs": 600
+          },
+          "qaState": {
+            "volume": {
+              "bgm": 0.7,
+              "se": 0.8
+            },
+            "playbackRate": 1,
+            "pan": 0,
+            "fadeInMs": 600
+          },
+          "resources": [
+            "cc0-bgm-rtp-fld-003"
+          ],
+          "allOprnGlobals": [
+            "__oprnAudioState",
+            "__oprnAudioObserved",
+            "__oprnRuntimeJuice",
+            "__oprnJuiceLog",
+            "__oprnPlayBootLog",
+            "__oprnInput",
+            "__oprnPlayerSprite",
+            "__oprnCharacterSprites",
+            "__oprnCamera",
+            "__oprnPerf",
+            "__oprnEmotes",
+            "__oprnActionCombat",
+            "__oprnDebug"
+          ]
+        },
+        "audioCleanup": {
+          "globals": [],
+          "audioElements": 0
+        },
+        "contextClosed": true
+      }
+    ],
+    "browserVersion": "149.0.7827.55",
+    "ok": true,
+    "cleanup": {
+      "browserClosed": true,
+      "contextsClosed": true,
+      "serverClosed": true,
+      "cacheRemoved": true,
+      "remoteWrites": 0
+    }
+  },
+  "cacheAbsentExit": 0,
+  "editorFollowup": {
+    "stats": {
+      "startTime": "2026-09-06T03:04:24.804Z",
+      "duration": 107324.21699999999,
+      "expected": 3,
+      "skipped": 0,
+      "unexpected": 1,
+      "flaky": 0
+    },
+    "diagnosis": "Editor module loading aborted before edit-canvas and before Q1 opt-in; Chromium ERR_NETWORK_CHANGED matches the existing documented host-network failure class. Exact host interface cause unproven; no baseline replay or retry.",
+    "failedModuleRequests": 101,
+    "source": "/home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/5/q1/editor-followup/"
+  }
+}

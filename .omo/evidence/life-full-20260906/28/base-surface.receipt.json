@@ -1,0 +1,28 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p2-gate-base",
+  "command": [
+    "timeout",
+    "--kill-after=15",
+    "1500",
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--kill-after=15",
+    "600",
+    "env",
+    "DEV_SERVER_PORT=9801",
+    "VITE_CACHE_DIR=/home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/28/cache-base",
+    "npm",
+    "run",
+    "gates",
+    "--",
+    "--only",
+    "surface",
+    "--json"
+  ],
+  "start": "2026-09-06T02:11:09.091179+00:00",
+  "end": "2026-09-06T02:12:21.579201+00:00",
+  "exit": 1
+}

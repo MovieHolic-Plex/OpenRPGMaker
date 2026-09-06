@@ -1,0 +1,9 @@
+{
+  "commit": "f86474547028cddf795c8e431b2195b7edccd201",
+  "command": "flock --timeout 900 /tmp/rpg-zzu-life-full-qa-01a0727b.lock node .omo/evidence/life-full-20260906/reserved-key-probe.mjs",
+  "exit": 1,
+  "input": "{\"bundleContributions\":{\"bundle\":{\"__proto__\":1}}}",
+  "actualOutput": "status: exited_1 exit_code: 1\n{\"result\":\"parsed\",\"directOwner\":false,\"unresolvedOwner\":false,\"parsed\":{\"bundleContributions\":{\"bundle\":{}}}}\n{\"cleanup\":\"middleware-only Vite closed\",\"remoteWrites\":0}\nnode:internal/modules/run_main:107\n    triggerUncaughtException(\n    ^\n\nAssertionError [ERR_ASSERTION]: A positive source amount must retain an owner or explicitly refuse parsing\n    at file:///home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/reserved-key-probe.mjs:31:12 {\n  generatedMessage: false,\n  code: 'ERR_ASSERTION',\n  actual: false,\n  expected: true,\n  operator: '==',\n  diff: 'simple'\n}\n\nNode.js v24.11.1",
+  "scope": "Accepted positive amount loses both direct and unresolved owners in actual parseLifeState; source input remains unchanged. This is an in-scope preservation defect, not a hypothetical finding.",
+  "cleanup": "Middleware-only Vite closed; no HTTP listener or remote write"
+}

@@ -1,0 +1,12 @@
+import ts from "typescript";
+import { resolve } from "node:path";
+const config = ts.readConfigFile(resolve("tsconfig.app.json"), ts.sys.readFile);
+if (config.error) throw new Error(ts.flattenDiagnosticMessageText(config.error.messageText, "\n"));
+const parsed = ts.parseJsonConfigFileContent(config.config, ts.sys, process.cwd());
+const target = resolve("test/p1FoundationSchema.test.ts");
+const program = ts.createProgram([...new Set([...parsed.fileNames, target])], parsed.options);
+const source = program.getSourceFile(target);
+if (!source) throw new Error("Missing P1 test source");
+const diagnostics = [...program.getSyntacticDiagnostics(source), ...program.getSemanticDiagnostics(source)];
+console.log(JSON.stringify({ file: target, diagnostics: diagnostics.map(d => ({ code: d.code, message: ts.flattenDiagnosticMessageText(d.messageText, "\n") })) }));
+process.exitCode = diagnostics.length ? 1 : 0;

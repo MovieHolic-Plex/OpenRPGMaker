@@ -1,0 +1,13 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p2",
+  "command": [
+    "git",
+    "worktree",
+    "move",
+    "/home/main/z-project/rpg-zzu-life-full-p2-life-full-p2-gate-base",
+    "/home/main/z-project/rpg-zzu-life-full-p2-gate-base"
+  ],
+  "start": "2026-09-06T02:07:24.544606+00:00",
+  "end": "2026-09-06T02:07:24.573940+00:00",
+  "exit": 0
+}

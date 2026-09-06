@@ -1,0 +1,24 @@
+{
+  "supervisorCommit": "4e2d1762264533a5826c48686648093c3fe69ebd",
+  "surface": "shipped player.html through vite.player-qa.config.ts/exportProjectStoreShim",
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p2",
+  "url": "http://127.0.0.1:35531/player.html",
+  "port": 35531,
+  "browser": "chromium",
+  "project": "Life QA observability fixture",
+  "projectPath": ".omo/evidence/life-full-20260906/5/project.json",
+  "viewport": {
+    "width": 1280,
+    "height": 960
+  },
+  "runs": [],
+  "browserVersion": "149.0.7827.55",
+  "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'DOM signal missing: [data-testid=\"title-screen\"]'\n- undefined\n\n    at observeDom (file:///home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/5-supervisor/browser-proof.mjs:23:89)\n    at async file:///home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/5-supervisor/browser-proof.mjs:38:7",
+  "cleanup": {
+    "browserClosed": true,
+    "contextsClosed": true,
+    "serverClosed": true,
+    "cacheRemoved": true,
+    "remoteWrites": 0
+  }
+}
