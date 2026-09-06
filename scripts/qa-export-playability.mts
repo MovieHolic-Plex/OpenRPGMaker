@@ -119,6 +119,7 @@ try {
 
   const project = deserialize(await readFile("test/fixtures/projects/editor-authored-demo-v3.json", "utf8"));
   // A deterministic test-only copy; no fixture file or remote project is edited.
+  project.system.battleUiStyle = "rm2003"; // This QA requires four visible party artworks.
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) {
       for (const page of event.pages ?? []) page.movement = { type: "fixed", speed: 2, frequency: 3 };

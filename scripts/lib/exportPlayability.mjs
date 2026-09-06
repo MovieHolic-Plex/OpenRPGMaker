@@ -219,6 +219,24 @@ export async function verifyEditorTestPlay(page) {
   return { before, after };
 }
 
+export async function verifyExportBattleStyle(page) {
+  const style = await page.evaluate(async () => {
+    // Match exportEntry's project selection, including file:// standalone HTML.
+    const embedded = document.getElementById("oprn-standalone-project")?.textContent;
+    let project;
+    if (embedded?.trim()) project = JSON.parse(embedded);
+    else {
+      const response = await fetch(window.__OPENRPG_BOOT__?.projectUrl ?? new URL("project.json", location.href),
+        { signal: AbortSignal.timeout(15000) });
+      if (!response.ok) throw new Error(`QA project could not load: ${response.status}`);
+      project = await response.json();
+    }
+    return project.system?.battleUiStyle;
+  });
+  assert.equal(style, "rm2003", "Four-party-art QA requires an explicitly exported rm2003 sideview project; export a new private QA release");
+  return style;
+}
+
 /** Real input only: no teleport, event invocation, inventory writes, or forced results. */
 export async function exerciseExport(page, { url, kind, outDir }) {
   const actions = [];
@@ -232,6 +250,7 @@ export async function exerciseExport(page, { url, kind, outDir }) {
   try {
     await page.goto(url, { waitUntil: "load" });
     await page.getByTestId("title-screen").waitFor({ state: "visible" });
+    result.battleUiStyle = await verifyExportBattleStyle(page);
     result.titleImage = await page.getByTestId("title-screen").evaluate(async (title) => {
       const url = getComputedStyle(title).backgroundImage.replace(/^url\(["']?/, "").replace(/["']?\)$/, "");
       const image = new Image();
