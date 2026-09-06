@@ -69,6 +69,10 @@ npm test -- test/toolActionAuthoringParity.test.ts test/databaseLifeCraftingView
 
 ## Wiki, cleanup and delivery
 
+### Task12 caller dependency (parent midpoint inspection)
+
+`interactWithFarmPlotSingle` in `src/player/farming.ts` now calls `canOccupySpatialFootprint` before operating on the target plot. The current `src/project/spatialOccupancy.ts` implementation deliberately does not inspect `session.farmPlots`. When task12 adds farm-plot occupancy to prevent spatial placement over crops, it must preserve farming access to its own current plot; otherwise valid water/harvest actions would reject themselves as occupied. Task12 should verify both placement-over-plot refusal and continued farming water/harvest access. The parent will carry this actual caller constraint into task12. This note asserts no current failure or new mandatory task8 fix, and no task12 implementation is included here.
+
 `wiki-proposal.md` supplies exact focused additions for editor-database/runtime-sessions/testing and parent INDEX regeneration. Shared wiki and INDEX remain untouched.
 
 `cleanup.json` records closed browsers and server receipts, port35209 no listener, removed owned dist (1,981 files / 244,569,348 bytes) and three newly created edit-activity files, and absent/removed exclusive probe caches. Original `.vite-cache/deps`, node_modules symlink, shared caches and `.env.local` were preserved. No process or worktree belonging to another task was stopped or removed.

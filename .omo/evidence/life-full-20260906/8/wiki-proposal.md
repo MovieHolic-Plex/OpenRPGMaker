@@ -16,6 +16,10 @@ Insert after the existing `Authoring tools (opt-in, not a forced Stardew loop)` 
 
 ## openwiki/testing.md
 
+Also append this caller-dependency paragraph to the proposed runtime-sessions entry above:
+
+> Task12 integration constraint: `interactWithFarmPlotSingle` in `src/player/farming.ts` calls `canOccupySpatialFootprint` before accessing the target plot. That authority currently deliberately omits `session.farmPlots`. When farm-plot occupancy is added for spatial placement, farming must retain access to its own current plot so valid water/harvest actions do not reject themselves. Verify placement-over-plot refusal alongside continued water/harvest access. This is a later caller dependency, not a current task8 failure; task12 owns the implementation.
+
 Append a focused entry under `Agent validation rule`:
 
 > Tool-rule parity: `test/toolActionAuthoringParity.test.ts` plus database-life, farming, tool-capability, serialization, regrowth and disabled-XP regressions. Task8 evidence at `.omo/evidence/life-full-20260906/8/` records RED, 269 tests/15 files, changed-file diagnostics, app typecheck, full build, the public authority probe, and native Firefox editor keyboard/undo controls at 1440x900 and 1024x768. The editor boot subscription uses `perf-metrics-json.initialEditRenderMs`, not the early toolbar mount, which can be replaced during boot. Native player gameplay is not claimed. Chromium transport failures, probe setup failures and offline fixture warnings remain in the evidence. Screenshots were captured, but this child had no image-decoding-capable model; DOM observations are verified, visual image review remains with the parent.
