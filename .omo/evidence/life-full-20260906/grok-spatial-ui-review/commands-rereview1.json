@@ -1,0 +1,24 @@
+{
+  "reviewer": "st_01a078fa-rereview1",
+  "model": "xai/grok-4.6",
+  "productHead": "78197cd54db57f01a5730d08bddcb1f532785efa",
+  "originalFocusedCheckUnchanged": {
+    "file": "commands.json",
+    "exit": 1,
+    "resultFile": "export-decoration.json",
+    "ok": false
+  },
+  "correctedCheck": {
+    "cwd": "/home/main/z-project/rpg-zzu-life-full-receipt-ui-grok",
+    "command": [
+      "flock", "--timeout", "900", "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+      "timeout", "--signal=TERM", "--kill-after=15s", "180s",
+      "./node_modules/.bin/vite-node", "--config", "vitest.config.ts",
+      ".omo/evidence/life-full-20260906/grok-spatial-ui-review-rereview1-tmp/check-export-rereview1.mjs"
+    ],
+    "exit": 0,
+    "stdout": "rereview1-stdout.txt",
+    "stderr": "rereview1-stderr.txt",
+    "resultFile": "export-rereview1.json"
+  }
+}

@@ -1,4 +1,6 @@
 import { BUNDLED_EASYRPG_CHARSET_ASSETS } from "@/assets/bundled";
+import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
+import { EASYRPG_PICTURE_ASSETS } from "@/assets/easyrpgRtp";
 import { isGeneratedMonsterSprite } from "@/assets/generatedMonsterSprites";
 import type { Project } from "@/project/types";
 import type { Dir } from "@/player/input";
@@ -10,6 +12,21 @@ export type EventSpriteTexture = {
   /** Static battler art is fitted to a field-sized box before authored scale. */
   readonly fitSize?: number;
 };
+
+/** Spatial overlay graphics may use catalog picture/charset ids. Event sprites stay on resolveEventSpriteTexture. */
+export function resolveSpatialGraphicTexture(
+  project: Project,
+  resourceId: string,
+): EventSpriteTexture | null {
+  const existing = resolveEventSpriteTexture(project, resourceId, 0);
+  if (existing) return existing;
+  if (EASYRPG_PICTURE_ASSETS.some((asset) => asset.id === resourceId)) {
+    return { texture: resourceId, frame: "__BASE" };
+  }
+  const charset = CHARSET_ASSETS.find((asset) => asset.id === resourceId);
+  if (charset) return { texture: charset.textureKey, frame: 0 };
+  return null;
+}
 
 export function resolveEventSpriteTexture(
   project: Project,

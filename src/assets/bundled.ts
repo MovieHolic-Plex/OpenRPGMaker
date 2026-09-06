@@ -16,6 +16,7 @@ import {
 } from "@/assets/chipsetTransparency";
 import { CHIPSET_ANIMATION_FPS, CHIPSET_ANIMATION_STRIPS } from "@/project/defaults/chipsetAnimation";
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
+import { EASYRPG_PICTURE_ASSETS } from "@/assets/easyrpgRtp";
 import { FARMING_CROP_SPRITE_ASSETS } from "@/assets/farmingSprites";
 import { generatedMonsterSpriteUrl, isGeneratedMonsterSprite } from "@/assets/generatedMonsterSprites";
 import { cropGraphicStages } from "@/project/farmModel";
@@ -118,6 +119,10 @@ export function loadBundledAssets(scene: Phaser.Scene, project?: Project): void 
   }
   for (const asset of FARMING_CROP_SPRITE_ASSETS) {
     if (usedTextures && !usedTextures.has(asset.id)) continue;
+    scene.load.image(asset.id, withInlineAsset(asset.path));
+  }
+  for (const asset of EASYRPG_PICTURE_ASSETS) {
+    if (!usedTextures?.has(asset.id)) continue;
     scene.load.image(asset.id, withInlineAsset(asset.path));
   }
   for (const id of usedTextures ?? []) {
@@ -288,7 +293,28 @@ function projectBundledTextureKeys(project: Project): Set<string> {
   for (const asset of FARMING_CROP_SPRITE_ASSETS) {
     if (strings.has(asset.id) || cropAssetIds.has(asset.id)) keys.add(asset.id);
   }
+  for (const asset of EASYRPG_PICTURE_ASSETS) {
+    if (spatialGraphicResourceIds(project).has(asset.id)) keys.add(asset.id);
+  }
   return keys;
+}
+
+function spatialGraphicResourceIds(project: Project): Set<string> {
+  const ids = new Set<string>();
+  const add = (id: string | undefined): void => {
+    if (id) ids.add(id);
+  };
+  for (const type of project.database.farmBuildingTypes ?? []) {
+    for (const level of type.levels) {
+      add(level.graphicResourceId);
+      for (const resourceId of Object.values(level.orientationGraphicResourceIds ?? {})) add(resourceId);
+    }
+  }
+  for (const type of project.database.homeDecorationTypes ?? []) {
+    add(type.graphicResourceId);
+    for (const resourceId of Object.values(type.orientationGraphicResourceIds ?? {})) add(resourceId);
+  }
+  return ids;
 }
 
 function collectProjectStrings(value: unknown, out: Set<string>): void {
