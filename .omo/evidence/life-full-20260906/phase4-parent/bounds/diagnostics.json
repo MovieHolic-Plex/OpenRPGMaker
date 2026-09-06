@@ -1,0 +1,21 @@
+{
+  "head": "e486e536954d69c59c7bcc82602646cc6712c445",
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "300s",
+    "node",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/phase4-parent/bounds/diagnostics.mjs"
+  ],
+  "started": "2026-09-06T20:11:56.753Z",
+  "finished": "2026-09-06T20:13:22.348Z",
+  "exit": 0,
+  "signal": null,
+  "stdout": "{\"file\":\"src/editor/panels/databaseCharacterView.ts\",\"diagnostics\":[]}\n{\"file\":\"src/editor/panels/databaseCropView.ts\",\"diagnostics\":[]}\n{\"file\":\"src/editor/panels/databaseDailyWeatherView.ts\",\"diagnostics\":[]}\n{\"file\":\"src/editor/panels/databaseLifeCraftingView.ts\",\"diagnostics\":[]}\n{\"file\":\"src/player/playSceneGift.ts\",\"diagnostics\":[]}\n{\"file\":\"src/player/playSceneInterpreter.ts\",\"diagnostics\":[]}\n{\"file\":\"src/project/characterProfiles.ts\",\"diagnostics\":[]}\n{\"file\":\"src/project/dailyWeather.ts\",\"diagnostics\":[]}\n{\"file\":\"test/lifeAuthoringBounds.test.ts\",\"diagnostics\":[]}\n",
+  "stderr": ""
+}
