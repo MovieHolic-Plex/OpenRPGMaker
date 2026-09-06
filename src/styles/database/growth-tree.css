@@ -91,6 +91,20 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-catalog > * { flex-shrink: 0; }
 
+/* Preset collection shares studio tokens and controls. */
+.database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-preset-browser { display: grid; grid-template-rows: minmax(0, 1fr) auto; min-height: 0; overflow: hidden; }
+.database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-preset-content { overflow: auto; min-height: 0; padding: var(--space-4); }
+.database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-preset-collection { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); margin-bottom: var(--space-4); }
+.database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-preset-card { display: flex; flex-direction: column; gap: var(--space-2); text-align: left; padding: var(--space-3); border-radius: var(--radius-m); min-width: 0; overflow-wrap: anywhere; }
+.database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-preset-card[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-muted); box-shadow: var(--focus-ring); }
+.database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-preset-cover { display: grid; place-items: center; width: 100%; aspect-ratio: 3 / 2; overflow: hidden; border-radius: var(--radius-s); background: var(--bg-inset); color: var(--text-2); }
+.database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-preset-cover img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+.database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-preset-details .growth-canvas { height: calc(var(--space-6) * 11); border: var(--stroke-1) solid var(--border-default); border-radius: var(--radius-m); }
+.database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-preset-footer { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-2); padding: var(--space-3) var(--space-4); border-top: var(--stroke-1) solid var(--border-default); background: var(--bg-raised); }
+.database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-preset-footer > p:first-child { flex: 1; }
+.database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-preset-footer [role="status"]:empty { display: none; }
+.database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-preset-footer [role="status"] { color: var(--danger); }
+
 /* Art occupies existing node geometry; catalog and hero sizes use the studio scale. */
 .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-catalog-art {
   display: grid; place-items: center; flex: 0 0 var(--space-6);
