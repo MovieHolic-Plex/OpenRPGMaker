@@ -204,25 +204,58 @@ try {
   expect(errors).toEqual([]);
   record('PASS', { assertions: 'actual composer/session/tool/apply; A-only draft and writes; B zero overlays/unchanged; completed retirement and lookup non-revival; abort rollback with no false completion' });
 } catch (error) {
-  record('FAIL', { error: error.stack ?? String(error) });
-  if (page && !page.isClosed()) {
-    await page.screenshot({ path: `${out}/failure.png` });
-    record('failure-body', { body: (await page.locator('body').innerText()).slice(-7000) });
-    const evidence = await page.evaluate(() => window.qa ? { events: qa.events, result: qa.result, bViolations: qa.bViolations } : null);
-    record('failure-events', { evidence });
-  }
   process.exitCode = 1;
-} finally {
-  if (context) await closeContext();
-  if (browser) await browser.close();
-  if (server && server.exitCode === null && server.signalCode === null) {
-    const exited = new Promise(resolve => server.once('exit', resolve));
-    process.kill(-server.pid, 'SIGTERM');
-    await bounded(exited, 'owned Vite cleanup');
+  record('FAIL', { error: error.stack ?? String(error) });
+  try {
+    if (page && !page.isClosed()) {
+      await page.screenshot({ path: `${out}/failure.png` });
+      record('failure-body', { body: (await page.locator('body').innerText()).slice(-7000) });
+      const evidence = await page.evaluate(() => window.qa ? { events: qa.events, result: qa.result, bViolations: qa.bViolations } : null);
+      record('failure-events', { evidence });
+    }
+  } catch (error) {
+    record('failure-evidence-error', { error: error.stack ?? String(error) });
   }
-  record('cleanup', { browserClosed: true, ownedServerStopped: !!server, reusedListener: false });
-  await writeFile(`${out}/actions.json`, JSON.stringify({ log, states, errors, routeErrors, blockedWrites }, null, 2));
-  await writeFile(`${out}/server.log`, serverLog);
+} finally {
+  try {
+    if (context) await closeContext();
+  } catch (error) {
+    process.exitCode = 1;
+    record('cleanup-error', { step: 'context', error: error.stack ?? String(error) });
+  }
+  try {
+    if (browser) await browser.close();
+  } catch (error) {
+    process.exitCode = 1;
+    record('cleanup-error', { step: 'browser', error: error.stack ?? String(error) });
+  }
+  try {
+    if (server && server.exitCode === null && server.signalCode === null) {
+      const exited = new Promise(resolve => server.once('exit', resolve));
+      process.kill(-server.pid, 'SIGTERM');
+      await bounded(exited, 'owned Vite cleanup');
+    }
+  } catch (error) {
+    process.exitCode = 1;
+    record('cleanup-error', { step: 'server', error: error.stack ?? String(error) });
+  }
+  record('cleanup', {
+    browserClosed: !browser || !browser.isConnected(),
+    ownedServerStopped: !!server && (server.exitCode !== null || server.signalCode !== null),
+    reusedListener: false,
+  });
+  try {
+    await writeFile(`${out}/server.log`, serverLog);
+  } catch (error) {
+    process.exitCode = 1;
+    record('cleanup-error', { step: 'server.log', error: error.stack ?? String(error) });
+  }
+  try {
+    await writeFile(`${out}/actions.json`, JSON.stringify({ log, states, errors, routeErrors, blockedWrites }, null, 2));
+  } catch (error) {
+    process.exitCode = 1;
+    record('cleanup-error', { step: 'actions.json', error: error.stack ?? String(error) });
+  }
 }
 
 async function boot() {
@@ -397,15 +430,28 @@ async function installLlm() {
 }
 
 async function closeContext() {
-  if (activeLlm) {
-    activeLlm.closing = true;
-    const pending = [...activeLlm.gates, activeLlm.lookupFinal].filter(gate => gate.pending);
-    for (const gate of pending) gate.release.resolve();
-    await bounded(Promise.all(pending.map(gate => gate.delivered.promise)), 'pending LLM cleanup');
-    activeLlm = null;
+  const failures = [];
+  try {
+    if (activeLlm) {
+      activeLlm.closing = true;
+      const pending = [...activeLlm.gates, activeLlm.lookupFinal].filter(gate => gate.pending);
+      for (const gate of pending) gate.release.resolve();
+      await bounded(Promise.all(pending.map(gate => gate.delivered.promise)), 'pending LLM cleanup');
+    }
+  } catch (error) {
+    failures.push(error);
+  } finally {
+    try {
+      await context.close();
+    } catch (error) {
+      failures.push(error);
+    } finally {
+      activeLlm = null;
+      context = null;
+      page = null;
+    }
   }
-  await context.close();
-  context = null;
+  if (failures.length) throw new AggregateError(failures, `Context cleanup failed:\n${failures.map(error => error.stack ?? String(error)).join('\n')}`);
 }
 
 async function arm(key, kind, args = {}) {
