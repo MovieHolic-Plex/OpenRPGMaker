@@ -796,6 +796,13 @@ export interface AssistantSessionOptions {
    * 도메인을 문장 키워드로 추측하는 경로는 없다(2026-09-03 의도 라우터 감사).
    */
   declareIntent?: IntentDeclarer;
+  /** Editor-owned, awaited wiki save. The detached session never persists wiki writes itself. */
+  prepareProjectWiki?: (input: {
+    readonly text: string;
+    readonly mapId: string | null;
+    readonly composerMode: "do" | "ask" | "plan";
+    readonly signal?: AbortSignal;
+  }) => Promise<Project["world"]>;
   /**
    * 자율 실행 드라이버용 사용자-대기 조회 훅(peek-only). 패널의 pendingSends 큐에
    * 메시지가 있는지 "만" 보고한다 — 드라이버는 절대 dequeue 하지 않는다(패널의 기존
@@ -1026,6 +1033,7 @@ export class AssistantSession {
   private lastTurnContext: ConversationTurnContext | null = null;
   private readonly getTurnSelection?: () => TurnSelectionSnapshot | null | undefined;
   private readonly declareIntent: IntentDeclarer | null;
+  private readonly prepareProjectWiki: AssistantSessionOptions["prepareProjectWiki"];
 
   constructor(project: Project, options: AssistantSessionOptions = {}) {
     this.config = options.config ?? loadAiConfig();
@@ -1043,6 +1051,7 @@ export class AssistantSession {
     this.yieldToUi = options.yieldToUi ?? defaultYieldToUi;
     this.getTurnSelection = options.getTurnSelection;
     this.declareIntent = options.declareIntent ?? null;
+    this.prepareProjectWiki = options.prepareProjectWiki;
     this.baselineProject = structuredClone(project);
     this.ctx = { project: cloneDetachedDraft(project) };
     this.acceptanceRequestBaseline = structuredClone(project);
@@ -1071,6 +1080,7 @@ export class AssistantSession {
       ...this.contextOptions,
       budgetChars: this.appliedBudgetChars,
       preferenceMemorySection: buildPreferenceMemorySection(this.contextOptions.projectScopeKey),
+      wikiQuery: this.currentTurnInstruction,
     };
   }
 
@@ -1665,6 +1675,31 @@ export class AssistantSession {
           this.pushAudit({ kind: "status", text: `work-item:reactivated ${revived}건 — 사용자 메시지로 재시도` });
           this.emitWorkPlan(onEvent);
         }
+      }
+    }
+
+    if (this.prepareProjectWiki && !this.turnIsDriverContinue) {
+      try {
+        const world = await this.prepareProjectWiki({
+          text: instruction,
+          mapId: turnContext.mapId,
+          composerMode: this.turnComposerMode,
+          signal,
+        });
+        if (world) {
+          this.baselineProject.world = structuredClone(world);
+          this.ctx.project.world = structuredClone(world);
+        } else {
+          delete this.baselineProject.world;
+          delete this.ctx.project.world;
+        }
+        this.rebuildSystemPrompt();
+      } catch (cause) {
+        const error = cause instanceof Error ? cause.message : String(cause);
+        const stoppedReason = signal?.aborted ? "aborted" : "error";
+        this.pushAudit({ kind: "status", text: `프로젝트 기록 준비 실패: ${error}` });
+        onEvent({ type: "status", text: `프로젝트 기록을 확인하지 못했습니다: ${error}` });
+        return { assistantText: "", proposedCalls: [], stoppedReason, error };
       }
     }
 
@@ -2573,6 +2608,11 @@ export class AssistantSession {
       return;
     }
     this.recordAppliedProject(applied);
+
+    if (applied.wikiWarning) {
+      this.pushAudit({ kind: "status", text: `게임 변경은 적용됐지만 위키 진행 기록은 갱신하지 못했습니다: ${applied.wikiWarning}` });
+      onEvent({ type: "status", text: `위키 진행 기록 갱신 실패: ${applied.wikiWarning}` });
+    }
     this.pushAudit({
       kind: "status",
       text: `agent_run:milestone-applied "${completed.title}" calls=${calls.length} commit=${applied.commit.commitId ?? "local-only"} persisted=${String(applied.commit.persisted)}`,

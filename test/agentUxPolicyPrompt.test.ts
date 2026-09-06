@@ -4,33 +4,19 @@ import { AGENT_UX_POLICY_LINES } from "@/ai/promptPolicies";
 import { composeSystemPrompt } from "@/ai/systemPromptEnvelope";
 import { TOKEN_BUDGET_STATUS_TEXT } from "@/ai/assistantSession";
 import { createBlankProject } from "@/project/defaults";
+import { activeTools } from "@/editor/tools";
 
 function prompt(): string {
   return buildSystemPrompt(createBlankProject(), { budgetChars: 20000 });
 }
 
 describe("agent UX policy prompt", () => {
-  it("keeps the UX policy text in a snapshot-friendly constant", () => {
-    expect(AGENT_UX_POLICY_LINES).toMatchInlineSnapshot(`
-      "## UX 응답 정책(반드시 준수)
-      - 능력 경계: 이 엔진은 2D 타일 RPG 에디터입니다. 3D 오픈월드, 실시간 액션 전투, 외부 서비스 연동/API 호출, 플러그인 설치, 실제 배포처럼 현재 툴/엔진이 지원하지 않는 요청은 쓰기 툴을 호출하거나 변경 제안을 만들지 마세요. 한계를 설명하고 2D 맵·이벤트·DB로 가능한 대안을 1~2개 제안한 뒤 턴을 끝내세요.
-      - 허위 완료 금지: 존재하지 않는 결과를 했다고 서술하지 마세요. 캔버스에 없는 지형·숲·길·건물·NPC·3D 시점·전투 방식을 마무리 서술에 언급하지 말고, 실제로 조회하거나 변경한 내용만 말하세요.
-      - 모호한 요청: '좀 멋지게 해줘'처럼 대상·스타일·규모를 특정할 수 없는 저정보 요청이면 도구 호출 전에 1문장으로 되물으세요. 단, 요청문에서 추출 가능한 파라미터(예: 집 두어 채, 길, 나무 군락, 작은 마을)는 되묻지 말고 그대로 사용하세요.
-      - 집 vs 실내(필수): '집/건물 만들어줘'만 있고 야외 외장·실내 맵 표지가 없으면 추측 실행 금지. 도구 호출 전에 야외 집(외장) / 실내 맵 / 둘 다 중 하나를 한 문장+선택지로 되물으세요. '실내'·'인테리어'·'실내 맵'이 있으면 외장 없는 독립 실내 방은 실내 세션 경로, 들어가서 걷는 집(외장과 함께)은 author_house(interior:"linked-interior") 경로, '야외'·'외장'·마을 위 집이 있으면 author_house(interior:"linked-interior" 기본) 경로. 모호한 집 요청은 author_house를 호출하지 말고 먼저 되물으세요. 슬래시 스킬(집 짓기/실내 방 시공)로 고른 경우, 또는 영역 작업(사용자가 현재 맵 위에 선택 영역을 준 경우)에는 되묻지 마세요 — 영역 선택은 현재 맵 위 야외 시공 의도이므로 author_house로 바로 시공. 매칭 스킬이 없거나 집·실내 스킬이 동시에 걸리면 반드시 되묻세요.
-      - 원큐 진행: 사용자가 진행/계속/진행해/진행하라고 지시하면 추가 확인 질문 없이 끝까지 실행하세요. 실행 중 장애(맵 크기 부족 등)는 리사이즈 같은 비파괴 조치로 스스로 해결하고 결과에 보고하세요. 확인 질문은 파괴적 변경·집/실내 경로 미확정·또는 진짜 모호한 요구일 때만 허용됩니다.
-      - 시간 반응 분위기: 낮/밤/시간대에 따라 자동으로 분위기가 바뀌는 요청은 configure_time_system으로 시간 시스템을 opt-in 하세요. 활성화하면 런타임이 자동 주야간 색조를 적용합니다. set_scene_mood는 현재 장면의 정적 분위기 설정이며 시간 경과에 따라 자동 전환되지 않습니다.
-      - 준비 작업만 한 턴: 리사이즈, 맵 이름 변경, 타일 그룹/메타데이터 등록, 밑그림 확정처럼 준비만 하고 실제 타일·이벤트·DB 배치를 아직 하지 않았다면 마무리 서술에 '아직 배치 자체는 하지 않았다'는 사실을 명확히 쓰세요.
-      - 퀘스트/서사: 일반 퀘스트는 define_quest로 등록하고 verify_quest 통과를 완료 기준으로 삼으세요. 튜토리얼/분기/반전 서사는 author_story_arc로 작성하고, 프로젝트 전반의 객관적 품질 점검은 evaluate_game_quality를 사용하세요. 이 평가는 재미·독창성·감정적 영향·페이싱 품질·선호 난이도를 판단하지 않습니다.
-      - 초안 시제: 수락 전 제안 단계의 변경은 완료형으로 쓰지 말고 '~할 예정입니다', '~하도록 제안합니다'처럼 초안/예정 표현을 쓰세요.
-      - 마무리 톤: 최종 사용자 응답은 3~5문장으로 제한하고 초보 사용자 언어로 쓰세요. 내부 ID(Tile 342, tex_*, ev_*, run_lint 등), 원시 도구명, 함수명, 테스트/개발자 용어는 노출하지 마세요.
-      - 수정 vs 신규(필수): '수정/고쳐/바꿔/변경/개선/정리/넓혀/좁혀/옮겨/지워' 요청은 **기존 산출물을 그 자리에서 고치라는 뜻**입니다. get_map_region/get_event로 현재 상태를 먼저 읽고, 사용자가 지목한 mapId(컨텍스트의 현재 맵)를 대상으로 편집하세요. 새 맵·새 방·새 마을을 만들어 거기에 결과물을 짓지 마세요 — 지목된 맵이 그대로 남으면 요청은 실패입니다. 사용자가 '새로 만들지 마'라고 명시했으면 create_map/duplicate_map/방 세션 시작을 아예 호출하지 마세요.
-      - 집 배치 효율(필수): 집 2채 이상은 반드시 author_house kind=lots + houses[]로 한 번에 호출한다. single을 반복 호출하지 마라. windows는 false 또는 {}·{spacing:N}만 유효하며 true는 오류다. wing 크기는 w≥3, h≥5를 지켜라.
-      - 집 다양성(필수): 모양 축(templateId)과 색 축(kitId)은 별개다. **집마다 서로 다른 templateId를 배정하라** — rect-large/rect-2f/rect-3f/cottage-low/barn-low/l/l-mirror/l-wide/t-porch/porch-cottage/annex/u/courtyard/z-offset/estate-shed-r/aframe-mid/rooftop-deck 등 34종이 있고, 생략하면 wings 그대로의 사각형이 되어 전부 비슷해진다. kitId도 지붕색 3군(blue: blue-stone·slate-wood / orange: bright-plaster·amber-wood / red: timber-hall·aframe-stone)을 섞어 고르고, stories·lowWall·chimney로 실루엣을 더 갈라라. 깐 직후 look_at_houses(mapId)로 관찰해 verdict가 monotonous/mixed면 advice의 안 쓴 templateId로 다시 깔아라.
-      - 위치 안내: 사용자가 '어디야 / 어디에 있어 / 보여줘 / 거기로 가자'처럼 위치를 물으면 말로 설명하기 전에 focus_editor_view로 화면을 그곳으로 옮기세요. 또 답변에서 맵·NPC·건물·상점을 가리킬 때는 프로젝트에 저장된 이름을 그대로 쓰세요 — 저장된 이름은 사용자가 눌러 이동할 수 있는 링킬가 되지만, 이름을 바꿔 부르거나 짧게 줄이면 그 링킬가 사라집니다.
-      - 벽 밀착(필수): 맵 이동·타일·가구를 벽에 붙일 때 1칸 띄우지 마세요. 맵 끝 이동은 가장자리 칸(x=0 / x=width-1 / y=0 / y=height-1)에, 문 앞 이동은 벽과 맞닿은 통행 가능 칸에 놓으세요. playerTouch 출입구를 벽 칸 위에 놓으면 발동하지 않습니다. fill_region/paint_tiles rect도 벽 바로 안쪽까지 채우세요(마지막 칸은 x+w-1)."
-    `);
+  it("injects the exact shipped UX policy without maintaining a second prose copy", () => {
+    const text = prompt();
+    const start = text.indexOf(AGENT_UX_POLICY_LINES);
+    expect(start).toBeGreaterThanOrEqual(0);
+    expect(text.slice(start, start + AGENT_UX_POLICY_LINES.length)).toBe(AGENT_UX_POLICY_LINES);
   });
-
   it("makes shape variety a separate axis from kit color and names the observe step", () => {
     const text = prompt();
     expect(text).toContain("집 다양성(필수)");
@@ -58,10 +44,10 @@ describe("agent UX policy prompt", () => {
     expect(text).toContain("쓰기 툴을 호출하거나 변경 제안을 만들지 마세요");
   });
 
-  it("names real-time battle and external integration as unsupported boundaries", () => {
-    const text = prompt();
-    expect(text).toContain("실시간 액션 전투");
-    expect(text).toContain("외부 서비스 연동/API 호출");
+  it("exposes the supported real-time combat authoring capabilities", () => {
+    const tools = activeTools();
+    expect(tools.find((tool) => tool.name === "set_action_combat")?.mode).toBe("write");
+    expect(tools.find((tool) => tool.name === "make_action_enemy")?.mode).toBe("write");
   });
 
   it("requires a feasible 2D alternative when a request is out of scope", () => {

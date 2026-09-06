@@ -39,6 +39,11 @@ Regression coverage: `test/exteriorDoorBackground.test.ts`.
   Real browser proof is `scripts/qa/sidebar-brush.mjs`; its fixture is local-only
   and requires disabled remote persistence.
 
+**2026-09-07 project wiki:** read [project-wiki.md](project-wiki.md) before changing
+world-document AI integration. The former blanket exclusion is superseded by
+awaited editor-owned wiki checkpoints, sourced relevant retrieval and combat
+authoring. Generic world CRUD and blanket lint/digests remain excluded.
+
 ## Pre-edit routing
 
 ### Automatic usage guides disabled (2026-09-06)

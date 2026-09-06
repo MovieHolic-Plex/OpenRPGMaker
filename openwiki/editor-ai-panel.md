@@ -135,6 +135,15 @@ Regression entry points: `test/assistantAcceptance.test.ts`,
 `test/assistantVisualEvidenceSession.test.ts`, `test/aiStickyChecklist.test.ts`,
 `test/e2e/ai-sticky-checklist.spec.ts`. Evidence: `output/evidence/assistant-sticky/`.
 
+## 자동 프로젝트 위키 (2026-09-07)
+
+일반 대화의 설정·제작 결정은 기존 OAuth LLM으로 추출해 `project.world`에 저장한다.
+의도 선택 전에 기록 저장을 기다리고, 새 대화에서도 관련 문서를 읽는다.
+출처·명시/추론·현재 맵 예외와 실제 적용 기록은 구별한다.
+전체 기록 복구, 오류·경합 처리, 실제 전투 수락 검증은
+[프로젝트 위키](project-wiki.md)를 따른다. 아래의 과거 세계관 AI 배제 기록은
+일반 CRUD·무조건 다이제스트에만 남으며, 이 제한된 위키 경로에는 적용하지 않는다.
+
 ## 브라우저 포커스와 도구 실행 대기 (2026-09-05)
 
 - 도구 실행 직전의 `AssistantSession.yieldForUi` → `src/ai/yieldToUi.ts`가 이벤트 루프를 양보한다. 포커스가 있는 보이는 문서는 rAF를 기다려 라이브 행·고스트가 그려질 틈을 준다. `document.visibilityState === "hidden"` 또는 `document.hasFocus() === false`이면 `MessageChannel` 태스크로 양보한다. `Promise.resolve()`만 쓰면 입력·중단 이벤트가 굶으므로 대체하지 않는다.

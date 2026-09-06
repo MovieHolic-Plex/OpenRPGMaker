@@ -63,6 +63,16 @@ Focused coverage: `test/audioDescriptionTools.test.ts`,
 `test/audioDescriptionPrompt.test.ts`, `test/audioDescriptionPromptTransport.test.ts`,
 `test/audioDescriptionSessionPrompt.test.ts`.
 
+## Project wiki application ownership (2026-09-07)
+
+`AssistantSessionOptions.prepareProjectWiki` is an awaited editor-owned checkpoint
+before intent selection and authoring. Failure stops that turn before tools run.
+The callback refreshes only the detached session's world documents.
+Ordinary `applyProposedProject` calls retain the live `project.world`, because a
+map/title proposal does not own codex edits made after its preview. Explicit
+`resetProject` keeps its replacement semantics. Tests:
+`projectWikiSession.test.ts` and `projectWikiApplication.test.ts`.
+
 ## Completed-house transaction protection - Phase 1 (2026-09-05)
 
 `src/editor/tools/houseProtection.ts` is the shared completed-house ownership rule.

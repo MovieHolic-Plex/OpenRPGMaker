@@ -94,6 +94,7 @@ export interface IntentFacts {
   readonly facilityLabels: readonly string[];
   readonly toolNames: readonly string[];
   readonly hasActivePlan: boolean;
+  readonly wikiContext?: string;
 }
 
 export const INTENT_MODES: readonly IntentMode[] = ["create", "modify", "question", "other"];
@@ -151,6 +152,7 @@ export function buildIntentUserPayload(facts: IntentFacts): string {
     context.push(`맵 목록: ${facts.maps.slice(0, 16).map((map) => `${map.name}(${map.id})`).join(", ")}`);
   }
   lines.push(`## 사실\n${context.join("\n")}`);
+  if (facts.wikiContext) lines.push(`## 프로젝트 위키 — 이전에 정한 제작 방향과 현재 맵의 예외\n${facts.wikiContext}`);
   lines.push(`## 개념 꾸러미 시설 라벨\n${facts.facilityLabels.length > 0 ? facts.facilityLabels.join(", ") : "(없음)"}`);
   lines.push(`## 툴 목록\n${facts.toolNames.join(", ")}`);
   return lines.join("\n\n");
