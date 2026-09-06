@@ -1,0 +1,48 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiRegionJob.test.ts -t validated checkpoints
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-aiq-region-silver
+
+ ❯ test/aiRegionJob.test.ts (15 tests | 1 failed | 14 skipped) 1396ms
+   ↓ isolated real session import graph > has no runtime editor/store/persistence boot edges
+   ↓ isolated region generation > does not boot the editor, store, pending slot, or preference distillation
+   ↓ clips real outside-region tile/event writes without changing either snapshot
+   ↓ retains a new interior-only map from a real session across a deferred provider boundary
+   ↓ retains allocated map IDs and paid responses after a post-response interruption
+   ↓ protects a completed new house from north-ridge clipping (task), retaining raw output
+   ↓ protects a completed new house from north-ridge clipping (polish), retaining raw output
+   ↓ protects existing houses from deterministic seam polish
+   ↓ rejects malformed input, project and checkpoint before any provider request
+   ↓ retries failed region output storage without replaying completed session or artwork
+   ↓ returns an intact completed house and review metadata (task)
+   ↓ returns an intact completed house and review metadata (polish)
+   ↓ does not polish a no-op region proposal
+   ↓ polishes only the permitted seam and reports its separate count
+   × preserves real tool-result JSON bytes through validated checkpoints 1393ms
+     → expected '{"ok":true,"summary":"맵 \'Checkpoint …' to be '{"ok":true,"summary":"맵 \'Checkpoint …' // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiRegionJob.test.ts > preserves real tool-result JSON bytes through validated checkpoints
+AssertionError: expected '{"ok":true,"summary":"맵 \'Checkpoint …' to be '{"ok":true,"summary":"맵 \'Checkpoint …' // Object.is equality
+
+Expected: [32m"{"ok":true,"summary":"맵 'Checkpoint map' (8x8) 생성 — id map_a5c860f4-b403-4cb8-9be7-271d9d2957f1, BGM cc0-bgm-rtp-fld-003","d[7miff[27m":{"[7mtilesChanged":0,"mapProper[27mtiesChanged":[7m1[27m,"eventsAdded":0,"eventsModified":0,"eventsRemoved":0,"mapsAdded":1,"mapsRemoved":0,"dbRecordsChanged":0,"tilesetsChanged":0,"switchesAdded":0,"variablesAdded":0,"worldEntitiesAdded":0,"worldEntitiesModified":0,"palettePresetsAdded":0,"palettePresetsModified":0,"endingsChanged":0,"sessionChanged":false,"systemChanged":false,"warnings":[]}[7m,"data":{"mapId":"map_a5c860f4-b403-4cb8-9be7-271d9d2957f1","bgmResourceId":"cc0-bgm-rtp-fld-003"}[27m}"[39m
+Received: [31m"{"ok":true,"summary":"맵 'Checkpoint map' (8x8) 생성 — id map_a5c860f4-b403-4cb8-9be7-271d9d2957f1, BGM cc0-bgm-rtp-fld-003","d[7mata[27m":{"[7mmapId":"map_a5c860f4-b403-4cb8-9be7-271d9d2957f1","bgmResourceId":"cc0-bgm-rtp-fld-003"},"diff":{"[27mti[7ml[27mesChanged":[7m0[27m,"eventsAdded":0,"eventsModified":0,"eventsRemoved":0,"mapsAdded":1,"mapsRemoved":0,"dbRecordsChanged":0,"tilesetsChanged":0,"switchesAdded":0,"variablesAdded":0,"worldEntitiesAdded":0,"worldEntitiesModified":0,"palettePresetsAdded":0,"palettePresetsModified":0,"endingsChanged":0,"[7mmapPropertiesChanged":1,"[27msessionChanged":false,"systemChanged":false,"warnings":[]}}"[39m
+
+ ❯ test/aiRegionJob.test.ts:288:52
+    286|   await job.flush();
+    287|   const restored = await parseSessionJobState(f.checkpoint().state, f.…
+    288|   expect(JSON.stringify(restored.tools[0].result)).toBe(JSON.stringify…
+       |                                                    ^
+    289| });
+    290|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 14 skipped (15)
+   Start at  20:40:36
+   Duration  16.24s (transform 9.63s, setup 0ms, collect 14.08s, tests 1.40s, environment 0ms, prepare 200ms)

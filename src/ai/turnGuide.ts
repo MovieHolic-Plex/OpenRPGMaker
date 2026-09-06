@@ -4,7 +4,7 @@
 // 예전에는 여기서 「도구 규칙」 가이드 17줄을 조립해 사용자 문장 뒤에 붙였고, 그 기계 텍스트를 되묻기·플래너
 // 스킵·툴 노출 스캔이 사용자 발화로 읽어 라우팅이 어긋났다(2026-09-03 의도 라우터 감사). 규칙은 이제 각 툴의
 // 설명에 있고(툴이 노출되면 규칙도 함께 보인다), 뜻은 의도 선언(intentDeclaration)이 정한다.
-import { BUILD_PALETTE_GROUP_IDS } from "@/editor/panels/buildPaletteCore";
+import { BUILD_PALETTE_GROUP_IDS } from "@/editor/regionTask/buildPaletteTileGroups";
 import { isBagGroupId, isBagMaterialQuery } from "@/project/materialPolicy";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import type { TilesetDef } from "@/project/types";

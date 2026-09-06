@@ -10,7 +10,7 @@
 import { TILE } from "@/project/defaults/constants";
 import { describeChipsetTile } from "@/project/defaults/chipsetMapping";
 import { isPassable } from "@/project/collision";
-import { eventDisplayName } from "@/editor/eventMarkerUx";
+import { eventDisplayName } from "@/project/eventDisplayName";
 import type { GameMap, MapId, Project, TilesetDef } from "@/project/types";
 import type { RegionRect } from "./clipToRegion";
 import { inRegion } from "./clipToRegion";

@@ -1,0 +1,49 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiRegionJob.test.ts -t no-op region
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-aiq-region-silver
+
+ ❯ test/aiRegionJob.test.ts (13 tests | 1 failed | 12 skipped) 292ms
+   ↓ isolated real session import graph > has no runtime editor/store/persistence boot edges
+   ↓ isolated region generation > does not boot the editor, store, pending slot, or preference distillation
+   ↓ clips real outside-region tile/event writes without changing either snapshot
+   ↓ retains a new interior-only map from a real session across a deferred provider boundary
+   ↓ retains allocated map IDs and paid responses after a post-response interruption
+   ↓ protects a completed new house from north-ridge clipping (task), retaining raw output
+   ↓ protects a completed new house from north-ridge clipping (polish), retaining raw output
+   ↓ protects existing houses from deterministic seam polish
+   ↓ rejects malformed input, project and checkpoint before any provider request
+   ↓ retries failed region output storage without replaying completed session or artwork
+   ↓ returns an intact completed house and review metadata (task)
+   ↓ returns an intact completed house and review metadata (polish)
+   × does not polish a no-op region proposal 290ms
+     → expected 31 to be +0 // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiRegionJob.test.ts > does not polish a no-op region proposal
+AssertionError: expected 31 to be +0 // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 0[39m
+[31m+ 31[39m
+
+ ❯ test/aiRegionJob.test.ts:255:31
+    253|   for (let y = 2; y < 9; y++) for (let x = 2; x < 8; x++) map.lowerTil…
+    254|   const result = finalizeRegionGeneration(base, structuredClone(base),…
+    255|   expect(result.changedCells).toBe(0);
+       |                               ^
+    256|   expect(result.seamCells).toBe(0);
+    257|   expect(result.project).toEqual(base);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 12 skipped (13)
+   Start at  20:37:29
+   Duration  13.63s (transform 8.53s, setup 0ms, collect 12.55s, tests 292ms, environment 0ms, prepare 219ms)

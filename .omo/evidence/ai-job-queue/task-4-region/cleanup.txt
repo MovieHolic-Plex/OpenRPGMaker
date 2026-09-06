@@ -1,0 +1,12 @@
+ss -ltn '( sport = :19845 )'
+Exit 0. Output header only; no listener.
+
+No application server, browser, provider process, or disk-backed project fixture
+was created. Test host blobs are in-memory. Every MessageChannel closes both
+ports in finally; bounded event timers are cleared in finally.
+
+Only diagnostics-tool-managed tsserver processes were observed for this tree.
+No unrelated process was stopped. No .env reads, paid calls, or remote writes.
+
+git diff --check
+Exit 0, no output.

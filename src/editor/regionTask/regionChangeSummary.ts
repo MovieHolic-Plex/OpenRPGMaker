@@ -10,7 +10,7 @@
 // 없이 그대로 반영된다. 최소한 목록에 드러내야 한다.
 //
 // 순수 함수 — store/DOM 의존 없음.
-import { eventDisplayName } from "@/editor/eventMarkerUx";
+import { eventDisplayName } from "@/project/eventDisplayName";
 import type { SvgIconName } from "@/editor/panels/tileToolbarIcons";
 import type { GameEvent, MapId, Project } from "@/project/types";
 import type { RegionRect } from "./clipToRegion";

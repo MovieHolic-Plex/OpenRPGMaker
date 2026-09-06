@@ -1,0 +1,46 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiRegionJob.test.ts test/materialPolicy.test.ts test/buildPaletteClaimLayerHome.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-aiq-region-silver
+
+ ✓ test/materialPolicy.test.ts (4 tests) 912ms
+   ✓ materialPolicy bag demotion > place_props rejects bag material  538ms
+ ✓ test/buildPaletteClaimLayerHome.test.ts (3 tests) 49ms
+ ✓ test/aiRegionJob.test.ts (15 tests) 91149ms
+   ✓ isolated real session import graph > has no runtime editor/store/persistence boot edges  7924ms
+   ✓ isolated region generation > does not boot the editor, store, pending slot, or preference distillation  4092ms
+   ✓ clips real outside-region tile/event writes without changing either snapshot  2809ms
+   ✓ retains a new interior-only map from a real session across a deferred provider boundary  6749ms
+   ✓ retains allocated map IDs and paid responses after a post-response interruption  7666ms
+   ✓ protects a completed new house from north-ridge clipping (task), retaining raw output  8740ms
+   ✓ protects a completed new house from north-ridge clipping (polish), retaining raw output  8636ms
+   ✓ protects existing houses from deterministic seam polish  493ms
+   ✓ rejects malformed input, project and checkpoint before any provider request  3453ms
+   ✓ retries failed region output storage without replaying completed session or artwork  17604ms
+   ✓ returns an intact completed house and review metadata (task)  10696ms
+   ✓ returns an intact completed house and review metadata (polish)  7099ms
+   ✓ does not polish a no-op region proposal  574ms
+   ✓ polishes only the permitted seam and reports its separate count  923ms
+   ✓ preserves real tool-result JSON bytes through validated checkpoints  3647ms
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 1 unhandled error during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: [vitest-worker]: Timeout calling "onTaskUpdate"
+ ❯ Object.onTimeoutError ../rpg-zzu/node_modules/vitest/dist/chunks/rpc.-pEldfrD.js:53:10
+ ❯ Timeout._onTimeout ../rpg-zzu/node_modules/vitest/dist/chunks/index.B521nVV-.js:59:62
+ ❯ listOnTimeout node:internal/timers:605:17
+ ❯ processTimers node:internal/timers:541:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  3 passed (3)
+      Tests  22 passed (22)
+     Errors  1 error
+   Start at  20:48:43
+   Duration  116.06s (transform 20.83s, setup 0ms, collect 52.91s, tests 92.11s, environment 3ms, prepare 532ms)

@@ -1,6 +1,6 @@
 import { requireRecord, requireArray, requireString, requireNumber, requireBoolean, assert } from "@/project/io/guards";
 import { deserialize } from "@/project/io/serialize";
-import type { Project, ChangeSummary } from "@/project/types";
+import type { Project } from "@/project/types";
 import type { ToolResult } from "@/editor/tools/types";
 import type { AiJobHost } from "../../../scripts/lib/aiJobs/scheduler.mjs";
 import type { BlobRef, JsonObject, JsonValue } from "./contracts";
@@ -43,26 +43,25 @@ function parseRef(value: unknown): BlobRef {
   const mediaType = requireString("mediaType", r.mediaType); assert(mediaType === "application/json", "Checkpoint blobs must be JSON");
   return { sha256, byteLength, mediaType };
 }
-function diffSummary(value: unknown): ChangeSummary {
-  const r = requireRecord("tool diff", value);
-  const n = (key: string) => requireNumber(key, r[key]);
-  return { tilesChanged: n("tilesChanged"), eventsAdded: n("eventsAdded"), eventsModified: n("eventsModified"), eventsRemoved: n("eventsRemoved"),
-    mapsAdded: n("mapsAdded"), mapsRemoved: n("mapsRemoved"), dbRecordsChanged: n("dbRecordsChanged"), tilesetsChanged: n("tilesetsChanged"),
-    switchesAdded: n("switchesAdded"), variablesAdded: n("variablesAdded"), worldEntitiesAdded: n("worldEntitiesAdded"), worldEntitiesModified: n("worldEntitiesModified"),
-    palettePresetsAdded: n("palettePresetsAdded"), palettePresetsModified: n("palettePresetsModified"), endingsChanged: n("endingsChanged"),
-    mapPropertiesChanged: r.mapPropertiesChanged === undefined ? undefined : n("mapPropertiesChanged"),
-    sessionChanged: requireBoolean("sessionChanged", r.sessionChanged), systemChanged: requireBoolean("systemChanged", r.systemChanged), warnings: strings(r.warnings) };
-}
-function toolResult(value: unknown): ToolResult {
+function validateToolResult(value: unknown): asserts value is ToolResult {
   const r = requireRecord("tool result", value);
-  return { ok: requireBoolean("ok", r.ok), summary: requireString("summary", r.summary),
-    data: r.data, diff: r.diff === undefined ? undefined : diffSummary(r.diff), warnings: r.warnings === undefined ? undefined : strings(r.warnings),
-    issues: r.issues === undefined ? undefined : requireArray("issues", r.issues).map(value => {
-      const i = requireRecord("issue", value);
-      return { severity: enumValue(i.severity, ["error", "warning"]), code: requireString("code", i.code), message: requireString("message", i.message),
-        mapId: i.mapId === undefined ? undefined : requireString("mapId", i.mapId),
-        x: i.x === undefined ? undefined : requireNumber("x", i.x), y: i.y === undefined ? undefined : requireNumber("y", i.y) };
-    }) };
+  requireBoolean("ok", r.ok); requireString("summary", r.summary);
+  if (r.diff !== undefined) {
+    const d = requireRecord("tool diff", r.diff);
+    for (const key of ["tilesChanged", "eventsAdded", "eventsModified", "eventsRemoved", "mapsAdded", "mapsRemoved", "dbRecordsChanged",
+      "tilesetsChanged", "switchesAdded", "variablesAdded", "worldEntitiesAdded", "worldEntitiesModified", "palettePresetsAdded",
+      "palettePresetsModified", "endingsChanged"]) requireNumber(key, d[key]);
+    if (d.mapPropertiesChanged !== undefined) requireNumber("mapPropertiesChanged", d.mapPropertiesChanged);
+    requireBoolean("sessionChanged", d.sessionChanged); requireBoolean("systemChanged", d.systemChanged); strings(d.warnings);
+  }
+  if (r.warnings !== undefined) strings(r.warnings);
+  if (r.issues !== undefined) for (const value of requireArray("issues", r.issues)) {
+    const i = requireRecord("issue", value);
+    enumValue(i.severity, ["error", "warning"]); requireString("code", i.code); requireString("message", i.message);
+    if (i.mapId !== undefined) requireString("mapId", i.mapId);
+    if (i.x !== undefined) requireNumber("x", i.x);
+    if (i.y !== undefined) requireNumber("y", i.y);
+  }
 }
 function recordedTool(value: unknown): RecordedTool {
   const r = requireRecord("recorded tool", value);
@@ -72,7 +71,12 @@ function recordedTool(value: unknown): RecordedTool {
     assert(path.length > 0 && path.every(k => !["__proto__", "constructor", "prototype"].includes(k)), "Invalid delta path");
     return d.value === undefined ? { path } : { path, value: parseJson(d.value) };
   });
-  return { name: requireString("tool name", r.name), args, delta, result: toolResult(r.result) };
+  const result = r.result;
+  validateToolResult(result);
+  // Tool results become JSON strings inside provider messages. Reconstructing their
+  // objects in schema order changes those bytes (notably diff.mapPropertiesChanged)
+  // and breaks the durable operation's identical-request contract on replay.
+  return { name: requireString("tool name", r.name), args, delta, result: structuredClone(result) };
 }
 export async function parseSessionJobState(value: unknown, host: AiJobHost): Promise<SessionJobState> {
   const r = requireRecord("session checkpoint", value);

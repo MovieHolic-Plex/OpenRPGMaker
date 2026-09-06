@@ -1,0 +1,43 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiRegionJob.test.ts -t allocated map IDs --silent=false
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-aiq-region-silver
+
+stderr | test/aiRegionJob.test.ts > retains allocated map IDs and paid responses after a post-response interruption
+REPLAY DIFFERENCE region/provider/2 [33m27343[39m  map_3ce7bd3a-d6b2-4a94-939c-24a5aa1e78e7, BGM cc0-bgm-rtp-fld-003\",\"diff\":{\"tilesChanged\":0,\"mapPropertiesChanged\":1,\"eventsAdded\":0,\"eventsModified\":0,\"eventsRemoved\":0,\"mapsAdded\":1,\"mapsRemoved\":0,\"dbRecordsChanged\":0,\"tilesetsChanged\":0,\"switchesAdded\":0,\"variablesAdded\":0,\"worldEntitiesAdded\":0,\"worldEntitiesModified\":0,\"palettePresetsAdded\":0,\"palettePresetsModified\":0,\"endingsChanged\":0,\"sessionChanged\":false,\"systemChanged\":false,\"warnings\":[]},\"data\":{\"mapId\":\"map_3ce7bd3a-d6b2-4a94-939c-24a5aa1e78e7\",\"bgmResourceId\":\"cc0-bgm-rtp-fld-  map_3ce7bd3a-d6b2-4a94-939c-24a5aa1e78e7, BGM cc0-bgm-rtp-fld-003\",\"diff\":{\"tilesChanged\":0,\"eventsAdded\":0,\"eventsModified\":0,\"eventsRemoved\":0,\"mapsAdded\":1,\"mapsRemoved\":0,\"dbRecordsChanged\":0,\"tilesetsChanged\":0,\"switchesAdded\":0,\"variablesAdded\":0,\"worldEntitiesAdded\":0,\"worldEntitiesModified\":0,\"palettePresetsAdded\":0,\"palettePresetsModified\":0,\"endingsChanged\":0,\"mapPropertiesChanged\":1,\"sessionChanged\":false,\"systemChanged\":false,\"warnings\":[]},\"data\":{\"mapId\":\"map_3ce7bd3a-d6b2-4a94-939c-24a5aa1e78e7\",\"bgmResourceId\":\"cc0-bgm-rtp-fld-
+
+ ❯ test/aiRegionJob.test.ts (9 tests | 1 failed | 8 skipped) 7422ms
+   ↓ isolated real session import graph > has no runtime editor/store/persistence boot edges
+   ↓ isolated region generation > does not boot the editor, store, pending slot, or preference distillation
+   ↓ clips real outside-region tile/event writes without changing either snapshot
+   ↓ retains a new interior-only map from a real session across a deferred provider boundary
+   × retains allocated map IDs and paid responses after a post-response interruption 7420ms
+     → ASSISTANT_INCOMPLETE: expected { kind: 'text', …(2) } to deeply equal { kind: 'text', …(2) }
+   ↓ protects a completed new house from north-ridge clipping (task), retaining raw output
+   ↓ protects a completed new house from north-ridge clipping (polish), retaining raw output
+   ↓ protects existing houses from deterministic seam polish
+   ↓ rejects malformed input, project and checkpoint before any provider request
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiRegionJob.test.ts > retains allocated map IDs and paid responses after a post-response interruption
+Error: ASSISTANT_INCOMPLETE: expected { kind: 'text', …(2) } to deeply equal { kind: 'text', …(2) }
+ ❯ executeAssistantJob src/ai/jobs/executors/assistantJob.ts:40:13
+     38|       state.partial = { reason: failure, turn: output };
+     39|       await job.flush("assistant/partial");
+     40|       throw new Error(`ASSISTANT_INCOMPLETE: ${failure}`);
+       |             ^
+     41|     }
+     42|     delete state.partial;
+ ❯ executeRegionJob src/ai/jobs/executors/regionJob.ts:75:25
+ ❯ test/aiRegionJob.test.ts:164:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 8 skipped (9)
+   Start at  20:32:29
+   Duration  33.77s (transform 15.95s, setup 0ms, collect 24.62s, tests 7.42s, environment 3ms, prepare 419ms)

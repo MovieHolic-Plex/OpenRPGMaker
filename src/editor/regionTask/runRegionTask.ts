@@ -1,3 +1,5 @@
+import { buildRegionTaskMessage, countAddedMaps, countInRegionChangedCells, countInRegionChangedEvents, reviewRegionGeneration } from "./regionGenerationCore";
+export { buildRegionTaskMessage, countAddedMaps, countInRegionChangedCells, countInRegionChangedEvents } from "./regionGenerationCore";
 // 영역 지정 AI 작업 오케스트레이션. 기존 AssistantSession을 그대로 재사용하되,
 // 메시지에 표준 [컨텍스트] 선택 영역 footer를 붙여(스펙 게이트 구간 격리 활성화)
 // 지시를 보내고, 제안을 clipMapCellsToRegion으로 사각형에 하드-클립한 뒤,
@@ -40,16 +42,14 @@ import {
   truncateMapEditHistoryFromMarker,
 } from "@/editor/mapEditHistory";
 import { getEditorMapViewport } from "@/editor/editorMapViewport";
-import { ensureBuildPaletteTileGroups } from "@/editor/panels/buildPaletteCore";
+import { ensureBuildPaletteTileGroups } from "./buildPaletteTileGroups";
 import { getTool } from "@/editor/tools";
 import { assertHouseProtection, captureHouseProtection, newlyBuiltHouseSnapshots } from "@/editor/tools/houseProtection";
 import { store } from "@/project/store";
 import { extractVocabSoftConfirm } from "@/project/tileVocabulary";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import type { MapId, Project, TilesetDef } from "@/project/types";
-import { validateLayoutPlacement } from "@/project/lint/layoutPlacementValidate";
-import { clipMapCellsToRegion, inRegion, type RegionRect } from "./clipToRegion";
-import { analyzeRegionBlend, describeBlendBreak, describeBlockedEntrance, expandRegion, polishRegionSeams } from "./regionBlend";
+import { clipMapCellsToRegion, type RegionRect } from "./clipToRegion";
 import { buildRegionPolishMessage } from "./regionPolish";
 import { analyzeRegionSurroundings } from "./regionSurroundings";
 // 재료 라벨 힌트(현재 맵 타일셋의 사실)의 정본은 turnGuide 다. 기존 수입자(test/materialPolicy.test.ts,
@@ -59,7 +59,7 @@ import { createLlmIntentDeclarer } from "@/ai/intentDeclarationClient";
 
 export { formatMaterialLabelHint };
 import { getPendingRegionApply, setPendingRegionApply, type PendingRegionApply } from "./pendingRegionApply";
-import { projectApprovalFingerprint, reviewRegionDraft, type HarnessReviewReport } from "./harnessReview";
+import { projectApprovalFingerprint, type HarnessReviewReport } from "./harnessReview";
 import { dispatchRegionTaskStatus } from "./regionTaskStatus";
 
 // 상한 값 자체는 표면 정책(assistantEndpoint)이 소유한다. 이 이름은 진행 표시("도구 3/2000")를
@@ -233,15 +233,6 @@ export function describeRegionTaskResult(result: RegionTaskResult): string {
   const parts = formatRegionTaskChangeParts(result);
   const clipped = result.clippedCells > 0 ? ` · 영역 밖 ${result.clippedCells}칸 차단` : "";
   return `적용됨 — ${parts.join(" · ") || "변경 적용"}${clipped}${seam}`;
-}
-
-/** proposed에 생기고 base에 없는 맵 수. */
-export function countAddedMaps(base: Project, proposed: Project): number {
-  let added = 0;
-  for (const id of Object.keys(proposed.maps)) {
-    if (!base.maps[id]) added += 1;
-  }
-  return added;
 }
 
 export function applyRegionProjectWithHistory(project: Project, label: string, mapId: MapId): void {
@@ -432,66 +423,6 @@ export const REGION_PROP_VOCAB = {
 /** 영역 메시지에 넣을 소품/지형 그룹 id 힌트(존재하면 soft-confirm 으로 바로 place_props 가능). */
 export function formatApprovedPropVocabHint(tileset: TilesetDef | undefined): string {
   return formatMaterialLabelHint(tileset);
-}
-
-// aiChatPanel.contextFooter와 동일한 [컨텍스트] 라인 포맷(buildSpec.ts의 정규식이 파싱).
-// 이 라인이 있어야 세션이 선택 영역을 이번 턴의 암묵적 명세로 인식한다.
-// 사용자 발화 + 사실(현재 맵·선택 영역·재료 라벨 예)만 싣는다. 도구 규칙은 툴 설명에, 영역 경계는 세션이
-// 스코프 인자(sendUserMessage opts.scope)로 받아 의도 선언에 맞춰 붙인다.
-export function buildRegionTaskMessage(
-  instruction: string,
-  mapName: string,
-  mapId: MapId,
-  region: RegionRect,
-  tileset?: TilesetDef,
-): string {
-  const material = tileset ? ` · ${formatMaterialLabelHint(tileset).replace(/^- /, "")}` : "";
-  const footer = `[컨텍스트] 현재 맵: ${mapName} (${mapId}) · 사용자 선택 영역: (${region.x},${region.y}) ${region.width}×${region.height}${material}`;
-  return `${instruction.trim()}\n\n${footer}`;
-}
-
-// 영역 안에서 base 대비 lower/upper가 바뀐 셀 수(적용 여부 판단·요약용).
-export function countInRegionChangedCells(base: Project, next: Project, mapId: MapId, region: RegionRect): number {
-  const baseMap = base.maps[mapId];
-  const nextMap = next.maps[mapId];
-  if (!baseMap || !nextMap) return 0;
-  if (baseMap.width !== nextMap.width || baseMap.height !== nextMap.height) return 0;
-  const { width, height } = baseMap;
-  let changed = 0;
-  for (let y = 0; y < height; y += 1) {
-    for (let x = 0; x < width; x += 1) {
-      if (!inRegion(x, y, region)) continue;
-      const i = y * width + x;
-      if (nextMap.lowerTiles[i] !== baseMap.lowerTiles[i] || nextMap.upperTiles[i] !== baseMap.upperTiles[i]) changed += 1;
-    }
-  }
-  return changed;
-}
-
-/** 영역 안 이벤트(NPC 등) 추가·삭제·이동·이름 변경 수. */
-export function countInRegionChangedEvents(base: Project, next: Project, mapId: MapId, region: RegionRect): number {
-  const baseMap = base.maps[mapId];
-  const nextMap = next.maps[mapId];
-  if (!baseMap || !nextMap) return 0;
-  const baseInside = (baseMap.events ?? []).filter((event) => inRegion(event.x, event.y, region));
-  const nextInside = (nextMap.events ?? []).filter((event) => inRegion(event.x, event.y, region));
-  const baseById = new Map(baseInside.map((event) => [event.id, event]));
-  const nextById = new Map(nextInside.map((event) => [event.id, event]));
-  let changed = 0;
-  for (const [id, event] of nextById) {
-    const prev = baseById.get(id);
-    if (!prev) {
-      changed += 1;
-      continue;
-    }
-    const prevName = prev.pages?.[0]?.name;
-    const nextName = event.pages?.[0]?.name;
-    if (prev.x !== event.x || prev.y !== event.y || prevName !== nextName) changed += 1;
-  }
-  for (const id of baseById.keys()) {
-    if (!nextById.has(id)) changed += 1;
-  }
-  return changed;
 }
 
 type ActiveRegionTaskRun = {
@@ -778,86 +709,12 @@ export async function runRegionTask(
     // 다듬기는 경계 바로 밖 1칸의 오토타일 **변형**까지 손댄다(사용자 승인 결정). 그래서 스코프
     // 검사에는 1칸 넓힌 사각형을 준다 — 안 그러면 방금 만든 이음새가 region-scope-violation
     // error 로 잡혀 적용 자체가 차단된다. 고립·도달·일정 검사는 원래 영역 기준을 그대로 쓴다.
-    const scopeRegion = mode === "polish"
-      ? expandRegion(opts.region, 1, map)
-      : opts.region;
-    const blendBefore = mode === "polish"
-      ? analyzeRegionBlend({ project: base, mapId: opts.mapId, region: opts.region })
-      : null;
     let seamCells = 0;
     const reviewCandidate = (project: Project) => {
-      let candidate = project;
-      if (mode === "polish") {
-        const seams = polishRegionSeams(candidate, opts.mapId, opts.region);
-        candidate = seams.project;
-        seamCells = seams.seamCells;
-      }
-      const harness = reviewRegionDraft({
-        base,
-        draft: candidate,
-        mapId: opts.mapId,
-        region: opts.region,
-        scopeRegion,
-      });
-      const layoutIssues = validateLayoutPlacement(harness.project, {
-        mapId: opts.mapId,
-        region: { x: opts.region.x, y: opts.region.y, width: opts.region.width, height: opts.region.height },
-        instruction,
-        toolNames: turn.proposedCalls.map((call) => call.name),
-      });
-      const structuredLayoutIssues = layoutIssues.map((issue) => ({
-        code: issue.code,
-        severity: issue.severity === "error" ? "error" as const : "warning" as const,
-        message: issue.message,
-        ...(issue.mapId ? { mapId: issue.mapId } : {}),
-        ...(issue.x === undefined ? {} : { x: issue.x }),
-        ...(issue.y === undefined ? {} : { y: issue.y }),
-      }));
-      // 어울림은 **경고만** 이다 — blockers 에 넣지 않는다. 경계가 조금 어긋난 초안조차 적용을
-      // 막으면 사용자가 아무것도 못 하게 된다. 사실을 보여 주고 결정은 사람이 한다.
-      // (배치 규칙 error 도 같은 이유로 blockers 에 넣지 않는다 — 영역작업 검증게이트 배제, 2026-08-30.)
-      const blend = mode === "polish"
-        ? analyzeRegionBlend({ project: harness.project, mapId: opts.mapId, region: opts.region, base })
-        : null;
-      const blendIssues = blend
-        ? [
-            ...blend.brokenCrossings.slice(0, 3).map((point) => ({
-              code: "region-blend-break",
-              severity: "warning" as const,
-              message: describeBlendBreak(point),
-              mapId: opts.mapId,
-              x: point.x,
-              y: point.y,
-            })),
-            ...blend.newlyBlockedEntrances.slice(0, 2).map((point) => ({
-              code: "region-blend-entrance-blocked",
-              severity: "warning" as const,
-              message: describeBlockedEntrance(point),
-              mapId: opts.mapId,
-              x: point.x,
-              y: point.y,
-            })),
-          ]
-        : [];
-      return {
-        project: harness.project,
-        report: {
-          ...harness.report,
-          issues: [...harness.report.issues, ...structuredLayoutIssues, ...blendIssues],
-          metrics: {
-            ...harness.report.metrics,
-            ...(blend
-              ? {
-                  blendScore: blend.score,
-                  brokenCrossings: blend.brokenCrossings.length,
-                  blockedEntrances: blend.newlyBlockedEntrances.length,
-                  seamCells,
-                  ...(blendBefore ? { blendScoreBefore: blendBefore.score } : {}),
-                }
-              : {}),
-          },
-        },
-      };
+      const result = reviewRegionGeneration({ base, project, mapId: opts.mapId, region: opts.region, mode, instruction,
+        toolNames: turn.proposedCalls.map((call) => call.name) });
+      seamCells = result.seamCells;
+      return result;
     };
     // 진단이 터져도 AI 작업물은 살린다. 예전에는 이 자리에서 예외가 나면 턴 전체가 오류로 끝나
     // 사용자에게 아무것도 남지 않았다 — 그 실패 모드를 없애는 것이 이 변경의 목적이다.

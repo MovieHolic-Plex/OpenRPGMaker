@@ -1,0 +1,30 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiRegionJob.test.ts test/materialPolicy.test.ts test/buildPaletteClaimLayerHome.test.ts --maxWorkers=1 --no-file-parallelism
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-aiq-region-silver
+
+ ✓ test/aiRegionJob.test.ts (15 tests) 61734ms
+   ✓ isolated real session import graph > has no runtime editor/store/persistence boot edges  6305ms
+   ✓ isolated region generation > does not boot the editor, store, pending slot, or preference distillation  5227ms
+   ✓ clips real outside-region tile/event writes without changing either snapshot  3104ms
+   ✓ retains a new interior-only map from a real session across a deferred provider boundary  6258ms
+   ✓ retains allocated map IDs and paid responses after a post-response interruption  7851ms
+   ✓ protects a completed new house from north-ridge clipping (task), retaining raw output  6159ms
+   ✓ protects a completed new house from north-ridge clipping (polish), retaining raw output  5741ms
+   ✓ protects existing houses from deterministic seam polish  429ms
+   ✓ rejects malformed input, project and checkpoint before any provider request  1528ms
+   ✓ retries failed region output storage without replaying completed session or artwork  6456ms
+   ✓ returns an intact completed house and review metadata (task)  5271ms
+   ✓ returns an intact completed house and review metadata (polish)  5324ms
+   ✓ polishes only the permitted seam and reports its separate count  360ms
+   ✓ preserves real tool-result JSON bytes through validated checkpoints  1509ms
+ ✓ test/materialPolicy.test.ts (4 tests) 1461ms
+   ✓ materialPolicy bag demotion > place_props rejects bag material  1177ms
+ ✓ test/buildPaletteClaimLayerHome.test.ts (3 tests) 38ms
+
+ Test Files  3 passed (3)
+      Tests  22 passed (22)
+   Start at  20:54:10
+   Duration  96.74s (transform 15.87s, setup 0ms, collect 30.85s, tests 63.23s, environment 1ms, prepare 635ms)

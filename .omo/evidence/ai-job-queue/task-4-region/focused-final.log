@@ -1,0 +1,110 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiRegionJob.test.ts test/aiSessionJobHost.test.ts test/regionTaskRun.test.ts test/regionTaskCompletedHouse.test.ts test/regionTaskHouseProtection.test.ts test/regionTaskClip.test.ts test/regionBlend.test.ts test/regionChangeSummary.test.ts test/regionSurroundings.test.ts test/regionAiPlacementHarness.test.ts test/buildPalette.test.ts test/buildPaletteClaimLayerHome.test.ts test/materialPolicy.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-aiq-region-silver
+
+ ✓ test/regionTaskCompletedHouse.test.ts (13 tests) 15095ms
+   ✓ completed new region house (task) > atomically rejects full application after clipping the north ridge  1416ms
+   ✓ completed new region house (task) > atomically rejects partial application after clipping the north ridge  1238ms
+   ✓ completed new region house (task) > atomically rejects immediate application after clipping the north ridge  1013ms
+   ✓ completed new region house (task) > applies a whole house including the ridge via approval with one undo  1203ms
+   ✓ completed new region house (task) > applies a whole house including the ridge via immediate with one undo  1070ms
+   ✓ completed new region house (polish) > atomically rejects full application after clipping the north ridge  1156ms
+   ✓ completed new region house (polish) > atomically rejects partial application after clipping the north ridge  1144ms
+   ✓ completed new region house (polish) > atomically rejects immediate application after clipping the north ridge  914ms
+   ✓ completed new region house (polish) > applies a whole house including the ridge via approval with one undo  1275ms
+   ✓ completed new region house (polish) > applies a whole house including the ridge via immediate with one undo  1192ms
+   ✓ rejects full review polishing a completed new house without any clipping  1243ms
+   ✓ rejects partial review polishing a completed new house without any clipping  1229ms
+   ✓ rejects immediate review polishing a completed new house without any clipping  997ms
+ ✓ test/regionTaskRun.test.ts (24 tests) 8410ms
+   ✓ countInRegionChangedCells > 영역 안 변경만 센다  403ms
+   ✓ runRegionTask > 기본 세션 생성은 보조 모델(liteModel)로 chat 요청을 만든다  609ms
+   ✓ runRegionTask > 영역 안 변경을 적용하고 영역 밖은 클립한다(undo 1개 형태)  408ms
+   ✓ runRegionTask > 영역 안 변경이 없으면 적용하지 않는다  350ms
+   ✓ runRegionTask > 영역 셀 0이어도 새 맵이 추가되면 적용한다(실내/create_map)  488ms
+   ✓ runRegionTask > 영역 안 NPC만 바뀌어도 적용한다(타일 0칸이어도)  469ms
+   ✓ runRegionTask > 세션 오류를 결과로 전달하고 적용하지 않는다  332ms
+   ✓ 승인 게이트 (gate: approval 기본) > 성공 시 적용하지 않고 pending을 반환한다  462ms
+   ✓ 승인 게이트 (gate: approval 기본) > discard 시 applyProject가 호출되지 않는다  434ms
+   ✓ 승인 게이트 (gate: approval 기본) > pending.discard() 시 실제 onSettle 배선이 running:false 배지 해제 이벤트를 발행한다  454ms
+   ✓ 승인 게이트 (gate: approval 기본) > gate: immediate는 기존처럼 즉시 적용한다  421ms
+   ✓ 승인 게이트 (gate: approval 기본) > 자동 discard 순서 — 새 작업(B) 완료 후 고스트 프리뷰가 B의 것으로 남는다(A의 뒤늦은 onSettle이 지우지 않음)  602ms
+   ✓ runRegionTask — running:false 배지 해제 회귀 > pending 제안 등록 성공 시 반환 시점에는 running:false를 발행하지 않는다(해제 소유권은 onSettle)  381ms
+   ✓ mode: polish > 세션에 주변 브리핑과 전권 문단이 담긴 다듬기 지시문을 보낸다  523ms
+   ✓ mode: polish > 일반 모드는 다듬기 문단을 넣지 않는다  390ms
+   ✓ mode: polish > 이음새 마감으로 영역 밖 1칸이 바뀌어도 차단되지 않고 seamCells 로 보고된다  469ms
+   ✓ mode: polish > 끊긴 길 연결은 경고 issue 로만 남고 적용을 막지 않는다  405ms
+ ✓ test/aiRegionJob.test.ts (15 tests) 37791ms
+   ✓ isolated real session import graph > has no runtime editor/store/persistence boot edges  3740ms
+   ✓ isolated region generation > does not boot the editor, store, pending slot, or preference distillation  2859ms
+   ✓ clips real outside-region tile/event writes without changing either snapshot  1532ms
+   ✓ retains a new interior-only map from a real session across a deferred provider boundary  3760ms
+   ✓ retains allocated map IDs and paid responses after a post-response interruption  4934ms
+   ✓ protects a completed new house from north-ridge clipping (task), retaining raw output  3615ms
+   ✓ protects a completed new house from north-ridge clipping (polish), retaining raw output  4021ms
+   ✓ rejects malformed input, project and checkpoint before any provider request  872ms
+   ✓ retries failed region output storage without replaying completed session or artwork  4554ms
+   ✓ returns an intact completed house and review metadata (task)  3050ms
+   ✓ returns an intact completed house and review metadata (polish)  2957ms
+   ✓ preserves real tool-result JSON bytes through validated checkpoints  1353ms
+ ✓ test/regionTaskHouseProtection.test.ts (9 tests) 9842ms
+   ✓ real region polish full approval > rejects protected seam changes when the store has not changed  1899ms
+   ✓ real region polish full approval > applies an unrelated outside edit when accepted house values remain unchanged  1583ms
+   ✓ real region polish partial approval > rejects protected seam changes when the store has not changed  1505ms
+   ✓ real region polish partial approval > applies an unrelated outside edit when accepted house values remain unchanged  1429ms
+   ✓ final region application uses the current store > rejects stale lowerTiles candidates before history or replacement  739ms
+   ✓ final region application uses the current store > rejects stale upperTiles candidates before history or replacement  654ms
+   ✓ final region application uses the current store > rejects stale lowerTileStacks candidates before history or replacement  733ms
+   ✓ final region application uses the current store > rejects stale upperTileStacks candidates before history or replacement  665ms
+   ✓ final region application uses the current store > rejects stale new-house candidates before history or replacement  632ms
+ ✓ test/buildPalette.test.ts (21 tests) 7651ms
+   ✓ build palette deterministic stamps > 집 프리미티브가 시작 위치를 덮으면 시공이 시작점을 복원하고 성공한다  1243ms
+   ✓ build palette deterministic stamps > manual rect houses reserve the north ridge before choosing a safe start  501ms
+   ✓ build palette deterministic stamps > manual l houses reserve the north ridge before choosing a safe start  444ms
+   ✓ build palette deterministic stamps > manual u houses reserve the north ridge before choosing a safe start  400ms
+   ✓ build palette deterministic stamps > manual houses leave starts on another map unchanged  535ms
+   ✓ build palette deterministic stamps > AI author_house still rejects restoration that would carve its sealed house  332ms
+   ✓ build palette deterministic stamps > 선재 무결성 오류가 있어도 무관한 영역의 시공은 허용한다  659ms
+   ✓ build palette deterministic stamps > 선재 error가 있어도 커밋 거부 issues는 신규 blocking 오류만 담는다  455ms
+   ✓ build palette deterministic stamps > 문 이벤트 토글을 끄면 문 이벤트 없이 외장만 시공한다  398ms
+   ✓ build palette deterministic stamps > 내부 토글을 끄면 문 이벤트 없이 외장만 시공한다  396ms
+   ✓ build palette deterministic stamps > 집 프리미티브는 author_house 정본을 호출하고 문 이벤트와 창문이 diff에 반영된다  536ms
+   ✓ build palette deterministic stamps > 마을 프리미티브는 build_village(bounds)를 호출하고 감사 요약을 메시지에 포함한다  739ms
+   ✓ build palette deterministic stamps > 길과 강 프리미티브도 선택 영역 기반으로 결정론 시공하고 LLM을 호출하지 않는다  303ms
+ ✓ test/aiSessionJobHost.test.ts (10 tests) 9358ms
+   ✓ store-free session execution host > validates complete project and checkpoint structure before execution  489ms
+   ✓ store-free session execution host > retains budget-limited output privately without completing generation  1635ms
+   ✓ store-free session execution host > runs a real milestone without editor application or false save evidence  2079ms
+   ✓ store-free session execution host > resumes tool IDs and paid responses from a durable checkpoint after a response-boundary crash  3449ms
+   ✓ store-free session execution host > does not continue paid work when intent dispatch fails  860ms
+ ✓ test/regionBlend.test.ts (11 tests) 2802ms
+   ✓ polishRegionSeams > 계단식 모래 경계의 변형을 다시 계산하고 재질 집합은 바꾸지 않는다  466ms
+   ✓ polishRegionSeams > 멱등이다 — 승인 시 재검토에서 다시 돌려도 결과가 같다  335ms
+   ✓ polishRegionSeams > 이음새로 바뀐 영역 밖 칸은 확장 스코프에서 region-scope-violation 이 되지 않는다  394ms
+ ✓ test/regionTaskClip.test.ts (13 tests) 2419ms
+   ✓ clipMapCellsToRegion > 영역 밖 lower/upper 변경을 base로 되돌리고 영역 안은 보존한다  402ms
+   ✓ clipMapCellsToRegion > 영역 안 변경만 있으면 clippedCells=0이고 proposed를 그대로 반환한다  342ms
+   ✓ clipMapCellsToRegion > base를 변형하지 않는다(순수)  335ms
+   ✓ clipMapCellsToRegion > 영역 밖 tileStacks도 base 상태로 복원한다  310ms
+   ✓ clipMapCellsToRegion > 대상 맵의 비타일 필드와 다른 맵 변경은 통과시킨다  316ms
+   ✓ runRegionTask live ghost preview > 성공한 쓰기 tool_call 뒤 세션 draft diff 프리뷰를 발행하고 승인 해소 시 clear한다  424ms
+ ✓ test/regionSurroundings.test.ts (9 tests) 2026ms
+   ✓ analyzeRegionSurroundings > 없는 맵이면 null  415ms
+ ✓ test/regionAiPlacementHarness.test.ts (6 tests) 2660ms
+   ✓ region AI placement harness > multi-domain region declaration keeps place_props/place_npc/author_house exposed  371ms
+   ✓ region AI placement harness > ensureRegionPlacementHarness approves tree group so place_props succeeds  539ms
+   ✓ region AI placement harness > place_props wood-box places tile 237 (not random small-props)  505ms
+   ✓ region AI placement harness > place_npc without graphic uses villager charset, not transparent  509ms
+   ✓ region AI placement harness > make_villager without graphic uses villager charset  464ms
+ ✓ test/regionChangeSummary.test.ts (10 tests) 1203ms
+ ✓ test/materialPolicy.test.ts (4 tests) 538ms
+   ✓ materialPolicy bag demotion > place_props rejects bag material  371ms
+ ✓ test/buildPaletteClaimLayerHome.test.ts (3 tests) 19ms
+
+ Test Files  13 passed (13)
+      Tests  148 passed (148)
+   Start at  20:42:35
+   Duration  75.66s (transform 10.78s, setup 0ms, collect 45.23s, tests 99.81s, environment 4ms, prepare 1.08s)

@@ -1,0 +1,44 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiRegionJob.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-aiq-region-silver
+
+ ❯ test/aiRegionJob.test.ts (2 tests | 1 failed) 15319ms
+   ✓ isolated real session import graph > has no runtime editor/store/persistence boot edges  8887ms
+   × isolated region generation > does not boot the editor, store, pending slot, or preference distillation 6426ms
+     → expected [ 'src/project/store.ts', …(9) ] to deeply equal []
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiRegionJob.test.ts > isolated region generation > does not boot the editor, store, pending slot, or preference distillation
+AssertionError: expected [ 'src/project/store.ts', …(9) ] to deeply equal []
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   "src/project/store.ts",[39m
+[31m+   "src/editor/mapEditHistory.ts",[39m
+[31m+   "src/editor/editorState.ts",[39m
+[31m+   "src/ai/preferenceDistiller.ts",[39m
+[31m+   "src/editor/agentGhostPreview.ts",[39m
+[31m+   "src/editor/panels/buildPaletteCore.ts",[39m
+[31m+   "src/editor/panels/eventEditor/commandSummary.ts",[39m
+[31m+   "src/editor/panels/eventEditor/options.ts",[39m
+[31m+   "src/editor/panels/eventEditor/weightedBranchTable.ts",[39m
+[31m+   "src/editor/regionTask/pendingRegionApply.ts",[39m
+[31m+ ][39m
+
+ ❯ test/aiRegionJob.test.ts:7:199
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  20:23:59
+   Duration  18.33s (transform 244ms, setup 0ms, collect 1.60s, tests 15.32s, environment 0ms, prepare 444ms)
