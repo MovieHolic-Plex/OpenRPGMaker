@@ -22,7 +22,7 @@ export interface EventRelocation {
   readonly searchRadius: 3;
   readonly candidates: readonly {
     readonly name: "move_event";
-    readonly args: { readonly mapId: string; readonly eventId: string; readonly x: number; readonly y: number };
+    readonly args: { readonly mapId: string; readonly eventId: string; readonly x: number; readonly y: number; readonly from?: Point };
   }[];
 }
 
@@ -134,7 +134,8 @@ export class EventPlacementAnalysis {
   }
 
   candidates(event: GameEvent, from?: Point): EventRelocation {
-    const origin = from ?? (this.map.id === this.project.startMapId ? this.project.startPos : undefined);
+    const start = this.project.startPos;
+    const origin = from ?? (this.map.id === this.project.startMapId && isPassable(this.project, this.map, start.x, start.y) ? start : undefined);
     const key = origin ? `${origin.x},${origin.y}` : "local";
     let byOrigin = this.suggestions.get(event);
     const cached = byOrigin?.get(key);
@@ -146,7 +147,10 @@ export class EventPlacementAnalysis {
           if (Math.max(Math.abs(dx), Math.abs(dy)) !== radius) continue;
           const x = event.x + dx, y = event.y + dy;
           if (!this.validDestination({ ...event, x, y }, true, from)) continue;
-          candidates.push({ name: "move_event", args: { mapId: this.map.id, eventId: event.id, x, y } });
+          candidates.push({ name: "move_event", args: {
+            mapId: this.map.id, eventId: event.id, x, y,
+            ...(origin ? { from: { x: origin.x, y: origin.y } } : {}),
+          } });
         }
       }
     }

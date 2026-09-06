@@ -36,20 +36,30 @@ if (process.argv.includes("--benchmark")) {
   }
 } else {
   const context = fixture(16, 1), mapId = context.project.startMapId;
+  const explicitOrigin = process.argv.includes("--explicit-origin") ? { x: 6, y: 5 } : undefined;
+  if (explicitOrigin) {
+    context.project.startPos = { x: 2, y: 5 };
+    context.project.maps[mapId].events[0].x = 3;
+  }
   // Mutation probe: remove the real authored effect, not the assertion or result.
   if (process.argv.includes("--without-switch-command")) context.project.maps[mapId].events[0].pages![0].commands = [];
   const before = structuredClone(context.project.maps[mapId].events[0]);
   const paint = runTool(context, "paint_tiles", { mapId, layer: "lower", mode: "cells", tile: TILE.WALL,
-    cells: [{ x: 4, y: 5 }, { x: 6, y: 5 }, { x: 5, y: 4 }, { x: 5, y: 6 }] });
+    cells: explicitOrigin ? Array.from({ length: 16 }, (_, y) => ({ x: 4, y }))
+      : [{ x: 4, y: 5 }, { x: 6, y: 5 }, { x: 5, y: 4 }, { x: 5, y: 6 }] });
   assert.equal(paint.ok, true, paint.summary);
-  const lint = runTool(context, "run_lint", {});
+  const lint = runTool(context, "run_lint", explicitOrigin
+    ? { reachability: [{ mapId, from: explicitOrigin, targets: [{ x: before.x, y: before.y }] }] } : {});
   const candidate = lint.issues?.find(i => i.eventId === before.id)?.relocation?.candidates[0];
   assert.ok(candidate, "ordinary lint must offer recovery for enclosed floor NPC");
   const move = runTool(context, candidate.name, candidate.args);
   assert.equal(move.ok, true, move.summary);
   assert.deepEqual(context.project.maps[mapId].events[0], { ...before, x: candidate.args.x, y: candidate.args.y });
-  const scene = runTool(context, "run_scene_test", { mapId, start: { x: candidate.args.x, y: candidate.args.y - 1 },
-    steps: [{ kind: "interact" }, { kind: "expect", switchOn: context.project.switches[0].id }] });
+  const scene = runTool(context, "run_scene_test", { mapId, start: explicitOrigin ?? { x: candidate.args.x, y: candidate.args.y - 1 },
+    steps: [
+      ...(explicitOrigin ? [{ kind: "walk", to: { x: candidate.args.x, y: candidate.args.y }, adjacent: true }] : []),
+      { kind: "interact" }, { kind: "expect", switchOn: context.project.switches[0].id },
+    ] });
   assert.equal(scene.ok, true, scene.summary);
   const verdict = scene.data;
   assert.ok(verdict && typeof verdict === "object" && "ok" in verdict && "finalState" in verdict, "missing scene verdict");

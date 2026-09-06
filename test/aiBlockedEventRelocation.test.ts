@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import type { ChatResult } from "@/ai/llmClient";
-import { runTool } from "@/editor/tools";
+import { getTool, runTool } from "@/editor/tools";
 import { canMoveFootprint, isPassable } from "@/project/collision";
 import { EventPlacementAnalysis, eventRelocationCandidates } from "@/project/eventPlacementRecovery";
 import * as footprintQuery from "@/project/eventFootprintQuery";
@@ -500,17 +500,55 @@ describe("AI blocked entity relocation", () => {
     expect(context.project).toEqual(before);
   });
 
-  it("uses the requested reachability component for a disconnected event's candidates", () => {
+  it("preserves an explicit reachability origin through the real move and scene interaction", () => {
     // Given: a wall divides two otherwise walkable areas.
     const { context, mapId, npc } = fixture();
     const map = context.project.maps[mapId];
+    context.project.startPos = { x: 2, y: 5 };
+    npc.x = 3; npc.y = 5;
+    npc.pages![0].commands = [{ kind: "setSwitch", switchId: "sw_0001", value: true }];
+    const before = structuredClone(npc);
+    const from = { x: 6, y: 5 };
     for (let y = 0; y < map.height; y++) map.lowerTiles[y * map.width + 4] = TILE.WALL;
-    // When: the caller explicitly checks the event from the left component.
-    const result = runTool(context, "run_lint", { reachability: [{ mapId, from: { x: 2, y: 5 }, targets: [{ x: npc.x, y: npc.y }] }] });
-    // Then: relocation is suggested onto the requested component, not another nearby pocket.
+    const result = runTool(context, "run_lint", { reachability: [{ mapId, from, targets: [{ x: npc.x, y: npc.y }] }] });
     const issue = result.issues?.find(entry => entry.code === "reachability" && entry.eventId === npc.id);
     expect(issue?.relocation?.candidates.length).toBeGreaterThan(0);
-    expect(issue?.relocation?.candidates.every(candidate => candidate.args.x < 4)).toBe(true);
+    const candidate = issue!.relocation!.candidates[0];
+    const move = runTool(context, candidate.name, candidate.args);
+    expect(move.ok, move.summary).toBe(true);
+    expect(move.data).toMatchObject({ x: candidate.args.x, y: candidate.args.y, adjusted: false });
+    expect(candidate.args).toMatchObject({ x: 5, y: 3, from });
+    expect(context.project.maps[mapId].events.find(e => e.id === npc.id)).toEqual({ ...before, x: 5, y: 3 });
+    const relint = runTool(context, "run_lint", { reachability: [{ mapId, from, targets: [{ x: 5, y: 3 }] }] });
+    expect(relint.issues?.some(i => i.code === "reachability" && i.eventId === npc.id) ?? false).toBe(false);
+    const scene = runTool(context, "run_scene_test", { mapId, start: from,
+      steps: [{ kind: "walk", to: { x: 5, y: 3 }, adjacent: true }, { kind: "interact", eventId: npc.id }, { kind: "expect", switchOn: "sw_0001" }] });
+    expect(scene.ok, scene.summary).toBe(true);
+    expect(scene.data).toMatchObject({ ok: true, finalState: { switchesOn: ["sw_0001"] } });
+  });
+
+  it.each([null, {}, { x: 6 }, { x: "invalid", y: 5 }, { x: 6.5, y: 5 }, { x: NaN, y: 5 }, { x: Infinity, y: 5 }, { x: -1, y: 5 }, { x: 999, y: 5 }, { x: 4, y: 5 }])("rejects an invalid explicit move origin without modifying the project (%j)", from => {
+    const { context, mapId, npc } = fixture();
+    const map = context.project.maps[mapId];
+    map.lowerTiles[5 * map.width + 4] = TILE.WALL;
+    const before = structuredClone(context.project);
+    const result = runTool(context, "move_event", { mapId, eventId: npc.id, x: 7, y: 3, from });
+    expect(result.ok).toBe(false);
+    expect(result.issues?.some(i => i.code === "invalid-args" || i.code === "move-event-origin-invalid")).toBe(true);
+    expect(context.project).toEqual(before);
+  });
+
+  it("exposes the optional origin schema and retains the omitted-origin start component", () => {
+    expect(getTool("move_event")?.parameters.properties?.from).toMatchObject({ type: "object", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"] });
+    expect(getTool("move_event")?.parameters.required).not.toContain("from");
+    const { context, mapId, npc } = fixture();
+    const map = context.project.maps[mapId];
+    context.project.startPos = { x: 2, y: 5 };
+    npc.x = 3;
+    for (let y = 0; y < map.height; y++) map.lowerTiles[y * map.width + 4] = TILE.WALL;
+    const result = runTool(context, "move_event", { mapId, eventId: npc.id, x: 5, y: 3 });
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.data).toMatchObject({ x: 3, y: 1, adjusted: true });
   });
 
   it("preserves completed-house tiles and metadata when recovering an existing NPC", () => {

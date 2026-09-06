@@ -18,7 +18,7 @@
   neither custom sprites nor RTP object sheets alone are character evidence.
 - Blocked-character, sealed-event, steppable-event and footprint diagnostics include
   `eventId` and `relocation: { eventId, searchRadius: 3, candidates }`. Each candidate
-  is `{ name: "move_event", args: { mapId, eventId, x, y } }`. Candidates preserve the
+  is `{ name: "move_event", args: { mapId, eventId, x, y, from? } }`. Candidates preserve the
   full passage footprint, avoid other event bodies and the resolved player-start
   **body** (including 3x3), and require a usable interaction position. Character
   candidates additionally need a real `canMoveFootprint` step, with directional
@@ -26,6 +26,17 @@
   On the start map (or an explicit lint reachability check), interaction positions
   must belong to the entry's tile-reachable component. Explicit
   `run_lint({reachability})` failures at event anchors receive the same recovery data.
+- Candidates carry the analyzed entry as `from: { x, y }` whenever one is known,
+  including explicit `reachability[].from`. `move_event` declares this optional
+  coordinate object and validates its integer coordinates, map bounds and current
+  terrain passability before forwarding it to destination validation. Invalid or
+  now-blocked explicit origins fail rather than silently reverting to the project
+  start. Omitting `from` retains the existing start-map/default-local behavior.
+  Candidates analyzed without a usable default entry omit `from`; identical known
+  origins still share their candidate list and BFS within one lint invocation.
+  `scripts/prove-ai-relocation-recovery.mts --explicit-origin` exercises the public
+  paint/lint/move/scene chain across a full-height divider, preserving the exact
+  candidate coordinates and activating the authored switch from the explicit side.
 - Destination reservations and traversal blockers are separate. Reservations still
   cover every event's full body, including nonblocking events, to prevent stale
   recommendations from stacking authored entities. Interaction approaches and NPC

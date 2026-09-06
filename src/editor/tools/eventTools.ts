@@ -339,6 +339,7 @@ export function resolveEventPlacement(
   options: {
     readonly kind: "character" | "interaction";
     readonly event?: GameEvent;
+    readonly from?: Point;
     readonly steppable?: boolean;
     readonly ignoreEventId?: string;
     readonly reserved?: ReadonlySet<string>;
@@ -355,7 +356,7 @@ export function resolveEventPlacement(
       for (let dy = -radius; dy <= radius; dy++) for (let dx = -radius; dx <= radius; dx++) {
         if (Math.max(Math.abs(dx), Math.abs(dy)) !== radius) continue;
         const moved = { ...options.event, x: x + dx, y: y + dy };
-        if (!analysis.validDestination(moved, mustStandOnPassable)) continue;
+        if (!analysis.validDestination(moved, mustStandOnPassable, options.from)) continue;
         return { x: moved.x, y: moved.y, adjusted: radius !== 0 };
       }
     }
@@ -2366,7 +2367,10 @@ const moveEvent: ToolDefinition = {
   mode: "write",
   parameters: {
     type: "object",
-    properties: { mapId: { type: "string" }, eventId: { type: "string" }, x: { type: "integer" }, y: { type: "integer" } },
+    properties: {
+      mapId: { type: "string" }, eventId: { type: "string" }, x: { type: "integer" }, y: { type: "integer" },
+      from: { ...COORD_SCHEMA, description: "접근성을 검사할 같은 맵의 진입 좌표. 린트 후보의 from을 그대로 전달한다. 생략하면 시작 맵의 시작 위치, 그 외 맵은 로컬 접근성을 사용한다." },
+    },
     required: ["mapId", "eventId", "x", "y"],
   },
   run(draft, args): ToolExecResult {
@@ -2376,9 +2380,17 @@ const moveEvent: ToolDefinition = {
     const requestedX = args.x as number;
     const requestedY = args.y as number;
     if (!inMapBounds(map, requestedX, requestedY)) throw new ToolError(`이동 위치가 맵 밖입니다: (${requestedX}, ${requestedY})`, { mapId: map.id, x: requestedX, y: requestedY });
+    const from = args.from as Point | undefined;
+    if (from !== undefined && (!Number.isInteger(from.x) || !Number.isInteger(from.y)
+      || !inMapBounds(map, from.x, from.y) || !isPassable(draft, map, from.x, from.y))) {
+      throw new ToolError("from은 같은 맵의 통행 가능한 정수 좌표여야 합니다. get_map_region으로 진입 위치를 확인하세요.", {
+        code: "move-event-origin-invalid", mapId: map.id, x: from.x, y: from.y,
+      });
+    }
     const placement = resolveEventPlacement(draft, map, requestedX, requestedY, {
       kind: eventRequiresPassableTile(event) ? "character" : "interaction",
       event,
+      from,
       steppable: eventIsSteppable(event),
       ignoreEventId: event.id,
       label: `이벤트 '${event.id}'`,
