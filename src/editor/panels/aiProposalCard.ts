@@ -30,7 +30,6 @@ import { getEditorChrome } from "@/editor/editorUiMode";
 import { sanitizeUserFacingToolId } from "@/editor/uiCopy";
 import {
   collectVocabSoftConfirms,
-  markSoftVocabApprovalsOnProject,
 } from "./aiProposalFusion";
 import {
   proposalHumanSummaryLine,
@@ -262,10 +261,11 @@ export function createProposalHost(options: {
     }
     const humanSummary = proposalHumanSummaryLine(calls);
     pendingProposalMessage = { calls, assistantBubble, summary: humanSummary };
-    // 재료(어휘) 합의도 AI 가 마무리한다 — 사람이 확정할 버튼이 없어졌고, 미합의로 남기면
-    // 다음 턴이 같은 재료를 다시 제안한다. 되돌리면 배치와 함께 합의도 원복된다.
+    // 재료(어휘) 합의는 검수 전 세션이 초안에 새긴다(reviewCurrentDraft) — 승인 뒤에
+    // 후보를 고치면 검수 대상과 적용 대상이 갈라진다(R2). 여기는 합의 건수만 세어 알린다.
+    // 되돌리면 배치와 함께 합의도 원복된다(단일 undo 경계).
     const softList = collectVocabSoftConfirms(calls);
-    const softMarked = markSoftVocabApprovalsOnProject(proposed, calls);
+    const softMarked = softList.length;
 
     // 배치 검증은 진단이다. 적용을 막지도, AI 가 깐 타일을 옮기거나 지우지도 않는다.
     const lastUser = [...(controller.session?.getAuditEntries() ?? [])].reverse().find((entry) => entry.kind === "user");

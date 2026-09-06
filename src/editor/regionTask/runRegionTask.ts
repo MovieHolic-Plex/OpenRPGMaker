@@ -45,6 +45,7 @@ import { getTool } from "@/editor/tools";
 import { assertHouseProtection, captureHouseProtection, newlyBuiltHouseSnapshots } from "@/editor/tools/houseProtection";
 import { store } from "@/project/store";
 import { extractVocabSoftConfirm } from "@/project/tileVocabulary";
+import { reconcileReviewedWorldForApply } from "@/project/world";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import type { MapId, Project, TilesetDef } from "@/project/types";
 import { validateLayoutPlacement } from "@/project/lint/layoutPlacementValidate";
@@ -256,7 +257,11 @@ export function applyRegionProjectWithHistory(project: Project, label: string, m
   // strand authored state or leave an orphan history snapshot.
   const before = structuredClone(store.getCurrent());
   const appliedProject = { ...project };
-  if (before.world) appliedProject.world = structuredClone(before.world);
+  // R2: agent 경로와 같은 병합 — 검수된 authored world 등록은 살리고 live wiki 문서는
+  // 보존한다. 호출부의 projectApprovalFingerprint 게이트가 기준 드리프트를 먼저
+  // 거부했으므로 검수 파티션이 그대로 적용된다.
+  const merged = reconcileReviewedWorldForApply(project.world, before.world);
+  if (merged) appliedProject.world = merged;
   else delete appliedProject.world;
   const historyMarker = getMapEditHistoryMarker();
   let replaceStarted = false;
@@ -773,8 +778,8 @@ export async function runRegionTask(
     // Seal completed new houses before clipping/review can damage them. Never refresh from
     // a partial or polished candidate: ownership and the full north ridge must survive together.
     const completedHouses = newlyBuiltHouseSnapshots(proposed, captureHouseProtection(base));
-    // 영역 경로에서는 soft 재료를 origin:user 로 자동 승격하지 않는다.
-    // (영구 합의 스탬프는 채팅 적용 경로가 찍는다 — markSoftVocabApprovalsOnProject)
+    // 영역 경로의 soft 재료 합의도 검수 전 세션이 초안에 새긴다(reviewCurrentDraft).
+    // 승인 뒤 후보를 고치지 않는다(R2).
     // 실내/새 맵: clip은 현재 맵 영역 밖 타일만 되돌리고 다른 맵은 통과(clipToRegion 계약).
     // 다만 셀 0 + 맵 추가만 있으면 예전엔 통째로 폐기했다 → mapsAdded를 적용 조건에 포함한다.
     const clippedResult = preparedForReview ? { project: proposed, clippedCells: preparedClippedCells }

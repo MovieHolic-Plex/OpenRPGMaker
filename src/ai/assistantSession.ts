@@ -35,7 +35,7 @@ import {
 } from "@/ai/npcCast";
 import { buildWorldDigest, normalizeProjectWorld } from "@/project/world";
 import { applyProposedProject, type ApplyProposedProjectResult } from "@/editor/tools/applyChangesetToStore";
-import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
+import { AuthoredProjectBaseline, authoredIdentity } from "@/project/authoredProjectBaseline";
 import { isDestructiveOutcome } from "@/ai/approvalPolicy";
 import { contextFooterMapId, stripContextFooter } from "@/ai/contextFooter";
 import {
@@ -66,7 +66,8 @@ import {
 import type { LintIssue } from "@/project/lint/projectLint";
 import { beginAssistantToolDomainTurn, recordAssistantToolDomainUse } from "@/editor/assistantToolMode";
 import { cloneDetachedDraft } from "@/editor/detachedDraftMemory";
-import { extractVocabSoftConfirm } from "@/project/tileVocabulary";
+import { applyVocabSoftConfirmApprovals, extractVocabSoftConfirm } from "@/project/tileVocabulary";
+import { syncDraftWikiWithLive } from "@/project/world";
 import type { Project } from "@/project/types";
 import { buildGroundedRequest, buildSystemPrompt, DEFAULT_BUDGET_CHARS, resolveContextMapId, resolveContextViewport, type ContextOptions } from "./contextBuilder";
 import { extractOriginalContext, GET_ORIGINAL_CONTEXT_TOOL, OriginalContextStore } from "./originalContext";
@@ -325,8 +326,8 @@ type ChatFn = (config: AiConfig, req: ChatRequest) => Promise<ChatResult>;
 // 여기 있던 3개짜리 지역 목록은 approvalPolicy 의 6개짜리 정본과 어긋나 있었다.
 export const RULE_TOOLS: ReadonlySet<string> = new Set(["set_cluster_rule", "set_group_junction", "set_group_overlay"]);
 
-// 어휘 합의: propose_tile_vocabulary 또는 soft-confirm 시공(목업 확인)이 적용될 때 origin:user 로 확정된다
-// (적용 경로가 markSoftVocabApprovalsOnProject 를 부른다 — 승인 버튼은 없다).
+// 어휘 합의: propose_tile_vocabulary 또는 soft-confirm 시공(목업 확인)은 검수 전 초안에
+// origin:user 로 확정된다(reviewCurrentDraft — 승인 뒤 후보 변경 금지(R2)).
 export const VOCABULARY_PROPOSAL_TOOLS: ReadonlySet<string> = new Set(["propose_tile_vocabulary"]);
 const VOCABULARY_APPROVAL_WARNING = "🔒 재료 합의: 적용하면 해당 타일/그룹을 다음부터 바로 씁니다(되돌리기로 원복).";
 const VOCAB_SOFT_CONFIRM_APPROVAL_WARNING =
@@ -1054,6 +1055,12 @@ export class AssistantSession {
   private readonly prepareProjectWiki: AssistantSessionOptions["prepareProjectWiki"];
   private draftBaseline: AuthoredProjectBaseline;
   private draftBaselineCurrent = true;
+  /** Authored partition of the approved candidate. Wiki-only drift (coordinator
+   * receipts, manual notes) adopts into the approval instead of voiding it. */
+  private approvedAuthoredIdentity: string | null = null;
+  /** Latest live world observed via refreshAcceptance. Pre-review wiki sync adopts
+   * newer coordinator/manual documents from here; authored drift stays R1's gate. */
+  private observedLiveWorld: Project["world"];
 
   constructor(project: Project, options: AssistantSessionOptions = {}) {
     this.config = options.config ?? loadAiConfig();
@@ -1075,6 +1082,7 @@ export class AssistantSession {
     this.declareIntent = options.declareIntent ?? null;
     this.prepareProjectWiki = options.prepareProjectWiki;
     this.draftBaseline = new AuthoredProjectBaseline(project);
+    this.observedLiveWorld = structuredClone(project.world);
     this.baselineProject = structuredClone(project);
     this.ctx = { project: cloneDetachedDraft(project) };
     this.acceptanceRequestBaseline = structuredClone(project);
@@ -1214,7 +1222,16 @@ export class AssistantSession {
   // 제안 수락/거부 후, 대화(메시지·감사 로그)를 유지한 채 프로젝트 기준만 store 최신 상태로 갱신한다.
   // 세션 폐기(dropSession)와 달리 대화 기억을 잃지 않는다 — "채팅 세션 단위 전체 기억"(#6)의 핵심.
   rebaseProject(project: Project): void {
-    if (this.approvedReviewIdentity !== JSON.stringify(project)) this.approvedReviewIdentity = null;
+    if (this.approvedReviewIdentity !== JSON.stringify(project)) {
+      // Coordinator receipts and manual wiki notes arrive outside the authored
+      // candidate: adopt wiki-only drift into the approval, void anything else.
+      if (this.approvedAuthoredIdentity !== null && this.approvedAuthoredIdentity === authoredIdentity(project)) {
+        this.approvedReviewIdentity = JSON.stringify(project);
+      } else {
+        this.approvedReviewIdentity = null;
+        this.approvedAuthoredIdentity = null;
+      }
+    }
     this.draftBaseline = new AuthoredProjectBaseline(project);
     this.draftBaselineCurrent = true;
     this.pruneRemovedMapSpecs(this.ctx.project, project);
@@ -1293,7 +1310,9 @@ export class AssistantSession {
     if (!this.draftBaseline.matches(project)) {
       this.draftBaselineCurrent = false;
       this.approvedReviewIdentity = null;
+      this.approvedAuthoredIdentity = null;
     }
+    this.observedLiveWorld = structuredClone(project.world);
     this.imageEvidence.current(project);
     if (!this.acceptance) return;
     this.acceptanceAppliedProject = structuredClone(project);
@@ -1748,9 +1767,11 @@ export class AssistantSession {
         if (world) {
           this.baselineProject.world = structuredClone(world);
           this.ctx.project.world = structuredClone(world);
+          this.observedLiveWorld = structuredClone(world);
         } else {
           delete this.baselineProject.world;
           delete this.ctx.project.world;
+          this.observedLiveWorld = undefined;
         }
         // Adopt only the independently owned pre-turn documents, never concurrent
         // authored changes returned with the coordinator's live world snapshot.
@@ -1828,6 +1849,7 @@ export class AssistantSession {
       this.reviewToolResults = [];
       this.resultReview = null;
       this.approvedReviewIdentity = null;
+      this.approvedAuthoredIdentity = null;
       this.reviewAttempts = 0;
       this.lastReviewFailure = null;
     }
@@ -2705,6 +2727,7 @@ export class AssistantSession {
       if (applied.reason === "stale-baseline") {
         this.draftBaselineCurrent = false;
         this.approvedReviewIdentity = null;
+        this.approvedAuthoredIdentity = null;
         this.resultReview = { status: "error", revision: this.reviewRevision, findings: [], summary: applied.issue ?? applied.reason };
       }
       // 커밋 게이트 차단 — 저장소는 그대로 두고 현재 자율 런만 중단한다.
@@ -3249,6 +3272,7 @@ export class AssistantSession {
 
   private upsertProposal(proposedByKey: Map<string, ProposedCall>, proposal: ProposedCall): void {
     this.approvedReviewIdentity = null;
+    this.approvedAuthoredIdentity = null;
     this.reviewRevision += 1;
     const move = moveEventTarget(proposal);
     if (move !== null) {
@@ -3599,11 +3623,27 @@ export class AssistantSession {
     remainingTokens: number): Promise<ResultReview> {
     let revision = this.reviewRevision;
     this.approvedReviewIdentity = null;
+    this.approvedAuthoredIdentity = null;
     let review: ResultReview;
     try {
       if (signal?.aborted) throw new Error("independent-review-cancelled");
       if (!this.draftBaselineCurrent) throw new Error("independent-review-stale-baseline: regenerate from the current project before review");
       const baseline = this.draftBaseline;
+      const preReviewProblems: string[] = [];
+      // R2: adopt newer live wiki-owned documents into the draft candidate so the
+      // reviewer sees the true final object. Draft-side wiki writes are writer
+      // content without a coordinator receipt and fail visibly as required problems.
+      const wikiSync = syncDraftWikiWithLive(this.ctx.project.world, this.baselineProject.world, this.observedLiveWorld);
+      if (wikiSync.changed) {
+        this.ctx.project = { ...this.ctx.project, world: wikiSync.world };
+        revision = ++this.reviewRevision;
+        this.verificationEvidence.invalidateAfterWrite();
+        this.workItemVerificationEvidence.invalidateAfterWrite();
+        this.imageEvidence.current(this.ctx.project);
+      }
+      for (const id of wikiSync.conflicts) {
+        preReviewProblems.push(`world/${id}: draft edits a wiki-owned document without a coordinator receipt; regenerate from the current project`);
+      }
       if (this.reviewDraftTransform) {
         const prepared = this.reviewDraftTransform(this.getProposedProject());
         if (JSON.stringify(prepared) !== JSON.stringify(this.ctx.project)) {
@@ -3617,7 +3657,7 @@ export class AssistantSession {
       const identity = JSON.stringify(this.ctx.project);
       this.emitPhase(onEvent, "review");
       const draftAcceptance = this.acceptance?.evaluateForReview(this.ctx.project) ?? null;
-      const requiredProblems = [...this.completionProblems(), ...this.verificationEvidence.problems(true),
+      const requiredProblems = [...preReviewProblems, ...this.completionProblems(), ...this.verificationEvidence.problems(true),
         ...(draftAcceptance?.items.flatMap(item => item.status === "verified" ? [] :
           [item.reason ?? item.title, ...item.evidence.filter(entry => !entry.passed).map(entry => `${entry.expected}: ${entry.observed}`)]) ?? [])];
       for (const name of new Set(this.workPlan?.layers.flatMap(layer => layer.items.flatMap(item => item.successTools ?? [])) ?? [])) {
@@ -3657,6 +3697,7 @@ export class AssistantSession {
       review = parseIndependentReview(response, revision, requiredProblems);
       if (review.status === "approved") {
         this.approvedReviewIdentity = identity;
+        this.approvedAuthoredIdentity = authoredIdentity(this.ctx.project);
         for (const item of draftAcceptance?.items ?? []) this.acceptance?.review(item.id, review.summary, this.ctx.project, "pass");
       }
     } catch (cause) {
@@ -3968,6 +4009,7 @@ export class AssistantSession {
           if (signal?.aborted) return { assistantText: "사용자가 중단했습니다", proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "aborted" };
           if (spentOutputTokens >= this.config.maxTokens) {
             this.approvedReviewIdentity = null;
+            this.approvedAuthoredIdentity = null;
             return { assistantText: "독립 검수 중 출력 예산이 소진되어 적용하지 않았습니다.", proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "token-budget" };
           }
           if (review.status !== "approved") {
@@ -4268,6 +4310,10 @@ export class AssistantSession {
             if (approvalWarning) proposal.approvalWarning = approvalWarning;
             proposal = this.withCarryoverWarningIfNeeded(proposal);
             this.upsertProposal(proposedByKey, proposal);
+            // R2: persistent soft-vocabulary origin/source normalization lands in the
+            // draft the moment its write succeeds — strictly before review, and before
+            // later show_map_region captures, so visual receipts stay valid.
+            if (softConfirm) applyVocabSoftConfirmApprovals(this.ctx.project, [softConfirm]);
           }
 
           this.publishAcceptance(onEvent);

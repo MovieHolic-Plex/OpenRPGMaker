@@ -12,6 +12,7 @@ import { store } from "@/project/store";
 import type { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
 import { createProjectWikiCoordinator } from "@/editor/projectWikiCoordinator";
 import type { ChangeSummary, Project } from "@/project/types";
+import { reconcileReviewedWorldForApply } from "@/project/world";
 import { commitChangeset, summarizeChanges } from "./changeset";
 import { runTool } from "./toolRunner";
 import { ToolError, type ToolContext, type ToolResult } from "./types";
@@ -250,7 +251,12 @@ export async function applyProposedProject(
   // detached authoring previews. A title/map proposal must not restore an old wiki.
   const appliedProject = { ...proposed };
   if (!options.resetProject) {
-    if (before.world) appliedProject.world = structuredClone(before.world);
+    // R2: blanket live-world replacement erases approved author_npc_cast
+    // registrations. Merge instead — reviewed authored graph wins, live wiki
+    // documents survive. The R1 baseline gate above already rejected concurrent
+    // authored drift, so the reviewed partition applies cleanly by construction.
+    const merged = reconcileReviewedWorldForApply(proposed.world, before.world);
+    if (merged) appliedProject.world = merged;
     else delete appliedProject.world;
   }
   // A detached preview may predate human edits or newly accepted houses.
