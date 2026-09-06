@@ -6,6 +6,14 @@
 - Receipts describe synchronous input dispatch and actual farm attempt results. Event/chest dispatch must still await that surface's own DOM completion; `handled:true` is not an asynchronous completion receipt. Future fishing, linked housing, regrowth and ledger integrations are not claimed by this foundation.
 - Task5 reproducible public-module and shipped-player proof scripts are under `.omo/evidence/life-full-20260906/5/`; `public-probe.mjs` generates the minimal local contract fixture, `browser-proof.mjs` drives actual keyboard input with QA off/on, and `harness-proof.mjs` exercises the dedicated runtime runner's observed action op. No editor play, remote authored content or injected successful outcomes are used. Full 51-feature coverage remains not-run until the later journeys.
 
+### Task5 validation correction (2026-09-06)
+
+Run heavyweight suites, builds and browser proofs serially. The original title-readiness failures did not retain enough diagnostics to establish a cause; a later passing replay is not a root-cause diagnosis. `5/correction/browser-proof.mjs` under the task5 evidence directory retains per-context startup milestones, page/console/HTTP/request failures and pending requests/DOM on failure. It keeps the same 120-second DOM deadlines, arms canvas-plus-loading-overlay-removal before Enter, and uses a real visible menu to prove normal omitted-flag player readiness without QA hooks. No network bypass, polling or settling sleep is added.
+
+`test/debugSession.test.ts` uses static imports for collection and synchronous operation tests. The former first-test `load()` charged every import (including unused-in-that-test scene hooks) to its 15-second operation deadline. Measured hooks loading dominated the actual fixture/operations; the new `runtimeDom` dependency also expanded the hooks' local static graph from 81 to 276 modules through the editor store. This correction separates setup from operations; it does **not** claim to reduce that graph or make imports faster. Timing evidence retains collection/import costs and all four tests/17 assertions. Do not raise timeouts, prewarm caches, or hide the two unrelated actionDebounce registry-fixture failures.
+
+Generate `openwiki/INDEX.md` **after staging the final evidence-inclusive file set**: its basename checks consume `git ls-files`, so a pre-staging check can pass while the committed index is stale. Check it again against the final committed tracked set.
+
 ## 기존 실패 비교는 진단 내용까지 확인한다 (2026-09-05)
 
 같은 main의 실패 파일·테스트 이름·중복 횟수가 같아도 회귀가 없다는 충분한 증거는 아니다.

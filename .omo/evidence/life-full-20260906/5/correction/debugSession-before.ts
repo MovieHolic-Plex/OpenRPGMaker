@@ -1,14 +1,19 @@
 import { describe, expect, it, vi } from "vitest";
-import * as debug from "@/testing/debugSession";
-import { installPlaySceneTestHooks, type RuntimeDebugHook } from "@/player/playSceneTestHooks";
-import { startSession } from "@/project/session";
-import { createEmberQuestProject, EMBER_SWITCH, EMBER_ITEM, EMBER_MAP } from "@/project/defaults/emberQuestGame";
+import type { RuntimeDebugHook } from "@/player/playSceneTestHooks";
 
-// Imports belong to collection, not the first operation's deadline. These tests
-// exercise synchronous authorities; no test should race cold module loading.
+async function load() {
+  const [debug, hooks, { startSession }, { createEmberQuestProject, EMBER_SWITCH, EMBER_ITEM, EMBER_MAP }] = await Promise.all([
+    import("@/testing/debugSession"),
+    import("@/player/playSceneTestHooks"),
+    import("@/project/session"),
+    import("@/project/defaults/emberQuestGame"),
+  ]);
+  return { debug, hooks, startSession, createEmberQuestProject, EMBER_SWITCH, EMBER_ITEM, EMBER_MAP };
+}
 
 describe("debugSession — 런타임 디버그 조작", () => {
-  it("applyDebugOp가 스위치/변수/아이템/골드/텔레포트를 반영한다", () => {
+  it("applyDebugOp가 스위치/변수/아이템/골드/텔레포트를 반영한다", async () => {
+    const { debug, startSession, createEmberQuestProject, EMBER_SWITCH, EMBER_ITEM, EMBER_MAP } = await load();
     const session = startSession(createEmberQuestProject());
 
     debug.applyDebugOp(session, { kind: "setSwitch", switchId: EMBER_SWITCH.q1Started, value: true });
@@ -26,7 +31,8 @@ describe("debugSession — 런타임 디버그 조작", () => {
     expect(session.y).toBe(6);
   });
 
-  it("applyStatePreset가 지정 키만 부분 적용한다", () => {
+  it("applyStatePreset가 지정 키만 부분 적용한다", async () => {
+    const { debug, startSession, createEmberQuestProject, EMBER_SWITCH } = await load();
     const session = startSession(createEmberQuestProject());
     const goldBefore = session.gold;
 
@@ -42,7 +48,8 @@ describe("debugSession — 런타임 디버그 조작", () => {
     expect(session.gold).toBe(goldBefore);
   });
 
-  it("testHerePreset가 시작 좌표 오버라이드 프리셋을 만든다", () => {
+  it("testHerePreset가 시작 좌표 오버라이드 프리셋을 만든다", async () => {
+    const { debug, startSession, createEmberQuestProject, EMBER_MAP } = await load();
     const session = startSession(createEmberQuestProject());
     debug.applyStatePreset(session, debug.testHerePreset(EMBER_MAP.pass, 8, 9));
     expect(session.currentMapId).toBe(EMBER_MAP.pass);
@@ -50,7 +57,8 @@ describe("debugSession — 런타임 디버그 조작", () => {
     expect(session.y).toBe(9);
   });
 
-  it("PlayScene 테스트 훅은 세션 교체 후 라이브 세션을 읽고 쓴다", () => {
+  it("PlayScene 테스트 훅은 세션 교체 후 라이브 세션을 읽고 쓴다", async () => {
+    const { hooks, startSession, createEmberQuestProject, EMBER_SWITCH, EMBER_MAP } = await load();
     const previousWindow = globalThis.window;
     const testWindow = { location: { search: "" } } as Window & { __oprnDebug?: RuntimeDebugHook };
     const project = createEmberQuestProject();
@@ -65,7 +73,7 @@ describe("debugSession — 런타임 디버그 조작", () => {
         value: testWindow,
       });
 
-      installPlaySceneTestHooks(
+      hooks.installPlaySceneTestHooks(
         { events: { once: vi.fn() } } as never,
         { injectActionEdge: vi.fn(), injectDirection: vi.fn() } as never,
         () => liveSession,

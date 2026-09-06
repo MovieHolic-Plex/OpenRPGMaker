@@ -1,0 +1,235 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/runtimeQaInstrumentationBoundary.test.ts test/runtimeQaReport.test.ts test/runtimeQaGate.test.ts test/sceneTestRunner.test.ts test/debugSession.test.ts test/runtimeDebugPanel.test.ts test/playSceneFarmFeedback.test.ts test/npcActionFacing.test.ts test/runtimeMovementStability.test.ts test/actionDebounceFootprint.test.ts test/lifeSaveVersion.test.ts test/lifeRecoveryPersistence.test.ts test/p0SessionPersistence.test.ts test/p2SpatialPersistence.test.ts test/autosave.test.ts --silent=false
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+ ✓ test/runtimeQaGate.test.ts (52 tests) 37ms
+ ✓ test/runtimeQaReport.test.ts (18 tests) 18ms
+stdout | test/debugSession.test.ts > debugSession — 런타임 디버그 조작 > applyDebugOp가 스위치/변수/아이템/골드/텔레포트를 반영한다
+{"boundary":"import session","elapsedMs":1173.672852}
+
+stdout | test/debugSession.test.ts > debugSession — 런타임 디버그 조작 > applyDebugOp가 스위치/변수/아이템/골드/텔레포트를 반영한다
+{"boundary":"import debugSession","elapsedMs":2260.08935}
+
+stdout | test/debugSession.test.ts > debugSession — 런타임 디버그 조작 > applyDebugOp가 스위치/변수/아이템/골드/텔레포트를 반영한다
+{"boundary":"import emberQuestGame","elapsedMs":6575.3170740000005}
+
+ ✓ test/p2SpatialPersistence.test.ts (3 tests) 335ms
+ ✓ test/autosave.test.ts (16 tests) 917ms
+ ✓ test/lifeSaveVersion.test.ts (18 tests) 1116ms
+ ✓ test/p0SessionPersistence.test.ts (9 tests) 757ms
+ ✓ test/runtimeDebugPanel.test.ts (17 tests) 2153ms
+stdout | test/debugSession.test.ts > debugSession — 런타임 디버그 조작 > applyDebugOp가 스위치/변수/아이템/골드/텔레포트를 반영한다
+{"boundary":"import playSceneTestHooks","elapsedMs":10334.342954}
+
+stdout | test/debugSession.test.ts > debugSession — 런타임 디버그 조작 > applyDebugOp가 스위치/변수/아이템/골드/텔레포트를 반영한다
+{"boundary":"fixture setup","elapsedMs":78.21741299999849}
+{"boundary":"operations and assertions","elapsedMs":2.3172059999997145}
+
+stdout | test/debugSession.test.ts > debugSession — 런타임 디버그 조작 > applyStatePreset가 지정 키만 부분 적용한다
+{"boundary":"import debugSession","elapsedMs":0.2544050000014977}
+{"boundary":"import playSceneTestHooks","elapsedMs":0.35098700000162353}
+{"boundary":"import session","elapsedMs":0.3891380000004574}
+{"boundary":"import emberQuestGame","elapsedMs":0.49645000000055006}
+
+ ✓ test/runtimeQaInstrumentationBoundary.test.ts (3 tests) 15ms
+stdout | test/debugSession.test.ts > debugSession — 런타임 디버그 조작 > testHerePreset가 시작 좌표 오버라이드 프리셋을 만든다
+{"boundary":"import debugSession","elapsedMs":0.2155640000000858}
+{"boundary":"import playSceneTestHooks","elapsedMs":0.4088979999996809}
+{"boundary":"import session","elapsedMs":0.4400690000002214}
+{"boundary":"import emberQuestGame","elapsedMs":0.4574090000005526}
+
+stdout | test/debugSession.test.ts > debugSession — 런타임 디버그 조작 > PlayScene 테스트 훅은 세션 교체 후 라이브 세션을 읽고 쓴다
+{"boundary":"import debugSession","elapsedMs":0.20884400000068126}
+{"boundary":"import playSceneTestHooks","elapsedMs":0.2878849999997328}
+{"boundary":"import session","elapsedMs":0.32059599999956845}
+{"boundary":"import emberQuestGame","elapsedMs":0.32886599999983446}
+
+ ✓ test/debugSession.test.ts (4 tests) 10595ms
+   ✓ debugSession — 런타임 디버그 조작 > applyDebugOp가 스위치/변수/아이템/골드/텔레포트를 반영한다  10418ms
+ ✓ test/lifeRecoveryPersistence.test.ts (40 tests) 3739ms
+   ✓ adversarial life codec boundaries > refuses all conversions on claim exhaustion without moving a prefix  596ms
+   ✓ bounded animal restoration > quarantines animals beyond the runtime bound instead of dropping a saved suffix  609ms
+stdout | test/npcActionFacing.test.ts > NPC action facing > turns a static action NPC toward a player on the west side before dialogue starts
+[edit-activity] (라벨 없음: project)
+
+stdout | test/actionDebounceFootprint.test.ts > 조사 연타 디바운스는 이벤트 단위다 > 몸 안에서 방향만 바꿔도 같은 이벤트는 다시 발동하지 않는다
+[edit-activity] (라벨 없음: project)
+
+ ❯ test/actionDebounceFootprint.test.ts (5 tests | 2 failed) 801ms
+   ✓ 조사 연타 디바운스는 이벤트 단위다 > 몸 안에서 방향만 바꿔도 같은 이벤트는 다시 발동하지 않는다 188ms
+   ✓ 조사 연타 디바운스는 이벤트 단위다 > 서로 다른 이벤트로 방향을 바꾸면 각각 발동한다 172ms
+   ✓ 조사 연타 디바운스는 이벤트 단위다 > 1x1 이벤트를 같은 방향으로 연타하면 한 번만 발동한다 — 항등 137ms
+   × __oprnDebug 스냅샷이 두 사각을 실어 보낸다 > 3x3 + passRows 1 이면 몸 사각과 통행 사각이 다르게 실린다 163ms
+     → Cannot read properties of undefined (reading 'registry')
+   × __oprnDebug 스냅샷이 두 사각을 실어 보낸다 > 발자국 저작이 없으면 두 사각이 앵커 한 칸으로 같다 — 항등 136ms
+     → Cannot read properties of undefined (reading 'registry')
+ ✓ test/npcActionFacing.test.ts (9 tests) 1332ms
+stdout | test/playSceneFarmFeedback.test.ts > farm failure feedback channel > surfaces the same ignore reason on every press and never writes to the session
+[edit-activity] 프로젝트 교체
+
+stdout | test/runtimeMovementStability.test.ts > 주인공 걷기 — RPG Maker 식 프레임 정량화 > 10 논리 프레임이면 정확히 한 칸을 마치고 칸 경계에 서 있다 — 다음 걸음은 다음 프레임에 시작한다
+[edit-activity] (라벨 없음: project)
+
+ ✓ test/playSceneFarmFeedback.test.ts (5 tests) 473ms
+ ✓ test/sceneTestRunner.test.ts (2 tests) 189ms
+ ✓ test/runtimeMovementStability.test.ts (50 tests) 4857ms
+
+ Test Files  1 failed | 14 passed (15)
+      Tests  2 failed | 249 passed (251)
+   Start at  11:03:03
+   Duration  21.41s (transform 34.82s, setup 0ms, collect 133.38s, tests 27.33s, environment 1.12s, prepare 4.07s)
+
+stderr | test/lifeSaveVersion.test.ts > Save5 version and original ownership boundary > preserves legacy bytes, previous new slot and live progress on quota (existing new=false)
+[save] failed to write save slot: DOMException [QuotaExceededError]: full
+[90m    at new DOMException (node:internal/per_context/domexception:76:18)[39m
+    at MemoryStorage.<anonymous> [90m(/home/main/z-project/rpg-zzu-life-full-p2/[39mtest/lifeSaveVersion.test.ts:132:67[90m)[39m
+    at MemoryStorage.mockCall (file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/spy[24m/dist/index.js:96:15)
+    at MemoryStorage.setItem (file:///home/main/z-project/rpg-zzu/node_modules/[4mtinyspy[24m/dist/index.js:47:80)
+    at Module.saveToSlot [90m(/home/main/z-project/rpg-zzu-life-full-p2/[39msrc/player/saveSlots.ts:422:13[90m)[39m
+    at [90m/home/main/z-project/rpg-zzu-life-full-p2/[39mtest/lifeSaveVersion.test.ts:134:18
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:863:59
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:155:11
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:26
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1897:20
+[autosave] failed to write autosave (ignored): DOMException [QuotaExceededError]: full
+[90m    at new DOMException (node:internal/per_context/domexception:76:18)[39m
+    at MemoryStorage.<anonymous> [90m(/home/main/z-project/rpg-zzu-life-full-p2/[39mtest/lifeSaveVersion.test.ts:132:67[90m)[39m
+    at MemoryStorage.mockCall (file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/spy[24m/dist/index.js:96:15)
+    at MemoryStorage.setItem (file:///home/main/z-project/rpg-zzu/node_modules/[4mtinyspy[24m/dist/index.js:47:80)
+    at writeAutosave [90m(/home/main/z-project/rpg-zzu-life-full-p2/[39msrc/player/saveSlots.ts:263:11[90m)[39m
+    at performAutosave [90m(/home/main/z-project/rpg-zzu-life-full-p2/[39msrc/player/autosave.ts:65:5[90m)[39m
+    at [90m/home/main/z-project/rpg-zzu-life-full-p2/[39mtest/lifeSaveVersion.test.ts:135:12
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:863:59
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:155:11
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:26
+
+stderr | test/lifeSaveVersion.test.ts > Save5 version and original ownership boundary > preserves legacy bytes, previous new slot and live progress on quota (existing new=true)
+[save] failed to write save slot: DOMException [QuotaExceededError]: full
+[90m    at new DOMException (node:internal/per_context/domexception:76:18)[39m
+    at MemoryStorage.<anonymous> [90m(/home/main/z-project/rpg-zzu-life-full-p2/[39mtest/lifeSaveVersion.test.ts:132:67[90m)[39m
+    at MemoryStorage.mockCall (file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/spy[24m/dist/index.js:96:15)
+    at MemoryStorage.setItem (file:///home/main/z-project/rpg-zzu/node_modules/[4mtinyspy[24m/dist/index.js:47:80)
+    at Module.saveToSlot [90m(/home/main/z-project/rpg-zzu-life-full-p2/[39msrc/player/saveSlots.ts:422:13[90m)[39m
+    at [90m/home/main/z-project/rpg-zzu-life-full-p2/[39mtest/lifeSaveVersion.test.ts:134:18
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:863:59
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:155:11
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:26
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1897:20
+[autosave] failed to write autosave (ignored): DOMException [QuotaExceededError]: full
+[90m    at new DOMException (node:internal/per_context/domexception:76:18)[39m
+    at MemoryStorage.<anonymous> [90m(/home/main/z-project/rpg-zzu-life-full-p2/[39mtest/lifeSaveVersion.test.ts:132:67[90m)[39m
+    at MemoryStorage.mockCall (file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/spy[24m/dist/index.js:96:15)
+    at MemoryStorage.setItem (file:///home/main/z-project/rpg-zzu/node_modules/[4mtinyspy[24m/dist/index.js:47:80)
+    at writeAutosave [90m(/home/main/z-project/rpg-zzu-life-full-p2/[39msrc/player/saveSlots.ts:263:11[90m)[39m
+    at performAutosave [90m(/home/main/z-project/rpg-zzu-life-full-p2/[39msrc/player/autosave.ts:65:5[90m)[39m
+    at [90m/home/main/z-project/rpg-zzu-life-full-p2/[39mtest/lifeSaveVersion.test.ts:135:12
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:863:59
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:155:11
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:26
+
+stderr | test/lifeRecoveryPersistence.test.ts > lossless life persistence > returns failed autosave on reconciliation failure, preserving prior disk and current live action
+[autosave] failed to reconcile life state: LifeReconciliationError: Life recovery lifeRecovery/claims: invalid-state
+    at parseLifeState [90m(/home/main/z-project/rpg-zzu-life-full-p2/[39msrc/project/lifeStateReconciliation.ts:43:87[90m)[39m
+    at prepareLifeSnapshot [90m(/home/main/z-project/rpg-zzu-life-full-p2/[39msrc/player/saveSlots.ts:1110:49[90m)[39m
+    at createSaveSnapshot [90m(/home/main/z-project/rpg-zzu-life-full-p2/[39msrc/player/saveSlots.ts:285:19[90m)[39m
+    at performAutosave [90m(/home/main/z-project/rpg-zzu-life-full-p2/[39msrc/player/autosave.ts:55:10[90m)[39m
+    at [90m/home/main/z-project/rpg-zzu-life-full-p2/[39mtest/lifeRecoveryPersistence.test.ts:122:12
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:155:11
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:26
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1863:10) {
+  sourceKind: [32m'lifeRecovery'[39m,
+  sourceId: [32m'claims'[39m,
+  reason: [32m'invalid-state'[39m
+}
+
+stderr | test/lifeRecoveryPersistence.test.ts > adversarial life codec boundaries > keeps a successful claim action in memory when subsequent autosave hits quota
+[autosave] failed to write autosave (ignored): DOMException [QuotaExceededError]: quota
+[90m    at new DOMException (node:internal/per_context/domexception:76:18)[39m
+    at Object.setItem [90m(/home/main/z-project/rpg-zzu-life-full-p2/[39mtest/lifeRecoveryPersistence.test.ts:287:30[90m)[39m
+    at writeAutosave [90m(/home/main/z-project/rpg-zzu-life-full-p2/[39msrc/player/saveSlots.ts:263:11[90m)[39m
+    at performAutosave [90m(/home/main/z-project/rpg-zzu-life-full-p2/[39msrc/player/autosave.ts:65:5[90m)[39m
+    at [90m/home/main/z-project/rpg-zzu-life-full-p2/[39mtest/lifeRecoveryPersistence.test.ts:289:12
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:155:11
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:26
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1863:10)
+
+stderr | test/lifeRecoveryPersistence.test.ts > independent task4 verifier counterexamples > B2 refuses writer and autosave without replacing the prior slot or current live ownership
+[autosave] failed to reconcile life state: LifeReconciliationError: Life recovery farmPlots/farmPlots: invalid-occupancy
+    at parseLifeState [90m(/home/main/z-project/rpg-zzu-life-full-p2/[39msrc/project/lifeStateReconciliation.ts:42:79[90m)[39m
+    at prepareLifeSnapshot [90m(/home/main/z-project/rpg-zzu-life-full-p2/[39msrc/player/saveSlots.ts:1110:49[90m)[39m
+    at createSaveSnapshot [90m(/home/main/z-project/rpg-zzu-life-full-p2/[39msrc/player/saveSlots.ts:285:19[90m)[39m
+    at performAutosave [90m(/home/main/z-project/rpg-zzu-life-full-p2/[39msrc/player/autosave.ts:55:10[90m)[39m
+    at [90m/home/main/z-project/rpg-zzu-life-full-p2/[39mtest/lifeRecoveryPersistence.test.ts:440:12
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:155:11
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:26
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1863:10) {
+  sourceKind: [32m'farmPlots'[39m,
+  sourceId: [32m'farmPlots'[39m,
+  reason: [32m'invalid-occupancy'[39m
+}
+
+stderr | test/sceneTestRunner.test.ts > run_scene_test > validates an interaction switch and a ticked camera pan
+[m2] missing field: zoom
+[m2] missing field: duration
+[m2] missing field: return
+
+stderr | test/runtimeMovementStability.test.ts > pathfinding through the real frame dispatcher > does not start a route outside the map and cancels its own route on abort
+[player] pathfind destination unreachable: player (-1, 5)
+
+stderr | Fetch.onError (file:/home/main/z-project/rpg-zzu/node_modules/happy-dom/src/fetch/Fetch.ts:698:35)
+DOMException [AbortError]: The operation was aborted.
+    at Fetch.onAsyncTaskManagerAbort (file:///home/main/z-project/rpg-zzu/node_modules/[4mhappy-dom[24m/src/fetch/Fetch.ts:711:17)
+    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/[4mhappy-dom[24m/src/fetch/Fetch.ts:545:10)
+    at AsyncTaskManager.abortAll (file:///home/main/z-project/rpg-zzu/node_modules/[4mhappy-dom[24m/src/async-task-manager/AsyncTaskManager.ts:331:21)
+    at AsyncTaskManager.abort (file:///home/main/z-project/rpg-zzu/node_modules/[4mhappy-dom[24m/src/async-task-manager/AsyncTaskManager.ts:61:15)
+    at DetachedBrowserFrame.abort (file:///home/main/z-project/rpg-zzu/node_modules/[4mhappy-dom[24m/src/browser/detached-browser/DetachedBrowserFrame.ts:139:49)
+    at DetachedWindowAPI.abort (file:///home/main/z-project/rpg-zzu/node_modules/[4mhappy-dom[24m/src/window/DetachedWindowAPI.ts:62:29)
+    at teardownWindow (file:///home/main/z-project/rpg-zzu/node_modules/[4mvitest[24m/dist/chunks/index.CmSc2RE5.js:336:22)
+    at Object.teardown (file:///home/main/z-project/rpg-zzu/node_modules/[4mvitest[24m/dist/chunks/index.CmSc2RE5.js:391:10)
+    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/[4mvitest[24m/dist/chunks/runBaseTests.9Ij9_de-.js:89:13)
+    at run (file:///home/main/z-project/rpg-zzu/node_modules/[4mvitest[24m/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)
+
+stderr | emitToConsole (/home/main/z-project/rpg-zzu-life-full-p2/src/util/logger.ts:111:35)
+[edit-activity] 디스크 미러 실패 (/__oprn/edit-activity: Failed to execute "fetch()" on "Window" with URL "http://localhost:3000/__oprn/edit-activity": The operation was aborted.) — output/edit-activity/ 가 갱신되지 않는다.
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/actionDebounceFootprint.test.ts > __oprnDebug 스냅샷이 두 사각을 실어 보낸다 > 3x3 + passRows 1 이면 몸 사각과 통행 사각이 다르게 실린다
+TypeError: Cannot read properties of undefined (reading 'registry')
+ ❯ syncCutsceneHudVisibility src/player/playSceneMapRuntime.ts:657:27
+    655|   readonly session: PlaySceneContext["session"];
+    656| }): void {
+    657|   const host = scene.game.registry.get("dialogueHost");
+       |                           ^
+    658|   if (!isCutsceneHudHost(host)) return;
+    659|   host.classList.toggle(CUTSCENE_HUD_HIDDEN_CLASS, isCutsceneHudHidden…
+ ❯ syncRuntimeState src/player/playSceneMapRuntime.ts:563:3
+ ❯ captureScene test/actionDebounceFootprint.test.ts:139:5
+ ❯ test/actionDebounceFootprint.test.ts:145:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/actionDebounceFootprint.test.ts > __oprnDebug 스냅샷이 두 사각을 실어 보낸다 > 발자국 저작이 없으면 두 사각이 앵커 한 칸으로 같다 — 항등
+TypeError: Cannot read properties of undefined (reading 'registry')
+ ❯ syncCutsceneHudVisibility src/player/playSceneMapRuntime.ts:657:27
+    655|   readonly session: PlaySceneContext["session"];
+    656| }): void {
+    657|   const host = scene.game.registry.get("dialogueHost");
+       |                           ^
+    658|   if (!isCutsceneHudHost(host)) return;
+    659|   host.classList.toggle(CUTSCENE_HUD_HIDDEN_CLASS, isCutsceneHudHidden…
+ ❯ syncRuntimeState src/player/playSceneMapRuntime.ts:563:3
+ ❯ captureScene test/actionDebounceFootprint.test.ts:139:5
+ ❯ test/actionDebounceFootprint.test.ts:158:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯

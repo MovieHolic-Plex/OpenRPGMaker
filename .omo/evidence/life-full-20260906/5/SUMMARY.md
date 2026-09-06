@@ -1,6 +1,100 @@
 # Task5 - QA-only life observability
 
-## DoneClaim
+## Correction DoneClaim - B1/B2/B3 (st_01a07471)
+
+This correction preserves the task5 implementation and addresses its verification blockers with deterministic test setup, retained startup diagnostics, serial real-player proof, and final-tracked-set index regeneration. It does not assert independent approval or a proven cause for the historical browser timeout. No production source, runtime harness, save code, existing actionDebounce test, dependency, baseline, WISH, VERIFY, parent supervisor output, or root task state is changed.
+
+- Worktree/branch: `/home/main/z-project/rpg-zzu-life-full-p2`, `agent/life-full-p2`.
+- Entry/reviewed commit: `4e2d1762264533a5826c48686648093c3fe69ebd`; tree `234c0e9c391276f082efb61e2abff2e0a8d7e634`.
+- Parent/root: `01a0727b-398a-7481-b557-b198013542c1`. Correction evidence: `.omo/evidence/life-full-20260906/5/correction/` (all paths below are relative to that directory unless stated otherwise).
+- Read the full fresh task5 VERIFY from `st_01a0745d` at the actual `5/VERIFY.md` and current SUMMARY, full approved Scope/task5, AGENTS/quickstart/PROJECT_WIKI/INDEX and focused runtime/testing guidance. There is no directory literally named fresh5 in this worktree. All CLAUDE.md files were ignored.
+- Predecessor gate: full `4/VERIFY.md` says confirmed/acceptance0/blockers0 at `b7b02d97ad6cb3b493bd60691ec61970e8a0e37e`; actual `git merge-base --is-ancestor b7b02d97ad6cb3b493bd60691ec61970e8a0e37e HEAD` exited0 before edits. No product edit was needed in this correction.
+- The new atomic correction commit is the latest commit touching this SUMMARY, obtainable with `git log -1 --format='%H %T' -- .omo/evidence/life-full-20260906/5/SUMMARY.md`; exact new SHA/tree and post-commit index check are reported in the final execution receipt. This is a new commit, not an amend. Subject: `test(runtime): stabilize life QA verification setup`.
+
+### B1 - Failure retained; readiness and diagnostics reconciled
+
+Independent review failed before title at port40501, and supervisor attempt1 failed before title at port35531 during concurrent full validation. Neither retained enough failure observations to prove a cause. The supervisor's diagnostic replay at port33519 passed the same 120000ms DOM deadlines and real off/on keyboard assertions after full tests finished. **That replay is a success, not a root-cause fix or evidence that contention caused the failure.** No such attribution is made here.
+
+The parent's original `5-supervisor/attempt1-execution.json` and `browser-attempt2.json` remain byte-identical. Exact archival copies are `supervisor-attempt1.json` and `supervisor-attempt2.json`; `cleanup.json` verifies original SHA256 respectively `d4aa30974669d959a38f8f411ae62c21513b74f87eb7ec03c87be5bfa0ada321` and `7f2feca0d9b0965690479d99b1f242f618fe03ff885f601bada279ecef381c75`. No writes were made under `5-supervisor`.
+
+The correction-only browser probe starts collection before navigation, retains a run record before attempting boot, records navigation/title/scene-ready milestones, page/console/HTTP/request errors, and pending requests plus DOM/title/screenshot if it fails. Title observation subscribes then checks existing DOM (no lost already-present signal). Before Enter, one observer now requires both the real canvas and disappearance of the loading overlay; canvas creation alone cannot falsely establish ready. Before Escape it observes the real menu; before each z it arms the actual scene-host receipt via the existing `performObservedAction`. No sleep, polling, timeout increase, network route workaround, mocked boot result, or retry loop is added. The only routed response is the same local minimal fixture. The missing-title cause remains unproven; the corrected diagnostics failure branch was not artificially forced during this successful run.
+
+Fresh serial browser proof, **one execution**, after tests, diagnostics, typecheck and build completed:
+
+```sh
+VITE_CACHE_DIR=.omo/evidence/life-full-20260906/5/correction/browser-cache node .omo/evidence/life-full-20260906/5/correction/run.mjs browser-execution node .omo/evidence/life-full-20260906/5/correction/browser-proof.mjs
+```
+
+Exit0. Chromium `149.0.7827.55`, headless, `--no-sandbox --use-gl=swiftshader --disable-gpu`, viewport1280x960, this worktree's dedicated `startPlayerQaServer` / `vite.player-qa.config.ts` / exportProjectStoreShim at **http://127.0.0.1:42457/player.html**, not editor play. Actual project `Life QA observability fixture`, start `map_blank_start` at2,2, original `5/project.json` SHA256 `f995e7c27d284593e5fb0101954872405b9eb7b68ffd5f5fd8e55b8181b4bbfc` (public regenerated copy is identical).
+
+- Off uses the **omitted** capability flag. Enter starts a real game; prearmed Escape opens its real menu. Globals[], mirrors0, markers0. No QA hook was used for off readiness.
+- On: real z tills2,3 with receipt1 and energy1->0; second real z yields receipt2, handledfalse, facing missing-seed and underfoot insufficient-energy. All public state excluding actionReceipt, including RNG/inventory/plots, is deep-equal after rejection. Mirror receipt equals public receipt. Detached-read mutation does not affect live state.
+- Both contexts: HTTP200 navigation; page/console/HTTP/request errors all empty. Off title at8240.69ms and scene-ready14507.36ms; on title4185.64ms and scene-ready9220.68ms, measured from each context's probe start, not arbitrary delays. Same120s DOM deadlines and default navigation deadline; no cache prewarming command.
+- Full observations: `browser.json`; real exit/raw stdout/stderr: `browser-execution.json`/`.txt`; captures: `player-off.png`, `player-on.png`. The image tool cannot display images to this model, so visual-quality adjudication is explicitly unverified.
+
+Fresh dedicated runner proof then executed serially with a separate cold cache:
+
+```sh
+VITE_CACHE_DIR=.omo/evidence/life-full-20260906/5/correction/harness-cache node .omo/evidence/life-full-20260906/5/correction/run.mjs harness node .omo/evidence/life-full-20260906/5/correction/harness-proof.mjs
+```
+
+Exit0; Chromium149.0.7827.55, **http://127.0.0.1:37003/player.html**, runner viewport1024x768. Real Enter then two existing Input edge `{kind:'action',observe:true}` operations; receipts1/2, till then rejection,2 beats/0 failures/errors. `runtime/SUMMARY.md`, `runtime/manifest.json`, `runtime/01-till.png`, `runtime/02-reject.png` retained. This is browser input evidence, unlike the separately named public-module probe.
+
+### B2 - Actual import cost measured; setup separated from operations
+
+Review RED is retained in the untouched `5/VERIFY.md` (SHA256 `58e4fb3abe153835b92c599b706823476c1c3811bcfb427a73effb4b5f279b7e`): first async debug test exceeded15000ms (15068ms), related suite248 passed/3 failed. Original producer related run249/2 took8285ms in that test. This correction does **not** claim to reproduce the original timeout or recover its missing timing measurements.
+
+Before the setup correction, diagnostic-only instrumentation was added to the existing test's import completion, fixture and operation boundaries. Original and instrumented sources are retained as `debugSession-before.ts` and `debugSession-measured-before.ts`. `related-before.json`/`.txt` records a fresh real run: exit1,249 passed/2 failed, the unchanged two registry-fixture errors. First-test imports completed at session1173.67ms, debugSession2260.09ms, emberQuestGame6575.32ms, **playSceneTestHooks10334.34ms**; fixture78.22ms; operations and assertions2.32ms. This is diagnosis evidence, not a fabricated RED or timing retry presented as a fix.
+
+`dependency-graph.mjs` emits TypeScript's runtime static import/export closure (type imports removed, local src only; dynamic/external modules excluded) against actual predecessor b7b02d97 and reviewed HEAD4e2d1762. Hooks closure: **81 ->276 local modules (+195)**, via newly imported runtimeDom -> resourceDisplay/store -> editor/defaults/IO modules. `dependency-graph.json` retains both complete adjacency lists; `graph.json` records exit0. This is the hooks closure, not a claim that all195 were newly unique in the union of all four test imports.
+
+The smallest correction is in `test/debugSession.test.ts`: use normal static imports during collection and synchronous tests for synchronous authorities. No first operation now awaits an unrelated hooks import. All four tests and17 exact assertions are preserved; live-session replacement and finally-restored window still run. This is deterministic test setup, **not** a cache-warmup hook, timeout increase, production dependency optimization, mock, test deletion or skip. Production graph cost remains visible and unchanged.
+
+The first and only post-correction affected run includes `timing-reporter.mjs`, using Vitest's real module/test diagnostics: collection6512.50ms; all four test bodies239.95ms; first body81.97ms; retries0, repeats0, flakyfalse. Full non-externalized import timings are in `debug-timing-after.json` (runtimeDom4449.32ms, hooks4489.28ms, store4282.42ms inclusive in this execution). No claim of faster imports or a machine-independent performance bound is made.
+
+Both fresh before/after related commands include **all** original15 files. They each exit1,249 passed/2 failed/0 skipped,14 files passed/1 failed. The unchanged failures are `TypeError: Cannot read properties of undefined (reading 'registry')`, `syncCutsceneHudVisibility` at playSceneMapRuntime.ts:657, via captureScene at actionDebounceFootprint.test.ts:139, cases145 and158. The earlier pre-product characterization records the same errors at old line655. Neither fixture/assertion nor baseline JSON is changed. Parent owns unrelated full-gates25-new-file baseline triage; this correction neither ran full gates nor labels them resolved.
+
+### Commands, true exits and ordering
+
+All commands execute in the named worktree at reviewed HEAD4e2d1762/tree234c0e9c with the scoped test edit uncommitted. Wrapper `node .omo/evidence/life-full-20260906/5/correction/run.mjs <label> <command...>` captures child status/signal, exact argv/cwd/head/tree/time/output and output SHA256. No piped status is substituted. Heavyweight commands were awaited serially; unrelated other-worktree test processes observed on the shared host were not killed or presented as this correction's work.
+
+```sh
+# related-before (exit1), same file list as below plus --silent=false
+npm test -- test/runtimeQaInstrumentationBoundary.test.ts test/runtimeQaReport.test.ts test/runtimeQaGate.test.ts test/sceneTestRunner.test.ts test/debugSession.test.ts test/runtimeDebugPanel.test.ts test/playSceneFarmFeedback.test.ts test/npcActionFacing.test.ts test/runtimeMovementStability.test.ts test/actionDebounceFootprint.test.ts test/lifeSaveVersion.test.ts test/lifeRecoveryPersistence.test.ts test/p0SessionPersistence.test.ts test/p2SpatialPersistence.test.ts test/autosave.test.ts --silent=false
+
+# green (exit0), one final run, 7/7 passed, start11:06:45, duration8.26s
+npm test -- test/lifeQaObservability.test.ts
+
+# related-after (exit1), 249 passed/2 unchanged failures, start11:06:54, duration14.50s
+npm test -- test/runtimeQaInstrumentationBoundary.test.ts test/runtimeQaReport.test.ts test/runtimeQaGate.test.ts test/sceneTestRunner.test.ts test/debugSession.test.ts test/runtimeDebugPanel.test.ts test/playSceneFarmFeedback.test.ts test/npcActionFacing.test.ts test/runtimeMovementStability.test.ts test/actionDebounceFootprint.test.ts test/lifeSaveVersion.test.ts test/lifeRecoveryPersistence.test.ts test/p0SessionPersistence.test.ts test/p2SpatialPersistence.test.ts test/autosave.test.ts --reporter=default --reporter=./.omo/evidence/life-full-20260906/5/correction/timing-reporter.mjs
+```
+
+| Subsequent exact command (relative worktree path) | Actual result |
+| --- | --- |
+| `node .omo/evidence/life-full-20260906/5/correction/public-probe.mjs` | Exit0; actual builder/dispatch/hooks/save writer, prearmed acceptance and rejection, whole rejected session unchanged, detached reads, no saved receipt, off events0/mirror absent; **module evidence, not player gameplay**. |
+| `node .omo/evidence/life-full-20260906/5/correction/diagnostics.mjs` | Exit0; actual TS language service8 files/0 diagnostics, including corrected debug test and original task5 TS paths. Tool LSP also returned zero for changed test. Both before typecheck/build. |
+| `npm run typecheck:app` | Exit0. |
+| `npm run build` | Exit0; app tsc/app Vite/player/SDK/standalone completed; visible existing circular record-picker, mixed-import, runtime asset and large-chunk warnings retained. |
+| Browser and harness commands above | Exit0 each, after build; no overlap or rerun. |
+| `node .omo/evidence/life-full-20260906/5/correction/cleanup.mjs` | Exit0, detailed assertions below. |
+| `bash -c 'for file in .omo/evidence/life-full-20260906/5/correction/*.mjs scripts/lib/runtimeQaRun.mjs; do node --check "$file" || exit $?; done'` | Exit0; all correction scripts and unchanged runtime harness syntax. |
+| `npm run openwiki:verify` | Exit0, failures[]. |
+
+### B3 - Evidence-inclusive generated index
+
+Fresh pre-correction `npm run openwiki:index -- --check` exited1 (`index-red.json`/`.txt`), confirming the final-tree stale-index blocker. Its concrete cause is that the generator's basename checks include `git ls-files`; the original pre-evidence generation/check missed newly tracked project.json/browser-proof.mjs/harness-proof.mjs. The matching testing wiki now documents setup/diagnostic/serial-validation boundaries. INDEX is generated, never hand-edited. `npm run openwiki:index` and `npm run openwiki:index -- --check` both exited0 after staging the correction evidence (`index-generation.json`, `index-green.json`). Final generation/check use those same already-tracked receipt paths after all evidence-inclusive staging, including `delivery-set.json`, which records the exact scoped change list and SHA256 of the entire NUL-delimited tracked path set. The post-commit check additionally reports the exact final SHA/tree rather than pretending a pre-commit tree is the delivered tree. `git diff --cached --check` exited0.
+
+### Cleanup, preservation and limitations
+
+`cleanup.json`/`cleanup-execution.json` record exit0: contexts/browser/server closed in probe finally blocks; one real connection per port42457/37003 returned ECONNREFUSED. Build output `dist` and correction-created browser/harness caches were non-symlink, contained no tracked files, and were removed; correction module-cache was absent. Shared node_modules, prior caches, parent supervisor files and original task5 artifacts were not cleaned or overwritten. The generated correction fixture was byte-compared to the original, then removed as a duplicate rather than adding another183477-line project dump. `cleanup-final.json` retains that additional cleanup exit0; the public probe regenerates it when executed, and the cleanup probe verifies equality before removing it. No demo/remote content was authored.
+
+Protected gate/review/supervisor hashes were rechecked; actual `git diff --exit-code 4e2d1762 -- src scripts WISH.md package.json package-lock.json vitest.config.ts .omo/gates-baseline.json test/actionDebounceFootprint.test.ts test/fixtures/life-full/coverage.json` exited0. Exact old/new expect lines compare equal (17); all four test cases execute. All51 coverage entries remain `not-run`; no later journeys, independent approval, full-gates success or visual-quality verdict is claimed. No VERIFY is staged. No push/PR/merge/history rewrite or dependency install.
+
+## Historical implementation DoneClaim (4e2d1762)
+
+The following original implementation record is retained for chronology. Its pre-evidence index-green claim and references to an older task5 VERIFY are historical, not current approval; the correction and fresh st_01a0745d review above supersede those delivery claims.
+
+### Original DoneClaim
 
 Task5's scoped QA observation increment is implemented and verified. The existing public snapshot contracts now carry detached life owners, and actual synchronous field-action dispatch produces scene-local increasing receipts, including rejected farm attempts. Normal shipped-player boot exposes no QA mirror/debug hook/receipt. This is not completion of later life gameplay, asynchronous event execution, full51 journeys, full gates, or independent approval.
 
