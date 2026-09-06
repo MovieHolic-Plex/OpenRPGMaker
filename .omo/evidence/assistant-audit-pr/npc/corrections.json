@@ -1,0 +1,41 @@
+{
+  "provenance": "Expected values asserted equal to parsed runTool issue repairs in test/npcAuditRepair.test.ts; each parsed correction was retried successfully. See green.log.",
+  "corrections": [
+    {
+      "entry": 170,
+      "repair": {
+        "path": "pages",
+        "example": [
+          {
+            "lines": [
+              "오른쪽 길을 따라가면 위험한 동굴이 나온단다. 조심해서 모험을 떠나렴!"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "entry": 174,
+      "repair": {
+        "path": "pages[0].commands[0]",
+        "example": {
+          "kind": "text",
+          "body": "오른쪽 길을 따라가면 위험한 동굴이 나온단다.\n준비를 단단히 하고 떠나렴!"
+        }
+      }
+    },
+    {
+      "entry": 196,
+      "repair": {
+        "path": "pages[1].conditions",
+        "example": [
+          {
+            "kind": "selfSwitch",
+            "key": "A",
+            "value": true
+          }
+        ]
+      }
+    }
+  ]
+}

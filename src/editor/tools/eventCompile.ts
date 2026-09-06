@@ -290,7 +290,18 @@ function normalizeCommand(raw: unknown, path: string, warnings: string[] | undef
   const rawKind = command.kind;
   const requestedKind = typeof rawKind === "string" ? rawKind : recoverCommandKind(command, path, warnings);
   if (!requestedKind) {
-    throw simplePageFieldError(`${path}.kind`, "string", rawKind);
+    const error = simplePageFieldError(`${path}.kind`, "string", rawKind);
+    // The audited 101 ID is not a catalog alias. Reject it and suggest native text,
+    // only when the entire payload unambiguously describes the supplied lines.
+    const fields = command.fields;
+    if (Object.keys(command).every(key => key === "commandId" || key === "fields")
+      && (command.commandId === "m2-001-show-text" || command.commandId === "m2-101-show-text")
+      && isRecord(fields) && Object.keys(fields).length === 1
+      && Array.isArray(fields.lines) && fields.lines.length > 0 && fields.lines.every(line => typeof line === "string")) {
+      const example = { kind: "text", body: fields.lines.join("\n") } satisfies Command;
+      throw new ToolError(`${error.message}\nrepair: ${JSON.stringify({ path, example })}`, { code: error.code });
+    }
+    throw error;
   }
   const kind = resolveCommandKind(requestedKind);
   if (!kind) {
@@ -405,9 +416,20 @@ function normalizeConditions(raw: unknown, path: string, warnings: string[] | un
     warnings
   );
   return values.flatMap((value, index) => {
-    if (isRecord(value) && (Object.keys(value).length === 0 || value.kind === "none")) {
+    if (isRecord(value) && (Object.keys(value).length === 0 || (value.kind === "none" && Object.keys(value).length === 1))) {
       warnings?.push(`SimplePage 정규화: ${path}[${index}] 빈/없음 조건을 제외했습니다.`);
       return [];
+    }
+    if (isRecord(value) && Object.keys(value).every(key => key === "selfSwitch" || key === "value")
+      && (value.selfSwitch === "A" || value.selfSwitch === "B" || value.selfSwitch === "C" || value.selfSwitch === "D")
+      && (value.value === undefined || typeof value.value === "boolean")) {
+      // Same default as make_villager dialogue.when; guidance, not an acceptance alias.
+      const condition = { kind: "selfSwitch", key: value.selfSwitch, value: value.value ?? true } satisfies EventPageCondition;
+      const repair = Array.isArray(raw)
+        ? { path: `${path}[${index}]`, example: condition }
+        : { path, example: [condition] };
+      const error = simplePageFieldError(`${path}[${index}].kind`, "string", value.kind);
+      throw new ToolError(`${error.message}\nrepair: ${JSON.stringify(repair)}`, { code: error.code });
     }
     return [normalizeCondition(value, `${path}[${index}]`, warnings)];
   });
