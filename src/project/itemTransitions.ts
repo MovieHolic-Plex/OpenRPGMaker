@@ -105,7 +105,7 @@ export function normalizeItemTransitionState(
 }
 
 function sanitizeItemState(state: ItemTransitionState): ItemTransitionResult {
-  const inventory: Record<string, number> = {};
+  const inventory: Record<string, number> = Object.create(null);
   for (const [itemId, count] of Object.entries(state.inventory)) {
     const normalizedCount = nonnegativeInteger(count);
     if (normalizedCount > 0) inventory[itemId] = normalizedCount;
@@ -121,7 +121,7 @@ function normalizeItemState(
   state: ItemTransitionState,
   itemById: ReadonlyMap<string, ItemRecord>
 ): ItemTransitionResult {
-  const inventory: Record<string, number> = {};
+  const inventory: Record<string, number> = Object.create(null);
   for (const [itemId, count] of Object.entries(state.inventory)) {
     const normalizedCount = nonnegativeInteger(count);
     if (normalizedCount > 0) inventory[itemId] = normalizedCount;

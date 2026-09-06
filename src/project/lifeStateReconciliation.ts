@@ -63,7 +63,7 @@ export function parseLifeState(raw: Partial<Record<LifeSourceKind | "lifeRecover
           break;
         case "bundleContributions":
           if (isRecord(original) && Object.values(original).every((count) => typeof count === "number")) {
-            const amounts: Record<string, number> = {};
+            const amounts: Record<string, number> = Object.create(null);
             for (const [itemId, count] of Object.entries(original)) {
               if (typeof count !== "number" || !Number.isSafeInteger(count) || count < 0) reject();
               else if (count > 0) amounts[itemId] = count;
@@ -140,8 +140,8 @@ export function reconcileLifeState(project: Project, input: PlaySession): PlaySe
   for (const [sourceId, amounts] of Object.entries(draft.bundleContributions ?? {})) {
     if (tombstones.includes(sourceId)) continue;
     const bundle = project.system.bundles?.find((entry) => entry.id === sourceId);
-    const retained: Record<string, number> = {};
-    const excess: Record<string, number> = {};
+    const retained: Record<string, number> = Object.create(null);
+    const excess: Record<string, number> = Object.create(null);
     for (const [itemId, count] of Object.entries(amounts)) {
       const required = known.has(itemId) ? bundle?.requirements.find((entry) => entry.itemId === itemId)?.count ?? 0 : 0;
       if (!Number.isSafeInteger(required) || required < 0) throw new LifeReconciliationError("bundleContributions", sourceId, "invalid-requirement");
