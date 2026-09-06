@@ -257,7 +257,10 @@ const MAX_EXPOSED_TOOLS = 40;
 // deprecated를 먼저 걸러내므로 핀해도 노출되지 않고, "보장됐다"는 착각만 남는다.
 // 재발 방지는 test/toolRegistry.test.ts 의 "핀된 툴은 deprecated가 아니다" 가드가 담당한다.
 export const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>> = new Map([
-  ["system", new Set(["reset_project", "configure_time_system", "evaluate_game_quality"])],
+  ["system", new Set([
+    "reset_project", "configure_time_system", "evaluate_game_quality",
+    "get_audio_resource", "set_audio_description",
+  ])],
   ["tile", new Set([
     "author_house", // 집·여관 외장 canonical facade (build_house_kit/lots의 대체 툴)
     "author_village",

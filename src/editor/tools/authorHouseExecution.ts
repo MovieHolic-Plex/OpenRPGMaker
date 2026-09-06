@@ -273,6 +273,7 @@ function constructionDiff(diff: ChangeSummary): ConstructionDiffTotals {
     palettePresetsAdded: diff.palettePresetsAdded,
     palettePresetsModified: diff.palettePresetsModified,
     endingsChanged: diff.endingsChanged,
+    audioDescriptionsChanged: diff.audioDescriptionsChanged ?? 0,
     sessionChanged: diff.sessionChanged,
     systemChanged: diff.systemChanged,
   };

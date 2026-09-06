@@ -1,5 +1,68 @@
 # Editor AI Tools & Vocabulary
 
+## Audio description tools and event candidates
+
+Audio identity is `{ kind: "music" | "sound", resourceId: rawId }`. Search-result prefixes
+`bgm:` and `se:` aren't valid override keys or detail/write tool IDs.
+`src/editor/tools/audioDescriptionTools.ts` defines:
+
+| Tool | Contract |
+| --- | --- |
+| `get_audio_resource` | Read an existing resource's full description and source from the current project. The resource is returned at `data.resource`, with its raw `id`. |
+| `set_audio_description` | Write through the existing draft/proposal/approval path. `action: "set"` requires a string; `""` clears. `action: "reset"` removes the override and rejects a supplied `description`. |
+| `upsert_resource` | `resource.description` is optional and allowed only for music/sound. Omission preserves the override; an explicit string uses the same writer. Description-only edits don't need a new asset or `dataUrl`. |
+
+New strings are trimmed at the write boundary and limited to 4,000 UTF-16 code units after
+trimming. Internal line breaks survive. Kind/ID existence and input validation happen before
+applying the edit. `src/editor/tools/resourceTools.ts` owns upload integration.
+`audioDescriptionsChanged` counts changed kind/raw-ID states, including clears and resets.
+The changeset, preview, commit summary and meaningful-change checks retain description-only
+proposals; they aren't tile-only auto-apply work. Approval and project undo/redo use the
+existing transaction path.
+
+### Search pages and full detail
+
+`list_resources` in `src/editor/tools/queryTools.ts` keeps search kinds `bgm`/`se`, existing
+prefixed result IDs and the default 20 results. `offset` defaults to 0 and must be a
+nonnegative safe integer; `limit` is an integer from 1 through 50. The response contains
+`data.matches`, `data.total` and `data.nextOffset`, which is `null` at the end.
+Non-audio search meaning stays unchanged.
+
+Audio matches also contain raw `resourceId`, `description`, `descriptionSource` and
+`descriptionTruncated`. Lists expose at most 240 UTF-16 code units per description;
+`get_audio_resource` returns the full value. Search ranking uses the full effective
+description in `src/assets/resourceSearch.ts`, including text beyond that excerpt.
+Overridden or cleared catalog descriptions aren't secretly appended as search terms.
+
+### Event prompt projection is not ID authority
+
+`src/ai/eventAudioPrompt.ts` builds at most 40 candidates per music/sound slot:
+
+1. Up to 20 positive-score request matches, ranked using names, tags and full descriptions.
+   Equal scores retain existing event catalog order.
+2. Up to 10 still-unselected project-override or uploaded candidates.
+3. All remaining places use still-unselected candidates in existing scene/category order.
+
+Zero matches consume no first-group quota; duplicate IDs don't consume later quotas.
+Each JSON entry includes raw ID, name, tags, a 240-unit description excerpt, source and
+truncation flag. `src/ai/eventCommandAssist.ts` forwards the submitted request into this
+projection. Validation still uses the full `eventResourceIdSet()` in
+`src/ai/eventResourceCatalog.ts`, so a valid ID outside the visible 40 remains valid.
+Keep description-heavy prompt imports in the prompt module, not the shared eligibility
+module used by other consumers.
+
+Descriptions are JSON-escaped reference data, not instructions or proof of listening.
+Escaping doesn't replace write approval or tool validation. `src/ai/contextBuilder.ts`
+directs fresh detail reads when full/current evidence is needed, including after conversation
+compaction. Each request uses the current project rather than a description cache or an
+old tool-result excerpt. Automatic `recommendMapBgm` selection is unchanged.
+
+Focused coverage: `test/audioDescriptionTools.test.ts`,
+`test/audioDescriptionDiff.test.ts`, `test/audioDescriptionToolStore.test.ts`,
+`test/audioDescriptionToolExposure.test.ts`, `test/audioResourceToolPagination.test.ts`,
+`test/audioDescriptionPrompt.test.ts`, `test/audioDescriptionPromptTransport.test.ts`,
+`test/audioDescriptionSessionPrompt.test.ts`.
+
 ## Completed-house transaction protection - Phase 1 (2026-09-05)
 
 `src/editor/tools/houseProtection.ts` is the shared completed-house ownership rule.

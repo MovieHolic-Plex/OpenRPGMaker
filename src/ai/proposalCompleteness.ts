@@ -421,6 +421,7 @@ function hasMeaningfulDiff(diff: ChangeSummary | undefined): boolean {
   return (
     diff.tilesChanged > 0 ||
     (diff.mapPropertiesChanged ?? 0) > 0 ||
+    (diff.audioDescriptionsChanged ?? 0) > 0 ||
     diff.eventsAdded > 0 ||
     diff.eventsModified > 0 ||
     diff.eventsRemoved > 0 ||

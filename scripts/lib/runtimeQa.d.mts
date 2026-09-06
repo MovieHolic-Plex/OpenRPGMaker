@@ -7,6 +7,14 @@ export type RuntimeQaOp =
   | { readonly kind: "cinematic"; readonly action: "key"; readonly key: string; readonly selector: string; readonly absent?: boolean }
   | { readonly kind: "cinematic"; readonly action: "input"; readonly beforeMap?: boolean }
   | { readonly kind: "cinematic"; readonly action: "reduced-motion" | "video-error" | "video-end" | "detach" | "reject-autoplay" | "geometry" }
+  | {
+      readonly kind: "audioAction";
+      readonly action: "start" | "interact";
+      readonly resourceId: string;
+      readonly sourcePath: string;
+      readonly loop: boolean;
+      readonly timeoutMs?: number;
+    }
   | { readonly kind: "seed"; readonly seed: number }
   | {
       readonly kind: "setVitals";
@@ -316,7 +324,35 @@ export type RuntimeQaObserved = {
   readonly battlers?: RuntimeQaBattlerGeometry | null;
 };
 
+export type RuntimeQaAudioEvidence = {
+  readonly action: "start" | "interact";
+  readonly resourceId: string;
+  readonly sourcePath: string;
+  readonly loop: boolean;
+  readonly error: string | null;
+  readonly playing: {
+    readonly trusted: boolean;
+    readonly sourcePath: string;
+    readonly paused: boolean;
+    readonly ended: boolean;
+    readonly readyState: number;
+    readonly currentTime: number;
+    readonly loop: boolean;
+    readonly volume: number;
+    readonly muted: boolean;
+    readonly playbackRate: number;
+  } | null;
+  readonly snapshot: {
+    readonly volume: { readonly bgm: number; readonly se: number };
+    readonly playbackRate: number;
+    readonly pan: number;
+    readonly fadeInMs: number;
+  } | null;
+};
+
 export type RuntimeQaBeatReport = {
+  readonly actions?: readonly RuntimeQaOp[];
+  readonly audio?: readonly RuntimeQaAudioEvidence[];
   readonly emotes?: readonly RuntimeQaEmote[];
   readonly index: number;
   readonly id: string;
