@@ -1,0 +1,6751 @@
+[
+  {
+    "scenario": "zero-yield",
+    "regrow": 0,
+    "atCapacity": false,
+    "before": {
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false
+      },
+      "selfSwitches": {},
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "timers": {},
+      "gold": 0,
+      "inventory": {
+        "hoe": 1,
+        "can": 1
+      },
+      "itemUseCharges": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "energy": 100,
+      "shippingQueue": {},
+      "shippingHistory": [],
+      "bundleContributions": {},
+      "completedBundleIds": [],
+      "bundleRewardAppliedIds": [],
+      "unlockedRegionIds": [],
+      "unlockedRecipeIds": [],
+      "makerInstances": {},
+      "monsterInstances": {},
+      "monsterParty": [],
+      "monsterBox": [],
+      "actorSkillIds": {},
+      "actorSkillPp": {},
+      "actorExperience": {
+        "actor_hero": 0
+      },
+      "actorLevels": {
+        "actor_hero": 1,
+        "actor_guardian": 1,
+        "actor_mage": 1,
+        "actor_scout": 1,
+        "actor_cleric": 1,
+        "actor_ranger": 1
+      },
+      "actorVitals": {
+        "actor_hero": {
+          "hp": 514,
+          "mp": 43,
+          "maxHp": 514,
+          "maxMp": 43
+        }
+      },
+      "eventLocations": {},
+      "erasedEventIds": [],
+      "removedEventIds": {},
+      "spawnedEvents": {},
+      "camera": {
+        "mode": "follow",
+        "target": {
+          "kind": "player"
+        }
+      },
+      "lighting": {
+        "ambient": 0,
+        "sources": []
+      },
+      "npcTravelStates": {},
+      "npcActivities": {},
+      "npcScheduleStates": {},
+      "lifeSkills": {},
+      "followers": [],
+      "followerTrail": [],
+      "actorEquipment": {
+        "actor_hero": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "actorRows": {
+        "actor_hero": "front"
+      },
+      "actorNames": {},
+      "actorCharacterResourceIds": {},
+      "classOverrides": {},
+      "actorParamBonuses": {},
+      "actorStateIds": {},
+      "factionStanceOverrides": {},
+      "currentMapId": "map_blank_start",
+      "x": 10,
+      "y": 8,
+      "mapOverrides": {},
+      "farmPlots": {
+        "map_blank_start": {
+          "1,1": {
+            "tilled": true,
+            "watered": false,
+            "cropId": "crop",
+            "plantedDay": {
+              "day": 1,
+              "season": "spring",
+              "year": 1
+            },
+            "stage": 2,
+            "dead": false,
+            "growthDays": 2
+          }
+        }
+      },
+      "placeables": {},
+      "farmPlotsAdvancedThrough": {
+        "day": 3,
+        "season": "spring",
+        "year": 1
+      },
+      "friendship": {},
+      "relationships": {},
+      "dailyGifts": {},
+      "dailyTalks": {},
+      "flags": {},
+      "audio": {},
+      "pictures": {},
+      "messageWindowSettings": {
+        "format": "normal",
+        "position": "bottom",
+        "preventObscuringPlayer": true,
+        "allowEventMovementDuringWait": false
+      },
+      "playTimeSeconds": 0,
+      "rng": {
+        "seed": 707,
+        "streams": {
+          "encounter": {
+            "seed": 2860409284,
+            "state": 2860409284
+          },
+          "battle": {
+            "seed": 2997262157,
+            "state": 2997262157
+          },
+          "movement": {
+            "seed": 1979330358,
+            "state": 1979330358
+          },
+          "fishing": {
+            "seed": 1997332011,
+            "state": 1997332011
+          },
+          "misc": {
+            "seed": 2662642267,
+            "state": 2662642267
+          }
+        }
+      },
+      "gameTime": {
+        "minute": 0,
+        "hour": 6,
+        "day": 3,
+        "season": "spring",
+        "year": 1
+      },
+      "dayTransitionLastDayKey": "1:spring:2"
+    },
+    "result": {
+      "kind": "harvested",
+      "x": 1,
+      "y": 1,
+      "cropId": "crop",
+      "itemId": "produce",
+      "count": 0,
+      "source": "crop",
+      "energySpent": 1,
+      "xpAwarded": {},
+      "affectedTiles": [
+        {
+          "x": 1,
+          "y": 1,
+          "kind": "harvested"
+        }
+      ]
+    },
+    "after": {
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false
+      },
+      "selfSwitches": {},
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "timers": {},
+      "gold": 0,
+      "inventory": {
+        "hoe": 1,
+        "can": 1
+      },
+      "itemUseCharges": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "energy": 99,
+      "shippingQueue": {},
+      "shippingHistory": [],
+      "bundleContributions": {},
+      "completedBundleIds": [],
+      "bundleRewardAppliedIds": [],
+      "unlockedRegionIds": [],
+      "unlockedRecipeIds": [],
+      "makerInstances": {},
+      "monsterInstances": {},
+      "monsterParty": [],
+      "monsterBox": [],
+      "actorSkillIds": {},
+      "actorSkillPp": {},
+      "actorExperience": {
+        "actor_hero": 0
+      },
+      "actorLevels": {
+        "actor_hero": 1,
+        "actor_guardian": 1,
+        "actor_mage": 1,
+        "actor_scout": 1,
+        "actor_cleric": 1,
+        "actor_ranger": 1
+      },
+      "actorVitals": {
+        "actor_hero": {
+          "hp": 514,
+          "mp": 43,
+          "maxHp": 514,
+          "maxMp": 43
+        }
+      },
+      "eventLocations": {},
+      "erasedEventIds": [],
+      "removedEventIds": {},
+      "spawnedEvents": {},
+      "camera": {
+        "mode": "follow",
+        "target": {
+          "kind": "player"
+        }
+      },
+      "lighting": {
+        "ambient": 0,
+        "sources": []
+      },
+      "npcTravelStates": {},
+      "npcActivities": {},
+      "npcScheduleStates": {},
+      "lifeSkills": {},
+      "followers": [],
+      "followerTrail": [],
+      "actorEquipment": {
+        "actor_hero": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "actorRows": {
+        "actor_hero": "front"
+      },
+      "actorNames": {},
+      "actorCharacterResourceIds": {},
+      "classOverrides": {},
+      "actorParamBonuses": {},
+      "actorStateIds": {},
+      "factionStanceOverrides": {},
+      "currentMapId": "map_blank_start",
+      "x": 10,
+      "y": 8,
+      "mapOverrides": {},
+      "farmPlots": {
+        "map_blank_start": {
+          "1,1": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      },
+      "placeables": {},
+      "farmPlotsAdvancedThrough": {
+        "day": 3,
+        "season": "spring",
+        "year": 1
+      },
+      "friendship": {},
+      "relationships": {},
+      "dailyGifts": {},
+      "dailyTalks": {},
+      "flags": {},
+      "audio": {},
+      "pictures": {},
+      "messageWindowSettings": {
+        "format": "normal",
+        "position": "bottom",
+        "preventObscuringPlayer": true,
+        "allowEventMovementDuringWait": false
+      },
+      "playTimeSeconds": 0,
+      "rng": {
+        "seed": 707,
+        "streams": {
+          "encounter": {
+            "seed": 2860409284,
+            "state": 2860409284
+          },
+          "battle": {
+            "seed": 2997262157,
+            "state": 2997262157
+          },
+          "movement": {
+            "seed": 1979330358,
+            "state": 1979330358
+          },
+          "fishing": {
+            "seed": 1997332011,
+            "state": 1997332011
+          },
+          "misc": {
+            "seed": 2662642267,
+            "state": 2662642267
+          }
+        }
+      },
+      "gameTime": {
+        "minute": 0,
+        "hour": 6,
+        "day": 3,
+        "season": "spring",
+        "year": 1
+      },
+      "dayTransitionLastDayKey": "1:spring:2"
+    }
+  },
+  {
+    "scenario": "zero-yield",
+    "regrow": 0,
+    "atCapacity": true,
+    "before": {
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false
+      },
+      "selfSwitches": {},
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "timers": {},
+      "gold": 0,
+      "inventory": {
+        "hoe": 1,
+        "can": 1,
+        "produce": 9999999
+      },
+      "itemUseCharges": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "energy": 100,
+      "shippingQueue": {},
+      "shippingHistory": [],
+      "bundleContributions": {},
+      "completedBundleIds": [],
+      "bundleRewardAppliedIds": [],
+      "unlockedRegionIds": [],
+      "unlockedRecipeIds": [],
+      "makerInstances": {},
+      "monsterInstances": {},
+      "monsterParty": [],
+      "monsterBox": [],
+      "actorSkillIds": {},
+      "actorSkillPp": {},
+      "actorExperience": {
+        "actor_hero": 0
+      },
+      "actorLevels": {
+        "actor_hero": 1,
+        "actor_guardian": 1,
+        "actor_mage": 1,
+        "actor_scout": 1,
+        "actor_cleric": 1,
+        "actor_ranger": 1
+      },
+      "actorVitals": {
+        "actor_hero": {
+          "hp": 514,
+          "mp": 43,
+          "maxHp": 514,
+          "maxMp": 43
+        }
+      },
+      "eventLocations": {},
+      "erasedEventIds": [],
+      "removedEventIds": {},
+      "spawnedEvents": {},
+      "camera": {
+        "mode": "follow",
+        "target": {
+          "kind": "player"
+        }
+      },
+      "lighting": {
+        "ambient": 0,
+        "sources": []
+      },
+      "npcTravelStates": {},
+      "npcActivities": {},
+      "npcScheduleStates": {},
+      "lifeSkills": {},
+      "followers": [],
+      "followerTrail": [],
+      "actorEquipment": {
+        "actor_hero": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "actorRows": {
+        "actor_hero": "front"
+      },
+      "actorNames": {},
+      "actorCharacterResourceIds": {},
+      "classOverrides": {},
+      "actorParamBonuses": {},
+      "actorStateIds": {},
+      "factionStanceOverrides": {},
+      "currentMapId": "map_blank_start",
+      "x": 10,
+      "y": 8,
+      "mapOverrides": {},
+      "farmPlots": {
+        "map_blank_start": {
+          "1,1": {
+            "tilled": true,
+            "watered": false,
+            "cropId": "crop",
+            "plantedDay": {
+              "day": 1,
+              "season": "spring",
+              "year": 1
+            },
+            "stage": 2,
+            "dead": false,
+            "growthDays": 2
+          }
+        }
+      },
+      "placeables": {},
+      "farmPlotsAdvancedThrough": {
+        "day": 3,
+        "season": "spring",
+        "year": 1
+      },
+      "friendship": {},
+      "relationships": {},
+      "dailyGifts": {},
+      "dailyTalks": {},
+      "flags": {},
+      "audio": {},
+      "pictures": {},
+      "messageWindowSettings": {
+        "format": "normal",
+        "position": "bottom",
+        "preventObscuringPlayer": true,
+        "allowEventMovementDuringWait": false
+      },
+      "playTimeSeconds": 0,
+      "rng": {
+        "seed": 707,
+        "streams": {
+          "encounter": {
+            "seed": 2860409284,
+            "state": 2860409284
+          },
+          "battle": {
+            "seed": 2997262157,
+            "state": 2997262157
+          },
+          "movement": {
+            "seed": 1979330358,
+            "state": 1979330358
+          },
+          "fishing": {
+            "seed": 1997332011,
+            "state": 1997332011
+          },
+          "misc": {
+            "seed": 2662642267,
+            "state": 2662642267
+          }
+        }
+      },
+      "gameTime": {
+        "minute": 0,
+        "hour": 6,
+        "day": 3,
+        "season": "spring",
+        "year": 1
+      },
+      "dayTransitionLastDayKey": "1:spring:2"
+    },
+    "result": {
+      "kind": "harvested",
+      "x": 1,
+      "y": 1,
+      "cropId": "crop",
+      "itemId": "produce",
+      "count": 0,
+      "source": "crop",
+      "energySpent": 1,
+      "xpAwarded": {},
+      "affectedTiles": [
+        {
+          "x": 1,
+          "y": 1,
+          "kind": "harvested"
+        }
+      ]
+    },
+    "after": {
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false
+      },
+      "selfSwitches": {},
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "timers": {},
+      "gold": 0,
+      "inventory": {
+        "hoe": 1,
+        "can": 1,
+        "produce": 9999999
+      },
+      "itemUseCharges": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "energy": 99,
+      "shippingQueue": {},
+      "shippingHistory": [],
+      "bundleContributions": {},
+      "completedBundleIds": [],
+      "bundleRewardAppliedIds": [],
+      "unlockedRegionIds": [],
+      "unlockedRecipeIds": [],
+      "makerInstances": {},
+      "monsterInstances": {},
+      "monsterParty": [],
+      "monsterBox": [],
+      "actorSkillIds": {},
+      "actorSkillPp": {},
+      "actorExperience": {
+        "actor_hero": 0
+      },
+      "actorLevels": {
+        "actor_hero": 1,
+        "actor_guardian": 1,
+        "actor_mage": 1,
+        "actor_scout": 1,
+        "actor_cleric": 1,
+        "actor_ranger": 1
+      },
+      "actorVitals": {
+        "actor_hero": {
+          "hp": 514,
+          "mp": 43,
+          "maxHp": 514,
+          "maxMp": 43
+        }
+      },
+      "eventLocations": {},
+      "erasedEventIds": [],
+      "removedEventIds": {},
+      "spawnedEvents": {},
+      "camera": {
+        "mode": "follow",
+        "target": {
+          "kind": "player"
+        }
+      },
+      "lighting": {
+        "ambient": 0,
+        "sources": []
+      },
+      "npcTravelStates": {},
+      "npcActivities": {},
+      "npcScheduleStates": {},
+      "lifeSkills": {},
+      "followers": [],
+      "followerTrail": [],
+      "actorEquipment": {
+        "actor_hero": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "actorRows": {
+        "actor_hero": "front"
+      },
+      "actorNames": {},
+      "actorCharacterResourceIds": {},
+      "classOverrides": {},
+      "actorParamBonuses": {},
+      "actorStateIds": {},
+      "factionStanceOverrides": {},
+      "currentMapId": "map_blank_start",
+      "x": 10,
+      "y": 8,
+      "mapOverrides": {},
+      "farmPlots": {
+        "map_blank_start": {
+          "1,1": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      },
+      "placeables": {},
+      "farmPlotsAdvancedThrough": {
+        "day": 3,
+        "season": "spring",
+        "year": 1
+      },
+      "friendship": {},
+      "relationships": {},
+      "dailyGifts": {},
+      "dailyTalks": {},
+      "flags": {},
+      "audio": {},
+      "pictures": {},
+      "messageWindowSettings": {
+        "format": "normal",
+        "position": "bottom",
+        "preventObscuringPlayer": true,
+        "allowEventMovementDuringWait": false
+      },
+      "playTimeSeconds": 0,
+      "rng": {
+        "seed": 707,
+        "streams": {
+          "encounter": {
+            "seed": 2860409284,
+            "state": 2860409284
+          },
+          "battle": {
+            "seed": 2997262157,
+            "state": 2997262157
+          },
+          "movement": {
+            "seed": 1979330358,
+            "state": 1979330358
+          },
+          "fishing": {
+            "seed": 1997332011,
+            "state": 1997332011
+          },
+          "misc": {
+            "seed": 2662642267,
+            "state": 2662642267
+          }
+        }
+      },
+      "gameTime": {
+        "minute": 0,
+        "hour": 6,
+        "day": 3,
+        "season": "spring",
+        "year": 1
+      },
+      "dayTransitionLastDayKey": "1:spring:2"
+    }
+  },
+  {
+    "scenario": "zero-yield",
+    "regrow": 10,
+    "atCapacity": false,
+    "before": {
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false
+      },
+      "selfSwitches": {},
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "timers": {},
+      "gold": 0,
+      "inventory": {
+        "hoe": 1,
+        "can": 1
+      },
+      "itemUseCharges": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "energy": 100,
+      "shippingQueue": {},
+      "shippingHistory": [],
+      "bundleContributions": {},
+      "completedBundleIds": [],
+      "bundleRewardAppliedIds": [],
+      "unlockedRegionIds": [],
+      "unlockedRecipeIds": [],
+      "makerInstances": {},
+      "monsterInstances": {},
+      "monsterParty": [],
+      "monsterBox": [],
+      "actorSkillIds": {},
+      "actorSkillPp": {},
+      "actorExperience": {
+        "actor_hero": 0
+      },
+      "actorLevels": {
+        "actor_hero": 1,
+        "actor_guardian": 1,
+        "actor_mage": 1,
+        "actor_scout": 1,
+        "actor_cleric": 1,
+        "actor_ranger": 1
+      },
+      "actorVitals": {
+        "actor_hero": {
+          "hp": 514,
+          "mp": 43,
+          "maxHp": 514,
+          "maxMp": 43
+        }
+      },
+      "eventLocations": {},
+      "erasedEventIds": [],
+      "removedEventIds": {},
+      "spawnedEvents": {},
+      "camera": {
+        "mode": "follow",
+        "target": {
+          "kind": "player"
+        }
+      },
+      "lighting": {
+        "ambient": 0,
+        "sources": []
+      },
+      "npcTravelStates": {},
+      "npcActivities": {},
+      "npcScheduleStates": {},
+      "lifeSkills": {},
+      "followers": [],
+      "followerTrail": [],
+      "actorEquipment": {
+        "actor_hero": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "actorRows": {
+        "actor_hero": "front"
+      },
+      "actorNames": {},
+      "actorCharacterResourceIds": {},
+      "classOverrides": {},
+      "actorParamBonuses": {},
+      "actorStateIds": {},
+      "factionStanceOverrides": {},
+      "currentMapId": "map_blank_start",
+      "x": 10,
+      "y": 8,
+      "mapOverrides": {},
+      "farmPlots": {
+        "map_blank_start": {
+          "1,1": {
+            "tilled": true,
+            "watered": false,
+            "cropId": "crop",
+            "plantedDay": {
+              "day": 1,
+              "season": "spring",
+              "year": 1
+            },
+            "stage": 2,
+            "dead": false,
+            "growthDays": 2
+          }
+        }
+      },
+      "placeables": {},
+      "farmPlotsAdvancedThrough": {
+        "day": 3,
+        "season": "spring",
+        "year": 1
+      },
+      "friendship": {},
+      "relationships": {},
+      "dailyGifts": {},
+      "dailyTalks": {},
+      "flags": {},
+      "audio": {},
+      "pictures": {},
+      "messageWindowSettings": {
+        "format": "normal",
+        "position": "bottom",
+        "preventObscuringPlayer": true,
+        "allowEventMovementDuringWait": false
+      },
+      "playTimeSeconds": 0,
+      "rng": {
+        "seed": 707,
+        "streams": {
+          "encounter": {
+            "seed": 2860409284,
+            "state": 2860409284
+          },
+          "battle": {
+            "seed": 2997262157,
+            "state": 2997262157
+          },
+          "movement": {
+            "seed": 1979330358,
+            "state": 1979330358
+          },
+          "fishing": {
+            "seed": 1997332011,
+            "state": 1997332011
+          },
+          "misc": {
+            "seed": 2662642267,
+            "state": 2662642267
+          }
+        }
+      },
+      "gameTime": {
+        "minute": 0,
+        "hour": 6,
+        "day": 3,
+        "season": "spring",
+        "year": 1
+      },
+      "dayTransitionLastDayKey": "1:spring:2"
+    },
+    "result": {
+      "kind": "harvested",
+      "x": 1,
+      "y": 1,
+      "cropId": "crop",
+      "itemId": "produce",
+      "count": 0,
+      "source": "crop",
+      "energySpent": 1,
+      "xpAwarded": {},
+      "affectedTiles": [
+        {
+          "x": 1,
+          "y": 1,
+          "kind": "harvested"
+        }
+      ]
+    },
+    "after": {
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false
+      },
+      "selfSwitches": {},
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "timers": {},
+      "gold": 0,
+      "inventory": {
+        "hoe": 1,
+        "can": 1
+      },
+      "itemUseCharges": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "energy": 99,
+      "shippingQueue": {},
+      "shippingHistory": [],
+      "bundleContributions": {},
+      "completedBundleIds": [],
+      "bundleRewardAppliedIds": [],
+      "unlockedRegionIds": [],
+      "unlockedRecipeIds": [],
+      "makerInstances": {},
+      "monsterInstances": {},
+      "monsterParty": [],
+      "monsterBox": [],
+      "actorSkillIds": {},
+      "actorSkillPp": {},
+      "actorExperience": {
+        "actor_hero": 0
+      },
+      "actorLevels": {
+        "actor_hero": 1,
+        "actor_guardian": 1,
+        "actor_mage": 1,
+        "actor_scout": 1,
+        "actor_cleric": 1,
+        "actor_ranger": 1
+      },
+      "actorVitals": {
+        "actor_hero": {
+          "hp": 514,
+          "mp": 43,
+          "maxHp": 514,
+          "maxMp": 43
+        }
+      },
+      "eventLocations": {},
+      "erasedEventIds": [],
+      "removedEventIds": {},
+      "spawnedEvents": {},
+      "camera": {
+        "mode": "follow",
+        "target": {
+          "kind": "player"
+        }
+      },
+      "lighting": {
+        "ambient": 0,
+        "sources": []
+      },
+      "npcTravelStates": {},
+      "npcActivities": {},
+      "npcScheduleStates": {},
+      "lifeSkills": {},
+      "followers": [],
+      "followerTrail": [],
+      "actorEquipment": {
+        "actor_hero": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "actorRows": {
+        "actor_hero": "front"
+      },
+      "actorNames": {},
+      "actorCharacterResourceIds": {},
+      "classOverrides": {},
+      "actorParamBonuses": {},
+      "actorStateIds": {},
+      "factionStanceOverrides": {},
+      "currentMapId": "map_blank_start",
+      "x": 10,
+      "y": 8,
+      "mapOverrides": {},
+      "farmPlots": {
+        "map_blank_start": {
+          "1,1": {
+            "tilled": true,
+            "watered": false,
+            "cropId": "crop",
+            "plantedDay": {
+              "day": 1,
+              "season": "spring",
+              "year": 1
+            },
+            "stage": 0,
+            "dead": false,
+            "growthDays": 0,
+            "regrowDaysRemaining": 10
+          }
+        }
+      },
+      "placeables": {},
+      "farmPlotsAdvancedThrough": {
+        "day": 3,
+        "season": "spring",
+        "year": 1
+      },
+      "friendship": {},
+      "relationships": {},
+      "dailyGifts": {},
+      "dailyTalks": {},
+      "flags": {},
+      "audio": {},
+      "pictures": {},
+      "messageWindowSettings": {
+        "format": "normal",
+        "position": "bottom",
+        "preventObscuringPlayer": true,
+        "allowEventMovementDuringWait": false
+      },
+      "playTimeSeconds": 0,
+      "rng": {
+        "seed": 707,
+        "streams": {
+          "encounter": {
+            "seed": 2860409284,
+            "state": 2860409284
+          },
+          "battle": {
+            "seed": 2997262157,
+            "state": 2997262157
+          },
+          "movement": {
+            "seed": 1979330358,
+            "state": 1979330358
+          },
+          "fishing": {
+            "seed": 1997332011,
+            "state": 1997332011
+          },
+          "misc": {
+            "seed": 2662642267,
+            "state": 2662642267
+          }
+        }
+      },
+      "gameTime": {
+        "minute": 0,
+        "hour": 6,
+        "day": 3,
+        "season": "spring",
+        "year": 1
+      },
+      "dayTransitionLastDayKey": "1:spring:2"
+    }
+  },
+  {
+    "scenario": "zero-yield",
+    "regrow": 10,
+    "atCapacity": true,
+    "before": {
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false
+      },
+      "selfSwitches": {},
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "timers": {},
+      "gold": 0,
+      "inventory": {
+        "hoe": 1,
+        "can": 1,
+        "produce": 9999999
+      },
+      "itemUseCharges": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "energy": 100,
+      "shippingQueue": {},
+      "shippingHistory": [],
+      "bundleContributions": {},
+      "completedBundleIds": [],
+      "bundleRewardAppliedIds": [],
+      "unlockedRegionIds": [],
+      "unlockedRecipeIds": [],
+      "makerInstances": {},
+      "monsterInstances": {},
+      "monsterParty": [],
+      "monsterBox": [],
+      "actorSkillIds": {},
+      "actorSkillPp": {},
+      "actorExperience": {
+        "actor_hero": 0
+      },
+      "actorLevels": {
+        "actor_hero": 1,
+        "actor_guardian": 1,
+        "actor_mage": 1,
+        "actor_scout": 1,
+        "actor_cleric": 1,
+        "actor_ranger": 1
+      },
+      "actorVitals": {
+        "actor_hero": {
+          "hp": 514,
+          "mp": 43,
+          "maxHp": 514,
+          "maxMp": 43
+        }
+      },
+      "eventLocations": {},
+      "erasedEventIds": [],
+      "removedEventIds": {},
+      "spawnedEvents": {},
+      "camera": {
+        "mode": "follow",
+        "target": {
+          "kind": "player"
+        }
+      },
+      "lighting": {
+        "ambient": 0,
+        "sources": []
+      },
+      "npcTravelStates": {},
+      "npcActivities": {},
+      "npcScheduleStates": {},
+      "lifeSkills": {},
+      "followers": [],
+      "followerTrail": [],
+      "actorEquipment": {
+        "actor_hero": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "actorRows": {
+        "actor_hero": "front"
+      },
+      "actorNames": {},
+      "actorCharacterResourceIds": {},
+      "classOverrides": {},
+      "actorParamBonuses": {},
+      "actorStateIds": {},
+      "factionStanceOverrides": {},
+      "currentMapId": "map_blank_start",
+      "x": 10,
+      "y": 8,
+      "mapOverrides": {},
+      "farmPlots": {
+        "map_blank_start": {
+          "1,1": {
+            "tilled": true,
+            "watered": false,
+            "cropId": "crop",
+            "plantedDay": {
+              "day": 1,
+              "season": "spring",
+              "year": 1
+            },
+            "stage": 2,
+            "dead": false,
+            "growthDays": 2
+          }
+        }
+      },
+      "placeables": {},
+      "farmPlotsAdvancedThrough": {
+        "day": 3,
+        "season": "spring",
+        "year": 1
+      },
+      "friendship": {},
+      "relationships": {},
+      "dailyGifts": {},
+      "dailyTalks": {},
+      "flags": {},
+      "audio": {},
+      "pictures": {},
+      "messageWindowSettings": {
+        "format": "normal",
+        "position": "bottom",
+        "preventObscuringPlayer": true,
+        "allowEventMovementDuringWait": false
+      },
+      "playTimeSeconds": 0,
+      "rng": {
+        "seed": 707,
+        "streams": {
+          "encounter": {
+            "seed": 2860409284,
+            "state": 2860409284
+          },
+          "battle": {
+            "seed": 2997262157,
+            "state": 2997262157
+          },
+          "movement": {
+            "seed": 1979330358,
+            "state": 1979330358
+          },
+          "fishing": {
+            "seed": 1997332011,
+            "state": 1997332011
+          },
+          "misc": {
+            "seed": 2662642267,
+            "state": 2662642267
+          }
+        }
+      },
+      "gameTime": {
+        "minute": 0,
+        "hour": 6,
+        "day": 3,
+        "season": "spring",
+        "year": 1
+      },
+      "dayTransitionLastDayKey": "1:spring:2"
+    },
+    "result": {
+      "kind": "harvested",
+      "x": 1,
+      "y": 1,
+      "cropId": "crop",
+      "itemId": "produce",
+      "count": 0,
+      "source": "crop",
+      "energySpent": 1,
+      "xpAwarded": {},
+      "affectedTiles": [
+        {
+          "x": 1,
+          "y": 1,
+          "kind": "harvested"
+        }
+      ]
+    },
+    "after": {
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false
+      },
+      "selfSwitches": {},
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "timers": {},
+      "gold": 0,
+      "inventory": {
+        "hoe": 1,
+        "can": 1,
+        "produce": 9999999
+      },
+      "itemUseCharges": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "energy": 99,
+      "shippingQueue": {},
+      "shippingHistory": [],
+      "bundleContributions": {},
+      "completedBundleIds": [],
+      "bundleRewardAppliedIds": [],
+      "unlockedRegionIds": [],
+      "unlockedRecipeIds": [],
+      "makerInstances": {},
+      "monsterInstances": {},
+      "monsterParty": [],
+      "monsterBox": [],
+      "actorSkillIds": {},
+      "actorSkillPp": {},
+      "actorExperience": {
+        "actor_hero": 0
+      },
+      "actorLevels": {
+        "actor_hero": 1,
+        "actor_guardian": 1,
+        "actor_mage": 1,
+        "actor_scout": 1,
+        "actor_cleric": 1,
+        "actor_ranger": 1
+      },
+      "actorVitals": {
+        "actor_hero": {
+          "hp": 514,
+          "mp": 43,
+          "maxHp": 514,
+          "maxMp": 43
+        }
+      },
+      "eventLocations": {},
+      "erasedEventIds": [],
+      "removedEventIds": {},
+      "spawnedEvents": {},
+      "camera": {
+        "mode": "follow",
+        "target": {
+          "kind": "player"
+        }
+      },
+      "lighting": {
+        "ambient": 0,
+        "sources": []
+      },
+      "npcTravelStates": {},
+      "npcActivities": {},
+      "npcScheduleStates": {},
+      "lifeSkills": {},
+      "followers": [],
+      "followerTrail": [],
+      "actorEquipment": {
+        "actor_hero": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "actorRows": {
+        "actor_hero": "front"
+      },
+      "actorNames": {},
+      "actorCharacterResourceIds": {},
+      "classOverrides": {},
+      "actorParamBonuses": {},
+      "actorStateIds": {},
+      "factionStanceOverrides": {},
+      "currentMapId": "map_blank_start",
+      "x": 10,
+      "y": 8,
+      "mapOverrides": {},
+      "farmPlots": {
+        "map_blank_start": {
+          "1,1": {
+            "tilled": true,
+            "watered": false,
+            "cropId": "crop",
+            "plantedDay": {
+              "day": 1,
+              "season": "spring",
+              "year": 1
+            },
+            "stage": 0,
+            "dead": false,
+            "growthDays": 0,
+            "regrowDaysRemaining": 10
+          }
+        }
+      },
+      "placeables": {},
+      "farmPlotsAdvancedThrough": {
+        "day": 3,
+        "season": "spring",
+        "year": 1
+      },
+      "friendship": {},
+      "relationships": {},
+      "dailyGifts": {},
+      "dailyTalks": {},
+      "flags": {},
+      "audio": {},
+      "pictures": {},
+      "messageWindowSettings": {
+        "format": "normal",
+        "position": "bottom",
+        "preventObscuringPlayer": true,
+        "allowEventMovementDuringWait": false
+      },
+      "playTimeSeconds": 0,
+      "rng": {
+        "seed": 707,
+        "streams": {
+          "encounter": {
+            "seed": 2860409284,
+            "state": 2860409284
+          },
+          "battle": {
+            "seed": 2997262157,
+            "state": 2997262157
+          },
+          "movement": {
+            "seed": 1979330358,
+            "state": 1979330358
+          },
+          "fishing": {
+            "seed": 1997332011,
+            "state": 1997332011
+          },
+          "misc": {
+            "seed": 2662642267,
+            "state": 2662642267
+          }
+        }
+      },
+      "gameTime": {
+        "minute": 0,
+        "hour": 6,
+        "day": 3,
+        "season": "spring",
+        "year": 1
+      },
+      "dayTransitionLastDayKey": "1:spring:2"
+    }
+  },
+  {
+    "scenario": "remaining7-native-Storage-roundtrip",
+    "raw": "{\"schemaVersion\":5,\"projectTitle\":\"새 프로젝트\",\"savedAt\":\"2026-09-06T12:33:26.077Z\",\"mapName\":\"빈 맵\",\"partyLevel\":1,\"playTimeSeconds\":0,\"session\":{\"switches\":{\"sw_0001\":false,\"sw_0002\":false,\"sw_0003\":false,\"sw_0004\":false,\"sw_0005\":false,\"sw_0006\":false,\"sw_0007\":false,\"sw_0008\":false,\"sw_0009\":false,\"sw_0010\":false,\"sw_0011\":false,\"sw_0012\":false,\"sw_0013\":false,\"sw_0014\":false,\"sw_0015\":false,\"sw_0016\":false,\"sw_0017\":false,\"sw_0018\":false,\"sw_0019\":false,\"sw_0020\":false},\"selfSwitches\":{},\"variables\":{\"var_0001\":0,\"var_0002\":0,\"var_0003\":0,\"var_0004\":0,\"var_0005\":0,\"var_0006\":0,\"var_0007\":0,\"var_0008\":0,\"var_0009\":0,\"var_0010\":0,\"var_0011\":0,\"var_0012\":0,\"var_0013\":0,\"var_0014\":0,\"var_0015\":0,\"var_0016\":0,\"var_0017\":0,\"var_0018\":0,\"var_0019\":0,\"var_0020\":0},\"timers\":{},\"gold\":0,\"inventory\":{\"hoe\":1,\"can\":1,\"produce\":1},\"itemUseCharges\":{},\"killedFieldSpawns\":{},\"partyActorIds\":[\"actor_hero\"],\"energy\":100,\"shippingQueue\":{},\"dayTransitionLastDayKey\":\"1:spring:5\",\"shippingHistory\":[],\"bundleContributions\":{},\"completedBundleIds\":[],\"bundleRewardAppliedIds\":[],\"unlockedRegionIds\":[],\"unlockedRecipeIds\":[],\"makerInstances\":{},\"monsterInstances\":{},\"monsterParty\":[],\"monsterBox\":[],\"actorSkillIds\":{},\"actorSkillPp\":{},\"actorExperience\":{\"actor_hero\":0},\"actorLevels\":{\"actor_hero\":1,\"actor_guardian\":1,\"actor_mage\":1,\"actor_scout\":1,\"actor_cleric\":1,\"actor_ranger\":1},\"actorVitals\":{\"actor_hero\":{\"hp\":514,\"mp\":43,\"maxHp\":514,\"maxMp\":43}},\"eventLocations\":{},\"erasedEventIds\":[],\"removedEventIds\":{},\"spawnedEvents\":{},\"camera\":{\"mode\":\"follow\",\"target\":{\"kind\":\"player\"}},\"lighting\":{\"ambient\":0,\"sources\":[]},\"npcTravelStates\":{},\"npcActivities\":{},\"npcScheduleStates\":{},\"lifeSkills\":{},\"farmPlots\":{\"map_blank_start\":{\"1,1\":{\"tilled\":true,\"watered\":false,\"cropId\":\"crop\",\"plantedDay\":{\"day\":1,\"season\":\"spring\",\"year\":1},\"stage\":0,\"dead\":false,\"growthDays\":0,\"regrowDaysRemaining\":7}}},\"farmPlotsAdvancedThrough\":{\"day\":6,\"season\":\"spring\",\"year\":1},\"friendship\":{},\"relationships\":{},\"dailyGifts\":{},\"dailyTalks\":{},\"monsterCareDaily\":{},\"chests\":{},\"placeables\":{},\"followers\":[],\"followerTrail\":[],\"currentMapId\":\"map_blank_start\",\"x\":10,\"y\":8,\"mapOverrides\":{},\"flags\":{},\"audio\":{},\"pictures\":{},\"actorEquipment\":{\"actor_hero\":{\"weapon\":\"equip_sword\",\"shield\":\"equip_oak_shield\",\"armor\":\"equip_leather_armor\",\"helmet\":\"equip_traveler_hat\",\"accessory\":\"equip_focus_charm\"},\"actor_guardian\":{\"weapon\":\"equip_sword\",\"shield\":\"equip_oak_shield\",\"armor\":\"equip_leather_armor\",\"helmet\":\"equip_traveler_hat\",\"accessory\":\"equip_focus_charm\"},\"actor_mage\":{\"weapon\":\"equip_mage_staff\",\"armor\":\"equip_mystic_robe\",\"helmet\":\"equip_traveler_hat\",\"accessory\":\"equip_focus_charm\"},\"actor_scout\":{\"weapon\":\"equip_scout_dagger\",\"armor\":\"equip_leather_armor\",\"helmet\":\"equip_traveler_hat\",\"accessory\":\"equip_focus_charm\"},\"actor_cleric\":{\"weapon\":\"equip_mage_staff\",\"shield\":\"equip_oak_shield\",\"armor\":\"equip_mystic_robe\",\"helmet\":\"equip_traveler_hat\",\"accessory\":\"equip_focus_charm\"},\"actor_ranger\":{\"weapon\":\"equip_scout_dagger\",\"armor\":\"equip_leather_armor\",\"helmet\":\"equip_traveler_hat\",\"accessory\":\"equip_focus_charm\"}},\"actorRows\":{\"actor_hero\":\"front\"},\"actorNames\":{},\"actorCharacterResourceIds\":{},\"classOverrides\":{},\"actorParamBonuses\":{},\"actorStateIds\":{},\"playTimeSeconds\":0,\"gameTime\":{\"minute\":0,\"hour\":6,\"day\":6,\"season\":\"spring\",\"year\":1},\"rng\":{\"seed\":707,\"streams\":{\"encounter\":{\"seed\":2860409284,\"state\":2860409284},\"battle\":{\"seed\":2997262157,\"state\":2997262157},\"movement\":{\"seed\":1979330358,\"state\":1979330358},\"fishing\":{\"seed\":1997332011,\"state\":1997332011},\"misc\":{\"seed\":2662642267,\"state\":2662642267}}}}}",
+    "before": {
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false
+      },
+      "selfSwitches": {},
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "timers": {},
+      "gold": 0,
+      "inventory": {
+        "hoe": 1,
+        "can": 1,
+        "produce": 1
+      },
+      "itemUseCharges": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "energy": 100,
+      "shippingQueue": {},
+      "shippingHistory": [],
+      "bundleContributions": {},
+      "completedBundleIds": [],
+      "bundleRewardAppliedIds": [],
+      "unlockedRegionIds": [],
+      "unlockedRecipeIds": [],
+      "makerInstances": {},
+      "monsterInstances": {},
+      "monsterParty": [],
+      "monsterBox": [],
+      "actorSkillIds": {},
+      "actorSkillPp": {},
+      "actorExperience": {
+        "actor_hero": 0
+      },
+      "actorLevels": {
+        "actor_hero": 1,
+        "actor_guardian": 1,
+        "actor_mage": 1,
+        "actor_scout": 1,
+        "actor_cleric": 1,
+        "actor_ranger": 1
+      },
+      "actorVitals": {
+        "actor_hero": {
+          "hp": 514,
+          "mp": 43,
+          "maxHp": 514,
+          "maxMp": 43
+        }
+      },
+      "eventLocations": {},
+      "erasedEventIds": [],
+      "removedEventIds": {},
+      "spawnedEvents": {},
+      "camera": {
+        "mode": "follow",
+        "target": {
+          "kind": "player"
+        }
+      },
+      "lighting": {
+        "ambient": 0,
+        "sources": []
+      },
+      "npcTravelStates": {},
+      "npcActivities": {},
+      "npcScheduleStates": {},
+      "lifeSkills": {},
+      "followers": [],
+      "followerTrail": [],
+      "actorEquipment": {
+        "actor_hero": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "actorRows": {
+        "actor_hero": "front"
+      },
+      "actorNames": {},
+      "actorCharacterResourceIds": {},
+      "classOverrides": {},
+      "actorParamBonuses": {},
+      "actorStateIds": {},
+      "factionStanceOverrides": {},
+      "currentMapId": "map_blank_start",
+      "x": 10,
+      "y": 8,
+      "mapOverrides": {},
+      "farmPlots": {
+        "map_blank_start": {
+          "1,1": {
+            "tilled": true,
+            "watered": false,
+            "cropId": "crop",
+            "plantedDay": {
+              "day": 1,
+              "season": "spring",
+              "year": 1
+            },
+            "stage": 0,
+            "dead": false,
+            "growthDays": 0,
+            "regrowDaysRemaining": 7
+          }
+        }
+      },
+      "placeables": {},
+      "farmPlotsAdvancedThrough": {
+        "day": 6,
+        "season": "spring",
+        "year": 1
+      },
+      "friendship": {},
+      "relationships": {},
+      "dailyGifts": {},
+      "dailyTalks": {},
+      "flags": {},
+      "audio": {},
+      "pictures": {},
+      "messageWindowSettings": {
+        "format": "normal",
+        "position": "bottom",
+        "preventObscuringPlayer": true,
+        "allowEventMovementDuringWait": false
+      },
+      "playTimeSeconds": 0,
+      "rng": {
+        "seed": 707,
+        "streams": {
+          "encounter": {
+            "seed": 2860409284,
+            "state": 2860409284
+          },
+          "battle": {
+            "seed": 2997262157,
+            "state": 2997262157
+          },
+          "movement": {
+            "seed": 1979330358,
+            "state": 1979330358
+          },
+          "fishing": {
+            "seed": 1997332011,
+            "state": 1997332011
+          },
+          "misc": {
+            "seed": 2662642267,
+            "state": 2662642267
+          }
+        }
+      },
+      "gameTime": {
+        "minute": 0,
+        "hour": 6,
+        "day": 6,
+        "season": "spring",
+        "year": 1
+      },
+      "dayTransitionLastDayKey": "1:spring:5"
+    },
+    "after": {
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false
+      },
+      "selfSwitches": {},
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "timers": {},
+      "gold": 0,
+      "inventory": {
+        "hoe": 1,
+        "can": 1,
+        "produce": 1
+      },
+      "itemUseCharges": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "energy": 100,
+      "shippingQueue": {},
+      "shippingHistory": [],
+      "bundleContributions": {},
+      "completedBundleIds": [],
+      "bundleRewardAppliedIds": [],
+      "unlockedRegionIds": [],
+      "unlockedRecipeIds": [],
+      "makerInstances": {},
+      "monsterInstances": {},
+      "monsterParty": [],
+      "monsterBox": [],
+      "actorSkillIds": {},
+      "actorSkillPp": {},
+      "actorExperience": {
+        "actor_hero": 0
+      },
+      "actorLevels": {
+        "actor_hero": 1,
+        "actor_guardian": 1,
+        "actor_mage": 1,
+        "actor_scout": 1,
+        "actor_cleric": 1,
+        "actor_ranger": 1
+      },
+      "actorVitals": {
+        "actor_hero": {
+          "hp": 514,
+          "mp": 43,
+          "maxHp": 514,
+          "maxMp": 43
+        }
+      },
+      "eventLocations": {},
+      "erasedEventIds": [],
+      "removedEventIds": {},
+      "spawnedEvents": {},
+      "camera": {
+        "mode": "follow",
+        "target": {
+          "kind": "player"
+        }
+      },
+      "lighting": {
+        "ambient": 0,
+        "sources": []
+      },
+      "npcTravelStates": {},
+      "npcActivities": {},
+      "npcScheduleStates": {},
+      "lifeSkills": {},
+      "followers": [],
+      "followerTrail": [],
+      "actorEquipment": {
+        "actor_hero": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "actorRows": {
+        "actor_hero": "front"
+      },
+      "actorNames": {},
+      "actorCharacterResourceIds": {},
+      "classOverrides": {},
+      "actorParamBonuses": {},
+      "actorStateIds": {},
+      "factionStanceOverrides": {},
+      "currentMapId": "map_blank_start",
+      "x": 10,
+      "y": 8,
+      "mapOverrides": {},
+      "farmPlots": {
+        "map_blank_start": {
+          "1,1": {
+            "tilled": true,
+            "watered": false,
+            "cropId": "crop",
+            "plantedDay": {
+              "day": 1,
+              "season": "spring",
+              "year": 1
+            },
+            "stage": 0,
+            "dead": false,
+            "growthDays": 0,
+            "regrowDaysRemaining": 7
+          }
+        }
+      },
+      "placeables": {},
+      "farmPlotsAdvancedThrough": {
+        "day": 6,
+        "season": "spring",
+        "year": 1
+      },
+      "friendship": {},
+      "relationships": {},
+      "dailyGifts": {},
+      "dailyTalks": {},
+      "flags": {},
+      "audio": {},
+      "pictures": {},
+      "messageWindowSettings": {
+        "format": "normal",
+        "position": "bottom",
+        "preventObscuringPlayer": true,
+        "allowEventMovementDuringWait": false
+      },
+      "playTimeSeconds": 0,
+      "rng": {
+        "seed": 707,
+        "streams": {
+          "encounter": {
+            "seed": 2860409284,
+            "state": 2860409284
+          },
+          "battle": {
+            "seed": 2997262157,
+            "state": 2997262157
+          },
+          "movement": {
+            "seed": 1979330358,
+            "state": 1979330358
+          },
+          "fishing": {
+            "seed": 1997332011,
+            "state": 1997332011
+          },
+          "misc": {
+            "seed": 2662642267,
+            "state": 2662642267
+          }
+        }
+      },
+      "gameTime": {
+        "minute": 0,
+        "hour": 6,
+        "day": 6,
+        "season": "spring",
+        "year": 1
+      },
+      "killedFieldSpawns": {},
+      "monsterCareDaily": {},
+      "chests": {},
+      "dayTransitionLastDayKey": "1:spring:5"
+    }
+  },
+  {
+    "scenario": "exact-ten-ticks",
+    "ticks": [
+      {
+        "tick": 1,
+        "plot": {
+          "tilled": true,
+          "watered": false,
+          "cropId": "crop",
+          "plantedDay": {
+            "day": 1,
+            "season": "spring",
+            "year": 1
+          },
+          "stage": 0,
+          "dead": false,
+          "growthDays": 0,
+          "regrowDaysRemaining": 9
+        },
+        "ready": false
+      },
+      {
+        "tick": 2,
+        "plot": {
+          "tilled": true,
+          "watered": false,
+          "cropId": "crop",
+          "plantedDay": {
+            "day": 1,
+            "season": "spring",
+            "year": 1
+          },
+          "stage": 0,
+          "dead": false,
+          "growthDays": 0,
+          "regrowDaysRemaining": 8
+        },
+        "ready": false
+      },
+      {
+        "tick": 3,
+        "plot": {
+          "tilled": true,
+          "watered": false,
+          "cropId": "crop",
+          "plantedDay": {
+            "day": 1,
+            "season": "spring",
+            "year": 1
+          },
+          "stage": 0,
+          "dead": false,
+          "growthDays": 0,
+          "regrowDaysRemaining": 7
+        },
+        "ready": false
+      },
+      {
+        "tick": 4,
+        "plot": {
+          "tilled": true,
+          "watered": false,
+          "cropId": "crop",
+          "plantedDay": {
+            "day": 1,
+            "season": "spring",
+            "year": 1
+          },
+          "stage": 0,
+          "dead": false,
+          "growthDays": 0,
+          "regrowDaysRemaining": 6
+        },
+        "ready": false
+      },
+      {
+        "tick": 5,
+        "plot": {
+          "tilled": true,
+          "watered": false,
+          "cropId": "crop",
+          "plantedDay": {
+            "day": 1,
+            "season": "spring",
+            "year": 1
+          },
+          "stage": 0,
+          "dead": false,
+          "growthDays": 0,
+          "regrowDaysRemaining": 5
+        },
+        "ready": false
+      },
+      {
+        "tick": 6,
+        "plot": {
+          "tilled": true,
+          "watered": false,
+          "cropId": "crop",
+          "plantedDay": {
+            "day": 1,
+            "season": "spring",
+            "year": 1
+          },
+          "stage": 0,
+          "dead": false,
+          "growthDays": 0,
+          "regrowDaysRemaining": 4
+        },
+        "ready": false
+      },
+      {
+        "tick": 7,
+        "plot": {
+          "tilled": true,
+          "watered": false,
+          "cropId": "crop",
+          "plantedDay": {
+            "day": 1,
+            "season": "spring",
+            "year": 1
+          },
+          "stage": 0,
+          "dead": false,
+          "growthDays": 0,
+          "regrowDaysRemaining": 3
+        },
+        "ready": false
+      },
+      {
+        "tick": 8,
+        "plot": {
+          "tilled": true,
+          "watered": false,
+          "cropId": "crop",
+          "plantedDay": {
+            "day": 1,
+            "season": "spring",
+            "year": 1
+          },
+          "stage": 0,
+          "dead": false,
+          "growthDays": 0,
+          "regrowDaysRemaining": 2
+        },
+        "ready": false
+      },
+      {
+        "tick": 9,
+        "plot": {
+          "tilled": true,
+          "watered": false,
+          "cropId": "crop",
+          "plantedDay": {
+            "day": 1,
+            "season": "spring",
+            "year": 1
+          },
+          "stage": 1,
+          "dead": false,
+          "growthDays": 1,
+          "regrowDaysRemaining": 1
+        },
+        "ready": false
+      },
+      {
+        "tick": 10,
+        "plot": {
+          "tilled": true,
+          "watered": false,
+          "cropId": "crop",
+          "plantedDay": {
+            "day": 1,
+            "season": "spring",
+            "year": 1
+          },
+          "stage": 2,
+          "dead": false,
+          "growthDays": 2,
+          "regrowDaysRemaining": 0
+        },
+        "ready": true
+      }
+    ],
+    "final": {
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false
+      },
+      "selfSwitches": {},
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "timers": {},
+      "gold": 0,
+      "inventory": {
+        "hoe": 1,
+        "can": 1,
+        "produce": 2
+      },
+      "itemUseCharges": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "energy": 99,
+      "shippingQueue": {},
+      "shippingHistory": [],
+      "bundleContributions": {},
+      "completedBundleIds": [],
+      "bundleRewardAppliedIds": [],
+      "unlockedRegionIds": [],
+      "unlockedRecipeIds": [],
+      "makerInstances": {},
+      "monsterInstances": {},
+      "monsterParty": [],
+      "monsterBox": [],
+      "actorSkillIds": {},
+      "actorSkillPp": {},
+      "actorExperience": {
+        "actor_hero": 0
+      },
+      "actorLevels": {
+        "actor_hero": 1,
+        "actor_guardian": 1,
+        "actor_mage": 1,
+        "actor_scout": 1,
+        "actor_cleric": 1,
+        "actor_ranger": 1
+      },
+      "actorVitals": {
+        "actor_hero": {
+          "hp": 514,
+          "mp": 43,
+          "maxHp": 514,
+          "maxMp": 43
+        }
+      },
+      "eventLocations": {},
+      "erasedEventIds": [],
+      "removedEventIds": {},
+      "spawnedEvents": {},
+      "camera": {
+        "mode": "follow",
+        "target": {
+          "kind": "player"
+        }
+      },
+      "lighting": {
+        "ambient": 0,
+        "sources": []
+      },
+      "npcTravelStates": {},
+      "npcActivities": {},
+      "npcScheduleStates": {},
+      "lifeSkills": {},
+      "followers": [],
+      "followerTrail": [],
+      "actorEquipment": {
+        "actor_hero": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "actorRows": {
+        "actor_hero": "front"
+      },
+      "actorNames": {},
+      "actorCharacterResourceIds": {},
+      "classOverrides": {},
+      "actorParamBonuses": {},
+      "actorStateIds": {},
+      "factionStanceOverrides": {},
+      "currentMapId": "map_blank_start",
+      "x": 10,
+      "y": 8,
+      "mapOverrides": {},
+      "farmPlots": {
+        "map_blank_start": {
+          "1,1": {
+            "tilled": true,
+            "watered": false,
+            "cropId": "crop",
+            "plantedDay": {
+              "day": 1,
+              "season": "spring",
+              "year": 1
+            },
+            "stage": 0,
+            "dead": false,
+            "growthDays": 0,
+            "regrowDaysRemaining": 10
+          }
+        }
+      },
+      "placeables": {},
+      "farmPlotsAdvancedThrough": {
+        "day": 13,
+        "season": "spring",
+        "year": 1
+      },
+      "friendship": {},
+      "relationships": {},
+      "dailyGifts": {},
+      "dailyTalks": {},
+      "flags": {},
+      "audio": {},
+      "pictures": {},
+      "messageWindowSettings": {
+        "format": "normal",
+        "position": "bottom",
+        "preventObscuringPlayer": true,
+        "allowEventMovementDuringWait": false
+      },
+      "playTimeSeconds": 0,
+      "rng": {
+        "seed": 707,
+        "streams": {
+          "encounter": {
+            "seed": 2860409284,
+            "state": 2860409284
+          },
+          "battle": {
+            "seed": 2997262157,
+            "state": 2997262157
+          },
+          "movement": {
+            "seed": 1979330358,
+            "state": 1979330358
+          },
+          "fishing": {
+            "seed": 1997332011,
+            "state": 1997332011
+          },
+          "misc": {
+            "seed": 2662642267,
+            "state": 2662642267
+          }
+        }
+      },
+      "gameTime": {
+        "minute": 0,
+        "hour": 6,
+        "day": 13,
+        "season": "spring",
+        "year": 1
+      },
+      "dayTransitionLastDayKey": "1:spring:12",
+      "killedFieldSpawns": {},
+      "monsterCareDaily": {},
+      "chests": {}
+    }
+  },
+  {
+    "scenario": "dry-duplicate-date-and-day-rollback",
+    "before": {
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false
+      },
+      "selfSwitches": {},
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "timers": {},
+      "gold": 0,
+      "inventory": {
+        "hoe": 1,
+        "can": 1,
+        "produce": 2
+      },
+      "itemUseCharges": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "energy": 99,
+      "shippingQueue": {},
+      "shippingHistory": [],
+      "bundleContributions": {},
+      "completedBundleIds": [],
+      "bundleRewardAppliedIds": [],
+      "unlockedRegionIds": [],
+      "unlockedRecipeIds": [],
+      "makerInstances": {},
+      "monsterInstances": {},
+      "monsterParty": [],
+      "monsterBox": [],
+      "actorSkillIds": {},
+      "actorSkillPp": {},
+      "actorExperience": {
+        "actor_hero": 0
+      },
+      "actorLevels": {
+        "actor_hero": 1,
+        "actor_guardian": 1,
+        "actor_mage": 1,
+        "actor_scout": 1,
+        "actor_cleric": 1,
+        "actor_ranger": 1
+      },
+      "actorVitals": {
+        "actor_hero": {
+          "hp": 514,
+          "mp": 43,
+          "maxHp": 514,
+          "maxMp": 43
+        }
+      },
+      "eventLocations": {},
+      "erasedEventIds": [],
+      "removedEventIds": {},
+      "spawnedEvents": {},
+      "camera": {
+        "mode": "follow",
+        "target": {
+          "kind": "player"
+        }
+      },
+      "lighting": {
+        "ambient": 0,
+        "sources": []
+      },
+      "npcTravelStates": {},
+      "npcActivities": {},
+      "npcScheduleStates": {},
+      "lifeSkills": {},
+      "followers": [],
+      "followerTrail": [],
+      "actorEquipment": {
+        "actor_hero": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "actorRows": {
+        "actor_hero": "front"
+      },
+      "actorNames": {},
+      "actorCharacterResourceIds": {},
+      "classOverrides": {},
+      "actorParamBonuses": {},
+      "actorStateIds": {},
+      "factionStanceOverrides": {},
+      "currentMapId": "map_blank_start",
+      "x": 10,
+      "y": 8,
+      "mapOverrides": {},
+      "farmPlots": {
+        "map_blank_start": {
+          "1,1": {
+            "tilled": true,
+            "watered": true,
+            "cropId": "crop",
+            "plantedDay": {
+              "day": 1,
+              "season": "spring",
+              "year": 1
+            },
+            "stage": 0,
+            "dead": false,
+            "growthDays": 0,
+            "regrowDaysRemaining": 10
+          }
+        }
+      },
+      "placeables": {},
+      "farmPlotsAdvancedThrough": {
+        "day": 14,
+        "season": "spring",
+        "year": 1
+      },
+      "friendship": {},
+      "relationships": {},
+      "dailyGifts": {},
+      "dailyTalks": {},
+      "flags": {},
+      "audio": {},
+      "pictures": {},
+      "messageWindowSettings": {
+        "format": "normal",
+        "position": "bottom",
+        "preventObscuringPlayer": true,
+        "allowEventMovementDuringWait": false
+      },
+      "playTimeSeconds": 0,
+      "rng": {
+        "seed": 707,
+        "streams": {
+          "encounter": {
+            "seed": 2860409284,
+            "state": 2860409284
+          },
+          "battle": {
+            "seed": 2997262157,
+            "state": 2997262157
+          },
+          "movement": {
+            "seed": 1979330358,
+            "state": 1979330358
+          },
+          "fishing": {
+            "seed": 1997332011,
+            "state": 1997332011
+          },
+          "misc": {
+            "seed": 2662642267,
+            "state": 2662642267
+          }
+        }
+      },
+      "gameTime": {
+        "minute": 0,
+        "hour": 6,
+        "day": 14,
+        "season": "spring",
+        "year": 1
+      },
+      "dayTransitionLastDayKey": "1:spring:13",
+      "killedFieldSpawns": {},
+      "monsterCareDaily": {},
+      "chests": {}
+    },
+    "failedDay": {
+      "ok": false,
+      "reason": "energy",
+      "stage": "energy"
+    },
+    "after": {
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false
+      },
+      "selfSwitches": {},
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "timers": {},
+      "gold": 0,
+      "inventory": {
+        "hoe": 1,
+        "can": 1,
+        "produce": 2
+      },
+      "itemUseCharges": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "energy": 99,
+      "shippingQueue": {},
+      "shippingHistory": [],
+      "bundleContributions": {},
+      "completedBundleIds": [],
+      "bundleRewardAppliedIds": [],
+      "unlockedRegionIds": [],
+      "unlockedRecipeIds": [],
+      "makerInstances": {},
+      "monsterInstances": {},
+      "monsterParty": [],
+      "monsterBox": [],
+      "actorSkillIds": {},
+      "actorSkillPp": {},
+      "actorExperience": {
+        "actor_hero": 0
+      },
+      "actorLevels": {
+        "actor_hero": 1,
+        "actor_guardian": 1,
+        "actor_mage": 1,
+        "actor_scout": 1,
+        "actor_cleric": 1,
+        "actor_ranger": 1
+      },
+      "actorVitals": {
+        "actor_hero": {
+          "hp": 514,
+          "mp": 43,
+          "maxHp": 514,
+          "maxMp": 43
+        }
+      },
+      "eventLocations": {},
+      "erasedEventIds": [],
+      "removedEventIds": {},
+      "spawnedEvents": {},
+      "camera": {
+        "mode": "follow",
+        "target": {
+          "kind": "player"
+        }
+      },
+      "lighting": {
+        "ambient": 0,
+        "sources": []
+      },
+      "npcTravelStates": {},
+      "npcActivities": {},
+      "npcScheduleStates": {},
+      "lifeSkills": {},
+      "followers": [],
+      "followerTrail": [],
+      "actorEquipment": {
+        "actor_hero": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "actorRows": {
+        "actor_hero": "front"
+      },
+      "actorNames": {},
+      "actorCharacterResourceIds": {},
+      "classOverrides": {},
+      "actorParamBonuses": {},
+      "actorStateIds": {},
+      "factionStanceOverrides": {},
+      "currentMapId": "map_blank_start",
+      "x": 10,
+      "y": 8,
+      "mapOverrides": {},
+      "farmPlots": {
+        "map_blank_start": {
+          "1,1": {
+            "tilled": true,
+            "watered": true,
+            "cropId": "crop",
+            "plantedDay": {
+              "day": 1,
+              "season": "spring",
+              "year": 1
+            },
+            "stage": 0,
+            "dead": false,
+            "growthDays": 0,
+            "regrowDaysRemaining": 10
+          }
+        }
+      },
+      "placeables": {},
+      "farmPlotsAdvancedThrough": {
+        "day": 14,
+        "season": "spring",
+        "year": 1
+      },
+      "friendship": {},
+      "relationships": {},
+      "dailyGifts": {},
+      "dailyTalks": {},
+      "flags": {},
+      "audio": {},
+      "pictures": {},
+      "messageWindowSettings": {
+        "format": "normal",
+        "position": "bottom",
+        "preventObscuringPlayer": true,
+        "allowEventMovementDuringWait": false
+      },
+      "playTimeSeconds": 0,
+      "rng": {
+        "seed": 707,
+        "streams": {
+          "encounter": {
+            "seed": 2860409284,
+            "state": 2860409284
+          },
+          "battle": {
+            "seed": 2997262157,
+            "state": 2997262157
+          },
+          "movement": {
+            "seed": 1979330358,
+            "state": 1979330358
+          },
+          "fishing": {
+            "seed": 1997332011,
+            "state": 1997332011
+          },
+          "misc": {
+            "seed": 2662642267,
+            "state": 2662642267
+          }
+        }
+      },
+      "gameTime": {
+        "minute": 0,
+        "hour": 6,
+        "day": 14,
+        "season": "spring",
+        "year": 1
+      },
+      "dayTransitionLastDayKey": "1:spring:13",
+      "killedFieldSpawns": {},
+      "monsterCareDaily": {},
+      "chests": {}
+    }
+  },
+  {
+    "scenario": "out-of-season-and-dead-preservation",
+    "before": {
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false
+      },
+      "selfSwitches": {},
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "timers": {},
+      "gold": 0,
+      "inventory": {
+        "hoe": 1,
+        "can": 1,
+        "produce": 2
+      },
+      "itemUseCharges": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "energy": 99,
+      "shippingQueue": {},
+      "shippingHistory": [],
+      "bundleContributions": {},
+      "completedBundleIds": [],
+      "bundleRewardAppliedIds": [],
+      "unlockedRegionIds": [],
+      "unlockedRecipeIds": [],
+      "makerInstances": {},
+      "monsterInstances": {},
+      "monsterParty": [],
+      "monsterBox": [],
+      "actorSkillIds": {},
+      "actorSkillPp": {},
+      "actorExperience": {
+        "actor_hero": 0
+      },
+      "actorLevels": {
+        "actor_hero": 1,
+        "actor_guardian": 1,
+        "actor_mage": 1,
+        "actor_scout": 1,
+        "actor_cleric": 1,
+        "actor_ranger": 1
+      },
+      "actorVitals": {
+        "actor_hero": {
+          "hp": 514,
+          "mp": 43,
+          "maxHp": 514,
+          "maxMp": 43
+        }
+      },
+      "eventLocations": {},
+      "erasedEventIds": [],
+      "removedEventIds": {},
+      "spawnedEvents": {},
+      "camera": {
+        "mode": "follow",
+        "target": {
+          "kind": "player"
+        }
+      },
+      "lighting": {
+        "ambient": 0,
+        "sources": []
+      },
+      "npcTravelStates": {},
+      "npcActivities": {},
+      "npcScheduleStates": {},
+      "lifeSkills": {},
+      "followers": [],
+      "followerTrail": [],
+      "actorEquipment": {
+        "actor_hero": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "actorRows": {
+        "actor_hero": "front"
+      },
+      "actorNames": {},
+      "actorCharacterResourceIds": {},
+      "classOverrides": {},
+      "actorParamBonuses": {},
+      "actorStateIds": {},
+      "factionStanceOverrides": {},
+      "currentMapId": "map_blank_start",
+      "x": 10,
+      "y": 8,
+      "mapOverrides": {},
+      "farmPlots": {
+        "map_blank_start": {
+          "1,1": {
+            "tilled": true,
+            "watered": false,
+            "cropId": "crop",
+            "plantedDay": {
+              "day": 1,
+              "season": "spring",
+              "year": 1
+            },
+            "stage": 0,
+            "dead": true,
+            "growthDays": 0,
+            "regrowDaysRemaining": 10
+          }
+        }
+      },
+      "placeables": {},
+      "farmPlotsAdvancedThrough": {
+        "day": 14,
+        "season": "spring",
+        "year": 1
+      },
+      "friendship": {},
+      "relationships": {},
+      "dailyGifts": {},
+      "dailyTalks": {},
+      "flags": {},
+      "audio": {},
+      "pictures": {},
+      "messageWindowSettings": {
+        "format": "normal",
+        "position": "bottom",
+        "preventObscuringPlayer": true,
+        "allowEventMovementDuringWait": false
+      },
+      "playTimeSeconds": 0,
+      "rng": {
+        "seed": 707,
+        "streams": {
+          "encounter": {
+            "seed": 2860409284,
+            "state": 2860409284
+          },
+          "battle": {
+            "seed": 2997262157,
+            "state": 2997262157
+          },
+          "movement": {
+            "seed": 1979330358,
+            "state": 1979330358
+          },
+          "fishing": {
+            "seed": 1997332011,
+            "state": 1997332011
+          },
+          "misc": {
+            "seed": 2662642267,
+            "state": 2662642267
+          }
+        }
+      },
+      "gameTime": {
+        "minute": 0,
+        "hour": 6,
+        "day": 14,
+        "season": "spring",
+        "year": 1
+      },
+      "dayTransitionLastDayKey": "1:spring:13",
+      "killedFieldSpawns": {},
+      "monsterCareDaily": {},
+      "chests": {}
+    },
+    "after": {
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false
+      },
+      "selfSwitches": {},
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "timers": {},
+      "gold": 0,
+      "inventory": {
+        "hoe": 1,
+        "can": 1,
+        "produce": 2
+      },
+      "itemUseCharges": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "energy": 99,
+      "shippingQueue": {},
+      "shippingHistory": [],
+      "bundleContributions": {},
+      "completedBundleIds": [],
+      "bundleRewardAppliedIds": [],
+      "unlockedRegionIds": [],
+      "unlockedRecipeIds": [],
+      "makerInstances": {},
+      "monsterInstances": {},
+      "monsterParty": [],
+      "monsterBox": [],
+      "actorSkillIds": {},
+      "actorSkillPp": {},
+      "actorExperience": {
+        "actor_hero": 0
+      },
+      "actorLevels": {
+        "actor_hero": 1,
+        "actor_guardian": 1,
+        "actor_mage": 1,
+        "actor_scout": 1,
+        "actor_cleric": 1,
+        "actor_ranger": 1
+      },
+      "actorVitals": {
+        "actor_hero": {
+          "hp": 514,
+          "mp": 43,
+          "maxHp": 514,
+          "maxMp": 43
+        }
+      },
+      "eventLocations": {},
+      "erasedEventIds": [],
+      "removedEventIds": {},
+      "spawnedEvents": {},
+      "camera": {
+        "mode": "follow",
+        "target": {
+          "kind": "player"
+        }
+      },
+      "lighting": {
+        "ambient": 0,
+        "sources": []
+      },
+      "npcTravelStates": {},
+      "npcActivities": {},
+      "npcScheduleStates": {},
+      "lifeSkills": {},
+      "followers": [],
+      "followerTrail": [],
+      "actorEquipment": {
+        "actor_hero": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "actorRows": {
+        "actor_hero": "front"
+      },
+      "actorNames": {},
+      "actorCharacterResourceIds": {},
+      "classOverrides": {},
+      "actorParamBonuses": {},
+      "actorStateIds": {},
+      "factionStanceOverrides": {},
+      "currentMapId": "map_blank_start",
+      "x": 10,
+      "y": 8,
+      "mapOverrides": {},
+      "farmPlots": {
+        "map_blank_start": {
+          "1,1": {
+            "tilled": true,
+            "watered": false,
+            "cropId": "crop",
+            "plantedDay": {
+              "day": 1,
+              "season": "spring",
+              "year": 1
+            },
+            "stage": 0,
+            "dead": true,
+            "growthDays": 0,
+            "regrowDaysRemaining": 10
+          }
+        }
+      },
+      "placeables": {},
+      "farmPlotsAdvancedThrough": {
+        "day": 14,
+        "season": "spring",
+        "year": 1
+      },
+      "friendship": {},
+      "relationships": {},
+      "dailyGifts": {},
+      "dailyTalks": {},
+      "flags": {},
+      "audio": {},
+      "pictures": {},
+      "messageWindowSettings": {
+        "format": "normal",
+        "position": "bottom",
+        "preventObscuringPlayer": true,
+        "allowEventMovementDuringWait": false
+      },
+      "playTimeSeconds": 0,
+      "rng": {
+        "seed": 707,
+        "streams": {
+          "encounter": {
+            "seed": 2860409284,
+            "state": 2860409284
+          },
+          "battle": {
+            "seed": 2997262157,
+            "state": 2997262157
+          },
+          "movement": {
+            "seed": 1979330358,
+            "state": 1979330358
+          },
+          "fishing": {
+            "seed": 1997332011,
+            "state": 1997332011
+          },
+          "misc": {
+            "seed": 2662642267,
+            "state": 2662642267
+          }
+        }
+      },
+      "gameTime": {
+        "minute": 0,
+        "hour": 6,
+        "day": 14,
+        "season": "spring",
+        "year": 1
+      },
+      "dayTransitionLastDayKey": "1:spring:13",
+      "killedFieldSpawns": {},
+      "monsterCareDaily": {},
+      "chests": {}
+    }
+  },
+  {
+    "scenario": "capacity",
+    "regrown": false,
+    "before": {
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false
+      },
+      "selfSwitches": {},
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "timers": {},
+      "gold": 0,
+      "inventory": {
+        "hoe": 1,
+        "can": 1,
+        "produce": 9999999
+      },
+      "itemUseCharges": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "energy": 100,
+      "shippingQueue": {},
+      "shippingHistory": [],
+      "bundleContributions": {},
+      "completedBundleIds": [],
+      "bundleRewardAppliedIds": [],
+      "unlockedRegionIds": [],
+      "unlockedRecipeIds": [],
+      "makerInstances": {},
+      "monsterInstances": {},
+      "monsterParty": [],
+      "monsterBox": [],
+      "actorSkillIds": {},
+      "actorSkillPp": {},
+      "actorExperience": {
+        "actor_hero": 0
+      },
+      "actorLevels": {
+        "actor_hero": 1,
+        "actor_guardian": 1,
+        "actor_mage": 1,
+        "actor_scout": 1,
+        "actor_cleric": 1,
+        "actor_ranger": 1
+      },
+      "actorVitals": {
+        "actor_hero": {
+          "hp": 514,
+          "mp": 43,
+          "maxHp": 514,
+          "maxMp": 43
+        }
+      },
+      "eventLocations": {},
+      "erasedEventIds": [],
+      "removedEventIds": {},
+      "spawnedEvents": {},
+      "camera": {
+        "mode": "follow",
+        "target": {
+          "kind": "player"
+        }
+      },
+      "lighting": {
+        "ambient": 0,
+        "sources": []
+      },
+      "npcTravelStates": {},
+      "npcActivities": {},
+      "npcScheduleStates": {},
+      "lifeSkills": {},
+      "followers": [],
+      "followerTrail": [],
+      "actorEquipment": {
+        "actor_hero": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "actorRows": {
+        "actor_hero": "front"
+      },
+      "actorNames": {},
+      "actorCharacterResourceIds": {},
+      "classOverrides": {},
+      "actorParamBonuses": {},
+      "actorStateIds": {},
+      "factionStanceOverrides": {},
+      "currentMapId": "map_blank_start",
+      "x": 10,
+      "y": 8,
+      "mapOverrides": {},
+      "farmPlots": {
+        "map_blank_start": {
+          "1,1": {
+            "tilled": true,
+            "watered": false,
+            "cropId": "crop",
+            "plantedDay": {
+              "day": 1,
+              "season": "spring",
+              "year": 1
+            },
+            "stage": 2,
+            "dead": false,
+            "growthDays": 2
+          }
+        }
+      },
+      "placeables": {},
+      "farmPlotsAdvancedThrough": {
+        "day": 3,
+        "season": "spring",
+        "year": 1
+      },
+      "friendship": {},
+      "relationships": {},
+      "dailyGifts": {},
+      "dailyTalks": {},
+      "flags": {},
+      "audio": {},
+      "pictures": {},
+      "messageWindowSettings": {
+        "format": "normal",
+        "position": "bottom",
+        "preventObscuringPlayer": true,
+        "allowEventMovementDuringWait": false
+      },
+      "playTimeSeconds": 0,
+      "rng": {
+        "seed": 707,
+        "streams": {
+          "encounter": {
+            "seed": 2860409284,
+            "state": 2860409284
+          },
+          "battle": {
+            "seed": 2997262157,
+            "state": 2997262157
+          },
+          "movement": {
+            "seed": 1979330358,
+            "state": 1979330358
+          },
+          "fishing": {
+            "seed": 1997332011,
+            "state": 1997332011
+          },
+          "misc": {
+            "seed": 2662642267,
+            "state": 2662642267
+          }
+        }
+      },
+      "gameTime": {
+        "minute": 0,
+        "hour": 6,
+        "day": 3,
+        "season": "spring",
+        "year": 1
+      },
+      "dayTransitionLastDayKey": "1:spring:2"
+    },
+    "result": {
+      "kind": "ignored",
+      "x": 1,
+      "y": 1,
+      "reason": "inventory-full"
+    },
+    "after": {
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false
+      },
+      "selfSwitches": {},
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "timers": {},
+      "gold": 0,
+      "inventory": {
+        "hoe": 1,
+        "can": 1,
+        "produce": 9999999
+      },
+      "itemUseCharges": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "energy": 100,
+      "shippingQueue": {},
+      "shippingHistory": [],
+      "bundleContributions": {},
+      "completedBundleIds": [],
+      "bundleRewardAppliedIds": [],
+      "unlockedRegionIds": [],
+      "unlockedRecipeIds": [],
+      "makerInstances": {},
+      "monsterInstances": {},
+      "monsterParty": [],
+      "monsterBox": [],
+      "actorSkillIds": {},
+      "actorSkillPp": {},
+      "actorExperience": {
+        "actor_hero": 0
+      },
+      "actorLevels": {
+        "actor_hero": 1,
+        "actor_guardian": 1,
+        "actor_mage": 1,
+        "actor_scout": 1,
+        "actor_cleric": 1,
+        "actor_ranger": 1
+      },
+      "actorVitals": {
+        "actor_hero": {
+          "hp": 514,
+          "mp": 43,
+          "maxHp": 514,
+          "maxMp": 43
+        }
+      },
+      "eventLocations": {},
+      "erasedEventIds": [],
+      "removedEventIds": {},
+      "spawnedEvents": {},
+      "camera": {
+        "mode": "follow",
+        "target": {
+          "kind": "player"
+        }
+      },
+      "lighting": {
+        "ambient": 0,
+        "sources": []
+      },
+      "npcTravelStates": {},
+      "npcActivities": {},
+      "npcScheduleStates": {},
+      "lifeSkills": {},
+      "followers": [],
+      "followerTrail": [],
+      "actorEquipment": {
+        "actor_hero": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "actorRows": {
+        "actor_hero": "front"
+      },
+      "actorNames": {},
+      "actorCharacterResourceIds": {},
+      "classOverrides": {},
+      "actorParamBonuses": {},
+      "actorStateIds": {},
+      "factionStanceOverrides": {},
+      "currentMapId": "map_blank_start",
+      "x": 10,
+      "y": 8,
+      "mapOverrides": {},
+      "farmPlots": {
+        "map_blank_start": {
+          "1,1": {
+            "tilled": true,
+            "watered": false,
+            "cropId": "crop",
+            "plantedDay": {
+              "day": 1,
+              "season": "spring",
+              "year": 1
+            },
+            "stage": 2,
+            "dead": false,
+            "growthDays": 2
+          }
+        }
+      },
+      "placeables": {},
+      "farmPlotsAdvancedThrough": {
+        "day": 3,
+        "season": "spring",
+        "year": 1
+      },
+      "friendship": {},
+      "relationships": {},
+      "dailyGifts": {},
+      "dailyTalks": {},
+      "flags": {},
+      "audio": {},
+      "pictures": {},
+      "messageWindowSettings": {
+        "format": "normal",
+        "position": "bottom",
+        "preventObscuringPlayer": true,
+        "allowEventMovementDuringWait": false
+      },
+      "playTimeSeconds": 0,
+      "rng": {
+        "seed": 707,
+        "streams": {
+          "encounter": {
+            "seed": 2860409284,
+            "state": 2860409284
+          },
+          "battle": {
+            "seed": 2997262157,
+            "state": 2997262157
+          },
+          "movement": {
+            "seed": 1979330358,
+            "state": 1979330358
+          },
+          "fishing": {
+            "seed": 1997332011,
+            "state": 1997332011
+          },
+          "misc": {
+            "seed": 2662642267,
+            "state": 2662642267
+          }
+        }
+      },
+      "gameTime": {
+        "minute": 0,
+        "hour": 6,
+        "day": 3,
+        "season": "spring",
+        "year": 1
+      },
+      "dayTransitionLastDayKey": "1:spring:2"
+    }
+  },
+  {
+    "scenario": "capacity",
+    "regrown": true,
+    "before": {
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false
+      },
+      "selfSwitches": {},
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "timers": {},
+      "gold": 0,
+      "inventory": {
+        "hoe": 1,
+        "can": 1,
+        "produce": 9999999
+      },
+      "itemUseCharges": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "energy": 100,
+      "shippingQueue": {},
+      "shippingHistory": [],
+      "bundleContributions": {},
+      "completedBundleIds": [],
+      "bundleRewardAppliedIds": [],
+      "unlockedRegionIds": [],
+      "unlockedRecipeIds": [],
+      "makerInstances": {},
+      "monsterInstances": {},
+      "monsterParty": [],
+      "monsterBox": [],
+      "actorSkillIds": {},
+      "actorSkillPp": {},
+      "actorExperience": {
+        "actor_hero": 0
+      },
+      "actorLevels": {
+        "actor_hero": 1,
+        "actor_guardian": 1,
+        "actor_mage": 1,
+        "actor_scout": 1,
+        "actor_cleric": 1,
+        "actor_ranger": 1
+      },
+      "actorVitals": {
+        "actor_hero": {
+          "hp": 514,
+          "mp": 43,
+          "maxHp": 514,
+          "maxMp": 43
+        }
+      },
+      "eventLocations": {},
+      "erasedEventIds": [],
+      "removedEventIds": {},
+      "spawnedEvents": {},
+      "camera": {
+        "mode": "follow",
+        "target": {
+          "kind": "player"
+        }
+      },
+      "lighting": {
+        "ambient": 0,
+        "sources": []
+      },
+      "npcTravelStates": {},
+      "npcActivities": {},
+      "npcScheduleStates": {},
+      "lifeSkills": {},
+      "followers": [],
+      "followerTrail": [],
+      "actorEquipment": {
+        "actor_hero": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "actorRows": {
+        "actor_hero": "front"
+      },
+      "actorNames": {},
+      "actorCharacterResourceIds": {},
+      "classOverrides": {},
+      "actorParamBonuses": {},
+      "actorStateIds": {},
+      "factionStanceOverrides": {},
+      "currentMapId": "map_blank_start",
+      "x": 10,
+      "y": 8,
+      "mapOverrides": {},
+      "farmPlots": {
+        "map_blank_start": {
+          "1,1": {
+            "tilled": true,
+            "watered": false,
+            "cropId": "crop",
+            "plantedDay": {
+              "day": 1,
+              "season": "spring",
+              "year": 1
+            },
+            "stage": 2,
+            "dead": false,
+            "growthDays": 2,
+            "regrowDaysRemaining": 0
+          }
+        }
+      },
+      "placeables": {},
+      "farmPlotsAdvancedThrough": {
+        "day": 13,
+        "season": "spring",
+        "year": 1
+      },
+      "friendship": {},
+      "relationships": {},
+      "dailyGifts": {},
+      "dailyTalks": {},
+      "flags": {},
+      "audio": {},
+      "pictures": {},
+      "messageWindowSettings": {
+        "format": "normal",
+        "position": "bottom",
+        "preventObscuringPlayer": true,
+        "allowEventMovementDuringWait": false
+      },
+      "playTimeSeconds": 0,
+      "rng": {
+        "seed": 707,
+        "streams": {
+          "encounter": {
+            "seed": 2860409284,
+            "state": 2860409284
+          },
+          "battle": {
+            "seed": 2997262157,
+            "state": 2997262157
+          },
+          "movement": {
+            "seed": 1979330358,
+            "state": 1979330358
+          },
+          "fishing": {
+            "seed": 1997332011,
+            "state": 1997332011
+          },
+          "misc": {
+            "seed": 2662642267,
+            "state": 2662642267
+          }
+        }
+      },
+      "gameTime": {
+        "minute": 0,
+        "hour": 6,
+        "day": 13,
+        "season": "spring",
+        "year": 1
+      },
+      "dayTransitionLastDayKey": "1:spring:12"
+    },
+    "result": {
+      "kind": "ignored",
+      "x": 1,
+      "y": 1,
+      "reason": "inventory-full"
+    },
+    "after": {
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false
+      },
+      "selfSwitches": {},
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "timers": {},
+      "gold": 0,
+      "inventory": {
+        "hoe": 1,
+        "can": 1,
+        "produce": 9999999
+      },
+      "itemUseCharges": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "energy": 100,
+      "shippingQueue": {},
+      "shippingHistory": [],
+      "bundleContributions": {},
+      "completedBundleIds": [],
+      "bundleRewardAppliedIds": [],
+      "unlockedRegionIds": [],
+      "unlockedRecipeIds": [],
+      "makerInstances": {},
+      "monsterInstances": {},
+      "monsterParty": [],
+      "monsterBox": [],
+      "actorSkillIds": {},
+      "actorSkillPp": {},
+      "actorExperience": {
+        "actor_hero": 0
+      },
+      "actorLevels": {
+        "actor_hero": 1,
+        "actor_guardian": 1,
+        "actor_mage": 1,
+        "actor_scout": 1,
+        "actor_cleric": 1,
+        "actor_ranger": 1
+      },
+      "actorVitals": {
+        "actor_hero": {
+          "hp": 514,
+          "mp": 43,
+          "maxHp": 514,
+          "maxMp": 43
+        }
+      },
+      "eventLocations": {},
+      "erasedEventIds": [],
+      "removedEventIds": {},
+      "spawnedEvents": {},
+      "camera": {
+        "mode": "follow",
+        "target": {
+          "kind": "player"
+        }
+      },
+      "lighting": {
+        "ambient": 0,
+        "sources": []
+      },
+      "npcTravelStates": {},
+      "npcActivities": {},
+      "npcScheduleStates": {},
+      "lifeSkills": {},
+      "followers": [],
+      "followerTrail": [],
+      "actorEquipment": {
+        "actor_hero": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "actorRows": {
+        "actor_hero": "front"
+      },
+      "actorNames": {},
+      "actorCharacterResourceIds": {},
+      "classOverrides": {},
+      "actorParamBonuses": {},
+      "actorStateIds": {},
+      "factionStanceOverrides": {},
+      "currentMapId": "map_blank_start",
+      "x": 10,
+      "y": 8,
+      "mapOverrides": {},
+      "farmPlots": {
+        "map_blank_start": {
+          "1,1": {
+            "tilled": true,
+            "watered": false,
+            "cropId": "crop",
+            "plantedDay": {
+              "day": 1,
+              "season": "spring",
+              "year": 1
+            },
+            "stage": 2,
+            "dead": false,
+            "growthDays": 2,
+            "regrowDaysRemaining": 0
+          }
+        }
+      },
+      "placeables": {},
+      "farmPlotsAdvancedThrough": {
+        "day": 13,
+        "season": "spring",
+        "year": 1
+      },
+      "friendship": {},
+      "relationships": {},
+      "dailyGifts": {},
+      "dailyTalks": {},
+      "flags": {},
+      "audio": {},
+      "pictures": {},
+      "messageWindowSettings": {
+        "format": "normal",
+        "position": "bottom",
+        "preventObscuringPlayer": true,
+        "allowEventMovementDuringWait": false
+      },
+      "playTimeSeconds": 0,
+      "rng": {
+        "seed": 707,
+        "streams": {
+          "encounter": {
+            "seed": 2860409284,
+            "state": 2860409284
+          },
+          "battle": {
+            "seed": 2997262157,
+            "state": 2997262157
+          },
+          "movement": {
+            "seed": 1979330358,
+            "state": 1979330358
+          },
+          "fishing": {
+            "seed": 1997332011,
+            "state": 1997332011
+          },
+          "misc": {
+            "seed": 2662642267,
+            "state": 2662642267
+          }
+        }
+      },
+      "gameTime": {
+        "minute": 0,
+        "hour": 6,
+        "day": 13,
+        "season": "spring",
+        "year": 1
+      },
+      "dayTransitionLastDayKey": "1:spring:12"
+    }
+  },
+  {
+    "scenario": "energy",
+    "regrown": false,
+    "before": {
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false
+      },
+      "selfSwitches": {},
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "timers": {},
+      "gold": 0,
+      "inventory": {
+        "hoe": 1,
+        "can": 1
+      },
+      "itemUseCharges": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "energy": 0,
+      "shippingQueue": {},
+      "shippingHistory": [],
+      "bundleContributions": {},
+      "completedBundleIds": [],
+      "bundleRewardAppliedIds": [],
+      "unlockedRegionIds": [],
+      "unlockedRecipeIds": [],
+      "makerInstances": {},
+      "monsterInstances": {},
+      "monsterParty": [],
+      "monsterBox": [],
+      "actorSkillIds": {},
+      "actorSkillPp": {},
+      "actorExperience": {
+        "actor_hero": 0
+      },
+      "actorLevels": {
+        "actor_hero": 1,
+        "actor_guardian": 1,
+        "actor_mage": 1,
+        "actor_scout": 1,
+        "actor_cleric": 1,
+        "actor_ranger": 1
+      },
+      "actorVitals": {
+        "actor_hero": {
+          "hp": 514,
+          "mp": 43,
+          "maxHp": 514,
+          "maxMp": 43
+        }
+      },
+      "eventLocations": {},
+      "erasedEventIds": [],
+      "removedEventIds": {},
+      "spawnedEvents": {},
+      "camera": {
+        "mode": "follow",
+        "target": {
+          "kind": "player"
+        }
+      },
+      "lighting": {
+        "ambient": 0,
+        "sources": []
+      },
+      "npcTravelStates": {},
+      "npcActivities": {},
+      "npcScheduleStates": {},
+      "lifeSkills": {},
+      "followers": [],
+      "followerTrail": [],
+      "actorEquipment": {
+        "actor_hero": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "actorRows": {
+        "actor_hero": "front"
+      },
+      "actorNames": {},
+      "actorCharacterResourceIds": {},
+      "classOverrides": {},
+      "actorParamBonuses": {},
+      "actorStateIds": {},
+      "factionStanceOverrides": {},
+      "currentMapId": "map_blank_start",
+      "x": 10,
+      "y": 8,
+      "mapOverrides": {},
+      "farmPlots": {
+        "map_blank_start": {
+          "1,1": {
+            "tilled": true,
+            "watered": false,
+            "cropId": "crop",
+            "plantedDay": {
+              "day": 1,
+              "season": "spring",
+              "year": 1
+            },
+            "stage": 2,
+            "dead": false,
+            "growthDays": 2
+          }
+        }
+      },
+      "placeables": {},
+      "farmPlotsAdvancedThrough": {
+        "day": 3,
+        "season": "spring",
+        "year": 1
+      },
+      "friendship": {},
+      "relationships": {},
+      "dailyGifts": {},
+      "dailyTalks": {},
+      "flags": {},
+      "audio": {},
+      "pictures": {},
+      "messageWindowSettings": {
+        "format": "normal",
+        "position": "bottom",
+        "preventObscuringPlayer": true,
+        "allowEventMovementDuringWait": false
+      },
+      "playTimeSeconds": 0,
+      "rng": {
+        "seed": 707,
+        "streams": {
+          "encounter": {
+            "seed": 2860409284,
+            "state": 2860409284
+          },
+          "battle": {
+            "seed": 2997262157,
+            "state": 2997262157
+          },
+          "movement": {
+            "seed": 1979330358,
+            "state": 1979330358
+          },
+          "fishing": {
+            "seed": 1997332011,
+            "state": 1997332011
+          },
+          "misc": {
+            "seed": 2662642267,
+            "state": 2662642267
+          }
+        }
+      },
+      "gameTime": {
+        "minute": 0,
+        "hour": 6,
+        "day": 3,
+        "season": "spring",
+        "year": 1
+      },
+      "dayTransitionLastDayKey": "1:spring:2"
+    },
+    "result": {
+      "kind": "ignored",
+      "x": 1,
+      "y": 1,
+      "reason": "insufficient-energy"
+    },
+    "after": {
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false
+      },
+      "selfSwitches": {},
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "timers": {},
+      "gold": 0,
+      "inventory": {
+        "hoe": 1,
+        "can": 1
+      },
+      "itemUseCharges": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "energy": 0,
+      "shippingQueue": {},
+      "shippingHistory": [],
+      "bundleContributions": {},
+      "completedBundleIds": [],
+      "bundleRewardAppliedIds": [],
+      "unlockedRegionIds": [],
+      "unlockedRecipeIds": [],
+      "makerInstances": {},
+      "monsterInstances": {},
+      "monsterParty": [],
+      "monsterBox": [],
+      "actorSkillIds": {},
+      "actorSkillPp": {},
+      "actorExperience": {
+        "actor_hero": 0
+      },
+      "actorLevels": {
+        "actor_hero": 1,
+        "actor_guardian": 1,
+        "actor_mage": 1,
+        "actor_scout": 1,
+        "actor_cleric": 1,
+        "actor_ranger": 1
+      },
+      "actorVitals": {
+        "actor_hero": {
+          "hp": 514,
+          "mp": 43,
+          "maxHp": 514,
+          "maxMp": 43
+        }
+      },
+      "eventLocations": {},
+      "erasedEventIds": [],
+      "removedEventIds": {},
+      "spawnedEvents": {},
+      "camera": {
+        "mode": "follow",
+        "target": {
+          "kind": "player"
+        }
+      },
+      "lighting": {
+        "ambient": 0,
+        "sources": []
+      },
+      "npcTravelStates": {},
+      "npcActivities": {},
+      "npcScheduleStates": {},
+      "lifeSkills": {},
+      "followers": [],
+      "followerTrail": [],
+      "actorEquipment": {
+        "actor_hero": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "actorRows": {
+        "actor_hero": "front"
+      },
+      "actorNames": {},
+      "actorCharacterResourceIds": {},
+      "classOverrides": {},
+      "actorParamBonuses": {},
+      "actorStateIds": {},
+      "factionStanceOverrides": {},
+      "currentMapId": "map_blank_start",
+      "x": 10,
+      "y": 8,
+      "mapOverrides": {},
+      "farmPlots": {
+        "map_blank_start": {
+          "1,1": {
+            "tilled": true,
+            "watered": false,
+            "cropId": "crop",
+            "plantedDay": {
+              "day": 1,
+              "season": "spring",
+              "year": 1
+            },
+            "stage": 2,
+            "dead": false,
+            "growthDays": 2
+          }
+        }
+      },
+      "placeables": {},
+      "farmPlotsAdvancedThrough": {
+        "day": 3,
+        "season": "spring",
+        "year": 1
+      },
+      "friendship": {},
+      "relationships": {},
+      "dailyGifts": {},
+      "dailyTalks": {},
+      "flags": {},
+      "audio": {},
+      "pictures": {},
+      "messageWindowSettings": {
+        "format": "normal",
+        "position": "bottom",
+        "preventObscuringPlayer": true,
+        "allowEventMovementDuringWait": false
+      },
+      "playTimeSeconds": 0,
+      "rng": {
+        "seed": 707,
+        "streams": {
+          "encounter": {
+            "seed": 2860409284,
+            "state": 2860409284
+          },
+          "battle": {
+            "seed": 2997262157,
+            "state": 2997262157
+          },
+          "movement": {
+            "seed": 1979330358,
+            "state": 1979330358
+          },
+          "fishing": {
+            "seed": 1997332011,
+            "state": 1997332011
+          },
+          "misc": {
+            "seed": 2662642267,
+            "state": 2662642267
+          }
+        }
+      },
+      "gameTime": {
+        "minute": 0,
+        "hour": 6,
+        "day": 3,
+        "season": "spring",
+        "year": 1
+      },
+      "dayTransitionLastDayKey": "1:spring:2"
+    }
+  },
+  {
+    "scenario": "energy",
+    "regrown": true,
+    "before": {
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false
+      },
+      "selfSwitches": {},
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "timers": {},
+      "gold": 0,
+      "inventory": {
+        "hoe": 1,
+        "can": 1,
+        "produce": 1
+      },
+      "itemUseCharges": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "energy": 0,
+      "shippingQueue": {},
+      "shippingHistory": [],
+      "bundleContributions": {},
+      "completedBundleIds": [],
+      "bundleRewardAppliedIds": [],
+      "unlockedRegionIds": [],
+      "unlockedRecipeIds": [],
+      "makerInstances": {},
+      "monsterInstances": {},
+      "monsterParty": [],
+      "monsterBox": [],
+      "actorSkillIds": {},
+      "actorSkillPp": {},
+      "actorExperience": {
+        "actor_hero": 0
+      },
+      "actorLevels": {
+        "actor_hero": 1,
+        "actor_guardian": 1,
+        "actor_mage": 1,
+        "actor_scout": 1,
+        "actor_cleric": 1,
+        "actor_ranger": 1
+      },
+      "actorVitals": {
+        "actor_hero": {
+          "hp": 514,
+          "mp": 43,
+          "maxHp": 514,
+          "maxMp": 43
+        }
+      },
+      "eventLocations": {},
+      "erasedEventIds": [],
+      "removedEventIds": {},
+      "spawnedEvents": {},
+      "camera": {
+        "mode": "follow",
+        "target": {
+          "kind": "player"
+        }
+      },
+      "lighting": {
+        "ambient": 0,
+        "sources": []
+      },
+      "npcTravelStates": {},
+      "npcActivities": {},
+      "npcScheduleStates": {},
+      "lifeSkills": {},
+      "followers": [],
+      "followerTrail": [],
+      "actorEquipment": {
+        "actor_hero": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "actorRows": {
+        "actor_hero": "front"
+      },
+      "actorNames": {},
+      "actorCharacterResourceIds": {},
+      "classOverrides": {},
+      "actorParamBonuses": {},
+      "actorStateIds": {},
+      "factionStanceOverrides": {},
+      "currentMapId": "map_blank_start",
+      "x": 10,
+      "y": 8,
+      "mapOverrides": {},
+      "farmPlots": {
+        "map_blank_start": {
+          "1,1": {
+            "tilled": true,
+            "watered": false,
+            "cropId": "crop",
+            "plantedDay": {
+              "day": 1,
+              "season": "spring",
+              "year": 1
+            },
+            "stage": 2,
+            "dead": false,
+            "growthDays": 2,
+            "regrowDaysRemaining": 0
+          }
+        }
+      },
+      "placeables": {},
+      "farmPlotsAdvancedThrough": {
+        "day": 13,
+        "season": "spring",
+        "year": 1
+      },
+      "friendship": {},
+      "relationships": {},
+      "dailyGifts": {},
+      "dailyTalks": {},
+      "flags": {},
+      "audio": {},
+      "pictures": {},
+      "messageWindowSettings": {
+        "format": "normal",
+        "position": "bottom",
+        "preventObscuringPlayer": true,
+        "allowEventMovementDuringWait": false
+      },
+      "playTimeSeconds": 0,
+      "rng": {
+        "seed": 707,
+        "streams": {
+          "encounter": {
+            "seed": 2860409284,
+            "state": 2860409284
+          },
+          "battle": {
+            "seed": 2997262157,
+            "state": 2997262157
+          },
+          "movement": {
+            "seed": 1979330358,
+            "state": 1979330358
+          },
+          "fishing": {
+            "seed": 1997332011,
+            "state": 1997332011
+          },
+          "misc": {
+            "seed": 2662642267,
+            "state": 2662642267
+          }
+        }
+      },
+      "gameTime": {
+        "minute": 0,
+        "hour": 6,
+        "day": 13,
+        "season": "spring",
+        "year": 1
+      },
+      "dayTransitionLastDayKey": "1:spring:12"
+    },
+    "result": {
+      "kind": "ignored",
+      "x": 1,
+      "y": 1,
+      "reason": "insufficient-energy"
+    },
+    "after": {
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false
+      },
+      "selfSwitches": {},
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "timers": {},
+      "gold": 0,
+      "inventory": {
+        "hoe": 1,
+        "can": 1,
+        "produce": 1
+      },
+      "itemUseCharges": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "energy": 0,
+      "shippingQueue": {},
+      "shippingHistory": [],
+      "bundleContributions": {},
+      "completedBundleIds": [],
+      "bundleRewardAppliedIds": [],
+      "unlockedRegionIds": [],
+      "unlockedRecipeIds": [],
+      "makerInstances": {},
+      "monsterInstances": {},
+      "monsterParty": [],
+      "monsterBox": [],
+      "actorSkillIds": {},
+      "actorSkillPp": {},
+      "actorExperience": {
+        "actor_hero": 0
+      },
+      "actorLevels": {
+        "actor_hero": 1,
+        "actor_guardian": 1,
+        "actor_mage": 1,
+        "actor_scout": 1,
+        "actor_cleric": 1,
+        "actor_ranger": 1
+      },
+      "actorVitals": {
+        "actor_hero": {
+          "hp": 514,
+          "mp": 43,
+          "maxHp": 514,
+          "maxMp": 43
+        }
+      },
+      "eventLocations": {},
+      "erasedEventIds": [],
+      "removedEventIds": {},
+      "spawnedEvents": {},
+      "camera": {
+        "mode": "follow",
+        "target": {
+          "kind": "player"
+        }
+      },
+      "lighting": {
+        "ambient": 0,
+        "sources": []
+      },
+      "npcTravelStates": {},
+      "npcActivities": {},
+      "npcScheduleStates": {},
+      "lifeSkills": {},
+      "followers": [],
+      "followerTrail": [],
+      "actorEquipment": {
+        "actor_hero": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "actorRows": {
+        "actor_hero": "front"
+      },
+      "actorNames": {},
+      "actorCharacterResourceIds": {},
+      "classOverrides": {},
+      "actorParamBonuses": {},
+      "actorStateIds": {},
+      "factionStanceOverrides": {},
+      "currentMapId": "map_blank_start",
+      "x": 10,
+      "y": 8,
+      "mapOverrides": {},
+      "farmPlots": {
+        "map_blank_start": {
+          "1,1": {
+            "tilled": true,
+            "watered": false,
+            "cropId": "crop",
+            "plantedDay": {
+              "day": 1,
+              "season": "spring",
+              "year": 1
+            },
+            "stage": 2,
+            "dead": false,
+            "growthDays": 2,
+            "regrowDaysRemaining": 0
+          }
+        }
+      },
+      "placeables": {},
+      "farmPlotsAdvancedThrough": {
+        "day": 13,
+        "season": "spring",
+        "year": 1
+      },
+      "friendship": {},
+      "relationships": {},
+      "dailyGifts": {},
+      "dailyTalks": {},
+      "flags": {},
+      "audio": {},
+      "pictures": {},
+      "messageWindowSettings": {
+        "format": "normal",
+        "position": "bottom",
+        "preventObscuringPlayer": true,
+        "allowEventMovementDuringWait": false
+      },
+      "playTimeSeconds": 0,
+      "rng": {
+        "seed": 707,
+        "streams": {
+          "encounter": {
+            "seed": 2860409284,
+            "state": 2860409284
+          },
+          "battle": {
+            "seed": 2997262157,
+            "state": 2997262157
+          },
+          "movement": {
+            "seed": 1979330358,
+            "state": 1979330358
+          },
+          "fishing": {
+            "seed": 1997332011,
+            "state": 1997332011
+          },
+          "misc": {
+            "seed": 2662642267,
+            "state": 2662642267
+          }
+        }
+      },
+      "gameTime": {
+        "minute": 0,
+        "hour": 6,
+        "day": 13,
+        "season": "spring",
+        "year": 1
+      },
+      "dayTransitionLastDayKey": "1:spring:12"
+    }
+  },
+  {
+    "scenario": "xp",
+    "regrown": false,
+    "before": {
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false
+      },
+      "selfSwitches": {},
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "timers": {},
+      "gold": 0,
+      "inventory": {
+        "hoe": 1,
+        "can": 1
+      },
+      "itemUseCharges": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "energy": 100,
+      "shippingQueue": {},
+      "shippingHistory": [],
+      "bundleContributions": {},
+      "completedBundleIds": [],
+      "bundleRewardAppliedIds": [],
+      "unlockedRegionIds": [],
+      "unlockedRecipeIds": [],
+      "makerInstances": {},
+      "monsterInstances": {},
+      "monsterParty": [],
+      "monsterBox": [],
+      "actorSkillIds": {},
+      "actorSkillPp": {},
+      "actorExperience": {
+        "actor_hero": 0
+      },
+      "actorLevels": {
+        "actor_hero": 1,
+        "actor_guardian": 1,
+        "actor_mage": 1,
+        "actor_scout": 1,
+        "actor_cleric": 1,
+        "actor_ranger": 1
+      },
+      "actorVitals": {
+        "actor_hero": {
+          "hp": 514,
+          "mp": 43,
+          "maxHp": 514,
+          "maxMp": 43
+        }
+      },
+      "eventLocations": {},
+      "erasedEventIds": [],
+      "removedEventIds": {},
+      "spawnedEvents": {},
+      "camera": {
+        "mode": "follow",
+        "target": {
+          "kind": "player"
+        }
+      },
+      "lighting": {
+        "ambient": 0,
+        "sources": []
+      },
+      "npcTravelStates": {},
+      "npcActivities": {},
+      "npcScheduleStates": {},
+      "lifeSkills": {
+        "farm": {
+          "xp": 99,
+          "level": 1
+        }
+      },
+      "followers": [],
+      "followerTrail": [],
+      "actorEquipment": {
+        "actor_hero": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "actorRows": {
+        "actor_hero": "front"
+      },
+      "actorNames": {},
+      "actorCharacterResourceIds": {},
+      "classOverrides": {},
+      "actorParamBonuses": {},
+      "actorStateIds": {},
+      "factionStanceOverrides": {},
+      "currentMapId": "map_blank_start",
+      "x": 10,
+      "y": 8,
+      "mapOverrides": {},
+      "farmPlots": {
+        "map_blank_start": {
+          "1,1": {
+            "tilled": true,
+            "watered": false,
+            "cropId": "crop",
+            "plantedDay": {
+              "day": 1,
+              "season": "spring",
+              "year": 1
+            },
+            "stage": 2,
+            "dead": false,
+            "growthDays": 2
+          }
+        }
+      },
+      "placeables": {},
+      "farmPlotsAdvancedThrough": {
+        "day": 3,
+        "season": "spring",
+        "year": 1
+      },
+      "friendship": {},
+      "relationships": {},
+      "dailyGifts": {},
+      "dailyTalks": {},
+      "flags": {},
+      "audio": {},
+      "pictures": {},
+      "messageWindowSettings": {
+        "format": "normal",
+        "position": "bottom",
+        "preventObscuringPlayer": true,
+        "allowEventMovementDuringWait": false
+      },
+      "playTimeSeconds": 0,
+      "rng": {
+        "seed": 707,
+        "streams": {
+          "encounter": {
+            "seed": 2860409284,
+            "state": 2860409284
+          },
+          "battle": {
+            "seed": 2997262157,
+            "state": 2997262157
+          },
+          "movement": {
+            "seed": 1979330358,
+            "state": 1979330358
+          },
+          "fishing": {
+            "seed": 1997332011,
+            "state": 1997332011
+          },
+          "misc": {
+            "seed": 2662642267,
+            "state": 2662642267
+          }
+        }
+      },
+      "gameTime": {
+        "minute": 0,
+        "hour": 6,
+        "day": 3,
+        "season": "spring",
+        "year": 1
+      },
+      "dayTransitionLastDayKey": "1:spring:2"
+    },
+    "result": {
+      "kind": "ignored",
+      "x": 1,
+      "y": 1,
+      "reason": "invalid-life-skill"
+    },
+    "after": {
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false
+      },
+      "selfSwitches": {},
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "timers": {},
+      "gold": 0,
+      "inventory": {
+        "hoe": 1,
+        "can": 1
+      },
+      "itemUseCharges": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "energy": 100,
+      "shippingQueue": {},
+      "shippingHistory": [],
+      "bundleContributions": {},
+      "completedBundleIds": [],
+      "bundleRewardAppliedIds": [],
+      "unlockedRegionIds": [],
+      "unlockedRecipeIds": [],
+      "makerInstances": {},
+      "monsterInstances": {},
+      "monsterParty": [],
+      "monsterBox": [],
+      "actorSkillIds": {},
+      "actorSkillPp": {},
+      "actorExperience": {
+        "actor_hero": 0
+      },
+      "actorLevels": {
+        "actor_hero": 1,
+        "actor_guardian": 1,
+        "actor_mage": 1,
+        "actor_scout": 1,
+        "actor_cleric": 1,
+        "actor_ranger": 1
+      },
+      "actorVitals": {
+        "actor_hero": {
+          "hp": 514,
+          "mp": 43,
+          "maxHp": 514,
+          "maxMp": 43
+        }
+      },
+      "eventLocations": {},
+      "erasedEventIds": [],
+      "removedEventIds": {},
+      "spawnedEvents": {},
+      "camera": {
+        "mode": "follow",
+        "target": {
+          "kind": "player"
+        }
+      },
+      "lighting": {
+        "ambient": 0,
+        "sources": []
+      },
+      "npcTravelStates": {},
+      "npcActivities": {},
+      "npcScheduleStates": {},
+      "lifeSkills": {
+        "farm": {
+          "xp": 99,
+          "level": 1
+        }
+      },
+      "followers": [],
+      "followerTrail": [],
+      "actorEquipment": {
+        "actor_hero": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "actorRows": {
+        "actor_hero": "front"
+      },
+      "actorNames": {},
+      "actorCharacterResourceIds": {},
+      "classOverrides": {},
+      "actorParamBonuses": {},
+      "actorStateIds": {},
+      "factionStanceOverrides": {},
+      "currentMapId": "map_blank_start",
+      "x": 10,
+      "y": 8,
+      "mapOverrides": {},
+      "farmPlots": {
+        "map_blank_start": {
+          "1,1": {
+            "tilled": true,
+            "watered": false,
+            "cropId": "crop",
+            "plantedDay": {
+              "day": 1,
+              "season": "spring",
+              "year": 1
+            },
+            "stage": 2,
+            "dead": false,
+            "growthDays": 2
+          }
+        }
+      },
+      "placeables": {},
+      "farmPlotsAdvancedThrough": {
+        "day": 3,
+        "season": "spring",
+        "year": 1
+      },
+      "friendship": {},
+      "relationships": {},
+      "dailyGifts": {},
+      "dailyTalks": {},
+      "flags": {},
+      "audio": {},
+      "pictures": {},
+      "messageWindowSettings": {
+        "format": "normal",
+        "position": "bottom",
+        "preventObscuringPlayer": true,
+        "allowEventMovementDuringWait": false
+      },
+      "playTimeSeconds": 0,
+      "rng": {
+        "seed": 707,
+        "streams": {
+          "encounter": {
+            "seed": 2860409284,
+            "state": 2860409284
+          },
+          "battle": {
+            "seed": 2997262157,
+            "state": 2997262157
+          },
+          "movement": {
+            "seed": 1979330358,
+            "state": 1979330358
+          },
+          "fishing": {
+            "seed": 1997332011,
+            "state": 1997332011
+          },
+          "misc": {
+            "seed": 2662642267,
+            "state": 2662642267
+          }
+        }
+      },
+      "gameTime": {
+        "minute": 0,
+        "hour": 6,
+        "day": 3,
+        "season": "spring",
+        "year": 1
+      },
+      "dayTransitionLastDayKey": "1:spring:2"
+    }
+  },
+  {
+    "scenario": "xp",
+    "regrown": true,
+    "before": {
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false
+      },
+      "selfSwitches": {},
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "timers": {},
+      "gold": 0,
+      "inventory": {
+        "hoe": 1,
+        "can": 1,
+        "produce": 1
+      },
+      "itemUseCharges": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "energy": 100,
+      "shippingQueue": {},
+      "shippingHistory": [],
+      "bundleContributions": {},
+      "completedBundleIds": [],
+      "bundleRewardAppliedIds": [],
+      "unlockedRegionIds": [],
+      "unlockedRecipeIds": [],
+      "makerInstances": {},
+      "monsterInstances": {},
+      "monsterParty": [],
+      "monsterBox": [],
+      "actorSkillIds": {},
+      "actorSkillPp": {},
+      "actorExperience": {
+        "actor_hero": 0
+      },
+      "actorLevels": {
+        "actor_hero": 1,
+        "actor_guardian": 1,
+        "actor_mage": 1,
+        "actor_scout": 1,
+        "actor_cleric": 1,
+        "actor_ranger": 1
+      },
+      "actorVitals": {
+        "actor_hero": {
+          "hp": 514,
+          "mp": 43,
+          "maxHp": 514,
+          "maxMp": 43
+        }
+      },
+      "eventLocations": {},
+      "erasedEventIds": [],
+      "removedEventIds": {},
+      "spawnedEvents": {},
+      "camera": {
+        "mode": "follow",
+        "target": {
+          "kind": "player"
+        }
+      },
+      "lighting": {
+        "ambient": 0,
+        "sources": []
+      },
+      "npcTravelStates": {},
+      "npcActivities": {},
+      "npcScheduleStates": {},
+      "lifeSkills": {
+        "farm": {
+          "xp": 99,
+          "level": 1
+        }
+      },
+      "followers": [],
+      "followerTrail": [],
+      "actorEquipment": {
+        "actor_hero": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "actorRows": {
+        "actor_hero": "front"
+      },
+      "actorNames": {},
+      "actorCharacterResourceIds": {},
+      "classOverrides": {},
+      "actorParamBonuses": {},
+      "actorStateIds": {},
+      "factionStanceOverrides": {},
+      "currentMapId": "map_blank_start",
+      "x": 10,
+      "y": 8,
+      "mapOverrides": {},
+      "farmPlots": {
+        "map_blank_start": {
+          "1,1": {
+            "tilled": true,
+            "watered": false,
+            "cropId": "crop",
+            "plantedDay": {
+              "day": 1,
+              "season": "spring",
+              "year": 1
+            },
+            "stage": 2,
+            "dead": false,
+            "growthDays": 2,
+            "regrowDaysRemaining": 0
+          }
+        }
+      },
+      "placeables": {},
+      "farmPlotsAdvancedThrough": {
+        "day": 13,
+        "season": "spring",
+        "year": 1
+      },
+      "friendship": {},
+      "relationships": {},
+      "dailyGifts": {},
+      "dailyTalks": {},
+      "flags": {},
+      "audio": {},
+      "pictures": {},
+      "messageWindowSettings": {
+        "format": "normal",
+        "position": "bottom",
+        "preventObscuringPlayer": true,
+        "allowEventMovementDuringWait": false
+      },
+      "playTimeSeconds": 0,
+      "rng": {
+        "seed": 707,
+        "streams": {
+          "encounter": {
+            "seed": 2860409284,
+            "state": 2860409284
+          },
+          "battle": {
+            "seed": 2997262157,
+            "state": 2997262157
+          },
+          "movement": {
+            "seed": 1979330358,
+            "state": 1979330358
+          },
+          "fishing": {
+            "seed": 1997332011,
+            "state": 1997332011
+          },
+          "misc": {
+            "seed": 2662642267,
+            "state": 2662642267
+          }
+        }
+      },
+      "gameTime": {
+        "minute": 0,
+        "hour": 6,
+        "day": 13,
+        "season": "spring",
+        "year": 1
+      },
+      "dayTransitionLastDayKey": "1:spring:12"
+    },
+    "result": {
+      "kind": "ignored",
+      "x": 1,
+      "y": 1,
+      "reason": "invalid-life-skill"
+    },
+    "after": {
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false
+      },
+      "selfSwitches": {},
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "timers": {},
+      "gold": 0,
+      "inventory": {
+        "hoe": 1,
+        "can": 1,
+        "produce": 1
+      },
+      "itemUseCharges": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "energy": 100,
+      "shippingQueue": {},
+      "shippingHistory": [],
+      "bundleContributions": {},
+      "completedBundleIds": [],
+      "bundleRewardAppliedIds": [],
+      "unlockedRegionIds": [],
+      "unlockedRecipeIds": [],
+      "makerInstances": {},
+      "monsterInstances": {},
+      "monsterParty": [],
+      "monsterBox": [],
+      "actorSkillIds": {},
+      "actorSkillPp": {},
+      "actorExperience": {
+        "actor_hero": 0
+      },
+      "actorLevels": {
+        "actor_hero": 1,
+        "actor_guardian": 1,
+        "actor_mage": 1,
+        "actor_scout": 1,
+        "actor_cleric": 1,
+        "actor_ranger": 1
+      },
+      "actorVitals": {
+        "actor_hero": {
+          "hp": 514,
+          "mp": 43,
+          "maxHp": 514,
+          "maxMp": 43
+        }
+      },
+      "eventLocations": {},
+      "erasedEventIds": [],
+      "removedEventIds": {},
+      "spawnedEvents": {},
+      "camera": {
+        "mode": "follow",
+        "target": {
+          "kind": "player"
+        }
+      },
+      "lighting": {
+        "ambient": 0,
+        "sources": []
+      },
+      "npcTravelStates": {},
+      "npcActivities": {},
+      "npcScheduleStates": {},
+      "lifeSkills": {
+        "farm": {
+          "xp": 99,
+          "level": 1
+        }
+      },
+      "followers": [],
+      "followerTrail": [],
+      "actorEquipment": {
+        "actor_hero": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "actorRows": {
+        "actor_hero": "front"
+      },
+      "actorNames": {},
+      "actorCharacterResourceIds": {},
+      "classOverrides": {},
+      "actorParamBonuses": {},
+      "actorStateIds": {},
+      "factionStanceOverrides": {},
+      "currentMapId": "map_blank_start",
+      "x": 10,
+      "y": 8,
+      "mapOverrides": {},
+      "farmPlots": {
+        "map_blank_start": {
+          "1,1": {
+            "tilled": true,
+            "watered": false,
+            "cropId": "crop",
+            "plantedDay": {
+              "day": 1,
+              "season": "spring",
+              "year": 1
+            },
+            "stage": 2,
+            "dead": false,
+            "growthDays": 2,
+            "regrowDaysRemaining": 0
+          }
+        }
+      },
+      "placeables": {},
+      "farmPlotsAdvancedThrough": {
+        "day": 13,
+        "season": "spring",
+        "year": 1
+      },
+      "friendship": {},
+      "relationships": {},
+      "dailyGifts": {},
+      "dailyTalks": {},
+      "flags": {},
+      "audio": {},
+      "pictures": {},
+      "messageWindowSettings": {
+        "format": "normal",
+        "position": "bottom",
+        "preventObscuringPlayer": true,
+        "allowEventMovementDuringWait": false
+      },
+      "playTimeSeconds": 0,
+      "rng": {
+        "seed": 707,
+        "streams": {
+          "encounter": {
+            "seed": 2860409284,
+            "state": 2860409284
+          },
+          "battle": {
+            "seed": 2997262157,
+            "state": 2997262157
+          },
+          "movement": {
+            "seed": 1979330358,
+            "state": 1979330358
+          },
+          "fishing": {
+            "seed": 1997332011,
+            "state": 1997332011
+          },
+          "misc": {
+            "seed": 2662642267,
+            "state": 2662642267
+          }
+        }
+      },
+      "gameTime": {
+        "minute": 0,
+        "hour": 6,
+        "day": 13,
+        "season": "spring",
+        "year": 1
+      },
+      "dayTransitionLastDayKey": "1:spring:12"
+    }
+  },
+  {
+    "scenario": "invalid-countdown-raw-preservation",
+    "invalid": -1,
+    "preserved": true
+  },
+  {
+    "scenario": "invalid-countdown-raw-preservation",
+    "invalid": 0.5,
+    "preserved": true
+  },
+  {
+    "scenario": "invalid-countdown-raw-preservation",
+    "invalid": null,
+    "preserved": true
+  },
+  {
+    "scenario": "invalid-countdown-raw-preservation",
+    "invalid": "7",
+    "preserved": true
+  },
+  {
+    "scenario": "invalid-countdown-raw-preservation",
+    "invalid": 9007199254740992,
+    "preserved": true
+  }
+]
