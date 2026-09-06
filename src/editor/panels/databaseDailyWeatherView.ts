@@ -35,6 +35,8 @@ import {
   workspaceShell,
 } from "@/editor/panels/databaseWorkspace";
 import { SEASONS } from "@/project/gameTime";
+import { DEFAULT_FORECAST_DAYS, DEFAULT_WEATHER_INTENSITY } from "@/project/dailyWeather";
+import { WEATHER_RULES_PER_SEASON_LIMIT } from "@/project/p1FoundationRecords";
 import { store } from "@/project/store";
 import type { DailyWeatherConfig, DailyWeatherRule, Season, WeatherKind } from "@/project/types";
 import { el } from "@/util/dom";
@@ -227,7 +229,7 @@ function configuredWorkspace(weather: DailyWeatherConfig, rerender: () => void):
       tags: [
         `규칙 ${rules.length}개`,
         `가중치 합계 ${sumWeight(rules)}`,
-        weather.enabled ? `예보 ${weather.forecastDays ?? 3}일` : "날씨 사용 안 함",
+        weather.enabled ? `예보 ${weather.forecastDays ?? DEFAULT_FORECAST_DAYS}일` : "날씨 사용 안 함",
       ],
       testid: "db-weather-hero",
     }),
@@ -307,7 +309,7 @@ function weatherInspector(weather: DailyWeatherConfig, season: Season, rerender:
       })),
       spanCard(sectionCard({
         title: "날씨 규칙",
-        hint: "가중치는 상대값입니다. 합계가 커도 비율만 같으면 결과는 같습니다.",
+        hint: `계절당 최대 ${WEATHER_RULES_PER_SEASON_LIMIT}개. 가중치는 상대값이며 합계가 달라도 비율이 같으면 결과는 같습니다.`,
         children: [
           table,
           el("div", {
@@ -334,7 +336,7 @@ function weatherInspector(weather: DailyWeatherConfig, season: Season, rerender:
           toggleSwitch("날씨 사용", "db-weather-enabled", weather.enabled, (checked) => updateWeather("enabled", checked, rerender)),
           el("div", {
             class: "db-wa-narrow",
-            children: [numberField("예보 일수", "db-weather-forecast-days", weather.forecastDays ?? 3, (value) => updateWeather("forecastDays", value, rerender), { min: 1, max: 7 })],
+            children: [numberField("예보 일수", "db-weather-forecast-days", weather.forecastDays ?? DEFAULT_FORECAST_DAYS, (value) => updateWeather("forecastDays", value, rerender), { min: 1, max: 7 })],
           }),
           el("button", {
             class: "db-ws-btn db-ws-btn-ghost",
@@ -374,7 +376,7 @@ function ruleRow(
   rerender: () => void,
 ): HTMLElement {
   const total = sumWeight(rules);
-  const intensity = rule.intensity ?? (rule.kind === "none" ? 0 : 0.65);
+  const intensity = rule.intensity ?? (rule.kind === "none" ? 0 : DEFAULT_WEATHER_INTENSITY);
 
   const kindSelect = el("select", {
     class: "db-wa-kind",
@@ -421,8 +423,10 @@ function ruleRow(
       "aria-label": `${SEASON_LABEL[season]} ${index + 1}번 규칙 강도`,
       ...(rule.kind === "none" ? { title: "맑음은 강도를 쓰지 않습니다" } : {}),
     },
-    value: String(intensity),
   }) as HTMLInputElement;
+  // Set the value after type/min/max/step: native range inputs sanitize it as each
+  // attribute is applied (the default step=1 would otherwise round 0.5 to 1).
+  intensityRange.value = String(intensity);
   intensityRange.addEventListener("input", () => {
     const next = clampNumber(intensityRange.value, 0, 1);
     intensityValue.textContent = next.toFixed(2);
@@ -643,13 +647,17 @@ function patchRuleQuiet(season: Season, index: number, patch: Partial<DailyWeath
 }
 
 function mutateRules(season: Season, mutate: (rules: DailyWeatherRule[]) => void, rerender: () => void, coalesce = false): void {
+  const weather = store.getCurrent().system.dailyWeather;
+  if (!weather) return;
+  const rules = [...(weather.seasons[season] ?? [])];
+  mutate(rules);
+  if (rules.length > WEATHER_RULES_PER_SEASON_LIMIT) {
+    toast(`날씨 규칙은 계절당 최대 ${WEATHER_RULES_PER_SEASON_LIMIT}개입니다.`, "error");
+    return;
+  }
   if (coalesce) recordCoalescedSnapshot(`db-weather:${season}`);
   else recordProjectSnapshot(`날씨 규칙 ${season} 변경`);
   store.update((project) => {
-    const weather = project.system.dailyWeather;
-    if (!weather) return;
-    const rules = [...(weather.seasons[season] ?? [])];
-    mutate(rules);
     project.system.dailyWeather = { ...weather, seasons: { ...weather.seasons, [season]: rules } };
   });
   rerender();

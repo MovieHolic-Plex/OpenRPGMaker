@@ -1,0 +1,244 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-authoring-bounds",
+  "port": 39841,
+  "surface": "native Firefox editor controls",
+  "remoteWrites": [],
+  "writes": [
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:17831",
+      "path": "/v1/browser/hello"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:17831",
+      "path": "/v1/browser/hello"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:17831",
+      "path": "/v1/browser/hello"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:39841",
+      "path": "/__oprn/edit-activity"
+    }
+  ],
+  "errors": [],
+  "runs": [
+    {
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "actions": [
+        {
+          "label": "keyboard birthday40",
+          "state": {
+            "characters": {
+              "resident": {
+                "displayName": "Task14 resident",
+                "birthday": {
+                  "season": "spring",
+                  "day": 40
+                }
+              }
+            },
+            "weather": {
+              "enabled": true,
+              "seasons": {
+                "spring": [
+                  {
+                    "kind": "rain",
+                    "weight": 1
+                  }
+                ]
+              }
+            },
+            "skills": [
+              {
+                "id": "skill",
+                "name": "Task14 skill",
+                "skillType": "farming",
+                "maxLevel": 10,
+                "levelUpRewards": [
+                  {
+                    "level": 1,
+                    "switchId": "sw_0001"
+                  }
+                ]
+              }
+            ],
+            "crops": [
+              {
+                "id": "unlinked",
+                "name": "Task14 crop",
+                "seedItemId": "item_potion",
+                "harvestItemId": "item_potion",
+                "harvestCount": 1,
+                "stages": [
+                  {
+                    "days": 2
+                  }
+                ],
+                "seasons": [
+                  "spring"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "label": "Ctrl+Z birthday",
+          "state": {
+            "characters": {
+              "resident": {
+                "displayName": "Task14 resident",
+                "birthday": {
+                  "season": "spring",
+                  "day": 39
+                }
+              }
+            },
+            "weather": {
+              "enabled": true,
+              "seasons": {
+                "spring": [
+                  {
+                    "kind": "rain",
+                    "weight": 1
+                  }
+                ]
+              }
+            },
+            "skills": [
+              {
+                "id": "skill",
+                "name": "Task14 skill",
+                "skillType": "farming",
+                "maxLevel": 10,
+                "levelUpRewards": [
+                  {
+                    "level": 1,
+                    "switchId": "sw_0001"
+                  }
+                ]
+              }
+            ],
+            "crops": [
+              {
+                "id": "unlinked",
+                "name": "Task14 crop",
+                "seedItemId": "item_potion",
+                "harvestItemId": "item_potion",
+                "harvestCount": 1,
+                "stages": [
+                  {
+                    "days": 2
+                  }
+                ],
+                "seasons": [
+                  "spring"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "label": "Ctrl+Y birthday",
+          "state": {
+            "characters": {
+              "resident": {
+                "displayName": "Task14 resident",
+                "birthday": {
+                  "season": "spring",
+                  "day": 40
+                }
+              }
+            },
+            "weather": {
+              "enabled": true,
+              "seasons": {
+                "spring": [
+                  {
+                    "kind": "rain",
+                    "weight": 1
+                  }
+                ]
+              }
+            },
+            "skills": [
+              {
+                "id": "skill",
+                "name": "Task14 skill",
+                "skillType": "farming",
+                "maxLevel": 10,
+                "levelUpRewards": [
+                  {
+                    "level": 1,
+                    "switchId": "sw_0001"
+                  }
+                ]
+              }
+            ],
+            "crops": [
+              {
+                "id": "unlinked",
+                "name": "Task14 crop",
+                "seedItemId": "item_potion",
+                "harvestItemId": "item_potion",
+                "harvestCount": 1,
+                "stages": [
+                  {
+                    "days": 2
+                  }
+                ],
+                "seasons": [
+                  "spring"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "failure": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n'1' !== '0.5'\n\n    at file:///home/main/z-project/rpg-zzu-life-full-authoring-bounds/.omo/evidence/life-full-20260906/14/editor.mjs:93:14",
+      "body": "✦\n새 프로젝트\n자동 저장 실패\n온라인 저장: 오프라인\n이 세션은 저장 안 됨\n다시 저장\n▶\n테스트\n스튜디오\n도움말\n게스트 세션 d75b\nAI 설정\n360 흙길 중심\n합본 마을 · EasyRPG (CC0)\n⚙\n바닥\n덧그림\n이벤트\n#\n전체\n최근\n지형\n물\n집\n울타리\n장식\n◆\n◆\n◆\n◆\n◆\n◆\n◆\n◆\n◆\n◆\n◆\n◆\n◆\n▸\n붓 보조\n이웃 연결\n수동\n맵\n1\n새 맵\n빈 맵\n20×15 · 0이벤트 · 문0\n시작\n임시 세션 — 작업이 이 탭에만 있습니다. 보존하려면 내보내기를 누르세요.\n내보내기\n✕\n−\n2x\n+\n⋯\n만들기\n다듬기\n검사\nAI 요청\n데이터베이스\n생활\n›\n계절·날씨\nAI 어시스턴트\n개요\n세계관\n세계 개요·설정집\n파티\n주인공·직업·직업 승급 트리·스킬·스킬 트리·아이템·장비\n몬스터\n몬스터·몬스터 종족·적 그룹·진영\n전투 규칙\n속성·상태·전투 애니메이션·전투 화면·전투 명령\n생활\n농사·작물\n주민 관계\n생활 기술·제작\n계절·날씨\n동물·축사\n농장 건물·집 꾸미기\n낚시·채집·박물관\n맵\n생성 규칙·타일셋·마을·지형 효과·공용 이벤트\n시스템\n시스템·용어·스위치·변수\n계절\n4계절\n봄\n1개 규칙\n비 100%\n여름\n0개 규칙\n규칙 없음\n가을\n0개 규칙\n규칙 없음\n겨울\n0개 규칙\n규칙 없음\n+ 날씨 규칙\n계절\n봄 확률표\n\n가중치는 서로의 비율로만 의미가 있습니다 — 오른쪽 비율 칩이 실제 확률입니다.\n\n규칙 1개\n가중치 합계 1\n예보 1일\n확률 분포\n다섯 종류 전부를 세워 0% 인 날씨도 눈에 보이게 합니다.\n맑음\n0%\n안개\n0%\n비\n100%\n눈\n0%\n폭풍\n0%\n날씨 규칙\n계절당 최대 128개. 가중치는 상대값이며 합계가 달라도 비율이 같으면 결과는 같습니다.\n날씨\n가중치\n비율\n강도\n100%\n0.50\n삭제\n가중치 합계\n1\n규칙 추가\n날씨 시스템\n네 계절 공통 설정입니다.\n날씨 사용\n예보 일수\n기본 확률로 되돌리기\n다른 계절\n눌러서 바로 이동합니다.\n여름\n규칙 없음\n0개\n가을\n규칙 없음\n0개\n겨울\n규칙 없음\n0개\n자동 저장됨\n닫기\n지금 저장\n도움말\n다시 실행했습니다 — 편집",
+      "contextClosed": true
+    }
+  ],
+  "limits": [
+    "Life navigation group is an existing pointer-only div",
+    "Project roundtrip uses public serialize/deserialize and local Storage, not the remote save dialog"
+  ],
+  "cleanup": {
+    "browserClosed": true,
+    "serverClosed": true,
+    "cacheRemoved": true
+  }
+}

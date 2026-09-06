@@ -45,7 +45,7 @@ import {
   type CharacterIdIndexEntry,
   type CharacterIdUsageHost,
 } from "@/project/characterIdIndex";
-import { SEASONS, type Season } from "@/project/gameTime";
+import { daysPerSeasonOf, SEASONS, type Season } from "@/project/gameTime";
 import { store } from "@/project/store";
 import type { CharacterProfile, GiftPrefs, GiftResponses, ItemId, Project } from "@/project/types";
 import { el } from "@/util/dom";
@@ -567,6 +567,13 @@ function birthdayCard(characterId: string, profile: CharacterProfile, rerender: 
   const enabled = profile.birthday !== undefined;
   const season = profile.birthday?.season ?? "spring";
   const day = profile.birthday?.day ?? 1;
+  const maxDay = daysPerSeasonOf(store.getCurrent().system.timeSystem);
+  const warning = el("p", {
+    class: "db-life-help",
+    attrs: { role: "alert", id: "db-character-birthday-warning" },
+    dataset: { testid: "db-character-birthday-warning" },
+    text: `현재 달력은 계절당 ${maxDay}일입니다. 범위를 벗어난 생일은 발생하지 않습니다. 날짜나 달력을 직접 수정하세요.`,
+  });
 
   const enable = el("input", {
     attrs: { type: "checkbox" },
@@ -599,16 +606,26 @@ function birthdayCard(characterId: string, profile: CharacterProfile, rerender: 
     "db-character-birthday-day",
     day,
     (value) => {
-      const nextDay = Math.min(99, Math.max(1, Math.trunc(value) || 1));
+      const nextDay = Math.min(maxDay, Math.max(1, Math.trunc(value) || 1));
       patchProfile(characterId, {
         birthday: {
           season: store.getCurrent().characters?.[characterId]?.birthday?.season ?? season,
           day: nextDay,
         },
       });
+      updateWarning(nextDay);
     },
-    { min: 1, max: 99 },
+    { min: 1, max: maxDay, step: 1 },
   );
+  function updateWarning(value: number): void {
+    const invalid = enabled && (!Number.isInteger(value) || value < 1 || value > maxDay);
+    warning.hidden = !invalid;
+    const input = dayField.querySelector("input");
+    input?.setAttribute("aria-invalid", String(invalid));
+    if (invalid) input?.setAttribute("aria-describedby", "db-character-birthday-warning");
+    else input?.removeAttribute("aria-describedby");
+  }
+  updateWarning(day);
 
   if (!enabled) {
     seasonSelect.querySelector("select")?.setAttribute("disabled", "true");
@@ -625,6 +642,7 @@ function birthdayCard(characterId: string, profile: CharacterProfile, rerender: 
         children: [enable, el("span", { text: "생일 사용" })],
       }),
       el("div", { class: "db-cx-inline-fields", children: [seasonSelect, dayField] }),
+      warning,
     ],
   });
 }

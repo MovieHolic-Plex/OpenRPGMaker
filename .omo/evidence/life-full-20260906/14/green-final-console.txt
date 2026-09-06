@@ -1,0 +1,27 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeAuthoringBounds.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-authoring-bounds
+
+ ✓ test/lifeAuthoringBounds.test.ts (14 tests) 17621ms
+   ✓ authoring bounds > accepts day40 in a 40-day calendar and bounds new input to that calendar  5775ms
+   ✓ authoring bounds > diagnoses day29 in a 28-day calendar without silently changing it  1261ms
+   ✓ authoring bounds > shows effective omitted weather values without authoring them  892ms
+   ✓ authoring bounds > rejects both 129th-rule add controls without mutation or an undo entry  1032ms
+   ✓ authoring bounds > caps skill input at10, starts new rewards at2, and retains legacy level1  812ms
+   ✓ authoring bounds > refuses a new level-up reward when maxLevel is1  612ms
+   ✓ authoring bounds > does not author crop graphics during rendering (undefined)  608ms
+   ✓ authoring bounds > does not author crop graphics during rendering ([])  1433ms
+   ✓ authoring bounds > does not author crop graphics during rendering ([ { frame: +0, label: 'Editor-only' } ])  489ms
+   ✓ legacy characterization > uses effective forecast 1 and rain intensity 0.5 without backfilling  552ms
+   ✓ legacy characterization > retains explicit forecast 3 and intensity 0.65 through render and roundtrip  1282ms
+   ✓ legacy characterization > preserves the legacy level1 reward and authored birthday on render/serialize  2317ms
+
+ Test Files  1 passed (1)
+      Tests  14 passed (14)
+   Start at  04:18:19
+   Duration  87.75s (transform 45.68s, setup 0ms, collect 66.63s, tests 17.62s, environment 1.18s, prepare 402ms)
+
+
