@@ -305,6 +305,29 @@ function renderDetailEntryIcon(project: Project, icon: NonNullable<StatusMenuDet
       dataset: { testid: icon.testId },
     });
   }
+  if (icon.sheet) {
+    const { frameWidth, frameHeight, columns } = icon.sheet;
+    const longestSide = Math.max(frameWidth, frameHeight);
+    return el("span", {
+      class: "status-menu-entry-icon",
+      attrs: { role: "img", "aria-label": icon.alt, style: "display:grid;place-items:center" },
+      dataset: { testid: icon.testId },
+      children: [el("span", {
+        attrs: {
+          "aria-hidden": "true",
+          style: [
+            `width:${frameWidth / longestSide * 100}%`,
+            `height:${frameHeight / longestSide * 100}%`,
+            `background-image:url("${url}")`,
+            `background-size:${columns * 100}% auto`,
+            "background-position:0 0",
+            "background-repeat:no-repeat",
+            "image-rendering:pixelated",
+          ].join(";"),
+        },
+      })],
+    });
+  }
   return el("span", {
     class: "status-menu-entry-icon",
     attrs: {
