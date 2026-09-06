@@ -2,6 +2,7 @@ import { resolve } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { build } from "vite";
 import { battlerIdleAnimation, battlerIdleAnimationUrl } from "@/assets/battlerIdleAnimations";
+import { battlerHiresSheet, battlerHiresSheetUrl } from "@/assets/battlerHiresSheets";
 import { registerExportAssetBase, registerInlineAssets } from "@/assets/inlineAssetStore";
 
 afterEach(() => {
@@ -10,6 +11,23 @@ afterEach(() => {
 });
 
 describe("export battle asset URLs", () => {
+  it.each([
+    ["nested", "https://games.example.test/games/demo/assets/generated/starter/hires/hero-01-battle.png"],
+    ["embedded", "data:image/png;base64,AQ=="],
+  ])("resolves high resolution sheets for %s exports", (kind, expected) => {
+    // Given
+    registerExportAssetBase(new URL("https://games.example.test/games/demo/"));
+    const sheet = battlerHiresSheet("generated-actor-hero-01-battle");
+    if (!sheet) throw new Error("Expected high resolution sheet");
+    if (kind === "embedded") registerInlineAssets({ [sheet.path]: "data:image/png;base64,AQ==" });
+
+    // When
+    const url = battlerHiresSheetUrl(sheet);
+
+    // Then
+    expect(url).toBe(expected);
+  });
+
   it("resolves the actual idle producer against the exported directory", () => {
     // Given
     registerExportAssetBase(new URL("https://games.example.test/games/demo/"));
@@ -60,5 +78,25 @@ describe("export battle asset URLs", () => {
     expect(icons.length).toBeGreaterThan(0);
     expect(icons.filter((url) => url?.startsWith("/"))).toEqual([]);
     expect(output.output.some((file) => file.fileName.includes("battle-icon-sword"))).toBe(true);
+  });
+
+  it("builds runtime fonts and fallback window skin without root-only URLs", async () => {
+    // Given
+    const input = resolve("src/styles/runtime/system.css");
+
+    // When
+    const built = await build({
+      configFile: false, publicDir: false, base: "./", logLevel: "silent",
+      build: { write: false, assetsInlineLimit: 0, rollupOptions: { input } },
+    });
+    const output = Array.isArray(built) ? built[0] : built;
+    if (!output || !("output" in output)) throw new Error("Expected completed CSS build");
+    const css = output.output.find((file) => file.type === "asset" && file.fileName.endsWith(".css"));
+    if (!css || css.type !== "asset") throw new Error("CSS artifact missing");
+    const text = typeof css.source === "string" ? css.source : new TextDecoder().decode(css.source);
+
+    // Then
+    expect([...text.matchAll(/url\(["']?(\/assets\/[^"')]+)["']?\)/g)]).toEqual([]);
+    expect(output.output.filter((file) => file.fileName.endsWith(".woff2"))).toHaveLength(4);
   });
 });
