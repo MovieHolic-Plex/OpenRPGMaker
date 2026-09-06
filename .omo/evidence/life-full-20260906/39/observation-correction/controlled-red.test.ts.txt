@@ -148,19 +148,15 @@ async function observeMessage(selector: string, trigger: () => void, textOnly = 
   } finally { cancel(); }
 }
 
+describe("player save/load reconciliation refusal boundaries", () => {
 async function openTitleLoadPanel(): Promise<void> {
-  // Navigation rerenders/read-checks the large slots synchronously. It prepares
-  // the selected action; only Enter schedules the asynchronous panel transition.
-  for (const key of ["ArrowDown", "ArrowDown"]) {
-    document.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true, cancelable: true }));
-  }
-  expect(main.querySelector(".rm-title-menu-button[aria-selected='true']")?.getAttribute("data-testid")).toBe("title-load-game");
   await observeMessage("[data-testid='player-load-window']", () => {
-    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
+    for (const key of ["ArrowDown", "ArrowDown", "Enter"]) {
+      document.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true, cancelable: true }));
+    }
   }, false);
 }
 
-describe("player save/load reconciliation refusal boundaries", () => {
   it("rejects a confirmed overwrite once without changing old bytes or live state", async () => {
     await boot();
     fillRecovery(session);

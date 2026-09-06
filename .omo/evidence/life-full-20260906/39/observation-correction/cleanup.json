@@ -1,0 +1,82 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-load-errors",
+  "head": "e9522cb11c4e09d09fddc45c18d805d53a61b976",
+  "baseTree": "47999d20959f54014ac1526adba0b27aa5842edd",
+  "testedProductTree": "44606f982e9f350f4fcae9f095e3efdd929ed5f6",
+  "scriptChecks": [
+    {
+      "file": "browser-proof.mjs",
+      "exit": 0,
+      "stderr": ""
+    },
+    {
+      "file": "cleanup.mjs",
+      "exit": 0,
+      "stderr": ""
+    },
+    {
+      "file": "run.mjs",
+      "exit": 0,
+      "stderr": ""
+    }
+  ],
+  "screenshots": [
+    {
+      "path": ".omo/evidence/life-full-20260906/39/observation-correction/firefox/title-autosave.png",
+      "width": 1280,
+      "height": 960,
+      "sha256": "c4ed05a0f2f2a3cc79f83af0c1945eb3c5fc81063bd77bbc19cd9988cd836287",
+      "visualInspection": "unavailable: image tool reports current model cannot view images; DOM assertions are verified"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/39/observation-correction/firefox/title-manual.png",
+      "width": 1280,
+      "height": 960,
+      "sha256": "af517e8d1991f45e9dc538a3ad93d4d1fa0cf9b1e0e78e155d26abb53ee53caa",
+      "visualInspection": "unavailable: image tool reports current model cannot view images; DOM assertions are verified"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/39/observation-correction/firefox/running-manual.png",
+      "width": 1280,
+      "height": 960,
+      "sha256": "24b13ec52b8cff6f268f0872f2634094d357d6f88fda4b61be6eb0a4d767b462",
+      "visualInspection": "unavailable: image tool reports current model cannot view images; DOM assertions are verified"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/39/observation-correction/firefox/running-autosave.png",
+      "width": 1280,
+      "height": 960,
+      "sha256": "4658b3d2c23f5371ffae9924c31b2799ecdd17eb4ebfef02aca485d8cdad0c45",
+      "visualInspection": "unavailable: image tool reports current model cannot view images; DOM assertions are verified"
+    }
+  ],
+  "removed": [
+    "dist",
+    "/tmp/st_01a0759d-public-cache",
+    "/tmp/st_01a0759d-browser-cache",
+    "/tmp/st_01a0759d-firefox-cache",
+    "/tmp/st_01a0759d-build-cache",
+    "/tmp/st_01a0759d-typecheck-cache",
+    "/tmp/st_01a0759d-index-cache"
+  ],
+  "runtimeLeaks": [],
+  "index": {
+    "workingBlob": "ad2dd527f66a6092b8f096e4294e965ef011fd40",
+    "baseBlob": "ad2dd527f66a6092b8f096e4294e965ef011fd40"
+  },
+  "trackedCacheDiff": "",
+  "remoteWrites": 0,
+  "parentFiles": [
+    {
+      "path": ".omo/evidence/life-full-20260906/39/parent-failed-suite.json",
+      "sha256": "0a20aaa0ef53f7da9f058fdafb30aaa3c8eb9217cd5a5fe2aadf73cc7a71dca8",
+      "trackedOrStaged": false
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/39/parent-browser-proof.mjs",
+      "sha256": "539b9a1d0dfd46da0755812e8a3ffdb36b8cc9155f1756a593e39d29a7f62549",
+      "trackedOrStaged": false
+    }
+  ],
+  "notes": "The browser receipts removed literal public/browser caches; this final cleanup additionally removes the actual VITE_CACHE_DIR=...firefox-cache plus all task-owned build output. No tracked/shared cache was removed."
+}

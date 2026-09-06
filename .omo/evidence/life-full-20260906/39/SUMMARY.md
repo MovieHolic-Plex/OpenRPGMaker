@@ -99,3 +99,7 @@ Final verified SHA256 values:
 Only owned source/test/evidence paths are staged for the requested scoped commit; no push, PR, merge or amend is performed.
 
 Evidence packaging: the first staged `git diff --cached --check` returned2 on original Vite trailing spaces and test/tsc final blank lines. `build.log`, `green.log`, `red.log` and `typecheck.log` are therefore stored as `.log.gz`, compressed with `gzip -n` and verified byte-for-byte against their originals with `cmp` before replacing the plain copies. All references above denote those exact raw outputs (`gzip -dc <path>.gz` to read); no warnings, failures or bytes were sanitized. Final staged whitespace check is rerun after lossless packaging.
+
+## Parent-replay follow-up
+
+Parent replay of e9522cb1 failed the first title-load-window wait (158passed/1failed); its browser did not run. The test-only correction, controlled old-flow RED with actual DOM/callback capture, and fresh160-test/native GREEN are recorded in [observation-correction/SUMMARY.md](observation-correction/SUMMARY.md). The observer timeout and success criteria were not loosened: title navigation is now verified setup before prearming the Enter action. The initial159-pass evidence above is historical, not a claim that the parent's failed replay passed. Production remains unchanged; the final test hash is in the follow-up. Parent-owned receipt/probe files remain untouched and unstaged.
