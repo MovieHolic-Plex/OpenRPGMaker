@@ -32,7 +32,8 @@ worktree server before measuring, and bind evidence to its cwd/revision.
 ## Concept navigation integration (2026-09-06)
 
 PR617's concept-first Map rail is integrated with the current unified inventory
-catalog: 32 primary destinations, only `scratchConcepts` and `tilesets` under Map,
+catalog: 34 primary destinations including Opening and Game Over, only
+`scratchConcepts` and `tilesets` under Map,
 and `commonEvents` under System. Legacy Map destinations remain contextual/search
 routes. `equipment` search finds the single `items` destination; programmatic
 `equipment` navigation retains the catalog's equipment-filter/selection behavior.
@@ -40,6 +41,75 @@ The navigation setter applies tileset facets once without bypassing that alias.
 The current multi-floor inn template remains authoritative (`dorm_bed_a`,
 `upper_stair`); snapshot tests use those IDs, not the retired bedroom/stairs IDs.
 Validation and replay boundaries are in `reports/pr617-621-integration.md`.
+
+## Opening and game-over authoring (2026-09-06)
+
+The System group contains dedicated `opening` / `gameOver` tabs, labelled
+`오프닝` / `게임 오버` (`db-tab-opening` / `db-tab-game-over`). Their source of
+truth is `project.system.opening` and `project.system.gameOver`, never
+`project.database.system`. Existing System title controls retain their owner.
+
+- `databaseCinematicView.ts` coordinates list/selection/revision and disposal.
+  `databaseCinematicForms.ts`, `databaseCinematicMediaFields.ts` and
+  `databaseCinematicControls.ts` build the focused form/picker primitives.
+- `databaseCinematicActions.ts` owns ordinary scene edits and history;
+  `databaseCinematicActionModel.ts` owns union/model helpers;
+  `databaseCinematicMediaActions.ts` owns ticketed media selection/import.
+  Reading an absent sequence does not materialize defaults. Settings are
+  created only by edits; disabling does not delete authored scenes or media.
+- New scenes are valid text records. Image/video intent remains view-local
+  until a valid resource is ready. Kind conversion copies only common fields,
+  so image motion cannot leak into a text/video record. The shared scene/time
+  limits are enforced. Optional voice/background can be cleared; required
+  media cannot become an empty or unknown reference.
+- Every authored update has `scope: "system"` and a readable label. Typing uses
+  coalesced history without replacing the active input; selection/navigation
+  do not create history. A prepared upload adds asset, profile and consuming
+  reference atomically, after project/scene/request freshness checks.
+- The store emits over a live listener Set. An Actions controller mounted
+  during a project-replacement notification tracks the project it already
+  observes, rather than disposing itself on that same event. Later replacement,
+  undo/import and explicit view disposal still invalidate old callbacks.
+- `databaseCinematicPreview.ts` reuses `playCinematicSequence` and
+  `createPlaySurface(resolvePlayResolution(project.system), "fit")`. Its Escape
+  handler is installed before runtime keyboard capture, so Escape stops even
+  an authored unskippable preview without also closing Database. Start reveals
+  the stage; stop removes media, player surface and subscriptions and restores
+  the active opener. Preview does not enable disabled settings in the project.
+- `database.ts` and `databaseModal.ts` call `disposeDatabaseCinematicsIn` before
+  leaving/evicting/closing cinematic views. These views are not reused from
+  detached cache. Other Database caching stays unchanged.
+- Scoped editor presentation lives in `src/styles/database/cinematics.css`;
+  runtime stage presentation still belongs to the existing runtime CSS closure.
+
+Tests: `databaseCinematics.test.ts`, `cinematicMediaImport.test.ts`,
+`databaseCinematicResources.test.ts`, and
+`test/e2e/database-cinematics.spec.ts`. Real editor QA uses a fresh unique port,
+`?blankProject=1&aiBridge=0`, and local-only fixtures. Serialization/reload is
+tested through the real project codec and restored UI, not described as a
+remote Supabase save. The blank-project `session-not-persisted` warning remains
+an explicit fixture condition; other browser errors and remote write attempts
+are failures. Optional disk mirroring can be disabled for QA with
+`VITE_EDIT_ACTIVITY_DISK_MIRROR=0`, without disabling in-memory edit annotations.
+
+## Cinematic media preparation boundary (2026-09-06)
+
+`prepareCinematicUpload(file, kind, signal)` in `src/editor/cinematicMediaImport.ts`
+prepares an `UploadedAsset` without accessing or mutating the current project.
+Input image/video/audio maps to picture/movie/sound. Image limits and formats
+come from the existing image decision helper; audio/movie rules come from
+`mediaImportRuleFor`. GIF/WebP payloads are preserved, not canvas-flattened.
+Native readers and decoders are abortable and have one bounded preparation
+deadline. Audio/video must expose decodable first data; video also needs valid
+dimensions but may report an as-yet-unknown positive duration. Preparation
+never starts playback.
+
+The authoring action owns cancellation, stale-project/scene/request checks after
+await, and one labelled history transaction adding asset, resource profile and
+scene reference. Do not call `importMediaResource` for this atomic workflow.
+The shared picker adds `movie` beside existing `image`/`sound`: movie profiles
+and uploads are deduplicated, and movie visuals are static labels, not images
+or another video player. Shared cinematic preview remains the playback owner.
 
 ## System settings workspace (2026-09-06)
 

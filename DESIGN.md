@@ -94,6 +94,32 @@ existing purse emblem; actual party faces remain explicitly labelled as party.
   invalid input, stale state and lock errors have visible recovery text.
   No fake loading. Real browser review is supervisor-owned.
 
+## Opening and game-over authoring (2026-09-06)
+
+Database > Opening and Game Over are separate System-group destinations using
+the existing cool-white/slate/indigo Database Studio, not a new theme.
+
+- A scene-order list and a scrolling detail pane share `workspaceShell`,
+  `listPane`, `detailPane`, `sectionCard`, native controls and resource pickers.
+  The desktop acceptance sizes are 1024x768 and 1440x900 across editor modes.
+- Text, image and video scenes share narration, optional voice and duration.
+  Image motion is specific to image scenes. Pending image/video choices stay
+  local until valid media is selected; disabled authored content is retained.
+- Media files are prepared without project writes, then the asset/profile/scene
+  reference is committed as one labelled undoable edit. Selection, navigation
+  and sequence preview do not modify authored settings.
+- Text input retains its DOM node, focus and caret; only the list excerpt is
+  refreshed while typing. Discrete edits and typing use the existing history.
+- Sequence preview uses the runtime player and fitted logical play surface.
+  It is revealed before keyboard capture and always stops with Escape, Stop,
+  Close, tab departure or project replacement, including unskippable content.
+  The opener is restored only while its view remains active.
+- Preview auditions disabled sequences without enabling them in the project.
+  It is labelled as sequence preview; game-over terminal labels/background are
+  checked in the actual game. Empty action-label edits restore runtime defaults.
+- Cinematic tab views are disposed and evicted on departure instead of retaining
+  live media/callbacks in the Database cache. Other tab caching is unchanged.
+
 ## System settings workspace (2026-09-06)
 
 Database > System is a settings worksheet in the existing cool-white, slate and
