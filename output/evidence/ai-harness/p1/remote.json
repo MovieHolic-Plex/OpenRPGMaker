@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "runId": "577b3786-69b8-413e-8654-6ec813ffac52",
-  "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-  "startedAt": "2026-09-06T09:56:13.454Z",
+  "runId": "87289b68-3b25-422e-b493-5641626bb3f9",
+  "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+  "startedAt": "2026-09-06T10:28:20.057Z",
   "surface": "actual ProjectStore flush/verifyPersistedRevision via Vite SSR and live Supabase REST",
-  "sourceSha": "057b5427cc5d32da657e9c35b2e442c4af526f7e",
+  "sourceSha": "476d7a7c97eb318350ff6304ad674d10b7f68bed",
   "storeSourceSha256": "7823f05b36f84ef5e2cf4532b6b3e11331228a650c7973117ce6c7f35f5c9645",
   "harnessSha256": "587c91a13ebdf3aad6b2efaedd96b52ec44db9e33f72100aa9c2aab1aa8db083",
   "scenario": "all",
@@ -15,15 +15,15 @@
       "kind": "request",
       "table": "projects",
       "method": "GET",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52&select=project_id&limit=1",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9&select=project_id&limit=1",
       "mode": "real",
       "network": true
     },
     {
       "sequence": 2,
       "kind": "isolated-target-established",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
       "absent": true,
       "beforeStoreImport": true
     },
@@ -32,7 +32,7 @@
       "kind": "request",
       "table": "projects",
       "method": "POST",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
       "query": "?on_conflict=project_id",
       "mode": "real",
       "network": true
@@ -42,8 +42,8 @@
       "kind": "request",
       "table": "maps",
       "method": "DELETE",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
       "mode": "real",
       "network": true
     },
@@ -52,7 +52,7 @@
       "kind": "request",
       "table": "maps",
       "method": "POST",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
       "query": "?on_conflict=project_id%2Cmap_id",
       "mode": "real",
       "network": true
@@ -62,8 +62,8 @@
       "kind": "request",
       "table": "tilesets",
       "method": "DELETE",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
       "mode": "real",
       "network": true
     },
@@ -72,7 +72,7 @@
       "kind": "request",
       "table": "tilesets",
       "method": "POST",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
       "query": "?on_conflict=project_id%2Ctileset_id",
       "mode": "real",
       "network": true
@@ -82,7 +82,7 @@
       "kind": "request",
       "table": "project_commits",
       "method": "POST",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
       "query": "",
       "mode": "real",
       "network": true
@@ -92,7 +92,7 @@
       "kind": "request",
       "table": "project_changes",
       "method": "POST",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
       "query": "",
       "mode": "real",
       "network": true
@@ -102,8 +102,8 @@
       "kind": "request",
       "table": "projects",
       "method": "GET",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
       "mode": "real",
       "network": true
     },
@@ -112,8 +112,8 @@
       "kind": "request",
       "table": "maps",
       "method": "GET",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52&select=map_id%2Cmap_json",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9&select=map_id%2Cmap_json",
       "mode": "real",
       "network": true
     },
@@ -122,8 +122,8 @@
       "kind": "request",
       "table": "projects",
       "method": "GET",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
       "mode": "real",
       "network": true
     },
@@ -132,8 +132,8 @@
       "kind": "request",
       "table": "maps",
       "method": "GET",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52&select=map_id%2Cmap_json",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9&select=map_id%2Cmap_json",
       "mode": "real",
       "network": true
     },
@@ -142,8 +142,8 @@
       "kind": "request",
       "table": "projects",
       "method": "GET",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52&select=project_id%2Ctitle%2Ccurrent_json%2Ccurrent_sha256",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9&select=project_id%2Ctitle%2Ccurrent_json%2Ccurrent_sha256",
       "mode": "real",
       "network": true
     },
@@ -152,15 +152,15 @@
       "kind": "request",
       "table": "projects",
       "method": "PATCH",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52&title=eq.QA+persistence+proof+577b3786-69b8-413e-8654-6ec813ffac52",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9&title=eq.QA+persistence+proof+87289b68-3b25-422e-b493-5641626bb3f9",
       "mode": "real",
       "network": true
     },
     {
       "sequence": 16,
       "kind": "real-remote-content-changed",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
       "wireHashIntentionallyUnchanged": true
     },
     {
@@ -168,8 +168,8 @@
       "kind": "request",
       "table": "projects",
       "method": "GET",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
       "mode": "real",
       "network": true
     },
@@ -178,8 +178,8 @@
       "kind": "request",
       "table": "maps",
       "method": "GET",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52&select=map_id%2Cmap_json",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9&select=map_id%2Cmap_json",
       "mode": "real",
       "network": true
     },
@@ -188,8 +188,8 @@
       "kind": "request",
       "table": "projects",
       "method": "GET",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
       "mode": "real",
       "network": true
     },
@@ -198,8 +198,8 @@
       "kind": "request",
       "table": "maps",
       "method": "GET",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52&select=map_id%2Cmap_json",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9&select=map_id%2Cmap_json",
       "mode": "real",
       "network": true
     },
@@ -208,24 +208,24 @@
       "kind": "request",
       "table": "projects",
       "method": "PATCH",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52&title=eq.QA+persistence+proof+577b3786-69b8-413e-8654-6ec813ffac52",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9&title=eq.QA+persistence+proof+87289b68-3b25-422e-b493-5641626bb3f9",
       "mode": "real",
       "network": true
     },
     {
       "sequence": 22,
       "kind": "real-remote-content-restored",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "sameReceipt": "beb8781c-fa30-4c08-9903-80892b2a751d"
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "sameReceipt": "f3a61432-92cc-4cc6-8697-453703fbc940"
     },
     {
       "sequence": 23,
       "kind": "request",
       "table": "projects",
       "method": "GET",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
       "mode": "real",
       "network": true
     },
@@ -234,8 +234,8 @@
       "kind": "request",
       "table": "maps",
       "method": "GET",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52&select=map_id%2Cmap_json",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9&select=map_id%2Cmap_json",
       "mode": "real",
       "network": true
     },
@@ -244,8 +244,8 @@
       "kind": "request",
       "table": "projects",
       "method": "GET",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
       "mode": "real",
       "network": true
     },
@@ -254,8 +254,8 @@
       "kind": "request",
       "table": "maps",
       "method": "GET",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52&select=map_id%2Cmap_json",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9&select=map_id%2Cmap_json",
       "mode": "real",
       "network": true
     },
@@ -264,8 +264,8 @@
       "kind": "request",
       "table": "projects",
       "method": "GET",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
       "mode": "injected-transport-503",
       "network": false
     },
@@ -280,8 +280,8 @@
       "kind": "request",
       "table": "projects",
       "method": "GET",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
       "mode": "real",
       "network": true
     },
@@ -290,8 +290,8 @@
       "kind": "request",
       "table": "maps",
       "method": "GET",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52&select=map_id%2Cmap_json",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9&select=map_id%2Cmap_json",
       "mode": "real",
       "network": true
     },
@@ -300,8 +300,8 @@
       "kind": "request",
       "table": "projects",
       "method": "GET",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
       "mode": "injected-target",
       "network": true
     },
@@ -310,15 +310,15 @@
       "kind": "injection",
       "fault": "injected-target",
       "realReadCompleted": true,
-      "returnedProjectId": "injected-wrong-577b3786-69b8-413e-8654-6ec813ffac52"
+      "returnedProjectId": "injected-wrong-87289b68-3b25-422e-b493-5641626bb3f9"
     },
     {
       "sequence": 33,
       "kind": "request",
       "table": "maps",
       "method": "GET",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52&select=map_id%2Cmap_json",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9&select=map_id%2Cmap_json",
       "mode": "real",
       "network": true
     },
@@ -327,8 +327,8 @@
       "kind": "request",
       "table": "projects",
       "method": "GET",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
       "mode": "real",
       "network": true
     },
@@ -337,8 +337,8 @@
       "kind": "request",
       "table": "maps",
       "method": "GET",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52&select=map_id%2Cmap_json",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9&select=map_id%2Cmap_json",
       "mode": "real",
       "network": true
     },
@@ -353,8 +353,8 @@
       "kind": "request",
       "table": "projects",
       "method": "GET",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
       "mode": "gated-real-read",
       "network": true
     },
@@ -369,8 +369,8 @@
       "kind": "request",
       "table": "projects",
       "method": "GET",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
       "mode": "real",
       "network": true
     },
@@ -379,8 +379,8 @@
       "kind": "request",
       "table": "maps",
       "method": "GET",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52&select=map_id%2Cmap_json",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9&select=map_id%2Cmap_json",
       "mode": "real",
       "network": true
     },
@@ -389,8 +389,8 @@
       "kind": "request",
       "table": "projects",
       "method": "GET",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
       "mode": "gated-real-read",
       "network": true
     },
@@ -399,8 +399,8 @@
       "kind": "request",
       "table": "maps",
       "method": "GET",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52&select=map_id%2Cmap_json",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9&select=map_id%2Cmap_json",
       "mode": "real",
       "network": true
     },
@@ -409,8 +409,8 @@
       "kind": "request",
       "table": "projects",
       "method": "GET",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
       "mode": "real",
       "network": true
     },
@@ -419,8 +419,8 @@
       "kind": "request",
       "table": "maps",
       "method": "GET",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52&select=map_id%2Cmap_json",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9&select=map_id%2Cmap_json",
       "mode": "real",
       "network": true
     },
@@ -429,8 +429,8 @@
       "kind": "request",
       "table": "projects",
       "method": "GET",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52&select=project_id%2Ctitle&limit=1",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9&select=project_id%2Ctitle&limit=1",
       "mode": "real",
       "network": true
     },
@@ -439,8 +439,8 @@
       "kind": "request",
       "table": "projects",
       "method": "DELETE",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52&title=eq.QA+persistence+proof+577b3786-69b8-413e-8654-6ec813ffac52",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9&title=eq.QA+persistence+proof+87289b68-3b25-422e-b493-5641626bb3f9",
       "mode": "real",
       "network": true
     },
@@ -449,8 +449,8 @@
       "kind": "request",
       "table": "projects",
       "method": "GET",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52&select=project_id",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9&select=project_id",
       "mode": "real",
       "network": true
     },
@@ -459,8 +459,8 @@
       "kind": "request",
       "table": "maps",
       "method": "GET",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52&select=project_id",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9&select=project_id",
       "mode": "real",
       "network": true
     },
@@ -469,8 +469,8 @@
       "kind": "request",
       "table": "tilesets",
       "method": "GET",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52&select=project_id",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9&select=project_id",
       "mode": "real",
       "network": true
     },
@@ -479,8 +479,8 @@
       "kind": "request",
       "table": "project_commits",
       "method": "GET",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?project_id=eq.qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52&select=project_id",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?project_id=eq.qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9&select=project_id",
       "mode": "real",
       "network": true
     },
@@ -489,8 +489,8 @@
       "kind": "request",
       "table": "project_changes",
       "method": "GET",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "query": "?commit_id=eq.318a8c38-3d7a-430e-8f70-ea46515717a3&select=commit_id",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "query": "?commit_id=eq.d959e008-3de6-4645-afdb-5058fe9eb39c&select=commit_id",
       "mode": "real",
       "network": true
     }
@@ -499,18 +499,18 @@
     {
       "name": "accepted-real-read",
       "realRemote": true,
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "acceptedIdentity": "4922e7929e1675758d960fc2e68c503fc7b4cf7988a6f766d5a4251e6ebe6d72",
-      "observedIdentity": "4922e7929e1675758d960fc2e68c503fc7b4cf7988a6f766d5a4251e6ebe6d72",
-      "observedWireSha256": "a6801b84699a2f909118aeb49f86a252a8ce6748a58404d737d7e42d6683cc48",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "acceptedIdentity": "28540a0f484856b8218cf87fc4a3df375d6bf7e4ff1302a7c9f4bcf10cc9985e",
+      "observedIdentity": "28540a0f484856b8218cf87fc4a3df375d6bf7e4ff1302a7c9f4bcf10cc9985e",
+      "observedWireSha256": "5ef0ab75483ac46ddbb93760876717d78afd76f35677d92782353729ae149941",
       "npcId": "qa-proof-npc",
-      "dialogueToken": "qa-dialogue-577b3786-69b8-413e-8654-6ec813ffac52"
+      "dialogueToken": "qa-dialogue-87289b68-3b25-422e-b493-5641626bb3f9"
     },
     {
       "name": "matched-real-content",
       "mode": "real",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "receiptId": "beb8781c-fa30-4c08-9903-80892b2a751d",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "receiptId": "f3a61432-92cc-4cc6-8697-453703fbc940",
       "kind": "verified",
       "isCurrent": true,
       "expected": "verified",
@@ -522,18 +522,18 @@
     {
       "name": "changed-real-read",
       "realRemote": true,
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "acceptedIdentity": "4922e7929e1675758d960fc2e68c503fc7b4cf7988a6f766d5a4251e6ebe6d72",
-      "observedIdentity": "a55a152ee3e739ce663c0c143ceae07a83bc827b35e3e2523127f8679a2e99f8",
-      "observedWireSha256": "a6801b84699a2f909118aeb49f86a252a8ce6748a58404d737d7e42d6683cc48",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "acceptedIdentity": "28540a0f484856b8218cf87fc4a3df375d6bf7e4ff1302a7c9f4bcf10cc9985e",
+      "observedIdentity": "593fe42850a93fec95a64422cf657d41ef43d5ff944d8ab8bf8d6dc43f6f634e",
+      "observedWireSha256": "5ef0ab75483ac46ddbb93760876717d78afd76f35677d92782353729ae149941",
       "npcId": "qa-proof-npc",
-      "dialogueToken": "qa-dialogue-577b3786-69b8-413e-8654-6ec813ffac52"
+      "dialogueToken": "qa-dialogue-87289b68-3b25-422e-b493-5641626bb3f9"
     },
     {
       "name": "changed-real-content",
       "mode": "real",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "receiptId": "beb8781c-fa30-4c08-9903-80892b2a751d",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "receiptId": "f3a61432-92cc-4cc6-8697-453703fbc940",
       "kind": "mismatch",
       "reason": "content",
       "expected": "mismatch",
@@ -545,18 +545,18 @@
     {
       "name": "restored-real-read",
       "realRemote": true,
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "acceptedIdentity": "4922e7929e1675758d960fc2e68c503fc7b4cf7988a6f766d5a4251e6ebe6d72",
-      "observedIdentity": "4922e7929e1675758d960fc2e68c503fc7b4cf7988a6f766d5a4251e6ebe6d72",
-      "observedWireSha256": "a6801b84699a2f909118aeb49f86a252a8ce6748a58404d737d7e42d6683cc48",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "acceptedIdentity": "28540a0f484856b8218cf87fc4a3df375d6bf7e4ff1302a7c9f4bcf10cc9985e",
+      "observedIdentity": "28540a0f484856b8218cf87fc4a3df375d6bf7e4ff1302a7c9f4bcf10cc9985e",
+      "observedWireSha256": "5ef0ab75483ac46ddbb93760876717d78afd76f35677d92782353729ae149941",
       "npcId": "qa-proof-npc",
-      "dialogueToken": "qa-dialogue-577b3786-69b8-413e-8654-6ec813ffac52"
+      "dialogueToken": "qa-dialogue-87289b68-3b25-422e-b493-5641626bb3f9"
     },
     {
       "name": "restored-same-receipt-retry",
       "mode": "real",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "receiptId": "beb8781c-fa30-4c08-9903-80892b2a751d",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "receiptId": "f3a61432-92cc-4cc6-8697-453703fbc940",
       "kind": "verified",
       "isCurrent": true,
       "expected": "verified",
@@ -568,8 +568,8 @@
     {
       "name": "injected-transport-503",
       "mode": "injected-transport-503",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "receiptId": "beb8781c-fa30-4c08-9903-80892b2a751d",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "receiptId": "f3a61432-92cc-4cc6-8697-453703fbc940",
       "kind": "failed",
       "expected": "failed",
       "actionSequences": [
@@ -580,8 +580,8 @@
     {
       "name": "transport-failure-same-receipt-retry",
       "mode": "real",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "receiptId": "beb8781c-fa30-4c08-9903-80892b2a751d",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "receiptId": "f3a61432-92cc-4cc6-8697-453703fbc940",
       "kind": "verified",
       "isCurrent": true,
       "expected": "verified",
@@ -593,8 +593,8 @@
     {
       "name": "injected-target",
       "mode": "injected-target",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "receiptId": "beb8781c-fa30-4c08-9903-80892b2a751d",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "receiptId": "f3a61432-92cc-4cc6-8697-453703fbc940",
       "kind": "mismatch",
       "reason": "target",
       "expected": "mismatch",
@@ -607,8 +607,8 @@
     {
       "name": "target-failure-same-receipt-retry",
       "mode": "real",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "receiptId": "beb8781c-fa30-4c08-9903-80892b2a751d",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "receiptId": "f3a61432-92cc-4cc6-8697-453703fbc940",
       "kind": "verified",
       "isCurrent": true,
       "expected": "verified",
@@ -620,8 +620,8 @@
     {
       "name": "injected-disabled",
       "mode": "real",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "receiptId": "beb8781c-fa30-4c08-9903-80892b2a751d",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "receiptId": "f3a61432-92cc-4cc6-8697-453703fbc940",
       "kind": "disabled",
       "expected": "disabled",
       "actionSequences": []
@@ -629,8 +629,8 @@
     {
       "name": "injected-cancel-after-real-response",
       "mode": "gated-real-read",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "receiptId": "beb8781c-fa30-4c08-9903-80892b2a751d",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "receiptId": "f3a61432-92cc-4cc6-8697-453703fbc940",
       "kind": "cancelled",
       "expected": "cancelled",
       "actionSequences": [
@@ -641,8 +641,8 @@
     {
       "name": "cancel-same-receipt-retry",
       "mode": "real",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "receiptId": "beb8781c-fa30-4c08-9903-80892b2a751d",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "receiptId": "f3a61432-92cc-4cc6-8697-453703fbc940",
       "kind": "verified",
       "isCurrent": true,
       "expected": "verified",
@@ -662,12 +662,12 @@
     {
       "name": "remote-still-accepted-after-local-race",
       "realRemote": true,
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "acceptedIdentity": "4922e7929e1675758d960fc2e68c503fc7b4cf7988a6f766d5a4251e6ebe6d72",
-      "observedIdentity": "4922e7929e1675758d960fc2e68c503fc7b4cf7988a6f766d5a4251e6ebe6d72",
-      "observedWireSha256": "a6801b84699a2f909118aeb49f86a252a8ce6748a58404d737d7e42d6683cc48",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "acceptedIdentity": "28540a0f484856b8218cf87fc4a3df375d6bf7e4ff1302a7c9f4bcf10cc9985e",
+      "observedIdentity": "28540a0f484856b8218cf87fc4a3df375d6bf7e4ff1302a7c9f4bcf10cc9985e",
+      "observedWireSha256": "5ef0ab75483ac46ddbb93760876717d78afd76f35677d92782353729ae149941",
       "npcId": "qa-proof-npc",
-      "dialogueToken": "qa-dialogue-577b3786-69b8-413e-8654-6ec813ffac52"
+      "dialogueToken": "qa-dialogue-87289b68-3b25-422e-b493-5641626bb3f9"
     }
   ],
   "cleanup": {
@@ -675,18 +675,18 @@
     "deferredSettled": true,
     "ownership": {
       "absentBeforeRun": true,
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-      "ownerTitle": "QA persistence proof 577b3786-69b8-413e-8654-6ec813ffac52",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "ownerTitle": "QA persistence proof 87289b68-3b25-422e-b493-5641626bb3f9",
       "observed": {
-        "project_id": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
-        "title": "QA persistence proof 577b3786-69b8-413e-8654-6ec813ffac52"
+        "project_id": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+        "title": "QA persistence proof 87289b68-3b25-422e-b493-5641626bb3f9"
       }
     },
     "remote": {
       "kind": "deleted-and-absence-verified",
-      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
       "commitIds": [
-        "318a8c38-3d7a-430e-8f70-ea46515717a3"
+        "d959e008-3de6-4645-afdb-5058fe9eb39c"
       ]
     },
     "viteClosed": true,
@@ -701,21 +701,21 @@
     "anonValidated": true,
     "configuredProjectLoaded": false,
     "configuredProjectAccessed": false,
-    "fixtureProjectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52"
+    "fixtureProjectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9"
   },
   "commitTransport": {
     "status": 201,
     "commitIds": [
-      "318a8c38-3d7a-430e-8f70-ea46515717a3"
+      "d959e008-3de6-4645-afdb-5058fe9eb39c"
     ]
   },
   "receipt": {
-    "revisionId": "beb8781c-fa30-4c08-9903-80892b2a751d",
-    "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
+    "revisionId": "f3a61432-92cc-4cc6-8697-453703fbc940",
+    "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
     "mutationGeneration": 1,
-    "contentIdentity": "4922e7929e1675758d960fc2e68c503fc7b4cf7988a6f766d5a4251e6ebe6d72",
-    "sha256": "a6801b84699a2f909118aeb49f86a252a8ce6748a58404d737d7e42d6683cc48"
+    "contentIdentity": "28540a0f484856b8218cf87fc4a3df375d6bf7e4ff1302a7c9f4bcf10cc9985e",
+    "sha256": "5ef0ab75483ac46ddbb93760876717d78afd76f35677d92782353729ae149941"
   },
   "assertionsPassed": true,
-  "finishedAt": "2026-09-06T09:56:46.499Z"
+  "finishedAt": "2026-09-06T10:29:04.733Z"
 }
