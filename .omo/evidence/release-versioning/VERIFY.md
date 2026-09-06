@@ -6,6 +6,16 @@ revision and updated evidence, not only the earlier core checkpoint.
 
 ## Completed evidence
 
+The review candidate includes latest main through `147218a2` in merge
+`f9193cc67`. After that merge, the full production build, strict release-script
+typecheck and 153 focused Vitest tests passed. The resulting runtime
+`cd0a7b861dee8393b996655448689ee7c2ae40cf8d0c81c614c4372431bec078`
+was packaged and exercised through real offline boot/movement with exit 0.
+Candidate reports are `.omo/release-candidate-tests.json` and
+`verify-shots/release-candidate/`. The intervening main changes concern BGM
+packaging and event-placement recovery; the publishing UI and community route
+source used by the full interaction evidence below are unchanged.
+
 | Scenario | Lead command / artifact | Observed |
 | --- | --- | --- |
 | Stable identity, Save6 isolation, legacy codecs | Locked review tree at `204ba0077`; `npm run typecheck:app` and five focused test files | Exit 0; 40 tests passed |
