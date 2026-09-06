@@ -8,7 +8,8 @@ import { resolve } from 'node:path';
 // Own the listener and disposable browser profiles. Never attach to a reused server.
 // Run: xvfb-run -a node scripts/qa/map-owned-ai-turns.mjs
 const root = fileURLToPath(new URL('../../', import.meta.url));
-const base = 'http://127.0.0.1:19846';
+const port = Number(process.env.QA_PORT ?? 19846);
+const base = `http://127.0.0.1:${port}`;
 const out = resolve(root, process.env.EVIDENCE_DIR ?? 'output/evidence/map-owned-overlays/phase2/green');
 const A = 'qa_map_a';
 const B = 'qa_map_b';
@@ -53,13 +54,13 @@ await mkdir(out, { recursive: true });
 try {
   // A successful exclusive bind proves the exact host/port was free before launch.
   const probe = createServer();
-  await new Promise((yes, no) => { probe.once('error', no); probe.listen(19846, '127.0.0.1', yes); });
+  await new Promise((yes, no) => { probe.once('error', no); probe.listen(port, '127.0.0.1', yes); });
   await new Promise((yes, no) => probe.close(error => error ? no(error) : yes()));
   record('port-verified-free', { base, root });
   const ready = deferred('Vite ready');
-  server = spawn(process.execPath, ['node_modules/vite/bin/vite.js', '--host', '127.0.0.1', '--port', '19846', '--strictPort'], {
+  server = spawn(process.execPath, ['node_modules/vite/bin/vite.js', '--host', '127.0.0.1', '--port', String(port), '--strictPort'], {
     cwd: root, detached: true,
-    env: { ...process.env, DEV_SERVER_NO_TLS: '1', E2E_FREEZE_DEV_SERVER: '1', DEV_SERVER_PORT: '19846', NO_COLOR: '1' },
+    env: { ...process.env, DEV_SERVER_NO_TLS: '1', E2E_FREEZE_DEV_SERVER: '1', DEV_SERVER_PORT: String(port), NO_COLOR: '1' },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
   server.once('error', ready.reject);
