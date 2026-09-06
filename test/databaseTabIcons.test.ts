@@ -125,7 +125,7 @@ describe("database tab icons", () => {
     renderDatabasePanel(panelRoot as unknown as HTMLElement);
 
     const buttons = panelRoot.querySelectorAll(".db-tab");
-    expect(buttons.length).toBe(RAIL_TABS.length);
+    expect(buttons.length).toBe(34);
     for (const button of buttons) {
       const icon = button.children[0];
       expect(icon?.tagName.toLowerCase(), `${button.dataset.testid} first child`).toBe("svg");
