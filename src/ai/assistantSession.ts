@@ -3884,6 +3884,7 @@ export class AssistantSession {
         );
         // Only exact originals delivered to the writer count at the existing read seam.
         this.originalContext!.observeDelivered(requestMessages, grounded.includedIds, this.readEvidence);
+        this.readEvidence.observeDelivered(requestMessages);
       } catch (cause) {
         if (isLlmAbortError(cause) || signal?.aborted) {
           this.lastTurnFailed = false;
@@ -4097,7 +4098,6 @@ export class AssistantSession {
       const failedRecords = new Map<string, BatchRecordTarget>();
       const failedWriteTargets = new Map<string, string>();
       const successfulWriteTargets = new Set<string>();
-      const batchReads: { name: string; args: Record<string, unknown>; result: ToolResult }[] = [];
       // 각 tool_call 실행 → role:"tool" 메시지로 결과 반환.
       for (const call of toolCalls) {
         const parsedCall = parseToolCall(call);
@@ -4123,6 +4123,7 @@ export class AssistantSession {
             name,
             content: JSON.stringify(toolResultForModel(result)),
           });
+          if (tool?.mode === "read") this.readEvidence.queue({ toolCallId: call.id, name, args, result });
         };
         try {
           // 스펙 게이트: set_build_spec은 세션이 직접 처리(검증·활성화)하고,
@@ -4262,7 +4263,6 @@ export class AssistantSession {
             }
           }
           if (tool?.mode === "read" || name === "get_original_context") {
-            batchReads.push({ name, args, result: toolResult });
             if (!toolResult.ok) failedReadInBatch ??= name;
           }
           // 읽기 툴도 기록한다 — 플래너가 `successTools:["get_map_region"]` 같은 확인 항목을 자주 쓰는데
@@ -4413,8 +4413,6 @@ export class AssistantSession {
         this.addExecutionHintIfNeeded();
       }
 
-      // 반환된 조회 결과는 다음 모델 응답에서만 참조 근거로 쓴다.
-      for (const read of batchReads) this.readEvidence.observe(read.name, read.args, read.result);
       if (signal?.aborted) return { assistantText: "사용자가 중단했습니다", proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "aborted" };
       // WorkPlan advance: successTools auto-complete OR complete/skip tools moved the cursor.
       await this.noteSuccessfulTools([...this.turnSuccessfulTools], onEvent);

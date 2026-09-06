@@ -1,8 +1,15 @@
 import type { Project } from "@/project/types";
 import type { ToolResult } from "@/editor/tools/types";
 import type { IntentDeclaration } from "./intentDeclaration";
+import type { ChatMessage } from "./llmClient";
 
 type ReadContract = NonNullable<IntentDeclaration["readBeforeWrite"]>;
+type PendingRead = {
+  readonly toolCallId: string;
+  readonly name: string;
+  readonly args: Record<string, unknown>;
+  readonly result: ToolResult;
+};
 const RECORD_COLLECTIONS: Readonly<Record<string, string>> = {
   item: "items", enemy: "enemies", troop: "troops", actor: "actors", skill: "skills", equipment: "equipment",
 };
@@ -31,6 +38,7 @@ export class ToolReadEvidence {
   private collections = new Set<string>();
   private ids = new Map<string, Set<string>>();
   private fullRecords = new Map<string, string>();
+  private pending = new Map<string, PendingRead>();
 
   begin(contract: ReadContract | undefined): void {
     this.contract = contract;
@@ -40,6 +48,34 @@ export class ToolReadEvidence {
     this.collections.clear();
     this.ids.clear();
     this.fullRecords.clear();
+    this.pending.clear();
+  }
+
+  /** Execution is not delivery. Capture exact data before later draft edits can change it. */
+  queue(read: PendingRead): void {
+    if (!read.result.ok || !["get_project_summary", "get_map_region", "find_events", "get_event", "get_database_records"].includes(read.name)) return;
+    this.pending.set(read.toolCallId, structuredClone(read));
+  }
+
+  /** Only call for the actual writer request after it returns, before executing its response. */
+  observeDelivered(messages: readonly ChatMessage[]): void {
+    for (const message of messages) {
+      if (message.role !== "tool" || message.tool_call_id === undefined || typeof message.content !== "string") continue;
+      const read = this.pending.get(message.tool_call_id);
+      if (!read || message.name !== read.name) continue;
+      let delivered: unknown;
+      try {
+        delivered = JSON.parse(message.content);
+      } catch {
+        // Truncated/rewritten history is not a receipt; leave the read uncredited.
+        continue;
+      }
+      const result = record(delivered);
+      if (result?.ok !== true || result.summary !== read.result.summary
+        || fingerprint(result.data) !== fingerprint(read.result.data)) continue;
+      this.observe(read.name, read.args, read.result);
+      this.pending.delete(message.tool_call_id);
+    }
   }
 
   requiredReadTools(): readonly string[] {

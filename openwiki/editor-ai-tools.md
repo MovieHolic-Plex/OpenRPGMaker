@@ -39,6 +39,18 @@ does not claim arbitrary tool-result paging. Task recipes accompany the catalog 
 map/interior, database/battle, quest/world and life read-write-verify work. Tests:
 `originalContext`, `assistantOriginalContext`, `assistantReadContract`, `aiToolDiscoveryEscalation`.
 
+Native reads follow the same delivery boundary: `ToolReadEvidence.queue` captures the
+executed result without granting credit. After the actual writer request returns, before
+its tools execute, `observeDelivered` matches the pending call ID/name and complete exact
+data against the outgoing messages. Execution, summarizer/reviewer context, sampled grids,
+stripped data and same-response reads cannot grant first-delivery credit. Previously
+delivered credit survives history compaction, but existing current-record fingerprints still
+invalidate changed data. Pending receipts share the goal lifecycle (`begin` clears them;
+genuine continuations retain them), and project switching drops the session as before.
+Regressions: `assistantNativeReadDelivery`, `toolReadDelivery`; the 512,029-character native
+read plus six summaries is refused after real compaction/clamping, then complete original
+paging or a complete current native result enables the subsequent writer response.
+
 ## Full native tool exposure (2026-09-06)
 
 `AssistantSession.runTurnLoop` sends every active editor tool's complete native description
