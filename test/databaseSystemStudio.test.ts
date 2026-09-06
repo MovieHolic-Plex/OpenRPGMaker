@@ -120,6 +120,15 @@ describe("database system studio", () => {
     expect(impactList.textContent).not.toContain("저장/불러오기");
   });
 
+  it("includes configured resume in the overview title summary", () => {
+    store.update((draft) => {
+      draft.system.titleScreen!.menuLabels.resume = "resume-authored-sentinel";
+      draft.system.titleScreen!.menuVisibility.resume = true;
+    });
+    const host = renderSystem();
+    expect(findByTestId(host, "db-system-studio-live-preview")?.textContent).toContain("resume-authored-sentinel");
+  });
+
   it("navigates from an overview card without writing project state", () => {
     // Break named: overview cards are decorative and cannot enter the existing authoring section.
     const host = renderSystem();

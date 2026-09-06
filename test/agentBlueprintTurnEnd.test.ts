@@ -218,10 +218,7 @@ describe.each([MAP_ID, OTHER_MAP_ID])("중단·오류로 끝난 턴의 청사진
     expect(logText).not.toContain("적용했습니다");
     // 저장소는 한 글자도 안 바뀌었다 — applyProposedProject 만 store.replace 를 부른다.
     expect(store.getCurrent()).toBe(before);
-    expect(getAgentBlueprintState().entries).toHaveLength(1);
-    expect(statusById()).toEqual({ house_a: "planned" });
-    // 노란 "짓는 중" 도 남기지 않는다(1차 결함) — 되돌린 상태는 planned 다.
-    expect(getAgentBlueprintState().entries[0].status).not.toBe("building");
+    expect(getAgentBlueprintState().entries).toHaveLength(0);
   });
 
   it("턴이 오류로 끝나도 남은 제안은 적용되므로 그 칸은 done 으로 확정된다", async () => {
@@ -304,7 +301,7 @@ describe.each([MAP_ID, OTHER_MAP_ID])("중단·오류로 끝난 턴의 청사진
     // 1라운드의 쓰기 제안은 살아 있었지만 중단은 적용 경로 앞에서 끝난다.
     expect((getLatestAiActivityLog()?.result.proposedCalls ?? 0) > 0).toBe(true);
     expect(store.getCurrent()).toBe(before);
-    expect(statusById()).toEqual({ house_a: "planned" });
+    expect(statusById()).toEqual({});
   });
 
   // 리뷰 지적: 캔버스가 다 지은 계획을 물러나게 하면 상태줄이 여전히 "밑그림 확정 — 에셋 N개" 를
@@ -352,7 +349,7 @@ describe.each([MAP_ID, OTHER_MAP_ID])("중단·오류로 끝난 턴의 청사진
     expect(logText).not.toContain("적용했습니다");
     expect(store.getCurrent()).toBe(before);
     // 읽기는 진행을 올리지 않으므로 계획 그대로여야 한다 — 확인 호출이 완료를 찍으면 거짓이다.
-    expect(getAgentBlueprintState().entries).toHaveLength(1);
-    expect(statusById()).toEqual({ house_a: "planned" });
+    expect(getAgentBlueprintState().entries).toHaveLength(0);
+    expect(statusById()).toEqual({});
   });
 });

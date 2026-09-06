@@ -11,7 +11,7 @@
   background: transparent;
   border: 0;
   box-shadow: none;
-  color: var(--studio-text, var(--text-1));
+  color: var(--text-1);
   font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
   font-size: 13px;
   line-height: 1.55;

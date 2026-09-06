@@ -24,21 +24,21 @@ import type { WorkPlan } from "@/ai/workPlan";
 import type { BuildSpec } from "@/ai/buildSpec";
 import type { AiDocument } from "@/project/types";
 import {
-  agentBlueprintForMap,
   beginAgentBlueprintTurn,
   commitAgentBlueprintProgress,
-  getAgentBlueprintState,
   markAgentBlueprintProgress,
   retireAgentBlueprint,
   setAgentBlueprintFromSpec,
   settleAgentBlueprintTurn,
   syncAgentBlueprintWithSpec,
 } from "@/editor/agentBlueprint";
+import { getPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
 import { appliedBlueprintRegions } from "@/editor/agentBlueprintRegions";
 import { focusEditorRegion, type EditorFocusRegion } from "@/editor/editorReferenceNavigation";
 import { shouldClearAiHighlightSelection } from "@/editor/transientEditorChrome";
 import {
   clearAgentGhostPreview,
+  replaceAgentGhostPreviewFromProjectDiff,
   createThrottledAgentGhostPreviewUpdater,
   setAgentGhostDraftMapProvider,
   setAgentGhostRunningTool,
@@ -83,7 +83,9 @@ export interface AiTurnRunnerDeps {
   readonly noteNoChanges: (result: TurnResult, extraWarnings?: readonly string[]) => void;
 
   // ── 할 일 목록 표면 ──────────────────────────────────────
-  /** 턴 종료 — 목록은 남기고 활동만 끈다(완료·중단·오류 공통). */
+  /** Every accepted turn, including manual retry, owns fresh live plan chrome. */
+  readonly beginWorkPlanTurn: (opts: { readonly autonomous: boolean; readonly carriedPlan: WorkPlan | null }) => void;
+  /** 턴 종료 — 계획 데이터는 남기고 라이브 표면은 걷는다. */
   readonly settleWorkPlanTurn: () => void;
   readonly refreshWorkPlanSurface: () => void;
   /** work_plan 이벤트 — 항목 체크가 바뀔 때마다 목록을 다시 그린다. */
@@ -129,6 +131,10 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       return;
     }
     deps.surface.turnBusy = true;
+    deps.beginWorkPlanTurn({
+      autonomous: runOpts?.autonomous === true,
+      carriedPlan: session.getWorkPlan(),
+    });
     const turnConversationId = deps.surface.conversationId;
     const turnConversationScope = deps.surface.conversationScope;
     const auditHistoryAtTurnStart = [...deps.surface.controller.auditHistory];
@@ -519,9 +525,6 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         // 적용 결과가 나온 다음에 청사진을 정산한다 — 배치 검증·커밋 게이트가 거부하면
         // (applied === false) 저장소는 그대로이므로 done 은 거짓이다.
         settleBlueprintForTurnEnd(applied ? result.proposedCalls : null);
-        // 시공이 저장소에 들어간 턴이 끝났다 — 밑그림은 착공 전 안내이므로 여기서 물러난다.
-        // 물러난 칸은 다음 턴의 재동기화가 되살리지 않는다(agentBlueprint.retireAgentBlueprint).
-        if (applied) retireAgentBlueprint();
         deps.surface.setStatus(applied ? "대기" : "적용 실패");
         // 변경 카드는 proposalApi.onApplied 가 한 장만 남긴다. 여기서 또 emitChangeCard 를 부르면
         // 한 턴에 카드가 두 장 붙는다(e2e 로 잡혔다).
@@ -551,15 +554,6 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         deps.renderQuickReplies(result.assistantText);
         // 마킹어 재렌더(위 streamedBubbles.forEach) 뒤에서 붙여야 쓸려나가지 않는다.
         decorateAssistantMentions(assistantBubble, result.assistantText, store.getCurrent());
-      }
-      // 밑그림 상태 표시 — 확정된 스펙이 있으면 사용자도 본다(다음 빌드가 이 영역 안에서만 실행됨).
-      // 단 **다 지은** 계획은 알릴 것이 없다: 캔버스가 물러난 뒤에도 이 줄이 계획을 계속 찍으면
-      // 상태줄과 맵이 서로 다른 말을 한다. 이 분기는 쓰기 제안 0건인 턴에서만 달리므로(시공이
-      // 끝난 뒤의 질문·조회 턴) 그대로 두면 오해만 남는다.
-      const activeSpec = session.getActiveSpec();
-      const planVisible = activeSpec !== null && agentBlueprintForMap(getAgentBlueprintState(), activeSpec.mapId).length > 0;
-      if (activeSpec && planVisible && turnWrites.length === 0 && completenessWarnings.length === 0 && result.stoppedReason !== "error") {
-        deps.surface.setStatus(`밑그림 확정 — 에셋 ${activeSpec.assets.length}개`);
       }
       if (result.error) appendErrorWithRetry(result.error, session, requestText, runOpts);
     } catch (cause) {
@@ -626,6 +620,20 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         });
         return;
       }
+      // Presentation belongs to the finished owner turn, not the retained BuildSpec.
+      // Settlement above still follows actual writes; retirement must not claim completion.
+      // Include shapes added internally by automatic spec expansion, not only emitted specs.
+      syncAgentBlueprintWithSpec(session.getActiveSpec());
+      retireAgentBlueprint();
+      clearAgentGhostPreview();
+      const pendingRegion = getPendingRegionApply();
+      if (pendingRegion) {
+        // Region approval owns its own draft. Return the shared preview surface to it.
+        setAgentGhostDraftMapProvider((mapId) => pendingRegion.clippedProject.maps[mapId]);
+        replaceAgentGhostPreviewFromProjectDiff(pendingRegion.baseProject, pendingRegion.clippedProject);
+      } else {
+        setAgentGhostDraftMapProvider(null);
+      }
       // highlight_map_region 은 질문용 강조라 사용자 선택이 아니다. 턴이 끝나면 사각형을 걷는다.
       if (shouldClearAiHighlightSelection(highlightedRegionThisTurn) && editorState.get().selection) {
         editorState.set({ selection: null });
@@ -636,8 +644,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       deps.surface.refreshAbortButton();
       // 턴이 끝나면 맥락/사용량이 움직였다 — 게이지는 여기서만 갱신하면 항상 최신이다.
       deps.refreshContextMeter();
-      // 턴 종료(정상 완료·중단·적용 실패 포함): 할 일 목록은 남기고 활동만 끈다 — 사용자가 뭐가 됐고
-      // 뭐가 남았는지 읽어야 한다. 자동 접기는 active 가 꺼지면서 재개된다. 다음 턴은 beginWorkPlanTurn 이 이어받는다.
+      // End live planning chrome without deleting the session plan or its audit history.
       if (deps.workPlanSurfaceState) {
         deps.workPlanSurfaceState.stoppedReason ??= abortController.signal.aborted
           ? "aborted"

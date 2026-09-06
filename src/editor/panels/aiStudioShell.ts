@@ -10,7 +10,7 @@ import type { WorkItem, WorkPlan } from "@/ai/workPlan";
 import { addMap } from "@/editor/actions";
 import { editorState } from "@/editor/editorState";
 import { selectEditorMap } from "@/editor/mapSelection";
-import { directorStartPrompts, readAgentBrief } from "@/editor/panels/aiAgentBrief";
+import { readAgentBrief } from "@/editor/panels/aiAgentBrief";
 import {
   renderChangePreviewCard,
   type ChangePreviewInput,
@@ -631,27 +631,12 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     if (brief.mapSize) meta.push(brief.mapSize);
     meta.push(`이벤트 ${brief.eventCount}`);
     meta.push(brief.layerShort);
-    const prompts = directorStartPrompts(brief);
     briefing.replaceChildren(
       el("p", { class: "ai-studio-kicker", text: "지금 이 장면" }),
       el("h3", { class: "ai-studio-briefing-title", text: brief.mapName }),
       el("p", { class: "ai-studio-briefing-meta", text: meta.join(" · ") }),
       ...(brief.deficit ? [el("p", { class: "ai-studio-briefing-deficit", text: brief.deficit })] : []),
-      el("div", {
-        class: "ai-studio-suggest-list",
-        children: prompts.map((prompt) =>
-          el("button", {
-            class: "ai-studio-suggest",
-            attrs: { type: "button", title: prompt.instruction },
-            dataset: { testid: "ai-studio-suggest", prompt: prompt.id },
-            children: [
-              el("b", { text: prompt.label }),
-              el("span", { text: prompt.instruction }),
-            ],
-            on: { click: () => options.onSuggest?.(prompt.instruction) },
-          }),
-        ),
-      }),
+
     );
   };
 

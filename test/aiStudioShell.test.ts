@@ -466,7 +466,7 @@ describe("스튜디오 콘솔(재개편)", () => {
     expect(findByTestId(root, "ai-studio-work")?.textContent).toContain("광장을 꾸민다");
   });
 
-  it("빈 대화에는 「지금 이 장면」 브리핑이 뜨고, 제안을 누르면 onSuggest 가 받는다", () => {
+  it("빈 대화에는 장면 정보만 보이고 추천은 없다", () => {
     const received: string[] = [];
     const { shell, root, chatLog } = standaloneShell({ onSuggest: (text) => received.push(text) });
     const briefing = findByTestId(root, "ai-studio-briefing");
@@ -474,10 +474,8 @@ describe("스튜디오 콘솔(재개편)", () => {
     expect(briefing?.hidden).toBe(false);
     expect(briefing?.textContent).toContain("빈 맵");
     const suggest = findByTestId(root, "ai-studio-suggest");
-    expect(suggest).toBeTruthy();
-    suggest?.click();
-    expect(received.length).toBe(1);
-    expect(received[0]?.length).toBeGreaterThan(0);
+    expect(suggest).toBeNull();
+    expect(received).toHaveLength(0);
 
     chatLog.append(new FakeElement("div"));
     shell.refreshMonitor();

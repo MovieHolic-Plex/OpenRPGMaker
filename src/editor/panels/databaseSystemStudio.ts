@@ -1,4 +1,6 @@
-import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { listTitleMenuOptions } from "@/player/titleScreen";
+import { resolveFontSelection, FONT_ROLE_LABELS, FONT_ROLES, fontOptionsForRole } from "@/project/fontRegistry";
+import { listDatabaseResourceOptions } from "@/editor/panels/databaseResourcePickerDialog";
 import { BATTLE_SKINS, resolveSkinId } from "@/battle/skins/registry";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import { resolvePlayResolution } from "@/project/playResolution";
@@ -6,11 +8,10 @@ import { buildStoryFlagUsageIndex, usageBucketFor } from "@/project/storyFlagUsa
 import type { Project, StoryFlagKind, TitleScreenSettings } from "@/project/types";
 import { el } from "@/util/dom";
 
-type SystemStudioTarget = "party" | "display" | "resources" | "startup" | "optin" | "time" | "typechart" | "title";
+type SystemStudioTarget = "party" | "display" | "font" | "resources" | "startup" | "optin" | "time" | "typechart" | "title";
 
 type StudioCard = {
   readonly id: string;
-  readonly icon: string;
   readonly title: string;
   readonly description: string;
   readonly status: string;
@@ -59,8 +60,16 @@ export function renderSystemStudioOverview(project: Project): HTMLElement {
             class: "db-system-studio-main",
             children: [
               primaryCardGrid(project),
-              stateRegistry(stateRows),
               ruleCardGrid(project),
+              el("div", {
+                class: "db-system-studio-no-results", dataset: { testid: "db-system-studio-no-results" },
+                children: [el("p", { text: "일치하는 설정이 없습니다." }), el("button", {
+                  class: "btn", text: "검색 지우기", attrs: { type: "button" },
+                  dataset: { testid: "db-system-studio-search-reset" },
+                  on: { click: () => { search.value = ""; filterStudio(studio, ""); search.focus(); } },
+                })],
+              }),
+              stateRegistry(stateRows),
             ],
           }),
           livePreview(project, titleScreen),
@@ -70,6 +79,7 @@ export function renderSystemStudioOverview(project: Project): HTMLElement {
   });
 
   search.addEventListener("input", () => filterStudio(studio, search.value));
+  filterStudio(studio, "");
   return studio;
 }
 
@@ -87,13 +97,14 @@ function resolvedTitleScreen(project: Project): TitleScreenSettings {
   };
 }
 
-export function wireSystemStudioOverview(root: HTMLElement): void {
-  for (const entry of Array.from(root.querySelectorAll<HTMLButtonElement>("button"))) {
+export function wireSystemStudioOverview(root: HTMLElement, source: HTMLElement = root): void {
+  for (const entry of Array.from(source.querySelectorAll<HTMLButtonElement>("button"))) {
     const systemTarget = entry.dataset.systemTarget;
     if (systemTarget) {
       entry.addEventListener("click", () => {
         const button = root.querySelector<HTMLElement>(`[data-testid="db-system-nav-${systemTarget}"]`);
         button?.click();
+        button?.focus({ preventScroll: true });
       });
     }
     const databaseTarget = entry.dataset.databaseTarget;
@@ -104,7 +115,7 @@ export function wireSystemStudioOverview(root: HTMLElement): void {
       });
     }
   }
-  root.querySelector<HTMLElement>("[data-testid='db-system-studio-play-test']")?.addEventListener("click", () => {
+  source.querySelector<HTMLElement>("[data-testid='db-system-studio-play-test']")?.addEventListener("click", () => {
     if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("oprn:test-play-window"));
   });
 }
@@ -156,25 +167,22 @@ function primaryCardGrid(project: Project): HTMLElement {
   const cards: readonly StudioCard[] = [
     {
       id: "startup",
-      icon: "↗",
       title: "시작 설정",
       description: "게임 시작 흐름과 초기 전투",
-      status: project.system.initialTroopId ? "초기 전투 설정됨" : "초기 적 그룹 없음",
-      statusKind: project.system.initialTroopId ? "ok" : "warn",
+      status: project.database.troops.find((troop) => troop.id === project.system.initialTroopId)?.name ?? "초기 전투 없음 (선택 사항)",
+      statusKind: "neutral",
       target: "startup",
     },
     {
       id: "party",
-      icon: "◎",
       title: "파티",
       description: "초기 멤버와 플레이어 구성",
-      status: `${project.system.startActorIds.length}명 구성`,
+      status: project.system.startActorIds.map((id) => project.database.actors.find((actor) => actor.id === id)?.name ?? id).join(", ") || "초기 멤버 없음",
       statusKind: project.system.startActorIds.length > 0 ? "ok" : "warn",
       target: "party",
     },
     {
       id: "display",
-      icon: "▣",
       title: "화면",
       description: "플레이 화면의 논리 해상도",
       status: `${resolution.width}×${resolution.height}`,
@@ -183,18 +191,24 @@ function primaryCardGrid(project: Project): HTMLElement {
     },
     {
       id: "time",
-      icon: "◷",
       title: "시간",
       description: "시간 흐름, 달력, 타임스케일",
-      status: timeEnabled ? "사용 중" : "사용 안 함",
+      status: timeEnabled ? `${project.system.timeSystem?.dayStartHour ?? 6}:00–${project.system.timeSystem?.dayEndHour ?? 26}:00 · 계절당 ${project.system.timeSystem?.daysPerSeason ?? 28}일` : "사용 안 함",
       statusKind: timeEnabled ? "ok" : "neutral",
       target: "time",
     },
   ];
+  const fonts = resolveFontSelection(project.system.fonts);
+  const resources = [project.system.titleResourceId, project.system.systemResourceId, project.system.battleSystemResourceId].filter(Boolean);
+  const additional: StudioCard[] = [
+    { id: "font", title: "폰트", description: "UI · 픽셀 · 고정폭 역할별 글꼴", status: FONT_ROLES.map((role) => `${FONT_ROLE_LABELS[role]} ${fontOptionsForRole(role).find((entry) => entry.id === fonts[role])?.label ?? fonts[role]}`).join(" · "), statusKind: "neutral", target: "font" },
+    { id: "resources", title: "리소스", description: "타이틀 · 창 · 전투 공유 그래픽", status: `${resources.length}/3개 선택`, statusKind: "neutral", target: "resources" },
+    { id: "typechart", title: "타입 상성", description: "공격 → 방어 배율", status: `${project.system.typeChart?.types.length ?? 0}개 타입`, statusKind: "neutral", target: "typechart" },
+  ];
   return el("section", {
     class: "db-system-studio-card-grid",
     attrs: { "aria-label": "핵심 시스템" },
-    children: cards.map((card) => studioCard(card, "primary")),
+    children: [...cards, ...additional].map((card) => studioCard(card, "primary")),
   });
 }
 
@@ -207,10 +221,11 @@ function stateRegistry(rows: readonly StateRow[]): HTMLElement {
           text: "아직 이름 붙인 진행 상태가 없습니다. 스위치나 변수에 의미 있는 이름을 붙여 보세요.",
         }),
       ];
-  return el("section", {
-    class: "db-system-studio-panel db-system-studio-state db-system-studio-searchable",
+  return el("details", {
+    class: "db-system-studio-panel db-system-studio-state",
     dataset: { testid: "db-system-studio-state-table", searchText: "진행 상태 플래그 변수 조건 스토리" },
     children: [
+      el("summary", { text: "진행 상태와 연결 데이터" }),
       el("header", {
         class: "db-system-studio-panel-header",
         children: [
@@ -223,26 +238,21 @@ function stateRegistry(rows: readonly StateRow[]): HTMLElement {
           el("div", {
             class: "db-system-studio-state-actions",
             children: [
-              el("span", {
-                class: "db-system-studio-filter active",
-                text: "전체",
-                attrs: { "aria-current": "true" },
-              }),
               el("button", {
                 class: "db-system-studio-filter",
                 text: "플래그",
-                attrs: { type: "button", "aria-pressed": "false" },
+                attrs: { type: "button" },
                 dataset: { databaseTarget: "switches" },
               }),
               el("button", {
                 class: "db-system-studio-filter",
                 text: "변수",
-                attrs: { type: "button", "aria-pressed": "false" },
+                attrs: { type: "button" },
                 dataset: { databaseTarget: "variables" },
               }),
               el("button", {
                 class: "db-system-studio-add-state",
-                text: "+ 상태 추가",
+                text: "스위치에서 관리",
                 attrs: { type: "button" },
                 dataset: { databaseTarget: "switches" },
               }),
@@ -278,7 +288,7 @@ function ruleCardGrid(project: Project): HTMLElement {
   const combatFlow = project.system.battleFlow === "strict" ? "턴 전투" : "게이지 전투";
   const activeSlots = project.system.activeSlots ? `${project.system.activeSlots}명` : "자동";
   const battleSkin = BATTLE_SKINS[resolveSkinId(project.system.battleUiStyle)].label;
-  const battleModel = project.system.battleModel === "gen1" ? "Gen1 · 구현 중" : "기본";
+  const battleModel = project.system.battleModel === "gen1" ? "Gen1" : "기본";
   const enabledFeatureCount = [project.system.skillSystem?.enabled, project.system.actionCombat?.enabled]
     .filter((value) => value === true).length;
   const titleScreen = resolvedTitleScreen(project);
@@ -286,7 +296,6 @@ function ruleCardGrid(project: Project): HTMLElement {
   const cards: readonly StudioCard[] = [
     {
       id: "combat",
-      icon: "⚔",
       title: "전투 규칙",
       description: `${combatFlow} · 참전 ${activeSlots}`,
       status: `${combatFlow} · ${activeSlots}`,
@@ -302,7 +311,6 @@ function ruleCardGrid(project: Project): HTMLElement {
     },
     {
       id: "features",
-      icon: "✧",
       title: "기능 확장",
       description: "실제로 켠 선택 기능과 데이터 수",
       status: `활성 기능 ${enabledFeatureCount}개`,
@@ -317,7 +325,6 @@ function ruleCardGrid(project: Project): HTMLElement {
     },
     {
       id: "title",
-      icon: "▤",
       title: "타이틀",
       description: "시작 화면의 표시·메뉴·오디오",
       status: `메뉴 ${titleMenuCount}개`,
@@ -327,7 +334,7 @@ function ruleCardGrid(project: Project): HTMLElement {
         { label: "표시 방식", value: titlePresentationLabel(titleScreen) },
         { label: "메뉴 항목", value: `${titleMenuCount}개` },
         { label: "배경", value: titleScreen.backgroundResourceId || project.system.titleResourceId ? "설정됨" : "기본" },
-        { label: "음악", value: titleScreen.musicResourceId ? "설정됨" : "없음" },
+        { label: "음악", value: titleScreen.musicResourceId ? listDatabaseResourceOptions("music", project).find((entry) => entry.id === titleScreen.musicResourceId)?.name ?? titleScreen.musicResourceId : "없음" },
       ],
     },
   ];
@@ -366,7 +373,6 @@ function studioCard(card: StudioCard, variant: "primary" | "rule"): HTMLElement 
       ...(card.target ? { systemTarget: card.target } : {}),
     },
     children: [
-      el("span", { class: "db-system-studio-card-icon", text: card.icon, attrs: { "aria-hidden": "true" } }),
       el("span", {
         class: "db-system-studio-card-copy",
         children: [
@@ -398,7 +404,7 @@ function stateTableRow(row: StateRow): HTMLElement {
       el("span", {
         class: "db-system-studio-state-name",
         attrs: { role: "cell" },
-        children: [el("i", { text: row.kind === "switch" ? "⚑" : "◇", attrs: { "aria-hidden": "true" } }), row.key],
+        children: [row.key],
       }),
       el("span", {
         attrs: { role: "cell" },
@@ -411,35 +417,33 @@ function stateTableRow(row: StateRow): HTMLElement {
 }
 
 function livePreview(project: Project, titleScreen: TitleScreenSettings): HTMLElement {
-  const backgroundResourceId = titleScreen.backgroundResourceId ?? project.system.titleResourceId;
-  const backgroundUrl = resolveAssetResourceUrl(backgroundResourceId, { project });
   const menuLabels = visibleTitleMenuLabels(titleScreen);
   const previewStage = el("div", {
     class: "db-system-studio-preview-stage",
-    attrs: {
-      ...(backgroundUrl ? { style: `background-image: linear-gradient(rgba(8,12,20,.22), rgba(8,12,20,.76)), url('${backgroundUrl}')` } : {}),
-    },
     children: [
       el("strong", { text: titleScreen.title || project.meta.title }),
+      el("p", { text: `${titlePresentationLabel(titleScreen)} · 설정된 메뉴` }),
       el("div", {
         class: "db-system-studio-preview-menu",
-        children: menuLabels.map((label, index) => el("span", { class: index === 0 ? "active" : "", text: label })),
+        children: listTitleMenuOptions(titleScreen, { autosaveAvailable: true }).map((option) => el("span", { text: option.label, dataset: { titleMenuOption: option.id } })),
       }),
+      el("p", { text: "이어하기는 자동 저장이 있을 때 표시됩니다. 실제 배치와 연출은 타이틀에서 확인하세요." }),
+      el("button", { class: "btn", text: "타이틀 구성 열기", attrs: { type: "button" }, dataset: { systemTarget: "title", testid: "db-system-studio-title-open" } }),
     ],
   });
   const resolution = resolvePlayResolution(project.system);
   const impacts = [
-    ["▣", "타이틀 메뉴", `${menuLabels.length}개 항목`],
-    ["⌗", "플레이 화면", `${resolution.width}×${resolution.height}`],
-    ["⚔", "전투 흐름", project.system.battleFlow === "strict" ? "턴 전투" : "게이지 전투"],
-    ["⚑", "진행 상태", `${namedStateCount(project)}개 정의`],
+    ["타이틀 메뉴", `${menuLabels.length}개 설정`],
+    ["플레이 화면", `${resolution.width}×${resolution.height}`],
+    ["전투 흐름", project.system.battleFlow === "strict" ? "턴 전투" : "게이지 전투"],
+    ["진행 상태", `${namedStateCount(project)}개 정의`],
   ];
   return el("aside", {
     class: "db-system-studio-preview",
     dataset: { testid: "db-system-studio-live-preview" },
     children: [
       el("header", {
-        children: [el("h3", { text: "라이브 프리뷰" })],
+        children: [el("h3", { text: "타이틀 요약" })],
       }),
       previewStage,
       el("section", {
@@ -447,11 +451,10 @@ function livePreview(project: Project, titleScreen: TitleScreenSettings): HTMLEl
         dataset: { testid: "db-system-studio-impact-list" },
         children: [
           el("h4", { text: "현재 프로젝트 값" }),
-          ...impacts.map(([icon, title, detail]) =>
+          ...impacts.map(([title, detail]) =>
             el("div", {
               class: "db-system-studio-impact-row",
               children: [
-                el("span", { text: icon, attrs: { "aria-hidden": "true" } }),
                 el("span", { children: [el("strong", { text: title }), el("small", { text: detail })] }),
               ],
             }),
@@ -463,11 +466,7 @@ function livePreview(project: Project, titleScreen: TitleScreenSettings): HTMLEl
 }
 
 function visibleTitleMenuLabels(titleScreen: TitleScreenSettings): string[] {
-  return [
-    titleScreen.menuLabels.newGame,
-    ...(titleScreen.menuVisibility.continueGame === false ? [] : [titleScreen.menuLabels.continueGame]),
-    ...(titleScreen.menuVisibility.quit === false ? [] : [titleScreen.menuLabels.quit]),
-  ];
+  return listTitleMenuOptions(titleScreen, { autosaveAvailable: true }).map((option) => option.label);
 }
 
 function titlePresentationLabel(titleScreen: TitleScreenSettings): string {
@@ -525,15 +524,19 @@ function namedStateCount(project: Project): number {
 function systemWarningCount(project: Project): number {
   let count = 0;
   if (project.system.startActorIds.length === 0) count += 1;
-  if (!project.system.initialTroopId) count += 1;
-  if (project.system.timeSystem?.enabled && !project.system.timeSystem.onDayEnd) count += 1;
+  if (project.system.startActorIds.some((id) => !project.database.actors.some((actor) => actor.id === id))) count += 1;
+  if (project.system.initialTroopId && !project.database.troops.some((troop) => troop.id === project.system.initialTroopId)) count += 1;
   return count;
 }
 
 function filterStudio(studio: HTMLElement, rawQuery: string): void {
   const query = rawQuery.trim().toLocaleLowerCase("ko");
+  let matches = 0;
   for (const item of Array.from(studio.querySelectorAll<HTMLElement>(".db-system-studio-searchable"))) {
     const haystack = `${item.dataset.searchText ?? ""} ${item.textContent ?? ""}`.toLocaleLowerCase("ko");
     item.hidden = query !== "" && !haystack.includes(query);
+    if (!item.hidden) matches += 1;
   }
+  const empty = studio.querySelector<HTMLElement>('[data-testid="db-system-studio-no-results"]');
+  if (empty) empty.hidden = matches > 0;
 }

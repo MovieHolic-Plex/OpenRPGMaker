@@ -18,7 +18,7 @@ function renderSystem(): FakeElement {
 function sectionNavButtons(host: FakeElement): FakeElement[] {
   const nav = findByTestId(host, "db-system-section-nav");
   if (!nav) throw new Error("missing section nav");
-  return nav.querySelectorAll(".db-system-section-nav");
+  return nav.querySelectorAll(".db-system-section-button");
 }
 
 function sectionNode(host: FakeElement, slug: string): FakeElement {

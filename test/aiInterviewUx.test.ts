@@ -1,5 +1,5 @@
 // 맵 인터뷰 UX 계약(2026-07-04): 킥오프 프롬프트 / 원탭 답변 칩 파싱 /
-// 메타데이터 전용 제안의 즉시 저장 판정 / 패널에 🎓 버튼·칩 호스트 존재.
+// 메타데이터 전용 제안의 즉시 저장 판정 / 추천 없이 입력·로그·전송 유지.
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { buildInterviewKickoff, buildStructureLearnKickoff, parseQuickReplies, QUICK_REPLY_MARKER } from "@/ai/interviewPrompt";
 import type { ProposedCall } from "@/ai/assistantSession";
@@ -113,9 +113,12 @@ describe("isMetadataOnlyProposal", () => {
 });
 
 describe("패널 인터뷰 UI", () => {
-  it("원탭 칩 호스트는 남고, 스킬 서러 가르치기 3종은 ☰ 에 두지 않는다", () => {
+  it("원탭 칩과 가르치기 진입점 없이 입력·로그·전송을 유지한다", () => {
     const panel = renderWithFakeDom(() => renderAiChatPanel()) as FakeElement;
-    expect(findByTestId(panel, "ai-quick-replies")).toBeTruthy();
+    expect(findByTestId(panel, "ai-quick-replies")).toBeNull();
+    expect(findByTestId(panel, "ai-input")).toBeTruthy();
+    expect(findByTestId(panel, "ai-chat-log")).toBeTruthy();
+    expect(findByTestId(panel, "ai-send")).toBeTruthy();
     expect(findByTestId(panel, "ai-interview")).toBeNull();
     expect(findByTestId(panel, "ai-learn-structure")).toBeNull();
     expect(findByTestId(panel, "ai-demo-teach")).toBeNull();

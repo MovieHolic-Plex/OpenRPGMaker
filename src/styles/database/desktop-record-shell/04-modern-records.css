@@ -787,7 +787,6 @@
     font-weight: 500;
   }
 
-  .database-modal-body .db-system-form,
   .database-modal-body .db-terms-form,
   .database-modal-body .db-utility-form {
     background: var(--bg-raised);
@@ -801,27 +800,19 @@
     padding: 16px;
   }
 
-  .database-modal-body .db-system-form,
   .database-modal-body .db-terms-form {
     align-content: start;
     display: grid;
     gap: 12px;
   }
 
-  .database-modal-body .db-system-form {
-    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
-  }
 
   .database-modal-body .db-terms-form {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .database-modal-body .db-system-form .oprn-db-fieldset:nth-of-type(4),
-  .database-modal-body .db-system-form .oprn-db-fieldset:nth-of-type(5) {
-    grid-column: 1 / -1;
-  }
 
-  .database-modal-body :is(.db-system-form, .db-terms-form) .oprn-db-fieldset {
+  .database-modal-body .db-terms-form .oprn-db-fieldset {
     background: var(--bg-raised);
     border: 1px solid var(--db-modern-line);
     border-radius: 4px;
@@ -831,14 +822,14 @@
     padding: 14px 14px 12px;
   }
 
-  .database-modal-body :is(.db-system-form, .db-terms-form) .oprn-db-fieldset legend {
+  .database-modal-body .db-terms-form .oprn-db-fieldset legend {
     color: var(--text-1);
     font: 700 15px/1.15 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     letter-spacing: 0;
     padding: 0 4px;
   }
 
-  .database-modal-body :is(.db-system-form, .db-terms-form) :is(.db-field, .db-readonly-row) {
+  .database-modal-body .db-terms-form :is(.db-field, .db-readonly-row) {
     align-items: center;
     color: var(--db-modern-muted);
     display: grid;
@@ -855,14 +846,14 @@
     grid-template-columns: minmax(72px, 0.18fr) minmax(0, 1fr);
   }
 
-  .database-modal-body :is(.db-system-form, .db-terms-form) :is(.db-field, .db-readonly-row) > span {
+  .database-modal-body .db-terms-form :is(.db-field, .db-readonly-row) > span {
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .database-modal-body :is(.db-system-form, .db-terms-form) :is(input, select, code) {
+  .database-modal-body .db-terms-form :is(input, select, code) {
     background-color: var(--bg-raised);
     border: 1px solid var(--db-modern-line);
     border-radius: 4px;
@@ -876,27 +867,11 @@
   }
 
   /* chevron 밴드(오른쪽 7~17px) 확보 — 위 단축이 8px 로 덮는다. */
-  .database-modal-body :is(.db-system-form, .db-terms-form) select {
+  .database-modal-body .db-terms-form select {
     padding-right: 24px;
   }
 
-  .database-modal-body .db-system-form .oprn-db-fieldset:nth-of-type(5) {
-    display: grid;
-    gap: 10px;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  }
 
-  .database-modal-body .db-system-form .db-system-preview-well {
-    align-content: start;
-    background: var(--bg-raised);
-    border: 1px solid var(--db-modern-line-soft);
-    border-radius: 4px;
-    box-sizing: border-box;
-    display: grid;
-    gap: 8px;
-    min-width: 0;
-    padding: 10px;
-  }
 
   .database-modal-body .db-system-preview-label {
     color: var(--text-1);

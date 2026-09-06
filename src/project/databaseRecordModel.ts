@@ -747,7 +747,7 @@ function normalizeCareProfile(profile: Partial<ItemCareProfile> | undefined): It
   };
 }
 
-function normalizeMonsterCare(config: Partial<MonsterCareConfig> | undefined): MonsterCareConfig | undefined {
+export function normalizeMonsterCare(config: Partial<MonsterCareConfig> | undefined): MonsterCareConfig | undefined {
   if (!config) return undefined;
   const stepsPerTickRaw = typeof config.stepsPerTick === "number" && Number.isFinite(config.stepsPerTick)
     ? Math.trunc(config.stepsPerTick)
