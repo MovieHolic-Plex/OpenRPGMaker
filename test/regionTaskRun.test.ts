@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { emptyWikiResponse, isWikiExtraction } from "./wikiTransportFixture";
 import {
   buildRegionTaskMessage,
   countAddedMaps,
@@ -163,6 +164,8 @@ describe("runRegionTask", () => {
       writable: true,
       value: async (_input: RequestInfo | URL, init?: RequestInit) => {
         bodies.push(String(init?.body ?? ""));
+        const request = JSON.parse(String(init?.body ?? "{}"));
+        if (isWikiExtraction(request.messages)) return emptyWikiResponse();
         return new Response(
           JSON.stringify({ choices: [{ message: { content: "완료" }, finish_reason: "stop" }] }),
           { status: 200, headers: { "Content-Type": "application/json" } }

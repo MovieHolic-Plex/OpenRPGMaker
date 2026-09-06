@@ -1,5 +1,7 @@
 import type { MapId } from "@/project/types";
 import { el } from "@/util/dom";
+import { registerModal, unregisterModal } from '@/editor/ui/modalStack';
+import { subscribeEditorUiMode } from '@/editor/editorUiMode';
 
 export type MapContextMenuPoint = {
   readonly x: number;
@@ -22,10 +24,12 @@ export type MapContextMenuRequest = {
   readonly mapId: MapId;
   readonly mapName: string;
   readonly point: MapContextMenuPoint;
+  readonly restoreFocus?: () => void;
 };
 
 let activeMenu: HTMLElement | null = null;
 let activeCleanup: (() => void) | null = null;
+let activeRestoreFocus: (() => void) | null = null;
 
 export function openMapContextMenu(request: MapContextMenuRequest): void {
   closeMapContextMenu();
@@ -43,29 +47,26 @@ export function openMapContextMenu(request: MapContextMenuRequest): void {
   }
   document.body.append(menu);
   activeMenu = menu;
+  activeRestoreFocus = request.restoreFocus ?? null;
   positionMenu(menu, request.point);
+  // This is the actual body-mounted child layer, not an inferred sidebar guard.
+  registerModal(menu, () => closeMapContextMenu(true));
 
   const onPointerDown = (event: PointerEvent): void => {
     if (!activeMenu || !(event.target instanceof Node)) return;
     if (!activeMenu.contains(event.target)) closeMapContextMenu();
   };
-  const onDocumentKeyDown = (event: KeyboardEvent): void => {
-    if (event.key === "Escape") {
-      event.preventDefault();
-      closeMapContextMenu();
-    }
-  };
   const onMenuKeyDown = (event: KeyboardEvent): void => handleMenuKeyDown(menu, event);
   const closeOnLayoutChange = (): void => closeMapContextMenu();
 
   document.addEventListener("pointerdown", onPointerDown, true);
-  document.addEventListener("keydown", onDocumentKeyDown);
+  const unsubscribeMode = subscribeEditorUiMode(() => closeMapContextMenu());
   window.addEventListener("resize", closeOnLayoutChange);
   window.addEventListener("scroll", closeOnLayoutChange, true);
   menu.addEventListener("keydown", onMenuKeyDown);
   activeCleanup = () => {
     document.removeEventListener("pointerdown", onPointerDown, true);
-    document.removeEventListener("keydown", onDocumentKeyDown);
+    unsubscribeMode();
     window.removeEventListener("resize", closeOnLayoutChange);
     window.removeEventListener("scroll", closeOnLayoutChange, true);
     menu.removeEventListener("keydown", onMenuKeyDown);
@@ -76,11 +77,15 @@ export function openMapContextMenu(request: MapContextMenuRequest): void {
   else menu.focus();
 }
 
-export function closeMapContextMenu(): void {
+export function closeMapContextMenu(restoreFocus = false): void {
+  const restore = activeRestoreFocus;
+  activeRestoreFocus = null;
   activeCleanup?.();
   activeCleanup = null;
+  if (activeMenu) unregisterModal(activeMenu);
   activeMenu?.remove();
   activeMenu = null;
+  if (restoreFocus) restore?.();
 }
 
 function renderMenuItem(item: MapContextMenuItem): HTMLButtonElement {

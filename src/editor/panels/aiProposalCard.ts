@@ -320,6 +320,7 @@ export function createProposalHost(options: {
     lastAppliedProposalMessage = pendingProposalMessage;
     pendingProposalMessage = null;
     appendBubble("system", `변경 ${calls.length}건을 프로젝트에 적용했습니다. 되돌리려면 [되돌리기](Ctrl+Z).`);
+    if (applied.wikiWarning) appendBubble("system", `게임 변경은 적용됐지만 위키 진행 기록은 갱신하지 못했습니다: ${applied.wikiWarning}`);
     // 배치 진단은 숨기지 않고 남긴다 — 타일은 이미 깔렸고, 마음에 안 들면 되돌리기가 답이다.
     if (layoutIssues.length > 0) {
       appendBubble("system", `배치 진단: ${formatLayoutValidationSummary(layoutIssues)}`);

@@ -39,6 +39,7 @@ import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { inBounds, isPassable } from "../collision";
 import { eventBodyRect, eventCoversPoint, eventPassageRect, overlappingEventPairs } from "../eventFootprintQuery";
 import { rectCells } from "../footprint";
+import { eventRelocationCandidates, eventRequiresPassableTile, type EventRelocation } from "../eventPlacementRecovery";
 import { playerPassageRect, resolvePlayerBody } from "../playerFootprint";
 import { deserialize, serialize } from "../io";
 import { collectProjectReferenceIssues } from "../io/references";
@@ -58,6 +59,8 @@ export interface LintIssue {
   readonly severity: LintSeverity;
   readonly code: string;
   readonly mapId?: string;
+  readonly eventId?: string;
+  readonly relocation?: EventRelocation;
   readonly x?: number;
   readonly y?: number;
   readonly message: string;
@@ -295,6 +298,8 @@ function checkPlayerTouchTilePassability(project: Project, issues: LintIssue[]):
         severity: "warning",
         code: "playerTouch-impassable",
         mapId: map.id,
+        eventId: event.id,
+        relocation: eventRelocationCandidates(project, map, event),
         x: event.x,
         y: event.y,
         message:
@@ -315,6 +320,16 @@ function checkEventUnreachable(project: Project, issues: LintIssue[]): void {
     for (const event of map.events) {
       // 몸 사각 전 칸과 그 칸들의 4방향 이웃을 본다. 1x1 이면 앵커 + 4방 이웃이라 예전과 같다.
       const body = rectCells(eventBodyRect(event));
+      if (eventRequiresPassableTile(event)
+        && rectCells(eventPassageRect(event)).some(cell => !isPassable(project, map, cell.x, cell.y))) {
+        issues.push({
+          severity: "warning", code: "event-character-impassable", mapId: map.id, eventId: event.id,
+          x: event.x, y: event.y,
+          message: `캐릭터 ${event.id}가 통행 불가 타일 위에 있습니다. 지형이나 충돌을 바꾸기 전에 move_event로 위치 이동을 검토하세요.`,
+          relocation: eventRelocationCandidates(project, map, event),
+        });
+        continue;
+      }
       if (body.some((cell) => isPassable(project, map, cell.x, cell.y))) continue;
       const neighbourPassable = body
         .flatMap((cell) => [
@@ -329,6 +344,8 @@ function checkEventUnreachable(project: Project, issues: LintIssue[]): void {
         severity: "warning",
         code: "event-unreachable",
         mapId: map.id,
+        eventId: event.id,
+        relocation: eventRelocationCandidates(project, map, event),
         x: event.x,
         y: event.y,
         message:
@@ -398,6 +415,8 @@ function checkEventFootprintPassability(project: Project, issues: LintIssue[]): 
         severity: "warning",
         code: "event-footprint-impassable",
         mapId: map.id,
+        eventId: event.id,
+        relocation: eventRelocationCandidates(project, map, event),
         x: event.x,
         y: event.y,
         message:
@@ -647,7 +666,9 @@ function checkReachabilitySpecs(
     }
     const result = checkReachability(project, spec.mapId, spec.from, spec.targets);
     for (const point of result.unreachable) {
+      const event = map.events.find(entry => entry.x === point.x && entry.y === point.y);
       issues.push({
+        ...(event ? { eventId: event.id, relocation: eventRelocationCandidates(project, map, event, spec.from) } : {}),
         severity: "error",
         code: "reachability",
         mapId: spec.mapId,
@@ -975,9 +996,6 @@ function checkSystemOptInConsistency(project: Project, issues: LintIssue[]): voi
     issues.push({ severity: "warning", code: "opt-in:tool-actions-without-farmable", message: "도구 규칙이 있으나 적용될 경작 영역이 없습니다." });
   }
   // 10. actionCombat enabled but no action combat maps
-  if (system.actionCombat?.enabled === true) {
-    issues.push({ severity: "warning", code: "deprecated:action-combat", message: "액션 전투는 지원 종료 예정입니다. 지원 전투는 RM식(rm2k3)과 포켓몬식(gen1) 둘뿐이며, 저장된 프로젝트는 계속 동작합니다." });
-  }
   if (system.actionCombat?.enabled === true && actionCombatMaps.length === 0) {
     issues.push({ severity: "warning", code: "opt-in:action-combat-no-map", message: "액션 전투가 활성이나 opt-in 한 맵이 없어 필드 접촉이 턴제로 갑니다." });
   }
@@ -994,6 +1012,9 @@ function checkSystemOptInConsistency(project: Project, issues: LintIssue[]): voi
     issues.push({ severity: "warning", code: "opt-in:item-upgrades-no-call", message: "업그레이드 규칙이 있으나 호출하는 명령이 없습니다." });
   }
   // 14. genre-specific requirements
+  if (system.genre === "action-rpg" && system.actionCombat?.enabled !== true) {
+    issues.push({ severity: "warning", code: "opt-in:genre-action-no-system", message: "장르가 2D 액션 RPG이나 액션 전투 시스템이 꺼져 있습니다." });
+  }
   if (system.genre === "monster-collect" && system.monsterCollection !== true) {
     issues.push({ severity: "warning", code: "opt-in:genre-monster-collect-no-collection", message: "장르가 몬스터 수집이나 포획(monsterCollection)이 꺼져 있습니다." });
   }

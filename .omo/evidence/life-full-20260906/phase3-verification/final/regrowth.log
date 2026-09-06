@@ -1,0 +1,4 @@
+{"records":19,"realNativeStorage":true,"mockedAuthorities":false,"nativePlayerInput":false}
+{"viteClosed":true,"httpListenerStarted":false,"nativeStorageCleared":true}
+(node:3074110) ExperimentalWarning: Web Storage is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)

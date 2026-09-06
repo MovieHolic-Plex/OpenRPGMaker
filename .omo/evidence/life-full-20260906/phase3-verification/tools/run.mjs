@@ -1,0 +1,13 @@
+import { spawnSync, execFileSync } from 'node:child_process';
+import { writeFileSync, openSync, closeSync } from 'node:fs';
+const out = '.omo/evidence/life-full-20260906/phase3-verification/tools';
+const [name, seconds, ...command] = process.argv.slice(2);
+const args = ['--timeout', '900', '/tmp/rpg-zzu-life-full-qa-01a0727b.lock', 'timeout', `${seconds}s`, ...command];
+const fd = openSync(`${out}/${name}.log`, 'w');
+const start = new Date().toISOString();
+const result = spawnSync('flock', args, {cwd:process.cwd(),env:{...process.env,DEV_SERVER_PORT:'35219',DEV_SERVER_NO_TLS:'1',E2E_FREEZE_DEV_SERVER:'1',VITE_CACHE_DIR:`${process.cwd()}/.vite-cache/st_01a076ed-build`},stdio:['ignore',fd,fd]});
+closeSync(fd);
+const receipt={command:['flock',...args],cwd:process.cwd(),head:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),start,end:new Date().toISOString(),exit:result.status,signal:result.signal,error:result.error?.message,log:`${out}/${name}.log`};
+writeFileSync(`${out}/${name}.json`,JSON.stringify(receipt,null,2)+'\n');
+console.log(JSON.stringify(receipt));
+process.exitCode=result.status??1;

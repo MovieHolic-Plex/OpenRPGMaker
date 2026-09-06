@@ -1,0 +1,17 @@
+Auto-merging openwiki/INDEX.md
+CONFLICT (content): Merge conflict in openwiki/INDEX.md
+Auto-merging openwiki/editor-database.md
+Auto-merging openwiki/runtime-project-schema.md
+Auto-merging openwiki/runtime-sessions.md
+CONFLICT (content): Merge conflict in openwiki/runtime-sessions.md
+Auto-merging openwiki/testing.md
+CONFLICT (content): Merge conflict in openwiki/testing.md
+Auto-merging src/editor/panels/databaseLifeCraftingView.ts
+Auto-merging src/player/playSceneMapRuntime.ts
+Auto-merging src/player/playSceneMovement.ts
+Auto-merging src/player/saveSlotValidation.ts
+Auto-merging src/player/saveSlots.ts
+Auto-merging src/project/session.ts
+Auto-merging src/testing/sceneTestRunner.ts
+CONFLICT (content): Merge conflict in src/testing/sceneTestRunner.ts
+Automatic merge failed; fix conflicts and then commit the result.

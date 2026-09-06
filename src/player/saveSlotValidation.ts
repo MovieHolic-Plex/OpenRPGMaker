@@ -237,6 +237,8 @@ function isFarmPlotState(value: unknown): value is NonNullable<PlaySession["farm
   if (value.cropId !== undefined && typeof value.cropId !== "string") return false;
   if (value.stage !== undefined && !isFiniteInteger(value.stage)) return false;
   if (value.growthDays !== undefined && !isFiniteInteger(value.growthDays)) return false;
+  if (value.regrowDaysRemaining !== undefined &&
+      (typeof value.regrowDaysRemaining !== "number" || !Number.isSafeInteger(value.regrowDaysRemaining) || value.regrowDaysRemaining < 0)) return false;
   if (value.dead !== undefined && typeof value.dead !== "boolean") return false;
   if (value.plantedDay !== undefined && !isFarmPlotDate(value.plantedDay)) return false;
   return true;

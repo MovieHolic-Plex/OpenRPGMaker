@@ -1,0 +1,1 @@
+flock --timeout 900 /tmp/rpg-zzu-life-full-qa-01a0727b.lock timeout --signal=TERM --kill-after=15s 300s npm test -- test/lifeSkillDisabledHarvest.test.ts --maxWorkers=2 --no-file-parallelism

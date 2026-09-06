@@ -97,6 +97,16 @@ describe("volume contract — 델타 측정", () => {
 });
 
 describe("volume contract — 상태별 NPC 게이트", () => {
+  it("allows an ordinary one-page guide without inventing stateful behavior", () => {
+    const project = withEvents([npc("guide", [{ conditions: [], commands: [{ kind: "text", body: "Go east." }] }])]);
+    expect(verifyPlacedNpcsHaveStatePages(project, ["guide"]).ok).toBe(true);
+    expect(verifyPlacedNpcsHaveStatePages(project, ["guide"], true).ok).toBe(false);
+    const before = measureVolume(createBlankProject());
+    expect(volumeUnmet(before, measureVolume(project), {
+      authoredMaps: 0, multiPageNpcs: 1, shops: 0, quests: 0,
+    })).toBe(true);
+  });
+
   it("place_npc 결과 eventId 를 뽑는다", () => {
     expect(placedNpcIdFrom("place_npc", { eventId: "ev_chief" })).toBe("ev_chief");
     expect(placedNpcIdFrom("make_villager", undefined, { eventId: "ev_from_args" })).toBe("ev_from_args");
@@ -111,10 +121,10 @@ describe("volume contract — 상태별 NPC 게이트", () => {
         { conditions: [{ kind: "switch", switchId: "story_met", value: true }] },
       ]),
     ]);
-    const blocked = verifyPlacedNpcsHaveStatePages(project, ["ev_thin"]);
+    const blocked = verifyPlacedNpcsHaveStatePages(project, ["ev_thin"], true);
     expect(blocked.ok).toBe(false);
     if (!blocked.ok) expect(blocked.reason).toContain("ev_thin");
-    expect(verifyPlacedNpcsHaveStatePages(project, ["ev_ok"]).ok).toBe(true);
+    expect(verifyPlacedNpcsHaveStatePages(project, ["ev_ok"], true).ok).toBe(true);
     expect(verifyPlacedNpcsHaveStatePages(project, []).ok).toBe(true);
   });
 });

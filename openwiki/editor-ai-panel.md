@@ -69,6 +69,15 @@ Focused contracts: `independentReview`, `assistantIndependentReview`,
 `aiTurnAppliedAccounting`, `regionTaskRun`. Existing `chat` injection remains the
 real-surface-friendly deterministic transport seam, not a production bypass.
 
+## World structure activity labels (2026-09-06)
+
+`author_world_bridge` and `author_world_mountain` explicitly use the world activity
+family in `aiActivityNarration.ts`. They must not fall through the `author_` prefix
+rule, which describes story authoring. The live panel's `ai-activity-live` row and
+the map ghost label consume the same narration function. The registry-wide
+`aiActivityNarration.test.ts` contract requires an explicit classification for
+every registered tool; adding a tool requires checking this contract too.
+
 ## Multi-map construction specifications (2026-09-06)
 
 `AssistantSession` owns one `Map<mapId, {spec, turnIndex}>`; `getActiveSpec()`
@@ -145,6 +154,42 @@ restores those contracts without changing browser checklist ownership.
 
 ### Session-owned acceptance contract
 
+Field-action acceptance (2026-09-07): `IntentDeclaration.actionCombat` carries
+`{ targets: AcceptanceTarget[] }`, with exact existing `mapId` or authored
+`newMapName` targets. This is a structured semantic declaration, not a keyword
+router. `AssistantAcceptanceLedger.requireActionCombat(targets, requestBaseline)`
+retains these obligations separately from planner IDs, so replacement plans and
+repairs of missing spatial acceptance cannot remove them. The `actionCombat`
+criterion requires the runtime-owned receipt from `run_action_combat_test`.
+`captureActionProof(receipt, project, requestedMapId)` validates exact receipt
+ownership, map and current project fingerprint. The async dispatcher must pass
+the original object before JSON serialization and pass the requested map even
+on failed/cancelled runs, which revoke prior success. Any observed content change
+retires old receipts permanently; undo cannot revive them.
+
+`ToolVerificationEvidence.requireTools(successTools)` retains declared verification
+obligations across plan replacement and skipping. `evaluate(applied, draft,
+blockingProblems)` publishes blocked verification evidence rather than a verified
+ledger alongside failed, stale or unexecuted required checks. Scheduling still treats
+skipped items as terminal; these proof obligations must not reactivate skipped items
+or bypass the existing bounded repair limits.
+The skip boundary calls `recordSkippedTools(itemId, successTools)` before advancing;
+`observe(name, args, result, source, workItemId)` only clears that skipped obligation
+on an explicit pass from the same item. Earlier or later same-name checks for
+another item cannot waive it.
+
+The synchronous `playTools` entry for `run_action_combat_test` fails closed unless
+the session's async browser dispatcher intercepts it. `run_scene_test` preflights
+the entire input before autoruns or movement, rejects malformed/unsupported steps
+and never claims field-action combat proof. Wait/spawn tests and turn-based battle
+simulation remain distinct capabilities. Ordinary one-page guides pass the NPC
+outcome gate unless the structured `statefulNpcs` requirement is explicitly true;
+planner-declared `multiPageNpcs` volume is still measured independently.
+Focused regressions: `actionAcceptanceRequirements`, `actionAcceptanceProof`,
+`sceneTestRunner`, `volumeContract`, and the existing acceptance/verification suites.
+Evidence: `output/evidence/action-fixes-acceptance/`. Session wiring and actual
+export-player browser QA are owned by the integrating lead.
+
 `assistantAcceptance.ts` parses structured promises separately from the replaceable
 `WorkPlan`; `assistantAcceptanceLedger.ts` retains their original baselines and
 immutable snapshots. Planner decisions and `set_work_plan` accept
@@ -194,6 +239,15 @@ Regression entry points: `test/assistantAcceptance.test.ts`,
 `test/assistantAcceptanceSession.test.ts`, `test/assistantImageEvidence.test.ts`,
 `test/assistantVisualEvidenceSession.test.ts`, `test/aiStickyChecklist.test.ts`,
 `test/e2e/ai-sticky-checklist.spec.ts`. Evidence: `output/evidence/assistant-sticky/`.
+
+## 자동 프로젝트 위키 (2026-09-07)
+
+일반 대화의 설정·제작 결정은 기존 OAuth LLM으로 추출해 `project.world`에 저장한다.
+의도 선택 전에 기록 저장을 기다리고, 새 대화에서도 관련 문서를 읽는다.
+출처·명시/추론·현재 맵 예외와 실제 적용 기록은 구별한다.
+전체 기록 복구, 오류·경합 처리, 실제 전투 수락 검증은
+[프로젝트 위키](project-wiki.md)를 따른다. 아래의 과거 세계관 AI 배제 기록은
+일반 CRUD·무조건 다이제스트에만 남으며, 이 제한된 위키 경로에는 적용하지 않는다.
 
 ## 브라우저 포커스와 도구 실행 대기 (2026-09-05)
 

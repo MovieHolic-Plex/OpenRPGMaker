@@ -1,0 +1,12 @@
+import {spawnSync,execFileSync} from 'node:child_process';
+import {writeFile} from 'node:fs/promises';
+import {dirname,join} from 'node:path';
+import {fileURLToPath} from 'node:url';
+const out=dirname(fileURLToPath(import.meta.url));
+const [head,tree]=execFileSync('git',['rev-parse','HEAD','HEAD^{tree}'],{encoding:'utf8'}).trim().split('\n');
+if(head!=='e0a5e8a67c48c739fc2b9e16eb48abc2ee85f854')throw new Error('Unexpected source HEAD');
+const args=['--timeout','900','/tmp/rpg-zzu-life-full-qa-01a0727b.lock','timeout','--signal=TERM','--kill-after=15s','300s','node',join(out,'player.mjs')];
+console.log('PARENT8_PLAYER_START');const started=new Date().toISOString();
+const r=spawnSync('flock',args,{encoding:'utf8',maxBuffer:64*1024*1024});
+await writeFile(join(out,'player-check.json'),JSON.stringify({head,tree,command:['flock',...args],started,finished:new Date().toISOString(),exit:r.status,signal:r.signal,stdout:r.stdout??'',stderr:r.stderr??''},null,2)+'\n',{flag:'wx'});
+console.log('PARENT8_PLAYER_END exit='+r.status);process.exitCode=r.status??1;

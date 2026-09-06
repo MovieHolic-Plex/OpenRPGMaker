@@ -1,0 +1,42 @@
+{
+  "command": "npm run gates",
+  "verifiedCodeCommit": "891bbbe897a65ad9ee22487e2a6c3f3f118067c5",
+  "exitCode": 1,
+  "typecheckApp": {"exitCode": 0, "errors": 0},
+  "vitest": {"exitCode": 1, "passed": 16211, "failed": 209, "failedFiles": 103},
+  "scopedTarget": {"passed": 34, "failed": 0},
+  "presetRegression": {"passed": 46, "failed": 0},
+  "scopedFiles": [
+    {"file": "test/aiActivityNarration.test.ts", "passed": 9, "failed": 0},
+    {"file": "test/aiChatObservability.test.ts", "passed": 9, "failed": 0},
+    {"file": "test/aiChatPanelTransportError.test.ts", "passed": 2, "failed": 0},
+    {"file": "test/aiSelectionChipScope.test.ts", "passed": 5, "failed": 0},
+    {"file": "test/noLocalProjectDb.test.ts", "passed": 9, "failed": 0},
+    {"file": "test/aiBootIntent.test.ts", "passed": 5, "failed": 0},
+    {"file": "test/editorWelcome.test.ts", "passed": 16, "failed": 0},
+    {"file": "test/newProjectDialog.test.ts", "passed": 8, "failed": 0},
+    {"file": "test/newProjectPresetHandoff.test.ts", "passed": 2, "failed": 0},
+    {"file": "test/transactionalNewRemoteProject.test.ts", "passed": 13, "failed": 0},
+    {"file": "test/welcomeGenreSystemPresetAction.test.ts", "passed": 2, "failed": 0}
+  ],
+  "css": {
+    "exitCode": 1,
+    "budgetExitCode": 1,
+    "graphExitCode": 0,
+    "reason": "CSS file count 268 exceeds stored baseline 267; this PR does not change CSS files."
+  },
+  "surface": {
+    "exitCode": 1,
+    "examples": [
+      "eventEditorCommitProbe.baseline: new image-generation controls and changed monster options",
+      "eventEditorFormSurface.baseline: image-generation controls and changed monster options",
+      "eventEditorInteractionSurface.baseline: new image-generation queue controls",
+      "eventEditorM2Surface.baseline: new image-generation queue controls",
+      "eventEditorPortalSurface.baseline: picker shapes and NPC graphic teaching controls"
+    ]
+  },
+  "reportedBaselineRelativeRegressions": 43,
+  "attribution": "All 80 tests in the requested repair and adjacent preset scope passed in this full run. Other failures are outside this PR's source/test changes and have not all been independently diagnosed or reproduced on an unmodified full upstream tree. Do not describe the entire repository gate as passed or all remaining failures as proven pre-existing.",
+  "rawVitestReport": ".omo/gates-vitest-report.json",
+  "review": {"decision": "APPROVE", "scopedBlockers": 0, "report": "final-review.md"}
+}

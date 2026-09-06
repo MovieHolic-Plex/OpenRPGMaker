@@ -1,5 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
+import type { ReviewInput } from "@/ai/independentReview";
+import { independentReviewPayload as payload } from "./independentReviewFixture";
 import { defaultAiConfig, type ChatRequest, type ChatResult } from "@/ai/llmClient";
 import { createBlankProject } from "@/project/defaults";
 import { llmSolver, runGoldenTask } from "@/evals/runner";
@@ -8,11 +10,6 @@ import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import type { SessionEvent } from "@/ai/assistantSession";
 import { fixedDeclarer } from "./intentFixture";
 
-function payload(request: ChatRequest): any {
-  const content = request.messages[1]?.content;
-  const text = Array.isArray(content) ? content.find(part => part.type === "text")?.text : content;
-  try { return JSON.parse(String(text)); } catch { return null; }
-}
 const text = (content: string): ChatResult => ({ message: { role: "assistant", content }, finishReason: "stop" });
 const write = (price: number): ChatResult => ({ message: { role: "assistant", content: null, tool_calls: [{
   id: `write_${price}`, type: "function", function: { name: "upsert_item", arguments: JSON.stringify({
@@ -22,7 +19,7 @@ const write = (price: number): ChatResult => ({ message: { role: "assistant", co
 describe("independent result review", () => {
   it("requests a change, repairs the same draft, and reviews the new revision without writer conversation", async () => {
     const project = createBlankProject();
-    const reviews: any[] = [];
+    const reviews: ReviewInput[] = [];
     let writerCalls = 0;
     const session = new AssistantSession(project, {
       config: { ...defaultAiConfig(), agentMode: "chat", maxToolCalls: 12 },
@@ -31,7 +28,7 @@ describe("independent result review", () => {
       priorTranscript: "PRIVATE_WRITER_HISTORY",
       chat: async (_config, request) => {
         const evidence = payload(request);
-        if (evidence?.kind === "independent-review") {
+        if (evidence) {
           expect(request.tools ?? []).toEqual([]);
           expect(request.tool_choice).toBe("none");
           expect(request.messages.map(message => message.role)).toEqual(["system", "user"]);
@@ -47,7 +44,8 @@ describe("independent result review", () => {
         if (writerCalls === 3) {
           const feedback = request.messages.map(message => typeof message.content === "string" ? message.content : "")
             .find(content => content.includes('"requestedChange":'))!;
-          expect(JSON.parse(feedback.slice(feedback.indexOf("\n{") + 1)).findings[0].requestedChange).toBe("Set price to 654");
+          const parsedFeedback: unknown = JSON.parse(feedback.slice(feedback.indexOf("\n{") + 1));
+          expect(parsedFeedback).toMatchObject({ findings: [{ requestedChange: "Set price to 654" }] });
           return { message: { role: "assistant", content: null, tool_calls: [{ id: "fresh", type: "function", function: {
             name: "get_database_records", arguments: JSON.stringify({ collection: "items", ids: ["item_potion"], include: "full" }) } }] }, finishReason: "tool_calls" };
         }
@@ -57,12 +55,12 @@ describe("independent result review", () => {
     });
     const result = await session.sendUserMessage("Set potion price to 654");
     expect(reviews, result.error).toHaveLength(2);
-    expect(reviews[0].revision).not.toBe(reviews[1].revision);
-    expect(reviews[0].originalRequest).toBe("Set potion price to 654");
-    expect(reviews[0].changes).toContainEqual(expect.objectContaining({ path: "/database/items/item_potion",
+    expect(reviews[0]?.revision).not.toBe(reviews[1]?.revision);
+    expect(reviews[0]?.originalRequest).toBe("Set potion price to 654");
+    expect(reviews[0]?.changes).toContainEqual(expect.objectContaining({ path: "/database/items/item_potion",
       before: expect.objectContaining({ price: project.database.items.find(item => item.id === "item_potion")!.price }),
       after: expect.objectContaining({ price: 321 }) }));
-    expect(reviews[1].changes).toContainEqual(expect.objectContaining({ path: "/database/items/item_potion", after: expect.objectContaining({ price: 654 }) }));
+    expect(reviews[1]?.changes).toContainEqual(expect.objectContaining({ path: "/database/items/item_potion", after: expect.objectContaining({ price: 654 }) }));
     expect(result.stoppedReason).toBe("final");
     expect(result.proposedCalls.length).toBeGreaterThan(0);
     expect(session.getProposedProject().database.items.find(item => item.id === "item_potion")?.price).toBe(654);
@@ -84,12 +82,12 @@ function call(name: string, args: object): ChatResult {
 function approval(revision: number): ChatResult {
   return text(JSON.stringify({ revision, verdict: "approved", summary: "Reviewed title", findings: [] }));
 }
-function changeRequest(revision: number): ChatResult {
+function changeRequest(revision: number, problem = "Wrong title"): ChatResult {
   return text(JSON.stringify({ revision, verdict: "changes_requested", summary: "Title needs repair", findings: [{
-    id: "title", target: "/system/titleScreen", problem: "Wrong title", requestedChange: "Change title", validation: "Read title" }] }));
+    id: "title", target: "/system/titleScreen", problem, requestedChange: "Change title", validation: "Read title" }] }));
 }
 function fixture(options: {
-  reviewer?: (evidence: any, request: ChatRequest) => Promise<ChatResult> | ChatResult;
+  reviewer?: (evidence: ReviewInput, request: ChatRequest) => Promise<ChatResult> | ChatResult;
   rounds?: ChatResult[];
   maxToolCalls?: number;
   maxTokens?: number;
@@ -106,7 +104,7 @@ function fixture(options: {
     renderImages: options.renderImages,
     chat: async (_config, request) => {
       const evidence = payload(request);
-      if (evidence?.kind === "independent-review") {
+      if (evidence) {
         reviewRequests.push(request);
         return options.reviewer ? options.reviewer(evidence, request) : approval(evidence.revision);
       }
@@ -210,7 +208,9 @@ describe("review termination and isolation", () => {
       call("run_scene_test", { mapId: "missing", start: { x: 0, y: 0 }, steps: [] })] });
     const result = await f.session.sendUserMessage("Change title and test scene");
     expect(result.review?.status).toBe("changes_requested");
-    expect(payload(f.reviewRequests[0]!).toolResults.some((entry: any) => entry.name === "run_scene_test" && entry.result.ok && entry.result.data.ok === false)).toBe(true);
+    expect(payload(f.reviewRequests[0]!)?.toolResults).toEqual(expect.arrayContaining([expect.objectContaining({
+      name: "run_scene_test", result: expect.objectContaining({ ok: true, data: expect.objectContaining({ ok: false }) }),
+    })]));
     expect(result.review?.findings.some(finding => finding.problem.includes("run_scene_test"))).toBe(true);
     expect(f.session.isDraftReviewApproved()).toBe(false);
   });
@@ -259,7 +259,7 @@ describe("review evidence and final revision boundaries", () => {
     });
     const result = await f.session.sendUserMessage("Change title");
     expect(result.review?.status).toBe("approved");
-    expect(payload(f.reviewRequests[0]!).changes).toContainEqual(expect.objectContaining({ path: "/system",
+    expect(payload(f.reviewRequests[0]!)?.changes).toContainEqual(expect.objectContaining({ path: "/system",
       after: expect.objectContaining({ titleScreen: expect.objectContaining({ title: "Prepared title" }) }) }));
     expect(f.session.isDraftReviewApproved()).toBe(true);
   });
@@ -278,10 +278,7 @@ describe("review evidence and final revision boundaries", () => {
   it("cannot continue forever by paraphrasing failures without repairing", async () => {
     let round = 0;
     const f = fixture({ reviewer: evidence => {
-      const response = changeRequest(evidence.revision);
-      const parsed = JSON.parse(String(response.message.content));
-      parsed.findings[0].problem = `Distinct failure ${++round}`;
-      return text(JSON.stringify(parsed));
+      return changeRequest(evidence.revision, `Distinct failure ${++round}`);
     } });
     const result = await f.session.sendUserMessage("Change title");
     expect(f.reviewRequests).toHaveLength(3);
@@ -308,7 +305,7 @@ describe("evaluation evidence integration", () => {
       matchers: [{ describe: "Requested title exists", check: project => project.system.titleScreen?.title === "Measured title" }] },
     llmSolver({ config: { ...defaultAiConfig(), agentMode: "chat", autonomyLevel: undefined, maxToolCalls: 10 }, chat: async (_config, request) => {
       const input = payload(request);
-      if (input?.kind === "independent-review") return verdict === "approved" ? approval(input.revision) : changeRequest(input.revision);
+      if (input) return verdict === "approved" ? approval(input.revision) : changeRequest(input.revision);
       return round++ === 0 ? call("set_title_screen", { title: "Measured title" }) : text("Writer finished");
     } }));
     expect(result.score.matcherResults[0]?.passed, result.error ?? result.audit).toBe(true);
@@ -332,7 +329,7 @@ describe("no-write authoring and authored start-state review", () => {
       declareIntent: fixedDeclarer(requirement === "acceptance" ? { mode: "create", targetMapId: project.startMapId }
         : { mode: "create", adventure: { village: false, dungeon: false, party: false, battle: true } }),
       chat: async (_config, request) => {
-        if (payload(request)?.kind === "independent-review") reviewCalls++;
+        if (payload(request)) reviewCalls++;
         else writerCalls++;
         return text("UNSUPPORTED_AUTHORING_SUCCESS");
       },
@@ -358,10 +355,10 @@ describe("no-write authoring and authored start-state review", () => {
     ] });
     const result = await f.session.sendUserMessage("Set authored starting party, inventory and gold");
     expect(result.review?.status, result.error).toBe("approved");
-    expect(payload(f.reviewRequests[0]!).changes).toContainEqual({ path: "/session", before: f.project.session,
+    expect(payload(f.reviewRequests[0]!)?.changes).toContainEqual({ path: "/session", before: f.project.session,
       after: f.session.getProposedProject().session });
     expect(f.session.getProposedProject().session).toMatchObject({ partyActorIds: [actorId], inventory: { item_potion: 3 }, gold: 654 });
-    expect(payload(f.reviewRequests[0]!).changes).toContainEqual(expect.objectContaining({ path: "/testPresets",
+    expect(payload(f.reviewRequests[0]!)?.changes).toContainEqual(expect.objectContaining({ path: "/testPresets",
       after: expect.arrayContaining([expect.objectContaining({ id: "review_start", inventory: { item_potion: 5 }, gold: 321 })]) }));
     expect(f.project.session.gold).not.toBe(654);
   });

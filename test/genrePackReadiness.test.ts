@@ -27,13 +27,14 @@ const passingAssertions = (packId: OfficialGenrePackId): GenrePackAssertionRecei
 });
 
 describe("genre pack readiness receipts", () => {
-  it("uses the persisted Phase 4 horror-chase id in the exact five-pack matrix", () => {
+  it("uses persisted genre ids in the exact official matrix", () => {
     expect(OFFICIAL_GENRE_PACK_IDS).toEqual([
       "adventure-jrpg",
       "monster-collect",
       "horror-chase",
       "story-cutscene",
       "farm-life",
+      "action-rpg",
     ]);
   });
 
@@ -224,6 +225,6 @@ describe("genre pack readiness receipts", () => {
 
     expect(result.ok).toBe(false);
     expect(result.unknownPackIds).toEqual(["unknown-pack"]);
-    expect(result.invalidReceiptIndexes).toEqual([6]);
+    expect(result.invalidReceiptIndexes).toEqual([OFFICIAL_GENRE_PACK_IDS.length + 1]);
   });
 });

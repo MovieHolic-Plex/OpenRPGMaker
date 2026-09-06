@@ -4,6 +4,8 @@
 // 왜 이 세 가지가 한 파일인가: 전부 "대화 하나가 어디에 속하고 어디서 입력됐는가"라는 같은
 // 계약의 면이다. 프로젝트 전환은 대화를 갈고, 맵 이동은 갈지 않고 기록만 남긴다.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { emptyWikiResponse, isWikiExtraction } from "./wikiTransportFixture";
+import { sendAiTurn } from "./aiTurnHarness";
 import { AssistantSession } from "@/ai/assistantSession";
 import { AI_CONFIG_STORAGE_KEY } from "@/ai/llmClient";
 import { conversationScopeKey, clearConversations, listConversations, loadConversation, saveConversation } from "@/ai/conversationStore";
@@ -50,8 +52,9 @@ async function flushAsync(): Promise<void> {
   for (let index = 0; index < 30; index += 1) await Promise.resolve();
 }
 
-function renderPanel(dock: "side" | "float" | "glass" = "side"): FakeElement {
-  return renderAiChatPanel({ clock: () => 37_000, getChatDock: () => dock }) as unknown as FakeElement;
+function renderPanel(_legacyDock: "side" | "float" | "glass" = "side"): FakeElement {
+  // The current composer has one layout; these retained session cases share it.
+  return renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
 }
 
 function twoMapProject(): Project {
@@ -82,9 +85,10 @@ function stubChat(): { chat: (config: AiConfig, req: ChatRequest) => Promise<Cha
  * 쓰기까지 함께 잡혀(실측: 첫 전송 직후 2건) 라운드 수 단정이 무너지고, 그 resolver 가
  * 대기 큐에 섞여 `settle` 이 엉뚱한 요청을 깨운다. 채팅 요청은 본문에 messages 가 있다.
  */
-function stubLlmFetch(): { readonly rounds: readonly unknown[]; settleNext: (content: string) => void } {
+function stubLlmFetch(): { readonly rounds: readonly unknown[]; settleNext: (content: string) => void; waitForRound: (count: number) => Promise<void> } {
   const rounds: unknown[] = [];
   const pending: Array<(response: Response) => void> = [];
+  const roundListeners = new Set<() => void>();
   // 턴 시작의 의도 선언(의도 라우터)은 모델 호출 1회다 — 본문 라운드가 아니라 즉시 유효 JSON 으로
   // 답해 라운드 계측·대기열에 섞이지 않게 한다. 본문에 messages 가 있다는 이유만으로 세면
   // 선언 호출까지 잡혀 턴 수 단정이 무너진다.
@@ -99,16 +103,27 @@ function stubLlmFetch(): { readonly rounds: readonly unknown[]; settleNext: (con
     if (!Array.isArray(body.messages)) {
       return Promise.resolve(new Response("{}", { status: 200, headers: { "Content-Type": "application/json" } }));
     }
+    if (isWikiExtraction(body.messages)) return Promise.resolve(emptyWikiResponse());
     if (body.response_format !== undefined) {
       return Promise.resolve(new Response(JSON.stringify({
         choices: [{ message: { role: "assistant", content: INTENT_JSON }, finish_reason: "stop" }],
       }), { status: 200, headers: { "Content-Type": "application/json" } }));
     }
     rounds.push(body);
+    for (const notify of roundListeners) notify();
     return new Promise<Response>((resolve) => pending.push(resolve));
   }));
   return {
     rounds,
+    waitForRound: (count) => new Promise<void>((resolve, reject) => {
+      const timeout = setTimeout(() => { roundListeners.delete(check); reject(new Error(`LLM round ${count} did not start`)); }, 10_000);
+      function check() {
+        if (rounds.length < count) return;
+        clearTimeout(timeout); roundListeners.delete(check); resolve();
+      }
+      roundListeners.add(check);
+      check();
+    }),
     settleNext: (content: string) => {
       const resolve = pending.shift();
       if (!resolve) throw new Error("대기 중인 LLM 요청이 없습니다");
@@ -203,8 +218,9 @@ describe("새 대화 진입점", () => {
     const queue = findByTestId(panel, "ai-pending-queue");
 
     input.value = "이전 대화 요청";
-    send?.click();
-    await flushAsync();
+    const firstStarted = llm.waitForRound(1);
+    const firstTurn = sendAiTurn(panel);
+    await firstStarted;
     expect(llm.rounds).toHaveLength(1);
 
     input.value = "이전 대화 대기 메시지";
@@ -216,7 +232,8 @@ describe("새 대화 진입점", () => {
     expect(queue?.hidden).toBe(true);
 
     llm.settleNext("이전 대화 늦은 응답");
-    await flushAsync();
+    await firstTurn;
+    await whenAiChatPanelSettled();
 
     const resetLog = findByTestId(panel, "ai-chat-log")?.textContent ?? "";
     expect(resetLog).not.toContain("이전 대화 늦은 응답");
@@ -225,11 +242,12 @@ describe("새 대화 진입점", () => {
     expect(llm.rounds).toHaveLength(1);
 
     input.value = "새 대화 요청";
-    send?.click();
-    await flushAsync();
+    const nextStarted = llm.waitForRound(2);
+    const nextTurn = sendAiTurn(panel);
+    await nextStarted;
     expect(llm.rounds).toHaveLength(2);
     llm.settleNext("새 대화 응답");
-    await flushAsync();
+    await nextTurn;
 
     const logText = findByTestId(panel, "ai-chat-log")?.textContent ?? "";
     expect(logText).toContain("새 대화 요청");
@@ -357,8 +375,9 @@ describe("프로젝트 전환", () => {
     await whenAiChatPanelSettled();
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     input.value = "첫 프로젝트에서 시작한 요청";
-    findByTestId(panel, "ai-send")?.click();
-    await flushAsync();
+    const started = llm.waitForRound(1);
+    const turn = sendAiTurn(panel);
+    await started;
     expect(llm.rounds).toHaveLength(1);
 
     identity.mockReturnValue({ kind: "remote", id: "project-two" });
@@ -367,7 +386,7 @@ describe("프로젝트 전환", () => {
     expect(panel.dataset.aiConversation).toBe("empty");
 
     llm.settleNext("늦게 도착한 응답");
-    await flushAsync();
+    await turn;
 
     await whenAiChatPanelSettled();
     const stored = (await listConversations()).filter((conversation) => conversation.turnCount > 0);

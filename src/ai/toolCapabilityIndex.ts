@@ -84,7 +84,7 @@ export function buildToolCapabilityIndex(tools: readonly ToolDefinition[] = acti
     "1. 목록에 있는 이름은 전부 호출 가능한 실제 기능이다.",
     "2. find_tools(query)는 필요한 도구를 찾는 검색 보조이며, 스키마를 열기 위한 필수 단계가 아니다.",
     "3. 목록에 있는 기능을 \"그 기능이 없습니다\"·\"지원하지 않습니다\"라고 보고하거나 work item 을 skip 하는 것은 결함이다 — 실제 도구 정의와 실행 결과를 확인한다.",
-    "4. 단, UX 정책의 진짜 엔진 한계(3D, 실시간 액션 전투, 외부 API/플러그인, 실제 배포 미지원)는 그대로다.",
+    "4. 단, UX 정책의 진짜 엔진 한계(3D, 외부 API/플러그인, 실제 배포 미지원)는 그대로다. 실시간 액션 전투는 set_action_combat과 make_action_enemy로 지원한다.",
   );
   return lines.join("\n");
 }

@@ -36,7 +36,7 @@ export const PLAY_WALKTHROUGH_TOOL = "play_walkthrough";
 /** Checks whose execution success is not evidence that the checked artifact passed. */
 export const VERIFICATION_TOOL_NAMES: ReadonlySet<string> = new Set([
   RUN_LINT_TOOL, EVALUATE_GAME_QUALITY_TOOL, VERIFY_QUEST_TOOL, PLAY_WALKTHROUGH_TOOL,
-  "check_reachability", "run_scene_test", "simulate_battle",
+  "check_reachability", "run_scene_test", "simulate_battle", "run_action_combat_test",
 ]);
 
 /** Tools that author quest records (questId = args.id / args.def.key). */
@@ -261,7 +261,11 @@ export function parseToolVerdict(name: string, result: ToolResultLike): Verdict 
     blocking.push(result.summary?.trim() !== "" && result.summary !== undefined ? result.summary : `${name} 실행 실패`);
   }
 
-  if (name === EVALUATE_GAME_QUALITY_TOOL) {
+  if (name === "run_action_combat_test") {
+    if (data?.pass !== true || data.status !== "verified") {
+      blocking.push(typeof data?.reason === "string" ? data.reason : "Action combat proof is unverified");
+    }
+  } else if (name === EVALUATE_GAME_QUALITY_TOOL) {
     const verdictData = asRecord(data?.verdict);
     if (verdictData?.blocked === true) {
       const integrity = asRecord(data?.integrity);

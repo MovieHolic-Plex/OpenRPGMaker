@@ -1,0 +1,30 @@
+{
+  "command": [
+    "node",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "--help",
+    "--reporter",
+    "--outputFile",
+    "--cache",
+    "--fileParallelism",
+    "--maxWorkers",
+    "--minWorkers",
+    "--configLoader",
+    "--retry"
+  ],
+  "exit": 0,
+  "stdout": "vitest/3.2.4\n\nUsage:\n  $ vitest run [...filters]\n\nOptions:\n  --reporter <name>                                     Specify reporters (default, basic, blob, verbose, dot, json, tap, tap-flat, junit, hanging-process, github-actions) \n  --outputFile <filename/-s>                            Write test results to a file when supporter reporter is also specified, use cac's dot notation for individual outputs of multiple reporters (example: --outputFile.tap=./tap.txt) \n  --fileParallelism                                     Should all test files run in parallel. Use --no-file-parallelism to disable (default: true) \n  --maxWorkers <workers>                                Maximum number or percentage of workers to run tests in \n  --minWorkers <workers>                                Minimum number or percentage of workers to run tests in \n  --retry <times>                                       Retry the test specific number of times if it fails (default: 0) \n  --cache                                               Enable cache. Use '--help --cache' for more info. \n  --configLoader <loader>                               Use bundle to bundle the config with esbuild or runner (experimental) to process it on the fly. This is only available in vite version 6.1.0 and above. (default: bundle) \n",
+  "stderr": "",
+  "sourceEvidence": {
+    "cli": "vitest/dist/chunks/cac.Cb-PYCCB.js:720-731 reporters array=true; outputFile dot notation",
+    "json": "vitest/dist/chunks/index.VByaPkjc.js:1719-1733 failureMessages prefers e.stack over e.message; 1774 getOutputFile(config,\"json\")",
+    "verbose": "vitest/dist/chunks/index.VByaPkjc.js:2115-2145 VerboseReporter prints each failed error.message and inherits DefaultReporter detailed errors"
+  },
+  "chosen": [
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile.json=<unique side report path>"
+  ],
+  "interpretation": "STACK_TRACE_ERROR can be stack capture text while the error.message has the real cause. It is not itself proof of timeout."
+}

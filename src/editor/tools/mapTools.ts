@@ -28,6 +28,8 @@ import { stampTownCityPlot, type TownCityPlotStyle } from "@/project/defaults/to
 import { kitIdForSmallHouseMaterial, type SmallHouseMaterial } from "@/editor/content/dbExtractedHouseTemplate";
 import { recommendMapBgm } from "@/assets/bgmThemeRecommendation";
 import { genId } from "@/util/id";
+import { resolveWikiCombatMode } from "@/ai/projectWikiContext";
+import { isActionCombatMap } from "@/project/actionCombat";
 import type { EncounterTableEntry, FieldSpawnDef, GameEvent, GameMap, PaletteSlotRole, Project, Rect, RoguelikeRoomDef, TilesetDef } from "@/project/types";
 import { applyMapShift } from "@/editor/mapShiftActions";
 import { visitProjectCommands } from "./commandTraversal";
@@ -1079,8 +1081,15 @@ const encounterEntrySchema: JsonSchema = {
 
 const fieldGraphicSchema: JsonSchema = {
   type: "object",
-  description: "EventPageGraphic 형태. 예: {sprite:{type:'uploaded',id:'...'},direction:'down',pattern:0}",
-  additionalProperties: true,
+  description: "생략하면 적 레코드의 몬스터 그림을 사용한다. 지정 시 실제 sprite가 필요하다. query/characterIndex는 지원하지 않는다.",
+  properties: {
+    sprite: { type: "object", properties: { type: { type: "string", enum: ["bundled", "uploaded"] }, id: { type: "string" } }, required: ["type", "id"] },
+    direction: { type: "string", enum: ["up", "down", "left", "right"] },
+    pattern: { type: "integer" },
+    transparent: { type: "boolean" },
+    scale: { type: "number" },
+  },
+  additionalProperties: false,
 };
 
 const characterFootprintSchema: JsonSchema = {
@@ -1205,7 +1214,19 @@ function parseFieldSpawn(draft: Project, map: GameMap, value: unknown, label: st
     spawn.respawnSec = respawnSec;
   }
   if (input.chase !== undefined) spawn.chase = booleanField(input, "chase", label);
-  if (input.graphic !== undefined) spawn.graphic = structuredClone(input.graphic) as FieldSpawnDef["graphic"];
+  if (input.graphic !== undefined) {
+    const graphic = requireRecordValue(input.graphic, `${label}.graphic`);
+    if (graphic.sprite === undefined && graphic.transparent !== true) {
+      throw new ToolError("graphic에는 sprite:{type:'uploaded',id:'실제 리소스 ID'}가 필요합니다. graphic을 생략하면 적의 몬스터 그림을 사용합니다.", { code: "invalid-graphic", mapId: map.id });
+    }
+    if (graphic.sprite !== undefined) {
+      const sprite = requireRecordValue(graphic.sprite, `${label}.graphic.sprite`);
+      if ((sprite.type !== "uploaded" && sprite.type !== "bundled") || typeof sprite.id !== "string" || !sprite.id.trim()) {
+        throw new ToolError("graphic.sprite의 type과 id를 확인하세요.", { code: "invalid-graphic", mapId: map.id });
+      }
+    }
+    spawn.graphic = structuredClone(graphic) as FieldSpawnDef["graphic"];
+  }
   // 진영·발자국·킬 필드를 드롭하면 make_action_enemy 와 스폰 계약이 갈라지고,
   // 저작한 덮어쓰기가 툴 한 번에 조용히 사라진다. 생략 시 키를 안 쓰는 기존 동작은 유지.
   if (input.factionId !== undefined) {
@@ -1544,7 +1565,7 @@ const setEncounterTable: ToolDefinition = {
 
 const makeHuntingGround: ToolDefinition = {
   name: "make_hunting_ground",
-  description: "사냥터 구획을 만든다. fieldSpawns 항목을 추가하고, encounterEntries가 있으면 encounterTable로 설정한다(없으면 area region의 단일 인카운터를 설정). 「사냥터」「몬스터 나오는 숲」의 정본. 지키는 몬스터 한 마리는 place_battle_blocker.",
+  description: "사냥터 구획에 보이는 몬스터를 배치한다. 프로젝트 위키의 전투 방식과 맵별 예외를 따르며, 접촉·액션 전투에서는 랜덤 인카운터를 끈다. 액션 결정이면 시스템과 대상 맵도 활성화한다. 위키 결정이 없으면 encounterEntries/encounterRate 설정을 사용한다. 지키는 몬스터 한 마리는 place_battle_blocker.",
   mode: "write",
   parameters: {
     type: "object",
@@ -1570,6 +1591,9 @@ const makeHuntingGround: ToolDefinition = {
     const map = requireMap(draft, args.mapId as string);
     const troopId = args.troopId as string;
     assertKnownTroop(draft, troopId);
+    const combat = resolveWikiCombatMode(draft, map.id)
+      ?? (isActionCombatMap(draft, map) ? { mode: "action" as const, sourceId: "map.actionCombat" }
+        : draft.system.genre === "adventure-jrpg" ? { mode: "contact" as const, sourceId: "system.genre" } : undefined);
     const area = parseRect(args.area, "area", map);
     const spawn = parseFieldSpawn(draft, map, {
       id: nextFieldSpawnId(map, troopId),
@@ -1586,6 +1610,16 @@ const makeHuntingGround: ToolDefinition = {
       ...(args.onKillSwitchId !== undefined ? { onKillSwitchId: args.onKillSwitchId } : {}),
     }, "fieldSpawn");
     map.fieldSpawns = [...(map.fieldSpawns ?? []), spawn];
+    if (combat && combat.mode !== "random") {
+      map.actionCombat = combat.mode === "action";
+      if (combat.mode === "action") draft.system.actionCombat = { ...draft.system.actionCombat, enabled: true };
+      map.encounterRate = 0;
+      delete map.encounterTable;
+      return {
+        summary: `${map.name} — 보이는 몬스터 배치 (${combat.mode === "action" ? "맵 위 직접 전투" : "접촉 시 전투 화면"})`,
+        data: { mapId: map.id, fieldSpawn: spawn, encounterRate: 0, combatMode: combat.mode, sourceId: combat.sourceId },
+      };
+    }
     const entries = args.encounterEntries !== undefined
       ? parseEncounterEntries(draft, map, args.encounterEntries)
       : [{ troopId, weight: 1, conditions: { region: area } }];

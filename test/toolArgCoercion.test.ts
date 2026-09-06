@@ -17,6 +17,16 @@ function approveDefaultWallVocabulary(ctx: ToolContext): void {
 }
 
 describe("tool argument coercion", () => {
+  it("does not invent a nested destination when scene steps own flat coordinates", () => {
+    const args = {
+      mapId: MAP_ID,
+      start: { x: 10, y: 8 },
+      steps: [{ kind: "set", x: 10, y: 8 }],
+    };
+
+    expect(normalizeToolArgs("run_scene_test", args)).toEqual(args);
+  });
+
   it("coerces numeric strings before schema validation and execution", () => {
     const ctx: ToolContext = { project: createBlankProject() };
 

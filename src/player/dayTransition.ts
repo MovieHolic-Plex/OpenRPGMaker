@@ -5,10 +5,11 @@ import {
   calendarDayKey,
   minutesUntilDayEnd,
   resolveTimeSystem,
+  setGameTimeClock,
   sleepGameTimeUntilMorning,
   type GameTime,
 } from "@/project/gameTime";
-import { absoluteGameMinutes, advanceMakers, type MakerAdvanceResult } from "@/project/makers";
+import { syncMakersToGameTime, type MakerAdvanceResult } from "@/project/makers";
 import type { PlaySession } from "@/project/session";
 import { settleShipping, type ShippingSettlementResult } from "@/project/shipping";
 import { applyDailyWeatherForDate } from "@/project/dailyWeather";
@@ -20,6 +21,7 @@ import { waterFarmPlotsForDailyWeather } from "@/player/farmingWeather";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import { weatherToRuntimeString } from "@/player/weather/weatherModel";
 import { advanceSeasonalForage, type ForageAdvanceResult } from "@/project/seasonalForage";
+import { isGameTime } from "@/player/saveSlotValidation";
 
 export const DAY_TRANSITION_STAGES = ["recovery", "shipping", "calendar", "dailyWeather", "rainWatering", "farm", "forage", "energy", "makers", "animals"] as const;
 export type DayTransitionStage = (typeof DAY_TRANSITION_STAGES)[number];
@@ -41,7 +43,7 @@ export type DayTransitionResult =
   | { readonly ok: true; readonly receipt: DayTransitionReceipt }
   | {
       readonly ok: false;
-      readonly reason: "disabled" | "missing-time" | "stale-day-key" | "already-transitioned" | "recovery" | "shipping" | "forage" | "energy" | "makers" | "animals";
+      readonly reason: "disabled" | "missing-time" | "invalid-time" | "stale-day-key" | "already-transitioned" | "recovery" | "shipping" | "forage" | "energy" | "makers" | "animals";
       readonly stage?: DayTransitionStage;
       readonly sourceKind?: string;
       readonly sourceId?: string;
@@ -49,7 +51,7 @@ export type DayTransitionResult =
 
 export type AdvanceTimeAcrossDayBoundariesResult =
   | { readonly ok: true; readonly time: GameTime; readonly receipts: readonly DayTransitionReceipt[] }
-  | { readonly ok: false; readonly reason: "disabled" | "missing-time" | "invalid-minutes" | "transition-failed" };
+  | { readonly ok: false; readonly reason: "disabled" | "missing-time" | "invalid-time" | "invalid-minutes" | "transition-failed" };
 
 /** Advances ordinary clock minutes while delegating every crossed boundary to transitionToNextDay. */
 export function advanceTimeAcrossDayBoundaries(
@@ -62,7 +64,14 @@ export function advanceTimeAcrossDayBoundaries(
   if (!session.gameTime) return { ok: false, reason: "missing-time" };
   if (!Number.isSafeInteger(minutes) || minutes < 0) return { ok: false, reason: "invalid-minutes" };
 
-  const draft = structuredClone(session);
+  if (minutes === 0) return { ok: true, time: session.gameTime, receipts: [] };
+  if (!isGameTime(session.gameTime)) return { ok: false, reason: "invalid-time" };
+  let draft: PlaySession;
+  try { draft = reconcileLifeState(project, session); }
+  catch (error) {
+    if (!(error instanceof LifeReconciliationError)) throw error;
+    return { ok: false, reason: "transition-failed" };
+  }
   const receipts: DayTransitionReceipt[] = [];
   let remaining = minutes;
   while (remaining > 0) {
@@ -78,8 +87,35 @@ export function advanceTimeAcrossDayBoundaries(
     receipts.push(transition.receipt);
     remaining -= untilBoundary;
   }
+  const makers = syncMakersToGameTime(project, draft);
+  if (!makers.ok && makers.reason !== "disabled") return { ok: false, reason: "transition-failed" };
   replaceSession(session, draft);
   return { ok: true, time: structuredClone(draft.gameTime!), receipts };
+}
+
+/** Set only the clock, preserving ready jobs and cancelling incompatible jobs at the prior clock. */
+export function setTimeWithMakers(
+  project: Project,
+  session: PlaySession,
+  clock: { readonly hour: number; readonly minute?: number },
+): AdvanceTimeAcrossDayBoundariesResult {
+  const system = resolveTimeSystem(project);
+  if (!system) return { ok: false, reason: "disabled" };
+  if (!session.gameTime) return { ok: false, reason: "missing-time" };
+  if (!isGameTime(session.gameTime) || !Number.isFinite(clock.hour) || !Number.isFinite(clock.minute ?? 0)) {
+    return { ok: false, reason: "invalid-time" };
+  }
+  let draft: PlaySession;
+  try { draft = reconcileLifeState(project, session); }
+  catch (error) {
+    if (!(error instanceof LifeReconciliationError)) throw error;
+    return { ok: false, reason: "transition-failed" };
+  }
+  draft.gameTime = setGameTimeClock(session.gameTime, clock.hour, clock.minute, system);
+  const makers = syncMakersToGameTime(project, draft);
+  if (!makers.ok && makers.reason !== "disabled") return { ok: false, reason: "transition-failed" };
+  replaceSession(session, draft);
+  return { ok: true, time: draft.gameTime, receipts: [] };
 }
 
 /**
@@ -94,6 +130,7 @@ export function transitionToNextDay(
   const system = resolveTimeSystem(project);
   if (!system) return { ok: false, reason: "disabled" };
   if (!session.gameTime) return { ok: false, reason: "missing-time" };
+  if (!isGameTime(session.gameTime)) return { ok: false, reason: "invalid-time", stage: "calendar" };
   const normalizedSource = sourceDayKey.trim();
   if (session.dayTransitionLastDayKey === normalizedSource) {
     return { ok: false, reason: "already-transitioned" };
@@ -114,6 +151,7 @@ export function transitionToNextDay(
   }
 
   draft.gameTime = sleepGameTimeUntilMorning(draft.gameTime!, system).time;
+  if (!isGameTime(draft.gameTime)) return { ok: false, reason: "invalid-time", stage: "calendar" };
   const weather = applyDailyWeatherForDate(project, draft, draft.gameTime);
   if (weather) ensureM2Runtime(draft).screen.weather = weatherToRuntimeString(weather);
   else if (draft.m2Runtime) draft.m2Runtime.screen.weather = "none";
@@ -130,18 +168,7 @@ export function transitionToNextDay(
     return { ok: false, reason: "energy", stage: "energy" };
   }
 
-  let makers: MakerAdvanceResult;
-  if (!project.system.makers?.length) {
-    makers = advanceMakers(project, draft, 0);
-  } else {
-    let absoluteMinute: number;
-    try {
-      absoluteMinute = absoluteGameMinutes(draft.gameTime, system);
-    } catch {
-      return { ok: false, reason: "makers", stage: "makers" };
-    }
-    makers = advanceMakers(project, draft, absoluteMinute);
-  }
+  const makers = syncMakersToGameTime(project, draft);
   if (!makers.ok && makers.reason !== "disabled") {
     return { ok: false, reason: "makers", stage: "makers" };
   }

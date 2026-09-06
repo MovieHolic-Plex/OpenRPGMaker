@@ -9,6 +9,7 @@ import {
 import { renderToolImages, type RenderedToolImage } from "@/ai/toolImageRenderer";
 import { conversationScopeKey } from "@/ai/conversationStore";
 import { resolveSurfaceAiConfig } from "@/ai/assistantEndpoint";
+import { createProjectWikiCoordinator } from "@/editor/projectWikiCoordinator";
 import { loadAiConfig } from "@/ai/llmClient";
 import { getAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
 import { isAiConfigReady } from "@/editor/panels/aiChatPanelHelpers";
@@ -186,6 +187,7 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
       state.session = new AssistantSession(store.getCurrent(), {
         config: resolveSurfaceAiConfig("cluster"),
         reviewConfig: resolveSurfaceAiConfig("chat"),
+        prepareProjectWiki: createProjectWikiCoordinator({ getConfig: () => resolveSurfaceAiConfig("cluster") }).prepare,
         contextOptions: {
           currentMapId: currentMapId() ?? undefined,
           // 프로젝트 한정 성향 조회 키. 전역 성향은 이 값과 무관하게 항상 붙는다.

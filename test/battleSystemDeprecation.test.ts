@@ -86,18 +86,16 @@ describe("editor skin dropdown", () => {
   });
 });
 
-describe("action combat deprecation", () => {
-  it("활성화된 액션 전투를 지원 종료 warning 으로 보고한다", () => {
+describe("action combat support", () => {
+  it("supports a correctly opted-in action map without a deprecation warning", () => {
     const project = createBlankProject();
     project.system.actionCombat = { enabled: true };
     const map = project.maps[project.startMapId];
     if (!map) throw new Error("start map missing");
     map.actionCombat = true;
 
-    expect(projectLint(project)).toContainEqual(expect.objectContaining({
-      severity: "warning",
-      code: "deprecated:action-combat",
-    }));
+    expect(isActionCombatMap(project, map)).toBe(true);
+    expect(projectLint(project).some(issue => issue.code === "deprecated:action-combat")).toBe(false);
   });
 
   it("액션 전투가 비활성화되었거나 없으면 지원 종료 issue 를 내지 않는다", () => {

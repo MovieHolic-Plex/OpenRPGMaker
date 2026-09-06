@@ -32,6 +32,7 @@ import { confidenceScore } from "@/project/tilesetPalette";
 import { approvedVocabulary } from "@/project/tileVocabulary";
 import { aiInstructionsSection } from "./projectInstructions";
 import { worldCanonPromptSection } from "./worldCanonContext";
+import { projectWikiContext } from "./projectWikiContext";
 import { AGENT_UX_POLICY_LINES } from "./promptPolicies";
 import { EVENT_PAGE_SEMANTICS_BLOCK } from "./eventPageSemantics";
 import { buildTaskRecipes, buildToolCapabilityIndex } from "./toolCapabilityIndex";
@@ -72,6 +73,7 @@ export interface ContextOptions {
    * 완성된 문자열을 받는다.
    */
   preferenceMemorySection?: string;
+  wikiQuery?: string;
 }
 
 export function resolveContextMapId(options: ContextOptions): string | undefined {
@@ -143,6 +145,7 @@ const INTRO = [
   "3. 쓰기 툴 결과에 issues(오류)가 있으면 그 내용을 읽고 인자를 고쳐 성공할 때까지 재시도하세요.",
   "4. 좌표·타일·리소스 ID는 추측하지 말고 조회 툴로 확인한 값을 사용하세요. 물 위/통행 불가 칸에 NPC를 두지 마세요.",
   "   NPC/주민 배치 = place_npc (통행 불가 칸 자동 착지), 저수준 upsert_event 금지.",
+  "   결과에서 NPC/오브젝트가 움직이지 못하거나 접근 불가이면 지형을 파거나 충돌을 끄는 해결만 하지 말고 위치 이동도 검토하세요. issues.relocation.candidates는 move_event 후보이며 자동 적용 지시가 아닙니다. 기존 ID·대사·페이지·완성된 집을 보존하고, 접근 가능한 이웃이 있는 벽의 문·간판은 그대로 두세요. 후보가 비면 주변을 조회해 다른 위치나 동선 수정을 판단하세요.",
   "5. 파괴적 작업(remove_event 등)은 꼭 필요할 때만, 이유를 먼저 설명하세요.",
   "6. 툴 호출을 아끼지 마세요. 조회·검증·재시도에 필요한 만큼 깊게 사용하세요(제한은 토큰 예산뿐).",
   "   모든 툴 호출에 reason(한 줄)을 넣어라. 사용자 지시의 어느 부분을 이 호출로 처리하는지. 없으면 실행되지 않는다.",
@@ -730,6 +733,8 @@ export function buildSystemPrompt(project: Project, options: ContextOptions = {}
   // 사라진다 — 사라진 줄 아무도 모르는 것이 이 블록의 최악 실패다(색인을 예산 밖에 둔 이유와 동일).
   const designContract = villageDesignContext(project);
   if (designContract) assembled += `\n\n${designContract}`;
+  const wiki = projectWikiContext(project, { query: options.wikiQuery ?? "", mapId: currentMapId });
+  if (wiki.text) assembled += `\n\n## 프로젝트 위키 — 현재 작업의 근거\n아래는 저장된 설정과 제작 결정이다. 명시적 결정과 현재 맵 예외를 따르고, 추론·실제 적용 상태를 구별한다. 자세한 본문은 read_project_wiki로 조회한다.\n${wiki.text}`;
   return withProjectInstructions(
     withWorldCanon(withFixedBlocks(assembled, options.preferenceMemorySection), project.worldCanon),
     project.aiInstructions,

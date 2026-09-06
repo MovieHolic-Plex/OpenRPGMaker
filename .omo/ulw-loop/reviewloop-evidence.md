@@ -203,3 +203,29 @@ git diff --check
   live/final-tree QA remain lead-owned, as requested; no additional build wave.
 - No live DB write: real local apply paths ran with remote persistence disabled and
   external fetch stubbed. No authored game content, push, PR, merge or unrelated edits.
+
+
+## Typed review fixture closeout
+
+- Removed new explicit any from the review-session tests. Reused the existing
+  typed independentReviewPayload parser, typed captured reviews/callbacks as
+  ReviewInput, and asserted unknown tool-result/feedback objects structurally.
+  The distinct-failure fixture constructs its typed response directly instead of
+  mutating an untyped JSON.parse result. No production behavior changed.
+- An intermediate edit left a fragment of the removed local parser and caused a
+  test transform error; it was corrected, not suppressed. Final focused command:
+
+```sh
+npm test -- test/independentReview.test.ts test/assistantIndependentReview.test.ts --pool=threads --maxWorkers=1 --testTimeout=60000
+npm run typecheck:app
+git diff --check
+```
+
+- Final tests: exit 0, 2 files / 52 tests passed in one complete run.
+  `/tmp/reviewloop-typed-fixture-green.log`.
+- App types: exit 0, `/tmp/reviewloop-typed-fixture-types.log`. This is an app-source
+  gate, not a claim of whole-repository test typing. Changed-test LSP diagnostics:
+  none. Explicit-any search over the three new review fixture/test files: no matches.
+- Lead reported another real Firefox composer/review/repair/apply/undo pass and
+  explicitly owns that interim evidence plus final-tree integration/QA. No extra
+  build, provider, merge or broad validation wave was launched here.

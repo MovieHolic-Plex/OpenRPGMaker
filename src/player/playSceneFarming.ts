@@ -8,20 +8,14 @@ import {
 import { DEFAULT_FARMLAND_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
 import { cropGraphicIndexForStage, cropGraphicStages } from "@/project/farmModel";
 import { store } from "@/project/store";
+import type { FarmPlotState } from "@/project/session";
+import { cropStageForPlot } from "@/player/farming";
 import type { CropRecord, TilesetDef } from "@/project/types";
 
 type OverlayGameObject = {
   setOrigin?(x: number, y: number): void;
   setDepth?(depth: number): void;
   setAlpha?(alpha: number): void;
-};
-
-type FarmPlotState = {
-  readonly tilled: boolean;
-  readonly watered: boolean;
-  readonly cropId?: string;
-  readonly stage?: number;
-  readonly dead?: boolean;
 };
 
 // 스텁 씬으로도 돌아가야 하므로 새 멤버는 전부 optional 이고, 없으면 조기 이탈/폴백한다.
@@ -61,7 +55,8 @@ export function renderFarmOverlays(scene: FarmOverlayScene, crops: readonly Crop
     if (plot.tilled) renderTilledSoil(scene, soil, textureKey, x, y, plot.dead === true);
     if (plot.watered) addRect(scene, x, y, WATERED_TINT_COLOR, WATERED_TINT_ALPHA, FARM_BASE_DEPTH + 1);
     if (!plot.cropId) continue;
-    renderCropMarker(scene, x, y, cropById.get(plot.cropId), plot.stage ?? 0, plot.dead === true);
+    const crop = cropById.get(plot.cropId);
+    renderCropMarker(scene, x, y, crop, crop ? cropStageForPlot(crop, plot) : plot.stage ?? 0, plot.dead === true);
   }
 }
 

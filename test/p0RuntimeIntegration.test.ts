@@ -272,7 +272,7 @@ describe("P0 day transition integration", () => {
     delete project.system.farmAnimalBuildings;
     delete project.session.farmAnimals;
     const session = startSession(project, 110);
-    session.gameTime = { year: 1e300, season: "spring", day: 2, hour: 6, minute: 0 };
+    session.gameTime = { year: Number.MAX_SAFE_INTEGER, season: "spring", day: 2, hour: 6, minute: 0 };
     const sourceDayKey = calendarDayKey(session.gameTime);
 
     expect(() => transitionToNextDay(project, session, sourceDayKey)).not.toThrow();
@@ -284,7 +284,7 @@ describe("P0 day transition integration", () => {
     const project = runtimeProject();
     delete project.system.seasonalForage;
     const session = startSession(project, 111);
-    session.gameTime = { year: 1e300, season: "spring", day: 2, hour: 6, minute: 0 };
+    session.gameTime = { year: Number.MAX_SAFE_INTEGER, season: "spring", day: 2, hour: 6, minute: 0 };
     const sourceDayKey = calendarDayKey(session.gameTime);
     const frozen = structuredClone(session);
 

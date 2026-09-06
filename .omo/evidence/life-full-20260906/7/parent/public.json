@@ -1,0 +1,24 @@
+{
+  "head": "9cb85be84746d84789497a1d4297d0c8416d86c8",
+  "tree": "08a922637d08260640b58bdaafca46eb90a5652d",
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "300s",
+    "node",
+    "--experimental-webstorage",
+    "--localstorage-file=/home/main/z-project/rpg-zzu-life-full-crop-regrowth/.omo/evidence/life-full-20260906/7/parent/native-storage",
+    "/home/main/z-project/rpg-zzu-life-full-crop-regrowth/.omo/evidence/life-full-20260906/7/parent/public-probe.mjs"
+  ],
+  "started": "2026-09-06T12:33:19.014Z",
+  "finished": "2026-09-06T12:33:26.637Z",
+  "exit": 0,
+  "signal": null,
+  "stdout": "{\"records\":19,\"realNativeStorage\":true,\"mockedAuthorities\":false,\"nativePlayerInput\":false}\n{\"viteClosed\":true,\"httpListenerStarted\":false,\"nativeStorageCleared\":true}\n",
+  "stderr": "(node:385663) ExperimentalWarning: Web Storage is an experimental feature and might change at any time\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+}
