@@ -7,7 +7,7 @@ import { chromium } from "@playwright/test";
 import { build } from "vite";
 import { startPlayerQaServer, runRuntimeQa } from "../../lib/runtimeQaRun.mjs";
 
-const ROOT = resolve("reports/ingame-shop-2026-09-06");
+const ROOT = resolve(process.env.SHOP_QA_OUTPUT ?? "reports/ingame-shop-2026-09-06");
 const fixturePath = join(ROOT, "qa-fixture.json");
 const project = JSON.parse(await readFile("test/fixtures/projects/item-runtime-qa-v3.json", "utf8"));
 project.meta.title = "상점 런타임 QA · 로컬 테스트 구성";

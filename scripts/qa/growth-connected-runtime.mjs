@@ -5,10 +5,11 @@ import { firefox } from 'playwright';
 import { runRuntimeQa, startPlayerQaServer } from '../lib/runtimeQaRun.mjs';
 import { armDomState, finishDomState, blockRemoteWrites } from './growth-tree-evidence.mjs';
 
-const out = resolve('.omo/evidence/growth-integrated/runtime-connected');
-const persistence = resolve('.omo/evidence/growth-integrated/persistence');
+const out = resolve(process.env.GROWTH_QA_OUTPUT ?? '.omo/evidence/growth-integrated/runtime-connected');
+const persistence = resolve(process.env.GROWTH_QA_FIXTURE_DIR ?? '.omo/evidence/growth-integrated/persistence');
 const proof = JSON.parse(await readFile(`${persistence}/proof.json`, 'utf8'));
 assert.equal(proof.reloaded, true);
+const verificationSource = proof.verificationSource ?? 'Supabase reload';
 await mkdir(out, { recursive: true });
 const server = await startPlayerQaServer();
 const browser = await firefox.launch({ headless: true });
@@ -41,7 +42,7 @@ try {
     projectFixture: `${persistence}/reloaded-project.json`,
     viewport: { width: 1280, height: 800 },
     beats: [
-      { id: 'title', note: 'Supabase에서 다시 읽은 연결 성장 프로젝트', expect: { testidPresent: ['title-screen'] } },
+      { id: 'title', note: `${verificationSource}: 연결 성장 프로젝트`, expect: { testidPresent: ['title-screen'] } },
       { id: 'field', note: '출하 플레이어 진입', ops: [{ kind: 'key', key: 'Enter' }, { kind: 'waitForRuntime' }], expect: { testidAbsent: ['title-screen'], playerSpriteTextureLoaded: true }, shot: true },
       { id: 'menu', note: '키보드 성장 메뉴 진입', ops: [{ kind: 'key', key: 'Escape' }, { kind: 'waitForVisible', testid: 'main-menu' }], expect: { testidPresent: ['main-menu'] } },
     ],
@@ -88,8 +89,8 @@ try {
   await shot('04-refunded-without-demotion');
   assert.deepEqual(errors, []);
   assert.deepEqual(remoteWrites, []);
-  await writeFile(`${out}/proof.json`, JSON.stringify({ projectId: proof.projectId, source: 'Supabase reload', checks: ['shipped-player', 'keyboard-only', 'skill-rank-point-gates', 'two-promotions', 'actual-lineage-inheritance', 'cross-tree-reset-protection', 'refund-without-demotion'], errors, remoteWrites }, null, 2));
-  await writeFile(`${out}/SUMMARY.md`, '# Connected growth runtime QA\n\nPASS: Supabase reload -> shipped player -> keyboard investment -> two promotions -> inherited trees -> protected reset -> refund without demotion.\n\nImmediately inspect: 01-locked-promotion.png, 02-inherited-and-reset-protected.png, 03-final-class-inherits-chain.png, 04-refunded-without-demotion.png.\n');
+  await writeFile(`${out}/proof.json`, JSON.stringify({ projectId: proof.projectId, source: verificationSource, checks: ['shipped-player', 'keyboard-only', 'skill-rank-point-gates', 'two-promotions', 'actual-lineage-inheritance', 'cross-tree-reset-protection', 'refund-without-demotion'], errors, remoteWrites }, null, 2));
+  await writeFile(`${out}/SUMMARY.md`, `# Connected growth runtime QA\n\nPASS: ${verificationSource} -> shipped player -> keyboard investment -> two promotions -> inherited trees -> protected reset -> refund without demotion.\n\nImmediately inspect: 01-locked-promotion.png, 02-inherited-and-reset-protected.png, 03-final-class-inherits-chain.png, 04-refunded-without-demotion.png.\n`);
   console.log('Connected growth shipped-player QA passed');
 } finally {
   await browser.close();

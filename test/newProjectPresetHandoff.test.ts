@@ -98,13 +98,16 @@ it("New Project preset waits for project creation AND conversation adoption befo
   });
   const creation = deferred<void>();
   const creationStarted = deferred<Project>();
-  const loadNew = vi.spyOn(store, "loadNewRemoteProject").mockImplementation(async (project) => {
+  const createProject = vi.fn(async (project: Project) => {
     creationStarted.resolve(project);
     await creation.promise;
     // Preserve the real identity-change notification that starts asynchronous chat adoption.
     store.replaceProject(project);
-    return { projectId: null };
+    return { projectId: "preset-ordering-fixture" };
   });
+  // Both menu creation entry points must preserve the same adoption ordering.
+  vi.spyOn(store, "loadNewRemoteProject").mockImplementation(createProject);
+  vi.spyOn(store, "loadNewRemoteProjectTransactionally").mockImplementation(createProject);
   const handedOff = deferred<void>();
   const originalSend = bootIntent.sendAiBootIntent;
   const handoff = vi.spyOn(bootIntent, "sendAiBootIntent").mockImplementation((text) => {
@@ -126,7 +129,7 @@ it("New Project preset waits for project creation AND conversation adoption befo
   try {
     const candidate = await signal(creationStarted.promise);
     expect(candidate.system.monsterCollection).toBe(true);
-    expect(loadNew).toHaveBeenCalledOnce();
+    expect(createProject).toHaveBeenCalledOnce();
     expect(handoff).not.toHaveBeenCalled();
     expect(control<HTMLTextAreaElement>("ai-input").value).toBe("");
     creation.resolve();
@@ -152,6 +155,7 @@ it("New Project preset waits for project creation AND conversation adoption befo
 
 it("cancelling the New Project chooser neither creates a project nor hands off an AI prompt", async () => {
   const loadNew = vi.spyOn(store, "loadNewRemoteProject");
+  const transactionalLoad = vi.spyOn(store, "loadNewRemoteProjectTransactionally");
   const handoff = vi.spyOn(bootIntent, "sendAiBootIntent");
   const dialog = vi.spyOn(newProjectDialog, "showNewProjectDialog");
   const topbar = document.createElement("div");
@@ -163,6 +167,7 @@ it("cancelling the New Project chooser neither creates a project nor hands off a
   control("new-project-cancel").click();
   await expect(signal(selection)).resolves.toBeNull();
   expect(loadNew).not.toHaveBeenCalled();
+  expect(transactionalLoad).not.toHaveBeenCalled();
   expect(handoff).not.toHaveBeenCalled();
   expect(bootIntent.peekPendingAiBootIntent()).toBeNull();
 });

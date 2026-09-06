@@ -10,12 +10,13 @@ async function openDatabase(page: Page) {
     else await route.continue();
   });
   await page.addInitScript(() => {
-    localStorage.setItem('rpg-zzu:editor-ui-mode', 'expert');
+    localStorage.setItem('oprn:editor-ui-mode', 'expert');
     localStorage.setItem('oprn:standard-welcome-seen', '1');
     localStorage.setItem('oprn:editor-welcome-dismissed', '1');
   });
   await page.goto('/?freshProject=1', { waitUntil: 'domcontentloaded' });
   await page.getByTestId('toolbar-database').waitFor({ state: 'visible', timeout: 60_000 });
+  await expect(page.locator('body')).toHaveClass(/editor-ui-expert/);
   await page.getByTestId('toolbar-database').click();
   await page.getByTestId('db-tab-search').waitFor();
   await page.evaluate(() => document.fonts.ready);
