@@ -3,6 +3,7 @@
 // 한 사용자 목표(자율 런이면 드라이버 전체)가 끝났을 때 남기는 계량.
 // 감사 로그·활동 로그에는 과정 전부, 채팅에는 토큰(+경과)만. 개선은 로그를 보고 한다.
 
+import type { RunOutcome } from "./runOutcome";
 import {
   formatTokenCount,
   type SessionUsageTotals,
@@ -21,6 +22,7 @@ export interface RunProcessStep {
 }
 
 export interface RunRecap {
+  readonly runOutcome?: RunOutcome;
   readonly elapsedMs: number;
   readonly usage: SessionUsageTotals;
   readonly toolCalls: number;
@@ -108,10 +110,12 @@ export function buildRunRecap(input: {
   readonly audit: readonly RecapAuditEntry[];
   readonly stoppedReason: string;
   readonly proposedWrites: number;
+  readonly runOutcome?: RunOutcome;
 }): RunRecap {
   const process = extractRunProcess(input.audit);
   const tools = input.audit.filter((entry): entry is Extract<RecapAuditEntry, { kind: "tool" }> => entry.kind === "tool");
   return {
+    ...(input.runOutcome ? { runOutcome: input.runOutcome } : {}),
     elapsedMs: Math.max(0, Math.trunc(input.elapsedMs)),
     usage: input.usage,
     toolCalls: tools.length,
@@ -137,6 +141,7 @@ export function formatRunRecapPlayerLine(recap: RunRecap): string {
 /** 감사/활동 로그용 — 파싱 가능한 한 줄 JSON. */
 export function serializeRunRecap(recap: RunRecap): string {
   return JSON.stringify({
+    ...(recap.runOutcome ? { runOutcome: recap.runOutcome } : {}),
     elapsedMs: recap.elapsedMs,
     prompt: recap.usage.promptTokens,
     completion: recap.usage.completionTokens,
@@ -165,6 +170,7 @@ export function parseRunRecapPayload(raw: string): RunRecap | null {
   try {
     const parsed = JSON.parse(jsonText) as Record<string, unknown>;
     if (!isRecord(parsed)) return null;
+    const runOutcome = parseStoredRunOutcome(parsed.runOutcome);
     const elapsedMs = asInt(parsed.elapsedMs);
     const processRaw = Array.isArray(parsed.process) ? parsed.process : [];
     const processKinds = new Set<RunProcessStep["kind"]>([
@@ -180,6 +186,7 @@ export function parseRunRecapPayload(raw: string): RunRecap | null {
       }));
     const byModelRaw = Array.isArray(parsed.byModel) ? parsed.byModel : [];
     return {
+      ...(runOutcome ? { runOutcome } : {}),
       elapsedMs,
       usage: {
         calls: asInt(parsed.calls),
@@ -212,6 +219,17 @@ export function parseRunRecapPayload(raw: string): RunRecap | null {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function parseStoredRunOutcome(value: unknown): RunOutcome | null {
+  if (!isRecord(value)) return null;
+  const { execution, goal, delivery } = value;
+  if (execution !== "response-final" && execution !== "awaiting-user" && execution !== "blocked"
+    && execution !== "cancelled" && execution !== "budget-exhausted" && execution !== "failed") return null;
+  if (goal !== "unassessed" && goal !== "incomplete" && goal !== "satisfied") return null;
+  if (delivery !== "no-change" && delivery !== "draft" && delivery !== "applied"
+    && delivery !== "persisted" && delivery !== "persisted-verified") return null;
+  return Object.freeze({ execution, goal, delivery });
 }
 
 function asInt(value: unknown): number {

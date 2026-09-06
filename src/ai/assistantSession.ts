@@ -1,5 +1,6 @@
 import { missingAcceptance, type AcceptanceSnapshot, type AcceptancePromise, type AcceptanceSource, type RequirementWithdrawalAction } from "./assistantAcceptance";
 import { acceptanceFingerprint } from "./assistantAcceptanceEvaluation";
+import { deriveRunOutcome, type RunOutcome } from "./runOutcome";
 import { AssistantAcceptanceLedger } from "./assistantAcceptanceLedger";
 import { AssistantImageEvidence, coveredByImages, type AcceptanceImageReceipt } from "./assistantImageEvidence";
 import { ACCEPTANCE_SCHEMA, ACCEPTANCE_TOOLS } from "./assistantAcceptanceTools";
@@ -252,6 +253,7 @@ export type SessionEvent =
   | { type: "proposal_paused"; reason: string; warnings?: readonly string[] }
   /** 사용자 목표(자율 런이면 드라이버 전체)가 끝났을 때 토큰·경과·과정 계량. */
   | { type: "run_recap"; recap: RunRecap }
+  | { type: "run_outcome"; runOutcome: RunOutcome }
   | { type: "persistence_proof"; state: RunEndProofState };
 
 // 제안(changeset)에 담기는 개별 쓰기 툴콜.
@@ -268,6 +270,8 @@ export interface ProposedCall {
 }
 
 export interface TurnResult {
+  /** Session-owned settlement updates this value after ordinary apply/proof. Legacy callers may omit it. */
+  runOutcome?: RunOutcome;
   assistantText: string;
   proposedCalls: ProposedCall[]; // 성공한 쓰기 툴콜(수락 시 store에 적용할 시퀀스).
   stoppedReason: "final" | "max-tool-calls" | "token-budget" | "error" | "aborted";
@@ -307,6 +311,7 @@ export interface HarnessSnapshot {
   readonly audit: readonly AuditEntry[];
   readonly workPlan?: WorkPlan | null;
   readonly runEndProof?: RunEndProofState | null;
+  readonly runOutcome?: RunOutcome | null;
 }
 
 type ChatFn = (config: AiConfig, req: ChatRequest) => Promise<ChatResult>;
@@ -926,6 +931,13 @@ export class AssistantSession {
   private verifiedLayerIds = new Set<string>();
   private runEndProof: RunEndProofState | null = null;
   private lastAppliedProject: { project: Project; commitId: string | null } | null = null;
+  private runExecution: RunOutcome["execution"] = "response-final";
+  /** Mutable settlement handle, never replaced by a getter or another run. */
+  private runResult: { current: TurnResult | null } = { current: null };
+  private storeBacked = false;
+  private runReceipt: ProjectPersistenceReceipt | null = null;
+  private runSubscriber: ((event: SessionEvent) => void) | undefined;
+  private runRecapAuditIndex: number | null = null;
   // 현재 시스템 프롬프트에 적용된 문자 예산(토큰 보정). 관측으로 값이 바뀌면 턴 시작 시 재조립한다.
   private appliedBudgetChars: number;
   /** 직전 요청에 공급자가 실제로 과금한 프롬프트 토큰 — 컨텍스트 압축 임계 판정의 실측 입력. */
@@ -1026,6 +1038,7 @@ export class AssistantSession {
   private readonly declareIntent: IntentDeclarer | null;
 
   constructor(project: Project, options: AssistantSessionOptions = {}) {
+    this.storeBacked = project === store.getCurrent();
     this.config = options.config ?? loadAiConfig();
     // 계량은 로그 파싱이 아니라 호출 지점에서 센다(sessionUsage.ts). 본문·플래너·검수·요약 콜이
     // 모두 이 한 겹을 지나므로, 여기서 세면 어떤 경로도 빠지지 않는다.
@@ -1208,12 +1221,16 @@ export class AssistantSession {
   /** UI/bridge user action only; deliberately absent from all LLM tool schemas. */
   withdrawRequirement(action: RequirementWithdrawalAction, onEvent?: (event: SessionEvent) => void): boolean {
     const accepted = this.acceptance?.withdraw(action) === true;
-    if (accepted) this.publishAcceptance(onEvent);
+    if (accepted) {
+      this.publishAcceptance(onEvent);
+      this.publishRunOutcome(onEvent);
+    }
     return accepted;
   }
 
   /** Applied-state refresh for store changes/undo, including after completion. */
   refreshAcceptance(project: Project, onEvent?: (event: SessionEvent) => void): void {
+    if (project === store.getCurrent()) this.storeBacked = true;
     this.imageEvidence.current(project);
     if (!this.acceptance && !this.verificationEvidence.hasChecks()) return;
     // A verdict may precede declaration; late adoption must not revive pre-edit proof.
@@ -1493,6 +1510,7 @@ export class AssistantSession {
       audit: [...this.audit],
       workPlan: this.workPlan ? structuredClone(this.workPlan) : null,
       runEndProof: this.getRunEndProof(),
+      runOutcome: this.getRunOutcome(),
     };
   }
 
@@ -1508,6 +1526,12 @@ export class AssistantSession {
     // 사용자의 수동 진입(새 sendUserMessage 호출)은 예산 카운터를 0으로 되돌린다(re-arm).
     // 마일스톤 자동 적용도 같은 명시 플래그로만 켠다. 직전 턴의 커밋 게이트 실패는
     // 현재 자율 런만 중단하는 상태이므로 새 사용자 메시지에서 반드시 재가동한다.
+    this.runResult = { current: null };
+    this.runSubscriber = onEvent;
+    this.runRecapAuditIndex = null;
+    this.runReceipt = null;
+    this.lastAppliedProject = null;
+    this.runExecution = "response-final";
     this.milestoneAutoApply = opts?.autonomous === true;
     if (this.milestoneApplyFailed) {
       // 실패한 proposed draft를 다음 턴으로 가져가면 같은 커밋 오류가 반복된다. 저장소는 실패
@@ -1525,15 +1549,21 @@ export class AssistantSession {
       scope: opts?.scope ?? null,
       composerMode: opts?.composerMode ?? "do",
     };
-    if (opts?.autonomous !== true) {
-      const result = await this.executeUserTurn(text, onEvent, signal, turnOptions);
-      return this.finishRunRecap(result, startedAt, usageBefore, auditFrom, onEvent);
+    try {
+      const first = await this.executeUserTurn(text, onEvent, signal, turnOptions);
+      const last = opts?.autonomous === true && !this.lastTurnPlanOnly && this.turnComposerMode !== "ask"
+        ? await this.runAutonomousDriver(first, onEvent, signal, turnOptions) : first;
+      if (signal?.aborted) this.runExecution = "cancelled";
+      return this.finishRunRecap(last, startedAt, usageBefore, auditFrom, onEvent);
+    } catch (cause) {
+      this.runExecution = signal?.aborted || isLlmAbortError(cause) ? "cancelled" : "failed";
+      const error = cause instanceof Error ? cause.message : String(cause);
+      this.pushAudit({ kind: "status", text: `turn-boundary-error ${error}` });
+      return this.finishRunRecap(this.withTurnLedger({ assistantText: "", error,
+        proposedCalls: this.finalizeProposals(this.turnProposals),
+        stoppedReason: this.runExecution === "cancelled" ? "aborted" : "error",
+      }), startedAt, usageBefore, auditFrom, onEvent);
     }
-    const first = await this.executeUserTurn(text, onEvent, signal, turnOptions);
-    // 계획 모드의 계획만 세운 턴은 사용자 확인을 기다린다 — 드라이버가 「계속」을 대신 보내버리면 멈춘 의미가 없다.
-    if (this.lastTurnPlanOnly || this.turnComposerMode === "ask") return this.finishRunRecap(first, startedAt, usageBefore, auditFrom, onEvent);
-    const last = await this.runAutonomousDriver(first, onEvent, signal, turnOptions);
-    return this.finishRunRecap(last, startedAt, usageBefore, auditFrom, onEvent);
   }
 
   /**
@@ -1567,7 +1597,7 @@ export class AssistantSession {
 
   /** 드라이버 계속 판정 — 계획 미완료 && 예산 잔여 && 사용자 대기 없음 && 중단 아님. */
   private shouldAutoContinue(last: TurnResult, onEvent: (event: SessionEvent) => void, signal?: AbortSignal): boolean {
-    if (signal?.aborted) return false;
+    if (signal?.aborted) { this.runExecution = "cancelled"; return false; }
     if (last.stoppedReason === "aborted" || last.stoppedReason === "error") return false;
     // 저장소를 바꾸지 못한 마일스톤이 있으면 현재 자율 런을 멈춘다. 승인 UI는 없으며,
     // 다음 사용자 메시지가 새 턴을 시작하면 다시 적용을 시도할 수 있다.
@@ -1580,6 +1610,7 @@ export class AssistantSession {
     const volumeOpen = this.volumeUnmetNow();
     if ((!this.workPlan || isWorkPlanComplete(this.workPlan)) && !volumeOpen && !acceptanceOpen) return false;
     if (this.autoRunSteps >= AGENT_RUN_MAX_TOTAL_STEPS) {
+      this.runExecution = "budget-exhausted";
       this.pushAudit({
         kind: "status",
         text: `agent_run_budget_exhausted steps=${this.autoRunSteps}/${AGENT_RUN_MAX_TOTAL_STEPS} — 이어서 진행하려면 「계속」 이라고 보내세요`,
@@ -1592,6 +1623,7 @@ export class AssistantSession {
     // 미완료면 다음 사용자 턴 종료 후 런이 다시 자동 계속된다.
     const pending = this.peekPendingUserMessage?.() ?? null;
     if (typeof pending === "string" && pending.trim().length > 0) {
+      this.runExecution = "awaiting-user";
       this.pushAudit({ kind: "status", text: "agent_run:paused-user-message — 대기 중 사용자 메시지가 자동 계속보다 우선합니다" });
       return false;
     }
@@ -1603,7 +1635,10 @@ export class AssistantSession {
       return shouldRalphContinue(this.workPlan, { autoStepsUsed: 0, assistantText });
     }
     // 계획이 끝났거나 없어도 볼륨 막대가 비면 코드가 다음 턴을 연다. 사용자 「계속」이 아니다.
-    if (volumeOpen && assistantTextLooksLikeQuestion(assistantText)) return false;
+    if (volumeOpen && assistantTextLooksLikeQuestion(assistantText)) {
+      this.runExecution = "awaiting-user";
+      return false;
+    }
     return volumeOpen || acceptanceOpen;
   }
 
@@ -1619,6 +1654,7 @@ export class AssistantSession {
     signal?: AbortSignal,
     options: SessionTurnOptions = {},
   ): Promise<TurnResult> {
+    this.runExecution = "response-final";
     // 토큰 보정: 직전 턴들의 usage 관측으로 문자 예산이 달라졌으면 시스템 프롬프트를 재조립한다.
     this.refreshSystemPromptBudget();
     // 매 턴: 에디터 뷰포트 좌표(+가능하면 맵 이미지)를 사용자 메시지에 붙여 "여기" 해석을 빠르게 한다.
@@ -1742,6 +1778,7 @@ export class AssistantSession {
         clarifyBypassed = true;
         this.pushAudit({ kind: "status", text: `의도 확인 건너뜀: ${intent.clarify} — auto/orchestrated` });
       } else {
+        this.runExecution = "awaiting-user";
         const assistantText = formatIntentClarifyMessage(intent);
         this.messages.push({ role: "assistant", content: assistantText });
         onEvent({ type: "assistant_message", content: assistantText });
@@ -1796,6 +1833,7 @@ export class AssistantSession {
         if (isLlmAbortError(cause) || signal?.aborted) {
           this.lastTurnFailed = false;
           this.pushAudit({ kind: "status", text: "턴 중단(aborted): 사용자가 중단했습니다" });
+          this.runExecution = "cancelled";
           return { assistantText: "", proposedCalls: [], stoppedReason: "aborted", error: "사용자가 중단했습니다" };
         }
         throw cause;
@@ -1829,6 +1867,7 @@ export class AssistantSession {
 
   /** 계획 모드: 계획 카드를 내고 실행 없이 턴을 끝낸다. 「계속」이 다음 턴에서 resume 으로 실행한다. */
   private finishPlanOnlyTurn(onEvent: (event: SessionEvent) => void): TurnResult {
+    this.runExecution = "awaiting-user";
     const plan = this.workPlan;
     if (!plan) throw new Error("finishPlanOnlyTurn: 계획이 없다");
     const assistantText = "계획을 세워두었습니다. 이대로 실행하려면 「계속」이라고 보내고, 고칠 게 있으면 그대로 말해 주세요.";
@@ -2514,7 +2553,6 @@ export class AssistantSession {
     //
     // clear 전에 원장에 남긴다: 이 호출들은 **저장소에 들어갔다**. 검수 단계와 패널의 완성도
     // 린트가 `turnProposals` 만 보면 여기서 지운 몫이 "변경 없음" 으로 뒤집힌다.
-    this.turnAppliedMilestoneCalls.push(...calls);
     this.turnProposals.clear();
     this.rebaseProject(applied.applied);
     this.publishAcceptance(onEvent);
@@ -2539,6 +2577,7 @@ export class AssistantSession {
     onEvent: (event: SessionEvent) => void,
   ): void {
     this.milestoneApplyFailed = true;
+    this.runExecution = "failed";
     this.pushAudit({ kind: "status", text: `agent_run:milestone-apply-failed "${completed.title}" — ${reason} (프로젝트 저장소 변경 없음)` });
     // 이벤트 이름은 기존 패널/테스트 소비 계약을 유지한다. 의미는 적용 실패다.
     onEvent({ type: "proposal_paused", reason, warnings });
@@ -2649,6 +2688,53 @@ export class AssistantSession {
     this.lastAppliedProject = applied.commitProject
       ? { project: applied.commitProject, commitId: applied.commit.commitId }
       : null;
+    this.runReceipt = null;
+    this.turnAppliedMilestoneCalls.push(...this.finalizeProposals(this.turnProposals));
+    this.turnProposals.clear();
+    this.publishRunOutcome();
+  }
+
+  /** Ordinary apply rejection is an execution decision, not a model verdict. */
+  recordApplyRejected(onEvent?: (event: SessionEvent) => void): void {
+    this.runExecution = "failed";
+    this.publishRunOutcome(onEvent);
+  }
+
+  getRunOutcome(): RunOutcome | null {
+    if (!this.runResult.current) return null;
+    const assessment = this.getAcceptanceSnapshot();
+    // A retained canonical pass is usable only for its assessed applied revision.
+    // Do not evaluate requirements or mutate their evidence in a read-only getter.
+    const assessmentCurrent = (!this.storeBacked && !this.lastAppliedProject) || !this.acceptanceAppliedProject
+      || acceptanceFingerprint(this.acceptanceAppliedProject) === acceptanceFingerprint(store.getCurrent());
+    const proof = this.getRunEndProof();
+    return deriveRunOutcome({
+      execution: this.runExecution,
+      acceptance: assessment ? assessment.status === "verified" && !assessmentCurrent ? "verifying" : assessment.status : null,
+      hasPendingDraft: this.turnProposals.size > 0,
+      hasApplied: this.turnAppliedMilestoneCalls.length > 0,
+      persistence: this.runReceipt === null ? "none"
+        : proof?.receipt === this.runReceipt && proof.verified ? "verified-current" : "accepted",
+    });
+  }
+
+  /** Update the original returned handle before publication; getters never settle state. */
+  private publishRunOutcome(onEvent?: (event: SessionEvent) => void): void {
+    const result = this.runResult.current;
+    const runOutcome = this.getRunOutcome();
+    if (!result || !runOutcome) return;
+    result.proposedCalls = this.finalizeProposals(this.turnProposals);
+    result.appliedCalls = [...this.turnAppliedMilestoneCalls];
+    result.runOutcome = runOutcome;
+    if (result.recap) {
+      result.recap = { ...result.recap, runOutcome };
+      if (this.runRecapAuditIndex !== null) {
+        const previous = this.audit[this.runRecapAuditIndex];
+        this.audit[this.runRecapAuditIndex] = { kind: "status", at: previous?.at,
+          text: `run-recap ${serializeRunRecap(result.recap)}` };
+      }
+    }
+    (onEvent ?? this.runSubscriber)?.({ type: "run_outcome", runOutcome });
   }
 
   /** Historical success is not authority for a newer editor revision. */
@@ -2671,19 +2757,25 @@ export class AssistantSession {
     onEvent: (event: SessionEvent) => void = () => {},
     signal?: AbortSignal,
   ): Promise<RunEndProofState> {
+    const outcomeOwner = this.runResult;
     const previous = this.getRunEndProof();
-    if (!signal?.aborted && previous?.verified) return previous;
+    if (!signal?.aborted && previous?.verified) {
+      this.publishRunOutcome(onEvent);
+      return previous;
+    }
     let receipt: ProjectPersistenceReceipt | undefined;
     let commitId: string | null = null;
     // Each attempt owns only its last published state. A newer invocation replaces it.
     let state: RunEndProofState = { status: "attempted", verified: false };
     this.runEndProof = state;
     const fail = (reason: string, proof?: ProjectPersistenceProof): RunEndProofState => {
+      if (outcomeOwner === this.runResult && reason === "cancelled") this.runExecution = "cancelled";
       state = { status: "failed", verified: false, reason, receipt, commitId, proof };
       this.emitRunEndProof(this.runEndProof = state, onEvent);
       if (this.runEndProof !== state) return this.projectRunEndProof(this.runEndProof);
       this.pushAudit({ kind: "status", text: `agent_run:proof-failed reason=${reason} revision=${receipt?.revisionId ?? "none"}` });
       onEvent({ type: "status", text: `저장 증명 미완료(${reason}) — 다시 검증할 수 있습니다.` });
+      if (outcomeOwner === this.runResult) this.publishRunOutcome(onEvent);
       return this.projectRunEndProof(this.runEndProof);
     };
     if (signal?.aborted) return fail("cancelled");
@@ -2703,7 +2795,10 @@ export class AssistantSession {
       receipt = flushResult.receipt;
       if (!receipt) return fail("missing-receipt");
       // Concurrent edits during apply/flush cannot borrow that apply's commit metadata.
-      if (applied?.project === store.getCurrent() && store.isPersistenceReceiptCurrent(receipt)) commitId = applied.commitId;
+      if (applied?.project === store.getCurrent() && store.isPersistenceReceiptCurrent(receipt)) {
+        commitId = applied.commitId;
+        if (outcomeOwner === this.runResult) this.runReceipt = receipt;
+      }
       state = { status: "attempted", verified: false, receipt, commitId };
       this.emitRunEndProof(this.runEndProof = state, onEvent);
       if (this.runEndProof !== state) return this.projectRunEndProof(this.runEndProof);
@@ -2723,6 +2818,7 @@ export class AssistantSession {
         text: `agent_run_saved projectId=${receipt.projectId} revision=${receipt.revisionId} contentIdentity=${receipt.contentIdentity} sha256=${receipt.sha256 ?? "none"} commit=${commitId ?? "unavailable"} verified=true`,
       });
       onEvent({ type: "status", text: `저장 증명 완료 — projectId=${receipt.projectId} revision=${receipt.revisionId}` });
+      if (outcomeOwner === this.runResult) this.publishRunOutcome(onEvent);
       return this.projectRunEndProof(this.runEndProof);
     } catch (error) {
       if (this.runEndProof !== state) return this.projectRunEndProof(this.runEndProof);
@@ -2768,8 +2864,9 @@ export class AssistantSession {
         && this.turnComposerMode !== "ask" && !this.lastTurnPlanOnly) {
         await this.proveAppliedRevision(onEvent, signal);
       }
-      return this.withTurnLedger({ assistantText: "", proposedCalls: this.finalizeProposals(this.turnProposals), stoppedReason: "final" });
+      return this.finishRunRecap(this.withTurnLedger({ assistantText: "", proposedCalls: this.finalizeProposals(this.turnProposals), stoppedReason: "final" }), Date.now(), this.usageTotals, this.audit.length, onEvent);
     }
+    this.runExecution = "response-final";
     this.pushAudit({ kind: "status", text: "오류 후 재시도(retryLastTurn)" });
     const startedAt = Date.now();
     const usageBefore = this.usageTotals;
@@ -2812,16 +2909,24 @@ export class AssistantSession {
       result = { ...result, assistantText: `${result.assistantText.trim()}\n\n${notice}`.trim() };
       onEvent({ type: "assistant_message", content: result.assistantText });
     }
+    if (this.runExecution === "response-final" && this.turnComposerMode !== "ask"
+      && (this.acceptanceOpen() || adventureProblems.length > 0)) this.runExecution = "blocked";
+    this.runResult.current = result;
+    this.publishRunOutcome();
     const recap = buildRunRecap({
       elapsedMs: Date.now() - startedAt,
       usage: usageDelta(usageBefore, this.usageTotals),
       audit: this.audit.slice(auditFrom),
       stoppedReason: result.stoppedReason,
       proposedWrites: result.proposedCalls.length + (result.appliedCalls?.length ?? 0),
+      runOutcome: result.runOutcome,
     });
+    this.runRecapAuditIndex = this.audit.length;
     this.pushAudit({ kind: "status", text: `run-recap ${serializeRunRecap(recap)}` });
+    result.recap = recap;
     onEvent({ type: "run_recap", recap });
-    return { ...result, recap };
+    this.publishRunOutcome(onEvent);
+    return result;
   }
 
   // 감사 항목에 ISO 타임스탬프를 붙여 기록한다(결함 ⑬ — 타임라인 export).
@@ -3488,6 +3593,7 @@ export class AssistantSession {
 
     for (let round = 0; round < roundCap; round += 1) {
       if (signal?.aborted) {
+        this.runExecution = "cancelled";
         this.pushAudit({ kind: "status", text: "턴 중단(aborted): 사용자가 중단했습니다" });
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "aborted", error: "사용자가 중단했습니다" };
       }
@@ -3569,12 +3675,14 @@ export class AssistantSession {
         if (isLlmAbortError(cause) || signal?.aborted) {
           this.lastTurnFailed = false;
           this.pushAudit({ kind: "status", text: "턴 중단(aborted): 사용자가 중단했습니다" });
+          this.runExecution = "cancelled";
           return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "aborted", error: "사용자가 중단했습니다" };
         }
         const rawError = cause instanceof Error ? cause.message : String(cause);
         const error = isRetryableLlmError(cause) && !isOhMyPiWorkerCrash(cause)
           ? appendTransientRetryGuidance(rawError)
           : rawError;
+        this.runExecution = "failed";
         this.lastTurnFailed = true; // 수동 재시도(retryLastTurn) 허용 상태로 표시.
         this.pushAudit({ kind: "status", text: `턴 중단(error): ${error} · 출력 토큰 ~${spentOutputTokens}` });
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "error", error };
@@ -3615,6 +3723,7 @@ export class AssistantSession {
             this.pushOrchestrationMessage(`Acceptance repair ${this.acceptanceRepairAttempts}/${MAX_RALPH_ATTEMPTS_PER_ITEM}. Do not claim success, skip, shrink or recreate completed content. Repair missing criteria with repair_acceptance; satisfy original promises with real tools; explicitly review delivered images with review_acceptance. Drafts are not applied verification.\n${JSON.stringify(this.getAcceptanceSnapshot())}`);
             continue;
           }
+          this.runExecution = this.milestoneApplyFailed ? "failed" : "blocked";
           this.acceptance?.stop();
           this.publishAcceptance(onEvent);
           assistantText = this.acceptanceIncompleteText();
@@ -3672,6 +3781,7 @@ export class AssistantSession {
           // 같은 항목을 상한만큼 밀어붙였는데도 안 되면 재주입을 멈추고 사용자에게 넘긴다.
           const stalled = this.blockStalledWorkItem(onEvent);
           if (stalled) {
+            this.runExecution = "blocked";
             assistantText = this.blockedTurnText(stalled, finalText);
             onEvent({ type: "assistant_message", content: assistantText });
             this.pushAudit({
@@ -3768,6 +3878,11 @@ export class AssistantSession {
         }
         // 레이어 검증(자문): 최종 응답 전에 1회 돌려 지적을 근거로 남긴다. 런은 멈추지 않는다.
         await this.sweepFinishedLayers(onEvent);
+        // Capture the existing continuation decision here, never parse outcome from published prose.
+        if (this.runExecution === "response-final" && this.turnComposerMode !== "ask" && this.workPlan && !isWorkPlanComplete(this.workPlan)) {
+          this.runExecution = assistantTextLooksLikeQuestion(finalText) ? "awaiting-user"
+            : this.workPlanAutoStepsThisUserMessage >= MAX_WORK_PLAN_AUTO_STEPS_PER_TURN ? "budget-exhausted" : "blocked";
+        }
         // 최종 응답.
         assistantText = finalText;
         onEvent({ type: "assistant_message", content: assistantText });
@@ -4062,6 +4177,7 @@ export class AssistantSession {
         const reason = currentItemId ? this.lastBlockReasonByItemId.get(currentItemId) ?? "같은 실패가 반복됩니다." : "";
         const blocked = currentItemId ? blockWorkItemById(this.workPlan, currentItemId, reason) : null;
         if (blocked) {
+          this.runExecution = "blocked";
           this.pushAudit({
             kind: "status",
             text: `tool-failure:stalled item=${blocked.id} repeats=${MAX_REPEATED_TOOL_FAILURES_PER_ITEM} — ${reason}`,
@@ -4085,6 +4201,7 @@ export class AssistantSession {
           type: "status",
           text: TOKEN_BUDGET_STATUS_TEXT,
         });
+        this.runExecution = "budget-exhausted";
         this.pushAudit({ kind: "status", text: `턴 종료(token-budget) — 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}` });
         return {
           assistantText: truncatedTurnText(assistantText, proposedByKey.size, "출력 토큰 예산", this.turnAppliedMilestoneCalls.length),
@@ -4097,6 +4214,7 @@ export class AssistantSession {
     // 라운드 안전핀 도달(기본 200 — 정상 작업에선 도달하지 않음) — 현재까지의 changeset을 제시.
     await this.authorPendingNpcCast(onEvent, signal, proposedByKey, turnTheme || this.activeSpec?.title || "");
     onEvent({ type: "status", text: TOKEN_BUDGET_STATUS_TEXT });
+    this.runExecution = "budget-exhausted";
     this.pushAudit({ kind: "status", text: `턴 종료(max-tool-calls) — 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}` });
     return {
       assistantText: truncatedTurnText(assistantText, proposedByKey.size, "도구 호출 예산", this.turnAppliedMilestoneCalls.length),

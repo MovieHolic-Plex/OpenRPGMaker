@@ -2868,6 +2868,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
           audit,
           harness: controller.session?.getHarnessSnapshot() ?? null,
           lastAssistantText: lastAssistantFromAudit(),
+          runOutcome: controller.session?.getRunOutcome() ?? null,
         };
       } catch (cause) {
         return {
@@ -2892,6 +2893,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }),
     getAudit: () => collectAudit(),
     getHarness: () => controller.session?.getHarnessSnapshot() ?? null,
+    withdrawRequirement: (action) => {
+      if (disposed || turnBusy) return false;
+      return controller.session?.withdrawRequirement(action) ?? false;
+    },
     abort: () => abortActiveTurn(),
     // DB 모달 AI 바 등 외부 진입점이 "채팅 도크 열기"를 요청할 때 — 접힘만 해제한다.
     openPanel: () => {

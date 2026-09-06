@@ -302,6 +302,7 @@ export function createProposalHost(options: {
       reason: calls.map((call) => call.reason).filter((value): value is string => typeof value === "string" && value.trim().length > 0).join(" · ") || `AI 제안 적용: ${aiHistoryLabel(calls)}`,
     });
     if (!applied.ok) {
+      session.recordApplyRejected();
       setStatus("적용 실패");
       toast(`적용 실패: ${applied.issue ?? "무결성 오류"}`, "error");
       // 예전에는 이 게이트만 채팅에 아무 기록도 남기지 않았다 — 토스트가 사라지면 흔적이 없다.

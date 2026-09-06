@@ -4,6 +4,9 @@
 // - MCP(scripts/rpgzzu-assistant-mcp.mjs)가 send/status/audit/harness 를 호출하면
 //   브라우저에서 실제 채팅 패널이 돌고, 사용자는 UI를 그대로 본다.
 
+import type { RunOutcome } from "@/ai/runOutcome";
+import type { RequirementWithdrawalAction } from "@/ai/assistantAcceptance";
+
 export const AI_ASSISTANT_BRIDGE_DEFAULT_PORT = 17831;
 export const AI_ASSISTANT_BRIDGE_DEFAULT_HOST = "127.0.0.1";
 
@@ -29,6 +32,7 @@ export type AiBridgeAuditEntry = {
 };
 
 export type AiBridgeTurnResult = {
+  readonly runOutcome?: RunOutcome | null;
   readonly ok: boolean;
   readonly error?: string;
   readonly status: AiBridgeStatus;
@@ -45,6 +49,8 @@ export type AiAssistantBridgeHandlers = {
   readonly abort: () => void;
   /** 채팅 패널이 접혀 있으면 펼친다(도크 열기). 선택 — 구 등록부 호환. */
   readonly openPanel?: () => void;
+  /** Local user action only; not a transport command or MCP/LLM tool. */
+  readonly withdrawRequirement?: (action: RequirementWithdrawalAction) => boolean;
 };
 
 type BridgeCommand =
@@ -121,6 +127,11 @@ export function getAiAssistantAudit(): readonly AiBridgeAuditEntry[] {
 /** 진행 중인 턴을 중단한다. 패널 미마운트면 아무 일도 하지 않는다. */
 export function abortAiAssistantTurn(): void {
   handlers?.abort();
+}
+
+/** Invoke only from an explicit scoped user action. Never dispatch model output here. */
+export function withdrawAiRequirement(action: RequirementWithdrawalAction): boolean {
+  return handlers?.withdrawRequirement?.(action) ?? false;
 }
 
 function getStatusSnapshot(): AiBridgeStatus {
