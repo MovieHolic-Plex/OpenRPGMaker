@@ -70,6 +70,28 @@ An undo entry is covered; an interactive browser undo action was not executed.
 - Sequence 6: `browserClosed:true`, `ownedServerStopped:true`,
   `reusedListener:false`.
 
+Exact startup assertion (full stack is retained in both browser log artifacts):
+
+```text
+Error: expect(locator).toBeVisible() failed
+
+Locator: locator('.phaser-container canvas')
+Expected: visible
+Timeout: 60000ms
+Error: element(s) not found
+```
+
+Paths from the worktree root:
+
+| Evidence | Path / availability |
+| --- | --- |
+| Browser command output and stack | `output/evidence/ai-harness/p1/baseline-editor.log` |
+| Browser action/state/error records | `output/evidence/ai-harness/p1/baseline-editor/actions.json` |
+| Screenshot | `output/evidence/ai-harness/p1/baseline-editor/failure.png` |
+| Vite server log | `output/evidence/ai-harness/p1/baseline-editor/server.log` |
+| Network evidence | Only empty `routeErrors` / `blockedWrites` arrays in `baseline-editor/actions.json`; no request/response trace, HAR, or network log was captured. Empty arrays do not establish successful asset loading. |
+| Cleanup and port release | `output/evidence/ai-harness/p1/baseline-cleanup.json`, plus browser log sequence 6 |
+
 The server log records Vite ready on the correct origin (966 ms) and three
 optional proxy-key warnings. It does not establish why the canvas failed to
 boot. No console/network trace identifying a deeper cause was captured. The
@@ -183,6 +205,10 @@ Artifact inventory (relative to this directory):
 - `baseline-editor/failure.png`: captured failure screenshot.
 - `baseline-cleanup.json`: independent port-release receipt.
 - `baseline-artifacts.sha256`: artifact integrity hashes, excluding itself.
+
+Per the lead's follow-up, a separate baseline-repair node precedes persistence.
+Startup diagnosis/repair belongs to that node. This capture has not retried the
+browser command, changed product code, or claimed the repair completed.
 
 **DoneClaim:** unchanged baseline evidence and the exact current persistence
 proof gap are recorded. Unit characterization passed; real-editor execution
