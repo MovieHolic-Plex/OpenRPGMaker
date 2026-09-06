@@ -3,17 +3,17 @@
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { approvedVocabulary, suggestMaterialsByLabel, unapprovedVocabulary } from "@/project/tileVocabulary";
 import type { Project } from "@/project/types";
+import { requireMap } from "./mapHelpers";
 import { QUERY_TOOLS } from "./queryTools";
 import { TILE_METADATA_TOOLS } from "./tileMetadataTools";
 import { VISION_QUERY_TOOLS } from "./visionQueryTools";
 import type { ToolDefinition, ToolExecResult } from "./types";
 import { byName, coerceEnum, compactArgs, failWithExample } from "./toolArgCoerce";
-/** mapId가 있으면 그 맵 타일셋, 없으면 startMap → DEFAULT. place_props 타일셋과 맞춘다. */
+/** 명시 tilesetId → 명시 mapId → startMap → DEFAULT. 명시한 선택자는 폴백하지 않는다. */
 function resolveQueryTilesetId(draft: Project, args: Record<string, unknown>): string {
-  if (typeof args.tilesetId === "string" && args.tilesetId.trim()) return args.tilesetId.trim();
-  if (typeof args.mapId === "string" && args.mapId.trim()) {
-    const map = draft.maps[args.mapId.trim()];
-    if (map?.tilesetId) return map.tilesetId;
+  if (typeof args.tilesetId === "string") return args.tilesetId.trim();
+  if (typeof args.mapId === "string") {
+    return requireMap(draft, args.mapId.trim()).tilesetId;
   }
   const startMap = draft.maps[draft.startMapId];
   if (startMap?.tilesetId) return startMap.tilesetId;
@@ -33,7 +33,7 @@ const ASK_KINDS = ["tile_info", "unclassified", "palette", "usage", "similar", "
 const tileQuery: ToolDefinition = {
   name: "tile_query",
   description:
-    "타일 지식 통합 조회. ask: tile_info(tileIds 상세), unclassified(미분류 목록), palette(role/category/프리셋 필터로 타일 찾기), usage(맵 사용 현황: mapId), similar(비슷한 타일: tileId), unapproved(미승인 요약), vocab(재료 그룹 목록 — 참고용), labels(타일 라벨/설명 목록 — 시공 material 인자용, query 로 필터). labels/vocab/unapproved는 tilesetId 생략 시 mapId 또는 startMap 타일셋을 쓴다(place_props와 동일 타일셋). ask:\"labels\" 는 mapId 를 넣어 대상 맵 타일셋 라벨만 조회하라 — 기본값은 야외 타일셋이라 실내 맵에서 가로 탁자 등 다른 타일셋 라벨을 오조회한다.",
+    "타일 지식 통합 조회. ask: tile_info(tileIds 상세), unclassified(미분류 목록), palette(role/category/프리셋 필터로 타일 찾기), usage(맵 사용 현황: mapId), similar(비슷한 타일: tileId), unapproved(미승인 요약), vocab(재료 그룹 목록 — 참고용), labels(타일 라벨/설명 목록 — 시공 material 인자용, query 로 필터). similar/unclassified/labels/vocab/unapproved는 tilesetId 생략 시 mapId 또는 startMap 타일셋을 쓴다(place_props와 동일 타일셋). ask:\"labels\" 는 mapId 를 넣어 대상 맵 타일셋 라벨만 조회하라 — 기본값은 야외 타일셋이라 실내 맵에서 가로 탁자 등 다른 타일셋 라벨을 오조회한다.",
   mode: "read",
   version: 3,
   domains: ["core", "tile"],
@@ -47,7 +47,7 @@ const tileQuery: ToolDefinition = {
       mapId: {
         type: "string",
         description:
-          "맵 id. ask=usage 필수. labels/vocab/unapproved에서 tilesetId 생략 시 이 맵(또는 startMap) 타일셋으로 조회 — place_props material과 맞추려면 mapId 권장.",
+          "맵 id. ask=usage 필수. similar/unclassified/labels/vocab/unapproved에서 tilesetId 생략 시 이 맵(또는 startMap) 타일셋으로 조회 — place_props material과 맞추려면 mapId 권장.",
       },
       role: { type: "string", description: "ask=palette: 팔레트 role 또는 타일 role" },
       category: { type: "string", description: "ask=palette" },
@@ -66,7 +66,7 @@ const tileQuery: ToolDefinition = {
       return v1GetTileInfo.run(draft, compactArgs({ tileIds: args.tileIds, tilesetId: args.tilesetId }));
     }
     if (ask === "unclassified") {
-      return v1ListUnclassified.run(draft, compactArgs({ tilesetId: args.tilesetId ?? "tiles_default", limit: args.limit }));
+      return v1ListUnclassified.run(draft, compactArgs({ tilesetId: resolveQueryTilesetId(draft, args), limit: args.limit }));
     }
     if (ask === "palette") {
       return v1QueryTiles.run(draft, compactArgs({
@@ -80,7 +80,7 @@ const tileQuery: ToolDefinition = {
     if (ask === "similar") {
       if (args.tileId === undefined) failWithExample("ask=similar에는 tileId가 필요합니다", { ask, tileId: 260 });
       return v1FindSimilar.run(draft, compactArgs({
-        tilesetId: args.tilesetId ?? "tiles_default", tileId: args.tileId, limit: args.limit,
+        tilesetId: resolveQueryTilesetId(draft, args), tileId: args.tileId, limit: args.limit,
       }));
     }
     if (ask === "unapproved") {
@@ -131,7 +131,7 @@ const tileQuery: ToolDefinition = {
       const limit = typeof args.limit === "number" && Number.isInteger(args.limit) && args.limit > 0 ? Math.min(args.limit, 80) : 40;
       const query = typeof args.query === "string" ? args.query : "";
       const materials = suggestMaterialsByLabel(tileset, query, limit);
-      // 라벨이 비어 있으면 전체 스캔 샘플
+      // 빈 검색어는 전체 목록 탐색, 비어 있지 않은 검색어는 일치 항목만 반환.
       const normalizedQuery = query.trim().toLowerCase();
       const groups = approvedVocabulary(tileset).groups.filter((group) => {
         if (!normalizedQuery) return true;
@@ -176,7 +176,7 @@ const tileQuery: ToolDefinition = {
           ...(material.role ? { role: material.role } : {}),
         });
       }
-      if (labels.length === 0) {
+      if (!normalizedQuery && labels.length === 0) {
         for (let tileId = 0; tileId < tileset.count && labels.length < limit; tileId += 1) {
           const meta = tileset.tileMeta?.[tileId];
           const label = typeof meta?.label === "string" ? meta.label.trim() : "";

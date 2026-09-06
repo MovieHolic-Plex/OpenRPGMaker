@@ -1,5 +1,15 @@
 # Editor AI Tools & Vocabulary
 
+## Tile-query selector and filter boundaries (2026-09-07)
+
+`tile_query`의 `similar`/`unclassified`는 `labels`/`vocab`/`unapproved`와 같은 선택 순서를 쓴다:
+명시 `tilesetId` → 명시 `mapId`의 타일셋 → 시작 맵의 타일셋 → `DEFAULT_TILESET_ID`.
+선택한 명시 ID가 없거나 비어 있으면 오류이며, 다른 맵/타일셋으로 조용히 대체하지 않는다.
+`labels`의 비어 있지 않은 검색어가 일치하지 않으면 `labels: []`를 반환한다. 생략/빈 문자열/공백은
+기존 제한 개수 탐색을 유지하며, 빈 검색에서만 설명 전용 타일의 전체 스캔 폴백을 허용한다.
+의미 매칭·통행·카탈로그 라벨은 변경하지 않는다. 회귀: `test/tileQueryBoundaries.test.ts`
+(시작/대상/명시 타일셋 분리, 잘못된 선택자, 검색 실패와 빈 검색 탐색).
+
 ## Completed-house transaction protection - Phase 1 (2026-09-05)
 
 `src/editor/tools/houseProtection.ts` is the shared completed-house ownership rule.
