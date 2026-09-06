@@ -1,0 +1,87 @@
+$ bun test test/ohMyPiNumericEnum.bun.test.ts test/ohMyPiToolEnums.bun.test.ts test/ohMyPiImageTransport.bun.test.ts test/ohMyPiComplete.bun.test.ts
+bun test v1.4.2 (744846f84)
+
+test/ohMyPiToolEnums.bun.test.ts:
+(pass) post-normalization CCA enum preservation > changes only numeric enum arrays and is idempotent on claude-opus-4-6 [29.32ms]
+(pass) post-normalization CCA enum preservation > changes only numeric enum arrays and is idempotent on gemini-3.7-flash [43.05ms]
+(pass) post-normalization CCA enum preservation > does not protobuf-encode parametersJsonSchema or instance data [2.55ms]
+(pass) post-normalization CCA enum preservation > rejects unsupported source numeric enum {"type":"integer","enum":[]} before fetch, without image acknowledgement [8.21ms]
+(pass) post-normalization CCA enum preservation > rejects unsupported source numeric enum {"type":"integer","enum":[1,"2"]} before fetch, without image acknowledgement [0.40ms]
+(pass) post-normalization CCA enum preservation > rejects unsupported source numeric enum {"type":"integer","enum":[1,1.5]} before fetch, without image acknowledgement [0.15ms]
+(pass) post-normalization CCA enum preservation > rejects unsupported source numeric enum {"type":"integer","enum":[1,9007199254740992]} before fetch, without image acknowledgement [0.07ms]
+(pass) post-normalization CCA enum preservation > rejects unsupported source numeric enum {"type":"integer","enum":[1,true]} before fetch, without image acknowledgement [0.10ms]
+(pass) post-normalization CCA enum preservation > rejects unsupported source numeric enum {"type":"integer","enum":[1,null]} before fetch, without image acknowledgement [0.06ms]
+(pass) post-normalization CCA enum preservation > rejects unsupported source numeric enum {"type":"integer","enum":[1,1]} before fetch, without image acknowledgement [0.09ms]
+(pass) post-normalization CCA enum preservation > rejects unsupported source numeric enum {"type":"number","enum":[1,2]} before fetch, without image acknowledgement [0.05ms]
+(pass) post-normalization CCA enum preservation > rejects unsupported source numeric enum {"type":"string","enum":[1,2]} before fetch, without image acknowledgement [0.11ms]
+(pass) post-normalization CCA enum preservation > rejects unsupported source numeric enum {"type":["integer","null"],"enum":[1,2]} before fetch, without image acknowledgement [0.12ms]
+(pass) post-normalization CCA enum preservation > rejects unsupported source numeric enum {"type":"integer","enum":"1,2"} before fetch, without image acknowledgement [0.05ms]
+(pass) post-normalization CCA enum preservation > a source path erased by real SDK combiner normalization fails before fetch [28.65ms]
+(pass) post-normalization CCA enum preservation > lost field: real SDK onPayload errors retain HTTP400 and never fetch [9.32ms]
+(pass) post-normalization CCA enum preservation > changed type: real SDK onPayload errors retain HTTP400 and never fetch [15.61ms]
+(pass) post-normalization CCA enum preservation > broadened membership: real SDK onPayload errors retain HTTP400 and never fetch [5.07ms]
+(pass) post-normalization CCA enum preservation > narrowed membership: real SDK onPayload errors retain HTTP400 and never fetch [5.43ms]
+(pass) post-normalization CCA enum preservation > mixed membership: real SDK onPayload errors retain HTTP400 and never fetch [13.76ms]
+(pass) post-normalization CCA enum preservation > duplicate membership: real SDK onPayload errors retain HTTP400 and never fetch [3.82ms]
+(pass) post-normalization CCA enum preservation > noncanonical spelling: real SDK onPayload errors retain HTTP400 and never fetch [1.65ms]
+(pass) post-normalization CCA enum preservation > lost declaration: real SDK onPayload errors retain HTTP400 and never fetch [1.52ms]
+(pass) post-normalization CCA enum preservation > ambiguous declaration: real SDK onPayload errors retain HTTP400 and never fetch [1.73ms]
+
+test/ohMyPiComplete.bun.test.ts:
+(pass) oh-my-pi complete (real pi-ai + mock fetch) > 해결된 자격이 실제 요청의 Authorization 으로 나간다 [16.04ms]
+(pass) oh-my-pi complete (real pi-ai + mock fetch) > 만료된 Antigravity 갱신은 우리 코드로 Google token URL 을 친다 [1.30ms]
+(pass) oh-my-pi complete (real pi-ai + mock fetch) > Antigravity OAuth without projectId is not reported as connected [0.57ms]
+(pass) oh-my-pi complete (real pi-ai + mock fetch) > Antigravity OAuth with projectId remains connected [0.46ms]
+(pass) oh-my-pi complete (real pi-ai + mock fetch) > Antigravity completion preserves projectId and reaches the provider [4.54ms]
+(pass) oh-my-pi complete (real pi-ai + mock fetch) > Antigravity 이미지 요청에 modality를 주입하고 SSE inlineData를 반환한다 [7.20ms]
+(pass) oh-my-pi complete (real pi-ai + mock fetch) > 로그인이 없으면 영어 원문 대신 401 한국어 로그인 안내로 끊는다 [0.44ms]
+(pass) oh-my-pi complete (real pi-ai + mock fetch) > Antigravity 빈 스트림 재시도에서도 응답 URL을 보존해 이미지를 반환한다 [517.02ms]
+(pass) oh-my-pi complete (real pi-ai + mock fetch) > Antigravity 안전 정책 차단은 로그인 오류로 오인하지 않는다 [23.47ms]
+(pass) oh-my-pi complete (real pi-ai + mock fetch) > Antigravity 상류 401은 제품 로그인 경로를 안내한다 [3.94ms]
+(pass) oh-my-pi complete (real pi-ai + mock fetch) > Antigravity follow-up sends prior tool-call arguments as an object [3.63ms]
+
+test/ohMyPiNumericEnum.bun.test.ts:
+(pass) numeric tool enums at the real Antigravity SDK wire boundary > the captured set and full live registry cover all five numeric leaves [14.04ms]
+(pass) numeric tool enums at the real Antigravity SDK wire boundary > Opus text-only control reaches the real fetch and response parser [4.11ms]
+captured48 gemini-3.7-flash: 48 declarations, numeric enums preserved, one controlled fetch
+(pass) numeric tool enums at the real Antigravity SDK wire boundary > captured48: preserves membership, numeric arguments and images on gemini-3.7-flash [245.00ms]
+captured48 claude-opus-4-6: 48 declarations, numeric enums preserved, one controlled fetch
+(pass) numeric tool enums at the real Antigravity SDK wire boundary > captured48: preserves membership, numeric arguments and images on claude-opus-4-6 [95.51ms]
+captured48+sparse gemini-3.7-flash: 49 declarations, numeric enums preserved, one controlled fetch
+(pass) numeric tool enums at the real Antigravity SDK wire boundary > captured48+sparse: preserves membership, numeric arguments and images on gemini-3.7-flash [282.01ms]
+captured48+sparse claude-opus-4-6: 49 declarations, numeric enums preserved, one controlled fetch
+(pass) numeric tool enums at the real Antigravity SDK wire boundary > captured48+sparse: preserves membership, numeric arguments and images on claude-opus-4-6 [154.97ms]
+full-corpus gemini-3.7-flash: 235 declarations, numeric enums preserved, one controlled fetch
+(pass) numeric tool enums at the real Antigravity SDK wire boundary > full-corpus: preserves membership, numeric arguments and images on gemini-3.7-flash [608.30ms]
+full-corpus claude-opus-4-6: 235 declarations, numeric enums preserved, one controlled fetch
+(pass) numeric tool enums at the real Antigravity SDK wire boundary > full-corpus: preserves membership, numeric arguments and images on claude-opus-4-6 [380.17ms]
+(fail) numeric tool enums at the real Antigravity SDK wire boundary > Codex keeps native numeric enums, not CCA string encoding [5013.43ms]
+  ^ this test timed out after 5000ms.
+
+test/ohMyPiImageTransport.bun.test.ts:
+(pass) companion image delivery at the real provider request seam > preserves labeled PNG bytes for the default model or alias gemini-3.7-flash [1.79ms]
+(pass) companion image delivery at the real provider request seam > preserves labeled PNG bytes for the default model or alias gemini-3.7-flash-tiered [7.07ms]
+(pass) companion image delivery at the real provider request seam > preserves labeled PNG bytes for the default model or alias gemini-3.7-flash-low [5.41ms]
+(pass) companion image delivery at the real provider request seam > preserves multiple images and label ordering on google-antigravity wire [3.05ms]
+(pass) companion image delivery at the real provider request seam > preserves multiple images and label ordering on openai-codex wire [2.20ms]
+(pass) companion image delivery at the real provider request seam > rejects malformed or unsupported image URL https://example.invalid/map.png before outbound fetch [0.62ms]
+(pass) companion image delivery at the real provider request seam > rejects malformed or unsupported image URL data:image/svg+xml;base64,PHN2Zy8+ before outbound fetch [0.08ms]
+(pass) companion image delivery at the real provider request seam > rejects malformed or unsupported image URL data:image/png;base64, before outbound fetch [0.06ms]
+(pass) companion image delivery at the real provider request seam > rejects malformed or unsupported image URL data:image/png;base64,!!!! before outbound fetch [0.04ms]
+(pass) companion image delivery at the real provider request seam > rejects malformed or unsupported image URL data:image/png;base64,YQ= before outbound fetch [0.03ms]
+(pass) companion image delivery at the real provider request seam > rejects malformed or unsupported image URL data:image/png;base64,YR== before outbound fetch [0.11ms]
+(pass) companion image delivery at the real provider request seam > rejects image roles, malformed parts and nonvision models instead of dropping them [0.32ms]
+(pass) companion image delivery at the real provider request seam > accepts JPEG/WebP MIME bytes without relabeling or transcoding [766.07ms]
+(pass) companion image delivery at the real provider request seam > rejects the completion when the image-bearing provider request fails [7.63ms]
+(pass) companion image delivery at the real provider request seam > parses acknowledgement positions atomically and refuses malformed siblings [0.12ms]
+
+1 tests failed:
+(fail) numeric tool enums at the real Antigravity SDK wire boundary > Codex keeps native numeric enums, not CCA string encoding [5013.43ms]
+  ^ this test timed out after 5000ms.
+
+ 58 pass
+ 1 fail
+ 277 expect() calls
+Ran 59 tests across 4 files. [14.27s]
+
+EXIT_STATUS=1

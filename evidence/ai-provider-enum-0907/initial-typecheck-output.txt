@@ -1,0 +1,115 @@
+Focused tsc program: scripts/lib/ohMyPiToolEnums.ts, scripts/lib/ohMyPiPiAiRuntime.ts, test/ohMyPiNumericEnum.bun.test.ts, test/ohMyPiToolEnums.bun.test.ts, test/ohMyPiNumericEnumLocal.test.ts; official cached Bun 1.4.1 ambient types; all transitive diagnostics included
+[96mtest/ohMyPiNumericEnum.bun.test.ts[0m:[93m60[0m:[93m56[0m - [91merror[0m[90m TS2352: [0mConversion of type '{ type: string; properties: { kind: { type: string; enum: string[]; description: string; }; mapId: { type: string; description?: undefined; }; kitId: { type: string; enum: string[]; description: string; }; wings: { ...; }; ... 131 more ...; domain?: undefined; }; required: string[]; additionalProperties?: undefined;...' to type 'SchemaNode' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type '{ type: string; properties: { query: { type: string; minLength: number; description?: undefined; }; domain: { type: string; enum: string[]; }; limit: { type: string; minimum: number; maximum: number; }; reason: { ...; }; ... 131 more ...; once?: undefined; }; required: string[]; additionalProperties: boolean; }' is not comparable to type 'SchemaNode'.
+    Types of property 'properties' are incompatible.
+      Type '{ query: { type: string; minLength: number; description?: undefined; }; domain: { type: string; enum: string[]; }; limit: { type: string; minimum: number; maximum: number; }; reason: { type: string; description: string; minLength: number; }; ... 131 more ...; once?: undefined; }' is not comparable to type 'Record<string, SchemaNode>'.
+        Property '"kind"' is incompatible with index signature.
+          Type 'undefined' is not comparable to type 'SchemaNode'.
+
+[7m60[0m       for (const { path, schema } of numericEnumLeaves(tool.function.parameters as SchemaNode)) {
+[7m  [0m [91m                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[96mtest/ohMyPiNumericEnum.bun.test.ts[0m:[93m72[0m:[93m18[0m - [91merror[0m[90m TS2741: [0mProperty 'preconnect' is missing in type '(_input: URL | RequestInfo, init: RequestInit | BunFetchRequestInit | undefined) => Promise<Response>' but required in type 'typeof fetch'.
+
+[7m72[0m     }, { apiKey, fetch: async (_input, init) => {
+[7m  [0m [91m                 ~~~~~[0m
+
+  [96m../../.bun/install/cache/bun-types@1.4.1@@@1/globals.d.ts[0m:[93m2162[0m:[93m19[0m
+    [7m2162[0m   export function preconnect(
+    [7m    [0m [96m                  ~~~~~~~~~~[0m
+    'preconnect' is declared here.
+[96mtest/ohMyPiNumericEnum.bun.test.ts[0m:[93m94[0m:[93m83[0m - [91merror[0m[90m TS2741: [0mProperty 'preconnect' is missing in type '(_input: URL | RequestInfo, init: RequestInit | BunFetchRequestInit | undefined) => Promise<Response>' but required in type 'typeof fetch'.
+
+[7m94[0m       const result = await completeProvider("google-antigravity", body, { apiKey, fetch: async (_input, init) => {
+[7m  [0m [91m                                                                                  ~~~~~[0m
+
+  [96m../../.bun/install/cache/bun-types@1.4.1@@@1/globals.d.ts[0m:[93m2162[0m:[93m19[0m
+    [7m2162[0m   export function preconnect(
+    [7m    [0m [96m                  ~~~~~~~~~~[0m
+    'preconnect' is declared here.
+[96mtest/ohMyPiNumericEnum.bun.test.ts[0m:[93m115[0m:[93m51[0m - [91merror[0m[90m TS2339: [0mProperty 'tool_calls' does not exist on type '{ role: string; content: string | null; tool_calls: { id: string; type: "function"; function: { name: string; arguments: string; }; }[] | undefined; } | { role: string; content: string; }'.
+  Property 'tool_calls' does not exist on type '{ role: string; content: string; }'.
+
+[7m115[0m       expect(result.completion.choices[0].message.tool_calls!.map(call => ({
+[7m   [0m [91m                                                  ~~~~~~~~~~[0m
+[96mtest/ohMyPiNumericEnum.bun.test.ts[0m:[93m115[0m:[93m67[0m - [91merror[0m[90m TS7006: [0mParameter 'call' implicitly has an 'any' type.
+
+[7m115[0m       expect(result.completion.choices[0].message.tool_calls!.map(call => ({
+[7m   [0m [91m                                                                  ~~~~[0m
+[96mtest/ohMyPiNumericEnum.bun.test.ts[0m:[93m129[0m:[93m32[0m - [91merror[0m[90m TS2741: [0mProperty 'preconnect' is missing in type '(_input: URL | RequestInfo, init: RequestInit | BunFetchRequestInit | undefined) => Promise<Response>' but required in type 'typeof fetch'.
+
+[7m129[0m       apiKey: "offline-codex", fetch: async (_input, init) => {
+[7m   [0m [91m                               ~~~~~[0m
+
+  [96m../../.bun/install/cache/bun-types@1.4.1@@@1/globals.d.ts[0m:[93m2162[0m:[93m19[0m
+    [7m2162[0m   export function preconnect(
+    [7m    [0m [96m                  ~~~~~~~~~~[0m
+    'preconnect' is declared here.
+[96mtest/ohMyPiToolEnums.bun.test.ts[0m:[93m30[0m:[93m38[0m - [91merror[0m[90m TS2345: [0mArgument of type '{ messages: { role: "user"; content: string; timestamp: number; }[]; tools: { name: string; description: string; parameters: JsonSchema; }[]; }' is not assignable to parameter of type 'Context'.
+  Types of property 'tools' are incompatible.
+    Type '{ name: string; description: string; parameters: JsonSchema; }[]' is not assignable to type 'Tool<TSchema>[]'.
+      Type '{ name: string; description: string; parameters: JsonSchema; }' is not assignable to type 'Tool<TSchema>'.
+        Types of property 'parameters' are incompatible.
+          Type 'JsonSchema' is not assignable to type 'TSchema'.
+            Type 'JsonSchema' is not assignable to type 'TJsonSchema'.
+              Index signature for type 'string' is missing in type 'JsonSchema'.
+
+[7m30[0m     const wire = buildRequest(model, context(), "offline-project", {}, true);
+[7m  [0m [91m                                     ~~~~~~~~~[0m
+[96mtest/ohMyPiToolEnums.bun.test.ts[0m:[93m44[0m:[93m18[0m - [91merror[0m[90m TS2352: [0mConversion of type 'CloudCodeAssistRequest' to type 'Payload' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  The types of 'request.tools' are incompatible between these types.
+    Type '{ functionDeclarations: Record<string, unknown>[]; }[] | undefined' is not comparable to type '{ functionDeclarations: { name: string; parameters?: Node | undefined; parametersJsonSchema?: Node | undefined; }[]; }[]'.
+      Type '{ functionDeclarations: Record<string, unknown>[]; }[]' is not comparable to type '{ functionDeclarations: { name: string; parameters?: Node | undefined; parametersJsonSchema?: Node | undefined; }[]; }[]'.
+        Type '{ functionDeclarations: Record<string, unknown>[]; }' is not comparable to type '{ functionDeclarations: { name: string; parameters?: Node | undefined; parametersJsonSchema?: Node | undefined; }[]; }'.
+          Types of property 'functionDeclarations' are incompatible.
+            Type 'Record<string, unknown>[]' is not comparable to type '{ name: string; parameters?: Node | undefined; parametersJsonSchema?: Node | undefined; }[]'.
+              Property 'name' is missing in type 'Record<string, unknown>' but required in type '{ name: string; parameters?: Node | undefined; parametersJsonSchema?: Node | undefined; }'.
+
+[7m44[0m     const wire = buildRequest(bundled("claude-opus-4-6"), context(), "offline-project", {}, true) as Payload;
+[7m  [0m [91m                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  [96mtest/ohMyPiToolEnums.bun.test.ts[0m:[93m21[0m:[93m62[0m
+    [7m21[0m type Payload = { request: { tools: { functionDeclarations: { name: string; parameters?: Node; parametersJsonSchema?: Node }[] }[] } };
+    [7m  [0m [96m                                                             ~~~~[0m
+    'name' is declared here.
+[96mtest/ohMyPiToolEnums.bun.test.ts[0m:[93m44[0m:[93m59[0m - [91merror[0m[90m TS2345: [0mArgument of type '{ messages: { role: "user"; content: string; timestamp: number; }[]; tools: { name: string; description: string; parameters: JsonSchema; }[]; }' is not assignable to parameter of type 'Context'.
+  Types of property 'tools' are incompatible.
+    Type '{ name: string; description: string; parameters: JsonSchema; }[]' is not assignable to type 'Tool<TSchema>[]'.
+      Type '{ name: string; description: string; parameters: JsonSchema; }' is not assignable to type 'Tool<TSchema>'.
+        Types of property 'parameters' are incompatible.
+          Type 'JsonSchema' is not assignable to type 'TSchema'.
+            Type 'JsonSchema' is not assignable to type 'TJsonSchema'.
+              Index signature for type 'string' is missing in type 'JsonSchema'.
+
+[7m44[0m     const wire = buildRequest(bundled("claude-opus-4-6"), context(), "offline-project", {}, true) as Payload;
+[7m  [0m [91m                                                          ~~~~~~~~~[0m
+[96mtest/ohMyPiToolEnums.bun.test.ts[0m:[93m70[0m:[93m73[0m - [91merror[0m[90m TS2741: [0mProperty 'preconnect' is missing in type '() => Promise<never>' but required in type 'typeof fetch'.
+
+[7m70[0m     await expect(completeProvider("google-antigravity", body, { apiKey, fetch: async () => {
+[7m  [0m [91m                                                                        ~~~~~[0m
+
+  [96m../../.bun/install/cache/bun-types@1.4.1@@@1/globals.d.ts[0m:[93m2162[0m:[93m19[0m
+    [7m2162[0m   export function preconnect(
+    [7m    [0m [96m                  ~~~~~~~~~~[0m
+    'preconnect' is declared here.
+[96mtest/ohMyPiToolEnums.bun.test.ts[0m:[93m85[0m:[93m18[0m - [91merror[0m[90m TS2741: [0mProperty 'preconnect' is missing in type '() => Promise<never>' but required in type 'typeof fetch'.
+
+[7m85[0m     }, { apiKey, fetch: async () => { fetches++; throw new Error("unexpected fetch"); } })).rejects.toMatchObject({
+[7m  [0m [91m                 ~~~~~[0m
+
+  [96m../../.bun/install/cache/bun-types@1.4.1@@@1/globals.d.ts[0m:[93m2162[0m:[93m19[0m
+    [7m2162[0m   export function preconnect(
+    [7m    [0m [96m                  ~~~~~~~~~~[0m
+    'preconnect' is declared here.
+[96mtest/ohMyPiToolEnums.bun.test.ts[0m:[93m109[0m:[93m42[0m - [91merror[0m[90m TS2345: [0mArgument of type '{ messages: { role: "user"; content: string; timestamp: number; }[]; tools: { name: string; description: string; parameters: JsonSchema; }[]; }' is not assignable to parameter of type 'Context'.
+  Types of property 'tools' are incompatible.
+    Type '{ name: string; description: string; parameters: JsonSchema; }[]' is not assignable to type 'Tool<TSchema>[]'.
+      Type '{ name: string; description: string; parameters: JsonSchema; }' is not assignable to type 'Tool<TSchema>'.
+        Types of property 'parameters' are incompatible.
+          Type 'JsonSchema' is not assignable to type 'TSchema'.
+            Type 'JsonSchema' is not assignable to type 'TJsonSchema'.
+              Index signature for type 'string' is missing in type 'JsonSchema'.
+
+[7m109[0m     const result = await complete(model, context(), { apiKey,
+[7m   [0m [91m                                         ~~~~~~~~~[0m
+
+DIAGNOSTICS=12

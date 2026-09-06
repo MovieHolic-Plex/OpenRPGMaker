@@ -9,6 +9,7 @@ import { getBundledModel, getBundledModels } from "@oh-my-pi/pi-catalog";
 import { getOhMyPiProvider } from "../../src/ai/ohMyPiProviders.ts";
 import type { ImageDelivery } from "../../src/ai/imageDelivery.ts";
 import { convertUserContent, hasImagePart, ImageTransportError } from "./ohMyPiUserContent.ts";
+import { antigravityToolEnumPayload } from "./ohMyPiToolEnums.ts";
 
 function testStub(): boolean {
   return process.env.RPG_ZZU_OH_MY_PI_TEST_STUB === "1";
@@ -224,6 +225,9 @@ export async function completeProvider(
   const message = await complete(model as never, context as never, {
     ...(apiKey ? { apiKey } : {}),
     fetch: options?.fetch,
+    ...(provider === "google-antigravity" && context.tools?.length
+      ? { onPayload: antigravityToolEnumPayload(model.id, context.tools) }
+      : {}),
   } as never);
   const completion = assistantToOpenAI(message);
   return { stream: false, completion: { ...completion, image_delivery: imageDelivery } };
