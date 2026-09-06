@@ -1,0 +1,16 @@
+{
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "300s",
+    "node",
+    ".omo/evidence/life-full-20260906/10/date-fix/player-neutral.mjs"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-field-input",
+  "exit": 0,
+  "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "pixelsExit": 0
+}

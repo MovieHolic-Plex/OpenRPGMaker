@@ -5,6 +5,7 @@ import { CONFIGURE_OBJECT_BEHAVIOR, PURSUIT_SCHEMA, parsePursuit } from "./horro
 
 import { shadowedPageWarnings } from "@/project/eventPageShadow";
 import { ACTION_CONTROLS_GUIDE } from "@/player/keyBindings";
+import { eventRequiresPassableTile } from "@/project/eventPlacementRecovery";
 import { isPassable, tileAt } from "@/project/collision";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
@@ -2357,7 +2358,7 @@ const moveEvent: ToolDefinition = {
     const requestedY = args.y as number;
     if (!inMapBounds(map, requestedX, requestedY)) throw new ToolError(`이동 위치가 맵 밖입니다: (${requestedX}, ${requestedY})`, { mapId: map.id, x: requestedX, y: requestedY });
     const placement = resolveEventPlacement(draft, map, requestedX, requestedY, {
-      kind: "interaction",
+      kind: eventRequiresPassableTile(event) ? "character" : "interaction",
       steppable: eventIsSteppable(event),
       ignoreEventId: event.id,
       label: `이벤트 '${event.id}'`,

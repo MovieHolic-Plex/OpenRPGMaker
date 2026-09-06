@@ -1,0 +1,84 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/toolActionAuthoringParity.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-tools
+
+ ❯ test/toolActionAuthoringParity.test.ts (42 tests | 1 failed) 4914ms
+   ✓ authored tool authority > keeps all four real defaults for absent and empty tables  890ms
+   ✓ authored tool authority > does not merge defaults into an existing one-row table on load  669ms
+   ✓ authored tool authority > matches a conditionless rule with a valid hoe 104ms
+   ✓ authored tool authority > matches a conditionless rule with a valid wateringCan 63ms
+   ✓ authored tool authority > matches a conditionless rule with a valid axe 81ms
+   ✓ authored tool authority > matches a conditionless rule with a valid pickaxe 73ms
+   ✓ authored tool authority > does not treat item_potato_seed as any farm tool or fall through an occupied hand 86ms
+   ✓ authored tool authority > does not treat item_potion as any farm tool or fall through an occupied hand 65ms
+   ✓ authored tool authority > does not treat missing as any farm tool or fall through an occupied hand 106ms
+   ✓ authored tool authority > resolves any tool from inventory when hand is empty 42ms
+   ✓ authored tool authority > refuses a seed consumable even if it carries a farmTool field 55ms
+   ✓ authored tool authority > refuses a normal consumable even if it carries a farmTool field 82ms
+   ✓ authored tool authority > honors itemId over a contradictory kind, without reordering rows 55ms
+   ✓ authored tool authority > preserves explicit false through serialization and tills outside the region  360ms
+   ✓ authored tool authority > refuses till outside the region when requiresFarmable is undefined 52ms
+   ✓ authored tool authority > refuses till outside the region when requiresFarmable is true 68ms
+   ✓ authored tool authority > lets the authored water action override the held hoe's legacy intent 168ms
+   × authored tool authority > keeps the held hoe from auto-planting after the defaults are materialized 321ms
+     → expected { kind: 'planted', x: 4, y: 5, …(6) } to match object { kind: 'ignored', …(1) }
+(8 matching properties omitted from actual)
+   ✓ authored tool authority > refuses mature crop harvest with item_hoe when the authored rule requires a can 111ms
+   ✓ authored tool authority > refuses mature crop harvest with item_potato_seed when the authored rule requires a can 81ms
+   ✓ authored tool authority > harvests with a matching authored rule outside the region 44ms
+   ✓ authored tool authority > keeps legacy mature harvesting with a seed when no harvest rule exists 56ms
+   ✓ authored tool authority > does not allow seeds to plant outside farmable regions via a false tool rule 46ms
+   ✓ authored tool authority > refuses invalid origin -1,5 even for a wide unrestricted tool 39ms
+   ✓ authored tool authority > refuses invalid origin 4,-1 even for a wide unrestricted tool 42ms
+   ✓ authored tool authority > refuses invalid origin 999,5 even for a wide unrestricted tool 72ms
+   ✓ authored tool authority > refuses invalid origin 4,999 even for a wide unrestricted tool 83ms
+   ✓ authored tool authority > refuses invalid origin 4.5,5 even for a wide unrestricted tool 53ms
+   ✓ authored tool authority > refuses invalid origin NaN,5 even for a wide unrestricted tool 63ms
+   ✓ authored tool authority > does not let false bypass wall occupancy or terrain 65ms
+   ✓ authored tool authority > does not let false bypass chest occupancy or terrain 54ms
+   ✓ authored tool authority > does not let false bypass placeable occupancy or terrain 43ms
+   ✓ authored tool authority > does not let false bypass building occupancy or terrain 49ms
+   ✓ authored tool authority > does not let false bypass decoration occupancy or terrain 71ms
+   ✓ authored tool authority > applies a wide tool only to safe cells and charges only those cells 83ms
+   ✓ authored tool authority > rolls back every wide-tool cell when energy is insufficient 51ms
+   ✓ authored tool authority > checks authored region and target restrictions for till 52ms
+   ✓ authored tool authority > checks authored region and target restrictions for water 46ms
+   ✓ authored tool authority > checks authored region and target restrictions for chop 174ms
+   ✓ authored tool authority > checks authored region and target restrictions for mine 107ms
+   ✓ authored tool authority > checks authored region and target restrictions for fish 34ms
+   ✓ authored tool authority > checks authored region and target restrictions for harvest 34ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > keeps the held hoe from auto-planting after the defaults are materialized
+AssertionError: expected { kind: 'planted', x: 4, y: 5, …(6) } to match object { kind: 'ignored', …(1) }
+(8 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "kind": "ignored",[39m
+[32m-   "reason": "wrong-tool-for-plot",[39m
+[31m+   "kind": "planted",[39m
+[2m  }[22m
+
+ ❯ test/toolActionAuthoringParity.test.ts:121:100
+    119|     session.farmPlots = { [map.id]: { "4,5": { tilled: true, watered: …
+    120|     const before = structuredClone(session);
+    121|     expect(interactWithFarmPlot(project, session, map, 4, 5, farmInten…
+       |                                                                                                    ^
+    122|     expect(session).toEqual(before);
+    123|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 41 passed (42)
+   Start at  22:06:41
+   Duration  15.92s (transform 6.63s, setup 0ms, collect 9.73s, tests 4.91s, environment 0ms, prepare 312ms)
+

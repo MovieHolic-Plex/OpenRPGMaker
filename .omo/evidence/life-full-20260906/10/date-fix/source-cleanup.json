@@ -1,0 +1,34 @@
+{
+  "worktree": "/home/main/z-project/rpg-zzu-life-full-field-input",
+  "baseHead": "038ff8b47b127e604dad6a5c5cb50597ef543c20",
+  "source": {
+    "src/project/seasonalForage.ts": {
+      "sha256": "5c80ae0b3e413b0fac294c4ab50c821c07a4b14f3d804046465263399189e09d",
+      "gitBlob": "2a8c6e06871e47474abb88b663c1688c0bb63ce6"
+    },
+    "test/lifeFieldInteraction.test.ts": {
+      "sha256": "92a75ef32f97df963f5f0d264bb1f7993c6d6290b2d8244fa98f3126b77dcf78",
+      "gitBlob": "fc04de1adfe1d26ac132bca073c9929f5191a41e"
+    }
+  },
+  "nativeAndPublicSourceMatch": true,
+  "parentEvidenceUnchanged": {
+    "/home/main/z-project/rpg-zzu-life-full-p3/.omo/evidence/life-full-20260906/phase3-parent-checks/forage-date.mjs": "c87adafdec60819bcf2c1d2762ff6f5151422cdfb4c03b13b5f5fe06fee4b636",
+    "/home/main/z-project/rpg-zzu-life-full-p3/.omo/evidence/life-full-20260906/phase3-parent-checks/forage-date-result.json": "c681844ba24bd240b95c4657dc69f036392667b560c969504ac4ec173ba1b6ab",
+    "/home/main/z-project/rpg-zzu-life-full-p3/.omo/evidence/life-full-20260906/phase3-parent-checks/forage-date-execution.json": "77888a849af0304e34f1e680427bceba5bea1063a5f1b7c13bfb728c4cb3435b"
+  },
+  "cleanup": {
+    "serverPort": 35433,
+    "portClosed": true,
+    "publicServersAndOwnedCachesClosed": true,
+    "native": {
+      "browserClosed": true,
+      "contextsClosed": true,
+      "serverClosed": true,
+      "ownedCacheRemoved": "/home/main/z-project/rpg-zzu-life-full-field-input/.omo/evidence/life-full-20260906/10/date-fix/native/player-cache"
+    },
+    "removedOwnDistBytes": 244586041,
+    "distAbsent": true,
+    "preExistingViteCachePreserved": true
+  }
+}

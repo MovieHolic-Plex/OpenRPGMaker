@@ -1,0 +1,30 @@
+{
+  "reviewedHead": "bd81a933cbecfeb8b25ef15bf57bc24911011aa8",
+  "approvalArchivedAt": "132164d4940bbcaf4be9feddeedd1502f3c4d3df",
+  "removed": [
+    {
+      "path": "/home/main/z-project/rpg-zzu-life-full-field-input",
+      "exit": 0,
+      "commitsReachableFrom": "132164d4940bbcaf4be9feddeedd1502f3c4d3df"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-life-full-field-verify",
+      "exit": 0,
+      "commitsReachableFrom": "132164d4940bbcaf4be9feddeedd1502f3c4d3df"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-life-full-p3-base-compare",
+      "exit": 0,
+      "commitsReachableFrom": "132164d4940bbcaf4be9feddeedd1502f3c4d3df"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-life-full-p3-final-01a0727b",
+      "exit": 0,
+      "commitsReachableFrom": "132164d4940bbcaf4be9feddeedd1502f3c4d3df"
+    }
+  ],
+  "branchesPreserved": true,
+  "integrationTreeRetained": "/home/main/z-project/rpg-zzu-life-full-p3",
+  "runtimeQA": "Parent/independent pair/probe/browser cleanup receipts already complete",
+  "rawEvidence": "All required evidence archived before removal; final verdict content matched before deleting its ignored original"
+}

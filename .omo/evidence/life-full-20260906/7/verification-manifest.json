@@ -1,0 +1,109 @@
+{
+  "task": 7,
+  "worktree": "/home/main/z-project/rpg-zzu-life-full-crop-regrowth",
+  "branch": "agent/life-full-crop-regrowth",
+  "verificationHead": "43817f4a32610fc5f833354d0e20cf1487e50355",
+  "baseTree": "60897226bac516b0e440debedd32aeb39b4fc86c",
+  "verifiedSourceTestTreeBeforeEvidence": "86678cfc12ff0daaaa3af4e10abf40a0ad52f499",
+  "requiredAncestors": {
+    "48195f5753556572db0c13e40f6945b9547bbea3": 0,
+    "27db0af0021fb49414723b64141a0e1c568b8069": 0
+  },
+  "sourceTestBlobs": {
+    "src/player/farming.ts": "4c63bf69a3e2f691fea141232174248fc194f51e",
+    "src/player/playSceneFarming.ts": "1209e9572cba0060bde426a93be308b51119cc18",
+    "src/player/saveSlotValidation.ts": "e5a279a47796f7c494128efe5b83d8026eb9adbe",
+    "src/project/session.ts": "4ff793cda487d45279127762c8a6f0dd3245587b",
+    "test/cropRegrowthContract.test.ts": "f2cc26d6fb083de208e24ade052d5c8a367be575"
+  },
+  "commands": [
+    {
+      "name": "setup-failure",
+      "command": "flock --timeout 900 /tmp/rpg-zzu-life-full-qa-01a0727b.lock timeout 300s npm test -- test/cropRegrowthContract.test.ts",
+      "exit": 1
+    },
+    {
+      "name": "setup-format-failure",
+      "command": "flock --timeout 900 /tmp/rpg-zzu-life-full-qa-01a0727b.lock timeout 300s npm test -- test/cropRegrowthContract.test.ts",
+      "exit": 1
+    },
+    {
+      "name": "red",
+      "command": "flock --timeout 900 /tmp/rpg-zzu-life-full-qa-01a0727b.lock timeout 300s npm test -- test/cropRegrowthContract.test.ts",
+      "exit": 1
+    },
+    {
+      "name": "green",
+      "command": "flock --timeout 900 /tmp/rpg-zzu-life-full-qa-01a0727b.lock timeout 300s npm test -- test/cropRegrowthContract.test.ts test/farmingRuntime.test.ts test/playSceneFarmOverlay.test.ts test/farmingSprites.test.ts test/lifeSkillDisabledHarvest.test.ts test/lifeSaveVersion.test.ts test/lifeRecoveryPersistence.test.ts test/p0SessionPersistence.test.ts test/customSeasonSave.test.ts test/makerClockIntegration.test.ts test/p0LifeSkillProgress.test.ts test/p1DayTransitionIntegration.test.ts",
+      "exit": 0
+    },
+    {
+      "name": "final-green",
+      "command": "flock --timeout 900 /tmp/rpg-zzu-life-full-qa-01a0727b.lock timeout 300s npm test -- test/cropRegrowthContract.test.ts test/farmingRuntime.test.ts test/playSceneFarmOverlay.test.ts test/farmingSprites.test.ts test/lifeSkillDisabledHarvest.test.ts test/lifeSaveVersion.test.ts test/lifeRecoveryPersistence.test.ts test/p0SessionPersistence.test.ts test/customSeasonSave.test.ts test/makerClockIntegration.test.ts test/p0LifeSkillProgress.test.ts test/p1DayTransitionIntegration.test.ts",
+      "exit": 0
+    },
+    {
+      "name": "diagnostics",
+      "command": "flock --timeout 900 /tmp/rpg-zzu-life-full-qa-01a0727b.lock timeout 300s node .omo/evidence/life-full-20260906/7/diagnostics.mjs",
+      "exit": 0
+    },
+    {
+      "name": "typecheck",
+      "command": "flock --timeout 900 /tmp/rpg-zzu-life-full-qa-01a0727b.lock timeout 300s npm run typecheck:app",
+      "exit": 0
+    },
+    {
+      "name": "build",
+      "command": "flock --timeout 900 /tmp/rpg-zzu-life-full-qa-01a0727b.lock timeout 600s npm run build",
+      "exit": 0
+    },
+    {
+      "name": "public-prototype-failure",
+      "command": "flock --timeout 900 /tmp/rpg-zzu-life-full-qa-01a0727b.lock timeout 300s node --experimental-webstorage --localstorage-file=.omo/evidence/life-full-20260906/7/native-storage .omo/evidence/life-full-20260906/7/public-probe.mjs",
+      "exit": 1
+    },
+    {
+      "name": "public",
+      "command": "flock --timeout 900 /tmp/rpg-zzu-life-full-qa-01a0727b.lock timeout 300s node --experimental-webstorage --localstorage-file=.omo/evidence/life-full-20260906/7/native-storage .omo/evidence/life-full-20260906/7/public-probe.mjs",
+      "exit": 0
+    }
+  ],
+  "rawSha256": {
+    "build.command.txt": "a2e3a8af2f46d59841790d35db6a045acff9e9ed5c10365c3b85a4b0a45da2e6",
+    "build.exit.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "build.txt": "d23c81488977cbcc447046cd146bdaa992aafdf8ac1104cf9cd4e59f172d874b",
+    "cleanup.json": "5eca3210bc6c7b2b2012d50cefd6cbe9b86fbcf9575b74e156d46ffc3b9d588f",
+    "diagnostics.command.txt": "954a208697312b0966cead9c30d04dffc111214c0da8aa9e586275ed855e3b39",
+    "diagnostics.exit.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "diagnostics.mjs": "21ec722474df104578d55f94dd0e7fd24bd8f7e5931639c5f684c7e223c13f6e",
+    "diagnostics.txt": "b5f6c818c83c4a175d42ee42526b10cfa0f3e5e513e5e73eb15e2b14783ed0fb",
+    "final-green.command.txt": "9105bf4c08ef547304d15026b5bbea566bb70b6ce24f840749180cb257e58f7d",
+    "final-green.exit.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "final-green.txt": "e636b4aa33926f5628b84d242b85c6cdc9fcb744daa5b557d91582da2255f47a",
+    "green.command.txt": "9105bf4c08ef547304d15026b5bbea566bb70b6ce24f840749180cb257e58f7d",
+    "green.exit.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "green.txt": "be006add4e68afba689fb30bc72b1ed40f9be0c12e6de15d7d7bc588f627ff7f",
+    "public-probe.mjs": "624fd5bd7deee4487cc7d3975bc1536f1c8994d29edfd40c90b06758ea9d4e0e",
+    "public-prototype-failure-state.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "public-prototype-failure.command.txt": "3a939354684d97aa5e7641e1fa02552d0c2430f6cc6cf0c994c9633aa4a6a2d0",
+    "public-prototype-failure.exit.txt": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "public-prototype-failure.mjs": "61f9bc2a98630f0d197133f02f9303171b370bf12151330812db072be93f27ab",
+    "public-prototype-failure.txt": "100caaf22da5719893df9239ed7a8b2d6ed34626f6f0c2dd8c9d8647ea7b131a",
+    "public-state.json": "f4fea65feaf8a9a23fde85c73342cc1a7262c0b978bf8bc30e9ca2545827d2aa",
+    "public.command.txt": "3a939354684d97aa5e7641e1fa02552d0c2430f6cc6cf0c994c9633aa4a6a2d0",
+    "public.exit.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "public.txt": "1b4b560663f2542a342c55cbd744483b3b2a9426c2e5230ffda3517061e6a1ca",
+    "red.command.txt": "60256eeb166464037bc09e0daaf63ae4f0af84b99782898bad48282c04d71c61",
+    "red.exit.txt": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "red.txt": "72072d029d2b0b6ec62eac4fea6db33fc27e6287c4dd7ad63b9b51307f985d7b",
+    "setup-failure.command.txt": "60256eeb166464037bc09e0daaf63ae4f0af84b99782898bad48282c04d71c61",
+    "setup-failure.exit.txt": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "setup-failure.txt": "59fb08e40de3bd4f21a0f0a1607c8b2acc6d2d460199938c68c2f19eec748878",
+    "setup-format-failure.command.txt": "60256eeb166464037bc09e0daaf63ae4f0af84b99782898bad48282c04d71c61",
+    "setup-format-failure.exit.txt": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "setup-format-failure.txt": "59fb08e40de3bd4f21a0f0a1607c8b2acc6d2d460199938c68c2f19eec748878",
+    "typecheck.command.txt": "2b71e79624e0ccb84bb66daeb54f2cca6dd5420daf58819ea2f8d082ffe8431b",
+    "typecheck.exit.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "typecheck.txt": "9e2e881b46f10347e10261b098fd6171273d8f45b9a5d52fc81a8473a713bdfe"
+  }
+}

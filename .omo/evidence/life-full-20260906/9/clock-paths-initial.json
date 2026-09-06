@@ -1,0 +1,15 @@
+{
+  "surface": "Actual public clock/maker/save authorities and actual ledger DOM renderer in Happy DOM; not native player.html gameplay",
+  "mocks": [
+    "camera render completion endpoint",
+    "scene refresh/sync endpoints"
+  ],
+  "paths": [],
+  "cleanup": {
+    "storageCleared": true,
+    "windowClosed": true,
+    "middlewareServerClosed": true,
+    "listenerCreated": false,
+    "remoteWrites": 0
+  }
+}

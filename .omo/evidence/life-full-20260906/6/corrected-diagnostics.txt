@@ -1,0 +1,4 @@
+{"path":"src/player/farming.ts","diagnostics":[]}
+{"path":"src/project/fishing.ts","diagnostics":[]}
+{"path":"src/project/seasonalForage.ts","diagnostics":[]}
+{"path":"test/lifeSkillDisabledHarvest.test.ts","diagnostics":[]}

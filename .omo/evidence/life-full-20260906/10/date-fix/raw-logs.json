@@ -1,0 +1,20 @@
+[
+  {
+    "original": "diagnostics.txt",
+    "stored": "diagnostics.txt.gz",
+    "sha256": "d6e30d2b3f42397ecd2cf69c32d151105eb9e347eded2c0263b7ce6bc71fe180",
+    "bytes": 532
+  },
+  {
+    "original": "red-public/output.txt",
+    "stored": "red-public/output.txt.gz",
+    "sha256": "5e02c4c732a97d493fc34b0d1fb7078eca1301c6d109737ed0d3488323c3e896",
+    "bytes": 1147
+  },
+  {
+    "original": "red-tests.txt",
+    "stored": "red-tests.txt.gz",
+    "sha256": "c81356a8cb4aaf92b5aec059879aa39f84187982e3ded009ce1e0cee5757343d",
+    "bytes": 10992
+  }
+]

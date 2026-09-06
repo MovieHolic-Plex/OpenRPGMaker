@@ -1,0 +1,116 @@
+{
+  "candidate": {
+    "key": "[\"test/storePersistence.test.ts\",\"Project store remote persistence skips remote flush when there are no unsaved changes\",1]",
+    "path": "test/storePersistence.test.ts",
+    "name": "Project store remote persistence skips remote flush when there are no unsaved changes",
+    "current": "failed",
+    "base": "passed",
+    "currentError": [
+      "AssertionError: expected \"spy\" to not be called at all, but actually been called 1 times"
+    ],
+    "baseError": []
+  },
+  "pairRun": "run-w9sTgj",
+  "probe": "audit-queue-probe.mjs",
+  "command": "cd /home/main/z-project/rpg-zzu-life-full-p3 && node --check /home/main/z-project/rpg-zzu-life-full-p3/.omo/evidence/life-full-20260906/phase3-gate-triage/audit-queue-probe.mjs && mkdir -p /home/main/z-project/rpg-zzu-life-full-p3/.omo/evidence/life-full-20260906/phase3-gate-triage/audit-queue-current /home/main/z-project/rpg-zzu-life-full-p3/.omo/evidence/life-full-20260906/phase3-gate-triage/audit-queue-base && flock --timeout 900 /tmp/rpg-zzu-life-full-qa-01a0727b.lock timeout --signal=TERM --kill-after=15s 300s node /home/main/z-project/rpg-zzu-life-full-p3/.omo/evidence/life-full-20260906/phase3-gate-triage/audit-queue-probe.mjs /home/main/z-project/rpg-zzu-life-full-p3/.omo/evidence/life-full-20260906/phase3-gate-triage/audit-queue-current && cd /home/main/z-project/rpg-zzu-life-full-p3-base-compare && flock --timeout 900 /tmp/rpg-zzu-life-full-qa-01a0727b.lock timeout --signal=TERM --kill-after=15s 300s node /home/main/z-project/rpg-zzu-life-full-p3/.omo/evidence/life-full-20260906/phase3-gate-triage/audit-queue-probe.mjs /home/main/z-project/rpg-zzu-life-full-p3/.omo/evidence/life-full-20260906/phase3-gate-triage/audit-queue-base",
+  "monitor": "mon_0GG7DY5XS6T1AM46 / bash_53",
+  "exit": 0,
+  "current": {
+    "root": "/home/main/z-project/rpg-zzu-life-full-p3",
+    "head": "b4395f929ec6a386f9aa274531efd8722ffc8252",
+    "rows": [
+      {
+        "resetBeforeNextSpy": false,
+        "cleanFlush": {
+          "kind": "saved"
+        },
+        "requestsBeforeDeadline": 0,
+        "requestsAfterDeadline": [
+          {
+            "url": "/__oprn/edit-activity",
+            "method": "POST",
+            "fields": [
+              {
+                "path": "bundledTilesets",
+                "after": true
+              }
+            ]
+          }
+        ],
+        "unchangedProject": true,
+        "unsaved": false
+      },
+      {
+        "resetBeforeNextSpy": true,
+        "cleanFlush": {
+          "kind": "saved"
+        },
+        "requestsBeforeDeadline": 0,
+        "requestsAfterDeadline": [],
+        "unchangedProject": true,
+        "unsaved": false
+      }
+    ],
+    "scope": "Controlled public audit-queue/real clean-flush probe; not replay of the entire original test sequence",
+    "cleanup": {
+      "serverClosed": true,
+      "timersReset": true,
+      "globalsRestored": true,
+      "ownedCacheRemoved": true
+    }
+  },
+  "base": {
+    "root": "/home/main/z-project/rpg-zzu-life-full-p3-base-compare",
+    "head": "e33c93afbd1b0d8824f273c62d234d66c8802323",
+    "rows": [
+      {
+        "resetBeforeNextSpy": false,
+        "cleanFlush": {
+          "kind": "saved"
+        },
+        "requestsBeforeDeadline": 0,
+        "requestsAfterDeadline": [
+          {
+            "url": "/__oprn/edit-activity",
+            "method": "POST",
+            "fields": [
+              {
+                "path": "bundledTilesets",
+                "after": true
+              }
+            ]
+          }
+        ],
+        "unchangedProject": true,
+        "unsaved": false
+      },
+      {
+        "resetBeforeNextSpy": true,
+        "cleanFlush": {
+          "kind": "saved"
+        },
+        "requestsBeforeDeadline": 0,
+        "requestsAfterDeadline": [],
+        "unchangedProject": true,
+        "unsaved": false
+      }
+    ],
+    "scope": "Controlled public audit-queue/real clean-flush probe; not replay of the entire original test sequence",
+    "cleanup": {
+      "serverClosed": true,
+      "timersReset": true,
+      "globalsRestored": true,
+      "ownedCacheRemoved": true
+    }
+  },
+  "rowsEqual": true,
+  "classification": "Existing audit-queue test-observer interference, not a changed clean-flush persistence behavior. The actual extra call is an audit endpoint. Same deferred callback behavior is reproduced on the exact base without Phase3 source.",
+  "evidenceLimits": "The controlled public probe schedules an observed-kind audit entry and runs actual clean flush; it is not a replay of the entire original multi-test sequence. The original test remains nondeterministic and is not modified or presented as fixed.",
+  "sourceEvidence": [
+    "src/project/store.ts:809-825 clean early return",
+    "src/editor/editActivityLog.ts:queueMirror/flushEditActivityMirror use dynamic global fetch after1500ms",
+    "test/storePersistence.test.ts:afterEach does not reset the audit module",
+    "test/storeFlushShaEvidence.test.ts:afterEach already documents and resets this exact known contamination"
+  ],
+  "cleanup": "Both probe servers/caches/timers/globals restored; paired comparison cleanup has no errors."
+}

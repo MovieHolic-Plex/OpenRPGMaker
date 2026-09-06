@@ -3,7 +3,7 @@
 
 import { describe, expect, it } from "vitest";
 import { createEmberQuestProject } from "@/project/defaults/emberQuestGame";
-import { PINNED_TOOLS_BY_DOMAIN, allTools, getTool, toOpenAiTools } from "@/editor/tools/toolRegistry";
+import { activeTools, allTools, getTool, toOpenAiTools } from "@/editor/tools/toolRegistry";
 import { runTool } from "@/editor/tools/toolRunner";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import type { ToolContext } from "@/editor/tools/types";
@@ -210,36 +210,21 @@ describe("toolRegistry", () => {
   });
 });
 
-// 노출 상한(40) 핀 목록의 무효 핀 방지 가드.
-// toOpenAiTools()가 deprecated를 먼저 걸러내므로, deprecated 툴을 핀해도 노출은 되지 않는다.
-describe("PINNED_TOOLS_BY_DOMAIN", () => {
-  it("핀된 툴은 모두 실존하고 deprecated가 아니다", () => {
-    for (const [domain, names] of PINNED_TOOLS_BY_DOMAIN) {
-      for (const name of names) {
-        const tool = getTool(name);
-        expect(tool, `핀된 툴이 레지스트리에 없다: ${name} (domain=${domain})`).toBeDefined();
-        expect(
-          tool?.deprecated,
-          `핀된 툴이 deprecated 다: ${name} (domain=${domain}, supersededBy=${tool?.supersededBy}) — 노출 필터가 먼저 걸러 핀이 무효하다`,
-        ).not.toBe(true);
-      }
+// Every active definition is public; no hand-maintained pin list can omit new capabilities.
+describe("public tool exposure", () => {
+  it("exposes all and only active definitions without a pin requirement", () => {
+    const exposed = toOpenAiTools();
+    expect(exposed.map((tool) => tool.function.name)).toEqual(activeTools().map((tool) => tool.name));
+    for (const schema of exposed) {
+      expect(getTool(schema.function.name)?.deprecated).not.toBe(true);
     }
   });
 
-  it("pins quest persist tools and world facades", () => {
-    expect(PINNED_TOOLS_BY_DOMAIN.get("quest")).toEqual(new Set([
-      "author_story_arc",
-      "define_quest",
-      "create_quest",
-      "verify_quest",
-      "lint_quest",
-      "generate_walkthrough",
-    ]));
-    expect(PINNED_TOOLS_BY_DOMAIN.get("world")).toEqual(new Set([
-      "plan_world",
-      "build_world",
-      "link_maps",
-      "lint_world",
+  it("exposes quest persist tools and world facades", () => {
+    const names = toOpenAiTools().map((tool) => tool.function.name);
+    expect(names).toEqual(expect.arrayContaining([
+      "author_story_arc", "define_quest", "create_quest", "verify_quest", "lint_quest", "generate_walkthrough",
+      "plan_world", "build_world", "link_maps", "lint_world",
     ]));
   });
 });

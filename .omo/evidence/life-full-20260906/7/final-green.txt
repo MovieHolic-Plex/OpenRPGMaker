@@ -1,0 +1,48 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/cropRegrowthContract.test.ts test/farmingRuntime.test.ts test/playSceneFarmOverlay.test.ts test/farmingSprites.test.ts test/lifeSkillDisabledHarvest.test.ts test/lifeSaveVersion.test.ts test/lifeRecoveryPersistence.test.ts test/p0SessionPersistence.test.ts test/customSeasonSave.test.ts test/makerClockIntegration.test.ts test/p0LifeSkillProgress.test.ts test/p1DayTransitionIntegration.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-crop-regrowth
+
+ ✓ test/farmingSprites.test.ts (21 tests) 527ms
+ ✓ test/customSeasonSave.test.ts (1 test) 481ms
+   ✓ custom season save compatibility > preserves day 40 through wire parsing and applies the current project calendar  479ms
+ ✓ test/lifeSaveVersion.test.ts (18 tests) 1468ms
+ ✓ test/p1DayTransitionIntegration.test.ts (5 tests) 1494ms
+   ✓ P1 daily weather transition integration > initializes today's weather and visual state when a new session starts  623ms
+   ✓ P1 daily weather transition integration > advances calendar, resolves forecast-matching rain, waters, then grows in one transaction  300ms
+   ✓ P1 daily weather transition integration > keeps non-rain weather visual but does not water a crop  311ms
+ ✓ test/p0SessionPersistence.test.ts (9 tests) 1682ms
+   ✓ P0 save snapshot regression > preserves life skills and shop economy through writer, parser, and apply  564ms
+ ✓ test/lifeSkillDisabledHarvest.test.ts (49 tests) 6127ms
+   ✓ crop automatic harvest XP > keeps the real reward when skillSystem is disabled  348ms
+   ✓ crop automatic harvest XP > rolls back the entire active transaction for an invalid recipe reward  300ms
+ ✓ test/p0LifeSkillProgress.test.ts (10 tests) 1987ms
+   ✓ P0 life-skill progression > applies every crossed level reward once and unlocks real crafting  677ms
+ ✓ test/lifeRecoveryPersistence.test.ts (40 tests) 9403ms
+   ✓ lossless life persistence > keeps compatible shipping and unfinished legacy maker behavior  723ms
+   ✓ lossless life persistence > keeps contribution2 and recovers only excess3 after requirement5 becomes2  369ms
+   ✓ adversarial life codec boundaries > refuses all conversions on claim exhaustion without moving a prefix  1472ms
+   ✓ load refusal bounds and pure reconciliation > rejects total-bytes at the real Save5 reader without overwriting bytes  916ms
+   ✓ bounded animal restoration > quarantines animals beyond the runtime bound instead of dropping a saved suffix  2023ms
+ ✓ test/playSceneFarmOverlay.test.ts (8 tests) 808ms
+ ✓ test/cropRegrowthContract.test.ts (30 tests) 5017ms
+   ✓ exact crop regrowth contract > zero yield with inventory undefined > treats zero yield as a successful harvest (regrow=0)  312ms
+   ✓ exact crop regrowth contract > requires ten qualifying ticks after a two-day crop's harvest, including every displayed stage  427ms
+ ✓ test/farmingRuntime.test.ts (29 tests) 3349ms
+   ✓ Phase 10b 농사 런타임 > 괭이질, 심기, 물주기, 성장, 수확 상태 머신을 처리한다  331ms
+   ✓ Phase 10b 농사 런타임 > 재수확 작물은 수확 후 regrow 단계로 후퇴한다  310ms
+   ✓ Phase 10b 농사 런타임 > 세이브/로드가 farmPlots를 왕복 보존한다  405ms
+   ✓ 손 슬롯 의도 계약 > 다 자란 작물은 씨앗·괭이·물뿌리개 어느 것을 들어도 수확된다  391ms
+ ✓ test/makerClockIntegration.test.ts (28 tests) 4781ms
+   ✓ maker game-clock integration > executes actual updateGameTime at minute 29 then 30, including split fixed frames  362ms
+   ✓ maker game-clock integration > has identical deadline readiness through natural  343ms
+   ✓ maker game-clock integration > preserves forced sleep hook clock and readiness at rate 1  373ms
+   ✓ maker game-clock integration > discards a ready draft and recovery prefix when capacity refuses set-time  354ms
+
+ Test Files  12 passed (12)
+      Tests  248 passed (248)
+   Start at  21:07:24
+   Duration  42.71s (transform 71.40s, setup 0ms, collect 300.99s, tests 37.12s, environment 3.37s, prepare 7.48s)
+

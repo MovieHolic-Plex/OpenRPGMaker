@@ -1,0 +1,28 @@
+{
+  "event": "previous-phase-integration-worktree-cleaned",
+  "phase": "필드와 시간",
+  "plan": ".omo/plans/life-systems-full-implementation.md",
+  "removedWorktree": "/home/main/z-project/rpg-zzu-life-full-p2",
+  "removeExit": 0,
+  "phase2Head": "e33c93afbd1b0d8824f273c62d234d66c8802323",
+  "preservedIn": [
+    "/home/main/z-project/rpg-zzu-life-full-p3",
+    "/home/main/z-project/rpg-zzu-life-full-harvest-xp",
+    "/home/main/z-project/rpg-zzu-life-full-maker-clock"
+  ],
+  "leftovers": {
+    "publicRawEntries": 6,
+    "allMatchedCommittedArchive": true,
+    "automaticBackupMatchedHistoricalGitBlob": true,
+    "privateLocalInventories": 2,
+    "privateArchiveIgnoredAndHashVerified": true
+  },
+  "activeOldPhaseRuntimes": 0,
+  "newDependencyRoot": "/home/main/z-project/rpg-zzu/node_modules",
+  "currentIntegration": "/home/main/z-project/rpg-zzu-life-full-p3",
+  "activeChildren": [
+    "st_01a07653",
+    "st_01a07654"
+  ],
+  "sourceChangesObserved": "Both workers had only their own new regression test file at midpoint; no overlapping product edits."
+}

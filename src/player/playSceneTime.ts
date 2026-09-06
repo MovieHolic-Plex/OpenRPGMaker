@@ -3,7 +3,6 @@ import {
   initialGameTime,
   minutesUntilDayEnd,
   resolveTimeSystem,
-  setGameTimeClock,
   timePhaseFor,
   type TimePhase,
 } from "@/project/gameTime";
@@ -11,7 +10,7 @@ import { store } from "@/project/store";
 import type { Command } from "@/project/types";
 import type { StepResult } from "@/player/interpreter";
 import { isCutsceneInputLocked } from "@/player/cutsceneControl";
-import { advanceTimeAcrossDayBoundaries, transitionToNextDay } from "@/player/dayTransition";
+import { advanceTimeAcrossDayBoundaries, setTimeWithMakers, transitionToNextDay } from "@/player/dayTransition";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { fadeCamera, TRANSFER_FADE_DURATION_MS } from "@/player/playSceneMapCommands";
 import { PLAY_RESOLUTION } from "@/player/playResolution";
@@ -48,26 +47,49 @@ export function updateGameTime(scene: PlaySceneContext, deltaMs: number): void {
   scene.session.gameTime ??= initialGameTime(system);
   if (!scene.session.gameTime || isGameTimePausedForRuntime(scene)) return;
 
-  scene.timeFixedAccumulatorMs += Math.max(0, deltaMs);
-  while (scene.timeFixedAccumulatorMs >= TIME_FIXED_STEP_MS) {
-    scene.timeFixedAccumulatorMs -= TIME_FIXED_STEP_MS;
-    scene.timeMinuteAccumulator += system.minutesPerRealSecond;
-    const wholeMinutes = Math.floor(scene.timeMinuteAccumulator);
-    if (wholeMinutes <= 0) continue;
-    scene.timeMinuteAccumulator -= wholeMinutes;
-    if (system.forceSleep && minutesUntilDayEnd(scene.session.gameTime, system) <= wholeMinutes) {
-      observeScheduledTimeTransition(scene, scene.sleepUntilMorning(), "forced-sleep");
-      return;
-    }
-    const advanced = advanceTimeAcrossDayBoundaries(project, scene.session, wholeMinutes);
+  if (!Number.isFinite(deltaMs) || deltaMs <= 0) return;
+  scene.timeFixedAccumulatorMs += deltaMs;
+  const steps = Math.floor(scene.timeFixedAccumulatorMs / TIME_FIXED_STEP_MS);
+  if (steps === 0) return;
+  scene.timeFixedAccumulatorMs -= steps * TIME_FIXED_STEP_MS;
+  const minuteCarry = scene.timeMinuteAccumulator;
+  scene.timeMinuteAccumulator += steps * system.minutesPerRealSecond;
+  const wholeMinutes = Math.floor(scene.timeMinuteAccumulator);
+  if (wholeMinutes <= 0) return;
+  scene.timeMinuteAccumulator -= wholeMinutes;
+  const untilEnd = minutesUntilDayEnd(scene.session.gameTime, system);
+  if (system.forceSleep && untilEnd <= wholeMinutes) {
+    const before = structuredClone(scene.session);
+    // Preserve the last completed fixed step seen by onDayEnd, not the start of a large frame.
+    const priorSteps = Math.max(0, Math.ceil((untilEnd - minuteCarry) / system.minutesPerRealSecond) - 1);
+    const priorMinutes = Math.floor(minuteCarry + priorSteps * system.minutesPerRealSecond);
+    const advanced = advanceTimeAcrossDayBoundaries(project, scene.session, priorMinutes);
     if (!advanced.ok) {
       scene.timeFixedAccumulatorMs = 0;
       scene.timeMinuteAccumulator = 0;
       showDayTransitionFailure(scene, advanced.reason);
       return;
     }
-    scene.clearRuntimeOverlay("day-transition-error");
+    const rollback = (): void => {
+      restoreSession(scene.session, before);
+      scene.refreshRuntimeSurfaces();
+      scene.syncRuntimeState();
+    };
+    observeScheduledTimeTransition(scene, scene.sleepUntilMorning().then((ok) => {
+      if (!ok) rollback();
+      return ok;
+    }, (error: unknown) => { rollback(); throw error; }), "forced-sleep");
+    return;
   }
+  // One frame is one transaction, including all crossed days and residual minutes.
+  const advanced = advanceTimeAcrossDayBoundaries(project, scene.session, wholeMinutes);
+  if (!advanced.ok) {
+    scene.timeFixedAccumulatorMs = 0;
+    scene.timeMinuteAccumulator = 0;
+    showDayTransitionFailure(scene, advanced.reason);
+    return;
+  }
+  scene.clearRuntimeOverlay("day-transition-error");
 }
 
 export function updateTimeTint(scene: PlaySceneContext, deltaMs: number): void {
@@ -163,31 +185,45 @@ export async function applyAdvanceTimeStep(
   if (!system) return;
   scene.session.gameTime ??= initialGameTime(system);
   if (!scene.session.gameTime) return;
-  const days = Math.max(0, Math.trunc(step.days ?? 0));
-  for (let index = 0; index < days; index += 1) {
-    if (!await scene.sleepUntilMorning()) throw new Error("Day transition failed during authored day advance");
+  if (![step.days ?? 0, step.minutes ?? 0].every(Number.isFinite)) throw new Error("Invalid time advance");
+  const before = structuredClone(scene.session);
+  try {
+    const days = Math.max(0, Math.trunc(step.days ?? 0));
+    for (let index = 0; index < days; index += 1) {
+      if (!await scene.sleepUntilMorning()) throw new Error("Day transition failed during authored day advance");
+    }
+    const minutes = Math.max(0, Math.trunc(step.minutes ?? 0));
+    if (minutes <= 0) return;
+    if (system.forceSleep && minutesUntilDayEnd(scene.session.gameTime, system) <= minutes) {
+      if (!await scene.sleepUntilMorning()) throw new Error("Day transition failed during forced sleep");
+      return;
+    }
+    const advanced = advanceTimeAcrossDayBoundaries(project, scene.session, minutes);
+    if (!advanced.ok) {
+      showDayTransitionFailure(scene, advanced.reason);
+      throw new Error(`Day transition failed: ${advanced.reason}`);
+    }
+    scene.clearRuntimeOverlay("day-transition-error");
+    scene.syncRuntimeState();
+  } catch (error) {
+    restoreSession(scene.session, before);
+    scene.refreshRuntimeSurfaces();
+    scene.syncRuntimeState();
+    throw error;
   }
-  const minutes = Math.max(0, Math.trunc(step.minutes ?? 0));
-  if (minutes <= 0) return;
-  if (system.forceSleep && minutesUntilDayEnd(scene.session.gameTime, system) <= minutes) {
-    if (!await scene.sleepUntilMorning()) throw new Error("Day transition failed during forced sleep");
-    return;
-  }
-  const advanced = advanceTimeAcrossDayBoundaries(project, scene.session, minutes);
-  if (!advanced.ok) {
-    showDayTransitionFailure(scene, advanced.reason);
-    throw new Error(`Day transition failed: ${advanced.reason}`);
-  }
-  scene.clearRuntimeOverlay("day-transition-error");
-  scene.syncRuntimeState();
 }
 
 export function applySetTimeStep(scene: PlaySceneContext, step: Extract<StepResult, { kind: "setTime" }>): void {
-  const system = resolveTimeSystem(store.getCurrent());
+  const project = store.getCurrent();
+  const system = resolveTimeSystem(project);
   if (!system) return;
   scene.session.gameTime ??= initialGameTime(system);
-  if (!scene.session.gameTime) return;
-  scene.session.gameTime = setGameTimeClock(scene.session.gameTime, step.hour, step.minute, system);
+  const changed = setTimeWithMakers(project, scene.session, step);
+  if (!changed.ok) {
+    showDayTransitionFailure(scene, changed.reason);
+    throw new Error(`Clock change failed: ${changed.reason}`);
+  }
+  scene.clearRuntimeOverlay("day-transition-error");
   scene.syncRuntimeState();
 }
 

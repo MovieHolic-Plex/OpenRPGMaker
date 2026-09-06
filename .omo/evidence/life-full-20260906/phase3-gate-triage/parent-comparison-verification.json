@@ -1,0 +1,31 @@
+{
+  "inputHashes": 11,
+  "byteReferences": 1772,
+  "jsonPointers": 1099,
+  "allOriginalFailuresMapped": 219,
+  "commonFullHumanBodies": 162,
+  "rootOnlyEqual": 158,
+  "narrowMappings": [
+    "CF001",
+    "CF002",
+    "CF066",
+    "CF134"
+  ],
+  "sourceCoordinateContentPairsEqual": true,
+  "soleStatusDeltaProbe": "audit-candidate-conclusion.json",
+  "pairedCoverage": {
+    "files": 113,
+    "cases": 1251,
+    "missing": 0,
+    "extra": 0,
+    "pending": 0
+  },
+  "cleanupErrors": 0,
+  "classification": "Comparison complete; no unexplained paired assertion-body differences. Original non-reproductions, console timing differences and restricted-environment/unhandled-error limits remain, not passed or fixed.",
+  "credentialScan": {
+    "files": 55,
+    "bytes": 60094086,
+    "matchingLiveLongCredentialValues": 0
+  },
+  "approved": false
+}

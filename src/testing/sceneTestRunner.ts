@@ -63,24 +63,24 @@ import { nearestCellInRect, pointRect, rectsOverlap } from "@/project/footprint"
 import { enterRoguelikeRunRoom } from "@/project/roguelikeRun";
 import { roguelikeRoomId, syncRoguelikeRoomEventGeneration } from "@/project/roguelikeRooms";
 import {
-  advanceGameTime,
   calendarDayKey,
   initialGameTime,
   isSeason,
   isTimePhase,
   minutesUntilDayEnd,
   resolveTimeSystem,
-  setGameTimeClock,
   timePhaseFor,
   type GameTime,
   type TimePhase,
 } from "@/project/gameTime";
 import { npcScheduleTargetForEvent } from "@/project/npcSchedule";
-import { cropStageAt, interactWithFarmPlot } from "@/player/farming";
+import { interactWithLifeField } from "@/player/lifeFieldInteraction";
+import { findChestAt } from "@/project/placeables";
+import { cropStageAt, farmIntentForHand, interactWithFarmPlot } from "@/player/farming";
 import { giveGiftToNpc } from "@/project/friendship";
 import { resolveShopStock } from "@/project/shopStock";
 import { applyMapBgmToSession, resolveMapBgm } from "@/player/mapBgm";
-import { transitionToNextDay } from "@/player/dayTransition";
+import { advanceTimeAcrossDayBoundaries, setTimeWithMakers, transitionToNextDay } from "@/player/dayTransition";
 
 const TICK_MS = 16;
 
@@ -659,35 +659,33 @@ function runInteractStep(state: RunnerState, expectedEventId?: string): string |
   const map = currentMap(state);
   if (!map) return `현재 맵 없음: ${state.session.currentMapId}`;
   const delta = directionDelta(state.facing);
-  const front = findRuntimeEventAtInMap(
-    state.project,
-    map,
-    state.session,
-    state.eventPositions,
-    state.session.x + delta.x,
-    state.session.y + delta.y,
-    "action"
-  );
-  if (front) {
-    if (expectedEventId !== undefined && front.event.id !== expectedEventId) return `Interaction target: expected ${expectedEventId}, actual ${front.event.id}`;
-    return runEventView(state, front);
-  }
-  const farmFront = interactWithFarmPlot(state.project, state.session, map, state.session.x + delta.x, state.session.y + delta.y);
-  if (farmFront.kind !== "ignored") {
-    if (expectedEventId !== undefined) return `Interaction target: expected ${expectedEventId}, actual farm plot`;
-    state.log.push(`farm ${farmFront.kind}: ${map.id} (${farmFront.x},${farmFront.y})${farmFront.cropId ? ` ${farmFront.cropId}` : ""}`);
-    return null;
-  }
-  const underfoot = findRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, state.session.x, state.session.y, "action");
-  if (underfoot) {
-    if (expectedEventId !== undefined && underfoot.event.id !== expectedEventId) return `Interaction target: expected ${expectedEventId}, actual ${underfoot.event.id}`;
-    return runEventView(state, underfoot);
-  }
-  const farmUnderfoot = interactWithFarmPlot(state.project, state.session, map, state.session.x, state.session.y);
-  if (farmUnderfoot.kind !== "ignored") {
-    if (expectedEventId !== undefined) return `Interaction target: expected ${expectedEventId}, actual farm plot`;
-    state.log.push(`farm ${farmUnderfoot.kind}: ${map.id} (${farmUnderfoot.x},${farmUnderfoot.y})${farmUnderfoot.cropId ? ` ${farmUnderfoot.cropId}` : ""}`);
-    return null;
+  for (const target of [
+    { mapId: map.id, x: state.session.x + delta.x, y: state.session.y + delta.y },
+    { mapId: map.id, x: state.session.x, y: state.session.y },
+  ]) {
+    const event = findRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, target.x, target.y, "action");
+    if (event) {
+      if (expectedEventId !== undefined && event.event.id !== expectedEventId) return `Interaction target: expected ${expectedEventId}, actual ${event.event.id}`;
+      return runEventView(state, event);
+    }
+    const chest = findChestAt(state.session, map.id, target.x, target.y);
+    if (chest) {
+      if (expectedEventId !== undefined) return `Interaction target: expected ${expectedEventId}, actual chest ${chest.id}`;
+      state.log.push(`chest ${chest.id}: open`);
+      return null;
+    }
+    const life = interactWithLifeField(state.project, state.session, target);
+    if (life.kind !== "unhandled") {
+      if (expectedEventId !== undefined) return `Interaction target: expected ${expectedEventId}, actual ${life.source}`;
+      state.log.push(`${life.source} ${life.kind}: ${life.kind === "success" ? life.itemId : life.reason}`);
+      return null;
+    }
+    const farm = interactWithFarmPlot(state.project, state.session, map, target.x, target.y, farmIntentForHand(state.project, state.session));
+    if (farm.kind !== "ignored") {
+      if (expectedEventId !== undefined) return `Interaction target: expected ${expectedEventId}, actual farm plot`;
+      state.log.push(`farm ${farm.kind}: ${map.id} (${farm.x},${farm.y})${farm.cropId ? ` ${farm.cropId}` : ""}`);
+      return null;
+    }
   }
   return `조사할 action 이벤트 없음: ${map.id} (${state.session.x},${state.session.y}) facing=${state.facing}`;
 }
@@ -785,7 +783,10 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
         step = interp.resume(undefined);
         break;
       case "setTime":
-        setClockForRunner(state, step.hour, step.minute);
+        {
+          const failure = setClockForRunner(state, step.hour, step.minute);
+          if (failure) return { stop: "failed", reason: failure };
+        }
         step = interp.resume(undefined);
         break;
       case "sleepUntilMorning":
@@ -1111,25 +1112,32 @@ function advanceCommandTimeForRunner(
   state: RunnerState,
   step: Extract<StepResult, { kind: "advanceTime" }>
 ): string | null {
-  const days = Math.max(0, Math.trunc(step.days ?? 0));
-  for (let index = 0; index < days; index += 1) {
-    const failure = sleepUntilMorningForRunner(state);
-    if (failure) return failure;
-  }
+  const before = structuredClone(state.session);
+  const daysFailure = advanceDaysForRunner(state, step.days ?? 0);
   const minutes = Math.max(0, Math.trunc(step.minutes ?? 0));
-  return minutes > 0 ? advanceGameMinutesForRunner(state, minutes) : null;
+  const failure = daysFailure ?? (minutes > 0 ? advanceGameMinutesForRunner(state, minutes) : null);
+  if (failure) state.session = before;
+  return failure;
 }
 
 function advanceDaysForRunner(state: RunnerState, days: number): string | null {
+  const before = structuredClone(state.session);
   const count = Math.max(0, Math.trunc(days));
   for (let index = 0; index < count; index += 1) {
     const failure = sleepUntilMorningForRunner(state);
-    if (failure) return failure;
+    if (failure) { state.session = before; return failure; }
   }
   return null;
 }
 
 function advanceGameMinutesForRunner(state: RunnerState, minutes: number): string | null {
+  const before = structuredClone(state.session);
+  const failure = advanceGameMinutesDraftForRunner(state, minutes);
+  if (failure) state.session = before;
+  return failure;
+}
+
+function advanceGameMinutesDraftForRunner(state: RunnerState, minutes: number): string | null {
   const system = resolveTimeSystem(state.project);
   if (!system) return null;
   state.session.gameTime ??= initialGameTime(system);
@@ -1140,7 +1148,8 @@ function advanceGameMinutesForRunner(state: RunnerState, minutes: number): strin
     if (!currentTime) return null;
     const untilEnd = minutesUntilDayEnd(currentTime, system);
     if (untilEnd > remaining) {
-      state.session.gameTime = advanceGameTime(currentTime, remaining, system).time;
+      const advanced = advanceTimeAcrossDayBoundaries(state.project, state.session, remaining);
+      if (!advanced.ok) return `day transition: ${advanced.reason}`;
       applyNpcSchedulesForRunner(state);
       return null;
     }
@@ -1149,18 +1158,18 @@ function advanceGameMinutesForRunner(state: RunnerState, minutes: number): strin
     const transitionFailure = transitionToNextDayForRunner(state);
     if (transitionFailure) return transitionFailure;
     applyNpcSchedulesForRunner(state);
-    if (untilEnd <= 0) remaining = 0;
   }
   return null;
 }
 
-function setClockForRunner(state: RunnerState, hour: number, minute: number | undefined): void {
+function setClockForRunner(state: RunnerState, hour: number, minute: number | undefined): string | null {
   const system = resolveTimeSystem(state.project);
-  if (!system) return;
+  if (!system) return null;
   state.session.gameTime ??= initialGameTime(system);
-  if (!state.session.gameTime) return;
-  state.session.gameTime = setGameTimeClock(state.session.gameTime, hour, minute, system);
+  const changed = setTimeWithMakers(state.project, state.session, { hour, minute });
+  if (!changed.ok) return `clock change: ${changed.reason}`;
   applyNpcSchedulesForRunner(state);
+  return null;
 }
 
 function sleepUntilMorningForRunner(state: RunnerState): string | null {
