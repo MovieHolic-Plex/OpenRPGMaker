@@ -1,0 +1,62 @@
+{
+  "candidate": "60baa32d89a3601a9d1805c066f08264198e359a",
+  "baseline": "3f7b89d64",
+  "whole": {
+    "command": "unshare -Urn sh -c 'ip link set lo up && taskset -c 0-7 npm run gates'",
+    "timeoutMs": 1800000,
+    "outcome": "timed_out",
+    "completed": false,
+    "jsonReportProduced": false,
+    "network": "isolated namespace; loopback only",
+    "scheduling": "Observed seven active workers. Parent affinity widened to 0-31 during run.",
+    "observedHostLoad": 75.74
+  },
+  "css": {
+    "candidateExit": 1,
+    "baselineExit": 1,
+    "budgetExit": 1,
+    "graphExit": 0,
+    "metric": "cssFileCount",
+    "allowed": 267,
+    "observed": 268,
+    "sourceTree": "8a321e80bfe1aabb526b02c3c101def216c8ccf2",
+    "checker": "cebb03c139a6a898a8b05174f4a84b3d99caf9ea",
+    "baselineFile": "6c794902547d162ed1ea38e9b79013091d1489dd",
+    "identicalToBaseline": true
+  },
+  "surface": {
+    "candidateExit": 1,
+    "baselineExit": 1,
+    "axes": 10,
+    "failedTests": 6,
+    "comparison": "Same failure identities and snapshot-difference counts in candidate and isolated baseline",
+    "failures": [
+      {
+        "file": "test/eventEditorCommitProbe.baseline.test.ts",
+        "cases": 2,
+        "snapshotDifferences": 4
+      },
+      {
+        "file": "test/eventEditorFormSurface.baseline.test.ts",
+        "cases": 1,
+        "snapshotDifferences": 4
+      },
+      {
+        "file": "test/eventEditorInteractionSurface.baseline.test.ts",
+        "cases": 1,
+        "snapshotDifferences": 4
+      },
+      {
+        "file": "test/eventEditorM2Surface.baseline.test.ts",
+        "cases": 1,
+        "snapshotDifferences": 2
+      },
+      {
+        "file": "test/eventEditorPortalSurface.baseline.test.ts",
+        "cases": 1,
+        "snapshotDifferences": 2
+      }
+    ]
+  },
+  "limits": "No whole-suite regression-free claim. No baseline, test assertion, or production guard was suppressed."
+}
