@@ -43,7 +43,15 @@ coverage (actual clipped bounds, exact union), then a later explicit
 `review_acceptance({itemId, verdict:"pass"|"fail", note})`. Only an explicit pass
 verifies the image condition; a failed review revokes an earlier pass and retains
 its observation in the evidence disclosure.
-Changes invalidate old receipts; a draft is not applied verification.
+`assistantImageEvidence.ts` owns the single receipt store used by both acceptance
+and terminal adventure coverage. DB-only writes and non-resetting follow-ups retain
+current images; map content, its tileset and shared asset changes retire applicable
+receipts, including captures pending delivery. Undo cannot revive retired receipts
+or reviews. Failed/empty rendering and metadata alone add no coverage. Applied-state
+checks filter evidence without retiring a reviewed draft that has not yet been
+applied; draft images never verify the old applied map. Normal finalization and both
+execution-budget exits use this same currentness. Image verification remains separate
+from structural adventure checks and is not game-completion/playthrough proof.
 
 `AssistantSession` consults acceptance at final-response and autonomous-continuation
 boundaries even when the execution plan is finished. Existing bounded repair
@@ -59,7 +67,8 @@ There is no new approval step, genre quota, remote schema or cross-device ledger
 The note's lifetime is the current conversation/session, not a saved project.
 
 Regression entry points: `test/assistantAcceptance.test.ts`,
-`test/assistantAcceptanceSession.test.ts`, `test/aiStickyChecklist.test.ts`,
+`test/assistantAcceptanceSession.test.ts`, `test/assistantImageEvidence.test.ts`,
+`test/assistantVisualEvidenceSession.test.ts`, `test/aiStickyChecklist.test.ts`,
 `test/e2e/ai-sticky-checklist.spec.ts`. Evidence: `output/evidence/assistant-sticky/`.
 
 ## 브라우저 포커스와 도구 실행 대기 (2026-09-05)
