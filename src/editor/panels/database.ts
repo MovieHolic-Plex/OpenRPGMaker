@@ -20,6 +20,10 @@ import {
   stopSkillAnimationStagesIn,
 } from "@/editor/panels/databaseSkillAnimationStage";
 import { renderSystemTab } from "@/editor/panels/databaseSystemView";
+import {
+  disposeDatabaseCinematicsIn,
+  renderDatabaseCinematicTab,
+} from "@/editor/panels/databaseCinematicView";
 import { renderVillageTab } from "@/editor/panels/databaseVillageView";
 import {
   renderSwitchesTab,
@@ -76,6 +80,8 @@ export type DatabaseTab =
   | "tilesetSpaces"
   | "scratchConcepts"
   | "system"
+  | "opening"
+  | "gameOver"
   | "terms"
   | "terrain"
   | "villages"
@@ -123,6 +129,8 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "villages", label: "기존 마을 설계", testid: "db-tab-villages" },
   { id: "commonEvents", label: "공용 이벤트", testid: "db-tab-common-events" },
   { id: "system", label: "시스템", testid: "db-tab-system" },
+  { id: "opening", label: "오프닝", testid: "db-tab-opening" },
+  { id: "gameOver", label: "게임 오버", testid: "db-tab-game-over" },
   { id: "terms", label: "용어", testid: "db-tab-terms" },
   { id: "switches", label: "스위치", testid: "db-tab-switches" },
   { id: "variables", label: "변수", testid: "db-tab-variables" },
@@ -151,7 +159,7 @@ export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
   },
   { label: "생활", slug: "life", tabs: ["crops", "characters", "lifeCrafting", "dailyWeather", "farmAnimals", "farmSpatial", "lifeCollections"] },
   { label: "맵", slug: "world", tabs: ["scratchConcepts", "tilesets"] },
-  { label: "시스템", slug: "system", tabs: ["commonEvents", "system", "terms", "switches", "variables"] },
+  { label: "시스템", slug: "system", tabs: ["commonEvents", "system", "opening", "gameOver", "terms", "switches", "variables"] },
 ];
 
 /** Phase 1 changes navigation, not data ownership or legacy route IDs. */
@@ -323,6 +331,12 @@ export function subscribeDatabaseActiveTab(listener: (tab: DatabaseTab) => void)
 }
 
 export function setDatabaseActiveTab(tab: DatabaseTab): void {
+  // Programmatic navigation also ends cinematic ownership immediately, before
+  // a caller refreshes or detaches the body. The active tab is shared globally.
+  if (tab !== activeTab && (activeTab === "opening" || activeTab === "gameOver")
+    && typeof document !== "undefined") {
+    disposeDatabaseCinematicsIn(document.body);
+  }
   // Legacy shortcuts apply once per navigation, never on a renderer's own redraw.
   applyTilesetFolderFacet(tab);
   if (tab === "equipment") {
@@ -736,6 +750,12 @@ function renderActiveTab(
 ): void {
   const tab = activeTab;
   let cache = tabRenderCacheFor(container);
+  // Cinematic callbacks and player ownership cannot survive detached caching.
+  // Other tabs retain their existing cache policy.
+  for (const cinematicTab of ["opening", "gameOver"] as const) {
+    evictDatabaseTabView(cache, cinematicTab);
+  }
+  disposeDatabaseCinematicsIn(body);
   // Map renderers share selection/mode sessions. Detached DOM cannot represent a
   // newer session after visiting a sibling. Other domains retain their cache lifecycle.
   const mapView = groupForTab(tab)?.slug === "world";
@@ -865,6 +885,10 @@ function renderActiveTab(
     case "system":
       renderSystemTab(body, rerender);
       break;
+    case "opening":
+    case "gameOver":
+      renderDatabaseCinematicTab(body, tab, () => activeTab === tab);
+      break;
     case "terms":
       renderTermsTab(body, rerender);
       break;
@@ -881,7 +905,10 @@ function renderActiveTab(
 
 function evictDatabaseTabView(cache: DatabaseTabRenderCache, tab: DatabaseTab): void {
   for (const node of cache.views.get(tab) ?? []) {
-    if (node instanceof HTMLElement) disposeAnimationPreviewsIn(node);
+    if (node instanceof HTMLElement) {
+      disposeAnimationPreviewsIn(node);
+      disposeDatabaseCinematicsIn(node);
+    }
   }
   cache.views.delete(tab);
 }
