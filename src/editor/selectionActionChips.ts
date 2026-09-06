@@ -19,6 +19,7 @@ import { openRegionTaskModal, type RegionTaskModalOptions } from "@/editor/panel
 import { POLISH_INSTRUCTION } from "@/editor/regionTask/suggestedCommands";
 import type { RegionTaskMode } from "@/editor/regionTask/runRegionTask";
 import { el } from "@/util/dom";
+import { openWalkEncounterForSelection } from "@/editor/panels/walkEncounterModal";
 
 /** 이 칸 수를 넘는 「지우기」는 두 번 눌러야 실행된다. 3×4 이하는 즉시 실행(기존 동작). */
 export const CLEAR_CONFIRM_CELLS = 12;
@@ -140,6 +141,12 @@ export function renderSelectionActionChips(
       }),
     );
   }
+
+  bar.append(el("button", {
+    class: "selection-action-chip", text: "걸을 때 적 만나기",
+    attrs: { type: "button" }, dataset: { testid: "selection-chip-walk-encounter" },
+    on: { click: () => openWalkEncounterForSelection(selection) },
+  }));
 
   // 복사
   bar.append(

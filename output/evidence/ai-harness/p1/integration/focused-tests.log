@@ -1,0 +1,73 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiRunEndProof.test.ts test/storePersistenceProof.test.ts test/assistantAcceptance.test.ts test/assistantAcceptanceSession.test.ts test/aiAssistantTurnCleanup.test.ts test/aiComposerModeSession.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p1-20260906
+
+ ✓ test/aiAssistantTurnCleanup.test.ts (14 tests) 5834ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on final without changing retained data  649ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on error without changing retained data  437ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on aborted without changing retained data  501ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on throw without changing retained data  861ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on abort-throw without changing retained data  367ms
+   ✓ assistant owner-turn presentation cleanup > clears the owner ghost on final when no region approval owns it  336ms
+   ✓ assistant owner-turn presentation cleanup > clears the owner ghost on error when no region approval owns it  464ms
+   ✓ assistant owner-turn presentation cleanup > clears the owner ghost on aborted when no region approval owns it  380ms
+   ✓ assistant owner-turn presentation cleanup > clears the owner ghost on throw when no region approval owns it  429ms
+   ✓ assistant owner-turn presentation cleanup > retires after an applied proposal without altering outcome accounting  331ms
+   ✓ assistant owner-turn presentation cleanup > retires unseen automatic spec expansion before a follow-up turn can sync it  313ms
+ ✓ test/assistantAcceptanceSession.test.ts (11 tests) 8016ms
+   ✓ session acceptance ownership > exposes the session-owned acceptance snapshot independently of WorkPlan  705ms
+   ✓ acceptance controls actual session termination > does not turn a review without an explicit passing verdict into completion  883ms
+   ✓ acceptance controls actual session termination > withdraws an earlier pass when a later explicit review fails  665ms
+   ✓ acceptance controls actual session termination > retains original denominator when skip and set_work_plan try to shrink promises  541ms
+   ✓ acceptance controls actual session termination > invalidates an attributed image review after a subsequent real map write  1148ms
+   ✓ applied acceptance lifecycle through real tools > repairs exact dimensions after plan completion and invalidates on applied undo  1632ms
+   ✓ applied acceptance lifecycle through real tools > blocks and retains the ledger when aborted while the next model response is held  698ms
+   ✓ applied acceptance lifecycle through real tools > never credits a review authored in the same response as the image request  880ms
+   ✓ applied acceptance lifecycle through real tools > requires visible contract repair for a spatial plan missing criteria  464ms
+ ✓ test/storePersistenceProof.test.ts (18 tests) 78441ms
+   ✓ accepted revision persistence proof > verifies the accepted content through actual save/read transport and reuses its clean-flush receipt  15615ms
+   ✓ accepted revision persistence proof > compares normalized values rather than JSONB object-key order  5553ms
+   ✓ accepted revision persistence proof > uses the ordinary normalized remote load and map-overlay contract  5047ms
+   ✓ accepted revision persistence proof > does not verify a matching projects row when the ordinary map read fails  3215ms
+   ✓ accepted revision persistence proof > binds the receipt to the accepted merged project, not the unmerged live store  6500ms
+   ✓ accepted revision persistence proof > keeps open event drafts local and out of accepted content identity  11323ms
+   ✓ accepted revision persistence proof > rejects a copied token without issuing a read  2365ms
+   ✓ accepted revision persistence proof > does not verify a failed read  2249ms
+   ✓ accepted revision persistence proof > does not verify a missing read  1826ms
+   ✓ accepted revision persistence proof > does not verify a disabled read  1661ms
+   ✓ accepted revision persistence proof > does not verify a cancelled read  1790ms
+   ✓ accepted revision persistence proof > rejects wrong target even when current_sha256 is unchanged  4141ms
+   ✓ accepted revision persistence proof > rejects wrong content even when current_sha256 is unchanged  2637ms
+   ✓ accepted revision persistence proof > keeps a failed proof retryable for the same accepted revision  3116ms
+   ✓ accepted revision persistence proof > preserves newer local edits during the read and does not attach old proof to them  3352ms
+   ✓ accepted revision persistence proof > pins the original target across a configuration change during read  2891ms
+   ✓ accepted revision persistence proof > does not verify when cancelled while the read is in flight  2586ms
+   ✓ accepted revision persistence proof > does not verify when disabled while the read is in flight  2562ms
+ ✓ test/aiRunEndProof.test.ts (14 tests) 55552ms
+   ✓ AssistantSession accepted-revision proof > does not claim verified after a failed proof read through actual session completion  3542ms
+   ✓ AssistantSession accepted-revision proof > retries failed proof for the same plan/revision, deduplicates success, and reproves a changed revision  6804ms
+   ✓ AssistantSession accepted-revision proof > does not promote cancelled during the read or replace editor state  4235ms
+   ✓ AssistantSession accepted-revision proof > does not promote disabled during the read or replace editor state  3544ms
+   ✓ AssistantSession accepted-revision proof > does not promote target during the read or replace editor state  3090ms
+   ✓ AssistantSession accepted-revision proof > does not promote content during the read or replace editor state  4004ms
+   ✓ AssistantSession accepted-revision proof > does not promote local-edit during the read or replace editor state  5481ms
+   ✓ AssistantSession accepted-revision proof > uses the real apply commit, not a newest remote commit read  4684ms
+   ✓ AssistantSession accepted-revision proof > project proof can succeed when the separate commit log fails  3724ms
+   ✓ AssistantSession accepted-revision proof > proves a normal no-plan apply through the reusable path without replaying the tool  3709ms
+   ✓ AssistantSession accepted-revision proof > does not correlate a later human edit with an in-flight apply commit  3620ms
+   ✓ AssistantSession accepted-revision proof > retryLastTurn retries failed proof without replaying the LLM or applied tools  3650ms
+   ✓ AssistantSession accepted-revision proof > retryLastTurn proves already applied milestones after a recovered LLM failure  5147ms
+   ✓ AssistantSession accepted-revision proof > a clean saved response without an accepted receipt cannot become proof  314ms
+ ✓ test/assistantAcceptance.test.ts (23 tests) 1596ms
+ ✓ test/aiComposerModeSession.test.ts (6 tests) 2881ms
+   ✓ 컴포저 모드 — 질문(ask) > 쓰기 툴 스키마를 모델에 노출하지 않는다 (읽기 툴은 남는다)  575ms
+   ✓ 컴포저 모드 — 질문(ask) > 모델이 쓰기 툴을 불러도 거부하고 프로젝트 초안은 불변이다  768ms
+   ✓ 컴포저 모드 — 계획(plan) > 계획 뒤 「계속」은 툴 루프를 돌려 실행한다  848ms
+
+ Test Files  6 passed (6)
+      Tests  86 passed (86)
+   Start at  20:28:06
+   Duration  92.11s (transform 26.37s, setup 0ms, collect 84.66s, tests 152.32s, environment 2ms, prepare 1.46s)

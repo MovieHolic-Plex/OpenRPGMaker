@@ -1,10 +1,12 @@
+import { createBlankProject } from '@/project/defaults';
+import { qualifiedNodeId } from './requirements';
 import type { Project } from '@/project/types';
 import { arrangeTree, promotionEdges } from './graph';
 import { emptyGrowth, type TreePosition } from './types';
 import { createGrowthPresetTemplate, GROWTH_PRESETS, type GrowthPresetKind } from './presetTemplates';
 
 export { GROWTH_PRESETS } from './presetTemplates';
-export type { GrowthPresetMetadata, GrowthPresetKind, GrowthPresetRole } from './presetTemplates';
+export type { GrowthPresetMetadata, GrowthPresetKind, GrowthPresetRole, GrowthStudioMode } from './presetTemplates';
 
 export interface GrowthPresetApplication {
   readonly presetId: string;
@@ -18,7 +20,7 @@ export interface GrowthPresetApplication {
 
 /**
  * Explicit additive mutation; call inside editGrowth's snapshot/store boundary.
- * Preview uses this same function on structuredClone(project), never on a live store snapshot.
+ * Preview uses detached templates, never this allocation path.
  * No existing records or settings are normalized, replaced, or attached to the added graph.
  * New growth starts with 2 points + 1 per level; existing budgets (including zero) win.
  * Unknown IDs / exhausted canvas space throw before any mutation.
@@ -42,7 +44,7 @@ export function applyGrowthPreset(project: Project, presetId: string): GrowthPre
   const skillIds = new Map(template.skills.map(s => [s.id, allocate(s.id)]));
   const classIds = new Map(template.classes.map(c => [c.id, allocate(c.id)]));
   const treeIds = new Map(template.trees.map(t => [t.id, allocate(t.id)]));
-  const nodeIds = new Map(template.trees.flatMap(t => t.nodes.map(n => [n.id, allocate(n.id)] as const)));
+  const nodeIds = new Map(template.trees.flatMap(t => t.nodes.map(n => [qualifiedNodeId(t.id, n.id), allocate(template.trees.length === 1 ? n.id : `${t.id}-${n.id}`)] as const)));
   const remap = (ids: ReadonlyMap<string, string>, id: string): string => {
     const mapped = ids.get(id);
     if (mapped === undefined) throw new Error(`Missing growth preset template reference: ${id}`);
@@ -55,13 +57,27 @@ export function applyGrowthPreset(project: Project, presetId: string): GrowthPre
     klass.elementRates = Object.fromEntries(Object.entries(klass.elementRates).filter(([id]) => project.database.elements?.some(e => e.id === id)));
     klass.skillIds = klass.skillIds.map(id => remap(skillIds, id));
     for (const skill of klass.learnedSkills) skill.skillId = remap(skillIds, skill.skillId);
-    for (const edge of klass.promotions ?? []) edge.toClassId = remap(classIds, edge.toClassId);
+    for (const edge of klass.promotions ?? []) {
+      edge.toClassId = remap(classIds, edge.toClassId);
+      if (edge.requires.requiredSkillIds) edge.requires.requiredSkillIds = edge.requires.requiredSkillIds.map(id => remap(skillIds, id));
+      for (const req of edge.requires.requiredNodes ?? []) {
+        req.nodeId = remap(nodeIds, qualifiedNodeId(req.treeId, req.nodeId));
+        req.treeId = remap(treeIds, req.treeId);
+      }
+      for (const req of edge.requires.requiredTreePoints ?? []) req.treeId = remap(treeIds, req.treeId);
+    }
   }
   for (const tree of template.trees) {
+    const localTreeId = tree.id;
     tree.id = remap(treeIds, tree.id);
+    tree.classIds = tree.classIds.map(id => remap(classIds, id));
     for (const node of tree.nodes) {
-      node.id = remap(nodeIds, node.id);
-      node.prerequisites = node.prerequisites.map(id => remap(nodeIds, id));
+      node.id = remap(nodeIds, qualifiedNodeId(localTreeId, node.id));
+      node.prerequisites = node.prerequisites.map(id => remap(nodeIds, qualifiedNodeId(localTreeId, id)));
+      for (const req of node.requiredNodes ?? []) {
+        req.nodeId = remap(nodeIds, qualifiedNodeId(req.treeId, req.nodeId));
+        req.treeId = remap(treeIds, req.treeId);
+      }
       if (node.effect.kind === 'skill') node.effect.skillId = remap(skillIds, node.effect.skillId);
     }
   }
@@ -91,4 +107,17 @@ function placePromotionNodes(project: Project, ids: readonly string[], edges: re
     if (Object.values(candidate).every(p => occupied.every(old => Math.abs(p.x - old.x) >= 248 || Math.abs(p.y - old.y) >= 152))) return candidate;
   }
   throw new Error('No free canvas space for growth preset; move existing promotion nodes first.');
+}
+
+/** Destination-independent records for read-only browsing; no ID allocation or store reads. */
+export function createGrowthPresetPreview(presetId: string): Project {
+  const preset = GROWTH_PRESETS.find(p => p.id === presetId);
+  if (!preset) throw new Error(`Unknown growth preset: ${presetId}`);
+  const template = createGrowthPresetTemplate(preset);
+  const project = createBlankProject();
+  project.database.classes = template.classes;
+  project.database.skills = template.skills;
+  project.growth = { ...emptyGrowth(), initialPoints: 2, skillTrees: template.trees };
+  project.growth.classPositions = arrangeTree(template.classes.map(c => c.id), promotionEdges(project));
+  return project;
 }

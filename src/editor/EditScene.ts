@@ -1904,6 +1904,8 @@ export class EditScene extends PhaserRuntime.Scene {
     });
     const canvasRect = canvas.getBoundingClientRect();
     const hostRect = host.getBoundingClientRect();
+    // Bound the wrapping selection toolbar before measuring and anchoring it.
+    if (isChips) popup.style.maxWidth = `${Math.max(1, Math.min(640, canvasRect.width - 16))}px`;
     // visibility:hidden 첫 프레임에서 0 크기가 나올 수 있어 칩/팔레트 기본값을 다르게 둔다.
     const fallback = isChips ? { width: 420, height: 44 } : { width: 228, height: 140 };
     const popupRect = popup.getBoundingClientRect();

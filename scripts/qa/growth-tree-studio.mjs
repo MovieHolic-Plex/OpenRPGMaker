@@ -42,7 +42,7 @@ try {
     await page.getByTestId(i===3 || i===5 ? 'growth-add-skill' : 'growth-add-parameter').click();
     await page.getByTestId('growth-node-name').fill(names[i]); await page.getByTestId('growth-node-name').press('Tab');
     console.log('Renamed node',i);
-    ids.push(await page.locator('.growth-node.is-selected').getAttribute('data-node-id'));
+    ids.push(await page.locator('.growth-body .growth-node.is-selected').getAttribute('data-node-id'));
   }
   // Locator.click owns scrolling and re-resolves nodes replaced by the store render.
   const clickNode=async id => { await page.getByTestId(`growth-node-${id}`).click(); };
@@ -74,7 +74,7 @@ try {
   assert.match(await page.getByTestId('growth-status').textContent(),/환급/);
   await page.getByTestId('growth-preview-toggle').click();
   const capture = async kind => {
-    const counts = [['.growth-node img', await page.locator('.growth-node').count()], ['.growth-catalog-art img', await page.locator('.growth-catalog-item').count()], ['.growth-inspector-art img', await page.locator('.growth-inspector-title').count()]];
+    const counts = [['.growth-body .growth-node img', await page.locator('.growth-body .growth-node').count()], ['.growth-catalog-art img', await page.locator('.growth-catalog-item').count()], ['.growth-inspector-art img', await page.locator('.growth-inspector-title').count()]];
     for (const [selector, count] of counts) imageEvidence.push({ kind, width: page.viewportSize().width, ...await inspectGrowthImages(page, selector, count) });
     measurements.push({ kind, width: page.viewportSize().width, boxes: await inspectGrowthLayout(page, ['.growth-body', '.growth-catalog', '.growth-workspace', '.growth-canvas', '.growth-inspector', '.growth-toolbar', '.growth-canvas-controls']) });
     const path = `${out}/${kind}-${page.viewportSize().width}.png`;
@@ -88,7 +88,7 @@ try {
   }
   await page.setViewportSize({width:1600,height:1000});
   await switchTab('db-tab-promotion-tree');
-  const classIds=await page.locator('.growth-node').evaluateAll(nodes=>nodes.map(n=>n.dataset.nodeId));
+  const classIds=await page.locator('.growth-body .growth-node').evaluateAll(nodes=>nodes.map(n=>n.dataset.nodeId));
   if(classIds.length>=3) for(const to of classIds.slice(1,3)) { await clickNode(classIds[0]); await page.getByTestId('growth-connect').click(); await clickNode(to); }
   await page.getByTestId('growth-arrange').click(); await clickNode(classIds[0]);
   for (const [width, height] of growthViewports) {
@@ -100,20 +100,20 @@ try {
   await page.getByTestId('database-dirty-prompt').waitFor();
   await page.getByTestId('database-dirty-keep-editing').click();
   await switchTab('db-tab-skill-trees');
-  assert.equal(await page.locator('.growth-node').count(),6);
+  assert.equal(await page.locator('.growth-body .growth-node').count(),6);
   // Complete CRUD on a disposable copy; original six-node graph must survive.
   await page.getByTestId('growth-duplicate-tree').click();
   assert.equal(await page.locator('.growth-catalog-item').count(), 2);
   await page.getByTestId('growth-delete-node').click();
-  assert.equal(await page.locator('.growth-node').count(), 5);
+  assert.equal(await page.locator('.growth-body .growth-node').count(), 5);
   await page.getByTestId('growth-delete-tree').click();
   await page.getByTestId('growth-confirm-delete-tree').click();
   assert.equal(await page.locator('.growth-catalog-item').count(), 1);
-  assert.equal(await page.locator('.growth-node').count(), 6);
+  assert.equal(await page.locator('.growth-body .growth-node').count(), 6);
   // Fault injection crosses the real image request boundary, not dispatchEvent('error').
   await clickNode(ids[0]);
-  const failedUrl = await page.locator('.growth-node.is-selected img').getAttribute('src');
-  const expectedFallbacks = await page.locator('.growth-studio img').evaluateAll((images, url) => images.filter(i => i.getAttribute('src') === url).length, failedUrl);
+  const failedUrl = await page.locator('.growth-body .growth-node.is-selected img').getAttribute('src');
+  const expectedFallbacks = await page.locator('.growth-body img').evaluateAll((images, url) => images.filter(i => i.getAttribute('src') === url).length, failedUrl);
   const failImage = route => route.fulfill({ status: 404, contentType: 'text/plain', body: 'QA missing image' });
   const missingUrl = `${base}/__growth-qa-missing.png`;
   await page.route(missingUrl, failImage);
@@ -124,10 +124,10 @@ try {
     registerInlineAssets({ [key]: missingUrl });
   }, { key: new URL(failedUrl, base).pathname.slice(1), missingUrl });
   const missingResponse = page.waitForResponse(response => response.url() === missingUrl, { timeout: 15000 });
-  await armDomState(page, expected => [...document.querySelectorAll('.growth-node-emblem, .growth-catalog-art, .growth-inspector-art')].filter(slot => !slot.querySelector('img') && slot.textContent.trim()).length === expected, expectedFallbacks);
+  await armDomState(page, expected => [...document.querySelectorAll('.growth-body .growth-node-emblem, .growth-catalog-art, .growth-inspector-art')].filter(slot => !slot.querySelector('img') && slot.textContent.trim()).length === expected, expectedFallbacks);
   await clickNode(ids[0]);
   assert.equal((await missingResponse).status(), 404); await finishDomState(page);
-  const fallbackSlots = await page.locator('.growth-node-emblem, .growth-catalog-art, .growth-inspector-art').evaluateAll(slots => slots.filter(s => !s.querySelector('img')).map(s => ({ class: s.className, badge: s.textContent })));
+  const fallbackSlots = await page.locator('.growth-body .growth-node-emblem, .growth-catalog-art, .growth-inspector-art').evaluateAll(slots => slots.filter(s => !s.querySelector('img')).map(s => ({ class: s.className, badge: s.textContent })));
   assert.ok(fallbackSlots.some(s => s.class === 'growth-node-emblem'));
   assert.ok(fallbackSlots.some(s => s.class === 'growth-catalog-art'));
   assert.ok(fallbackSlots.some(s => s.class === 'growth-inspector-art'));
@@ -143,7 +143,7 @@ try {
     store.update(p => { const n = p.growth.skillTrees[0].nodes.find(n => n.id === id); n.effect = { kind: 'skill', skillId: 'qa-missing-skill' }; n.maxRank = 1; }, { scope: 'database', label: 'QA missing skill reference', origin: 'system' });
   }, { id: ids[0] });
   await clickNode(ids[0]);
-  assert.equal(await page.locator('.growth-node.is-selected.is-invalid').count(), 1);
+  assert.equal(await page.locator('.growth-body .growth-node.is-selected.is-invalid').count(), 1);
   await page.locator('.growth-inspector').evaluate(e => { e.scrollTop = 0; });
   await capture('custom-missing-skill');
   await page.evaluate(async id => {

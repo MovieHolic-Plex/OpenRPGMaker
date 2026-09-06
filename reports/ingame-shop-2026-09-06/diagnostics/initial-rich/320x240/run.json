@@ -1,0 +1,474 @@
+{
+  "viewport": {
+    "width": 320,
+    "height": 240
+  },
+  "errors": [
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED"
+  ],
+  "networkFailures": [
+    {
+      "url": "http://127.0.0.1:38193/src/project/defaults/defaultDatabaseStarterRecords.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/defaults/defaultDatabaseItemRecords.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/defaults/defaultDatabaseUtilityRecords.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/defaults/constants.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/assets/bundled.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/assets/imageWarmQueue.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/emotes.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/assets/farmingSprites.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/defaults/defaultAssets.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/defaults/pokemonChipsetPreset.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/defaults/interiorTransparentPropLayerRepair.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/defaults/starterHouseTransfer.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/defaults/defaultMaps.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/defaults/defaultProject.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/defaults/modernNocturneGame.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/editor/content/skyStairGame.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/util/id.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/types/base.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/growth/types.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/growth/graph.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/assets/charsetCatalog.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/assets/easyrpgRtp.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/actorModel.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/upgrades.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/spatialPlacements.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/spatialOccupancy.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/commandKindRegistry.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/structurePlacements.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/io/commandReferenceValidation.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/io/resourceReferenceValidation.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/app/phaserRuntime.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/villageDesign.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/databaseRecordModel.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/storyFlags.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/world/canonNormalize.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/world/guards.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/worldGraph/index.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/tilesetPalette.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/defaults/houseTemplateCatalog.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/io/shapeCommandFields.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/characterIdStamp.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/io/shapeCharacterFields.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/io/shapeFields.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/mapOverlayTiles.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/tilesetPassage.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/equipmentRules.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/assets/cc0IconAssets.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/assets/cc0AudioAssets.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/assets/bgmCatalogResolver.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/assets/seCatalogResolver.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/assets/generatedEffectSheets.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/assets/scarloxyPack.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/player/characterShadow.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/assets/system2Sheet.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/assets/transparentColorKeyBackground.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/battle/animationTiming.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/assets/transparentColorKey.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/player/battleAnimationPlayback.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/player/battleAnimationEffectStyle.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/player/battleAnimationAnchor.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/itemUsage.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/itemEligibility.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/battle/animationSnapshot.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/battle/battleBattlers.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/battle/battleDamage.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/battle/battleEvents.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/battle/battleRewards.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/battle/battleLevelUp.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/battle/typeChart.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/battle/rewardPolicy.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/battle/battleStates.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/battle/battleTurnGauge.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/battle/battleBackdrop.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/battle/battlePose.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/databaseEnemyTroopRecordModel.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/battle/battleSkillUse.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/battle/battleAuto.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/battle/battlePredict.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/battle/battleStrictOrder.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/battle/gen1/capture.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/battle/gen1/status.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/terms.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/battle/battleCommands.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/battleCommandCss.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/util/josa.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/player/battleAudio.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/assets/battlerIdleAnimations.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/battle/battlerPlacements.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/assets/battlerHiresSheets.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/project/actorFaceDefaults.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/battle/battleRuntimeAdvance.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:38193/src/player/battleActionBeats.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    }
+  ],
+  "screenshots": [],
+  "failures": [
+    "TimeoutError: page.waitForSelector: Timeout 120000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\\'title-screen\\']') to be visible\u001b[22m\n"
+  ]
+}

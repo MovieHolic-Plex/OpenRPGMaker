@@ -28,7 +28,7 @@ describe('growth art surface wiring', () => {
     const p = fixture(), before = JSON.stringify(p), host = document.createElement('div');
     document.body.append(host);
     renderGrowthTreeTab(host, 'promotion');
-    expect(host.querySelectorAll('.growth-node img').length).toBe(p.database.classes.length);
+    expect(host.querySelectorAll('.growth-body .growth-node img').length).toBe(p.database.classes.length);
     expect(host.querySelectorAll('.growth-catalog-item img').length).toBe(p.database.classes.length);
     expect(host.querySelector('.growth-inspector-title img')).not.toBeNull();
     const node = host.querySelector<HTMLButtonElement>('.growth-node')!;
@@ -40,7 +40,7 @@ describe('growth art surface wiring', () => {
     node.click();
     expect(host.querySelector('.growth-node')?.getAttribute('aria-pressed')).toBe('true');
     host.replaceChildren(); renderGrowthTreeTab(host, 'skill');
-    expect(host.querySelectorAll('.growth-node img')).toHaveLength(2);
+    expect(host.querySelectorAll('.growth-body .growth-node img')).toHaveLength(2);
     expect(host.querySelector('.growth-node.is-invalid img')).not.toBeNull();
     expect(host.querySelector('.growth-catalog-item img')).not.toBeNull();
     expect(host.querySelector('.growth-inspector-title img')).not.toBeNull();

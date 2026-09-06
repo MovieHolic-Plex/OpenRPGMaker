@@ -51,9 +51,9 @@ function emptyDatabaseProject() {
 
 describe('curated growth preset contracts', () => {
   it('exposes six immutable metadata entries with fixed editor cover URLs', () => {
-    expect(GROWTH_PRESETS.map(p => p.id).sort()).toEqual([...ids].sort());
+    expect(GROWTH_PRESETS.filter(p => p.kind !== 'bundle').map(p => p.id).sort()).toEqual([...ids].sort());
     expect(Object.isFrozen(GROWTH_PRESETS)).toBe(true);
-    for (const preset of GROWTH_PRESETS) {
+    for (const preset of GROWTH_PRESETS.filter(p => p.kind !== 'bundle')) {
       expect(Object.isFrozen(preset)).toBe(true);
       expect(preset.coverUrl).toBe(`/assets/generated/growth-presets/${preset.role}.png`);
       expect(preset.nodeCount).toBe(preset.kind === 'promotion' ? 5 : 7);
