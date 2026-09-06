@@ -1,0 +1,31 @@
+{
+  "event": "completed-phase3-lanes-cleaned",
+  "tasks": [
+    6,
+    9
+  ],
+  "plan": ".omo/plans/life-systems-full-implementation.md",
+  "worktrees": [
+    {
+      "path": "/home/main/z-project/rpg-zzu-life-full-harvest-xp",
+      "exit": 0,
+      "error": ""
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-life-full-maker-clock",
+      "exit": 0,
+      "error": ""
+    }
+  ],
+  "ancestorProof": [
+    "6392db5388d05740640b24f0d9cac8c3ba105a5e",
+    "778b0fdf5146661e15116805595853fff2f84b31"
+  ],
+  "allEvidenceTrackedAndIntegrated": true,
+  "unarchivedEvidenceFiles": 0,
+  "ownedLiveRuntimes": 0,
+  "activeDependencyRoot": "/home/main/z-project/rpg-zzu/node_modules",
+  "unchangedActiveWorktree": "/home/main/z-project/rpg-zzu-life-full-crop-regrowth",
+  "workflow": "dag_3b58f987-8a5d-46e0-99aa-0c64eaf6c1c9",
+  "remaining": "regrowth7 running; tools8/field10/verify wait on verified handoffs"
+}

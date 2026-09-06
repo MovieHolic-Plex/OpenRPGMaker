@@ -6,6 +6,7 @@
 import type { Project } from "@/project/types";
 import type { PlaySession } from "@/project/session";
 import { handSlotCurrent, handSlotIndex } from "@/player/handSlot";
+import { isActionCombatMap } from "@/project/actionCombat";
 
 const EMPTY_HAND_LABEL = "빈 손";
 
@@ -30,8 +31,13 @@ export class HandSlotChip {
   }
 
   update(project: Project, session: PlaySession): void {
+    const map = project.maps[session.currentMapId];
+    const actionMap = isActionCombatMap(project, map);
+    this.root.hidden = actionMap && !map?.farmableArea?.length;
+    this.root.setAttribute("aria-label", actionMap ? "농사 도구" : "손에 든 아이템");
     const entry = handSlotCurrent(project, session);
-    const text = entry ? `${entry.name} ×${entry.count}` : EMPTY_HAND_LABEL;
+    const hand = entry ? `${entry.name} ×${entry.count}` : EMPTY_HAND_LABEL;
+    const text = actionMap ? `농사: ${hand}` : hand;
     this.render(text, handSlotIndex(project, session));
   }
 

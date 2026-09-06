@@ -1,0 +1,20 @@
+{
+  "task": 8,
+  "status": "confirmed",
+  "worktree": "/home/main/z-project/rpg-zzu-life-full-tools",
+  "branch": "agent/life-full-tools",
+  "baseHead": "675a3b2fd0952143ec8887b1b204789ec0dfe035",
+  "port": 35209,
+  "required": [
+    {
+      "task": 7,
+      "commit": "9cb85be84746d84789497a1d4297d0c8416d86c8",
+      "verify": ".omo/evidence/life-full-20260906/7/VERIFY.md"
+    }
+  ],
+  "alsoVerified": {
+    "task6": "48195f5753556572db0c13e40f6945b9547bbea3",
+    "task9": "27db0af0021fb49414723b64141a0e1c568b8069"
+  },
+  "note": "Ready before node start; do not create a handoff watcher or count waiting as implementation."
+}

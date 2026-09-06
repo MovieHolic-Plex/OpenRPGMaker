@@ -78,7 +78,7 @@ describe("commandRegistry", () => {
   });
 
   it("패널 명령이 도크를 옮기고 닫는다", () => {
-    resetEditorUiModeForTests("standard");
+    resetEditorUiModeForTests("expert");
     installDockHosts();
     const commands = listEditorCommands();
     updateWorkspaceLayout(layoutFromPreset("map"));
@@ -155,7 +155,7 @@ describe("commandRegistry", () => {
   });
 
   it("워크스페이스 명령이 편집 모드 3개 · 패널마다 3개씩 정확히 한 번 등록된다", () => {
-    resetEditorUiModeForTests("standard");
+    resetEditorUiModeForTests("expert");
     installDockHosts();
     const ids = listEditorCommands().map((command) => command.id);
     expect(new Set(ids).size).toBe(ids.length);
@@ -185,6 +185,16 @@ describe("commandRegistry", () => {
     for (const task of ["map", "event", "data", "test"]) {
       expect(ids.filter((id) => id === `authoring-task-${task}`)).toHaveLength(1);
     }
+  });
+
+  it('Standard offers all inspection commands but not ineffective dock toggles', () => {
+    resetEditorUiModeForTests('standard');
+    installDockHosts();
+    const ids = listEditorCommands().map(command => command.id);
+    expect(ids.filter(id => id.startsWith('sidebar-inspection-'))).toEqual([
+      'sidebar-inspection-inspector', 'sidebar-inspection-ruleAudit', 'sidebar-inspection-history',
+    ]);
+    expect(ids.some(id => id.startsWith('workspace-panel-'))).toBe(false);
   });
 
   it("도움말: 단축키 명령이 등록되어 '단축키' 검색으로 찾을 수 있다", () => {

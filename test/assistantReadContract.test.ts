@@ -47,7 +47,7 @@ describe("실제 도구 결과에 기반한 조회 선행", () => {
     expect(session.getProposedProject().database.items.find((item) => item.id === "item_potion")?.price).toBe(321);
   });
 
-  it("읽기 전 첫 쓰기와 동일 응답의 쓰기를 막고, 조회 결과를 받은 다음 응답에서만 허용한다", async () => {
+  it("전달된 원본은 첫 쓰기를 허용하고, 변경 뒤 재조회는 다음 응답에서만 현재 값 근거가 된다", async () => {
     const project = createBlankProject();
     // Use a fresh scripted session with its actual map ID, never a fabricated target.
     const map = project.maps[project.startMapId]!;
@@ -60,7 +60,7 @@ describe("실제 도구 결과에 기반한 조회 선행", () => {
     const run = scriptedSession([[writeItem], [...reads, writeItem], [writeItem]], { project: true, collections: ["items"], references: true }).session;
     await run.sendUserMessage("기존 맵·이벤트·DB를 먼저 읽고 회복약 가격을 수정해줘");
     const writes = run.getAuditEntries().filter((entry) => entry.kind === "tool" && entry.name === "upsert_item");
-    expect(writes.map((entry) => entry.ok)).toEqual([false, false, true]);
+    expect(writes.map((entry) => entry.ok)).toEqual([true, false, true]);
     expect(run.getProposedProject().database.items.find((item) => item.id === "item_potion")?.price).toBe(321);
   });
 

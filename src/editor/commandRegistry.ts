@@ -18,6 +18,8 @@ import { openWorldCodexPanel, openWorldPanel } from "@/editor/panels/worldEntrie
 import { saveProjectNow } from "@/editor/saveActions";
 import { uiLabel } from "@/editor/uiCopy";
 import type { MapId, Project } from "@/project/types";
+import { INSPECTION_COMMANDS } from '@/editor/panels/sidebarInspectionPins';
+import { openSidebarInspection } from '@/editor/panels/tileToolbarMenus';
 
 export interface EditorCommand {
   readonly id: string;
@@ -68,6 +70,10 @@ function runTool(tool: Tool): void {
 
 export function listEditorCommands(): readonly EditorCommand[] {
   return [
+    ...(!getEditorChrome().paletteRail ? INSPECTION_COMMANDS.map((id): EditorCommand => ({
+      id: `sidebar-inspection-${id}`, label: `검사: ${{ inspector: '인스펙터', ruleAudit: '규칙 감사', history: '작업 기록' }[id]}`,
+      category: '화면', keywords: ['inspect', 'audit', 'history', '검사', '기록', id], run: () => openSidebarInspection(id),
+    })) : []),
     ...AUTHORING_TASKS.map((task): EditorCommand => ({
       id: `authoring-task-${task.id}`,
       label: `작업: ${task.label}`,

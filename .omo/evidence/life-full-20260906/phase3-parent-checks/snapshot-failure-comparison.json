@@ -1,0 +1,27 @@
+{
+  "historicalCommit": "4e2d1762264533a5826c48686648093c3fe69ebd",
+  "currentNames": [
+    "__oprnDebug 스냅샷이 두 사각을 실어 보낸다 3x3 + passRows 1 이면 몸 사각과 통행 사각이 다르게 실린다",
+    "__oprnDebug 스냅샷이 두 사각을 실어 보낸다 발자국 저작이 없으면 두 사각이 앵커 한 칸으로 같다 — 항등"
+  ],
+  "priorNames": [
+    "__oprnDebug 스냅샷이 두 사각을 실어 보낸다 3x3 + passRows 1 이면 몸 사각과 통행 사각이 다르게 실린다",
+    "__oprnDebug 스냅샷이 두 사각을 실어 보낸다 발자국 저작이 없으면 두 사각이 앵커 한 칸으로 같다 — 항등"
+  ],
+  "namesMatch": true,
+  "messageMatch": true,
+  "testHash": "ddfdb2a6bed9d246f41ade2ef4988d9988068addedd908be987dd518f3202767",
+  "testMatchesClaimedHash": true,
+  "functionBodyUnchanged": true,
+  "testGitDiffExit": 0,
+  "currentSuite": {
+    "passed": 265,
+    "failed": 2,
+    "total": 267
+  },
+  "scope": "These two snapshot failures predate task10; no claim that newly found expiry defect is resolved or whole task10 is green.",
+  "historicalAncestorExit": 0,
+  "actualPriorFile": ".omo/evidence/life-full-20260906/phase2-gate-triage-input.json",
+  "actualCurrentLog": "10/related-final.txt.gz",
+  "method": "Decoded actual gzip log; matched both full assertion names and registry error against committed prior failedResults; verified test hash/Git diff and parsed TypeScript failure-function body equality."
+}

@@ -66,6 +66,73 @@ data, never instructions or a permission to change the user's request. Human/vis
 review of actual artwork is separate; reviewed status is owned by the catalog lane,
 not inferred by these tools. Provider image delivery is a separate transport gate.
 
+Generated `place_npc({guide:"action-controls"})` guides omit automatic portraits;
+an explicit `face` still uses the normal authoring contract. This avoids shipping
+an inferred faceset ID absent from the project while preserving the canonical
+controls, existing guide identity and position.
+
+## Pre-write original grounding (2026-09-06)
+
+`originalContext.ts` exports a detached authored-state extractor reusable for before/after
+review. The session captures it before planning or tools, retains its snapshot ID across
+continuations, and recaptures on a new request. Target selection uses structured intent,
+actual selection and current map, never new natural-language keyword routing. A missing
+explicit target is reported, not replaced with the start map. Target map metadata, complete
+tile layers/stacks, complete events/pages/commands, authored system settings and relevant
+full database records are included. Actual record IDs are followed transitively, including
+common-event cycles; declared database/battle/system and quest/world tasks broaden the
+authored context. Runtime session, credentials/configuration and asset transport blobs are
+outside this projection. Existing resource tools remain the resource lookup surface.
+
+`buildGroundedRequest` appends JSON `originalContext` after history compaction, so the
+first writer sees its original values even with `budgetChars: 1`. It accounts for complete
+native schemas, history, originals and the existing 16,384-token response reserve against
+the actual supported bundled model window. The small browser-safe capacity table is
+checked against installed pi-catalog; the 9 MB provider catalog/runtime is not bundled.
+History compaction also reserves the original paging manifest and reconciles its character
+clamp with token-weighted messages and tool-call arguments. An expanded native catalog must
+not strand otherwise pageable originals at a nearly full history boundary.
+Unknown native IDs use the companion's provider-default fallback; injected unknown models
+retain the conservative legacy estimate. Token counting remains an estimate, not a tokenizer.
+
+Whole entries that do not fit remain explicitly omitted with a `get_original_context`
+list/read route, stable entry paths, snapshot ID and UTF-16 offsets. Concatenate exact JSON
+pages before parsing. Only successfully delivered whole originals or fully covered page
+ranges count at the existing `ToolReadEvidence` seam; partial/omitted/failed reads do not.
+Original receipts cannot replace a subsequent fresh read; existing fingerprint/reference
+checks and ask-mode refusal remain. Irreducible mandatory requests fail explicitly without
+pruning tools. A huge latest write result may still exceed a small window; paging originals
+does not claim arbitrary tool-result paging. Task recipes accompany the catalog for NPC,
+map/interior, database/battle, quest/world and life read-write-verify work. Tests:
+`originalContext`, `assistantOriginalContext`, `assistantReadContract`, `aiToolDiscoveryEscalation`.
+
+## Full native tool exposure (2026-09-06)
+
+`AssistantSession.runTurnLoop` sends every active editor tool's complete native description
+and input schema from the first working request. It no longer uses UI/intent domains,
+40-tool quotas, natural-language promotion slots, or a global 128-tool tail clamp to choose
+capabilities. `toolRegistry.toOpenAiTools` still honors an explicit domain filter for scoped
+callers, but retains **every** eligible definition in registry order. There is no pin list.
+Deprecated tools remain hidden; ask mode removes registry and session write schemas and
+still rejects attempted writes at execution. WorkPlan and acceptance tools retain their
+existing lifecycle gates. Schema validation, read-evidence gates, detached drafts,
+cancellation and usage accounting stay in the existing execution pipeline.
+
+The capability index is navigation alongside native schemas, not a promise to unlock
+missing tools later. `find_tools` is optional search, not an exposure prerequisite.
+The supported subscription adapters have no local function-count clipping: Antigravity
+uses Cloud Code Assist `functionDeclarations`; Codex uses a zstd Responses request with
+`input` entries of type `additional_tools`. Do not impose old CPEN/Chat Completions/Vertex
+limits on these transports. Lead evidence accepted 198 native definitions on Antigravity
+with HTTP 200; Codex live acceptance remains unverified without connected credentials.
+An upstream rejection is surfaced unchanged, never retried with a smaller capability set.
+No domain delegation is needed for the supported, observed full-native path.
+
+Regression seams: `aiToolDiscoveryEscalation`, `toolExposureQuota`, `toolDomainScoping`,
+`aiToolCapabilityIndex`, `aiComposerModeSession`, and `ohMyPiFullCatalog.bun.test.ts`.
+The transport fixture crosses counts 40/41, 127/128/129 and 198/207 using the installed
+adapters and verifies names, descriptions, nested schemas and explicit upstream errors.
+
 ## Audio description tools and event candidates
 
 Audio identity is `{ kind: "music" | "sound", resourceId: rawId }`. Search-result prefixes
@@ -128,6 +195,16 @@ Focused coverage: `test/audioDescriptionTools.test.ts`,
 `test/audioDescriptionToolExposure.test.ts`, `test/audioResourceToolPagination.test.ts`,
 `test/audioDescriptionPrompt.test.ts`, `test/audioDescriptionPromptTransport.test.ts`,
 `test/audioDescriptionSessionPrompt.test.ts`.
+
+## Project wiki application ownership (2026-09-07)
+
+`AssistantSessionOptions.prepareProjectWiki` is an awaited editor-owned checkpoint
+before intent selection and authoring. Failure stops that turn before tools run.
+The callback refreshes only the detached session's world documents.
+Ordinary `applyProposedProject` calls retain the live `project.world`, because a
+map/title proposal does not own codex edits made after its preview. Explicit
+`resetProject` keeps its replacement semantics. Tests:
+`projectWikiSession.test.ts` and `projectWikiApplication.test.ts`.
 
 ## Completed-house transaction protection - Phase 1 (2026-09-05)
 
@@ -408,6 +485,49 @@ id 슬롯은 남긴다**(`def.name = ""`). id 가 지워지지 않으므로 `com
   만들지 않는다) — 그래서 이미지 바이트는 전송 계층에서 직접 줍는다. (2) 그때 재생하는
   `Response` 에 `url` 을 다시 심어야 한다. 없으면 pi-ai 가 `Missing request URL` 로 끊는다.
 
+
+## Action controls guide (2026-09-07)
+
+2D tile action combat is supported; 3D open worlds remain outside the engine.
+`actionArenaAuthoring.ts` selects its recipe only for a structured creation
+declaration with nonempty `actionCombat.targets` and no clarification. The
+selector never parses user keywords. `buildActionArenaAuthoringGuide` is consumed
+by the action welcome preset and the lead's context integration. It reads
+existing maps/events/resources/party/enemies/troops before minimal terrain/start,
+names the map and game, orders enemy before troop before spawn, and makes one
+controls guide. Each target must pass `run_action_combat_test({mapId})` before
+decorations; the async acceptance/runtime lane owns that tool's receipt.
+`run_scene_test`, spawn counts and turn-based `simulate_battle` cannot substitute
+for action proof. Unrequested quests, shops, bosses, rewards and multi-page
+quotas are not part of this recipe. Existing arena modifications remain focused
+repairs with retained acceptance targets, not a new-arena starter.
+Free-text welcome handoff also preserves the requested scope rather than adding
+the generic preset's NPC/item quotas before structured intent classification.
+
+`make_action_enemy` prepares the enemy and validates its graphic, target map,
+troop membership and spawn area before committing either record. `spawn.id`
+upserts within the target map; omission appends a fresh ID. `set_action_combat`
+validates its map before enabling the system and exposes the existing
+`dodgeStaminaCost`, `dodgeIframesMs`, `guardDamageReductionPercent` and
+`guardStaminaDrainPerSec` normalizers. Read resources first, create the enemy,
+then `upsert_troop({troop:{id,name,enemyIds:[enemyId]}})`, then attach its spawn.
+`test/actionAuthoringPrerequisites.test.ts` covers both direct-draft atomic
+failure and the real runner's successful dependency order.
+
+`place_npc` accepts `guide: "action-controls"` instead of authored `pages` for one
+controls page only. `src/player/keyBindings.ts` exports `ACTION_CONTROL_BINDINGS`
+(`id`, normalized `keys`, `label`) and `ACTION_CONTROLS_GUIDE`; the generated text
+comes from those runtime predicates, not model-authored key descriptions.
+The default identity is `ev_action_controls_<mapId>`. An explicit ID takes
+precedence. Retries update that event's page without moving it, even when the
+requested name or coordinates change. Nearby ordinary NPCs are not guide
+identities, and distinct explicit ordinary NPC IDs still remain distinct.
+Ordinary NPCs still require authored pages. The guide is the narrow exception to
+the narrative multi-page recommendation, not a fallback for missing dialogue.
+
+Regression: `test/actionControlsGuide.test.ts` exercises real tool dispatch,
+repeat identity, explicit-ID priority, ordinary NPC separation, and shipped
+command-body equality with the canonical guide.
 
 ## NPC 대사는 코드가 지어내지 않는다 — 캐스트 라이터 계약 (2026-09-03)
 

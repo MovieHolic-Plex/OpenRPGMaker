@@ -1,0 +1,73 @@
+.omo/evidence/life-full-20260906/8/build.txt:86: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/8/build.txt:89: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/8/build.txt:92: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/8/build.txt:95: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/8/build.txt:98: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/8/build.txt:140: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/8/green-attempt1.txt:104: trailing whitespace.
++[32m- Expected:[39m 
+.omo/evidence/life-full-20260906/8/green-attempt1.txt:111: trailing whitespace.
++[31m+ Received:[39m 
+.omo/evidence/life-full-20260906/8/green-attempt1.txt:120: trailing whitespace.
++     50| 
+.omo/evidence/life-full-20260906/8/green-attempt1.txt:136: trailing whitespace.
++     86| 
+.omo/evidence/life-full-20260906/8/green-attempt1.txt:152: trailing whitespace.
++    101| 
+.omo/evidence/life-full-20260906/8/green-attempt1.txt:177: new blank line at EOF.
+.omo/evidence/life-full-20260906/8/green-final.txt:72: new blank line at EOF.
+.omo/evidence/life-full-20260906/8/green-focused.txt:15: new blank line at EOF.
+.omo/evidence/life-full-20260906/8/red-corrected-fixture.txt:72: trailing whitespace.
++[32m- Expected:[39m 
+.omo/evidence/life-full-20260906/8/red-corrected-fixture.txt:79: trailing whitespace.
++[31m+ Received:[39m 
+.omo/evidence/life-full-20260906/8/red-corrected-fixture.txt:88: trailing whitespace.
++     50| 
+.omo/evidence/life-full-20260906/8/red-corrected-fixture.txt:95: trailing whitespace.
++[32m- Expected:[39m 
+.omo/evidence/life-full-20260906/8/red-corrected-fixture.txt:98: trailing whitespace.
++[31m+ Received:[39m 
+.omo/evidence/life-full-20260906/8/red-corrected-fixture.txt:107: trailing whitespace.
++     65| 
+.omo/evidence/life-full-20260906/8/red-corrected-fixture.txt:123: trailing whitespace.
++     86| 
+.omo/evidence/life-full-20260906/8/red-corrected-fixture.txt:139: trailing whitespace.
++    101| 
+.omo/evidence/life-full-20260906/8/red-corrected-fixture.txt:191: trailing whitespace.
++[32m- Expected:[39m 
+.omo/evidence/life-full-20260906/8/red-corrected-fixture.txt:194: trailing whitespace.
++[31m+ Received:[39m 
+.omo/evidence/life-full-20260906/8/red-corrected-fixture.txt:237: new blank line at EOF.
+.omo/evidence/life-full-20260906/8/red-hand-intent.txt:84: new blank line at EOF.
+.omo/evidence/life-full-20260906/8/red-overlap.txt:80: new blank line at EOF.
+.omo/evidence/life-full-20260906/8/red.txt:117: trailing whitespace.
++     65| 
+.omo/evidence/life-full-20260906/8/red.txt:122: trailing whitespace.
++     69| 
+.omo/evidence/life-full-20260906/8/red.txt:136: trailing whitespace.
++[32m- Expected:[39m 
+.omo/evidence/life-full-20260906/8/red.txt:143: trailing whitespace.
++[31m+ Received:[39m 
+.omo/evidence/life-full-20260906/8/red.txt:152: trailing whitespace.
++     51| 
+.omo/evidence/life-full-20260906/8/red.txt:159: trailing whitespace.
++[32m- Expected:[39m 
+.omo/evidence/life-full-20260906/8/red.txt:162: trailing whitespace.
++[31m+ Received:[39m 
+.omo/evidence/life-full-20260906/8/red.txt:171: trailing whitespace.
++     66| 
+.omo/evidence/life-full-20260906/8/red.txt:179: trailing whitespace.
++     65| 
+.omo/evidence/life-full-20260906/8/red.txt:184: trailing whitespace.
++     69| 
+.omo/evidence/life-full-20260906/8/red.txt:204: trailing whitespace.
++    102| 
+.omo/evidence/life-full-20260906/8/red.txt:253: new blank line at EOF.
+.omo/evidence/life-full-20260906/8/setup-no-patch.txt:25: new blank line at EOF.
+.omo/evidence/life-full-20260906/8/typecheck.txt:4: new blank line at EOF.

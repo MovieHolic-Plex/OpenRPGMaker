@@ -151,11 +151,11 @@ describe("presentEditorWelcome", () => {
     for (const packId of GENRE_PACK_IDS) {
       expect(host.querySelectorAll(`[data-pack-id='${packId}']`)).toHaveLength(1);
     }
-    expect(host.querySelectorAll("[data-testid^='editor-welcome-template-card-']")).toHaveLength(7);
+    expect(host.querySelectorAll("[data-testid^='editor-welcome-template-card-']")).toHaveLength(8);
     const featured = host.querySelector(".editor-welcome-briefing-cards");
     expect(featured?.querySelectorAll("[data-testid^='editor-welcome-template-card-']")).toHaveLength(3);
     const more = host.querySelector("#editor-welcome-more-grid");
-    expect(more?.querySelectorAll("[data-testid^='editor-welcome-template-card-']")).toHaveLength(4);
+    expect(more?.querySelectorAll("[data-testid^='editor-welcome-template-card-']")).toHaveLength(5);
     for (const presetId of ["partner-raise", "school-horror"]) {
       const variant = host.querySelector<HTMLElement>(`[data-preset-id='${presetId}']`);
       expect(variant).toBeTruthy();
@@ -189,7 +189,7 @@ describe("presentEditorWelcome", () => {
       expect(host.textContent).toContain(caption);
     }
     // The system-preset action is one gear per poster, not a repeated full-width button.
-    expect(host.querySelectorAll("[data-testid^='editor-welcome-starter-card-']")).toHaveLength(7);
+    expect(host.querySelectorAll("[data-testid^='editor-welcome-starter-card-']")).toHaveLength(8);
     expect(featured?.querySelectorAll("[data-testid^='editor-welcome-starter-card-']")).toHaveLength(3);
     expect(host.querySelector("[data-testid='editor-welcome-starter-card-0']")?.textContent).not.toContain("빈 프로젝트");
     expect(document.querySelector("[data-testid='app-modal-confirm']")).toBeNull();

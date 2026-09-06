@@ -1,0 +1,90 @@
+{
+  "encoding": "gzip; decompressed bytes identical to original stdout/stderr",
+  "reason": "Preserve exact RED/errors/warnings including trailing whitespace without introducing source whitespace failures. No log lines filtered.",
+  "logs": [
+    {
+      "original": "build.txt",
+      "stored": "build.txt.gz",
+      "bytes": 18250,
+      "sha256": "1318a6eb9c8745fa17dde88f8c282b95f0dafee150e5c823c534a084ea55e333"
+    },
+    {
+      "original": "diagnostics-final.txt",
+      "stored": "diagnostics-final.txt.gz",
+      "bytes": 782,
+      "sha256": "a1aacc2f29cb71d5af1f553493ce92222efaf96b154b8d140247beb2b0b1de3c"
+    },
+    {
+      "original": "diagnostics-initial.txt",
+      "stored": "diagnostics-initial.txt.gz",
+      "bytes": 2582,
+      "sha256": "cda34838d6071c1fc0cb22d6405957c634769da81f2444548cc0281dfe1f5fec"
+    },
+    {
+      "original": "diagnostics-verified.txt",
+      "stored": "diagnostics-verified.txt.gz",
+      "bytes": 532,
+      "sha256": "d6e30d2b3f42397ecd2cf69c32d151105eb9e347eded2c0263b7ce6bc71fe180"
+    },
+    {
+      "original": "diagnostics.txt",
+      "stored": "diagnostics.txt.gz",
+      "bytes": 532,
+      "sha256": "d6e30d2b3f42397ecd2cf69c32d151105eb9e347eded2c0263b7ce6bc71fe180"
+    },
+    {
+      "original": "focused-final.txt",
+      "stored": "focused-final.txt.gz",
+      "bytes": 427,
+      "sha256": "fefee68d82d316110ac9c9b741824699dea3433b5c68b2d14e66835ab26fcd97"
+    },
+    {
+      "original": "green-initial.txt",
+      "stored": "green-initial.txt.gz",
+      "bytes": 427,
+      "sha256": "7b9aa224a5d35c748e16a71b2da6da1191fe5fffd95928d7bb546fc580ff2619"
+    },
+    {
+      "original": "green.txt",
+      "stored": "green.txt.gz",
+      "bytes": 11633,
+      "sha256": "35d5ce193707b04c2378194c2c92b1416a95a8fdaadd23bb19ef319973efbfea"
+    },
+    {
+      "original": "player-final.txt",
+      "stored": "player-final.txt.gz",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original": "player.txt",
+      "stored": "player.txt.gz",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original": "raw-whitespace.txt",
+      "stored": "raw-whitespace.txt.gz",
+      "bytes": 1422,
+      "sha256": "b612a1b413be4bc038bc8672cd27ac8b0725dc608c070e237dea94b5ba391b14"
+    },
+    {
+      "original": "red.txt",
+      "stored": "red.txt.gz",
+      "bytes": 17193,
+      "sha256": "a2eba66d4e9039648670bdf372f5f95ab2d807027185904cd7ceace8f858d01c"
+    },
+    {
+      "original": "related-final.txt",
+      "stored": "related-final.txt.gz",
+      "bytes": 7758,
+      "sha256": "6cb0a8c07f3458fd21ef6d7b2eb257563e4e43c3b30813a27aabe9279012452e"
+    },
+    {
+      "original": "typecheck.txt",
+      "stored": "typecheck.txt.gz",
+      "bytes": 68,
+      "sha256": "9e2e881b46f10347e10261b098fd6171273d8f45b9a5d52fc81a8473a713bdfe"
+    }
+  ]
+}

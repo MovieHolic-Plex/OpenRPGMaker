@@ -1,0 +1,382 @@
+{
+  "receipt": {
+    "version": 1,
+    "projectFingerprint": "action-v1:2245660:67603f3731dc7a86",
+    "mapId": "map_mine_1f",
+    "scenarioId": "action-combat-v1",
+    "runId": "59cfcb35-816e-4d5d-8a35-c6bd8b472131",
+    "status": "verified",
+    "pass": true,
+    "observations": [
+      {
+        "outcome": "player-damage",
+        "mapId": "map_mine_1f",
+        "sequence": 1,
+        "before": 120,
+        "after": 106,
+        "eventId": "__field_spawn__spawn_mine_bats_1",
+        "attackId": "__field_spawn__spawn_mine_bats_1:melee:14:5:6"
+      },
+      {
+        "outcome": "stamina-spent",
+        "mapId": "map_mine_1f",
+        "sequence": 2,
+        "before": 100,
+        "after": 80
+      },
+      {
+        "outcome": "dodge-rejection",
+        "mapId": "map_mine_1f",
+        "sequence": 3,
+        "before": 120,
+        "after": 120,
+        "eventId": "__field_spawn__spawn_mine_bats_1",
+        "attackId": "__field_spawn__spawn_mine_bats_1:melee:14:5:6"
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 4,
+        "before": 80,
+        "after": 80.3332
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 5,
+        "before": 80.3332,
+        "after": 80.66640000000001
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 6,
+        "before": 80.66640000000001,
+        "after": 80.99960000000002
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 7,
+        "before": 80.99960000000002,
+        "after": 81.33280000000002
+      },
+      {
+        "outcome": "enemy-projectile",
+        "mapId": "map_mine_1f",
+        "sequence": 8,
+        "before": 0,
+        "after": 1,
+        "eventId": "__field_spawn__spawn_mine_archers_1"
+      },
+      {
+        "outcome": "stamina-spent",
+        "mapId": "map_mine_1f",
+        "sequence": 9,
+        "before": 100,
+        "after": 90
+      },
+      {
+        "outcome": "swing-hit",
+        "mapId": "map_mine_1f",
+        "sequence": 10,
+        "before": 95,
+        "after": 51,
+        "eventId": "__field_spawn__spawn_mine_bats_1"
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 11,
+        "before": 90,
+        "after": 90.33333333333333
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 12,
+        "before": 90.33333333333333,
+        "after": 90.66666666666666
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 13,
+        "before": 90.66666666666666,
+        "after": 90.99999999999999
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 14,
+        "before": 90.99999999999999,
+        "after": 91.33333333333331
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 15,
+        "before": 91.33333333333331,
+        "after": 91.66666666666664
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 16,
+        "before": 91.66666666666664,
+        "after": 91.99999999999997
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 17,
+        "before": 91.99999999999997,
+        "after": 92.3333333333333
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 18,
+        "before": 92.3333333333333,
+        "after": 92.66666666666663
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 19,
+        "before": 92.66666666666663,
+        "after": 92.99999999999996
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 20,
+        "before": 92.99999999999996,
+        "after": 93.33333333333329
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 21,
+        "before": 93.33333333333329,
+        "after": 93.66666666666661
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 22,
+        "before": 93.66666666666661,
+        "after": 93.99999999999994
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 23,
+        "before": 93.99999999999994,
+        "after": 94.33319999999995
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 24,
+        "before": 94.33319999999995,
+        "after": 94.66639999999995
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 25,
+        "before": 94.66639999999995,
+        "after": 94.99959999999996
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 26,
+        "before": 94.99959999999996,
+        "after": 95.33279999999996
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 27,
+        "before": 95.33279999999996,
+        "after": 95.66599999999997
+      },
+      {
+        "outcome": "stamina-spent",
+        "mapId": "map_mine_1f",
+        "sequence": 28,
+        "before": 95.66599999999997,
+        "after": 85.66599999999997
+      },
+      {
+        "outcome": "swing-hit",
+        "mapId": "map_mine_1f",
+        "sequence": 29,
+        "before": 51,
+        "after": 8,
+        "eventId": "__field_spawn__spawn_mine_bats_1"
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 30,
+        "before": 85.66599999999997,
+        "after": 85.9993333333333
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 31,
+        "before": 85.9993333333333,
+        "after": 86.33266666666663
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 32,
+        "before": 86.33266666666663,
+        "after": 86.66599999999995
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 33,
+        "before": 86.66599999999995,
+        "after": 86.99933333333328
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 34,
+        "before": 86.99933333333328,
+        "after": 87.33266666666661
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 35,
+        "before": 87.33266666666661,
+        "after": 87.66599999999994
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 36,
+        "before": 87.66599999999994,
+        "after": 87.99933333333327
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 37,
+        "before": 87.99933333333327,
+        "after": 88.3326666666666
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 38,
+        "before": 88.3326666666666,
+        "after": 88.66599999999993
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 39,
+        "before": 88.66599999999993,
+        "after": 88.99933333333325
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 40,
+        "before": 88.99933333333325,
+        "after": 89.33266666666658
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 41,
+        "before": 89.33266666666658,
+        "after": 89.66599999999991
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 42,
+        "before": 89.66599999999991,
+        "after": 89.99933333333324
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 43,
+        "before": 89.99933333333324,
+        "after": 90.33266666666657
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 44,
+        "before": 90.33266666666657,
+        "after": 90.6659999999999
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 45,
+        "before": 90.6659999999999,
+        "after": 90.99933333333323
+      },
+      {
+        "outcome": "stamina-recovered",
+        "mapId": "map_mine_1f",
+        "sequence": 46,
+        "before": 90.99933333333323,
+        "after": 91.33266666666655
+      },
+      {
+        "outcome": "stamina-spent",
+        "mapId": "map_mine_1f",
+        "sequence": 47,
+        "before": 91.33266666666655,
+        "after": 81.33266666666655
+      },
+      {
+        "outcome": "enemy-defeat",
+        "mapId": "map_mine_1f",
+        "sequence": 48,
+        "before": 8,
+        "after": 0,
+        "eventId": "__field_spawn__spawn_mine_bats_1"
+      },
+      {
+        "outcome": "reward-granted",
+        "mapId": "map_mine_1f",
+        "sequence": 49,
+        "before": 39,
+        "after": 117,
+        "eventId": "__field_spawn__spawn_mine_bats_1"
+      },
+      {
+        "outcome": "swing-hit",
+        "mapId": "map_mine_1f",
+        "sequence": 50,
+        "before": 8,
+        "after": 0,
+        "eventId": "__field_spawn__spawn_mine_bats_1"
+      }
+    ]
+  },
+  "owned": true,
+  "forgedAccepted": false,
+  "wrongMapAccepted": false,
+  "unchanged": true,
+  "fingerprintMs": 314.89999997615814,
+  "staleAccepted": false,
+  "remainingFrames": 0,
+  "normalBootHasQaGlobals": false,
+  "errors": []
+}

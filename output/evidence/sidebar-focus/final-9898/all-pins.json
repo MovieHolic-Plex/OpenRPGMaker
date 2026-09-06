@@ -1,0 +1,58 @@
+[
+  {
+    "id": "oprn-tool-overflow",
+    "inside": true,
+    "box": {
+      "x": 11,
+      "y": 463,
+      "width": 79.21875,
+      "height": 32,
+      "top": 463,
+      "right": 90.21875,
+      "bottom": 495,
+      "left": 11
+    }
+  },
+  {
+    "id": "toolbar-toggle-history",
+    "inside": true,
+    "box": {
+      "x": 94.21875,
+      "y": 463,
+      "width": 79.125,
+      "height": 32,
+      "top": 463,
+      "right": 173.34375,
+      "bottom": 495,
+      "left": 94.21875
+    }
+  },
+  {
+    "id": "oprn-tool-inspector",
+    "inside": true,
+    "box": {
+      "x": 177.34375,
+      "y": 463,
+      "width": 76,
+      "height": 32,
+      "top": 463,
+      "right": 253.34375,
+      "bottom": 495,
+      "left": 177.34375
+    }
+  },
+  {
+    "id": "toolbar-toggle-ruleAudit",
+    "inside": true,
+    "box": {
+      "x": 11,
+      "y": 499,
+      "width": 79.125,
+      "height": 32,
+      "top": 499,
+      "right": 90.125,
+      "bottom": 531,
+      "left": 11
+    }
+  }
+]

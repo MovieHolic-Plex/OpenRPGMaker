@@ -7,7 +7,7 @@ import { hasPendingFacesetSheetRepair, repairUploadedFacesetSheets } from "@/ass
 import { repairInteriorTransparentPropLayers } from "./defaults/interiorTransparentPropLayerRepair";
 import { ensureScarloxyPokemonInteriors } from "./defaults/scarloxyPokemonInteriors";
 import { ensureDefaultDatabaseIconResources } from "./defaults/defaultDatabaseIconResources";
-import { ensureBundledBattleAnimations } from "./defaults/defaultDatabase";
+import { defaultTitleScreenSettings, ensureBundledBattleAnimations } from "./defaults/defaultDatabase";
 import { isSaveSkippedLocation, loadDevProjectOverride, saveDevProjectOverride } from "./devProjectPersistence";
 import {
   loadProjectFromSupabase,
@@ -345,7 +345,7 @@ class ProjectStore {
   ): Promise<LoadNewRemoteProjectResult> {
     const title = options.title?.trim();
     if (title) {
-      project.meta = { ...project.meta, title };
+      nameNewProject(project, title);
     }
 
     const draft = supabaseProjectConfigDraft();
@@ -422,7 +422,7 @@ class ProjectStore {
     const targetConfig: SupabaseProjectConfig = { ...baseConfig, projectId };
     const candidate = structuredClone(project);
     const title = options.title?.trim();
-    if (title) candidate.meta = { ...candidate.meta, title };
+    if (title) nameNewProject(candidate, title);
     const generationAfterFlush = this.mutationGeneration;
 
     let saved: SupabaseSaveResult;
@@ -1373,6 +1373,14 @@ class ProjectStore {
 }
 
 export const store = new ProjectStore();
+
+function nameNewProject(project: Project, title: string): void {
+  const playerTitle = project.system.titleScreen?.title?.trim();
+  if (!playerTitle || playerTitle === defaultTitleScreenSettings().title) {
+    project.system.titleScreen = { ...(project.system.titleScreen ?? defaultTitleScreenSettings()), title };
+  }
+  project.meta = { ...project.meta, title };
+}
 
 function browserHref(): string | null {
   if (typeof window === "undefined") return null;

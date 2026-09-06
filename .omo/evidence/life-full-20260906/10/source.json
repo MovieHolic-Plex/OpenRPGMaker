@@ -1,0 +1,68 @@
+{
+  "worktree": "/home/main/z-project/rpg-zzu-life-full-field-input",
+  "branch": "agent/life-full-field-input",
+  "baseHead": "fb0588d9383f2b3c85a421bfe706a56e8c40742b",
+  "required": [
+    {
+      "task": 8,
+      "commit": "98b099f8d73a3d36be96fef17746f48fe5f027fe",
+      "verify": ".omo/evidence/life-full-20260906/8/VERIFY.md",
+      "ancestorExit": 0,
+      "verifySha256": "f546fd736b7068ab122ef8208626dfbd009ecf4971ba4d43a9cd4c23fda11f48"
+    },
+    {
+      "task": 9,
+      "commit": "27db0af0021fb49414723b64141a0e1c568b8069",
+      "verify": ".omo/evidence/life-full-20260906/9/VERIFY.md",
+      "ancestorExit": 0,
+      "verifySha256": "e8b763d0ace74f5775d6fca82af52d88fa30bd1e5f01d3597fbfc379bd2e57f3"
+    }
+  ],
+  "files": {
+    "src/player/lifeFieldInteraction.ts": {
+      "sha256": "f48fc3db0c6a3cf03b36014276a00e9526a7daebc103ffd43d9482d4cb53402e",
+      "gitBlob": "a709eb721ae19d9cd9b4bccb27e62cd1713b04cd"
+    },
+    "src/player/playSceneMovement.ts": {
+      "sha256": "4c3e5cfcaa9f452b99793c02c82b469a31d3c372ef6ed2b333c6ae6892ea1456",
+      "gitBlob": "eda466f1a3deace9cdaee2640177118098d0cd21"
+    },
+    "src/player/playScenePlaceables.ts": {
+      "sha256": "11a981a999299fb08d424e22c241a452dd5bfb23c22eade40994ba18a3613844",
+      "gitBlob": "840a302fab8499e675af0d2520e0fd2e5e55b2a0"
+    },
+    "src/player/playSceneMapRuntime.ts": {
+      "sha256": "091e7afd5488bb48e2ce18271dae2e43db8d66936c1582bd0f916db4ad8ab19a",
+      "gitBlob": "b1dc540e34e759405133265e22fbe0ada655ca48"
+    },
+    "src/project/fishing.ts": {
+      "sha256": "3f4e2d1460152d8fe2e9d42ef89eac5342e317ea99daf08b839945e5f499e57d",
+      "gitBlob": "f9384789682acf8a6c3c6ffdc229dd910b8690c6"
+    },
+    "src/project/seasonalForage.ts": {
+      "sha256": "94167a19a6eb77d640336c5b2fb054f0df9bf2150bab45b6e4f8651ad2c7e3da",
+      "gitBlob": "509a9e954b71a6bd3279f28f70261d4d963161a8"
+    },
+    "src/testing/sceneTestRunner.ts": {
+      "sha256": "eff165adcb7549d1970f76ce5bca4ab16ebcdac3bc30e95f69aad5fb19081074",
+      "gitBlob": "18b7f742fb6c4dcd848bc367568e93e08b0a616b"
+    },
+    "test/lifeFieldInteraction.test.ts": {
+      "sha256": "f150fb9d81c402ebef50b3a998090a72d931fc398b6c2ccab7fcdd7dca0f4bd6",
+      "gitBlob": "06b54806877bc7d2238ab25b4b1a4d0f1c9fc24e"
+    },
+    "test/p2LifeRuntime.test.ts": {
+      "sha256": "996d25518864ea1c37861c6c870d4856ebe625df548f236c991bb79a5514474a",
+      "gitBlob": "87f26cd6c0d2fed32f6e1f1aea69ed720754ecf6"
+    }
+  },
+  "unchangedVerifiedAuthorities": {
+    "src/player/farming.ts": "5222e17999fb0a1da9fa1594c265f3eb4dac40ab5a63594cb94d599963be4d67",
+    "src/project/toolActions.ts": "84c58386207251da43c50a65024cce3fed4b2ca94ed0e6c1ce5ab490a5ad1b32",
+    "src/player/dayTransition.ts": "595a765884396c7f2d45fefc5002c5a4444cfbc125c8f8fb306a51eb76b7c354",
+    "src/project/makers.ts": "0519cdf5e116f7355f7e0d6876a11bd3fd585be38a21868e47ee7adcaa4e74b9",
+    "src/player/saveSlots.ts": "2dac3eb6c6f5ef90a2cce5bdcd3c9cf79c7e587eb7262916cb82a01ace39a98b",
+    "src/project/session.ts": "21a61e54c9b64dcfe3b4ad1c12990d3095f661cd08bbf1f8aee592eed8f7d376"
+  },
+  "nativePlayerSourceHashesMatch": true
+}

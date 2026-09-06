@@ -1,0 +1,28 @@
+{
+  "event": "task8-implementation-and-verification-trees-cleaned",
+  "task": "8",
+  "plan": ".omo/plans/life-systems-full-implementation.md",
+  "retainedCommits": [
+    "34cc4b42d0cc743360835ab899daaa09e9ac7b4e",
+    "072ba3ebd9e816fc28fd00acd9ae898808702bf3"
+  ],
+  "allEvidenceTrackedAndIntegrated": true,
+  "unarchivedEvidence": 0,
+  "ownedLiveRuntimes": 0,
+  "unlockExit": 0,
+  "removed": [
+    {
+      "path": "/home/main/z-project/rpg-zzu-life-full-tools-verify",
+      "exit": 0
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-life-full-tools",
+      "exit": 0
+    }
+  ],
+  "activeTask10": "st_01a07717",
+  "activeWorktree": "/home/main/z-project/rpg-zzu-life-full-field-input",
+  "dependencyRoot": "/home/main/z-project/rpg-zzu/node_modules",
+  "workflow": "dag_3b58f987-8a5d-46e0-99aa-0c64eaf6c1c9",
+  "generation": 3
+}

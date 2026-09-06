@@ -1,0 +1,13 @@
+--- a/src/editor/panels/aiConversationLog.ts
++++ b/src/editor/panels/aiConversationLog.ts
+@@ -250 +250 @@
+-      return { box: lastReasoning.box, body: appendReasoningItem(lastReasoning.body) };
++      return { box: lastReasoning.box, body: lastReasoning.body.querySelector<HTMLElement>(".ai-reasoning-item") ?? lastReasoning.body };
+--- a/src/editor/panels/aiTurnRunner.ts
++++ b/src/editor/panels/aiTurnRunner.ts
+@@ -309 +309 @@
+-        ghostPreviewUpdater.handleToolCall(event);
++        // MUTATION: disconnect successful tool events from live draft preview.
+@@ -775 +775 @@
+-      actions.push(settingsAction);
++      void settingsAction; // MUTATION: omit settings CTA from recovery actions.

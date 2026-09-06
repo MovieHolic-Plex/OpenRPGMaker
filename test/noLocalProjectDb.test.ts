@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import ts from "typescript";
 
 type DirentLike = {
   readonly name: string;
@@ -35,6 +36,23 @@ const forbiddenRuntimePatterns = [
   "supabaseRecoveredHouseTemplateProject",
 ] as const;
 
+function forbiddenLocalDbReferences(text: string): readonly string[] {
+  const source = text.includes("indexedDB")
+    ? ts.createSourceFile("runtime.ts", text, ts.ScriptTarget.Latest, true)
+    : null;
+  const usesIndexedDb = (node: ts.Node): boolean => {
+    if ((ts.isIdentifier(node) || ts.isStringLiteralLike(node)) && node.text === "indexedDB") {
+      // A capability check cannot read or write project data. Every actual access,
+      // including aliases and computed property access, remains forbidden here.
+      return !(ts.isIdentifier(node) && ts.isTypeOfExpression(node.parent));
+    }
+    return ts.forEachChild(node, usesIndexedDb) ?? false;
+  };
+  return forbiddenRuntimePatterns.filter((pattern) =>
+    pattern === "indexedDB" ? source !== null && usesIndexedDb(source) : text.includes(pattern),
+  );
+}
+
 describe("canonical project persistence has no local DB fallback", () => {
   it("does not keep old local DB implementation files", async () => {
     const fs = await loadFs();
@@ -44,19 +62,32 @@ describe("canonical project persistence has no local DB fallback", () => {
     }
   });
 
-  it("does not reference IndexedDB SQLite or local JSON fallback in runtime source", async () => {
+  it("does not access IndexedDB SQLite or local JSON fallback in runtime source", async () => {
     const fs = await loadFs();
     const files = runtimeSourceRoots.flatMap((root) => sourceFiles(fs, root));
     const offenders: string[] = [];
 
     for (const file of files) {
       const text = fs.readFileSync(file, "utf8");
-      for (const pattern of forbiddenRuntimePatterns) {
-        if (text.includes(pattern)) offenders.push(`${file}: ${pattern}`);
-      }
+      for (const pattern of forbiddenLocalDbReferences(text)) offenders.push(`${file}: ${pattern}`);
     }
 
     expect(offenders).toEqual([]);
+  });
+
+  it("permits a capability check without permitting a local project database", () => {
+    expect(forbiddenLocalDbReferences('const available = typeof indexedDB !== "undefined";')).toEqual([]);
+  });
+
+  it.each([
+    'indexedDB.open("project");',
+    'typeof indexedDB !== "undefined" && indexedDB.open("project");',
+    'const factory = indexedDB; factory.open("project");',
+    'window.indexedDB.open("project");',
+    'globalThis["indexedDB"].open("project");',
+    'globalThis[`indexedDB`].open("project");',
+  ])("rejects actual local database access: %s", (source) => {
+    expect(forbiddenLocalDbReferences(source)).toContain("indexedDB");
   });
 });
 

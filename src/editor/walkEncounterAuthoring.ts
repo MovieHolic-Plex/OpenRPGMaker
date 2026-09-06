@@ -4,8 +4,7 @@ import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { isActionCombatMap } from "@/project/actionCombat";
 import { SEASONS, TIME_PHASES } from "@/project/gameTime";
 import { store } from "@/project/store";
-import type { EncounterConditions, GameMap, Rect, TroopRecord } from "@/project/types";
-import { randomUuid } from "@/util/id";
+import type { EncounterConditions, GameMap, Rect } from "@/project/types";
 
 export const WALK_FREQUENCIES = [
   { label: "드물게", rate: 10 }, { label: "보통", rate: 30 }, { label: "자주", rate: 60 },
@@ -13,7 +12,6 @@ export const WALK_FREQUENCIES = [
 
 // Mutable form state; never attached to the project until apply.
 export interface WalkEncounterChoice {
-  kind: "enemy" | "troop";
   id: string;
   weight: number;
   conditions: Omit<EncounterConditions, "region">;
@@ -62,7 +60,7 @@ export function beginWalkEncounter(mapId: string, region: Rect, edit = false): W
     choices: edit ? (map.encounterTable ?? []).filter((entry) => sameEncounterRegion(entry.conditions?.region, region))
       .map((entry) => {
         const { region: _region, ...conditions } = entry.conditions ?? {};
-        return { kind: "troop", id: entry.troopId, weight: entry.weight, conditions: structuredClone(conditions) };
+        return { id: entry.troopId, weight: entry.weight, conditions: structuredClone(conditions) };
       }) : [],
   };
 }
@@ -74,7 +72,7 @@ export function reuseLastWalkEncounter(draft: WalkEncounterDraft): boolean {
 }
 export function hasLastWalkEncounter(): boolean { return lastConfiguration?.projectKey === projectKey(); }
 
-function currentDraftError(draft: WalkEncounterDraft): string | undefined {
+export function currentDraftError(draft: WalkEncounterDraft): string | undefined {
   const project = store.getCurrent();
   const map = project.maps[draft.mapId];
   if (draft.projectKey !== projectKey() || (editorState.get().currentMapId ?? project.startMapId) !== draft.mapId || !map)
@@ -85,10 +83,10 @@ function currentDraftError(draft: WalkEncounterDraft): string | undefined {
 }
 function choicesError(draft: WalkEncounterDraft): string | undefined {
   const project = store.getCurrent();
-  if (!draft.choices.length) return "만날 적을 하나 이상 골라 주세요.";
+  if (!draft.choices.length) return "만날 그룹을 하나 이상 골라 주세요.";
   for (const choice of draft.choices) {
-    const records = choice.kind === "enemy" ? project.database.enemies : project.database.troops;
-    if (!records.some((record) => record.id === choice.id)) return "선택한 적 또는 적 그룹이 없어졌습니다. 다시 골라 주세요.";
+    const records = project.database.troops;
+    if (!records.some((record) => record.id === choice.id)) return "선택한 그룹이 없습니다. 해당 행을 다른 그룹으로 바꾸거나 제외해 주세요.";
     if (!Number.isInteger(choice.weight) || choice.weight < 1 || choice.weight > 999) return "상대 비중은 1~999의 정수로 입력해 주세요.";
     const c = choice.conditions;
     if (c.switchId && !project.switches.some((record) => record.id === c.switchId)) return "조건 스위치를 다시 골라 주세요.";
@@ -104,13 +102,6 @@ function choicesError(draft: WalkEncounterDraft): string | undefined {
   }
   return undefined;
 }
-export function isSimpleWalkTroop(troop: TroopRecord, enemyId: string): boolean {
-  return troop.enemyIds.length === 1 && troop.enemyIds[0] === enemyId && troop.autoAlign
-    && (!troop.members || (troop.members.length === 1 && troop.members[0]?.enemyId === enemyId && !troop.members[0].hidden))
-    && !troop.trainerBattle && !troop.uncapturable && !troop.battleFlow && !troop.activeSlots
-    && !troop.previewBackgroundResourceId && troop.battleEventPages.length === 0;
-}
-
 export function applyWalkEncounter(draft: WalkEncounterDraft, operation: "save" | "delete" = "save"): WalkEncounterResult {
   const stale = currentDraftError(draft);
   if (stale) return { ok: false, error: stale };
@@ -131,7 +122,7 @@ export function applyWalkEncounter(draft: WalkEncounterDraft, operation: "save" 
   }
 
   const label = `걸을 때 적 만나기 ${operation === "delete" ? "삭제" : draft.originalRegion ? "편집" : "추가"}`;
-  recordProjectSnapshot(label, draft.mapId);
+  recordProjectSnapshot(label, draft.mapId, { kind: "map" });
   store.update((next) => {
     const target = next.maps[draft.mapId]!;
     const entries = (target.encounterTable ?? []).filter((entry) => !sameEncounterRegion(entry.conditions?.region, draft.originalRegion));
@@ -142,23 +133,13 @@ export function applyWalkEncounter(draft: WalkEncounterDraft, operation: "save" 
         target.troopIds = [];
       }
       for (const choice of draft.choices) {
-        let troopId = choice.id;
-        if (choice.kind === "enemy") {
-          let troop = next.database.troops.find((candidate) => isSimpleWalkTroop(candidate, choice.id));
-          if (!troop) {
-            troop = { id: `troop_walk_${randomUuid()}`, name: `${next.database.enemies.find((enemy) => enemy.id === choice.id)!.name} (걷기)`,
-              enemyIds: [choice.id], autoAlign: true, battleEventPages: [] };
-            next.database.troops.push(troop);
-          }
-          troopId = troop.id;
-        }
-        entries.push({ troopId, weight: choice.weight, conditions: { ...structuredClone(choice.conditions), region: { ...draft.region } } });
+        entries.push({ troopId: choice.id, weight: choice.weight, conditions: { ...structuredClone(choice.conditions), region: { ...draft.region } } });
       }
       target.encounterRate = draft.rate;
     }
     if (entries.length) target.encounterTable = entries;
     else delete target.encounterTable;
-  }, { scope: "project", label });
+  }, { scope: "map", mapId: draft.mapId, label });
   if (operation === "save") lastConfiguration = { projectKey: draft.projectKey, choices: structuredClone(draft.choices) };
   return { ok: true };
 }

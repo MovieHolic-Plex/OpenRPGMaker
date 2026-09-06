@@ -541,7 +541,9 @@ const runLint: ToolDefinition = {
     const errors = issues.filter((issue) => issue.severity === "error").length;
     const warnings = issues.filter((issue) => issue.severity === "warning").length;
     const infos = issues.filter((issue) => issue.severity === "info").length;
-    return { summary: `lint: error ${errors}건 / warning ${warnings}건 / info ${infos}건`, data: { counts: { errors, infos, warnings }, issues } };
+    return { summary: `lint: error ${errors}건 / warning ${warnings}건 / info ${infos}건`,
+      issues: issues.filter(issue => issue.relocation !== undefined),
+      data: { counts: { errors, infos, warnings }, issues } };
   },
 };
 

@@ -1,0 +1,17 @@
+import {spawnSync,execFileSync} from 'node:child_process';
+import {writeFileSync,readFileSync} from 'node:fs';
+import {fileURLToPath} from 'node:url';
+import {dirname} from 'node:path';
+const out=dirname(fileURLToPath(import.meta.url));
+const [label,budget,...command]=process.argv.slice(2);
+const identity=JSON.parse(readFileSync(`${out}/identity.json`,'utf8'));
+const head=()=>execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+if(head()!==identity.head) throw Error('Frozen HEAD changed');
+const argv=['--timeout','900','/tmp/rpg-zzu-life-full-qa-01a0727b.lock','timeout','--signal=TERM','--kill-after=15s',`${budget}s`,...command];
+const start=new Date().toISOString();
+const result=spawnSync('flock',argv,{cwd:process.cwd(),encoding:'utf8',maxBuffer:100*1024*1024,env:{...process.env,DEV_SERVER_PORT:String(identity.port),DEV_SERVER_NO_TLS:'1',E2E_FREEZE_DEV_SERVER:'1',VITE_CACHE_DIR:`${out}/build-cache`}});
+writeFileSync(`${out}/${label}.log`,(result.stdout??'')+(result.stderr??''));
+const receipt={cwd:process.cwd(),headBefore:identity.head,headAfter:head(),command:['flock',...argv],start,end:new Date().toISOString(),exit:result.status,signal:result.signal,error:result.error?.message};
+writeFileSync(`${out}/${label}.json`,JSON.stringify(receipt,null,2)+'\n');
+console.log(JSON.stringify(receipt)); console.log((result.stdout??'').slice(-5000)); console.error((result.stderr??'').slice(-3000));
+process.exitCode=result.status??1;

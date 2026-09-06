@@ -1,0 +1,46 @@
+--- src/editor/panels/aiComposer.ts
++++ src/editor/panels/aiComposer.ts
+@@ -358,7 +358,7 @@
+   });
+
+   // 키 힌트는 행에 두지 않는다(실측 160×15 상시 점유). 입력창 title 로 옮겼다.
+-  options.input.setAttribute("title", "Enter 보내기 · Shift+Enter 줄바꿈");
++  options.input.removeAttribute("title");
+
+   const composer = el("div", {
+     class: "ai-composer",
+
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiSelectionChipScope.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-clear-field-e552-ai-seven-selection
+
+ ❯ test/aiSelectionChipScope.test.ts (5 tests | 1 failed) 5401ms
+   ✓ 선택 칩 해제와 턴 스코프 > × 로 해제한 뒤 보내면 세션 스코프가 null 이고 영역 실행부를 타지 않는다  2723ms
+   ✓ 선택 칩 해제와 턴 스코프 > 칩이 살아 있으면 영역 실행부로 간다(대조군)  515ms
+   ✓ 대기 상태에서도 선택 칩은 보인다 > 선택 칩이 붙으면 칩 호스트에 has-selection-scope 가 서고, 해제하면 내려간다  565ms
+   ✓ 대기 상태에서도 선택 칩은 보인다 > idle: the map pin is visible, selection hides only sibling chips, and clearing restores the map pin  867ms
+   × composer keyboard help does not occupy the action row > keeps help on the input title and the shipped action row intact before focus, during focus, and after blur 211ms
+     → expected 0 to be greater than 0
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiSelectionChipScope.test.ts > composer keyboard help does not occupy the action row > keeps help on the input title and the shipped action row intact before focus, during focus, and after blur
+AssertionError: expected 0 to be greater than 0
+ ❯ test/aiSelectionChipScope.test.ts:197:32
+    195|     const actions = control(panel, "ai-composer-actions");
+    196|     const help = input.title;
+    197|     expect(help.trim().length).toBeGreaterThan(0);
+       |                                ^
+    198|     // Nonempty input keeps suggestions out of this focus/row-space re…
+    199|     input.value = "나무 세 그루 심어줘";
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 passed (5)
+   Start at  01:05:53
+   Duration  52.90s (transform 31.93s, setup 0ms, collect 44.57s, tests 5.40s, environment 685ms, prepare 274ms)

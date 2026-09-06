@@ -1,0 +1,2 @@
+{"publicTransactions":12,"fullStateRecords":"public-state.json","mockedAuthorities":false,"nativePlayerInput":false}
+{"viteClosed":true,"httpListenerStarted":false}

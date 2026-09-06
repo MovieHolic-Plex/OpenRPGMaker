@@ -1,0 +1,15 @@
+import { execFileSync, spawnSync } from "node:child_process";
+import { writeFileSync } from "node:fs";
+const [label, seconds, ...command] = process.argv.slice(2);
+if (!label || !seconds || !command.length) throw new Error("LABEL SECONDS COMMAND required");
+const git = (...args) => execFileSync("git", args, { encoding: "utf8" }).trim();
+const args = ["--timeout", "900", "/tmp/rpg-zzu-life-full-qa-01a0727b.lock", "timeout", "--signal=TERM", "--kill-after=15s", `${seconds}s`, ...command];
+const started = new Date().toISOString();
+const result = spawnSync("flock", args, { encoding: "utf8", maxBuffer: 32 * 1024 * 1024 });
+const receipt = { cwd: process.cwd(), command: ["flock", ...args], started, finished: new Date().toISOString(), head: git("rev-parse", "HEAD"), headTree: git("rev-parse", "HEAD^{tree}"), diff: git("diff", "--", "src", "test"), exit: result.status, signal: result.signal, error: result.error?.message };
+const root = ".omo/evidence/life-full-20260906/9";
+writeFileSync(`${root}/${label}.log`, `${result.stdout ?? ""}${result.stderr ?? ""}`);
+writeFileSync(`${root}/${label}.json`, JSON.stringify(receipt, null, 2) + "\n");
+console.log(JSON.stringify({ ...receipt, diff: "recorded in receipt" }));
+console.log(`${result.stdout ?? ""}${result.stderr ?? ""}`);
+process.exitCode = result.status ?? 1;

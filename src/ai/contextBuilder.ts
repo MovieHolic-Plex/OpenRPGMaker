@@ -32,9 +32,14 @@ import { confidenceScore } from "@/project/tilesetPalette";
 import { approvedVocabulary } from "@/project/tileVocabulary";
 import { aiInstructionsSection } from "./projectInstructions";
 import { worldCanonPromptSection } from "./worldCanonContext";
+import { projectWikiContext } from "./projectWikiContext";
 import { AGENT_UX_POLICY_LINES } from "./promptPolicies";
 import { EVENT_PAGE_SEMANTICS_BLOCK } from "./eventPageSemantics";
-import { buildToolCapabilityIndex } from "./toolCapabilityIndex";
+import { buildTaskRecipes, buildToolCapabilityIndex } from "./toolCapabilityIndex";
+import type { AiConfig, ChatMessage, OpenAiToolSchema } from "./llmClient";
+import { DEFAULT_COMPACTION_SETTINGS, estimateContextTokens } from "./contextCompaction";
+import { compactMessagesForRequest, resolveRequestCharBudget } from "./messageBudget";
+import { originalContextWindow, type OriginalContextStore } from "./originalContext";
 import {
   formatViewportContextBlock,
   mapRegionForContext,
@@ -68,6 +73,7 @@ export interface ContextOptions {
    * 완성된 문자열을 받는다.
    */
   preferenceMemorySection?: string;
+  wikiQuery?: string;
 }
 
 export function resolveContextMapId(options: ContextOptions): string | undefined {
@@ -139,6 +145,7 @@ const INTRO = [
   "3. 쓰기 툴 결과에 issues(오류)가 있으면 그 내용을 읽고 인자를 고쳐 성공할 때까지 재시도하세요.",
   "4. 좌표·타일·리소스 ID는 추측하지 말고 조회 툴로 확인한 값을 사용하세요. 물 위/통행 불가 칸에 NPC를 두지 마세요.",
   "   NPC/주민 배치 = place_npc (통행 불가 칸 자동 착지), 저수준 upsert_event 금지.",
+  "   결과에서 NPC/오브젝트가 움직이지 못하거나 접근 불가이면 지형을 파거나 충돌을 끄는 해결만 하지 말고 위치 이동도 검토하세요. issues.relocation.candidates는 move_event 후보이며 자동 적용 지시가 아닙니다. 기존 ID·대사·페이지·완성된 집을 보존하고, 접근 가능한 이웃이 있는 벽의 문·간판은 그대로 두세요. 후보가 비면 주변을 조회해 다른 위치나 동선 수정을 판단하세요.",
   "5. 파괴적 작업(remove_event 등)은 꼭 필요할 때만, 이유를 먼저 설명하세요.",
   "6. 툴 호출을 아끼지 마세요. 조회·검증·재시도에 필요한 만큼 깊게 사용하세요(제한은 토큰 예산뿐).",
   "   모든 툴 호출에 reason(한 줄)을 넣어라. 사용자 지시의 어느 부분을 이 호출로 처리하는지. 없으면 실행되지 않는다.",
@@ -649,6 +656,39 @@ function ruleText(rule: ClusterRuleHint): string {
   return `${kindLabel(rule.kind)} 규칙 ${rule.id}`;
 }
 
+/** Budget the actual writer model, complete native schemas, conversation and originals together.
+ * Original evidence is appended after history compaction, never prose-sliced. The legacy
+ * working-window cap governs history, not how much original data a large model can see.
+ */
+export function buildGroundedRequest(
+  messages: readonly ChatMessage[], tools: readonly OpenAiToolSchema[],
+  config: Pick<AiConfig, "model" | "baseUrl"> & Partial<Pick<AiConfig, "authMode" | "providerId">>, original: OriginalContextStore,
+): { messages: ChatMessage[]; includedIds: string[]; budget: { windowTokens: number; toolsTokens: number; reserveTokens: number; inputTokens: number } } {
+  const windowTokens = originalContextWindow(config);
+  const reserveTokens = DEFAULT_COMPACTION_SETTINGS.reserveTokens;
+  const toolsTokens = tools.length ? estimateContextTokens([{ role: "system", content: JSON.stringify(tools) }]) : 0;
+  const manifestTokens = original.minimumTokens();
+  let historyChars = Math.max(0, Math.min(resolveRequestCharBudget(config), windowTokens * 4) - (toolsTokens + reserveTokens + manifestTokens) * 4);
+  let request = compactMessagesForRequest(messages, historyChars);
+  // The character clamp omits tool-call arguments and token weighting. Reconcile its
+  // output with the actual estimator while reserving the mandatory paging manifest.
+  while (historyChars > 0) {
+    const overflow = estimateContextTokens(request) + toolsTokens + reserveTokens + manifestTokens - windowTokens;
+    if (overflow <= 0) break;
+    historyChars = Math.max(0, historyChars - overflow * 4);
+    request = compactMessagesForRequest(messages, historyChars);
+  }
+  const remaining = windowTokens - reserveTokens - toolsTokens - estimateContextTokens(request);
+  const grounding = original.message(remaining);
+  request.push(grounding.message);
+  const inputTokens = estimateContextTokens(request) + toolsTokens;
+  if (inputTokens + reserveTokens > windowTokens) {
+    throw new Error("original-context-window-exceeded: conversation and full tool schemas exceed the model window; no capability was removed");
+  }
+  return { messages: request, includedIds: grounding.includedIds,
+    budget: { windowTokens, toolsTokens, reserveTokens, inputTokens } };
+}
+
 // 시스템 프롬프트 전체 조립. 예산 초과 섹션은 잘라내고 조회 안내로 대체.
 export function buildSystemPrompt(project: Project, options: ContextOptions = {}): string {
   // 툴 능력 색인은 예산 슬라이싱 밖의 고정 버지다. 아래 조립·잘라내기는 색인을 모르는 상태로 진행되고
@@ -702,6 +742,8 @@ export function buildSystemPrompt(project: Project, options: ContextOptions = {}
   // 사라진다 — 사라진 줄 아무도 모르는 것이 이 블록의 최악 실패다(색인을 예산 밖에 둔 이유와 동일).
   const designContract = villageDesignContext(project);
   if (designContract) assembled += `\n\n${designContract}`;
+  const wiki = projectWikiContext(project, { query: options.wikiQuery ?? "", mapId: currentMapId });
+  if (wiki.text) assembled += `\n\n## 프로젝트 위키 — 현재 작업의 근거\n아래는 저장된 설정과 제작 결정이다. 명시적 결정과 현재 맵 예외를 따르고, 추론·실제 적용 상태를 구별한다. 자세한 본문은 read_project_wiki로 조회한다.\n${wiki.text}`;
   return withProjectInstructions(
     withWorldCanon(withFixedBlocks(assembled, options.preferenceMemorySection), project.worldCanon),
     project.aiInstructions,
@@ -729,7 +771,7 @@ function withWorldCanon(assembled: string, canon: Project["worldCanon"]): string
 function withFixedBlocks(assembled: string, preferenceMemorySection?: string): string {
   const index = buildToolCapabilityIndex();
   const memory = preferenceMemorySection?.trim() ?? "";
-  const fixed = [index, EVENT_PAGE_SEMANTICS_BLOCK, ...(memory ? [memory] : [])].join("\n\n");
+  const fixed = [index, buildTaskRecipes(), EVENT_PAGE_SEMANTICS_BLOCK, ...(memory ? [memory] : [])].join("\n\n");
   if (assembled.startsWith(INTRO)) {
     return `${INTRO}\n\n${fixed}${assembled.slice(INTRO.length)}`;
   }

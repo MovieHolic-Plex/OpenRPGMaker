@@ -80,7 +80,7 @@ import {
   parsePictures,
 } from "@/player/saveSlotValidation";
 import { shippingHistoryLimit } from "@/project/shipping";
-import { absoluteGameMinutes, advanceMakers } from "@/project/makers";
+import { absoluteGameMinutes, syncMakersToGameTime } from "@/project/makers";
 import { normalizeLightingState } from "@/project/lightingRules";
 import { levelForXp, xpForLevel } from "@/project/skillModel";
 import { cloneRngState, normalizeRngState, type RngState } from "@/util/rng";
@@ -658,7 +658,7 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   const reconciled = prepareLifeSnapshot(project, session);
   reconciled.gameTime = savedTime;
   if (reconciled.gameTime) {
-    const makers = advanceMakers(project, reconciled, absoluteGameMinutes(reconciled.gameTime, project.system.timeSystem));
+    const makers = syncMakersToGameTime(project, reconciled);
     if (!makers.ok && makers.reason !== "disabled") throw new LifeReconciliationError("makerInstances", makers.instanceId ?? "makers", makers.reason);
   }
   syncMonsterPartyFollowers(project, reconciled);
@@ -835,7 +835,10 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
   if (session.growthProgress !== undefined && !isGrowthProgress(session.growthProgress)) return { ok: false, message: 'Invalid growth progress' };
   if (session.promotionLineage !== undefined && !isPromotionLineage(session.promotionLineage)) return { ok: false, message: 'Invalid promotion lineage' };
   let life: ReturnType<typeof parseLifeState>;
-  try { life = parseLifeState(session); }
+  try {
+    life = parseLifeState(session);
+    assertSavedMakerClock(session.gameTime, life.makerInstances);
+  }
   catch (error) {
     if (!(error instanceof LifeReconciliationError)) throw error;
     return { ok: false, message: error.message };
@@ -1127,9 +1130,26 @@ function corrupt(slot: SaveSlotIndex, message: string): SaveSlotReadResult {
   return { kind: "corrupt", slot, message };
 }
 
+/** A malformed saved clock must not be dropped while retaining jobs that depend on it. */
+function assertSavedMakerClock(time: unknown, instances: PlaySession["makerInstances"]): void {
+  if (time === undefined) return; // Legacy omitted clocks retain the initial-time fallback.
+  for (const [id, job] of Object.entries(instances ?? {})) {
+    if (job.status === "idle") continue;
+    if (!isGameTime(time) || !time) throw new LifeReconciliationError("makerInstances", id, "invalid-time");
+    if (!job.contract) continue;
+    try {
+      absoluteGameMinutes(time, { enabled: true, ...job.contract.timeBasis });
+    } catch (error) {
+      if (!(error instanceof RangeError)) throw error;
+      throw new LifeReconciliationError("makerInstances", id, "invalid-time");
+    }
+  }
+}
+
 /** Restore persistent occupancy first, retaining rejected placeable originals before spatial reconciliation. */
 function prepareLifeSnapshot(project: Project, input: PlaySession): PlaySession {
   const draft = { ...structuredClone(input), ...parseLifeState(input) };
+  assertSavedMakerClock(input.gameTime, draft.makerInstances);
   const placeables = restorePlaceables(project, draft.placeables);
   for (const [sourceId, original] of Object.entries(draft.placeables ?? {})) {
     if (!Object.hasOwn(placeables, sourceId)) preserveUnresolvedLifeSource(draft, { sourceKind: "placeables", sourceId, reason: "incompatible-placeable" }, original);
