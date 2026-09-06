@@ -63,12 +63,10 @@ import { nearestCellInRect, pointRect, rectsOverlap } from "@/project/footprint"
 import { enterRoguelikeRunRoom } from "@/project/roguelikeRun";
 import { roguelikeRoomId, syncRoguelikeRoomEventGeneration } from "@/project/roguelikeRooms";
 import {
-  advanceGameTime,
   calendarDayKey,
   initialGameTime,
   minutesUntilDayEnd,
   resolveTimeSystem,
-  setGameTimeClock,
   timePhaseFor,
   type GameTime,
   type TimePhase,
@@ -78,7 +76,7 @@ import { cropStageAt, interactWithFarmPlot } from "@/player/farming";
 import { giveGiftToNpc } from "@/project/friendship";
 import { resolveShopStock } from "@/project/shopStock";
 import { applyMapBgmToSession, resolveMapBgm } from "@/player/mapBgm";
-import { transitionToNextDay } from "@/player/dayTransition";
+import { advanceTimeAcrossDayBoundaries, setTimeWithMakers, transitionToNextDay } from "@/player/dayTransition";
 
 const TICK_MS = 16;
 
@@ -656,7 +654,10 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
         step = interp.resume(undefined);
         break;
       case "setTime":
-        setClockForRunner(state, step.hour, step.minute);
+        {
+          const failure = setClockForRunner(state, step.hour, step.minute);
+          if (failure) return { stop: "failed", reason: failure };
+        }
         step = interp.resume(undefined);
         break;
       case "sleepUntilMorning":
@@ -976,25 +977,32 @@ function advanceCommandTimeForRunner(
   state: RunnerState,
   step: Extract<StepResult, { kind: "advanceTime" }>
 ): string | null {
-  const days = Math.max(0, Math.trunc(step.days ?? 0));
-  for (let index = 0; index < days; index += 1) {
-    const failure = sleepUntilMorningForRunner(state);
-    if (failure) return failure;
-  }
+  const before = structuredClone(state.session);
+  const daysFailure = advanceDaysForRunner(state, step.days ?? 0);
   const minutes = Math.max(0, Math.trunc(step.minutes ?? 0));
-  return minutes > 0 ? advanceGameMinutesForRunner(state, minutes) : null;
+  const failure = daysFailure ?? (minutes > 0 ? advanceGameMinutesForRunner(state, minutes) : null);
+  if (failure) state.session = before;
+  return failure;
 }
 
 function advanceDaysForRunner(state: RunnerState, days: number): string | null {
+  const before = structuredClone(state.session);
   const count = Math.max(0, Math.trunc(days));
   for (let index = 0; index < count; index += 1) {
     const failure = sleepUntilMorningForRunner(state);
-    if (failure) return failure;
+    if (failure) { state.session = before; return failure; }
   }
   return null;
 }
 
 function advanceGameMinutesForRunner(state: RunnerState, minutes: number): string | null {
+  const before = structuredClone(state.session);
+  const failure = advanceGameMinutesDraftForRunner(state, minutes);
+  if (failure) state.session = before;
+  return failure;
+}
+
+function advanceGameMinutesDraftForRunner(state: RunnerState, minutes: number): string | null {
   const system = resolveTimeSystem(state.project);
   if (!system) return null;
   state.session.gameTime ??= initialGameTime(system);
@@ -1005,7 +1013,8 @@ function advanceGameMinutesForRunner(state: RunnerState, minutes: number): strin
     if (!currentTime) return null;
     const untilEnd = minutesUntilDayEnd(currentTime, system);
     if (untilEnd > remaining) {
-      state.session.gameTime = advanceGameTime(currentTime, remaining, system).time;
+      const advanced = advanceTimeAcrossDayBoundaries(state.project, state.session, remaining);
+      if (!advanced.ok) return `day transition: ${advanced.reason}`;
       applyNpcSchedulesForRunner(state);
       return null;
     }
@@ -1014,18 +1023,18 @@ function advanceGameMinutesForRunner(state: RunnerState, minutes: number): strin
     const transitionFailure = transitionToNextDayForRunner(state);
     if (transitionFailure) return transitionFailure;
     applyNpcSchedulesForRunner(state);
-    if (untilEnd <= 0) remaining = 0;
   }
   return null;
 }
 
-function setClockForRunner(state: RunnerState, hour: number, minute: number | undefined): void {
+function setClockForRunner(state: RunnerState, hour: number, minute: number | undefined): string | null {
   const system = resolveTimeSystem(state.project);
-  if (!system) return;
+  if (!system) return null;
   state.session.gameTime ??= initialGameTime(system);
-  if (!state.session.gameTime) return;
-  state.session.gameTime = setGameTimeClock(state.session.gameTime, hour, minute, system);
+  const changed = setTimeWithMakers(state.project, state.session, { hour, minute });
+  if (!changed.ok) return `clock change: ${changed.reason}`;
   applyNpcSchedulesForRunner(state);
+  return null;
 }
 
 function sleepUntilMorningForRunner(state: RunnerState): string | null {

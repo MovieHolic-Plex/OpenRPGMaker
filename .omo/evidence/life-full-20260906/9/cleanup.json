@@ -1,0 +1,15 @@
+{
+  "removed": [
+    "dist"
+  ],
+  "absent": [
+    "dist",
+    ".omo/evidence/life-full-20260906/9/ssr-cache"
+  ],
+  "nodeProcessesInWorktree": [],
+  "provisionedPort": 33617,
+  "listener": "State Recv-Q Send-Q Local Address:Port Peer Address:PortProcess\n",
+  "nativeBrowserLaunched": false,
+  "remoteWrites": 0,
+  "sharedTrackedCachesUntouched": true
+}
