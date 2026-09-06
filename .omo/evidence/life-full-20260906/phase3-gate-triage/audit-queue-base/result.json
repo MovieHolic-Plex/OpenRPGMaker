@@ -1,0 +1,44 @@
+{
+  "root": "/home/main/z-project/rpg-zzu-life-full-p3-base-compare",
+  "head": "e33c93afbd1b0d8824f273c62d234d66c8802323",
+  "rows": [
+    {
+      "resetBeforeNextSpy": false,
+      "cleanFlush": {
+        "kind": "saved"
+      },
+      "requestsBeforeDeadline": 0,
+      "requestsAfterDeadline": [
+        {
+          "url": "/__oprn/edit-activity",
+          "method": "POST",
+          "fields": [
+            {
+              "path": "bundledTilesets",
+              "after": true
+            }
+          ]
+        }
+      ],
+      "unchangedProject": true,
+      "unsaved": false
+    },
+    {
+      "resetBeforeNextSpy": true,
+      "cleanFlush": {
+        "kind": "saved"
+      },
+      "requestsBeforeDeadline": 0,
+      "requestsAfterDeadline": [],
+      "unchangedProject": true,
+      "unsaved": false
+    }
+  ],
+  "scope": "Controlled public audit-queue/real clean-flush probe; not replay of the entire original test sequence",
+  "cleanup": {
+    "serverClosed": true,
+    "timersReset": true,
+    "globalsRestored": true,
+    "ownedCacheRemoved": true
+  }
+}

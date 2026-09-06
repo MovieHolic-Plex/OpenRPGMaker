@@ -1,0 +1,5 @@
+{"path":"src/project/toolActions.ts","diagnostics":[]}
+{"path":"src/editor/panels/databaseLifeCraftingView.ts","diagnostics":[]}
+{"path":"src/player/farming.ts","diagnostics":[]}
+{"path":"test/toolActionAuthoringParity.test.ts","diagnostics":[{"code":2322,"category":1,"start":3657,"message":"Type '\"seed\" | \"normal\"' is not assignable to type 'ItemType | undefined'.\n  Type '\"normal\"' is not assignable to type 'ItemType | undefined'."}]}
+{"path":"test/databaseLifeCraftingView.test.ts","diagnostics":[]}

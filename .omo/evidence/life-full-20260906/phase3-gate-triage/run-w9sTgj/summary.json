@@ -1,0 +1,1405 @@
+{
+  "started": "2026-09-06T17:02:25.043Z",
+  "status": "pair-complete-review-required",
+  "run": "/home/main/z-project/rpg-zzu-life-full-p3/.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj",
+  "sides": [
+    {
+      "label": "current",
+      "receipt": "/home/main/z-project/rpg-zzu-life-full-p3/.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/receipt.json",
+      "exit": 1,
+      "signal": null,
+      "path": "/home/main/z-project/rpg-zzu-life-full-p3/.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/report.json",
+      "sha256": "e69a0d7766f471a30c4e7a0238f6cd81fb9e7f151112435d3ad7174b6d5a9aad",
+      "complete": true,
+      "files": [
+        "test/actionDebounceFootprint.test.ts",
+        "test/actorBattleAuthoringSurface.test.ts",
+        "test/actorCombatCommandBodies.test.ts",
+        "test/agentBlueprintTurnEnd.test.ts",
+        "test/aiActivityLiveRow.test.ts",
+        "test/aiAssistantAfterUx.test.ts",
+        "test/aiChatObservability.test.ts",
+        "test/aiChatPanelTransportError.test.ts",
+        "test/aiChatPanelUxRepairs.test.ts",
+        "test/aiPlacementCutsceneCheckpoint.test.ts",
+        "test/aiProposalCardUxd.test.ts",
+        "test/aiSelectionChipScope.test.ts",
+        "test/appStorageMigration.test.ts",
+        "test/authorHouseFacade.test.ts",
+        "test/authorVillageFacade.test.ts",
+        "test/autosaveStatus.test.ts",
+        "test/autotileGroupPersistence.test.ts",
+        "test/battleElementAdversarialFixes.test.ts",
+        "test/changeExpCommandBody.test.ts",
+        "test/changePartyCommandBody.test.ts",
+        "test/clusterRulePlacement.test.ts",
+        "test/commandContracts/coverage.test.ts",
+        "test/commandContracts/evolveMonster.contract.test.ts",
+        "test/commandContracts/registry.test.ts",
+        "test/commandKindCoverage.test.ts",
+        "test/commentCommandBody.test.ts",
+        "test/commitEditActivityAttachment.test.ts",
+        "test/databaseActions.test.ts",
+        "test/databaseBattleCommandsTab.test.ts",
+        "test/databaseItemInspector.test.ts",
+        "test/databaseKoreanRtpDefaults.test.ts",
+        "test/databaseModalDirtySession.test.ts",
+        "test/databaseNavMode.test.ts",
+        "test/databaseOverviewDashboard.test.ts",
+        "test/databaseOverviewTab.test.ts",
+        "test/databaseRadioCustomGuard.test.ts",
+        "test/databaseSidebarKeyboard.test.ts",
+        "test/databaseSidebarNav.test.ts",
+        "test/databaseTabIcons.test.ts",
+        "test/databaseViewToggle.test.ts",
+        "test/databaseVillageView.test.ts",
+        "test/defaultAdventureGame.test.ts",
+        "test/defaultDatabase.test.ts",
+        "test/defaults.test.ts",
+        "test/demoTeach.test.ts",
+        "test/detsukuruBrandStrings.test.ts",
+        "test/devShowcaseProjects.test.ts",
+        "test/editorProjectE2EBridge.test.ts",
+        "test/emberQuestGame.test.ts",
+        "test/eventCommandPickerHandoff.test.ts",
+        "test/eventEditorCommandLabels.test.ts",
+        "test/eventEditorCommitProbe.baseline.test.ts",
+        "test/eventEditorFormSurface.baseline.test.ts",
+        "test/eventEditorInteractionSurface.baseline.test.ts",
+        "test/eventEditorM2Surface.baseline.test.ts",
+        "test/eventEditorModal.test.ts",
+        "test/eventEditorPortalSurface.baseline.test.ts",
+        "test/eventEditorTrustLoop.test.ts",
+        "test/eventEditorUiDensity.test.ts",
+        "test/fontFamilyTokenGuard.test.ts",
+        "test/forestDensity.test.ts",
+        "test/gen1DemoContent.test.ts",
+        "test/genrePackReceiptCli.test.ts",
+        "test/horrorExperienceQa.test.ts",
+        "test/horrorMysteryPrototype.test.ts",
+        "test/houseKitDomainSeam.test.ts",
+        "test/houseLotTools.test.ts",
+        "test/interiorAutotile.test.ts",
+        "test/interiorWallFrameQuarterComposition.test.ts",
+        "test/io.test.ts",
+        "test/koreanLocalizationDefaults.test.ts",
+        "test/layerRouting.m1.test.ts",
+        "test/loadNewRemoteProject.test.ts",
+        "test/manualCommitDiff.test.ts",
+        "test/mapClipboardFeedback.test.ts",
+        "test/mapEditCommands.test.ts",
+        "test/mapEditLockScratchSession.test.ts",
+        "test/modalEscapeLayerGate.test.ts",
+        "test/modeTransitions.test.ts",
+        "test/monsterCollection.test.ts",
+        "test/moveRouteCatalogPersistence.test.ts",
+        "test/noLocalProjectDb.test.ts",
+        "test/pkmnBalanceB6.test.ts",
+        "test/playerRuntimeCss.test.ts",
+        "test/pokemonChipsetPreset.test.ts",
+        "test/quickAuthoringPreviewIdentity.test.ts",
+        "test/regionAiHouseTreeNpc.probe.test.ts",
+        "test/regionRightDragNotifications.test.ts",
+        "test/regionSelectionPastePreview.test.ts",
+        "test/regionTaskCssTokens.test.ts",
+        "test/rm2003DatabaseUtilityRecords.test.ts",
+        "test/roleNameComparisonGate.test.ts",
+        "test/scarloxyPokemonDemo.test.ts",
+        "test/scatterObject.test.ts",
+        "test/setGroupLayout.test.ts",
+        "test/storeEventDraftPreserve.test.ts",
+        "test/storeFlushShaEvidence.test.ts",
+        "test/storePersistence.test.ts",
+        "test/supabaseProjectSync.test.ts",
+        "test/teamWorkflowUi.test.ts",
+        "test/tileFlowApprovalExpansion.test.ts",
+        "test/tileGrafts.test.ts",
+        "test/tileLayerClassification.test.ts",
+        "test/tilesetHarness.test.ts",
+        "test/tilesetPaletteT1a.test.ts",
+        "test/tilesetWave2Undo.test.ts",
+        "test/toolCatalog.test.ts",
+        "test/toolHostileArgs.test.ts",
+        "test/unsavedChangesGuard.test.ts",
+        "test/uxcEditorShell.test.ts",
+        "test/uxcLoadFailure.test.ts",
+        "test/villageBuilder.test.ts",
+        "test/viteConfig.test.ts"
+      ],
+      "total": 1251,
+      "passed": 1088,
+      "failed": 163,
+      "pending": 0,
+      "missingAssertions": [],
+      "additionalAssertions": [],
+      "fileResults": [
+        {
+          "path": "test/actionDebounceFootprint.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/actorBattleAuthoringSurface.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/actorCombatCommandBodies.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/agentBlueprintTurnEnd.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/aiActivityLiveRow.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/aiAssistantAfterUx.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/aiChatObservability.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/aiChatPanelTransportError.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/aiChatPanelUxRepairs.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/aiPlacementCutsceneCheckpoint.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/aiProposalCardUxd.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/aiSelectionChipScope.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/appStorageMigration.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/authorHouseFacade.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/authorVillageFacade.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/autosaveStatus.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/autotileGroupPersistence.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/battleElementAdversarialFixes.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/changeExpCommandBody.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/changePartyCommandBody.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/clusterRulePlacement.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/commandKindCoverage.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/commentCommandBody.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/commitEditActivityAttachment.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/databaseActions.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/databaseBattleCommandsTab.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/databaseItemInspector.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/databaseKoreanRtpDefaults.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/databaseModalDirtySession.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/databaseNavMode.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/databaseOverviewDashboard.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/databaseOverviewTab.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/databaseRadioCustomGuard.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/databaseSidebarKeyboard.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/databaseSidebarNav.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/databaseTabIcons.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/databaseViewToggle.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/databaseVillageView.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/defaultAdventureGame.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/defaultDatabase.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/defaults.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/demoTeach.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/detsukuruBrandStrings.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/devShowcaseProjects.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/editorProjectE2EBridge.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/emberQuestGame.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/eventCommandPickerHandoff.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/eventEditorCommandLabels.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/eventEditorCommitProbe.baseline.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/eventEditorFormSurface.baseline.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/eventEditorInteractionSurface.baseline.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/eventEditorM2Surface.baseline.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/eventEditorModal.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/eventEditorPortalSurface.baseline.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/eventEditorTrustLoop.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/eventEditorUiDensity.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/fontFamilyTokenGuard.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/forestDensity.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/gen1DemoContent.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/genrePackReceiptCli.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/horrorExperienceQa.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/horrorMysteryPrototype.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/houseKitDomainSeam.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/houseLotTools.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/interiorAutotile.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/interiorWallFrameQuarterComposition.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/io.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/koreanLocalizationDefaults.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/layerRouting.m1.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/loadNewRemoteProject.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/manualCommitDiff.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/mapClipboardFeedback.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/mapEditCommands.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/mapEditLockScratchSession.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/modalEscapeLayerGate.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/modeTransitions.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/monsterCollection.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/moveRouteCatalogPersistence.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/noLocalProjectDb.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/pkmnBalanceB6.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/playerRuntimeCss.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/pokemonChipsetPreset.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/quickAuthoringPreviewIdentity.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/regionAiHouseTreeNpc.probe.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/regionRightDragNotifications.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/regionSelectionPastePreview.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/regionTaskCssTokens.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/rm2003DatabaseUtilityRecords.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/roleNameComparisonGate.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/scarloxyPokemonDemo.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/scatterObject.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/setGroupLayout.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/storeEventDraftPreserve.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/storeFlushShaEvidence.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/storePersistence.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/supabaseProjectSync.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/teamWorkflowUi.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/tileFlowApprovalExpansion.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/tileGrafts.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/tileLayerClassification.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/tilesetHarness.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/tilesetPaletteT1a.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/tilesetWave2Undo.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/toolCatalog.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/toolHostileArgs.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/unsavedChangesGuard.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/uxcEditorShell.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/uxcLoadFailure.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/villageBuilder.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/viteConfig.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/commandContracts/coverage.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/commandContracts/evolveMonster.contract.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/commandContracts/registry.test.ts",
+          "status": "failed",
+          "message": ""
+        }
+      ]
+    },
+    {
+      "label": "base",
+      "receipt": "/home/main/z-project/rpg-zzu-life-full-p3/.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/receipt.json",
+      "exit": 1,
+      "signal": null,
+      "path": "/home/main/z-project/rpg-zzu-life-full-p3/.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/report.json",
+      "sha256": "61f659f845b5ad352d2763b49eca2eae81af1420d2f8b4d30ead21a304080b27",
+      "complete": true,
+      "files": [
+        "test/actionDebounceFootprint.test.ts",
+        "test/actorBattleAuthoringSurface.test.ts",
+        "test/actorCombatCommandBodies.test.ts",
+        "test/agentBlueprintTurnEnd.test.ts",
+        "test/aiActivityLiveRow.test.ts",
+        "test/aiAssistantAfterUx.test.ts",
+        "test/aiChatObservability.test.ts",
+        "test/aiChatPanelTransportError.test.ts",
+        "test/aiChatPanelUxRepairs.test.ts",
+        "test/aiPlacementCutsceneCheckpoint.test.ts",
+        "test/aiProposalCardUxd.test.ts",
+        "test/aiSelectionChipScope.test.ts",
+        "test/appStorageMigration.test.ts",
+        "test/authorHouseFacade.test.ts",
+        "test/authorVillageFacade.test.ts",
+        "test/autosaveStatus.test.ts",
+        "test/autotileGroupPersistence.test.ts",
+        "test/battleElementAdversarialFixes.test.ts",
+        "test/changeExpCommandBody.test.ts",
+        "test/changePartyCommandBody.test.ts",
+        "test/clusterRulePlacement.test.ts",
+        "test/commandContracts/coverage.test.ts",
+        "test/commandContracts/evolveMonster.contract.test.ts",
+        "test/commandContracts/registry.test.ts",
+        "test/commandKindCoverage.test.ts",
+        "test/commentCommandBody.test.ts",
+        "test/commitEditActivityAttachment.test.ts",
+        "test/databaseActions.test.ts",
+        "test/databaseBattleCommandsTab.test.ts",
+        "test/databaseItemInspector.test.ts",
+        "test/databaseKoreanRtpDefaults.test.ts",
+        "test/databaseModalDirtySession.test.ts",
+        "test/databaseNavMode.test.ts",
+        "test/databaseOverviewDashboard.test.ts",
+        "test/databaseOverviewTab.test.ts",
+        "test/databaseRadioCustomGuard.test.ts",
+        "test/databaseSidebarKeyboard.test.ts",
+        "test/databaseSidebarNav.test.ts",
+        "test/databaseTabIcons.test.ts",
+        "test/databaseViewToggle.test.ts",
+        "test/databaseVillageView.test.ts",
+        "test/defaultAdventureGame.test.ts",
+        "test/defaultDatabase.test.ts",
+        "test/defaults.test.ts",
+        "test/demoTeach.test.ts",
+        "test/detsukuruBrandStrings.test.ts",
+        "test/devShowcaseProjects.test.ts",
+        "test/editorProjectE2EBridge.test.ts",
+        "test/emberQuestGame.test.ts",
+        "test/eventCommandPickerHandoff.test.ts",
+        "test/eventEditorCommandLabels.test.ts",
+        "test/eventEditorCommitProbe.baseline.test.ts",
+        "test/eventEditorFormSurface.baseline.test.ts",
+        "test/eventEditorInteractionSurface.baseline.test.ts",
+        "test/eventEditorM2Surface.baseline.test.ts",
+        "test/eventEditorModal.test.ts",
+        "test/eventEditorPortalSurface.baseline.test.ts",
+        "test/eventEditorTrustLoop.test.ts",
+        "test/eventEditorUiDensity.test.ts",
+        "test/fontFamilyTokenGuard.test.ts",
+        "test/forestDensity.test.ts",
+        "test/gen1DemoContent.test.ts",
+        "test/genrePackReceiptCli.test.ts",
+        "test/horrorExperienceQa.test.ts",
+        "test/horrorMysteryPrototype.test.ts",
+        "test/houseKitDomainSeam.test.ts",
+        "test/houseLotTools.test.ts",
+        "test/interiorAutotile.test.ts",
+        "test/interiorWallFrameQuarterComposition.test.ts",
+        "test/io.test.ts",
+        "test/koreanLocalizationDefaults.test.ts",
+        "test/layerRouting.m1.test.ts",
+        "test/loadNewRemoteProject.test.ts",
+        "test/manualCommitDiff.test.ts",
+        "test/mapClipboardFeedback.test.ts",
+        "test/mapEditCommands.test.ts",
+        "test/mapEditLockScratchSession.test.ts",
+        "test/modalEscapeLayerGate.test.ts",
+        "test/modeTransitions.test.ts",
+        "test/monsterCollection.test.ts",
+        "test/moveRouteCatalogPersistence.test.ts",
+        "test/noLocalProjectDb.test.ts",
+        "test/pkmnBalanceB6.test.ts",
+        "test/playerRuntimeCss.test.ts",
+        "test/pokemonChipsetPreset.test.ts",
+        "test/quickAuthoringPreviewIdentity.test.ts",
+        "test/regionAiHouseTreeNpc.probe.test.ts",
+        "test/regionRightDragNotifications.test.ts",
+        "test/regionSelectionPastePreview.test.ts",
+        "test/regionTaskCssTokens.test.ts",
+        "test/rm2003DatabaseUtilityRecords.test.ts",
+        "test/roleNameComparisonGate.test.ts",
+        "test/scarloxyPokemonDemo.test.ts",
+        "test/scatterObject.test.ts",
+        "test/setGroupLayout.test.ts",
+        "test/storeEventDraftPreserve.test.ts",
+        "test/storeFlushShaEvidence.test.ts",
+        "test/storePersistence.test.ts",
+        "test/supabaseProjectSync.test.ts",
+        "test/teamWorkflowUi.test.ts",
+        "test/tileFlowApprovalExpansion.test.ts",
+        "test/tileGrafts.test.ts",
+        "test/tileLayerClassification.test.ts",
+        "test/tilesetHarness.test.ts",
+        "test/tilesetPaletteT1a.test.ts",
+        "test/tilesetWave2Undo.test.ts",
+        "test/toolCatalog.test.ts",
+        "test/toolHostileArgs.test.ts",
+        "test/unsavedChangesGuard.test.ts",
+        "test/uxcEditorShell.test.ts",
+        "test/uxcLoadFailure.test.ts",
+        "test/villageBuilder.test.ts",
+        "test/viteConfig.test.ts"
+      ],
+      "total": 1251,
+      "passed": 1089,
+      "failed": 162,
+      "pending": 0,
+      "missingAssertions": [],
+      "additionalAssertions": [],
+      "fileResults": [
+        {
+          "path": "test/actionDebounceFootprint.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/actorBattleAuthoringSurface.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/actorCombatCommandBodies.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/agentBlueprintTurnEnd.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/aiActivityLiveRow.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/aiAssistantAfterUx.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/aiChatObservability.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/aiChatPanelTransportError.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/aiChatPanelUxRepairs.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/aiPlacementCutsceneCheckpoint.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/aiProposalCardUxd.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/aiSelectionChipScope.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/appStorageMigration.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/authorHouseFacade.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/authorVillageFacade.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/autosaveStatus.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/autotileGroupPersistence.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/battleElementAdversarialFixes.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/changeExpCommandBody.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/changePartyCommandBody.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/clusterRulePlacement.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/commandKindCoverage.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/commentCommandBody.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/commitEditActivityAttachment.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/databaseActions.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/databaseBattleCommandsTab.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/databaseItemInspector.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/databaseKoreanRtpDefaults.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/databaseModalDirtySession.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/databaseNavMode.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/databaseOverviewDashboard.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/databaseOverviewTab.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/databaseRadioCustomGuard.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/databaseSidebarKeyboard.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/databaseSidebarNav.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/databaseTabIcons.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/databaseViewToggle.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/databaseVillageView.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/defaultAdventureGame.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/defaultDatabase.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/defaults.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/demoTeach.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/detsukuruBrandStrings.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/devShowcaseProjects.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/editorProjectE2EBridge.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/emberQuestGame.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/eventCommandPickerHandoff.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/eventEditorCommandLabels.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/eventEditorCommitProbe.baseline.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/eventEditorFormSurface.baseline.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/eventEditorInteractionSurface.baseline.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/eventEditorM2Surface.baseline.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/eventEditorModal.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/eventEditorPortalSurface.baseline.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/eventEditorTrustLoop.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/eventEditorUiDensity.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/fontFamilyTokenGuard.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/forestDensity.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/gen1DemoContent.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/genrePackReceiptCli.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/horrorExperienceQa.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/horrorMysteryPrototype.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/houseKitDomainSeam.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/houseLotTools.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/interiorAutotile.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/interiorWallFrameQuarterComposition.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/io.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/koreanLocalizationDefaults.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/layerRouting.m1.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/loadNewRemoteProject.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/manualCommitDiff.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/mapClipboardFeedback.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/mapEditCommands.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/mapEditLockScratchSession.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/modalEscapeLayerGate.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/modeTransitions.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/monsterCollection.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/moveRouteCatalogPersistence.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/noLocalProjectDb.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/pkmnBalanceB6.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/playerRuntimeCss.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/pokemonChipsetPreset.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/quickAuthoringPreviewIdentity.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/regionAiHouseTreeNpc.probe.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/regionRightDragNotifications.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/regionSelectionPastePreview.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/regionTaskCssTokens.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/rm2003DatabaseUtilityRecords.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/roleNameComparisonGate.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/scarloxyPokemonDemo.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/scatterObject.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/setGroupLayout.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/storeEventDraftPreserve.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/storeFlushShaEvidence.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/storePersistence.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/supabaseProjectSync.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/teamWorkflowUi.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/tileFlowApprovalExpansion.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/tileGrafts.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/tileLayerClassification.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/tilesetHarness.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/tilesetPaletteT1a.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/tilesetWave2Undo.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/toolCatalog.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/toolHostileArgs.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/unsavedChangesGuard.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/uxcEditorShell.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/uxcLoadFailure.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/villageBuilder.test.ts",
+          "status": "passed",
+          "message": ""
+        },
+        {
+          "path": "test/viteConfig.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/commandContracts/coverage.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/commandContracts/evolveMonster.contract.test.ts",
+          "status": "failed",
+          "message": ""
+        },
+        {
+          "path": "test/commandContracts/registry.test.ts",
+          "status": "failed",
+          "message": ""
+        }
+      ]
+    }
+  ],
+  "safety": "read-only product mounts; no-network namespace; no unsandboxed fallback",
+  "comparisonStatus": "not an approval",
+  "finished": "2026-09-06T17:36:20.264Z",
+  "exit": 1
+}

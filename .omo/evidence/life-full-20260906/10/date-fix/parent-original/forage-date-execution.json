@@ -1,0 +1,8 @@
+{
+  "exit": 1,
+  "command": "flock --timeout 900 /tmp/rpg-zzu-life-full-qa-01a0727b.lock timeout --signal=TERM --kill-after=15s 180s node /home/main/z-project/rpg-zzu-life-full-p3/.omo/evidence/life-full-20260906/phase3-parent-checks/forage-date.mjs",
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-field-input",
+  "output": "status: exited_1 exit_code: 1\n{\"sourceBefore\":\"94167a19a6eb77d640336c5b2fb054f0df9bf2150bab45b6e4f8651ad2c7e3da\",\"rows\":[{\"year\":1,\"spawnedDay\":1,\"liveDay\":3,\"despawnAfterDays\":1,\"generated\":{\"ok\":true,\"dayKey\":\"1:spring:1\",\"spawned\":1,\"removed\":0},\"resolved\":{\"ok\":false,\"reason\":\"expired\"},\"collected\":{\"ok\":false,\"reason\":\"expired\"},\"inventory\":0,\"stateUnchanged\":true},{\"year\":9007199254740991,\"spawnedDay\":1,\"liveDay\":3,\"despawnAfterDays\":1,\"generated\":{\"ok\":true,\"dayKey\":\"9007199254740991:spring:1\",\"spawned\":1,\"removed\":0},\"resolved\":{\"ok\":true,\"itemId\":\"date-berry\"},\"collected\":{\"ok\":true,\"itemId\":\"date-berry\"},\"inventory\":1,\"stateUnchanged\":false}]}\nFORAGE_DATE_CLEANUP closed\nnode:internal/modules/run_main:107\n    triggerUncaughtException(\n    ^\n\nAssertionError [ERR_ASSERTION]: Expired forage must refuse for accepted calendar year 9007199254740991\n\ntrue !== false\n\n    at file:///home/main/z-project/rpg-zzu-life-full-p3/.omo/evidence/life-full-20260906/phase3-parent-checks/forage-date.mjs:40:32 {\n  generatedMessage: false,\n  code: 'ERR_ASSERTION',\n  actual: true,\n  expected: false,\n  operator: 'strictEqual',\n  diff: 'simple'\n}\n\nNode.js v24.11.1",
+  "sourceStable": true,
+  "cleanup": "Middleware server closed and exclusively owned cache removed"
+}

@@ -1,0 +1,20 @@
+.omo/evidence/life-full-20260906/7/build.txt:14: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/7/build.txt:17: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/7/build.txt:20: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/7/build.txt:23: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/7/build.txt:26: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/7/build.txt:118: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/7/final-green.txt:48: new blank line at EOF.
+.omo/evidence/life-full-20260906/7/green.txt:43: new blank line at EOF.
+.omo/evidence/life-full-20260906/7/red.txt:331: trailing whitespace.
++    195| 
+.omo/evidence/life-full-20260906/7/red.txt:404: new blank line at EOF.
+.omo/evidence/life-full-20260906/7/setup-failure.txt:13: new blank line at EOF.
+.omo/evidence/life-full-20260906/7/setup-format-failure.txt:13: new blank line at EOF.
+.omo/evidence/life-full-20260906/7/typecheck.txt:4: new blank line at EOF.

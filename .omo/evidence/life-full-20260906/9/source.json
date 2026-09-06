@@ -1,0 +1,16 @@
+{
+  "head": "e33c93afbd1b0d8824f273c62d234d66c8802323",
+  "headTree": "bb854c6938045c387d94ddd7f69aec02acb50868",
+  "codeTree": "53a223c074a220d88535ef5b707e4a8e47647679",
+  "codeTreeMeaning": "base tree plus the seven owned source/test files; base evidence unchanged",
+  "branch": "agent/life-full-maker-clock",
+  "sourceHashes": {
+    "src/player/dayTransition.ts": "595a765884396c7f2d45fefc5002c5a4444cfbc125c8f8fb306a51eb76b7c354",
+    "src/project/makers.ts": "0519cdf5e116f7355f7e0d6876a11bd3fd585be38a21868e47ee7adcaa4e74b9",
+    "src/player/playSceneTime.ts": "9538b029df4af485e13c0f5dc0a47da7c22baaa11f76747cd433464331839bfc",
+    "src/player/saveSlots.ts": "2dac3eb6c6f5ef90a2cce5bdcd3c9cf79c7e587eb7262916cb82a01ace39a98b",
+    "src/testing/sceneTestRunner.ts": "6bd25a94d16a21eefec489e06e48abc0a856daed2773396d6cf52f52fc9d1c58",
+    "test/makerClockIntegration.test.ts": "7a65e6d7d5ef5874769324ef08361e061043bbd0f922cb4bba3de2f9ea3ce7cc",
+    "test/p0RuntimeIntegration.test.ts": "0f2f422ce4352b564d4d43ef11cef4df824e4c908b9bc816cc5de347706c16cf"
+  }
+}

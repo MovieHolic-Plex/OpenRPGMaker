@@ -1,0 +1,19 @@
+{
+  "removedOwnBuildDirectory": "/home/main/z-project/rpg-zzu-life-full-field-input/dist",
+  "removedBuildBytes": 244586173,
+  "distAbsent": true,
+  "playerServerPort": 35433,
+  "portClosed": true,
+  "browserContextsClosed": {
+    "browserClosed": true,
+    "contextsClosed": true,
+    "serverClosed": true,
+    "ownedCacheRemoved": "/home/main/z-project/rpg-zzu-life-full-field-input/.omo/evidence/life-full-20260906/10/player-final/player-cache"
+  },
+  "ownCachesAbsent": true,
+  "preExistingViteCachePreserved": "/home/main/z-project/rpg-zzu-life-full-field-input/.vite-cache",
+  "sharedCachesDeleted": false,
+  "remoteWrites": [],
+  "worktreeCreatedByChild": false,
+  "remainingOwnedArtifacts": "Only committed source/tests and retained evidence; no server/browser/build/cache."
+}

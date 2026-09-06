@@ -1,0 +1,32 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-field-verify",
+  "headBefore": "bbaf9464cad3768da057ef9909338b5cfb25aa8c",
+  "headAfter": "bbaf9464cad3768da057ef9909338b5cfb25aa8c",
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "300s",
+    "npm",
+    "test",
+    "--",
+    "test/lifeSkillDisabledHarvest.test.ts",
+    "test/cropRegrowthContract.test.ts",
+    "test/toolActionAuthoringParity.test.ts",
+    "test/makerClockIntegration.test.ts",
+    "test/lifeFieldInteraction.test.ts",
+    "test/databaseLifeCraftingView.test.ts",
+    "test/playSceneFarmFeedback.test.ts",
+    "test/playScenePlaceableOverlay.test.ts",
+    "test/npcActionFacing.test.ts",
+    "test/seasonalForage.test.ts"
+  ],
+  "start": "2026-09-06T15:19:19.812Z",
+  "end": "2026-09-06T15:20:22.638Z",
+  "exit": 0,
+  "signal": null
+}

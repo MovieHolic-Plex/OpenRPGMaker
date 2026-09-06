@@ -130,6 +130,8 @@ export type FarmPlotState = {
   readonly dead?: boolean;
   // 단계별 소요일을 결정적으로 누적하기 위한 런타임 진행도. 저장/로드 대상이다.
   readonly growthDays?: number;
+  // Absent until a successful regrowing harvest; zero means ready to harvest again.
+  readonly regrowDaysRemaining?: number;
 };
 
 export type FarmPlots = Record<MapId, Record<string, FarmPlotState>>;
