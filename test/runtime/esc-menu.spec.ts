@@ -14,7 +14,7 @@ test("ESC workbench: actions, focus, scroll, geometry, and interruptible exit", 
   expect(report.errors).toEqual([]);
   expect(report.beats.flatMap((beat: { failures: string[] }) => beat.failures)).toEqual([]);
   const out = "verify-shots/runtime-qa/esc-menu";
-  await appendFile(`${out}/SUMMARY.md`, "\n## 즉시 확인 — 디자인 검토\n- 03-preview.png\n- 04-targets.png\n- 10-equipment-comparison.png\n- 11-party.png\n- 12-system.png\n");
+  await appendFile(`${out}/SUMMARY.md`, "\n## 즉시 확인 — 디자인 검토\n- 03-preview.png\n- 04-targets.png\n- 09-skills.png\n- 10-next-skill.png\n- 13-equipment-comparison.png\n- 14-party.png\n- 15-system.png\n");
 
   await page.keyboard.press("Escape");
   await page.getByTestId("main-menu").waitFor();

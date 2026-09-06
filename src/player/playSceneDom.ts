@@ -1,12 +1,13 @@
-import type Phaser from "phaser";
 import type { DialogueUI } from "@/player/dialogue";
 
-export function dialogueHost(scene: Phaser.Scene): HTMLElement | undefined {
+type DialogueScene = { readonly game: { readonly registry: { get(key: string): unknown } } };
+
+export function dialogueHost(scene: DialogueScene): HTMLElement | undefined {
   const host: unknown = scene.game.registry.get("dialogueHost");
   return host instanceof HTMLElement ? host : undefined;
 }
 
-export function dialogueUi(scene: Phaser.Scene): DialogueUI | undefined {
+export function dialogueUi(scene: DialogueScene): DialogueUI | undefined {
   const value: unknown = scene.game.registry.get("dialogue");
   return isDialogueUi(value) ? value : undefined;
 }

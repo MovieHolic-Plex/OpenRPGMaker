@@ -1,0 +1,53 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiRunEndProof.test.ts test/aiAssistantTurnCleanup.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p1-r1-reentrant-20260906
+
+ ✓ test/aiAssistantTurnCleanup.test.ts (14 tests) 5473ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on final without changing retained data  655ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on error without changing retained data  504ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on aborted without changing retained data  359ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on throw without changing retained data  339ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on abort-throw without changing retained data  331ms
+   ✓ assistant owner-turn presentation cleanup > clears the owner ghost on final when no region approval owns it  488ms
+   ✓ assistant owner-turn presentation cleanup > clears the owner ghost on error when no region approval owns it  457ms
+   ✓ assistant owner-turn presentation cleanup > clears the owner ghost on abort-throw when no region approval owns it  374ms
+   ✓ assistant owner-turn presentation cleanup > retires after an applied proposal without altering outcome accounting  582ms
+   ✓ assistant owner-turn presentation cleanup > retires after an rejected proposal without altering outcome accounting  351ms
+   ✓ assistant owner-turn presentation cleanup > an orphaned completion cannot retire its replacement turn's blueprint  349ms
+ ✓ test/aiRunEndProof.test.ts (29 tests) 78270ms
+   ✓ AssistantSession accepted-revision proof > projects initialized proof events and rechecks freshness after the final status subscriber  2932ms
+   ✓ AssistantSession accepted-revision proof > rechecks edit from a synchronous proof subscriber  2930ms
+   ✓ AssistantSession accepted-revision proof > rechecks cancel from a synchronous proof subscriber  2491ms
+   ✓ AssistantSession accepted-revision proof > does not publish success after a proof subscriber starts a cancelled proof  2413ms
+   ✓ AssistantSession accepted-revision proof > returns the latest emitted state when a status subscriber starts a cancelled proof  2192ms
+   ✓ AssistantSession accepted-revision proof > preserves cancellation superseding the receipt callback  1370ms
+   ✓ AssistantSession accepted-revision proof > preserves cancellation superseding the failure callback  1511ms
+   ✓ AssistantSession accepted-revision proof > preserves cancellation superseding the success-throw callback  2545ms
+   ✓ AssistantSession accepted-revision proof > does not resume publication after a pending flush is superseded  2485ms
+   ✓ AssistantSession accepted-revision proof > keeps newer 'cancelled' proof when an overlapping read ends 'verified'  2739ms
+   ✓ AssistantSession accepted-revision proof > keeps newer 'cancelled' proof when an overlapping read ends 'mismatch'  2277ms
+   ✓ AssistantSession accepted-revision proof > keeps newer 'succeeded' proof when an overlapping read ends 'verified'  3863ms
+   ✓ AssistantSession accepted-revision proof > keeps newer 'succeeded' proof when an overlapping read ends 'mismatch'  2793ms
+   ✓ AssistantSession accepted-revision proof > keeps newer 'succeeded' proof when an overlapping read ends 'cancelled'  2414ms
+   ✓ AssistantSession accepted-revision proof > does not claim verified after a failed proof read through actual session completion  2162ms
+   ✓ AssistantSession accepted-revision proof > retries failed proof for the same plan/revision, deduplicates success, and reproves a changed revision  6645ms
+   ✓ AssistantSession accepted-revision proof > does not promote cancelled during the read or replace editor state  2668ms
+   ✓ AssistantSession accepted-revision proof > does not promote disabled during the read or replace editor state  3285ms
+   ✓ AssistantSession accepted-revision proof > does not promote target during the read or replace editor state  2858ms
+   ✓ AssistantSession accepted-revision proof > does not promote content during the read or replace editor state  2945ms
+   ✓ AssistantSession accepted-revision proof > does not promote local-edit during the read or replace editor state  3449ms
+   ✓ AssistantSession accepted-revision proof > uses the real apply commit, not a newest remote commit read  2944ms
+   ✓ AssistantSession accepted-revision proof > project proof can succeed when the separate commit log fails  3151ms
+   ✓ AssistantSession accepted-revision proof > proves a normal no-plan apply through the reusable path without replaying the tool  2630ms
+   ✓ AssistantSession accepted-revision proof > does not correlate a later human edit with an in-flight apply commit  3181ms
+   ✓ AssistantSession accepted-revision proof > retryLastTurn retries failed proof without replaying the LLM or applied tools  3343ms
+   ✓ AssistantSession accepted-revision proof > retryLastTurn proves already applied milestones after a recovered LLM failure  3518ms
+
+ Test Files  2 passed (2)
+      Tests  43 passed (43)
+   Start at  21:36:32
+   Duration  107.88s (transform 19.87s, setup 0ms, collect 57.09s, tests 83.74s, environment 1ms, prepare 1.15s)
+

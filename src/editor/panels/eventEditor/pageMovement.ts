@@ -1,3 +1,5 @@
+import { defaultChaseSight, defaultChasePursuit } from "@/project/npcBehavior";
+import { renderMovementSight } from "./pageNpcBehavior";
 import { renderChaseSettings } from "./pageHorror";
 import { updateEventPage } from "@/editor/eventPages";
 import { el } from "@/util/dom";
@@ -58,7 +60,7 @@ export function renderPageMovement(mapId: MapId, eventId: string, page: EventPag
       ],
     })
   );
-  if (movement.type === "chase") wrap.append(renderChaseSettings(mapId, eventId, page));
+  if (movement.type === "chase") wrap.append(renderMovementSight(mapId, eventId, page), renderChaseSettings(mapId, eventId, page));
   if (isCustom) {
     wrap.append(routeBlock(movement, openRouteDialog));
   }
@@ -83,7 +85,11 @@ function movementForType(movement: EventPageMovement, type: EventPageMovement["t
     };
   }
   if (type === "chase") {
-    return { ...movement, type, pathfind: movement.pathfind ?? true };
+    return { ...movement, type, pathfind: movement.pathfind ?? true,
+      ...(movement.type !== "chase" ? {
+        sight: movement.sight ?? defaultChaseSight(), pursuit: movement.pursuit ?? defaultChasePursuit(),
+      } : {}),
+    };
   }
   return { ...movement, type };
 }

@@ -17,6 +17,7 @@ import {
   type SupabaseSaveResult,
 } from "./supabaseProjectSync";
 import { projectWithoutEventDrafts } from "./eventDrafts";
+import { applyAudioDescriptionDelta } from "./audioDescriptions";
 import { serialize, serializeForComparison } from "./io";
 import {
   applyEventDraftVault,
@@ -225,7 +226,12 @@ class ProjectStore {
   private remotePersistenceDisabledReason: DbPersistenceDisabledReason | null = null;
   private persistedBaseline: Project | null = null;
   private lastPersistenceReceipt: ProjectPersistenceReceipt | null = null;
-  private readonly persistenceTargets = new WeakMap<ProjectPersistenceReceipt, SupabaseProjectConfig>();
+  /** Load/adoption lineage is separate from the local-edit counter used by catch-up saves. */
+  private contentLineage = 0;
+  private readonly persistenceTargets = new WeakMap<ProjectPersistenceReceipt, {
+    readonly target: SupabaseProjectConfig;
+    readonly contentLineage: number;
+  }>();
   private persistInFlight: Promise<ProjectFlushResult> | null = null;
   // 마지막 "실제 저장"(원격 업서트 또는 dev override 기록) 이후 변경이 있는가 —
   // beforeunload 미저장 경고(도그푸딩 결함 ⑧)의 근거. 저장이 스킵되는 모드(fresh/blank)
@@ -472,6 +478,7 @@ class ProjectStore {
       mutationGeneration: this.mutationGeneration,
       persistedBaseline: this.persistedBaseline,
       lastPersistenceReceipt: this.lastPersistenceReceipt,
+      contentLineage: this.contentLineage,
       remotePersistenceDisabledReason: this.remotePersistenceDisabledReason,
       remotePersistenceEnabled: this.remotePersistenceEnabled,
     };
@@ -513,6 +520,7 @@ class ProjectStore {
       this.current = localSnapshot.current;
       this.persistedBaseline = localSnapshot.persistedBaseline;
       this.lastPersistenceReceipt = localSnapshot.lastPersistenceReceipt;
+      this.contentLineage = localSnapshot.contentLineage;
       this.loaded = localSnapshot.loaded;
       this.loadedRemoteProjectId = localSnapshot.loadedRemoteProjectId;
       this.remotePersistenceEnabled = localSnapshot.remotePersistenceEnabled;
@@ -645,6 +653,7 @@ class ProjectStore {
     try {
       const project = await loadProjectFromSupabase();
       if (project) {
+        this.contentLineage += 1;
         this.lastPersistenceReceipt = null;
         this.current = preserveEventDraftsOnProject(project, this.current);
         clearCopiedEventPage();
@@ -694,6 +703,7 @@ class ProjectStore {
       if (!project) {
         return { kind: "failed", message: "DB에서 프로젝트를 찾을 수 없습니다.", projectId };
       }
+      this.contentLineage += 1;
       this.lastPersistenceReceipt = null;
       this.current = preserveEventDraftsOnProject(project, this.current);
       syncEventDraftVaultFromProject(this.current);
@@ -739,13 +749,19 @@ class ProjectStore {
   /**
    * `change` 는 관측용 주석이다 — undo/AI 적용/원격 병합이 서로 구분되게 라벨을 실어 보낸다.
    * 생략하면 라벨 없는 project 스코프 변경으로 기록된다(`__oprnUnlabeledEditCount()` 에 집계).
+   * Returns the applied project captured before synchronous mutation subscribers run.
    */
   replace(
     project: Project,
     options: { readonly preserveEventDrafts?: boolean; readonly change?: ProjectChangeAnnotation } = {},
-  ): void {
+  ): Project {
     ensureSwitchVariableSlots(project);
     removeLegacySpriteReferences(project);
+    if (options.preserveEventDrafts === false || options.change?.projectSwitch === true) {
+      this.contentLineage += 1;
+      this.lastPersistenceReceipt = null;
+      this.persistedBaseline = null;
+    }
     if (options.change?.projectSwitch === true) clearCopiedEventPage();
     // Default: keep open event editor drafts across undo/AI/accept/remote merges.
     // Pass preserveEventDrafts:false only for intentional full project switches
@@ -757,18 +773,20 @@ class ProjectStore {
       this.current = preserveEventDraftsOnProject(project, this.current);
       syncEventDraftVaultFromProject(this.current);
     }
+    const applied = this.current;
     this.markLocalMutation({ scope: "project", ...(options.change ?? {}) });
     this.emit({ scope: "project", ...(options.change ?? {}) });
     this.scheduleAutoSave();
+    return applied;
   }
 
   /** Full project switch (new/import/sample). Drops event-draft vault for the previous project. */
-  replaceProject(project: Project, change?: ProjectChangeAnnotation): void {
+  replaceProject(project: Project, change?: ProjectChangeAnnotation): Project {
     clearEventDraftVault();
     clearCopiedEventPage();
     persistEventDraftVaultNow();
     if (this.loadedRemoteProjectId === null) this.beginLocalProjectSession();
-    this.replace(project, {
+    return this.replace(project, {
       preserveEventDrafts: false,
       change: { label: "프로젝트 교체", projectSwitch: true, ...(change ?? {}) },
     });
@@ -828,11 +846,13 @@ class ProjectStore {
 
   /** Recheck at consumption time: proof can outlive the editor revision it describes. */
   isPersistenceReceiptCurrent(receipt: ProjectPersistenceReceipt): boolean {
-    const target = this.persistenceTargets.get(receipt);
+    const authority = this.persistenceTargets.get(receipt);
+    const target = authority?.target;
     const config = supabaseProjectConfig();
     return this.loaded && this.remotePersistenceEnabled
       && this.lastPersistenceReceipt === receipt
       && this.mutationGeneration === receipt.mutationGeneration
+      && authority?.contentLineage === this.contentLineage
       && !!target && !!config
       && target.projectId === config.projectId && target.url === config.url && target.anonKey === config.anonKey;
   }
@@ -842,7 +862,7 @@ class ProjectStore {
     receipt: ProjectPersistenceReceipt,
     options: { readonly signal?: AbortSignal } = {},
   ): Promise<ProjectPersistenceProof> {
-    const target = this.persistenceTargets.get(receipt);
+    const target = this.persistenceTargets.get(receipt)?.target;
     if (!target) return { kind: "failed", receipt, message: "Unknown accepted revision" };
     if (options.signal?.aborted) return { kind: "cancelled", receipt };
     if (!this.remotePersistenceEnabled) return { kind: "disabled", receipt };
@@ -893,6 +913,9 @@ class ProjectStore {
     clearEventDraftVault();
     clearCopiedEventPage();
     persistEventDraftVaultNow();
+    this.contentLineage += 1;
+    this.lastPersistenceReceipt = null;
+    this.persistedBaseline = null;
     this.current = createBlankProject();
     if (this.loadedRemoteProjectId === null) this.beginLocalProjectSession();
     this.markLocalMutation({ scope: "project", label: "전체 초기화" });
@@ -1177,6 +1200,7 @@ class ProjectStore {
     if (!config) return { kind: "not-configured" };
     const target = Object.freeze({ ...config });
     const generationAtSubmit = this.mutationGeneration;
+    const lineageAtSubmit = this.contentLineage;
     const submittedProject = projectWithoutEventDrafts(this.current);
     // 커밋 로그가 쓸 diff baseline — **이 저장 직전에 서버가 갖고 있던 내용**이다.
     // 아래에서 `this.persistedBaseline` 을 저장 결과로 갈아치우므로 여기서 잡아두지 않으면
@@ -1190,12 +1214,12 @@ class ProjectStore {
     if (result.kind === "not-configured") return result;
     if (result.kind === "conflict") return result;
     const savedProject = result.project ?? submittedProject;
-    // Baseline tracks what the server accepted — not what the editor is showing.
-    this.persistedBaseline = structuredClone(projectWithoutEventDrafts(savedProject));
+    // Keep accepted content detached even if a replacement arrives during receipt hashing.
+    const acceptedBaseline = structuredClone(projectWithoutEventDrafts(savedProject));
     let receipt: ProjectPersistenceReceipt | undefined;
     try {
       // Capture accepted content before the hash await; never derive it from live getCurrent().
-      const acceptedContent = serializeForComparison(this.persistedBaseline);
+      const acceptedContent = serializeForComparison(acceptedBaseline);
       receipt = Object.freeze({
         revisionId: randomUuid(),
         projectId: target.projectId,
@@ -1203,13 +1227,33 @@ class ProjectStore {
         contentIdentity: await sha256HexText(acceptedContent),
         ...(result.sha256 ? { sha256: result.sha256 } : {}),
       });
-      this.persistenceTargets.set(receipt, target);
+      this.persistenceTargets.set(receipt, { target, contentLineage: lineageAtSubmit });
     } catch (error) {
       // Intermediate projects may save but cannot supply normalized proof. Preserve flush compatibility.
       log.warn("Accepted project could not produce a persistence receipt", error);
     }
+    recordManualProjectCommitAfterSave(savedProject, commitBaseline);
+    // Historical saves retain proof, but cannot adopt a baseline, metadata or dirty state
+    // into a replacement project (including a replacement during the hash await).
+    if (this.contentLineage !== lineageAtSubmit) return receipt ? { ...result, receipt } : result;
+    this.persistedBaseline = acceptedBaseline;
     this.lastPersistenceReceipt = receipt ?? null;
-    // Local-first: never replace live maps/project with the save response.
+    const audioDescriptions = applyAudioDescriptionDelta(
+      submittedProject.audioDescriptions,
+      this.current.audioDescriptions,
+      savedProject.audioDescriptions,
+    );
+    if (JSON.stringify(audioDescriptions) !== JSON.stringify(this.current.audioDescriptions)) {
+      const reconciledProject = { ...this.current };
+      if (audioDescriptions === undefined) delete reconciledProject.audioDescriptions;
+      else reconciledProject.audioDescriptions = structuredClone(audioDescriptions);
+      this.current = reconciledProject;
+      // Synchronization is observable, but is not a new authored mutation.
+      this.emit({ scope: "project", origin: "system", projectSwitch: false });
+    }
+    // A synchronization subscriber may itself replace the project.
+    if (this.contentLineage !== lineageAtSubmit) return receipt ? { ...result, receipt } : result;
+    // Local-first: never replace live maps with the save response.
     // Doing so rewound brush strokes that landed during the network RTT
     // (user symptom: painted tiles pop back / cancel after a moment).
     if (this.mutationGeneration === generationAtSubmit) {
@@ -1220,7 +1264,6 @@ class ProjectStore {
       // Do not arm the 4s autosave debounce here — that left a "saved" gap.
       this.dirtySinceLastPersist = true;
     }
-    recordManualProjectCommitAfterSave(savedProject, commitBaseline);
     this.refreshSupabaseResourceCache();
     return receipt ? { ...result, receipt } : result;
   }
@@ -1230,6 +1273,7 @@ class ProjectStore {
    * for the current DB project id.
    */
   private adoptProject(project: Project, options: { readonly restoreVault: boolean }): void {
+    this.contentLineage += 1;
     this.lastPersistenceReceipt = null;
     clearEventDraftVault();
     clearCopiedEventPage();

@@ -1,3 +1,4 @@
+import { updateDetectionEncounters } from "./npcDetectionEncounter";
 import { advanceFurniturePush, beginFurniturePush, clearFurniturePush, furniturePushFrames } from './furniturePushAnimation';
 import { advancePursuitDoors, isPlayerHiding, pushObject, toggleHiding } from "./horrorRuntime";
 import { refreshRuntimeEntities } from "./playSceneMapRuntime";
@@ -90,6 +91,7 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
     scene.syncRuntimeState();
     return;
   }
+  updateDetectionEncounters(scene, deltaMs);
   const world = { project: store.getCurrent(), map: scene.map, session: scene.session, positions: scene.eventPositions };
   if (!scene.running && advancePursuitDoors(world, deltaMs)) refreshRuntimeEntities(scene);
   scene.player.setVisible?.(!isPlayerHiding(world));
@@ -755,6 +757,7 @@ export function maybeTriggerRandomEncounter(scene: PlaySceneContext): void {
 
 // runFieldSpawnEventBattle(playSceneFieldSpawns.ts) 과 같은 재진입 가드 계약이다.
 async function runRandomEncounterBattle(scene: PlaySceneContext, troopId: string): Promise<void> {
+  const session = scene.session;
   const previousInputEnabled = scene.inputEnabled;
   scene.running = true;
   scene.setInputEnabled(false);
@@ -762,11 +765,14 @@ async function runRandomEncounterBattle(scene: PlaySceneContext, troopId: string
     // 결과를 버리면 안 된다: battleResult 는 페이지 조건·분기의 SSOT 이고, 랜덤 인카운터는
     // canLose=false 라 패배가 곧 게임 오버다(sceneTestRunner 의 인카운터 경로와 같은 계약).
     const result = await scene.playBattle({ kind: "battleProcessing", troopId, canEscape: true, canLose: false });
-    scene.session.battleResult = result;
+    if (result === null || scene.session !== session || scene.sys?.isActive() === false) return;
+    session.battleResult = result;
     if (result === "defeat") applyBattleDefeat(scene);
   } finally {
-    scene.running = false;
-    scene.setInputEnabled(previousInputEnabled);
+    if (scene.session === session && !scene.battleAbortController && scene.sys?.isActive() !== false) {
+      scene.running = false;
+      scene.setInputEnabled(previousInputEnabled);
+    }
   }
 }
 

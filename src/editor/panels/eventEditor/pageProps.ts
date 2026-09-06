@@ -1,3 +1,4 @@
+import { renderDetectionEncounter } from "./pageNpcBehavior";
 import { renderObjectInteraction } from "./pageHorror";
 import { hasRecursivePageCondition, type EventDraftValidation } from "@/editor/eventDraftValidator";
 import { el } from "@/util/dom";
@@ -941,6 +942,7 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
         class: "event-page-movement-stack",
         children: [
           rm2k3Fieldset("물체 동작", renderObjectInteraction(mapId, eventId, page), "event-classic-object-interaction"),
+          rm2k3Fieldset("플레이어 발견", renderDetectionEncounter(mapId, eventId, page), "event-classic-detection"),
           rm2k3Fieldset("이동 유형", renderPageMovement(mapId, eventId, page), "event-classic-movement-type"),
           rm2k3Fieldset("애니메이션 유형", renderPageAnimationType(mapId, eventId, page), "event-classic-animation-type"),
           rm2k3Fieldset("이동 속도", movementSpeedSelect(mapId, eventId, page), "event-classic-movement-speed"),

@@ -217,6 +217,8 @@ function matchesSingleType(value: unknown, type: JsonSchemaType): boolean {
 }
 
 function matchesType(value: unknown, type: JsonSchema["type"]): boolean {
+  // type 생략은 JSON Schema의 무제약 값이다(커맨드/조건의 variant별 value 등).
+  if (type === undefined) return true;
   const schemaTypes = Array.isArray(type) ? type : [type];
   return schemaTypes.some((entry) => matchesSingleType(value, entry));
 }

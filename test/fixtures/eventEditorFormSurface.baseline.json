@@ -5964,6 +5964,9 @@
  },
  "playAudio": {
   "testids": [
+   "audio-description",
+   "audio-description-source",
+   "audio-description-text",
    "event-command-edit-summary",
    "play-audio-channel-bgm",
    "play-audio-channel-hint",
@@ -6756,12 +6759,16 @@
   ],
   "tags": {
    "button": 5,
-   "div": 13,
+   "div": 15,
    "input": 1,
    "option": 734,
-   "select": 1
+   "select": 1,
+   "small": 1
   },
   "tagByTestid": {
+   "audio-description": "div",
+   "audio-description-source": "small",
+   "audio-description-text": "div",
    "event-command-edit-summary": "div",
    "play-audio-channel-bgm": "button",
    "play-audio-channel-hint": "div",
@@ -6782,7 +6789,7 @@
    "play-audio-channel-hint": "배경음은 반복되고, 효과음은 한 번만 재생됩니다. 미리 듣기는 브라우저가 재생할 수 있는 소리만 됩니다.",
    "play-audio-preview": "미리 듣기"
   },
-  "testidCount": 14,
+  "testidCount": 17,
   "controlCount": 7
  },
  "stopAudio": {

@@ -68,6 +68,59 @@ Map/event search, audio test, help modal, themed dungeons, resource manager, vil
 - `/export-player/` and `/standalone-player/` requests are handled before SPA fallback. Build failure or an absent file returns an error rather than editor HTML or stale output. The existing menu catches rejected exports before `downloadBlob`; required media failures are no longer an informational warning after a broken HTML download.
 - Browser acceptance must begin with these menu buttons and play the downloaded files outside the editor server. See `npm run qa:export` in `openwiki/testing.md`; normal Test Play is a separate adjacent-surface regression.
 
+### Audio descriptions and live resource ownership
+
+The Resource Manager's music/sound categories use the complete shared catalog from
+`src/assets/audioResourceCatalog.ts`. Select a row to see its raw ID, native preview,
+effective description and source. Search matches names, IDs, tags and descriptions;
+the empty-description filter tests the effective value, including deliberate clears.
+`audio-description-search`, `audio-description-input` and `audio-description-save`
+are the feature's browser test controls.
+
+Save trims new input and writes one project override, including `""`. Restore default
+removes the override. Source labels distinguish project text, BGM creative briefs,
+metadata-derived descriptions and missing descriptions. Neither selection nor preview
+authors metadata. Implementation lives in `src/editor/panels/audioDescriptionEditor.ts`,
+`audioDescriptionDetail.ts`, `audioDescriptionDirtyDialog.ts` and
+`audioResourcePresentation.ts` under the same panels directory.
+
+Dirty row/category/close transitions offer Save, Discard and Cancel. Cancel retains the
+input node, caret and selected resource; a refresh doesn't erase a dirty draft.
+Project replacement ends the old draft's ownership, and an in-flight import can't write
+into another project. The textarea keeps native text undo; project history applies outside
+text controls. Escape and focus restoration remain owned by the modal stack.
+
+Successful audio import selects the upload for description editing without changing file
+validation. `src/editor/panels/resourceManagerAudioDelete.ts` checks real references before
+deleting. A successful deletion removes the upload, matching `ResourceProfile` rows and its
+override in one history operation. A blocked deletion leaves all three intact; bundled audio
+isn't a file-deletion target. `src/editor/tools/resourceTools.ts` also removes matching
+profiles through the tool deletion path.
+
+| Consumer | Shared metadata path |
+| --- | --- |
+| Map BGM, system/title/battle music and sound slots | `src/editor/panels/databaseResourcePickerDialog.ts` |
+| Toolbar audio test dialog | `src/editor/panels/audioTestDialog.ts` |
+| Normal event `playAudio` form | `src/editor/panels/eventEditor/commandBodyAdvanced.ts` |
+| M2 audio form and command preview | `src/editor/panels/eventEditor/commandBodyM2.ts`, `previewAudio.ts` |
+| AI search and detail | `src/assets/resourceSearch.ts`, `src/editor/tools/queryTools.ts`, `src/editor/tools/audioDescriptionTools.ts` |
+| Event prompt candidates | `src/ai/eventAudioPrompt.ts`, separate from full-ID eligibility |
+
+An open music/sound picker or audio-test dialog subscribes to project/assets changes, refreshes descriptions and
+search results, and invalidates a removed selected ID so it can't be confirmed. Closing the
+dialog releases its subscription; switching projects closes it. Reopened consumers use the
+latest project. Don't introduce per-surface fallback descriptions or global description storage.
+Reopening the audio-test dialog closes the previous instance through its modal teardown,
+including its store subscription and audio settings; removing its DOM alone leaks ownership.
+
+Coverage includes `test/audioDescriptionEditor.test.ts`,
+`test/audioDescriptionLifecycle.test.ts`, `test/audioDescriptionPickerSurfaces.test.ts`,
+`test/audioDescriptionCommandSurfaces.test.ts`,
+`test/audioDescriptionResourceLifecycle.test.ts`, `test/e2e/audio-descriptions.spec.ts`
+and `test/e2e/audio-description-search.spec.ts`. See `openwiki/testing.md` for scoped
+browser setup and separate exported-player evidence.
+
+
 ### Genre-neutral authoring launcher and journey (2026-08-24)
 
 - The topbar's four front actions (`Map | Event | Data | Test`) and the matching Ctrl+K commands share `runAuthoringTask` in `src/editor/authoringTasks.ts`. Map selects the real tile drawer/layer, Event selects the real event drawer/layer, Data opens `openDatabaseModal`, and Test dispatches the established `oprn:test-play-window` request. These actions do not require AI.

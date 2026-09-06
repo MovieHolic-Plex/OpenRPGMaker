@@ -1,5 +1,7 @@
-import { CC0_MUSIC_ASSETS, CC0_SOUND_ASSETS, type Cc0AudioAsset } from "@/assets/cc0AudioAssets";
-import { EASYRPG_MUSIC_ASSETS, EASYRPG_SOUND_ASSETS, type EasyRpgRtpAsset } from "@/assets/easyrpgRtp";
+import { CC0_MUSIC_ASSETS, CC0_SOUND_ASSETS } from "@/assets/cc0AudioAssets";
+import { EASYRPG_MUSIC_ASSETS, EASYRPG_SOUND_ASSETS } from "@/assets/easyrpgRtp";
+import { listAudioResources, type AudioResource } from "@/assets/audioResourceCatalog";
+import { audioDescriptionView, audioPlayback } from "./audioResourcePresentation";
 import { uiLabel } from "@/editor/uiCopy";
 import { registerModal } from "@/editor/ui/modalStack";
 import { getAudioEngine, playAudioCommand, stopAudioCommand } from "@/player/audio";
@@ -8,16 +10,16 @@ import { el } from "@/util/dom";
 
 type AudioCategory = "music" | "sound";
 
-type ListedAudio = {
-  readonly id: string;
+type ListedAudio = AudioResource & {
   readonly label: string;
   readonly playable: boolean;
+  readonly midi: boolean;
 };
 
 type AudioDialogState = {
   category: AudioCategory;
-  // 전체 목록(필터 이전) 기준 인덱스. 0 = (꺼짐). testid `audio-test-option-<n>` 이 이 번호다.
-  selectedIndex: number;
+  // Selection survives catalog refreshes; option test IDs retain display indices.
+  selectedId: string;
   playing: boolean;
   // 슬라이더 원단위 값. 화면 표기와 엔진 적용값의 단일 원천.
   volume: number;
@@ -47,7 +49,7 @@ const CATEGORY_LABELS: Readonly<Record<AudioCategory, string>> = {
 };
 
 export function openAudioTestDialog(): void {
-  document.querySelector("[data-testid='audio-test-dialog']")?.remove();
+  document.querySelector<HTMLButtonElement>("[data-testid='audio-test-close']")?.click();
   const engine = getAudioEngine();
   engine.installUnlockListeners();
   engine.unlock();
@@ -57,7 +59,7 @@ export function openAudioTestDialog(): void {
 
   const state: AudioDialogState = {
     category: "music",
-    selectedIndex: 0,
+    selectedId: "",
     playing: false,
     volume: 100,
     fadeSeconds: 0,
@@ -93,6 +95,9 @@ export function openAudioTestDialog(): void {
     text: "대기 중",
     attrs: { "aria-live": "polite" },
     dataset: { testid: "audio-test-status" },
+  });
+  const description = el("div", {
+    dataset: { testid: "audio-test-description" },
   });
   const playButton = el("button", {
     class: "audio-test-button primary",
@@ -187,6 +192,7 @@ export function openAudioTestDialog(): void {
             },
           }),
           el("div", { class: "audio-test-actions", children: [playButton, stopButton] }),
+          description,
           status,
         ],
       }),
@@ -220,7 +226,9 @@ export function openAudioTestDialog(): void {
   });
 
   // 모달 층 등록: Escape 는 modalStack 이 맨 위 층에만 전달한다(중첩 모달 계약).
+  let unsubscribe: (() => void) | undefined;
   const close = registerModal(backdrop, () => {
+    unsubscribe?.();
     stopAudioCommand();
     engine.setFadeInMs(restoreFadeInMs);
     backdrop.remove();
@@ -232,7 +240,7 @@ export function openAudioTestDialog(): void {
 
   function setPlaying(playing: boolean): void {
     const selected = currentEntry(state);
-    if (!playing || state.selectedIndex === 0 || !selected) {
+    if (!playing || state.selectedId === "" || !selected) {
       stopAudioCommand();
       state.playing = false;
       status.textContent = "정지됨";
@@ -243,7 +251,7 @@ export function openAudioTestDialog(): void {
       stopAudioCommand();
       state.playing = false;
       status.textContent =
-        state.category === "music"
+        selected.midi
           ? `재생 불가(MIDI): ${selected.label} — CC0 WAV/OGG 트랙을 쓰세요`
           : `재생 불가: ${selected.label}`;
       syncTransport();
@@ -263,6 +271,7 @@ export function openAudioTestDialog(): void {
   // 재생/정지 버튼이 실제 상태를 반영한다(장식 금지).
   function syncTransport(): void {
     const selected = currentEntry(state);
+    description.replaceChildren(...(selected ? [audioDescriptionView(selected)] : []));
     const canPlay = selected !== null && selected.playable;
     playButton.setAttribute("aria-pressed", String(state.playing));
     stopButton.setAttribute("aria-pressed", String(!state.playing));
@@ -284,7 +293,7 @@ export function openAudioTestDialog(): void {
             click: () => {
               stopAudioCommand();
               state.category = category;
-              state.selectedIndex = 0;
+              state.selectedId = "";
               state.playing = false;
               status.textContent = "대기 중";
               render();
@@ -300,18 +309,31 @@ export function openAudioTestDialog(): void {
     const options = listAudio(state.category);
     const needle = state.filter.trim().toLowerCase();
     // (꺼짐) 은 필터와 무관하게 언제나 첫 줄이다 — 선택 해제 경로가 사라지면 안 된다.
-    list.append(optionButton({ label: "(꺼짐)", index: 0, playable: true }));
+    list.append(optionButton({ id: "", label: "(꺼짐)", index: 0, playable: true, midi: false }));
     let shown = 0;
     options.forEach((entry, offset) => {
-      if (needle && !entry.label.toLowerCase().includes(needle)) return;
+      if (needle && ![entry.id, entry.label, entry.description, ...entry.tags]
+        .some(value => value.toLowerCase().includes(needle))) return;
       shown += 1;
-      list.append(optionButton({ label: entry.label, index: offset + 1, playable: entry.playable }));
+      list.append(optionButton({
+        id: entry.id,
+        label: entry.label,
+        index: offset + 1,
+        playable: entry.playable,
+        midi: entry.midi,
+      }));
     });
     listCount.textContent = needle ? `${shown}/${options.length}개` : `${options.length}개`;
   }
 
-  function optionButton(spec: { label: string; index: number; playable: boolean }): HTMLButtonElement {
-    const selected = state.selectedIndex === spec.index;
+  function optionButton(spec: {
+    readonly id: string;
+    readonly label: string;
+    readonly index: number;
+    readonly playable: boolean;
+    readonly midi: boolean;
+  }): HTMLButtonElement {
+    const selected = state.selectedId === spec.id;
     const classes = ["audio-test-option"];
     if (selected) classes.push("selected");
     if (!spec.playable) classes.push("unplayable");
@@ -322,9 +344,16 @@ export function openAudioTestDialog(): void {
         role: "option",
         "aria-selected": String(selected),
         // 재생 불가(MIDI)는 목록에서 바로 구별된다 — 눌러보고 나서야 알게 하지 않는다.
-        ...(spec.playable ? {} : { "aria-disabled": "true", title: "재생 불가(MIDI)" }),
+        ...(spec.playable ? {} : {
+          "aria-disabled": "true",
+          title: spec.midi ? "재생 불가(MIDI)" : "미리 듣기 불가",
+        }),
       },
-      dataset: { testid: spec.index === 0 ? "audio-test-option-off" : `audio-test-option-${spec.index}` },
+      dataset: {
+        testid: spec.index === 0 ? "audio-test-option-off" : `audio-test-option-${spec.index}`,
+        resourceId: spec.id,
+        audioMidi: String(spec.midi),
+      },
       children: [
         el("span", { class: "audio-test-option-label", text: spec.label }),
         ...(spec.playable ? [] : [el("span", { class: "audio-test-option-badge", text: "재생 불가" })]),
@@ -332,9 +361,13 @@ export function openAudioTestDialog(): void {
       on: {
         click: () => {
           stopAudioCommand();
-          state.selectedIndex = spec.index;
+          state.selectedId = spec.id;
           state.playing = false;
-          status.textContent = spec.playable ? "대기 중" : "재생 불가(MIDI) — CC0 WAV/OGG 트랙을 쓰세요";
+          status.textContent = spec.playable
+            ? "대기 중"
+            : spec.midi
+              ? "재생 불가(MIDI) — CC0 WAV/OGG 트랙을 쓰세요"
+              : "미리 듣기 불가";
           renderList();
           syncTransport();
         },
@@ -351,6 +384,7 @@ export function openAudioTestDialog(): void {
   filterInput.addEventListener("input", () => {
     state.filter = filterInput.value;
     renderList();
+    syncTransport();
   });
   closeButton.addEventListener("click", () => closeUi());
   backdrop.addEventListener("mousedown", (event) => {
@@ -363,42 +397,45 @@ export function openAudioTestDialog(): void {
   engine.setPan(state.balance / 100);
   engine.setFadeInMs(state.fadeSeconds * 1000);
   render();
+  unsubscribe = store.subscribe((_project, change) => {
+    if (change.projectSwitch) {
+      closeUi();
+      return;
+    }
+    if (change.scope !== "project" && change.scope !== "assets") return;
+    if (state.selectedId !== "" && !currentEntry(state)) {
+      state.selectedId = "";
+      setPlaying(false);
+    }
+    renderList();
+    syncTransport();
+  });
   closeAction.focus();
 }
 
 function listAudio(category: AudioCategory): readonly ListedAudio[] {
-  if (category === "music") {
-    return [
-      ...CC0_MUSIC_ASSETS.map(cc0Entry),
-      ...EASYRPG_MUSIC_ASSETS.map((asset) => rtpEntry(asset, false)),
-    ];
-  }
-  return [
-    ...CC0_SOUND_ASSETS.map(cc0Entry),
-    ...EASYRPG_SOUND_ASSETS.map((asset) => rtpEntry(asset, true)),
-  ];
-}
-
-function cc0Entry(asset: Cc0AudioAsset): ListedAudio {
-  return {
-    id: asset.id,
-    label: `${asset.name} <CC0>`,
-    playable: true,
+  const project = store.getCurrent();
+  const resources = listAudioResources(category, project);
+  // Ordering only: metadata and eligibility belong to the shared catalog.
+  // Preserve historical numbered test IDs before appending newly exposed entries.
+  const legacyOrder = {
+    music: [...CC0_MUSIC_ASSETS, ...EASYRPG_MUSIC_ASSETS],
+    sound: [...CC0_SOUND_ASSETS, ...EASYRPG_SOUND_ASSETS],
   };
-}
-
-function rtpEntry(asset: EasyRpgRtpAsset, playable: boolean): ListedAudio {
-  const file = asset.fileName.replace(/\.[^.]+$/, "");
-  return {
-    id: asset.id,
-    label: playable ? `${file} <RTP>` : `${file} <RTP·MIDI>`,
-    playable,
-  };
+  const order = legacyOrder[category];
+  const rank = new Map<string, number>(order.map((asset, index) => [asset.id, index]));
+  return [...resources]
+    .sort((a, b) => (rank.get(a.id) ?? order.length) - (rank.get(b.id) ?? order.length))
+    .map(resource => ({
+      ...resource,
+      label: resource.name,
+      ...audioPlayback(resource.id, project),
+    }));
 }
 
 function currentEntry(state: AudioDialogState): ListedAudio | null {
-  if (state.selectedIndex === 0) return null;
-  return listAudio(state.category)[state.selectedIndex - 1] ?? null;
+  if (state.selectedId === "") return null;
+  return listAudio(state.category).find(entry => entry.id === state.selectedId) ?? null;
 }
 
 function applyVolume(state: AudioDialogState): void {

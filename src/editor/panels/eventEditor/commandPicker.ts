@@ -3,7 +3,6 @@ import {
   isM2CatalogEntrySelectableInMap,
   M2_COMMAND_CATALOG,
   m2CommandById,
-  m2CatalogEntryRuntimeSupport,
   type CommandRuntimeSupport,
   type M2CommandCatalogEntry,
   type M2CommandPickerGroup,
@@ -17,7 +16,7 @@ import { commandKindLabel } from "./options";
 import { groupHeadingText, groupVisual, pickerPageGlyph, pickerPageIcon, renderCategoryIcon } from "./commandCategoryIcons";
 import { renderEditorIcon } from "./editorIcons";
 import { renderRuntimeSupportBadge } from "./commandRuntimeBadge";
-import { nativeCommandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
+import { commandRuntimeSupportDescriptor } from "@/project/eventCommands/runtimeSupport";
 import {
   readEventCommandPickerPreferences,
   recordRecentEventCommand,
@@ -600,19 +599,6 @@ function renderCommandGrid(
   return grid;
 }
 
-/**
- * 배지에 쓸 컨텍스트 반영 런타임 지원. 네이티브 kind 항목은 카탈로그/디스크립터 판정을
- * 그대로 쓰고(컨텍스트 무관), 순수 m2 항목만 편집 컨텍스트로 재판정한다.
- */
-// Native rows and aliases are context-sensitive through COMMAND_GUARANTEES; only pure M2 rows use M2 classification.
-function entryRuntimeSupport(entry: CommandEntry, context: M2RuntimeContext | undefined): CommandRuntimeSupport {
-  if (entry.kind !== undefined && entry.kind !== "m2Command") {
-    return nativeCommandRuntimeSupport(entry.kind, context);
-  }
-  const catalogEntry = m2CommandById(entry.commandId);
-  return catalogEntry ? m2CatalogEntryRuntimeSupport(catalogEntry, context) : entry.runtimeSupport;
-}
-
 function renderCommandButton(
   entry: CommandEntry,
   onSelect: EventCommandPickerRequest["onSelect"],
@@ -620,7 +606,13 @@ function renderCommandButton(
   options: { readonly showPageChip: boolean; readonly onPreferencesChanged: () => void; readonly context?: M2RuntimeContext },
 ): HTMLElement {
   const visual = groupVisual(entry.group);
-  const runtimeSupport = entryRuntimeSupport(entry, options.context);
+  // Describe the representation inserted by the picker, not its persisted M2 alias.
+  const descriptor = commandRuntimeSupportDescriptor(
+    entry.kind && entry.kind !== "m2Command"
+      ? { kind: entry.kind }
+      : { kind: "m2Command", commandId: entry.commandId },
+    options.context
+  );
   // 카테고리 아이콘: aria-hidden 스팬의 ::before(attr(data-glyph)) — 버튼 textContent 와
   // 접근성 이름(getByRole name, exact:true 포함)을 오염시키지 않는다.
   const children: HTMLElement[] = [
@@ -635,7 +627,7 @@ function renderCommandButton(
   if (options.showPageChip) {
     children.push(el("span", { class: "event-command-picker-page-chip", text: pickerPageTitle(entry.page), attrs: { "aria-hidden": "true" } }));
   }
-  const badge = renderRuntimeSupportBadge(runtimeSupport, `command-runtime-badge-picker-${entry.commandId}`);
+  const badge = renderRuntimeSupportBadge(descriptor, `command-runtime-badge-picker-${entry.commandId}`);
   if (badge) children.push(badge);
   if (!entry.selectable) {
     const guidanceId = `command-picker-guidance-${entry.commandId}`;
@@ -658,7 +650,7 @@ function renderCommandButton(
     },
     dataset: {
       category: visual.key,
-      runtimeSupport,
+      runtimeSupport: descriptor.support,
       runtimeOwner: entry.runtimeOwner,
       // 검색창에서 ↑↓/Enter 로 훑을 대상 표식. 즐겨찾기 별 버튼과 구분된다.
       ...(entry.selectable ? { commandEntry: entry.commandId } : {}),
@@ -765,9 +757,9 @@ function renderFooter(close: () => void): HTMLElement {
         dataset: { testid: "event-command-picker-legend" },
         children: [
           el("span", { class: "command-runtime-badge runtime-partial", attrs: { "aria-hidden": "true" }, children: [renderEditorIcon("warning")] }),
-          el("span", { text: "일부만 실행" }),
+          el("span", { text: "실행 제한·확인 필요" }),
           el("span", { class: "command-runtime-badge editor-only", attrs: { "aria-hidden": "true" }, children: [renderEditorIcon("info")] }),
-          el("span", { text: "에디터에서만 미리 봅니다" }),
+          el("span", { text: "편집용 기록" }),
         ],
       }),
       el("button", {

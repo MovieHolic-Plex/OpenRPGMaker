@@ -1,0 +1,39 @@
+status: completed exit_code: 0
+                      ✓ stable target retry budgets through AssistantSession > bounds spelling and page-path variations
+despite unrelated writes and synthetic continuations, then rearms for a real user  10089ms
+                                                                                             ✓ stable target retry budge
+ts through AssistantSession > successful correction resets that target's accumulated failures  5359ms
+                                                                                                        ✓ stable target
+retry budgets through AssistantSession > does not execute attempts beyond the bound even within one model batch  5436ms
+
+✓ test/assistantAcceptanceSession.test.ts (11 tests) 12223ms
+                                                               ✓ acceptance controls actual session termination > does n
+ot turn a review without an explicit passing verdict into completion  953ms
+                                                                              ✓ acceptance controls actual session termi
+nation > withdraws an earlier pass when a later explicit review fails  1887ms
+                                                                                ✓ acceptance controls actual session ter
+mination > continues then blocks insufficient dimensions and quantity even after skip completes the plan  700ms
+                                                                                                                  ✓ acce
+ptance controls actual session termination > retains original denominator when skip and set_work_plan try to shrink prom
+ises  488ms
+              ✓ acceptance controls actual session termination > invalidates an attributed image review after a subseque
+nt real map write  1357ms
+                            ✓ applied acceptance lifecycle through real tools > repairs exact dimensions after plan comp
+letion and invalidates on applied undo  3518ms
+                                                 ✓ applied acceptance lifecycle through real tools > blocks and retains
+the ledger when aborted while the next model response is held  1188ms
+                                                                        ✓ applied acceptance lifecycle through real tool
+s > never credits a review authored in the same response as the image request  1064ms
+                                                                                        ✓ applied acceptance lifecycle t
+hrough real tools > requires visible contract repair for a spatial plan missing criteria  546ms
+
+                                                                                                Test Files  4 passed (4)
+
+     Tests  51 passed (51)
+                             Start at  21:59:54
+                                                  Duration  121.45s (transform 26.24s, setup 0ms, collect 87.27s, tests
+130.34s, environment 9ms, prepare 1.64s)
+
+
+                                        > rpg-zzu@0.1.0 typecheck:app
+                                                                     > tsc --noEmit -p tsconfig.app.json

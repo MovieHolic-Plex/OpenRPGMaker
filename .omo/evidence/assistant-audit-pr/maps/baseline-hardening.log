@@ -1,0 +1,57 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiSpecGateHardening.test.ts -t 선택 영역 암묵 스펙은 그 턴에만 유효하고 다음 턴으로 승격되지 않는다 --pool=threads --maxWorkers=2 --testTimeout=60000
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-rapid-harbor-7ca6
+
+ ❯ test/aiSpecGateHardening.test.ts (21 tests | 1 failed | 20 skipped) 2196ms
+   ↓ 밑그림 좌표 정규화 — 게이트는 검증기가 받아준 값과 같은 숫자를 본다 > normalizeBuildSpec 은 숫자 문자열 좌표를 정수로 바꾸고 나머지 필드는 보존한다
+   ↓ 밑그림 좌표 정규화 — 게이트는 검증기가 받아준 값과 같은 숫자를 본다 > 문자열 좌표로 확정한 밑그림도 밑그림 밖 구조물 정리를 차단한다
+   ↓ 기존 내용 보호는 밑그림 안에서도 — 기준선(사용자 맵)에 있던 것은 선언 없이 덮지 않는다 > 밑그림 확정 뒤 사용자가 그 자리에 판 호수는 다음 턴의 채우기가 덮지 못한다
+   ↓ 기존 내용 보호는 밑그림 안에서도 — 기준선(사용자 맵)에 있던 것은 선언 없이 덮지 않는다 > 이 세션이 밑그림 안에 지은 것은 같은 세션이 다시 손댈 수 있다
+   ↓ 기존 내용 보호는 밑그림 안에서도 — 기준선(사용자 맵)에 있던 것은 선언 없이 덮지 않는다 > clear 에셋에 confirmDestroy 가 있으면 기존 구조물을 덮는 clear_region 이 통과한다
+   ↓ 기존 내용 보호는 밑그림 안에서도 — 기준선(사용자 맵)에 있던 것은 선언 없이 덮지 않는다 > overExisting 을 선언한 배치 에셋 자리의 기존 구조물은 덮을 수 있다
+   ↓ 게이트 밖이던 타일 쓰기 툴도 기존 구조물 보호를 받는다 > TILE_WRITE_TOOLS 는 살아 있는 v3 시공 프리미티브를 포함하고 전부 레지스트리에 있다
+   ↓ 게이트 밖이던 타일 쓰기 툴도 기존 구조물 보호를 받는다 > tile_erase 가 밑그림 없이 기준선 구조물을 지우려 하면 차단되고 빈 땅 정리는 그대로 통과한다
+   ↓ 게이트 밖이던 타일 쓰기 툴도 기존 구조물 보호를 받는다 > build_wall 은 빈 땅이면 밑그림 없이 통과하고(v3 soft-allow) 기존 구조물 위면 차단된다
+   ↓ 게이트 밖이던 타일 쓰기 툴도 기존 구조물 보호를 받는다 > paint_tiles mode=fill 은 맵 전체를 영향 영역으로 본다
+   ↓ 게이트 밖이던 타일 쓰기 툴도 기존 구조물 보호를 받는다 > affectedRegions 는 area·at·wallRect 를 읽는다
+   ↓ 지어진 칸 판정은 잔디 리터럴이 아니라 타일셋 어휘(terrain 역할 + 통행 가능)다 > 모래 바닥 맵에서 집·정리 밑그림은 정리 방침 없이 통과하고, 벽을 덮는 정리는 confirmDestroy 를 요구한다
+   ↓ 지어진 칸 판정은 잔디 리터럴이 아니라 타일셋 어휘(terrain 역할 + 통행 가능)다 > 얼음 대평원의 눈밭은 지어진 칸이 아니고 절벽은 지어진 칸이다
+   ↓ 지어진 칸 판정은 잔디 리터럴이 아니라 타일셋 어휘(terrain 역할 + 통행 가능)다 > 길(terrain·통행 가능) 옆에 붙인 집은 정리 방침 없이 통과한다
+   ↓ 지어진 칸 판정은 잔디 리터럴이 아니라 타일셋 어휘(terrain 역할 + 통행 가능)다 > 사용자가 가장자리에 세운 벽은 보호되고, 생성된 WALL 테두리 링은 제외된다
+   ↓ 교차 규칙 — 타일을 쓰지 않는 에셋은 겹쳐도 교차가 아니다 > npc·event·transfer 는 길·집과 겹칠 수 있다
+   ↓ 암묵 스펙 — 선택 영역 > 실제 패널 footer(재료 힌트가 맵과 선택 사이)와 영역 작업 footer(힌트가 뒤)를 모두 파싱한다
+   × 암묵 스펙 — 선택 영역 > 선택 영역 암묵 스펙은 그 턴에만 유효하고 다음 턴으로 승격되지 않는다 2193ms
+     → expected undefined to be false // Object.is equality
+   ↓ 암묵 스펙 — 선택 영역 > 사용자가 지목한 선택 영역 안의 기존 구조물은 그 턴의 쓰기가 고칠 수 있고, 선택 밖은 여전히 보호된다
+   ↓ 암묵 스펙 — 선택 영역 > opts.scope 로 넘어온 선택 영역도 암묵 스펙이다
+   ↓ 질문으로 끝난 턴 > 모델이 되묻고 끝낸 턴에서는 밑그림 NPC 를 자동 배치하지 않는다
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiSpecGateHardening.test.ts > 암묵 스펙 — 선택 영역 > 선택 영역 암묵 스펙은 그 턴에만 유효하고 다음 턴으로 승격되지 않는다
+AssertionError: expected undefined to be false // Object.is equality
+
+[32m- Expected:[39m
+false
+
+[31m+ Received:[39m
+undefined
+
+ ❯ test/aiSpecGateHardening.test.ts:319:27
+    317|     const second: Ev[] = [];
+    318|     await session.sendUserMessage("(15,15)에도 모래 깔아줘", collect(second));
+    319|     expect(second[0]?.ok).toBe(false);
+       |                           ^
+    320|     expect(second[0]?.summary).toContain("밑그림");
+    321|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 20 skipped (21)
+   Start at  21:29:15
+   Duration  27.20s (transform 18.83s, setup 0ms, collect 23.89s, tests 2.20s, environment 0ms, prepare 368ms)

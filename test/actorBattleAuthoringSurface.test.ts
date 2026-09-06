@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { store } from "@/project/store";
 import { renderCommandPreview } from "@/editor/panels/eventEditor/commandPreview";
 import { eventCommandPickerTabEntries } from "@/editor/panels/eventEditor/commandPicker";
@@ -150,19 +151,26 @@ describe("actor and battle command previews are authoring surfaces", () => {
 
   it("previews a face change as a faceset crop, not a summary fallback", () => {
     withProject(() => {
-      const actorId = store.getCurrent().database.actors[0]?.id ?? "";
+      const project = store.getCurrent();
+      const actor = project.database.actors[0];
+      if (!actor) throw new Error("Missing fixture actor");
+      actor.faceResourceId = "easyrpg-faceset-actor1-01";
+      const resourceId = "easyrpg-faceset-actor1-02";
       const root = preview({
         kind: "m2Command",
         commandId: "m2-025-change-actor-faceset",
-        fields: { target: actorId, value: "easyrpg-faceset-actor1-02" },
+        fields: { target: actor.id, value: resourceId },
       });
 
-      expect(findByTestId(root, "ecp-faceset-change-stage")).toBeTruthy();
-      const after = findByTestId(root, "ecp-faceset-after");
+      expect(findByTestId(root, "ecp-m2-faceset-stage")).toBeTruthy();
+      const after = findByTestId(root, "event-command-face-crop-shell");
       expect(after).toBeTruthy();
-      expect(after?.querySelectorAll(".event-command-face-crop-shell").length).toBeGreaterThanOrEqual(1);
+      expect(after?.querySelectorAll(".faceset-crop-sheet").length).toBeGreaterThanOrEqual(1);
+      expect(after?.dataset.resourceId).toBe(resourceId);
+      expect(after?.querySelector("img")?.getAttribute("src")).toBe(resolveAssetResourceUrl(resourceId, { project }));
       // 낱장 얼굴 모델: 캡션은 주인공 이름 + "얼굴" 이고 칸 순번을 말하지 않는다.
-      const caption = findByTestId(root, "ecp-faceset-change-caption")?.textContent ?? "";
+      const caption = findByTestId(root, "ecp-face-caption")?.textContent ?? "";
+      expect(caption).toContain(actor.name);
       expect(caption).toContain("얼굴");
       expect(caption).not.toContain("얼굴 미선택");
       expect(caption).not.toMatch(/얼굴\s*\d/);

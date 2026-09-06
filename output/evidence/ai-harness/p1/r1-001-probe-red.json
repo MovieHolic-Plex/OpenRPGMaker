@@ -1,0 +1,184 @@
+{
+  "sha": "7671a7dcb0fce1d52d05d1eb95ee38bc21e7688e",
+  "tree": "f904c90fad5e09dcbea1e791cd7fc323939843d4",
+  "transport": "deterministic HTTP only; no real remote or product edits",
+  "scenarios": [
+    {
+      "name": "reload-during-save",
+      "reload": "reloaded",
+      "result": {
+        "status": "succeeded",
+        "verified": true,
+        "receipt": {
+          "revisionId": "85d83ec4-0732-44ba-9334-d8bb9bd07f86",
+          "projectId": "p1-review-boundary-fixture",
+          "mutationGeneration": 2,
+          "contentIdentity": "0b6574efd1bb51dae10e4f3ed891c1155cdb200a691a2503bf8ecc3bc9f39c51",
+          "sha256": "d6b0bd4f8c41628a4f4b857231aff12ab943509ab9b3de0a3505349959e48635"
+        },
+        "commitId": null,
+        "proof": {
+          "kind": "verified",
+          "receipt": {
+            "revisionId": "85d83ec4-0732-44ba-9334-d8bb9bd07f86",
+            "projectId": "p1-review-boundary-fixture",
+            "mutationGeneration": 2,
+            "contentIdentity": "0b6574efd1bb51dae10e4f3ed891c1155cdb200a691a2503bf8ecc3bc9f39c51",
+            "sha256": "d6b0bd4f8c41628a4f4b857231aff12ab943509ab9b3de0a3505349959e48635"
+          },
+          "isCurrent": true
+        }
+      },
+      "liveTitle": "before-pending-save",
+      "remoteTitle": "accepted-pending-save",
+      "liveIdentity": "20b4dde8c0a99a5602db2488bbbdb87067ed2234fd0f07adce944bd1f93aa7f9",
+      "remoteIdentity": "0b6574efd1bb51dae10e4f3ed891c1155cdb200a691a2503bf8ecc3bc9f39c51",
+      "savedAuditCount": 1
+    }
+  ],
+  "requests": [
+    {
+      "path": "/rest/v1/projects",
+      "query": "?on_conflict=project_id",
+      "method": "POST"
+    },
+    {
+      "path": "/rest/v1/maps",
+      "query": "?project_id=eq.p1-review-boundary-fixture",
+      "method": "DELETE"
+    },
+    {
+      "path": "/rest/v1/maps",
+      "query": "?on_conflict=project_id%2Cmap_id",
+      "method": "POST"
+    },
+    {
+      "path": "/rest/v1/tilesets",
+      "query": "?project_id=eq.p1-review-boundary-fixture",
+      "method": "DELETE"
+    },
+    {
+      "path": "/rest/v1/tilesets",
+      "query": "?on_conflict=project_id%2Ctileset_id",
+      "method": "POST"
+    },
+    {
+      "path": "/rest/v1/projects",
+      "query": "?select=current_json%2Ccurrent_sha256&project_id=eq.p1-review-boundary-fixture",
+      "method": "GET"
+    },
+    {
+      "path": "/rest/v1/maps",
+      "query": "?project_id=eq.p1-review-boundary-fixture&select=map_id%2Cmap_json",
+      "method": "GET"
+    },
+    {
+      "path": "/rest/v1/project_commits",
+      "query": "?project_id=eq.p1-review-boundary-fixture&limit=1&order=created_at.desc&select=commit_id%2Cmessage%2Csummary%2Creview_status%2Cauthor_id%2Cauthor_label%2Cauthor_kind%2Cagent_name%2Ccreated_at",
+      "method": "GET"
+    },
+    {
+      "path": "/rest/v1/projects",
+      "query": "?select=current_json%2Ccurrent_sha256&project_id=eq.p1-review-boundary-fixture",
+      "method": "GET"
+    },
+    {
+      "path": "/rest/v1/project_commits",
+      "query": "",
+      "method": "POST"
+    },
+    {
+      "path": "/rest/v1/project_changes",
+      "query": "",
+      "method": "POST"
+    },
+    {
+      "path": "/rest/v1/projects",
+      "query": "?project_id=eq.p1-review-boundary-fixture&current_sha256=eq.1027a255f20c8a2883d764c68a75cd6d593a9fda38b56cba3fb69c4169d8abc0",
+      "method": "PATCH"
+    },
+    {
+      "path": "/rest/v1/projects",
+      "query": "?select=current_json%2Ccurrent_sha256&project_id=eq.p1-review-boundary-fixture",
+      "method": "GET"
+    },
+    {
+      "path": "/rest/v1/project_commits",
+      "query": "",
+      "method": "POST"
+    },
+    {
+      "path": "/rest/v1/project_changes",
+      "query": "",
+      "method": "POST"
+    },
+    {
+      "path": "/rest/v1/projects",
+      "query": "?project_id=eq.p1-review-boundary-fixture&current_sha256=eq.9c2f5ce5c96a561b868b2066871a6f04e6afb590660adb7268906e6ecda20dcb",
+      "method": "PATCH"
+    },
+    {
+      "path": "/rest/v1/projects",
+      "query": "?select=current_json%2Ccurrent_sha256&project_id=eq.p1-review-boundary-fixture",
+      "method": "GET"
+    },
+    {
+      "path": "/rest/v1/maps",
+      "query": "?project_id=eq.p1-review-boundary-fixture&select=map_id%2Cmap_json",
+      "method": "GET"
+    },
+    {
+      "path": "/rest/v1/project_commits",
+      "query": "?project_id=eq.p1-review-boundary-fixture&limit=1&order=created_at.desc&select=commit_id%2Cmessage%2Csummary%2Creview_status%2Cauthor_id%2Cauthor_label%2Cauthor_kind%2Cagent_name%2Ccreated_at",
+      "method": "GET"
+    },
+    {
+      "path": "/rest/v1/projects",
+      "query": "?select=current_json%2Ccurrent_sha256&project_id=eq.p1-review-boundary-fixture",
+      "method": "GET"
+    },
+    {
+      "path": "/rest/v1/projects",
+      "query": "?project_id=eq.p1-review-boundary-fixture&current_sha256=eq.9c2f5ce5c96a561b868b2066871a6f04e6afb590660adb7268906e6ecda20dcb",
+      "method": "PATCH"
+    },
+    {
+      "path": "/rest/v1/projects",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.p1-review-boundary-fixture",
+      "method": "GET"
+    },
+    {
+      "path": "/rest/v1/maps",
+      "query": "?project_id=eq.p1-review-boundary-fixture&select=map_id%2Cmap_json",
+      "method": "GET"
+    },
+    {
+      "path": "/rest/v1/project_commits",
+      "query": "",
+      "method": "POST"
+    },
+    {
+      "path": "/rest/v1/project_changes",
+      "query": "",
+      "method": "POST"
+    }
+  ],
+  "cleanup": {
+    "serverClosed": true,
+    "listenerStarted": false,
+    "timersCleared": true,
+    "globalsRestored": true,
+    "pendingTransports": 0,
+    "realRemoteWrites": 0
+  },
+  "completed": true,
+  "contractFailures": [
+    {
+      "id": "P1-R1-001",
+      "expected": false,
+      "actual": true,
+      "message": "Reload during save must invalidate current proof\n\ntrue !== false\n"
+    }
+  ],
+  "failure": "AggregateError: P1 contract regression probes failed\n    at file:///home/main/z-project/rpg-zzu-ai-harness-p1-r1-lineage-20260906/output/evidence/ai-harness/p1/r1-001-probe.mjs:108:45"
+}

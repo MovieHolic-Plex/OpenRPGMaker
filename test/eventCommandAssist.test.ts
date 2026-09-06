@@ -27,6 +27,7 @@ import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { Command, EventPage, Project } from "@/project/types";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
+import { parseAudioPrompt } from "./support/audioPrompt";
 
 const CONFIG: AiConfig = {
   authMode: "apiKey",
@@ -139,11 +140,16 @@ describe("buildEventAssistPrompt", () => {
       expect(prompt).toContain(`- ${kind}: `);
     }
     // 종류별 절이 서기고, 각 절에 그 종류의 실제 id 가 보여야 한다.
-    for (const slot of ["faceset", "music", "sound", "picture"] as const) {
+    for (const slot of ["faceset", "picture"] as const) {
       const label = EVENT_RESOURCE_SLOT_LABELS[slot];
       expect(prompt).toContain(`### ${label} id`);
       const first = listEventResourceOptions(slot, project)[0]!;
       expect(prompt).toContain(`- ${first.id}:`);
+    }
+    for (const slot of ["music", "sound"] as const) {
+      const first = listEventResourceOptions(slot, project)[0];
+      expect(first).toBeDefined();
+      expect(parseAudioPrompt(prompt, slot).entries.map(entry => entry.id)).toContain(first?.id);
     }
     expect(prompt).toContain("playAudio.resourceId");
   });

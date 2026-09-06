@@ -1,0 +1,56 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/storePersistenceLineage.test.ts --maxWorkers 2 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p1-r1-lineage-20260906
+
+ ❯ test/storePersistenceLineage.test.ts (8 tests | 3 failed) 129449ms
+   × accepted receipt content lineage > does not resurrect saved authority after reload during PATCH 37730ms
+     → expected { kind: 'verified', …(2) } to match object { kind: 'verified', …(2) }
+   × accepted receipt content lineage > does not resurrect saved authority after load during PATCH 11401ms
+     → expected { kind: 'verified', …(2) } to match object { kind: 'verified', …(2) }
+   × accepted receipt content lineage > does not resurrect saved authority after reconnect during PATCH 12536ms
+     → expected { kind: 'verified', …(2) } to match object { kind: 'verified', …(2) }
+   ✓ accepted receipt content lineage > invalidates an already published receipt on reload even for identical content  14500ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on load even for identical content  14710ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on reconnect even for identical content  16850ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on adopt even for identical content  12178ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on fallback even for identical content  9538ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/storePersistenceLineage.test.ts > accepted receipt content lineage > does not resurrect saved authority after reload during PATCH
+ FAIL  test/storePersistenceLineage.test.ts > accepted receipt content lineage > does not resurrect saved authority after load during PATCH
+ FAIL  test/storePersistenceLineage.test.ts > accepted receipt content lineage > does not resurrect saved authority after reconnect during PATCH
+AssertionError: expected { kind: 'verified', …(2) } to match object { kind: 'verified', …(2) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -1,7 +1,7 @@[39m
+[2m  {[22m
+[32m-   "isCurrent": false,[39m
+[31m+   "isCurrent": true,[39m
+[2m    "kind": "verified",[22m
+[2m    "receipt": {[22m
+[2m      "contentIdentity": "0b6574efd1bb51dae10e4f3ed891c1155cdb200a691a2503bf8ecc3bc9f39c51",[22m
+[2m      "mutationGeneration": 2,[22m
+[2m      "projectId": "p1-lineage-fixture",[22m
+
+ ❯ test/storePersistenceLineage.test.ts:132:28
+    130|       expect(await f.identity(live)).not.toBe(receipt.contentIdentity);
+    131|       expect(f.requests.some((request) => request.method === "PATCH" &…
+    132|       expect(result.proof).toMatchObject({ kind: "verified", isCurrent…
+       |                            ^
+    133|       expect(result).toMatchObject({ status: "failed", verified: false…
+    134|       expect(f.savedAudits()).toHaveLength(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 5 passed (8)
+   Start at  21:32:27
+   Duration  130.62s (transform 17.60s, setup 0ms, collect 186ms, tests 129.45s, environment 0ms, prepare 174ms)
+

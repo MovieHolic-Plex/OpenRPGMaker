@@ -8,16 +8,58 @@ import {
   m2CommandRuntimeClassification,
 } from "@/project/eventCommands/runtimeSupport";
 import type { Command, M2CommandFields } from "@/project/types";
-import type { ContractRunResult } from "./harness";
-import { runCommandContract } from "./harness";
+import type { ContractRunOptions, ContractRunResult } from "./harness";
+import { CONTRACT_EVENT_ID, runCommandContract } from "./harness";
 
 type M2Command = Extract<Command, { kind: "m2Command" }>;
 type MapSemanticContract = {
   readonly command: M2Command;
   readonly verify: (result: ContractRunResult) => void;
+  readonly options?: ContractRunOptions;
 };
 
 const MAP_FULL_CONTRACTS: readonly MapSemanticContract[] = [
+  contract("m2-022-change-actor-name", { target: "actor_hero", value: "CONTRACT HERO" }, (result) => {
+    expect(result.session.actorNames?.actor_hero).toBe("CONTRACT HERO");
+  }),
+  contract("m2-040-set-event-location", { target: CONTRACT_EVENT_ID, mapId: "map_blank_start", x: 8, y: 7 }, (result) => {
+    expect(result.session.eventLocations?.[CONTRACT_EVENT_ID]).toMatchObject({ mapId: "map_blank_start", x: 8, y: 7 });
+    expect(result.pauses).toContainEqual({ kind: "relocateEvents", eventIds: [CONTRACT_EVENT_ID] });
+  }),
+  contract("m2-041-swap-event-location", { eventA: CONTRACT_EVENT_ID, eventB: "event_other" }, (result) => {
+    expect(result.session.eventLocations?.[CONTRACT_EVENT_ID]).toMatchObject({ x: 5, y: 6 });
+    expect(result.session.eventLocations?.event_other).toMatchObject({ x: 1, y: 1 });
+    expect(result.pauses).toContainEqual({ kind: "relocateEvents", eventIds: [CONTRACT_EVENT_ID, "event_other"] });
+  }, { mutateProject: (project) => {
+    project.maps[project.startMapId].events.push({ id: "event_other", x: 5, y: 6, trigger: { kind: "action" }, commands: [] });
+  } }),
+  contract("m2-042-get-terrain-id", { variableId: "terrain_result", x: 2, y: 3 }, (result) => {
+    expect(result.session.variables.terrain_result).toBe(9);
+  }, { mutateProject: (project) => {
+    const map = project.maps[project.startMapId];
+    map.lowerTiles[3 * map.width + 2] = 0;
+    const tileset = project.tilesets[map.tilesetId];
+    tileset.tileMeta ??= [];
+    tileset.tileMeta[0] = { ...tileset.tileMeta[0], terrainTag: 9 };
+  } }),
+  contract("m2-043-get-event-id", { variableId: "event_result", x: 1, y: 1 }, (result) => {
+    expect(result.session.variables.event_result).toBe(1);
+  }),
+  contract("m2-044-hide-screen", {}, (result) => expect(result.session.m2Runtime?.screen.hidden).toBe(true)),
+  contract("m2-045-show-screen", {}, (result) => expect(result.session.m2Runtime?.screen.hidden).toBe(false)),
+  contract("m2-078-open-menu-screen", {}, pauseContract("openMenuScreen")),
+  contract("m2-093-open-load-menu", {}, pauseContract("openLoadMenu")),
+  contract("m2-205-pathfind-move", { target: "this-event", x: 8, y: 7, speed: 3, wait: false }, (result) => {
+    expect(result.pauses).toContainEqual({ kind: "pathfindMove", target: "this-event", x: 8, y: 7, speed: 3, wait: false });
+  }),
+  contract("m2-206-wait-until", { condition: "switchOn", target: "condition_ready", value: "", timeoutMs: 100 }, (result) => {
+    expect(result.pauses).toEqual([{ kind: "wait", ms: 50, allowParallelEvents: true }, { kind: "wait", ms: 50, allowParallelEvents: true }]);
+    expect(result.session.flags["m2-wait:switchOn:condition_ready"]).toBe(false);
+  }),
+  contract("m2-210-sound-layer", { channel: "ambient", resourceId: "ambient_contract", volume: 63, fadeMs: 400 }, (result) => {
+    expect(result.pauses).toContainEqual({ kind: "playAudio", channel: "ambient", resourceId: "ambient_contract", loop: true, volume: 63, fadeInMs: 400 });
+    expect(result.session.audio?.ambient).toMatchObject({ resourceId: "ambient_contract", loop: true, volume: 63, fadeInMs: 400 });
+  }),
   contract("m2-014-change-parameters", { target: "actor_hero", parameter: "attack", operation: "add", value: 5, valueSource: "number", valueVariableId: "" }, (result) => {
     expect(result.session.m2Runtime?.actors.actor_hero?.parameters).toBe(5);
   }),
@@ -103,7 +145,7 @@ const BATTLE_FULL_CONTRACTS: readonly {
 ];
 
 describe("m2Command persisted semantic contracts", () => {
-  it.each(MAP_FULL_CONTRACTS)("executes $command.commandId in map and common runtimes", ({ command, verify }) => {
+  it.each(MAP_FULL_CONTRACTS)("executes $command.commandId in map and common runtimes", ({ command, verify, options }) => {
     // Given: a persisted M2 command classified full in map and common contexts.
     expect(m2CommandRuntimeClassification(command.commandId).supportByContext).toMatchObject({
       map: "runtime-full",
@@ -111,14 +153,24 @@ describe("m2Command persisted semantic contracts", () => {
     });
 
     // When: the real interpreter drains the persisted command.
-    const result = runCommandContract([command]);
-
-    // Then: the command reaches its independent semantic observation. Missing-field
-    // diagnostics document compact/defaulted payloads; interpreter support warnings would
-    // mean the command was skipped or misclassified and remain forbidden here.
-    expect(result.finished).toBe(true);
-    expect(result.warnings.filter((warning) => warning.startsWith("[interpreter]"))).toEqual([]);
-    verify(result);
+    const direct = runCommandContract([command], options);
+    const common = runCommandContract([{ kind: "callCommonEvent", commonEventId: "common_contract" }], {
+      ...options,
+      mutateProject: (project) => {
+        options?.mutateProject?.(project);
+        project.commonEvents.push({ id: "common_contract", name: "Contract", trigger: "none", commands: [command] });
+      },
+      mutateSession: (session) => {
+        options?.mutateSession?.(session);
+        // The shipping interpreter resolves calls from the session's event snapshot.
+        session.commonEvents = [{ id: "common_contract", commands: [command] }];
+      },
+    });
+    for (const result of [direct, common]) {
+      expect(result.finished).toBe(true);
+      expect(result.warnings.filter((warning) => warning.startsWith("[interpreter]"))).toEqual([]);
+      verify(result);
+    }
   });
 
   it.each(BATTLE_FULL_CONTRACTS)("parses $command.commandId into its battle effect", ({ command, expected }) => {
@@ -200,8 +252,8 @@ function persistedM2(commandId: string, fields: M2CommandFields): M2Command {
   return { kind: "m2Command", commandId, fields };
 }
 
-function contract(commandId: string, fields: M2CommandFields, verify: MapSemanticContract["verify"]): MapSemanticContract {
-  return { command: persistedM2(commandId, fields), verify };
+function contract(commandId: string, fields: M2CommandFields, verify: MapSemanticContract["verify"], options?: ContractRunOptions): MapSemanticContract {
+  return { command: persistedM2(commandId, fields), verify, options };
 }
 
 function pauseContract(kind: string): MapSemanticContract["verify"] {

@@ -3,7 +3,7 @@ import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEdit
 import { openNewEventCommandDialog } from "@/editor/panels/eventEditor/commandEditDialog";
 import { renderCommandList } from "@/editor/panels/eventEditor/commandList";
 import { openEventCommandPicker } from "@/editor/panels/eventEditor/commandPicker";
-import type { CommandRuntimeSupport, M2RuntimeContext } from "@/project/eventCommands/runtimeSupport";
+import type { M2RuntimeContext } from "@/project/eventCommands/runtimeSupport";
 import type { Command } from "@/project/types";
 import { el } from "@/util/dom";
 import type { CommandListActions } from "./eventEditor/types";
@@ -13,8 +13,7 @@ export type DatabaseCommandArrayAdapter = {
   readonly commands: Command[];
   readonly replaceCommands: (commands: Command[]) => void;
   readonly rerender?: () => void;
-  readonly runtimeSupport?: (command: Command) => CommandRuntimeSupport;
-  /** 명령 피커 배지용 편집 컨텍스트: 공통 이벤트 "common", 트룹 배틀 이벤트 "troop". */
+  /** 목록·피커 설명의 실행 맥락: 공통 이벤트 "common", 트룹 배틀 이벤트 "troop". */
   readonly pickerContext?: M2RuntimeContext;
 };
 
@@ -106,7 +105,6 @@ export function createDatabaseCommandListActions(adapter: DatabaseCommandArrayAd
 export function renderDatabaseCommandListEditor(host: HTMLElement, adapter: DatabaseCommandArrayAdapter): void {
   const actions = createDatabaseCommandListActions(adapter);
   renderCommandList(host, adapter.commands, [], actions, {
-    runtimeSupport: adapter.runtimeSupport,
     pickerContext: adapter.pickerContext,
   });
   if (host.firstElementChild?.classList.contains("empty-hint")) host.firstElementChild.remove();

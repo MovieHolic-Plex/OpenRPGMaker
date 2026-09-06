@@ -71,6 +71,106 @@ Editor boot must complete before opening Database; wait for the published boot
 metric rather than the first toolbar node. Existing whole-suite failures and
 timeouts remain explicit, with assertion/diagnostic comparison against a frozen base.
 
+## Audio description verification
+
+These are reproducible verification requirements, not a claim that every gate has passed.
+Record commands, exit codes and evidence under `output/evidence/audio-descriptions/`;
+keep baseline failures and unverified visual review separate from feature results.
+No live project backfill, SQL migration, asset conversion or catalog regeneration is needed.
+
+Focused model, persistence, tool, UI, prompt and export gates:
+
+```sh
+npm test -- test/audioDescriptions.test.ts test/audioDescriptionPersistence.test.ts test/audioDescriptionConcurrentPersistence.test.ts test/audioResourceCatalog.test.ts
+npm test -- test/audioDescriptionTools.test.ts test/audioDescriptionDiff.test.ts test/audioDescriptionToolStore.test.ts test/audioDescriptionToolExposure.test.ts test/audioResourceToolPagination.test.ts
+npm test -- test/audioDescriptionEditor.test.ts test/audioDescriptionLifecycle.test.ts test/audioDescriptionPickerSurfaces.test.ts test/audioDescriptionCommandSurfaces.test.ts test/audioDescriptionResourceLifecycle.test.ts test/audioResourceSearchContract.test.ts
+npm test -- test/audioDescriptionPrompt.test.ts test/audioDescriptionPromptTransport.test.ts test/audioDescriptionSessionPrompt.test.ts
+npm test -- test/audioDescriptionExport.test.ts test/projectPackage.test.ts test/webExportUsagePruning.test.ts test/cc0AudioPlayback.test.ts test/playerRuntimeAudioIds.test.ts test/runtimeQaAudioContract.test.ts
+npm run build
+```
+
+Assert machine-consumed fields, raw IDs, source values, truncation, input sentinels and
+state changes, not exact explanatory prose. Persistence coverage must include deferred
+save responses, repeated map saves, same/different-key conflicts, clear/reset, and edits
+made after submission. Mock only transport when asserting real serialization/load/merge
+behavior; label that evidence as mocked transport rather than live Supabase persistence.
+
+### Real editor surfaces
+
+```sh
+npx playwright test --config playwright.audio.config.ts
+```
+
+`playwright.audio.config.ts` scopes Firefox, zero retries and an isolated Vite cache to
+`test/e2e/audio-descriptions.spec.ts` and `test/e2e/audio-description-search.spec.ts`.
+It defaults to port 19847 and `.omo/audio-e2e-vite-cache`; `DEV_SERVER_PORT` and
+`VITE_CACHE_DIR` can override those values. A reused server must use the same isolated
+cache/setup. This local Firefox choice addresses Chromium module requests failing with
+host `ERR_NETWORK_CHANGED`; it doesn't change global browser policy.
+
+`test/e2e/audioDescriptionHarness.ts` waits for DOMContentLoaded, the real toolbar and
+the loaded store, rejects remote persistence, then installs a normal blank project through
+the real store. Readiness comes from actual state, not page-load timing or fixed sleeps.
+Subscribe before triggering asynchronous edits/imports/playback, then await their exact
+signal with a bounded timeout.
+
+At 1024x768 and 1440x900, verify save/reopen/search, clear/reset, modal undo/redo, dirty
+cancellation, real WAV import/edit/delete and project-import isolation. Also exercise live
+picker refresh, removed-ID confirmation blocking, listener cleanup, project-switch close,
+audio test, normal/M2 event forms and actual registered AI tool parity.
+Capture screenshots/traces with selected IDs and worktree/port information. Capturing an
+image isn't visual-review approval; keyboard/focus and layout inspection remain separate.
+Don't claim Lighthouse approval from this scoped suite.
+
+### Exported-player playback and dependency evidence
+
+`scripts/qa/prepare-audio-descriptions.mts` uses
+`test/fixtures/audioDescriptions.ts` and the real `prepareWebExport()` boundary.
+It checks source immutability and removed metadata, then writes a new fixture path with
+exclusive-create semantics. Use a fresh evidence directory for each run:
+
+```sh
+EVIDENCE=output/evidence/audio-descriptions/08-export
+mkdir -p "$EVIDENCE"
+RUN="$(mktemp -d "$EVIDENCE/run-XXXXXX")"
+CACHE="$(mktemp -d /tmp/oprn-audio-qa-cache-XXXXXX)"
+trap 'rm -rf -- "$CACHE"' EXIT
+bun scripts/qa/prepare-audio-descriptions.mts "$RUN/project.json"
+VITE_CACHE_DIR="$CACHE" npm run qa:runtime -- --scenario audio-descriptions --browser firefox --project "$RUN/project.json" --out "$RUN/runtime"
+AUDIO_QA_BROWSER=firefox AUDIO_QA_PROJECT="$PWD/$RUN/project.json" AUDIO_QA_FAILURE_OUT="$PWD/$RUN/runtime-failure" VITE_CACHE_DIR="$CACHE" node --test test/runtimeQaAudioFailure.test.mjs
+node scripts/qa/check-player-audio-dependencies.mjs "$RUN/player-dependencies.json"
+```
+
+The fixture preparer and dependency checker refuse to overwrite their output files.
+`scripts/runtime-qa.mjs` runs the dedicated `player.html` surface, not editor play mode.
+`scripts/qa/runtime/audio-descriptions.scenario.mjs` starts starter BGM
+`cc0-bgm-rtp-fld-003` through title input, then triggers local SE `cc0-sound-ui-confirm`
+through an interaction. The commands above select Firefox for this host; the runtime CLI
+defaults to Chromium. Its optional `--browser firefox` and the failure test's
+`AUDIO_QA_BROWSER=firefox` are separate from the editor Playwright configuration.
+
+`scripts/lib/runtimeQaAudio.mjs` installs native `playing`/`error` listeners before the
+action. Evidence requires a trusted event from the matching engine-owned, same-origin audio
+element, valid ready/paused/ended state, expected loop/mute state, the engine-requested ID
+and an engine snapshot. It doesn't replace `Audio`, `play()` or engine methods. A requested-ID
+log alone isn't playback evidence. `test/runtimeQaAudioFailure.test.mjs` aborts the real SE
+request and requires failed playback evidence while BGM succeeds.
+
+This proves native playback start, not human listening, full-track playback or label accuracy.
+Inspect the runtime `SUMMARY.md` and machine-readable audio evidence, including failures.
+`test/runtimeQaAudioContract.test.ts` covers the report contract.
+
+`scripts/qa/check-player-audio-dependencies.mjs` performs a production player build with
+`write: false` and records modules with positive rendered length. It rejects
+`src/assets/audioResourceCatalog.ts`, `bgmCatalog.ts` and `seCatalog.ts`, while requiring
+`src/assets/bgmCatalogRuntime.ts` and `seCatalogRuntime.ts`. This is rendered-bundle evidence,
+not a source-grep claim. Keep prompt descriptions in `src/ai/eventAudioPrompt.ts`, separate
+from shared event eligibility and player dependencies.
+
+Close owned browsers/servers and remove only owned temporary caches after verification.
+After applying documentation, the integrating lead runs `npm run openwiki:index`, then
+`npm run openwiki:index -- --check` and `npm run openwiki:verify`. Don't hand-edit INDEX.md.
+
 ## Mac onboarding Phase 1 contracts (2026-09-06)
 
 `node --test test/macLauncher.test.mjs test/setupLocal.test.mjs` (also
@@ -886,6 +986,16 @@ Chromium local network 검사만 캡처 실행 인자로 끈다. 일반 출하 �
 - `.env.local`에 실 Supabase 키가 있는 상태의 전체 검사 중 `rpg-zzu-house-template-gallery`에 테스트 문구(`증발 위험 변경`, `마일스톤: 1차 제목` 등)가 저장되고 저작한 꾸러미가 다시 사라졌다. 여러 워크트리에서 동시에 전체 검사가 돌았으므로 어느 실행이 썼는지는 확정하지 못했다. `lakeVillageRebuildFinal`만 제외돼 있어도 안전하다고 보지 마라.
 - 이 세션의 무격리 게이트를 중단하고, 환경의 Supabase URL/키/프록시를 비운 뒤 Node `--import`로 **실 네트워크 fetch 차단**을 설치해 다시 실행했다. `.env.local`을 직접 읽는 테스트도 있으므로 환경 변수만 비우는 것으로 충분하지 않다. 네트워크 모의 응답은 그대로 쓰며 실 DB URL과 외부 주소 요청을 거절한다. 로컬 HTTP 하네스는 허용하되 `.env.local`의 실제 DB origin은 로컬이어도 막는다.
 - 세션 증거: `output/evidence/concept-expansion/README.md`, 원격 저장 직후 증명 `supabase-proof-first-save.json`. 후속 저장에서는 CAS가 동시 변경을 감지해 덮어쓰기를 거절했다. 실 콘텐츠 작업과 전체 검사를 같은 공유 프로젝트에서 병행하지 말고, 외부 쓰기가 끝난 뒤 최신 스냅샷으로 추가하고 재로드하라.
+
+## 조수 보상 저작과 출하 플레이어 검증 (2026-09-06)
+
+`npcCommandContract`, `aiCompletionAccounting`, `assistantDependencyRetry`, `npcRewardAcceptance`, `npcRewardSession`은 각각 명령 규격, 적용 완료 원장, 종속 보류/재시도, 실제 장면 보상, 세션 완료 판정을 검사한다. 보상 요구는 `IntentDeclaration.npcRewards`에서 오며 최종 이벤트 명령으로 역산하지 않는다. 페이지 두 개나 도구 성공 횟수는 지급 증거가 아니다.
+
+실제 모델 검증은 별도 원격 QA 프로젝트에서 조수를 실행하고 정상 저장 후 같은 project id로 다시 읽는다. 재로드한 JSON을 `npm run qa:runtime -- --scenario assistant-reward --project <path>`에 전달한다. 이 시나리오는 `player.html`에서 실제 상호작용 두 번으로 `item_capture_orb`와 `species_leafling`이 각각 `0/0 → 5/1 → 5/1`인지 검사한다. 맵은 `map_blank_start`, 시작점은 `(10,8)`, 고정 보상 NPC는 `(10,7)`이다. 장면 테스트가 통과해도 출하 플레이어 검증을 생략하지 않는다.
+
+런타임 QA의 선택적 `inventoryCounts`/`ownedMonsterCounts`는 요청한 ID만 manifest에 기록한다. 몬스터 수는 파티와 보관함의 소유 인스턴스를 합쳐 세며, 훅이나 관측 데이터가 없으면 0으로 간주하지 않고 실패한다. 관련 회귀는 `runtimeQaGate`, `runtimeQaInstrumentationBoundary`, `runtimeQaReport`다.
+
+실제 모델 후속 검증에서 `giveMonster`의 `speciesId`/`level`, 장면 스텝의 `dir`/`to`/`ticks`/`index`가 노출 스키마에 빠져 인자가 다른 필드로 반복 전송됐다. 해당 필드의 노출과 컴파일러 계약은 `npcCommandContract`가 검사한다. `sceneVerificationRepair`는 명시 NPC ID·단언·선택지·보상 기준점이 같은 검사에서 이동/방향을 고친 재실행이 과거 실패를 해소하는지 검사한다. 기대 보상이나 NPC 대상을 바꾼 별개 검사는 기존 실패를 지울 수 없다.
 
 ## 실내 조립·형상 검증 (2026-09-05)
 

@@ -262,7 +262,7 @@ export function listEventResourceOptions(
   return collect(slot, project);
 }
 
-/** 이 슬롯의 유효 id 집합. 프롬프트가 실은 목록과 검증이 보는 집합이 같아야 한다. */
+/** Full eligible IDs for validation; prompt selection is only a subset of this set. */
 export function eventResourceIdSet(
   slot: EventResourceSlot,
   project: Pick<Project, "assets" | "resourceProfiles">,

@@ -141,6 +141,19 @@ export const M2_SYNTHETIC_EDITOR_ONLY_IDS = [
 ] as const;
 
 export const M2_MAP_COMMON_FULL_IDS = [
+  // 2026-09-06 player audit + location/audio repair evidence (declared fields).
+  "m2-022-change-actor-name",
+  "m2-040-set-event-location",
+  "m2-041-swap-event-location",
+  "m2-042-get-terrain-id",
+  "m2-043-get-event-id",
+  "m2-044-hide-screen",
+  "m2-045-show-screen",
+  "m2-078-open-menu-screen",
+  "m2-093-open-load-menu",
+  "m2-205-pathfind-move",
+  "m2-206-wait-until",
+  "m2-210-sound-layer",
   "m2-002-display-text-settings",
   "m2-014-change-parameters",
   "m2-019-change-state",

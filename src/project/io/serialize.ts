@@ -5,9 +5,14 @@ import { requireNumber, requireRecord } from "./guards";
 import { migrateV1toV3, migrateV2toV3, migrateV3toV4 } from "./migration";
 import { validateProjectV1, validateProjectV2, validateProjectV4 } from "./shape";
 
-/** Drop legacy terrainTemplates from wire format (field removed from product model). */
-function projectJsonReplacer(key: string, value: unknown): unknown {
-  return key === "terrainTemplates" ? undefined : value;
+/** Retired fields are omitted, but raw audio resource IDs are not field names. */
+function projectJsonReplacer(project: Project) {
+  const descriptions = project.audioDescriptions;
+  return function (this: unknown, key: string, value: unknown): unknown {
+    return key === "terrainTemplates" && this !== descriptions?.music && this !== descriptions?.sound
+      ? undefined
+      : value;
+  };
 }
 
 /**
@@ -15,7 +20,7 @@ function projectJsonReplacer(key: string, value: unknown): unknown {
  * Compact (no pretty indent) — payload size and main-thread stringify cost matter on large maps.
  */
 export function serialize(project: Project): string {
-  return JSON.stringify(project, projectJsonReplacer);
+  return JSON.stringify(project, projectJsonReplacer(project));
 }
 
 /**
@@ -32,7 +37,7 @@ export function serializeForComparison(project: Project): string {
 
 /** Human-readable project.json for .rpgzzu packages and debug dumps only. */
 export function serializePretty(project: Project): string {
-  return JSON.stringify(project, projectJsonReplacer, 2);
+  return JSON.stringify(project, projectJsonReplacer(project), 2);
 }
 
 export function deserialize(raw: string): Project {

@@ -82,6 +82,9 @@ export const SCENE_SPECS = {
     loop: false,
   }),
   stopAudio: nativeManifestEntry("scene", { kind: "stopAudio" }),
+  playMovie: nativeManifestEntry("scene", {
+    kind: "playMovie", resourceId: "resource_contract", wait: true, skippable: true,
+  }),
   shop: nativeManifestEntry("scene", {
     kind: "shop",
     itemIds: ["item_contract"],
