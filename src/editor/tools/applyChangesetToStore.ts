@@ -268,10 +268,11 @@ export async function applyProposedProject(
     options.toolNames,
     options.reason ?? `AI 적용: ${options.summary}`,
   );
-  if (options.resetProject === true) store.replaceProject(proposed, { ...change, projectSwitch: false });
-  else store.replace(proposed, { change });
-  // Capture the actual apply before the asynchronous commit can outlive a human edit.
-  const commitProject = store.getCurrent();
+  // Correlate at the mutation boundary: synchronous subscribers and the awaited
+  // commit can both leave a later edit in the live store before this apply returns.
+  const commitProject = options.resetProject === true
+    ? store.replaceProject(proposed, { ...change, projectSwitch: false })
+    : store.replace(proposed, { change });
   focusAcceptedAgentChanges(before, proposed);
   const commitInput: CommitLogInput = {
     project: proposed,

@@ -1,0 +1,56 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiRunEndProof.test.ts -t does not publish success after a proof subscriber starts a cancelled proof
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p1-r1-reentrant-20260906
+
+ ❯ test/aiRunEndProof.test.ts (19 tests | 1 failed | 18 skipped) 2809ms
+   ↓ AssistantSession accepted-revision proof > projects initialized proof events and rechecks freshness after the final status subscriber
+   ↓ AssistantSession accepted-revision proof > rechecks edit from a synchronous proof subscriber
+   ↓ AssistantSession accepted-revision proof > rechecks cancel from a synchronous proof subscriber
+   × AssistantSession accepted-revision proof > does not publish success after a proof subscriber starts a cancelled proof 2806ms
+     → expected [ { kind: 'status', …(2) } ] to have a length of +0 but got 1
+   ↓ AssistantSession accepted-revision proof > returns the latest emitted state when a status subscriber starts a cancelled proof
+   ↓ AssistantSession accepted-revision proof > does not claim verified after a failed proof read through actual session completion
+   ↓ AssistantSession accepted-revision proof > retries failed proof for the same plan/revision, deduplicates success, and reproves a changed revision
+   ↓ AssistantSession accepted-revision proof > does not promote cancelled during the read or replace editor state
+   ↓ AssistantSession accepted-revision proof > does not promote disabled during the read or replace editor state
+   ↓ AssistantSession accepted-revision proof > does not promote target during the read or replace editor state
+   ↓ AssistantSession accepted-revision proof > does not promote content during the read or replace editor state
+   ↓ AssistantSession accepted-revision proof > does not promote local-edit during the read or replace editor state
+   ↓ AssistantSession accepted-revision proof > uses the real apply commit, not a newest remote commit read
+   ↓ AssistantSession accepted-revision proof > project proof can succeed when the separate commit log fails
+   ↓ AssistantSession accepted-revision proof > proves a normal no-plan apply through the reusable path without replaying the tool
+   ↓ AssistantSession accepted-revision proof > does not correlate a later human edit with an in-flight apply commit
+   ↓ AssistantSession accepted-revision proof > retryLastTurn retries failed proof without replaying the LLM or applied tools
+   ↓ AssistantSession accepted-revision proof > retryLastTurn proves already applied milestones after a recovered LLM failure
+   ↓ AssistantSession accepted-revision proof > a clean saved response without an accepted receipt cannot become proof
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiRunEndProof.test.ts > AssistantSession accepted-revision proof > does not publish success after a proof subscriber starts a cancelled proof
+AssertionError: expected [ { kind: 'status', …(2) } ] to have a length of +0 but got 1
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 0[39m
+[31m+ 1[39m
+
+ ❯ test/aiRunEndProof.test.ts:144:29
+    142|     expect(result).toEqual(await nested);
+    143|     expect(f.session.getRunEndProof()).toEqual(result);
+    144|     expect(f.savedAudits()).toHaveLength(0);
+       |                             ^
+    145|   });
+    146| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 18 skipped (19)
+   Start at  21:29:12
+   Duration  31.42s (transform 19.45s, setup 0ms, collect 27.36s, tests 2.81s, environment 0ms, prepare 402ms)
+

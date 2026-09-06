@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { clearTimeout as clearDeadline, setTimeout as setDeadline } from "node:timers";
 import type { Project } from "@/project/types";
 import type { ChatResult } from "@/ai/llmClient";
 import { fixedDeclarer } from "./intentFixture";
@@ -16,9 +17,21 @@ const plan = {
   }] }],
 };
 
+async function waitForSignal(signal: Promise<void>): Promise<void> {
+  let deadline: ReturnType<typeof setDeadline> | undefined;
+  try {
+    await Promise.race([signal, new Promise<never>((_resolve, reject) => {
+      deadline = setDeadline(() => reject(new Error("Transport did not reach the subscribed boundary")), 30_000);
+    })]);
+  } finally {
+    clearDeadline(deadline);
+  }
+}
+
 async function fixture(withPlan = true) {
   let row: Row | undefined;
   let read: (() => Promise<Response>) | undefined;
+  let write: (() => Promise<void>) | undefined;
   const requests: { path: string; method: string }[] = [];
   const commits: string[] = [];
   let commitResponse: (() => Promise<Response>) | undefined;
@@ -27,7 +40,11 @@ async function fixture(withPlan = true) {
     const method = init?.method ?? "GET";
     requests.push({ path, method });
     if (path === "/rest/v1/projects") {
-      if (method !== "GET") { row = JSON.parse(String(init?.body)); return Response.json(method === "PATCH" ? [row] : []); }
+      if (method !== "GET") {
+        if (write) await write();
+        row = JSON.parse(String(init?.body));
+        return Response.json(method === "PATCH" ? [row] : []);
+      }
       return read ? read() : Response.json(row ? [row] : []);
     }
     if (path === "/rest/v1/project_commits" && method === "POST") {
@@ -66,6 +83,7 @@ async function fixture(withPlan = true) {
     failFinal: () => { failFinal = true; },
     chatCalls: () => chatCalls,
     setRead: (next: () => Promise<Response>) => { read = next; },
+    setWrite: (next: () => Promise<void>) => { write = next; },
     setCommit: (next: () => Promise<Response>) => { commitResponse = next; },
     row: () => { if (!row) throw new Error("No saved row"); return row; },
     run: (onEvent: Parameters<typeof session.sendUserMessage>[1] = () => {}, signal?: AbortSignal) =>
@@ -127,6 +145,23 @@ describe("AssistantSession accepted-revision proof", () => {
     expect(f.savedAudits()).toHaveLength(0);
   });
 
+  it("does not publish success after a proof subscriber starts a cancelled proof", async () => {
+    const f = await fixture();
+    const controller = new AbortController();
+    controller.abort();
+    let nested: Promise<RunEndProofState> | undefined;
+    const result = await f.session.proveAppliedRevision((event) => {
+      if (event.type === "persistence_proof" && event.state.status === "succeeded" && !nested) {
+        nested = f.session.proveAppliedRevision(() => {}, controller.signal);
+      }
+    });
+    expect(nested).toBeDefined();
+    expect(await nested).toMatchObject({ status: "failed", verified: false, reason: "cancelled" });
+    expect(result).toEqual(await nested);
+    expect(f.session.getRunEndProof()).toEqual(result);
+    expect(f.savedAudits()).toHaveLength(0);
+  });
+
   it("returns the latest emitted state when a status subscriber starts a cancelled proof", async () => {
     const f = await fixture();
     const controller = new AbortController();
@@ -139,7 +174,92 @@ describe("AssistantSession accepted-revision proof", () => {
     expect(await nested).toMatchObject({ status: "failed", verified: false, reason: "cancelled" });
     expect(result).toEqual(await nested);
     expect(f.session.getRunEndProof()).toEqual(result);
+    // This callback runs after a legitimately published success audit.
+    expect(f.savedAudits()).toHaveLength(1);
   });
+
+  it.each(["initial", "receipt", "failure", "success-throw"])("preserves cancellation superseding the %s callback", async (boundary) => {
+    const f = await fixture();
+    const controller = new AbortController();
+    controller.abort();
+    if (boundary === "failure") f.setRead(async () => new Response("unavailable", { status: 503 }));
+    let nested: Promise<RunEndProofState> | undefined;
+    const result = await f.session.proveAppliedRevision((event) => {
+      if (event.type !== "persistence_proof" || nested) return;
+      const matches = boundary === "initial" ? event.state.status === "attempted" && !event.state.receipt
+        : boundary === "receipt" ? event.state.status === "attempted" && !!event.state.receipt
+        : event.state.status === (boundary === "failure" ? "failed" : "succeeded");
+      if (!matches) return;
+      nested = f.session.proveAppliedRevision(() => {}, controller.signal);
+      if (boundary === "success-throw") throw new Error("superseded subscriber failed");
+    });
+    expect(nested).toBeDefined();
+    expect(await nested).toMatchObject({ status: "failed", verified: false, reason: "cancelled" });
+    expect(result).toEqual(await nested);
+    expect(f.session.getRunEndProof()).toEqual(result);
+    expect(f.savedAudits()).toHaveLength(0);
+    expect(f.session.getAuditEntries().filter((entry) => entry.kind === "status").map((entry) => entry.text.split(" ")[0]))
+      .toEqual(["agent_run:proof-failed"]);
+    if (boundary === "initial") expect(f.requests).toHaveLength(0);
+    if (boundary === "receipt") expect(f.requests.filter((r) => r.method === "GET")).toHaveLength(0);
+  });
+
+  it("does not resume publication after a pending flush is superseded", async () => {
+    const f = await fixture();
+    const started = Promise.withResolvers<void>();
+    const release = Promise.withResolvers<void>();
+    f.setWrite(() => { started.resolve(); return release.promise; });
+    const outer = f.session.proveAppliedRevision();
+    try {
+      await waitForSignal(started.promise);
+      const controller = new AbortController();
+      controller.abort();
+      const nested = await f.session.proveAppliedRevision(() => {}, controller.signal);
+      expect(nested).toMatchObject({ status: "failed", reason: "cancelled", verified: false });
+      release.resolve();
+      expect(await outer).toEqual(nested);
+      expect(f.session.getRunEndProof()).toEqual(nested);
+      expect(f.requests.filter((r) => r.method === "GET")).toHaveLength(0);
+      expect(f.savedAudits()).toHaveLength(0);
+    } finally {
+      release.resolve();
+      await outer;
+    }
+  }, 60_000);
+
+  it.each([
+    { newer: "cancelled", older: "verified" },
+    { newer: "cancelled", older: "mismatch" },
+    { newer: "succeeded", older: "verified" },
+    { newer: "succeeded", older: "mismatch" },
+    { newer: "succeeded", older: "cancelled" },
+  ])("keeps newer $newer proof when an overlapping read ends $older", async ({ newer, older }) => {
+    const f = await fixture();
+    const started = Promise.withResolvers<void>();
+    const reply = Promise.withResolvers<Response>();
+    const controller = new AbortController();
+    f.setRead(() => { started.resolve(); return reply.promise; });
+    const outer = f.session.proveAppliedRevision(() => {}, controller.signal);
+    try {
+      await waitForSignal(started.promise);
+      const row = structuredClone(f.row());
+      f.setRead(async () => Response.json([f.row()]));
+      const nextController = new AbortController();
+      if (newer === "cancelled") nextController.abort();
+      const nested = await f.session.proveAppliedRevision(() => {}, nextController.signal);
+      expect(nested).toMatchObject({ status: newer === "cancelled" ? "failed" : "succeeded", verified: newer === "succeeded" });
+      if (older === "cancelled") controller.abort();
+      if (older === "mismatch") row.current_json.meta.title = "old-read-mismatch";
+      reply.resolve(Response.json([row]));
+      expect(await outer).toEqual(nested);
+      expect(f.session.getRunEndProof()).toEqual(nested);
+      expect(f.savedAudits()).toHaveLength(newer === "succeeded" ? 1 : 0);
+      expect(f.session.getAuditEntries().filter((entry) => entry.kind === "status")).toHaveLength(1);
+    } finally {
+      reply.resolve(Response.json([f.row()]));
+      await outer;
+    }
+  }, 60_000);
 
   it("does not claim verified after a failed proof read through actual session completion", async () => {
     const f = await fixture();

@@ -1,0 +1,3 @@
+[edit-activity] (라벨 없음: project)
+[project-commits] 저장 baseline 이 없어 실제 diff 를 못 낸다 — 시스템 변경으로 기록한다 { summary: '변경 저장: 시스템' }
+{"name":"reentrant-cancelled-proof-at-success-event","outer":{"status":"failed","verified":false,"reason":"cancelled","commitId":null},"inner":{"status":"failed","verified":false,"reason":"cancelled","commitId":null},"current":{"status":"failed","verified":false,"reason":"cancelled","commitId":null},"savedAuditCount":0,"auditTokens":["agent_run:proof-failed"]}

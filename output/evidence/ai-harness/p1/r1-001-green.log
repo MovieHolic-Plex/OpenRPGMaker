@@ -1,0 +1,41 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/storePersistenceProof.test.ts test/storePersistenceLineage.test.ts --maxWorkers 2 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p1-r1-lineage-20260906
+
+ ✓ test/storePersistenceProof.test.ts (18 tests) 59950ms
+   ✓ accepted revision persistence proof > verifies the accepted content through actual save/read transport and reuses its clean-flush receipt  9974ms
+   ✓ accepted revision persistence proof > compares normalized values rather than JSONB object-key order  3792ms
+   ✓ accepted revision persistence proof > uses the ordinary normalized remote load and map-overlay contract  4146ms
+   ✓ accepted revision persistence proof > does not verify a matching projects row when the ordinary map read fails  2108ms
+   ✓ accepted revision persistence proof > binds the receipt to the accepted merged project, not the unmerged live store  5072ms
+   ✓ accepted revision persistence proof > keeps open event drafts local and out of accepted content identity  7518ms
+   ✓ accepted revision persistence proof > rejects a copied token without issuing a read  1982ms
+   ✓ accepted revision persistence proof > does not verify a failed read  1895ms
+   ✓ accepted revision persistence proof > does not verify a missing read  1519ms
+   ✓ accepted revision persistence proof > does not verify a disabled read  1756ms
+   ✓ accepted revision persistence proof > does not verify a cancelled read  1648ms
+   ✓ accepted revision persistence proof > rejects wrong target even when current_sha256 is unchanged  1907ms
+   ✓ accepted revision persistence proof > rejects wrong content even when current_sha256 is unchanged  2727ms
+   ✓ accepted revision persistence proof > keeps a failed proof retryable for the same accepted revision  2754ms
+   ✓ accepted revision persistence proof > preserves newer local edits during the read and does not attach old proof to them  2801ms
+   ✓ accepted revision persistence proof > pins the original target across a configuration change during read  2701ms
+   ✓ accepted revision persistence proof > does not verify when cancelled while the read is in flight  2274ms
+   ✓ accepted revision persistence proof > does not verify when disabled while the read is in flight  3370ms
+ ✓ test/storePersistenceLineage.test.ts (8 tests) 127408ms
+   ✓ accepted receipt content lineage > does not resurrect saved authority after reload during PATCH  32625ms
+   ✓ accepted receipt content lineage > does not resurrect saved authority after load during PATCH  14940ms
+   ✓ accepted receipt content lineage > does not resurrect saved authority after reconnect during PATCH  18482ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on reload even for identical content  17561ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on load even for identical content  12102ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on reconnect even for identical content  14382ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on adopt even for identical content  10124ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on fallback even for identical content  7187ms
+
+ Test Files  2 passed (2)
+      Tests  26 passed (26)
+   Start at  21:44:08
+   Duration  128.64s (transform 14.38s, setup 0ms, collect 465ms, tests 187.36s, environment 1ms, prepare 326ms)
+

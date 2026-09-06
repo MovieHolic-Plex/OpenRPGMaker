@@ -1,0 +1,160 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/storePersistence.test.ts --maxWorkers 2 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p1-r1-lineage-20260906
+
+ ❯ test/storePersistence.test.ts (11 tests | 6 failed) 22840ms
+   × Project store remote persistence > does not write to Supabase before the canonical project has loaded 10122ms
+     → expected "spy" to not be called at all, but actually been called 1 times[90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m    Array [
+      "/__oprn/edit-activity",
+      Object {
+        "body": "{"entries":[{"seq":0,"at":"2026-09-06T12:43:28.100Z","scope":"project","label":null,"origin":"human","generation":1,"reason":"사람이 편집"}]}",
+        "headers": Object {
+          "Content-Type": "application/json",
+        },
+        "method": "POST",
+      },
+    ]
+[39m[90m
+
+Number of calls: [1m1[22m
+[39m
+   × Project store remote persistence > does not auto-save local dev showcase projects to Supabase 631ms
+     → Cannot read properties of undefined (reading 'ok')
+   × Project store remote persistence > always creates a new fresh project instead of reloading local dev overrides 1534ms
+     → Cannot read properties of undefined (reading 'ok')
+   × Project store remote persistence > saves and reloads local edits for dev showcase projects without Supabase 605ms
+     → Cannot read properties of undefined (reading 'ok')
+   × Project store remote persistence > reports why DB persistence is unavailable for local dev showcase projects 601ms
+     → {
+  "message":"Invalid authentication credentials"
+}
+   ✓ Project store remote persistence > requires DB configuration before opening a project  832ms
+   ✓ Project store remote persistence > marks the project loaded when reconnect recovers a blocked first boot  2979ms
+   × Project store remote persistence > does not create a DB project when the selected project row is missing 600ms
+     → expected "spy" to be called 1 times, but got 4 times
+   ✓ Project store remote persistence > skips remote flush when there are no unsaved changes  455ms
+   ✓ Project store remote persistence > keeps local map paint when remote save finishes with a stale snapshot  2081ms
+   ✓ Project store remote persistence > does not apply stale map-patch response over newer local paint  2396ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/storePersistence.test.ts > Project store remote persistence > does not write to Supabase before the canonical project has loaded
+AssertionError: expected "spy" to not be called at all, but actually been called 1 times[90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m    Array [
+      "/__oprn/edit-activity",
+      Object {
+        "body": "{"entries":[{"seq":0,"at":"2026-09-06T12:43:28.100Z","scope":"project","label":null,"origin":"human","generation":1,"reason":"사람이 편집"}]}",
+        "headers": Object {
+          "Content-Type": "application/json",
+        },
+        "method": "POST",
+      },
+    ]
+[39m[90m
+
+Number of calls: [1m1[22m
+[39m
+ ❯ test/storePersistence.test.ts:35:26
+     33| 
+     34|     expect(saveResult).toEqual({ kind: "not-loaded" });
+     35|     expect(fetchSpy).not.toHaveBeenCalled();
+       |                          ^
+     36|   });
+     37| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  test/storePersistence.test.ts > Project store remote persistence > does not auto-save local dev showcase projects to Supabase
+TypeError: Cannot read properties of undefined (reading 'ok')
+ ❯ loadProjectSnapshotFromSupabase src/project/supabaseProjectSync.ts:232:17
+    230|     signal: options.signal,
+    231|   });
+    232|   if (!response.ok) {
+       |                 ^
+    233|     throw new SupabaseProjectSyncError(await response.text(), response…
+    234|   }
+ ❯ loadProjectFromSupabase src/project/supabaseProjectSync.ts:153:20
+ ❯ ProjectStore.load src/project/store.ts:274:27
+ ❯ test/storePersistence.test.ts:55:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  test/storePersistence.test.ts > Project store remote persistence > always creates a new fresh project instead of reloading local dev overrides
+TypeError: Cannot read properties of undefined (reading 'ok')
+ ❯ loadProjectSnapshotFromSupabase src/project/supabaseProjectSync.ts:232:17
+    230|     signal: options.signal,
+    231|   });
+    232|   if (!response.ok) {
+       |                 ^
+    233|     throw new SupabaseProjectSyncError(await response.text(), response…
+    234|   }
+ ❯ loadProjectFromSupabase src/project/supabaseProjectSync.ts:153:20
+ ❯ ProjectStore.load src/project/store.ts:274:27
+ ❯ test/storePersistence.test.ts:91:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  test/storePersistence.test.ts > Project store remote persistence > saves and reloads local edits for dev showcase projects without Supabase
+TypeError: Cannot read properties of undefined (reading 'ok')
+ ❯ loadProjectSnapshotFromSupabase src/project/supabaseProjectSync.ts:232:17
+    230|     signal: options.signal,
+    231|   });
+    232|   if (!response.ok) {
+       |                 ^
+    233|     throw new SupabaseProjectSyncError(await response.text(), response…
+    234|   }
+ ❯ loadProjectFromSupabase src/project/supabaseProjectSync.ts:153:20
+ ❯ ProjectStore.load src/project/store.ts:274:27
+ ❯ test/storePersistence.test.ts:119:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  test/storePersistence.test.ts > Project store remote persistence > reports why DB persistence is unavailable for local dev showcase projects
+SupabaseProjectSyncError: {
+  "message":"Invalid authentication credentials"
+}
+ ❯ loadProjectSnapshotFromSupabase src/project/supabaseProjectSync.ts:233:11
+    231|   });
+    232|   if (!response.ok) {
+    233|     throw new SupabaseProjectSyncError(await response.text(), response…
+       |           ^
+    234|   }
+    235|   const rows = await parseProjectRows(response);
+ ❯ loadProjectFromSupabase src/project/supabaseProjectSync.ts:153:20
+ ❯ ProjectStore.load src/project/store.ts:274:27
+ ❯ test/storePersistence.test.ts:151:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  test/storePersistence.test.ts > Project store remote persistence > does not create a DB project when the selected project row is missing
+AssertionError: expected "spy" to be called 1 times, but got 4 times
+ ❯ test/storePersistence.test.ts:230:22
+    228| 
+    229|     await expect(store.load()).rejects.toMatchObject({ name: "DbConnec…
+    230|     expect(fetchSpy).toHaveBeenCalledTimes(1);
+       |                      ^
+    231|     expect(fetchSpy.mock.calls[0]?.[1]?.method ?? "GET").toBe("GET");
+    232|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed | 5 passed (11)
+   Start at  21:43:27
+   Duration  24.19s (transform 6.76s, setup 0ms, collect 232ms, tests 22.84s, environment 0ms, prepare 168ms)
+

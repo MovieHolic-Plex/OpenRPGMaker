@@ -1,0 +1,75 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/storePersistenceProof.test.ts test/storePersistenceLineage.test.ts --maxWorkers 2 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p1-r1-lineage-20260906
+
+ ✓ test/storePersistenceProof.test.ts (18 tests) 86133ms
+   ✓ accepted revision persistence proof > verifies the accepted content through actual save/read transport and reuses its clean-flush receipt  17467ms
+   ✓ accepted revision persistence proof > compares normalized values rather than JSONB object-key order  4779ms
+   ✓ accepted revision persistence proof > uses the ordinary normalized remote load and map-overlay contract  5448ms
+   ✓ accepted revision persistence proof > does not verify a matching projects row when the ordinary map read fails  3428ms
+   ✓ accepted revision persistence proof > binds the receipt to the accepted merged project, not the unmerged live store  6399ms
+   ✓ accepted revision persistence proof > keeps open event drafts local and out of accepted content identity  13907ms
+   ✓ accepted revision persistence proof > rejects a copied token without issuing a read  2508ms
+   ✓ accepted revision persistence proof > does not verify a failed read  1710ms
+   ✓ accepted revision persistence proof > does not verify a missing read  2895ms
+   ✓ accepted revision persistence proof > does not verify a disabled read  2164ms
+   ✓ accepted revision persistence proof > does not verify a cancelled read  2200ms
+   ✓ accepted revision persistence proof > rejects wrong target even when current_sha256 is unchanged  3785ms
+   ✓ accepted revision persistence proof > rejects wrong content even when current_sha256 is unchanged  2548ms
+   ✓ accepted revision persistence proof > keeps a failed proof retryable for the same accepted revision  3234ms
+   ✓ accepted revision persistence proof > preserves newer local edits during the read and does not attach old proof to them  4190ms
+   ✓ accepted revision persistence proof > pins the original target across a configuration change during read  4116ms
+   ✓ accepted revision persistence proof > does not verify when cancelled while the read is in flight  2902ms
+   ✓ accepted revision persistence proof > does not verify when disabled while the read is in flight  2437ms
+ ❯ test/storePersistenceLineage.test.ts (8 tests | 2 failed) 146502ms
+   × accepted receipt content lineage > does not resurrect saved authority after reload during PATCH 43012ms
+     → expected { kind: 'saved', …(2) } to deeply equal { kind: 'saved' }
+   ✓ accepted receipt content lineage > does not resurrect saved authority after load during PATCH  22115ms
+   × accepted receipt content lineage > does not resurrect saved authority after reconnect during PATCH 15113ms
+     → expected { kind: 'saved', …(2) } to deeply equal { kind: 'saved' }
+   ✓ accepted receipt content lineage > invalidates an already published receipt on reload even for identical content  21872ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on load even for identical content  12755ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on reconnect even for identical content  14554ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on adopt even for identical content  9869ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on fallback even for identical content  7210ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/storePersistenceLineage.test.ts > accepted receipt content lineage > does not resurrect saved authority after reload during PATCH
+ FAIL  test/storePersistenceLineage.test.ts > accepted receipt content lineage > does not resurrect saved authority after reconnect during PATCH
+AssertionError: expected { kind: 'saved', …(2) } to deeply equal { kind: 'saved' }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "kind": "saved",[22m
+[31m+   "receipt": {[39m
+[31m+     "contentIdentity": "20b4dde8c0a99a5602db2488bbbdb87067ed2234fd0f07adce944bd1f93aa7f9",[39m
+[31m+     "mutationGeneration": 2,[39m
+[31m+     "projectId": "p1-lineage-fixture",[39m
+[31m+     "revisionId": "1185fa17-fb2e-4ef7-94d8-bb796f3d3574",[39m
+[31m+     "sha256": "9c2f5ce5c96a561b868b2066871a6f04e6afb590660adb7268906e6ecda20dcb",[39m
+[31m+   },[39m
+[31m+   "sha256": "9c2f5ce5c96a561b868b2066871a6f04e6afb590660adb7268906e6ecda20dcb",[39m
+[2m  }[22m
+
+ ❯ test/storePersistenceLineage.test.ts:137:37
+    135|       expect(f.session.getRunEndProof()?.verified).toBe(false);
+    136|       expect(f.store.isPersistenceReceiptCurrent(receipt)).toBe(false);
+    137|       expect(await f.store.flush()).toEqual({ kind: "saved" });
+       |                                     ^
+    138|       expect(f.store.getCurrent()).toBe(live);
+    139|       expect(f.store.hasUnsavedChanges()).toBe(false);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  2 failed | 24 passed (26)
+   Start at  21:35:41
+   Duration  148.23s (transform 21.99s, setup 0ms, collect 525ms, tests 232.63s, environment 1ms, prepare 433ms)
+

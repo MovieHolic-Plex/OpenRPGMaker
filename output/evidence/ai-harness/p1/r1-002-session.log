@@ -1,0 +1,31 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiRunEndProof.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p1-r1-commit-20260906
+
+ ✓ test/aiRunEndProof.test.ts (18 tests) 64016ms
+   ✓ AssistantSession accepted-revision proof > projects initialized proof events and rechecks freshness after the final status subscriber  2259ms
+   ✓ AssistantSession accepted-revision proof > rechecks edit from a synchronous proof subscriber  1736ms
+   ✓ AssistantSession accepted-revision proof > rechecks cancel from a synchronous proof subscriber  2460ms
+   ✓ AssistantSession accepted-revision proof > returns the latest emitted state when a status subscriber starts a cancelled proof  2097ms
+   ✓ AssistantSession accepted-revision proof > does not claim verified after a failed proof read through actual session completion  2543ms
+   ✓ AssistantSession accepted-revision proof > retries failed proof for the same plan/revision, deduplicates success, and reproves a changed revision  6485ms
+   ✓ AssistantSession accepted-revision proof > does not promote cancelled during the read or replace editor state  2599ms
+   ✓ AssistantSession accepted-revision proof > does not promote disabled during the read or replace editor state  3168ms
+   ✓ AssistantSession accepted-revision proof > does not promote target during the read or replace editor state  5415ms
+   ✓ AssistantSession accepted-revision proof > does not promote content during the read or replace editor state  5047ms
+   ✓ AssistantSession accepted-revision proof > does not promote local-edit during the read or replace editor state  4119ms
+   ✓ AssistantSession accepted-revision proof > uses the real apply commit, not a newest remote commit read  3833ms
+   ✓ AssistantSession accepted-revision proof > project proof can succeed when the separate commit log fails  3695ms
+   ✓ AssistantSession accepted-revision proof > proves a normal no-plan apply through the reusable path without replaying the tool  3389ms
+   ✓ AssistantSession accepted-revision proof > does not correlate a later human edit with an in-flight apply commit  5342ms
+   ✓ AssistantSession accepted-revision proof > retryLastTurn retries failed proof without replaying the LLM or applied tools  4978ms
+   ✓ AssistantSession accepted-revision proof > retryLastTurn proves already applied milestones after a recovered LLM failure  4609ms
+
+ Test Files  1 passed (1)
+      Tests  18 passed (18)
+   Start at  21:34:51
+   Duration  89.45s (transform 16.00s, setup 0ms, collect 24.02s, tests 64.02s, environment 0ms, prepare 284ms)
+
