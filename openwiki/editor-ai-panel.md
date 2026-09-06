@@ -1,5 +1,98 @@
 # Editor AI Panel & Tools
 
+## P2 run outcomes and user scope actions (2026-09-06)
+
+The session publishes three independent facts, not a single completion badge:
+
+| Axis | Values | Meaning |
+| --- | --- | --- |
+| `execution` | `response-final`, `awaiting-user`, `blocked`, `cancelled`, `budget-exhausted`, `failed` | Actual execution decision; `response-final` means the response ended, not that the goal passed. |
+| `goal` | `unassessed`, `incomplete`, `satisfied` | Canonical acceptance: null, assessed but not verified, or verified. |
+| `delivery` | `no-change`, `draft`, `applied`, `persisted`, `persisted-verified` | This run's pending/applied work and accepted save/current proof. |
+
+[runOutcome.ts](../src/ai/runOutcome.ts) exports `RunOutcome`, `RunOutcomeFacts`
+and `deriveRunOutcome(facts)`. The pure function returns a frozen value from
+`execution`, `acceptance`, `hasPendingDraft`, `hasApplied` and `persistence`
+(`none | accepted | verified-current`). It owns no evidence or evaluator.
+Pending draft takes precedence over earlier applied milestones; otherwise no
+applied work means `no-change`, then current proof, accepted save and actual apply
+select the remaining delivery states. Both pending and applied call collections
+survive this display precedence. Only pending calls are candidates for application;
+proof retry doesn't replay already-applied tools.
+
+[AssistantSession](../src/ai/assistantSession.ts) owns the normalized facts.
+`getRunOutcome(): RunOutcome | null` is read-only and returns null before a result
+exists. It rechecks live receipt and assessed-revision freshness without saving,
+proving or changing canonical evidence. Actual settlement updates the original
+`TurnResult.runOutcome`, recap and `{ type: "run_outcome", runOutcome }` event.
+`getHarnessSnapshot().runOutcome`, bridge send results and serialized activity
+carry the same settled projection. See [publication boundaries](editor-observability.md#p2-outcome-publication-2026-09-06),
+including legacy omissions and historical-record limits.
+
+P1 remains the save/proof authority: this run's actual apply and correlated flush
+receipt can establish `persisted`; only its current passing proof establishes
+`persisted-verified`. `commit.persisted`, an old global receipt and model flags
+can't establish delivery. Failed or stale proof retains accepted persistence.
+Cancellation doesn't roll back applied milestones. Fresh sends clear prior applied
+delivery before fallible context/intent awaits; Ask also clears delivery ownership,
+not the retained goal evidence. Trusted continuation retains already-owned delivery.
+Auto-apply, undo, separate region approval and advisory checks keep their policies.
+
+### Canonical requirements and genuine user actions
+
+`WorkPlan.requirements?: readonly AcceptancePromise[]` and
+`WorkItem.requirementIds?: readonly string[]` reuse the existing ledger. Definitions
+are `{ id, title, required?, criteria }`, with required defaulting true. Existing
+explicit `acceptance` is still assessed without either new field. When both fields
+reuse an ID, acceptance is adopted first and later definitions can't weaken it.
+Bare scheduler plans without an assessed contract remain unassessed; inferred
+missing-spatial-contract repair remains fail-closed. Malformed declarations are
+repair obligations, not satisfied legacy plans. Item links don't own requirements:
+skip, replan or dropping every link can't erase an adopted obligation.
+
+Only active required items enter the canonical denominator. Optional skipped work
+can remain unverified while the required goal is satisfied. Withdrawal also changes
+that denominator, not the item's observed evidence or status. Original IDs, target
+bindings and per-request pre-write baselines remain. Runtime-owned `source` records
+`requestId`, normalized original user `text`, and host `scope` (map ID plus
+`{ x, y, width, height }`, or null). Model source/evidence/withdrawal claims grant
+no authority. Structural criterion regions still use `{ x, y, w, h }`.
+
+`session.withdrawRequirement({ acceptanceId, requirementId, reason }, onEvent?)`
+is synchronous and returns boolean. Stale goal IDs, missing/already-withdrawn items
+and blank reasons return false. Success retains the original source and evidence,
+adds `{ acceptanceId, requirementId, reason, source: "user" }` withdrawal metadata,
+and publishes acceptance/outcome through the session's existing seams. The local
+`withdrawAiRequirement(action)` bridge export delegates to the current idle,
+non-disposed Panel host. It isn't an HTTP/MCP command, window API or LLM tool.
+
+The sticky's real `ai-requirement-withdraw` button carries `data-requirement-id`
+and submits the displayed acceptance ID, item ID and user-exclusion reason. Busy
+or withdrawn actions disable; verified items need no exclusion action. Original
+request and withdrawal reason remain in the disclosure. The terminal outcome node
+is outside folded transcript history, above the composer, with test ID
+`ai-run-outcome` and `data-execution`, `data-goal`, `data-delivery`. Korean labels
+keep response ending separate from goal satisfaction.
+
+Questions preserve blocked items, retry counters and relevant goal evidence,
+including after read-only tools or refused scheduling mutations. Explicit host
+`SessionTurnOptions.goalAction: "resume"` or a manual continuation token outside
+Ask authorizes reactivation only after the intent decision. The existing
+`ai-continue-run` button is available for blocked work as well as budget stops;
+its click passes `AiRunSurface.sendText("계속", undefined, { userResume: true })`.
+Only that UI action changes both Panel mode ownership and the displayed composer
+to Do. Typed, bridge and ordinary RunSurface continuation text in Ask stays Ask.
+Synthetic driver continuation and model intent claims aren't new authorization.
+A resumed read-only run with unmet required work still ends blocked/incomplete/no-change.
+
+Host `goalAction: "new-goal"` archives the prior immutable canonical snapshot;
+`getAcceptanceHistory()` returns session-local frozen history, not durable recovery.
+Ask overrides this action. A model `resetsContext` flag can't erase old obligations.
+Exact tool-verdict requirements reuse [the existing verification store](editor-ai-tools.md#p2-requirement-and-exact-verdict-inputs-2026-09-06).
+[P2 evidence index](../output/evidence/ai-harness/p2/README.md) distinguishes producer
+verification, independent surface evidence and pending lead gates. This section
+records implemented contracts, not Phase approval or checkpoint/boot recovery.
+
 ## Plan authoring has no small-plan quota (2026-09-06)
 
 `workPlan.ts` no longer recommends 8 todos, 4 items for a village, fixed layer
@@ -21,8 +114,9 @@ prose is reviewed rather than pinned by string tests.
 
 ## Acceptance sticky note (2026-09-06)
 
-`aiStickyChecklist.ts` is a body-mounted read-only projection of backend
-`AcceptanceSnapshot`, separate from ephemeral work-plan/book chrome. The runner
+`aiStickyChecklist.ts` is a body-mounted projection of backend
+`AcceptanceSnapshot`, separate from ephemeral work-plan/book chrome. P2 adds only
+the scoped user withdrawal action described above; the ledger still owns assessment. The runner
 forwards acceptance events only from its current non-aborted owner and publishes
 the backend terminal snapshot after the existing `ownsTurn(true)` finalization
 guard, so abort retains blocked evidence without reviving retired conversations.

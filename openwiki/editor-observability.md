@@ -98,6 +98,48 @@ AI 로 만든 편집 전량이 `{ scope: "project" }` + 라벨 없음 + `origin:
 `test/aiApplyActivityLabels.test.ts` 가 이 계약을 고정하고, 마지막 케이스가
 "AI 경로를 전부 돌려도 `unlabeledEditActivityCount() === 0` 이고 `origin: "human"` 엔트리가 없다" 를 잠근다.
 
+## P2 outcome publication (2026-09-06)
+
+Use typed outcome fields to distinguish execution, goal assessment and current
+delivery. Don't infer them from assistant prose, status labels, scheduler
+`done/skipped` or legacy `stoppedReason`. The latter keeps its existing values.
+[Contract and UI hooks](editor-ai-panel.md#p2-run-outcomes-and-user-scope-actions-2026-09-06)
+describe the axes; [P2 evidence](../output/evidence/ai-harness/p2/README.md) records
+which actual entry points were exercised.
+
+| Surface | Current contract |
+| --- | --- |
+| Session | `TurnResult.runOutcome`, `getRunOutcome()`, `getHarnessSnapshot().runOutcome` |
+| Event | `{ type: "run_outcome", runOutcome }` at real settlement |
+| Bridge | `AiBridgeTurnResult.runOutcome` on completed Panel sends; harness reads the live session |
+| Activity | `AiActivityLogRecord.result.runOutcome` and `result.recap.runOutcome`, retained by `buildAiActivityLogRecord` |
+| Recap | `RunRecap.runOutcome`, including compact `run-recap` JSON |
+| UI | One visible `ai-run-outcome` node with execution/goal/delivery data attributes |
+
+Ordinary application settles the original returned result and recap after the
+actual apply response and P1 proof, before final runner activity/bridge/UI
+publication. Applied milestones and later pending calls remain distinct; draft
+display precedence doesn't discard or replay milestones. The existing compact
+recap audit slot is updated, not appended as a duplicate. Late proof callbacks
+can't settle a newer result owner. Read-only getters recheck freshness but don't
+rewrite stored activity, audit or acceptance evidence. Post-turn withdrawal
+refreshes the live session/UI; it doesn't rewrite already-published activity rows.
+
+Outcome fields are optional in compatibility types. Legacy stored records without
+them remain without them; `parseRunRecapPayload` accepts only the typed axis
+literals and doesn't recover authority from prose. Bridge readiness/configuration
+or other pre-send errors may omit the field too. A retained historical proof isn't
+current delivery authority, and commit-log POST failure isn't project-save failure.
+The real browser matrix injects a labelled commit-log HTTP fault while still
+saving/proving the project; this isn't evidence of a remote outage. Browser checks
+use the registered production window bridge and local activity serialization,
+not external MCP HTTP or remote telemetry delivery.
+
+Sources: [session settlement](../src/ai/assistantSession.ts),
+[runner](../src/editor/panels/aiTurnRunner.ts),
+[activity builder](../src/ai/activityLog.ts), [recap parser](../src/ai/runRecap.ts),
+[bridge](../src/editor/aiAssistantBridge.ts).
+
 ## 되돌리기 스택과 감사 로그는 다르다
 
 `mapEditHistory`(되돌리기)와 `editActivityLog`(감사)는 요구가 정반대다. 한 자료구조로 겸업하면 둘 다 나빠진다.

@@ -230,6 +230,43 @@ Soft-confirm vocabulary, region task routing, AI visual polish, dock modes, tool
 - `build_village`는 집을 찍기 전에 스케치 프리패스를 먼저 돌린다 (2026-09-04): `build_village`가 `buildHouses` 전에 `sketchHouseSites`를 뽑고, 스케치 후보를 분수 슬롯·격자보다 먼저 시도한다. 사이트 간격은 8폭+마진(10). 격자는 폴백이다. `villageArteryRoutes`는 다리당 내부 경유점 하나를 더 넣되 `host[1]` T-join과 4변 출구는 그대로 둔다. Tests: `test/villageSketch.test.ts`.
 - `build_village` 대형 맵 대로 골격은 이제 곡선이다 (2026-09-05): `villageBoulevardPath`가 시드 고정 경유점으로 동서·남북 곡선을 그리고, 예약과 시공은 `boulevardCells` 한 칸 함수를 같이 쓴다. Tests: `test/villageBoulevard.test.ts`.
 
+## P2 requirement and exact-verdict inputs (2026-09-06)
+
+Planner output and native `set_work_plan` accept optional `requirements` using
+`{ id, title, required?, criteria }` and item `requirementIds`. They feed the same
+`AssistantAcceptanceLedger` as existing explicit `acceptance`; item scheduling
+isn't satisfaction authority. Required defaults true. Malformed criteria or
+required flags remain required repair obligations, even if the model claims
+optionality or supplies evidence. `repair_acceptance` can't replace valid original
+criteria. See [requirement lifecycle and user actions](editor-ai-panel.md#canonical-requirements-and-genuine-user-actions).
+
+The additional structural criterion is:
+
+```ts
+{ kind: "toolVerdict", tool: "check_reachability", args: {
+  mapId, from: { x: 0, y: 0 }, targets: [{ x: 1, y: 0 }]
+} }
+```
+
+`tool` must belong to the existing verification family. `args` is the full native
+invocation object, not a tool-name-only claim. For this native tool the field is
+`targets`; the separate structural `reachability` criterion uses `to`.
+[Acceptance parsing](../src/ai/assistantAcceptance.ts) reuses custom fail-closed
+parsing, and [ToolVerificationEvidence.passedScope](../src/ai/toolVerificationEvidence.ts)
+uses the existing stable tool-plus-full-arguments key and `parseToolVerdict`.
+Only a current host-observed explicit pass satisfies that exact scope. Wrong
+targets, negative verdicts, stale checks, model `passed` claims and advisory-only
+success don't. A clean advisory check can retain an already-current explicit pass,
+but can't renew it after a write. Successful writes and changed applied-state
+refreshes retire checks, including checks made before requirement declaration;
+undo doesn't revive them. A passing verdict can't verify an unapplied draft.
+
+Name-level scheduler queries and advisory reporting retain their existing roles.
+The ledger's existing evaluation receives the goal evidence store; absence of that
+store fails tool-verdict criteria closed. No new verification ledger or dependency
+was added. Withdrawal is a local user action, never a `withdraw_requirement` tool,
+model note, `skip_work_item` effect or `resetsContext` permission.
+
 ## Project-wide quality evaluation
 
 `evaluate_game_quality` is read-only. It combines project lint and tileset-palette findings with structural coverage across legacy event commands, event pages, common events, troop battle pages, and every nested command branch. It also reports quest/battle/ending/content counts, story-flag reads and writes, and optional caller-supplied walkthrough results. Objective project errors, unauthored secondary maps, and uninvoked ending definitions block its verdict; palette findings and caller-supplied walkthrough results remain explicit evidence. It never emits a numeric score and cannot measure fun, originality, emotional impact, pacing quality, or preferred difficulty.

@@ -265,26 +265,35 @@ Phase 운영 게이트이며, 실행 순서를 강제하도록 해당 Phase 뒤�
   - 승인한 HEAD를 `gh pr merge --merge --match-head-commit`에 사용하고 GitHub의
     MERGED 상태·merge SHA를 확인한다. 소유 QA 자원을 정리한 뒤 P2로 진행한다.
 
-- [ ] 3. WorkPlan의 항목 종료와 필수 요구 충족을 분리한다
+- [x] 3. WorkPlan의 항목 종료와 필수 요구 충족을 분리한다
+  - P2 implementation verified, not Phase approval: canonical requirements,
+    exact-scope verdicts, retained provenance, user withdrawal and question-safe
+    continuation are documented in [P2 evidence](../../output/evidence/ai-harness/p2/README.md).
+    Producer tests and real required-skip evidence are distinct from gate 12.
   - Recommended task executor category: deep
   - 선행: 2. 소유: `src/ai/workPlan.ts`, `intentDeclarationClient.ts`,
     `assistantSession.ts`의 계획 도구/완료 경계, `toolVerificationEvidence.ts`의
     필요한 조회·직렬화 API만.
-  - RED: `test/aiRequiredOutcomes.test.ts` 신규 예정. 필수 상점 요구를 연결한
+  - RED/GREEN retained: `test/aiRequiredOutcomes.test.ts`. 필수 요구를 연결한
     항목을 skipped로 만들어도 goal satisfied=false; optional skip은 종료 가능;
     다른 대상의 통과 verdict, stale verdict, 모델 임의 evidence로 충족 불가.
   - 사용자 새 범위 지시의 출처가 있는 withdrawal만 필수 요구에서 제외.
     원래 요청과 철회 사유는 보관한다. requirement 의미 추출의 불확실성을
     false success로 숨기지 않는다.
   - GREEN 명령: `npm test -- test/aiRequiredOutcomes.test.ts test/assistantVerificationEvidence.test.ts test/workItemOutcome.test.ts`.
-  - legacy/회귀: requirements 없는 계획은 기존 스케줄러로 실행되되 목표 증명은
-    unassessed. ask로 blocked 항목/counter가 바뀌지 않고 명시 resume만 활성화.
+  - legacy/회귀: assessed contract 없는 계획은 기존 스케줄러로 실행되되 목표 증명은
+    unassessed. 기존 explicit acceptance는 계속 평가한다.
+    ask로 blocked 항목/counter가 바뀌지 않고 명시 resume만 활성화.
   - 실표면: 10의 `--scenario required-skip`에서 skipped 항목과 incomplete 목표가
     동시에 표시되고 생성 결과도 실제 기대와 대조.
-  - 증거: `output/evidence/ai-harness/requirements/`.
+  - 증거: `output/evidence/ai-harness/p2/requirements.md`, P2 README의 실표면 색인.
   - Commit: `feat(ai): retain required outcomes across work item skips`.
 
-- [ ] 4. 종료·목표·저장 상태의 단일 투영을 session과 적용 경계에 연결한다
+- [x] 4. 종료·목표·저장 상태의 단일 투영을 session과 적용 경계에 연결한다
+  - P2 implementation verified, not Phase approval: the pure projection and
+    actual session/apply/bridge/activity/recap/UI settlement share canonical facts.
+    [P2 evidence](../../output/evidence/ai-harness/p2/README.md) binds producer
+    verification and independent surface packets; gate 12 remains unchecked.
   - Recommended task executor category: deep
   - 선행: 3. 소유: 신규 `src/ai/runOutcome.ts`, `assistantSession.ts`,
     `src/editor/panels/aiTurnRunner.ts`, `aiProposalCard.ts`,
@@ -292,14 +301,14 @@ Phase 운영 게이트이며, 실행 순서를 강제하도록 해당 Phase 뒤�
   - 순수 파생 함수는 D1의 세 축을 계산. session의 실행 결과 뒤 실제
     applyProposal 응답이 오면 같은 원천 영수증을 갱신해 다시 투영한다.
     마일스톤과 일반 적용이 다른 완료 정책을 갖지 않게 한다.
-  - RED: `test/aiRunOutcome.test.ts` 신규 예정. final+미충족 요구,
+  - RED/GREEN retained: `test/aiRunOutcome.test.ts`. final+미충족 요구,
     cancelled+appliedCalls, apply ok+commit persisted:false,
     query/no-change, proof failure가 서로 다른 typed 결과인지 검사.
   - GREEN 명령: `npm test -- test/aiRunOutcome.test.ts test/aiMilestoneTurnAccounting.test.ts test/aiAssistantTurnCleanup.test.ts test/aiAssistantBridge.test.ts`.
   - 모든 조기 return/error/retry/plan-only/driver end에서 구조 필드가 일치.
     `stoppedReason` 기존 값은 호환 유지; 출력 문자열 역파싱은 사용하지 않음.
-  - 실표면: 10의 `--scenario outcome-matrix`; UI data-state/bridge/로그 결과 일치.
-  - 증거: `output/evidence/ai-harness/outcomes/`.
+  - 실표면: 10의 `--scenario outcome-matrix`; UI data-execution/data-goal/data-delivery와 bridge/로그 결과 일치.
+  - 증거: `output/evidence/ai-harness/p2/integration.md`, P2 README의 실표면 색인.
   - Commit: `feat(ai): project run outcomes from execution and delivery evidence`.
 
 - [ ] 12. P2를 검증하고 ultrabrain 최종 승인 뒤 PR을 병합한다
