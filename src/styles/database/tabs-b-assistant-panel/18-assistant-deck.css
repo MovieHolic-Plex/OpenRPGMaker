@@ -494,6 +494,13 @@
   overflow-x: auto;
 }
 
+.ai-chat-log .ai-command-row-body :is(th, td),
+.ai-chat-log .md :is(th, td) {
+  overflow-wrap: normal;
+  white-space: nowrap;
+  word-break: normal;
+}
+
 /* 답변 속 이름 링크 — 본문 흐름 안의 낱말이므로 버튼 크롬을 걷고 점선 밑줄만. */
 .ai-chat-log .ai-answer-link {
   background: none;
