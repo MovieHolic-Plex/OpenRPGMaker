@@ -6,6 +6,7 @@ export function topFrame(stack: Frame[]): Frame | null {
 }
 
 export function pushFrame(state: InterpreterState, commands: Command[]): boolean {
+  if (commands.length && state.stack.length >= state.maxStackDepth) state.onUnverified?.("Interpreter stack budget exhausted");
   if (commands.length === 0 || state.stack.length >= state.maxStackDepth) return false;
   state.stack.push({ commands, pc: 0 });
   return true;
@@ -19,6 +20,7 @@ export function pushLoopFrame(
   ownerCommands: Command[],
   ownerPc: number
 ): boolean {
+  if (body.length && state.stack.length >= state.maxStackDepth) state.onUnverified?.("Interpreter stack budget exhausted");
   if (body.length === 0 || state.stack.length >= state.maxStackDepth) return false;
   state.stack.push({ commands: body, pc: 0, loopOwner: { commands: ownerCommands, pc: ownerPc } });
   return true;
@@ -30,6 +32,7 @@ export function advanceCompletedFrame(state: InterpreterState): ResumeAdvance {
   if (completed?.loopOwner) {
     state.loopIterations = (state.loopIterations ?? 0) + 1;
     if (state.loopIterations >= state.maxLoopIterations) {
+      state.onUnverified?.("Interpreter loop budget exhausted");
       // 가드 도달: 루프를 종료한다. 부모 프레임의 pc 는 loop 명령 실행 시
       // 이미 loop 다음 명령으로 옮겨져 있으므로(see commandCatalog case "loop"),
       // 여기서 pc 를 더 건드리지 않고 그대로 진행한다.

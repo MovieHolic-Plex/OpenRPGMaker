@@ -21,6 +21,8 @@ export function createInterpreter(
   options?: InterpreterOptions
 ): Interpreter {
   const state: InterpreterState = {
+    beforeCommand: options?.beforeCommand,
+    onUnverified: options?.onUnverified,
     continueAfterTransfer: options?.continueAfterTransfer,
     stack: [{ commands, pc: 0 }],
     session,
@@ -54,6 +56,7 @@ export function createInterpreter(
       const command = frame.commands[frame.pc] ?? null;
       if (!command) return finish();
       if (state.instructionsExecuted >= state.maxInstructions) {
+        state.onUnverified?.("Interpreter instruction budget exhausted");
         console.warn(
           `[interpreter:instruction-budget-exhausted] maxInstructions=${state.maxInstructions} executed=${state.instructionsExecuted}`
         );

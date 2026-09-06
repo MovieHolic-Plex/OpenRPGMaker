@@ -17,14 +17,15 @@ import { TILE } from "@/project/defaults/constants";
 import { isPassable } from "@/project/collision";
 import { startSession } from "@/project/session";
 import { findBlockingRuntimeEventAtInMap, initialRuntimeEventPositions } from "@/project/runtimeEventState";
-import type { NpcRewardRequirements } from "./intentDeclaration";
+import type { NpcRewardRequirement, NpcRewardRequirements } from "./intentDeclaration";
+import { isVerifyNpcRewardInput, type NpcRewardWitness } from "./npcRewardWitness";
 import {
   findQuestById,
   findQuestGraph,
   generateQuestWalkthrough,
   lintQuestGraph,
 } from "@/project/quest/questGraph";
-import { runSceneTest, type SceneStep, type SceneExpectStep } from "@/testing/sceneTestRunner";
+import { runSceneTest, type SceneStep, type SceneExpectStep, type SceneRewardProof, type RewardDelta } from "@/testing/sceneTestRunner";
 import type { BattleEventCondition, TroopRecord } from "@/project/types";
 import type { GameMap, Project } from "@/project/types/project";
 
@@ -87,32 +88,59 @@ export function unauthoredMapLabels(project: Project, mapIds: Iterable<string>):
   return labels;
 }
 
-export type WorkItemOutcomeVerdict = { readonly ok: true } | { readonly ok: false; readonly reason: string };
+export interface NpcRewardReplayEvidence {
+  readonly target: NpcRewardWitness["target"];
+  readonly phase: "prelude" | "claim" | "repeat";
+  readonly instructions: number;
+  readonly movementSteps: number;
+  readonly failedStepIndex?: number;
+  readonly claim?: RewardDelta;
+  readonly repeat?: RewardDelta;
+  readonly final: { readonly gold: number; readonly inventory: Record<string, number>; readonly monsters: Record<string, number> };
+}
+export type WorkItemOutcomeVerdict = ({ readonly ok: true } | { readonly ok: false; readonly reason: string }) & {
+  readonly evidence?: readonly NpcRewardReplayEvidence[];
+};
+
+export function npcRewardTargetMatches(project: Project, target: NpcRewardRequirement["target"]) {
+  return Object.values(project.maps)
+    .filter((map) => target.mapId === undefined || map.id === target.mapId)
+    .flatMap((map) => map.events
+      .filter((event) => target.eventId !== undefined ? event.id === target.eventId : (event.name ?? event.pages?.[0]?.name) === target.eventName)
+      .map((event) => ({ map, event })));
+}
 
 /**
  * Opt-in local NPC acceptance. Expectations are captured from the request, not commands.
- * Each NPC runs in a fresh scene; both interactions use that SAME runtime session.
- * This checks local interaction, not a world traversal or quest prerequisite walkthrough.
+ * Without a selected witness this retains local acceptance. A selected action program
+ * instead replays authored start -> prelude -> protected claim/repeat in one session.
+ * No verdict is cached and a failed witness never falls back to the local path.
  */
 export function verifyNpcRewardsPlayable(
   project: Project,
   required: NpcRewardRequirements | undefined,
+  witnesses?: ReadonlyMap<NpcRewardRequirement, NpcRewardWitness>,
+  signal?: AbortSignal,
 ): WorkItemOutcomeVerdict {
   if (required === undefined) return { ok: true };
   if ("invalidReason" in required) return { ok: false, reason: required.invalidReason };
   if (required.length === 0) return { ok: false, reason: "npcRewards: missing requirements" };
+  const evidence: NpcRewardReplayEvidence[] = [];
   for (const requirement of required) {
     const { target } = requirement;
-    const matches = Object.values(project.maps)
-      .filter((map) => target.mapId === undefined || map.id === target.mapId)
-      .flatMap((map) => map.events
-        .filter((event) => target.eventId !== undefined ? event.id === target.eventId : (event.name ?? event.pages?.[0]?.name) === target.eventName)
-        .map((event) => ({ map, event })));
+    const matches = npcRewardTargetMatches(project, target);
     const match = matches[0];
     if (matches.length !== 1 || !match) {
       return { ok: false, reason: `NPC reward target ${JSON.stringify(target)}: expected one exact match, found ${matches.length}` };
     }
     const { map, event } = match;
+    const witness = witnesses?.get(requirement);
+    if (witness && (witness.target.mapId !== map.id || witness.target.eventId !== event.id)) {
+      return { ok: false, reason: "NPC reward witness target no longer resolves to its original map/event pair" };
+    }
+    if (witness && !isVerifyNpcRewardInput({ requirementIndex: 0, prelude: witness.prelude })) {
+      return { ok: false, reason: "Malformed NPC reward witness" };
+    }
     const first: SceneExpectStep = { kind: "expect", interactionComplete: true, inventoryDelta: {}, ownedMonsterDelta: {} };
     for (const grant of requirement.grants) {
       if (grant.kind === "gold") {
@@ -133,28 +161,39 @@ export function verifyNpcRewardsPlayable(
       }
     }
     if (requirement.grants.length === 0) return { ok: false, reason: `NPC ${event.id}: missing reward grants` };
-    const session = startSession(project, 1);
-    const positions = initialRuntimeEventPositions(map.events);
-    const start = [
-      { x: event.x, y: event.y - 1 }, { x: event.x - 1, y: event.y },
-      { x: event.x + 1, y: event.y }, { x: event.x, y: event.y + 1 },
-    ].find((point) => isPassable(project, map, point.x, point.y)
-      && !findBlockingRuntimeEventAtInMap(project, map, session, positions, point.x, point.y));
-    if (!start) return { ok: false, reason: `NPC ${event.id}: no passable interaction position` };
+    let start = project.startPos;
+    if (!witness) {
+      const session = startSession(project, 1);
+      const positions = initialRuntimeEventPositions(map.events);
+      const localStart = [
+        { x: event.x, y: event.y - 1 }, { x: event.x - 1, y: event.y },
+        { x: event.x + 1, y: event.y }, { x: event.x, y: event.y + 1 },
+      ].find((point) => isPassable(project, map, point.x, point.y)
+        && !findBlockingRuntimeEventAtInMap(project, map, session, positions, point.x, point.y));
+      if (!localStart) return { ok: false, reason: `NPC ${event.id}: no passable interaction position` };
+      start = localStart;
+    }
     const interact: SceneStep[] = [
       { kind: "expect", mapId: map.id },
       { kind: "walk", to: { x: event.x, y: event.y }, adjacent: true },
       { kind: "snapshotRewards" },
       { kind: "interact", eventId: event.id },
     ];
+    const prelude: SceneStep[] = witness ? witness.prelude.flatMap(({ mapId, ...action }): SceneStep[] => [
+      { kind: "expect", mapId }, action,
+    ]) : [];
     const steps: SceneStep[] = [
+      ...prelude,
+      { kind: "expect", interactionComplete: true, mapId: map.id },
       ...interact,
       ...(requirement.choices ?? []).map((index): SceneStep => ({ kind: "choose", index })),
       first,
     ];
+    const repeatFrom = requirement.oneTime ? steps.length : undefined;
     if (requirement.oneTime) {
       steps.push(
-        ...interact,
+        { kind: "snapshotRewards" },
+        { kind: "interact", eventId: event.id },
         ...(requirement.repeatChoices ?? []).map((index): SceneStep => ({ kind: "choose", index })),
         {
           kind: "expect", interactionComplete: true,
@@ -164,12 +203,18 @@ export function verifyNpcRewardsPlayable(
         },
       );
     }
-    const result = runSceneTest(project, { mapId: map.id, start, steps });
+    const report: SceneRewardProof["report"] = { phase: witness ? "prelude" : "claim", instructions: 0, movementSteps: 0 };
+    const result = runSceneTest(structuredClone(project), {
+      mapId: witness ? project.startMapId : map.id,
+      start, steps,
+    }, { target: { mapId: map.id, eventId: event.id }, protectedFrom: prelude.length, repeatFrom, requested: first, report, signal });
+    evidence.push({ target: { mapId: map.id, eventId: event.id }, ...report, failedStepIndex: result.failedStepIndex,
+      final: { gold: result.finalState.gold, inventory: result.finalState.inventory, monsters: result.finalState.ownedMonsterCounts } });
     if (!result.ok) {
-      return { ok: false, reason: `NPC ${event.id} reward acceptance failed at step ${result.failedStepIndex}: ${result.failureReason}. Preserve the requested grants and fix the runtime interaction; do not remove the reward to complete.` };
+      return { ok: false, evidence, reason: `NPC ${event.id} reward acceptance failed at step ${result.failedStepIndex}: ${result.failureReason}. Preserve the requested grants and fix the runtime interaction; author prerequisites and links first, then use verify_npc_reward. Do not remove the reward or move its timing to complete.` };
     }
   }
-  return { ok: true };
+  return witnesses ? { ok: true, evidence } : { ok: true };
 }
 
 /**

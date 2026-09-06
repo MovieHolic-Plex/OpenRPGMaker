@@ -13,6 +13,7 @@ import { buildActionArenaAuthoringGuide, selectActionArenaAuthoringRecipe } from
 import { workTargetContractIssues, workTargetIssues, workToolOutcome, type WorkToolOutcome } from "./workPlanTargets";
 import { ToolReadEvidence } from "./toolReadEvidence";
 import { ToolVerificationEvidence } from "./toolVerificationEvidence";
+import { isVerifyNpcRewardInput, VERIFY_NPC_REWARD_TOOL, type NpcRewardWitness } from "./npcRewardWitness";
 import { getTool, normalizeToolArgs, runTool } from "@/editor/tools";
 import { validateArgs } from "@/editor/tools/jsonSchema";
 import { viewportVillageBounds } from "@/editor/tools/authorVillageSupport";
@@ -188,6 +189,7 @@ import {
   verifyAuthoredBossPhases,
   verifyAuthoredQuestsPlayable,
   verifyNpcRewardsPlayable,
+  npcRewardTargetMatches,
   type WorkItemOutcomeVerdict,
   verifyCreatedMapsAuthored,
   verifyTargetMapChanged,
@@ -922,6 +924,8 @@ export class AssistantSession {
   private adventureRequirements: AdventureRequirements | undefined;
   private statefulNpcRequirement = false;
   private npcRewardRequirements: NpcRewardRequirements | undefined;
+  /** Captured requirement object identity binds index and request lifetime; never stores verdicts. */
+  private readonly npcRewardWitnesses = new Map<NpcRewardRequirement, NpcRewardWitness>();
   /** Only declared NPC event state, so DB/terrain items do not inherit NPC acceptance. */
   private readonly npcRewardItemBaseline = new Map<NpcRewardRequirement, string>();
   private adventureRepairAttempts = 0;
@@ -1791,10 +1795,14 @@ export class AssistantSession {
     if (!this.turnIsDriverContinue && intent.source !== "continuation") {
       this.adventureRequirements = intent.adventure;
       this.npcRewardRequirements = intent.npcRewards === undefined ? undefined : structuredClone(intent.npcRewards);
+      this.npcRewardWitnesses.clear();
       this.adventureRepairAttempts = 0;
       this.adventureIconRecords.clear();
     }
-    if (this.turnComposerMode === "ask") this.npcRewardRequirements = undefined;
+    if (this.turnComposerMode === "ask") {
+      this.npcRewardRequirements = undefined;
+      this.npcRewardWitnesses.clear();
+    }
     if (!this.turnIsDriverContinue && intent.source !== "continuation") {
       this.readEvidence.begin(intent.readBeforeWrite);
       this.completionQualityRequired = false;
@@ -2521,17 +2529,44 @@ export class AssistantSession {
     const required = this.npcRewardRequirements;
     if (required === undefined || this.turnComposerMode === "ask" || this.lastTurnPlanOnly) return { ok: true };
     const project = this.getProposedProject();
-    if (!item || this.finishesWorkPlan(item.id)) return verifyNpcRewardsPlayable(project, required);
+    if (!item || this.finishesWorkPlan(item.id)) return verifyNpcRewardsPlayable(project, required, this.npcRewardWitnesses);
     if ("invalidReason" in required) return { ok: true }; // No resolvable item target; whole-goal closure still fails.
     const changed = required.filter((requirement) =>
       this.npcRewardItemBaseline.get(requirement) !== npcRewardTargetSnapshot(project, requirement));
-    return verifyNpcRewardsPlayable(project, changed.length ? changed : undefined);
+    return verifyNpcRewardsPlayable(project, changed.length ? changed : undefined, this.npcRewardWitnesses);
   }
 
   private npcRewardNote(): string | null {
-    return this.npcRewardRequirements === undefined ? null : formatIntentNote({
+    if (this.npcRewardRequirements === undefined) return null;
+    return formatIntentNote({
       ...emptyIntentDeclaration(), source: "llm", npcRewards: this.npcRewardRequirements,
-    });
+    }) + "\nNPC reward indices: " + JSON.stringify("invalidReason" in this.npcRewardRequirements ? []
+      : this.npcRewardRequirements.map((requirement, requirementIndex) => ({ requirementIndex, target: requirement.target })))
+      + "\nverify_npc_reward requirementIndex is the zero-based index in this immutable npcRewards array. "
+      + "Author prerequisite maps/chests first, transfer links in separate linking items next, then the reward NPC and its journey verification. "
+      + "Keep one-map authoring items. Supply only physical prelude actions from authored start, with mapId asserting the current map. "
+      + "Do not seed keys, change reward timing, skip obligations or reset acceptance baselines. This proves the chosen reachable route, not every game path.";
+  }
+
+  private verifyNpcRewardTool(input: unknown, signal?: AbortSignal): ToolResult {
+    const required = this.npcRewardRequirements;
+    if (!isVerifyNpcRewardInput(input) || !required || "invalidReason" in required || !required[input.requirementIndex]) {
+      return { ok: false, summary: "Invalid verify_npc_reward input or captured requirementIndex", data: { executed: false } };
+    }
+    const requirement = required[input.requirementIndex];
+    const project = this.getProposedProject();
+    const matches = npcRewardTargetMatches(project, requirement.target);
+    const match = matches[0];
+    const previous = this.npcRewardWitnesses.get(requirement);
+    if (matches.length !== 1 || !match || (previous && (previous.target.mapId !== match.map.id || previous.target.eventId !== match.event.id))) {
+      return { ok: false, summary: "NPC reward target must uniquely resolve to its original map/event pair", data: { executed: false } };
+    }
+    const witness: NpcRewardWitness = structuredClone({ target: { mapId: match.map.id, eventId: match.event.id }, prelude: input.prelude });
+    // Select before replay: a valid but failing replacement cannot inherit the old pass.
+    this.npcRewardWitnesses.set(requirement, witness);
+    const verdict = verifyNpcRewardsPlayable(project, [requirement], this.npcRewardWitnesses, signal);
+    return { ok: verdict.ok, summary: verdict.ok ? "NPC reward prerequisite replay verified" : verdict.reason,
+      data: { executed: true, requirementIndex: input.requirementIndex, target: { ...witness.target }, ...verdict } };
   }
 
   private npcRewardFinalText(text: string): string {
@@ -3784,6 +3819,7 @@ export class AssistantSession {
           ...discoveryEscalated,
           SET_BUILD_SPEC_TOOL,
           ...(planToolsOn ? WORK_PLAN_TOOLS : []),
+          ...(this.npcRewardRequirements ? [VERIFY_NPC_REWARD_TOOL] : []),
           ...(this.acceptance ? ACCEPTANCE_TOOLS : []),
         ].map((tool) => [tool.function.name, tool] as const),
       );
@@ -3809,7 +3845,7 @@ export class AssistantSession {
       )
         // 질문 모드: 쓰기 스키마는 모델에 보이지 않는다. 문장으로 "바꾸지 마라"고 부탁하는 대신 능력을 뺀다.
         .filter((tool) => this.turnComposerMode !== "ask" || !isWriteToolName(tool.function.name))
-        .map((tool) => injectToolReasonIntoOpenAiTool(tool));
+        .map((tool) => tool.function.name === "verify_npc_reward" ? tool : injectToolReasonIntoOpenAiTool(tool));
       const toolsChars = JSON.stringify(tools).length;
       const exposedNames = new Set(tools.map((tool) => tool.function.name));
       const capabilityExposed = [...capabilityNames].filter((name) => exposedNames.has(name));
@@ -4146,6 +4182,9 @@ export class AssistantSession {
                 data: receipt,
               };
             }
+          } else if (name === "verify_npc_reward") {
+            // Validate raw args, before generic reason stripping or target normalization.
+            toolResult = this.verifyNpcRewardTool(parsedCall.args, signal);
           } else if (name === "repair_acceptance" || name === "review_acceptance") {
             toolResult = this.applyAcceptanceTool(name, args);
             this.publishAcceptance(onEvent);
