@@ -44,6 +44,7 @@ import {
   FACE_SCHEMA,
   GRAPHIC_SPEC_SCHEMA,
   ITEM_AMOUNT_SCHEMA,
+  NATIVE_EVENT_PAGE_SCHEMA,
   RECT_SCHEMA,
   SIMPLE_PAGE_SCHEMA,
 } from "./schemaShapes";
@@ -168,9 +169,11 @@ function commandArrayOrEmpty(value: unknown, label: string, warnings?: string[])
   return normalizeLowLevelCommandArray(value, label, warnings);
 }
 
-function normalizeEventCommandArrays(event: GameEvent, warnings?: string[]): void {
-  (event as GameEvent).commands = commandArrayOrEmpty((event as { commands?: unknown }).commands, `${event.id}.commands`, warnings);
-  if (event.pages === undefined || event.pages === null) return;
+function normalizeEventCommandArrays(event: GameEvent, warnings?: string[], supplied: Partial<GameEvent> = event): void {
+  if (supplied === event || Object.prototype.hasOwnProperty.call(supplied, "commands")) {
+    event.commands = commandArrayOrEmpty(event.commands, `${event.id}.commands`, warnings);
+  }
+  if (!Object.prototype.hasOwnProperty.call(supplied, "pages") || event.pages === undefined || event.pages === null) return;
   if (!Array.isArray(event.pages)) {
     throw new ToolError(`이벤트 형식이 올바르지 않습니다: ${event.id}.pages는 배열이어야 합니다. 실제 타입: ${describeValue(event.pages)}`, {
       code: "invalid-args",
@@ -236,9 +239,9 @@ function fillRequiredPageFields(event: GameEvent, page: Partial<EventPage>, page
 }
 
 // 페이지 커맨드 shape를 사전 검증(기존 io 검증기 위임).
-function assertEventShape(event: GameEvent, warnings?: string[]): void {
+function assertEventShape(event: GameEvent, warnings?: string[], supplied: Partial<GameEvent> = event): void {
   try {
-    normalizeEventCommandArrays(event, warnings);
+    normalizeEventCommandArrays(event, warnings, supplied);
     validateLowLevelCommandArray(`${event.id}.commands`, event.commands);
     for (const page of event.pages ?? []) {
       validateLowLevelCommandArray(`${event.id}.${page.id}.commands`, page.commands);
@@ -377,6 +380,24 @@ function eventIsSteppable(event: GameEvent): boolean {
 
 const PLACEMENT_AUTOLAND_HINT = "통행 불가 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다.";
 
+const NATIVE_PAGE_REPAIR_EXAMPLE = {
+  mapId: "existing_map_id",
+  event: {
+    id: "existing_event_id",
+    pages: [{
+      conditions: [],
+      graphic: { transparent: true },
+      commands: [{ kind: "choices", options: [
+        { text: "Continue", branch: [
+          { kind: "changeItem", itemId: "existing_item_id", op: "-=", amount: 1 },
+          { kind: "triggerEnding", endingId: "defined_ending_id" },
+        ] },
+        { text: "Cancel", branch: [] },
+      ] }],
+    }],
+  },
+};
+
 const upsertEvent: ToolDefinition = {
   name: "upsert_event",
   description: `${LOW_LEVEL_TOOL_DESCRIPTION_PREFIX} GameEvent를 추가하거나 기존 이벤트를 부분 수정한다. 기존 id이면 입력에 포함한 최상위 필드만 바꾸고, 생략한 pages/commands/graphic/characterId/좌표 등은 보존한다. 빈 배열처럼 명시한 값은 그대로 반영한다. NPC/주민/대화 이벤트 배치는 place_npc, 스케줄만 바꿀 때는 set_npc_schedule을 우선 사용하라.`,
@@ -394,7 +415,7 @@ const upsertEvent: ToolDefinition = {
           y: { type: "integer" },
           trigger: { type: "object", properties: { kind: { type: "string" } }, additionalProperties: true },
           commands: { type: "array", items: COMMAND_SCHEMA },
-          pages: { type: "array", items: SIMPLE_PAGE_SCHEMA },
+          pages: { type: "array", items: NATIVE_EVENT_PAGE_SCHEMA },
         },
         // 나머지 GameEvent 필드는 이벤트 shape 검증기가 본다.
         additionalProperties: true,
@@ -421,6 +442,24 @@ const upsertEvent: ToolDefinition = {
         throw new ToolError(
           `${path}.trigger.commands는 지원하지 않습니다. 명령을 ${path}.commands로 옮기세요. ` +
           '예: {"trigger":{"kind":"playerTouch"},"commands":[{"kind":"transfer","mapId":"조회한 맵 ID","x":1,"y":1}]}',
+          { code: "invalid-args" },
+        );
+      }
+    }
+    // Only inspect submitted pages: unrelated partial updates must neither compile
+    // nor rewrite old content, including legacy SimplePage-shaped properties.
+    for (const [index, page] of (Array.isArray(patch.pages) ? patch.pages : []).entries()) {
+      if (!page || typeof page !== "object" || Array.isArray(page)) continue;
+      const unsupported = ["choices", "lines", "showText", "messages", "text", "face"]
+        .filter(key => Object.prototype.hasOwnProperty.call(page, key));
+      for (const key of ["query", "textureKey", "characterIndex"]) {
+        if (page.graphic && Object.prototype.hasOwnProperty.call(page.graphic, key)) unsupported.push(`graphic.${key}`);
+      }
+      if (unsupported.length > 0) {
+        throw new ToolError(
+          `event.pages[${index}]: ${unsupported.join(", ")}는 SimplePage 전용이며 upsert_event에서 실행되지 않습니다. ` +
+          "기존 페이지/명령을 보존하면서 대사는 commands의 text, 선택은 choices.options[].branch, 얼굴은 changeFace, 그림은 graphic.sprite로 바꾸세요. " +
+          "pages는 배열 전체 교체이므로 유지할 페이지도 모두 포함하세요. 고수준 페이지는 place_npc/make_villager를 사용하세요. 네이티브 부분 수정 예시: " + JSON.stringify(NATIVE_PAGE_REPAIR_EXAMPLE),
           { code: "invalid-args" },
         );
       }
@@ -461,7 +500,7 @@ const upsertEvent: ToolDefinition = {
         if (adjusted) warnings.push(placementAdjustedWarning(`이벤트 '${event.id}'`, requested, placement));
       }
     }
-    assertEventShape(event, warnings);
+    assertEventShape(event, warnings, existing ? patch : event);
     const outcome = upsertEventIntoMap(map, event);
     const unsupportedCommands = countLimitedRuntimeSupportCommandsForEvent(event);
     return {

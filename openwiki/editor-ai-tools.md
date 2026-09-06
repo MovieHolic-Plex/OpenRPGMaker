@@ -345,6 +345,16 @@ author_village와 buildVillageDomain이 DB 설계서의 고정값·집 수 범�
 기존 컴파일러/shape 검증기가 검사한다. `test/aiCommandSchemaContract.test.ts`는 컴파일·직렬화 보존,
 잘못된 명령/누락 조건 값의 원자적 거부, 참조 조회 선행을 검증한다. 실모델 복구·플레이 증명은 별도다.
 
+2026-09-06 R10: `upsert_event.event.pages`는 `NATIVE_EVENT_PAGE_SCHEMA`이며 SimplePage 컴파일 경로가 아니다.
+대사·선택·효과는 `page.commands`에 넣고, 선택 명령은
+`{kind:"choices",options:[{text:"선택",branch:[{kind:"changeItem",itemId,op:"-=",amount:1},{kind:"triggerEnding",endingId}]}]}`다.
+`page.choices/lines/showText/messages/text/face` 및 `graphic.query/textureKey/characterIndex`를 제출하면
+병합 전에 `invalid-args`와 네이티브 수정 JSON 예시로 원자적 거부한다. 그래픽은 `graphic.sprite:{type,id}`를 사용한다.
+기존 이벤트에서 생략한 최상위 필드는 정규화도 하지 않는다. `pages`를 제출하면 배열 전체 교체이며,
+제출된 페이지의 필수 필드 보완과 R5 명령 검증은 유지한다. `place_npc`/`make_villager`의 SimplePage 컴파일은 그대로다.
+회귀: `test/aiNativePageContract.test.ts`는 실제 round2 출구 입력 거부, 예시 재호출, 직렬화 후 선택·열쇠 1개 차감·
+기록된 epilogue·`returnToTitle`, 취소 무효과, 생략 페이지 보존과 고수준 컴파일을 검증한다. 실브라우저 완주/원격 재로드는 별도 게이트다.
+
 ## 보물상자는 노출된 수면을 거부한다 (2026-09-05)
 
 `place_chest`는 요청 좌표와 자동 착지 결과를 모두 검사한다. 물 판정은 현재 타일셋의

@@ -40,7 +40,7 @@ export const RECT_SCHEMA: JsonSchema = {
  * 이벤트 커맨드/조건 — `kind` 로 분기하는 넓은 유니온이다. 전 variant 를 나열하면 스키마가 수백 줄이
  * 되고 노출 토큰이 폭증하므로 `kind` 와 최빈 필드만 선언한다. 값 검증은 커맨드 컴파일러가 한다.
  */
-export const COMMAND_SCHEMA: JsonSchema = {
+const COMMAND_LEAF_SCHEMA: JsonSchema = {
   type: "object",
   description:
     'Command 예: {kind:"changeItem",itemId:"조회한 ID",op:"-=",amount:1}, ' +
@@ -76,6 +76,30 @@ export const COMMAND_SCHEMA: JsonSchema = {
   required: ["kind"],
   // variant 전용 필드는 커맨드 shape 검증기가 본다.
   additionalProperties: true,
+};
+
+// A finite schema avoids cyclic JSON/$ref on provider transports. Nested branch
+// commands retain the same kind/field contract; runtime validates every depth.
+export const COMMAND_SCHEMA: JsonSchema = {
+  ...COMMAND_LEAF_SCHEMA,
+  properties: {
+    ...COMMAND_LEAF_SCHEMA.properties,
+    prompt: { type: "string" },
+    options: {
+      type: "array",
+      description: "choices 실행 선택지. 각 branch는 선택 시 실행할 Command[].",
+      items: {
+        type: "object",
+        properties: {
+          text: { type: "string" },
+          branch: { type: "array", items: COMMAND_LEAF_SCHEMA },
+        },
+        required: ["text", "branch"],
+      },
+    },
+    cancelBehavior: { type: "string", enum: ["disallow", "choice1", "choice2", "choice3", "choice4", "choice5", "branch"] },
+    cancelBranch: { type: "array", items: COMMAND_LEAF_SCHEMA },
+  },
 };
 
 /** `GraphicSpec` (eventCompile.ts): `{query}` | `{textureKey,characterIndex?}` | `{transparent:true}`. */
@@ -170,6 +194,70 @@ export const CONDITION_SCHEMA: JsonSchema = {
   },
   required: ["kind"],
   additionalProperties: true,
+};
+
+/** Native EventPage input for the partial-update tool, not a SimplePage compiler. */
+export const NATIVE_EVENT_PAGE_SCHEMA: JsonSchema = {
+  type: "object",
+  description: "EventPage. pages 지정은 페이지 배열 전체 교체다. 생략한 필수 페이지 필드는 기본값으로 보완한다. " +
+    "대사/선택/효과는 commands에만 둔다: {kind:'choices',options:[{text:'선택',branch:[{kind:'triggerEnding',endingId:'정의한 ID'}]}]}. " +
+    "page.choices/lines/showText/messages/text/face 및 graphic.query/textureKey/characterIndex는 지원하지 않는다. SimplePage는 place_npc/make_villager를 사용하라.",
+  properties: {
+    id: { type: "string" },
+    name: { type: "string" },
+    conditions: { type: "array", items: CONDITION_SCHEMA, description: "모든 조건이 참인 마지막 페이지를 실행. 기본 페이지를 먼저, 조건 페이지를 뒤에 둔다." },
+    commands: { type: "array", items: COMMAND_SCHEMA },
+    trigger: {
+      type: "object",
+      properties: { kind: { type: "string", enum: ["action", "touch", "playerTouch", "eventTouch", "auto", "parallel"] } },
+      required: ["kind"],
+    },
+    graphic: {
+      type: "object",
+      properties: {
+        sprite: {
+          type: "object",
+          properties: { id: { type: "string" }, type: { type: "string", enum: ["bundled", "uploaded"] } },
+          required: ["id", "type"],
+        },
+        direction: { type: "string", enum: ["down", "left", "right", "up"] },
+        pattern: { type: "integer" },
+        transparent: { type: "boolean" },
+        scale: { type: "number" },
+      },
+    },
+    priority: { type: "string", enum: ["below", "same", "above"] },
+    overlapForbidden: { type: "boolean" },
+    animationType: { type: "string" },
+    footprint: {
+      type: "object",
+      properties: { width: { type: "integer" }, height: { type: "integer" } },
+      required: ["width", "height"],
+    },
+    passRows: { type: "integer" },
+    interaction: {
+      type: "object",
+      properties: {
+        kind: { type: "string", enum: ["pushable", "hiding"] },
+        directions: { type: "array", items: { type: "string", enum: ["down", "left", "right", "up"] } },
+      },
+      required: ["kind"],
+    },
+    movement: {
+      type: "object",
+      properties: {
+        type: { type: "string", enum: ["fixed", "random", "approach", "custom", "living", "chase"] },
+        speed: { type: "number" },
+        frequency: { type: "number" },
+        sightRange: { type: "number" },
+        giveUpRange: { type: "number" },
+        pathfind: { type: "boolean" },
+        moveIntervalMs: { type: "number" },
+      },
+      description: "EventPageMovement. custom는 route:MoveRoute, living은 living:NpcLivingMovement, chase는 pursuit:ChaseAcrossMaps를 추가할 수 있다.",
+      additionalProperties: true,
+    },
+  },
 };
 
 /** `SimplePage` (types.ts) — place_npc/make_villager 등이 받는 고수준 페이지. */
