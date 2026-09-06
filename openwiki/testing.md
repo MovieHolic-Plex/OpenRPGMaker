@@ -1,3 +1,15 @@
+## CSS budget: file count is informational
+
+`scripts/check-css-budget.mjs` reports stylesheet count and paths but does not
+treat adding or removing files as a regression or quality improvement. Keep
+styles split by ownership; do not concatenate unrelated styles to meet a count.
+The existing baseline remains valid without regeneration. Increases in hardcoded
+hex colors, `!important`, undefined custom properties and global `:root` files
+still fail. Import-graph and live-class checks remain separate active gates.
+
+Run `node --test test/cssBudget.test.mjs` for isolated CLI regression coverage,
+then `npm run gates:css` and `npm run gates -- --only css` on the real repository.
+
 ## Database CSS ownership contracts (2026-09-06)
 
 The required surface gate includes `databaseAllTabsRenderWalk`, using the actual
