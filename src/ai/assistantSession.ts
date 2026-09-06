@@ -1,4 +1,4 @@
-import { missingAcceptance, type AcceptanceSnapshot, type AcceptancePromise } from "./assistantAcceptance";
+import { ACCEPTANCE_EXAMPLES, missingAcceptance, type AcceptanceSnapshot, type AcceptancePromise } from "./assistantAcceptance";
 import { AssistantAcceptanceLedger } from "./assistantAcceptanceLedger";
 import { AssistantImageEvidence, coveredByImages, type AcceptanceImageReceipt } from "./assistantImageEvidence";
 import { ACCEPTANCE_SCHEMA, ACCEPTANCE_TOOLS } from "./assistantAcceptanceTools";
@@ -1233,6 +1233,8 @@ export class AssistantSession {
     }
     this.acceptance.adopt(promises ?? missingAcceptance(goal), this.acceptanceRequestBaseline);
     this.publishAcceptance(onEvent);
+    const malformed = this.acceptance.getSnapshot().items.filter(item => item.issues?.length);
+    if (malformed.length) this.pushOrchestrationMessage(`Acceptance contract requires repair before content generation. Use repair_acceptance for these item IDs; valid promises and baselines remain unchanged.\n${JSON.stringify({ code: "malformed-criteria", items: malformed })}`);
   }
 
   private acceptanceOpen(): boolean {
@@ -1247,11 +1249,19 @@ export class AssistantSession {
 
   private applyAcceptanceTool(name: string, args: Record<string, unknown>): ToolResult {
     const allowed = name === "repair_acceptance" ? ["itemId", "criteria"] : ["itemId", "note", "verdict"];
-    const ok = !Object.keys(args).some(key => !allowed.includes(key)) && Boolean(this.acceptance &&
-      (name === "repair_acceptance" ? this.acceptance.repair(args.itemId, args.criteria)
-        : this.acceptance.review(args.itemId, args.note, this.ctx.project, args.verdict)));
+    const extra = Object.keys(args).find(key => !allowed.includes(key));
+    const result = extra ? { ok: false, code: "invalid-arguments", issues: [{ field: extra, code: "unknown-field",
+      expected: `only ${allowed.join(", ")}`, example: ACCEPTANCE_EXAMPLES.mapCount }] }
+      : !this.acceptance ? { ok: false, code: "unknown-item", issues: [{ field: "itemId", code: "unknown-item",
+        expected: "an adopted acceptance item ID", example: ACCEPTANCE_EXAMPLES.mapCount }] }
+      : name === "repair_acceptance" ? this.acceptance.repair(args.itemId, args.criteria)
+        : this.acceptance.reviewResult(args.itemId, args.note, this.ctx.project, args.verdict);
     this.publishAcceptance();
-    return { ok, summary: ok ? "Acceptance evidence updated" : "Acceptance unchanged: repair only missing criteria; review requires delivered current image coverage", data: { acceptance: this.getAcceptanceSnapshot() } };
+    return { ok: result.ok, summary: result.ok ? "Acceptance evidence updated"
+      : `Acceptance unchanged (${result.code}): ${result.issues.map(issue => `${issue.field}: ${issue.expected}`).join("; ")}`,
+      issues: result.issues.map(issue => ({ severity: "error", code: issue.code, message: `${issue.field}: ${issue.expected}` })),
+      data: { code: result.code, issues: result.issues, acceptance: this.getAcceptanceSnapshot() } };
+
   }
 
 
@@ -2180,7 +2190,7 @@ export class AssistantSession {
       return {
         ok: true,
         summary: `WorkPlan 설정: ${progress.layersTotal}레이어 / ${progress.itemsTotal}항목. 현재: ${progress.current?.itemTitle ?? "(완료)"}`,
-        data: { plan: structuredClone(plan), progress },
+        data: { plan: structuredClone(plan), progress, acceptance: this.getAcceptanceSnapshot() },
       };
     }
     // 조회는 계획이 없어도 실패가 아니다 — "없음"은 정확한 답이다. ok:false 로 돌려주면 정상 상태가

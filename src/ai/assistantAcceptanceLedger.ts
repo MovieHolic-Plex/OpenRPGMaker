@@ -1,7 +1,7 @@
 import type { Project } from "@/project/types";
 import {
-  parseAcceptanceCriteria,
-  type AcceptancePromise, type AcceptanceSnapshot, type AcceptanceItemSnapshot,
+  ACCEPTANCE_EXAMPLES, parseAcceptanceCriteriaResult,
+  type AcceptancePromise, type AcceptanceSnapshot, type AcceptanceItemSnapshot, type AcceptanceIssue,
 } from "./assistantAcceptance";
 import {
   acceptanceFingerprint, criterionTargets, evaluateAcceptanceCriterion, resolveAcceptanceMap,
@@ -9,6 +9,12 @@ import {
 
 import { AssistantImageEvidence, coveredByImages, type AcceptanceImageReceipt } from "./assistantImageEvidence";
 export type { AcceptanceImageReceipt } from "./assistantImageEvidence";
+
+export interface AcceptanceToolResult {
+  readonly ok: boolean;
+  readonly code: "repaired" | "reviewed" | "unknown-item" | "immutable-valid" | "malformed-criteria" | "invalid-review" | "image-review-unavailable";
+  readonly issues: readonly AcceptanceIssue[];
+}
 
 /** Session-owned ledger. Plans never own or replace its promises/baselines. */
 export class AssistantAcceptanceLedger {
@@ -38,12 +44,21 @@ export class AssistantAcceptanceLedger {
     }
   }
 
-  repair(itemId: unknown, criteria: unknown): boolean {
+  repair(itemId: unknown, criteria: unknown): AcceptanceToolResult {
     const promise = typeof itemId === "string" ? this.promises.get(itemId) : undefined;
-    const parsed = parseAcceptanceCriteria(criteria);
-    if (!promise || promise.criteria !== null || !parsed) return false;
-    this.promises.set(promise.id, { ...promise, criteria: parsed });
-    return true;
+    if (!promise) return this.unavailableItem();
+    if (promise.criteria !== null) return { ok: false, code: "immutable-valid", issues: [{
+      field: "itemId", code: "immutable-valid", expected: "an item with missing/malformed criteria; valid promises and baselines are immutable", example: ACCEPTANCE_EXAMPLES.mapCount,
+    }] };
+    const parsed = parseAcceptanceCriteriaResult(criteria);
+    if (!parsed.criteria) return { ok: false, code: "malformed-criteria", issues: parsed.issues };
+    this.promises.set(promise.id, { ...promise, criteria: parsed.criteria, issues: undefined });
+    return { ok: true, code: "repaired", issues: [] };
+  }
+
+  private unavailableItem(): AcceptanceToolResult {
+    return { ok: false, code: "unknown-item", issues: [{ field: "itemId", code: "unknown-item",
+      expected: `existing acceptance item ID: ${[...this.promises.keys()].join(", ")}`, example: ACCEPTANCE_EXAMPLES.mapCount }] };
   }
 
   resume(): void { this.stopped = false; }
@@ -80,20 +95,35 @@ export class AssistantAcceptanceLedger {
   }
 
   review(itemId: unknown, note: unknown, project: Project, verdict: unknown): boolean {
-    if (typeof itemId !== "string" || typeof note !== "string" || !note.trim()
-      || (verdict !== "pass" && verdict !== "fail")) return false;
+    return this.reviewResult(itemId, note, project, verdict).ok;
+  }
+
+  reviewResult(itemId: unknown, note: unknown, project: Project, verdict: unknown): AcceptanceToolResult {
+    const promise = typeof itemId === "string" ? this.promises.get(itemId) : undefined;
+    if (!promise) return this.unavailableItem();
+    if (typeof note !== "string" || !note.trim() || (verdict !== "pass" && verdict !== "fail")) return {
+      ok: false, code: "invalid-review", issues: [{ field: typeof note !== "string" || !note.trim() ? "note" : "verdict",
+        code: "invalid-field", expected: "nonempty note and explicit verdict pass|fail", example: ACCEPTANCE_EXAMPLES.imageReviewed }],
+    };
+    if (!promise.criteria) return { ok: false, code: "malformed-criteria", issues: promise.issues ?? parseAcceptanceCriteriaResult(undefined).issues };
     this.bind(project);
-    const promise = this.promises.get(itemId);
-    const criteria = promise?.criteria;
-    if (!criteria?.some(criterion => criterion.kind === "imageReviewed")) return false;
     const receipts = this.images.current(project);
-    const covered = criteria.every(criterion => {
-      if (criterion.kind !== "imageReviewed") return true;
+    const imageCriteria = promise.criteria.filter(criterion => criterion.kind === "imageReviewed");
+    const issues: AcceptanceIssue[] = [];
+    promise.criteria.forEach((criterion, criterionIndex) => {
+      if (criterion.kind !== "imageReviewed") return;
       const map = resolveAcceptanceMap(project, criterion.target, this.bindings);
-      return map && coveredByImages(receipts, map, criterion.region ?? { x: 0, y: 0, w: map.width, h: map.height });
+      if (!map || !coveredByImages(receipts, map, criterion.region ?? { x: 0, y: 0, w: map.width, h: map.height })) {
+        issues.push({ criterionIndex, field: `criteria[${criterionIndex}]`, code: "image-review-unavailable",
+          expected: "current delivered show_map_region image coverage for this scope, consumed in a subsequent response",
+          example: ACCEPTANCE_EXAMPLES.imageReviewed, ...(map ? { mapId: map.id } : {}) });
+      }
     });
-    if (covered) this.reviews.set(itemId, { receipts, note: note.trim(), passed: verdict === "pass" });
-    return covered;
+    if (!imageCriteria.length) issues.push({ field: "itemId", code: "image-review-unavailable",
+      expected: "an item with an imageReviewed criterion", example: ACCEPTANCE_EXAMPLES.imageReviewed });
+    if (issues.length) return { ok: false, code: "image-review-unavailable", issues };
+    this.reviews.set(promise.id, { receipts, note: note.trim(), passed: verdict === "pass" });
+    return { ok: true, code: "reviewed", issues: [] };
   }
 
   evaluate(applied: Project, draft = applied): AcceptanceSnapshot {
@@ -105,9 +135,10 @@ export class AssistantAcceptanceLedger {
       else this.reviews.set(id, { ...review, receipts });
     }
     const items: AcceptanceItemSnapshot[] = [...this.promises.values()].map(promise => {
-      if (!promise.criteria) return Object.freeze({ id: promise.id, title: promise.title, status: "blocked", reason: "Missing or malformed criteria: repair_acceptance required", evidence: Object.freeze([]) });
+      if (!promise.criteria) return Object.freeze({ id: promise.id, title: promise.title, status: "blocked", reason: "Missing or malformed criteria: repair_acceptance required",
+        issues: Object.freeze((promise.issues ?? parseAcceptanceCriteriaResult(undefined).issues).map(issue => Object.freeze({ ...issue, example: ACCEPTANCE_EXAMPLES[issue.example.kind] }))), evidence: Object.freeze([]) });
       const review = this.reviews.get(promise.id);
-      const evidence = promise.criteria.map(criterion => {
+      const evidence = promise.criteria.map((criterion, criterionIndex) => {
         const result = evaluateAcceptanceCriterion(criterion, {
           project: applied, baseline: promise.baseline, bindings: this.bindings,
           reviewed: (map, region) => review?.passed === true
@@ -115,6 +146,9 @@ export class AssistantAcceptanceLedger {
         });
         return Object.freeze({
           ...result,
+          ...(result.issues ? { issues: Object.freeze(result.issues.map(issue => Object.freeze({ ...issue,
+            criterionIndex, field: `criteria[${criterionIndex}].${issue.field}`,
+          }))) } : {}),
           observed: criterion.kind === "imageReviewed" && review
             ? `${result.observed}: ${review.note}` : result.observed,
         });

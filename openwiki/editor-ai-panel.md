@@ -33,6 +33,24 @@ before planning/tools; milestone rebases, repairs, duplicate IDs, replans and
 manual/synthetic continuations cannot move it. New requests may add promises
 against newer applied content without replacing earlier promises or baselines.
 
+Acceptance repair diagnostics (R7): provider schemas expose a union-free field
+superset plus canonical per-kind examples; Google-to-Antigravity normalization
+cannot erase those examples. `mapCount` requires explicit nonempty `targets`,
+each with exactly one `mapId` or `newMapName` selector, and an exact `count`.
+Runtime parsing remains atomic across the full criterion array. Tool `data.code`
+distinguishes `malformed-criteria`, `unknown-item`, `immutable-valid`,
+`invalid-review`, and `image-review-unavailable`; `data.issues` identifies
+`criterionIndex`, `field`, `code`, `expected`, and the canonical `example`.
+Adoption immediately publishes malformed/missing criteria in the ledger and
+injects diagnostics before generation; `set_work_plan` returns that snapshot.
+Failed repairs leave all criteria, earlier promises, and baselines unchanged.
+Static reachability means exact walkable origin/destination cells, unlike
+interaction-oriented `check_reachability`. Failed evidence identifies the cell,
+map, and blocker (including solid event ID). Author approach-cell criteria for
+interactions; do not relocate NPCs/signs/chests to satisfy a misunderstood check.
+Regression seams: `assistantAcceptanceDiagnostics`, `assistantAcceptanceProvider`,
+and `assistantAcceptanceSession` replay the five round-2 repair calls.
+
 Checks inspect actual scoped map dimensions, map/event counts, original target
 changes, protected map/region content, conservative static reachability and
 explicit image review. New-map names bind once to a unique new ID relative to the
