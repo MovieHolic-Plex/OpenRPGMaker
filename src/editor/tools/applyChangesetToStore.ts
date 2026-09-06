@@ -237,16 +237,23 @@ export async function applyProposedProject(
   options: ApplyProposedProjectOptions,
 ): Promise<ApplyProposedProjectResult> {
   const before = store.getCurrent();
+  // Wiki checkpoints and human codex edits own world documents independently of
+  // detached authoring previews. A title/map proposal must not restore an old wiki.
+  const appliedProject = { ...proposed };
+  if (!options.resetProject) {
+    if (before.world) appliedProject.world = structuredClone(before.world);
+    else delete appliedProject.world;
+  }
   // A detached preview may predate human edits or newly accepted houses.
   // Capture the live baseline at application, before any history or store writes.
   try {
-    assertHouseProtection(captureHouseProtection(before), proposed, []);
+    assertHouseProtection(captureHouseProtection(before), appliedProject, []);
   } catch (error) {
     if (!(error instanceof ToolError)) throw error;
     const issue = error.mapId ? `[${error.mapId}] ${error.message}` : error.message;
     return { ok: false, reason: "commit-rejected", issue, issues: [issue] };
   }
-  const commit = commitChangeset(proposed, before);
+  const commit = commitChangeset(appliedProject, before);
   if (!commit.ok) {
     const blocking = commit.blocking.map((entry) =>
       entry.mapId ? `[${entry.mapId}] ${entry.message}` : entry.message);
@@ -260,7 +267,7 @@ export async function applyProposedProject(
   recordProjectSnapshot(options.snapshotLabel, options.snapshotMapId);
   // diff 를 replace **전에** 계산한다 — 행위 로그 라벨이 이 시점에 확정돼야 하고,
   // summarizeChanges 는 before(교체 전 스토어)를 필요로 한다.
-  const diff = options.diff ?? summarizeChanges(before, proposed);
+  const diff = options.diff ?? summarizeChanges(before, appliedProject);
   const change = applyAnnotation(
     "ai",
     `${options.source === "agent-milestone" ? "AI 마일스톤" : "AI 제안"} 적용: ${options.summary}`,
@@ -268,11 +275,11 @@ export async function applyProposedProject(
     options.toolNames,
     options.reason ?? `AI 적용: ${options.summary}`,
   );
-  if (options.resetProject === true) store.replaceProject(proposed, { ...change, projectSwitch: false });
-  else store.replace(proposed, { change });
-  focusAcceptedAgentChanges(before, proposed);
+  if (options.resetProject === true) store.replaceProject(appliedProject, { ...change, projectSwitch: false });
+  else store.replace(appliedProject, { change });
+  focusAcceptedAgentChanges(before, appliedProject);
   const commitInput: CommitLogInput = {
-    project: proposed,
+    project: appliedProject,
     identity: currentAgentEditorIdentity(options.agentName ?? loadAiConfig().model),
     reviewStatus: options.reviewStatus ?? "approved",
     summary: options.summary,
@@ -293,6 +300,6 @@ export async function applyProposedProject(
       recordedAt: new Date().toISOString(),
     };
   }
-  resetManualProjectCommitBaseline(proposed);
+  resetManualProjectCommitBaseline(appliedProject);
   return { ok: true, commit: commitRow, applied: store.getCurrent() };
 }
