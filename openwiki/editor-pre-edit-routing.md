@@ -4,9 +4,7 @@
 
 Read this before editing editor-facing behavior. Identifies which workflow owns a request and lists agent cautions.
 
-## Pre-edit routing
-
-### Tile brush reliability (2026-09-06)
+## Tile brush reliability (2026-09-06)
 
 - `TilePaintEngine.brushStrokePoints` is shared with hover rendering and produces
   exactly N by N cells. Even sizes retain the negative-side anchor: 2 uses
@@ -30,6 +28,8 @@ Read this before editing editor-facing behavior. Identifies which workflow owns 
   `test/tileBrushState.test.ts`, `test/structureKitBrushConditions.test.ts`.
   Real browser proof is `scripts/qa/sidebar-brush.mjs`; its fixture is local-only
   and requires disabled remote persistence.
+
+## Pre-edit routing
 
 ### Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
 
