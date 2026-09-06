@@ -1,0 +1,5 @@
+{
+  "harnessFailure": "A typed LifeReconciliationError was caught but its reason was incorrectly compared to the inner parser reason sentinel. applySaveSnapshot first calls parseSnapshotValue and wraps its message in LifeReconciliationError(snapshot,session,parsed.message).",
+  "source": "src/player/saveSlots.ts:478-480",
+  "correction": "Assert the public boundary typed refusal (already verified by instanceof in catch), retain the actual reason as raw evidence; raw byte and whole-session equality checks remain. No prose pinning, product changes, deadline changes or outcome injection."
+}

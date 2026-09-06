@@ -108,7 +108,10 @@ function validAnimalCapacity(value: number | undefined): boolean {
 
 function addPaymentReceipt(previous: SpatialPaymentReceipt | undefined, cost: SpatialPlacementCost | undefined): SpatialPaymentReceipt | undefined {
   if (previous !== undefined && !isSpatialPaymentReceipt(previous)) return undefined;
-  const items = aggregateCosts([...(previous?.items ?? []), ...(cost?.items ?? [])]);
+  // The new cost already passed per-transaction preflight. History has cumulative bounds.
+  const totals = new Map((previous?.items ?? []).map(({ itemId, count }) => [itemId, count]));
+  for (const { itemId, count } of cost?.items ?? []) totals.set(itemId, (totals.get(itemId) ?? 0) + count);
+  const items = [...totals].map(([itemId, count]) => ({ itemId, count }));
   const receipt = { gold: (previous?.gold ?? 0) + (cost?.gold ?? 0), items };
   return isSpatialPaymentReceipt(receipt) ? receipt : undefined;
 }

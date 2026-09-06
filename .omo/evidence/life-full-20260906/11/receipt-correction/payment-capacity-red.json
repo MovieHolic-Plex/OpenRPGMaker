@@ -1,0 +1,21 @@
+{
+  "head": "b8f7b00e38c4d18badb2d8ea5211d03daf6384f0",
+  "sourceHash": "e580b07d9b353cc79c13ea18725d13d1c06f56f178715ebe83a18d0bfd297bc0",
+  "authoredRoundtripAccepted": true,
+  "costItemCounts": [
+    32,
+    33
+  ],
+  "cumulativeDistinctItems": 65,
+  "result": {
+    "ok": false,
+    "reason": "invalid"
+  },
+  "level": 1,
+  "receiptItems": 32,
+  "unchangedOnRefusal": true,
+  "cleanup": {
+    "serverClosed": true,
+    "ownedCacheRemoved": true
+  }
+}

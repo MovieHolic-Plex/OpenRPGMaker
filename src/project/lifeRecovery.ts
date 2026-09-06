@@ -1,5 +1,4 @@
 import { changeItemsAtomically, type LifeRecoveryClaim, type LifeRecoveryJson, type LifeRecoveryState, type PlaySession, type SpatialPaymentReceipt } from "./session";
-import { GOLD_MAX } from "./economyValues";
 import { isPositiveItemQuantity, ITEM_QUANTITY_MAX } from "./itemQuantities";
 import { isMakerContract } from "./makers";
 import type { ItemAmount, Project } from "./types";
@@ -75,9 +74,15 @@ export function isRecoveryItems(value: unknown): value is readonly ItemAmount[] 
   });
 }
 
+/** Cumulative paid history, not one wallet, inventory stack, cost input or recovery claim. */
 export function isSpatialPaymentReceipt(value: unknown): value is SpatialPaymentReceipt {
-  return record(value) && Number.isSafeInteger(value.gold) && (value.gold as number) >= 0
-    && (value.gold as number) <= GOLD_MAX && isRecoveryItems(value.items);
+  if (!record(value) || !Number.isSafeInteger(value.gold) || (value.gold as number) < 0 || !Array.isArray(value.items)) return false;
+  const ids = new Set<string>();
+  for (const entry of value.items) {
+    if (!record(entry) || !text(entry.itemId) || !positiveSafe(entry.count) || ids.has(entry.itemId)) return false;
+    ids.add(entry.itemId);
+  }
+  return true;
 }
 
 /** Boundary predicate: unknown item/source IDs are valid evidence, invalid quantities are not. */

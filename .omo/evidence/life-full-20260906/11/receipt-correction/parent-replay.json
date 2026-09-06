@@ -1,0 +1,24 @@
+{
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "180s",
+    "env",
+    "TMPDIR=/dev/shm/st_01a0786a-receipt-qa/tmp",
+    "node",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/phase4-parent/payment-capacity-probe.mjs",
+    "/home/main/z-project/rpg-zzu-life-full-housing-receipts/.omo/evidence/life-full-20260906/11/receipt-correction/payment-capacity-green.json"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-housing-receipts",
+  "head": "b8f7b00e38c4d18badb2d8ea5211d03daf6384f0",
+  "sourceHash": "f7fb8f6793aa1350bccae6f78b71aad79f14cd8bb4c642568a4add71db95f86d",
+  "exit": 0,
+  "signal": null,
+  "stdout": "{\"head\":\"b8f7b00e38c4d18badb2d8ea5211d03daf6384f0\",\"sourceHash\":\"f7fb8f6793aa1350bccae6f78b71aad79f14cd8bb4c642568a4add71db95f86d\",\"authoredRoundtripAccepted\":true,\"costItemCounts\":[32,33],\"cumulativeDistinctItems\":65,\"result\":{\"ok\":true},\"level\":2,\"receiptItems\":65,\"unchangedOnRefusal\":false,\"recoveryClaimSizes\":[64,1],\"pass\":true,\"cleanup\":{\"serverClosed\":true,\"ownedCacheRemoved\":true}}\n",
+  "stderr": ""
+}

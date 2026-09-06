@@ -1,0 +1,23 @@
+{
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "180s",
+    "env",
+    "TMPDIR=/dev/shm/st_01a0786a-receipt-qa/tmp",
+    "node",
+    ".omo/evidence/life-full-20260906/11/receipt-correction/diagnostics.mjs"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-housing-receipts",
+  "head": "b8f7b00e38c4d18badb2d8ea5211d03daf6384f0",
+  "sourceHash": "f7fb8f6793aa1350bccae6f78b71aad79f14cd8bb4c642568a4add71db95f86d",
+  "exit": 1,
+  "signal": null,
+  "stdout": "\u001b[96mtest/spatialPaymentReceipts.test.ts\u001b[0m:\u001b[93m179\u001b[0m:\u001b[93m56\u001b[0m - \u001b[91merror\u001b[0m\u001b[90m TS2540: \u001b[0mCannot assign to 'cost' because it is a read-only property.\n\n\u001b[7m179\u001b[0m     project.database.farmBuildingTypes![0]!.levels[1]!.cost = cost;\n\u001b[7m   \u001b[0m \u001b[91m                                                       ~~~~\u001b[0m\n\n",
+  "stderr": ""
+}

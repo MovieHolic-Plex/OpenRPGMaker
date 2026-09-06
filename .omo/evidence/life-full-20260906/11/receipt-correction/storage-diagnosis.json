@@ -1,0 +1,7 @@
+{
+  "failure": "green.json: p2SpatialPlayIntegration collection ENOSPC, 242 other tests passed",
+  "observedAtFailure": "root and /tmp same /dev/sda2: 200M free, 100% used; inode usage21%; tmpfs50G free",
+  "currentDf": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/sda2       914G  875G  957M 100% /\n/dev/sda2       914G  875G  957M 100% /\ntmpfs            50G  2.2M   50G   1% /dev/shm\n",
+  "correction": "Only runtime temporary files and owned dist use /dev/shm/st_01a0786a-receipt-qa. Sources, config, evidence remain in assigned worktree. No shared cleanup. No test changes or deadline increases.",
+  "unexecutedTarget": "test/p2SpatialPlayIntegration.test.ts"
+}
