@@ -80,7 +80,7 @@ for (const [width, height] of [[1024, 768], [1280, 800], [1440, 900]]) {
         await route.fulfill({ response });
       });
     }
-    await page.addInitScript(() => {
+    await page.addInitScript((readyTimeout) => {
       localStorage.setItem("oprn:editor-ui-mode", "beginner");
       localStorage.setItem("oprn:coachmarks-basic-v1", "1");
       localStorage.setItem("oprn:standard-welcome-seen", "1");
@@ -89,13 +89,13 @@ for (const [width, height] of [[1024, 768], [1280, 800], [1440, 900]]) {
       // polling or synthetic readiness; the assigned function is unchanged.
       const w = window as BrowserSignals;
       w.walkSceneReady = new Promise<void>((resolve, reject) => {
-        const deadline = setTimeout(() => reject(new Error("Editor scene did not become ready")), 60_000);
+        const deadline = setTimeout(() => reject(new Error("Editor scene did not become ready")), readyTimeout);
         Object.defineProperty(w, "__oprnEditWorldToClient", { configurable: true, set(value: BrowserSignals["__oprnEditWorldToClient"]) {
           Object.defineProperty(w, "__oprnEditWorldToClient", { configurable: true, writable: true, value });
           clearTimeout(deadline); resolve();
         } });
       });
-    });
+    }, testInfo.timeout);
     await page.goto("/?blankProject=1", { waitUntil: "domcontentloaded" });
     await page.evaluate(() => (window as BrowserSignals).walkSceneReady);
     await page.evaluate(async () => {
