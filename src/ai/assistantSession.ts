@@ -278,7 +278,7 @@ export interface TurnResult {
 export type AuditEntry =
   | { kind: "user"; text: string; at?: string; context?: ConversationTurnContext }
   | { kind: "assistant"; text: string; toolCalls?: { name: string; args: string }[]; at?: string }
-  | { kind: "tool"; name: string; args: Record<string, unknown>; ok: boolean; summary: string; reason?: string; issues?: string[]; construction?: import("@/editor/construction/constructionAudit").ConstructionAuditRecord; at?: string }
+  | { kind: "tool"; name: string; args: Record<string, unknown>; ok: boolean; summary: string; reason?: string; issues?: string[]; issueCodes?: string[]; deferred?: boolean; construction?: import("@/editor/construction/constructionAudit").ConstructionAuditRecord; at?: string }
   | { kind: "status"; text: string; at?: string };
 
 // 하네스 스냅샷 — 오케스트레이션 주입을 포함한 세션 원본 메시지와 감사 로그를 한 번에 관측한다.
@@ -953,14 +953,14 @@ export class AssistantSession {
   /** 항목 id → 마지막으로 자동 완료를 막은 사유(산출물 게이트·완성도 경고). 교착 안내 문구의 근거. */
   private lastBlockReasonByItemId = new Map<string, string>();
   /**
-   * 항목 id → `${툴 이름}::${실패 요약}` 이 연속으로 몇 번 같았는가.
+   * 항목 id → 툴/대상/안정된 issue code별 실패 횟수. 다른 대상의 성공은 지우지 않는다.
    *
    * Ralph 교착 판정은 「모델이 나가려 한다」를 신호로 쓰는데, 같은 쓰기 툴을 **같은 이유로 계속 실패**하는
    * 모델은 나가려 하지 않으므로 그 신호가 오지 않는다(2026-09-03 e2e 실측: 스펙 게이트에 막힌 fill_region
    * 을 대본이 주는 대로 30번 반복했고 Ralph 는 한 번도 안 돌았다). 같은 실패가 이 상한에 닿으면 항목을
    * blocked 로 돌려 같은 출구로 나간다.
    */
-  private repeatedToolFailures = new Map<string, { readonly key: string; count: number }>();
+  private repeatedToolFailures = new Map<string, Map<string, { target: string; count: number; summary: string }>>();
   /** 이 턴은 자율 드라이버의 합성 「계속」인가(SessionTurnOptions.driverContinue). */
   private turnIsDriverContinue = false;
   /** 플래너 LLM 왕복만 건너뛴다 — 계획 툴·오케스트레이션 주입은 그대로 둔다(skipPlannerThisTurn 과 다르다). */
@@ -1954,27 +1954,32 @@ export class AssistantSession {
     return blocked;
   }
 
-  /**
-   * 같은 쓰기 툴이 같은 이유로 연속 실패하는 것을 센다. 상한에 닿으면 현재 항목을 blocked 로 돌려
-   * Ralph 교착과 같은 출구(사용자에게 넘김)로 보낸다. 성공한 쓰기 하나가 카운터를 지운다.
-   */
-  private noteRepeatedToolFailure(name: string, result: ToolResult): void {
+  /** Retry budgets are target-scoped, unlike Ralph's consecutive lack-of-progress counter. */
+  private noteToolRetryResult(name: string, args: Record<string, unknown>, result: ToolResult): void {
     const currentItemId = this.workPlan?.currentItemId;
-    if (!currentItemId || getTool(name)?.mode !== "write") return;
-    const key = `${name}::${result.summary.slice(0, 120)}`;
-    const entry = this.repeatedToolFailures.get(currentItemId);
-    const next = entry && entry.key === key ? { key, count: entry.count + 1 } : { key, count: 1 };
-    this.repeatedToolFailures.set(currentItemId, next);
-    if (next.count >= MAX_REPEATED_TOOL_FAILURES_PER_ITEM) {
-      this.lastBlockReasonByItemId.set(currentItemId, result.summary);
+    if (!currentItemId || (getTool(name)?.mode !== "write" && name !== "set_build_spec")) return;
+    // A fresh missing-lookup refusal is a correctable attempt, even though it did not execute.
+    // Only downstream dependency deferrals (and already-exhausted targets) are free retries.
+    if (isDeferredToolResult(result) && !result.issues?.some((issue) => issue.code === "read-before-write-required")) return;
+    const target = toolRetryTarget(name, args);
+    const entries = this.repeatedToolFailures.get(currentItemId) ?? new Map<string, { target: string; count: number; summary: string }>();
+    if (result.ok) {
+      for (const [key, entry] of entries) if (entry.target === target) entries.delete(key);
+    } else {
+      const codes = result.issues?.filter((issue) => issue.severity === "error").map((issue) => issue.code) ?? [];
+      for (const code of new Set(codes.length > 0 ? codes : ["tool-failure"])) {
+        const key = JSON.stringify([target, code]);
+        entries.set(key, { target, count: (entries.get(key)?.count ?? 0) + 1, summary: result.summary });
+      }
     }
+    this.repeatedToolFailures.set(currentItemId, entries);
   }
 
-  /** 같은 실패가 상한만큼 반복됐는가 — 참이면 호출부가 항목을 막고 턴을 끝낸다. */
-  private hasRepeatedToolFailureStall(): boolean {
+  private repeatedToolFailureStall(target?: string): { summary: string } | undefined {
     const currentItemId = this.workPlan?.currentItemId;
-    if (!currentItemId) return false;
-    return (this.repeatedToolFailures.get(currentItemId)?.count ?? 0) >= MAX_REPEATED_TOOL_FAILURES_PER_ITEM;
+    if (!currentItemId) return undefined;
+    return [...(this.repeatedToolFailures.get(currentItemId)?.values() ?? [])]
+      .find((entry) => entry.count >= MAX_REPEATED_TOOL_FAILURES_PER_ITEM && (target === undefined || entry.target === target));
   }
 
   /** 막힌 항목으로 턴을 끝낼 때 사용자에게 보내는 문장 — 무엇이 막혔고 무엇을 하면 되는지. */
@@ -2246,7 +2251,6 @@ export class AssistantSession {
     if (currentItemId && getTool(name)?.mode === "write") {
       this.ralphAttemptsByItemId.delete(currentItemId);
       this.lastBlockReasonByItemId.delete(currentItemId);
-      this.repeatedToolFailures.delete(currentItemId);
     }
   }
 
@@ -3583,6 +3587,8 @@ export class AssistantSession {
       // 같은 배치의 인자는 실패 결과를 보기 전에 만들어졌다. 뒤쪽 읽기가 성공해도
       // 모델이 그 결과를 소비한 것은 아니므로 현재 배치의 쓰기를 다시 열지 않는다.
       let failedReadInBatch: string | null = null;
+      const failedSpecMaps = new Set<string>();
+      const failedRecords = new Map<string, BatchRecordTarget>();
       const batchReads: { name: string; args: Record<string, unknown>; result: ToolResult }[] = [];
       // 각 tool_call 실행 → role:"tool" 메시지로 결과 반환.
       for (const call of toolCalls) {
@@ -3620,6 +3626,7 @@ export class AssistantSession {
           if (split.missing && parsedCall.parseError === null) {
             this.pushAudit({ kind: "status", text: `tool-args:missing-reason ${name}` });
           }
+          const recordDependency = tool?.mode === "write" ? failedRecordReference(args, failedRecords) : undefined;
           if (parsedCall.parseError !== null) {
             toolResult = invalidJsonArgsResult(name, call.function.arguments ?? "", parsedCall.parseError);
             this.pushAudit({ kind: "status", text: `tool-args:invalid-json ${name} — ${parsedCall.parseError}` });
@@ -3629,7 +3636,13 @@ export class AssistantSession {
             this.pushAudit({ kind: "status", text: `composer:ask 쓰기 툴 거부 ${name}` });
           } else if (failedReadInBatch && isWriteToolName(name)) {
             const summary = `${failedReadInBatch} 조회가 실패하여 같은 응답의 ${name} 실행을 보류했습니다. 조회를 성공시키고 반환값을 확인한 다음 다시 호출하세요.`;
-            toolResult = { ok: false, summary, issues: [{ severity: "error", code: "read-dependency-failed", message: summary }] };
+            toolResult = deferredToolResult("read-dependency-failed", summary);
+          } else if (SPATIAL_BUILD_TOOLS.has(name) && failedSpecMaps.has(toolTargetMapId(args) ?? "")) {
+            toolResult = deferredToolResult("build-spec-dependency-failed", `${name}: 이 응답의 대상 맵 밑그림이 거부되어 실행을 보류했습니다. set_build_spec을 고쳐 제출하세요.`);
+          } else if (recordDependency) {
+            toolResult = deferredToolResult("record-dependency-failed", `${name}: ${recordDependency.kind} ${recordDependency.id} 생성이 실패하여 실행을 보류했습니다. 생성·조회 후 다시 호출하세요.`);
+          } else if (this.repeatedToolFailureStall(toolRetryTarget(name, args))) {
+            toolResult = deferredToolResult("tool-retry-exhausted", `${name}: 같은 대상의 실패 상한에 도달하여 실행을 보류했습니다. 사용자 지시가 필요합니다.`);
           } else if (name === "set_build_spec") {
             toolResult = this.applyBuildSpec(args);
           } else if (
@@ -3661,7 +3674,7 @@ export class AssistantSession {
             const dedupeKey = writeDedupeKey(name, args);
             const cached = dedupeKey ? this.turnWriteDedupe.get(dedupeKey) : undefined;
             if (readGate) {
-              toolResult = readGate;
+              toolResult = { ...readGate, data: { code: "tool-deferred", executed: false, reason: "read-before-write-required" } };
             } else if (cached) {
               toolResult = {
                 ...cached,
@@ -3685,6 +3698,17 @@ export class AssistantSession {
               if (dedupeKey && toolResult.ok) this.turnWriteDedupe.set(dedupeKey, toolResult);
             }
           }
+          if (!isDeferredToolResult(toolResult)) {
+            if (name === "set_build_spec" && typeof args.mapId === "string") {
+              if (toolResult.ok) failedSpecMaps.delete(args.mapId);
+              else failedSpecMaps.add(args.mapId);
+            }
+            const record = batchRecordTarget(name, args);
+            if (record) {
+              if (toolResult.ok) failedRecords.delete(record.key);
+              else if (!this.ctx.project.database[record.collection].some((entry) => entry.id === record.id)) failedRecords.set(record.key, record);
+            }
+          }
           if (tool?.mode === "read") {
             batchReads.push({ name, args, result: toolResult });
             if (!toolResult.ok) failedReadInBatch ??= name;
@@ -3692,7 +3716,7 @@ export class AssistantSession {
           // 읽기 툴도 기록한다 — 플래너가 `successTools:["get_map_region"]` 같은 확인 항목을 자주 쓰는데
           // 쓰기만 세면 그 항목은 무슨 짓을 해도 완료할 수 없는 게이트가 된다(2026-08-23 실측: 2회 거부 후 skip).
           this.recordToolResult(name, args, toolResult);
-          if (!toolResult.ok) this.noteRepeatedToolFailure(name, toolResult);
+          this.noteToolRetryResult(name, args, toolResult);
           if (toolResult.ok) {
             // 이 항목이 새로 만든 맵을 기록한다 — 산출물 게이트가 "만들고 안 채운 맵"을 여기서 잡는다.
             const createdMapId = createdMapIdFrom(name, args, toolResult.data);
@@ -3734,6 +3758,8 @@ export class AssistantSession {
             ok: toolResult.ok,
             summary: toolResult.summary,
             reason: recordedReason,
+            ...(isDeferredToolResult(toolResult) ? { deferred: true } : {}),
+            ...(toolResult.issues?.length ? { issueCodes: toolResult.issues.map((issue) => issue.code) } : {}),
             // 실패/경고 원인은 감사 로그에도 남긴다 — summary만으로 원인 추적이 안 되던 문제 방지.
             ...(toolResult.issues && toolResult.issues.length > 0 ? { issues: toolResult.issues.map((issue) => issue.message) } : {}),
           });
@@ -3846,10 +3872,11 @@ export class AssistantSession {
         });
       }
 
-      // 같은 쓰기 실패가 반복되면(인자를 바꾸지 않는 모델) 라운드를 더 태우지 않고 사용자에게 넘긴다.
-      if (this.hasRepeatedToolFailureStall() && this.workPlan) {
+      // A different write succeeding in this batch cannot erase an exhausted target's budget.
+      const retryStall = this.repeatedToolFailureStall();
+      if (retryStall && this.workPlan) {
         const currentItemId = this.workPlan.currentItemId;
-        const reason = currentItemId ? this.lastBlockReasonByItemId.get(currentItemId) ?? "같은 실패가 반복됩니다." : "";
+        const reason = retryStall.summary;
         const blocked = currentItemId ? blockWorkItemById(this.workPlan, currentItemId, reason) : null;
         if (blocked) {
           this.pushAudit({
@@ -4065,6 +4092,74 @@ function dataWithEventPosition(data: unknown, move: EventMoveTarget): unknown {
 
 function eventTargetKey(target: EventTargetKey): string {
   return `${target.mapId}:${target.eventId}`;
+}
+
+function toolTargetMapId(args: Record<string, unknown>): string | undefined {
+  const mapId = args.mapId ?? (isRecord(args.target) ? args.target.mapId : undefined);
+  return typeof mapId === "string" ? mapId : undefined;
+}
+
+function toolRetryTarget(name: string, args: Record<string, unknown>): string {
+  const record = name.startsWith("upsert_") ? args[name.slice("upsert_".length)] : undefined;
+  const id = args.id ?? args.eventId ?? (isRecord(record) ? record.id : undefined) ?? args.name;
+  return JSON.stringify([name, toolTargetMapId(args) ?? null, typeof id === "string" ? id : null]);
+}
+
+function deferredToolResult(reason: string, summary: string): ToolResult {
+  return {
+    ok: false, summary,
+    issues: [{ severity: "error", code: reason, message: summary }],
+    data: { code: "tool-deferred", executed: false, reason },
+  };
+}
+
+function isDeferredToolResult(result: ToolResult): boolean {
+  return isRecord(result.data) && result.data.code === "tool-deferred" && result.data.executed === false;
+}
+
+// Only explicit DB ID contracts, matching ToolReadEvidence; never infer dependencies from prose.
+const BATCH_RECORD_COLLECTIONS = [
+  ["item", "items"], ["enemy", "enemies"], ["troop", "troops"],
+  ["actor", "actors"], ["skill", "skills"], ["equipment", "equipment"],
+] as const;
+type BatchRecordKind = typeof BATCH_RECORD_COLLECTIONS[number][0];
+interface BatchRecordTarget {
+  key: string;
+  kind: BatchRecordKind;
+  collection: typeof BATCH_RECORD_COLLECTIONS[number][1];
+  id: string;
+}
+
+function batchRecordTarget(name: string, args: Record<string, unknown>): BatchRecordTarget | null {
+  for (const [kind, collection] of BATCH_RECORD_COLLECTIONS) {
+    const value = args[kind];
+    if (name === `upsert_${kind}` && isRecord(value) && typeof value.id === "string") {
+      return { key: `${kind}:${value.id}`, kind, collection, id: value.id };
+    }
+  }
+  return null;
+}
+
+function failedRecordReference(value: unknown, failed: ReadonlyMap<string, BatchRecordTarget>): BatchRecordTarget | undefined {
+  if (failed.size === 0) return undefined;
+  if (Array.isArray(value)) {
+    for (const child of value) {
+      const found = failedRecordReference(child, failed);
+      if (found) return found;
+    }
+  } else if (isRecord(value)) {
+    for (const [key, child] of Object.entries(value)) {
+      for (const target of failed.values()) {
+        const idField = key === `${target.kind}Id` || key === `${target.kind}Ids`
+          || (target.kind === "actor" && (key === "partyActorIds" || key === "startActorIds"));
+        if (idField && (Array.isArray(child) ? child : [child]).includes(target.id)) return target;
+        if (target.kind === "item" && key === "inventory" && isRecord(child) && Object.hasOwn(child, target.id)) return target;
+      }
+      const found = failedRecordReference(child, failed);
+      if (found) return found;
+    }
+  }
+  return undefined;
 }
 
 function isSpecGatePass(result: ToolResult | SpecGatePass): result is SpecGatePass {
