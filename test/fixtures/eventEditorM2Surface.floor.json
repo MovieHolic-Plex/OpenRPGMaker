@@ -640,12 +640,12 @@
   "textCount": 2
  },
  "m2-211-weighted-branch": {
-  "testidCount": 25,
+  "testidCount": 20,
   "controlCount": 9,
   "selectOptionCount": 21,
-  "classCount": 29,
-  "labelCount": 6,
-  "textCount": 2
+  "classCount": 31,
+  "labelCount": 5,
+  "textCount": 1
  },
  "m2-212-cutscene-control": {
   "testidCount": 4,
