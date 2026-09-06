@@ -71,18 +71,14 @@ describe("basic icon rail", () => {
     expect(editorState.get().layer).toBe("lower");
   });
 
-  it("타일 토글 → 플라이아웃에 타일 그리드, 타일 클릭 시 브러시 전환", () => {
-    renderBasicLeftRail(container);
-    expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")).toBeNull();
-    click("basic-rail-toggle-tiles");
-    // dispatchFlyout 은 lastContainer.isConnected 여야 자가 재렌더한다. fakeDom 은 isConnected 를
-    // 구현하지 않으니 토글 후 명시적으로 다시 그린다(상태는 모듈에 살아있다).
-    renderBasicLeftRail(container);
-    expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")).toBeTruthy();
+  it("타일은 처음부터 보이고 선택 뒤에도 남는다", () => {
     expect(findByTestId(container as unknown as FakeElement, "basic-tile-grid")).toBeTruthy();
+    expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")).toBeNull();
     click("basic-tile-0");
+    renderBasicLeftRail(container);
     expect(editorState.get().selectedTile).toBe(0);
     expect(editorState.get().tool).toBe("paint");
+    expect(findByTestId(container as unknown as FakeElement, "basic-tile-grid")).toBeTruthy();
   });
 
   it("레이어 스위치는 아이콘 위에 바닥/장식/이벤트 한글을 보여 준다", () => {
@@ -108,8 +104,7 @@ describe("basic icon rail", () => {
     expect(editorState.get().tool).toBe("paint");
   });
 
-  it("열린 타일 플라이아웃에서 타일셋이 사라지면 초보용 빈 상태를 보여 준다", () => {
-    click("basic-rail-toggle-tiles");
+  it("타일셋이 사라지면 상시 패널에 빈 상태를 보여 준다", () => {
     const project = store.getCurrent();
     const map = project.maps[project.startMapId];
     store.replace({
@@ -117,7 +112,8 @@ describe("basic icon rail", () => {
       tilesets: Object.fromEntries(Object.entries(project.tilesets).filter(([id]) => id !== map.tilesetId)),
     });
     renderBasicLeftRail(container);
-    expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")?.textContent).toContain("그림이 없습니다");
+    expect(container.querySelector(".empty-hint")).not.toBeNull();
+    expect(findByTestId(container as unknown as FakeElement, "basic-tile-grid")).toBeNull();
   });
 
   it("도구·레이어의 단일 선택을 aria-current 로 노출한다 (aria-pressed 아님)", () => {
@@ -147,7 +143,7 @@ describe("basic icon rail", () => {
   });
 
   it("플라이아웃을 닫으면 포커스가 그것을 연 토글로 돌아온다", () => {
-    click("basic-rail-toggle-tiles");
+    click("basic-rail-toggle-maps");
     renderBasicLeftRail(container);
     const closeBtn = findByTestId(container as unknown as FakeElement, "basic-flyout-close") as unknown as HTMLElement | null;
     expect(closeBtn).toBeTruthy();
@@ -155,11 +151,11 @@ describe("basic icon rail", () => {
     closeBtn!.click();
     renderBasicLeftRail(container);
     expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")).toBeNull();
-    expect(document.activeElement).toBe(findByTestId(container as unknown as FakeElement, "basic-rail-toggle-tiles"));
+    expect(document.activeElement).toBe(findByTestId(container as unknown as FakeElement, "basic-rail-toggle-maps"));
   });
 
   it("모드를 바꿨다 초보로 돌아오면 열지 않은 플라이아웃이 남지 않는다", () => {
-    click("basic-rail-toggle-tiles");
+    click("basic-rail-toggle-maps");
     renderBasicLeftRail(container);
     expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")).toBeTruthy();
 
@@ -169,20 +165,19 @@ describe("basic icon rail", () => {
     expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")).toBeNull();
   });
 
-  it("쓸 타일이 이미 있으면 칠하기가 방금 닫은 플라이아웃을 다시 열지 않는다", () => {
+  it("칠하기는 맵 플라이아웃을 다시 열지 않고 타일을 계속 보여 준다", () => {
     editorState.set({ selectedTile: 0, tool: "select" });
     renderBasicLeftRail(container);
-    click("basic-rail-toggle-tiles");
+    click("basic-rail-toggle-maps");
     renderBasicLeftRail(container);
     expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")).toBeTruthy();
-    click("basic-rail-toggle-tiles");
+    click("basic-rail-toggle-maps");
     renderBasicLeftRail(container);
-    expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")).toBeNull();
-
     click("tool-paint");
     renderBasicLeftRail(container);
     expect(editorState.get().tool).toBe("paint");
     expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")).toBeNull();
+    expect(findByTestId(container as unknown as FakeElement, "basic-tile-grid")).toBeTruthy();
   });
 
   it("호출자가 컨테이너를 비운 뒤 다시 그려도 열린 플라이아웃은 살아 있다", () => {
@@ -199,21 +194,16 @@ describe("basic icon rail", () => {
     expect(findByTestId(container as unknown as FakeElement, "map-tree")).toBeTruthy();
   });
 
-  it("타일을 고르면 타일 플라이아웃은 물러나고, 핀을 걸었으면 남는다", () => {
-    click("basic-rail-toggle-tiles");
-    renderBasicLeftRail(container);
-    click("basic-tile-0");
-    renderBasicLeftRail(container);
-    // 캔버스를 덮는 오버레이라 고른 타일을 바로 칠할 수 있어야 한다.
-    expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")).toBeNull();
-
-    click("basic-rail-toggle-tiles");
+  it("맵 플라이아웃의 핀은 선택 재렌더에도 유지된다", () => {
+    click("basic-rail-toggle-maps");
     renderBasicLeftRail(container);
     click("basic-flyout-pin");
     renderBasicLeftRail(container);
     click("basic-tile-0");
     renderBasicLeftRail(container);
     expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")).toBeTruthy();
+    expect(findByTestId(container as unknown as FakeElement, "basic-flyout-pin")?.getAttribute("aria-pressed")).toBe("true");
+    expect(findByTestId(container as unknown as FakeElement, "basic-tile-grid")).toBeTruthy();
   });
 
   it("타일셋이 없으면 비활성 타일 버튼이 이벤트 레이어가 아니라 실제 원인을 말한다", () => {

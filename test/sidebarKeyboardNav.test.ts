@@ -108,7 +108,9 @@ describe("Sidebar Keyboard Navigation & Focus Survival Integration", () => {
       const railStops = (container as unknown as FakeElement)
         .querySelectorAll("button")
         .filter((b) => b.getAttribute("tabindex") === "0");
-      expect(railStops.length).toBe(3);
+      expect(railStops.length).toBe(4);
+      const grid = findByTestId(container as unknown as FakeElement, "basic-tile-grid");
+      expect(grid?.querySelectorAll("button").filter(b => b.getAttribute("tabindex") === "0")).toHaveLength(1);
     });
 
     it("도구 그룹은 role=toolbar, 레이어·패널 그룹은 라벨 있는 group 이다", () => {
