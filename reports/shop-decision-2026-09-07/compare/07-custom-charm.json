@@ -1,0 +1,122 @@
+{
+  "id": "07-custom-charm",
+  "screenshot": "07-custom-charm.png",
+  "expected": {
+    "kind": "ready",
+    "slot": "charm",
+    "stats": {
+      "attack": [
+        30,
+        30,
+        0
+      ],
+      "defense": [
+        18,
+        18,
+        0
+      ],
+      "mind": [
+        8,
+        11,
+        3
+      ],
+      "agility": [
+        8,
+        8,
+        0
+      ]
+    }
+  },
+  "observed": {
+    "gold": 200,
+    "inventory": {
+      "candidate": 1,
+      "old": 1,
+      "potion": 1
+    },
+    "owned": 0,
+    "playerGold": 200,
+    "merchantGold": 200,
+    "selected": "shop-buy-charm",
+    "cap": 5,
+    "unitPrice": 40,
+    "displayedPrice": 40,
+    "displayedOwned": 0,
+    "quantity": "1",
+    "quantityMax": "5",
+    "total": 40,
+    "rows": 6,
+    "actorEquipment": {
+      "a1": {
+        "weapon": "old"
+      },
+      "a2": {
+        "weapon": "old"
+      },
+      "a3": {
+        "weapon": "curse"
+      },
+      "a4": {
+        "weapon": "old"
+      },
+      "a5": {
+        "weapon": "old"
+      },
+      "a6": {
+        "weapon": "old"
+      }
+    },
+    "tradeCounts": {},
+    "focus": "shop-actor-a1",
+    "balance": "160",
+    "shortage": null,
+    "x": 14,
+    "y": 18,
+    "warnings": [],
+    "detail": {
+      "kind": "ready",
+      "actor": "a1",
+      "slot": "charm",
+      "same": "false",
+      "reason": null,
+      "actors": [
+        "shop-actor-a1",
+        "shop-actor-a2",
+        "shop-actor-a3",
+        "shop-actor-a4",
+        "shop-actor-a5",
+        "shop-actor-a6"
+      ],
+      "stats": {
+        "attack": [
+          30,
+          30,
+          0
+        ],
+        "defense": [
+          18,
+          18,
+          0
+        ],
+        "mind": [
+          8,
+          11,
+          3
+        ],
+        "agility": [
+          8,
+          8,
+          0
+        ]
+      },
+      "effects": {
+        "gained": [],
+        "lost": [],
+        "changed": []
+      },
+      "displaced": [],
+      "focus": "shop-actor-a1",
+      "scrollTop": 0
+    }
+  }
+}

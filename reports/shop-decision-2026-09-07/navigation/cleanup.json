@@ -1,0 +1,212 @@
+[
+  {
+    "resource": "/home/main/.herdr/worktrees/rpg-zzu/worktree-clear-harbor-3da2/.vite-cache/shop-decision-player-pciByc",
+    "registeredAt": "2026-09-06T21:27:15.533Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:31:35.341Z"
+  },
+  {
+    "resource": "http://127.0.0.1:34217",
+    "registeredAt": "2026-09-06T21:27:43.719Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:31:35.330Z"
+  },
+  {
+    "resource": "chromium",
+    "registeredAt": "2026-09-06T21:27:44.065Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:31:35.328Z"
+  },
+  {
+    "resource": "navigation-1024x768:context",
+    "registeredAt": "2026-09-06T21:27:44.277Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:28:47.705Z"
+  },
+  {
+    "resource": "navigation-1024x768:page",
+    "registeredAt": "2026-09-06T21:27:44.518Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:28:47.687Z"
+  },
+  {
+    "resource": "navigation-1024x768:cdp",
+    "registeredAt": "2026-09-06T21:27:53.055Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:28:47.577Z"
+  },
+  {
+    "resource": "navigation-1024x768:heap-read-handle",
+    "registeredAt": "2026-09-06T21:27:58.070Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:28:47.493Z"
+  },
+  {
+    "resource": "navigation-640x480:context",
+    "registeredAt": "2026-09-06T21:28:47.944Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:29:47.386Z"
+  },
+  {
+    "resource": "navigation-640x480:page",
+    "registeredAt": "2026-09-06T21:28:48.060Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:29:47.373Z"
+  },
+  {
+    "resource": "navigation-640x480:cdp",
+    "registeredAt": "2026-09-06T21:28:54.442Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:29:47.308Z"
+  },
+  {
+    "resource": "navigation-640x480:heap-read-handle",
+    "registeredAt": "2026-09-06T21:28:56.770Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:29:47.230Z"
+  },
+  {
+    "resource": "navigation-320x240:context",
+    "registeredAt": "2026-09-06T21:29:47.500Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:30:41.133Z"
+  },
+  {
+    "resource": "navigation-320x240:page",
+    "registeredAt": "2026-09-06T21:29:47.590Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:30:41.088Z"
+  },
+  {
+    "resource": "navigation-320x240:cdp",
+    "registeredAt": "2026-09-06T21:29:55.888Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:30:40.994Z"
+  },
+  {
+    "resource": "navigation-320x240:heap-read-handle",
+    "registeredAt": "2026-09-06T21:29:58.499Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:30:40.901Z"
+  },
+  {
+    "resource": "no-party-640x480:context",
+    "registeredAt": "2026-09-06T21:30:41.249Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:30:53.873Z"
+  },
+  {
+    "resource": "no-party-640x480:page",
+    "registeredAt": "2026-09-06T21:30:41.348Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:30:53.825Z"
+  },
+  {
+    "resource": "no-party-640x480:cdp",
+    "registeredAt": "2026-09-06T21:30:46.723Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:30:53.785Z"
+  },
+  {
+    "resource": "no-party-640x480:heap-read-handle",
+    "registeredAt": "2026-09-06T21:30:49.016Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:30:53.745Z"
+  },
+  {
+    "resource": "non-equipment-640x480:context",
+    "registeredAt": "2026-09-06T21:30:53.955Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:31:06.107Z"
+  },
+  {
+    "resource": "non-equipment-640x480:page",
+    "registeredAt": "2026-09-06T21:30:54.067Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:31:06.097Z"
+  },
+  {
+    "resource": "non-equipment-640x480:cdp",
+    "registeredAt": "2026-09-06T21:30:58.859Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:31:06.057Z"
+  },
+  {
+    "resource": "non-equipment-640x480:heap-read-handle",
+    "registeredAt": "2026-09-06T21:31:01.550Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:31:06.016Z"
+  },
+  {
+    "resource": "buyOnly-640x480:context",
+    "registeredAt": "2026-09-06T21:31:06.244Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:31:16.094Z"
+  },
+  {
+    "resource": "buyOnly-640x480:page",
+    "registeredAt": "2026-09-06T21:31:06.344Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:31:16.071Z"
+  },
+  {
+    "resource": "buyOnly-640x480:cdp",
+    "registeredAt": "2026-09-06T21:31:10.515Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:31:16.023Z"
+  },
+  {
+    "resource": "buyOnly-640x480:heap-read-handle",
+    "registeredAt": "2026-09-06T21:31:13.302Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:31:15.903Z"
+  },
+  {
+    "resource": "sellOnly-640x480:context",
+    "registeredAt": "2026-09-06T21:31:16.169Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:31:26.605Z"
+  },
+  {
+    "resource": "sellOnly-640x480:page",
+    "registeredAt": "2026-09-06T21:31:16.239Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:31:26.548Z"
+  },
+  {
+    "resource": "sellOnly-640x480:cdp",
+    "registeredAt": "2026-09-06T21:31:21.575Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:31:26.504Z"
+  },
+  {
+    "resource": "sellOnly-640x480:heap-read-handle",
+    "registeredAt": "2026-09-06T21:31:24.259Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:31:26.429Z"
+  },
+  {
+    "resource": "empty-640x480:context",
+    "registeredAt": "2026-09-06T21:31:26.877Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:31:35.038Z"
+  },
+  {
+    "resource": "empty-640x480:page",
+    "registeredAt": "2026-09-06T21:31:27.022Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:31:34.985Z"
+  },
+  {
+    "resource": "empty-640x480:cdp",
+    "registeredAt": "2026-09-06T21:31:31.188Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:31:34.924Z"
+  },
+  {
+    "resource": "empty-640x480:heap-read-handle",
+    "registeredAt": "2026-09-06T21:31:32.969Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:31:34.872Z"
+  }
+]

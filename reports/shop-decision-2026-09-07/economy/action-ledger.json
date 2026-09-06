@@ -1,18 +1,247 @@
 [
   {
-    "label": "shipping boot and entrance",
-    "ops": [
-      "Enter",
-      "waitForRuntime",
-      "seed:1",
-      "face:right",
-      "action"
-    ],
-    "completed": true
+    "label": "Enter: shipping new-game boot",
+    "completed": true,
+    "state": {
+      "gold": 100,
+      "inventory": {},
+      "owned": 0,
+      "playerGold": null,
+      "merchantGold": null,
+      "selected": null,
+      "cap": null,
+      "unitPrice": null,
+      "displayedPrice": null,
+      "displayedOwned": null,
+      "quantity": null,
+      "quantityMax": null,
+      "total": null,
+      "rows": 0,
+      "actorEquipment": {
+        "actor_hero": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "tradeCounts": {},
+      "focus": null,
+      "balance": null,
+      "shortage": null,
+      "x": 14,
+      "y": 18,
+      "warnings": []
+    }
   },
   {
-    "key": "Enter",
-    "label": "open buy list",
+    "label": "e: actual field action opens authored shop",
+    "completed": true,
+    "state": {
+      "gold": 100,
+      "inventory": {},
+      "owned": 0,
+      "playerGold": 100,
+      "merchantGold": null,
+      "selected": null,
+      "cap": null,
+      "unitPrice": null,
+      "displayedPrice": null,
+      "displayedOwned": null,
+      "quantity": null,
+      "quantityMax": null,
+      "total": null,
+      "rows": 0,
+      "actorEquipment": {
+        "actor_hero": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "tradeCounts": {},
+      "focus": "shop-scene",
+      "balance": null,
+      "shortage": null,
+      "x": 14,
+      "y": 18,
+      "warnings": []
+    }
+  },
+  {
+    "label": "economy-1024x768: CDP main-world selection",
+    "completed": true,
+    "executionContexts": [
+      {
+        "id": 4,
+        "origin": "http://127.0.0.1:39657",
+        "name": "__playwright_utility_world_page@b5d8b8aaacbcc6857eb99c06e8e68e61",
+        "uniqueId": "550175073351135165.-2981495199349576737",
+        "auxData": {
+          "isDefault": false,
+          "type": "isolated",
+          "frameId": "9673912E834F27955CAF7A3088C1CAB6"
+        }
+      },
+      {
+        "id": 3,
+        "origin": "http://127.0.0.1:39657",
+        "name": "",
+        "uniqueId": "6923589681084312030.4948229129592208481",
+        "auxData": {
+          "isDefault": true,
+          "type": "default",
+          "frameId": "9673912E834F27955CAF7A3088C1CAB6"
+        }
+      }
+    ]
+  },
+  {
+    "label": "economy-1024x768: read-only live session acquired (CDP queryObjects)",
+    "completed": true,
+    "initial": {
+      "gold": 100,
+      "inventory": {},
+      "actorEquipment": {
+        "actor_hero": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "partyActorIds": [
+        "actor_hero",
+        "actor_guardian",
+        "actor_mage",
+        "actor_scout"
+      ],
+      "actorLevels": {
+        "actor_hero": 1,
+        "actor_guardian": 1,
+        "actor_mage": 1,
+        "actor_scout": 1,
+        "actor_cleric": 1,
+        "actor_ranger": 1
+      },
+      "actorExperience": {
+        "actor_hero": 0,
+        "actor_guardian": 0,
+        "actor_mage": 0,
+        "actor_scout": 0
+      },
+      "classOverrides": {},
+      "growthProgress": null,
+      "promotionLineage": null,
+      "actorParamBonuses": {},
+      "shopTradeCounts": null,
+      "currentMapId": "map_lantern_village",
+      "x": 14,
+      "y": 18
+    }
+  },
+  {
+    "label": "Enter: open buy list",
     "completed": true,
     "state": {
       "gold": 100,
@@ -71,14 +300,16 @@
         }
       },
       "tradeCounts": {},
+      "focus": "shop-buy-equip_sword",
+      "balance": "60",
+      "shortage": null,
       "x": 14,
       "y": 18,
       "warnings": []
     }
   },
   {
-    "key": "ArrowRight",
-    "label": "buy quantity two",
+    "label": "ArrowRight: buy quantity two",
     "completed": true,
     "state": {
       "gold": 100,
@@ -137,14 +368,16 @@
         }
       },
       "tradeCounts": {},
+      "focus": "shop-buy-equip_sword",
+      "balance": "20",
+      "shortage": null,
       "x": 14,
       "y": 18,
       "warnings": []
     }
   },
   {
-    "key": "e",
-    "label": "buy two equipment",
+    "label": "e: buy two equipment",
     "completed": true,
     "state": {
       "gold": 20,
@@ -210,14 +443,16 @@
           "bought": 2
         }
       },
+      "focus": "shop-buy-equip_sword",
+      "balance": null,
+      "shortage": "20",
       "x": 14,
       "y": 18,
       "warnings": []
     }
   },
   {
-    "key": "e",
-    "label": "reject zero-capacity purchase",
+    "label": "e: reject zero-capacity purchase",
     "completed": true,
     "state": {
       "gold": 20,
@@ -283,14 +518,16 @@
           "bought": 2
         }
       },
+      "focus": "shop-buy-equip_sword",
+      "balance": null,
+      "shortage": "20",
       "x": 14,
       "y": 18,
       "warnings": []
     }
   },
   {
-    "key": "Escape",
-    "label": "return to entrance",
+    "label": "Tab: focus shop-tab-buy",
     "completed": true,
     "state": {
       "gold": 20,
@@ -299,16 +536,16 @@
       },
       "owned": 2,
       "playerGold": 20,
-      "merchantGold": null,
-      "selected": null,
-      "cap": null,
-      "unitPrice": null,
-      "displayedPrice": null,
-      "displayedOwned": null,
-      "quantity": null,
-      "quantityMax": null,
-      "total": null,
-      "rows": 0,
+      "merchantGold": 280,
+      "selected": "shop-buy-equip_sword",
+      "cap": 0,
+      "unitPrice": 40,
+      "displayedPrice": 40,
+      "displayedOwned": 2,
+      "quantity": "1",
+      "quantityMax": "1",
+      "total": 40,
+      "rows": 1,
       "actorEquipment": {
         "actor_hero": {
           "weapon": "equip_sword",
@@ -356,14 +593,16 @@
           "bought": 2
         }
       },
+      "focus": "shop-tab-buy",
+      "balance": null,
+      "shortage": "20",
       "x": 14,
       "y": 18,
       "warnings": []
     }
   },
   {
-    "key": "ArrowDown",
-    "label": "select sell",
+    "label": "ArrowRight: focus shop-tab-sell",
     "completed": true,
     "state": {
       "gold": 20,
@@ -372,16 +611,16 @@
       },
       "owned": 2,
       "playerGold": 20,
-      "merchantGold": null,
-      "selected": null,
-      "cap": null,
-      "unitPrice": null,
-      "displayedPrice": null,
-      "displayedOwned": null,
-      "quantity": null,
-      "quantityMax": null,
-      "total": null,
-      "rows": 0,
+      "merchantGold": 280,
+      "selected": "shop-buy-equip_sword",
+      "cap": 0,
+      "unitPrice": 40,
+      "displayedPrice": 40,
+      "displayedOwned": 2,
+      "quantity": "1",
+      "quantityMax": "1",
+      "total": 40,
+      "rows": 1,
       "actorEquipment": {
         "actor_hero": {
           "weapon": "equip_sword",
@@ -429,14 +668,16 @@
           "bought": 2
         }
       },
+      "focus": "shop-tab-sell",
+      "balance": null,
+      "shortage": "20",
       "x": 14,
       "y": 18,
       "warnings": []
     }
   },
   {
-    "key": "Enter",
-    "label": "open sell list",
+    "label": "Enter: direct keyboard sell mode",
     "completed": true,
     "state": {
       "gold": 20,
@@ -502,14 +743,91 @@
           "bought": 2
         }
       },
+      "focus": "shop-tab-sell",
+      "balance": "40",
+      "shortage": null,
       "x": 14,
       "y": 18,
       "warnings": []
     }
   },
   {
-    "key": "ArrowRight",
-    "label": "sell quantity two",
+    "label": "Shift+Tab: focus shop-sell-equip_sword",
+    "completed": true,
+    "state": {
+      "gold": 20,
+      "inventory": {
+        "equip_sword": 2
+      },
+      "owned": 2,
+      "playerGold": 20,
+      "merchantGold": 280,
+      "selected": "shop-sell-equip_sword",
+      "cap": 2,
+      "unitPrice": 20,
+      "displayedPrice": 20,
+      "displayedOwned": 2,
+      "quantity": "1",
+      "quantityMax": "2",
+      "total": 20,
+      "rows": 1,
+      "actorEquipment": {
+        "actor_hero": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "tradeCounts": {
+        "equip_sword": {
+          "sold": 0,
+          "bought": 2
+        }
+      },
+      "focus": "shop-sell-equip_sword",
+      "balance": "40",
+      "shortage": null,
+      "x": 14,
+      "y": 18,
+      "warnings": []
+    }
+  },
+  {
+    "label": "ArrowRight: sell quantity two",
     "completed": true,
     "state": {
       "gold": 20,
@@ -575,14 +893,16 @@
           "bought": 2
         }
       },
+      "focus": "shop-sell-equip_sword",
+      "balance": "60",
+      "shortage": null,
       "x": 14,
       "y": 18,
       "warnings": []
     }
   },
   {
-    "key": "e",
-    "label": "sell final two equipment",
+    "label": "e: sell final two equipment",
     "completed": true,
     "state": {
       "gold": 60,
@@ -646,14 +966,16 @@
           "bought": 2
         }
       },
+      "focus": "shop-tab-sell",
+      "balance": null,
+      "shortage": null,
       "x": 14,
       "y": 18,
       "warnings": []
     }
   },
   {
-    "key": "Escape",
-    "label": "return to entrance",
+    "label": "Escape: return to entrance",
     "completed": true,
     "state": {
       "gold": 60,
@@ -717,14 +1039,16 @@
           "bought": 2
         }
       },
+      "focus": "shop-scene",
+      "balance": null,
+      "shortage": null,
       "x": 14,
       "y": 18,
       "warnings": []
     }
   },
   {
-    "key": "Escape",
-    "label": "close shop",
+    "label": "Escape: close shop",
     "completed": true,
     "state": {
       "gold": 60,
@@ -788,6 +1112,9 @@
           "bought": 2
         }
       },
+      "focus": null,
+      "balance": null,
+      "shortage": null,
       "x": 14,
       "y": 18,
       "warnings": []

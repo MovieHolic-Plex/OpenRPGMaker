@@ -11,7 +11,9 @@
     "quantity": "1",
     "unitPrice": 40,
     "displayedPrice": 40,
-    "total": 40
+    "total": 40,
+    "balance": "60",
+    "shortage": null
   },
   "observed": {
     "gold": 100,
@@ -70,6 +72,9 @@
       }
     },
     "tradeCounts": {},
+    "focus": "shop-buy-equip_sword",
+    "balance": "60",
+    "shortage": null,
     "x": 14,
     "y": 18,
     "warnings": []

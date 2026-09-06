@@ -78,6 +78,9 @@
         "bought": 2
       }
     },
+    "focus": "shop-tab-sell",
+    "balance": null,
+    "shortage": null,
     "x": 14,
     "y": 18,
     "warnings": []

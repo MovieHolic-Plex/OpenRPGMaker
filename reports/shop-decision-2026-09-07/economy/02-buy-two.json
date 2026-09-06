@@ -5,7 +5,8 @@
     "gold": 100,
     "merchantGold": 200,
     "quantity": "2",
-    "total": 80
+    "total": 80,
+    "balance": "20"
   },
   "observed": {
     "gold": 100,
@@ -64,6 +65,9 @@
       }
     },
     "tradeCounts": {},
+    "focus": "shop-buy-equip_sword",
+    "balance": "20",
+    "shortage": null,
     "x": 14,
     "y": 18,
     "warnings": []
