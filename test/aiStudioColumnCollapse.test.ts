@@ -42,7 +42,9 @@ function expectColumns(scenes: number, chat: number): void {
   // Assert both grid tracks and pane widths: a class-only test missed this defect.
   expect(getComputedStyle(shell.root).gridTemplateColumns)
     .toBe(`${scenes}px 8px minmax(0, 1fr) 8px ${chat}px`);
-  expect(getComputedStyle(shell.root.querySelector<HTMLElement>(".ai-studio-scenes")!).width).toBe(`${scenes}px`);
+  const scenesPane = shell.root.querySelector<HTMLElement>(".ai-studio-scenes");
+  if (!scenesPane) throw new Error("Missing studio scenes pane");
+  expect(getComputedStyle(scenesPane).width).toBe(`${scenes}px`);
   expect(getComputedStyle(control("chat")).width).toBe(`${chat}px`);
 }
 
@@ -78,7 +80,7 @@ describe("studio column collapse layout", () => {
     control("scenes-collapse").click();
     control("chat-collapse").click();
     expectColumns(52, 52);
-    expect(JSON.parse(localStorage.getItem(layoutKey)!)).toEqual(saved);
+    expect(JSON.parse(localStorage.getItem(layoutKey) ?? "null")).toEqual(saved);
     control("scenes-collapse").click();
     control("chat-collapse").click();
     expectColumns(316, 464);
@@ -86,7 +88,7 @@ describe("studio column collapse layout", () => {
     key("scenes", "ArrowRight");
     key("chat", "ArrowLeft", true);
     expectColumns(332, 400);
-    expect(JSON.parse(localStorage.getItem(layoutKey)!)).toEqual({ scenes: 332, chat: 400, deck: 300 });
+    expect(JSON.parse(localStorage.getItem(layoutKey) ?? "null")).toEqual({ scenes: 332, chat: 400, deck: 300 });
     // The right handle grows leftwards; the left handle grows rightwards.
     for (const [column, endX] of [["scenes", 132], ["chat", 68]] as const) {
       control(`split-${column}`).dispatchEvent(new PointerEvent("pointerdown", { button: 0, clientX: 100 }));
@@ -94,7 +96,7 @@ describe("studio column collapse layout", () => {
       document.dispatchEvent(new PointerEvent("pointerup"));
     }
     expectColumns(364, 432);
-    expect(JSON.parse(localStorage.getItem(layoutKey)!)).toEqual({ scenes: 364, chat: 432, deck: 300 });
+    expect(JSON.parse(localStorage.getItem(layoutKey) ?? "null")).toEqual({ scenes: 364, chat: 432, deck: 300 });
     control("scenes-collapse").click();
     control("chat-collapse").click();
     expectColumns(52, 52);
@@ -108,6 +110,6 @@ describe("studio column collapse layout", () => {
     control("split-scenes").dispatchEvent(new MouseEvent("dblclick"));
     control("split-chat").dispatchEvent(new MouseEvent("dblclick"));
     expectColumns(252, 400);
-    expect(JSON.parse(localStorage.getItem(layoutKey)!)).toEqual({ scenes: 252, chat: 400, deck: 300 });
+    expect(JSON.parse(localStorage.getItem(layoutKey) ?? "null")).toEqual({ scenes: 252, chat: 400, deck: 300 });
   });
 });
