@@ -88,3 +88,13 @@ Evidence-only `git diff --cached --check` returned exit2 for preserved tool-outp
 In `openwiki/runtime-sessions.md`, replace the paragraph beginning `- Farm interactions simulate` with:
 
 > - Farm interactions simulate the full target area on a session draft, then charge `ceil(successfulTiles * energyMultiplier)`. When `system.skillSystem?.enabled === true`, they award 10 XP per successful crop harvest, rock mine, or tree chop to the matching authored life skill. Disabled/omitted skill progression skips only automatic XP, without blocking valid farm, fishing, or seasonal-forage rewards. Explicit XP APIs retain their disabled failures. Enabled invalid progress or reward references still roll back the entire transaction, including inventory, energy, owners and RNG. Fishing minSkill qualification is unchanged. `system.itemUpgrades[].capability` supplies the equipped upgraded tool's centered `areaWidth` / `areaHeight` and energy multiplier; legacy/no-capability tools remain 1x1 / 1.0. `system.craftRecipes[].requiresUnlock:true` gates both `canCraft` and `craftRecipe` on `session.unlockedRecipeIds`.
+
+## Parent lossless raw-log packaging
+
+Eight tool-output files with trailing whitespace or terminal blank lines are
+stored byte-for-byte in `raw-log-archive.json`. Original path, byte length,
+SHA256 and Git blob identity are recorded for every entry. Paths in the
+historical summaries and `verification-manifest.json` refer to these original
+outputs; decode the matching entry before checking its bytes. No failure,
+warning, assertion, or output byte was rewritten. The source scripts are
+historical producers, not a reason to overwrite these archived results.
