@@ -1,13 +1,18 @@
 // 세션 라우팅은 의도 선언(모델이 읽은 것)만 소비한다 — 되묻기·플래너 스킵·플래너 direct 존중·볼륨 막대·
 // 툴 노출·선택 영역 노트·수정 대상 맵. 문장 키워드로 추측하는 경로가 없음을 세션 루프로 증명한다.
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Project } from "@/project/types";
 import { store } from "@/project/store";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import type { ChatRequest, ChatResult } from "@/ai/llmClient";
 import { declaredIntent, fixedDeclarer } from "./intentFixture";
+import { toOpenAiTools } from "@/editor/tools/toolRegistry";
+import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
+
+beforeEach(() => resetIntentDeclarationCache());
 
 afterEach(() => {
+  resetIntentDeclarationCache();
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
   vi.unstubAllEnvs();
@@ -97,18 +102,33 @@ describe("의도 선언이 세션 라우팅을 정한다", () => {
     expect(statuses(session).some((text) => text.startsWith("의도 확인:"))).toBe(true);
   }, 30000);
 
-  it("auto 모드는 같은 선언에도 멈추지 않고 진행한다(F-05)", async () => {
+  it("auto 모드는 되묻기를 건너뛰지만 미완성 acceptance 를 성공으로 게시하지 않는다(F-05)", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const seen: ChatRequest[] = [];
-    const session = new AssistantSession(createBlankProject(), {
+    const project = createBlankProject();
+    installHermetic(project);
+    const published: string[] = [];
+    const session = new AssistantSession(project, {
       config: AUTO_CONFIG,
-      chat: scriptedChat([finalResult("야외 집으로 진행합니다.")], seen),
+      chat: async (_config, request) => {
+        seen.push(request);
+        return finalResult("WRITER_SUCCESS_SENTINEL");
+      },
       declareIntent: fixedDeclarer({ space: "unclear", clarify: "실내인가요 야외인가요?", needsPlan: false }),
     });
-    const result = await session.sendUserMessage("집 하나 만들어줘", () => {});
+    const result = await session.sendUserMessage("집 하나 만들어줘", event => {
+      if (event.type === "assistant_message") published.push(event.content);
+    });
     expect(seen.length).toBeGreaterThan(0);
-    expect(result.assistantText).toBe("야외 집으로 진행합니다.");
-    expect(statuses(session).some((text) => text.startsWith("의도 확인 건너뜀"))).toBe(true);
+    expect(seen.length).toBeLessThanOrEqual(AUTO_CONFIG.maxToolCalls);
+    expect(seen[0]?.tools?.length).toBeGreaterThan(0);
+    expect(result.stoppedReason).toBe("error");
+    expect(session.getAcceptanceSnapshot()?.status).toBe("blocked");
+    expect(result.proposedCalls).toEqual([]);
+    expect(result.appliedCalls ?? []).toEqual([]);
+    expect(session.isDraftReviewApproved()).toBe(false);
+    expect(result.assistantText).not.toContain("WRITER_SUCCESS_SENTINEL");
+    expect(published.join("\n")).not.toContain("WRITER_SUCCESS_SENTINEL");
   }, 30000);
 
   it("선언자가 없으면 폴백 선언이다 — 되묻지 않고, 계획 여부는 플래너(direct)에게 넘긴다", async () => {
@@ -238,23 +258,31 @@ describe("의도 선언이 세션 라우팅을 정한다", () => {
     expect(names).toContain("script_cutscene");
   }, 30000);
 
-  it("툴 이름 언급은 사용자 발화(instruction)에서만 읽고 footer 는 보지 않는다", async () => {
+  it.each([
+    ["define_ending 툴이 뭐야", ""],
+    ["define_ending 툴이 뭐야", "\n\n[컨텍스트] 현재 맵: 시작 맵 (map_blank_start) · set_type_chart"],
+    ["지금 뭘 할 수 있어?", "\n\n[컨텍스트] 현재 맵: 시작 맵 (map_blank_start) · set_type_chart"],
+  ])("전체 활성 스키마는 키워드·footer 와 무관하고 선언은 instruction 만 읽는다: %s / %s", async (instruction, footer) => {
     const { AssistantSession, createBlankProject } = await load();
     const seen: ChatRequest[] = [];
+    const declareIntent = vi.fn(fixedDeclarer({ mode: "question" }));
     const session = new AssistantSession(createBlankProject(), {
       config: CHAT_CONFIG,
       chat: scriptedChat([finalResult("완료")], seen),
-      declareIntent: fixedDeclarer({ mode: "question" }),
+      declareIntent,
     });
     await session.sendUserMessage(
-      "define_ending 툴이 뭐야\n\n[컨텍스트] 현재 맵: 시작 맵 (map_blank_start) · set_type_chart",
+      instruction + footer,
       () => {},
       undefined,
-      { instruction: "define_ending 툴이 뭐야" },
+      { instruction },
     );
-    const names = (seen[0]!.tools ?? []).map((tool) => tool.function.name);
-    expect(names).toContain("define_ending");
-    expect(names).not.toContain("set_type_chart");
+    expect(declareIntent).toHaveBeenCalledTimes(1);
+    expect(declareIntent.mock.calls[0]?.[0].userText).toBe(instruction);
+    expect(seen).toHaveLength(1);
+    expect(seen[0]?.tools).toEqual(expect.arrayContaining(toOpenAiTools()));
+    expect(seen[0]?.tools?.map(tool => tool.function.name)).toContain("set_type_chart");
+    expect(statuses(session)).toContain("planner:skip question");
   }, 30000);
 
   it("선택 영역은 사실로 붙고 선언에 따라 경계 또는 참고용 노트가 된다", async () => {
