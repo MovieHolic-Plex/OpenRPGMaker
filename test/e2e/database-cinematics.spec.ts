@@ -26,7 +26,10 @@ test.use({
     ],
   },
 });
-test.describe.configure({ timeout: 240_000, retries: 0 });
+// This full author/reload/native-media journey is not a performance test.
+// Keep the 15s action and bounded event deadlines; allow the complete matrix
+// case to finish on the shared host without exhausting its aggregate budget.
+test.describe.configure({ timeout: 600_000, retries: 0 });
 
 type SignalResult = { error?: string };
 type ProbeWindow = Window & {
