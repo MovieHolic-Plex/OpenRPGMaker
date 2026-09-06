@@ -16,7 +16,7 @@ describe("canonical requirements", () => {
     // Given a declared obligation and a replacement claiming it is optional and passed.
     const f = fixture();
     // When both plans are skipped through the real session tool dispatcher.
-    await f.run([[plan([size]), skip], [plan([{ ...size, required: false, passed: true, criteria: [{ kind: "eventCount", target, count: 0 }] }]), skip]]);
+    await f.run([[plan([size], ["size"]), skip], [plan([{ ...size, required: false, passed: true, criteria: [{ kind: "eventCount", target, count: 0 }] }], ["size"]), skip]]);
     // Then scheduler completion cannot replace the original denominator or bindings.
     expect(f.session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [{ id: "size", required: true, evidence: [{ passed: false }] }] });
     expect(f.session.getWorkPlan()?.layers[0]?.items[0]).toMatchObject({ status: "skipped", requirementIds: ["size"] });
@@ -40,7 +40,7 @@ describe("canonical requirements", () => {
 
   it("preserves requirements and item links through the planner parser", () => {
     // Given the planner transport's JSON shape.
-    const raw = plan([size]).args;
+    const raw = plan([size], ["size"]).args;
     // When parsed and materialized by the actual planner API.
     const parsed = parseOrchestratorDecision(JSON.stringify({ ...raw, action: "new_plan" })).decision;
     if (!parsed || parsed.action === "direct" || parsed.action === "resume") throw new Error("Expected a plan decision");
@@ -50,17 +50,39 @@ describe("canonical requirements", () => {
   });
 
   it("keeps a bare legacy scheduler plan unassessed", async () => {
-    // Given no declared or inferred spatial contract; when the plan is skipped; then no assessment is fabricated.
+    // Given an actual legacy payload with neither new declarations nor scheduler links.
     const f = fixture();
-    await f.run([[plan(), skip]]);
+    const legacy = plan();
+    expect(legacy.args).not.toHaveProperty("requirements");
+    expect(legacy.args).not.toHaveProperty("layers.0.items.0.requirementIds");
+    // When the plan is skipped; then no assessment is fabricated.
+    await f.run([[legacy, skip]]);
     expect(f.session.getAcceptanceSnapshot()).toBeNull();
   });
 
   it("assesses existing explicit acceptance without requiring the new field", async () => {
-    // Given legacy explicit acceptance; when skipped; then its measured failure remains authoritative.
+    // Given legacy acceptance without either new field.
     const f = fixture();
-    await f.run([[{ name: "set_work_plan", args: { ...plan().args, acceptance: [size] } }, skip]]);
+    const legacy = { name: "set_work_plan", args: { ...plan().args, acceptance: [size] } };
+    expect(legacy.args).not.toHaveProperty("requirements");
+    expect(legacy.args).not.toHaveProperty("layers.0.items.0.requirementIds");
+    // When skipped; then the explicit contract's measured failure remains authoritative.
+    await f.run([[legacy, skip]]);
     expect(f.session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [{ id: "size", evidence: [{ passed: false }] }] });
+  });
+
+  it.each([false, true])("retains an unlinked required obligation when replan drops links=%s", async replan => {
+    // Given a required obligation, either unlinked initially or linked before replacement.
+    const f = fixture();
+    const original = plan([size], replan ? ["size"] : undefined);
+    const rounds = replan ? [[original, skip], [plan(), skip]] : [[original, skip]];
+    // When the real dispatcher skips all scheduling work, optionally replacing the plan without links/declarations.
+    await f.run(rounds);
+    // Then no scheduler link is needed to retain the original required denominator.
+    const work = f.session.getWorkPlan();
+    expect(work).toMatchObject({ layers: [{ items: [{ status: "skipped" }] }] });
+    expect(work).not.toHaveProperty("layers.0.items.0.requirementIds");
+    expect(f.session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [{ id: "size", required: true, evidence: [{ passed: false }] }] });
   });
 
   it("binds original text and scope at the host boundary despite fabricated source and withdrawal", async () => {
@@ -72,6 +94,19 @@ describe("canonical requirements", () => {
     // Then only host facts own provenance and the requirement remains open.
     expect(f.session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [{ source: { text: "ORIGINAL", scope }, required: true }] });
     expect(f.session.getAcceptanceSnapshot()?.items[0]?.withdrawal).toBeUndefined();
+  });
+
+  it.each([false, true])("retains only the original user utterance through replan with instruction override=%s", async override => {
+    // Given a real request whose transport includes synthesized editor facts.
+    const f = fixture();
+    const instruction = "USER_ORIGINAL";
+    const scope = { mapId: target.mapId, region: { x: 1, y: 2, width: 3, height: 4 } };
+    const transport = `${override ? "TRANSPORT_WRAPPER" : instruction}\n[컨텍스트] 현재 맵: Editor map (${target.mapId})`;
+    await f.run([[plan([size]), skip]], { scope, ...(override ? { instruction } : {}) }, transport);
+    // When another user request replans the same ID and the model attempts to replace its source.
+    await f.run([[plan([{ ...size, source: { text: "MODEL_REPLACEMENT" } }]), skip]], { instruction: "USER_FOLLOWUP" }, "FOLLOWUP_TRANSPORT");
+    // Then original user words survive, without either transport's context or the model's claim.
+    expect(f.session.getAcceptanceSnapshot()?.items[0]?.source).toMatchObject({ text: instruction, scope });
   });
 
   it("withdraws only the named current requirement through the user-only API", async () => {
@@ -150,7 +185,7 @@ describe("exact scoped verdict authority", () => {
   it.each(["explicit", "wrong-target", "stale", "advisory", "advisory-after-stale", "advisory-after-explicit", "negative", "model"] as const)("evaluates %s evidence without tool-name credit", source => {
     // Given a canonical criterion bound to the complete verification invocation.
     const project = createBlankProject();
-    const args = { mapId: target.mapId, from: { x: 0, y: 0 }, to: [{ x: 1, y: 1 }] };
+    const args = { mapId: target.mapId, from: { x: 0, y: 0 }, targets: [{ x: 1, y: 1 }] };
     const promises = parseAcceptance([{ id: "route", title: "Route", criteria: [{ kind: "toolVerdict", tool: "check_reachability", args }], passed: true }]);
     const ledger = new AssistantAcceptanceLedger("goal", "Route", project);
     ledger.adopt(promises ?? []);
@@ -169,7 +204,7 @@ describe("exact scoped verdict authority", () => {
     // Given a passing host observation and an unapplied content change.
     const applied = createBlankProject();
     const draft = structuredClone(applied);
-    draft.name = "Unapplied";
+    draft.meta.title = "Unapplied";
     const evidence = new ToolVerificationEvidence();
     evidence.observe("run_lint", {}, { ok: true, data: { counts: { errors: 0 } } });
     const ledger = new AssistantAcceptanceLedger("draft", "Draft", applied);
@@ -185,7 +220,7 @@ describe("exact scoped verdict authority", () => {
     await f.run([[plan([{ id: "route", title: "Route", criteria: [{ kind: "toolVerdict", tool: "check_reachability", args }] }]), skip], [{ name: "check_reachability", args }]]);
     const original = f.session.baselineProject;
     const changed = structuredClone(original);
-    changed.name = "External edit";
+    changed.meta.title = "External edit";
     f.session.refreshAcceptance(changed);
     // When the earlier project is restored; then stale proof cannot revive through content equality.
     f.session.refreshAcceptance(original);
@@ -198,7 +233,7 @@ describe("exact scoped verdict authority", () => {
     const args = { mapId: target.mapId, from: { x: 0, y: 0 }, targets: [{ x: 1, y: 0 }] };
     await f.run([[{ name: "check_reachability", args }]]);
     const changed = structuredClone(f.session.baselineProject);
-    changed.name = "Changed before contract adoption";
+    changed.meta.title = "Changed before contract adoption";
     f.session.rebaseProject(changed);
     // When the requirement is adopted later without a new verification call.
     await f.run([[plan([{ id: "route", title: "Route", criteria: [{ kind: "toolVerdict", tool: "check_reachability", args }] }]), skip]]);

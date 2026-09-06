@@ -8,10 +8,12 @@ export type Call = { readonly name: string; readonly args: Record<string, unknow
 export const target = { mapId: createBlankProject().startMapId };
 export const skip: Call = { name: "skip_work_item", args: {} };
 export const size = { id: "size", title: "Size", criteria: [{ kind: "mapDimensions", target, width: 99, height: 99 }] };
-export function plan(requirements?: unknown): Call {
+export function plan(requirements?: unknown, requirementIds?: readonly string[]): Call {
   return { name: "set_work_plan", args: {
     goal: "Map contract", ...(requirements === undefined ? {} : { requirements }),
-    layers: [{ title: "Edit", items: [{ id: "edit", title: "Edit", instruction: "Inspect map", requirementIds: ["size"] }] }],
+    layers: [{ title: "Edit", items: [{ id: "edit", title: "Edit", instruction: "Inspect map",
+      ...(requirementIds === undefined ? {} : { requirementIds }),
+    }] }],
   } };
 }
 

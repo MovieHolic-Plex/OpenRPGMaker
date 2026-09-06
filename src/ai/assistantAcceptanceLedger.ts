@@ -124,7 +124,11 @@ export class AssistantAcceptanceLedger {
       if (receipts.length === 0) this.reviews.delete(id);
       else this.reviews.set(id, { ...review, receipts });
     }
-    const items: AcceptanceItemSnapshot[] = [...this.promises.values()].map(promise => {
+    const promises = [...this.promises.values()];
+    const toolDraftChanged = applied !== draft
+      && promises.some(promise => promise.criteria?.some(criterion => criterion.kind === "toolVerdict"))
+      && acceptanceFingerprint(applied) !== acceptanceFingerprint(draft);
+    const items: AcceptanceItemSnapshot[] = promises.map(promise => {
       const metadata = { required: promise.required !== false, source: promise.source,
         ...(promise.withdrawal ? { withdrawal: promise.withdrawal } : {}) };
       if (!promise.criteria) return Object.freeze({ ...metadata, id: promise.id, title: promise.title, status: "blocked", reason: "Missing or malformed criteria: repair_acceptance required", evidence: Object.freeze([]) });
@@ -142,8 +146,7 @@ export class AssistantAcceptanceLedger {
         });
       });
       const maps = promise.criteria.flatMap(criterion => criterionTargets(criterion));
-      const unapplied = (promise.criteria.some(criterion => criterion.kind === "toolVerdict")
-        && acceptanceFingerprint(applied) !== acceptanceFingerprint(draft)) || maps.some(target => {
+      const unapplied = (toolDraftChanged && promise.criteria.some(criterion => criterion.kind === "toolVerdict")) || maps.some(target => {
         const before = resolveAcceptanceMap(applied, target, this.bindings), after = resolveAcceptanceMap(draft, target, this.bindings);
         return acceptanceFingerprint(before) !== acceptanceFingerprint(after);
       });

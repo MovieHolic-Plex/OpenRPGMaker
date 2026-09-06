@@ -1215,8 +1215,10 @@ export class AssistantSession {
   /** Applied-state refresh for store changes/undo, including after completion. */
   refreshAcceptance(project: Project, onEvent?: (event: SessionEvent) => void): void {
     this.imageEvidence.current(project);
+    if (!this.acceptance && !this.verificationEvidence.hasChecks()) return;
     // A verdict may precede declaration; late adoption must not revive pre-edit proof.
-    if (acceptanceFingerprint(this.acceptanceAppliedProject ?? this.acceptanceRequestBaseline) !== acceptanceFingerprint(project)) {
+    const previous = this.acceptanceAppliedProject ?? this.acceptanceRequestBaseline;
+    if (previous !== project && acceptanceFingerprint(previous) !== acceptanceFingerprint(project)) {
       this.verificationEvidence.invalidateAfterWrite();
     }
     this.acceptanceAppliedProject = structuredClone(project);
@@ -1674,7 +1676,7 @@ export class AssistantSession {
     if (newRequest || startsGoal) {
       // Capture before planning/tools; continuations and questions retain this request's baseline.
       this.acceptanceRequestBaseline = structuredClone(this.baselineProject);
-      this.acceptanceRequestSource = { requestId: `request-${this.currentTurnIndex + 1}`, text,
+      this.acceptanceRequestSource = { requestId: `request-${this.currentTurnIndex + 1}`, text: instruction,
         scope: this.turnScope ? structuredClone(this.turnScope) : null };
     }
     if (resumesGoal || startsGoal) {
@@ -2097,7 +2099,7 @@ export class AssistantSession {
    */
   private noteRepeatedToolFailure(name: string, result: ToolResult): void {
     const currentItemId = this.workPlan?.currentItemId;
-    if (!currentItemId || getTool(name)?.mode !== "write") return;
+    if (this.turnComposerMode === "ask" || !currentItemId || getTool(name)?.mode !== "write") return;
     const key = `${name}::${result.summary.slice(0, 120)}`;
     const entry = this.repeatedToolFailures.get(currentItemId);
     const next = entry && entry.key === key ? { key, count: entry.count + 1 } : { key, count: 1 };
@@ -2110,7 +2112,7 @@ export class AssistantSession {
   /** 같은 실패가 상한만큼 반복됐는가 — 참이면 호출부가 항목을 막고 턴을 끝낸다. */
   private hasRepeatedToolFailureStall(): boolean {
     const currentItemId = this.workPlan?.currentItemId;
-    if (!currentItemId) return false;
+    if (this.turnComposerMode === "ask" || !currentItemId) return false;
     return (this.repeatedToolFailures.get(currentItemId)?.count ?? 0) >= MAX_REPEATED_TOOL_FAILURES_PER_ITEM;
   }
 
@@ -2430,7 +2432,7 @@ export class AssistantSession {
   }
 
   private async noteSuccessfulTools(names: readonly string[], onEvent: (event: SessionEvent) => void): Promise<void> {
-    if (!this.workPlan || names.length === 0) return;
+    if (this.turnComposerMode === "ask" || !this.workPlan || names.length === 0) return;
     const { completed, next, blocked } = advanceWorkPlanFromTools(this.workPlan, names, this.autoCompleteGate());
     const blockedKey = blocked ? `${blocked.item.id}::${blocked.reason}` : null;
     if (blocked && blockedKey !== this.lastOutcomeBlockedKey) {

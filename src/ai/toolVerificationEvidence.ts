@@ -15,6 +15,10 @@ export class ToolVerificationEvidence {
     this.checks.clear();
   }
 
+  hasChecks(): boolean {
+    return this.checks.size > 0;
+  }
+
   observe(name: string, args: Record<string, unknown>, result: ToolResultLike, source: "explicit" | "advisory" = "explicit"): Verdict | null {
     if (!VERIFICATION_TOOL_NAMES.has(name)) return null;
     const verdict = parseToolVerdict(name, result);
