@@ -1,0 +1,15 @@
+{"file":"src/player/saveSlots.ts","diagnostics":[]}
+{"file":"test/autosave.test.ts","diagnostics":[]}
+{"file":"test/e2e/_quest-playthrough.spec.ts","diagnostics":[]}
+{"file":"test/e2e/oprn-learn-skill-cert.spec.ts","diagnostics":[]}
+{"file":"test/e2e/oprn-menu-keyboard-tour.spec.ts","diagnostics":[]}
+{"file":"test/e2e/oprnPlayerStatusMenuHelpers.ts","diagnostics":[]}
+{"file":"test/runtime/status-menu-adversarial.spec.ts","diagnostics":[]}
+{"file":"test/fixtures/life-full/saveSlots.phase1.ts","diagnostics":[]}
+{"file":"test/lifeSaveVersion.test.ts","diagnostics":[]}
+{"symbol":"createSaveSnapshot","references":[{"file":"src/player/saveSlots.ts","span":{"start":12424,"length":18}},{"file":"src/player/checkpoints.ts","span":{"start":130,"length":18}},{"file":"src/player/checkpoints.ts","span":{"start":374,"length":18}},{"file":"src/player/autosave.ts","span":{"start":77,"length":18}},{"file":"src/player/autosave.ts","span":{"start":1655,"length":18}},{"file":"src/player/playerStatusMenuController.ts","span":{"start":308,"length":18}},{"file":"src/player/playerStatusMenuController.ts","span":{"start":14370,"length":18}}]}
+{"symbol":"saveSlotKey","references":[{"file":"src/player/saveSlots.ts","span":{"start":10836,"length":11}},{"file":"src/player/saveSlots.ts","span":{"start":20864,"length":11}},{"file":"src/player/saveSlots.ts","span":{"start":22196,"length":11}}]}
+{"symbol":"autosaveKey","references":[{"file":"src/player/saveSlots.ts","span":{"start":11085,"length":11}},{"file":"src/player/saveSlots.ts","span":{"start":11659,"length":11}},{"file":"src/player/saveSlots.ts","span":{"start":11804,"length":11}}]}
+{"changedFiles":9,"diagnostics":0}
+
+ACTUAL_EXIT=0

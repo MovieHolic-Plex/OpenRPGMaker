@@ -92,7 +92,8 @@ function emittedGrowthPaths(project: Project): string[] {
 // files, and neither the deployment nor CSS can add icons missing from the plan.
 async function fetchExportBytes(path: string): Promise<Uint8Array> {
   if (path === '/standalone-player/standalone.js') return encoder.encode('/* fixture player */');
-  if (path === '/standalone-player/standalone.css') return encoder.encode('');
+  // The player bundle contract rejects empty stylesheets; keep this fixture valid.
+  if (path === '/standalone-player/standalone.css') return encoder.encode('body { margin: 0; }');
   if (path.startsWith('/assets/cc0/jetrel/icons/')) return readFileSync(`public${path}`);
   return encoder.encode(`fixture:${path}`);
 }

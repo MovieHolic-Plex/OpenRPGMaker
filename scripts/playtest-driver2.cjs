@@ -73,7 +73,13 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     return false;
   };
 
-  await page.addInitScript(([k, v]) => { try { localStorage.setItem(k, v); for (let i = 1; i <= 3; i++) localStorage.removeItem('oprn:save-slot:' + i); } catch (e) {} }, [DEV_KEY, PROJECT_JSON]);
+  await page.addInitScript(([k, v]) => {
+    localStorage.setItem(k, v);
+    for (let i = 1; i <= 3; i++) {
+      localStorage.removeItem("oprn:save-slot:v5:" + i);
+      localStorage.removeItem("oprn:save-slot:" + i);
+    }
+  }, [DEV_KEY, PROJECT_JSON]);
   await page.goto(URL, { waitUntil: "domcontentloaded" });
   await page.waitForSelector('[data-testid="mode-play"]', { timeout: 30000 });
   await sleep(1200);

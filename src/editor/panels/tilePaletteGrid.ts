@@ -1,10 +1,12 @@
-﻿import type { Layer } from "@/editor/editorState";
+import type { Layer } from "@/editor/editorState";
 import { isDefaultTilesetTexture, tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { CHIPSET_TILE_GROUPS, tileAiLabelForIndex, tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { tileVisibleOnLayer } from "@/editor/tileLayerClassification";
 import type { AutotileGroup, TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
+import type { PaletteStamp } from "@/editor/tilePaletteStamp";
+import { installCustomPaletteGesture } from "@/editor/panels/tilePaletteCustomGesture";
 
 // RM2003식 단일 타일 팔레트 — 그룹/시트 보기 분리 없이 가로 6칸 고정 리플로우.
 // 오토타일 그룹(autotileGroupsForTileset)은 그룹당 대표 1칸(외딴/anchor 타일)으로
@@ -46,7 +48,9 @@ type MakeGridPaletteArgs = {
   readonly visibleTiles?: ReadonlySet<number> | null;
 };
 
-type MakeCustomPaletteArgs = MakeGridPaletteArgs;
+type MakeCustomPaletteArgs = MakeGridPaletteArgs & {
+  readonly onCreatePaletteStamp?: (stamp: PaletteStamp) => void;
+};
 
 /** 선택 타일은 필터에 안 걸려도 항상 보여야 한다 — 안 그러면 "선택 중"인 칸이 사라진다. */
 function passesFilter(args: MakeGridPaletteArgs, tileId: number): boolean {
@@ -151,7 +155,9 @@ export function gridPaletteDisplayTile(tileset: TilesetDef, tile: number): numbe
   return tile;
 }
 
-export function makeGridPalette(args: MakeGridPaletteArgs): HTMLElement {
+export function makeGridPalette(input: MakeGridPaletteArgs): HTMLElement {
+  // Selection is a display projection only; do not replace the selected paint variant.
+  const args = { ...input, selectedTile: gridPaletteDisplayTile(input.tileset, input.selectedTile) };
   const model = buildGridPaletteModel(args.tileset, args.layer);
   const sheet = el("div", {
     class: "chipset-sheet tile-palette oprn-palette",
@@ -216,6 +222,9 @@ export function makeCustomPalette(args: MakeCustomPaletteArgs): HTMLElement {
     grid.append(cell);
   }
   installGridRoving(grid, columns);
+  if (args.onCreatePaletteStamp) {
+    installCustomPaletteGesture(sheet, grid, args.tileset, args.onSelectTile, args.onCreatePaletteStamp);
+  }
   sheet.append(grid);
   return sheet;
 }

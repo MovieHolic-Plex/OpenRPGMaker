@@ -1,0 +1,3 @@
+> node scripts/run-vitest.mjs run --configLoader bundle test/exportBattleAssetUrls.test.ts test/battlerHiresSheets.test.ts test/battlerIdleAnimation.test.ts test/battlerBackIdleAnimation.test.ts test/battleFieldAllySprite.test.ts test/webExportBattleDependencies.test.ts test/playerManifestContract.test.ts
+ Test Files  7 passed (7)
+      Tests  98 passed (98)

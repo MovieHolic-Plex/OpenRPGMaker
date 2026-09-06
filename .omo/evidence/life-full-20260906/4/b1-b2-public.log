@@ -1,0 +1,14 @@
+{"blocker":"B1","writer":"quarantined","readerOriginalIntact":true,"originalOwners":1,"fullOriginal":{"id":"legacy","mapId":"map_blank_start","x":2,"y":2,"kind":"legacy-machine","paid":{"itemId":"old-input","count":3},"oldJob":{"progress":7}},"payableItems":[],"receiptRefused":true,"repeatedRoundtrips":2,"reissued":false,"liveUnchanged":true,"inputDiskUnchanged":true}
+[autosave] failed to reconcile life state: LifeReconciliationError: Life recovery farmPlots/farmPlots: invalid-occupancy
+    at parseLifeState (/home/main/z-project/rpg-zzu-life-full-p2/src/project/lifeStateReconciliation.ts:36:102)
+    at prepareLifeSnapshot (/home/main/z-project/rpg-zzu-life-full-p2/src/player/saveSlots.ts:834:89)
+    at createSaveSnapshot (/home/main/z-project/rpg-zzu-life-full-p2/src/player/saveSlots.ts:142:19)
+    at Module.performAutosave (/home/main/z-project/rpg-zzu-life-full-p2/src/player/autosave.ts:26:54)
+    at file:///home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/4/b1-b2-public-probe.mjs:95:25 {
+  sourceKind: 'farmPlots',
+  sourceId: 'farmPlots',
+  reason: 'invalid-occupancy'
+}
+{"blocker":"B2","reader":"corrupt","apply":"refused","writer":"refused","autosave":null,"day":{"ok":false,"reason":"recovery","stage":"recovery","sourceKind":"farmPlots","sourceId":"farmPlots"},"priorDiskUnchanged":true,"currentLiveAndReceiptsUnchanged":true}
+{"control":"valid occupancy","plotRetained":true,"collidingShed":"quarantined","occupancyWeakened":false}
+{"teardown":"Storage cleared; happy-dom and middleware-only Vite closed","httpListener":false,"remoteWrites":0}

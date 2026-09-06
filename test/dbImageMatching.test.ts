@@ -1,21 +1,39 @@
 import { describe, expect, it } from "vitest";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
-import { createBlankProject } from "@/project/defaults";
+import { createBlankProject, createSampleAdventureProject } from "@/project/defaults";
 import { seedHomeDungeonComplexTroops } from "@/project/defaults/complexMonsterAuthoring";
 
 describe("database image matching", () => {
+  it("loads dedicated starter and crowned-slime art through the shipped sample entry", () => {
+    // Given / When: the shipped demo loads its authored fixture, not the blank database.
+    const project = createSampleAdventureProject();
+    // Then: its independent graphics must not reintroduce the old substitutes.
+    for (const [id, resourceId] of [
+      ["species_leafling", "generated-enemy-leafling-01"],
+      ["species_sparkit", "generated-enemy-sparkit-fire"],
+      ["species_aqualing", "generated-enemy-aqualing-01"],
+      ["species_king_slime", "generated-enemy-king-slime-01"],
+    ]) {
+      expect(project.database.monsterSpecies?.find((species) => species.id === id)?.graphic)
+        .toMatchObject({ monsterResourceId: resourceId, graphicHue: 0 });
+    }
+  });
+
   it("assigns unique matching monster graphics for default enemies and species", () => {
     const project = createBlankProject();
-    // 몬스터 다이어트(2026-08-30) 뒤의 실측 로스터: 적 106종이 전부 생성 배틀러 아트를 쓰고,
-    // 그중 한 쌍만 의도적으로 아트를 공유한다(enemy_slime / enemy_meadow_slime → slime).
-    // 종족 쪽 공유(species_king_slime → slime, species_sparkit → bat hue 30 재사용)는
-    // 아래 종족 단언에서 따로 못박는다 — 이 상한은 적 id 기준이다.
+    // Only these two role-identical pairs may share art; unrelated duplicates fail.
     const monsterIds = project.database.enemies.map((enemy) => enemy.monsterResourceId);
     const generatedIds = monsterIds.filter((id) => id?.startsWith("generated-enemy-"));
     expect(generatedIds.length).toBe(monsterIds.length);
     expect(generatedIds.length).toBeGreaterThanOrEqual(100);
-    // 아트 공유는 «이름이 다른 친척» 한 쌍만 허용한다 — 그 외 중복은 매칭 실패로 본다.
-    expect(generatedIds.length - new Set(generatedIds).size).toBeLessThanOrEqual(1);
+    const shared = Object.fromEntries([...new Set(monsterIds)].flatMap((resourceId) => {
+      const ids = project.database.enemies.filter((enemy) => enemy.monsterResourceId === resourceId).map((enemy) => enemy.id).sort();
+      return ids.length > 1 ? [[String(resourceId), ids]] : [];
+    }));
+    expect(shared).toEqual({
+      "generated-enemy-slime-01": ["enemy_meadow_slime", "enemy_slime"],
+      "generated-enemy-skeleton-archer": ["enemy_mine_skel_archer", "enemy_skeleton_archer"],
+    });
     for (const id of monsterIds) {
       expect(resolveAssetResourceUrl(id), id).toBeTruthy();
     }
@@ -33,11 +51,15 @@ describe("database image matching", () => {
     expect(bySpecies.species_cave_bat).toBe("generated-enemy-bat-01");
     expect(bySpecies.species_stone_golem).toBe("generated-enemy-golem-01");
     expect(bySpecies.species_ember_drake).toBe("generated-enemy-dragon-01");
-    expect(bySpecies.species_leafling).toBe("easyrpg-monster-hornet");
+    expect(bySpecies.species_leafling).toBe("generated-enemy-leafling-01");
     expect(bySpecies.species_forest_hornet).toBe("easyrpg-monster-hornet");
-    expect(bySpecies.species_sparkit).toBe("generated-enemy-bat-01");
-    expect(bySpecies.species_aqualing).toBe("generated-enemy-slime-01");
+    expect(bySpecies.species_sparkit).toBe("generated-enemy-sparkit-fire");
+    expect(bySpecies.species_aqualing).toBe("generated-enemy-aqualing-01");
     expect(bySpecies.species_mine_skeleton).toBe("generated-enemy-skeleton-01");
+    for (const id of ["species_leafling", "species_sparkit", "species_aqualing"]) {
+      expect(project.database.monsterSpecies?.find((species) => species.id === id)?.graphic.graphicHue).toBe(0);
+    }
+    expect(project.database.monsterSpecies?.find((species) => species.id === "species_sparkit")?.types).toEqual(["fire"]);
     for (const id of Object.values(bySpecies)) {
       expect(resolveAssetResourceUrl(id), id).toBeTruthy();
     }

@@ -1,5 +1,5 @@
 import { firefox, expect } from '@playwright/test';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:net';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
@@ -19,6 +19,7 @@ const states = {};
 const errors = [];
 const routeErrors = [];
 const blockedWrites = [];
+const startup = [];
 let server;
 let browser;
 let serverLog = '';
@@ -27,6 +28,7 @@ let page;
 let scenario;
 let sequence = 0;
 let activeLlm;
+let cacheDir;
 
 function record(type, data = {}) {
   const entry = { sequence: ++sequence, scenario, type, ...data };
@@ -58,9 +60,11 @@ try {
   await new Promise((yes, no) => probe.close(error => error ? no(error) : yes()));
   record('port-verified-free', { base, root });
   const ready = deferred('Vite ready');
-  server = spawn(process.execPath, ['node_modules/vite/bin/vite.js', '--host', '127.0.0.1', '--port', String(port), '--strictPort'], {
+  await mkdir(resolve(root, '.vite-cache'), { recursive: true });
+  cacheDir = await mkdtemp(resolve(root, '.vite-cache/map-owned-ai-turns-'));
+  server = spawn(process.execPath, ['node_modules/vite/bin/vite.js', '--configLoader', 'runner', '--host', '127.0.0.1', '--port', String(port), '--strictPort'], {
     cwd: root, detached: true,
-    env: { ...process.env, DEV_SERVER_NO_TLS: '1', E2E_FREEZE_DEV_SERVER: '1', DEV_SERVER_PORT: String(port), NO_COLOR: '1' },
+    env: { ...process.env, DEV_SERVER_NO_TLS: '1', E2E_FREEZE_DEV_SERVER: '1', DEV_SERVER_PORT: String(port), VITE_CACHE_DIR: cacheDir, NO_COLOR: '1' },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
   server.once('error', ready.reject);
@@ -70,6 +74,15 @@ try {
     if (serverLog.includes(base)) ready.resolve();
   });
   await bounded(ready.promise, ready.label);
+  // Listening is not module readiness: Firefox aborts the cold, multi-MB CSS
+  // module during the initial module fan-out. Await the real Vite transform,
+  // including its full body, before navigation; never replace CSS or retry a boot.
+  const css = await fetch(`${base}/src/styles/index.css`, { signal: AbortSignal.timeout(TIMEOUT) });
+  expect(css.status).toBe(200);
+  expect(css.headers.get('content-type')).toContain('javascript');
+  const cssBytes = (await css.arrayBuffer()).byteLength;
+  expect(cssBytes).toBeGreaterThan(0);
+  record('boot-module-ready', { path: '/src/styles/index.css', status: css.status, bytes: cssBytes });
   for (scenario of ['completed', 'aborted']) {
     browser = await firefox.launch({ headless: false });
     await boot();
@@ -173,7 +186,9 @@ try {
       await capture('05-B-aborted');
       assertB(states['aborted/05-B-aborted']);
       expect(states['aborted/05-B-aborted'].mapDataUnchanged).toEqual({ [A]: true, [B]: true });
-      expect(states['aborted/05-B-aborted'].blueprintEntries.map(entry => entry.status)).toEqual(['planned', 'planned', 'planned']);
+      // aiTurnRunner retires presentation on every owner-turn ending, including
+      // abort. Retained BuildSpec is not a visible plan or an applied write.
+      expect(states['aborted/05-B-aborted'].blueprintEntries).toEqual([]);
       expect(states['aborted/05-B-aborted'].allGhostCells).toBe(0);
       expect(states['aborted/05-B-aborted'].changeCards).toBe(0);
       expect(await page.evaluate(() => qa.result.stoppedReason)).toBe('aborted');
@@ -183,10 +198,10 @@ try {
       await bounded(llm.gates[2].delivered.promise, 'aborted route delivery');
       await selectMap(A);
       await capture('06-A-aborted-return');
-      expect(states['aborted/06-A-aborted-return'].blueprintLayer).toBeGreaterThan(0);
-      expect(states['aborted/06-A-aborted-return'].blueprintEntries.map(entry => entry.status)).toEqual(['planned', 'planned', 'planned']);
+      assertRetired(states['aborted/06-A-aborted-return']);
       expect(states['aborted/06-A-aborted-return'].mapDataUnchanged).toEqual({ [A]: true, [B]: true });
-      expect(states['aborted/06-A-aborted-return'].chip).toBeNull();
+      expect(states['aborted/06-A-aborted-return'].changeCards).toBe(0);
+      expect(await page.evaluate(() => ({ mapId: qa.session.getActiveSpec()?.mapId, assets: qa.session.getActiveSpec()?.assets.length }))).toEqual({ mapId: A, assets: 3 });
       expect(await page.evaluate(() => qa.events.filter(event => event.type === 'tool_started' && event.name === 'skip_work_item'))).toEqual([]);
     }
     const eventLog = await page.evaluate(() => ({ events: qa.events, result: qa.result, bViolations: qa.bViolations }));
@@ -210,6 +225,7 @@ try {
     if (page && !page.isClosed()) {
       await page.screenshot({ path: `${out}/failure.png` });
       record('failure-body', { body: (await page.locator('body').innerText()).slice(-7000) });
+      record('failure-dom', { html: (await page.locator('body').innerHTML()).slice(-10000) });
       const evidence = await page.evaluate(() => window.qa ? { events: qa.events, result: qa.result, bViolations: qa.bViolations } : null);
       record('failure-events', { evidence });
     }
@@ -239,6 +255,15 @@ try {
     process.exitCode = 1;
     record('cleanup-error', { step: 'server', error: error.stack ?? String(error) });
   }
+  try {
+    if (cacheDir) {
+      await rm(cacheDir, { recursive: true });
+      record('owned-cache-removed', { path: cacheDir });
+    }
+  } catch (error) {
+    process.exitCode = 1;
+    record('cleanup-error', { step: 'cache', error: error.stack ?? String(error) });
+  }
   record('cleanup', {
     browserClosed: !browser || !browser.isConnected(),
     ownedServerStopped: !!server && (server.exitCode !== null || server.signalCode !== null),
@@ -251,7 +276,7 @@ try {
     record('cleanup-error', { step: 'server.log', error: error.stack ?? String(error) });
   }
   try {
-    await writeFile(`${out}/actions.json`, JSON.stringify({ log, states, errors, routeErrors, blockedWrites }, null, 2));
+    await writeFile(`${out}/actions.json`, JSON.stringify({ log, states, errors, routeErrors, blockedWrites, startup }, null, 2));
   } catch (error) {
     process.exitCode = 1;
     record('cleanup-error', { step: 'actions.json', error: error.stack ?? String(error) });
@@ -270,6 +295,12 @@ async function boot() {
   });
   page = await context.newPage();
   page.on('pageerror', error => errors.push({ scenario, message: error.message }));
+  page.on('console', message => startup.push({ scenario, type: 'console', level: message.type(), text: message.text() }));
+  page.on('requestfailed', request => startup.push({ scenario, type: 'requestfailed', path: new URL(request.url()).pathname, error: request.failure()?.errorText }));
+  page.on('response', response => {
+    const path = new URL(response.url()).pathname;
+    if (response.status() >= 400 || path === '/src/styles/index.css' || path === '/src/main.ts') startup.push({ scenario, type: 'response', path, status: response.status() });
+  });
   await context.route('**/*', async route => {
     const request = route.request();
     const url = new URL(request.url());

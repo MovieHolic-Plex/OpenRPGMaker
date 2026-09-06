@@ -4,7 +4,7 @@ import { createChipsetTileObject } from "@/editor/chipsetTileRender";
 import { editorState, type PaintShape } from "@/editor/editorState";
 import { requestAiSelectionContext } from "@/editor/aiSelectionContext";
 import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
-import { recordProjectSnapshot } from "@/editor/mapEditHistory";
+import { recordMapEditIfChanged, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { selectTileRegion } from "@/editor/mapClipboard";
 import { moveEvent } from "@/editor/eventActions";
 import { tileCellsForPaintShape, tileRectFromDrag, tileRectWithinBounds, type TilePoint } from "@/editor/tileShapeTools";
@@ -198,18 +198,19 @@ export class DragOperationHandler {
     if (!map) return;
     const cells = tileCellsForPaintShape(operation.shape, operation.start, point, { width: map.width, height: map.height });
     if (cells.length === 0) return;
-    recordProjectSnapshot(undefined, operation.mapId, { kind: "map" });
     // 도형 드래그 전 칸을 한 번의 updateMap 으로 (N번 structuredClone 금지)
-    paintTilesBulk(
-      operation.mapId,
-      cells.map((cell) => ({
-        layer: operation.layer,
-        x: cell.x,
-        y: cell.y,
-        tile: operation.tile,
-      })),
-      { autoConnect: operation.autoConnect },
-    );
+    recordMapEditIfChanged(operation.mapId, () => {
+      paintTilesBulk(
+        operation.mapId,
+        cells.map((cell) => ({
+          layer: operation.layer,
+          x: cell.x,
+          y: cell.y,
+          tile: operation.tile,
+        })),
+        { autoConnect: operation.autoConnect },
+      );
+    });
   }
 
   private commitEventMoveDrag(operation: Extract<DragOperation, { readonly kind: "eventMove" }>, point: TilePoint): void {

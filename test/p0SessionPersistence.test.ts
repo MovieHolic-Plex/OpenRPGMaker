@@ -115,7 +115,7 @@ describe("P0 save snapshot regression", () => {
     expect(restored.bundleRewardAppliedIds).toEqual(["bundle_mine"]);
     expect(restored.unlockedRegionIds).toEqual(["region_bridge"]);
     expect(restored.unlockedRecipeIds).toEqual(["recipe_preserves"]);
-    expect(restored.makerInstances).toEqual(session.makerInstances);
+    expect(restored.makerInstances).toEqual({ "farm:2,3": { ...session.makerInstances["farm:2,3"], status: "ready" } });
   });
 
   it("loads a legacy snapshot with the optional progression fields omitted", () => {
@@ -263,7 +263,7 @@ describe("P0 save snapshot regression", () => {
       dayTransitionLastDayKey: "1:spring:4",
       completedBundleIds: ["bundle_spring"],
       unlockedRecipeIds: ["recipe_preserves"],
-      makerInstances: session.makerInstances,
+      makerInstances: { "farm:4,5": { ...session.makerInstances["farm:4,5"], status: "ready" } },
     });
 
     saveSessionCheckpoint(project, session);
@@ -313,8 +313,8 @@ describe("P0 save snapshot regression", () => {
     expect(restored.shippingHistory).toEqual([]);
   });
 
-  it("drops P0 progress whose authored shipping, bundle, or maker definition was deleted", () => {
-    // Break caught: stale save state survives content deletion and later mints items or completes unknown ids.
+  it("quarantines removed P0 assets and retains completed rights without paying them", () => {
+    // Deleted content cannot mint items; the recovery owner and completed rights must survive.
     const project = createBlankProject();
     configureP0PersistenceProject(project);
     const session = startSession(project, 21);
@@ -351,11 +351,17 @@ describe("P0 save snapshot regression", () => {
     expect(restored.shippingLastSettledDayKey).toBeUndefined();
     expect(restored.shippingHistory).toEqual([]);
     expect(restored.bundleContributions).toEqual({});
-    expect(restored.completedBundleIds).toEqual([]);
-    expect(restored.bundleRewardAppliedIds).toEqual([]);
-    expect(restored.unlockedRegionIds).toEqual([]);
-    expect(restored.unlockedRecipeIds).toEqual([]);
+    expect(restored.completedBundleIds).toEqual(["bundle_mine"]);
+    expect(restored.bundleRewardAppliedIds).toEqual(["bundle_mine"]);
+    expect(restored.unlockedRegionIds).toEqual(["region_bridge"]);
+    expect(restored.unlockedRecipeIds).toEqual(["recipe_preserves"]);
     expect(restored.makerInstances).toEqual({});
+    expect(Object.values(restored.lifeRecovery?.claims ?? {})).toMatchObject([
+      { sourceKind: "shippingQueue", items: [{ itemId: "item_turnip", count: 2 }] },
+      { sourceKind: "bundleContributions", items: [{ itemId: "item_turnip", count: 1 }] },
+      { sourceKind: "makerInstances", items: [], unresolved: { record: session.makerInstances["farm:1,1"] } },
+    ]);
+    expect(restored.inventory).toEqual(session.inventory);
   });
 
   it("normalizes hostile skill, maker, and bundle receipt state against the current project", () => {

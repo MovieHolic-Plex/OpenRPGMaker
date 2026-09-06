@@ -1,0 +1,7 @@
+{
+  "command": "node .omo/evidence/life-full-20260906/2/public-probe.mjs",
+  "exit": 0,
+  "signal": null,
+  "stdout": "{\n  \"surface\": \"real Vite SSR public imports + happy-dom Storage (not player.html UI)\",\n  \"results\": [\n    {\n      \"namespace\": null,\n      \"manualKey\": \"oprn:save-slot:v5:1\",\n      \"autoKey\": \"oprn:save-slot:v5:auto\",\n      \"migrated\": 5,\n      \"resumedGold\": 81,\n      \"legacyUnchanged\": true,\n      \"corruptFallback\": false,\n      \"constructionFailure\": \"DataCloneError\",\n      \"checkpoint\": \"memory-only Save5\"\n    },\n    {\n      \"namespace\": \"runtime-qa:task2\",\n      \"manualKey\": \"runtime-qa:task2:save-slot:v5:1\",\n      \"autoKey\": \"runtime-qa:task2:save-slot:v5:auto\",\n      \"migrated\": 5,\n      \"resumedGold\": 81,\n      \"legacyUnchanged\": true,\n      \"corruptFallback\": false,\n      \"constructionFailure\": \"DataCloneError\",\n      \"checkpoint\": \"memory-only Save5\"\n    }\n  ]\n}\nTeardown: local test storage cleared; happy-dom windows and Vite SSR server closed; no HTTP listener or remote writes.\n",
+  "stderr": ""
+}

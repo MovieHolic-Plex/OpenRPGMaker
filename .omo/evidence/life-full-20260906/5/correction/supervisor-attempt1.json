@@ -1,0 +1,34 @@
+{
+  "command": "Supervisor task5 tests plus browser-proof.mjs",
+  "commit": "4e2d1762264533a5826c48686648093c3fe69ebd",
+  "exit": 1,
+  "actualOutput": "status: exited_1 exit_code: 1\n\n> rpg-zzu@0.1.0 test\n> node scripts/run-vitest.mjs run --configLoader bundle test/lifeQaObservability.test.ts test/runtimeQaInstrumentationBoundary.test.ts test/runtimeQaReport.test.ts test/runtimeQaGate.test.ts\n\n\n RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2\n\n ✓ test/runtimeQaReport.test.ts (18 tests) 142ms\n ✓ test/runtimeQaGate.test.ts (52 tests) 267ms\n ✓ test/runtimeQaInstrumentationBoundary.test.ts (3 tests) 79ms\n ✓ test/lifeQaObservability.test.ts (7 tests) 604ms\n\n Test Files  4 passed (4)\n      Tests  80 passed (80)\n   Start at  10:40:46\n   Duration  19.02s (transform 12.41s, setup 0ms, collect 30.00s, tests 1.09s, environment 1ms, prepare 1.52s)\n\n{\"supervisor\":true,\"error\":\"AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\\n+ actual - expected\\n\\n+ 'DOM signal missing: [data-testid=\\\"title-screen\\\"]'\\n- undefined\\n\\n    at observeDom (file:///home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/5-supervisor/browser-proof.mjs:23:89)\\n    at async file:///home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/5-supervisor/browser-proof.mjs:38:7\",\"runs\":[],\"cleanup\":{\"browserClosed\":true,\"contextsClosed\":true,\"serverClosed\":true,\"cacheRemoved\":true,\"remoteWrites\":0}}\nnode:internal/modules/run_main:107\n    triggerUncaughtException(\n    ^\n\nAssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'DOM signal missing: [data-testid=\"title-screen\"]'\n- undefined\n\n    at observeDom (file:///home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/5-supervisor/browser-proof.mjs:23:89)\n    at async file:///home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/5-supervisor/browser-proof.mjs:38:7 {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: 'DOM signal missing: [data-testid=\"title-screen\"]',\n  expected: undefined,\n  operator: 'strictEqual',\n  diff: 'simple'\n}\n\nNode.js v24.11.1",
+  "browser": {
+    "supervisorCommit": "4e2d1762264533a5826c48686648093c3fe69ebd",
+    "surface": "shipped player.html through vite.player-qa.config.ts/exportProjectStoreShim",
+    "cwd": "/home/main/z-project/rpg-zzu-life-full-p2",
+    "url": "http://127.0.0.1:35531/player.html",
+    "port": 35531,
+    "browser": "chromium",
+    "project": "Life QA observability fixture",
+    "projectPath": ".omo/evidence/life-full-20260906/5/project.json",
+    "viewport": {
+      "width": 1280,
+      "height": 960
+    },
+    "runs": [],
+    "browserVersion": "149.0.7827.55",
+    "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'DOM signal missing: [data-testid=\"title-screen\"]'\n- undefined\n\n    at observeDom (file:///home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/5-supervisor/browser-proof.mjs:23:89)\n    at async file:///home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/5-supervisor/browser-proof.mjs:38:7",
+    "cleanup": {
+      "browserClosed": true,
+      "contextsClosed": true,
+      "serverClosed": true,
+      "cacheRemoved": true,
+      "remoteWrites": 0
+    }
+  },
+  "cleanupVerified": {
+    "cacheAbsentExit": 0,
+    "trackedWorktreeClean": true
+  }
+}

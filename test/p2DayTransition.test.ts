@@ -15,7 +15,7 @@ describe("P2 forage day-transition integration", () => {
     expect(result.ok).toBe(true);
     if (!result.ok) throw new Error(result.reason);
     expect(result.receipt.stages).toEqual([
-      "shipping", "calendar", "dailyWeather", "rainWatering", "farm", "forage", "energy", "makers", "animals",
+      "recovery", "shipping", "calendar", "dailyWeather", "rainWatering", "farm", "forage", "energy", "makers", "animals",
     ]);
     expect(result.receipt.forage).toMatchObject({ ok: true, dayKey: "1:spring:2", spawned: 2 });
     expect(session.shippingLastSettledDayKey).toBe("1:spring:1");

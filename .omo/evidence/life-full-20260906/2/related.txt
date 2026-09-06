@@ -1,0 +1,32 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/customEquipmentSlots.test.ts test/checkpointEndingRuntime.test.ts test/systemShell.test.ts test/playerOpenSaveMenu.test.ts test/p2SpatialPersistence.test.ts test/customSeasonSave.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+ ✓ test/customSeasonSave.test.ts (1 test) 205ms
+ ✓ test/p2SpatialPersistence.test.ts (3 tests) 589ms
+ ✓ test/systemShell.test.ts (9 tests) 1044ms
+   ✓ T12 save slots > roundtrips runtime location, switches, variables, audio, pictures, and battle result  315ms
+ ✓ test/playerOpenSaveMenu.test.ts (4 tests) 1636ms
+   ✓ event-opened save menu in the shipping player shell > shows slots immediately and saves, navigates and backs out through the keyboard  531ms
+   ✓ event-opened save menu in the shipping player shell > keeps overwrite confirmation cancellable and resets it on direct re-entry  458ms
+   ✓ event-opened save menu in the shipping player shell > preserves the session save restriction on direct entry  395ms
+ ✓ test/customEquipmentSlots.test.ts (10 tests) 3982ms
+   ✓ project-authored equipment slots > roundtrips initial equipment, equips through menu and event authority, derives stats, and saves/reloads  384ms
+   ✓ project-authored equipment slots > rejects unknown or unsafe authored slot "" on project reload  351ms
+   ✓ project-authored equipment slots > rejects unknown or unsafe authored slot "__proto__" on project reload  421ms
+   ✓ project-authored equipment slots > validates catalog identity, initial equipment, event slots, and all custom save values  827ms
+   ✓ project-authored equipment slots > keeps catalog-free legacy projects and saves compatible, even after renaming built-in labels  323ms
+   ✓ project-authored equipment slots > authors a custom slot inline, retains its ID on rename, and exposes it in the actor picker  1019ms
+ ✓ test/checkpointEndingRuntime.test.ts (5 tests) 1724ms
+   ✓ checkpointSave / killPlayer / triggerEnding > define_ending은 같은 조건 집합의 낮은 priority 엔딩을 warning으로 보고한다  1086ms
+
+ Test Files  6 passed (6)
+      Tests  32 passed (32)
+   Start at  06:58:44
+   Duration  30.12s (transform 40.56s, setup 0ms, collect 110.19s, tests 9.18s, environment 474ms, prepare 2.51s)
+
+
+ACTUAL_EXIT=0

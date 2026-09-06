@@ -1,0 +1,17 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p2",
+  "head": "34c279bb6a481b18bf428fb985bc4fa4916d1e29",
+  "removed": [
+    "dist"
+  ],
+  "preservedReceipts": [
+    "finite-use/postcommit-index-check.json",
+    "finite-use/postcommit-index-check.log",
+    "finite-use/postcommit-clean.json",
+    "finite-use/correction-commit.json",
+    "finite-use/postcommit-clean.log",
+    "finite-use/correction-commit.log"
+  ],
+  "worktreeRemoved": true,
+  "ok": true
+}

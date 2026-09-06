@@ -7,12 +7,14 @@ import {
   readAutosave,
   readSaveSlot,
   saveToSlot,
+  saveSlotKey,
 } from "@/player/saveSlots";
 import { normalizeDatabaseRecords, normalizeSystemRecords } from "@/project/databaseRecordModel";
 import { createBlankProject } from "@/project/defaults";
 import { deserialize, serialize } from "@/project/io";
 import { startSession } from "@/project/session";
 import { createLegacyLifeProject } from "./fixtures/life-full/legacyProject";
+import { collectLifeRecoveryClaim, LifeReconciliationError } from "@/project/lifeRecovery";
 
 class MemoryStorage implements Storage {
   private readonly values = new Map<string, string>();
@@ -340,27 +342,36 @@ describe("P1 daily weather and farm-animal session persistence", () => {
     });
   });
 
-  it("sanitizes hostile P1 state in both the writer and direct-apply paths", () => {
-    // Break caught: parser-only validation lets internal writer/direct apply callers bypass save safety.
+  it("rejects unrepresentable writer state and quarantines JSON-safe hostile direct input", () => {
     const project = createBlankProject();
     configureP1Project(project);
+    const weatherOnly = startSession(project, 108) as unknown as MutableUnknown;
+    weatherOnly.dailyWeather = { dayKey: "1:spring:4", kind: "rain", intensity: Number.NaN };
+    const weatherWritten = createSaveSnapshot(project, weatherOnly as never);
+    expect((weatherWritten.session as unknown as MutableUnknown).dailyWeather).toBeUndefined();
+
     const session = startSession(project, 106) as unknown as MutableUnknown;
     session.dailyWeather = { dayKey: "1:spring:4", kind: "rain", intensity: Number.NaN };
-    Object.assign((session.farmAnimals as Record<string, MutableUnknown>).farm_animal_1!, {
+    const animal = (session.farmAnimals as Record<string, MutableUnknown>).farm_animal_1!;
+    Object.assign(animal, {
       friendship: Number.POSITIVE_INFINITY,
       productionProgress: Number.MAX_SAFE_INTEGER + 1,
       readyProductCount: 1e300,
     });
+    const before = structuredClone(session);
+    const storage = new MemoryStorage();
+    const valid = createSaveSnapshot(project, startSession(project, 105));
+    expect(saveToSlot(storage, 2, valid).ok).toBe(true);
+    const priorSlotBytes = storage.getItem(saveSlotKey(2));
+    expect(priorSlotBytes).not.toBeNull();
 
-    const written = createSaveSnapshot(project, session as never);
-    expect((written.session as unknown as MutableUnknown).dailyWeather).toBeUndefined();
-    expect((written.session as unknown as MutableUnknown).farmAnimals).toEqual({
-      farm_animal_1: expect.objectContaining({
-        friendship: 0,
-        productionProgress: 0,
-        readyProductCount: 0,
-      }),
-    });
+    let thrown: unknown;
+    try { saveToSlot(storage, 2, createSaveSnapshot(project, session as never)); }
+    catch (error) { thrown = error; }
+    expect(thrown).toBeInstanceOf(LifeReconciliationError);
+    expect(thrown).toMatchObject({ name: "LifeReconciliationError", sourceKind: "farmAnimals", sourceId: "farm_animal_1", reason: "invalid-state" });
+    expect(session).toEqual(before);
+    expect(storage.getItem(saveSlotKey(2))).toBe(priorSlotBytes);
 
     const direct = createSaveSnapshot(project, startSession(project, 107));
     const directSession = direct.session as unknown as MutableUnknown;
@@ -374,15 +385,56 @@ describe("P1 daily weather and farm-animal session persistence", () => {
         readyProductCount: Number.MAX_SAFE_INTEGER + 1,
       },
     };
+    const directBefore = structuredClone(direct);
     const restored = applySaveSnapshot(project, direct) as unknown as MutableUnknown;
+    expect(direct).toEqual(directBefore);
     expect(restored.dailyWeather).toBeUndefined();
-    expect(restored.farmAnimals).toEqual({
-      farm_animal_1: expect.objectContaining({
-        friendship: 0,
-        productionProgress: 0,
-        readyProductCount: 0,
-      }),
+    expect(restored.farmAnimals).toEqual({});
+    const claims = (restored.lifeRecovery as MutableUnknown).claims as Record<string, MutableUnknown>;
+    expect(Object.values(claims)).toHaveLength(1);
+    expect(Object.values(claims)[0]).toMatchObject({
+      sourceKind: "farmAnimals",
+      sourceId: "farm_animal_1",
+      items: [],
+      unresolved: { record: (directBefore.session as unknown as MutableUnknown).farmAnimals && ((directBefore.session as unknown as MutableUnknown).farmAnimals as MutableUnknown).farm_animal_1 },
     });
+    expect(restored.inventory).toEqual((directBefore.session as unknown as MutableUnknown).inventory);
+    expect(restored.gold).toBe((directBefore.session as unknown as MutableUnknown).gold);
+    const beforeCollection = structuredClone(restored);
+    const claimId = Object.keys(claims)[0];
+    if (!claimId) throw new Error("expected unresolved recovery claim");
+    expect(collectLifeRecoveryClaim(project, restored as never, claimId)).toEqual({ ok: false, reason: "unresolved" });
+    expect(restored).toEqual(beforeCollection);
+
+    const initialRecovery = structuredClone(restored.lifeRecovery);
+    const initialInventory = structuredClone(restored.inventory);
+    const initialGold = restored.gold;
+    const roundTrip = (state: MutableUnknown) => {
+      const snapshot = createSaveSnapshot(project, state as never);
+      expect(saveToSlot(storage, 2, snapshot).ok).toBe(true);
+      const read = readSaveSlot(storage, 2);
+      expect(read.kind).toBe("present");
+      if (read.kind !== "present") throw new Error("expected present save");
+      return applySaveSnapshot(project, read.snapshot) as unknown as MutableUnknown;
+    };
+    const repeated = roundTrip(restored);
+    const repeatedAgain = roundTrip(repeated);
+    expect(repeated.lifeRecovery).toEqual(initialRecovery);
+    expect(repeatedAgain.lifeRecovery).toEqual(initialRecovery);
+    expect(repeated.inventory).toEqual(initialInventory);
+    expect(repeatedAgain.inventory).toEqual(initialInventory);
+    expect(repeated.gold).toBe(initialGold);
+    expect(repeatedAgain.gold).toBe(initialGold);
+    expect(repeated.farmAnimals).toEqual({});
+    expect(repeatedAgain.farmAnimals).toEqual({});
+
+    const repeatedRead = readSaveSlot(storage, 2);
+    expect(repeatedRead.kind).toBe("present");
+    if (repeatedRead.kind !== "present") throw new Error("expected present save");
+    const repeatedDirect = applySaveSnapshot(project, repeatedRead.snapshot) as unknown as MutableUnknown;
+    expect(repeatedDirect.lifeRecovery).toEqual(repeated.lifeRecovery);
+    expect(repeatedDirect.farmAnimals).toEqual({});
+
   });
 
   it("uses the common snapshot for autosave and checkpoint restoration", () => {

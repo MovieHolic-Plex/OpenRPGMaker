@@ -1,0 +1,2 @@
+command=npm test -- test/aiComposerModeSession.test.ts test/assistantVerificationEvidence.test.ts test/applyProposedProjectHouseProtection.test.ts
+exit=0

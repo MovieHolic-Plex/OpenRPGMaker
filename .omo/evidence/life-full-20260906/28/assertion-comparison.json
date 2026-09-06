@@ -1,0 +1,3805 @@
+[
+  {
+    "file": "test/aiActivityLiveRow.test.ts",
+    "original": [
+      {
+        "name": "AI 도구 라이브 활동 행 최소 표시 시간 동안 라이브 행을 유지한 뒤 예약 콜백에서 완료 행으로 바꾼다",
+        "status": "passed",
+        "durationMs": 717.327443999995,
+        "messages": []
+      },
+      {
+        "name": "AI 도구 라이브 활동 행 성공한 조회 도구는 완료 행을 남기지 않고 턴 종료 시 캔버스 칩 상태도 지운다",
+        "status": "failed",
+        "durationMs": 891.9129709999979,
+        "messages": [
+          "AssertionError: expected \"spy\" to be called 1 times, but got 0 times"
+        ]
+      },
+      {
+        "name": "AI 도구 라이브 활동 행 다음 도구 시작은 이전 예약을 먼저 확정하고 턴 종료는 마지막 예약까지 비운다",
+        "status": "failed",
+        "durationMs": 941.9969300000084,
+        "messages": [
+          "AssertionError: expected \"spy\" to be called 1 times, but got 0 times"
+        ]
+      }
+    ],
+    "baseline": [
+      {
+        "name": "AI 도구 라이브 활동 행 최소 표시 시간 동안 라이브 행을 유지한 뒤 예약 콜백에서 완료 행으로 바꾼다",
+        "status": "passed",
+        "durationMs": 303.35118000000057,
+        "messages": []
+      },
+      {
+        "name": "AI 도구 라이브 활동 행 성공한 조회 도구는 완료 행을 남기지 않고 턴 종료 시 캔버스 칩 상태도 지운다",
+        "status": "failed",
+        "durationMs": 519.6519070000004,
+        "messages": [
+          "AssertionError: expected \"spy\" to be called 1 times, but got 0 times"
+        ]
+      },
+      {
+        "name": "AI 도구 라이브 활동 행 다음 도구 시작은 이전 예약을 먼저 확정하고 턴 종료는 마지막 예약까지 비운다",
+        "status": "failed",
+        "durationMs": 427.1037100000003,
+        "messages": [
+          "AssertionError: expected \"spy\" to be called 1 times, but got 0 times"
+        ]
+      }
+    ],
+    "current": [
+      {
+        "name": "AI 도구 라이브 활동 행 최소 표시 시간 동안 라이브 행을 유지한 뒤 예약 콜백에서 완료 행으로 바꾼다",
+        "status": "passed",
+        "durationMs": 417.06339299999945,
+        "messages": []
+      },
+      {
+        "name": "AI 도구 라이브 활동 행 성공한 조회 도구는 완료 행을 남기지 않고 턴 종료 시 캔버스 칩 상태도 지운다",
+        "status": "failed",
+        "durationMs": 680.2708280000006,
+        "messages": [
+          "AssertionError: expected \"spy\" to be called 1 times, but got 0 times"
+        ]
+      },
+      {
+        "name": "AI 도구 라이브 활동 행 다음 도구 시작은 이전 예약을 먼저 확정하고 턴 종료는 마지막 예약까지 비운다",
+        "status": "failed",
+        "durationMs": 427.5022969999991,
+        "messages": [
+          "AssertionError: expected \"spy\" to be called 1 times, but got 0 times"
+        ]
+      }
+    ],
+    "baselineCurrentFailuresEqual": true,
+    "originalBaselineFailuresEqual": true,
+    "introducedFocusedFailures": {},
+    "originalCollectionSource": "original-25-counts.json"
+  },
+  {
+    "file": "test/aiChatObservability.test.ts",
+    "original": [
+      {
+        "name": "글자 크기 3단 (V3C ①) 기본값은 '보통'이고 저장하면 localStorage(oprn:ai-font-size)에 영속된다 — 무효값은 보통으로 방어",
+        "status": "passed",
+        "durationMs": 392.6112260000082,
+        "messages": []
+      },
+      {
+        "name": "글자 크기 3단 (V3C ①) 설정의 글자 크기 select(ai-font-size)를 바꾸면 즉시 패널에 반영·영속되고, 재부팅 시 다시 적용된다",
+        "status": "passed",
+        "durationMs": 329.3910249999899,
+        "messages": []
+      },
+      {
+        "name": "글자 크기 3단 (V3C ①) applyAiFontSize는 data 속성과 CSS 변수(--ai-font-scale)를 함께 설정한다",
+        "status": "passed",
+        "durationMs": 157.54844799998682,
+        "messages": []
+      },
+      {
+        "name": "글자 크기 3단 (V3C ①) 기록 줌 스테퍼는 없다 — Ctrl+휠이 글자 크기를 바꾸고 영속한다",
+        "status": "passed",
+        "durationMs": 196.1118209999986,
+        "messages": []
+      },
+      {
+        "name": "도구 호출 상세 아코디언 (V3C ③) 성공 라인은 한 줄 요약만 보여 JSON 인자/결과 원문 노이즈를 숨긴다",
+        "status": "passed",
+        "durationMs": 208.70002400000521,
+        "messages": []
+      },
+      {
+        "name": "도구 호출 상세 아코디언 (V3C ③) 실패 라인은 기존 testid를 유지하면서 아코디언 안에 오류 원문(summary/issues)을 그대로 담는다",
+        "status": "passed",
+        "durationMs": 178.32977300000493,
+        "messages": []
+      },
+      {
+        "name": "도구 호출 상세 아코디언 (V3C ③) 복원된 대화의 도구 로그는 한 줄 요약으로 남고 JSON 상세는 숨긴다",
+        "status": "passed",
+        "durationMs": 1155.986653,
+        "messages": []
+      },
+      {
+        "name": "병합 추론 원문 전체 열람 (V3C ②) 도구 사이 추론이 한 블록으로 병합돼도 각 추론의 원문 전체가 아이템으로 남고 토글은 횟수를 표시한다",
+        "status": "failed",
+        "durationMs": 865.0861129999976,
+        "messages": [
+          "AssertionError: expected null to be truthy"
+        ]
+      },
+      {
+        "name": "실시간 고스트 프리뷰 연결 채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다",
+        "status": "failed",
+        "durationMs": 863.4629739999946,
+        "messages": [
+          "AssertionError: expected [] to deeply equal ArrayContaining{…}"
+        ]
+      }
+    ],
+    "baseline": [
+      {
+        "name": "글자 크기 3단 (V3C ①) 기본값은 '보통'이고 저장하면 localStorage(oprn:ai-font-size)에 영속된다 — 무효값은 보통으로 방어",
+        "status": "passed",
+        "durationMs": 147.54699499999697,
+        "messages": []
+      },
+      {
+        "name": "글자 크기 3단 (V3C ①) 설정의 글자 크기 select(ai-font-size)를 바꾸면 즉시 패널에 반영·영속되고, 재부팅 시 다시 적용된다",
+        "status": "passed",
+        "durationMs": 216.59693100000004,
+        "messages": []
+      },
+      {
+        "name": "글자 크기 3단 (V3C ①) applyAiFontSize는 data 속성과 CSS 변수(--ai-font-scale)를 함께 설정한다",
+        "status": "passed",
+        "durationMs": 140.14009499999884,
+        "messages": []
+      },
+      {
+        "name": "글자 크기 3단 (V3C ①) 기록 줌 스테퍼는 없다 — Ctrl+휠이 글자 크기를 바꾸고 영속한다",
+        "status": "passed",
+        "durationMs": 94.59213699999964,
+        "messages": []
+      },
+      {
+        "name": "도구 호출 상세 아코디언 (V3C ③) 성공 라인은 한 줄 요약만 보여 JSON 인자/결과 원문 노이즈를 숨긴다",
+        "status": "passed",
+        "durationMs": 109.26069500000085,
+        "messages": []
+      },
+      {
+        "name": "도구 호출 상세 아코디언 (V3C ③) 실패 라인은 기존 testid를 유지하면서 아코디언 안에 오류 원문(summary/issues)을 그대로 담는다",
+        "status": "passed",
+        "durationMs": 124.31255299999975,
+        "messages": []
+      },
+      {
+        "name": "도구 호출 상세 아코디언 (V3C ③) 복원된 대화의 도구 로그는 한 줄 요약으로 남고 JSON 상세는 숨긴다",
+        "status": "passed",
+        "durationMs": 315.2630710000012,
+        "messages": []
+      },
+      {
+        "name": "병합 추론 원문 전체 열람 (V3C ②) 도구 사이 추론이 한 블록으로 병합돼도 각 추론의 원문 전체가 아이템으로 남고 토글은 횟수를 표시한다",
+        "status": "failed",
+        "durationMs": 530.288951999999,
+        "messages": [
+          "AssertionError: expected null to be truthy"
+        ]
+      },
+      {
+        "name": "실시간 고스트 프리뷰 연결 채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다",
+        "status": "failed",
+        "durationMs": 536.2020709999997,
+        "messages": [
+          "AssertionError: expected [] to deeply equal ArrayContaining{…}"
+        ]
+      }
+    ],
+    "current": [
+      {
+        "name": "글자 크기 3단 (V3C ①) 기본값은 '보통'이고 저장하면 localStorage(oprn:ai-font-size)에 영속된다 — 무효값은 보통으로 방어",
+        "status": "passed",
+        "durationMs": 193.79859399999987,
+        "messages": []
+      },
+      {
+        "name": "글자 크기 3단 (V3C ①) 설정의 글자 크기 select(ai-font-size)를 바꾸면 즉시 패널에 반영·영속되고, 재부팅 시 다시 적용된다",
+        "status": "passed",
+        "durationMs": 360.2749699999986,
+        "messages": []
+      },
+      {
+        "name": "글자 크기 3단 (V3C ①) applyAiFontSize는 data 속성과 CSS 변수(--ai-font-scale)를 함께 설정한다",
+        "status": "passed",
+        "durationMs": 141.95890299999883,
+        "messages": []
+      },
+      {
+        "name": "글자 크기 3단 (V3C ①) 기록 줌 스테퍼는 없다 — Ctrl+휠이 글자 크기를 바꾸고 영속한다",
+        "status": "passed",
+        "durationMs": 193.883636999999,
+        "messages": []
+      },
+      {
+        "name": "도구 호출 상세 아코디언 (V3C ③) 성공 라인은 한 줄 요약만 보여 JSON 인자/결과 원문 노이즈를 숨긴다",
+        "status": "passed",
+        "durationMs": 247.37554999999702,
+        "messages": []
+      },
+      {
+        "name": "도구 호출 상세 아코디언 (V3C ③) 실패 라인은 기존 testid를 유지하면서 아코디언 안에 오류 원문(summary/issues)을 그대로 담는다",
+        "status": "passed",
+        "durationMs": 288.155144999997,
+        "messages": []
+      },
+      {
+        "name": "도구 호출 상세 아코디언 (V3C ③) 복원된 대화의 도구 로그는 한 줄 요약으로 남고 JSON 상세는 숨긴다",
+        "status": "passed",
+        "durationMs": 463.79846800000087,
+        "messages": []
+      },
+      {
+        "name": "병합 추론 원문 전체 열람 (V3C ②) 도구 사이 추론이 한 블록으로 병합돼도 각 추론의 원문 전체가 아이템으로 남고 토글은 횟수를 표시한다",
+        "status": "failed",
+        "durationMs": 628.2436320000052,
+        "messages": [
+          "AssertionError: expected null to be truthy"
+        ]
+      },
+      {
+        "name": "실시간 고스트 프리뷰 연결 채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다",
+        "status": "failed",
+        "durationMs": 686.8294400000013,
+        "messages": [
+          "AssertionError: expected [] to deeply equal ArrayContaining{…}"
+        ]
+      }
+    ],
+    "baselineCurrentFailuresEqual": true,
+    "originalBaselineFailuresEqual": true,
+    "introducedFocusedFailures": {},
+    "originalCollectionSource": "original-25-counts.json"
+  },
+  {
+    "file": "test/aiChatPanelTransportError.test.ts",
+    "original": [
+      {
+        "name": "transport failure paints recovery CTA and keeps Send mounted refused fetch: is-turn-running cleared, system error bubble + ai-error-open-settings, ai-send stays disabled with ai-abort visible",
+        "status": "failed",
+        "durationMs": 1562.1193679999997,
+        "messages": [
+          "AssertionError: expected null to be truthy"
+        ]
+      },
+      {
+        "name": "transport failure paints recovery CTA and keeps Send mounted 401 also mounts settings opener",
+        "status": "passed",
+        "durationMs": 863.6411430000007,
+        "messages": []
+      }
+    ],
+    "baseline": [
+      {
+        "name": "transport failure paints recovery CTA and keeps Send mounted refused fetch: is-turn-running cleared, system error bubble + ai-error-open-settings, ai-send stays disabled with ai-abort visible",
+        "status": "failed",
+        "durationMs": 1670.1838510000016,
+        "messages": [
+          "AssertionError: expected null to be truthy"
+        ]
+      },
+      {
+        "name": "transport failure paints recovery CTA and keeps Send mounted 401 also mounts settings opener",
+        "status": "passed",
+        "durationMs": 1687.8862640000007,
+        "messages": []
+      }
+    ],
+    "current": [
+      {
+        "name": "transport failure paints recovery CTA and keeps Send mounted refused fetch: is-turn-running cleared, system error bubble + ai-error-open-settings, ai-send stays disabled with ai-abort visible",
+        "status": "failed",
+        "durationMs": 687.9258120000004,
+        "messages": [
+          "AssertionError: expected null to be truthy"
+        ]
+      },
+      {
+        "name": "transport failure paints recovery CTA and keeps Send mounted 401 also mounts settings opener",
+        "status": "passed",
+        "durationMs": 546.6564120000003,
+        "messages": []
+      }
+    ],
+    "baselineCurrentFailuresEqual": true,
+    "originalBaselineFailuresEqual": true,
+    "introducedFocusedFailures": {},
+    "originalCollectionSource": "original-25-counts.json"
+  },
+  {
+    "file": "test/aiSelectionChipScope.test.ts",
+    "original": [
+      {
+        "name": "선택 칩 해제와 턴 스코프 × 로 해제한 뒤 보내면 세션 스코프가 null 이고 영역 실행부를 타지 않는다",
+        "status": "passed",
+        "durationMs": 2299.166317999996,
+        "messages": []
+      },
+      {
+        "name": "선택 칩 해제와 턴 스코프 칩이 살아 있으면 영역 실행부로 간다(대조군)",
+        "status": "passed",
+        "durationMs": 379.47288200000185,
+        "messages": []
+      },
+      {
+        "name": "대기 상태에서도 선택 칩은 보인다 선택 칩이 붙으면 칩 호스트에 has-selection-scope 가 서고, 해제하면 내려간다",
+        "status": "passed",
+        "durationMs": 662.3689640000011,
+        "messages": []
+      },
+      {
+        "name": "대기 상태에서도 선택 칩은 보인다 idle 패널에서 has-selection-scope 칩 호스트의 사용 display 는 none 이 아니다",
+        "status": "failed",
+        "durationMs": 257.6299519999957,
+        "messages": [
+          "AssertionError: expected 'block' to be 'none' // Object.is equality"
+        ]
+      },
+      {
+        "name": "컴포저 힌트는 숨을 때 자리를 비운다 입력 포커스가 없을 때 힌트의 사용 display 는 none 이다(visibility:hidden 은 156px 를 먹었다)",
+        "status": "failed",
+        "durationMs": 467.20283599999675,
+        "messages": [
+          "Error: ENOENT: no such file or directory, open '<TREE>/src/styles/database/tabs-b-assistant-panel/14-assistant-ux-repair.css'"
+        ]
+      }
+    ],
+    "baseline": [
+      {
+        "name": "선택 칩 해제와 턴 스코프 × 로 해제한 뒤 보내면 세션 스코프가 null 이고 영역 실행부를 타지 않는다",
+        "status": "passed",
+        "durationMs": 747.8741120000004,
+        "messages": []
+      },
+      {
+        "name": "선택 칩 해제와 턴 스코프 칩이 살아 있으면 영역 실행부로 간다(대조군)",
+        "status": "passed",
+        "durationMs": 237.10458300000028,
+        "messages": []
+      },
+      {
+        "name": "대기 상태에서도 선택 칩은 보인다 선택 칩이 붙으면 칩 호스트에 has-selection-scope 가 서고, 해제하면 내려간다",
+        "status": "passed",
+        "durationMs": 366.46784899999875,
+        "messages": []
+      },
+      {
+        "name": "대기 상태에서도 선택 칩은 보인다 idle 패널에서 has-selection-scope 칩 호스트의 사용 display 는 none 이 아니다",
+        "status": "failed",
+        "durationMs": 306.3883139999998,
+        "messages": [
+          "AssertionError: expected 'block' to be 'none' // Object.is equality"
+        ]
+      },
+      {
+        "name": "컴포저 힌트는 숨을 때 자리를 비운다 입력 포커스가 없을 때 힌트의 사용 display 는 none 이다(visibility:hidden 은 156px 를 먹었다)",
+        "status": "failed",
+        "durationMs": 165.72630700000082,
+        "messages": [
+          "Error: ENOENT: no such file or directory, open '<TREE>/src/styles/database/tabs-b-assistant-panel/14-assistant-ux-repair.css'"
+        ]
+      }
+    ],
+    "current": [
+      {
+        "name": "선택 칩 해제와 턴 스코프 × 로 해제한 뒤 보내면 세션 스코프가 null 이고 영역 실행부를 타지 않는다",
+        "status": "passed",
+        "durationMs": 945.1786629999997,
+        "messages": []
+      },
+      {
+        "name": "선택 칩 해제와 턴 스코프 칩이 살아 있으면 영역 실행부로 간다(대조군)",
+        "status": "passed",
+        "durationMs": 315.7019909999999,
+        "messages": []
+      },
+      {
+        "name": "대기 상태에서도 선택 칩은 보인다 선택 칩이 붙으면 칩 호스트에 has-selection-scope 가 서고, 해제하면 내려간다",
+        "status": "passed",
+        "durationMs": 375.53952500000014,
+        "messages": []
+      },
+      {
+        "name": "대기 상태에서도 선택 칩은 보인다 idle 패널에서 has-selection-scope 칩 호스트의 사용 display 는 none 이 아니다",
+        "status": "failed",
+        "durationMs": 230.77006400000027,
+        "messages": [
+          "AssertionError: expected 'block' to be 'none' // Object.is equality"
+        ]
+      },
+      {
+        "name": "컴포저 힌트는 숨을 때 자리를 비운다 입력 포커스가 없을 때 힌트의 사용 display 는 none 이다(visibility:hidden 은 156px 를 먹었다)",
+        "status": "failed",
+        "durationMs": 203.53228599999966,
+        "messages": [
+          "Error: ENOENT: no such file or directory, open '<TREE>/src/styles/database/tabs-b-assistant-panel/14-assistant-ux-repair.css'"
+        ]
+      }
+    ],
+    "baselineCurrentFailuresEqual": true,
+    "originalBaselineFailuresEqual": true,
+    "introducedFocusedFailures": {},
+    "originalCollectionSource": "original-25-counts.json"
+  },
+  {
+    "file": "test/databaseItemInspector.test.ts",
+    "original": [
+      {
+        "name": "database item inspector form summarizes a finite-use party medicine from live item fields",
+        "status": "passed",
+        "durationMs": 359.97342599999683,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form resolves a special item's triggered skill name",
+        "status": "passed",
+        "durationMs": 361.6890330000024,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form does not present special item actor and class ids as runtime restrictions",
+        "status": "passed",
+        "durationMs": 316.00813200000266,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form keeps an always item battle-usable when the legacy menu-only flag is also set",
+        "status": "passed",
+        "durationMs": 384.8410889999941,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form renders the effect story and refreshes it in place after recovery edits",
+        "status": "passed",
+        "durationMs": 738.7564150000107,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form renders the inspector header with 96px icon, name edit (db-field-name), and type tag",
+        "status": "passed",
+        "durationMs": 411.4853809999913,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form HP/MP recovery % slider/stepper writes clamped step-5 values to the store",
+        "status": "passed",
+        "durationMs": 783.3361009999935,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form keeps the base percent testid on the field wrapper while inputs use -slider/-stepper",
+        "status": "passed",
+        "durationMs": 157.10940899999696,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form segmented scope radio rewrites the stored ItemScope enum",
+        "status": "passed",
+        "durationMs": 452.61308799999824,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form avatar chip toggles an actor id in usableActorIds and keeps class checkboxes",
+        "status": "passed",
+        "durationMs": 519.0825120000081,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form occasion selection synchronizes menu and battle flags",
+        "status": "passed",
+        "durationMs": 553.4135069999902,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form switch items use the same occasion authority",
+        "status": "passed",
+        "durationMs": 768.4519960000034,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form type change calls updateItemType + full rerender and swaps type panels",
+        "status": "passed",
+        "durationMs": 448.88531800000055,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form draws one scope control for usable items and none for ordinary goods",
+        "status": "passed",
+        "durationMs": 344.1633900000015,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form renders one shared usable card placed under the limits section",
+        "status": "passed",
+        "durationMs": 114.99803499999689,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form orders workbench cards as summary → definition → effect → limits",
+        "status": "passed",
+        "durationMs": 124.73368099999789,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form authors item state effects through add, edit and delete rows",
+        "status": "passed",
+        "durationMs": 842.6955769999913,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form assigns and clears the battle animation played when the item is used",
+        "status": "passed",
+        "durationMs": 517.1192480000027,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form authors the monster care profile and removes it when set to none",
+        "status": "passed",
+        "durationMs": 1084.4788819999958,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form round-trips edited state effects, animation and care profile through project persistence",
+        "status": "passed",
+        "durationMs": 1428.6648239999922,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form narrates inflicted states with their chance and names the battle animation",
+        "status": "passed",
+        "durationMs": 190.8048250000138,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form omits the chance when an inflicted state always lands",
+        "status": "passed",
+        "durationMs": 249.01560600000084,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form keeps price and consumption in basics, without unrelated farming options on medicine",
+        "status": "passed",
+        "durationMs": 143.71498299999803,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form weapon type shows an equipment-tab door instead of the legacy equipment form",
+        "status": "failed",
+        "durationMs": 422.4516009999934,
+        "messages": [
+          "AssertionError: expected '⚔착용 장비는 별도 항목으로 만듭니다이 항목은 이전 형식의 비착용 …' to contain '장비 탭'"
+        ]
+      },
+      {
+        "name": "database item inspector form legacy weapon item keeps its price but has no scope/capture editors",
+        "status": "passed",
+        "durationMs": 296.68800999999803,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form farm tool dropdown offers every canonical FARM_TOOLS value with Korean labels",
+        "status": "passed",
+        "durationMs": 1164.7995680000022,
+        "messages": []
+      }
+    ],
+    "baseline": [
+      {
+        "name": "database item inspector form summarizes a finite-use party medicine from live item fields",
+        "status": "passed",
+        "durationMs": 138.67760400000043,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form resolves a special item's triggered skill name",
+        "status": "passed",
+        "durationMs": 130.9543279999998,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form does not present special item actor and class ids as runtime restrictions",
+        "status": "passed",
+        "durationMs": 99.22592099999747,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form keeps an always item battle-usable when the legacy menu-only flag is also set",
+        "status": "passed",
+        "durationMs": 142.50733300000138,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form renders the effect story and refreshes it in place after recovery edits",
+        "status": "passed",
+        "durationMs": 333.75942699999723,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form renders the inspector header with 96px icon, name edit (db-field-name), and type tag",
+        "status": "passed",
+        "durationMs": 281.2780700000003,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form HP/MP recovery % slider/stepper writes clamped step-5 values to the store",
+        "status": "passed",
+        "durationMs": 489.6590639999995,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form keeps the base percent testid on the field wrapper while inputs use -slider/-stepper",
+        "status": "passed",
+        "durationMs": 92.32290099999955,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form segmented scope radio rewrites the stored ItemScope enum",
+        "status": "passed",
+        "durationMs": 298.3545460000023,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form avatar chip toggles an actor id in usableActorIds and keeps class checkboxes",
+        "status": "passed",
+        "durationMs": 468.85883000000103,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form occasion selection synchronizes menu and battle flags",
+        "status": "passed",
+        "durationMs": 449.62384799999927,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form switch items use the same occasion authority",
+        "status": "passed",
+        "durationMs": 403.80555500000264,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form type change calls updateItemType + full rerender and swaps type panels",
+        "status": "passed",
+        "durationMs": 274.2674169999991,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form draws one scope control for usable items and none for ordinary goods",
+        "status": "passed",
+        "durationMs": 217.83045799999672,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form renders one shared usable card placed under the limits section",
+        "status": "passed",
+        "durationMs": 111.76043700000082,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form orders workbench cards as summary → definition → effect → limits",
+        "status": "passed",
+        "durationMs": 96.5628570000008,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form authors item state effects through add, edit and delete rows",
+        "status": "passed",
+        "durationMs": 549.7176470000013,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form assigns and clears the battle animation played when the item is used",
+        "status": "passed",
+        "durationMs": 297.21258300000045,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form authors the monster care profile and removes it when set to none",
+        "status": "passed",
+        "durationMs": 637.645668000001,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form round-trips edited state effects, animation and care profile through project persistence",
+        "status": "passed",
+        "durationMs": 726.7115339999982,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form narrates inflicted states with their chance and names the battle animation",
+        "status": "passed",
+        "durationMs": 104.48120799999742,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form omits the chance when an inflicted state always lands",
+        "status": "passed",
+        "durationMs": 104.478658,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form keeps price and consumption in basics, without unrelated farming options on medicine",
+        "status": "passed",
+        "durationMs": 127.54763900000034,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form weapon type shows an equipment-tab door instead of the legacy equipment form",
+        "status": "failed",
+        "durationMs": 308.13666699999885,
+        "messages": [
+          "AssertionError: expected '⚔착용 장비는 별도 항목으로 만듭니다이 항목은 이전 형식의 비착용 …' to contain '장비 탭'"
+        ]
+      },
+      {
+        "name": "database item inspector form legacy weapon item keeps its price but has no scope/capture editors",
+        "status": "passed",
+        "durationMs": 225.20314700000017,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form farm tool dropdown offers every canonical FARM_TOOLS value with Korean labels",
+        "status": "passed",
+        "durationMs": 342.03361700000096,
+        "messages": []
+      }
+    ],
+    "current": [
+      {
+        "name": "database item inspector form summarizes a finite-use party medicine from live item fields",
+        "status": "passed",
+        "durationMs": 209.419753999995,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form resolves a special item's triggered skill name",
+        "status": "passed",
+        "durationMs": 209.91890400000557,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form does not present special item actor and class ids as runtime restrictions",
+        "status": "passed",
+        "durationMs": 111.34591699999874,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form keeps an always item battle-usable when the legacy menu-only flag is also set",
+        "status": "passed",
+        "durationMs": 178.5132220000014,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form renders the effect story and refreshes it in place after recovery edits",
+        "status": "passed",
+        "durationMs": 320.47535600000265,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form renders the inspector header with 96px icon, name edit (db-field-name), and type tag",
+        "status": "passed",
+        "durationMs": 392.5459209999972,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form HP/MP recovery % slider/stepper writes clamped step-5 values to the store",
+        "status": "passed",
+        "durationMs": 742.2954639999953,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form keeps the base percent testid on the field wrapper while inputs use -slider/-stepper",
+        "status": "passed",
+        "durationMs": 122.98969499999657,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form segmented scope radio rewrites the stored ItemScope enum",
+        "status": "passed",
+        "durationMs": 493.745640000001,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form avatar chip toggles an actor id in usableActorIds and keeps class checkboxes",
+        "status": "passed",
+        "durationMs": 497.25194100000226,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form occasion selection synchronizes menu and battle flags",
+        "status": "passed",
+        "durationMs": 654.8886570000031,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form switch items use the same occasion authority",
+        "status": "passed",
+        "durationMs": 502.13671199999953,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form type change calls updateItemType + full rerender and swaps type panels",
+        "status": "passed",
+        "durationMs": 461.8501679999972,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form draws one scope control for usable items and none for ordinary goods",
+        "status": "passed",
+        "durationMs": 338.85456200000044,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form renders one shared usable card placed under the limits section",
+        "status": "passed",
+        "durationMs": 336.83535100000154,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form orders workbench cards as summary → definition → effect → limits",
+        "status": "passed",
+        "durationMs": 180.6122649999961,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form authors item state effects through add, edit and delete rows",
+        "status": "passed",
+        "durationMs": 987.7955779999975,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form assigns and clears the battle animation played when the item is used",
+        "status": "passed",
+        "durationMs": 448.0375950000016,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form authors the monster care profile and removes it when set to none",
+        "status": "passed",
+        "durationMs": 778.9801860000007,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form round-trips edited state effects, animation and care profile through project persistence",
+        "status": "passed",
+        "durationMs": 864.628687999997,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form narrates inflicted states with their chance and names the battle animation",
+        "status": "passed",
+        "durationMs": 114.75234700000146,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form omits the chance when an inflicted state always lands",
+        "status": "passed",
+        "durationMs": 104.5806900000025,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form keeps price and consumption in basics, without unrelated farming options on medicine",
+        "status": "passed",
+        "durationMs": 189.28075199999876,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form weapon type shows an equipment-tab door instead of the legacy equipment form",
+        "status": "failed",
+        "durationMs": 326.2176550000004,
+        "messages": [
+          "AssertionError: expected '⚔착용 장비는 별도 항목으로 만듭니다이 항목은 이전 형식의 비착용 …' to contain '장비 탭'"
+        ]
+      },
+      {
+        "name": "database item inspector form legacy weapon item keeps its price but has no scope/capture editors",
+        "status": "passed",
+        "durationMs": 470.86267300000327,
+        "messages": []
+      },
+      {
+        "name": "database item inspector form farm tool dropdown offers every canonical FARM_TOOLS value with Korean labels",
+        "status": "passed",
+        "durationMs": 420.5279129999981,
+        "messages": []
+      }
+    ],
+    "baselineCurrentFailuresEqual": true,
+    "originalBaselineFailuresEqual": true,
+    "introducedFocusedFailures": {},
+    "originalCollectionSource": "original-25-counts.json"
+  },
+  {
+    "file": "test/databaseModalDirtySession.test.ts",
+    "original": [
+      {
+        "name": "database modal dirty session tracks a clean modal snapshot until database edits change project state",
+        "status": "passed",
+        "durationMs": 1047.6877800000002,
+        "messages": []
+      },
+      {
+        "name": "database modal dirty session restores the modal-open snapshot when dirty edits are discarded",
+        "status": "passed",
+        "durationMs": 828.4622280000003,
+        "messages": []
+      },
+      {
+        "name": "database modal dirty session marks applied edits clean so later cancel attempts can close without a prompt",
+        "status": "passed",
+        "durationMs": 736.1696790000005,
+        "messages": []
+      },
+      {
+        "name": "database modal dirty session rewinds undo history to the session-open depth on discard so discarded edits cannot be revived with Ctrl+Z",
+        "status": "passed",
+        "durationMs": 944.7496540000011,
+        "messages": []
+      },
+      {
+        "name": "database modal dirty session discards a session-only edit even when the undo stack was already saturated at MAX_HISTORY before the session opened",
+        "status": "failed",
+        "durationMs": 48568.786311,
+        "messages": [
+          "Error: STACK_TRACE_ERROR"
+        ]
+      }
+    ],
+    "baseline": [
+      {
+        "name": "database modal dirty session tracks a clean modal snapshot until database edits change project state",
+        "status": "passed",
+        "durationMs": 1093.1032770000002,
+        "messages": []
+      },
+      {
+        "name": "database modal dirty session restores the modal-open snapshot when dirty edits are discarded",
+        "status": "passed",
+        "durationMs": 1305.7240419999998,
+        "messages": []
+      },
+      {
+        "name": "database modal dirty session marks applied edits clean so later cancel attempts can close without a prompt",
+        "status": "passed",
+        "durationMs": 872.8933380000008,
+        "messages": []
+      },
+      {
+        "name": "database modal dirty session rewinds undo history to the session-open depth on discard so discarded edits cannot be revived with Ctrl+Z",
+        "status": "passed",
+        "durationMs": 978.2726270000003,
+        "messages": []
+      },
+      {
+        "name": "database modal dirty session discards a session-only edit even when the undo stack was already saturated at MAX_HISTORY before the session opened",
+        "status": "passed",
+        "durationMs": 42186.199496999994,
+        "messages": []
+      }
+    ],
+    "current": [
+      {
+        "name": "database modal dirty session tracks a clean modal snapshot until database edits change project state",
+        "status": "passed",
+        "durationMs": 662.929619,
+        "messages": []
+      },
+      {
+        "name": "database modal dirty session restores the modal-open snapshot when dirty edits are discarded",
+        "status": "passed",
+        "durationMs": 892.6997120000001,
+        "messages": []
+      },
+      {
+        "name": "database modal dirty session marks applied edits clean so later cancel attempts can close without a prompt",
+        "status": "passed",
+        "durationMs": 733.83266,
+        "messages": []
+      },
+      {
+        "name": "database modal dirty session rewinds undo history to the session-open depth on discard so discarded edits cannot be revived with Ctrl+Z",
+        "status": "passed",
+        "durationMs": 743.9422670000004,
+        "messages": []
+      },
+      {
+        "name": "database modal dirty session discards a session-only edit even when the undo stack was already saturated at MAX_HISTORY before the session opened",
+        "status": "passed",
+        "durationMs": 23509.258957,
+        "messages": []
+      }
+    ],
+    "baselineCurrentFailuresEqual": true,
+    "originalBaselineFailuresEqual": false,
+    "introducedFocusedFailures": {},
+    "originalCollectionSource": "original-25-counts.json"
+  },
+  {
+    "file": "test/databaseNavMode.test.ts",
+    "original": [
+      {
+        "name": "database navigation by editor mode groups the rail by category in beginner mode too — no all-data disclosure",
+        "status": "passed",
+        "durationMs": 648.721126000004,
+        "messages": []
+      },
+      {
+        "name": "database navigation by editor mode keeps grouped navigation with explicit monster and life domains in standard mode",
+        "status": "passed",
+        "durationMs": 459.0856419999982,
+        "messages": []
+      },
+      {
+        "name": "database navigation by editor mode 그룹 헤더가 안에 든 탭 이름과 레코드 합계를 알려준다 — 라벨 텍스트는 그대로",
+        "status": "failed",
+        "durationMs": 194.0931319999945,
+        "messages": [
+          "AssertionError: expected '맵' to be '세계' // Object.is equality"
+        ]
+      },
+      {
+        "name": "database navigation by editor mode shows the full expert surface without an all-data disclosure",
+        "status": "passed",
+        "durationMs": 298.6081630000044,
+        "messages": []
+      }
+    ],
+    "baseline": [
+      {
+        "name": "database navigation by editor mode groups the rail by category in beginner mode too — no all-data disclosure",
+        "status": "passed",
+        "durationMs": 236.91865099999995,
+        "messages": []
+      },
+      {
+        "name": "database navigation by editor mode keeps grouped navigation with explicit monster and life domains in standard mode",
+        "status": "passed",
+        "durationMs": 198.3981840000015,
+        "messages": []
+      },
+      {
+        "name": "database navigation by editor mode 그룹 헤더가 안에 든 탭 이름과 레코드 합계를 알려준다 — 라벨 텍스트는 그대로",
+        "status": "failed",
+        "durationMs": 205.1593929999999,
+        "messages": [
+          "AssertionError: expected '맵' to be '세계' // Object.is equality"
+        ]
+      },
+      {
+        "name": "database navigation by editor mode shows the full expert surface without an all-data disclosure",
+        "status": "passed",
+        "durationMs": 318.2033479999991,
+        "messages": []
+      }
+    ],
+    "current": [
+      {
+        "name": "database navigation by editor mode groups the rail by category in beginner mode too — no all-data disclosure",
+        "status": "passed",
+        "durationMs": 336.45446699999957,
+        "messages": []
+      },
+      {
+        "name": "database navigation by editor mode keeps grouped navigation with explicit monster and life domains in standard mode",
+        "status": "passed",
+        "durationMs": 150.63799400000062,
+        "messages": []
+      },
+      {
+        "name": "database navigation by editor mode 그룹 헤더가 안에 든 탭 이름과 레코드 합계를 알려준다 — 라벨 텍스트는 그대로",
+        "status": "failed",
+        "durationMs": 166.4439169999996,
+        "messages": [
+          "AssertionError: expected '맵' to be '세계' // Object.is equality"
+        ]
+      },
+      {
+        "name": "database navigation by editor mode shows the full expert surface without an all-data disclosure",
+        "status": "passed",
+        "durationMs": 205.510577,
+        "messages": []
+      }
+    ],
+    "baselineCurrentFailuresEqual": true,
+    "originalBaselineFailuresEqual": true,
+    "introducedFocusedFailures": {},
+    "originalCollectionSource": "original-25-counts.json"
+  },
+  {
+    "file": "test/databaseOverviewDashboard.test.ts",
+    "original": [
+      {
+        "name": "database overview dashboard renders stat chips immediately with counts from the project data",
+        "status": "passed",
+        "durationMs": 28600.000108999997,
+        "messages": []
+      },
+      {
+        "name": "database overview dashboard lazy compute: charts container is empty before idle callback, populated after flush",
+        "status": "passed",
+        "durationMs": 12992.589947,
+        "messages": []
+      },
+      {
+        "name": "database overview dashboard curve chart renders two non-empty SVG paths with gridlines and Lv1..Lv50 labels",
+        "status": "passed",
+        "durationMs": 14905.373420000004,
+        "messages": []
+      },
+      {
+        "name": "database overview dashboard scatter chart draws one circle per enemy with a <title> tooltip and boss styling",
+        "status": "failed",
+        "durationMs": 15085.149805999994,
+        "messages": [
+          "Error: STACK_TRACE_ERROR"
+        ]
+      },
+      {
+        "name": "database overview dashboard renders issue cards matching the detector output with jump buttons",
+        "status": "failed",
+        "durationMs": 15037.75594100001,
+        "messages": [
+          "Error: STACK_TRACE_ERROR"
+        ]
+      },
+      {
+        "name": "database overview dashboard jump button switches to the target tab via switchDatabaseActiveTab (G006)",
+        "status": "failed",
+        "durationMs": 15031.744890000002,
+        "messages": [
+          "Error: STACK_TRACE_ERROR"
+        ]
+      },
+      {
+        "name": "database overview dashboard attack-stagnation jump opens the classes tab, not skills",
+        "status": "failed",
+        "durationMs": 15033.262873,
+        "messages": [
+          "Error: STACK_TRACE_ERROR"
+        ]
+      },
+      {
+        "name": "database overview dashboard curve section shows a visible HP/attack legend",
+        "status": "failed",
+        "durationMs": 15015.590907999984,
+        "messages": [
+          "Error: STACK_TRACE_ERROR"
+        ]
+      },
+      {
+        "name": "database overview dashboard AI 분석 button dispatches the modal's database-ai-toggle click (aria-expanded)",
+        "status": "failed",
+        "durationMs": 15023.871058999997,
+        "messages": [
+          "Error: STACK_TRACE_ERROR"
+        ]
+      },
+      {
+        "name": "database overview dashboard clean project shows empty-state cards instead of blank canvases",
+        "status": "failed",
+        "durationMs": 15052.364646000002,
+        "messages": [
+          "Error: STACK_TRACE_ERROR"
+        ]
+      },
+      {
+        "name": "database overview dashboard empty project renders empty states without NaN paths",
+        "status": "failed",
+        "durationMs": 15025.279317999986,
+        "messages": [
+          "Error: STACK_TRACE_ERROR"
+        ]
+      }
+    ],
+    "baseline": [
+      {
+        "name": "database overview dashboard renders stat chips immediately with counts from the project data",
+        "status": "passed",
+        "durationMs": 17149.342678,
+        "messages": []
+      },
+      {
+        "name": "database overview dashboard lazy compute: charts container is empty before idle callback, populated after flush",
+        "status": "passed",
+        "durationMs": 2339.4133279999987,
+        "messages": []
+      },
+      {
+        "name": "database overview dashboard curve chart renders two non-empty SVG paths with gridlines and Lv1..Lv50 labels",
+        "status": "passed",
+        "durationMs": 1681.2690739999998,
+        "messages": []
+      },
+      {
+        "name": "database overview dashboard scatter chart draws one circle per enemy with a <title> tooltip and boss styling",
+        "status": "passed",
+        "durationMs": 1591.1044699999984,
+        "messages": []
+      },
+      {
+        "name": "database overview dashboard renders issue cards matching the detector output with jump buttons",
+        "status": "passed",
+        "durationMs": 2023.2075039999982,
+        "messages": []
+      },
+      {
+        "name": "database overview dashboard jump button switches to the target tab via switchDatabaseActiveTab (G006)",
+        "status": "passed",
+        "durationMs": 1828.1251699999993,
+        "messages": []
+      },
+      {
+        "name": "database overview dashboard attack-stagnation jump opens the classes tab, not skills",
+        "status": "passed",
+        "durationMs": 1944.4137920000067,
+        "messages": []
+      },
+      {
+        "name": "database overview dashboard curve section shows a visible HP/attack legend",
+        "status": "passed",
+        "durationMs": 2853.916863999999,
+        "messages": []
+      },
+      {
+        "name": "database overview dashboard AI 분석 button dispatches the modal's database-ai-toggle click (aria-expanded)",
+        "status": "passed",
+        "durationMs": 3098.4981899999984,
+        "messages": []
+      },
+      {
+        "name": "database overview dashboard clean project shows empty-state cards instead of blank canvases",
+        "status": "passed",
+        "durationMs": 2843.1744120000003,
+        "messages": []
+      },
+      {
+        "name": "database overview dashboard empty project renders empty states without NaN paths",
+        "status": "passed",
+        "durationMs": 2351.824673000003,
+        "messages": []
+      }
+    ],
+    "current": [
+      {
+        "name": "database overview dashboard renders stat chips immediately with counts from the project data",
+        "status": "passed",
+        "durationMs": 26605.554699,
+        "messages": []
+      },
+      {
+        "name": "database overview dashboard lazy compute: charts container is empty before idle callback, populated after flush",
+        "status": "passed",
+        "durationMs": 3900.273012000005,
+        "messages": []
+      },
+      {
+        "name": "database overview dashboard curve chart renders two non-empty SVG paths with gridlines and Lv1..Lv50 labels",
+        "status": "passed",
+        "durationMs": 2318.2202839999954,
+        "messages": []
+      },
+      {
+        "name": "database overview dashboard scatter chart draws one circle per enemy with a <title> tooltip and boss styling",
+        "status": "passed",
+        "durationMs": 3209.902256000001,
+        "messages": []
+      },
+      {
+        "name": "database overview dashboard renders issue cards matching the detector output with jump buttons",
+        "status": "passed",
+        "durationMs": 3437.9379740000004,
+        "messages": []
+      },
+      {
+        "name": "database overview dashboard jump button switches to the target tab via switchDatabaseActiveTab (G006)",
+        "status": "passed",
+        "durationMs": 3137.5537630000035,
+        "messages": []
+      },
+      {
+        "name": "database overview dashboard attack-stagnation jump opens the classes tab, not skills",
+        "status": "passed",
+        "durationMs": 3188.1812219999993,
+        "messages": []
+      },
+      {
+        "name": "database overview dashboard curve section shows a visible HP/attack legend",
+        "status": "passed",
+        "durationMs": 3412.581076000002,
+        "messages": []
+      },
+      {
+        "name": "database overview dashboard AI 분석 button dispatches the modal's database-ai-toggle click (aria-expanded)",
+        "status": "passed",
+        "durationMs": 2671.113167999996,
+        "messages": []
+      },
+      {
+        "name": "database overview dashboard clean project shows empty-state cards instead of blank canvases",
+        "status": "passed",
+        "durationMs": 3165.408295000001,
+        "messages": []
+      },
+      {
+        "name": "database overview dashboard empty project renders empty states without NaN paths",
+        "status": "passed",
+        "durationMs": 2990.827123999996,
+        "messages": []
+      }
+    ],
+    "baselineCurrentFailuresEqual": true,
+    "originalBaselineFailuresEqual": false,
+    "introducedFocusedFailures": {},
+    "originalCollectionSource": "original-25-counts.json"
+  },
+  {
+    "file": "test/databaseOverviewTab.test.ts",
+    "original": [
+      {
+        "name": "database overview tab shell summarizes the authored game across world, story, cast, systems, and readiness",
+        "status": "passed",
+        "durationMs": 29149.122816,
+        "messages": []
+      },
+      {
+        "name": "database overview tab shell renders stat chips for all 9 collections with counts from the project data",
+        "status": "passed",
+        "durationMs": 12967.082166,
+        "messages": []
+      },
+      {
+        "name": "database overview tab shell empty project renders chips with 0 counts without crashing",
+        "status": "failed",
+        "durationMs": 15072.855034,
+        "messages": [
+          "Error: STACK_TRACE_ERROR"
+        ]
+      },
+      {
+        "name": "database overview tab shell default open tab after modal open is the stored last tab, NOT overview unless stored",
+        "status": "passed",
+        "durationMs": 14309.562972,
+        "messages": []
+      },
+      {
+        "name": "database overview tab shell persists across hard reload: stored 'overview' lands on the overview tab",
+        "status": "failed",
+        "durationMs": 15025.271803999989,
+        "messages": [
+          "Error: STACK_TRACE_ERROR"
+        ]
+      },
+      {
+        "name": "database overview tab shell setDatabaseActiveTab('overview') + renderDatabasePanel renders the overview tab",
+        "status": "failed",
+        "durationMs": 15016.578047000003,
+        "messages": [
+          "Error: STACK_TRACE_ERROR"
+        ]
+      },
+      {
+        "name": "database overview tab shell stat chips are buttons that switch to the matching tab (G006)",
+        "status": "failed",
+        "durationMs": 15091.052704000002,
+        "messages": [
+          "Error: STACK_TRACE_ERROR"
+        ]
+      },
+      {
+        "name": "database overview tab shell databaseTabLabel resolves the overview label for the AI footer",
+        "status": "failed",
+        "durationMs": 15008.544085999994,
+        "messages": [
+          "Error: STACK_TRACE_ERROR"
+        ]
+      }
+    ],
+    "baseline": [
+      {
+        "name": "database overview tab shell summarizes the authored game across world, story, cast, systems, and readiness",
+        "status": "passed",
+        "durationMs": 5954.027048,
+        "messages": []
+      },
+      {
+        "name": "database overview tab shell renders stat chips for all 9 collections with counts from the project data",
+        "status": "passed",
+        "durationMs": 2933.613555,
+        "messages": []
+      },
+      {
+        "name": "database overview tab shell empty project renders chips with 0 counts without crashing",
+        "status": "passed",
+        "durationMs": 2498.793729000001,
+        "messages": []
+      },
+      {
+        "name": "database overview tab shell default open tab after modal open is the stored last tab, NOT overview unless stored",
+        "status": "passed",
+        "durationMs": 3212.370543000001,
+        "messages": []
+      },
+      {
+        "name": "database overview tab shell persists across hard reload: stored 'overview' lands on the overview tab",
+        "status": "passed",
+        "durationMs": 2450.601713,
+        "messages": []
+      },
+      {
+        "name": "database overview tab shell setDatabaseActiveTab('overview') + renderDatabasePanel renders the overview tab",
+        "status": "passed",
+        "durationMs": 2656.6343439999982,
+        "messages": []
+      },
+      {
+        "name": "database overview tab shell stat chips are buttons that switch to the matching tab (G006)",
+        "status": "passed",
+        "durationMs": 3265.2939650000008,
+        "messages": []
+      },
+      {
+        "name": "database overview tab shell databaseTabLabel resolves the overview label for the AI footer",
+        "status": "passed",
+        "durationMs": 5410.723835000001,
+        "messages": []
+      }
+    ],
+    "current": [
+      {
+        "name": "database overview tab shell summarizes the authored game across world, story, cast, systems, and readiness",
+        "status": "passed",
+        "durationMs": 6262.923043,
+        "messages": []
+      },
+      {
+        "name": "database overview tab shell renders stat chips for all 9 collections with counts from the project data",
+        "status": "passed",
+        "durationMs": 3262.7592919999997,
+        "messages": []
+      },
+      {
+        "name": "database overview tab shell empty project renders chips with 0 counts without crashing",
+        "status": "passed",
+        "durationMs": 3028.777339,
+        "messages": []
+      },
+      {
+        "name": "database overview tab shell default open tab after modal open is the stored last tab, NOT overview unless stored",
+        "status": "passed",
+        "durationMs": 2851.211545,
+        "messages": []
+      },
+      {
+        "name": "database overview tab shell persists across hard reload: stored 'overview' lands on the overview tab",
+        "status": "passed",
+        "durationMs": 2995.0354020000013,
+        "messages": []
+      },
+      {
+        "name": "database overview tab shell setDatabaseActiveTab('overview') + renderDatabasePanel renders the overview tab",
+        "status": "passed",
+        "durationMs": 2864.0189830000018,
+        "messages": []
+      },
+      {
+        "name": "database overview tab shell stat chips are buttons that switch to the matching tab (G006)",
+        "status": "passed",
+        "durationMs": 2305.8241610000005,
+        "messages": []
+      },
+      {
+        "name": "database overview tab shell databaseTabLabel resolves the overview label for the AI footer",
+        "status": "passed",
+        "durationMs": 2505.7259159999994,
+        "messages": []
+      }
+    ],
+    "baselineCurrentFailuresEqual": true,
+    "originalBaselineFailuresEqual": false,
+    "introducedFocusedFailures": {},
+    "originalCollectionSource": "original-25-counts.json"
+  },
+  {
+    "file": "test/databaseRadioCustomGuard.test.ts",
+    "original": [
+      {
+        "name": "database radio custom guard 기준선이 DB radio 커스텀 원 규칙을 가진다",
+        "status": "passed",
+        "durationMs": 10.238236000000143,
+        "messages": []
+      },
+      {
+        "name": "database radio custom guard 기준선 밖의 직접 radio 규칙이 없다",
+        "status": "passed",
+        "durationMs": 331.28650700000003,
+        "messages": []
+      },
+      {
+        "name": "database radio custom guard radio 제외 없는 bare input 결합이 없다",
+        "status": "failed",
+        "durationMs": 442.9423979999997,
+        "messages": [
+          "AssertionError: bare input 결합이 radio 까지 함께 칠한다: expected [ Array(1) ] to deeply equal []"
+        ]
+      },
+      {
+        "name": "database radio custom guard radio 규칙에 하드코딩 색이 없다",
+        "status": "passed",
+        "durationMs": 275.46795199999997,
+        "messages": []
+      }
+    ],
+    "baseline": [
+      {
+        "name": "database radio custom guard 기준선이 DB radio 커스텀 원 규칙을 가진다",
+        "status": "passed",
+        "durationMs": 3.026432,
+        "messages": []
+      },
+      {
+        "name": "database radio custom guard 기준선 밖의 직접 radio 규칙이 없다",
+        "status": "passed",
+        "durationMs": 276.94333199999994,
+        "messages": []
+      },
+      {
+        "name": "database radio custom guard radio 제외 없는 bare input 결합이 없다",
+        "status": "failed",
+        "durationMs": 333.41546200000016,
+        "messages": [
+          "AssertionError: bare input 결합이 radio 까지 함께 칠한다: expected [ Array(1) ] to deeply equal []"
+        ]
+      },
+      {
+        "name": "database radio custom guard radio 규칙에 하드코딩 색이 없다",
+        "status": "passed",
+        "durationMs": 298.73489500000005,
+        "messages": []
+      }
+    ],
+    "current": [
+      {
+        "name": "database radio custom guard 기준선이 DB radio 커스텀 원 규칙을 가진다",
+        "status": "passed",
+        "durationMs": 12.874482,
+        "messages": []
+      },
+      {
+        "name": "database radio custom guard 기준선 밖의 직접 radio 규칙이 없다",
+        "status": "passed",
+        "durationMs": 304.52437100000003,
+        "messages": []
+      },
+      {
+        "name": "database radio custom guard radio 제외 없는 bare input 결합이 없다",
+        "status": "failed",
+        "durationMs": 278.837525,
+        "messages": [
+          "AssertionError: bare input 결합이 radio 까지 함께 칠한다: expected [ Array(1) ] to deeply equal []"
+        ]
+      },
+      {
+        "name": "database radio custom guard radio 규칙에 하드코딩 색이 없다",
+        "status": "passed",
+        "durationMs": 238.49233000000004,
+        "messages": []
+      }
+    ],
+    "baselineCurrentFailuresEqual": true,
+    "originalBaselineFailuresEqual": true,
+    "introducedFocusedFailures": {},
+    "originalCollectionSource": "original-25-counts.json"
+  },
+  {
+    "file": "test/databaseSidebarKeyboard.test.ts",
+    "original": [
+      {
+        "name": "database sidebar keyboard navigation pins Tab focus order: sidebar DOM order = overview entry + TAB_GROUPS order",
+        "status": "failed",
+        "durationMs": 974.3196420000022,
+        "messages": [
+          "AssertionError: expected [ 'db-tab-overview', …(38) ] to deeply equal [ 'db-tab-overview', …(38) ]"
+        ]
+      },
+      {
+        "name": "database sidebar keyboard navigation activates the focused tab through the click handler on Enter (keydown path inert)",
+        "status": "passed",
+        "durationMs": 251.8144500000053,
+        "messages": []
+      },
+      {
+        "name": "database sidebar keyboard navigation activates the focused tab on Space via the click handler, one active tab at a time",
+        "status": "passed",
+        "durationMs": 286.3881959999999,
+        "messages": []
+      },
+      {
+        "name": "database sidebar keyboard navigation keeps every sidebar tab reachable in sequence when walked with Tab-style focus",
+        "status": "failed",
+        "durationMs": 169.0759590000016,
+        "messages": [
+          "AssertionError: expected [ 'db-tab-overview', …(38) ] to deeply equal [ 'db-tab-overview', …(38) ]"
+        ]
+      }
+    ],
+    "baseline": [
+      {
+        "name": "database sidebar keyboard navigation pins Tab focus order: sidebar DOM order = overview entry + TAB_GROUPS order",
+        "status": "failed",
+        "durationMs": 377.1679670000003,
+        "messages": [
+          "AssertionError: expected [ 'db-tab-overview', …(38) ] to deeply equal [ 'db-tab-overview', …(38) ]"
+        ]
+      },
+      {
+        "name": "database sidebar keyboard navigation activates the focused tab through the click handler on Enter (keydown path inert)",
+        "status": "passed",
+        "durationMs": 421.2589450000005,
+        "messages": []
+      },
+      {
+        "name": "database sidebar keyboard navigation activates the focused tab on Space via the click handler, one active tab at a time",
+        "status": "passed",
+        "durationMs": 322.8756709999998,
+        "messages": []
+      },
+      {
+        "name": "database sidebar keyboard navigation keeps every sidebar tab reachable in sequence when walked with Tab-style focus",
+        "status": "failed",
+        "durationMs": 136.47783000000072,
+        "messages": [
+          "AssertionError: expected [ 'db-tab-overview', …(38) ] to deeply equal [ 'db-tab-overview', …(38) ]"
+        ]
+      }
+    ],
+    "current": [
+      {
+        "name": "database sidebar keyboard navigation pins Tab focus order: sidebar DOM order = overview entry + TAB_GROUPS order",
+        "status": "failed",
+        "durationMs": 216.61589400000048,
+        "messages": [
+          "AssertionError: expected [ 'db-tab-overview', …(38) ] to deeply equal [ 'db-tab-overview', …(38) ]"
+        ]
+      },
+      {
+        "name": "database sidebar keyboard navigation activates the focused tab through the click handler on Enter (keydown path inert)",
+        "status": "passed",
+        "durationMs": 174.71878599999945,
+        "messages": []
+      },
+      {
+        "name": "database sidebar keyboard navigation activates the focused tab on Space via the click handler, one active tab at a time",
+        "status": "passed",
+        "durationMs": 229.65623099999993,
+        "messages": []
+      },
+      {
+        "name": "database sidebar keyboard navigation keeps every sidebar tab reachable in sequence when walked with Tab-style focus",
+        "status": "failed",
+        "durationMs": 139.53509600000052,
+        "messages": [
+          "AssertionError: expected [ 'db-tab-overview', …(38) ] to deeply equal [ 'db-tab-overview', …(38) ]"
+        ]
+      }
+    ],
+    "baselineCurrentFailuresEqual": true,
+    "originalBaselineFailuresEqual": true,
+    "introducedFocusedFailures": {},
+    "originalCollectionSource": "original-25-counts.json"
+  },
+  {
+    "file": "test/databaseSidebarNav.test.ts",
+    "original": [
+      {
+        "name": "database sidebar navigation renders the nav as a .db-tabs sidebar with honest group headers in order",
+        "status": "passed",
+        "durationMs": 337.65146699998877,
+        "messages": []
+      },
+      {
+        "name": "database sidebar navigation keeps all registered tab testids, including the unified inventory catalog",
+        "status": "failed",
+        "durationMs": 397.9217059999937,
+        "messages": [
+          "AssertionError: expected 39 to be 37 // Object.is equality"
+        ]
+      },
+      {
+        "name": "database sidebar navigation uses domain-specific labels for monster, farming, and resident authoring",
+        "status": "passed",
+        "durationMs": 491.90723899999284,
+        "messages": []
+      },
+      {
+        "name": "database sidebar navigation counts only authored keyword rules, not builtin override rows",
+        "status": "passed",
+        "durationMs": 354.2225369999942,
+        "messages": []
+      },
+      {
+        "name": "database sidebar navigation shows the aggregate life-record count and opens its structured workspace",
+        "status": "passed",
+        "durationMs": 536.2102749999904,
+        "messages": []
+      },
+      {
+        "name": "database sidebar navigation toggles .active on the clicked tab and clears the previous one",
+        "status": "passed",
+        "durationMs": 244.02458599999954,
+        "messages": []
+      },
+      {
+        "name": "database sidebar navigation persists the clicked tab to localStorage under the unchanged key",
+        "status": "passed",
+        "durationMs": 289.6450509999995,
+        "messages": []
+      }
+    ],
+    "baseline": [
+      {
+        "name": "database sidebar navigation renders the nav as a .db-tabs sidebar with honest group headers in order",
+        "status": "passed",
+        "durationMs": 218.79928800000016,
+        "messages": []
+      },
+      {
+        "name": "database sidebar navigation keeps all registered tab testids, including the unified inventory catalog",
+        "status": "failed",
+        "durationMs": 245.75463799999943,
+        "messages": [
+          "AssertionError: expected 39 to be 37 // Object.is equality"
+        ]
+      },
+      {
+        "name": "database sidebar navigation uses domain-specific labels for monster, farming, and resident authoring",
+        "status": "passed",
+        "durationMs": 160.24874499999987,
+        "messages": []
+      },
+      {
+        "name": "database sidebar navigation counts only authored keyword rules, not builtin override rows",
+        "status": "passed",
+        "durationMs": 224.0553549999995,
+        "messages": []
+      },
+      {
+        "name": "database sidebar navigation shows the aggregate life-record count and opens its structured workspace",
+        "status": "passed",
+        "durationMs": 227.39829299999928,
+        "messages": []
+      },
+      {
+        "name": "database sidebar navigation toggles .active on the clicked tab and clears the previous one",
+        "status": "passed",
+        "durationMs": 145.37208199999986,
+        "messages": []
+      },
+      {
+        "name": "database sidebar navigation persists the clicked tab to localStorage under the unchanged key",
+        "status": "passed",
+        "durationMs": 117.88645199999974,
+        "messages": []
+      }
+    ],
+    "current": [
+      {
+        "name": "database sidebar navigation renders the nav as a .db-tabs sidebar with honest group headers in order",
+        "status": "passed",
+        "durationMs": 321.05623900000046,
+        "messages": []
+      },
+      {
+        "name": "database sidebar navigation keeps all registered tab testids, including the unified inventory catalog",
+        "status": "failed",
+        "durationMs": 154.8282589999999,
+        "messages": [
+          "AssertionError: expected 39 to be 37 // Object.is equality"
+        ]
+      },
+      {
+        "name": "database sidebar navigation uses domain-specific labels for monster, farming, and resident authoring",
+        "status": "passed",
+        "durationMs": 185.17104899999958,
+        "messages": []
+      },
+      {
+        "name": "database sidebar navigation counts only authored keyword rules, not builtin override rows",
+        "status": "passed",
+        "durationMs": 274.6645099999996,
+        "messages": []
+      },
+      {
+        "name": "database sidebar navigation shows the aggregate life-record count and opens its structured workspace",
+        "status": "passed",
+        "durationMs": 269.3695910000006,
+        "messages": []
+      },
+      {
+        "name": "database sidebar navigation toggles .active on the clicked tab and clears the previous one",
+        "status": "passed",
+        "durationMs": 159.84801100000004,
+        "messages": []
+      },
+      {
+        "name": "database sidebar navigation persists the clicked tab to localStorage under the unchanged key",
+        "status": "passed",
+        "durationMs": 137.33774099999937,
+        "messages": []
+      }
+    ],
+    "baselineCurrentFailuresEqual": true,
+    "originalBaselineFailuresEqual": true,
+    "introducedFocusedFailures": {},
+    "originalCollectionSource": "original-25-counts.json"
+  },
+  {
+    "file": "test/databaseTabIcons.test.ts",
+    "original": [
+      {
+        "name": "database tab icons covers every rail tab, overview included",
+        "status": "failed",
+        "durationMs": 629.8970039999986,
+        "messages": [
+          "AssertionError: expected 39 to be 38 // Object.is equality"
+        ]
+      },
+      {
+        "name": "database tab icons builds each icon to the house SVG spec with drawable children",
+        "status": "passed",
+        "durationMs": 668.4248369999987,
+        "messages": []
+      },
+      {
+        "name": "database tab icons hardcodes no colors — stroke follows currentColor so themes and the collapsed rail work",
+        "status": "passed",
+        "durationMs": 208.21891999999934,
+        "messages": []
+      },
+      {
+        "name": "database tab icons uses no emoji or pictographic glyphs",
+        "status": "passed",
+        "durationMs": 306.43718799999624,
+        "messages": []
+      },
+      {
+        "name": "database tab icons keeps icon ownership out of CSS — no content glyphs, no data-short fallback",
+        "status": "passed",
+        "durationMs": 276.2510259999981,
+        "messages": []
+      },
+      {
+        "name": "database tab icons renders the icon as the first child while the label owns textContent",
+        "status": "failed",
+        "durationMs": 188.8440089999931,
+        "messages": [
+          "AssertionError: expected 39 to be 38 // Object.is equality"
+        ]
+      }
+    ],
+    "baseline": [
+      {
+        "name": "database tab icons covers every rail tab, overview included",
+        "status": "failed",
+        "durationMs": 259.4821689999999,
+        "messages": [
+          "AssertionError: expected 39 to be 38 // Object.is equality"
+        ]
+      },
+      {
+        "name": "database tab icons builds each icon to the house SVG spec with drawable children",
+        "status": "passed",
+        "durationMs": 509.93138400000043,
+        "messages": []
+      },
+      {
+        "name": "database tab icons hardcodes no colors — stroke follows currentColor so themes and the collapsed rail work",
+        "status": "passed",
+        "durationMs": 345.65898600000037,
+        "messages": []
+      },
+      {
+        "name": "database tab icons uses no emoji or pictographic glyphs",
+        "status": "passed",
+        "durationMs": 321.5950750000002,
+        "messages": []
+      },
+      {
+        "name": "database tab icons keeps icon ownership out of CSS — no content glyphs, no data-short fallback",
+        "status": "passed",
+        "durationMs": 207.85160600000017,
+        "messages": []
+      },
+      {
+        "name": "database tab icons renders the icon as the first child while the label owns textContent",
+        "status": "failed",
+        "durationMs": 203.31337499999972,
+        "messages": [
+          "AssertionError: expected 39 to be 38 // Object.is equality"
+        ]
+      }
+    ],
+    "current": [
+      {
+        "name": "database tab icons covers every rail tab, overview included",
+        "status": "failed",
+        "durationMs": 152.72177499999998,
+        "messages": [
+          "AssertionError: expected 39 to be 38 // Object.is equality"
+        ]
+      },
+      {
+        "name": "database tab icons builds each icon to the house SVG spec with drawable children",
+        "status": "passed",
+        "durationMs": 229.57138699999996,
+        "messages": []
+      },
+      {
+        "name": "database tab icons hardcodes no colors — stroke follows currentColor so themes and the collapsed rail work",
+        "status": "passed",
+        "durationMs": 130.4972600000001,
+        "messages": []
+      },
+      {
+        "name": "database tab icons uses no emoji or pictographic glyphs",
+        "status": "passed",
+        "durationMs": 168.9488369999999,
+        "messages": []
+      },
+      {
+        "name": "database tab icons keeps icon ownership out of CSS — no content glyphs, no data-short fallback",
+        "status": "passed",
+        "durationMs": 221.78915000000052,
+        "messages": []
+      },
+      {
+        "name": "database tab icons renders the icon as the first child while the label owns textContent",
+        "status": "failed",
+        "durationMs": 144.13736900000004,
+        "messages": [
+          "AssertionError: expected 39 to be 38 // Object.is equality"
+        ]
+      }
+    ],
+    "baselineCurrentFailuresEqual": true,
+    "originalBaselineFailuresEqual": true,
+    "introducedFocusedFailures": {},
+    "originalCollectionSource": "original-25-counts.json"
+  },
+  {
+    "file": "test/debugSession.test.ts",
+    "original": [
+      {
+        "name": "debugSession — 런타임 디버그 조작 applyDebugOp가 스위치/변수/아이템/골드/텔레포트를 반영한다",
+        "status": "failed",
+        "durationMs": 15012.780637,
+        "messages": [
+          "Error: STACK_TRACE_ERROR"
+        ]
+      },
+      {
+        "name": "debugSession — 런타임 디버그 조작 applyStatePreset가 지정 키만 부분 적용한다",
+        "status": "passed",
+        "durationMs": 12188.214252000002,
+        "messages": []
+      },
+      {
+        "name": "debugSession — 런타임 디버그 조작 testHerePreset가 시작 좌표 오버라이드 프리셋을 만든다",
+        "status": "passed",
+        "durationMs": 170.93135399999665,
+        "messages": []
+      },
+      {
+        "name": "debugSession — 런타임 디버그 조작 PlayScene 테스트 훅은 세션 교체 후 라이브 세션을 읽고 쓴다",
+        "status": "passed",
+        "durationMs": 131.14359599999807,
+        "messages": []
+      }
+    ],
+    "baseline": [
+      {
+        "name": "debugSession — 런타임 디버그 조작 applyDebugOp가 스위치/변수/아이템/골드/텔레포트를 반영한다",
+        "status": "passed",
+        "durationMs": 4287.680101,
+        "messages": []
+      },
+      {
+        "name": "debugSession — 런타임 디버그 조작 applyStatePreset가 지정 키만 부분 적용한다",
+        "status": "passed",
+        "durationMs": 404.3516559999998,
+        "messages": []
+      },
+      {
+        "name": "debugSession — 런타임 디버그 조작 testHerePreset가 시작 좌표 오버라이드 프리셋을 만든다",
+        "status": "passed",
+        "durationMs": 284.39617799999996,
+        "messages": []
+      },
+      {
+        "name": "debugSession — 런타임 디버그 조작 PlayScene 테스트 훅은 세션 교체 후 라이브 세션을 읽고 쓴다",
+        "status": "passed",
+        "durationMs": 136.5884560000004,
+        "messages": []
+      }
+    ],
+    "current": [
+      {
+        "name": "debugSession — 런타임 디버그 조작 applyDebugOp가 스위치/변수/아이템/골드/텔레포트를 반영한다",
+        "status": "passed",
+        "durationMs": 1577.156602,
+        "messages": []
+      },
+      {
+        "name": "debugSession — 런타임 디버그 조작 applyStatePreset가 지정 키만 부분 적용한다",
+        "status": "passed",
+        "durationMs": 147.92303800000036,
+        "messages": []
+      },
+      {
+        "name": "debugSession — 런타임 디버그 조작 testHerePreset가 시작 좌표 오버라이드 프리셋을 만든다",
+        "status": "passed",
+        "durationMs": 185.29400299999998,
+        "messages": []
+      },
+      {
+        "name": "debugSession — 런타임 디버그 조작 PlayScene 테스트 훅은 세션 교체 후 라이브 세션을 읽고 쓴다",
+        "status": "passed",
+        "durationMs": 152.51628000000028,
+        "messages": []
+      }
+    ],
+    "baselineCurrentFailuresEqual": true,
+    "originalBaselineFailuresEqual": false,
+    "introducedFocusedFailures": {},
+    "originalCollectionSource": "original-25-counts.json"
+  },
+  {
+    "file": "test/editorProjectE2EBridge.test.ts",
+    "original": [
+      {
+        "name": "mounted project E2E bridge installs exactly four frozen methods and returns detached recursively frozen snapshots",
+        "status": "passed",
+        "durationMs": 20427.021258,
+        "messages": []
+      },
+      {
+        "name": "mounted project E2E bridge denies missing/wrong capability before invoking either remote store method",
+        "status": "passed",
+        "durationMs": 14194.634243,
+        "messages": []
+      },
+      {
+        "name": "mounted project E2E bridge maps authorized initialization and reload to the mounted singleton with exact proof",
+        "status": "failed",
+        "durationMs": 15026.646701999998,
+        "messages": [
+          "Error: STACK_TRACE_ERROR"
+        ]
+      },
+      {
+        "name": "mounted project E2E bridge cleanup removes only the bridge and remount consumes no stale capability",
+        "status": "passed",
+        "durationMs": 11524.168337999996,
+        "messages": []
+      },
+      {
+        "name": "mounted project E2E bridge does not install without WebDriver",
+        "status": "passed",
+        "durationMs": 13374.383212999994,
+        "messages": []
+      }
+    ],
+    "baseline": [
+      {
+        "name": "mounted project E2E bridge installs exactly four frozen methods and returns detached recursively frozen snapshots",
+        "status": "passed",
+        "durationMs": 5228.731868,
+        "messages": []
+      },
+      {
+        "name": "mounted project E2E bridge denies missing/wrong capability before invoking either remote store method",
+        "status": "passed",
+        "durationMs": 3304.1797349999997,
+        "messages": []
+      },
+      {
+        "name": "mounted project E2E bridge maps authorized initialization and reload to the mounted singleton with exact proof",
+        "status": "passed",
+        "durationMs": 7204.732025000001,
+        "messages": []
+      },
+      {
+        "name": "mounted project E2E bridge cleanup removes only the bridge and remount consumes no stale capability",
+        "status": "passed",
+        "durationMs": 2673.8729789999998,
+        "messages": []
+      },
+      {
+        "name": "mounted project E2E bridge does not install without WebDriver",
+        "status": "passed",
+        "durationMs": 5966.565386000002,
+        "messages": []
+      }
+    ],
+    "current": [
+      {
+        "name": "mounted project E2E bridge installs exactly four frozen methods and returns detached recursively frozen snapshots",
+        "status": "passed",
+        "durationMs": 3038.9498759999997,
+        "messages": []
+      },
+      {
+        "name": "mounted project E2E bridge denies missing/wrong capability before invoking either remote store method",
+        "status": "passed",
+        "durationMs": 1668.707074,
+        "messages": []
+      },
+      {
+        "name": "mounted project E2E bridge maps authorized initialization and reload to the mounted singleton with exact proof",
+        "status": "passed",
+        "durationMs": 2827.0095520000004,
+        "messages": []
+      },
+      {
+        "name": "mounted project E2E bridge cleanup removes only the bridge and remount consumes no stale capability",
+        "status": "passed",
+        "durationMs": 2046.4543949999988,
+        "messages": []
+      },
+      {
+        "name": "mounted project E2E bridge does not install without WebDriver",
+        "status": "passed",
+        "durationMs": 1358.2596620000004,
+        "messages": []
+      }
+    ],
+    "baselineCurrentFailuresEqual": true,
+    "originalBaselineFailuresEqual": false,
+    "introducedFocusedFailures": {},
+    "originalCollectionSource": "original-25-counts.json"
+  },
+  {
+    "file": "test/eventEditorM2Surface.baseline.test.ts",
+    "original": [
+      {
+        "name": "M2 명령 폼 표면 스냅샷 카탈로그 전량이 예외 없이 렌더된다",
+        "status": "passed",
+        "durationMs": 3.3714360000012675,
+        "messages": []
+      },
+      {
+        "name": "M2 명령 폼 표면 스냅샷 스냅샷 = 카탈로그 전량 − 빈 껍데기 별칭",
+        "status": "passed",
+        "durationMs": 1.1988520000013523,
+        "messages": []
+      },
+      {
+        "name": "M2 명령 폼 표면 스냅샷 빈 껍데기 제외 목록이 정본과 정확히 일치한다",
+        "status": "passed",
+        "durationMs": 0.4282180000009248,
+        "messages": []
+      },
+      {
+        "name": "M2 명령 폼 표면 스냅샷 existing 이면서 전용 폼을 갖는 항목은 반드시 스냅샷에 있다",
+        "status": "passed",
+        "durationMs": 0.48875900000712136,
+        "messages": []
+      },
+      {
+        "name": "M2 명령 폼 표면 스냅샷 카탈로그 규모가 고정 수치와 일치한다",
+        "status": "passed",
+        "durationMs": 0.6333229999945615,
+        "messages": []
+      },
+      {
+        "name": "M2 명령 폼 표면 스냅샷 별칭 → kind 대응이 정본과 정확히 일치한다",
+        "status": "passed",
+        "durationMs": 1.6316010000009555,
+        "messages": []
+      },
+      {
+        "name": "M2 명령 폼 표면 스냅샷 모든 별칭의 existingKind 가 COMMAND_KINDS 에 실재한다",
+        "status": "passed",
+        "durationMs": 0.7489639999985229,
+        "messages": []
+      },
+      {
+        "name": "M2 명령 폼 표면 스냅샷 모든 별칭 대상 kind 가 실제로 렌더되는 폼을 갖는다",
+        "status": "passed",
+        "durationMs": 5926.572413000002,
+        "messages": []
+      },
+      {
+        "name": "M2 명령 폼 표면 스냅샷 필드가 있는 M2 항목은 반드시 컨트롤을 낸다 (control 0 ⟹ fields 0)",
+        "status": "passed",
+        "durationMs": 1.0010499999989406,
+        "messages": []
+      },
+      {
+        "name": "M2 명령 폼 표면 스냅샷 필드가 없는데 컨트롤을 내는 항목은 손수 작성 폼 목록과 정확히 같다 (fields 0 ⟹ control 0)",
+        "status": "passed",
+        "durationMs": 0.5035889999999199,
+        "messages": []
+      },
+      {
+        "name": "M2 명령 폼 표면 스냅샷 기준선과 일치한다",
+        "status": "failed",
+        "durationMs": 28.470948999995016,
+        "messages": [
+          "AssertionError: [M2(commandId)] 표면이 기준선과 다르다 (2건)\n  m2-025-change-actor-faceset: testid 신규 2종 [change-actor-faceset-ai-queue, change-actor-faceset-ai-queue-list] | 태그 개수 [div 132→134, p 3→4] | 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list]\n  m2-069-change-parallax-back: testid 신규 2종 [change-parallax-back-ai-queue, change-parallax-back-ai-queue-list] | 태그 개수 [div 15→17, p 4→5] | 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list]: expected [ …(2) ] to deeply equal []"
+        ]
+      }
+    ],
+    "baseline": [
+      {
+        "name": "M2 명령 폼 표면 스냅샷 카탈로그 전량이 예외 없이 렌더된다",
+        "status": "passed",
+        "durationMs": 7.226227999999537,
+        "messages": []
+      },
+      {
+        "name": "M2 명령 폼 표면 스냅샷 스냅샷 = 카탈로그 전량 − 빈 껍데기 별칭",
+        "status": "passed",
+        "durationMs": 1.2858959999939543,
+        "messages": []
+      },
+      {
+        "name": "M2 명령 폼 표면 스냅샷 빈 껍데기 제외 목록이 정본과 정확히 일치한다",
+        "status": "passed",
+        "durationMs": 0.36144700000295416,
+        "messages": []
+      },
+      {
+        "name": "M2 명령 폼 표면 스냅샷 existing 이면서 전용 폼을 갖는 항목은 반드시 스냅샷에 있다",
+        "status": "passed",
+        "durationMs": 0.3931979999979376,
+        "messages": []
+      },
+      {
+        "name": "M2 명령 폼 표면 스냅샷 카탈로그 규모가 고정 수치와 일치한다",
+        "status": "passed",
+        "durationMs": 0.5890230000004522,
+        "messages": []
+      },
+      {
+        "name": "M2 명령 폼 표면 스냅샷 별칭 → kind 대응이 정본과 정확히 일치한다",
+        "status": "passed",
+        "durationMs": 4.171584999996412,
+        "messages": []
+      },
+      {
+        "name": "M2 명령 폼 표면 스냅샷 모든 별칭의 existingKind 가 COMMAND_KINDS 에 실재한다",
+        "status": "passed",
+        "durationMs": 0.5262409999995725,
+        "messages": []
+      },
+      {
+        "name": "M2 명령 폼 표면 스냅샷 모든 별칭 대상 kind 가 실제로 렌더되는 폼을 갖는다",
+        "status": "passed",
+        "durationMs": 6641.784897999998,
+        "messages": []
+      },
+      {
+        "name": "M2 명령 폼 표면 스냅샷 필드가 있는 M2 항목은 반드시 컨트롤을 낸다 (control 0 ⟹ fields 0)",
+        "status": "passed",
+        "durationMs": 0.7763760000016191,
+        "messages": []
+      },
+      {
+        "name": "M2 명령 폼 표면 스냅샷 필드가 없는데 컨트롤을 내는 항목은 손수 작성 폼 목록과 정확히 같다 (fields 0 ⟹ control 0)",
+        "status": "passed",
+        "durationMs": 0.3945380000004661,
+        "messages": []
+      },
+      {
+        "name": "M2 명령 폼 표면 스냅샷 기준선과 일치한다",
+        "status": "failed",
+        "durationMs": 43.40825600000244,
+        "messages": [
+          "AssertionError: [M2(commandId)] 표면이 기준선과 다르다 (2건)\n  m2-025-change-actor-faceset: testid 신규 2종 [change-actor-faceset-ai-queue, change-actor-faceset-ai-queue-list] | 태그 개수 [div 132→134, p 3→4] | 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list]\n  m2-069-change-parallax-back: testid 신규 2종 [change-parallax-back-ai-queue, change-parallax-back-ai-queue-list] | 태그 개수 [div 15→17, p 4→5] | 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list]: expected [ …(2) ] to deeply equal []"
+        ]
+      }
+    ],
+    "current": [
+      {
+        "name": "M2 명령 폼 표면 스냅샷 카탈로그 전량이 예외 없이 렌더된다",
+        "status": "passed",
+        "durationMs": 4.05764199999976,
+        "messages": []
+      },
+      {
+        "name": "M2 명령 폼 표면 스냅샷 스냅샷 = 카탈로그 전량 − 빈 껍데기 별칭",
+        "status": "passed",
+        "durationMs": 1.7974269999976968,
+        "messages": []
+      },
+      {
+        "name": "M2 명령 폼 표면 스냅샷 빈 껍데기 제외 목록이 정본과 정확히 일치한다",
+        "status": "passed",
+        "durationMs": 0.3539570000029926,
+        "messages": []
+      },
+      {
+        "name": "M2 명령 폼 표면 스냅샷 existing 이면서 전용 폼을 갖는 항목은 반드시 스냅샷에 있다",
+        "status": "passed",
+        "durationMs": 0.4490989999976591,
+        "messages": []
+      },
+      {
+        "name": "M2 명령 폼 표면 스냅샷 카탈로그 규모가 고정 수치와 일치한다",
+        "status": "passed",
+        "durationMs": 0.5735719999975117,
+        "messages": []
+      },
+      {
+        "name": "M2 명령 폼 표면 스냅샷 별칭 → kind 대응이 정본과 정확히 일치한다",
+        "status": "passed",
+        "durationMs": 0.5460409999977855,
+        "messages": []
+      },
+      {
+        "name": "M2 명령 폼 표면 스냅샷 모든 별칭의 existingKind 가 COMMAND_KINDS 에 실재한다",
+        "status": "passed",
+        "durationMs": 0.3178970000008121,
+        "messages": []
+      },
+      {
+        "name": "M2 명령 폼 표면 스냅샷 모든 별칭 대상 kind 가 실제로 렌더되는 폼을 갖는다",
+        "status": "passed",
+        "durationMs": 5436.3741679999985,
+        "messages": []
+      },
+      {
+        "name": "M2 명령 폼 표면 스냅샷 필드가 있는 M2 항목은 반드시 컨트롤을 낸다 (control 0 ⟹ fields 0)",
+        "status": "passed",
+        "durationMs": 0.5304309999992256,
+        "messages": []
+      },
+      {
+        "name": "M2 명령 폼 표면 스냅샷 필드가 없는데 컨트롤을 내는 항목은 손수 작성 폼 목록과 정확히 같다 (fields 0 ⟹ control 0)",
+        "status": "passed",
+        "durationMs": 0.47544900000139023,
+        "messages": []
+      },
+      {
+        "name": "M2 명령 폼 표면 스냅샷 기준선과 일치한다",
+        "status": "failed",
+        "durationMs": 29.239928999999393,
+        "messages": [
+          "AssertionError: [M2(commandId)] 표면이 기준선과 다르다 (2건)\n  m2-025-change-actor-faceset: testid 신규 2종 [change-actor-faceset-ai-queue, change-actor-faceset-ai-queue-list] | 태그 개수 [div 132→134, p 3→4] | 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list]\n  m2-069-change-parallax-back: testid 신규 2종 [change-parallax-back-ai-queue, change-parallax-back-ai-queue-list] | 태그 개수 [div 15→17, p 4→5] | 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list]: expected [ …(2) ] to deeply equal []"
+        ]
+      }
+    ],
+    "baselineCurrentFailuresEqual": true,
+    "originalBaselineFailuresEqual": true,
+    "introducedFocusedFailures": {},
+    "originalCollectionSource": "original-25-counts.json"
+  },
+  {
+    "file": "test/eventEditorPortalSurface.baseline.test.ts",
+    "original": [
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 모든 포털이 예외 없이 열린다",
+        "status": "passed",
+        "durationMs": 3.1473900000019057,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 항목 집합이 포털 정의와 일치한다",
+        "status": "passed",
+        "durationMs": 3.8720050000010815,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 모든 포털이 body 에 실제로 무언가를 렌더한다 (testid ≥ 1, root ≥ 1)",
+        "status": "passed",
+        "durationMs": 0.5520109999997658,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 의도적으로 제외한 포털 수가 고정 수치와 같다",
+        "status": "passed",
+        "durationMs": 0.6359819999997853,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 즐겨찾기·최근 상태에 쓰는 고정 commandId 가 픽커에 실재한다",
+        "status": "passed",
+        "durationMs": 6.375901999999769,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 즐겨찾기 상태가 실제로 즐겨찾기 섹션을 렌더한다",
+        "status": "passed",
+        "durationMs": 1.9188569999969332,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 검색 상태가 검색 결과 표면을 렌더한다",
+        "status": "passed",
+        "durationMs": 0.6548929999989923,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 검색 결과에만 나오는 정보 행(선택 불가) 표면이 축에 잡힌다",
+        "status": "passed",
+        "durationMs": 3.5085980000003474,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 레코드 피커의 맵 스코프 섹션 헤딩이 축에 잡힌다",
+        "status": "passed",
+        "durationMs": 0.5210600000027625,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 이 축이 두 사각 CSS 시트의 클래스를 렌더로 증명한다",
+        "status": "passed",
+        "durationMs": 6.171899000000849,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 수확 순서를 뒤집어도 결과가 같다 (document.body / localStorage 정리 누수 없음)",
+        "status": "passed",
+        "durationMs": 2473.487599,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 래퍼 div 를 더 씌워도 컨트롤 stableKey 가 변하지 않는다",
+        "status": "passed",
+        "durationMs": 8.348270999998931,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 diff 가 합성 변이 4종을 모두 보고한다",
+        "status": "passed",
+        "durationMs": 9.615356000002066,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 변이가 없으면 diff 는 조용하다",
+        "status": "passed",
+        "durationMs": 3.279623000002175,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 기준선과 일치한다",
+        "status": "failed",
+        "durationMs": 51.28093699999954,
+        "messages": [
+          "AssertionError: [포털(피커/모달)] 표면이 기준선과 다르다 (2건)\n  commandPickerTab3: 태그 circle 18→16, div 60→59, path 102→101, span 125→124, svg 101→100\n  npcGraphic: testid 신규 5종: npc-charset-label-input, npc-charset-tags-input, npc-charset-teach, npc-charset-teach-save, npc-charset-teach-status | 클래스 신규 3종: npc-charset-teach, npc-charset-teach-heading, npc-charset-teach-status | 컨트롤 신규 3개: npc-charset-label-input, npc-charset-tags-input, npc-charset-teach-save | 라벨 소실 1종: 캐릭터 슬롯 # | 태그 button 32→33, div 15→16, input 8→10, p 0→2 | testidCount 46→51 | controlCount 40→43 | classCount 34→37: expected [ …(2) ] to deeply equal []"
+        ]
+      }
+    ],
+    "baseline": [
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 모든 포털이 예외 없이 열린다",
+        "status": "passed",
+        "durationMs": 3.311177999999927,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 항목 집합이 포털 정의와 일치한다",
+        "status": "passed",
+        "durationMs": 0.9137799999989511,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 모든 포털이 body 에 실제로 무언가를 렌더한다 (testid ≥ 1, root ≥ 1)",
+        "status": "passed",
+        "durationMs": 0.3935480000000098,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 의도적으로 제외한 포털 수가 고정 수치와 같다",
+        "status": "passed",
+        "durationMs": 0.722314999999071,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 즐겨찾기·최근 상태에 쓰는 고정 commandId 가 픽커에 실재한다",
+        "status": "passed",
+        "durationMs": 1.496091000000888,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 즐겨찾기 상태가 실제로 즐겨찾기 섹션을 렌더한다",
+        "status": "passed",
+        "durationMs": 2.3714580000014394,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 검색 상태가 검색 결과 표면을 렌더한다",
+        "status": "passed",
+        "durationMs": 0.6297740000009071,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 검색 결과에만 나오는 정보 행(선택 불가) 표면이 축에 잡힌다",
+        "status": "passed",
+        "durationMs": 4.374109000000317,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 레코드 피커의 맵 스코프 섹션 헤딩이 축에 잡힌다",
+        "status": "passed",
+        "durationMs": 0.8917689999980212,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 이 축이 두 사각 CSS 시트의 클래스를 렌더로 증명한다",
+        "status": "passed",
+        "durationMs": 7.067294000000402,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 수확 순서를 뒤집어도 결과가 같다 (document.body / localStorage 정리 누수 없음)",
+        "status": "passed",
+        "durationMs": 2953.530107999999,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 래퍼 div 를 더 씌워도 컨트롤 stableKey 가 변하지 않는다",
+        "status": "passed",
+        "durationMs": 2.889509000000544,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 diff 가 합성 변이 4종을 모두 보고한다",
+        "status": "passed",
+        "durationMs": 3.1407340000005206,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 변이가 없으면 diff 는 조용하다",
+        "status": "passed",
+        "durationMs": 5.792837999993935,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 기준선과 일치한다",
+        "status": "failed",
+        "durationMs": 26.558222999999998,
+        "messages": [
+          "AssertionError: [포털(피커/모달)] 표면이 기준선과 다르다 (2건)\n  commandPickerTab3: 태그 circle 18→16, div 60→59, path 102→101, span 125→124, svg 101→100\n  npcGraphic: testid 신규 5종: npc-charset-label-input, npc-charset-tags-input, npc-charset-teach, npc-charset-teach-save, npc-charset-teach-status | 클래스 신규 3종: npc-charset-teach, npc-charset-teach-heading, npc-charset-teach-status | 컨트롤 신규 3개: npc-charset-label-input, npc-charset-tags-input, npc-charset-teach-save | 라벨 소실 1종: 캐릭터 슬롯 # | 태그 button 32→33, div 15→16, input 8→10, p 0→2 | testidCount 46→51 | controlCount 40→43 | classCount 34→37: expected [ …(2) ] to deeply equal []"
+        ]
+      }
+    ],
+    "current": [
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 모든 포털이 예외 없이 열린다",
+        "status": "passed",
+        "durationMs": 4.208105999998224,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 항목 집합이 포털 정의와 일치한다",
+        "status": "passed",
+        "durationMs": 0.6040429999993648,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 모든 포털이 body 에 실제로 무언가를 렌더한다 (testid ≥ 1, root ≥ 1)",
+        "status": "passed",
+        "durationMs": 0.5418820000013511,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 의도적으로 제외한 포털 수가 고정 수치와 같다",
+        "status": "passed",
+        "durationMs": 1.0181200000006356,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 즐겨찾기·최근 상태에 쓰는 고정 commandId 가 픽커에 실재한다",
+        "status": "passed",
+        "durationMs": 1.2878960000016377,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 즐겨찾기 상태가 실제로 즐겨찾기 섹션을 렌더한다",
+        "status": "passed",
+        "durationMs": 2.4884410000013304,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 검색 상태가 검색 결과 표면을 렌더한다",
+        "status": "passed",
+        "durationMs": 0.7142149999999674,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 검색 결과에만 나오는 정보 행(선택 불가) 표면이 축에 잡힌다",
+        "status": "passed",
+        "durationMs": 0.3718169999992824,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 레코드 피커의 맵 스코프 섹션 헤딩이 축에 잡힌다",
+        "status": "passed",
+        "durationMs": 0.464099000000715,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 이 축이 두 사각 CSS 시트의 클래스를 렌더로 증명한다",
+        "status": "passed",
+        "durationMs": 1.5106400000004214,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 수확 순서를 뒤집어도 결과가 같다 (document.body / localStorage 정리 누수 없음)",
+        "status": "passed",
+        "durationMs": 2296.9962209999976,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 래퍼 div 를 더 씌워도 컨트롤 stableKey 가 변하지 않는다",
+        "status": "passed",
+        "durationMs": 10.26321100000132,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 diff 가 합성 변이 4종을 모두 보고한다",
+        "status": "passed",
+        "durationMs": 6.276139000001422,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 변이가 없으면 diff 는 조용하다",
+        "status": "passed",
+        "durationMs": 10.645737999999255,
+        "messages": []
+      },
+      {
+        "name": "포털(피커/모달) 표면 스냅샷 기준선과 일치한다",
+        "status": "failed",
+        "durationMs": 39.5886900000005,
+        "messages": [
+          "AssertionError: [포털(피커/모달)] 표면이 기준선과 다르다 (2건)\n  commandPickerTab3: 태그 circle 18→16, div 60→59, path 102→101, span 125→124, svg 101→100\n  npcGraphic: testid 신규 5종: npc-charset-label-input, npc-charset-tags-input, npc-charset-teach, npc-charset-teach-save, npc-charset-teach-status | 클래스 신규 3종: npc-charset-teach, npc-charset-teach-heading, npc-charset-teach-status | 컨트롤 신규 3개: npc-charset-label-input, npc-charset-tags-input, npc-charset-teach-save | 라벨 소실 1종: 캐릭터 슬롯 # | 태그 button 32→33, div 15→16, input 8→10, p 0→2 | testidCount 46→51 | controlCount 40→43 | classCount 34→37: expected [ …(2) ] to deeply equal []"
+        ]
+      }
+    ],
+    "baselineCurrentFailuresEqual": true,
+    "originalBaselineFailuresEqual": true,
+    "introducedFocusedFailures": {},
+    "originalCollectionSource": "original-25-counts.json"
+  },
+  {
+    "file": "test/forestDensity.test.ts",
+    "original": [
+      {
+        "name": "forest density is structured-only 사용자 문장이 아니라 enum 인자만 읽는다",
+        "status": "passed",
+        "durationMs": 6.328611000004457,
+        "messages": []
+      },
+      {
+        "name": "forest density is structured-only 기본값은 dense — 도구 인자를 생략한 군락 시공의 fallback",
+        "status": "passed",
+        "durationMs": 4.238656000001356,
+        "messages": []
+      },
+      {
+        "name": "forest density is structured-only 수종은 해석된 그룹 id·정확 라벨로만 가른다",
+        "status": "passed",
+        "durationMs": 0.629229000012856,
+        "messages": []
+      },
+      {
+        "name": "forestPlacementPlan 옛 캡(면적/28, 최대 10그루)을 넘어 면적에 비례해 그루 수를 낸다",
+        "status": "passed",
+        "durationMs": 0.684529999998631,
+        "messages": []
+      },
+      {
+        "name": "forestPlacementPlan dense·impassable 은 선형 packer(packing dense)로, 낮은 밀도는 자연 산포로 나간다",
+        "status": "passed",
+        "durationMs": 0.5055480000009993,
+        "messages": []
+      },
+      {
+        "name": "forestPlacementPlan share 로 침엽수·활엽수 패스가 커버리지를 나눠 갖는다",
+        "status": "passed",
+        "durationMs": 0.43136699999740813,
+        "messages": []
+      },
+      {
+        "name": "outside-enterable forest cells 바깥 한 겹이 solid 덤불로 닫힌 4×4 영역은 진입 가능한 칸이 0이다",
+        "status": "passed",
+        "durationMs": 599.0411450000101,
+        "messages": []
+      },
+      {
+        "name": "plant_tree_clusters 기본(dense)이 선언한 커버리지에 닿고 그 지대를 실제로 막는다",
+        "status": "failed",
+        "durationMs": 2490.3147099999915,
+        "messages": [
+          "AssertionError: 영역의 30% 가 아직 걸어서 통과된다: expected 0.3003472222222222 to be less than 0.3"
+        ]
+      },
+      {
+        "name": "plant_tree_clusters 기본(dense)의 빈틈은 등간격 격자가 아니라 seeded 청색잡음으로 흩어진다",
+        "status": "passed",
+        "durationMs": 1282.1795170000114,
+        "messages": []
+      },
+      {
+        "name": "plant_tree_clusters 기본(dense)이 100×100 에서도 선형 시간에 끝난다",
+        "status": "passed",
+        "durationMs": 503.7428130000044,
+        "messages": []
+      },
+      {
+        "name": "plant_tree_clusters impassable 은 영역을 실제로 지나갈 수 없게 만든다",
+        "status": "passed",
+        "durationMs": 379.6103620000067,
+        "messages": []
+      },
+      {
+        "name": "plant_tree_clusters 커버리지 실측을 요약에 적어 사용자가 밀도를 확인할 수 있다",
+        "status": "passed",
+        "durationMs": 385.8164919999981,
+        "messages": []
+      },
+      {
+        "name": "place_props density — 모델이 실제로 닿는 라이브 툴 침엽수 density=dense 가 count 없이도 숲을 만든다",
+        "status": "passed",
+        "durationMs": 357.364201999997,
+        "messages": []
+      },
+      {
+        "name": "place_props density — 모델이 실제로 닿는 라이브 툴 활엽수 density=dense 가 count 없이도 숲을 만든다",
+        "status": "failed",
+        "durationMs": 514.9997279999952,
+        "messages": [
+          "AssertionError: expected 0.3003472222222222 to be less than 0.3"
+        ]
+      },
+      {
+        "name": "place_props density — 모델이 실제로 닿는 라이브 툴 침엽수 density=sparse 가 선언 커버리지와 실측 허용 오차 안에 든다",
+        "status": "passed",
+        "durationMs": 2927.9131019999913,
+        "messages": []
+      },
+      {
+        "name": "place_props density — 모델이 실제로 닿는 라이브 툴 침엽수 density=normal 가 선언 커버리지와 실측 허용 오차 안에 든다",
+        "status": "passed",
+        "durationMs": 5215.646624000001,
+        "messages": []
+      },
+      {
+        "name": "place_props density — 모델이 실제로 닿는 라이브 툴 침엽수 density=dense 가 선언 커버리지와 실측 허용 오차 안에 든다",
+        "status": "passed",
+        "durationMs": 484.7246279999963,
+        "messages": []
+      },
+      {
+        "name": "place_props density — 모델이 실제로 닿는 라이브 툴 침엽수 density=impassable 가 선언 커버리지와 실측 허용 오차 안에 든다",
+        "status": "passed",
+        "durationMs": 504.2861019999982,
+        "messages": []
+      },
+      {
+        "name": "place_props density — 모델이 실제로 닿는 라이브 툴 활엽수 density=sparse 가 선언 커버리지와 실측 허용 오차 안에 든다",
+        "status": "passed",
+        "durationMs": 648.5208480000001,
+        "messages": []
+      },
+      {
+        "name": "place_props density — 모델이 실제로 닿는 라이브 툴 활엽수 density=normal 가 선언 커버리지와 실측 허용 오차 안에 든다",
+        "status": "passed",
+        "durationMs": 1530.5810619999975,
+        "messages": []
+      },
+      {
+        "name": "place_props density — 모델이 실제로 닿는 라이브 툴 활엽수 density=dense 가 선언 커버리지와 실측 허용 오차 안에 든다",
+        "status": "passed",
+        "durationMs": 301.8552170000039,
+        "messages": []
+      },
+      {
+        "name": "place_props density — 모델이 실제로 닿는 라이브 툴 활엽수 density=impassable 가 선언 커버리지와 실측 허용 오차 안에 든다",
+        "status": "passed",
+        "durationMs": 295.96751499999664,
+        "messages": []
+      },
+      {
+        "name": "place_props density — 모델이 실제로 닿는 라이브 툴 density 는 나무 재료 전용이고 count 는 여전히 직접 줄 수 있다",
+        "status": "passed",
+        "durationMs": 454.8927110000077,
+        "messages": []
+      },
+      {
+        "name": "author_village — 모델이 실제로 지나는 마을 파사드 「울창한 숲 마을」의 숲 밴드가 두껍고 거의 통행 불가다",
+        "status": "passed",
+        "durationMs": 4214.214840000001,
+        "messages": []
+      },
+      {
+        "name": "author_village — 모델이 실제로 지나는 마을 파사드 테마 문장만으로는 밀도를 올리지 않는다 — forestDensity enum이 필요하다",
+        "status": "passed",
+        "durationMs": 3507.3247339999944,
+        "messages": []
+      }
+    ],
+    "baseline": [
+      {
+        "name": "forest density is structured-only 사용자 문장이 아니라 enum 인자만 읽는다",
+        "status": "passed",
+        "durationMs": 2.745755999996618,
+        "messages": []
+      },
+      {
+        "name": "forest density is structured-only 기본값은 dense — 도구 인자를 생략한 군락 시공의 fallback",
+        "status": "passed",
+        "durationMs": 0.6514640000023064,
+        "messages": []
+      },
+      {
+        "name": "forest density is structured-only 수종은 해석된 그룹 id·정확 라벨로만 가른다",
+        "status": "passed",
+        "durationMs": 0.5134399999988091,
+        "messages": []
+      },
+      {
+        "name": "forestPlacementPlan 옛 캡(면적/28, 최대 10그루)을 넘어 면적에 비례해 그루 수를 낸다",
+        "status": "passed",
+        "durationMs": 4.016812000001664,
+        "messages": []
+      },
+      {
+        "name": "forestPlacementPlan dense·impassable 은 선형 packer(packing dense)로, 낮은 밀도는 자연 산포로 나간다",
+        "status": "passed",
+        "durationMs": 0.8042270000005374,
+        "messages": []
+      },
+      {
+        "name": "forestPlacementPlan share 로 침엽수·활엽수 패스가 커버리지를 나눠 갖는다",
+        "status": "passed",
+        "durationMs": 2.1248430000014196,
+        "messages": []
+      },
+      {
+        "name": "outside-enterable forest cells 바깥 한 겹이 solid 덤불로 닫힌 4×4 영역은 진입 가능한 칸이 0이다",
+        "status": "passed",
+        "durationMs": 402.5789569999979,
+        "messages": []
+      },
+      {
+        "name": "plant_tree_clusters 기본(dense)이 선언한 커버리지에 닿고 그 지대를 실제로 막는다",
+        "status": "failed",
+        "durationMs": 973.1918480000022,
+        "messages": [
+          "AssertionError: 영역의 30% 가 아직 걸어서 통과된다: expected 0.3003472222222222 to be less than 0.3"
+        ]
+      },
+      {
+        "name": "plant_tree_clusters 기본(dense)의 빈틈은 등간격 격자가 아니라 seeded 청색잡음으로 흩어진다",
+        "status": "passed",
+        "durationMs": 852.4904300000017,
+        "messages": []
+      },
+      {
+        "name": "plant_tree_clusters 기본(dense)이 100×100 에서도 선형 시간에 끝난다",
+        "status": "passed",
+        "durationMs": 394.1031550000007,
+        "messages": []
+      },
+      {
+        "name": "plant_tree_clusters impassable 은 영역을 실제로 지나갈 수 없게 만든다",
+        "status": "passed",
+        "durationMs": 225.27996799999892,
+        "messages": []
+      },
+      {
+        "name": "plant_tree_clusters 커버리지 실측을 요약에 적어 사용자가 밀도를 확인할 수 있다",
+        "status": "passed",
+        "durationMs": 284.09000599999854,
+        "messages": []
+      },
+      {
+        "name": "place_props density — 모델이 실제로 닿는 라이브 툴 침엽수 density=dense 가 count 없이도 숲을 만든다",
+        "status": "passed",
+        "durationMs": 285.15135700000246,
+        "messages": []
+      },
+      {
+        "name": "place_props density — 모델이 실제로 닿는 라이브 툴 활엽수 density=dense 가 count 없이도 숲을 만든다",
+        "status": "failed",
+        "durationMs": 260.1041980000009,
+        "messages": [
+          "AssertionError: expected 0.3003472222222222 to be less than 0.3"
+        ]
+      },
+      {
+        "name": "place_props density — 모델이 실제로 닿는 라이브 툴 침엽수 density=sparse 가 선언 커버리지와 실측 허용 오차 안에 든다",
+        "status": "passed",
+        "durationMs": 2289.6076109999995,
+        "messages": []
+      },
+      {
+        "name": "place_props density — 모델이 실제로 닿는 라이브 툴 침엽수 density=normal 가 선언 커버리지와 실측 허용 오차 안에 든다",
+        "status": "passed",
+        "durationMs": 4555.651818999999,
+        "messages": []
+      },
+      {
+        "name": "place_props density — 모델이 실제로 닿는 라이브 툴 침엽수 density=dense 가 선언 커버리지와 실측 허용 오차 안에 든다",
+        "status": "passed",
+        "durationMs": 244.55459100000007,
+        "messages": []
+      },
+      {
+        "name": "place_props density — 모델이 실제로 닿는 라이브 툴 침엽수 density=impassable 가 선언 커버리지와 실측 허용 오차 안에 든다",
+        "status": "passed",
+        "durationMs": 276.75706699999864,
+        "messages": []
+      },
+      {
+        "name": "place_props density — 모델이 실제로 닿는 라이브 툴 활엽수 density=sparse 가 선언 커버리지와 실측 허용 오차 안에 든다",
+        "status": "passed",
+        "durationMs": 476.27839200000017,
+        "messages": []
+      },
+      {
+        "name": "place_props density — 모델이 실제로 닿는 라이브 툴 활엽수 density=normal 가 선언 커버리지와 실측 허용 오차 안에 든다",
+        "status": "passed",
+        "durationMs": 1321.4830970000003,
+        "messages": []
+      },
+      {
+        "name": "place_props density — 모델이 실제로 닿는 라이브 툴 활엽수 density=dense 가 선언 커버리지와 실측 허용 오차 안에 든다",
+        "status": "passed",
+        "durationMs": 207.02077700000154,
+        "messages": []
+      },
+      {
+        "name": "place_props density — 모델이 실제로 닿는 라이브 툴 활엽수 density=impassable 가 선언 커버리지와 실측 허용 오차 안에 든다",
+        "status": "passed",
+        "durationMs": 283.89992300000085,
+        "messages": []
+      },
+      {
+        "name": "place_props density — 모델이 실제로 닿는 라이브 툴 density 는 나무 재료 전용이고 count 는 여전히 직접 줄 수 있다",
+        "status": "passed",
+        "durationMs": 550.1297370000029,
+        "messages": []
+      },
+      {
+        "name": "author_village — 모델이 실제로 지나는 마을 파사드 「울창한 숲 마을」의 숲 밴드가 두껍고 거의 통행 불가다",
+        "status": "passed",
+        "durationMs": 2351.682126000007,
+        "messages": []
+      },
+      {
+        "name": "author_village — 모델이 실제로 지나는 마을 파사드 테마 문장만으로는 밀도를 올리지 않는다 — forestDensity enum이 필요하다",
+        "status": "passed",
+        "durationMs": 3211.3144930000053,
+        "messages": []
+      }
+    ],
+    "current": [
+      {
+        "name": "forest density is structured-only 사용자 문장이 아니라 enum 인자만 읽는다",
+        "status": "passed",
+        "durationMs": 6.2931290000015,
+        "messages": []
+      },
+      {
+        "name": "forest density is structured-only 기본값은 dense — 도구 인자를 생략한 군락 시공의 fallback",
+        "status": "passed",
+        "durationMs": 0.5915719999975408,
+        "messages": []
+      },
+      {
+        "name": "forest density is structured-only 수종은 해석된 그룹 id·정확 라벨로만 가른다",
+        "status": "passed",
+        "durationMs": 2.290087000001222,
+        "messages": []
+      },
+      {
+        "name": "forestPlacementPlan 옛 캡(면적/28, 최대 10그루)을 넘어 면적에 비례해 그루 수를 낸다",
+        "status": "passed",
+        "durationMs": 0.8280870000016876,
+        "messages": []
+      },
+      {
+        "name": "forestPlacementPlan dense·impassable 은 선형 packer(packing dense)로, 낮은 밀도는 자연 산포로 나간다",
+        "status": "passed",
+        "durationMs": 0.9097389999988081,
+        "messages": []
+      },
+      {
+        "name": "forestPlacementPlan share 로 침엽수·활엽수 패스가 커버리지를 나눠 갖는다",
+        "status": "passed",
+        "durationMs": 4.508332000001246,
+        "messages": []
+      },
+      {
+        "name": "outside-enterable forest cells 바깥 한 겹이 solid 덤불로 닫힌 4×4 영역은 진입 가능한 칸이 0이다",
+        "status": "passed",
+        "durationMs": 860.5412710000019,
+        "messages": []
+      },
+      {
+        "name": "plant_tree_clusters 기본(dense)이 선언한 커버리지에 닿고 그 지대를 실제로 막는다",
+        "status": "failed",
+        "durationMs": 1332.1728250000015,
+        "messages": [
+          "AssertionError: 영역의 30% 가 아직 걸어서 통과된다: expected 0.3003472222222222 to be less than 0.3"
+        ]
+      },
+      {
+        "name": "plant_tree_clusters 기본(dense)의 빈틈은 등간격 격자가 아니라 seeded 청색잡음으로 흩어진다",
+        "status": "passed",
+        "durationMs": 1152.383539999999,
+        "messages": []
+      },
+      {
+        "name": "plant_tree_clusters 기본(dense)이 100×100 에서도 선형 시간에 끝난다",
+        "status": "passed",
+        "durationMs": 565.5956179999994,
+        "messages": []
+      },
+      {
+        "name": "plant_tree_clusters impassable 은 영역을 실제로 지나갈 수 없게 만든다",
+        "status": "passed",
+        "durationMs": 319.1040759999996,
+        "messages": []
+      },
+      {
+        "name": "plant_tree_clusters 커버리지 실측을 요약에 적어 사용자가 밀도를 확인할 수 있다",
+        "status": "passed",
+        "durationMs": 319.7860809999984,
+        "messages": []
+      },
+      {
+        "name": "place_props density — 모델이 실제로 닿는 라이브 툴 침엽수 density=dense 가 count 없이도 숲을 만든다",
+        "status": "passed",
+        "durationMs": 310.59899399999995,
+        "messages": []
+      },
+      {
+        "name": "place_props density — 모델이 실제로 닿는 라이브 툴 활엽수 density=dense 가 count 없이도 숲을 만든다",
+        "status": "failed",
+        "durationMs": 361.2537880000018,
+        "messages": [
+          "AssertionError: expected 0.3003472222222222 to be less than 0.3"
+        ]
+      },
+      {
+        "name": "place_props density — 모델이 실제로 닿는 라이브 툴 침엽수 density=sparse 가 선언 커버리지와 실측 허용 오차 안에 든다",
+        "status": "passed",
+        "durationMs": 2211.1558369999984,
+        "messages": []
+      },
+      {
+        "name": "place_props density — 모델이 실제로 닿는 라이브 툴 침엽수 density=normal 가 선언 커버리지와 실측 허용 오차 안에 든다",
+        "status": "passed",
+        "durationMs": 4257.352274000001,
+        "messages": []
+      },
+      {
+        "name": "place_props density — 모델이 실제로 닿는 라이브 툴 침엽수 density=dense 가 선언 커버리지와 실측 허용 오차 안에 든다",
+        "status": "passed",
+        "durationMs": 323.8755450000026,
+        "messages": []
+      },
+      {
+        "name": "place_props density — 모델이 실제로 닿는 라이브 툴 침엽수 density=impassable 가 선언 커버리지와 실측 허용 오차 안에 든다",
+        "status": "passed",
+        "durationMs": 330.1110219999973,
+        "messages": []
+      },
+      {
+        "name": "place_props density — 모델이 실제로 닿는 라이브 툴 활엽수 density=sparse 가 선언 커버리지와 실측 허용 오차 안에 든다",
+        "status": "passed",
+        "durationMs": 503.20595299999695,
+        "messages": []
+      },
+      {
+        "name": "place_props density — 모델이 실제로 닿는 라이브 툴 활엽수 density=normal 가 선언 커버리지와 실측 허용 오차 안에 든다",
+        "status": "passed",
+        "durationMs": 1622.8688479999983,
+        "messages": []
+      },
+      {
+        "name": "place_props density — 모델이 실제로 닿는 라이브 툴 활엽수 density=dense 가 선언 커버리지와 실측 허용 오차 안에 든다",
+        "status": "passed",
+        "durationMs": 241.92756799999916,
+        "messages": []
+      },
+      {
+        "name": "place_props density — 모델이 실제로 닿는 라이브 툴 활엽수 density=impassable 가 선언 커버리지와 실측 허용 오차 안에 든다",
+        "status": "passed",
+        "durationMs": 285.9698800000042,
+        "messages": []
+      },
+      {
+        "name": "place_props density — 모델이 실제로 닿는 라이브 툴 density 는 나무 재료 전용이고 count 는 여전히 직접 줄 수 있다",
+        "status": "passed",
+        "durationMs": 524.4343479999952,
+        "messages": []
+      },
+      {
+        "name": "author_village — 모델이 실제로 지나는 마을 파사드 「울창한 숲 마을」의 숲 밴드가 두껍고 거의 통행 불가다",
+        "status": "passed",
+        "durationMs": 3148.344796999998,
+        "messages": []
+      },
+      {
+        "name": "author_village — 모델이 실제로 지나는 마을 파사드 테마 문장만으로는 밀도를 올리지 않는다 — forestDensity enum이 필요하다",
+        "status": "passed",
+        "durationMs": 2702.3540749999956,
+        "messages": []
+      }
+    ],
+    "baselineCurrentFailuresEqual": true,
+    "originalBaselineFailuresEqual": true,
+    "introducedFocusedFailures": {},
+    "originalCollectionSource": "original-25-counts.json"
+  },
+  {
+    "file": "test/gen1DemoContent.test.ts",
+    "original": [
+      {
+        "name": "Scarloxy Gen1 authored content authors all 15 R/B types with their physical/special damage classes",
+        "status": "passed",
+        "durationMs": 369.638645,
+        "messages": []
+      },
+      {
+        "name": "Scarloxy Gen1 authored content authors the R/B matchup table including immunities and the Ghost/Psychic bug",
+        "status": "passed",
+        "durationMs": 90.128514,
+        "messages": []
+      },
+      {
+        "name": "Scarloxy Gen1 authored content authors persistent major statuses, finite PP, a Poke Ball, and trainer semantics",
+        "status": "failed",
+        "durationMs": 167.05403800000022,
+        "messages": [
+          "TypeError: actual value must be number or bigint, received \"undefined\""
+        ]
+      }
+    ],
+    "baseline": [
+      {
+        "name": "Scarloxy Gen1 authored content authors all 15 R/B types with their physical/special damage classes",
+        "status": "passed",
+        "durationMs": 252.22033399999964,
+        "messages": []
+      },
+      {
+        "name": "Scarloxy Gen1 authored content authors the R/B matchup table including immunities and the Ghost/Psychic bug",
+        "status": "passed",
+        "durationMs": 199.5920300000007,
+        "messages": []
+      },
+      {
+        "name": "Scarloxy Gen1 authored content authors persistent major statuses, finite PP, a Poke Ball, and trainer semantics",
+        "status": "failed",
+        "durationMs": 150.6560529999997,
+        "messages": [
+          "TypeError: actual value must be number or bigint, received \"undefined\""
+        ]
+      }
+    ],
+    "current": [
+      {
+        "name": "Scarloxy Gen1 authored content authors all 15 R/B types with their physical/special damage classes",
+        "status": "passed",
+        "durationMs": 153.67751599999997,
+        "messages": []
+      },
+      {
+        "name": "Scarloxy Gen1 authored content authors the R/B matchup table including immunities and the Ghost/Psychic bug",
+        "status": "passed",
+        "durationMs": 73.087986,
+        "messages": []
+      },
+      {
+        "name": "Scarloxy Gen1 authored content authors persistent major statuses, finite PP, a Poke Ball, and trainer semantics",
+        "status": "failed",
+        "durationMs": 86.12595299999998,
+        "messages": [
+          "TypeError: actual value must be number or bigint, received \"undefined\""
+        ]
+      }
+    ],
+    "baselineCurrentFailuresEqual": true,
+    "originalBaselineFailuresEqual": true,
+    "introducedFocusedFailures": {},
+    "originalCollectionSource": "original-25-counts.json"
+  },
+  {
+    "file": "test/modalEscapeLayerGate.test.ts",
+    "original": [
+      {
+        "name": "Escape 계층 게이트 body 에 오버레이를 붙이는 파일은 modalStack 에 참여하거나 이유와 함께 면제된다",
+        "status": "failed",
+        "durationMs": 211.645309,
+        "messages": [
+          "AssertionError: body 에 띄운 새 오버레이가 Escape 계층에 참여하지 않는다. registerModal/unregisterModal 을 짝지어 쓰거나, 정말 계층이 아니면 EXEMPT 에 이유를 적어라.: expected [ 'panels/newProjectDialog.ts' ] to deeply equal []"
+        ]
+      },
+      {
+        "name": "Escape 계층 게이트 면제 목록에 죽은 항목이 남지 않는다",
+        "status": "passed",
+        "durationMs": 149.7606169999999,
+        "messages": []
+      },
+      {
+        "name": "Escape 계층 게이트 이번에 고친 표면들은 면제가 아니라 실제로 등록한다",
+        "status": "failed",
+        "durationMs": 5.008589000000029,
+        "messages": [
+          "AssertionError: 회귀: 이 표면들은 modalStack 에 등록되어 있어야 한다: expected [ 'panels/worldPanel.ts' ] to deeply equal []"
+        ]
+      }
+    ],
+    "baseline": [
+      {
+        "name": "Escape 계층 게이트 body 에 오버레이를 붙이는 파일은 modalStack 에 참여하거나 이유와 함께 면제된다",
+        "status": "failed",
+        "durationMs": 128.98854900000003,
+        "messages": [
+          "AssertionError: body 에 띄운 새 오버레이가 Escape 계층에 참여하지 않는다. registerModal/unregisterModal 을 짝지어 쓰거나, 정말 계층이 아니면 EXEMPT 에 이유를 적어라.: expected [ 'panels/newProjectDialog.ts' ] to deeply equal []"
+        ]
+      },
+      {
+        "name": "Escape 계층 게이트 면제 목록에 죽은 항목이 남지 않는다",
+        "status": "passed",
+        "durationMs": 72.418746,
+        "messages": []
+      },
+      {
+        "name": "Escape 계층 게이트 이번에 고친 표면들은 면제가 아니라 실제로 등록한다",
+        "status": "failed",
+        "durationMs": 3.542291999999975,
+        "messages": [
+          "AssertionError: 회귀: 이 표면들은 modalStack 에 등록되어 있어야 한다: expected [ 'panels/worldPanel.ts' ] to deeply equal []"
+        ]
+      }
+    ],
+    "current": [
+      {
+        "name": "Escape 계층 게이트 body 에 오버레이를 붙이는 파일은 modalStack 에 참여하거나 이유와 함께 면제된다",
+        "status": "failed",
+        "durationMs": 158.48855400000002,
+        "messages": [
+          "AssertionError: body 에 띄운 새 오버레이가 Escape 계층에 참여하지 않는다. registerModal/unregisterModal 을 짝지어 쓰거나, 정말 계층이 아니면 EXEMPT 에 이유를 적어라.: expected [ 'panels/newProjectDialog.ts' ] to deeply equal []"
+        ]
+      },
+      {
+        "name": "Escape 계층 게이트 면제 목록에 죽은 항목이 남지 않는다",
+        "status": "passed",
+        "durationMs": 88.44090899999992,
+        "messages": []
+      },
+      {
+        "name": "Escape 계층 게이트 이번에 고친 표면들은 면제가 아니라 실제로 등록한다",
+        "status": "failed",
+        "durationMs": 5.141415999999936,
+        "messages": [
+          "AssertionError: 회귀: 이 표면들은 modalStack 에 등록되어 있어야 한다: expected [ 'panels/worldPanel.ts' ] to deeply equal []"
+        ]
+      }
+    ],
+    "baselineCurrentFailuresEqual": true,
+    "originalBaselineFailuresEqual": true,
+    "introducedFocusedFailures": {},
+    "originalCollectionSource": "original-25-counts.json"
+  },
+  {
+    "file": "test/moveRouteCatalogPersistence.test.ts",
+    "original": [
+      {
+        "name": "이동 경로 팔레트 persistence BREAK: 「효과음 재생」 기본값이 실재하는 리소스다 — 없는 id 면 이벤트 저장이 통째로 막힌다",
+        "status": "passed",
+        "durationMs": 595.9871249999997,
+        "messages": []
+      },
+      {
+        "name": "이동 경로 팔레트 persistence BREAK: 팔레트의 모든 명령이 하나씩 serialize→deserialize 를 통과한다",
+        "status": "failed",
+        "durationMs": 15963.495861,
+        "messages": [
+          "Error: STACK_TRACE_ERROR"
+        ]
+      },
+      {
+        "name": "이동 경로 팔레트 persistence BREAK: 팔레트를 통째로 담은 경로도 왕복한다 — 44 개를 한 이벤트에 다 넣는 e2e 스윕과 같은 모양",
+        "status": "passed",
+        "durationMs": 265.21136800000386,
+        "messages": []
+      }
+    ],
+    "baseline": [
+      {
+        "name": "이동 경로 팔레트 persistence BREAK: 「효과음 재생」 기본값이 실재하는 리소스다 — 없는 id 면 이벤트 저장이 통째로 막힌다",
+        "status": "passed",
+        "durationMs": 641.5587699999996,
+        "messages": []
+      },
+      {
+        "name": "이동 경로 팔레트 persistence BREAK: 팔레트의 모든 명령이 하나씩 serialize→deserialize 를 통과한다",
+        "status": "failed",
+        "durationMs": 17844.695527,
+        "messages": [
+          "Error: STACK_TRACE_ERROR"
+        ]
+      },
+      {
+        "name": "이동 경로 팔레트 persistence BREAK: 팔레트를 통째로 담은 경로도 왕복한다 — 44 개를 한 이벤트에 다 넣는 e2e 스윕과 같은 모양",
+        "status": "passed",
+        "durationMs": 221.6190600000009,
+        "messages": []
+      }
+    ],
+    "current": [
+      {
+        "name": "이동 경로 팔레트 persistence BREAK: 「효과음 재생」 기본값이 실재하는 리소스다 — 없는 id 면 이벤트 저장이 통째로 막힌다",
+        "status": "passed",
+        "durationMs": 154.86167100000011,
+        "messages": []
+      },
+      {
+        "name": "이동 경로 팔레트 persistence BREAK: 팔레트의 모든 명령이 하나씩 serialize→deserialize 를 통과한다",
+        "status": "passed",
+        "durationMs": 9077.439855,
+        "messages": []
+      },
+      {
+        "name": "이동 경로 팔레트 persistence BREAK: 팔레트를 통째로 담은 경로도 왕복한다 — 44 개를 한 이벤트에 다 넣는 e2e 스윕과 같은 모양",
+        "status": "passed",
+        "durationMs": 194.47129000000132,
+        "messages": []
+      }
+    ],
+    "baselineCurrentFailuresEqual": false,
+    "originalBaselineFailuresEqual": true,
+    "introducedFocusedFailures": {},
+    "originalCollectionSource": "original-25-counts.json"
+  },
+  {
+    "file": "test/noLocalProjectDb.test.ts",
+    "original": [
+      {
+        "name": "canonical project persistence has no local DB fallback does not keep old local DB implementation files",
+        "status": "passed",
+        "durationMs": 11.719486999999958,
+        "messages": []
+      },
+      {
+        "name": "canonical project persistence has no local DB fallback does not reference IndexedDB SQLite or local JSON fallback in runtime source",
+        "status": "failed",
+        "durationMs": 334.1098989999999,
+        "messages": [
+          "AssertionError: expected [ Array(1) ] to deeply equal []"
+        ]
+      }
+    ],
+    "baseline": [
+      {
+        "name": "canonical project persistence has no local DB fallback does not keep old local DB implementation files",
+        "status": "passed",
+        "durationMs": 26.213494999999966,
+        "messages": []
+      },
+      {
+        "name": "canonical project persistence has no local DB fallback does not reference IndexedDB SQLite or local JSON fallback in runtime source",
+        "status": "failed",
+        "durationMs": 866.989762,
+        "messages": [
+          "AssertionError: expected [ Array(1) ] to deeply equal []"
+        ]
+      }
+    ],
+    "current": [
+      {
+        "name": "canonical project persistence has no local DB fallback does not keep old local DB implementation files",
+        "status": "passed",
+        "durationMs": 4.551603,
+        "messages": []
+      },
+      {
+        "name": "canonical project persistence has no local DB fallback does not reference IndexedDB SQLite or local JSON fallback in runtime source",
+        "status": "failed",
+        "durationMs": 209.473479,
+        "messages": [
+          "AssertionError: expected [ Array(1) ] to deeply equal []"
+        ]
+      }
+    ],
+    "baselineCurrentFailuresEqual": true,
+    "originalBaselineFailuresEqual": true,
+    "introducedFocusedFailures": {},
+    "originalCollectionSource": "original-25-counts.json"
+  },
+  {
+    "file": "test/regionSelectionPastePreview.test.ts",
+    "original": [
+      {
+        "name": "북여넣기 미리보기 모드 복사 후 enterPastePreview → confirmPastePreview로 실제 붙여넣기",
+        "status": "passed",
+        "durationMs": 10323.069532,
+        "messages": []
+      },
+      {
+        "name": "북여넣기 미리보기 모드 cancelPastePreview로 미리보기 취소 — 맵 변화 없음",
+        "status": "passed",
+        "durationMs": 6175.588681000001,
+        "messages": []
+      },
+      {
+        "name": "북여넣기 미리보기 모드 클립보드 없이 enterPastePreview → false + 안내 토스트",
+        "status": "passed",
+        "durationMs": 7501.518751,
+        "messages": []
+      },
+      {
+        "name": "북여넣기 미리보기 모드 movePastePreview로 위치 갱신",
+        "status": "passed",
+        "durationMs": 6536.693156000001,
+        "messages": []
+      },
+      {
+        "name": "북여넣기 미리보기 모드 movePastePreview가 맵 경계를 벗어나지 않게 클램프",
+        "status": "passed",
+        "durationMs": 5414.403848999998,
+        "messages": []
+      },
+      {
+        "name": "clearSelection / clearSelectionRegion clearSelection이 selection과 pastePreview를 모두 해제",
+        "status": "passed",
+        "durationMs": 7546.7203420000005,
+        "messages": []
+      },
+      {
+        "name": "clearSelection / clearSelectionRegion clearSelectionRegion이 선택 영역을 빈 칸으로",
+        "status": "passed",
+        "durationMs": 5554.695700000004,
+        "messages": []
+      },
+      {
+        "name": "clearSelection / clearSelectionRegion clearSelectionRegion 토스트에 '지우기' 포함",
+        "status": "passed",
+        "durationMs": 7598.400730999994,
+        "messages": []
+      },
+      {
+        "name": "copySelection 피드백 개선 복사 토스트에 크기 정보 포함",
+        "status": "passed",
+        "durationMs": 6160.136740000002,
+        "messages": []
+      },
+      {
+        "name": "renderSelectionActionChips — 복사/붙여넣기/지우기/해제 버튼 AI 작업이 첫 버튼이고, 크기 텍스트는 바에 없다",
+        "status": "failed",
+        "durationMs": 15049.707666999995,
+        "messages": [
+          "Error: STACK_TRACE_ERROR"
+        ]
+      },
+      {
+        "name": "renderSelectionActionChips — 복사/붙여넣기/지우기/해제 버튼 클립보드가 있으면 붙여넣기 버튼이 나타난다",
+        "status": "passed",
+        "durationMs": 8643.813574,
+        "messages": []
+      },
+      {
+        "name": "renderSelectionActionChips — 복사/붙여넣기/지우기/해제 버튼 클립보드가 없으면 붙여넣기 버튼이 없다",
+        "status": "passed",
+        "durationMs": 12501.190896,
+        "messages": []
+      }
+    ],
+    "baseline": [
+      {
+        "name": "북여넣기 미리보기 모드 복사 후 enterPastePreview → confirmPastePreview로 실제 붙여넣기",
+        "status": "passed",
+        "durationMs": 2469.8100170000002,
+        "messages": []
+      },
+      {
+        "name": "북여넣기 미리보기 모드 cancelPastePreview로 미리보기 취소 — 맵 변화 없음",
+        "status": "passed",
+        "durationMs": 1112.7834219999995,
+        "messages": []
+      },
+      {
+        "name": "북여넣기 미리보기 모드 클립보드 없이 enterPastePreview → false + 안내 토스트",
+        "status": "passed",
+        "durationMs": 1001.1989779999994,
+        "messages": []
+      },
+      {
+        "name": "북여넣기 미리보기 모드 movePastePreview로 위치 갱신",
+        "status": "passed",
+        "durationMs": 1160.422243,
+        "messages": []
+      },
+      {
+        "name": "북여넣기 미리보기 모드 movePastePreview가 맵 경계를 벗어나지 않게 클램프",
+        "status": "passed",
+        "durationMs": 1038.7825750000002,
+        "messages": []
+      },
+      {
+        "name": "clearSelection / clearSelectionRegion clearSelection이 selection과 pastePreview를 모두 해제",
+        "status": "passed",
+        "durationMs": 1111.1751799999993,
+        "messages": []
+      },
+      {
+        "name": "clearSelection / clearSelectionRegion clearSelectionRegion이 선택 영역을 빈 칸으로",
+        "status": "passed",
+        "durationMs": 1036.383377,
+        "messages": []
+      },
+      {
+        "name": "clearSelection / clearSelectionRegion clearSelectionRegion 토스트에 '지우기' 포함",
+        "status": "passed",
+        "durationMs": 1142.4410290000014,
+        "messages": []
+      },
+      {
+        "name": "copySelection 피드백 개선 복사 토스트에 크기 정보 포함",
+        "status": "passed",
+        "durationMs": 921.2053320000014,
+        "messages": []
+      },
+      {
+        "name": "renderSelectionActionChips — 복사/붙여넣기/지우기/해제 버튼 AI 작업이 첫 버튼이고, 크기 텍스트는 바에 없다",
+        "status": "passed",
+        "durationMs": 2721.0258779999986,
+        "messages": []
+      },
+      {
+        "name": "renderSelectionActionChips — 복사/붙여넣기/지우기/해제 버튼 클립보드가 있으면 붙여넣기 버튼이 나타난다",
+        "status": "passed",
+        "durationMs": 1877.6232639999998,
+        "messages": []
+      },
+      {
+        "name": "renderSelectionActionChips — 복사/붙여넣기/지우기/해제 버튼 클립보드가 없으면 붙여넣기 버튼이 없다",
+        "status": "passed",
+        "durationMs": 1291.290544999998,
+        "messages": []
+      }
+    ],
+    "current": [
+      {
+        "name": "북여넣기 미리보기 모드 복사 후 enterPastePreview → confirmPastePreview로 실제 붙여넣기",
+        "status": "passed",
+        "durationMs": 2658.093634,
+        "messages": []
+      },
+      {
+        "name": "북여넣기 미리보기 모드 cancelPastePreview로 미리보기 취소 — 맵 변화 없음",
+        "status": "passed",
+        "durationMs": 952.62529,
+        "messages": []
+      },
+      {
+        "name": "북여넣기 미리보기 모드 클립보드 없이 enterPastePreview → false + 안내 토스트",
+        "status": "passed",
+        "durationMs": 1301.6465609999996,
+        "messages": []
+      },
+      {
+        "name": "북여넣기 미리보기 모드 movePastePreview로 위치 갱신",
+        "status": "passed",
+        "durationMs": 1137.1305160000002,
+        "messages": []
+      },
+      {
+        "name": "북여넣기 미리보기 모드 movePastePreview가 맵 경계를 벗어나지 않게 클램프",
+        "status": "passed",
+        "durationMs": 1365.7149740000004,
+        "messages": []
+      },
+      {
+        "name": "clearSelection / clearSelectionRegion clearSelection이 selection과 pastePreview를 모두 해제",
+        "status": "passed",
+        "durationMs": 1091.739079,
+        "messages": []
+      },
+      {
+        "name": "clearSelection / clearSelectionRegion clearSelectionRegion이 선택 영역을 빈 칸으로",
+        "status": "passed",
+        "durationMs": 1506.1955389999985,
+        "messages": []
+      },
+      {
+        "name": "clearSelection / clearSelectionRegion clearSelectionRegion 토스트에 '지우기' 포함",
+        "status": "passed",
+        "durationMs": 1164.7070319999984,
+        "messages": []
+      },
+      {
+        "name": "copySelection 피드백 개선 복사 토스트에 크기 정보 포함",
+        "status": "passed",
+        "durationMs": 1103.3041569999987,
+        "messages": []
+      },
+      {
+        "name": "renderSelectionActionChips — 복사/붙여넣기/지우기/해제 버튼 AI 작업이 첫 버튼이고, 크기 텍스트는 바에 없다",
+        "status": "passed",
+        "durationMs": 2999.0992719999995,
+        "messages": []
+      },
+      {
+        "name": "renderSelectionActionChips — 복사/붙여넣기/지우기/해제 버튼 클립보드가 있으면 붙여넣기 버튼이 나타난다",
+        "status": "passed",
+        "durationMs": 1671.833063,
+        "messages": []
+      },
+      {
+        "name": "renderSelectionActionChips — 복사/붙여넣기/지우기/해제 버튼 클립보드가 없으면 붙여넣기 버튼이 없다",
+        "status": "passed",
+        "durationMs": 1558.6264159999992,
+        "messages": []
+      }
+    ],
+    "baselineCurrentFailuresEqual": true,
+    "originalBaselineFailuresEqual": false,
+    "introducedFocusedFailures": {},
+    "originalCollectionSource": "original-25-counts.json"
+  },
+  {
+    "file": "test/roleNameComparisonGate.test.ts",
+    "original": [
+      {
+        "name": "A-2 게이트 — 역할 이름 비교 잔여 허용 목록 밖에서 타일 역할 이름을 직접 비교하지 않는다",
+        "status": "failed",
+        "durationMs": 1828.36319,
+        "messages": [
+          "AssertionError: expected [ …(2) ] to deeply equal []"
+        ]
+      },
+      {
+        "name": "A-2 게이트 — 역할 이름 비교 잔여 허용 목록 안에서도 비교가 늘어나지 않는다",
+        "status": "passed",
+        "durationMs": 18.22169900000017,
+        "messages": []
+      },
+      {
+        "name": "A-2 게이트 — 역할 이름 비교 잔여 허용 목록에 죽은 항목이 없다",
+        "status": "passed",
+        "durationMs": 10.623693000000003,
+        "messages": []
+      }
+    ],
+    "baseline": [
+      {
+        "name": "A-2 게이트 — 역할 이름 비교 잔여 허용 목록 밖에서 타일 역할 이름을 직접 비교하지 않는다",
+        "status": "failed",
+        "durationMs": 514.822928,
+        "messages": [
+          "AssertionError: expected [ …(2) ] to deeply equal []"
+        ]
+      },
+      {
+        "name": "A-2 게이트 — 역할 이름 비교 잔여 허용 목록 안에서도 비교가 늘어나지 않는다",
+        "status": "passed",
+        "durationMs": 17.077537000000007,
+        "messages": []
+      },
+      {
+        "name": "A-2 게이트 — 역할 이름 비교 잔여 허용 목록에 죽은 항목이 없다",
+        "status": "passed",
+        "durationMs": 10.877182000000062,
+        "messages": []
+      }
+    ],
+    "current": [
+      {
+        "name": "A-2 게이트 — 역할 이름 비교 잔여 허용 목록 밖에서 타일 역할 이름을 직접 비교하지 않는다",
+        "status": "failed",
+        "durationMs": 858.047975,
+        "messages": [
+          "AssertionError: expected [ …(2) ] to deeply equal []"
+        ]
+      },
+      {
+        "name": "A-2 게이트 — 역할 이름 비교 잔여 허용 목록 안에서도 비교가 늘어나지 않는다",
+        "status": "passed",
+        "durationMs": 32.97934499999997,
+        "messages": []
+      },
+      {
+        "name": "A-2 게이트 — 역할 이름 비교 잔여 허용 목록에 죽은 항목이 없다",
+        "status": "passed",
+        "durationMs": 13.151768000000175,
+        "messages": []
+      }
+    ],
+    "baselineCurrentFailuresEqual": true,
+    "originalBaselineFailuresEqual": true,
+    "introducedFocusedFailures": {},
+    "originalCollectionSource": "original-25-counts.json"
+  },
+  {
+    "file": "test/uxcLoadFailure.test.ts",
+    "original": [
+      {
+        "name": "UXC D01 프로젝트 로드 실패 폴백 오류 원문을 숨기고 안전한 복구 방법과 예제/새 프로젝트 CTA를 제공한다",
+        "status": "failed",
+        "durationMs": 15105.930175,
+        "messages": [
+          "Error: STACK_TRACE_ERROR"
+        ]
+      },
+      {
+        "name": "UXC D01 프로젝트 로드 실패 폴백 예제 프로젝트 폴백은 저장본을 폐기하지 않고 메모리 프로젝트로 부팅한다",
+        "status": "passed",
+        "durationMs": 9038.063941,
+        "messages": []
+      },
+      {
+        "name": "UXC D01 프로젝트 로드 실패 폴백 새 프로젝트 폴백도 기존 저장본을 폐기하지 않는다",
+        "status": "passed",
+        "durationMs": 11412.146961999995,
+        "messages": []
+      }
+    ],
+    "baseline": [
+      {
+        "name": "UXC D01 프로젝트 로드 실패 폴백 오류 원문을 숨기고 안전한 복구 방법과 예제/새 프로젝트 CTA를 제공한다",
+        "status": "passed",
+        "durationMs": 3216.720994,
+        "messages": []
+      },
+      {
+        "name": "UXC D01 프로젝트 로드 실패 폴백 예제 프로젝트 폴백은 저장본을 폐기하지 않고 메모리 프로젝트로 부팅한다",
+        "status": "passed",
+        "durationMs": 3630.457183,
+        "messages": []
+      },
+      {
+        "name": "UXC D01 프로젝트 로드 실패 폴백 새 프로젝트 폴백도 기존 저장본을 폐기하지 않는다",
+        "status": "passed",
+        "durationMs": 2219.8343720000003,
+        "messages": []
+      }
+    ],
+    "current": [
+      {
+        "name": "UXC D01 프로젝트 로드 실패 폴백 오류 원문을 숨기고 안전한 복구 방법과 예제/새 프로젝트 CTA를 제공한다",
+        "status": "passed",
+        "durationMs": 2431.14605,
+        "messages": []
+      },
+      {
+        "name": "UXC D01 프로젝트 로드 실패 폴백 예제 프로젝트 폴백은 저장본을 폐기하지 않고 메모리 프로젝트로 부팅한다",
+        "status": "passed",
+        "durationMs": 1572.4573049999995,
+        "messages": []
+      },
+      {
+        "name": "UXC D01 프로젝트 로드 실패 폴백 새 프로젝트 폴백도 기존 저장본을 폐기하지 않는다",
+        "status": "passed",
+        "durationMs": 1385.5819689999998,
+        "messages": []
+      }
+    ],
+    "baselineCurrentFailuresEqual": true,
+    "originalBaselineFailuresEqual": false,
+    "introducedFocusedFailures": {},
+    "originalCollectionSource": "original-25-counts.json"
+  }
+]

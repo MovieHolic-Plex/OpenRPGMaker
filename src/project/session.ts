@@ -146,12 +146,43 @@ export type ShippingSettlement = {
   readonly credited: number;
 };
 
+export type LifeRecoveryJson = null | boolean | number | string | readonly LifeRecoveryJson[] | { readonly [key: string]: LifeRecoveryJson };
+export type LifeRecoveryClaim = {
+  readonly id: string;
+  readonly sourceKind: string;
+  readonly sourceId: string;
+  readonly reason: string;
+  readonly items: readonly import("./types").ItemAmount[];
+  readonly unresolved?: { readonly record: LifeRecoveryJson; readonly detail: string };
+};
+export type LifeRecoveryState = {
+  readonly nextSequence: number;
+  readonly claims: Record<string, LifeRecoveryClaim>;
+};
+export type MakerContract = {
+  readonly inputs: readonly import("./types").ItemAmount[];
+  readonly outputs: readonly import("./types").ItemAmount[];
+  readonly durationMinutes: number;
+  readonly timeBasis: { readonly dayStartHour: number; readonly dayEndHour: number; readonly daysPerSeason: number };
+};
+/** Runtime receipts only: authored/legacy placements must not invent past payment. */
+export type SpatialPaymentReceipt = {
+  readonly gold: number;
+  readonly items: readonly import("./types").ItemAmount[];
+};
+export type FarmBuildingPlacementState = FarmBuildingPlacement & { readonly paymentReceipt?: SpatialPaymentReceipt };
+export type HomeDecorationPlacementState = HomeDecorationPlacement & {
+  readonly paymentReceipt?: SpatialPaymentReceipt;
+  readonly recoveryItem?: import("./types").ItemAmount;
+};
+
 export type MakerInstanceState = {
   readonly instanceId: string;
   readonly makerId: string;
   readonly status: "idle" | "processing" | "ready";
   readonly startedAtMinute?: number;
   readonly readyAtMinute?: number;
+  readonly contract?: MakerContract;
 };
 
 export type DailyWeatherState = {
@@ -219,11 +250,12 @@ export interface PlaySession {
   unlockedRegionIds?: string[];
   unlockedRecipeIds?: string[];
   makerInstances?: Record<string, MakerInstanceState>;
+  lifeRecovery?: LifeRecoveryState;
   /** Current resolved day only. Forecasts are recomputed and never stored in saves. */
   dailyWeather?: DailyWeatherState;
   farmAnimals?: Record<string, FarmAnimalState>;
-  farmBuildingPlacements?: Record<string, FarmBuildingPlacement>;
-  homeDecorationPlacements?: Record<string, HomeDecorationPlacement>;
+  farmBuildingPlacements?: Record<string, FarmBuildingPlacementState>;
+  homeDecorationPlacements?: Record<string, HomeDecorationPlacementState>;
   monsterInstances: Record<MonsterInstanceId, MonsterInstance>;
   monsterParty: MonsterInstanceId[];
   monsterBox: MonsterInstanceId[];
@@ -568,7 +600,8 @@ export function changeItemsAtomically(
   const nextCounts = new Map<string, number>();
   const actions: ItemTransitionAction[] = [];
   for (const operation of operations) {
-    const current = nextCounts.get(operation.itemId) ?? session.inventory[operation.itemId] ?? 0;
+    const current = nextCounts.get(operation.itemId)
+      ?? (Object.hasOwn(session.inventory, operation.itemId) ? session.inventory[operation.itemId] : 0);
     const next = resolveItemQuantity(current, operation.op, operation.amount);
     if (next === undefined) return false;
     nextCounts.set(operation.itemId, next);

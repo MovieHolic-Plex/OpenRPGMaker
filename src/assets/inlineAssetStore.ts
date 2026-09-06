@@ -9,9 +9,15 @@
  * new Image().src, new Audio(url) …) 생산자는 셋뿐이다 — resolveAssetResourceUrl, bundled.ts 의
  * 경로 상수, 그리고 CSS 의 폰트 url(빌드 때 치환).
  *
- * 표가 등록되지 않은 일반 빌드에서는 `inlineAssetUrl` 이 항상 null 이라 아무 것도 바뀌지 않는다.
+ * 편집기는 원래 경로를 유지한다. 내보내기 플레이어만 게임 디렉터리를 등록해
+ * 루트 경로로 저작된 public 에셋도 게임이 배포된 위치에서 찾는다.
  */
 let table: Readonly<Record<string, string>> | null = null;
+let exportAssetBase: URL | null = null;
+
+export function registerExportAssetBase(base: URL | null): void {
+  exportAssetBase = base;
+}
 
 /** null 을 주면 표를 걷어낸다 — 일반 빌드와 같은 상태로 되돌린다. */
 export function registerInlineAssets(map: Readonly<Record<string, string>> | null): void {
@@ -32,9 +38,12 @@ export function inlineAssetUrl(pathOrUrl: string | null | undefined): string | n
   return table[normalizeAssetKey(pathOrUrl)] ?? null;
 }
 
-/** 인라인 표가 있으면 바꿔치기하고, 없으면 원본을 그대로 돌려준다. */
+/** 내장 에셋을 우선하고, 웹 내보내기의 public 경로만 게임 디렉터리로 옮긴다. */
 export function withInlineAsset(pathOrUrl: string): string {
-  return inlineAssetUrl(pathOrUrl) ?? pathOrUrl;
+  const embedded = inlineAssetUrl(pathOrUrl);
+  if (embedded !== null) return embedded;
+  if (exportAssetBase === null || !/^(?:\.\/|\/)?assets\//.test(pathOrUrl)) return pathOrUrl;
+  return new URL(normalizeAssetKey(pathOrUrl), exportAssetBase).href;
 }
 
 export function normalizeAssetKey(pathOrUrl: string): string {

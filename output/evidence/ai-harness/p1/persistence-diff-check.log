@@ -1,0 +1,58 @@
+output/evidence/ai-harness/p1/persistence-build.log:14: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p1/persistence-build.log:17: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p1/persistence-build.log:20: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p1/persistence-build.log:23: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p1/persistence-build.log:26: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p1/persistence-build.log:114: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p1/persistence-green-final.log:52: new blank line at EOF.
+output/evidence/ai-harness/p1/persistence-green-initial.log:77: trailing whitespace.
++     10| 
+output/evidence/ai-harness/p1/persistence-green-initial.log:150: trailing whitespace.
++    228| 
+output/evidence/ai-harness/p1/persistence-green-initial.log:164: trailing whitespace.
++    257| 
+output/evidence/ai-harness/p1/persistence-green-initial.log:177: trailing whitespace.
++    326| 
+output/evidence/ai-harness/p1/persistence-green-initial.log:206: new blank line at EOF.
+output/evidence/ai-harness/p1/persistence-green.log:51: new blank line at EOF.
+output/evidence/ai-harness/p1/persistence-legacy-baseline.log:12: trailing whitespace.
++Received: 
+output/evidence/ai-harness/p1/persistence-legacy-baseline.log:53: trailing whitespace.
++Received: 
+output/evidence/ai-harness/p1/persistence-legacy-baseline.log:72: trailing whitespace.
++     33| 
+output/evidence/ai-harness/p1/persistence-legacy-baseline.log:77: trailing whitespace.
++     37| 
+output/evidence/ai-harness/p1/persistence-legacy-baseline.log:146: trailing whitespace.
++    228| 
+output/evidence/ai-harness/p1/persistence-legacy-baseline.log:160: new blank line at EOF.
+output/evidence/ai-harness/p1/persistence-red-bounded.log:39: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/ai-harness/p1/persistence-red-bounded.log:45: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/ai-harness/p1/persistence-red-bounded.log:82: trailing whitespace.
++    110| 
+output/evidence/ai-harness/p1/persistence-red-bounded.log:140: new blank line at EOF.
+output/evidence/ai-harness/p1/persistence-red.log:42: trailing whitespace.
++     70| 
+output/evidence/ai-harness/p1/persistence-red.log:74: trailing whitespace.
++    110| 
+output/evidence/ai-harness/p1/persistence-red.log:132: new blank line at EOF.
+output/evidence/ai-harness/p1/persistence-related.log:12: trailing whitespace.
++Received: 
+output/evidence/ai-harness/p1/persistence-related.log:92: trailing whitespace.
++Received: 
+output/evidence/ai-harness/p1/persistence-related.log:111: trailing whitespace.
++     33| 
+output/evidence/ai-harness/p1/persistence-related.log:116: trailing whitespace.
++     37| 
+output/evidence/ai-harness/p1/persistence-related.log:185: trailing whitespace.
++    228| 
+output/evidence/ai-harness/p1/persistence-related.log:199: new blank line at EOF.
+output/evidence/ai-harness/p1/persistence-typecheck.log:4: new blank line at EOF.

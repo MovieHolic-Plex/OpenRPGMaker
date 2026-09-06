@@ -1,0 +1,15 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p2",
+  "head": "4e2d1762264533a5826c48686648093c3fe69ebd",
+  "tree": "234c0e9c391276f082efb61e2abff2e0a8d7e634",
+  "command": [
+    "npm",
+    "run",
+    "openwiki:index"
+  ],
+  "started": "2026-09-06T02:19:12.493Z",
+  "exit": 0,
+  "signal": null,
+  "output": "\n> rpg-zzu@0.1.0 openwiki:index\n> node scripts/openwiki-index.mjs\n\nopenwiki/INDEX.md 갱신 — 47쪽, 없는 파일 참조 110건, 깨진 줄 79건.\n",
+  "sha256": "64a84f6d99f13418dc60a3e7fcb78e52ee26716db0a97a22a1f78fdf37307a01"
+}

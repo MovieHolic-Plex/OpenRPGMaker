@@ -128,11 +128,11 @@ describe("performAutosave / round trip", () => {
   });
 
   it("keeps the autosave key fully separate from the 3 manual slots (namespace included)", () => {
-    expect(autosaveKey()).toBe("oprn:save-slot:auto");
+    expect(autosaveKey()).toBe("oprn:save-slot:v5:auto");
     for (const slot of [1, 2, 3] as const) expect(autosaveKey()).not.toBe(saveSlotKey(slot));
     setSaveSlotStorageNamespace("proj-x");
-    expect(autosaveKey()).toBe("proj-x:save-slot:auto");
-    expect(saveSlotKey(1)).toBe("proj-x:save-slot:1");
+    expect(autosaveKey()).toBe("proj-x:save-slot:v5:auto");
+    expect(saveSlotKey(1)).toBe("proj-x:save-slot:v5:1");
   });
 
   it("does not touch manual slots when autosaving", () => {
@@ -242,7 +242,7 @@ describe("manual slot schemaVersion compatibility (regression)", () => {
     const { project, session } = projectAndSession();
     const snapshot = createSaveSnapshot(project, session);
     // 구 스냅샷 시뮬레이션: 새 optional 필드가 아예 없는 JSON.
-    const legacy = JSON.parse(JSON.stringify(snapshot)) as Record<string, unknown>;
+    const legacy = { ...snapshot, schemaVersion: SCHEMA_VERSION };
     delete legacy.savedBy;
     delete legacy.autosaveTrigger;
     expect(legacy.schemaVersion).toBe(SCHEMA_VERSION);

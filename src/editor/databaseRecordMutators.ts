@@ -142,6 +142,7 @@ export function updateEnemyRecord(database: DatabaseRecords, id: string, patch: 
   if ("level" in patch) record.level = patch.level;
   if ("skillIds" in patch && patch.skillIds !== undefined) record.skillIds = patch.skillIds;
   if ("monsterResourceId" in patch) record.monsterResourceId = patch.monsterResourceId;
+  if ("battleScalePercent" in patch) record.battleScalePercent = patch.battleScalePercent;
   if ("graphicHue" in patch && patch.graphicHue !== undefined) record.graphicHue = patch.graphicHue;
   if ("transparent" in patch && patch.transparent !== undefined) record.transparent = patch.transparent;
   if ("flying" in patch && patch.flying !== undefined) record.flying = patch.flying;

@@ -1,0 +1,21 @@
+{
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "120",
+    "npm",
+    "run",
+    "openwiki:index",
+    "--",
+    "--check"
+  ],
+  "started": "2026-09-06T08:49:44.935Z",
+  "finished": "2026-09-06T08:49:46.779Z",
+  "exit": 0,
+  "signal": null,
+  "head": "e9522cb11c4e09d09fddc45c18d805d53a61b976",
+  "tree": "47999d20959f54014ac1526adba0b27aa5842edd"
+}

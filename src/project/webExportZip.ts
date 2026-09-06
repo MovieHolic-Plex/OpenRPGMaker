@@ -2,7 +2,7 @@ import { contractFailure } from "@/project/playerDeploymentErrors";
 import { pathCollisionKey } from "@/project/playerDeploymentManifest";
 import type { FetchBytes, VerifiedPlayerDeployment } from "@/project/playerDeploymentManifest";
 import type { ZipEntry } from "@/project/packageZip";
-import { dataUrlBytes } from "@/project/webExportAssets";
+import { dataUrlBytes, exportAssetSourceUrl, invalidExportDependencyBytes } from "@/project/webExportAssets";
 import { prunedRuntimeAssetPaths } from "@/project/webExportRuntimeAssets";
 import type { PreparedWebExport, WebExportAsset } from "@/project/webExportTypes";
 
@@ -76,7 +76,9 @@ async function assetEntries(assets: readonly WebExportAsset[], fetchBytes: Fetch
       continue;
     }
     try {
-      entries.push({ name: asset.zipPath, bytes: await fetchBytes(`/${asset.sourcePath}`) });
+      const bytes = await fetchBytes(exportAssetSourceUrl(asset.sourcePath));
+      if (invalidExportDependencyBytes(bytes)) contractFailure("runtime-asset-unavailable");
+      entries.push({ name: asset.zipPath, bytes });
     } catch {
       contractFailure("runtime-asset-unavailable");
     }

@@ -1,0 +1,22 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeRecoveryRecordKeys.test.ts test/lifeRecovery.test.ts test/lifeRecoveryPersistence.test.ts test/p0SessionPersistence.test.ts test/p2SpatialPersistence.test.ts test/itemTransitions.test.ts test/p0CommerceFinalSafety.test.ts test/p0EconomySafetyFollowup.test.ts --config .omo/evidence/life-full-20260906/30/finite-use/vitest.config.mjs --maxWorkers=2 --minWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2-life-full-record-keys
+
+ ✓ test/lifeRecovery.test.ts (54 tests) 1822ms
+ ✓ test/lifeRecoveryPersistence.test.ts (40 tests) 2489ms
+   ✓ adversarial life codec boundaries > refuses all conversions on claim exhaustion without moving a prefix  446ms
+   ✓ bounded animal restoration > quarantines animals beyond the runtime bound instead of dropping a saved suffix  453ms
+ ✓ test/p0SessionPersistence.test.ts (9 tests) 429ms
+ ✓ test/p0CommerceFinalSafety.test.ts (16 tests) 575ms
+ ✓ test/lifeRecoveryRecordKeys.test.ts (37 tests) 3031ms
+ ✓ test/p0EconomySafetyFollowup.test.ts (18 tests) 647ms
+ ✓ test/p2SpatialPersistence.test.ts (3 tests) 182ms
+ ✓ test/itemTransitions.test.ts (4 tests) 215ms
+
+ Test Files  8 passed (8)
+      Tests  181 passed (181)
+   Start at  13:29:38
+   Duration  12.65s (transform 3.73s, setup 0ms, collect 12.04s, tests 9.39s, environment 2ms, prepare 504ms)

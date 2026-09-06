@@ -1,0 +1,214 @@
+[
+  {
+    "archive": ".omo/evidence/life-full-20260906/raw-log-archive.json",
+    "path": ".omo/evidence/life-full-20260906/28/base-25.stderr.txt",
+    "bytes": 23320,
+    "sha256": "061dc21ef152e3d10423a9de1886a8a0952c33e23ec9a92b77414ee43c2847f9",
+    "lines": 485
+  },
+  {
+    "archive": ".omo/evidence/life-full-20260906/raw-log-archive.json",
+    "path": ".omo/evidence/life-full-20260906/28/base-surface.decoded.txt",
+    "bytes": 26426,
+    "sha256": "7929f755808c96bcaf443c3b4c4727ad0c9e50f3968247bced7584031e725fcc",
+    "lines": 269
+  },
+  {
+    "archive": ".omo/evidence/life-full-20260906/raw-log-archive.json",
+    "path": ".omo/evidence/life-full-20260906/28/current-25.stderr.txt",
+    "bytes": 22513,
+    "sha256": "e435f8890490e47f0a1677c9f20a60af4e97b560dca341dc33ec363d16539027",
+    "lines": 472
+  },
+  {
+    "archive": ".omo/evidence/life-full-20260906/raw-log-archive.json",
+    "path": ".omo/evidence/life-full-20260906/28/current-surface.decoded.txt",
+    "bytes": 26803,
+    "sha256": "91147b381d27bc831973c976f79902256575c1fb63ad35e42336f56f6c200f8a",
+    "lines": 272
+  },
+  {
+    "archive": ".omo/evidence/life-full-20260906/raw-log-archive.json",
+    "path": ".omo/evidence/life-full-20260906/28/listeners-after.txt",
+    "notAvailable": "Unrelated machine-wide listener addresses; assigned-port cleanup evidence remains public."
+  },
+  {
+    "archive": ".omo/evidence/life-full-20260906/raw-log-archive.json",
+    "path": ".omo/evidence/life-full-20260906/28/listeners-before.txt",
+    "notAvailable": "Unrelated machine-wide listener addresses; assigned-port cleanup evidence remains public."
+  },
+  {
+    "archive": ".omo/evidence/life-full-20260906/raw-log-archive.json",
+    "path": ".omo/evidence/life-full-20260906/28/phase2-code.diff",
+    "bytes": 256633,
+    "sha256": "0a42cbd162ff17e4074840200382f6d5906830ee3ae4d2bca7b5dfc5a81e46ea",
+    "lines": 4593
+  },
+  {
+    "archive": ".omo/evidence/life-full-20260906/raw-log-archive.json",
+    "path": ".omo/evidence/life-full-20260906/28/registrations.txt",
+    "bytes": 39174,
+    "sha256": "35a7a3687bd867793330d1d22b497c50186879abc2358bf7a3165eb9c855cc93",
+    "lines": 1054
+  },
+  {
+    "archive": ".omo/evidence/life-full-20260906/40/raw-log-archive.json",
+    "path": ".omo/evidence/life-full-20260906/40/GREEN.log",
+    "bytes": 16983,
+    "sha256": "b48de71fc2a5c2df938d5c06ac2466a7a67de257c31338e2e847fb6acaa893a0",
+    "lines": 156,
+    "sourceGitBlobExact": true
+  },
+  {
+    "archive": ".omo/evidence/life-full-20260906/40/raw-log-archive.json",
+    "path": ".omo/evidence/life-full-20260906/40/RED.log",
+    "bytes": 32733,
+    "sha256": "1b64900842b3ba25c92aae3c29df66d8ddde61ecc3805c4faa13aabe5cd17085",
+    "lines": 273,
+    "sourceGitBlobExact": true
+  },
+  {
+    "archive": ".omo/evidence/life-full-20260906/40/raw-log-archive.json",
+    "path": ".omo/evidence/life-full-20260906/40/build.log",
+    "bytes": 18691,
+    "sha256": "4dbe8a5693eddbd25447413bb5ed44140118cbb5afe386a427d6770365a44431",
+    "lines": 186,
+    "sourceGitBlobExact": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/39/build.log.gz",
+    "compressedSha256": "a522510c8a2034ff59e46085ca30e876b354565081e2f356d18e90c07eae4492",
+    "bytes": 18250,
+    "sha256": "2d6b2d396dcb485f4acb6c7a1b5632c0fe2ff7366d166411a21eca2e848b034c",
+    "gzipCrcVerified": true,
+    "compressedHeadBlobExact": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/39/green.log.gz",
+    "compressedSha256": "0dd81ead96342694a417ac88d5c6b5f10ed18a18befdb55b67ce8768159ba0dd",
+    "bytes": 4757,
+    "sha256": "dfbb3a62d3f00b997dca204dbc481e005f2df84ace2b4616c69062cf8eb03e10",
+    "gzipCrcVerified": true,
+    "compressedHeadBlobExact": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/39/observation-correction/build.log.gz",
+    "compressedSha256": "3606c2146448bf60a362f1560b016695c00dc3251f136d406b3c915fd2070d9e",
+    "bytes": 18250,
+    "sha256": "aad431340ec4230cd115f813716dca1d27d4b819a796fcd86eb57b708e51a66b",
+    "gzipCrcVerified": true,
+    "compressedHeadBlobExact": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/39/observation-correction/cleanup.log.gz",
+    "compressedSha256": "091b295d77ab1f75c965251423a2b17e07752f0782f68f57ba4c85f3b3b9cf09",
+    "bytes": 2627,
+    "sha256": "0153d375bc88249fcd0e6c4cbe8688d49490cec0326928734f8a08136891cc12",
+    "gzipCrcVerified": true,
+    "compressedHeadBlobExact": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/39/observation-correction/controlled-diagnostic-visible.log.gz",
+    "compressedSha256": "9a4f109f340c20e3c4f7776bf58a5eca3e7ce7c504784620cb61299559c47288",
+    "bytes": 2971,
+    "sha256": "663b6b9b9db16baba70e3f54bdf9de457999bb243434cbce4f998c35d7ab0c46",
+    "gzipCrcVerified": true,
+    "compressedHeadBlobExact": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/39/observation-correction/controlled-diagnostic.log.gz",
+    "compressedSha256": "20ad373b8ab450fb96a7c26f239b429d1c6b84ce3f29a4759347c535fe0f1f8c",
+    "bytes": 2971,
+    "sha256": "c1008a08636b637ce7ada6e2c7e3e64e323c27045de4387bcef6efe538b6776a",
+    "gzipCrcVerified": true,
+    "compressedHeadBlobExact": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/39/observation-correction/deadline-red.log.gz",
+    "compressedSha256": "30a66c58c89510a67b6437a5935a6c215f3e3deba117ce4ac943dbab50c58479",
+    "bytes": 3530,
+    "sha256": "41946c13175ca0e1ff00bd6a3931f3b80569582a26fca064c3bc3e51f7cfc9d2",
+    "gzipCrcVerified": true,
+    "compressedHeadBlobExact": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/39/observation-correction/diagnostics.log.gz",
+    "compressedSha256": "de52b730f56d7f601c5f01f1c2105605c0d9020a3481ccafc93c80e53ce1eb24",
+    "bytes": 182,
+    "sha256": "1d9f1fce7951b6f097f2c5c159f79420aedb1c6a92f970f268a2ffb0c7526005",
+    "gzipCrcVerified": true,
+    "compressedHeadBlobExact": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/39/observation-correction/exact-flow-red.log.gz",
+    "compressedSha256": "6e8b39ce22376ec2e7eacb0eac04b271f54c9750db20bf5cba880137e1e2f25c",
+    "bytes": 3736,
+    "sha256": "801c729203ab7fecb00239a87efa5d53152c0193649b01a1c31fbd189e9af8fd",
+    "gzipCrcVerified": true,
+    "compressedHeadBlobExact": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/39/observation-correction/firefox.log.gz",
+    "compressedSha256": "66fd660a56963b16f07e11faebe888819421d8b58410e8c70d8e48d7ca19132e",
+    "bytes": 3428,
+    "sha256": "273251472bbada11cee44d88e9e542b7016d3a95fff20ee161181b72364f5c34",
+    "gzipCrcVerified": true,
+    "compressedHeadBlobExact": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/39/observation-correction/green.log.gz",
+    "compressedSha256": "3bc363ec8297bf7465f4663db53c9bf11a6bd1a7f44601fae04506771610cd04",
+    "bytes": 5538,
+    "sha256": "bf19c034adee5609cc8962ad65ba93a5e5fa1d86258c1c0a7aa986f5953df4e0",
+    "gzipCrcVerified": true,
+    "compressedHeadBlobExact": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/39/observation-correction/index.log.gz",
+    "compressedSha256": "979752a98a197236253f2fa7c2f3056211ba9be8b7850131077fcfccb8be8ff2",
+    "bytes": 101,
+    "sha256": "3f2805fa72c4dc3a0ea9a97a5f20db40593b9faba6ed867b8703ff05fac259b5",
+    "gzipCrcVerified": true,
+    "compressedHeadBlobExact": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/39/observation-correction/red.log.gz",
+    "compressedSha256": "f78c16b49592d48e4a5b58a096308abb7e4a30380a129ad1b577c0925de6ef30",
+    "bytes": 3005,
+    "sha256": "34b9150dd42efe17b277b079934bb9597bef62a250453863357b4ac852f04064",
+    "gzipCrcVerified": true,
+    "compressedHeadBlobExact": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/39/observation-correction/trigger-diagnostic.log.gz",
+    "compressedSha256": "dbfa650218dbf385cf48abde12158f866f2a93d375265e9550e607fe8072e11a",
+    "bytes": 3392,
+    "sha256": "5ec8267cab0358f517ff36e0519eed301234bb9ac2e45ae68a1fc1d60944033a",
+    "gzipCrcVerified": true,
+    "compressedHeadBlobExact": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/39/observation-correction/typecheck.log.gz",
+    "compressedSha256": "0bfd1eddf343566adecfdf6aa0b982fa3f84cd4a9b9d6994d6d45d651d7f09c6",
+    "bytes": 68,
+    "sha256": "9e2e881b46f10347e10261b098fd6171273d8f45b9a5d52fc81a8473a713bdfe",
+    "gzipCrcVerified": true,
+    "compressedHeadBlobExact": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/39/red.log.gz",
+    "compressedSha256": "7ec7fa7f39b40743cd53ad10abdf5b21fecbb5da3f00050dc224cb0366a22dfd",
+    "bytes": 5930,
+    "sha256": "21df01143ee94f51b2c3d04ec1e518c16d267adff114b25e2662852fa837ce69",
+    "gzipCrcVerified": true,
+    "compressedHeadBlobExact": true
+  },
+  {
+    "path": ".omo/evidence/life-full-20260906/39/typecheck.log.gz",
+    "compressedSha256": "0bfd1eddf343566adecfdf6aa0b982fa3f84cd4a9b9d6994d6d45d651d7f09c6",
+    "bytes": 68,
+    "sha256": "9e2e881b46f10347e10261b098fd6171273d8f45b9a5d52fc81a8473a713bdfe",
+    "gzipCrcVerified": true,
+    "compressedHeadBlobExact": true
+  }
+]

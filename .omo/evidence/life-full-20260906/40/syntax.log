@@ -1,0 +1,6 @@
+CHECK_EXIT=0 scripts/playtest-driver3.cjs
+CHECK_EXIT=0 scripts/playtest-driver4.cjs
+CHECK_EXIT=0 scripts/playtest-driver5.cjs
+CHECK_EXIT=0 scripts/playtest-driver6.cjs
+CHECK_EXIT=0 scripts/capture-fullscreen-scale.cjs
+CHECK_EXIT=0 .omo/evidence/life-full-20260906/40/browser-probe.mjs

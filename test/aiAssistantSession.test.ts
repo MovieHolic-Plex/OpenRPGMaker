@@ -949,16 +949,16 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
     gateFinal("모든 항목을 완료했습니다."),
   ];
 
-  it("(c) 플랜 완료 + remote enabled → store.flush()+reloadFromRemote() 호출 + agent_run_saved 감사(projectId+sha256)", async () => {
+  it("(c) completed remote plan verifies its accepted receipt without reloading", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const project = createBlankProject();
     installMilestoneHermeticEnv(project);
-    const flushSpy = vi.spyOn(store, "flush").mockResolvedValue({ kind: "saved", sha256: "sha-abc123" });
-    const reloadSpy = vi.spyOn(store, "reloadFromRemote").mockResolvedValue({
-      kind: "reloaded",
-      projectId: MILESTONE_TEST_ENV.VITE_SUPABASE_PROJECT_ID,
-      title: "t3",
-    });
+    const receipt = { revisionId: "accepted-revision", projectId: MILESTONE_TEST_ENV.VITE_SUPABASE_PROJECT_ID,
+      mutationGeneration: 3, contentIdentity: "normalized-content", sha256: "sha-abc123" };
+    const flushSpy = vi.spyOn(store, "flush").mockResolvedValue({ kind: "saved", receipt });
+    const reloadSpy = vi.spyOn(store, "reloadFromRemote");
+    const verifySpy = vi.spyOn(store, "verifyPersistedRevision").mockResolvedValue({ kind: "verified", receipt, isCurrent: true });
+    vi.spyOn(store, "isPersistenceReceiptCurrent").mockReturnValue(true);
     vi.spyOn(store, "isRemotePersistenceEnabled").mockReturnValue(true);
     const steps = runEndMilestoneSteps();
     let index = 0;
@@ -971,16 +971,12 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
     const result = await session.sendUserMessage("타이틀을 3단계로 개선해줘", () => {}, undefined, { autonomous: true });
 
     expect(result.stoppedReason).toBe("final");
-    // run-end 게이트: flush → reloadFromRemote 순서로 정확히 1회씩.
     expect(flushSpy).toHaveBeenCalledTimes(1);
-    expect(reloadSpy).toHaveBeenCalledTimes(1);
+    expect(reloadSpy).not.toHaveBeenCalled();
+    expect(verifySpy).toHaveBeenCalledExactlyOnceWith(receipt, { signal: undefined });
+    expect(session.getRunEndProof()).toMatchObject({ status: "succeeded", verified: true, receipt });
     const audits = gateStatusTexts(session);
-    const saved = audits.find((t) => t.includes("agent_run_saved"));
-    expect(saved).toBeTruthy();
-    expect(saved!).toContain(`projectId=${MILESTONE_TEST_ENV.VITE_SUPABASE_PROJECT_ID}`);
-    expect(saved!).toContain("sha256=sha-abc123");
-    // commitId 증거 경로: list_project_commits 는 브라우저 전용 툴 — node 에선 우아하게 기록된다.
-    expect(audits.some((t) => t.includes("agent_run:commit-evidence-unavailable"))).toBe(true);
+    expect(audits.filter((t) => t.split(" ")[0] === "agent_run_saved")).toHaveLength(1);
     // 드라이버 계속 턴은 플래너 왕복을 태우지 않는다 — 플래너는 사용자 턴에서 한 번만 돈다.
     expect(audits.filter((t) => t.startsWith("planner:start")).length).toBe(1);
     expect(audits.some((t) => t.includes("planner:skip driver-continue"))).toBe(true);

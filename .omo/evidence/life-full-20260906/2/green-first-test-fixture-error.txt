@@ -1,0 +1,65 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeSaveVersion.test.ts test/autosave.test.ts test/p0SessionPersistence.test.ts test/p1SessionPersistence.test.ts test/p2SessionPersistence.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+ ✓ test/p1SessionPersistence.test.ts (3 tests) 652ms
+   ✓ P1 farm-animal session persistence > round-trips runtime assignment, care receipts, cadence, and ready products  399ms
+ ✓ test/p2SessionPersistence.test.ts (4 tests) 1395ms
+   ✓ P2 session persistence > round-trips collection, museum receipts, forage cursor/placeables, and fishing RNG  744ms
+ ❯ test/lifeSaveVersion.test.ts (18 tests | 1 failed) 2009ms
+   × Save5 version and original ownership boundary > writes independent Save5 even without life packages, leaving Project4 and live state unchanged 679ms
+     → expected undefined to be 4 // Object.is equality
+   ✓ Save5 version and original ownership boundary > migrates manual and auto only in memory in namespace null 115ms
+   ✓ Save5 version and original ownership boundary > migrates manual and auto only in memory in namespace "  exported:game-a  " 136ms
+   ✓ Save5 version and original ownership boundary > runs the frozen phase1 reader on actual old/new bytes, not a simulated version predicate 105ms
+   ✓ Save5 version and original ownership boundary > rejects unsupported wire version 3 without rewriting it 104ms
+   ✓ Save5 version and original ownership boundary > rejects unsupported wire version 6 without rewriting it 110ms
+   ✓ Save5 version and original ownership boundary > rejects unsupported wire version 999 without rewriting it 110ms
+   ✓ Save5 version and original ownership boundary > rejects unsupported wire version "5" without rewriting it 52ms
+   ✓ Save5 version and original ownership boundary > never falls back from present malformed new bytes "" 56ms
+   ✓ Save5 version and original ownership boundary > never falls back from present malformed new bytes "{broken" 49ms
+   ✓ Save5 version and original ownership boundary > never falls back from present malformed new bytes "null" 48ms
+   ✓ Save5 version and original ownership boundary > never falls back from present malformed new bytes "{\"schemaVersion\":5}" 53ms
+   ✓ Save5 version and original ownership boundary > never falls back from present malformed new bytes "{\"schemaVersion\":6}" 70ms
+   ✓ Save5 version and original ownership boundary > does not borrow another namespace's legacy progress 63ms
+   ✓ Save5 version and original ownership boundary > preserves legacy bytes, previous new slot and live progress on quota (existing new=false) 81ms
+   ✓ Save5 version and original ownership boundary > preserves legacy bytes, previous new slot and live progress on quota (existing new=true) 77ms
+   ✓ Save5 version and original ownership boundary > characterizes construction failure: throws explicitly, preserves checkpoint and disk, does not debounce retry 46ms
+   ✓ Save5 version and original ownership boundary > creates Save5 memory checkpoints and resumes an independent session without mutating the live one 49ms
+ ✓ test/autosave.test.ts (16 tests) 1989ms
+   ✓ autosave policy (shouldAutosave) > saves by default with no prior autosave  630ms
+ ✓ test/p0SessionPersistence.test.ts (9 tests) 1619ms
+   ✓ P0 save snapshot regression > preserves life skills and shop economy through writer, parser, and apply  635ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/lifeSaveVersion.test.ts > Save5 version and original ownership boundary > writes independent Save5 even without life packages, leaving Project4 and live state unchanged
+AssertionError: expected undefined to be 4 // Object.is equality
+
+[32m- Expected:[39m
+4
+
+[31m+ Received:[39m
+undefined
+
+ ❯ test/lifeSaveVersion.test.ts:46:35
+     44|     expect(snapshot.schemaVersion).toBe(5);
+     45|     expect(SCHEMA_VERSION).toBe(4);
+     46|     expect(project.schemaVersion).toBe(4);
+       |                                   ^
+     47|     expect(session).toEqual(before);
+     48|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 4 passed (5)
+      Tests  1 failed | 49 passed (50)
+   Start at  06:55:25
+   Duration  11.54s (transform 7.96s, setup 0ms, collect 42.50s, tests 7.66s, environment 2ms, prepare 1.49s)
+
+
+ACTUAL_EXIT=1

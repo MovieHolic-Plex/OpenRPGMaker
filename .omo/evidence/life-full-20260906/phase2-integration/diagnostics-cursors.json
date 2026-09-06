@@ -1,0 +1,24 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p2",
+  "head": "66f2cdb756a5a95eda07cae6103b82dfe7298b8a",
+  "tree": "944315667d23fd9d65de95d33a35215e7f925e68",
+  "label": "diagnostics-cursors",
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "300s",
+    "node",
+    ".omo/evidence/life-full-20260906/30/finite-use/diagnostics.mjs"
+  ],
+  "started": "2026-09-06T05:02:48.962Z",
+  "finished": "2026-09-06T05:02:58.895Z",
+  "exit": 0,
+  "signal": null,
+  "stdout": "{\"path\":\"src/player/saveSlots.ts\",\"diagnostics\":[]}\n{\"path\":\"src/project/itemTransitions.ts\",\"diagnostics\":[]}\n{\"path\":\"test/lifeRecoveryRecordKeys.test.ts\",\"diagnostics\":[]}\n{\"command\":[\"/usr/local/bin/node\",\"--check\",\".omo/evidence/life-full-20260906/30/finite-use/diagnostics.mjs\"],\"exit\":0,\"stdout\":\"\",\"stderr\":\"\"}\n{\"command\":[\"/usr/local/bin/node\",\"--check\",\".omo/evidence/life-full-20260906/30/finite-use/run.mjs\"],\"exit\":0,\"stdout\":\"\",\"stderr\":\"\"}\n{\"command\":[\"/usr/local/bin/node\",\"--check\",\".omo/evidence/life-full-20260906/30/finite-use/public-roundtrip.mjs\"],\"exit\":0,\"stdout\":\"\",\"stderr\":\"\"}\n{\"command\":[\"/usr/local/bin/node\",\"--check\",\".omo/evidence/life-full-20260906/30/finite-use/vitest.config.mjs\"],\"exit\":0,\"stdout\":\"\",\"stderr\":\"\"}\n",
+  "stderr": ""
+}

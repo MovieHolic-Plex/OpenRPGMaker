@@ -1,31 +1,5 @@
 # RPG ZZU Design System
 
-## Opening and game-over authoring (2026-09-06)
-
-Database > Opening and Game Over are separate System-group destinations using
-the existing cool-white/slate/indigo Database Studio, not a new theme.
-
-- A scene-order list and a scrolling detail pane share `workspaceShell`,
-  `listPane`, `detailPane`, `sectionCard`, native controls and resource pickers.
-  The desktop acceptance sizes are 1024x768 and 1440x900 across editor modes.
-- Text, image and video scenes share narration, optional voice and duration.
-  Image motion is specific to image scenes. Pending image/video choices stay
-  local until valid media is selected; disabled authored content is retained.
-- Media files are prepared without project writes, then the asset/profile/scene
-  reference is committed as one labelled undoable edit. Selection, navigation
-  and sequence preview do not modify authored settings.
-- Text input retains its DOM node, focus and caret; only the list excerpt is
-  refreshed while typing. Discrete edits and typing use the existing history.
-- Sequence preview uses the runtime player and fitted logical play surface.
-  It is revealed before keyboard capture and always stops with Escape, Stop,
-  Close, tab departure or project replacement, including unskippable content.
-  The opener is restored only while its view remains active.
-- Preview auditions disabled sequences without enabling them in the project.
-  It is labelled as sequence preview; game-over terminal labels/background are
-  checked in the actual game. Empty action-label edits restore runtime defaults.
-- Cinematic tab views are disposed and evicted on departure instead of retaining
-  live media/callbacks in the Database cache. Other tab caching is unchanged.
-
 ## In-game shop trade counter (2026-09-06)
 
 Runtime only: this is not the shop-command editor. `runtime/shop.css` owns a
@@ -119,6 +93,32 @@ existing purse emblem; actual party faces remain explicitly labelled as party.
   generated troops. Delete removes rules, not tiles/troops. Empty catalog/search,
   invalid input, stale state and lock errors have visible recovery text.
   No fake loading. Real browser review is supervisor-owned.
+
+## Opening and game-over authoring (2026-09-06)
+
+Database > Opening and Game Over are separate System-group destinations using
+the existing cool-white/slate/indigo Database Studio, not a new theme.
+
+- A scene-order list and a scrolling detail pane share `workspaceShell`,
+  `listPane`, `detailPane`, `sectionCard`, native controls and resource pickers.
+  The desktop acceptance sizes are 1024x768 and 1440x900 across editor modes.
+- Text, image and video scenes share narration, optional voice and duration.
+  Image motion is specific to image scenes. Pending image/video choices stay
+  local until valid media is selected; disabled authored content is retained.
+- Media files are prepared without project writes, then the asset/profile/scene
+  reference is committed as one labelled undoable edit. Selection, navigation
+  and sequence preview do not modify authored settings.
+- Text input retains its DOM node, focus and caret; only the list excerpt is
+  refreshed while typing. Discrete edits and typing use the existing history.
+- Sequence preview uses the runtime player and fitted logical play surface.
+  It is revealed before keyboard capture and always stops with Escape, Stop,
+  Close, tab departure or project replacement, including unskippable content.
+  The opener is restored only while its view remains active.
+- Preview auditions disabled sequences without enabling them in the project.
+  It is labelled as sequence preview; game-over terminal labels/background are
+  checked in the actual game. Empty action-label edits restore runtime defaults.
+- Cinematic tab views are disposed and evicted on departure instead of retaining
+  live media/callbacks in the Database cache. Other tab caching is unchanged.
 
 ## System settings workspace (2026-09-06)
 
@@ -229,6 +229,28 @@ worldbuilding workspace.
   No runtime/mobile-editor expansion is included.
 
 > **Status note:** The editor chrome is a cool white studio with one indigo accent. Runtime game surfaces keep their retro/pixel window presentation. The event-command editor is a cream-studio command editor: the event-command list, canvas, and every command form use cream tokens (`src/styles/tokens.css`), Korean-first modern labels, human sentences (named flags, no `Sw[0001]` / `◆` / `ON` / raw `\c[1]` chip walls), and the `cream form` field pattern — no RM2K3 retro command-list presentation. Shell tokens live in `src/styles/tokens.css` (single source of truth, imported first in `src/styles/index.css`) with `html { color-scheme: light; }` (`src/styles/index.css:75`); legacy names are aliased in `src/styles/editor/core.part-1.css`, `src/styles/database/tabs-b-shell-layout.css`, and `src/styles/shell/figma-editor/01-shell-topbar-team.css`. Warm cream elevation is `canvas < inset < base < surface < raised < overlay`. Previous dark values live in git history only. When the code changes, update this file — it is the source of truth, not an aspirational target.
+
+## Sidebar brush and source selection (2026-09-06)
+
+- All density modes expose one compact native brush-size group (1 through 4),
+  outside More, plus current shape/stamp dimensions and layer. Existing `btn`,
+  `tile-brush-row`, semantic text/accent tokens, `--font-size-sm`, `--space-1/2`
+  and 32px (`--space-6`) targets govern it. No new theme or cards.
+- Beginner Paint uses the shared tool reset, including clearing a stamp. Size
+  remains visible across modes rather than silently resetting the user's brush.
+- Collapsed default variants use their representative for filter exemption,
+  pressed/roving/reveal state only; the original selected paint tile is retained.
+- Beginner search reports actual matches, explains the retained out-of-filter
+  selection, and offers clear/reset returning focus to the search input.
+- Custom source atlases retain all authored rows/columns and per-cell layers.
+  Pointer drag resolves once on release into the existing PaletteStamp contract;
+  one-cell and keyboard activation remain single-tile selection. Cancellation,
+  scroll and removal abandon a pending gesture without painting. The collapsed
+  default palette keeps single-tile semantics. No drag-start rerender.
+- The source sheet remains primary. Existing 288px beginner rail and dock sizing
+  remain; browser acceptance must retain 520px canvas at 1024px and 108px expert
+  map-list content. Lead owns fresh screenshots, measures and visual approval;
+  no approval is inferred from DOM tests or unavailable image inspection.
 
 ## 1. Atmosphere & Identity
 
@@ -663,6 +685,7 @@ The float assistant is **one glass instrument**, `div.ai-deck` inside the transp
 - Target selection keeps field brackets, a short target prompt, key hints, and clickable target rows. Victory/result uses a compact reward summary only.
 - Battle is database-driven: actor stats from parameter curves, enemy stats/rewards from records, skill effects (damage/healing/support/switch), agility-derived ATB charge, defense + defend halving.
 - Battle sprites must be original or permissively licensed. Do not reproduce RM2K3 battlers, animations, icons, or window graphics.
+- Enemy battle-size requests above 100% fit uniformly within the logical battlefield: 16px side gutters, 32px top motion clearance, 24px bottom information-card clearance. Clamp the visual ground anchor without changing authored troop positions or requested percentages. Default 100% geometry and HUD typography remain unchanged; fit affects image dimensions, never motion transforms. The appearance inspector explains the fit ceiling and directs authors to the existing battle test.
 
 ## 6. Motion & Interaction
 

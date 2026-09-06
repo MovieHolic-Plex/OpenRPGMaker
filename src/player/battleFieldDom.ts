@@ -1,4 +1,5 @@
 import type { BattleActionBeat } from "@/player/battleActionBeats";
+import { fitBattleEnemy } from "@/player/battleEnemyFit";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import {
   battlerIdleAnimation,
@@ -8,12 +9,12 @@ import {
 } from "@/assets/battlerIdleAnimations";
 import type { BattleBattlerSnapshot, BattleSnapshot } from "@/battle/runtime";
 import { POSE_FRAME } from "@/battle/battlePose";
+import { skinPartySpriteUrl } from "@/battle/partySpriteResources";
 import { getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
 import type { BattleSkin } from "@/battle/skins/types";
 import {
   BATTLER_PLACEMENTS,
   resolveSkinEnemyPositions,
-  type BattlerPartyFacing,
 } from "@/battle/battlerPlacements";
 export {
   BATTLER_PLACEMENTS,
@@ -75,51 +76,9 @@ function activeSkin(): BattleSkin {
   return getBattleSkin(resolveSkinId(store.getCurrent().system.battleUiStyle));
 }
 
-type PartyFacing = BattlerPartyFacing;
-
 /** 스킨 전용 적 스프라이트(bskin-enemy-<id>)를 우선 사용. 없으면 null. */
 function skinEnemySpriteUrl(): string | null {
   return resolveAssetResourceUrl(`bskin-enemy-${activeSkin().id}`, { project: store.getCurrent() });
-}
-
-/**
- * 액터별 뒷모습 배틀러 리소스 id. 저작된 전투 시트 id 에서 슬러그만 떼어낸다 —
- * `generated-actor-hero-03-battle` → `generated-actor-hero-03-back`.
- *
- * 왜 스키마에 필드를 안 더하나: 뒷모습은 정면 시트와 **같은 인물의 다른 시점**이라 파생
- * 관계가 이미 id 에 들어 있다. 필드를 더하면 스키마·에디터·직렬화·픽스처가 다 따라와야 하고,
- * 작성자가 두 칸을 따로 채워 어긋나게 만들 여지도 생긴다. 여기서 유도하면 그 전부가 0 이다.
- */
-function actorBackSpriteId(actor: BattleBattlerSnapshot): string | null {
-  const slug = /^generated-actor-(hero-\d+)-battle$/.exec(actor.battleCharacterResourceId ?? "")?.[1];
-  return slug ? `generated-actor-${slug}-back` : null;
-}
-
-/**
- * 스킨 파티 스프라이트(정면/후면).
- *
- * 후면 스킨의 폴백은 액터를 구분하지 못한다 — 포켓몬은 파티 전원에게 보라색 생물 한 장을,
- * 나머지는 전사/마법사 두 장을 번갈아 돌려 준다. 그래서 액터별 뒷모습이 있으면 그걸 먼저 쓴다.
- * 없는 액터(작성자가 직접 넣은 시트 등)는 예전 폴백 그대로 간다.
- */
-function skinPartySpriteUrl(
-  index: number,
-  facing: PartyFacing,
-  actor?: BattleBattlerSnapshot,
-): { url: string; perActor: boolean; resourceId: string } | null {
-  if (facing === "hidden") return null;
-  const project = store.getCurrent();
-  if (facing === "back" && actor) {
-    const backId = actorBackSpriteId(actor);
-    // id 가 만들어졌다고 그림이 있는 건 아니다 — 리졸브까지 성공해야 액터별로 쓴 것이다.
-    const backUrl = backId && resolveAssetResourceUrl(backId, { project });
-    if (backId && backUrl) return { url: backUrl, perActor: true, resourceId: backId };
-  }
-  const id = activeSkin().id === "pokemon"
-    ? "bskin-ally-creature-back"
-    : `bskin-party-${index % 2 === 0 ? "warrior" : "mage"}-${facing}`;
-  const url = resolveAssetResourceUrl(id, { project });
-  return url ? { url, perActor: false, resourceId: id } : null;
 }
 
 /**
@@ -365,6 +324,8 @@ function syncEnemyGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
     }
     if (!node) continue;
     syncEnemyNode(node, enemy, snapshot, presentation);
+    const position = fitBattleEnemy(field, node, positions[index]);
+    positionBattleNode(node, position.x, position.y);
   }
 }
 
@@ -663,7 +624,10 @@ function enemyButton(
     enemyNode.classList.add("battle-target-selected");
   }
   // 각 적 레코드의 고유 몬스터 이미지를 우선 사용. 없으면 스킨 공용 스프라이트로 대체.
-  const resourceId = monsterResourceId(enemy.recordId);
+  const record = store.getCurrent().database.enemies.find((entry) => entry.id === enemy.recordId);
+  const resourceId = record?.monsterResourceId;
+  // 이미지 치수만 배율 적용: 노드의 이동/피격 transform과 이미지의 숨쉬기 scale은 그대로 둔다.
+  enemyNode.style.setProperty("--battle-enemy-scale", String((record?.battleScalePercent ?? 100) / 100));
   const perEnemyUrl = resourceId ? resolveAssetResourceUrl(resourceId, { project: store.getCurrent() }) : null;
   const skinUrl = skinEnemySpriteUrl();
   const url = perEnemyUrl ?? skinUrl;
@@ -833,7 +797,7 @@ function actorNode(actor: BattleBattlerSnapshot, index = 0, count = 4): HTMLElem
   }
   // authored 정면 시트가 없거나 후면 구도가 필요한 스킨만 스킨 공용 파티 스프라이트로 폴백한다.
   // 후면이면 액터별 뒷모습이 먼저 잡힌다(skinPartySpriteUrl).
-  const skinSprite = skinPartySpriteUrl(index, place.partyFacing, actor);
+  const skinSprite = skinPartySpriteUrl(store.getCurrent(), activeSkin().id, index, place.partyFacing, actor);
   if (skinSprite) {
     const image = document.createElement("img");
     image.className = "battle-actor-image battle-skin-actor-image";
@@ -1232,10 +1196,6 @@ const BATTLE_SHEET_ROWS = 8;
 
 function isGeneratedBattleActor(resourceId: string): boolean {
   return resourceId.startsWith("generated-actor-") && resourceId.endsWith("-battle");
-}
-
-function monsterResourceId(recordId: string): string | undefined {
-  return store.getCurrent().database.enemies.find((enemy) => enemy.id === recordId)?.monsterResourceId;
 }
 
 function monsterSpeciesResourceId(speciesId: string): string | undefined {

@@ -1,0 +1,4 @@
+command: npm test -- test/assistantVerificationEvidence.test.ts test/aiComposerModeSession.test.ts test/aiMilestoneTurnAccounting.test.ts test/aiAssistantTurnCleanup.test.ts test/applyProposedProjectHouseProtection.test.ts
+started: 2026-09-06T08:44:24Z
+exit_code: 0
+finished: 2026-09-06T08:45:57Z

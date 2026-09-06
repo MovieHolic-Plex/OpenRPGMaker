@@ -13,10 +13,10 @@
   범용 DAG, 임의 JavaScript 실행 도구, 서버 상주 에이전트, 새 Supabase 테이블.
 - 우선순위: **저장 증명의 거짓 성공 수정 → 목표 완료 의미 → 복구 →
   오래된 결과/초안 방지 → 사용자 표시와 실제 검증.**
-- 이번 문서는 연구 결과에 따른 제안이며 **제품 구현은 아직 시작하지 않았다.**
-  이 계획의 실행은 별도 사용자 지시로 시작한다.
-- 미래 구현 위험도: **HEAVY**. 세션 수명주기, 로컬 저장 마이그레이션,
-  동시 편집 경계, 원격 검증 계약을 다룬다. 현재 연구/계획 작성은 산문 중심 LIGHT.
+- 사용자는 2026-09-06 구현·커밋·PR·순차 병합을 승인했다. 아래 체크박스와
+  `.omo/ulw-loop/ai-harness-implementation-01a07564/`가 현재 실행 상태를 기록한다.
+- 구현 위험도: **HEAVY**. 세션 수명주기, 로컬 저장 마이그레이션,
+  동시 편집 경계, 원격 검증 계약을 다룬다.
 
 ## Context and provenance
 
@@ -179,10 +179,28 @@ UI는 실제 경로를 탄다. 클릭 전 정확한 사건을 구독하고 bound
 
 ## Execution strategy and dependencies
 
-후속 구현은 격리 worktree 한 곳에서 한 작성자가 코드 편집을 담당한다.
-다른 조사/리뷰는 읽기 전용으로 병렬 가능하다. 여러 구현자를 쓸 경우 repo
-규칙대로 각자 격리 worktree가 필요하며, 같은 Supabase 프로젝트 콘텐츠는
+사용자의 후속 실행 지시가 초기 단일-worktree 제안을 대체한다. **Phase마다
+새 전용 worktree를 만들고 mass-ulw로 구현·검증·PR을 진행한다.** 독립 작업과
+리뷰 수정은 worker별 별도 worktree에서 deep 병렬 작업으로 수행한다.
+같은 worktree에 두 작성자를 두지 않으며, 같은 Supabase 프로젝트 콘텐츠는
 병렬 작성하지 않는다.
+
+각 Phase의 PR은 **ultrabrain이 현재 통합 HEAD에 최종 승인한 뒤에만** 리드가
+병합한다. 수정 요청이 있으면 독립 작업으로 나누어 병렬 deep 수정 → 통합 →
+ultrabrain 재검토를 반복한다. 승인·병합·정리가 끝나기 전에는 다음 Phase를
+시작하지 않는다.
+
+원본 구현 번호 1~10은 보존한다. 추가된 11~15는 새 기능이 아니라 사용자 지정
+Phase 운영 게이트이며, 실행 순서를 강제하도록 해당 Phase 뒤에 배치한다.
+이 게이트들은 live todo의 Phase별 검증/PR/리뷰/병합/정리 항목과 대응한다.
+
+| Phase | 원본 구현 | 운영 게이트 |
+|---|---|---|
+| P1 Proof | 1, 2 | 11 |
+| P2 Outcomes | 3, 4 | 12 |
+| P3 Ownership | 5, 6 | 13 |
+| P4 Recovery | 7, 8 | 14 |
+| P5 Delivery | 9, 10 및 F1~F3 | 15 |
 
 ```text
 1 기준선
@@ -201,7 +219,7 @@ UI는 실제 경로를 탄다. 클릭 전 정확한 사건을 구독하고 bound
 
 ## Todos
 
-- [ ] 1. 현재 계약과 실패 증거를 기준선으로 고정한다
+- [x] 1. 현재 계약과 실패 증거를 기준선으로 고정한다
   - Recommended task executor category: deep
   - 소유: 관련 `test/`와 evidence만. 기존 동작 변경 없음.
   - 근거: 연구 E02/E03, `assistantVerificationEvidence.test.ts`,
@@ -231,6 +249,16 @@ UI는 실제 경로를 탄다. 클릭 전 정확한 사건을 구독하고 bound
   - 실표면: 10의 `--scenario proof-failure`와 실제 remote smoke가 이 증분을 검증.
   - 증거: `output/evidence/ai-harness/proof/`의 RED/GREEN, captured receipts.
   - Commit: `fix(ai): verify persisted revisions before reporting saved proof`.
+
+- [ ] 11. P1을 검증하고 ultrabrain 최종 승인 뒤 PR을 병합한다
+  - Recommended task executor category: ultrabrain
+  - 이 행은 리드의 운영 게이트다. ultrabrain은 읽기 전용 검토만 하며 병합은 리드만 한다.
+  - P1 전용 worktree, 실제 편집기/격리 원격 증거, 감독자 gates, 현재 main과의
+    통합을 확인한다. 기존 실패는 동일 조건의 원본 코드와 대조하고 신규 회귀를 해결한다.
+  - PR #647의 현재 HEAD/tree를 검토에 고정한다. 수정 시 독립 deep worktree로
+    병렬 수정 후 통합 재검토. 최종 APPROVE 전에는 PR을 병합하지 않는다.
+  - 승인한 HEAD를 `gh pr merge --merge --match-head-commit`에 사용하고 GitHub의
+    MERGED 상태·merge SHA를 확인한다. 소유 QA 자원을 정리한 뒤 P2로 진행한다.
 
 - [ ] 3. WorkPlan의 항목 종료와 필수 요구 충족을 분리한다
   - Recommended task executor category: deep
@@ -269,6 +297,14 @@ UI는 실제 경로를 탄다. 클릭 전 정확한 사건을 구독하고 bound
   - 증거: `output/evidence/ai-harness/outcomes/`.
   - Commit: `feat(ai): project run outcomes from execution and delivery evidence`.
 
+- [ ] 12. P2를 검증하고 ultrabrain 최종 승인 뒤 PR을 병합한다
+  - Recommended task executor category: ultrabrain
+  - P1 병합 기반의 새 worktree와 새 mass-ulw run을 사용한다. 최신 main의
+    수락 조건 구현을 대조해 기존 원장을 중복 구현하거나 제거하지 않는다.
+  - 요구/결과 실표면·회귀·감독자 gates와 Draft PR을 준비한다. 읽기 전용
+    ultrabrain 검토 → 독립 deep 병렬 수정 → 통합 재검토를 승인까지 반복한다.
+  - 리드가 승인된 현재 HEAD만 병합하고 merge SHA·정리를 기록한 뒤 P3로 진행한다.
+
 - [ ] 5. 실행 세대와 취소 경계를 늦은 결과까지 관통시킨다
   - Recommended task executor category: deep
   - 선행: 4. 소유: `assistantSession.ts`, `aiTurnRunner.ts`,
@@ -297,6 +333,13 @@ UI는 실제 경로를 탄다. 클릭 전 정확한 사건을 구독하고 bound
     실제 map/database 값 보존. 두 탭 전역 lock 보장은 주장하지 않음.
   - 증거: `output/evidence/ai-harness/stale-proposal/`.
   - Commit: `fix(ai): preserve live edits when a proposed project becomes stale`.
+
+- [ ] 13. P3를 검증하고 ultrabrain 최종 승인 뒤 PR을 병합한다
+  - Recommended task executor category: ultrabrain
+  - P2 병합 기반의 새 worktree/mass-ulw에서 취소·세대·사람 편집 보존을 실제
+    화면과 실패 주입으로 증명하고 감독자 gates 및 Draft PR을 준비한다.
+  - 읽기 전용 ultrabrain 검토와 독립 deep 병렬 수정·통합 재검토를 반복한다.
+    리드가 최종 승인된 HEAD만 병합하고 자원 정리 후 P4로 진행한다.
 
 - [ ] 7. 기존 IndexedDB에 버전 있는 실행 체크포인트를 추가한다
   - Recommended task executor category: deep
@@ -331,6 +374,13 @@ UI는 실제 경로를 탄다. 클릭 전 정확한 사건을 구독하고 bound
     tool counter·맵 이벤트 수·활성 run identity를 대조.
   - 증거: `output/evidence/ai-harness/recovery/`. No exactly-once claim.
   - Commit: `fix(ai): reconcile interrupted runs before resuming authoring`.
+
+- [ ] 14. P4를 검증하고 ultrabrain 최종 승인 뒤 PR을 병합한다
+  - Recommended task executor category: ultrabrain
+  - P3 병합 기반 새 worktree/mass-ulw에서 실제 IndexedDB 이관·새로고침·
+    미확정 쓰기 조정과 회귀를 증명하고 감독자 gates 및 Draft PR을 준비한다.
+  - 읽기 전용 ultrabrain 검토 → 독립 deep 병렬 수정 → 통합 재검토를 반복한다.
+    최종 승인 후 리드가 현재 HEAD만 병합하고 정리한 뒤 P5로 진행한다.
 
 - [ ] 9. 자료 전달 영수증과 간결한 결과 표시를 연결한다
   - Recommended task executor category: deep
@@ -374,6 +424,15 @@ UI는 실제 경로를 탄다. 클릭 전 정확한 사건을 구독하고 bound
     `openwiki/testing.md` 중 변경된 계약 절만 갱신.
   - 증거: 모든 action log, 상태 JSON, PNG, 서버/브라우저/리스너 정리 receipt.
   - Commit: `test(ai): verify harness outcomes and recovery on real editor surfaces`.
+
+- [ ] 15. P5의 전체 목표를 검증하고 ultrabrain 승인 뒤 마지막 PR을 병합한다
+  - Recommended task executor category: ultrabrain
+  - P4 병합 기반 새 worktree/mass-ulw에서 9·10을 마무리한다. F1·F2의 전체
+    감독자 검증과 아래 모든 SC를 먼저 실행·기록하고 해당 체크박스도 갱신한다.
+  - 현재 통합 HEAD의 Draft PR을 ultrabrain이 검토한다. 독립 deep 병렬 수정과
+    통합 재검토를 최종 승인까지 반복하고 리드만 승인된 HEAD를 병합한다.
+  - F3에서 소유 자원 정리와 사용자 변경을 보존한 공유 main 통합까지 확인한다.
+    다섯 PR의 승인/병합 증거와 전체 실제 동작이 충족돼야 최상위 목표를 완료한다.
 
 ## Final verification wave
 

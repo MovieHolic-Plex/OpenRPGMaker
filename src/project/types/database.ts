@@ -398,6 +398,8 @@ export interface EnemyRecord {
   speciesId?: MonsterSpeciesId;
   level?: number;
   monsterResourceId?: string;
+  /** 전투 이미지 표시 크기(10~300%, 정수). 생략 시 기존 크기 100%. */
+  battleScalePercent?: number;
   graphicHue: number;
   transparent: boolean;
   flying: boolean;

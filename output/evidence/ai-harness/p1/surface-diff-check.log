@@ -1,0 +1,24 @@
+output/evidence/ai-harness/p1/surface-build.log:14: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p1/surface-build.log:17: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p1/surface-build.log:20: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p1/surface-build.log:23: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p1/surface-build.log:26: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p1/surface-build.log:114: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p1/surface-tests.log:26: trailing whitespace.
++Received: 
+output/evidence/ai-harness/p1/surface-tests.log:126: trailing whitespace.
++Received: 
+output/evidence/ai-harness/p1/surface-tests.log:145: trailing whitespace.
++     33| 
+output/evidence/ai-harness/p1/surface-tests.log:150: trailing whitespace.
++     37| 
+output/evidence/ai-harness/p1/surface-tests.log:219: trailing whitespace.
++    228| 
+output/evidence/ai-harness/p1/surface-tests.log:233: new blank line at EOF.
+output/evidence/ai-harness/p1/surface-typecheck.log:4: new blank line at EOF.

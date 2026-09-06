@@ -1,0 +1,54 @@
+{
+  "at": "2026-09-06T02:23:36.935965+00:00",
+  "trees": [
+    {
+      "path": "/home/main/z-project/rpg-zzu-life-full-p2-gate-base",
+      "head": "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "branch": "agent/life-full-p2-gate-base",
+      "trackedStatus": "",
+      "trackedCachesPreserved": [
+        ".vite-cache/deps/_metadata.json",
+        ".vite-cache/deps/package.json"
+      ],
+      "nodeModulesIsSymlink": true,
+      "envLocalPresent": true,
+      "literalEnvPresent": false
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-life-full-p2-gate-current",
+      "head": "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "branch": "agent/life-full-p2-gate-current",
+      "trackedStatus": "",
+      "trackedCachesPreserved": [
+        ".vite-cache/deps/_metadata.json",
+        ".vite-cache/deps/package.json"
+      ],
+      "nodeModulesIsSymlink": true,
+      "envLocalPresent": true,
+      "literalEnvPresent": false
+    }
+  ],
+  "assignedPortsUnused": {
+    "9801": true,
+    "9802": true
+  },
+  "processGroupCheck": {
+    "command": [
+      "ps",
+      "-o",
+      "pid,ppid,stat,args",
+      "-g",
+      "1051827"
+    ],
+    "exit": 1,
+    "stdout": "    PID    PPID STAT COMMAND\n",
+    "stderr": ""
+  },
+  "removedTaskOwnedCaches": [
+    "/home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/28/__pycache__"
+  ],
+  "requestedViteCachesAbsent": true,
+  "sharedPreexistingVitestResultCachePreserved": "/home/main/z-project/rpg-zzu/node_modules/.vite/vitest/da39a3ee5e6b4b0d3255bfef95601890afd80709/results.json",
+  "mainSourceNotTested": true,
+  "temporaryWorktreesRetained": true
+}

@@ -1,0 +1,16 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p2",
+  "head": "62c70a3093f6a891f209cc9c3d02a6140dccffed",
+  "tree": "e6fb5e9a92ad4c570420e4755880d78d532c7d68",
+  "diffSha256": "1b10b539d385f52def550443a44266526e1cbc6863177c3bc3344bb8f10583a8",
+  "command": [
+    "bash",
+    "-c",
+    "for file in .omo/evidence/life-full-20260906/5/q1/*.mjs; do node --check \"$file\" || exit $?; done"
+  ],
+  "started": "2026-09-06T02:50:12.391Z",
+  "exit": 0,
+  "signal": null,
+  "output": "",
+  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

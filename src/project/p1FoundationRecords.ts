@@ -179,12 +179,13 @@ export function restoreFarmAnimalStates(
     .map((building) => [building.id, building] as const));
   const restored: Record<string, FarmAnimalState> = {};
 
-  for (const start of normalizedStarts) restored[start.instanceId] = initialFarmAnimalState(start);
+  if (saved === undefined) for (const start of normalizedStarts) {
+    if (knownSpeciesIds.has(start.speciesId)) restored[start.instanceId] = initialFarmAnimalState(start);
+  }
   for (const [instanceId, state] of Object.entries(saved ?? {}).slice(0, FARM_ANIMAL_RECORD_LIMIT)) {
     if (!knownSpeciesIds.has(state.speciesId)) continue;
     const start = startById.get(instanceId);
-    if (start && state.speciesId !== start.speciesId) continue;
-    const identity = start ?? state;
+    const identity = start?.speciesId === state.speciesId ? start : state;
     const buildingId = compatibleBuildingId(state.buildingId, state.speciesId, buildingById)
       ?? compatibleBuildingId(start?.buildingId, state.speciesId, buildingById);
     restored[instanceId] = {
