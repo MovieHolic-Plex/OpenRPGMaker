@@ -1,5 +1,10 @@
 # Editor AI Tools & Vocabulary
 
+Generated `place_npc({guide:"action-controls"})` guides omit automatic portraits;
+an explicit `face` still uses the normal authoring contract. This avoids shipping
+an inferred faceset ID absent from the project while preserving the canonical
+controls, existing guide identity and position.
+
 ## Completed-house transaction protection - Phase 1 (2026-09-05)
 
 `src/editor/tools/houseProtection.ts` is the shared completed-house ownership rule.

@@ -590,6 +590,7 @@ const placeNpc: ToolDefinition = {
       movement,
       warnings: normalizationWarnings,
       face: faceArg,
+      injectFace: !actionGuide || args.face !== undefined,
     });
     let event: GameEvent;
     let finalX = x;

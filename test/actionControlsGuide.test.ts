@@ -9,6 +9,17 @@ function context(): ToolContext {
 }
 
 describe("action controls guide authoring", () => {
+  it("does not invent a portrait for a generated controls guide", () => {
+    const ctx = context();
+    const result = runTool(ctx, "place_npc", {
+      mapId: ctx.project.startMapId, x: 2, y: 2, name: "Controls", guide: "action-controls",
+    });
+
+    expect(result.ok, result.summary).toBe(true);
+    const guide = ctx.project.maps[ctx.project.startMapId]?.events[0];
+    expect(guide?.pages?.[0]?.commands.filter(command => command.kind === "changeFace")).toHaveLength(0);
+  });
+
   it("updates one map-stable guide without moving it when retried elsewhere", () => {
     const ctx = context();
     const mapId = ctx.project.startMapId;
