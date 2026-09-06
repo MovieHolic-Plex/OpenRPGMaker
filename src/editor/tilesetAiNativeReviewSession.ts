@@ -1,4 +1,5 @@
-import { hasCpenTilesetApiKey } from "@/editor/panels/tilesetAiCpenClient";
+import { renderTilesetAtlasImage } from "@/editor/panels/tilesetAiTempMapImage";
+import { hasCpenTilesetApiKey, requestCpenTilesetMapping } from "@/editor/panels/tilesetAiCpenClient";
 import { loadKnowledgeProposal } from "@/editor/panels/tilesetKnowledgeWorkspaceState";
 import { applyAiReviewProposals } from "@/editor/tilesetAiNativeReviewApply";
 import { analyzeTilesetKnowledge, tilesetKnowledgeFingerprint, type TilesetAiKnowledgeAnalysis } from "@/editor/tilesetAiNativeAnalysis";
@@ -212,5 +213,5 @@ function stageHighConfidence(state: TilesetAiReviewReady): TilesetAiReviewReady 
 }
 
 function defaultAnalyzer(tileset: TilesetDef, feedback: readonly string[]): Promise<TilesetAiKnowledgeAnalysis> {
-  return analyzeTilesetKnowledge(tileset, { feedback });
+  return analyzeTilesetKnowledge(tileset, { feedback, renderImage: renderTilesetAtlasImage, request: requestCpenTilesetMapping });
 }

@@ -1,0 +1,55 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiTilesetJob.test.ts -t executes.*cluster-edit
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-aiq-tileset-silver
+
+ ❯ test/aiTilesetJob.test.ts (25 tests | 1 failed | 24 skipped) 4483ms
+   ↓ isolated real session import graph > has no runtime editor/store/persistence boot edges
+   ↓ tileset worker isolation > src/editor/tilesetAiNativeAnalysis.ts has no editor boot dependencies
+   ↓ tileset worker isolation > src/editor/tilesetAiSnapshotImage.ts has no editor boot dependencies
+   ↓ tileset worker isolation > src/ai/jobs/executors/tilesetJob.ts has no editor boot dependencies
+   ↓ tileset worker isolation > has an exhaustive operation discriminator
+   ↓ captured tileset analysis jobs > holds the real knowledge analyzer at the durable vision boundary, then returns immutable review choices
+   ↓ captured tileset analysis jobs > runs proposal orchestration with locked edits, captured temp-map image and user answers
+   ↓ captured tileset analysis jobs > runs question follow-up over captured review, preserving accepted/skipped choices and IDs
+   ↓ captured tileset analysis jobs > preserves deterministic structure condition IDs across a failed completion checkpoint
+   ↓ captured tileset analysis jobs > retains invalid mapping output without false success or repeated spend: not JSON
+   ↓ captured tileset analysis jobs > retains invalid mapping output without false success or repeated spend: {}
+   ↓ captured tileset analysis jobs > retains invalid mapping output without false success or repeated spend: {"tiles":"malformed"}
+   ↓ captured tileset analysis jobs > retains invalid mapping output without false success or repeated spend: {"previewMaps":[{"width":2,"height":2,"lowerTiles":[1]}],"tiles":[{"tile":4}]}
+   ↓ captured tileset analysis jobs > never upgrades a length-truncated response to success on retry
+   ↓ captured tileset analysis jobs > rejects malformed captured input before spend: {"config":{"authMode":"apiKey","providerId":"openai-codex","model":"gpt-5.4","liteModel":"gpt-5.4-mini","maxToolCalls":12,"maxTokens":8192,"agentMode":"chat"}}
+   ↓ captured tileset analysis jobs > rejects malformed captured input before spend: {"config":{"authMode":"chatgpt","providerId":"openai-codex","model":"gpt-5.4","liteModel":"gpt-5.4-mini","maxToolCalls":12,"maxTokens":8192,"agentMode":"chat","apiKey":"not-allowed"}}
+   ↓ captured tileset analysis jobs > rejects malformed captured input before spend: {"tilesetId":"missing"}
+   ↓ captured tileset analysis jobs > rejects malformed captured input before spend: {"operation":"unknown"}
+   ↓ captured tileset analysis jobs > rejects malformed projects, stale reviews, checkpoints and refs before spend
+   ↓ captured tileset analysis jobs > does not retry or change providers after an uncertain provider failure
+   × real isolated cluster session operations > executes 'cluster-edit' through actual tools, with retry-stable IDs and no application 4480ms
+     → TILESET_INCOMPLETE: Replay request mismatch tileset/cluster-edit/provider/2 at 27257: actual=true,\"summary\":\"타일 그룹 'Private generated group' 생성(prop, 타일 2개)\",\"diff\":{\"tilesChanged\":0,\"eventsAdded\":0,\"eventsModified\":0,\"eventsRemoved\":0,\"mapsAdded\":0,\"mapsRemoved\":0,\"dbRecordsChanged\":0,\"tilesetsChanged\":1,\"switchesAdded\":0,\"variablesAdded\":0,\"worldEntitiesAdded\":0,\"worldEntitiesModified\":0,\"palettePresetsAdded\":0,\"palettePresetsModified\":0,\"endingsChange expected=true,\"summary\":\"타일 그룹 'Private generated group' 생성(prop, 타일 2개)\",\"diff\":{\"tilesChanged\":0,\"mapPropertiesChanged\":0,\"eventsAdded\":0,\"eventsModified\":0,\"eventsRemoved\":0,\"mapsAdded\":0,\"mapsRemoved\":0,\"dbRecordsChanged\":0,\"tilesetsChanged\":1,\"switchesAdded\":0,\"variablesAdded\":0,\"worldEntitiesAdded\":0,\"worldEntitiesModified\":0,\"palettePresetsAdded\":0,\"palettePresetsM
+   ↓ real isolated cluster session operations > executes 'range-classify' through actual tools, with retry-stable IDs and no application
+   ↓ real isolated cluster session operations > executes 'unclassified-analysis' through actual tools, with retry-stable IDs and no application
+   ↓ render-only snapshots and parser boundaries > draws the actual atlas helper over a supplied image without reading store
+   ↓ render-only snapshots and parser boundaries > validates mapping machine fields rather than trusting a parsed object
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiTilesetJob.test.ts > real isolated cluster session operations > executes 'cluster-edit' through actual tools, with retry-stable IDs and no application
+Error: TILESET_INCOMPLETE: Replay request mismatch tileset/cluster-edit/provider/2 at 27257: actual=true,\"summary\":\"타일 그룹 'Private generated group' 생성(prop, 타일 2개)\",\"diff\":{\"tilesChanged\":0,\"eventsAdded\":0,\"eventsModified\":0,\"eventsRemoved\":0,\"mapsAdded\":0,\"mapsRemoved\":0,\"dbRecordsChanged\":0,\"tilesetsChanged\":1,\"switchesAdded\":0,\"variablesAdded\":0,\"worldEntitiesAdded\":0,\"worldEntitiesModified\":0,\"palettePresetsAdded\":0,\"palettePresetsModified\":0,\"endingsChange expected=true,\"summary\":\"타일 그룹 'Private generated group' 생성(prop, 타일 2개)\",\"diff\":{\"tilesChanged\":0,\"mapPropertiesChanged\":0,\"eventsAdded\":0,\"eventsModified\":0,\"eventsRemoved\":0,\"mapsAdded\":0,\"mapsRemoved\":0,\"dbRecordsChanged\":0,\"tilesetsChanged\":1,\"switchesAdded\":0,\"variablesAdded\":0,\"worldEntitiesAdded\":0,\"worldEntitiesModified\":0,\"palettePresetsAdded\":0,\"palettePresetsM
+ ❯ executeTilesetCluster src/ai/jobs/tilesetClusterExecution.ts:87:115
+     85|     let failure: string | null = turn.stoppedReason === "final" ? sess…
+     86|     try { chat.assertHealthy(); } catch (error) { failure = error inst…
+     87|     if (failure) { state.partial = { reason: failure, turn: output }; …
+       |                                                                                                                   ^
+     88|     delete state.partial;
+     89|     state.completed = { turn: { ...output, completion: "complete" }, g…
+ ❯ test/aiTilesetJob.test.ts:230:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 24 skipped (25)
+   Start at  20:39:49
+   Duration  22.25s (transform 11.31s, setup 0ms, collect 16.68s, tests 4.48s, environment 0ms, prepare 344ms)

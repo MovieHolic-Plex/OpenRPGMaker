@@ -1,0 +1,118 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiTilesetJob.test.ts test/tilesetAiNativeAnalysis.test.ts test/tilesetAiNativeReviewModel.test.ts test/tilesetAiConversationSession.test.ts test/tilesetAiCpenClient.test.ts test/tilesetAiMetadataNormalizer.test.ts test/tilesetAiMappingRules.test.ts test/tilesetAiSetupMapping.test.ts test/structureKitEditorDialog.test.ts test/tilesetAiWorkspaceModal.test.ts test/tilesetAiTerrainExample.test.ts test/tilesetAiNativeReviewInbox.test.ts test/tilesetAiNativeReviewApply.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-aiq-tileset-silver
+
+ ✓ test/tilesetAiNativeReviewModel.test.ts (4 tests) 32ms
+ ✓ test/tilesetAiMetadataNormalizer.test.ts (4 tests) 22ms
+ ✓ test/tilesetAiCpenClient.test.ts (8 tests) 42ms
+ ✓ test/tilesetAiNativeAnalysis.test.ts (2 tests) 569ms
+   ✓ AI-native whole tileset analysis > sends the whole image and returns detached typed proposals  366ms
+ ✓ test/tilesetAiTerrainExample.test.ts (2 tests) 18ms
+ ✓ test/tilesetAiConversationSession.test.ts (1 test) 434ms
+   ✓ conversational tileset AI session > asks, carries the answer into reanalysis, stages the refreshed group, then applies explicitly  432ms
+ ✓ test/tilesetAiSetupMapping.test.ts (3 tests) 124ms
+ ✓ test/tilesetAiMappingRules.test.ts (9 tests) 236ms
+ ✓ test/tilesetAiNativeReviewInbox.test.ts (3 tests) 922ms
+   ✓ AI tileset workspace boundary > keeps AI controls out of the human-owned knowledge editor  352ms
+   ✓ AI tileset workspace boundary > stages high-confidence AI work without touching the project until explicit apply  421ms
+ ✓ test/tilesetAiNativeReviewApply.test.ts (4 tests) 2011ms
+   ✓ AI-native review apply > accepts only high-confidence proposals in one undoable batch  1107ms
+   ✓ AI-native review apply > applies only the strongest proposal when AI candidates overlap  343ms
+   ✓ AI-native review apply > applies a staged conversational proposal only after explicit selected apply  364ms
+ ❯ test/tilesetAiWorkspaceModal.test.ts (4 tests | 1 failed) 1473ms
+   ✓ AI tileset workspace entry > keeps the human knowledge editor visible without an inline AI inbox  355ms
+   ✓ AI tileset workspace entry > puts the AI Tileset launcher on the workspace hero, not the editor body  323ms
+   ✓ AI tileset workspace three-step flow > starts on the analyze step and moves to questions once analysis lands  394ms
+   × AI tileset workspace three-step flow > shows the summary step with a confirmed list and applies to the project 397ms
+     → matching.matches is not a function
+ ✓ test/structureKitEditorDialog.test.ts (45 tests) 10363ms
+   ✓ replaceStructureKit > 같은 id 의 킷을 통째로 갈아끼운다  330ms
+   ✓ replaceStructureKit > 없는 id 면 아무것도 하지 않는다  323ms
+   ✓ openStructureKitEditor > 되돌리기 뒤 AI 메타를 수락하면 다시하기가 그것을 지우지 않는다  458ms
+   ✓ 편집기 크기 조절 > 줄여서 부위가 잘리면 개수를 보고한다  382ms
+   ✓ 편집기 부위 편집 > 부위 행의 ✕ 로 지우고, ✎ 로 종류 팝오버를 연다  358ms
+   ✓ 편집기 도구 표시 > 도구를 바꾸면 활성 표시가 갱신된다  310ms
+   ✓ AI 메타 탭 — 반복·분류 > 반복을 '미지정'으로 되돌리면 repeatability 키 자체가 사라진다  361ms
+   ✓ AI 메타 탭 — 수정할 수 있는 축이 화면에 있다 > 증분 축을 골랐다 미지정으로 돌려도 기존 반복 값을 보존한다  315ms
+   ✓ 칸 힌트 도구 > 도구를 잡고 칸을 누르면 가로 → 세로 → 양방향 → 없음 순으로 돈다  427ms
+   ✓ 칸 힌트 도구 > 삭제 버튼이 그 칸의 힌트만 지운다  319ms
+ ✓ test/aiTilesetJob.test.ts (28 tests) 42248ms
+   ✓ isolated real session import graph > has no runtime editor/store/persistence boot edges  4908ms
+   ✓ tileset worker isolation > src/ai/jobs/executors/tilesetJob.ts has no editor boot dependencies  3319ms
+   ✓ captured tileset analysis jobs > holds the real knowledge analyzer at the durable vision boundary, then returns immutable review choices  1063ms
+   ✓ captured tileset analysis jobs > runs proposal orchestration with locked edits, captured temp-map image and user answers  575ms
+   ✓ captured tileset analysis jobs > runs question follow-up over captured review, preserving accepted/skipped choices and IDs  1145ms
+   ✓ captured tileset analysis jobs > binds a queued question to its predecessor while permitting captured review choices  1316ms
+   ✓ captured tileset analysis jobs > preserves deterministic structure condition IDs across a failed completion checkpoint  868ms
+   ✓ captured tileset analysis jobs > retains invalid mapping output without false success or repeated spend: not JSON  757ms
+   ✓ captured tileset analysis jobs > retains invalid mapping output without false success or repeated spend: {}  748ms
+   ✓ captured tileset analysis jobs > retains invalid mapping output without false success or repeated spend: {"tiles":"malformed"}  867ms
+   ✓ captured tileset analysis jobs > retains invalid mapping output without false success or repeated spend: {"previewMaps":[{"width":2,"height":2,"lowerTiles":[1]}],"tiles":[{"tile":4}]}  638ms
+   ✓ captured tileset analysis jobs > never upgrades a length-truncated response to success on retry  605ms
+   ✓ captured tileset analysis jobs > rejects malformed captured input before spend: {"config":{"authMode":"apiKey","providerId":"openai-codex","model":"gpt-5.4","liteModel":"gpt-5.4-mini","maxToolCalls":12,"maxTokens":8192,"agentMode":"chat"}}  328ms
+   ✓ captured tileset analysis jobs > rejects malformed captured input before spend: {"config":{"authMode":"chatgpt","providerId":"openai-codex","model":"gpt-5.4","liteModel":"gpt-5.4-mini","maxToolCalls":12,"maxTokens":8192,"agentMode":"chat","apiKey":"not-allowed"}}  458ms
+   ✓ captured tileset analysis jobs > rejects malformed captured input before spend: {"tilesetId":"missing"}  535ms
+   ✓ captured tileset analysis jobs > rejects malformed captured input before spend: {"operation":"unknown"}  389ms
+   ✓ captured tileset analysis jobs > rejects malformed projects, stale reviews, checkpoints and refs before spend  1107ms
+   ✓ captured tileset analysis jobs > does not retry or change providers after an uncertain provider failure  537ms
+   ✓ real isolated cluster session operations > executes 'cluster-edit' through actual tools, with retry-stable IDs and no application  5422ms
+   ✓ real isolated cluster session operations > executes 'range-classify' through actual tools, with retry-stable IDs and no application  5065ms
+   ✓ real isolated cluster session operations > executes 'unclassified-analysis' through actual tools, with retry-stable IDs and no application  5282ms
+   ✓ cluster vision stages > executes range suggestion and actual sample rendering, retains image refs, and replays without a renderer  3593ms
+   ✓ cluster vision stages > retains budget-limited cluster output as partial, not success  1931ms
+   ✓ render-only snapshots and parser boundaries > draws the actual atlas helper over a supplied image without reading store  316ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/tilesetAiWorkspaceModal.test.ts > AI tileset workspace three-step flow > shows the summary step with a confirmed list and applies to the project
+TypeError: matching.matches is not a function
+ ❯ restoreTilesetAiWorkspaceFocus src/editor/panels/tilesetAiWorkspaceAccessibility.ts:25:29
+     23| export function restoreTilesetAiWorkspaceFocus(host: HTMLElement): voi…
+     24|   const matching = lastFocusTestId ? findTestId(host, lastFocusTestId)…
+     25|   if (matching && !matching.matches(":disabled")) {
+       |                             ^
+     26|     matching.focus({ preventScroll: true });
+     27|     return;
+ ❯ renderActiveWorkspace src/editor/panels/tilesetAiWorkspaceModal.ts:129:3
+ ❯ click src/editor/panels/tilesetAiWorkspaceModal.ts:525:9
+ ❯ FakeElement.dispatchEvent test/fakeDom.ts:242:9
+ ❯ FakeElement.click test/fakeDom.ts:265:10
+ ❯ test/tilesetAiWorkspaceModal.test.ts:183:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 1 unhandled error during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+TypeError: matching.matches is not a function
+ ❯ restoreTilesetAiWorkspaceFocus src/editor/panels/tilesetAiWorkspaceAccessibility.ts:25:29
+     23| export function restoreTilesetAiWorkspaceFocus(host: HTMLElement): voi…
+     24|   const matching = lastFocusTestId ? findTestId(host, lastFocusTestId)…
+     25|   if (matching && !matching.matches(":disabled")) {
+       |                             ^
+     26|     matching.focus({ preventScroll: true });
+     27|     return;
+ ❯ renderActiveWorkspace src/editor/panels/tilesetAiWorkspaceModal.ts:129:3
+ ❯ runTilesetAiReview src/editor/tilesetAiNativeReviewSession.ts:67:3
+ ❯ openTilesetAiWorkspace src/editor/panels/tilesetAiWorkspaceModal.ts:54:72
+ ❯ test/tilesetAiWorkspaceModal.test.ts:151:5
+ ❯ ../rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+ ❯ ../rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+ ❯ ../rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+ ❯ runWithTimeout ../rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10
+
+This error originated in "test/tilesetAiWorkspaceModal.test.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  1 failed | 12 passed (13)
+      Tests  1 failed | 116 passed (117)
+     Errors  1 error
+   Start at  20:46:25
+   Duration  65.56s (transform 31.13s, setup 0ms, collect 143.98s, tests 58.49s, environment 43ms, prepare 4.49s)

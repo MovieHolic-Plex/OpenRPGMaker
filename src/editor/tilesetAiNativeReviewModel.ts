@@ -251,3 +251,15 @@ function compareProposal(left: TilesetAiReviewProposal, right: TilesetAiReviewPr
   const firstTile = (left.tileIds[0] ?? 0) - (right.tileIds[0] ?? 0);
   return firstTile !== 0 ? firstTile : left.id.localeCompare(right.id);
 }
+
+export function findRefreshedAiReviewProposal(
+  state: TilesetAiReviewState,
+  previous: TilesetAiReviewProposal,
+): TilesetAiReviewProposal | null {
+  const key = tileKey(previous.tileIds);
+  return proposalsForAiReview(state).find((proposal) => proposal.id === previous.id || tileKey(proposal.tileIds) === key) ?? null;
+}
+
+function tileKey(tileIds: readonly number[]): string {
+  return tileIds.join(",");
+}

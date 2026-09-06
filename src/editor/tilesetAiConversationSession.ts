@@ -8,6 +8,7 @@ import {
 } from "@/editor/tilesetAiNativeReviewSession";
 import {
   aiReviewBuckets,
+  findRefreshedAiReviewProposal,
   proposalsForAiReview,
   type TilesetAiReviewProposal,
   type TilesetAiReviewState,
@@ -85,7 +86,7 @@ export async function answerTilesetAiQuestion(
   ];
   updateReviewProposalFeedback(tileset, previous.id, trimmed);
   await runTilesetAiReview(tileset, rerender);
-  const refreshed = findRefreshedProposal(tilesetAiReviewState(tileset), previous);
+  const refreshed = findRefreshedAiReviewProposal(tilesetAiReviewState(tileset), previous);
   if (refreshed) {
     stageOneReviewProposal(tileset, refreshed.id);
     session.turns = [
@@ -112,16 +113,4 @@ function conversationFor(tilesetId: string): ConversationSession {
   const created: ConversationSession = { activeProposalId: null, turns: [] };
   conversations.set(tilesetId, created);
   return created;
-}
-
-function findRefreshedProposal(
-  state: TilesetAiReviewState,
-  previous: TilesetAiReviewProposal,
-): TilesetAiReviewProposal | null {
-  const key = tileKey(previous.tileIds);
-  return proposalsForAiReview(state).find((proposal) => proposal.id === previous.id || tileKey(proposal.tileIds) === key) ?? null;
-}
-
-function tileKey(tileIds: readonly number[]): string {
-  return tileIds.join(",");
 }

@@ -1,0 +1,43 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiTilesetJob.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-aiq-tileset-silver
+
+ ❯ test/aiTilesetJob.test.ts (2 tests | 1 failed) 9225ms
+   ✓ isolated real session import graph > has no runtime editor/store/persistence boot edges  7230ms
+   × tileset worker isolation > native knowledge analysis has no editor boot dependencies 1993ms
+     → expected [ …(4) ] to deeply equal []
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiTilesetJob.test.ts > tileset worker isolation > native knowledge analysis has no editor boot dependencies
+AssertionError: expected [ …(4) ] to deeply equal []
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   "src/editor/panels/tilesetAiCpenClient.ts",[39m
+[31m+   "src/editor/panels/aiConnectionStatus.ts",[39m
+[31m+   "src/editor/panels/tilesetAiTempMapImage.ts",[39m
+[31m+   "src/project/store.ts",[39m
+[31m+ ][39m
+
+ ❯ test/aiTilesetJob.test.ts:7:128
+      5|   it("native knowledge analysis has no editor boot dependencies", () =…
+      6|     const graph = runtimeGraph("src/editor/tilesetAiNativeAnalysis.ts"…
+      7|     expect(graph.filter(p => /project\/store\.ts$|editor\/panels\/|edi…
+       |                                                                                                                                ^
+      8|   });
+      9| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  20:24:37
+   Duration  12.01s (transform 135ms, setup 0ms, collect 1.35s, tests 9.23s, environment 0ms, prepare 344ms)

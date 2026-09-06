@@ -1,0 +1,65 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle --config .omo/evidence/ai-job-queue/task-4-tileset/baseline.config.mts test/tilesetAiWorkspaceModal.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-aiq-tileset-silver
+
+ ❯ test/tilesetAiWorkspaceModal.test.ts (4 tests | 1 failed) 1684ms
+   ✓ AI tileset workspace entry > keeps the human knowledge editor visible without an inline AI inbox  481ms
+   ✓ AI tileset workspace entry > puts the AI Tileset launcher on the workspace hero, not the editor body  452ms
+   ✓ AI tileset workspace three-step flow > starts on the analyze step and moves to questions once analysis lands 226ms
+   × AI tileset workspace three-step flow > shows the summary step with a confirmed list and applies to the project 523ms
+     → matching.matches is not a function
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/tilesetAiWorkspaceModal.test.ts > AI tileset workspace three-step flow > shows the summary step with a confirmed list and applies to the project
+TypeError: matching.matches is not a function
+ ❯ restoreTilesetAiWorkspaceFocus src/editor/panels/tilesetAiWorkspaceAccessibility.ts:25:29
+     23| export function restoreTilesetAiWorkspaceFocus(host: HTMLElement): voi…
+     24|   const matching = lastFocusTestId ? findTestId(host, lastFocusTestId)…
+     25|   if (matching && !matching.matches(":disabled")) {
+       |                             ^
+     26|     matching.focus({ preventScroll: true });
+     27|     return;
+ ❯ renderActiveWorkspace src/editor/panels/tilesetAiWorkspaceModal.ts:129:3
+ ❯ click src/editor/panels/tilesetAiWorkspaceModal.ts:525:9
+ ❯ FakeElement.dispatchEvent test/fakeDom.ts:242:9
+ ❯ FakeElement.click test/fakeDom.ts:265:10
+ ❯ test/tilesetAiWorkspaceModal.test.ts:183:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 1 unhandled error during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+TypeError: matching.matches is not a function
+ ❯ restoreTilesetAiWorkspaceFocus src/editor/panels/tilesetAiWorkspaceAccessibility.ts:25:29
+     23| export function restoreTilesetAiWorkspaceFocus(host: HTMLElement): voi…
+     24|   const matching = lastFocusTestId ? findTestId(host, lastFocusTestId)…
+     25|   if (matching && !matching.matches(":disabled")) {
+       |                             ^
+     26|     matching.focus({ preventScroll: true });
+     27|     return;
+ ❯ renderActiveWorkspace src/editor/panels/tilesetAiWorkspaceModal.ts:129:3
+ ❯ runTilesetAiReview src/editor/tilesetAiNativeReviewSession.ts:66:3
+ ❯ openTilesetAiWorkspace src/editor/panels/tilesetAiWorkspaceModal.ts:54:72
+ ❯ test/tilesetAiWorkspaceModal.test.ts:151:5
+ ❯ ../rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+ ❯ ../rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+ ❯ ../rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+ ❯ runWithTimeout ../rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10
+
+This error originated in "test/tilesetAiWorkspaceModal.test.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+     Errors  1 error
+   Start at  20:49:04
+   Duration  21.25s (transform 13.53s, setup 0ms, collect 17.95s, tests 1.68s, environment 1ms, prepare 328ms)

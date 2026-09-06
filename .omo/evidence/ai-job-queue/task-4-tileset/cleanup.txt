@@ -1,0 +1,8 @@
+Worktree: /home/main/z-project/rpg-zzu-aiq-tileset-silver
+Branch verified: agent/aiq-tileset-silver
+git diff --check: exit 0 after whitespace-only EOF corrections.
+git diff --cached --check: exit 0 after trimming only trailing blank lines from logs.
+Staged product/test paths: 28, explicitly enumerated; no shared worker/host/config paths.
+ss -ltn '( sport = :19846 )': exit 0, header only, no listener.
+No owned browser/server was launched; completed validator subprocesses have exited.
+Evidence baseline.config.mts is intentionally retained for the recorded baseline proof.

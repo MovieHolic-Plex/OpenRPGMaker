@@ -1,0 +1,31 @@
+Per-file functions.lsp_diagnostics, severity=all. Final result for each: No diagnostics found.
+Four panel requests initially timed out at 3000ms under concurrent typecheck/test load; subsequent calls completed.
+
+src/ai/jobs/executors/tilesetJob.ts
+src/ai/jobs/tilesetArtifacts.ts
+src/ai/jobs/tilesetClusterExecution.ts
+src/ai/jobs/tilesetDependency.ts
+src/ai/jobs/tilesetPayload.ts
+src/ai/jobs/tilesetProvider.ts
+src/editor/panels/structureKitEditorDialog.ts
+src/editor/panels/tilesetAiCpenClient.ts
+src/editor/panels/tilesetAiMappingRules.ts
+src/editor/panels/tilesetAiMetadataNormalizer.ts
+src/editor/panels/tilesetAiProposalController.ts
+src/editor/panels/tilesetAiProposalParsing.ts
+src/editor/panels/tilesetAiTempMapImage.ts
+src/editor/panels/tilesetTileContext.ts
+src/editor/structureKitAiDraft.ts
+src/editor/tilesetAiConversationSession.ts
+src/editor/tilesetAiNativeAnalysis.ts
+src/editor/tilesetAiNativeReviewModel.ts
+src/editor/tilesetAiNativeReviewSession.ts
+src/editor/tilesetAiProposalDraft.ts
+src/editor/tilesetAiPure/tilesetAiMappingRules.ts
+src/editor/tilesetAiPure/tilesetAiMetadataNormalizer.ts
+src/editor/tilesetAiPure/tilesetAiProposalParsing.ts
+src/editor/tilesetAiPure/tilesetTileContext.ts
+src/editor/tilesetAiQuestionAnalysis.ts
+src/editor/tilesetAiRequest.ts
+src/editor/tilesetAiSnapshotImage.ts
+test/aiTilesetJob.test.ts
