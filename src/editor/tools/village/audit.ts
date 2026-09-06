@@ -11,6 +11,7 @@ import {
   coordKey,
   DOOR_BOTTOM_TILE,
   DOOR_TOP_TILE,
+  environmentalRoadAt,
   pointFromKey,
   ROAD_TILES,
   WINDOW_TILES,
@@ -78,7 +79,8 @@ export function critiqueVillageMap(project: Project, args: Record<string, unknow
 }
 
 export function auditVillage(map: GameMap, houses: readonly BuiltHouse[], upperBefore: readonly number[], area: Rect): VillageAudit {
-  const doorsConnected = houses.filter((house) => doorHasRoad(map, house.doorAt)).length;
+  const isRoad = environmentalRoadAt(map);
+  const doorsConnected = houses.filter((house) => doorHasRoad(isRoad, house.doorAt)).length;
   // 문 칸이 살아있는지(도로 관통 등으로 덮이지 않았는지)도 직접 검사한다.
   // 기준은 시공 직후 기록한 house.doorTiles — 이벤트 문이면 킷 벽 타일, 타일 문이면 116/146.
   const lowerAt = (x: number, y: number): number => map.lowerTiles[y * map.width + x] ?? TILE.EMPTY;
@@ -130,11 +132,10 @@ export function auditVillage(map: GameMap, houses: readonly BuiltHouse[], upperB
   };
 }
 
-function doorHasRoad(map: GameMap, door: Point): boolean {
+function doorHasRoad(isRoad: (x: number, y: number) => boolean, door: Point): boolean {
   for (let y = door.y + 1; y <= door.y + 3; y += 1) {
     for (let x = door.x - 1; x <= door.x + 1; x += 1) {
-      if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
-      if (ROAD_TILES.has(map.lowerTiles[y * map.width + x] ?? TILE.EMPTY)) return true;
+      if (isRoad(x, y)) return true;
     }
   }
   return false;
@@ -163,15 +164,11 @@ function countRoadComponents(map: GameMap, area: Rect): number {
 }
 
 function collectRoadComponents(map: GameMap, area: Rect): string[][] {
+  const isRoad = environmentalRoadAt(map);
   const road = new Set<string>();
   for (let y = area.y; y < area.y + area.h; y += 1) {
     for (let x = area.x; x < area.x + area.w; x += 1) {
-      const index = y * map.width + x;
-      // 상위 판자 다리(199)는 "하위가 물일 때만" 도로 연결로 인정 — 수로가 대로를 지나가면
-      // 하위가 물이 된다 (2026-07-17). 옥상 데크(지붕 위 199)는 도로가 아니다.
-      const isBridge = (map.upperTiles[index] ?? TILE.EMPTY) === 199
-        && isWaterChipsetTile(map.lowerTiles[index] ?? TILE.EMPTY);
-      if (isBridge || ROAD_TILES.has(map.lowerTiles[index] ?? TILE.EMPTY)) road.add(coordKey(x, y));
+      if (isRoad(x, y)) road.add(coordKey(x, y));
     }
   }
   const components: string[][] = [];
