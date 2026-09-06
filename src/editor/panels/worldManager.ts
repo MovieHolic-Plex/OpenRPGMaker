@@ -220,8 +220,8 @@ export function saveDraft(state: WorldPanelState, _world: ProjectWorld): void {
   const world = currentWorld(store.getCurrent());
   const draft = state.editDraft;
   if (!draft) return;
+  const stored = world.entities.find((entry) => entry.id === normalizeWorldEntityId(draft.id));
   if (!draft.isNew) {
-    const stored = world.entities.find((entry) => entry.id === normalizeWorldEntityId(draft.id));
     if (!stored || (draft.baseEntity !== undefined && JSON.stringify(stored) !== draft.baseEntity)) {
       state.editError = "이 문서가 다른 작업에서 변경되거나 삭제되었습니다. 초안을 보관한 뒤 문서를 다시 열어주세요.";
       return;
@@ -231,16 +231,32 @@ export function saveDraft(state: WorldPanelState, _world: ProjectWorld): void {
       return;
     }
   }
+  const wiki = stored?.wiki;
+  // Application evidence is immutable: manual edits become a separate explicit note.
+  // The original document retains its sources, supersession and observed claims.
+  const manualNote = wiki?.sources.some((source) => source.kind === "application") === true;
+  const textChanged = stored && (draft.name.trim() !== stored.name || draft.summary.trim() !== stored.summary || draft.body !== (stored.body ?? ""));
+  const manualSource = wiki ? {
+    id: genId("manual"), kind: "manual" as const, at: Date.now(),
+    text: [manualNote ? `수동 편집 메모 · 원본 ${draft.id}` : "수동 편집", draft.name.trim() || "새 카드", draft.summary.trim(), draft.body].filter(Boolean).join("\n\n"),
+  } : undefined;
   const entity: WorldEntity = {
-    id: normalizeWorldEntityId(draft.id),
+    id: manualNote ? nextWorldId(world) : normalizeWorldEntityId(draft.id),
     type: draft.type,
     name: draft.name.trim() || "새 카드",
     summary: draft.summary.trim(),
     ...(draft.body.trim() ? { body: draft.body } : {}),
     ...(parseTags(draft.tagsText).length > 0 ? { tags: parseTags(draft.tagsText) } : {}),
     ...(draft.refs.length > 0 ? { refs: [...draft.refs] } : {}),
-    origin: draft.origin,
+    origin: manualNote ? "user" : draft.origin,
     ...(draft.locked ? { locked: true } : {}),
+    ...(wiki && manualSource ? { wiki: manualNote ? {
+      kind: "knowledge", basis: "explicit", sources: [manualSource],
+      ...(wiki.topic ? { topic: wiki.topic } : {}),
+    } : {
+      ...wiki, basis: "explicit", sources: [...wiki.sources, manualSource],
+      ...(textChanged ? { combatMode: undefined } : {}),
+    } } : {}),
   };
   const exists = world.entities.some((entry) => entry.id === entity.id);
   const entities = exists
@@ -248,8 +264,10 @@ export function saveDraft(state: WorldPanelState, _world: ProjectWorld): void {
     : [...world.entities, entity];
   try {
     const normalized = normalizeWorld({ entities, relations: [
-      ...world.relations.filter((relation) => relation.a !== draft.id && relation.b !== draft.id),
-      ...draft.relations.filter((relation) => relation.a === draft.id || relation.b === draft.id),
+      ...world.relations.filter((relation) => manualNote || (relation.a !== draft.id && relation.b !== draft.id)),
+      ...draft.relations.filter((relation) => relation.a === draft.id || relation.b === draft.id).map((relation) => manualNote ? {
+        ...relation, a: relation.a === draft.id ? entity.id : relation.a, b: relation.b === draft.id ? entity.id : relation.b,
+      } : relation),
     ] });
     recordProjectSnapshot(draft.isNew ? "세계관 추가" : "세계관 편집");
     store.update((project) => {
@@ -272,6 +290,10 @@ export function deleteWorldEntity(entityId: string): boolean {
   const entity = world.entities.find((entry) => entry.id === entityId);
   if (!entity) return false;
   if (entity.locked) { toast("잠금을 푼 뒤 삭제하세요", "error"); return false; }
+  if (entity.wiki?.supersedes?.length || world.entities.some((entry) => entry.wiki?.supersedes?.includes(entityId))) {
+    toast("대체 이력에 연결된 문서는 삭제할 수 없습니다. 이전 지침이 다시 적용되지 않도록 이력을 보존합니다.", "error");
+    return false;
+  }
   recordProjectSnapshot("설정집 카드 삭제");
   store.update((project) => {
     project.world = normalizeWorld({

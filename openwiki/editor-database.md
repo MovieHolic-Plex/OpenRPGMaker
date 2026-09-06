@@ -236,6 +236,18 @@ Party record tabs use the final section of `studio-v2.css`: actors, classes, ski
 - The hero owns selected-actor identity, class, level range, and start-party membership. The table owns selection and comparison only; do not restore duplicate current-selection/party summary metrics or analytics. System remains the authority for `startActorIds`.
 - Scroll ownership is explicit: list rows scroll inside `.db-actor-studio-table`; the actor hero and section tabs remain fixed; only `.actor-section-body` scrolls. Do not return to one long inspector document where category navigation depends on scrolling.
 
+## 프로젝트 위키 출처와 수동 편집 (2026-09-07)
+
+설정집의 위키 문서는 `world-wiki-provenance`에 선언/지식/진행 기록과
+명시/추론/실제 적용 근거를 표시한다. 출처 원문은 접힌 `world-wiki-sources`에서
+읽으며 HTML로 실행하지 않는다. 대체된 문서는 이력을 남기고 현재 지침에서 제외한다.
+수동 편집은 출처를 추가하며 제목/요약/본문 변경 시 낡은 자동 combatMode를 해제한다.
+실제 적용 기록의 수동 수정은 원본 증거를 바꾸지 않고 별도 지식 메모를 만든다.
+대체 이력에 연결된 문서는 삭제를 거부해 이전 지침이 되살아나지 않게 한다.
+열린 초안은 문서 지문으로 경합을 검사하며 충돌 시 사용자 입력을 보존한다.
+테스트: `projectWikiCodex.test.ts`, `projectWikiManualEdit.test.ts`.
+전체 AI 연결과 지속성은 [프로젝트 위키](project-wiki.md)를 따른다.
+
 ## 세계관 그룹 — 세계 개요 · 설정집 (2026-09-06)
 
 - **문서 작업실 개편:** `worldCanon`의 표시 이름은 「세계 개요」이며 stable tab/field testid는 유지한다. 제목·전제·본문이 중앙 문서를 구성하고 톤·시대·기술 수준·금지 항목·법칙은 `src/editor/panels/worldDocumentProperties.ts`의 접을 수 있는 속성에 둔다. 두 탭 모두 `workspaceShell`의 단일 루트/모달 크기 계약을 유지한다.
