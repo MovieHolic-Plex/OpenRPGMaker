@@ -1,0 +1,544 @@
+{
+  "desktop": [
+    {
+      "event": "boot",
+      "width": 1280,
+      "height": 800,
+      "url": "http://127.0.0.1:29887/?blankProject=1&map=map_blank_start"
+    },
+    {
+      "event": "palette-click",
+      "width": 1280,
+      "step": 0,
+      "mode": "beginner",
+      "selected": 7,
+      "flyoutVisible": false
+    },
+    {
+      "event": "search-caret",
+      "width": 1280,
+      "step": 0,
+      "mode": "beginner",
+      "value": "17",
+      "caret": 1,
+      "focus": true
+    },
+    {
+      "event": "grid-arrow",
+      "width": 1280,
+      "step": 0,
+      "mode": "beginner",
+      "focused": "basic-tile-10"
+    },
+    {
+      "event": "paint",
+      "width": 1280,
+      "step": 0,
+      "mode": "beginner",
+      "point": {
+        "x": 468,
+        "y": 335,
+        "tileX": 3,
+        "tileY": 3,
+        "index": 63
+      },
+      "diff": [
+        {
+          "index": 63,
+          "before": 240,
+          "after": 7
+        }
+      ],
+      "upperUnchanged": true
+    },
+    {
+      "event": "undo",
+      "width": 1280,
+      "step": 0,
+      "mode": "beginner",
+      "exactMapRestore": true
+    },
+    {
+      "event": "retained-stroke",
+      "width": 1280,
+      "step": 0,
+      "mode": "beginner",
+      "indices": [
+        63
+      ]
+    },
+    {
+      "event": "mode-switch",
+      "width": 1280,
+      "step": 1,
+      "mode": "standard",
+      "mapRetained": true
+    },
+    {
+      "event": "palette-click",
+      "width": 1280,
+      "step": 1,
+      "mode": "standard",
+      "selected": 7,
+      "flyoutVisible": false
+    },
+    {
+      "event": "search-caret",
+      "width": 1280,
+      "step": 1,
+      "mode": "standard",
+      "value": "17",
+      "caret": 1,
+      "focus": true
+    },
+    {
+      "event": "grid-arrow",
+      "width": 1280,
+      "step": 1,
+      "mode": "standard",
+      "focused": "chipset-tile-10"
+    },
+    {
+      "event": "paint",
+      "width": 1280,
+      "step": 1,
+      "mode": "standard",
+      "point": {
+        "x": 616,
+        "y": 335,
+        "tileX": 4,
+        "tileY": 3,
+        "index": 64
+      },
+      "diff": [
+        {
+          "index": 64,
+          "before": 240,
+          "after": 7
+        }
+      ],
+      "upperUnchanged": true
+    },
+    {
+      "event": "undo",
+      "width": 1280,
+      "step": 1,
+      "mode": "standard",
+      "exactMapRestore": true
+    },
+    {
+      "event": "retained-stroke",
+      "width": 1280,
+      "step": 1,
+      "mode": "standard",
+      "indices": [
+        63,
+        64
+      ]
+    },
+    {
+      "event": "mode-switch",
+      "width": 1280,
+      "step": 2,
+      "mode": "expert",
+      "mapRetained": true
+    },
+    {
+      "event": "palette-click",
+      "width": 1280,
+      "step": 2,
+      "mode": "expert",
+      "selected": 7,
+      "flyoutVisible": false
+    },
+    {
+      "event": "search-caret",
+      "width": 1280,
+      "step": 2,
+      "mode": "expert",
+      "value": "17",
+      "caret": 1,
+      "focus": true
+    },
+    {
+      "event": "grid-arrow",
+      "width": 1280,
+      "step": 2,
+      "mode": "expert",
+      "focused": "chipset-tile-10"
+    },
+    {
+      "event": "paint",
+      "width": 1280,
+      "step": 2,
+      "mode": "expert",
+      "point": {
+        "x": 658,
+        "y": 335,
+        "tileX": 5,
+        "tileY": 3,
+        "index": 65
+      },
+      "diff": [
+        {
+          "index": 65,
+          "before": 240,
+          "after": 7
+        }
+      ],
+      "upperUnchanged": true
+    },
+    {
+      "event": "undo",
+      "width": 1280,
+      "step": 2,
+      "mode": "expert",
+      "exactMapRestore": true
+    },
+    {
+      "event": "retained-stroke",
+      "width": 1280,
+      "step": 2,
+      "mode": "expert",
+      "indices": [
+        63,
+        64,
+        65
+      ]
+    },
+    {
+      "event": "mode-switch",
+      "width": 1280,
+      "step": 3,
+      "mode": "beginner",
+      "mapRetained": true
+    },
+    {
+      "event": "palette-click",
+      "width": 1280,
+      "step": 3,
+      "mode": "beginner",
+      "selected": 7,
+      "flyoutVisible": false
+    },
+    {
+      "event": "search-caret",
+      "width": 1280,
+      "step": 3,
+      "mode": "beginner",
+      "value": "17",
+      "caret": 1,
+      "focus": true
+    },
+    {
+      "event": "grid-arrow",
+      "width": 1280,
+      "step": 3,
+      "mode": "beginner",
+      "focused": "basic-tile-10"
+    },
+    {
+      "event": "paint",
+      "width": 1280,
+      "step": 3,
+      "mode": "beginner",
+      "point": {
+        "x": 564,
+        "y": 335,
+        "tileX": 6,
+        "tileY": 3,
+        "index": 66
+      },
+      "diff": [],
+      "upperUnchanged": true
+    },
+    {
+      "event": "fatal",
+      "message": "Error: paint did not change lower tiles\n    at file:///home/main/.herdr/worktrees/rpg-zzu/worktree-calm-stone-5ef1/output/evidence/mode-ux-before/audit.mjs:48:23"
+    }
+  ],
+  "narrow": [
+    {
+      "event": "boot",
+      "width": 1024,
+      "height": 768,
+      "url": "http://127.0.0.1:29887/?blankProject=1&map=map_blank_start"
+    },
+    {
+      "event": "palette-click",
+      "width": 1024,
+      "step": 0,
+      "mode": "beginner",
+      "selected": 7,
+      "flyoutVisible": false
+    },
+    {
+      "event": "search-caret",
+      "width": 1024,
+      "step": 0,
+      "mode": "beginner",
+      "value": "17",
+      "caret": 1,
+      "focus": true
+    },
+    {
+      "event": "grid-arrow",
+      "width": 1024,
+      "step": 0,
+      "mode": "beginner",
+      "focused": "basic-tile-10"
+    },
+    {
+      "event": "paint",
+      "width": 1024,
+      "step": 0,
+      "mode": "beginner",
+      "point": {
+        "x": 372,
+        "y": 319,
+        "tileX": 4,
+        "tileY": 3,
+        "index": 64
+      },
+      "diff": [
+        {
+          "index": 64,
+          "before": 240,
+          "after": 7
+        }
+      ],
+      "upperUnchanged": true
+    },
+    {
+      "event": "undo",
+      "width": 1024,
+      "step": 0,
+      "mode": "beginner",
+      "exactMapRestore": true
+    },
+    {
+      "event": "retained-stroke",
+      "width": 1024,
+      "step": 0,
+      "mode": "beginner",
+      "indices": [
+        64
+      ]
+    },
+    {
+      "event": "mode-switch",
+      "width": 1024,
+      "step": 1,
+      "mode": "standard",
+      "mapRetained": true
+    },
+    {
+      "event": "palette-click",
+      "width": 1024,
+      "step": 1,
+      "mode": "standard",
+      "selected": 7,
+      "flyoutVisible": false
+    },
+    {
+      "event": "search-caret",
+      "width": 1024,
+      "step": 1,
+      "mode": "standard",
+      "value": "17",
+      "caret": 1,
+      "focus": true
+    },
+    {
+      "event": "grid-arrow",
+      "width": 1024,
+      "step": 1,
+      "mode": "standard",
+      "focused": "chipset-tile-10"
+    },
+    {
+      "event": "paint",
+      "width": 1024,
+      "step": 1,
+      "mode": "standard",
+      "point": {
+        "x": 456,
+        "y": 319,
+        "tileX": 3,
+        "tileY": 3,
+        "index": 63
+      },
+      "diff": [
+        {
+          "index": 63,
+          "before": 240,
+          "after": 7
+        }
+      ],
+      "upperUnchanged": true
+    },
+    {
+      "event": "undo",
+      "width": 1024,
+      "step": 1,
+      "mode": "standard",
+      "exactMapRestore": true
+    },
+    {
+      "event": "retained-stroke",
+      "width": 1024,
+      "step": 1,
+      "mode": "standard",
+      "indices": [
+        64,
+        63
+      ]
+    },
+    {
+      "event": "mode-switch",
+      "width": 1024,
+      "step": 2,
+      "mode": "expert",
+      "mapRetained": true
+    },
+    {
+      "event": "palette-click",
+      "width": 1024,
+      "step": 2,
+      "mode": "expert",
+      "selected": 7,
+      "flyoutVisible": false
+    },
+    {
+      "event": "search-caret",
+      "width": 1024,
+      "step": 2,
+      "mode": "expert",
+      "value": "17",
+      "caret": 1,
+      "focus": true
+    },
+    {
+      "event": "grid-arrow",
+      "width": 1024,
+      "step": 2,
+      "mode": "expert",
+      "focused": "chipset-tile-10"
+    },
+    {
+      "event": "paint",
+      "width": 1024,
+      "step": 2,
+      "mode": "expert",
+      "point": {
+        "x": 530,
+        "y": 319,
+        "tileX": 5,
+        "tileY": 3,
+        "index": 65
+      },
+      "diff": [
+        {
+          "index": 65,
+          "before": 240,
+          "after": 7
+        }
+      ],
+      "upperUnchanged": true
+    },
+    {
+      "event": "undo",
+      "width": 1024,
+      "step": 2,
+      "mode": "expert",
+      "exactMapRestore": true
+    },
+    {
+      "event": "retained-stroke",
+      "width": 1024,
+      "step": 2,
+      "mode": "expert",
+      "indices": [
+        64,
+        63,
+        65
+      ]
+    },
+    {
+      "event": "mode-switch",
+      "width": 1024,
+      "step": 3,
+      "mode": "beginner",
+      "mapRetained": true
+    },
+    {
+      "event": "palette-click",
+      "width": 1024,
+      "step": 3,
+      "mode": "beginner",
+      "selected": 7,
+      "flyoutVisible": false
+    },
+    {
+      "event": "search-caret",
+      "width": 1024,
+      "step": 3,
+      "mode": "beginner",
+      "value": "17",
+      "caret": 1,
+      "focus": true
+    },
+    {
+      "event": "grid-arrow",
+      "width": 1024,
+      "step": 3,
+      "mode": "beginner",
+      "focused": "basic-tile-10"
+    },
+    {
+      "event": "paint",
+      "width": 1024,
+      "step": 3,
+      "mode": "beginner",
+      "point": {
+        "x": 436,
+        "y": 319,
+        "tileX": 6,
+        "tileY": 3,
+        "index": 66
+      },
+      "diff": [
+        {
+          "index": 66,
+          "before": 240,
+          "after": 7
+        }
+      ],
+      "upperUnchanged": true
+    },
+    {
+      "event": "undo",
+      "width": 1024,
+      "step": 3,
+      "mode": "beginner",
+      "exactMapRestore": true
+    },
+    {
+      "event": "retained-stroke",
+      "width": 1024,
+      "step": 3,
+      "mode": "beginner",
+      "indices": [
+        64,
+        63,
+        65,
+        66
+      ]
+    },
+    {
+      "event": "context-closed",
+      "width": 1024
+    }
+  ],
+  "note": "1280 return-beginner paint was inconclusive due asynchronous DOM export mirror. Narrow run uses authoritative store read and passes entire cycle."
+}

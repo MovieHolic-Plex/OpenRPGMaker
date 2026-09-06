@@ -1,5 +1,7 @@
 /** @vitest-environment happy-dom */
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { saveEventDraft } from "@/editor/eventDraftActions";
+import { _resetEventDraftVaultForTest } from "@/project/eventDraftVault";
 import { editorState } from "@/editor/editorState";
 import { renderEventEditorDynamic } from "@/editor/panels/eventEditor/content";
 import { openFieldMonsterTemplateDialog } from "@/editor/panels/eventEditor/fieldMonsterTemplateDialog";
@@ -54,13 +56,14 @@ describe("field monster template", () => {
         battleEventPages: [],
       });
     }
-    store.replace(project);
+    store.replaceProject(project);
     editorState.set({ currentMapId: mapId, selectedEventPageId: "p1" });
     host = document.createElement("div");
     document.body.append(host);
   });
 
   afterEach(() => {
+    _resetEventDraftVaultForTest();
     host.remove();
     document.querySelectorAll('[data-testid="field-monster-template-dialog"]').forEach((node) => node.remove());
   });
@@ -118,6 +121,8 @@ describe("field monster template", () => {
       { kind: "switch", switchId: "sw_ev_field_mob_clear", value: true },
     ]);
     expect(event.pages![1]!.graphic.transparent).toBe(true);
+    expect(store.getCurrent().switches.some((entry) => entry.id === "sw_ev_field_mob_clear")).toBe(false);
+    saveEventDraft(mapId, "ev_field_mob");
     expect(store.getCurrent().switches.some((entry) => entry.id === "sw_ev_field_mob_clear")).toBe(true);
     expect(document.querySelector('[data-testid="field-monster-template-dialog"]')).toBeNull();
   });

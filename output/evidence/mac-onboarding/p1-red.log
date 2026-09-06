@@ -1,0 +1,277 @@
+✖ new entrypoints require Node 24, not older or newer majors (13.322041ms)
+✖ npm is required; ci runs only when node_modules is absent, never repairs broken installs (14.709788ms)
+✖ failed install stops with recovery instead of starting server or deleting partial install (0.783426ms)
+✖ Vite is strict loopback HTTP with runner; browser opens only after own listen succeeds (6.738467ms)
+✖ port conflicts close own server and never open or reuse another origin (9.087904ms)
+✖ browser failure reports stable URL and no-open bypasses browser; SIGINT closes exactly once (9.784458ms)
+✖ Finder bash wrapper quotes paths and preserves arguments from another cwd (205.357137ms)
+✖ fresh setup probes before writing exclusive private config, round-trips through Vite (2.790517ms)
+✖ existing env files and exclusive-create races cannot be overwritten (1.718005ms)
+✖ cancellation, invalid input, probe failure leave no partial configuration or secret error (1.594773ms)
+✖ validation rejects admin credentials and unsafe origins without reflecting supplied values (1.189913ms)
+✖ probe makes only bounded GET with schema, encoded exact project filter and private headers (0.625834ms)
+✖ probe rejects redirects without forwarding credentials and classifies remote failures (0.661503ms)
+✖ probe cancellation observes a real request before abort, not a sleep (0.747125ms)
+✖ masked terminal input never echoes key and restores raw mode on completion and cancellation (1.129654ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 0
+ℹ fail 15
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 693.050601
+
+✖ failing tests:
+
+test at test/macLauncher.test.mjs:16:1
+✖ new entrypoints require Node 24, not older or newer majors (13.322041ms)
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/scripts/setup-local.mjs' imported from /home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/test/macLauncher.test.mjs
+      at finalizeResolution (node:internal/modules/esm/resolve:274:11)
+      at moduleResolve (node:internal/modules/esm/resolve:864:10)
+      at defaultResolve (node:internal/modules/esm/resolve:990:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:737:20)
+      at ModuleLoader.resolve (node:internal/modules/esm/loader:714:38)
+      at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:293:38)
+      at onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:36)
+      at TracingChannel.tracePromise (node:diagnostics_channel:350:14)
+      at ModuleLoader.import (node:internal/modules/esm/loader:664:21)
+      at defaultImportModuleDynamicallyForModule (node:internal/modules/esm/utils:224:31) {
+    code: 'ERR_MODULE_NOT_FOUND',
+    url: 'file:///home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/scripts/setup-local.mjs'
+  }
+
+test at test/macLauncher.test.mjs:22:1
+✖ npm is required; ci runs only when node_modules is absent, never repairs broken installs (14.709788ms)
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/scripts/setup-local.mjs' imported from /home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/test/macLauncher.test.mjs
+      at finalizeResolution (node:internal/modules/esm/resolve:274:11)
+      at moduleResolve (node:internal/modules/esm/resolve:864:10)
+      at defaultResolve (node:internal/modules/esm/resolve:990:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:737:20)
+      at ModuleLoader.resolve (node:internal/modules/esm/loader:714:38)
+      at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:293:38)
+      at onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:36)
+      at TracingChannel.tracePromise (node:diagnostics_channel:350:14)
+      at ModuleLoader.import (node:internal/modules/esm/loader:664:21)
+      at defaultImportModuleDynamicallyForModule (node:internal/modules/esm/utils:224:31) {
+    code: 'ERR_MODULE_NOT_FOUND',
+    url: 'file:///home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/scripts/setup-local.mjs'
+  }
+
+test at test/macLauncher.test.mjs:41:1
+✖ failed install stops with recovery instead of starting server or deleting partial install (0.783426ms)
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/scripts/setup-local.mjs' imported from /home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/test/macLauncher.test.mjs
+      at finalizeResolution (node:internal/modules/esm/resolve:274:11)
+      at moduleResolve (node:internal/modules/esm/resolve:864:10)
+      at defaultResolve (node:internal/modules/esm/resolve:990:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:737:20)
+      at ModuleLoader.resolve (node:internal/modules/esm/loader:714:38)
+      at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:293:38)
+      at onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:36)
+      at TracingChannel.tracePromise (node:diagnostics_channel:350:14)
+      at ModuleLoader.import (node:internal/modules/esm/loader:664:21)
+      at defaultImportModuleDynamicallyForModule (node:internal/modules/esm/utils:224:31) {
+    code: 'ERR_MODULE_NOT_FOUND',
+    url: 'file:///home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/scripts/setup-local.mjs'
+  }
+
+test at test/macLauncher.test.mjs:50:1
+✖ Vite is strict loopback HTTP with runner; browser opens only after own listen succeeds (6.738467ms)
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/scripts/mac-launch.mjs' imported from /home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/test/macLauncher.test.mjs
+      at finalizeResolution (node:internal/modules/esm/resolve:274:11)
+      at moduleResolve (node:internal/modules/esm/resolve:864:10)
+      at defaultResolve (node:internal/modules/esm/resolve:990:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:737:20)
+      at ModuleLoader.resolve (node:internal/modules/esm/loader:714:38)
+      at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:293:38)
+      at onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:36)
+      at TracingChannel.tracePromise (node:diagnostics_channel:350:14)
+      at ModuleLoader.import (node:internal/modules/esm/loader:664:21)
+      at defaultImportModuleDynamicallyForModule (node:internal/modules/esm/utils:224:31) {
+    code: 'ERR_MODULE_NOT_FOUND',
+    url: 'file:///home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/scripts/mac-launch.mjs'
+  }
+
+test at test/macLauncher.test.mjs:76:1
+✖ port conflicts close own server and never open or reuse another origin (9.087904ms)
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/scripts/mac-launch.mjs' imported from /home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/test/macLauncher.test.mjs
+      at finalizeResolution (node:internal/modules/esm/resolve:274:11)
+      at moduleResolve (node:internal/modules/esm/resolve:864:10)
+      at defaultResolve (node:internal/modules/esm/resolve:990:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:737:20)
+      at ModuleLoader.resolve (node:internal/modules/esm/loader:714:38)
+      at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:293:38)
+      at onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:36)
+      at TracingChannel.tracePromise (node:diagnostics_channel:350:14)
+      at ModuleLoader.import (node:internal/modules/esm/loader:664:21)
+      at defaultImportModuleDynamicallyForModule (node:internal/modules/esm/utils:224:31) {
+    code: 'ERR_MODULE_NOT_FOUND',
+    url: 'file:///home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/scripts/mac-launch.mjs'
+  }
+
+test at test/macLauncher.test.mjs:85:1
+✖ browser failure reports stable URL and no-open bypasses browser; SIGINT closes exactly once (9.784458ms)
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/scripts/mac-launch.mjs' imported from /home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/test/macLauncher.test.mjs
+      at finalizeResolution (node:internal/modules/esm/resolve:274:11)
+      at moduleResolve (node:internal/modules/esm/resolve:864:10)
+      at defaultResolve (node:internal/modules/esm/resolve:990:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:737:20)
+      at ModuleLoader.resolve (node:internal/modules/esm/loader:714:38)
+      at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:293:38)
+      at onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:36)
+      at TracingChannel.tracePromise (node:diagnostics_channel:350:14)
+      at ModuleLoader.import (node:internal/modules/esm/loader:664:21)
+      at defaultImportModuleDynamicallyForModule (node:internal/modules/esm/utils:224:31) {
+    code: 'ERR_MODULE_NOT_FOUND',
+    url: 'file:///home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/scripts/mac-launch.mjs'
+  }
+
+test at test/macLauncher.test.mjs:97:1
+✖ Finder bash wrapper quotes paths and preserves arguments from another cwd (205.357137ms)
+  Error: ENOENT: no such file or directory, copyfile '/home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/Start RPG Maker.command' -> '/tmp/RPG launcher 한글 fEoTLK/Start RPG Maker.command'
+      at async copyFile (node:internal/fs/promises:624:10)
+      at async TestContext.<anonymous> (file:///home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/test/macLauncher.test.mjs:100:3)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'copyfile',
+    path: '/home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/Start RPG Maker.command',
+    dest: '/tmp/RPG launcher 한글 fEoTLK/Start RPG Maker.command'
+  }
+
+test at test/setupLocal.test.mjs:28:1
+✖ fresh setup probes before writing exclusive private config, round-trips through Vite (2.790517ms)
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/scripts/setup-local.mjs' imported from /home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/test/setupLocal.test.mjs
+      at finalizeResolution (node:internal/modules/esm/resolve:274:11)
+      at moduleResolve (node:internal/modules/esm/resolve:864:10)
+      at defaultResolve (node:internal/modules/esm/resolve:990:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:737:20)
+      at ModuleLoader.resolve (node:internal/modules/esm/loader:714:38)
+      at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:293:38)
+      at onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:36)
+      at TracingChannel.tracePromise (node:diagnostics_channel:350:14)
+      at ModuleLoader.import (node:internal/modules/esm/loader:664:21)
+      at defaultImportModuleDynamicallyForModule (node:internal/modules/esm/utils:224:31) {
+    code: 'ERR_MODULE_NOT_FOUND',
+    url: 'file:///home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/scripts/setup-local.mjs'
+  }
+
+test at test/setupLocal.test.mjs:48:1
+✖ existing env files and exclusive-create races cannot be overwritten (1.718005ms)
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/scripts/setup-local.mjs' imported from /home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/test/setupLocal.test.mjs
+      at finalizeResolution (node:internal/modules/esm/resolve:274:11)
+      at moduleResolve (node:internal/modules/esm/resolve:864:10)
+      at defaultResolve (node:internal/modules/esm/resolve:990:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:737:20)
+      at ModuleLoader.resolve (node:internal/modules/esm/loader:714:38)
+      at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:293:38)
+      at onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:36)
+      at TracingChannel.tracePromise (node:diagnostics_channel:350:14)
+      at ModuleLoader.import (node:internal/modules/esm/loader:664:21)
+      at defaultImportModuleDynamicallyForModule (node:internal/modules/esm/utils:224:31) {
+    code: 'ERR_MODULE_NOT_FOUND',
+    url: 'file:///home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/scripts/setup-local.mjs'
+  }
+
+test at test/setupLocal.test.mjs:64:1
+✖ cancellation, invalid input, probe failure leave no partial configuration or secret error (1.594773ms)
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/scripts/setup-local.mjs' imported from /home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/test/setupLocal.test.mjs
+      at finalizeResolution (node:internal/modules/esm/resolve:274:11)
+      at moduleResolve (node:internal/modules/esm/resolve:864:10)
+      at defaultResolve (node:internal/modules/esm/resolve:990:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:737:20)
+      at ModuleLoader.resolve (node:internal/modules/esm/loader:714:38)
+      at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:293:38)
+      at onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:36)
+      at TracingChannel.tracePromise (node:diagnostics_channel:350:14)
+      at ModuleLoader.import (node:internal/modules/esm/loader:664:21)
+      at defaultImportModuleDynamicallyForModule (node:internal/modules/esm/utils:224:31) {
+    code: 'ERR_MODULE_NOT_FOUND',
+    url: 'file:///home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/scripts/setup-local.mjs'
+  }
+
+test at test/setupLocal.test.mjs:77:1
+✖ validation rejects admin credentials and unsafe origins without reflecting supplied values (1.189913ms)
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/scripts/setup-local.mjs' imported from /home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/test/setupLocal.test.mjs
+      at finalizeResolution (node:internal/modules/esm/resolve:274:11)
+      at moduleResolve (node:internal/modules/esm/resolve:864:10)
+      at defaultResolve (node:internal/modules/esm/resolve:990:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:737:20)
+      at ModuleLoader.resolve (node:internal/modules/esm/loader:714:38)
+      at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:293:38)
+      at onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:36)
+      at TracingChannel.tracePromise (node:diagnostics_channel:350:14)
+      at ModuleLoader.import (node:internal/modules/esm/loader:664:21)
+      at defaultImportModuleDynamicallyForModule (node:internal/modules/esm/utils:224:31) {
+    code: 'ERR_MODULE_NOT_FOUND',
+    url: 'file:///home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/scripts/setup-local.mjs'
+  }
+
+test at test/setupLocal.test.mjs:95:1
+✖ probe makes only bounded GET with schema, encoded exact project filter and private headers (0.625834ms)
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/scripts/setup-local.mjs' imported from /home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/test/setupLocal.test.mjs
+      at finalizeResolution (node:internal/modules/esm/resolve:274:11)
+      at moduleResolve (node:internal/modules/esm/resolve:864:10)
+      at defaultResolve (node:internal/modules/esm/resolve:990:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:737:20)
+      at ModuleLoader.resolve (node:internal/modules/esm/loader:714:38)
+      at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:293:38)
+      at onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:36)
+      at TracingChannel.tracePromise (node:diagnostics_channel:350:14)
+      at ModuleLoader.import (node:internal/modules/esm/loader:664:21)
+      at defaultImportModuleDynamicallyForModule (node:internal/modules/esm/utils:224:31) {
+    code: 'ERR_MODULE_NOT_FOUND',
+    url: 'file:///home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/scripts/setup-local.mjs'
+  }
+
+test at test/setupLocal.test.mjs:112:1
+✖ probe rejects redirects without forwarding credentials and classifies remote failures (0.661503ms)
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/scripts/setup-local.mjs' imported from /home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/test/setupLocal.test.mjs
+      at finalizeResolution (node:internal/modules/esm/resolve:274:11)
+      at moduleResolve (node:internal/modules/esm/resolve:864:10)
+      at defaultResolve (node:internal/modules/esm/resolve:990:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:737:20)
+      at ModuleLoader.resolve (node:internal/modules/esm/loader:714:38)
+      at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:293:38)
+      at onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:36)
+      at TracingChannel.tracePromise (node:diagnostics_channel:350:14)
+      at ModuleLoader.import (node:internal/modules/esm/loader:664:21)
+      at defaultImportModuleDynamicallyForModule (node:internal/modules/esm/utils:224:31) {
+    code: 'ERR_MODULE_NOT_FOUND',
+    url: 'file:///home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/scripts/setup-local.mjs'
+  }
+
+test at test/setupLocal.test.mjs:123:1
+✖ probe cancellation observes a real request before abort, not a sleep (0.747125ms)
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/scripts/setup-local.mjs' imported from /home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/test/setupLocal.test.mjs
+      at finalizeResolution (node:internal/modules/esm/resolve:274:11)
+      at moduleResolve (node:internal/modules/esm/resolve:864:10)
+      at defaultResolve (node:internal/modules/esm/resolve:990:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:737:20)
+      at ModuleLoader.resolve (node:internal/modules/esm/loader:714:38)
+      at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:293:38)
+      at onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:36)
+      at TracingChannel.tracePromise (node:diagnostics_channel:350:14)
+      at ModuleLoader.import (node:internal/modules/esm/loader:664:21)
+      at defaultImportModuleDynamicallyForModule (node:internal/modules/esm/utils:224:31) {
+    code: 'ERR_MODULE_NOT_FOUND',
+    url: 'file:///home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/scripts/setup-local.mjs'
+  }
+
+test at test/setupLocal.test.mjs:135:1
+✖ masked terminal input never echoes key and restores raw mode on completion and cancellation (1.129654ms)
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/scripts/setup-local.mjs' imported from /home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/test/setupLocal.test.mjs
+      at finalizeResolution (node:internal/modules/esm/resolve:274:11)
+      at moduleResolve (node:internal/modules/esm/resolve:864:10)
+      at defaultResolve (node:internal/modules/esm/resolve:990:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:737:20)
+      at ModuleLoader.resolve (node:internal/modules/esm/loader:714:38)
+      at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:293:38)
+      at onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:36)
+      at TracingChannel.tracePromise (node:diagnostics_channel:350:14)
+      at ModuleLoader.import (node:internal/modules/esm/loader:664:21)
+      at defaultImportModuleDynamicallyForModule (node:internal/modules/esm/utils:224:31) {
+    code: 'ERR_MODULE_NOT_FOUND',
+    url: 'file:///home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/scripts/setup-local.mjs'
+  }

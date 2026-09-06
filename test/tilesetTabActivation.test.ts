@@ -3,12 +3,11 @@
 // 그 함수가 editMode 를 무조건 "passage" 로 되돌려서, setMode 가 자기가 부른 rerender 에
 // 곧바로 덮였다.
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { getDatabaseActiveTab, renderDatabasePanel, setDatabaseActiveTab } from "@/editor/panels/database";
+import { getDatabaseActiveTab, renderDatabasePanel, setDatabaseActiveTab, switchDatabaseActiveTab } from "@/editor/panels/database";
 import {
   getTilesetMetadataEditMode,
   getTilesetSectionTab,
-  resetTilesetFolderFacet,
-  setTilesetFolderTabRequestHandler,
+  setTilesetMetadataEditMode,
 } from "@/editor/panels/tilesetMetadataEditor";
 import { resetStructureKitsTabSession } from "@/editor/panels/structureKitDbTab";
 import { resetTilesetSpacesTabSession } from "@/editor/panels/tilesetSpacesTab";
@@ -27,16 +26,13 @@ beforeEach(() => {
   store.replace(createBlankProject());
   resetStructureKitsTabSession();
   resetTilesetSpacesTabSession();
-  resetTilesetFolderFacet();
-  setTilesetFolderTabRequestHandler(null);
+  setTilesetMetadataEditMode("passage", () => {});
   setDatabaseActiveTab("worldGen");
 });
 
 afterEach(() => {
   resetStructureKitsTabSession();
   resetTilesetSpacesTabSession();
-  resetTilesetFolderFacet();
-  setTilesetFolderTabRequestHandler(null);
   restoreDom?.();
   restoreDom = undefined;
 });
@@ -86,24 +82,24 @@ describe("타일셋 편집 모드 탭", () => {
   });
 });
 
-describe("타일셋 섹션 탭과 좌측 폴더 자식 탭", () => {
-  it("타일 지식 섹션은 지식 모드 + 미분류 폴더 탭으로 함께 간다", () => {
+describe("one internal tileset section navigation", () => {
+  it("tile descriptions change the mode without creating a secondary rail selection", () => {
     const host = openPassageTab();
     click(host, "tileset-section-tab-knowledge");
     expect(getTilesetSectionTab()).toBe("knowledge");
     expect(getTilesetMetadataEditMode()).toBe("ai");
-    expect(getDatabaseActiveTab()).toBe("tilesetUnlabeled");
+    expect(getDatabaseActiveTab()).toBe("tilesets");
   });
 
-  it("구성 섹션은 오토타일 모드 + 오토타일 폴더 탭으로 함께 간다", () => {
+  it("automatic connections change the mode within the primary workspace", () => {
     const host = openPassageTab();
     click(host, "tileset-section-tab-compose");
     expect(getTilesetSectionTab()).toBe("compose");
     expect(getTilesetMetadataEditMode()).toBe("autotile");
-    expect(getDatabaseActiveTab()).toBe("tilesetAutotile");
+    expect(getDatabaseActiveTab()).toBe("tilesets");
   });
 
-  it("타일 규칙으로 돌아오면 통행 폴더 탭이 선택된다", () => {
+  it("returning to rules keeps the tileset primary selected", () => {
     const host = openPassageTab();
     click(host, "tileset-section-tab-compose");
     click(host, "tileset-section-tab-rules");
@@ -111,12 +107,12 @@ describe("타일셋 섹션 탭과 좌측 폴더 자식 탭", () => {
     expect(getDatabaseActiveTab()).toBe("tilesets");
   });
 
-  it("좌측 폴더 탭을 옮기면 섹션 탭도 따라온다", () => {
+  it("legacy route requests still open the matching section", () => {
     const host = openPassageTab();
     expect(getTilesetSectionTab()).toBe("rules");
-    click(host, "db-tab-tileset-autotile");
+    switchDatabaseActiveTab("tilesetAutotile", host as unknown as HTMLElement);
     expect(getTilesetSectionTab()).toBe("compose");
-    click(host, "db-tab-tileset-unlabeled");
+    switchDatabaseActiveTab("tilesetUnlabeled", host as unknown as HTMLElement);
     expect(getTilesetSectionTab()).toBe("knowledge");
   });
 });

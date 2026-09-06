@@ -1,7 +1,8 @@
 /** @vitest-environment happy-dom */
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { EDITOR_WELCOME_TESTIDS, presentEditorWelcome } from "@/editor/editorWelcome";
-import { materializeGenreBlankProjectSystemPreset } from "@/editor/genrePacks";
+import { createNewProjectSeed, GENRE_PACK_IDS, materializeGenreBlankProjectSystemPreset } from "@/editor/genrePacks";
+import { loadProjectFromSupabase, saveProjectToSupabase } from "@/project/supabaseProjectSync";
 import type { Project } from "@/project/types";
 import type { SupabaseProjectConfig } from "@/project/supabaseProjectConfig";
 import type { SupabaseSaveResult } from "@/project/supabaseProjectSync";
@@ -20,6 +21,42 @@ type TransactionalStore = {
     dependencies: TransactionDependencies,
   ): Promise<{ readonly projectId: string }>;
 };
+
+/** JSONB preserves values and array order, not JavaScript object insertion order. */
+function jsonbValue(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(jsonbValue);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(Object.entries(value).sort(([a], [b]) => a.localeCompare(b))
+      .map(([key, entry]) => [key, jsonbValue(entry)]));
+  }
+  return value;
+}
+
+function useJsonbTransport() {
+  let projectRows: unknown = [];
+  let mapRows: unknown = [];
+  vi.stubGlobal("fetch", (async (input, init) => {
+    const url = new URL(String(input));
+    expect(url.searchParams.get("project_id") ?? "eq.oprn-new-target").toBe("eq.oprn-new-target");
+    if (init?.method === "POST") {
+      const body: unknown = jsonbValue(JSON.parse(String(init.body)));
+      if (url.pathname.endsWith("/projects")) projectRows = [body];
+      else if (url.pathname.endsWith("/maps")) mapRows = body;
+      else expect(url.pathname).toBe("/rest/v1/tilesets");
+      return new Response(null, { status: 201 });
+    }
+    if (init?.method === "DELETE") return new Response(null, { status: 204 });
+    if (url.pathname.endsWith("/projects")) return Response.json(projectRows);
+    if (url.pathname.endsWith("/maps")) return Response.json(mapRows);
+    expect(["/rest/v1/project_commits", "/rest/v1/tilesets"]).toContain(url.pathname);
+    return Response.json([]);
+  }) satisfies typeof fetch);
+  return {
+    createProjectId: () => "oprn-new-target",
+    saveTarget: saveProjectToSupabase,
+    reloadTarget: loadProjectFromSupabase,
+  } satisfies TransactionDependencies;
+}
 
 describe("transactional new remote project switch", () => {
   afterEach(() => {
@@ -185,6 +222,40 @@ describe("transactional new remote project switch", () => {
     expect(location.search).toContain("project=oprn-new-target");
   });
 
+  it.each([null, ...GENRE_PACK_IDS])("creates %s through real save/load with JSONB key ordering and load normalization", async (packId) => {
+    const { location, store } = await setup();
+    const candidate = createNewProjectSeed(packId);
+    const dependencies = useJsonbTransport();
+
+    await expect(store.loadNewRemoteProjectTransactionally(candidate, {}, dependencies)).resolves.toEqual({
+      projectId: "oprn-new-target",
+    });
+    expect(store.getProjectIdentity()).toEqual({ kind: "remote", id: "oprn-new-target" });
+    expect(location.search).toContain("project=oprn-new-target");
+  });
+
+  it.each(["title", "tile", "array-order"] as const)("rejects an actual %s mismatch after a JSONB roundtrip without changing local state", async (difference) => {
+    const { before, candidate, getDraft, location, storage, store } = await setup();
+    const transport = useJsonbTransport();
+    const dependencies: TransactionDependencies = {
+      ...transport,
+      reloadTarget: async (config) => {
+        const loaded = await transport.reloadTarget(config);
+        if (!loaded) throw new Error("Expected the saved project");
+        if (difference === "title") loaded.meta.title = "Changed remotely";
+        if (difference === "tile") loaded.maps[loaded.startMapId].lowerTiles[0] = -1;
+        if (difference === "array-order") loaded.database.items.reverse();
+        return loaded;
+      },
+    };
+
+    await expect(store.loadNewRemoteProjectTransactionally(candidate, {}, dependencies)).rejects.toMatchObject({ stage: "verify" });
+    expect((store as unknown as { getCurrent(): Project }).getCurrent()).toEqual(before.project);
+    expect(getDraft()).toEqual(before.draft);
+    expect(location.href).toBe(before.href);
+    expect(storage).toEqual(before.storage);
+  });
+
   // BREAK: quota failure occurred after candidate adopt/draft deletion, leaving welcome over a half-switched project.
   it("keeps project, draft, config, URL, and welcome intact when config staging hits quota", async () => {
     const {
@@ -212,13 +283,23 @@ describe("transactional new remote project switch", () => {
         await store.loadNewRemoteProjectTransactionally(result.project, { title: plan.title }, dependencies);
       },
     });
+    const errorShown = new Promise<void>((resolve, reject) => {
+      const observer = new MutationObserver(() => {
+        if (host.querySelector<HTMLElement>(`[data-testid='${EDITOR_WELCOME_TESTIDS.systemPresetError}']`)?.hidden === false) {
+          observer.disconnect();
+          clearTimeout(timeout);
+          resolve();
+        }
+      });
+      const timeout = setTimeout(() => {
+        observer.disconnect();
+        reject(new Error("Welcome did not display the failed transaction"));
+      }, 5000);
+      observer.observe(host, { attributes: true, subtree: true, attributeFilter: ["hidden"] });
+    });
     host.querySelector<HTMLButtonElement>("[data-testid='editor-welcome-starter-card-0']")?.click();
     document.querySelector<HTMLButtonElement>("[data-testid='app-modal-confirm']")?.click();
-    await vi.waitFor(() => {
-      expect(host.querySelector<HTMLElement>(
-        `[data-testid='${EDITOR_WELCOME_TESTIDS.systemPresetError}']`,
-      )?.hidden).toBe(false);
-    });
+    await errorShown;
 
     expect((store as unknown as { getCurrent(): Project }).getCurrent()).toEqual(before.project);
     expect(getDraft()).toEqual(before.draft);

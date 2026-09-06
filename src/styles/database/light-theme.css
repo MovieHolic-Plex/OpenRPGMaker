@@ -15,7 +15,6 @@
 
 .database-modal-backdrop {
   /* 모달 내 네이티브 폼 컨트롤을 라이트로 렌더 — 서브트리에만 영향. */
-  color-scheme: light;
 
   /* ---- 배경 계층 (크림 기조) -------------------------------------------- */
   --db-light-bg-base: #F7F3EA;    /* 창 최하층/본문 */
@@ -160,25 +159,13 @@
 /* ── 창 표면 --------------------------------------------------------------- */
 
 .database-modal-backdrop .database-modal-window {
-  background: var(--db-light-bg-base);
   border-color: var(--db-light-border-subtle) var(--db-light-border-default) var(--db-light-border-default) var(--db-light-border-subtle);
-  box-shadow: 0 2px 0 rgba(42, 37, 33, 0.12), 0 10px 24px rgba(60, 48, 32, 0.10);
-  color: var(--db-light-text-1);
   outline: 1px solid rgba(42, 37, 33, 0.20);
 }
 
 /* ── 헤더 ------------------------------------------------------------------ */
 
-.database-modal-backdrop .database-modal-window .database-modal-header {
-  background: linear-gradient(180deg, #f5f0e1 0%, #ece5cf 100%);
-  border-bottom: 1px solid var(--db-light-border-default);
-  color: var(--db-light-text-1);
-}
 
-.database-modal-backdrop .database-modal-window .database-modal-header h2 {
-  color: var(--db-light-text-1);
-  text-shadow: none;
-}
 
 .database-modal-backdrop .database-modal-window .database-modal-close,
 .database-modal-backdrop .database-modal-window .database-modal-maximize,
@@ -204,43 +191,19 @@
 
 /* ── 본문 + 탭 스트립 ------------------------------------------------------ */
 
-.database-modal-backdrop .database-modal-window .database-modal-body {
-  background: var(--db-light-bg-base);
-}
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-tabs {
-  background: var(--db-light-bg-surface);
-  border-bottom: 1px solid var(--db-light-border-default);
-}
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab {
-  background: var(--db-light-bg-surface);
   border-color: var(--db-light-border-subtle) var(--db-light-border-default) var(--db-light-border-default) var(--db-light-border-subtle);
   border-style: solid;
   border-width: 1px;
-  color: var(--db-light-text-1);
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-tab:hover {
-  background: var(--db-light-bg-raised);
-}
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-tab.active {
-  background: linear-gradient(var(--db-light-accent), var(--db-light-accent));
-  border-color: var(--db-light-accent-border) var(--db-light-accent-border) var(--db-light-accent-border) var(--db-light-accent-border);
-  color: var(--db-light-on-accent);
-}
 
 /* ── 푸터 ------------------------------------------------------------------ */
 
-.database-modal-backdrop .database-modal-window .database-modal-footer {
-  background: var(--db-light-bg-surface);
-  border-top: 1px solid var(--db-light-border-default);
-}
 
-.database-modal-backdrop .database-modal-window .database-footer-status {
-  color: var(--db-light-text-2);
-}
 
 .database-modal-backdrop .database-modal-window .database-footer-button {
   background: var(--db-light-bg-raised);

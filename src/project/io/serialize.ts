@@ -18,6 +18,18 @@ export function serialize(project: Project): string {
   return JSON.stringify(project, projectJsonReplacer);
 }
 
+/**
+ * Compare loaded project values, not wire bytes: loading normalizes defaults and
+ * JSONB reorders object keys. Array order and non-default authored values remain
+ * significant. Keep this separate from serialize() so persisted hashes do not change.
+ */
+export function serializeForComparison(project: Project): string {
+  return JSON.stringify(deserialize(serialize(project)), (_key, value: unknown) => {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return value;
+    return Object.fromEntries(Object.keys(value).sort().map((key) => [key, Reflect.get(value, key)]));
+  });
+}
+
 /** Human-readable project.json for .rpgzzu packages and debug dumps only. */
 export function serializePretty(project: Project): string {
   return JSON.stringify(project, projectJsonReplacer, 2);

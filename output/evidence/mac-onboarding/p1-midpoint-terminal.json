@@ -1,0 +1,29 @@
+{
+  "host": "Linux PTY; not macOS",
+  "results": [
+    {
+      "scenario": "fresh setup",
+      "exitCode": 0,
+      "keyEchoed": false,
+      "configCreated": true,
+      "mode": "0o600",
+      "terminalOutput": "본인에게 제공된 Supabase 접속 정보와 기존 RPG Maker 프로젝트를 준비하세요. 이 설정 도구는 읽기 확인만 하며 서버에 데이터를 생성하지 않습니다. Ctrl-C로 취소할 수 있습니다.\r\nSupabase 기본 주소: http://127.0.0.1:40677\r\nanon / publishable 키 (입력 숨김): *******************************\r\n기존 RPG Maker 프로젝트 ID: 기존 작업 #$HOME\r\n개인 설정 .env.local을 권한 0600으로 저장했습니다. Start RPG Maker.command 또는 npm run mac:launch로 실행하세요.\r\n"
+    },
+    {
+      "scenario": "cancel",
+      "exitCode": 1,
+      "keyEchoed": false,
+      "configCreated": false,
+      "mode": null,
+      "terminalOutput": "본인에게 제공된 Supabase 접속 정보와 기존 RPG Maker 프로젝트를 준비하세요. 이 설정 도구는 읽기 확인만 하며 서버에 데이터를 생성하지 않습니다. Ctrl-C로 취소할 수 있습니다.\r\nSupabase 기본 주소: http://127.0.0.1:40677\r\nanon / publishable 키 (입력 숨김): \r\nCANCELLED: 설정을 취소했습니다. 설정 파일을 작성하지 않았습니다.\r\n"
+    }
+  ],
+  "probeRequests": [
+    {
+      "method": "GET",
+      "schema": "rpg_zzu",
+      "exactProject": true
+    }
+  ],
+  "launcherArgumentError": "ARGUMENTS: 지원하는 인자는 --no-open뿐입니다. 명령 인자로 키나 접속 정보를 전달하지 마세요."
+}

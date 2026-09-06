@@ -17,6 +17,10 @@ The duration contract for playback consumers is: zero means keyboard advance for
 
 `webExportAssets` already traverses nested project strings outside uploaded payloads, so no cinematic asset collector is added. Disabled sequences retain uploaded media in `prepareWebExport`, including narration referenced nowhere else. Uploaded video filenames now use `.mp4`, `.webm`, or `.ogv` for the media types accepted by the existing movie importer (rather than the former `.png` fallback); image/GIF/WebP and audio handling is unchanged. `test/cinematicSettings.test.ts` covers legacy absence, disabled/empty retention, deterministic serialize/deserialize, strict rejection, resource validation, and actual export-entry bytes for image/video/audio/background, with unused uploads pruned.
 
+## New-project save/reload verification (2026-09-05)
+
+`store.loadNewRemoteProjectTransactionally` compares draft-free projects with `serializeForComparison`, not raw wire bytes. The comparison runs both sides through the project loader's normalization and recursively sorts object keys; arrays and authored non-default values remain significant. New blank/preset seeds contain the default `system.titleScreen.titleGraphic = { mode: "text", x: 32, y: 62 }`, which normalization omits, and the farm preset gains `system.timeSystem.forceSleep = false` on load. PostgreSQL JSONB also changes object-key order. These representation differences must not reject a successful save/reload. Wire serialization and SHA-256 persistence remain unchanged; actual mismatches still reject before adopting the new project or changing drafts, config, or URL. `test/transactionalNewRemoteProject.test.ts` exercises all five presets plus blank creation through real save/load functions with a JSONB-like transport, and rejects changed titles, map tiles, and array order.
+
 ## Project-authored equipment slots (2026-09-05)
 
 `ProjectDatabaseRecords.equipmentSlots?: EquipmentSlotRecord[]` is an additive v4 catalog of `{ id, label }`. Omission keeps the five built-ins. `src/project/equipmentSlots.ts` merges built-ins with authored label overrides and custom slots; built-in IDs cannot be removed. IDs are stable ASCII identifiers, not labels. `EquipmentRecord.slot`, `ActorInitialEquipment`, and `changeEquipment.slot` reference these IDs. Actor normalization preserves every slot key; shape/reference validation rejects duplicate/unsafe catalog IDs, empty labels, and dangling equipment/actor/event slot references. No migration or schema bump is needed for catalog-free projects.
@@ -43,6 +47,8 @@ Contract: `test/customEquipmentSlots.test.ts` covers create/rename/use, initial 
 
 
 Authored project schema, defaults, validation, migration, references, and persistence boundaries.
+
+생활 스키마 회귀 fixture (2026-09-06): `test/fixtures/life-full/legacyProject.ts`는 새 프로젝트의 중복 `titleScreen.titleGraphic`만 명시적으로 제외한다. 생성기는 `{mode:"text",x:32,y:62}`를 제공하지만 로더는 리소스 없는 text-only 그림을 생략한다. 이 의도된 첫 정상화를 생활 optional 필드 부재/전체 byte-stability 검사와 혼합하지 않는다. fixture 안에서 deserialize를 호출하지 않으며, `p0ProjectSchema`는 새 프로젝트에서 그 한 필드만 없어지는지와 리소스 있는 text/graphic/both 보존을 별도로 검사한다. P0/P1/P2는 원문 동일성과 두 번째 왕복 안정성을 모두 유지한다. 공간 탭의 0개 배지는 공용 UI 계약대로 `data-count`를 생략하며, `p2SpatialEditorAuthoring`는 추가/삭제 확인/undo/redo와 4종 합계를 검증한다. `test/fixtures/life-full/coverage.json`의 51개 기능 및 F01..F13은 후속 완주용 **미실행 명세**이며 PASS 원장이 아니다.
 
 ## 통행 컴포넌트 색인의 계약 (2026-08-30, PR #286)
 

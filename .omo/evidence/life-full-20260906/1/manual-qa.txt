@@ -1,0 +1,12 @@
+command: node .omo/evidence/life-full-20260906/1/manual-qa.mjs
+Public createBlankProject -> serialize -> deserialize: only redundant text title removed; source unchanged; N(P)=N(N(P)).
+{"beforeBytes":2291858,"afterBytes":2291813}
+18 absent optional authored fields remain absent, including spatial and animal definitions.
+Public deserialize rejects malformed optional energy.
+Public deserialize rejects malformed optional dailyWeather.
+Public deserialize rejects malformed optional fishing.
+Parsed coverage: exact 51 unique feature IDs + F01..F13; all not-run; no claimed execution; valid owners.
+PASS: real public serialization boundary, not a mocked normalizer. No browser or remote write.
+Teardown: Vite SSR server closed; no listening HTTP port created.
+
+exit code: 0

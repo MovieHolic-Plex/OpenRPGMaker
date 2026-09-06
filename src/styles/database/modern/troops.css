@@ -350,8 +350,6 @@
   margin: 0;
   overflow: hidden;
   padding: 5px 9px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-troop-preview-legend {

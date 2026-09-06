@@ -1,4 +1,4 @@
-// 데이터베이스 「맵 → 타일셋 → 개념 꾸러미」.
+// 데이터베이스 「맵 → 개념 꾸러미」.
 // 타일셋에 동봉된 시설→장소→물건→칩 나무를 그림으로 고친다.
 // 사용자가 고친 나무는 place_concept 이 그대로 읽는다.
 
@@ -124,9 +124,9 @@ export function renderScratchConceptTab(host: HTMLElement, rerender: () => void)
       ?? null
     : null;
   session.placeId = place?.id ?? null;
-  const thing = bundle && facility
-    ? bundle.things.find((entry) => entry.id === session.thingId && entry.placeIds.some((id) => facility.placeIds.includes(id)))
-      ?? bundle.things.find((entry) => place && entry.placeIds.includes(place.id))
+  const thing = bundle && place
+    ? bundle.things.find((entry) => entry.id === session.thingId && entry.placeIds.includes(place.id))
+      ?? bundle.things.find((entry) => entry.placeIds.includes(place.id))
       ?? null
     : null;
   session.thingId = thing?.id ?? null;
@@ -136,6 +136,7 @@ export function renderScratchConceptTab(host: HTMLElement, rerender: () => void)
       class: "db-tab-note",
       children: [
         el("h3", { text: "개념 꾸러미", dataset: { testid: "scratch-concept-heading" } }),
+        renderTilesetSelector(tilesets, activeTileset, host, rerender),
         el("span", {
           class: "db-tab-note-chip",
           children: [makeDatabaseTabIcon("scratchConcepts"), el("span", { text: "타일셋별로 분리됨" })],
@@ -146,11 +147,10 @@ export function renderScratchConceptTab(host: HTMLElement, rerender: () => void)
   );
 
   const workspace = el("div", {
-    class: "structure-kit-album-workspace scratch-concept-workspace",
+    class: "scratch-concept-workspace",
     dataset: { testid: "scratch-concept-workspace" },
   });
   host.append(workspace);
-  workspace.append(renderTilesetRail(tilesets, activeTileset, host, rerender));
 
   const tableCol = el("div", { class: "scratch-concept-main" });
   workspace.append(tableCol);
@@ -179,45 +179,39 @@ export function renderScratchConceptTab(host: HTMLElement, rerender: () => void)
   }
 }
 
-function renderTilesetRail(
+function renderTilesetSelector(
   tilesets: readonly TilesetDef[],
   activeTileset: TilesetDef | undefined,
   host: HTMLElement,
   rerender: () => void,
 ): HTMLElement {
-  const rail = el("div", {
-    class: "structure-kit-album-rail",
-    dataset: { testid: "scratch-concept-rail" },
-    children: [el("div", { class: "structure-kit-album-rail-title", text: "타일셋" })],
+  const select = el("select", {
+    dataset: { testid: "scratch-concept-tileset-select" },
+    attrs: { "aria-label": "타일셋" },
+    on: { change: (event) => {
+      const id = (event.target as HTMLSelectElement).value;
+      session.tilesetId = id;
+      session.bundleId = null;
+      session.facilityId = null;
+      session.placeId = null;
+      session.thingId = null;
+      session.pickerOpen = false;
+      setSelectedTileset(id);
+      refresh(host, rerender);
+    } },
   });
   for (const tileset of tilesets) {
     const count = tileset.scratchConceptBundles?.length ?? 0;
-    const isActive = tileset.id === activeTileset?.id;
-    rail.append(
-      el("button", {
-        class: `structure-kit-album-item${isActive ? " active" : ""}${count === 0 ? " zero" : ""}`,
-        attrs: { type: "button" },
+    select.append(
+      el("option", {
+        attrs: { value: tileset.id },
         dataset: { testid: `scratch-concept-tileset-${tileset.id}` },
-        children: [
-          el("span", { text: tileset.name }),
-          el("span", { class: "structure-kit-album-count", text: String(count) }),
-        ],
-        on: {
-          click: () => {
-            session.tilesetId = tileset.id;
-            session.bundleId = null;
-            session.facilityId = null;
-            session.placeId = null;
-            session.thingId = null;
-            session.pickerOpen = false;
-            setSelectedTileset(tileset.id);
-            refresh(host, rerender);
-          },
-        },
+        text: `${tileset.name} · ${count}`,
       }),
     );
   }
-  return rail;
+  select.value = activeTileset?.id ?? "";
+  return el("label", { class: "scratch-concept-tileset-select", children: [el("span", { text: "타일셋" }), select] });
 }
 
 function renderEmpty(tileset: TilesetDef, host: HTMLElement, rerender: () => void): HTMLElement {
@@ -298,12 +292,20 @@ function renderFacilityStrip(
   const strip = el("div", { class: "scratch-concept-facilities", dataset: { testid: "scratch-concept-facilities" } });
   for (const bundle of bundles) {
     const label = bundle.facilities[0]?.label ?? bundle.label;
+    const object = bundle.things.map((thing) => resolveThingObject(tileset, thing.objectId)).find(Boolean);
     strip.append(
       el("button", {
         class: `scratch-concept-facility${bundle.id === active.id ? " active" : ""}`,
-        attrs: { type: "button", title: `${label} — 장소 ${bundle.places.length} · 물건 ${bundle.things.length}` },
+        attrs: { type: "button", "aria-pressed": String(bundle.id === active.id), title: `${label} — 장소 ${bundle.places.length} · 물건 ${bundle.things.length}` },
         dataset: { testid: `scratch-concept-facility-${bundle.id}` },
-        text: label,
+        children: [
+          ...(object ? [el("span", {
+            class: "scratch-concept-facility-art",
+            attrs: { "aria-hidden": "true" },
+            children: [interiorObjectCanvas(tileset, object, 2)],
+          })] : []),
+          el("span", { text: label }),
+        ],
         on: {
           click: () => {
             if (session.bundleId === bundle.id) return;
@@ -576,7 +578,7 @@ function renderPlaceCard(
 
   const row = el("div", { class: "scratch-concept-things", dataset: { testid: `scratch-concept-things-${place.id}` } });
   for (const entry of things) {
-    row.append(renderThingChip(tileset, bundle, entry, selectedThing?.id === entry.id, host, rerender));
+    row.append(renderThingChip(tileset, bundle, place.id, entry, active && selectedThing?.id === entry.id, host, rerender));
   }
   row.append(
     el("button", {
@@ -738,6 +740,7 @@ function renderPlacePlanRow(
 function renderThingChip(
   tileset: TilesetDef,
   bundle: ConceptBundleRecord,
+  placeId: string,
   thing: ConceptThingRecord,
   active: boolean,
   host: HTMLElement,
@@ -749,6 +752,7 @@ function renderThingChip(
     : el("span", { class: "scratch-concept-missing", text: "?" });
   // 버튼 안에 버튼을 넣지 않으려 칩 외곽은 div — 칠하기는 안의 버튼, 선택은 칩 클릭/Enter/Space.
   const selectThing = () => {
+    session.placeId = placeId;
     session.thingId = thing.id;
     session.pickerOpen = false;
     refresh(host, rerender);
@@ -778,6 +782,9 @@ function renderThingChip(
         on: {
           click: (event) => {
             event.stopPropagation();
+            session.placeId = placeId;
+            session.thingId = thing.id;
+            session.pickerOpen = false;
             paintThingGraphic(tileset, bundle, thing, host, rerender);
           },
         },

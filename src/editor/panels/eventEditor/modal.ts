@@ -2,7 +2,6 @@ import { warmEditorPickerAssets } from "@/assets/editorAssetWarmup";
 import { editorState } from "@/editor/editorState";
 import { requestEditorEventDeletion } from "@/editor/eventDeletion";
 import { eventDisplayName } from "@/editor/eventMarkerUx";
-import { handleHistoryHotkey } from "@/editor/hotkeys";
 import {
   beginExistingEventDraft,
   checkpointEventDraft,
@@ -25,6 +24,8 @@ import {
   openActiveEventCommandPicker,
   renderEventEditorDynamic,
   renderEventEditorStable,
+  undoActiveEventCommands,
+  clearEventCommandNavigation,
 } from "./content";
 import {
   navigateToEventDraftIssue,
@@ -246,6 +247,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
   }, EVENT_EDITOR_CHECKPOINT_MS);
   backdrop.addEventListener("keydown", (event) => handleModalKeyDown(event, request));
   backdrop.addEventListener(EVENT_EDITOR_CLOSE_EVENT, (event) => {
+    clearEventCommandNavigation();
     const saved = event instanceof CustomEvent && event.detail?.saved === true;
     disposeWindowFullscreen();
     customSelects.dispose();
@@ -682,7 +684,15 @@ function handleModalKeyDown(event: KeyboardEvent, request: OpenEventEditorReques
     openActiveEventCommandPicker(request.mapId, request.eventId);
     return;
   }
-  if (handleHistoryHotkey(event)) return;
+  if ((event.ctrlKey || event.metaKey) && !event.altKey && ["z", "y"].includes(event.key.toLowerCase())) {
+    // Text fields retain native undo. Even an empty page history owns this key:
+    // it must never fall through to the global map stack beneath the draft.
+    event.stopPropagation();
+    if (isTextEditingTarget(event.target)) return;
+    event.preventDefault();
+    undoActiveEventCommands(request.mapId, request.eventId, event.key.toLowerCase() === "y" || event.shiftKey);
+    return;
+  }
   if (event.key !== "Delete" || event.ctrlKey || event.metaKey || event.altKey) return;
   if (isTextEditingTarget(event.target)) return;
 
@@ -858,7 +868,6 @@ function restoreEventEditorInteraction(root: HTMLElement, snapshot: EventEditorI
     const details = root.querySelector<HTMLDetailsElement>(`[data-testid="${testId}"]`);
     if (details) details.open = true;
   }
-  if (snapshot.selectedCommandPath) selectRenderedCommand(root, snapshot.selectedCommandPath);
 
   let focusTarget: HTMLElement | null = null;
   if (snapshot.focusPageId) {
@@ -887,13 +896,6 @@ function restoreEventEditorInteraction(root: HTMLElement, snapshot: EventEditorI
   ) {
     focusTarget.setSelectionRange(snapshot.selectionStart, snapshot.selectionEnd);
   }
-}
-
-function selectRenderedCommand(root: HTMLElement, encodedPath: string): void {
-  const row = findRenderedCommand(root, encodedPath);
-  if (!row) return;
-  root.querySelectorAll(".cmd-item.selected, .row.selected, .leaf.selected").forEach((node) => node.classList.remove("selected", "is-selected"));
-  row.classList.add("selected", "is-selected");
 }
 
 function findRenderedCommand(root: HTMLElement, encodedPath: string): HTMLElement | null {

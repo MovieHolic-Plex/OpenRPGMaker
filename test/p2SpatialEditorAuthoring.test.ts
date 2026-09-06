@@ -1,5 +1,6 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderDatabasePanel, setDatabaseActiveTab, TAB_GROUPS } from "@/editor/panels/database";
+import { redoMapEdit, resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
 import { createBlankProject } from "@/project/defaults";
 import { deserialize, serialize } from "@/project/io";
 import { store } from "@/project/store";
@@ -9,6 +10,8 @@ let restoreDom: (() => void) | undefined;
 let previousWindow: typeof globalThis.window | undefined;
 
 beforeEach(() => {
+  vi.useFakeTimers({ toFake: ["Date", "setTimeout", "clearTimeout"] });
+  vi.setSystemTime(new Date("2026-09-06T00:00:00Z"));
   restoreDom = installFakeDom();
   previousWindow = globalThis.window;
   Object.defineProperty(globalThis, "window", {
@@ -16,10 +19,14 @@ beforeEach(() => {
     value: { localStorage: { getItem: () => null, setItem: () => undefined, removeItem: () => undefined } },
   });
   store.replace(createBlankProject());
+  resetMapEditHistory();
   setDatabaseActiveTab("actors");
 });
 
 afterEach(() => {
+  resetMapEditHistory();
+  vi.clearAllTimers();
+  vi.useRealTimers();
   restoreDom?.();
   if (previousWindow === undefined) Reflect.deleteProperty(globalThis, "window");
   else Object.defineProperty(globalThis, "window", { configurable: true, value: previousWindow });
@@ -40,12 +47,35 @@ describe("P2 spatial editor authoring", () => {
     const host = renderPanel();
     const tab = findByTestId(host, "db-tab-farm-spatial");
     expect(tab?.textContent).toBe("농장 건물·집 꾸미기");
-    expect(tab?.dataset.count).toBe("0");
+    expect(tab?.dataset.count).toBeUndefined();
     tab?.click();
     expect(findByTestId(host, "db-spatial-workspace")).toBeTruthy();
     expect(findByTestId(host, "db-spatial-hero-image")?.getAttribute("src"))
       .toBe("/assets/farming/life-ui/decorating-card.png");
     expect(findByTestId(host, "db-spatial-empty-state")).toBeTruthy();
+  });
+
+  it("omits the zero badge after deletion and restores counts through undo and redo", () => {
+    const host = renderPanel();
+    findByTestId(host, "db-tab-farm-spatial")?.click();
+    expect(findByTestId(host, "db-tab-farm-spatial")?.dataset.count).toBeUndefined();
+
+    findByTestId(host, "db-spatial-add-building-type")?.click();
+    const building = store.getCurrent().database.farmBuildingTypes?.[0];
+    if (!building) throw new Error("missing building fixture");
+    expect(findByTestId(host, "db-tab-farm-spatial")?.dataset.count).toBe("1");
+    findByTestId(host, `db-spatial-delete-building-type-${building.id}`)?.click();
+    expect(store.getCurrent().database.farmBuildingTypes).toEqual([building]);
+    findByTestId(host, `db-spatial-delete-building-type-${building.id}`)?.click();
+    expect(store.getCurrent().database.farmBuildingTypes).toEqual([]);
+    expect(findByTestId(host, "db-tab-farm-spatial")?.dataset.count).toBeUndefined();
+
+    expect(undoMapEdit()).toBe(true);
+    expect(store.getCurrent().database.farmBuildingTypes).toEqual([building]);
+    expect(findByTestId(renderPanel(), "db-tab-farm-spatial")?.dataset.count).toBe("1");
+    expect(redoMapEdit()).toBe(true);
+    expect(store.getCurrent().database.farmBuildingTypes).toEqual([]);
+    expect(findByTestId(renderPanel(), "db-tab-farm-spatial")?.dataset.count).toBeUndefined();
   });
 
   it("creates structured building/decor definitions and independent authored placements", () => {

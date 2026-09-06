@@ -33,6 +33,28 @@ describe("store preserves open event drafts across remote autosave", () => {
     vi.clearAllMocks();
   });
 
+  it("autosave submits canonical linked profiles and preserves the staged name for Apply", async () => {
+    const { store } = await import("@/project/store");
+    const { createEventDraft, setEventDraftCharacterName, saveEventDraft } = await import("@/editor/eventDraftActions");
+    const { saveProjectToSupabase, saveProjectMapPatchToSupabase } = await import("@/project/supabaseProjectSync");
+    store.replaceProject(createBlankProject());
+    store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: true });
+    const mapId = store.getCurrent().startMapId;
+    const eventId = createEventDraft(mapId, 3, 3);
+    setEventDraftCharacterName(mapId, eventId, "autosave-npc", "Staged name");
+    const result = await store.flush();
+    expect(result.kind).toBe("saved");
+    const submitted = [
+      ...vi.mocked(saveProjectToSupabase).mock.calls.map(([project]) => project),
+      ...vi.mocked(saveProjectMapPatchToSupabase).mock.calls.map(([input]) => input.project),
+    ];
+    expect(submitted.length).toBeGreaterThan(0);
+    for (const project of submitted) expect(project.characters?.["autosave-npc"]).toBeUndefined();
+    expect(store.getCurrent().characters?.["autosave-npc"]).toBeUndefined();
+    saveEventDraft(mapId, eventId);
+    expect(store.getCurrent().characters?.["autosave-npc"]?.displayName).toBe("Staged name");
+  });
+
   it("keeps a new event draft after map-patch save returns a draft-stripped project", async () => {
     const { store } = await import("@/project/store");
     const { createEventDraft } = await import("@/editor/eventDraftActions");
