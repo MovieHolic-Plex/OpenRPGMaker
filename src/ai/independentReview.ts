@@ -37,6 +37,13 @@ export function reviewChanges(before: Project, after: Project): ReviewInput["cha
   const right = after as unknown as Record<string, unknown>;
   return [...new Set([...Object.keys(left), ...Object.keys(right)])].sort().flatMap(key => {
     if (JSON.stringify(left[key]) === JSON.stringify(right[key])) return [];
+    if (key === "maps") {
+      return [...new Set([...Object.keys(before.maps), ...Object.keys(after.maps)])].flatMap(id => {
+        const a = before.maps[id], b = after.maps[id];
+        return JSON.stringify(a) === JSON.stringify(b) ? [] : [
+          { path: `/maps/${id}`, before: a ?? null, after: b ?? null }];
+      });
+    }
     if (key === "database") {
       const changes: { path: string; before: unknown; after: unknown }[] = [];
       for (const collection of new Set([...Object.keys(before.database), ...Object.keys(after.database)])) {
