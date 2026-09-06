@@ -94,7 +94,9 @@ describe("실제 도구 결과에 기반한 조회 선행", () => {
     const context = { project: createBlankProject() };
     const evidence = new ToolReadEvidence();
     evidence.begin({ project: false, collections: [], references: true });
-    const made = runTool(context, "upsert_enemy", { enemy: { id: "enemy_read_contract", name: "조회 계약 적" } }, { dryRun: false });
+    const made = runTool(context, "upsert_enemy", {
+      enemy: { id: "enemy_read_contract", name: "조회 계약 적", monsterResourceId: "generated-enemy-slime-01" },
+    }, { dryRun: false });
     expect(made.ok).toBe(true);
     evidence.observe("upsert_enemy", {}, made);
     const args = { troop: { id: "troop_read_contract", name: "조회 무리", enemyIds: ["enemy_read_contract"] } };
