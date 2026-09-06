@@ -14,7 +14,7 @@ let harness: ReturnType<typeof encounterHarness> | undefined;
 afterEach(() => { harness?.dispose(); vi.unstubAllGlobals(); vi.restoreAllMocks(); surfaces.mount.mockReset(); surfaces.transition.mockReset(); });
 
 describe('real battle result lifetime', () => {
-  it.each(['unchanged', 'session', 'map', 'shutdown'] as const)('applies rewards only to the live battle owner: %s', async change => {
+  it.each(['unchanged', 'session', 'map', 'same-map-id', 'owner', 'shutdown'] as const)('applies rewards only to the live battle owner: %s', async change => {
     const f = harness = encounterHarness();
     const host = document.createElement('div');
     vi.spyOn(f.scene.game.registry, 'get').mockReturnValue(host);
@@ -23,12 +23,15 @@ describe('real battle result lifetime', () => {
     surfaces.mount.mockImplementation((options: BattleDomOptions) => { mounted.resolve(options); return { root: host, destroy: destroyed }; });
     surfaces.transition.mockImplementation(() => ({ cover: async () => undefined, reveal: async () => undefined,
       exit: () => exit.promise, destroy: () => undefined }));
-    const done = playBattle(f.scene, { kind: 'battleProcessing', troopId: f.troopId, canEscape: false, canLose: false }, 0);
+    let current = true;
+    const done = playBattle(f.scene, { kind: 'battleProcessing', troopId: f.troopId, canEscape: false, canLose: false }, 0, () => current);
     const battle = await bounded(mounted.promise);
     const snapshot = battle.runtime.snapshot();
     battle.onResult('victory', { ...snapshot, rewards: { ...snapshot.rewards, gold: 17 } });
     if (change === 'session') f.scene.session = startSession(f.project);
     if (change === 'map') f.scene.map = { ...f.map, id: 'other_map' };
+    if (change === 'same-map-id') f.scene.map = { ...f.map };
+    if (change === 'owner') { current = false; f.scene.events.emit('update'); }
     if (change === 'shutdown') f.scene.events.emit('shutdown');
     exit.resolve();
     expect(await bounded(done)).toBe(change === 'unchanged' ? 'victory' : null);

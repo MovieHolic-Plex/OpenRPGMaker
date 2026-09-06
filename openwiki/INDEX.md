@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **48쪽 / 1782KB / 약 506,652 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **48쪽 / 1783KB / 약 506,988 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -21,7 +21,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-event-authoring.md` | 120KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 574 | ~34,884 |
 | `openwiki/editor-event-commands.md` | 50KB | 32KB | 132 | ~13,431 |
 | `openwiki/editor-pre-edit-routing.md` | 75KB | 55KB ⚠상한 초과 — 절을 더 쪼개라 | 248 | ~21,334 |
-| `openwiki/runtime-battle.md` | 125KB | 31KB | 434 | ~35,858 |
+| `openwiki/runtime-battle.md` | 126KB | 31KB | 435 | ~35,993 |
 | `openwiki/runtime-project-schema.md` | 76KB | 44KB | 322 | ~20,399 |
 | `openwiki/runtime-sessions.md` | 77KB | 46KB | 283 | ~20,565 |
 | `openwiki/testing.md` | 124KB | 46KB | 841 | ~34,728 |
@@ -584,7 +584,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L15` Quick routing
 - `L24` For AI agents
 
-### `openwiki/runtime-battle.md` — 125KB · 434줄 · ~35,858 토큰 · 통째읽기 잘림
+### `openwiki/runtime-battle.md` — 126KB · 435줄 · ~35,993 토큰 · 통째읽기 잘림
 
 - `L3` 적별 전투 표시 크기 (2026-09-06)
 - `L13` Event friendship and live level changes (2026-09-06)
@@ -593,19 +593,19 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L79` 빈 페이지와 실행 빈도 계약 (2026-09-05)
   - `L96` 체공 배율 채널과 착지 눌림 (2026-08-30, PR #297)
 - `L114` 지원 전투 시스템은 둘뿐이다 (2026-08-28)
-- `L126` Roguelike run boundary (2026-08-24)
-- `L131` Battle rules & runtime
-  - `L146` 전투 화면 표현 · 전환 · 타임라인 · 연출 타이밍
-  - `L171` 커맨드/대상 메뉴 기하와 글자 가시성 계약
-  - `L187` 스킨 CSS 캐스케이드와 저작 가능 스킨
-  - `L191` Gen 1(포켓몬식) 규칙 모델
-  - `L199` 플레이 모드 런타임 (이 절에 섞여 있는 비전투 항목)
-  - `L218` 전투 흐름 · 몬스터 수집 · 트룹 이벤트 · 보상
-- `L255` Starter hero battle sheets (2026-08-29)
-- `L276` Per-actor back battlers (2026-08-29)
-- `L294` Battle input and visibility P0 contract (2026-07-30)
-- `L305` 배틀러 idle 애니메이션 (2026-08-30)
-- `L431` 필드 아이템 상태 부여 복구 (2026-09-05)
+- `L127` Roguelike run boundary (2026-08-24)
+- `L132` Battle rules & runtime
+  - `L147` 전투 화면 표현 · 전환 · 타임라인 · 연출 타이밍
+  - `L172` 커맨드/대상 메뉴 기하와 글자 가시성 계약
+  - `L188` 스킨 CSS 캐스케이드와 저작 가능 스킨
+  - `L192` Gen 1(포켓몬식) 규칙 모델
+  - `L200` 플레이 모드 런타임 (이 절에 섞여 있는 비전투 항목)
+  - `L219` 전투 흐름 · 몬스터 수집 · 트룹 이벤트 · 보상
+- `L256` Starter hero battle sheets (2026-08-29)
+- `L277` Per-actor back battlers (2026-08-29)
+- `L295` Battle input and visibility P0 contract (2026-07-30)
+- `L306` 배틀러 idle 애니메이션 (2026-08-30)
+- `L432` 필드 아이템 상태 부여 복구 (2026-09-05)
 
 ### `openwiki/runtime-m2-flow-controls.md` — 19KB · 78줄 · ~5,067 토큰
 
@@ -617,12 +617,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L59` 저장된 M2 명령 실행 연결 복구 (2026-09-05)
   - `L72` 이동 중 경로 재지정 — 2026-09-05 브라우저 적대적 QA
 
-### `openwiki/runtime-pre-edit-routing.md` — 31KB · 178줄 · ~8,954 토큰
+### `openwiki/runtime-pre-edit-routing.md` — 32KB · 189줄 · ~9,155 토큰
 
-- `L150` Recovered head emotes (2026-09-05)
-- `L156` 메뉴 입력·불러오기 배율 (2026-09-05)
-- `L164` 가구 밀기 애니메이션 (2026-09-05)
-- `L173` Recovered head emotes (2026-09-05)
+- `L150` ESC skill thumbnails (2026-09-06)
+- `L161` Recovered head emotes (2026-09-05)
+- `L167` 메뉴 입력·불러오기 배율 (2026-09-05)
+- `L175` 가구 밀기 애니메이션 (2026-09-05)
+- `L184` Recovered head emotes (2026-09-05)
 
 ### `openwiki/runtime-project-schema.md` — 76KB · 322줄 · ~20,399 토큰 · 통째읽기 잘림
 
