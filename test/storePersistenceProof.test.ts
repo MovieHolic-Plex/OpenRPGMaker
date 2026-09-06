@@ -1,34 +1,76 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { clearTimeout as clearDeadline, setTimeout as setDeadline } from "node:timers";
 import type { Project } from "@/project/types";
 
 const projectId = "p1-proof-fixture";
 
 type Row = { project_id: string; current_json: Project; current_sha256: string };
+type Commit = { projectId: string; sha256: string; commitId: string };
+
+let store: typeof import("@/project/store").store;
+const pendingSignals = new Map<Promise<unknown>, () => void>();
+const signalErrors: unknown[] = [];
 
 function deferred<T>() {
-  return Promise.withResolvers<T>();
+  const signal = Promise.withResolvers<T>();
+  const deadline = setDeadline(() => signal.reject(new Error("Proof fixture transport signal deadline")), 10_000);
+  const promise = signal.promise.finally(() => {
+    clearDeadline(deadline);
+    pendingSignals.delete(promise);
+  });
+  // Observe rejection immediately, even while flush is still pending. The consumer
+  // still receives the rejection, and teardown fails on every recorded error.
+  void promise.catch((error) => { signalErrors.push(error); });
+  pendingSignals.set(promise, () => signal.reject(new Error("Unfinished proof fixture signal at cleanup")));
+  return { ...signal, promise };
 }
 
 async function fixture() {
   let row: Row | undefined;
   let readResponse: (() => Promise<Response>) | undefined;
   let mapReadResponse: (() => Promise<Response>) | undefined;
-  let committed = deferred<void>();
+  let committed: ReturnType<typeof deferred<Commit>> | undefined;
+  const commitHashes = new Map<string, Commit>();
+  const sync = await import("@/project/supabaseProjectSync");
+  // Call-through observation: await the real background writer, including its response handling.
+  const commitWrites = vi.spyOn(sync, "recordProjectCommitToSupabase");
   const calls: { url: URL; method: string }[] = [];
   const fetchSpy = vi.fn<typeof fetch>(async (input, init) => {
     const url = new URL(String(input));
+    if (url.origin !== "http://p1-transport.invalid") throw new Error(`Unexpected transport origin: ${url.origin}`);
     const method = init?.method ?? "GET";
+    if ((method === "GET" || method === "DELETE" || method === "PATCH")
+      && url.searchParams.get("project_id") !== `eq.${projectId}`) {
+      throw new Error(`Unexpected transport target: ${url}`);
+    }
     calls.push({ url, method });
     if (url.pathname === "/rest/v1/projects") {
       if (method === "POST" || method === "PATCH") {
-        row = JSON.parse(String(init?.body));
+        const submitted: Row = JSON.parse(String(init?.body));
+        if (submitted.project_id !== projectId) throw new Error(`Unexpected save target: ${submitted.project_id}`);
+        row = submitted;
         return Response.json(method === "PATCH" ? [row] : []);
       }
       if (readResponse) return readResponse();
       return Response.json(row ? [row] : []);
     }
     if (url.pathname === "/rest/v1/maps" && method === "GET" && mapReadResponse) return mapReadResponse();
-    if (url.pathname === "/rest/v1/project_changes") committed.resolve();
+    if (url.pathname === "/rest/v1/project_commits" && method === "POST") {
+      const commits: { project_id: string; commit_id: string; current_sha256: string }[] = JSON.parse(String(init?.body));
+      for (const commit of commits) {
+        commitHashes.set(commit.commit_id, { projectId: commit.project_id, sha256: commit.current_sha256, commitId: commit.commit_id });
+      }
+    }
+    if (url.pathname === "/rest/v1/project_changes" && method === "POST") {
+      const changes: { entity_type: string; entity_id: string; commit_id: string }[] = JSON.parse(String(init?.body));
+      for (const change of changes) {
+        const commit = commitHashes.get(change.commit_id);
+        if (change.entity_type === "project" && change.entity_id === projectId
+          && commit?.projectId === projectId && commit.sha256 === row?.current_sha256) {
+          committed?.resolve(commit);
+        }
+      }
+    }
     if (url.pathname === "/rest/v1/maps" || url.pathname === "/rest/v1/tilesets"
       || url.pathname === "/rest/v1/project_commits" || url.pathname === "/rest/v1/project_changes") {
       return Response.json([]);
@@ -36,14 +78,36 @@ async function fixture() {
     throw new Error(`Unexpected transport: ${method} ${url.pathname}`);
   });
   vi.stubGlobal("fetch", fetchSpy);
-  const { store } = await import("@/project/store");
   store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: true, disabledReason: null });
-  store.update((draft) => { draft.meta.title = "accepted-fixture"; });
+  store.update((draft) => {
+    draft.meta.title = "accepted-fixture";
+    // This seam needs one valid map, not the bundled tileset authoring catalogs.
+    // Keep the real database/resources so ordinary load repair still participates.
+    const map = draft.maps[draft.startMapId];
+    if (!map) throw new Error("Fixture start map is missing");
+    const tileset = draft.tilesets[map.tilesetId];
+    if (!tileset) throw new Error("Fixture start tileset is missing");
+    const image = tileset.image;
+    map.tilesetId = "proof-tileset";
+    map.lowerTiles.fill(0);
+    draft.tilesets = { [map.tilesetId]: {
+      id: map.tilesetId, name: "Proof tileset", image, kind: "custom",
+      tileSize: map.tileSize, tilesPerRow: 1, count: 1,
+      passability: [0], priority: ["lower"], terrain: [0],
+    } };
+  });
   const flush = async () => {
-    committed = deferred<void>(); // Subscribe to the exact background commit before saving.
+    committed = deferred<Commit>(); // Subscribe before saving.
+    const writeIndex = commitWrites.mock.calls.length;
     const saved = await store.flush();
     if (saved.kind !== "saved" || !saved.receipt) throw new Error("No accepted-save receipt");
-    await committed.promise;
+    const commit = await committed.promise;
+    expect(commit).toMatchObject({ projectId: saved.receipt.projectId, sha256: saved.receipt.sha256 });
+    const write = commitWrites.mock.results[writeIndex];
+    if (write?.type !== "return") throw new Error("No real background commit writer");
+    const finished = deferred<Awaited<typeof write.value>>();
+    write.value.then(finished.resolve, finished.reject);
+    expect(await finished.promise).toMatchObject({ kind: "saved", commitId: commit.commitId });
     return saved.receipt;
   };
   // This is the actual public API; no substituted verifier or reload-result adapter.
@@ -60,9 +124,10 @@ async function fixture() {
 }
 
 describe("accepted revision persistence proof", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.resetModules();
     vi.useFakeTimers(); // Prevent unrelated autosave timers; never advance time to synchronize I/O.
+    vi.stubEnv("VITE_EDIT_ACTIVITY_DISK_MIRROR", "0");
     vi.stubEnv("VITE_SUPABASE_USE_PROXY", "0");
     vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
     vi.stubEnv("VITE_SUPABASE_PROJECT_ID", projectId);
@@ -71,13 +136,25 @@ describe("accepted revision persistence proof", () => {
       location: { hostname: "127.0.0.1", pathname: "/", search: "" },
       localStorage: { getItem: () => null, setItem: () => undefined, removeItem: () => undefined },
     });
+    // Isolated module/constructor setup is not part of the proof-operation deadline.
+    ({ store } = await import("@/project/store"));
   });
-  afterEach(() => {
-    vi.clearAllTimers();
-    vi.useRealTimers();
-    vi.restoreAllMocks();
-    vi.unstubAllGlobals();
-    vi.unstubAllEnvs();
+  afterEach(async () => {
+    const unfinished = [...pendingSignals];
+    try {
+      for (const [, cancel] of unfinished) cancel();
+      await Promise.allSettled(unfinished.map(([promise]) => promise));
+      if (signalErrors.length) throw new AggregateError(signalErrors, "Proof fixture signal failed");
+      expect(unfinished).toHaveLength(0);
+    } finally {
+      signalErrors.length = 0;
+      vi.clearAllTimers();
+      expect(vi.getTimerCount()).toBe(0);
+      vi.useRealTimers();
+      vi.restoreAllMocks();
+      vi.unstubAllGlobals();
+      vi.unstubAllEnvs();
+    }
   });
 
   it("verifies the accepted content through actual save/read transport and reuses its clean-flush receipt", async () => {
