@@ -1,0 +1,51 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/npcAuditRepair.test.ts test/npcCommandContract.test.ts test/placeNpcMalformedPage.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-rapid-harbor-7ca6-audit-npc
+
+ ✓ test/npcCommandContract.test.ts (22 tests) 2166ms
+   ✓ actionable NPC command repairs > returns a parseable changeItem repair for changeItems through the real tool surface  1033ms
+   ✓ actionable NPC command repairs > returns a parseable changeItem repair for gainItem through the real tool surface  420ms
+   ✓ actionable NPC command repairs > returns a parseable changeItem repair for item through the real tool surface  579ms
+ ✓ test/placeNpcMalformedPage.test.ts (14 tests) 9426ms
+   ✓ place_npc SimplePage malformed input normalization > normalizes a missing command kind from the command alias  1851ms
+   ✓ place_npc SimplePage malformed input normalization > normalizes an object command kind from kind.command  1570ms
+   ✓ place_npc SimplePage malformed input normalization > wraps a single conditions object into an array  631ms
+   ✓ place_npc SimplePage malformed input normalization > normalizes null conditions to an empty array  781ms
+   ✓ place_npc SimplePage malformed input normalization > normalizes empty object conditions {} to an empty array  326ms
+   ✓ place_npc SimplePage malformed input normalization > normalizes conditions kind none to an empty array  334ms
+   ✓ place_npc SimplePage malformed input normalization > normalizes LLM self-switch id aliases and boolean strings in conditions and choice commands  321ms
+   ✓ place_npc SimplePage malformed input normalization > registers missing global switches referenced by nested choice commands  439ms
+   ✓ place_npc SimplePage malformed input normalization > updates an explicit event id in place without treating itself as an occupied cell  964ms
+   ✓ place_npc SimplePage malformed input normalization > moves a transfer endpoint to a nearby usable cell when the requested doorway has no landing  1213ms
+   ✓ place_npc SimplePage malformed input normalization > live 2026-08-25: changeGold without op defaults to += so quest reward pages persist  320ms
+   ✓ place_npc SimplePage malformed input normalization > live 2026-08-25: 촌장 선택지 setSwitch 페이지는 그대로 배치된다  464ms
+ ✓ test/npcAuditRepair.test.ts (26 tests) 12461ms
+   ✓ audited NPC repairs through the real runner > entry170: requires pages but supplies the original dialogue as a usable pages correction  2249ms
+   ✓ audited NPC repairs through the real runner > entry174: rejects the unknown M2 id and offers native text preserving all lines  1063ms
+   ✓ audited NPC repairs through the real runner > entry196: replaces the actual singleton condition field without dropping either page  746ms
+   ✓ audited NPC repairs through the real runner > keeps explicit self-switch value=true and sibling array conditions  570ms
+   ✓ audited NPC repairs through the real runner > keeps explicit self-switch value=false and sibling array conditions  503ms
+   ✓ audited NPC repairs through the real runner > preserves canonical pages and condition arrays without repairs  417ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not invent pages for dialogue {"text":""}  439ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not invent pages for dialogue {"text":"Keep","when":{"selfSwitch":"A"}}  709ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not invent pages for dialogue {"text":"Keep","choices":["Yes","No"]}  515ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not invent dialogue for chest misuse  320ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not guess a command correction for {"commandId":"m2-101-show-text","fields":{"lines":["Keep",42]}}  347ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not guess a command correction for {"commandId":"m2-101-show-text","fields":{"lines":["Keep"],"speaker":"Other"}}  450ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not guess a command correction for {"commandId":"m2-101-show-text","fields":{"lines":["Keep"]},"body":"Conflicting"}  452ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not drop malformed or extra conditions {"selfSwitch":1}  393ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not drop malformed or extra conditions {"selfSwitch":"A","value":"false"}  317ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not drop malformed or extra conditions {"selfSwitch":"A","switchId":"also_required"}  344ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not drop malformed or extra conditions {"selfSwitch":"A","variableId":"v1","value":3}  508ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not drop malformed or extra conditions {"selfSwitch":"A","kind":"unknown"}  305ms
+
+ Test Files  3 passed (3)
+      Tests  62 passed (62)
+   Start at  21:11:17
+   Duration  44.82s (transform 26.67s, setup 0ms, collect 90.81s, tests 24.05s, environment 1ms, prepare 1.21s)
+
+
+EXIT_STATUS=0

@@ -7,6 +7,14 @@ export type RuntimeQaOp =
   | { readonly kind: "cinematic"; readonly action: "key"; readonly key: string; readonly selector: string; readonly absent?: boolean }
   | { readonly kind: "cinematic"; readonly action: "input"; readonly beforeMap?: boolean }
   | { readonly kind: "cinematic"; readonly action: "reduced-motion" | "video-error" | "video-end" | "detach" | "reject-autoplay" | "geometry" }
+  | {
+      readonly kind: "audioAction";
+      readonly action: "start" | "interact";
+      readonly resourceId: string;
+      readonly sourcePath: string;
+      readonly loop: boolean;
+      readonly timeoutMs?: number;
+    }
   | { readonly kind: "seed"; readonly seed: number }
   | {
       readonly kind: "setVitals";
@@ -96,6 +104,10 @@ export type RuntimeQaExpect = {
   /** y 의 부등 기대치. {@link RuntimeQaExpect.xNot} 참조. */
   readonly yNot?: number;
   readonly gold?: number;
+  /** Exact inventory quantities keyed by item ID; only requested IDs are observed. */
+  readonly inventoryCounts?: Readonly<Record<string, number>>;
+  /** Owned instances in monsterParty + monsterBox, keyed by species ID. */
+  readonly ownedMonsterCounts?: Readonly<Record<string, number>>;
   /**
    * 이 버트까지 오디오 엔진이 **재생 지시를 받은** 리소스 id 가 전부 포함되어야 한다
    * (`window.__oprnAudioObserved`). 스크린샷은 소리를 못 잡으므로 SE 경로가 실제로 도달했는지는 이 축만이 증명한다.
@@ -270,6 +282,9 @@ export type RuntimeQaCompactState = {
   readonly x: number;
   readonly y: number;
   readonly gold: number;
+  /** Present only when requested; null means the runtime collection is unavailable. */
+  readonly inventoryCounts?: Readonly<Record<string, number>> | null;
+  readonly ownedMonsterCounts?: Readonly<Record<string, number>> | null;
 };
 
 export type RuntimeQaBattleTextNode = {
@@ -316,7 +331,35 @@ export type RuntimeQaObserved = {
   readonly battlers?: RuntimeQaBattlerGeometry | null;
 };
 
+export type RuntimeQaAudioEvidence = {
+  readonly action: "start" | "interact";
+  readonly resourceId: string;
+  readonly sourcePath: string;
+  readonly loop: boolean;
+  readonly error: string | null;
+  readonly playing: {
+    readonly trusted: boolean;
+    readonly sourcePath: string;
+    readonly paused: boolean;
+    readonly ended: boolean;
+    readonly readyState: number;
+    readonly currentTime: number;
+    readonly loop: boolean;
+    readonly volume: number;
+    readonly muted: boolean;
+    readonly playbackRate: number;
+  } | null;
+  readonly snapshot: {
+    readonly volume: { readonly bgm: number; readonly se: number };
+    readonly playbackRate: number;
+    readonly pan: number;
+    readonly fadeInMs: number;
+  } | null;
+};
+
 export type RuntimeQaBeatReport = {
+  readonly actions?: readonly RuntimeQaOp[];
+  readonly audio?: readonly RuntimeQaAudioEvidence[];
   readonly emotes?: readonly RuntimeQaEmote[];
   readonly index: number;
   readonly id: string;

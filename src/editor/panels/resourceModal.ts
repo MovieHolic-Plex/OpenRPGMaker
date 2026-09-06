@@ -1,10 +1,25 @@
-import { renderResourceManager } from "@/editor/panels/resourceManager";
-import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
+import {
+  disposeResourceManager, renderResourceManager, requestResourceManagerClose,
+} from "@/editor/panels/resourceManager";
+import { isTopModal, registerModal, unregisterModal } from "@/editor/ui/modalStack";
+import { handleHistoryHotkey, isHistoryHotkeyChord, isTextEditingElement } from "@/editor/hotkeys";
+import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 
+let activeResourceModal: {
+  readonly element: HTMLElement;
+  readonly dispose: () => void;
+} | null = null;
+
 export function openResourceModal(): void {
-  document.querySelector("[data-testid='resource-modal']")?.remove();
+  if (activeResourceModal?.element.isConnected) {
+    activeResourceModal.element.querySelector<HTMLElement>('[data-testid="resource-modal-close"]')?.focus();
+    return;
+  }
+  activeResourceModal?.dispose();
+  const opener = document.activeElement;
+  const identity = store.getProjectIdentity();
 
   const body = el("div", { class: "database-modal-body" });
   const closeButton = el("button", {
@@ -32,13 +47,52 @@ export function openResourceModal(): void {
     ],
   });
 
-  const close = (): void => {
+  let closed = false;
+  let unsubscribe = (): void => {};
+  const dispose = (): void => {
+    if (closed) return;
+    closed = true;
+    unsubscribe();
+    disposeResourceManager(body);
     unregisterModal(backdrop);
     backdrop.remove();
+    activeResourceModal = null;
+    if (opener instanceof HTMLElement && opener.isConnected) opener.focus();
+  };
+  const close = (): void => requestResourceManagerClose(body, dispose);
+  const escape = (): void => {
+    // modalStack removes the entry before invoking us. Re-arm before opening
+    // a nested dirty prompt so cancel retains the resource layer's ownership.
+    if (closed) return;
+    registerModal(backdrop, escape);
+    close();
   };
   closeButton.addEventListener("click", close);
   backdrop.addEventListener("mousedown", (event) => {
-    if (event.target === backdrop) close();
+    if (event.target === backdrop && isTopModal(backdrop)) close();
+  });
+  backdrop.addEventListener("keydown", event => {
+    if (!isTopModal(backdrop)) return;
+    if (isHistoryHotkeyChord(event) && !isTextEditingElement(event.target)) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      requestResourceManagerClose(body, () => { handleHistoryHotkey(event); });
+      return;
+    }
+    if (event.key !== "Tab") return;
+    const targets = [...backdrop.querySelectorAll<HTMLElement>(
+      'button:not([disabled]), input:not([type="file"]):not([disabled]), textarea:not([disabled]), select:not([aria-hidden="true"]), audio[controls]',
+    )].filter(node => !node.hidden && !node.closest("[hidden]"));
+    const first = targets[0];
+    const last = targets[targets.length - 1];
+    if (!first || !last) return;
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
   });
   const footer = el("footer", {
     class: "resource-modal-footer",
@@ -62,7 +116,16 @@ export function openResourceModal(): void {
   document.body.append(backdrop);
   // Escape 는 공용 모달 스택이 라우팅한다. 자체 document 리스너로 잡으면 도크 모드에서
   // 데이터베이스를 켠 채 이 창을 열었을 때 데이터베이스까지 함께 닫혔다.
-  registerModal(backdrop, close);
+  registerModal(backdrop, escape);
   renderResourceManager(body);
+  unsubscribe = store.subscribe((_project, change) => {
+    const current = store.getProjectIdentity();
+    if (change.projectSwitch || current.kind !== identity.kind || current.id !== identity.id) {
+      dispose();
+      return;
+    }
+    if (change.scope === "project" || change.scope === "assets") renderResourceManager(body);
+  });
+  activeResourceModal = { element: backdrop, dispose };
   closeButton.focus();
 }

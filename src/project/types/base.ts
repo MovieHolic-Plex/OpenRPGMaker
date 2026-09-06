@@ -42,6 +42,14 @@ export type ResourceKind =
   | "music"
   | "sound";
 
+export type AudioResourceKind = "music" | "sound";
+
+/** Raw resource IDs: absent key inherits; an empty string explicitly clears. */
+export interface AudioDescriptionOverrides {
+  readonly music?: Readonly<Record<string, string>>;
+  readonly sound?: Readonly<Record<string, string>>;
+}
+
 export interface ResourceProfile {
   kind: ResourceKind;
   name: string;

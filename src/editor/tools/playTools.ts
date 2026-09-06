@@ -79,8 +79,9 @@ const runSceneTestTool: ToolDefinition = {
   name: "run_scene_test",
   description:
     "브라우저 없이 장면을 고정 tick으로 실행해 컷신/카메라/스폰/픽처/오디오 상태를 검증한다. 입력: " +
-    "{mapId,start:{x,y},steps:[{kind:'wait',ticks}|{kind:'face',dir}|{kind:'set',switches?,variables?,inventory?,mapId?,x?,y?}|{kind:'move',dir|to}|{kind:'interact'}|{kind:'gift',eventId?,itemId}|{kind:'choose',index}|{kind:'retryCheckpoint'}|{kind:'advanceDays',days}|{kind:'expect',...}]}." +
-    " expect는 playerAt, switchOn/Off, variableEquals, variableAtLeast, eventAt, eventOnMap, eventDistanceToPlayerLessThan, followerCount, followerAt, cameraAt, lightingAmbient, lightAt, lightCount, weatherKind, animationPlaying, fieldSpawnCount, spawnedCount, pictureVisible, bgmPlaying, gameOver, endingReached, cutsceneLocked, mapId, gameTimeAt, timePhase, cropStageAt, inventoryCount, friendshipAtLeast, shopStock를 지원한다.",
+    "{mapId,start:{x,y},steps:[{kind:'wait',ticks}|{kind:'face',dir}|{kind:'set',switches?,variables?,inventory?,mapId?,x?,y?}|{kind:'move',dir|to}|{kind:'interact',eventId?}|{kind:'snapshotRewards'}|{kind:'gift',eventId?,itemId}|{kind:'choose',index}|{kind:'retryCheckpoint'}|{kind:'advanceDays',days}|{kind:'expect',...}]}." +
+    " expect는 playerAt, switchOn/Off, variableEquals, variableAtLeast, eventAt, eventOnMap, eventDistanceToPlayerLessThan, followerCount, followerAt, cameraAt, lightingAmbient, lightAt, lightCount, weatherKind, animationPlaying, fieldSpawnCount, spawnedCount, pictureVisible, bgmPlaying, gameOver, endingReached, cutsceneLocked, mapId, gameTimeAt, timePhase, cropStageAt, inventoryCount, inventoryDelta, ownedMonsterDelta, interactionComplete, friendshipAtLeast, shopStock를 지원한다. " +
+    "NPC reward proof: snapshotRewards immediately before interacting; expect inventoryDelta:{itemId:count} / ownedMonsterDelta:{speciesId:count} (or {atLeast:1}) and interactionComplete:true. For one-time rewards, snapshot again and interact twice in the SAME steps array, then expect zero deltas. eventId checks the physically selected NPC, never directly executes its commands. finalState includes ownedMonsterCounts across party+box, monsterParty and monsterBox.",
   mode: "read",
   parameters: {
     type: "object",
@@ -94,11 +95,24 @@ const runSceneTestTool: ToolDefinition = {
           type: "object",
           properties: {
             kind: { type: "string", description: "스텝 종류" },
+            dir: { type: "string", enum: ["up", "down", "left", "right"] },
+            to: COORD_SCHEMA,
+            ticks: { type: "integer" },
+            index: { type: "integer" },
             mapId: { type: "string" },
             x: { type: "integer" },
             y: { type: "integer" },
             eventId: { type: "string" },
             text: { type: "string" },
+            interactionComplete: { type: "boolean" },
+            inventoryDelta: {
+              type: "object", description: "Item ID to exact delta or {atLeast:number}, relative to snapshotRewards (scene start by default).",
+              additionalProperties: true,
+            },
+            ownedMonsterDelta: {
+              type: "object", description: "Species ID to exact delta or {atLeast:number}; counts owned instances in party and box, not actor party members.",
+              additionalProperties: true,
+            },
           },
           required: ["kind"],
           additionalProperties: true,

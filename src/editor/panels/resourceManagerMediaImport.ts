@@ -6,6 +6,7 @@ import { store } from "@/project/store";
 import type { ResourceKind, UploadedAsset } from "@/project/types";
 import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
+import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 
 export type MediaImportRule = {
   readonly kind: ResourceKind;
@@ -66,7 +67,7 @@ export function mediaImportRuleFor(kind: ResourceKind): MediaImportRule | null {
 }
 
 /** 파일을 데이터 URL 업로드 + 리소스 프로필로 등록한다. 등록이 끝나면 onImported 로 알린다. */
-export function importMediaResource(file: File, rule: MediaImportRule, onImported: () => void): void {
+export function importMediaResource(file: File, rule: MediaImportRule, onImported: (asset: UploadedAsset) => void): void {
   if (file.size > rule.maxBytes) {
     toast(`파일이 너무 큽니다 (${Math.round(rule.maxBytes / 1024 / 1024)}MB 초과).`, "error");
     return;
@@ -76,7 +77,21 @@ export function importMediaResource(file: File, rule: MediaImportRule, onImporte
     return;
   }
   const reader = new FileReader();
+  const identity = store.getProjectIdentity();
+  let active = true;
+  const unsubscribe = store.subscribe((_project, change) => {
+    if (!change.projectSwitch) return;
+    active = false;
+    unsubscribe();
+    reader.abort();
+  });
+  reader.addEventListener("loadend", unsubscribe, { once: true });
   reader.onload = () => {
+    const currentIdentity = store.getProjectIdentity();
+    if (!active || identity.kind !== currentIdentity.kind || identity.id !== currentIdentity.id) {
+      toast("프로젝트가 바뀌어 가져오기를 취소했습니다.", "info");
+      return;
+    }
     const dataUrl = String(reader.result ?? "");
     if (!dataUrl.startsWith(rule.dataUrlPrefix)) {
       toast(rule.dataError, "error");
@@ -90,14 +105,15 @@ export function importMediaResource(file: File, rule: MediaImportRule, onImporte
       dataUrl,
       meta: {},
     };
+    if (rule.kind === "music" || rule.kind === "sound") recordProjectSnapshot("음원 가져오기");
     store.update((project) => {
       project.assets.uploaded[id] = asset;
       if (!project.resourceProfiles.some((profile) => profile.assetId === id)) {
         project.resourceProfiles.push({ kind: rule.kind, name: asset.name, assetId: id });
       }
-    });
+    }, { scope: "assets", origin: "human", label: "미디어 가져오기" });
     toast(`가져오기 완료: ${asset.name}`, "ok");
-    onImported();
+    onImported(asset);
   };
   reader.onerror = () => toast("파일을 읽지 못했습니다.", "error");
   reader.readAsDataURL(file);

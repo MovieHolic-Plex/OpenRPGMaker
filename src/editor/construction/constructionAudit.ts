@@ -138,6 +138,7 @@ function constructionDiffHasChanges(diff: ConstructionDiffTotals): boolean {
     || diff.palettePresetsModified > 0
     || diff.endingsChanged > 0
     || (diff.mapPropertiesChanged ?? 0) > 0
+    || (diff.audioDescriptionsChanged ?? 0) > 0
     || diff.sessionChanged
     || diff.systemChanged;
 }

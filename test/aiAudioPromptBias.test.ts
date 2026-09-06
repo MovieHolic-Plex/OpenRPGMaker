@@ -4,12 +4,12 @@
 import { describe, expect, it } from "vitest";
 import { buildEventAssistPrompt, parseAndValidate } from "@/ai/eventCommandAssist";
 import {
-  EVENT_RESOURCE_SLOT_LABELS,
   eventResourceIdSet,
 } from "@/ai/eventResourceCatalog";
 import { BGM_CATALOG, findBgmTrack } from "@/assets/bgmCatalog";
 import { SE_CATALOG } from "@/assets/seCatalog";
 import { createBlankProject } from "@/project/defaults";
+import { parseAudioPrompt } from "./support/audioPrompt";
 
 const MAX_REF_ENTRIES = 40;
 
@@ -56,31 +56,19 @@ function maxCategoryShare(ids: readonly string[], categoryOf: (id: string) => st
   return Math.max(0, ...counts.values()) / ids.length;
 }
 
-function refSectionIds(prompt: string, slotLabel: string): string[] {
-  const heading = `### ${slotLabel} id`;
-  const start = prompt.indexOf(heading);
-  expect(start, `${heading} 절이 없다`).toBeGreaterThanOrEqual(0);
-  const rest = prompt.slice(start + heading.length);
-  const next = rest.search(/\n### /);
-  const body = next === -1 ? rest : rest.slice(0, next);
-  const ids: string[] = [];
-  for (const line of body.split("\n")) {
-    const match = line.match(/^- ([^:]+): /);
-    if (match) ids.push(match[1]!);
-  }
-  return ids;
+function refSectionIds(prompt: string, slot: "music" | "sound"): string[] {
+  return parseAudioPrompt(prompt, slot).entries.map(entry => entry.id);
 }
 
 describe("AI 프롬프트 오디오 절단 편향", () => {
   it("블랭크 프로젝트의 음악 40개는 7개 장면 축을 덮고, 효과음 40개는 상자/동전/문/징글/발소리를 포함하며 한 분류가 과반이 아니다", () => {
     const project = createBlankProject();
     const prompt = buildEventAssistPrompt({ project, mapId: project.startMapId });
-    const musicIds = refSectionIds(prompt, EVENT_RESOURCE_SLOT_LABELS.music);
-    const soundIds = refSectionIds(prompt, EVENT_RESOURCE_SLOT_LABELS.sound);
+    const musicIds = refSectionIds(prompt, "music");
+    const soundIds = refSectionIds(prompt, "sound");
 
     expect(musicIds).toHaveLength(MAX_REF_ENTRIES);
     expect(soundIds).toHaveLength(MAX_REF_ENTRIES);
-    expect(prompt).toContain("개 생략(위 목록의 id만 사용)");
 
     const musicScenes = new Set(
       musicIds.flatMap((id) => {
@@ -127,8 +115,8 @@ describe("AI 프롬프트 오디오 절단 편향", () => {
     }
 
     const prompt = buildEventAssistPrompt({ project, mapId: project.startMapId });
-    const shownMusic = new Set(refSectionIds(prompt, EVENT_RESOURCE_SLOT_LABELS.music));
-    const shownSound = new Set(refSectionIds(prompt, EVENT_RESOURCE_SLOT_LABELS.sound));
+    const shownMusic = new Set(refSectionIds(prompt, "music"));
+    const shownSound = new Set(refSectionIds(prompt, "sound"));
     const hiddenMusic = BGM_CATALOG.find((track) => !shownMusic.has(track.id));
     const hiddenSound = SE_CATALOG.find((entry) => !shownSound.has(entry.id));
     expect(hiddenMusic, "프롬프트에 안 실린 BGM 이 있어야 절단이 살아 있다").toBeDefined();

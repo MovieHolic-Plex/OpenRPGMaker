@@ -139,6 +139,7 @@ export function historyHotkeyOwnedByPanel(): boolean {
   if (isPlaySurfaceOwningKeyboard()) return true;
   if (document.querySelector(WALK_ENCOUNTER_DIALOG_SELECTOR)) return true;
   if (document.querySelector("[data-testid='database-modal']")) return true;
+  if (document.querySelector("[data-testid='resource-modal']")) return true;
   return Boolean(document.querySelector("[data-testid='event-editor-modal']"));
 }
 
