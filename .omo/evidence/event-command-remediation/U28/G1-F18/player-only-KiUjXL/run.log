@@ -1,0 +1,24 @@
+PLAYER SERVER http://127.0.0.1:36559
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ 'timeout'
+- 'success'
+
+    at provePlayer (file:///home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-text-tools/scripts/qa/runtime/event-command-remediation-u28-text.scenario.mjs:70:12)
+    at async file:///home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-text-tools/scripts/qa/runtime/event-command-remediation-u28-text.scenario.mjs:121:9 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 'timeout',
+  expected: 'success',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.11.1
+
+DIRECT_EXIT=1

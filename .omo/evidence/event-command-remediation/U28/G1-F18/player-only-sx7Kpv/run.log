@@ -1,0 +1,8 @@
+PLAYER SERVER http://127.0.0.1:33199
+PLAYER title PASS
+PLAYER ready PASS
+PLAYER g1-f18 PASS
+PLAYER complete PASS
+PLAYER PASS: title + 3 beats, Other29, 2 wrong-target rejections
+
+DIRECT_EXIT=0

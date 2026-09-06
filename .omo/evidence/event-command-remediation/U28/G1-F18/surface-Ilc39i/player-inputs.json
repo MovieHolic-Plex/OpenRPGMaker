@@ -1,0 +1,42 @@
+{
+  "editorFile": ".omo/evidence/event-command-remediation/U28/G1-F18/surface-Ilc39i/native/editor-exported.json",
+  "command": {
+    "kind": "text",
+    "speaker": "Narrator",
+    "body": "Hello\\n[2]\\v[2] world",
+    "emotion": "happy"
+  },
+  "program": [
+    {
+      "kind": "setVariable",
+      "variableId": "var_0001",
+      "op": "=",
+      "value": 11
+    },
+    {
+      "kind": "setVariable",
+      "variableId": "var_0002",
+      "op": "=",
+      "value": 29
+    },
+    {
+      "kind": "text",
+      "body": "READY"
+    },
+    {
+      "kind": "text",
+      "speaker": "Narrator",
+      "body": "Hello\\n[2]\\v[2] world",
+      "emotion": "happy"
+    },
+    {
+      "kind": "text",
+      "body": "DONE"
+    }
+  ],
+  "qaSetup": "Only host trigger becomes auto and setup/barrier commands surround the exact exported payload. No original command field changes.",
+  "wrongTargets": [
+    "HelloFirst Hero29 world",
+    "HelloOther11 world"
+  ]
+}

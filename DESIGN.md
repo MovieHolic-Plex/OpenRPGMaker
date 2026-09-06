@@ -1,5 +1,12 @@
 # RPG ZZU Design System
 
+## Named text record insertion (2026-09-06)
+
+- Text name/value tools open the existing searchable record picker; they do not insert a default record before confirmation. Selection replaces the saved textarea range and returns focus to the textarea. Cancel preserves the text and range.
+- Actor names use existing actor ordinals. Variable choices follow the existing numeric text-code aliases and their runtime precedence. Unrepresentable or shadowed variable IDs remain visible as disabled rows with a concise reason; arrow navigation skips them and Confirm cannot choose them.
+- Reuse the cream command form, record picker, native disabled state and current focus/scroll behavior. No new colors, motion, theme or runtime text grammar. Other record-picker callers retain their existing behavior when no availability callback is supplied.
+- G1-F18 actual-surface receipts cover 1024x768, 1280x800 and 1440x900 in Firefox: picker/composer actions remain in bounds without horizontal overflow, text focus returns after insertion/Cancel, and dedicated player dialogue stays in bounds. Screenshots are local evidence; the verification model cannot inspect their pixels, so geometry/interaction PASS is not pixel-level visual approval.
+
 ## Weighted outcome worksheet (2026-09-06)
 
 - `m2-211-weighted-branch` uses a task-first `확률로 결과 뽑기` form; the catalog retains `가중 분기` for discovery. Outcomes precede the destination variable. Each repeated row composes a labelled name, direct percent input, single-accent proportional meter, and `저장값` number. No instructional card, duplicated legend, raw table or automatic action-branch promise.
