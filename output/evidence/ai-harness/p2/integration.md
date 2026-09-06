@@ -1,6 +1,6 @@
 # P2 backend outcome integration
 
-**Current verified integration:** The three policy corrections below are folded into this same deliverable: typed continuation decisions replace projection-only prose classification; ordinary and milestone application use the same post-apply completion policy; trusted continuation/proof retry retains delivery while fresh queries do not. **643/643 tests in 18 files and a fresh complete build pass.** The actual browser matrix again passes all **138 non-UI checks**, with its ten UI-hook failures retained. See **Verified stop/apply/continuation policy correction** below for exact RED/GREEN commands and limits.
+**Current verified integration:** Typed continuation decisions replace projection-only prose classification; ordinary and milestone application share post-apply completion policy; trusted continuation/proof retry retains delivery while fresh queries do not. Fresh-entry delivery ownership is now established from trusted entry facts **before fallible context/intent awaits**, including real signal-aware intent cancellation and early failure. **657/657 tests in 20 files and a fresh complete build pass.** A fresh actual browser matrix again passes all **138 non-UI checks**, with its ten UI-hook failures retained. The verified early-entry and prior policy corrections below contain exact RED/GREEN commands and preserved limits.
 
 **Earlier runner follow-up:** [Real blocked-work Continue availability](integration-blocked-control.md) completes the integration-owned runner split: the existing control is visible and actually clicked after Ask, including after native history folding. **524/524 scoped tests and a fresh complete build pass.** The strengthened real browser terminal contract remains RED because the Panel click still sends Ask instead of Do; the UI lane must fix that user boundary and obtain blocked/incomplete/no-change after the resumed unfinished run. No synthetic control or test-only goalAction shortcut is used.
 
@@ -46,7 +46,8 @@ Exit 0, no conflict or merge. Ordered mapping:
 | 10 | own | `761ed517b188729130e26dad57196aa4218b19ab` | Original report and raw integration evidence |
 | 11 | own | `bd836d57ae238405f9388dd346a35ca8371df242` | Fixture writer drainage, regression and actual Ask/resume handoff |
 | 12 | own | `89584faf0470cfc4601fd791180ff1f659ec7e95` | Blocked-work Continue availability, native history retention and resumed terminal contract |
-| 13 | own | current task handoff SHA | Verified typed-stop, apply-policy and trusted-continuation corrections in this central deliverable |
+| 13 | own | `841ee4ae1fc7cd2564e857a2a8860a91a1e6c3e3` | Verified typed-stop, apply-policy and trusted-continuation corrections in this central deliverable |
+| 14 | own | current task handoff SHA | Pre-await fresh-entry ownership, signal-aware regression, bounded small fixture and central evidence |
 
 At the original integration handoff, terminal producer heads still equaled the two named terminal SHAs. `git diff 7f42772c9 HEAD -- src/ai/runOutcome.ts test/aiRunOutcome.test.ts`, `git diff 8f82a11b9 HEAD -- scripts/qa`, and the diff against `d6a38018c` for the canonical acceptance types/ledger/tool-verification authority were empty. The latest follow-up intentionally adds only two terminal-agreement assertion lines to the imported resume helper; it does not rewrite producer evidence or weaken its contract. All imported commits and own commits retain mandatory omo attribution. No push, merge, rebase, nested agent or shared-main worktree edit occurred.
 
@@ -70,7 +71,7 @@ An acceptance-only terminal stop records whether a pending ordinary draft still 
 
 `recordApplyRejected(onEvent?)` captures failed execution without rewriting `stoppedReason` or discarding the draft. Both actual proposal-host rejection and runner settlement use it. Ordinary successful apply still follows the existing host rebase and `proveAppliedRevision` path; no approval, auto-apply, undo, house guard, region approval or advisory behavior was changed.
 
-Only an actual P1 flush receipt correlated to the current run's actual `commitProject` can become this run's accepted persistence fact. Commit-log `persisted`, newest/global receipts, model flags and status text cannot grant it. A passing proof must also refer to that receipt and remain current to project `persisted-verified`; stale or failed proof preserves accepted `persisted`, not verified. Delivery reset now happens after the existing intent/user-action decision, not unconditionally at public send. Host-authorized manual continuation and synthetic driver continuation retain their already-owned applied calls, apply metadata and receipt. Fresh requests and Ask queries clear that delivery ownership, including Ask containing the literal continuation token. A model `source: continuation` claim alone does not preserve delivery. Explicit `retryLastTurn` continues to retry proof without replaying applied tools. The mutable returned-result holder gives an in-flight proof an actual publication owner: an old proof cannot cancel or settle a newer query. P1 proof's existing overlapping-attempt guards and store authority are preserved.
+Only an actual P1 flush receipt correlated to the current run's actual `commitProject` can become this run's accepted persistence fact. Commit-log `persisted`, newest/global receipts, model flags and status text cannot grant it. A passing proof must also refer to that receipt and remain current to project `persisted-verified`; stale or failed proof preserves accepted `persisted`, not verified. Public entry now establishes delivery retention synchronously from the normalized original instruction and host composer/goal action, before context/image/intent work can await or fail. Fresh entries clear the prior receipt, actual-apply metadata and applied-call collection at that boundary. The existing post-intent boundary remains able to revoke provisional retention when the effective request is a question; model output cannot grant delivery ownership. Host-authorized manual continuation and synthetic driver continuation retain their already-owned applied calls, apply metadata and receipt. Fresh requests and Ask queries clear that delivery ownership, including Ask containing the literal continuation token. A model `source: continuation` claim alone does not preserve delivery. Explicit `retryLastTurn` continues to retry proof without replaying applied tools. The mutable returned-result holder gives an in-flight proof an actual publication owner: an old proof cannot cancel or settle a newer query. P1 proof's existing overlapping-attempt guards and store authority are preserved.
 
 ### Publication surfaces
 
@@ -100,6 +101,46 @@ withdrawAiRequirement({ acceptanceId, requirementId, reason }): boolean
 ```
 
 The real panel registration refuses this action when disposed or busy and delegates to its current session. It is deliberately **not** a `BridgeCommand`, HTTP/MCP command, `window` tool, LLM schema or tool dispatcher. The UI node should invoke it (or the canonical session API with its normal event callback) only from a genuine scoped user action, then refresh the current snapshot/outcome surface. An unmet withdrawn item stays unmet in history while its denominator effect is canonical. No renderer, control, CSS or UI hook was authored here.
+
+## Verified early-entry ownership refinement
+
+This scoped correction starts at committed integration head `841ee4ae1fc7cd2564e857a2a8860a91a1e6c3e3` and stays on the same main P2 branch. The earlier post-intent delivery reset was too late: `buildUserTurnContent` and `declareTurnIntent` are awaited first. A fresh send could therefore reach the outer failed/cancelled result path with the previous run's verified receipt and applied calls still attached.
+
+`sendUserMessage` now establishes the entry's delivery ownership before those fallible awaits, using only trusted entry facts: `options.instruction` (or the original text with its context footer stripped), explicit host resume/new-goal action and composer Ask mode. Only explicit continuation/resume outside Ask/new-goal can retain existing applied delivery. A shared three-field clearing method is used by entry and the existing post-intent boundary; the latter can still revoke retention for effective questions. No new run epoch, checkpoint, authority object or P3 framework was introduced. The single outcome projector, canonical ledger, P1 receipt/proof authority and existing late-owner guards are unchanged.
+
+### Signal-aware failing-first evidence
+
+`test/aiOutcomeEntryOwnership.test.ts` first creates actual ordinary applied work and verifies its genuine P1 receipt. The same session then invokes an injected intent transport that calls native `signal.throwIfAborted()` or throws an armed transport error. Unlike `fixedDeclarer`, it cannot silently ignore an already-aborted signal. Each case asserts that this second real intent-boundary invocation occurred, then compares returned outcome/applied calls, recap, getter, harness and final event; the prior result and historical proof receipt remain unchanged.
+
+The twelve cases cover cancelled and failed entry for fresh requests, explicit continuation, Ask with the continuation token, new-goal with that token, and both directions of host instruction override. Ordinary and override-based explicit continuation must retain the still-owned verified work; every fresh/Ask/new-goal case must be no-change.
+
+```sh
+npm test -- test/aiOutcomeEntryOwnership.test.ts --maxWorkers 1 --minWorkers 1
+```
+
+- Initial exit **1**: six faithful delivery assertion failures, four 15-second test timeouts, two passing continuation controls. Raw [integration-entry-red.log](integration-entry-red.log) is preserved. The timeouts are not credited as behavior RED.
+- Before changing production ownership, the fixture was reduced to the established P1 valid one-custom-tile shape, retaining the real map/database/resources and store/normalizer/save/proof path while dropping unrelated bundled tileset catalogs. No test timeout, signal assertion or expected outcome was changed. Repeating the exact command then exited **1 with eight faithful delivery failures and four passing continuation controls, zero timeouts**. Raw: [integration-entry-red-small-fixture.log](integration-entry-red-small-fixture.log). Fresh failed/cancelled entries actually returned `persisted-verified` where `no-change` was required.
+
+The shared fixture now accepts a real intent-declarer dependency in addition to its existing scripted chat dependency. Its call-through writer drainage and bounded response-body cleanup remain intact. This is a fixture-size correction, not an I/O mock replacing the tested authority.
+
+### Final verification and actual API proof
+
+```sh
+npm test -- test/aiOutcomeEntryOwnership.test.ts test/runOutcomeApplyFixture.test.ts test/aiOutcomeApplyPolicy.test.ts test/aiOutcomeContinuationDelivery.test.ts test/aiRunOutcome.test.ts test/aiRunOutcomeApply.test.ts test/aiRunOutcomeOwnership.test.ts test/aiRunOutcomeLifecycle.test.ts test/aiRunOutcomeIntegration.test.ts test/aiBlockedContinue.test.ts test/aiRequiredOutcomes.test.ts test/aiMilestoneTurnAccounting.test.ts test/aiAssistantTurnCleanup.test.ts test/aiAssistantBridge.test.ts test/workPlan.test.ts test/aiRunEndProof.test.ts test/storePersistenceProof.test.ts test/assistantAcceptanceSession.test.ts test/aiActivityLog.test.ts test/runRecap.test.ts --maxWorkers 1 --minWorkers 1
+npm run build
+```
+
+Both exit **0**. Tests: **657 passed, 20 files, zero failures/skips, 549.35s**. Build includes app typecheck, editor, player/SDK and standalone bundles. Raw: [integration-entry-green.log](integration-entry-green.log), [integration-entry-build.log](integration-entry-build.log). All three changed TypeScript files received fresh clear diagnostics. Source/test whitespace checks passed. Existing build warnings remain unsuppressed. No source/test edit followed these final executions.
+
+```sh
+QA_PORT=37025 EVIDENCE_DIR=output/evidence/ai-harness/p2/integration-entry-surface xvfb-run -a node scripts/qa/ai-harness-contracts.mjs --scenario outcome-matrix
+```
+
+Overall exit **1 solely for the ten missing UI outcome hooks**, with **138/138 non-UI checks passing** on a fresh editor/bridge/session/store/Supabase execution. [integration-entry-binding.log](integration-entry-binding.log) verifies all 16 source/harness hashes against this corrected source and inventories cleanup. This matrix preserves the prior ten real cases; the new pre-intent-failure cases are covered through the actual session API and signal-aware injected intent boundary, not claimed as new browser cases.
+
+Run-owned project `qa-ai-surface-e1712cec-2d35-476a-bae4-5ee0de9761bc` and its child rows/observed commits were deleted with absence proof. Browser, server, cache, page listeners/timers and port were released, `activeRoutes:0`, no reused listener. Configured key-value scan passed. All earlier REDs, intermediate results, prior test/build records and UI-lane limitations remain preserved; Ask-to-Do click wiring and full gates/exact-head approval are still downstream responsibilities.
+
+Architectural review: the new helper clears only the existing applied-delivery facts and has two actual callers; there is no second evaluator or general lifecycle abstraction. Trusted entry parsing reuses the existing continuation token/context-footer semantics. No new casts, any annotations, non-null assertions, suppressions, sleeps/polling, prose assertions, logger or dependency changes. Fixture and regression pure LOC are 88 and 61; inherited session is 3981 under the fixed narrow no-redesign scope. Test fixture boundary checks concern genuinely optional map/tileset lookups; no product defensive layer or redundant post-delete verification was added. The existing attributed commit chain is extended with this verified correction, not left dirty.
 
 ## Verified stop/apply/continuation policy correction
 

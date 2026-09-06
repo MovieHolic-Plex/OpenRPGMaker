@@ -24,7 +24,10 @@ export async function drainOutcomeFixtures(): Promise<void> {
 }
 
 /** The real store/save/proof adapter against a wire-level in-memory project row. */
-export function applyFixture(chat?: AssistantSessionOptions["chat"]) {
+export function applyFixture(
+  chat?: AssistantSessionOptions["chat"],
+  declareIntent: AssistantSessionOptions["declareIntent"] = fixedDeclarer({ mode: "other" }),
+) {
   vi.useFakeTimers(); // Autosave is unrelated; flush and exact callbacks drive every operation.
   const commits = vi.spyOn(sync, "recordProjectCommitToSupabase"); // Call through, never replace the writer.
   fixtureWriters.push(() => commits.mock.results.map(result => {
@@ -53,7 +56,20 @@ export function applyFixture(chat?: AssistantSessionOptions["chat"]) {
     throw new Error(`Unexpected transport: ${method} ${path}`);
   }));
   store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
-  store.replace(createBlankProject());
+  const project = createBlankProject();
+  const map = project.maps[project.startMapId];
+  if (!map) throw new Error("Outcome fixture start map missing");
+  const tileset = project.tilesets[map.tilesetId];
+  if (!tileset) throw new Error("Outcome fixture start tileset missing");
+  // Same valid one-tile proof fixture shape as storePersistenceProof; bundled catalogs are unrelated.
+  map.tilesetId = "outcome-tileset";
+  map.lowerTiles.fill(0);
+  project.tilesets = { [map.tilesetId]: {
+    id: map.tilesetId, name: "Outcome tileset", image: tileset.image, kind: "custom",
+    tileSize: map.tileSize, tilesPerRow: 1, count: 1,
+    passability: [0], priority: ["lower"], terrain: [0],
+  } };
+  store.replace(project);
   store._setPersistedBaselineForTest(null);
   resetMapEditHistory();
   store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: true, disabledReason: null });
@@ -61,7 +77,7 @@ export function applyFixture(chat?: AssistantSessionOptions["chat"]) {
   const events: SessionEvent[] = [];
   const session = new AssistantSession(store.getCurrent(), {
     config: { ...defaultAiConfig(), model: "test", liteModel: "test", apiKey: "test", agentMode: "chat", maxToolCalls: 4 },
-    declareIntent: fixedDeclarer({ mode: "other" }),
+    declareIntent,
     yieldToUi: async () => {},
     chat: chat ?? (async (): Promise<ChatResult> => round++ === 0
       ? { message: { role: "assistant", content: null, tool_calls: [{ id: "title", type: "function", function: {

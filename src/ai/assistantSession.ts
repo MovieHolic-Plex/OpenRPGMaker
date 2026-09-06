@@ -1538,6 +1538,11 @@ export class AssistantSession {
     this.runResult = { current: null };
     this.runSubscriber = onEvent;
     this.runRecapAuditIndex = null;
+    const entryInstruction = (opts?.instruction ?? stripContextFooter(text)).trim();
+    const retainsAppliedDelivery = opts?.composerMode !== "ask" && opts?.goalAction !== "new-goal"
+      && (opts?.goalAction === "resume" || isContinuationText(entryInstruction));
+    // Establish delivery ownership before context/image/intent work can await or fail.
+    if (!retainsAppliedDelivery) this.clearAppliedDelivery();
     this.runExecution = "response-final";
     this.milestoneAutoApply = opts?.autonomous === true;
     if (this.milestoneApplyFailed) {
@@ -1717,11 +1722,7 @@ export class AssistantSession {
     const resumesGoal = userAction && (options.goalAction === "resume" || isContinuationText(instruction));
     const newRequest = userAction && !resumesGoal && intent.source !== "continuation";
     // Delivery follows host-authorized continuation, never a model's source claim or a fresh query.
-    if (!this.turnIsDriverContinue && (!resumesGoal || startsGoal)) {
-      this.runReceipt = null;
-      this.lastAppliedProject = null;
-      this.turnAppliedMilestoneCalls = [];
-    }
+    if (!this.turnIsDriverContinue && (!resumesGoal || startsGoal)) this.clearAppliedDelivery();
     if (startsGoal) {
       this.publishAcceptance();
       const previous = this.getAcceptanceSnapshot();
@@ -2703,6 +2704,12 @@ export class AssistantSession {
     if (!this.workPlan || !this.milestoneAutoApply || this.milestoneApplyFailed) return;
     if (!isWorkPlanComplete(this.workPlan) || this.acceptanceOpen() || this.turnProposals.size > 0 || signal?.aborted) return;
     await this.proveAppliedRevision(onEvent, signal);
+  }
+
+  private clearAppliedDelivery(): void {
+    this.runReceipt = null;
+    this.lastAppliedProject = null;
+    this.turnAppliedMilestoneCalls = [];
   }
 
   /** Keep only metadata from the actual apply, never a newest-commit query. */
