@@ -2,6 +2,34 @@
 
 The LLM-harnessed interior pipeline: start session, advance build per layer, evaluate, and self-repair loop.
 
+## Interior authoring/load consistency (2026-09-07)
+
+- `project/tilesetHarness/interiorRoomGroups.ts` owns the supplemental room records
+  and shared tile vocabulary. `ensureInteriorProjectGroups` composes the 26 pack
+  records and 13 supplemental records for both room authoring and bundled load.
+  Existing records win by their exact ID, including user-origin records that retain
+  `source: bundled-default`; IDs, membership, rules, grammar and overrides are not
+  replaced or renamed. Suppressed IDs stay suppressed. A prefix is not ownership.
+- Group composition is separate from per-tile runtime seeding. Only pack groups
+  seed passage/priority/repeatability; supplemental room guidance must not overwrite
+  those contracts. Existing unknown/retired-looking groups are preserved, not deleted.
+- Default `cabinet` cells 148/178 are upper-layer; the floor beneath them remains.
+  Saved kits still take precedence. `repairLegacyInteriorCabinetKit` upgrades only
+  the complete known old catalog record on the exact bundled interior texture,
+  with no tile/graft/layer override. A changed name, AI record, row, part, ID or
+  provenance leaves it authored; `learnedFrom` alone is never sufficient.
+- The former membership-based map repair is intentionally no longer permitted.
+  A saved room plan and a matching kit do not prove per-cell authorship or recover
+  the original floor. Ambiguous already-placed lower props remain exactly as saved;
+  automatic repair is confined to proven legacy kit definitions. This preserves
+  explicit lower-layer counterexamples rather than silently choosing a new floor.
+- `test/interiorLoadConsistency.test.ts` runs the real room pipeline and editor
+  load/flush/fresh-load paths, checks canonical identity, upper cabinets over default
+  and nondefault floors, group preservation, strict legacy eligibility, and migration
+  failure/concurrent-edit behavior. No shipped demo, live DB or model is involved.
+  The archived Round8 result remains failed; these are engine regression contracts,
+  not a retrospective success label for that run.
+
 ## 사용자 타일 정정: 항아리·돌계단·석조 화로
 
 - 235는 주전자가 아니라 **항아리**다. 기존 저장물의 `kettle`/`VR.KETTLE` 식별자는 유지하지만 검색 라벨·태그·가구 이름·시설 물건 설명은 항아리로 쓴다. 141·111·171은 **돌계단**이며 목제라고 설명하지 않는다.

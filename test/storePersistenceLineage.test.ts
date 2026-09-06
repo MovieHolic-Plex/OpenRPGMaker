@@ -139,11 +139,8 @@ describe("accepted receipt content lineage", () => {
       // Reload/reconnect normalization can legitimately save the replacement lineage.
       const replacementFlush = await f.store.flush();
       if (replacementFlush.kind !== "saved") throw new Error("Replacement must be clean");
-      if (replacement === "load") expect(replacementFlush.receipt).toBeUndefined();
-      else {
-        expect(replacementFlush.receipt?.contentIdentity).toBe(await f.identity(live));
-        expect(replacementFlush.receipt).toBeDefined();
-      }
+      expect(replacementFlush.receipt?.contentIdentity).toBe(await f.identity(live));
+      expect(replacementFlush.receipt).toBeDefined();
       const replacementBaseline = structuredClone(f.store._getPersistedBaselineForTest());
       gate.release.resolve();
       const result = await bounded(pending);
@@ -161,7 +158,7 @@ describe("accepted receipt content lineage", () => {
       expect(f.store.isPersistenceReceiptCurrent(receipt)).toBe(false);
       // The late historical save must not overwrite the replacement's published receipt.
       const clean = await f.store.flush();
-      expect(clean).toEqual(replacementFlush);
+      expect(clean).toEqual({ kind: "saved", sha256: replacementFlush.sha256, receipt: replacementFlush.receipt });
       if (clean.kind !== "saved") throw new Error("Expected clean saved result");
       expect(clean.receipt).toBe(replacementFlush.receipt);
       expect(f.store.getCurrent()).toBe(live);
