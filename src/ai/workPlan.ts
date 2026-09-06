@@ -29,6 +29,7 @@ import { QUICK_REPLY_MARKER } from "@/ai/interviewPrompt";
 import { allTools, getTool } from "@/editor/tools/toolRegistry";
 import { parseAcceptance, type AcceptancePromise } from "./assistantAcceptance";
 import { ACCEPTANCE_PLANNER_GUIDE } from "./assistantAcceptanceTools";
+import { parseWorkTargetIds, workTargetContractIssues } from "./workPlanTargets";
 export type WorkItemStatus = "pending" | "in_progress" | "done" | "skipped" | "blocked";
 
 export interface WorkItem {
@@ -43,6 +44,8 @@ export interface WorkItem {
   readonly doneWhen?: string;
   /** Tools that must all succeed before this item can auto-complete (orchestrator-authored). */
   readonly successTools?: readonly string[];
+  /** Exact map identities; authoring is single-map, linking declares both endpoints. */
+  readonly mapTargets?: readonly string[] | null;
   /** Emergency generic fallback: require evidence from at least one successful write tool. */
   readonly requiresAnyWrite?: boolean;
   status: WorkItemStatus;
@@ -120,6 +123,7 @@ export type OrchestratorDecision =
           readonly instruction: string;
           readonly doneWhen?: string;
           readonly successTools?: readonly string[];
+          readonly mapTargets?: readonly string[] | null;
           readonly requiresAnyWrite?: boolean;
         }[];
       }[];
@@ -154,6 +158,7 @@ Harness contract:
 14. Preserve an explicit numbered checklist and its dependencies. Put required project/map/event/DB reads in the first item, before any writes. Use only names from the canonical tool list below: get_database_records, set_start_position, set_session_start, upsert_troop are distinct tools. Do not invent get_database or set_player_start.
 15. For a full adventure JRPG stage request, include actual village buildings, a connected explorable dungeon with a return transfer, a reachable encounter, a real start party or changeParty join, and final full-map show_map_region inspection. A sign saying dungeon and an NPC talking about joining do not implement these. Seed-only database requests are exempt. Use upsert_equipment for equippable weapons and queried iconResourceId for items.
 16. For a party adventure, inspect the current party and supplies, make an accessible village-to-dungeon route, and inspect every affected map with show_map_region. A solid grass rectangle or a small decorated viewport does not complete a dungeon or whole-map stage. Preserve existing content while improving it. Separate visual inspection from authoring so premature tool-name completion cannot omit it.
+17. Spatial authoring items MUST declare mapTargets:["exact_map_id"] (choose stable IDs for new maps). One map per authoring item, with that map's own single-map BuildSpec. Never combine terrain/buildings on different maps in one item. Put create_transfer_pair in a separate linking item with mapTargets:["map_a","map_b"] after both map authoring items in existing layer/item order. Each successTool is credited only for its declared targets; a no-op on A cannot discharge B. Include structure-authoring tools for promised buildings, not just fill_region, roads or transfers.
 ${NARRATIVE_HORROR_PLANNER_RULE}
 ${ACCEPTANCE_PLANNER_GUIDE}
 
@@ -174,7 +179,8 @@ JSON schema:
           "title": "todo",
           "instruction": "tools + numbers + placement",
           "doneWhen": "observable acceptance criteria",
-          "successTools": ["author_village"]
+          "successTools": ["author_village"],
+          "mapTargets": ["map_hub"]
         }
       ]
     }
@@ -431,6 +437,7 @@ function createWorkPlanFromLayers(input: {
       instruction: string;
       doneWhen?: string;
       successTools?: readonly string[];
+      mapTargets?: readonly string[] | null;
       requiresAnyWrite?: boolean;
     }[];
   }[];
@@ -446,6 +453,7 @@ function createWorkPlanFromLayers(input: {
       instruction: it.instruction.trim(),
       doneWhen: it.doneWhen?.trim() || undefined,
       successTools: sanitizeToolNames(it.successTools),
+      mapTargets: it.mapTargets,
       requiresAnyWrite: it.requiresAnyWrite === true || undefined,
       status: "pending" as const,
     })),
@@ -477,6 +485,7 @@ function normalizeLayer(
     instruction: string;
     doneWhen?: string;
     successTools?: readonly string[];
+    mapTargets?: readonly string[] | null;
   }[];
 } | null {
   if (!isRecord(layer)) return null;
@@ -495,6 +504,7 @@ function normalizeLayer(
         title: itemTitle,
         instruction,
         doneWhen: typeof it.doneWhen === "string" ? it.doneWhen : undefined,
+        mapTargets: parseWorkTargetIds(it.mapTargets),
         successTools: Array.isArray(it.successTools)
           ? it.successTools.filter((t): t is string => typeof t === "string")
           : undefined,
@@ -616,7 +626,10 @@ export function formatWorkPlanForOrchestration(plan: WorkPlan): string {
     lines.push(`Current item: ${s.current.itemTitle}`);
     lines.push(`Worker instruction:\n${s.current.instruction}`);
     if (s.current.doneWhen) lines.push(`Done when: ${s.current.doneWhen}`);
-    const required = getCurrentWorkItem(plan)?.successTools ?? [];
+    const item = getCurrentWorkItem(plan);
+    if (item?.mapTargets) lines.push(`Declared map targets: ${item.mapTargets.join(", ")}`);
+    if (item) for (const issue of workTargetContractIssues(item)) lines.push(`Plan correction [${issue.code}] ${issue.field}: ${issue.message}`);
+    const required = item?.successTools ?? [];
     if (required.length) lines.push(`Required successful tools for this item (including prior continuations): ${required.join(", ")}`);
     const unknown = required.filter((name) => !getTool(name));
     if (unknown.length) lines.push(`Invalid tool requirements: ${unknown.join(", ")}. Use find_tools, then correct these names with set_work_plan while preserving all unfinished checklist requirements. They cannot count as completed.`);

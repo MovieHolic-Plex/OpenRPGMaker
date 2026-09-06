@@ -9,6 +9,7 @@ import { adventureToolNames, adventureCompletionProblems, ADVENTURE_AUTHORING_GU
 // - 커밋 게이트/인자 검증 실패 시 issues를 tool 메시지로 모델에 되돌려 자가수정을 유도(최대 maxToolCalls 왕복).
 // - 브라우저 비의존(순수). chat 함수는 주입 가능(테스트에서 모킹).
 
+import { workTargetContractIssues, workTargetIssues, workToolOutcome, type WorkToolOutcome } from "./workPlanTargets";
 import { ToolReadEvidence } from "./toolReadEvidence";
 import { ToolVerificationEvidence } from "./toolVerificationEvidence";
 import { getTool, normalizeToolArgs, runTool } from "@/editor/tools";
@@ -696,6 +697,10 @@ export const WORK_PLAN_TOOLS: readonly OpenAiToolSchema[] = [
                       title: { type: "string", description: "항목 제목" },
                       instruction: { type: "string", description: "실행 모델이 그대로 수행할 구체 지시" },
                       doneWhen: { type: "string", description: "완료 판정 기준(선택)" },
+                      mapTargets: {
+                        type: "array", items: { type: "string" },
+                        description: "Required for spatial work: one exact map ID per authoring item. Linking declares exactly both endpoint IDs in its separate item.",
+                      },
                       successTools: {
                         type: "array",
                         description: "이 항목의 성공을 증명하는 툴 이름(선택)",
@@ -989,6 +994,7 @@ export class AssistantSession {
   private skipPlannerRoundOnly = false;
   /** 현재 WorkItem에서 이번 사용자 메시지 동안 성공한 모든 툴 이름(읽기 포함). */
   private turnSuccessfulTools = new Set<string>();
+  private workItemToolOutcomes: WorkToolOutcome[] = [];
   private successfulToolsWorkItemId: string | null = null;
   /** 현재 WorkItem 이 새로 만든 맵 id — 산출물 게이트가 "만들고 안 채운 맵"을 잡는 근거. */
   private turnItemCreatedMapIds = new Set<string>();
@@ -2182,6 +2188,13 @@ export class AssistantSession {
           summary: "set_work_plan 인자 오류: goal + layers[{title, items[{title, instruction}]}] 필요",
         };
       }
+      const targetIssues = plan.layers.flatMap(layer => layer.items.flatMap(item =>
+        workTargetContractIssues(item).map(issue => ({ ...issue, itemId: item.id }))));
+      if (targetIssues.length) return {
+        ok: false, summary: targetIssues.map(issue => `${issue.itemId}: ${issue.message}`).join(" "),
+        issues: targetIssues.map(issue => ({ severity: "error", code: issue.code, message: issue.message })),
+        data: { targetIssues },
+      };
       this.workPlan = plan;
       this.adoptAcceptance(plan.acceptance);
       // 새 계획 — 항목 id 는 위치 기반("L1-1")이라 이전 계획과 겹칠 수 있다. 중복 완료 방지 추적을 초기화한다.
@@ -2227,6 +2240,7 @@ export class AssistantSession {
           ok: false,
           summary: result.reason,
           issues: [{ severity: "error", code: "work-item-incomplete", message: result.reason }],
+          data: { targetIssues: result.item ? workTargetIssues(result.item, this.workItemToolOutcomes, this.workPlan) : [] },
         };
       }
       const done = result.item;
@@ -2274,6 +2288,7 @@ export class AssistantSession {
 
   private resetWorkItemEvidence(): void {
     this.turnSuccessfulTools.clear();
+    this.workItemToolOutcomes = [];
     this.workItemVerificationEvidence.clear();
     // 산출물 추적도 항목 단위다 — 이전 항목이 만든 맵을 다음 항목이 채울 책임으로 물려받지 않는다.
     this.turnItemCreatedMapIds.clear();
@@ -2294,7 +2309,9 @@ export class AssistantSession {
    *    새 맵을 만들어 시공하면 successTools 이름 매칭은 전부 통과하고 대상 맵은 그대로 남았다).
    */
   private outcomeGate(): WorkItemOutcomeGate {
-    return () => {
+    return (item) => {
+      const targetIssues = workTargetIssues(item, this.workItemToolOutcomes, this.workPlan ?? undefined);
+      if (targetIssues.length) return { ok: false, reason: targetIssues.map(issue => issue.message).join(" ") };
       const project = this.getProposedProject();
       const maps = verifyCreatedMapsAuthored(project, this.turnItemCreatedMapIds);
       if (!maps.ok) return maps;
@@ -2369,6 +2386,13 @@ export class AssistantSession {
     this.verificationEvidence.observe(name, args, result, countAsSuccess ? "explicit" : "advisory");
     if (!countAsSuccess) return;
     const verdict = this.workItemVerificationEvidence.observe(name, args, result);
+    const outcome = workToolOutcome(name, args, result.ok && (!verdict || this.workItemVerificationEvidence.passed(name)), result.data);
+    if (outcome.mapIds.length) {
+      this.workItemToolOutcomes = this.workItemToolOutcomes.filter(previous =>
+        previous.name !== name || previous.mapIds.length !== outcome.mapIds.length
+        || previous.mapIds.some((mapId, index) => mapId !== outcome.mapIds[index]));
+      this.workItemToolOutcomes.push(outcome);
+    }
     if (verdict && !this.workItemVerificationEvidence.passed(name)) {
       this.turnSuccessfulTools.delete(name);
       this.pushAudit({ kind: "status", text: `verification:unmet ${name} — ${this.workItemVerificationEvidence.problems().join("; ")}` });
@@ -3166,7 +3190,7 @@ export class AssistantSession {
         ...(result.issues && result.issues.length > 0 ? { issues: result.issues.map((issue) => issue.message) } : {}),
       });
       if (!result.ok || !result.diff) continue;
-      this.recordSuccessfulTool("place_npc");
+      this.recordToolResult("place_npc", args, result);
       this.upsertProposal(proposedByKey, {
         name: "place_npc",
         args,
@@ -3248,7 +3272,7 @@ export class AssistantSession {
         outcome = "rekick";
         continue;
       }
-      this.recordSuccessfulTool("author_npc_cast");
+      this.recordToolResult("author_npc_cast", args, result);
       this.upsertProposal(proposedByKey, { name: "author_npc_cast", args, summary: result.summary, result, destructive: false, requiresApproval: false, reason });
       this.pushAudit({ kind: "status", text: `npc-cast:applied map=${mapId} residents=${sheet.sheet.residents.map((resident) => resident.name).join(",")}` });
       if (outcome === "none") outcome = "applied";

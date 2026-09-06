@@ -112,6 +112,21 @@ Regression entry points: `test/assistantAcceptance.test.ts`,
 - 범위는 살아 있는 문서의 스케줄링이다. 브라우저의 탭 freeze/discard, 탭 닫기, 기기 절전 중에도 작업을 계속하려면 별도의 서버 실행·복구 설계가 필요하다.
 - 회귀: `test/yieldToUi.test.ts`(프레임·타이머 정지, 중간 숨김·포커스 상실, 자원 정리, 미지원 환경), `test/assistantSessionYield.test.ts`, `test/e2e/ai-background-progress.spec.ts`(실제 패널의 도구 3개와 최종 답변). 브라우저 증거는 `output/evidence/assistant-background/`. Playwright는 기본으로 포커스를 강제하고 타이머 제한을 끄므로 해당 스펙은 그 옵션을 해제한다. 숨김·분 단위 타이머 제한은 명시적으로 주입하고, MessageChannel과 세션 실행은 실제 브라우저 경로를 쓴다.
 
+## Map-targeted work outcomes (2026-09-06)
+
+Spatial WorkPlan items declare `mapTargets` with exact stable map IDs. Author one map per
+item and submit its own single-map BuildSpec; put `create_transfer_pair` in a later item
+with both endpoint IDs. Existing layer/item order supplies the prerequisites, not a DAG.
+`workPlanTargets.ts` checks declarations and per-target tool outcomes. The session keeps
+these outcomes across continuations and resets them only with item/goal/plan evidence.
+Successful idempotent/no-change work counts for its own target; another map's success,
+a road, or a transfer cannot replace a failed declared authoring tool. Explicit completion
+uses the same target gate, and completing an already-done item remains idempotent.
+Malformed `set_work_plan` targets are rejected atomically with `data.targetIssues`; legacy
+planner items retain actionable correction instructions instead of completing by names.
+Nonspatial and map-metadata-only plans keep their existing behavior. Regression:
+`test/workPlanMapOutcomes.test.ts` replays the round2 village/cellar failure in both orders.
+
 ## 계획 항목의 연속 실행 증거 (2026-09-05)
 
 실행 예산으로 나뉜 driverContinue 또는 continuation은 같은 항목의 성공 툴·생성 맵/퀘스트/NPC·전투 검증과 미적용 제안을 보존한다. 새 목표·새 계획·현재 항목 변경에서만 resetWorkItemEvidence로 비운다. 테스트 `aiMilestoneTurnAccounting`은 maxToolCalls=1로 upsert_item과 set_title_screen을 서로 다른 턴에 실행하고 두 변경이 실제 마일스톤으로 적용되는지 확인한다.
