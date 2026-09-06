@@ -1,5 +1,6 @@
 import { warmEditorPickerAssets } from "@/assets/editorAssetWarmup";
 import { editorState } from "@/editor/editorState";
+import { selectEditorMap } from "@/editor/mapSelection";
 import { requestEditorEventDeletion } from "@/editor/eventDeletion";
 import { eventDisplayName } from "@/editor/eventMarkerUx";
 import {
@@ -119,6 +120,9 @@ function confirmEventEditor(parent: HTMLElement, options: ConfirmOptions): Promi
 }
 
 function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
+  // The switch guard restores the old draft's map. Only a successful open
+  // takes ownership of the destination, keeping its newly selected event/page.
+  selectEditorMap(request.mapId, { clearEventSelection: false });
   // 그래픽/얼굴 피커는 이 모달 안에서 열린다 — 여는 순간이 아니라 지금 받아 둔다.
   void warmEditorPickerAssets();
   clearCommandToolbarHistories(`${request.mapId}:${request.eventId}:`);

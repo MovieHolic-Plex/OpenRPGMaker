@@ -2,6 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { historyHotkeyOwnedByPanel, shouldIgnoreEditorShortcut } from "@/editor/hotkeys";
 import { editorState } from "@/editor/editorState";
+import { selectEditorMap } from "@/editor/mapSelection";
 import { openEventEditorModal, openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { modalStackDepthForTest, resetModalStackForTest } from "@/editor/ui/modalStack";
 import { updateEventPage } from "@/editor/eventPages";
@@ -11,6 +12,7 @@ import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 
 let mapId: string;
+const destinationMapId = "window-map-b";
 function node(id: string): HTMLElement {
   const result = document.querySelector<HTMLElement>(`[data-testid="${id}"]`);
   if (!result) throw new Error(`Missing ${id}`);
@@ -26,6 +28,15 @@ beforeEach(() => {
       movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [],
     }] }];
   project.maps[mapId].events.push({ ...structuredClone(project.maps[mapId].events[0]), id: "other-event" });
+  const secondMap = structuredClone(project.maps[mapId]);
+  const pages = project.maps[mapId].events[0].pages;
+  const destinationPage = secondMap.events[0].pages?.[0];
+  if (!pages || !destinationPage) throw new Error("Expected two-map fixture pages");
+  secondMap.id = destinationMapId;
+  secondMap.events = [{ ...structuredClone(secondMap.events[0]), id: "destination-event",
+    pages: [{ ...structuredClone(destinationPage), id: "destination-page" }] }];
+  project.maps[destinationMapId] = secondMap;
+  pages.push({ ...structuredClone(pages[0]), id: "window-page-2", name: "Second page" });
   store.replaceProject(project);
   editorState.set({ currentMapId: mapId, selectedEventId: "window-event", selectedEventPageId: "window-page" });
   openEventEditorModal(mapId, "window-event");
@@ -55,6 +66,75 @@ function changedUntil(check: () => boolean): Promise<void> {
   });
 }
 describe("event editor window controls", () => {
+  for (const target of ["existing", "new"] as const) {
+    for (const dirty of [false, true]) {
+      it(`keeps the destination map when opening a ${target} event after ${dirty ? "approved dirty" : "unchanged"} cross-map switching`, async () => {
+        if (dirty) updateEventPage(mapId, "window-event", "window-page", { name: "Dirty" });
+        const previous = node("event-editor-modal");
+        node("event-editor-window-minimize").click();
+        expect(selectEditorMap(destinationMapId)).toBe(true);
+        expect(editorState.get().currentMapId).toBe(destinationMapId);
+        if (target === "existing") openEventEditorModal(destinationMapId, "destination-event");
+        else openNewEventEditorModal(destinationMapId, 3, 4);
+        if (dirty) {
+          const switched = changedUntil(() => node("event-editor-modal") !== previous);
+          node("app-modal-confirm").click();
+          await switched;
+        }
+        const modal = node("event-editor-modal");
+        expect(modal).not.toBe(previous);
+        expect(modal.dataset.mapId).toBe(destinationMapId);
+        expect(editorState.get().currentMapId).toBe(destinationMapId);
+        const opened = store.getCurrent().maps[destinationMapId].events.find(event => event.id === modal.dataset.eventId);
+        expect(opened?.draft?.kind).toBe(target === "existing" ? "edit" : "new");
+        expect(editorState.get().selectedEventId).toBe(opened?.id);
+        expect(editorState.get().selectedEventPageId).toBe(opened?.pages?.[0].id);
+        if (target === "existing") expect(opened?.id).toBe("destination-event");
+        else expect(opened).toMatchObject({ x: 3, y: 4 });
+        expect(draft()?.draft).toBeUndefined();
+        expect(draft()?.pages?.[0].name).toBe("Window event");
+        expect(document.querySelector('[data-testid="event-editor-window-restore"]')).toBeNull();
+        expect(modalStackDepthForTest()).toBe(1);
+      });
+    }
+
+    it(`retains the original map and page when cancelling a dirty cross-map switch to a ${target} event`, async () => {
+      editorState.set({ selectedEventPageId: "window-page-2" });
+      updateEventPage(mapId, "window-event", "window-page-2", { name: "Dirty second page" });
+      const original = structuredClone(draft());
+      const destination = structuredClone(store.getCurrent().maps[destinationMapId]);
+      const modal = node("event-editor-modal");
+      node("event-editor-window-minimize").click();
+      selectEditorMap(destinationMapId);
+      if (target === "existing") openEventEditorModal(destinationMapId, "destination-event");
+      else expect(openNewEventEditorModal(destinationMapId, 3, 4)).toBe("");
+      expect(modal.hidden).toBe(false);
+      expect(modalStackDepthForTest()).toBe(2);
+      const cancelled = changedUntil(() => modal.dataset.switchGuard !== "true");
+      node("app-modal-cancel").click();
+      await cancelled;
+      expect(node("event-editor-modal")).toBe(modal);
+      expect(editorState.get()).toMatchObject({ currentMapId: mapId, selectedEventId: "window-event", selectedEventPageId: "window-page-2" });
+      expect(draft()).toEqual(original);
+      expect(store.getCurrent().maps[destinationMapId]).toEqual(destination);
+      expect(modalStackDepthForTest()).toBe(1);
+    });
+  }
+
+  for (const restore of ["chip", "same-event"] as const) {
+    it(`restores the original map and nondefault page via ${restore} after selecting another map`, () => {
+      editorState.set({ selectedEventPageId: "window-page-2" });
+      const modal = node("event-editor-modal");
+      node("event-editor-window-minimize").click();
+      selectEditorMap(destinationMapId);
+      if (restore === "chip") node("event-editor-window-restore").click();
+      else openEventEditorModal(mapId, "window-event");
+      expect(node("event-editor-modal")).toBe(modal);
+      expect(modal.hidden).toBe(false);
+      expect(editorState.get()).toMatchObject({ currentMapId: mapId, selectedEventId: "window-event", selectedEventPageId: "window-page-2" });
+    });
+  }
+
   it("minimizes without discarding pending input and restores the same editor", () => {
     const modal = node("event-editor-modal");
     const input = node("event-editor-name");

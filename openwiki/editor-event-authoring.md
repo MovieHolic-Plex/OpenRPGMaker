@@ -31,7 +31,12 @@
   discard confirms are bound to their owning editor and canceled on teardown;
   stale asynchronous approvals cannot reopen an editor in a new project.
 - Switching to a different event restores a dormant window before flushing and
-  asking to discard; declining keeps editing. Minimize/restore does not steal
+  asking to discard; declining keeps the original draft's map and page. After
+  a successful existing/new draft open, the shared modal-open boundary reapplies
+  the requested map through `selectEditorMap` with `clearEventSelection: false`.
+  Otherwise restoring the old window leaves the canvas/map tree on map A while
+  the new modal edits map B. Two-map tests cover clean/approved opens, cancellation,
+  and restoring a nondefault page. Minimize/restore does not steal
   focus from a higher modal. Save/Apply/Cancel and local command history remain
   unchanged; no app-wide window manager or persistence schema was introduced.
 - Deterministic happy-dom coverage: `test/eventEditorWindowControls.test.ts`.
