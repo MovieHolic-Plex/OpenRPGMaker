@@ -1,11 +1,9 @@
 import { editorState } from "@/editor/editorState";
-import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
-import { beginWalkEncounter, applyWalkEncounter, hasLastWalkEncounter, isSimpleWalkTroop,
+import { beginWalkEncounter, applyWalkEncounter, hasLastWalkEncounter, currentDraftError,
   reuseLastWalkEncounter, sameEncounterRegion, walkEncounterRegions, WALK_FREQUENCIES,
   type WalkEncounterDraft } from "@/editor/walkEncounterAuthoring";
 import { openEventSubdialog } from "@/editor/panels/eventEditor/subdialog";
-import { recordListThumbnail } from "@/editor/panels/databaseRecordThumbnails";
-import { renderWalkEncounterOptions, walkChoiceName, walkField, walkSelect } from "@/editor/panels/walkEncounterOptions";
+import { renderWalkEncounterOptions, walkGroupComposition, walkField, walkSelect } from "@/editor/panels/walkEncounterOptions";
 import { store } from "@/project/store";
 import type { Rect } from "@/project/types";
 import { el } from "@/util/dom";
@@ -24,60 +22,81 @@ export function openWalkEncounterForSelection(selection: WalkEncounterSelection,
 export function walkRegionLabel(rect: Rect): string { return `(${rect.x}, ${rect.y}) · ${rect.w}×${rect.h}칸`; }
 
 export function openWalkEncounterModal(draft: WalkEncounterDraft): void {
-  if (!canEditMap(draft.mapId)) { toast(mapEditLockNotice(draft.mapId), "error"); return; }
   openEventSubdialog({ title: "걸을 때 적 만나기", subtitle: walkRegionLabel(draft.region), testId: "walk-encounter-modal", width: "wide", render: (body, close) => {
     body.classList.add("walk-encounter-shell");
     const content = el("div", { class: "walk-encounter-content" });
     const error = el("p", { class: "walk-encounter-error", attrs: { role: "alert" }, dataset: { testid: "walk-encounter-error" } });
-    const intro = el("p", { class: "walk-encounter-help", text: "포켓몬 풀숲처럼, 이 안에서 걷다 보면 전투가 시작됩니다." });
-    const search = el("input", { attrs: { type: "search", placeholder: "적 이름 검색" }, dataset: { testid: "walk-encounter-search" } });
-    const catalog = el("div", { class: "walk-encounter-catalog", dataset: { testid: "walk-encounter-catalog" } });
-    const count = el("p", { attrs: { "aria-live": "polite" }, dataset: { testid: "walk-encounter-count" } });
-    const selected = el("div", { class: "walk-encounter-selected" });
-    const optionsHost = el("div");
     const project = store.getCurrent();
-    const enemyForChoice = (choice: WalkEncounterDraft["choices"][number], enemyId: string): boolean => choice.kind === "enemy"
-      ? choice.id === enemyId : project.database.troops.some((troop) => troop.id === choice.id && isSimpleWalkTroop(troop, enemyId));
-    const refreshCatalog = (): void => {
-      catalog.replaceChildren();
-      const query = search.value.trim().toLocaleLowerCase();
-      const enemies = project.database.enemies.filter((enemy) => enemy.name.toLocaleLowerCase().includes(query));
-      for (const enemy of enemies) {
-        const check = el("input", { attrs: { type: "checkbox" }, dataset: { testid: `walk-enemy-${enemy.id}` } });
-        check.checked = draft.choices.some((choice) => enemyForChoice(choice, enemy.id));
-        check.addEventListener("change", () => {
-          if (check.checked) draft.choices.push({ kind: "enemy", id: enemy.id, weight: 1, conditions: {} });
-          else draft.choices = draft.choices.filter((choice) => !enemyForChoice(choice, enemy.id));
-          refreshChoices(false);
-        });
-        const row = el("label", { class: "walk-encounter-enemy", children: [check] });
-        const art = recordListThumbnail("enemies", enemy, project, 48);
-        if (art) row.append(art);
-        row.append(el("span", { text: enemy.name }));
-        catalog.append(row);
-      }
-      if (!enemies.length) {
-        catalog.append(el("p", { class: "walk-encounter-help", text: project.database.enemies.length ? "검색 결과가 없습니다." : "등록된 적이 없습니다. 데이터베이스의 전투 몬스터에서 먼저 만들어 주세요." }));
-        if (query) catalog.append(el("button", { class: "btn", text: "검색 지우기", attrs: { type: "button" }, on: { click: () => { search.value = ""; refreshCatalog(); search.focus(); } } }));
+    error.textContent = currentDraftError(draft) ?? "";
+    const optionsHost = el("div");
+    const count = el("span", { class: "walk-encounter-help", attrs: { "aria-live": "polite" }, dataset: { testid: "walk-encounter-count" } });
+    const editGroup = async (id?: string): Promise<void> => {
+      try {
+        const [{ openDatabaseModal }, { setSelectedRecordId }, { refreshDatabasePanel }] = await Promise.all([
+          import("@/editor/panels/databaseModal"), import("@/editor/panels/databaseRecordViewSession"), import("@/editor/panels/database"),
+        ]);
+        if (!body.isConnected) return;
+        close();
+        openDatabaseModal("troops", { onClose: () => openWalkEncounterModal(draft) });
+        if (id) {
+          setSelectedRecordId("troops", id, { reveal: true });
+          const panel = document.querySelector<HTMLElement>(".database-modal-body");
+          if (panel) refreshDatabasePanel(panel);
+        }
+      } catch (cause) {
+        toast(`그룹 편집기를 열지 못했습니다: ${String(cause)}`, "error");
+        if (!body.isConnected) openWalkEncounterModal(draft);
       }
     };
-    const refreshChoices = (catalogToo = true): void => {
-      count.textContent = `${draft.choices.length}종 선택`;
-      selected.replaceChildren(...draft.choices.map((choice) => el("span", { text: walkChoiceName(choice) })));
-      const wasOpen = optionsHost.querySelector("details")?.open ?? false;
-      const options = renderWalkEncounterOptions(draft, () => { refreshChoices(); optionsHost.querySelector("summary")?.focus(); });
-      options.open = wasOpen;
-      optionsHost.replaceChildren(options);
-      if (catalogToo) refreshCatalog();
+    const openPicker = (replaceIndex?: number): void => {
+      openEventSubdialog({ title: replaceIndex === undefined ? "만날 그룹 추가" : "그룹 바꾸기", testId: "walk-encounter-picker", width: "narrow", render: (pickerBody, closePicker) => {
+        pickerBody.classList.add("walk-encounter-picker");
+        const search = el("input", { attrs: { type: "search", placeholder: "그룹 이름 또는 구성원 검색" }, dataset: { testid: "walk-encounter-search" } });
+        const catalog = el("div", { class: "walk-encounter-catalog", dataset: { testid: "walk-encounter-catalog" } });
+        const refreshCatalog = (): void => {
+          catalog.replaceChildren();
+          const db = store.getCurrent().database;
+          const query = search.value.trim().toLocaleLowerCase();
+          const groups = db.troops.filter((troop) => [troop.name, troop.id, ...(troop.members ?? troop.enemyIds.map((enemyId) => ({ enemyId }))).map((member) => db.enemies.find((enemy) => enemy.id === member.enemyId)?.name ?? member.enemyId)].join(" ").toLocaleLowerCase().includes(query));
+          for (const troop of groups) {
+            const selected = draft.choices.some((choice, index) => index !== replaceIndex && choice.id === troop.id);
+            const button = el("button", { class: "walk-encounter-group-option", attrs: { type: "button", ...(selected ? { disabled: "" } : {}) }, dataset: { testid: `walk-group-${troop.id}` }, children: [
+              el("div", { class: "walk-encounter-picker-heading", children: [el("strong", { text: troop.name || troop.id }), el("span", { text: selected ? "추가됨" : "추가" })] }), walkGroupComposition(troop),
+            ], on: { click: () => {
+              if (replaceIndex !== undefined) {
+                draft.choices[replaceIndex]!.id = troop.id;
+                refreshChoices(); closePicker(); return;
+              }
+              draft.choices.push({ id: troop.id, weight: 1, conditions: {} });
+              refreshChoices(); refreshCatalog(); search.focus();
+            } } });
+            catalog.append(button);
+          }
+          if (!groups.length) catalog.append(el("p", { class: "walk-encounter-empty", text: db.troops.length ? "검색 결과가 없습니다." : "아직 만든 그룹이 없습니다." }));
+        };
+        search.addEventListener("input", refreshCatalog);
+        pickerBody.append(walkField("그룹 검색", search), catalog,
+          el("div", { class: "walk-encounter-actions", children: [
+            el("button", { class: "btn", text: "그룹 편집기 열기", attrs: { type: "button" }, dataset: { testid: "walk-encounter-group-editor" }, on: { click: () => { closePicker(); void editGroup(); } } }),
+            el("button", { class: "btn btn-primary", text: "선택 완료", attrs: { type: "button" }, dataset: { testid: "walk-encounter-picker-done" }, on: { click: closePicker } }),
+          ] }));
+        refreshCatalog(); search.focus();
+      } });
     };
-    search.addEventListener("input", refreshCatalog);
-    content.append(intro, walkField("만날 적 고르기", search), count, selected, catalog);
+    const refreshChoices = (): void => {
+      count.textContent = `${draft.choices.length}개 그룹`;
+      optionsHost.replaceChildren(renderWalkEncounterOptions(draft, () => { refreshChoices(); add.focus(); }, (id) => { void editGroup(id); }, openPicker));
+    };
+    const add = el("button", { class: "btn", text: "+ 그룹 추가", attrs: { type: "button" }, dataset: { testid: "walk-encounter-add-group" }, on: { click: () => openPicker() } });
+    content.append(el("p", { class: "walk-encounter-help", text: "포켓몬 풀숲처럼, 걷다 보면 선택한 그룹 중 하나와 전투합니다." }),
+      el("div", { class: "walk-encounter-heading", children: [el("h4", { text: "만날 그룹" }), count, add] }), optionsHost,
+      el("p", { class: "walk-encounter-help", text: "상대 비율은 이 목록의 비중을 합쳐 계산합니다. 출현 조건·겹친 범위·맵 전체 규칙에 따라 실제 비율은 달라집니다." }));
     const frequency = walkSelect([
       ...(!WALK_FREQUENCIES.some((preset) => preset.rate === draft.rate) ? [{ id: String(draft.rate), name: `현재 값 유지 (${draft.rate})` }] : []),
       ...WALK_FREQUENCIES.map((preset) => ({ id: String(preset.rate), name: preset.label })),
     ], String(draft.rate), (value) => { draft.rate = Number(value); });
     frequency.dataset.testid = "walk-encounter-frequency";
-    content.append(walkField("얼마나 자주 만날까요?", frequency), el("p", { class: "walk-encounter-help", text: "빈도는 이 맵 전체에 적용됩니다. 다른 범위의 빈도도 함께 바뀝니다." }));
+    content.append(el("div", { class: "walk-encounter-frequency", children: [walkField("만나는 빈도", frequency), el("p", { class: "walk-encounter-help", text: "맵 전체에 적용 · 다른 범위도 함께 바뀝니다." })] }));
     if (draft.needsLegacyChoice) {
       const legacy = walkSelect([{ id: "undecided", name: "기존 출현 방식 선택" }, { id: "preserve", name: "맵 전체 출현도 유지" }, { id: "replace", name: "기존 전체 출현 대신 선택한 범위만" }], draft.legacy, (value) => {
         draft.legacy = value === "preserve" ? "preserve" : value === "replace" ? "replace" : "undecided";
@@ -88,11 +107,14 @@ export function openWalkEncounterModal(draft: WalkEncounterDraft): void {
       content.append(el("p", { class: "walk-encounter-help", text: "기존 맵 전체 출현 규칙은 유지됩니다. 범위 밖에서도 그 규칙으로 적을 만납니다." }));
     }
     if (!draft.originalRegion && hasLastWalkEncounter()) content.append(el("button", { class: "btn", text: "마지막 설정 가져오기", attrs: { type: "button" }, dataset: { testid: "walk-encounter-reuse" }, on: { click: () => { reuseLastWalkEncounter(draft); refreshChoices(); } } }));
-    content.append(optionsHost);
     const actions = el("div", { class: "walk-encounter-footer" });
     const save = (operation: "save" | "delete"): void => {
       const result = applyWalkEncounter(draft, operation);
-      if (!result.ok) { error.textContent = result.error; return; }
+      if (!result.ok) {
+        error.textContent = result.error;
+        if (draft.choices.some((choice) => !store.getCurrent().database.troops.some((troop) => troop.id === choice.id))) refreshChoices();
+        return;
+      }
       close();
       toast(operation === "delete" ? "걷기 전투 설정을 삭제했습니다. 타일과 적 그룹은 그대로입니다." : "걸을 때 적 만나기를 설정했습니다.", "ok");
     };
@@ -111,7 +133,7 @@ export function openWalkEncounterModal(draft: WalkEncounterDraft): void {
       el("button", { class: "btn btn-primary", text: "완료", attrs: { type: "button" }, dataset: { testid: "walk-encounter-save" }, on: { click: () => save("save") } }));
     body.append(content, error, actions);
     refreshChoices();
-    search.focus();
+    add.focus();
   } });
 }
 

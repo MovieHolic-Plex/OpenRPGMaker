@@ -1,0 +1,99 @@
+{
+  "nativePlayer": false,
+  "authority": "real imported public modules",
+  "observations": [
+    {
+      "path": "actual farm authority",
+      "harvest": {
+        "kind": "harvested",
+        "x": 4,
+        "y": 5,
+        "cropId": "crop_potato",
+        "itemId": "item_potato",
+        "count": 1,
+        "source": "crop",
+        "energySpent": 1,
+        "xpAwarded": {
+          "farming": 10
+        },
+        "affectedTiles": [
+          {
+            "x": 4,
+            "y": 5,
+            "kind": "harvested"
+          }
+        ]
+      },
+      "refusedWrongHandUnchanged": true
+    },
+    {
+      "path": "actual placeable authority",
+      "result": {
+        "kind": "harvested",
+        "x": 1,
+        "y": 1,
+        "itemId": "item_potato",
+        "count": 1,
+        "reason": "special-chop",
+        "source": "tree",
+        "energySpent": 1,
+        "xpAwarded": {
+          "foraging": 10
+        },
+        "affectedTiles": [
+          {
+            "x": 1,
+            "y": 1,
+            "kind": "harvested"
+          }
+        ]
+      }
+    },
+    {
+      "path": "actual placeable authority",
+      "result": {
+        "kind": "harvested",
+        "x": 1,
+        "y": 1,
+        "itemId": "item_potato",
+        "count": 1,
+        "reason": "special-mine",
+        "source": "rock",
+        "energySpent": 1,
+        "xpAwarded": {
+          "mining": 10
+        },
+        "affectedTiles": [
+          {
+            "x": 1,
+            "y": 1,
+            "kind": "harvested"
+          }
+        ]
+      }
+    },
+    {
+      "path": "Project4 false roundtrip and occupied refusal",
+      "version": 4,
+      "rules": [
+        {
+          "id": "outside",
+          "action": "till",
+          "farmTool": "hoe",
+          "requiresFarmable": false
+        }
+      ],
+      "unchanged": true
+    },
+    {
+      "path": "fish resolver ONLY; input/catch wiring belongs to task10",
+      "fishRule": {
+        "itemId": "item_hoe",
+        "farmTool": "hoe",
+        "action": "fish",
+        "ruleId": "fish-any-tool"
+      },
+      "seedRefused": true
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-tools",
+  "baseHead": "675a3b2fd0952143ec8887b1b204789ec0dfe035",
+  "branch": "agent/life-full-tools",
+  "files": [
+    {
+      "path": "src/project/toolActions.ts",
+      "sha256": "84c58386207251da43c50a65024cce3fed4b2ca94ed0e6c1ce5ab490a5ad1b32",
+      "blob": "696a92aa2c62df3fa856cae972863e8686a863d3"
+    },
+    {
+      "path": "src/editor/panels/databaseLifeCraftingView.ts",
+      "sha256": "6f6704a0876f3f8232ce9d4acaaf47a85dfb3795252a14ec19c8f05b93a869a8",
+      "blob": "70bb209e28458edd9cdee0bbc971c999ecd77e9d"
+    },
+    {
+      "path": "src/player/farming.ts",
+      "sha256": "5222e17999fb0a1da9fa1594c265f3eb4dac40ab5a63594cb94d599963be4d67",
+      "blob": "cc746850e48a51984bba6eae16a6a406af39897b"
+    },
+    {
+      "path": "test/toolActionAuthoringParity.test.ts",
+      "sha256": "864518fd845440aa532a35cf6f6d98eb29e62c77781574d9b4825ead4be23974",
+      "blob": "6b2480787335a8458930b4d980a6ce4c3bd8b421"
+    },
+    {
+      "path": "test/databaseLifeCraftingView.test.ts",
+      "sha256": "57178b07c6a69c038e05073aee1372bdadc5c07329b87544a8070fd83b2ec0c8",
+      "blob": "35c065ce6c483aa4a4a9c7ef5eaadb542c83c92e"
+    }
+  ]
+}

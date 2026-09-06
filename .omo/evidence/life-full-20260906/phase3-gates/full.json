@@ -1,0 +1,27 @@
+{
+  "head": "d107ac24ed72902fb35980034d08aed3ab3e0553",
+  "tree": "d8c601c1801831cd52697801161b181c7d5c9088",
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "1200s",
+    "npm",
+    "run",
+    "gates",
+    "--",
+    "--json"
+  ],
+  "started": "2026-09-06T16:18:03.294Z",
+  "finished": "2026-09-06T16:38:03.397Z",
+  "exit": 124,
+  "signal": null,
+  "stdout": "\n> rpg-zzu@0.1.0 gates\n> node scripts/verify-gates.mjs --json\n\n",
+  "stderr": "GATE_SUBPROCESS_START 1 npx tsc --noEmit -p tsconfig.app.json\nGATE_SUBPROCESS_END 1 exit=0\nGATE_SUBPROCESS_START 2 node scripts/run-vitest.mjs run --configLoader bundle --reporter=json --outputFile /home/main/z-project/rpg-zzu-life-full-p3/.omo/gates-vitest-report.json\nGATE_SUBPROCESS_END 2 exit=1\nGATE_SUBPROCESS_START 3 node scripts/check-css-budget.mjs\nGATE_SUBPROCESS_END 3 exit=0\nGATE_SUBPROCESS_START 4 node scripts/check-css-graph.mjs\nGATE_SUBPROCESS_END 4 exit=0\nGATE_SUBPROCESS_START 5 node scripts/check-surface-gates.mjs --json\n",
+  "loadBefore": "92.51 103.52 102.77 108/11932 3751325\n",
+  "loadAfter": "119.49 118.33 118.33 102/11563 4060476\n"
+}

@@ -1,0 +1,75 @@
+{
+  "removed": [
+    {
+      "path": "/home/main/z-project/rpg-zzu-life-full-tools-verify/output/edit-activity",
+      "existed": true,
+      "files": 3,
+      "bytes": 3169,
+      "absentAfter": true
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-life-full-tools-verify/.vite-cache/st_01a076ed-editor-network",
+      "existed": false,
+      "files": 0,
+      "bytes": 0,
+      "absentAfter": true
+    }
+  ],
+  "checks": [
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}"
+      ],
+      "exit": 0,
+      "stdout": "e0a5e8a67c48c739fc2b9e16eb48abc2ee85f854\n21c2d59619a68885c99a7a95dbf6aa81a77b71a0\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--exit-code"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--cached",
+        "--exit-code"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "status",
+        "--porcelain=v1"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "ss",
+        "-ltnp",
+        "sport = :35219"
+      ],
+      "exit": 0,
+      "stdout": "State Recv-Q Send-Q Local Address:Port Peer Address:PortProcess\n",
+      "stderr": ""
+    }
+  ],
+  "allFiveSourceHashesUnchanged": true,
+  "originalEditorEvidenceUnchanged": true,
+  "lockedTreeRetainedForParent": true
+}

@@ -1,0 +1,144 @@
+{
+  "removedOnlyOwnedGeneratedArtifacts": [
+    {
+      "path": "/home/main/z-project/rpg-zzu-life-full-tools-verify/dist",
+      "existed": true,
+      "files": 1981,
+      "bytes": 244569374,
+      "absentAfter": true
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-life-full-tools-verify/output/edit-activity",
+      "existed": true,
+      "files": 3,
+      "bytes": 2816,
+      "absentAfter": true
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-life-full-tools-verify/.vite-cache/st_01a076ed-build",
+      "existed": false,
+      "files": 0,
+      "bytes": 0,
+      "absentAfter": true
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-life-full-tools-verify/.vite-cache/st_01a076ed-player",
+      "existed": false,
+      "files": 0,
+      "bytes": 0,
+      "absentAfter": true
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-life-full-tools-verify/.vite-cache/st_01a076ed-editor",
+      "existed": false,
+      "files": 0,
+      "bytes": 0,
+      "absentAfter": true
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-life-full-tools-verify/.vite-cache/st_01a076ed-public",
+      "existed": false,
+      "files": 0,
+      "bytes": 0,
+      "absentAfter": true
+    }
+  ],
+  "checks": [
+    {
+      "command": [
+        "git",
+        "diff",
+        "--exit-code"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--cached",
+        "--exit-code"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "675a3b2f..HEAD",
+        "--",
+        "src",
+        "test"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "status",
+        "--porcelain=v1"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}"
+      ],
+      "exit": 0,
+      "stdout": "e0a5e8a67c48c739fc2b9e16eb48abc2ee85f854\n21c2d59619a68885c99a7a95dbf6aa81a77b71a0\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "/home/main/z-project/rpg-zzu-life-full-tools",
+        "status",
+        "--porcelain=v1"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "/home/main/z-project/rpg-zzu-life-full-tools",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}"
+      ],
+      "exit": 0,
+      "stdout": "e0a5e8a67c48c739fc2b9e16eb48abc2ee85f854\n21c2d59619a68885c99a7a95dbf6aa81a77b71a0\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "ss",
+        "-ltnp",
+        "sport = :35219"
+      ],
+      "exit": 0,
+      "stdout": "State Recv-Q Send-Q Local Address:Port Peer Address:PortProcess\n",
+      "stderr": ""
+    }
+  ],
+  "allFiveSourceHashesUnchanged": true,
+  "trackedDepsCachePreserved": true,
+  "lockedVerificationWorktreeLeftForParent": true,
+  "browserAndContextClosure": "editor-state.json and player-state.json finally receipts; command exits0",
+  "noRemoteWrites": "editor remote persistence false; native player write guard recorded none; no DB commands issued"
+}

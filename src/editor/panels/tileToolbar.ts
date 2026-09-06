@@ -6,7 +6,7 @@ import type { SvgIconName } from "@/editor/panels/tileToolbarIcons";
 import { isTileToolbarItemActive, selectMapModeTool, selectTileTool } from "@/editor/panels/tileToolbarActions";
 import type { TileToolId } from "@/editor/panels/tileToolbarActions";
 import { getEditorChrome } from "@/editor/editorUiMode";
-import { makeInspectorDropdown, makeRuleAuditDropdown, makeHistoryDropdown, makeOverflowDropdown } from "@/editor/panels/tileToolbarMenus";
+import { makeTileToolsMenu } from "@/editor/panels/tileToolOptions";
 import type { TileToolbarModel } from "@/editor/panels/tileToolbarMenus";
 import { store } from "@/project/store";
 
@@ -18,7 +18,7 @@ export {
 } from "@/editor/panels/tileToolbarActions";
 
 type TileToolbarItem = {
-  readonly id: "undo" | TileToolId;
+  readonly id: "undo" | Exclude<TileToolId, "rect" | "round">;
   readonly label: string;
   readonly icon: SvgIconName;
   /** hotkeys.ts 의 단축키 표기 — 툴팁에 같이 적어 잘린 도구도 키보드로 부를 수 있게 한다. */
@@ -37,13 +37,11 @@ const TOOLBAR_ITEMS: readonly TileToolbarItem[] = [
   // 아이콘은 초보 레일과 같은 brush 를 쓴다 — 한 행위에 두 글리프를 두지 않는다.
   { id: "pen", label: "칠하기", hotkey: "B", icon: "brush", testid: "tool-paint" },
   { id: "erase", label: "지우기", hotkey: "E", icon: "eraser", testid: "tool-erase" },
-  { id: "rect", label: "사각형 채우기", icon: "rect", testid: "oprn-tool-rect" },
-  { id: "round", label: "타원 채우기", icon: "round", testid: "oprn-tool-round" },
   { id: "fill", label: "이어진 영역 채우기", hotkey: "G", icon: "fill", testid: "tool-fill" },
 ];
 
 type MapModeItem = {
-  readonly id: Extract<Tool, "eyedropper" | "pan" | "collision" | "event">;
+  readonly id: Extract<Tool, "eyedropper">;
   readonly label: string;
   readonly hint: string;
   readonly hotkey: string;
@@ -53,9 +51,6 @@ type MapModeItem = {
 /** 구 "도구" 섹션(tilePaletteToolbar)에서 이관한 맵 모드 도구 — 그리기 도구와 구분선으로 나뉜다. */
 const MODE_ITEMS: readonly MapModeItem[] = [
   { id: "eyedropper", label: "타일 집기", hint: "맵에 놓인 타일을 찍어 팔레트 선택으로 가져옵니다", hotkey: "I", icon: "eyedropper" },
-  { id: "pan", label: "화면 밀기", hint: "드래그로 맵 화면을 움직입니다. Space를 누른 동안에도 움직입니다", hotkey: "4", icon: "hand" },
-  { id: "collision", label: "통행 표시", hint: "지나갈 수 있는 칸인지 표시하고 바꿉니다", hotkey: "6", icon: "collision" },
-  { id: "event", label: "장면 놓기", hint: "맵에 이벤트를 놓거나 놓인 이벤트를 고릅니다", hotkey: "7", icon: "event" },
 ];
 
 /** 툴팁 표기는 초보 레일·레이어 전환과 같은 형식이다: 라벨 (단축키) — 설명. */
@@ -68,9 +63,8 @@ let latestToolbarRerender: (() => void) | null = null;
 let toolbarBadgeRefreshInstalled = false;
 
 /**
- * 도구막대 한 줄. 가로로 넘치는 도구들은 내부 `.oprn-tile-toolbar-scroll` 이 스크롤하고,
- * ⋯ 오버플로는 그 형제로 오른쪽 끝에 고정된다 — 트리거가 좌패널(300/320px) 밖으로 밀려
- * 보이지도 눌리지도 않던 실측 결함(triggerInsideLeftPanel false)의 수정.
+ * Daily tools occupy one row. Shape, navigation and clipboard choices live in
+ * the labelled Tools surface; inspection utilities live below the sheet.
  */
 export function makeTileToolbar(model: TileToolbarModel): HTMLElement {
   installToolbarBadgeRefresh(model.rerender);
@@ -84,8 +78,10 @@ export function makeTileToolbar(model: TileToolbarModel): HTMLElement {
   const historyState = getMapEditHistoryState();
 
   for (const item of TOOLBAR_ITEMS) {
+    if (state.layer === "event" && item.id !== "undo") continue;
     if (item.id === "select") scroll.append(el("span", { class: "oprn-tile-toolbar-separator", attrs: { "aria-hidden": "true" } }));
-    const active = item.id !== "undo" && isTileToolbarItemActive(item.id, state.tool, state.paintShape);
+    const active = item.id === 'pen' ? state.tool === 'paint'
+      : item.id !== "undo" && isTileToolbarItemActive(item.id, state.tool, state.paintShape);
     const button = el("button", {
       class: "oprn-tile-tool" + (active ? " active" : ""),
       attrs: {
@@ -113,33 +109,22 @@ export function makeTileToolbar(model: TileToolbarModel): HTMLElement {
     scroll.append(button);
   }
 
-  scroll.append(el("span", { class: "oprn-tile-toolbar-separator", attrs: { "aria-hidden": "true" } }));
-  scroll.append(makeMapModeGroup(model));
+  if (state.layer !== "event" && getEditorChrome().advancedSidebarControls) scroll.append(makeMapModeGroup(model));
   row.append(scroll);
-  // 좁은 팔레트에서도 1줄을 유지하기 위해 검사/기록/인스펙터는 ⋯ overflow 로 흡수.
-  row.append(makeOverflowDropdown(model));
-  if (getEditorChrome().advancedSidebarControls) {
-    row.append(el("div", {
-      class: "sidebar-advanced-tools",
-      attrs: { role: "group", "aria-label": "고급 검사" },
-      dataset: { testid: "sidebar-advanced-tools" },
-      children: [makeInspectorDropdown(model), makeRuleAuditDropdown(model), makeHistoryDropdown(model)],
-    }));
-  }
+  if (state.layer !== "event") row.append(makeTileToolsMenu(model));
 
   return row;
 }
 
 /**
- * 맵 모드 도구 그룹 (스포이트·이동·통행·이벤트).
- * testid "tool-grid"는 구 도구 섹션 컨테이너에서 승계 — 셸 e2e가 존재를 검증한다.
+ * Expert quick sampling; Standard reaches the same action through Tools.
  */
 function makeMapModeGroup(model: TileToolbarModel): HTMLElement {
   const { state } = model;
   const group = el("span", {
     class: "oprn-tile-toolbar-modes",
     attrs: { role: "group", "aria-label": "맵 모드 도구" },
-    dataset: { testid: "tool-grid" },
+    dataset: { testid: "tool-quick-modes" },
   });
   for (const item of MODE_ITEMS) {
     const active = state.tool === item.id;

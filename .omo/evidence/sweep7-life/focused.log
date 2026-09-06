@@ -1,0 +1,174 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeSkillDisabledHarvest.test.ts test/cropRegrowthContract.test.ts test/toolActionAuthoringParity.test.ts test/makerClockIntegration.test.ts test/lifeFieldInteraction.test.ts test/databaseLifeCraftingView.test.ts test/playSceneFarmFeedback.test.ts test/playScenePlaceableOverlay.test.ts test/npcActionFacing.test.ts test/seasonalForage.test.ts test/farmingRuntime.test.ts test/p0Makers.test.ts test/p0RuntimeIntegration.test.ts test/p2LifeRuntime.test.ts test/lifeSaveVersion.test.ts test/lifeRecoveryPersistence.test.ts test/npcBattleLifecycle.test.ts test/sceneVerificationRepair.test.ts test/mapBgm.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-sweep7-life
+
+ ✓ test/lifeRecoveryPersistence.test.ts (40 tests) 38877ms
+   ✓ lossless life persistence > keeps compatible shipping and unfinished legacy maker behavior  635ms
+   ✓ lossless life persistence > cancels removed frozen makers at original minute 30 through apply  520ms
+   ✓ lossless life persistence > rejects corrupt recovery at read and direct apply without touching source bytes  632ms
+   ✓ lossless life persistence > returns failed autosave on reconciliation failure, preserving prior disk and current live action  5146ms
+   ✓ lossless life persistence > rolls back the whole day when reconciliation fails  514ms
+   ✓ adversarial life codec boundaries > preserves opaque legacy owners through the parser without guessing payouts  353ms
+   ✓ adversarial life codec boundaries > uses original maker clock on changed day start at minute 29  385ms
+   ✓ adversarial life codec boundaries > uses original maker clock on changed day start at minute 30  358ms
+   ✓ adversarial life codec boundaries > refuses all conversions on claim exhaustion without moving a prefix  10938ms
+   ✓ load refusal bounds and pure reconciliation > rejects claim-limit at the real Save5 reader without overwriting bytes  3882ms
+   ✓ load refusal bounds and pure reconciliation > rejects total-bytes at the real Save5 reader without overwriting bytes  9576ms
+   ✓ load refusal bounds and pure reconciliation > rejects raw-bytes at the real Save5 reader without overwriting bytes  328ms
+   ✓ load refusal bounds and pure reconciliation > rejects unsafe-sequence at the real Save5 reader without overwriting bytes  503ms
+   ✓ bounded animal restoration > quarantines animals beyond the runtime bound instead of dropping a saved suffix  1314ms
+ ✓ test/toolActionAuthoringParity.test.ts (44 tests) 16587ms
+   ✓ authored tool authority > keeps all four real defaults for absent and empty tables  1152ms
+   ✓ authored tool authority > does not merge defaults into an existing one-row table on load  2181ms
+   ✓ authored tool authority > matches a conditionless rule with a valid hoe  393ms
+   ✓ authored tool authority > matches a conditionless rule with a valid axe  698ms
+   ✓ authored tool authority > matches a conditionless rule with a valid pickaxe  467ms
+   ✓ authored tool authority > does not let false bypass building occupancy or terrain  387ms
+   ✓ authored tool authority > does not let false bypass decoration occupancy or terrain  723ms
+   ✓ authored tool authority > applies a wide tool only to safe cells and charges only those cells  857ms
+   ✓ authored tool authority > checks authored region and target restrictions for water  408ms
+   ✓ authored tool authority > checks authored region and target restrictions for chop  474ms
+   ✓ authored tool authority > checks authored region and target restrictions for mine  1449ms
+   ✓ authored tool authority > checks authored region and target restrictions for fish  2821ms
+ ❯ test/databaseLifeCraftingView.test.ts (14 tests | 1 failed) 68632ms
+   × database life skill and crafting view > materializes real defaults only on first custom-table creation, as one undoable edit 20373ms
+     → Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+   ✓ database life skill and crafting view > appends to existing tables without merging and preserves false through editing and load  5946ms
+   ✓ database life skill and crafting view > authors a life skill and level reward, then undo restores the prior record  3721ms
+   ✓ database life skill and crafting view > authors a recipe with ingredient and output item references  2872ms
+   ✓ database life skill and crafting view > authors upgrade, sell-price, and tool-action records through their detail forms  7088ms
+   ✓ database life skill and crafting view > rejects duplicate record ids and chooses an unused sell-price item  7516ms
+   ✓ database life skill and crafting view > blocks deletion while event commands reference the selected life records  584ms
+   ✓ database life skill and crafting view > authors recipe unlock requirements and tool capability fields  3696ms
+   ✓ database life skill and crafting view > clamps authored tool capability axes to the runtime-safe 9x9 limit  1839ms
+   ✓ database life skill and crafting view > creates energy and shipping settings and preserves disabled shipping values  3411ms
+   ✓ database life skill and crafting view > authors world unlock, bundle rewards, and maker processing without raw JSON  9925ms
+   ✓ database life skill and crafting view > rejects duplicate package ids, guards reward targets, and records undo  1045ms
+   ✓ database life skill and crafting view > blocks renaming referenced skill, recipe, upgrade, and world-unlock ids 237ms
+   ✓ database life skill and crafting view > keeps section switching in a tab strip and does not dump every section into the empty detail  372ms
+ ✓ test/npcActionFacing.test.ts (9 tests) 3540ms
+   ✓ NPC action facing > turns a static action NPC toward a player on the west side before dialogue starts  964ms
+   ✓ NPC action facing > turns a static action NPC toward a player on the east side before dialogue starts  433ms
+   ✓ NPC action facing > turns a static action NPC toward a player on the north side before dialogue starts  336ms
+   ✓ NPC action facing > turns a default bundled NPC sprite toward the player before dialogue starts  679ms
+   ✓ NPC action facing > keeps fixed-direction action NPCs facing their authored direction  340ms
+ ✓ test/lifeSkillDisabledHarvest.test.ts (49 tests) 4511ms
+ ✓ test/farmingRuntime.test.ts (29 tests) 12535ms
+   ✓ Phase 10b 농사 런타임 > 괭이질, 심기, 물주기, 성장, 수확 상태 머신을 처리한다  967ms
+   ✓ Phase 10b 농사 런타임 > 재수확 작물은 수확 후 regrow 단계로 후퇴한다  455ms
+   ✓ Phase 10b 농사 런타임 > 세이브/로드가 farmPlots를 왕복 보존한다  702ms
+   ✓ Phase 10b 농사 런타임 > farmableArea 밖 상호작용은 무시한다  360ms
+   ✓ Phase 10b 농사 런타임 > define_crop과 create_farm_plot 툴을 실행한다  331ms
+   ✓ Phase 10b 농사 런타임 > advanceCropGrowth 커맨드가 현재 세션 작물을 성장시킨다  447ms
+   ✓ Phase 10b 농사 런타임 > 취침은 하루치만 성장시킨다(이중 계산 없음)  304ms
+   ✓ Phase 10b 농사 런타임 > advanceCropGrowth 는 커서를 옮기지 않아 다음 날 자연 성장을 삼키지 않는다  442ms
+   ✓ Phase 10b 농사 런타임 > 세이브/로드가 성장 커서를 보존하고 경과일을 재적용하지 않는다  419ms
+   ✓ 손 슬롯 의도 계약 > 토마토 씨앗을 들면 crops 배열 앞의 감자가 아니라 토마토를 심는다  442ms
+   ✓ 손 슬롯 의도 계약 > 계절이 맞지 않는 씨앗은 심기지 않고 소모되지 않는다  510ms
+   ✓ 손 슬롯 의도 계약 > 마지막 씨앗을 심으면 손이 비고 의도도 같이 사라진다  498ms
+   ✓ 손 슬롯 의도 계약 > 다 자란 작물은 씨앗·괭이·물뿌리개 어느 것을 들어도 수확된다  2010ms
+   ✓ 손 슬롯 의도 계약 > 고사 작물은 괭이로 정리되고, 씨앗을 들면 도구 탓을 하지 않는 사유를 돌려준다  812ms
+   ✓ 손 슬롯 의도 계약 > DB 에서 사라진 작물은 안내대로 괭이로 정리된다  489ms
+   ✓ 손 슬롯 의도 계약 > 갈지 않은 밭에 씨앗을 쓰면 도구가 아니라 경작이 필요하다고 안내한다  372ms
+   ✓ 농사 데모의 밭 지형 > paints the farmable rect with ground that differs from the surrounding terrain  414ms
+ ✓ test/p0RuntimeIntegration.test.ts (16 tests) 3602ms
+   ✓ P0 day transition integration > settles, advances calendar and farm, restores energy, then advances makers in one receipt  347ms
+   ✓ P0 day transition integration > quarantines stale queue and legacy maker records without guessing payouts  345ms
+   ✓ P0 day transition integration > persists the exact-once transition key through the shared save path  566ms
+   ✓ P0 day transition integration > advances a day whose shipping was already settled but has no transition cursor  321ms
+ ✓ test/sceneVerificationRepair.test.ts (6 tests) 6410ms
+   ✓ corrected scene navigation retains the same verification obligation > replaces a failed navigation attempt with the passing same-target assertions: []  1844ms
+   ✓ corrected scene navigation retains the same verification obligation > replaces a failed navigation attempt with the passing same-target assertions: [ { kind: 'face', text: 'up' } ]  753ms
+   ✓ corrected scene navigation retains the same verification obligation > replaces a failed navigation attempt with the passing same-target assertions: [ { kind: 'move', text: 'up' } ]  1323ms
+   ✓ corrected scene navigation retains the same verification obligation > replaces a failed navigation attempt with the passing same-target assertions: [ { kind: 'set', x: 10, y: 8 } ]  807ms
+   ✓ corrected scene navigation retains the same verification obligation > cannot erase a different assertion by weakening its expected reward  1013ms
+   ✓ corrected scene navigation retains the same verification obligation > keeps distinct explicit NPC targets separate  652ms
+ ✓ test/p2LifeRuntime.test.ts (8 tests) 2348ms
+   ✓ P2 shipping collections and museum > records only settled shipping and keeps exact-once settlement  393ms
+   ✓ P2 shipping collections and museum > donates once and applies every newly-qualified reward in the same transaction  570ms
+   ✓ P2 shipping collections and museum > rejects malformed source inventory without partial donation or rewards  510ms
+ ✓ test/lifeSaveVersion.test.ts (18 tests) 5053ms
+   ✓ Save5 version and original ownership boundary > writes independent Save5 even without life packages, leaving Project4 and live state unchanged  2088ms
+   ✓ Save5 version and original ownership boundary > migrates manual and auto only in memory in namespace null  634ms
+   ✓ Save5 version and original ownership boundary > migrates manual and auto only in memory in namespace "  exported:game-a  "  371ms
+   ✓ Save5 version and original ownership boundary > runs the frozen phase1 reader on actual old/new bytes, not a simulated version predicate  332ms
+ ✓ test/seasonalForage.test.ts (4 tests) 517ms
+   ✓ 계절별 채집물 > 도구 수확이 현재 계절의 산출물을 인벤토리에 넣는다  485ms
+ ✓ test/p0Makers.test.ts (8 tests) 2362ms
+   ✓ P0 timed makers > uses a monotonic absolute game-minute clock across a season/day boundary  865ms
+   ✓ P0 timed makers > preserves a processing timer through the shared save snapshot path  448ms
+ ✓ test/mapBgm.test.ts (13 tests) 48ms
+ ✓ test/cropRegrowthContract.test.ts (30 tests) 6501ms
+   ✓ exact crop regrowth contract > zero yield with inventory undefined > treats zero yield as a successful harvest (regrow=0)  347ms
+   ✓ exact crop regrowth contract > zero yield with inventory 9999999 > treats zero yield as a successful harvest (regrow=0)  425ms
+   ✓ exact crop regrowth contract > zero yield with inventory 9999999 > treats zero yield as a successful harvest (regrow=10)  388ms
+   ✓ exact crop regrowth contract > requires ten qualifying ticks after a two-day crop's harvest, including every displayed stage  521ms
+   ✓ exact crop regrowth contract > does not infer harvest history in an old plot, including after Storage reload  501ms
+   ✓ exact crop regrowth contract > preserves a watered dead plot's countdown on an in-season tick  384ms
+ ✓ test/makerClockIntegration.test.ts (28 tests) 23211ms
+   ✓ maker game-clock integration > executes actual updateGameTime at minute 29 then 30, including split fixed frames  1318ms
+   ✓ maker game-clock integration > has identical deadline readiness through natural  946ms
+   ✓ maker game-clock integration > has identical deadline readiness through command  821ms
+   ✓ maker game-clock integration > has identical deadline readiness through set-time  698ms
+   ✓ maker game-clock integration > has identical deadline readiness through sleep  854ms
+   ✓ maker game-clock integration > has identical deadline readiness through load  1393ms
+   ✓ maker game-clock integration > finishes a deadline in the residual minutes after a large multi-day delta  808ms
+   ✓ maker game-clock integration > never demotes ready on backward set-time or load and pays frozen outputs once  324ms
+   ✓ maker game-clock integration > refuses an invalid year without normalizing a live date or maker  9482ms
+   ✓ maker game-clock integration > rejects an unusable saved maker clock (-1) before writer/parser/apply loss  773ms
+   ✓ maker game-clock integration > rejects an unusable saved maker clock (9007199254740991) before writer/parser/apply loss  659ms
+   ✓ maker game-clock integration > discards a ready draft and recovery prefix when capacity refuses set-time  2367ms
+   ✓ maker game-clock integration > rolls back the whole large natural frame if a later day stage fails  321ms
+   ✓ maker game-clock integration > rolls back completed frame minutes when actual forced sleep refuses  311ms
+ ✓ test/npcBattleLifecycle.test.ts (6 tests) 2047ms
+   ✓ real battle result lifetime > applies rewards only to the live battle owner: unchanged  766ms
+   ✓ real battle result lifetime > applies rewards only to the live battle owner: same-map-id  341ms
+ ✓ test/lifeFieldInteraction.test.ts (49 tests) 6270ms
+   ✓ real confirmation life-field routing > catches one fish without inventing a rod requirement and refreshes  515ms
+ ✓ test/playScenePlaceableOverlay.test.ts (5 tests) 1067ms
+ ✓ test/playSceneFarmFeedback.test.ts (5 tests) 2908ms
+   ✓ farm failure feedback channel > surfaces the same ignore reason on every press and never writes to the session  796ms
+   ✓ farm failure feedback channel > emits at most one message per action press even though two tiles are tried  398ms
+   ✓ farm failure feedback channel > stays silent when the hand is empty on a non-farmable tile  727ms
+   ✓ farm failure feedback channel > never lets a farm message steal a live checkpoint toast  802ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/databaseLifeCraftingView.test.ts > database life skill and crafting view > materializes real defaults only on first custom-table creation, as one undoable edit
+Error: Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ test/databaseLifeCraftingView.test.ts:45:3
+     43|   afterEach(() => cleanupDom?.());
+     44| 
+     45|   it("materializes real defaults only on first custom-table creation, …
+       |   ^
+     46|     const defaults = structuredClone(toolActionRulesOf(store.getCurren…
+     47|     const host = renderTab();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 1 unhandled error during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: [vitest-worker]: Timeout calling "onTaskUpdate"
+ ❯ Object.onTimeoutError ../rpg-zzu/node_modules/vitest/dist/chunks/rpc.-pEldfrD.js:53:10
+ ❯ Timeout._onTimeout ../rpg-zzu/node_modules/vitest/dist/chunks/index.B521nVV-.js:59:62
+ ❯ listOnTimeout node:internal/timers:605:17
+ ❯ processTimers node:internal/timers:541:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  1 failed | 18 passed (19)
+      Tests  1 failed | 380 passed (381)
+     Errors  1 error
+   Start at  04:26:57
+   Duration  259.73s (transform 71.89s, setup 0ms, collect 263.02s, tests 207.02s, environment 12.50s, prepare 12.41s)
+

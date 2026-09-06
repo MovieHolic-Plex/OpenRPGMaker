@@ -1,0 +1,8 @@
+{
+  "id": 3,
+  "command": "node",
+  "args": [
+    "scripts/check-css-budget.mjs"
+  ],
+  "started": "2026-09-06T16:37:59.164Z"
+}

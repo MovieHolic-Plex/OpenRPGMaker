@@ -1,0 +1,253 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/toolActionAuthoringParity.test.ts test/databaseLifeCraftingView.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-tools
+
+ ❯ test/toolActionAuthoringParity.test.ts (31 tests | 11 failed) 5995ms
+   ✓ authored tool authority > keeps all four real defaults for absent and empty tables  699ms
+   × authored tool authority > does not merge defaults into an existing one-row table on load 1229ms
+     → session.farmAnimals[0].eventId does not exist: ev_farm_chicken
+session.farmAnimals[1].eventId does not exist: ev_farm_cow
+   × authored tool authority > matches a conditionless rule with a valid hoe 205ms
+     → expected undefined to match object { itemId: 'tool', …(2) }
+   × authored tool authority > matches a conditionless rule with a valid wateringCan 136ms
+     → expected undefined to match object { itemId: 'tool', …(2) }
+   × authored tool authority > matches a conditionless rule with a valid axe 241ms
+     → expected undefined to match object { itemId: 'tool', …(2) }
+   × authored tool authority > matches a conditionless rule with a valid pickaxe 235ms
+     → expected undefined to match object { itemId: 'tool', …(2) }
+   ✓ authored tool authority > does not treat item_potato_seed as any farm tool or fall through an occupied hand 235ms
+   ✓ authored tool authority > does not treat item_potion as any farm tool or fall through an occupied hand 213ms
+   ✓ authored tool authority > does not treat missing as any farm tool or fall through an occupied hand 168ms
+   × authored tool authority > resolves any tool from inventory when hand is empty 160ms
+     → expected undefined to be 'item_hoe' // Object.is equality
+   ✓ authored tool authority > honors itemId over a contradictory kind, without reordering rows 165ms
+   × authored tool authority > preserves explicit false through serialization and tills outside the region 652ms
+     → session.farmAnimals[0].eventId does not exist: ev_farm_chicken
+session.farmAnimals[1].eventId does not exist: ev_farm_cow
+   ✓ authored tool authority > refuses till outside the region when requiresFarmable is undefined 95ms
+   ✓ authored tool authority > refuses till outside the region when requiresFarmable is true 72ms
+   × authored tool authority > lets the authored water action override the held hoe's legacy intent 56ms
+     → expected 'ignored' to be 'watered' // Object.is equality
+   × authored tool authority > refuses mature crop harvest with item_hoe when the authored rule requires a can 54ms
+     → expected { kind: 'harvested', x: 4, y: 5, …(7) } to match object { kind: 'ignored', …(1) }
+(10 matching properties omitted from actual)
+   × authored tool authority > refuses mature crop harvest with item_potato_seed when the authored rule requires a can 37ms
+     → expected { kind: 'harvested', x: 4, y: 5, …(7) } to match object { kind: 'ignored', …(1) }
+(10 matching properties omitted from actual)
+   × authored tool authority > harvests with a matching authored rule outside the region 42ms
+     → expected 'ignored' to be 'harvested' // Object.is equality
+   ✓ authored tool authority > keeps legacy mature harvesting with a seed when no harvest rule exists 68ms
+   ✓ authored tool authority > does not allow seeds to plant outside farmable regions via a false tool rule 139ms
+   ✓ authored tool authority > refuses invalid origin -1,5 even for a wide unrestricted tool 76ms
+   ✓ authored tool authority > refuses invalid origin 4,-1 even for a wide unrestricted tool 133ms
+   ✓ authored tool authority > refuses invalid origin 999,5 even for a wide unrestricted tool 86ms
+   ✓ authored tool authority > refuses invalid origin 4,999 even for a wide unrestricted tool 143ms
+   ✓ authored tool authority > refuses invalid origin 4.5,5 even for a wide unrestricted tool 123ms
+   ✓ authored tool authority > refuses invalid origin NaN,5 even for a wide unrestricted tool 103ms
+   ✓ authored tool authority > does not let false bypass wall occupancy or terrain 122ms
+   ✓ authored tool authority > does not let false bypass chest occupancy or terrain 86ms
+   ✓ authored tool authority > does not let false bypass placeable occupancy or terrain 71ms
+   ✓ authored tool authority > does not let false bypass building occupancy or terrain 69ms
+   ✓ authored tool authority > does not let false bypass decoration occupancy or terrain 55ms
+ ❯ test/databaseLifeCraftingView.test.ts (14 tests | 2 failed) 27209ms
+   × database life skill and crafting view > materializes real defaults only on first custom-table creation, as one undoable edit 1387ms
+     → expected [ { …(4) } ] to have a length of 5 but got 1
+   × database life skill and crafting view > appends to existing tables without merging and preserves false through editing and load 384ms
+     → expected false to be true // Object.is equality
+   ✓ database life skill and crafting view > authors a life skill and level reward, then undo restores the prior record  2122ms
+   ✓ database life skill and crafting view > authors a recipe with ingredient and output item references  2255ms
+   ✓ database life skill and crafting view > authors upgrade, sell-price, and tool-action records through their detail forms  2531ms
+   ✓ database life skill and crafting view > rejects duplicate record ids and chooses an unused sell-price item  4233ms
+   ✓ database life skill and crafting view > blocks deletion while event commands reference the selected life records  898ms
+   ✓ database life skill and crafting view > authors recipe unlock requirements and tool capability fields  2306ms
+   ✓ database life skill and crafting view > clamps authored tool capability axes to the runtime-safe 9x9 limit  1853ms
+   ✓ database life skill and crafting view > creates energy and shipping settings and preserves disabled shipping values  3659ms
+   ✓ database life skill and crafting view > authors world unlock, bundle rewards, and maker processing without raw JSON  4085ms
+   ✓ database life skill and crafting view > rejects duplicate package ids, guards reward targets, and records undo  732ms
+   ✓ database life skill and crafting view > blocks renaming referenced skill, recipe, upgrade, and world-unlock ids  553ms
+   ✓ database life skill and crafting view > keeps section switching in a tab strip and does not dump every section into the empty detail 209ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 13 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/databaseLifeCraftingView.test.ts > database life skill and crafting view > materializes real defaults only on first custom-table creation, as one undoable edit
+AssertionError: expected [ { …(4) } ] to have a length of 5 but got 1
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 5[39m
+[31m+ 1[39m
+
+ ❯ test/databaseLifeCraftingView.test.ts:51:51
+     49|     expect(store.getCurrent().system.toolActions).toBeUndefined();
+     50|     findByTestId(host, "db-life-add")?.click();
+     51|     expect(store.getCurrent().system.toolActions).toHaveLength(5);
+       |                                                   ^
+     52|     expect(store.getCurrent().system.toolActions?.slice(1)).toEqual(de…
+     53|     expect(store.getCurrent().system.toolActions?.[0]?.itemId).toBeUnd…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/13]⎯
+
+ FAIL  test/databaseLifeCraftingView.test.ts > database life skill and crafting view > appends to existing tables without merging and preserves false through editing and load
+AssertionError: expected false to be true // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+ ❯ test/databaseLifeCraftingView.test.ts:65:75
+     63|     findByTestId(host, "db-life-section-tool-actions")?.click();
+     64|     findByTestId(host, "db-life-row-existing")?.click();
+     65|     expect(findByTestId(host, "db-life-tool-requires-farmable")?.check…
+       |                                                                           ^
+     66|     setChecked(host, "db-life-tool-requires-farmable", false);
+     67|     expect(store.getCurrent().system.toolActions?.[0]?.requiresFarmabl…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/13]⎯
+
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > does not merge defaults into an existing one-row table on load
+ProjectFormatError: session.farmAnimals[0].eventId does not exist: ev_farm_chicken
+session.farmAnimals[1].eventId does not exist: ev_farm_cow
+ ❯ assert src/project/io/guards.ts:67:25
+     65| 
+     66| export function assert(condition: boolean, message: string): asserts c…
+     67|   if (!condition) throw new ProjectFormatError(message);
+       |                         ^
+     68| }
+     69| 
+ ❯ validateProjectReferences src/project/io/references.ts:32:3
+ ❯ validateProjectV4 src/project/io/shape.ts:151:3
+ ❯ deserialize src/project/io/serialize.ts:42:42
+ ❯ test/toolActionAuthoringParity.test.ts:38:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/13]⎯
+
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > matches a conditionless rule with a valid hoe
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > matches a conditionless rule with a valid wateringCan
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > matches a conditionless rule with a valid axe
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > matches a conditionless rule with a valid pickaxe
+AssertionError: expected undefined to match object { itemId: 'tool', …(2) }
+
+[32m- Expected:[39m 
+{
+  "farmTool": "hoe",
+  "itemId": "tool",
+  "ruleId": "any",
+}
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ test/toolActionAuthoringParity.test.ts:49:71
+     47|     session.equippedToolItemId = "tool";
+     48|     project.system.toolActions = [{ id: "any", action: "fish" }];
+     49|     expect(resolveToolUseOnTile(project, session, map, 4, 5, "fish")).…
+       |                                                                       ^
+     50|   });
+     51| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/13]⎯
+
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > resolves any tool from inventory when hand is empty
+AssertionError: expected undefined to be 'item_hoe' // Object.is equality
+
+[32m- Expected:[39m 
+"item_hoe"
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ test/toolActionAuthoringParity.test.ts:64:79
+     62|     delete session.equippedToolItemId;
+     63|     project.system.toolActions = [{ id: "any", action: "fish" }];
+     64|     expect(resolveToolUseOnTile(project, session, map, 4, 5, "fish")?.…
+       |                                                                               ^
+     65|   });
+     66| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/13]⎯
+
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > preserves explicit false through serialization and tills outside the region
+ProjectFormatError: session.farmAnimals[0].eventId does not exist: ev_farm_chicken
+session.farmAnimals[1].eventId does not exist: ev_farm_cow
+ ❯ assert src/project/io/guards.ts:67:25
+     65| 
+     66| export function assert(condition: boolean, message: string): asserts c…
+     67|   if (!condition) throw new ProjectFormatError(message);
+       |                         ^
+     68| }
+     69| 
+ ❯ validateProjectReferences src/project/io/references.ts:32:3
+ ❯ validateProjectV4 src/project/io/shape.ts:151:3
+ ❯ deserialize src/project/io/serialize.ts:42:42
+ ❯ test/toolActionAuthoringParity.test.ts:83:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/13]⎯
+
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > lets the authored water action override the held hoe's legacy intent
+AssertionError: expected 'ignored' to be 'watered' // Object.is equality
+
+Expected: [32m"[7mwate[27mred"[39m
+Received: [31m"[7migno[27mred"[39m
+
+ ❯ test/toolActionAuthoringParity.test.ts:100:105
+     98|     project.system.toolActions = [{ id: "water-hoe", action: "water", …
+     99|     session.farmPlots = { [map.id]: { "1,1": { tilled: true, watered: …
+    100|     expect(interactWithFarmPlot(project, session, map, 1, 1, farmInten…
+       |                                                                                                         ^
+    101|   });
+    102| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/13]⎯
+
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > refuses mature crop harvest with item_hoe when the authored rule requires a can
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > refuses mature crop harvest with item_potato_seed when the authored rule requires a can
+AssertionError: expected { kind: 'harvested', x: 4, y: 5, …(7) } to match object { kind: 'ignored', …(1) }
+(10 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "kind": "ignored",[39m
+[32m-   "reason": "wrong-tool-for-plot",[39m
+[31m+   "kind": "harvested",[39m
+[2m  }[22m
+
+ ❯ test/toolActionAuthoringParity.test.ts:109:100
+    107|     session.farmPlots = { [map.id]: { "4,5": { tilled: true, watered: …
+    108|     const before = structuredClone(session);
+    109|     expect(interactWithFarmPlot(project, session, map, 4, 5, farmInten…
+       |                                                                                                    ^
+    110|     expect(session).toEqual(before);
+    111|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/13]⎯
+
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > harvests with a matching authored rule outside the region
+AssertionError: expected 'ignored' to be 'harvested' // Object.is equality
+
+Expected: [32m"[7mharvest[27med"[39m
+Received: [31m"[7mignor[27med"[39m
+
+ ❯ test/toolActionAuthoringParity.test.ts:117:105
+    115|     project.system.toolActions = [{ id: "harvest-hoe", action: "harves…
+    116|     session.farmPlots = { [map.id]: { "1,1": { tilled: true, watered: …
+    117|     expect(interactWithFarmPlot(project, session, map, 1, 1, farmInten…
+       |                                                                                                         ^
+    118|     expect(session.inventory.item_potato).toBe(1);
+    119|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/13]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  13 failed | 32 passed (45)
+   Start at  21:59:49
+   Duration  50.43s (transform 15.31s, setup 0ms, collect 38.05s, tests 33.20s, environment 2ms, prepare 1.25s)
+

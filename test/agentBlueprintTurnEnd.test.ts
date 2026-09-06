@@ -24,6 +24,7 @@ import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { sendAiTurn } from "./aiTurnHarness";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
+import { emptyWikiResponse, isWikiExtraction } from "./wikiTransportFixture";
 
 const MAP_ID = "map_blank_start";
 const OTHER_MAP_ID = "map_viewed_b";
@@ -128,7 +129,9 @@ const okResponse = (): Response => new Response("{}", { status: 200, headers: { 
 
 function scriptTurn(afterFirstRound: () => Response | never): void {
   let round = 0;
-  vi.stubGlobal("fetch", vi.fn(async (input: unknown, init?: unknown) => {
+  vi.stubGlobal("fetch", vi.fn(async (input: unknown, init?: RequestInit) => {
+    const request = JSON.parse(String(init?.body ?? "{}"));
+    if (isWikiExtraction(request.messages)) return emptyWikiResponse();
     if (!isLlmRequest(input, init)) return okResponse();
     round += 1;
     if (round === 1) {
@@ -144,7 +147,9 @@ function scriptTurn(afterFirstRound: () => Response | never): void {
 /** 라운드별 응답을 그대로 지정한다 — 마지막 응답은 남은 라운드에서 되쓴다. */
 function scriptRounds(rounds: readonly (() => Response | never)[]): void {
   let round = 0;
-  vi.stubGlobal("fetch", vi.fn(async (input: unknown, init?: unknown) => {
+  vi.stubGlobal("fetch", vi.fn(async (input: unknown, init?: RequestInit) => {
+    const request = JSON.parse(String(init?.body ?? "{}"));
+    if (isWikiExtraction(request.messages)) return emptyWikiResponse();
     if (!isLlmRequest(input, init)) return okResponse();
     const step = rounds[Math.min(round, rounds.length - 1)];
     round += 1;

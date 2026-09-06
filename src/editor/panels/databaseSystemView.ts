@@ -801,7 +801,7 @@ function storePlayResolution(system: SystemRecords, value: PlayResolution): void
  */
 function optInSystemFields(project: Project, rerender: SystemRefresh): readonly HTMLElement[] {
   const { system } = project;
-  const actionCombatField = checkboxField("액션 전투 (지원 종료)", "db-field-system-action-combat", system.actionCombat?.enabled === true, (checked) => {
+  const actionCombatField = checkboxField("2D 액션 전투", "db-field-system-action-combat", system.actionCombat?.enabled === true, (checked) => {
     updateSystem((draft) => {
       if (checked) {
         draft.system.actionCombat = {
@@ -815,7 +815,7 @@ function optInSystemFields(project: Project, rerender: SystemRefresh): readonly 
     });
     rerender();
   });
-  actionCombatField.setAttribute("title", "지원 전투는 RM식(rm2k3)과 포켓몬식(gen1) 둘뿐이며, 기존 액션 전투 맵은 계속 동작합니다.");
+  actionCombatField.setAttribute("title", "타일 맵에서 실시간 공격·회피·가드를 사용합니다. 시스템과 해당 맵을 모두 켜야 적용됩니다.");
   const fields: HTMLElement[] = [
     checkboxField("생활 스킬 레벨링", "db-field-system-skill-system", system.skillSystem?.enabled === true, (checked) => {
       updateSystem((draft) => {
@@ -824,9 +824,9 @@ function optInSystemFields(project: Project, rerender: SystemRefresh): readonly 
     }),
   ];
   const groups: HTMLElement[] = [rm2k3Fieldset("생활 기능", fields)];
-  groups.push(rm2k3Fieldset("기존 액션 전투", [
+  groups.push(rm2k3Fieldset("2D 액션 전투", [
     actionCombatField,
-    systemHelp("지원 종료 기능입니다. 기존 맵의 설정은 유지되며, 끄더라도 세부 값은 삭제하지 않습니다. 새 전투는 시작 설정의 지원 전투를 사용하세요."),
+    systemHelp("맵 속성에서 액션 전투를 켠 맵에만 적용됩니다. 다른 맵은 기존 전투 방식을 유지하며, 시스템을 꺼도 세부 값은 삭제하지 않습니다."),
     ...(system.actionCombat?.enabled === true ? actionCombatDetailFields(system.actionCombat) : []),
   ]));
   const care: HTMLElement[] = [];

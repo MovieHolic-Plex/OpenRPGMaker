@@ -1,0 +1,50 @@
+{
+  "sourceBefore": "94167a19a6eb77d640336c5b2fb054f0df9bf2150bab45b6e4f8651ad2c7e3da",
+  "sourceAfter": "94167a19a6eb77d640336c5b2fb054f0df9bf2150bab45b6e4f8651ad2c7e3da",
+  "rows": [
+    {
+      "year": 1,
+      "spawnedDay": 1,
+      "liveDay": 3,
+      "despawnAfterDays": 1,
+      "generated": {
+        "ok": true,
+        "dayKey": "1:spring:1",
+        "spawned": 1,
+        "removed": 0
+      },
+      "resolved": {
+        "ok": false,
+        "reason": "expired"
+      },
+      "collected": {
+        "ok": false,
+        "reason": "expired"
+      },
+      "inventory": 0,
+      "stateUnchanged": true
+    },
+    {
+      "year": 9007199254740991,
+      "spawnedDay": 1,
+      "liveDay": 3,
+      "despawnAfterDays": 1,
+      "generated": {
+        "ok": true,
+        "dayKey": "9007199254740991:spring:1",
+        "spawned": 1,
+        "removed": 0
+      },
+      "resolved": {
+        "ok": true,
+        "itemId": "date-berry"
+      },
+      "collected": {
+        "ok": true,
+        "itemId": "date-berry"
+      },
+      "inventory": 1,
+      "stateUnchanged": false
+    }
+  ]
+}

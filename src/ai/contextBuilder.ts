@@ -32,9 +32,14 @@ import { confidenceScore } from "@/project/tilesetPalette";
 import { approvedVocabulary } from "@/project/tileVocabulary";
 import { aiInstructionsSection } from "./projectInstructions";
 import { worldCanonPromptSection } from "./worldCanonContext";
+import { projectWikiContext } from "./projectWikiContext";
 import { AGENT_UX_POLICY_LINES } from "./promptPolicies";
 import { EVENT_PAGE_SEMANTICS_BLOCK } from "./eventPageSemantics";
-import { buildToolCapabilityIndex } from "./toolCapabilityIndex";
+import { buildTaskRecipes, buildToolCapabilityIndex } from "./toolCapabilityIndex";
+import type { AiConfig, ChatMessage, OpenAiToolSchema } from "./llmClient";
+import { DEFAULT_COMPACTION_SETTINGS, estimateContextTokens } from "./contextCompaction";
+import { compactMessagesForRequest, resolveRequestCharBudget } from "./messageBudget";
+import { originalContextWindow, type OriginalContextStore } from "./originalContext";
 import {
   formatViewportContextBlock,
   mapRegionForContext,
@@ -68,6 +73,7 @@ export interface ContextOptions {
    * 완성된 문자열을 받는다.
    */
   preferenceMemorySection?: string;
+  wikiQuery?: string;
 }
 
 export function resolveContextMapId(options: ContextOptions): string | undefined {
@@ -650,6 +656,30 @@ function ruleText(rule: ClusterRuleHint): string {
   return `${kindLabel(rule.kind)} 규칙 ${rule.id}`;
 }
 
+/** Budget the actual writer model, complete native schemas, conversation and originals together.
+ * Original evidence is appended after history compaction, never prose-sliced. The legacy
+ * working-window cap governs history, not how much original data a large model can see.
+ */
+export function buildGroundedRequest(
+  messages: readonly ChatMessage[], tools: readonly OpenAiToolSchema[],
+  config: Pick<AiConfig, "model" | "baseUrl"> & Partial<Pick<AiConfig, "authMode" | "providerId">>, original: OriginalContextStore,
+): { messages: ChatMessage[]; includedIds: string[]; budget: { windowTokens: number; toolsTokens: number; reserveTokens: number; inputTokens: number } } {
+  const windowTokens = originalContextWindow(config);
+  const reserveTokens = DEFAULT_COMPACTION_SETTINGS.reserveTokens;
+  const toolsTokens = tools.length ? estimateContextTokens([{ role: "system", content: JSON.stringify(tools) }]) : 0;
+  const historyChars = Math.max(0, Math.min(resolveRequestCharBudget(config), windowTokens * 4) - (toolsTokens + reserveTokens) * 4);
+  const request = compactMessagesForRequest(messages, historyChars);
+  const remaining = windowTokens - reserveTokens - toolsTokens - estimateContextTokens(request);
+  const grounding = original.message(remaining);
+  request.push(grounding.message);
+  const inputTokens = estimateContextTokens(request) + toolsTokens;
+  if (inputTokens + reserveTokens > windowTokens) {
+    throw new Error("original-context-window-exceeded: conversation and full tool schemas exceed the model window; no capability was removed");
+  }
+  return { messages: request, includedIds: grounding.includedIds,
+    budget: { windowTokens, toolsTokens, reserveTokens, inputTokens } };
+}
+
 // 시스템 프롬프트 전체 조립. 예산 초과 섹션은 잘라내고 조회 안내로 대체.
 export function buildSystemPrompt(project: Project, options: ContextOptions = {}): string {
   // 툴 능력 색인은 예산 슬라이싱 밖의 고정 버지다. 아래 조립·잘라내기는 색인을 모르는 상태로 진행되고
@@ -703,6 +733,8 @@ export function buildSystemPrompt(project: Project, options: ContextOptions = {}
   // 사라진다 — 사라진 줄 아무도 모르는 것이 이 블록의 최악 실패다(색인을 예산 밖에 둔 이유와 동일).
   const designContract = villageDesignContext(project);
   if (designContract) assembled += `\n\n${designContract}`;
+  const wiki = projectWikiContext(project, { query: options.wikiQuery ?? "", mapId: currentMapId });
+  if (wiki.text) assembled += `\n\n## 프로젝트 위키 — 현재 작업의 근거\n아래는 저장된 설정과 제작 결정이다. 명시적 결정과 현재 맵 예외를 따르고, 추론·실제 적용 상태를 구별한다. 자세한 본문은 read_project_wiki로 조회한다.\n${wiki.text}`;
   return withProjectInstructions(
     withWorldCanon(withFixedBlocks(assembled, options.preferenceMemorySection), project.worldCanon),
     project.aiInstructions,
@@ -730,7 +762,7 @@ function withWorldCanon(assembled: string, canon: Project["worldCanon"]): string
 function withFixedBlocks(assembled: string, preferenceMemorySection?: string): string {
   const index = buildToolCapabilityIndex();
   const memory = preferenceMemorySection?.trim() ?? "";
-  const fixed = [index, EVENT_PAGE_SEMANTICS_BLOCK, ...(memory ? [memory] : [])].join("\n\n");
+  const fixed = [index, buildTaskRecipes(), EVENT_PAGE_SEMANTICS_BLOCK, ...(memory ? [memory] : [])].join("\n\n");
   if (assembled.startsWith(INTRO)) {
     return `${INTRO}\n\n${fixed}${assembled.slice(INTRO.length)}`;
   }

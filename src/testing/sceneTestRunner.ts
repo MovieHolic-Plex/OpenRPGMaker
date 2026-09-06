@@ -63,22 +63,24 @@ import { nearestCellInRect, pointRect, rectsOverlap } from "@/project/footprint"
 import { enterRoguelikeRunRoom } from "@/project/roguelikeRun";
 import { roguelikeRoomId, syncRoguelikeRoomEventGeneration } from "@/project/roguelikeRooms";
 import {
-  advanceGameTime,
   calendarDayKey,
   initialGameTime,
+  isSeason,
+  isTimePhase,
   minutesUntilDayEnd,
   resolveTimeSystem,
-  setGameTimeClock,
   timePhaseFor,
   type GameTime,
   type TimePhase,
 } from "@/project/gameTime";
 import { npcScheduleTargetForEvent } from "@/project/npcSchedule";
-import { cropStageAt, interactWithFarmPlot } from "@/player/farming";
+import { interactWithLifeField } from "@/player/lifeFieldInteraction";
+import { findChestAt } from "@/project/placeables";
+import { cropStageAt, farmIntentForHand, interactWithFarmPlot } from "@/player/farming";
 import { giveGiftToNpc } from "@/project/friendship";
 import { resolveShopStock } from "@/project/shopStock";
 import { applyMapBgmToSession, resolveMapBgm } from "@/player/mapBgm";
-import { transitionToNextDay } from "@/player/dayTransition";
+import { advanceTimeAcrossDayBoundaries, setTimeWithMakers, transitionToNextDay } from "@/player/dayTransition";
 
 const TICK_MS = 16;
 
@@ -256,8 +258,98 @@ function ownedMonsterCounts(session: PlaySession): Record<string, number> {
   return counts;
 }
 
+type SceneFieldCheck = (value: unknown) => boolean;
+const sceneRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+const sceneNumber: SceneFieldCheck = value => typeof value === "number" && Number.isFinite(value);
+const sceneCount: SceneFieldCheck = value => typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
+const sceneText: SceneFieldCheck = value => typeof value === "string" && value.trim().length > 0;
+const sceneBoolean: SceneFieldCheck = value => typeof value === "boolean";
+const sceneDirection: SceneFieldCheck = value => value === "up" || value === "down" || value === "left" || value === "right";
+const sceneStrings: SceneFieldCheck = value => Array.isArray(value) && value.every(sceneText);
+const sceneStringOrList: SceneFieldCheck = value => sceneText(value) || sceneStrings(value);
+const sceneNumbers: SceneFieldCheck = value => sceneRecord(value) && Object.values(value).every(sceneNumber);
+
+function sceneShape(value: unknown, fields: Readonly<Record<string, SceneFieldCheck>>, required: readonly string[] = []): boolean {
+  return sceneRecord(value) && required.every(key => Object.hasOwn(value, key))
+    && Object.entries(value).every(([key, entry]) => Object.hasOwn(fields, key) && fields[key](entry));
+}
+const scenePoint: SceneFieldCheck = value => sceneShape(value, { x: sceneCount, y: sceneCount }, ["x", "y"]);
+const sceneVariableValues: SceneFieldCheck = value => sceneNumbers(value)
+  || sceneShape(value, { variableId: sceneText, value: sceneNumber }, ["variableId", "value"]);
+const sceneRewardDeltas: SceneFieldCheck = value => sceneRecord(value)
+  && Object.values(value).every(delta => sceneNumber(delta)
+    || sceneShape(delta, { atLeast: sceneNumber }, ["atLeast"]));
+const sceneExpectFields: Readonly<Record<keyof Omit<SceneExpectStep, "kind">, SceneFieldCheck>> = {
+  playerAt: value => sceneShape(value, { x: sceneCount, y: sceneCount, mapId: sceneText }, ["x", "y"]),
+  switchOn: sceneStringOrList, switchOff: sceneStringOrList,
+  variableEquals: sceneVariableValues, variableAtLeast: sceneVariableValues,
+  eventAt: value => sceneShape(value, { eventId: sceneText, x: sceneCount, y: sceneCount, mapId: sceneText }, ["eventId", "x", "y"]),
+  eventOnMap: value => sceneShape(value, { eventId: sceneText, mapId: sceneText }, ["eventId", "mapId"]),
+  eventDistanceToPlayerLessThan: value => sceneShape(value, { eventId: sceneText, distance: sceneNumber, mapId: sceneText }, ["eventId", "distance"]),
+  followerCount: sceneCount,
+  followerAt: value => sceneShape(value, { name: sceneText, x: sceneCount, y: sceneCount }, ["name", "x", "y"]),
+  cameraAt: value => sceneShape(value, { cx: sceneNumber, cy: sceneNumber, tolerance: sceneNumber }, ["cx", "cy"]),
+  lightingAmbient: value => sceneNumber(value) || sceneShape(value, { value: sceneNumber, tolerance: sceneNumber }, ["value"]),
+  lightAt: value => sceneShape(value, { x: sceneCount, y: sceneCount, expected: sceneBoolean }, ["x", "y"]),
+  lightCount: sceneCount,
+  weatherKind: value => value === "none" || value === "rain" || value === "storm" || value === "snow" || value === "fog",
+  animationPlaying: sceneBoolean, fieldSpawnCount: sceneCount, spawnedCount: sceneCount,
+  pictureVisible: value => sceneText(value) || sceneShape(value, { id: sceneText, resourceId: sceneText }, ["id"]),
+  bgmPlaying: sceneText, messageShown: sceneBoolean, gameOver: sceneBoolean,
+  endingReached: sceneText, cutsceneLocked: sceneBoolean, mapId: sceneText,
+  gameTimeAt: value => sceneShape(value, { minute: sceneCount, hour: sceneCount, day: sceneCount, season: isSeason, year: sceneCount }),
+  timePhase: isTimePhase,
+  cropStageAt: value => sceneShape(value, { x: sceneCount, y: sceneCount, stage: sceneCount, mapId: sceneText }, ["x", "y", "stage"]),
+  inventoryCount: value => sceneNumbers(value) || sceneShape(value, { itemId: sceneText, count: sceneCount }, ["itemId", "count"]),
+  inventoryDelta: sceneRewardDeltas, ownedMonsterDelta: sceneRewardDeltas,
+  interactionComplete: sceneBoolean,
+  friendshipAtLeast: value => sceneNumbers(value) || sceneShape(value, { npcKey: sceneText, value: sceneNumber }, ["npcKey", "value"]),
+  shopStock: value => sceneShape(value, { eventId: sceneText, itemIds: sceneStrings, prices: sceneNumbers, mapId: sceneText }, ["eventId", "itemIds"]),
+};
+
+function isSceneStep(value: unknown): value is SceneStep {
+  if (!sceneRecord(value)) return false;
+  const shape = (fields: Readonly<Record<string, SceneFieldCheck>>, required: readonly string[] = []): boolean =>
+    sceneShape(value, { kind: sceneText, ...fields }, ["kind", ...required]);
+  switch (value.kind) {
+    case "wait": return shape({ ticks: sceneCount }, ["ticks"]);
+    case "face": return shape({ dir: sceneDirection }, ["dir"]);
+    case "move": return shape({ dir: sceneDirection, to: scenePoint })
+      && (Object.hasOwn(value, "dir") !== Object.hasOwn(value, "to"));
+    case "walk": return shape({ to: scenePoint, adjacent: sceneBoolean }, ["to"]);
+    case "set": return shape({
+      mapId: sceneText, x: sceneCount, y: sceneCount, facing: sceneDirection,
+      switches: entry => sceneStrings(entry) || (sceneRecord(entry) && Object.values(entry).every(sceneBoolean)),
+      variables: sceneNumbers, inventory: sceneNumbers, gold: sceneNumber, manualHint: sceneText,
+    });
+    case "interact": return shape({ eventId: sceneText });
+    case "snapshotRewards": case "retryCheckpoint": return shape({});
+    case "gift": return shape({ eventId: sceneText, itemId: sceneText }, ["itemId"]);
+    case "choose": return shape({
+      index: entry => typeof entry === "number" && Number.isSafeInteger(entry) && entry >= -1,
+    }, ["index"]);
+    case "advanceDays": return shape({ days: sceneCount }, ["days"]);
+    case "expect": return Object.keys(value).length > 1 && shape(sceneExpectFields);
+    default: return false;
+  }
+}
+
+/** Validate the complete script before autoruns, movement, or any debug-set step. */
+export function isSceneTestInput(value: unknown): value is SceneTestInput {
+  return sceneShape(value, {
+    mapId: sceneText,
+    start: entry => sceneRecord(entry) && sceneCount(entry.x) && sceneCount(entry.y),
+    steps: steps => Array.isArray(steps) && steps.every(isSceneStep),
+  }, ["mapId", "start", "steps"]);
+}
+
 export function runSceneTest(project: Project, input: SceneTestInput): SceneTestResult {
   const session = startSession(project, 1);
+  if (!isSceneTestInput(input)) {
+    return result(false, project, session, emptyEventPositions(project), emptyCamera(session), [], [],
+      [], 0, undefined, "Malformed scene test input", null, false, false);
+  }
   const runtimeMaps = structuredClone(project.maps);
   const map = runtimeMaps[input.mapId];
   const log: string[] = [];
@@ -567,35 +659,33 @@ function runInteractStep(state: RunnerState, expectedEventId?: string): string |
   const map = currentMap(state);
   if (!map) return `현재 맵 없음: ${state.session.currentMapId}`;
   const delta = directionDelta(state.facing);
-  const front = findRuntimeEventAtInMap(
-    state.project,
-    map,
-    state.session,
-    state.eventPositions,
-    state.session.x + delta.x,
-    state.session.y + delta.y,
-    "action"
-  );
-  if (front) {
-    if (expectedEventId !== undefined && front.event.id !== expectedEventId) return `Interaction target: expected ${expectedEventId}, actual ${front.event.id}`;
-    return runEventView(state, front);
-  }
-  const farmFront = interactWithFarmPlot(state.project, state.session, map, state.session.x + delta.x, state.session.y + delta.y);
-  if (farmFront.kind !== "ignored") {
-    if (expectedEventId !== undefined) return `Interaction target: expected ${expectedEventId}, actual farm plot`;
-    state.log.push(`farm ${farmFront.kind}: ${map.id} (${farmFront.x},${farmFront.y})${farmFront.cropId ? ` ${farmFront.cropId}` : ""}`);
-    return null;
-  }
-  const underfoot = findRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, state.session.x, state.session.y, "action");
-  if (underfoot) {
-    if (expectedEventId !== undefined && underfoot.event.id !== expectedEventId) return `Interaction target: expected ${expectedEventId}, actual ${underfoot.event.id}`;
-    return runEventView(state, underfoot);
-  }
-  const farmUnderfoot = interactWithFarmPlot(state.project, state.session, map, state.session.x, state.session.y);
-  if (farmUnderfoot.kind !== "ignored") {
-    if (expectedEventId !== undefined) return `Interaction target: expected ${expectedEventId}, actual farm plot`;
-    state.log.push(`farm ${farmUnderfoot.kind}: ${map.id} (${farmUnderfoot.x},${farmUnderfoot.y})${farmUnderfoot.cropId ? ` ${farmUnderfoot.cropId}` : ""}`);
-    return null;
+  for (const target of [
+    { mapId: map.id, x: state.session.x + delta.x, y: state.session.y + delta.y },
+    { mapId: map.id, x: state.session.x, y: state.session.y },
+  ]) {
+    const event = findRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, target.x, target.y, "action");
+    if (event) {
+      if (expectedEventId !== undefined && event.event.id !== expectedEventId) return `Interaction target: expected ${expectedEventId}, actual ${event.event.id}`;
+      return runEventView(state, event);
+    }
+    const chest = findChestAt(state.session, map.id, target.x, target.y);
+    if (chest) {
+      if (expectedEventId !== undefined) return `Interaction target: expected ${expectedEventId}, actual chest ${chest.id}`;
+      state.log.push(`chest ${chest.id}: open`);
+      return null;
+    }
+    const life = interactWithLifeField(state.project, state.session, target);
+    if (life.kind !== "unhandled") {
+      if (expectedEventId !== undefined) return `Interaction target: expected ${expectedEventId}, actual ${life.source}`;
+      state.log.push(`${life.source} ${life.kind}: ${life.kind === "success" ? life.itemId : life.reason}`);
+      return null;
+    }
+    const farm = interactWithFarmPlot(state.project, state.session, map, target.x, target.y, farmIntentForHand(state.project, state.session));
+    if (farm.kind !== "ignored") {
+      if (expectedEventId !== undefined) return `Interaction target: expected ${expectedEventId}, actual farm plot`;
+      state.log.push(`farm ${farm.kind}: ${map.id} (${farm.x},${farm.y})${farm.cropId ? ` ${farm.cropId}` : ""}`);
+      return null;
+    }
   }
   return `조사할 action 이벤트 없음: ${map.id} (${state.session.x},${state.session.y}) facing=${state.facing}`;
 }
@@ -693,7 +783,10 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
         step = interp.resume(undefined);
         break;
       case "setTime":
-        setClockForRunner(state, step.hour, step.minute);
+        {
+          const failure = setClockForRunner(state, step.hour, step.minute);
+          if (failure) return { stop: "failed", reason: failure };
+        }
         step = interp.resume(undefined);
         break;
       case "sleepUntilMorning":
@@ -1019,25 +1112,32 @@ function advanceCommandTimeForRunner(
   state: RunnerState,
   step: Extract<StepResult, { kind: "advanceTime" }>
 ): string | null {
-  const days = Math.max(0, Math.trunc(step.days ?? 0));
-  for (let index = 0; index < days; index += 1) {
-    const failure = sleepUntilMorningForRunner(state);
-    if (failure) return failure;
-  }
+  const before = structuredClone(state.session);
+  const daysFailure = advanceDaysForRunner(state, step.days ?? 0);
   const minutes = Math.max(0, Math.trunc(step.minutes ?? 0));
-  return minutes > 0 ? advanceGameMinutesForRunner(state, minutes) : null;
+  const failure = daysFailure ?? (minutes > 0 ? advanceGameMinutesForRunner(state, minutes) : null);
+  if (failure) state.session = before;
+  return failure;
 }
 
 function advanceDaysForRunner(state: RunnerState, days: number): string | null {
+  const before = structuredClone(state.session);
   const count = Math.max(0, Math.trunc(days));
   for (let index = 0; index < count; index += 1) {
     const failure = sleepUntilMorningForRunner(state);
-    if (failure) return failure;
+    if (failure) { state.session = before; return failure; }
   }
   return null;
 }
 
 function advanceGameMinutesForRunner(state: RunnerState, minutes: number): string | null {
+  const before = structuredClone(state.session);
+  const failure = advanceGameMinutesDraftForRunner(state, minutes);
+  if (failure) state.session = before;
+  return failure;
+}
+
+function advanceGameMinutesDraftForRunner(state: RunnerState, minutes: number): string | null {
   const system = resolveTimeSystem(state.project);
   if (!system) return null;
   state.session.gameTime ??= initialGameTime(system);
@@ -1048,7 +1148,8 @@ function advanceGameMinutesForRunner(state: RunnerState, minutes: number): strin
     if (!currentTime) return null;
     const untilEnd = minutesUntilDayEnd(currentTime, system);
     if (untilEnd > remaining) {
-      state.session.gameTime = advanceGameTime(currentTime, remaining, system).time;
+      const advanced = advanceTimeAcrossDayBoundaries(state.project, state.session, remaining);
+      if (!advanced.ok) return `day transition: ${advanced.reason}`;
       applyNpcSchedulesForRunner(state);
       return null;
     }
@@ -1057,18 +1158,18 @@ function advanceGameMinutesForRunner(state: RunnerState, minutes: number): strin
     const transitionFailure = transitionToNextDayForRunner(state);
     if (transitionFailure) return transitionFailure;
     applyNpcSchedulesForRunner(state);
-    if (untilEnd <= 0) remaining = 0;
   }
   return null;
 }
 
-function setClockForRunner(state: RunnerState, hour: number, minute: number | undefined): void {
+function setClockForRunner(state: RunnerState, hour: number, minute: number | undefined): string | null {
   const system = resolveTimeSystem(state.project);
-  if (!system) return;
+  if (!system) return null;
   state.session.gameTime ??= initialGameTime(system);
-  if (!state.session.gameTime) return;
-  state.session.gameTime = setGameTimeClock(state.session.gameTime, hour, minute, system);
+  const changed = setTimeWithMakers(state.project, state.session, { hour, minute });
+  if (!changed.ok) return `clock change: ${changed.reason}`;
   applyNpcSchedulesForRunner(state);
+  return null;
 }
 
 function sleepUntilMorningForRunner(state: RunnerState): string | null {

@@ -1,0 +1,44 @@
+{
+  "root": "/home/main/z-project/rpg-zzu-life-full-p3",
+  "head": "b4395f929ec6a386f9aa274531efd8722ffc8252",
+  "rows": [
+    {
+      "resetBeforeNextSpy": false,
+      "cleanFlush": {
+        "kind": "saved"
+      },
+      "requestsBeforeDeadline": 0,
+      "requestsAfterDeadline": [
+        {
+          "url": "/__oprn/edit-activity",
+          "method": "POST",
+          "fields": [
+            {
+              "path": "bundledTilesets",
+              "after": true
+            }
+          ]
+        }
+      ],
+      "unchangedProject": true,
+      "unsaved": false
+    },
+    {
+      "resetBeforeNextSpy": true,
+      "cleanFlush": {
+        "kind": "saved"
+      },
+      "requestsBeforeDeadline": 0,
+      "requestsAfterDeadline": [],
+      "unchangedProject": true,
+      "unsaved": false
+    }
+  ],
+  "scope": "Controlled public audit-queue/real clean-flush probe; not replay of the entire original test sequence",
+  "cleanup": {
+    "serverClosed": true,
+    "timersReset": true,
+    "globalsRestored": true,
+    "ownedCacheRemoved": true
+  }
+}

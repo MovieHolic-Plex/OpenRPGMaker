@@ -17,13 +17,14 @@ import { createBlankProject, createFarmingDemoProject } from "@/project/defaults
 import { isGenrePackId } from "@/project/genrePackId";
 
 describe("genre pack registry contract", () => {
-  it("BREAK: all five official packs expose complete machine-readable guidance", () => {
+  it("all official packs expose complete machine-readable guidance", () => {
     expect(GENRE_PACK_IDS).toEqual([
       "adventure-jrpg",
       "monster-collect",
       "horror-chase",
       "story-cutscene",
       "farm-life",
+      "action-rpg",
     ]);
 
     for (const packId of GENRE_PACK_IDS) {
@@ -42,7 +43,7 @@ describe("genre pack registry contract", () => {
   });
 
   it("BREAK: every welcome card resolves to a real pack recipe without AI", () => {
-    expect(WELCOME_GENRE_PRESETS).toHaveLength(7);
+    expect(WELCOME_GENRE_PRESETS).toHaveLength(8);
     for (const preset of WELCOME_GENRE_PRESETS) {
       const pack = genrePackById(preset.packId);
       expect(pack.recipes.some((recipe) => recipe.id === preset.systemPresetRecipeId)).toBe(true);

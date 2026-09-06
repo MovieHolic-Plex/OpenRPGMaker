@@ -1,0 +1,21 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-crop-regrowth",
+  "verificationHead": "43817f4a32610fc5f833354d0e20cf1487e50355",
+  "removedOwnedArtifacts": [
+    "dist",
+    ".omo/evidence/life-full-20260906/7/native-storage"
+  ],
+  "ownedArtifactsAbsent": true,
+  "parentCachePreserved": true,
+  "sharedCacheDeletion": false,
+  "publicServerClosed": true,
+  "httpServerStarted": false,
+  "browserStarted": false,
+  "port46557": "State Recv-Q Send-Q Local Address:Port Peer Address:PortProcess\n",
+  "diffCheckExit": 0,
+  "scriptSyntaxExit": {
+    "public-probe.mjs": 0,
+    "public-prototype-failure.mjs": 0,
+    "diagnostics.mjs": 0
+  }
+}

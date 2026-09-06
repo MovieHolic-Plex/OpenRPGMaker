@@ -156,6 +156,15 @@ afterEach(() => {
 });
 
 describe("좌측 도크 구성은 워크스페이스 레이아웃을 따른다", () => {
+  it("Standard mounts its task host without changing a saved Expert maps-only layout", async () => {
+    storage.setItem(UI_MODE_KEY, 'standard');
+    setWorkspaceDocks(['maps']);
+    const root = await mountEditor();
+    expect(findByTestId(root, 'left-palette-root')).not.toBeNull();
+    expect(findByTestId(root, 'left-map-root')).toBeNull();
+    expect(findByTestId(root, 'map-tree-height-resizer')).toBeNull();
+    expect(JSON.parse(storage.getItem(WORKSPACE_KEY) ?? '{}').docks.left).toEqual(['maps']);
+  }, 120_000);
   it("맵 패널을 닫으면 맵 호스트가 좌측 도크에서 사라진다", async () => {
     storage.setItem(UI_MODE_KEY, "standard");
     setWorkspaceDocks(["tiles"]);
@@ -219,7 +228,7 @@ describe("패널 메뉴는 실제로 되는 선택지만 제시한다", () => {
   }, 120_000);
 
   it("오른쪽 도크 호스트가 있으면 그 zone 칩을 제시한다", async () => {
-    storage.setItem(UI_MODE_KEY, "standard");
+    storage.setItem(UI_MODE_KEY, "expert");
     setWorkspaceDocks(["tiles", "maps"]);
     const rightHost = document.createElement("div");
     rightHost.dataset.dockZone = "right";
@@ -256,8 +265,8 @@ describe("패널 메뉴는 실제로 되는 선택지만 제시한다", () => {
     expect(JSON.parse(storage.getItem(WORKSPACE_KEY) ?? "{}").docks.left).toEqual(["tiles", "maps"]);
   }, 120_000);
 
-  it("표준 모드에서는 이 메뉴가 패널 토글의 유일한 집이다", async () => {
-    storage.setItem(UI_MODE_KEY, "standard");
+  it("전문가 모드에서는 이 메뉴가 패널 토글의 유일한 집이다", async () => {
+    storage.setItem(UI_MODE_KEY, "expert");
     setWorkspaceDocks(["tiles", "maps"]);
     const { renderWorkspaceBar } = await import("@/editor/panels/workspaceBar");
 

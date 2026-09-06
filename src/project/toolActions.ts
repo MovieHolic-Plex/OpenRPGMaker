@@ -7,6 +7,7 @@
 import type { FarmTool, GameMap, ItemId, Project, Rect } from "@/project/types";
 import type { PlaySession } from "@/project/session";
 import { placeableKey } from "@/project/placeables";
+import { inBounds } from "@/project/collision";
 
 export type ToolWorldAction =
   | "till"
@@ -45,6 +46,10 @@ export function toolActionRulesOf(project: Project): readonly ToolActionRule[] {
   const authored = project.system.toolActions;
   if (authored && authored.length > 0) return authored;
   return DEFAULT_FARM_RULES;
+}
+
+export function toolRuleRequiresFarmable(rule: ToolActionRule): boolean {
+  return rule.requiresFarmable ?? (rule.action === "till" || rule.action === "water");
 }
 
 /**
@@ -100,7 +105,12 @@ function ruleMatchesInventory(
     if (!itemId) return undefined;
     return { itemId, farmTool: rule.farmTool };
   }
-  return undefined;
+  const item = project.database.items.find((entry) =>
+    (!equipped || entry.id === equipped) && (session.inventory[entry.id] ?? 0) > 0
+    && entry.type !== "seed" && !entry.consumable
+    && (entry.farmTool === "hoe" || entry.farmTool === "wateringCan" || entry.farmTool === "axe" || entry.farmTool === "pickaxe")
+  );
+  return item ? { itemId: item.id, farmTool: item.farmTool } : undefined;
 }
 
 export function resolveToolUseOnTile(
@@ -111,6 +121,7 @@ export function resolveToolUseOnTile(
   y: number,
   preferredAction?: ToolWorldAction
 ): ResolvedToolUse | undefined {
+  if (!Number.isInteger(x) || !Number.isInteger(y) || !inBounds(map, x, y)) return undefined;
   const farmable = isTileFarmable(map, x, y);
   const key = placeableKey(map.id, x, y);
   const placeable = session.placeables?.[key];
@@ -118,10 +129,7 @@ export function resolveToolUseOnTile(
   for (const rule of toolActionRulesOf(project)) {
     if (preferredAction && rule.action !== preferredAction) continue;
 
-    const needsFarmable =
-      rule.requiresFarmable === true ||
-      (rule.requiresFarmable !== false && (rule.action === "till" || rule.action === "water"));
-    if (needsFarmable && !farmable) continue;
+    if (toolRuleRequiresFarmable(rule) && !farmable) continue;
 
     if (rule.targetPlaceableKind) {
       if (!placeable || placeable.kind !== rule.targetPlaceableKind) continue;

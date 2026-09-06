@@ -256,6 +256,7 @@ function leftDockPanels(): readonly PanelId[] {
   return resolveLeftDockPanels({
     left: getWorkspaceLayout().docks.left,
     paletteRail: getEditorChrome().paletteRail,
+    mapTree: getEditorChrome().mapTree,
   });
 }
 

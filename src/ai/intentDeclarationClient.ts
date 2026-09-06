@@ -23,6 +23,7 @@ import {
   type IntentSelectionFact,
 } from "./intentDeclaration";
 import { chatCompletion, configForLiteModel, loadAiConfig, type AiConfig, type ChatRequest, type ChatResult } from "./llmClient";
+import { projectWikiContext } from "./projectWikiContext";
 
 /** 한 문장을 JSON 으로 옮기는 데 허용하는 벽시계. 넘기면 끊고 폴백으로 떨어진다. */
 export const INTENT_DECLARATION_TIMEOUT_MS = 20_000;
@@ -60,6 +61,7 @@ export function buildIntentFacts(input: BuildIntentFactsInput): IntentFacts {
     facilityLabels: [...listLiveConceptFacilityLabels(input.project)],
     toolNames: activeTools().map((tool) => tool.name),
     hasActivePlan: input.hasActivePlan,
+    wikiContext: projectWikiContext(input.project, { query: input.userText, mapId: input.currentMapId }).text,
   };
 }
 
@@ -156,7 +158,7 @@ function cacheKey(facts: IntentFacts): string {
   const selection = facts.selection
     ? `${facts.selection.mapId}:${facts.selection.x},${facts.selection.y},${facts.selection.width},${facts.selection.height}`
     : "-";
-  return `${facts.userText.trim()}|${facts.currentMap?.id ?? "-"}|${selection}|${facts.hasActivePlan ? "plan" : "noplan"}`;
+  return `${facts.userText.trim()}|${facts.currentMap?.id ?? "-"}|${selection}|${facts.hasActivePlan ? "plan" : "noplan"}|${facts.wikiContext ?? ""}`;
 }
 
 export async function declareIntentCached(
