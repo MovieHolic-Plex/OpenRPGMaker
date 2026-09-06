@@ -52,7 +52,7 @@ export function installEventEditorCustomSelects(root: HTMLElement): EventEditorC
   let openMenu: OpenMenu | null = null;
   let disposed = false;
   let typeahead = "";
-  let typeaheadTimer: number | undefined;
+  let typeaheadTimer: ReturnType<typeof globalThis.setTimeout> | undefined;
 
   const closeMenu = (restoreFocus = false): void => {
     const current = openMenu;

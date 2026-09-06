@@ -51,6 +51,8 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  document.querySelector<HTMLButtonElement>('[data-testid="event-command-edit-cancel"]')?.click();
+  document.querySelector<HTMLButtonElement>('[data-testid="event-command-picker-cancel"]')?.click();
   resetEditorUiModeForTests("standard");
   clearCommandInspector();
   document.body.replaceChildren();
@@ -66,9 +68,9 @@ describe("command picker hands off to the edit dialog", () => {
     editorState.set({ currentMapId: mapId, selectedEventPageId: "p1" });
     renderEventEditorDynamic(host, mapId, event.id);
 
-    host.querySelector<HTMLElement>('[data-testid="event-command-empty-line"]')?.dispatchEvent(
-      new MouseEvent("dblclick", { bubbles: true, cancelable: true }),
-    );
+    const append = host.querySelector<HTMLButtonElement>('[data-testid="event-command-empty-line"]');
+    expect(append).not.toBeNull();
+    append?.click();
     expect(document.querySelector(PICKER)).not.toBeNull();
 
     textCommandButton().click();

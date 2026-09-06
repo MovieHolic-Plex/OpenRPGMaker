@@ -44,6 +44,9 @@ export const STATE_SPECS = {
   applyItemUpgrade: nativeManifestEntry("state", { kind: "applyItemUpgrade", upgradeId: "upgrade_contract" }),
   equipTool: nativeManifestEntry("state", { kind: "equipTool", itemId: "item_contract" }),
   changeFriendship: nativeManifestEntry("state", { kind: "changeFriendship", npcKey: "npc_contract", delta: 5 }),
+  setRelationship: nativeManifestEntry("state", {
+    kind: "setRelationship", npcKey: "npc_contract", state: "dating",
+  }),
   changeFactionStance: nativeManifestEntry("state", {
     kind: "changeFactionStance",
     a: "player",

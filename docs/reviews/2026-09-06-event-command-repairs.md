@@ -91,3 +91,21 @@ node scripts/qa-event-command-repairs.mjs --scenario battle-state --phase green
 ```
 
 Evidence: `output/evidence/event-command-repairs/battle-state/{red,green}/`.
+
+## Context-specific support
+
+- RED: 89 of the initial 92 support tests failed. The actual editor also showed `runtime-partial` for the verified map actor-name command.
+- Supervisor GREEN: 387 tests across 24 related files passed, including the expanded 102-case repair suite. All 27 changed TypeScript files had clean LSP and fresh compiler diagnostics. The full app/player/standalone build passed.
+- One descriptor now supplies picker and list grades, reason codes, Korean explanations and alternatives. Map/common promote exactly 022, 040, 041, 042, 043, 044, 045, 078, 093, 205, 206 and 210; eligibility and command exposure are unchanged.
+- Troop text, face/settings, input wait and non-sequential wait retain specific limitations. System BGM/SE remain metadata-only in map/common, with actual `playAudio` alternatives carrying `loop=true`/`false`; troop reports that they do not execute there.
+- The supervisor rendered all 12 actual picker panels using the editor Vite configuration: 128 command rows per context, correct support/limitations, no runtime errors or write requests. Screenshots show the retained badges. Native tooltip content is read from the rendered attributes, not claimed as a screenshot of an open tooltip.
+- Missing native contract files now test handoff fields, pause/resume ordering and roundtrip behavior. Deliberate mutations caused eight failures across all five files. Corrected click/preview tests detected three further failures from disabled handoff/wrong-face mutations; all production mutations were restored.
+- Two timer-handle type annotations now match their existing schedulers; emitted JavaScript is unchanged. No test was skipped or weakened.
+- Browser/server cleanup receipts are true.
+
+```bash
+npm test -- test/eventCommandSupportRepairs.test.ts --maxWorkers=1
+node scripts/qa-event-command-repairs.mjs --scenario editor-support --phase green
+```
+
+Evidence: `output/evidence/event-command-repairs/editor/{red,green,mutation,types}/`.

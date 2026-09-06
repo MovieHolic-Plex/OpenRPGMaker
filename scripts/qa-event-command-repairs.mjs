@@ -11,6 +11,8 @@ const args = process.argv.slice(2);
 const scenario = args[args.indexOf("--scenario") + 1];
 if (scenario === "battle-flow") {
   await import("./qa-event-command-battle-flow.mjs");
+} else if (scenario === "editor-support") {
+  await import("./qa-event-command-editor-support.mjs");
 } else {
 const phaseIndex = args.indexOf("--phase");
 const phase = phaseIndex >= 0 ? args[phaseIndex + 1] : "surface";
