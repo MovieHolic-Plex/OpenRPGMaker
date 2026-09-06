@@ -96,7 +96,15 @@ export class AssistantAcceptanceLedger {
     return covered;
   }
 
-  evaluate(applied: Project, draft = applied): AcceptanceSnapshot {
+  /** Read-only draft evidence for the independent reviewer, not applied verification. */
+  evaluateForReview(draft: Project): AcceptanceSnapshot {
+    const previous = this.snapshot;
+    const result = this.evaluate(draft, draft, true);
+    this.snapshot = previous;
+    return result;
+  }
+
+  evaluate(applied: Project, draft = applied, deliveredImagesOnly = false): AcceptanceSnapshot {
     this.bind(draft);
     this.images.current(draft);
     for (const [id, review] of this.reviews) {
@@ -110,8 +118,9 @@ export class AssistantAcceptanceLedger {
       const evidence = promise.criteria.map(criterion => {
         const result = evaluateAcceptanceCriterion(criterion, {
           project: applied, baseline: promise.baseline, bindings: this.bindings,
-          reviewed: (map, region) => review?.passed === true
-            && coveredByImages(this.currentReceipts(review.receipts, applied), map, region),
+          reviewed: (map, region) => deliveredImagesOnly
+            ? coveredByImages(this.images.matching(applied), map, region)
+            : review?.passed === true && coveredByImages(this.currentReceipts(review.receipts, applied), map, region),
         });
         return Object.freeze({
           ...result,

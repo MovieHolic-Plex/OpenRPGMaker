@@ -484,7 +484,18 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       } else {
         ghostPreviewUpdater.flush();
       }
-      // 정산은 아래 적용 분기가 끝난 뒤에 한다 — 오류로 끝난 턴도 제안이 남아 있으면 적용된다.
+      // A successful write is not authority to apply an errored or unreviewed draft.
+      if (result.proposedCalls.length > 0 && (result.stoppedReason !== "final"
+        || result.review?.status !== "approved" || !session.isDraftReviewApproved())) {
+        turnFailed = true;
+        ghostPreviewUpdater.cancel();
+        clearAgentGhostPreview();
+        settleBlueprintForTurnEnd(null);
+        deps.surface.appendBubble("system", result.error ?? "독립 검수가 승인되지 않아 초안을 적용하지 않았습니다.");
+        deps.surface.setStatus("검수 미완료");
+        if (result.error) appendErrorWithRetry(result.error, session, requestText, runOpts);
+        return;
+      }
       // Count applied milestones for accounting; only proposedCalls may be replayed.
       const changeExpectedByMode = (runOpts?.composerMode ?? "do") === "do";
       const turnWrites = [...(result.appliedCalls ?? []), ...result.proposedCalls];

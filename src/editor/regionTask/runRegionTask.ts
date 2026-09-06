@@ -59,6 +59,7 @@ import { createLlmIntentDeclarer } from "@/ai/intentDeclarationClient";
 
 export { formatMaterialLabelHint };
 import { getPendingRegionApply, setPendingRegionApply, type PendingRegionApply } from "./pendingRegionApply";
+import { renderToolImages } from "@/ai/toolImageRenderer";
 import { projectApprovalFingerprint, reviewRegionDraft, type HarnessReviewReport } from "./harnessReview";
 import { dispatchRegionTaskStatus } from "./regionTaskStatus";
 
@@ -74,6 +75,7 @@ export interface RegionTaskSessionLike {
     opts?: SessionTurnOptions,
   ): Promise<TurnResult>;
   getProposedProject(): Project;
+  setReviewDraftTransform?(transform: (project: Project) => Project): void;
   getAuditEntries?(): readonly AuditEntry[];
   getHarnessSnapshot?(): HarnessSnapshot;
   exportAudit?(): string;
@@ -299,6 +301,8 @@ const defaultDeps: RegionTaskDeps = {
   createSession: (project, mapId) => {
     return new AssistantSession(project, {
       config: resolveSurfaceAiConfig("region"),
+      reviewConfig: resolveSurfaceAiConfig("chat"),
+      renderImages: renderToolImages,
       declareIntent: createLlmIntentDeclarer(),
       contextOptions: {
         currentMapId: mapId,
@@ -628,6 +632,21 @@ export async function runRegionTask(
 
     const session = deps.createSession(working, opts.mapId);
     const mode: RegionTaskMode = opts.mode ?? "task";
+    let preparedForReview = false;
+    let preparedClippedCells = 0;
+    let preparedSeamCells = 0;
+    session.setReviewDraftTransform?.(draft => {
+      const protection = captureHouseProtection(base);
+      const completed = newlyBuiltHouseSnapshots(draft, protection);
+      const clipped = clipMapCellsToRegion(base, draft, opts.mapId, opts.region);
+      preparedClippedCells += clipped.clippedCells;
+      const polished = mode === "polish" ? polishRegionSeams(clipped.project, opts.mapId, opts.region)
+        : { project: clipped.project, seamCells: 0 };
+      preparedSeamCells = Math.max(preparedSeamCells, polished.seamCells);
+      assertHouseProtection(protection, polished.project, completed);
+      preparedForReview = true;
+      return polished.project;
+    });
     const message = mode === "polish"
       ? buildRegionPolishMessage({
           instruction,
@@ -734,12 +753,13 @@ export async function runRegionTask(
       };
     }
 
-    if (turn.stoppedReason === "error") {
+    if (turn.stoppedReason === "error" || (turn.proposedCalls.length > 0
+      && (turn.stoppedReason !== "final" || turn.review?.status !== "approved"))) {
       return attachLog({
         ...emptyBase,
         proposedCalls: turn.proposedCalls.length,
         assistantText: turn.assistantText,
-        error: turn.error ?? "AI 처리 오류",
+        error: turn.error ?? "독립 검수가 승인되지 않아 초안을 적용하지 않았습니다.",
       }, turn);
     }
 
@@ -752,7 +772,8 @@ export async function runRegionTask(
     // (영구 합의 스탬프는 채팅 적용 경로가 찍는다 — markSoftVocabApprovalsOnProject)
     // 실내/새 맵: clip은 현재 맵 영역 밖 타일만 되돌리고 다른 맵은 통과(clipToRegion 계약).
     // 다만 셀 0 + 맵 추가만 있으면 예전엔 통째로 폐기했다 → mapsAdded를 적용 조건에 포함한다.
-    const clippedResult = clipMapCellsToRegion(base, proposed, opts.mapId, opts.region);
+    const clippedResult = preparedForReview ? { project: proposed, clippedCells: preparedClippedCells }
+      : clipMapCellsToRegion(base, proposed, opts.mapId, opts.region);
     let clipped = clippedResult.project;
     const clippedCells = clippedResult.clippedCells;
     let changedCells = countInRegionChangedCells(base, clipped, opts.mapId, opts.region);
@@ -778,19 +799,23 @@ export async function runRegionTask(
     // 다듬기는 경계 바로 밖 1칸의 오토타일 **변형**까지 손댄다(사용자 승인 결정). 그래서 스코프
     // 검사에는 1칸 넓힌 사각형을 준다 — 안 그러면 방금 만든 이음새가 region-scope-violation
     // error 로 잡혀 적용 자체가 차단된다. 고립·도달·일정 검사는 원래 영역 기준을 그대로 쓴다.
+    if (turn.stoppedReason !== "final" || turn.review?.status !== "approved") {
+      return attachLog({ ...emptyBase, assistantText: turn.assistantText,
+        error: "독립 검수가 승인되지 않아 초안을 적용하지 않았습니다." }, turn);
+    }
     const scopeRegion = mode === "polish"
       ? expandRegion(opts.region, 1, map)
       : opts.region;
     const blendBefore = mode === "polish"
       ? analyzeRegionBlend({ project: base, mapId: opts.mapId, region: opts.region })
       : null;
-    let seamCells = 0;
+    let seamCells = preparedSeamCells;
     const reviewCandidate = (project: Project) => {
       let candidate = project;
       if (mode === "polish") {
         const seams = polishRegionSeams(candidate, opts.mapId, opts.region);
         candidate = seams.project;
-        seamCells = seams.seamCells;
+        seamCells = Math.max(seamCells, seams.seamCells);
       }
       const harness = reviewRegionDraft({
         base,
@@ -868,6 +893,10 @@ export async function runRegionTask(
       console.warn("[regionTask] 진단 실행에 실패했지만 초안은 유지합니다:", cause);
     }
     clipped = reviewed.project;
+    if (projectApprovalFingerprint(clipped) !== projectApprovalFingerprint(proposed)) {
+      return attachLog({ ...emptyBase, proposedCalls: turn.proposedCalls.length,
+        assistantText: turn.assistantText, error: "영역 자르기/다듬기로 검수한 초안이 바뀌어 적용하지 않았습니다. 영역 안에서 다시 요청해 주세요." }, turn);
+    }
     changedCells = countInRegionChangedCells(base, clipped, opts.mapId, opts.region);
     changedEvents = countInRegionChangedEvents(base, clipped, opts.mapId, opts.region);
     mapsAdded = countAddedMaps(base, clipped);
@@ -884,6 +913,10 @@ export async function runRegionTask(
     const applyOwnedProject = (project: Project): void => {
       // Full, partial (including re-polish), and immediate apply converge here after diagnostics.
       // This invariant is not advisory and must fail before any history/store mutation.
+      if (signal?.aborted || turn.review?.status !== "approved"
+        || projectApprovalFingerprint(project) !== projectApprovalFingerprint(proposed)) {
+        throw new Error("독립 검수 이후 초안이 바뀌었거나 중단되어 적용하지 않았습니다.");
+      }
       assertHouseProtection(captureHouseProtection(deps.getProject()), project, completedHouses);
       deps.applyProject(project, label, opts.mapId);
       publishAiApplyCompletion({

@@ -239,6 +239,11 @@ export function createProposalHost(options: {
   ): Promise<ProposalApplyOutcome> => {
     const session = controller.session;
     if (!session || calls.length === 0) return "rejected";
+    if (!session.isDraftReviewApproved()) {
+      appendBubble("system", "독립 검수가 승인되지 않았거나 초안이 바뀌어 적용하지 않았습니다.");
+      setStatus("검수 미완료");
+      return "rejected";
+    }
     ensureGuestIdentityForAiSurface();
     const before = store.getCurrent();
     const proposed = session.getProposedProject();

@@ -13,6 +13,7 @@ import { __clearPendingRegionApplyForTest, getPendingRegionApply } from "@/edito
 import { clearAgentGhostPreview, getAgentGhostPreviewState } from "@/editor/agentGhostPreview";
 import { REGION_TASK_STATUS_EVENT, regionTaskStatusDetail, type RegionTaskStatusDetail } from "@/editor/regionTask/regionTaskStatus";
 import type { RegionRect } from "@/editor/regionTask/clipToRegion";
+import { approvedReview } from "./independentReviewFixture";
 import type { TurnResult } from "@/ai/assistantSession";
 import { AI_CONFIG_STORAGE_KEY } from "@/ai/llmClient";
 import { implicitSpecFromContext } from "@/ai/buildSpec";
@@ -64,7 +65,7 @@ function installFakeWindow(): () => void {
 
 // turn result 형태를 만족하는 최소 스텁.
 function finalTurn(assistantText = "완료"): TurnResult {
-  return { assistantText, proposedCalls: [], stoppedReason: "final" };
+  return { assistantText, proposedCalls: [], stoppedReason: "final", review: approvedReview };
 }
 
 function makeDeps(base: Project, proposed: Project, session?: Partial<RegionTaskSessionLike>): {
@@ -72,13 +73,17 @@ function makeDeps(base: Project, proposed: Project, session?: Partial<RegionTask
   applied: () => { project: Project; label: string; mapId: string } | null;
 } {
   let appliedRef: { project: Project; label: string; mapId: string } | null = null;
+  let candidate = proposed;
+  let prepare: ((project: Project) => Project) | undefined;
   const fullSession: RegionTaskSessionLike = {
-    async sendUserMessage(_text, onEvent) {
-      onEvent?.({ type: "status", text: "테스트 진행" });
-      return finalTurn();
-    },
-    getProposedProject: () => proposed,
     ...session,
+    setReviewDraftTransform: transform => { prepare = transform; },
+    async sendUserMessage(text, onEvent, signal, options) {
+      candidate = prepare?.(candidate) ?? candidate;
+      onEvent?.({ type: "status", text: "테스트 진행" });
+      return session?.sendUserMessage ? session.sendUserMessage(text, onEvent, signal, options) : finalTurn();
+    },
+    getProposedProject: () => candidate,
   };
   const deps: RegionTaskDeps = {
     getProject: () => base,
@@ -178,7 +183,7 @@ describe("runRegionTask", () => {
     }
   });
 
-  it("영역 안 변경을 적용하고 영역 밖은 클립한다(undo 1개 형태)", async () => {
+  it("영역 밖 변경은 독립 검수 전에 클립하고 승인된 초안을 적용한다", async () => {
     const base = baseProject();
     const proposed: Project = structuredClone(base);
     proposed.maps[MAP_ID].lowerTiles[idx(2, 2)] = 5; // 영역 안
@@ -192,14 +197,10 @@ describe("runRegionTask", () => {
 
     expect(result.ok).toBe(true);
     expect(result.applied).toBe(true);
-    expect(result.changedCells).toBe(1);
     expect(result.clippedCells).toBe(1);
-    const rec = applied();
-    expect(rec).not.toBeNull();
-    expect(rec?.mapId).toBe(MAP_ID);
-    expect(rec?.label.startsWith("영역 작업:")).toBe(true);
-    expect(rec?.project.maps[MAP_ID].lowerTiles[idx(2, 2)]).toBe(5);
-    expect(rec?.project.maps[MAP_ID].lowerTiles[idx(8, 8)]).toBe(TILE.EMPTY);
+    expect(applied()?.project.maps[MAP_ID].lowerTiles[idx(2, 2)]).toBe(5);
+    expect(applied()?.project.maps[MAP_ID].lowerTiles[idx(8, 8)]).toBe(TILE.EMPTY);
+    expect(base.maps[MAP_ID].lowerTiles[idx(2, 2)]).toBe(TILE.EMPTY);
   });
 
   it("영역 안 변경이 없으면 적용하지 않는다", async () => {
@@ -490,7 +491,7 @@ describe("mode: polish", () => {
     const { deps } = makeDeps(base, proposed, {
       async sendUserMessage(text) {
         sent = text;
-        return { assistantText: "완료", proposedCalls: [], stoppedReason: "final" };
+        return { assistantText: "완료", proposedCalls: [], stoppedReason: "final", review: approvedReview };
       },
     });
 
@@ -515,7 +516,7 @@ describe("mode: polish", () => {
     const { deps } = makeDeps(base, proposed, {
       async sendUserMessage(text) {
         sent = text;
-        return { assistantText: "완료", proposedCalls: [], stoppedReason: "final" };
+        return { assistantText: "완료", proposedCalls: [], stoppedReason: "final", review: approvedReview };
       },
     });
 
@@ -578,5 +579,31 @@ describe("mode: polish", () => {
     // 어울림 경고는 적용을 막지 않는다 — error 로 승격되지 않는지만 본다.
     expect(report.issues.filter((issue) => issue.severity === "error")).toEqual([]);
     expect(result.pending!.apply).toBeTypeOf("function");
+  });
+});
+
+
+describe("independent review region ownership", () => {
+  beforeEach(__clearPendingRegionApplyForTest);
+  afterEach(__clearPendingRegionApplyForTest);
+  it.each(["error", "token-budget", "max-tool-calls", "final"] as const)("rejects unapproved %s drafts before pending/immediate apply", async stoppedReason => {
+    const base = baseProject(), proposed = structuredClone(base);
+    proposed.maps[MAP_ID].lowerTiles[idx(2, 2)] = 5;
+    const { deps, applied } = makeDeps(base, proposed, { sendUserMessage: async () => ({
+      assistantText: "Unapproved", proposedCalls: [], stoppedReason }) });
+    const result = await runRegionTask({ mapId: MAP_ID, region: REGION, instruction: "Change region", gate: "immediate" }, deps);
+    expect(result.ok).toBe(false);
+    expect(applied()).toBeNull();
+    expect(getPendingRegionApply()).toBeNull();
+  });
+  it("does not let a partial/manual revision borrow the original approval", async () => {
+    const base = baseProject(), proposed = structuredClone(base);
+    proposed.maps[MAP_ID].lowerTiles[idx(2, 2)] = 5;
+    const { deps, applied } = makeDeps(base, proposed);
+    const result = await runRegionTask({ mapId: MAP_ID, region: REGION, instruction: "Change region" }, deps);
+    const changed = structuredClone(result.pending!.clippedProject);
+    changed.maps[MAP_ID].lowerTiles[idx(2, 2)] = 6;
+    expect(result.pending!.applyProject(changed).applied).toBe(false);
+    expect(applied()).toBeNull();
   });
 });

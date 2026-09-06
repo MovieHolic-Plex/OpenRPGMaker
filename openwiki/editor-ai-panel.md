@@ -1,5 +1,64 @@
 # Editor AI Panel & Tools
 
+## Independent result review and repair (2026-09-06)
+
+This supersedes older same-conversation review/9-write-threshold and unreviewed
+milestone-application descriptions below. `independentReview.ts` builds a fresh
+system/user request through the existing authenticated `ChatFn` transport. It has
+no writer transcript, writer success prose, streaming callbacks or executable
+tools. A single whole-response Markdown fence (optional `json` label) is
+normalized before JSON parsing; surrounding prose, partial/multiple fences and
+other language labels are rejected. This matches an observed authenticated
+Gemini HTTP 200 response, not only the original unfenced fixture. Any returned
+tool call, malformed/inconsistent JSON, stale revision,
+truncated response or transport error stops without approval.
+
+`AssistantSession` reviews every completed write batch, including direct/lite
+and autonomous work. No-write questions and ask turns do not invoke it. The
+supervisor receives the original request, complete original/current projections
+from `originalContext.ts`, actual changed values, tool results, draft acceptance
+and available executable/image evidence. Duplicate read-credit receipts are not
+sent twice. Oversized complete evidence is an explicit window error, not a
+truncated review. Runtime session/asset transport changes that lack a reviewable
+projection are explicitly blocked; their omission never earns approval.
+
+Verdicts echo `revision` and contain `verdict`, `summary` and structured findings
+(`id`, `target`, `problem`, `requestedChange`, `validation`). Findings go back to
+the writer on the same draft; fresh record reads and all existing write gates
+still apply. The repaired revision gets another isolated review. Reviews consume
+the same round/output budget. Repeated unchanged failures stop; distinct failures
+also stop at the existing three-attempt repair cap. Cancellation and reviewer
+errors never count as approval. Writer success streaming is withheld on editing
+turns; only the reviewed conclusion is published as the changed result.
+
+Required current rendered map coverage and failed/stale explicit scene,
+walkthrough or other verification evidence cannot be overridden by an AI pass.
+Declared verification tools must actually pass. Pure record/dialogue edits do
+not invent placement-image prerequisites. The acceptance ledger evaluates the
+draft privately for review without labelling it applied; applied-state acceptance
+and remote persistence receipts remain separate. Advisory lint results are sent
+as evidence, not promoted to an unconditional baseline-breaking gate.
+
+`TurnResult.review`, `result_review` events and `HarnessSnapshot.resultReview`
+expose the outcome. `isDraftReviewApproved(project?)` checks the exact current
+revision and cancellation state; mutation/undo cannot revive invalidated approval.
+Milestones are batched until approval, then use the existing commit/undo/persistence
+path. `aiTurnRunner`, the direct proposal host, cluster acceptance and region
+application reject unapproved/error/budget/cancelled drafts, even when successful
+writes remain in the proposal ledger. Evaluation retains draft measurements and
+review evidence, but an unapproved solver result cannot pass the task.
+
+Region clipping and seam preparation run through `setReviewDraftTransform` before
+review. Repairs and rerenders see that prepared draft. Later clipping, partial
+application, schedule edits or room rerolls cannot borrow its approval; a changed
+candidate needs another reviewed request. Region/cluster writers retain their
+lite configuration while reviews use the configured supervisor endpoint/model.
+
+Focused contracts: `independentReview`, `assistantIndependentReview`,
+`assistantAcceptanceSession`, `assistantVisualEvidenceSession`,
+`aiTurnAppliedAccounting`, `regionTaskRun`. Existing `chat` injection remains the
+real-surface-friendly deterministic transport seam, not a production bypass.
+
 ## Multi-map construction specifications (2026-09-06)
 
 `AssistantSession` owns one `Map<mapId, {spec, turnIndex}>`; `getActiveSpec()`

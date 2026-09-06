@@ -156,7 +156,9 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
       }),
     ],
   });
+  let activeTurn: AbortController | null = null;
   const close = (): void => {
+    activeTurn?.abort();
     clearAgentGhostPreview();
     root.remove();
     document.removeEventListener?.("keydown", onKeyDown);
@@ -183,6 +185,7 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
     if (!state.session) {
       state.session = new AssistantSession(store.getCurrent(), {
         config: resolveSurfaceAiConfig("cluster"),
+        reviewConfig: resolveSurfaceAiConfig("chat"),
         contextOptions: {
           currentMapId: currentMapId() ?? undefined,
           // 프로젝트 한정 성향 조회 키. 전역 성향은 이 값과 무관하게 항상 붙는다.
@@ -287,7 +290,9 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
       log.scrollTop = log.scrollHeight;
     };
     try {
-      const result = await ensureSession().sendUserMessage(trimmed, onEvent);
+      activeTurn = new AbortController();
+      const result = await ensureSession().sendUserMessage(trimmed, onEvent, activeTurn.signal);
+      if (activeTurn.signal.aborted) return;
       if (result.assistantText) assistantText = result.assistantText;
       if (result.assistantText && !assistantBubble) appendBubble("assistant", result.assistantText);
       renderQuickReplies(assistantText);
@@ -308,6 +313,11 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
     const warnings = proposalApprovalWarnings(calls);
     if (warnings.length > 0 && !(await confirmRuleApproval(warnings))) return;
     const proposed = session.getProposedProject();
+    if (!session.isDraftReviewApproved(proposed)) {
+      appendBubble("system", "독립 검수가 승인되지 않았거나 초안이 바뀌어 적용하지 않았습니다.");
+      status.textContent = "검수 미완료";
+      return;
+    }
     const label = `클러스터 수정: ${model.group?.name ?? model.title}`;
     clearAgentGhostPreview();
     const applied = await applyProposedProject(proposed, {
