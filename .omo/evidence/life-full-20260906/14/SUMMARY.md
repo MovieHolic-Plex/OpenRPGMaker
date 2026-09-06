@@ -27,7 +27,7 @@ The working changes, not base HEAD alone, were exercised by these commands.
 | Skill max10/new reward2..max | Native and unit input bounds; native reward2 add/undo/redo and valid switch binding; max1 add refusal in unit |
 | Legacy reward1 preserved | Native display/roundtrip remains1 and unit pure render/roundtrip; explanatory hint says it is not a level-up grant |
 | Linked automatic names, shared identity, explicit override | Actual public playGiftSelection/runEvent/runCommands tests plus native player.html dialogue/gift menu/feedback; explicit empty speaker also retained in unit |
-| Crop frame/label/fallback truth without backfill | Existing renderer inspected; labels now describe frame selection, editor-only labels and color-rectangle fallback; undefined/[]/authored graphics purity tests and mounted crop card captures |
+| Crop frame/label/fallback truth without backfill | Labels now describe actual consumers; undefined/[]/authored graphics purity is preserved baseline behavior, not a task14 behavioral fix. Corrected cases pass on baseline and current source; see crop-baseline/REPORT.md. Mounted crop card captures cover the prose changes. |
 | Phase3 tool behavior unchanged | 103-case related selection includes toolActionAuthoringParity and databaseLifeCraftingView; existing wiki tool-authoring paragraph preserved |
 
 No schema, project version, Save5/key/raw-preservation, housing/reference/recovery,
@@ -47,6 +47,9 @@ The skill model's existing MAX_LIFE_SKILL_LEVEL is reused rather than changing n
    behavioral production edit.
 4. `red.*`: 8 intended bounds/name regressions fail, plus 3 crop harness import failures
    (wrong renderCropsTab name; actual export is renderCropTab). All original output remains.
+   The three `TypeError: render is not a function` results are **setup failures, not
+   behavioral RED**. Corrected crop cases pass against unchanged baseline source; there is
+   no failing-on-base crop-purity regression to claim or manufacture.
    Tests and diagnostics then corrected fixture types, including real command.body fields,
    without removing assertions. `diagnostics*.txt` preserves those intermediate errors.
 5. `native-editor.*`, `editor-red-state.json`: actual Firefox additionally exposed range
@@ -69,6 +72,23 @@ The skill model's existing MAX_LIFE_SKILL_LEVEL is reused rather than changing n
 9. `typecheck-interruption.md`: the first combined tool call was terminated at180s without
    a typecheck child exit receipt. It is not counted as passing. The complete separate
    invocation is retained below.
+
+## Corrected-test baseline comparison (parent evidence correction)
+
+`crop-baseline/REPORT.md` records one locked, bounded full14-case run using the unchanged
+corrected test and all baseline production source: **exit1, 8 failed / 6 passed**. The
+three crop-purity cases and three legacy-characterization cases pass; the eight actual
+bounds/speaker regressions fail. Every changed source module was loaded from verbatim
+baseline bytes through a non-mutating Vite source overlay, with all other tracked src
+files already identical to baseline. Exact commit/blob/SHA256 identities and the loaded
+module receipt are retained. No product or test was changed for this comparison.
+
+The fixture correction is independently explained by
+`crop-baseline/characterization-fixture-diff.json`, extracted from the original failed
+assertions: first load removes titleScreen.titleGraphic and adds forceSleep=false,
+minutesPerRealSecond=1, dayEndHour=26, dayStartHour=6. The corrected fixture establishes
+this existing normalization before asserting pure render/repeated-roundtrip behavior.
+It does not normalize inside the render operation or discard any crop assertion.
 
 ## Final validation
 
