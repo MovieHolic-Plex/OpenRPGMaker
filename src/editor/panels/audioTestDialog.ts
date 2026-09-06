@@ -49,7 +49,7 @@ const CATEGORY_LABELS: Readonly<Record<AudioCategory, string>> = {
 };
 
 export function openAudioTestDialog(): void {
-  document.querySelector("[data-testid='audio-test-dialog']")?.remove();
+  document.querySelector<HTMLButtonElement>("[data-testid='audio-test-close']")?.click();
   const engine = getAudioEngine();
   engine.installUnlockListeners();
   engine.unlock();
@@ -226,7 +226,9 @@ export function openAudioTestDialog(): void {
   });
 
   // 모달 층 등록: Escape 는 modalStack 이 맨 위 층에만 전달한다(중첩 모달 계약).
+  let unsubscribe: (() => void) | undefined;
   const close = registerModal(backdrop, () => {
+    unsubscribe?.();
     stopAudioCommand();
     engine.setFadeInMs(restoreFadeInMs);
     backdrop.remove();
@@ -395,6 +397,19 @@ export function openAudioTestDialog(): void {
   engine.setPan(state.balance / 100);
   engine.setFadeInMs(state.fadeSeconds * 1000);
   render();
+  unsubscribe = store.subscribe((_project, change) => {
+    if (change.projectSwitch) {
+      closeUi();
+      return;
+    }
+    if (change.scope !== "project" && change.scope !== "assets") return;
+    if (state.selectedId !== "" && !currentEntry(state)) {
+      state.selectedId = "";
+      setPlaying(false);
+    }
+    renderList();
+    syncTransport();
+  });
   closeAction.focus();
 }
 

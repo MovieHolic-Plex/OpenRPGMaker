@@ -174,6 +174,56 @@ describe("audio picker descriptions", () => {
 });
 
 describe("audio test dialog catalog", () => {
+  it("refreshes selected metadata and description-only search while open", () => {
+    openAudioTestDialog();
+    enterAudioSearch("audio-test-filter", AUDIO_SEARCH_SENTINEL);
+    document.querySelector<HTMLButtonElement>(
+      `[data-testid="audio-test-list"] button[data-resource-id="${AUDIO_SEARCH_ID}"]`,
+    )?.click();
+    store.replace(audioSearchProject("music", "LIVE_AUDIO_TEST_821"));
+    const details = audioElement(document, "div", "audio-test-description");
+    expect(audioElement(details, "div", "audio-description-text").textContent).toBe("LIVE_AUDIO_TEST_821");
+    expect(audioElement(document, "div", "audio-test-list").querySelectorAll("[data-resource-id]")).toHaveLength(1);
+    enterAudioSearch("audio-test-filter", "LIVE_AUDIO_TEST_821");
+    expect(audioElement(document, "div", "audio-test-list").querySelectorAll("[data-resource-id]")).toHaveLength(2);
+  });
+
+  it("closes an open audio test dialog on project replacement", () => {
+    openAudioTestDialog();
+    store.replaceProject(audioSearchProject("music", "OTHER_PROJECT_912"));
+    expect(document.querySelector('[data-testid="audio-test-dialog"]')).toBeNull();
+  });
+
+  it("unsubscribes when closed or replaced by a new audio test dialog", () => {
+    const subscribe = store.subscribe.bind(store);
+    const stopped = vi.fn();
+    vi.spyOn(store, "subscribe").mockImplementation(listener => {
+      const unsubscribe = subscribe(listener);
+      return () => { stopped(); unsubscribe(); };
+    });
+    openAudioTestDialog();
+    openAudioTestDialog();
+    expect(stopped).toHaveBeenCalledTimes(1);
+    audioElement(document, "button", "audio-test-close").click();
+    expect(stopped).toHaveBeenCalledTimes(2);
+  });
+
+  it("clears the selected audio-test resource when it is removed", () => {
+    openAudioTestDialog();
+    enterAudioSearch("audio-test-filter", AUDIO_SEARCH_SENTINEL);
+    document.querySelector<HTMLButtonElement>(
+      `[data-testid="audio-test-list"] button[data-resource-id="${AUDIO_SEARCH_ID}"]`,
+    )?.click();
+    expect(audioElement(document, "button", "audio-test-play").disabled).toBe(false);
+    store.update(project => {
+      delete project.assets.uploaded[AUDIO_SEARCH_ID];
+      project.resourceProfiles = project.resourceProfiles.filter(profile => profile.assetId !== AUDIO_SEARCH_ID);
+    });
+    expect(audioElement(document, "button", "audio-test-play").disabled).toBe(true);
+    expect(audioElement(document, "div", "audio-test-description").textContent).toBe("");
+    expect(audioElement(document, "button", "audio-test-option-off").getAttribute("aria-selected")).toBe("true");
+  });
+
   it.each(["music", "sound"] as const)("includes the large %s catalog and uploaded descriptions", kind => {
     // Given
     store.replace(audioSearchProject(kind));
