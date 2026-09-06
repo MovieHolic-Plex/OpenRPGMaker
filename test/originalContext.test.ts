@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { extractOriginalContext, OriginalContextStore, ORIGINAL_MODEL_WINDOWS, originalContextWindow, type OriginalContext } from "@/ai/originalContext";
 import { buildGroundedRequest } from "@/ai/contextBuilder";
+import { compactMessagesForRequest, totalMessagesCharLength } from "@/ai/messageBudget";
 import { ToolReadEvidence } from "@/ai/toolReadEvidence";
 import { TASK_RECIPES } from "@/ai/toolCapabilityIndex";
 import { createEmptyToolProject, getTool, runTool, toOpenAiTools } from "@/editor/tools";
@@ -129,6 +130,46 @@ describe("original paging, delivery and window accounting", () => {
     evidence.observe("get_database_records", args, runTool({ project }, "get_database_records", args));
     store.observeDelivered([], ["/item"], evidence);
     expect(evidence.beforeWrite(project, "upsert_item", write)).toBeNull();
+  });
+
+  it.each(["truncated-json", "null", "redacted-text", "invalid-total", "invalid-offset", "invalid-next", "nonboolean-ok"])("rejects rewritten delivered receipts without throwing or granting evidence: %s", variant => {
+    const { store, project } = fixture();
+    const evidence = new ToolReadEvidence();
+    evidence.begin({ project: false, collections: ["items"], references: true });
+    const receipt = store.read({ snapshotId: options.snapshotId, action: "read", entryId: "/item" });
+    const changed = JSON.parse(JSON.stringify(receipt));
+    if (variant === "redacted-text") changed.data.text = "[redacted]";
+    if (variant === "invalid-total") changed.data.totalChars++;
+    if (variant === "invalid-offset") changed.data.offset = -1;
+    if (variant === "invalid-next") changed.data.nextOffset = 1;
+    if (variant === "nonboolean-ok") changed.ok = "true";
+    const content = variant === "truncated-json" ? JSON.stringify(receipt).slice(0, 60)
+      : variant === "null" ? "null" : JSON.stringify(changed);
+    const message: ChatMessage = { role: "tool", name: "get_original_context", content };
+    expect(() => store.observeDelivered([message], [], evidence)).not.toThrow();
+    expect(evidence.beforeWrite(project, "upsert_item", { item: { id: "item_potion", price: 321 } })).not.toBeNull();
+    // Refusal does not poison the snapshot: an intact later delivery still establishes evidence.
+    store.observeDelivered([{ ...message, content: JSON.stringify(receipt) }], [], evidence);
+    expect(evidence.beforeWrite(project, "upsert_item", { item: { id: "item_potion", price: 321 } })).toBeNull();
+  });
+
+  it("does not credit an original tool result whose data was removed by real request compaction", () => {
+    const { store, project } = fixture();
+    const evidence = new ToolReadEvidence();
+    evidence.begin({ project: false, collections: ["items"], references: true });
+    const receipt = store.read({ snapshotId: options.snapshotId, action: "read", entryId: "/item" });
+    const messages: ChatMessage[] = [
+      { role: "system", content: "System" },
+      { role: "assistant", content: null, tool_calls: [{ id: "original-read", type: "function", function: { name: "get_original_context", arguments: "{}" } }] },
+      { role: "tool", name: "get_original_context", tool_call_id: "original-read", content: JSON.stringify(receipt) },
+      ...Array.from({ length: 7 }, () => ({ role: "user" as const, content: "Retained request" })),
+    ];
+    const compacted = compactMessagesForRequest(messages, totalMessagesCharLength(messages) - 100);
+    const tool = compacted.find(message => message.role === "tool")!;
+    expect(tool).toBeDefined();
+    expect(JSON.parse(tool.content as string).data).toBeUndefined();
+    expect(() => store.observeDelivered(compacted, [], evidence)).not.toThrow();
+    expect(evidence.beforeWrite(project, "upsert_item", { item: { id: "item_potion", price: 321 } })).not.toBeNull();
   });
 
   it.each([

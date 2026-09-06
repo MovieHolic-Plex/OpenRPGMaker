@@ -25,6 +25,8 @@ Whole entries that do not fit remain explicitly omitted with a `get_original_con
 list/read route, stable entry paths, snapshot ID and UTF-16 offsets. Concatenate exact JSON
 pages before parsing. Only successfully delivered whole originals or fully covered page
 ranges count at the existing `ToolReadEvidence` seam; partial/omitted/failed reads do not.
+Malformed or rewritten historical tool JSON is refused as evidence without aborting the
+model response; original text, total length and pagination metadata must match exactly.
 Original receipts cannot replace a subsequent fresh read; existing fingerprint/reference
 checks and ask-mode refusal remain. Irreducible mandatory requests fail explicitly without
 pruning tools. A huge latest write result may still exceed a small window; paging originals

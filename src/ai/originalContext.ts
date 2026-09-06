@@ -247,12 +247,23 @@ export class OriginalContextStore {
     const complete = new Set(includedIds);
     for (const message of messages) {
       if (message.role !== "tool" || message.name !== "get_original_context" || typeof message.content !== "string") continue;
-      const result = JSON.parse(message.content) as ToolResult;
+      let result: unknown;
+      try {
+        result = JSON.parse(message.content);
+      } catch {
+        // Rewritten/truncated history is not a receipt. Refuse evidence, not the model response.
+        continue;
+      }
+      if (!object(result) || result.ok !== true) continue;
       const data = result.data;
-      if (!result.ok || !object(data) || data.snapshotId !== this.context.snapshotId || typeof data.entryId !== "string"
-        || typeof data.offset !== "number" || typeof data.text !== "string") continue;
+      if (!object(data) || data.snapshotId !== this.context.snapshotId || typeof data.entryId !== "string"
+        || typeof data.offset !== "number" || !Number.isSafeInteger(data.offset) || data.offset < 0
+        || typeof data.text !== "string") continue;
       const text = this.texts.get(data.entryId);
-      if (text === undefined || text.slice(data.offset, data.offset + data.text.length) !== data.text) continue;
+      const endOffset = data.offset + data.text.length;
+      if (text === undefined || data.totalChars !== text.length || endOffset > text.length
+        || data.nextOffset !== (endOffset < text.length ? endOffset : null)
+        || text.slice(data.offset, endOffset) !== data.text) continue;
       const ranges = [...(this.ranges.get(data.entryId) ?? []), [data.offset, data.offset + data.text.length] as [number, number]]
         .sort((a, b) => a[0] - b[0]);
       let end = 0;
