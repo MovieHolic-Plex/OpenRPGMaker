@@ -15,10 +15,52 @@
 
 # Editor Database
 
+## Character appearance catalog v1 (2026-09-06)
+
+Database > Party > `캐릭터 외형` (`characterAppearances`,
+`db-tab-character-appearances`) is a reusable visual catalog, separate from
+resident relationships. `databaseAppearanceView.ts` and
+`databaseAppearanceSlots.ts` reuse the Database Studio list/detail primitives.
+Authors create partial records, edit name/appearance description, search without
+replacing the input, duplicate independently, and see actor/page/portrait-command
+usage before deletion. Deletion is blocked while referenced and never deletes
+the underlying images.
+
+Each set has a manually chosen walking charset/cell, a standalone face and an
+optional bust. Slot upload opens the existing resource manager with the correct
+kind; the author then selects the imported resource. Actor and event-page
+selectors retain direct graphics and store only an appearance link. The existing
+portrait command can select a shared set and explicit face/bust presentation.
+
+Event-page selectors are upgraded to custom dropdown buttons. Before committing
+an appearance change, focus that logical trigger so the event modal's existing
+interaction snapshot can restore it after rerender. Keyboard QA must target
+`data-custom-select-for`, not the hidden native select's testid. Choosing an
+option through the actual popup is distinct from programmatic `selectOption`.
+
+Event previews accept both canonical charset resource IDs and legacy texture
+keys through the shared charset catalog lookup. Editor map markers also project
+the appearance before resolving their texture/frame; reading only the stored
+direct sprite would leave a linked NPC invisible in the event layer.
+`characterAppearancePreview` and `editSceneRender` tests cover both boundaries;
+`xvfb-run -a node scripts/qa/appearance-preview-proof.mjs` exercises the real UI.
+
+AI generation is limited to face/bust candidates. Walking charsets are reference
+inputs only, never generation outputs. The DB shows generated artwork before
+explicit Apply; an occupied slot has an explicit replacement action. Existing
+art remains until application, and a candidate image must load successfully
+before Apply is enabled. The shared generation controller owns stale-target and
+project-switch checks. World/lore coupling, expression variants and automatic
+cutscene insertion are not part of v1.
+
+Tests: `characterAppearanceEditor`, `characterAppearanceLifecycle`,
+`databaseTabIcons` and `databaseSidebarNav`. The supported viewport matrix is
+1024x768, 1280x800 and 1440x900; list and detail have independent bounded scrolls.
+
 ## Concept navigation integration (2026-09-06)
 
 PR617's concept-first Map rail is integrated with the current unified inventory
-catalog: 32 primary destinations, only `scratchConcepts` and `tilesets` under Map,
+catalog: 33 primary destinations after adding Character appearance v1, only `scratchConcepts` and `tilesets` under Map,
 and `commonEvents` under System. Legacy Map destinations remain contextual/search
 routes. `equipment` search finds the single `items` destination; programmatic
 `equipment` navigation retains the catalog's equipment-filter/selection behavior.

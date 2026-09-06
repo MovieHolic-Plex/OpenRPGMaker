@@ -1,0 +1,78 @@
+.appearance-workspace {
+  --appearance-preview-height: 128px;
+  --appearance-specimen-height: 192px;
+  --appearance-slot-width: 192px;
+  --appearance-list-width: 240px;
+  --appearance-ui-size: 13px;
+  font: var(--appearance-ui-size)/1.5 var(--font-ui);
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .appearance-workspace.db-ws {
+  grid-template-columns: minmax(var(--appearance-slot-width), var(--appearance-list-width)) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+}
+.appearance-detail-host {
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+.appearance-detail-host > .db-ws-detail { min-width: 0; min-height: 0; }
+.database-modal-backdrop .database-modal-window .database-modal-body .appearance-workspace .db-ws-detail-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  overflow: auto;
+}
+.appearance-workspace .db-ws-detail-body > * { flex-shrink: 0; }
+.database-modal-backdrop .database-modal-window .database-modal-body .appearance-workspace input,
+.database-modal-backdrop .database-modal-window .database-modal-body .appearance-workspace textarea,
+.database-modal-backdrop .database-modal-window .database-modal-body .appearance-workspace button {
+  font: inherit;
+  min-height: var(--space-6);
+}
+.appearance-workspace textarea { resize: vertical; }
+.appearance-slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(var(--appearance-slot-width), 100%), 1fr));
+  gap: var(--space-3);
+}
+.appearance-workspace .db-ws-toolbar { flex-wrap: wrap; }
+.appearance-slot-preview,
+.appearance-portrait {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: var(--appearance-preview-height);
+  padding: var(--space-2);
+  border-radius: var(--radius-s);
+  background: var(--db-studio-inset);
+  color: var(--db-studio-text-2);
+}
+.appearance-portrait img {
+  display: block;
+  max-width: 100%;
+  height: var(--appearance-preview-height);
+  object-fit: contain;
+}
+.appearance-help {
+  margin: 0;
+  color: var(--db-studio-text-2);
+  font-size: var(--font-size-sm);
+  overflow-wrap: anywhere;
+}
+.appearance-error { color: var(--danger); overflow-wrap: anywhere; }
+.appearance-candidate { display: grid; gap: var(--space-2); min-width: 0; }
+.appearance-dialogue {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+  min-height: var(--appearance-specimen-height);
+  padding: var(--space-4);
+  border: var(--stroke-1) solid var(--db-studio-border-default);
+  border-radius: var(--radius-s);
+  background: var(--db-studio-surface);
+  color: var(--db-studio-text-1);
+  overflow-wrap: anywhere;
+}
+.appearance-workspace :focus-visible { outline: var(--focus-outline); outline-offset: var(--stroke-2); }

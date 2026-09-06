@@ -24,6 +24,8 @@ import { setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
 import { store } from "@/project/store";
 import type { ActorParameterKey, ActorRecord } from "@/project/types";
 import { el } from "@/util/dom";
+import { getCharacterAppearance, resolveActorAppearance } from "@/project/characterAppearances";
+import { appearanceBindingControl } from "./appearanceBindingControl";
 
 export function renderActorRecordForm(
   actor: ActorRecord,
@@ -392,10 +394,11 @@ function databasePanelRootFrom(node: HTMLElement | null): HTMLElement | null {
 // 히어로 헤더 — 얼굴 + 이름 인라인 편집 + 직업/레벨 태그. 이름 편집은 identityPanel 에서
 // 여기로 승격됐다(아이템/장비 인스펙터 헤더와 같은 비주얼 언어, db-field-name 계약 유지).
 function actorHeroHeader(actor: ActorRecord, onRename?: (name: string) => void): HTMLElement {
+  const effective = resolveActorAppearance(store.getCurrent(), actor);
   const className = store.getCurrent().database.classes.find((entry) => entry.id === actor.classId)?.name;
   const face = graphicPreview(
     "얼굴",
-    actor.faceResourceId ?? actor.characterResourceId ?? "(없음)",
+    effective.faceResourceId ?? effective.characterResourceId ?? "(없음)",
     "faceset",
     0,
     4 / 3
@@ -534,8 +537,26 @@ function activateInspectorTab(button: HTMLElement, root: HTMLElement, selector: 
 }
 
 function graphicsPanel(actor: ActorRecord, rerender: () => void): HTMLElement {
-  return actorPanel("화면에 보이는 모습", "actor-graphic", [
-    graphicPreview("얼굴", actor.faceResourceId ?? actor.characterResourceId ?? "(없음)", "faceset"),
+  const project = store.getCurrent();
+  const linked = getCharacterAppearance(project, actor.appearanceId);
+  const effective = resolveActorAppearance(project, actor);
+  const panel = actorPanel("화면에 보이는 모습", "actor-graphic", [
+    appearanceBindingControl(actor.appearanceId, "actor-appearance-select", (appearanceId) => {
+      updateDatabaseRecord("actors", actor.id, { appearanceId });
+      const current = store.getCurrent().database.actors.find((entry) => entry.id === actor.id);
+      if (current) {
+        const resolved = resolveActorAppearance(store.getCurrent(), current);
+        const heroFace = graphicPreview("얼굴", resolved.faceResourceId ?? resolved.characterResourceId ?? "(없음)", "faceset", 0, 4 / 3);
+        heroFace.classList.add("db-record-hero-face");
+        panel.closest(".actor-detail-form")?.querySelector(".db-record-hero-face")?.replaceWith(heroFace);
+        const replacement = graphicsPanel(current, rerender);
+        panel.replaceWith(replacement);
+        replacement.querySelector<HTMLSelectElement>("[data-testid='actor-appearance-select']")?.focus();
+      }
+    }),
+    ...(linked ? [el("p", { class: "actor-field-help", dataset: { testid: "actor-appearance-linked" },
+      text: `${linked.name}에서 그림을 공유합니다. 아래 직접 지정 값은 보관되며 연결을 해제하면 복원됩니다. 비어 있는 슬롯은 직접 지정 값을 사용합니다.` })] : []),
+    graphicPreview("얼굴", effective.faceResourceId ?? effective.characterResourceId ?? "(없음)", "faceset"),
     resourceControl("얼굴", "db-field-face-resource", actor.faceResourceId ?? "", (faceResourceId) =>
       updateDatabaseRecord("actors", actor.id, { faceResourceId: emptyToUndefined(faceResourceId) }),
       () => openActorResourceDialog(actor, "faceResourceId", rerender)
@@ -549,7 +570,7 @@ function graphicsPanel(actor: ActorRecord, rerender: () => void): HTMLElement {
         rerender();
       },
     }),
-    graphicPreview("캐릭터셋", actor.characterResourceId ?? "(없음)", "charset", actor.characterIndex ?? 0),
+    graphicPreview("캐릭터셋", effective.characterResourceId ?? "(없음)", "charset", effective.characterIndex ?? 0),
     resourceControl("캐릭터셋", "db-field-character-resource", actor.characterResourceId ?? "", (characterResourceId) =>
       updateDatabaseRecord("actors", actor.id, { characterResourceId: emptyToUndefined(characterResourceId) }),
       () => openActorResourceDialog(actor, "characterResourceId", rerender)
@@ -563,6 +584,20 @@ function graphicsPanel(actor: ActorRecord, rerender: () => void): HTMLElement {
       () => openActorResourceDialog(actor, "battleCharacterResourceId", rerender)
     ),
   ]);
+  for (const [testid, supplied] of [["db-field-face-resource", Boolean(linked?.face)], ["db-field-character-resource", Boolean(linked?.charset)]] as const) {
+    if (!supplied) continue;
+    const input = panel.querySelector<HTMLInputElement>(`[data-testid='${testid}']`);
+    if (input) {
+      input.disabled = true;
+      input.title = "공유 외형의 그림을 사용 중입니다. 연결을 해제하면 직접 지정할 수 있습니다.";
+      const button = input.parentElement?.querySelector("button");
+      if (button instanceof HTMLButtonElement) button.disabled = true;
+    }
+  }
+  if (linked?.face) {
+    for (const control of panel.querySelectorAll<HTMLElement>("[data-testid^='db-actor-face-ai']")) control.hidden = true;
+  }
+  return panel;
 }
 
 function curvesPanel(actor: ActorRecord): HTMLElement {

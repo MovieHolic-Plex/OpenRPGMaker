@@ -1,5 +1,6 @@
 import { complete } from "@oh-my-pi/pi-ai";
 import { getBundledModel } from "@oh-my-pi/pi-catalog";
+import { ImageReferenceError, parseImageReferences } from "../../src/ai/imageReferences";
 
 export const IMAGE_PROVIDER_ID = "google-antigravity";
 export const DEFAULT_IMAGE_MODEL = "gemini-3.1-flash-image";
@@ -153,6 +154,13 @@ export async function generateProviderImage(
   }
   const prompt = typeof body.prompt === "string" ? body.prompt.trim() : "";
   if (!prompt) throw statusError("prompt 가 필요합니다.", 400);
+  let referenceImages;
+  try {
+    referenceImages = parseImageReferences(body.referenceImages);
+  } catch (error) {
+    if (error instanceof ImageReferenceError) throw statusError(error.message, 400);
+    throw error;
+  }
 
   const requestedModel = typeof body.model === "string" ? body.model.trim() : "";
   const modelId = requestedModel || DEFAULT_IMAGE_MODEL;
@@ -178,13 +186,22 @@ export async function generateProviderImage(
       "You are a game art generator for a 2D top-down JRPG maker.",
       "Always answer by producing the requested image. Keep the subject centered on a plain background.",
     ],
-    messages: [{ role: "user", content: [{ type: "text", text: prompt }], timestamp: Date.now() }],
+    messages: [{
+      role: "user",
+      content: [
+        { type: "text", text: prompt },
+        ...referenceImages.map((image) => ({ type: "image", ...image })),
+      ],
+      timestamp: Date.now(),
+    }],
   };
 
   let message: unknown;
   let failure: unknown;
   try {
-    message = await complete(model as never, context as never, {
+    // The image model's catalog entry omits vision input even though this endpoint
+    // supports image editing. Otherwise pi-ai replaces references with omission text.
+    message = await complete({ ...model, input: ["text", "image"] } as never, context as never, {
       ...(options?.apiKey ? { apiKey: options.apiKey } : {}),
       fetch: harvestingFetch(harvested, upstreamFailure, options?.fetch ?? fetch),
       onPayload: withImageModality,

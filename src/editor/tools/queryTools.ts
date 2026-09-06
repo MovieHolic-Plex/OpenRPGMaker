@@ -620,6 +620,7 @@ const DB_COLLECTIONS = [
   "actors", "classes", "skills", "items", "equipment", "enemies", "troops", "states",
   "battleAnimations", "switches", "variables", "commonEvents", "quests", "maps",
   "elements", "monsterSpecies", "lifeSkills", "farmAnimalSpecies", "crops",
+  "characterAppearances",
 ] as const;
 type DbCollection = (typeof DB_COLLECTIONS)[number];
 
@@ -644,7 +645,7 @@ function collectionEntries(project: Project, collection: DbCollection): { id: st
 
 const getDatabaseRecords: ToolDefinition = {
   name: "get_database_records",
-  description: "컬렉션 레코드를 반환한다. 기본은 {id, name}. include=full 이면 전체 필드(적 stats 등). ids로 특정 레코드만 조회, limit/offset으로 페이지 조회 가능. 수정 전에는 ids:[실제 id],include:full로 원본을 확인한다. collection: actors/classes/skills/items/equipment/enemies/troops/states/battleAnimations/switches/variables/commonEvents/quests/maps/elements/monsterSpecies/lifeSkills/farmAnimalSpecies/crops.",
+  description: "컬렉션 레코드를 반환한다. 기본은 {id, name}. include=full 이면 전체 필드(적 stats 등). ids로 특정 레코드만 조회, limit/offset으로 페이지 조회 가능. 수정 전에는 ids:[실제 id],include:full로 원본을 확인한다. collection: actors/classes/skills/items/equipment/enemies/troops/states/battleAnimations/switches/variables/commonEvents/quests/maps/elements/monsterSpecies/lifeSkills/farmAnimalSpecies/crops/characterAppearances.",
   mode: "read",
   parameters: {
     type: "object",

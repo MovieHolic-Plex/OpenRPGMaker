@@ -1,5 +1,6 @@
 import { companionCompletionsBaseUrl, type AiConfig } from "@/ai/llmClient";
 import { ANTIGRAVITY_PROVIDER_ID } from "@/ai/oauth/credentials";
+import { parseImageReferences, type ImageReference } from "@/ai/imageReferences";
 
 /**
  * 이미지 생성이 실측으로 통과하는 제공자는 Antigravity 하나다. Codex(Responses) 는
@@ -25,6 +26,7 @@ export interface GenerateAiImageRequest {
   readonly prompt: string;
   readonly model?: string;
   readonly signal?: AbortSignal;
+  readonly referenceImages?: readonly ImageReference[];
 }
 
 export interface GenerateAiImageDeps {
@@ -72,6 +74,7 @@ export async function generateAiImage(
 ): Promise<GeneratedImageAsset> {
   const prompt = request.prompt.trim();
   if (!prompt) throw new ImageGenerationError("그림 설명(prompt)이 비어 있습니다.");
+  const referenceImages = parseImageReferences(request.referenceImages);
 
   const doFetch = deps.fetch ?? fetch;
   const timeout = AbortSignal.timeout(IMAGE_REQUEST_TIMEOUT_MS);
@@ -85,7 +88,11 @@ export async function generateAiImage(
         "Content-Type": "application/json",
         "X-Rpgzzu-Provider": IMAGE_GENERATION_PROVIDER_ID,
       },
-      body: JSON.stringify({ prompt, model: request.model ?? IMAGE_GENERATION_MODEL }),
+      body: JSON.stringify({
+        prompt,
+        model: request.model ?? IMAGE_GENERATION_MODEL,
+        ...(referenceImages.length > 0 ? { referenceImages } : {}),
+      }),
       signal,
     });
   } catch (cause) {

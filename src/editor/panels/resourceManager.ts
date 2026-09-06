@@ -83,7 +83,8 @@ function makeTilesetFromUpload(asset: UploadedAsset): TilesetDef {
   };
 }
 
-export function renderResourceManager(container: HTMLElement): void {
+export function renderResourceManager(container: HTMLElement, initialKind?: ResourceKind): void {
+  if (initialKind) selectedResourceKind = initialKind;
   clearChildren(container);
   const project = store.getCurrent();
   const uploaded = Object.values(project.assets.uploaded);

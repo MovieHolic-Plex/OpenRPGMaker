@@ -221,6 +221,35 @@ describe("oh-my-pi complete (real pi-ai + mock fetch)", () => {
     expect(image.base64).toBe(base64);
   });
 
+  test("appearance references reach the real SDK wire as inline image parts", async () => {
+    const { generateProviderImage } = await import("../scripts/lib/ohMyPiImageRuntime.ts");
+    const reference = { mimeType: "image/png", data: "aGVsbG8=" };
+    const requests: unknown[] = [];
+
+    await generateProviderImage("google-antigravity", {
+      prompt: "portrait",
+      referenceImages: [reference],
+    }, {
+      apiKey: JSON.stringify({ token: "image-access", projectId: "image-project" }),
+      fetch: async (input, init) => {
+        requests.push(JSON.parse(String(init?.body)));
+        return responseWithUrl(antigravityImageSse("aW1hZ2U="), String(input));
+      },
+    });
+
+    expect(requests).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        request: expect.objectContaining({
+          contents: expect.arrayContaining([
+            expect.objectContaining({
+              parts: expect.arrayContaining([{ inlineData: reference }]),
+            }),
+          ]),
+        }),
+      }),
+    ]));
+  });
+
   test("로그인이 없으면 영어 원문 대신 401 한국어 로그인 안내로 끊는다", async () => {
     const { generateProviderImage } = await import("../scripts/lib/ohMyPiImageRuntime.ts");
     let called = false;

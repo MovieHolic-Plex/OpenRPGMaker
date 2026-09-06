@@ -483,7 +483,8 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       // Count applied milestones for accounting; only proposedCalls may be replayed.
       const changeExpectedByMode = (runOpts?.composerMode ?? "do") === "do";
       const turnWrites = [...(result.appliedCalls ?? []), ...result.proposedCalls];
-      const completenessWarnings = result.stoppedReason === "error" || !changeExpectedByMode
+      const appearanceRequested = result.appearanceGeneration?.status === "generating" && result.stoppedReason !== "error";
+      const completenessWarnings = result.stoppedReason === "error" || !changeExpectedByMode || (appearanceRequested && turnWrites.length === 0)
         ? []
         : proposalCompletenessWarnings({
             requestText,
@@ -539,6 +540,10 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         if (turnWrites.length > 0) {
           if (completenessWarnings.length > 0) deps.surface.appendBubble("system", completenessWarnings.join("\n"));
           deps.surface.setStatus(result.stoppedReason === "error" ? "오류" : "대기");
+        } else if (appearanceRequested) {
+          // A detached candidate request is neither a failed empty turn nor an
+          // applied edit. Its turn-scoped receipt never auto-applies the image.
+          deps.surface.setStatus("외형 후보 요청 전달됨 · 캐릭터 외형 DB에서 확인");
         } else {
           deps.noteNoChanges(result, completenessWarnings);
           if (result.stoppedReason !== "error") {

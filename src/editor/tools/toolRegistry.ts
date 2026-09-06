@@ -47,6 +47,7 @@ import { DUNGEON_ROOM_SESSION_TOOLS } from "./dungeonRoomSession";
 import { AI_DOC_TOOLS } from "./aiDocTools";
 import { VISION_QUERY_TOOLS } from "./visionQueryTools";
 import { VIEW_FOCUS_TOOLS } from "./viewFocusTools";
+import { CHARACTER_APPEARANCE_TOOLS } from "./characterAppearanceTools";
 import { WORLD_GRAPH_TOOLS } from "./worldGraphTools";
 import { TILE_QUERY_TOOLS } from "./tileQueryTool";
 import { getActiveToolDomainInfo } from "@/editor/assistantToolMode";
@@ -213,6 +214,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   // isPinnedTool은 도메인이 있는 툴만 핀할 수 있어, map 도메인과 핀을 함께 주면 상한(40)의 한 자리를
   // 강제로 예약한다. 실측에서는 그 예약 때문에 test/regionIntentExposure.test.ts의 대표 도구 보장 3건이 실패했다.
   ...VIEW_FOCUS_TOOLS,
+  ...withDomain(CHARACTER_APPEARANCE_TOOLS, "database"),
   ...withDomain(PLACEMENT_TOOLS, "tile"),
   ...withDomain(RANGE_CLASSIFY_TOOLS, "tile"),
 ]);

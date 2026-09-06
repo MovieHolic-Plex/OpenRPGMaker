@@ -6,6 +6,8 @@ import { adventureToolNames, adventureCompletionProblems, ADVENTURE_AUTHORING_GU
 // - 브라우저 비의존(순수). chat 함수는 주입 가능(테스트에서 모킹).
 
 import { ToolReadEvidence } from "./toolReadEvidence";
+import { APPEARANCE_GENERATION_TOOL } from "@/editor/tools/characterAppearanceTools";
+import { startAppearanceGenerationFromAssistant, type AppearanceGenerationHandoff } from "@/editor/characterAppearanceGeneration";
 import { ToolVerificationEvidence } from "./toolVerificationEvidence";
 import { getTool, normalizeToolArgs, runTool } from "@/editor/tools";
 import { viewportVillageBounds } from "@/editor/tools/authorVillageSupport";
@@ -270,6 +272,8 @@ export interface TurnResult {
    * 재적용에는 `proposedCalls` 만 써야 한다.
    */
   appliedCalls?: ProposedCall[];
+  /** Successful DB candidate request in this turn, not an applied project write. */
+  appearanceGeneration?: AppearanceGenerationHandoff;
 }
 
 // 감사 로그 항목(Phase 1 헤드리스 러너로 리플레이 가능한 시퀀스).
@@ -623,7 +627,7 @@ export const AGENT_RUN_MAX_TOTAL_STEPS = 48;
  * the pre-turn planner also authors the first plan without tools.
  */
 /** 세션 전용 쓰기 툴(레지스트리 밖) — 질문 모드에서 함께 뺀다. */
-const SESSION_WRITE_TOOL_NAMES: ReadonlySet<string> = new Set(["set_build_spec", "set_work_plan", "complete_work_item", "skip_work_item"]);
+const SESSION_WRITE_TOOL_NAMES: ReadonlySet<string> = new Set(["set_build_spec", "set_work_plan", "complete_work_item", "skip_work_item", APPEARANCE_GENERATION_TOOL]);
 
 /** 프로젝트를 바꾸는 툴인가 — 레지스트리 mode:"write" 또는 세션 전용 쓰기 툴. */
 export function isWriteToolName(name: string): boolean {
@@ -807,6 +811,8 @@ export type CompactionOutcome =
   | { readonly kind: "skipped"; readonly reason: string };
 
 export class AssistantSession {
+  private readonly appearanceProjectIdentity = store.getProjectIdentity();
+  private turnAppearanceGeneration: AppearanceGenerationHandoff | undefined;
   private config: AiConfig;
   private readonly chat: ChatFn;
   private readonly contextOptions: ContextOptions;
@@ -1578,7 +1584,10 @@ export class AssistantSession {
     // artifact evidence until that item completes (or a different goal starts).
     if (!continuesGoal) this.turnProposals = new Map();
     // Synthetic continuations belong to the same user goal and retain its applied ledger.
-    if (!options.driverContinue) this.turnAppliedMilestoneCalls = [];
+    if (!options.driverContinue) {
+      this.turnAppliedMilestoneCalls = [];
+      this.turnAppearanceGeneration = undefined;
+    }
     this.turnWriteDedupe = new Map();
     this.turnToolStartedCount = 0;
     this.turnEscalatedToolNames = [];
@@ -2574,8 +2583,11 @@ export class AssistantSession {
    * "변경 없음(0건)" 으로 보고하고, 밑그림 이행 여부도 지지 않은 것으로 판정한다.
    */
   private withTurnLedger(result: TurnResult): TurnResult {
-    if (this.turnAppliedMilestoneCalls.length === 0) return result;
-    return { ...result, appliedCalls: [...this.turnAppliedMilestoneCalls] };
+    return {
+      ...result,
+      ...(this.turnAppliedMilestoneCalls.length > 0 ? { appliedCalls: [...this.turnAppliedMilestoneCalls] } : {}),
+      ...(this.turnAppearanceGeneration ? { appearanceGeneration: this.turnAppearanceGeneration } : {}),
+    };
   }
 
   private withWorkPlanResult(result: TurnResult): TurnResult {
@@ -3590,7 +3602,7 @@ export class AssistantSession {
         if (typeof args.theme === "string" && args.theme.trim()) turnTheme = args.theme.trim();
         this.emitToolStarted(onEvent, name, args);
         await this.yieldForUi(signal);
-        if (tool?.mode === "write") writeToolAttempts += 1;
+        if (tool?.mode === "write" || name === APPEARANCE_GENERATION_TOOL) writeToolAttempts += 1;
         // 프로토콜 보장: 이 호출에 대한 role:"tool" 응답을 반드시 남긴다. 응답 없이 라운드를 벗어나면
         // 세션의 영구 대화에 짝 없는 tool_calls 가 남아 **그 뒤 모든 턴**이 공급자 400 으로 죽는다
         // (실측 2026-08-30). 예외는 삼키지 않고 응답을 붙인 뒤 그대로 다시 던진다.
@@ -3627,6 +3639,10 @@ export class AssistantSession {
             toolResult = { ok: false, summary, issues: [{ severity: "error", code: "read-dependency-failed", message: summary }] };
           } else if (name === "set_build_spec") {
             toolResult = this.applyBuildSpec(args);
+          } else if (name === APPEARANCE_GENERATION_TOOL) {
+            const handoff = await startAppearanceGenerationFromAssistant(this.ctx.project, args, this.appearanceProjectIdentity, signal);
+            toolResult = handoff;
+            if (handoff.ok && handoff.data?.status === "generating") this.turnAppearanceGeneration = handoff.data;
           } else if (
             name === "get_work_plan" ||
             name === "set_work_plan" ||

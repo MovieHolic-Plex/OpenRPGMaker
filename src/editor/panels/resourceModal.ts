@@ -2,8 +2,9 @@ import { renderResourceManager } from "@/editor/panels/resourceManager";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
+import type { ResourceKind } from "@/project/types";
 
-export function openResourceModal(): void {
+export function openResourceModal(initialKind?: ResourceKind): void {
   document.querySelector("[data-testid='resource-modal']")?.remove();
 
   const body = el("div", { class: "database-modal-body" });
@@ -63,6 +64,6 @@ export function openResourceModal(): void {
   // Escape 는 공용 모달 스택이 라우팅한다. 자체 document 리스너로 잡으면 도크 모드에서
   // 데이터베이스를 켠 채 이 창을 열었을 때 데이터베이스까지 함께 닫혔다.
   registerModal(backdrop, close);
-  renderResourceManager(body);
+  renderResourceManager(body, initialKind);
   closeButton.focus();
 }

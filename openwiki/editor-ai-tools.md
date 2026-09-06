@@ -1,5 +1,38 @@
 # Editor AI Tools & Vocabulary
 
+## Character appearance image candidates v1 (2026-09-06)
+
+`get_database_records` exposes `characterAppearances` for real set IDs.
+`generate_character_appearance {appearanceId,slot?}` generates only a missing
+`face` (default) or `bust`; it never generates or modifies walking charsets.
+Generic synchronous runners return an honest `ui-required` preparation result.
+The in-app assistant awaits the registered Database-opening callback, checks
+the session's actual ProjectIdentity and current record, then starts the shared
+`characterAppearanceGeneration` controller. Ask mode excludes and rejects this
+capability even though its generic preparation is read-only.
+
+Candidates remain outside the project until explicit DB Apply. Occupied slots
+can only be replaced through the human slot action; fresh asset IDs preserve
+old images. Apply rechecks the target snapshot and project identity, updates the
+current cloned store draft atomically, and creates one undo checkpoint.
+Cancelled, late, failed and stale requests do not write project assets.
+Leaving the set/tab/modal disposes UI subscriptions and cancels its candidate.
+
+The image request carries at most two bounded raster references: a read-only
+crop of the selected manual charset cell and an existing face when present.
+`imageReferences.ts` validates the external payload;
+`ohMyPiImageRuntime.ts` sends real SDK image parts and marks this image-generation
+model as vision-capable so the SDK does not replace them with omission text.
+The existing Antigravity route and model fallback remain. Client cancellation
+discards output; it does not claim upstream provider work has stopped.
+
+`TurnResult.appearanceGeneration` is a per-turn handoff receipt, not an applied
+write. `aiTurnRunner` uses it to report the DB request without false zero-change
+retry warnings; global proposal auto-apply is unchanged. Contracts:
+`characterAppearanceGeneration`, `characterAppearanceReferences`,
+`characterAppearanceAssistant`, `characterAppearanceLifecycle`,
+`aiTurnAppliedAccounting`, and the existing provider SDK suite.
+
 ## Completed-house transaction protection - Phase 1 (2026-09-05)
 
 `src/editor/tools/houseProtection.ts` is the shared completed-house ownership rule.
