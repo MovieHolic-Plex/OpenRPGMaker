@@ -55,10 +55,15 @@ Phase 1 증거 위치: `output/evidence/growth-presets/p1`.
 
 ## 명시적 프리셋 추가 (Phase 2, 2026-09-06)
 
-양쪽 스튜디오의 **프리셋**은 역할별 표지 3개를 보여주는 내부 화면이다.
-`growthTree/presetBrowser.ts`는 공개 `project/growth/presets` API만 소비한다.
-현재 프로젝트 복제본에 실제 라이브러리를 적용해 분기 그래프, 레벨·비용·등급,
-선행 조건과 추가 레코드 수를 보여준다. 열기·선택·취소·Escape는 저장/스냅샷이 없다.
+양쪽 스튜디오는 **프리셋 버튼을 누르기 전부터** 미적용 노드/간선을 표시한다.
+저작 캔버스가 위에서 기본 선택/편집을 유지하며 아래 264px 영역은 별도 미리보기다.
+`growthTree/presetBrowser.ts`는 `createGrowthPresetPreview(presetId)`의 분리된 템플릿을
+그린다. 이 Project-shaped drawing context는 저장/플레이용 프로젝트가 아니며, 현재
+프로젝트·할당·여유 공간을 읽지 않는다. 실제 추가 사전 검증만 현재 프로젝트 복제본에
+`applyGrowthPreset`을 적용한다. 목적지 캔버스가 가득 차도 미리보기는 계속 보인다.
+프리셋 선택·노드 검사·확대·스크롤·취소·Escape는 저장/dirty/스냅샷이 없다.
+헤더의 프리셋 버튼은 같은 선택을 큰 그래프와 조건 목록으로 펼친다. 표지가 아니라
+기존 180×98 노드 그림이 중심이며 100%에서 시작한다. 나머지 가지는 자체 스크롤로 읽는다.
 명시적 추가만 현재 데이터에 라벨 있는 `editGrowth` 경계 하나를 만든다. 기존 내용·설정을
 보존하고 반복 추가는 독립 사본이다. 새 승급 루트 또는 스킬 트리/루트를 선택해 화면 안으로 이동한다.
 할당 사전 검증 실패는 표시하며 빈 되돌리기 항목을 만들지 않는다.
@@ -67,7 +72,8 @@ Phase 1 증거 위치: `output/evidence/growth-presets/p1`.
 자동 좌표가 이동하므로 추가 전 배치를 쓰면 겹친다. 계산·빈 공간 확인은 기록/설정 변경 전에 끝내며
 기존 수동 좌표는 바꾸지 않는다.
 표지는 편집기 전용이고 그래프 그림은 Phase 1 선택기를 재사용한다.
-스킬 트리는 공용·초기화 허용으로 추가된다. 기존 포인트 예산(0 포함)을 바꾸지 않으며
+기존 독립 스킬 프리셋은 공용·초기화 허용으로 추가된다. 연결 묶음은 직업별 계승 트리다.
+기존 포인트 예산(0 포함)을 바꾸지 않으며
 설정이 처음 생길 때만 라이브러리의 시작 2 / 레벨당 1을 쓴다. 승급은 주인공을 자동 전직시키지 않는다.
 수동 빈 트리 생성은 유지한다. 성장 시뮬레이션에서는 프리셋·새 트리·포인트 설정·노드 이동·자동 배치를 비활성화한다.
 데이터/ID/참조는 라이브러리, 투자·전직은 런타임 소유다. 자동 시드·AI·장르 연결·직접 DB 쓰기는 없다.
@@ -140,7 +146,7 @@ HP/MP는 하향 제한만 하며 회복하지 않는다. 기존 레벨업 회복
 `skillTreeDeletionBlocker`는 외부 노드/승급 조건의 참조를 보호한다. 같은 트리 내부 참조는
 노드 삭제 시 해제되며, 복제에서는 자기 트리 ID만 새 ID로 매핑하고 외부 참조는 유지한다.
 
-### 다음 UI 증분이 사용하는 API
+### 통합 API
 
 - 타입: `project/growth/types.ts`의 `NodeRankRequirement`, `PromotionLineage`와 위 선택 필드.
 - `project/growth/lineage.ts`: `effectiveActorClassId`, `validActorClassOverride`, `effectivePromotionLineage`.
@@ -154,16 +160,58 @@ HP/MP는 하향 제한만 하며 회복하지 않는다. 기존 레벨업 회복
   `skillTreeDeletionBlocker(project, treeId, nodeId?)`, `deleteSkillTree(project, treeId)`,
   `duplicateSkillTree(tree, newId)`. `connectSkillNodes`/`deleteSkillNode`의 마지막 선택 project 인자는
   외부 참조/순환 검사에 필요하며 실제 스튜디오는 전달한다.
-- `renderGrowthTreeTab(host, mode, onNavigateToSkills?)`: 직업 인스펙터의 연결 트리 열기는 목적지
+- `renderGrowthTreeTab(host, mode, onNavigateToSkills?, onNavigate?)`: 직업 인스펙터의 연결 트리 열기는 목적지
   선택을 보존한 뒤 Database 탭 이동 콜백을 사용한다. 양쪽 스튜디오는 동일 런타임으로 승급을
   시뮬레이션하며 임의 직업 선택기는 실제 `changeActorClass` 의미를 사용한다.
 
 기존 native control/section으로 계승 설정, 스킬·등급·투자 포인트 조건과 qualified 선행
 트리/노드/등급을 편집한다. 실패는 런타임 blocker를 표시하고 저작 쓰기/undo를 만들지 않는다.
-연결 프리셋(계약 11–14), 기본 표시 프리셋 그래프와 브라우저 개편은 이 런타임 증분의 범위 밖이다.
+네 번째 navigation callback은 `promotion | skill | actors`를 받으며 세 번째 legacy callback은
+유지한다. Database는 목적지 탭 캐시를 비우고 같은 호스트의 선택을 다시 그린다.
+주인공 경로는 기존 `db-picker-class`에 초점만 옮기며 직업/곡선을 자동 변경하지 않는다.
+
+## 연결 프리셋과 그래프 (2026-09-06)
+
+- `GROWTH_PRESETS`: `bundle-vanguard`, `bundle-arcane`, `bundle-ranger`가 양쪽에 추가된다.
+  기존 `promotion-{vanguard,arcane,ranger}`, `skill-{vanguard,arcane,ranger}` 여섯 개는 그대로다.
+  metadata kind는 `bundle | promotion | skill`, 화면 mode는 `GrowthStudioMode`다.
+- 묶음마다 직업 5개(루트 → 두 갈래 → 각 최종 직업), 계승 트리 5개, 스킬 3개, 트리 노드 10개다.
+  각 직업은 비어 있지 않은 자기 트리를 갖고 `inheritOnPromotion: true`다. 클래스의 자동
+  습득 스킬 목록은 비어 있으므로 트리 스킬과 겹치지 않는다.
+- 트리마다 기초 2등급(각 1 P)과 스킬 1등급(1 P)이 있다. 승급은 출발 트리의 기초 2등급,
+  출발 트리 스킬, 실제 투자 3 P를 모두 요구한다. 첫 승급 Lv.5에 누적 3 P, 최종 승급
+  Lv.12에 누적 6 P이므로 새 예산 2 + (레벨−1)에서 양쪽 경로가 모두 도달 가능하다.
+  최종 직업의 트리까지 모두 익혀도 Lv.12에 9/13 P다. 목적지 전용 스킬을 입장 조건으로 쓰지 않는다.
+- 각 다음 트리의 기초는 직전 트리의 기초 2등급을 요구한다. 로컬 선행과 자기 트리 rank 조건도
+  함께 쓴다. 템플릿은 일부러 같은 `root`/`technique` 로컬 ID를 쓰고, applicator는
+  `(treeId,nodeId)` identity로 모든 노드/직업/스킬/트리/승급 gate를 remap한다.
+  반복 추가는 완전히 독립된 참조와 좌표를 할당한다.
+- `GrowthPresetApplication`의 addedClassIds/addedTreeIds/addedSkillIds/addedNodeIds는
+  템플릿 순서이고 루트가 먼저다. ID 문자열을 분해하지 말고 결과 배열을 사용한다.
+- `skillGraph.ts`는 로컬 선행과 qualified 선행의 간선을 중복 없이 합치고 외부 트리에는
+  점선 테두리 portal node를 만든다. 트리 이름·노드·필요 등급이 보이고 클릭하면 원본 트리로
+  이동한다. 미리보기와 실제 저작 캔버스가 같은 규칙을 쓴다. 외부 노드는 이동/편집하지 않는다.
+- 새 그래프 testid prefix는 `growth-preset-*`이며 실제 캔버스의 `growth-*`와 구별한다.
+  미리보기 상태는 호스트/모드에 보존되고 가져온 묶음의 선택은 양쪽 모드에 공유한다.
+  `growth-bundle-skills`, `growth-bundle-promotion`, `growth-bundle-assign-actor`는 추가가 아닌 이동이다.
+- 실제 에디터 QA: `node scripts/qa/growth-connected-studio.mjs`. 포트 **9897을 직접 시작/종료**하며
+  점유된 서버를 재사용하지 않는다. 원격 쓰기를 차단하고 3개 화면 크기에서 실제 노드 크기,
+  이미지 로드, pane/node 겹침, 포커스/확대/Escape, 무변경 preview, Apply 1 undo,
+  같은 묶음 탭 이동, 시작 직업 경로, 반복 독립 추가를 검증한다. sleep/polling 없이 MutationObserver와
+  bounded deadline을 사용한다(일반 15초, cold Vite boot 120초).
+  `.omo/evidence/growth-integrated/browser-presets/report.json`과 screenshots가 근거다.
+  `applied-bundle.json`은 실제 UI 추가 결과이며 주인공을 자동 지정하지 않은 별도 QA 입력이다.
+  Supabase 별도 QA 프로젝트 저장/재로드와 출하 플레이어 최종 증거는 lead 소유다.
+  이미지 도구가 unsupported이므로 이 증거는 주관적 시각 승인으로 주장하지 않는다.
 
 ## 검증
 
+- `test/growthConnectedPresets.test.ts`: 연결/반복 적용의 모든 참조, 0 예산/기존 기록 보존,
+  wire roundtrip, 실제 runtime 투자/승급으로 세 역할의 두 가지 경로 도달 가능성.
+- `test/growthConnectedStudio.test.ts`: 기본 노드, 꽉 찬 목적지에서도 분리 preview,
+  단일 undo/탭 이동, qualified portal 및 실제 좌표 범위 보존.
+- 기존 `growthPresets`, `growthPresetStudio`, `growthTreeArtSurfaces`는 여섯 독립 preset 또는
+  `.growth-body` 범위로 명시해 기존 동작 검증을 그대로 유지한다.
 - `test/growthIntegrated.test.ts`, `test/growthIntegratedBoundaries.test.ts`: 다이아몬드 실제 경로,
   고급 시작/옛 저장, 모든 새 gate 경계, 비활성 등급/실제 지불액, 순환/참조/형태 거부,
   전투 연속 승급 write-back, 메뉴 능력치, 원격 DB와 무관한 실제 세이브 슬롯 왕복.
