@@ -9,6 +9,11 @@ import type { MoveCommand } from "@/project/types";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { cloneRngState, normalizeRngState, type RngState } from "@/util/rng";
 import type { RuntimePerfCounters } from "@/player/runtimePerfCounters";
+import { subscribeActionCombatObservations } from "@/player/playSceneActionCombat";
+import { inBounds, isPassable } from "@/project/collision";
+import { store } from "@/project/store";
+import { PLAYER_COMBATANT_ID, type ActionEnemyState } from "@/player/actionCombatTypes";
+import { ACTION_COMBAT_OUTCOMES, type ActionCombatObservation, type ActionCombatRuntimeResult } from "@/testing/actionCombatProof";
 
 // 런타임 디버그 쓰기 훅. 플레이 중 스위치/변수/아이템/골드/회복/텔레포트를 조작한다.
 export type RuntimeDebugHook = {
@@ -46,6 +51,7 @@ export type RuntimeDebugHook = {
 };
 
 type TestHookWindow = Window & {
+  __oprnRunActionCombatProof?: () => Promise<ActionCombatRuntimeResult>;
   __oprnInput?: {
     action: () => void;
     attack: () => void;
@@ -216,6 +222,8 @@ export function installPlaySceneTestHooks(
   w.__oprnEmotes = () => describeSceneEmotes(scene as unknown as Parameters<typeof describeSceneEmotes>[0]);
 
   w.__oprnActionCombat = () => actionCombatDebug(scene);
+  const proofController = new AbortController();
+  w.__oprnRunActionCombatProof = () => runActionCombatSceneProof(scene as PlaySceneContext, proofController.signal);
   // 런타임 디버그 쓰기 훅(항상 활성). 조작 후 syncRuntimeState로 화면/상태 JSON을 갱신한다.
   const applyAndSync = (op: DebugOp): void => {
     applyDebugOp(getSession(), op);
@@ -285,6 +293,9 @@ export function installPlaySceneTestHooks(
     },
   };
   scene.events.once("shutdown", () => {
+    proofController.abort();
+    delete w.__oprnRunActionCombatProof;
+    delete w.__oprnActionCombat;
     delete w.__oprnInput;
     delete w.__oprnPlayerSprite;
     delete w.__oprnCharacterSprites;
@@ -331,6 +342,170 @@ export function installPlaySceneTestHooks(
     vitals.mp = Math.max(0, Math.min(vitals.maxMp, mp));
     syncRuntimeState();
   };
+}
+
+/**
+ * One bounded QA scenario, in the actual exported PlayScene. Setup relocates live
+ * combatants only; authored stats, equipment, rewards, collision and dispatcher
+ * remain authoritative. Nothing here is written back to the project.
+ */
+async function runActionCombatSceneProof(
+  scene: PlaySceneContext, shutdown: AbortSignal,
+): Promise<ActionCombatRuntimeResult> {
+  const state = scene.actionCombatState;
+  if (!state || scene.game.registry.get("qaInstrumentation") !== true) {
+    return { pass: false, observations: [], reason: "Action runtime QA capability is unavailable" };
+  }
+  const melee = [...state.enemies.values()].find((enemy) => enemy.actionAttack?.kind === "melee");
+  const ranged = [...state.enemies.values()].find((enemy) => enemy.actionAttack?.kind === "projectile");
+  const leadId = scene.session.partyActorIds[0];
+  const vitals = leadId ? scene.session.actorVitals[leadId] : undefined;
+  if (!melee || !ranged || !vitals || vitals.hp <= (melee.actionAttack?.damage ?? 0)) {
+    return { pass: false, observations: [], reason: "Scenario requires live authored melee/projectile spawns and a surviving actor" };
+  }
+  const project = store.getCurrent();
+  let stage: { x: number; y: number } | undefined;
+  for (let y = 2; y < scene.map.height - 1 && !stage; y += 1) {
+    for (let x = 2; x < scene.map.width - 4; x += 1) {
+      const cells = [{ x, y }, { x, y: y - 1 }, { x: x + 1, y }, { x: x + 3, y }];
+      if (cells.every((cell) => inBounds(scene.map, cell.x, cell.y)
+        && isPassable(project, scene.map, cell.x, cell.y)
+        && !scene.map.events.some((event) => event.x === cell.x && event.y === cell.y))) {
+        stage = { x, y };
+        break;
+      }
+    }
+  }
+  if (!stage) return { pass: false, observations: [], reason: "No passable action proof staging cells on this map" };
+  const controller = new AbortController();
+  const abort = (): void => controller.abort();
+  shutdown.addEventListener("abort", abort, { once: true });
+  const deadline = setTimeout(abort, 45_000);
+  const observations: ActionCombatObservation[] = [];
+  const notify = new Set<() => void>();
+  const stop = subscribeActionCombatObservations(scene, (entry) => {
+    observations.push(entry);
+    for (const listener of notify) listener();
+  });
+  // Register both the exact outcome and post-frame state signals before input.
+  const until = (check: () => boolean, trigger: () => void = () => {}): Promise<void> => new Promise((resolve, reject) => {
+    const cleanup = (): void => {
+      notify.delete(inspect);
+      scene.events.off("postupdate", inspect);
+      controller.signal.removeEventListener("abort", cancelled);
+    };
+    const inspect = (): void => {
+      if (scene.map.id !== mapId) {
+        cleanup();
+        reject(new Error("Action proof map changed"));
+      } else if (check()) {
+        cleanup();
+        resolve();
+      }
+    };
+    const cancelled = (): void => { cleanup(); reject(new Error("Action proof cancelled or timed out")); };
+    notify.add(inspect);
+    scene.events.on("postupdate", inspect);
+    controller.signal.addEventListener("abort", cancelled, { once: true });
+    if (controller.signal.aborted) { cancelled(); return; }
+    trigger();
+    inspect();
+  });
+  const mapId = scene.map.id;
+  const positionPlayer = (): void => {
+    scene.input_.releaseAllKeys();
+    scene.moving = false;
+    scene.dashing = false;
+    scene.moveProgress = 0;
+    scene.tileX = stage.x;
+    scene.tileY = stage.y;
+    scene.session.x = stage.x;
+    scene.session.y = stage.y;
+    scene.movingFrom = { ...stage };
+    scene.movingTo = { ...stage };
+    scene.player.setPosition(stage.x * 16 + 8, stage.y * 16 + 16);
+    state.playerIframesMs = 0;
+    state.dodgeIframesMs = 0;
+    state.hitstopMs = 0;
+    state.stamina = 100;
+    reseedSessionRng(scene.session, 731);
+  };
+  const park = (enemy: ActionEnemyState): void => {
+    enemy.mode = "recover";
+    enemy.modeTimerMs = 1_000_000;
+    enemy.attackCooldownMs = 1_000_000;
+    enemy.targetId = PLAYER_COMBATANT_ID;
+    enemy.retargetMs = 1_000_000;
+    enemy.knockbackTween?.stop();
+  };
+  const arm = (enemy: ActionEnemyState, distance: number): void => {
+    park(enemy);
+    scene.eventPositions[enemy.eventId] = { x: stage.x + distance, y: stage.y, direction: "left" };
+    scene.eventSprites.get(enemy.eventId)?.setPosition((stage.x + distance) * 16 + 8, stage.y * 16 + 16);
+    enemy.mode = "windup";
+    enemy.modeTimerMs = 0;
+  };
+  const key = (type: "keydown" | "keyup", value: string): void => {
+    document.dispatchEvent(new KeyboardEvent(type, { key: value, bubbles: true }));
+  };
+  try {
+    if (shutdown.aborted) return { pass: false, observations, reason: "Action proof scene shut down" };
+    // Existing field spawns remain the roster; hold background movement for the
+    // paired attack, otherwise pathfinding changes the counterfactual geometry.
+    scene.autonomousNPCs.clear();
+    for (const enemy of state.enemies.values()) park(enemy);
+    positionPlayer();
+    const hp = vitals.hp;
+    await until(() => observations.some((entry) => entry.outcome === "player-damage" && entry.eventId === melee.eventId), () => {
+      arm(melee, 1);
+      key("keydown", "Shift");
+    });
+    key("keyup", "Shift");
+    park(melee);
+    const control = observations.find((entry) => entry.outcome === "player-damage" && entry.eventId === melee.eventId);
+    positionPlayer();
+    vitals.hp = hp;
+    await until(() => observations.some((entry) => entry.outcome === "dodge-rejection" && entry.attackId === control?.attackId), () => {
+      arm(melee, 1);
+      key("keydown", "Shift");
+      scene.input_.injectDirection("up");
+    });
+    key("keyup", "Shift");
+    scene.input_.releaseAllKeys();
+    park(melee);
+    const spent = state.stamina;
+    await until(() => !scene.moving && state.stamina > spent);
+    positionPlayer();
+    await until(() => observations.some((entry) => entry.outcome === "enemy-projectile" && entry.eventId === ranged.eventId), () => arm(ranged, 3));
+    park(ranged);
+    // Projectiles were created by the real dispatcher. Clear them between cases
+    // so a late projectile cannot turn the controlled swing case into a death.
+    for (const projectile of state.projectiles) projectile.object.destroy();
+    state.projectiles.length = 0;
+    for (let swings = 0; melee.hp > 0 && swings < 256; swings += 1) {
+      await until(() => state.swingCooldownMs === 0 && state.stamina >= 10);
+      park(melee);
+      scene.eventPositions[melee.eventId] = { x: scene.tileX + 1, y: scene.tileY, direction: "left" };
+      scene.facing = "right";
+      const previous = observations.length;
+      await until(() => observations.slice(previous).some((entry) => entry.outcome === "swing-hit" && entry.eventId === melee.eventId),
+        () => scene.input_.injectAttackEdge());
+    }
+    const rejected = observations.find((entry) => entry.outcome === "dodge-rejection" && entry.attackId === control?.attackId);
+    const pass = control !== undefined && control.before > control.after
+      && rejected !== undefined && rejected.before === rejected.after
+      && ACTION_COMBAT_OUTCOMES.every((outcome) => observations.some((entry) => entry.outcome === outcome));
+    return { pass, observations, ...(pass ? {} : { reason: "Runtime did not observe every required action outcome" }) };
+  } catch (error) {
+    return { pass: false, observations, reason: error instanceof Error ? error.message : String(error) };
+  } finally {
+    key("keyup", "Shift");
+    scene.input_.releaseAllKeys();
+    stop();
+    clearTimeout(deadline);
+    shutdown.removeEventListener("abort", abort);
+    controller.abort();
+  }
 }
 
 function cameraDebug(scene: Phaser.Scene): CameraDebug {

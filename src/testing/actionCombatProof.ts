@@ -53,11 +53,17 @@ function canonical(value: unknown): string {
 
 export function actionCombatProjectFingerprint(project: Project): string {
   const source = canonical(project);
-  let hash = 0xcbf29ce484222325n;
+  // Exact FNV-1a 64-bit arithmetic in two words. Per-character BigInt took
+  // 533 ms for the authored demo in Chromium, blocking acceptance evaluation.
+  let high = 0xcbf29ce4;
+  let low = 0x84222325;
   for (let i = 0; i < source.length; i += 1) {
-    hash = BigInt.asUintN(64, (hash ^ BigInt(source.charCodeAt(i))) * 0x100000001b3n);
+    low = (low ^ source.charCodeAt(i)) >>> 0;
+    high = (Math.imul(high, 435) + Math.imul(low, 256) + Math.floor(low * 435 / 0x100000000)) >>> 0;
+    low = Math.imul(low, 435) >>> 0;
   }
-  return `action-v1:${source.length}:${hash.toString(16)}`;
+  const hex = `${high.toString(16)}${low.toString(16).padStart(8, "0")}`.replace(/^0+(?=.)/, "");
+  return `action-v1:${source.length}:${hex}`;
 }
 
 export function isVerifiedActionCombatProof(
@@ -174,6 +180,9 @@ export async function runActionCombatTest(
     document.body.append(frame);
     const runtime = await result;
     if (options.signal?.aborted) return finish("cancelled", [], "Action proof cancelled");
+    if (actionCombatProjectFingerprint(project) !== projectFingerprint) {
+      return finish("unverified", runtime.observations, "Project revision changed during action proof");
+    }
     return finish(runtime.pass ? "verified" : "unverified", runtime.observations, runtime.reason);
   } catch (error) {
     return finish(timedOut ? "timeout" : controller.signal.aborted ? "cancelled" : "unverified", [],

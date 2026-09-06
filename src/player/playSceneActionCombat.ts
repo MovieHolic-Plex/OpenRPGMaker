@@ -73,6 +73,38 @@ import {
   type ActionEnemyState,
 } from "@/player/actionCombatTypes";
 import { mountActionHud } from "@/player/actionHud";
+import type { ActionCombatObservation, ActionCombatOutcome } from "@/testing/actionCombatProof";
+
+const combatObservers = new WeakMap<PlaySceneContext, Set<(entry: ActionCombatObservation) => void>>();
+
+/** Explicit QA subscribers only; normal player frames allocate no observations. */
+export function subscribeActionCombatObservations(
+  scene: PlaySceneContext, receive: (entry: ActionCombatObservation) => void,
+): () => void {
+  if (scene.game.registry.get("qaInstrumentation") !== true) return () => {};
+  let sequence = 0;
+  const listener = (entry: ActionCombatObservation): void => receive({ ...entry, sequence: ++sequence });
+  const listeners = combatObservers.get(scene) ?? new Set();
+  listeners.add(listener);
+  combatObservers.set(scene, listeners);
+  return () => {
+    listeners.delete(listener);
+    if (listeners.size === 0) combatObservers.delete(scene);
+  };
+}
+
+function observeCombat(
+  scene: PlaySceneContext, outcome: ActionCombatOutcome, before: number, after: number,
+  eventId?: string, attackId?: string,
+): void {
+  const listeners = combatObservers.get(scene);
+  if (!listeners) return;
+  const entry: ActionCombatObservation = {
+    outcome, mapId: scene.map.id, sequence: 0, before, after,
+    ...(eventId ? { eventId } : {}), ...(attackId ? { attackId } : {}),
+  };
+  for (const receive of listeners) receive(entry);
+}
 
 const ENEMY_FLASH_MS = 120;
 const PLAYER_FLASH_MS = 200;
@@ -188,7 +220,9 @@ function tickActionTimers(scene: PlaySceneContext, state: ActionCombatSceneState
   if (state.config.staminaEnabled) {
     // 가드를 잡고 있는 동안은 회복하지 않는다 — 그러지 않으면 드레인이 리젬에 상쇄되어 상시 가드가 공짜가 된다.
     if (!state.guarding) {
+      const before = state.stamina;
       state.stamina = Math.min(ACTION_STAMINA_MAX, state.stamina + (ACTION_STAMINA_REGEN_PER_SEC * deltaMs) / 1000);
+      if (state.stamina > before) observeCombat(scene, "stamina-recovered", before, state.stamina);
     }
   }
   if (state.playerFlashMs > 0) {
@@ -357,7 +391,8 @@ function damageActionTarget(
   fromTileY: number
 ): void {
   if (targetId === PLAYER_COMBATANT_ID) {
-    damagePlayer(scene, state, damage, fromTileX, fromTileY);
+    damagePlayer(scene, state, damage, fromTileX, fromTileY, attacker.eventId,
+      `${attacker.eventId}:${attacker.actionAttack?.kind}:${damage}:${fromTileX}:${fromTileY}`);
     return;
   }
   const victim = state.enemies.get(targetId);
@@ -461,8 +496,10 @@ function updatePlayerDodge(scene: PlaySceneContext, state: ActionCombatSceneStat
     deltaMs,
     requested,
   });
+  const before = state.stamina;
   state.stamina = outcome.stamina;
   state.dodgeIframesMs = outcome.iframesRemainingMs;
+  if (state.stamina < before) observeCombat(scene, "stamina-spent", before, state.stamina);
 }
 
 // 홀드 가드. 키를 누르고 있는 동안 피해가 줄고 스태미나가 탄다. 판정 자체는 전부 순수 모듈(guard.ts).
@@ -516,11 +553,18 @@ function applyContactDamage(scene: PlaySceneContext, state: ActionCombatSceneSta
   }
 }
 
-function damagePlayer(scene: PlaySceneContext, state: ActionCombatSceneState, damage: number, fromTileX: number, fromTileY: number): void {
+function damagePlayer(
+  scene: PlaySceneContext, state: ActionCombatSceneState, damage: number,
+  fromTileX: number, fromTileY: number, eventId?: string, attackId?: string,
+): void {
   if (damage <= 0) return;
   if (state.playerIframesMs > 0) return;
   // 회피 무적: 스태미나를 지불하고 열린 짧은 창 동안만 유효하다.
-  if (state.dodgeIframesMs > 0) return;
+  if (state.dodgeIframesMs > 0) {
+    const hp = scene.session.actorVitals[scene.session.partyActorIds[0] ?? ""]?.hp;
+    if (hp !== undefined && hp > 0) observeCombat(scene, "dodge-rejection", hp, hp, eventId, attackId);
+    return;
+  }
   // 가드: 무적이 아니라 감산이다. 피해는 반드시 1 이상 들어온다.
   const dealt = state.guarding ? guardedDamage(damage, state.guardMultiplier) : damage;
   if (dealt <= 0) return;
@@ -530,7 +574,9 @@ function damagePlayer(scene: PlaySceneContext, state: ActionCombatSceneState, da
   syncActorVitals(project, scene.session.actorVitals, leadId);
   const vitals = scene.session.actorVitals[leadId];
   if (!vitals || vitals.hp <= 0) return;
+  const before = vitals.hp;
   vitals.hp = Math.max(0, vitals.hp - dealt);
+  observeCombat(scene, "player-damage", before, vitals.hp, eventId, attackId);
   state.playerIframesMs = state.config.playerIframesMs;
   state.playerFlashMs = PLAYER_FLASH_MS;
   state.hitstopMs = Math.max(state.hitstopMs, HITSTOP_PLAYER_HURT_MS);
@@ -571,7 +617,11 @@ function performActionCombatSwing(scene: PlaySceneContext, state: ActionCombatSc
   const lead = leadActorSwingProfile(scene);
   if (!lead) return;
   state.swingCooldownMs = lead.cooldownMs;
-  if (state.config.staminaEnabled) state.stamina = Math.max(0, state.stamina - ACTION_SWING_STAMINA_COST);
+  if (state.config.staminaEnabled) {
+    const before = state.stamina;
+    state.stamina = Math.max(0, state.stamina - ACTION_SWING_STAMINA_COST);
+    observeCombat(scene, "stamina-spent", before, state.stamina);
+  }
   flashSwingArc(scene, scene.facing, lead.range);
   pulsePlayerSwing(scene);
   playActionSe(SE_SWING_RESOURCE_ID);
@@ -589,7 +639,9 @@ function performActionCombatSwing(scene: PlaySceneContext, state: ActionCombatSc
     });
     const multiplier = typeChartMultiplierForTypes(project, lead.elementId, [], monsterTypesForRecord(project, enemy.enemyId));
     const damage = Math.max(1, Math.round(base * multiplier));
+    const before = enemy.hp;
     hitActionEnemy(scene, state, enemy, damage, pos.x, pos.y);
+    if (enemy.hp < before) observeCombat(scene, "swing-hit", before, enemy.hp, enemy.eventId);
   }
 }
 
@@ -663,6 +715,7 @@ function actionSkillSlotNames(project: Project, slotIds: readonly string[]): str
 function hitActionEnemy(scene: PlaySceneContext, state: ActionCombatSceneState, enemy: ActionEnemyState, damage: number, tileX: number, tileY: number): void {
   // 이미 사망 연출에 들어간 적은 다시 맞지 않는다(보상 이중 지급 방지).
   if (enemy.dying) return;
+  const hpBefore = enemy.hp;
   enemy.hp = Math.max(0, enemy.hp - damage);
   enemy.flashMs = ENEMY_FLASH_MS;
   state.hitstopMs = Math.max(state.hitstopMs, HITSTOP_HIT_ENEMY_MS);
@@ -678,6 +731,7 @@ function hitActionEnemy(scene: PlaySceneContext, state: ActionCombatSceneState, 
   }
   // 사망: 보상은 여기서 정확히 한 번 떨어지고, 사라지는 연출만 뒤로 미룬다.
   enemy.dying = true;
+  observeCombat(scene, "enemy-defeat", hpBefore, enemy.hp, enemy.eventId);
   applyKillReputation(state, enemy.factionId);
   grantActionKillRewards(scene, enemy, tileX, tileY);
   playEnemyDeathBeat(scene, enemy);
@@ -757,6 +811,10 @@ function replaceFactionStanceOverrides(
 }
 
 function grantActionKillRewards(scene: PlaySceneContext, enemy: ActionEnemyState, tileX: number, tileY: number): void {
+  const rewardTotal = (): number => scene.session.gold
+    + Object.values(scene.session.actorExperience).reduce((sum, value) => sum + value, 0)
+    + Object.values(scene.session.inventory).reduce((sum, value) => sum + value, 0);
+  const before = combatObservers.has(scene) ? rewardTotal() : 0;
   let text = "";
   if (enemy.gold > 0) {
     scene.session.gold += enemy.gold;
@@ -782,6 +840,10 @@ function grantActionKillRewards(scene: PlaySceneContext, enemy: ActionEnemyState
     }
   }
   if (text) spawnDamageNumber(scene, characterSpriteX(tileX), characterSpriteY(tileY) - 34, text, "#9be37e");
+  if (combatObservers.has(scene)) {
+    const after = rewardTotal();
+    if (after > before) observeCombat(scene, "reward-granted", before, after, enemy.eventId);
+  }
 }
 
 function commitItemGrant(project: Project, scene: PlaySceneContext, itemId: string, amount: number): void {
@@ -1375,6 +1437,9 @@ function spawnProjectileFrom(scene: PlaySceneContext, state: ActionCombatSceneSt
     maxRangeTiles: spec.maxRangeTiles,
     object,
   });
+  if (spec.faction === "enemy") {
+    observeCombat(scene, "enemy-projectile", state.projectiles.length - 1, state.projectiles.length, spec.ownerId);
+  }
 }
 
 function updateProjectiles(scene: PlaySceneContext, state: ActionCombatSceneState, deltaMs: number): void {

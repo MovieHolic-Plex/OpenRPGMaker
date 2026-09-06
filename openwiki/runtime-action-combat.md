@@ -195,6 +195,70 @@ There is no new budget system. Field spawns already cap concurrency with `maxAli
 
 ## Verification and test coverage
 
+### Runtime-owned AI action proof (2026-09-07)
+
+`src/editor/actionCombatRuntimeProbe.ts` exports
+`runActionCombatTest(project, { mapId, signal?, timeoutMs? })`.
+It copies the project and opens a separate `export-player/player.html` iframe,
+with the exported store shim and explicit `qaInstrumentation` boot capability.
+It never enters editor play mode, writes authored content, or treats the
+turn-based `sceneTestRunner` contact simulation as action evidence.
+
+The immutable `ActionCombatProofReceipt` and
+`isVerifiedActionCombatProof(receipt, project, mapId)` live in
+`src/testing/actionCombatProof.ts`. The guard requires exact in-memory issuer
+ownership, the current whole-project fingerprint, matching map, and a completed
+passing run. JSON copies, model-supplied objects, stale revisions, missing
+outcomes, wrong-map results, cancellation and timeouts cannot verify. The receipt
+includes `version`, `projectFingerprint`, `mapId`, `scenarioId`, `runId`,
+`status`, `pass`, numeric `observations`, and an optional failure `reason`.
+The public runner has no evidence-input argument or public receipt-minting API.
+The fingerprint is canonical whole-project FNV-1a 64-bit. Two unsigned 32-bit
+words preserve the exact digest without per-character BigInt overhead; an
+independent BigInt oracle test covers the arithmetic.
+
+The fixed `action-combat-v1` scenario runs in `playSceneTestHooks.ts`. It requires
+live authored melee and projectile field spawns, passable staging cells and an
+actor who survives the control strike. It parks background movers and relocates
+live runtime actors for reproducibility; it does not replace authored combat
+stats, rewards, weapons, collision rules or the real scene input dispatcher.
+It subscribes before input, then pairs the same seed-731 melee strike with
+stationary Shift and directional Shift. `damagePlayer` must observe actual
+damage in the first case and the **dodge-specific damage rejection gate** in
+the second, with the same attack identity. Positive iframe counters, walking
+away, and post-hit invulnerability do not establish dodge proof.
+
+The remaining required observations are swing hit, enemy defeat, stamina spent,
+stamina recovered, enemy projectile creation and reward grant. They come from
+the real combat mutation sites, not UI snapshots or guessed state deltas.
+`subscribeActionCombatObservations` is QA-capability gated; normal exports
+install no proof globals or observers. The scenario has a 45-second deadline;
+the transport defaults to 60 seconds and caps a caller override at 120 seconds.
+Outcome/post-frame listeners are removed on completion or abort, and every
+transport exit removes its iframe, timer, abort/message listeners and blob URL.
+Execution unavailable or incomplete returns `unverified`, never simulated success.
+
+Focused checks:
+
+```bash
+npm test -- test/actionCombatProof.test.ts test/actionCombatRuntimeProof.test.ts test/actionCombatProbeBoot.test.ts
+npm run typecheck:app
+node scripts/qa/runtime/action-rpg.scenario.mjs
+```
+
+The action scenario is a direct executable because the existing visual beat
+runner does not expose this async receipt transport. It starts a private
+Vite server on **45973**, tests the existing authored action demo on
+`map_mine_1f`, and writes
+`verify-shots/runtime-qa/action-rpg/{SUMMARY.md,receipt.json,player-proof.png}`.
+Read `SUMMARY.md` first. No Supabase or project-content writes are made.
+The scenario uses a blank host and the real `/export-player/` deployment from
+`devPlayerBundlesPlugin`, without browser request routing. The plugin builds the
+player and standalone bundles on first access; `npm run build:player` is the
+production player build command. Only the private probe boot resolves public
+game resources against the parent editor directory: normal exported games still
+resolve assets inside their own deployment directory.
+
 ### Pure rule unit tests
 - `test/actionAttackWindow.test.ts`: Attack buffering lifetime and single-fire timing.
 - `test/actionCombatMath.test.ts`: Damage formulas and variance injection.
