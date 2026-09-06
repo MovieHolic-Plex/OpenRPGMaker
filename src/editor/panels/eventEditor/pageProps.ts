@@ -20,7 +20,8 @@ import { editorState } from "@/editor/editorState";
 import { showConfirm } from "@/editor/ui/modal";
 import { toast } from "@/util/toast";
 import { updateEvent } from "@/editor/eventActions";
-import { recordCoalescedSnapshot } from "@/editor/mapEditHistory";
+import { setEventDraftCharacterName } from "@/editor/eventDraftActions";
+import { eventDraftCharacterName } from "@/project/eventDraftAuthored";
 import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
 import { selectedOptionValue, selectWithOptions } from "./dom";
@@ -598,7 +599,7 @@ const CHARACTER_ID_HELP =
 export function renderEventCharacterIdField(mapId: MapId, event: GameEvent): HTMLElement {
   const characterId = event.characterId?.trim();
   const profileName = characterId
-    ? store.getCurrent().characters?.[characterId]?.displayName?.trim()
+    ? eventDraftCharacterName(store.getCurrent(), event, characterId).trim()
     : "";
   const connected = Boolean(characterId);
   const openPicker = () => openCharacterIdPicker({
@@ -671,7 +672,7 @@ export function renderEventCharacterSocialExtras(mapId: MapId, event: GameEvent)
     updateEvent(mapId, event.id, { talkFriendship: talkCheckbox.checked ? true : undefined });
   });
 
-  const profileName = store.getCurrent().characters?.[characterId]?.displayName ?? "";
+  const profileName = eventDraftCharacterName(store.getCurrent(), event, characterId);
   const characterIdInput = el("input", {
     attrs: {
       type: "text",
@@ -709,22 +710,7 @@ export function renderEventCharacterSocialExtras(mapId: MapId, event: GameEvent)
     dataset: { testid: "event-character-display-name-input" },
   }) as HTMLInputElement;
   displayNameInput.addEventListener("change", () => {
-    const name = displayNameInput.value.trim();
-    recordCoalescedSnapshot(`event-character-display-name:${characterId}`);
-    store.update((project) => {
-      const next = { ...(project.characters ?? {}) };
-      const existing = { ...(next[characterId] ?? {}) };
-      if (name) {
-        existing.displayName = name;
-        next[characterId] = existing;
-      } else {
-        delete existing.displayName;
-        if (Object.keys(existing).length === 0) delete next[characterId];
-        else next[characterId] = existing;
-      }
-      if (Object.keys(next).length === 0) delete project.characters;
-      else project.characters = next;
-    }, { scope: "project" });
+    setEventDraftCharacterName(mapId, event.id, characterId, displayNameInput.value);
   });
 
   return el("details", {

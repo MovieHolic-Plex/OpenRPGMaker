@@ -11,6 +11,10 @@ import { editorState } from "@/editor/editorState";
 import type { EventDraftIssue, EventDraftValidation } from "@/editor/eventDraftValidator";
 import { clearChildren, el } from "@/util/dom";
 import { openEventRailGroupFor } from "./pageProps";
+import { navigateToEventCommand } from "./content";
+import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
+
+const closeBell = new WeakMap<HTMLDetailsElement, () => void>();
 
 const BELL_ICON = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
  stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" focusable="false" aria-hidden="true">
@@ -88,7 +92,7 @@ export function refreshEventValidationBell(root: ParentNode, validation: EventDr
   details.dataset.severity = bellSeverity(validation);
   details.dataset.count = String(total);
   if (total === 0) {
-    details.open = false;
+    closeBell.get(details)?.();
     details.hidden = true;
     clearChildren(issues);
     return;
@@ -107,41 +111,39 @@ export function refreshEventValidationBell(root: ParentNode, validation: EventDr
 }
 
 export function navigateToEventDraftIssue(issue: EventDraftIssue): void {
-  if (issue.pageId) editorState.set({ selectedEventPageId: issue.pageId });
-  const focusIssue = (): void => {
-    const modal = document.querySelector<HTMLElement>('[data-testid="event-editor-modal"]');
-    const root = modal ?? document.body;
-    let target: HTMLElement | null = null;
-    if (issue.commandPath) {
-      const encoded = JSON.stringify(issue.commandPath);
-      target = Array.from(root.querySelectorAll<HTMLElement>(".cmd-item, .row, .leaf"))
-        .find((candidate) => candidate.dataset.cmdPath === encoded) ?? null;
-      if (target) {
-        root.querySelectorAll(".cmd-item.selected, .row.selected, .leaf.selected").forEach((node) => node.classList.remove("selected", "is-selected"));
-        target.classList.add("selected", "is-selected");
-        target = target.querySelector<HTMLElement>(".cmd-head, .line") ?? target;
-      }
-    }
-    if (!target && issue.field) {
-      target = root.querySelector<HTMLElement>(`[data-testid="${issue.field.testId}"]`);
-    }
-    if (!target) return;
-    // 앵커가 닫힌 설정 레일 그룹 속이면 그 그룹을 여는 것까지 해야 사용자가 고칠 자리를 본다.
-    // 그룹은 <details> 가 아니라 is-open 클래스라 아래 DETAILS 루프가 달지 못한다(#212).
-    openEventRailGroupFor(target);
-    for (let ancestor: HTMLElement | null = target; ancestor; ancestor = ancestor.parentElement) {
-      if (ancestor.tagName === "DETAILS") (ancestor as HTMLDetailsElement).open = true;
-    }
-    if (target.getAttribute("tabindex") === null && !/^(BUTTON|INPUT|SELECT|TEXTAREA)$/u.test(target.tagName)) {
-      target.setAttribute("tabindex", "-1");
-    }
-    target.focus({ preventScroll: true });
-    target.scrollIntoView?.({ block: "center", inline: "nearest" });
-  };
-  focusIssue();
-  if (typeof window !== "undefined" && typeof window.requestAnimationFrame === "function") {
-    window.requestAnimationFrame(focusIssue);
+  const modal = document.querySelector<HTMLElement>('[data-testid="event-editor-modal"]');
+  if (issue.commandPath) {
+    const mapId = modal?.dataset.mapId;
+    const eventId = modal?.dataset.eventId;
+    if (mapId && eventId) navigateToEventCommand(mapId, eventId, issue.pageId, issue.commandPath);
+    return;
   }
+  if (issue.pageId) editorState.set({ selectedEventPageId: issue.pageId });
+  if (!issue.field) return;
+  const root = modal ?? document.body;
+  const scope = issue.field.scopeTestId
+    ? root.querySelector<HTMLElement>(`[data-testid="${issue.field.scopeTestId}"]`)
+    : root;
+  const field = scope?.querySelector<HTMLElement>(`[data-testid="${issue.field.testId}"]`);
+  if (!field) return;
+  // Both custom selects and record pickers keep a hidden native select for form state.
+  const target = scope?.querySelector<HTMLElement>(`[data-custom-select-for="${issue.field.testId}"]`)
+    ?? (field.tagName === "SELECT" && field.classList.contains("event-record-modal-select")
+      ? field.parentElement?.querySelector<HTMLElement>(".event-record-picker-trigger") : null)
+    ?? field;
+  openEventRailGroupFor(target);
+  for (let ancestor: HTMLElement | null = target; ancestor; ancestor = ancestor.parentElement) {
+    if (ancestor.tagName === "DETAILS") (ancestor as HTMLDetailsElement).open = true;
+  }
+  for (let ancestor: HTMLElement | null = target; ancestor; ancestor = ancestor.parentElement) {
+    const style = typeof getComputedStyle === "function" ? getComputedStyle(ancestor) : undefined;
+    if (ancestor.hidden || style?.display === "none" || style?.visibility === "hidden") return;
+  }
+  if (target.getAttribute("tabindex") === null && !/^(BUTTON|INPUT|SELECT|TEXTAREA)$/u.test(target.tagName)) {
+    target.setAttribute("tabindex", "-1");
+  }
+  target.focus({ preventScroll: true });
+  target.scrollIntoView?.({ block: "center", inline: "nearest" });
 }
 
 function renderIssueRow(issue: EventDraftIssue, index: number, details: HTMLDetailsElement): HTMLElement {
@@ -159,7 +161,7 @@ function renderIssueRow(issue: EventDraftIssue, index: number, details: HTMLDeta
     ],
     on: {
       click: () => {
-        details.open = false;
+        closeBell.get(details)?.();
         navigateToEventDraftIssue(issue);
       },
     },
@@ -186,22 +188,51 @@ function tallyLabel(validation: EventDraftValidation): string {
  * 리스너는 종이 열릴 때만 붙고, 모달이 사라져 종이 문서에서 떨어지면 스스로 걷힌다.
  */
 function installOutsideDismiss(details: HTMLDetailsElement): void {
-  if (typeof document === "undefined") return;
-  const onPointerDown = (event: Event): void => {
-    if (!details.isConnected) {
-      document.removeEventListener("pointerdown", onPointerDown, true);
-      return;
-    }
-    if (!details.open) return;
-    const target = event.target;
-    if (target instanceof Node && details.contains(target)) return;
-    details.open = false;
-  };
-  details.addEventListener("toggle", () => {
-    if (details.open) {
-      document.addEventListener("pointerdown", onPointerDown, true);
-      return;
-    }
-    document.removeEventListener("pointerdown", onPointerDown, true);
+  const summary = details.querySelector("summary");
+  let registered = false;
+  let parent: HTMLElement | null = null;
+  const observer = typeof MutationObserver === "undefined" ? undefined : new MutationObserver(() => {
+    if (!details.isConnected) dispose();
   });
+  const close = (): void => {
+    details.open = false;
+    registered = false;
+    unregisterModal(details);
+    document.removeEventListener("pointerdown", onPointerDown, true);
+    parent?.removeEventListener("oprn:event-editor-close", dispose);
+    parent = null;
+    observer?.disconnect();
+  };
+  const dispose = (): void => {
+    close();
+    details.removeEventListener("toggle", sync);
+    summary?.removeEventListener("click", onSummaryClick);
+    closeBell.delete(details);
+  };
+  const onPointerDown = (event: Event): void => {
+    if (event.target instanceof Node && details.contains(event.target)) return;
+    close();
+  };
+  const sync = (): void => {
+    if (!details.open) { close(); return; }
+    if (registered || !details.isConnected) return;
+    registered = true;
+    registerModal(details, () => {
+      close();
+      if (summary?.isConnected) summary.focus();
+    });
+    parent = details.closest<HTMLElement>('[data-testid="event-editor-modal"]');
+    parent?.addEventListener("oprn:event-editor-close", dispose);
+    document.addEventListener("pointerdown", onPointerDown, true);
+    observer?.observe(document.body, { childList: true, subtree: true });
+  };
+  const onSummaryClick = (event: Event): void => {
+    // Native toggle is queued; register synchronously so a following Escape cannot close the editor.
+    event.preventDefault();
+    details.open = !details.open;
+    sync();
+  };
+  closeBell.set(details, close);
+  summary?.addEventListener("click", onSummaryClick);
+  details.addEventListener("toggle", sync);
 }
