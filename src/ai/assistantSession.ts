@@ -142,6 +142,7 @@ import {
 import {
   PROPOSAL_COMPLETENESS_WARNING_PREFIX,
   proposalCompletenessWarnings,
+  buildSpecCompletenessWarnings,
   proposalHasChangedMap,
   proposalScopeCarryoverWarning,
   requestLikelyExpectsChange,
@@ -872,6 +873,8 @@ export class AssistantSession {
   private lastRejectedSpecFingerprint: string | null = null;
   // 이번 턴에 누적된 제안 — 오류 후 재시도(retryLastTurn)에서도 이어진다(결함 ⑥).
   private turnProposals = new Map<string, ProposedCall>();
+  // Quantity and diff completeness belong to one work item, even before milestone apply.
+  private readonly workItemProposals = new Map<string, ProposedCall>();
   /**
    * 이 턴에 마일스톤으로 저장소에 적용을 끝낸 쓰기 툴콜 원장.
    *
@@ -2314,6 +2317,7 @@ export class AssistantSession {
   private resetWorkItemEvidence(): void {
     this.turnSuccessfulTools.clear();
     this.workItemToolOutcomes = [];
+    this.workItemProposals.clear();
     this.workItemVerificationEvidence.clear();
     // 산출물 추적도 항목 단위다 — 이전 항목이 만든 맵을 다음 항목이 채울 책임으로 물려받지 않는다.
     this.turnItemCreatedMapIds.clear();
@@ -2440,14 +2444,16 @@ export class AssistantSession {
     return (item) => {
       const verdict = outcome(item);
       if (!verdict.ok) return verdict;
-      const calls = this.turnWriteLedger(this.finalizeProposals(this.turnProposals));
-      if (calls.length === 0) return { ok: true };
+      const itemCalls = [...this.workItemProposals.values()];
+      if (itemCalls.length === 0) return { ok: true };
+      const spatialCalls = this.turnWriteLedger(this.finalizeProposals(this.turnProposals));
+      const buildSpec = this.reviewBuildSpecForProposal(itemCalls, item);
       const warnings = [...new Set([...proposalCompletenessWarnings({
         requestText: item.instruction,
         intent: this.turnIntent,
-        buildSpec: this.reviewBuildSpecForProposal(calls, item),
-        calls,
-      }), ...this.inferredViewWarnings(calls, item)])];
+        calls: itemCalls,
+      }), ...(buildSpec ? buildSpecCompletenessWarnings(buildSpec, spatialCalls) : []),
+      ...this.inferredViewWarnings(spatialCalls, item)])];
       if (warnings.length === 0) return { ok: true };
       return {
         ok: false,
@@ -3029,6 +3035,7 @@ export class AssistantSession {
   }
 
   private upsertProposal(proposedByKey: Map<string, ProposedCall>, proposal: ProposedCall): void {
+    this.workItemProposals.set(proposalKey(proposal), proposal);
     const move = moveEventTarget(proposal);
     if (move !== null) {
       const baseKey = this.eventBaseProposalKeys.get(eventTargetKey(move));
@@ -3365,11 +3372,10 @@ export class AssistantSession {
     const spec = this.turnViewSpec;
     if (!spec || (item && !this.inferredViewSpecForItem(item))) return [];
     // An NPC touching the pond's rectangle is not evidence of terrain placement.
-    return proposalCompletenessWarnings({
-      buildSpec: spec,
-      calls: calls.filter(call => spec.assets.some(asset =>
+    return buildSpecCompletenessWarnings(spec,
+      calls.filter(call => spec.assets.some(asset =>
         asset.kind === "selection" ? SPATIAL_BUILD_TOOLS.has(call.name) : asset.kind === autoExpandedAssetKind(call.name))),
-    });
+    );
   }
 
   private inferredViewSpecForItem(item: WorkItem | null): BuildSpec | null {

@@ -85,6 +85,49 @@ function changedCall(name: string, args: Record<string, unknown>): ProposedCall 
 const npcItem: WorkItem = { id: "npc", title: "NPC", instruction: "Add an NPC with dialogue", status: "in_progress", successTools: ["upsert_event"] };
 
 describe("spatial milestone completion evidence", () => {
+  it.each([
+    { applied: true, spatialSpec: false },
+    { applied: true, spatialSpec: true },
+    { applied: false, spatialSpec: false },
+    { applied: false, spatialSpec: true },
+  ])("does not count prior NPCs toward the next item's quantity ($applied, $spatialSpec)", async ({ applied, spatialSpec }) => {
+    // Given two separate quantities on the same map, with real NPC tool results.
+    vi.spyOn(applyStore, "applyProposedProject").mockImplementation(async project => ({
+      ok: true, applied: project,
+      commit: { commitId: null, persisted: false, reviewStatus: "approved", summary: "local test", toolNames: [], recordedAt: "2026-09-06T00:00:00.000Z" },
+    }));
+    const project = createBlankProject();
+    const session = new AssistantSession(project);
+    session["milestoneAutoApply"] = applied;
+    session["workPlan"] = workPlanFromSetToolArgs({ goal: "Separate NPC groups", layers: [{ title: "NPCs", items: [
+      { id: "first", title: "First group", instruction: "NPC 2명 배치해 줘", successTools: ["place_npc"] },
+      { id: "later", title: "Later group", instruction: "NPC 3명 추가해 줘", successTools: ["place_npc"] },
+    ] }] });
+    if (spatialSpec) session["activeSpec"] = { mapId: project.startMapId, assets: [{ id: "npcs", kind: "npc", x: 1, y: 7, w: 10, h: 3 }] };
+    const place = (id: string, x: number) => {
+      const args = { mapId: project.startMapId, id, name: id, x, y: 8, graphic: { transparent: true }, pages: [{ lines: ["Hello"] }] };
+      const result = runTool(session["ctx"], "place_npc", args);
+      expect(result.ok).toBe(true);
+      expect(result.diff?.eventsAdded).toBe(1);
+      session["upsertProposal"](session["turnProposals"], { name: "place_npc", args, result, summary: result.summary, destructive: false });
+    };
+    place("first-a", 2);
+    place("first-b", 3);
+    await session["noteSuccessfulTools"](["place_npc"], () => {});
+    expect(session.getWorkPlan()?.currentItemId).toBe("later");
+    expect(session["turnAppliedMilestoneCalls"]).toHaveLength(applied ? 2 : 0);
+    // When the next item succeeds at only one of its three requested placements.
+    place("later-a", 4);
+    await session["noteSuccessfulTools"](["place_npc"], () => {});
+    // Then successful tool names and earlier NPCs cannot complete the later quantity.
+    expect(session.getWorkPlan()?.layers[0]?.items.map(item => item.status)).toEqual(["done", "in_progress"]);
+    // Completing this item's remaining two placements permits advancement without replay.
+    place("later-b", 5);
+    place("later-c", 6);
+    await session["noteSuccessfulTools"](["place_npc"], () => {});
+    expect(session.getWorkPlan()?.layers[0]?.items.map(item => item.status)).toEqual(["done", "done"]);
+  });
+
   it("does not bind an unrelated ground-fill instruction to a later viewport pond", () => {
     // Given separate ground and viewport-pond work, with an explicit spec for the ground.
     const project = createBlankProject();
@@ -133,7 +176,7 @@ describe("spatial milestone completion evidence", () => {
     const args = { mapId: project.startMapId, rect: { x: 12, y: 1, w: 2, h: 2 }, material: "물" };
     const result = runTool(session["ctx"], "fill_region", args);
     expect(result.ok).toBe(true);
-    session["turnProposals"].set("pond", { name: "fill_region", args, result, summary: result.summary, destructive: false });
+    session["upsertProposal"](session["turnProposals"], { name: "fill_region", args, result, summary: result.summary, destructive: false });
     session["milestoneAutoApply"] = true;
     // When the actual milestone transition applies, rebases, and clears pending proposals.
     await session["maybeAutoApplyMilestone"]({ ...npcItem, id: "pond" }, () => {});
@@ -141,7 +184,7 @@ describe("spatial milestone completion evidence", () => {
     const npcArgs = { mapId: project.startMapId, id: "npc", name: "Watcher", x: 2, y: 8, graphic: { transparent: true }, pages: [{ lines: ["Hello"] }] };
     const npc = runTool(session["ctx"], "place_npc", npcArgs);
     expect(npc.ok).toBe(true);
-    session["turnProposals"].set("npc", { name: "place_npc", args: npcArgs, result: npc, summary: npc.summary, destructive: false });
+    session["upsertProposal"](session["turnProposals"], { name: "place_npc", args: npcArgs, result: npc, summary: npc.summary, destructive: false });
     // Then the NPC may complete without another terrain write; applied proof is still present.
     expect(session["turnAppliedMilestoneCalls"].map(call => call.name)).toEqual(["fill_region"]);
     expect(session["autoCompleteGate"]()(npcItem)).toEqual({ ok: true });
@@ -153,7 +196,7 @@ describe("spatial milestone completion evidence", () => {
     const session = new AssistantSession(project);
     session["turnViewSpec"] = { mapId: project.startMapId, assets: [{ id: "pond", kind: "terrain", ...rect }] };
     session["turnViewSpecWorkItemId"] = "pond";
-    session["turnProposals"].set("npc", changedCall("place_npc", { mapId: project.startMapId, id: "npc", x: 12, y: 2 }));
+    session["upsertProposal"](session["turnProposals"], changedCall("place_npc", { mapId: project.startMapId, id: "npc", x: 12, y: 2 }));
     // When checking spatial completion, then position alone is not the requested placement.
     expect(session["autoCompleteGate"]()({ ...npcItem, id: "pond" })).toMatchObject({ ok: false });
   });
@@ -187,7 +230,7 @@ describe("spatial milestone completion evidence", () => {
     ] }] });
     // When a pond write claims its location, then a different item cannot reuse that permit.
     expect(session["specGate"]("fill_region", { mapId: project.startMapId, rect })).toEqual({ warnings: [] });
-    session["turnProposals"].set("npc", changedCall("place_npc", { mapId: project.startMapId, id: "npc", x: 2, y: 8 }));
+    session["upsertProposal"](session["turnProposals"], changedCall("place_npc", { mapId: project.startMapId, id: "npc", x: 2, y: 8 }));
     expect(session["autoCompleteGate"]()(npcItem)).toEqual({ ok: true });
     const plan = session["workPlan"];
     if (!plan) throw new Error("Expected a parsed plan");
@@ -201,7 +244,7 @@ describe("spatial milestone completion evidence", () => {
     const session = new AssistantSession(project);
     session["turnImplicitSpec"] = { mapId: project.startMapId, assets: [{ id: "pond", kind: "terrain", ...rect }] };
     session["turnAppliedMilestoneCalls"] = [changedCall("fill_region", { mapId: project.startMapId, rect })];
-    session["turnProposals"].set("npc", changedCall("place_npc", { mapId: project.startMapId, id: "npc", x: 2, y: 8 }));
+    session["upsertProposal"](session["turnProposals"], changedCall("place_npc", { mapId: project.startMapId, id: "npc", x: 2, y: 8 }));
     // When the real automatic milestone gate checks the unrelated NPC item.
     const verdict = session["autoCompleteGate"]()(npcItem);
     // Then an applied pond must not be charged a second time to the NPC item.

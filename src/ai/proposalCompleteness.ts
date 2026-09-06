@@ -96,7 +96,7 @@ export function requestLikelyExpectsChange(text: string): boolean {
   return /(해줘|해주세요|만들|생성|추가|배치|놓아|놔|꾸며|장식|칠해|그려|지어|파줘|깔아|정리|삭제|수정|바꿔|설정)/.test(normalized);
 }
 
-function buildSpecCompletenessWarnings(buildSpec: BuildSpec, calls: readonly ProposalCompletenessCall[]): string[] {
+export function buildSpecCompletenessWarnings(buildSpec: BuildSpec, calls: readonly ProposalCompletenessCall[]): string[] {
   const touchedRegions = calls.flatMap(changedRegionsForCall);
   const missing = buildSpec.assets.filter((asset) => !assetTouched(buildSpec.mapId, asset, touchedRegions));
   if (missing.length === 0) return [];
