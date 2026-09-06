@@ -9,6 +9,9 @@ import { startPlayerQaServer } from "./lib/runtimeQaRun.mjs";
 const root = fileURLToPath(new URL("../", import.meta.url));
 const args = process.argv.slice(2);
 const scenario = args[args.indexOf("--scenario") + 1];
+if (scenario === "battle-flow") {
+  await import("./qa-event-command-battle-flow.mjs");
+} else {
 const phaseIndex = args.indexOf("--phase");
 const phase = phaseIndex >= 0 ? args[phaseIndex + 1] : "surface";
 assert(["map-effects", "audio-layers"].includes(scenario), "Choose an implemented repair scenario");
@@ -235,4 +238,6 @@ try {
     `Immediately inspect: ${report.screenshots.join(", ")}\n\n` +
     `Cleanup: ${JSON.stringify(report.cleanup)}\n\n${report.failure ?? ""}\n`);
   console.log(JSON.stringify({ pass: report.pass, out, cleanup: report.cleanup, failure: report.failure }));
+}
+
 }

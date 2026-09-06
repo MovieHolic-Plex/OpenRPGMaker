@@ -5,7 +5,9 @@ import type { Command, EventPage } from "@/project/types";
 export function mapCommandRepairsProject() {
   const project = createBlankProject();
   project.meta.title = "Event command repairs";
-  project.system.titleScreen = { ...project.system.titleScreen, title: project.meta.title };
+  if (project.system.titleScreen) {
+    project.system.titleScreen = { ...project.system.titleScreen, title: project.meta.title };
+  }
   project.system.defaultBgmResourceId = "";
   project.startPos = { x: 3, y: 6 };
   const map = project.maps[project.startMapId];

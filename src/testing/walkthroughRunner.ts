@@ -10,7 +10,7 @@
 //  - expect *  : 세션 상태(스위치/아이템/변수/맵/골드/엔딩) 단언.
 // 쓰기 툴이 아니라 "플레이어" 관점이므로 store를 건드리지 않는다(순수).
 
-import { createBattleRuntime } from "@/battle/runtime";
+import { BattleEventInputRequiredError, createBattleRuntime } from "@/battle/runtime";
 import type { BattleRuntimeOptions } from "@/battle/types";
 import { checkReachability } from "@/project/lint/reachability";
 import { eventAtPoint } from "@/project/eventFootprintQuery";
@@ -232,6 +232,7 @@ function runOneBattle(
     const maxSteps = 8000;
     for (let step = 0; step < maxSteps; step += 1) {
       const snap = rt.snapshot();
+      if (snap.eventChoice) throw new BattleEventInputRequiredError(snap.eventChoice);
       if (snap.result) break;
       if (snap.phase === "actorCommand") {
         const actor = snap.actors.find((entry) => entry.recordId === snap.activeActorId);
@@ -252,6 +253,7 @@ function runOneBattle(
       }
     }
     const final = rt.snapshot();
+    if (final.eventChoice) throw new BattleEventInputRequiredError(final.eventChoice);
     // 보상을 세션에 반영(경험치→레벨업, 골드, 드롭). 승리 시에만 의미.
     applyBattleRewardsToSession(session, {
       result: final.result ?? "defeat",

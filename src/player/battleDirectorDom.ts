@@ -210,7 +210,8 @@ export function resultDirectorState(snapshot: BattleSnapshot, previous: BattleDi
 }
 
 export function battleEventDirectorState(snapshot: BattleSnapshot, previous: BattleDirectorState): BattleDirectorState {
-  const log = [...snapshot.eventLogs].reverse().find((entry) => entry.kind === "message" || entry.kind === "choices");
+  if (previous.step === "result" || snapshot.eventChoice) return previous;
+  const log = [...snapshot.eventLogs].reverse().find((entry) => entry.kind === "message");
   if (!log?.detail) return previous;
   return {
     ...previous,

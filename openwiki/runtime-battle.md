@@ -1,5 +1,48 @@
 # Runtime Battle Behavior
 
+## Battle-event continuation and cancellation (2026-09-06)
+
+Battle execution remains synchronous between input boundaries. `battleEvents.ts`
+retains the page scan and per-call frame stacks for native/M2 common calls and
+M2 troop-page calls. A choice exposes `snapshot.eventChoice` and phase
+`eventChoice`; only `resumeEventChoice(request.id, index)` runs a branch. Invalid,
+stale, duplicate, or disposed responses do nothing. `-1` selects an authored
+cancel branch only; mapped-option cancellation is resolved by the dialogue UI.
+No browser/input host means no implicit first option. Empty saved choices log
+unsupported and continue without inventing a branch.
+
+`gameOver`, `killPlayer`, M2 abort and forced escape short-circuit all event
+callers and remaining pages. The first terminal wins. Gauge resumes only its
+post-action epilogue; strict retains its already-sorted queue, extra-action
+count, RNG decisions, and round timeline boundary. A terminal completes only
+the executed strict prefix. Existing wait/text/inputWait semantics are unchanged.
+
+The sequencer drains preceding timeline facts before requesting input, remains
+busy while choices are open, and consumes only appended facts after resumption.
+`playSceneBattle` supplies the existing stage `DialogueUI.showChoices` host;
+battle keyboard/AUTO/skip handlers yield ownership. Choice signals, hide, and
+replacement remove listeners and settle cancellation rather than selecting the
+cancel branch. Result presentation is never overwritten by event diagnostics.
+
+`BattleRuntime.cancel()` disposes execution without an outcome. Player-side
+`playBattle` returns `null` on cancellation, not defeat/escape. `PlayScene` owns
+its abort controller before lazy import and aborts on shutdown, destruction,
+and session replacement. DOM destruction also settles the pending battle;
+transition destruction settles its waits. State/rewards/autosave commit once,
+after cancellable exit/reveal completes, to the captured session only.
+
+Synchronous balance/scene/walkthrough simulations throw/report
+`BATTLE_EVENT_INPUT_REQUIRED` instead of exhausting ticks and fabricating defeat.
+They do not provide an automatic choice policy. Simulation project-mode flags
+are restored in `finally`.
+
+Contracts: `battleEventRepairFlow`, `battleEventChoiceHost`,
+`playSceneBattleCancellation`, and `battleEventSimulationInput` tests, plus the
+existing strict/sequencer/active-slot/wait/defeat suites. DOM tests use real
+runtime/sequencer/dialogue and a controlled clock; they are not evidence of
+shipping-player browser QA. That acceptance check uses `player.html` and the
+export-store shim, never the editor shell.
+
 ## 전투 명령 custom CSS (2026-09-05)
 
 `battleCommandDom.commandPanel`은 프로젝트의 `system.battleCommandCss`를 `mountBattleCommandCss`로 마운트한다. 내부 생성 scope 속성이 각 패널의 메뉴/버튼/라벨/포커스·disabled 상태만 겨냥한다. 패널이 재생성될 때 스타일도 함께 제거되며 타이틀·대화창·편집기 셸에는 적용되지 않는다. 하위 메뉴와 대상 선택도 같은 범위다. 파서는 8,000자 이하의 제한된 시각 속성만 허용하며 URL·CSS 변수·at-rule·임의 선택자를 거부한다. 실패한 스타일은 실행하지 않고 기본 스킨을 유지한다. 검증은 `node scripts/qa-battle-command-css.mjs`로 편집기 저작 후 별도 player.html 하네스에서 수행한다.

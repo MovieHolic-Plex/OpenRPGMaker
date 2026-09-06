@@ -25,7 +25,9 @@ export function audioCommandRepairsProject() {
   const project = createBlankProject();
   project.meta.title = "Audio command repairs";
   project.startPos = { x: 3, y: 6 };
-  project.system.titleScreen = { ...project.system.titleScreen, title: project.meta.title };
+  if (project.system.titleScreen) {
+    project.system.titleScreen = { ...project.system.titleScreen, title: project.meta.title };
+  }
   const map = project.maps[project.startMapId];
   if (!map) throw new Error("Audio fixture has no start map");
   map.lowerTiles.fill(240);

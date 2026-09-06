@@ -1,5 +1,5 @@
 import { canMove, isPassable } from "@/project/collision";
-import { createBattleRuntime, type BattleResult } from "@/battle/runtime";
+import { BattleEventInputRequiredError, createBattleRuntime, type BattleResult } from "@/battle/runtime";
 import { resolveEventPage } from "@/project/io";
 import { checkReachability } from "@/project/lint/reachability";
 import {
@@ -1750,6 +1750,7 @@ function runHeadlessBattle(
   });
   for (let guard = 0; guard < 8000; guard += 1) {
     const snapshot = runtime.snapshot();
+    if (snapshot.eventChoice) throw new BattleEventInputRequiredError(snapshot.eventChoice);
     if (snapshot.result) break;
     if (snapshot.phase === "actorCommand") {
       const enemy = snapshot.enemies.find((entry) => !entry.defeated && entry.hp > 0);
@@ -1760,6 +1761,7 @@ function runHeadlessBattle(
     }
   }
   const final = runtime.snapshot();
+  if (final.eventChoice) throw new BattleEventInputRequiredError(final.eventChoice);
   const result = final.result ?? "defeat";
   applyBattleRewardsToSession(state.session, {
     result,

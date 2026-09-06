@@ -53,3 +53,23 @@ node scripts/qa-event-command-repairs.mjs --scenario audio-layers --phase green
 
 Evidence: `output/evidence/event-command-repairs/audio/red/` and `audio/green/`.
 Media `playing`/`ended`, current time, loop and gain observations are captured in `report.json`; a static screenshot alone is not an audio proof.
+
+## Battle choices and terminal control
+
+- RED: 66 of the original 69 runtime cases failed before implementation. Separate host, session, simulation and ownership regressions were also captured before their changes.
+- Supervisor GREEN: 188 battle tests passed. The integrated battle/map/audio run passed 316 tests. A newly detected map-choice cancellation regression was captured and fixed; its 16-test adjacent run passed.
+- A fresh compiler pass checked 30 changed/new TypeScript roots without diagnostics. App typecheck and the exported-player build passed.
+- The supervisor completed all 20 real-player runs in one full invocation: gauge/strict, second-option Enter/Z, disallowed/mapped/branch cancellation, four terminal commands, pending-context teardown and restart.
+- No branch executes before a choice response. Nested caller/page tails execute once after a valid selection, and terminal tails stay zero. Non-browser simulations now report `BATTLE_EVENT_INPUT_REQUIRED` instead of inventing a choice.
+- The browser matrix observes battle-local values through authored prompt substitutions, then verifies actual session write-back. It never invokes the runtime's response method or injects effect results.
+- All 20 contexts closed with no pending observers/pages; browser and server closed. In-document replacement safety is covered by the real host/session integration tests, not claimed from browser-context restart alone.
+
+```bash
+node scripts/qa-event-command-repairs.mjs --scenario battle-flow \
+  --out output/evidence/event-command-repairs/battle-flow-stable
+```
+
+Start with `battle-flow-stable/SUMMARY.md`, `summary.json` and `cleanup.json`.
+An earlier run stopped after 15 passing cases because a local asset GET reset the connection; that attempt is retained and is not accepted as a complete run. Transparent local request forwarding now handles connection-reset retries for idempotent asset reads only; scenario failures are never retried or hidden.
+
+The gauge force-escape result screenshot initially preceded its entrance animation. The capture now awaits actual visibility, and the focused `battle-flow-visible` run confirms the visible result and confirmation control.

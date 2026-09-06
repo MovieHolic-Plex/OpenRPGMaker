@@ -6,6 +6,7 @@ import type {
   BattleAnimationPosition,
   BattleAnimationScope,
   BattleFlow,
+  ChoiceCancelBehavior,
   EnemyId,
   ItemId,
   MonsterSpeciesId,
@@ -23,7 +24,16 @@ import type { RoguelikeRunState } from "@/project/roguelikeRun";
 
 export type { BattleFlow } from "@/project/types";
 
-export type BattlePhase = "charging" | "actorCommand" | "targetSelect" | "roundResolve" | "resolved";
+export type BattlePhase = "charging" | "actorCommand" | "targetSelect" | "roundResolve" | "eventChoice" | "resolved";
+
+export interface BattleEventChoiceSnapshot {
+  readonly id: number;
+  readonly pageId: string;
+  readonly round: number;
+  readonly prompt?: string;
+  readonly options: readonly { readonly text: string }[];
+  readonly cancelBehavior?: ChoiceCancelBehavior;
+}
 export type { BattleResult } from "@/project/gameTime";
 
 export type EquipmentUseTarget =
@@ -400,6 +410,7 @@ export interface BattleEventStateSnapshot {
 }
 
 export interface BattleSnapshot {
+  readonly eventChoice?: BattleEventChoiceSnapshot;
   readonly phase: BattlePhase;
   readonly battleFlow: BattleFlow;
   readonly activeActorId?: ActorId;
@@ -437,6 +448,9 @@ export interface BattleSnapshot {
 }
 
 export interface BattleRuntime {
+  resumeEventChoice(requestId: number, index: number): boolean;
+  /** Dispose suspended execution without creating a battle outcome. */
+  cancel(): void;
   tick(deltaMs: number): void;
   beginActorCommand(command: ActorCommandDraft): void;
   selectTarget(targetId: string): void;
