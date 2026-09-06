@@ -1,0 +1,15 @@
+{
+  "command": "node .omo/evidence/life-full-20260906/4/diagnostics.mjs",
+  "wrapper": [
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=10s",
+    "240s",
+    "bash",
+    "-lc",
+    "node .omo/evidence/life-full-20260906/4/diagnostics.mjs"
+  ],
+  "exit": 0,
+  "durationSeconds": 37.85574650764465,
+  "base": "f72853167278d2865a95b8600200313eb8ee08b0"
+}

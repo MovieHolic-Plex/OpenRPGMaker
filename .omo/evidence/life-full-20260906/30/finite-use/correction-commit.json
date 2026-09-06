@@ -1,0 +1,28 @@
+{
+  "label": "correction-commit",
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p2-life-full-record-keys",
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "180s",
+    "git",
+    "commit",
+    "-m",
+    "fix(save): preserve finite-use cursors for reserved item keys"
+  ],
+  "started": "2026-09-06T04:34:19.980Z",
+  "finished": "2026-09-06T04:34:20.018Z",
+  "base": "f86474547028cddf795c8e431b2195b7edccd201",
+  "head": "6ac1eedb89c0fcefccfa585d2c00fd8b000daa4b",
+  "headTree": "2f2814726f754865ea780ca790ccab4418001129",
+  "codeTree": "e2efc070d6792216d78eb03707a8b35a3fdcf3c2",
+  "stdout": "[agent/life-full-record-keys 6ac1eedb] fix(save): preserve finite-use cursors for reserved item keys\n 56 files changed, 2489 insertions(+), 17 deletions(-)\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/BLOCKED.md\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/authorized-build.json\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/authorized-build.log\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/authorized-cleanup.json\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/authorized-cleanup.log\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/authorized-diagnostics.json\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/authorized-diagnostics.log\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/authorized-final-index-check.json\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/authorized-final-index-check.log\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/authorized-final-index.json\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/authorized-final-index.log\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/authorized-green.json\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/authorized-green.log\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/authorized-index-generate.json\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/authorized-index-generate.log\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/authorized-public.json\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/authorized-public.log\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/authorized-typecheck.json\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/authorized-typecheck.log\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/authorized-wiki-verify.json\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/authorized-wiki-verify.log\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/blocked-handoff.json\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/blocked-handoff.log\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/build.json\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/build.log\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/cleanup.json\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/cleanup.log\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/cleanup.py\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/diagnostics-final.json\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/diagnostics-final.log\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/diagnostics.json\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/diagnostics.log\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/diagnostics.mjs\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/final-green.json\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/final-green.log\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/public-after-accumulators.json\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/public-after-accumulators.log\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/public-red.json\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/public-red.log\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/public-roundtrip.mjs\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/red.json\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/red.log\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/run.mjs\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/typecheck.json\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/typecheck.log\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/vitest.config.mjs\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/wiki-check.json\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/wiki-check.log\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/wiki-verify.json\n create mode 100644 .omo/evidence/life-full-20260906/30/finite-use/wiki-verify.log\n",
+  "stderr": "",
+  "exit": 0,
+  "signal": null
+}

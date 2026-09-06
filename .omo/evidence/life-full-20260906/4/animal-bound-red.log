@@ -1,0 +1,84 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeRecoveryPersistence.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+ ❯ test/lifeRecoveryPersistence.test.ts (35 tests | 1 failed) 3624ms
+   ✓ lossless life persistence > keeps compatible shipping and unfinished legacy maker behavior 178ms
+   ✓ lossless life persistence > keeps contribution2 and recovers only excess3 after requirement5 becomes2 115ms
+   ✓ lossless life persistence > retains removed completed bundle tombstones and dormant unlock rights without refunds 76ms
+   ✓ lossless life persistence > moves disabled shipping before writer filtering without paying inventory 65ms
+   ✓ lossless life persistence > moves removed shipping before writer filtering without paying inventory 59ms
+   ✓ lossless life persistence > moves ineligible shipping before writer filtering without paying inventory 78ms
+   ✓ lossless life persistence > cancels removed frozen makers at original minute 29 through apply 97ms
+   ✓ lossless life persistence > cancels removed frozen makers at original minute 30 through apply 64ms
+   ✓ lossless life persistence > rejects corrupt recovery at read and direct apply without touching source bytes 60ms
+   ✓ lossless life persistence > returns failed autosave on reconciliation failure, preserving prior disk and current live action 163ms
+   ✓ lossless life persistence > rolls back the whole day when reconciliation fails 46ms
+   ✓ adversarial life codec boundaries > preserves opaque legacy owners through the parser without guessing payouts 67ms
+   ✓ adversarial life codec boundaries > uses original maker clock on changed day start at minute 29 63ms
+   ✓ adversarial life codec boundaries > uses original maker clock on changed day start at minute 30 57ms
+   ✓ adversarial life codec boundaries > synchronizes compatible makers only on apply, not snapshot creation 43ms
+   ✓ adversarial life codec boundaries > restores plots before spatial placement, retains raw removed species and rejected placement 55ms
+   ✓ adversarial life codec boundaries > keeps valid paid placements and their detached receipts through read and apply 74ms
+   ✓ adversarial life codec boundaries > preserves stale generated forage raw rather than paying a guessed harvest 52ms
+   ✓ adversarial life codec boundaries > rejects a duplicate raw JSON claim key instead of silently keeping its last owner 51ms
+   ✓ adversarial life codec boundaries > rejects invalid owned quantity -1 without truncation 56ms
+   ✓ adversarial life codec boundaries > rejects invalid owned quantity 1.5 without truncation 82ms
+   ✓ adversarial life codec boundaries > rejects invalid owned quantity 9007199254740992 without truncation 86ms
+   ✓ adversarial life codec boundaries > refuses all conversions on claim exhaustion without moving a prefix  700ms
+   ✓ adversarial life codec boundaries > rejects oversized unknown originals at the parser, preserving the disk slot 42ms
+   ✓ adversarial life codec boundaries > rolls back recovery, inventory, date and receipts when a later energy stage fails 40ms
+   ✓ adversarial life codec boundaries > keeps a successful claim action in memory when subsequent autosave hits quota 58ms
+   ✓ source definition churn > preserves legacy placeables whose explicit item definition disappeared 44ms
+   ✓ source definition churn > does not auto-pay unknown claims when definitions return 52ms
+   ✓ load refusal bounds and pure reconciliation > rejects claim-limit at the real Save5 reader without overwriting bytes 110ms
+   ✓ load refusal bounds and pure reconciliation > rejects item-limit at the real Save5 reader without overwriting bytes 43ms
+   ✓ load refusal bounds and pure reconciliation > rejects total-bytes at the real Save5 reader without overwriting bytes 284ms
+   ✓ load refusal bounds and pure reconciliation > rejects raw-bytes at the real Save5 reader without overwriting bytes 45ms
+   ✓ load refusal bounds and pure reconciliation > rejects unsafe-sequence at the real Save5 reader without overwriting bytes 47ms
+   ✓ load refusal bounds and pure reconciliation > returns an idempotent reconciled draft without mutating its input or paying items 44ms
+   × bounded animal restoration > quarantines animals beyond the runtime bound instead of dropping a saved suffix 423ms
+     → expected undefined to match object { sourceId: 'animal500', …(2) }
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/lifeRecoveryPersistence.test.ts > bounded animal restoration > quarantines animals beyond the runtime bound instead of dropping a saved suffix
+AssertionError: expected undefined to match object { sourceId: 'animal500', …(2) }
+
+[32m- Expected:[39m
+{
+  "items": [],
+  "sourceId": "animal500",
+  "unresolved": {
+    "record": {
+      "friendship": 3,
+      "instanceId": "animal500",
+      "name": "animal500",
+      "productionProgress": 0,
+      "readyProductCount": 1,
+      "speciesId": "species",
+    },
+  },
+}
+
+[31m+ Received:[39m
+undefined
+
+ ❯ test/lifeRecoveryPersistence.test.ts:364:57
+    362|     const restored = roundtrip(project, session);
+    363|     expect(Object.keys(restored.farmAnimals ?? {})).toHaveLength(500);
+    364|     expect(restored.lifeRecovery?.claims["recovery:1"]).toMatchObject(…
+       |                                                         ^
+    365|     expect(roundtrip(project, restored).lifeRecovery).toEqual(restored…
+    366|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 34 passed (35)
+   Start at  09:08:48
+   Duration  12.27s (transform 5.02s, setup 0ms, collect 7.31s, tests 3.62s, environment 0ms, prepare 518ms)

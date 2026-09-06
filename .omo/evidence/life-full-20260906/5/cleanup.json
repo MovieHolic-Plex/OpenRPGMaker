@@ -1,0 +1,20 @@
+{
+  "head": "b7b02d97ad6cb3b493bd60691ec61970e8a0e37e",
+  "baseTree": "63ea1d26f87d4a82d9ff925071582abdae01b354",
+  "verifiedProductTree": "7af5b113323de35ec5bd06d54bfce4f9bbe0caf9",
+  "removed": [
+    "dist",
+    ".omo/evidence/life-full-20260906/5/browser-cache"
+  ],
+  "closedPorts": [
+    43201,
+    43429
+  ],
+  "features": 51,
+  "allStatus": "not-run",
+  "projectSha256": "f995e7c27d284593e5fb0101954872405b9eb7b68ffd5f5fd8e55b8181b4bbfc",
+  "verify4Sha256": "766f31c0a0a11033e31d20c57303f8cfa951450af20088ad0694af2c3b68b494",
+  "remoteWrites": 0,
+  "sharedCaches": "left intact",
+  "exit": 0
+}

@@ -1,3 +1,4 @@
+import { buildLifeRuntimeSnapshot, type LifeRuntimeSnapshot } from "@/player/runtimeDom";
 import { canMove, isPassable } from "@/project/collision";
 import { createBattleRuntime, type BattleResult } from "@/battle/runtime";
 import { resolveEventPage } from "@/project/io";
@@ -155,7 +156,7 @@ export interface SceneTestResult {
   readonly failedStepIndex?: number;
   readonly failedStep?: SceneStep;
   readonly failureReason?: string;
-  readonly finalState: {
+  readonly finalState: LifeRuntimeSnapshot & {
     readonly mapId: string;
     readonly x: number;
     readonly y: number;
@@ -1876,6 +1877,7 @@ function result(
     failedStep,
     failureReason,
     finalState: {
+      ...buildLifeRuntimeSnapshot(session),
       mapId: session.currentMapId,
       x: session.x,
       y: session.y,

@@ -1,3 +1,4 @@
+import { LifeReconciliationError } from "@/project/lifeRecovery";
 import { investSkillNode, resetSkillTree } from "@/project/growth/runtime";
 import { promoteActor } from "@/project/sessionClass";
 import { refreshGrowthVitals } from "@/project/growth/vitals";
@@ -331,7 +332,15 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     }
     confirmSaveSlot = undefined;
     confirmToTitlePending = false;
-    const written = saveToSlot(window.localStorage, slot, createSaveSnapshot(store.getCurrent(), scene.getSession()));
+    let snapshot;
+    try {
+      snapshot = createSaveSnapshot(store.getCurrent(), scene.getSession());
+    } catch (error) {
+      if (!(error instanceof LifeReconciliationError)) throw error;
+      rejectInput(`${slot}번 저장 칸에 저장하지 못했습니다`);
+      return;
+    }
+    const written = saveToSlot(window.localStorage, slot, snapshot);
     if (!written.ok) {
       rejectInput(`${slot}번 저장 칸에 저장하지 못했습니다 — ${written.message}`);
       return;

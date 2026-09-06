@@ -1,4 +1,5 @@
 import { playCinematicSequence } from "@/player/cinematicSequence";
+import { LifeReconciliationError } from "@/project/lifeRecovery";
 import { openEventMenu } from "@/player/playerEventMenus";
 import type Phaser from "phaser";
 import { startPlayGame, destroyGame } from "@/app/mode";
@@ -67,7 +68,7 @@ import {
   type TitleMenuOptionId,
 } from "@/player/titleScreen";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
-import { playAudioCommand, stopAudioCommand } from "@/player/audio";
+import { getAudioEngine, playAudioCommand, stopAudioCommand } from "@/player/audio";
 import { installPlayPointerBlocker } from "@/player/playInputBlocker";
 import { isCutsceneInputLocked } from "@/player/cutsceneControl";
 import {
@@ -139,6 +140,7 @@ const TITLE_CONFIRM_JUICE_MS = 180;
 export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {}): void {
   teardownShell?.();
   clearChildren(main);
+  const audioEngine = getAudioEngine({ qaInstrumentation: options.qaInstrumentation === true });
 
   let openingController: AbortController | null = null;
   let titleConfirmTimer: ReturnType<typeof setTimeout> | undefined;
@@ -520,7 +522,14 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       renderLoad(fromTitle, `${slot}번 저장 칸을 불러올 수 없습니다 — ${blocker}`);
       return;
     }
-    const restored = applySaveSnapshot(store.getCurrent(), result.snapshot);
+    let restored: PlaySession;
+    try {
+      restored = applySaveSnapshot(store.getCurrent(), result.snapshot);
+    } catch (error) {
+      if (!(error instanceof LifeReconciliationError)) throw error;
+      renderLoad(fromTitle, `${slot}번 저장 칸을 불러올 수 없습니다`);
+      return;
+    }
     if (fromTitle || !game) {
       startGame({ session: restored });
       return;
@@ -542,7 +551,14 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       renderLoad(fromTitle, `자동 저장을 불러올 수 없습니다 — ${blocker}`);
       return;
     }
-    const restored = applySaveSnapshot(store.getCurrent(), result.snapshot);
+    let restored: PlaySession;
+    try {
+      restored = applySaveSnapshot(store.getCurrent(), result.snapshot);
+    } catch (error) {
+      if (!(error instanceof LifeReconciliationError)) throw error;
+      renderLoad(fromTitle, "자동 저장을 불러올 수 없습니다");
+      return;
+    }
     if (fromTitle || !game) {
       startGame({ session: restored });
       return;
@@ -852,6 +868,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     document.removeEventListener("keydown", onKeyDown);
     cleanupPointerBlocker();
     stopGame();
+    audioEngine.setQaInstrumentation(false);
     clearChildren(layout);
   };
   // 우선순위: 선택-이벤트 테스트(initialSession) → "여기서 테스트"(startOverride)

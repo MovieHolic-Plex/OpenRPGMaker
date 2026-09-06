@@ -1,0 +1,1066 @@
+{
+  "commit": "f86474547028cddf795c8e431b2195b7edccd201",
+  "tree": "8386dd1efe4338f705d6a7accdbdefaa3b0beb6a",
+  "traceSha256": "673337fae0fd4aaf61410ae6de7ad8d00585b8f7d0a37fc9d1451b990a1b1f6e",
+  "consoleErrors": [
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/panels/chromaKey.ts",
+      "time": 47413.113
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/tools/v3/rmTypeExpander.ts",
+      "time": 47413.205
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/tileRoles.ts",
+      "time": 47414.134
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/defaults/darkWallAutotile.ts",
+      "time": 47414.194
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/defaults/interiorTerrainAutotiles.ts",
+      "time": 47414.282
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/defaults/tileSemanticsInterior.ts",
+      "time": 47414.332
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/defaults/tileSemanticsRetroDungeon.ts",
+      "time": 47414.363
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/defaults/tileSemanticsRetroExterior.ts",
+      "time": 47414.388
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/defaults/tileSemanticsRetroHouse.ts",
+      "time": 47414.412
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/defaults/tileSemanticsRetroWorld.ts",
+      "time": 47414.451
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/defaults/tileSemanticsShip.ts",
+      "time": 47414.533
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/defaults/tileSemanticsWorld.ts",
+      "time": 47415.021
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/assets/charsetFaceMap.ts",
+      "time": 47415.156
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/assets/charsetQuery.ts",
+      "time": 47415.205
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/houseKit.ts",
+      "time": 47415.315
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/defaults/snowGateTerrain.ts",
+      "time": 47415.364
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/battle/action/guard.ts",
+      "time": 47415.397
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/villageDesign.ts",
+      "time": 47415.432
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/world/canonNormalize.ts",
+      "time": 47415.474
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/world/guards.ts",
+      "time": 47415.508
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/worldGraph/index.ts",
+      "time": 47415.578
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/tilesetPalette.ts",
+      "time": 47415.628
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/defaults/houseTemplateCatalog.ts",
+      "time": 47415.706
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/characterIdStamp.ts",
+      "time": 47415.761
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/io/shapeCharacterFields.ts",
+      "time": 47415.82
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/io/shapeFields.ts",
+      "time": 47415.903
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/growth/types.ts",
+      "time": 47415.946
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/growth/graph.ts",
+      "time": 47416.008
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/lint/horrorAuthoringLint.ts",
+      "time": 47416.09
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/eventPageShadow.ts",
+      "time": 47416.154
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/mapSizeLimits.ts",
+      "time": 47416.191
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/eventFootprintQuery.ts",
+      "time": 47416.224
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/playerFootprint.ts",
+      "time": 47416.257
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/quest/questDef.ts",
+      "time": 47416.327
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/quest/questGraph.ts",
+      "time": 47416.371
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/storyFlagUsage.ts",
+      "time": 47416.426
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/lint/clusterRuleValidators.ts",
+      "time": 47417.206
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/assets/tileGrafts.ts",
+      "time": 47417.27
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/lint/postTileVerify.ts",
+      "time": 47417.312
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/lint/repairTreePairs.ts",
+      "time": 47417.354
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/tools/forestComposition.ts",
+      "time": 47417.392
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/battle/battleM2Commands.ts",
+      "time": 47417.437
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/lifeStateReconciliation.ts",
+      "time": 47417.531
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/friendship.ts",
+      "time": 47417.581
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/player/lifeLedger.ts",
+      "time": 47417.627
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/player/playerStatusMenuDetails.ts",
+      "time": 47417.725
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/player/playerItemUse.ts",
+      "time": 47417.796
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/assets/generatedAssetConstants.ts",
+      "time": 47417.871
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/assets/bgmCdn.ts",
+      "time": 47417.92
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/panels/eventEditor/recordKinds.ts",
+      "time": 47417.962
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/panels/eventEditor/mapPointDialog.ts",
+      "time": 47418
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/panels/eventEditor/moveRouteCommandCatalog.ts",
+      "time": 47418.026
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/panels/eventEditor/moveRouteDialogParts.ts",
+      "time": 47418.05
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/battle/simulate.ts",
+      "time": 47418.075
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/tools/commandArgs.ts",
+      "time": 47418.148
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/tools/schemaShapes.ts",
+      "time": 47418.181
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/placementSurface.ts",
+      "time": 47418.205
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/endings.ts",
+      "time": 47418.228
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/tools/eventCompile.ts",
+      "time": 47418.251
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/webExport.ts",
+      "time": 47418.275
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/assets/resourceSearch.ts",
+      "time": 47418.303
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/tools/monsterGraphicAssignment.ts",
+      "time": 47418.325
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/tools/mapGenerationProfiles.ts",
+      "time": 47418.349
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/ai/groupSampleBuilder.ts",
+      "time": 47418.372
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/tools/houseVariety.ts",
+      "time": 47418.396
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/tools/horrorBehaviorTools.ts",
+      "time": 47418.419
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/lootFeedback.ts",
+      "time": 47418.444
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/tools/wallFlush.ts",
+      "time": 47418.478
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/recollectionBeats.ts",
+      "time": 47418.547
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/defaults/sandAutotile.ts",
+      "time": 47418.611
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/mapDeletion.ts",
+      "time": 47418.694
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/mapClone.ts",
+      "time": 47418.783
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/runtimeTileMetadata.ts",
+      "time": 47418.819
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/tileLayerClassification.ts",
+      "time": 47418.844
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/assets/bgmThemeRecommendation.ts",
+      "time": 47418.867
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/mapShiftActions.ts",
+      "time": 47418.89
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/tools/clusterRulePlacement.ts",
+      "time": 47418.913
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/tools/naturalScatter.ts",
+      "time": 47418.941
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/tools/naturalToolArgs.ts",
+      "time": 47419.431
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/tools/paletteToolArgs.ts",
+      "time": 47419.462
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/tools/roadObstacles.ts",
+      "time": 47419.489
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/testing/sceneTestRunner.ts",
+      "time": 47419.515
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/testing/walkthroughRunner.ts",
+      "time": 47419.539
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/quest/questCompiler.ts",
+      "time": 47419.563
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/tools/questToolSchemas.ts",
+      "time": 47419.588
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/mapLayoutPlan.ts",
+      "time": 47419.612
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/lint/tilesetPaletteLint.ts",
+      "time": 47419.741
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/defaults/cobbleAutotile.ts",
+      "time": 47419.779
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/tools/placementScoring.ts",
+      "time": 47419.805
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/tools/placementStructure.ts",
+      "time": 47419.83
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/storyEventExplain.ts",
+      "time": 47419.854
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/defaults/tileSemanticsCombinedTown.ts",
+      "time": 47419.878
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/defaults/tileSemanticsDungeon.ts",
+      "time": 47419.914
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/project/tilesetSemanticChecker.ts",
+      "time": 47419.951
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/tools/v3/constructionTools.ts",
+      "time": 47419.989
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/tools/v3/rowArrangement.ts",
+      "time": 47420.029
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/tools/v3/vocabularyTools.ts",
+      "time": 47420.068
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/tools/v3/grammarProfiles.ts",
+      "time": 47420.093
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/tools/village/builder.ts",
+      "time": 47420.132
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/tools/village/pipeline.ts",
+      "time": 47420.157
+    },
+    {
+      "text": "Failed to load resource: net::ERR_NETWORK_CHANGED",
+      "url": "http://127.0.0.1:41331/src/editor/harnessSuggestion/structureKitModel.ts",
+      "time": 47420.18
+    }
+  ],
+  "zeroStatusRequests": [],
+  "evaluateExpressionCalls": 0,
+  "classification": "Editor module loading aborted before edit-canvas and before Q1 opt-in; Chromium ERR_NETWORK_CHANGED matches the existing documented host-network failure class. Exact host interface cause unproven; no baseline replay or retry.",
+  "networkStatusCounts": {
+    "200": 670,
+    "-1": 101,
+    "101": 1
+  },
+  "negativeStatusRequests": [
+    {
+      "url": "http://127.0.0.1:41331/src/editor/panels/chromaKey.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/tools/v3/rmTypeExpander.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/tileRoles.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/defaults/darkWallAutotile.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/defaults/interiorTerrainAutotiles.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/defaults/tileSemanticsInterior.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/defaults/tileSemanticsRetroDungeon.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/defaults/tileSemanticsRetroExterior.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/defaults/tileSemanticsRetroHouse.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/defaults/tileSemanticsRetroWorld.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/defaults/tileSemanticsShip.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/defaults/tileSemanticsWorld.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/assets/charsetFaceMap.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/assets/charsetQuery.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/houseKit.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/defaults/snowGateTerrain.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/battle/action/guard.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/villageDesign.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/world/canonNormalize.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/world/guards.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/worldGraph/index.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/tilesetPalette.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/defaults/houseTemplateCatalog.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/characterIdStamp.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/io/shapeCharacterFields.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/io/shapeFields.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/growth/types.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/growth/graph.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/lint/horrorAuthoringLint.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/eventPageShadow.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/mapSizeLimits.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/eventFootprintQuery.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/playerFootprint.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/quest/questDef.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/quest/questGraph.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/storyFlagUsage.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/lint/clusterRuleValidators.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/assets/tileGrafts.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/lint/postTileVerify.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/lint/repairTreePairs.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/tools/forestComposition.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/battle/battleM2Commands.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/lifeStateReconciliation.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/friendship.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/player/lifeLedger.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/player/playerStatusMenuDetails.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/player/playerItemUse.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/assets/generatedAssetConstants.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/assets/bgmCdn.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/panels/eventEditor/recordKinds.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/panels/eventEditor/mapPointDialog.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/panels/eventEditor/moveRouteCommandCatalog.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/panels/eventEditor/moveRouteDialogParts.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/battle/simulate.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/tools/commandArgs.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/tools/schemaShapes.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/placementSurface.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/endings.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/tools/eventCompile.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/webExport.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/assets/resourceSearch.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/tools/monsterGraphicAssignment.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/tools/mapGenerationProfiles.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/ai/groupSampleBuilder.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/tools/houseVariety.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/tools/horrorBehaviorTools.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/lootFeedback.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/tools/wallFlush.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/recollectionBeats.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/defaults/sandAutotile.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/mapDeletion.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/mapClone.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/runtimeTileMetadata.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/tileLayerClassification.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/assets/bgmThemeRecommendation.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/mapShiftActions.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/tools/clusterRulePlacement.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/tools/naturalScatter.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/tools/naturalToolArgs.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/tools/paletteToolArgs.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/tools/roadObstacles.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/testing/sceneTestRunner.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/testing/walkthroughRunner.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/quest/questCompiler.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/tools/questToolSchemas.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/mapLayoutPlan.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/lint/tilesetPaletteLint.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/defaults/cobbleAutotile.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/tools/placementScoring.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/tools/placementStructure.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/storyEventExplain.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/defaults/tileSemanticsCombinedTown.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/defaults/tileSemanticsDungeon.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/project/tilesetSemanticChecker.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/tools/v3/constructionTools.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/tools/v3/rowArrangement.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/tools/v3/vocabularyTools.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/tools/v3/grammarProfiles.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/tools/village/builder.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/tools/village/pipeline.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41331/src/editor/harnessSuggestion/structureKitModel.ts",
+      "status": -1,
+      "failure": "net::ERR_NETWORK_CHANGED"
+    }
+  ],
+  "cleanupSteps": [
+    {
+      "title": "Fixture \"context\"",
+      "completed": true,
+      "error": null
+    },
+    {
+      "title": "Fixture \"page\"",
+      "completed": true,
+      "error": null
+    },
+    {
+      "title": "After Hooks",
+      "completed": true,
+      "error": null
+    },
+    {
+      "title": "Fixture \"page\"",
+      "completed": true,
+      "error": null
+    },
+    {
+      "title": "Fixture \"context\"",
+      "completed": true,
+      "error": null
+    },
+    {
+      "title": "Worker Cleanup",
+      "completed": true,
+      "error": null
+    },
+    {
+      "title": "Fixture \"browser\"",
+      "completed": true,
+      "error": null
+    }
+  ],
+  "ownerProcessGone": true,
+  "testProcessGone": true
+}

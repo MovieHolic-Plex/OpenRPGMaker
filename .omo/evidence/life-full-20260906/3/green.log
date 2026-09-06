@@ -1,0 +1,30 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeRecovery.test.ts test/p0Makers.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+ ✓ test/p0Makers.test.ts (8 tests) 2989ms
+   ✓ P0 timed makers > uses a monotonic absolute game-minute clock across a season/day boundary  920ms
+   ✓ P0 timed makers > preserves a processing timer through the shared save snapshot path  435ms
+   ✓ P0 timed makers > rejects invalid absolute minute NaN before consuming inputs  397ms
+   ✓ P0 timed makers > rejects invalid absolute minute 1.5 before consuming inputs  350ms
+ ✓ test/lifeRecovery.test.ts (53 tests) 8927ms
+   ✓ life transaction evidence > freezes spent inputs, promised outputs, duration and calendar when starting  887ms
+   ✓ life transaction evidence > pays the original promise when the definition changes during a new job  397ms
+   ✓ bounded recovery ownership > keeps unknown item evidence until an explicit receipt after the item returns  387ms
+   ✓ bounded recovery ownership > accepts claim 4096 then refuses claim 4097 without removing its owner or sequence  973ms
+   ✓ bounded recovery ownership > rejects a multi-claim split in advance when only one slot remains  839ms
+   ✓ bounded recovery ownership > does not treat inherited record names as owned sources or claims  344ms
+   ✓ recovery save boundary schema > accepts exactly 4096 claims and rejects excess without trimming input  378ms
+   ✓ adversarial source conversion > validates a large JSON array without overflowing the call stack  393ms
+   ✓ adversarial source conversion > rejects total recovery overflow without removing the owner or advancing sequence  313ms
+
+ Test Files  2 passed (2)
+      Tests  61 passed (61)
+   Start at  08:10:37
+   Duration  22.89s (transform 10.95s, setup 0ms, collect 24.08s, tests 11.92s, environment 1ms, prepare 1.16s)
+
+
+EXIT=0

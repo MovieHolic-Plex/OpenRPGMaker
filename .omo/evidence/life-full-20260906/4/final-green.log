@@ -1,0 +1,23 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeRecoveryPersistence.test.ts test/p0SessionPersistence.test.ts test/p1SessionPersistence.test.ts test/p2SessionPersistence.test.ts test/p2SpatialPersistence.test.ts test/p0RuntimeIntegration.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+ ✓ test/p2SessionPersistence.test.ts (4 tests) 623ms
+ ✓ test/p2SpatialPersistence.test.ts (3 tests) 444ms
+ ✓ test/p1SessionPersistence.test.ts (3 tests) 587ms
+   ✓ P1 farm-animal session persistence > round-trips runtime assignment, care receipts, cadence, and ready products  325ms
+ ✓ test/p0SessionPersistence.test.ts (9 tests) 786ms
+ ✓ test/lifeRecoveryPersistence.test.ts (35 tests) 5072ms
+   ✓ lossless life persistence > keeps compatible shipping and unfinished legacy maker behavior  368ms
+   ✓ adversarial life codec boundaries > refuses all conversions on claim exhaustion without moving a prefix  747ms
+   ✓ load refusal bounds and pure reconciliation > rejects total-bytes at the real Save5 reader without overwriting bytes  317ms
+   ✓ bounded animal restoration > quarantines animals beyond the runtime bound instead of dropping a saved suffix  818ms
+ ✓ test/p0RuntimeIntegration.test.ts (16 tests) 1658ms
+
+ Test Files  6 passed (6)
+      Tests  70 passed (70)
+   Start at  09:12:01
+   Duration  16.60s (transform 14.01s, setup 0ms, collect 53.85s, tests 9.17s, environment 2ms, prepare 3.30s)

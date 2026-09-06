@@ -1,0 +1,26 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p2",
+  "head": "34c279bb6a481b18bf428fb985bc4fa4916d1e29",
+  "tree": "6590d367eea64d35431ea0e8324c1bfebaffc7f2",
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "120s",
+    "npm",
+    "run",
+    "openwiki:index",
+    "--",
+    "--check"
+  ],
+  "started": "2026-09-06T06:15:21.262Z",
+  "finished": "2026-09-06T06:15:21.786Z",
+  "exit": 0,
+  "signal": null,
+  "stdout": "\n> rpg-zzu@0.1.0 openwiki:index\n> node scripts/openwiki-index.mjs --check\n\nopenwiki/INDEX.md 최신.\n",
+  "stderr": ""
+}

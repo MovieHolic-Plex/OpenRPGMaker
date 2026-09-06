@@ -1,0 +1,15 @@
+{
+  "command": "npm run build",
+  "wrapper": [
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=10s",
+    "900s",
+    "bash",
+    "-lc",
+    "npm run build"
+  ],
+  "exit": 0,
+  "durationSeconds": 137.3894603252411,
+  "base": "f72853167278d2865a95b8600200313eb8ee08b0"
+}

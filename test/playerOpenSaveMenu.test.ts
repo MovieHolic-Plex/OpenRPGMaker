@@ -7,7 +7,10 @@ vi.mock("@/app/mode", () => modeMocks);
 vi.mock("@/project/store", () => import("@/player/exportProjectStoreShim"));
 vi.mock("@/assets/bundledAssetWarmup", () => ({ warmBundledPlayAssets: vi.fn() }));
 vi.mock("@/player/runtimeJuice", () => ({ emitRuntimeJuice: vi.fn(() => ({})) }));
-vi.mock("@/player/audio", () => ({ playAudioCommand: vi.fn(), stopAudioCommand: vi.fn() }));
+vi.mock("@/player/audio", () => ({
+  getAudioEngine: vi.fn(() => ({ setQaInstrumentation: vi.fn() })),
+  playAudioCommand: vi.fn(), stopAudioCommand: vi.fn(),
+}));
 vi.mock("@/player/runtimeDebugPanel", () => ({
   renderRuntimeDebugPanel: () => document.createElement("div"),
 }));
@@ -18,6 +21,7 @@ import { renderPlayer, teardownPlayer } from "@/player/player";
 import { readSaveSlot, setSaveSlotStorageNamespace } from "@/player/saveSlots";
 import { createBlankProject } from "@/project/defaults";
 import type { PlaySession } from "@/project/session";
+import { armSaveWriteSignal } from "./e2e/saveWriteSignal";
 
 let main: HTMLElement;
 let session: PlaySession;
@@ -54,6 +58,8 @@ beforeEach(async () => {
 });
 
 afterEach(() => {
+  window.__saveWriteSignal?.dispose();
+  vi.useRealTimers();
   teardownPlayer();
   main.remove();
   window.localStorage.clear();
@@ -88,6 +94,56 @@ function expectSaveScreen(): void {
 }
 
 describe("event-opened save menu in the shipping player shell", () => {
+  it("signals the exact Save5 write from the real save entry point without a delay", async () => {
+    openSaveMenu();
+    session.switches.sw_quest_key = true;
+    const original = window.localStorage.setItem;
+    armSaveWriteSignal("oprn:save-slot:v5:1");
+    const signal = window.__saveWriteSignal;
+    if (!signal) throw new Error("Save signal was not armed");
+
+    keyDown("Enter");
+
+    expect(await signal.completion).toBe("written");
+    expect(window.localStorage.setItem).toBe(original);
+    expect(readSaveSlot(window.localStorage, 1)).toMatchObject({
+      kind: "present", snapshot: { schemaVersion: 5, session: { switches: { sw_quest_key: true } } },
+    });
+  });
+
+  it("ignores other keys and sessionStorage, then times out and restores instrumentation", async () => {
+    vi.useFakeTimers();
+    const original = window.localStorage.setItem;
+    armSaveWriteSignal("oprn:save-slot:v5:1");
+    const signal = window.__saveWriteSignal;
+    if (!signal) throw new Error("Save signal was not armed");
+    window.localStorage.setItem("oprn:save-slot:1", "legacy");
+    window.sessionStorage.setItem("oprn:save-slot:v5:1", "other storage");
+
+    await vi.advanceTimersByTimeAsync(5_000);
+
+    expect(await signal.completion).toBe("timeout");
+    expect(window.localStorage.setItem).toBe(original);
+  });
+
+  it("does not report a failed write as complete and disposes a cancelled observation", async () => {
+    openSaveMenu();
+    const write = vi.spyOn(window.localStorage, "setItem").mockImplementation(() => {
+      throw new DOMException("full", "QuotaExceededError");
+    });
+    armSaveWriteSignal("oprn:save-slot:v5:1");
+    const signal = window.__saveWriteSignal;
+    if (!signal) throw new Error("Save signal was not armed");
+
+    keyDown("Enter");
+    signal.dispose();
+
+    expect(await signal.completion).toBe("cancelled");
+    expect(window.localStorage.setItem).toBe(write);
+    expect(window.__saveWriteSignal).toBeUndefined();
+    expect(readSaveSlot(window.localStorage, 1).kind).toBe("empty");
+  });
+
   it("shows slots immediately and saves, navigates and backs out through the keyboard", () => {
     openSaveMenu();
     expectSaveScreen();

@@ -1,0 +1,37 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeRecoveryPersistence.test.ts test/p0SessionPersistence.test.ts test/p1SessionPersistence.test.ts test/p2SessionPersistence.test.ts test/p2SpatialPersistence.test.ts test/p0RuntimeIntegration.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+ ✓ test/p2SessionPersistence.test.ts (4 tests) 689ms
+   ✓ P2 session persistence > round-trips collection, museum receipts, forage cursor/placeables, and fishing RNG  457ms
+ ✓ test/p2SpatialPersistence.test.ts (3 tests) 503ms
+ ✓ test/p1SessionPersistence.test.ts (3 tests) 1438ms
+   ✓ P1 farm-animal session persistence > round-trips runtime assignment, care receipts, cadence, and ready products  858ms
+ ✓ test/p0SessionPersistence.test.ts (9 tests) 1664ms
+   ✓ P0 save snapshot regression > preserves life skills and shop economy through writer, parser, and apply  928ms
+ ✓ test/lifeRecoveryPersistence.test.ts (40 tests) 8162ms
+   ✓ lossless life persistence > keeps compatible shipping and unfinished legacy maker behavior  1068ms
+   ✓ lossless life persistence > retains removed completed bundle tombstones and dormant unlock rights without refunds  317ms
+   ✓ adversarial life codec boundaries > refuses all conversions on claim exhaustion without moving a prefix  1145ms
+   ✓ load refusal bounds and pure reconciliation > rejects total-bytes at the real Save5 reader without overwriting bytes  472ms
+   ✓ bounded animal restoration > quarantines animals beyond the runtime bound instead of dropping a saved suffix  1005ms
+ ✓ test/p0RuntimeIntegration.test.ts (16 tests) 7705ms
+   ✓ P0 day transition integration > settles, advances calendar and farm, restores energy, then advances makers in one receipt  458ms
+   ✓ P0 day transition integration > quarantines stale queue and legacy maker records without guessing payouts  356ms
+   ✓ P0 day transition integration > persists the exact-once transition key through the shared save path  428ms
+   ✓ P0 day transition integration > advances a day whose shipping was already settled but has no transition cursor  460ms
+   ✓ P0 day transition integration > continues the day transition when authored daily energy restore is zero  344ms
+   ✓ P0 day transition integration > drops malformed, current-day, and non-adjacent save cursors while retaining the previous day  572ms
+   ✓ P0 day transition integration > does not calculate absolute maker time when the maker package is disabled  414ms
+   ✓ P0 day transition integration > fails the maker stage atomically when absolute game time still overflows  1707ms
+   ✓ P0 farm action integration > applies upgraded tool area and multiplier atomically  1061ms
+   ✓ P0 farm action integration > changes no tile, inventory, placeable, energy, or XP when energy is insufficient  654ms
+   ✓ P0 farm action integration > awards XP only for successful crop, rock, and tree harvests  372ms
+
+ Test Files  6 passed (6)
+      Tests  75 passed (75)
+   Start at  09:39:25
+   Duration  33.50s (transform 22.77s, setup 0ms, collect 105.77s, tests 20.16s, environment 12ms, prepare 3.76s)

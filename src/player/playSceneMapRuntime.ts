@@ -56,7 +56,7 @@ import { renderPlaceableOverlays } from "@/player/playScenePlaceables";
 import { initialRuntimeEventPositions,
 runtimeEventViewsForMap,
 type RuntimeEventView, } from "@/project/runtimeEventState"
-import type { RuntimeEventSnapshot } from "@/player/runtimeDom";
+import { buildLifeRuntimeSnapshot, type RuntimeEventSnapshot } from "@/player/runtimeDom";
 import { resetCullableTiles, trackCullableTile } from "@/player/playSceneTileCulling";
 import { bumpPerfCounter, type RuntimePerfCounters } from "@/player/runtimePerfCounters";
 
@@ -595,6 +595,8 @@ export function syncRuntimeState(scene: PlaySceneContext): void {
     };
   }
   scene.runtimeDom.syncRuntimeState({
+    ...buildLifeRuntimeSnapshot(scene.session),
+    ...(scene.runtimeDom.actionReceipt ? { actionReceipt: scene.runtimeDom.actionReceipt } : {}),
     mapId: scene.getMapId(),
     inputEnabled: scene.inputEnabled,
     running: scene.running,

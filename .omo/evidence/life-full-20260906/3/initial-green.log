@@ -1,0 +1,25 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeRecovery.test.ts test/p0Makers.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+ ✓ test/p0Makers.test.ts (8 tests) 2260ms
+   ✓ P0 timed makers > uses a monotonic absolute game-minute clock across a season/day boundary  1489ms
+ ✓ test/lifeRecovery.test.ts (46 tests) 5797ms
+   ✓ life transaction evidence > freezes spent inputs, promised outputs, duration and calendar when starting  750ms
+   ✓ life transaction evidence > pays the original promise when the definition changes during a new job  301ms
+   ✓ bounded recovery ownership > rejects full destination inventory without paying or consuming any claim field  568ms
+   ✓ bounded recovery ownership > rolls back all payout side effects when collection metadata is invalid  343ms
+   ✓ bounded recovery ownership > accepts claim 4096 then refuses claim 4097 without removing its owner or sequence  720ms
+   ✓ bounded recovery ownership > rejects a multi-claim split in advance when only one slot remains  324ms
+   ✓ recovery save boundary schema > accepts exactly 8 MiB total and rejects one extra byte without normalizing input  388ms
+
+ Test Files  2 passed (2)
+      Tests  54 passed (54)
+   Start at  08:04:47
+   Duration  33.12s (transform 20.02s, setup 0ms, collect 49.95s, tests 8.06s, environment 1ms, prepare 908ms)
+
+
+EXIT=0

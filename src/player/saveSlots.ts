@@ -1,14 +1,14 @@
+import { LifeReconciliationError, parseLifeState, preserveUnresolvedLifeSource, reconcileLifeState } from "@/project/lifeRecovery";
 import { hasEquipmentSlot } from "@/project/equipmentSlots";
 import { isHorrorState } from "@/project/horrorState";
 import { isPromotionLineage } from '@/project/growth/requirements';
 import { isGrowthProgress } from "@/project/growth/validation";
 import { refreshGrowthVitals } from '@/project/growth/vitals';
-import { SCHEMA_VERSION, type ActorInitialEquipment, type CharacterFootprint, type Project } from "@/project/types";
+import type { ActorInitialEquipment, CharacterFootprint, Project } from "@/project/types";
 import { normalizeRelationships } from "@/project/relationshipState";
 import { normalizeCharacterFootprint } from "@/project/footprint";
 import {
   clampFriendship,
-  GOLD_MAX,
   startSession,
   type AudioCommandState,
   type PictureState,
@@ -50,16 +50,13 @@ import {
   isBooleanRecord,
   isLightingState,
   isLifeSkillsRecord,
-  isMakerInstancesRecord,
   isGameTime,
   isFarmPlotDate,
   isFarmPlotsRecord,
   isMonsterInstancesRecord,
   isNestedNumberRecord,
-  isNestedNonNegativeIntegerRecord,
   isNumberRecord,
   isPictureRecord,
-  parsePositiveIntegerRecord,
   isRecord,
   isRuntimeCameraState,
   isRuntimeEventLocationRecord,
@@ -82,23 +79,16 @@ import {
   parsePictures,
 } from "@/player/saveSlotValidation";
 import { shippingHistoryLimit } from "@/project/shipping";
-import { absoluteGameMinutes } from "@/project/makers";
+import { absoluteGameMinutes, advanceMakers } from "@/project/makers";
 import { normalizeLightingState } from "@/project/lightingRules";
 import { levelForXp, xpForLevel } from "@/project/skillModel";
 import { cloneRngState, normalizeRngState, type RngState } from "@/util/rng";
 import { normalizeRoguelikeRunState, type RoguelikeRunState } from "@/project/roguelikeRun";
 import {
   normalizeDailyWeatherState,
-  parseFarmAnimalStateRecord,
-  restoreFarmAnimalStates,
 } from "@/project/p1FoundationRecords";
 import { applyDailyWeatherForDate } from "@/project/dailyWeather";
 import { weatherToRuntimeString } from "@/player/weather/weatherModel";
-import {
-  parseFarmBuildingPlacementRecord,
-  parseHomeDecorationPlacementRecord,
-} from "@/player/saveSlotSpatialValidation";
-import { restoreSpatialPlacementRecords } from "@/project/spatialPlacementRestore";
 import { validProgress, type CollectionProgress } from "@/project/collections";
 import { placeableDropItemId, placeableKey, type PlaceableObjectState } from "@/project/placeables";
 export {
@@ -109,8 +99,9 @@ export {
   type SystemShellState,
 } from "@/player/systemShellState";
 
+export const SAVE_SCHEMA_VERSION = 5;
 export const SAVE_SLOT_COUNT = 3;
-const SAVE_SLOT_PREFIX = "oprn:save-slot:";
+const SAVE_SLOT_PREFIX = "oprn:save-slot:v5:";
 let saveSlotStorageNamespace: string | null = null;
 
 export type SaveSlotIndex = 1 | 2 | 3;
@@ -121,13 +112,13 @@ export type SaveOrigin = "manual" | "auto";
 export type AutosaveTrigger = "transfer" | "battleVictory";
 
 export type SaveSnapshot = {
-  readonly schemaVersion: typeof SCHEMA_VERSION;
+  readonly schemaVersion: typeof SAVE_SCHEMA_VERSION;
   readonly projectTitle: string;
   readonly savedAt: string;
   readonly mapName?: string;
   readonly partyLevel?: number;
   readonly playTimeSeconds?: number;
-  /** optional 확장 — 알려진-필드 픽 파싱이라 구 스냅샷(schemaVersion 3)과 전후방 호환. */
+  /** Optional metadata shared by supported Save4 and Save5 snapshots. */
   readonly savedBy?: SaveOrigin;
   readonly autosaveTrigger?: AutosaveTrigger;
   readonly session: {
@@ -161,6 +152,7 @@ export type SaveSnapshot = {
     readonly unlockedRegionIds?: PlaySession["unlockedRegionIds"];
     readonly unlockedRecipeIds?: PlaySession["unlockedRecipeIds"];
     readonly makerInstances?: PlaySession["makerInstances"];
+    readonly lifeRecovery?: PlaySession["lifeRecovery"];
     readonly dailyWeather?: PlaySession["dailyWeather"];
     readonly farmAnimals?: PlaySession["farmAnimals"];
     readonly farmBuildingPlacements?: PlaySession["farmBuildingPlacements"];
@@ -251,13 +243,13 @@ export type SaveSlotReadResult =
   | { readonly kind: "present"; readonly slot: SaveSlotIndex; readonly snapshot: SaveSnapshot };
 
 export function saveSlotKey(slot: SaveSlotIndex): string {
-  if (saveSlotStorageNamespace) return `${saveSlotStorageNamespace}:save-slot:${slot}`;
+  if (saveSlotStorageNamespace) return `${saveSlotStorageNamespace}:save-slot:v5:${slot}`;
   return `${SAVE_SLOT_PREFIX}${slot}`;
 }
 
 /** 전용 오토세이브 키 — 수동 3슬롯(SaveSlotIndex)과 완전히 분리된 별도 칸. */
 export function autosaveKey(): string {
-  if (saveSlotStorageNamespace) return `${saveSlotStorageNamespace}:save-slot:auto`;
+  if (saveSlotStorageNamespace) return `${saveSlotStorageNamespace}:save-slot:v5:auto`;
   return `${SAVE_SLOT_PREFIX}auto`;
 }
 
@@ -266,16 +258,20 @@ export type AutosaveReadResult =
   | { readonly kind: "corrupt"; readonly message: string }
   | { readonly kind: "present"; readonly snapshot: SaveSnapshot };
 
+function legacySaveKey(slot: SaveSlotIndex | "auto"): string {
+  return `${saveSlotStorageNamespace ?? "oprn"}:save-slot:${slot}`;
+}
+
 export function writeAutosave(storage: Storage, snapshot: SaveSnapshot): void {
   storage.setItem(autosaveKey(), JSON.stringify(snapshot));
 }
 
 export function readAutosave(storage: Storage): AutosaveReadResult {
-  const text = storage.getItem(autosaveKey());
-  if (!text) return { kind: "empty" };
+  const text = storage.getItem(autosaveKey()) ?? storage.getItem(legacySaveKey("auto"));
+  if (text === null) return { kind: "empty" };
   let value: unknown;
   try {
-    value = JSON.parse(text);
+    value = parseUniqueSaveJson(text);
   } catch (error) {
     return { kind: "corrupt", message: error instanceof Error ? error.message : "Invalid save data" };
   }
@@ -288,15 +284,12 @@ export function setSaveSlotStorageNamespace(namespace: string | null): void {
   saveSlotStorageNamespace = namespace?.trim() || null;
 }
 
-export function createSaveSnapshot(project: Project, session: PlaySession): SaveSnapshot {
+export function createSaveSnapshot(project: Project, input: PlaySession): SaveSnapshot {
+  const session = prepareLifeSnapshot(project, input);
   const normalizedItems = normalizeItemTransitionState(session, project.database.items);
-  const bundleReceiptIds = normalizedBundleReceiptIds(project, session.completedBundleIds, session.bundleRewardAppliedIds);
-  const spatial = restoreSpatialPlacementRecords(project, session, {
-    farmBuildingPlacements: parseFarmBuildingPlacementRecord(session.farmBuildingPlacements),
-    homeDecorationPlacements: parseHomeDecorationPlacementRecord(session.homeDecorationPlacements),
-  });
+  const bundleReceiptIds = normalizedBundleReceiptIds(session.completedBundleIds, session.bundleRewardAppliedIds);
   return {
-    schemaVersion: SCHEMA_VERSION,
+    schemaVersion: SAVE_SCHEMA_VERSION,
     projectTitle: project.meta.title,
     savedAt: new Date().toISOString(),
     mapName: project.maps[session.currentMapId]?.name ?? "",
@@ -334,13 +327,14 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       bundleRewardAppliedIds: [...bundleReceiptIds],
       unlockedRegionIds: uniqueStrings(session.unlockedRegionIds),
       unlockedRecipeIds: uniqueStrings(session.unlockedRecipeIds),
-      makerInstances: structuredClone(restoreMakerInstances(project, session.makerInstances)),
+      makerInstances: structuredClone(session.makerInstances ?? {}),
+      lifeRecovery: structuredClone(session.lifeRecovery),
       dailyWeather: project.system.dailyWeather?.enabled === true
         ? structuredClone(normalizeDailyWeatherState(session.dailyWeather))
         : undefined,
-      farmAnimals: structuredClone(restoreFarmAnimalsForProject(project, parseFarmAnimalStateRecord(session.farmAnimals))),
-      farmBuildingPlacements: structuredClone(spatial.farmBuildingPlacements),
-      homeDecorationPlacements: structuredClone(spatial.homeDecorationPlacements),
+      farmAnimals: structuredClone(session.farmAnimals),
+      farmBuildingPlacements: structuredClone(session.farmBuildingPlacements),
+      homeDecorationPlacements: structuredClone(session.homeDecorationPlacements),
       collections: sanitizeCollections(session.collections, new Set(project.database.items.map((item) => item.id))),
       museumRewardAppliedIds: sanitizeReceiptIds(session.museumRewardAppliedIds),
       forageLastAdvancedDayKey: parseCalendarDayKey(session.forageLastAdvancedDayKey)
@@ -459,11 +453,11 @@ export function snapshotLoadBlocker(project: Project, snapshot: SaveSnapshot): s
 }
 
 export function readSaveSlot(storage: Storage, slot: SaveSlotIndex): SaveSlotReadResult {
-  const text = storage.getItem(saveSlotKey(slot));
-  if (!text) return { kind: "empty", slot };
+  const text = storage.getItem(saveSlotKey(slot)) ?? storage.getItem(legacySaveKey(slot));
+  if (text === null) return { kind: "empty", slot };
   let value: unknown;
   try {
-    value = JSON.parse(text);
+    value = parseUniqueSaveJson(text);
   } catch (error) {
     return {
       kind: "corrupt",
@@ -485,7 +479,10 @@ export function getSaveSlotStatus(
   return slots.find((item) => item.slot === slot) ?? { kind: "empty", slot };
 }
 
-export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): PlaySession {
+export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySession {
+  const parsed = parseSnapshotValue(input);
+  if (!parsed.ok) throw new LifeReconciliationError("snapshot", "session", parsed.message);
+  const snapshot = { ...input, session: { ...input.session, ...parseLifeState(input.session) } };
   const session = startSession(project);
   session.switches = structuredClone(snapshot.session.switches);
   session.selfSwitches = structuredClone(snapshot.session.selfSwitches ?? {});
@@ -516,35 +513,27 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   session.shopShelf = sanitizeShopShelf(snapshot.session.shopShelf);
   if (typeof snapshot.session.energy === "number") session.energy = snapshot.session.energy;
   const shippingEnabled = project.system.shipping?.enabled === true;
-  session.shippingQueue = shippingEnabled
-    ? restoreShippingQueue(project, snapshot.session.shippingQueue)
-    : {};
+  session.shippingQueue = structuredClone(snapshot.session.shippingQueue ?? {});
   session.shippingLastSettledDayKey = shippingEnabled ? snapshot.session.shippingLastSettledDayKey : undefined;
   session.shippingHistory = shippingEnabled
     ? structuredClone((snapshot.session.shippingHistory ?? []).slice(-shippingHistoryLimit(project)))
     : [];
-  session.bundleContributions = restoreBundleContributions(project, snapshot.session.bundleContributions);
+  session.bundleContributions = structuredClone(snapshot.session.bundleContributions ?? {});
   const bundleReceiptIds = normalizedBundleReceiptIds(
-    project,
     snapshot.session.completedBundleIds,
     snapshot.session.bundleRewardAppliedIds,
   );
   session.completedBundleIds = bundleReceiptIds;
   session.bundleRewardAppliedIds = [...bundleReceiptIds];
-  session.unlockedRegionIds = filterKnownIds(
-    snapshot.session.unlockedRegionIds,
-    new Set((project.system.worldUnlocks ?? []).map((unlock) => unlock.id)),
-  );
-  session.unlockedRecipeIds = filterKnownIds(
-    snapshot.session.unlockedRecipeIds,
-    new Set((project.system.craftRecipes ?? []).map((recipe) => recipe.id)),
-  );
-  session.makerInstances = restoreMakerInstances(project, snapshot.session.makerInstances);
+  session.unlockedRegionIds = uniqueStrings(snapshot.session.unlockedRegionIds);
+  session.unlockedRecipeIds = uniqueStrings(snapshot.session.unlockedRecipeIds);
+  session.makerInstances = structuredClone(snapshot.session.makerInstances ?? {});
+  session.lifeRecovery = structuredClone(snapshot.session.lifeRecovery);
   const savedDailyWeather = project.system.dailyWeather?.enabled === true
     ? normalizeDailyWeatherState(snapshot.session.dailyWeather)
     : undefined;
   session.dailyWeather = savedDailyWeather;
-  session.farmAnimals = restoreFarmAnimalsForProject(project, parseFarmAnimalStateRecord(snapshot.session.farmAnimals));
+  if (snapshot.session.farmAnimals !== undefined) session.farmAnimals = structuredClone(snapshot.session.farmAnimals);
   if (session.collections !== undefined) {
     session.collections = sanitizeCollections(
       snapshot.session.collections,
@@ -594,13 +583,9 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   }
   if (snapshot.session.equippedToolItemId) session.equippedToolItemId = snapshot.session.equippedToolItemId;
   session.chests = parseChestsRecord(snapshot.session.chests) ?? {};
-  if (snapshot.session.placeables) session.placeables = restorePlaceables(project, snapshot.session.placeables);
-  const spatial = restoreSpatialPlacementRecords(project, session, {
-    farmBuildingPlacements: parseFarmBuildingPlacementRecord(snapshot.session.farmBuildingPlacements),
-    homeDecorationPlacements: parseHomeDecorationPlacementRecord(snapshot.session.homeDecorationPlacements),
-  });
-  if (spatial.farmBuildingPlacements !== undefined) session.farmBuildingPlacements = spatial.farmBuildingPlacements;
-  if (spatial.homeDecorationPlacements !== undefined) session.homeDecorationPlacements = spatial.homeDecorationPlacements;
+  if (snapshot.session.placeables) session.placeables = structuredClone(snapshot.session.placeables);
+  if (snapshot.session.farmBuildingPlacements !== undefined) session.farmBuildingPlacements = structuredClone(snapshot.session.farmBuildingPlacements);
+  if (snapshot.session.homeDecorationPlacements !== undefined) session.homeDecorationPlacements = structuredClone(snapshot.session.homeDecorationPlacements);
   if (snapshot.session.followers) session.followers = structuredClone(snapshot.session.followers);
   if (snapshot.session.followerTrail) session.followerTrail = structuredClone(snapshot.session.followerTrail);
   session.currentMapId = snapshot.session.currentMapId;
@@ -663,8 +648,17 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
     // Disabling the former clears its HUD state but must not erase a saved setWeather effect.
     session.dailyWeather = undefined;
   }
-  syncMonsterPartyFollowers(project, session);
-  return session;
+  // Cancellation is evaluated using the saved date in each job's original clock, before normalizing to the new calendar.
+  const savedTime = session.gameTime;
+  if (snapshot.session.gameTime) session.gameTime = structuredClone(snapshot.session.gameTime);
+  const reconciled = prepareLifeSnapshot(project, session);
+  reconciled.gameTime = savedTime;
+  if (reconciled.gameTime) {
+    const makers = advanceMakers(project, reconciled, absoluteGameMinutes(reconciled.gameTime, project.system.timeSystem));
+    if (!makers.ok && makers.reason !== "disabled") throw new LifeReconciliationError("makerInstances", makers.instanceId ?? "makers", makers.reason);
+  }
+  syncMonsterPartyFollowers(project, reconciled);
+  return reconciled;
 }
 
 const P2_SESSION_RECORD_LIMIT = 2_000;
@@ -701,8 +695,12 @@ function restorePlaceables(project: Project, value: PlaySession["placeables"] | 
   if (!value || typeof value !== "object" || Array.isArray(value)) return {};
   const itemIds = new Set(project.database.items.map((item) => item.id));
   const result: Record<string, PlaceableObjectState> = {};
+  const fields = new Set(["id", "mapId", "x", "y", "kind", "itemId", "seasonalDrops", "forageSpawn"]);
   for (const [key, raw] of Object.entries(value).slice(0, P2_SESSION_RECORD_LIMIT)) {
     if (!raw || typeof raw !== "object" || Array.isArray(raw)) continue;
+    // A recognizable prefix is not proof that opaque legacy job/payment fields can be discarded.
+    // Leave the entire source for prepareLifeSnapshot to quarantine without inferred payouts.
+    if (Object.keys(raw).some((field) => !fields.has(field))) continue;
     const candidate = raw as Record<string, any>;
     const mapId = typeof candidate.mapId === "string" ? candidate.mapId.trim() : "";
     const id = typeof candidate.id === "string" ? candidate.id.trim() : "";
@@ -712,7 +710,8 @@ function restorePlaceables(project: Project, value: PlaySession["placeables"] | 
     const map = project.maps[mapId];
     if (!id || !kind || !map || !Number.isSafeInteger(x) || !Number.isSafeInteger(y)
       || x < 0 || y < 0 || x >= map.width || y >= map.height || key !== placeableKey(mapId, x, y)) continue;
-    const itemId = typeof candidate.itemId === "string" && itemIds.has(candidate.itemId) ? candidate.itemId : undefined;
+    if (candidate.itemId !== undefined && (typeof candidate.itemId !== "string" || !itemIds.has(candidate.itemId))) continue;
+    const itemId = typeof candidate.itemId === "string" ? candidate.itemId : undefined;
     const base: PlaceableObjectState = { id, mapId, x, y, kind, ...(itemId ? { itemId } : {}) };
     const provenance = candidate.forageSpawn;
     if (provenance !== undefined) {
@@ -761,10 +760,10 @@ type ParsedSnapshotResult =
   | { readonly ok: true; readonly snapshot: SaveSnapshot }
   | { readonly ok: false; readonly message: string };
 
-// 수동 슬롯/오토세이브 공용 코어 파서 — 알려진 필드만 골라 담아 전후방 호환을 유지한다.
+// Save4 migrates in memory; Save5 is intentionally unreadable by the previous reader.
 function parseSnapshotValue(value: unknown): ParsedSnapshotResult {
   if (!isRecord(value)) return { ok: false, message: "Save slot is not an object" };
-  if (value.schemaVersion !== SCHEMA_VERSION) return { ok: false, message: "Unsupported save schema" };
+  if (value.schemaVersion !== 4 && value.schemaVersion !== SAVE_SCHEMA_VERSION) return { ok: false, message: "Unsupported save schema" };
   if (typeof value.projectTitle !== "string") return { ok: false, message: "Missing project title" };
   if (typeof value.savedAt !== "string") return { ok: false, message: "Missing saved time" };
   if (!isRecord(value.session)) return { ok: false, message: "Missing session" };
@@ -773,7 +772,7 @@ function parseSnapshotValue(value: unknown): ParsedSnapshotResult {
   return {
     ok: true,
     snapshot: {
-      schemaVersion: SCHEMA_VERSION,
+      schemaVersion: SAVE_SCHEMA_VERSION,
       projectTitle: value.projectTitle,
       savedAt: value.savedAt,
       mapName: typeof value.mapName === "string" ? value.mapName : undefined,
@@ -831,6 +830,12 @@ type ParsedSessionResult =
 function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResult {
   if (session.growthProgress !== undefined && !isGrowthProgress(session.growthProgress)) return { ok: false, message: 'Invalid growth progress' };
   if (session.promotionLineage !== undefined && !isPromotionLineage(session.promotionLineage)) return { ok: false, message: 'Invalid promotion lineage' };
+  let life: ReturnType<typeof parseLifeState>;
+  try { life = parseLifeState(session); }
+  catch (error) {
+    if (!(error instanceof LifeReconciliationError)) throw error;
+    return { ok: false, message: error.message };
+  }
   if (session.actorEquipment !== undefined && !isActorEquipmentRecord(session.actorEquipment)) {
     return { ok: false, message: "Invalid actor equipment" };
   }
@@ -883,7 +888,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       shopReputation: sanitizeEconomyRecord(session.shopReputation),
       shopShelf: sanitizeShopShelf(session.shopShelf),
       energy: nonNegativeIntegerOrUndefined(session.energy),
-      shippingQueue: parsePositiveIntegerRecord(session.shippingQueue),
+      shippingQueue: life.shippingQueue,
       shippingLastSettledDayKey: typeof session.shippingLastSettledDayKey === "string" && session.shippingLastSettledDayKey.trim()
         ? session.shippingLastSettledDayKey
         : undefined,
@@ -891,16 +896,17 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
         ? session.dayTransitionLastDayKey as string
         : undefined,
       shippingHistory: isShippingSettlementArray(session.shippingHistory) ? session.shippingHistory : undefined,
-      bundleContributions: isNestedNonNegativeIntegerRecord(session.bundleContributions) ? session.bundleContributions : undefined,
+      bundleContributions: life.bundleContributions,
       completedBundleIds: isStringArray(session.completedBundleIds) ? [...session.completedBundleIds] : undefined,
       bundleRewardAppliedIds: isStringArray(session.bundleRewardAppliedIds) ? [...session.bundleRewardAppliedIds] : undefined,
       unlockedRegionIds: isStringArray(session.unlockedRegionIds) ? [...session.unlockedRegionIds] : undefined,
       unlockedRecipeIds: isStringArray(session.unlockedRecipeIds) ? [...session.unlockedRecipeIds] : undefined,
-      makerInstances: isMakerInstancesRecord(session.makerInstances) ? session.makerInstances : undefined,
+      makerInstances: life.makerInstances,
+      lifeRecovery: life.lifeRecovery,
       dailyWeather: normalizeDailyWeatherState(session.dailyWeather),
-      farmAnimals: parseFarmAnimalStateRecord(session.farmAnimals),
-      farmBuildingPlacements: parseFarmBuildingPlacementRecord(session.farmBuildingPlacements),
-      homeDecorationPlacements: parseHomeDecorationPlacementRecord(session.homeDecorationPlacements),
+      farmAnimals: life.farmAnimals,
+      farmBuildingPlacements: life.farmBuildingPlacements,
+      homeDecorationPlacements: life.homeDecorationPlacements,
       collections: sanitizeCollections(session.collections),
       museumRewardAppliedIds: sanitizeReceiptIds(session.museumRewardAppliedIds),
       forageLastAdvancedDayKey: parseCalendarDayKey(session.forageLastAdvancedDayKey)
@@ -977,7 +983,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
 
 function parseItemUseCharges(value: unknown): Record<string, number> {
   if (!isRecord(value)) return {};
-  const charges: Record<string, number> = {};
+  const charges: Record<string, number> = Object.create(null);
   for (const [itemId, charge] of Object.entries(value)) {
     if (typeof charge === "number" && Number.isFinite(charge)) charges[itemId] = charge;
   }
@@ -1085,52 +1091,6 @@ function normalizeFarmPlotDateForProject(
     : undefined;
 }
 
-function restoreShippingQueue(
-  project: Project,
-  queue: PlaySession["shippingQueue"],
-): NonNullable<PlaySession["shippingQueue"]> {
-  const itemIds = new Set(project.database.items.map((item) => item.id));
-  const allowedIds = project.system.shipping?.allowedItemIds;
-  return Object.fromEntries(Object.entries(queue ?? {}).filter(([itemId, count]) =>
-    Number.isInteger(count) && count > 0 && count <= GOLD_MAX &&
-    itemIds.has(itemId) && (allowedIds === undefined || allowedIds.includes(itemId))));
-}
-
-function restoreBundleContributions(
-  project: Project,
-  contributions: PlaySession["bundleContributions"],
-): NonNullable<PlaySession["bundleContributions"]> {
-  const restored: NonNullable<PlaySession["bundleContributions"]> = {};
-  for (const bundle of project.system.bundles ?? []) {
-    const saved = contributions?.[bundle.id];
-    if (!saved) continue;
-    const requirements = new Map(bundle.requirements.map((entry) => [entry.itemId, entry.count] as const));
-    const valid = Object.fromEntries(Object.entries(saved).filter(([itemId, count]) => {
-      const required = requirements.get(itemId);
-      return required !== undefined && count > 0 && count <= required;
-    }));
-    if (Object.keys(valid).length > 0) restored[bundle.id] = valid;
-  }
-  return restored;
-}
-
-function restoreMakerInstances(
-  project: Project,
-  instances: PlaySession["makerInstances"],
-): NonNullable<PlaySession["makerInstances"]> {
-  const makerIds = new Set((project.system.makers ?? []).map((maker) => maker.id));
-  return Object.fromEntries(Object.entries(instances ?? {}).filter(([instanceId, instance]) => {
-    if (instance.instanceId !== instanceId || !makerIds.has(instance.makerId)) return false;
-    if (instance.status === "idle") {
-      return instance.startedAtMinute === undefined && instance.readyAtMinute === undefined;
-    }
-    return Number.isSafeInteger(instance.startedAtMinute)
-      && instance.startedAtMinute! >= 0
-      && Number.isSafeInteger(instance.readyAtMinute)
-      && instance.readyAtMinute! >= instance.startedAtMinute!;
-  }));
-}
-
 function restoreLifeSkills(
   project: Project,
   progress: PlaySession["lifeSkills"],
@@ -1145,31 +1105,47 @@ function restoreLifeSkills(
   return restored;
 }
 
-function restoreFarmAnimalsForProject(
-  project: Project,
-  animals: PlaySession["farmAnimals"],
-): PlaySession["farmAnimals"] {
-  return restoreFarmAnimalStates(
-    project.session.farmAnimals,
-    animals,
-    new Set((project.database.farmAnimalSpecies ?? []).map((species) => species.id)),
-    project.system.farmAnimalBuildings,
-  );
-}
-
 function normalizedBundleReceiptIds(
-  project: Project,
   completed: readonly string[] | undefined,
   rewardApplied: readonly string[] | undefined,
 ): string[] {
-  const knownIds = new Set((project.system.bundles ?? []).map((bundle) => bundle.id));
-  return filterKnownIds([...(completed ?? []), ...(rewardApplied ?? [])], knownIds);
-}
-
-function filterKnownIds(values: readonly string[] | undefined, knownIds: ReadonlySet<string>): string[] {
-  return uniqueStrings(values).filter((id) => knownIds.has(id));
+  return uniqueStrings([...(completed ?? []), ...(rewardApplied ?? [])]);
 }
 
 function corrupt(slot: SaveSlotIndex, message: string): SaveSlotReadResult {
   return { kind: "corrupt", slot, message };
+}
+
+/** Restore persistent occupancy first, retaining rejected placeable originals before spatial reconciliation. */
+function prepareLifeSnapshot(project: Project, input: PlaySession): PlaySession {
+  const draft = { ...structuredClone(input), ...parseLifeState(input) };
+  const placeables = restorePlaceables(project, draft.placeables);
+  for (const [sourceId, original] of Object.entries(draft.placeables ?? {})) {
+    if (!Object.hasOwn(placeables, sourceId)) preserveUnresolvedLifeSource(draft, { sourceKind: "placeables", sourceId, reason: "incompatible-placeable" }, original);
+  }
+  draft.placeables = placeables;
+  return reconcileLifeState(project, draft);
+}
+
+
+/** JSON.parse overwrites duplicate keys before a reviver can see them. Reject ambiguous ownership first. */
+function parseUniqueSaveJson(text: string): unknown {
+  const value: unknown = JSON.parse(text);
+  const objects: (Set<string> | null)[] = [];
+  const tokens = /"(?:\\.|[^"\\])*"|[{}\[\]]/g;
+  for (const match of text.matchAll(tokens)) {
+    const token = match[0];
+    if (token === "{") { objects.push(new Set()); continue; }
+    if (token === "[") { objects.push(null); continue; }
+    if (token === "}" || token === "]") { objects.pop(); continue; }
+    let next = match.index + token.length;
+    while (/\s/.test(text[next] ?? "") && next < text.length) next++;
+    if (text[next] !== ":") continue;
+    const keys = objects[objects.length - 1];
+    const key: unknown = JSON.parse(token);
+    if (!keys || typeof key !== "string") continue;
+    if (keys.has(key)) throw new LifeReconciliationError("snapshot", key, "duplicate-key");
+    keys.add(key);
+  }
+  return value;
 }

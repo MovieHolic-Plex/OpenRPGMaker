@@ -1,0 +1,91 @@
+{
+  "trees": [
+    {
+      "label": "base",
+      "path": "/home/main/z-project/rpg-zzu-life-full-p2-gate-base",
+      "head": "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "node_modules": "/home/main/z-project/rpg-zzu/node_modules",
+      "envExists": {
+        ".env": false,
+        ".env.local": true
+      },
+      "inheritedPort": "9841",
+      "assignedRuntimePort": "9801",
+      "exists": {
+        "test/aiActivityLiveRow.test.ts": true,
+        "test/aiChatObservability.test.ts": true,
+        "test/aiChatPanelTransportError.test.ts": true,
+        "test/aiSelectionChipScope.test.ts": true,
+        "test/databaseItemInspector.test.ts": true,
+        "test/databaseModalDirtySession.test.ts": true,
+        "test/databaseNavMode.test.ts": true,
+        "test/databaseOverviewDashboard.test.ts": true,
+        "test/databaseOverviewTab.test.ts": true,
+        "test/databaseRadioCustomGuard.test.ts": true,
+        "test/databaseSidebarKeyboard.test.ts": true,
+        "test/databaseSidebarNav.test.ts": true,
+        "test/databaseTabIcons.test.ts": true,
+        "test/debugSession.test.ts": true,
+        "test/editorProjectE2EBridge.test.ts": true,
+        "test/eventEditorM2Surface.baseline.test.ts": true,
+        "test/eventEditorPortalSurface.baseline.test.ts": true,
+        "test/forestDensity.test.ts": true,
+        "test/gen1DemoContent.test.ts": true,
+        "test/modalEscapeLayerGate.test.ts": true,
+        "test/moveRouteCatalogPersistence.test.ts": true,
+        "test/noLocalProjectDb.test.ts": true,
+        "test/regionSelectionPastePreview.test.ts": true,
+        "test/roleNameComparisonGate.test.ts": true,
+        "test/uxcLoadFailure.test.ts": true
+      },
+      "status": ""
+    },
+    {
+      "label": "current",
+      "path": "/home/main/z-project/rpg-zzu-life-full-p2-gate-current",
+      "head": "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "node_modules": "/home/main/z-project/rpg-zzu/node_modules",
+      "envExists": {
+        ".env": false,
+        ".env.local": true
+      },
+      "inheritedPort": "9841",
+      "assignedRuntimePort": "9802",
+      "exists": {
+        "test/aiActivityLiveRow.test.ts": true,
+        "test/aiChatObservability.test.ts": true,
+        "test/aiChatPanelTransportError.test.ts": true,
+        "test/aiSelectionChipScope.test.ts": true,
+        "test/databaseItemInspector.test.ts": true,
+        "test/databaseModalDirtySession.test.ts": true,
+        "test/databaseNavMode.test.ts": true,
+        "test/databaseOverviewDashboard.test.ts": true,
+        "test/databaseOverviewTab.test.ts": true,
+        "test/databaseRadioCustomGuard.test.ts": true,
+        "test/databaseSidebarKeyboard.test.ts": true,
+        "test/databaseSidebarNav.test.ts": true,
+        "test/databaseTabIcons.test.ts": true,
+        "test/debugSession.test.ts": true,
+        "test/editorProjectE2EBridge.test.ts": true,
+        "test/eventEditorM2Surface.baseline.test.ts": true,
+        "test/eventEditorPortalSurface.baseline.test.ts": true,
+        "test/forestDensity.test.ts": true,
+        "test/gen1DemoContent.test.ts": true,
+        "test/modalEscapeLayerGate.test.ts": true,
+        "test/moveRouteCatalogPersistence.test.ts": true,
+        "test/noLocalProjectDb.test.ts": true,
+        "test/regionSelectionPastePreview.test.ts": true,
+        "test/roleNameComparisonGate.test.ts": true,
+        "test/uxcLoadFailure.test.ts": true
+      },
+      "status": ""
+    }
+  ],
+  "node": "v24.11.1",
+  "npm": "11.6.2",
+  "platform": "Linux x86_64",
+  "cpu": 32,
+  "inputSha256": "55e55fd00225809ffd5706fdfb393c284ce50ee463e700c3a03464961e4dc113",
+  "originalFullReportSha256Actual": "a36b2120415caf4e3587ebd33b7939a69c58b0f33be5aeb71d0d9c334324a6d3",
+  "updateEnvs": {}
+}

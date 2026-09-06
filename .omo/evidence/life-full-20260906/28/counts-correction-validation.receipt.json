@@ -1,0 +1,11 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/28",
+  "command": [
+    "python3",
+    "-B",
+    "/home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/28/validate.py"
+  ],
+  "start": "2026-09-06T02:29:46.141389+00:00",
+  "end": "2026-09-06T02:29:46.497548+00:00",
+  "exit": 0
+}

@@ -1,0 +1,219 @@
+{
+  "head": "f86474547028cddf795c8e431b2195b7edccd201",
+  "tree": "8386dd1efe4338f705d6a7accdbdefaa3b0beb6a",
+  "commands": [
+    {
+      "command": [
+        "node",
+        "--check",
+        ".omo/evidence/life-full-20260906/5/q1/editor-followup/run.mjs"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "add",
+        "-f",
+        "--",
+        ".omo/evidence/life-full-20260906/5/q1/editor-followup",
+        ".omo/evidence/life-full-20260906/5/SUMMARY.md"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "flock",
+        "--timeout",
+        "900",
+        "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+        "npm",
+        "run",
+        "openwiki:index"
+      ],
+      "exit": 0,
+      "stdout": "\n> rpg-zzu@0.1.0 openwiki:index\n> node scripts/openwiki-index.mjs\n\nopenwiki/INDEX.md \uac31\uc2e0 \u2014 47\ucabd, \uc5c6\ub294 \ud30c\uc77c \ucc38\uc870 110\uac74, \uae68\uc9c4 \uc904 79\uac74.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "add",
+        "--",
+        "openwiki/INDEX.md"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "flock",
+        "--timeout",
+        "900",
+        "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+        "npm",
+        "run",
+        "openwiki:index",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "stdout": "\n> rpg-zzu@0.1.0 openwiki:index\n> node scripts/openwiki-index.mjs --check\n\nopenwiki/INDEX.md \ucd5c\uc2e0.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--exit-code",
+        "HEAD",
+        "--",
+        "src",
+        "test",
+        "scripts",
+        "package.json",
+        "package-lock.json"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "add",
+        "-f",
+        "--",
+        ".omo/evidence/life-full-20260906/5/SUMMARY.md",
+        ".omo/evidence/life-full-20260906/5/q1/editor-followup/final-checks.json"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "flock",
+        "--timeout",
+        "900",
+        "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+        "npm",
+        "run",
+        "openwiki:index"
+      ],
+      "exit": 0,
+      "stdout": "\n> rpg-zzu@0.1.0 openwiki:index\n> node scripts/openwiki-index.mjs\n\nopenwiki/INDEX.md \uac31\uc2e0 \u2014 47\ucabd, \uc5c6\ub294 \ud30c\uc77c \ucc38\uc870 110\uac74, \uae68\uc9c4 \uc904 79\uac74.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "add",
+        "--",
+        "openwiki/INDEX.md"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "flock",
+        "--timeout",
+        "900",
+        "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+        "npm",
+        "run",
+        "openwiki:index",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "stdout": "\n> rpg-zzu@0.1.0 openwiki:index\n> node scripts/openwiki-index.mjs --check\n\nopenwiki/INDEX.md \ucd5c\uc2e0.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--exit-code",
+        "HEAD",
+        "--",
+        "src",
+        "test",
+        "scripts",
+        "package.json",
+        "package-lock.json",
+        ".omo/gates-baseline.json"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "lspConfigDiagnostics": 0,
+  "postCleanup": {
+    "port": 41331,
+    "connectExit": 111,
+    "cacheAbsent": true,
+    "ownerPidGone": true,
+    "testPidGone": true
+  },
+  "trackedPathSetSha256": "32cbbd2a07713bc123bedb5c4ec3ee94f85f52ee3e2aed7bd7d4a36689337ad3",
+  "terminalReview": {
+    "at": "2026-09-06T03:15:12.477814+00:00",
+    "supervisorFilesSha256": {
+      ".omo/evidence/life-full-20260906/5/q1-supervisor/player-false.png": "849c5cc91adfcd2dba2d5da12e7510644cd8f4b689e30b4653291d0940a1b452",
+      ".omo/evidence/life-full-20260906/5/q1-supervisor/browser.json": "d8ca14fe2040d586791679ba6f2890f434722f9c3373c53fb4241c9378325869",
+      ".omo/evidence/life-full-20260906/5/q1-supervisor/player-omitted.png": "be33199cb735d00a556c15bb9805c34f5437782b573adfd5e5253c67a0de7d55",
+      ".omo/evidence/life-full-20260906/5/q1-supervisor/player-on.png": "ef696808a3fe9b31d1187f009ed41c5819f5df4dd8259876c1503b569b163ebf",
+      ".omo/evidence/life-full-20260906/5/q1-supervisor/browser-proof.mjs": "0e2a8a0396edd8e5c063caf59b3455a34ee0330853faf93f7df443874da8a787"
+    },
+    "supervisorReceiptInspectedNotRerun": true,
+    "editorExit": 1,
+    "editorPassed": 3,
+    "editorLoadingAbort": 1,
+    "escapeAssertionExecuted": false,
+    "blindRetries": 0,
+    "newProductChanges": false,
+    "newCommit": false,
+    "cleanupPorts": [
+      {
+        "port": 41331,
+        "connectExit": 111
+      },
+      {
+        "port": 33943,
+        "connectExit": 111
+      }
+    ],
+    "supervisorPreserved": true
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "id": "red",
+  "command": "npm test -- test/lifeSaveVersion.test.ts",
+  "actualExit": 1,
+  "log": "red.txt",
+  "passed": 7,
+  "failed": 11
+}
