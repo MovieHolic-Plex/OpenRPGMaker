@@ -103,3 +103,21 @@ The temporary baseline worktree was removed after verification; shared main was 
   or reintroduce name-only discovery as the authoritative catalog.
 - The index heading now identifies the native tools field as the full schema source.
   This follow-up changes only prose/handoff documentation; no new prose-pinning test.
+
+## Session-owned schema coverage follow-up
+
+- Strengthened both first-request provider cases to compare the complete BuildSpec schema,
+  not only registry definitions.
+- Added a public-session regression that creates a real plan/acceptance ledger and checks
+  exact equality of the first working request against all registry + BuildSpec + WorkPlan
+  + acceptance schemas, including reason injection, with `budgetChars: 1`.
+- The same session then enters ask mode with the ledger still present: no session or
+  registry write schema leaks, and the detached project remains unchanged.
+- Existing 40-quota/pin assertions were migrated to complete eligible-domain coverage;
+  no failing tests were deleted or skipped. Compatibility helpers remain covered by their
+  actual scoped-consumer/plan tests; no helper can prune the execution catalog.
+- `npm test -- test/aiToolDiscoveryEscalation.test.ts`: exit 0, **7 tests passed**.
+  Log: `/tmp/exposure-session-schema.log`.
+- LSP diagnostics on the changed test: none. `npm run typecheck:app`: exit 0.
+  Log: `/tmp/exposure-session-schema-types.log`.
+- This follow-up changes tests and evidence only; production exposure behavior is unchanged.

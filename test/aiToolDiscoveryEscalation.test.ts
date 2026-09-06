@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { AssistantSession, isWriteToolName } from "@/ai/assistantSession";
+import { AssistantSession, isWriteToolName, SET_BUILD_SPEC_TOOL, WORK_PLAN_TOOLS } from "@/ai/assistantSession";
 import { activeTools, allTools, runTool, toOpenAiTools } from "@/editor/tools";
 import { LlmError, type ChatRequest, type ChatResult } from "@/ai/llmClient";
 import { createBlankProject } from "@/project/defaults/defaultProject";
+import { ACCEPTANCE_TOOLS } from "@/ai/assistantAcceptanceTools";
+import { injectToolReasonIntoOpenAiTool } from "@/ai/toolReason";
+import { fixedDeclarer } from "./intentFixture";
 
 const CHAT_CONFIG = {
   authMode: "apiKey" as const,
@@ -41,10 +44,50 @@ describe("AI tool discovery escalation", () => {
     const tools = requests[0]?.tools ?? [];
     const byName = new Map(tools.map((tool) => [tool.function.name, tool]));
     expect(activeTools().length).toBeGreaterThan(128);
-    for (const tool of toOpenAiTools()) expect(byName.get(tool.function.name)).toEqual(tool);
+    for (const tool of [...toOpenAiTools(), SET_BUILD_SPEC_TOOL].map(injectToolReasonIntoOpenAiTool)) {
+      expect(byName.get(tool.function.name)).toEqual(tool);
+    }
     for (const name of ["get_database_records", "get_project_summary", "list_resources"]) expect(byName.has(name)).toBe(true);
     for (const tool of allTools().filter((tool) => tool.deprecated)) expect(byName.has(tool.name)).toBe(false);
     expect(byName.size).toBe(tools.length);
+  });
+
+  it("retains build, plan and acceptance schemas alongside the full catalog under a minimal prompt budget", async () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId]!;
+    const requests: ChatRequest[] = [];
+    const session = new AssistantSession(project, {
+      config: { ...CHAT_CONFIG, agentMode: "auto" },
+      contextOptions: { budgetChars: 1 },
+      declareIntent: fixedDeclarer({ mode: "modify", needsPlan: true, targetMapId: map.id }),
+      chat: async (_config, request) => {
+        requests.push(request);
+        if (!request.tools?.length) return final(JSON.stringify({
+          action: "new_plan",
+          goal: "Inspect the original map",
+          layers: [{ title: "Inspect", items: [{ title: "Read map", instruction: "get_map_region", successTools: ["get_map_region"] }] }],
+          acceptance: [{ id: "dimensions", title: "Keep dimensions", criteria: [{ kind: "mapDimensions", target: { mapId: map.id }, width: map.width, height: map.height }] }],
+        }));
+        throw new LlmError("fixture stops after complete request assembly", 422);
+      },
+    });
+    const result = await session.sendUserMessage("Inspect the map and keep its dimensions.", () => {});
+    expect(result.stoppedReason).toBe("error");
+    expect(session.getAcceptanceSnapshot()).not.toBeNull();
+    const firstWorkingRequest = requests.find((request) => request.tools?.length);
+    const expected = [...toOpenAiTools(), SET_BUILD_SPEC_TOOL, ...WORK_PLAN_TOOLS, ...ACCEPTANCE_TOOLS]
+      .map(injectToolReasonIntoOpenAiTool);
+    expect(firstWorkingRequest?.tools).toEqual(expected);
+    expect(new Set(firstWorkingRequest?.tools?.map((tool) => tool.function.name)).size).toBe(expected.length);
+    expect(JSON.stringify(firstWorkingRequest?.tools).length).toBeGreaterThan(100_000);
+
+    // An existing plan/acceptance ledger must not leak session-owned write tools into ask mode.
+    const beforeAsk = requests.length;
+    await session.sendUserMessage("What are the current dimensions?", () => {}, undefined, { composerMode: "ask" });
+    const askRequest = requests.slice(beforeAsk).find((request) => request.tools?.length);
+    expect(askRequest).toBeDefined();
+    expect(askRequest?.tools?.filter((tool) => isWriteToolName(tool.function.name))).toEqual([]);
+    expect(session.getProposedProject()).toEqual(project);
   });
 
   it("exposes every active read schema and no writes in question mode", async () => {
