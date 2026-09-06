@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "initial": "missing_state",
+  "saved": {
+    "kind": "m2Command",
+    "commandId": "m2-019-change-state",
+    "fields": {
+      "target": "hero",
+      "operation": "set",
+      "value": "state_sleep_u05"
+    }
+  },
+  "confirmRejectedBeforeChoice": true
+}

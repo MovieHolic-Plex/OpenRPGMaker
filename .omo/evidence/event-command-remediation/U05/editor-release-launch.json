@@ -1,0 +1,13 @@
+{
+  "port": 36611,
+  "url": "http://127.0.0.1:36611",
+  "cache": "/tmp/event-command-u05-2dCkLZ/editor-release-cache",
+  "grep": null,
+  "workers": 1,
+  "retries": 0,
+  "normalNodeVite": true,
+  "freshContexts": true,
+  "outerChildDeadline": false,
+  "freeze": true,
+  "supabaseDisabled": true
+}

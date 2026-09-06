@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "editorFixture": ".omo/evidence/event-command-remediation/U05/accepted-fixtures/project.json",
+  "editorExport": ".omo/evidence/event-command-remediation/U05/accepted-fixtures/editor-map.json",
+  "playerSourceHash": "170a17d661f8f51bb8f69269db0a34cf1284d19bb1b1d303e86eccb8fdd559dd",
+  "editorCases": 5,
+  "playerCases": 7,
+  "sourceHashMatches": true,
+  "immutableCopies": true
+}

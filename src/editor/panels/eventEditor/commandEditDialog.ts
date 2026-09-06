@@ -311,11 +311,8 @@ export function shouldRerenderCommandForm(prev: Command, next: Command): boolean
     return prevSource !== nextSource || prev.op !== next.op;
   }
   if (prev.kind === "changeExp" && next.kind === "changeExp") {
-    const prevSource = typeof prev.amount === "number" ? "number" : "variable";
-    const nextSource = typeof next.amount === "number" ? "number" : "variable";
-    const prevTarget = !prev.actorId || prev.actorId === "party" || prev.actorId === "all" ? "party" : "actor";
-    const nextTarget = !next.actorId || next.actorId === "party" || next.actorId === "all" ? "party" : "actor";
-    return prevSource !== nextSource || prev.op !== next.op || prevTarget !== nextTarget;
+    // The mounted EXP form owns source/target visibility and inactive operand drafts.
+    return false;
   }
   if (prev.kind === "learnSkill" && next.kind === "learnSkill") {
     const prevAction = prev.action === "forget" ? "forget" : "learn";

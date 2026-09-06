@@ -1,0 +1,9 @@
+{
+  "mode": "editor",
+  "root": "/tmp/event-command-u05-supervisor-90CD4m",
+  "port": 40289,
+  "url": "http://127.0.0.1:40289",
+  "cache": "/tmp/event-command-u05-supervisor-90CD4m/editor-cache",
+  "workers": 1,
+  "retries": 0
+}

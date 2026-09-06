@@ -1,0 +1,37 @@
+import assert from 'node:assert/strict';
+import { readFile, writeFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import ts from 'typescript';
+import { createBlankProject } from '../../../../src/project/defaults';
+import { deserialize, serialize } from '../../../../src/project/io';
+import { fixtureProject, buildFixture, HERO, OTHER, POISON, SLEEP, REWARD } from '../../../../test/eventCommandRemediation/U05.fixture';
+const out = '.omo/evidence/event-command-remediation/U05';
+const original = await readFile(`${out}/original.fixture.ts`, 'utf8');
+const current = await readFile('test/eventCommandRemediation/U05.fixture.ts', 'utf8');
+const oldTest = await readFile(`${out}/original.test.ts`, 'utf8');
+const newTest = await readFile('test/eventCommandRemediation/U05.test.ts', 'utf8');
+const functionText = (source: string, name: string) => {
+  const ast = ts.createSourceFile('fixture.ts', source, ts.ScriptTarget.Latest, true);
+  const fn = ast.statements.find(node => ts.isFunctionDeclaration(node) && node.name?.text === name);
+  assert.ok(fn, name); return fn.getText(ast).replace(/^export /, '');
+};
+const originalBodies = oldTest.slice(oldTest.indexOf('beforeEach(() => {'));
+const bodyStart = newTest.indexOf('beforeEach(() => {');
+assert.equal(newTest.slice(bodyStart, bodyStart + originalBodies.length), originalBodies);
+const names = ['control','change','dialog','asM2','roundtrip','execute','nextBattleMenu','authoringEntry'];
+for (const name of names) assert.equal(functionText(newTest,name),functionText(original,name));
+for (const name of ['fixtureProject','eventWith','m2']) assert.equal(functionText(current,name),functionText(original,name));
+// Execute only the original pure constructor, not an import stub or a modified Vitest module.
+const js = ts.transpileModule(functionText(original,'fixtureProject'), { compilerOptions:{target:ts.ScriptTarget.ES2022} }).outputText;
+const oldBuild = new Function('createBlankProject','HERO','OTHER','POISON','SLEEP','REWARD', `${js}; return fixtureProject();`);
+const oldOutput = oldBuild(createBlankProject,HERO,OTHER,POISON,SLEEP,REWARD);
+assert.deepEqual(fixtureProject(),oldOutput);
+const fixture = buildFixture();
+assert.deepEqual(buildFixture(),fixture);
+assert.deepEqual(deserialize(serialize(deserialize(serialize(fixture)))),deserialize(serialize(fixture)));
+const cliPath = process.argv[2]; assert.ok(cliPath);
+const cli = await readFile(cliPath,'utf8');
+assert.deepEqual(deserialize(cli),deserialize(serialize(fixture)));
+const hash = (s:string) => createHash('sha256').update(s).digest('hex');
+await writeFile(`${out}/fixture-equivalence.json`,JSON.stringify({status:'PASS',originalFixture:hash(original),originalTests:hash(oldTest),originalTestBodiesByteIdentical:true,helpersByteIdenticalExceptExport:names,pureConstructorsByteIdentical:true,fixtureOutputEquivalent:true,originalAndCurrentUnitOutputHash:hash(serialize(oldOutput)),buildFixtureDeterministic:true,cliSerializerReload:true,cliFile:cliPath,cliHash:hash(cli)},null,2));
+console.log('PASS: original inputs, expectations, helper bodies and fixture output preserved; pure deterministic CLI fixture reload equal');

@@ -1,0 +1,58 @@
+{
+  "trace": {
+    "status": "success",
+    "before": [
+      {
+        "value": false
+      },
+      {
+        "value": false
+      }
+    ],
+    "after": [
+      {
+        "value": true
+      },
+      {
+        "value": true
+      }
+    ],
+    "event": null,
+    "cleanup": {
+      "observer": true,
+      "timer": true,
+      "event": true,
+      "pagehide": true,
+      "abort": true
+    }
+  },
+  "errors": [],
+  "pending": [
+    "http://127.0.0.1:42329/assets/easyrpg/faceset/People2/12.png"
+  ],
+  "writes": [],
+  "network": [
+    {
+      "url": "http://127.0.0.1:17831/v1/browser/hello",
+      "failure": {
+        "errorText": "NS_ERROR_DOM_BAD_URI"
+      }
+    },
+    {
+      "console": "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]"
+    },
+    {
+      "console": "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]"
+    }
+  ],
+  "documentState": {
+    "url": "http://127.0.0.1:42329/?map=map_u05",
+    "readyState": "complete",
+    "scripts": [
+      "http://127.0.0.1:42329/@vite/client",
+      "http://127.0.0.1:42329/@fs/home/main/z-project/rpg-zzu/node_modules/phaser/dist/phaser.min.js",
+      "http://127.0.0.1:42329/src/main.ts"
+    ],
+    "body": "✦\nOPRN Studio\nU05 actor command remediation\n변경 없음\nDB\n리소스\n명령 · 맵 이동\nCtrl K\n▶\n테스트\n스튜디오\n보기\n도움말\n게스트 세션 653f\nAI 설정\n360 흙길 중심\n합본 마을 · EasyRPG (CC0)\n⚙\n더 보기\n인스펙터\n규칙 감사\n작업 기록\n바닥\n덧그림\n이벤트\n#\n전체\n최근\n지형\n물\n집\n울타리\n장식\n◆\n◆\n◆\n◆\n◆\n◆\n◆\n◆\n◆\n◆\n◆\n◆\n◆\n▸\n붓 보조\n이웃 연결\n수동\n맵\n1\n새 맵\nU05\n8×8 · 1이벤트 · 문0\n시작\n개발 모드 — 이 브라우저에만 저장됩니다.\n−\n2x\n+\n⋯\n만들기\n다듬기\n검사\nAI 요청\n조수\nU05\n맥락 —\n지시\n질문\n계획\nU05\ngemini-3.7-flash · 균형"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "trace": {
+    "status": "success",
+    "before": [
+      {
+        "value": false
+      },
+      {
+        "value": false
+      }
+    ],
+    "after": [
+      {
+        "value": true
+      },
+      {
+        "value": true
+      }
+    ],
+    "event": null,
+    "cleanup": {
+      "observer": true,
+      "timer": true,
+      "event": true,
+      "pagehide": true,
+      "abort": true
+    }
+  },
+  "errors": [],
+  "writes": []
+}

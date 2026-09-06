@@ -1,0 +1,38 @@
+{
+  "status": "PASS",
+  "commits": [
+    {
+      "id": "8f9f6c222f7ecdbfcf1a3366d33be54ece867670",
+      "tree": "69bfea47852485ea0dbb55017894587a3088769b",
+      "subject": "fix(events): preserve actor targets and operand drafts",
+      "files": [
+        "scripts/qa/runtime/event-command-remediation-u05.scenario.mjs",
+        "src/editor/eventDraftValidator.ts",
+        "src/editor/panels/eventEditor/commandBodyAdvanced.ts",
+        "src/editor/panels/eventEditor/commandBodyDatabase.ts",
+        "src/editor/panels/eventEditor/commandBodyM2Actor.ts",
+        "src/editor/panels/eventEditor/commandEditDialog.ts",
+        "src/player/interpreter/m2Runtime.ts",
+        "test/commandEditModalPreview.test.ts",
+        "test/e2e/event-command-remediation-U05.spec.ts",
+        "test/e2e/eventCommandRemediationHarness.ts",
+        "test/eventCommandRemediation/U05.fixture.ts",
+        "test/eventCommandRemediation/U05.test.ts"
+      ]
+    },
+    {
+      "id": "b5521e4d73ce17b8adc971c90096217419c2c403",
+      "tree": "2719dbe69d5eb91ad25c94a1eb420755eb25befb",
+      "subject": "fix(editor): refresh EXP records after inline variable creation",
+      "files": [
+        "src/editor/panels/eventEditor/commandBodyDatabase.ts",
+        "test/e2e/event-command-remediation-U05.spec.ts",
+        "test/eventCommandRemediation/U05.test.ts"
+      ]
+    }
+  ],
+  "cleanWorktree": true,
+  "originalTestBodiesUnchanged": true,
+  "verification": "Main121 unit/5 editor/7 player; follow-up97 focused/1 real inline creation;11 TS files zero diagnostics",
+  "testedTreeEqualsCommittedTree": true
+}

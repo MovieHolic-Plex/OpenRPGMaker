@@ -1,0 +1,900 @@
+{
+  "error": "AssertionError [ERR_ASSERTION]: {\"status\":\"timeout\",\"before\":[{\"value\":true}],\"after\":[{\"value\":true}],\"event\":null,\"cleanup\":{\"observer\":true,\"timer\":true,\"event\":true,\"pagehide\":true,\"abort\":true},\"error\":\"eventCommand observation timed out\"}\n\u001b[32mactual\u001b[39m \u001b[31mexpected\u001b[39m\n\n\u001b[39m'\u001b[39m\u001b[32mt\u001b[39m\u001b[32mi\u001b[39m\u001b[32mm\u001b[39m\u001b[32me\u001b[39m\u001b[32mo\u001b[39m\u001b[31ms\u001b[39m\u001b[39mu\u001b[39m\u001b[32mt\u001b[39m\u001b[31mc\u001b[39m\u001b[31mc\u001b[39m\u001b[31me\u001b[39m\u001b[31ms\u001b[39m\u001b[31ms\u001b[39m\u001b[39m'\u001b[39m\n",
+  "errors": [],
+  "traces": [
+    {
+      "status": "success",
+      "before": [
+        {
+          "value": true
+        },
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-092-change-battle-commands",
+            "fields": {
+              "target": "party",
+              "operation": "add",
+              "value": "cmd_attack",
+              "slots": "cmd_attack,cmd_defend"
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": false
+        },
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-092-change-battle-commands",
+            "fields": {
+              "target": "hero",
+              "operation": "add",
+              "value": "cmd_item",
+              "slots": "cmd_attack,cmd_defend"
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    {
+      "status": "success",
+      "before": [
+        {
+          "value": true
+        },
+        {
+          "value": {
+            "kind": "changeExp",
+            "actorId": "hero",
+            "op": "+=",
+            "amount": {
+              "kind": "var",
+              "id": "reward"
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": false
+        },
+        {
+          "value": {
+            "kind": "changeExp",
+            "actorId": "other",
+            "op": "-=",
+            "amount": {
+              "kind": "var",
+              "id": "reward"
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    {
+      "status": "success",
+      "before": [
+        {
+          "value": true
+        },
+        {
+          "value": {
+            "kind": "changeExp",
+            "actorId": "other",
+            "op": "-=",
+            "amount": {
+              "kind": "var",
+              "id": "reward"
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": false
+        },
+        {
+          "value": {
+            "kind": "changeExp",
+            "actorId": "",
+            "op": "-=",
+            "amount": {
+              "kind": "var",
+              "id": "reward"
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    {
+      "status": "success",
+      "before": [
+        {
+          "value": true
+        },
+        {
+          "value": {
+            "kind": "changeExp",
+            "actorId": "",
+            "op": "-=",
+            "amount": {
+              "kind": "var",
+              "id": "reward"
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": false
+        },
+        {
+          "value": {
+            "kind": "changeExp",
+            "actorId": "other",
+            "op": "-=",
+            "amount": {
+              "kind": "var",
+              "id": "reward"
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    {
+      "status": "success",
+      "before": [
+        {
+          "value": true
+        },
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-014-change-parameters",
+            "fields": {
+              "target": "hero",
+              "parameter": "attack",
+              "operation": "add",
+              "value": 3,
+              "valueSource": "variable",
+              "valueVariableId": "reward"
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": false
+        },
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-014-change-parameters",
+            "fields": {
+              "target": "hero",
+              "parameter": "attack",
+              "operation": "add",
+              "value": 10,
+              "valueSource": "number",
+              "valueVariableId": "reward"
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    {
+      "status": "success",
+      "before": [
+        {
+          "value": true
+        },
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-014-change-parameters",
+            "fields": {
+              "target": "hero",
+              "parameter": "attack",
+              "operation": "add",
+              "value": 10,
+              "valueSource": "number",
+              "valueVariableId": "reward"
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": false
+        },
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-014-change-parameters",
+            "fields": {
+              "target": "hero",
+              "parameter": "attack",
+              "operation": "remove",
+              "value": 10,
+              "valueSource": "number",
+              "valueVariableId": "reward"
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    {
+      "status": "success",
+      "before": [
+        {
+          "value": true
+        },
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-021-damage-processing",
+            "fields": {
+              "target": "hero",
+              "operation": "add",
+              "value": 3,
+              "valueSource": "variable",
+              "valueVariableId": "reward"
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": false
+        },
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-021-damage-processing",
+            "fields": {
+              "target": "hero",
+              "operation": "add",
+              "value": 10,
+              "valueSource": "number",
+              "valueVariableId": "reward"
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    {
+      "status": "success",
+      "before": [
+        {
+          "value": true
+        },
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-021-damage-processing",
+            "fields": {
+              "target": "hero",
+              "operation": "add",
+              "value": 10,
+              "valueSource": "number",
+              "valueVariableId": "reward"
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": false
+        },
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-021-damage-processing",
+            "fields": {
+              "target": "hero",
+              "operation": "remove",
+              "value": 10,
+              "valueSource": "number",
+              "valueVariableId": "reward"
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    {
+      "status": "success",
+      "before": [
+        {
+          "value": true
+        },
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-019-change-state",
+            "fields": {
+              "target": "hero",
+              "operation": "toggle",
+              "value": "state_poison_u05"
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": false
+        },
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-019-change-state",
+            "fields": {
+              "target": "hero",
+              "operation": "toggle",
+              "value": "state_sleep_u05"
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    {
+      "status": "success",
+      "before": [
+        {
+          "value": true
+        },
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-022-change-actor-name",
+            "fields": {
+              "target": "hero",
+              "value": "Hero"
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": false
+        },
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-022-change-actor-name",
+            "fields": {
+              "target": "party",
+              "value": "Hero"
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    {
+      "status": "success",
+      "before": [
+        {
+          "value": true
+        },
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-022-change-actor-name",
+            "fields": {
+              "target": "party",
+              "value": "Hero"
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": false
+        },
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-022-change-actor-name",
+            "fields": {
+              "target": "hero",
+              "value": "Hero edited"
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    {
+      "status": "success",
+      "before": [
+        {
+          "value": true
+        },
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-023-change-actor-nickname",
+            "fields": {
+              "target": "hero",
+              "value": "Hero nick"
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": false
+        },
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-023-change-actor-nickname",
+            "fields": {
+              "target": "party",
+              "value": "Hero nick"
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    {
+      "status": "success",
+      "before": [
+        {
+          "value": true
+        },
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-023-change-actor-nickname",
+            "fields": {
+              "target": "party",
+              "value": "Hero nick"
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": false
+        },
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-023-change-actor-nickname",
+            "fields": {
+              "target": "hero",
+              "value": "Hero nick2"
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    {
+      "status": "success",
+      "before": [
+        {
+          "value": true
+        },
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-024-change-actor-graphic",
+            "fields": {
+              "target": "hero",
+              "value": "easyrpg-charset-actor1"
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": false
+        },
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-024-change-actor-graphic",
+            "fields": {
+              "target": "party",
+              "value": "easyrpg-charset-actor1"
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    {
+      "status": "success",
+      "before": [
+        {
+          "value": true
+        },
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-024-change-actor-graphic",
+            "fields": {
+              "target": "party",
+              "value": "easyrpg-charset-actor1"
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": false
+        },
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-024-change-actor-graphic",
+            "fields": {
+              "target": "hero",
+              "value": "easyrpg-charset-actor1"
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    {
+      "status": "success",
+      "before": [
+        {
+          "value": true
+        },
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-025-change-actor-faceset",
+            "fields": {
+              "target": "hero",
+              "value": "easyrpg-faceset-actor1-00"
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": false
+        },
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-025-change-actor-faceset",
+            "fields": {
+              "target": "party",
+              "value": "easyrpg-faceset-actor1-00"
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    {
+      "status": "success",
+      "before": [
+        {
+          "value": true
+        },
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-025-change-actor-faceset",
+            "fields": {
+              "target": "party",
+              "value": "easyrpg-faceset-actor1-00"
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": false
+        },
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-025-change-actor-faceset",
+            "fields": {
+              "target": "hero",
+              "value": "easyrpg-faceset-actor1-00"
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    {
+      "status": "success",
+      "before": [
+        {
+          "value": true
+        },
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-091-change-actor-class",
+            "fields": {
+              "target": "hero",
+              "value": "class_u05"
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": false
+        },
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-091-change-actor-class",
+            "fields": {
+              "target": "party",
+              "value": "class_u05"
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    {
+      "status": "success",
+      "before": [
+        {
+          "value": true
+        },
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-091-change-actor-class",
+            "fields": {
+              "target": "party",
+              "value": "class_u05"
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": false
+        },
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-091-change-actor-class",
+            "fields": {
+              "target": "hero",
+              "value": "class_u05"
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    {
+      "status": "success",
+      "before": [
+        {
+          "value": true
+        },
+        {
+          "value": {
+            "kind": "learnSkill",
+            "actorId": "hero",
+            "skillId": "skill_attack",
+            "action": "learn"
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": false
+        },
+        {
+          "value": {
+            "kind": "learnSkill",
+            "actorId": "",
+            "skillId": "skill_attack",
+            "action": "forget"
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    {
+      "status": "success",
+      "before": [
+        {
+          "value": true
+        },
+        {
+          "value": {
+            "kind": "learnSkill",
+            "actorId": "",
+            "skillId": "skill_attack",
+            "action": "forget"
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": false
+        },
+        {
+          "value": {
+            "kind": "learnSkill",
+            "actorId": "hero",
+            "skillId": "skill_attack",
+            "action": "learn"
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    }
+  ],
+  "body": "✦\nOPRN Studio\nU05 actor command remediation\n변경 없음\nDB\n리소스\n명령 · 맵 이동\nCtrl K\n▶\n테스트\n스튜디오\n보기\n도움말\n게스트 세션 2c47\nAI 설정\n360 흙길 중심\n합본 마을 · EasyRPG (CC0)\n⚙\n더 보기\n인스펙터\n규칙 감사\n작업 기록\n8\n바닥\n덧그림\n이벤트\n#\n전체\n최근\n지형\n물\n집\n울타리\n장식\n◆\n◆\n◆\n◆\n◆\n◆\n◆\n◆\n◆\n◆\n◆\n◆\n◆\n▸\n붓 보조\n이웃 연결\n수동\n맵\n1\n새 맵\nU05\n8×8 · 1이벤트 · 문0\n시작\n개발 모드 — 이 브라우저에만 저장됩니다.\n−\n2x\n+\n⋯\n만들기\n다듬기\n검사\nAI 요청\n데이터베이스\n시스템\n›\n공용 이벤트\nAI 어시스턴트\n개요\n세계관\n세계 개요·설정집\n파티\n주인공·직업·직업 승급 트리·스킬·스킬 트리·아이템·장비\n몬스터\n전투 몬스터·포획·성장 종족·적 그룹·진영\n전투 규칙\n속성·상태·전투 애니메이션·전투 화면·전투 명령\n생활\n농사·작물·주민 관계·생활 기술·제작·계절·날씨·동물·축사·농장 건물·집 꾸미기·낚시·채집·박물관\n맵\n개념 꾸러미·타일셋\n시스템\n공용 이벤트\n시스템\n용어\n스위치\n변수\n공통 이벤트\n1개\nU05 common\ncall\n#1\n+ 공통 이벤트 추가\n복제\n공용 이벤트\nU05 common\n\ncommon_u05\n\n#1\ncall\n명령 11개\n조건 없음\n기본\n이름은 [공통 이벤트 호출] 목록에 그대로 나옵니다.\n#1\n삭제\n트리거\n조건 스위치 사용\n이벤트 명령\n위에서 아래로 순서대로 실행됩니다.\n1\n전투 명령 변경: 누구에게 hero, 증가, 값 cmd_item\n2\n경험치 변경: Other 빼기 변수 Reward\n3\n능력치 변경: Hero 공격 −변수 Reward\n4\n데미지: Hero · 회복 변수 Reward\n5\n상태 변경: Hero · Sleep 부여\n6\n주인공 이름 변경: Hero · Hero edited\n△\n7\n주인공 별명 변경: Hero · Hero nick2\n△\n8\n주인공 모습 변경: Hero · easyrpg-charset-actor1\n9\n주인공 얼굴 변경: Hero · easyrpg-faceset-actor1-00\n△\n10\n주인공 직업 변경: Hero · class_u05\n11\n스킬 변경: Hero 배우기 공격\n◆\n자동 저장됨\n이 세션에서 바뀐 내용이 있습니다. 어떻게 할까요?\n닫기 전에 저장하거나 되돌릴지 선택하세요. 되돌리기는 이 모달을 연 시점의 DB 상태로 복구합니다.\n저장하고 닫기\n열 때 상태로 되돌리고 닫기\n계속 편집\n닫기\n지금 저장\n도움말"
+}

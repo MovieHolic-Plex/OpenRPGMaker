@@ -101,11 +101,16 @@ export async function openCommandRow(page: Page, scope: Locator, path: readonly 
 export async function openDatabaseCommand(page: Page, context: "common" | "troop", id: string, path: readonly number[] = [0]) {
   // enterLocalEditor uses expert mode; the database lives on its toolbar, not the beginner tools menu.
   await page.getByTestId("toolbar-database").click();
-  await page.getByTestId(context === "common" ? "db-tab-common-events" : "db-tab-troops").click();
+  const tabId = context === "common" ? "db-tab-common-events" : "db-tab-troops";
+  if (await page.getByTestId(tabId).isHidden()) {
+    await observeEditorAction(page, {
+      observe: [{ source: "dom", selector: `[data-testid="${tabId}"]`, read: "property", name: "hidden", equals: false }],
+      timeoutMs: 10_000,
+    }, () => page.getByTestId(`db-tab-group-${context === "common" ? "system" : "monster"}`).click());
+  }
+  await page.getByTestId(tabId).click();
   await page.getByTestId(context === "common" ? `db-common-event-row-${id}` : `db-record-row-${id}`).click();
   if (context === "troop") {
-    const details = page.getByTestId("db-troop-event-details");
-    if (await details.getAttribute("open") === null) await details.locator("summary").click();
     await page.getByTestId("db-troop-event-page-tab-1").click();
   }
   await openCommandRow(page, page.getByTestId(context === "common" ? "db-common-event-command-list" : "db-troop-event-command-list"), path);

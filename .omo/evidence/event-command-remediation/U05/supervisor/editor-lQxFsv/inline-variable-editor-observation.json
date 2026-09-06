@@ -1,0 +1,40 @@
+{
+  "status": "PASS",
+  "plan": {
+    "action": "Existing EXP -> numeric31 -> variable -> real picker search/add/select/Confirm -> EXP Confirm -> map Apply",
+    "pass": {
+      "createdName": "U05 newly authored reward",
+      "actorId": "other",
+      "op": "-=",
+      "inactiveNumber": "31",
+      "currentPreviewIdentity": true,
+      "mountedNodes": true
+    }
+  },
+  "selection": {
+    "created": {
+      "id": "var_0021",
+      "name": "U05 newly authored reward"
+    },
+    "selected": {
+      "id": "var_0021",
+      "label": "U05 newly authored reward",
+      "previewContainsCurrentName": true,
+      "invalid": "false",
+      "sameForm": true,
+      "sameNumeric": true
+    }
+  },
+  "expected": {
+    "kind": "changeExp",
+    "actorId": "other",
+    "op": "-=",
+    "amount": {
+      "kind": "var",
+      "id": "var_0021"
+    }
+  },
+  "errors": [],
+  "remoteWrites": [],
+  "observationReleased": true
+}

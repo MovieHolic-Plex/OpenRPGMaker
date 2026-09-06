@@ -1,0 +1,26 @@
+[
+  {
+    "id": "editor-stale",
+    "path": ".omo/evidence/event-command-remediation/U05/qa-input-legacy-call.json",
+    "normalizedHash": "32adb828622f8ef3094c3ba5e18cfc418c528ada1eff38e8fa6e26c50e2f1c8d",
+    "normalizedTrigger": "call"
+  },
+  {
+    "id": "editor-current",
+    "path": "/tmp/event-command-u05-2dCkLZ/fixtures/project.json",
+    "normalizedHash": "cefa204de1e3bed4542a6e12a414c435b8848196ef6d8d0418349bf6731c0512",
+    "normalizedTrigger": "none"
+  },
+  {
+    "id": "player-stale-export",
+    "path": ".omo/evidence/event-command-remediation/U05/editor-map-wire-legacy-call.json",
+    "normalizedHash": "072cf4f608eb7d1c0fcfbb499189fa4b6d96fc5be104add539468dd362d46de5",
+    "normalizedTrigger": "call"
+  },
+  {
+    "id": "player-current-export",
+    "path": "/tmp/event-command-u05-2dCkLZ/fixtures/editor-map.json",
+    "normalizedHash": "170a17d661f8f51bb8f69269db0a34cf1284d19bb1b1d303e86eccb8fdd559dd",
+    "normalizedTrigger": "none"
+  }
+]

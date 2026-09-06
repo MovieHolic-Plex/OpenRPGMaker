@@ -1,0 +1,11 @@
+[96mtest/eventCommandRemediation/U05.fixture.ts[0m:[93m88[0m:[93m61[0m - [91merror[0m[90m TS2322: [0mType '"call"' is not assignable to type '"none" | "auto" | "parallel"'.
+
+[7m88[0m   project.commonEvents = [{ id: COMMON, name: "U05 common", trigger: "call", commands: structuredClone(commands) }];
+[7m  [0m [91m                                                            ~~~~~~~[0m
+
+  [96msrc/project/types/events.ts[0m:[93m590[0m:[93m3[0m
+    [7m590[0m   trigger: "none" | "auto" | "parallel";
+    [7m   [0m [96m  ~~~~~~~[0m
+    The expected type comes from property 'trigger' which is declared here on type 'CommonEvent'
+
+8 files: 1 diagnostics

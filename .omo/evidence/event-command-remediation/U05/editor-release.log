@@ -1,0 +1,25 @@
+[rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] QWENCLOUD_API_KEY 가 없어 /api/qwen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] CPENROUTER_API_KEY 가 없어 /api/cpen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+manually calling optimizeDeps is deprecated. This is done automatically and does not need to be called manually.
+Optimizing dependencies:
+  zod
+[rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] QWENCLOUD_API_KEY 가 없어 /api/qwen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] CPENROUTER_API_KEY 가 없어 /api/cpen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+
+  VITE v6.4.3  ready in 1017 ms
+
+  ➜  Local:   http://127.0.0.1:36611/
+
+Running 5 tests using 1 worker
+
+  ✓  1 test/e2e/event-command-remediation-U05.spec.ts:73:3 › U05 map: actor forms Confirm, outer save, import and reopen (5.1m)
+  ✓  2 test/e2e/event-command-remediation-U05.spec.ts:73:3 › U05 common: actor forms Confirm, outer save, import and reopen (3.8m)
+  ✓  3 test/e2e/event-command-remediation-U05.spec.ts:73:3 › U05 troop: actor forms Confirm, outer save, import and reopen (4.1m)
+  ✓  4 test/e2e/event-command-remediation-U05.spec.ts:235:3 › U05 missing state "" survives until explicit chip (57.9s)
+  ✓  5 test/e2e/event-command-remediation-U05.spec.ts:235:3 › U05 missing state "missing_state" survives until explicit chip (58.2s)
+
+  Slow test file: test/e2e/event-command-remediation-U05.spec.ts (15.0m)
+  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+  5 passed (15.0m)

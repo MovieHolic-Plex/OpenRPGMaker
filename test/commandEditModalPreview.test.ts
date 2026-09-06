@@ -496,6 +496,19 @@ describe("command edit modal — image-rich preview", () => {
     expect(controls?.className.includes("is-hidden")).toBe(false);
   });
 
+  it("EXP owns operand and target edits while a command kind change still rebuilds", () => {
+    const initial: Extract<Command, { kind: "changeExp" }> = {
+      kind: "changeExp", actorId: "hero", op: "+=", amount: { kind: "var", id: "reward" },
+    };
+    for (const next of [
+      { ...initial, amount: 31 },
+      { ...initial, op: "-=" as const },
+      { ...initial, actorId: "" },
+      { ...initial, actorId: "other" },
+    ]) expect(shouldRerenderCommandForm(initial, next)).toBe(false);
+    expect(shouldRerenderCommandForm(initial, { kind: "text", body: "next" })).toBe(true);
+  });
+
   it("shop owns its updates while choices still rebuild on cancel structure", () => {
     expect(
       shouldRerenderCommandForm(

@@ -1,0 +1,52 @@
+{
+  "unit": "U05",
+  "integrationBase": "a9dcbf32c",
+  "sourceCommits": [
+    "8f9f6c222f7ecdbfcf1a3366d33be54ece867670",
+    "b5521e4d73ce17b8adc971c90096217419c2c403"
+  ],
+  "evidenceCommit": "8db98b68783f0eb0a8f5461dbe5f2052b7eaf522",
+  "verificationComposition": [
+    "U05",
+    "U06"
+  ],
+  "focused": {
+    "passed": 237,
+    "failed": 0,
+    "exitCode": 0,
+    "report": "../../checkpoints/u05-u06-integration.json"
+  },
+  "editor": {
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0,
+    "flaky": 0,
+    "report": "editor-lQxFsv/report.json"
+  },
+  "player": {
+    "passed": 7,
+    "failed": 0,
+    "report": "player-CY2SNi/player-observation.json",
+    "sourceSha256": "170a17d661f8f51bb8f69269db0a34cf1284d19bb1b1d303e86eccb8fdd559dd",
+    "unchangedInputFromFailedAttempt": true
+  },
+  "static": {
+    "productionLspErrors": 0,
+    "typecheckAppExit": 0,
+    "buildAppExit": 0,
+    "buildSeconds": 28.14
+  },
+  "qaCorrection": {
+    "failure": "player-r5yURg/player-authored-failure.json",
+    "cause": "Cold page navigation inherited the 15000 ms interaction timeout; title rendered, no page or request errors.",
+    "navigationTimeoutMs": 120000,
+    "interactionTimeoutMs": 15000
+  },
+  "cleanup": {
+    "editor": "editor-lQxFsv/cleanup.json",
+    "player": "player-CY2SNi/cleanup.json",
+    "temporaryRootRemoved": true,
+    "portableInputs": "accepted-fixtures/"
+  },
+  "visual": "Screenshots and objective geometry retained. Available model omits image pixels; no pixel-level visual verdict claimed."
+}

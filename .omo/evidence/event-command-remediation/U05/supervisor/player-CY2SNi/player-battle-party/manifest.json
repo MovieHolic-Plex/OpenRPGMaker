@@ -1,0 +1,559 @@
+{
+  "scenarioId": "event-command-remediation-u05-battle-party",
+  "projectPath": "../../../../../../tmp/event-command-u05-supervisor-90CD4m/fixtures/player-battle-party.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "boot",
+      "shot": null,
+      "failures": [],
+      "eventCommands": [
+        {
+          "op": {
+            "kind": "eventCommand",
+            "trigger": {
+              "kind": "key",
+              "key": "Enter"
+            },
+            "observe": [
+              {
+                "source": "state",
+                "path": [
+                  "mapId"
+                ],
+                "equals": "map_u05"
+              },
+              {
+                "source": "state",
+                "path": [
+                  "player"
+                ],
+                "equals": {
+                  "x": 2,
+                  "y": 3
+                }
+              },
+              {
+                "source": "state",
+                "path": [
+                  "inputEnabled"
+                ],
+                "equals": true
+              },
+              {
+                "source": "state",
+                "path": [
+                  "running"
+                ],
+                "equals": false
+              }
+            ],
+            "timeoutMs": 60000
+          },
+          "status": "success",
+          "before": [
+            {
+              "missing": true
+            },
+            {
+              "missing": true
+            },
+            {
+              "missing": true
+            },
+            {
+              "missing": true
+            }
+          ],
+          "after": [
+            {
+              "value": "map_u05"
+            },
+            {
+              "value": {
+                "x": 2,
+                "y": 3
+              }
+            },
+            {
+              "value": true
+            },
+            {
+              "value": false
+            }
+          ],
+          "event": null,
+          "cleanup": {
+            "observer": true,
+            "timer": true,
+            "event": true,
+            "pagehide": true,
+            "abort": true
+          }
+        }
+      ],
+      "state": {
+        "currentMapId": "map_u05",
+        "x": 2,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null
+      }
+    },
+    {
+      "index": 1,
+      "id": "hero-menu",
+      "shot": "02-hero-menu.png",
+      "failures": [],
+      "eventCommands": [
+        {
+          "op": {
+            "kind": "eventCommand",
+            "trigger": {
+              "kind": "key",
+              "key": "z"
+            },
+            "observe": [
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"battle-scene\"]",
+                "read": "attribute",
+                "name": "data-battle-director-step",
+                "equals": "command"
+              },
+              {
+                "source": "dom",
+                "selector": ".battle-actor-status.is-active-actor[data-record-id=\"hero\"]",
+                "read": "present",
+                "equals": true
+              },
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"actor-command-defend\"]",
+                "read": "present",
+                "equals": true
+              },
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"actor-command-item\"]",
+                "read": "present",
+                "equals": true
+              }
+            ],
+            "timeoutMs": 60000
+          },
+          "status": "success",
+          "before": [
+            {
+              "missing": true
+            },
+            {
+              "value": false
+            },
+            {
+              "value": false
+            },
+            {
+              "value": false
+            }
+          ],
+          "after": [
+            {
+              "value": "command"
+            },
+            {
+              "value": true
+            },
+            {
+              "value": true
+            },
+            {
+              "value": true
+            }
+          ],
+          "event": null,
+          "cleanup": {
+            "observer": true,
+            "timer": true,
+            "event": true,
+            "pagehide": true,
+            "abort": true
+          }
+        }
+      ],
+      "state": {
+        "currentMapId": "map_u05",
+        "x": 2,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null
+      },
+      "battlers": {
+        "skin": "rm2000",
+        "directorStep": "command",
+        "field": {
+          "top": 24,
+          "bottom": 564,
+          "left": 32,
+          "right": 992,
+          "width": 960,
+          "height": 540
+        },
+        "enemyGroup": {
+          "top": 96,
+          "bottom": 564,
+          "left": 32,
+          "right": 992,
+          "width": 960,
+          "height": 468
+        },
+        "enemies": [
+          {
+            "id": "enemy-1",
+            "node": {
+              "top": 99,
+              "bottom": 459,
+              "left": 368,
+              "right": 668,
+              "width": 300,
+              "height": 360
+            },
+            "image": {
+              "top": 105,
+              "bottom": 459,
+              "left": 366,
+              "right": 670,
+              "width": 304,
+              "height": 354
+            },
+            "name": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0,
+              "width": 0,
+              "height": 0
+            }
+          }
+        ],
+        "allies": [
+          {
+            "id": "battle-actor-hero",
+            "node": {
+              "top": 396,
+              "bottom": 564,
+              "left": 161,
+              "right": 335,
+              "width": 174,
+              "height": 168
+            }
+          },
+          {
+            "id": "battle-actor-other",
+            "node": {
+              "top": 396,
+              "bottom": 564,
+              "left": 689,
+              "right": 863,
+              "width": 174,
+              "height": 168
+            }
+          }
+        ]
+      }
+    },
+    {
+      "index": 2,
+      "id": "select-defend",
+      "shot": null,
+      "failures": [],
+      "eventCommands": [
+        {
+          "op": {
+            "kind": "eventCommand",
+            "trigger": {
+              "kind": "key",
+              "key": "ArrowDown"
+            },
+            "observe": [
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"actor-command-defend\"][data-battle-command-cursor=\"true\"]",
+                "read": "present",
+                "equals": true
+              }
+            ],
+            "timeoutMs": 60000
+          },
+          "status": "success",
+          "before": [
+            {
+              "value": false
+            }
+          ],
+          "after": [
+            {
+              "value": true
+            }
+          ],
+          "event": null,
+          "cleanup": {
+            "observer": true,
+            "timer": true,
+            "event": true,
+            "pagehide": true,
+            "abort": true
+          }
+        }
+      ],
+      "state": {
+        "currentMapId": "map_u05",
+        "x": 2,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null
+      },
+      "battlers": {
+        "skin": "rm2000",
+        "directorStep": "command",
+        "field": {
+          "top": 24,
+          "bottom": 564,
+          "left": 32,
+          "right": 992,
+          "width": 960,
+          "height": 540
+        },
+        "enemyGroup": {
+          "top": 96,
+          "bottom": 564,
+          "left": 32,
+          "right": 992,
+          "width": 960,
+          "height": 468
+        },
+        "enemies": [
+          {
+            "id": "enemy-1",
+            "node": {
+              "top": 99,
+              "bottom": 459,
+              "left": 368,
+              "right": 668,
+              "width": 300,
+              "height": 360
+            },
+            "image": {
+              "top": 103,
+              "bottom": 459,
+              "left": 367,
+              "right": 669,
+              "width": 302,
+              "height": 356
+            },
+            "name": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0,
+              "width": 0,
+              "height": 0
+            }
+          }
+        ],
+        "allies": [
+          {
+            "id": "battle-actor-hero",
+            "node": {
+              "top": 396,
+              "bottom": 564,
+              "left": 161,
+              "right": 335,
+              "width": 174,
+              "height": 168
+            }
+          },
+          {
+            "id": "battle-actor-other",
+            "node": {
+              "top": 396,
+              "bottom": 564,
+              "left": 689,
+              "right": 863,
+              "width": 174,
+              "height": 168
+            }
+          }
+        ]
+      }
+    },
+    {
+      "index": 3,
+      "id": "other-menu",
+      "shot": "04-other-menu.png",
+      "failures": [],
+      "eventCommands": [
+        {
+          "op": {
+            "kind": "eventCommand",
+            "trigger": {
+              "kind": "key",
+              "key": "Enter"
+            },
+            "observe": [
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"battle-scene\"]",
+                "read": "attribute",
+                "name": "data-battle-director-step",
+                "equals": "command"
+              },
+              {
+                "source": "dom",
+                "selector": ".battle-actor-status.is-active-actor[data-record-id=\"other\"]",
+                "read": "present",
+                "equals": true
+              },
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"actor-command-defend\"]",
+                "read": "present",
+                "equals": true
+              },
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"actor-command-item\"]",
+                "read": "present",
+                "equals": true
+              }
+            ],
+            "timeoutMs": 60000
+          },
+          "status": "success",
+          "before": [
+            {
+              "value": "command"
+            },
+            {
+              "value": false
+            },
+            {
+              "value": true
+            },
+            {
+              "value": true
+            }
+          ],
+          "after": [
+            {
+              "value": "command"
+            },
+            {
+              "value": true
+            },
+            {
+              "value": true
+            },
+            {
+              "value": true
+            }
+          ],
+          "event": null,
+          "cleanup": {
+            "observer": true,
+            "timer": true,
+            "event": true,
+            "pagehide": true,
+            "abort": true
+          }
+        }
+      ],
+      "state": {
+        "currentMapId": "map_u05",
+        "x": 2,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null
+      },
+      "battlers": {
+        "skin": "rm2000",
+        "directorStep": "command",
+        "field": {
+          "top": 24,
+          "bottom": 564,
+          "left": 32,
+          "right": 992,
+          "width": 960,
+          "height": 540
+        },
+        "enemyGroup": {
+          "top": 96,
+          "bottom": 564,
+          "left": 32,
+          "right": 992,
+          "width": 960,
+          "height": 468
+        },
+        "enemies": [
+          {
+            "id": "enemy-1",
+            "node": {
+              "top": 99,
+              "bottom": 459,
+              "left": 368,
+              "right": 668,
+              "width": 300,
+              "height": 360
+            },
+            "image": {
+              "top": 103,
+              "bottom": 459,
+              "left": 367,
+              "right": 669,
+              "width": 302,
+              "height": 356
+            },
+            "name": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0,
+              "width": 0,
+              "height": 0
+            }
+          }
+        ],
+        "allies": [
+          {
+            "id": "battle-actor-hero",
+            "node": {
+              "top": 396,
+              "bottom": 564,
+              "left": 161,
+              "right": 335,
+              "width": 174,
+              "height": 168
+            }
+          },
+          {
+            "id": "battle-actor-other",
+            "node": {
+              "top": 396,
+              "bottom": 564,
+              "left": 689,
+              "right": 863,
+              "width": 174,
+              "height": 168
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -17,6 +17,7 @@ import {
 import { faceDisplayModeOf, renderFaceGallery, renderFacesetCrop } from "./facesetPreview";
 import type { CommandEditContext } from "./types";
 import { replaceFields } from "./commandBodyM2Page3";
+import { actorTargetControls, bindCommandFormValidity } from "./commandBodyDatabase";
 
 type M2Command = Extract<Command, { kind: "m2Command" }>;
 
@@ -28,7 +29,9 @@ const ACTOR_TARGET_SEGMENTS = [
 const STATE_OP_SEGMENTS = [
   { value: "add", key: "add", label: "부여" },
   { value: "remove", key: "remove", label: "해제" },
-] as const satisfies readonly SegmentOption<"add" | "remove">[];
+  { value: "set", key: "set", label: "교체" },
+  { value: "toggle", key: "toggle", label: "반전" },
+] as const satisfies readonly SegmentOption<"add" | "remove" | "set" | "toggle">[];
 
 const DAMAGE_OP_SEGMENTS = [
   { value: "add", key: "add", label: "데미지" },
@@ -249,16 +252,11 @@ function changeStateCommandBody(context: CommandEditContext, cmd: M2Command): HT
   });
   const operation = segmentedSelect({
     options: STATE_OP_SEGMENTS,
-    value: opOf(cmd.fields.operation, "add") === "remove" ? "remove" : "add",
+    value: opOf(cmd.fields.operation, "add"),
     testid: "change-state-operation",
     ariaLabel: "어떻게",
   });
   let currentStateId = String(cmd.fields.value ?? "").trim();
-  if (currentStateId && !states.some((entry) => entry.id === currentStateId)) {
-    currentStateId = states[0]?.id ?? "";
-  } else if (!currentStateId) {
-    currentStateId = states[0]?.id ?? "";
-  }
   const stateSelect = el("select", {
     class: "record-browser-hidden-select",
     dataset: { testid: "change-state-state-select" },
@@ -273,7 +271,13 @@ function changeStateCommandBody(context: CommandEditContext, cmd: M2Command): HT
       })
     );
   }
+  if (currentStateId && !states.some(entry => entry.id === currentStateId)) {
+    stateSelect.append(el("option", { text: currentStateId, attrs: { value: currentStateId } }));
+  }
   stateSelect.value = currentStateId;
+  const validate = bindCommandFormValidity(wrap, () =>
+    states.some(entry => entry.id === stateSelect.value) &&
+    (target.select.value === "party" || actors.some(entry => entry.id === actor.select.value)));
   const chips = el("div", {
     class: "actor-m2-chip-grid",
     dataset: { testid: "change-state-grid" },
@@ -316,6 +320,8 @@ function changeStateCommandBody(context: CommandEditContext, cmd: M2Command): HT
 
   const commit = () => {
     currentStateId = stateSelect.value;
+    renderPreview();
+    if (!validate()) return;
     replaceFields(context, cmd, {
       target: target.select.value === "party" ? "party" : actor.select.value,
       operation: operation.select.value,
@@ -330,7 +336,7 @@ function changeStateCommandBody(context: CommandEditContext, cmd: M2Command): HT
         ? "파티 전체"
         : actors.find((entry) => entry.id === actor.select.value)?.name ?? "주인공";
     const stateName = states.find((entry) => entry.id === currentStateId)?.name ?? "(상태 선택)";
-    const opLabel = operation.select.value === "remove" ? "해제" : "부여";
+    const opLabel = STATE_OP_SEGMENTS.find(entry => entry.value === operation.select.value)?.label ?? operation.select.value;
     preview.replaceChildren(
       el("p", { class: "actor-m2-preview-line", text: `${who} · ${stateName} ${opLabel}` }),
       el("p", {
@@ -536,6 +542,8 @@ function changeActorNameCommandBody(
     iconOf: (record) => facesetIconOf(project, record.faceResourceId),
     subtitleOf: (record) => record.name,
   });
+  const target = actorTargetControls(actor, String(cmd.fields.target ?? ""), `change-actor-${mode}`);
+  const validate = bindCommandFormValidity(wrap, target.valid);
   const text = el("input", {
     class: "actor-m2-text-input",
     attrs: {
@@ -556,8 +564,10 @@ function changeActorNameCommandBody(
   });
 
   const commit = () => {
+    renderPreview();
+    if (!validate()) return;
     replaceFields(context, cmd, {
-      target: actor.select.value,
+      target: target.read(),
       value: text.value,
     });
     renderPreview();
@@ -579,7 +589,7 @@ function changeActorNameCommandBody(
             children: [
               el("p", {
                 class: "actor-m2-preview-line",
-                text: record ? `${record.name} → ${next}` : `주인공 선택 · ${next}`,
+                text: record && target.read() !== "party" ? `${record.name} → ${next}` : `${target.read() === "party" ? "파티 전체" : "주인공 선택"} · ${next}`,
               }),
               el("p", {
                 class: "actor-m2-preview-note",
@@ -595,6 +605,7 @@ function changeActorNameCommandBody(
     );
   };
 
+  target.mode.addEventListener("change", commit);
   actor.select.addEventListener("change", commit);
   text.addEventListener("change", commit);
   text.addEventListener("input", renderPreview);
@@ -614,7 +625,7 @@ function changeActorNameCommandBody(
         el("div", {
           class: "actor-m2-main",
           children: [
-            fieldBlock("주인공", actor.root),
+            fieldBlock("대상", target.root),
             fieldBlock(mode === "name" ? "이름" : "별명", text),
           ],
         }),
@@ -638,6 +649,8 @@ function changeActorGraphicCommandBody(context: CommandEditContext, cmd: M2Comma
     iconOf: (record) => facesetIconOf(project, record.faceResourceId),
     subtitleOf: (record) => record.characterResourceId ?? null,
   });
+  const target = actorTargetControls(actor, String(cmd.fields.target ?? ""), "change-actor-graphic");
+  const validate = bindCommandFormValidity(wrap, target.valid);
   const resourceSelect = charsetResourceSelect(resourceId, "change-actor-graphic-resource-select");
   const preview = el("div", {
     class: "actor-m2-preview",
@@ -666,8 +679,10 @@ function changeActorGraphicCommandBody(context: CommandEditContext, cmd: M2Comma
 
   const commit = () => {
     resourceId = resourceSelect.value.trim();
+    renderPreview();
+    if (!validate()) return;
     replaceFields(context, cmd, {
-      target: actor.select.value,
+      target: target.read(),
       value: resourceId,
     });
     renderPreview();
@@ -686,9 +701,9 @@ function changeActorGraphicCommandBody(context: CommandEditContext, cmd: M2Comma
             children: [
               el("p", {
                 class: "actor-m2-preview-line",
-                text: record
+                text: record && target.read() !== "party"
                   ? `${record.name} 맵 그래픽 → ${resourceId || "(선택 없음)"}`
-                  : `주인공 선택 · ${resourceId || "(선택 없음)"}`,
+                  : `${target.read() === "party" ? "파티 전체" : "주인공 선택"} · ${resourceId || "(선택 없음)"}`,
               }),
               el("p", {
                 class: "actor-m2-preview-note",
@@ -701,6 +716,7 @@ function changeActorGraphicCommandBody(context: CommandEditContext, cmd: M2Comma
     );
   };
 
+  target.mode.addEventListener("change", commit);
   actor.select.addEventListener("change", commit);
   resourceSelect.addEventListener("change", commit);
   renderPreview();
@@ -717,7 +733,7 @@ function changeActorGraphicCommandBody(context: CommandEditContext, cmd: M2Comma
         el("div", {
           class: "actor-m2-main",
           children: [
-            fieldBlock("주인공", actor.root),
+            fieldBlock("대상", target.root),
             fieldBlock(
               "모습",
               el("div", {
@@ -747,6 +763,8 @@ function changeActorFacesetCommandBody(context: CommandEditContext, cmd: M2Comma
     iconOf: (record) => facesetIconOf(project, record.faceResourceId),
     subtitleOf: (record) => record.faceResourceId ?? null,
   });
+  const target = actorTargetControls(actor, String(cmd.fields.target ?? ""), "change-actor-faceset");
+  const validate = bindCommandFormValidity(wrap, target.valid);
   const resourceSelect = facesetResourceSelect(resourceId, "change-actor-faceset-resource-select");
   const facePreview = el("div", {
     class: "actor-m2-faceset-preview",
@@ -783,8 +801,10 @@ function changeActorFacesetCommandBody(context: CommandEditContext, cmd: M2Comma
 
   const commit = () => {
     resourceId = resourceSelect.value.trim();
+    renderFaceUi();
+    if (!validate()) return;
     replaceFields(context, cmd, {
-      target: actor.select.value,
+      target: target.read(),
       value: resourceId,
     });
     renderFaceUi();
@@ -815,9 +835,9 @@ function changeActorFacesetCommandBody(context: CommandEditContext, cmd: M2Comma
     preview.replaceChildren(
       el("p", {
         class: "actor-m2-preview-line",
-        text: record
+        text: record && target.read() !== "party"
           ? `${record.name} 얼굴 → ${resourceId || "(선택 없음)"}`
-          : `주인공 선택 · ${resourceId || "(선택 없음)"}`,
+          : `${target.read() === "party" ? "파티 전체" : "주인공 선택"} · ${resourceId || "(선택 없음)"}`,
       }),
       el("p", {
         class: "actor-m2-preview-note",
@@ -829,6 +849,7 @@ function changeActorFacesetCommandBody(context: CommandEditContext, cmd: M2Comma
     );
   };
 
+  target.mode.addEventListener("change", commit);
   actor.select.addEventListener("change", commit);
   resourceSelect.addEventListener("change", commit);
   renderFaceUi();
@@ -845,7 +866,7 @@ function changeActorFacesetCommandBody(context: CommandEditContext, cmd: M2Comma
         el("div", {
           class: "actor-m2-main",
           children: [
-            fieldBlock("주인공", actor.root),
+            fieldBlock("대상", target.root),
             fieldBlock(
               "얼굴",
               el("div", {
@@ -893,6 +914,8 @@ function changeActorClassCommandBody(context: CommandEditContext, cmd: M2Command
       return klass?.name ?? record.classId;
     },
   });
+  const target = actorTargetControls(actor, String(cmd.fields.target ?? ""), "change-actor-class");
+  const validate = bindCommandFormValidity(wrap, target.valid);
   const klass = recordPickerWithPreview({
     records: classes,
     selectedId: String(cmd.fields.value ?? ""),
@@ -907,8 +930,10 @@ function changeActorClassCommandBody(context: CommandEditContext, cmd: M2Command
   });
 
   const commit = () => {
+    renderPreview();
+    if (!validate()) return;
     replaceFields(context, cmd, {
-      target: actor.select.value,
+      target: target.read(),
       value: klass.select.value,
     });
     renderPreview();
@@ -922,7 +947,7 @@ function changeActorClassCommandBody(context: CommandEditContext, cmd: M2Command
     preview.replaceChildren(
       el("p", {
         class: "actor-m2-preview-line",
-        text: record ? `${record.name}: ${from} → ${to}` : `주인공 선택 · ${to}`,
+        text: record && target.read() !== "party" ? `${record.name}: ${from} → ${to}` : `${target.read() === "party" ? "파티 전체" : "주인공 선택"} · ${to}`,
       }),
       el("p", {
         class: "actor-m2-preview-note",
@@ -931,6 +956,7 @@ function changeActorClassCommandBody(context: CommandEditContext, cmd: M2Command
     );
   };
 
+  target.mode.addEventListener("change", commit);
   actor.select.addEventListener("change", commit);
   klass.select.addEventListener("change", commit);
   renderPreview();
@@ -942,7 +968,7 @@ function changeActorClassCommandBody(context: CommandEditContext, cmd: M2Command
       children: [
         el("div", {
           class: "actor-m2-main",
-          children: [fieldBlock("주인공", actor.root), fieldBlock("직업", klass.root)],
+          children: [fieldBlock("대상", target.root), fieldBlock("직업", klass.root)],
         }),
         preview,
       ],
@@ -964,8 +990,8 @@ function valueSourceControls(
   readonly bind: (onChange: () => void) => void;
 } {
   const initialSource =
-    String(cmd.fields.valueSource ?? "") === "variable" ||
-    Boolean(String(cmd.fields.valueVariableId ?? "").trim())
+    cmd.fields.valueSource === "variable" ||
+    (cmd.fields.valueSource !== "number" && Boolean(String(cmd.fields.valueVariableId ?? "").trim()))
       ? "variable"
       : "number";
   let variableId = String(cmd.fields.valueVariableId ?? "").trim();
@@ -1015,7 +1041,7 @@ function valueSourceControls(
     setNumber: (value) => {
       source.select.value = "number";
       numberInput.value = String(value);
-      syncVisibility();
+      source.select.dispatchEvent(new Event("change"));
     },
     syncVisibility,
     bind: (onChange) => {
@@ -1115,15 +1141,18 @@ function changeBattleCommandsCommandBody(context: CommandEditContext, cmd: M2Com
   const wrap = shell("change-battle-commands-command-body", "change-battle-commands-command-body");
   const mode = segmentedSelect({
     options: [...ACTOR_TARGET_SEGMENTS],
-    value: String(fields.target ?? "party") === "actor" ? "actor" : "party",
+    value: targetModeOf(String(fields.target ?? "party")),
     testid: "change-battle-commands-target-mode",
     ariaLabel: "누구에게",
   });
   const actor = actorPicker({
     project,
-    selectedId: String(fields.actorId ?? ""),
+    selectedId: String(fields.target === "actor" ? fields.actorId ?? "" : targetModeOf(String(fields.target ?? "party")) === "actor" ? fields.target : ""),
     testid: "change-battle-commands-target-actor",
-    onChange: (id) => apply({ actorId: id, target: "actor" }),
+    onChange: () => {
+      mode.select.value = "actor";
+      mode.select.dispatchEvent(new Event("change"));
+    },
   });
   const operation = el("select", { dataset: { testid: "change-battle-commands-operation" } }) as HTMLSelectElement;
   for (const [value, label] of [["add", "더하기"], ["remove", "빼기"], ["set", "이 값으로"]] as const) {
@@ -1140,13 +1169,15 @@ function changeBattleCommandsCommandBody(context: CommandEditContext, cmd: M2Com
   }
   commandSel.value = String(fields.value ?? "");
   const preview = el("div", { class: "actor-m2-preview", dataset: { testid: "change-battle-commands-preview" } });
-  const apply = (patch: Record<string, unknown> = {}): void => {
+  const validate = bindCommandFormValidity(wrap, () => mode.select.value === "party" || project.database.actors.some(record => record.id === actor.select.value));
+  const apply = (): void => {
+    renderPreview();
+    if (!validate()) return;
     const next = {
       ...fields,
-      target: mode.select.value,
+      target: mode.select.value === "party" ? "party" : actor.select.value,
       operation: operation.value,
       value: commandSel.value,
-      ...patch,
     };
     Object.assign(fields, next);
     context.actions.replaceCommand(context.path, { ...cmd, fields: next });
@@ -1158,6 +1189,7 @@ function changeBattleCommandsCommandBody(context: CommandEditContext, cmd: M2Com
     const picked = commandSel.value || "커맨드 없음";
     preview.replaceChildren(el("p", { class: "actor-m2-preview-line", text: `${who} · ${how} · ${picked}` }));
   };
+  wrap.addEventListener("event-command-validate", () => apply());
   mode.select.addEventListener("change", () => apply());
   operation.addEventListener("change", () => apply());
   commandSel.addEventListener("change", () => apply());

@@ -1,0 +1,150 @@
+{
+  "config": {
+    "argv": [
+      "/usr/local/bin/node",
+      "/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u05/node_modules/@playwright/test/cli.js",
+      "test",
+      "--config",
+      ".omo/evidence/event-command-remediation/U05/playwright.config.mts",
+      "--grep",
+      "U05 map:",
+      "--reporter=list,json"
+    ],
+    "configFile": "/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u05/.omo/evidence/event-command-remediation/U05/playwright.config.mts",
+    "rootDir": "/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u05/test/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/tmp/event-command-u05-2dCkLZ/playwright-output",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u05/test/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "event-command-remediation-U05.spec.ts"
+        ],
+        "timeout": 360000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.61.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "event-command-remediation-U05.spec.ts",
+      "file": "event-command-remediation-U05.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "U05 map: actor forms Confirm, outer save, import and reopen",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 360000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 73004,
+                  "error": {
+                    "message": "TimeoutError: locator.selectOption: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"event-command-edit-dialog\"] [data-testid=\"change-battle-commands-target-mode\"]')\u001b[22m\n\u001b[2m    - locator resolved to <select hidden=\"\" aria-label=\"누구에게\" class=\"rich-native-select\" data-testid=\"change-battle-commands-target-mode\">…</select>\u001b[22m\n\u001b[2m  - attempting select option action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible and enabled\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying select option action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible and enabled\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying select option action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    26 × waiting for element to be visible and enabled\u001b[22m\n\u001b[2m       - element is not visible\u001b[22m\n\u001b[2m     - retrying select option action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n",
+                    "stack": "TimeoutError: locator.selectOption: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"event-command-edit-dialog\"] [data-testid=\"change-battle-commands-target-mode\"]')\u001b[22m\n\u001b[2m    - locator resolved to <select hidden=\"\" aria-label=\"누구에게\" class=\"rich-native-select\" data-testid=\"change-battle-commands-target-mode\">…</select>\u001b[22m\n\u001b[2m  - attempting select option action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible and enabled\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying select option action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible and enabled\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying select option action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    26 × waiting for element to be visible and enabled\u001b[22m\n\u001b[2m       - element is not visible\u001b[22m\n\u001b[2m     - retrying select option action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n    at action (/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u05/test/e2e/event-command-remediation-U05.spec.ts:31:38)\n    at observeEditorAction (/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u05/test/e2e/eventCommandRemediationHarness.ts:20:11)\n    at /home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u05/test/e2e/event-command-remediation-U05.spec.ts:98:7",
+                    "location": {
+                      "file": "/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u05/test/e2e/event-command-remediation-U05.spec.ts",
+                      "column": 38,
+                      "line": 31
+                    },
+                    "snippet": "  29 | async function select(page: Page, id: string, next: string) {\n  30 |   return observeEditorAction(page, { observe: [value(id, next)], event: { selector: selector(id), type: \"change\" }, timeoutMs: 10_000 },\n> 31 |     () => page.locator(selector(id)).selectOption(next));\n     |                                      ^\n  32 | }\n  33 | async function amount(page: Page, id: string, next: string) {\n  34 |   return observeEditorAction(page, { observe: [value(id, next)], event: { selector: selector(id), type: \"input\" }, timeoutMs: 10_000 },"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u05/test/e2e/event-command-remediation-U05.spec.ts",
+                        "column": 38,
+                        "line": 31
+                      },
+                      "message": "TimeoutError: locator.selectOption: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"event-command-edit-dialog\"] [data-testid=\"change-battle-commands-target-mode\"]')\u001b[22m\n\u001b[2m    - locator resolved to <select hidden=\"\" aria-label=\"누구에게\" class=\"rich-native-select\" data-testid=\"change-battle-commands-target-mode\">…</select>\u001b[22m\n\u001b[2m  - attempting select option action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible and enabled\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying select option action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible and enabled\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying select option action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    26 × waiting for element to be visible and enabled\u001b[22m\n\u001b[2m       - element is not visible\u001b[22m\n\u001b[2m     - retrying select option action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n\n  29 | async function select(page: Page, id: string, next: string) {\n  30 |   return observeEditorAction(page, { observe: [value(id, next)], event: { selector: selector(id), type: \"change\" }, timeoutMs: 10_000 },\n> 31 |     () => page.locator(selector(id)).selectOption(next));\n     |                                      ^\n  32 | }\n  33 | async function amount(page: Page, id: string, next: string) {\n  34 |   return observeEditorAction(page, { observe: [value(id, next)], event: { selector: selector(id), type: \"input\" }, timeoutMs: 10_000 },\n    at action (/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u05/test/e2e/event-command-remediation-U05.spec.ts:31:38)\n    at observeEditorAction (/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u05/test/e2e/eventCommandRemediationHarness.ts:20:11)\n    at /home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u05/test/e2e/event-command-remediation-U05.spec.ts:98:7"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-06T13:08:12.971Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/tmp/event-command-u05-2dCkLZ/playwright-output/event-command-remediation--b4c7d-uter-save-import-and-reopen/error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u05/test/e2e/event-command-remediation-U05.spec.ts",
+                    "column": 38,
+                    "line": 31
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "1593eb394776067819be-baae9ce5bcbc9f122079",
+          "file": "event-command-remediation-U05.spec.ts",
+          "line": 65,
+          "column": 3
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-09-06T13:08:09.793Z",
+    "duration": 79017.73,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

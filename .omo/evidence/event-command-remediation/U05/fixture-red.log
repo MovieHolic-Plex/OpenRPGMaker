@@ -1,0 +1,27 @@
+[rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] QWENCLOUD_API_KEY 가 없어 /api/qwen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] CPENROUTER_API_KEY 가 없어 /api/cpen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/utils.XdZDrNZV.js:9
+		throw new Error(errorMsg);
+		      ^
+
+Error: Vitest failed to access its internal state.
+
+One of the following is possible:
+- "vitest" is imported directly without running "vitest" command
+- "vitest" is imported inside "globalSetup" (to fix this, use "setupFiles" instead, because "globalSetup" runs in a different context)
+- "vitest" is imported inside Vite / Vitest config file
+- Otherwise, it might be a Vitest bug. Please report it to https://github.com/vitest-dev/vitest/issues
+
+    at getWorkerState (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/utils.XdZDrNZV.js:9:9)
+    at getCurrentEnvironment (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/utils.XdZDrNZV.js:23:16)
+    at createExpect (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/vi.bdSIJ99Y.js:426:16)
+    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/vi.bdSIJ99Y.js:464:22
+    at ModuleJob.run (node:internal/modules/esm/module_job:377:25)
+    at onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:671:26)
+    at ViteNodeRunner.interopedImport (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:450:26)
+    at ViteNodeRunner.directRequest (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:271:20)
+    at ViteNodeRunner.cachedRequest (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:189:11)
+    at ViteNodeRunner.dependencyRequest (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:239:10)
+
+Node.js v24.11.1

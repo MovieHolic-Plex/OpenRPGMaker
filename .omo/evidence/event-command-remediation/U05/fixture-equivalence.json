@@ -1,0 +1,23 @@
+{
+  "status": "PASS",
+  "originalFixture": "c5fe0bc0cc9f10d9f0332695e1511550096f24b39b142077e803722d960dae41",
+  "originalTests": "501e9eda684f6f8b5396f567611be2837cde202d6707b98e64a2dfa434604614",
+  "originalTestBodiesByteIdentical": true,
+  "helpersByteIdenticalExceptExport": [
+    "control",
+    "change",
+    "dialog",
+    "asM2",
+    "roundtrip",
+    "execute",
+    "nextBattleMenu",
+    "authoringEntry"
+  ],
+  "pureConstructorsByteIdentical": true,
+  "fixtureOutputEquivalent": true,
+  "originalAndCurrentUnitOutputHash": "af9c5419beeacd9718ab8fcc3e998e93b0786593890510f0f223b98cd9a345ce",
+  "buildFixtureDeterministic": true,
+  "cliSerializerReload": true,
+  "cliFile": "/tmp/event-command-u05-2dCkLZ/final-fixtures/project.json",
+  "cliHash": "cefa204de1e3bed4542a6e12a414c435b8848196ef6d8d0418349bf6731c0512"
+}

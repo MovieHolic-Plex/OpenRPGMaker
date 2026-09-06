@@ -1,0 +1,86 @@
+{
+  "scenarioId": "event-command-remediation-u05-edges",
+  "projectPath": "../../../../../../tmp/event-command-u05-2dCkLZ/fixtures/player-edges.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "errors": [
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: [player] failed to start play game: TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:36135/src/player/PlayScene.ts?t=1788702928193",
+    "console: [play-boot] [play-boot] stage=error fail map=map_u05 stale-module-reload err=Failed to fetch dynamically imported module: http://127.0.0.1:36135/src/player/PlayScene.ts?t=1788702928193 {kind: play-boot, stage: error, ok: false, mapId: map_u05, elapsedMs: 912}",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED"
+  ],
+  "beats": [
+    {
+      "index": 0,
+      "id": "boot",
+      "shot": "01-boot.png",
+      "failures": [
+        "op eventCommand 실패: page.evaluate: Execution context was destroyed, most likely because of a navigation"
+      ],
+      "state": null
+    },
+    {
+      "index": 1,
+      "id": "execute",
+      "note": "Real action key executes authored commands in dedicated player.html; untargeted values distinguish party mistakes.",
+      "shot": "02-execute.png",
+      "failures": [
+        "op face 실패: page.waitForFunction: Timeout 120000ms exceeded."
+      ],
+      "state": null
+    }
+  ]
+}

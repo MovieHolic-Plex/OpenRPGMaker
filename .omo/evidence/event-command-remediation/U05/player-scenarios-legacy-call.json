@@ -1,0 +1,2946 @@
+{
+  "sourceFile": "/tmp/event-command-u05-2dCkLZ/fixtures/editor-map.json",
+  "sourceHash": "072cf4f608eb7d1c0fcfbb499189fa4b6d96fc5be104add539468dd362d46de5",
+  "cases": [
+    {
+      "entry": {
+        "id": "authored",
+        "program": [
+          {
+            "kind": "changeExp",
+            "actorId": "hero",
+            "op": "=",
+            "amount": 80
+          },
+          {
+            "kind": "changeExp",
+            "actorId": "other",
+            "op": "=",
+            "amount": 40
+          },
+          {
+            "kind": "changeActorHp",
+            "actorId": "hero",
+            "op": "=",
+            "amount": 60
+          },
+          {
+            "kind": "changeActorHp",
+            "actorId": "other",
+            "op": "=",
+            "amount": 45
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-014-change-parameters",
+            "fields": {
+              "target": "hero",
+              "value": 7,
+              "operation": "set",
+              "parameter": "attack",
+              "valueSource": "number"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-014-change-parameters",
+            "fields": {
+              "target": "other",
+              "value": 13,
+              "operation": "set",
+              "parameter": "attack",
+              "valueSource": "number"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-019-change-state",
+            "fields": {
+              "target": "hero",
+              "value": "state_poison_u05",
+              "operation": "set"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-019-change-state",
+            "fields": {
+              "target": "other",
+              "value": "state_sleep_u05",
+              "operation": "set"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-022-change-actor-name",
+            "fields": {
+              "target": "hero",
+              "value": "Hero before",
+              "operation": "set"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-022-change-actor-name",
+            "fields": {
+              "target": "other",
+              "value": "Other before",
+              "operation": "set"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-023-change-actor-nickname",
+            "fields": {
+              "target": "hero",
+              "value": "Hero nick",
+              "operation": "set"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-023-change-actor-nickname",
+            "fields": {
+              "target": "other",
+              "value": "Other nick",
+              "operation": "set"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-092-change-battle-commands",
+            "fields": {
+              "target": "hero",
+              "value": "",
+              "operation": "set",
+              "slots": "cmd_attack"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-092-change-battle-commands",
+            "fields": {
+              "target": "other",
+              "value": "",
+              "operation": "set",
+              "slots": "cmd_defend"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-092-change-battle-commands",
+            "fields": {
+              "target": "hero",
+              "operation": "add",
+              "value": "cmd_item",
+              "slots": "cmd_attack,cmd_defend"
+            }
+          },
+          {
+            "kind": "changeExp",
+            "actorId": "other",
+            "op": "-=",
+            "amount": {
+              "kind": "var",
+              "id": "reward"
+            }
+          },
+          {
+            "kind": "setVariable",
+            "variableId": "reward",
+            "op": "=",
+            "value": 99
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-014-change-parameters",
+            "fields": {
+              "target": "hero",
+              "parameter": "attack",
+              "operation": "remove",
+              "value": 10,
+              "valueSource": "number",
+              "valueVariableId": "reward"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-021-damage-processing",
+            "fields": {
+              "target": "hero",
+              "operation": "remove",
+              "value": 10,
+              "valueSource": "number",
+              "valueVariableId": "reward"
+            }
+          },
+          {
+            "kind": "text",
+            "body": "U05_DAMAGE"
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-019-change-state",
+            "fields": {
+              "target": "hero",
+              "operation": "toggle",
+              "value": "state_sleep_u05"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-022-change-actor-name",
+            "fields": {
+              "target": "hero",
+              "value": "Hero edited"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-023-change-actor-nickname",
+            "fields": {
+              "target": "hero",
+              "value": "Hero nick2"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-024-change-actor-graphic",
+            "fields": {
+              "target": "hero",
+              "value": "easyrpg-charset-actor1"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-025-change-actor-faceset",
+            "fields": {
+              "target": "hero",
+              "value": "easyrpg-faceset-actor1-00"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-091-change-actor-class",
+            "fields": {
+              "target": "hero",
+              "value": "class_u05"
+            }
+          },
+          {
+            "kind": "learnSkill",
+            "actorId": "hero",
+            "skillId": "skill_attack",
+            "action": "learn"
+          },
+          {
+            "kind": "text",
+            "body": "U05_DONE"
+          }
+        ],
+        "observations": [
+          {
+            "source": "state",
+            "path": [
+              "actorExperience",
+              "hero"
+            ],
+            "equals": 80
+          },
+          {
+            "source": "state",
+            "path": [
+              "actorExperience",
+              "other"
+            ],
+            "equals": 15
+          },
+          {
+            "source": "state",
+            "path": [
+              "actorVitals",
+              "hero",
+              "hp"
+            ],
+            "equals": 40
+          },
+          {
+            "source": "state",
+            "path": [
+              "actorVitals",
+              "hero",
+              "maxHp"
+            ],
+            "equals": 40
+          },
+          {
+            "source": "state",
+            "path": [
+              "actorVitals",
+              "other",
+              "hp"
+            ],
+            "equals": 45
+          },
+          {
+            "source": "state",
+            "path": [
+              "m2Runtime",
+              "actors",
+              "hero",
+              "parameters"
+            ],
+            "equals": -3
+          },
+          {
+            "source": "state",
+            "path": [
+              "m2Runtime",
+              "actors",
+              "other",
+              "parameters"
+            ],
+            "equals": 13
+          },
+          {
+            "source": "state",
+            "path": [
+              "m2Runtime",
+              "actors",
+              "hero",
+              "states"
+            ],
+            "equals": [
+              "state_poison_u05",
+              "state_sleep_u05"
+            ]
+          },
+          {
+            "source": "state",
+            "path": [
+              "m2Runtime",
+              "actors",
+              "other",
+              "states"
+            ],
+            "equals": [
+              "state_sleep_u05"
+            ]
+          },
+          {
+            "source": "state",
+            "path": [
+              "m2Runtime",
+              "actors",
+              "hero",
+              "name"
+            ],
+            "equals": "Hero edited"
+          },
+          {
+            "source": "state",
+            "path": [
+              "m2Runtime",
+              "actors",
+              "other",
+              "name"
+            ],
+            "equals": "Other before"
+          },
+          {
+            "source": "state",
+            "path": [
+              "m2Runtime",
+              "actors",
+              "hero",
+              "nickname"
+            ],
+            "equals": "Hero nick2"
+          },
+          {
+            "source": "state",
+            "path": [
+              "m2Runtime",
+              "actors",
+              "other",
+              "nickname"
+            ],
+            "equals": "Other nick"
+          }
+        ]
+      },
+      "spec": {
+        "id": "event-command-remediation-u05-authored",
+        "projectFixture": "/tmp/event-command-u05-2dCkLZ/fixtures/player-authored.json",
+        "beats": [
+          {
+            "id": "boot",
+            "ops": [
+              {
+                "kind": "eventCommand",
+                "trigger": {
+                  "kind": "key",
+                  "key": "Enter"
+                },
+                "observe": [
+                  {
+                    "source": "state",
+                    "path": [
+                      "mapId"
+                    ],
+                    "equals": "map_u05"
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "player"
+                    ],
+                    "equals": {
+                      "x": 2,
+                      "y": 3
+                    }
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "inputEnabled"
+                    ],
+                    "equals": true
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "running"
+                    ],
+                    "equals": false
+                  }
+                ],
+                "timeoutMs": 60000
+              }
+            ]
+          },
+          {
+            "id": "damage-before-class",
+            "shot": true,
+            "ops": [
+              {
+                "kind": "face",
+                "dir": "up"
+              },
+              {
+                "kind": "eventCommand",
+                "trigger": {
+                  "kind": "key",
+                  "key": "z"
+                },
+                "observe": [
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"dialogue-box\"].page-ready",
+                    "read": "present",
+                    "equals": true
+                  },
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"dialogue-box\"] .body",
+                    "read": "text",
+                    "equals": "U05_DAMAGE"
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "actorExperience",
+                      "hero"
+                    ],
+                    "equals": 80
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "actorExperience",
+                      "other"
+                    ],
+                    "equals": 15
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "actorVitals",
+                      "hero",
+                      "hp"
+                    ],
+                    "equals": 70
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "actorVitals",
+                      "other",
+                      "hp"
+                    ],
+                    "equals": 45
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "m2Runtime",
+                      "actors",
+                      "hero",
+                      "parameters"
+                    ],
+                    "equals": -3
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "m2Runtime",
+                      "actors",
+                      "other",
+                      "parameters"
+                    ],
+                    "equals": 13
+                  }
+                ],
+                "timeoutMs": 60000
+              }
+            ]
+          },
+          {
+            "id": "state-identity-class",
+            "shot": true,
+            "ops": [
+              {
+                "kind": "eventCommand",
+                "trigger": {
+                  "kind": "key",
+                  "key": "z"
+                },
+                "observe": [
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"dialogue-box\"].page-ready",
+                    "read": "present",
+                    "equals": true
+                  },
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"dialogue-box\"] .body",
+                    "read": "text",
+                    "equals": "U05_DONE"
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "actorExperience",
+                      "hero"
+                    ],
+                    "equals": 80
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "actorExperience",
+                      "other"
+                    ],
+                    "equals": 15
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "actorVitals",
+                      "hero",
+                      "hp"
+                    ],
+                    "equals": 40
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "actorVitals",
+                      "hero",
+                      "maxHp"
+                    ],
+                    "equals": 40
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "actorVitals",
+                      "other",
+                      "hp"
+                    ],
+                    "equals": 45
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "m2Runtime",
+                      "actors",
+                      "hero",
+                      "parameters"
+                    ],
+                    "equals": -3
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "m2Runtime",
+                      "actors",
+                      "other",
+                      "parameters"
+                    ],
+                    "equals": 13
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "m2Runtime",
+                      "actors",
+                      "hero",
+                      "states"
+                    ],
+                    "equals": [
+                      "state_poison_u05",
+                      "state_sleep_u05"
+                    ]
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "m2Runtime",
+                      "actors",
+                      "other",
+                      "states"
+                    ],
+                    "equals": [
+                      "state_sleep_u05"
+                    ]
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "m2Runtime",
+                      "actors",
+                      "hero",
+                      "name"
+                    ],
+                    "equals": "Hero edited"
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "m2Runtime",
+                      "actors",
+                      "other",
+                      "name"
+                    ],
+                    "equals": "Other before"
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "m2Runtime",
+                      "actors",
+                      "hero",
+                      "nickname"
+                    ],
+                    "equals": "Hero nick2"
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "m2Runtime",
+                      "actors",
+                      "other",
+                      "nickname"
+                    ],
+                    "equals": "Other nick"
+                  }
+                ],
+                "timeoutMs": 60000
+              }
+            ]
+          }
+        ]
+      },
+      "authoredProgram": [
+        {
+          "kind": "changeExp",
+          "actorId": "hero",
+          "op": "=",
+          "amount": 80
+        },
+        {
+          "kind": "changeExp",
+          "actorId": "other",
+          "op": "=",
+          "amount": 40
+        },
+        {
+          "kind": "changeActorHp",
+          "actorId": "hero",
+          "op": "=",
+          "amount": 60
+        },
+        {
+          "kind": "changeActorHp",
+          "actorId": "other",
+          "op": "=",
+          "amount": 45
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-014-change-parameters",
+          "fields": {
+            "target": "hero",
+            "value": 7,
+            "operation": "set",
+            "parameter": "attack",
+            "valueSource": "number"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-014-change-parameters",
+          "fields": {
+            "target": "other",
+            "value": 13,
+            "operation": "set",
+            "parameter": "attack",
+            "valueSource": "number"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-019-change-state",
+          "fields": {
+            "target": "hero",
+            "value": "state_poison_u05",
+            "operation": "set"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-019-change-state",
+          "fields": {
+            "target": "other",
+            "value": "state_sleep_u05",
+            "operation": "set"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-022-change-actor-name",
+          "fields": {
+            "target": "hero",
+            "value": "Hero before",
+            "operation": "set"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-022-change-actor-name",
+          "fields": {
+            "target": "other",
+            "value": "Other before",
+            "operation": "set"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-023-change-actor-nickname",
+          "fields": {
+            "target": "hero",
+            "value": "Hero nick",
+            "operation": "set"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-023-change-actor-nickname",
+          "fields": {
+            "target": "other",
+            "value": "Other nick",
+            "operation": "set"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-092-change-battle-commands",
+          "fields": {
+            "target": "hero",
+            "value": "",
+            "operation": "set",
+            "slots": "cmd_attack"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-092-change-battle-commands",
+          "fields": {
+            "target": "other",
+            "value": "",
+            "operation": "set",
+            "slots": "cmd_defend"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-092-change-battle-commands",
+          "fields": {
+            "target": "hero",
+            "operation": "add",
+            "value": "cmd_item",
+            "slots": "cmd_attack,cmd_defend"
+          }
+        },
+        {
+          "kind": "changeExp",
+          "actorId": "other",
+          "op": "-=",
+          "amount": {
+            "kind": "var",
+            "id": "reward"
+          }
+        },
+        {
+          "kind": "setVariable",
+          "variableId": "reward",
+          "op": "=",
+          "value": 99
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-014-change-parameters",
+          "fields": {
+            "target": "hero",
+            "parameter": "attack",
+            "operation": "remove",
+            "value": 10,
+            "valueSource": "number",
+            "valueVariableId": "reward"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-021-damage-processing",
+          "fields": {
+            "target": "hero",
+            "operation": "remove",
+            "value": 10,
+            "valueSource": "number",
+            "valueVariableId": "reward"
+          }
+        },
+        {
+          "kind": "text",
+          "body": "U05_DAMAGE"
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-019-change-state",
+          "fields": {
+            "target": "hero",
+            "operation": "toggle",
+            "value": "state_sleep_u05"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-022-change-actor-name",
+          "fields": {
+            "target": "hero",
+            "value": "Hero edited"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-023-change-actor-nickname",
+          "fields": {
+            "target": "hero",
+            "value": "Hero nick2"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-024-change-actor-graphic",
+          "fields": {
+            "target": "hero",
+            "value": "easyrpg-charset-actor1"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-025-change-actor-faceset",
+          "fields": {
+            "target": "hero",
+            "value": "easyrpg-faceset-actor1-00"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-091-change-actor-class",
+          "fields": {
+            "target": "hero",
+            "value": "class_u05"
+          }
+        },
+        {
+          "kind": "learnSkill",
+          "actorId": "hero",
+          "skillId": "skill_attack",
+          "action": "learn"
+        },
+        {
+          "kind": "text",
+          "body": "U05_DONE"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "id": "edges",
+        "program": [
+          {
+            "kind": "changeExp",
+            "actorId": "hero",
+            "op": "=",
+            "amount": 80
+          },
+          {
+            "kind": "changeExp",
+            "actorId": "other",
+            "op": "=",
+            "amount": 40
+          },
+          {
+            "kind": "changeActorHp",
+            "actorId": "hero",
+            "op": "=",
+            "amount": 60
+          },
+          {
+            "kind": "changeActorHp",
+            "actorId": "other",
+            "op": "=",
+            "amount": 45
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-014-change-parameters",
+            "fields": {
+              "target": "hero",
+              "value": 7,
+              "operation": "set",
+              "parameter": "attack",
+              "valueSource": "number"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-014-change-parameters",
+            "fields": {
+              "target": "other",
+              "value": 13,
+              "operation": "set",
+              "parameter": "attack",
+              "valueSource": "number"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-019-change-state",
+            "fields": {
+              "target": "hero",
+              "value": "state_poison_u05",
+              "operation": "set"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-019-change-state",
+            "fields": {
+              "target": "other",
+              "value": "state_sleep_u05",
+              "operation": "set"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-022-change-actor-name",
+            "fields": {
+              "target": "hero",
+              "value": "Hero before",
+              "operation": "set"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-022-change-actor-name",
+            "fields": {
+              "target": "other",
+              "value": "Other before",
+              "operation": "set"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-023-change-actor-nickname",
+            "fields": {
+              "target": "hero",
+              "value": "Hero nick",
+              "operation": "set"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-023-change-actor-nickname",
+            "fields": {
+              "target": "other",
+              "value": "Other nick",
+              "operation": "set"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-092-change-battle-commands",
+            "fields": {
+              "target": "hero",
+              "value": "",
+              "operation": "set",
+              "slots": "cmd_attack"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-092-change-battle-commands",
+            "fields": {
+              "target": "other",
+              "value": "",
+              "operation": "set",
+              "slots": "cmd_defend"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-092-change-battle-commands",
+            "fields": {
+              "target": "actor",
+              "operation": "add",
+              "value": "cmd_item",
+              "slots": "cmd_attack,cmd_defend",
+              "actorId": ""
+            }
+          },
+          {
+            "kind": "setVariable",
+            "variableId": "reward",
+            "op": "=",
+            "value": 99
+          },
+          {
+            "kind": "changeExp",
+            "actorId": "other",
+            "op": "-=",
+            "amount": {
+              "kind": "var",
+              "id": "reward"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-014-change-parameters",
+            "fields": {
+              "target": "hero",
+              "parameter": "attack",
+              "operation": "remove",
+              "value": 0,
+              "valueSource": "number",
+              "valueVariableId": "reward"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-021-damage-processing",
+            "fields": {
+              "target": "hero",
+              "operation": "add",
+              "value": 25,
+              "valueSource": "number",
+              "valueVariableId": "reward"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-019-change-state",
+            "fields": {
+              "target": "hero",
+              "operation": "set",
+              "value": "state_sleep_u05"
+            }
+          },
+          {
+            "kind": "text",
+            "body": "U05_DONE"
+          }
+        ],
+        "observations": [
+          {
+            "source": "state",
+            "path": [
+              "actorExperience",
+              "hero"
+            ],
+            "equals": 80
+          },
+          {
+            "source": "state",
+            "path": [
+              "actorExperience",
+              "other"
+            ],
+            "equals": 0
+          },
+          {
+            "source": "state",
+            "path": [
+              "actorVitals",
+              "hero",
+              "hp"
+            ],
+            "equals": 35
+          },
+          {
+            "source": "state",
+            "path": [
+              "actorVitals",
+              "other",
+              "hp"
+            ],
+            "equals": 45
+          },
+          {
+            "source": "state",
+            "path": [
+              "m2Runtime",
+              "actors",
+              "hero",
+              "parameters"
+            ],
+            "equals": 7
+          },
+          {
+            "source": "state",
+            "path": [
+              "m2Runtime",
+              "actors",
+              "other",
+              "parameters"
+            ],
+            "equals": 13
+          },
+          {
+            "source": "state",
+            "path": [
+              "m2Runtime",
+              "actors",
+              "hero",
+              "states"
+            ],
+            "equals": [
+              "state_sleep_u05"
+            ]
+          },
+          {
+            "source": "state",
+            "path": [
+              "m2Runtime",
+              "actors",
+              "other",
+              "states"
+            ],
+            "equals": [
+              "state_sleep_u05"
+            ]
+          }
+        ]
+      },
+      "spec": {
+        "id": "event-command-remediation-u05-edges",
+        "projectFixture": "/tmp/event-command-u05-2dCkLZ/fixtures/player-edges.json",
+        "beats": [
+          {
+            "id": "boot",
+            "ops": [
+              {
+                "kind": "eventCommand",
+                "trigger": {
+                  "kind": "key",
+                  "key": "Enter"
+                },
+                "observe": [
+                  {
+                    "source": "state",
+                    "path": [
+                      "mapId"
+                    ],
+                    "equals": "map_u05"
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "player"
+                    ],
+                    "equals": {
+                      "x": 2,
+                      "y": 3
+                    }
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "inputEnabled"
+                    ],
+                    "equals": true
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "running"
+                    ],
+                    "equals": false
+                  }
+                ],
+                "timeoutMs": 60000
+              }
+            ]
+          },
+          {
+            "id": "execute",
+            "note": "Real action key executes authored commands in dedicated player.html; untargeted values distinguish party mistakes.",
+            "shot": true,
+            "ops": [
+              {
+                "kind": "face",
+                "dir": "up"
+              },
+              {
+                "kind": "eventCommand",
+                "trigger": {
+                  "kind": "key",
+                  "key": "z"
+                },
+                "observe": [
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"dialogue-box\"].page-ready",
+                    "read": "present",
+                    "equals": true
+                  },
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"dialogue-box\"] .body",
+                    "read": "text",
+                    "equals": "U05_DONE"
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "actorExperience",
+                      "hero"
+                    ],
+                    "equals": 80
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "actorExperience",
+                      "other"
+                    ],
+                    "equals": 0
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "actorVitals",
+                      "hero",
+                      "hp"
+                    ],
+                    "equals": 35
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "actorVitals",
+                      "other",
+                      "hp"
+                    ],
+                    "equals": 45
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "m2Runtime",
+                      "actors",
+                      "hero",
+                      "parameters"
+                    ],
+                    "equals": 7
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "m2Runtime",
+                      "actors",
+                      "other",
+                      "parameters"
+                    ],
+                    "equals": 13
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "m2Runtime",
+                      "actors",
+                      "hero",
+                      "states"
+                    ],
+                    "equals": [
+                      "state_sleep_u05"
+                    ]
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "m2Runtime",
+                      "actors",
+                      "other",
+                      "states"
+                    ],
+                    "equals": [
+                      "state_sleep_u05"
+                    ]
+                  }
+                ],
+                "timeoutMs": 60000
+              }
+            ]
+          }
+        ]
+      },
+      "authoredProgram": [
+        {
+          "kind": "changeExp",
+          "actorId": "hero",
+          "op": "=",
+          "amount": 80
+        },
+        {
+          "kind": "changeExp",
+          "actorId": "other",
+          "op": "=",
+          "amount": 40
+        },
+        {
+          "kind": "changeActorHp",
+          "actorId": "hero",
+          "op": "=",
+          "amount": 60
+        },
+        {
+          "kind": "changeActorHp",
+          "actorId": "other",
+          "op": "=",
+          "amount": 45
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-014-change-parameters",
+          "fields": {
+            "target": "hero",
+            "value": 7,
+            "operation": "set",
+            "parameter": "attack",
+            "valueSource": "number"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-014-change-parameters",
+          "fields": {
+            "target": "other",
+            "value": 13,
+            "operation": "set",
+            "parameter": "attack",
+            "valueSource": "number"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-019-change-state",
+          "fields": {
+            "target": "hero",
+            "value": "state_poison_u05",
+            "operation": "set"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-019-change-state",
+          "fields": {
+            "target": "other",
+            "value": "state_sleep_u05",
+            "operation": "set"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-022-change-actor-name",
+          "fields": {
+            "target": "hero",
+            "value": "Hero before",
+            "operation": "set"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-022-change-actor-name",
+          "fields": {
+            "target": "other",
+            "value": "Other before",
+            "operation": "set"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-023-change-actor-nickname",
+          "fields": {
+            "target": "hero",
+            "value": "Hero nick",
+            "operation": "set"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-023-change-actor-nickname",
+          "fields": {
+            "target": "other",
+            "value": "Other nick",
+            "operation": "set"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-092-change-battle-commands",
+          "fields": {
+            "target": "hero",
+            "value": "",
+            "operation": "set",
+            "slots": "cmd_attack"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-092-change-battle-commands",
+          "fields": {
+            "target": "other",
+            "value": "",
+            "operation": "set",
+            "slots": "cmd_defend"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-092-change-battle-commands",
+          "fields": {
+            "target": "actor",
+            "operation": "add",
+            "value": "cmd_item",
+            "slots": "cmd_attack,cmd_defend",
+            "actorId": ""
+          }
+        },
+        {
+          "kind": "setVariable",
+          "variableId": "reward",
+          "op": "=",
+          "value": 99
+        },
+        {
+          "kind": "changeExp",
+          "actorId": "other",
+          "op": "-=",
+          "amount": {
+            "kind": "var",
+            "id": "reward"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-014-change-parameters",
+          "fields": {
+            "target": "hero",
+            "parameter": "attack",
+            "operation": "remove",
+            "value": 0,
+            "valueSource": "number",
+            "valueVariableId": "reward"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-021-damage-processing",
+          "fields": {
+            "target": "hero",
+            "operation": "add",
+            "value": 25,
+            "valueSource": "number",
+            "valueVariableId": "reward"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-019-change-state",
+          "fields": {
+            "target": "hero",
+            "operation": "set",
+            "value": "state_sleep_u05"
+          }
+        },
+        {
+          "kind": "text",
+          "body": "U05_DONE"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "id": "legacy",
+        "program": [
+          {
+            "kind": "changeExp",
+            "actorId": "hero",
+            "op": "=",
+            "amount": 80
+          },
+          {
+            "kind": "changeExp",
+            "actorId": "other",
+            "op": "=",
+            "amount": 40
+          },
+          {
+            "kind": "changeActorHp",
+            "actorId": "hero",
+            "op": "=",
+            "amount": 60
+          },
+          {
+            "kind": "changeActorHp",
+            "actorId": "other",
+            "op": "=",
+            "amount": 45
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-014-change-parameters",
+            "fields": {
+              "target": "hero",
+              "value": 7,
+              "operation": "set",
+              "parameter": "attack",
+              "valueSource": "number"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-014-change-parameters",
+            "fields": {
+              "target": "other",
+              "value": 13,
+              "operation": "set",
+              "parameter": "attack",
+              "valueSource": "number"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-019-change-state",
+            "fields": {
+              "target": "hero",
+              "value": "state_poison_u05",
+              "operation": "set"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-019-change-state",
+            "fields": {
+              "target": "other",
+              "value": "state_sleep_u05",
+              "operation": "set"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-022-change-actor-name",
+            "fields": {
+              "target": "hero",
+              "value": "Hero before",
+              "operation": "set"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-022-change-actor-name",
+            "fields": {
+              "target": "other",
+              "value": "Other before",
+              "operation": "set"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-023-change-actor-nickname",
+            "fields": {
+              "target": "hero",
+              "value": "Hero nick",
+              "operation": "set"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-023-change-actor-nickname",
+            "fields": {
+              "target": "other",
+              "value": "Other nick",
+              "operation": "set"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-092-change-battle-commands",
+            "fields": {
+              "target": "hero",
+              "value": "",
+              "operation": "set",
+              "slots": "cmd_attack"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-092-change-battle-commands",
+            "fields": {
+              "target": "other",
+              "value": "",
+              "operation": "set",
+              "slots": "cmd_defend"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-092-change-battle-commands",
+            "fields": {
+              "target": "actor",
+              "operation": "add",
+              "value": "cmd_item",
+              "slots": "cmd_attack,cmd_defend",
+              "actorId": "hero"
+            }
+          },
+          {
+            "kind": "changeExp",
+            "actorId": "",
+            "op": "+=",
+            "amount": 25
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-022-change-actor-name",
+            "fields": {
+              "target": "",
+              "value": "Legacy party",
+              "operation": "set"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-023-change-actor-nickname",
+            "fields": {
+              "target": "party",
+              "value": "Explicit party",
+              "operation": "set"
+            }
+          },
+          {
+            "kind": "m2Command",
+            "commandId": "m2-019-change-state",
+            "fields": {
+              "target": "hero",
+              "operation": "set",
+              "value": "state_sleep_u05"
+            }
+          },
+          {
+            "kind": "text",
+            "body": "U05_DONE"
+          }
+        ],
+        "observations": [
+          {
+            "source": "state",
+            "path": [
+              "actorExperience",
+              "hero"
+            ],
+            "equals": 105
+          },
+          {
+            "source": "state",
+            "path": [
+              "actorExperience",
+              "other"
+            ],
+            "equals": 65
+          },
+          {
+            "source": "state",
+            "path": [
+              "m2Runtime",
+              "actors",
+              "",
+              "name"
+            ],
+            "equals": "Legacy party"
+          },
+          {
+            "source": "state",
+            "path": [
+              "m2Runtime",
+              "actors",
+              "party",
+              "nickname"
+            ],
+            "equals": "Explicit party"
+          },
+          {
+            "source": "state",
+            "path": [
+              "m2Runtime",
+              "actors",
+              "hero",
+              "states"
+            ],
+            "equals": [
+              "state_sleep_u05"
+            ]
+          },
+          {
+            "source": "state",
+            "path": [
+              "m2Runtime",
+              "actors",
+              "other",
+              "states"
+            ],
+            "equals": [
+              "state_sleep_u05"
+            ]
+          }
+        ]
+      },
+      "spec": {
+        "id": "event-command-remediation-u05-legacy",
+        "projectFixture": "/tmp/event-command-u05-2dCkLZ/fixtures/player-legacy.json",
+        "beats": [
+          {
+            "id": "boot",
+            "ops": [
+              {
+                "kind": "eventCommand",
+                "trigger": {
+                  "kind": "key",
+                  "key": "Enter"
+                },
+                "observe": [
+                  {
+                    "source": "state",
+                    "path": [
+                      "mapId"
+                    ],
+                    "equals": "map_u05"
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "player"
+                    ],
+                    "equals": {
+                      "x": 2,
+                      "y": 3
+                    }
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "inputEnabled"
+                    ],
+                    "equals": true
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "running"
+                    ],
+                    "equals": false
+                  }
+                ],
+                "timeoutMs": 60000
+              }
+            ]
+          },
+          {
+            "id": "execute",
+            "note": "Real action key executes authored commands in dedicated player.html; untargeted values distinguish party mistakes.",
+            "shot": true,
+            "ops": [
+              {
+                "kind": "face",
+                "dir": "up"
+              },
+              {
+                "kind": "eventCommand",
+                "trigger": {
+                  "kind": "key",
+                  "key": "z"
+                },
+                "observe": [
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"dialogue-box\"].page-ready",
+                    "read": "present",
+                    "equals": true
+                  },
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"dialogue-box\"] .body",
+                    "read": "text",
+                    "equals": "U05_DONE"
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "actorExperience",
+                      "hero"
+                    ],
+                    "equals": 105
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "actorExperience",
+                      "other"
+                    ],
+                    "equals": 65
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "m2Runtime",
+                      "actors",
+                      "",
+                      "name"
+                    ],
+                    "equals": "Legacy party"
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "m2Runtime",
+                      "actors",
+                      "party",
+                      "nickname"
+                    ],
+                    "equals": "Explicit party"
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "m2Runtime",
+                      "actors",
+                      "hero",
+                      "states"
+                    ],
+                    "equals": [
+                      "state_sleep_u05"
+                    ]
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "m2Runtime",
+                      "actors",
+                      "other",
+                      "states"
+                    ],
+                    "equals": [
+                      "state_sleep_u05"
+                    ]
+                  }
+                ],
+                "timeoutMs": 60000
+              }
+            ]
+          }
+        ]
+      },
+      "authoredProgram": [
+        {
+          "kind": "changeExp",
+          "actorId": "hero",
+          "op": "=",
+          "amount": 80
+        },
+        {
+          "kind": "changeExp",
+          "actorId": "other",
+          "op": "=",
+          "amount": 40
+        },
+        {
+          "kind": "changeActorHp",
+          "actorId": "hero",
+          "op": "=",
+          "amount": 60
+        },
+        {
+          "kind": "changeActorHp",
+          "actorId": "other",
+          "op": "=",
+          "amount": 45
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-014-change-parameters",
+          "fields": {
+            "target": "hero",
+            "value": 7,
+            "operation": "set",
+            "parameter": "attack",
+            "valueSource": "number"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-014-change-parameters",
+          "fields": {
+            "target": "other",
+            "value": 13,
+            "operation": "set",
+            "parameter": "attack",
+            "valueSource": "number"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-019-change-state",
+          "fields": {
+            "target": "hero",
+            "value": "state_poison_u05",
+            "operation": "set"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-019-change-state",
+          "fields": {
+            "target": "other",
+            "value": "state_sleep_u05",
+            "operation": "set"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-022-change-actor-name",
+          "fields": {
+            "target": "hero",
+            "value": "Hero before",
+            "operation": "set"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-022-change-actor-name",
+          "fields": {
+            "target": "other",
+            "value": "Other before",
+            "operation": "set"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-023-change-actor-nickname",
+          "fields": {
+            "target": "hero",
+            "value": "Hero nick",
+            "operation": "set"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-023-change-actor-nickname",
+          "fields": {
+            "target": "other",
+            "value": "Other nick",
+            "operation": "set"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-092-change-battle-commands",
+          "fields": {
+            "target": "hero",
+            "value": "",
+            "operation": "set",
+            "slots": "cmd_attack"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-092-change-battle-commands",
+          "fields": {
+            "target": "other",
+            "value": "",
+            "operation": "set",
+            "slots": "cmd_defend"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-092-change-battle-commands",
+          "fields": {
+            "target": "actor",
+            "operation": "add",
+            "value": "cmd_item",
+            "slots": "cmd_attack,cmd_defend",
+            "actorId": "hero"
+          }
+        },
+        {
+          "kind": "changeExp",
+          "actorId": "",
+          "op": "+=",
+          "amount": 25
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-022-change-actor-name",
+          "fields": {
+            "target": "",
+            "value": "Legacy party",
+            "operation": "set"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-023-change-actor-nickname",
+          "fields": {
+            "target": "party",
+            "value": "Explicit party",
+            "operation": "set"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-019-change-state",
+          "fields": {
+            "target": "hero",
+            "operation": "set",
+            "value": "state_sleep_u05"
+          }
+        },
+        {
+          "kind": "text",
+          "body": "U05_DONE"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "id": "battle-canonical",
+        "command": {
+          "kind": "m2Command",
+          "commandId": "m2-092-change-battle-commands",
+          "fields": {
+            "target": "hero",
+            "operation": "add",
+            "value": "cmd_item",
+            "slots": "cmd_attack,cmd_defend"
+          }
+        },
+        "heroItem": true,
+        "otherItem": false
+      },
+      "spec": {
+        "id": "event-command-remediation-u05-battle-canonical",
+        "projectFixture": "/tmp/event-command-u05-2dCkLZ/fixtures/player-battle-canonical.json",
+        "beats": [
+          {
+            "id": "boot",
+            "ops": [
+              {
+                "kind": "eventCommand",
+                "trigger": {
+                  "kind": "key",
+                  "key": "Enter"
+                },
+                "observe": [
+                  {
+                    "source": "state",
+                    "path": [
+                      "mapId"
+                    ],
+                    "equals": "map_u05"
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "player"
+                    ],
+                    "equals": {
+                      "x": 2,
+                      "y": 3
+                    }
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "inputEnabled"
+                    ],
+                    "equals": true
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "running"
+                    ],
+                    "equals": false
+                  }
+                ],
+                "timeoutMs": 60000
+              }
+            ]
+          },
+          {
+            "id": "hero-menu",
+            "shot": true,
+            "ops": [
+              {
+                "kind": "face",
+                "dir": "up"
+              },
+              {
+                "kind": "eventCommand",
+                "trigger": {
+                  "kind": "key",
+                  "key": "z"
+                },
+                "observe": [
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"battle-scene\"]",
+                    "read": "attribute",
+                    "name": "data-battle-director-step",
+                    "equals": "command"
+                  },
+                  {
+                    "source": "dom",
+                    "selector": ".battle-actor-status.is-active-actor[data-record-id=\"hero\"]",
+                    "read": "present",
+                    "equals": true
+                  },
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"actor-command-defend\"]",
+                    "read": "present",
+                    "equals": true
+                  },
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"actor-command-item\"]",
+                    "read": "present",
+                    "equals": true
+                  }
+                ],
+                "timeoutMs": 60000
+              }
+            ]
+          },
+          {
+            "id": "select-defend",
+            "ops": [
+              {
+                "kind": "eventCommand",
+                "trigger": {
+                  "kind": "key",
+                  "key": "ArrowDown"
+                },
+                "observe": [
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"actor-command-defend\"][data-battle-command-cursor=\"true\"]",
+                    "read": "present",
+                    "equals": true
+                  }
+                ],
+                "timeoutMs": 60000
+              }
+            ]
+          },
+          {
+            "id": "other-menu",
+            "shot": true,
+            "ops": [
+              {
+                "kind": "eventCommand",
+                "trigger": {
+                  "kind": "key",
+                  "key": "Enter"
+                },
+                "observe": [
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"battle-scene\"]",
+                    "read": "attribute",
+                    "name": "data-battle-director-step",
+                    "equals": "command"
+                  },
+                  {
+                    "source": "dom",
+                    "selector": ".battle-actor-status.is-active-actor[data-record-id=\"other\"]",
+                    "read": "present",
+                    "equals": true
+                  },
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"actor-command-defend\"]",
+                    "read": "present",
+                    "equals": true
+                  },
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"actor-command-item\"]",
+                    "read": "present",
+                    "equals": false
+                  }
+                ],
+                "timeoutMs": 60000
+              }
+            ]
+          }
+        ]
+      },
+      "authoredProgram": [
+        {
+          "kind": "m2Command",
+          "commandId": "m2-092-change-battle-commands",
+          "fields": {
+            "target": "hero",
+            "value": "",
+            "operation": "set",
+            "slots": "cmd_attack,cmd_defend"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-092-change-battle-commands",
+          "fields": {
+            "target": "other",
+            "value": "",
+            "operation": "set",
+            "slots": "cmd_defend"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-092-change-battle-commands",
+          "fields": {
+            "target": "hero",
+            "operation": "add",
+            "value": "cmd_item",
+            "slots": "cmd_attack,cmd_defend"
+          }
+        },
+        {
+          "kind": "battleProcessing",
+          "troopId": "troop_slime",
+          "canEscape": true,
+          "canLose": true,
+          "battleFlow": "strict",
+          "onWin": [],
+          "onEscape": [],
+          "onLose": []
+        }
+      ]
+    },
+    {
+      "entry": {
+        "id": "battle-legacy",
+        "command": {
+          "kind": "m2Command",
+          "commandId": "m2-092-change-battle-commands",
+          "fields": {
+            "target": "actor",
+            "operation": "add",
+            "value": "cmd_item",
+            "slots": "cmd_attack,cmd_defend",
+            "actorId": "hero"
+          }
+        },
+        "heroItem": true,
+        "otherItem": false
+      },
+      "spec": {
+        "id": "event-command-remediation-u05-battle-legacy",
+        "projectFixture": "/tmp/event-command-u05-2dCkLZ/fixtures/player-battle-legacy.json",
+        "beats": [
+          {
+            "id": "boot",
+            "ops": [
+              {
+                "kind": "eventCommand",
+                "trigger": {
+                  "kind": "key",
+                  "key": "Enter"
+                },
+                "observe": [
+                  {
+                    "source": "state",
+                    "path": [
+                      "mapId"
+                    ],
+                    "equals": "map_u05"
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "player"
+                    ],
+                    "equals": {
+                      "x": 2,
+                      "y": 3
+                    }
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "inputEnabled"
+                    ],
+                    "equals": true
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "running"
+                    ],
+                    "equals": false
+                  }
+                ],
+                "timeoutMs": 60000
+              }
+            ]
+          },
+          {
+            "id": "hero-menu",
+            "shot": true,
+            "ops": [
+              {
+                "kind": "face",
+                "dir": "up"
+              },
+              {
+                "kind": "eventCommand",
+                "trigger": {
+                  "kind": "key",
+                  "key": "z"
+                },
+                "observe": [
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"battle-scene\"]",
+                    "read": "attribute",
+                    "name": "data-battle-director-step",
+                    "equals": "command"
+                  },
+                  {
+                    "source": "dom",
+                    "selector": ".battle-actor-status.is-active-actor[data-record-id=\"hero\"]",
+                    "read": "present",
+                    "equals": true
+                  },
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"actor-command-defend\"]",
+                    "read": "present",
+                    "equals": true
+                  },
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"actor-command-item\"]",
+                    "read": "present",
+                    "equals": true
+                  }
+                ],
+                "timeoutMs": 60000
+              }
+            ]
+          },
+          {
+            "id": "select-defend",
+            "ops": [
+              {
+                "kind": "eventCommand",
+                "trigger": {
+                  "kind": "key",
+                  "key": "ArrowDown"
+                },
+                "observe": [
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"actor-command-defend\"][data-battle-command-cursor=\"true\"]",
+                    "read": "present",
+                    "equals": true
+                  }
+                ],
+                "timeoutMs": 60000
+              }
+            ]
+          },
+          {
+            "id": "other-menu",
+            "shot": true,
+            "ops": [
+              {
+                "kind": "eventCommand",
+                "trigger": {
+                  "kind": "key",
+                  "key": "Enter"
+                },
+                "observe": [
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"battle-scene\"]",
+                    "read": "attribute",
+                    "name": "data-battle-director-step",
+                    "equals": "command"
+                  },
+                  {
+                    "source": "dom",
+                    "selector": ".battle-actor-status.is-active-actor[data-record-id=\"other\"]",
+                    "read": "present",
+                    "equals": true
+                  },
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"actor-command-defend\"]",
+                    "read": "present",
+                    "equals": true
+                  },
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"actor-command-item\"]",
+                    "read": "present",
+                    "equals": false
+                  }
+                ],
+                "timeoutMs": 60000
+              }
+            ]
+          }
+        ]
+      },
+      "authoredProgram": [
+        {
+          "kind": "m2Command",
+          "commandId": "m2-092-change-battle-commands",
+          "fields": {
+            "target": "hero",
+            "value": "",
+            "operation": "set",
+            "slots": "cmd_attack,cmd_defend"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-092-change-battle-commands",
+          "fields": {
+            "target": "other",
+            "value": "",
+            "operation": "set",
+            "slots": "cmd_defend"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-092-change-battle-commands",
+          "fields": {
+            "target": "actor",
+            "operation": "add",
+            "value": "cmd_item",
+            "slots": "cmd_attack,cmd_defend",
+            "actorId": "hero"
+          }
+        },
+        {
+          "kind": "battleProcessing",
+          "troopId": "troop_slime",
+          "canEscape": true,
+          "canLose": true,
+          "battleFlow": "strict",
+          "onWin": [],
+          "onEscape": [],
+          "onLose": []
+        }
+      ]
+    },
+    {
+      "entry": {
+        "id": "battle-party",
+        "command": {
+          "kind": "m2Command",
+          "commandId": "m2-092-change-battle-commands",
+          "fields": {
+            "target": "party",
+            "operation": "add",
+            "value": "cmd_item",
+            "slots": "cmd_attack,cmd_defend"
+          }
+        },
+        "heroItem": true,
+        "otherItem": true
+      },
+      "spec": {
+        "id": "event-command-remediation-u05-battle-party",
+        "projectFixture": "/tmp/event-command-u05-2dCkLZ/fixtures/player-battle-party.json",
+        "beats": [
+          {
+            "id": "boot",
+            "ops": [
+              {
+                "kind": "eventCommand",
+                "trigger": {
+                  "kind": "key",
+                  "key": "Enter"
+                },
+                "observe": [
+                  {
+                    "source": "state",
+                    "path": [
+                      "mapId"
+                    ],
+                    "equals": "map_u05"
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "player"
+                    ],
+                    "equals": {
+                      "x": 2,
+                      "y": 3
+                    }
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "inputEnabled"
+                    ],
+                    "equals": true
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "running"
+                    ],
+                    "equals": false
+                  }
+                ],
+                "timeoutMs": 60000
+              }
+            ]
+          },
+          {
+            "id": "hero-menu",
+            "shot": true,
+            "ops": [
+              {
+                "kind": "face",
+                "dir": "up"
+              },
+              {
+                "kind": "eventCommand",
+                "trigger": {
+                  "kind": "key",
+                  "key": "z"
+                },
+                "observe": [
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"battle-scene\"]",
+                    "read": "attribute",
+                    "name": "data-battle-director-step",
+                    "equals": "command"
+                  },
+                  {
+                    "source": "dom",
+                    "selector": ".battle-actor-status.is-active-actor[data-record-id=\"hero\"]",
+                    "read": "present",
+                    "equals": true
+                  },
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"actor-command-defend\"]",
+                    "read": "present",
+                    "equals": true
+                  },
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"actor-command-item\"]",
+                    "read": "present",
+                    "equals": true
+                  }
+                ],
+                "timeoutMs": 60000
+              }
+            ]
+          },
+          {
+            "id": "select-defend",
+            "ops": [
+              {
+                "kind": "eventCommand",
+                "trigger": {
+                  "kind": "key",
+                  "key": "ArrowDown"
+                },
+                "observe": [
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"actor-command-defend\"][data-battle-command-cursor=\"true\"]",
+                    "read": "present",
+                    "equals": true
+                  }
+                ],
+                "timeoutMs": 60000
+              }
+            ]
+          },
+          {
+            "id": "other-menu",
+            "shot": true,
+            "ops": [
+              {
+                "kind": "eventCommand",
+                "trigger": {
+                  "kind": "key",
+                  "key": "Enter"
+                },
+                "observe": [
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"battle-scene\"]",
+                    "read": "attribute",
+                    "name": "data-battle-director-step",
+                    "equals": "command"
+                  },
+                  {
+                    "source": "dom",
+                    "selector": ".battle-actor-status.is-active-actor[data-record-id=\"other\"]",
+                    "read": "present",
+                    "equals": true
+                  },
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"actor-command-defend\"]",
+                    "read": "present",
+                    "equals": true
+                  },
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"actor-command-item\"]",
+                    "read": "present",
+                    "equals": true
+                  }
+                ],
+                "timeoutMs": 60000
+              }
+            ]
+          }
+        ]
+      },
+      "authoredProgram": [
+        {
+          "kind": "m2Command",
+          "commandId": "m2-092-change-battle-commands",
+          "fields": {
+            "target": "hero",
+            "value": "",
+            "operation": "set",
+            "slots": "cmd_attack,cmd_defend"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-092-change-battle-commands",
+          "fields": {
+            "target": "other",
+            "value": "",
+            "operation": "set",
+            "slots": "cmd_defend"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-092-change-battle-commands",
+          "fields": {
+            "target": "party",
+            "operation": "add",
+            "value": "cmd_item",
+            "slots": "cmd_attack,cmd_defend"
+          }
+        },
+        {
+          "kind": "battleProcessing",
+          "troopId": "troop_slime",
+          "canEscape": true,
+          "canLose": true,
+          "battleFlow": "strict",
+          "onWin": [],
+          "onEscape": [],
+          "onLose": []
+        }
+      ]
+    },
+    {
+      "entry": {
+        "id": "battle-incomplete",
+        "command": {
+          "kind": "m2Command",
+          "commandId": "m2-092-change-battle-commands",
+          "fields": {
+            "target": "actor",
+            "operation": "add",
+            "value": "cmd_item",
+            "slots": "cmd_attack,cmd_defend",
+            "actorId": ""
+          }
+        },
+        "heroItem": false,
+        "otherItem": false
+      },
+      "spec": {
+        "id": "event-command-remediation-u05-battle-incomplete",
+        "projectFixture": "/tmp/event-command-u05-2dCkLZ/fixtures/player-battle-incomplete.json",
+        "beats": [
+          {
+            "id": "boot",
+            "ops": [
+              {
+                "kind": "eventCommand",
+                "trigger": {
+                  "kind": "key",
+                  "key": "Enter"
+                },
+                "observe": [
+                  {
+                    "source": "state",
+                    "path": [
+                      "mapId"
+                    ],
+                    "equals": "map_u05"
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "player"
+                    ],
+                    "equals": {
+                      "x": 2,
+                      "y": 3
+                    }
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "inputEnabled"
+                    ],
+                    "equals": true
+                  },
+                  {
+                    "source": "state",
+                    "path": [
+                      "running"
+                    ],
+                    "equals": false
+                  }
+                ],
+                "timeoutMs": 60000
+              }
+            ]
+          },
+          {
+            "id": "hero-menu",
+            "shot": true,
+            "ops": [
+              {
+                "kind": "face",
+                "dir": "up"
+              },
+              {
+                "kind": "eventCommand",
+                "trigger": {
+                  "kind": "key",
+                  "key": "z"
+                },
+                "observe": [
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"battle-scene\"]",
+                    "read": "attribute",
+                    "name": "data-battle-director-step",
+                    "equals": "command"
+                  },
+                  {
+                    "source": "dom",
+                    "selector": ".battle-actor-status.is-active-actor[data-record-id=\"hero\"]",
+                    "read": "present",
+                    "equals": true
+                  },
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"actor-command-defend\"]",
+                    "read": "present",
+                    "equals": true
+                  },
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"actor-command-item\"]",
+                    "read": "present",
+                    "equals": false
+                  }
+                ],
+                "timeoutMs": 60000
+              }
+            ]
+          },
+          {
+            "id": "select-defend",
+            "ops": [
+              {
+                "kind": "eventCommand",
+                "trigger": {
+                  "kind": "key",
+                  "key": "ArrowDown"
+                },
+                "observe": [
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"actor-command-defend\"][data-battle-command-cursor=\"true\"]",
+                    "read": "present",
+                    "equals": true
+                  }
+                ],
+                "timeoutMs": 60000
+              }
+            ]
+          },
+          {
+            "id": "other-menu",
+            "shot": true,
+            "ops": [
+              {
+                "kind": "eventCommand",
+                "trigger": {
+                  "kind": "key",
+                  "key": "Enter"
+                },
+                "observe": [
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"battle-scene\"]",
+                    "read": "attribute",
+                    "name": "data-battle-director-step",
+                    "equals": "command"
+                  },
+                  {
+                    "source": "dom",
+                    "selector": ".battle-actor-status.is-active-actor[data-record-id=\"other\"]",
+                    "read": "present",
+                    "equals": true
+                  },
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"actor-command-defend\"]",
+                    "read": "present",
+                    "equals": true
+                  },
+                  {
+                    "source": "dom",
+                    "selector": "[data-testid=\"actor-command-item\"]",
+                    "read": "present",
+                    "equals": false
+                  }
+                ],
+                "timeoutMs": 60000
+              }
+            ]
+          }
+        ]
+      },
+      "authoredProgram": [
+        {
+          "kind": "m2Command",
+          "commandId": "m2-092-change-battle-commands",
+          "fields": {
+            "target": "hero",
+            "value": "",
+            "operation": "set",
+            "slots": "cmd_attack,cmd_defend"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-092-change-battle-commands",
+          "fields": {
+            "target": "other",
+            "value": "",
+            "operation": "set",
+            "slots": "cmd_defend"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-092-change-battle-commands",
+          "fields": {
+            "target": "actor",
+            "operation": "add",
+            "value": "cmd_item",
+            "slots": "cmd_attack,cmd_defend",
+            "actorId": ""
+          }
+        },
+        {
+          "kind": "battleProcessing",
+          "troopId": "troop_slime",
+          "canEscape": true,
+          "canLose": true,
+          "battleFlow": "strict",
+          "onWin": [],
+          "onEscape": [],
+          "onLose": []
+        }
+      ]
+    }
+  ],
+  "pass": "All expected native/M2 values; real next-actor battle menus match; no actor pseudo-ID, remote writes or leaked observation"
+}

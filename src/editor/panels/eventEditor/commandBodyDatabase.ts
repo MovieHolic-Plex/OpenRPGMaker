@@ -18,6 +18,8 @@ import {
   recordPickerWithPreview,
   searchableRecordBrowser,
   segmentedSelect,
+  variablePicker,
+  type RecordPickerHandle,
 } from "./recordPicker";
 import type { ActorAmountOp, ActorEquipmentSlot, ActorRecord, Command, EquipmentRecord, Project } from "@/project/types";
 import type { CommandEditContext } from "./types";
@@ -1030,8 +1032,101 @@ export function actorSubtitle(project: Project, record: ActorRecord): string | n
   return className ? `${className} · ${level}` : level;
 }
 
+// Incomplete individual selections stay in the form, never becoming legacy empty-party data.
+export function actorTargetControls(actor: RecordPickerHandle, initial: string, prefix: string) {
+  const mode = segmentedSelect({
+    options: [
+      { value: "party", key: "party", label: "파티 전체" },
+      { value: "actor", key: "actor", label: "주인공" },
+    ],
+    value: !initial || initial === "party" || initial === "all" ? "party" : "actor",
+    testid: `${prefix}-target-mode`,
+    ariaLabel: "대상",
+  });
+  const root = el("div", { children: [mode.root, actor.root] });
+  const sync = () => { actor.root.hidden = mode.select.value === "party"; };
+  mode.select.addEventListener("change", sync);
+  actor.select.addEventListener("change", () => {
+    if (mode.select.value !== "actor") {
+      mode.select.value = "actor";
+      mode.select.dispatchEvent(new Event("change"));
+    }
+  });
+  sync();
+  return {
+    root, mode: mode.select,
+    read: () => mode.select.value === "party" ? "party" : actor.select.value,
+    valid: () => mode.select.value === "party" || store.getCurrent().database.actors.some(record => record.id === actor.select.value),
+  };
+}
+
+export function bindCommandFormValidity(root: HTMLElement, isValid: () => boolean): () => boolean {
+  root.dataset.commandFormValidity = "true";
+  const validate = () => {
+    const valid = isValid();
+    root.setAttribute("aria-invalid", String(!valid));
+    return valid;
+  };
+  root.addEventListener("event-command-validate", event => {
+    if (!validate()) event.preventDefault();
+  });
+  return validate;
+}
+
 export function changeExpBody(context: CommandEditContext, cmd: Extract<Command, { kind: "changeExp" }>): HTMLElement {
-  return actorAmountBody(context, cmd);
+  const project = store.getCurrent();
+  const actor = actorPicker({ project, selectedId: cmd.actorId, testid: "change-exp-actor-select" });
+  const target = actorTargetControls(actor, cmd.actorId, "change-exp");
+  const op = segmentedSelect({ options: AMOUNT_OP_SEGMENTS, value: cmd.op, testid: "change-exp-op-select" });
+  const source = segmentedSelect({
+    options: [{ value: "number", key: "number", label: "숫자" }, { value: "variable", key: "variable", label: "변수" }],
+    value: typeof cmd.amount === "number" ? "number" : "variable", testid: "change-exp-amount-source",
+  });
+  const amount = numberInput(typeof cmd.amount === "number" ? cmd.amount : 0, "경험치", "change-exp-amount-input");
+  let variableId = typeof cmd.amount === "number" ? "" : cmd.amount.id;
+  const variable = variablePicker({ selectedId: variableId, testId: "change-exp-amount-variable", keepMissingId: true, onChange: id => {
+    variableId = id;
+    apply();
+  } });
+  const preview = previewStrip("change-exp-preview", "");
+  const wrap = el("div", {
+    class: "rich-command-form actor-amount-command-body",
+    dataset: { testid: "event-command-exp-form" },
+    children: [target.root, op.root, source.root, amount, variable.root, preview.root],
+  });
+  const validTarget = () => target.valid();
+  const validate = bindCommandFormValidity(wrap, () => validTarget() &&
+    (source.select.value !== "variable" || store.getCurrent().variables.some(record => record.id === variableId)));
+  const renderPreview = () => {
+    // Creating a variable in the nested picker replaces the project, not this mounted form.
+    const current = store.getCurrent();
+    const selectedVariable = current.variables.find(record => record.id === variableId);
+    if (selectedVariable) {
+      for (const option of variable.select.selectedOptions) option.textContent = selectedVariable.name;
+      variable.setSelectedId(variableId);
+    }
+    const useVariable = source.select.value === "variable";
+    amount.hidden = useVariable;
+    variable.root.hidden = !useVariable;
+    const who = target.read() === "party" ? "파티 전체" : current.database.actors.find(record => record.id === target.read())?.name ?? "주인공 선택";
+    const value = useVariable ? selectedVariable?.name ?? "변수 선택" : amount.value;
+    preview.body.replaceChildren(el("span", { text: `${who} · ${op.select.value} ${value}` }));
+  };
+  const apply = () => {
+    renderPreview();
+    validate();
+    if (!validTarget()) return;
+    context.actions.replaceCommand(context.path, {
+      ...cmd, actorId: target.read() === "party" ? "" : target.read(),
+      op: selectedOptionValue(op.select, AMOUNT_OP_OPTIONS, cmd.op),
+      amount: source.select.value === "variable" ? { kind: "var", id: variableId } : Math.max(0, Math.trunc(Number(amount.value) || 0)),
+    });
+  };
+  for (const select of [target.mode, actor.select, op.select, source.select]) select.addEventListener("change", apply);
+  amount.addEventListener("change", apply);
+  amount.addEventListener("input", apply);
+  renderPreview();
+  return wrap;
 }
 
 export function changeLevelBody(context: CommandEditContext, cmd: Extract<Command, { kind: "changeLevel" }>): HTMLElement {

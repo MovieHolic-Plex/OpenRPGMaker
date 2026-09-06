@@ -13,6 +13,7 @@ import { databasePicker } from "./conditionForm";
 import { innBody, shopBody } from "./commandBodyCommerce";
 import {
   battleProcessingBody,
+  bindCommandFormValidity,
   changeActorHpBody,
   changeActorMpBody,
   changeEquipmentBody,
@@ -1290,6 +1291,7 @@ function learnSkillBody(context: CommandEditContext, cmd: Extract<Command, { kin
 
   const apply = () => {
     renderPreview();
+    if (!validate()) return;
     context.actions.replaceCommand(context.path, {
       kind: "learnSkill",
       actorId: target.select.value === "party" ? "" : actor.select.value,
@@ -1312,6 +1314,8 @@ function learnSkillBody(context: CommandEditContext, cmd: Extract<Command, { kin
     class: "rich-command-form learn-skill-command-body actor-amount-command-body",
     dataset: { testid: "event-command-learn-skill-form" },
   });
+  const validate = bindCommandFormValidity(wrap, () =>
+    target.select.value === "party" || actors.some(record => record.id === actor.select.value));
   wrap.append(
     skillField("액션", action.root),
     skillField("대상", target.root),

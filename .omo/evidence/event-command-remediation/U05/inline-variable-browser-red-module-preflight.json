@@ -1,0 +1,33 @@
+{
+  "trace": {
+    "status": "timeout",
+    "before": [
+      {
+        "value": false
+      },
+      {
+        "value": false
+      }
+    ],
+    "after": [
+      {
+        "value": false
+      },
+      {
+        "value": false
+      }
+    ],
+    "event": null,
+    "cleanup": {
+      "observer": true,
+      "timer": true,
+      "event": true,
+      "pagehide": true,
+      "abort": true
+    },
+    "error": "eventCommand observation timed out"
+  },
+  "errors": [],
+  "pending": [],
+  "writes": []
+}

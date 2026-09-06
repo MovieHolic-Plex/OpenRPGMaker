@@ -1,0 +1,288 @@
+{
+  "config": {
+    "argv": [
+      "/usr/local/bin/node",
+      "/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906/node_modules/@playwright/test/cli.js",
+      "test",
+      "--config",
+      "/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906/.omo/evidence/event-command-remediation/U05/supervisor/playwright.config.mts",
+      "--reporter=list,json"
+    ],
+    "configFile": "/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906/.omo/evidence/event-command-remediation/U05/supervisor/playwright.config.mts",
+    "rootDir": "/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906/test/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/tmp/event-command-u05-supervisor-90CD4m/playwright-output",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906/test/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "event-command-remediation-U05.spec.ts"
+        ],
+        "timeout": 360000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.61.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "event-command-remediation-U05.spec.ts",
+      "file": "event-command-remediation-U05.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "U05 map: actor forms Confirm, outer save, import and reopen",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 360000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 215627,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-06T15:41:09.432Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "1593eb394776067819be-baae9ce5bcbc9f122079",
+          "file": "event-command-remediation-U05.spec.ts",
+          "line": 73,
+          "column": 3
+        },
+        {
+          "title": "U05 common: actor forms Confirm, outer save, import and reopen",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 360000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 139415,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-06T15:44:45.900Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "1593eb394776067819be-c963f98121a8993dcbff",
+          "file": "event-command-remediation-U05.spec.ts",
+          "line": 73,
+          "column": 3
+        },
+        {
+          "title": "U05 troop: actor forms Confirm, outer save, import and reopen",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 360000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 229098,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-06T15:47:05.340Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "1593eb394776067819be-f0d7d38f404ab58fec92",
+          "file": "event-command-remediation-U05.spec.ts",
+          "line": 73,
+          "column": 3
+        },
+        {
+          "title": "U05 missing state \"\" survives until explicit chip",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 40870,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-06T15:50:54.459Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "1593eb394776067819be-d441098148319cfc8aed",
+          "file": "event-command-remediation-U05.spec.ts",
+          "line": 235,
+          "column": 3
+        },
+        {
+          "title": "U05 missing state \"missing_state\" survives until explicit chip",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 58584,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-06T15:51:35.363Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "1593eb394776067819be-aaa5b60356b563d12034",
+          "file": "event-command-remediation-U05.spec.ts",
+          "line": 235,
+          "column": 3
+        },
+        {
+          "title": "U05 EXP inline variable creation keeps current selection and inactive draft",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 240000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 110469,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-06T15:52:34.069Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "1593eb394776067819be-f31218c1b2cf4417b2d1",
+          "file": "event-command-remediation-U05.spec.ts",
+          "line": 260,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-09-06T15:41:05.260Z",
+    "duration": 800560.179,
+    "expected": 6,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

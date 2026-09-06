@@ -1,0 +1,43 @@
+{
+  "editorInput": {
+    "path": "/tmp/event-command-u05-2dCkLZ/fixtures/project.json",
+    "staleHash": "32adb828622f8ef3094c3ba5e18cfc418c528ada1eff38e8fa6e26c50e2f1c8d",
+    "currentHash": "cefa204de1e3bed4542a6e12a414c435b8848196ef6d8d0418349bf6731c0512",
+    "changes": [
+      {
+        "path": [
+          "commonEvents",
+          "0",
+          "trigger"
+        ],
+        "before": "call",
+        "after": "none"
+      }
+    ],
+    "driver": "qa-runner sets U05_FIXTURE to fixtures/project.json; spec reads that file via JSON.parse, imports constants but never calls buildFixture"
+  },
+  "playerInput": {
+    "path": "/tmp/event-command-u05-2dCkLZ/fixtures/editor-map.json",
+    "acceptedSourceHash": "072cf4f608eb7d1c0fcfbb499189fa4b6d96fc5be104add539468dd362d46de5",
+    "preservedOldExportHash": "072cf4f608eb7d1c0fcfbb499189fa4b6d96fc5be104add539468dd362d46de5",
+    "currentExportHash": "170a17d661f8f51bb8f69269db0a34cf1284d19bb1b1d303e86eccb8fdd559dd",
+    "acceptedHashMatchesPreservedExport": true,
+    "changes": [
+      {
+        "path": [
+          "commonEvents",
+          "0",
+          "trigger"
+        ],
+        "before": "call",
+        "after": "none"
+      }
+    ],
+    "driver": "provePlayer reads fixtures/editor-map.json; every seven-case fixture is derived from that complete exported project"
+  },
+  "editorRelease": {
+    "status": "PASS",
+    "caseCount": 5,
+    "log": ".omo/evidence/event-command-remediation/U05/editor-release.log"
+  }
+}

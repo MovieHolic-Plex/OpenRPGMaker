@@ -1,0 +1,10 @@
+{
+  "port": 39011,
+  "url": "http://127.0.0.1:39011",
+  "cache": "/tmp/event-command-u05-2dCkLZ/editor-cache",
+  "grep": "U05 map:",
+  "workers": 1,
+  "retries": 0,
+  "freshFirefox": true,
+  "outerChildDeadline": false
+}

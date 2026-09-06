@@ -1,0 +1,9 @@
+{
+  "mode": "player",
+  "root": "/tmp/event-command-u05-supervisor-90CD4m",
+  "port": 46227,
+  "url": "http://127.0.0.1:46227",
+  "cache": "/tmp/event-command-u05-supervisor-90CD4m/player-cache",
+  "workers": 1,
+  "retries": 0
+}

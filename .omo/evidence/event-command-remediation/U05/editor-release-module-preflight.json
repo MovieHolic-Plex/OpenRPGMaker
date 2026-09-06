@@ -1,0 +1,37 @@
+{
+  "trace": {
+    "status": "success",
+    "before": [
+      {
+        "value": false
+      },
+      {
+        "value": false
+      }
+    ],
+    "after": [
+      {
+        "value": true
+      },
+      {
+        "value": true
+      }
+    ],
+    "event": null,
+    "cleanup": {
+      "observer": true,
+      "timer": true,
+      "event": true,
+      "pagehide": true,
+      "abort": true
+    }
+  },
+  "errors": [],
+  "pending": [
+    "http://127.0.0.1:36611/assets/easyrpg/faceset/Monster/11.png",
+    "http://127.0.0.1:36611/assets/easyrpg/faceset/Monster/12.png",
+    "http://127.0.0.1:36611/assets/easyrpg/faceset/Monster/13.png",
+    "http://127.0.0.1:36611/assets/easyrpg/faceset/Monster/14.png"
+  ],
+  "writes": []
+}

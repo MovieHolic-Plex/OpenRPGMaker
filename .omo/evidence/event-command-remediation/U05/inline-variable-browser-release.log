@@ -1,0 +1,19 @@
+[rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] QWENCLOUD_API_KEY 가 없어 /api/qwen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] CPENROUTER_API_KEY 가 없어 /api/cpen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+manually calling optimizeDeps is deprecated. This is done automatically and does not need to be called manually.
+Optimizing dependencies:
+  zod
+[rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] QWENCLOUD_API_KEY 가 없어 /api/qwen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] CPENROUTER_API_KEY 가 없어 /api/cpen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+
+  VITE v6.4.3  ready in 407 ms
+
+  ➜  Local:   http://127.0.0.1:42329/
+
+Running 1 test using 1 worker
+
+  ✓  1 test/e2e/event-command-remediation-U05.spec.ts:260:1 › U05 EXP inline variable creation keeps current selection and inactive draft (24.6s)
+
+  1 passed (27.5s)

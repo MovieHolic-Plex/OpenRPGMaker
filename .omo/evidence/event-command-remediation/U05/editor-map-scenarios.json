@@ -1,0 +1,30 @@
+{
+  "surface": "map",
+  "findings": [
+    "G2-F1",
+    "G2-F4",
+    "G2-F6",
+    "G2-F7",
+    "G2-F8"
+  ],
+  "steps": [
+    "092 party -> actual hero ID, slots retained",
+    "EXP variable -> number31 -> variable reward; actor/op edits; focus stable",
+    "014/021 variable -> number10 -> Confirm/reopen -> remove; inactive variable retained",
+    "state toggle -> sleep; set remains selectable",
+    "five identity forms + learnSkill + EXP: clear individual, Confirm rejects; explicit party and individual saves",
+    "outer map Apply or database OK; actual wire JSON file import; reopen saved 092 and EXP",
+    "inline individual clear cannot persist party on map Apply"
+  ],
+  "pass": {
+    "target": "hero",
+    "source": "number",
+    "inactiveVariable": "reward",
+    "exp": {
+      "kind": "var",
+      "id": "reward"
+    },
+    "state": "state_sleep_u05",
+    "unexpectedRemoteWrites": 0
+  }
+}

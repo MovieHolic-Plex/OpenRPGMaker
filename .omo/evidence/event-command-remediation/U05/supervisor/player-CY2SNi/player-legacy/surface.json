@@ -1,0 +1,262 @@
+{
+  "id": "legacy",
+  "status": "PASS",
+  "surface": {
+    "url": "http://127.0.0.1:46227/player.html",
+    "editor": false,
+    "canvas": true,
+    "pending": false,
+    "state": {
+      "mapId": "map_u05",
+      "inputEnabled": false,
+      "running": true,
+      "player": {
+        "x": 2,
+        "y": 3
+      },
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false
+      },
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0,
+        "reward": 25
+      },
+      "timers": {},
+      "timerActive": {},
+      "flags": {},
+      "mapOverrides": {},
+      "gold": 0,
+      "inventory": {},
+      "partyActorIds": [
+        "hero",
+        "other"
+      ],
+      "actorSkillIds": {},
+      "actorExperience": {
+        "hero": 105,
+        "other": 65
+      },
+      "actorLevels": {
+        "actor_hero": 1,
+        "actor_guardian": 1,
+        "actor_mage": 1,
+        "actor_scout": 1,
+        "actor_cleric": 1,
+        "actor_ranger": 1,
+        "hero": 1,
+        "other": 1
+      },
+      "actorVitals": {
+        "hero": {
+          "hp": 60,
+          "mp": 43,
+          "maxHp": 514,
+          "maxMp": 43
+        },
+        "other": {
+          "hp": 45,
+          "mp": 43,
+          "maxHp": 514,
+          "maxMp": 43
+        }
+      },
+      "eventLocations": {},
+      "followers": [],
+      "followerTrail": [],
+      "removedEventIds": {},
+      "spawnedEvents": {},
+      "camera": {
+        "mode": "follow",
+        "target": {
+          "kind": "player"
+        }
+      },
+      "lighting": {
+        "ambient": 0,
+        "sources": []
+      },
+      "actorEquipment": {
+        "actor_hero": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_guardian": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_mage": {
+          "weapon": "equip_mage_staff",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_scout": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_cleric": {
+          "weapon": "equip_mage_staff",
+          "shield": "equip_oak_shield",
+          "armor": "equip_mystic_robe",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "actor_ranger": {
+          "weapon": "equip_scout_dagger",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "hero": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        },
+        "other": {
+          "weapon": "equip_sword",
+          "shield": "equip_oak_shield",
+          "armor": "equip_leather_armor",
+          "helmet": "equip_traveler_hat",
+          "accessory": "equip_focus_charm"
+        }
+      },
+      "actorRows": {
+        "hero": "front",
+        "other": "front"
+      },
+      "classOverrides": {},
+      "audio": {
+        "bgm": {
+          "resourceId": "cc0-bgm-rtp-fld-003",
+          "loop": true
+        }
+      },
+      "pictures": {},
+      "m2Runtime": {
+        "screen": {},
+        "access": {},
+        "audio": {},
+        "actors": {
+          "hero": {
+            "parameters": 7,
+            "states": [
+              "state_sleep_u05"
+            ],
+            "name": "Hero before",
+            "nickname": "Hero nick",
+            "battleCommands": "cmd_item"
+          },
+          "other": {
+            "parameters": 13,
+            "states": [
+              "state_sleep_u05"
+            ],
+            "name": "Other before",
+            "nickname": "Other nick",
+            "battleCommands": ""
+          },
+          "": {
+            "name": "Legacy party"
+          },
+          "party": {
+            "nickname": "Explicit party"
+          }
+        },
+        "events": {},
+        "map": {},
+        "system": {},
+        "session": {},
+        "camera": {},
+        "screenEffects": [],
+        "pathfinding": [],
+        "waits": [],
+        "regions": [],
+        "quests": {},
+        "dialogue": [],
+        "cutscene": {},
+        "checkpoints": [],
+        "ui": [],
+        "debug": [],
+        "expressions": [],
+        "fallbacks": []
+      },
+      "events": {
+        "ev_u05": {
+          "x": 2,
+          "y": 2,
+          "pageId": "page_u05",
+          "priority": "same",
+          "trigger": "action",
+          "direction": "down",
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "passRows": 1,
+          "bodyRect": {
+            "left": 2,
+            "right": 2,
+            "top": 2,
+            "bottom": 2
+          },
+          "passRect": {
+            "left": 2,
+            "right": 2,
+            "top": 2,
+            "bottom": 2
+          }
+        }
+      },
+      "movers": {}
+    }
+  },
+  "remoteWrites": []
+}

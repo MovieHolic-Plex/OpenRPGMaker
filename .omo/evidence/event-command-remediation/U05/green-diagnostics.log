@@ -1,0 +1,6 @@
+[96msrc/editor/eventDraftValidator.ts[0m:[93m1067[0m:[93m114[0m - [91merror[0m[90m TS2339: [0mProperty 'states' does not exist on type '{ actors: Set<string>; animations: Set<string>; classes: Set<string>; commonEvents: Set<string>; endings: Set<string>; equipment: Set<string>; factions: Set<...>; ... 15 more ...; hasTimeSystem: boolean; }'.
+
+[7m1067[0m       requireReference(issues, pageId, "reference.state.missing", "상태", String(command.fields.value ?? ""), refs.states,
+[7m    [0m [91m                                                                                                                 ~~~~~~[0m
+
+7 files: 1 diagnostics

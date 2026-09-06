@@ -331,7 +331,11 @@ function mutateActorState(
   fields: M2CommandFields,
   context: { readonly project?: Project } = {}
 ): void {
-  const actorId = fieldString(fields, "target", "party");
+  const target = fieldString(fields, "target", "party");
+  const legacyBattleActor = title === "Change Battle Commands" && target === "actor";
+  const actorId = legacyBattleActor ? fieldString(fields, "actorId", "") : target;
+  // Only 092 used the old mode token as a target. An incomplete old individual is not party.
+  if (legacyBattleActor && (!actorId || actorId === "actor" || actorId === "party" || actorId === "all")) return;
   runtime.actors[actorId] ??= {};
   const actor = runtime.actors[actorId];
   if (title === "Change Actor Name") {

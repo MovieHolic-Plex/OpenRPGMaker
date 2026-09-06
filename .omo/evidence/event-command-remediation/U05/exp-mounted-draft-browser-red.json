@@ -1,0 +1,46 @@
+{
+  "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n'' !== 'reward'\n",
+  "errors": [],
+  "traces": [
+    {
+      "status": "success",
+      "before": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-092-change-battle-commands",
+            "fields": {
+              "target": "party",
+              "operation": "add",
+              "value": "cmd_attack",
+              "slots": "cmd_attack,cmd_defend"
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-092-change-battle-commands",
+            "fields": {
+              "target": "hero",
+              "operation": "add",
+              "value": "cmd_item",
+              "slots": "cmd_attack,cmd_defend"
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    }
+  ],
+  "body": "✦\nOPRN Studio\nU05 actor command remediation\n변경 없음\nDB\n리소스\n명령 · 맵 이동\nCtrl K\n▶\n테스트\n스튜디오\n보기\n도움말\n게스트 세션 5c4a\nAI 설정\n더 보기\n인스펙터\n규칙 감사\n작업 기록\n1\n바닥\n덧그림\n이벤트\n이벤트\n맵 이벤트 목록\nU05\n2,2 · 1p\nU05\n위치 2,2 / 1 페이지\n이벤트 편집 열기\n맵\n1\n새 맵\nU05\n8×8 · 1이벤트 · 문0\n시작\n개발 모드 — 이 브라우저에만 저장됩니다.\n−\n2x\n+\n⋯\n만들기\n다듬기\n검사\nAI 요청\n조수\nU05\n맥락 —\n지시\n질문\n계획\nU05\ngemini-3.7-flash · 균형\nU05\n2, 2\n3\n경고 3\n테스트\n1\nU05\n조건 없음\n+\n페이지\n복제\n복사\n붙여넣기\n삭제\n이 페이지 설정\n어떻게 보이고 언제 켜지는지\n모습과 대화\n그래픽 있음\n이 페이지\n말을 걸면\n같은 층 · 정지\n모습\n이미지 선택\n맵에서 숨기기\n언제 보이나요\n조건 없음\n움직임과 속도\n정지\n겹침과 통행\n겹침 금지\nNPC와 일정\n연결 안 됨\n이 페이지가 하는 일\n위에서 아래로 차례대로 실행됩니다\n11개\n명령\n되돌리기\n다시 실행\n편집\n도구\n목록\n스토리\n미리보기\n플로우\nAI 명령\n1\n전투 명령 변경: 누구에게 hero, 증가, 값 cmd_item\n2\n경험치 변경: Hero 더하기 변수 Reward\n3\n능력치 변경: Hero 공격 ＋변수 Reward\n4\n데미지: Hero · 데미지 변수 Reward\n5\n상태 변경: Hero · Poison 부여\n6\n주인공 이름 변경: Hero · Hero\n△\n1\n7\n주인공 별명 변경: Hero · Hero nick\n△\n1\n8\n주인공 모습 변경: Hero · easyrpg-charset-actor1\n9\n주인공 얼굴 변경: Hero · easyrpg-faceset-actor1-00\n△\n1\n10\n주인공 직업 변경: Hero · class_u05\n11\n스킬 변경: Hero 배우기 공격\n+ 여기에 명령 추가\nAI로 명령 만들기\n경험치 변경\nHero 더하기 변수 Reward\n경험치 변경\nHero\nEXP · Lv.1\n변수 Reward · 다음 레벨까지 678\n경험치 += 변수 Reward\n미리보기 새로고침\n경험치 변경\n파티 전체\n주인공\nHero\nHero\n전사 · Lv.1\n＝ 대입\n＋ 증가\n− 감소\n숫자\n변수\nReward\nHero · += Reward\n이벤트 삭제\n적용됨\n취소\n적용\n저장하고 닫기\n경고 3개를 확인하세요. 적용은 계속 진행합니다.\n경험치 변경\n경험치 변경\n파티 전체\n주인공\nHero\nHero\n전사 · Lv.1\n＝ 대입\n＋ 증가\n− 감소\n숫자\n변수\n(선택)\nHero · += 변수 선택\n경험치 변경\nHero\nEXP · Lv.1\n변수 (미선택) · 다음 레벨까지 678\n경험치 += 변수 (미선택)\n확인\n취소"
+}

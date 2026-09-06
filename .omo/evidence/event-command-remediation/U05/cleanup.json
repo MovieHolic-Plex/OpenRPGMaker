@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "temporaryRoot": "/tmp/event-command-u05-2dCkLZ",
+  "temporaryRootRemoved": true,
+  "acceptedFixtureCopies": ".omo/evidence/event-command-remediation/U05/accepted-fixtures",
+  "ownedRunnersRemaining": [],
+  "ownedServersExited": true,
+  "browserContextsClosed": true,
+  "observationsReleased": true,
+  "remoteWrites": [],
+  "gitStatus": ""
+}

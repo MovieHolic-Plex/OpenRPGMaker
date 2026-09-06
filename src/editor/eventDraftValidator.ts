@@ -194,6 +194,7 @@ function referenceSets(project: Project, mapId: MapId, host: GameEvent) {
     recipes: new Set((project.system.craftRecipes ?? []).map((entry) => entry.id)),
     resources: collectResourceIds(project),
     skills: new Set(project.database.skills.map((entry) => entry.id)),
+    states: new Set(project.database.states.map((entry) => entry.id)),
     species: new Set((project.database.monsterSpecies ?? []).map((entry) => entry.id)),
     switches: new Set(project.switches.map((entry) => entry.id)),
     troops: new Set(project.database.troops.map((entry) => entry.id)),
@@ -1055,6 +1056,19 @@ function validateM2CommandReferences(
 ): M2CatalogEntry | undefined {
   const entry = m2CommandById(command.commandId);
   if (!entry) return undefined;
+  if (entry.title.startsWith("Change Actor ") || ["Change Parameters", "Change State", "Damage Processing", "Change Battle Commands"].includes(entry.title)) {
+    const rawTarget = String(command.fields.target ?? "party");
+    const legacyBattleActor = entry.title === "Change Battle Commands" && rawTarget === "actor";
+    const target = legacyBattleActor ? String(command.fields.actorId ?? "") : rawTarget;
+    if (legacyBattleActor || (target && target !== "party" && target !== "all")) {
+      requireReference(issues, pageId, "reference.actor.missing", "배우", target, refs.actors,
+        { testId: "m2-command-target-input" }, commandPath);
+    }
+    if (entry.title === "Change State") {
+      requireReference(issues, pageId, "reference.state.missing", "상태", String(command.fields.value ?? ""), refs.states,
+        { testId: "change-state-state-select" }, commandPath);
+    }
+  }
   for (const field of entry.fields) {
     const rule = M2_REFERENCE_RULES[field.key];
     if (!rule || !m2ReferenceFieldApplies(command, entry, field.key)) continue;
@@ -1079,6 +1093,7 @@ function m2ReferenceFieldApplies(
   fieldKey: string,
 ): boolean {
   const value = String(m2FieldValue(command, entry, fieldKey)).trim();
+  if (entry.title === "Change Battle Commands" && fieldKey === "actorId") return false;
   if (fieldKey === "valueVariableId") {
     return String(m2FieldValue(command, entry, "valueSource")) === "variable";
   }

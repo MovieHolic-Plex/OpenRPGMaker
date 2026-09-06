@@ -1,0 +1,13 @@
+{
+  "port": 42329,
+  "url": "http://127.0.0.1:42329",
+  "cache": "/tmp/event-command-u05-2dCkLZ/inline-variable-browser-release-cache",
+  "grep": "EXP inline variable creation",
+  "workers": 1,
+  "retries": 0,
+  "normalNodeVite": true,
+  "freshContexts": true,
+  "outerChildDeadline": false,
+  "freeze": true,
+  "supabaseDisabled": true
+}

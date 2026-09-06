@@ -1,0 +1,308 @@
+{
+  "status": "PASS",
+  "taskId": "st_01a076b2",
+  "redTaskId": "st_01a0764a",
+  "parentSession": "01a07596-cae4-78dd-be1b-f0bfcd260950",
+  "rootSession": "01a07596-cae4-78dd-be1b-f0bfcd260950",
+  "depth": 1,
+  "worktree": "/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u05",
+  "originalRedBase": "c66f5a8ac2f61005833783807c40477d045b2b35",
+  "greenBase": "9c14cfdefbcfc9a71c5ba1149f35600f413777fc",
+  "commits": [
+    {
+      "id": "8f9f6c222f7ecdbfcf1a3366d33be54ece867670",
+      "tree": "69bfea47852485ea0dbb55017894587a3088769b",
+      "subject": "fix(events): preserve actor targets and operand drafts",
+      "files": [
+        "scripts/qa/runtime/event-command-remediation-u05.scenario.mjs",
+        "src/editor/eventDraftValidator.ts",
+        "src/editor/panels/eventEditor/commandBodyAdvanced.ts",
+        "src/editor/panels/eventEditor/commandBodyDatabase.ts",
+        "src/editor/panels/eventEditor/commandBodyM2Actor.ts",
+        "src/editor/panels/eventEditor/commandEditDialog.ts",
+        "src/player/interpreter/m2Runtime.ts",
+        "test/commandEditModalPreview.test.ts",
+        "test/e2e/event-command-remediation-U05.spec.ts",
+        "test/e2e/eventCommandRemediationHarness.ts",
+        "test/eventCommandRemediation/U05.fixture.ts",
+        "test/eventCommandRemediation/U05.test.ts"
+      ]
+    },
+    {
+      "id": "b5521e4d73ce17b8adc971c90096217419c2c403",
+      "tree": "2719dbe69d5eb91ad25c94a1eb420755eb25befb",
+      "subject": "fix(editor): refresh EXP records after inline variable creation",
+      "files": [
+        "src/editor/panels/eventEditor/commandBodyDatabase.ts",
+        "test/e2e/event-command-remediation-U05.spec.ts",
+        "test/eventCommandRemediation/U05.test.ts"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "G2-F1",
+      "status": "PASS",
+      "redFailed": 4,
+      "redControls": 1,
+      "currentU05Cases": 5,
+      "commits": [
+        "8f9f6c222f7ecdbfcf1a3366d33be54ece867670"
+      ],
+      "surfaces": [
+        "real command Confirm",
+        "outer map Apply/database Save",
+        "wire-file import/reopen",
+        "dedicated player"
+      ],
+      "detail": "manifest.md",
+      "cleanup": "cleanup.json"
+    },
+    {
+      "id": "G2-F4",
+      "status": "PASS",
+      "redFailed": 2,
+      "redControls": 1,
+      "currentU05Cases": 5,
+      "commits": [
+        "8f9f6c222f7ecdbfcf1a3366d33be54ece867670",
+        "b5521e4d73ce17b8adc971c90096217419c2c403"
+      ],
+      "surfaces": [
+        "real command Confirm",
+        "outer map Apply/database Save",
+        "wire-file import/reopen",
+        "dedicated player"
+      ],
+      "detail": "manifest.md",
+      "cleanup": "cleanup.json"
+    },
+    {
+      "id": "G2-F6",
+      "status": "PASS",
+      "redFailed": 3,
+      "redControls": 0,
+      "currentU05Cases": 3,
+      "commits": [
+        "8f9f6c222f7ecdbfcf1a3366d33be54ece867670"
+      ],
+      "surfaces": [
+        "real command Confirm",
+        "outer map Apply/database Save",
+        "wire-file import/reopen",
+        "dedicated player"
+      ],
+      "detail": "manifest.md",
+      "cleanup": "cleanup.json"
+    },
+    {
+      "id": "G2-F7",
+      "status": "PASS",
+      "redFailed": 6,
+      "redControls": 1,
+      "currentU05Cases": 8,
+      "commits": [
+        "8f9f6c222f7ecdbfcf1a3366d33be54ece867670"
+      ],
+      "surfaces": [
+        "real command Confirm",
+        "outer map Apply/database Save",
+        "wire-file import/reopen",
+        "dedicated player"
+      ],
+      "detail": "manifest.md",
+      "cleanup": "cleanup.json"
+    },
+    {
+      "id": "G2-F8",
+      "status": "PASS",
+      "redFailed": 32,
+      "redControls": 6,
+      "currentU05Cases": 38,
+      "commits": [
+        "8f9f6c222f7ecdbfcf1a3366d33be54ece867670"
+      ],
+      "surfaces": [
+        "real command Confirm",
+        "outer map Apply/database Save",
+        "wire-file import/reopen",
+        "dedicated player"
+      ],
+      "detail": "manifest.md",
+      "cleanup": "cleanup.json"
+    }
+  ],
+  "verification": {
+    "mainUnit": 121,
+    "mainEditor": 5,
+    "mainPlayer": 7,
+    "followupFocusedUnit": 97,
+    "followupEditor": 1,
+    "tsFiles": 11,
+    "diagnostics": 0,
+    "fullBuildOrGatesRun": false
+  },
+  "provenance": "acceptance-input-provenance.json",
+  "originalTestBodiesUnchanged": true,
+  "artifacts": [
+    {
+      "path": "prep-manifest.md",
+      "sha256": "196c679a177aaddb4d54c9cb34340c7aa564b89642619e9322a80e87116a6aec",
+      "bytes": 6154
+    },
+    {
+      "path": "red.json",
+      "sha256": "12a40a6abce24ef8d49ea2f7567abea4cf7836831089943a5e690e841d2fe96e",
+      "bytes": 143223
+    },
+    {
+      "path": "red.log",
+      "sha256": "dff38b5e02cf361d91c3e70a3e114673c59ddde2e1d7ed98be51505a2c14be1f",
+      "bytes": 73958
+    },
+    {
+      "path": "original.test.ts",
+      "sha256": "501e9eda684f6f8b5396f567611be2837cde202d6707b98e64a2dfa434604614",
+      "bytes": 17465
+    },
+    {
+      "path": "original.fixture.ts",
+      "sha256": "c5fe0bc0cc9f10d9f0332695e1511550096f24b39b142077e803722d960dae41",
+      "bytes": 8041
+    },
+    {
+      "path": "fixture-equivalence.json",
+      "sha256": "58873fff30850848a241ad3ef078107502d98806867c6912ce95d3b7589befa4",
+      "bytes": 821
+    },
+    {
+      "path": "fixture-final-cli.log",
+      "sha256": "0af10be8b558610e6ae50534241aa38c1ae7978cd203900dff3d3b501423a320",
+      "bytes": 431
+    },
+    {
+      "path": "final-equivalence-corrected.log",
+      "sha256": "cbb7eddf5f054fb0cb09086360c9b8e0b88455f8f0946e1673c9329223d0bcad",
+      "bytes": 498
+    },
+    {
+      "path": "acceptance-input-provenance.json",
+      "sha256": "a383971f358a9b7f451a5dc65db37dd0500cb45d645900d1c2c1cc46a2d07102",
+      "bytes": 1481
+    },
+    {
+      "path": "acceptance-normalized-hashes.json",
+      "sha256": "1a48d1f7c2f9167b10188f0ea1e4cb436dbc57bb7de7781d4b3bc3ae72704009",
+      "bytes": 962
+    },
+    {
+      "path": "release-input-receipt.json",
+      "sha256": "77709524c15cabb19272af83908d052d6187f99789fe4165866480304f5da69c",
+      "bytes": 404
+    },
+    {
+      "path": "unit-release.log",
+      "sha256": "8918a5673480b0ad4776e7b1c5db18b79043feb39dfdf3044702e167ed3895bf",
+      "bytes": 5238
+    },
+    {
+      "path": "diagnostics-release.log",
+      "sha256": "e84b97d93e29e7249a44737836b613fbd9ba5df040cadbeae42ddd049813320c",
+      "bytes": 25
+    },
+    {
+      "path": "editor-release-report.json",
+      "sha256": "580aeaf3c64299d4046ce50ef9cc25a581acf0b4e38c112d36d7f7753f945558",
+      "bytes": 7605
+    },
+    {
+      "path": "editor-release.log",
+      "sha256": "87b073ef5a9c363edf4a868df347d09996c85de3a5f9579f60f17a098f320657",
+      "bytes": 1853
+    },
+    {
+      "path": "player-release.log",
+      "sha256": "7a54a6342d0299cf9b8600742c1724f2792be630065713ec5d288015e7f15b16",
+      "bytes": 368
+    },
+    {
+      "path": "player-observation.json",
+      "sha256": "8833d6a7ba5169cd6ceada7c5f2b6c63aceee88fbe652a56bd6a9c6f97138afb",
+      "bytes": 49828
+    },
+    {
+      "path": "player-scenarios.json",
+      "sha256": "13aa3f5ad3dd8ecdd8441925018a26cfe8409a42b4e0b6de6dc43a95e583812c",
+      "bytes": 80846
+    },
+    {
+      "path": "inline-variable-red.log",
+      "sha256": "b5aa11e6228b3c243cca18f212b076fe88774feaf829fff3b82ad0a65222d032",
+      "bytes": 13874
+    },
+    {
+      "path": "inline-variable-green.log",
+      "sha256": "9ea4e76748dabd486853182ca745bb6cd6ccbb899e4d3e00ad66381ff01d2f57",
+      "bytes": 4144
+    },
+    {
+      "path": "inline-variable-diagnostics.log",
+      "sha256": "e84b97d93e29e7249a44737836b613fbd9ba5df040cadbeae42ddd049813320c",
+      "bytes": 25
+    },
+    {
+      "path": "inline-variable-browser-release-report.json",
+      "sha256": "3626a144791b65b4034d776c2c55353fad053919c298ca22864b4b2cd6d6837b",
+      "bytes": 3401
+    },
+    {
+      "path": "inline-variable-editor-observation.json",
+      "sha256": "89e610cb5436ca8d9629163860642558b557cffe4960349a4815e6a17df95677",
+      "bytes": 915
+    },
+    {
+      "path": "accepted-fixtures/project.json",
+      "sha256": "cefa204de1e3bed4542a6e12a414c435b8848196ef6d8d0418349bf6731c0512",
+      "bytes": 2465257
+    },
+    {
+      "path": "accepted-fixtures/editor-map.json",
+      "sha256": "170a17d661f8f51bb8f69269db0a34cf1284d19bb1b1d303e86eccb8fdd559dd",
+      "bytes": 2465526
+    },
+    {
+      "path": "accepted-fixtures/editor-common.json",
+      "sha256": "f274072bda4ddcc408f2c10ec172db40dc4dccdcd082c5aa7e06314d3acfa376",
+      "bytes": 2465526
+    },
+    {
+      "path": "accepted-fixtures/editor-troop.json",
+      "sha256": "052add3e0c92d017e1d37571821486ab913e57c1d2e1ba4ab6217af6bdff8865",
+      "bytes": 2465526
+    },
+    {
+      "path": "manifest.md",
+      "sha256": "11a221ff48bae8da9ef62934a7de38a9cf36cee208bf14e6c4737c421bbb74c8",
+      "bytes": 12433
+    },
+    {
+      "path": "wiki-amendment.md",
+      "sha256": "20f552d29e41344d6a1db84c1627e1bd440e3773ad8f0967677479144e74951e",
+      "bytes": 3051
+    }
+  ],
+  "cleanup": {
+    "status": "PASS",
+    "temporaryRoot": "/tmp/event-command-u05-2dCkLZ",
+    "temporaryRootRemoved": true,
+    "acceptedFixtureCopies": ".omo/evidence/event-command-remediation/U05/accepted-fixtures",
+    "ownedRunnersRemaining": [],
+    "ownedServersExited": true,
+    "browserContextsClosed": true,
+    "observationsReleased": true,
+    "remoteWrites": [],
+    "gitStatus": ""
+  },
+  "wikiAmendment": "wiki-amendment.md",
+  "coordination": "commandBodyAdvanced.ts only validity import and learnSkillBody; U05 integrates before U06"
+}

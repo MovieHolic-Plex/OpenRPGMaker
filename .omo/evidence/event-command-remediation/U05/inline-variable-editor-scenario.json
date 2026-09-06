@@ -1,0 +1,11 @@
+{
+  "action": "Existing EXP -> numeric31 -> variable -> real picker search/add/select/Confirm -> EXP Confirm -> map Apply",
+  "pass": {
+    "createdName": "U05 newly authored reward",
+    "actorId": "other",
+    "op": "-=",
+    "inactiveNumber": "31",
+    "currentPreviewIdentity": true,
+    "mountedNodes": true
+  }
+}
