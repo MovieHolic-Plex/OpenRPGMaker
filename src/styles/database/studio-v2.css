@@ -419,6 +419,7 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .btn,
 .database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-toolbar-button,
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-btn {
+  appearance: none;
   align-items: center;
   background: var(--db-studio-surface);
   border: 1px solid var(--db-studio-border-default);
@@ -429,14 +430,32 @@
   flex: 0 0 auto;
   font: 600 12.5px/1 var(--font-ui);
   gap: 4px;
-  min-height: 30px;
+  min-height: 32px;
   padding: 0 12px;
+  justify-content: center;
+  white-space: nowrap;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .btn:hover,
 .database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-toolbar-button:hover,
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-btn:hover {
   background: var(--db-studio-inset);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body :is(.db-toolbar .btn, .db-toolbar-button, .db-ws-btn):focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: 1px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body :is(.db-toolbar .btn, .db-toolbar-button, .db-ws-btn):disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .btn.danger.confirming,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-btn-danger.confirming {
+  background: var(--db2-danger-tint);
+  border-color: var(--db-studio-danger);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .btn.danger,
@@ -732,6 +751,11 @@
   word-break: keep-all;
 }
 
+.database-modal-backdrop .database-modal-window .database-modal-body .db-field > span:first-child > label {
+  font: inherit;
+  color: inherit;
+}
+
 /* 텍스트 영역이 있는 행은 라벨을 위 정렬. */
 .database-modal-backdrop .database-modal-window .database-modal-body .db-field:has(textarea) {
   align-items: start;
@@ -763,7 +787,7 @@
 }
 
 /* 입력 크롬 — 세 가지가 섞여 있었다(스튜디오 / 네이티브 얇은 테두리 / 점선). 하나로. */
-.database-modal-backdrop .database-modal-window .database-modal-body input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):not(.db-number-stepper input),
+.database-modal-backdrop .database-modal-window .database-modal-body input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):where(:not(.db-number-stepper input)),
 .database-modal-backdrop .database-modal-window .database-modal-body textarea {
   background-color: var(--db-studio-surface);
   border: 1px solid var(--db-studio-border-default);
@@ -800,17 +824,17 @@
   resize: vertical;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):not(.db-number-stepper input), select, textarea):hover:not(:disabled):not(:focus-visible) {
+.database-modal-backdrop .database-modal-window .database-modal-body :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):where(:not(.db-number-stepper input)), select, textarea):hover:not(:disabled):not(:focus-visible) {
   border-color: var(--db-studio-border-strong);
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):not(.db-number-stepper input), select, textarea):focus-visible {
+.database-modal-backdrop .database-modal-window .database-modal-body :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):where(:not(.db-number-stepper input)), select, textarea):focus-visible {
   border-color: var(--db-studio-accent);
   box-shadow: 0 0 0 3px var(--db2-accent-ring);
   outline: none;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):not(.db-number-stepper input), select, textarea):disabled {
+.database-modal-backdrop .database-modal-window .database-modal-body :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):where(:not(.db-number-stepper input)), select, textarea):disabled {
   background-color: var(--db-studio-inset);
   border-style: solid;
   color: var(--db-studio-text-3);
@@ -1018,20 +1042,8 @@
 }
 
 /* 카드 안의 입력은 다시 흰 면 — 회색 면 위에 흰 입력이 놓여 깊이가 생긴다. */
-.database-modal-backdrop .database-modal-window .database-modal-body :is(.db-ws-card, fieldset, .db-panel, .db-advanced-panel) .db-number-stepper,
-.database-modal-backdrop .database-modal-window .database-modal-body :is(.db-ws-card, fieldset, .db-panel, .db-advanced-panel) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not(.db-number-stepper input), select, textarea) {
-  background-color: var(--db-studio-surface);
-}
 
 /* 서브탭 스트립 — 밑줄형은 유지, 글자만 통일. */
-.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-section-tab {
-  font: 600 13px/1 var(--font-ui);
-  min-height: 34px;
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-section-tabs {
-  gap: 4px;
-}
 
 /* 상태/요약 띠 — 색면 타일 네 개가 시선을 뺏었다. 헤어라인 한 줄의 조용한 셀로. */
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stats {
@@ -1165,16 +1177,6 @@
   align-items: stretch;
   grid-template-columns: minmax(0, 1fr);
   row-gap: 4px;
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body :is(
-  .db-enemy-stat-grid,
-  .db-enemy-reward-grid,
-  .db-item-grid,
-  .db-state-runtime-panel,
-  .db-terrain-quick-row
-) .db-field > span:first-child {
-  font-size: 12px;
 }
 
 /* 슬라이더 + 수치 쌍: 슬라이더가 남는 폭을, 수치는 64px, 단위는 제 폭만. */
@@ -1661,13 +1663,4 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-skills .db-skill-effect-copy > span,
 .database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-classes .db-class-build-metric strong {
   color: var(--db-studio-text-2);
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-actors .actor-section-tab.active {
-  background: var(--db-studio-accent-soft);
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-actors .actor-section-tab:focus-visible {
-  outline: 2px solid var(--db-studio-accent);
-  outline-offset: -4px;
 }

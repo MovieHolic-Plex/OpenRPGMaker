@@ -66,7 +66,7 @@
     .tileset-db-workspace
   )) .database-modal-header h2 {
     color: var(--db-studio-text-1, #0F172A);
-    font: 600 14px/1.2 "Malgun Gothic", system-ui, sans-serif;
+    font: 600 14px/1.2 var(--font-ui);
     text-shadow: none;
   }
 
@@ -194,7 +194,7 @@
     border: 0;
     color: var(--text-1);
     display: block;
-    font: 700 13px/1.2 "MS UI Gothic", "Malgun Gothic", "Segoe UI", sans-serif;
+    font: 700 13px/1.2 var(--font-ui);
     height: auto;
     margin: 0 0 8px;
     text-align: left;
@@ -220,7 +220,7 @@
     border-bottom: 1px solid var(--border-subtle);
     color: var(--text-1);
     display: grid;
-    font: 13px/1.35 "MS UI Gothic", "Malgun Gothic", "Segoe UI", sans-serif;
+    font: 13px/1.35 var(--font-ui);
     gap: 4px;
     grid-template-columns: auto minmax(0, 1fr);
     height: auto;

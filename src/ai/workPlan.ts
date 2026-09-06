@@ -139,19 +139,18 @@ Harness contract:
 3. action=resume — incomplete WorkPlan already matches the user goal; keep it.
 4. action=new_plan — first multi-step hard request; author goal + layers + items.
 5. action=replan — active plan is wrong/stale or user wants restart/wipe/new goal.
-6. Prefer 2–4 layers, 1–3 items each, max ~8 items. Each item = one coherent sprint. Simple requests (one village, a few houses, terrain paint) should use action=direct or a 2-layer plan with ≤4 items — do NOT over-decompose.
+6. Plan at the scale the requested work requires. There is no layer or todo-count quota. Separate work that can be executed, retried or verified independently: individual regions, landmarks, connections, authoring passes and verification steps. A bulk tool does not make an entire village or world map an atomic task. Use direct only for genuinely atomic work. Do not invent extra scope or filler tasks merely to make the list longer.
 7. Every item needs:
-   - title (short)
+   - title (identifies the independent result)
    - instruction (concrete tools/numbers: 신축=author_house, author_village, create_map, place_npc, create_transfer_pair, upsert_event, fill_region, paint_road, script_cutscene_preset, make_horror_loop, make_gallery_room / **수정=paint_tiles, tile_erase, fill_region, move_event, remove_event, set_map_properties, resize_map, furnish_interior_space, author_village(target:{kind:"existing",mapId,bounds})** … — 건설 지시는 목표 맵과 정확한 수량을, **수정 지시는 대상 맵 id 와 바꿀 대상을 반드시 명시**)
    - doneWhen (acceptance: what must be true when this item is complete)
    - successTools (tool names that must ALL succeed before the item auto-completes; they must cover **every clause of doneWhen**, not just the first one. If doneWhen also requires painting/decorating/placing after a map is created, list those tools too — e.g. doneWhen "맵이 생성되고 지형이 칠해짐" → ["create_map","fill_region"]. Modify items list modify tools, never creation tools — e.g. doneWhen "기존 광장 타일이 석재로 교체됨" → ["paint_tiles"], doneWhen "집 2채가 새 위치로 이동됨" → ["move_event"], doneWhen "잘못 깔린 담장이 정리되고 다시 깔림" → ["tile_erase","build_wall"]. Listing only the creation tool for such an item is a contract violation: the harness completes the item the moment those tools succeed, so the rest of doneWhen never runs. Never list alternatives.)
 8. Typical **greenfield** RPG content layers (신규 프로젝트/신규 맵을 만드는 요청에만 해당): meta/wipe → hub map → landmarks → side maps/transfers → quest chain → polish/QA.
    기존 산출물을 고치는 요청의 레이어는 다르다 — Repair/adjust: survey(get_map_region / find_layout_regions 로 현재 상태 확인) → cleanup(tile_erase) → rebuild in place → verify. 여기에 create_map/author_* new 를 끼워 넣지 마라.
 9. Titles/instructions/doneWhen in the **same language as the user** (usually Korean).
-10. **Be terse — a truncated response is worse than a small plan.** 2026-08-23 실측: 장문 goal + 큰 layers 로 응답이 출력 한도에서 잘려 JSON 이 깨졌고, 하니스가 무관한 폴백 템플릿으로 갈아타 사용자 요청의 5/6 이 조용히 누락됐다. reason ≤ 1 short sentence, goal ≤ 200 chars, each instruction ≤ 200 chars, no restating the user request verbatim.
-   단, 사용자의 **금지·보존 제약**("새로 만들지 마", "기존 것 유지", "이 맵만")은 축약 예외다 — instruction 에 그대로 남겨라. 축약해서 날리면 생성기가 신축으로 되돌아간다.
-11. A multi-deliverable request MUST have every deliverable represented by at least one item. Dropping one because the plan is getting long is a contract violation — merge related deliverables into one item instead.
-12. "volume" (optional, only with new_plan/replan): the minimum outputs you commit to for greenfield content — {"authoredMaps","multiPageNpcs","shops","quests"} as integers. The harness measures the project delta against it and re-injects work until it is met, so declare only what the user actually asked for (village ≈ maps 1 / npcs 3 / shops 1; RPG campaign ≈ maps 3 / npcs 6 / shops 1 / quests 1). Omit it for repairs, single facilities, and anything the user excluded.
+10. Preserve complete goals, instructions, quantities, dependencies and acceptance criteria without a character quota. Large plans are allowed. Avoid repetition, not required detail. Keep the user's prohibitions and preservation constraints (금지·보존 제약) explicit ("새로 만들지 마", "기존 것 유지", "이 맵만"). An interrupted response does not authorize treating a partial plan as the complete requested scope.
+11. A multi-deliverable request MUST have every deliverable represented by independently checkable items. Do not drop, merge or summarize independent tasks just to shorten the plan. Group them into meaningful layers while preserving their individual completion conditions.
+12. "volume" (optional, only with new_plan/replan): the minimum outputs you commit to for greenfield content — {"authoredMaps","multiPageNpcs","shops","quests"} as integers. The harness measures the project delta against it and re-injects work until it is met. Derive quantities from the requested scope, not a genre-sized preset or an arbitrary ceiling. Omit it for repairs, single facilities, and anything the user excluded.
 13. Only plan quest chains / bosses if the user asks for them. A genre preset or a guide NPC does not require a quest graph or boss.
    - create_quest compiles a step quest and define_quest authors a separate graph contract; they are NOT mandatory sequential calls. Graph verification uses verify_quest. Debugging state to a goal is not a playthrough and cannot prove completion.
    - 보스 전투 페이즈/광폭화/HP 임계 연출 → successTools MUST include ["author_boss_phases","simulate_battle"]. 페이즈가 실제로 발동했는지(phaseCoverage)를 시뮬로 확인해야 완료된다.
@@ -323,7 +322,7 @@ export function parsePlannerVolume(value: unknown): PlannerVolumeBar | null {
   const read = (key: string): number => {
     const raw = value[key];
     if (typeof raw !== "number" || !Number.isFinite(raw)) return 0;
-    return Math.max(0, Math.min(50, Math.floor(raw)));
+    return Math.max(0, Math.floor(raw));
   };
   const bar = {
     authoredMaps: read("authoredMaps"),
@@ -460,7 +459,7 @@ function createWorkPlanFromLayers(input: {
   }));
   const plan: WorkPlan = {
     id: `wp_${input.now.getTime().toString(36)}`,
-    goal: input.goal.slice(0, 500),
+    goal: input.goal,
     ...(input.acceptance ? { acceptance: input.acceptance } : {}),
     createdAt: input.now.toISOString(),
     layers,
@@ -640,7 +639,7 @@ export function formatWorkPlanForOrchestration(plan: WorkPlan): string {
     lines.push("All items complete. Summarize results briefly for the user.");
   }
   if (s.remainingTitles.length > 1) {
-    lines.push(`Remaining: ${s.remainingTitles.slice(0, 10).join(" → ")}`);
+    lines.push(`Remaining: ${s.remainingTitles.join(" → ")}`);
   }
   lines.push(
     "When all of this item's successTools succeed, the harness may auto-complete; " +
@@ -695,7 +694,7 @@ export function formatWorkPlanUserVisible(plan: WorkPlan): string {
     }
   }
   if (s.current) {
-    lines.push(`\n다음: **${s.current.itemTitle}** — ${s.current.instruction.slice(0, 200)}`);
+    lines.push(`\n다음: **${s.current.itemTitle}** — ${s.current.instruction}`);
   }
   return lines.join("\n");
 }
@@ -916,12 +915,12 @@ export function buildDefaultWorkPlan(goal: string, now = new Date(), opts: { rea
     (genre != null
       ? `${templateToolInstruction(genre)}
 
-요청: ${goal.slice(0, 600)}`
-      : goal.slice(0, 800)) + modifyGuard;
+요청: ${goal}`
+      : goal) + modifyGuard;
   return workPlanFromOrchestratorDecision(
     {
       action: "new_plan",
-      goal: goal.slice(0, 400),
+      goal,
       plannerNote:
         genre != null
           ? `fallback template (planner parse/API failed); ${plannerHintForNarrativeHorrorGenre(genre)}`

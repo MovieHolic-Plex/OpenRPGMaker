@@ -1,3 +1,24 @@
+## Database CSS ownership contracts (2026-09-06)
+
+The required surface gate includes `databaseAllTabsRenderWalk`, using the actual
+registry and destination-specific sentinels. The original 32 destinations are
+retained; upstream Opening and Game Over expand the current set to 34. Per-file Vitest JSON
+must contain successful, nonempty, unskipped required assertions; aggregate exit
+zero or file existence alone is not proof. `databaseRequiredSurfaceAxis` and
+`databaseCssOwnerProof` exercise missing-execution and missing-designated-owner
+failures, including unrelated descendant declarations left in place.
+
+The dedicated `playwright.db-css.config.ts` uses an explicitly started, cwd-verified
+worktree server and zero retries. Supply its `DEV_SERVER_PORT`; do not reuse the
+copied 9841 value or another checkout's server. Freeze/restart owned transforms
+after source changes and record source/harness fingerprints with browser-scoped
+PNG/JSON evidence. The primary matrix derives its complete destination set from
+the live registry (currently 34) at 1440x900 and 1024x900; separate contracts cover native controls, true wheel/keyboard access,
+fonts, focus, virtualized reveal, domain variants and deliberate CSS regressions.
+Editor boot must complete before opening Database; wait for the published boot
+metric rather than the first toolbar node. Existing whole-suite failures and
+timeouts remain explicit, with assertion/diagnostic comparison against a frozen base.
+
 ## Mac onboarding Phase 1 contracts (2026-09-06)
 
 `node --test test/macLauncher.test.mjs test/setupLocal.test.mjs` (also

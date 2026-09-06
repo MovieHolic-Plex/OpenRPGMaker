@@ -469,7 +469,7 @@
 }
 .database-modal-backdrop .db-record-hero h3 {
   color: var(--db-studio-text-1);
-  font: 600 13px/1.4 "Malgun Gothic", system-ui, sans-serif;
+  font: 600 13px/1.4 var(--font-ui);
   margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;

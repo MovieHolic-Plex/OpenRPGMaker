@@ -16,6 +16,7 @@
     "gates:css": "node scripts/check-css-budget.mjs && node scripts/check-css-graph.mjs && node scripts/check-css-live-classes.mjs",
     "gates:css:save": "node scripts/check-css-budget.mjs --save-baseline",
     "gates:css:live": "node scripts/check-css-live-classes.mjs",
+    "audit:db-css-ownership": "node scripts/audit-db-css-ownership.mjs",
     "gates:surface": "node scripts/check-surface-gates.mjs",
     "gates:surface:audit": "node scripts/audit-gate-mutations.mjs",
     "gates:dead-css": "node scripts/check-dead-css-classes.mjs",

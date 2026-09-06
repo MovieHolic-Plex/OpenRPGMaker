@@ -57,7 +57,7 @@
 
 .scratch-concept-crumb {
   flex: 1 1 100%;
-  font: 600 12px/1.4 ui-monospace, monospace;
+  font: 600 12px/1.4 var(--font-mono);
   color: var(--db-studio-text-3);
 }
 
@@ -200,7 +200,7 @@
 
 .scratch-concept-line {
   margin: 0;
-  font: 12px/1.45 ui-monospace, monospace;
+  font: 12px/1.45 var(--font-mono);
   color: var(--db-studio-text-2);
 }
 
@@ -212,7 +212,7 @@
 }
 
 .scratch-concept-chip {
-  font: 700 11px/1.6 ui-monospace, monospace;
+  font: 700 11px/1.6 var(--font-mono);
   padding: 0 8px;
   border-radius: 999px;
   border: 1px solid var(--db-studio-border-default);
@@ -239,7 +239,7 @@
 
 .scratch-concept-chip-custom-input,
 .scratch-concept-chip-add {
-  font: 700 11px/1.6 ui-monospace, monospace;
+  font: 700 11px/1.6 var(--font-mono);
   width: 8em;
   min-width: 0;
   border: 0;

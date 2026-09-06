@@ -143,7 +143,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-cx-starter-arrow {
   color: var(--db-studio-text-3, var(--db-studio-text-3));
-  font: 600 13px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 600 13px/1 var(--font-ui);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-cx-starter-text {
@@ -154,7 +154,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-cx-starter-name {
   color: var(--db-studio-text-1, var(--db-studio-text-1));
-  font: 600 12.5px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 600 12.5px/1.4 var(--font-ui);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -162,7 +162,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-cx-starter-meta {
   color: var(--db-studio-text-3, var(--db-studio-text-3));
-  font: 400 11px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 400 11px/1.4 var(--font-ui);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -173,7 +173,7 @@
   border: 1px solid var(--db-studio-accent-border, rgba(74, 87, 214, 0.16));
   border-radius: 999px;
   color: var(--db-studio-accent, var(--db-studio-accent));
-  font: 600 11.5px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 600 11.5px/1 var(--font-ui);
   padding: 6px 12px;
   white-space: nowrap;
 }
@@ -201,7 +201,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-cx-stage-chip small {
   color: var(--db-studio-text-2, var(--db-studio-text-2));
-  font: 500 10.5px/1.3 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 500 10.5px/1.3 var(--font-ui);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-cx-stage-grid {
@@ -225,7 +225,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-cx-stage-name {
   color: var(--db-studio-text-2, var(--db-studio-text-2));
-  font: 600 11.5px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 600 11.5px/1.4 var(--font-ui);
   padding-bottom: 6px;
   white-space: nowrap;
 }
@@ -235,11 +235,6 @@
   gap: 3px;
   margin: 0;
   min-width: 0;
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-cx-stage-row .db-field > span {
-  color: var(--db-studio-text-3, var(--db-studio-text-3));
-  font: 600 10px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-cx-stage-row :is(input, select) {
@@ -271,7 +266,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-cx-frame-btn small {
   color: var(--db-studio-text-3, var(--db-studio-text-3));
-  font: 600 11px/1.35 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 600 11px/1.35 var(--font-ui);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-cx-frame-btn:hover {
@@ -332,7 +327,7 @@
   border: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
   border-radius: 999px;
   color: var(--db-studio-text-2, var(--db-studio-text-2));
-  font: 600 11px/1.35 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 600 11px/1.35 var(--font-ui);
   padding: 1px 9px;
 }
 
@@ -350,7 +345,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-cx-status-id {
   color: var(--db-studio-text-3, var(--db-studio-text-3));
-  font: 500 11px/1.6 "Cascadia Mono", Consolas, monospace;
+  font: 500 11px/1.6 var(--font-mono);
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -386,7 +381,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-cx-gift-rank-title {
   color: var(--db-studio-text-2, var(--db-studio-text-2));
-  font: 700 11.5px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 700 11.5px/1.4 var(--font-ui);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-cx-gift-list {
@@ -409,7 +404,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-cx-gift-row > span {
   color: var(--db-studio-text-1, var(--db-studio-text-1));
-  font: 500 12px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 500 12px/1.5 var(--font-ui);
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -461,7 +456,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-cx-usage-name {
   color: var(--db-studio-text-1, var(--db-studio-text-1));
-  font: 500 12px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 500 12px/1.5 var(--font-ui);
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;

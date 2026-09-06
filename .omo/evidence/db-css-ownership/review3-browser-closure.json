@@ -1,0 +1,394 @@
+{
+  "productionCommit": "1aba4675",
+  "productionUnchanged": true,
+  "fullRun": {
+    "path": ".omo/evidence/db-css-ownership/review3-final-browser.json",
+    "stats": {
+      "startTime": "2026-09-06T10:32:15.861Z",
+      "duration": 2315527.811,
+      "expected": 39,
+      "skipped": 0,
+      "unexpected": 3,
+      "flaky": 0
+    },
+    "passed": 39,
+    "failed": [
+      "animation keyboard and resource dialog at 1024x900",
+      "animation keyboard and resource dialog at 1024x768",
+      "System fonts and runtime preview variants"
+    ]
+  },
+  "focusedRepairRun": {
+    "path": ".omo/evidence/db-css-ownership/review3-last-seams.json",
+    "stats": {
+      "startTime": "2026-09-06T11:16:04.603Z",
+      "duration": 169443.455,
+      "expected": 5,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "cases": [
+      {
+        "title": "animation keyboard and resource dialog at 1440x900",
+        "project": "firefox",
+        "status": "passed",
+        "retry": 0
+      },
+      {
+        "title": "animation keyboard and resource dialog at 1024x900",
+        "project": "firefox",
+        "status": "passed",
+        "retry": 0
+      },
+      {
+        "title": "animation keyboard and resource dialog at 1024x768",
+        "project": "firefox",
+        "status": "passed",
+        "retry": 0
+      },
+      {
+        "title": "System fonts and runtime preview variants",
+        "project": "firefox",
+        "status": "passed",
+        "retry": 0
+      },
+      {
+        "title": "CRUD confirmation and representative shared text contrast",
+        "project": "firefox",
+        "status": "passed",
+        "retry": 0
+      }
+    ]
+  },
+  "singleFullRunAfterHarnessRepairs": false,
+  "closureMethod": "Preserve all 39 full-run passes; replace the three failed cases with their zero-retry focused passing executions. The focused run also rechecks wide keyboard traversal and strengthened destructive-hover contrast. This is NOT represented as a single 42/42 Playwright run.",
+  "effectiveCases": [
+    {
+      "title": "animation ordinary scroll owns lower authoring at 1440",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "shared stepper is one 32px control at 1440",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "animation ordinary scroll owns lower authoring at 1024",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "shared stepper is one 32px control at 1024",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "equivalent shared roles and ordinary captions in actors",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "equivalent shared roles and ordinary captions in enemies",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "equivalent shared roles and ordinary captions in lifeCrafting",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "required 32-primary destination matrix at 1440",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "required 32-primary destination matrix at 1024",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "numeric and native control states preserve input and change semantics",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "animation first lower panels and playback at 1440x900",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "animation after-battle lower panels and playback at 1440x900",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "animation return lower panels and playback at 1440x900",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "animation reopen lower panels and playback at 1440x900",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "animation keyboard and resource dialog at 1440x900",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-last-seams.json"
+    },
+    {
+      "title": "animation first lower panels and playback at 1024x900",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "animation after-battle lower panels and playback at 1024x900",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "animation return lower panels and playback at 1024x900",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "animation reopen lower panels and playback at 1024x900",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "animation keyboard and resource dialog at 1024x900",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-last-seams.json"
+    },
+    {
+      "title": "animation first lower panels and playback at 1024x768",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "animation after-battle lower panels and playback at 1024x768",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "animation return lower panels and playback at 1024x768",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "animation reopen lower panels and playback at 1024x768",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "animation keyboard and resource dialog at 1024x768",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-last-seams.json"
+    },
+    {
+      "title": "equipment filtering, selection and gallery",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "actor and enemy navigation and portrait failure variant",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "virtualized linked selection reveal in list",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "virtualized linked selection reveal in gallery",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "System fonts and runtime preview variants",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-last-seams.json"
+    },
+    {
+      "title": "world document control and typography variants",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "distinctive child routes and tileset geometry at 1440",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "distinctive child routes and tileset geometry at 1024",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "rendered contracts reject reintroduced animation and stepper ownership conflicts",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "shared action hover and disabled native states",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "CRUD confirmation and representative shared text contrast",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-last-seams.json"
+    },
+    {
+      "title": "real classes main-form lower control wheel access at 1440",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "real troops main-form lower control wheel access at 1440",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "narrow captions and intrinsic Battle Commands card action at 1440",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "real classes main-form lower control wheel access at 1024",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "real troops main-form lower control wheel access at 1024",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    },
+    {
+      "title": "narrow captions and intrinsic Battle Commands card action at 1024",
+      "project": "firefox",
+      "status": "passed",
+      "retry": 0,
+      "evidence": ".omo/evidence/db-css-ownership/review3-final-browser.json"
+    }
+  ],
+  "matrix": {
+    "path": ".omo/evidence/db-css-ownership/review3-primary-matrix.json",
+    "cases": 64,
+    "destinations": 32,
+    "widths": [
+      1440,
+      1024
+    ],
+    "sourceDiffSha256": "b0675da817ba986557efe1cbeaa4d23be5ec0f65a4fb0c072432a7f2d6434293",
+    "harnessSha256": "c23fd29897d5a7c20dbe2e8e910ae66cfdc554349d7afaa296a966311f442c62"
+  },
+  "finalHarnessSha256": "c553644ccdc1a0925f1085cf0d9110843337ee6c907adc5697af09ded54bb0e7",
+  "destructiveContrast": {
+    "testid": "db-delete-selected",
+    "class": "btn danger small",
+    "hovered": true,
+    "text": "삭제",
+    "html": "<button class=\"btn danger small\" aria-label=\"선택한 장비 삭제\" data-testid=\"db-delete-selected\">삭제</button>",
+    "foreground": [
+      185,
+      28,
+      28,
+      255
+    ],
+    "background": [
+      235,
+      223,
+      226,
+      255
+    ],
+    "ratio": 4.986771986444722
+  }
+}
