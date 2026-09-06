@@ -2612,7 +2612,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         applyCollapsed();
       }
       panel.classList.add("is-studio");
-      panel.setAttribute("style", ""); // 커스텀 크기 대신 전체 폭.
+      applySize(); // 크기만 해제하고 배경 농도·글자 크기 설정은 유지한다.
       // 로그 슬롯은 기록 마운트. is-history-open 은 다른 오버레이라 붙이지 않는다.
       historyOpen = true;
       panel.classList.remove("is-docked");
