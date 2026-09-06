@@ -24,7 +24,9 @@
 `skillTrees`는 스킬 레코드를 참조하는 노드와 양수 능력치 패시브 노드를 갖는다.
 스킬 위력·연출은 기존 스킬 레코드의 소유다. 스킬 노드는 1등급, 패시브는 1~99등급이다.
 선행 노드는 **모두** 1등급 이상이어야 한다. 빈 `classIds`는 공용 트리이며,
-여러 직업을 지정하면 현재 직업이 그 목록에 있을 때만 효과가 활성화된다.
+여러 직업을 지정하면 기본적으로 현재 직업이 그 목록에 있을 때만 효과가 활성화된다.
+`inheritOnPromotion: true`인 트리는 실제 승급 경로의 직업과 교차하면 계승된다.
+이 필드가 없거나 false인 기존 트리는 현재 직업 전용 동작을 유지한다.
 
 ## 성장 트리 그림 (Phase 1, 2026-09-05)
 
@@ -94,8 +96,79 @@ Phase 1 증거 위치: `output/evidence/growth-presets/p1`.
 스킬·직업·보너스 변수 삭제는 트리 참조를 먼저 해제하도록 기존 삭제 가드에 연결돼 있다.
 이미 연결된 승급 경로를 다시 연결해도 기존 승급 조건을 보존한다.
 
+## 통합 성장 런타임 (2026-09-06)
+
+승급과 임의 전직은 다르다. `promoteActor`는 현재 직업의 `promotions`만 평가하며,
+목적지 생략 시 첫 번째 조건 충족 간선을 선택한다. `changeActorClass`는 조건 없는
+이벤트 전직이다. 저작 간선이 있어도 암묵적 승급으로 바뀌지 않는다.
+
+`PlaySession.promotionLineage?: Record<ActorId, ClassId[]>`는 현재 **실제 승급 경로**의
+중복 없는 집합이다. 승급은 출발·도착 직업을 더하고, 다른 직업으로 임의 전직하면
+도착 직업만 남긴다. 같은 직업 전직은 경로와 투자를 유지한다. 고급 직업 시작·옛 세이브는
+현재 직업만 인정하며 조상 직업을 만들지 않는다. 삭제된 override는 원래 직업/주인공 곡선으로
+일관되게 돌아가고 무관한 경로를 활성화하지 않는다. 저작 간선 수정은 획득 경로를 바꾸지 않는다.
+기존 승급 순환은 계속 읽지만 스튜디오의 새 순환 연결은 막는다.
+
+`SkillTree.inheritOnPromotion`은 새 수동 트리에서 true다. 계승 트리는 효과와 투자가 계속
+활성화되지만 직업 곡선·명령·장비 옵션은 현재 직업만 제공한다. 유효한 명시적 override 전에는
+주인공 곡선을, 이후에는 목적지 직업 곡선을 쓴다. 전직 전에 현재 레벨까지의 주인공·직업 스킬을
+영구 목록으로 보존하고 목적지 스킬을 더한다. 이전 직업의 미래 스킬은 자동 습득하지 않는다.
+트리 스킬/패시브는 계속 파생 효과이며 영구 스킬/보너스 원장에 넣지 않는다.
+
+`NodeRankRequirement { treeId, nodeId, rank }`는 트리로 한정된 노드 식별자다.
+`SkillTreeNode.requiredNodes`와 기존 `prerequisites`(같은 트리, 1등급)는 모두 AND다.
+승급의 `requires`는 기존 조건에 `requiredSkillIds`, `requiredNodes`,
+`requiredTreePoints: { treeId, points }[]`를 AND한다. 스킬 소유는 영구/현재 자동 습득/활성 트리의
+중복 없는 합집합이며 MP·상태·사용 장소와 무관하다. 등급은 비활성 투자도 인정하되 현재
+`maxRank`로 제한한다. 포인트는 아직 저작된 노드의 과거 `spent` 합계이며 현재 가격으로
+재계산하지 않는다. 새 조건은 소비하지 않고 기존 필요 아이템만 1개 소비한다.
+
+초기화는 다른 트리의 투자된 노드가 해당 트리를 선행 조건으로 사용하면 차단하고 의존 노드를
+표시한다. 의존 트리를 먼저 초기화해야 한다. 승급 조건은 입장 조건이므로 초기화로 강등하지 않는다.
+투자/초기화 메뉴는 `refreshGrowthVitals`를 호출한다. 승급/전직도 최대치만 갱신하고 현재
+HP/MP는 하향 제한만 하며 회복하지 않는다. 기존 레벨업 회복 정책은 별도다.
+메뉴 장비 미리보기와 필드 액션 능력치는 전투의 `actorDerivedStats`를 공유한다.
+
+전투는 경로·투자·영구 스킬을 시드/스냅숏으로 보존한다. `battleRewardsToSession`은 종료 상태를
+권위자로 복사하며 임의 전직을 재실행하지 않는다. 한 전투에서 여러 번 승급하거나 순환해서
+최종 직업 ID가 같아도 경로·중간 습득 스킬을 옮긴다. 스킬 잊기 이벤트는 영구 사본만 제거하고
+활성 트리의 독립 부여는 유지한다. 세이브 파서는 present-but-malformed 경로/투자 필드를
+손실 없이 거부한다. 예전 세이브에서 선택 필드가 없는 것은 유효하다.
+
+정규화는 새 승급 필드를 복사하기 **전에** 형태를 검사한다. `growthIssues`는 스킬·트리·노드
+참조, 최대 등급과 qualified identity를 사용하는 전체 선행 그래프 순환을 검사한다.
+`skillTreeDeletionBlocker`는 외부 노드/승급 조건의 참조를 보호한다. 같은 트리 내부 참조는
+노드 삭제 시 해제되며, 복제에서는 자기 트리 ID만 새 ID로 매핑하고 외부 참조는 유지한다.
+
+### 다음 UI 증분이 사용하는 API
+
+- 타입: `project/growth/types.ts`의 `NodeRankRequirement`, `PromotionLineage`와 위 선택 필드.
+- `project/growth/lineage.ts`: `effectiveActorClassId`, `validActorClassOverride`, `effectivePromotionLineage`.
+  기존 `sessionClass.effectiveActorClassId` 재수출은 유지한다.
+- `promotionRequirementsMet(session, actorId, requires, project?)`와
+  `promotionRequirementBlocker(session, actorId, requires, project?)`: 새 조건 평가 시 project 필수.
+  기존 3인자 호출은 기존 조건만 지원하며 새 조건이 있으면 fail-closed다.
+- `growth/runtime.ts`: 기존 투자/초기화 API와 `actorOwnedSkillIds`, `permanentActorSkillIds`,
+  `retainedNodeRank`, `treeSpentPoints`, `nodeRequirementsBlocker`, `skillTreeResetBlocker`.
+- `growthTree/actions.ts`: `setSkillNodeRequirements(project, treeId, nodeId, requirements)`,
+  `skillTreeDeletionBlocker(project, treeId, nodeId?)`, `deleteSkillTree(project, treeId)`,
+  `duplicateSkillTree(tree, newId)`. `connectSkillNodes`/`deleteSkillNode`의 마지막 선택 project 인자는
+  외부 참조/순환 검사에 필요하며 실제 스튜디오는 전달한다.
+- `renderGrowthTreeTab(host, mode, onNavigateToSkills?)`: 직업 인스펙터의 연결 트리 열기는 목적지
+  선택을 보존한 뒤 Database 탭 이동 콜백을 사용한다. 양쪽 스튜디오는 동일 런타임으로 승급을
+  시뮬레이션하며 임의 직업 선택기는 실제 `changeActorClass` 의미를 사용한다.
+
+기존 native control/section으로 계승 설정, 스킬·등급·투자 포인트 조건과 qualified 선행
+트리/노드/등급을 편집한다. 실패는 런타임 blocker를 표시하고 저작 쓰기/undo를 만들지 않는다.
+연결 프리셋(계약 11–14), 기본 표시 프리셋 그래프와 브라우저 개편은 이 런타임 증분의 범위 밖이다.
+
 ## 검증
 
+- `test/growthIntegrated.test.ts`, `test/growthIntegratedBoundaries.test.ts`: 다이아몬드 실제 경로,
+  고급 시작/옛 저장, 모든 새 gate 경계, 비활성 등급/실제 지불액, 순환/참조/형태 거부,
+  전투 연속 승급 write-back, 메뉴 능력치, 원격 DB와 무관한 실제 세이브 슬롯 왕복.
+- `test/growthIntegratedStudio.test.ts`: native 입력→저작/undo, 실제 승급/전직 시뮬레이션,
+  외부 참조 삭제 차단과 자기 참조 복제. 전체 gates/build와 실제 브라우저 표면 검증은 lead 소유다.
 - `test/growthTrees.test.ts`: 기존 v4 무변경 로드, 프로젝트/세이브 왕복, 잘못된 참조,
   순환, 등급/레벨/포인트/선행 조건, 다른 직업 비활성화, 실제 전투 스탯과 스킬, 독립 습득 보존.
 - `node scripts/qa/growth-tree-studio.mjs`: 실제 편집기 CRUD·연결·순환 거부·드래그·

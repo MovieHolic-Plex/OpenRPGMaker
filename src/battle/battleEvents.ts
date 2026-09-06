@@ -1,3 +1,4 @@
+import { growthEffects, permanentActorSkillIds } from '@/project/growth/runtime';
 import { executeM2BattleCommand as executeM2Command } from "@/battle/battleM2CommandExecutor";
 import type { MutableBattler } from "@/battle/battleBattlers";
 import type { BattleEventLogSnapshot, BattleEventStateSnapshot } from "@/battle/types";
@@ -38,8 +39,10 @@ export type BattleEventRuntimeState = {
   // 전투 종료 시 applyBattleRewardsToSession 이 세션 actorEquipment 로 write-back.
   actorEquipment?: Record<string, ActorInitialEquipment>;
   // 런타임 직업 오버라이드 사본(actorId → classId). promoteActor 가 여기 기록하고
-  // 전투 종료 시 세션 classOverrides 로 write-back(맵 changeActorClass 와 동일 의미).
+  // 전투 종료 시 경로·영구 스킬과 함께 권위 상태로 write-back.
   classOverrides?: Record<string, string>;
+  promotionLineage?: import('@/project/growth/types').PromotionLineage;
+  growthProgress?: import('@/project/growth/types').GrowthProgress;
   readonly gameTime?: GameTime;
   readonly npcActivities?: Record<string, string>;
   readonly friendship?: Record<string, number>;
@@ -204,7 +207,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       itemUseCharges: { ...(options.state.itemUseCharges ?? {}) },
       gold: options.state.gold ?? 0,
       partyActorIds: [...(options.state.partyActorIds ?? [])],
-      actorSkillIds: { ...(options.state.actorSkillIds ?? {}) },
+      actorSkillIds: structuredClone(options.state.actorSkillIds ?? {}),
       actorExperience: { ...(options.state.actorExperience ?? {}) },
       actorLevels: { ...(options.state.actorLevels ?? {}) },
       actorBattleCommands: { ...(options.state.actorBattleCommands ?? {}) },
@@ -215,6 +218,8 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         Object.entries(options.state.actorEquipment ?? {}).map(([actorId, equipment]) => [actorId, { ...equipment }])
       ),
       classOverrides: { ...(options.state.classOverrides ?? {}) },
+      promotionLineage: structuredClone(options.state.promotionLineage),
+      growthProgress: structuredClone(options.state.growthProgress),
     };
   }
 
@@ -424,6 +429,8 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
     }
     const view: ClassOverrideSession = {
       classOverrides: state.classOverrides,
+      promotionLineage: state.promotionLineage,
+      growthProgress: state.growthProgress,
       actorLevels: state.actorLevels,
       actorSkillIds: state.actorSkillIds,
       actorVitals: {},
@@ -434,6 +441,8 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
     };
     const result = promoteActorClass(view, options.project, command.actorId, command.toClassId || undefined);
     // promoteActor 는 아이템 소모 시 inventory/itemUseCharges 참조를 교체한다 — state 로 되받는다.
+    state.promotionLineage = view.promotionLineage;
+    state.actorSkillIds = view.actorSkillIds;
     state.inventory = view.inventory;
     state.itemUseCharges = view.itemUseCharges;
     // 맵 인터프리터와 동일한 성공 플래그(session.flags.promoteActorSuccess 대응, write-back 포함).
@@ -574,11 +583,11 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         const targets = resolveActorTargets(command.actorId);
         for (const actor of targets) {
           const id = actor.recordId;
-          const known = new Set(options.state.actorSkillIds[id] ?? actor.skillIds);
+          const known = new Set(permanentActorSkillIds(options.project, options.state, id));
           if (action === "forget") {
             known.delete(command.skillId);
             options.state.actorSkillIds[id] = [...known];
-            actor.skillIds = actor.skillIds.filter((skillId) => skillId !== command.skillId);
+            actor.skillIds = [...new Set([...actor.skillIds.filter((skillId) => skillId !== command.skillId), ...growthEffects(options.project, options.state, id).skillIds])];
             continue;
           }
           known.add(command.skillId);

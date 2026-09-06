@@ -819,7 +819,10 @@ function renderActiveTab(
   }
   switch (tab) {
     case "promotionTree":
-      renderGrowthTreeTab(body, "promotion");
+      renderGrowthTreeTab(body, "promotion", () => {
+        evictDatabaseTabView(tabRenderCacheFor(container), 'skillTrees');
+        switchDatabaseActiveTab('skillTrees', container);
+      });
       break;
     case "skillTrees":
       renderGrowthTreeTab(body, "skill");

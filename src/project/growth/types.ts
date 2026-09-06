@@ -1,5 +1,7 @@
 import type { ActorParameterKey } from '@/project/types';
 
+export interface NodeRankRequirement { treeId: string; nodeId: string; rank: number }
+export type PromotionLineage = Record<string, string[]>;
 export interface TreePosition { x: number; y: number }
 export interface SkillTreeNode extends TreePosition {
   id: string;
@@ -9,6 +11,7 @@ export interface SkillTreeNode extends TreePosition {
   maxRank: number;
   level: number;
   prerequisites: string[];
+  requiredNodes?: NodeRankRequirement[];
   effect: { kind: 'skill'; skillId: string } | { kind: 'parameter'; parameter: ActorParameterKey; amount: number };
 }
 export interface SkillTree {
@@ -17,6 +20,7 @@ export interface SkillTree {
   description: string;
   /** Empty = shared by every class. */
   classIds: string[];
+  inheritOnPromotion?: boolean;
   allowReset: boolean;
   nodes: SkillTreeNode[];
 }

@@ -1,3 +1,4 @@
+import { effectiveActorClassId } from '@/project/sessionClass';
 import { activeItemEffects, itemAllowsBattle } from "@/project/itemUsage";
 // SIZE_OK: Battle runtime keeps turn state, troop-event callbacks, and snapshot
 // assembly together so battle-event regressions can verify one state machine.
@@ -173,14 +174,17 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     } catch { return 1; }
   })();
 
+  // Runtime-only growth fields are optional on the authored ProjectSession fallback.
+  const rawSessionState = options.sessionState ?? startStateOf(options.project);
+  const sessionState = rawSessionState as BattleSessionState;
   const actorEquipment = new Map(
     options.project.database.actors.map((actor) => [
       actor.id,
       effectiveActorEquipment(
         options.project,
         actor,
-        options.party?.equipment?.[actor.id],
-        options.party?.classOverrides?.[actor.id] ?? actor.classId
+        sessionState.actorEquipment?.[actor.id] ?? options.party?.equipment?.[actor.id],
+        effectiveActorClassId(options.project, {classOverrides:sessionState.classOverrides ?? options.party?.classOverrides}, actor.id)
       ),
     ])
   );
@@ -194,14 +198,15 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     : actorBattlers(options.project, {
         names: options.party?.names,
         faceResourceIds: options.party?.faceResourceIds,
-        levels: options.party?.levels,
+        levels: sessionState.actorLevels ?? options.party?.levels,
         vitals: options.party?.vitals,
         paramBonuses: options.party?.paramBonuses,
         equipment: Object.fromEntries(actorEquipment),
-        skillIds: options.party?.skillIds,
+        skillIds: sessionState.actorSkillIds ?? options.party?.skillIds,
         skillPp: options.party?.skillPp,
-        classOverrides: options.party?.classOverrides,
-        growthProgress: options.party?.growthProgress,
+        classOverrides: sessionState.classOverrides ?? options.party?.classOverrides,
+        growthProgress: sessionState.growthProgress ?? options.party?.growthProgress,
+        promotionLineage: sessionState.promotionLineage ?? options.party?.promotionLineage,
         stateIds: options.party?.stateIds,
         partyActorIds: options.party?.partyActorIds,
       });
@@ -287,11 +292,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     levelUps: BattleLevelUpResult[];
     monsterLevelUps: MonsterLevelUpPreview[];
   } = { exp: 0, gold: 0, items: [], levelUps: [], monsterLevelUps: [] };
-  // 플레이 중에는 현재 세션 상태를 기준으로 한다(에디터 시작 상태가 아니라).
-  // sessionState 는 BattleSessionState(런타임) 또는 ProjectSession(에디터 시작 상태).
-  // ProjectSession 에는 actorSkillIds 등 런타임 전용 필드가 없으므로 BattleSessionState 로 좁혀 읽는다.
-  const rawSessionState = options.sessionState ?? startStateOf(options.project);
-  const sessionState = rawSessionState as BattleSessionState;
+  // Mutable battle authority is detached from the live session seed.
   const battleEventState: BattleEventRuntimeState = {
     switches: { ...sessionState.switches },
     variables: { ...sessionState.variables },
@@ -329,6 +330,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       Object.entries(sessionState.actorEquipment ?? options.party?.equipment ?? {}).map(([actorId, equipment]) => [actorId, { ...equipment }])
     ),
     classOverrides: { ...(sessionState.classOverrides ?? options.party?.classOverrides ?? {}) },
+    promotionLineage: structuredClone(sessionState.promotionLineage ?? options.party?.promotionLineage),
+    growthProgress: structuredClone(sessionState.growthProgress ?? options.party?.growthProgress),
     gameTime: "gameTime" in sessionState ? sessionState.gameTime : undefined,
     npcActivities: "npcActivities" in sessionState ? { ...(sessionState.npcActivities ?? {}) } : undefined,
     friendship: "friendship" in sessionState ? { ...(sessionState.friendship ?? {}) } : undefined,
@@ -391,7 +394,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     refreshActorDerivedStats: (battler, refreshOptions) => {
       refreshActorBattlerDerivedStats(options.project, battler, {
         classOverrides: battleEventState.classOverrides,
-        growthProgress: options.party?.growthProgress,
+        growthProgress: battleEventState.growthProgress,
+        promotionLineage: battleEventState.promotionLineage,
         paramBonuses: options.party?.paramBonuses?.[battler.recordId],
         equipment: battleEventState.actorEquipment?.[battler.recordId],
         skills: refreshOptions?.refreshSkills

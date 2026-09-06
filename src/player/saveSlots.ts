@@ -1,5 +1,6 @@
 import { hasEquipmentSlot } from "@/project/equipmentSlots";
 import { isHorrorState } from "@/project/horrorState";
+import { isPromotionLineage } from '@/project/growth/requirements';
 import { isGrowthProgress } from "@/project/growth/validation";
 import { SCHEMA_VERSION, type ActorInitialEquipment, type CharacterFootprint, type Project } from "@/project/types";
 import { normalizeRelationships } from "@/project/relationshipState";
@@ -217,6 +218,7 @@ export type SaveSnapshot = {
     readonly actorFaceResourceIds?: PlaySession["actorFaceResourceIds"];
     readonly actorCharacterResourceIds?: Record<string, string>;
     readonly growthProgress?: PlaySession["growthProgress"];
+    readonly promotionLineage?: PlaySession["promotionLineage"];
     readonly classOverrides?: Record<string, string>;
     readonly actorParamBonuses?: PlaySession["actorParamBonuses"];
     readonly actorStateIds?: PlaySession["actorStateIds"];
@@ -397,6 +399,7 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       actorFaceResourceIds: structuredClone(session.actorFaceResourceIds),
       actorCharacterResourceIds: structuredClone(session.actorCharacterResourceIds),
       growthProgress: structuredClone(session.growthProgress),
+      promotionLineage: structuredClone(session.promotionLineage),
       classOverrides: structuredClone(session.classOverrides),
       actorParamBonuses: structuredClone(session.actorParamBonuses),
       actorStateIds: structuredClone(session.actorStateIds),
@@ -620,6 +623,7 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.actorFaceResourceIds) session.actorFaceResourceIds = structuredClone(snapshot.session.actorFaceResourceIds);
   if (snapshot.session.actorCharacterResourceIds) session.actorCharacterResourceIds = structuredClone(snapshot.session.actorCharacterResourceIds);
   if (snapshot.session.growthProgress) session.growthProgress = structuredClone(snapshot.session.growthProgress);
+  if (snapshot.session.promotionLineage) session.promotionLineage = structuredClone(snapshot.session.promotionLineage);
   if (snapshot.session.classOverrides) session.classOverrides = structuredClone(snapshot.session.classOverrides);
   if (snapshot.session.actorParamBonuses) session.actorParamBonuses = structuredClone(snapshot.session.actorParamBonuses);
   if (snapshot.session.actorStateIds) session.actorStateIds = structuredClone(snapshot.session.actorStateIds);
@@ -821,6 +825,8 @@ type ParsedSessionResult =
   | { readonly ok: false; readonly message: string };
 
 function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResult {
+  if (session.growthProgress !== undefined && !isGrowthProgress(session.growthProgress)) return { ok: false, message: 'Invalid growth progress' };
+  if (session.promotionLineage !== undefined && !isPromotionLineage(session.promotionLineage)) return { ok: false, message: 'Invalid promotion lineage' };
   if (session.actorEquipment !== undefined && !isActorEquipmentRecord(session.actorEquipment)) {
     return { ok: false, message: "Invalid actor equipment" };
   }
@@ -951,6 +957,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       actorFaceResourceIds: parseActorFaceResourceIds(session),
       actorCharacterResourceIds: isStringRecord(session.actorCharacterResourceIds) ? session.actorCharacterResourceIds : undefined,
       growthProgress: isGrowthProgress(session.growthProgress) ? session.growthProgress : undefined,
+      promotionLineage: isPromotionLineage(session.promotionLineage) ? session.promotionLineage : undefined,
       classOverrides: isStringRecord(session.classOverrides) ? session.classOverrides : undefined,
       actorParamBonuses: isActorParamBonusRecord(session.actorParamBonuses) ? session.actorParamBonuses : undefined,
       actorStateIds: isActorStateIdsRecord(session.actorStateIds) ? session.actorStateIds : undefined,

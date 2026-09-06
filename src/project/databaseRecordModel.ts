@@ -1,3 +1,4 @@
+import { assertPromotionExtensions } from '@/project/growth/requirements';
 import {
   ACTOR_LEVEL_MAX,
   ACTOR_RATE_GRADES,
@@ -603,8 +604,12 @@ function normalizePromotions(promotions: readonly Partial<ClassPromotion>[] | un
 }
 
 function normalizePromotionRequirement(requires: Partial<ClassPromotionRequirement> | undefined): ClassPromotionRequirement {
+  assertPromotionExtensions(requires);
   const variableId = cleanOptionalId(requires?.variableId);
   return {
+    ...(requires?.requiredSkillIds !== undefined ? { requiredSkillIds: [...requires.requiredSkillIds] } : {}),
+    ...(requires?.requiredNodes !== undefined ? { requiredNodes: structuredClone(requires.requiredNodes) } : {}),
+    ...(requires?.requiredTreePoints !== undefined ? { requiredTreePoints: structuredClone(requires.requiredTreePoints) } : {}),
     level: typeof requires?.level === "number" ? clampInteger(requires.level, 1, ACTOR_LEVEL_MAX) : undefined,
     switchId: cleanOptionalId(requires?.switchId),
     itemId: cleanOptionalId(requires?.itemId),

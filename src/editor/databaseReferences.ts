@@ -51,6 +51,10 @@ export function databaseReferenceMessage(collection: DatabaseCollection, id: str
   const project = store.getCurrent();
   const tree = project.growth?.skillTrees.find(t => collection === "classes" ? t.classIds.includes(id) : collection === "skills" && t.nodes.some(n => n.effect.kind === "skill" && n.effect.skillId === id));
   if (tree) return `스킬 트리 '${tree.name}'에서 사용 중입니다. 먼저 연결을 해제하세요.`;
+  if (collection === 'skills') {
+    const owner = project.database.classes.find(c => c.promotions?.some(p => p.requires.requiredSkillIds?.includes(id)));
+    if (owner) return `직업 '${owner.name}'의 승급 조건에서 사용 중입니다. 먼저 연결을 해제하세요.`;
+  }
   switch (collection) {
     case "skills": {
       const actors = project.database.actors.filter((record) => record.learnedSkills.some((skill) => skill.skillId === id));

@@ -1,3 +1,5 @@
+import { changeActorClass, effectiveActorClassId, promoteActor, promotionRequirementBlocker, type ClassOverrideSession } from '@/project/sessionClass';
+import { nodeRequirementControls, promotionRequirementControls } from './requirementControls';
 import { store } from '@/project/store';
 import { classGrowthArt, nodeGrowthArt, treeGrowthArt } from '@/assets/growthTreeArt';
 import { resolveAssetResourceUrl } from '@/assets/generatedAssetResourceResolver';
@@ -7,19 +9,20 @@ import type { Project, ClassPromotionRequirement } from '@/project/types';
 import { emptyGrowth, GROWTH_PARAMETERS, GROWTH_PARAMETER_LABELS, type SkillTree, type SkillTreeNode } from '@/project/growth/types';
 import { arrangeTree, promotionEdges, wouldCreateCycle } from '@/project/growth/graph';
 import { growthIssues } from '@/project/growth/validation';
-import { growthPoints, investSkillNode, nodeRank, resetSkillTree, skillNodeBlocker, type GrowthSession } from '@/project/growth/runtime';
+import { growthPoints, investSkillNode, nodeRank, resetSkillTree, skillNodeBlocker } from '@/project/growth/runtime';
 import { genId } from '@/util/id';
 import { el } from '@/util/dom';
 import { button, checkInput, note, numberInput, section, selectInput, textInput } from './controls';
-import { connectPromotion, connectSkillNodes, deleteSkillNode, editGrowth, editNode, editTree, moveClass } from './actions';
+import { connectPromotion, connectSkillNodes, deleteSkillNode, deleteSkillTree, duplicateSkillTree, skillTreeDeletionBlocker, setSkillNodeRequirements, editGrowth, editNode, editTree, moveClass } from './actions';
 import { renderGrowthCanvas, type GraphNode } from './canvas';
 import '@/styles/database/growth-tree.css';
 
 type Mode = 'promotion' | 'skill';
-interface StudioState { treeId?: string; selected?: string; connecting?: string; zoom: number; search: string; preview: boolean; previewActor?: string; previewLevel: number; simulation: GrowthSession; message?: string; canvasX?: number; canvasY?: number }
+interface StudioState { treeId?: string; selected?: string; connecting?: string; zoom: number; search: string; preview: boolean; previewActor?: string; previewLevel: number; simulation: ClassOverrideSession; message?: string; canvasX?: number; canvasY?: number }
 const states = new WeakMap<HTMLElement, Record<Mode, StudioState>>();
-export function renderGrowthTreeTab(host: HTMLElement, mode: Mode): void {
-  const init = (): StudioState => ({ zoom: .8, search: '', preview: false, previewLevel: 10, simulation: { variables: {}, actorLevels: {}, growthProgress: {} } });
+export function renderGrowthTreeTab(host: HTMLElement, mode: Mode, onNavigateToSkills?: () => void): void {
+  const simulation: ClassOverrideSession = { variables: {}, switches: {}, inventory: {}, actorVitals: {}, actorLevels: {}, growthProgress: {} };
+  const init = (): StudioState => ({ zoom: .8, search: '', preview: false, previewLevel: 10, simulation });
   let both = states.get(host);
   if (!both) { both = { promotion: init(), skill: init() }; states.set(host, both); }
   const state = both[mode];
@@ -36,12 +39,12 @@ export function renderGrowthTreeTab(host: HTMLElement, mode: Mode): void {
       const p = structuredClone(store.getCurrent());
       const from = state.connecting;
       const tree = p.growth?.skillTrees.find(t => t.id === state.treeId);
-      const error = mode === 'promotion' ? connectPromotion(p, from, id) : tree ? connectSkillNodes(tree, from, id) : '트리를 선택하세요.';
+      const error = mode === 'promotion' ? connectPromotion(p, from, id) : tree ? connectSkillNodes(tree, from, id, p) : '트리를 선택하세요.';
       if (error) return message(error);
       state.connecting = undefined;
       commit('성장 트리 연결', actual => {
         if (mode === 'promotion') connectPromotion(actual, from, id);
-        else editTree(actual, state.treeId!, t => { connectSkillNodes(t, from, id); });
+        else editTree(actual, state.treeId!, t => { connectSkillNodes(t, from, id, actual); });
       });
       return;
     }
@@ -98,9 +101,9 @@ export function renderGrowthTreeTab(host: HTMLElement, mode: Mode): void {
     const tools: HTMLElement[] = [];
     if (mode === 'skill') {
       tools.push(button('+ 스킬 노드', 'growth-add-skill', () => addNode('skill'), true), button('+ 패시브 노드', 'growth-add-parameter', () => addNode('parameter')));
-      tools.push(button(state.preview ? '편집으로 돌아가기' : '성장 미리보기', 'growth-preview-toggle', () => { state.preview = !state.preview; state.connecting = undefined; draw(); }));
       for (const tool of tools.slice(0, 2)) (tool as HTMLButtonElement).disabled = !tree || state.preview;
     }
+    tools.push(button(state.preview ? '편집으로 돌아가기' : '성장 미리보기', 'growth-preview-toggle', () => { state.preview = !state.preview; state.connecting = undefined; draw(); }));
     const connect = button(state.connecting ? '연결 취소' : '선택 노드에서 연결', 'growth-connect', () => { state.connecting = state.connecting ? undefined : state.selected; draw(); });
     connect.disabled = !state.selected || state.preview; tools.push(connect);
     const toolbar = el('div', { class: 'growth-toolbar', children: [el('span', { class: 'growth-toolbar-title', text: mode === 'promotion' ? '직업 계보' : tree?.name ?? '새 트리를 만들어 시작하세요' }), ...tools] });
@@ -109,8 +112,8 @@ export function renderGrowthTreeTab(host: HTMLElement, mode: Mode): void {
       onMove: (id, pos) => { if (!state.preview) commit('성장 노드 이동', actual => { if (mode === 'promotion') moveClass(actual, id, pos); else editNode(actual, state.treeId!, id, n => Object.assign(n, pos)); }); },
       onArrange: () => { if (!state.preview) commit('성장 트리 자동 배치', actual => { if (mode === 'promotion') { actual.growth ??= emptyGrowth(); actual.growth.classPositions = auto; } else editTree(actual, state.treeId!, t => t.nodes.forEach(n => Object.assign(n, auto[n.id]))); }); },
     });
-    const inspector = el('aside', { class: 'growth-inspector', attrs: { 'aria-label': '선택 항목 설정' }, children: mode === 'promotion' ? promotionInspector(p) : state.preview ? previewInspector(p, tree) : skillInspector(p, tree) });
-    const issues = growthIssues(p).filter(issue => mode === 'skill' && (!tree || issue.startsWith(tree.name) || issue.startsWith('성장')));
+    const inspector = el('aside', { class: 'growth-inspector', attrs: { 'aria-label': '선택 항목 설정' }, children: state.preview ? previewInspector(p, tree) : mode === 'promotion' ? promotionInspector(p) : skillInspector(p, tree) });
+    const issues = growthIssues(p);
     root.replaceChildren(header, el('div', { class: 'growth-body', children: [catalog(p, tree), el('main', { class: 'growth-workspace', children: [toolbar, canvas,
       el('div', { class: `growth-status${state.message || issues.length ? ' has-issue' : ''}`, attrs: { role: 'status' }, dataset: { testid: 'growth-status' }, text: state.message ?? (state.connecting ? '도착 노드를 선택하세요. 선행 조건으로 연결됩니다.' : issues[0] ?? '노드를 끌어 배치 · Alt + 방향키로 미세 이동 · Ctrl + 휠로 확대') }),
     ] }), inspector] }));
@@ -122,7 +125,7 @@ export function renderGrowthTreeTab(host: HTMLElement, mode: Mode): void {
   };
   const addTree = (): void => {
     const id = genId('skill-tree'); state.treeId = id; state.selected = undefined; state.preview = false;
-    commit('스킬 트리 추가', p => { p.growth ??= emptyGrowth(); p.growth.skillTrees.push({ id, name: '새 스킬 트리', description: '', classIds: [], allowReset: true, nodes: [] }); });
+    commit('스킬 트리 추가', p => { p.growth ??= emptyGrowth(); p.growth.skillTrees.push({ id, name: '새 스킬 트리', description: '', classIds: [], inheritOnPromotion: true, allowReset: true, nodes: [] }); });
   };
   const addNode = (kind: 'skill' | 'parameter'): void => {
     const p = store.getCurrent(), tree = p.growth?.skillTrees.find(t => t.id === state.treeId);
@@ -155,7 +158,12 @@ export function renderGrowthTreeTab(host: HTMLElement, mode: Mode): void {
     if (!c) return [note('데이터베이스에서 직업을 추가하세요.')];
     const outgoing = c.promotions ?? [];
     return [inspectorTitle('선택한 직업', c.name, classGrowthArt(p, c)), section('이 직업의 스킬 트리', [
-      ...((p.growth?.skillTrees ?? []).filter(t => t.classIds.includes(c.id) || !t.classIds.length).map(t => note(`${t.name} · ${t.classIds.length ? '직업 전용' : '공용'}`))),
+      ...((p.growth?.skillTrees ?? []).filter(t => t.classIds.includes(c.id) || !t.classIds.length).map(t => button(`${t.name} · ${t.inheritOnPromotion ? '승급 계승' : '현재 직업'} · 열기`, `growth-open-tree-${t.id}`, () => {
+        const skillState = states.get(host)?.skill;
+        if (skillState) { skillState.treeId = t.id; skillState.selected = t.nodes[0]?.id; }
+        if (onNavigateToSkills) onNavigateToSkills();
+        else { host.replaceChildren(); renderGrowthTreeTab(host, 'skill'); }
+      }))),
       ...(!p.growth?.skillTrees.length ? [note('스킬 트리 탭에서 성장 트리를 만들고 직업을 연결하세요.')] : []),
     ]), section('승급 경로', [
       ...(!outgoing.length ? [note('상단의 연결 버튼을 누르고 도착 직업을 선택하세요.')] : []),
@@ -171,6 +179,7 @@ export function renderGrowthTreeTab(host: HTMLElement, mode: Mode): void {
           selectInput('필요 스위치 · 켜짐', `growth-promotion-switch-${path.toClassId}`, path.requires.switchId ?? '', [{ id: '', name: '없음' }, ...p.switches], switchId => save({ switchId: switchId || undefined })),
           selectInput('조건 변수', `growth-promotion-variable-${path.toClassId}`, path.requires.variableId ?? '', [{ id: '', name: '없음' }, ...p.variables], variableId => save({ variableId: variableId || undefined })),
           ...(path.requires.variableId ? [numberInput('변수 최솟값', `growth-promotion-value-${path.toClassId}`, path.requires.atLeast ?? 1, atLeast => save({ atLeast }))] : []),
+          ...promotionRequirementControls(p, `growth-promotion-${path.toClassId}`, path.requires, save),
           button('연결 삭제', `growth-promotion-remove-${path.toClassId}`, () => commit('직업 승급 연결 삭제', actual => { const source = actual.database.classes.find(t => t.id === c.id); if (source) source.promotions = source.promotions?.filter(t => t.toClassId !== path.toClassId); })),
         ]);
       }),
@@ -182,6 +191,8 @@ export function renderGrowthTreeTab(host: HTMLElement, mode: Mode): void {
     const result = [inspectorTitle('트리 설정', tree.name, treeGrowthArt(p, tree)), section('기본 정보', [
       textInput('트리 이름', 'growth-tree-name', tree.name, name => mutateTree('스킬 트리 이름 변경', t => { t.name = name.trim() || '새 스킬 트리'; })),
       textInput('설명', 'growth-tree-description', tree.description, description => mutateTree('스킬 트리 설명 변경', t => { t.description = description; }), true),
+      checkInput('실제 승급 경로에서 계승', 'growth-tree-inherit', tree.inheritOnPromotion === true, v => mutateTree('스킬 트리 승급 계승 설정', t => { t.inheritOnPromotion = v; })),
+      note('계승을 끄면 현재 직업에서만 활성화됩니다. 공용 트리는 항상 활성화됩니다.'),
       checkInput('포인트 초기화 허용', 'growth-tree-reset', tree.allowReset, v => mutateTree('스킬 초기화 설정', t => { t.allowReset = v; })),
       note('직업을 선택하지 않으면 모든 직업에서 사용하는 공용 트리입니다.'),
       ...p.database.classes.map(c => checkInput(c.name, `growth-tree-class-${c.id}`, tree.classIds.includes(c.id), checked => mutateTree('스킬 트리 직업 연결', t => { t.classIds = checked ? [...new Set([...t.classIds, c.id])] : t.classIds.filter(id => id !== c.id); }))),
@@ -197,35 +208,56 @@ export function renderGrowthTreeTab(host: HTMLElement, mode: Mode): void {
       numberInput('등급당 포인트', 'growth-node-cost', node.cost, cost => mutateNode('성장 노드 비용 변경', n => { n.cost = cost; }), 1),
       numberInput('필요 레벨', 'growth-node-level', node.level, level => mutateNode('성장 노드 레벨 변경', n => { n.level = level; }), 1, 99),
       ...node.prerequisites.map(id => button(`선행: ${tree.nodes.find(n => n.id === id)?.name ?? id} ×`, `growth-prerequisite-${id}`, () => mutateNode('선행 노드 연결 삭제', n => { n.prerequisites = n.prerequisites.filter(p => p !== id); }))),
-      note('연결된 선행 노드를 모두 1등급 이상 습득해야 열립니다.'),
-      button('노드 삭제', 'growth-delete-node', () => { const id = state.selected!; state.selected = undefined; mutateTree('성장 노드 삭제', t => deleteSkillNode(t, id)); }),
+      note('로컬 선행 노드는 모두 1등급 이상, 아래 조건도 모두 만족해야 열립니다.'),
+      ...nodeRequirementControls(p, 'growth-required', node.requiredNodes ?? [], requirements => {
+        const error = setSkillNodeRequirements(structuredClone(p), tree.id, node.id, requirements);
+        if (error) return message(error);
+        commit('선행 트리·노드 조건 변경', actual => { setSkillNodeRequirements(actual, tree.id, node.id, requirements); });
+      }, {treeId:tree.id,nodeId:node.id}),
+      button('노드 삭제', 'growth-delete-node', () => {
+        const error = skillTreeDeletionBlocker(p, tree.id, node.id);
+        if (error) return message(error);
+        state.selected = undefined;
+        commit('성장 노드 삭제', actual => editTree(actual, tree.id, t => { deleteSkillNode(t, node.id, actual); }));
+      }),
     ]));
-    result.push(section('트리 관리', [button('트리 복제', 'growth-duplicate-tree', () => { const copy = structuredClone(tree); copy.id = genId('skill-tree'); copy.name += ' 복사'; state.treeId = copy.id; commit('스킬 트리 복제', actual => actual.growth!.skillTrees.push(copy)); }), button('트리 삭제', 'growth-delete-tree', () => {
+    result.push(section('트리 관리', [button('트리 복제', 'growth-duplicate-tree', () => { const copy = duplicateSkillTree(tree, genId('skill-tree')); state.treeId = copy.id; commit('스킬 트리 복제', actual => actual.growth!.skillTrees.push(copy)); }), button('트리 삭제', 'growth-delete-tree', () => {
       const targetId = tree.id;
-      const confirm = el('div', { class: 'growth-inline-confirm', attrs: { role: 'alert' }, children: [note(`“${tree.name}”과 노드 ${tree.nodes.length}개를 삭제합니다.`), button('삭제 확인', 'growth-confirm-delete-tree', () => { state.selected = undefined; commit('스킬 트리 삭제', actual => { actual.growth!.skillTrees = actual.growth!.skillTrees.filter(t => t.id !== targetId); }); }), button('취소', 'growth-cancel-delete-tree', draw)] });
+      const error = skillTreeDeletionBlocker(p, targetId);
+      if (error) return message(error);
+      const confirm = el('div', { class: 'growth-inline-confirm', attrs: { role: 'alert' }, children: [note(`“${tree.name}”과 노드 ${tree.nodes.length}개를 삭제합니다.`), button('삭제 확인', 'growth-confirm-delete-tree', () => { state.selected = undefined; commit('스킬 트리 삭제', actual => { deleteSkillTree(actual, targetId); }); }), button('취소', 'growth-cancel-delete-tree', draw)] });
       root.querySelector('.growth-inspector')?.append(confirm); confirm.scrollIntoView({ block: 'nearest' });
     })]));
     return result;
   };
   const previewInspector = (p: Project, tree?: SkillTree): HTMLElement[] => {
-    if (!tree) return [note('트리를 먼저 만드세요.')];
     state.previewActor ??= p.database.actors[0]?.id;
     const actorId = state.previewActor ?? '';
     state.simulation.actorLevels = { [actorId]: state.previewLevel };
-    const points = growthPoints(p, state.simulation, actorId), node = tree.nodes.find(n => n.id === state.selected);
+    const points = growthPoints(p, state.simulation, actorId), node = mode === 'skill' ? tree?.nodes.find(n => n.id === state.selected) : undefined;
     const children = [inspectorTitle('성장 미리보기', `${points.available} 포인트`), note('저작 데이터와 실제 게임 진행에는 영향을 주지 않습니다.'),
       selectInput('주인공', 'growth-preview-actor', actorId, p.database.actors, id => { state.previewActor = id; draw(); }),
       numberInput('미리보기 레벨', 'growth-preview-level', state.previewLevel, level => { state.previewLevel = level; draw(); }, 1, 99),
-      selectInput('미리보기 직업', 'growth-preview-class', state.simulation.classOverrides?.[actorId] ?? p.database.actors.find(a => a.id === actorId)?.classId ?? '', p.database.classes, id => { state.simulation.classOverrides = { ...state.simulation.classOverrides, [actorId]: id }; draw(); }),
+      selectInput('임의 전직 · 승급 경로 초기화', 'growth-preview-class', effectiveActorClassId(p, state.simulation, actorId) ?? '', p.database.classes, id => { changeActorClass(state.simulation, p, actorId, id); draw(); }),
       note(`획득 ${points.earned} P · 사용 ${points.spent} P`),
     ];
-    if (node) {
+    const klass = p.database.classes.find(c => c.id === effectiveActorClassId(p, state.simulation, actorId));
+    for (const path of klass?.promotions ?? []) {
+      const blocker = promotionRequirementBlocker(state.simulation, actorId, path.requires, p);
+      const promote = button(`승급: ${p.database.classes.find(c => c.id === path.toClassId)?.name ?? path.toClassId}`, `growth-preview-promote-${path.toClassId}`, () => {
+        const result = promoteActor(state.simulation, p, actorId, path.toClassId);
+        message(result.ok ? '승급했습니다.' : result.reason);
+      });
+      promote.disabled = Boolean(blocker);
+      children.push(section('실제 승급 시뮬레이션', [note(blocker ?? '조건을 만족합니다. 기존 직업의 계승 트리를 유지합니다.'), promote]));
+    }
+    if (node && tree) {
       const blocked = skillNodeBlocker(p, state.simulation, actorId, tree, node);
       const learn = button(`습득 · ${node.cost} P`, 'growth-preview-learn', () => { const error = investSkillNode(p, state.simulation, actorId, tree.id, node.id); message(error ?? `${node.name} 습득!`); }, true);
       learn.disabled = Boolean(blocked);
       children.push(section(node.name, [note(`${nodeRank(state.simulation, actorId, tree.id, node.id)} / ${node.maxRank} 등급`), note(blocked ?? '지금 습득할 수 있습니다.'), learn]));
     }
-    children.push(button('이 트리 투자 초기화', 'growth-preview-reset', () => message(resetSkillTree(p, state.simulation, actorId, tree.id) ?? '포인트를 환급했습니다.')));
+    if (tree && mode === 'skill') children.push(button('이 트리 투자 초기화', 'growth-preview-reset', () => message(resetSkillTree(p, state.simulation, actorId, tree.id) ?? '포인트를 환급했습니다.')));
     return children;
   };
   root.addEventListener('keydown', event => { if (browsing && event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closePresets(); } });
