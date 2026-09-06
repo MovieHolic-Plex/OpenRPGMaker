@@ -1,0 +1,22 @@
+{
+  "head": "bbaf9464cad3768da057ef9909338b5cfb25aa8c",
+  "tree": "c62153444c0e05855be01628c534c4e0f9f15bbe",
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "300s",
+    "node",
+    "/home/main/z-project/rpg-zzu-life-full-field-input/.omo/evidence/life-full-20260906/10/parent/integration-check/diagnostics.mjs"
+  ],
+  "started": "2026-09-06T15:43:24.278Z",
+  "finished": "2026-09-06T15:43:43.707Z",
+  "exit": 0,
+  "signal": null,
+  "stdout": "{\"path\":\"src/editor/panels/databaseLifeCraftingView.ts\",\"diagnostics\":[]}\n{\"path\":\"src/player/dayTransition.ts\",\"diagnostics\":[]}\n{\"path\":\"src/player/farming.ts\",\"diagnostics\":[]}\n{\"path\":\"src/player/lifeFieldInteraction.ts\",\"diagnostics\":[]}\n{\"path\":\"src/player/playSceneFarming.ts\",\"diagnostics\":[]}\n{\"path\":\"src/player/playSceneMapRuntime.ts\",\"diagnostics\":[]}\n{\"path\":\"src/player/playSceneMovement.ts\",\"diagnostics\":[]}\n{\"path\":\"src/player/playScenePlaceables.ts\",\"diagnostics\":[]}\n{\"path\":\"src/player/playSceneTime.ts\",\"diagnostics\":[]}\n{\"path\":\"src/player/saveSlotValidation.ts\",\"diagnostics\":[]}\n{\"path\":\"src/player/saveSlots.ts\",\"diagnostics\":[]}\n{\"path\":\"src/project/fishing.ts\",\"diagnostics\":[]}\n{\"path\":\"src/project/makers.ts\",\"diagnostics\":[]}\n{\"path\":\"src/project/seasonalForage.ts\",\"diagnostics\":[]}\n{\"path\":\"src/project/session.ts\",\"diagnostics\":[]}\n{\"path\":\"src/project/toolActions.ts\",\"diagnostics\":[]}\n{\"path\":\"src/testing/sceneTestRunner.ts\",\"diagnostics\":[]}\n{\"path\":\"test/cropRegrowthContract.test.ts\",\"diagnostics\":[]}\n{\"path\":\"test/databaseLifeCraftingView.test.ts\",\"diagnostics\":[]}\n{\"path\":\"test/lifeFieldInteraction.test.ts\",\"diagnostics\":[]}\n{\"path\":\"test/lifeSkillDisabledHarvest.test.ts\",\"diagnostics\":[]}\n{\"path\":\"test/makerClockIntegration.test.ts\",\"diagnostics\":[]}\n{\"path\":\"test/p0RuntimeIntegration.test.ts\",\"diagnostics\":[]}\n{\"path\":\"test/p2LifeRuntime.test.ts\",\"diagnostics\":[]}\n{\"path\":\"test/toolActionAuthoringParity.test.ts\",\"diagnostics\":[]}\n",
+  "stderr": ""
+}
