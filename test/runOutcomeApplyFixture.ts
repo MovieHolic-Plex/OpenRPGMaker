@@ -69,7 +69,7 @@ export function applyFixture(chat?: AssistantSessionOptions["chat"]) {
       } }] }, finishReason: "tool_calls" }
       : { message: { role: "assistant", content: "RESULT" }, finishReason: "stop" }),
   });
-  return { session, events, setProofResponse: (response: () => Response | Promise<Response>) => { proofResponse = response; },
+  return { session, events, setProofResponse: (response?: () => Response | Promise<Response>) => { proofResponse = response; },
     setCommitResponse: (response: () => Response) => { commitResponse = response; },
     run: () => session.sendUserMessage("Set title", event => events.push(event)),
   };

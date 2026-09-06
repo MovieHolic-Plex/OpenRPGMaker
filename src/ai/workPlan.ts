@@ -705,28 +705,35 @@ export function formatWorkPlanUserVisible(plan: WorkPlan): string {
  * Should the harness Ralph-continue (re-inject + keep looping) instead of ending the turn?
  * Code decides continuation; model does not get a silent early exit on multi-step plans.
  */
-export function shouldRalphContinue(
+export type RalphContinuationDecision = "continue" | "complete" | "blocked" | "budget-exhausted" | "awaiting-user";
+
+export function ralphContinuationDecision(
   plan: WorkPlan | null,
   opts: {
     readonly autoStepsUsed: number;
     readonly assistantText?: string;
   }
-): boolean {
-  if (!plan || isWorkPlanComplete(plan)) return false;
+): RalphContinuationDecision {
+  if (!plan || isWorkPlanComplete(plan)) return "complete";
   const current = getCurrentWorkItem(plan);
-  if (!current) return false;
+  if (!current) return "complete";
   // 막힌 항목은 사람의 판단을 기다린다 — 재주입도, 자동 계속도 하지 않는다(2026-09-03).
-  if (current.status === "blocked") return false;
-  if (opts.autoStepsUsed >= MAX_WORK_PLAN_AUTO_STEPS_PER_TURN) return false;
+  if (current.status === "blocked") return "blocked";
+  if (opts.autoStepsUsed >= MAX_WORK_PLAN_AUTO_STEPS_PER_TURN) return "budget-exhausted";
   const remaining = summarizeWorkPlan(plan).itemsTotal - summarizeWorkPlan(plan).itemsDone;
   if (remaining > MAX_WORK_PLAN_ITEMS_PER_BURST && opts.autoStepsUsed >= MAX_WORK_PLAN_AUTO_STEPS_PER_TURN) {
-    return false;
+    return "budget-exhausted";
   }
   // Incomplete plans keep looping through a trailing ?; only explicit quick-replies pause.
   if (opts.assistantText?.includes(QUICK_REPLY_MARKER)) {
-    return false;
+    return "awaiting-user";
   }
-  return true;
+  return "continue";
+}
+
+/** Boolean compatibility for existing scheduling callers; the decision remains single-source. */
+export function shouldRalphContinue(plan: WorkPlan | null, opts: Parameters<typeof ralphContinuationDecision>[1]): boolean {
+  return ralphContinuationDecision(plan, opts) === "continue";
 }
 
 /**

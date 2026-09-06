@@ -1,0 +1,182 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiOutcomeApplyPolicy.test.ts test/aiOutcomeContinuationDelivery.test.ts test/aiRunOutcome.test.ts test/aiRunOutcomeApply.test.ts test/aiRunOutcomeOwnership.test.ts test/aiRunOutcomeLifecycle.test.ts test/aiRunOutcomeIntegration.test.ts test/aiBlockedContinue.test.ts test/aiRequiredOutcomes.test.ts test/aiMilestoneTurnAccounting.test.ts test/aiAssistantTurnCleanup.test.ts test/aiAssistantBridge.test.ts test/workPlan.test.ts test/aiRunEndProof.test.ts test/storePersistenceProof.test.ts test/assistantAcceptanceSession.test.ts test/aiActivityLog.test.ts test/runRecap.test.ts --maxWorkers 1 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-20260906
+
+ ✓ test/aiRunEndProof.test.ts (29 tests) 153166ms
+   ✓ AssistantSession accepted-revision proof > projects initialized proof events and rechecks freshness after the final status subscriber  5166ms
+   ✓ AssistantSession accepted-revision proof > rechecks edit from a synchronous proof subscriber  3124ms
+   ✓ AssistantSession accepted-revision proof > rechecks cancel from a synchronous proof subscriber  4089ms
+   ✓ AssistantSession accepted-revision proof > does not publish success after a proof subscriber starts a cancelled proof  2156ms
+   ✓ AssistantSession accepted-revision proof > returns the latest emitted state when a status subscriber starts a cancelled proof  5386ms
+   ✓ AssistantSession accepted-revision proof > preserves cancellation superseding the initial callback  744ms
+   ✓ AssistantSession accepted-revision proof > preserves cancellation superseding the receipt callback  2605ms
+   ✓ AssistantSession accepted-revision proof > preserves cancellation superseding the failure callback  7502ms
+   ✓ AssistantSession accepted-revision proof > preserves cancellation superseding the success-throw callback  3388ms
+   ✓ AssistantSession accepted-revision proof > does not resume publication after a pending flush is superseded  4302ms
+   ✓ AssistantSession accepted-revision proof > keeps newer 'cancelled' proof when an overlapping read ends 'verified'  3235ms
+   ✓ AssistantSession accepted-revision proof > keeps newer 'cancelled' proof when an overlapping read ends 'mismatch'  3915ms
+   ✓ AssistantSession accepted-revision proof > keeps newer 'succeeded' proof when an overlapping read ends 'verified'  6311ms
+   ✓ AssistantSession accepted-revision proof > keeps newer 'succeeded' proof when an overlapping read ends 'mismatch'  8220ms
+   ✓ AssistantSession accepted-revision proof > keeps newer 'succeeded' proof when an overlapping read ends 'cancelled'  2747ms
+   ✓ AssistantSession accepted-revision proof > does not claim verified after a failed proof read through actual session completion  5356ms
+   ✓ AssistantSession accepted-revision proof > retries failed proof for the same plan/revision, deduplicates success, and reproves a changed revision  14270ms
+   ✓ AssistantSession accepted-revision proof > does not promote cancelled during the read or replace editor state  5689ms
+   ✓ AssistantSession accepted-revision proof > does not promote disabled during the read or replace editor state  7121ms
+   ✓ AssistantSession accepted-revision proof > does not promote target during the read or replace editor state  6219ms
+   ✓ AssistantSession accepted-revision proof > does not promote content during the read or replace editor state  7438ms
+   ✓ AssistantSession accepted-revision proof > does not promote local-edit during the read or replace editor state  11651ms
+   ✓ AssistantSession accepted-revision proof > uses the real apply commit, not a newest remote commit read  5295ms
+   ✓ AssistantSession accepted-revision proof > project proof can succeed when the separate commit log fails  4733ms
+   ✓ AssistantSession accepted-revision proof > proves a normal no-plan apply through the reusable path without replaying the tool  4643ms
+   ✓ AssistantSession accepted-revision proof > does not correlate a later human edit with an in-flight apply commit  5932ms
+   ✓ AssistantSession accepted-revision proof > retryLastTurn retries failed proof without replaying the LLM or applied tools  5051ms
+   ✓ AssistantSession accepted-revision proof > retryLastTurn proves already applied milestones after a recovered LLM failure  6199ms
+   ✓ AssistantSession accepted-revision proof > a clean saved response without an accepted receipt cannot become proof  675ms
+ ✓ test/aiOutcomeApplyPolicy.test.ts (6 tests) 53936ms
+   ✓ settles the same verified requirement with milestone=false  13069ms
+   ✓ settles the same verified requirement with milestone=true  10843ms
+   ✓ uses the existing quick-reply stop decision without reclassifying response prose  604ms
+   ✓ preserves genuine blocked execution when an applied draft later verifies  10324ms
+   ✓ preserves genuine failed execution when an applied draft later verifies  9403ms
+   ✓ preserves genuine cancelled execution when an applied draft later verifies  9641ms
+ ✓ test/aiOutcomeContinuationDelivery.test.ts (7 tests) 54475ms
+   ✓ preserves delivery ownership for 'continue' with verified=false  8423ms
+   ✓ preserves delivery ownership for 'continue' with verified=true  4246ms
+   ✓ preserves delivery ownership for 'proof-retry' with verified=false  8182ms
+   ✓ preserves delivery ownership for 'query' with verified=true  9763ms
+   ✓ preserves delivery ownership for 'ask' with verified=true  6857ms
+   ✓ distinguishes continue after a failed milestone proof  13361ms
+   ✓ distinguishes query after a failed milestone proof  3612ms
+ ✓ test/aiRequiredOutcomes.test.ts (39 tests) 38253ms
+   ✓ canonical requirements > keeps required skipped obligations when a replan tries to weaken them  1259ms
+   ✓ canonical requirements > allows optional skipped work without labeling it verified  1258ms
+   ✓ canonical requirements > fails closed for malformed declarations null  1602ms
+   ✓ canonical requirements > fails closed for malformed declarations %j  1073ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"mapDimensions","target":{"mapId":"map_blank_start"},"width":99,"height":99}],"required":"false"}  1196ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"invented","passed":true}]}  1269ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":null,"required":false}  1108ms
+   ✓ canonical requirements > keeps a bare legacy scheduler plan unassessed  387ms
+   ✓ canonical requirements > assesses existing explicit acceptance without requiring the new field  989ms
+   ✓ canonical requirements > retains an unlinked required obligation when replan drops links=false  648ms
+   ✓ canonical requirements > retains an unlinked required obligation when replan drops links=true  1444ms
+   ✓ canonical requirements > binds original text and scope at the host boundary despite fabricated source and withdrawal  924ms
+   ✓ canonical requirements > retains only the original user utterance through replan with instruction override=false  1255ms
+   ✓ canonical requirements > retains only the original user utterance through replan with instruction override=true  2476ms
+   ✓ canonical requirements > withdraws only the named current requirement through the user-only API  509ms
+   ✓ canonical requirements > keeps sibling obligations when the user withdraws just one  647ms
+   ✓ canonical requirements > rejects model tool withdrawal even with fabricated user provenance  1026ms
+   ✓ canonical requirements > rejects stale goal withdrawal actions  683ms
+   ✓ canonical requirements > does not erase old obligations on a model resetsContext claim  975ms
+   ✓ canonical requirements > archives an incomplete goal when the user explicitly starts a new goal  706ms
+   ✓ exact scoped verdict authority > evaluates stale evidence without tool-name credit  421ms
+   ✓ exact scoped verdict authority > evaluates advisory evidence without tool-name credit  562ms
+   ✓ exact scoped verdict authority > evaluates advisory-after-stale evidence without tool-name credit  539ms
+   ✓ exact scoped verdict authority > evaluates advisory-after-explicit evidence without tool-name credit  852ms
+   ✓ exact scoped verdict authority > evaluates negative evidence without tool-name credit  301ms
+   ✓ exact scoped verdict authority > evaluates model evidence without tool-name credit  303ms
+   ✓ exact scoped verdict authority > does not verify an unapplied draft from a passing scoped verdict  964ms
+   ✓ exact scoped verdict authority > retires scoped verdicts after applied content changes even if later undone  2799ms
+   ✓ exact scoped verdict authority > rejects pre-declaration evidence after an external rebase  2029ms
+   ✓ exact scoped verdict authority > credits a real scoped tool response through the session dispatcher  1216ms
+   ✓ question-safe continuation > preserves blocked work and counters for ask  927ms
+   ✓ question-safe continuation > preserves blocked work and counters for question  889ms
+   ✓ question-safe continuation > preserves repeated failure counters while answering a question  2495ms
+   ✓ question-safe continuation > does not reactivate from fabricated continuation source  499ms
+   ✓ question-safe continuation > reactivates blocked work only with explicit user resume  548ms
+   ✓ question-safe continuation > retains goal evidence and repair counters during ask  1140ms
+ ✓ test/aiMilestoneTurnAccounting.test.ts (6 tests) 28147ms
+   ✓ 마일스톤 턴 정산 > auto-completion distinguishes modification facts from missing placements: 방금 실제 플레이에서 황동 열쇠를 얻은 뒤 북쪽 출구가 "열었다"라는 대사만 하고 끝났어. 열쇠는 여전히 1개이고 엔딩이 나오지 않아. 이 문제를 고쳐 줘. 먼저 현재 두 맵과 출구/촌장/상자 이벤트의 실제 명령을 읽어라. 이미 만든 집, 길, 나무, 두 맵의 크기, 왕복 이동, 상자, 촌장과 안내 표지판 문구 「우물은 북쪽, 지하실은 동쪽」은 보존해야 해. 수정 범위는 북쪽 출구의 열쇠 1개 소비 및 엔딩 실행, 마을 이름을 "마을"로 바꾸는 것뿐이야. 참고로 화면은 "완료 기준 검증 완료 2/2, 맵 시각 리뷰 완료"인데 답변은 "모험 구성이 아직 미완성, 두 맵 시각 확인 누락"이라고 해. 앞의 초록 체크를 근거로 이미 완성됐다고 판단하지 말고 실제 데이터를 근거로 모순을 설명해. 끝난 뒤 두 맵을 실제 그림으로 확인하고 미검증은 미검증이라고 말해.  2075ms
+   ✓ 마일스톤 턴 정산 > auto-completion distinguishes modification facts from missing placements: 기존 나무 10개는 보존하고 꽃 3개 추가해줘  2258ms
+   ✓ 마일스톤 턴 정산 > auto-completion distinguishes modification facts from missing placements: 나무 10개 배치해줘  2839ms
+   ✓ 마일스톤 턴 정산 > 한 항목이 실행 한도로 나뉘어도 앞선 성공과 미적용 제안을 이어서 완료한다  5210ms
+   ✓ 마일스톤 턴 정산 > 마일스톤 쓰기는 자동 계속(false) 후에도 정산에 남는다  7847ms
+   ✓ 마일스톤 턴 정산 > 마일스톤 쓰기는 자동 계속(true) 후에도 정산에 남는다  7907ms
+ ✓ test/storePersistenceProof.test.ts (18 tests) 76075ms
+   ✓ accepted revision persistence proof > verifies the accepted content through actual save/read transport and reuses its clean-flush receipt  5578ms
+   ✓ accepted revision persistence proof > compares normalized values rather than JSONB object-key order  3168ms
+   ✓ accepted revision persistence proof > uses the ordinary normalized remote load and map-overlay contract  3258ms
+   ✓ accepted revision persistence proof > does not verify a matching projects row when the ordinary map read fails  5114ms
+   ✓ accepted revision persistence proof > binds the receipt to the accepted merged project, not the unmerged live store  7859ms
+   ✓ accepted revision persistence proof > keeps open event drafts local and out of accepted content identity  19456ms
+   ✓ accepted revision persistence proof > rejects a copied token without issuing a read  4658ms
+   ✓ accepted revision persistence proof > does not verify a failed read  2579ms
+   ✓ accepted revision persistence proof > does not verify a missing read  1271ms
+   ✓ accepted revision persistence proof > does not verify a disabled read  1895ms
+   ✓ accepted revision persistence proof > does not verify a cancelled read  3110ms
+   ✓ accepted revision persistence proof > rejects wrong target even when current_sha256 is unchanged  3047ms
+   ✓ accepted revision persistence proof > rejects wrong content even when current_sha256 is unchanged  1453ms
+   ✓ accepted revision persistence proof > keeps a failed proof retryable for the same accepted revision  4141ms
+   ✓ accepted revision persistence proof > preserves newer local edits during the read and does not attach old proof to them  3370ms
+   ✓ accepted revision persistence proof > pins the original target across a configuration change during read  2788ms
+   ✓ accepted revision persistence proof > does not verify when cancelled while the read is in flight  1634ms
+   ✓ accepted revision persistence proof > does not verify when disabled while the read is in flight  1692ms
+ ✓ test/assistantAcceptanceSession.test.ts (12 tests) 15538ms
+   ✓ session acceptance ownership > exposes the session-owned acceptance snapshot independently of WorkPlan  829ms
+   ✓ acceptance controls actual session termination > does not schedule run-end persistence proof for a completed plan with unmet acceptance  639ms
+   ✓ acceptance controls actual session termination > does not turn a review without an explicit passing verdict into completion  819ms
+   ✓ acceptance controls actual session termination > withdraws an earlier pass when a later explicit review fails  1464ms
+   ✓ acceptance controls actual session termination > continues then blocks insufficient dimensions and quantity even after skip completes the plan  1334ms
+   ✓ acceptance controls actual session termination > retains original denominator when skip and set_work_plan try to shrink promises  1328ms
+   ✓ acceptance controls actual session termination > invalidates an attributed image review after a subsequent real map write  2977ms
+   ✓ applied acceptance lifecycle through real tools > repairs exact dimensions after plan completion and invalidates on applied undo  3679ms
+   ✓ applied acceptance lifecycle through real tools > blocks and retains the ledger when aborted while the next model response is held  339ms
+   ✓ applied acceptance lifecycle through real tools > never credits a review authored in the same response as the image request  778ms
+   ✓ applied acceptance lifecycle through real tools > requires visible contract repair for a spatial plan missing criteria  712ms
+   ✓ applied acceptance lifecycle through real tools > keeps legacy nonspatial and read-only requests free of fabricated map promises  634ms
+ ✓ test/aiRunOutcomeLifecycle.test.ts (6 tests) 11198ms
+   ✓ projects budget exhaustion when the tools limit ends execution  2053ms
+   ✓ projects budget exhaustion when the tokens limit ends execution  1654ms
+   ✓ preserves the driver user-wait decision after a tool-budget return  610ms
+   ✓ projects a recovered retry without inventing application  435ms
+   ✓ retains both applied milestones and pending calls when a later transport fails  5798ms
+   ✓ routes an explicit user withdrawal to the sole session authority  643ms
+ ✓ test/aiAssistantTurnCleanup.test.ts (14 tests) 10786ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on final without changing retained data  1363ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on error without changing retained data  428ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on aborted without changing retained data  555ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on throw without changing retained data  452ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on abort-throw without changing retained data  604ms
+   ✓ assistant owner-turn presentation cleanup > clears the owner ghost on final when no region approval owns it  490ms
+   ✓ assistant owner-turn presentation cleanup > clears the owner ghost on error when no region approval owns it  686ms
+   ✓ assistant owner-turn presentation cleanup > clears the owner ghost on aborted when no region approval owns it  1604ms
+   ✓ assistant owner-turn presentation cleanup > clears the owner ghost on throw when no region approval owns it  1330ms
+   ✓ assistant owner-turn presentation cleanup > clears the owner ghost on abort-throw when no region approval owns it  1433ms
+   ✓ assistant owner-turn presentation cleanup > retires after an rejected proposal without altering outcome accounting  363ms
+   ✓ assistant owner-turn presentation cleanup > retires unseen automatic spec expansion before a follow-up turn can sync it  425ms
+   ✓ assistant owner-turn presentation cleanup > an orphaned completion cannot retire its replacement turn's blueprint  757ms
+ ✓ test/aiRunOutcomeOwnership.test.ts (2 tests) 8861ms
+   ✓ does not settle a newer query when an old run's proof is cancelled  5131ms
+   ✓ rechecks a canonical no-write pass when the live assessed map changes  3729ms
+ ✓ test/aiBlockedContinue.test.ts (4 tests) 5239ms
+   ✓ offers the real Continue control when required work blocks without a budget stop  1434ms
+   ✓ keeps one Continue control when a question follows blocked work  987ms
+   ✓ does not publish a Continue control when the blocked owner is retired  712ms
+   ✓ publishes the resumed unfinished result instead of the preceding question outcome  2104ms
+ ✓ test/workPlan.test.ts (40 tests) 188ms
+ ✓ test/aiActivityLog.test.ts (4 tests) 404ms
+   ✓ ai activity log store > persists ring buffer in localStorage and exposes latest  325ms
+ ✓ test/aiRunOutcomeApply.test.ts (7 tests) 35114ms
+   ✓ run outcome actual application > settles the returned result when ordinary proof is verified  7947ms
+   ✓ run outcome actual application > settles the returned result when ordinary proof is failed  4535ms
+   ✓ run outcome actual application > settles the returned result when ordinary proof is cancelled  5221ms
+   ✓ run outcome actual application > refreshes the compact recap when proof settles after the returned draft  4568ms
+   ✓ run outcome actual application > publishes apply rejection through the original session subscriber  1923ms
+   ✓ run outcome actual application > rechecks current proof without mutating the historical returned result  4977ms
+   ✓ run outcome actual application > does not credit an old receipt when another user run only queries  5931ms
+ ✓ test/aiRunOutcome.test.ts (437 tests) 192ms
+ ✓ test/aiRunOutcomeIntegration.test.ts (7 tests) 1916ms
+   ✓ run outcome session boundaries > publishes one unassessed projection when a query returns  373ms
+   ✓ run outcome session boundaries > captures blocked execution when required work is skipped  745ms
+   ✓ run outcome session boundaries > captures awaiting user when plan mode stops before execution  468ms
+   ✓ run outcome session boundaries > captures cancellation when the entry signal is already aborted  324ms
+ ✓ test/aiAssistantBridge.test.ts (1 test) 53ms
+ ✓ test/runRecap.test.ts (4 tests) 48ms
+
+ Test Files  18 passed (18)
+      Tests  643 passed (643)
+   Start at  04:13:56
+   Duration  668.73s (transform 54.70s, setup 0ms, collect 150.03s, tests 493.59s, environment 19ms, prepare 5.12s)
+

@@ -161,7 +161,8 @@ import {
   getCurrentWorkItem,
   isWorkPlanComplete,
   parseOrchestratorDecision,
-  shouldRalphContinue,
+  ralphContinuationDecision,
+  type RalphContinuationDecision,
   blockWorkItemById,
   reactivateBlockedWorkItems,
   skipWorkItemById,
@@ -932,6 +933,7 @@ export class AssistantSession {
   private runEndProof: RunEndProofState | null = null;
   private lastAppliedProject: { project: Project; commitId: string | null } | null = null;
   private runExecution: RunOutcome["execution"] = "response-final";
+  private acceptanceApplyPending = false;
   /** Mutable settlement handle, never replaced by a getter or another run. */
   private runResult: { current: TurnResult | null } = { current: null };
   private storeBacked = false;
@@ -1240,6 +1242,13 @@ export class AssistantSession {
     }
     this.acceptanceAppliedProject = structuredClone(project);
     this.publishAcceptance(onEvent);
+    if (this.acceptanceApplyPending && this.runExecution === "blocked"
+      && this.lastAppliedProject?.project === project && this.turnProposals.size === 0
+      && this.acceptance?.getSnapshot().status === "verified") {
+      this.acceptanceApplyPending = false;
+      this.runExecution = "response-final";
+      this.publishRunOutcome(onEvent);
+    }
   }
 
   private publishAcceptance(onEvent?: (event: SessionEvent) => void): void {
@@ -1529,8 +1538,6 @@ export class AssistantSession {
     this.runResult = { current: null };
     this.runSubscriber = onEvent;
     this.runRecapAuditIndex = null;
-    this.runReceipt = null;
-    this.lastAppliedProject = null;
     this.runExecution = "response-final";
     this.milestoneAutoApply = opts?.autonomous === true;
     if (this.milestoneApplyFailed) {
@@ -1632,7 +1639,7 @@ export class AssistantSession {
     // 질문으로 끝났는지 판별한다 — 질문이면 false(문의 대기, 자동 송신 금지).
     const assistantText = this.rawLastTurnAssistantText(last);
     if (this.workPlan && !isWorkPlanComplete(this.workPlan)) {
-      return shouldRalphContinue(this.workPlan, { autoStepsUsed: 0, assistantText });
+      return this.recordWorkPlanDecision(ralphContinuationDecision(this.workPlan, { autoStepsUsed: 0, assistantText }));
     }
     // 계획이 끝났거나 없어도 볼륨 막대가 비면 코드가 다음 턴을 연다. 사용자 「계속」이 아니다.
     if (volumeOpen && assistantTextLooksLikeQuestion(assistantText)) {
@@ -1640,6 +1647,16 @@ export class AssistantSession {
       return false;
     }
     return volumeOpen || acceptanceOpen;
+  }
+
+  /** Carry the actual scheduling decision; never run another text classifier for projection. */
+  private recordWorkPlanDecision(decision: RalphContinuationDecision): boolean {
+    const executionByDecision = {
+      continue: null, complete: null, blocked: "blocked", "budget-exhausted": "budget-exhausted", "awaiting-user": "awaiting-user",
+    } as const satisfies Record<RalphContinuationDecision, RunOutcome["execution"] | null>;
+    const execution = executionByDecision[decision];
+    if (execution !== null) this.runExecution = execution;
+    return decision === "continue";
   }
 
   /** 드라이버의 질문 판별용 원문 — 계획 게시판 접미어(행 끝 정규식 오염)를 제거한 최종 응답. */
@@ -1655,6 +1672,7 @@ export class AssistantSession {
     options: SessionTurnOptions = {},
   ): Promise<TurnResult> {
     this.runExecution = "response-final";
+    this.acceptanceApplyPending = false;
     // 토큰 보정: 직전 턴들의 usage 관측으로 문자 예산이 달라졌으면 시스템 프롬프트를 재조립한다.
     this.refreshSystemPromptBudget();
     // 매 턴: 에디터 뷰포트 좌표(+가능하면 맵 이미지)를 사용자 메시지에 붙여 "여기" 해석을 빠르게 한다.
@@ -1698,6 +1716,12 @@ export class AssistantSession {
     const startsGoal = userAction && options.goalAction === "new-goal";
     const resumesGoal = userAction && (options.goalAction === "resume" || isContinuationText(instruction));
     const newRequest = userAction && !resumesGoal && intent.source !== "continuation";
+    // Delivery follows host-authorized continuation, never a model's source claim or a fresh query.
+    if (!this.turnIsDriverContinue && (!resumesGoal || startsGoal)) {
+      this.runReceipt = null;
+      this.lastAppliedProject = null;
+      this.turnAppliedMilestoneCalls = [];
+    }
     if (startsGoal) {
       this.publishAcceptance();
       const previous = this.getAcceptanceSnapshot();
@@ -1755,8 +1779,6 @@ export class AssistantSession {
     // A tool budget splits execution, not the work item. Keep unapplied calls and
     // artifact evidence until that item completes (or a different goal starts).
     if (!continuesGoal) this.turnProposals = new Map();
-    // Synthetic continuations belong to the same user goal and retain its applied ledger.
-    if (!options.driverContinue) this.turnAppliedMilestoneCalls = [];
     this.turnWriteDedupe = new Map();
     this.turnToolStartedCount = 0;
     this.turnEscalatedToolNames = [];
@@ -2694,6 +2716,12 @@ export class AssistantSession {
     this.publishRunOutcome();
   }
 
+  /** Only an acceptance-only stop with finished scheduling can settle after its pending apply. */
+  private stopForAcceptance(): void {
+    this.runExecution = "blocked";
+    this.acceptanceApplyPending = this.turnProposals.size > 0 && (!this.workPlan || isWorkPlanComplete(this.workPlan));
+  }
+
   /** Ordinary apply rejection is an execution decision, not a model verdict. */
   recordApplyRejected(onEvent?: (event: SessionEvent) => void): void {
     this.runExecution = "failed";
@@ -2909,8 +2937,11 @@ export class AssistantSession {
       result = { ...result, assistantText: `${result.assistantText.trim()}\n\n${notice}`.trim() };
       onEvent({ type: "assistant_message", content: result.assistantText });
     }
-    if (this.runExecution === "response-final" && this.turnComposerMode !== "ask"
-      && (this.acceptanceOpen() || adventureProblems.length > 0)) this.runExecution = "blocked";
+    if (this.runExecution === "response-final" && this.turnComposerMode !== "ask" && this.acceptanceOpen()) this.stopForAcceptance();
+    if (adventureProblems.length > 0) {
+      this.acceptanceApplyPending = false;
+      if (this.runExecution === "response-final" && this.turnComposerMode !== "ask") this.runExecution = "blocked";
+    }
     this.runResult.current = result;
     this.publishRunOutcome();
     const recap = buildRunRecap({
@@ -3723,7 +3754,8 @@ export class AssistantSession {
             this.pushOrchestrationMessage(`Acceptance repair ${this.acceptanceRepairAttempts}/${MAX_RALPH_ATTEMPTS_PER_ITEM}. Do not claim success, skip, shrink or recreate completed content. Repair missing criteria with repair_acceptance; satisfy original promises with real tools; explicitly review delivered images with review_acceptance. Drafts are not applied verification.\n${JSON.stringify(this.getAcceptanceSnapshot())}`);
             continue;
           }
-          this.runExecution = this.milestoneApplyFailed ? "failed" : "blocked";
+          if (this.milestoneApplyFailed) this.runExecution = "failed";
+          else this.stopForAcceptance();
           this.acceptance?.stop();
           this.publishAcceptance(onEvent);
           assistantText = this.acceptanceIncompleteText();
@@ -3770,14 +3802,10 @@ export class AssistantSession {
         // Ralph loop: incomplete WorkPlan → re-inject current item; do not early-exit.
         // 단, 현재 턴의 마일스톤 적용이 실패했으면 저장소와 draft가 어긋난 채 다음 항목을
         // 저작하지 않는다. 새 사용자 메시지가 실패 상태를 해제한 뒤 이어갈 수 있다.
-        if (
-          !this.milestoneApplyFailed
-          && this.turnComposerMode !== "ask"
-          && shouldRalphContinue(this.workPlan, {
-            autoStepsUsed: this.workPlanAutoStepsThisUserMessage,
-            assistantText: finalText,
-          })
-        ) {
+        const workPlanDecision = !this.milestoneApplyFailed && this.turnComposerMode !== "ask"
+          ? ralphContinuationDecision(this.workPlan, { autoStepsUsed: this.workPlanAutoStepsThisUserMessage, assistantText: finalText })
+          : null;
+        if (workPlanDecision === "continue") {
           // 같은 항목을 상한만큼 밀어붙였는데도 안 되면 재주입을 멈추고 사용자에게 넘긴다.
           const stalled = this.blockStalledWorkItem(onEvent);
           if (stalled) {
@@ -3878,11 +3906,7 @@ export class AssistantSession {
         }
         // 레이어 검증(자문): 최종 응답 전에 1회 돌려 지적을 근거로 남긴다. 런은 멈추지 않는다.
         await this.sweepFinishedLayers(onEvent);
-        // Capture the existing continuation decision here, never parse outcome from published prose.
-        if (this.runExecution === "response-final" && this.turnComposerMode !== "ask" && this.workPlan && !isWorkPlanComplete(this.workPlan)) {
-          this.runExecution = assistantTextLooksLikeQuestion(finalText) ? "awaiting-user"
-            : this.workPlanAutoStepsThisUserMessage >= MAX_WORK_PLAN_AUTO_STEPS_PER_TURN ? "budget-exhausted" : "blocked";
-        }
+        if (workPlanDecision !== null) this.recordWorkPlanDecision(workPlanDecision);
         // 최종 응답.
         assistantText = finalText;
         onEvent({ type: "assistant_message", content: assistantText });

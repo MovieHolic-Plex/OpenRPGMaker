@@ -1,10 +1,12 @@
 # P2 backend outcome integration
 
-**Latest follow-up:** [Real blocked-work Continue availability](integration-blocked-control.md) completes the integration-owned runner split: the existing control is visible and actually clicked after Ask, including after native history folding. **524/524 scoped tests and a fresh complete build pass.** The strengthened real browser terminal contract remains RED because the Panel click still sends Ask instead of Do; the UI lane must fix that user boundary and obtain blocked/incomplete/no-change after the resumed unfinished run. No synthetic control or test-only goalAction shortcut is used.
+**Current verified integration:** The three policy corrections below are folded into this same deliverable: typed continuation decisions replace projection-only prose classification; ordinary and milestone application use the same post-apply completion policy; trusted continuation/proof retry retains delivery while fresh queries do not. **643/643 tests in 18 files and a fresh complete build pass.** The actual browser matrix again passes all **138 non-UI checks**, with its ten UI-hook failures retained. See **Verified stop/apply/continuation policy correction** below for exact RED/GREEN commands and limits.
+
+**Earlier runner follow-up:** [Real blocked-work Continue availability](integration-blocked-control.md) completes the integration-owned runner split: the existing control is visible and actually clicked after Ask, including after native history folding. **524/524 scoped tests and a fresh complete build pass.** The strengthened real browser terminal contract remains RED because the Panel click still sends Ask instead of Do; the UI lane must fix that user boundary and obtain blocked/incomplete/no-change after the resumed unfinished run. No synthetic control or test-only goalAction shortcut is used.
 
 **Earlier follow-up:** [Owned fixture I/O drainage](integration-fixture-drain.md), committed as `bd836d57a`, corrected cleanup before globals restoration and passed **35/35 affected/P1 tests** plus build. Its then-missing Continue control is superseded by the latest runner fix.
 
-Integrated the producer contracts through the actual session, ordinary/milestone apply, P1 proof, bridge, activity serialization and recap paths. Final scoped verification is **586/586 tests in 15 files, exit 0**, and the complete build is **exit 0**. The unchanged actual browser/API matrix passes **all 138 non-UI checks** across ten real cases. Its overall exit remains **1 solely for the ten missing UI outcome hooks**, which are explicitly owned by the next node. No assertions were removed or weakened to call that full scenario GREEN.
+Initially integrated the producer contracts through the actual session, ordinary/milestone apply, P1 proof, bridge, activity serialization and recap paths. Initial scoped verification was **586/586 tests in 15 files, exit 0**, and the complete build is **exit 0**. The unchanged actual browser/API matrix passes **all 138 non-UI checks** across ten real cases. Its overall exit remains **1 solely for the ten missing UI outcome hooks**, which are explicitly owned by the next node. No assertions were removed or weakened to call that full scenario GREEN.
 
 ## Scope and committed identity
 
@@ -43,7 +45,8 @@ Exit 0, no conflict or merge. Ordered mapping:
 | 9 | own | `f4ae6118e5e44fe8f3d29727fb6fd15f1a75cd66` | Verified backend implementation and direct tests |
 | 10 | own | `761ed517b188729130e26dad57196aa4218b19ab` | Original report and raw integration evidence |
 | 11 | own | `bd836d57ae238405f9388dd346a35ca8371df242` | Fixture writer drainage, regression and actual Ask/resume handoff |
-| 12 | own | latest task handoff SHA | Blocked-work Continue availability, native history retention and resumed terminal contract |
+| 12 | own | `89584faf0470cfc4601fd791180ff1f659ec7e95` | Blocked-work Continue availability, native history retention and resumed terminal contract |
+| 13 | own | current task handoff SHA | Verified typed-stop, apply-policy and trusted-continuation corrections in this central deliverable |
 
 At the original integration handoff, terminal producer heads still equaled the two named terminal SHAs. `git diff 7f42772c9 HEAD -- src/ai/runOutcome.ts test/aiRunOutcome.test.ts`, `git diff 8f82a11b9 HEAD -- scripts/qa`, and the diff against `d6a38018c` for the canonical acceptance types/ledger/tool-verification authority were empty. The latest follow-up intentionally adds only two terminal-agreement assertion lines to the imported resume helper; it does not rewrite producer evidence or weaken its contract. All imported commits and own commits retain mandatory omo attribution. No push, merge, rebase, nested agent or shared-main worktree edit occurred.
 
@@ -53,6 +56,8 @@ At the original integration handoff, terminal producer heads still equaled the t
 
 `src/ai/runOutcome.ts` remains byte-for-byte producer code (SHA-256 `b5c44e295d3de495a728a33c9f122babe81ee47b61f31dc848234348ef35fa7f`). Every runtime outcome is derived by its `deriveRunOutcome`; no consumer evaluates requirements or parses model claims into an outcome.
 
+The existing WorkPlan continuation policy now returns `RalphContinuationDecision`; `shouldRalphContinue` remains a compatible boolean wrapper around that same policy. The tool loop carries the actual decision to its return boundary, and the autonomous driver consumes it at its real stop branch. The projection-only `assistantTextLooksLikeQuestion(finalText)` call was removed. Existing quick-reply-marker, cap, blocked-item and continuation heuristics are unchanged; no second prose classification or requirement evaluator was introduced.
+
 The session captures execution at the actual decision sites: final response, clarification/plan-only wait, stalled/required-blocked work, transport failure, cancellation, token/tool budget, driver budget and pending-user yield. Legacy `stoppedReason` values remain unchanged. In particular, a driver can yield to a pending user after an inner `max-tool-calls` return; its later `awaiting-user` decision is not overwritten by reconstructing execution from that legacy string.
 
 The canonical `AssistantAcceptanceLedger` remains the only requirement-satisfaction authority. The session reads its assessed status; null remains unassessed. A store-backed getter checks whether the applied revision underlying a retained canonical pass still matches the live project. A stale pass is conservatively projected as incomplete until the existing canonical refresh evaluates it. This is freshness invalidation, not a second requirement evaluator or a mutation of the stored snapshot. It may conservatively downgrade an unrelated unrefreshed edit; normal editor store subscriptions already perform canonical refresh.
@@ -61,9 +66,11 @@ The canonical `AssistantAcceptanceLedger` remains the only requirement-satisfact
 
 `recordAppliedProject(actualSuccess)` now transfers the pending call collection into the existing applied-call ledger at the real successful apply boundary, retaining both collections when later drafts are produced. Milestones no longer separately double-add those calls. The runner captures its pending array before application because successful settlement changes the returned result's pending collection; applied accounting and blueprint settlement still use the actual applied calls, not an emptied array.
 
+An acceptance-only terminal stop records whether a pending ordinary draft still needs actual application after scheduling has finished. At the existing applied-state refresh, only the same actually applied project with no pending calls and a newly verified canonical assessment can settle that provisional block to `response-final`. Genuine work stalls, errors, cancellation, unfinished scheduling and adventure problems do not receive this promotion. The original result, recap and final event are refreshed before publication; equivalent milestone and ordinary paths therefore share completion policy.
+
 `recordApplyRejected(onEvent?)` captures failed execution without rewriting `stoppedReason` or discarding the draft. Both actual proposal-host rejection and runner settlement use it. Ordinary successful apply still follows the existing host rebase and `proveAppliedRevision` path; no approval, auto-apply, undo, house guard, region approval or advisory behavior was changed.
 
-Only an actual P1 flush receipt correlated to the current run's actual `commitProject` can become this run's accepted persistence fact. Commit-log `persisted`, newest/global receipts, model flags and status text cannot grant it. A passing proof must also refer to that receipt and remain current to project `persisted-verified`; stale or failed proof preserves accepted `persisted`, not verified. No-write new user runs clear delivery ownership. The mutable returned-result holder gives an in-flight proof an actual publication owner: an old proof cannot cancel or settle a newer query. P1 proof's existing overlapping-attempt guards and store authority are preserved.
+Only an actual P1 flush receipt correlated to the current run's actual `commitProject` can become this run's accepted persistence fact. Commit-log `persisted`, newest/global receipts, model flags and status text cannot grant it. A passing proof must also refer to that receipt and remain current to project `persisted-verified`; stale or failed proof preserves accepted `persisted`, not verified. Delivery reset now happens after the existing intent/user-action decision, not unconditionally at public send. Host-authorized manual continuation and synthetic driver continuation retain their already-owned applied calls, apply metadata and receipt. Fresh requests and Ask queries clear that delivery ownership, including Ask containing the literal continuation token. A model `source: continuation` claim alone does not preserve delivery. Explicit `retryLastTurn` continues to retry proof without replaying applied tools. The mutable returned-result holder gives an in-flight proof an actual publication owner: an old proof cannot cancel or settle a newer query. P1 proof's existing overlapping-attempt guards and store authority are preserved.
 
 ### Publication surfaces
 
@@ -93,6 +100,48 @@ withdrawAiRequirement({ acceptanceId, requirementId, reason }): boolean
 ```
 
 The real panel registration refuses this action when disposed or busy and delegates to its current session. It is deliberately **not** a `BridgeCommand`, HTTP/MCP command, `window` tool, LLM schema or tool dispatcher. The UI node should invoke it (or the canonical session API with its normal event callback) only from a genuine scoped user action, then refresh the current snapshot/outcome surface. An unmet withdrawn item stays unmet in history while its denominator effect is canonical. No renderer, control, CSS or UI hook was authored here.
+
+## Verified stop/apply/continuation policy correction
+
+This correction is based on committed integration head `89584faf0470cfc4601fd791180ff1f659ec7e95` and is delivered as another scoped commit on the same main P2 branch, not an uncommitted patch or separate outcome implementation. It changes `assistantSession.ts`, the existing WorkPlan continuation decision seam, two new direct test files and one optional fault-reset parameter in the existing drained fixture. The canonical acceptance ledger, pure `runOutcome.ts`, P1 store/proof authority and QA scripts are unchanged by this correction. Prior raw evidence remains intact.
+
+### Faithful failing-first cases
+
+```sh
+npm test -- test/aiOutcomeApplyPolicy.test.ts test/aiOutcomeContinuationDelivery.test.ts --maxWorkers 1 --minWorkers 1
+```
+
+**Exit 1: four assertion failures and seven passing controls.** Raw: [integration-policy-red.log](integration-policy-red.log).
+
+- Real ordinary resize application produced `blocked / satisfied / persisted-verified`, while its equivalent actual milestone path correctly produced `response-final / satisfied / persisted-verified`. The ordinary requirement was explicitly asserted unverified before application, then verified only by real applied content.
+- A real unfinished plan stopped at `QUICK_REPLY_MARKER` without question prose, but the separate projection classifier returned blocked rather than awaiting-user. The test pins only the machine-consumed marker and typed result, not prompt wording.
+- Trusted manual `계속` lost both accepted and verified delivery to no-change because public-send and non-driver resets cleared ownership before the actual resume decision.
+- Passing controls already preserved genuine blocked/error/cancelled executions, direct proof retry, fresh query and Ask delivery exclusion. These assertions were retained unchanged.
+
+The first implementation passed **51/51 cases** including all 40 existing WorkPlan tests (`npm test -- test/aiOutcomeApplyPolicy.test.ts test/aiOutcomeContinuationDelivery.test.ts test/workPlan.test.ts --maxWorkers 1 --minWorkers 1`, exit 0; [integration-policy-green-attempt.log](integration-policy-green-attempt.log)). The final implementation carries the decision until the actual return, so a later review/repair continuation cannot retain a prematurely recorded stop. Two additional real completed-milestone controls exercise manual continuation retrying a failed proof versus a fresh query; neither replays the title tool.
+
+### Final verification
+
+```sh
+npm test -- test/aiOutcomeApplyPolicy.test.ts test/aiOutcomeContinuationDelivery.test.ts test/aiRunOutcome.test.ts test/aiRunOutcomeApply.test.ts test/aiRunOutcomeOwnership.test.ts test/aiRunOutcomeLifecycle.test.ts test/aiRunOutcomeIntegration.test.ts test/aiBlockedContinue.test.ts test/aiRequiredOutcomes.test.ts test/aiMilestoneTurnAccounting.test.ts test/aiAssistantTurnCleanup.test.ts test/aiAssistantBridge.test.ts test/workPlan.test.ts test/aiRunEndProof.test.ts test/storePersistenceProof.test.ts test/assistantAcceptanceSession.test.ts test/aiActivityLog.test.ts test/runRecap.test.ts --maxWorkers 1 --minWorkers 1
+npm run build
+```
+
+Both **exit 0**. Tests: **643 passed in 18 files, zero failed/skipped, 668.73s**, including the named plan suites and actual P1 proof adapters. Build includes app typecheck, editor, player/SDK and standalone bundles. Raw: [integration-policy-final-green.log](integration-policy-final-green.log), [integration-policy-build.log](integration-policy-build.log). No source/test edit followed these final executions. Fresh diagnostics on every changed TypeScript file were clear; two requests initially timed out during contention, and subsequent fresh session/continuation-test requests returned no diagnostics. No timeout was raised in tests and no assertion was weakened.
+
+The new ordinary/milestone contract compares independently specified expected axes after native `resize_map`, actual `applyProposedProject`, canonical applied-state assessment and real store flush/read proof against the fixture's wire-level row. Separate negative cases prove actual independent blocked, failed and cancelled stops remain so even when the applied draft later satisfies the requirement. Continuation cases use the normal public `계속` token or existing proof retry; fresh query and Ask controls in the same session retain no old applied calls/delivery. The completed-plan manual continuation case actually retries its failed proof against the same receipt with one total title-tool execution. No general epoch, checkpoint, authorization or P3 framework was introduced.
+
+### Actual API probe, cleanup and remaining scope
+
+```sh
+QA_PORT=37025 EVIDENCE_DIR=output/evidence/ai-harness/p2/integration-policy-surface xvfb-run -a node scripts/qa/ai-harness-contracts.mjs --scenario outcome-matrix
+```
+
+Overall **exit 1 only for the ten absent UI outcome hooks**; all **138 backend/behavior checks pass**, with the original assertions unchanged. [integration-policy-binding.log](integration-policy-binding.log) verifies all 16 actual source/harness hashes against this corrected source and the cleanup receipt. Raw logs, actions, exit and screenshots are in [integration-policy-surface](integration-policy-surface/). This is a fresh editor/bridge/store/Supabase execution, not a reused earlier probe. It validates the original ten matrix cases; the new canonical apply-policy and continuation cases are actual-adapter integration tests, not claimed as additional browser cases.
+
+Run-owned project `qa-ai-surface-86b3383b-439b-49c7-b044-d2365806b6aa` was deleted with child-table/commit absence proof. Browser, server, cache, listeners/timers and port were released; `activeRoutes:0`, no reused listener, configured key-value scan passed. The UI-lane Ask-to-Do user-click boundary and its deliberately RED resumed terminal assertions remain as documented in the runner handoff; this policy correction does not bypass them.
+
+Architectural review: one canonical requirement ledger and one outcome projector remain; the new typed WorkPlan value is the existing scheduler's stop reason, not goal authority. The apply-pending flag records only the actual acceptance stop cause and settles only through the correlated actual applied-state refresh. New helper methods have one or zero parameters and two real callers; normalized facts remain typed, no parameters or caller data are mutated. No new any/casts/non-null assertions, suppressions, sleeps/polling, prose assertions, dependencies, logging framework or defensive re-query. The fixture retains bounded call-through writer drainage before restoring globals. Pure LOC: inherited session 3976, WorkPlan 878; drained fixture 73, new apply-policy tests 88, continuation tests 78. The explicit narrow phase scope still forbids unrelated restructuring of the inherited oversized owners. Source/test whitespace checks passed; raw log whitespace is retained.
 
 ## Own RED -> GREEN record
 
