@@ -21,7 +21,7 @@ import { FACESET_FACE_ASSETS, LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetF
 import { builtinGeneratedResourceIds } from "@/assets/generatedAssetResourceResolver";
 import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
 import { SE_CATALOG, SE_CATALOG_CATEGORIES } from "@/assets/seCatalog";
-import { listMovieResources } from "@/editor/panels/eventEditor/playMoviePreview";
+import { listMovieResources } from "@/assets/movieResourceCatalog";
 import { resolvePictureSource } from "@/player/pictures/pictureResources";
 import type { Project } from "@/project/types";
 
@@ -186,7 +186,7 @@ function collect(
       for (const id of Object.keys(project.assets.sprites)) add(id, id);
       break;
     case "movie":
-      // 동영상은 업로드로만 들어온다 — 판정 근거는 playMoviePreview 가 소유한다.
+      // 동영상은 업로드로만 들어온다 — 판정 근거는 movieResourceCatalog 가 소유한다.
       for (const entry of listMovieResources(project)) add(entry.id, entry.name);
       break;
   }

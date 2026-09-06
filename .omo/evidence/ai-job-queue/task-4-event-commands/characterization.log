@@ -1,0 +1,29 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/eventCommandAssist.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-aiq-event-silver
+
+ ✓ test/eventCommandAssist.test.ts (56 tests) 13599ms
+   ✓ buildEventAssistPrompt > kind 목록·factory 기본값 예시·리소스 id 목록·출력 규약을 포함한다  580ms
+   ✓ buildEventAssistPrompt > AI 저작 표면에서 제외된 명령은 kind 목록과 예시에 노출하지 않는다  330ms
+   ✓ buildEventAssistPrompt > 고를 리소스가 없는 kind 는 프로젝트를 보고 목록에서 뺀다 — 동영상  504ms
+   ✓ parseAndValidate > 「그림 선택」 픽커가 제시하는 이미지는 하나도 반려하지 않는다  349ms
+   ✓ AI Assist 패널 UI (fakeDom) > 같은 ids를 가진 다른 프로젝트로 바꾸면 초안과 열린 상태를 공유하지 않는다  456ms
+   ✓ AI Assist 패널 UI (fakeDom) > 초안은 도크 카드가 아니라 목록 자리(stagedHost)에 유령 행으로 그려진다  492ms
+   ✓ AI Assist 패널 UI (fakeDom) > 적용은 목록 전체 교체 한 번이다 — 되돌리기 스냅샷이 한 칸만 쌓인다  387ms
+   ✓ AI Assist 패널 UI (fakeDom) > 기존 명령이 있는 페이지에서 «고쳐 달라»고 하면 덧붙이지 않고 바뀜으로 표시한다  600ms
+   ✓ AI Assist 패널 UI (fakeDom) > 행마다 «이건 빼기»로 골라 적용할 수 있다  429ms
+   ✓ AI Assist 패널 UI (fakeDom) > 생성 중 명령 목록이 바뀌면 초안을 만들거나 적용하지 않는다  306ms
+   ✓ AI Assist 패널 UI (fakeDom) > surviving staged rows use the applied result sequence for numbers and the badge  883ms
+   ✓ AI Assist 패널 UI (fakeDom) > excluding an add row rerenders the remaining staged numbers contiguously  801ms
+   ✓ AI Assist 패널 UI (fakeDom) > 취소를 누르면 초안만 지우고 목록을 건드리지 않는다  1041ms
+   ✓ AI Assist 패널 UI (fakeDom) > 연결이 안 됐으면 연결 방식을 완료하라고 안내한다  761ms
+   ✓ AI Assist 패널 UI (fakeDom) > ChatGPT 모드(apiKey 없음)에서는 생성을 막지 않고 초안을 보여준다  626ms
+   ✓ AI Assist 패널 UI (fakeDom) > 존재하지 않는 itemId만 계속 돌아오면 에러를 표시한다  434ms
+
+ Test Files  1 passed (1)
+      Tests  56 passed (56)
+   Start at  20:23:39
+   Duration  38.10s (transform 15.90s, setup 0ms, collect 23.11s, tests 13.60s, environment 0ms, prepare 174ms)

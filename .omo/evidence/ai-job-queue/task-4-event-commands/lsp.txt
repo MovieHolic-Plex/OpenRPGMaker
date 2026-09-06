@@ -1,0 +1,13 @@
+LSP diagnostics, severity=all: No diagnostics found
+src/ai/eventCommandAssist.ts
+src/ai/eventResourceCatalog.ts
+src/ai/jobs/eventCommandsPayload.ts
+src/ai/jobs/executors/eventCommandsJob.ts
+src/assets/movieResourceCatalog.ts
+src/editor/panels/eventEditor/playMoviePreview.ts
+test/aiEventCommandsJob.test.ts
+
+A fresh check of playMoviePreview.ts after the EOF-only correction initially timed
+out at 3000ms; its subsequent final check returned No diagnostics found.
+Final executeEventCommandsJob/test checks after the explicit-review guard also
+returned No diagnostics found. Final application tsc command exited 0.

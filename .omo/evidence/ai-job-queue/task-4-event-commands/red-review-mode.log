@@ -1,0 +1,88 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiEventCommandsJob.test.ts -t rejects automatic application mode
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-aiq-event-silver
+
+ ❯ test/aiEventCommandsJob.test.ts (16 tests | 1 failed | 15 skipped) 839ms
+   ↓ isolated real session import graph > has no runtime editor/store/persistence boot edges
+   ↓ event command worker boundary > uses injected chat for the real assist and every validation repair, never foreground HTTP
+   ↓ durable event command proposals > runs real assist through a held wire response and retains draft context and exclusion review without applying
+   ↓ durable event command proposals > preserves long-page insertion scope and selection null
+   ↓ durable event command proposals > preserves long-page insertion scope and selection 0
+   ↓ durable event command proposals > preserves long-page insertion scope and selection 0
+   ↓ durable event command proposals > captures a common event without treating it as a map event page
+   ↓ durable event command proposals > retains invalid content before failed repair and retries only the missing paid stage
+   ↓ durable event command proposals > reuses the host ledger after interruption between durable paid response and worker receipt
+   ↓ durable event command proposals > retains validated output when final proposal persistence fails without repeating assist work
+   ↓ durable event command proposals > preserves three-attempt validation failure and paid outputs without a false completed proposal
+   ↓ durable event command proposals > allows clearing a nonempty page
+   × durable event command proposals > rejects automatic application mode before any paid operation 838ms
+     → promise resolved "{ version: 1, …(8) }" instead of rejecting
+   ↓ durable event command proposals > rejects malformed payload, target, project and checkpoint before paid work
+   ↓ durable event command proposals > rejects a foreign checkpoint and altered proposal without provider work
+   ↓ durable event command proposals > has no transitive store, panel, editor boot or PWA runtime edge
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiEventCommandsJob.test.ts > durable event command proposals > rejects automatic application mode before any paid operation
+AssertionError: promise resolved "{ version: 1, …(8) }" instead of rejecting
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- Error {[39m
+[32m-   "message": "rejected promise",[39m
+[31m+ {[39m
+[31m+   "artifacts": [[39m
+[31m+     {[39m
+[31m+       "byteLength": 1215,[39m
+[31m+       "mediaType": "application/json",[39m
+[31m+       "sha256": "e5da0c7a637e15097b2c33e0fd7b6d6436ebefe52e5a2b0c837051a50bcad854",[39m
+[31m+     },[39m
+[31m+   ],[39m
+[31m+   "attemptId": "attempt-1",[39m
+[31m+   "baseSnapshot": {[39m
+[31m+     "byteLength": 2451461,[39m
+[31m+     "mediaType": "application/json",[39m
+[31m+     "sha256": "8ac04d007b3cb7dcd90fd41752a2a0fba13b73ff4dc4625d9fb9a39ac33251b3",[39m
+[31m+   },[39m
+[31m+   "family": "event-commands",[39m
+[31m+   "generatedSnapshot": null,[39m
+[31m+   "jobId": "38bbe7d9-0ebf-490e-ad58-2039ed84bcef",[39m
+[31m+   "payload": {[39m
+[31m+     "attempts": 1,[39m
+[31m+     "checkpoint": "private-proposal",[39m
+[31m+     "completion": "complete",[39m
+[31m+     "persistence": "not-applicable",[39m
+[31m+     "proposalRef": {[39m
+[31m+       "byteLength": 1215,[39m
+[31m+       "mediaType": "application/json",[39m
+[31m+       "sha256": "e5da0c7a637e15097b2c33e0fd7b6d6436ebefe52e5a2b0c837051a50bcad854",[39m
+[31m+     },[39m
+[31m+     "review": "required",[39m
+[31m+     "scope": "page",[39m
+[31m+   },[39m
+[31m+   "project": {[39m
+[31m+     "backend": "local",[39m
+[31m+     "projectId": "snapshot-A",[39m
+[31m+   },[39m
+[31m+   "version": 1,[39m
+[2m  }[22m
+
+ ❯ test/aiEventCommandsJob.test.ts:240:79
+    238|   it("rejects automatic application mode before any paid operation", a…
+    239|     const f = await fixture();
+    240|     await expect(executeEventCommandsJob({ ...f.input, mode: "auto" },…
+       |                                                                               ^
+    241|     expect(f.operations).toEqual([]);
+    242|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 15 skipped (16)
+   Start at  20:44:10
+   Duration  8.49s (transform 4.58s, setup 0ms, collect 6.81s, tests 839ms, environment 0ms, prepare 230ms)

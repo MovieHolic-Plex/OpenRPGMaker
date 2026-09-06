@@ -1,0 +1,6 @@
+Owned temporary repositories remaining:
+
+Port 19844 listeners:
+State Recv-Q Send-Q Local Address:Port Peer Address:PortProcess
+
+No owned server/browser was started. Tests use local temporary repositories only.

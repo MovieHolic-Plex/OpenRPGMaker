@@ -1,0 +1,15 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/movieResourceKind.test.ts test/playMovieEditorBody.test.ts test/playMovieRuntime.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-aiq-event-silver
+
+ ✓ test/playMovieRuntime.test.ts (14 tests) 955ms
+ ✓ test/playMovieEditorBody.test.ts (8 tests) 926ms
+ ✓ test/movieResourceKind.test.ts (9 tests) 1198ms
+
+ Test Files  3 passed (3)
+      Tests  31 passed (31)
+   Start at  20:40:23
+   Duration  10.80s (transform 10.43s, setup 0ms, collect 26.23s, tests 3.08s, environment 2ms, prepare 580ms)

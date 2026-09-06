@@ -1,0 +1,124 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiEventCommandsJob.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-aiq-event-silver
+
+ ❯ test/aiEventCommandsJob.test.ts (15 tests | 3 failed) 17443ms
+   ✓ isolated real session import graph > has no runtime editor/store/persistence boot edges  4814ms
+   ✓ event command worker boundary > uses injected chat for the real assist and every validation repair, never foreground HTTP 186ms
+   × durable event command proposals > runs real assist through a held wire response and retains draft context and exclusion review without applying 1626ms
+     → Invalid completed event commands proposal
+   ✓ durable event command proposals > preserves long-page insertion scope and selection null  950ms
+   ✓ durable event command proposals > preserves long-page insertion scope and selection 0  1065ms
+   ✓ durable event command proposals > preserves long-page insertion scope and selection 0  756ms
+   ✓ durable event command proposals > captures a common event without treating it as a map event page  713ms
+   ✓ durable event command proposals > retains invalid content before failed repair and retries only the missing paid stage  956ms
+   ✓ durable event command proposals > reuses the host ledger after interruption between durable paid response and worker receipt  928ms
+   ✓ durable event command proposals > retains validated output when final proposal persistence fails without repeating assist work  937ms
+   ✓ durable event command proposals > preserves three-attempt validation failure and paid outputs without a false completed proposal  897ms
+   ✓ durable event command proposals > allows clearing a nonempty page  668ms
+   × durable event command proposals > rejects malformed payload, target, project and checkpoint before paid work 564ms
+     → promise resolved "{ version: 1, …(8) }" instead of rejecting
+   ✓ durable event command proposals > rejects a foreign checkpoint and altered proposal without provider work  848ms
+   × durable event command proposals > has no transitive store, panel, editor boot or PWA runtime edge 1531ms
+     → expected [ Array(1) ] to deeply equal []
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiEventCommandsJob.test.ts > durable event command proposals > runs real assist through a held wire response and retains draft context and exclusion review without applying
+ProjectFormatError: Invalid completed event commands proposal
+ ❯ assert src/project/io/guards.ts:67:25
+     65|
+     66| export function assert(condition: boolean, message: string): asserts c…
+     67|   if (!condition) throw new ProjectFormatError(message);
+       |                         ^
+     68| }
+     69|
+ ❯ executeEventCommandsJob src/ai/jobs/executors/eventCommandsJob.ts:84:5
+ ❯ test/aiEventCommandsJob.test.ts:138:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  test/aiEventCommandsJob.test.ts > durable event command proposals > rejects malformed payload, target, project and checkpoint before paid work
+AssertionError: promise resolved "{ version: 1, …(8) }" instead of rejecting
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- Error {[39m
+[32m-   "message": "rejected promise",[39m
+[31m+ {[39m
+[31m+   "artifacts": [[39m
+[31m+     {[39m
+[31m+       "byteLength": 1187,[39m
+[31m+       "mediaType": "application/json",[39m
+[31m+       "sha256": "dae09a6c669ec917a98b2407afce1da8aa3b44e4883482fdb2923c43eebe0d6c",[39m
+[31m+     },[39m
+[31m+   ],[39m
+[31m+   "attemptId": "attempt-1",[39m
+[31m+   "baseSnapshot": {[39m
+[31m+     "byteLength": 2451461,[39m
+[31m+     "mediaType": "application/json",[39m
+[31m+     "sha256": "8ac04d007b3cb7dcd90fd41752a2a0fba13b73ff4dc4625d9fb9a39ac33251b3",[39m
+[31m+   },[39m
+[31m+   "family": "event-commands",[39m
+[31m+   "generatedSnapshot": null,[39m
+[31m+   "jobId": "2881447d-272b-4950-8faf-b24d4916f083",[39m
+[31m+   "payload": {[39m
+[31m+     "attempts": 1,[39m
+[31m+     "checkpoint": "private-proposal",[39m
+[31m+     "completion": "complete",[39m
+[31m+     "persistence": "not-applicable",[39m
+[31m+     "proposalRef": {[39m
+[31m+       "byteLength": 1187,[39m
+[31m+       "mediaType": "application/json",[39m
+[31m+       "sha256": "dae09a6c669ec917a98b2407afce1da8aa3b44e4883482fdb2923c43eebe0d6c",[39m
+[31m+     },[39m
+[31m+     "review": "required",[39m
+[31m+     "scope": "page",[39m
+[31m+   },[39m
+[31m+   "project": {[39m
+[31m+     "backend": "local",[39m
+[31m+     "projectId": "snapshot-A",[39m
+[31m+   },[39m
+[31m+   "version": 1,[39m
+[2m  }[22m
+
+ ❯ test/aiEventCommandsJob.test.ts:246:109
+    244|       { ...f.input.payload, selection: [0, -2] },
+    245|       { ...f.input.payload, preferenceMemorySection: undefined },
+    246|     ]) await expect(executeEventCommandsJob({ ...f.input, payload: jso…
+       |                                                                                                             ^
+    247|     await expect(executeEventCommandsJob({ ...f.input, target: { ...f.…
+    248|     const badProject = await f.host.putJson({ version: 4, maps: {}, da…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  test/aiEventCommandsJob.test.ts > durable event command proposals > has no transitive store, panel, editor boot or PWA runtime edge
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   "src/editor/panels/eventEditor/playMoviePreview.ts",[39m
+[31m+ ][39m
+
+ ❯ test/aiEventCommandsJob.test.ts:273:169
+    271|     expect(graph).toContain("src/ai/eventCommandAssist.ts");
+    272|     expect(graph).toContain("src/editor/eventCommandFactoryCore.ts");
+    273|     expect(graph.filter(path => /src\/main\.ts$|project\/store\.ts$|ed…
+       |                                                                                                                                                                         ^
+    274|   });
+    275| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 12 passed (15)
+   Start at  20:37:03
+   Duration  27.61s (transform 6.09s, setup 0ms, collect 8.86s, tests 17.44s, environment 0ms, prepare 426ms)

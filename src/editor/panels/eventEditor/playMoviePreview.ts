@@ -6,12 +6,8 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
-
-/** 브라우저 <video> 가 확실히 재생하는 컨테이너만 통과시킨다(업로드 데이터 URL 화이트리스트). */
-const MOVIE_DATA_URL_PREFIXES = ["data:video/webm", "data:video/mp4", "data:video/ogg"] as const;
-
-/** 번들 경로로 들어온 동영상 파일 확장자. */
-const MOVIE_FILE_EXTENSIONS = [".webm", ".mp4", ".m4v", ".ogv"] as const;
+import { isMovieMedia } from "@/assets/movieResourceCatalog";
+export { listMovieResources, type MovieResourceEntry } from "@/assets/movieResourceCatalog";
 
 /**
  * 레포에 함께 실리는 샘플 클립. 프로젝트 리소스로 등록하지 않는다 —
@@ -22,25 +18,6 @@ export const SAMPLE_MOVIE_RESOURCE = {
   name: "샘플 동영상",
   url: "/assets/movies/sample-movie.webm",
 } as const;
-
-export type MovieResourceEntry = {
-  readonly id: string;
-  readonly name: string;
-  readonly group?: string;
-};
-
-/**
- * 프로젝트에 올라온 동영상 리소스(이름 오름차순).
- *
- * 종류(kind)가 근거다 — "movie" 로 등재된 업로드는 데이터 URL 이 무엇이든 동영상이다.
- * 전용 종류가 생기기 전에 다른 kind 로 올라간 레거시 업로드만 미디어 타입으로 구제한다.
- */
-export function listMovieResources(project: Pick<Project, "assets">): readonly MovieResourceEntry[] {
-  return Object.values(project.assets.uploaded)
-    .filter((asset) => asset.kind === "movie" || isMovieMedia(asset.dataUrl))
-    .map((asset) => ({ id: asset.id, name: asset.name.trim() || asset.id }))
-    .sort((left, right) => left.name.localeCompare(right.name, "ko"));
-}
 
 /**
  * 재생 가능한 URL 을 돌려준다. 업로드 동영상은 데이터 URL 을 직접 쓰고
@@ -103,11 +80,4 @@ export function renderMoviePreviewStage(url: string | null): MoviePreviewStage {
   // fakeDom 에는 play() 가 없다. 실제 브라우저에서만 자동 재생을 시도한다.
   video.play?.()?.catch(() => {});
   return { stage, video };
-}
-
-function isMovieMedia(value: string): boolean {
-  const normalized = value.trim().toLowerCase();
-  if (MOVIE_DATA_URL_PREFIXES.some((prefix) => normalized.startsWith(prefix))) return true;
-  const withoutQuery = normalized.split("?")[0] ?? normalized;
-  return MOVIE_FILE_EXTENSIONS.some((extension) => withoutQuery.endsWith(extension));
 }

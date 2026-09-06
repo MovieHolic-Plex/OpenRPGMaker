@@ -605,6 +605,10 @@ export async function runEventCommandAssist(options: {
   readonly context: EventAssistContext;
   readonly onDelta?: (delta: string) => void;
   readonly signal?: AbortSignal;
+  /** Isolated jobs supply the durable provider boundary; foreground keeps its transport. */
+  readonly chat?: typeof chatCompletion;
+  /** Captured at submission. Empty string deliberately disables live preference reads. */
+  readonly preferenceMemorySection?: string;
   /** 프로젝트 한정 성향 조회 키(conversationScopeKey). 없으면 전역 성향만 붙는다. */
   readonly projectScopeKey?: string;
 }): Promise<AssistRunResult> {
@@ -623,6 +627,7 @@ export async function runEventCommandAssist(options: {
         surface: "event-command",
         body: buildEventAssistPrompt(context),
         includeMemory: true,
+        memorySection: options.preferenceMemorySection,
         ...(options.projectScopeKey ? { projectScopeKey: options.projectScopeKey } : {}),
       }),
     },
@@ -631,7 +636,7 @@ export async function runEventCommandAssist(options: {
 
   let lastErrors: string[] = [];
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
-    const result = await chatCompletion(config, {
+    const result = await (options.chat ?? chatCompletion)(config, {
       messages,
       stream: Boolean(onDelta),
       onToken: onDelta,

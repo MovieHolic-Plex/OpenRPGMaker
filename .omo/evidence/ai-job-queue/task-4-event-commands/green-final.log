@@ -1,0 +1,35 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiEventCommandsJob.test.ts test/eventCommandAssist.test.ts test/movieResourceKind.test.ts test/playMovieEditorBody.test.ts test/playMovieRuntime.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-aiq-event-silver
+
+ ✓ test/playMovieRuntime.test.ts (14 tests) 1490ms
+ ✓ test/playMovieEditorBody.test.ts (8 tests) 1746ms
+   ✓ playMovie 편집기 본문 > 리소스 URL 은 업로드 동영상만 통과시키고 그림 데이터는 거른다  324ms
+ ✓ test/movieResourceKind.test.ts (9 tests) 1838ms
+   ✓ movie ResourceKind > movie 업로드가 serialize/deserialize 왕복한다  445ms
+ ✓ test/eventCommandAssist.test.ts (56 tests) 5993ms
+   ✓ parseAndValidate > 「그림 선택」 픽커가 제시하는 이미지는 하나도 반려하지 않는다  307ms
+ ✓ test/aiEventCommandsJob.test.ts (16 tests) 21399ms
+   ✓ isolated real session import graph > has no runtime editor/store/persistence boot edges  5587ms
+   ✓ durable event command proposals > runs real assist through a held wire response and retains draft context and exclusion review without applying  1825ms
+   ✓ durable event command proposals > preserves long-page insertion scope and selection null  1189ms
+   ✓ durable event command proposals > preserves long-page insertion scope and selection [ +0, -2, +0 ]  950ms
+   ✓ durable event command proposals > preserves long-page insertion scope and selection [ +0, -3, +0 ]  740ms
+   ✓ durable event command proposals > captures a common event without treating it as a map event page  706ms
+   ✓ durable event command proposals > retains invalid content before failed repair and retries only the missing paid stage  947ms
+   ✓ durable event command proposals > reuses the host ledger after interruption between durable paid response and worker receipt  1030ms
+   ✓ durable event command proposals > retains validated output when final proposal persistence fails without repeating assist work  1151ms
+   ✓ durable event command proposals > preserves three-attempt validation failure and paid outputs without a false completed proposal  850ms
+   ✓ durable event command proposals > allows clearing a nonempty page  750ms
+   ✓ durable event command proposals > rejects automatic application mode before any paid operation  532ms
+   ✓ durable event command proposals > rejects malformed payload, target, project and checkpoint before paid work  733ms
+   ✓ durable event command proposals > rejects a foreign checkpoint and altered proposal without provider work  1295ms
+   ✓ durable event command proposals > has no transitive store, panel, editor boot or PWA runtime edge  2877ms
+
+ Test Files  5 passed (5)
+      Tests  103 passed (103)
+   Start at  20:45:06
+   Duration  30.94s (transform 23.12s, setup 0ms, collect 67.37s, tests 32.47s, environment 3ms, prepare 1.22s)
