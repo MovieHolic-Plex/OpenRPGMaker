@@ -83,6 +83,8 @@ export interface AiTurnRunnerDeps {
   readonly noteNoChanges: (result: TurnResult, extraWarnings?: readonly string[]) => void;
 
   // ── 할 일 목록 표면 ──────────────────────────────────────
+  /** Every accepted turn, including manual retry, owns fresh live plan chrome. */
+  readonly beginWorkPlanTurn: (opts: { readonly autonomous: boolean; readonly carriedPlan: WorkPlan | null }) => void;
   /** 턴 종료 — 계획 데이터는 남기고 라이브 표면은 걷는다. */
   readonly settleWorkPlanTurn: () => void;
   readonly refreshWorkPlanSurface: () => void;
@@ -129,6 +131,10 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       return;
     }
     deps.surface.turnBusy = true;
+    deps.beginWorkPlanTurn({
+      autonomous: runOpts?.autonomous === true,
+      carriedPlan: session.getWorkPlan(),
+    });
     const turnConversationId = deps.surface.conversationId;
     const turnConversationScope = deps.surface.conversationScope;
     const auditHistoryAtTurnStart = [...deps.surface.controller.auditHistory];

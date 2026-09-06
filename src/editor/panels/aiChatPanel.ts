@@ -1505,8 +1505,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 계획 모드의 첫 턴은 계획만 세우고 멈춘다(세션이 강제). 활성 계획이 있는 채 「계속」이면 실행 턴이다.
     const activePlan = session.getWorkPlan();
     const planPreview = composerMode === "plan" && (!activePlan || isWorkPlanComplete(activePlan));
-    // 할 일 목록: 세션의 미완료 계획은 이어받고, 예산은 실제 자율 진입에만 세운다. 새 계획은 work_plan 이벤트로 온다.
-    beginWorkPlanTurn({ autonomous: autonomous && !planPreview, carriedPlan: activePlan });
     // 사용자 발화 + 사실(footer: 현재 맵·선택 영역·재료 라벨 예)만 보낸다. 예전에 여기 붙던 「도구 규칙」
     // 17줄은 툴 설명으로 옮겼다 — 기계 텍스트가 사용자 채널에 실려 되묻기·플래너 스킵·툴 노출을 어긋나게
     // 했던 근인이다(2026-09-03 의도 라우터 감사). 선택 사각형은 스코프 인자로 따로 넘긴다.
@@ -1576,6 +1574,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     get workPlanSurfaceState() { return workPlanSurfaceState; },
     applyProposal: (calls, assistantBubble) => applyProposal(calls, assistantBubble),
     noteNoChanges: (result, extraWarnings) => noteNoChanges(result, extraWarnings),
+    beginWorkPlanTurn: (opts) => beginWorkPlanTurn(opts),
     settleWorkPlanTurn: () => settleWorkPlanTurn(),
     refreshWorkPlanSurface: () => refreshWorkPlanSurface(),
     showWorkPlan: (plan) => showWorkPlan(plan),
