@@ -231,6 +231,7 @@ export function parseNpcRewardRequirements(raw: unknown): NpcRewardRequirements 
       const count = typeof grant.count === "number" ? { count: grant.count } : {};
       if (grant.kind === "gold") {
         if ("id" in grant || "name" in grant) return invalid("gold grants must omit id and name");
+        if (grants.some(existing => existing.kind === "gold")) return invalid(`duplicate gold grants for target ${JSON.stringify(reference)}; declare one gold grant with the amount from the user request, preserving other grants and counts. Do not sum ambiguous amounts`);
         grants.push({ kind: "gold", ...count });
         continue;
       }

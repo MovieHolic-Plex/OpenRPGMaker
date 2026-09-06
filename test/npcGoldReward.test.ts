@@ -98,6 +98,22 @@ describe("first-class NPC currency contract", () => {
     expect(verifyNpcRewardsPlayable(project, request([GOLD, { kind: "gold", count: 19 }]))).toMatchObject({ ok: false });
   });
 
+  it.each([
+    [GOLD, { kind: "gold", count: 19 }], [GOLD, GOLD], [{ kind: "gold" }, { kind: "gold" }],
+    [GOLD, ITEM_GRANT, { kind: "gold" }],
+  ] satisfies NpcRewardGrant[][])("rejects duplicate currency components at admission: %j", (...grants) => {
+    const raw = request(grants);
+    const before = structuredClone(raw);
+    expect(parseNpcRewardRequirements(raw)).toHaveProperty("invalidReason");
+    expect(raw).toEqual(before);
+  });
+
+  it("allows independent NPC currency grants and preserves mixed noncurrency components", () => {
+    const mixed = request([ITEM_GRANT, GOLD, { kind: "monster", id: "species_leafling", count: 2 }]);
+    const independent = [...mixed, { ...request()[0], target: { eventId: "another_chief" } }];
+    expect(parseNpcRewardRequirements(independent)).toEqual(independent);
+  });
+
   it.each(["gold", "item", "mixed"] as const)("keeps legitimate item ID gold/name 골드 separate for %s rewards", kind => {
     const { project, map } = fixture(kind === "gold" ? [MONEY] : kind === "item" ? [ITEM] : [MONEY, ITEM]);
     const potion = project.database.items[0];

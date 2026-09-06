@@ -1,0 +1,6 @@
+{
+  "parsed": {
+    "invalidReason": "npcRewards: duplicate gold grants for target {\"eventId\":\"chief\"}; declare one gold grant with the amount from the user request, preserving other grants and counts. Do not sum ambiguous amounts"
+  },
+  "unchanged": true
+}

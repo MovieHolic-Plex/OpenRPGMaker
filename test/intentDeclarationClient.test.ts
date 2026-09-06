@@ -39,6 +39,34 @@ function reply(content: string): ChatResult {
 afterEach(() => resetIntentDeclarationCache());
 
 describe("createLlmIntentDeclarer", () => {
+  it.each(["corrected", "duplicate", "omitted"] as const)("routes duplicate gold through one bounded repair: %s", async repair => {
+    const rewards = [{ target: { eventName: "Chief" }, oneTime: true, grants: [
+      { kind: "item", id: "item_potion", count: 2 }, { kind: "gold", count: 20 },
+      { kind: "monster", id: "species_leafling", count: 1 },
+    ] }];
+    const invalid = { mode: "modify", npcRewards: [{ ...rewards[0], grants: [...rewards[0].grants, { kind: "gold", count: 20 }] }] };
+    const requests: ChatRequest[] = [];
+    const declarer = createLlmIntentDeclarer({ getConfig: () => CONFIG, chat: async (_config, request) => {
+      requests.push(request);
+      return reply(JSON.stringify(requests.length === 1 || repair === "duplicate" ? invalid
+        : repair === "omitted" ? { mode: "modify" } : { mode: "create", npcRewards: rewards }));
+    } });
+    const facts = { ...FACTS, userText: "Make Chief give 20 gold, two potions and one Leafling once." };
+    const outcome = await declarer(facts);
+    expect(requests).toHaveLength(2);
+    const echoed = requests[1].messages[2].content;
+    if (typeof echoed !== "string") throw new Error("Expected original raw declaration in repair request");
+    expect(JSON.parse(echoed)).toEqual(invalid);
+    expect(outcome.intent.mode).toBe("modify");
+    if (repair === "corrected") {
+      expect(outcome.intent.npcRewards).toEqual(rewards);
+      expect(outcome.error).toBeUndefined();
+    } else {
+      expect(outcome.intent.npcRewards).toHaveProperty("invalidReason");
+      expect(outcome.error).toBeDefined();
+    }
+  });
+
   it.each([false, true])("preserves exact reference-free gold through admission/cache, shape repair=%s", async repair => {
     const rewards = [{ target: { eventName: "Chief" }, grants: [{ kind: "gold", count: 20 }], oneTime: true }];
     const requests: ChatRequest[] = [];

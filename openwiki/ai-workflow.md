@@ -85,7 +85,11 @@ npcRewards?: readonly {
   still exact when supplied and positive when omitted. Currency is authored with native
   `changeGold`; neither the parser nor completion coerces localized item names. A legitimate
   item ID `gold` or name `골드` remains inventory-only. Mixed grants require every currency,
-  item and monster delta. Duplicate gold requirements fail rather than overwrite a count.
+  item and monster delta. Duplicate gold components in one requirement fail during admission,
+  before the declaration can be adopted. The actionable error enters the existing single bounded
+  shape-repair call with the complete original JSON; other grants/counts and `oneTime` are
+  preserved. Never silently sum ambiguous amounts. Completion retains its duplicate guard for
+  typed callers; already adopted contracts are not reset. Independent NPC gold grants remain valid.
 - The declaration client gives malformed `npcRewards` one JSON-shape repair within the original
   20-second deadline. It retains the original non-reward intent fields and never accepts omission of
   the reward contract as a repair. Failed repairs remain blocking and are not cached. The session
@@ -120,6 +124,11 @@ npcRewards?: readonly {
   supported aliases; malformed/unknown assertions fail tool preflight before executing steps.
   The provider schema exposes `goldDelta` without a type restriction, like walkthrough `value`,
   because strict provider schemas prohibit the scalar/object union; runtime preflight owns validation.
+  `test/ohMyPiGoldRewardWire.bun.test.ts` captures this field at the actual installed SDK fetch
+  boundary on Antigravity Gemini and Claude routes. It remains untyped (not STRING); numeric
+  20/0 and `{atLeast:1}`/`{atLeast:0}` survive response parsing and execute in the real scene tool.
+  String values are still rejected by runtime preflight. This offline test does not establish
+  remote service acceptance of an untyped legacy Schema field.
   `expect.inventoryDelta` / `ownedMonsterDelta` map IDs to exact integers or `{atLeast:1}`;
   `interactionComplete:true` rejects a still-pending choice. `interact.eventId` asserts the physically
   selected NPC instead of directly executing authored commands. Out-of-range choices fail.
