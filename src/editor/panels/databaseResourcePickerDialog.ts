@@ -17,6 +17,7 @@ import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
 import { listAudioResources } from "@/assets/audioResourceCatalog";
 import { listMonsterResources } from "@/assets/monsterResourceCatalog";
 import { audioDescriptionView, audioPlayback } from "./audioResourcePresentation";
+import { monsterResourceSummary } from "./monsterResourcePresentation";
 import {
   SCARLOXY_BACKDROP_ASSETS,
   SCARLOXY_MONSTER_ICON_ASSETS,
@@ -139,6 +140,7 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
         hue: options.allowHue ? hue : undefined,
       })
     );
+    if (options.kind === "monster" && selectedId) preview.append(monsterResourceSummary(project, selectedId));
   };
 
   const refreshIndexPanel = (): void => {
@@ -216,7 +218,7 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
     el("div", { class: "db-resource-picker-grid", children: [list, preview] }),
     indexPanel,
   ], actions, undefined, () => unsubscribe?.());
-  if (options.kind === "music" || options.kind === "sound") {
+  if (options.kind === "music" || options.kind === "sound" || options.kind === "monster") {
     unsubscribe = store.subscribe((_project, change) => {
       if (change.projectSwitch) {
         closeDialog();

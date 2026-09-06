@@ -1,0 +1,84 @@
+{
+  "browser": "firefox",
+  "viewports": [
+    {
+      "viewport": 375,
+      "width": 351,
+      "height": 760,
+      "left": 12,
+      "top": 70,
+      "overflow": 0
+    }
+  ],
+  "captures": [
+    "output/evidence/monster-ui/browser/catalog-375.png"
+  ],
+  "imageChecks": [
+    {
+      "label": "catalog-375",
+      "images": [
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true
+        }
+      ],
+      "signature": "PNG",
+      "dimensions": {
+        "width": 375,
+        "height": 900
+      }
+    }
+  ],
+  "controls": [],
+  "remoteWrites": [],
+  "pageErrors": [],
+  "failedRequests": [
+    {
+      "path": "/v1/browser/hello",
+      "error": "NS_ERROR_DOM_BAD_URI"
+    },
+    {
+      "path": "/v1/browser/hello",
+      "error": "NS_ERROR_DOM_BAD_URI"
+    },
+    {
+      "path": "/v1/browser/hello",
+      "error": "NS_ERROR_DOM_BAD_URI"
+    },
+    {
+      "path": "/v1/browser/hello",
+      "error": "NS_ERROR_DOM_BAD_URI"
+    }
+  ],
+  "browserErrors": [
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 JSHandle@object",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]"
+  ],
+  "httpErrors": [],
+  "failure": "375: name target is too short",
+  "failureBody": "✦\n이슬 장터 — 30분\n자동 저장 실패\n온라인 저장: 오프라인\n이 세션은 저장 안 됨\n다시 저장\n▶\n테스트\n스튜디오\n도움말\n게스트 세션 37aa\nAI 설정\n360 흙길 중심\n⚙\n더 보기\n인스펙터\n규칙 감사\n12\n작업 기록\n바닥\n덧그림\n이벤트\n크기\n1\n2\n3\n4\n칠하기 · 바닥\n#\n전체\n최근\n지형\n물\n집\n울타리\n장식\n◆\n◆\n◆\n◆\n◆\n◆\n◆\n◆\n◆\n◆\n◆\n◆\n◆\n▸\n붓 보조\n이웃 연결\n수동\n맵\n16\n전체\n빈 맵\n문 없음\n인카운터\n이슬 장터 마을\n100×100 · 20이벤트 · 문30\n시작\n민재의 집 내부\n13×10 · 1이벤트 · 문2\n소라의 집 내부\n13×10 · 1이벤트 · 문2\n대길의 집 내부\n13×10 · 1이벤트 · 문2\n연화의 집 내부\n13×10 · 1이벤트 · 문2\n준호의 집 내부\n13×10 · 1이벤트 · 문2\n다솜의 집 내부\n13×10 · 1이벤트 · 문2\n태식의 집 내부\n13×10 · 1이벤트 · 문2\n보라의 집 내부\n13×10 · 1이벤트 · 문2\n한결의 집 내부\n13×10 · 1이벤트 · 문2\n미선의 집 내부\n13×10 · 1이벤트 · 문2\n민재2의 집 내부\n13×10 · 1이벤트 · 문2\n소라2의 집 내부\n13×10 · 1이벤트 · 문2\n달빛 숲\n40×40 · 5이벤트 · 문2\n폐광 입구\n36×36 · 4이벤트 · 문2\n종탑 사당\n24×24 · 2이벤트 · 문2\n임시 세션 — 작업이 이 탭에만 있습니다. 보존하려면 내보내기를 누르세요.\n내보내기\n✕\n걸을 때 적 만나기\n−\n2x\n+\n26\n데이터베이스\n몬스터\n›\n전투 몬스터\nAI 어시스턴트\n개요\n전투 몬스터\n포획·성장 종족\n적 그룹\n진영\n전투 중심 모드입니다. 포획을 사용하려면 시스템에서 몬스터 수집을 켜세요.\n시스템 탭 열기\n몬스터\n0개\n○\n몬스터 — 아직 없습니다\n\n[+ 추가]로 첫 레코드를 만드세요.\n\n몬스터 소재\n+ 추가\n복제\n삭제\nAI로 생성\n갤러리\n목록\n레코드가 없습니다.\n자동 저장됨\n닫기\n지금 저장\n도움말\n몬스터 소재\n닫기\n몬스터 소재\n162/162\n초록 슬라임\n갈색 박쥐\n바위 골렘\n붉은 드래곤\n적갈색 벌\n픽셀 초록 슬라임\n빛나는 룬 다면체\n좀비\n녹슨 검을 든 해골\n도끼를 든 녹색 오크\n푸른빛 망령\n바위 게\n보라색 가시 거미\n초록색 코브라\n황갈색 전갈\n회색 늑대\n갈색 깃털 하피\n거대 지네\n거대한 식충 식물\n무장한 갈색 말\n하얀 유니콘\n적흑무늬 도마뱀\n붉은 보석 여우\n무장한 줄무늬 고양이\n물접시 갓파\n비늘 코카트리스\n붉은 촉수 벌레\n거대 사마귀\n잭 오 랜턴\n파란 이빨물고기\n흰색 유령\n초록색 언데드\n회색 악령\n푸른 비늘 해룡\n하늘색 구름 정령\n풀잎 여우\n불꽃 강아지\n불꽃 정령\n나뭇잎 정령\n번개 정령\n물고기형 물 정령\n왕관 쓴 초록 슬라임\n푸른 슬라임\n붉은 슬라임\n초록 슬라임\n은빛 슬라임\n왕관 쓴 초록 슬라임\n초록 큐브 슬라임\n검은 얼룩 슬라임\n청록색 슬라임\n갈색 박쥐\n적갈색 박쥐\n거대 벌\n가시 거미\n가시 돋친 흑거미\n황록색 전갈\n푸른 장수풍뎅이\n거대 녹색 사마귀\n자줏빛 등갑 지네\n갈색 털 나방\n갈색 거대 벌레\n붉은 개미\n회색 늑대\n보랏빛 눈 늑대\n갈색 멧돼지\n갈색 곰\n갑옷 입은 검치호랑이\n붉은 눈의 갈색 쥐\n갈색 매\n초록 코브라\n보라색 줄무늬 고양이\n갈색 큰뿔 산양\n바위게\n머리 셋 달린 검은 늑대\n이끼 낀 바위 고릴라\n룬 무늬 뿔사슴\n녹슨 검을 든 해골\n해골 궁수\n낡은 검을 든 해골\n녹색 좀비\n녹색 좀비\n하얀 유령\n회색 유령\n얼음 해골 마법사\n미라\n창백한 망령\n무장한 해골 검사\n사족보행 해골 괴수\n불의 정령\n물의 정령\n이끼 낀 바위 골렘\n백색 유령\n하얀 유령\n회색 유령\n푸른 불꽃 정령\n구름 정령\n물의 정령\n주황 검정 무늬 도마뱀\n바위 골렘\n짙은 회색 바위 골렘\n이끼 바위 골렘\n푸른 바위 골렘\n녹슨 중갑 기사\n룬 장식 검\n외눈 미믹\n낫을 든 허수아비\n단검을 든 목각 꼭두각시\n나무 토템\n가시곤봉 고블린\n송곳니 고블린\n도끼를 든 녹색 오크\n해골 지팡이를 든 녹색 오크\n곡괭이 파충류 인간\n단검을 든 복면 인간형\n보라 지팡이 후드 마법사\n검은 갑옷 기사\n창을 든 녹색 리자드맨\n녹색 하피\n무장한 미노타우로스\n켄타우로스 전사\n세 팔 곤봉 괴수\n곤봉을 든 녹색 거인\n붉은 꼬마 악마\n청색 주황 비늘 괴어\n보라색 부리 오징어\n사족보행 상어\n푸른 번개장어\n갈색 그리핀\n황록색 드래곤\n갈색 독수리\n이끼 낀 돌 가고일\n불새\n황갈색 비늘 드래곤\n붉은 드래곤\n푸른 드래곤\n회백색 드래곤\n녹색 삼두룡\n뿔 달린 흑갈색 마수\n뿔 달린 창백한 마족\n검은 날개의 흑기사\n뿔 달린 거대 핏빛 눈알\n이빨 식충식물\n붉은 벌\n보라색 뿔뱀\n용암 무늬 바위 거북\n불꽃꼬리 갑옷 파충류\n나뭇잎 뿔벌레\n별무늬 맥\n불꽃 꼬리 여우\n긴몸 파란 돌고래\n파란 돌고래\n푸른 뿔 흰 사슴\n분홍 무늬 돌고래\n덩굴 꼬리 고양이\n작은 삼색 새\n새싹거북\n꽃머리 풀고슴도치\n초록 갈기 점박이 맹수\n잎사귀 표범\n두발 갈색 설치류\n물방울 뿔 청록색 꼬마 공룡\n불꽃꼬리 등딱지 몬스터\ngenerated-enemy-slime-01\n\n기본 제공 · 검토됨\n\n이름: 기본 카탈로그 · 태그: 기본 카탈로그 · 설명: 기본 카탈로그\n\n소재 정보\n이름\n태그 (한 줄에 하나)\n설명\n적용\n기본값 복원\n\n게임 속 몬스터 이름·능력치는 바뀌지 않습니다.",
+  "bootDiagnostics": {
+    "readyState": "complete",
+    "url": "http://127.0.0.1:11942/?freshProject=1&map=map_village_30_100x100",
+    "html": "\n    <div id=\"app\"><div class=\"topbar\"><div class=\"oprn-menu-bar editor-studio-menubar studio-bar\" data-testid=\"oprn-menu-bar\" data-editor-ui-mode=\"expert\"><div class=\"studio-bar-lead\" data-testid=\"studio-bar-lead\"><div class=\"editor-product-brand\" title=\"OPRN Studio\" data-testid=\"editor-product-brand\"><span class=\"editor-product-brand-mark\" aria-hidden=\"true\">✦</span><span class=\"editor-product-brand-text\">OPRN Studio</span></div><button class=\"oprn-menu-item studio-project-button\" type=\"button\" aria-haspopup=\"menu\" aria-expanded=\"false\" title=\"프로젝트 — 이슬 장터 — 30분\" data-testid=\"menu-project\"><span class=\"oprn-menu-item-label\">이슬 장터 — 30분</span><span class=\"oprn-menu-item-chevron\" aria-hidden=\"true\"><svg viewBox=\"0 0 22 22\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M6.5 9l4.5 4.5L15.5 9\"></path></svg></span></button><button class=\"studio-icon-button studio-save-button\" type=\"button\" title=\"프로젝트 저장 (Ctrl+S)\" aria-label=\"프로젝트 저장 (Ctrl+S)\" aria-keyshortcuts=\"Control+S\" data-testid=\"toolbar-save\" data-autosave-kind=\"error\"><svg viewBox=\"0 0 22 22\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M4 4.5A1.5 1.5 0 0 1 5.5 3H15l4 4v10.5a1.5 1.5 0 0 1-1.5 1.5h-12A1.5 1.5 0 0 1 4 17.5z\"></path><path d=\"M7 3v5h8V3\"></path><rect x=\"7\" y=\"13\" width=\"8\" height=\"5\"></rect></svg><span class=\"studio-save-dot\" aria-hidden=\"true\"></span><span class=\"visually-hidden\" data-testid=\"toolbar-save-autosave\">자동 저장 실패</span></button><div class=\"topbar-save-status\" role=\"status\" aria-live=\"polite\" data-testid=\"topbar-save-status\" data-autosave-kind=\"error\" style=\"display: inline-flex; align-items: center;\"><span class=\"db-connection-status-group\" role=\"group\" aria-label=\"온라인 저장 작업\"><button class=\"editor-statusbar-cell db-connection-status db-connection-chip-button disabled autosave-error\" title=\"현재 예제 모드에서는 온라인 저장을 사용하지 않습니다. 이 주소는 예제·새 프로젝트 세션이라 변경을 살려 두지 않습니다. 보존하려면 프로젝트를 내보내거나 정상 주소로 여세요. 클릭하면 저장된 작업을 확인합니다.\" type=\"button\" style=\"display:inline-flex;align-items:center;gap:7px\" data-testid=\"db-connection-status\"><span class=\"db-connection-label\">온라인 저장: 오프라인</span><span class=\"db-autosave-state\" data-testid=\"db-autosave-state\">이 세션은 저장 안 됨</span></button><button class=\"db-autosave-retry-button\" type=\"button\" title=\"온라인 저장을 다시 시도합니다.\" data-testid=\"db-autosave-retry\">다시 저장</button></span></div><button class=\"studio-tool-button\" type=\"button\" title=\"데이터베이스\" aria-label=\"DB\" data-testid=\"toolbar-database\"><svg viewBox=\"0 0 22 22\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M4 6c0-1.7 3.1-3 7-3s7 1.3 7 3-3.1 3-7 3-7-1.3-7-3z\"></path><path d=\"M4 6v10c0 1.7 3.1 3 7 3s7-1.3 7-3V6\"></path><path d=\"M4 11c0 1.7 3.1 3 7 3s7-1.3 7-3\"></path></svg><span class=\"studio-tool-button-label\">DB<",
+    "styles": 10,
+    "hasStore": true,
+    "resources": [
+      {
+        "name": "/src/main.ts",
+        "duration": 533,
+        "bytes": 13399
+      }
+    ],
+    "resourceCount": 250
+  },
+  "serverStopped": true
+}

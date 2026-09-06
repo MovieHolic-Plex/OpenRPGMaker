@@ -26,6 +26,7 @@ import { renderStateRecordForm } from "@/editor/panels/databaseStateRecordView";
 import { renderEquipmentRecordForm, renderItemRecordForm, renderSkillRecordForm, renderTroopRecordForm } from "@/editor/panels/databaseAdvancedRecordViews";
 import { ITEM_TYPES } from "@/editor/panels/databaseItemRecordView";
 import { renderEnemyRecordForm } from "@/editor/panels/databaseEnemyRecordView";
+import { openMonsterResourceEditor } from "@/editor/panels/databaseMonsterResourceEditor";
 import {
   categoryFilterForCollection,
   listScrollTopForCollection,
@@ -216,6 +217,11 @@ export function resetDatabaseRecordViewSession(): void {
 function toolbar(collection: DatabaseCollection, rerender: () => void): HTMLElement {
   const wrap = el("div", { class: "db-toolbar" });
   wrap.append(
+    ...(collection === "enemies" ? [el("button", {
+      class: "btn small", text: "몬스터 소재", attrs: { type: "button" },
+      dataset: { testid: "db-monster-resources-open" },
+      on: { click: openMonsterResourceEditor },
+    })] : []),
     el("button", {
       class: "btn small",
       text: "+ 추가",

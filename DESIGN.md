@@ -1,5 +1,34 @@
 # RPG ZZU Design System
 
+## Monster resource metadata editor (2026-09-07)
+
+- Database > 전투 몬스터 exposes 몬스터 소재 even with no gameplay records.
+  This nested worksheet edits artwork metadata, never gameplay names or stats.
+- Reuse Database Studio tokens, `workspaceShell`, `listPane`, `listRow`,
+  `detailPane`, `sectionCard`, labelled native controls and shared modal-stack
+  confirmation. No new dependency, visual theme, or decorative motion.
+- The list-detail spatial contract follows StyleGallery
+  `patterns/split-sidebar/list-detail.md`: source order is list then detail,
+  zero-minimum tracks prevent long IDs from expanding the frame. The bounded
+  dialog is at most 960px by 760px; list and detail body own separate vertical
+  scrolls. Below 600px the list is above detail with a 192px maximum list height.
+  Existing shell remains desktop-first; narrow captures verify containment only.
+- Reuse 4/8/12/16px spacing, 12/13/18px type, 32px controls, 8px corners,
+  `--bg-raised/inset`, `--text-1/2`, `--accent`, `--border-default`,
+  `--focus-outline` and existing shadows. Preview is 160px tall; list art 32px.
+- Search by effective name, ID, tags and description does not discard selection.
+  The list has one tab stop; shared arrows/Home/End move focus and Enter selects.
+  ID, origin, review state and each field's source are read-only. Apply creates
+  one undoable store edit; restore removes only this resource's overrides.
+- Drafts stay mounted through clean external refreshes and dirty search. Selection,
+  reset and close require explicit discard confirmation when dirty. Project
+  replacement disables writes while leaving draft text available for copying;
+  pending confirmations cannot write into the replacement. Browser unload warns.
+- Personas: catalog browsing author, keyboard/IME author, existing-project author.
+  Native labels, meaningful artwork alternatives, visible error/status text and
+  token focus rings are required. No accepted accessibility debt. Browser evidence
+  and independent review are required; unit DOM tests do not imply visual approval.
+
 ## In-game shop trade counter (2026-09-06)
 
 Runtime only: this is not the shop-command editor. `runtime/shop.css` owns a

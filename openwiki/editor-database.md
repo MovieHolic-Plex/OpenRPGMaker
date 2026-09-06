@@ -1,3 +1,9 @@
+## Monster resource metadata worksheet (2026-09-07)
+
+Database > 전투 몬스터 > 몬스터 소재 uses the full resource catalog independently
+of gameplay enemies. Draft, Apply/reset, project-switch safety and focused QA
+ownership: [monster-resource-editor.md](monster-resource-editor.md).
+
 ## Shared database CSS ownership (2026-09-06)
 
 `studio-v2.css` owns the shared numeric composite: one 32px border box and
