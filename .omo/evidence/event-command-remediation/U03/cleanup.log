@@ -1,0 +1,10 @@
+PORT_CLOSED 39283
+PORT_CLOSED 40115
+PORT_CLOSED 38283
+BROWSER_CONTEXTS_CLOSED: editor worker and two Chromium disposable contexts, per finally cleanup receipts
+ABSENT output/ai-activity
+ABSENT output/edit-activity
+ABSENT /tmp/event-command-u03-Y3cP2Q (fixture-loader, fixtures, editor/player caches, Playwright output)
+PRESERVED pre-existing .vite-cache tracked metadata; no diff
+RETAINED local screenshots under ignored U03 evidence; no binary files staged
+DIRECT_EXIT_CODE=0

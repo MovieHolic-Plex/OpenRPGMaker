@@ -4,6 +4,12 @@
 
 Event command edit dialogs, cutscene/horror/puzzle authoring tools, place_npc/make_villager, AI event tools, and 2026-07-15 hostile-review command fixes.
 
+## 장소 이동의 목적지 원복과 설정 보존 (2026-09-06)
+
+- `transferPlayerDialog.ts`는 창을 열 때의 값이 아니라 마지막으로 반영한 명령과 현재 선택을 비교한다. A → B → A로 고르면 초안도 다시 A가 된다.
+- 실시간 반영과 독립 창의 확인 모두 기존 명령에 수정 필드만 덧씌운다. `transition`과 다른 미수정 필드는 유지한다. 전환값은 `fade`·`mosaic`·`blinds`이며 별도의 이동 시간 필드는 없다.
+- 이벤트 명령 창의 확인이 초안을 확정하고 맵 이벤트 적용이 실제 프로젝트에 반영한다. 취소는 실시간 선택 변경을 버린다. `U03.test.ts`와 `transferCommandBody.test.ts`, 실제 편집기 재열기·파일 가져오기 및 출하 플레이어 이동 근거는 `.omo/evidence/event-command-remediation/U03/`에 있다.
+
 ## 확률로 결과 뽑기 / 가중 분기 (2026-09-06)
 
 - Intentional surface snapshot update: only `m2-211-weighted-branch` is recaptured in the M2 baseline and floor. Test IDs 25→20, labels 6→5 and text entries 2→1 reflect removal of the requested prose guide, duplicate legend/summary and raw-weight presentation, not executable functionality. Control count stays protected at 9 and variable select options at 21; the new percent inputs, row meters and numeric output mapping are captured (classes 29→31). The 19 `weightedBranchUx` behavior tests protect editing, validation, persistence and result-index contracts independently of these surface counts. Unrelated M2 entries are not regenerated or accepted.

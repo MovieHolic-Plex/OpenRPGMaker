@@ -1,0 +1,10 @@
+{
+  "browser": "firefox",
+  "url": "http://127.0.0.1:39283",
+  "port": 39283,
+  "cache": "/tmp/event-command-u03-Y3cP2Q/editor-cache",
+  "fixture": "/tmp/event-command-u03-Y3cP2Q/fixtures/project.json",
+  "freshContext": true,
+  "frozen": true,
+  "retries": 0
+}

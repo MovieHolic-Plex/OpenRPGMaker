@@ -1,0 +1,17 @@
+[
+  {
+    "path": "/tmp/event-command-u03-Y3cP2Q/fixtures/direction-up.json",
+    "sha256": "00950558a4b6065c827a4fb79c369b4c98c2a02a6487d9eef325c23b0409b9b4",
+    "bytes": 2451135
+  },
+  {
+    "path": "/tmp/event-command-u03-Y3cP2Q/fixtures/project.json",
+    "sha256": "383b50a2699278804303070fe85b9bb4895b66e535c415e318f3b33272857d23",
+    "bytes": 2451137
+  },
+  {
+    "path": "/tmp/event-command-u03-Y3cP2Q/fixtures/restored-A.json",
+    "sha256": "fa7ca4cc70dec280977ff12fecb6977e9fb5b7ad49401d7fc15acdf194d5c153",
+    "bytes": 2451137
+  }
+]

@@ -1,0 +1,72 @@
+[
+  {
+    "id": "restore-A",
+    "action": "Select host row; Space; mapB; mapA; outer Confirm; event Apply",
+    "pass": {
+      "kind": "transfer",
+      "mapId": "mapA",
+      "x": 2,
+      "y": 3,
+      "direction": "left",
+      "fade": "black",
+      "transition": "fade"
+    }
+  },
+  {
+    "id": "reopen-A",
+    "action": "Select existing row; Space; inspect A/left/black; Cancel",
+    "pass": "A unchanged, exactly one outer Confirm"
+  },
+  {
+    "id": "import-A",
+    "action": "Read export mirror wire JSON; menu-project/import; filechooser; reopen with Space",
+    "pass": {
+      "kind": "transfer",
+      "mapId": "mapA",
+      "x": 2,
+      "y": 3,
+      "direction": "left",
+      "fade": "black",
+      "transition": "fade"
+    }
+  },
+  {
+    "id": "direction-only",
+    "action": "Check up; Confirm; event Apply; reopen",
+    "pass": {
+      "kind": "transfer",
+      "mapId": "mapA",
+      "x": 2,
+      "y": 3,
+      "direction": "up",
+      "fade": "black",
+      "transition": "fade"
+    }
+  },
+  {
+    "id": "cancel",
+    "action": "Select mapB and right; Cancel; Apply event draft",
+    "pass": {
+      "kind": "transfer",
+      "mapId": "mapA",
+      "x": 2,
+      "y": 3,
+      "direction": "up",
+      "fade": "black",
+      "transition": "fade"
+    }
+  },
+  {
+    "id": "final-import",
+    "action": "Import saved up wire JSON; reopen; Cancel",
+    "pass": {
+      "kind": "transfer",
+      "mapId": "mapA",
+      "x": 2,
+      "y": 3,
+      "direction": "up",
+      "fade": "black",
+      "transition": "fade"
+    }
+  }
+]
