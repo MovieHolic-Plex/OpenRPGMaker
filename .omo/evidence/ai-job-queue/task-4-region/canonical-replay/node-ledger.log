@@ -1,0 +1,21 @@
+✔ cancel is durable before returning, including queued work (321.180562ms)
+✔ generation host exposes durable checkpoint save/load, not only orphan blob writes (319.591761ms)
+✔ checkpoint draft, generated IDs, tool results and artifacts survive restart and fence stale writers (258.954291ms)
+✔ one generation and one physical provider request; dispatch and response are durable at both boundaries (1013.126437ms)
+✔ cancel persists before abort; retry waits for old physical request and reuses its late durable response without resurrection (385.991688ms)
+✔ unknown dispatch never automatically replays; explicit acknowledged retry is durable before second dispatch (333.382076ms)
+✔ restart retains paid response and interrupts worker; queued resumes, interrupted requires explicit safe retry (475.933714ms)
+✔ provider key mismatch fails without redispatch; known-not-dispatched failures permit safe retry (317.946336ms)
+✔ automatic report has separate state and no provider authority; partial retry does not regenerate (417.042882ms)
+✔ explicit dependencies bind predecessor output; failed dependencies never execute (356.898385ms)
+✔ renderer failure preserves generated result and permits only report retry (394.532726ms)
+✔ failed dispatch metadata persistence fences scheduler and performs zero physical requests (107.930028ms)
+✔ admission while dependency scanning drains wakes the next eligible job (192.999135ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5471.831814

@@ -1,0 +1,44 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiJobCanonicalReplay.test.ts --maxWorkers=1 --no-file-parallelism
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-aiq-region-silver
+
+ ❯ test/aiJobCanonicalReplay.test.ts (2 tests | 2 failed) 32024ms
+   × canonical filesystem checkpoint replay > reuses exact paid requests and create_map IDs after a real assistant repository restart 16447ms
+     → actual executor/ledger errors after disk restart: expected [ …(1) ] to deeply equal []
+   × canonical filesystem checkpoint replay > reuses exact paid requests and create_map IDs after a real region repository restart 15576ms
+     → actual executor/ledger errors after disk restart: expected [ …(1) ] to deeply equal []
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiJobCanonicalReplay.test.ts > canonical filesystem checkpoint replay > reuses exact paid requests and create_map IDs after a real assistant repository restart
+ FAIL  test/aiJobCanonicalReplay.test.ts > canonical filesystem checkpoint replay > reuses exact paid requests and create_map IDs after a real region repository restart
+AssertionError: actual executor/ledger errors after disk restart: expected [ …(1) ] to deeply equal []
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   Error {[39m
+[31m+     "message": "ASSISTANT_INCOMPLETE: Stable provider key was reused with different input",[39m
+[31m+   },[39m
+[31m+ ][39m
+
+ ❯ test/aiJobCanonicalReplay.test.ts:100:76
+     98|       await scheduler.retry(job.id, { stage: "generation" });
+     99|       const resumed = await watched.promise;
+    100|       expect(failures, "actual executor/ledger errors after disk resta…
+       |                                                                            ^
+    101|       expect(resumed.states.generation).toBe("succeeded");
+    102|       expect(dispatches).toBe(4);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  21:06:51
+   Duration  62.05s (transform 19.18s, setup 0ms, collect 28.26s, tests 32.02s, environment 0ms, prepare 330ms)

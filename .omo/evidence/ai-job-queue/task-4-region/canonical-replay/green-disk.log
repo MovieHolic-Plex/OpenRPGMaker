@@ -1,0 +1,18 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiJobCanonicalReplay.test.ts --maxWorkers=1 --no-file-parallelism
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-aiq-region-silver
+
+ ✓ test/aiJobCanonicalReplay.test.ts (5 tests) 36696ms
+   ✓ canonical filesystem checkpoint replay > reuses exact paid requests and create_map IDs after a real assistant repository restart  16897ms
+   ✓ canonical filesystem checkpoint replay > reuses exact paid requests and create_map IDs after a real region repository restart  18409ms
+   ✓ canonicalizes nested tool data with optional mapPropertiesChanged=undefined through actual disk roundtrip  471ms
+   ✓ canonicalizes nested tool data with optional mapPropertiesChanged=0 through actual disk roundtrip  532ms
+   ✓ canonicalizes nested tool data with optional mapPropertiesChanged=7 through actual disk roundtrip  382ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  21:11:39
+   Duration  65.09s (transform 18.67s, setup 0ms, collect 27.22s, tests 36.70s, environment 0ms, prepare 225ms)

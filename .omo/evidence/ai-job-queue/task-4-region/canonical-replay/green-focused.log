@@ -1,0 +1,41 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiJobCanonicalReplay.test.ts test/aiSessionJobHost.test.ts test/aiRegionJob.test.ts --maxWorkers=1 --no-file-parallelism
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-aiq-region-silver
+
+ ✓ test/aiRegionJob.test.ts (15 tests) 68206ms
+   ✓ isolated real session import graph > has no runtime editor/store/persistence boot edges  7989ms
+   ✓ isolated region generation > does not boot the editor, store, pending slot, or preference distillation  5331ms
+   ✓ clips real outside-region tile/event writes without changing either snapshot  2728ms
+   ✓ retains a new interior-only map from a real session across a deferred provider boundary  6525ms
+   ✓ retains allocated map IDs and paid responses after a post-response interruption  9789ms
+   ✓ protects a completed new house from north-ridge clipping (task), retaining raw output  6245ms
+   ✓ protects a completed new house from north-ridge clipping (polish), retaining raw output  8791ms
+   ✓ rejects malformed input, project and checkpoint before any provider request  1147ms
+   ✓ retries failed region output storage without replaying completed session or artwork  5781ms
+   ✓ returns an intact completed house and review metadata (task)  4630ms
+   ✓ returns an intact completed house and review metadata (polish)  6553ms
+   ✓ preserves real tool-result JSON bytes through validated checkpoints  1955ms
+ ✓ test/aiJobCanonicalReplay.test.ts (6 tests) 35763ms
+   ✓ canonical filesystem checkpoint replay > reuses exact paid requests and create_map IDs after a real assistant repository restart  15433ms
+   ✓ canonical filesystem checkpoint replay > reuses exact paid requests and create_map IDs after a real region repository restart  17803ms
+   ✓ canonicalizes nested tool data with optional mapPropertiesChanged=undefined through actual disk roundtrip  986ms
+   ✓ canonicalizes nested tool data with optional mapPropertiesChanged=0 through actual disk roundtrip  965ms
+   ✓ canonicalizes nested tool data with optional mapPropertiesChanged=7 through actual disk roundtrip  494ms
+ ✓ test/aiSessionJobHost.test.ts (10 tests) 21307ms
+   ✓ store-free session execution host > validates complete project and checkpoint structure before execution  944ms
+   ✓ store-free session execution host > reports an unfinished real work plan separately from a final message  700ms
+   ✓ store-free session execution host > rejects unsupported captured auth mode apiKey before any paid operation  356ms
+   ✓ store-free session execution host > retains budget-limited output privately without completing generation  2964ms
+   ✓ store-free session execution host > does not retain full projects in the read-only tool journal  378ms
+   ✓ store-free session execution host > runs a real milestone without editor application or false save evidence  4974ms
+   ✓ store-free session execution host > resumes tool IDs and paid responses from a durable checkpoint after a response-boundary crash  7900ms
+   ✓ store-free session execution host > does not continue paid work when intent dispatch fails  2510ms
+   ✓ store-free session execution host > uses captured preferences/domains and explicitly rejects live history reads  357ms
+
+ Test Files  3 passed (3)
+      Tests  31 passed (31)
+   Start at  21:21:58
+   Duration  167.77s (transform 18.89s, setup 0ms, collect 38.77s, tests 125.28s, environment 1ms, prepare 799ms)

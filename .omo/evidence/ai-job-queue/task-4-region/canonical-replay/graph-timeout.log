@@ -1,0 +1,60 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiJobCanonicalReplay.test.ts test/aiSessionJobHost.test.ts test/aiRegionJob.test.ts --maxWorkers=1 --no-file-parallelism
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-aiq-region-silver
+
+ ❯ test/aiRegionJob.test.ts (15 tests | 1 failed) 103821ms
+   × isolated real session import graph > has no runtime editor/store/persistence boot edges 15662ms
+     → Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+   ✓ isolated region generation > does not boot the editor, store, pending slot, or preference distillation  6874ms
+   ✓ clips real outside-region tile/event writes without changing either snapshot  4393ms
+   ✓ retains a new interior-only map from a real session across a deferred provider boundary  8539ms
+   ✓ retains allocated map IDs and paid responses after a post-response interruption  11717ms
+   ✓ protects a completed new house from north-ridge clipping (task), retaining raw output  11459ms
+   ✓ protects a completed new house from north-ridge clipping (polish), retaining raw output  10720ms
+   ✓ protects existing houses from deterministic seam polish 190ms
+   ✓ rejects malformed input, project and checkpoint before any provider request  1608ms
+   ✓ retries failed region output storage without replaying completed session or artwork  13995ms
+   ✓ returns an intact completed house and review metadata (task)  5675ms
+   ✓ returns an intact completed house and review metadata (polish)  6722ms
+   ✓ does not polish a no-op region proposal  623ms
+   ✓ polishes only the permitted seam and reports its separate count  611ms
+   ✓ preserves real tool-result JSON bytes through validated checkpoints  5001ms
+ ✓ test/aiJobCanonicalReplay.test.ts (6 tests) 59566ms
+   ✓ canonical filesystem checkpoint replay > reuses exact paid requests and create_map IDs after a real assistant repository restart  22647ms
+   ✓ canonical filesystem checkpoint replay > reuses exact paid requests and create_map IDs after a real region repository restart  34711ms
+   ✓ canonicalizes nested tool data with optional mapPropertiesChanged=undefined through actual disk roundtrip  818ms
+   ✓ canonicalizes nested tool data with optional mapPropertiesChanged=0 through actual disk roundtrip  640ms
+   ✓ canonicalizes nested tool data with optional mapPropertiesChanged=7 through actual disk roundtrip  684ms
+ ✓ test/aiSessionJobHost.test.ts (10 tests) 17195ms
+   ✓ store-free session execution host > validates complete project and checkpoint structure before execution  702ms
+   ✓ store-free session execution host > reports an unfinished real work plan separately from a final message  377ms
+   ✓ store-free session execution host > retains budget-limited output privately without completing generation  2292ms
+   ✓ store-free session execution host > does not retain full projects in the read-only tool journal  432ms
+   ✓ store-free session execution host > runs a real milestone without editor application or false save evidence  3975ms
+   ✓ store-free session execution host > resumes tool IDs and paid responses from a durable checkpoint after a response-boundary crash  6615ms
+   ✓ store-free session execution host > does not continue paid work when intent dispatch fails  2209ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiRegionJob.test.ts > isolated real session import graph > has no runtime editor/store/persistence boot edges
+Error: Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ test/aiJobWorkerIsolation.test.ts:35:3
+     33|
+     34| describe("isolated real session import graph", () => {
+     35|   it("has no runtime editor/store/persistence boot edges", () => {
+       |   ^
+     36|     const entry = "src/ai/jobs/workerEntry.ts";
+     37|     const graph = runtimeGraph(entry);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  1 failed | 30 passed (31)
+   Start at  21:14:44
+   Duration  239.73s (transform 28.57s, setup 0ms, collect 54.06s, tests 180.58s, environment 1ms, prepare 866ms)

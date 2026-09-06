@@ -1,0 +1,40 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiJobCanonicalReplay.test.ts -t canonicalizes nested --maxWorkers=1 --no-file-parallelism
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-aiq-region-silver
+
+ ❯ test/aiJobCanonicalReplay.test.ts (5 tests | 3 failed | 2 skipped) 1861ms
+   ↓ canonical filesystem checkpoint replay > reuses exact paid requests and create_map IDs after a real assistant repository restart
+   ↓ canonical filesystem checkpoint replay > reuses exact paid requests and create_map IDs after a real region repository restart
+   × canonicalizes nested tool data with optional mapPropertiesChanged=undefined through actual disk roundtrip 645ms
+     → OPERATION_MISMATCH
+   × canonicalizes nested tool data with optional mapPropertiesChanged=0 through actual disk roundtrip 515ms
+     → OPERATION_MISMATCH
+   × canonicalizes nested tool data with optional mapPropertiesChanged=7 through actual disk roundtrip 698ms
+     → OPERATION_MISMATCH
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiJobCanonicalReplay.test.ts > canonicalizes nested tool data with optional mapPropertiesChanged=undefined through actual disk roundtrip
+ FAIL  test/aiJobCanonicalReplay.test.ts > canonicalizes nested tool data with optional mapPropertiesChanged=0 through actual disk roundtrip
+ FAIL  test/aiJobCanonicalReplay.test.ts > canonicalizes nested tool data with optional mapPropertiesChanged=7 through actual disk roundtrip
+Error: OPERATION_MISMATCH
+ ❯ Object.providerOperation test/aiJobCanonicalReplay.test.ts:144:71
+    142|         requests.push(structuredClone(request));
+    143|         const nextRef = await repository.putJson(request);
+    144|         if (requestRef && nextRef.sha256 !== requestRef.sha256) throw …
+       |                                                                       ^
+    145|         requestRef = nextRef;
+    146|         if (!responseRef) { dispatches++; responseRef = await reposito…
+ ❯ chat src/ai/jobs/providerBridge.ts:15:24
+ ❯ test/aiJobCanonicalReplay.test.ts:159:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 2 skipped (5)
+   Start at  21:10:13
+   Duration  29.08s (transform 18.32s, setup 0ms, collect 25.77s, tests 1.86s, environment 0ms, prepare 356ms)
