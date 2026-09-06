@@ -37,6 +37,9 @@ const DELETE_CONFIRM_WINDOW_MS = 3000;
 let selectedSpeciesId: string | undefined;
 let speciesSearch = "";
 let revealSpeciesSelection = false;
+// The modal keeps this host across deferred refreshes, but replaces its list.
+// Weak ownership prevents a closed modal's scroll from leaking into a new one.
+const speciesListScrollTops = new WeakMap<HTMLElement, number>();
 
 export function setSelectedMonsterSpeciesId(id?: string, options?: { reveal: boolean }): void {
   selectedSpeciesId = id;
@@ -90,6 +93,7 @@ export function renderMonsterSpeciesTab(host: HTMLElement, rerender: () => void)
     search.value = "";
     renderRows();
     rowsHost.querySelector<HTMLElement>('[aria-pressed="true"]')?.scrollIntoView?.({ block: "nearest" });
+    speciesListScrollTops.set(host, rowsHost.scrollTop);
     search.focus();
   };
 
@@ -188,10 +192,17 @@ export function renderMonsterSpeciesTab(host: HTMLElement, rerender: () => void)
       testid: "db-monster-species-workspace",
     })
   );
+  rowsHost.scrollTop = speciesListScrollTops.get(host) ?? 0;
   if (revealSpeciesSelection) {
     revealSpeciesSelection = false;
     rowsHost.querySelector<HTMLElement>('[aria-pressed="true"]')?.scrollIntoView?.({ block: "nearest" });
   }
+  // Capture native reveal/clamping now, before its asynchronous scroll event.
+  speciesListScrollTops.set(host, rowsHost.scrollTop);
+  rowsHost.addEventListener("scroll", () => {
+    // A queued event from a replaced/cached list must not overwrite live scroll.
+    if (host.contains(rowsHost)) speciesListScrollTops.set(host, rowsHost.scrollTop);
+  });
 }
 
 function speciesListRow(
