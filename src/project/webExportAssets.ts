@@ -1,5 +1,9 @@
 import { BUNDLED_IMAGE_ASSETS, TEX_DIALOGUE_FRAME, TEX_TILESET } from "@/assets/bundled";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { battlerIdleAnimation } from "@/assets/battlerIdleAnimations";
+import { BATTLER_PLACEMENTS } from "@/battle/battlerPlacements";
+import { skinPartySpriteUrl } from "@/battle/partySpriteResources";
+import { resolveSkinId } from "@/battle/skins/registry";
 import { PLAYER_RUNTIME_AUDIO_RESOURCE_IDS } from "@/player/playerRuntimeAudioIds";
 import { getResourceProfileSpec } from "@/project/resourceProfiles";
 import type { ResourceKind } from "@/project/types";
@@ -27,6 +31,8 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
     }
   }
   for (const id of ids) {
+    const idle = battlerIdleAnimation(id);
+    if (idle) assets.set(idle.path, { kind: "public", sourcePath: idle.path, zipPath: idle.path });
     const bundled = BUNDLED_IMAGE_ASSETS.find((asset) => asset.textureKey === id);
     if (bundled) {
       assets.set(bundled.path, { kind: "public", sourcePath: bundled.path, zipPath: bundled.path, resourceId: id });
@@ -92,6 +98,17 @@ function collectProjectStrings(project: Project): Set<string> {
   collectStrings(project, values);
   // 소스에 박힌 재생 — 프로젝트 문자열에는 없지만 플레이어가 반드시 읽는다.
   for (const id of PLAYER_RUNTIME_AUDIO_RESOURCE_IDS) values.add(id);
+  const skinId = resolveSkinId(project.system.battleUiStyle);
+  const facing = BATTLER_PLACEMENTS[skinId].partyFacing;
+  // Include reserve actors too: party membership/order can change after export.
+  for (const actor of project.database.actors) {
+    if (facing === "front" && actor.battleCharacterResourceId) continue;
+    // Either fallback slot can be selected after reordering the party.
+    for (const index of [0, 1]) {
+      const sprite = skinPartySpriteUrl(project, skinId, index, facing, actor);
+      if (sprite) values.add(sprite.resourceId);
+    }
+  }
   return values;
 }
 
