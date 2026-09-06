@@ -11,7 +11,7 @@ import { resolve } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { openDatabaseModal, requestDatabaseModalClose } from "@/editor/panels/databaseModal";
-import { setDatabaseActiveTab } from "@/editor/panels/database";
+import { databaseTabGroupLabel, databaseTabLabel, setDatabaseActiveTab } from "@/editor/panels/database";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { installFakeDom } from "./fakeDom";
@@ -44,7 +44,7 @@ function crumbText(): string {
 describe("데이터베이스 모달 헤더 — 현재 위치 브레드크럼", () => {
   it("열 때 활성 탭의 그룹 › 탭 을 적는다", () => {
     openDatabaseModal("skills");
-    expect(crumbText()).toBe("파티›스킬");
+    expect(crumbText()).toBe(`${databaseTabGroupLabel("skills")}›${databaseTabLabel("skills")}`.replace(/\s+/g, ""));
     // fakeDom 셀렉터 엔진은 콤비네이터·태그 선택을 지원하지 않는다 — 헤더 텍스트로 본다.
     const header = document.querySelector<HTMLElement>(".database-modal-header");
     expect(header?.textContent ?? "").toContain("데이터베이스");
@@ -53,14 +53,14 @@ describe("데이터베이스 모달 헤더 — 현재 위치 브레드크럼", (
   it("활성 탭이 바뀌면 따라간다 — 레일 클릭·G006 점프·Ctrl+T 전부 같은 setter 를 지난다", () => {
     openDatabaseModal("skills");
     setDatabaseActiveTab("enemies");
-    expect(crumbText()).toBe("몬스터›몬스터");
+    expect(crumbText()).toBe(`${databaseTabGroupLabel("enemies")}›${databaseTabLabel("enemies")}`.replace(/\s+/g, ""));
     setDatabaseActiveTab("switches");
-    expect(crumbText()).toBe("시스템›스위치");
+    expect(crumbText()).toBe(`${databaseTabGroupLabel("switches")}›${databaseTabLabel("switches")}`.replace(/\s+/g, ""));
   });
 
   it("개요처럼 그룹 밖 탭은 탭 이름만 남긴다", () => {
     openDatabaseModal("overview");
-    expect(crumbText()).toBe("개요");
+    expect(crumbText()).toBe(databaseTabLabel("overview"));
     expect(document.querySelector(".database-modal-crumb-sep")).toBeNull();
   });
 

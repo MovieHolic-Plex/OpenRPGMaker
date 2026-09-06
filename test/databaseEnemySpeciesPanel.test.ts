@@ -150,11 +150,14 @@ describe("enemy species panel (G002 Phase 2d)", () => {
     const host = renderEnemyForm(enemy.id);
     const info = findByTestId(host, "db-enemy-species-graphic-mismatch");
     expect(info).not.toBeNull();
-    expect(info?.textContent).toBe("그래픽이 종족과 다름");
+    expect(info?.dataset.speciesStatus).toBe("info");
 
     const copy = findByTestId(host, "db-enemy-species-copy-graphic");
     expect(copy).not.toBeNull();
-    expect(copy?.textContent).toBe("그래픽 복사");
+    expect(copy).toBeInstanceOf(HTMLButtonElement);
+    expect(copy?.tagName).toBe("BUTTON");
+    expect(copy?.getAttribute("type")).toBe("button");
+    expect(copy?.disabled).toBe(false);
     copy?.click();
 
     const updated = store.getCurrent().database.enemies.find((entry) => entry.id === enemy.id);
