@@ -1,0 +1,24 @@
+{
+  "pass": true,
+  "count": 2,
+  "originalScenarioPass": true,
+  "checks": 107,
+  "cleanup": {
+    "absentBeforeRun": true,
+    "pageListenersAndTimersClosed": true,
+    "browserClosed": true,
+    "serverClosed": true,
+    "cacheRemoved": true,
+    "portReleased": true,
+    "remote": {
+      "projectId": "qa-ai-surface-62da0cce-4589-4e10-a625-cf60a204c959",
+      "kind": "deleted-and-absence-verified",
+      "commitIds": [
+        "898259ea-5bbc-4d64-b4d5-d63fd82fbd36"
+      ]
+    },
+    "remoteDeletedAndAbsent": true,
+    "reusedListener": false,
+    "activeRoutes": 0
+  }
+}

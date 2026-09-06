@@ -1,5 +1,7 @@
 # P2 authoritative outcome UI and user scope actions
 
+**Current handoff:** [Explicit Continue authorization and reachability](ui-explicit-resume.md), implementation `383c27539d8ce94846c660bf45c2a070dfd9b940`. It replaces c8fa's RunSurface token check with an explicit user-action flag, adds real 1024/1280 reachability and negative typed/bridge Ask evidence, and supplies fresh source-bound responsive packets. The original implementation report and captures below remain historical and unchanged apart from this pointer.
+
 The existing deck now presents the session's authoritative execution, goal and delivery axes. The existing sticky checklist offers a scoped user-only requirement exclusion, preserving original request source and unsatisfied evidence. The real Continue control after Ask now updates both Panel mode ownership and composer presentation before sending Do/resume.
 
 **Verified implementation:** `c8fa4e965396cb53bc2f453a02c7752b64c4a0e3` (`feat(ai): present authoritative outcomes and user scope actions`). Final scoped tests: **133/133 in six files, exit 0**. Complete build: **exit 0**. Fresh actual browser contracts: **148/148 outcome-matrix** and **107/107 required-skip**, both exit 0. Independent image-capable visual review and full gates remain lead-owned; this is not visual approval.

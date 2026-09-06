@@ -1,0 +1,35 @@
+{
+  "pass": true,
+  "activation": "keyboard",
+  "width": 1280,
+  "source": "67002b876d92080b0400b19924b94d68434cda57",
+  "actualOptions": {
+    "autonomous": true,
+    "instruction": "계속",
+    "scope": null,
+    "composerMode": "do"
+  },
+  "outcome": {
+    "execution": "blocked",
+    "goal": "incomplete",
+    "delivery": "no-change"
+  },
+  "cleanup": {
+    "absentBeforeRun": true,
+    "pageListenersAndTimersClosed": true,
+    "browserClosed": true,
+    "serverClosed": true,
+    "cacheRemoved": true,
+    "portReleased": true,
+    "remote": {
+      "projectId": "qa-ai-surface-678084cb-f0a8-4b11-a053-3b3629341fe8",
+      "kind": "deleted-and-absence-verified",
+      "commitIds": [
+        "dd9268ff-8529-4530-947f-47562493b04c"
+      ]
+    },
+    "remoteDeletedAndAbsent": true,
+    "reusedListener": false,
+    "activeRoutes": 0
+  }
+}
