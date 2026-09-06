@@ -90,7 +90,9 @@ async function capture(page: Page, name: string) {
 }
 
 test("real panel rejects early completion, verifies applied dimensions and keeps the left note", async ({ page }) => {
-  test.setTimeout(180_000);
+  // Full editor boot plus twelve captures can exceed three minutes while other
+  // worktrees run their gates. Individual event/HTTP deadlines stay bounded.
+  test.setTimeout(300_000);
   mkdirSync(evidence, { recursive: true });
   await page.setViewportSize({ width: 1440, height: 900 });
   const mapId = await boot(page);
