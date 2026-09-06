@@ -1,0 +1,14 @@
+output/evidence/ai-harness/p1/remote-build.log:14: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p1/remote-build.log:17: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p1/remote-build.log:20: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p1/remote-build.log:23: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p1/remote-build.log:26: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p1/remote-build.log:114: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p1/remote-related-tests.log:54: new blank line at EOF.
+output/evidence/ai-harness/p1/remote-typecheck.log:4: new blank line at EOF.
