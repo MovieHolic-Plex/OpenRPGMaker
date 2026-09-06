@@ -95,7 +95,7 @@ export function collectForageAt(project: Project, session: PlaySession, mapId: s
   const draft = structuredClone(session);
   if (!changeItemsAtomically(draft, [{ itemId, op: "+=", amount: 1 }])) return { ok: false, reason: "inventory" };
   const skill = project.database.lifeSkills?.find((candidate) => candidate.skillType === "foraging");
-  if (skill && !awardLifeSkillXp(project, draft, skill.id, 1).ok) return { ok: false, reason: "xp" };
+  if (project.system.skillSystem?.enabled === true && skill && !awardLifeSkillXp(project, draft, skill.id, 1).ok) return { ok: false, reason: "xp" };
   delete draft.placeables?.[placeableKey(mapId, x, y)];
   replace(session, draft);
   return { ok: true, itemId };

@@ -232,6 +232,7 @@ function awardInteractionXp(
   session: PlaySession,
   results: readonly FarmInteractionResult[],
 ): Readonly<Partial<Record<"farming" | "mining" | "foraging", number>>> | undefined {
+  if (project.system.skillSystem?.enabled !== true) return {};
   const amounts = {
     farming: results.filter((result) => result.source === "crop").length * 10,
     mining: results.filter((result) => result.source === "rock").length * 10,

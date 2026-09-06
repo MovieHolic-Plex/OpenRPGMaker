@@ -51,7 +51,7 @@ export function attemptFishingCatch(project: Project, session: PlaySession, loca
   if (energyCost > 0 && !spendEnergy(project, draft, energyCost).ok) return { ok: false, reason: "energy" };
   if (!changeItemsAtomically(draft, [{ itemId: fish.itemId, op: "+=", amount: 1 }])) return { ok: false, reason: "inventory" };
   if (!incrementCollection(draft, fish.itemId, "caughtCount", 1)) return { ok: false, reason: "collection" };
-  if ((fish.skillXp ?? 0) > 0) {
+  if (project.system.skillSystem?.enabled === true && (fish.skillXp ?? 0) > 0) {
     const skill = project.database.lifeSkills?.find((entry) => entry.skillType === "fishing");
     if (!skill || !awardLifeSkillXp(project, draft, skill.id, fish.skillXp!).ok) return { ok: false, reason: "xp" };
   }
