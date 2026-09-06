@@ -857,6 +857,10 @@ export class AssistantSession {
   private currentTurnIndex = 0;
   // 이번 턴 사용자 메시지의 [컨텍스트] 선택 영역에서 파생된 암묵적 명세(턴마다 재계산).
   private turnImplicitSpec: BuildSpec | null = null;
+  // An inferred viewport placement belongs to a matching placement instruction,
+  // not every item that happens to edit its map. Its box is captured before camera moves.
+  private turnViewSpec: BuildSpec | null = null;
+  private turnViewSpecWorkItemId: string | null = null;
   // 이번 턴 시작 전에 이미 존재하던 명시 스펙. 이 스펙으로 변경 제안이 만들어지면
   // 카드에 이전 계획 포함 경고를 붙인다(D06).
   private carryoverSpecForTurn: BuildSpec | null = null;
@@ -1354,7 +1358,13 @@ export class AssistantSession {
     const regions = this.gateRegions(name, args);
     if (regions.length === 0) return { warnings: [] }; // mapId 없는 인자 형태 — 현 공간 툴셋엔 없음.
     const mapId = regions[0].mapId;
-    const specs = [this.activeSpec, this.turnImplicitSpec]
+    const currentItemId = this.workPlan?.currentItemId ?? null;
+    const itemViewSpec = this.workPlan ? this.inferredViewSpecForItem(getCurrentWorkItem(this.workPlan)) : this.turnViewSpec;
+    const viewSpec = this.turnViewSpec?.mapId === mapId
+      && itemViewSpec !== null
+      && this.turnViewSpec.assets.some(asset => asset.kind === "selection" || asset.kind === autoExpandedAssetKind(name))
+      ? this.turnViewSpec : null;
+    const specs = [this.activeSpec, this.turnImplicitSpec, viewSpec]
       .filter((spec): spec is BuildSpec => spec !== null && spec.mapId === mapId);
     if (scoped && specs.length === 0) {
       return specGateResult(`스펙 게이트: '${name}' 차단 — 이 맵의 밑그림(스펙)이 없습니다`, [
@@ -1380,7 +1390,10 @@ export class AssistantSession {
       const baseline = this.baselineProject.maps[mapId];
       if (baseline) {
         const tileset = this.baselineProject.tilesets[baseline.tilesetId];
-        const guarded = protectedCellsInRegions(baseline, regions, assets, tileset);
+        // Inferred locations are not a user-selected overwrite permission, even for
+        // an unclassified object whose inferred asset kind falls back to selection.
+        const overwriteAssets = specs.filter(spec => spec !== viewSpec).flatMap(spec => spec.assets);
+        const guarded = protectedCellsInRegions(baseline, regions, overwriteAssets, tileset);
         if (guarded.count > 0) {
           const at = guarded.sample ? `, 예: (${guarded.sample.x},${guarded.sample.y})` : "";
           return specGateResult(`스펙 게이트: '${name}' 차단 — 기존 구조물·지형 ${guarded.count}칸을 덮습니다${at}`, [
@@ -1393,6 +1406,15 @@ export class AssistantSession {
       }
     }
     if (!scoped) return { warnings: [] };
+
+    if (viewSpec) {
+      if (!checkRegionsAgainstSpecBoundary(viewSpec.assets, regions, 0).covered) {
+        return specGateResult(`스펙 게이트: '${name}' 차단 — 화면 배치 영역 밖입니다`, [
+          `이 배치 지시의 영역만 사용하세요: ${viewSpec.assets.map(asset => `(${asset.x},${asset.y}) ${asset.w}×${asset.h}`).join(", ")}. 다른 작업은 별도 set_build_spec을 제출하세요.`,
+        ]);
+      }
+      this.turnViewSpecWorkItemId = currentItemId;
+    }
 
     const slackCells = boundarySlackForTool(name);
     const coverage = checkRegionsAgainstSpecBoundary(assets, regions, slackCells);
@@ -1688,21 +1710,24 @@ export class AssistantSession {
 
     // 스펙 게이트 턴 초기화: 사용자 선택 영역([컨텍스트])은 이 턴의 암묵적 명세가 된다.
     this.currentTurnIndex += 1;
+    const continuesGoal = this.turnIsDriverContinue || intent.source === "continuation";
     this.turnImplicitSpec = implicitSpecFromContext(text)
-      ?? implicitSpecFromScope(options.scope)
-      ?? this.implicitSpecFromViewPhrase(instruction);
+      ?? implicitSpecFromScope(options.scope);
+    if (!continuesGoal) {
+      this.turnViewSpec = this.turnImplicitSpec ? null : this.implicitSpecFromViewPhrase(instruction);
+      this.turnViewSpecWorkItemId = null;
+    }
     this.carryoverSpecForTurn = this.activeSpec && this.activeSpecTurnIndex < this.currentTurnIndex
       ? structuredClone(this.activeSpec)
       : null;
     this.carryoverWarningAdded = false;
     this.specRejections = 0;
     this.lastRejectedSpecFingerprint = null;
-    const continuesGoal = this.turnIsDriverContinue || intent.source === "continuation";
     // A tool budget splits execution, not the work item. Keep unapplied calls and
     // artifact evidence until that item completes (or a different goal starts).
     if (!continuesGoal) this.turnProposals = new Map();
-    // Synthetic continuations belong to the same user goal and retain its applied ledger.
-    if (!options.driverContinue) this.turnAppliedMilestoneCalls = [];
+    // Both manual and synthetic continuations retain the same goal's applied ledger.
+    if (!continuesGoal) this.turnAppliedMilestoneCalls = [];
     this.turnWriteDedupe = new Map();
     this.turnToolStartedCount = 0;
     this.turnEscalatedToolNames = [];
@@ -2415,14 +2440,14 @@ export class AssistantSession {
     return (item) => {
       const verdict = outcome(item);
       if (!verdict.ok) return verdict;
-      const calls = this.finalizeProposals(this.turnProposals);
+      const calls = this.turnWriteLedger(this.finalizeProposals(this.turnProposals));
       if (calls.length === 0) return { ok: true };
-      const warnings = proposalCompletenessWarnings({
-        requestText: this.currentTurnInstruction,
+      const warnings = [...new Set([...proposalCompletenessWarnings({
+        requestText: item.instruction,
         intent: this.turnIntent,
-        buildSpec: this.reviewBuildSpecForProposal(calls),
+        buildSpec: this.reviewBuildSpecForProposal(calls, item),
         calls,
-      });
+      }), ...this.inferredViewWarnings(calls, item)])];
       if (warnings.length === 0) return { ok: true };
       return {
         ok: false,
@@ -3319,10 +3344,12 @@ export class AssistantSession {
     onEvent({ type: "status", text: `주민 대사 생성 실패 — 모델이 직접 씁니다 (${eventIds.length}명)` });
   }
 
-  private reviewBuildSpecForProposal(calls: readonly ProposedCall[]): BuildSpec | null {
+  private reviewBuildSpecForProposal(calls: readonly ProposedCall[], item?: WorkItem): BuildSpec | null {
     const currentSpec = this.activeSpec && this.activeSpecTurnIndex === this.currentTurnIndex ? this.activeSpec : null;
     if (currentSpec && proposalHasChangedMap(calls, currentSpec.mapId)) return currentSpec;
     if (this.turnImplicitSpec && proposalHasChangedMap(calls, this.turnImplicitSpec.mapId)) return this.turnImplicitSpec;
+    if (this.turnViewSpec && (!item || this.inferredViewSpecForItem(item))
+      && proposalHasChangedMap(calls, this.turnViewSpec.mapId)) return this.turnViewSpec;
     if (this.carryoverSpecForTurn && proposalHasChangedMap(calls, this.carryoverSpecForTurn.mapId)) return this.carryoverSpecForTurn;
     if (
       this.activeSpec &&
@@ -3332,6 +3359,26 @@ export class AssistantSession {
       return this.activeSpec;
     }
     return null;
+  }
+
+  private inferredViewWarnings(calls: readonly ProposedCall[], item?: WorkItem): string[] {
+    const spec = this.turnViewSpec;
+    if (!spec || (item && !this.inferredViewSpecForItem(item))) return [];
+    // An NPC touching the pond's rectangle is not evidence of terrain placement.
+    return proposalCompletenessWarnings({
+      buildSpec: spec,
+      calls: calls.filter(call => spec.assets.some(asset =>
+        asset.kind === "selection" ? SPATIAL_BUILD_TOOLS.has(call.name) : asset.kind === autoExpandedAssetKind(call.name))),
+    });
+  }
+
+  private inferredViewSpecForItem(item: WorkItem | null): BuildSpec | null {
+    const spec = this.turnViewSpec;
+    if (!spec || !item) return null;
+    if (this.turnViewSpecWorkItemId !== null) return this.turnViewSpecWorkItemId === item.id ? spec : null;
+    const asset = spec.assets[0];
+    const placement = implicitSpecFromViewLocation({ mapId: spec.mapId, requestText: item.instruction, rect: asset });
+    return placement?.assets.some(candidate => candidate.kind === asset.kind) ? spec : null;
   }
 
   /**
@@ -3353,7 +3400,7 @@ export class AssistantSession {
       calls,
     });
     const diffWarnings = calls.flatMap((call) => call.result.diff?.warnings ?? []);
-    const allWarnings = [...new Set([...lintWarnings, ...diffWarnings])];
+    const allWarnings = [...new Set([...lintWarnings, ...this.inferredViewWarnings(calls), ...diffWarnings])];
     const missingWarnings = allWarnings.filter((warning) => warning.startsWith(PROPOSAL_COMPLETENESS_WARNING_PREFIX));
     const lintBlock = allWarnings.length > 0 ? allWarnings.map((warning) => `- ${warning}`).join("\n") : "- 통과";
     const diffBlock = calls.length > 0
