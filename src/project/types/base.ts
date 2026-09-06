@@ -51,6 +51,10 @@ export interface AudioDescriptionOverrides {
 }
 
 export interface ResourceProfile {
+  /** Authoring-only metadata; sprite slots and standalone faces are classified independently. */
+  graphicAttributes?: import("../characterGraphics").GraphicAttributes;
+  graphicNote?: string;
+  characterSlots?: import("../characterGraphics").CharacterGraphicSlot[];
   kind: ResourceKind;
   name: string;
   tileWidth?: number;

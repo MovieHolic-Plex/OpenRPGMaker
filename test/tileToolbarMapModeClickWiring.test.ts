@@ -1,3 +1,4 @@
+/** @vitest-environment happy-dom */
 /**
  * 렌더된 표준 도구막대의 맵 모드 버튼 → `selectMapModeTool` 배선 계약.
  *
@@ -8,13 +9,13 @@
  * 를 되살려도 여섯 스위트 21/21 이 전부 초록이었다 — 버튼과 헬퍼 사이의 배선만 무검증이었다.
  * 이 파일은 실제 표준 좌패널을 렌더해서 testid 로 버튼을 찾아 클릭하고, 그 결과 상태를 잰다.
  */
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { renderTilePalette } from "@/editor/panels/tilePalette";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
-import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
+import { resetTileToolbarMenusForTests } from '@/editor/panels/tileToolbarMenus';
 
 const STAMP = {
   cells: [{ dx: 0, dy: 0, layer: "lower", tile: 7 }],
@@ -29,20 +30,31 @@ describe("렌더된 표준 도구막대의 맵 모드 클릭 배선", () => {
   let container: HTMLElement;
 
   beforeEach(() => {
-    restore = installFakeDom();
+    vi.useFakeTimers();
+    resetTileToolbarMenusForTests();
     resetEditorUiModeForTests("standard");
     store.replace(createBlankProject());
     container = document.createElement("div");
+    container.dataset.testid = 'left-palette-root';
     document.body.append(container);
+    restore = editorState.subscribe(() => renderTilePalette(container));
   });
 
   afterEach(() => {
     restore();
+    container.remove();
+    resetTileToolbarMenusForTests();
+    vi.clearAllTimers();
+    vi.useRealTimers();
   });
 
   function clickTool(testid: string): void {
     renderTilePalette(container);
-    const button = findByTestId(container as unknown as FakeElement, testid);
+    if (testid === 'tool-collision') {
+      container.querySelector<HTMLElement>('[data-testid="layer-lower"]')?.click();
+      container.querySelector<HTMLElement>('[data-testid="sidebar-tools-menu"]')?.click();
+    }
+    const button = container.querySelector<HTMLElement>(`[data-testid="${testid}"]`);
     if (!button) throw new Error(`도구막대에 testid 없음: ${testid}`);
     button.click();
   }
@@ -57,7 +69,7 @@ describe("렌더된 표준 도구막대의 맵 모드 클릭 배선", () => {
       tool: "paint",
     });
 
-    clickTool("tool-event");
+    clickTool("layer-event");
 
     expect(editorState.get().tool).toBe("event");
     expect(editorState.get().layer).toBe("event");

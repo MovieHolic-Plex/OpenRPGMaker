@@ -39,6 +39,46 @@
   An intentionally different authored title is preserved. This does not rename
   maps on load or replace authored title artwork.
 
+## Focused Standard / Expert sidebar (2026-09-07)
+
+- Preserve the cream shell, `el`/native controls, shared SVG icons and beginner
+  workflow. Standard is a single task surface, not a shortened Expert tree:
+  current map / map settings, common layers, primary tools, contextual options,
+  search with one category select, growing tile sheet, compact selected tile,
+  then labelled utilities. Expert keeps its resizable/collapsible map dock.
+- Standard current-map switcher opens the shared searchable map explorer without
+  reserving height. Expert's same-location switcher reveals its dock (or opens
+  the explorer if the dock was disabled). No map operations are reimplemented.
+- Paint/erase/fill/select are primary; Expert adds eyedropper. Other tools and
+  clipboard actions use `도구`. Rect/ellipse are choices in a labelled shape
+  selector, direct in Expert and in Tools in Standard. Brush size is one native
+  1–4 select only for freehand paint/erase, never fill/select/event/stamps/shapes.
+- Layers keep the same location in both modes and Event replaces the tile body;
+  no duplicate Event tool, irrelevant tile search or brush options. Connection
+  state remains visible while painting. Selected-tile reveal/property actions
+  sit near the bottom; tileset changes belong to map settings.
+- One `검사·기록` menu owns inspector/audit/history with a visible issue badge.
+  Expert can pin/unpin each inspection action; preferences are mode-local and
+  persisted, with each command appearing once. Ctrl+K remains a discovery path.
+- Named spatial reference: StyleGallery
+  [scroll-body-shell](https://github.com/changeroa/StyleGallery/blob/main/patterns/viewport-shell/scroll-body-shell.md).
+  The tile sheet owns tile scrolling; auxiliary map/assist/kit surfaces have
+  bounded overlay bodies instead of consuming the sheet's height. Fixed chrome
+  follows DOM reading order. No new motion beyond existing token transitions;
+  native selects and focusable anchored panels supersede animated menu examples.
+- Geometry: existing 300/320px Standard/Expert rails, 32px primary controls,
+  24px utility minimum, 4/8px gaps, `--radius-s/m`, `--font-ui`, 12/13px UI,
+  `--bg-raised/inset`, `--text-1/2`, `--accent`, `--border-default` and
+  `--focus-outline`. Preserve at least 520px canvas at 1024x768/1280x800/1440x900;
+  Standard sheet target is at least 60% of sidebar at 1440x900. No toolbar reel.
+- Personas: daily painter, expert mapper, keyboard-only author. Menus expose
+  names/state, support Escape and opener restoration, dismiss on outside input,
+  and never auto-open on boot or mode return. Focus and search caret survive
+  rerenders. No new onboarding, dependency, project schema or remote mutation.
+- Parent owns independent visual critique, ultrabrain review/approval and merge.
+  Browser evidence, measurements and unresolved debt are recorded with this
+  deliverable; no Lighthouse score or image-based approval is inferred from DOM.
+
 ## In-game shop trade counter (2026-09-06)
 
 Runtime only: this is not the shop-command editor. `runtime/shop.css` owns a
@@ -114,15 +154,22 @@ existing purse emblem; actual party faces remain explicitly labelled as party.
 ## Walk encounters from a rectangle (2026-09-06)
 
 - Primary action: `걸을 때 적 만나기`. Use the existing left-drag selection tool,
-  then the visible selection chip. Explanation: `포켓몬 풀숲처럼, 이 안에서 걷다
-  보면 전투가 시작됩니다.` No tile painting, new schema, or runtime overlay.
-- Native modal-stack worksheet: named enemy artwork/checkbox search, selected
-  count, frequency presets, then `완료`. Reuse subdialog, `btn`, thumbnail and
-  labelled native controls; advanced weights/conditions use `details`.
+  then the visible selection chip. Explanation: `포켓몬 풀숲처럼, 걷다 보면 선택한
+  그룹 중 하나와 전투합니다.` No tile painting, new schema, or runtime overlay.
+- Group-first modal worksheet: compact selected-group rows show authored names,
+  composition thumbnails/counts (including hidden members), weight and live relative
+  share. `+ 그룹 추가` opens a separate searchable existing-group picker with
+  selected, empty and no-results states. No individual-enemy selection or troop
+  generation. Each row owns its conditions disclosure, edit and remove actions.
+  Reuse subdialog, `btn`, thumbnails and labelled native controls. Weight typing
+  updates only share outputs, preserving input focus. Shares describe the current
+  worksheet, not actual eligibility among overlapping/conditional rules.
   Personas: first-time author, existing-table author, keyboard-only author.
 - Studio tokens (`--bg-raised`, `--bg-inset`, `--text-1/2`, `--accent`,
   `--border-soft`), --font-ui 13px/1.5, help 12px/1.5, 32px minimum controls,
-  4/8/12/16/24 spacing, 6px controls and 8px groups. No decorative motion.
+  4/8/12/16/24 spacing and shared 6px radius. Row titles are 14px; numeric
+  tracks use 64px weight / 72px share, 32px thumbnails, tabular figures. Picker
+  width is at most 560px with a 320px list cap. No decorative motion.
   Width at most 760px; bounded scrolling body, fixed action footer. Desktop
   acceptance 1024x768, 1280x800, 1440x900; controls wrap rather than shrink.
 - Canvas has a persistent labelled region-list button and translucent indigo
@@ -135,8 +182,12 @@ existing purse emblem; actual party faces remain explicitly labelled as party.
   keep-everywhere or replace-with-regions choice. Other table entries survive.
 - Fields are local drafts. Cancel/Escape write nothing. Apply validates bounds,
   references, conditions, locks, project identity and encounter-state freshness,
-  then records one project snapshot and one labelled store mutation including
-  generated troops. Delete removes rules, not tiles/troops. Empty catalog/search,
+  then records one map-only snapshot and one labelled map mutation. Authored
+  groups, including previously generated groups and duplicate condition variants,
+  are never merged, migrated or deleted. Group editing opens the existing database
+  then reveals the selected troop; closing it restores the same in-memory draft.
+  Missing groups stay visible and block save, with replace/remove recovery. Empty
+  databases offer direct group editing. Delete removes rules, not tiles/troops. Empty picker/search,
   invalid input, stale state and lock errors have visible recovery text.
   No fake loading. Real browser review is supervisor-owned.
 

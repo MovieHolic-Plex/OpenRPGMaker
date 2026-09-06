@@ -36,9 +36,12 @@ export type LeftDockResolution = {
   readonly left: readonly PanelId[];
   /** `chrome.paletteRail` — 초보 아이콘 레일 모드인가. */
   readonly paletteRail: boolean;
+  readonly mapTree?: boolean;
 };
 
 export function resolveLeftDockPanels(input: LeftDockResolution): readonly PanelId[] {
+  // A focused surface cannot be switched off leaving only its non-rendered map dock.
+  if (input.mapTree === false && !input.paletteRail) return ["tiles"];
   const owned = input.left.filter((id) => !LEFT_DOCK_EXTERNAL.includes(id));
   const pinned = input.paletteRail && !owned.includes(LEFT_DOCK_RAIL_HOST)
     ? [LEFT_DOCK_RAIL_HOST, ...owned]
@@ -62,6 +65,7 @@ export function isLeftDockPanelOffered(
   chrome: Pick<EditorChromeVisibility, "mapTree" | "paletteRail">,
 ): boolean {
   if (isLeftDockPinned(id, chrome.paletteRail)) return false;
+  if (!chrome.mapTree) return false;
   return id !== "maps" || chrome.mapTree;
 }
 
