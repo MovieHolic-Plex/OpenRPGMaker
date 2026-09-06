@@ -10,7 +10,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import { editorState } from "@/editor/editorState";
 import { paletteStampFromKit } from "@/editor/harnessSuggestion/structureKitModel";
-import { resetMapEditHistory } from "@/editor/mapEditHistory";
+import { getMapEditHistoryState, recordProjectSnapshot, redoMapEdit, resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
 import { TilePaintEngine, type TilePaintEngineDeps } from "@/editor/TilePaintEngine";
 import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
@@ -122,6 +122,25 @@ beforeEach(() => {
   document.body.innerHTML = "";
   resetToastsForTest();
   editorState.set({ activePaletteStamp: null, tool: "paint", layer: "lower" });
+});
+
+describe("blocked stamp history", () => {
+  it("preserves redo and undo when placement conditions block a kit", () => {
+    const { mapId, tileset } = seed([NORTH_WALL]);
+    recordProjectSnapshot(undefined, mapId, { kind: "map" });
+    store.updateMap(mapId, (map) => { map.lowerTiles[0] = KIT_TOP; });
+    const edited = structuredClone(store.getCurrent().maps[mapId]);
+    expect(undoMapEdit()).toBe(true);
+    const before = structuredClone(store.getCurrent().maps[mapId]);
+    armKit(tileset);
+    createPaintEngine(mapId, tileset).stroke([{ x: 4, y: 5 }]);
+    expect(store.getCurrent().maps[mapId]).toEqual(before);
+    expect(getMapEditHistoryState()).toEqual({ canUndo: false, canRedo: true });
+    expect(redoMapEdit()).toBe(true);
+    expect(store.getCurrent().maps[mapId]).toEqual(edited);
+    expect(undoMapEdit()).toBe(true);
+    expect(store.getCurrent().maps[mapId]).toEqual(before);
+  });
 });
 
 describe("붓질 — 필수 배치 조건", () => {

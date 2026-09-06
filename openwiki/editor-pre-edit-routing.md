@@ -6,6 +6,27 @@ Read this before editing editor-facing behavior. Identifies which workflow owns 
 
 ## Pre-edit routing
 
+### Tile brush reliability (2026-09-06)
+
+- `TilePaintEngine.brushStrokePoints` is shared with hover rendering and produces
+  exactly N by N cells. Even sizes retain the negative-side anchor: 2 uses
+  offsets -1..0 and 4 uses -2..1. Erase and upper-layer empty brushes show the
+  same clipped footprint without a tile preview.
+- Freehand paint and erase interpolate between pointer samples. Fill, collision,
+  event and stamp gestures remain discrete; one undo restores a whole stroke.
+- `mapEditHistory.recordMapEditIfChanged` retains the immutable before-map and
+  records history only after an actual synchronous change. Brush strokes use it
+  until their first mutation, then bypass comparison. No-op paint/fill/erase,
+  rejected stamps and no-op rectangle/ellipse edits preserve redo.
+- Toolbar picking and short right-click share the visible-tile policy on lower,
+  and current-layer policy on upper, including EMPTY. Explicit `pickTileAt`
+  remains layer-specific. Sampling and structure-kit selection reset shape to
+  pen; B/1 clears an active stamp like the normal Paint button.
+- Regression seams: `test/editScenePaintHistory.test.ts`,
+  `test/tileBrushState.test.ts`, `test/structureKitBrushConditions.test.ts`.
+  Real browser proof is `scripts/qa/sidebar-brush.mjs`; its fixture is local-only
+  and requires disabled remote persistence.
+
 ### Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
 
 - `basicLeftRail.ts` now owns a **288px persistent beginner palette**: labeled tools, direct layers, visible `oprn-tool-undo`, selected tile and search, then the shared scrolling grid. `basic-rail-toggle-tiles` focuses the grid; it is not a visibility toggle. Tile activation preserves the sheet and uses the existing authored-layer/paint/pen/stamp-reset rules. Event mode replaces the tile body with its explanation/creation CTA; returning to a tile layer restores it.

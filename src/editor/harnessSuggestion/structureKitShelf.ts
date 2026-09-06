@@ -65,6 +65,7 @@ function makeKitButton(kit: SectionStructureKitDef, input: StructureKitShelfInpu
           editorState.set({
             activePaletteStamp: paletteStampFromKit(kit),
             tool: "paint",
+            paintShape: "pen",
           });
         }
         input.rerender();
