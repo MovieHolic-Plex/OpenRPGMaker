@@ -57,6 +57,9 @@ export type AutonomousMover = {
    * 액션 전투 상태기가 매 프레임 심는다. 있으면 추겁 경로가 이 칸을 목표로 삼는다.
    */
   chaseTarget?: { readonly x: number; readonly y: number } | undefined;
+  /** Cache identity only; persisted search targets live in session.horror. */
+  pursuitTargetKey?: string;
+  chasePathBlocked?: boolean;
   chaseRepathTimerMs?: number;
   chasePath?: { readonly x: number; readonly y: number }[];
   chaseActive?: boolean;

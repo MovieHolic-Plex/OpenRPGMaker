@@ -19,6 +19,7 @@ import {
   type ChipsetQuarterComposition,
 } from "@/project/defaults/terrainQuarterAutotile";
 import { mapWithCommittedEvents } from "@/project/eventDrafts";
+import { runtimeMap } from "@/project/runtimeMap";
 import { tileStackAt } from "@/project/mapOverlayTiles";
 import { invalidateTilePassabilityComponents } from "@/project/tilePassabilityComponents";
 import { isTreeTrunkTileId } from "@/project/tilesetHarness";
@@ -719,21 +720,7 @@ export async function fireAutoTriggers(scene: PlaySceneContext): Promise<void> {
 }
 
 export function applyMapOverrides(scene: PlaySceneContext): void {
-  const overrides = scene.session.mapOverrides[scene.getMapId()];
-  if (!overrides) return;
-  // 런타임에서 타일이 바뀌는 유일한 지점이다. 통행 성분 색인을 여기서 버린다 —
-  // 지문 검증이 이미 막아주지만(tilePassabilityComponents §terrainMayReach) 뜻을 남긴다.
+  if (!scene.session.mapOverrides[scene.getMapId()]) return;
   invalidateTilePassabilityComponents(scene.map);
-  for (const idxStr in overrides.lower) {
-    const index = Number(idxStr);
-    if (index >= 0 && index < scene.map.lowerTiles.length) {
-      scene.map.lowerTiles[index] = overrides.lower[index];
-    }
-  }
-  for (const idxStr in overrides.upper) {
-    const index = Number(idxStr);
-    if (index >= 0 && index < scene.map.upperTiles.length) {
-      scene.map.upperTiles[index] = overrides.upper[index];
-    }
-  }
+  scene.map = runtimeMap(scene.map, scene.session);
 }

@@ -821,6 +821,9 @@ type ParsedSessionResult =
   | { readonly ok: false; readonly message: string };
 
 function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResult {
+  if (session.horror !== undefined && !isHorrorState(session.horror)) {
+    return { ok: false, message: "Invalid pursuit state" };
+  }
   if (session.actorEquipment !== undefined && !isActorEquipmentRecord(session.actorEquipment)) {
     return { ok: false, message: "Invalid actor equipment" };
   }

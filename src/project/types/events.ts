@@ -485,6 +485,8 @@ export interface NpcScheduleEntry {
 }
 
 export interface ChaseAcrossMaps {
+  /** Omitted preserves finite last-seen search; persistent still respects hiding and safe zones. */
+  tracking?: "lastSeen" | "persistent";
   scope: "map" | "connected";
   doorDelayMs: number;
   searchMs: number;

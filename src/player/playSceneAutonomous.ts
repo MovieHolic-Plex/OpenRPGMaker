@@ -1,4 +1,5 @@
 import { pursuitTarget } from "./horrorRuntime";
+import { pursuitPass } from "./pursuitNavigation";
 import { footprintBounds } from "@/project/footprint";
 import { findBlockingEventOverlappingRect } from "@/project/runtimeEventState";
 import { store } from "@/project/store";
@@ -28,6 +29,10 @@ export function updateAutonomousNPCs(scene: AutonomousNpcSceneContext, deltaMs: 
     if (scene.running && scene.session.messageWindowSettings?.allowEventMovementDuringWait !== true
       && !scene.commandMoveRouteEventIds?.has(eventId)) continue;
     if (mover.activeMove) {
+      if (mover.strategy === "chase" && !mover.chaseTarget && !mover.actionFrozen) {
+        const view = runtimeEventViewById(project, scene.map, scene.session, scene.eventPositions, eventId);
+        if (view) pursuitTarget({ project, map: scene.map, session: scene.session, positions: scene.eventPositions }, view, mover, deltaMs);
+      }
       updateActiveNpcMove({ scene, eventId, mover }, deltaMs);
       continue;
     }
@@ -155,8 +160,10 @@ function updateChaseNpc(
     pathfind: mover.pathfind,
     kite: mover.kite,
     // 추격자 자신의 통행 사각. 1x1 이면 canMove 1회로 환원돼 기존 경로와 같다.
-    pass: { footprint: view.footprint, passRows: view.passRows,
-      blocked: (x, y) => !!findBlockingEventOverlappingRect(project, scene.map, scene.session, scene.eventPositions, footprintBounds(x, y, view.footprint), eventId) },
+    pass: view.movement.pursuit
+      ? pursuitPass({ project, map: scene.map, session: scene.session, positions: scene.eventPositions }, view)
+      : { footprint: view.footprint, passRows: view.passRows,
+        blocked: (x, y) => !!findBlockingEventOverlappingRect(project, scene.map, scene.session, scene.eventPositions, footprintBounds(x, y, view.footprint), eventId) },
   });
   if (tracked?.searching && decision.kind === "touch" && (pursuit.x !== scene.tileX || pursuit.y !== scene.tileY)) {
     decision = { kind: "move", x: pursuit.x, y: pursuit.y, dir: decision.dir };

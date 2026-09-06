@@ -1,17 +1,15 @@
 import { isSpatialPlacementBlocking } from '@/project/spatialOccupancy';
 import { resolvePlayerBody } from '@/project/playerFootprint';
-import { canMoveFootprint, isPassable, isPassableLanding } from '@/project/collision';
-import { footprintBounds, pointRect, rectsOverlap, rectCells, passageBounds } from '@/project/footprint';
-import { resolveEventPage } from '@/project/io';
-import { runtimeEventViewById, runtimeEventViewsForMap, findBlockingEventOverlappingRect, type RuntimeEventView, type RuntimeEventPositions } from '@/project/runtimeEventState';
-import type { PlaySession } from '@/project/session';
-import type { Project, GameMap, Dir } from '@/project/types';
-import type { PursuitState } from '@/project/horrorState';
+import { canMoveFootprint, isPassable } from '@/project/collision';
+import { footprintBounds, pointRect, rectsOverlap } from '@/project/footprint';
+import { runtimeEventViewById, runtimeEventViewsForMap, findBlockingEventOverlappingRect, type RuntimeEventView } from '@/project/runtimeEventState';
+import type { Dir } from '@/project/types';
 import type { AutonomousMover } from './playSceneTypes';
-import { findChasePath, isInSafeZone } from './chaseAi';
+import { isInSafeZone } from './chaseAi';
+import { pursuitState, searchTarget, type PursuitWorld as World } from './pursuitNavigation';
+export { carryPursuitThroughDoor, advancePursuitDoors } from './pursuitDoors';
 
 const directions: Record<Dir, { x: number; y: number }> = { up: { x: 0, y: -1 }, down: { x: 0, y: 1 }, left: { x: -1, y: 0 }, right: { x: 1, y: 0 } };
-type World = { project: Project; map: GameMap; session: PlaySession; positions: RuntimeEventPositions };
 
 /** Furniture is an event, never a mutation of the authored tiles. No diagonal or chain pushes. */
 export function pushObject(world: World, view: RuntimeEventView, dir: Dir): boolean {
@@ -71,102 +69,51 @@ export function seesPlayer(world: World, view: RuntimeEventView): boolean {
   return true;
 }
 
-function pursuitState(world: World, view: RuntimeEventView): PursuitState {
-  const states = (world.session.horror ??= { pursuits: {} }).pursuits;
-  return states[view.event.id] ??= { home: { mapId: world.map.id, x: view.x, y: view.y }, active: false, searchMs: 0, doors: [] };
+type PursuitTarget = { x: number; y: number; searching: boolean } | null | undefined;
+
+/** Invalidate cached paths when acquisition, search, return or the actual target changes. */
+export function pursuitTarget(world: World, view: RuntimeEventView, mover: AutonomousMover, deltaMs: number): PursuitTarget {
+  const target = trackedPursuitTarget(world, view, mover, deltaMs);
+  if (target === undefined) return target; // No pursuit policy: preserve base chase.
+  const key = target ? `${target.x}:${target.y}:${target.searching}` : 'lost';
+  if (mover.pursuitTargetKey !== key) {
+    mover.pursuitTargetKey = key;
+    mover.chasePath = [];
+    mover.chasePathBlocked = false;
+  }
+  return target;
 }
 
 /** A hidden player is never a fresh target. Witnessed entry can still lead to capture. */
-export function pursuitTarget(world: World, view: RuntimeEventView, mover: AutonomousMover, deltaMs: number): { x: number; y: number; searching: boolean } | null | undefined {
+function trackedPursuitTarget(world: World, view: RuntimeEventView, mover: AutonomousMover, deltaMs: number): PursuitTarget {
   const config = view.movement.pursuit;
-  const hiding = isPlayerHiding(world) ? world.session.horror!.hiding : undefined;
-  if (!config && !hiding) return undefined; // Preserve legacy chase behavior.
+  const hiding = isPlayerHiding(world) ? world.session.horror?.hiding : undefined;
+  if (!config && !hiding) return undefined;
   const state = pursuitState(world, view);
+  if (state.doors.length) return null; // Transit, not an independently walking duplicate.
   if (config) world.session.eventLocations[view.event.id] = { mapId: world.map.id, x: view.x, y: view.y, direction: view.direction };
   const visible = (!hiding || hiding.witnessedBy.includes(view.event.id)) && seesPlayer(world, view);
-  if (visible) {
+  const persistent = config?.tracking === 'persistent' && (state.active || mover.chaseActive)
+    && !hiding && !isInSafeZone(world.map.safeZones, world.session);
+  if (visible || persistent) {
     state.active = true;
     state.searchMs = 0;
     state.lastSeen = { x: world.session.x, y: world.session.y };
+    delete state.searchTarget; delete state.searchCursor;
     mover.chaseActive = true;
     return { ...state.lastSeen, searching: false };
   }
   if (!state.active && mover.chaseActive) state.active = true;
   if (!state.active) return null;
-  state.searchMs += deltaMs;
+  state.searchMs += Math.max(0, deltaMs);
   if (state.searchMs <= (config?.searchMs ?? 3000) && state.lastSeen) {
-    return { ...state.lastSeen, searching: true };
+    // Positions reserve tween destinations immediately. Do not rotate the search until landing.
+    const target = mover.activeMove ? state.searchTarget ?? state.lastSeen : searchTarget(world, view, state);
+    return target ? { ...target, searching: true } : null;
   }
   mover.chaseActive = false;
-  mover.chasePath = [];
   if (config?.onLost === 'return' && state.home.mapId === world.map.id
     && (view.x !== state.home.x || view.y !== state.home.y)) return { ...state.home, searching: true };
   state.active = false;
   return null;
-}
-
-/** Capture at the source door, before loadMap destroys the current movers. */
-export function carryPursuitThroughDoor(world: World, movers: Map<string, AutonomousMover>, destination: { mapId: string; x: number; y: number }): void {
-  if (destination.mapId === world.map.id) return;
-  for (const view of runtimeEventViewsForMap(world.project, world.map, world.session, world.positions)) {
-    const config = view.movement.pursuit;
-    if (view.movement.type !== 'chase' || config?.scope !== 'connected') continue;
-    const state = pursuitState(world, view);
-    world.session.eventLocations[view.event.id] = { mapId: world.map.id, x: view.x, y: view.y, direction: view.direction };
-    if (!state.active && !movers.get(view.event.id)?.chaseActive) continue;
-    if (state.searchMs > 0 || world.session.horror?.hiding) continue;
-    const path = findChasePath(world.project, world.map, view, { x: world.session.x, y: world.session.y }, { footprint: view.footprint, passRows: view.passRows, blocked: (x,y) => !!findBlockingEventOverlappingRect(world.project, world.map, world.session, world.positions, footprintBounds(x,y,view.footprint), view.event.id) });
-    if (!path.length && (view.x !== world.session.x || view.y !== world.session.y)) continue;
-    if (path.some(p => findBlockingEventOverlappingRect(world.project, world.map, world.session, world.positions, footprintBounds(p.x, p.y, view.footprint), view.event.id))) continue;
-    state.active = true;
-    state.doors.push({ ...destination, remainingMs: config.doorDelayMs + path.length * (movers.get(view.event.id)?.moveDurationMs ?? 320) });
-    // Remember each room's entry as the local return point; returning never warps through a wall.
-  }
-  // Rapid consecutive transfers retain the door trail for pursuers still in transit.
-  for (const [id, state] of Object.entries(world.session.horror?.pursuits ?? {})) {
-    const last = state.doors.at(-1);
-    if (last?.mapId === world.map.id && state.doors.length < 64) {
-      const event = Object.values(world.project.maps).flatMap(m => m.events).find(e => e.id === id);
-      const page = event ? resolveEventPage(event, world.session) : undefined;
-      if (page?.movement.pursuit?.scope !== 'connected') continue;
-      const path = findChasePath(world.project, world.map, last, world.session);
-      if (!path.length && (last.x !== world.session.x || last.y !== world.session.y)) continue;
-      state.doors.push({ ...destination, remainingMs: page.movement.pursuit.doorDelayMs + path.length * Math.max(80, 640 - page.movement.speed * 80) });
-    }
-  }
-  if (world.session.horror) delete world.session.horror.hiding;
-}
-
-/** Advances in game time, including while the pursuer is in an unloaded room. */
-export function advancePursuitDoors(world: World, deltaMs: number): boolean {
-  let changed = false;
-  for (const [id, state] of Object.entries(world.session.horror?.pursuits ?? {})) {
-    const door = state.doors[0];
-    if (!door) continue;
-    const event = Object.values(world.project.maps).flatMap(m => m.events).find(e => e.id === id);
-    const page = event ? resolveEventPage(event, world.session) : undefined;
-    if (!event || page?.movement.type !== 'chase' || page.movement.pursuit?.scope !== 'connected'
-      || world.session.erasedEventIds.includes(id) || Object.values(world.session.removedEventIds ?? {}).some(ids => ids.includes(id))) {
-      state.doors = []; state.active = false; continue;
-    }
-    door.remainingMs = Math.max(0, door.remainingMs - Math.max(0, deltaMs));
-    if (door.remainingMs > 0) continue;
-    const map = world.project.maps[door.mapId];
-    if (!map) { state.doors = []; state.active = false; continue; }
-    // Never appear on the player or in furniture. A blocked doorway waits until it clears.
-    const pos = { x: door.x, y: door.y };
-    const bounds = footprintBounds(pos.x, pos.y, page.footprint ?? { width: 1, height: 1 });
-    if (!rectCells(passageBounds(pos.x, pos.y, page.footprint ?? { width: 1, height: 1 }, page.passRows ?? page.footprint?.height ?? 1)).every(c => isPassableLanding(world.project,map,c.x,c.y))
-      || isSpatialPlacementBlocking(world.project, world.session, map.id, bounds)
-      || findBlockingEventOverlappingRect(world.project, map, world.session, world.positions, bounds, id)
-      || (map.id === world.map.id && rectsOverlap(bounds, footprintBounds(world.session.x, world.session.y, resolvePlayerBody(world.project, world.session).footprint)))) continue;
-    world.session.eventLocations[id] = { mapId: map.id, ...pos };
-    world.positions[id] = pos;
-    state.doors.shift();
-    state.home = { mapId: map.id, ...pos };
-    state.lastSeen = { ...pos };
-    state.searchMs = 0;
-    changed ||= map.id === world.map.id;
-  }
-  return changed;
 }

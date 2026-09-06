@@ -20,20 +20,44 @@ AI도 `make_chase_scene.pursuit`와 `configure_object_behavior`로 같은 페이
 
 ## 데이터와 런타임
 
-- `EventPage.movement.pursuit?: {scope, doorDelayMs, searchMs, onLost}`.
+- `EventPage.movement.pursuit?: {scope, doorDelayMs, searchMs, onLost, tracking?}`.
 - `EventPage.interaction?: {kind: pushable|hiding, directions?: Dir[]}`.
 - 필드는 선택적이다. 이전 데이터에 자동으로 추격/물체 기능을 켜지 않는다.
   `shapeEventFields.ts`가 새 필드의 enum과 유한한 시간 범위를 검증한다.
 - `session.eventLocations`가 가구와 이동한 추격자의 실제 위치를 소유한다.
   `session.horror`가 추격 활성·수색·문 대기열·은신 및 목격자 목록을 보존한다.
   `saveSlots.ts`의 생성·파싱·복원 경로와 `isHorrorState` 검증을 모두 연결했다.
-- `horrorRuntime.ts`: 밀기 충돌, 시야, 은신, 문 이동 대기. 실제 `transferTo`에서
+- `horrorRuntime.ts`: 밀기 충돌, 시야, 은신 및 추적 대상. 문 대기열은 `pursuitDoors.ts`, 공통 통행·수색은 `pursuitNavigation.ts`. 실제 `transferTo`에서
   출발 맵의 괴물 상태를 넘기며 `updatePlayScene`에서 게임 시간으로 대기를 진행한다.
   메뉴·게임 오버에서는 진행하지 않는다. 연결 방 추격은 실제 전이의 발자취를 따른다.
 - 한 칸 밀기이며 연쇄 밀기·당기기는 지원하지 않는다. 막힌 칸/다른 이벤트로 밀 수 없다.
 - 추격 경로는 동적 이벤트의 점유를 고려한다. 문까지 경로가 막혔으면 전이를 예약하지 않는다.
   도착 칸이 막혀 있으면 대기한다. 맵마다 괴물을 복제하지 않고 기존 runtime event view를 사용한다.
 - 복귀는 현재 방의 시작/진입 위치까지다. 원래 방까지 역으로 돌아가는 장거리 귀환은 범위 밖이다.
+
+## 연결 방 추격 연속성 (2026-09-06)
+
+- `tracking` 생략/`lastSeen`은 마지막 목격 위치로 간 뒤 맨해튼 반경 2의 도달 가능한 칸을
+  결정적 순서로 수색한다. `persistent`는 한 번 발견한 플레이어의 현재 위치를 시야가 끊겨도
+  추적하지만 은신·안전 구역은 이 정책을 중단한다. 미목격 은신은 새 표적이 아니며,
+  목격한 은신 진입의 기존 포획 규칙은 유지한다. 추격 속성 없는 구버전 chase는 바꾸지 않는다.
+  이 증분은 데이터/런타임 계약이며 tracking 편집기 컨트롤은 아직 추가하지 않았다.
+- 수색 제한 시간은 이동 보간 중에도 허용된 업데이트마다 한 번 증가한다. `searchTarget`과
+  `searchCursor`(0~11)는 `session.horror.pursuits`에 선택적으로 저장한다. 대상·수색 단계가
+  바뀌면 임시 경로 캐시를 버리고, 수색 종료 후 기존 wait/현재 방 진입점 return을 따른다.
+  손상된 선택 수색 필드는 세이브를 거부하며 추격 상태만 조용히 지우지 않는다.
+- 수색 유예가 남아 있으면 문 추적을 예약할 수 있다. 각 이동 칸은 보행 시간과 저작 간격을
+  모두 포함하고 첫 구간은 남은 idle 간격 또는 진행 중 보간 시간을 반영한다. 연속 전이도
+  같은 footprint/passRows·동적 이벤트·공간 배치 충돌을 검사한다. 대기열 상한은 64다.
+- 한 프레임의 남은 시간은 이미 예약된 다음 구간에만 이월한다. 막힌 도착점에서는 기다리되
+  그 프레임의 남은 시간을 버려 문이 열린 뒤 누적 시간으로 여러 방을 순간 통과하지 않는다.
+- `project/runtimeMap.ts`가 로드된 맵 적용과 미로드 목적지 조회의 타일 오버라이드를 공유한다.
+  저작 배열은 변경하지 않으며, 미로드 맵에는 현재 맵의 `eventPositions`를 넘기지 않는다.
+  실제 `transferTo`는 목적지 런타임 타일과 플레이어 통행 사각으로 최종 착지점을 먼저 구하고
+  그 좌표를 추격 대기열과 플레이어 양쪽에 사용한다.
+- 계약 테스트: `npcPursuitRegression.test.ts`, `npcPursuitBoundaries.test.ts`,
+  `horrorObjectRuntime.test.ts`, `playerFootprint.test.ts`의 실제 transfer 착지 회귀.
+  출하 플레이어 브라우저 승인은 별도이며 단위 테스트 통과로 대체하지 않는다.
 
 ## 가구 밀기 애니메이션 (2026-09-05 후속 체험 수정)
 
