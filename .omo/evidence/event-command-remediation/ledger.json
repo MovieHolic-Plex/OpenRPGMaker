@@ -909,13 +909,28 @@
         "m2:m2-051-show-picture",
         "native:showPicture"
       ],
-      "status": "in_progress",
+      "status": "resolved",
       "unit": "U04",
-      "red": [],
-      "green": [],
-      "surface": [],
-      "commits": [],
-      "resolution": null
+      "red": [
+        ".omo/evidence/event-command-remediation/U04/red-refreshed.json",
+        ".omo/evidence/event-command-remediation/U04/runtime-renderer-red.json",
+        ".omo/evidence/event-command-remediation/U04/followup-continuation/red.json",
+        ".omo/evidence/event-command-remediation/U04/followup-continuation/retarget-red.json"
+      ],
+      "green": [
+        ".omo/evidence/event-command-remediation/checkpoints/u04-integration-green.json",
+        ".omo/evidence/event-command-remediation/U04/supervisor/summary.json"
+      ],
+      "surface": [
+        ".omo/evidence/event-command-remediation/U04/supervisor/editor-report.json",
+        ".omo/evidence/event-command-remediation/U04/supervisor/editor-cases.json",
+        ".omo/evidence/event-command-remediation/U04/supervisor/player/SUMMARY.md",
+        ".omo/evidence/event-command-remediation/U04/supervisor/player-continuation/SUMMARY.md"
+      ],
+      "commits": [
+        "3654c739640f7d277737a20b1c864d84f298962a"
+      ],
+      "resolution": "Native Show Picture preserves explicit and omitted waitForPicture during other edits. Completion follows the renderer's final frame, including same-generation retargets. Replacement/erase releases the picture wait but continues the live event; session replacement/shutdown still blocks stale continuation. Integrated tests, actual editor import/reopen and dedicated player passed. Pixel inspection unavailable for the current model; objective geometry and captures are recorded explicitly. Legacy stored-wrapper recovery remains separately owned by U12."
     },
     "G3-F11": {
       "title": "그림 표시·이동·삭제가 이름 없는 문자열 슬롯으로만 연결됨",
@@ -1448,13 +1463,24 @@
       "commandIds": [
         "native:playMovie"
       ],
-      "status": "in_progress",
+      "status": "resolved",
       "unit": "U04",
-      "red": [],
-      "green": [],
-      "surface": [],
-      "commits": [],
-      "resolution": null
+      "red": [
+        ".omo/evidence/event-command-remediation/U04/red-refreshed.json"
+      ],
+      "green": [
+        ".omo/evidence/event-command-remediation/checkpoints/u04-integration-green.json",
+        ".omo/evidence/event-command-remediation/U04/supervisor/summary.json"
+      ],
+      "surface": [
+        ".omo/evidence/event-command-remediation/U04/supervisor/editor-report.json",
+        ".omo/evidence/event-command-remediation/U04/supervisor/editor-cases.json",
+        ".omo/evidence/event-command-remediation/U04/supervisor/player/SUMMARY.md"
+      ],
+      "commits": [
+        "3654c739640f7d277737a20b1c864d84f298962a"
+      ],
+      "resolution": "Play Movie displays omitted wait/skippable as enabled and stores explicit false when switched off. All four combinations and omitted defaults survive actual Apply/reopen/Cancel/import. Dedicated player proves decoded media, native ended, skip-key behavior, error/abort cleanup and opening cinematic URL preservation. Integrated typecheck and build passed; pixel-inspection limitation is documented rather than reported as a visual pass."
     },
     "G5-F3": {
       "title": "이름으로 제거의 빈 입력이 동료 전체 제거로 바뀐다",
