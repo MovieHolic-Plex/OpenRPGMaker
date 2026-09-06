@@ -1,0 +1,14 @@
+status: completed exit_code: 0
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/assistantMultiMapSpec.test.ts test/assistantBatchCompletion.test.ts test/npcAuditRepair.test.ts test/aiCompletionAccounting.test.ts test/assistantDependencyRetry.test.ts test/assistantVerificationEvidence.test.ts test/assistantAcceptanceSession.test.ts test/npcRewardSession.test.ts test/npcCommandContract.test.ts test/placeNpcMalformedPage.test.ts test/aiTurnAppliedAccounting.test.ts --pool=threads --maxWorkers=3 --testTimeout=60000
+ Test Files  11 passed (11)
+      Tests  170 passed (170)
+> rpg-zzu@0.1.0 build
+> tsc --noEmit -p tsconfig.app.json && vite build --configLoader runner && npm run build:player && npm run build:standalone:bundle
+✓ built in 38.29s
+> rpg-zzu@0.1.0 build:player
+> vite build --config vite.player.config.ts --configLoader runner && node scripts/build-player-sdk.mjs
+✓ built in 10.02s
+> rpg-zzu@0.1.0 build:standalone:bundle
+> vite build --config vite.standalone.config.ts --configLoader runner
+✓ built in 24.36s

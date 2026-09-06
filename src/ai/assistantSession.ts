@@ -2237,6 +2237,20 @@ export class AssistantSession {
     }
     if (name === "complete_work_item") {
       const id = typeof args.itemId === "string" && args.itemId.trim() ? args.itemId.trim() : this.workPlan.currentItemId;
+      if (!id && args.itemId === undefined && this.workPlan.layers.every((layer) => layer.items.every((item) => item.status === "done"))) {
+        const rewards = this.npcRewardOutcome();
+        if (!rewards.ok) return { ok: false, summary: rewards.reason, issues: [{ severity: "error", code: "npc-reward-incomplete", message: rewards.reason }] };
+        const pending = [...this.adventureProblems(), ...this.verificationEvidence.problems()];
+        if (pending.length > 0) {
+          const summary = pending.join("\n");
+          return { ok: false, summary, issues: [{ severity: "error", code: "work-item-incomplete", message: summary }] };
+        }
+        if (this.acceptanceOpen()) {
+          const summary = this.acceptanceIncompleteText();
+          return { ok: false, summary, issues: [{ severity: "error", code: "acceptance-incomplete", message: summary }] };
+        }
+        return { ok: true, summary: "작업 계획은 이미 완료되었습니다. 다시 적용하지 않습니다.", data: { alreadyComplete: true, progress: summarizeWorkPlan(this.workPlan) } };
+      }
       if (!id) return { ok: false, summary: "완료할 항목 id가 없습니다." };
       const note = typeof args.note === "string" ? args.note : undefined;
       this.syncSuccessfulToolsToCurrentWorkItem();
@@ -3810,6 +3824,8 @@ export class AssistantSession {
       let failedReadInBatch: string | null = null;
       const failedSpecMaps = new Set<string>();
       const failedRecords = new Map<string, BatchRecordTarget>();
+      const failedWriteTargets = new Map<string, string>();
+      const successfulWriteTargets = new Set<string>();
       const batchReads: { name: string; args: Record<string, unknown>; result: ToolResult }[] = [];
       // 각 tool_call 실행 → role:"tool" 메시지로 결과 반환.
       for (const call of toolCalls) {
@@ -3858,10 +3874,12 @@ export class AssistantSession {
           } else if (failedReadInBatch && isWriteToolName(name)) {
             const summary = `${failedReadInBatch} 조회가 실패하여 같은 응답의 ${name} 실행을 보류했습니다. 조회를 성공시키고 반환값을 확인한 다음 다시 호출하세요.`;
             toolResult = deferredToolResult("read-dependency-failed", summary);
-          } else if (SPATIAL_BUILD_TOOLS.has(name) && failedSpecMaps.has(toolTargetMapId(args) ?? "")) {
+          } else if ((SPATIAL_BUILD_TOOLS.has(name) || TILE_WRITE_TOOLS.has(name)) && failedSpecMaps.has(toolTargetMapId(args) ?? "")) {
             toolResult = deferredToolResult("build-spec-dependency-failed", `${name}: 이 응답의 대상 맵 밑그림이 거부되어 실행을 보류했습니다. set_build_spec을 고쳐 제출하세요.`);
           } else if (recordDependency) {
             toolResult = deferredToolResult("record-dependency-failed", `${name}: ${recordDependency.kind} ${recordDependency.id} 생성이 실패하여 실행을 보류했습니다. 생성·조회 후 다시 호출하세요.`);
+          } else if (name === "complete_work_item" && failedWriteTargets.size > 0) {
+            toolResult = deferredToolResult("work-dependency-failed", `이 응답에서 ${[...new Set(failedWriteTargets.values())].join(", ")} 실행이 실패하여 완료 처리를 보류했습니다. 실패를 교정한 뒤 완료하세요.`);
           } else if (this.repeatedToolFailureStall(toolRetryTarget(name, args))) {
             toolResult = deferredToolResult("tool-retry-exhausted", `${name}: 같은 대상의 실패 상한에 도달하여 실행을 보류했습니다. 사용자 지시가 필요합니다.`);
           } else if (name === "repair_acceptance" || name === "review_acceptance") {
@@ -3928,6 +3946,16 @@ export class AssistantSession {
                 toolResult = gate;
               }
               if (dedupeKey && toolResult.ok) this.turnWriteDedupe.set(dedupeKey, toolResult);
+            }
+          }
+          if (tool?.mode === "write" || name === "set_build_spec") {
+            const target = toolRetryTarget(name, args);
+            if (toolResult.ok) {
+              successfulWriteTargets.add(target);
+              failedWriteTargets.delete(target);
+            } else if (!successfulWriteTargets.has(target)
+              && (!isDeferredToolResult(toolResult) || toolResult.issues?.some((issue) => issue.code === "read-before-write-required"))) {
+              failedWriteTargets.set(target, name);
             }
           }
           if (!isDeferredToolResult(toolResult)) {

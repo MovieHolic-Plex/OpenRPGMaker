@@ -572,6 +572,14 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 
 공간 게이트는 확장을 준비만 하고, `runTool`이 `ok:true`를 반환한 뒤 `commitExpansion`으로 반영한다. 인자 거절·맵 밖 좌표·실행 예외는 밑그림에 유령 `auto:*` 에셋을 남기지 않는다. 성공한 확장의 경고는 유지되며, 명시 스펙은 턴 간 유지하고 선택 영역 암묵 스펙은 해당 턴에만 유지한다. 회귀: `test/aiCompletionAccounting.test.ts`는 실제 세션·툴 실행·마일스톤 저장소 적용과 실패 후 재시도/다음 턴 수명을 검사한다.
 
+## 배치 의존성과 완료 멱등성 (2026-09-06)
+
+같은 응답에서 밑그림이 거절되면 그 맵의 공간 도구뿐 아니라 `place_props` 등 타일 쓰기도 보류한다. 다른 맵과 독립 조회는 계속 실행하고, 실패한 밑그림이 없는 평상시 v3 도구의 자유 배치 계약은 유지한다.
+
+교정되지 않은 쓰기 실패가 남은 배치의 `complete_work_item`은 `work-dependency-failed`로 보류된다. 같은 대상의 성공한 교정은 이 보류를 해소한다. 이미 성공·검증한 상태를 바꾸지 못한 거절된 재시도는 같은 배치의 기존 성공 근거를 지우지 않는다.
+
+모든 항목이 실제 `done`이고 보상·모험·검수 근거도 충족되었다면, itemId 없는 재완료는 `alreadyComplete:true`로 확인만 하고 마일스톤을 재적용하지 않는다. 없는 계획, 알 수 없는 명시 ID, 건너뛴 항목, 미통과 검수는 이 경로로 통과할 수 없다. 회귀: `assistantBatchCompletion`, `assistantDependencyRetry`, `assistantVerificationEvidence`.
+
 ## 모험 완료와 실제 적용 횟수 (2026-09-05)
 
 모험 저작 의도 선언이 있을 때 세션은 최종 응답 전 구조적 플레이 연결과 마지막 시각 조회를 확인한다. 계획 3/3 또는 lint 0만으로 완료 응답을 허용하지 않는다. 부족하면 보완 지시를 주고, 남으면 미완성 항목을 최종 응답으로 표시한다. run recap writes는 아직 적용하지 않은 제안과 이미 적용한 마일스톤 호출을 함께 센다.
