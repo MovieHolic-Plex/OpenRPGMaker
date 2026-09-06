@@ -1,5 +1,10 @@
 # Editor AI Tools & Vocabulary
 
+Generated `place_npc({guide:"action-controls"})` guides omit automatic portraits;
+an explicit `face` still uses the normal authoring contract. This avoids shipping
+an inferred faceset ID absent from the project while preserving the canonical
+controls, existing guide identity and position.
+
 ## Audio description tools and event candidates
 
 Audio identity is `{ kind: "music" | "sound", resourceId: rawId }`. Search-result prefixes
@@ -352,6 +357,49 @@ id 슬롯은 남긴다**(`def.name = ""`). id 가 지워지지 않으므로 `com
   만들지 않는다) — 그래서 이미지 바이트는 전송 계층에서 직접 줍는다. (2) 그때 재생하는
   `Response` 에 `url` 을 다시 심어야 한다. 없으면 pi-ai 가 `Missing request URL` 로 끊는다.
 
+
+## Action controls guide (2026-09-07)
+
+2D tile action combat is supported; 3D open worlds remain outside the engine.
+`actionArenaAuthoring.ts` selects its recipe only for a structured creation
+declaration with nonempty `actionCombat.targets` and no clarification. The
+selector never parses user keywords. `buildActionArenaAuthoringGuide` is consumed
+by the action welcome preset and the lead's context integration. It reads
+existing maps/events/resources/party/enemies/troops before minimal terrain/start,
+names the map and game, orders enemy before troop before spawn, and makes one
+controls guide. Each target must pass `run_action_combat_test({mapId})` before
+decorations; the async acceptance/runtime lane owns that tool's receipt.
+`run_scene_test`, spawn counts and turn-based `simulate_battle` cannot substitute
+for action proof. Unrequested quests, shops, bosses, rewards and multi-page
+quotas are not part of this recipe. Existing arena modifications remain focused
+repairs with retained acceptance targets, not a new-arena starter.
+Free-text welcome handoff also preserves the requested scope rather than adding
+the generic preset's NPC/item quotas before structured intent classification.
+
+`make_action_enemy` prepares the enemy and validates its graphic, target map,
+troop membership and spawn area before committing either record. `spawn.id`
+upserts within the target map; omission appends a fresh ID. `set_action_combat`
+validates its map before enabling the system and exposes the existing
+`dodgeStaminaCost`, `dodgeIframesMs`, `guardDamageReductionPercent` and
+`guardStaminaDrainPerSec` normalizers. Read resources first, create the enemy,
+then `upsert_troop({troop:{id,name,enemyIds:[enemyId]}})`, then attach its spawn.
+`test/actionAuthoringPrerequisites.test.ts` covers both direct-draft atomic
+failure and the real runner's successful dependency order.
+
+`place_npc` accepts `guide: "action-controls"` instead of authored `pages` for one
+controls page only. `src/player/keyBindings.ts` exports `ACTION_CONTROL_BINDINGS`
+(`id`, normalized `keys`, `label`) and `ACTION_CONTROLS_GUIDE`; the generated text
+comes from those runtime predicates, not model-authored key descriptions.
+The default identity is `ev_action_controls_<mapId>`. An explicit ID takes
+precedence. Retries update that event's page without moving it, even when the
+requested name or coordinates change. Nearby ordinary NPCs are not guide
+identities, and distinct explicit ordinary NPC IDs still remain distinct.
+Ordinary NPCs still require authored pages. The guide is the narrow exception to
+the narrative multi-page recommendation, not a fallback for missing dialogue.
+
+Regression: `test/actionControlsGuide.test.ts` exercises real tool dispatch,
+repeat identity, explicit-ID priority, ordinary NPC separation, and shipped
+command-body equality with the canonical guide.
 
 ## NPC 대사는 코드가 지어내지 않는다 — 캐스트 라이터 계약 (2026-09-03)
 

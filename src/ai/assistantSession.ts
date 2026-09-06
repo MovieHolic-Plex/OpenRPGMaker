@@ -3,6 +3,7 @@ import { AssistantAcceptanceLedger } from "./assistantAcceptanceLedger";
 import { AssistantImageEvidence, coveredByImages, type AcceptanceImageReceipt } from "./assistantImageEvidence";
 import { ACCEPTANCE_SCHEMA, ACCEPTANCE_TOOLS } from "./assistantAcceptanceTools";
 import { adventureToolNames, adventureCompletionProblems, ADVENTURE_AUTHORING_GUIDE, type AdventureRequirements } from "./adventureCompletion";
+import { buildActionArenaAuthoringGuide, selectActionArenaAuthoringRecipe } from "./actionArenaAuthoring";
 // ai/assistantSession.ts
 // 어시스턴트 세션: user msg → LLM → tool_calls → runTool(dryRun 누적) → tool 메시지 → … → 최종 응답.
 // - 쓰기 툴은 로컬 draft(ctx.project)에 누적되어 연쇄 툴콜이 이전 결과를 본다(store는 건드리지 않음).
@@ -12,6 +13,7 @@ import { adventureToolNames, adventureCompletionProblems, ADVENTURE_AUTHORING_GU
 import { ToolReadEvidence } from "./toolReadEvidence";
 import { ToolVerificationEvidence } from "./toolVerificationEvidence";
 import { getTool, normalizeToolArgs, runTool } from "@/editor/tools";
+import { validateArgs } from "@/editor/tools/jsonSchema";
 import { viewportVillageBounds } from "@/editor/tools/authorVillageSupport";
 import { toOpenAiTools } from "@/editor/tools";
 import type { ToolContext, ToolDomain, ToolResult } from "@/editor/tools";
@@ -895,6 +897,7 @@ export class AssistantSession {
   /** 이번 턴의 사용자 발화만(가이드·footer 없음) — 툴 이름 언급·능력 승격·의도 선언의 입력. */
   private currentTurnInstruction = "";
   private adventureRequirements: AdventureRequirements | undefined;
+  private statefulNpcRequirement = false;
   private npcRewardRequirements: NpcRewardRequirements | undefined;
   /** Only declared NPC event state, so DB/terrain items do not inherit NPC acceptance. */
   private readonly npcRewardItemBaseline = new Map<NpcRewardRequirement, string>();
@@ -1250,7 +1253,8 @@ export class AssistantSession {
     this.imageEvidence.current(this.ctx.project);
     if (!this.acceptance || !this.acceptanceAppliedProject) return;
     const snapshot = this.acceptance.evaluate(this.acceptanceAppliedProject,
-      this.turnProposals.size > 0 ? this.ctx.project : this.acceptanceAppliedProject);
+      this.turnProposals.size > 0 ? this.ctx.project : this.acceptanceAppliedProject,
+      this.verificationEvidence.problems());
     onEvent?.({ type: "acceptance", snapshot });
   }
 
@@ -1269,6 +1273,8 @@ export class AssistantSession {
   }
 
   private adoptAcceptance(promises: readonly AcceptancePromise[] | undefined, onEvent?: (event: SessionEvent) => void): void {
+    if (this.workPlan) this.verificationEvidence.requireTools(
+      this.workPlan.layers.flatMap(layer => layer.items.flatMap(item => item.successTools ?? [])));
     if (!promises && (this.acceptance || !this.spatialAcceptanceRequired())) return;
     const goal = this.acceptance?.goal ?? this.workPlan?.goal ?? this.currentTurnInstruction;
     if (!this.acceptance) {
@@ -1716,6 +1722,8 @@ export class AssistantSession {
       this.acceptanceRepairAttempts = 0;
       if (intent.resetsContext && intent.source !== "continuation") {
         this.imageEvidence.clear();
+        this.verificationEvidence.clear();
+        this.statefulNpcRequirement = false;
         this.acceptance = null;
         this.acceptanceAppliedProject = null;
         onEvent({ type: "acceptance", snapshot: null });
@@ -1733,7 +1741,13 @@ export class AssistantSession {
     if (this.turnComposerMode === "ask") this.npcRewardRequirements = undefined;
     if (!this.turnIsDriverContinue && intent.source !== "continuation") {
       this.readEvidence.begin(intent.readBeforeWrite);
-      this.verificationEvidence.clear();
+    }
+    if (intent.statefulNpcs === true) this.statefulNpcRequirement = true;
+    if (intent.actionCombat && intent.mode !== "question") {
+      this.adoptAcceptance([], onEvent);
+      this.acceptance?.requireActionCombat(intent.actionCombat.targets, this.acceptanceRequestBaseline);
+      this.verificationEvidence.requireTools(["run_action_combat_test"]);
+      this.publishAcceptance(onEvent);
     }
     beginAssistantToolDomainTurn(intent);
     this.currentTurnToolDomains = computeActiveToolDomains(intent);
@@ -1801,6 +1815,8 @@ export class AssistantSession {
     // 선언이 확정한 것은 본문 모델도 봐야 한다 — 안 그러면 모델이 같은 것을 되묻는다(2026-09-03 실측: 대장간).
     const intentNote = formatIntentNote(intent, { clarifyBypassed });
     if (intentNote) this.pushOrchestrationMessage(intentNote);
+    const actionRecipe = selectActionArenaAuthoringRecipe(intent);
+    if (actionRecipe) this.pushOrchestrationMessage(buildActionArenaAuthoringGuide(actionRecipe));
     // 선택 사각형은 사실이다 — 선언이 그 안에서 작업한다고 했으면 경계를, 새 맵/실내 시공이면 참고용임을 알린다.
     if (this.turnScope) this.pushOrchestrationMessage(formatScopeNote(this.turnScope, intent));
 
@@ -2350,6 +2366,8 @@ export class AssistantSession {
       const note = typeof args.note === "string" ? args.note : undefined;
       const rewards: WorkItemOutcomeVerdict = this.finishesWorkPlan(id) ? this.npcRewardOutcome() : { ok: true };
       if (!rewards.ok) return { ok: false, summary: rewards.reason, issues: [{ severity: "error", code: "npc-reward-incomplete", message: rewards.reason }] };
+      const item = findWorkItemById(this.workPlan, id);
+      if (item) this.verificationEvidence.recordSkippedTools(id, item.successTools ?? []);
       const skipped = skipWorkItemById(this.workPlan, id, note);
       if (!skipped) return { ok: false, summary: `항목을 찾지 못했습니다: ${id}` };
       const next = getCurrentWorkItem(this.workPlan);
@@ -2418,7 +2436,7 @@ export class AssistantSession {
       if (!quests.ok) return quests;
       const rewards = this.npcRewardOutcome(item);
       if (!rewards.ok) return rewards;
-      return verifyPlacedNpcsHaveStatePages(project, this.turnItemPlacedNpcIds);
+      return verifyPlacedNpcsHaveStatePages(project, this.turnItemPlacedNpcIds, this.statefulNpcRequirement);
     };
   }
 
@@ -2502,7 +2520,8 @@ export class AssistantSession {
       const record = args[field] as { id?: unknown } | undefined;
       if (name === tool && record && typeof record.id === "string") this.adventureIconRecords.set(`${collection}/${record.id}`, { collection, id: record.id });
     }
-    this.verificationEvidence.observe(name, args, result, countAsSuccess ? "explicit" : "advisory");
+    this.verificationEvidence.observe(name, args, result, countAsSuccess ? "explicit" : "advisory",
+      this.workPlan?.currentItemId ?? undefined);
     if (!countAsSuccess) return;
     const verdict = this.workItemVerificationEvidence.observe(name, args, result);
     if (verdict && !this.workItemVerificationEvidence.passed(name)) {
@@ -3969,6 +3988,23 @@ export class AssistantSession {
             toolResult = deferredToolResult("work-dependency-failed", `이 응답에서 ${[...new Set(failedWriteTargets.values())].join(", ")} 실행이 실패하여 완료 처리를 보류했습니다. 실패를 교정한 뒤 완료하세요.`);
           } else if (this.repeatedToolFailureStall(toolRetryTarget(name, args))) {
             toolResult = deferredToolResult("tool-retry-exhausted", `${name}: 같은 대상의 실패 상한에 도달하여 실행을 보류했습니다. 사용자 지시가 필요합니다.`);
+          } else if (name === "run_action_combat_test" && tool) {
+            const errors = validateArgs(tool.parameters, args);
+            if (errors.length > 0 || typeof args.mapId !== "string") {
+              toolResult = {
+                ok: false, summary: "액션 전투 검증 인자 오류",
+                issues: errors.map(message => ({ severity: "error", code: "invalid-args", message })),
+              };
+            } else {
+              const { runActionCombatTest } = await import("@/editor/actionCombatRuntimeProbe");
+              const receipt = await runActionCombatTest(this.ctx.project, { mapId: args.mapId, signal });
+              this.acceptance?.captureActionProof(receipt, this.ctx.project, args.mapId);
+              toolResult = {
+                ok: true,
+                summary: receipt.pass ? "실제 액션 전투 검증 통과" : `실제 액션 전투 검증 미통과: ${receipt.reason ?? receipt.status}`,
+                data: receipt,
+              };
+            }
           } else if (name === "repair_acceptance" || name === "review_acceptance") {
             toolResult = this.applyAcceptanceTool(name, args);
             this.publishAcceptance(onEvent);
@@ -4063,6 +4099,7 @@ export class AssistantSession {
           // 읽기 툴도 기록한다 — 플래너가 `successTools:["get_map_region"]` 같은 확인 항목을 자주 쓰는데
           // 쓰기만 세면 그 항목은 무슨 짓을 해도 완료할 수 없는 게이트가 된다(2026-08-23 실측: 2회 거부 후 skip).
           this.recordToolResult(name, args, toolResult);
+          this.publishAcceptance(onEvent);
           this.noteToolRetryResult(name, args, toolResult);
           if (toolResult.ok) {
             // 이 항목이 새로 만든 맵을 기록한다 — 산출물 게이트가 "만들고 안 채운 맵"을 여기서 잡는다.

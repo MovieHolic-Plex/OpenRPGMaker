@@ -62,6 +62,27 @@ belongs to `src/ai/aiRecordDb.ts`. The editor may report whether that history is
 durable. Negative guard fixtures and a temporary actual project-source mutation
 prove that allowing capability detection does not allow a local project store.
 
+## Action RPG authoring and runtime proof (2026-09-07)
+
+`test/actionRpgAuthoringAcceptance.test.ts` exercises the actual AssistantSession:
+wait-only scene success and failed mandatory verification followed by skipped
+work cannot publish verified acceptance. Goal-scoped action targets and required
+verification survive replanning; only an explicit context reset clears them.
+Ordinary one-page guides are not subject to a stateful-NPC quota.
+
+`run_action_combat_test({mapId})` is an asynchronous session dispatch; the normal
+synchronous tool registry deliberately fails closed. The session validates its
+arguments, invokes the copied exported player, captures the exact owned receipt
+before serialization, and publishes verification blockers with the same ledger
+used by the checklist. It never interprets model-provided receipt JSON as proof.
+
+Run `node scripts/qa/runtime/action-rpg.scenario.mjs` for the existing action
+demo through the actual compiled `/export-player/` deployment. Read
+`verify-shots/runtime-qa/action-rpg/SUMMARY.md` first. The script is not a generic
+`qa:runtime --scenario` beat file. For a newly authored game, the lead must also
+use the actual browser AI, save/reload the remote project, and exercise the
+resulting player with keyboard inputs. Unit receipts do not replace that run.
+
 ## Database CSS ownership contracts (2026-09-06)
 
 The required surface gate includes `databaseAllTabsRenderWalk`, using the actual

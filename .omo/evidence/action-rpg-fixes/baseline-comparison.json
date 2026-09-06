@@ -1,0 +1,26 @@
+{
+  "baseline": "58105616b",
+  "fullRun": {
+    "total": 15593,
+    "passed": 15313,
+    "failed": 257
+  },
+  "finalFocused": {
+    "total": 205,
+    "passed": 205,
+    "failed": 0
+  },
+  "baselineCandidates": {
+    "total": 539,
+    "passed": 479,
+    "failed": 60
+  },
+  "sameSettingsCandidates": {
+    "total": 181,
+    "passed": 178,
+    "failed": 3
+  },
+  "persistentNewFailures": [],
+  "baselineCss": "cssFileCount 267 -> 268",
+  "baselineSurface": "6 identical failures / 108 passed"
+}

@@ -24,16 +24,22 @@ function rewardScene() {
 
 describe("corrected scene navigation retains the same verification obligation", () => {
   it.each([
-    [],
-    [{ kind: "face", text: "up" }],
-    [{ kind: "move", text: "up" }],
-    [{ kind: "set", x: 10, y: 8 }],
-  ].map((setup) => ({ setup })))("replaces a failed navigation attempt with the passing same-target assertions: $setup", ({ setup }) => {
+    { setup: [], malformed: false },
+    { setup: [{ kind: "face", text: "up" }], malformed: true },
+    { setup: [{ kind: "move", text: "up" }], malformed: true },
+    { setup: [{ kind: "set", x: 10, y: 8 }], malformed: false },
+  ])("replaces a failed navigation attempt with the passing same-target assertions: $setup", ({ setup, malformed }) => {
     const { context, args } = rewardScene();
     const evidence = new ToolVerificationEvidence();
     const failedArgs = { ...args, steps: [...setup, ...args.steps] };
     const failed = runTool(context, "run_scene_test", failedArgs);
-    expect(failed.data).toMatchObject({ ok: false });
+    if (malformed) {
+      expect(failed.ok).toBe(false);
+      expect(failed.issues).toContainEqual(expect.objectContaining({ code: "invalid-scene-test" }));
+    } else {
+      expect(failed.ok).toBe(true);
+      expect(failed.data).toMatchObject({ ok: false });
+    }
     evidence.observe("run_scene_test", failedArgs, failed);
     evidence.invalidateAfterWrite();
     const corrected = { ...args, steps: [{ kind: "face", dir: "up" }, ...args.steps] };

@@ -11,11 +11,12 @@ function prompt(): string {
 }
 
 describe("agent UX policy prompt", () => {
-  it("injects the exact shipped UX policy without maintaining a second prose copy", () => {
-    const text = prompt();
-    const start = text.indexOf(AGENT_UX_POLICY_LINES);
-    expect(start).toBeGreaterThanOrEqual(0);
-    expect(text.slice(start, start + AGENT_UX_POLICY_LINES.length)).toBe(AGENT_UX_POLICY_LINES);
+  it("ships identical policy bytes through the main prompt and shared envelope", () => {
+    const wrapped = composeSystemPrompt({ surface: "chat", body: "POLICY_COPY_BOUNDARY", includePolicy: true });
+    for (const shipped of [prompt(), wrapped]) {
+      const start = shipped.indexOf(AGENT_UX_POLICY_LINES.split("\n")[0]);
+      expect(shipped.slice(start, start + AGENT_UX_POLICY_LINES.length)).toBe(AGENT_UX_POLICY_LINES);
+    }
   });
   it("makes shape variety a separate axis from kit color and names the observe step", () => {
     const text = prompt();

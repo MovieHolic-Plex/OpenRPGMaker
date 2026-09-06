@@ -85,6 +85,42 @@ restores those contracts without changing browser checklist ownership.
 
 ### Session-owned acceptance contract
 
+Field-action acceptance (2026-09-07): `IntentDeclaration.actionCombat` carries
+`{ targets: AcceptanceTarget[] }`, with exact existing `mapId` or authored
+`newMapName` targets. This is a structured semantic declaration, not a keyword
+router. `AssistantAcceptanceLedger.requireActionCombat(targets, requestBaseline)`
+retains these obligations separately from planner IDs, so replacement plans and
+repairs of missing spatial acceptance cannot remove them. The `actionCombat`
+criterion requires the runtime-owned receipt from `run_action_combat_test`.
+`captureActionProof(receipt, project, requestedMapId)` validates exact receipt
+ownership, map and current project fingerprint. The async dispatcher must pass
+the original object before JSON serialization and pass the requested map even
+on failed/cancelled runs, which revoke prior success. Any observed content change
+retires old receipts permanently; undo cannot revive them.
+
+`ToolVerificationEvidence.requireTools(successTools)` retains declared verification
+obligations across plan replacement and skipping. `evaluate(applied, draft,
+blockingProblems)` publishes blocked verification evidence rather than a verified
+ledger alongside failed, stale or unexecuted required checks. Scheduling still treats
+skipped items as terminal; these proof obligations must not reactivate skipped items
+or bypass the existing bounded repair limits.
+The skip boundary calls `recordSkippedTools(itemId, successTools)` before advancing;
+`observe(name, args, result, source, workItemId)` only clears that skipped obligation
+on an explicit pass from the same item. Earlier or later same-name checks for
+another item cannot waive it.
+
+The synchronous `playTools` entry for `run_action_combat_test` fails closed unless
+the session's async browser dispatcher intercepts it. `run_scene_test` preflights
+the entire input before autoruns or movement, rejects malformed/unsupported steps
+and never claims field-action combat proof. Wait/spawn tests and turn-based battle
+simulation remain distinct capabilities. Ordinary one-page guides pass the NPC
+outcome gate unless the structured `statefulNpcs` requirement is explicitly true;
+planner-declared `multiPageNpcs` volume is still measured independently.
+Focused regressions: `actionAcceptanceRequirements`, `actionAcceptanceProof`,
+`sceneTestRunner`, `volumeContract`, and the existing acceptance/verification suites.
+Evidence: `output/evidence/action-fixes-acceptance/`. Session wiring and actual
+export-player browser QA are owned by the integrating lead.
+
 `assistantAcceptance.ts` parses structured promises separately from the replaceable
 `WorkPlan`; `assistantAcceptanceLedger.ts` retains their original baselines and
 immutable snapshots. Planner decisions and `set_work_plan` accept
