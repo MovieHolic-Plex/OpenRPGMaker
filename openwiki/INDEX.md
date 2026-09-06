@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **48쪽 / 1785KB / 약 506,858 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **48쪽 / 1801KB / 약 511,366 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,15 +15,15 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 277KB | 95KB ⚠상한 초과 — 절을 더 쪼개라 | 616 | ~80,208 |
-| `openwiki/editor-ai-tools.md` | 103KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 433 | ~29,351 |
+| `openwiki/editor-ai-panel.md` | 284KB | 95KB ⚠상한 초과 — 절을 더 쪼개라 | 666 | ~82,108 |
+| `openwiki/editor-ai-tools.md` | 106KB | 73KB ⚠상한 초과 — 절을 더 쪼개라 | 435 | ~30,157 |
 | `openwiki/editor-database.md` | 244KB | 55KB ⚠상한 초과 — 절을 더 쪼개라 | 1258 | ~70,289 |
 | `openwiki/editor-event-authoring.md` | 119KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 564 | ~34,648 |
 | `openwiki/editor-pre-edit-routing.md` | 75KB | 55KB ⚠상한 초과 — 절을 더 쪼개라 | 248 | ~21,334 |
 | `openwiki/runtime-battle.md` | 122KB | 31KB | 372 | ~34,911 |
 | `openwiki/runtime-project-schema.md` | 79KB | 44KB | 390 | ~21,382 |
 | `openwiki/runtime-sessions.md` | 77KB | 46KB | 278 | ~20,410 |
-| `openwiki/testing.md` | 130KB | 46KB | 941 | ~36,386 |
+| `openwiki/testing.md` | 132KB | 46KB | 951 | ~36,993 |
 
 ## 한국어 산문이 깨진 페이지
 
@@ -31,8 +31,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 | 페이지 | 깨진 줄 수 | 예시 줄 번호 |
 |---|---|---|
-| `openwiki/editor-ai-panel.md` | 25 | 338, 339, 340, 341, 342, 343, 355, 364 |
-| `openwiki/editor-ai-tools.md` | 6 | 271, 272, 276, 278, 280, 346 |
+| `openwiki/editor-ai-panel.md` | 25 | 374, 375, 376, 377, 378, 379, 391, 400 |
+| `openwiki/editor-ai-tools.md` | 6 | 273, 274, 278, 280, 282, 348 |
 | `openwiki/editor-database.md` | 7 | 468, 472, 473, 474, 483, 509, 512 |
 | `openwiki/editor-event-authoring.md` | 16 | 151, 152, 155, 160, 161, 162, 163, 164 |
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
@@ -149,15 +149,15 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L40` 3단계 — 이름 삭제 (메이저 정리)
 - `L45` 개별 판단 메모
 
-### `openwiki/ai-workflow.md` — 20KB · 109줄 · ~5,500 토큰
+### `openwiki/ai-workflow.md` — 25KB · 169줄 · ~6,695 토큰
 
 - `L5` Before changing files
 - `L13` While changing files
-- `L59` After changing files
-- `L66` Tool-calling architecture (human review map)
-- `L76` Headless Tool and MCP Access
-- `L85` Live editor AI assistant MCP (same UI session)
-- `L104` Refreshing the wiki
+- `L119` After changing files
+- `L126` Tool-calling architecture (human review map)
+- `L136` Headless Tool and MCP Access
+- `L145` Live editor AI assistant MCP (same UI session)
+- `L164` Refreshing the wiki
 
 ### `openwiki/architecture.md` — 10KB · 67줄 · ~2,449 토큰
 
@@ -228,30 +228,32 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L18` Output limits
 - `L24` Practical tips
 
-### `openwiki/editor-ai-panel.md` — 277KB · 616줄 · ~80,208 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 284KB · 666줄 · ~82,108 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
-- `L3` Plan authoring has no small-plan quota (2026-09-06)
-- `L22` Acceptance sticky note (2026-09-06)
-  - `L41` Session-owned acceptance contract
-- `L93` 브라우저 포커스와 도구 실행 대기 (2026-09-05)
-- `L100` 계획 항목의 연속 실행 증거 (2026-09-05)
-- `L106` 조회 선행·계획 완료와 실행 종료 (2026-09-05)
-- `L115` 조수 카메라 이동 수명·부드러운 줌 (2026-09-05)
-- `L131` 패널 셸 · 도크 · 접기 · 컴포저
-- `L269` 세션 수명 · 대화 컨텍스트
-- `L284` 제안 적용 · 복구 · 완성도 린트
-- `L368` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
-- `L430` 영역 작업 · 시공 · 실내/집 파이프라인
-- `L454` 툴 노출 · 프롬프트 · 의도 판정 · NPC
-- `L468` 타일셋 이해 · 검토 위저드 (T1a/T1b)
-- `L494` 저장 · 내보내기 · 프로젝트 생성
-- `L502` 제공자 · OAuth · 동반 서비스
-- `L532` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
-- `L571` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
-- `L575` 모험 완료와 실제 적용 횟수 (2026-09-05)
-- `L580` Assistant clean conversation — Phase 1 (2026-09-06)
+- `L3` Multi-map construction specifications (2026-09-06)
+- `L39` Plan authoring has no small-plan quota (2026-09-06)
+- `L58` Acceptance sticky note (2026-09-06)
+  - `L77` Session-owned acceptance contract
+- `L129` 브라우저 포커스와 도구 실행 대기 (2026-09-05)
+- `L136` 계획 항목의 연속 실행 증거 (2026-09-05)
+- `L142` 조회 선행·계획 완료와 실행 종료 (2026-09-05)
+- `L151` 조수 카메라 이동 수명·부드러운 줌 (2026-09-05)
+- `L167` 패널 셸 · 도크 · 접기 · 컴포저
+- `L305` 세션 수명 · 대화 컨텍스트
+- `L320` 제안 적용 · 복구 · 완성도 린트
+- `L404` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
+- `L466` 영역 작업 · 시공 · 실내/집 파이프라인
+- `L490` 툴 노출 · 프롬프트 · 의도 판정 · NPC
+- `L504` 타일셋 이해 · 검토 위저드 (T1a/T1b)
+- `L530` 저장 · 내보내기 · 프로젝트 생성
+- `L538` 제공자 · OAuth · 동반 서비스
+- `L568` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
+- `L609` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
+- `L617` 배치 의존성과 완료 멱등성 (2026-09-06)
+- `L625` 모험 완료와 실제 적용 횟수 (2026-09-05)
+- `L630` Assistant clean conversation — Phase 1 (2026-09-06)
 
-### `openwiki/editor-ai-tools.md` — 103KB · 433줄 · ~29,351 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-ai-tools.md` — 106KB · 435줄 · ~30,157 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` Audio description tools and event candidates
   - `L23` Search pages and full detail
@@ -260,14 +262,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L140` Completed-house construction protection - Phase 2 (2026-09-06)
 - `L179` 퀘스트 입력과 완주 증거 계약 (2026-09-05)
 - `L189` DB 조회 페이지와 마을 전체 범위 (2026-09-05)
-- `L296` Project-wide quality evaluation
-- `L308` prune_unused 의 참조 수집은 variableId 를 가진 명령 전부를 세야 한다 (2026-08-29 실측 결함 수정)
-- `L344` NPC 대사는 코드가 지어내지 않는다 — 캐스트 라이터 계약 (2026-09-03)
-- `L375` 「이 세계」 캐논은 문장 3채널에 강제된다 (2026-09-04)
-- `L390` 마을 설계서 (2026-09-05)
-- `L394` 저수준 이벤트 입력은 명령 위치를 검증한다 (2026-09-05)
-- `L411` 보물상자는 노출된 수면을 거부한다 (2026-09-05)
-- `L418` 모험 저작 완료와 재시도 (2026-09-05)
+- `L298` Project-wide quality evaluation
+- `L310` prune_unused 의 참조 수집은 variableId 를 가진 명령 전부를 세야 한다 (2026-08-29 실측 결함 수정)
+- `L346` NPC 대사는 코드가 지어내지 않는다 — 캐스트 라이터 계약 (2026-09-03)
+- `L377` 「이 세계」 캐논은 문장 3채널에 강제된다 (2026-09-04)
+- `L392` 마을 설계서 (2026-09-05)
+- `L396` 저수준 이벤트 입력은 명령 위치를 검증한다 (2026-09-05)
+- `L413` 보물상자는 노출된 수면을 거부한다 (2026-09-05)
+- `L420` 모험 저작 완료와 재시도 (2026-09-05)
 
 ### `openwiki/editor-database.md` — 244KB · 1258줄 · ~70,289 토큰 · 통째읽기 잘림 · 깨진 줄 7
 
@@ -722,7 +724,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L110` Files to inspect before editing
 - `L122` Related pages
 
-### `openwiki/testing.md` — 130KB · 941줄 · ~36,386 토큰 · 통째읽기 잘림
+### `openwiki/testing.md` — 132KB · 951줄 · ~36,993 토큰 · 통째읽기 잘림
 
 - `L1` Database CSS ownership contracts (2026-09-06)
 - `L22` Audio description verification
@@ -769,7 +771,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L914` 공포 제작 개정 QA와 개발 서버 전송 (2026-09-05)
 - `L924` 상점 진열 중심 편집 검증 (2026-09-05)
 - `L932` 실제 DB로 나가는 전체 검사 요청 (2026-09-05 실측)
-- `L938` 실내 조립·형상 검증 (2026-09-05)
+- `L938` 조수 보상 저작과 출하 플레이어 검증 (2026-09-06)
+- `L948` 실내 조립·형상 검증 (2026-09-05)
 
 ### `openwiki/town-tile-benchmark.md` — 10KB · 153줄 · ~3,010 토큰
 

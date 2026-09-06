@@ -700,8 +700,16 @@ function overlapAllowed(a: CheckedAsset, b: CheckedAsset, buildOrder: readonly s
     NON_TILE_ASSET_KINDS.has(a.kind) || NON_TILE_ASSET_KINDS.has(b.kind) ||
     (a.layer === "upper") !== (b.layer === "upper") ||
     (a.kind === "road" && b.kind === "road") ||
-    clearThenBuildOverlapAllowed(a, b, buildOrder)
+    clearThenBuildOverlapAllowed(a, b, buildOrder) ||
+    terrainThenRoadOverlapAllowed(a, b, buildOrder)
   );
+}
+
+function terrainThenRoadOverlapAllowed(a: CheckedAsset, b: CheckedAsset, buildOrder: readonly string[] | null): boolean {
+  if (!buildOrder || !((a.kind === "terrain" && b.kind === "road") || (a.kind === "road" && b.kind === "terrain"))) return false;
+  const terrainRank = buildOrder.indexOf("terrain");
+  const roadRank = buildOrder.indexOf("road");
+  return terrainRank >= 0 && roadRank > terrainRank;
 }
 
 function clearThenBuildOverlapAllowed(a: CheckedAsset, b: CheckedAsset, buildOrder: readonly string[] | null): boolean {

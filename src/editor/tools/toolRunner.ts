@@ -92,13 +92,15 @@ export function runToolDefinition(
   const normalizedArgs = normalizeArgsForSchema(tool.parameters, args) as Record<string, unknown>;
   const argErrors = validateArgs(tool.parameters, normalizedArgs);
   if (argErrors.length > 0) {
+    const repair = tool.invalidArgsRepair?.(normalizedArgs);
     return {
       ok: false,
       summary: `'${name}' 인자 검증 실패`,
       issues: argErrors.map((message) => ({
         severity: "error",
         code: "invalid-args",
-        message: argErrorMessage(message, tool.invalidArgsExample, tool.invalidArgsHint),
+        message: argErrorMessage(message, tool.invalidArgsExample, tool.invalidArgsHint)
+          + (repair ? `\nrepair: ${JSON.stringify(repair)}` : ""),
       })),
     };
   }
