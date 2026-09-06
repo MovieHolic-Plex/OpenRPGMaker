@@ -1,0 +1,35 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiRequiredOutcomes.test.ts --maxWorkers 2 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-20260906
+
+ ✓ test/aiRequiredOutcomes.test.ts (35 tests) 17750ms
+   ✓ canonical requirements > keeps required skipped obligations when a replan tries to weaken them  577ms
+   ✓ canonical requirements > allows optional skipped work without labeling it verified  403ms
+   ✓ canonical requirements > fails closed for malformed declarations null  368ms
+   ✓ canonical requirements > fails closed for malformed declarations %j  394ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"mapDimensions","target":{"mapId":"map_blank_start"},"width":99,"height":99}],"required":"false"}  471ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"invented","passed":true}]}  417ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":null,"required":false}  433ms
+   ✓ canonical requirements > assesses existing explicit acceptance without requiring the new field  383ms
+   ✓ canonical requirements > binds original text and scope at the host boundary despite fabricated source and withdrawal  389ms
+   ✓ canonical requirements > withdraws only the named current requirement through the user-only API  388ms
+   ✓ canonical requirements > keeps sibling obligations when the user withdraws just one  384ms
+   ✓ canonical requirements > rejects model tool withdrawal even with fabricated user provenance  364ms
+   ✓ canonical requirements > rejects stale goal withdrawal actions  453ms
+   ✓ canonical requirements > does not erase old obligations on a model resetsContext claim  503ms
+   ✓ canonical requirements > archives an incomplete goal when the user explicitly starts a new goal  436ms
+   ✓ exact scoped verdict authority > evaluates explicit evidence without tool-name credit  405ms
+   ✓ exact scoped verdict authority > retires scoped verdicts after applied content changes even if later undone  2441ms
+   ✓ exact scoped verdict authority > rejects pre-declaration evidence after an external rebase  2694ms
+   ✓ exact scoped verdict authority > credits a real scoped tool response through the session dispatcher  1496ms
+   ✓ question-safe continuation > preserves repeated failure counters while answering a question  578ms
+   ✓ question-safe continuation > retains goal evidence and repair counters during ask  379ms
+
+ Test Files  1 passed (1)
+      Tests  35 passed (35)
+   Start at  01:53:09
+   Duration  33.05s (transform 10.28s, setup 0ms, collect 14.73s, tests 17.75s, environment 0ms, prepare 103ms)
+

@@ -1,0 +1,50 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiRequiredQuestionDispatch.test.ts --maxWorkers 2 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-20260906
+
+ ❯ test/aiRequiredQuestionDispatch.test.ts (4 tests | 4 failed) 2579ms
+   × question dispatch preserves blocked goal ownership > ask preserves blocked state when tools attempt mutation=false 717ms
+     → expected [ 'in_progress', 'pending' ] to deeply equal [ 'blocked', 'pending' ]
+   × question dispatch preserves blocked goal ownership > ask preserves blocked state when tools attempt mutation=true 626ms
+     → expected [ 'in_progress', 'pending' ] to deeply equal [ 'blocked', 'pending' ]
+   × question dispatch preserves blocked goal ownership > question preserves blocked state when tools attempt mutation=false 639ms
+     → expected [ 'in_progress', 'pending' ] to deeply equal [ 'blocked', 'pending' ]
+   × question dispatch preserves blocked goal ownership > question preserves blocked state when tools attempt mutation=true 594ms
+     → expected [ 'in_progress', 'pending' ] to deeply equal [ 'blocked', 'pending' ]
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiRequiredQuestionDispatch.test.ts > question dispatch preserves blocked goal ownership > ask preserves blocked state when tools attempt mutation=false
+ FAIL  test/aiRequiredQuestionDispatch.test.ts > question dispatch preserves blocked goal ownership > ask preserves blocked state when tools attempt mutation=true
+ FAIL  test/aiRequiredQuestionDispatch.test.ts > question dispatch preserves blocked goal ownership > question preserves blocked state when tools attempt mutation=false
+ FAIL  test/aiRequiredQuestionDispatch.test.ts > question dispatch preserves blocked goal ownership > question preserves blocked state when tools attempt mutation=true
+AssertionError: expected [ 'in_progress', 'pending' ] to deeply equal [ 'blocked', 'pending' ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[32m-   "blocked",[39m
+[31m+   "in_progress",[39m
+[2m    "pending",[22m
+[2m  ][22m
+
+ ❯ test/aiRequiredQuestionDispatch.test.ts:40:63
+     38|         repairs: f.session["acceptanceRepairAttempts"],
+     39|       };
+     40|       expect(work?.layers[0]?.items.map(item => item.status)).toEqual(…
+       |                                                               ^
+     41|       expect(acceptance?.status).toBe("blocked");
+     42|       expect(counters.failures.length).toBeGreaterThan(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed (4)
+   Start at  01:55:48
+   Duration  16.76s (transform 9.53s, setup 0ms, collect 13.70s, tests 2.58s, environment 0ms, prepare 88ms)
+
