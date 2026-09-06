@@ -11,6 +11,7 @@ import { ensureBundledBattleAnimations } from "./defaults/defaultDatabase";
 import { isSaveSkippedLocation, loadDevProjectOverride, saveDevProjectOverride } from "./devProjectPersistence";
 import {
   loadProjectFromSupabase,
+  loadProjectForPersistenceProof,
   saveProjectMapPatchToSupabase,
   saveProjectToSupabase,
   type SupabaseSaveResult,
@@ -106,16 +107,29 @@ export type AutoSaveState =
       readonly code?: "session-not-persisted";
     };
 
+/** In-memory accepted-save token; contains no credentials or mutable project data. */
+export type ProjectPersistenceReceipt = {
+  readonly revisionId: string;
+  readonly projectId: string;
+  readonly mutationGeneration: number;
+  /** SHA-256 of the existing normalized comparison, not the wire/server hash. */
+  readonly contentIdentity: string;
+  readonly sha256?: string;
+};
+
+export type ProjectPersistenceProof =
+  | { readonly kind: "verified"; readonly receipt: ProjectPersistenceReceipt; readonly isCurrent: boolean }
+  | { readonly kind: "mismatch"; readonly receipt: ProjectPersistenceReceipt; readonly reason: "target" | "content" }
+  | { readonly kind: "disabled" | "cancelled"; readonly receipt: ProjectPersistenceReceipt }
+  | { readonly kind: "failed"; readonly receipt: ProjectPersistenceReceipt; readonly message: string };
+
 export type ProjectFlushResult =
   | { readonly kind: "disabled" }
   | { readonly kind: "not-loaded" }
   | { readonly kind: "not-configured" }
   | { readonly kind: "conflict"; readonly conflicts: readonly { readonly mapId: string; readonly name: string }[] }
-  // todo 5: 성공 시 원격 저장의 sha256 증거를 담는다 — 자율 런 run-end 게이트가
-  // agent_run_saved 감사에 projectId + sha256 으로 기록한다. saveProjectToSupabase/
-  // saveProjectMapPatchToSupabase 의 결과가 그대로 흘러들어온다(commitId 는 여기 오지
-  // 않는다 — 비동기 커밋 로그 경로의 전용 row 다).
-  | { readonly kind: "saved"; readonly sha256?: string }
+  // A clean flush after load may have no accepted-save receipt. Never invent proof from it.
+  | { readonly kind: "saved"; readonly sha256?: string; readonly receipt?: ProjectPersistenceReceipt }
   | { readonly kind: "saved-local" };
 
 export type ProjectDbReconnectResult =
@@ -210,6 +224,8 @@ class ProjectStore {
   private remotePersistenceEnabled = true;
   private remotePersistenceDisabledReason: DbPersistenceDisabledReason | null = null;
   private persistedBaseline: Project | null = null;
+  private lastPersistenceReceipt: ProjectPersistenceReceipt | null = null;
+  private readonly persistenceTargets = new WeakMap<ProjectPersistenceReceipt, SupabaseProjectConfig>();
   private persistInFlight: Promise<ProjectFlushResult> | null = null;
   // 마지막 "실제 저장"(원격 업서트 또는 dev override 기록) 이후 변경이 있는가 —
   // beforeunload 미저장 경고(도그푸딩 결함 ⑧)의 근거. 저장이 스킵되는 모드(fresh/blank)
@@ -455,6 +471,7 @@ class ProjectStore {
       loadedRemoteProjectId: this.loadedRemoteProjectId,
       mutationGeneration: this.mutationGeneration,
       persistedBaseline: this.persistedBaseline,
+      lastPersistenceReceipt: this.lastPersistenceReceipt,
       remotePersistenceDisabledReason: this.remotePersistenceDisabledReason,
       remotePersistenceEnabled: this.remotePersistenceEnabled,
     };
@@ -495,6 +512,7 @@ class ProjectStore {
     } catch (error) {
       this.current = localSnapshot.current;
       this.persistedBaseline = localSnapshot.persistedBaseline;
+      this.lastPersistenceReceipt = localSnapshot.lastPersistenceReceipt;
       this.loaded = localSnapshot.loaded;
       this.loadedRemoteProjectId = localSnapshot.loadedRemoteProjectId;
       this.remotePersistenceEnabled = localSnapshot.remotePersistenceEnabled;
@@ -627,6 +645,7 @@ class ProjectStore {
     try {
       const project = await loadProjectFromSupabase();
       if (project) {
+        this.lastPersistenceReceipt = null;
         this.current = preserveEventDraftsOnProject(project, this.current);
         clearCopiedEventPage();
         syncEventDraftVaultFromProject(this.current);
@@ -675,6 +694,7 @@ class ProjectStore {
       if (!project) {
         return { kind: "failed", message: "DB에서 프로젝트를 찾을 수 없습니다.", projectId };
       }
+      this.lastPersistenceReceipt = null;
       this.current = preserveEventDraftsOnProject(project, this.current);
       syncEventDraftVaultFromProject(this.current);
       this.remotePersistenceEnabled = true;
@@ -806,6 +826,45 @@ class ProjectStore {
     this.persistedBaseline = project;
   }
 
+  /** Recheck at consumption time: proof can outlive the editor revision it describes. */
+  isPersistenceReceiptCurrent(receipt: ProjectPersistenceReceipt): boolean {
+    const target = this.persistenceTargets.get(receipt);
+    const config = supabaseProjectConfig();
+    return this.loaded && this.remotePersistenceEnabled
+      && this.lastPersistenceReceipt === receipt
+      && this.mutationGeneration === receipt.mutationGeneration
+      && !!target && !!config
+      && target.projectId === config.projectId && target.url === config.url && target.anonKey === config.anonKey;
+  }
+
+  /** Read-only verification of a store-issued save receipt. Failed attempts are always retryable. */
+  async verifyPersistedRevision(
+    receipt: ProjectPersistenceReceipt,
+    options: { readonly signal?: AbortSignal } = {},
+  ): Promise<ProjectPersistenceProof> {
+    const target = this.persistenceTargets.get(receipt);
+    if (!target) return { kind: "failed", receipt, message: "Unknown accepted revision" };
+    if (options.signal?.aborted) return { kind: "cancelled", receipt };
+    if (!this.remotePersistenceEnabled) return { kind: "disabled", receipt };
+    try {
+      const read = await loadProjectForPersistenceProof(target, options.signal);
+      if (options.signal?.aborted) return { kind: "cancelled", receipt };
+      if (!this.remotePersistenceEnabled) return { kind: "disabled", receipt };
+      if (!read) return { kind: "failed", receipt, message: "Saved project not found" };
+      if (read.projectId !== receipt.projectId) return { kind: "mismatch", receipt, reason: "target" };
+      const observedIdentity = await sha256HexText(serializeForComparison(projectWithoutEventDrafts(read.project)));
+      if (options.signal?.aborted) return { kind: "cancelled", receipt };
+      if (!this.remotePersistenceEnabled) return { kind: "disabled", receipt };
+      if (observedIdentity !== receipt.contentIdentity) return { kind: "mismatch", receipt, reason: "content" };
+      return { kind: "verified", receipt, isCurrent: this.isPersistenceReceiptCurrent(receipt) };
+    } catch (error) {
+      if (options.signal?.aborted || (error instanceof Error && error.name === "AbortError")) {
+        return { kind: "cancelled", receipt };
+      }
+      return { kind: "failed", receipt, message: error instanceof Error ? error.message : String(error) };
+    }
+  }
+
   async flush(): Promise<ProjectFlushResult> {
     if (this.autoSaveTimer) {
       clearTimeout(this.autoSaveTimer);
@@ -818,7 +877,12 @@ class ProjectStore {
     }
     // Clean flush: skip network/serialize when nothing changed since last successful persist.
     if (!this.dirtySinceLastPersist && this.autoSaveState.kind !== "error") {
-      if (this.remotePersistenceEnabled) return { kind: "saved" };
+      if (this.remotePersistenceEnabled) {
+        const receipt = this.lastPersistenceReceipt;
+        return receipt && this.isPersistenceReceiptCurrent(receipt)
+          ? { kind: "saved", receipt, ...(receipt.sha256 ? { sha256: receipt.sha256 } : {}) }
+          : { kind: "saved" };
+      }
       if (this.remotePersistenceDisabledReason === "dev-showcase") return { kind: "saved-local" };
       return this.remotePersistenceDisabledReason === null ? { kind: "not-configured" } : { kind: "disabled" };
     }
@@ -1109,6 +1173,9 @@ class ProjectStore {
       return this.remotePersistenceDisabledReason === null ? { kind: "not-configured" } : { kind: "disabled" };
     }
     // Snapshot local state at submit time. Paint during await must win over the response.
+    const config = supabaseProjectConfig();
+    if (!config) return { kind: "not-configured" };
+    const target = Object.freeze({ ...config });
     const generationAtSubmit = this.mutationGeneration;
     const submittedProject = projectWithoutEventDrafts(this.current);
     // 커밋 로그가 쓸 diff baseline — **이 저장 직전에 서버가 갖고 있던 내용**이다.
@@ -1118,13 +1185,30 @@ class ProjectStore {
     // 부르는 경로가 있어서다 — RTT 중에 이 필드가 다른 저장에 의해 바뀔 수 있다.
     const commitBaseline = this.persistedBaseline;
     const result = commitBaseline
-      ? await saveProjectMapPatchToSupabase({ project: submittedProject, baseProject: commitBaseline })
-      : await saveProjectToSupabase(submittedProject);
+      ? await saveProjectMapPatchToSupabase({ project: submittedProject, baseProject: commitBaseline }, target)
+      : await saveProjectToSupabase(submittedProject, target);
     if (result.kind === "not-configured") return result;
     if (result.kind === "conflict") return result;
     const savedProject = result.project ?? submittedProject;
     // Baseline tracks what the server accepted — not what the editor is showing.
     this.persistedBaseline = structuredClone(projectWithoutEventDrafts(savedProject));
+    let receipt: ProjectPersistenceReceipt | undefined;
+    try {
+      // Capture accepted content before the hash await; never derive it from live getCurrent().
+      const acceptedContent = serializeForComparison(this.persistedBaseline);
+      receipt = Object.freeze({
+        revisionId: randomUuid(),
+        projectId: target.projectId,
+        mutationGeneration: generationAtSubmit,
+        contentIdentity: await sha256HexText(acceptedContent),
+        ...(result.sha256 ? { sha256: result.sha256 } : {}),
+      });
+      this.persistenceTargets.set(receipt, target);
+    } catch (error) {
+      // Intermediate projects may save but cannot supply normalized proof. Preserve flush compatibility.
+      log.warn("Accepted project could not produce a persistence receipt", error);
+    }
+    this.lastPersistenceReceipt = receipt ?? null;
     // Local-first: never replace live maps/project with the save response.
     // Doing so rewound brush strokes that landed during the network RTT
     // (user symptom: painted tiles pop back / cancel after a moment).
@@ -1138,7 +1222,7 @@ class ProjectStore {
     }
     recordManualProjectCommitAfterSave(savedProject, commitBaseline);
     this.refreshSupabaseResourceCache();
-    return result;
+    return receipt ? { ...result, receipt } : result;
   }
 
   /**
@@ -1146,6 +1230,7 @@ class ProjectStore {
    * for the current DB project id.
    */
   private adoptProject(project: Project, options: { readonly restoreVault: boolean }): void {
+    this.lastPersistenceReceipt = null;
     clearEventDraftVault();
     clearCopiedEventPage();
     if (options.restoreVault) {

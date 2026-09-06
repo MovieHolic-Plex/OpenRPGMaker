@@ -1,0 +1,54 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/storePersistenceProof.test.ts test/supabaseProjectSync.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p1-remote-20260906
+
+ ✓ test/supabaseProjectSync.test.ts (29 tests) 59206ms
+   ✓ Supabase project sync > loads a Supabase current_json row through the project parser  3291ms
+   ✓ Supabase project sync > uses the app canonical Supabase project id when the env id is omitted  934ms
+   ✓ Supabase project sync > 옛 전투 애니메이션 묶음의 실제 행을 복구해 아이템을 실행 가능한 상태로 불러온다  844ms
+   ✓ Supabase project sync > 참조된 옛 장비 아이템 19종을 명시적 대응 장비의 한국어 안내 행으로 보존한다  486ms
+   ✓ Supabase project sync > 액션 탄약과 상점 상태에서만 참조한 옛 아이템 행을 보존한다  501ms
+   ✓ Supabase project sync > 손대지 않은 영문 아이템 껍데기만 고치고 필요한 스킬만 추가한다  709ms
+   ✓ Supabase project sync > treats Supabase current_json as canonical — does not backfill removed database records  632ms
+   ✓ Supabase project sync > repairs legacy sprite references from Supabase rows before project use  870ms
+   ✓ Supabase project sync > drops Supabase village info documents for maps that no longer exist  1312ms
+   ✓ Supabase project sync > removes legacy sprite references from Supabase save payloads  1206ms
+   ✓ Supabase project sync > saves the project as a Supabase projects upsert payload  1144ms
+   ✓ Supabase project sync > keeps current_json as canonical when optional normalized tables are absent  557ms
+   ✓ Supabase project sync > merges a changed map into the latest project without replacing other maps  3778ms
+   ✓ Supabase project sync > does not stop a stale same-map save before it overwrites a newer DB map  3615ms
+   ✓ Supabase project sync > does not false-conflict when the load path repairs a saved map (shop commands)  2629ms
+   ✓ Supabase project sync > does not false-conflict when only the repair pipeline differs (dangling refs elsewhere)  3556ms
+   ✓ Supabase project sync > does not false-conflict on jsonb key reordering (alphabetical vs insertion order)  5120ms
+   ✓ Supabase project sync > preserves concurrent saves from separate editors touching different maps  8090ms
+   ✓ Supabase project sync > preserves concurrent map tree additions from separate editors  8421ms
+   ✓ Supabase project sync > does not undo a remote same-map reparent when saving only that map content  7878ms
+   ✓ Supabase project sync > overlays map_json from maps table onto current_json on load  3523ms
+ ✓ test/storePersistenceProof.test.ts (18 tests) 137809ms
+   ✓ accepted revision persistence proof > verifies the accepted content through actual save/read transport and reuses its clean-flush receipt  21420ms
+   ✓ accepted revision persistence proof > compares normalized values rather than JSONB object-key order  4585ms
+   ✓ accepted revision persistence proof > uses the ordinary normalized remote load and map-overlay contract  7068ms
+   ✓ accepted revision persistence proof > does not verify a matching projects row when the ordinary map read fails  7844ms
+   ✓ accepted revision persistence proof > binds the receipt to the accepted merged project, not the unmerged live store  11812ms
+   ✓ accepted revision persistence proof > keeps open event drafts local and out of accepted content identity  25681ms
+   ✓ accepted revision persistence proof > rejects a copied token without issuing a read  6503ms
+   ✓ accepted revision persistence proof > does not verify a failed read  4018ms
+   ✓ accepted revision persistence proof > does not verify a missing read  2227ms
+   ✓ accepted revision persistence proof > does not verify a disabled read  3696ms
+   ✓ accepted revision persistence proof > does not verify a cancelled read  2813ms
+   ✓ accepted revision persistence proof > rejects wrong target even when current_sha256 is unchanged  4457ms
+   ✓ accepted revision persistence proof > rejects wrong content even when current_sha256 is unchanged  9142ms
+   ✓ accepted revision persistence proof > keeps a failed proof retryable for the same accepted revision  5282ms
+   ✓ accepted revision persistence proof > preserves newer local edits during the read and does not attach old proof to them  6507ms
+   ✓ accepted revision persistence proof > pins the original target across a configuration change during read  5445ms
+   ✓ accepted revision persistence proof > does not verify when cancelled while the read is in flight  6444ms
+   ✓ accepted revision persistence proof > does not verify when disabled while the read is in flight  2862ms
+
+ Test Files  2 passed (2)
+      Tests  47 passed (47)
+   Start at  18:49:15
+   Duration  140.82s (transform 23.70s, setup 0ms, collect 16.87s, tests 197.02s, environment 1ms, prepare 1.43s)
+

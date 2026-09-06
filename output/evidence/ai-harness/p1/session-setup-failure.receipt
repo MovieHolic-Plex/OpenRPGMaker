@@ -1,0 +1,2 @@
+command=npm test -- test/aiRunEndProof.test.ts
+exit=1

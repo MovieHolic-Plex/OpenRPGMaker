@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "scenario": "proof-failure",
+  "runId": "afee2225-a58c-439f-992b-c67b1c600bd7",
+  "projectId": "qa-ai-surface-afee2225-a58c-439f-992b-c67b1c600bd7",
+  "sourceSha": "476d7a7c97eb318350ff6304ad674d10b7f68bed",
+  "mutation": "false-verified",
+  "pass": false,
+  "actions": [
+    {
+      "sequence": 1,
+      "type": "real-rest",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-surface-afee2225-a58c-439f-992b-c67b1c600bd7",
+      "status": 200,
+      "bytes": 2
+    },
+    {
+      "sequence": 2,
+      "type": "isolated-project-available",
+      "projectId": "qa-ai-surface-afee2225-a58c-439f-992b-c67b1c600bd7",
+      "beforeContentQa": true
+    },
+    {
+      "sequence": 3,
+      "type": "FAIL",
+      "error": "Error: listen EADDRINUSE: address already in use 127.0.0.1:19847\n    at Server.setupListenHandle [as _listen2] (node:net:1940:16)\n    at listenInCluster (node:net:1997:12)\n    at node:net:2206:7\n    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)"
+    }
+  ],
+  "states": {},
+  "errors": [],
+  "blocked": [],
+  "cleanup": {
+    "absentBeforeRun": true,
+    "pageListenersAndTimersClosed": true,
+    "browserClosed": true,
+    "serverClosed": true,
+    "cacheRemoved": true,
+    "portReleased": "Error: listen EADDRINUSE: address already in use 127.0.0.1:19847\n    at Server.setupListenHandle [as _listen2] (node:net:1940:16)\n    at listenInCluster (node:net:1997:12)\n    at node:net:2206:7\n    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)",
+    "remote": "not-created",
+    "remoteDeletedAndAbsent": true,
+    "reusedListener": false,
+    "activeRoutes": 0
+  },
+  "configuration": {
+    "origin": "http://dbserver:8100",
+    "anonValidated": true,
+    "configuredProjectPresent": true,
+    "configuredProjectAccessed": false,
+    "fixtureProjectId": "qa-ai-surface-afee2225-a58c-439f-992b-c67b1c600bd7"
+  },
+  "failure": "Error: listen EADDRINUSE: address already in use 127.0.0.1:19847\n    at Server.setupListenHandle [as _listen2] (node:net:1940:16)\n    at listenInCluster (node:net:1997:12)\n    at node:net:2206:7\n    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)",
+  "sourceHashes": {
+    "src/ai/assistantSession.ts": "da3d8e8b00a5cc6a58862de06044b1d8ea6c1bd2ed31a6d36ab5c5f9d9ceb937",
+    "src/project/store.ts": "7823f05b36f84ef5e2cf4532b6b3e11331228a650c7973117ce6c7f35f5c9645",
+    "scripts/qa/ai-harness-contracts.mjs": "c71c1cf6c9be19f5ff7f71f32de0ec2462d37e54bd3afd7fa145b6be59c25fee"
+  }
+}

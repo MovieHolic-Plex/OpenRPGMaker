@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **48쪽 / 1729KB / 약 492,040 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **48쪽 / 1734KB / 약 493,266 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,13 +15,13 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 271KB | 95KB ⚠상한 초과 — 절을 더 쪼개라 | 574 | ~78,779 |
+| `openwiki/editor-ai-panel.md` | 274KB | 95KB ⚠상한 초과 — 절을 더 쪼개라 | 582 | ~79,377 |
 | `openwiki/editor-ai-tools.md` | 95KB | 69KB ⚠상한 초과 — 절을 더 쪼개라 | 356 | ~27,345 |
 | `openwiki/editor-database.md` | 235KB | 54KB ⚠상한 초과 — 절을 더 쪼개라 | 1152 | ~67,641 |
 | `openwiki/editor-event-authoring.md` | 119KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 564 | ~34,648 |
 | `openwiki/editor-pre-edit-routing.md` | 73KB | 55KB ⚠상한 초과 — 절을 더 쪼개라 | 220 | ~20,713 |
 | `openwiki/runtime-battle.md` | 119KB | 31KB | 362 | ~34,124 |
-| `openwiki/runtime-project-schema.md` | 70KB | 42KB | 269 | ~18,965 |
+| `openwiki/runtime-project-schema.md` | 73KB | 42KB | 309 | ~19,593 |
 | `openwiki/runtime-sessions.md` | 77KB | 46KB | 278 | ~20,410 |
 | `openwiki/testing.md` | 121KB | 45KB | 816 | ~33,881 |
 
@@ -31,7 +31,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 | 페이지 | 깨진 줄 수 | 예시 줄 번호 |
 |---|---|---|
-| `openwiki/editor-ai-panel.md` | 25 | 301, 302, 303, 304, 305, 306, 318, 327 |
+| `openwiki/editor-ai-panel.md` | 25 | 304, 305, 306, 307, 308, 309, 321, 330 |
 | `openwiki/editor-ai-tools.md` | 6 | 208, 209, 213, 215, 217, 279 |
 | `openwiki/editor-database.md` | 7 | 363, 367, 368, 369, 378, 403, 406 |
 | `openwiki/editor-event-authoring.md` | 16 | 151, 152, 155, 160, 161, 162, 163, 164 |
@@ -227,27 +227,27 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L18` Output limits
 - `L24` Practical tips
 
-### `openwiki/editor-ai-panel.md` — 271KB · 574줄 · ~78,779 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 274KB · 582줄 · ~79,377 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
 - `L3` Acceptance sticky note (2026-09-06)
   - `L22` Session-owned acceptance contract
-- `L56` 브라우저 포커스와 도구 실행 대기 (2026-09-05)
-- `L63` 계획 항목의 연속 실행 증거 (2026-09-05)
-- `L69` 조회 선행·계획 완료와 실행 종료 (2026-09-05)
-- `L78` 조수 카메라 이동 수명·부드러운 줌 (2026-09-05)
-- `L94` 패널 셸 · 도크 · 접기 · 컴포저
-- `L232` 세션 수명 · 대화 컨텍스트
-- `L247` 제안 적용 · 복구 · 완성도 린트
-- `L331` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
-- `L393` 영역 작업 · 시공 · 실내/집 파이프라인
-- `L417` 툴 노출 · 프롬프트 · 의도 판정 · NPC
-- `L431` 타일셋 이해 · 검토 위저드 (T1a/T1b)
-- `L457` 저장 · 내보내기 · 프로젝트 생성
-- `L465` 제공자 · OAuth · 동반 서비스
-- `L495` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
-- `L529` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
-- `L533` 모험 완료와 실제 적용 횟수 (2026-09-05)
-- `L538` Assistant clean conversation — Phase 1 (2026-09-06)
+- `L59` 브라우저 포커스와 도구 실행 대기 (2026-09-05)
+- `L66` 계획 항목의 연속 실행 증거 (2026-09-05)
+- `L72` 조회 선행·계획 완료와 실행 종료 (2026-09-05)
+- `L81` 조수 카메라 이동 수명·부드러운 줌 (2026-09-05)
+- `L97` 패널 셸 · 도크 · 접기 · 컴포저
+- `L235` 세션 수명 · 대화 컨텍스트
+- `L250` 제안 적용 · 복구 · 완성도 린트
+- `L334` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
+- `L396` 영역 작업 · 시공 · 실내/집 파이프라인
+- `L420` 툴 노출 · 프롬프트 · 의도 판정 · NPC
+- `L434` 타일셋 이해 · 검토 위저드 (T1a/T1b)
+- `L460` 저장 · 내보내기 · 프로젝트 생성
+- `L468` 제공자 · OAuth · 동반 서비스
+- `L498` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
+- `L537` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
+- `L541` 모험 완료와 실제 적용 횟수 (2026-09-05)
+- `L546` Assistant clean conversation — Phase 1 (2026-09-06)
 
 ### `openwiki/editor-ai-tools.md` — 95KB · 356줄 · ~27,345 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
@@ -609,32 +609,33 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L164` 가구 밀기 애니메이션 (2026-09-05)
 - `L173` Recovered head emotes (2026-09-05)
 
-### `openwiki/runtime-project-schema.md` — 70KB · 269줄 · ~18,965 토큰 · 통째읽기 잘림
+### `openwiki/runtime-project-schema.md` — 73KB · 309줄 · ~19,593 토큰 · 통째읽기 잘림
 
-- `L3` Opening and game-over cinematic settings (2026-09-06)
-- `L20` New-project save/reload verification (2026-09-05)
-- `L24` Independent game Save5 boundary (2026-09-06)
-- `L30` Life ownership in Save5 (2026-09-06)
-- `L34` Project-authored equipment slots (2026-09-05)
-- `L42` 전투 명령 CSS (2026-09-05)
-- `L46` 기본 카탈로그 삭제 보존 (2026-09-05)
-- `L50` 전투 페이지 중복 ID 복구와 슬롯 참조 (2026-09-05)
-- `L63` 통행 컴포넌트 색인의 계약 (2026-08-30, PR #286)
-- `L71` 세계 법칙의 명시적 부재 (2026-09-05)
-- `L75` Project schema & persistence
-- `L142` Variable arithmetic & loop runtime (2026-08-07)
-- `L146` Canonical event-draft projection (2026-07-30)
-- `L152` P2 general buildings and home decorations (2026-08-25)
-- `L159` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
-- `L177` Boot normalizers must not create dangling references (2026-08-30)
-- `L203` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
-- `L237` 성장 트리 선택 확장 (2026-09-05)
-- `L243` 마을 설계서 (2026-09-05)
-- `L249` 공포 게임 제작 기능 (2026-09-05)
-  - `L253` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
-- `L257` NPC 표시 이름 (2026-09-05)
-- `L262` 연결 실내 도면의 영속성 (2026-09-05)
-- `L266` 개념 장소 형상 (2026-09-05)
+- `L3` P1 accepted-save receipts and read-only proof (2026-09-06)
+- `L43` Opening and game-over cinematic settings (2026-09-06)
+- `L60` New-project save/reload verification (2026-09-05)
+- `L64` Independent game Save5 boundary (2026-09-06)
+- `L70` Life ownership in Save5 (2026-09-06)
+- `L74` Project-authored equipment slots (2026-09-05)
+- `L82` 전투 명령 CSS (2026-09-05)
+- `L86` 기본 카탈로그 삭제 보존 (2026-09-05)
+- `L90` 전투 페이지 중복 ID 복구와 슬롯 참조 (2026-09-05)
+- `L103` 통행 컴포넌트 색인의 계약 (2026-08-30, PR #286)
+- `L111` 세계 법칙의 명시적 부재 (2026-09-05)
+- `L115` Project schema & persistence
+- `L182` Variable arithmetic & loop runtime (2026-08-07)
+- `L186` Canonical event-draft projection (2026-07-30)
+- `L192` P2 general buildings and home decorations (2026-08-25)
+- `L199` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
+- `L217` Boot normalizers must not create dangling references (2026-08-30)
+- `L243` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
+- `L277` 성장 트리 선택 확장 (2026-09-05)
+- `L283` 마을 설계서 (2026-09-05)
+- `L289` 공포 게임 제작 기능 (2026-09-05)
+  - `L293` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
+- `L297` NPC 표시 이름 (2026-09-05)
+- `L302` 연결 실내 도면의 영속성 (2026-09-05)
+- `L306` 개념 장소 형상 (2026-09-05)
 
 ### `openwiki/runtime-sessions.md` — 77KB · 278줄 · ~20,410 토큰 · 통째읽기 잘림
 

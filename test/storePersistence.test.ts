@@ -271,15 +271,15 @@ describe("Project store remote persistence", () => {
     vi.resetModules();
 
     type Project = import("@/project/types").Project;
-    const delaySave = async <T>(value: T): Promise<T> => {
-      await new Promise<void>((resolve) => {
-        setTimeout(resolve, 50);
-      });
-      return value;
-    };
-    const saveFull = vi.fn(async (project: Project) => delaySave({ kind: "saved" as const, project }));
+    const submitted = Promise.withResolvers<void>();
+    const releaseSave = Promise.withResolvers<void>();
+    const saveFull = vi.fn(async (project: Project) => {
+      submitted.resolve();
+      await releaseSave.promise;
+      return { kind: "saved" as const, project };
+    });
     const saveMapPatch = vi.fn(async (input: { readonly project: Project; readonly baseProject: Project }) =>
-      delaySave({ kind: "saved" as const, project: input.project }),
+      ({ kind: "saved" as const, project: input.project }),
     );
     vi.doMock("@/project/supabaseProjectSync", async () => {
       const actual = await vi.importActual<typeof import("@/project/supabaseProjectSync")>(
@@ -307,12 +307,12 @@ describe("Project store remote persistence", () => {
     });
 
     const flushPromise = store.flush();
+    await submitted.promise;
     // Paint again while save is still awaiting the network.
     store.updateMap(mapId, (map) => {
       map.lowerTiles[0] = secondTile;
     });
-    await vi.advanceTimersByTimeAsync(50);
-    await vi.advanceTimersByTimeAsync(50);
+    releaseSave.resolve();
     const result = await flushPromise;
 
     expect(result.kind).toBe("saved");
@@ -340,13 +340,14 @@ describe("Project store remote persistence", () => {
     vi.resetModules();
 
     type Project = import("@/project/types").Project;
+    const submitted = Promise.withResolvers<void>();
+    const releaseSave = Promise.withResolvers<void>();
     const saveMapPatch = vi.fn(async (input: {
       readonly project: Project;
       readonly baseProject: Project;
     }) => {
-      await new Promise<void>((resolve) => {
-        setTimeout(resolve, 50);
-      });
+      submitted.resolve();
+      await releaseSave.promise;
       return { kind: "saved" as const, project: structuredClone(input.project) };
     });
     vi.doMock("@/project/supabaseProjectSync", async () => {
@@ -372,11 +373,11 @@ describe("Project store remote persistence", () => {
       map.lowerTiles[0] = 11;
     });
     const flushPromise = store.flush();
+    await submitted.promise;
     store.updateMap(mapId, (map) => {
       map.lowerTiles[0] = 22;
     });
-    await vi.advanceTimersByTimeAsync(50);
-    await vi.advanceTimersByTimeAsync(50);
+    releaseSave.resolve();
     const result = await flushPromise;
 
     expect(result.kind).toBe("saved");

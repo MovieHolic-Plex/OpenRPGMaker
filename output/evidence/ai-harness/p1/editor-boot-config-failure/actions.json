@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "scenario": "proof-failure",
+  "runId": "e8a2393a-1f7e-4c4b-92a7-12906fc08ce9",
+  "projectId": "qa-ai-surface-e8a2393a-1f7e-4c4b-92a7-12906fc08ce9",
+  "sourceSha": "476d7a7c97eb318350ff6304ad674d10b7f68bed",
+  "mutation": "false-verified",
+  "pass": false,
+  "actions": [
+    {
+      "sequence": 1,
+      "type": "real-rest",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-surface-e8a2393a-1f7e-4c4b-92a7-12906fc08ce9",
+      "status": 200,
+      "bytes": 2
+    },
+    {
+      "sequence": 2,
+      "type": "isolated-project-available",
+      "projectId": "qa-ai-surface-e8a2393a-1f7e-4c4b-92a7-12906fc08ce9",
+      "beforeContentQa": true
+    },
+    {
+      "sequence": 3,
+      "type": "cold-css-ready",
+      "bytes": 7520664
+    },
+    {
+      "sequence": 4,
+      "type": "FAIL",
+      "error": "Error: expect(locator).toBeVisible() failed\n\nLocator: locator('.phaser-container canvas')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n  - Expect \"to.be.visible\" with timeout 5000ms\n  - waiting for locator('.phaser-container canvas')\n\n    at captureRawStack (/home/main/z-project/rpg-zzu/node_modules/playwright-core/lib/coreBundle.js:3172:17)\n    at callMatcherAsStep (/home/main/z-project/rpg-zzu/node_modules/playwright/lib/matchers/expect.js:12875:57)\n    at Object.toBeVisible (/home/main/z-project/rpg-zzu/node_modules/playwright/lib/matchers/expect.js:12865:23)\n    at /home/main/z-project/rpg-zzu-ai-harness-p1-20260906/scripts/qa/ai-harness-contracts.mjs:242:58"
+    }
+  ],
+  "states": {},
+  "errors": [],
+  "blocked": [
+    {
+      "method": "POST",
+      "path": "/__oprn/edit-activity",
+      "reason": "non-QA write"
+    }
+  ],
+  "cleanup": {
+    "absentBeforeRun": true,
+    "pageListenersAndTimersClosed": true,
+    "browserClosed": true,
+    "serverClosed": true,
+    "cacheRemoved": true,
+    "portReleased": true,
+    "remote": "not-created",
+    "remoteDeletedAndAbsent": true,
+    "reusedListener": false,
+    "activeRoutes": 0
+  },
+  "configuration": {
+    "origin": "http://dbserver:8100",
+    "anonValidated": true,
+    "configuredProjectPresent": true,
+    "configuredProjectAccessed": false,
+    "fixtureProjectId": "qa-ai-surface-e8a2393a-1f7e-4c4b-92a7-12906fc08ce9"
+  },
+  "failure": "Error: expect(locator).toBeVisible() failed\n\nLocator: locator('.phaser-container canvas')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n  - Expect \"to.be.visible\" with timeout 5000ms\n  - waiting for locator('.phaser-container canvas')\n\n    at captureRawStack (/home/main/z-project/rpg-zzu/node_modules/playwright-core/lib/coreBundle.js:3172:17)\n    at callMatcherAsStep (/home/main/z-project/rpg-zzu/node_modules/playwright/lib/matchers/expect.js:12875:57)\n    at Object.toBeVisible (/home/main/z-project/rpg-zzu/node_modules/playwright/lib/matchers/expect.js:12865:23)\n    at /home/main/z-project/rpg-zzu-ai-harness-p1-20260906/scripts/qa/ai-harness-contracts.mjs:242:58",
+  "failureEvents": [],
+  "sourceHashes": {
+    "src/ai/assistantSession.ts": "da3d8e8b00a5cc6a58862de06044b1d8ea6c1bd2ed31a6d36ab5c5f9d9ceb937",
+    "src/project/store.ts": "7823f05b36f84ef5e2cf4532b6b3e11331228a650c7973117ce6c7f35f5c9645",
+    "scripts/qa/ai-harness-contracts.mjs": "38f97c5a2d4f79f7805f13a989c5003aa15e483a9993ffa877eff792425766d1"
+  }
+}

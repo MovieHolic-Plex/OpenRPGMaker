@@ -1,0 +1,47 @@
+{
+  "sourceSha": "057b5427cc5d32da657e9c35b2e442c4af526f7e",
+  "cleanBefore": true,
+  "originalStoreSha256": "7823f05b36f84ef5e2cf4532b6b3e11331228a650c7973117ce6c7f35f5c9645",
+  "mutationMechanism": "temporary single-line verifier-seam changes using apply_patch; exact byte restoration in finally",
+  "runs": [
+    {
+      "name": "content",
+      "sourceSha256": "6c7e446355db6dc0a1053cd7218fd19e05c9a8a346d68428ba2bdde2c2668fa4",
+      "exit": 1,
+      "actual": "verified",
+      "expected": "mismatch",
+      "assertion": {
+        "name": "AssertionError",
+        "message": "changed-real-content: false verified or wrong typed outcome\n+ actual - expected\n\n+ 'verified'\n- 'mismatch'\n"
+      },
+      "projectId": "qa-ai-proof-8e42495e-3778-417f-adbd-f15b891b33aa",
+      "cleanup": {
+        "kind": "deleted-and-absence-verified",
+        "projectId": "qa-ai-proof-8e42495e-3778-417f-adbd-f15b891b33aa",
+        "commitIds": [
+          "c5893962-9e97-4b73-82c7-4a1b59db8981"
+        ]
+      }
+    },
+    {
+      "name": "transport",
+      "sourceSha256": "5c7088ad43aab514eeaa8a3ab0ae4103430f39b27e076c4d9bbe41b58b9b842a",
+      "exit": 1,
+      "actual": "verified",
+      "expected": "failed",
+      "assertion": {
+        "name": "AssertionError",
+        "message": "injected-transport-503: false verified or wrong typed outcome\n+ actual - expected\n\n+ 'verified'\n- 'failed'\n"
+      },
+      "projectId": "qa-ai-proof-3febe680-f055-498c-a83a-33f6e49eaf6c",
+      "cleanup": {
+        "kind": "deleted-and-absence-verified",
+        "projectId": "qa-ai-proof-3febe680-f055-498c-a83a-33f6e49eaf6c",
+        "commitIds": [
+          "b3a63f45-1c4b-42c9-b6b0-1b5941fde39b"
+        ]
+      }
+    }
+  ],
+  "restored": false
+}

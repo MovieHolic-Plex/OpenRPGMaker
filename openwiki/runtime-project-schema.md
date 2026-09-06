@@ -1,5 +1,45 @@
 # Runtime Project Schema & Persistence
 
+## P1 accepted-save receipts and read-only proof (2026-09-06)
+
+`ProjectFlushResult` keeps its existing variants; `saved` optionally includes a
+`ProjectPersistenceReceipt`. A clean flush after load may return `saved` without
+a receipt, which isn't proof. After an accepted save, a clean current flush
+returns the same receipt without another write.
+
+The frozen, in-memory receipt contains `revisionId`, `projectId`,
+`mutationGeneration`, `contentIdentity` and optional `sha256`. Identity is SHA-256
+of the existing `serializeForComparison(projectWithoutEventDrafts(...))`
+normalization, derived from `result.project ?? submittedProject`, not live
+`getCurrent()` after an await. Accepted merged content can differ from the live
+editor. The optional wire/server hash alone doesn't establish content equality.
+If accepted content can't normalize, saving logs the error and returns no receipt.
+
+`store.verifyPersistedRevision(receipt, { signal? })` accepts the exact
+store-issued object. A private WeakMap holds its captured Supabase configuration;
+copied or reconstructed tokens fail. `loadProjectForPersistenceProof` reuses the
+normalized/hybrid loader with observed `project_id` and cancellation, without
+commit-tip hydration. It performs a remote read, not `reloadFromRemote()`: no
+live-project replacement, dirty reset, draft change, URL change, or store event.
+Manual reload retains its separate contract.
+
+Results are `verified` with `isCurrent`, `mismatch` with `reason: target | content`,
+`disabled`, `cancelled`, or `failed` with a message. Missing rows and read errors
+fail. Each verifier call makes a fresh attempt, so a failed receipt can retry.
+`isPersistenceReceiptCurrent(receipt)` checks loaded/enabled state, the latest
+receipt reference, mutation generation and captured target configuration. A
+matching historical read may return `verified` with `isCurrent:false`; consumers
+mustn't promote newer live state from that result and must recheck currentness
+when consuming it after an await. Neither save responses nor proof reads replace
+newer local edits.
+
+Sources: [store types and methods](../src/project/store.ts) and
+[proof loader](../src/project/supabaseProjectSync.ts). The
+[session contract](editor-ai-panel.md) describes completion/retry and optional
+apply-commit correlation. [P1 evidence](../output/evidence/ai-harness/p1/README.md)
+records real editor and isolated Supabase proof. This adds no schema migration,
+durable receipt recovery, cross-device guarantee, or P2-P5 implementation.
+
 ## Opening and game-over cinematic settings (2026-09-06)
 
 `SystemRecords.opening?: CinematicSequence` and `gameOver?: GameOverSettings` are additive, opt-in project-v4 authoring records. No schema bump, server migration, or default/demo content is needed. `src/project/cinematicSettings.ts` owns the mutable authored types and pure normalization; all four types are re-exported through `@/project/types`:

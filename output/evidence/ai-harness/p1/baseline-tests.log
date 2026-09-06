@@ -1,0 +1,75 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/assistantVerificationEvidence.test.ts test/aiComposerModeSession.test.ts test/aiMilestoneTurnAccounting.test.ts test/aiAssistantTurnCleanup.test.ts test/applyProposedProjectHouseProtection.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p1-20260906
+
+ ✓ test/aiComposerModeSession.test.ts (6 tests) 3248ms
+   ✓ 컴포저 모드 — 질문(ask) > 쓰기 툴 스키마를 모델에 노출하지 않는다 (읽기 툴은 남는다)  590ms
+   ✓ 컴포저 모드 — 질문(ask) > 모델이 쓰기 툴을 불러도 거부하고 프로젝트 초안은 불변이다  1152ms
+   ✓ 컴포저 모드 — 계획(plan) > 계획 뒤 「계속」은 툴 루프를 돌려 실행한다  751ms
+   ✓ 컴포저 모드 — 지시(do) > 기본/지시 모드는 쓰기 툴을 그대로 노출한다  369ms
+ ✓ test/aiAssistantTurnCleanup.test.ts (14 tests) 13428ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on final without changing retained data  3280ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on error without changing retained data  859ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on aborted without changing retained data  843ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on throw without changing retained data  509ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on abort-throw without changing retained data  1221ms
+   ✓ assistant owner-turn presentation cleanup > clears the owner ghost on final when no region approval owns it  753ms
+   ✓ assistant owner-turn presentation cleanup > clears the owner ghost on error when no region approval owns it  351ms
+   ✓ assistant owner-turn presentation cleanup > clears the owner ghost on throw when no region approval owns it  902ms
+   ✓ assistant owner-turn presentation cleanup > clears the owner ghost on abort-throw when no region approval owns it  1288ms
+   ✓ assistant owner-turn presentation cleanup > retires after an applied proposal without altering outcome accounting  1632ms
+   ✓ assistant owner-turn presentation cleanup > retires after an rejected proposal without altering outcome accounting  611ms
+   ✓ assistant owner-turn presentation cleanup > retires unseen automatic spec expansion before a follow-up turn can sync it  620ms
+   ✓ assistant owner-turn presentation cleanup > an orphaned completion cannot retire its replacement turn's blueprint  310ms
+ ✓ test/aiMilestoneTurnAccounting.test.ts (3 tests) 23279ms
+   ✓ 마일스톤 턴 정산 > 한 항목이 실행 한도로 나뉘어도 앞선 성공과 미적용 제안을 이어서 완료한다  8895ms
+   ✓ 마일스톤 턴 정산 > 마일스톤 쓰기는 자동 계속(false) 후에도 정산에 남는다  7313ms
+   ✓ 마일스톤 턴 정산 > 마일스톤 쓰기는 자동 계속(true) 후에도 정산에 남는다  7069ms
+ ✓ test/assistantVerificationEvidence.test.ts (20 tests) 28220ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > run_lint ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  3326ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > check_reachability ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  1223ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > verify_quest ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  1164ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > play_walkthrough ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  1679ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > run_scene_test ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  1063ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > evaluate_game_quality ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  807ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > run_lint 실제 실행 결과도 ok:true를 유지한다  624ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 같은 검사 재실패는 앞선 성공을 제거하고, 이후 실제 재통과는 복구한다  3403ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 쓰기 이후에는 이전 검증 성공으로 완료할 수 없고 다시 검사해야 한다  1164ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 재검사 없는 쓰기는 최종 보고에서도 검증 통과로 남지 않는다  2132ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 실행되지 않은 잘못된 인자는 고친 호출로 복구할 수 있다  2375ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > warning-only lint는 통과하며 거부된 쓰기는 성공 근거를 무효화하지 않는다  1671ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 레이어 자동 통과는 재검증 의무를 만들지 않고 명시 검사만 유지한다 (explicit=false)  2224ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 레이어 자동 통과는 재검증 의무를 만들지 않고 명시 검사만 유지한다 (explicit=true)  3276ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 다음 항목은 자기 대상의 검증으로 완료하며 이전 항목의 stale 검사는 최종 보고에 보존한다  1381ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 실패한 walkthrough 실행은 레이어의 성공 시나리오로 기록하지 않는다  425ms
+ ✓ test/applyProposedProjectHouseProtection.test.ts (21 tests) 40108ms
+   ✓ agent live house baseline > atomically rejects a stale preview after human lowerTiles edits  3079ms
+   ✓ agent live house baseline > atomically rejects a stale preview after human upperTiles edits  1656ms
+   ✓ agent live house baseline > atomically rejects a stale preview after human lowerTileStacks edits  1679ms
+   ✓ agent live house baseline > atomically rejects a stale preview after human upperTileStacks edits  2319ms
+   ✓ agent live house baseline > retains a house completed after preview, including resetProject=false  1112ms
+   ✓ agent live house baseline > retains a house completed after preview, including resetProject=true  3475ms
+   ✓ agent live house baseline > applies an unchanged-store preview with one undo entry and one commit  3749ms
+   ✓ agent live house baseline > uses current human tile and stack edits as the next accepted baseline  1581ms
+   ✓ agent live house baseline > does not turn raw walls or non-house regions into a stale-project lock  2390ms
+   ✓ agent-milestone live house baseline > atomically rejects a stale preview after human lowerTiles edits  1294ms
+   ✓ agent-milestone live house baseline > atomically rejects a stale preview after human upperTiles edits  690ms
+   ✓ agent-milestone live house baseline > atomically rejects a stale preview after human lowerTileStacks edits  574ms
+   ✓ agent-milestone live house baseline > atomically rejects a stale preview after human upperTileStacks edits  1002ms
+   ✓ agent-milestone live house baseline > retains a house completed after preview, including resetProject=false  1035ms
+   ✓ agent-milestone live house baseline > retains a house completed after preview, including resetProject=true  753ms
+   ✓ agent-milestone live house baseline > applies an unchanged-store preview with one undo entry and one commit  1135ms
+   ✓ agent-milestone live house baseline > uses current human tile and stack edits as the next accepted baseline  1526ms
+   ✓ agent-milestone live house baseline > does not turn raw walls or non-house regions into a stale-project lock  1298ms
+   ✓ real autonomous milestone application > checks the live store at completion: human-edit  2078ms
+   ✓ real autonomous milestone application > checks the live store at completion: new-house  3608ms
+   ✓ real autonomous milestone application > checks the live store at completion: unchanged  4070ms
+
+ Test Files  5 passed (5)
+      Tests  64 passed (64)
+   Start at  17:44:25
+   Duration  91.47s (transform 34.38s, setup 0ms, collect 245.90s, tests 108.28s, environment 2ms, prepare 3.53s)
+
