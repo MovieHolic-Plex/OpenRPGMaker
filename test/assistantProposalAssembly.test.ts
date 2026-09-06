@@ -190,20 +190,22 @@ describe("assistant proposal assembly move_event squash", () => {
 
 describe("assistant WorkPlan evidence isolation", () => {
   it("clears successful-tool evidence when set_work_plan replaces a same-id item", () => {
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat: scriptedChat([]) });
+    const project = createBlankProject();
+    const session = new AssistantSession(project, { config: CONFIG, chat: scriptedChat([]) });
     const probe = session as unknown as {
       applyWorkPlanTool(name: string, args: Record<string, unknown>): ToolResult;
-      turnSuccessfulTools: Set<string>;
-      successfulToolsWorkItemId: string | null;
+      ctx: ToolContext;
+      recordToolResult(name: string, args: Record<string, unknown>, result: ToolResult): void;
     };
     const planArgs = {
       goal: "타일 작업",
-      layers: [{ title: "L", items: [{ title: "A", instruction: "paint", successTools: ["paint_tiles"] }] }],
+      layers: [{ title: "L", items: [{ title: "A", instruction: "paint", successTools: ["paint_tiles"], mapTargets: [project.startMapId] }] }],
     };
 
     expect(probe.applyWorkPlanTool("set_work_plan", planArgs).ok).toBe(true);
-    probe.turnSuccessfulTools.add("paint_tiles");
-    probe.successfulToolsWorkItemId = "L1-1";
+    const args = { mapId: project.startMapId, mode: "rect", layer: "lower", tile: TILE.PATH, from: { x: 2, y: 2 }, to: { x: 7, y: 2 } };
+    const result = runTool(probe.ctx, "paint_tiles", args);
+    probe.recordToolResult("paint_tiles", args, result);
     expect(probe.applyWorkPlanTool("set_work_plan", planArgs).ok).toBe(true);
 
     const completed = probe.applyWorkPlanTool("complete_work_item", { itemId: "L1-1" });
