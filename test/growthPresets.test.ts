@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { createBlankProject } from '@/project/defaults';
 import { normalizeClassRecord, normalizeSkillRecord } from '@/project/databaseRecordModel';
 import { serialize, deserialize } from '@/project/io';
-import { collectProjectReferenceIssues } from '@/project/io/references';
+import { collectProjectReferenceIssues, validateProjectReferences } from '@/project/io/references';
 import { startSession } from '@/project/session';
 import { changeActorClass, promoteActor } from '@/project/sessionClass';
 import { actorBattlers } from '@/battle/battleBattlers';
@@ -160,14 +160,14 @@ describe('curated growth preset contracts', () => {
       expect(loaded.database.skills.find(s => s.id === skill.id)).toEqual(skill);
     }
   });
-  it('rejects an exhausted authored canvas without partial records or settings', () => {
+  it.each(roles)('rejects an exhausted authored canvas for promotion-%s without partial records or settings', role => {
     const project = createBlankProject();
     project.growth = emptyGrowth();
     for (let y = 60; y <= 9848; y += 456) for (let x = 56; x <= 9504; x += 744) {
       project.growth.classPositions[`occupied-${x}-${y}`] = { x, y };
     }
     const before = structuredClone(project);
-    expect(() => applyGrowthPreset(project, 'promotion-vanguard')).toThrow();
+    expect(() => applyGrowthPreset(project, `promotion-${role}`)).toThrow();
     expect(project).toEqual(before);
   });
   it('preserves explicitly zero point budgets rather than initializing defaults', () => {
@@ -179,15 +179,65 @@ describe('curated growth preset contracts', () => {
   it('places new promotion nodes apart from authored and automatically positioned nodes', () => {
     const project = customProject();
     for (const id of roles.map(role => `promotion-${role}`)) {
-      const auto = arrangeTree(project.database.classes.map(c => c.id), promotionEdges(project));
-      const occupied = project.database.classes.map(c => required(project.growth?.classPositions[c.id] ?? auto[c.id]));
+      const existingIds = project.database.classes.map(c => c.id);
       const result = applyGrowthPreset(project, id);
+      const auto = arrangeTree(project.database.classes.map(c => c.id), promotionEdges(project));
+      const occupied = existingIds.map(classId => required(project.growth?.classPositions[classId] ?? auto[classId]));
       for (const classId of result.addedClassIds) {
         const p = required(project.growth?.classPositions[classId]);
         expect(occupied.every(old => Math.abs(old.x - p.x) >= 248 || Math.abs(old.y - p.y) >= 152)).toBe(true);
         occupied.push(p);
       }
     }
+  });
+});
+
+describe.each([false, true])('imported promotion cycles (authored positions: %s)', authored => {
+  it.each(roles)('places promotion-%s apart from post-apply effective existing positions', role => {
+    // Given: an actual imported, reference-valid cycle, with optional authored overrides and an orphan reservation.
+    const source = createBlankProject();
+    const first = required(source.database.classes[0]), second = required(source.database.classes[1]);
+    first.promotions = [{ toClassId: second.id, requires: { level: 5 } }];
+    second.promotions = [{ toClassId: first.id, requires: { level: 12 } }];
+    const presetId = `promotion-${role}`;
+    const reservedId = `${presetId}-class-0`;
+    if (authored) source.growth = { ...emptyGrowth(), initialPoints: 11, pointsPerLevel: 0,
+      classPositions: { [second.id]: { x: 56, y: 2000 }, [reservedId]: { x: 1544, y: 60 } } };
+    const project = deserialize(serialize(source));
+    expect(() => validateProjectReferences(project)).not.toThrow();
+    const before = structuredClone(project);
+    const preApplyAuto = arrangeTree(project.database.classes.map(c => c.id), promotionEdges(project));
+    expect(preApplyAuto[first.id]).toEqual({ x: 304, y: 60 });
+
+    // When: append a disconnected promotion preset without rewriting the imported graph.
+    const result = applyGrowthPreset(project, presetId);
+
+    // Then: use the studio's combined post-apply layout, not the pre-append automatic positions.
+    const auto = arrangeTree(project.database.classes.map(c => c.id), promotionEdges(project));
+    expect(auto[first.id]).toEqual({ x: 800, y: 60 });
+    const occupied = Object.entries({
+      ...Object.fromEntries(before.database.classes.map(c => [c.id, required(auto[c.id])])),
+      ...before.growth?.classPositions,
+    });
+    for (const classId of result.addedClassIds) {
+      const p = required(project.growth?.classPositions[classId]);
+      for (const [oldId, old] of occupied) {
+        expect(Math.abs(old.x - p.x) >= 248 || Math.abs(old.y - p.y) >= 152,
+          `${classId} at (${p.x},${p.y}) overlaps ${oldId} at (${old.x},${old.y})`).toBe(true);
+      }
+      occupied.push([classId, p]);
+    }
+    expect(project.database.classes.slice(0, before.database.classes.length)).toEqual(before.database.classes);
+    expect(Object.keys(required(project.growth).classPositions).sort()).toEqual([
+      ...Object.keys(before.growth?.classPositions ?? {}), ...result.addedClassIds,
+    ].sort());
+    if (authored) {
+      expect(project.growth).toMatchObject(before.growth);
+      expect(result.addedClassIds).not.toContain(reservedId);
+    }
+    const loaded = deserialize(serialize(project));
+    expect(() => validateProjectReferences(loaded)).not.toThrow();
+    expect(loaded.growth).toEqual(project.growth);
   });
 });
 

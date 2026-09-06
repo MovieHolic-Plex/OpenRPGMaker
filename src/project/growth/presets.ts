@@ -80,7 +80,10 @@ export function applyGrowthPreset(project: Project, presetId: string): GrowthPre
 function placePromotionNodes(project: Project, ids: readonly string[], edges: readonly { from: string; to: string }[]): Record<string, TreePosition> {
   if (!ids.length) return {};
   const layout = arrangeTree(ids, edges);
-  const existingAuto = arrangeTree(project.database.classes.map(c => c.id), promotionEdges(project));
+  const existingIds = project.database.classes.map(c => c.id);
+  // Match the studio's post-append layout: imported cycles move after the new acyclic layers.
+  const combinedAuto = arrangeTree([...existingIds, ...ids], [...promotionEdges(project), ...edges]);
+  const existingAuto = Object.fromEntries(existingIds.map(id => [id, combinedAuto[id]]));
   const occupied = Object.values({ ...existingAuto, ...project.growth?.classPositions });
   // Three columns / two rows plus a full node pitch between blocks. All origins stay in the schema's 0..10000 range.
   for (let y = 60; y <= 9848; y += 456) for (let x = 56; x <= 9504; x += 744) {
