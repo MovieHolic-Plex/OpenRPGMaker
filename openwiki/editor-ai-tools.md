@@ -278,6 +278,23 @@ id 슬롯은 남긴다**(`def.name = ""`). id 가 지워지지 않으므로 `com
   `Response` 에 `url` 을 다시 심어야 한다. 없으면 pi-ai 가 `Missing request URL` 로 끊는다.
 
 
+## Action controls guide (2026-09-07)
+
+`place_npc` accepts `guide: "action-controls"` instead of authored `pages` for one
+controls page only. `src/player/keyBindings.ts` exports `ACTION_CONTROL_BINDINGS`
+(`id`, normalized `keys`, `label`) and `ACTION_CONTROLS_GUIDE`; the generated text
+comes from those runtime predicates, not model-authored key descriptions.
+The default identity is `ev_action_controls_<mapId>`. An explicit ID takes
+precedence. Retries update that event's page without moving it, even when the
+requested name or coordinates change. Nearby ordinary NPCs are not guide
+identities, and distinct explicit ordinary NPC IDs still remain distinct.
+Ordinary NPCs still require authored pages. The guide is the narrow exception to
+the narrative multi-page recommendation, not a fallback for missing dialogue.
+
+Regression: `test/actionControlsGuide.test.ts` exercises real tool dispatch,
+repeat identity, explicit-ID priority, ordinary NPC separation, and shipped
+command-body equality with the canonical guide.
+
 ## NPC 대사는 코드가 지어내지 않는다 — 캐스트 라이터 계약 (2026-09-03)
 
 사용자 보고: "npc 대사가 생성할 때마다 비슷하다. 하드코딩이냐?" — 맞았다. `author_village` 는 인자에 대사 자리가 없어
