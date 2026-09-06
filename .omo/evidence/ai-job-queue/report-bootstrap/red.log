@@ -1,0 +1,38 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Report-only request graph must exclude generation executors and assistant session
++ actual - expected
+
++ [
++   'http://127.0.0.1:19842/src/ai/jobs/executors/assistantJob.ts',
++   'http://127.0.0.1:19842/src/ai/jobs/executors/databaseJob.ts',
++   'http://127.0.0.1:19842/src/ai/jobs/executors/eventCommandsJob.ts',
++   'http://127.0.0.1:19842/src/ai/jobs/executors/imageJob.ts',
++   'http://127.0.0.1:19842/src/ai/jobs/executors/tilesetJob.ts',
++   'http://127.0.0.1:19842/src/ai/jobs/executors/regionJob.ts',
++   'http://127.0.0.1:19842/src/ai/assistantSessionCore.ts',
++   'http://127.0.0.1:19842/src/ai/jobs/sessionHost.ts'
++ ]
+- []
+
+    at file:///home/main/.herdr/worktrees/rpg-zzu/worktree-ai-report-bootstrap-0906/test/aiJobReportBootstrap.browser.mjs:186:10 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: [
+    'http://127.0.0.1:19842/src/ai/jobs/executors/assistantJob.ts',
+    'http://127.0.0.1:19842/src/ai/jobs/executors/databaseJob.ts',
+    'http://127.0.0.1:19842/src/ai/jobs/executors/eventCommandsJob.ts',
+    'http://127.0.0.1:19842/src/ai/jobs/executors/imageJob.ts',
+    'http://127.0.0.1:19842/src/ai/jobs/executors/tilesetJob.ts',
+    'http://127.0.0.1:19842/src/ai/jobs/executors/regionJob.ts',
+    'http://127.0.0.1:19842/src/ai/assistantSessionCore.ts',
+    'http://127.0.0.1:19842/src/ai/jobs/sessionHost.ts'
+  ],
+  expected: [],
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.11.1

@@ -1,12 +1,6 @@
-import { executeAssistantJob } from "./executors/assistantJob";
-import { executeDatabaseJob } from "./executors/databaseJob";
-import { executeEventCommandsJob } from "./executors/eventCommandsJob";
-import { executeImageJob } from "./executors/imageJob";
-import { executeTilesetJob } from "./executors/tilesetJob";
-import { executeRegionJob } from "./executors/regionJob";
 import type { AiJobInput, AiJobResult } from "./contracts";
 import type { AiJobHost, AiReportHost } from "../../../scripts/lib/aiJobs/scheduler.mjs";
-import { renderJobReport } from "./renderJobReport";
+import type { renderJobReport } from "./renderJobReport";
 import type { ReportContext } from "./reportModel";
 
 declare global {
@@ -30,12 +24,12 @@ window.__executeAiJob = async (input, identity) => {
     providerOperation: value => call("providerOperation", value),
   };
   switch (input.family) {
-    case "assistant": return executeAssistantJob(input, host);
-    case "database": return executeDatabaseJob(input, host);
-    case "event-commands": return executeEventCommandsJob(input, host);
-    case "image": return executeImageJob(input, host);
-    case "tileset": return executeTilesetJob(input, host);
-    case "region": return executeRegionJob(input, host);
+    case "assistant": return (await import("./executors/assistantJob")).executeAssistantJob(input, host);
+    case "database": return (await import("./executors/databaseJob")).executeDatabaseJob(input, host);
+    case "event-commands": return (await import("./executors/eventCommandsJob")).executeEventCommandsJob(input, host);
+    case "image": return (await import("./executors/imageJob")).executeImageJob(input, host);
+    case "tileset": return (await import("./executors/tilesetJob")).executeTilesetJob(input, host);
+    case "region": return (await import("./executors/regionJob")).executeRegionJob(input, host);
     default: {
       const unexpected: never = input;
       throw new Error(`Unsupported AI job family: ${String(unexpected)}`);
@@ -52,6 +46,6 @@ window.__renderAiJobReport = async (report, identity) => {
     putJson: value => call("putJson", value),
     saveReport: document => call("saveReport", document),
   };
-  return renderJobReport(report.result, host);
+  return (await import("./renderJobReport")).renderJobReport(report.result, host);
 };
 if (window.__aiJobReady) await window.__aiJobReady();

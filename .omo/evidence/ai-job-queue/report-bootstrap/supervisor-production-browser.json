@@ -1,0 +1,315 @@
+{
+  "origin": "http://127.0.0.1:19842",
+  "temporary": "/dev/shm/ai-report-bootstrap-L06OjS",
+  "buildRoot": "/dev/shm/ai-bootstrap-supervisor-5BltW7/dist",
+  "builtGeneration": [
+    "/assets/assistantSessionCore-Cvn4GTCp.js",
+    "/assets/sessionHost-BuAuj91n.js",
+    "/assets/assistantJob-C-hyLLtU.js",
+    "/assets/databaseJob-BqeyyWht.js",
+    "/assets/eventCommandsJob-k-_Jmb11.js",
+    "/assets/imageJob-CxNRC63Y.js",
+    "/assets/regionJob-CiuMhkH4.js",
+    "/assets/tilesetJob-BQHCp7gO.js"
+  ],
+  "realms": [
+    {
+      "stage": "report",
+      "requests": [
+        "http://127.0.0.1:19842/ai-job-worker.html",
+        "http://127.0.0.1:19842/assets/aiJobWorker-D9kYU77C.js",
+        "http://127.0.0.1:19842/assets/modulepreload-polyfill-B5Qt9EMX.js",
+        "http://127.0.0.1:19842/assets/preload-helper-BlTxHScW.js",
+        "http://127.0.0.1:19842/assets/renderJobReport-DUqfrslN.js",
+        "http://127.0.0.1:19842/assets/checkpointState-CG174ah2.js",
+        "http://127.0.0.1:19842/assets/autonomyLevels-BirJc4Kl.js",
+        "http://127.0.0.1:19842/assets/regionSnapshotCore-C2QXGZKM.js",
+        "http://127.0.0.1:19842/assets/mapTileDrawCore-B8h9KZDs.js",
+        "http://127.0.0.1:19842/assets/clipToRegion-DxcNHokC.js",
+        "http://127.0.0.1:19842/assets/detachedDraftMemory-CfVNEqki.js",
+        "http://127.0.0.1:19842/assets/eventCommandBranches-DARAShH9.js"
+      ],
+      "loaded": [
+        "http://127.0.0.1:19842/assets/aiJobWorker-D9kYU77C.js",
+        "http://127.0.0.1:19842/assets/modulepreload-polyfill-B5Qt9EMX.js",
+        "http://127.0.0.1:19842/assets/preload-helper-BlTxHScW.js",
+        "http://127.0.0.1:19842/assets/renderJobReport-DUqfrslN.js",
+        "http://127.0.0.1:19842/assets/checkpointState-CG174ah2.js",
+        "http://127.0.0.1:19842/assets/regionSnapshotCore-C2QXGZKM.js",
+        "http://127.0.0.1:19842/assets/mapTileDrawCore-B8h9KZDs.js",
+        "http://127.0.0.1:19842/assets/detachedDraftMemory-CfVNEqki.js",
+        "http://127.0.0.1:19842/assets/clipToRegion-DxcNHokC.js",
+        "http://127.0.0.1:19842/assets/eventCommandBranches-DARAShH9.js",
+        "http://127.0.0.1:19842/assets/autonomyLevels-BirJc4Kl.js"
+      ],
+      "ready": {
+        "count": 3,
+        "categories": {
+          "assets": 3
+        },
+        "generationModules": [],
+        "urls": [
+          "http://127.0.0.1:19842/assets/aiJobWorker-D9kYU77C.js",
+          "http://127.0.0.1:19842/assets/modulepreload-polyfill-B5Qt9EMX.js",
+          "http://127.0.0.1:19842/assets/preload-helper-BlTxHScW.js"
+        ]
+      },
+      "hostMethods": [
+        "readJson",
+        "readJson",
+        "saveReport",
+        "putBlob",
+        "readBlob",
+        "putBlob",
+        "saveReport",
+        "putBlob",
+        "putBlob",
+        "saveReport"
+      ],
+      "complete": {
+        "count": 11,
+        "categories": {
+          "assets": 11
+        },
+        "generationModules": [],
+        "urls": [
+          "http://127.0.0.1:19842/assets/aiJobWorker-D9kYU77C.js",
+          "http://127.0.0.1:19842/assets/autonomyLevels-BirJc4Kl.js",
+          "http://127.0.0.1:19842/assets/checkpointState-CG174ah2.js",
+          "http://127.0.0.1:19842/assets/clipToRegion-DxcNHokC.js",
+          "http://127.0.0.1:19842/assets/detachedDraftMemory-CfVNEqki.js",
+          "http://127.0.0.1:19842/assets/eventCommandBranches-DARAShH9.js",
+          "http://127.0.0.1:19842/assets/mapTileDrawCore-B8h9KZDs.js",
+          "http://127.0.0.1:19842/assets/modulepreload-polyfill-B5Qt9EMX.js",
+          "http://127.0.0.1:19842/assets/preload-helper-BlTxHScW.js",
+          "http://127.0.0.1:19842/assets/regionSnapshotCore-C2QXGZKM.js",
+          "http://127.0.0.1:19842/assets/renderJobReport-DUqfrslN.js"
+        ]
+      }
+    },
+    {
+      "stage": "generation",
+      "requests": [
+        "http://127.0.0.1:19842/ai-job-worker.html",
+        "http://127.0.0.1:19842/assets/aiJobWorker-D9kYU77C.js",
+        "http://127.0.0.1:19842/assets/modulepreload-polyfill-B5Qt9EMX.js",
+        "http://127.0.0.1:19842/assets/preload-helper-BlTxHScW.js",
+        "http://127.0.0.1:19842/assets/databaseJob-BqeyyWht.js",
+        "http://127.0.0.1:19842/assets/checkpointState-CG174ah2.js",
+        "http://127.0.0.1:19842/assets/autonomyLevels-BirJc4Kl.js",
+        "http://127.0.0.1:19842/assets/llmClient-D6fIe2oU.js",
+        "http://127.0.0.1:19842/assets/imageGenerationClient-BB7zR-tr.js",
+        "http://127.0.0.1:19842/assets/databaseGenerationCore--3XuwkxS.js",
+        "http://127.0.0.1:19842/assets/commandTraversal-DBAndM--.js",
+        "http://127.0.0.1:19842/assets/eventCommandBranches-DARAShH9.js",
+        "http://127.0.0.1:19842/assets/toolRunner-D5PRfy0g.js",
+        "http://127.0.0.1:19842/assets/detachedDraftMemory-CfVNEqki.js",
+        "http://127.0.0.1:19842/assets/aiArtworkCanvas-DK87pMs8.js"
+      ],
+      "loaded": [
+        "http://127.0.0.1:19842/assets/aiJobWorker-D9kYU77C.js",
+        "http://127.0.0.1:19842/assets/modulepreload-polyfill-B5Qt9EMX.js",
+        "http://127.0.0.1:19842/assets/preload-helper-BlTxHScW.js",
+        "http://127.0.0.1:19842/assets/databaseJob-BqeyyWht.js",
+        "http://127.0.0.1:19842/assets/checkpointState-CG174ah2.js",
+        "http://127.0.0.1:19842/assets/imageGenerationClient-BB7zR-tr.js",
+        "http://127.0.0.1:19842/assets/llmClient-D6fIe2oU.js",
+        "http://127.0.0.1:19842/assets/databaseGenerationCore--3XuwkxS.js",
+        "http://127.0.0.1:19842/assets/eventCommandBranches-DARAShH9.js",
+        "http://127.0.0.1:19842/assets/detachedDraftMemory-CfVNEqki.js",
+        "http://127.0.0.1:19842/assets/aiArtworkCanvas-DK87pMs8.js",
+        "http://127.0.0.1:19842/assets/commandTraversal-DBAndM--.js",
+        "http://127.0.0.1:19842/assets/toolRunner-D5PRfy0g.js",
+        "http://127.0.0.1:19842/assets/autonomyLevels-BirJc4Kl.js"
+      ],
+      "ready": {
+        "count": 3,
+        "categories": {
+          "assets": 3
+        },
+        "generationModules": [],
+        "urls": [
+          "http://127.0.0.1:19842/assets/aiJobWorker-D9kYU77C.js",
+          "http://127.0.0.1:19842/assets/modulepreload-polyfill-B5Qt9EMX.js",
+          "http://127.0.0.1:19842/assets/preload-helper-BlTxHScW.js"
+        ]
+      },
+      "hostMethods": [
+        "readJson",
+        "loadCheckpoint",
+        "providerOperation",
+        "saveCheckpoint",
+        "putJson",
+        "saveCheckpoint"
+      ],
+      "complete": {
+        "count": 14,
+        "categories": {
+          "assets": 14
+        },
+        "generationModules": [
+          "http://127.0.0.1:19842/assets/databaseJob-BqeyyWht.js"
+        ],
+        "urls": [
+          "http://127.0.0.1:19842/assets/aiArtworkCanvas-DK87pMs8.js",
+          "http://127.0.0.1:19842/assets/aiJobWorker-D9kYU77C.js",
+          "http://127.0.0.1:19842/assets/autonomyLevels-BirJc4Kl.js",
+          "http://127.0.0.1:19842/assets/checkpointState-CG174ah2.js",
+          "http://127.0.0.1:19842/assets/commandTraversal-DBAndM--.js",
+          "http://127.0.0.1:19842/assets/databaseGenerationCore--3XuwkxS.js",
+          "http://127.0.0.1:19842/assets/databaseJob-BqeyyWht.js",
+          "http://127.0.0.1:19842/assets/detachedDraftMemory-CfVNEqki.js",
+          "http://127.0.0.1:19842/assets/eventCommandBranches-DARAShH9.js",
+          "http://127.0.0.1:19842/assets/imageGenerationClient-BB7zR-tr.js",
+          "http://127.0.0.1:19842/assets/llmClient-D6fIe2oU.js",
+          "http://127.0.0.1:19842/assets/modulepreload-polyfill-B5Qt9EMX.js",
+          "http://127.0.0.1:19842/assets/preload-helper-BlTxHScW.js",
+          "http://127.0.0.1:19842/assets/toolRunner-D5PRfy0g.js"
+        ]
+      }
+    }
+  ],
+  "errors": [],
+  "reportRef": {
+    "sha256": "b1312dfd76d4e925307d71429e32a244125c4a26f272469290780160eda6ce82",
+    "byteLength": 4572,
+    "mediaType": "application/json"
+  },
+  "states": {
+    "application": "awaiting-review",
+    "generation": "succeeded",
+    "save": "unsaved"
+  },
+  "previews": [
+    {
+      "phase": "before",
+      "artifact": {
+        "byteLength": 872,
+        "mediaType": "image/png",
+        "sha256": "9f6e3477574e5c5076084bb94f60da9ff6488a332cf7a2e189919c535b264642"
+      },
+      "width": 128,
+      "height": 128,
+      "pixel": [
+        220,
+        50,
+        40,
+        255
+      ]
+    },
+    {
+      "phase": "generated",
+      "artifact": {
+        "byteLength": 893,
+        "mediaType": "image/png",
+        "sha256": "279ae7c541b01c96abcbcb1a9e662e62e4a872090c295ccd4c671acd33bbc251"
+      },
+      "width": 128,
+      "height": 128,
+      "pixel": [
+        40,
+        90,
+        220,
+        255
+      ]
+    }
+  ],
+  "reportProviderCalls": 0,
+  "generationProviderCalls": 1,
+  "generationResult": {
+    "version": 1,
+    "family": "database",
+    "jobId": "bootstrap-generation",
+    "attemptId": "bootstrap-generation-attempt",
+    "project": {
+      "backend": "local",
+      "projectId": "isolated-bootstrap-proof"
+    },
+    "baseSnapshot": {
+      "sha256": "6f93fdd295398ea73531857302bc02b01b2b504e9b5236f1409c2bb36670916d",
+      "byteLength": 682117,
+      "mediaType": "application/json"
+    },
+    "generatedSnapshot": {
+      "sha256": "5b2fb85211d714d47b5b741c9ef5a6228630aaaaa770423ea39a543ed8591597",
+      "byteLength": 683196,
+      "mediaType": "application/json"
+    },
+    "artifacts": [],
+    "payload": {
+      "kind": "item",
+      "recordId": "item_ai_bootstrap-potion",
+      "name": "Bootstrap Potion",
+      "record": {
+        "id": "item_ai_bootstrap-potion",
+        "name": "Bootstrap Potion",
+        "scope": "ally",
+        "price": 37,
+        "description": "",
+        "type": "normalGoods",
+        "occasion": "always",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "usageMessage": "normal",
+        "occasionField": false,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      "summary": "AI 아이템 생성: Bootstrap Potion",
+      "completion": "complete",
+      "persistence": "not-applicable",
+      "checkpoint": "private-draft"
+    }
+  }
+}
