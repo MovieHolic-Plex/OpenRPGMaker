@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **47쪽 / 1605KB / 약 456,269 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **47쪽 / 1612KB / 약 458,055 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -22,8 +22,8 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-pre-edit-routing.md` | 69KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 197 | ~19,760 |
 | `openwiki/runtime-battle.md` | 118KB | 31KB | 358 | ~33,888 |
 | `openwiki/runtime-project-schema.md` | 65KB | 42KB | 241 | ~17,531 |
-| `openwiki/runtime-sessions.md` | 75KB | 47KB | 224 | ~19,886 |
-| `openwiki/testing.md` | 114KB | 46KB | 741 | ~32,065 |
+| `openwiki/runtime-sessions.md` | 78KB | 47KB | 238 | ~20,756 |
+| `openwiki/testing.md` | 118KB | 46KB | 757 | ~32,981 |
 
 ## 한국어 산문이 깨진 페이지
 
@@ -594,26 +594,27 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L232` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
 - `L236` NPC 표시 이름 (2026-09-05)
 
-### `openwiki/runtime-sessions.md` — 75KB · 224줄 · ~19,886 토큰 · 통째읽기 잘림
+### `openwiki/runtime-sessions.md` — 78KB · 238줄 · ~20,756 토큰 · 통째읽기 잘림
 
-- `L1` QA-only life observation (2026-09-06)
-  - `L7` Audio QA capability and shell lifetime (2026-09-06)
-- `L13` Save5 session boundary (2026-09-06)
-- `L21` Life recovery primitives and maker evidence (2026-09-06)
-- `L29` Lossless life snapshot reconciliation (2026-09-06)
-- `L43` Esc 메뉴 작업 프레임 (2026-09-05)
-- `L73` 아이템 종류 전환과 실행 효과 (2026-09-05)
-- `L84` Roguelike run kernel and field rooms (Phase 0–3, 2026-08-24)
-- `L94` P1 daily-weather transition authority (2026-08-25)
-- `L103` Exact crop regrowth and zero yields (2026-09-06)
-- `L109` Session state & life-sim
-- `L184` Editorial title screen (2026-08-26)
-- `L190` playerTouch trigger contract (2026-08-20)
-- `L194` Selected-event runtime sandbox (2026-07-30)
-- `L200` P2 spatial runtime and saves (2026-08-25)
-- `L208` 공포 게임 제작 기능 (2026-09-05)
-  - `L212` 메뉴 PR 통합 검증 (2026-09-05)
-- `L219` Maker clock deadlines (2026-09-06)
+- `L1` Task10 field input and exact forage dates (2026-09-06)
+- `L15` QA-only life observation (2026-09-06)
+  - `L21` Audio QA capability and shell lifetime (2026-09-06)
+- `L27` Save5 session boundary (2026-09-06)
+- `L35` Life recovery primitives and maker evidence (2026-09-06)
+- `L43` Lossless life snapshot reconciliation (2026-09-06)
+- `L57` Esc 메뉴 작업 프레임 (2026-09-05)
+- `L87` 아이템 종류 전환과 실행 효과 (2026-09-05)
+- `L98` Roguelike run kernel and field rooms (Phase 0–3, 2026-08-24)
+- `L108` P1 daily-weather transition authority (2026-08-25)
+- `L117` Exact crop regrowth and zero yields (2026-09-06)
+- `L123` Session state & life-sim
+- `L198` Editorial title screen (2026-08-26)
+- `L204` playerTouch trigger contract (2026-08-20)
+- `L208` Selected-event runtime sandbox (2026-07-30)
+- `L214` P2 spatial runtime and saves (2026-08-25)
+- `L222` 공포 게임 제작 기능 (2026-09-05)
+  - `L226` 메뉴 PR 통합 검증 (2026-09-05)
+- `L233` Maker clock deadlines (2026-09-06)
 
 ### `openwiki/se-catalog.md` — 13KB · 228줄 · ~3,423 토큰
 
@@ -663,45 +664,46 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L110` Files to inspect before editing
 - `L122` Related pages
 
-### `openwiki/testing.md` — 114KB · 741줄 · ~32,065 토큰 · 통째읽기 잘림
+### `openwiki/testing.md` — 118KB · 757줄 · ~32,981 토큰 · 통째읽기 잘림
 
-- `L1` Life QA observation and action receipts (2026-09-06)
-  - `L9` Task5 validation correction (2026-09-06)
-  - `L17` Task5 Q1 audio boundary correction (2026-09-06)
-- `L25` 기존 실패 비교는 진단 내용까지 확인한다 (2026-09-05)
-- `L33` Esc 메뉴 동작·시각 검증 (2026-09-05)
-- `L49` P2 낚시·채집·도감·박물관 focused gate (2026-08-25)
-- `L56` Editor e2e boot-overlay determinism (2026-08-31)
-- `L61` 영역 다듬기 focused gate (2026-08-31)
-- `L68` AI 이벤트 배치 통행성 focused gate (2026-08-30)
-- `L76` 체공(점프·낙하) focused gate (2026-08-29)
-  - `L85` 체공 런타임 QA — `npm run qa:runtime -- --scenario hop`
-  - `L115` 워크트리에 `node_modules` 가 없을 때 (2026-08-29 실측)
-- `L178` Roguelike run Phase 0–3 coverage (2026-08-24)
-  - `L189` 조건 게이트를 부하 중에 재지 마라 (실측 2026-08-29)
-- `L198` 데이터베이스 UI/UX 계측 하네스 (2026-08-30)
-  - `L222` 가상 요소 텍스트를 안 재면 `tinyFont 0` 은 "안 봤다" 는 뜻이다 (실측)
-  - `L243` 0px 이미지는 "깨진 것" 과 "접힌 것" 을 갈라야 한다 (실측)
-  - `L249` 타이밍에 취약한 e2e 가 빨간불이면 그 스펙이 단정하는 속성을 직접 재라 (실측 2026-08-30)
-  - `L272` 소스를 grep 하는 테스트는 이름만 봐서는 회귀를 못 가른다 (실측)
-- `L280` Agent validation rule
-- `L386` Event-editor trust-loop validation (2026-07-30)
-- `L391` 얼굴 바꾸기(changeFace) 폼 시각 계약 (2026-08-28 실측)
-- `L410` P2 spatial focused gate (2026-08-25)
-- `L419` 대화창 연출 focused gate (2026-08-30)
-- `L493` 워크트리 e2e 는 dev 서버가 조용히 안 뜬다 (2026-08-27 실측)
-  - `L506` `locator.click()` 은 잘림 버그를 구조적으로 못 잡는다 (2026-08-29 실측)
-  - `L518` 스크롤이 생겼다고 다 닿는 건 아니다 — 가운데 정렬 넘침 (2026-08-30 실측)
-  - `L526` 미정의 커스텀 프로퍼티는 콘솔에 아무 말도 남기지 않는다 (2026-08-30 실측)
-  - `L533` `ERR_NETWORK_CHANGED` 는 HMR 말고 호스트 인터페이스 때문에도 터진다 (2026-08-28 실측)
-- `L555` 런타임(게임) 전용 비전 QA 하네스 (2026-08-28)
-  - `L557` 메뉴 적대적 플레이 회귀 (2026-09-05)
-- `L677` sceneTestRunner 의 자율 이동 관측 공백 (2026-08-27)
-- `L684` fakeDom 은 프로덕션이 쓰는 브라우저 전역을 빠짐없이 준다 (2026-08-29)
-- `L705` bugfix-sweep 실제 표면 하네스 (2026-08-29)
-- `L718` 마을 설계서 (2026-09-05)
-- `L723` 공포 제작 개정 QA와 개발 서버 전송 (2026-09-05)
-- `L733` 상점 진열 중심 편집 검증 (2026-09-05)
+- `L1` Task10 field-input verification and limits (2026-09-06)
+- `L17` Life QA observation and action receipts (2026-09-06)
+  - `L25` Task5 validation correction (2026-09-06)
+  - `L33` Task5 Q1 audio boundary correction (2026-09-06)
+- `L41` 기존 실패 비교는 진단 내용까지 확인한다 (2026-09-05)
+- `L49` Esc 메뉴 동작·시각 검증 (2026-09-05)
+- `L65` P2 낚시·채집·도감·박물관 focused gate (2026-08-25)
+- `L72` Editor e2e boot-overlay determinism (2026-08-31)
+- `L77` 영역 다듬기 focused gate (2026-08-31)
+- `L84` AI 이벤트 배치 통행성 focused gate (2026-08-30)
+- `L92` 체공(점프·낙하) focused gate (2026-08-29)
+  - `L101` 체공 런타임 QA — `npm run qa:runtime -- --scenario hop`
+  - `L131` 워크트리에 `node_modules` 가 없을 때 (2026-08-29 실측)
+- `L194` Roguelike run Phase 0–3 coverage (2026-08-24)
+  - `L205` 조건 게이트를 부하 중에 재지 마라 (실측 2026-08-29)
+- `L214` 데이터베이스 UI/UX 계측 하네스 (2026-08-30)
+  - `L238` 가상 요소 텍스트를 안 재면 `tinyFont 0` 은 "안 봤다" 는 뜻이다 (실측)
+  - `L259` 0px 이미지는 "깨진 것" 과 "접힌 것" 을 갈라야 한다 (실측)
+  - `L265` 타이밍에 취약한 e2e 가 빨간불이면 그 스펙이 단정하는 속성을 직접 재라 (실측 2026-08-30)
+  - `L288` 소스를 grep 하는 테스트는 이름만 봐서는 회귀를 못 가른다 (실측)
+- `L296` Agent validation rule
+- `L402` Event-editor trust-loop validation (2026-07-30)
+- `L407` 얼굴 바꾸기(changeFace) 폼 시각 계약 (2026-08-28 실측)
+- `L426` P2 spatial focused gate (2026-08-25)
+- `L435` 대화창 연출 focused gate (2026-08-30)
+- `L509` 워크트리 e2e 는 dev 서버가 조용히 안 뜬다 (2026-08-27 실측)
+  - `L522` `locator.click()` 은 잘림 버그를 구조적으로 못 잡는다 (2026-08-29 실측)
+  - `L534` 스크롤이 생겼다고 다 닿는 건 아니다 — 가운데 정렬 넘침 (2026-08-30 실측)
+  - `L542` 미정의 커스텀 프로퍼티는 콘솔에 아무 말도 남기지 않는다 (2026-08-30 실측)
+  - `L549` `ERR_NETWORK_CHANGED` 는 HMR 말고 호스트 인터페이스 때문에도 터진다 (2026-08-28 실측)
+- `L571` 런타임(게임) 전용 비전 QA 하네스 (2026-08-28)
+  - `L573` 메뉴 적대적 플레이 회귀 (2026-09-05)
+- `L693` sceneTestRunner 의 자율 이동 관측 공백 (2026-08-27)
+- `L700` fakeDom 은 프로덕션이 쓰는 브라우저 전역을 빠짐없이 준다 (2026-08-29)
+- `L721` bugfix-sweep 실제 표면 하네스 (2026-08-29)
+- `L734` 마을 설계서 (2026-09-05)
+- `L739` 공포 제작 개정 QA와 개발 서버 전송 (2026-09-05)
+- `L749` 상점 진열 중심 편집 검증 (2026-09-05)
 
 ### `openwiki/town-tile-benchmark.md` — 10KB · 153줄 · ~3,010 토큰
 
