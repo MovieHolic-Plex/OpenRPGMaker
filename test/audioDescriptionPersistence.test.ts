@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import { deserialize, migrateV1toV2, ProjectFormatError, serialize, serializePretty } from "@/project/io";
+import { createProjectBackup, deserialize, migrateV1toV2, ProjectFormatError, restoreProjectBackup, serialize, serializePretty } from "@/project/io";
+import { createProjectPackage, readProjectPackage } from "@/project/package";
 import { getAudioDescriptionOverride, resetAudioDescriptionOverride, setAudioDescriptionOverride } from "@/project/audioDescriptions";
 import type { AudioDescriptionOverrides } from "@/project/types";
 import eventPagesV3 from "./fixtures/projects/event-pages-v3.json";
@@ -127,4 +128,28 @@ describe("authored audio description round trips", () => {
     // Then
     expect(Object.hasOwn(result, "audioDescriptions")).toBe(false);
   });
+});
+
+describe("audio description recovery snapshots", () => {
+  it.each([
+    undefined,
+    {
+      music: { orphan: " \tBACKUP_VALUE\n ", cleared: "", ["__proto__"]: "OWN_ID" },
+      sound: { orphan: "SOUND_VALUE", terrainTemplates: "" },
+    },
+  ])("preserves description states when restoring a backup into an editor package: %j", async (descriptions) => {
+    // Given
+    const source = createBlankProject();
+    if (descriptions !== undefined) source.audioDescriptions = descriptions;
+    const backup = createProjectBackup(source);
+    source.audioDescriptions = { music: { replacement: "AFTER_BACKUP" } };
+    // When
+    const restored = restoreProjectBackup(backup);
+    const packaged = await readProjectPackage(createProjectPackage(restored));
+    // Then
+    expect(restored.audioDescriptions).toEqual(descriptions);
+    expect(packaged.audioDescriptions).toEqual(descriptions);
+    expect(Object.hasOwn(packaged, "audioDescriptions")).toBe(descriptions !== undefined);
+    expect(source.audioDescriptions).toEqual({ music: { replacement: "AFTER_BACKUP" } });
+  }, 15_000);
 });

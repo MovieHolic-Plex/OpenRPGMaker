@@ -16,6 +16,7 @@ import {
   type SupabaseSaveResult,
 } from "./supabaseProjectSync";
 import { projectWithoutEventDrafts } from "./eventDrafts";
+import { applyAudioDescriptionDelta } from "./audioDescriptions";
 import { serialize, serializeForComparison } from "./io";
 import {
   applyEventDraftVault,
@@ -1125,7 +1126,20 @@ class ProjectStore {
     const savedProject = result.project ?? submittedProject;
     // Baseline tracks what the server accepted — not what the editor is showing.
     this.persistedBaseline = structuredClone(projectWithoutEventDrafts(savedProject));
-    // Local-first: never replace live maps/project with the save response.
+    const audioDescriptions = applyAudioDescriptionDelta(
+      submittedProject.audioDescriptions,
+      this.current.audioDescriptions,
+      savedProject.audioDescriptions,
+    );
+    if (JSON.stringify(audioDescriptions) !== JSON.stringify(this.current.audioDescriptions)) {
+      const reconciledProject = { ...this.current };
+      if (audioDescriptions === undefined) delete reconciledProject.audioDescriptions;
+      else reconciledProject.audioDescriptions = structuredClone(audioDescriptions);
+      this.current = reconciledProject;
+      // Synchronization is observable, but is not a new authored mutation.
+      this.emit({ scope: "project", origin: "system", projectSwitch: false });
+    }
+    // Local-first: never replace live maps with the save response.
     // Doing so rewound brush strokes that landed during the network RTT
     // (user symptom: painted tiles pop back / cancel after a moment).
     if (this.mutationGeneration === generationAtSubmit) {

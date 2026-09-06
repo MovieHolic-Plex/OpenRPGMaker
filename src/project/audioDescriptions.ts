@@ -38,6 +38,39 @@ export function getAudioDescriptionOverride(
     : undefined;
 }
 
+/**
+ * Apply only local per-resource changes to the latest stored descriptions.
+ * Absence is reset, "" is clear, and unchanged local keys inherit latest.
+ * Stored strings are copied exactly; this is not a new-input write boundary.
+ */
+export function applyAudioDescriptionDelta(
+  base: AudioDescriptionOverrides | undefined,
+  local: AudioDescriptionOverrides | undefined,
+  latest: AudioDescriptionOverrides | undefined,
+): AudioDescriptionOverrides | undefined {
+  let result = latest;
+  for (const kind of ["music", "sound"] as const) {
+    const resourceIds = new Set([
+      ...Object.keys(base?.[kind] ?? {}),
+      ...Object.keys(local?.[kind] ?? {}),
+    ]);
+    for (const resourceId of resourceIds) {
+      const resource = { kind, resourceId };
+      const localValue = getAudioDescriptionOverride(local, resource);
+      if (localValue === getAudioDescriptionOverride(base, resource)) continue;
+      if (localValue === undefined) {
+        result = resetAudioDescriptionOverride(result, resource);
+      } else {
+        result = {
+          ...result,
+          [kind]: { ...result?.[kind], [resourceId]: localValue },
+        };
+      }
+    }
+  }
+  return result;
+}
+
 /** Pure write boundary: trim new input, preserve siblings, and retain explicit clears. */
 export function setAudioDescriptionOverride(
   overrides: AudioDescriptionOverrides | undefined,
