@@ -52,6 +52,30 @@
   activate the Tiles host through workspace state before opening the same pinned
   or unpinned inspection surface. No new default controls or onboarding.
 
+## Event editor window controls (2026-09-06)
+
+- The titlebar ends with three native circular 32px buttons: minimize,
+  maximize/restore and close. Existing SVG icons, cream surfaces, `--text-1/2`,
+  `--border-default`, `--accent-muted`, `--danger` and `--focus-outline` own
+  default, hover, pressed and keyboard-focus states. Use 4px gaps, 16px icons;
+  maximized state has persistent accent fill and aria-pressed. No new motion.
+- Minimize is not Cancel: retain mounted fields, pending input, page/command
+  selection, scroll and geometry, including maximized state. Release the modal
+  stack, focus trap, backdrop and body-open flag. A bottom-center named restore
+  chip (`이벤트 편집 계속` plus event name) remains keyboard reachable, using
+  13px UI type, 32px minimum height, 8/12px padding and existing raised surface.
+  Restore returns to the retained editor control and caret.
+- Same-event reopen restores this window; switching events still asks before
+  discarding changes. Deletion, project replacement and teardown end ownership.
+  Save/Apply/Cancel, drag/resize, double-click and Alt+Enter stay intact.
+  Header/footer remain fixed around the existing bounded scrolling body.
+  Normal geometry is centered, up to 1440px wide and 820px tall, with 32px
+  horizontal/24px vertical preferred insets and 16px viewport bounds. Full view
+  uses the existing 6px inset and restores the prior dimensions/translation.
+- Personas: map-and-event author switching contexts, keyboard/IME author with
+  pending input, dirty-draft author. Desktop acceptance: 1024x768, 1280x800,
+  1440x900. Lead owns fresh browser geometry and independent visual approval.
+
 ## Action combat identity and controls (2026-09-07)
 
 - Keep the existing 320x240 logical play stage, keyboard-only input and runtime

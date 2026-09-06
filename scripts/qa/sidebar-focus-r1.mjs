@@ -12,12 +12,6 @@ async function boot(initialMode) {
   const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   const page = await context.newPage();
   page.setDefaultTimeout(90000);
-  await page.route('**/*', async route => {
-    const request = route.request();
-    if (request.method() !== 'GET' || new URL(request.url()).origin !== new URL(baseUrl).origin) return route.continue();
-    const response = await fetch(request.url(), { signal: AbortSignal.timeout(90000) });
-    await route.fulfill({ status: response.status, headers: Object.fromEntries(response.headers), body: Buffer.from(await response.arrayBuffer()) });
-  });
   await page.addInitScript(initialMode => {
     if (!localStorage.getItem('oprn:editor-ui-mode')) localStorage.setItem('oprn:editor-ui-mode', initialMode);
     localStorage.setItem('oprn:ai-panel-collapsed', '1');
