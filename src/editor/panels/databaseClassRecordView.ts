@@ -600,7 +600,7 @@ function promotionRow(
         ...(!current || input === switchId ? { switchId: switchId.value || undefined } : {}),
         ...(!current || input === itemId ? { itemId: itemId.value || undefined } : {}),
         ...(!current || input === variableId ? { variableId: variableId.value || undefined } : {}),
-        ...(!current || input === atLeast ? { atLeast: optionalNumber(atLeast) } : {}),
+        ...(!current || input === variableId || input === atLeast ? { atLeast: optionalNumber(atLeast) } : {}),
       },
     });
     onSummaryChanged();

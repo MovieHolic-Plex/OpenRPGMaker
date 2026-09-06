@@ -10,7 +10,10 @@ const cwd = fileURLToPath(new URL('../../', import.meta.url));
 const out = `${cwd}/.omo/evidence/growth-integrated/browser-presets`;
 const base = 'http://127.0.0.1:9897';
 await mkdir(out, { recursive: true });
-const server = spawn(process.execPath, ['node_modules/vite/bin/vite.js', '--configLoader', 'runner', '--host', '127.0.0.1', '--port', '9897', '--strictPort'], { cwd, detached: true, stdio: ['ignore', 'pipe', 'pipe'] });
+const server = spawn(process.execPath, ['node_modules/vite/bin/vite.js', '--configLoader', 'runner', '--host', '127.0.0.1', '--port', '9897', '--strictPort'], {
+  cwd, detached: true, stdio: ['ignore', 'pipe', 'pipe'],
+  env: { ...process.env, VITE_CACHE_DIR: `${out}/vite-cache`, E2E_FREEZE_DEV_SERVER: '1' },
+});
 let serverLog = '', browser, page;
 const errors = [], measurements = [], screenshots = [], images = [];
 let remoteWrites = [];
@@ -192,9 +195,49 @@ try {
   const classFormShot = `${out}/class-form-preserved-gates.png`;
   await page.screenshot({ path: classFormShot }); screenshots.push(classFormShot);
   await writeFile(`${out}/class-form-proof.json`, JSON.stringify(classForm, null, 2));
+  const variableId = repeated.variables[0].id;
+  const variableCases = [];
+  await page.getByTestId('db-field-class-promotion-at-least').fill('7');
+  for (const ordering of ['threshold-before-variable', 'clear-and-reselect']) {
+    if (ordering === 'clear-and-reselect') {
+      await page.getByTestId('db-picker-class-promotion-variable').focus();
+      await page.getByTestId('db-picker-class-promotion-variable').selectOption('');
+    }
+    assert.equal(await page.getByTestId('db-field-class-promotion-at-least').inputValue(), '7');
+    await page.getByTestId('db-picker-class-promotion-variable').focus();
+    await page.getByTestId('db-picker-class-promotion-variable').selectOption(variableId);
+    const result = await page.evaluate(async ({ rootClass, variableId }) => {
+      const { store } = await import('/src/project/store.ts');
+      const { serialize, deserialize } = await import('/src/project/io.ts');
+      const { startSession } = await import('/src/project/session.ts');
+      const { changeActorClass, promoteActor } = await import('/src/project/sessionClass.ts');
+      const { investSkillNode } = await import('/src/project/growth/runtime.ts');
+      const project = deserialize(serialize(store.getCurrent()));
+      const klass = project.database.classes.find(c => c.id === rootClass), actor = project.database.actors[0];
+      const session = startSession(project);
+      changeActorClass(session, project, actor.id, rootClass);
+      session.actorLevels[actor.id] = 6;
+      const tree = project.growth.skillTrees.find(t => t.classIds.includes(rootClass));
+      const investmentErrors = [];
+      for (const node of tree.nodes) for (let rank = 0; rank < node.maxRank; rank++) {
+        const error = investSkillNode(project, session, actor.id, tree.id, node.id);
+        if (error) investmentErrors.push(error);
+      }
+      const attempts = [1, 6, 7].map(value => {
+        const attempt = structuredClone(session); attempt.variables[variableId] = value;
+        return { value, ...promoteActor(attempt, project, actor.id, klass.promotions[0].toClassId) };
+      });
+      return { requires: JSON.parse(JSON.stringify(klass.promotions[0].requires)), investmentErrors, attempts };
+    }, { rootClass, variableId });
+    assert.deepEqual(result.requires, { ...originalGate, level: 6, variableId, atLeast: 7 });
+    assert.deepEqual(result.investmentErrors, []);
+    assert.deepEqual(result.attempts.map(attempt => attempt.ok), [false, false, true]);
+    variableCases.push({ ordering, ...result });
+  }
+  await writeFile(`${out}/class-form-variable-proof.json`, JSON.stringify(variableCases, null, 2));
   assert.equal(errors.length, 0, errors.join('\n'));
   assert.equal(remoteWrites.length, 0, JSON.stringify(remoteWrites));
-  await writeFile(`${out}/report.json`, JSON.stringify({ base, errors, remoteWrites, measurements, images, screenshots, checks: ['default-nodes-both-tabs', 'native-node-size', 'no-overlap', 'loaded-art', 'detached-no-dirty-history', 'cross-tree-portal', 'focus-zoom-escape', 'single-apply-undo', 'same-import-cross-tab', 'explicit-actor-route', 'repeated-independent-imports', 'native-class-edit-preserves-growth-gates'] }, null, 2));
+  await writeFile(`${out}/report.json`, JSON.stringify({ base, errors, remoteWrites, measurements, images, screenshots, checks: ['default-nodes-both-tabs', 'native-node-size', 'no-overlap', 'loaded-art', 'detached-no-dirty-history', 'cross-tree-portal', 'focus-zoom-escape', 'single-apply-undo', 'same-import-cross-tab', 'explicit-actor-route', 'repeated-independent-imports', 'native-class-edit-preserves-growth-gates', 'native-variable-threshold-draft'] }, null, 2));
   console.log(`Connected growth editor QA passed: ${out}/report.json`);
 } catch (error) {
   if (page) await writeFile(`${out}/failure-body.txt`, await page.locator('body').innerText());

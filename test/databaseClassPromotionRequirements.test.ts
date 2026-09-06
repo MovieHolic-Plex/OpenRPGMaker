@@ -37,7 +37,7 @@ function mount(legacy = false, empty = false) {
     const loaded = deserialize(serialize(store.getCurrent()));
     return { loaded, promotions: loaded.database.classes.find(c => c.id === klass.id)!.promotions! };
   };
-  return { project, bundle, klass, actor, change, reload };
+  return { project, bundle, klass, actor, form, change, reload };
 }
 
 it.each(['input', 'change'])('preserves all connected gates through a native level %s and reload; untrained promotion stays blocked', event => {
@@ -64,6 +64,58 @@ it.each(['input', 'change'])('preserves all connected gates through a native lev
     expect(investSkillNode(loaded, session, actor.id, tree.id, node.id)).toBeUndefined();
   }
   expect(promoteActor(session, loaded, actor.id, promotions[0]!.toClassId).ok).toBe(true);
+});
+
+it.each(['threshold before variable', 'clear and reselect variable'])('preserves the visible paired draft through %s, reload, and runtime threshold checks', ordering => {
+  const { klass, actor, form, change, reload } = mount();
+  const original = structuredClone(klass.promotions!);
+  const variable = form.querySelector<HTMLSelectElement>('[data-testid="db-picker-class-promotion-variable"]')!;
+  const threshold = form.querySelector<HTMLInputElement>('[data-testid="db-field-class-promotion-at-least"]')!;
+  const edit = (control: HTMLInputElement | HTMLSelectElement, value: string) => {
+    control.focus();
+    change(control.dataset.testid!, value, 'input');
+    control.dispatchEvent(new Event('change', { bubbles: true }));
+  };
+  expect(variable.value).toBe('');
+  if (ordering === 'clear and reselect variable') edit(variable, 'var_0001');
+  edit(threshold, '7');
+  if (ordering === 'clear and reselect variable') {
+    expect(reload().promotions[0]!.requires.atLeast).toBe(7);
+    edit(variable, '');
+  }
+  expect(reload().promotions[0]!.requires.atLeast).toBeUndefined();
+  expect(threshold.value).toBe('7');
+  // An unrelated current-store edit must survive the paired-control commit.
+  const current = store.getCurrent().database.classes.find(c => c.id === klass.id)!.promotions!;
+  updateDatabaseRecord('classes', klass.id, {
+    promotions: [{ ...current[0]!, requires: { ...current[0]!.requires, level: 6 } }, current[1]!],
+  });
+  edit(variable, 'var_0001');
+  expect(form.querySelector('[data-testid="db-field-class-promotion-at-least"]')).toBe(threshold);
+  expect(threshold.value).toBe('7');
+  const { loaded, promotions } = reload();
+  expect.soft(promotions).toEqual([
+    { ...original[0], requires: { ...original[0]!.requires, level: 6, variableId: 'var_0001', atLeast: 7 } }, original[1],
+  ]);
+  const session = startSession(loaded);
+  session.actorLevels[actor.id] = 6;
+  const tree = loaded.growth!.skillTrees.find(t => t.classIds.includes(klass.id))!;
+  for (const node of tree.nodes) for (let rank = 0; rank < node.maxRank; rank++) {
+    expect(investSkillNode(loaded, session, actor.id, tree.id, node.id)).toBeUndefined();
+  }
+  for (const value of [1, 6]) {
+    const attempt = structuredClone(session);
+    attempt.variables.var_0001 = value;
+    const before = structuredClone(attempt);
+    expect.soft(promoteActor(attempt, loaded, actor.id, promotions[0]!.toClassId)).toEqual({
+      ok: false, actorId: actor.id, reason: 'requirements-not-met',
+    });
+    expect.soft(attempt).toEqual(before);
+  }
+  session.variables.var_0001 = 7;
+  expect(promoteActor(session, loaded, actor.id, promotions[0]!.toClassId)).toEqual({
+    ok: true, actorId: actor.id, classId: promotions[0]!.toClassId,
+  });
 });
 
 it.each([
