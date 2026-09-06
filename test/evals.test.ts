@@ -2,6 +2,7 @@
 // 골든 태스크 프레임워크 검증: 오프라인 정답 시퀀스 채점 + 모킹 LLM 툴콜 루프 채점.
 // 실제 LLM 호출은 하지 않는다(chat 주입).
 
+import { strict as assert } from "node:assert";
 import { describe, expect, it } from "vitest";
 import type { AiConfig, ChatRequest, ChatResult } from "@/ai/llmClient";
 import type { ReviewInput } from "@/ai/independentReview";
@@ -94,14 +95,17 @@ describe("evals", () => {
   it.each(["write", "read-only"] as const)("모킹 LLM 시작 상태 설정은 실제 변경과 독립 검수를 요구한다: %s", async mode => {
     // Only the golden solution's map setup is pre-authored. All requested title,
     // item and starting inventory changes must still come from the real LLM loop.
-    const solution = GOLDEN_SOLUTIONS[GOLDEN_SESSION.id]!;
+    const solution = GOLDEN_SOLUTIONS[GOLDEN_SESSION.id];
+    assert(solution);
     expect(solution.slice(0, 2).map(call => call.name)).toEqual(["create_map", "set_start_position"]);
     const { project: initial } = await toolSequenceSolver(solution.slice(0, 2))(GOLDEN_SESSION);
     const task = { ...GOLDEN_SESSION, initialProject: () => structuredClone(initial) };
     expect(scoreProject(initial, task).passed).toBe(false);
     const mapId = initial.startMapId;
+    const itemSetup = solution[2];
+    assert(itemSetup);
     const calls = mode === "write" ? [
-      solution[2]!,
+      itemSetup,
       { name: "get_database_records", args: { collection: "items", ids: ["it_potion"], include: "full" } },
       ...solution.slice(3),
     ] : [{ name: "get_project_summary", args: {} }];
@@ -122,7 +126,8 @@ describe("evals", () => {
         expect(request.tools?.map(tool => tool.function.name)).toEqual(expect.arrayContaining(toOpenAiTools().map(tool => tool.function.name)));
         const originalMessage = request.messages.find(message => typeof message.content === "string" && message.content.startsWith('{"originalContext":'));
         expect(originalMessage).toBeDefined();
-        const context: unknown = JSON.parse(String(originalMessage!.content));
+        assert(originalMessage && typeof originalMessage.content === "string");
+        const context: unknown = JSON.parse(originalMessage.content);
         expect(context).toMatchObject({ originalContext: { target: { mapId }, entries: expect.arrayContaining([
           expect.objectContaining({ entryId: "/project", value: expect.objectContaining({ meta: initial.meta, startMapId: mapId }) }),
           expect.objectContaining({ entryId: "/system", value: initial.system }),
@@ -139,7 +144,8 @@ describe("evals", () => {
     for (const [index, call] of calls.entries()) {
       const reply = writerRequests[index + 1]?.messages.find(message => message.role === "tool" && message.tool_call_id === `start_${index}`);
       expect(reply).toMatchObject({ name: call.name });
-      const output: unknown = JSON.parse(String(reply!.content));
+      assert(reply && typeof reply.content === "string");
+      const output: unknown = JSON.parse(reply.content);
       expect(output).toMatchObject({ ok: true });
     }
     expect(result.audit).toBeDefined();
@@ -154,7 +160,9 @@ describe("evals", () => {
       expect(result.score.score).toBe(1);
       expect(result.score.lintErrors).toBe(0);
       expect(reviews).toHaveLength(1);
-      expect(result.review).toMatchObject({ status: "approved", revision: reviews[0]!.revision, findings: [] });
+      const review = reviews[0];
+      assert(review);
+      expect(result.review).toMatchObject({ status: "approved", revision: review.revision, findings: [] });
       expect(reviews[0]?.originalRequest).toBe(task.prompt);
       expect(reviews[0]?.requiredProblems).toEqual([]);
       expect(reviews[0]?.toolResults).toEqual(expect.arrayContaining(calls.map(call => expect.objectContaining({
