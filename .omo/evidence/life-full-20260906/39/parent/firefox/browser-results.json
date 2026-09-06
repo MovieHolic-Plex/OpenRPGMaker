@@ -1,0 +1,199 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-load-errors",
+  "head": "2d6096e2d0950b3ee41c8345623bd9a0bab9b6f1",
+  "tree": "d347b6d02b787bbc98796f31b33885f6237169b8",
+  "surface": "dedicated player.html/exportProjectStoreShim; controlled failure-input fixture, not earned gameplay",
+  "deadlineMs": 120000,
+  "actionDeadlineMs": 10000,
+  "sourceHashes": {
+    "src/player/player.ts": "ef42c64ff5b9efe7233fb5b43f18a424400fd97c34faa3db5866c0a2ca369593",
+    "src/player/playerStatusMenuController.ts": "e4bd1b24758c62338b1a871712222b2412b9c4b8c01c9cdd45af9295f2504155",
+    "test/lifePlayerSaveFailures.test.ts": "be9b05decffb3c598ef0e8cac0fc27ca423b7af1e137ed4056836007f5684035"
+  },
+  "runs": [
+    {
+      "name": "title-autosave",
+      "running": false,
+      "actions": "real keyboard; actual shell callback/Storage/apply",
+      "message": {
+        "text": "자동 저장을 불러올 수 없습니다",
+        "role": "status",
+        "children": 0
+      },
+      "guidanceCount": 1,
+      "diskUnchanged": true,
+      "qaStateUnchanged": true,
+      "currentSceneIdentityPreserved": false,
+      "noRestoredCanvas": true
+    },
+    {
+      "name": "title-manual",
+      "running": false,
+      "actions": "real keyboard; actual shell callback/Storage/apply",
+      "message": {
+        "text": "1번 저장 칸을 불러올 수 없습니다",
+        "role": "status",
+        "children": 0
+      },
+      "guidanceCount": 1,
+      "diskUnchanged": true,
+      "qaStateUnchanged": true,
+      "currentSceneIdentityPreserved": false,
+      "noRestoredCanvas": true
+    },
+    {
+      "name": "running-manual",
+      "running": true,
+      "actions": "real keyboard; actual shell callback/Storage/apply",
+      "message": {
+        "text": "1번 저장 칸을 불러올 수 없습니다",
+        "role": "status",
+        "children": 0
+      },
+      "guidanceCount": 1,
+      "diskUnchanged": true,
+      "qaStateUnchanged": true,
+      "currentSceneIdentityPreserved": true,
+      "noRestoredCanvas": false
+    },
+    {
+      "name": "running-autosave",
+      "running": true,
+      "actions": "real keyboard; actual shell callback/Storage/apply",
+      "message": {
+        "text": "자동 저장을 불러올 수 없습니다",
+        "role": "status",
+        "children": 0
+      },
+      "guidanceCount": 1,
+      "diskUnchanged": true,
+      "qaStateUnchanged": true,
+      "currentSceneIdentityPreserved": true,
+      "noRestoredCanvas": false
+    }
+  ],
+  "errors": [],
+  "requestsFailed": [],
+  "httpErrors": [],
+  "consoleErrors": [],
+  "public": {
+    "readers": [
+      {
+        "name": "manual",
+        "kind": "present",
+        "precheck": null,
+        "applyError": {
+          "name": "LifeReconciliationError",
+          "sourceKind": "shippingQueue",
+          "sourceId": "raw",
+          "reason": "capacity"
+        }
+      },
+      {
+        "name": "auto",
+        "kind": "present",
+        "precheck": null,
+        "applyError": {
+          "name": "LifeReconciliationError",
+          "sourceKind": "shippingQueue",
+          "sourceId": "raw",
+          "reason": "capacity"
+        }
+      }
+    ],
+    "writerRefused": true,
+    "shippingQueue": {
+      "raw": 3
+    },
+    "claims": 4096,
+    "nextSequence": 4097,
+    "validRecovery": true,
+    "snapshotCreatedShippingEnabled": true,
+    "currentShippingEnabled": false,
+    "liveAndSourceUnchanged": true,
+    "fixtureSha256": "00b4daa54d7cfcb3d3fa2a9727626b542a8ea3537e8fc41e19f79ebaf740af10",
+    "fixtureBytes": 2292998,
+    "slots": {
+      "task39:save-slot:v5:1": {
+        "bytes": 578650,
+        "sha256": "f3d13db8e01899ceb42fa8a3161b0a3a09d511d3ed59633ad212048f48f6e8e7"
+      },
+      "task39:save-slot:v5:auto": {
+        "bytes": 578650,
+        "sha256": "f3d13db8e01899ceb42fa8a3161b0a3a09d511d3ed59633ad212048f48f6e8e7"
+      },
+      "task39:save-slot:1": {
+        "bytes": 3273,
+        "sha256": "faad22b6fadc539867ef7d894fc89a03a7a317506edaffb5e4926d1af40b9d21"
+      },
+      "task39:save-slot:auto": {
+        "bytes": 3273,
+        "sha256": "faad22b6fadc539867ef7d894fc89a03a7a317506edaffb5e4926d1af40b9d21"
+      }
+    }
+  },
+  "url": "http://127.0.0.1:41881/player.html",
+  "port": 41881,
+  "browserName": "firefox",
+  "browserVersion": "151.0",
+  "navigationStatus": 200,
+  "messageLayouts": [
+    {
+      "name": "title-autosave",
+      "x": 132,
+      "y": 215,
+      "width": 1016,
+      "height": 56,
+      "right": 1148,
+      "bottom": 271,
+      "viewportWidth": 1280,
+      "viewportHeight": 960,
+      "clipped": false
+    },
+    {
+      "name": "title-manual",
+      "x": 132,
+      "y": 215,
+      "width": 1016,
+      "height": 56,
+      "right": 1148,
+      "bottom": 271,
+      "viewportWidth": 1280,
+      "viewportHeight": 960,
+      "clipped": false
+    },
+    {
+      "name": "running-manual",
+      "x": 132,
+      "y": 215,
+      "width": 1016,
+      "height": 56,
+      "right": 1148,
+      "bottom": 271,
+      "viewportWidth": 1280,
+      "viewportHeight": 960,
+      "clipped": false
+    },
+    {
+      "name": "running-autosave",
+      "x": 132,
+      "y": 215,
+      "width": 1016,
+      "height": 56,
+      "right": 1148,
+      "bottom": 271,
+      "viewportWidth": 1280,
+      "viewportHeight": 960,
+      "clipped": false
+    }
+  ],
+  "ok": true,
+  "cleanup": {
+    "contextsClosed": true,
+    "browserClosed": true,
+    "serversClosed": true,
+    "portProbe": "ECONNREFUSED",
+    "ownCachesRemoved": true,
+    "remoteWrites": 0
+  }
+}
