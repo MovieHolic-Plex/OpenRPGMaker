@@ -687,13 +687,27 @@
         "m2:m2-024-change-actor-graphic",
         "m2:m2-025-change-actor-faceset"
       ],
-      "status": "pending",
+      "status": "resolved",
       "unit": "U07",
-      "red": [],
-      "green": [],
-      "surface": [],
-      "commits": [],
-      "resolution": null
+      "red": [
+        ".omo/evidence/event-command-remediation/U07/refresh-red.json",
+        ".omo/evidence/event-command-remediation/U07/runtime-blocker-red.json",
+        ".omo/evidence/event-command-remediation/U07/loader-red.json"
+      ],
+      "green": [
+        ".omo/evidence/event-command-remediation/U07/final-green.json",
+        ".omo/evidence/event-command-remediation/checkpoints/u07-integration.json",
+        ".omo/evidence/event-command-remediation/U07/supervisor-summary.json"
+      ],
+      "surface": [
+        ".omo/evidence/event-command-remediation/U07/surface-VoQxSZ/editor-observations.json",
+        ".omo/evidence/event-command-remediation/U07/surface-VoQxSZ/player-observations.json",
+        ".omo/evidence/event-command-remediation/U07/surface-VoQxSZ/player-walk.json"
+      ],
+      "commits": [
+        "b81504b5c149fbea4e7cd4272d9044105beca614"
+      ],
+      "resolution": "Late picker/AI resources retain actual registered IDs. Uploaded player charsets are resolved, preloaded and framed correctly; real walk/idle and manual/generated faces plus untargeted actor state are verified."
     },
     "G2-F10": {
       "title": "장비 폼의 가능 여부·부위 목록이 실제 장착 규칙과 다르다",
@@ -783,13 +797,24 @@
       "commandIds": [
         "m2:m2-102-change-battleback"
       ],
-      "status": "pending",
+      "status": "resolved",
       "unit": "U07",
-      "red": [],
-      "green": [],
-      "surface": [],
-      "commits": [],
-      "resolution": null
+      "red": [
+        ".omo/evidence/event-command-remediation/U07/refresh-red.json"
+      ],
+      "green": [
+        ".omo/evidence/event-command-remediation/U07/final-green.json",
+        ".omo/evidence/event-command-remediation/checkpoints/u07-integration.json",
+        ".omo/evidence/event-command-remediation/U07/supervisor-summary.json"
+      ],
+      "surface": [
+        ".omo/evidence/event-command-remediation/U07/surface-VoQxSZ/editor-observations.json",
+        ".omo/evidence/event-command-remediation/U07/surface-VoQxSZ/player-observations.json"
+      ],
+      "commits": [
+        "b81504b5c149fbea4e7cd4272d9044105beca614"
+      ],
+      "resolution": "Battle background selection updates saved ID, displayed name and image without remounting controls; the actual battle backdrop uses the selected resource."
     },
     "G2-F16": {
       "title": "잊기 명령이 기본·직업 습득 스킬에는 지속되지 않는다",
@@ -1181,13 +1206,24 @@
       "commandIds": [
         "m2:m2-069-change-parallax-back"
       ],
-      "status": "pending",
+      "status": "resolved",
       "unit": "U07",
-      "red": [],
-      "green": [],
-      "surface": [],
-      "commits": [],
-      "resolution": null
+      "red": [
+        ".omo/evidence/event-command-remediation/U07/refresh-red.json"
+      ],
+      "green": [
+        ".omo/evidence/event-command-remediation/U07/final-green.json",
+        ".omo/evidence/event-command-remediation/checkpoints/u07-integration.json",
+        ".omo/evidence/event-command-remediation/U07/supervisor-summary.json"
+      ],
+      "surface": [
+        ".omo/evidence/event-command-remediation/U07/surface-VoQxSZ/editor-observations.json",
+        ".omo/evidence/event-command-remediation/U07/surface-VoQxSZ/player-observations.json"
+      ],
+      "commits": [
+        "b81504b5c149fbea4e7cd4272d9044105beca614"
+      ],
+      "resolution": "Manual and AI parallax resource IDs survive Confirm, outer save, reopen, Cancel and package import. Recorded override agrees with the selection; live parallax consumer work remains separately owned by U15."
     },
     "G3-F23": {
       "title": "지형/이벤트 조회의 맵 선택과 적용 시 좌표 검사 맵이 다름",
@@ -1213,13 +1249,24 @@
         "m2:m2-204-remove-event",
         "m2:m2-207-region-trigger"
       ],
-      "status": "pending",
+      "status": "resolved",
       "unit": "U07",
-      "red": [],
-      "green": [],
-      "surface": [],
-      "commits": [],
-      "resolution": null
+      "red": [
+        ".omo/evidence/event-command-remediation/U07/refresh-red.json"
+      ],
+      "green": [
+        ".omo/evidence/event-command-remediation/U07/final-green.json",
+        ".omo/evidence/event-command-remediation/checkpoints/u07-integration.json",
+        ".omo/evidence/event-command-remediation/U07/supervisor-summary.json"
+      ],
+      "surface": [
+        ".omo/evidence/event-command-remediation/U07/surface-VoQxSZ/editor-observations.json",
+        ".omo/evidence/event-command-remediation/U07/surface-VoQxSZ/player-observations.json"
+      ],
+      "commits": [
+        "b81504b5c149fbea4e7cd4272d9044105beca614"
+      ],
+      "resolution": "Generic resource/map/event cards track current selection while preserving mounted controls and explicit missing IDs. U05 invalid-actor guards remain intact; unrelated consumer gaps remain in their original units."
     },
     "G3-F25": {
       "title": "이벤트 대상 이름 대신 내부 ID를 노출하고 이 이벤트 sentinel을 잃을 수 있음",
@@ -1452,13 +1499,24 @@
         "m2:m2-074-set-escape-location",
         "m2:m2-217-data-query"
       ],
-      "status": "pending",
+      "status": "resolved",
       "unit": "U07",
-      "red": [],
-      "green": [],
-      "surface": [],
-      "commits": [],
-      "resolution": null
+      "red": [
+        ".omo/evidence/event-command-remediation/U07/refresh-red.json"
+      ],
+      "green": [
+        ".omo/evidence/event-command-remediation/U07/final-green.json",
+        ".omo/evidence/event-command-remediation/checkpoints/u07-integration.json",
+        ".omo/evidence/event-command-remediation/U07/supervisor-summary.json"
+      ],
+      "surface": [
+        ".omo/evidence/event-command-remediation/U07/surface-VoQxSZ/editor-observations.json",
+        ".omo/evidence/event-command-remediation/U07/surface-VoQxSZ/player-observations.json"
+      ],
+      "commits": [
+        "b81504b5c149fbea4e7cd4272d9044105beca614"
+      ],
+      "resolution": "Valid switch/variable names resolve on first render and selected record metadata updates with the actual value. Runtime variable/record observations match saved data; no unsupported immediate system-audio/travel effects are claimed."
     },
     "G4-F12": {
       "title": "트룹 피커의 부분 실행 도구가 실제로는 효과 없이 스킵됨",
@@ -1509,13 +1567,25 @@
         "m2:m2-216-evaluate-expression",
         "m2:m2-217-data-query"
       ],
-      "status": "pending",
+      "status": "resolved",
       "unit": "U07",
-      "red": [],
-      "green": [],
-      "surface": [],
-      "commits": [],
-      "resolution": null
+      "red": [
+        ".omo/evidence/event-command-remediation/U07/refresh-red.json",
+        ".omo/evidence/event-command-remediation/U07/http-id-red.json"
+      ],
+      "green": [
+        ".omo/evidence/event-command-remediation/U07/final-green.json",
+        ".omo/evidence/event-command-remediation/checkpoints/u07-integration.json",
+        ".omo/evidence/event-command-remediation/U07/supervisor-summary.json"
+      ],
+      "surface": [
+        ".omo/evidence/event-command-remediation/U07/surface-VoQxSZ/editor-observations.json",
+        ".omo/evidence/event-command-remediation/U07/surface-VoQxSZ/player-observations.json"
+      ],
+      "commits": [
+        "b81504b5c149fbea4e7cd4272d9044105beca614"
+      ],
+      "resolution": "Labels target unique real inputs, selects and picker triggers in simultaneous forms. Checkbox label activation persists false. IDs use the existing HTTP-compatible utility; real editor label/focus behavior and platform-availability regression are verified."
     },
     "G5-F1": {
       "title": "선택 가능한 세 명령의 실제 입력 폼이 없다",
