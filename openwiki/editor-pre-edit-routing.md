@@ -4,6 +4,16 @@
 
 Read this before editing editor-facing behavior. Identifies which workflow owns a request and lists agent cautions.
 
+## Exterior door backing
+
+AI house and village authoring places lower-layer tile 359 at `(x, y-1)` and
+`(x, y)` before creating the exterior door event at `(x, y)`. The shared
+`stampHouseDoorBackground` clears upper tiles and tile stacks in those two cells;
+neighboring walls and the approach/return cell `(x, y+1)` remain separate.
+Village door restoration must retain the captured 359/359 pair. Interior exits
+and explicitly event-free decorative tile doors keep their existing behavior.
+Regression coverage: `test/exteriorDoorBackground.test.ts`.
+
 ## Tile brush reliability (2026-09-06)
 
 - `TilePaintEngine.brushStrokePoints` is shared with hover rendering and produces
