@@ -232,7 +232,7 @@ Phase 운영 게이트이며, 실행 순서를 강제하도록 해당 Phase 뒤�
   - 증거/정리: baseline 로그·상태 JSON·PNG, 서버/브라우저 close와 포트 해제 receipt.
   - Commit: `test(ai): characterize harness completion and cancellation contracts`.
 
-- [ ] 2. 저장 증명과 실패 후 재시도를 실제 수락 버전에 연결한다
+- [x] 2. 저장 증명과 실패 후 재시도를 실제 수락 버전에 연결한다
   - Recommended task executor category: deep
   - 선행: 1. 소유: `src/project/store.ts`, 필요한
     `src/project/supabaseProjectSync.ts` 읽기 메타데이터 경계,
@@ -250,7 +250,12 @@ Phase 운영 게이트이며, 실행 순서를 강제하도록 해당 Phase 뒤�
   - 증거: `output/evidence/ai-harness/proof/`의 RED/GREEN, captured receipts.
   - Commit: `fix(ai): verify persisted revisions before reporting saved proof`.
 
-- [ ] 11. P1을 검증하고 ultrabrain 최종 승인 뒤 PR을 병합한다
+- [x] 11. P1을 검증하고 ultrabrain 최종 승인 뒤 PR을 병합한다
+
+  완료: 후속 PR #655, 승인 HEAD `f8d9f7402`, 병합 `58105616b`,
+  검증된 병합 tree `0ef1046d`. 원래 #647의 조기 병합은 소급 승인하지 않는다.
+  원장과 `.omo/evidence/ai-harness-implementation/p1-merge-receipt.json`,
+  `p1-cleanup-complete.json`에 승인 순서·실제 병합·9개 worktree 정리를 기록했다.
   - Recommended task executor category: ultrabrain
   - 이 행은 리드의 운영 게이트다. ultrabrain은 읽기 전용 검토만 하며 병합은 리드만 한다.
   - P1 전용 worktree, 실제 편집기/격리 원격 증거, 감독자 gates, 현재 main과의
