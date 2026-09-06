@@ -276,5 +276,64 @@ deleted or modified by this follow-up.
 `persistence-review-typecheck.log/.receipt`: exit 0. Changed-test LSP diagnostics:
 none. No new build/browser/live-remote run is claimed for this test-only change.
 Original RED logs and receipts were compared byte-for-byte against `dea2a917` and
-remain unchanged. `persistence-review-artifacts.sha256` records current test,
-report and follow-up logs separately from the original historical manifest.
+remain unchanged. `persistence-review-artifacts.sha256` records the `3eccfb89`
+test, report and follow-up logs separately from the original historical manifest.
+
+
+## Lead confirmation: exact save gates, unchanged assertions
+
+Confirmed the current committed API/tests on `3eccfb89` without further source,
+test, demo, or timeout changes. No P2/P4 implementation was added.
+
+The original failure remains in `persistence-green-initial.log:49-54`: both
+sleep-based save-race tests timed out at 15000 ms after the persistence receipt
+introduced another asynchronous boundary. Their replacement uses a submitted
+promise armed before flush, awaits that exact save submission, makes the second
+local edit, then resolves the release-save promise. It neither advances fake
+time nor polls for completion.
+
+The default-deadline confirmation in `persistence-gates-related.log` shows:
+
+| Existing test | Original failure | Exact-gate result |
+| --- | --- | --- |
+| `keeps local map paint when remote save finishes with a stale snapshot` | timeout at 15006 ms | PASS, 5996 ms |
+| `does not apply stale map-patch response over newer local paint` | timeout at 15009 ms | PASS, 3737 ms |
+
+A TypeScript AST comparison against `048da7d5:test/storePersistence.test.ts`
+confirmed all six assertions in the first case and all five in the second are
+unchanged. These still require the newer tile, expected save/catch-up call counts
+and payload, successful result, and clean dirty-state bookkeeping. Neither test
+has a raised test timeout. The new proof suite's two previously documented cold
+store/event import bounds were not changed by this confirmation; read races are
+still driven by subscribed promises, not those deadlines.
+
+Exact commands, each run once for this confirmation:
+
+```sh
+npm test -- test/storePersistenceProof.test.ts test/storePersistence.test.ts test/supabaseProjectSync.test.ts --maxWorkers 1
+npm test -- test/storePersistenceProof.test.ts test/supabaseProjectSync.test.ts --maxWorkers 1
+npm run typecheck:app
+```
+
+- `persistence-gates-related.log/.receipt`: exit 1; 52 passed / six failed. All
+  18 proof tests, 29 sync tests and both exact-gate save-race tests passed. The
+  unchanged before-load test hit its 15 s cold-import bound in this run; the
+  other five failures remain the dev-fixture/extra-fetch failures already
+  captured against clean production source. No tests were filtered or skipped.
+- `persistence-gates-focused.log/.receipt`: exit 0, **47 passed**, covering the
+  complete proof and sync suites on the final test revision.
+- `persistence-gates-typecheck.log/.receipt`: exit 0.
+
+The unchanged-source dev-project evidence remains
+`persistence-legacy-baseline.log/.receipt`; no demo, dev-project factory or
+product repair was included. New proof, mismatch, overlay and read-race
+assertions remain strict. The original RED files and source/test files are
+unchanged by this evidence-only confirmation. No browser, listener or remote
+fixture was created. `persistence-gates-artifacts.sha256` records this report,
+new command artifacts and unchanged current source/test hashes.
+
+**Final persistence DoneClaim:** scoped API/test implementation remains committed;
+current focused validation and typecheck pass. The exact save-gate repair is
+proven without widening those test deadlines, and unrelated clean-baseline
+failures remain disclosed. Session integration and P1 browser/live-remote release
+acceptance are outside this node's completion claim.

@@ -1,0 +1,165 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/storePersistenceProof.test.ts test/storePersistence.test.ts test/supabaseProjectSync.test.ts --maxWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p1-20260906
+
+ ❯ test/storePersistence.test.ts (11 tests | 6 failed) 45069ms
+   × Project store remote persistence > does not write to Supabase before the canonical project has loaded 15093ms
+     → Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+   × Project store remote persistence > does not auto-save local dev showcase projects to Supabase 7660ms
+     → Cannot read properties of undefined (reading 'ok')
+   × Project store remote persistence > always creates a new fresh project instead of reloading local dev overrides 2536ms
+     → Cannot read properties of undefined (reading 'ok')
+   × Project store remote persistence > saves and reloads local edits for dev showcase projects without Supabase 979ms
+     → Cannot read properties of undefined (reading 'ok')
+   × Project store remote persistence > reports why DB persistence is unavailable for local dev showcase projects 541ms
+     → {
+  "message":"Invalid authentication credentials"
+}
+   ✓ Project store remote persistence > requires DB configuration before opening a project  584ms
+   ✓ Project store remote persistence > marks the project loaded when reconnect recovers a blocked first boot  6575ms
+   × Project store remote persistence > does not create a DB project when the selected project row is missing 855ms
+     → expected "spy" to be called 1 times, but got 4 times
+   ✓ Project store remote persistence > skips remote flush when there are no unsaved changes  510ms
+   ✓ Project store remote persistence > keeps local map paint when remote save finishes with a stale snapshot  5996ms
+   ✓ Project store remote persistence > does not apply stale map-patch response over newer local paint  3737ms
+ ✓ test/storePersistenceProof.test.ts (18 tests) 131555ms
+   ✓ accepted revision persistence proof > verifies the accepted content through actual save/read transport and reuses its clean-flush receipt  6172ms
+   ✓ accepted revision persistence proof > compares normalized values rather than JSONB object-key order  9624ms
+   ✓ accepted revision persistence proof > uses the ordinary normalized remote load and map-overlay contract  6548ms
+   ✓ accepted revision persistence proof > does not verify a matching projects row when the ordinary map read fails  7301ms
+   ✓ accepted revision persistence proof > binds the receipt to the accepted merged project, not the unmerged live store  14474ms
+   ✓ accepted revision persistence proof > keeps open event drafts local and out of accepted content identity  27294ms
+   ✓ accepted revision persistence proof > rejects a copied token without issuing a read  3098ms
+   ✓ accepted revision persistence proof > does not verify a failed read  2984ms
+   ✓ accepted revision persistence proof > does not verify a missing read  5181ms
+   ✓ accepted revision persistence proof > does not verify a disabled read  4400ms
+   ✓ accepted revision persistence proof > does not verify a cancelled read  3213ms
+   ✓ accepted revision persistence proof > rejects wrong target even when current_sha256 is unchanged  4157ms
+   ✓ accepted revision persistence proof > rejects wrong content even when current_sha256 is unchanged  3844ms
+   ✓ accepted revision persistence proof > keeps a failed proof retryable for the same accepted revision  7423ms
+   ✓ accepted revision persistence proof > preserves newer local edits during the read and does not attach old proof to them  5630ms
+   ✓ accepted revision persistence proof > pins the original target across a configuration change during read  7723ms
+   ✓ accepted revision persistence proof > does not verify when cancelled while the read is in flight  5431ms
+   ✓ accepted revision persistence proof > does not verify when disabled while the read is in flight  7053ms
+ ✓ test/supabaseProjectSync.test.ts (29 tests) 51683ms
+   ✓ Supabase project sync > loads a Supabase current_json row through the project parser  3525ms
+   ✓ Supabase project sync > uses the app canonical Supabase project id when the env id is omitted  2236ms
+   ✓ Supabase project sync > 옛 전투 애니메이션 묶음의 실제 행을 복구해 아이템을 실행 가능한 상태로 불러온다  820ms
+   ✓ Supabase project sync > 참조된 옛 장비 아이템 19종을 명시적 대응 장비의 한국어 안내 행으로 보존한다  486ms
+   ✓ Supabase project sync > 액션 탄약과 상점 상태에서만 참조한 옛 아이템 행을 보존한다  751ms
+   ✓ Supabase project sync > 손대지 않은 영문 아이템 껍데기만 고치고 필요한 스킬만 추가한다  785ms
+   ✓ Supabase project sync > treats Supabase current_json as canonical — does not backfill removed database records  670ms
+   ✓ Supabase project sync > repairs legacy sprite references from Supabase rows before project use  2560ms
+   ✓ Supabase project sync > drops Supabase village info documents for maps that no longer exist  1884ms
+   ✓ Supabase project sync > removes legacy sprite references from Supabase save payloads  867ms
+   ✓ Supabase project sync > saves the project as a Supabase projects upsert payload  637ms
+   ✓ Supabase project sync > keeps current_json as canonical when optional normalized tables are absent  542ms
+   ✓ Supabase project sync > merges a changed map into the latest project without replacing other maps  2548ms
+   ✓ Supabase project sync > does not stop a stale same-map save before it overwrites a newer DB map  2638ms
+   ✓ Supabase project sync > does not false-conflict when the load path repairs a saved map (shop commands)  2113ms
+   ✓ Supabase project sync > does not false-conflict when only the repair pipeline differs (dangling refs elsewhere)  1769ms
+   ✓ Supabase project sync > does not false-conflict on jsonb key reordering (alphabetical vs insertion order)  4008ms
+   ✓ Supabase project sync > preserves concurrent saves from separate editors touching different maps  11249ms
+   ✓ Supabase project sync > preserves concurrent map tree additions from separate editors  7135ms
+   ✓ Supabase project sync > does not undo a remote same-map reparent when saving only that map content  3770ms
+   ✓ Supabase project sync > overlays map_json from maps table onto current_json on load  676ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/storePersistence.test.ts > Project store remote persistence > does not write to Supabase before the canonical project has loaded
+Error: Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ test/storePersistence.test.ts:11:3
+      9|   });
+     10| 
+     11|   it("does not write to Supabase before the canonical project has load…
+       |   ^
+     12|     vi.useFakeTimers();
+     13|     vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  test/storePersistence.test.ts > Project store remote persistence > does not auto-save local dev showcase projects to Supabase
+TypeError: Cannot read properties of undefined (reading 'ok')
+ ❯ loadProjectSnapshotFromSupabase src/project/supabaseProjectSync.ts:232:17
+    230|     signal: options.signal,
+    231|   });
+    232|   if (!response.ok) {
+       |                 ^
+    233|     throw new SupabaseProjectSyncError(await response.text(), response…
+    234|   }
+ ❯ loadProjectFromSupabase src/project/supabaseProjectSync.ts:153:20
+ ❯ ProjectStore.load src/project/store.ts:274:27
+ ❯ test/storePersistence.test.ts:55:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  test/storePersistence.test.ts > Project store remote persistence > always creates a new fresh project instead of reloading local dev overrides
+TypeError: Cannot read properties of undefined (reading 'ok')
+ ❯ loadProjectSnapshotFromSupabase src/project/supabaseProjectSync.ts:232:17
+    230|     signal: options.signal,
+    231|   });
+    232|   if (!response.ok) {
+       |                 ^
+    233|     throw new SupabaseProjectSyncError(await response.text(), response…
+    234|   }
+ ❯ loadProjectFromSupabase src/project/supabaseProjectSync.ts:153:20
+ ❯ ProjectStore.load src/project/store.ts:274:27
+ ❯ test/storePersistence.test.ts:91:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  test/storePersistence.test.ts > Project store remote persistence > saves and reloads local edits for dev showcase projects without Supabase
+TypeError: Cannot read properties of undefined (reading 'ok')
+ ❯ loadProjectSnapshotFromSupabase src/project/supabaseProjectSync.ts:232:17
+    230|     signal: options.signal,
+    231|   });
+    232|   if (!response.ok) {
+       |                 ^
+    233|     throw new SupabaseProjectSyncError(await response.text(), response…
+    234|   }
+ ❯ loadProjectFromSupabase src/project/supabaseProjectSync.ts:153:20
+ ❯ ProjectStore.load src/project/store.ts:274:27
+ ❯ test/storePersistence.test.ts:119:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  test/storePersistence.test.ts > Project store remote persistence > reports why DB persistence is unavailable for local dev showcase projects
+SupabaseProjectSyncError: {
+  "message":"Invalid authentication credentials"
+}
+ ❯ loadProjectSnapshotFromSupabase src/project/supabaseProjectSync.ts:233:11
+    231|   });
+    232|   if (!response.ok) {
+    233|     throw new SupabaseProjectSyncError(await response.text(), response…
+       |           ^
+    234|   }
+    235|   const rows = await parseProjectRows(response);
+ ❯ loadProjectFromSupabase src/project/supabaseProjectSync.ts:153:20
+ ❯ ProjectStore.load src/project/store.ts:274:27
+ ❯ test/storePersistence.test.ts:151:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  test/storePersistence.test.ts > Project store remote persistence > does not create a DB project when the selected project row is missing
+AssertionError: expected "spy" to be called 1 times, but got 4 times
+ ❯ test/storePersistence.test.ts:230:22
+    228| 
+    229|     await expect(store.load()).rejects.toMatchObject({ name: "DbConnec…
+    230|     expect(fetchSpy).toHaveBeenCalledTimes(1);
+       |                      ^
+    231|     expect(fetchSpy.mock.calls[0]?.[1]?.method ?? "GET").toBe("GET");
+    232|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  6 failed | 52 passed (58)
+   Start at  18:33:25
+   Duration  239.86s (transform 25.89s, setup 0ms, collect 4.51s, tests 228.31s, environment 15ms, prepare 1.35s)
+
