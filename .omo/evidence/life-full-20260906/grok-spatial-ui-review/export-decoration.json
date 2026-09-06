@@ -1,0 +1,29 @@
+{
+  "cloudCatalog": true,
+  "runtimeInventoryIncludesCloud": false,
+  "runtimeInventoryPictureCount": 0,
+  "load": {
+    "decorationDefault": true,
+    "blankProjectLoadsCloud": false,
+    "decorationOrientationOnly": true,
+    "buildingLevelTwoOnly": true,
+    "otherPictureLoadedOnDecorationProject": null
+  },
+  "resolve": {
+    "spatialDecoration": {
+      "texture": "easyrpg-picture-cloud",
+      "frame": "__BASE"
+    },
+    "eventDecoration": null
+  },
+  "overlayTextureKeys": [
+    "easyrpg-picture-cloud"
+  ],
+  "export": {
+    "blankHasCloud": true,
+    "decorationHasCloud": true,
+    "buildingLevelHasCloud": true,
+    "decorationHasOtherPictures": []
+  },
+  "ok": false
+}

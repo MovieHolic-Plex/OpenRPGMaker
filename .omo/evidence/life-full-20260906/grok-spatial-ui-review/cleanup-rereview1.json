@@ -1,0 +1,12 @@
+{
+  "ownedShmRemoved": "/dev/shm/st_01a078fa-rereview1",
+  "producerTempScriptRemoved": "/home/main/z-project/rpg-zzu-life-full-receipt-ui-grok/.omo/evidence/life-full-20260906/grok-spatial-ui-review-rereview1-tmp",
+  "originalReviewFilesLeftUnchanged": [
+    "export-decoration.json",
+    "commands.json",
+    "check-export-decoration.mjs",
+    "REPORT.md"
+  ],
+  "lockedTreeRetained": "/home/main/z-project/rpg-zzu-life-full-spatial-ui-grok-review",
+  "otherResourcesDeleted": false
+}

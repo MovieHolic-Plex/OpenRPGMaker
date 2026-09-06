@@ -1,0 +1,21 @@
+{
+  "reviewer": "st_01a078fa",
+  "model": "xai/grok-4.6",
+  "reviewedHead": "78197cd54db57f01a5730d08bddcb1f532785efa",
+  "base": "0e2af2591f33bab3e1f56f1847e499a1cce0681f",
+  "diskAtStart": {
+    "rootAvail": "684M",
+    "note": "Not ~1GiB. tmpfs ample."
+  },
+  "focusedCheck": {
+    "cwd": "/home/main/z-project/rpg-zzu-life-full-receipt-ui-grok",
+    "command": [
+      "flock", "--timeout", "900", "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+      "timeout", "--signal=TERM", "--kill-after=15s", "180s",
+      "./node_modules/.bin/vite-node", "--config", "vitest.config.ts",
+      ".omo/evidence/life-full-20260906/grok-spatial-ui-review-tmp/check-export-decoration.mjs"
+    ],
+    "exit": 1,
+    "note": "Exit 1 was the reviewer's extra assertion that blank projects must not export Cloud.png. Actual payload: decoration/level/orientation load and zipPath inclusion succeeded; blank export includes Cloud via default resourceProfiles. Script dir removed after copy."
+  }
+}
