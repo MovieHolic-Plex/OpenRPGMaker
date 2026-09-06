@@ -18,13 +18,24 @@
       "commandIds": [
         "m2:m2-086-erase-event"
       ],
-      "status": "pending",
+      "status": "resolved",
       "unit": "U10",
-      "red": [],
-      "green": [],
-      "surface": [],
-      "commits": [],
-      "resolution": null
+      "red": [
+        ".omo/evidence/event-command-remediation/U10/erase/red.json"
+      ],
+      "green": [
+        ".omo/evidence/event-command-remediation/U10/erase/green-focused.json",
+        ".omo/evidence/event-command-remediation/checkpoints/erase-integration-serial.json",
+        ".omo/evidence/event-command-remediation/U10/erase/supervisor-summary.json"
+      ],
+      "surface": [
+        ".omo/evidence/event-command-remediation/U10/erase/surface-Avtoua/editor-observations.json",
+        ".omo/evidence/event-command-remediation/U10/erase/surface-Avtoua/player-observations.json"
+      ],
+      "commits": [
+        "2e49cc829e8cb9b9818990a8b6d9f49e510eacab"
+      ],
+      "resolution": "Erase Event forwards the saved event ID instead of always erasing its caller. Empty/omitted current-host behavior, unknown/no-host safety and temporary erasure are retained. Actual editor package roundtrip, sprite membership, following markers, called-common targeting and map-reload restoration are verified. Spawn/Remove Event findings remain separate and unresolved."
     },
     "G1-F2": {
       "title": "사운드 레이어가 그림을 고르게 하고 모든 채널을 BGM으로 재생",
