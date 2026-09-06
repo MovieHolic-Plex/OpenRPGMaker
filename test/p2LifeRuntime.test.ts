@@ -53,6 +53,8 @@ describe("P2 seasonal forage", () => {
     const session = startSession(project, 403);
     const date = { year: 1, season: "spring" as const, day: 2, hour: 6, minute: 0 };
 
+    // Collection is checked against the live date, not a future generator preview.
+    session.gameTime = date;
     const first = advanceSeasonalForage(project, session, date);
     expect(first).toMatchObject({ ok: true, dayKey: "1:spring:2", spawned: 2, removed: 0 });
     const generated = Object.values(session.placeables ?? {}).filter((entry) => entry.forageSpawn);
@@ -76,7 +78,9 @@ describe("P2 seasonal forage", () => {
     const session = startSession(project, 404);
     session.placeables![`${project.startMapId}:9,9`] = { id: "legacy", mapId: project.startMapId, x: 9, y: 9, kind: "rock", itemId: "item_berry" };
     expect(advanceSeasonalForage(project, session, { year: 1, season: "spring", day: 1, hour: 6, minute: 0 }).ok).toBe(true);
-    project.system.seasonalForage!.areas[0]!.dailySpawnCount = 0;
+    const forage = project.system.seasonalForage;
+    if (!forage) throw new Error("Missing fixture forage");
+    project.system.seasonalForage = { ...forage, areas: forage.areas.map(area => ({ ...area, dailySpawnCount: 0 })) };
     expect(advanceSeasonalForage(project, session, { year: 1, season: "summer", day: 1, hour: 6, minute: 0 })).toMatchObject({ ok: true, removed: 2 });
     expect(session.placeables?.[`${project.startMapId}:9,9`]?.kind).toBe("rock");
   });
@@ -125,10 +129,12 @@ describe("P2 shipping collections and museum", () => {
   it("preflights the combined gold of multiple newly-qualified rewards", () => {
     // Break caught: each reward fits alone but their combined gold silently clamps after donation.
     const project = p2LifeProject();
-    project.system.museum!.rewards = [
+    const museum = project.system.museum;
+    if (!museum) throw new Error("Missing fixture museum");
+    project.system.museum = { ...museum, rewards: [
       { id: "reward_a", minDonations: 1, reward: { gold: 4 } },
       { id: "reward_b", minDonations: 1, reward: { gold: 4 } },
-    ];
+    ] };
     const session = startSession(project, 408);
     session.inventory.item_trout = 1;
     session.gold = GOLD_MAX - 5;

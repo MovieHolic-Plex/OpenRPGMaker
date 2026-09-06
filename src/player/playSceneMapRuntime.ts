@@ -51,7 +51,7 @@ import { DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults/constants";
 import { applyMapDefaultLighting } from "@/project/lightingRules";
 import { initializeFieldSpawnsForScene } from "@/player/playSceneFieldSpawns";
 import { renderFarmOverlays } from "@/player/playSceneFarming";
-import { renderPlaceableOverlays } from "@/player/playScenePlaceables";
+import { renderPlaceableOverlays, syncForageWarnings } from "@/player/playScenePlaceables";
 import { initialRuntimeEventPositions,
 runtimeEventViewsForMap,
 type RuntimeEventView, } from "@/project/runtimeEventState"
@@ -501,6 +501,7 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
     marker.setScale(eventSpriteScale(spriteTexture, marker, view.scale));
     scene.eventSprites.set(event.id, marker);
   }
+  syncForageWarnings(scene);
   scene.runtimeDom.syncMissingResourceError(scene.missingResources);
   scene.syncRuntimeState();
 }

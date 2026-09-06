@@ -72,7 +72,9 @@ import {
   type TimePhase,
 } from "@/project/gameTime";
 import { npcScheduleTargetForEvent } from "@/project/npcSchedule";
-import { cropStageAt, interactWithFarmPlot } from "@/player/farming";
+import { interactWithLifeField } from "@/player/lifeFieldInteraction";
+import { findChestAt } from "@/project/placeables";
+import { cropStageAt, farmIntentForHand, interactWithFarmPlot } from "@/player/farming";
 import { giveGiftToNpc } from "@/project/friendship";
 import { resolveShopStock } from "@/project/shopStock";
 import { applyMapBgmToSession, resolveMapBgm } from "@/player/mapBgm";
@@ -539,27 +541,24 @@ function runInteractStep(state: RunnerState): string | null {
   const map = currentMap(state);
   if (!map) return `현재 맵 없음: ${state.session.currentMapId}`;
   const delta = directionDelta(state.facing);
-  const front = findRuntimeEventAtInMap(
-    state.project,
-    map,
-    state.session,
-    state.eventPositions,
-    state.session.x + delta.x,
-    state.session.y + delta.y,
-    "action"
-  );
-  if (front) return runEventView(state, front);
-  const farmFront = interactWithFarmPlot(state.project, state.session, map, state.session.x + delta.x, state.session.y + delta.y);
-  if (farmFront.kind !== "ignored") {
-    state.log.push(`farm ${farmFront.kind}: ${map.id} (${farmFront.x},${farmFront.y})${farmFront.cropId ? ` ${farmFront.cropId}` : ""}`);
-    return null;
-  }
-  const underfoot = findRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, state.session.x, state.session.y, "action");
-  if (underfoot) return runEventView(state, underfoot);
-  const farmUnderfoot = interactWithFarmPlot(state.project, state.session, map, state.session.x, state.session.y);
-  if (farmUnderfoot.kind !== "ignored") {
-    state.log.push(`farm ${farmUnderfoot.kind}: ${map.id} (${farmUnderfoot.x},${farmUnderfoot.y})${farmUnderfoot.cropId ? ` ${farmUnderfoot.cropId}` : ""}`);
-    return null;
+  for (const target of [
+    { mapId: map.id, x: state.session.x + delta.x, y: state.session.y + delta.y },
+    { mapId: map.id, x: state.session.x, y: state.session.y },
+  ]) {
+    const event = findRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, target.x, target.y, "action");
+    if (event) return runEventView(state, event);
+    const chest = findChestAt(state.session, map.id, target.x, target.y);
+    if (chest) { state.log.push(`chest ${chest.id}: open`); return null; }
+    const life = interactWithLifeField(state.project, state.session, target);
+    if (life.kind !== "unhandled") {
+      state.log.push(`${life.source} ${life.kind}: ${life.kind === "success" ? life.itemId : life.reason}`);
+      return null;
+    }
+    const farm = interactWithFarmPlot(state.project, state.session, map, target.x, target.y, farmIntentForHand(state.project, state.session));
+    if (farm.kind !== "ignored") {
+      state.log.push(`farm ${farm.kind}: ${map.id} (${farm.x},${farm.y})${farm.cropId ? ` ${farm.cropId}` : ""}`);
+      return null;
+    }
   }
   return `조사할 action 이벤트 없음: ${map.id} (${state.session.x},${state.session.y}) facing=${state.facing}`;
 }
