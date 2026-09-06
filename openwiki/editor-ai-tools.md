@@ -335,6 +335,16 @@ author_village와 buildVillageDomain이 DB 설계서의 고정값·집 수 범�
 실제 JRPG 재실행에서 잘못 중첩된 transfer를 도구가 무시하고 빈 commands로 저장해 던전 귀환이 사라졌기 때문이다.
 `test/toolsMapManagement.test.ts`는 두 잘못된 위치를 모두 거부하고 기존 귀환 이벤트가 그대로 남는지 검증한다.
 
+2026-09-06 R5: `schemaShapes.ts`의 실행 명령 enum은 `COMMAND_KINDS`만 노출한다.
+아이템 차감은 `{kind:"changeItem",itemId,op:"-=",amount:1}`, 스위치 대입은
+`{kind:"setSwitch",switchId,value:true}`, 아이템 조건은 `{kind:"item",itemId,present:true}`,
+엔딩 호출은 `{kind:"triggerEnding",endingId}`(ID 생략 시 조건 선택)다. `op`/`endingId`/`present`를
+선언하며 `find_tools`도 같은 등록 스키마를 반환한다. 다형 `value`는 거짓 `type:"string"` 대신
+타입 제약 없이 필드를 노출하고 kind별 boolean/number/"toggle"/변수 피연산자를 설명한다.
+이는 provider의 union type 및 oneOf/anyOf 금지를 유지하기 위한 경계 표현이며, 실제 타입·필수 값은
+기존 컴파일러/shape 검증기가 검사한다. `test/aiCommandSchemaContract.test.ts`는 컴파일·직렬화 보존,
+잘못된 명령/누락 조건 값의 원자적 거부, 참조 조회 선행을 검증한다. 실모델 복구·플레이 증명은 별도다.
+
 ## 보물상자는 노출된 수면을 거부한다 (2026-09-05)
 
 `place_chest`는 요청 좌표와 자동 착지 결과를 모두 검사한다. 물 판정은 현재 타일셋의
