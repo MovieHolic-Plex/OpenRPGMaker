@@ -8,12 +8,12 @@ AI-generated illustrations. No external download or new dependency was used.
 
 The lead reported native `generate_image` HTTP 403 `key_model_access_denied`
 for `gpt-image-2` (the key supports only muse) and editor google-antigravity
-`connected:false`. The user then explicitly authorized packaged-art composition.
+`connected:false`. The lead selected packaged-art composition within the requested image-rich preset scope.
 This worker did not retry generation, seek credentials, or call an AI service.
 There is no new generation prompt, model response, or seed for these composites.
 
-The source files are existing generated game assets in this repository, reused
-under that explicit authorization. This document does **not** assign CC0 or any
+The source files are existing generated game assets in this repository.
+This document does **not** assign CC0 or any
 new license, assert exclusive ownership, or independently establish original
 provider terms. Those terms/rights remain those of the source assets and must
 not be inferred from a filename or this processing step.
@@ -81,5 +81,7 @@ image-capable QA `st_01a0741c` passed vanguard/arcane but found white/magenta
 square remnants in the original hero-06 ranger. Ranger therefore uses the
 parent-confirmed green archer hero-04 instead; no color deletion, erosion,
 blur, or source-art edits were added. Approved vanguard/arcane bytes are unchanged.
-This worker cannot inspect images visually; the replacement ranger requires
-the same reviewer's re-read for artifact removal and subject clarity.
+This worker cannot inspect images visually. The lead subsequently reported
+image-capable re-review PASS for the replacement ranger at SHA-256
+`684ff227d9f994c3c18105aa44bd5a483a9634e10736b57c706ac70a3639aeb7`,
+completing the all-three-cover PASS verdict.
