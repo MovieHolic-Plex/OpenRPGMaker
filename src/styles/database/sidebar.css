@@ -78,7 +78,6 @@
   box-sizing: border-box;
   flex: 0 0 44px !important;
   min-height: 44px !important;
-  padding: 0 12px !important;
 }
 
 .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-modal-body {
@@ -296,7 +295,7 @@
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
-  font: 600 11px/1 "Malgun Gothic", system-ui, sans-serif;
+  font: 600 11px/1 var(--font-ui);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0;
   margin-left: auto;
@@ -324,7 +323,7 @@
   box-sizing: border-box;
   color: var(--db-studio-text-1, #0F172A);
   flex: 0 0 auto;
-  font: 400 13px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 400 13px/1.4 var(--font-ui);
   height: 32px;
   margin: 0 0 8px;
   padding: 0 10px;
@@ -341,7 +340,7 @@
 /* 탭 검색 무결과 안내. 사이드바가 통째로 빈 공백이 되던 자리를 채운다. */
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search-empty {
   color: var(--db-studio-text-2);
-  font: 400 12px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 400 12px/1.5 var(--font-ui);
   margin: 4px 2px 0;
 }
 
@@ -450,7 +449,7 @@
   cursor: pointer;
   display: flex;
   flex: 0 0 auto;
-  font: 500 13px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 500 13px/1.4 var(--font-ui);
   gap: 8px;
   height: 32px;
   justify-content: flex-start;
@@ -495,7 +494,7 @@
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
-  font: 600 11px/1 "Malgun Gothic", system-ui, sans-serif;
+  font: 600 11px/1 var(--font-ui);
   font-variant-numeric: tabular-nums;
   margin-left: auto;
   min-width: 20px;

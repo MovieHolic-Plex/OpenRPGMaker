@@ -95,21 +95,13 @@
   grid-template-columns: minmax(0, 1fr);
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-equipment-inspector-name .db-field > span,
-.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-item-inspector-name .db-field > span {
-  color: var(--db-studio-text-3, var(--db-studio-text-3));
-  font: 700 10px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
 .database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-equipment-inspector-name .db-field input[type="text"],
 .database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-item-inspector-name .db-field input[type="text"] {
   background: var(--db-studio-surface, var(--db-studio-surface));
   border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.1));
   border-radius: 8px;
   color: var(--db-studio-text-1, var(--db-studio-text-1));
-  font: 700 17px/1.3 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 700 17px/1.3 var(--font-ui);
   padding: 5px 10px;
 }
 
@@ -123,11 +115,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-equipment-inspector-title > .db-field > span {
-  color: var(--db-studio-text-3, var(--db-studio-text-3));
   flex: 0 0 auto;
-  font: 700 10px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-equipment-inspector-title > .db-field > .db-segmented {
@@ -192,8 +180,6 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-ws-card .db-field > span,
 .database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-ws-card .db-field > span {
-  color: var(--db-studio-text-2, var(--db-studio-text-2));
-  font: 500 12px/1.45 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   min-width: 0;
   overflow: visible;
   text-overflow: clip;
@@ -249,7 +235,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-item-subgroup > strong {
   color: var(--db-studio-text-2, var(--db-studio-text-2));
-  font: 700 11px/1.6 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 700 11px/1.6 var(--font-ui);
 }
 
 /* ── 체크박스 묶음 ──────────────────────────────────────────────────────── */
@@ -265,7 +251,7 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-item-choice-list > strong,
 .database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-item-choice-list > strong {
   color: var(--db-studio-text-2, var(--db-studio-text-2));
-  font: 700 11px/1.6 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 700 11px/1.6 var(--font-ui);
   grid-column: 1 / -1;
 }
 
@@ -274,7 +260,7 @@
   align-items: center;
   color: var(--db-studio-text-1, var(--db-studio-text-1));
   display: inline-flex;
-  font: 400 12px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 400 12px/1.5 var(--font-ui);
   gap: 7px;
   min-height: 26px;
   min-width: 0;
@@ -349,7 +335,7 @@
   align-items: center;
   color: var(--db-studio-text-3);
   display: flex;
-  font: 700 10.5px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 700 10.5px/1.4 var(--font-ui);
   gap: 8px;
   letter-spacing: 0.1em;
   margin: 6px 0 -2px;

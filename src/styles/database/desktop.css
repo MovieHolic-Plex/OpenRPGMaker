@@ -92,13 +92,6 @@
     white-space: nowrap;
   }
 
-  .database-modal-body .oprn-record-list-pane .db-toolbar .btn {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
   .database-modal-body .oprn-record-detail-pane {
     display: grid;
     grid-template-rows: auto minmax(0, 1fr);
@@ -188,7 +181,7 @@
     border-bottom: 3px solid transparent;
     border-radius: 0;
     color: var(--text-1);
-    font: 700 14px/53px "Malgun Gothic", "Segoe UI", sans-serif;
+    font: 700 14px/53px var(--font-ui);
     height: 56px;
     margin: 0;
     min-width: 0;
@@ -299,7 +292,7 @@
     border-bottom: 3px solid transparent;
     border-radius: 0;
     color: var(--text-1);
-    font: 700 14px/53px "Malgun Gothic", "Segoe UI", sans-serif;
+    font: 700 14px/53px var(--font-ui);
     height: 56px;
     margin: 0;
     min-width: 0;
@@ -342,7 +335,7 @@
     background: transparent;
     border: 0;
     color: var(--text-1);
-    font: 700 16px/22px "Malgun Gothic", "Segoe UI", sans-serif;
+    font: 700 16px/22px var(--font-ui);
     height: auto;
     justify-items: start;
     margin: 0 0 10px;
@@ -362,7 +355,7 @@
     border: 1px solid var(--border-subtle);
     border-radius: 4px;
     color: var(--text-1);
-    font: 400 15px/20px "Malgun Gothic", "Segoe UI", sans-serif;
+    font: 400 15px/20px var(--font-ui);
     height: 36px;
     padding: 0 10px 0 26px;
     position: relative;
@@ -388,18 +381,17 @@
   .database-modal-body .oprn-record-troops .oprn-record-count {
     color: var(--text-1);
     display: block;
-    font: 400 14px/20px "Malgun Gothic", "Segoe UI", sans-serif;
+    font: 400 14px/20px var(--font-ui);
     margin: 10px 0 8px;
   }
 
   .database-modal-body .oprn-record-troops .oprn-maximum-button,
-  .database-modal-body .oprn-record-troops .db-toolbar .btn,
-  .database-modal-body .db-troops-classic-workbench button {
+.database-modal-body .db-troops-classic-workbench button {
     background: var(--bg-raised);
     border: 1px solid var(--border-subtle);
     border-radius: 4px;
     color: var(--text-1);
-    font: 700 14px/34px "Malgun Gothic", "Segoe UI", sans-serif;
+    font: 700 14px/34px var(--font-ui);
     min-height: 36px;
   }
 
@@ -456,7 +448,7 @@
     background: var(--bg-raised);
     color: var(--text-1);
     float: left;
-    font: 700 17px/22px "Malgun Gothic", "Segoe UI", sans-serif;
+    font: 700 17px/22px var(--font-ui);
     margin: 0;
     padding: 0;
     width: 100%;
@@ -501,7 +493,7 @@
     border: 1px solid var(--border-subtle);
     border-radius: 4px;
     color: var(--text-1);
-    font: 400 14px/20px "Malgun Gothic", "Segoe UI", sans-serif;
+    font: 400 14px/20px var(--font-ui);
     height: 32px;
     min-height: 32px;
     padding: 4px 8px;
@@ -524,12 +516,11 @@
     grid-template-columns: 72px minmax(0, 1fr);
   }
 
-  .database-modal-body .db-troops-classic-workbench .db-field > span,
   .database-modal-body .db-troops-classic-workbench .actor-check,
-  .database-modal-body .db-troop-radio,
-  .database-modal-body .db-troop-terrain-row {
+.database-modal-body .db-troop-radio,
+.database-modal-body .db-troop-terrain-row {
     color: var(--text-1);
-    font: 400 14px/20px "Malgun Gothic", "Segoe UI", sans-serif;
+    font: 400 14px/20px var(--font-ui);
   }
 
   .database-modal-body .oprn-detail-troops .db-troop-battle-preview-stage {
@@ -553,7 +544,7 @@
   }
 
   .database-modal-body .db-troop-event-command-area {
-    font: 400 15px/22px "Malgun Gothic", "Segoe UI", sans-serif;
+    font: 400 15px/22px var(--font-ui);
   }
 
   .database-modal-body .db-troop-member-editor {

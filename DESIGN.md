@@ -19,6 +19,13 @@
 - World document 36px controls, System 32–36px targets, the 36px actor portrait,
   tileset art geometry and runtime/project-font previews are retained variants.
   UI fonts resolve through role tokens, including component-loaded shorthand.
+- DB row thumbnails have one 24px dimension owner in `record-list-modern.css`;
+  `record-thumbs.css` keeps non-DB 32px defaults and art rendering. The actor
+  identity's 36px dimensions live only in `desktop-record-shell/13-actor-studio.css`.
+  `sidebar.css` owns modal-body containment; Studio v2 owns cards, legends and
+  11.5px mono list ordinals. Workspace grid actions retain `justify-self: start`.
+- Destructive text uses the Studio danger token #B91C1C so its hover/confirmation
+  tint retains normal-text contrast, not just contrast on white.
 
 ## System settings workspace (2026-09-06)
 

@@ -63,7 +63,7 @@
   border-style: solid;
   border-width: 1px;
   color: var(--text-1);
-  font: 400 12px/18px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  font: 400 12px/18px var(--font-ui);
   min-height: 20px;
   overflow: hidden;
   padding: 1px 4px;
@@ -202,7 +202,7 @@
 .database-modal-body .oprn-tileset-main .tileset-db-tools::before {
   color: var(--text-1);
   content: "편집 도구";
-  font: 400 11px/1 Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  font: 400 11px/1 var(--font-ui);
   margin-top: -16px;
   padding: 0 4px;
   width: max-content;
@@ -210,7 +210,7 @@
 
 .database-modal-body .oprn-tileset-main .tileset-db-tools button,
 .database-modal-body .oprn-tileset-terrain-pane .database-footer-button {
-  font: 400 12px/18px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  font: 400 12px/18px var(--font-ui);
   min-height: 24px;
 }
 
@@ -371,7 +371,7 @@
 
 .tileset-graphic-picker-lead {
   color: var(--text-2);
-  font: 400 12px/1.45 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 400 12px/1.45 var(--font-ui);
   margin: 0 0 10px;
 }
 
@@ -417,7 +417,7 @@
 
 .tileset-graphic-option-name {
   color: var(--text-1);
-  font: 600 12px/1.3 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 600 12px/1.3 var(--font-ui);
   overflow-wrap: anywhere;
 }
 
@@ -485,7 +485,7 @@
 .database-modal-body .oprn-tileset-main .tileset-selected-rules,
 .database-modal-body .oprn-tileset-main .tileset-selected-group {
   color: var(--text-dim, var(--text-1));
-  font: 400 11px/1.35 Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  font: 400 11px/1.35 var(--font-ui);
   overflow-wrap: anywhere;
 }
 
@@ -543,7 +543,7 @@
 
 .database-modal-body .oprn-tileset-main .tileset-db-preview-title {
   color: var(--text-1);
-  font: 600 12px/18px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  font: 600 12px/18px var(--font-ui);
 }
 
 .database-modal-body .oprn-tileset-main .tileset-db-layer-filter {
@@ -558,7 +558,7 @@
   border-radius: 4px;
   color: var(--text-1);
   cursor: pointer;
-  font: 600 11px/1.1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 600 11px/1.1 var(--font-ui);
   min-height: 24px;
   min-width: 36px;
   padding: 0 8px;
@@ -598,7 +598,7 @@
   background: transparent;
   border-radius: 0;
   color: var(--text-1);
-  font: 700 11px/1 "Cascadia Mono", Consolas, monospace;
+  font: 700 11px/1 var(--font-mono);
   justify-content: center;
   text-shadow: 1px 1px 0 var(--border-strong);
 }
@@ -634,7 +634,7 @@
   align-items: flex-start;
   color: var(--text-1);
   display: flex;
-  font: 400 11px/1.35 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 400 11px/1.35 var(--font-ui);
   gap: 6px;
   margin: 0 0 6px;
 }
@@ -667,7 +667,7 @@
 
 .database-modal-body .tileset-legend-sheet-info {
   color: var(--text-1);
-  font: 600 12px/1.3 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 600 12px/1.3 var(--font-ui);
   margin-bottom: 8px;
 }
 
@@ -687,7 +687,7 @@
 .database-modal-body .tileset-selected-layer-badge {
   border: 1px solid var(--border-default);
   border-radius: 3px;
-  font: 700 10px/14px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 700 10px/14px var(--font-ui);
   padding: 0 5px;
 }
 
@@ -732,7 +732,7 @@
   .database-modal-body .oprn-tileset-list-pane .tileset-db-panel-title {
     background: transparent;
     color: var(--text-1);
-    font: 700 17px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 700 17px/1.2 var(--font-ui);
     margin: 0 0 12px;
     text-align: left;
   }
@@ -750,7 +750,7 @@
     border-bottom: 1px solid var(--db-modern-line-soft, var(--border-subtle));
     color: var(--text-1);
     display: block;
-    font: 500 13px/1.25 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 500 13px/1.25 var(--font-ui);
     height: auto;
     min-height: 34px;
     overflow: hidden;
@@ -786,7 +786,7 @@
     border-radius: 4px;
     box-sizing: border-box;
     color: var(--text-1);
-    font: 400 14px/1.25 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 400 14px/1.25 var(--font-ui);
     min-height: 30px;
     padding: 4px 8px;
     width: 100%;
@@ -810,7 +810,7 @@
     border: 1px solid var(--db-modern-line, var(--border-subtle));
     border-radius: 4px;
     color: var(--text-1);
-    font: 600 13px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 600 13px/1 var(--font-ui);
     min-height: 32px;
   }
 
@@ -849,7 +849,7 @@
   .database-modal-body .oprn-tileset-main .tileset-selected-description,
   .database-modal-body .oprn-tileset-main .tileset-selected-rules,
   .database-modal-body .oprn-tileset-main .tileset-selected-group {
-    font: 400 12px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 400 12px/1.4 var(--font-ui);
   }
 
   .database-modal-body .oprn-tileset-main .tileset-db-tools {
@@ -859,7 +859,7 @@
   .database-modal-body .oprn-tileset-main .tileset-db-tools::before {
     color: var(--text-1);
     content: "편집 도구";
-    font: 700 14px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 700 14px/1.2 var(--font-ui);
     margin: 0 0 2px;
     padding: 0;
     width: max-content;
@@ -883,7 +883,7 @@
 
   .database-modal-body .oprn-tileset-main .tileset-db-preview-title {
     color: var(--text-1);
-    font: 600 13px/1.3 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 600 13px/1.3 var(--font-ui);
   }
 
   .database-modal-body .oprn-tileset-main .tileset-db-preview {
@@ -899,12 +899,12 @@
   }
 
   .database-modal-body .oprn-tileset-main .tileset-db-cell {
-    font: 700 12px/1 "Cascadia Mono", Consolas, monospace;
+    font: 700 12px/1 var(--font-mono);
   }
 
   .database-modal-body .oprn-tileset-main .tileset-db-layer-filter button,
   .database-modal-body .oprn-tileset-main .tileset-db-preview-scale button {
-    font: 600 12px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 600 12px/1 var(--font-ui);
     min-height: 28px;
   }
 }
@@ -1709,12 +1709,12 @@
 }
 
 .tileset-autotile-toolbar-head strong {
-  font: 650 13px/1.3 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 650 13px/1.3 var(--font-ui);
 }
 
 .tileset-autotile-toolbar-head span {
   color: var(--text-2);
-  font: 400 12px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 400 12px/1.4 var(--font-ui);
 }
 
 .tileset-autotile-sidebar {
@@ -1750,12 +1750,12 @@
 }
 
 .tileset-autotile-layout-card strong {
-  font: 650 13px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 650 13px/1.2 var(--font-ui);
 }
 
 .tileset-autotile-layout-card span {
   color: var(--text-2);
-  font: 400 11px/1.35 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 400 11px/1.35 var(--font-ui);
 }
 
 .tileset-autotile-layout-card:hover,
@@ -1816,7 +1816,7 @@
 .tileset-autotile-hint {
   color: var(--text-2);
   flex: 1;
-  font: 400 12px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 400 12px/1.4 var(--font-ui);
 }
 
 .tileset-autotile-hint.is-error {
@@ -1828,7 +1828,7 @@
   border: 0;
   color: var(--accent);
   cursor: pointer;
-  font: 600 11px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 600 11px/1.2 var(--font-ui);
   padding: 0;
   white-space: nowrap;
 }
@@ -1847,7 +1847,7 @@
 
 .tileset-autotile-lead {
   color: var(--text-2);
-  font: 400 12px/1.45 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 400 12px/1.45 var(--font-ui);
   margin: 0;
 }
 
@@ -1871,7 +1871,7 @@
 
 .tileset-autotile-groups-label {
   color: var(--text-2);
-  font: 600 11px/1.3 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 600 11px/1.3 var(--font-ui);
 }
 
 .tileset-autotile-list {
@@ -1902,7 +1902,7 @@
 }
 
 .tileset-autotile-group-name {
-  font: 600 12px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 600 12px/1.2 var(--font-ui);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1914,7 +1914,7 @@
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-pill);
   color: var(--text-2);
-  font: 600 11.5px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 600 11.5px/1.4 var(--font-ui);
   padding: 2px 6px;
   white-space: nowrap;
 }
@@ -1996,13 +1996,13 @@
 
 .tileset-autotile-slot-label {
   color: var(--text-2);
-  font: 600 11.5px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 600 11.5px/1.4 var(--font-ui);
 }
 
 .tileset-autotile-progress,
 .tileset-autotile-empty {
   color: var(--text-2);
-  font: 400 12px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 400 12px/1.4 var(--font-ui);
 }
 
 .tileset-autotile-composer-actions {
@@ -2019,7 +2019,7 @@
 .tileset-autotile-advanced summary {
   color: var(--text-2);
   cursor: pointer;
-  font: 600 11px/1.3 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 600 11px/1.3 var(--font-ui);
 }
 
 .tileset-autotile-variant-grid {
@@ -2031,7 +2031,7 @@
 
 .tileset-autotile-variant-title {
   color: var(--text-3);
-  font: 600 11.5px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 600 11.5px/1.4 var(--font-ui);
   grid-column: 1 / -1;
 }
 
@@ -2042,7 +2042,7 @@
 
 .tileset-autotile-variant-key {
   color: var(--text-3);
-  font: 400 11.5px/1.4 Tahoma, "Malgun Gothic", sans-serif;
+  font: 400 11.5px/1.4 var(--font-ui);
 }
 
 .tileset-db-cell.autotile-member {
@@ -2063,7 +2063,7 @@
 
 .tileset-autotile-passage-row > span {
   color: var(--text-2);
-  font: 600 11px/1.3 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 600 11px/1.3 var(--font-ui);
 }
 
 .tileset-db-small-button.active,

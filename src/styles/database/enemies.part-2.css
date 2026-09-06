@@ -34,7 +34,7 @@
 
   .database-modal-window:has(.oprn-record-enemies) .database-modal-header h2 {
     color: var(--text-primary);
-    font: 700 19px/48px "Malgun Gothic", "Segoe UI", sans-serif;
+    font: 700 19px/48px var(--font-ui);
     text-shadow: none;
   }
 
@@ -72,7 +72,7 @@
     border-radius: 0;
     color: var(--text-1);
     flex: 0 0 auto;
-    font: 700 14px/53px "Malgun Gothic", "Segoe UI", sans-serif;
+    font: 700 14px/53px var(--font-ui);
     height: 56px;
     letter-spacing: 0;
     min-width: 0;
@@ -126,7 +126,7 @@
     border: 0;
     color: var(--text-1);
     display: flex;
-    font: 700 16px/22px "Malgun Gothic", "Segoe UI", sans-serif;
+    font: 700 16px/22px var(--font-ui);
     height: auto;
     justify-content: flex-start;
     margin: 0 0 10px;
@@ -135,7 +135,7 @@
   .database-modal-body .oprn-record-enemies .oprn-record-count {
     color: var(--text-1);
     display: block;
-    font: 400 14px/20px "Malgun Gothic", "Segoe UI", sans-serif;
+    font: 400 14px/20px var(--font-ui);
     margin: 10px 0 8px;
   }
 
@@ -148,7 +148,7 @@
     border: 1px solid var(--border-subtle);
     border-radius: 4px;
     color: var(--text-1);
-    font: 400 15px/22px "Malgun Gothic", "Segoe UI", sans-serif;
+    font: 400 15px/22px var(--font-ui);
     height: 38px;
     padding: 0 12px;
     width: 100%;
@@ -174,7 +174,7 @@
     border-radius: 4px;
     color: var(--text-1);
     display: flex;
-    font: 400 15px/20px "Malgun Gothic", "Segoe UI", sans-serif;
+    font: 400 15px/20px var(--font-ui);
     height: 36px;
     margin: 0;
     padding: 0 10px 0 26px;
@@ -224,7 +224,7 @@
     border: 1px solid var(--border-subtle);
     border-radius: 4px;
     color: var(--text-2);
-    font: 700 14px/34px "Malgun Gothic", "Segoe UI", sans-serif;
+    font: 700 14px/34px var(--font-ui);
     height: 36px;
   }
 
@@ -233,21 +233,6 @@
     gap: 8px;
     grid-template-columns: repeat(3, 1fr);
     margin: 8px 0 0;
-  }
-
-  .database-modal-body .oprn-record-enemies .db-toolbar .btn {
-    background: var(--bg-raised);
-    border: 1px solid var(--border-subtle);
-    border-radius: 4px;
-    color: var(--text-1);
-    font: 700 14px/34px "Malgun Gothic", "Segoe UI", sans-serif;
-    height: 36px;
-    min-height: 36px;
-    padding: 0 8px;
-  }
-
-  .database-modal-body .oprn-record-enemies .db-toolbar .btn.danger {
-    color: var(--danger);
   }
 
   .database-modal-body .oprn-record-enemies .oprn-record-detail-pane,

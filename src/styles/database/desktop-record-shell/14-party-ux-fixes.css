@@ -103,7 +103,7 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   display: -webkit-box;
-  font: 500 11px/14px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 500 11px/14px var(--font-ui);
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -113,7 +113,7 @@
 
 /* 갤러리 카드도 UA 폰트(Arial 13.33px)로 렌더되고 있었다. */
 .database-modal-body .oprn-record-list-pane [data-testid^="db-record-card-"] {
-  font-family: "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font-family: var(--font-ui);
   font-size: 11px;
 }
 
@@ -153,7 +153,7 @@
   align-content: center;
   color: var(--text-2, #475569);
   display: grid;
-  font: 400 12px/18px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 400 12px/18px var(--font-ui);
   gap: 4px;
   justify-items: center;
   min-height: 120px;
@@ -200,28 +200,6 @@ body:has(.database-modal-backdrop) .toast-stack {
 }
 
 /* `db-ws` 프리미티브 세트의 고스트 버튼 — 신규 프리미티브인데 규칙이 없어 UA 버튼이었다. */
-.database-modal-body .db-ws-btn-ghost {
-  appearance: none;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 4px;
-  color: var(--text-2, #475569);
-  cursor: pointer;
-  font: 500 11.5px/16px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
-  min-height: 24px;
-  padding: 3px 8px;
-}
-
-.database-modal-body .db-ws-btn-ghost:hover {
-  background: var(--bg-inset, rgba(15, 23, 42, 0.05));
-  border-color: var(--border-subtle, rgba(15, 23, 42, 0.16));
-  color: var(--text-1, #0f172a);
-}
-
-.database-modal-body .db-ws-btn-ghost:focus-visible {
-  outline: 2px solid var(--accent-primary, #4a57d6);
-  outline-offset: 1px;
-}
 
 /* 직업 탭 스킬 표의 행 삭제 버튼 — 파괴적 액션인데 중립 UA 버튼으로 보였다. */
 .database-modal-body .oprn-record-classes .db-class-skill-remove {
@@ -231,7 +209,7 @@ body:has(.database-modal-backdrop) .toast-stack {
   border-radius: 4px;
   color: #dc2626;
   cursor: pointer;
-  font: 500 11px/16px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 500 11px/16px var(--font-ui);
   min-height: 24px;
   padding: 3px 8px;
 }
@@ -252,7 +230,7 @@ body:has(.database-modal-backdrop) .toast-stack {
 
 .database-modal-body .db-class-exp-summary {
   color: var(--text-2, #475569);
-  font: 400 11.5px/16px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 400 11.5px/16px var(--font-ui);
 }
 
 .database-modal-body .db-class-exp-graph {
@@ -295,7 +273,7 @@ body:has(.database-modal-backdrop) .toast-stack {
 
 .database-modal-body .oprn-record-classes .db-class-rate-name {
   color: var(--text-1, #0f172a);
-  font: 500 11.5px/16px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 500 11.5px/16px var(--font-ui);
 }
 
 /* 카테고리 칩의 라벨 — 칩 안에서 카운트와 붙어 읽히던 것을 떼어낸다. */
@@ -315,6 +293,6 @@ body:has(.database-modal-backdrop) .toast-stack {
 .database-modal-body .actor-field-help {
   color: var(--text-2, #475569);
   display: block;
-  font: 400 11px/15px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 400 11px/15px var(--font-ui);
   margin-top: 3px;
 }

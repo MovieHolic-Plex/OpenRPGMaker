@@ -12,6 +12,19 @@ Rendered regressions: `test/e2e/database-css-ownership.spec.ts`, run with
 A frozen dev server caches transforms: after an edit restart only the owned
 worktree server before measuring, and bind evidence to its cwd/revision.
 
+Shared section navigation now belongs to `workspace-modern.css`; equivalent
+actor/enemy controls reuse its 34px grammar. CRUD chrome and 12.5px captions
+belong to `studio-v2.css`, with document/System variants kept scoped. Bare Life
+numeric inputs retain native spinners and their change-only commit semantics.
+Modal-body overflow belongs to `sidebar.css`; cards, legends and list ordinals
+to `studio-v2.css`; ordinary 24px DB rows to `record-list-modern.css`; 36px actor
+portraits to `desktop-record-shell/13-actor-studio.css`. `record-thumbs.css` keeps
+non-DB 32px defaults. Grid-card actions retain intrinsic width through the
+workspace's direct-child `justify-self: start` constraint.
+The shared danger token is #B91C1C after the earlier color failed contrast on
+its actual hover tint. Database close restores the connected opener, or its
+logical replacement after a topbar rerender, without stealing focus on tab reuse.
+
 ## 전투 명령 배치 스튜디오 (2026-09-05)
 
 - Custom CSS는 `databaseBattleCommandCss.ts`가 소유한다. 직업 배치 아래의 프로젝트 공통 편집기로 유효한 입력만 스타일 샘플에 즉시 반영하며 적용 시 history + store 변경을 남긴다. 잘못된 입력은 적용을 막고 마지막 유효 미리보기를 유지한다. 저장된 CSS 복원·다크 프리셋·기본 스킨 복귀를 제공한다.

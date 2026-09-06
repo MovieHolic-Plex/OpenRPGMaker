@@ -125,7 +125,7 @@ function actorSectionTabs(sections: HTMLElement[]): HTMLElement {
     const panelId = `db-actor-panel-${section.key}`;
     sections[index]?.setAttribute("id", panelId);
     return el("button", {
-      class: `actor-section-tab${index === 0 ? " active" : ""}`,
+      class: `db-ws-section-tab${index === 0 ? " active" : ""}`,
       text: section.label,
       attrs: {
         "aria-controls": panelId,
@@ -150,7 +150,7 @@ function actorSectionTabs(sections: HTMLElement[]): HTMLElement {
     });
   }));
   return el("nav", {
-    class: "actor-section-tabs",
+    class: "actor-section-tabs db-ws-section-tabs",
     attrs: { "aria-label": "캐릭터 편집 영역", role: "tablist" },
     dataset: { testid: "db-actor-section-tabs" },
     children: tabs,
