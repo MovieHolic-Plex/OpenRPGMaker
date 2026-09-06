@@ -508,6 +508,35 @@ The float assistant is **one glass instrument**, `div.ai-deck` inside the transp
 - The Resource Manager modal follows the classic RM2K3 resource window composition: left category list, center resource list, right command/format/preview rail, and bottom close/help controls.
 - Resource Manager clone metrics live as local `--rm-resource-*` CSS variables on `.resource-modal-window`; use those variables for pane widths, row height, command button height, preview height, and footer button width rather than scattering one-off dimensions.
 
+#### Resource Manager audio descriptions
+
+- Preserve the existing category / resource-list / command-detail rail. The
+  audio list uses the complete shared catalog, raw resource IDs, selected native
+  buttons, and an effective-empty-description checkbox. Filtering never changes
+  selection or commits a draft. The list remains its own scroll owner.
+- The existing command rail contains identity, native audio preview, source,
+  labelled textarea, Save, Restore default, status and upload-only Delete.
+  The rail owns vertical overflow within the existing bounded shell. Text wraps;
+  the textarea owns its text overflow. No pane-width, theme or global CSS change.
+- Reuse resource command buttons, existing 12/13px typography, `--font-ui`,
+  `--space-1/2`, resource command height, control/radius/focus tokens and the
+  existing surface ladder. No new animation, decorative icons or audio waveform.
+- Drafts belong to the open manager, not Project or localStorage. Save writes a
+  normalized override, including an explicit empty string. Restore removes only
+  the override. Each successful edit is one labelled project-history operation.
+- Row/kind/close transitions protect dirty input with Save / Discard / Cancel.
+  Cancel preserves the input node, caret and selected resource. A store refresh
+  retains dirty draft DOM; project replacement ends ownership without writing the
+  old draft into the new project. A pending import cannot cross project identity.
+- Keyboard authors retain native text undo in the textarea; project undo applies
+  outside text controls. The existing modal stack owns Escape, including repeated
+  Escape after cancellation. Dirty dialogs trap focus and return to the editor;
+  final close restores the attached opener. Source and user text are text nodes.
+- Verification debt: this contract is supplied in a read-only patch bundle, not
+  visually approved. The implementing lead owns fresh 1024x768 / 1440x900 captures,
+  keyboard/playback checks and independent visual review. No accessibility debt
+  or visual deviation is accepted by this document.
+
 ### Play presentation
 
 - Play viewport is `320×240` logical pixels (`PLAY_RESOLUTION.width`/`PLAY_RESOLUTION.height`), then scaled by the largest whole-number factor that fits inside the test-play/player shell with nearest-neighbor rendering.

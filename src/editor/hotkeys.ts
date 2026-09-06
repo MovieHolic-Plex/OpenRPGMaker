@@ -135,6 +135,7 @@ export function historyHotkeyOwnedByPanel(): boolean {
   // 내려가 전적으로 침묵한다 — EditScene 에 별도 가드를 넣지 않는 이유다.
   if (isPlaySurfaceOwningKeyboard()) return true;
   if (document.querySelector("[data-testid='database-modal']")) return true;
+  if (document.querySelector("[data-testid='resource-modal']")) return true;
   return Boolean(document.querySelector("[data-testid='event-editor-modal']"));
 }
 
