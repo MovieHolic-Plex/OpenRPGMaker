@@ -1,4 +1,5 @@
 import { expect, test, type Locator } from "@playwright/test";
+import { Agent, get } from "node:http";
 
 // Run with DEV_SERVER_PORT=9917 E2E_RETRIES=0. Model/persistence transports are mocked;
 // the live answer renderer, reference index/decorator, navigation and CSS are shipped code.
@@ -57,6 +58,28 @@ test("decorated ambiguous answer links retain AA contrast and disambiguation at 
     localStorage.setItem("oprn:coachmarks-basic-v1", "1");
     localStorage.setItem("oprn:ai-config", JSON.stringify({ agentMode: "chat" }));
   });
+  // Optional unchanged static-GET relay for shared-host Chromium netlink failures.
+  // No retry, idle socket reuse, altered UI response, or production server reuse.
+  if (process.env.E2E_STATIC_RELAY === "1") {
+    const origin = new URL(test.info().project.use.baseURL!).origin;
+    const agent = new Agent({ keepAlive: false, maxSockets: 8 });
+    page.once("close", () => agent.destroy());
+    await page.route(`${origin}/**`, async (route) => {
+      const url = new URL(route.request().url());
+      if (route.request().method() !== "GET" || !(url.pathname === "/" || /^\/(src|assets|@vite|@id|@fs|node_modules)\//.test(url.pathname))) return route.fallback();
+      const response = await new Promise<{ status: number; headers: Record<string, string>; body: Buffer }>((resolve, reject) => {
+        const request = get(url, { agent }, (incoming) => {
+          const chunks: Buffer[] = [];
+          incoming.on("data", (chunk: Buffer) => chunks.push(chunk));
+          incoming.once("error", reject);
+          incoming.once("end", () => resolve({ status: incoming.statusCode!, headers: Object.fromEntries(Object.entries(incoming.headers).filter((entry): entry is [string, string] => typeof entry[1] === "string")), body: Buffer.concat(chunks) }));
+        });
+        request.once("error", reject);
+        request.setTimeout(60_000, () => request.destroy(new Error(`Static GET timeout: ${url.pathname}`)));
+      });
+      await route.fulfill(response);
+    });
+  }
   await page.route("**/rest/v1/**", route => route.fulfill({ json: [] }));
   await page.route("**/__oprn/ai-activity", route => route.fulfill({ json: { ok: true } }));
   await page.route("**/v1/chat/completions", async route => {
