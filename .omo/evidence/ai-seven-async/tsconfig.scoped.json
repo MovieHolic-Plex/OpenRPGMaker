@@ -1,0 +1,12 @@
+{
+  "extends": "../../../tsconfig.json",
+  "include": [
+    "../../../src",
+    "../../../test/aiChatObservability.test.ts",
+    "../../../test/aiChatPanelTransportError.test.ts"
+  ],
+  "exclude": [
+    "../../../node_modules",
+    "../../../dist"
+  ]
+}

@@ -25,6 +25,13 @@ const REQUIRED_ASSERTIONS = [
 ] as const;
 
 export const OFFICIAL_GENRE_PACK_REQUIREMENTS: Readonly<Record<OfficialGenrePackId, OfficialGenrePackRequirement>> = {
+  "action-rpg": {
+    packId: "action-rpg",
+    label: "2D action RPG",
+    requiredCommands: commands("map", ["text"]),
+    requiredAssertions: REQUIRED_ASSERTIONS,
+    blockingLintCodePrefixes: ["opt-in:action-combat", "opt-in:genre-action"],
+  },
   "adventure-jrpg": {
     packId: "adventure-jrpg",
     label: "Adventure JRPG",

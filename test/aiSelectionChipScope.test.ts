@@ -1,9 +1,9 @@
+/** @vitest-environment happy-dom */
 // 선택 칩을 × 로 해제하면 그 턴의 스코프도 사라져야 한다 — 2026-09-03 적대적 리뷰 13(해제 뒤에도 옛 영역 안에만 시공).
 // 그리고 대기 상태(idle)에서도 선택 칩은 보여야 한다 — 스코프가 붙는지 사용자가 볼 수 있어야 × 를 누를 수 있다.
-import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { Window } from "happy-dom";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { preprocessCSS, resolveConfig } from "vite";
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
 import { editorState } from "@/editor/editorState";
@@ -11,44 +11,82 @@ import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
-import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
-let restoreDom: (() => void) | null = null;
-let storage: Map<string, string>;
+let shippedCss: string;
+
+beforeAll(async () => {
+  // Preserve the shipped assistant import order, including the late shell constraints.
+  // Unrelated runtime/database sheets make happy-dom's selector scans prohibitively slow.
+  const filename = resolve("src/styles/index.css");
+  const css = [
+    '@import "./tokens.css";',
+    '@import "./database/tabs-b-assistant-panel.css";',
+    '@import "./shell/editor-ui-modes.css";',
+  ].join("\n");
+  const config = await resolveConfig({ configFile: false, envFile: false }, "serve", "test");
+  shippedCss = (await preprocessCSS(css, filename, config)).code;
+});
 
 beforeEach(() => {
   store.replace(createBlankProject());
   resetMapEditHistory();
-  restoreDom = installFakeDom();
-  storage = new Map();
-  Object.defineProperty(globalThis, "localStorage", {
-    configurable: true,
-    writable: true,
-    value: {
-      getItem: (key: string) => storage.get(key) ?? null,
-      setItem: (key: string, value: string) => void storage.set(key, String(value)),
-      removeItem: (key: string) => void storage.delete(key),
-      clear: () => storage.clear(),
-    },
-  });
-  storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), apiKey: "sk-test", agentMode: "chat" }));
+  localStorage.clear();
+  // The real panel runs, but neither model nor persistence may reach a network.
+  vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("Network disabled in selection UI tests")));
+  localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), apiKey: "sk-test", agentMode: "chat" }));
   editorState.set({ selection: null, currentMapId: store.getCurrent().startMapId });
 });
 
 afterEach(() => {
   teardownAiChatPanel();
   editorState.set({ selection: null });
-  restoreDom?.();
-  restoreDom = null;
-  Reflect.deleteProperty(globalThis, "localStorage");
+  document.body.replaceChildren();
+  document.head.replaceChildren();
+  localStorage.clear();
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
 });
 
-async function flushAsync(): Promise<void> {
-  // 턴 후처리(말풍선·되돌리기 카드)는 마이크로태스크 뒤 매크로태스크에서도 이어진다 — DOM 을 걷기 전에 끝내 둔다.
-  for (let round = 0; round < 4; round += 1) {
-    for (let i = 0; i < 30; i += 1) await Promise.resolve();
-    await new Promise((resolve) => setTimeout(resolve, 5));
+function renderPanel(options: Parameters<typeof renderAiChatPanel>[0] = {}): HTMLElement {
+  const style = document.createElement("style");
+  style.textContent = shippedCss;
+  document.head.append(style);
+  const panel = renderAiChatPanel(options);
+  document.body.append(panel);
+  return panel;
+}
+
+function control<T extends HTMLElement = HTMLElement>(panel: HTMLElement, id: string): T {
+  const node = panel.querySelector<T>(`[data-testid="${id}"]`);
+  if (!node) throw new Error(`Missing control: ${id}`);
+  return node;
+}
+
+async function sendAndFinish(panel: HTMLElement, text: string): Promise<void> {
+  const input = control<HTMLTextAreaElement>(panel, "ai-input");
+  input.value = text;
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+  let sawRunning = false;
+  let cancel = () => {};
+  const finished = new Promise<void>((resolve, reject) => {
+    const observer = new MutationObserver((records) => {
+      const running = panel.classList.contains("is-turn-running");
+      // oldValue also catches a complete transition delivered in one mutation batch.
+      sawRunning ||= running || records.some((record) => record.oldValue?.split(/\s+/).includes("is-turn-running"));
+      if (sawRunning && !running) resolve();
+    });
+    observer.observe(panel, { attributes: true, attributeFilter: ["class"], attributeOldValue: true });
+    const timeout = setTimeout(() => reject(new Error("Panel did not finish a running turn")), 2000);
+    cancel = () => {
+      observer.disconnect();
+      clearTimeout(timeout);
+    };
+  });
+  try {
+    control<HTMLButtonElement>(panel, "ai-send").click();
+    await finished;
+  } finally {
+    cancel();
   }
 }
 
@@ -60,24 +98,29 @@ describe("선택 칩 해제와 턴 스코프", () => {
       stoppedReason: "final",
     });
     const regionRunner = vi.fn();
-    const panel = renderAiChatPanel({ regionTaskRunner: regionRunner as never }) as unknown as FakeElement;
+    const panel = renderPanel({ regionTaskRunner: regionRunner });
     const mapId = store.getCurrent().startMapId;
-    editorState.set({ selection: { mapId, x: 2, y: 2, width: 4, height: 4 } });
-    expect(findByTestId(panel, "ai-selection-chip")).toBeTruthy();
-    (findByTestId(panel, "ai-selection-chip-clear") as unknown as HTMLElement).click();
-    expect(findByTestId(panel, "ai-selection-chip")).toBeFalsy();
+    const selection = { mapId, x: 2, y: 2, width: 4, height: 4 };
+    editorState.set({ selection });
+    expect(control(panel, "ai-selection-chip").isConnected).toBe(true);
+    control<HTMLButtonElement>(panel, "ai-selection-chip-clear").click();
+    expect(panel.querySelector('[data-testid="ai-selection-chip"]')).toBeNull();
+    // Dismissing AI scope must not clear the editor's actual selection.
+    expect(editorState.get().selection).toEqual(selection);
 
-    const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
-    input.value = "나무 세 그루 심어줘";
-    (findByTestId(panel, "ai-send") as unknown as HTMLElement).click();
-    await flushAsync();
+    const text = "나무 세 그루 심어줘";
+    await sendAndFinish(panel, text);
 
     expect(regionRunner).not.toHaveBeenCalled();
     expect(sendSpy).toHaveBeenCalledTimes(1);
     const options = sendSpy.mock.calls[0]?.[3];
-    expect(options?.scope ?? null).toBeNull();
-    // 컨텍스트 꼬리표에도 선택 영역이 남지 않는다.
-    expect(String(sendSpy.mock.calls[0]?.[0])).not.toContain("사용자 선택 영역");
+    expect(options?.scope).toBeNull();
+    // The entire payload must match an unselected send, without pinning prompt prose.
+    editorState.set({ selection: null });
+    await sendAndFinish(panel, text);
+    expect(sendSpy).toHaveBeenCalledTimes(2);
+    expect(sendSpy.mock.calls[0]?.[0]).toBe(sendSpy.mock.calls[1]?.[0]);
+    expect(regionRunner).not.toHaveBeenCalled();
   });
 
   it("칩이 살아 있으면 영역 실행부로 간다(대조군)", async () => {
@@ -89,75 +132,93 @@ describe("선택 칩 해제와 턴 스코프", () => {
     const regionRunner = vi.fn(async () => ({
       ok: true, applied: false, changedCells: 0, changedEvents: 0, mapsAdded: 0, clippedCells: 0, proposedCalls: 0, assistantText: "",
     }));
-    const panel = renderAiChatPanel({ regionTaskRunner: regionRunner as never }) as unknown as FakeElement;
+    const panel = renderPanel({ regionTaskRunner: regionRunner });
     const mapId = store.getCurrent().startMapId;
     editorState.set({ selection: { mapId, x: 2, y: 2, width: 4, height: 4 } });
-    const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
-    input.value = "여기 물 채워줘";
-    (findByTestId(panel, "ai-send") as unknown as HTMLElement).click();
-    await flushAsync();
+    await sendAndFinish(panel, "여기 물 채워줘");
     expect(regionRunner).toHaveBeenCalledTimes(1);
+    expect(regionRunner).toHaveBeenCalledWith(expect.objectContaining({
+      mapId, region: { x: 2, y: 2, width: 4, height: 4 }, instruction: "여기 물 채워줘", gate: "immediate",
+    }));
     expect(sendSpy).not.toHaveBeenCalled();
   });
 });
 
 describe("대기 상태에서도 선택 칩은 보인다", () => {
   it("선택 칩이 붙으면 칩 호스트에 has-selection-scope 가 서고, 해제하면 내려간다", () => {
-    const panel = renderAiChatPanel() as unknown as FakeElement;
+    const panel = renderPanel();
     const mapId = store.getCurrent().startMapId;
-    const host = findByTestId(panel, "ai-context-chips") as unknown as HTMLElement;
+    const host = control(panel, "ai-context-chips");
     expect(host.classList.contains("has-selection-scope")).toBe(false);
     editorState.set({ selection: { mapId, x: 1, y: 1, width: 3, height: 3 } });
     expect(host.classList.contains("has-selection-scope")).toBe(true);
-    (findByTestId(panel, "ai-selection-chip-clear") as unknown as HTMLElement).click();
+    control<HTMLButtonElement>(panel, "ai-selection-chip-clear").click();
     expect(host.classList.contains("has-selection-scope")).toBe(false);
   });
 
-  it("idle 패널에서 has-selection-scope 칩 호스트의 사용 display 는 none 이 아니다", () => {
-    // 이름 붙인 파괴: 12-assistant-temperature.css 의 idle 숨김을 그대로 두면 display 가 none 으로 남는다.
-    const css = readFileSync(resolve("src/styles/database/tabs-b-assistant-panel/12-assistant-temperature.css"), "utf8");
-    const window = new Window();
-    try {
-      const doc = window.document;
-      const style = doc.createElement("style");
-      style.textContent = css;
-      doc.head.append(style);
-      const panel = doc.createElement("aside");
-      panel.className = "ai-chat-panel is-assistant-idle";
-      const plain = doc.createElement("div");
-      plain.className = "ai-context-chips";
-      const scoped = doc.createElement("div");
-      scoped.className = "ai-context-chips has-selection-scope";
-      panel.append(plain, scoped);
-      doc.body.append(panel);
-      expect(window.getComputedStyle(plain).display).toBe("none");
-      expect(window.getComputedStyle(scoped).display).not.toBe("none");
-    } finally {
-      window.close();
-    }
+  it("idle: the map pin is visible, selection hides only sibling chips, and clearing restores the map pin", () => {
+    const panel = renderPanel();
+    const host = control(panel, "ai-context-chips");
+    const mapId = store.getCurrent().startMapId;
+    const mapChip = () => {
+      const chip = host.querySelector<HTMLElement>(".ai-context-chip:not(.ai-selection-chip)");
+      if (!chip) throw new Error("Missing current-map pin");
+      expect(chip.textContent).toBe(store.getCurrent().maps[mapId]?.name);
+      return chip;
+    };
+    expect(panel.classList.contains("is-assistant-idle")).toBe(true);
+    expect(getComputedStyle(host).display).toBe("flex");
+    expect(getComputedStyle(mapChip()).display).toBe("inline-flex");
+
+    editorState.set({ selection: { mapId, x: 1, y: 1, width: 3, height: 3 } });
+    expect(panel.classList.contains("is-assistant-idle")).toBe(true);
+    expect(getComputedStyle(host).display).toBe("flex");
+    expect(getComputedStyle(host).order).toBe("-1");
+    expect(getComputedStyle(mapChip()).display).toBe("none");
+    expect(getComputedStyle(control(panel, "ai-selection-chip")).display).toBe("inline-flex");
+    const clear = control<HTMLButtonElement>(panel, "ai-selection-chip-clear");
+    expect(getComputedStyle(clear).display).toBe("inline-flex");
+    expect(clear.disabled).toBe(false);
+
+    clear.click();
+    expect(panel.querySelector('[data-testid="ai-selection-chip"]')).toBeNull();
+    expect(getComputedStyle(host).display).toBe("flex");
+    expect(getComputedStyle(mapChip()).display).toBe("inline-flex");
+    expect(document.activeElement).toBe(control(panel, "ai-input"));
   });
 });
 
-describe("컴포저 힌트는 숨을 때 자리를 비운다", () => {
-  it("입력 포커스가 없을 때 힌트의 사용 display 는 none 이다(visibility:hidden 은 156px 를 먹었다)", () => {
-    const css = readFileSync(resolve("src/styles/database/tabs-b-assistant-panel/14-assistant-ux-repair.css"), "utf8");
-    const window = new Window();
-    try {
-      const doc = window.document;
-      const style = doc.createElement("style");
-      style.textContent = css;
-      doc.head.append(style);
-      const actions = doc.createElement("div");
-      actions.className = "ai-composer-actions";
-      const hint = doc.createElement("span");
-      hint.className = "ai-composer-hint";
-      actions.append(hint);
-      doc.body.append(actions);
-      expect(window.getComputedStyle(hint).display).toBe("none");
-      actions.classList.add("is-input-focused");
-      expect(window.getComputedStyle(hint).display).not.toBe("none");
-    } finally {
-      window.close();
-    }
+describe("composer keyboard help does not occupy the action row", () => {
+  it("keeps help on the input title and the shipped action row intact before focus, during focus, and after blur", () => {
+    const panel = renderPanel();
+    const input = control<HTMLTextAreaElement>(panel, "ai-input");
+    const actions = control(panel, "ai-composer-actions");
+    const help = input.title;
+    expect(help.trim().length).toBeGreaterThan(0);
+    // Nonempty input keeps suggestions out of this focus/row-space regression.
+    input.value = "나무 세 그루 심어줘";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    const assertRow = () => {
+      expect(input.title).toBe(help);
+      expect(panel.querySelector(".ai-composer-hint")).toBeNull();
+      expect(actions.textContent).not.toContain(help);
+      expect(getComputedStyle(actions).display).toBe("flex");
+      expect(getComputedStyle(actions).minHeight).toBe("36px");
+      // happy-dom omits unset initial values; test the authored nowrap rule on the lead.
+      const lead = actions.querySelector<HTMLElement>(".ai-composer-actions-lead");
+      if (!lead) throw new Error("Missing composer action lead");
+      expect(getComputedStyle(lead).whiteSpace).toBe("nowrap");
+      expect(actions.contains(control(panel, "ai-send"))).toBe(true);
+      expect(getComputedStyle(control(panel, "ai-send")).display).not.toBe("none");
+    };
+    expect(actions.classList.contains("is-input-focused")).toBe(false);
+    assertRow();
+    input.focus();
+    expect(document.activeElement).toBe(input);
+    expect(actions.classList.contains("is-input-focused")).toBe(true);
+    assertRow();
+    input.blur();
+    expect(actions.classList.contains("is-input-focused")).toBe(false);
+    assertRow();
   });
 });

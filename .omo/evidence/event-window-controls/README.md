@@ -54,6 +54,16 @@ keyboard resizing, dirty-close cancellation, saving and clean reopening.
 - CSS language-server diagnostics were unavailable because Biome is absent.
   The existing PostCSS parser and CSS graph checker were used instead.
 
+## Latest main integration
+
+Integrated `5d2649d0cd0baf83d3a30036955ff24ce149f689` before final review.
+The only conflict was adjacent additions in `DESIGN.md`; both event-window
+and action-combat sections were retained. Event-window source had no conflict.
+The integrated tree passed the same 52 related tests and all three Firefox
+viewport scenarios (`integrated-browser/`). Its CSS budget and graph gates
+passed. The surface gate retained exactly the six baseline assertion failures
+listed above, with 109 passed assertions.
+
 ## Review contract
 
 Ultrabrain is the requested final reviewer. Any blocking findings must be fixed

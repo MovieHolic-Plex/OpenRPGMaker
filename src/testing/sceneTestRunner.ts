@@ -66,6 +66,8 @@ import {
   advanceGameTime,
   calendarDayKey,
   initialGameTime,
+  isSeason,
+  isTimePhase,
   minutesUntilDayEnd,
   resolveTimeSystem,
   setGameTimeClock,
@@ -256,8 +258,98 @@ function ownedMonsterCounts(session: PlaySession): Record<string, number> {
   return counts;
 }
 
+type SceneFieldCheck = (value: unknown) => boolean;
+const sceneRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+const sceneNumber: SceneFieldCheck = value => typeof value === "number" && Number.isFinite(value);
+const sceneCount: SceneFieldCheck = value => typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
+const sceneText: SceneFieldCheck = value => typeof value === "string" && value.trim().length > 0;
+const sceneBoolean: SceneFieldCheck = value => typeof value === "boolean";
+const sceneDirection: SceneFieldCheck = value => value === "up" || value === "down" || value === "left" || value === "right";
+const sceneStrings: SceneFieldCheck = value => Array.isArray(value) && value.every(sceneText);
+const sceneStringOrList: SceneFieldCheck = value => sceneText(value) || sceneStrings(value);
+const sceneNumbers: SceneFieldCheck = value => sceneRecord(value) && Object.values(value).every(sceneNumber);
+
+function sceneShape(value: unknown, fields: Readonly<Record<string, SceneFieldCheck>>, required: readonly string[] = []): boolean {
+  return sceneRecord(value) && required.every(key => Object.hasOwn(value, key))
+    && Object.entries(value).every(([key, entry]) => Object.hasOwn(fields, key) && fields[key](entry));
+}
+const scenePoint: SceneFieldCheck = value => sceneShape(value, { x: sceneCount, y: sceneCount }, ["x", "y"]);
+const sceneVariableValues: SceneFieldCheck = value => sceneNumbers(value)
+  || sceneShape(value, { variableId: sceneText, value: sceneNumber }, ["variableId", "value"]);
+const sceneRewardDeltas: SceneFieldCheck = value => sceneRecord(value)
+  && Object.values(value).every(delta => sceneNumber(delta)
+    || sceneShape(delta, { atLeast: sceneNumber }, ["atLeast"]));
+const sceneExpectFields: Readonly<Record<keyof Omit<SceneExpectStep, "kind">, SceneFieldCheck>> = {
+  playerAt: value => sceneShape(value, { x: sceneCount, y: sceneCount, mapId: sceneText }, ["x", "y"]),
+  switchOn: sceneStringOrList, switchOff: sceneStringOrList,
+  variableEquals: sceneVariableValues, variableAtLeast: sceneVariableValues,
+  eventAt: value => sceneShape(value, { eventId: sceneText, x: sceneCount, y: sceneCount, mapId: sceneText }, ["eventId", "x", "y"]),
+  eventOnMap: value => sceneShape(value, { eventId: sceneText, mapId: sceneText }, ["eventId", "mapId"]),
+  eventDistanceToPlayerLessThan: value => sceneShape(value, { eventId: sceneText, distance: sceneNumber, mapId: sceneText }, ["eventId", "distance"]),
+  followerCount: sceneCount,
+  followerAt: value => sceneShape(value, { name: sceneText, x: sceneCount, y: sceneCount }, ["name", "x", "y"]),
+  cameraAt: value => sceneShape(value, { cx: sceneNumber, cy: sceneNumber, tolerance: sceneNumber }, ["cx", "cy"]),
+  lightingAmbient: value => sceneNumber(value) || sceneShape(value, { value: sceneNumber, tolerance: sceneNumber }, ["value"]),
+  lightAt: value => sceneShape(value, { x: sceneCount, y: sceneCount, expected: sceneBoolean }, ["x", "y"]),
+  lightCount: sceneCount,
+  weatherKind: value => value === "none" || value === "rain" || value === "storm" || value === "snow" || value === "fog",
+  animationPlaying: sceneBoolean, fieldSpawnCount: sceneCount, spawnedCount: sceneCount,
+  pictureVisible: value => sceneText(value) || sceneShape(value, { id: sceneText, resourceId: sceneText }, ["id"]),
+  bgmPlaying: sceneText, messageShown: sceneBoolean, gameOver: sceneBoolean,
+  endingReached: sceneText, cutsceneLocked: sceneBoolean, mapId: sceneText,
+  gameTimeAt: value => sceneShape(value, { minute: sceneCount, hour: sceneCount, day: sceneCount, season: isSeason, year: sceneCount }),
+  timePhase: isTimePhase,
+  cropStageAt: value => sceneShape(value, { x: sceneCount, y: sceneCount, stage: sceneCount, mapId: sceneText }, ["x", "y", "stage"]),
+  inventoryCount: value => sceneNumbers(value) || sceneShape(value, { itemId: sceneText, count: sceneCount }, ["itemId", "count"]),
+  inventoryDelta: sceneRewardDeltas, ownedMonsterDelta: sceneRewardDeltas,
+  interactionComplete: sceneBoolean,
+  friendshipAtLeast: value => sceneNumbers(value) || sceneShape(value, { npcKey: sceneText, value: sceneNumber }, ["npcKey", "value"]),
+  shopStock: value => sceneShape(value, { eventId: sceneText, itemIds: sceneStrings, prices: sceneNumbers, mapId: sceneText }, ["eventId", "itemIds"]),
+};
+
+function isSceneStep(value: unknown): value is SceneStep {
+  if (!sceneRecord(value)) return false;
+  const shape = (fields: Readonly<Record<string, SceneFieldCheck>>, required: readonly string[] = []): boolean =>
+    sceneShape(value, { kind: sceneText, ...fields }, ["kind", ...required]);
+  switch (value.kind) {
+    case "wait": return shape({ ticks: sceneCount }, ["ticks"]);
+    case "face": return shape({ dir: sceneDirection }, ["dir"]);
+    case "move": return shape({ dir: sceneDirection, to: scenePoint })
+      && (Object.hasOwn(value, "dir") !== Object.hasOwn(value, "to"));
+    case "walk": return shape({ to: scenePoint, adjacent: sceneBoolean }, ["to"]);
+    case "set": return shape({
+      mapId: sceneText, x: sceneCount, y: sceneCount, facing: sceneDirection,
+      switches: entry => sceneStrings(entry) || (sceneRecord(entry) && Object.values(entry).every(sceneBoolean)),
+      variables: sceneNumbers, inventory: sceneNumbers, gold: sceneNumber, manualHint: sceneText,
+    });
+    case "interact": return shape({ eventId: sceneText });
+    case "snapshotRewards": case "retryCheckpoint": return shape({});
+    case "gift": return shape({ eventId: sceneText, itemId: sceneText }, ["itemId"]);
+    case "choose": return shape({
+      index: entry => typeof entry === "number" && Number.isSafeInteger(entry) && entry >= -1,
+    }, ["index"]);
+    case "advanceDays": return shape({ days: sceneCount }, ["days"]);
+    case "expect": return Object.keys(value).length > 1 && shape(sceneExpectFields);
+    default: return false;
+  }
+}
+
+/** Validate the complete script before autoruns, movement, or any debug-set step. */
+export function isSceneTestInput(value: unknown): value is SceneTestInput {
+  return sceneShape(value, {
+    mapId: sceneText,
+    start: entry => sceneRecord(entry) && sceneCount(entry.x) && sceneCount(entry.y),
+    steps: steps => Array.isArray(steps) && steps.every(isSceneStep),
+  }, ["mapId", "start", "steps"]);
+}
+
 export function runSceneTest(project: Project, input: SceneTestInput): SceneTestResult {
   const session = startSession(project, 1);
+  if (!isSceneTestInput(input)) {
+    return result(false, project, session, emptyEventPositions(project), emptyCamera(session), [], [],
+      [], 0, undefined, "Malformed scene test input", null, false, false);
+  }
   const runtimeMaps = structuredClone(project.maps);
   const map = runtimeMaps[input.mapId];
   const log: string[] = [];

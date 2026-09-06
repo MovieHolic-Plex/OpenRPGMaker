@@ -14,7 +14,7 @@ import {
   type InteriorWallMaterial,
   type RoomSpec,
 } from "@/editor/interiorRoomPipeline";
-import { DEFAULT_TILE_SIZE } from "@/project/defaults/constants";
+import { DEFAULT_TILE_SIZE, TILE } from "@/project/defaults/constants";
 import type { Command, EventPageGraphic, GameEvent, GameMap, MapId, Project } from "@/project/types";
 import type { HouseKitId } from "./houseKit";
 import { conceptHouseFloorPlan, resolveHouseConcept } from "./interiorConceptPlan";
@@ -46,6 +46,19 @@ export const HOUSE_INTERIOR_ENTRY = { x: 10, y: 15 } as const;
 export const HOUSE_INTERIOR_EXIT = { x: 10, y: 16 } as const;
 
 export const HOUSE_DOOR_CHARSET_TEXTURE = "tex_easyrpg_charset_object1";
+export const HOUSE_DOOR_BACKGROUND_TILE = 359;
+
+/** Exterior house door anchors occupy the bottom cell of a two-cell opening. */
+export function stampHouseDoorBackground(map: GameMap, door: { readonly x: number; readonly y: number }): void {
+  for (const y of [door.y - 1, door.y]) {
+    const index = y * map.width + door.x;
+    map.lowerTiles[index] = HOUSE_DOOR_BACKGROUND_TILE;
+    map.upperTiles[index] = TILE.EMPTY;
+    if (map.lowerTileStacks) delete map.lowerTileStacks[index];
+    if (map.upperTileStacks) delete map.upperTileStacks[index];
+  }
+}
+
 export const HOUSE_DOOR_FRAME_WAIT_MS = 100;
 export const HOUSE_DOOR_OPEN_HOLD_MS = 180;
 /**

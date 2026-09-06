@@ -17,8 +17,8 @@ import {
 import { GENRE_PACK_IDS } from "@/project/genrePackId";
 
 describe("welcomeGenrePresets", () => {
-  it("exposes seven genre chips including story-cutscene", () => {
-    expect(WELCOME_GENRE_PRESETS).toHaveLength(7);
+  it("exposes eight genre chips including story-cutscene and action-rpg", () => {
+    expect(WELCOME_GENRE_PRESETS).toHaveLength(8);
     expect(welcomeGenrePresetById("monster-collect")?.label).toBe("몬스터 수집");
     expect(WELCOME_GENRE_PRESETS.every((p) => !/포켓몬|디지몬|스타듀/.test(p.label))).toBe(true);
     expect(welcomeGenrePresetById("horror-gallery")?.label).toContain("갤러리");
@@ -26,11 +26,12 @@ describe("welcomeGenrePresets", () => {
     expect(welcomeGenrePresetById("story-cutscene")?.label).toContain("회상");
   });
 
-  it("maps seven UI variants onto only the exact five persisted packs", () => {
+  it("maps UI variants onto the exact persisted packs", () => {
     expect(Object.fromEntries(WELCOME_GENRE_PRESETS.map((preset) => [
       preset.id,
       officialGenrePackIdForWelcomePreset(preset.id),
     ]))).toEqual({
+      "action-rpg": "action-rpg",
       "monster-collect": "monster-collect",
       "partner-raise": "monster-collect",
       "farm-life": "farm-life",
@@ -100,6 +101,7 @@ describe("welcomeGenrePresets", () => {
       "school-horror",
       "farm-life",
       "partner-raise",
+      "action-rpg",
     ]);
 
     const anchors = WELCOME_POSTER_CARDS.map((card) => card.packAnchor).filter((packId) => packId !== null);

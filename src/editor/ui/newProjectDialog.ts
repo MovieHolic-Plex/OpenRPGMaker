@@ -8,7 +8,7 @@ import { registerModal, unregisterModal } from "./modalStack";
 
 export type NewProjectDialogResult = {
   readonly title: string;
-  /** null = 빈 프로젝트. 다섯 공식 팩 중 하나면 그 팩의 시스템 프리셋을 적용한다. */
+  /** null = 빈 프로젝트. 공식 팩이면 그 팩의 시스템 프리셋을 적용한다. */
   readonly packId: GenrePackId | null;
 };
 
@@ -42,6 +42,7 @@ type GenreOption = {
 export const NEW_PROJECT_GENRE_OPTIONS: readonly GenreOption[] = [
   { id: null, label: "빈 프로젝트", blurb: "장르 설정 없이 빈 맵으로 시작합니다" },
   { id: "adventure-jrpg", label: "모험 JRPG", blurb: "파티 모험 · 던전 탐험용 기본 설정" },
+  { id: "action-rpg", label: "2D 액션 RPG", blurb: "실시간 전투 시스템을 켭니다 — 싸울 맵은 따로 지정합니다" },
   { id: "monster-collect", label: "몬스터 수집", blurb: "포획 · 도감 · 몬스터 파티 전투를 켭니다" },
   { id: "horror-chase", label: "공포 추격", blurb: "탐험 호러 — 장르 표시만 지정됩니다" },
   { id: "story-cutscene", label: "스토리 컷신", blurb: "회상 · 감정 연출 중심 — 장르 표시만 지정됩니다" },

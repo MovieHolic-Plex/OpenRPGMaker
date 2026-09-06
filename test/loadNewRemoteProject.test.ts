@@ -49,6 +49,7 @@ describe("store.loadNewRemoteProject — welcome genre remote branch", () => {
 
     expect(store.isLoaded()).toBe(true);
     expect(store.getCurrent().meta.title).toBe("몬스터 수집");
+    expect(store.getCurrent().system.titleScreen?.title).toBe("몬스터 수집");
     // 새로 발급되는 프로젝트 id 접두사는 2026-08-21 개명에서 rpg-zzu- → oprn- 로 바뀌었다.
     // 이미 발급된 id(원격 Supabase 레코드를 가리킨다)는 그대로 유효하다.
     expect(result.projectId).toMatch(/^oprn-[a-f0-9]{10}$/);
@@ -92,5 +93,22 @@ describe("store.loadNewRemoteProject — welcome genre remote branch", () => {
     expect(store.getDbPersistenceStatus().kind).toBe("not-configured");
     const flushed = await store.flush();
     expect(flushed.kind).toBe("not-configured");
+  });
+
+  it("preserves a deliberately different player title when naming a new project", async () => {
+    vi.stubEnv("VITE_SUPABASE_URL", "");
+    vi.stubEnv("VITE_SUPABASE_ANON_KEY", "");
+    vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "");
+    vi.resetModules();
+    const { store } = await import("@/project/store");
+    const { createBlankProject } = await import("@/project/defaults");
+    const project = createBlankProject();
+    if (!project.system.titleScreen) throw new Error("Expected starter title settings");
+    project.system.titleScreen.title = "The Sword's Promise";
+
+    await store.loadNewRemoteProject(project, { title: "Arena development" });
+
+    expect(store.getCurrent().meta.title).toBe("Arena development");
+    expect(store.getCurrent().system.titleScreen?.title).toBe("The Sword's Promise");
   });
 });
