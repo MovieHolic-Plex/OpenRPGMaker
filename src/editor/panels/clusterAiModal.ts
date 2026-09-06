@@ -18,10 +18,9 @@ import {
   buildUnclassifiedAnalysisKickoff,
   type ClusterGroupSnapshot,
 } from "@/ai/clusterAssistPrompt";
-import { focusAcceptedAgentChanges } from "@/editor/agentFocus";
 import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { editorState } from "@/editor/editorState";
-import { recordProjectSnapshot } from "@/editor/mapEditHistory";
+import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { store } from "@/project/store";
 import type { TileGroupMetadata, TilesetDef } from "@/project/types";
@@ -39,8 +38,6 @@ type RangeClassifyRect = {
   readonly x: number;
   readonly y: number;
 };
-
-type SnapshotRecorder = (label?: string, mapId?: string | null) => void;
 
 type ModalModel = {
   readonly detail: ClusterAiModalDetail;
@@ -311,13 +308,23 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
     const warnings = proposalApprovalWarnings(calls);
     if (warnings.length > 0 && !(await confirmRuleApproval(warnings))) return;
     const proposed = session.getProposedProject();
-    const mapId = currentMapId();
-    const snapshot: SnapshotRecorder = recordProjectSnapshot;
-    const before = store.getCurrent();
+    const label = `클러스터 수정: ${model.group?.name ?? model.title}`;
     clearAgentGhostPreview();
-    snapshot(`클러스터 수정: ${model.group?.name ?? model.title}`, mapId);
-    store.replace(proposed);
-    focusAcceptedAgentChanges(before, proposed);
+    const applied = await applyProposedProject(proposed, {
+      source: "agent",
+      agentName: resolveSurfaceAiConfig("cluster").model,
+      summary: label,
+      toolNames: calls.map((call) => call.name),
+      snapshotLabel: label,
+      snapshotMapId: currentMapId(),
+    });
+    if (!applied.ok) {
+      const message = `적용 실패: ${applied.issue ?? "무결성 오류"}`;
+      status.textContent = "적용 실패";
+      appendBubble("system", message);
+      toast(message, "error");
+      return;
+    }
     session.rebaseProject(store.getCurrent());
     proposals.replaceChildren();
     appendBubble("system", `변경 ${calls.length}건을 프로젝트에 적용했습니다.`);

@@ -197,7 +197,8 @@ export function autotileEditTriggersGroup(group: AutotileGroup, previousTile: nu
 export function shapeAutotileGroupAround(
   map: AutotileMapView,
   group: AutotileGroup,
-  points: readonly AutotilePoint[]
+  points: readonly AutotilePoint[],
+  canWrite?: (x: number, y: number) => boolean
 ): void {
   const members = new Set<number>(group.memberTileIds);
   const connect = connectSet(group);
@@ -212,6 +213,7 @@ export function shapeAutotileGroupAround(
       const key = `${cx},${cy}`;
       if (visited.has(key)) continue;
       visited.add(key);
+      if (canWrite && !canWrite(cx, cy)) continue;
       const current = tileAt(map, cx, cy);
       if (typeof current !== "number" || !members.has(current)) continue;
       const mask = autotileNeighborMask(map, cx, cy, isConnected, neighborhood);

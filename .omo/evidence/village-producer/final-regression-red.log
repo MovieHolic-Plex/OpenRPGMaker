@@ -1,0 +1,92 @@
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-house-protection-p1-village
+
+ ❯ test/villageProducerProtection.test.ts (2 tests | 2 failed) 34736ms
+   × village producer completion through toolRunner > retains sealed layers and stacks after global repair (snow=false) 4314ms
+     → 'author_village' 후처리 실패: 완성된 집의 보호 영역은 AI가 변경할 수 없습니다. 집 밖에서 작업하세요. 직접 편집은 가능합니다. [{"severity":"error","code":"protected-house-write","mapId":"map_existing","x":28,"y":8,"message":"완성된 집의 보호 영역은 AI가 변경할 수 없습니다. 집 밖에서 작업하세요. 직접 편집은 가능합니다."}]: expected false to be true // Object.is equality
+   × village producer completion through toolRunner > retains sealed layers and stacks after global repair (snow=true) 30416ms
+     → 'author_village' 후처리 실패: 완성된 집의 보호 영역은 AI가 변경할 수 없습니다. 집 밖에서 작업하세요. 직접 편집은 가능합니다. [{"severity":"error","code":"protected-house-write","mapId":"map_winter_city","x":72,"y":42,"message":"완성된 집의 보호 영역은 AI가 변경할 수 없습니다. 집 밖에서 작업하세요. 직접 편집은 가능합니다."}]: expected false to be true // Object.is equality
+ ❯ test/villageTreePlacement.test.ts (10 tests | 8 failed) 1210ms
+   × tree footprint eligibility (natural) > rejects the whole object: canopy over wall 296ms
+     → expected function to throw an error, but it didn't
+   × tree footprint eligibility (natural) > rejects the whole object: trunk over fence 79ms
+     → expected function to throw an error, but it didn't
+   × tree footprint eligibility (natural) > rejects the whole object: recorded stacked house 122ms
+     → expected function to throw an error, but it didn't
+   × tree footprint eligibility (natural) > rejects the whole object: recorded empty house 97ms
+     → expected function to throw an error, but it didn't
+   ✓ tree footprint eligibility (natural) > keeps legitimate canopy-over-trunk forest overlap 101ms
+   × tree footprint eligibility (dense) > rejects the whole object: canopy over wall 164ms
+     → expected function to throw an error, but it didn't
+   × tree footprint eligibility (dense) > rejects the whole object: trunk over fence 143ms
+     → expected function to throw an error, but it didn't
+   × tree footprint eligibility (dense) > rejects the whole object: recorded stacked house 88ms
+     → expected function to throw an error, but it didn't
+   × tree footprint eligibility (dense) > rejects the whole object: recorded empty house 65ms
+     → expected function to throw an error, but it didn't
+   ✓ tree footprint eligibility (dense) > keeps legitimate canopy-over-trunk forest overlap 50ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/villageProducerProtection.test.ts > village producer completion through toolRunner > retains sealed layers and stacks after global repair (snow=false)
+AssertionError: 'author_village' 후처리 실패: 완성된 집의 보호 영역은 AI가 변경할 수 없습니다. 집 밖에서 작업하세요. 직접 편집은 가능합니다. [{"severity":"error","code":"protected-house-write","mapId":"map_existing","x":28,"y":8,"message":"완성된 집의 보호 영역은 AI가 변경할 수 없습니다. 집 밖에서 작업하세요. 직접 편집은 가능합니다."}]: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ test/villageProducerProtection.test.ts:27:77
+     25|     } : { target: EXISTING_TARGET, houseCount: 4, seed: 7 };
+     26|     const result = runFacade(project, { ...args, countPolicy: "exact",…
+     27|     expect(result.ok, `${result.summary} ${JSON.stringify(result.issue…
+       |                                                                             ^
+     28|     expect(sealed).toHaveLength(snow ? 20 : 4);
+     29|     expect(captureHouseProtection(project)).toEqual(sealed);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+ FAIL  test/villageProducerProtection.test.ts > village producer completion through toolRunner > retains sealed layers and stacks after global repair (snow=true)
+AssertionError: 'author_village' 후처리 실패: 완성된 집의 보호 영역은 AI가 변경할 수 없습니다. 집 밖에서 작업하세요. 직접 편집은 가능합니다. [{"severity":"error","code":"protected-house-write","mapId":"map_winter_city","x":72,"y":42,"message":"완성된 집의 보호 영역은 AI가 변경할 수 없습니다. 집 밖에서 작업하세요. 직접 편집은 가능합니다."}]: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ test/villageProducerProtection.test.ts:27:77
+     25|     } : { target: EXISTING_TARGET, houseCount: 4, seed: 7 };
+     26|     const result = runFacade(project, { ...args, countPolicy: "exact",…
+     27|     expect(result.ok, `${result.summary} ${JSON.stringify(result.issue…
+       |                                                                             ^
+     28|     expect(sealed).toHaveLength(snow ? 20 : 4);
+     29|     expect(captureHouseProtection(project)).toEqual(sealed);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯
+
+ FAIL  test/villageTreePlacement.test.ts > tree footprint eligibility (natural) > rejects the whole object: canopy over wall
+ FAIL  test/villageTreePlacement.test.ts > tree footprint eligibility (natural) > rejects the whole object: trunk over fence
+ FAIL  test/villageTreePlacement.test.ts > tree footprint eligibility (natural) > rejects the whole object: recorded stacked house
+ FAIL  test/villageTreePlacement.test.ts > tree footprint eligibility (natural) > rejects the whole object: recorded empty house
+ FAIL  test/villageTreePlacement.test.ts > tree footprint eligibility (dense) > rejects the whole object: canopy over wall
+ FAIL  test/villageTreePlacement.test.ts > tree footprint eligibility (dense) > rejects the whole object: trunk over fence
+ FAIL  test/villageTreePlacement.test.ts > tree footprint eligibility (dense) > rejects the whole object: recorded stacked house
+ FAIL  test/villageTreePlacement.test.ts > tree footprint eligibility (dense) > rejects the whole object: recorded empty house
+AssertionError: expected function to throw an error, but it didn't
+ ❯ test/villageTreePlacement.test.ts:24:9
+     22|     expect(() => placePropsOnDraft(project, {
+     23|       mapId: map.id, area: { x: 3, y: 3, w: 1, h: 2 }, material: "침엽수"…
+     24|     })).toThrowError(expect.objectContaining({ code: "placement-zero" …
+       |         ^
+     25|     expect(map).toEqual(before);
+     26|     expect(repairTreePairsOnProject(project)).toEqual({ canopiesPlaced…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  10 failed | 2 passed (12)
+   Start at  04:52:24
+   Duration  58.20s (transform 15.09s, setup 0ms, collect 20.13s, tests 35.95s, environment 1ms, prepare 524ms)

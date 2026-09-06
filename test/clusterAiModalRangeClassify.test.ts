@@ -157,7 +157,7 @@ describe("cluster AI range-classify modal", () => {
       tileIds: [10, 11, 12, 13, 14, 15, 16, 17],
       tilesetId: DEFAULT_TILESET_ID,
     });
-    await flushAsync();
+    await finishTurn();
 
     const modal = requireTestId(document, "cluster-ai-modal");
     const input = requireTestId(modal, "cluster-ai-input");
@@ -222,7 +222,7 @@ describe("cluster AI range-classify modal", () => {
       tileIds: [20, 21, 22, 23],
       tilesetId: DEFAULT_TILESET_ID,
     });
-    await flushAsync();
+    await finishTurn();
 
     const stage = requireTestId(document, "cluster-ai-stage");
     expect(stage.querySelectorAll("img")).toHaveLength(1);
@@ -231,12 +231,20 @@ describe("cluster AI range-classify modal", () => {
     expect(choices.map((choice) => choice.textContent)).toEqual(["이 분류로 저장", "이름 바꿔", "역할 바꿔", "다시"]);
 
     choices[0]?.click();
-    await flushAsync();
+    await finishTurn();
     expect(mocks.instances[0]?.sendUserMessage).toHaveBeenLastCalledWith("이 분류로 저장", expect.any(Function));
+    const rebased = new Promise<void>((resolve, reject) => {
+      const timeout = setTimeout(() => reject(new Error("Cluster session did not rebase")), 5000);
+      mocks.instances[0].rebaseProject.mockImplementationOnce(() => {
+        clearTimeout(timeout);
+        resolve();
+      });
+    });
     requireTestId(document, "cluster-ai-accept").click();
+    await rebased;
 
     expect(recordProjectSnapshot).toHaveBeenCalledWith("클러스터 수정: 범위 분류 — 4개 타일", store.getCurrent().startMapId);
-    expect(replaceSpy).toHaveBeenCalledWith(proposed);
+    expect(replaceSpy).toHaveBeenCalledExactlyOnceWith(proposed, { change: expect.objectContaining({ origin: "ai" }) });
     expect(mocks.instances[0]?.rebaseProject).toHaveBeenCalledWith(store.getCurrent());
   });
 
@@ -247,7 +255,7 @@ describe("cluster AI range-classify modal", () => {
       tileIds: [1],
       tilesetId: DEFAULT_TILESET_ID,
     });
-    await flushAsync();
+    await finishTurn();
 
     const input = requireTestId(document, "cluster-ai-input");
     expect(input.getAttribute("rows")).toBe("3");
@@ -255,10 +263,10 @@ describe("cluster AI range-classify modal", () => {
   });
 });
 
-async function flushAsync(): Promise<void> {
-  await Promise.resolve();
-  await Promise.resolve();
-  await Promise.resolve();
+async function finishTurn(): Promise<void> {
+  const turn = mocks.instances[0]?.sendUserMessage.mock.results.at(-1);
+  if (!turn || turn.type !== "return") throw new Error("Missing cluster turn promise");
+  await turn.value;
 }
 
 function changeSummary(): ChangeSummary {

@@ -49,6 +49,8 @@ export interface RoomHarnessKit<Plan = unknown> {
   ensureHarness(project: Project): boolean;
   /** 툴 args → 플랜(검증 포함, 실패 시 ToolError throw). */
   parsePlan(args: Record<string, unknown>): Plan;
+  /** Resolve project-authored inputs before storing or building a plan. */
+  preparePlan?(plan: Plan, project: Project): Plan;
   mapIdOf(plan: Plan): string;
   nameOf(plan: Plan): string;
   createEmptyMap(plan: Plan): GameMap;

@@ -26,6 +26,7 @@ import { TILE } from "@/project/defaults/constants";
 import { passageMarkForTile } from "@/project/tilesetPassage";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
 import { inMapBounds, type Point } from "./mapHelpers";
+import { protectedHouseCells } from "./houseProtection";
 
 /** 도로가 이 칸을 어떻게 대해야 하는가. */
 export type RoadCellClass = "open" | "structure" | "water";
@@ -65,10 +66,11 @@ export type RoadWidthFilter = {
 // 이 창이 곧 탐색 상한이다: 방문 셀은 창 안에서 한 번씩만 큐에 들어가므로
 // cameFrom/queue 는 최대 (2*MARGIN+1)^2 개로 묶인다(별도 노드 상한이 필요 없다).
 const DETOUR_MARGIN = 32;
-// 이웃 순서 고정(위·아래·왼·오) = 결정론.
+// Equal-length detours prefer the south/front side over the protected north ridge.
+// Fixed neighbor order keeps shortest-path routing deterministic.
 const NEIGHBORS: readonly Point[] = [
-  { x: 0, y: -1 },
   { x: 0, y: 1 },
+  { x: 0, y: -1 },
   { x: -1, y: 0 },
   { x: 1, y: 0 },
 ];
@@ -95,14 +97,17 @@ const ROAD_CLEARABLE_TILES = new Set<number>([
  */
 export function roadObstacleMaskFor(project: Project, map: GameMap): RoadObstacleMask {
   const tileset = project.tilesets[map.tilesetId];
-  if (!tileset) return () => "open";
-  const cache = new Map<number, RoadCellClass>();
+  // Completed geometry includes passable doors, bbox gaps, empty ridge cells and deck ladders.
+  // Seed before painting so later tile changes cannot make ownership disappear.
+  const cache = new Map<number, RoadCellClass>(
+    protectedHouseCells(map).map((cell) => [cell.y * map.width + cell.x, "structure"])
+  );
   return (x: number, y: number): RoadCellClass => {
     if (!inMapBounds(map, x, y)) return "open";
     const index = y * map.width + x;
     const cached = cache.get(index);
     if (cached !== undefined) return cached;
-    const kind = classifyRoadCell(project, tileset, map, x, y);
+    const kind = tileset ? classifyRoadCell(project, tileset, map, x, y) : "open";
     cache.set(index, kind);
     return kind;
   };

@@ -10,20 +10,23 @@
 // done 이었다(중단 쪽 로그에는 "적용" 이 없다). 게다가 markAgentBlueprintProgress 는 planned 가
 // 아닌 칸을 다시 올리지 않으므로 그 거짓 완료는 세션이 죽을 때까지 남는다 — 손도 안 댄 타일
 // 위에 회색 ✓ "완료" 가 영구히 박힌다. 그래서 아래 세 케이스는 **청사진과 저장소를 함께** 본다.
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from "vitest";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
 import { clearConversations } from "@/ai/conversationStore";
+import * as activityLog from "@/ai/activityLog";
 import { clearAgentBlueprint, getAgentBlueprintState } from "@/editor/agentBlueprint";
 import { clearAiActivityLogs, getLatestAiActivityLog } from "@/ai/activityLog";
-import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
+import { clearAgentGhostPreview, getAgentGhostPreviewState, subscribeAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { editorState } from "@/editor/editorState";
 import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
+import { sendAiTurn } from "./aiTurnHarness";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
 const MAP_ID = "map_blank_start";
+const OTHER_MAP_ID = "map_viewed_b";
 
 /** 20×15 빈 맵 안에 들어가는 최소 계획 — 집 한 채. */
 const SPEC = {
@@ -45,7 +48,9 @@ let storage: Map<string, string>;
 beforeEach(async () => {
   clearAgentBlueprint();
   clearAgentGhostPreview();
-  store.replace(createBlankProject());
+  const project = createBlankProject();
+  project.maps[OTHER_MAP_ID] = { ...structuredClone(project.maps[MAP_ID]), id: OTHER_MAP_ID };
+  store.replace(project);
   store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
   editorState.set({ currentMapId: MAP_ID, selection: null });
   resetMapEditHistory();
@@ -78,63 +83,20 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-/** Subscribe before send; the runner hides abort only after releasing its busy state. */
-function turnEndSignal(panel: FakeElement): Promise<void> {
-  const abort = findByTestId(panel, "ai-abort");
-  if (!abort) throw new Error("abort control missing");
-  let hidden = abort.hidden;
-  let started = false;
-  return new Promise<void>((resolve, reject) => {
-    const timeout = AbortSignal.timeout(15000);
-    const fail = (): void => reject(new Error("turn did not release abort control"));
-    timeout.addEventListener("abort", fail, { once: true });
-    Object.defineProperty(abort, "hidden", {
-      configurable: true,
-      get: () => hidden,
-      set: (value: boolean) => {
-        hidden = value;
-        if (!value) started = true;
-        if (value && started) {
-          timeout.removeEventListener("abort", fail);
-          Object.defineProperty(abort, "hidden", { configurable: true, writable: true, value });
-          resolve();
-        }
-      },
-    });
-  });
-}
-
-function sseToolCallsResponse(calls: readonly { readonly name: string; readonly args: unknown }[]): Response {
-  const deltas = calls.map((call, index) => ({
-    index,
+// The tool loop can request stream:false. JSON messages are supported by the
+// real client for both streaming and non-streaming requests; SSE deltas are not.
+function toolCallsResponse(calls: readonly { readonly name: string; readonly args: unknown }[]): Response {
+  const toolCalls = calls.map((call, index) => ({
     id: `call_${index}`,
     type: "function",
     function: { name: call.name, arguments: JSON.stringify(call.args) },
   }));
-  const body = [
-    `data: ${JSON.stringify({ choices: [{ delta: { tool_calls: deltas } }] })}`,
-    "",
-    `data: ${JSON.stringify({ choices: [{ delta: {}, finish_reason: "tool_calls" }] })}`,
-    "",
-    "data: [DONE]",
-    "",
-    "",
-  ].join("\n");
-  return new Response(body, { status: 200, headers: { "Content-Type": "text/event-stream" } });
+  return Response.json({ choices: [{ message: { role: "assistant", content: null, tool_calls: toolCalls }, finish_reason: "tool_calls" }] });
 }
 
 /** 툴콜 없는 마무리 응답 — 턴을 정상 종료로 끝낸다. */
-function sseTextResponse(text: string): Response {
-  const body = [
-    `data: ${JSON.stringify({ choices: [{ delta: { content: text } }] })}`,
-    "",
-    `data: ${JSON.stringify({ choices: [{ delta: {}, finish_reason: "stop" }] })}`,
-    "",
-    "data: [DONE]",
-    "",
-    "",
-  ].join("\n");
-  return new Response(body, { status: 200, headers: { "Content-Type": "text/event-stream" } });
+function textResponse(text: string): Response {
+  return Response.json({ choices: [{ message: { role: "assistant", content: text }, finish_reason: "stop" }] });
 }
 
 /** 진행을 옮기지 않는 읽기 툴콜 — 루프를 한 라운드 더 돌리되 제안은 만들지 않는다. */
@@ -157,7 +119,7 @@ function isLlmRequest(input: unknown, init?: unknown): boolean {
   if (!url.includes("/chat/completions")) return false;
   // 패널은 턴 앞에 의도 선언 LLM 호출(createLlmIntentDeclarer — response_format json, 툴 없음)을 하나 더 보낸다.
   // 그 호출이 1라운드 툴콜 대본을 가져가면 본 턴은 «끝» 응답만 받는다. 툴이 실린 요청(턴 루프)만 라운드로 센다 —
-  // 의도 선언은 `{}` 를 받아 문장 휴리스틱 폴백으로 동작한다.
+  // 의도 선언은 `{}` 를 받아 중립 폴백으로 동작한다.
   const body = (init as { body?: unknown } | undefined)?.body;
   return typeof body === "string" && body.includes("\"tools\"");
 }
@@ -170,7 +132,7 @@ function scriptTurn(afterFirstRound: () => Response | never): void {
     if (!isLlmRequest(input, init)) return okResponse();
     round += 1;
     if (round === 1) {
-      return sseToolCallsResponse([
+      return toolCallsResponse([
         { name: "set_build_spec", args: SPEC },
         { name: "fill_region", args: FILL_ARGS },
       ]);
@@ -192,11 +154,42 @@ function scriptRounds(rounds: readonly (() => Response | never)[]): void {
 
 async function runTurn(panel: FakeElement, text = "야외에 집 한 채 지어줘"): Promise<void> {
   const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
-  // "야외" 표지가 없으면 intentClarify 가 실내/야외를 되묻고 툴 라운드로 가지 않는다.
   input.value = text;
-  const ended = turnEndSignal(panel);
-  (findByTestId(panel, "ai-send") as unknown as HTMLElement).click();
-  await ended;
+  const otherMapBefore = structuredClone(store.getCurrent().maps[OTHER_MAP_ID]);
+  const viewedMapId = editorState.get().currentMapId;
+  const runningOwners: Array<string | null> = [];
+  const unsubscribe = subscribeAgentGhostPreview((state) => {
+    if (state.runningToolName) runningOwners.push(state.runningToolMapId);
+  });
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const persist = activityLog.recordAiActivity;
+  let persistenceSpy: MockInstance<typeof persist> | undefined;
+  // Activity persistence is queued independently of the panel's finally block.
+  // Observe completion of the real terminal write, including its queued mirrors,
+  // so teardown cannot race a write from this turn into the next test's storage.
+  const logged = new Promise<Awaited<ReturnType<typeof persist>>>((resolve, reject) => {
+    timer = setTimeout(() => reject(new Error("Terminal AI activity log was not saved within 10s")), 10_000);
+    persistenceSpy = vi.spyOn(activityLog, "recordAiActivity").mockImplementation((record) => {
+      const saved = persist(record);
+      if (!record.result.pending) void saved.then(resolve, reject);
+      return saved;
+    });
+  });
+  try {
+    const [record] = await Promise.all([logged, sendAiTurn(panel)]);
+    expect(getLatestAiActivityLog()?.toolCalls.length).toBeGreaterThan(0);
+    expect(new Set(runningOwners)).toEqual(new Set([MAP_ID]));
+    expect(getAgentGhostPreviewState().runningToolName).toBe("");
+    expect(getAgentGhostPreviewState().runningToolMapId).toBeNull();
+    // Applying changes deliberately focuses their owner (focusAcceptedAgentChanges).
+    // Aborts and lookups leave the viewed map alone; neither may mutate map B.
+    expect(editorState.get().currentMapId).toBe(record.result.appliedCalls ? MAP_ID : viewedMapId);
+    expect(store.getCurrent().maps[OTHER_MAP_ID]).toEqual(otherMapBefore);
+  } finally {
+    clearTimeout(timer);
+    persistenceSpy?.mockRestore();
+    unsubscribe();
+  }
 }
 
 function statusById(): Record<string, string> {
@@ -205,7 +198,9 @@ function statusById(): Record<string, string> {
   return out;
 }
 
-describe("중단·오류로 끝난 턴의 청사진 정산", () => {
+describe.each([MAP_ID, OTHER_MAP_ID])("중단·오류로 끝난 턴의 청사진 정산 (viewed: %s)", (viewedMapId) => {
+  beforeEach(() => editorState.set({ currentMapId: viewedMapId }));
+
   it("시공 중 중단하면 짓던 칸이 planned 로 되돌아간다 — 저장소가 안 바뀌었는데 완료를 찍지 않는다", async () => {
     const panel = renderAiChatPanel({ getChatDock: () => "side" }) as unknown as FakeElement;
     const before = store.getCurrent();
@@ -242,7 +237,7 @@ describe("중단·오류로 끝난 턴의 청사진 정산", () => {
   it("정상 종료 + 적용에서만 저장소가 바뀝고 밑그림이 물러난다", async () => {
     const panel = renderAiChatPanel({ getChatDock: () => "side" }) as unknown as FakeElement;
     const before = store.getCurrent();
-    scriptTurn(() => sseTextResponse("집을 지었습니다."));
+    scriptTurn(() => textResponse("집을 지었습니다."));
 
     await runTurn(panel);
 
@@ -261,8 +256,8 @@ describe("중단·오류로 끝난 턴의 청사진 정산", () => {
     };
     // 1턴: 집 듑 채를 계획하고 한 채만 짓고 끝낸다 — house_b 는 planned 로 남을 칸이다.
     scriptRounds([
-      () => sseToolCallsResponse([{ name: "set_build_spec", args: twoAssets }, { name: "fill_region", args: FILL_ARGS }]),
-      () => sseTextResponse("집 한 채를 지었습니다."),
+      () => toolCallsResponse([{ name: "set_build_spec", args: twoAssets }, { name: "fill_region", args: FILL_ARGS }]),
+      () => textResponse("집 한 채를 지었습니다."),
     ]);
     const before = store.getCurrent();
     await runTurn(panel, "야외에 집 두 채 지어줘");
@@ -271,9 +266,10 @@ describe("중단·오류로 끝난 턴의 청사진 정산", () => {
 
     // 2턴: 스펙은 세션에 그대로 있다 — 턴 시작 재동기화가 물러난 칸을 다시 그리지 않아야 한다.
     scriptRounds([
-      () => sseToolCallsResponse([{ name: "get_map_region", args: READ_ARGS }]),
-      () => sseTextResponse("지어진 집을 확인했습니다."),
+      () => toolCallsResponse([{ name: "get_map_region", args: READ_ARGS }]),
+      () => textResponse("지어진 집을 확인했습니다."),
     ]);
+    editorState.set({ currentMapId: viewedMapId });
     await runTurn(panel, "야외 맵 상태가 지금 어떤지 알려줘");
     expect(getAgentBlueprintState().entries).toHaveLength(0);
     const status = findByTestId(panel, "ai-status") as unknown as FakeElement;
@@ -288,13 +284,13 @@ describe("중단·오류로 끝난 턴의 청사진 정산", () => {
     const panel = renderAiChatPanel({ getChatDock: () => "side" }) as unknown as FakeElement;
     const before = store.getCurrent();
     scriptRounds([
-      () => sseToolCallsResponse([{ name: "set_build_spec", args: SPEC }, { name: "fill_region", args: FILL_ARGS }]),
+      () => toolCallsResponse([{ name: "set_build_spec", args: SPEC }, { name: "fill_region", args: FILL_ARGS }]),
       () => {
         // 응답은 정상으로 돌려준다 — 다음 라운드 머리의 중단 검사가 턴을 끝낸다.
         (findByTestId(panel, "ai-abort") as unknown as HTMLElement).click();
-        return sseToolCallsResponse([{ name: "get_map_region", args: READ_ARGS }]);
+        return toolCallsResponse([{ name: "get_map_region", args: READ_ARGS }]);
       },
-      () => sseTextResponse("여기까지 했습니다."),
+      () => textResponse("여기까지 했습니다."),
     ]);
 
     await runTurn(panel);
@@ -314,17 +310,18 @@ describe("중단·오류로 끝난 턴의 청사진 정산", () => {
   it("다 지은 뒤의 조회 턴은 상태줄에 밑그림 확정을 다시 찍지 않는다", async () => {
     const panel = renderAiChatPanel({ getChatDock: () => "side" }) as unknown as FakeElement;
     // 1턴: 계획을 세우고 집을 실제로 지어 적용까지 간다.
-    scriptTurn(() => sseTextResponse("집을 지었습니다."));
+    scriptTurn(() => textResponse("집을 지었습니다."));
     await runTurn(panel);
     // 시공이 적용된 턴이 끝났으므로 계획은 물러났다.
     expect(getAgentBlueprintState().entries).toHaveLength(0);
 
     // 2턴: 스펙은 세션에 그대로 살아 있고(턴 간 유지) 쓰기 제안은 0건인 조회 턴.
     scriptRounds([
-      () => sseToolCallsResponse([{ name: "get_map_region", args: READ_ARGS }]),
-      () => sseTextResponse("지어진 집을 확인했습니다."),
+      () => toolCallsResponse([{ name: "get_map_region", args: READ_ARGS }]),
+      () => textResponse("지어진 집을 확인했습니다."),
     ]);
     // 시공 지시가 아니라 조회다 — 완성도 린트가 경고를 내면 상태줄 분기에 닿지 못한다.
+    editorState.set({ currentMapId: viewedMapId });
     await runTurn(panel, "야외 맵 상태가 지금 어떤지 알려줘");
 
     const status = findByTestId(panel, "ai-status") as unknown as FakeElement;
@@ -340,8 +337,8 @@ describe("중단·오류로 끝난 턴의 청사진 정산", () => {
     const before = store.getCurrent();
     scriptRounds([
       // 밑그림만 확정하고 읽기만 한 턴 — 쓰기 툴콜이 없으니 제안이 0건이다.
-      () => sseToolCallsResponse([{ name: "set_build_spec", args: SPEC }, { name: "get_map_region", args: READ_ARGS }]),
-      () => sseTextResponse("먼저 지형을 확인했습니다."),
+      () => toolCallsResponse([{ name: "set_build_spec", args: SPEC }, { name: "get_map_region", args: READ_ARGS }]),
+      () => textResponse("먼저 지형을 확인했습니다."),
     ]);
 
     await runTurn(panel);

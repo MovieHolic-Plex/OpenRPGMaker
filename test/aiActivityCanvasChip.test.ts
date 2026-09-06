@@ -5,6 +5,8 @@ import { regionTaskBadgeText } from "@/editor/EditScene";
 import {
   appendAgentGhostPreviewForToolCall,
   clearAgentGhostPreview,
+  clearAgentGhostRunningTool,
+  replaceAgentGhostPreviewFromProjectDiff,
   setAgentGhostRunningTool,
 } from "@/editor/agentGhostPreview";
 import { createBlankMap, createBlankProject } from "@/project/defaults";
@@ -193,7 +195,7 @@ describe("맵 캔버스 AI 진행 칩", () => {
 
   it("도구 시작 직후 셀이 없어도 코너 폴백으로 칩을 마운트한다", () => {
     store.replace(createBlankProject());
-    setAgentGhostRunningTool("paint_road");
+    setAgentGhostRunningTool("paint_road", { mapId: "m1" });
     const renderer = new AgentGhostPreviewRenderer(makeRendererScene(canvas), makeContainer(), () => "m1");
 
     renderer.render();
@@ -202,6 +204,65 @@ describe("맵 캔버스 AI 진행 칩", () => {
     expect(chip).not.toBeNull();
     expect(chip?.dataset.chipMode).toBe("corner");
     expect(chip?.textContent).toContain("길을 그리는 중");
+  });
+
+  it.each(["render", "update"] as const)("removes A's empty-preview chip on B via %s and restores it on A", (refresh) => {
+    // Given: activity on A, before any preview cells exist.
+    let mapId = "m1";
+    const renderer = new AgentGhostPreviewRenderer(makeRendererScene(canvas), makeContainer(), () => mapId);
+    setAgentGhostRunningTool("fill_region", { mapId: "m1" });
+    renderer.render();
+    expect(host.querySelector("[data-testid='ai-ghost-phase-chip']")).not.toBeNull();
+
+    // When: the viewed map changes, without clearing the owner's activity.
+    mapId = "m2";
+    renderer[refresh]();
+
+    // Then: B has no chip, while returning to A restores it.
+    expect(host.querySelector("[data-testid='ai-ghost-phase-chip']")).toBeNull();
+    mapId = "m1";
+    renderer.render();
+    expect(host.querySelector("[data-testid='ai-ghost-phase-chip']")).not.toBeNull();
+    clearAgentGhostRunningTool();
+    renderer.render();
+    expect(host.querySelector("[data-testid='ai-ghost-phase-chip']")).toBeNull();
+    renderer.clear();
+  });
+
+  it("keeps unknown-target activity off the canvas", () => {
+    // Given: no map identity in the tool event.
+    setAgentGhostRunningTool("get_project_summary");
+    const renderer = new AgentGhostPreviewRenderer(makeRendererScene(canvas), makeContainer(), () => "m1");
+    // When: rendering the currently viewed map.
+    renderer.render();
+    // Then: chat-only activity must not acquire that map.
+    expect(host.querySelector("[data-testid='ai-ghost-phase-chip']")).toBeNull();
+    renderer.clear();
+  });
+
+  it("does not let A's running tool label or spinner contaminate B's local diff", () => {
+    // Given: B has a real local preview, but the running tool belongs to A.
+    const project = createBlankProject();
+    project.maps.m2 = createBlankMap("m2", 10, 10);
+    store.replace(project);
+    const draft = structuredClone(project);
+    draft.maps.m2.lowerTiles[0] = 1;
+    replaceAgentGhostPreviewFromProjectDiff(project, draft);
+    let now = 0;
+    const renderer = new AgentGhostPreviewRenderer(makeRendererScene(canvas), makeContainer(), () => "m2", { clock: () => now });
+    renderer.render();
+    const localLabel = host.querySelector(".ai-ghost-phase-text")?.textContent;
+
+    // When: A starts a different tool while B's preview remains visible.
+    setAgentGhostRunningTool("fill_region", { mapId: "m1" });
+    renderer.render();
+
+    // Then: B keeps its own label and completes independently of A.
+    expect(host.querySelector(".ai-ghost-phase-text")?.textContent).toBe(localLabel);
+    now = 1000;
+    renderer.update();
+    expect(host.querySelector(".ai-ghost-phase-spinner")).toBeNull();
+    renderer.clear();
   });
 
   it("실행 중에는 고스트 진행 칩만 보이고 영역 배지는 확인 대기 단계만 맡는다", () => {

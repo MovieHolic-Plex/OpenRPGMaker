@@ -280,7 +280,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         currentStreamNodes = [];
       } else if (event.type === "tool_started") {
         // 채팅과 상태 배지 모두 실행 직전에 구체적인 현재 작업을 반영한다.
-        setAgentGhostRunningTool(event.name);
+        setAgentGhostRunningTool(event.name, event.args);
         deps.surface.startLiveActivity(event.name, event.index);
         deps.noteWorkPlanActivity(toolLabel(event.name));
       } else if (event.type === "tool_call") {

@@ -1,0 +1,194 @@
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-house-protection-p1-village
+
+ ❯ test/forestDensity.test.ts (25 tests | 2 failed) 27506ms
+   ✓ forest density is structured-only > 사용자 문장이 아니라 enum 인자만 읽는다 2ms
+   ✓ forest density is structured-only > 기본값은 dense — 도구 인자를 생략한 군락 시공의 fallback 1ms
+   ✓ forest density is structured-only > 수종은 해석된 그룹 id·정확 라벨로만 가른다 1ms
+   ✓ forestPlacementPlan > 옛 캡(면적/28, 최대 10그루)을 넘어 면적에 비례해 그루 수를 낸다 1ms
+   ✓ forestPlacementPlan > dense·impassable 은 선형 packer(packing dense)로, 낮은 밀도는 자연 산포로 나간다 1ms
+   ✓ forestPlacementPlan > share 로 침엽수·활엽수 패스가 커버리지를 나눠 갖는다 0ms
+   ✓ outside-enterable forest cells > 바깥 한 겹이 solid 덤불로 닫힌 4×4 영역은 진입 가능한 칸이 0이다  346ms
+   × plant_tree_clusters > 기본(dense)이 선언한 커버리지에 닿고 그 지대를 실제로 막는다 1079ms
+     → 영역의 30% 가 아직 걸어서 통과된다: expected 0.3003472222222222 to be less than 0.3
+   ✓ plant_tree_clusters > 기본(dense)의 빈틈은 등간격 격자가 아니라 seeded 청색잡음으로 흩어진다  887ms
+   ✓ plant_tree_clusters > 기본(dense)이 100×100 에서도 선형 시간에 끝난다  500ms
+   ✓ plant_tree_clusters > impassable 은 영역을 실제로 지나갈 수 없게 만든다 235ms
+   ✓ plant_tree_clusters > 커버리지 실측을 요약에 적어 사용자가 밀도를 확인할 수 있다 277ms
+   ✓ place_props density — 모델이 실제로 닿는 라이브 툴 > 침엽수 density=dense 가 count 없이도 숲을 만든다 247ms
+   × place_props density — 모델이 실제로 닿는 라이브 툴 > 활엽수 density=dense 가 count 없이도 숲을 만든다 265ms
+     → expected 0.3003472222222222 to be less than 0.3
+   ✓ place_props density — 모델이 실제로 닿는 라이브 툴 > 침엽수 density=sparse 가 선언 커버리지와 실측 허용 오차 안에 든다  3746ms
+   ✓ place_props density — 모델이 실제로 닿는 라이브 툴 > 침엽수 density=normal 가 선언 커버리지와 실측 허용 오차 안에 든다  5175ms
+   ✓ place_props density — 모델이 실제로 닿는 라이브 툴 > 침엽수 density=dense 가 선언 커버리지와 실측 허용 오차 안에 든다  395ms
+   ✓ place_props density — 모델이 실제로 닿는 라이브 툴 > 침엽수 density=impassable 가 선언 커버리지와 실측 허용 오차 안에 든다  511ms
+   ✓ place_props density — 모델이 실제로 닿는 라이브 툴 > 활엽수 density=sparse 가 선언 커버리지와 실측 허용 오차 안에 든다  1129ms
+   ✓ place_props density — 모델이 실제로 닿는 라이브 툴 > 활엽수 density=normal 가 선언 커버리지와 실측 허용 오차 안에 든다  3559ms
+   ✓ place_props density — 모델이 실제로 닿는 라이브 툴 > 활엽수 density=dense 가 선언 커버리지와 실측 허용 오차 안에 든다  424ms
+   ✓ place_props density — 모델이 실제로 닿는 라이브 툴 > 활엽수 density=impassable 가 선언 커버리지와 실측 허용 오차 안에 든다  303ms
+   ✓ place_props density — 모델이 실제로 닿는 라이브 툴 > density 는 나무 재료 전용이고 count 는 여전히 직접 줄 수 있다  546ms
+   ✓ author_village — 모델이 실제로 지나는 마을 파사드 > 「울창한 숲 마을」의 숲 밴드가 두껍고 거의 통행 불가다  3163ms
+   ✓ author_village — 모델이 실제로 지나는 마을 파사드 > 테마 문장만으로는 밀도를 올리지 않는다 — forestDensity enum이 필요하다  4697ms
+ ✓ test/authorVillageFacade.test.ts (36 tests) 126470ms
+   ✓ author_village adversarial boundary > runs the product facade through exactly one ToolDefinition execution  3843ms
+   ✓ author_village adversarial boundary > returns a structured blocked ConstructionOutcome from the product facade  417ms
+   ✓ author_village adversarial boundary > returns a structured failed outcome when the inner builder reports data.ok false  895ms
+   ✓ author_village adversarial boundary > rolls back an unauthorized other-map add  1727ms
+   ✓ author_village adversarial boundary > rolls back an unauthorized other-map remove  1448ms
+   ✓ author_village adversarial boundary > rolls back an unauthorized other-map mutate  1122ms
+   ✓ author_village adversarial boundary > rolls back an event created outside requested bounds  1884ms
+   ✓ author_village adversarial boundary > rolls back an undeclared non-map project mutation  1559ms
+   ✓ author_village facade > applies an exact seeded village to only the requested existing exterior  3238ms
+   ✓ author_village facade > supports an exact two-house starter settlement  2791ms
+   ✓ author_village facade > normalizes mixed existing-target fields captured from a live LLM turn  1078ms
+   ✓ author_village facade > substitutes one plaza well for the unavailable landmark in 분수가 있는 평화로운 마을  5439ms
+   ✓ author_village facade > substitutes one plaza well for the unavailable landmark in town with a Fountain centerpiece  2484ms
+   ✓ author_village facade > keeps fountain fallback well placement inside requested bounds  1113ms
+   ✓ author_village facade > does not emit the fountain fallback warning for an ordinary theme  2419ms
+   ✓ author_village facade > creates the exact requested new map identity without suffix or reuse  4330ms
+   ✓ author_village facade > rejects houseCount 0 without clamping or writing  668ms
+   ✓ author_village facade > rejects houseCount 33 without clamping or writing  463ms
+   ✓ author_village facade > rejects a house-plan count mismatch before writing  401ms
+   ✓ author_village facade > rolls back maps, interiors, events, tree, and start when exact count is short  1551ms
+   ✓ author_village facade > fails a colliding new map without suffixing or reusing it  526ms
+   ✓ author_village facade > accepts a fully satisfied two-house best-effort request  850ms
+   ✓ author_village facade > reports an explicit best-effort result at the 85 percent threshold  1194ms
+   ✓ author_village facade > rolls back best-effort below the 85 percent threshold  588ms
+   ✓ author_village facade > converts 'structural QA' into an atomic outer failure  443ms
+   ✓ author_village facade > converts 'target change' into an atomic outer failure  569ms
+   ✓ author_village facade > converts 'inner failure' into an atomic outer failure  622ms
+   ✓ author_village facade > converts 'no write' into an atomic outer failure  1079ms
+   ✓ author_village facade > rejects an existing-target write outside requested bounds  952ms
+   ✓ author_village bounds 생략 경고 > 기존 맵을 bounds 없이 시공하면 덮은 칸수·비율·bbox 를 경고로 알린다  2871ms
+   ✓ author_village bounds 생략 경고 > bounds 를 지정하면 그 경고가 붙지 않는다  2850ms
+   ✓ author_village bounds 생략 경고 > 신규 맵 타깃에는 그 경고가 붙지 않는다  2049ms
+   ✓ author_village settlement scale and winter > builds a deterministic 100x100 snow city with the requested population  71245ms
+   ✓ author_village settlement scale and winter > rolls back an exact request when the requested population cannot fit  1729ms
+ ✓ test/villageBuilder.test.ts (33 tests) 75855ms
+   ✓ build_village > 빈 프로젝트에서 seed만으로 50x50 마을을 완성한다  4742ms
+   ✓ build_village > pathStyle:dirt 로 흙길을 쓸 수 있다  496ms
+   ✓ build_village > theme/housePlans 의도를 받아 집 수와 키트에 반영한다  2821ms
+   ✓ build_village > 강촌마을 쿼리는 강+숲 필수 스펙을 뽑고 맵에 수역·나무를 깐다  1105ms
+   ✓ build_village > run_village_session 이 멀티턴 체크리스트로 강촌을 시공하고 2×2 나무를 심는다  964ms
+   ✓ build_village > run_village_pipeline 이 plan→build→spec→look 을 돌린다  641ms
+   ✓ build_village > plan_village → build_village(planId) → critique_village 3층 흐름  2685ms
+   ✓ build_village > fences:false면 울타리를 깔지 않는다  2093ms
+   ✓ build_village > 기본 시드에서도 문 8개가 전부 온전하다 (진입로 관통 회귀)  2434ms
+   ✓ build_village > 같은 seed는 타일과 이벤트 좌표가 같고 다른 seed는 하위 타일이 달라진다  7154ms
+   ✓ build_village > NPC 그래픽을 주민형 후보에서 다양하게 순환 배정하고 같은 seed에서 고정한다  5601ms
+   ✓ build_village > 스케치가 이긴 집 배치는 격자 열에 서지 않는다  8303ms
+   ✓ build_village > 집 8채에 Object1 문 이벤트와 자식 내부 맵을 생성한다  2167ms
+   ✓ build_village > 대로·진입로가 집 footprint 내부를 침범하지 않는다  9467ms
+   ✓ build_village > interior:false면 내부 맵과 문 이벤트를 만들지 않는다  1564ms
+   ✓ build_village > 내부 맵 삭제 시 외부 문 transfer dangling 참조가 정리된다  2571ms
+   ✓ build_village > 하네싱 창문을 상위 레이어에 배치한다  2247ms
+   ✓ build_village > 기존 20x20 맵에는 한 채를 시공하고 최소 크기 미만인 19x19 맵은 거부한다  1305ms
+   ✓ build_village > bounds 지정 시 기존 맵의 해당 영역 안에 광장·집·NPC를 배치한다  1636ms
+   ✓ build_village > 레지스트리에 등록되고(deprecated) runTool 경로로 실행된다  2481ms
+   ✓ build_village housePlans contract > forces housePlans[0].templateId=l and owner/program onto interiors  570ms
+   ✓ build_village housePlans contract > 파이프라인 재시도 정리가 기존 무관 맵을 보존한다 (스냅샷 와이프)  2439ms
+   ✓ build_village housePlans contract > 강+호수 테마에서 집이 물 마스크 셀 위에 배치되지 않는다  2091ms
+   ✓ build_village housePlans contract > 길·울타리·나무가 지붕 용마루 행(bbox.y-1)을 침범하지 않는다  3687ms
+   ✓ build_village housePlans contract > pathStyle:stone 은 포석(129 블록) 오토타일로 성형된 돌길을 깔고 불변식을 지킨다  2557ms
+   ✓ build_village housePlans contract > 길 시공 훅: bounds 밖으로 길이 새지 않는다 (침범 롤백 재시도)  1114ms
+   ✓ build_village housePlans contract > 문이 0개인 맵은 layoutPlan 없이도 evaluate 구조 게이트에서 떨어진다  303ms
+   ✓ exterior footprint area (wing-union) > housePlans t-hall workshop interior scale is cottage3 from union 60 not mansion bbox 80  371ms
+ ✓ test/naturalScatterToolIntegration.test.ts (19 tests) 25144ms
+   ✓ natural scatter tool integration > paint_road naturalness 0 matches the legacy lineCells/autotile path exactly  773ms
+   ✓ natural scatter tool integration > paint_road naturalness 0.8 creates a non-straight, longer road footprint  742ms
+   ✓ natural scatter tool integration > paint_road replays the same natural path for the same seed  1442ms
+   ✓ natural scatter tool integration > scatter_object auto-selects uniform below naturalness 0.3  871ms
+   ✓ natural scatter tool integration > scatter_object auto-selects poisson from naturalness 0.3 through 0.7  993ms
+   ✓ natural scatter tool integration > scatter_object auto-selects cluster above naturalness 0.7  1252ms
+   ✓ natural scatter tool integration > scatter_object explicit mode overrides the naturalness threshold  889ms
+   ✓ natural scatter tool integration > scatter_object keeps hard conifer companion placement under cluster naturalness  767ms
+   ✓ natural scatter tool integration > scatter_object replays the same poisson placement for the same seed  2364ms
+   ✓ natural scatter tool integration > scatter_object poisson changes placement when seed changes  2320ms
+   ✓ natural scatter tool integration > forest stacks canopy upper over trunk lower on the same cell  1764ms
+   ✓ natural scatter tool integration > scatter_object bag props place 1-cell tiles, not vertical pairs of first two ids  759ms
+   ✓ natural scatter tool integration > place_props bench-horizontal is only 327|328 (no 357/358 under it)  519ms
+   ✓ natural scatter tool integration > place_props bench-vertical stamps 358 above 388 on upper only  765ms
+   ✓ natural scatter tool integration > scatter_object / place_props skip dirt road cells even though they are passable  5963ms
+   ✓ natural scatter tool integration > build_house naturalness 0 preserves the requested origin  534ms
+   ✓ natural scatter tool integration > build_house jitter falls back to the original origin when every offset overflows  652ms
+   ✓ natural scatter tool integration > stamp_structure jitters within the two-cell maximum and is seed-replayable  1757ms
+ ✓ test/villageAuthoringData.test.ts (19 tests) 15264ms
+   ✓ 사용자 저작 마을 데이터 — 읽기 > 사용자 형태가 내장 카탈로그에 더해진다  327ms
+   ✓ 사용자 저작 마을 데이터 — 읽기 > 레코드는 JSON 왕복으로 살아남는다  432ms
+   ✓ 사용자 저작 마을 데이터 — 읽기 > 화이트리스트에 내장 id 가 있어도 프로젝트가 열린다  362ms
+   ✓ 사용자 저작 마을 데이터 — AI 컨텍스트 > 저작 레코드가 없으면 섹션 자체가 없다  318ms
+   ✓ 사용자 저작 마을 데이터 — 시공 반영 > presetId를 주면 프리셋 형태만 쓰고 설계도에 프리셋을 남긴다  1335ms
+   ✓ 사용자 저작 마을 데이터 — 시공 반영 > 모르는 presetId는 경고로 흘리고 기본값으로 시공한다  4081ms
+   ✓ 사용자 저작 마을 데이터 — 시공 반영 > 사용자 형태 id를 housePlans로 지정해도 지워지지 않는다  2683ms
+   ✓ 사용자 저작 마을 데이터 — 시공 반영 > 저작 레코드가 없으면 예전과 똑같이 동작한다  2276ms
+   ✓ 사용자 저작 마을 데이터 — 시공 반영 > 규약 위반 형태 레코드가 있어도 시공은 성공한다  2110ms
+ ✓ test/authorVillageScopeGate.test.ts (11 tests) 7934ms
+   ✓ author_village lived-map scope gate > rejects full-map rebuild on a lived map without bounds or fullMap  651ms
+   ✓ author_village lived-map scope gate > accepts the same rebuild with target.fullMap:true  974ms
+   ✓ author_village lived-map scope gate > accepts the same rebuild with top-level fullMap:true  900ms
+   ✓ author_village lived-map scope gate > 부분 bounds와 fullMap이 충돌하면 범위를 조용히 줄이거나 넓히지 않는다  477ms
+   ✓ author_village lived-map scope gate > still builds a full empty map without any confirm  3294ms
+   ✓ author_village lived-map scope gate > rejects an unlinked extra map even when the builder declares it  385ms
+   ✓ author_village postconditions and parser > passes NPC count within the 90% lower bound  867ms
+   ✓ author_village postconditions and parser > fails NPC count below the 90% lower bound as failed, not blocked  374ms
+ ✓ test/toolHouseProtection.test.ts (12 tests) 5181ms
+   ✓ completed house transaction invariant > seals a newly built standalone house before global tree repair  558ms
+   ✓ completed house transaction invariant > preflights author_house against a completed house without tile changes  931ms
+   ✓ completed house transaction invariant > preflights build_house against a completed house without tile changes  657ms
+   ✓ completed house transaction invariant > registers and reloads a standalone roof-deck attachment without claiming its yard  837ms
+   ✓ completed house transaction invariant > allows unrelated edits and safe dry-run without changing the original project  606ms
+ ✓ test/lakeVillageTwoMaps.test.ts (1 test) 9585ms
+   ✓ lake village two maps rebuild > clears maps and builds a 2-map village with circular lakes  9582ms
+ ✓ test/villageBuilderSeam.test.ts (9 tests) 7768ms
+   ✓ buildVillageDomain > preserves seeded existing-map output when called through the compatibility adapter  1302ms
+   ✓ buildVillageDomain > normalizes 2 houses to 2  869ms
+   ✓ buildVillageDomain > normalizes 33 houses to 32  1736ms
+   ✓ buildVillageDomain > keeps a constrained house shortfall as a compatibility warning  669ms
+   ✓ buildVillageDomain > keeps a zero-house constrained build as an atomic compatibility failure  633ms
+   ✓ buildVillageDomain > rejects malformed legacy house input before mutating the ToolRunner project  462ms
+   ✓ village completed-house registration > preserves earlier house regions, allocates unique IDs, and protects after reload  1063ms
+   ✓ inspectVillageBuild > classifies the requested exterior, created interiors, actual houses, and structural QA  520ms
+   ✓ inspectVillageBuild > rejects a stale result whose exterior map is absent from authoritative project state  507ms
+ ✓ test/villageTreePlacement.test.ts (10 tests) 717ms
+ ✓ test/villageFirstPlanHardGate.test.ts (2 tests) 3244ms
+   ✓ 첫 plan 필수요소 hard 게이트 > 장터 테마는 장터 소품을 실측으로 보장한다  2511ms
+   ✓ 첫 plan 필수요소 hard 게이트 > 농촌 테마 look 평가는 farm 충족 여부를 requirementsMet에 싣는다  730ms
+ ✓ test/placePropsAdversarialHardening.test.ts (9 tests) 1473ms
+   ✓ place_props adversarial hardening > 소품 재료(덤불)는 그대로 산포한다  426ms
+ ✓ test/villageProducerProtection.test.ts (2 tests) 30665ms
+   ✓ village producer completion through toolRunner > retains sealed layers and stacks after global repair (snow=false)  3028ms
+   ✓ village producer completion through toolRunner > retains sealed layers and stacks after global repair (snow=true)  27634ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/forestDensity.test.ts > plant_tree_clusters > 기본(dense)이 선언한 커버리지에 닿고 그 지대를 실제로 막는다
+AssertionError: 영역의 30% 가 아직 걸어서 통과된다: expected 0.3003472222222222 to be less than 0.3
+ ❯ test/forestDensity.test.ts:227:8
+    225|     // 통행성 실측(실측 19.8%): 옛 판은 72.6% 가 걸어서 통과됐다.
+    226|     expect(densePassable, `영역의 ${Math.round(densePassable * 100)}% 가 아…
+    227|       .toBeLessThan(0.3);
+       |        ^
+    228|     // 숲이지 벽이 아니다 — 빈틈이 조금은 남아야 한다.
+    229|     expect(densePassable).toBeGreaterThan(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/forestDensity.test.ts > place_props density — 모델이 실제로 닿는 라이브 툴 > 활엽수 density=dense 가 count 없이도 숲을 만든다
+AssertionError: expected 0.3003472222222222 to be less than 0.3
+ ❯ test/forestDensity.test.ts:298:47
+    296|
+    297|     expect(treeCoverage(map, AREA)).toBeGreaterThanOrEqual(forestCover…
+    298|     expect(passableRatio(project, map, AREA)).toBeLessThan(0.3);
+       |                                               ^
+    299|     expect((result.data as { packing?: string }).packing).toBe("dense"…
+    300|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed | 12 passed (13)
+      Tests  2 failed | 186 passed (188)
+   Start at  04:44:37
+   Duration  397.86s (transform 16.11s, setup 0ms, collect 51.52s, tests 336.81s, environment 31ms, prepare 2.95s)
+
+JSON report written to /home/main/z-project/rpg-zzu-house-protection-p1-village/.omo/evidence/village-producer/final-report.json

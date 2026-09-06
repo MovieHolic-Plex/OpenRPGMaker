@@ -1,5 +1,80 @@
 # Editor AI Tools & Vocabulary
 
+## Completed-house transaction protection - Phase 1 (2026-09-05)
+
+`src/editor/tools/houseProtection.ts` is the shared completed-house ownership rule.
+Every write through `runToolDefinition` captures the **current accepted project**,
+not the assistant session's initial baseline, then checks the detached draft after
+**global tree-pair repair and before commit**, including dry-run. There is no
+selection, BuildSpec, map-target, or tool-name exemption. A rejected transaction
+returns `protected-house-write` or `house-overlap` and commits none of its maps,
+events, interiors, or map-tree additions. Human direct editing is unchanged.
+
+Final application also checks the current live store before history or replacement.
+`applyProposedProject` covers chat proposals, autonomous milestones, and cluster
+AI acceptance. `applyRegionProjectWithHistory` covers full and partial region
+approval after seam polishing. A safe detached tool result is not permission to
+overwrite a later human house edit or to commit protected-cell changes introduced
+by region postprocessing. Rejection leaves both the live project and undo history
+untouched; see `applyProposedProjectHouseProtection`, `regionTaskHouseProtection`,
+and `clusterAiModalHouseProtection` tests. Region tasks also retain newly completed
+house snapshots from the full session proposal before clipping. Full, partial,
+and immediate application check those snapshots after review polishing, so a
+selection that excludes the north ridge cannot commit a damaged new house.
+The selection is not expanded; unsafe candidates reject atomically.
+`regionTaskCompletedHouse` covers clipping, approval-time re-polishing, and intact
+house controls.
+
+Completion is metadata-defined: `layoutPlan.regions` with `role:"house"` protect
+the full bbox (including empty gaps between wings) plus its full-width north
+ridge row `y-1`, clipped to the map. Human `structurePlacements` protect their
+recorded rectangles, without an extra ridge. Both base layers and both persisted
+sparse stack entries are compared exactly, including empty cells and absent
+stacks. Stack rendering is deprecated, but that is not permission to erase saved
+stack data. Non-house layout regions and raw wall/roof tiles do not acquire this
+lock; existing fill role protections and incremental wall/door/window/roof
+construction without completion metadata remain unchanged.
+
+Roof-deck attachment protection requires recorded deck evidence (`shape:
+"rooftop-deck"`, `shape:rooftop-deck` tag, or `roof-deck` tag), a recorded door,
+and an existing upper ladder tile at the shared authored attachment coordinate.
+Only that one ground attachment outside the bbox is added, not the whole yard;
+an arbitrary nearby tile 322 is not evidence of a house attachment. The shared
+ladder calculation is also used by `village/houses.ts` when authoring decks.
+
+`houseKitDomain` preflights standalone/lots house footprints and records each
+completed house after house-owned finishing, before subsequent yard work and
+runner postprocessing. A draft-local seal retains those exact registration-time
+values; it is never refreshed to accept later corruption. Legacy `build_house`
+also preflights and registers. Durable ownership uses existing layout fields
+and survives serialize/deserialize; no schema or lock UI was added. The next
+transaction snapshots any accepted human edits, not original kit artwork.
+
+Map deletion, changing the protected map's tileset ID/tile size, cropping, and
+removing/shrinking/moving away/reclassifying recorded protection are rejected.
+Descriptive labels, notes, and tags may change when protection is preserved.
+New overlapping house geometry is rejected even when tile IDs are identical;
+pre-existing overlaps are tolerated only while their overlap does not expand.
+Village final layout registration retains earlier house regions and allocates
+unique IDs. **Village internal early sealing and proactive terrain/road/prop
+avoidance are Phase 2**: a Phase 1 transaction may reject unsafe generation
+instead of silently restoring or accepting damaged houses.
+
+Cluster approval (`clusterAiModal.ts`, including palette range classification) uses
+`applyProposedProject` against the live store, not direct snapshot/replacement.
+That common boundary owns house validation, undo, AI-attributed replacement,
+focus and commit logging. A stale proposal that would overwrite human house
+edits or remove a newly completed house leaves store/history and session draft
+unchanged; the modal reports failure and keeps the proposal available. Safe
+metadata-only proposals apply once and then rebase. Existing destructive/rule
+confirmation hooks are unchanged. Regression: `test/clusterAiModalHouseProtection.test.ts`.
+
+Focused contracts: `test/houseProtection.test.ts`, `test/toolHouseProtection.test.ts`,
+`test/houseKitDomainSeam.test.ts`, `test/villageBuilderSeam.test.ts`,
+`test/assistantMapPreservationGuard.test.ts`, `test/constructionToolsV3.test.ts`.
+The session matrix covers accepted, same-turn, same-session, and newly created
+maps against selection, `confirmDestroy`, and both `overExisting` values.
+
 ## 퀘스트 입력과 완주 증거 계약 (2026-09-05)
 
 `create_quest`는 `QuestDef`의 단계 정의와 이벤트/플래그를 만들며 graph를 만들지 않는다. `questToolSchemas.ts`가 giver/target의 `{mapId,eventId}` 또는 `{create:{mapId,x,y,name}}`, collect의 `itemId/count/sources`, kill의 `troopId/at`, reach의 `mapId/x/y`를 모델 스키마에 모두 노출한다. 공통 runner의 검사는 얕으므로 `parseQuestDef`가 실제 kind별 중첩 구조를 컴파일 전에 검증한다. 오류에는 `def.steps[0].at.mapId` 같은 경로와 올바른 형태를 싣는다. provider용 키 합집합 때문에 공통 좌표 정규화가 reach/talk에도 `at`를 합성할 수 있어, 단계 파서는 해당 kind의 필드만 검증한다.

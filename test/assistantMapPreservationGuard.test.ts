@@ -11,6 +11,8 @@ import { AssistantSession } from "@/ai/assistantSession";
 import { runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
+import type { ToolResult } from "@/editor/tools/types";
+import { fixedDeclarer } from "./intentFixture";
 
 type ChatResult = import("@/ai/llmClient").ChatResult;
 
@@ -77,6 +79,65 @@ async function runSession(project: Project, steps: readonly ChatResult[], text =
   });
   return { session, events };
 }
+
+describe("completed houses cannot be overwritten through session permissions", () => {
+  const permits = [
+    { name: "selection", asset: null },
+    { name: "confirmDestroy", asset: { kind: "clear", confirmDestroy: true } },
+    { name: "overExisting-clear", asset: { kind: "terrain", overExisting: "clear" } },
+    { name: "overExisting-keep", asset: { kind: "terrain", overExisting: "keep" } },
+  ];
+  const scenarios = ["accepted", "same-turn", "new-map", "same-session"];
+  for (const scenario of scenarios) {
+    it.each(permits)(`${scenario}: rejects destruction despite $name`, async ({ asset }) => {
+      const ctx = { project: createBlankProject() };
+      const mapId = scenario === "new-map" ? "new_house_map" : ctx.project.startMapId;
+      ctx.project.startPos = { x: 0, y: 0 };
+      const houseArgs = {
+        kind: "single", mapId, kitId: "blue-stone", wings: [{ x: 2, y: 2, w: 6, h: 6 }],
+        interior: "exterior-only", yard: [],
+      };
+      let builtMap: Project["maps"][string] | undefined;
+      if (scenario === "accepted") {
+        const built = runTool(ctx, "author_house", houseArgs);
+        expect(built.ok, JSON.stringify(built.issues)).toBe(true);
+        builtMap = structuredClone(ctx.project.maps[mapId]);
+      }
+      const steps: ChatResult[] = [];
+      if (scenario === "new-map") steps.push(toolCallMsg("create_map", { id: mapId, name: "New house map", width: 20, height: 15 }, "map"));
+      if (scenario !== "accepted") {
+        steps.push(toolCallMsg("set_build_spec", { mapId, assets: [{ id: "house", kind: "house", x: 1, y: 1, w: 8, h: 8 }] }, "plan"));
+        steps.push(toolCallMsg("author_house", houseArgs, "build"));
+      }
+      if (scenario === "same-session") steps.push(finalMsg("Done"));
+      if (asset) steps.push(toolCallMsg("set_build_spec", { mapId, assets: [{ id: "permit", x: 1, y: 1, w: 8, h: 8, ...asset }] }, "permit"));
+      steps.push(toolCallMsg("tile_erase", { mapId, rect: { x: 2, y: 2, w: 6, h: 6 } }, "erase"), finalMsg("Done"));
+      const session = new AssistantSession(ctx.project, {
+        config: CONFIG, chat: scriptedChat(steps), contextOptions: { currentMapId: mapId },
+        declareIntent: fixedDeclarer({ mode: "create", targetMapId: mapId }),
+      });
+      const results: { name: string; result: ToolResult }[] = [];
+      const collect = (event: import("@/ai/assistantSession").SessionEvent): void => {
+        if (event.type !== "tool_call") return;
+        results.push({ name: event.name, result: event.result });
+        if (event.name === "author_house" && event.result.ok) builtMap = structuredClone(session.getProposedProject().maps[mapId]);
+      };
+      const request = `author_house tile_erase 집을 짓고 정리해줘\n\n[컨텍스트] 현재 맵: 집 (${mapId}) · 사용자 선택 영역: (1,1) 8×8`;
+      await session.sendUserMessage(request, collect);
+      if (scenario === "same-session") await session.sendUserMessage(request, collect);
+      expect(builtMap).toBeDefined();
+      if (scenario !== "accepted") expect(results.find((entry) => entry.name === "author_house")?.result.ok, JSON.stringify(results)).toBe(true);
+      if (asset) expect(results.filter((entry) => entry.name === "set_build_spec").at(-1)?.result.ok).toBe(true);
+      const erased = results.find((entry) => entry.name === "tile_erase")?.result;
+      expect(erased?.issues?.map((issue) => issue.code), JSON.stringify(results)).toContain("protected-house-write");
+      expect(erased?.ok).toBe(false);
+      const retained = session.getProposedProject().maps[mapId];
+      expect(retained.lowerTiles).toEqual(builtMap?.lowerTiles);
+      expect(retained.upperTiles).toEqual(builtMap?.upperTiles);
+      expect(retained.layoutPlan).toEqual(builtMap?.layoutPlan);
+    });
+  }
+});
 
 describe("수정 요청에서 맵 보존", () => {
   it("기존 맵 id 로 방 세션을 시작하려 하면 거부되고 맵이 그대로 남는다", async () => {

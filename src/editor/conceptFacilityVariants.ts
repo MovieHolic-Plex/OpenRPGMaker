@@ -14,8 +14,8 @@ const DESIGN_NOTES: Readonly<Record<string, string>> = {
 
 /** Reference only: never replaces the live authored bundle or its omissions. */
 export function facilityDesignVariants(facilityId: string) {
-  const why = DESIGN_NOTES[facilityId];
-  const bundle = why ? conceptFacilityTemplateById(facilityId) : undefined;
+  const bundle = conceptFacilityTemplateById(facilityId);
+  const why = DESIGN_NOTES[facilityId] ?? "장소별 가구 구성과 출입 통로를 참고해 설계한다.";
   const facility = bundle?.facilities[0];
   if (!bundle || !facility) return [];
   return [{

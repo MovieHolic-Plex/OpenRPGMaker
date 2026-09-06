@@ -16,6 +16,7 @@ import {
 } from "./combinedTownGroups";
 import { applyEasyRpgThemeMetadataPacks } from "./themePacks";
 import { roleCapabilities } from "@/project/tileRoles";
+import { chipsetLabelCorrection, seedChipsetLabelCorrections } from "@/project/defaults/chipsetLabelCorrections";
 
 const passable: PassFlag = { up: true, down: true, left: true, right: true };
 const solid: PassFlag = { up: false, down: false, left: false, right: false };
@@ -42,6 +43,7 @@ export function ensureTilesetHarnesses(project: Pick<Project, "tilesets">): bool
       changed = applyCustomChipsetMinimalHarness(tileset) || changed;
     }
     changed = applyEasyRpgThemeMetadataPacks(tileset) || changed;
+    changed = seedChipsetLabelCorrections(tileset) || changed;
   }
   return changed;
 }
@@ -90,6 +92,7 @@ export function applyCombinedTownHarness(tileset: TilesetDef): boolean {
     tileset.tileGroups = next;
     changed = true;
   }
+  changed = seedChipsetLabelCorrections(tileset) || changed;
   return changed;
 }
 
@@ -182,6 +185,7 @@ function applyTileContract(tileset: TilesetDef, group: CombinedTownHarnessGroup,
     confidence: group.confidence,
     source: "bundled-default",
     ...(meta?.userLocked ? { userLocked: true } : {}),
+    ...chipsetLabelCorrection(tileset.image.id, tile),
   };
   if (meta?.userLocked !== true && meta?.source !== "user" && JSON.stringify(meta) !== JSON.stringify(nextMeta)) {
     tileset.tileMeta![tile] = nextMeta;

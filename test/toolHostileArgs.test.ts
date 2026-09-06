@@ -6,11 +6,13 @@
 // - 던진 예외로 런타임을 깨서도 안 된다.
 //
 // 이 스윕이 없던 동안 page.trigger 누락 하나가 projectLint 크래시로 이어져 커밋 경로가 죽었다.
+import { scheduler } from "node:timers/promises";
 import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools/toolRunner";
 import { allTools } from "@/editor/tools/toolRegistry";
 import { createBlankProject } from "@/project/defaults";
 import type { JsonSchema, ToolResult } from "@/editor/tools/types";
+import { completedHouseProject, houseMap, HOUSE_RECT, mutateProject } from "./fixtures/completedHouse";
 
 type Variant = "empty" | "nulls" | "wrongTypes" | "deepHoles";
 
@@ -58,9 +60,11 @@ describe("쓰기 툴 적대적 인자 스윕", () => {
   });
 
   for (const variant of ["empty", "nulls", "wrongTypes", "deepHoles"] as const) {
-    it(`${variant} 인자에 어떤 툴도 크래시하거나 읽을 수 없는 실패를 남기지 않는다`, () => {
+    it(`${variant} 인자에 어떤 툴도 크래시하거나 읽을 수 없는 실패를 남기지 않는다`, async () => {
       const offenders: string[] = [];
       for (const tool of writeTools) {
+        // Let worker RPC responses drain between synchronous tool calls; no timed wait.
+        await scheduler.yield();
         const ctx = { project: createBlankProject() };
         let result: ToolResult;
         try {
@@ -77,4 +81,39 @@ describe("쓰기 툴 적대적 인자 스윕", () => {
       expect(offenders).toEqual([]);
     }, HOSTILE_ARGS_TIMEOUT_MS);
   }
+});
+
+describe("postprocessing error boundary", () => {
+  for (const code of ["protected-house-write", "house-overlap"] as const) {
+    it.each([false, true])(`returns a readable ${code} rejection with empty args (dryRun=%s)`, (dryRun) => {
+      const ctx = { project: completedHouseProject() };
+      const original = ctx.project;
+      const before = structuredClone(original);
+      const result = mutateProject(ctx, (draft) => {
+        const map = houseMap(draft);
+        if (code === "protected-house-write") map.upperTiles[3 * map.width + 3] = -1;
+        else map.layoutPlan?.regions.push({ id: "overlap", role: "house", label: "Overlap", ...HOUSE_RECT });
+      }, dryRun);
+      expect(result.ok).toBe(false);
+      expect(result.issues).toEqual([expect.objectContaining({ severity: "error", code, mapId: original.startMapId })]);
+      expect(isUnreadableFailure(result), JSON.stringify(result)).toBe(false);
+      expect(ctx.project).toBe(original);
+      expect(ctx.project).toEqual(before);
+    });
+  }
+
+  it("retains unexpected postprocessing exceptions and rolls back", () => {
+    const ctx = { project: completedHouseProject() };
+    const original = ctx.project;
+    const before = structuredClone(original);
+    const error = new Error("postprocessing fixture failure");
+    const result = mutateProject(ctx, (draft) => {
+      Object.defineProperty(draft.maps, "broken", { enumerable: true, get() { throw error; } });
+    });
+    expect(result.ok).toBe(false);
+    expect(result.issues).toEqual([{ severity: "error", code: "tool-postprocess", message: error.message }]);
+    expect(isUnreadableFailure(result)).toBe(true);
+    expect(ctx.project).toBe(original);
+    expect(ctx.project).toEqual(before);
+  });
 });

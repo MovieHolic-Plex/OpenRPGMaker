@@ -532,11 +532,10 @@ describe("build_village", () => {
       const interior = context.project.maps[house.interiorMapId as string];
       expect(interior.name.startsWith(`${house.ownerName}의 집 내부`)).toBe(true);
       expect(interior.tilesetId).toBe(INTERIOR_HOUSE_TILESET_ID);
-      // villager-room-v1 규모(천장 정본 v2: 북벽 = 천장+벽, minY<3이면 height를 늘림).
-      // cottage-l 20×20, cottage2/3 20×21, ceiling-shift+2 20×22, mansion 24×25.
-      // 22는 sketchHouseSites가 다른 템플릿/프로그램을 고르면 rooms minY=1이 되어 나온다.
-      expect([20, 24]).toContain(interior.width);
-      expect([20, 21, 22, 25]).toContain(interior.height);
+      // The concept's authored places now determine the interior dimensions.
+      expect(interior.roomHarnessPlan?.plan).toMatchObject({
+        width: interior.width, height: interior.height, concept: { rooms: expect.any(Object) },
+      });
       expect(house.entry).toBeTruthy();
       expect(house.exit).toBeTruthy();
       expect(door?.pages?.[0]?.commands.at(-1)).toMatchObject({
@@ -741,8 +740,9 @@ describe("build_village housePlans contract", () => {
     const interiorId = data.houses?.[0]?.interiorMapId;
     expect(interiorId).toBeTruthy();
     const interior = ctx.project.maps[interiorId!];
-    expect(interior.width).toBe(20);
-    expect(interior.height).toBe(20);
+    expect(interior.roomHarnessPlan?.plan).toMatchObject({
+      width: interior.width, height: interior.height, concept: { facilityId: "manor" },
+    });
     expect(interior.name).toContain("촌장 로안");
   });
 
@@ -988,4 +988,3 @@ describe("exterior footprint area (wing-union)", () => {
     expect(data.houses?.[0]?.interiorScale).toBe("cottage3");
   });
 });
-

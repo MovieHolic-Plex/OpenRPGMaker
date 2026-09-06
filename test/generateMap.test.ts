@@ -72,8 +72,9 @@ describe("generate_map", () => {
 
   // border:"wall" 로 고정한다 — 이 케이스가 검증하는 것은 프로필 디스패치와
   // "장애물 팔레트가 통행 불가로 등록되는가"이고, 그 관측점이 외곽 (0,0)이다.
-  it("모든 번들 타일셋을 서로 다른 생성 프로필로 디스패치한다", () => {
+  it("번들 프로필을 디스패치하되 실내는 개념 시공으로 안내한다", () => {
     const profileKeys = new Set<string>();
+    let conceptInteriors = 0;
 
     for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
       const tilesetId = bundledEasyRpgTilesetId(asset.textureKey);
@@ -89,6 +90,13 @@ describe("generate_map", () => {
         border: "wall",
       });
 
+      if (["easyrpg_chipset_interior", "easyrpg_chipset_retro_house", "scarloxy_chipset_indoor"].includes(tilesetId)) {
+        expect(result.ok).toBe(false);
+        expect(result.issues?.some(issue => issue.code === "concept-interior-required")).toBe(true);
+        expect(ctx.project.maps[`map_${tilesetId}`]).toBeUndefined();
+        conceptInteriors += 1;
+        continue;
+      }
       expect(result.ok, `${tilesetId}: ${result.summary}`).toBe(true);
       const data = result.data as { mapId: string; generationProfile: string };
       const map = ctx.project.maps[data.mapId];
@@ -102,7 +110,7 @@ describe("generate_map", () => {
       profileKeys.add(data.generationProfile);
     }
 
-    expect(profileKeys.size).toBe(BUNDLED_EASYRPG_CHIPSET_ASSETS.length);
+    expect(profileKeys.size + conceptInteriors).toBe(BUNDLED_EASYRPG_CHIPSET_ASSETS.length);
   });
 
   // 사용자 보고 2026-08-29: "타일 깔라 하면 항상 외곽에 벽을 깐다".

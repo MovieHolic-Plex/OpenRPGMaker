@@ -1,0 +1,299 @@
+{
+  "status": "passed",
+  "implementationCommit": "02b496aec6c331d0cc33b19217765e2b0b2e967b",
+  "specSha256": "03af8ca9c6b732a1c5e0513000393d0fe739bda51f7ad08d46b563c732b2cc76",
+  "command": "DEV_SERVER_PORT=52385 E2E_RETRIES=0 npx playwright test test/e2e/ai-house-protection.spec.ts --project=chromium --workers=1 --reporter=line",
+  "passed": 4,
+  "failed": 0,
+  "retries": 0,
+  "exit": 0,
+  "duration": "4.9m",
+  "assignedEnvPort": 9841,
+  "ownedServerPort": 52385,
+  "serverReceipt": "server-receipt.json",
+  "cleanup": "cleanup.json",
+  "scenarios": [
+    {
+      "permit": "selection",
+      "json": "selection.json",
+      "sha256": "985d5448ed8a6d88405c9bf28d8cebb7bcda6c2e08576e6986c2f6a03fd77f7f",
+      "protectedCellCount": 42,
+      "twoLayerAndStackExactEquality": true,
+      "entireMapRollbackForEachRejection": true,
+      "unrelatedSelectedEditSucceeded": true,
+      "deniedWriteCount": 16,
+      "outcomes": [
+        {
+          "id": "plan",
+          "ok": true,
+          "issueCodes": []
+        },
+        {
+          "id": "build",
+          "ok": true,
+          "issueCodes": []
+        },
+        {
+          "id": "erase-house",
+          "ok": false,
+          "issueCodes": [
+            "protected-house-write"
+          ]
+        },
+        {
+          "id": "fill-empty-upper",
+          "ok": false,
+          "issueCodes": [
+            "protected-house-write"
+          ]
+        },
+        {
+          "id": "erase-ridge",
+          "ok": false,
+          "issueCodes": [
+            "protected-house-write"
+          ]
+        },
+        {
+          "id": "edit-selected-outside",
+          "ok": true,
+          "issueCodes": []
+        }
+      ]
+    },
+    {
+      "permit": "confirmDestroy",
+      "json": "confirmDestroy.json",
+      "sha256": "e303d68afb789d635132203903a03d4c7981050b3dae0a82850738e2a7fa3844",
+      "protectedCellCount": 42,
+      "twoLayerAndStackExactEquality": true,
+      "entireMapRollbackForEachRejection": true,
+      "unrelatedSelectedEditSucceeded": true,
+      "deniedWriteCount": 18,
+      "outcomes": [
+        {
+          "id": "plan",
+          "ok": true,
+          "issueCodes": []
+        },
+        {
+          "id": "build",
+          "ok": true,
+          "issueCodes": []
+        },
+        {
+          "id": "permit",
+          "ok": true,
+          "issueCodes": []
+        },
+        {
+          "id": "erase-house",
+          "ok": false,
+          "issueCodes": [
+            "protected-house-write"
+          ]
+        },
+        {
+          "id": "fill-empty-upper",
+          "ok": false,
+          "issueCodes": [
+            "protected-house-write"
+          ]
+        },
+        {
+          "id": "erase-ridge",
+          "ok": false,
+          "issueCodes": [
+            "protected-house-write"
+          ]
+        },
+        {
+          "id": "edit-selected-outside",
+          "ok": true,
+          "issueCodes": []
+        }
+      ]
+    },
+    {
+      "permit": "overExisting-clear",
+      "json": "overExisting-clear.json",
+      "sha256": "0b0c703492352d021a33aadd47eaf96400551466dad71dcc40d5d0b6371434b8",
+      "protectedCellCount": 42,
+      "twoLayerAndStackExactEquality": true,
+      "entireMapRollbackForEachRejection": true,
+      "unrelatedSelectedEditSucceeded": true,
+      "deniedWriteCount": 18,
+      "outcomes": [
+        {
+          "id": "plan",
+          "ok": true,
+          "issueCodes": []
+        },
+        {
+          "id": "build",
+          "ok": true,
+          "issueCodes": []
+        },
+        {
+          "id": "permit",
+          "ok": true,
+          "issueCodes": []
+        },
+        {
+          "id": "erase-house",
+          "ok": false,
+          "issueCodes": [
+            "protected-house-write"
+          ]
+        },
+        {
+          "id": "fill-empty-upper",
+          "ok": false,
+          "issueCodes": [
+            "protected-house-write"
+          ]
+        },
+        {
+          "id": "erase-ridge",
+          "ok": false,
+          "issueCodes": [
+            "protected-house-write"
+          ]
+        },
+        {
+          "id": "edit-selected-outside",
+          "ok": true,
+          "issueCodes": []
+        }
+      ]
+    },
+    {
+      "permit": "overExisting-keep",
+      "json": "overExisting-keep.json",
+      "sha256": "1b633f4716fd8c02ae262eb302f9270293188d13d22a85bf13af9f9d3cb49391",
+      "protectedCellCount": 42,
+      "twoLayerAndStackExactEquality": true,
+      "entireMapRollbackForEachRejection": true,
+      "unrelatedSelectedEditSucceeded": true,
+      "deniedWriteCount": 18,
+      "outcomes": [
+        {
+          "id": "plan",
+          "ok": true,
+          "issueCodes": []
+        },
+        {
+          "id": "build",
+          "ok": true,
+          "issueCodes": []
+        },
+        {
+          "id": "permit",
+          "ok": true,
+          "issueCodes": []
+        },
+        {
+          "id": "erase-house",
+          "ok": false,
+          "issueCodes": [
+            "protected-house-write"
+          ]
+        },
+        {
+          "id": "fill-empty-upper",
+          "ok": false,
+          "issueCodes": [
+            "protected-house-write"
+          ]
+        },
+        {
+          "id": "erase-ridge",
+          "ok": false,
+          "issueCodes": [
+            "protected-house-write"
+          ]
+        },
+        {
+          "id": "edit-selected-outside",
+          "ok": true,
+          "issueCodes": []
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "confirmDestroy-after.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "4be0a55cf8e2bf0a53dbce0bde1396e24c836545d1c40636f0ccb55d96f5e37a"
+    },
+    {
+      "file": "confirmDestroy-before.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "56091bc0d78422302f03c1eba2537f51176336c07922176ea7445fad0e021b31"
+    },
+    {
+      "file": "confirmDestroy-built-before-attempts.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "6c1a5956346e3db86fcfb49eb32b4cf0fbbcc39520de8a17710763496155c088"
+    },
+    {
+      "file": "overExisting-clear-after.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "7f3543fa4967410078ecad79110c97bd5f7c5e4fa1e6f2fbf83cc81145055eac"
+    },
+    {
+      "file": "overExisting-clear-before.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "ed0df7869de4b53792e61347ad499abb00d19d3071f89c0adb35b250ec9a781e"
+    },
+    {
+      "file": "overExisting-clear-built-before-attempts.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "b9f26f0b5c8541a29211d10f849c7d9026394408f9a3343a27dc7a6744c2f45a"
+    },
+    {
+      "file": "overExisting-keep-after.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "e520f210907831f96b6cecc3197de0fc0a1ba86afd5137c8b9dc08d0d3a12956"
+    },
+    {
+      "file": "overExisting-keep-before.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "56091bc0d78422302f03c1eba2537f51176336c07922176ea7445fad0e021b31"
+    },
+    {
+      "file": "overExisting-keep-built-before-attempts.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "c07e034b1ed85e999f0d371fd7a7d76f3d0d2fa1f81c52230c4bd8e2db44dc38"
+    },
+    {
+      "file": "selection-after.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "296f3c23193d845017ee0b4616d21ec4b740cdd4205abc0643a77ec78c0a6423"
+    },
+    {
+      "file": "selection-before.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "f82a8c47b3f6ef1a5f37581f9be06f111d6d98ad1bdad61875ecb50605918540"
+    },
+    {
+      "file": "selection-built-before-attempts.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "ee00e1c2afd8dadbbe5fb8fdac9dae2fee08abca0d0aa80a6661842ee7c18db6"
+    }
+  ],
+  "visualInterpretationVerified": false
+}

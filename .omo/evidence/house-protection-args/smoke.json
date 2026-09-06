@@ -1,0 +1,40 @@
+[
+  {
+    "name": "run_village_pipeline",
+    "args": {},
+    "result": {
+      "ok": false,
+      "summary": "'run_village_pipeline' 실행 실패: 완성된 집의 보호 영역은 AI가 변경할 수 없습니다. 집 밖에서 작업하세요. 직접 편집은 가능합니다.",
+      "issues": [
+        {
+          "severity": "error",
+          "code": "protected-house-write",
+          "mapId": "map_village_1_50x50",
+          "x": 5,
+          "y": 8,
+          "message": "완성된 집의 보호 영역은 AI가 변경할 수 없습니다. 집 밖에서 작업하세요. 직접 편집은 가능합니다."
+        }
+      ]
+    },
+    "unchanged": true
+  },
+  {
+    "name": "build_village",
+    "args": {},
+    "result": {
+      "ok": false,
+      "summary": "'build_village' 실행 실패: 완성된 집의 보호 영역은 AI가 변경할 수 없습니다. 집 밖에서 작업하세요. 직접 편집은 가능합니다.",
+      "issues": [
+        {
+          "severity": "error",
+          "code": "protected-house-write",
+          "mapId": "map_village_1_50x50",
+          "x": 8,
+          "y": 24,
+          "message": "완성된 집의 보호 영역은 AI가 변경할 수 없습니다. 집 밖에서 작업하세요. 직접 편집은 가능합니다."
+        }
+      ]
+    },
+    "unchanged": true
+  }
+]

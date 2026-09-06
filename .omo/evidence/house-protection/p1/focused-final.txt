@@ -1,0 +1,149 @@
+$ npm test -- test/houseProtection.test.ts test/toolHouseProtection.test.ts test/houseKitDomainSeam.test.ts test/villageBuilderSeam.test.ts test/assistantMapPreservationGuard.test.ts test/constructionToolsV3.test.ts test/aiSpecGateHardening.test.ts test/houseKitDecor.test.ts test/villageWrites.test.ts test/villageWingGeometry.test.ts
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/houseProtection.test.ts test/toolHouseProtection.test.ts test/houseKitDomainSeam.test.ts test/villageBuilderSeam.test.ts test/assistantMapPreservationGuard.test.ts test/constructionToolsV3.test.ts test/aiSpecGateHardening.test.ts test/houseKitDecor.test.ts test/villageWrites.test.ts test/villageWingGeometry.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-house-protection-p1
+
+ ✓ test/villageWingGeometry.test.ts (13 tests) 33ms
+ ✓ test/villageWrites.test.ts (14 tests) 3300ms
+   ✓ buildVillageWrites > 모든 쓰기가 영역 안이다  610ms
+   ✓ buildVillageWrites > 다양성이 보장된다 — 집이 여러 채면 모양도 여러 종 (비복원 추출)  965ms
+   ✓ 마을 팔레트 유도 > combined_town 슬롯에서 길·지면·울타리가 나온다  964ms
+ ✓ test/houseKitDecor.test.ts (6 tests) 6970ms
+   ✓ author_house 장식 옵션 — chimney > chimney:true 면 굴뚝이 시공된다  5604ms
+   ✓ author_house 장식 옵션 — chimney > 옵션을 안 주면 기존과 동일 — 장식 타일이 없다(기본 꺼짐 회귀 방지)  1055ms
+ ✓ test/villageBuilderSeam.test.ts (9 tests) 13287ms
+   ✓ buildVillageDomain > preserves seeded existing-map output when called through the compatibility adapter  3329ms
+   ✓ buildVillageDomain > normalizes 2 houses to 2  1177ms
+   ✓ buildVillageDomain > normalizes 33 houses to 32  1252ms
+   ✓ buildVillageDomain > keeps a constrained house shortfall as a compatibility warning  310ms
+   ✓ buildVillageDomain > keeps a zero-house constrained build as an atomic compatibility failure  408ms
+   ✓ buildVillageDomain > rejects malformed legacy house input before mutating the ToolRunner project  330ms
+   ✓ village completed-house registration > preserves earlier house regions, allocates unique IDs, and protects after reload  4044ms
+   ✓ inspectVillageBuild > classifies the requested exterior, created interiors, actual houses, and structural QA  1456ms
+   ✓ inspectVillageBuild > rejects a stale result whose exterior map is absent from authoritative project state  972ms
+ ✓ test/toolHouseProtection.test.ts (12 tests) 15925ms
+   ✓ completed house transaction invariant > rolls back maps, events and tree additions atomically (dryRun=false)  2924ms
+   ✓ completed house transaction invariant > rolls back maps, events and tree additions atomically (dryRun=true)  1689ms
+   ✓ completed house transaction invariant > catches global tree-repair spillover even when the tool edits another map  994ms
+   ✓ completed house transaction invariant > seals a newly built standalone house before global tree repair  1917ms
+   ✓ completed house transaction invariant > retains registration-time snapshots through later work in the same transaction  1233ms
+   ✓ completed house transaction invariant > does not allow removing metadata and then destroying the house  1380ms
+   ✓ completed house transaction invariant > preflights author_house against a completed house without tile changes  1198ms
+   ✓ completed house transaction invariant > preflights build_house against a completed house without tile changes  576ms
+   ✓ completed house transaction invariant > registers and reloads a standalone roof-deck attachment without claiming its yard  1189ms
+   ✓ completed house transaction invariant > allows unrelated edits and safe dry-run without changing the original project  2356ms
+ ❯ test/houseKitDomainSeam.test.ts (10 tests | 1 failed) 17630ms
+   ✓ HouseKit domain seam baseline characterization > locks the exterior-only blue-stone L-house semantic hash  823ms
+   ✓ HouseKit domain seam baseline characterization > locks the linked-interior semantic hash  1038ms
+   ✓ HouseKit durable completed-house registration > registers single footprints and preserves them through reload  5391ms
+   ✓ HouseKit durable completed-house registration > registers lots footprints and preserves them through reload  4695ms
+   ✓ HouseKit domain seam > author_house single produces the domain exterior-only semantic project  1620ms
+   ✓ HouseKit domain seam > author_house single produces the domain linked-interior semantic project  823ms
+   × HouseKit domain seam > keeps one exhaustive public kit list and a safe HouseKit module size 32ms
+     → expected 233 to be less than or equal to 220
+   ✓ HouseKit domain seam > keeps house lot and registered prop composition on shared domain calls  2051ms
+   ✓ HouseKit domain seam > leaves the caller hash unchanged when the target map is missing  328ms
+   ✓ HouseKit domain seam > leaves the caller hash unchanged when a wing is out of bounds  809ms
+ ✓ test/houseProtection.test.ts (23 tests) 17683ms
+   ✓ completed house geometry and exact cell ownership > protects bbox, full-width north ridge and empty cells at (3,2)  651ms
+   ✓ completed house geometry and exact cell ownership > protects bbox, full-width north ridge and empty cells at (6,2)  427ms
+   ✓ completed house geometry and exact cell ownership > protects bbox, full-width north ridge and empty cells at (3,3)  549ms
+   ✓ completed house geometry and exact cell ownership > protects bbox, full-width north ridge and empty cells at (6,6)  801ms
+   ✓ completed house geometry and exact cell ownership > protects bbox, full-width north ridge and empty cells at (4,4)  578ms
+   ✓ completed house geometry and exact cell ownership > protects lowerTileStacks contents, order and absence  3644ms
+   ✓ completed house geometry and exact cell ownership > protects upperTileStacks contents, order and absence  4097ms
+   ✓ completed house geometry and exact cell ownership > clips ridge and bbox at map edges (0,0)  554ms
+   ✓ completed house geometry and exact cell ownership > clips ridge and bbox at map edges (18,13)  772ms
+   ✓ completed house geometry and exact cell ownership > protects a human placement rectangle without adding a north ridge  1549ms
+   ✓ completed house geometry and exact cell ownership > protects the existing roof-deck ladder attachment, not the entire yard  864ms
+   ✓ completed house geometry and exact cell ownership > does not claim a raw adjacent ladder without roof-deck metadata  342ms
+   ✓ completed house geometry and exact cell ownership > allows descriptive metadata and unrelated stack changes  392ms
+   ✓ completed house geometry and exact cell ownership > takes the current accepted human-edited tiles as truth, not original kit tiles  427ms
+ ✓ test/constructionToolsV3.test.ts (26 tests) 30849ms
+   ✓ build_wall / build_roof (공정 1·3단계) > 미합의 벽 어휘는 soft-confirm으로 시공되고 vocabSoftConfirm 을 붙인다  3715ms
+   ✓ build_wall / build_roof (공정 1·3단계) > 승인된 9분할 벽을 rect에 시공하고(lower 홈) data.wallRegion을 반환한다  899ms
+   ✓ build_wall / build_roof (공정 1·3단계) > 벽 없이 build_roof는 거부되고('먼저 build_wall'), 벽을 지으면 자동 감지로 벽 위에 얹는다  1557ms
+   ✓ incremental primitives versus recorded completed houses > 'build_wall' remains incremental without metadata and rejects the same recorded-house write  2208ms
+   ✓ incremental primitives versus recorded completed houses > 'build_roof' remains incremental without metadata and rejects the same recorded-house write  2852ms
+   ✓ incremental primitives versus recorded completed houses > 'place_door' remains incremental without metadata and rejects the same recorded-house write  6557ms
+   ✓ incremental primitives versus recorded completed houses > 'place_window' remains incremental without metadata and rejects the same recorded-house write  1654ms
+   ✓ place_door / place_window (공정 2단계 — 벽 셀에만) > 벽 셀이 아니면 거부하고, 벽 셀에는 어휘 layerHome대로 설치한다  1024ms
+   ✓ lay_path / place_props (공정 4·5단계) > 승인 어휘 + 8-이웃 variantMap이면 결정론(seed)으로 길을 깔고 외곽/inner corner를 재계산한다  1080ms
+   ✓ lay_path / place_props (공정 4·5단계) > place_props: 미합의 소품도 soft-confirm으로 배치되고, 승인 그룹도 동일 엔진으로 배치된다  2587ms
+   ✓ lay_path / place_props (공정 4·5단계) > place_props: 존재하지 않는 라벨은 하드 실패한다  466ms
+   ✓ fill_region / tile_erase (면 채우기·부분 보호) > fill_region: 10×8 rect를 물 오토타일로 채우면 80칸 전부 물이고 통행 불가, 경계 quarter가 정합된다  429ms
+   ✓ fill_region / tile_erase (면 채우기·부분 보호) > fill_region shape=circle: 9×9 박스 안 원만 채우고 모서리는 비운다(원형 호수)  634ms
+   ✓ fill_region / tile_erase (면 채우기·부분 보호) > place_props: 물 위에는 나무를 올리지 않는다  839ms
+   ✓ fill_region / tile_erase (면 채우기·부분 보호) > fill_region: transfer 목적지가 통행 불가가 될 때 해당 칸만 제외하고 warning으로 통과한다  315ms
+   ✓ fill_region / tile_erase (면 채우기·부분 보호) > tile_erase: 기본 바닥이 통행을 막을 때만 transfer 목적지 셀을 제외한다  356ms
+   ✓ fill_region / tile_erase (면 채우기·부분 보호) > tile_erase: 지운 하위 칸은 빈 칸이 아니라 맵의 기본 바닥이다 — 바닥에 구멍을 남기지 않는다  525ms
+   ✓ fill_region / tile_erase (면 채우기·부분 보호) > tile_erase: 기본 바닥은 rect 밖 최빈값 — 실내 바닥 맵은 잔디가 아니라 그 바닥으로 되돌린다  571ms
+   ✓ tile_erase kind=market (시장 데크만 선택 철거) > kind=market: bbox가 집을 덮어도 집 타일은 그대로, 시장 데크만 지우고 lower는 잔디로 되돌린다  896ms
+   ✓ tile_erase kind=market (시장 데크만 선택 철거) > kind 생략(레거시)은 AABB 전체를 정리한다 — 집 타일도 상위는 EMPTY·하위는 기본 바닥  659ms
+   ✓ 잔디 채우기 (grass-autotile) > fill_region이 잔디 그룹으로 사각형을 채운다  404ms
+ ✓ test/aiSpecGateHardening.test.ts (21 tests) 30764ms
+   ✓ 밑그림 좌표 정규화 — 게이트는 검증기가 받아준 값과 같은 숫자를 본다 > 문자열 좌표로 확정한 밑그림도 밑그림 밖 구조물 정리를 차단한다  4033ms
+   ✓ 기존 내용 보호는 밑그림 안에서도 — 기준선(사용자 맵)에 있던 것은 선언 없이 덮지 않는다 > 밑그림 확정 뒤 사용자가 그 자리에 판 호수는 다음 턴의 채우기가 덮지 못한다  1468ms
+   ✓ 기존 내용 보호는 밑그림 안에서도 — 기준선(사용자 맵)에 있던 것은 선언 없이 덮지 않는다 > 이 세션이 밑그림 안에 지은 것은 같은 세션이 다시 손댈 수 있다  4599ms
+   ✓ 기존 내용 보호는 밑그림 안에서도 — 기준선(사용자 맵)에 있던 것은 선언 없이 덮지 않는다 > clear 에셋에 confirmDestroy 가 있으면 기존 구조물을 덮는 clear_region 이 통과한다  1304ms
+   ✓ 기존 내용 보호는 밑그림 안에서도 — 기준선(사용자 맵)에 있던 것은 선언 없이 덮지 않는다 > overExisting 을 선언한 배치 에셋 자리의 기존 구조물은 덮을 수 있다  924ms
+   ✓ 게이트 밖이던 타일 쓰기 툴도 기존 구조물 보호를 받는다 > tile_erase 가 밑그림 없이 기준선 구조물을 지우려 하면 차단되고 빈 땅 정리는 그대로 통과한다  3432ms
+   ✓ 게이트 밖이던 타일 쓰기 툴도 기존 구조물 보호를 받는다 > build_wall 은 빈 땅이면 밑그림 없이 통과하고(v3 soft-allow) 기존 구조물 위면 차단된다  2280ms
+   ✓ 게이트 밖이던 타일 쓰기 툴도 기존 구조물 보호를 받는다 > paint_tiles mode=fill 은 맵 전체를 영향 영역으로 본다  972ms
+   ✓ 지어진 칸 판정은 잔디 리터럴이 아니라 타일셋 어휘(terrain 역할 + 통행 가능)다 > 모래 바닥 맵에서 집·정리 밑그림은 정리 방침 없이 통과하고, 벽을 덮는 정리는 confirmDestroy 를 요구한다  698ms
+   ✓ 지어진 칸 판정은 잔디 리터럴이 아니라 타일셋 어휘(terrain 역할 + 통행 가능)다 > 얼음 대평원의 눈밭은 지어진 칸이 아니고 절벽은 지어진 칸이다  2235ms
+   ✓ 지어진 칸 판정은 잔디 리터럴이 아니라 타일셋 어휘(terrain 역할 + 통행 가능)다 > 길(terrain·통행 가능) 옆에 붙인 집은 정리 방침 없이 통과한다  1779ms
+   ✓ 지어진 칸 판정은 잔디 리터럴이 아니라 타일셋 어휘(terrain 역할 + 통행 가능)다 > 사용자가 가장자리에 세운 벽은 보호되고, 생성된 WALL 테두리 링은 제외된다  879ms
+   ✓ 암묵 스펙 — 선택 영역 > 실제 패널 footer(재료 힌트가 맵과 선택 사이)와 영역 작업 footer(힌트가 뒤)를 모두 파싱한다  375ms
+   ✓ 암묵 스펙 — 선택 영역 > 선택 영역 암묵 스펙은 그 턴에만 유효하고 다음 턴으로 승격되지 않는다  844ms
+   ✓ 암묵 스펙 — 선택 영역 > 사용자가 지목한 선택 영역 안의 기존 구조물은 그 턴의 쓰기가 고칠 수 있고, 선택 밖은 여전히 보호된다  763ms
+   ✓ 암묵 스펙 — 선택 영역 > opts.scope 로 넘어온 선택 영역도 암묵 스펙이다  1327ms
+   ✓ 질문으로 끝난 턴 > 모델이 되묻고 끝낸 턴에서는 밑그림 NPC 를 자동 배치하지 않는다  2448ms
+ ✓ test/assistantMapPreservationGuard.test.ts (21 tests) 45694ms
+   ✓ completed houses cannot be overwritten through session permissions > accepted: rejects destruction despite 'selection'  5196ms
+   ✓ completed houses cannot be overwritten through session permissions > accepted: rejects destruction despite 'confirmDestroy'  2115ms
+   ✓ completed houses cannot be overwritten through session permissions > accepted: rejects destruction despite 'overExisting-clear'  1793ms
+   ✓ completed houses cannot be overwritten through session permissions > accepted: rejects destruction despite 'overExisting-keep'  772ms
+   ✓ completed houses cannot be overwritten through session permissions > same-turn: rejects destruction despite 'selection'  1153ms
+   ✓ completed houses cannot be overwritten through session permissions > same-turn: rejects destruction despite 'confirmDestroy'  1046ms
+   ✓ completed houses cannot be overwritten through session permissions > same-turn: rejects destruction despite 'overExisting-clear'  1160ms
+   ✓ completed houses cannot be overwritten through session permissions > same-turn: rejects destruction despite 'overExisting-keep'  882ms
+   ✓ completed houses cannot be overwritten through session permissions > new-map: rejects destruction despite 'selection'  1424ms
+   ✓ completed houses cannot be overwritten through session permissions > new-map: rejects destruction despite 'confirmDestroy'  3103ms
+   ✓ completed houses cannot be overwritten through session permissions > new-map: rejects destruction despite 'overExisting-clear'  5568ms
+   ✓ completed houses cannot be overwritten through session permissions > new-map: rejects destruction despite 'overExisting-keep'  2425ms
+   ✓ completed houses cannot be overwritten through session permissions > same-session: rejects destruction despite 'selection'  2505ms
+   ✓ completed houses cannot be overwritten through session permissions > same-session: rejects destruction despite 'confirmDestroy'  1917ms
+   ✓ completed houses cannot be overwritten through session permissions > same-session: rejects destruction despite 'overExisting-clear'  2224ms
+   ✓ completed houses cannot be overwritten through session permissions > same-session: rejects destruction despite 'overExisting-keep'  1987ms
+   ✓ 수정 요청에서 맵 보존 > 기존 맵 id 로 방 세션을 시작하려 하면 거부되고 맵이 그대로 남는다  1925ms
+   ✓ 수정 요청에서 맵 보존 > 같은 id 로 create_map 하면 map-exists 로 거부되고 편집 경로를 안내한다  1785ms
+   ✓ 수정 요청에서 맵 보존 > 같은 id 로 duplicate_map 하는 우회도 막힌다  3419ms
+   ✓ 수정 요청에서 맵 보존 > 시스템 프롬프트가 현재 맵 id 와 대상 선택 규칙을 함께 싣는다  944ms
+   ✓ 수정 요청에서 맵 보존 > 정직한 수정(지우고 다시 놓기)은 그대로 통과한다  2308ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/houseKitDomainSeam.test.ts > HouseKit domain seam > keeps one exhaustive public kit list and a safe HouseKit module size
+AssertionError: expected 233 to be less than or equal to 220
+ ❯ test/houseKitDomainSeam.test.ts:183:35
+    181|     // Then
+    182|     expect(uniqueDeclaredIds).toEqual(Object.keys(HOUSE_KITS).sort());
+    183|     expect(pureLoc(domainSource)).toBeLessThanOrEqual(220);
+       |                                   ^
+    184|     expect(pureLoc(supportSource)).toBeLessThanOrEqual(220);
+    185|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 9 passed (10)
+      Tests  1 failed | 154 passed (155)
+   Start at  03:27:19
+   Duration  98.25s (transform 58.29s, setup 0ms, collect 435.76s, tests 182.13s, environment 3ms, prepare 5.04s)
+
+
+EXIT_CODE=1
