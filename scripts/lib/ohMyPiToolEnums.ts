@@ -2,7 +2,7 @@
 // Keep canonical JSON Schema numeric; repair only the SDK's normalized payload.
 // Gemini drops numeric enums during normalization, so retain source membership first.
 type RecordNode = Record<string, unknown>;
-type EnumField = { tool: string; path: string[]; members: number[] };
+type EnumField = { readonly tool: string; readonly path: readonly string[]; readonly members: readonly number[] };
 
 function record(value: unknown): value is RecordNode {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -58,23 +58,23 @@ export function antigravityToolEnumPayload(
     const declarations = Array.isArray(groups) ? groups.flatMap(group =>
       record(group) && Array.isArray(group.functionDeclarations) ? group.functionDeclarations : []) : [];
     for (const field of fields) {
-      const fail = (detail: string): never => {
+      function fail(detail: string): never {
         throw new ToolSchemaTransportError(model, field.tool, field.path, detail);
-      };
-      const matches = declarations.filter(declaration => record(declaration) && declaration.name === field.tool);
+      }
+      const matches = declarations.filter((declaration): declaration is RecordNode => record(declaration) && declaration.name === field.tool);
       if (matches.length !== 1) fail("enum-bearing tool is missing or ambiguous after normalization");
-      const declaration = matches[0] as RecordNode;
+      const declaration = matches[0];
       // This hook is NOT a JSON Schema encoder. Leave non-legacy dialects alone.
       if (!Object.hasOwn(declaration, "parameters") && Object.hasOwn(declaration, "parametersJsonSchema")) continue;
       let node = declaration.parameters;
       for (const key of field.path) {
         if ((!record(node) && !Array.isArray(node)) || !Object.hasOwn(node, key)) fail("enum-bearing field was lost during normalization");
-        node = (node as RecordNode)[key];
+        node = Array.isArray(node) ? node[Number(key)] : node[key];
       }
       if (!record(node) || typeof node.type !== "string" || node.type.toLowerCase() !== "integer") {
         fail("enum-bearing field changed type during normalization");
       }
-      const schema = node as RecordNode;
+      const schema = node;
       const encoded = field.members.map(String);
       if (Object.hasOwn(schema, "enum")) {
         const current = schema.enum;

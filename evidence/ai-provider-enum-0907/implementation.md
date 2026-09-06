@@ -1,5 +1,9 @@
 # Reviewed Antigravity integer-enum transport repair
 
+This records the bdc6fad0 implementation phase. See `narrowing-followup.md` for
+the subsequent assertion-free narrowing and refreshed final-source proof. The
+original live receipt below is archived as `live-opus-proof-bdc6fad0.json`.
+
 Task st_01a07772; isolated branch `agent/ai-provider-enum-0907` at base
 `08c60dc68625c66ac2b7aa61799b27eaa4cf25aa`. Implemented after the final focused
 ultrabrain REQUEST_CHANGES, retained as `review-contract.md`. The historical
