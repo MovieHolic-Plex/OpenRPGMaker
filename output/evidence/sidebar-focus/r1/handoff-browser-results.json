@@ -1,5 +1,7 @@
 {
-  "snapshot": "handoff; later live cases are not implied passing",
+  "snapshot": "final handoff; remaining cases are unverified",
+  "driverExit": 1,
+  "driverError": "page.goto: Target page, context or browser has been closed",
   "completed": [
     {
       "name": "context-menu-pointer",
@@ -81,6 +83,15 @@
           "layeredEscape": true
         }
       ]
+    },
+    {
+      "name": "mode-lifecycle-beginner",
+      "status": "PASS",
+      "observed": {
+        "initial": "beginner",
+        "toolsAndAssist": true,
+        "teardownRemount": true
+      }
     }
   ]
 }

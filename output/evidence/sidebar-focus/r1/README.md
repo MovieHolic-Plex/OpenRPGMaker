@@ -37,6 +37,9 @@ No new default controls/onboarding, remote content writes, push or PR merge.
   exit 0**. Exact targets: `test/sidebarFocusR1.test.ts`,
   `test/sidebarFocusModes.test.ts`, `test/mapList.test.ts`,
   `test/commandRegistry.test.ts`; same affinity/worker options.
+- The subsequent complete focused rerun also finished during handoff:
+  `latest-full-focused.log/.exit`: **22 files / 181 tests, exit 0** on the frozen
+  `db825efc5` integration. No test was skipped and no unhandled error was reported.
 - `latest-typecheck.log/.exit`: **npm run typecheck:app, exit 0** after that latest
   integration. R1 TypeScript/MJS diagnostics were clean. CSS LSP is unavailable
   because Biome is not installed. `node scripts/openwiki-index.mjs --check`
@@ -51,11 +54,15 @@ No new default controls/onboarding, remote content writes, push or PR merge.
   opening/navigation/Rename and two-level Escape/focus return passed.
   Standard visible sheet remains **544/851 = 63.92%**, canvas 1134px at 1440x900.
   See `handoff-browser-results.json` and `final-direct/context-menu-*.png`.
+- `mode-lifecycle-beginner` also passed during handoff: real Ctrl+K transitions
+  with Tools/Assist, reopened surface Escape, and actual editor teardown/remount.
 
 ## Remaining browser verification - parent-owned, NOT reported as pass
 
-The final frozen-server driver is still running at handoff. Beginner-first and
-Standard-first Ctrl+K Tools/Assist transitions plus teardown/remount, persisted
+The final frozen-server driver exited **1** while opening the next browser context:
+`page.goto: Target page, context or browser has been closed`. This is not a full
+browser pass and no cause beyond that tool error is asserted. Standard-first
+Ctrl+K Tools/Assist transitions plus teardown/remount, persisted
 Expert collapse/header reveal and pointer/keyboard resize, and the three
 inspection commands across maps-only reload/pinned/unpinned states have not all
 completed in that final run. Their DOM regressions pass, but that is not a
@@ -77,11 +84,9 @@ Existing full geometry/interaction driver: `scripts/qa/sidebar-focus.mjs`.
 - Owned frozen server: **9842, PID 2497089**, cwd this task worktree; launched
   through Vite `createServer` with `server.hmr=false`. Application source stays
   frozen. Shared-main 9841 was never used or killed during R1.
-- Child final browser PID at handoff: **2535417**. Live output:
-  `final-direct-browser.log`, results `final-direct/results.json`, eventual exit
-  `final-direct-browser.exit`. These live files are not immutable pass evidence.
-- A further same-22-file focused rerun after latest integration is in progress
-  (`latest-full-focused.log/.exit`); it is not counted as passed without its exit.
+- The child browser process ended; log `final-direct-browser.log`, results
+  `final-direct/results.json`, exit `final-direct-browser.exit` record the partial
+  run. Its three completed groups do not imply success for the remaining groups.
 - Earlier runs interrupted by Vite full reload during integration or browser
   transport/relay failures are invalidated, not passes. The final driver uses
   native Firefox requests and the HMR-disabled server. A completed earlier
