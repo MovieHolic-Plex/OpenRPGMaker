@@ -1,0 +1,82 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeQaObservability.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+ ❯ test/lifeQaObservability.test.ts (7 tests | 4 failed) 1088ms
+   × life QA observability > clones existing life owners without progressing makers or paying recovery 117ms
+     → (0 , buildLifeRuntimeSnapshot) is not a function
+   × life QA observability > does not materialize missing optional owners 2ms
+     → (0 , buildLifeRuntimeSnapshot) is not a function
+   × life QA observability > publishes a prearmed actual acceptance then a rejection without state mutation 593ms
+     → Missing action receipt
+   ✓ life QA observability > off does not emit or retain an action receipt even after a real action 62ms
+   × life QA observability > the headless runner reports the same life owners, detached from its session 96ms
+     → expected undefined to be 1 // Object.is equality
+   ✓ life QA baseline characterization > real action spends one energy to till, then rejects without changing session 107ms
+   ✓ life QA baseline characterization > an uninstrumented overlay starts without a mirror 107ms
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 3 passed (7)
+   Start at  10:15:38
+   Duration  14.28s (transform 7.88s, setup 0ms, collect 11.76s, tests 1.09s, environment 0ms, prepare 227ms)
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/lifeQaObservability.test.ts > life QA observability > clones existing life owners without progressing makers or paying recovery
+TypeError: (0 , buildLifeRuntimeSnapshot) is not a function
+ ❯ test/lifeQaObservability.test.ts:53:22
+     51|     session.lifeRecovery = { nextSequence: 2, claims: { "1": { id: "1"…
+     52|     const before = structuredClone(session);
+     53|     const snapshot = buildLifeRuntimeSnapshot(session);
+       |                      ^
+     54|     for (const key of ["farmPlots", "energy", "makerInstances", "farmA…
+     55|       expect(snapshot[key]).toEqual(before[key]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  test/lifeQaObservability.test.ts > life QA observability > does not materialize missing optional owners
+TypeError: (0 , buildLifeRuntimeSnapshot) is not a function
+ ❯ test/lifeQaObservability.test.ts:65:12
+     63|   });
+     64|   it("does not materialize missing optional owners", () => {
+     65|     expect(buildLifeRuntimeSnapshot({})).toEqual({});
+       |            ^
+     66|   });
+     67|   it("publishes a prearmed actual acceptance then a rejection without …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  test/lifeQaObservability.test.ts > life QA observability > publishes a prearmed actual acceptance then a rejection without state mutation
+Error: Missing action receipt
+ ❯ Timeout._onTimeout test/lifeQaObservability.test.ts:38:66
+     36|     };
+     37|     const timeout = setTimeout(() => {
+     38|       host.removeEventListener("oprn:action", onReceipt); reject(new E…
+       |                                                                  ^
+     39|     }, 500);
+     40|     host.addEventListener("oprn:action", onReceipt);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  test/lifeQaObservability.test.ts > life QA observability > the headless runner reports the same life owners, detached from its session
+AssertionError: expected undefined to be 1 // Object.is equality
+
+[32m- Expected:[39m
+1
+
+[31m+ Received:[39m
+undefined
+
+ ❯ test/lifeQaObservability.test.ts:95:38
+     93|     const result = runSceneTest(project, { mapId: project.startMapId, …
+     94|     expect(result.ok).toBe(true);
+     95|     expect(result.finalState.energy).toBe(1);
+       |                                      ^
+     96|     expect(result.finalState.farmPlots).toEqual(result.session.farmPlo…
+     97|     expect(result.finalState.farmPlots).not.toBe(result.session.farmPl…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯

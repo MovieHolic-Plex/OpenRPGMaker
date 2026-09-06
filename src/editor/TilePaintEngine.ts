@@ -5,12 +5,11 @@ import {
   toggleCollision,
   fillTile,
 } from "@/editor/actions";
-import type { TileStrokeCell } from "@/editor/tileActions";
 import { editorState } from "@/editor/editorState";
 import { revealPaletteTileFromMap } from "@/editor/panels/tilePalette";
 import { selectTileRegion } from "@/editor/mapClipboard";
 import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
-import { recordProjectSnapshot } from "@/editor/mapEditHistory";
+import { recordMapEditIfChanged } from "@/editor/mapEditHistory";
 import { beginKitStampCapture, checkKitStampConditions, commitKitStampCapture } from "@/editor/structurePlacementActions";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
 import { layerTilePickAt, visibleTilePickAt, type VisibleTilePick } from "@/editor/tilePicking";
@@ -54,6 +53,7 @@ export class TilePaintEngine {
    * 스트로크 도중 처음 거부되는 자리에서는 반드시 한 번 말하게 하는 자리 표시다.
    */
   private placementNoticeShown = false;
+  private strokeSnapshotRecorded = false;
 
   constructor(private readonly deps: TilePaintEngineDeps) {}
 
@@ -73,9 +73,13 @@ export class TilePaintEngine {
     }
     const { activePaletteStamp, autoConnectMode, brushSize, selectedTile } = editorState.get();
     const key = `${x},${y}`;
-    const firstStrokeTile = this.deps.getPaintState().lastPaintKey === "";
-    if (firstStrokeTile) this.placementNoticeShown = false;
-    const repeatedNonEventCell = layer !== "event" && key === this.deps.getPaintState().lastPaintKey;
+    const previousKey = this.deps.getPaintState().lastPaintKey;
+    const firstStrokeTile = previousKey === "";
+    if (firstStrokeTile) {
+      this.placementNoticeShown = false;
+      this.strokeSnapshotRecorded = false;
+    }
+    const repeatedNonEventCell = layer !== "event" && key === previousKey;
     const tileLayer: TileLayer = layer === "upper" ? "upper" : "lower";
     const clickCount =
       layer === "event" ? this.deps.eventLayerClickCount({ mapId: mid, ptr, x, y }) : this.deps.pointerClickCount(ptr);
@@ -88,12 +92,18 @@ export class TilePaintEngine {
       return;
     }
 
+    // Only freehand tile brushes interpolate. Stamps, fills and collision keep
+    // their discrete gesture policy. Each pointer sample still uses one bulk edit.
+    const continuous = layer !== "event" && (tool === "erase"
+      || (tool === "paint" && !activePaletteStamp && editorState.get().paintShape === "pen"));
+    const points = continuous
+      ? strokeCenters(previousKey, x, y).flatMap((center) =>
+        brushStrokePoints({ centerX: center.x, centerY: center.y, size: brushSize }))
+      : brushStrokePoints({ centerX: x, centerY: y, size: brushSize });
+
     switch (tool) {
       case "paint":
-        // 스냅샷은 스트로크(드래그) 시작 시 1회만 — 셀마다 찍으면 드래그 한 번에 맵 clone+직렬화가
-        // N번 돌아 렉의 원인이 되고, undo도 셀 단위로 쪼개져 되돌리기가 고통스럽다.
-        if (firstStrokeTile) recordTileEditSnapshot(mid);
-        {
+        this.applyStrokeEdit(mid, () => {
           if (activePaletteStamp) {
             // 배치 조건(kit.ai.placement) 검사 — 킷에 조건이 있을 때만 돈다.
             // hard 를 어기면 **칠하지 않는다**. 예전에는 조건이 산문뿐이라 아무 일도 일어나지 않았고,
@@ -112,7 +122,7 @@ export class TilePaintEngine {
                   "error",
                 );
               }
-              break;
+              return;
             }
             if (conditions && conditions.verdict.warnings.length > 0 && !this.placementNoticeShown) {
               this.placementNoticeShown = true;
@@ -123,7 +133,7 @@ export class TilePaintEngine {
             const capture = firstStrokeTile ? beginKitStampCapture(mid, activePaletteStamp, x, y) : null;
             applyPaletteStamp({ mapId: mid, stamp: activePaletteStamp, x, y, autoConnect: autoConnectMode });
             if (capture) commitKitStampCapture(capture);
-            break;
+            return;
           }
           if (selectedTile < 0) {
             // 덧그림 공백 붓 = 지우개. 바닥에서는 공백을 칠하지 않는다(체커 구멍).
@@ -131,39 +141,35 @@ export class TilePaintEngine {
               eraseVisibleTilesBulk(
                 mid,
                 tileLayer,
-                brushStrokePoints({ centerX: x, centerY: y, size: brushSize }),
+                points,
                 { autoConnect: autoConnectMode },
               );
             }
-            break;
+            return;
           }
           // 브러시 전 칸을 한 번의 updateMap 으로 (셀마다 clone 금지)
           paintTilesBulk(
             mid,
-            brushStrokeCells({ centerX: x, centerY: y, size: brushSize, layer: tileLayer, tile: selectedTile }),
+            points.map((point) => ({ ...point, layer: tileLayer, tile: selectedTile })),
             { autoConnect: autoConnectMode },
           );
-        }
+        });
         break;
       case "fill":
         if (firstStrokeTile) {
           if (selectedTile < 0 && tileLayer === "lower") break;
-          recordTileEditSnapshot(mid);
-          fillTile(mid, tileLayer, x, y, selectedTile, { autoConnect: autoConnectMode });
+          this.applyStrokeEdit(mid, () => {
+            fillTile(mid, tileLayer, x, y, selectedTile, { autoConnect: autoConnectMode });
+          });
         }
         break;
       case "erase":
-        if (firstStrokeTile) recordTileEditSnapshot(mid);
-        eraseVisibleTilesBulk(
-          mid,
-          tileLayer,
-          brushStrokePoints({ centerX: x, centerY: y, size: brushSize }),
-          { autoConnect: autoConnectMode },
-        );
+        this.applyStrokeEdit(mid, () => {
+          eraseVisibleTilesBulk(mid, tileLayer, points, { autoConnect: autoConnectMode });
+        });
         break;
       case "collision":
-        if (firstStrokeTile) recordTileEditSnapshot(mid, { includeTilesets: true });
-        toggleCollision(mid, x, y);
+        this.applyStrokeEdit(mid, () => toggleCollision(mid, x, y), { includeTilesets: true });
         break;
       case "event":
         this.deps.setPaintState({ isPainting: false, lastPaintKey: "" });
@@ -173,11 +179,16 @@ export class TilePaintEngine {
         selectTileRegion(mid, { mapId: mid, x, y, width: 1, height: 1 });
         break;
       case "eyedropper":
-        this.pickTileAt({ mapId: mid, layer: tileLayer, x, y });
+        this.pickVisibleTileAt(mid, x, y);
         break;
       case "pan":
         break;
     }
+  }
+
+  private applyStrokeEdit(mapId: MapId, edit: () => void, options: { readonly includeTilesets?: boolean } = {}): void {
+    if (this.strokeSnapshotRecorded) edit();
+    else this.strokeSnapshotRecorded = recordMapEditIfChanged(mapId, edit, options);
   }
 
   pickTileAtPointer(ptr: Phaser.Input.Pointer): void {
@@ -215,44 +226,44 @@ export class TilePaintEngine {
       selectedTile: pick.tile,
       layer: pick.layer,
       tool: "paint",
+      paintShape: "pen",
     });
     // 전문가 모드: 우클릭 스포이트 후 팔레트 타일 그림판(하위/상위 레이어 시트)로 이동
     revealPaletteTileFromMap(pick.tile);
   }
 }
 
-function recordTileEditSnapshot(mapId: MapId, options: { readonly includeTilesets?: boolean } = {}): void {
-  recordProjectSnapshot(undefined, mapId, { kind: "map", includeTilesets: options.includeTilesets });
-}
-
-function brushStrokePoints(stroke: {
+// Even sizes retain the negative-side anchor: size 2 covers [-1, 0],
+// size 4 covers [-2, -1, 0, 1]. Painting and hover use this same footprint.
+export function brushStrokePoints(stroke: {
   readonly centerX: number;
   readonly centerY: number;
   readonly size: number;
 }): readonly { x: number; y: number }[] {
   const offset = Math.floor(stroke.size / 2);
   const points: { x: number; y: number }[] = [];
-  for (let y = stroke.centerY - offset; y <= stroke.centerY + offset; y += 1) {
-    for (let x = stroke.centerX - offset; x <= stroke.centerX + offset; x += 1) {
+  for (let y = stroke.centerY - offset; y < stroke.centerY - offset + stroke.size; y += 1) {
+    for (let x = stroke.centerX - offset; x < stroke.centerX - offset + stroke.size; x += 1) {
       points.push({ x, y });
     }
   }
   return points;
 }
 
-function brushStrokeCells(stroke: {
-  readonly centerX: number;
-  readonly centerY: number;
-  readonly size: number;
-  readonly layer: TileLayer;
-  readonly tile: number;
-}): readonly TileStrokeCell[] {
-  return brushStrokePoints(stroke).map((point) => ({
-    layer: stroke.layer,
-    x: point.x,
-    y: point.y,
-    tile: stroke.tile,
-  }));
+function strokeCenters(previousKey: string, x: number, y: number): readonly { x: number; y: number }[] {
+  if (!previousKey) return [{ x, y }];
+  const [startX, startY] = previousKey.split(",").map(Number);
+  const steps = Math.max(Math.abs(x - startX), Math.abs(y - startY));
+  const points: { x: number; y: number }[] = [];
+  // Integer-weight interpolation gives the same 8-connected line in reverse,
+  // including half-cell ties. Do not apply the previous endpoint twice.
+  for (let step = 1; step <= steps; step += 1) {
+    points.push({
+      x: Math.round((startX * (steps - step) + x * step) / steps),
+      y: Math.round((startY * (steps - step) + y * step) / steps),
+    });
+  }
+  return points;
 }
 
 function applyPaletteStamp(input: {
@@ -276,6 +287,7 @@ function applyPaletteStamp(input: {
     })),
     {
       autoConnect: single ? input.autoConnect : false,
+      preservePattern: !single,
       clusterExpand: false,
     },
   );

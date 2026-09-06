@@ -1,0 +1,11 @@
+{
+  "id": 1,
+  "command": "npx",
+  "args": [
+    "tsc",
+    "--noEmit",
+    "-p",
+    "tsconfig.app.json"
+  ],
+  "started": "2026-09-06T09:44:23.143Z"
+}

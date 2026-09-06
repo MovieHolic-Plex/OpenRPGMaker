@@ -1,0 +1,10 @@
+Teardown completed before commit.
+Removed task-created artifacts: dist, /tmp/life-full-task2-red.txt, /tmp/life-full-task2-green.txt
+Public probe closed both happy-dom windows, cleared its local Storage, and closed Vite SSR in finally.
+No listening HTTP server or background monitor was started. Build and test processes exited synchronously within their bounds.
+Pre-existing .vite-cache, node_modules symlink, .env.local, parent WISH.md, parent plan/Boulder, coverage.json, autosave policy, custom equipment validation and checkpoint implementation are untouched.
+No dependencies, remote DB writes, push, PR, merge, skipped tests, or weakened assertions.
+All retained outputs are task2 evidence. git diff --check: exit 0.
+Evidence-stage initial diff check: exit 2 for tool-emitted trailing whitespace only; raw-output.json preserves exact original outputs/hashes. Readable .txt whitespace normalized with apply_patch; final staged diff check rerun.
+
+Save-signal follow-up final cleanup: each focused test begins with cleared localStorage/sessionStorage, reset namespace, and a fresh project/player shell. afterEach disposes the signal (restoring the original setter and removing its window handle), restores real timers/mocks, tears down the player, and clears localStorage. Final focused process exited 0 with all 7 tests run. Chromium helper probe closed its browser and cleared test storage; intercepted task2.invalid required no server or remote request. Temporary STORAGE_REALM console instrumentation was removed. No production/checkpoint changes, broad suite, whole-adventure run, or unrelated sleep cleanup. Final assertion-order-only patch awaits completion before checking restoration.

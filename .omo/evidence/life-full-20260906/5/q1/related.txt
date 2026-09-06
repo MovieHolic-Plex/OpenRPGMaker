@@ -1,0 +1,93 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/audioEngine.test.ts test/cc0AudioPlayback.test.ts test/battleAudio.test.ts test/runtimeAudioIndicator.test.ts test/playerRuntimeAudioIds.test.ts test/playAudioCommandBody.test.ts test/runtimeJuice.test.ts test/playBootDiagnostics.test.ts test/playBootRecovery.test.ts test/playerRunControls.test.ts test/playerKeydownSessionGuard.test.ts test/playerOpenSaveMenu.test.ts test/runtimeQaInstrumentationBoundary.test.ts test/runtimeQaReport.test.ts test/runtimeQaGate.test.ts test/sceneTestRunner.test.ts test/debugSession.test.ts test/runtimeDebugPanel.test.ts test/playSceneFarmFeedback.test.ts test/npcActionFacing.test.ts test/runtimeMovementStability.test.ts test/actionDebounceFootprint.test.ts test/lifeSaveVersion.test.ts test/lifeRecoveryPersistence.test.ts test/p0SessionPersistence.test.ts test/p2SpatialPersistence.test.ts test/autosave.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+ ✓ test/runtimeQaReport.test.ts (18 tests) 14ms
+ ✓ test/runtimeQaGate.test.ts (52 tests) 23ms
+ ✓ test/playBootDiagnostics.test.ts (5 tests) 124ms
+ ✓ test/audioEngine.test.ts (21 tests) 14ms
+ ✓ test/battleAudio.test.ts (6 tests) 130ms
+ ✓ test/p2SpatialPersistence.test.ts (3 tests) 227ms
+ ✓ test/autosave.test.ts (16 tests) 674ms
+ ✓ test/lifeSaveVersion.test.ts (18 tests) 840ms
+ ✓ test/p0SessionPersistence.test.ts (9 tests) 558ms
+ ✓ test/playerRuntimeAudioIds.test.ts (3 tests) 349ms
+   ✓ player runtime audio ids > 목록의 모든 id 가 내보내기 산출물에 실린다  315ms
+ ✓ test/runtimeJuice.test.ts (2 tests) 6ms
+ ✓ test/runtimeQaInstrumentationBoundary.test.ts (3 tests) 12ms
+ ✓ test/debugSession.test.ts (4 tests) 180ms
+ ✓ test/runtimeDebugPanel.test.ts (17 tests) 1610ms
+ ✓ test/lifeRecoveryPersistence.test.ts (40 tests) 3318ms
+   ✓ adversarial life codec boundaries > refuses all conversions on claim exhaustion without moving a prefix  630ms
+   ✓ bounded animal restoration > quarantines animals beyond the runtime bound instead of dropping a saved suffix  580ms
+ ✓ test/cc0AudioPlayback.test.ts (3 tests) 381ms
+ ✓ test/runtimeAudioIndicator.test.ts (2 tests) 298ms
+ ✓ test/playerKeydownSessionGuard.test.ts (1 test) 229ms
+ ❯ test/actionDebounceFootprint.test.ts (5 tests | 2 failed) 587ms
+   ✓ 조사 연타 디바운스는 이벤트 단위다 > 몸 안에서 방향만 바꿔도 같은 이벤트는 다시 발동하지 않는다 146ms
+   ✓ 조사 연타 디바운스는 이벤트 단위다 > 서로 다른 이벤트로 방향을 바꾸면 각각 발동한다 118ms
+   ✓ 조사 연타 디바운스는 이벤트 단위다 > 1x1 이벤트를 같은 방향으로 연타하면 한 번만 발동한다 — 항등 124ms
+   × __oprnDebug 스냅샷이 두 사각을 실어 보낸다 > 3x3 + passRows 1 이면 몸 사각과 통행 사각이 다르게 실린다 117ms
+     → Cannot read properties of undefined (reading 'registry')
+   × __oprnDebug 스냅샷이 두 사각을 실어 보낸다 > 발자국 저작이 없으면 두 사각이 앵커 한 칸으로 같다 — 항등 79ms
+     → Cannot read properties of undefined (reading 'registry')
+ ✓ test/npcActionFacing.test.ts (9 tests) 860ms
+ ✓ test/playerRunControls.test.ts (7 tests) 1173ms
+ ✓ test/playerOpenSaveMenu.test.ts (7 tests) 1381ms
+ ✓ test/playSceneFarmFeedback.test.ts (5 tests) 345ms
+ ✓ test/playAudioCommandBody.test.ts (1 test) 827ms
+   ✓ playAudio command body > lists playable BGM/SE and previews selected audio  825ms
+ ✓ test/sceneTestRunner.test.ts (2 tests) 153ms
+ ✓ test/playBootRecovery.test.ts (11 tests) 4221ms
+   ✓ test play boot recovery > shows the thrown boot reason in the recovery panel  478ms
+   ✓ test play boot recovery > reloads once when PlayScene's hashed chunk fails to fetch  414ms
+   ✓ test play boot recovery > shows a reload action after a stale-chunk reload already happened  342ms
+   ✓ test play boot recovery > shows a recovery panel when waiting for PlayScene times out  361ms
+   ✓ test play boot recovery > starts a fresh boot attempt when retry is clicked  420ms
+   ✓ test play boot recovery > boots the repaired project and reports a dangling start-map repair  457ms
+   ✓ test play boot recovery > exposes an idempotent repaired-project snapshot in the export store  342ms
+   ✓ test play boot recovery > does not let a stale failed run paint a recovery panel over a newer run  402ms
+   ✓ test play boot recovery > refuses to boot Phaser and names the blocker when the project has no maps  329ms
+   ✓ test play boot recovery > suppresses autonomous movement and auto-run events when safe mode is chosen  495ms
+ ✓ test/runtimeMovementStability.test.ts (50 tests) 3543ms
+
+ Test Files  1 failed | 26 passed (27)
+      Tests  2 failed | 318 passed (320)
+   Start at  11:48:05
+   Duration  17.47s (transform 41.07s, setup 0ms, collect 206.99s, tests 22.08s, environment 3.74s, prepare 7.36s)
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/actionDebounceFootprint.test.ts > __oprnDebug 스냅샷이 두 사각을 실어 보낸다 > 3x3 + passRows 1 이면 몸 사각과 통행 사각이 다르게 실린다
+TypeError: Cannot read properties of undefined (reading 'registry')
+ ❯ syncCutsceneHudVisibility src/player/playSceneMapRuntime.ts:657:27
+    655|   readonly session: PlaySceneContext["session"];
+    656| }): void {
+    657|   const host = scene.game.registry.get("dialogueHost");
+       |                           ^
+    658|   if (!isCutsceneHudHost(host)) return;
+    659|   host.classList.toggle(CUTSCENE_HUD_HIDDEN_CLASS, isCutsceneHudHidden…
+ ❯ syncRuntimeState src/player/playSceneMapRuntime.ts:563:3
+ ❯ captureScene test/actionDebounceFootprint.test.ts:139:5
+ ❯ test/actionDebounceFootprint.test.ts:145:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/actionDebounceFootprint.test.ts > __oprnDebug 스냅샷이 두 사각을 실어 보낸다 > 발자국 저작이 없으면 두 사각이 앵커 한 칸으로 같다 — 항등
+TypeError: Cannot read properties of undefined (reading 'registry')
+ ❯ syncCutsceneHudVisibility src/player/playSceneMapRuntime.ts:657:27
+    655|   readonly session: PlaySceneContext["session"];
+    656| }): void {
+    657|   const host = scene.game.registry.get("dialogueHost");
+       |                           ^
+    658|   if (!isCutsceneHudHost(host)) return;
+    659|   host.classList.toggle(CUTSCENE_HUD_HIDDEN_CLASS, isCutsceneHudHidden…
+ ❯ syncRuntimeState src/player/playSceneMapRuntime.ts:563:3
+ ❯ captureScene test/actionDebounceFootprint.test.ts:139:5
+ ❯ test/actionDebounceFootprint.test.ts:158:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯

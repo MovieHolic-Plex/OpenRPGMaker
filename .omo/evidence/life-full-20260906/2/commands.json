@@ -1,0 +1,82 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p2",
+  "base": "87de73785d1c309bbbe975636414f70bbc73a4b9",
+  "baseTree": "1b248f0fd4411ab953a2a61ade9470f5d4fcf9eb",
+  "branch": "agent/life-full-p2",
+  "monitor": "not available; bounded foreground capture; no pipeline-derived exit",
+  "commands": [
+    {
+      "id": "red",
+      "command": "npm test -- test/lifeSaveVersion.test.ts",
+      "actualExit": 1,
+      "log": "red.txt",
+      "passed": 7,
+      "failed": 11
+    },
+    {
+      "id": "first-green-fixture-error",
+      "command": "npm test -- test/lifeSaveVersion.test.ts test/autosave.test.ts test/p0SessionPersistence.test.ts test/p1SessionPersistence.test.ts test/p2SessionPersistence.test.ts",
+      "actualExit": 1,
+      "log": "green-first-test-fixture-error.txt",
+      "passed": 49,
+      "failed": 1,
+      "reason": "Test used project.schemaVersion; actual project field is version. Fixed only the new assertion."
+    },
+    {
+      "id": "green",
+      "command": "npm test -- test/lifeSaveVersion.test.ts test/autosave.test.ts test/p0SessionPersistence.test.ts test/p1SessionPersistence.test.ts test/p2SessionPersistence.test.ts",
+      "actualExit": 0,
+      "log": "green.txt",
+      "passed": 50,
+      "failed": 0,
+      "files": 5
+    },
+    {
+      "id": "related",
+      "command": "npm test -- test/customEquipmentSlots.test.ts test/checkpointEndingRuntime.test.ts test/systemShell.test.ts test/playerOpenSaveMenu.test.ts test/p2SpatialPersistence.test.ts test/customSeasonSave.test.ts",
+      "actualExit": 0,
+      "log": "related.txt",
+      "passed": 32,
+      "failed": 0,
+      "files": 6
+    },
+    {
+      "id": "public",
+      "command": "node .omo/evidence/life-full-20260906/2/public-probe.mjs",
+      "actualExit": 0,
+      "log": "version-roundtrip.txt"
+    },
+    {
+      "id": "diagnostics",
+      "command": "node .omo/evidence/life-full-20260906/2/diagnostics.mjs",
+      "actualExit": 0,
+      "log": "diagnostics.txt",
+      "changedFiles": 9,
+      "diagnostics": 0
+    },
+    {
+      "id": "typecheck",
+      "command": "npm run typecheck:app",
+      "actualExit": 0,
+      "log": "typecheck.txt"
+    },
+    {
+      "id": "build",
+      "command": "timeout --signal=TERM --kill-after=10s 300s npm run build",
+      "actualExit": 0,
+      "log": "build.txt"
+    },
+    {
+      "id": "wiki-verify",
+      "command": "npm run openwiki:verify",
+      "actualExit": 0,
+      "log": "wiki.txt"
+    },
+    {
+      "id": "wiki-index",
+      "command": "npm run openwiki:index -- --check",
+      "actualExit": 0,
+      "log": "wiki.txt"
+    }
+  ]
+}

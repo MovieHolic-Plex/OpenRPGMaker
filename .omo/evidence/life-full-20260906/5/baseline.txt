@@ -1,0 +1,14 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeQaObservability.test.ts test/runtimeQaInstrumentationBoundary.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+ ✓ test/runtimeQaInstrumentationBoundary.test.ts (3 tests) 14ms
+ ✓ test/lifeQaObservability.test.ts (2 tests) 137ms
+
+ Test Files  2 passed (2)
+      Tests  5 passed (5)
+   Start at  10:14:16
+   Duration  11.38s (transform 7.67s, setup 0ms, collect 18.36s, tests 151ms, environment 1ms, prepare 440ms)

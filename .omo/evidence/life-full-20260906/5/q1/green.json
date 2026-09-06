@@ -1,0 +1,24 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p2",
+  "head": "62c70a3093f6a891f209cc9c3d02a6140dccffed",
+  "tree": "e6fb5e9a92ad4c570420e4755880d78d532c7d68",
+  "diffSha256": "d18197a64aa9e4c819d8e7b8807ff0c3ce15b5575f29e6b24650aa536f61e40d",
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "npm",
+    "test",
+    "--",
+    "test/audioQaInstrumentation.test.ts",
+    "test/playerAudioQaLifecycle.test.ts",
+    "test/audioEnginePlaybackControls.test.ts",
+    "test/lifeQaObservability.test.ts"
+  ],
+  "started": "2026-09-06T02:47:37.182Z",
+  "exit": 0,
+  "signal": null,
+  "output": "\n> rpg-zzu@0.1.0 test\n> node scripts/run-vitest.mjs run --configLoader bundle test/audioQaInstrumentation.test.ts test/playerAudioQaLifecycle.test.ts test/audioEnginePlaybackControls.test.ts test/lifeQaObservability.test.ts\n\n\n RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2\n\n ✓ test/audioEnginePlaybackControls.test.ts (11 tests) 14ms\n ✓ test/audioQaInstrumentation.test.ts (5 tests) 25ms\n ✓ test/playerAudioQaLifecycle.test.ts (3 tests) 199ms\n ✓ test/lifeQaObservability.test.ts (7 tests) 430ms\n\n Test Files  4 passed (4)\n      Tests  26 passed (26)\n   Start at  11:47:37\n   Duration  10.45s (transform 10.57s, setup 0ms, collect 17.00s, tests 668ms, environment 1.17s, prepare 970ms)\n\n",
+  "sha256": "e2c6b770db2a0b03613efe8933e2ff69a10ab4246cfbe12b529cdf4632cf1c9f"
+}

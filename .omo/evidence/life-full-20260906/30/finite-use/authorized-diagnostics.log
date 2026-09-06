@@ -1,0 +1,7 @@
+{"path":"src/player/saveSlots.ts","diagnostics":[]}
+{"path":"src/project/itemTransitions.ts","diagnostics":[]}
+{"path":"test/lifeRecoveryRecordKeys.test.ts","diagnostics":[]}
+{"command":["/usr/local/bin/node","--check",".omo/evidence/life-full-20260906/30/finite-use/diagnostics.mjs"],"exit":0,"stdout":"","stderr":""}
+{"command":["/usr/local/bin/node","--check",".omo/evidence/life-full-20260906/30/finite-use/run.mjs"],"exit":0,"stdout":"","stderr":""}
+{"command":["/usr/local/bin/node","--check",".omo/evidence/life-full-20260906/30/finite-use/public-roundtrip.mjs"],"exit":0,"stdout":"","stderr":""}
+{"command":["/usr/local/bin/node","--check",".omo/evidence/life-full-20260906/30/finite-use/vitest.config.mjs"],"exit":0,"stdout":"","stderr":""}

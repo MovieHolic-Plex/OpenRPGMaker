@@ -1,0 +1,66 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeRecoveryPersistence.test.ts test/p0SessionPersistence.test.ts test/p1SessionPersistence.test.ts test/p2SessionPersistence.test.ts test/p2SpatialPersistence.test.ts test/p0RuntimeIntegration.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+ ✓ test/p2SpatialPersistence.test.ts (3 tests) 369ms
+ ✓ test/p2SessionPersistence.test.ts (4 tests) 681ms
+   ✓ P2 session persistence > round-trips collection, museum receipts, forage cursor/placeables, and fishing RNG  377ms
+ ✓ test/p1SessionPersistence.test.ts (3 tests) 600ms
+   ✓ P1 farm-animal session persistence > round-trips runtime assignment, care receipts, cadence, and ready products  359ms
+ ✓ test/p0SessionPersistence.test.ts (9 tests) 1341ms
+ ❯ test/lifeRecoveryPersistence.test.ts (26 tests | 1 failed) 3101ms
+   ✓ lossless life persistence > keeps compatible shipping and unfinished legacy maker behavior 220ms
+   ✓ lossless life persistence > keeps contribution2 and recovers only excess3 after requirement5 becomes2 114ms
+   ✓ lossless life persistence > retains removed completed bundle tombstones and dormant unlock rights without refunds 83ms
+   ✓ lossless life persistence > moves disabled shipping before writer filtering without paying inventory 64ms
+   ✓ lossless life persistence > moves removed shipping before writer filtering without paying inventory 152ms
+   ✓ lossless life persistence > moves ineligible shipping before writer filtering without paying inventory 190ms
+   ✓ lossless life persistence > cancels removed frozen makers at original minute 29 through apply 110ms
+   ✓ lossless life persistence > cancels removed frozen makers at original minute 30 through apply 64ms
+   ✓ lossless life persistence > rejects corrupt recovery at read and direct apply without touching source bytes 60ms
+   ✓ lossless life persistence > returns failed autosave on reconciliation failure, preserving prior disk and current live action 190ms
+   ✓ lossless life persistence > rolls back the whole day when reconciliation fails 54ms
+   ✓ adversarial life codec boundaries > preserves opaque legacy owners through the parser without guessing payouts 67ms
+   ✓ adversarial life codec boundaries > uses original maker clock on changed day start at minute 29 56ms
+   ✓ adversarial life codec boundaries > uses original maker clock on changed day start at minute 30 59ms
+   ✓ adversarial life codec boundaries > synchronizes compatible makers only on apply, not snapshot creation 65ms
+   ✓ adversarial life codec boundaries > restores plots before spatial placement, retains raw removed species and rejected placement 138ms
+   ✓ adversarial life codec boundaries > keeps valid paid placements and their detached receipts through read and apply 80ms
+   ✓ adversarial life codec boundaries > preserves stale generated forage raw rather than paying a guessed harvest 89ms
+   × adversarial life codec boundaries > rejects a duplicate raw JSON claim key instead of silently keeping its last owner 66ms
+     → expected 'present' to be 'corrupt' // Object.is equality
+   ✓ adversarial life codec boundaries > rejects invalid owned quantity -1 without truncation 79ms
+   ✓ adversarial life codec boundaries > rejects invalid owned quantity 1.5 without truncation 51ms
+   ✓ adversarial life codec boundaries > rejects invalid owned quantity 9007199254740992 without truncation 50ms
+   ✓ adversarial life codec boundaries > refuses all conversions on claim exhaustion without moving a prefix  802ms
+   ✓ adversarial life codec boundaries > rejects oversized unknown originals at the parser, preserving the disk slot 71ms
+   ✓ adversarial life codec boundaries > rolls back recovery, inventory, date and receipts when a later energy stage fails 53ms
+   ✓ adversarial life codec boundaries > keeps a successful claim action in memory when subsequent autosave hits quota 70ms
+ ✓ test/p0RuntimeIntegration.test.ts (16 tests) 1352ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/lifeRecoveryPersistence.test.ts > adversarial life codec boundaries > rejects a duplicate raw JSON claim key instead of silently keeping its last owner
+AssertionError: expected 'present' to be 'corrupt' // Object.is equality
+
+Expected: [32m"[7mcorrup[27mt"[39m
+Received: [31m"[7mpresen[27mt"[39m
+
+ ❯ test/lifeRecoveryPersistence.test.ts:226:48
+    224|     const duplicate = text.replace('"claims":{', `"claims":{"recovery:…
+    225|     localStorage.setItem(saveSlotKey(1), duplicate);
+    226|     expect(readSaveSlot(localStorage, 1).kind).toBe("corrupt");
+       |                                                ^
+    227|     expect(localStorage.getItem(saveSlotKey(1))).toBe(duplicate);
+    228|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 5 passed (6)
+      Tests  1 failed | 60 passed (61)
+   Start at  08:57:26
+   Duration  15.88s (transform 13.20s, setup 0ms, collect 52.66s, tests 7.44s, environment 2ms, prepare 1.85s)

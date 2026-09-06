@@ -1,0 +1,174 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeRecoveryPersistence.test.ts test/p0SessionPersistence.test.ts test/p1SessionPersistence.test.ts test/p2SessionPersistence.test.ts test/p2SpatialPersistence.test.ts test/p0RuntimeIntegration.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+ ✓ test/p2SpatialPersistence.test.ts (3 tests) 243ms
+ ✓ test/p2SessionPersistence.test.ts (4 tests) 319ms
+ ✓ test/p1SessionPersistence.test.ts (3 tests) 277ms
+ ✓ test/p0SessionPersistence.test.ts (9 tests) 548ms
+ ❯ test/lifeRecoveryPersistence.test.ts (40 tests | 5 failed) 3257ms
+   ✓ lossless life persistence > keeps compatible shipping and unfinished legacy maker behavior 149ms
+   ✓ lossless life persistence > keeps contribution2 and recovers only excess3 after requirement5 becomes2 86ms
+   ✓ lossless life persistence > retains removed completed bundle tombstones and dormant unlock rights without refunds 59ms
+   ✓ lossless life persistence > moves disabled shipping before writer filtering without paying inventory 68ms
+   ✓ lossless life persistence > moves removed shipping before writer filtering without paying inventory 49ms
+   ✓ lossless life persistence > moves ineligible shipping before writer filtering without paying inventory 52ms
+   ✓ lossless life persistence > cancels removed frozen makers at original minute 29 through apply 47ms
+   ✓ lossless life persistence > cancels removed frozen makers at original minute 30 through apply 53ms
+   ✓ lossless life persistence > rejects corrupt recovery at read and direct apply without touching source bytes 52ms
+   ✓ lossless life persistence > returns failed autosave on reconciliation failure, preserving prior disk and current live action 72ms
+   ✓ lossless life persistence > rolls back the whole day when reconciliation fails 35ms
+   ✓ adversarial life codec boundaries > preserves opaque legacy owners through the parser without guessing payouts 48ms
+   ✓ adversarial life codec boundaries > uses original maker clock on changed day start at minute 29 38ms
+   ✓ adversarial life codec boundaries > uses original maker clock on changed day start at minute 30 40ms
+   ✓ adversarial life codec boundaries > synchronizes compatible makers only on apply, not snapshot creation 39ms
+   ✓ adversarial life codec boundaries > restores plots before spatial placement, retains raw removed species and rejected placement 51ms
+   ✓ adversarial life codec boundaries > keeps valid paid placements and their detached receipts through read and apply 42ms
+   ✓ adversarial life codec boundaries > preserves stale generated forage raw rather than paying a guessed harvest 42ms
+   ✓ adversarial life codec boundaries > rejects a duplicate raw JSON claim key instead of silently keeping its last owner 39ms
+   ✓ adversarial life codec boundaries > rejects invalid owned quantity -1 without truncation 40ms
+   ✓ adversarial life codec boundaries > rejects invalid owned quantity 1.5 without truncation 39ms
+   ✓ adversarial life codec boundaries > rejects invalid owned quantity 9007199254740992 without truncation 50ms
+   ✓ adversarial life codec boundaries > refuses all conversions on claim exhaustion without moving a prefix  550ms
+   ✓ adversarial life codec boundaries > rejects oversized unknown originals at the parser, preserving the disk slot 36ms
+   ✓ adversarial life codec boundaries > rolls back recovery, inventory, date and receipts when a later energy stage fails 30ms
+   ✓ adversarial life codec boundaries > keeps a successful claim action in memory when subsequent autosave hits quota 40ms
+   ✓ source definition churn > preserves legacy placeables whose explicit item definition disappeared 42ms
+   ✓ source definition churn > does not auto-pay unknown claims when definitions return 51ms
+   ✓ load refusal bounds and pure reconciliation > rejects claim-limit at the real Save5 reader without overwriting bytes 98ms
+   ✓ load refusal bounds and pure reconciliation > rejects item-limit at the real Save5 reader without overwriting bytes 41ms
+   ✓ load refusal bounds and pure reconciliation > rejects total-bytes at the real Save5 reader without overwriting bytes 263ms
+   ✓ load refusal bounds and pure reconciliation > rejects raw-bytes at the real Save5 reader without overwriting bytes 40ms
+   ✓ load refusal bounds and pure reconciliation > rejects unsafe-sequence at the real Save5 reader without overwriting bytes 52ms
+   ✓ load refusal bounds and pure reconciliation > returns an idempotent reconciled draft without mutating its input or paying items 40ms
+   ✓ bounded animal restoration > quarantines animals beyond the runtime bound instead of dropping a saved suffix  591ms
+   × independent task4 verifier counterexamples > B1 quarantines a recognizable opaque placeable through writer with exactly one original owner 54ms
+     → expected { 'map_blank_start:2,2': { …(5) } } to deeply equal {}
+   × independent task4 verifier counterexamples > B1 quarantines a recognizable opaque placeable through disk with exactly one original owner 39ms
+     → expected { 'map_blank_start:2,2': { …(5) } } to deeply equal {}
+   × independent task4 verifier counterexamples > B2 refuses the exact mixed valid/malformed plot slot before accepting a colliding shed 34ms
+     → expected 'present' to be 'corrupt' // Object.is equality
+   × independent task4 verifier counterexamples > B2 refuses writer and autosave without replacing the prior slot or current live ownership 33ms
+     → expected [Function] to throw an error
+   × independent task4 verifier counterexamples > B2 refuses the whole day before changing occupancy, recovery, or prior receipts 32ms
+     → expected { ok: true, receipt: { …(9) } } to match object { ok: false, reason: 'recovery', …(2) }
+(10 matching properties omitted from actual)
+ ✓ test/p0RuntimeIntegration.test.ts (16 tests) 858ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/lifeRecoveryPersistence.test.ts > independent task4 verifier counterexamples > B1 quarantines a recognizable opaque placeable through writer with exactly one original owner
+AssertionError: expected { 'map_blank_start:2,2': { …(5) } } to deeply equal {}
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- {}[39m
+[31m+ {[39m
+[31m+   "map_blank_start:2,2": {[39m
+[31m+     "id": "legacy",[39m
+[31m+     "kind": "legacy-machine",[39m
+[31m+     "mapId": "map_blank_start",[39m
+[31m+     "x": 2,[39m
+[31m+     "y": 2,[39m
+[31m+   },[39m
+[31m+ }[39m
+
+ ❯ test/lifeRecoveryPersistence.test.ts:382:42
+    380|     if (surface === "writer") {
+    381|       const written = createSaveSnapshot(project, session);
+    382|       expect(written.session.placeables).toEqual({});
+       |                                          ^
+    383|       expect(Object.values(written.session.lifeRecovery?.claims ?? {})…
+    384|       expect(saveToSlot(localStorage, 1, written).ok).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  test/lifeRecoveryPersistence.test.ts > independent task4 verifier counterexamples > B1 quarantines a recognizable opaque placeable through disk with exactly one original owner
+AssertionError: expected { 'map_blank_start:2,2': { …(5) } } to deeply equal {}
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- {}[39m
+[31m+ {[39m
+[31m+   "map_blank_start:2,2": {[39m
+[31m+     "id": "legacy",[39m
+[31m+     "kind": "legacy-machine",[39m
+[31m+     "mapId": "map_blank_start",[39m
+[31m+     "x": 2,[39m
+[31m+     "y": 2,[39m
+[31m+   },[39m
+[31m+ }[39m
+
+ ❯ test/lifeRecoveryPersistence.test.ts:395:33
+    393|     expect(localStorage.getItem(saveSlotKey(1))).toBe(raw);
+    394|     expect(session).toEqual(before);
+    395|     expect(restored.placeables).toEqual({});
+       |                                 ^
+    396|     const claims = Object.values(restored.lifeRecovery?.claims ?? {});
+    397|     expect(claims).toHaveLength(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  test/lifeRecoveryPersistence.test.ts > independent task4 verifier counterexamples > B2 refuses the exact mixed valid/malformed plot slot before accepting a colliding shed
+AssertionError: expected 'present' to be 'corrupt' // Object.is equality
+
+Expected: [32m"[7mcorrup[27mt"[39m
+Received: [31m"[7mpresen[27mt"[39m
+
+ ❯ test/lifeRecoveryPersistence.test.ts:425:48
+    423|     const raw = JSON.stringify(snapshot);
+    424|     localStorage.setItem(saveSlotKey(2), raw);
+    425|     expect(readSaveSlot(localStorage, 2).kind).toBe("corrupt");
+       |                                                ^
+    426|     expect(() => applySaveSnapshot(project, snapshot)).toThrow();
+    427|     expect(localStorage.getItem(saveSlotKey(2))).toBe(raw);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  test/lifeRecoveryPersistence.test.ts > independent task4 verifier counterexamples > B2 refuses writer and autosave without replacing the prior slot or current live ownership
+AssertionError: expected [Function] to throw an error
+ ❯ test/lifeRecoveryPersistence.test.ts:439:85
+    437|     const auto = localStorage.getItem(autosaveKey());
+    438|     const before = structuredClone(session);
+    439|     expect(() => saveToSlot(localStorage, 1, createSaveSnapshot(projec…
+       |                                                                                     ^
+    440|     expect(performAutosave(project, session, localStorage, "transfer")…
+    441|     expect(localStorage.getItem(saveSlotKey(1))).toBe(manual);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  test/lifeRecoveryPersistence.test.ts > independent task4 verifier counterexamples > B2 refuses the whole day before changing occupancy, recovery, or prior receipts
+AssertionError: expected { ok: true, receipt: { …(9) } } to match object { ok: false, reason: 'recovery', …(2) }
+(10 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "ok": false,[39m
+[32m-   "reason": "recovery",[39m
+[32m-   "sourceKind": "farmPlots",[39m
+[32m-   "stage": "recovery",[39m
+[31m+   "ok": true,[39m
+[2m  }[22m
+
+ ❯ test/lifeRecoveryPersistence.test.ts:455:65
+    453|     session.shippingHistory = [{ dayKey: "1:winter:28", entries: [], t…
+    454|     const before = structuredClone(session);
+    455|     expect(transitionToNextDay(project, session, "1:spring:1")).toMatc…
+       |                                                                 ^
+    456|     expect(session).toEqual(before);
+    457|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed | 5 passed (6)
+      Tests  5 failed | 70 passed (75)
+   Start at  09:35:12
+   Duration  9.49s (transform 7.72s, setup 0ms, collect 31.25s, tests 5.50s, environment 3ms, prepare 1.38s)

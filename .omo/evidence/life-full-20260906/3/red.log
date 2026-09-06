@@ -1,0 +1,140 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeRecovery.test.ts test/p0Makers.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+ ❯ test/lifeRecovery.test.ts (5 tests | 4 failed) 1619ms
+   × life transaction evidence > freezes spent inputs, promised outputs, duration and calendar when starting 1048ms
+     → expected { instanceId: 'one', …(4) } to match object { contract: { …(4) } }
+(5 matching properties omitted from actual)
+   × life transaction evidence > pays the original promise when the definition changes during a new job 292ms
+     → expected { ok: true, instanceId: 'one', …(2) } to match object { ok: true, outputs: [ { …(2) } ] }
+(2 matching properties omitted from actual)
+   ✓ life transaction evidence > retains current-definition payout for legacy jobs without a contract 248ms
+   × life transaction evidence > rejects malformed new contracts at the existing save validation seam 12ms
+     → expected true to be false // Object.is equality
+   × life transaction evidence > exposes a bounded recovery-state validator at the save boundary 3ms
+     → expected { …(44), …(1) } to have property "isLifeRecoveryState"
+ ✓ test/p0Makers.test.ts (8 tests) 3704ms
+   ✓ P0 timed makers > uses a monotonic absolute game-minute clock across a season/day boundary  914ms
+   ✓ P0 timed makers > preserves a processing timer through the shared save snapshot path  709ms
+   ✓ P0 timed makers > rejects invalid absolute minute NaN before consuming inputs  719ms
+   ✓ P0 timed makers > rejects invalid absolute minute -1 before consuming inputs  316ms
+   ✓ P0 timed makers > rejects missing inventory, busy instances, and invalid definitions atomically  456ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/lifeRecovery.test.ts > life transaction evidence > freezes spent inputs, promised outputs, duration and calendar when starting
+AssertionError: expected { instanceId: 'one', …(4) } to match object { contract: { …(4) } }
+(5 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "contract": {[39m
+[32m-     "durationMinutes": 30,[39m
+[32m-     "inputs": [[39m
+[32m-       {[39m
+[32m-         "count": 3,[39m
+[32m-         "itemId": "raw",[39m
+[32m-       },[39m
+[32m-     ],[39m
+[32m-     "outputs": [[39m
+[32m-       {[39m
+[32m-         "count": 2,[39m
+[32m-         "itemId": "product",[39m
+[32m-       },[39m
+[32m-     ],[39m
+[32m-     "timeBasis": {[39m
+[32m-       "dayEndHour": 27,[39m
+[32m-       "dayStartHour": 5,[39m
+[32m-       "daysPerSeason": 40,[39m
+[32m-     },[39m
+[32m-   },[39m
+[31m+   "instanceId": "one",[39m
+[31m+   "makerId": "maker",[39m
+[31m+   "readyAtMinute": 40,[39m
+[31m+   "startedAtMinute": 10,[39m
+[31m+   "status": "processing",[39m
+[2m  }[22m
+
+ ❯ test/lifeRecovery.test.ts:24:41
+     22|     const { project, session } = fixture();
+     23|     expect(startMaker(project, session, "one", "maker", 10).ok).toBe(t…
+     24|     expect(session.makerInstances?.one).toMatchObject({ contract: {
+       |                                         ^
+     25|       inputs: [{ itemId: "raw", count: 3 }], outputs: [{ itemId: "prod…
+     26|       durationMinutes: 30, timeBasis: { dayStartHour: 5, dayEndHour: 2…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  test/lifeRecovery.test.ts > life transaction evidence > pays the original promise when the definition changes during a new job
+AssertionError: expected { ok: true, instanceId: 'one', …(2) } to match object { ok: true, outputs: [ { …(2) } ] }
+(2 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "ok": true,[22m
+[2m    "outputs": [[22m
+[2m      {[22m
+[32m-       "count": 2,[39m
+[31m+       "count": 9,[39m
+[2m        "itemId": "product",[22m
+[2m      },[22m
+[2m    ],[22m
+[2m  }[22m
+
+ ❯ test/lifeRecovery.test.ts:36:51
+     34|     project.system.makers = [{ id: "maker", inputs: [], outputs: [{ it…
+     35|     expect(advanceMakers(project, session, 40).ok).toBe(true);
+     36|     expect(collectMaker(project, session, "one")).toMatchObject({ ok: …
+       |                                                   ^
+     37|     expect(session.inventory.product).toBe(2);
+     38|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  test/lifeRecovery.test.ts > life transaction evidence > rejects malformed new contracts at the existing save validation seam
+AssertionError: expected true to be false // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+ ❯ test/lifeRecovery.test.ts:52:66
+     50|       contract: { inputs: [{ itemId: "raw", count: -3 }], outputs: [{ …
+     51|         timeBasis: { dayStartHour: 5, dayEndHour: 27, daysPerSeason: 4…
+     52|     expect(validation.isMakerInstancesRecord({ one: instance })).toBe(…
+       |                                                                  ^
+     53|   });
+     54|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  test/lifeRecovery.test.ts > life transaction evidence > exposes a bounded recovery-state validator at the save boundary
+AssertionError: expected { …(44), …(1) } to have property "isLifeRecoveryState"
+ ❯ test/lifeRecovery.test.ts:56:24
+     54|
+     55|   it("exposes a bounded recovery-state validator at the save boundary"…
+     56|     expect(validation).toHaveProperty("isLifeRecoveryState");
+       |                        ^
+     57|   });
+     58| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  4 failed | 9 passed (13)
+   Start at  07:58:13
+   Duration  23.46s (transform 15.93s, setup 0ms, collect 34.03s, tests 5.32s, environment 5ms, prepare 1.73s)
+
+
+EXIT=1

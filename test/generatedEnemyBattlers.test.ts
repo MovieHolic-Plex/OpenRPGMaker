@@ -19,6 +19,18 @@ describe("generated enemy battler files", () => {
     expect(resolveAssetResourceUrl("generated-enemy-dragon-01")).toBe("/assets/generated/starter/monster-dragon-01.png");
   });
 
+  it.each([
+    "leaf-fox", "fire-pup", "sparkit-fire", "skeleton-archer", "orc-shaman",
+    "spirit-fire", "spirit-earth", "spirit-water", "wisp-blue",
+  ])("registers audited %s art at its exact existing path", async (slug) => {
+    const id = `generated-enemy-${slug}`;
+    const url = `/assets/generated/monsters/corrected/${slug}.png`;
+    expect(builtinGeneratedResourceIds()).toContain(id);
+    expect(resolveAssetResourceUrl(id)).toBe(url);
+    const existsSync = await loadExistsSync();
+    expect(existsSync(`public${url}`)).toBe(true);
+  });
+
   it("routes the enemy_extra_NNN resource suffix to its matching enemy-art file", async () => {
     // Break caught: broad name fallbacks or a non-generated prefix bypass the
     // enemy_extra_NNN route and show a shared image (or no image) in the DB.

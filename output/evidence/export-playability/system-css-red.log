@@ -1,0 +1,8 @@
+> node scripts/run-vitest.mjs run --configLoader bundle test/exportBattleAssetUrls.test.ts
+ ❯ test/exportBattleAssetUrls.test.ts (4 tests | 1 failed) 508ms
+     → expected [ [ …(2), index: 94, …(2) ], …(4) ] to deeply equal []
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  test/exportBattleAssetUrls.test.ts > export battle asset URLs > builds runtime fonts and fallback window skin without root-only URLs
+AssertionError: expected [ [ …(2), index: 94, …(2) ], …(4) ] to deeply equal []
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)

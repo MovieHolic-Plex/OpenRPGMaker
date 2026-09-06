@@ -1,0 +1,16 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/audioQaInstrumentation.test.ts test/playerAudioQaLifecycle.test.ts test/audioEnginePlaybackControls.test.ts test/lifeQaObservability.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+ ✓ test/audioEnginePlaybackControls.test.ts (11 tests) 14ms
+ ✓ test/audioQaInstrumentation.test.ts (5 tests) 25ms
+ ✓ test/playerAudioQaLifecycle.test.ts (3 tests) 199ms
+ ✓ test/lifeQaObservability.test.ts (7 tests) 430ms
+
+ Test Files  4 passed (4)
+      Tests  26 passed (26)
+   Start at  11:47:37
+   Duration  10.45s (transform 10.57s, setup 0ms, collect 17.00s, tests 668ms, environment 1.17s, prepare 970ms)

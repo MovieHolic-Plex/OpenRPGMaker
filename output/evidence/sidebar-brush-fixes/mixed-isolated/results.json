@@ -1,0 +1,48 @@
+{
+  "baseUrl": "http://127.0.0.1:19841",
+  "scope": "ui",
+  "proxyLocalRequests": true,
+  "results": [
+    {
+      "name": "C8a-custom-atlas-stamp",
+      "status": "PASS",
+      "observed": {
+        "sourceCells": [
+          7,
+          8,
+          37,
+          38
+        ],
+        "placed": true
+      },
+      "screenshot": "C8a-custom-atlas-stamp.png"
+    },
+    {
+      "name": "C8-mixed-layers",
+      "status": "PASS",
+      "observed": {
+        "sourceCells": [
+          285,
+          286,
+          289,
+          290
+        ],
+        "layers": [
+          "upper",
+          "upper",
+          "lower",
+          "lower"
+        ],
+        "placed": [
+          285,
+          286,
+          289,
+          290
+        ]
+      },
+      "screenshot": "C8-mixed-layers.png"
+    }
+  ],
+  "errors": [],
+  "cleanup": true
+}

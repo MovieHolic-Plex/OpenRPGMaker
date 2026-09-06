@@ -1,0 +1,25 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p2",
+  "head": "66f2cdb756a5a95eda07cae6103b82dfe7298b8a",
+  "tree": "944315667d23fd9d65de95d33a35215e7f925e68",
+  "label": "typecheck",
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "300s",
+    "npm",
+    "run",
+    "typecheck:app"
+  ],
+  "started": "2026-09-06T05:03:18.375Z",
+  "finished": "2026-09-06T05:03:53.828Z",
+  "exit": 0,
+  "signal": null,
+  "stdout": "\n> rpg-zzu@0.1.0 typecheck:app\n> tsc --noEmit -p tsconfig.app.json\n\n",
+  "stderr": ""
+}

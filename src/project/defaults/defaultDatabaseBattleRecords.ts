@@ -30,16 +30,10 @@ export function defaultBattleRecords() {
       // enemy_mine_skel_archer + generatedEnemyRecords() 100종이다.
       // 폐광 원거리 적 — 벽 뒤 갱도에서 투석(투사체) 사격. 박쥐보다 단단하고 사거리가 길다.
       // 레벨 16·TTK 4 / TTD 6 — 중반 원거리 견제. 실시간 actionProfile 수치는 유지한다.
-      // 배틀러는 `generated-enemy-skeleton-01`(384×384) 이다. 필러 시절엔
-      // `generated-enemy-skeleton-01-enemy_extra_105` 였는데, 그 id 는 레지스트리에 없어
-      // enemy_extra_NNN 정규식 폴백으로 떨어졌고 legacy `enemy-art-105.png` **64×64** 가
-      // 떴다(나머지 105종은 전부 384×384). 필러 115건 제거 때 남은 유일한 잔재였다.
-      // 전용 아트인 `generated-enemy-skeleton-archer` 는 쓰지 않는다 — 그건 이미
-      // generatedEnemyRecords() 의 enemy_skeleton_archer 것이고, dbImageMatching 이
-      // 생성 로스터의 1:1 아트 매핑을 강제한다(`-01` 접미사만 공유 예외).
-      // speciesId 없음: 짝이던 species_extra_105 가 더미 species 와 함께 제거됐다(2026-08-28).
-      // generatedEnemyRecords() 100종도 speciesId 를 달지 않으므로 기본 로스터의 표준 형태다.
-      normalizeEnemyRecord({"id":"enemy_mine_skel_archer","name":"광산 해골 궁수","level":16,"speciesId":"species_mine_skeleton","monsterResourceId":"generated-enemy-skeleton-01","stats":{"maxHp":176,"maxMp":10,"attack":31,"defense":27,"mind":31,"agility":14},"rewards":{"exp":73,"gold":68,"dropItemId":"item_bone","dropRatePercent":15},"actions":archetypeActions("curse"),"actionProfile":{"contactDamage":8,"aggroRange":9,"moveIntervalMs":450,"knockbackResist":0,"attack":{"kind":"projectile","windupMs":700,"recoverMs":300,"damage":18,"range":8,"cooldownMs":1400,"projectileSpeedTilesPerSec":7}}}),
+      // 광산 궁수는 활을 든 전용 해골 궁수 아트를 쓴다. enemy_skeleton_archer와
+      // 역할이 같으므로 이 한 쌍의 공유를 dbImageMatching에서 명시적으로 허용한다.
+      // 검을 든 skeleton-01로 가짜 1:1 매핑을 만들거나 legacy enemy_extra 폴백을 쓰지 않는다.
+      normalizeEnemyRecord({"id":"enemy_mine_skel_archer","name":"광산 해골 궁수","level":16,"speciesId":"species_mine_skeleton","monsterResourceId":"generated-enemy-skeleton-archer","stats":{"maxHp":176,"maxMp":10,"attack":31,"defense":27,"mind":31,"agility":14},"rewards":{"exp":73,"gold":68,"dropItemId":"item_bone","dropRatePercent":15},"actions":archetypeActions("curse"),"actionProfile":{"contactDamage":8,"aggroRange":9,"moveIntervalMs":450,"knockbackResist":0,"attack":{"kind":"projectile","windupMs":700,"recoverMs":300,"damage":18,"range":8,"cooldownMs":1400,"projectileSpeedTilesPerSec":7}}}),
       ...generatedEnemyRecords(),
     ],
     troops: [
@@ -130,9 +124,9 @@ export function defaultBattleRecords() {
       // ── 스타터 3종(포획·육성 튜토리얼용) ───────────────────────────────
       // B6 밸런스 튜닝 스펙(4e7a9590): 탱커 리프링·속공 스파킷·밸런스 아쿠아링.
       // give_starter_monsters·밸런스·언락 테스트가 이 id 를 직접 참조한다.
-      normalizeMonsterSpeciesRecord({"id":"species_leafling","name":"리프링","types":["grass"],"graphic":{"monsterResourceId":"easyrpg-monster-hornet","graphicHue":90,"transparent":false,"flying":false},"baseStats":{"maxHp":36,"maxMp":6,"attack":7,"defense":13,"mind":9,"agility":12},"captureRate":0.45,"skillsByLevel":[{"level":1,"skillId":DEFAULT_SKILL_ID},{"level":3,"skillId":"skill_leaf"}]}),
-      normalizeMonsterSpeciesRecord({"id":"species_sparkit","name":"스파킷","types":["fire"],"graphic":{"monsterResourceId":"generated-enemy-bat-01","graphicHue":30,"transparent":false,"flying":false},"baseStats":{"maxHp":25,"maxMp":8,"attack":7,"defense":8,"mind":11,"agility":16},"captureRate":0.45,"skillsByLevel":[{"level":1,"skillId":DEFAULT_SKILL_ID},{"level":3,"skillId":"skill_fire"}]}),
-      normalizeMonsterSpeciesRecord({"id":"species_aqualing","name":"아쿠아링","types":["water"],"graphic":{"monsterResourceId":"generated-enemy-slime-01","graphicHue":190,"transparent":false,"flying":false},"baseStats":{"maxHp":30,"maxMp":8,"attack":7,"defense":11,"mind":12,"agility":13},"captureRate":0.45,"skillsByLevel":[{"level":1,"skillId":DEFAULT_SKILL_ID},{"level":3,"skillId":"skill_water"}]}),
+      normalizeMonsterSpeciesRecord({"id":"species_leafling","name":"리프링","types":["grass"],"graphic":{"monsterResourceId":"generated-enemy-leafling-01","graphicHue":0,"transparent":false,"flying":false},"baseStats":{"maxHp":36,"maxMp":6,"attack":7,"defense":13,"mind":9,"agility":12},"captureRate":0.45,"skillsByLevel":[{"level":1,"skillId":DEFAULT_SKILL_ID},{"level":3,"skillId":"skill_leaf"}]}),
+      normalizeMonsterSpeciesRecord({"id":"species_sparkit","name":"스파킷","types":["fire"],"graphic":{"monsterResourceId":"generated-enemy-sparkit-fire","graphicHue":0,"transparent":false,"flying":false},"baseStats":{"maxHp":25,"maxMp":8,"attack":7,"defense":8,"mind":11,"agility":16},"captureRate":0.45,"skillsByLevel":[{"level":1,"skillId":DEFAULT_SKILL_ID},{"level":3,"skillId":"skill_fire"}]}),
+      normalizeMonsterSpeciesRecord({"id":"species_aqualing","name":"아쿠아링","types":["water"],"graphic":{"monsterResourceId":"generated-enemy-aqualing-01","graphicHue":0,"transparent":false,"flying":false},"baseStats":{"maxHp":30,"maxMp":8,"attack":7,"defense":11,"mind":12,"agility":13},"captureRate":0.45,"skillsByLevel":[{"level":1,"skillId":DEFAULT_SKILL_ID},{"level":3,"skillId":"skill_water"}]}),
       // ── 야생 5종 + 광산 해골 ───────────────────────────────────────────
       // a06dd69d 스펙 복원: 타입·포획률·기술·진화가 전부 달랐던 시절의 값이다.
       // 2026-08-28 다이어트 때 스탯 등차수열로 평탄화돼 6종 전부

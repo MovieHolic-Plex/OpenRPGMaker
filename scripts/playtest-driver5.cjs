@@ -10,7 +10,10 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   fs.mkdirSync(OUT, { recursive: true });
   const browser = await chromium.launch({ args: ["--disable-gpu", "--use-gl=swiftshader", "--no-sandbox"] });
   const page = await (await browser.newContext({ viewport: { width: 1720, height: 960 } })).newPage();
-  await page.addInitScript(() => { for (let i = 1; i <= 3; i++) localStorage.removeItem("oprn:save-slot:" + i); });
+  await page.addInitScript(() => { for (let i = 1; i <= 3; i++) {
+      localStorage.removeItem("oprn:save-slot:v5:" + i);
+      localStorage.removeItem("oprn:save-slot:" + i);
+    } });
   await page.goto(URL, { waitUntil: "domcontentloaded" });
   await page.waitForSelector('[data-testid="mode-play"]', { timeout: 30000 });
   await sleep(1500);

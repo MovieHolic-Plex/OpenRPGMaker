@@ -1,0 +1,244 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeRecovery.test.ts test/lifeSaveVersion.test.ts test/autosave.test.ts test/p0Makers.test.ts test/p0Shipping.test.ts test/p0Bundles.test.ts test/p1FarmAnimals.test.ts test/p1DayTransitionIntegration.test.ts test/p1WeatherDayTransition.test.ts test/p2DayTransition.test.ts test/p0DayTransitionSceneFailure.test.ts test/p2SpatialTransactions.test.ts test/checkpointEndingRuntime.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+ ✓ test/p2DayTransition.test.ts (2 tests) 519ms
+   ✓ P2 forage day-transition integration > settles the source day then spawns destination-day forage through the one transition authority  309ms
+ ✓ test/p2SpatialTransactions.test.ts (3 tests) 584ms
+   ✓ P2 spatial atomic transactions > builds, moves, upgrades, and removes a general structure without touching P1 homes  366ms
+ ✓ test/p0Shipping.test.ts (9 tests) 1091ms
+ ✓ test/p0Bundles.test.ts (9 tests) 1149ms
+ ✓ test/p1WeatherDayTransition.test.ts (4 tests) 915ms
+   ✓ P1 weather watering handoff > marks dry destination-day plots before farm growth synchronization for rain  484ms
+ ✓ test/p1DayTransitionIntegration.test.ts (5 tests) 842ms
+   ✓ P1 daily weather transition integration > initializes today's weather and visual state when a new session starts  435ms
+ ✓ test/p0Makers.test.ts (8 tests) 1145ms
+   ✓ P0 timed makers > uses a monotonic absolute game-minute clock across a season/day boundary  492ms
+ ✓ test/lifeSaveVersion.test.ts (18 tests) 1732ms
+   ✓ Save5 version and original ownership boundary > writes independent Save5 even without life packages, leaving Project4 and live state unchanged  337ms
+ ✓ test/autosave.test.ts (16 tests) 2077ms
+   ✓ autosave policy (shouldAutosave) > saves by default with no prior autosave  333ms
+ ✓ test/p1FarmAnimals.test.ts (16 tests) 3038ms
+   ✓ P1 farm-animal runtime authority > rejects missing, incompatible, and full homes without mutating the session  645ms
+   ✓ P1 farm-animal runtime authority > rejects empty and unsafe feed stacks without changing inventory or animal care  319ms
+   ✓ P1 farm-animal runtime authority > fails closed on unknown references, duplicate instances, and unsafe state  381ms
+ ❯ test/p0DayTransitionSceneFailure.test.ts (4 tests | 2 failed) 678ms
+   × P0 day-transition scene failure handling > keeps natural clock state unchanged and exposes a visible error 344ms
+     → expected { switches: { …(22) }, …(73) } to deeply equal { switches: { …(22) }, …(69) }
+   × P0 day-transition scene failure handling > preflights sleep before fade/hooks and does not refresh as though sleep succeeded 114ms
+     → expected true to be false // Object.is equality
+   ✓ P0 day-transition scene failure handling > rolls back a partially mutating day-end hook, fades in, and refreshes error surfaces 77ms
+   ✓ P0 day-transition scene failure handling > surfaces a forced-sleep false result instead of dropping the scheduler failure 141ms
+ ✓ test/lifeRecovery.test.ts (54 tests) 4679ms
+   ✓ life transaction evidence > freezes spent inputs, promised outputs, duration and calendar when starting  622ms
+   ✓ bounded recovery ownership > accepts claim 4096 then refuses claim 4097 without removing its owner or sequence  509ms
+   ✓ adversarial source conversion > rejects total recovery overflow without removing the owner or advancing sequence  358ms
+ ✓ test/checkpointEndingRuntime.test.ts (5 tests) 1188ms
+   ✓ checkpointSave / killPlayer / triggerEnding > define_ending은 같은 조건 집합의 낮은 priority 엔딩을 warning으로 보고한다  777ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/p0DayTransitionSceneFailure.test.ts > P0 day-transition scene failure handling > keeps natural clock state unchanged and exposes a visible error
+AssertionError: expected { switches: { …(22) }, …(73) } to deeply equal { switches: { …(22) }, …(69) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -149,34 +149,37 @@[39m
+[2m    "completedBundleIds": [],[22m
+[2m    "currentMapId": "map_farming_demo",[22m
+[2m    "dailyGifts": {},[22m
+[2m    "dailyTalks": {},[22m
+[2m    "dailyWeather": {[22m
+[32m-     "dayKey": "1:spring:1",[39m
+[31m+     "dayKey": "1:spring:2",[39m
+[2m      "intensity": 0,[22m
+[2m      "kind": "none",[22m
+[2m    },[22m
+[31m+   "dayTransitionLastDayKey": "1:spring:1",[39m
+[2m    "energy": 100,[22m
+[2m    "erasedEventIds": [],[22m
+[2m    "eventLocations": {},[22m
+[2m    "factionStanceOverrides": {},[22m
+[2m    "farmAnimals": {[22m
+[2m      "farm_animal_bori": {[22m
+[2m        "buildingId": "building_sunrise_barn",[22m
+[2m        "eventId": "ev_farm_chicken",[22m
+[2m        "friendship": 0,[22m
+[2m        "instanceId": "farm_animal_bori",[22m
+[31m+       "lastAdvancedDayKey": "1:spring:1",[39m
+[2m        "name": "보리",[22m
+[2m        "productionProgress": 0,[22m
+[2m        "readyProductCount": 0,[22m
+[2m        "speciesId": "animal_chicken",[22m
+[2m      },[22m
+[2m      "farm_animal_dubu": {[22m
+[2m        "buildingId": "building_sunrise_barn",[22m
+[2m        "eventId": "ev_farm_cow",[22m
+[2m        "friendship": 0,[22m
+[2m        "instanceId": "farm_animal_dubu",[22m
+[31m+       "lastAdvancedDayKey": "1:spring:1",[39m
+[2m        "name": "두부",[22m
+[2m        "productionProgress": 0,[22m
+[2m        "readyProductCount": 0,[22m
+[2m        "speciesId": "animal_cow",[22m
+[2m      },[22m
+[33m@@ -192,22 +195,23 @@[39m
+[2m        "y": 11,[22m
+[2m      },[22m
+[2m    },[22m
+[2m    "farmPlots": {},[22m
+[2m    "farmPlotsAdvancedThrough": {[22m
+[32m-     "day": 1,[39m
+[31m+     "day": 2,[39m
+[2m      "season": "spring",[22m
+[2m      "year": 1,[22m
+[2m    },[22m
+[2m    "flags": {},[22m
+[2m    "followerTrail": [],[22m
+[2m    "followers": [],[22m
+[31m+   "forageLastAdvancedDayKey": "1:spring:2",[39m
+[2m    "friendship": {},[22m
+[2m    "gameTime": {[22m
+[32m-     "day": 1,[39m
+[32m-     "hour": 25,[39m
+[32m-     "minute": 50,[39m
+[31m+     "day": 2,[39m
+[31m+     "hour": 6,[39m
+[31m+     "minute": 0,[39m
+[2m      "season": "spring",[22m
+[2m      "year": 1,[22m
+[2m    },[22m
+[2m    "gold": 0,[22m
+[2m    "homeDecorationPlacements": {[22m
+[33m@@ -240,10 +244,31 @@[39m
+[2m      "item_watering_can": 1,[22m
+[2m      "item_wild_leek": 1,[22m
+[2m      "item_wood_table": 1,[22m
+[2m    },[22m
+[2m    "itemUseCharges": {},[22m
+[31m+   "lifeRecovery": {[39m
+[31m+     "claims": {[39m
+[31m+       "recovery:1": {[39m
+[31m+         "id": "recovery:1",[39m
+[31m+         "items": [[39m
+[31m+           {[39m
+[31m+             "count": 1,[39m
+[31m+             "itemId": "item_deleted",[39m
+[31m+           },[39m
+[31m+         ],[39m
+[31m+         "reason": "ineligible-shipping",[39m
+[31m+         "sourceId": "item_deleted",[39m
+[31m+         "sourceKind": "shippingQueue",[39m
+[31m+         "unresolved": {[39m
+[31m+           "detail": "ineligible-shipping",[39m
+[31m+           "record": 1,[39m
+[31m+         },[39m
+[31m+       },[39m
+[31m+     },[39m
+[31m+     "nextSequence": 2,[39m
+[31m+   },[39m
+[2m    "lifeSkills": {},[22m
+[2m    "lighting": {[22m
+[2m      "ambient": 0,[22m
+[2m      "sources": [],[22m
+[2m    },[22m
+[33m@@ -290,10 +315,36 @@[39m
+[2m    "partyActorIds": [[22m
+[2m      "actor_hero",[22m
+[2m    ],[22m
+[2m    "pictures": {},[22m
+[2m    "placeables": {[22m
+[31m+     "map_farming_demo:11,16": {[39m
+[31m+       "forageSpawn": {[39m
+[31m+         "areaId": "forage_farm_meadow",[39m
+[31m+         "entryId": "forage_turning_seasons",[39m
+[31m+         "spawnedDayKey": "1:spring:2",[39m
+[31m+       },[39m
+[31m+       "id": "forage:forage_farm_meadow:1:spring:2:11,16",[39m
+[31m+       "itemId": "item_wild_leek",[39m
+[31m+       "kind": "forage",[39m
+[31m+       "mapId": "map_farming_demo",[39m
+[31m+       "x": 11,[39m
+[31m+       "y": 16,[39m
+[31m+     },[39m
+[31m+     "map_farming_demo:16,18": {[39m
+[31m+       "forageSpawn": {[39m
+[31m+         "areaId": "forage_farm_meadow",[39m
+[31m+         "entryId": "forage_turning_seasons",[39m
+[31m+         "spawnedDayKey": "1:spring:2",[39m
+[31m+       },[39m
+[31m+       "id": "forage:forage_farm_meadow:1:spring:2:16,18",[39m
+[31m+       "itemId": "item_wild_leek",[39m
+[31m+       "kind": "forage",[39m
+[31m+       "mapId": "map_farming_demo",[39m
+[31m+       "x": 16,[39m
+[31m+       "y": 18,[39m
+[31m+     },[39m
+[2m      "map_mine_1f:10,9": {[22m
+[2m        "id": "rock_mine_5",[22m
+[2m        "itemId": "item_iron_ore",[22m
+[2m        "kind": "rock",[22m
+[2m        "mapId": "map_mine_1f",[22m
+[33m@@ -360,14 +411,20 @@[39m
+[2m          "state": 3942022695,[22m
+[2m        },[22m
+[2m      },[22m
+[2m    },[22m
+[2m    "selfSwitches": {},[22m
+[32m-   "shippingHistory": [],[39m
+[32m-   "shippingQueue": {[39m
+[32m-     "item_deleted": 1,[39m
+[31m+   "shippingHistory": [[39m
+[31m+     {[39m
+[31m+       "credited": 0,[39m
+[31m+       "dayKey": "1:spring:1",[39m
+[31m+       "entries": [],[39m
+[31m+       "total": 0,[39m
+[2m      },[22m
+[31m+   ],[39m
+[31m+   "shippingLastSettledDayKey": "1:spring:1",[39m
+[31m+   "shippingQueue": {},[39m
+[2m    "spawnedEvents": {},[22m
+[2m    "switches": {[22m
+[2m      "sw_0001": false,[22m
+[2m      "sw_0002": false,[22m
+[2m      "sw_0003": false,[22m
+
+ ❯ test/p0DayTransitionSceneFailure.test.ts:65:23
+     63|       updateGameTime(scene, 1_000);
+     64|
+     65|       expect(session).toEqual(frozen);
+       |                       ^
+     66|       expect(overlays.at(-1)).toContain("transition-failed");
+     67|       expect(scene.timeFixedAccumulatorMs).toBe(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/p0DayTransitionSceneFailure.test.ts > P0 day-transition scene failure handling > preflights sleep before fade/hooks and does not refresh as though sleep succeeded
+AssertionError: expected true to be false // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+ ❯ test/p0DayTransitionSceneFailure.test.ts:84:7
+     82|       const frozen = structuredClone(session);
+     83|
+     84|       await expect(sleepUntilMorningScene(scene, hook)).resolves.toBe(…
+       |       ^
+     85|
+     86|       expect(session).toEqual(frozen);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed | 12 passed (13)
+      Tests  2 failed | 151 passed (153)
+   Start at  08:59:55
+   Duration  21.09s (transform 20.77s, setup 0ms, collect 113.99s, tests 19.64s, environment 8ms, prepare 5.49s)

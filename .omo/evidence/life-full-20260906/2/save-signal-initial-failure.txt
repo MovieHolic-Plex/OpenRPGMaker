@@ -1,0 +1,63 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/playerOpenSaveMenu.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+ ❯ test/playerOpenSaveMenu.test.ts (7 tests | 2 failed) 2709ms
+   × event-opened save menu in the shipping player shell > signals the exact Save5 write from the real save entry point without a delay 397ms
+     → expected [Function] to be [Function setItem] // Object.is equality
+   ✓ event-opened save menu in the shipping player shell > ignores other keys and sessionStorage, then times out and restores instrumentation 252ms
+   × event-opened save menu in the shipping player shell > does not report a failed write as complete and disposes a cancelled observation 287ms
+     → expected 'present' to be 'empty' // Object.is equality
+   ✓ event-opened save menu in the shipping player shell > shows slots immediately and saves, navigates and backs out through the keyboard  762ms
+   ✓ event-opened save menu in the shipping player shell > keeps overwrite confirmation cancellable and resets it on direct re-entry  561ms
+   ✓ event-opened save menu in the shipping player shell > preserves the map save restriction on direct entry 236ms
+   ✓ event-opened save menu in the shipping player shell > preserves the session save restriction on direct entry 203ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/playerOpenSaveMenu.test.ts > event-opened save menu in the shipping player shell > signals the exact Save5 write from the real save entry point without a delay
+AssertionError: expected [Function] to be [Function setItem] // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [Function setItem][39m
+[31m+ [Function anonymous][39m
+
+ ❯ test/playerOpenSaveMenu.test.ts:104:39
+    102|     keyDown("Enter");
+    103|
+    104|     expect(Storage.prototype.setItem).toBe(original);
+       |                                       ^
+    105|     expect(await signal.completion).toBe("written");
+    106|     expect(readSaveSlot(window.localStorage, 1)).toMatchObject({
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/playerOpenSaveMenu.test.ts > event-opened save menu in the shipping player shell > does not report a failed write as complete and disposes a cancelled observation
+AssertionError: expected 'present' to be 'empty' // Object.is equality
+
+Expected: [32m"empty"[39m
+Received: [31m"present"[39m
+
+ ❯ test/playerOpenSaveMenu.test.ts:141:55
+    139|     expect(Storage.prototype.setItem).toBe(write);
+    140|     expect(window.__saveWriteSignal).toBeUndefined();
+    141|     expect(readSaveSlot(window.localStorage, 1).kind).toBe("empty");
+       |                                                       ^
+    142|   });
+    143|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 5 passed (7)
+   Start at  07:13:24
+   Duration  17.51s (transform 8.65s, setup 0ms, collect 12.36s, tests 2.71s, environment 730ms, prepare 444ms)
+
+
+ACTUAL_EXIT=1

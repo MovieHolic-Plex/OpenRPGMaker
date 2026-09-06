@@ -1,3 +1,4 @@
+import { LifeReconciliationError } from "@/project/lifeRecovery";
 import { isCutsceneInputLocked } from "@/player/cutsceneControl";
 import {
   createSaveSnapshot,
@@ -48,11 +49,18 @@ export function performAutosave(
   storage: Storage,
   trigger: AutosaveTrigger,
 ): SaveSnapshot | null {
-  const snapshot: SaveSnapshot = {
-    ...createSaveSnapshot(project, session),
-    savedBy: "auto",
-    autosaveTrigger: trigger,
-  };
+  let snapshot: SaveSnapshot;
+  try {
+    snapshot = {
+      ...createSaveSnapshot(project, session),
+      savedBy: "auto",
+      autosaveTrigger: trigger,
+    };
+  } catch (error) {
+    if (!(error instanceof LifeReconciliationError)) throw error;
+    console.warn("[autosave] failed to reconcile life state:", error);
+    return null;
+  }
   try {
     writeAutosave(storage, snapshot);
     return snapshot;

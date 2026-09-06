@@ -42,6 +42,9 @@ Changes invalidate old receipts; a draft is not applied verification.
 `AssistantSession` consults acceptance at final-response and autonomous-continuation
 boundaries even when the execution plan is finished. Existing bounded repair
 limits remain; unmet promises produce an incomplete result and blocked note.
+Run-end persistence proof also retains this acceptance gate: a completed/skipped
+execution plan cannot schedule proof while promises remain unmet. PR647's
+accepted-revision proof is read-only and retryable, not a replacement for acceptance.
 `refreshAcceptance` reevaluates canonical store changes, including manual edits
 and undo after completion. Request interpretation is still model-authored:
 this is not proof that every natural-language clause was extracted. Missing

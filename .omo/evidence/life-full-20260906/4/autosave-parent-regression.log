@@ -1,0 +1,33 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeRecovery.test.ts test/lifeSaveVersion.test.ts test/autosave.test.ts test/p0Makers.test.ts test/p0Shipping.test.ts test/p0Bundles.test.ts test/p1FarmAnimals.test.ts test/p1DayTransitionIntegration.test.ts test/p1WeatherDayTransition.test.ts test/p2DayTransition.test.ts test/p0DayTransitionSceneFailure.test.ts test/p2SpatialTransactions.test.ts test/checkpointEndingRuntime.test.ts test/playerOpenSaveMenu.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+ ✓ test/p2DayTransition.test.ts (2 tests) 299ms
+ ✓ test/p2SpatialTransactions.test.ts (3 tests) 348ms
+ ✓ test/p1WeatherDayTransition.test.ts (4 tests) 493ms
+ ✓ test/p0Bundles.test.ts (9 tests) 874ms
+ ✓ test/p0Shipping.test.ts (9 tests) 980ms
+ ✓ test/lifeSaveVersion.test.ts (18 tests) 1213ms
+ ✓ test/p0Makers.test.ts (8 tests) 1029ms
+   ✓ P0 timed makers > uses a monotonic absolute game-minute clock across a season/day boundary  384ms
+ ✓ test/p1DayTransitionIntegration.test.ts (5 tests) 1064ms
+   ✓ P1 daily weather transition integration > advances calendar, resolves forecast-matching rain, waters, then grows in one transaction  402ms
+ ✓ test/autosave.test.ts (16 tests) 1560ms
+ ✓ test/p1FarmAnimals.test.ts (16 tests) 2063ms
+   ✓ P1 farm-animal runtime authority > assigns and moves an animal only to a compatible home with remaining capacity  325ms
+   ✓ P1 farm-animal runtime authority > rejects missing, incompatible, and full homes without mutating the session  308ms
+ ✓ test/lifeRecovery.test.ts (54 tests) 3335ms
+   ✓ life transaction evidence > freezes spent inputs, promised outputs, duration and calendar when starting  423ms
+   ✓ adversarial source conversion > validates a large JSON array without overflowing the call stack  409ms
+ ✓ test/p0DayTransitionSceneFailure.test.ts (4 tests) 377ms
+ ✓ test/playerOpenSaveMenu.test.ts (7 tests) 1398ms
+ ✓ test/checkpointEndingRuntime.test.ts (5 tests) 947ms
+   ✓ checkpointSave / killPlayer / triggerEnding > define_ending은 같은 조건 집합의 낮은 priority 엔딩을 warning으로 보고한다  611ms
+
+ Test Files  14 passed (14)
+      Tests  160 passed (160)
+   Start at  09:23:45
+   Duration  24.19s (transform 40.55s, setup 0ms, collect 185.28s, tests 15.98s, environment 826ms, prepare 4.03s)

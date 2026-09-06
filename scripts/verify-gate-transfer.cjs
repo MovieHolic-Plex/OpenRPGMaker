@@ -12,7 +12,10 @@ async function boot(browser) {
   const page = await (await browser.newContext({ viewport: { width: 1720, height: 960 } })).newPage();
   const PROJECT_JSON = fs.readFileSync(path.join(__dirname, "..", ".playwright-mcp", "ember-quest.json"), "utf8");
   await page.addInitScript((json) => {
-    for (let i = 1; i <= 3; i++) localStorage.removeItem("oprn:save-slot:" + i);
+    for (let i = 1; i <= 3; i++) {
+      localStorage.removeItem("oprn:save-slot:v5:" + i);
+      localStorage.removeItem("oprn:save-slot:" + i);
+    }
     window.__RPG_ZZU_E2E_PROJECT__ = JSON.parse(json);
   }, PROJECT_JSON);
   await page.goto(URL, { waitUntil: "domcontentloaded" });
@@ -72,8 +75,25 @@ async function walkTo(page, tx, ty, maxSteps = 40) {
   const clickBtn = async (label) => page.evaluate((q) => { const root = document.querySelector('[data-testid="test-play-window"]') ?? document; const el = q.startsWith("#") ? root.querySelector(`[data-testid="${q.slice(1)}"]`) : [...root.querySelectorAll("button")].find((b) => b.textContent.trim() === q); if (el) el.click(); return !!el; }, label);
   await page.keyboard.press("Escape"); await sleep(900);
   await clickBtn("저장"); await sleep(700);
-  await clickBtn("#save-slot-1"); await sleep(900);
-  const saved = await page.evaluate(() => !!localStorage.getItem("oprn:save-slot:1"));
+  await page.evaluate(async () => {
+    const { armSaveWriteSignal } = await import("/test/e2e/saveWriteSignal.ts");
+    armSaveWriteSignal("oprn:save-slot:v5:1");
+  });
+  try {
+    if (!await clickBtn("#save-slot-1")) throw new Error("Save slot button missing");
+    const outcome = await page.evaluate(() => window.__saveWriteSignal.completion);
+    if (outcome !== "written") throw new Error(`Save write failed: ${outcome}`);
+  } finally {
+    await page.evaluate(() => window.__saveWriteSignal.dispose());
+  }
+  const saved = await page.evaluate(async () => {
+    const { readSaveSlot } = await import("/src/player/saveSlots.ts");
+    const text = localStorage.getItem("oprn:save-slot:v5:1");
+    let snapshot;
+    try { snapshot = JSON.parse(text); } catch { return false; }
+    return snapshot?.schemaVersion === 5 && readSaveSlot(localStorage, 1).kind === "present";
+  });
+  if (!saved) throw new Error("Current save slot is missing or invalid");
   console.log("phase2 saved:", saved);
   await page.keyboard.press("Escape"); await sleep(700);
   await clickBtn("로드"); await sleep(700);

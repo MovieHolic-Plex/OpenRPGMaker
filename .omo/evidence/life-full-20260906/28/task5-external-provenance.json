@@ -1,0 +1,18 @@
+{
+  "dependency-graph.json": {
+    "path": "/home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/5/correction/dependency-graph.json",
+    "sha256": "19e6a75d2a13221010c02ffff782b7c491a27768ab2852c2556e6ebb4433ce10"
+  },
+  "related-before.json": {
+    "path": "/home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/5/correction/related-before.json",
+    "sha256": "06afbdc9ca47326811f09eadd5c0fe71b8d89c0c18532af8d9d66b9736df828f"
+  },
+  "debug-timing-after.json": {
+    "path": "/home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/5/correction/debug-timing-after.json",
+    "sha256": "e4ca3562e371f03012cbdb2b5db755dcf6c8a55c6030d5742998e970504a0d62"
+  },
+  "related-after.json": {
+    "path": "/home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/5/correction/related-after.json",
+    "sha256": "dfe3cd178eef8f6c4c9d8bec203497da3655f197de38363bf4019b0a59eedc07"
+  }
+}

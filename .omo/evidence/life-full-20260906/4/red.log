@@ -1,0 +1,207 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeRecoveryPersistence.test.ts test/p0SessionPersistence.test.ts test/p1SessionPersistence.test.ts test/p2SessionPersistence.test.ts test/p2SpatialPersistence.test.ts test/p0RuntimeIntegration.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+ ✓ test/p2SessionPersistence.test.ts (4 tests) 1197ms
+   ✓ P2 session persistence > round-trips collection, museum receipts, forage cursor/placeables, and fishing RNG  816ms
+ ✓ test/p1SessionPersistence.test.ts (3 tests) 919ms
+   ✓ P1 farm-animal session persistence > round-trips runtime assignment, care receipts, cadence, and ready products  712ms
+ ✓ test/p2SpatialPersistence.test.ts (3 tests) 1102ms
+   ✓ P2 spatial persistence > round-trips records and preserves an explicitly emptied runtime collection  630ms
+ ✓ test/p0SessionPersistence.test.ts (9 tests) 2130ms
+   ✓ P0 save snapshot regression > preserves life skills and shop economy through writer, parser, and apply  664ms
+ ❯ test/lifeRecoveryPersistence.test.ts (11 tests | 11 failed) 3606ms
+   × lossless life persistence > keeps compatible shipping and unfinished legacy maker behavior 624ms
+     → localStorage is not defined
+     → localStorage is not defined
+   × lossless life persistence > keeps contribution2 and recovers only excess3 after requirement5 becomes2 274ms
+     → localStorage is not defined
+     → localStorage is not defined
+   × lossless life persistence > retains removed completed bundle tombstones and dormant unlock rights without refunds 274ms
+     → localStorage is not defined
+     → localStorage is not defined
+   × lossless life persistence > moves disabled shipping before writer filtering without paying inventory 228ms
+     → localStorage is not defined
+     → localStorage is not defined
+   × lossless life persistence > moves removed shipping before writer filtering without paying inventory 263ms
+     → localStorage is not defined
+     → localStorage is not defined
+   × lossless life persistence > moves ineligible shipping before writer filtering without paying inventory 202ms
+     → localStorage is not defined
+     → localStorage is not defined
+   × lossless life persistence > cancels removed frozen makers at original minute 29 through apply 295ms
+     → expected [] to match object [ { items: [ { …(2) } ] } ]
+     → localStorage is not defined
+   × lossless life persistence > cancels removed frozen makers at original minute 30 through apply 322ms
+     → expected [] to match object [ { items: [ { …(2) } ] } ]
+     → localStorage is not defined
+   × lossless life persistence > rejects corrupt recovery at read and direct apply without touching source bytes 349ms
+     → localStorage is not defined
+     → localStorage is not defined
+   × lossless life persistence > returns failed autosave on reconciliation failure, preserving prior disk and current live action 212ms
+     → localStorage is not defined
+     → localStorage is not defined
+   × lossless life persistence > rolls back the whole day when reconciliation fails 559ms
+     → expected { ok: true, receipt: { …(9) } } to match object { ok: false, reason: 'recovery', …(1) }
+(10 matching properties omitted from actual)
+     → localStorage is not defined
+ ✓ test/p0RuntimeIntegration.test.ts (16 tests) 1721ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 11 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/lifeRecoveryPersistence.test.ts > lossless life persistence > keeps compatible shipping and unfinished legacy maker behavior
+ReferenceError: localStorage is not defined
+ ❯ roundtrip test/lifeRecoveryPersistence.test.ts:25:21
+     23| }
+     24| function roundtrip(project: ReturnType<typeof fixture>["project"], ses…
+     25|   expect(saveToSlot(localStorage, 1, createSaveSnapshot(project, sessi…
+       |                     ^
+     26|   const read = readSaveSlot(localStorage, 1);
+     27|   if (read.kind !== "present") throw new Error(`save read: ${read.kind…
+ ❯ test/lifeRecoveryPersistence.test.ts:37:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/22]⎯
+
+ FAIL  test/lifeRecoveryPersistence.test.ts > lossless life persistence > keeps compatible shipping and unfinished legacy maker behavior
+ FAIL  test/lifeRecoveryPersistence.test.ts > lossless life persistence > keeps contribution2 and recovers only excess3 after requirement5 becomes2
+ FAIL  test/lifeRecoveryPersistence.test.ts > lossless life persistence > retains removed completed bundle tombstones and dormant unlock rights without refunds
+ FAIL  test/lifeRecoveryPersistence.test.ts > lossless life persistence > moves disabled shipping before writer filtering without paying inventory
+ FAIL  test/lifeRecoveryPersistence.test.ts > lossless life persistence > moves removed shipping before writer filtering without paying inventory
+ FAIL  test/lifeRecoveryPersistence.test.ts > lossless life persistence > moves ineligible shipping before writer filtering without paying inventory
+ FAIL  test/lifeRecoveryPersistence.test.ts > lossless life persistence > cancels removed frozen makers at original minute 29 through apply
+ FAIL  test/lifeRecoveryPersistence.test.ts > lossless life persistence > cancels removed frozen makers at original minute 30 through apply
+ FAIL  test/lifeRecoveryPersistence.test.ts > lossless life persistence > rejects corrupt recovery at read and direct apply without touching source bytes
+ FAIL  test/lifeRecoveryPersistence.test.ts > lossless life persistence > returns failed autosave on reconciliation failure, preserving prior disk and current live action
+ FAIL  test/lifeRecoveryPersistence.test.ts > lossless life persistence > rolls back the whole day when reconciliation fails
+ReferenceError: localStorage is not defined
+ ❯ test/lifeRecoveryPersistence.test.ts:30:30
+     28|   return applySaveSnapshot(project, read.snapshot);
+     29| }
+     30| afterEach(() => localStorage.clear());
+       |                              ^
+     31|
+     32| describe("lossless life persistence", () => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/22]⎯
+
+ FAIL  test/lifeRecoveryPersistence.test.ts > lossless life persistence > keeps contribution2 and recovers only excess3 after requirement5 becomes2
+ReferenceError: localStorage is not defined
+ ❯ roundtrip test/lifeRecoveryPersistence.test.ts:25:21
+     23| }
+     24| function roundtrip(project: ReturnType<typeof fixture>["project"], ses…
+     25|   expect(saveToSlot(localStorage, 1, createSaveSnapshot(project, sessi…
+       |                     ^
+     26|   const read = readSaveSlot(localStorage, 1);
+     27|   if (read.kind !== "present") throw new Error(`save read: ${read.kind…
+ ❯ test/lifeRecoveryPersistence.test.ts:48:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/22]⎯
+
+ FAIL  test/lifeRecoveryPersistence.test.ts > lossless life persistence > retains removed completed bundle tombstones and dormant unlock rights without refunds
+ReferenceError: localStorage is not defined
+ ❯ roundtrip test/lifeRecoveryPersistence.test.ts:25:21
+     23| }
+     24| function roundtrip(project: ReturnType<typeof fixture>["project"], ses…
+     25|   expect(saveToSlot(localStorage, 1, createSaveSnapshot(project, sessi…
+       |                     ^
+     26|   const read = readSaveSlot(localStorage, 1);
+     27|   if (read.kind !== "present") throw new Error(`save read: ${read.kind…
+ ❯ test/lifeRecoveryPersistence.test.ts:67:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/22]⎯
+
+ FAIL  test/lifeRecoveryPersistence.test.ts > lossless life persistence > moves disabled shipping before writer filtering without paying inventory
+ FAIL  test/lifeRecoveryPersistence.test.ts > lossless life persistence > moves removed shipping before writer filtering without paying inventory
+ FAIL  test/lifeRecoveryPersistence.test.ts > lossless life persistence > moves ineligible shipping before writer filtering without paying inventory
+ReferenceError: localStorage is not defined
+ ❯ roundtrip test/lifeRecoveryPersistence.test.ts:25:21
+     23| }
+     24| function roundtrip(project: ReturnType<typeof fixture>["project"], ses…
+     25|   expect(saveToSlot(localStorage, 1, createSaveSnapshot(project, sessi…
+       |                     ^
+     26|   const read = readSaveSlot(localStorage, 1);
+     27|   if (read.kind !== "present") throw new Error(`save read: ${read.kind…
+ ❯ test/lifeRecoveryPersistence.test.ts:80:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/22]⎯
+
+ FAIL  test/lifeRecoveryPersistence.test.ts > lossless life persistence > cancels removed frozen makers at original minute 29 through apply
+ FAIL  test/lifeRecoveryPersistence.test.ts > lossless life persistence > cancels removed frozen makers at original minute 30 through apply
+AssertionError: expected [] to match object [ { items: [ { …(2) } ] } ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [[39m
+[32m-   {[39m
+[32m-     "items": [[39m
+[32m-       {[39m
+[32m-         "count": 3,[39m
+[32m-         "itemId": "raw",[39m
+[32m-       },[39m
+[32m-     ],[39m
+[32m-   },[39m
+[32m- ][39m
+[31m+ [][39m
+
+ ❯ test/lifeRecoveryPersistence.test.ts:97:64
+     95|     const restored = applySaveSnapshot(project, snapshot);
+     96|     expect(restored.makerInstances).toEqual({});
+     97|     expect(Object.values(restored.lifeRecovery?.claims ?? {})).toMatch…
+       |                                                                ^
+     98|     expect(roundtrip(project, restored).lifeRecovery).toEqual(restored…
+     99|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/22]⎯
+
+ FAIL  test/lifeRecoveryPersistence.test.ts > lossless life persistence > rejects corrupt recovery at read and direct apply without touching source bytes
+ReferenceError: localStorage is not defined
+ ❯ test/lifeRecoveryPersistence.test.ts:104:5
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/22]⎯
+
+ FAIL  test/lifeRecoveryPersistence.test.ts > lossless life persistence > returns failed autosave on reconciliation failure, preserving prior disk and current live action
+ReferenceError: localStorage is not defined
+ ❯ test/lifeRecoveryPersistence.test.ts:111:46
+    109|   it("returns failed autosave on reconciliation failure, preserving pr…
+    110|     const { project, session } = fixture();
+    111|     expect(performAutosave(project, session, localStorage, "transfer")…
+       |                                              ^
+    112|     const prior = localStorage.getItem(autosaveKey());
+    113|     expect(depositShipping(project, session, "raw", 3).ok).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/22]⎯
+
+ FAIL  test/lifeRecoveryPersistence.test.ts > lossless life persistence > rolls back the whole day when reconciliation fails
+AssertionError: expected { ok: true, receipt: { …(9) } } to match object { ok: false, reason: 'recovery', …(1) }
+(10 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "ok": false,[39m
+[32m-   "reason": "recovery",[39m
+[32m-   "stage": "recovery",[39m
+[31m+   "ok": true,[39m
+[2m  }[22m
+
+ ❯ test/lifeRecoveryPersistence.test.ts:125:65
+    123|     session.lifeRecovery = { nextSequence: 0, claims: {} };
+    124|     const before = structuredClone(session);
+    125|     expect(transitionToNextDay(project, session, "1:spring:1")).toMatc…
+       |                                                                 ^
+    126|     expect(session).toEqual(before);
+    127|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/22]⎯
+
+
+ Test Files  1 failed | 5 passed (6)
+      Tests  11 failed | 35 passed (46)
+   Start at  08:48:57
+   Duration  21.53s (transform 17.18s, setup 0ms, collect 71.64s, tests 10.68s, environment 8ms, prepare 3.08s)

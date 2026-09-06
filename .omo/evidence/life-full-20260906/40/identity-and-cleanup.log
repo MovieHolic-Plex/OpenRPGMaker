@@ -1,0 +1,14 @@
+WORKTREE=/home/main/z-project/rpg-zzu-life-full-save-consumers-final
+BRANCH=agent/life-full-save-consumers-final
+BASE_HEAD=b7f68fe23e1e1670e0d1d4bbc329708a69256f16
+BASE_TREE=28354fe57c7928181ccad11ef40a0186e05757da
+781b7548dcd4d51aac983eb6348bf03ab5758568a1cd5c2bf9751f383104eac5  scripts/playtest-driver3.cjs
+25ebafd860f9b5305cc619bfeb213095bed00a9c390a9f10e59d17d793621048  scripts/playtest-driver4.cjs
+7fdd8cbc5d3b4147679a4cfd5a4850bc045bc424500821eee4363b6c7350363f  scripts/playtest-driver5.cjs
+757c4fc92ed886088d16e2e9a5fa12e7478861f9ff220ca5f95bcb9032f04d7c  scripts/playtest-driver6.cjs
+3a95338da82933256f40d4bcf79eb00a28790ee821b6302abbfa0c59414c7627  scripts/capture-fullscreen-scale.cjs
+71650453859b6508f24947a016e83c1ab0cfad67700c48f261f9b78b72cbce22  test/lifeSaveConsumers.test.ts
+DIFF_CHECK_EXIT=0
+CORRECTED_PROBE_SYNTAX_EXIT=0
+State Recv-Q Send-Q Local Address:Port Peer Address:PortProcess
+Removed private worktree generated dist (no tracked files)

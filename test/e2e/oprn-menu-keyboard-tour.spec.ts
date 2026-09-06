@@ -210,6 +210,9 @@ async function mutatePositionAndInventory(page: Page, mapId: string, x: number, 
 
 async function clearSaveSlots(page: Page): Promise<void> {
   await page.evaluate(() => {
-    for (const slot of [1, 2, 3]) window.localStorage.removeItem(`oprn:save-slot:${slot}`);
+    for (const slot of [1, 2, 3]) {
+      window.localStorage.removeItem(`oprn:save-slot:v5:${slot}`);
+      window.localStorage.removeItem(`oprn:save-slot:${slot}`);
+    }
   });
 }

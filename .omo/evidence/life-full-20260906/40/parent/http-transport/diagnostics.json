@@ -1,0 +1,1185 @@
+{
+  "pageErrors": [],
+  "failedRequests": [],
+  "httpErrors": [],
+  "consoleErrors": [],
+  "transport": [
+    {
+      "url": "http://127.0.0.1:42201/__task40",
+      "status": 200,
+      "bytes": 46,
+      "sha256": "685f3fcd09e07901e0b98ac7b452401ac34745bfcd2cdadac87b07075f39378b"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/player/saveSlots.ts",
+      "status": 200,
+      "bytes": 173963,
+      "sha256": "87fae292d49fb6bf64f4770731f50b3c4f4b4d748c2bc52a2d6c6bb1891cbc92"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/lifeRecovery.ts",
+      "status": 200,
+      "bytes": 35413,
+      "sha256": "7a92c5065d81b30a2a1c820aa22b2dbe210cb5160935a50b6dd628042563d565"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/equipmentSlots.ts",
+      "status": 200,
+      "bytes": 10944,
+      "sha256": "8c6495567afe062394f1b35d30fc7556793778a71ce3f631725b387355a5f1b4"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/horrorState.ts",
+      "status": 200,
+      "bytes": 4567,
+      "sha256": "84f80eea939d20ff34f212c03dca6381921228c5f0ecbd2713176dc8912a3e23"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/growth/validation.ts",
+      "status": 200,
+      "bytes": 14766,
+      "sha256": "0b9d4671043895b491dc105e88ac8a5b7eedb211b40634af8cdbaa4dca99ba44"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/relationshipState.ts",
+      "status": 200,
+      "bytes": 7424,
+      "sha256": "fe72f140b76ae173c7c0d8d09a9e9ae78efc94c2ce43651d9f31fd1d1a35d7ca"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/itemQuantities.ts",
+      "status": 200,
+      "bytes": 2950,
+      "sha256": "0b00173cd007f2dc42de8388c61a60cdefe7d189a81adb9e2303de055d135505"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/lifeStateReconciliation.ts",
+      "status": 200,
+      "bytes": 33738,
+      "sha256": "045f9416443101a1655ba8abb7cf70dc164a71bcfd89dd2ddfa17f8b2f8f7a13"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/util/id.ts",
+      "status": 200,
+      "bytes": 3047,
+      "sha256": "0bd61480ceef270a0a38d477b9611f2c37dbae745144b9c504a564c77d550170"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/footprint.ts",
+      "status": 200,
+      "bytes": 16575,
+      "sha256": "c68c7f3e651c4b2b21e93d4fa341527dcef1cd8c38224c3dec88de9585be08f4"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/session.ts",
+      "status": 200,
+      "bytes": 76969,
+      "sha256": "98685a5437bfe4ebdff4bcf7b03f8f809e79504b4fa4347b0b217ef270e32734"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/growth/types.ts",
+      "status": 200,
+      "bytes": 2939,
+      "sha256": "3da30c25acd126c7605480e009bd0ded44f8b89a944e817efdd941d38bd85199"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/growth/graph.ts",
+      "status": 200,
+      "bytes": 4146,
+      "sha256": "f62bca98fcb9f035dc1184c565c00e2de31da77dccf72c1e3eaa368cc72f2c0d"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/factionRuntime.ts",
+      "status": 200,
+      "bytes": 18817,
+      "sha256": "d5368318609c08db775c8c701c34406ccf8851414eb086c529101b05360665e2"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/factions.ts",
+      "status": 200,
+      "bytes": 25832,
+      "sha256": "fa4d15bd18f76c95428e7fdb4ca60fa401de97eabb56201ffd3e3d4bb4fbc3ac"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/itemTransitions.ts",
+      "status": 200,
+      "bytes": 17220,
+      "sha256": "b83723d597216118a0ecf5c82b0171323ae5c2881f2c75fc746b55e1b4efdfa9"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/upgrades.ts",
+      "status": 200,
+      "bytes": 13652,
+      "sha256": "2b9fc1f1ae09f5f6edfd90a772699a77856cecb7ff5b00e28e0c49bee7045d27"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/spatialPlacementRestore.ts",
+      "status": 200,
+      "bytes": 8339,
+      "sha256": "8b4f9012980b41aa83abe86606d054c07e62a5d89ec1c0e3f11794a8573f76e8"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/player/saveSlotSpatialValidation.ts",
+      "status": 200,
+      "bytes": 6121,
+      "sha256": "a411612084a589095edfba34657a034bebb6bcee6df7be6285d60e0e415150d1"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/conditionEvaluation.ts",
+      "status": 200,
+      "bytes": 1663,
+      "sha256": "012782adda983a0e4bfa97bcbb278214953767161da3ab09ca0433b24eebb7fa"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/socialKey.ts",
+      "status": 200,
+      "bytes": 2012,
+      "sha256": "b58754b0594d3706a63e2f1b5bc6e5ee91e630c31ccc386da62a5aa372c637d2"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/sessionVitals.ts",
+      "status": 200,
+      "bytes": 4294,
+      "sha256": "02cce7c48550e77a6236d39ec10a7c5aab40d3ce4fe974fc655062c68a6758dd"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/assets/facesetFaceAssets.ts",
+      "status": 200,
+      "bytes": 66126,
+      "sha256": "c05a3a4b09d700f43f8206e2035a16ec1862d90b57fa386e1295c412b1d06818"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/economyValues.ts",
+      "status": 200,
+      "bytes": 10570,
+      "sha256": "dcfcb1b1a668e6ddbaa909aa15da70bf917fda52dc9c07eccf4ba54f6938cb3f"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/followers.ts",
+      "status": 200,
+      "bytes": 37753,
+      "sha256": "772d4064872cbb62969c9752f4eaab90e0512221bdf5144df74ca28172e3afd0"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/monsterCollection.ts",
+      "status": 200,
+      "bytes": 96314,
+      "sha256": "37e78299262cdcf4c760c647d86f76ab10dedd1fafd6555e2803d30241a64d16"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/player/interpreter/m2RuntimeState.ts",
+      "status": 200,
+      "bytes": 3576,
+      "sha256": "7076b8c53ef11dc61baf9795c54a54a79aadffdadd3bed3d321afb474faaf7fc"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/gameTime.ts",
+      "status": 200,
+      "bytes": 26670,
+      "sha256": "43ba1bde6ca9a838fbb16e6e3c95fa9cea602d5494648bfa9f901dd4eeb19e76"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/player/saveSlotValidation.ts",
+      "status": 200,
+      "bytes": 73476,
+      "sha256": "3e8c69648890485c7a998a45747645261d26a381dd9f5ca510f8bba192ce57d2"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/shipping.ts",
+      "status": 200,
+      "bytes": 19971,
+      "sha256": "bb6f45a3ff3385806aa82d62bcfc122fb5905ee3d92663381c99e4a4611c09f0"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/makers.ts",
+      "status": 200,
+      "bytes": 33092,
+      "sha256": "8b6bb9c8d8c6956a3ee39a5af0ba7fc83d1bdcab8e6453c99519f20f2075272c"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/lightingRules.ts",
+      "status": 200,
+      "bytes": 18669,
+      "sha256": "541f40814088edeb417f21f4edc5c4527d726fc9f4132e7728dca8c235347ce8"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/skillModel.ts",
+      "status": 200,
+      "bytes": 7300,
+      "sha256": "5f0905e6e40daa677cae45fce695ede9bcbd1a9db0898f69b36cb9526e3f53f8"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/util/rng.ts",
+      "status": 200,
+      "bytes": 13706,
+      "sha256": "10c742ad2160160a0916715b79e92b65bcb738fc90d1f8c77633be0b952473f2"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/roguelikeRun.ts",
+      "status": 200,
+      "bytes": 19088,
+      "sha256": "898d999b745348af6d2098b1be7c698a9959138a56da9233d3620a5dd88ecda3"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/p1FoundationRecords.ts",
+      "status": 200,
+      "bytes": 44073,
+      "sha256": "66a47b01ffb792f312900439d2eb7923834989d942104c42d34c752f07643b14"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/dailyWeather.ts",
+      "status": 200,
+      "bytes": 15738,
+      "sha256": "e6144b4f26186f1b6f635554cf56ff0129bd4376e1b44bb625ccd4a018ace63a"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/player/weather/weatherModel.ts",
+      "status": 200,
+      "bytes": 14695,
+      "sha256": "3d5c7e9625603cd1c0a83875e05c88b34562bed2e45167e4edafb83241f0266a"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/collections.ts",
+      "status": 200,
+      "bytes": 10575,
+      "sha256": "d02b88b3a4f935dcb4e9290a1f2702180411fae21c8d58e20a93f71c8995a9c8"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/placeables.ts",
+      "status": 200,
+      "bytes": 14407,
+      "sha256": "a9b7023c1b6e92f2058fbaea315aa003c44942864c6857022eac4bc726ebd8f7"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/player/systemShellState.ts",
+      "status": 200,
+      "bytes": 3203,
+      "sha256": "5110af6bb15b7add9488ddf9729d1347540bfa4d4dd2ea84757447df3b84ec42"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/spatialPlacements.ts",
+      "status": 200,
+      "bytes": 29735,
+      "sha256": "b2c8413c32370fa495ad4705824817741ff3c9400599837ebcc96c61135782e4"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/spatialOccupancy.ts",
+      "status": 200,
+      "bytes": 15190,
+      "sha256": "4422434b9e582e09e5eb06c0dc9eb346031c21da6f24d09825811693afe6ee09"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/actorModel.ts",
+      "status": 200,
+      "bytes": 34400,
+      "sha256": "c128075937fcc7a819b96b09f8dadaf7743279dc785cc5e358f1f193ae0aebb0"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/assets/charsetCatalog.ts",
+      "status": 200,
+      "bytes": 4831,
+      "sha256": "314d2253bcf05982f996e405de76f05422932ecc546451fd6ab56a6abc2b3397"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/assets/easyrpgRtp.ts",
+      "status": 200,
+      "bytes": 145577,
+      "sha256": "0242f3ada1c7759769348fe83f9b419b42477ea7e27bc24d06103ce73a731060"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/collision.ts",
+      "status": 200,
+      "bytes": 20777,
+      "sha256": "24e9015ef3924428c57abb380b69b7334b84a89346a7b72eae986a106fd65356"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/actorFaceDefaults.ts",
+      "status": 200,
+      "bytes": 4334,
+      "sha256": "1de87d6681813273b7fc1fcaa01ce461a7c2bbb242c61b32c648a722eaa13d0a"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/assets/farmingSprites.ts",
+      "status": 200,
+      "bytes": 10547,
+      "sha256": "acf1425b0c377b29d145f682108aca65f47f1bc641fc7a44ece0c76f6106014a"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/assets/scarloxyPack.ts",
+      "status": 200,
+      "bytes": 45512,
+      "sha256": "bf84cfc1c88deeae2bc0658f4993878e7e2158cfc2a7d0e9961f3a7ac69a93bc"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/assets/resourceSlicing.ts",
+      "status": 200,
+      "bytes": 9141,
+      "sha256": "248d713c918410f5720b6b8e4c87da42ae6759668d97aff1762d8d28af30de7a"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/mapOverlayTiles.ts",
+      "status": 200,
+      "bytes": 8790,
+      "sha256": "02ca704fc71571320e08e4f35c2e654f1a147c7b277a8198ad399fe28ef851d5"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/tilesetPassage.ts",
+      "status": 200,
+      "bytes": 7630,
+      "sha256": "ff57c7f23ad3927286cce27ee05d0dd2f5c4cc705bc78b0d0230d1039f15f1e8"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/assets/scarloxyPackManifest.json?import",
+      "status": 200,
+      "bytes": 4835,
+      "sha256": "aa6325f6fc1ad1822b75a42d63d9338dd134d779900f0803ef5f13d35c447991"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/tilesetHarness.ts",
+      "status": 200,
+      "bytes": 3888,
+      "sha256": "052316265c0c9caa5d017316bda604068020847bed5d4b24f68ca9879866e878"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/tilesetHarness/combinedTown.ts",
+      "status": 200,
+      "bytes": 70054,
+      "sha256": "5f80ed19bb655d5cd8cfbf50af97666f33697f2db695deb1fd13ef5717cab931"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/tilesetHarness/combinedTownGroups.ts",
+      "status": 200,
+      "bytes": 95625,
+      "sha256": "c5a364e5b5a41129fb69dceac7d8db129ec7f9968c3ae7714f9ebf1d2836f0f9"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/tilesetHarness/themePacks.ts",
+      "status": 200,
+      "bytes": 136681,
+      "sha256": "9e8d681a3f500af5f7561090514d0f8a5858aaf85b6addbcc6cbf694189fe5f2"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/constants.ts",
+      "status": 200,
+      "bytes": 7477,
+      "sha256": "5d5828a883638a734fc8e8db6b6a2ac895b349598f9e09013c6ca8619bada1fa"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/chipsetMapping.ts",
+      "status": 200,
+      "bytes": 218362,
+      "sha256": "02bbc9527da9ec43121b47f6813a7f6248fee4575ece3d7d77bc1e64faf09239"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/tileRoles.ts",
+      "status": 200,
+      "bytes": 12718,
+      "sha256": "066e1b49344dcd59c4877ff87e35a12b2d15665e16d9d20cd25b8d69a1a03941"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/lakeAutotile.ts",
+      "status": 200,
+      "bytes": 17284,
+      "sha256": "02eb55bd90fc19a950855873e716fc6f35327ef3c0547acfcc9d67653b89ff63"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/autotileEngine.ts",
+      "status": 200,
+      "bytes": 22344,
+      "sha256": "0a8bf3c4506c53ebeda99de15fe29d1d9ad821bfdcd2f45548e0d17964195afa"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/darkWallAutotile.ts",
+      "status": 200,
+      "bytes": 6975,
+      "sha256": "63acda9b044caae3abc7190ec5d2033bdf78f1d5cbb5b47fb640c47c18b8f3d1"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/interiorTerrainAutotiles.ts",
+      "status": 200,
+      "bytes": 9775,
+      "sha256": "71b9c313cc8eccc85ef2553216f2753bd345bb6f4dfea1639536fba83212c7e2"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/dungeonTerrainAutotiles.ts",
+      "status": 200,
+      "bytes": 18890,
+      "sha256": "e3b74ebe747d7c5840925bda685b9130a97b657acbd86e276d0639fdce86d557"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/tileSemanticsInterior.ts",
+      "status": 200,
+      "bytes": 101808,
+      "sha256": "e1e45adc702f91c123b198e0c9318a9d04d798e6132e8e7ce07cd55124695053"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/tileSemanticsRetroDungeon.ts",
+      "status": 200,
+      "bytes": 170981,
+      "sha256": "cd0ad0a2b35dc73865ddc4245c9aa263d6ffd62bfbd0ff5455f0ca2eeaab97dd"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/tileSemanticsRetroWorld.ts",
+      "status": 200,
+      "bytes": 163706,
+      "sha256": "5a1ef2a46625e47a9e3cc0636fe41ae1416a36b7aedb944524b3f9eb84a1bf88"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/tileSemanticsShip.ts",
+      "status": 200,
+      "bytes": 176261,
+      "sha256": "a255fdfe7a712f23bf1fce3bac54d605b11aba1d4668d00daa41c864ff9a44cb"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/tileSemanticsWorld.ts",
+      "status": 200,
+      "bytes": 174778,
+      "sha256": "6db09d94ebabb7c535e15b18d21012332e0a57f50764ee51b63ca0c987003ea1"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/tileSemanticsRetroExterior.ts",
+      "status": 200,
+      "bytes": 193405,
+      "sha256": "16c141c9b6c39b02eb1e517e32bd3804bf92be28d73d0425c4ba5f04ae92b6b1"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/tileSemanticsRetroHouse.ts",
+      "status": 200,
+      "bytes": 184813,
+      "sha256": "b55596b2462657768848a5850c84c5226c75e412d8d7be3b6125579b1d07abf0"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/chipsetAnimation.ts",
+      "status": 200,
+      "bytes": 7944,
+      "sha256": "9ecf786a74b4f651e2a9a0075fdd0281457a4511c2d7cdd6ad1e69d5930c2682"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/generatedChipsetTransparency.ts",
+      "status": 200,
+      "bytes": 4394,
+      "sha256": "e86630f6b5680747ead81006cfba47cba3e022e38790764f18c5c6f7115688e7"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults.ts",
+      "status": 200,
+      "bytes": 8164,
+      "sha256": "fa8c49ffd38f323ef23860db0167fc9493af9b33e19acffb6d79e59208c18c1e"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/defaultAssets.ts",
+      "status": 200,
+      "bytes": 36927,
+      "sha256": "eb5ecd6cccd98dc05bb8fd621144adbce425980043103f8e175a9085dc03653d"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/pokemonChipsetPreset.ts",
+      "status": 200,
+      "bytes": 16358,
+      "sha256": "16635917bc896ce2d61a823aa210f59054408050e74f7efb610029df78b1ecd8"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/interiorTransparentPropLayerRepair.ts",
+      "status": 200,
+      "bytes": 7279,
+      "sha256": "ae358867c08da579f49857429eb08b4abceddc04f716f4d44af7262ef0c545ab"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/starterHouseTransfer.ts",
+      "status": 200,
+      "bytes": 16567,
+      "sha256": "66f26d755d9892840ed427a12dc5deee94cc0917d2fe5d61e913672ab5670e0f"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/defaultDatabase.ts",
+      "status": 200,
+      "bytes": 17274,
+      "sha256": "a74df609d94637fc819951371054d4828cd1e80aee60aa474268c921c3173dd4"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/defaultMaps.ts",
+      "status": 200,
+      "bytes": 27178,
+      "sha256": "766942f57f04a60542042245cb1cdb6f69524203378a1d75f55d6a4048580644"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/defaultProject.ts",
+      "status": 200,
+      "bytes": 198174,
+      "sha256": "268343f70d8369c17f8793db7d142020b1a2afa53e15c7096b56bbb263b19b2f"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/modernNocturneGame.ts",
+      "status": 200,
+      "bytes": 104854,
+      "sha256": "451e4d610a1ea6eabd23bf9b6b7270f4a0b8432039a490f542a024ae380b8066"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/editor/content/skyStairGame.ts",
+      "status": 200,
+      "bytes": 76391,
+      "sha256": "43767276eb455e9192d0acd63995a0f9ff5ff9960ffc79572b0871a64708b094"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/assets/cc0AudioAssets.ts",
+      "status": 200,
+      "bytes": 9201,
+      "sha256": "bef5b025f66bb1fe6edc84e6398553eed77c8729079d716b3239d189ba9b5b45"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/resourceProfiles.ts",
+      "status": 200,
+      "bytes": 14361,
+      "sha256": "3463aae4a31313e8aa75db58fab6030c6608cda5aa7acc0a86967823fd605349"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/assets/cc0IconAssets.ts",
+      "status": 200,
+      "bytes": 71172,
+      "sha256": "a460941b47f684a3d86a0ac2385eda3259b2a0e9872ab15ec2252adc23b97b1c"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/assets/bgmStarterTracks.ts",
+      "status": 200,
+      "bytes": 2859,
+      "sha256": "b00ea3d8f78c24e678da5edc063ac7045b9b8a230101d9e99a041db7736fb3a4"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/defaultDatabaseBattleRecords.ts",
+      "status": 200,
+      "bytes": 48503,
+      "sha256": "2c6d874b25f5feb4483028737adac4b2f17e5ebe67d82d154f00c083c615f129"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/defaultDatabasePartyRecords.ts",
+      "status": 200,
+      "bytes": 18575,
+      "sha256": "f2176d6c6abc18ac91e8e54ec94ca471782cad7dd46a562640aaf8045c7f0e74"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/defaultDatabaseStarterRecords.ts",
+      "status": 200,
+      "bytes": 60183,
+      "sha256": "13ed6e303c70eff2bbc5d7f4f31dfa68635c7e870e7f8049d3408dab97921aec"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/defaultDatabaseItemRecords.ts",
+      "status": 200,
+      "bytes": 38103,
+      "sha256": "91418f66ee378f462ec033c642b9f85cddc7df7bd521ac877206ff70048908b3"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/defaultDatabaseUtilityRecords.ts",
+      "status": 200,
+      "bytes": 8677,
+      "sha256": "9cc0459659424554225bcb54eefd3c8fdb03adfb70e3ac9c2cd88f051252846a"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/roadAutotile.ts",
+      "status": 200,
+      "bytes": 7829,
+      "sha256": "edeeb1f369317acb5d9e4f58ce1d1e5dec071914c70aacbe1c00b6b1b18ab5b6"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/starterVillageNpcs.ts",
+      "status": 200,
+      "bytes": 7986,
+      "sha256": "670328460a07568bef6720572d2d7b94b86cd6d43d0e2c1b969d41452484388c"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/editor/content/townShowcaseMaps.ts",
+      "status": 200,
+      "bytes": 10984,
+      "sha256": "1071e05604fd93aaaa086276c74bb4d774978e15cad6bce38ce0e25e9a401380"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/marketTownMap.ts",
+      "status": 200,
+      "bytes": 37092,
+      "sha256": "383851b0eb6e453059b39a20dd0d30cf95e46de680e2310420cc7d24a73b18b6"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/assets/bundled.ts",
+      "status": 200,
+      "bytes": 52714,
+      "sha256": "71d87c61b4441b54e617806c201eefefd659c7258a3cd32d82e62c4a8dca6f95"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/types.ts",
+      "status": 200,
+      "bytes": 804,
+      "sha256": "505ead016781fdeb7c76762135d55062b417be628532a067c418f2e58e0ec6c4"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/defaultFeatureItemRecords.ts",
+      "status": 200,
+      "bytes": 65699,
+      "sha256": "9e9a2b4f18055a04521f075ff3847bdc772997520d242a01bb36f048063b9b82"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/legacyRateKeyRepair.ts",
+      "status": 200,
+      "bytes": 7445,
+      "sha256": "c00dbd6d4977d7839fde9e0b2fc0e12ec596cfaedda707ba8ddb8ded44bded13"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/scarloxyDemoGame.ts",
+      "status": 200,
+      "bytes": 49401,
+      "sha256": "60d61568528f43ded39b2cfa5291cef9894c8fab81e87b0611a624e02f00479a"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/trainingExampleMaps.ts",
+      "status": 200,
+      "bytes": 6269,
+      "sha256": "07ba361a2dca5b31138c4284145376a49e2cb29fc8b5950c9e9a00c919500ab9"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/farmModel.ts",
+      "status": 200,
+      "bytes": 17759,
+      "sha256": "1fc0773e7eca1f58183b01aceeabee8c81f90887e964e96be55043d3449bcb1e"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/snowMountain60.ts",
+      "status": 200,
+      "bytes": 44982,
+      "sha256": "ccbd89ff32f7d2f8317105ae075bb37aa6c25ef0d0751028ed08b0b8b699c854"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/autotileGroups.ts",
+      "status": 200,
+      "bytes": 31615,
+      "sha256": "5ea02cb3e20b69fcefd77bfeb1146096d5d679f624edb287111a8cf5b4287111"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/dewVillageLiving.ts",
+      "status": 200,
+      "bytes": 16178,
+      "sha256": "855475a7abbfaa136add57aaba68b8fc5e985da0dc56447aa7e1ec93c9ed6182"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/scarloxyPokemonDemoGame.ts",
+      "status": 200,
+      "bytes": 114626,
+      "sha256": "5f509e723a47dc698d495e29efdf231d6a42343252dc082fd204014dc875a3fc"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/brand.ts",
+      "status": 200,
+      "bytes": 2493,
+      "sha256": "f313bc8aebef0c83f9a5ed9b65821c8754f95f0985d6a20e153a8e80f49bab7a"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/dewVillageDialogue.ts",
+      "status": 200,
+      "bytes": 20572,
+      "sha256": "2472350276c08200b38ae56b579b0802b036de35a1dfcdee6439056b1ca433e5"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/databaseRecordModel.ts",
+      "status": 200,
+      "bytes": 131984,
+      "sha256": "cbca1eade62c2d8d48087e3eb162946f49c179cc0e39f324fcb7d5851136fe9f"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/dungeonThemedLayouts.ts",
+      "status": 200,
+      "bytes": 44715,
+      "sha256": "f14caa58d3a878a1cd8822f4243cbabacc790354776258ab15d751982b28321e"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/defaultDatabaseRecordIds.ts",
+      "status": 200,
+      "bytes": 7397,
+      "sha256": "c14d2f452174c53c2d609ab9c723b0b1e9294c9a53e170647cf07d88dfb6a670"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/databaseEnemyTroopRecordModel.ts",
+      "status": 200,
+      "bytes": 27107,
+      "sha256": "1bb9722209d88bd06234c03813e9ffe8b07c11e0e915f436bf24a06aecd01666"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/legacyAudioRepair.ts",
+      "status": 200,
+      "bytes": 6419,
+      "sha256": "663cb7bfc2e3f8b9a67824f6bdf038e4cb013253d09ea9a30b5cc1959ecb080e"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/iceGrandPlain64.ts",
+      "status": 200,
+      "bytes": 122768,
+      "sha256": "effa4453263d5a7613a6576440a3a7f7963ac799c8537f57aee957fe5bed1df8"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/enemyActionArchetypes.ts",
+      "status": 200,
+      "bytes": 27490,
+      "sha256": "24256bdde6b993d8f9bd453c047c64be8a5ff0da5d3592a96cc1d7ab7c4b3560"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/assets/generatedEffectSheets.ts",
+      "status": 200,
+      "bytes": 13246,
+      "sha256": "5635ed4f076d45aac34af7a76256b4f5b986e74617fee64bcf2432a0b695948e"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/editor/tools/v3/terrainPolish.ts",
+      "status": 200,
+      "bytes": 10606,
+      "sha256": "4f36966825291a39f05844350f78cdca1d0c30937aef6b328a0f246ea43d7575"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/databaseAnimationRecordModel.ts",
+      "status": 200,
+      "bytes": 17142,
+      "sha256": "26eb6a7e0da69a45b6295a52e76128ce3182f2f70c3275709af6a3e7fa013f16"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/generatedBattleEffectBindings.ts",
+      "status": 200,
+      "bytes": 26974,
+      "sha256": "af0c8db95b030f2847a8fb9b758b3edd65c9a90720f0c528a055b8e321dcd2f3"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/editor/content/skyStairMaps.ts",
+      "status": 200,
+      "bytes": 245550,
+      "sha256": "fe7cac929f553e304997a4b9e05ac882b0de7761cca64ca86d9e819153321121"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/generatedEnemyRecords.ts",
+      "status": 200,
+      "bytes": 118407,
+      "sha256": "4521e83bf8ce8ecf1c63410e87a352716fc9d0190954c21f9084c31453916ccd"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/defaultDatabaseClassRecords.ts",
+      "status": 200,
+      "bytes": 18765,
+      "sha256": "76d3878359f64a858b8c1b7150cfb34f888ac174b8dbea020e9974baf6dbe812"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/townHousePatterns.ts",
+      "status": 200,
+      "bytes": 14606,
+      "sha256": "b31dc74cc31e5961d9aa4df9f89dcae3b41c24bed959e4daf078fb77e6b16b10"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/defaultDatabaseEquipmentRecords.ts",
+      "status": 200,
+      "bytes": 40780,
+      "sha256": "ecf007d746d66a856d330bd66f53424ae673ea1790c559e0780012e4eb32e70a"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/editor/content/dbExtractedHouseTemplate.ts",
+      "status": 200,
+      "bytes": 111286,
+      "sha256": "6071ff4371e5410864cce1d3ec59c6b16b9f071762243c11f017a8f17c63df07"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/townPathAutotile.ts",
+      "status": 200,
+      "bytes": 12769,
+      "sha256": "105f8c3defa194e4da10b6a496e1e1d3cac2abd13fb23504e097dd78ef44cbe8"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/townArchitectureCityMap.ts",
+      "status": 200,
+      "bytes": 27348,
+      "sha256": "df37953739d7912cb5e58ddcc753686271e0ab94fb603164a1742968af0833b8"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/defaultExpandedItemRecords.ts",
+      "status": 200,
+      "bytes": 63973,
+      "sha256": "d528cc35678009e51443652b525fbe69d719ea9899d34fc29800c55d5acb69cc"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/emotes.ts",
+      "status": 200,
+      "bytes": 6976,
+      "sha256": "dee1c00dc90138dc9f1e3a507c839dde93244052b775cb00afd7041b8a65f1c6"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/assets/inlineAssetStore.ts",
+      "status": 200,
+      "bytes": 3979,
+      "sha256": "6510ee19db4dd12f9e1896d0305d66b08ed062f864ed8e123d5298d8ecb8fd90"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/generatedItemRecords.ts",
+      "status": 200,
+      "bytes": 180018,
+      "sha256": "e5dafdc115b77957fe955501799cb27eeacf147c781ce3d42eaba86e75524a9f"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/defaultCatalogFillItems.ts",
+      "status": 200,
+      "bytes": 21617,
+      "sha256": "3935c45b8feb80d817460bc012603b08d23720c0390998f300d1098f5820e773"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/townArchitectureTestMap.ts",
+      "status": 200,
+      "bytes": 21834,
+      "sha256": "4267e60935768fdb2a4ccb720bcd39014b4c9995cd210e6aac0fc6739ce4c716"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/assets/chipsetTransparency.ts",
+      "status": 200,
+      "bytes": 8697,
+      "sha256": "4955eb8975644a47bdf23da651d924347f6ad1040511d6527a34b11c8991ccdb"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/dbExtractedHouseVariants.ts",
+      "status": 200,
+      "bytes": 33156,
+      "sha256": "6985232bd00123bae8166ae6a9ac4ba24f719ebecc5a98badd550a7aaff5707a"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/marketTownEvents.ts",
+      "status": 200,
+      "bytes": 34677,
+      "sha256": "a580043602227b3a29e7e67dea5d7a5a5126ecad907190bbc3a84a4bed2a18f7"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/assets/generatedMonsterSprites.ts",
+      "status": 200,
+      "bytes": 1940,
+      "sha256": "5209ebcd68947f67c771b0e99729b6a71d92cc086e61385a8a9839fc81843086"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/types/base.ts",
+      "status": 200,
+      "bytes": 33992,
+      "sha256": "5599f78fc333f6fc6925cfd76489da6ba17123970bd4812028b87257f0dd276a"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/iceDiagonalTerrain.ts",
+      "status": 200,
+      "bytes": 34406,
+      "sha256": "3d2ae0dc0c59a23f60e0c9a69c03d5465ec2be2b1afb5d7aaabb792015dd5f91"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/moveRouteTarget.ts",
+      "status": 200,
+      "bytes": 1117,
+      "sha256": "e94145cb269fe4da3744eb4f92501d188d7ca77b9ce2be3f135e05881f251501"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/fontRegistry.ts",
+      "status": 200,
+      "bytes": 14163,
+      "sha256": "a5da74e038afdcded17a55fab58a58cc654951ab7e1cde67fe0805c38ee62cb7"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/scarloxyPokemonInteriors.ts",
+      "status": 200,
+      "bytes": 42330,
+      "sha256": "87170dcccf4f5b84d3771f8dd9d80c6fe5c71b01b6765f9cdc4581f943c0ea00"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/databaseUtilityRecordModel.ts",
+      "status": 200,
+      "bytes": 13699,
+      "sha256": "c7dee336dc8b3f40745e3b87bbb71c45733a56f6f3ef755c6a314704372b6302"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/actionCombat.ts",
+      "status": 200,
+      "bytes": 24673,
+      "sha256": "53d64a688dfb78170aca85ea3ba19e8bda791f741408e59fe58a2258cf15c6d0"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/genrePackId.ts",
+      "status": 200,
+      "bytes": 1279,
+      "sha256": "442ec161f1de655a55fb3e4ed93dd39bb03d2ece613aa735643fcb5e79f97c9e"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/p0SystemRecords.ts",
+      "status": 200,
+      "bytes": 11513,
+      "sha256": "f580fde55dd712291bc6a5443c58341537acc605e5e2d6dcf06ab48060f1969a"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/battle/skins/registry.ts",
+      "status": 200,
+      "bytes": 42853,
+      "sha256": "0fbda35e13712d311ee0ba36f8bde7813bdc96c5a43cd53ad28087943e132fbb"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/assets/generatedEffectSheets.json?import",
+      "status": 200,
+      "bytes": 13890,
+      "sha256": "0a10e24c334b09edab50490119ec0eb407a209fedc8ac1e0a8c79327b255e6bb"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/p2FoundationRecords.ts",
+      "status": 200,
+      "bytes": 30055,
+      "sha256": "15ccb267464936d1b98c423d94021cfc09111aafce314339ca5e4a830df56682"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/editor/tools/v3/rmTypeExpander.ts",
+      "status": 200,
+      "bytes": 71795,
+      "sha256": "52b1c1a9efef7f608fd2f898bafc3e0bc171e8afade05368780cf0be88b171a6"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/playResolution.ts",
+      "status": 200,
+      "bytes": 10227,
+      "sha256": "b4efa83f1a5be19a5d5b948210cd88b256a9eb7e5fa0628c7175d10ff3e7b822"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/worldGenRules.ts",
+      "status": 200,
+      "bytes": 58717,
+      "sha256": "0caca9f38e8e55e0129c45b575dec9dd246231165dc9bbc846aa06e3b07b283f"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/assets/charsetFaceMap.ts",
+      "status": 200,
+      "bytes": 27298,
+      "sha256": "30410980707a4f76ab29612e9f27e7c14e5ee8678223a5b7f814056146ef9a3a"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/assets/charsetQuery.ts",
+      "status": 200,
+      "bytes": 37396,
+      "sha256": "b3ccbf9acfdfed6bdb805a2bcf92acd61c70057070f210b4461ecc44d0ab4415"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/editor/houseKit.ts",
+      "status": 200,
+      "bytes": 79130,
+      "sha256": "443351aec52e7c62bae5f9dead2587fa2d8f95154d97c6104652fde07296552a"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/snowGateTerrain.ts",
+      "status": 200,
+      "bytes": 63593,
+      "sha256": "93e158329b3d3db12e700a9386729be8c9d7307fe7f541e55e1625e9fdbb7007"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/defaultCatalogFillEquipment.ts",
+      "status": 200,
+      "bytes": 24777,
+      "sha256": "5cdcee56c5c2873ff9ed43ef917c7face5ce24718364687b54084c6e19a9f9a2"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/townArchitectureCityNpcs.ts",
+      "status": 200,
+      "bytes": 12636,
+      "sha256": "069fe33b905f12e91a3f84cd89943a7139d33af936a4851b746b5c1b508b4ab4"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/fixtures/dew-village-demo.json?import",
+      "status": 200,
+      "bytes": 2147475,
+      "sha256": "a896743e0520c2952a3a2ae3262cbbc1f0f5e1dfab8875700477f71e5c9bcead"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/assets/transparentColorKey.ts",
+      "status": 200,
+      "bytes": 13666,
+      "sha256": "ace0fddba0fd46b80b0a4245e068e52dd3a774c243bc1daaed12dfca9feecf09"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/assets/generatedAssetResourceResolver.ts",
+      "status": 200,
+      "bytes": 77073,
+      "sha256": "e0251fff1d0f8fcd62dedd8841a93e14730a049fd85d5b08be36b79f0b9fca7a"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/battle/action/guard.ts",
+      "status": 200,
+      "bytes": 6322,
+      "sha256": "66e3e67126cdf4219a4d4d46fda34ecc7cf88a5d6349079e5fb07e3860dc8336"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/editor/tileLayerClassification.ts",
+      "status": 200,
+      "bytes": 8309,
+      "sha256": "a3f0ef372ad50fe632c00ce9ce2ec529139296b7e1f0e1b5ca28b31a02290d60"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/tileVocabulary.ts",
+      "status": 200,
+      "bytes": 80020,
+      "sha256": "88b5a6222bb227c01e7d97d81526836a2d2a45672c24458528a5204e127c717d"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/editor/tools/types.ts",
+      "status": 200,
+      "bytes": 8754,
+      "sha256": "766ac77880208d6761e3b338f4262096baa451aad821b535ae38a09af231986e"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/assets/charsetSemantics.ts",
+      "status": 200,
+      "bytes": 69995,
+      "sha256": "8e6e746e9c64500087beab757ccde0f9456689ed0d648688fe2ffddb5b86f0b3"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/editor/houseInteriors.ts",
+      "status": 200,
+      "bytes": 109613,
+      "sha256": "a8cd7a01f6354938725e02f631f54ca36eb1d465b135fc92ccf2e43b059af8db"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/assets/bgmCatalogResolver.ts",
+      "status": 200,
+      "bytes": 1654,
+      "sha256": "0bf62e99fcde331b54c75ab430365434e19c3c96bf5c3dc5370741209111e78c"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/assets/seCatalogResolver.ts",
+      "status": 200,
+      "bytes": 1521,
+      "sha256": "f81658fa28e01a176eceaaa176d92a38e6712346e670818f8dec50be80d39f2e"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/editor/runtimeTileMetadata.ts",
+      "status": 200,
+      "bytes": 8561,
+      "sha256": "2a9b9931e9b9c4353af08104094c99d0c4b93ced6717043bfc4438fd82dc5109"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/tilesetKind.ts",
+      "status": 200,
+      "bytes": 2344,
+      "sha256": "adb99663e3184b58f5f03fb116288ce42bac5c3e881d46fad0cd94073f747ff7"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/materialPolicy.ts",
+      "status": 200,
+      "bytes": 6806,
+      "sha256": "1843c55e9937e0a74bc215d2eeb598ca2d307f3f5c9818bcc373679d9004beb2"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/assets/seThemeVariants.ts",
+      "status": 200,
+      "bytes": 7747,
+      "sha256": "dc300e3cf2970ad5883d43b4a1f22c6d7dd1e4d08dbf456d69dd99478806f935"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/editor/interiorRoomPipeline.ts",
+      "status": 200,
+      "bytes": 373941,
+      "sha256": "3245400ee1c3f78ebf4f5b404523f7b31aa4a61659020b3600cff5cce07a164b"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/assets/bgmCatalogRuntime.ts",
+      "status": 200,
+      "bytes": 92150,
+      "sha256": "671c634c17e36ef245ebae27a7380c4c0065561d51b76b07d1bc58875e8ec679"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/assets/bgmCdn.ts",
+      "status": 200,
+      "bytes": 5780,
+      "sha256": "cb6a13fe140ecc5926dc188d0e10aca41e22042c3903bf7ccfc889cbb8513a76"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/assets/seCatalogRuntime.ts",
+      "status": 200,
+      "bytes": 154006,
+      "sha256": "70b49f1ce020bf3ed45d4e68b56cf30acb73a56276836e4a299145665814ef36"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/tilesetPalette.ts",
+      "status": 200,
+      "bytes": 16689,
+      "sha256": "6ed88d94c9f3e2cb18e0c53b2301319195590e7bb4048542bc779942a39509b5"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/editor/interiorHouseWallGrammar.ts",
+      "status": 200,
+      "bytes": 31985,
+      "sha256": "987d5ba1fd8e91fc23eed157a963cc2b8d89236d59f212897cb17f18103aaaa2"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/interiorHouseWallTiles.ts",
+      "status": 200,
+      "bytes": 7020,
+      "sha256": "289fd05548b290fd6d92f27853073857892088e3c0c3fe88ca40569b0c5230f4"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/editor/interiorConceptCompose.ts",
+      "status": 200,
+      "bytes": 87871,
+      "sha256": "e3a26542e04147a1b2f097d62e3c4f87430bc4e32e5565945d611a6a3c697df9"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/editor/interiorConceptEvents.ts",
+      "status": 200,
+      "bytes": 39721,
+      "sha256": "5a3cbcef17bf6f2aa872340857cd8c29b99890d9a7761cb10e24d6f1722d07db"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/editor/interiorObjectCatalog.ts",
+      "status": 200,
+      "bytes": 26660,
+      "sha256": "439c6682b61d3b92e9f7ab2be02d0c2846f41c1337444ff68957fca3f45fee3c"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/editor/interiorRoomVocab.ts",
+      "status": 200,
+      "bytes": 19244,
+      "sha256": "43a226f5e77b44de5f8fbeae8b8a33952c8f7a82f6b512ef7f564b48d495e3ef"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/defaults/interiorRoomKinds.ts",
+      "status": 200,
+      "bytes": 3413,
+      "sha256": "5e4f7e14ac373108a69cc88ff9f3dd7e6261a8331a6d3cf840a3a33f7efc9137"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/placementSurface.ts",
+      "status": 200,
+      "bytes": 35326,
+      "sha256": "07537938f1b456611c178303b1a7eae2f98b1ad0d1fb2f169152cb4d3c54f068"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/editor/lootFeedback.ts",
+      "status": 200,
+      "bytes": 12638,
+      "sha256": "1169f82a1951a3642aad25bfd79a9d46118f491efb65bcd75911596a3b635444"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/project/io/rewriteLegacyDialogue.ts",
+      "status": 200,
+      "bytes": 13583,
+      "sha256": "5a6cb8ef3af9e42b3ba5b78eca7ed1c3a5251fcb6d97b99ee1a1051ab1b63559"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/editor/harnessSuggestion/structureKitRasterModel.ts",
+      "status": 200,
+      "bytes": 34440,
+      "sha256": "3688ca628e9e3e85002fcbd949500e228ded9ddaa984679936c7975608add459"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/editor/harnessSuggestion/structureKitModel.ts",
+      "status": 200,
+      "bytes": 25653,
+      "sha256": "5328091a66feec4a9b0d07344adae64312e34950fb4819d2d8a264c9edbc2e6d"
+    },
+    {
+      "url": "http://127.0.0.1:42201/src/editor/harnessSuggestion/patternDetect.ts",
+      "status": 200,
+      "bytes": 2205,
+      "sha256": "4ba907ed5e7a98625c9e17616638e95c411226079b9ed53515caf2c5720fb2c1"
+    },
+    {
+      "url": "http://127.0.0.1:42201/test/e2e/saveWriteSignal.ts",
+      "status": 200,
+      "bytes": 3807,
+      "sha256": "f072c46c63a5183bb66262257798539097a442afd67ddd583c8d85f521946c5d"
+    }
+  ],
+  "transportErrors": []
+}

@@ -1,0 +1,150 @@
+[
+  {
+    "receipt": "b1-b2-public.json",
+    "observation": {
+      "blocker": "B1",
+      "writer": "quarantined",
+      "readerOriginalIntact": true,
+      "originalOwners": 1,
+      "fullOriginal": {
+        "id": "legacy",
+        "mapId": "map_blank_start",
+        "x": 2,
+        "y": 2,
+        "kind": "legacy-machine",
+        "paid": {
+          "itemId": "old-input",
+          "count": 3
+        },
+        "oldJob": {
+          "progress": 7
+        }
+      },
+      "payableItems": [],
+      "receiptRefused": true,
+      "repeatedRoundtrips": 2,
+      "reissued": false,
+      "liveUnchanged": true,
+      "inputDiskUnchanged": true
+    }
+  },
+  {
+    "receipt": "b1-b2-public.json",
+    "observation": {
+      "blocker": "B2",
+      "reader": "corrupt",
+      "apply": "refused",
+      "writer": "refused",
+      "autosave": null,
+      "day": {
+        "ok": false,
+        "reason": "recovery",
+        "stage": "recovery",
+        "sourceKind": "farmPlots",
+        "sourceId": "farmPlots"
+      },
+      "priorDiskUnchanged": true,
+      "currentLiveAndReceiptsUnchanged": true
+    }
+  },
+  {
+    "receipt": "b1-b2-public.json",
+    "observation": {
+      "control": "valid occupancy",
+      "plotRetained": true,
+      "collidingShed": "quarantined",
+      "occupancyWeakened": false
+    }
+  },
+  {
+    "receipt": "b1-b2-public.json",
+    "observation": {
+      "teardown": "Storage cleared; happy-dom and middleware-only Vite closed",
+      "httpListener": false,
+      "remoteWrites": 0
+    }
+  },
+  {
+    "receipt": "b1-b2-prior-public.json",
+    "observation": {
+      "surface": "real public contribute -> Save5 Storage -> read/apply -> claim receipt",
+      "donated": 5,
+      "progress": 2,
+      "claim": 3,
+      "inventoryBeforeReceipt": 5,
+      "inventoryAfterReceipt": 8,
+      "conservedTotal": 10,
+      "reloads": 2,
+      "duplicatePayout": false,
+      "liveUnchanged": true
+    }
+  },
+  {
+    "receipt": "b1-b2-prior-public.json",
+    "observation": {
+      "completedTombstone": true,
+      "dormantRights": 2,
+      "repeatedReward": false,
+      "earnedGold": 9
+    }
+  },
+  {
+    "receipt": "b1-b2-prior-public.json",
+    "observation": {
+      "oldClockMinute": 29,
+      "changedStart": 8,
+      "canceled": [
+        {
+          "itemId": "raw",
+          "count": 3
+        }
+      ],
+      "reissued": false
+    }
+  },
+  {
+    "receipt": "b1-b2-prior-public.json",
+    "observation": {
+      "oldClockMinute": 30,
+      "changedStart": 8,
+      "canceled": [
+        {
+          "itemId": "product",
+          "count": 2
+        }
+      ],
+      "reissued": false
+    }
+  },
+  {
+    "receipt": "b1-b2-prior-public.json",
+    "observation": {
+      "reconciliationFailure": "reported",
+      "currentLiveUnchanged": true,
+      "priorAutosaveUnchanged": true,
+      "priorCheckpointUnchanged": true,
+      "dayRollback": true,
+      "malformedRead": "corrupt",
+      "malformedRawUnchanged": true
+    }
+  },
+  {
+    "receipt": "b1-b2-prior-public.json",
+    "observation": {
+      "laterStage": "energy",
+      "wholeDayRolledBack": true,
+      "quotaFailure": true,
+      "successfulClaimNotRolledBack": true,
+      "currentInventory": 3
+    }
+  },
+  {
+    "receipt": "b1-b2-prior-public.json",
+    "observation": {
+      "teardown": "Storage cleared; happy-dom and middleware-only Vite closed",
+      "httpListener": false,
+      "remoteWrites": 0,
+      "playerHtml": "not-run; public persistence seam exercised"
+    }
+  }
+]

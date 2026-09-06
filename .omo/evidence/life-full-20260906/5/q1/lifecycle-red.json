@@ -1,0 +1,21 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p2",
+  "head": "62c70a3093f6a891f209cc9c3d02a6140dccffed",
+  "tree": "e6fb5e9a92ad4c570420e4755880d78d532c7d68",
+  "diffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "npm",
+    "test",
+    "--",
+    "test/playerAudioQaLifecycle.test.ts"
+  ],
+  "started": "2026-09-06T02:44:05.129Z",
+  "exit": 1,
+  "signal": null,
+  "output": "\n> rpg-zzu@0.1.0 test\n> node scripts/run-vitest.mjs run --configLoader bundle test/playerAudioQaLifecycle.test.ts\n\n\n RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2\n\n ❯ test/playerAudioQaLifecycle.test.ts (3 tests | 3 failed) 339ms\n   × player shell audio observation ownership > cleans an enabled shell before replacement with undefined 167ms\n     → expected [ '__oprnAudioState' ] to deeply equal [ '__oprnAudioState', …(1) ]\n   × player shell audio observation ownership > cleans an enabled shell before replacement with false 98ms\n     → expected [] to deeply equal [ '__oprnAudioState', …(1) ]\n   × player shell audio observation ownership > releases observation on teardown and can opt in on the next shell 72ms\n     → expected [] to deeply equal [ '__oprnAudioState', …(1) ]\n\n Test Files  1 failed (1)\n      Tests  3 failed (3)\n   Start at  11:44:06\n   Duration  10.48s (transform 6.21s, setup 0ms, collect 8.62s, tests 339ms, environment 468ms, prepare 305ms)\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  test/playerAudioQaLifecycle.test.ts > player shell audio observation ownership > cleans an enabled shell before replacement with undefined\nAssertionError: expected [ '__oprnAudioState' ] to deeply equal [ '__oprnAudioState', …(1) ]\n\n\u001b[32m- Expected\u001b[39m\n\u001b[31m+ Received\u001b[39m\n\n\u001b[2m  [\u001b[22m\n\u001b[2m    \"__oprnAudioState\",\u001b[22m\n\u001b[32m-   \"__oprnAudioObserved\",\u001b[39m\n\u001b[2m  ]\u001b[22m\n\n ❯ test/playerAudioQaLifecycle.test.ts:38:27\n     36|     it(`cleans an enabled shell before replacement with ${nextCapabili…\n     37|       renderPlayer(main, { qaInstrumentation: true });\n     38|       expect(qaGlobals()).toEqual([\"__oprnAudioState\", \"__oprnAudioObs…\n       |                           ^\n     39|       const engine = getAudioEngine();\n     40|       const state = audioStateSnapshot();\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯\n\n FAIL  test/playerAudioQaLifecycle.test.ts > player shell audio observation ownership > cleans an enabled shell before replacement with false\nAssertionError: expected [] to deeply equal [ '__oprnAudioState', …(1) ]\n\n\u001b[32m- Expected\u001b[39m\n\u001b[31m+ Received\u001b[39m\n\n\u001b[32m- [\u001b[39m\n\u001b[32m-   \"__oprnAudioState\",\u001b[39m\n\u001b[32m-   \"__oprnAudioObserved\",\u001b[39m\n\u001b[32m- ]\u001b[39m\n\u001b[31m+ []\u001b[39m\n\n ❯ test/playerAudioQaLifecycle.test.ts:38:27\n     36|     it(`cleans an enabled shell before replacement with ${nextCapabili…\n     37|       renderPlayer(main, { qaInstrumentation: true });\n     38|       expect(qaGlobals()).toEqual([\"__oprnAudioState\", \"__oprnAudioObs…\n       |                           ^\n     39|       const engine = getAudioEngine();\n     40|       const state = audioStateSnapshot();\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯\n\n FAIL  test/playerAudioQaLifecycle.test.ts > player shell audio observation ownership > releases observation on teardown and can opt in on the next shell\nAssertionError: expected [] to deeply equal [ '__oprnAudioState', …(1) ]\n\n\u001b[32m- Expected\u001b[39m\n\u001b[31m+ Received\u001b[39m\n\n\u001b[32m- [\u001b[39m\n\u001b[32m-   \"__oprnAudioState\",\u001b[39m\n\u001b[32m-   \"__oprnAudioObserved\",\u001b[39m\n\u001b[32m- ]\u001b[39m\n\u001b[31m+ []\u001b[39m\n\n ❯ test/playerAudioQaLifecycle.test.ts:54:25\n     52|   it(\"releases observation on teardown and can opt in on the next shel…\n     53|     renderPlayer(main, { qaInstrumentation: true });\n     54|     expect(qaGlobals()).toEqual([\"__oprnAudioState\", \"__oprnAudioObser…\n       |                         ^\n     55|     teardownPlayer();\n     56|     expect(qaGlobals()).toEqual([]);\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯\n\n",
+  "sha256": "23207c21e04481657a03ed6b7bbd121500baffe4d4dc14a8009675eaeee662a3"
+}

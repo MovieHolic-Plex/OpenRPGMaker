@@ -1,0 +1,861 @@
+[
+  {
+    "file": "test/aiActivityNarration.test.ts",
+    "test": "AI 도구 활동 문장 레지스트리에 등록된 모든 도구에서 내부 이름을 노출하지 않는다",
+    "fullRunMessage": "AssertionError: author_world_bridge 도구의 활동 문구 패밀리를 명시적으로 결정해야 함: expected false to be true // Object.is equality",
+    "fullRunDuration": 96.91988799999672,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/aiChatObservability.test.ts",
+    "test": "병합 추론 원문 전체 열람 (V3C ②) 도구 사이 추론이 한 블록으로 병합돼도 각 추론의 원문 전체가 아이템으로 남고 토글은 횟수를 표시한다",
+    "fullRunMessage": "AssertionError: expected null to be truthy",
+    "fullRunDuration": 1118.1357209999987,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/aiChatObservability.test.ts",
+    "test": "실시간 고스트 프리뷰 연결 채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다",
+    "fullRunMessage": "AssertionError: expected [] to deeply equal ArrayContaining{…}",
+    "fullRunDuration": 669.7152939999942,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/aiChatPanelTransportError.test.ts",
+    "test": "transport failure paints recovery CTA and keeps Send mounted refused fetch: is-turn-running cleared, system error bubble + ai-error-open-settings, ai-send stays disabled with ai-abort visible",
+    "fullRunMessage": "AssertionError: expected null to be truthy",
+    "fullRunDuration": 2008.8308819999947,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/aiImageGenerateField.test.ts",
+    "test": "aiImageGenerateField 종류별 프롬프트 접두사를 붙여 요청한다",
+    "fullRunMessage": "AssertionError: expected +0 to be 1 // Object.is equality",
+    "fullRunDuration": 1654.674611999999,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/aiImageGenerateQueue.test.ts",
+    "test": "aiImageGenerateField queue 프롬프트를 비우지 않고 여러 작업을 쌓는다",
+    "fullRunMessage": "AssertionError: expected '프롬프트를 입력하면 여기에 쌓입니다. 만드는 동안에도 계속 추가할 …' to contain '고블린'",
+    "fullRunDuration": 493.9423080000015,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/aiImageGenerateQueue.test.ts",
+    "test": "aiImageGenerateField queue 끝난 작업은 에셋으로 등록하고 onInserted 를 부른다",
+    "fullRunMessage": "AssertionError: expected [] to have a length of 1 but got +0",
+    "fullRunDuration": 1289.629622999997,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/aiImageGenerateQueue.test.ts",
+    "test": "aiImageGenerateField queue 실패한 작업은 목록에 남고 다시 시도할 수 있다",
+    "fullRunMessage": "AssertionError: expected '프롬프트를 입력하면 여기에 쌓입니다. 만드는 동안에도 계속 추가할 …' to contain '서버 불량'",
+    "fullRunDuration": 320.3036429999993,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/aiImageGenerateQueue.test.ts",
+    "test": "aiImageGenerateField queue 대기 중인 작업은 목록에서 취소할 수 있다",
+    "fullRunMessage": "AssertionError: expected '프롬프트를 입력하면 여기에 쌓입니다. 만드는 동안에도 계속 추가할 …' to contain '취소됨'",
+    "fullRunDuration": 293.6422019999991,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/aiImageGenerateQueue.test.ts",
+    "test": "aiImageGenerateField queue store 재진입 리마운트에도 에셋 등록은 한 번만 한다",
+    "fullRunMessage": "AssertionError: expected +0 to be 1 // Object.is equality",
+    "fullRunDuration": 1158.5794949999981,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/aiImageGenerateQueue.test.ts",
+    "test": "aiImageGenerateField queue 레코드를 바꾸면 진행 중 작업의 완료가 새 레코드에 닿지 않는다",
+    "fullRunMessage": "TypeError: Cannot set property isConnected of #<FakeNode> which has only a getter",
+    "fullRunDuration": 688.7963469999995,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/aiSelectionChipScope.test.ts",
+    "test": "대기 상태에서도 선택 칩은 보인다 idle 패널에서 has-selection-scope 칩 호스트의 사용 display 는 none 이 아니다",
+    "fullRunMessage": "AssertionError: expected 'block' to be 'none' // Object.is equality",
+    "fullRunDuration": 311.68045499999425,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/aiSelectionChipScope.test.ts",
+    "test": "컴포저 힌트는 숨을 때 자리를 비운다 입력 포커스가 없을 때 힌트의 사용 display 는 none 이다(visibility:hidden 은 156px 를 먹었다)",
+    "fullRunMessage": "Error: ENOENT: no such file or directory, open '/home/main/.herdr/worktrees/rpg-zzu/worktree-quiet-valley-be3d/src/styles/database/tabs-b-assistant-panel/14-assistant-ux-repair.css'",
+    "fullRunDuration": 414.38113700000395,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/authorVillageFacade.test.ts",
+    "test": "author_village settlement scale and winter builds a deterministic 100x100 snow city with the requested population",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 94139.20679699999,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/bootLoadFailureRecovery.test.ts",
+    "test": "store.loadFallbackProject — 로드 실패 복구 예제 프로젝트를 메모리로 열고, 원격 저장은 꺼진 채(loaded=true) 시작한다",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15193.059126,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/commitEditActivityAttachment.test.ts",
+    "test": "커밋 row 에 실리는 편집 행위 기록 AI 적용 커밋의 patch_json 에 그 행위가 origin·라벨과 함께 실린다",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 30133.062155,
+    "baselineStatus": "failed",
+    "focusedCurrentStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/commitEditActivityAttachment.test.ts",
+    "test": "커밋 row 에 실리는 편집 행위 기록 두 번째 커밋은 첫 커밋이 이미 실은 엔트리를 다시 싣지 않는다",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 30027.562836000005,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/databaseActions.test.ts",
+    "test": "Database actions creates, edits, duplicates, deletes, and exports every database collection",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 18162.147852,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/databaseAnimationPreview.test.ts",
+    "test": "database animation preview autoplays visible frames in a loop and restores the editing frame on stop",
+    "fullRunMessage": "AssertionError: expected 'false' to be 'true' // Object.is equality",
+    "fullRunDuration": 613.9872590000014,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/databaseItemInspector.test.ts",
+    "test": "database item inspector form weapon type shows an equipment-tab door instead of the legacy equipment form",
+    "fullRunMessage": "AssertionError: expected '⚔착용 장비는 별도 항목으로 만듭니다이 항목은 이전 형식의 비착용 …' to contain '장비 탭'",
+    "fullRunDuration": 547.4958990000014,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/databaseModalDirtySession.test.ts",
+    "test": "database modal dirty session discards a session-only edit even when the undo stack was already saturated at MAX_HISTORY before the session opened",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 61808.509852999996,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/databaseOverviewDashboard.test.ts",
+    "test": "database overview dashboard renders stat chips immediately with counts from the project data",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 60025.68039499999,
+    "baselineStatus": "failed",
+    "focusedCurrentStatus": "failed",
+    "coldCurrentStatus": "passed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/databaseOverviewDashboard.test.ts",
+    "test": "database overview dashboard lazy compute: charts container is empty before idle callback, populated after flush",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15048.754702999999,
+    "baselineStatus": "failed",
+    "focusedCurrentStatus": "failed",
+    "coldCurrentStatus": "passed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/databaseOverviewDashboard.test.ts",
+    "test": "database overview dashboard curve chart renders two non-empty SVG paths with gridlines and Lv1..Lv50 labels",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15062.989189,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "failed",
+    "coldCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/databaseOverviewDashboard.test.ts",
+    "test": "database overview dashboard scatter chart draws one circle per enemy with a <title> tooltip and boss styling",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15107.347880000016,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "coldCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/databaseOverviewDashboard.test.ts",
+    "test": "database overview dashboard renders issue cards matching the detector output with jump buttons",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15030.612667000009,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "coldCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/databaseOverviewDashboard.test.ts",
+    "test": "database overview dashboard jump button switches to the target tab via switchDatabaseActiveTab (G006)",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15085.459031000006,
+    "baselineStatus": "failed",
+    "focusedCurrentStatus": "passed",
+    "coldCurrentStatus": "passed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/databaseOverviewDashboard.test.ts",
+    "test": "database overview dashboard attack-stagnation jump opens the classes tab, not skills",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15040.785311999993,
+    "baselineStatus": "failed",
+    "focusedCurrentStatus": "passed",
+    "coldCurrentStatus": "passed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/databaseOverviewDashboard.test.ts",
+    "test": "database overview dashboard curve section shows a visible HP/attack legend",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15010.568784000003,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "coldCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/databaseOverviewDashboard.test.ts",
+    "test": "database overview dashboard AI 분석 button dispatches the modal's database-ai-toggle click (aria-expanded)",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15081.863543999993,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "coldCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/databaseOverviewDashboard.test.ts",
+    "test": "database overview dashboard clean project shows empty-state cards instead of blank canvases",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15046.380395999993,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "coldCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/databaseOverviewDashboard.test.ts",
+    "test": "database overview dashboard empty project renders empty states without NaN paths",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15025.83359199998,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "coldCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/databaseOverviewTab.test.ts",
+    "test": "database overview tab shell summarizes the authored game across world, story, cast, systems, and readiness",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 60069.836081,
+    "baselineStatus": "failed",
+    "focusedCurrentStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/databaseOverviewTab.test.ts",
+    "test": "database overview tab shell renders stat chips for all 9 collections with counts from the project data",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 60068.186031000005,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/databaseOverviewTab.test.ts",
+    "test": "database overview tab shell empty project renders chips with 0 counts without crashing",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15160.452415999986,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/databaseOverviewTab.test.ts",
+    "test": "database overview tab shell default open tab after modal open is the stored last tab, NOT overview unless stored",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15041.923871000006,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/databaseOverviewTab.test.ts",
+    "test": "database overview tab shell persists across hard reload: stored 'overview' lands on the overview tab",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15384.931665000011,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/databaseOverviewTab.test.ts",
+    "test": "database overview tab shell setDatabaseActiveTab('overview') + renderDatabasePanel renders the overview tab",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15163.718034999998,
+    "baselineStatus": "failed",
+    "focusedCurrentStatus": "passed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/databaseOverviewTab.test.ts",
+    "test": "database overview tab shell stat chips are buttons that switch to the matching tab (G006)",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15044.747938999993,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/databaseOverviewTab.test.ts",
+    "test": "database overview tab shell databaseTabLabel resolves the overview label for the AI footer",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15305.460099000018,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/databaseRadioCustomGuard.test.ts",
+    "test": "database radio custom guard radio 제외 없는 bare input 결합이 없다",
+    "fullRunMessage": "AssertionError: bare input 결합이 radio 까지 함께 칠한다: expected [ Array(1) ] to deeply equal []",
+    "fullRunDuration": 261.006609,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/databaseSkillAnimationStage.test.ts",
+    "test": "스킬 탭 애니메이션 스테이지 프레임을 자동 반복 재생하고 프레임 카운터가 따라간다",
+    "fullRunMessage": "AssertionError: expected '1' to be '2' // Object.is equality",
+    "fullRunDuration": 1009.620796999996,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/editorProjectE2EBridge.test.ts",
+    "test": "mounted project E2E bridge installs exactly four frozen methods and returns detached recursively frozen snapshots",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 96067.688742,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/editorProjectE2EBridge.test.ts",
+    "test": "mounted project E2E bridge denies missing/wrong capability before invoking either remote store method",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 32270.230635,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/editorProjectE2EBridge.test.ts",
+    "test": "mounted project E2E bridge maps authorized initialization and reload to the mounted singleton with exact proof",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 33125.693573,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/editorProjectE2EBridge.test.ts",
+    "test": "mounted project E2E bridge cleanup removes only the bridge and remount consumes no stale capability",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 30319.79637200001,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/editorProjectE2EBridge.test.ts",
+    "test": "mounted project E2E bridge does not install without WebDriver",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 26822.025556999986,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/eventEditorM2Surface.baseline.test.ts",
+    "test": "M2 명령 폼 표면 스냅샷 기준선과 일치한다",
+    "fullRunMessage": "AssertionError: [M2(commandId)] 표면이 기준선과 다르다 (2건)",
+    "fullRunDuration": 33.9092629999941,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/eventEditorPortalSurface.baseline.test.ts",
+    "test": "포털(피커/모달) 표면 스냅샷 기준선과 일치한다",
+    "fullRunMessage": "AssertionError: [포털(피커/모달)] 표면이 기준선과 다르다 (2건)",
+    "fullRunDuration": 35.87589700000535,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/eventEditorShowAnimationPreview.test.ts",
+    "test": "showAnimation 본문 애니메이션 표시면 반복 재생은 마지막 프레임 다음에 0으로 돌아가 계속 전진한다",
+    "fullRunMessage": "AssertionError: expected '1' to be '2' // Object.is equality",
+    "fullRunDuration": 366.56177200000093,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/eventEditorShowAnimationPreview.test.ts",
+    "test": "showAnimation 본문 애니메이션 표시면 프레임 콜백은 첫 렌더와 매 틱의 인덱스와 전체 프레임 수를 알린다",
+    "fullRunMessage": "AssertionError: expected [ [ +0, 2 ], [ 1, 2 ] ] to deeply equal [ Array(4) ]",
+    "fullRunDuration": 811.7883899999979,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/eventEditorShowAnimationPreview.test.ts",
+    "test": "showAnimation 본문 애니메이션 표시면 기존 1회 재생은 끝에서 멈추고 첫 프레임으로 돌아간다",
+    "fullRunMessage": "AssertionError: expected '1' to be '0' // Object.is equality",
+    "fullRunDuration": 439.43723899999895,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/forestDensity.test.ts",
+    "test": "plant_tree_clusters 기본(dense)이 선언한 커버리지에 닿고 그 지대를 실제로 막는다",
+    "fullRunMessage": "AssertionError: 영역의 30% 가 아직 걸어서 통과된다: expected 0.3003472222222222 to be less than 0.3",
+    "fullRunDuration": 2487.2465500000108,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/forestDensity.test.ts",
+    "test": "place_props density — 모델이 실제로 닿는 라이브 툴 활엽수 density=dense 가 count 없이도 숲을 만든다",
+    "fullRunMessage": "AssertionError: expected 0.3003472222222222 to be less than 0.3",
+    "fullRunDuration": 711.856409999993,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/gen1DemoContent.test.ts",
+    "test": "Scarloxy Gen1 authored content authors persistent major statuses, finite PP, a Poke Ball, and trainer semantics",
+    "fullRunMessage": "TypeError: actual value must be number or bigint, received \"undefined\"",
+    "fullRunDuration": 827.4924260000007,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/houseProtectionForest.test.ts",
+    "test": "direct forest composition writers rejects an entire puddle footprint touching a house and uses the other clearing",
+    "fullRunMessage": "TypeError: Cannot read properties of undefined (reading 'type')",
+    "fullRunDuration": 409.09028899999976,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/interiorBench.test.ts",
+    "test": "interior benchmark scoring schemes 정본 답변은 모든 태스크에서 만점에 가깝다",
+    "fullRunMessage": "AssertionError: t3-floor composite: expected 0.9333333333333332 to be greater than or equal to 0.999",
+    "fullRunDuration": 1332.2428870000003,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/interiorPipelineMapReplacement.test.ts",
+    "test": "인바운드 transfer 착지점 착지점이 이미 방 안이면 좌표를 건드리지 않는다",
+    "fullRunMessage": "AssertionError: expected { x: 5, y: 9 } to deeply equal { x: 5, y: 10 }",
+    "fullRunDuration": 313.93260700000974,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/interiorTerrainAutotiles.test.ts",
+    "test": "interior terrain autotiles (RM2k3 blocks ×6) 블랭크 프로젝트의 실내 타일셋에 지형/카펫 그룹 9종이 시드된다 (재적용은 idempotent)",
+    "fullRunMessage": "AssertionError: expected true to be false // Object.is equality",
+    "fullRunDuration": 538.0021899999992,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/loadNewRemoteProject.test.ts",
+    "test": "store.loadNewRemoteProject — welcome genre remote branch keeps remote persistence on, mints a new project id, and does not disable DB",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15696.741176,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/mapClipboardFeedback.test.ts",
+    "test": "맵 클립보드 피드백 클립보드 없이 붙여넣으면 false와 안내 토스트를 반환한다",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15265.573969,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/mapEditLocks.test.ts",
+    "test": "잠금 소유자 라벨 내부 '브라우저 xxxx' 라벨을 사람이 읽을 문구로 바꾼다",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15054.827188000003,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "failed",
+    "coldCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/mapEditLocks.test.ts",
+    "test": "맵 편집 잠금 가져오기 기존 소유자 조회 없이 현재 세션으로 upsert하고 held 상태로 바꾼다",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15033.821253999999,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "coldCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/modalEscapeLayerGate.test.ts",
+    "test": "Escape 계층 게이트 body 에 오버레이를 붙이는 파일은 modalStack 에 참여하거나 이유와 함께 면제된다",
+    "fullRunMessage": "AssertionError: body 에 띄운 새 오버레이가 Escape 계층에 참여하지 않는다. registerModal/unregisterModal 을 짝지어 쓰거나, 정말 계층이 아니면 EXEMPT 에 이유를 적어라.: expected [ 'panels/newProjectDialog.ts' ] to deeply equal []",
+    "fullRunDuration": 395.7452250000001,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/modalEscapeLayerGate.test.ts",
+    "test": "Escape 계층 게이트 이번에 고친 표면들은 면제가 아니라 실제로 등록한다",
+    "fullRunMessage": "AssertionError: 회귀: 이 표면들은 modalStack 에 등록되어 있어야 한다: expected [ 'panels/worldPanel.ts' ] to deeply equal []",
+    "fullRunDuration": 14.096666000000141,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/moveRouteCatalogPersistence.test.ts",
+    "test": "이동 경로 팔레트 persistence BREAK: 팔레트의 모든 명령이 하나씩 serialize→deserialize 를 통과한다",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 27409.955414999997,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/noLocalProjectDb.test.ts",
+    "test": "canonical project persistence has no local DB fallback does not reference IndexedDB SQLite or local JSON fallback in runtime source",
+    "fullRunMessage": "AssertionError: expected [ Array(1) ] to deeply equal []",
+    "fullRunDuration": 770.771501,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/npcCastSession.test.ts",
+    "test": "캐스트 라이터 세션 훅 대사 없는 NPC 3명이 놓인 라운드 뒤 캐스트 시트가 적용되고 세계관에 주민이 등록된다",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 32911.474764,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/playerBootFactory.test.ts",
+    "test": "player Phaser boot contract keeps editor and export Phaser config and registry contracts identical",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 64221.053061,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/playerBootFactory.test.ts",
+    "test": "player Phaser boot contract boots Phaser with the current project's authored play resolution",
+    "fullRunMessage": "AssertionError: expected [ FakeGame{ …(4) }, …(2) ] to have a length of 2 but got 3",
+    "fullRunDuration": 586.3574329999974,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/regionSelectionPastePreview.test.ts",
+    "test": "북여넣기 미리보기 모드 복사 후 enterPastePreview → confirmPastePreview로 실제 붙여넣기",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15127.382429,
+    "baselineStatus": "failed",
+    "focusedCurrentStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/regionSelectionPastePreview.test.ts",
+    "test": "북여넣기 미리보기 모드 cancelPastePreview로 미리보기 취소 — 맵 변화 없음",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15061.659560000004,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/regionSelectionPastePreview.test.ts",
+    "test": "북여넣기 미리보기 모드 클립보드 없이 enterPastePreview → false + 안내 토스트",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15008.478878000002,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/regionSelectionPastePreview.test.ts",
+    "test": "북여넣기 미리보기 모드 movePastePreview로 위치 갱신",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15325.952278999997,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/regionSelectionPastePreview.test.ts",
+    "test": "북여넣기 미리보기 모드 movePastePreview가 맵 경계를 벗어나지 않게 클램프",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15010.800307000005,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/regionSelectionPastePreview.test.ts",
+    "test": "copySelection 피드백 개선 복사 토스트에 크기 정보 포함",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15010.594205000001,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/regionSelectionPastePreview.test.ts",
+    "test": "renderSelectionActionChips — 복사/붙여넣기/지우기/해제 버튼 AI 작업이 첫 버튼이고, 크기 텍스트는 바에 없다",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15066.698254999996,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/regionSelectionPastePreview.test.ts",
+    "test": "renderSelectionActionChips — 복사/붙여넣기/지우기/해제 버튼 클립보드가 있으면 붙여넣기 버튼이 나타난다",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15011.188513000001,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/regionSelectionPastePreview.test.ts",
+    "test": "renderSelectionActionChips — 복사/붙여넣기/지우기/해제 버튼 클립보드가 없으면 붙여넣기 버튼이 없다",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15063.882978000009,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/roleNameComparisonGate.test.ts",
+    "test": "A-2 게이트 — 역할 이름 비교 잔여 허용 목록 밖에서 타일 역할 이름을 직접 비교하지 않는다",
+    "fullRunMessage": "AssertionError: expected [ …(2) ] to deeply equal []",
+    "fullRunDuration": 1142.088223,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/showPictureForm.test.ts",
+    "test": "그림 표시 폼 프롬프트로 그림을 만들면 업로드 리소스가 커맨드에 실린다",
+    "fullRunMessage": "AssertionError: expected 0 to be greater than 0",
+    "fullRunDuration": 1137.8439379999982,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/storeEventDraftPreserve.test.ts",
+    "test": "store preserves open event drafts across remote autosave autosave submits canonical linked profiles and preserves the staged name for Apply",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15109.829840999995,
+    "baselineStatus": "failed",
+    "focusedCurrentStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/storeEventDraftPreserve.test.ts",
+    "test": "store preserves open event drafts across remote autosave keeps a new event draft after map-patch save returns a draft-stripped project",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15008.980619000002,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/storeFlushShaEvidence.test.ts",
+    "test": "Project store flush sha256 evidence 전체 저장 경로: saveProjectToSupabase 의 sha256 이 flush 결과(saved.sha256)로 흘러든다",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15212.493452000002,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/tilesetAiWorkspaceModal.test.ts",
+    "test": "AI tileset workspace three-step flow shows the summary step with a confirmed list and applies to the project",
+    "fullRunMessage": "TypeError: matching.matches is not a function",
+    "fullRunDuration": 380.33122399999775,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/transactionalNewRemoteProject.test.ts",
+    "test": "transactional new remote project switch commits locally only after flush, explicit-target save, and matching reload",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 16346.681880999997,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/transactionalNewRemoteProject.test.ts",
+    "test": "transactional new remote project switch creates horror-chase through real save/load with JSONB key ordering and load normalization",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 16039.09231800001,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/transactionalNewRemoteProject.test.ts",
+    "test": "transactional new remote project switch creates story-cutscene through real save/load with JSONB key ordering and load normalization",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 18103.537853999995,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/transactionalNewRemoteProject.test.ts",
+    "test": "transactional new remote project switch creates farm-life through real save/load with JSONB key ordering and load normalization",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15012.449923999986,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/transactionalNewRemoteProject.test.ts",
+    "test": "transactional new remote project switch rejects an actual title mismatch after a JSONB roundtrip without changing local state",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15673.623213999992,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/transactionalNewRemoteProject.test.ts",
+    "test": "transactional new remote project switch rejects an actual tile mismatch after a JSONB roundtrip without changing local state",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 16775.204647999984,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/transactionalNewRemoteProject.test.ts",
+    "test": "transactional new remote project switch rejects an actual array-order mismatch after a JSONB roundtrip without changing local state",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15005.122169999988,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/transactionalNewRemoteProject.test.ts",
+    "test": "transactional new remote project switch keeps project, draft, config, URL, and welcome intact when config staging hits quota",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 21048.128727000003,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/uxcLoadFailure.test.ts",
+    "test": "UXC D01 프로젝트 로드 실패 폴백 오류 원문을 숨기고 안전한 복구 방법과 예제/새 프로젝트 CTA를 제공한다",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15128.353276999998,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/uxcLoadFailure.test.ts",
+    "test": "UXC D01 프로젝트 로드 실패 폴백 예제 프로젝트 폴백은 저장본을 폐기하지 않고 메모리 프로젝트로 부팅한다",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15048.157987999999,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/uxcLoadFailure.test.ts",
+    "test": "UXC D01 프로젝트 로드 실패 폴백 새 프로젝트 폴백도 기존 저장본을 폐기하지 않는다",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15012.583577999998,
+    "baselineStatus": "failed",
+    "classification": "reproduced-before-change"
+  },
+  {
+    "file": "test/walkthroughRunner.test.ts",
+    "test": "walkthroughRunner — 잿불의 유산 완주 kind 모양과 do/expect 혼합 오류를 한 스텝도 실행하기 전에 거부한다",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15072.748489999998,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "failed",
+    "coldCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  },
+  {
+    "file": "test/walkthroughRunner.test.ts",
+    "test": "walkthroughRunner — 잿불의 유산 완주 3퀘스트 + 엔딩을 헤드리스로 완주한다",
+    "fullRunMessage": "Error: STACK_TRACE_ERROR",
+    "fullRunDuration": 15011.347532000003,
+    "baselineStatus": "passed",
+    "focusedCurrentStatus": "passed",
+    "coldCurrentStatus": "passed",
+    "classification": "passed-focused-current"
+  }
+]

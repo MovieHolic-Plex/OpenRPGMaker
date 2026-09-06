@@ -13,7 +13,8 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
-import { makeTileToolbar } from "@/editor/panels/tileToolbar";
+import { renderTilePalette } from "@/editor/panels/tilePalette";
+import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { resetTileToolbarMenusForTests } from "@/editor/panels/tileToolbarMenus";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -35,17 +36,8 @@ function declarationBlock(selectorSuffix: string): string | null {
 let host: HTMLElement;
 
 function render(): HTMLElement {
-  host.replaceChildren();
-  const project = store.getCurrent();
-  const map = project.maps[project.startMapId]!;
-  const toolbar = makeTileToolbar({
-    map,
-    rerender: () => { render(); },
-    state: editorState.get(),
-    tileset: project.tilesets[map.tilesetId]!,
-  });
-  host.append(toolbar);
-  return toolbar;
+  renderTilePalette(host);
+  return toolbarRow();
 }
 
 function toolbarRow(): HTMLElement {
@@ -57,10 +49,12 @@ function toolbarRow(): HTMLElement {
 describe("도구막대 오버플로 도달성", () => {
   beforeEach(() => {
     resetTileToolbarMenusForTests();
+    resetEditorUiModeForTests("standard");
     const project = createBlankProject();
     store.replace(project);
     editorState.set({ currentMapId: project.startMapId, layer: "lower", paintShape: "pen", selection: null, tool: "paint" });
     host = document.createElement("div");
+    host.dataset.testid = "left-palette-root";
     document.body.append(host);
     render();
   });
@@ -88,15 +82,28 @@ describe("도구막대 오버플로 도달성", () => {
   });
 
   it("열린 드롭다운은 잘리는 스크롤 컨테이너의 자손이 아니다", () => {
+    const expectDirectSizes = () => {
+      for (const size of [1, 2, 3, 4]) {
+        const controls = host.querySelectorAll<HTMLButtonElement>(`[data-testid="brush-size-${size}"]`);
+        expect(controls).toHaveLength(1);
+        const control = controls[0];
+        if (!control) throw new Error(`Missing brush ${size}`);
+        expect(control.closest('[data-testid="toolbar-overflow-dropdown"]')).toBeNull();
+        expect(control.closest('[hidden], .hidden')).toBeNull();
+        expect(control.disabled).toBe(false);
+      }
+    };
+    expectDirectSizes();
     toolbarRow().querySelector<HTMLElement>('[data-testid="oprn-tool-overflow"]')!.click();
     const row = toolbarRow();
     const dropdown = row.querySelector<HTMLElement>('[data-testid="toolbar-overflow-dropdown"]');
     expect(dropdown).toBeTruthy();
     const scroll = row.querySelector<HTMLElement>(".oprn-tile-toolbar-scroll")!;
     expect(scroll.contains(dropdown!)).toBe(false);
-    for (const testid of ["copy-button", "paste-button", "oprn-tool-inspector", "toolbar-toggle-ruleAudit", "toolbar-toggle-history", "brush-size-1", "brush-size-4"]) {
+    for (const testid of ["copy-button", "paste-button", "oprn-tool-inspector", "toolbar-toggle-ruleAudit", "toolbar-toggle-history"]) {
       expect(dropdown!.querySelector(`[data-testid="${testid}"]`), testid).toBeTruthy();
     }
+    expectDirectSizes();
   });
 
   it("도구막대 행은 더 이상 가로 스크롤 띠가 아니고, 내부 컨테이너가 스크롤을 맡는다", () => {

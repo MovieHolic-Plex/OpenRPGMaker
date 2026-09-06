@@ -1,0 +1,45 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/p1FoundationSchema.test.ts -t sanitizes hostile P1 state
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+ ❯ test/p1FoundationSchema.test.ts (9 tests | 1 failed | 8 skipped) 147ms
+   ↓ P1 weather and farm-animal authored schema > round-trips authored weather, species, homes, and project-start animals
+   ↓ P1 weather and farm-animal authored schema > keeps legacy projects byte-stable without optional P1 authored fields
+   ↓ P1 weather and farm-animal authored schema > rejects unknown weather kinds, unsafe numbers, duplicate ids, and oversized arrays
+   ↓ P1 weather and farm-animal authored schema > bounds direct in-memory normalization and drops unknown weather rules
+   ↓ P1 daily weather and farm-animal session persistence > preserves one current weather state and animal progress through manual save parse/apply
+   ↓ P1 daily weather and farm-animal session persistence > sanitizes hostile runtime weather and animal state without corrupting the whole save
+   × P1 daily weather and farm-animal session persistence > sanitizes hostile P1 state in both the writer and direct-apply paths 144ms
+     → Life recovery farmAnimals/farm_animal_1: invalid-state
+   ↓ P1 daily weather and farm-animal session persistence > uses the common snapshot for autosave and checkpoint restoration
+   ↓ P1 daily weather and farm-animal session persistence > loads a legacy save without optional P1 runtime fields
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/p1FoundationSchema.test.ts > P1 daily weather and farm-animal session persistence > sanitizes hostile P1 state in both the writer and direct-apply paths
+LifeReconciliationError: Life recovery farmAnimals/farm_animal_1: invalid-state
+ ❯ preserveUnresolvedLifeSource src/project/lifeStateReconciliation.ts:29:78
+     27| ): void {
+     28|   const recovery = state.lifeRecovery ?? { nextSequence: 1, claims: {}…
+     29|   if (!isLifeRecoveryState(recovery) || !isLifeRecoveryJson(original))…
+       |                                                                              ^
+     30|   const id = `recovery:${recovery.nextSequence}`;
+     31|   const next = {
+ ❯ parseLifeState src/project/lifeStateReconciliation.ts:100:22
+ ❯ prepareLifeSnapshot src/player/saveSlots.ts:1110:49
+ ❯ createSaveSnapshot src/player/saveSlots.ts:285:19
+ ❯ test/p1FoundationSchema.test.ts:355:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 8 skipped (9)
+   Start at  14:57:40
+   Duration  6.49s (transform 4.01s, setup 0ms, collect 5.50s, tests 147ms, environment 0ms, prepare 176ms)
+
+
+ACTUAL_EXIT=1

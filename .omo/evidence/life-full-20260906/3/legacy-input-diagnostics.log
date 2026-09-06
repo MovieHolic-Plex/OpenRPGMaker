@@ -1,0 +1,8 @@
+{"file":"src/project/session.ts","diagnostics":[]}
+{"file":"src/project/makers.ts","diagnostics":[]}
+{"file":"src/project/lifeRecovery.ts","diagnostics":[]}
+{"file":"src/player/saveSlotValidation.ts","diagnostics":[]}
+{"file":"test/lifeRecovery.test.ts","diagnostics":[]}
+{"files":5,"diagnostics":0}
+
+EXIT=0

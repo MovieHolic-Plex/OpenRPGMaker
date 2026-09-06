@@ -44,7 +44,7 @@ describe("P1 daily weather transition integration", () => {
       ok: true,
       receipt: {
         destinationDayKey: "1:spring:2",
-        stages: ["shipping", "calendar", "dailyWeather", "rainWatering", "farm", "forage", "energy", "makers", "animals"],
+        stages: ["recovery", "shipping", "calendar", "dailyWeather", "rainWatering", "farm", "forage", "energy", "makers", "animals"],
         weather: forecast,
         wateredPlots: 1,
       },
@@ -88,7 +88,7 @@ describe("P1 daily weather transition integration", () => {
     expect(result).toMatchObject({
       ok: true,
       receipt: {
-        stages: ["shipping", "calendar", "dailyWeather", "rainWatering", "farm", "forage", "energy", "makers", "animals"],
+        stages: ["recovery", "shipping", "calendar", "dailyWeather", "rainWatering", "farm", "forage", "energy", "makers", "animals"],
         animals: {
           ok: true,
           dayKey: sourceDayKey,
@@ -111,7 +111,9 @@ describe("P1 daily weather transition integration", () => {
     session.inventory.item_hay = 1;
     expect(feedFarmAnimal(project, session, "farm_animal_bori", sourceDayKey)).toMatchObject({ ok: true });
     expect(petFarmAnimal(project, session, "farm_animal_bori", sourceDayKey)).toMatchObject({ ok: true });
-    session.farmAnimals!.farm_animal_bori!.readyProductCount = ITEM_QUANTITY_MAX;
+    const animal = session.farmAnimals?.farm_animal_bori;
+    if (!animal) throw new Error("missing fixture animal");
+    session.farmAnimals = { ...session.farmAnimals, farm_animal_bori: { ...animal, readyProductCount: ITEM_QUANTITY_MAX } };
     const before = structuredClone(session);
 
     const result = transitionToNextDay(project, session, sourceDayKey);

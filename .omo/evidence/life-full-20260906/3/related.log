@@ -1,0 +1,42 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/p0SessionPersistence.test.ts test/p1SessionPersistence.test.ts test/p2SessionPersistence.test.ts test/p2SpatialPersistence.test.ts test/p0LifeLedgerUi.test.ts test/p0DayTransitionSceneFailure.test.ts test/p1DayTransitionIntegration.test.ts test/p2DayTransition.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+ ✓ test/p2DayTransition.test.ts (2 tests) 1420ms
+   ✓ P2 forage day-transition integration > settles the source day then spawns destination-day forage through the one transition authority  1161ms
+ ✓ test/p2SpatialPersistence.test.ts (3 tests) 1486ms
+   ✓ P2 spatial persistence > round-trips records and preserves an explicitly emptied runtime collection  1079ms
+ ✓ test/p1SessionPersistence.test.ts (3 tests) 1875ms
+   ✓ P1 farm-animal session persistence > round-trips runtime assignment, care receipts, cadence, and ready products  1063ms
+   ✓ P1 farm-animal session persistence > falls back to the authored home when a saved moved-home reference is deleted  513ms
+ ✓ test/p2SessionPersistence.test.ts (4 tests) 2713ms
+   ✓ P2 session persistence > round-trips collection, museum receipts, forage cursor/placeables, and fishing RNG  1430ms
+   ✓ P2 session persistence > accepts a legacy RNG payload without fishing while preserving every old stream  305ms
+   ✓ P2 session persistence > sanitizes hostile P2 state and removes stale generated forage without touching legacy placeables  529ms
+   ✓ P2 session persistence > loads omitted legacy P2 state without inventing it for projects that do not opt in  431ms
+ ✓ test/p0SessionPersistence.test.ts (9 tests) 1897ms
+   ✓ P0 save snapshot regression > preserves life skills and shop economy through writer, parser, and apply  735ms
+ ✓ test/p1DayTransitionIntegration.test.ts (5 tests) 2879ms
+   ✓ P1 daily weather transition integration > initializes today's weather and visual state when a new session starts  889ms
+   ✓ P1 daily weather transition integration > advances calendar, resolves forecast-matching rain, waters, then grows in one transaction  447ms
+   ✓ P1 daily weather transition integration > keeps non-rain weather visual but does not water a crop  584ms
+   ✓ P1 daily weather transition integration > advances cared animals for the source day after every other successful stage  744ms
+ ✓ test/p0LifeLedgerUi.test.ts (5 tests) 2299ms
+   ✓ P0 life ledger status menu > does not expose the optional record command for a legacy project  1005ms
+   ✓ P0 life ledger status menu > renders five pointer/keyboard reachable tabs, generated artwork, and long names without truncating the text node  410ms
+   ✓ P0 life ledger status menu > contributes bundles and starts/collects makers through their pure APIs  312ms
+ ✓ test/p0DayTransitionSceneFailure.test.ts (4 tests) 1460ms
+   ✓ P0 day-transition scene failure handling > keeps natural clock state unchanged and exposes a visible error  455ms
+   ✓ P0 day-transition scene failure handling > preflights sleep before fade/hooks and does not refresh as though sleep succeeded  309ms
+   ✓ P0 day-transition scene failure handling > rolls back a partially mutating day-end hook, fades in, and refreshes error surfaces  456ms
+
+ Test Files  8 passed (8)
+      Tests  35 passed (35)
+   Start at  08:12:31
+   Duration  33.18s (transform 39.46s, setup 0ms, collect 177.33s, tests 16.03s, environment 29ms, prepare 4.89s)
+
+
+EXIT=0

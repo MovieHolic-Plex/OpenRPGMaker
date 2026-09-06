@@ -1,0 +1,54 @@
+
+> rpg-zzu@0.1.0 test:e2e
+> playwright test --config .omo/evidence/life-full-20260906/5/q1/editor-followup/playwright.config.ts test/e2e/oprn-audio-test-dialog.spec.ts --project=chromium --workers=1 --retries=0
+
+
+Running 4 tests using 1 worker
+
+  ✓  1 [chromium] › test/e2e/oprn-audio-test-dialog.spec.ts:53:1 › audio dialog uses the canonical 음악·효과음 title and modern control layout (17.1s)
+  ✓  2 [chromium] › test/e2e/oprn-audio-test-dialog.spec.ts:101:1 › moving the sliders changes the values actually applied to playback (13.0s)
+  ✓  3 [chromium] › test/e2e/oprn-audio-test-dialog.spec.ts:140:1 › list filter keeps (꺼짐) first and MIDI rows are marked unplayable (12.8s)
+  ✘  4 [chromium] › test/e2e/oprn-audio-test-dialog.spec.ts:161:1 › Escape closes the audio dialog through the shared modal stack (1.1m)
+
+
+  1) [chromium] › test/e2e/oprn-audio-test-dialog.spec.ts:161:1 › Escape closes the audio dialog through the shared modal stack
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByTestId('edit-canvas')
+    Expected: visible
+    Timeout: 60000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 60000ms
+      - waiting for getByTestId('edit-canvas')
+
+
+      39 | async function openAudioDialog(page: Page): Promise<void> {
+      40 |   await page.goto("/?freshProject=1&audioTestDialog=1", { timeout: 90_000 });
+    > 41 |   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 60_000 });
+         |                                                 ^
+      42 |   await expect(page.getByTestId("toolbar-sound-test")).toBeVisible({ timeout: 30_000 });
+      43 |   // This editor-only probe deliberately opts into the same audio QA capability.
+      44 |   await page.evaluate(async () => {
+        at openAudioDialog (/home/main/z-project/rpg-zzu-life-full-p2/test/e2e/oprn-audio-test-dialog.spec.ts:41:49)
+        at /home/main/z-project/rpg-zzu-life-full-p2/test/e2e/oprn-audio-test-dialog.spec.ts:162:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    .omo/evidence/life-full-20260906/5/q1/editor-followup/results/oprn-audio-test-dialog-Esc-27ed7-ough-the-shared-modal-stack-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: .omo/evidence/life-full-20260906/5/q1/editor-followup/results/oprn-audio-test-dialog-Esc-27ed7-ough-the-shared-modal-stack-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    .omo/evidence/life-full-20260906/5/q1/editor-followup/results/oprn-audio-test-dialog-Esc-27ed7-ough-the-shared-modal-stack-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace .omo/evidence/life-full-20260906/5/q1/editor-followup/results/oprn-audio-test-dialog-Esc-27ed7-ough-the-shared-modal-stack-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › test/e2e/oprn-audio-test-dialog.spec.ts:161:1 › Escape closes the audio dialog through the shared modal stack
+  3 passed (1.8m)

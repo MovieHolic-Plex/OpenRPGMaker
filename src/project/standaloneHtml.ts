@@ -54,7 +54,7 @@ export async function inlineCssAssetUrls(
   const missing: string[] = [];
   const requests = [...css.matchAll(/url\(\s*["']?(\/?[^"')]+)["']?\s*\)/g)]
     .map((match) => match[1] ?? "")
-    .filter((raw) => raw !== "" && !raw.startsWith("data:") && !raw.includes("://"));
+    .filter((raw) => raw !== "" && !raw.startsWith("#") && !raw.startsWith("data:") && !raw.includes("://"));
 
   for (const raw of new Set(requests)) {
     const key = standaloneAssetKey(raw);
@@ -65,7 +65,7 @@ export async function inlineCssAssetUrls(
   }
 
   const next = css.replace(/url\(\s*["']?(\/?[^"')]+)["']?\s*\)/g, (whole, raw: string) => {
-    if (raw.startsWith("data:") || raw.includes("://")) return whole;
+    if (raw.startsWith("#") || raw.startsWith("data:") || raw.includes("://")) return whole;
     const dataUrl = inlineAssets[standaloneAssetKey(raw)];
     return dataUrl === undefined ? whole : `url("${dataUrl}")`;
   });

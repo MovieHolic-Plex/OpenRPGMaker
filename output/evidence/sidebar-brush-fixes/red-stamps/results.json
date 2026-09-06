@@ -1,0 +1,32 @@
+{
+  "baseUrl": "http://127.0.0.1:19841",
+  "scope": "all",
+  "results": [
+    {
+      "name": "C8b-kit-after-rect",
+      "status": "FAIL",
+      "error": "selecting a kit must leave shape-drag mode\n\n'rect' !== 'pen'\n",
+      "screenshot": "C8b-kit-after-rect.png"
+    },
+    {
+      "name": "C8b-kit-after-round",
+      "status": "FAIL",
+      "error": "selecting a kit must leave shape-drag mode\n\n'round' !== 'pen'\n",
+      "screenshot": "C8b-kit-after-round.png"
+    },
+    {
+      "name": "C8c-keyboard-stamp-reset",
+      "status": "FAIL",
+      "error": "B must clear a stamp just like the Paint button\n+ actual - expected\n\n+ {\n+   cells: [\n+     {\n+       dx: 0,\n+       dy: 0,\n+       layer: 'lower',\n+       tile: 7\n+     },\n+     {\n+       dx: 1,\n+       dy: 0,\n+       layer: 'lower',\n+       tile: 7\n+     },\n+     {\n+       dx: 0,\n+       dy: 1,\n+       layer: 'lower',\n+       tile: 7\n+     },\n+     {\n+       dx: 1,\n+       dy: 1,\n+       layer: 'lower',\n+       tile: 7\n+     }\n+   ],\n+   height: 2,\n+   kitId: 'qa-brush-section',\n+   source: {\n+     endTile: 7,\n+     startTile: 7\n+   },\n+   width: 2\n+ }\n- null\n",
+      "screenshot": "C8c-keyboard-stamp-reset.png"
+    },
+    {
+      "name": "C8a-custom-atlas-stamp",
+      "status": "FAIL",
+      "error": "custom atlas drag must create a stamp",
+      "screenshot": "C8a-custom-atlas-stamp.png"
+    }
+  ],
+  "errors": [],
+  "cleanup": true
+}

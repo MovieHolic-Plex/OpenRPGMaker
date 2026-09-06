@@ -1,5 +1,11 @@
 import { BUNDLED_IMAGE_ASSETS, TEX_DIALOGUE_FRAME, TEX_TILESET } from "@/assets/bundled";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { battlerIdleAnimation } from "@/assets/battlerIdleAnimations";
+import { findBgmRuntimeEntry } from "@/assets/bgmCatalogRuntime";
+import { bgmTrackUrl } from "@/assets/bgmCdn";
+import { BATTLER_PLACEMENTS } from "@/battle/battlerPlacements";
+import { skinPartySpriteUrl } from "@/battle/partySpriteResources";
+import { resolveSkinId } from "@/battle/skins/registry";
 import { PLAYER_RUNTIME_AUDIO_RESOURCE_IDS } from "@/player/playerRuntimeAudioIds";
 import { getResourceProfileSpec } from "@/project/resourceProfiles";
 import type { ResourceKind } from "@/project/types";
@@ -27,14 +33,18 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
     }
   }
   for (const id of ids) {
+    const idle = battlerIdleAnimation(id);
+    if (idle) assets.set(idle.path, { kind: "public", sourcePath: idle.path, zipPath: idle.path });
     const bundled = BUNDLED_IMAGE_ASSETS.find((asset) => asset.textureKey === id);
     if (bundled) {
       assets.set(bundled.path, { kind: "public", sourcePath: bundled.path, zipPath: bundled.path, resourceId: id });
       continue;
     }
     const url = resolveAssetResourceUrl(id, { project });
-    const path = localPublicPath(url);
-    if (path) assets.set(path, { kind: "public", sourcePath: path, zipPath: path, resourceId: id });
+    // The editor may stream catalog music from a CDN; the shipped player uses its local path.
+    const catalogTrack = findBgmRuntimeEntry(id);
+    const path = localPublicPath(catalogTrack ? bgmTrackUrl(catalogTrack.fileName, {}) : url);
+    if (path && url) assets.set(path, { kind: "public", sourcePath: localPublicPath(url) ?? url, zipPath: path, resourceId: id });
   }
   for (const id of usedUploadedIds) {
     const asset = project.assets.uploaded[id];
@@ -56,6 +66,15 @@ export function collectUsedUploadedAssetIds(project: Project): Set<string> {
 
 export function estimateAssetBytes(asset: WebExportAsset): number {
   return asset.kind === "uploaded" ? dataUrlBytes(asset.asset.dataUrl).length : 0;
+}
+
+export function exportAssetSourceUrl(sourcePath: string): string {
+  return /^https?:\/\//i.test(sourcePath) ? sourcePath : `/${sourcePath.replace(/^\//, "")}`;
+}
+
+export function invalidExportDependencyBytes(bytes: Uint8Array): boolean {
+  const prefix = new TextDecoder().decode(bytes.subarray(0, 512)).trimStart();
+  return bytes.length === 0 || /^(?:<!doctype\s+html\b|<(?:html|head|body)\b)/i.test(prefix);
 }
 
 export function dataUrlBytes(dataUrl: string): Uint8Array {
@@ -92,6 +111,17 @@ function collectProjectStrings(project: Project): Set<string> {
   collectStrings(project, values);
   // 소스에 박힌 재생 — 프로젝트 문자열에는 없지만 플레이어가 반드시 읽는다.
   for (const id of PLAYER_RUNTIME_AUDIO_RESOURCE_IDS) values.add(id);
+  const skinId = resolveSkinId(project.system.battleUiStyle);
+  const facing = BATTLER_PLACEMENTS[skinId].partyFacing;
+  // Include reserve actors too: party membership/order can change after export.
+  for (const actor of project.database.actors) {
+    if (facing === "front" && actor.battleCharacterResourceId) continue;
+    // Either fallback slot can be selected after reordering the party.
+    for (const index of [0, 1]) {
+      const sprite = skinPartySpriteUrl(project, skinId, index, facing, actor);
+      if (sprite) values.add(sprite.resourceId);
+    }
+  }
   return values;
 }
 

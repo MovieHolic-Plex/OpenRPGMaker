@@ -1,0 +1,27 @@
+{
+  "head": "d84001e88b5e0b7f8ff3074de0ec5f6cdbcbf41e",
+  "tree": "7b9fd7d4cbc04e99f3f7a2ed9005e8eb91ea3345",
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "120s",
+    "npm",
+    "run",
+    "gates",
+    "--",
+    "--only",
+    "css",
+    "--json"
+  ],
+  "started": "2026-09-06T10:09:06.240Z",
+  "finished": "2026-09-06T10:09:09.207Z",
+  "exit": 0,
+  "signal": null,
+  "stdout": "\n> rpg-zzu@0.1.0 gates\n> node scripts/verify-gates.mjs --only css --json\n\n{\n  \"ranAt\": \"2026-09-06T10:09:06.783Z\",\n  \"cwd\": \"/home/main/z-project/rpg-zzu-life-full-p2-corrected-review\",\n  \"css\": {\n    \"name\": \"css\",\n    \"exitCode\": 0,\n    \"budgetExitCode\": 0,\n    \"graphExitCode\": 0,\n    \"failures\": [],\n    \"out\": \"CSS 예산 래칫 — 기준선 .omo/css-budget-baseline.json\\n   지표                    기준선       현재      증감  설명\\n   hexLiterals          1668     1653     -15  하드코딩 hex 리터럴 (TOKENS.md §4.1)\\n   important             988      975     -13  !important 선언\\n   undefinedVars          61       61       0  정의 없는 커스텀 프로퍼티\\n   globalRootFiles        10       10       0  전역 :root 블록을 가진 파일\\n   cssFileCount          267      267       0  CSS 파일 수\\n\\nGOOD: hexLiterals 1668 → 1653 (-15). 래칫을 조이세요 — node scripts/check-css-budget.mjs --save-baseline\\nGOOD: important 988 → 975 (-13). 래칫을 조이세요 — node scripts/check-css-budget.mjs --save-baseline\\nCSS 예산 게이트 통과: 267개 파일 검사, 회귀 0건, 개선 2건.\\nCSS graph gate: entries=13 (scan), files=269, reachable=269, orphan=0\\n  missing @import target : 0 new (유예 없음)\\n  unreachable            : 0 found, 0 allowlisted, 0 new\\n  double-imported        : 5 found, 5 allowlisted, 0 new\\n  unregistered slice     : 1 found, 1 allowlisted, 0 new\\n  duplicate NN- prefix   : 1 found, 1 allowlisted, 0 new\"\n  },\n  \"baseline\": \"/home/main/z-project/rpg-zzu-life-full-p2-corrected-review/.omo/gates-baseline.json\",\n  \"regressions\": []\n}\n",
+  "stderr": ""
+}

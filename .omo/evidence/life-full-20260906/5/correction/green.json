@@ -1,0 +1,16 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p2",
+  "head": "4e2d1762264533a5826c48686648093c3fe69ebd",
+  "tree": "234c0e9c391276f082efb61e2abff2e0a8d7e634",
+  "command": [
+    "npm",
+    "test",
+    "--",
+    "test/lifeQaObservability.test.ts"
+  ],
+  "started": "2026-09-06T02:06:44.832Z",
+  "exit": 0,
+  "signal": null,
+  "output": "\n> rpg-zzu@0.1.0 test\n> node scripts/run-vitest.mjs run --configLoader bundle test/lifeQaObservability.test.ts\n\n\n RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2\n\n ✓ test/lifeQaObservability.test.ts (7 tests) 365ms\n\n Test Files  1 passed (1)\n      Tests  7 passed (7)\n   Start at  11:06:45\n   Duration  8.26s (transform 5.04s, setup 0ms, collect 7.37s, tests 365ms, environment 0ms, prepare 108ms)\n\n",
+  "sha256": "34d5a3437974024b19817173e5dff9e8c4bbff48a2710ec4ef580830ffe3bfd8"
+}

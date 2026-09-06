@@ -37,6 +37,8 @@ import { eligibleEncounterEntries, pickEncounterTroopForMap } from "@/player/enc
 import { terrainRecordAt } from "@/project/terrainAt";
 import { applyTerrainWalkDamage, scaledEncounterRate } from "@/project/terrainStep";
 import { firesOnPlayerCollision, PLAYER_COLLISION_TRIGGER_KINDS } from "@/project/eventTouchRules";
+import type { RuntimeDomOverlay } from "@/player/runtimeDom";
+import type { FarmInteractionResult } from "@/player/farming";
 import { farmIntentForHand, interactWithFarmPlot, farmIgnoreMessage } from "@/player/farming";
 import { showFarmFeedbackMessage } from "@/player/playSceneZoneFeedback";
 import { tryChestInteraction } from "@/player/playSceneChest";
@@ -56,6 +58,7 @@ type ActionEventSceneContext = Pick<
   | "tileY"
 > & {
   readonly eventSprites: { get(eventId: string): AutonomousNpcSprite | undefined };
+  readonly runtimeDom?: RuntimeDomOverlay;
   refreshRuntimeSurfaces?(): void;
   syncRuntimeState?(): void;
 };
@@ -461,6 +464,20 @@ function clampPlayerMoveDuration(current: number, delta: number): number {
 
 // 반환값: 조사 대상과 상호작용했는지. 액션 전투에서 "조사 없으면 스윙" 판정에 쓴다.
 export function handleAction(scene: ActionEventSceneContext, pushFurniture?: (event: RuntimeEventView) => boolean): boolean {
+  // No allocation, counter or receipt on the normal shipped-player path.
+  if (!scene.runtimeDom?.instrumented) return performAction(scene, pushFurniture);
+  const farmAttempts: FarmInteractionResult[] = [];
+  const mapId = scene.map.id;
+  const handled = performAction(scene, pushFurniture, farmAttempts);
+  scene.runtimeDom.recordAction({ kind: "action", mapId, handled, farmAttempts }, () => scene.syncRuntimeState?.());
+  return handled;
+}
+
+function performAction(
+  scene: ActionEventSceneContext,
+  pushFurniture?: (event: RuntimeEventView) => boolean,
+  farmAttempts?: FarmInteractionResult[],
+): boolean {
   const world = { project: store.getCurrent(), map: scene.map, session: scene.session, positions: scene.eventPositions };
   if (world.session.horror?.hiding) { toggleHiding(world); scene.lastActionTargetKey = ""; return true; }
   const delta = directionDelta(scene.facing);
@@ -487,7 +504,7 @@ export function handleAction(scene: ActionEventSceneContext, pushFurniture?: (ev
     return true;
   }
   if (tryChestInteraction(scene as any, tx, ty)) return true;
-  const facingFarm = attemptFarmInteraction(scene, tx, ty);
+  const facingFarm = attemptFarmInteraction(scene, tx, ty, farmAttempts);
   if (facingFarm.handled) return true;
   // RM2K3 관례: 정면에 없으면 발밑(하위 우선순위) 액션 이벤트를 조사한다.
   // 바닥의 반짝임/문서처럼 플레이어가 올라선 채 조사하는 오브젝트가 여기 해당한다.
@@ -499,7 +516,7 @@ export function handleAction(scene: ActionEventSceneContext, pushFurniture?: (ev
     return true;
   }
   if (tryChestInteraction(scene as any, scene.tileX, scene.tileY)) return true;
-  const underfootFarm = attemptFarmInteraction(scene, scene.tileX, scene.tileY);
+  const underfootFarm = attemptFarmInteraction(scene, scene.tileX, scene.tileY, farmAttempts);
   if (underfootFarm.handled) return true;
   // 한 번의 A 입력에 안내 문구는 최대 하나. 정면과 발밑 두 번 시도하므로 여기서 한 번만 띄운다.
   // 발밑 사유를 우선하고(플레이어가 서 있는 밭이 더 구체적인 대상), 없으면 정면 사유로 대체한다.
@@ -510,7 +527,7 @@ export function handleAction(scene: ActionEventSceneContext, pushFurniture?: (ev
 
 type FarmAttempt = { readonly handled: boolean; readonly message: string | null };
 
-function attemptFarmInteraction(scene: ActionEventSceneContext, x: number, y: number): FarmAttempt {
+function attemptFarmInteraction(scene: ActionEventSceneContext, x: number, y: number, farmAttempts?: FarmInteractionResult[]): FarmAttempt {
   const project = store.getCurrent();
   const result = interactWithFarmPlot(
     project,
@@ -520,6 +537,7 @@ function attemptFarmInteraction(scene: ActionEventSceneContext, x: number, y: nu
     y,
     farmIntentForHand(project, scene.session),
   );
+  farmAttempts?.push(result);
   if (result.kind === "ignored") return { handled: false, message: farmIgnoreMessage(result.reason) };
   scene.lastActionTargetKey = "";
   scene.refreshRuntimeSurfaces?.();

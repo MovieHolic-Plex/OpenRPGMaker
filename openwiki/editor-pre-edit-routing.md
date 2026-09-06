@@ -4,6 +4,31 @@
 
 Read this before editing editor-facing behavior. Identifies which workflow owns a request and lists agent cautions.
 
+## Tile brush reliability (2026-09-06)
+
+- `TilePaintEngine.brushStrokePoints` is shared with hover rendering and produces
+  exactly N by N cells. Even sizes retain the negative-side anchor: 2 uses
+  offsets -1..0 and 4 uses -2..1. Erase and upper-layer empty brushes show the
+  same clipped footprint without a tile preview.
+- Freehand paint and erase interpolate between pointer samples. Fill, collision,
+  event and stamp gestures remain discrete; one undo restores a whole stroke.
+- Multi-cell source stamps set `preservePattern` to bypass terrain shaping and
+  tree-pair repair, and disable hard cluster expansion. `autoConnect: false`
+  alone is insufficient: ordinary autotile brushes still shape in Manual.
+  Single-cell stamps keep ordinary terrain/tree brush behavior.
+- `mapEditHistory.recordMapEditIfChanged` retains the immutable before-map and
+  records history only after an actual synchronous change. Brush strokes use it
+  until their first mutation, then bypass comparison. No-op paint/fill/erase,
+  rejected stamps and no-op rectangle/ellipse edits preserve redo.
+- Toolbar picking and short right-click share the visible-tile policy on lower,
+  and current-layer policy on upper, including EMPTY. Explicit `pickTileAt`
+  remains layer-specific. Sampling and structure-kit selection reset shape to
+  pen; B/1 clears an active stamp like the normal Paint button.
+- Regression seams: `test/editScenePaintHistory.test.ts`,
+  `test/tileBrushState.test.ts`, `test/structureKitBrushConditions.test.ts`.
+  Real browser proof is `scripts/qa/sidebar-brush.mjs`; its fixture is local-only
+  and requires disabled remote persistence.
+
 ## Pre-edit routing
 
 ### Automatic usage guides disabled (2026-09-06)
@@ -21,8 +46,11 @@ Read this before editing editor-facing behavior. Identifies which workflow owns 
 - `basicLeftRail.ts` now owns a **288px persistent beginner palette**: labeled tools, direct layers, visible `oprn-tool-undo`, selected tile and search, then the shared scrolling grid. `basic-rail-toggle-tiles` focuses the grid; it is not a visibility toggle. Tile activation preserves the sheet and uses the existing authored-layer/paint/pen/stamp-reset rules. Event mode replaces the tile body with its explanation/creation CTA; returning to a tile layer restores it.
 - Only Maps remains a nonmodal flyout (`basic-rail-toggle-maps`). Pin, outside dismissal, Escape and opener-focus restoration remain. Its width is clamped against the new panel width. `paletteRail` still pins the tiles dock host; no persistence migration or workspace key changes are required.
 - CSS `--basic-rail-width` owns the 288px geometry; `editor.ts` has the matching pre-layout fallback and still derives `--editor-left-safe` from measured width. The supported 1024px viewport trades 216px of the former narrow rail's canvas for persistent materials; browser acceptance must retain at least the existing 520px canvas minimum, not claim increased canvas area.
-- Standard retains daily tools plus labeled More. Expert's `advancedSidebarControls` flag adds direct labeled inspector/rule-audit/history dropdowns via existing `tileToolbarMenus.ts` renderers. Expert More retains copy/paste/brush sizes but never duplicates those three actions or their IDs. Direct dropdowns use the existing viewport anchoring and return Escape focus to their own trigger. Mode changes dismiss open menus.
-- Shared `makeGridPalette`/`makeCustomPalette`, source column geometry, tile selection, paint engine and history are unchanged. Beginner undo calls `undoMapEdit` and refreshes on `MAP_EDIT_HISTORY_EVENT`; no separate history stack. Tool/layer/panel groups and the tile grid each retain one roving tab stop.
+- Standard retains daily tools plus labeled More. Expert's `advancedSidebarControls` flag adds direct labeled inspector/rule-audit/history dropdowns via existing `tileToolbarMenus.ts` renderers. Expert More retains copy/paste but never duplicates those three actions or their IDs. Direct dropdowns use the existing viewport anchoring and return Escape focus to their own trigger. Mode changes dismiss open menus.
+- `makeTileBrushControls` owns always-visible, unique `brush-size-1..4` controls and active tool/shape/stamp/layer status in every mode. Sizes no longer live in More. The size group adds one roving tab stop; beginner Paint uses the shared stamp-reset action.
+- The shared palette preserves source column geometry. Default autotile selection projects the picked variant to its displayed representative for filtering, pressed state and roving focus without changing the paint tile. Custom atlas dragging resolves a source-coordinate stamp once on pointer release through `installCustomPaletteGesture`; pointer cancel, scroll, blur, outside release and detached sheets cannot commit.
+- Beginner search reports true match count, explains its retained out-of-filter selection, and restores search focus after reset. `basic-tile-search-feedback`, `basic-tile-search-reset` and `custom-palette-grid` are the browser QA hooks.
+- Beginner undo calls `undoMapEdit` and refreshes on `MAP_EDIT_HISTORY_EVENT`; there is no separate history stack. Tool/layer/panel/brush groups and the tile grid each retain one roving tab stop. Brush and history contracts are described above.
 - New/modified chrome uses existing tokens and SVG icons. Touched selected-tile/tileset-name, auto-connect and map-menu targets have a 24px minimum; new labeled utility controls use 32px. Standard/expert sheet and map-height allocation remain owned by the existing layout.
 - The wrapping toolbar uses `flex: 1 1 0` for its daily-tool group so More stays beside it rather than consuming another row. `fitMapTreeHeight` derives a minimum from measured map chrome plus up to 108px of list content; the preferred tile-sheet reserve cannot starve a multi-map list when expert controls add height. The adversarial E2E preserves this minimum and subscribes to resize/layout events before changing the viewport.
 - Regression seam: `test/sidebarModeWorkflow.test.ts` exercises actual DOM renderers, editor state, custom atlas cells, map flyout focus, history-backed undo and expert menu uniqueness. History tests subscribe before mutation with a bounded event deadline, not sleeps/polling. Existing atlas/selection/grid-roving and dock-width suites remain regression gates. Evidence is under `output/evidence/mode-ux`; full build/gates/browser acceptance are lead-owned.

@@ -1,0 +1,28 @@
+{
+  "surface": "real Vite SSR public imports + happy-dom Storage (not player.html UI)",
+  "results": [
+    {
+      "namespace": null,
+      "manualKey": "oprn:save-slot:v5:1",
+      "autoKey": "oprn:save-slot:v5:auto",
+      "migrated": 5,
+      "resumedGold": 81,
+      "legacyUnchanged": true,
+      "corruptFallback": false,
+      "constructionFailure": "DataCloneError",
+      "checkpoint": "memory-only Save5"
+    },
+    {
+      "namespace": "runtime-qa:task2",
+      "manualKey": "runtime-qa:task2:save-slot:v5:1",
+      "autoKey": "runtime-qa:task2:save-slot:v5:auto",
+      "migrated": 5,
+      "resumedGold": 81,
+      "legacyUnchanged": true,
+      "corruptFallback": false,
+      "constructionFailure": "DataCloneError",
+      "checkpoint": "memory-only Save5"
+    }
+  ],
+  "actualExit": 0
+}

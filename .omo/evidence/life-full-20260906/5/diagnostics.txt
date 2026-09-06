@@ -1,0 +1,8 @@
+{"file":"src/player/runtimeDom.ts","diagnostics":[]}
+{"file":"src/player/playSceneMovement.ts","diagnostics":[]}
+{"file":"src/player/playSceneMapRuntime.ts","diagnostics":[]}
+{"file":"src/player/playSceneTestHooks.ts","diagnostics":[]}
+{"file":"src/testing/sceneTestRunner.ts","diagnostics":[]}
+{"file":"test/lifeQaObservability.test.ts","diagnostics":[]}
+{"file":"test/fixtures/life-full/qaObservability.ts","diagnostics":[]}
+{"files":7,"diagnostics":0}
