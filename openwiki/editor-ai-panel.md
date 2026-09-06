@@ -1,5 +1,13 @@
 # Editor AI Panel & Tools
 
+## Assistant control audit fixes (2026-09-07)
+
+- Composer menu, preference and context popovers use `anchoredPopupPosition` and rail-relative coordinates; the glass deck establishes a containing block, so viewport `fixed` coordinates are not interchangeable. Open content/deck resize and viewport/scroll changes reposition the popup. Dispose removes observers/listeners. Suggestion content stays in normal flow.
+- Full history is a visible toggle: both menu variants update their label and `aria-expanded`. Collapsing history returns to float before hiding the deck; entering studio removes the history CSS class before reparenting. Preserve the separate studio log-mount state without leaving both surface classes active.
+- Export actions call the shared export operation, not a disabled hidden button. Empty export shows feedback; the native hidden-button disabled contract remains intact. `aiEmptyExportFeedback.test.ts` uses real DOM semantics because FakeDom.click does not enforce native disabled behavior.
+- A saved/user-resized width overrides the idle compact default. `aiChatResizeChrome` observes the actual deck width to keep separator ARIA values correct through focus, viewport and animated size changes.
+- Regression surfaces: `test/aiPanelChrome.test.ts`, `test/aiEmptyExportFeedback.test.ts`, `test/e2e/ai-ui-audit-fixes.spec.ts`; original findings remain in `docs/qa/2026-09-06-ai-assistant-ui-audit.md`.
+
 ## World structure activity labels (2026-09-06)
 
 `author_world_bridge` and `author_world_mountain` explicitly use the world activity

@@ -87,6 +87,41 @@ function expandPanel(panel: FakeElement): void {
 // 사이드 전용 `ai-rising-overlay` 는 전부 사라졌다. 해당 케이스는 지우지 않고 「그 표면이
 // 돌아오지 않는다」는 반대 계약으로 뒤집었고, 도크별 `it.each` 는 단일 케이스로 합쳤다.
 describe("AI 패널 크롬", () => {
+  function historyAction(panel: FakeElement): FakeElement {
+    const menu = findByTestId(panel, "ai-command-menu");
+    const action = menu?.childNodes.find((node): node is FakeElement =>
+      node instanceof FakeElement && node.querySelector(".ai-command-menu-label")?.textContent === "전체 기록");
+    if (!action) throw new Error("history menu action missing");
+    return action;
+  }
+
+  it("F2 collapsing history returns to the collapsed float surface", () => {
+    const panel = renderPanel();
+    historyAction(panel).click();
+    expect(panel.classList.contains("is-history-open")).toBe(true);
+    findByTestId(panel, "ai-collapse")?.click();
+    expect(panel.classList.contains("is-collapsed")).toBe(true);
+    expect(panel.classList.contains("is-history-open")).toBe(false);
+    expect(panel.classList.contains("is-docked")).toBe(false);
+  });
+
+  it("F3 entering studio clears the full-history surface", () => {
+    const panel = renderPanel();
+    historyAction(panel).click();
+    findByTestId(panel, "ai-studio-toggle")?.click();
+    expect(panel.classList.contains("is-studio")).toBe(true);
+    expect(panel.classList.contains("is-history-open")).toBe(false);
+  });
+
+  it("F4 the visible history menu action toggles open and closed", () => {
+    const panel = renderPanel();
+    const action = historyAction(panel);
+    action.click();
+    expect(panel.classList.contains("is-history-open")).toBe(true);
+    action.click();
+    expect(panel.classList.contains("is-history-open")).toBe(false);
+  });
+
   it("패널에 헤더도 얼굴도 없다", () => {
     // Break: `.ai-chat-header` 밴드나 `.ai-director-*` 명패가 되살아났다.
     // 2026-08-28 감독 지시 — 조수의 얼굴을 노출하지 않고 헤더 없는 유리면 하나로 간다.

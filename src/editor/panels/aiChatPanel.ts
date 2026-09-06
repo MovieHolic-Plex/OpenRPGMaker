@@ -1915,32 +1915,31 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 광고한다. 대신 `panel.dataset.chatDock` 은 `"float"` 로 고정 노출한다 — 레이아웃
   // 테스트가 "어디에 붙었나"를 읽는 단일 창구다.
   // z-layers: panel 30 / bar 40 / overlay 41 / palette 80 — 56/50/62 난장 정리
+  const exportAudit = (): void => {
+    const json = exportCombinedAudit(controller);
+    if (!json) {
+      toast("내보낼 대화가 없습니다.", "info");
+      recordAiUiEvent({ surface: "panel", action: AI_UI_ACTIONS.conversationExport, testid: "ai-export", disabled: true, detail: { entries: 0 } });
+      return;
+    }
+    downloadJson("ai-session-audit.json", json);
+    recordAiUiEvent({
+      surface: "panel",
+      action: AI_UI_ACTIONS.conversationExport,
+      testid: "ai-export",
+      detail: {
+        format: "json",
+        bytes: json.length,
+        entries: [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])].length,
+      },
+    });
+  };
   exportButton = el("button", {
     class: "ai-assistant-action ai-export-button",
     text: "내보내기",
     attrs: { type: "button", hidden: "", "aria-hidden": "true", title: "대화 감사 로그 내보내기", "aria-label": "대화 내보내기" },
     dataset: { testid: "ai-export" },
-    on: {
-      click: () => {
-        const json = exportCombinedAudit(controller);
-        if (!json) {
-          toast("내보낼 대화가 없습니다.", "info");
-          recordAiUiEvent({ surface: "panel", action: AI_UI_ACTIONS.conversationExport, testid: "ai-export", disabled: true, detail: { entries: 0 } });
-          return;
-        }
-        downloadJson("ai-session-audit.json", json);
-        recordAiUiEvent({
-          surface: "panel",
-          action: AI_UI_ACTIONS.conversationExport,
-          testid: "ai-export",
-          detail: {
-            format: "json",
-            bytes: json.length,
-            entries: [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])].length,
-          },
-        });
-      },
-    },
+    on: { click: exportAudit },
   }) as HTMLButtonElement;
   refreshExportButton();
   const undoLastButton = el("button", {
@@ -2142,10 +2141,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       });
     },
     openSettings: () => openAiSettings("first"),
-    exportAudit: () => exportButton?.click(),
+    exportAudit,
     openHistory: () => {
       historyButton.click();
-      applyHistoryOpen(true);
     },
     openTools: () => toolsButton.click(),
     openInstructions: () => {
@@ -2575,6 +2573,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 수동으로 접으면 예약 취소. 수동으로 펼치면 다음 AI 턴 전까지는 연 상태 유지.
     collapseAfterAiWork = false;
     if (collapsed && studio) applyStudio(false); // 접으면 스튜디오도 해제.
+    if (collapsed && historyOpen) applyHistoryOpen(false);
     savePanelCollapsed(collapsed);
     applyCollapsed();
     // 턴 중에 접혔는지가 「답장이 안 보였다」류 신고의 갈림길이다.
@@ -2614,6 +2613,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   applyHistoryOpen = (next: boolean): void => {
     historyOpen = next;
+    headerMenu.setHistoryOpen(next);
+    composerMenu.setHistoryOpen(next);
     if (historyOpen) {
       panel.classList.add("is-history-open");
       panel.classList.add("is-docked");
@@ -2652,7 +2653,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       applySize(); // 크기만 해제하고 배경 농도·글자 크기 설정은 유지한다.
       // 로그 슬롯은 기록 마운트. is-history-open 은 다른 오버레이라 붙이지 않는다.
       historyOpen = true;
-      panel.classList.remove("is-docked");
+      panel.classList.remove("is-docked", "is-history-open");
       if (typeof document !== "undefined" && document.body) {
         document.body.classList.remove("ai-panel-docked");
         document.body.classList.add("ai-studio-open");
