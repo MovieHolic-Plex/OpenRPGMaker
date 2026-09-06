@@ -198,6 +198,57 @@ describe("independent region presentation at chat boundaries", () => {
     approve(region);
   });
 
+  it("never resurrects or applies A after switching to identical B, starting new chat and restoring history", async () => {
+    const panel = renderAiChatPanel();
+    await whenAiChatPanelSettled();
+    const regionA = pendingRegion();
+    const identityA = store.getProjectIdentity().id;
+    store.replaceProject(structuredClone(regionA.base));
+    await whenAiChatPanelSettled();
+    expect(store.getProjectIdentity().id).not.toBe(identityA);
+    await saveHistory("project-b-history");
+
+    button(panel, "ai-new-chat").click();
+    expect(getAgentGhostPreviewState().previews).toEqual([]);
+    expect(getAgentGhostDraftMap(regionA.mapId)).toBeUndefined();
+    button(panel, "ai-open-conversations").click();
+    await whenAiConversationHistoryModalSettled();
+    button(document, "ai-history-open").click();
+    await whenAiConversationHistoryModalSettled();
+    expect(panel.dataset.aiConversation).toBe("active");
+    expect(getAgentGhostPreviewState().previews).toEqual([]);
+    expect(getAgentGhostDraftMap(regionA.mapId)).toBeUndefined();
+    expect(getPendingRegionApply()).toBeNull();
+    expect(regionA.pending.settled).toBe(true);
+    expect(regionA.onDiscard).toHaveBeenCalledTimes(1);
+    expect(regionA.pending.apply()).toMatchObject({ ok: false, applied: false });
+    expect(regionA.onApply).not.toHaveBeenCalled();
+    expect(store.getCurrent()).toEqual(regionA.base);
+  });
+
+  it("preserves a B draft created while project-switch history is loading", async () => {
+    const panel = renderAiChatPanel();
+    await whenAiChatPanelSettled();
+    const regionA = pendingRegion();
+    await saveHistory("same-shaped-history");
+    store.replaceProject(structuredClone(regionA.base));
+    // No await: B registers its draft after the identity notification but before async chat adoption.
+    const regionB = pendingRegion();
+    await whenAiChatPanelSettled();
+    expect(regionA.pending.settled).toBe(true);
+    expect(regionA.onDiscard).toHaveBeenCalledTimes(1);
+    expectPending(regionB);
+    button(panel, "ai-new-chat").click();
+    expectPending(regionB);
+    button(panel, "ai-open-conversations").click();
+    await whenAiConversationHistoryModalSettled();
+    button(document, "ai-history-open").click();
+    await whenAiConversationHistoryModalSettled();
+    expectPending(regionB);
+    approve(regionB);
+    expect(regionA.onApply).not.toHaveBeenCalled();
+  });
+
   it.each([false, true])("does not restore the old region on a project switch (saved target: %s)", async (savedTarget) => {
     const panel = renderAiChatPanel();
     await whenAiChatPanelSettled();

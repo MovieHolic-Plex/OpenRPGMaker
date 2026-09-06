@@ -762,7 +762,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
 
   const restoreConversationRecord = (record: ConversationRecord, source: "auto" | "manual" | "project-switch"): void => {
-    dropSession(controller, source === "project-switch" ? null : getPendingRegionApply());
+    dropSession(controller, getPendingRegionApply());
     clearWorkPlanSurface(); // 대화 전환 — 다른 대화의 할 일 목록이 남으면 안 된다(스테일 상태 방지).
     // 화면만 복원하면 사용자는 이어졌다고 믿고 모델은 아무것도 모른다 — 다음 세션에 기록 요약을
     // 함께 밀어 넣어 "이어가기"를 모델 쪽에서도 참으로 만든다.
@@ -835,7 +835,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     endTurnProgress();
     refreshAbortButton();
     persistConversation();
-    dropSession(controller, reason === "manual" ? getPendingRegionApply() : null);
+    dropSession(controller, getPendingRegionApply());
     clearWorkPlanSurface(); // 새 대화 — 이전 대화의 할 일 목록/예산/피드를 버린다.
     // 새 대화는 정말로 빈 대화다 — 복원/되감기가 예약해 둔 기록 주입이 남아 있으면 버린다.
     pendingPriorTranscript = null;
@@ -1802,6 +1802,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }
     // 스토어가 로드 중 여러 번 알리므로 표식을 먼저 갱신해 같은 전환이 여러 번 채택되지 않게 한다.
     projectIdentityId = identity.id;
+    // Settle the outgoing owner before async history loading. A new project's draft may
+    // arrive during that lookup and must survive the later chat reset/restore.
+    getPendingRegionApply()?.discard();
     void panelPendingWork.track(adoptConversationForCurrentProject());
   });
   const activateSelectionTaskContext = (focus = true): void => {
