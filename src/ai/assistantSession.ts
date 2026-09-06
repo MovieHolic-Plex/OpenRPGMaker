@@ -4055,11 +4055,13 @@ export class AssistantSession {
               if (toolResult.ok) failedSpecMaps.delete(args.mapId);
               else failedSpecMaps.add(args.mapId);
             }
-            const record = batchRecordTarget(name, args);
-            if (record) {
-              if (toolResult.ok) failedRecords.delete(record.key);
-              else if (!this.ctx.project.database[record.collection].some((entry) => entry.id === record.id)) failedRecords.set(record.key, record);
-            }
+          }
+          // Dependencies require an available record, even when its producer never executed.
+          // Track deferred creations too so missing IDs propagate transitively without charging dependents.
+          const record = batchRecordTarget(name, args);
+          if (record) {
+            if (toolResult.ok) failedRecords.delete(record.key);
+            else if (!this.ctx.project.database[record.collection].some((entry) => entry.id === record.id)) failedRecords.set(record.key, record);
           }
           if (tool?.mode === "read" || name === "get_original_context") {
             batchReads.push({ name, args, result: toolResult, callId: call.id });
