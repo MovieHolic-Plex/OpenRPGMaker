@@ -110,7 +110,7 @@ function sanitizeItemState(state: ItemTransitionState): ItemTransitionResult {
     const normalizedCount = nonnegativeInteger(count);
     if (normalizedCount > 0) inventory[itemId] = normalizedCount;
   }
-  const itemUseCharges: Record<string, number> = {};
+  const itemUseCharges: Record<string, number> = Object.create(null);
   for (const [itemId, charge] of Object.entries(state.itemUseCharges ?? {})) {
     if (Number.isInteger(charge) && charge > 0) itemUseCharges[itemId] = charge;
   }
@@ -127,7 +127,7 @@ function normalizeItemState(
     if (normalizedCount > 0) inventory[itemId] = normalizedCount;
   }
 
-  const itemUseCharges: Record<string, number> = {};
+  const itemUseCharges: Record<string, number> = Object.create(null);
   for (const [itemId, rawCharge] of Object.entries(state.itemUseCharges ?? {})) {
     if (!Number.isInteger(rawCharge) || rawCharge <= 0) continue;
     const item = itemById.get(itemId);

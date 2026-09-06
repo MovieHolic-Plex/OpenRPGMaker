@@ -1,5 +1,41 @@
 # Task30: reserved JSON record-key quantity conservation
 
+## Finite-use B1 continuation: corrected and verified (2026-09-06)
+
+Task `st_01a074ed` completes the finite-use correction on branch `agent/life-full-record-keys`, starting from `7c19e5edc5849e800db81b4af0c3f26504401bc1` (tree `7c013a59633197ca8031b856e9b1dcd79dba5bff`). The previous quantity correction was not redone. Full reviewer VERIFY was read first; reviewer-owned VERIFY is unchanged and excluded from staging. The parent explicitly authorized the additional one-line `src/player/saveSlots.ts` cursor-parser correction after reading the preserved `finite-use/BLOCKED.md` evidence.
+
+Product change: exactly three numeric accumulator initializers become `Object.create(null)` - two finite-use accumulators in `itemTransitions.ts`, one in `parseItemUseCharges`. No schema, blacklist, inferred charge, dependency, quantity-policy change or broader parser change. Existing absent-charge lookup correctly reads zero from the normalized null-prototype dictionary without an additional own-check edit.
+
+### Exact verification and provenance
+
+All new receipts live in `30/finite-use/`; JSON contains exact command argv, stdout/stderr text, direct exit/signal, timestamps and trees. Human-readable logs trim trailing whitespace only. Every heavy command uses `flock --timeout 900 /tmp/rpg-zzu-life-full-qa-01a0727b.lock timeout --signal=TERM --kill-after=15s <deadline>s ...`. The evidence-only Vitest config retains the original configuration and only supplies task-owned cacheDir `/tmp/st_01a074ed-vitest-cache`; no test/hook timeout increase.
+
+- RED code/test tree: `071148d13c1192abce95b920c198ca2400b785aa`, initial production unchanged. `red`: exit1, **6 failed / 31 passed**. `public-red`: exit1, 24 finite stage mismatches using actual imported authority and real Storage.
+- The initial two-accumulator candidate exposed the Storage parser's identical cause. `final-green` is a retained **failed attempted final run** (179 passed / 2 failed), not a passing claim. `public-after-accumulators`: exit1, exactly four reader/apply cursor mismatches. `BLOCKED.md` and these receipts remain unchanged as history; they are superseded by the authorized correction, not erased.
+- Initial `diagnostics` found three optional-owner typing errors in the new test; explicit missing-owner assertions/narrowing corrected them without weakening assertions. Both diagnostics failure and subsequent results remain retained.
+- Final verified code/test tree: `e2efc070d6792216d78eb03707a8b35a3fdcf3c2`. The runner's temporary-index projection now includes authorized `saveSlots.ts`; earlier projections were accurate before that file was changed. The containing correction commit supplies the evidence-inclusive tree, distinct from this code/test projection.
+
+| Final receipt | Inner command / coverage | Deadline | Result |
+| --- | --- | ---: | --- |
+| authorized-diagnostics | Compiler API syntactic/semantic diagnostics: itemTransitions, saveSlots, lifeRecoveryRecordKeys; four evidence JS syntax checks | 300s | exit0; no diagnostics |
+| authorized-green | npm test with all eight required files, unchanged assertions; maxWorkers2/minWorkers1 and evidence cache config | 300s | exit0; **181/181 tests, 8/8 files**, one run after authorized fix |
+| authorized-public | node finite-use/public-roundtrip.mjs | 180s | exit0; zero finite failures, all previous exact ownership assertions retained |
+| authorized-typecheck | npm run typecheck:app | 300s | exit0 |
+| authorized-build | env VITE_CACHE_DIR=/tmp/st_01a074ed-build-cache npm run build | 600s | exit0; app, player SDK and standalone |
+| authorized-cleanup | python3 finite-use/cleanup.py | 60s | exit0; task caches/processes absent, byte integrity confirmed |
+
+The eight files are `lifeRecoveryRecordKeys.test.ts`, `lifeRecovery.test.ts`, `lifeRecoveryPersistence.test.ts`, `p0SessionPersistence.test.ts`, `p2SpatialPersistence.test.ts`, `itemTransitions.test.ts`, `p0CommerceFinalSafety.test.ts`, and `p0EconomySafetyFollowup.test.ts`. All original tests/assertions remain, including FIFO, lowered limits, ordered batches, caps, malformed/quota/rollback and ownership checks. Sixteen added deterministic cases cover all four IDs. No sleeps, polling, timing retries, skip/deletion, mock success or assertion weakening.
+
+### Public behavior and cleanup
+
+Actual project serialize/deserialize accepts ordinary, __proto__, constructor and toString finite consumables (limit5). JSON-owned inventory1/charge2 plus actual shipping claim3 collection becomes inventory4/own charge2, consumes claim once and keeps nextSequence2. Normalize, snapshot writer, real Happy DOM Storage reader and apply preserve that cursor both before and after collection. Fresh items record exact own numeric charges1,2,3,4 and deplete on successfulUse5. FIFO tail removal preserves the charged copy; overflow/invalid-count rejection retains state. Object.prototype descriptors remain unchanged. The extended public probe retains original parse/contribution/split/unknown/returning-definition/retry ownership checks and unchanged Storage bytes/live-writer input checks.
+
+The public probe clears Storage, awaits Happy DOM close, closes Vite and removes its unique task cache in finally. `authorized-cleanup` confirms no owned runtime/test/compiler processes, no task tmp caches, and removes only newly generated untracked dist and owned console/cache outputs. Both tracked `.vite-cache/deps` files and root `package.json` are byte-identical to frozen base `f86474547028cddf795c8e431b2195b7edccd201`; exact hashes are in that receipt. Shared/tracked caches were never deleted. No parent phase2/state/WISH or other task file was edited.
+
+Build success is not warning-free: missing optional proxy keys, circular cross-chunk recordPicker reexport, mixed static/dynamic imports, unresolved runtime fonts/assets and large chunks remain in raw output. No full unrelated gates, UI journey, remote write, independent approval or integration is claimed. Finalization receipts record evidence-inclusive INDEX generation/checks, commit/tree and post-commit cleanliness; no amend/reset/push/PR/merge.
+
+The remainder is the original quantity-correction report, preserved as historical evidence. Its older verification/cleanup statements are not substituted for the finite-use results above.
+
 The reserved-key quantity loss is corrected without changing recovery ownership policy. The correction is six targeted numeric-record/lookup changes in three product files, plus one focused regression file and the matching runtime wiki/index. No schema, UI, dependency, baseline, maker policy, or spatial policy changes are included.
 
 ## Isolation and reproducible trees

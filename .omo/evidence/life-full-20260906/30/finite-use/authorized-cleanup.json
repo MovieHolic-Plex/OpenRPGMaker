@@ -1,0 +1,26 @@
+{
+  "label": "authorized-cleanup",
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p2-life-full-record-keys",
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "60s",
+    "python3",
+    ".omo/evidence/life-full-20260906/30/finite-use/cleanup.py"
+  ],
+  "started": "2026-09-06T04:32:38.333Z",
+  "finished": "2026-09-06T04:32:38.685Z",
+  "base": "f86474547028cddf795c8e431b2195b7edccd201",
+  "head": "7c19e5edc5849e800db81b4af0c3f26504401bc1",
+  "headTree": "7c013a59633197ca8031b856e9b1dcd79dba5bff",
+  "codeTree": "e2efc070d6792216d78eb03707a8b35a3fdcf3c2",
+  "stdout": "{\"integrity\": [{\"path\": \".vite-cache/deps/_metadata.json\", \"bytes\": 146, \"sha256\": \"eb92c7299e3ca1a241fff3664422f1a7821a242b763935b799631990183f8edc\", \"baseIdentical\": true}, {\"path\": \".vite-cache/deps/package.json\", \"bytes\": 23, \"sha256\": \"3ca9d4afd21425087cf31893b8f9f63c81b0b8408db5e343ca76e5f8aa26ab9a\", \"baseIdentical\": true}, {\"path\": \"package.json\", \"bytes\": 5406, \"sha256\": \"b712911d186b12c954dfecb278451f6a6fae255ab0f9d8e25529dc90dcce6211\", \"baseIdentical\": true}], \"removed\": [\"/home/main/z-project/rpg-zzu-life-full-p2-life-full-record-keys/dist\", \"/tmp/st_01a074ed-authorized-public-console\", \"/tmp/st_01a074ed-authorized-build-console\", \"/tmp/st_01a074ed-vitest-cache\"], \"ownRemainingProcesses\": [], \"remainingOwnTmpPaths\": [], \"sharedCachesDeleted\": false}\n",
+  "stderr": "",
+  "exit": 0,
+  "signal": null
+}

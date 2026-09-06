@@ -3,6 +3,8 @@ import { afterAll, afterEach, describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import { startSession } from "@/project/session";
+import { normalizeItemTransitionState, transitionItemState } from "@/project/itemTransitions";
+import { deserialize, serialize } from "@/project/io";
 import { ITEM_QUANTITY_MAX } from "@/project/itemQuantities";
 import { collectLifeRecoveryClaim, moveLifeRecoverySource, parseLifeState, reconcileLifeState } from "@/project/lifeRecovery";
 import { applySaveSnapshot, createSaveSnapshot, readSaveSlot, saveSlotKey, saveToSlot } from "@/player/saveSlots";
@@ -127,5 +129,84 @@ describe("life recovery own record keys", () => {
     const full = JSON.stringify(session);
     expect(collectLifeRecoveryClaim(project, session, "recovery:1")).toEqual({ ok: false, reason: "inventory-overflow" });
     expect(JSON.stringify(session)).toBe(full);
+  });
+});
+
+
+describe("finite-use recovery record keys", () => {
+  function finiteFixture(id: string) {
+    let project = createBlankProject();
+    project.database.items.push(normalizeItemRecord({ id, name: id, scope: "none", price: 1, consumable: true, consumptionLimit: 5 }));
+    project = deserialize(serialize(project));
+    expect(project.database.items.find((item) => item.id === id)).toMatchObject({ consumable: true, consumptionLimit: 5 });
+    const session = startSession(project, 30);
+    session.inventory = JSON.parse(`{${JSON.stringify(id)}:1}`);
+    session.itemUseCharges = JSON.parse(`{${JSON.stringify(id)}:2}`);
+    return { project, session };
+  }
+  function cursor(state: { inventory?: Readonly<Record<string, number>>; itemUseCharges?: Readonly<Record<string, number>> }, id: string, count: number, charge: number) {
+    if (!state.inventory) throw new Error("Missing inventory owner");
+    expect(Object.entries(state.inventory)).toEqual([[id, count]]);
+    expect(Object.entries(state.itemUseCharges ?? {})).toEqual([[id, charge]]);
+    expect(Object.getOwnPropertyDescriptors(Object.prototype)).toEqual(prototype);
+  }
+
+  it.each(ids)("preserves %s charge2 through actual shipping claim3 collection", (id) => {
+    const { project, session } = finiteFixture(id);
+    session.shippingQueue = JSON.parse(`{${JSON.stringify(id)}:3}`);
+    expect(moveLifeRecoverySource(project, session, { sourceKind: "shippingQueue", sourceId: id, reason: "disabled" })).toEqual({ ok: true, claimIds: ["recovery:1"] });
+    cursor(session, id, 1, 2);
+    if (!session.shippingQueue) throw new Error("Missing shipping owner");
+    expect(Object.keys(session.shippingQueue)).toEqual([]);
+    expect(session.lifeRecovery?.claims["recovery:1"]?.items).toEqual([{ itemId: id, count: 3 }]);
+    expect(collectLifeRecoveryClaim(project, session, "recovery:1")).toEqual({ ok: true, claimIds: ["recovery:1"] });
+    cursor(session, id, 4, 2);
+    expect(session.lifeRecovery).toEqual({ nextSequence: 2, claims: {} });
+    expect(collectLifeRecoveryClaim(project, session, "recovery:1")).toEqual({ ok: false, reason: "missing-claim" });
+    cursor(roundtrip(project, session), id, 4, 2);
+    const tail = transitionItemState(session, project.database.items, { kind: "remove", itemId: id, amount: 3 });
+    cursor(tail, id, 1, 2);
+    expect(transitionItemState(tail, project.database.items, { kind: "remove", itemId: id, amount: 1 })).toEqual({ inventory: {}, itemUseCharges: {} });
+  });
+
+  it.each(ids)("preserves own %s charge2 at normalize, writer, Storage reader and apply", (id) => {
+    const { project, session } = finiteFixture(id);
+    const before = JSON.stringify(session);
+    cursor(normalizeItemTransitionState(session, project.database.items), id, 1, 2);
+    const snapshot = createSaveSnapshot(project, session);
+    cursor(snapshot.session, id, 1, 2);
+    expect(JSON.stringify(session)).toBe(before);
+    expect(saveToSlot(storage, 1, snapshot).ok).toBe(true);
+    const disk = storage.getItem(saveSlotKey(1));
+    const read = readSaveSlot(storage, 1);
+    if (read.kind !== "present") throw new Error(`save read: ${read.kind}`);
+    cursor(read.snapshot.session, id, 1, 2);
+    cursor(applySaveSnapshot(project, read.snapshot), id, 1, 2);
+    expect(storage.getItem(saveSlotKey(1))).toBe(disk);
+  });
+
+  it.each(ids)("counts numeric %s charges1..4 and depletes on successfulUse5", (id) => {
+    const { project, session } = finiteFixture(id);
+    let state = { inventory: session.inventory, itemUseCharges: {} };
+    for (let use = 1; use <= 4; use++) {
+      state = transitionItemState(state, project.database.items, { kind: "successfulUse", itemId: id });
+      cursor(state, id, 1, use);
+    }
+    state = transitionItemState(state, project.database.items, { kind: "successfulUse", itemId: id });
+    expect(Object.entries(state.inventory)).toEqual([]);
+    expect(Object.entries(state.itemUseCharges)).toEqual([]);
+    expect(Object.getOwnPropertyDescriptors(Object.prototype)).toEqual(prototype);
+  });
+
+  it.each(ids)("keeps %s finite cursor and claim on overflow or invalid count", (id) => {
+    const { project, session } = finiteFixture(id);
+    session.inventory = JSON.parse(`{${JSON.stringify(id)}:${ITEM_QUANTITY_MAX}}`);
+    session.shippingQueue = JSON.parse(`{${JSON.stringify(id)}:3}`);
+    expect(moveLifeRecoverySource(project, session, { sourceKind: "shippingQueue", sourceId: id, reason: "disabled" }).ok).toBe(true);
+    const before = JSON.stringify(session);
+    expect(collectLifeRecoveryClaim(project, session, "recovery:1")).toEqual({ ok: false, reason: "inventory-overflow" });
+    expect(JSON.stringify(session)).toBe(before);
+    cursor(transitionItemState(session, project.database.items, { kind: "grant", itemId: id, amount: -1 }), id, ITEM_QUANTITY_MAX, 2);
+    expect(JSON.stringify(session)).toBe(before);
   });
 });
