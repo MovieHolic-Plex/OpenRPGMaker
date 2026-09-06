@@ -25,6 +25,14 @@ The shared danger token is #B91C1C after the earlier color failed contrast on
 its actual hover tint. Database close restores the connected opener, or its
 logical replacement after a topbar rerender, without stealing focus on tab reuse.
 
+`npm run audit:db-css-ownership` records the import graph, scoped role owners,
+retained-important reasons and removed-declaration mappings. Owner proof requires
+the exact normalized selector, file, at-rule context and property (including
+valid shorthand coverage); descendant/prefix matches are not replacements.
+Narrowed rules split retained and excluded consumers rather than assigning an
+unrelated intrinsic default. Required DB surface execution consumes per-file
+Vitest results and rejects missing, zero-assertion, skipped or failed coverage.
+
 ## 전투 명령 배치 스튜디오 (2026-09-05)
 
 - Custom CSS는 `databaseBattleCommandCss.ts`가 소유한다. 직업 배치 아래의 프로젝트 공통 편집기로 유효한 입력만 스타일 샘플에 즉시 반영하며 적용 시 history + store 변경을 남긴다. 잘못된 입력은 적용을 막고 마지막 유효 미리보기를 유지한다. 저장된 CSS 복원·다크 프리셋·기본 스킨 복귀를 제공한다.
