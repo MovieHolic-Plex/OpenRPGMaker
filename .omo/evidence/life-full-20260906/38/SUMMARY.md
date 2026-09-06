@@ -14,9 +14,11 @@ Diagnostics: language-service diagnostics for test/p1FoundationSchema.test.ts: n
 git diff --check: exit 0.
 
 ## Coverage added
-- Exact typed LifeReconciliationError fields are asserted for unrepresentable farm-animal source.
-- The complete live session, including NaN/Infinity, is compared unchanged after the failed writer; an existing valid slot byte string is also unchanged.
-- JSON-safe hostile direct input produces exactly one empty-items unresolved original, no authored-animal resurrection, no payout, invalid weather remains separately rejected, and repeated save/read/apply is stable.
+- Exact typed LifeReconciliationError fields are asserted for unrepresentable farm-animal source, captured from the actual thrown value.
+- The complete live session, including NaN/Infinity, is compared unchanged after the failed writer; a confirmed non-null prior slot byte string from saveSlotKey(2) remains unchanged after the combined failed save action.
+- A separate valid-animal writer control preserves the NaN-weather assertion; JSON-safe hostile direct input retains exactly one empty-items unresolved original, no authored-animal resurrection, no payout, unchanged input/inventory/gold, and the direct meteor-weather rejection.
+- Two subsequent snapshots are created from restored states and saved/read/applied, proving stable claim sequence and no active animal.
+- Initial review gaps disclosed: the first commit used an incorrect hardcoded slot key, did not assert non-null prior bytes or the combined failed-save action, used an asymmetric matcher cast, did not preserve direct-input/inventory/gold explicitly, replayed the original snapshot instead of creating round-trip snapshots, and omitted the separate valid-animal NaN-weather writer control.
 - Existing valid-animal and legacy-omission controls remain untouched.
 
 ## Repository/resource cleanup
