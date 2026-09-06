@@ -1,0 +1,841 @@
+{
+  "scenarioId": "event-command-remediation-u02",
+  "projectPath": "../../../../../../tmp/u02-player-wvs27I/runtime-project.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "boot",
+      "shot": null,
+      "failures": [],
+      "eventCommands": [
+        {
+          "op": {
+            "kind": "eventCommand",
+            "trigger": {
+              "kind": "key",
+              "key": "Enter"
+            },
+            "observe": [
+              {
+                "source": "state",
+                "path": [
+                  "mapId"
+                ],
+                "equals": "map_intro"
+              },
+              {
+                "source": "state",
+                "path": [
+                  "variables",
+                  "first"
+                ],
+                "equals": 91
+              },
+              {
+                "source": "state",
+                "path": [
+                  "variables",
+                  "answer"
+                ],
+                "equals": 92
+              }
+            ],
+            "timeoutMs": 15000
+          },
+          "status": "success",
+          "before": [
+            {
+              "missing": true
+            },
+            {
+              "missing": true
+            },
+            {
+              "missing": true
+            }
+          ],
+          "after": [
+            {
+              "value": "map_intro"
+            },
+            {
+              "value": 91
+            },
+            {
+              "value": 92
+            }
+          ],
+          "event": null,
+          "cleanup": {
+            "observer": true,
+            "timer": true,
+            "event": true,
+            "pagehide": true,
+            "abort": true
+          }
+        }
+      ],
+      "state": {
+        "currentMapId": "map_intro",
+        "x": 2,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null
+      }
+    },
+    {
+      "index": 1,
+      "id": "g1-f5",
+      "note": "Real Z executes saved other<=50; reward25 and other40 are untouched",
+      "shot": "02-g1-f5.png",
+      "failures": [],
+      "eventCommands": [
+        {
+          "op": {
+            "kind": "eventCommand",
+            "trigger": {
+              "kind": "key",
+              "key": "z"
+            },
+            "observe": [
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"dialogue-box\"].page-ready",
+                "read": "present",
+                "equals": true
+              },
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"dialogue-box\"] .body",
+                "read": "text",
+                "equals": "THEN"
+              },
+              {
+                "source": "state",
+                "path": [
+                  "variables",
+                  "reward"
+                ],
+                "equals": 25
+              },
+              {
+                "source": "state",
+                "path": [
+                  "variables",
+                  "other"
+                ],
+                "equals": 40
+              }
+            ],
+            "timeoutMs": 15000
+          },
+          "status": "success",
+          "before": [
+            {
+              "value": false
+            },
+            {
+              "missing": true
+            },
+            {
+              "value": 25
+            },
+            {
+              "value": 40
+            }
+          ],
+          "after": [
+            {
+              "value": true
+            },
+            {
+              "value": "THEN"
+            },
+            {
+              "value": 25
+            },
+            {
+              "value": 40
+            }
+          ],
+          "event": null,
+          "cleanup": {
+            "observer": true,
+            "timer": true,
+            "event": true,
+            "pagehide": true,
+            "abort": true
+          }
+        }
+      ],
+      "state": {
+        "currentMapId": "map_intro",
+        "x": 2,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null
+      }
+    },
+    {
+      "index": 2,
+      "id": "choices-ready",
+      "shot": null,
+      "failures": [],
+      "eventCommands": [
+        {
+          "op": {
+            "kind": "eventCommand",
+            "trigger": {
+              "kind": "key",
+              "key": "z"
+            },
+            "observe": [
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"runtime-choices\"]",
+                "read": "present",
+                "equals": true
+              }
+            ],
+            "timeoutMs": 15000
+          },
+          "status": "success",
+          "before": [
+            {
+              "value": false
+            }
+          ],
+          "after": [
+            {
+              "value": true
+            }
+          ],
+          "event": null,
+          "cleanup": {
+            "observer": true,
+            "timer": true,
+            "event": true,
+            "pagehide": true,
+            "abort": true
+          }
+        }
+      ],
+      "state": {
+        "currentMapId": "map_intro",
+        "x": 2,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null
+      }
+    },
+    {
+      "index": 3,
+      "id": "g1-f14",
+      "note": "Real Escape follows saved choice1 to B, not C",
+      "shot": "04-g1-f14.png",
+      "failures": [],
+      "eventCommands": [
+        {
+          "op": {
+            "kind": "eventCommand",
+            "trigger": {
+              "kind": "key",
+              "key": "Escape"
+            },
+            "observe": [
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"dialogue-speaker\"]",
+                "read": "text",
+                "equals": "B"
+              },
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"dialogue-box\"] .body",
+                "read": "text",
+                "equals": "MARKER_B"
+              }
+            ],
+            "timeoutMs": 15000
+          },
+          "status": "success",
+          "before": [
+            {
+              "missing": true
+            },
+            {
+              "missing": true
+            }
+          ],
+          "after": [
+            {
+              "value": "B"
+            },
+            {
+              "value": "MARKER_B"
+            }
+          ],
+          "event": null,
+          "cleanup": {
+            "observer": true,
+            "timer": true,
+            "event": true,
+            "pagehide": true,
+            "abort": true
+          }
+        }
+      ],
+      "state": {
+        "currentMapId": "map_intro",
+        "x": 2,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null
+      }
+    },
+    {
+      "index": 4,
+      "id": "number-ready",
+      "shot": null,
+      "failures": [],
+      "eventCommands": [
+        {
+          "op": {
+            "kind": "eventCommand",
+            "trigger": {
+              "kind": "none"
+            },
+            "observe": [
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"runtime-input-number\"]",
+                "read": "present",
+                "equals": true
+              },
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"runtime-input-number-title\"]",
+                "read": "text",
+                "equals": "Code"
+              },
+              {
+                "source": "state",
+                "path": [
+                  "variables",
+                  "first"
+                ],
+                "equals": 91
+              },
+              {
+                "source": "state",
+                "path": [
+                  "variables",
+                  "answer"
+                ],
+                "equals": 92
+              }
+            ],
+            "timeoutMs": 15000
+          },
+          "status": "success",
+          "before": [
+            {
+              "value": true
+            },
+            {
+              "value": "Code"
+            },
+            {
+              "value": 91
+            },
+            {
+              "value": 92
+            }
+          ],
+          "after": [
+            {
+              "value": true
+            },
+            {
+              "value": "Code"
+            },
+            {
+              "value": 91
+            },
+            {
+              "value": 92
+            }
+          ],
+          "event": null,
+          "cleanup": {
+            "observer": true,
+            "timer": true,
+            "event": true,
+            "pagehide": true,
+            "abort": true
+          }
+        }
+      ],
+      "state": {
+        "currentMapId": "map_intro",
+        "x": 2,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null
+      }
+    },
+    {
+      "index": 5,
+      "id": "g1-f15",
+      "note": "Literal keys4,2,Enter write42 only to answer",
+      "shot": "06-g1-f15.png",
+      "failures": [],
+      "eventCommands": [
+        {
+          "op": {
+            "kind": "eventCommand",
+            "trigger": {
+              "kind": "key",
+              "key": "4"
+            },
+            "observe": [
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"runtime-input-number-field\"]",
+                "read": "property",
+                "name": "value",
+                "equals": "4"
+              }
+            ],
+            "timeoutMs": 15000
+          },
+          "status": "success",
+          "before": [
+            {
+              "value": ""
+            }
+          ],
+          "after": [
+            {
+              "value": "4"
+            }
+          ],
+          "event": null,
+          "cleanup": {
+            "observer": true,
+            "timer": true,
+            "event": true,
+            "pagehide": true,
+            "abort": true
+          }
+        },
+        {
+          "op": {
+            "kind": "eventCommand",
+            "trigger": {
+              "kind": "key",
+              "key": "2"
+            },
+            "observe": [
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"runtime-input-number-field\"]",
+                "read": "property",
+                "name": "value",
+                "equals": "42"
+              }
+            ],
+            "timeoutMs": 15000
+          },
+          "status": "success",
+          "before": [
+            {
+              "value": "4"
+            }
+          ],
+          "after": [
+            {
+              "value": "42"
+            }
+          ],
+          "event": null,
+          "cleanup": {
+            "observer": true,
+            "timer": true,
+            "event": true,
+            "pagehide": true,
+            "abort": true
+          }
+        },
+        {
+          "op": {
+            "kind": "eventCommand",
+            "trigger": {
+              "kind": "key",
+              "key": "Enter"
+            },
+            "observe": [
+              {
+                "source": "state",
+                "path": [
+                  "variables",
+                  "answer"
+                ],
+                "equals": 42
+              },
+              {
+                "source": "state",
+                "path": [
+                  "variables",
+                  "first"
+                ],
+                "equals": 91
+              },
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"dialogue-box\"].page-ready",
+                "read": "present",
+                "equals": true
+              },
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"dialogue-box\"] .body",
+                "read": "text",
+                "equals": "TIMER_READY"
+              }
+            ],
+            "timeoutMs": 15000
+          },
+          "status": "success",
+          "before": [
+            {
+              "value": 92
+            },
+            {
+              "value": 91
+            },
+            {
+              "value": false
+            },
+            {
+              "missing": true
+            }
+          ],
+          "after": [
+            {
+              "value": 42
+            },
+            {
+              "value": 91
+            },
+            {
+              "value": true
+            },
+            {
+              "value": "TIMER_READY"
+            }
+          ],
+          "event": null,
+          "cleanup": {
+            "observer": true,
+            "timer": true,
+            "event": true,
+            "pagehide": true,
+            "abort": true
+          }
+        }
+      ],
+      "state": {
+        "currentMapId": "map_intro",
+        "x": 2,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null
+      }
+    },
+    {
+      "index": 6,
+      "id": "g1-f13",
+      "note": "Authored set17 -> saved start-without-seconds -> stop retains17, not60; other timer stays9",
+      "shot": "07-g1-f13.png",
+      "failures": [],
+      "eventCommands": [
+        {
+          "op": {
+            "kind": "eventCommand",
+            "trigger": {
+              "kind": "none"
+            },
+            "observe": [
+              {
+                "source": "state",
+                "path": [
+                  "timers",
+                  "timer2"
+                ],
+                "equals": 17
+              },
+              {
+                "source": "state",
+                "path": [
+                  "timerActive",
+                  "timer2"
+                ],
+                "equals": false
+              },
+              {
+                "source": "state",
+                "path": [
+                  "timers",
+                  "timer1"
+                ],
+                "equals": 9
+              },
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"runtime-timer-hud\"]",
+                "read": "present",
+                "equals": true
+              }
+            ],
+            "timeoutMs": 15000
+          },
+          "status": "success",
+          "before": [
+            {
+              "value": 17
+            },
+            {
+              "value": false
+            },
+            {
+              "value": 9
+            },
+            {
+              "value": true
+            }
+          ],
+          "after": [
+            {
+              "value": 17
+            },
+            {
+              "value": false
+            },
+            {
+              "value": 9
+            },
+            {
+              "value": true
+            }
+          ],
+          "event": null,
+          "cleanup": {
+            "observer": true,
+            "timer": true,
+            "event": true,
+            "pagehide": true,
+            "abort": true
+          }
+        }
+      ],
+      "state": {
+        "currentMapId": "map_intro",
+        "x": 2,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null
+      }
+    },
+    {
+      "index": 7,
+      "id": "g1-f4",
+      "note": "Edited loop text renders its saved speaker/emotion. Only QA termination commands are appended after the untouched original children.",
+      "shot": "08-g1-f4.png",
+      "failures": [],
+      "eventCommands": [
+        {
+          "op": {
+            "kind": "eventCommand",
+            "trigger": {
+              "kind": "key",
+              "key": "z"
+            },
+            "observe": [
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"dialogue-speaker\"]",
+                "read": "text",
+                "equals": "Edited NPC"
+              },
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"dialogue-box\"]",
+                "read": "attribute",
+                "name": "data-dialogue-emotion",
+                "equals": "happy"
+              },
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"dialogue-box\"] .body",
+                "read": "text",
+                "equals": "Edited"
+              }
+            ],
+            "timeoutMs": 15000
+          },
+          "status": "success",
+          "before": [
+            {
+              "missing": true
+            },
+            {
+              "value": "neutral"
+            },
+            {
+              "value": "TIMER_READY"
+            }
+          ],
+          "after": [
+            {
+              "value": "Edited NPC"
+            },
+            {
+              "value": "happy"
+            },
+            {
+              "value": "Edited"
+            }
+          ],
+          "event": null,
+          "cleanup": {
+            "observer": true,
+            "timer": true,
+            "event": true,
+            "pagehide": true,
+            "abort": true
+          }
+        }
+      ],
+      "state": {
+        "currentMapId": "map_intro",
+        "x": 2,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null
+      }
+    },
+    {
+      "index": 8,
+      "id": "g1-f4-auto-advance",
+      "note": "No key: autoAdvance completes text, nested break exits only inner loop, QA marker and outer break execute",
+      "shot": "09-g1-f4-auto-advance.png",
+      "failures": [],
+      "eventCommands": [
+        {
+          "op": {
+            "kind": "eventCommand",
+            "trigger": {
+              "kind": "none"
+            },
+            "observe": [
+              {
+                "source": "state",
+                "path": [
+                  "flags",
+                  "u02-loop-completed"
+                ],
+                "equals": true
+              },
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"dialogue-box\"].page-ready",
+                "read": "present",
+                "equals": true
+              },
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"dialogue-box\"] .body",
+                "read": "text",
+                "equals": "AUTO_ADVANCED"
+              },
+              {
+                "source": "state",
+                "path": [
+                  "variables",
+                  "first"
+                ],
+                "equals": 91
+              },
+              {
+                "source": "state",
+                "path": [
+                  "timers",
+                  "timer2"
+                ],
+                "equals": 17
+              }
+            ],
+            "timeoutMs": 15000
+          },
+          "status": "success",
+          "before": [
+            {
+              "value": true
+            },
+            {
+              "value": false
+            },
+            {
+              "value": "AU"
+            },
+            {
+              "value": 91
+            },
+            {
+              "value": 17
+            }
+          ],
+          "after": [
+            {
+              "value": true
+            },
+            {
+              "value": true
+            },
+            {
+              "value": "AUTO_ADVANCED"
+            },
+            {
+              "value": 91
+            },
+            {
+              "value": 17
+            }
+          ],
+          "event": null,
+          "cleanup": {
+            "observer": true,
+            "timer": true,
+            "event": true,
+            "pagehide": true,
+            "abort": true
+          }
+        }
+      ],
+      "state": {
+        "currentMapId": "map_intro",
+        "x": 2,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null
+      }
+    }
+  ]
+}

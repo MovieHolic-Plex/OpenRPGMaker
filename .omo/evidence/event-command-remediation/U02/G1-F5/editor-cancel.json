@@ -1,0 +1,124 @@
+{
+  "id": "G1-F5",
+  "index": 0,
+  "confirm": {
+    "status": "success",
+    "before": [
+      {
+        "value": {
+          "kind": "fork",
+          "condition": {
+            "kind": "variable",
+            "variableId": "reward",
+            "op": ">=",
+            "value": 10
+          },
+          "then": [
+            {
+              "kind": "text",
+              "body": "THEN",
+              "speaker": "Then speaker",
+              "emotion": "happy"
+            }
+          ],
+          "else": [
+            {
+              "kind": "text",
+              "body": "ELSE",
+              "speaker": "Else speaker",
+              "autoAdvance": true
+            }
+          ]
+        }
+      }
+    ],
+    "after": [
+      {
+        "value": {
+          "kind": "fork",
+          "condition": {
+            "kind": "variable",
+            "variableId": "other",
+            "op": "<=",
+            "value": 50
+          },
+          "then": [
+            {
+              "kind": "text",
+              "body": "THEN",
+              "speaker": "Then speaker",
+              "emotion": "happy"
+            }
+          ],
+          "else": [
+            {
+              "kind": "text",
+              "body": "ELSE",
+              "speaker": "Else speaker",
+              "autoAdvance": true
+            }
+          ]
+        }
+      }
+    ],
+    "event": null,
+    "cleanup": {
+      "observer": true,
+      "timer": true,
+      "event": true,
+      "pagehide": true,
+      "abort": true
+    }
+  },
+  "saved": {
+    "kind": "fork",
+    "condition": {
+      "kind": "variable",
+      "variableId": "other",
+      "op": "<=",
+      "value": 50
+    },
+    "then": [
+      {
+        "kind": "text",
+        "body": "THEN",
+        "speaker": "Then speaker",
+        "emotion": "happy"
+      }
+    ],
+    "else": [
+      {
+        "kind": "text",
+        "body": "ELSE",
+        "speaker": "Else speaker",
+        "autoAdvance": true
+      }
+    ]
+  },
+  "reopened": true,
+  "canceled": true,
+  "unchangedAfterCancel": true,
+  "geometry": [
+    {
+      "width": 1024,
+      "overflow": false,
+      "top": 621.0166625976562,
+      "bottom": 653.0166625976562,
+      "height": 768
+    },
+    {
+      "width": 1280,
+      "overflow": false,
+      "top": 637.0166625976562,
+      "bottom": 669.0166625976562,
+      "height": 800
+    },
+    {
+      "width": 1440,
+      "overflow": false,
+      "top": 687.0166625976562,
+      "bottom": 719.0166625976562,
+      "height": 900
+    }
+  ]
+}

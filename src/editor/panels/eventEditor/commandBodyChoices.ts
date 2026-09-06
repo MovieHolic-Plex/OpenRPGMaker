@@ -1,5 +1,6 @@
 import type { ChoiceCancelBehavior, Command } from "@/project/types";
 import { el } from "@/util/dom";
+import { showAlert, showConfirm } from "@/editor/ui/modal";
 import type { CommandEditContext } from "./types";
 
 type ChoicesCommand = Extract<Command, { kind: "choices" }>;
@@ -122,14 +123,29 @@ function choiceOptionRow(
       click: () => {
         const latest = latestChoices(context, cmd);
         if (latest.options.length <= 1) return;
-        const nextOptions = latest.options.filter((_, optionIndex) => optionIndex !== index);
-        context.actions.replaceCommand(context.path, {
-          ...latest,
-          options: nextOptions.length ? nextOptions : [...DEFAULT_OPTIONS],
-          cancelBehavior: normalizeCancelBehavior(
-            latest.cancelBehavior ?? "choice2",
-            Math.max(1, nextOptions.length)
-          ),
+        const behavior = normalizeCancelBehavior(latest.cancelBehavior ?? "choice2", latest.options.length);
+        if (behavior === `choice${index + 1}`) {
+          void showAlert({ title: "취소 동작 변경", message: "이 선택지는 취소할 때 실행됩니다. 다른 취소 동작을 먼저 고른 뒤 삭제하세요." });
+          return;
+        }
+        const host = input.closest(".event-command-edit-body") ?? input.parentElement!.parentElement!;
+        const removeOption = (): void => {
+          const current = latestChoices(context, cmd);
+          const nextOptions = current.options.filter((_, optionIndex) => optionIndex !== index);
+          const destination = Number(behavior.slice("choice".length)) - 1;
+          context.actions.replaceCommand(context.path, {
+            ...current,
+            options: nextOptions,
+            cancelBehavior: destination > index ? `choice${destination}` as ChoiceCancelBehavior : behavior,
+          });
+          host.querySelector<HTMLElement>(`[data-testid="event-choice-option-${Math.min(index + 1, nextOptions.length)}"]`)?.focus();
+        };
+        if (latest.options[index]!.branch.length === 0) {
+          removeOption();
+          return;
+        }
+        void showConfirm({ title: "선택지 삭제", message: "선택지에 들어있는 명령도 삭제됩니다. 진행할까요?", danger: true }).then((confirmed) => {
+          if (confirmed) removeOption();
         });
       },
     },
@@ -160,7 +176,9 @@ function optionActionsRow(context: CommandEditContext, cmd: ChoicesCommand, coun
         },
         dataset: { testid: "event-choice-add" },
         on: {
-          click: () => {
+          click: (event) => {
+            const source = event.currentTarget as HTMLElement;
+            const host = source.closest(".event-command-edit-body") ?? source.parentElement!.parentElement!;
             const latest = latestChoices(context, cmd);
             if (latest.options.length >= MAX_CHOICE_OPTIONS) return;
             context.actions.replaceCommand(context.path, {
@@ -170,6 +188,7 @@ function optionActionsRow(context: CommandEditContext, cmd: ChoicesCommand, coun
                 { text: `선택지 ${latest.options.length + 1}`, branch: [] },
               ],
             });
+            host.querySelector<HTMLElement>(`[data-testid="event-choice-option-${latest.options.length + 1}"]`)?.focus();
           },
         },
       }),

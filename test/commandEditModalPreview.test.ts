@@ -523,13 +523,13 @@ describe("command edit modal — image-rich preview", () => {
     ).toBe(true);
   });
 
-  it("shouldRerenderCommandForm flags fork structure and loop body length", () => {
+  it("keeps locally owned condition and loop editors while rebuilding fork branches", () => {
     expect(
       shouldRerenderCommandForm(
         { kind: "fork", condition: { kind: "switch", switchId: "a", value: true }, then: [] },
         { kind: "fork", condition: { kind: "variable", variableId: "v", op: "==", value: 1 }, then: [] },
       ),
-    ).toBe(true);
+    ).toBe(false);
     expect(
       shouldRerenderCommandForm(
         { kind: "fork", condition: { kind: "switch", switchId: "a", value: true }, then: [] },
@@ -541,7 +541,7 @@ describe("command edit modal — image-rich preview", () => {
         { kind: "loop", body: [] },
         { kind: "loop", body: [{ kind: "text", body: "x" }] },
       ),
-    ).toBe(true);
+    ).toBe(false);
     expect(
       shouldRerenderCommandForm(
         { kind: "fork", condition: { kind: "switch", switchId: "a", value: true }, then: [] },

@@ -1,0 +1,7 @@
+cwd: /home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u02
+command: npm test -- test/eventCommandRemediation/U02.test.ts --maxWorkers=2 --reporter=verbose --reporter=json --outputFile=.omo/evidence/event-command-remediation/U02/red.json
+exit: 1
+results: 31 tests; 22 failed; 9 passed
+LSP diagnostics: no diagnostics found on both final test/fixture files
+sha256 0ff2e55598e825a8a2087167f6072f568b0ac930e10fbf1cd311c552db92a382  test/eventCommandRemediation/U02.test.ts
+sha256 158802411cce19852632914d25f1ba19392af1e3ae80dee84c2447a1edb4a201  test/eventCommandRemediation/U02.fixture.ts

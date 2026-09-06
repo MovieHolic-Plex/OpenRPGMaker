@@ -1,0 +1,109 @@
+{
+  "id": "G1-F4",
+  "index": 3,
+  "confirm": {
+    "status": "success",
+    "before": [
+      {
+        "value": {
+          "kind": "loop",
+          "body": [
+            {
+              "kind": "text",
+              "body": "Original",
+              "speaker": "NPC",
+              "emotion": "happy",
+              "autoAdvance": true
+            },
+            {
+              "kind": "loop",
+              "body": [
+                {
+                  "kind": "breakLoop"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "after": [
+      {
+        "value": {
+          "kind": "loop",
+          "body": [
+            {
+              "kind": "text",
+              "speaker": "Edited NPC",
+              "body": "Edited",
+              "emotion": "happy",
+              "autoAdvance": true
+            },
+            {
+              "kind": "loop",
+              "body": [
+                {
+                  "kind": "breakLoop"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "event": null,
+    "cleanup": {
+      "observer": true,
+      "timer": true,
+      "event": true,
+      "pagehide": true,
+      "abort": true
+    }
+  },
+  "saved": {
+    "kind": "loop",
+    "body": [
+      {
+        "kind": "text",
+        "speaker": "Edited NPC",
+        "body": "Edited",
+        "emotion": "happy",
+        "autoAdvance": true
+      },
+      {
+        "kind": "loop",
+        "body": [
+          {
+            "kind": "breakLoop"
+          }
+        ]
+      }
+    ]
+  },
+  "reopened": true,
+  "canceled": true,
+  "unchangedAfterCancel": true,
+  "geometry": [
+    {
+      "width": 1024,
+      "overflow": false,
+      "top": 553.5,
+      "bottom": 585.5,
+      "height": 768
+    },
+    {
+      "width": 1280,
+      "overflow": false,
+      "top": 569.5,
+      "bottom": 601.5,
+      "height": 800
+    },
+    {
+      "width": 1440,
+      "overflow": false,
+      "top": 619.5,
+      "bottom": 651.5,
+      "height": 900
+    }
+  ]
+}

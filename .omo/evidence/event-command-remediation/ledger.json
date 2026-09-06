@@ -71,7 +71,7 @@
         "native:loop",
         "m2:m2-083-loop"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "unit": "U02",
       "red": [],
       "green": [],
@@ -86,7 +86,7 @@
         "native:fork",
         "m2:m2-080-conditional-branch"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "unit": "U02",
       "red": [],
       "green": [],
@@ -237,7 +237,7 @@
         "native:timer",
         "m2:m2-008-control-timer"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "unit": "U02",
       "red": [],
       "green": [],
@@ -252,7 +252,7 @@
         "native:choices",
         "m2:m2-004-show-choices"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "unit": "U02",
       "red": [],
       "green": [],
@@ -267,7 +267,7 @@
         "native:inputNumber",
         "m2:m2-005-input-number"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "unit": "U02",
       "red": [],
       "green": [],
@@ -345,13 +345,23 @@
         "native:transfer",
         "m2:m2-035-transfer-player"
       ],
-      "status": "pending",
+      "status": "resolved",
       "unit": "U03",
-      "red": [],
-      "green": [],
-      "surface": [],
-      "commits": [],
-      "resolution": null
+      "red": [
+        ".omo/evidence/event-command-remediation/U03/red.json"
+      ],
+      "green": [
+        ".omo/evidence/event-command-remediation/U03/green.log",
+        "supervisor: 13/13 related tests"
+      ],
+      "surface": [
+        ".omo/evidence/event-command-remediation/U03/manifest.json",
+        ".omo/evidence/event-command-remediation/U03/supervisor.json"
+      ],
+      "commits": [
+        "69d77ffeb3c1e2e440409342f3450753cae859b3"
+      ],
+      "resolution": "A→B→A and direction edits preserve destination and transition. Supervisor real editor Confirm/Apply/reopen/import/Cancel and player landing/direction pass; owned resources cleaned."
     },
     "G1-F21": {
       "title": "이름 재입력에 현재 이름 대신 DB 이름을 채운다",
@@ -844,7 +854,7 @@
         "m2:m2-051-show-picture",
         "native:showPicture"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "unit": "U04",
       "red": [],
       "green": [],
@@ -1383,7 +1393,7 @@
       "commandIds": [
         "native:playMovie"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "unit": "U04",
       "red": [],
       "green": [],

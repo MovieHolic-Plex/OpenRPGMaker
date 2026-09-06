@@ -813,6 +813,7 @@ function forkBody(context: CommandEditContext, cmd: Extract<Command, { kind: "fo
     dataset: { testid: "event-command-fork-form" },
   });
 
+  const evaluation = el("div", { children: [renderConditionEvalPreview(cmd.condition)] });
   const conditionSection = el("section", {
     class: "event-fork-section event-fork-condition-section",
     children: [
@@ -823,6 +824,7 @@ function forkBody(context: CommandEditContext, cmd: Extract<Command, { kind: "fo
       }),
       conditionForm(cmd.condition, (condition) => {
         context.actions.replaceCommand(context.path, { ...latestFork(), condition });
+        evaluation.replaceChildren(renderConditionEvalPreview(condition));
       }),
     ],
   });
@@ -839,7 +841,9 @@ function forkBody(context: CommandEditContext, cmd: Extract<Command, { kind: "fo
       return;
     }
     const dropElseBranch = (): void => {
-      context.actions.replaceCommand(context.path, { kind: "fork", condition: latest.condition, then: latest.then });
+      const next = { ...latestFork() };
+      delete next.else;
+      context.actions.replaceCommand(context.path, next);
     };
     if ((latest.else?.length ?? 0) === 0) {
       dropElseBranch();
@@ -891,7 +895,7 @@ function forkBody(context: CommandEditContext, cmd: Extract<Command, { kind: "fo
           }),
         ],
       }),
-      renderConditionEvalPreview(cmd.condition),
+      evaluation,
     ],
   });
 
@@ -1172,18 +1176,41 @@ function timerBody(context: CommandEditContext, cmd: Extract<Command, { kind: "t
     value: String(cmd.seconds ?? 60),
     dataset: { testid: "event-command-timer-seconds" },
   }) as HTMLInputElement;
+  const startMode = selectWithOptions([
+    { value: "resume", label: "남은 시간 이어서" },
+    { value: "restart", label: "지정한 시간부터" },
+  ] as const, cmd.seconds === undefined ? "resume" : "restart", "event-command-timer-start-mode");
+  const startField = fieldControl("시작 방식", startMode);
+  const secondsField = fieldControl("몇 초", secs);
+  const sync = (): void => {
+    startField.hidden = action.value !== "start";
+    secondsField.hidden = action.value === "stop" || (action.value === "start" && startMode.value === "resume");
+    secs.disabled = secondsField.hidden;
+    // The inline-field display rule overrides the UA [hidden] presentation.
+    startField.style.display = startField.hidden ? "none" : "";
+    secondsField.style.display = secondsField.hidden ? "none" : "";
+  };
   const apply = () => {
-    context.actions.replaceCommand(context.path, {
-      kind: "timer",
+    const current = context.getCurrentCommand?.();
+    const next = {
+      ...(current?.kind === "timer" ? current : cmd),
       action: selectedOptionValue(action, TIMER_ACTION_OPTIONS, cmd.action),
-      seconds: parseInt(secs.value, 10) || 0,
       timerId: selectedOptionValue(timerId, TIMER_ID_OPTIONS, cmd.timerId ?? "timer1"),
-    });
+    };
+    if (next.action === "set" || (next.action === "start" && startMode.value === "restart")) {
+      next.seconds = Math.max(0, parseInt(secs.value, 10) || 0);
+    } else if (next.action === "start") {
+      delete next.seconds;
+    }
+    context.actions.replaceCommand(context.path, next);
+    sync();
   };
   action.addEventListener("change", apply);
+  startMode.addEventListener("change", apply);
   timerId.addEventListener("change", apply);
   secs.addEventListener("change", apply);
-  wrap.append(fieldControl("무엇을", action), fieldControl("타이머", timerId), fieldControl("몇 초", secs));
+  sync();
+  wrap.append(fieldControl("무엇을", action), fieldControl("타이머", timerId), startField, secondsField);
   return wrap;
 }
 

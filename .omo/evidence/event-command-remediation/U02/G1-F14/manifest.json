@@ -1,0 +1,105 @@
+{
+  "findingID": "G1-F14",
+  "status": "green",
+  "red": {
+    "base": "c66f5a8ac2f61005833783807c40477d045b2b35",
+    "artifact": "../red-G1-F14.json",
+    "counts": {
+      "failed": 4,
+      "passed": 1
+    }
+  },
+  "green": {
+    "tests": 6,
+    "passed": 6,
+    "failed": 0,
+    "artifact": "../green-unit.json",
+    "testNames": [
+      "G1-F14 asks before deleting a nonempty branch and preserves the draft pending consent",
+      "G1-F14 deleting an empty predecessor keeps cancel destination B and branch bytes",
+      "G1-F14 removing an empty row restores focus to the adjacent surviving text input",
+      "G1-F14 deleting the cancel destination does not silently retarget another branch",
+      "G1-F14 keeps inactive cancel-branch bytes and enforces five options",
+      "G1-F14 cancel consent retains A; accept removes only A and focuses B"
+    ]
+  },
+  "editor": {
+    "status": "passed",
+    "artifact": "editor-cancel.json",
+    "confirmApply": "success",
+    "reopened": true,
+    "canceledWithoutMutation": true,
+    "exportReimport": true,
+    "viewports": [
+      [
+        1024,
+        768
+      ],
+      [
+        1280,
+        800
+      ],
+      [
+        1440,
+        900
+      ]
+    ],
+    "saved": {
+      "kind": "choices",
+      "prompt": "Choose",
+      "cancelBehavior": "choice1",
+      "options": [
+        {
+          "text": "B",
+          "branch": [
+            {
+              "kind": "text",
+              "body": "MARKER_B",
+              "speaker": "B",
+              "autoAdvance": true
+            }
+          ]
+        },
+        {
+          "text": "C",
+          "branch": [
+            {
+              "kind": "text",
+              "body": "MARKER_C",
+              "speaker": "C",
+              "autoAdvance": true
+            }
+          ]
+        }
+      ],
+      "cancelBranch": [
+        {
+          "kind": "text",
+          "body": "INACTIVE_CANCEL",
+          "emotion": "happy"
+        }
+      ]
+    }
+  },
+  "player": {
+    "status": "passed",
+    "artifact": "../player/manifest.json",
+    "beats": [
+      "g1-f14"
+    ],
+    "observationCleanup": true
+  },
+  "retained": [
+    "surviving option branch bytes",
+    "cancel destination identity",
+    "inactive cancelBranch",
+    "prompt",
+    "source on canceled consent/parent Cancel"
+  ],
+  "cleanup": {
+    "artifact": "../cleanup.log",
+    "browserContexts": "closed",
+    "servers": "closed",
+    "temporaryFixturesAndCaches": "removed"
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "findingID": "G1-F15",
+  "status": "green",
+  "red": {
+    "base": "c66f5a8ac2f61005833783807c40477d045b2b35",
+    "artifact": "../red-G1-F15.json",
+    "counts": {
+      "failed": 4,
+      "passed": 3
+    }
+  },
+  "green": {
+    "tests": 7,
+    "passed": 7,
+    "failed": 0,
+    "artifact": "../green-unit.json",
+    "testNames": [
+      "G1-F15 rendering an empty destination never stages the first variable",
+      "G1-F15 Confirm blocks unresolved destination \"\" without applying",
+      "G1-F15 Confirm blocks unresolved destination \"deleted-variable\" without applying",
+      "G1-F15 an empty variable catalog cannot be confirmed",
+      "G1-F15 explicit answer survives prompt, digits, keypad, parser and input resume",
+      "G1-F15 Cancel with an unresolved destination never applies a command",
+      "G1-F15 scoped validation must keep the existing weighted-branch guard"
+    ]
+  },
+  "editor": {
+    "status": "passed",
+    "artifact": "editor-cancel.json",
+    "confirmApply": "success",
+    "reopened": true,
+    "canceledWithoutMutation": true,
+    "exportReimport": true,
+    "viewports": [
+      [
+        1024,
+        768
+      ],
+      [
+        1280,
+        800
+      ],
+      [
+        1440,
+        900
+      ]
+    ],
+    "saved": {
+      "kind": "inputNumber",
+      "variableId": "answer",
+      "digits": 3,
+      "prompt": "Code"
+    }
+  },
+  "player": {
+    "status": "passed",
+    "artifact": "../player/manifest.json",
+    "beats": [
+      "g1-f15"
+    ],
+    "observationCleanup": true,
+    "adversarial": "../player/wrong-target.json (first42 rejected; actual91)"
+  },
+  "retained": [
+    "explicit variable target",
+    "prompt",
+    "digits",
+    "showPad semantics",
+    "other variable first=91",
+    "source on Cancel"
+  ],
+  "cleanup": {
+    "artifact": "../cleanup.log",
+    "browserContexts": "closed",
+    "servers": "closed",
+    "temporaryFixturesAndCaches": "removed"
+  }
+}

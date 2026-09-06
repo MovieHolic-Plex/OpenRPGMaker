@@ -1,0 +1,245 @@
+{
+  "sourceEditorFile": "/tmp/u02-qa-AMNzG1/editor-saved.json",
+  "savedCommands": [
+    {
+      "kind": "fork",
+      "condition": {
+        "kind": "variable",
+        "variableId": "other",
+        "op": "<=",
+        "value": 50
+      },
+      "then": [
+        {
+          "kind": "text",
+          "body": "THEN",
+          "speaker": "Then speaker",
+          "emotion": "happy"
+        }
+      ],
+      "else": [
+        {
+          "kind": "text",
+          "body": "ELSE",
+          "speaker": "Else speaker",
+          "autoAdvance": true
+        }
+      ]
+    },
+    {
+      "kind": "choices",
+      "prompt": "Choose",
+      "cancelBehavior": "choice1",
+      "options": [
+        {
+          "text": "B",
+          "branch": [
+            {
+              "kind": "text",
+              "body": "MARKER_B",
+              "speaker": "B",
+              "autoAdvance": true
+            }
+          ]
+        },
+        {
+          "text": "C",
+          "branch": [
+            {
+              "kind": "text",
+              "body": "MARKER_C",
+              "speaker": "C",
+              "autoAdvance": true
+            }
+          ]
+        }
+      ],
+      "cancelBranch": [
+        {
+          "kind": "text",
+          "body": "INACTIVE_CANCEL",
+          "emotion": "happy"
+        }
+      ]
+    },
+    {
+      "kind": "timer",
+      "action": "start",
+      "timerId": "timer2"
+    },
+    {
+      "kind": "loop",
+      "body": [
+        {
+          "kind": "text",
+          "speaker": "Edited NPC",
+          "body": "Edited",
+          "emotion": "happy",
+          "autoAdvance": true
+        },
+        {
+          "kind": "loop",
+          "body": [
+            {
+              "kind": "breakLoop"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "inputNumber",
+      "variableId": "answer",
+      "digits": 3,
+      "prompt": "Code"
+    }
+  ],
+  "runtimeCommands": [
+    {
+      "kind": "fork",
+      "condition": {
+        "kind": "variable",
+        "variableId": "other",
+        "op": "<=",
+        "value": 50
+      },
+      "then": [
+        {
+          "kind": "text",
+          "body": "THEN",
+          "speaker": "Then speaker",
+          "emotion": "happy"
+        }
+      ],
+      "else": [
+        {
+          "kind": "text",
+          "body": "ELSE",
+          "speaker": "Else speaker",
+          "autoAdvance": true
+        }
+      ]
+    },
+    {
+      "kind": "choices",
+      "prompt": "Choose",
+      "cancelBehavior": "choice1",
+      "options": [
+        {
+          "text": "B",
+          "branch": [
+            {
+              "kind": "text",
+              "body": "MARKER_B",
+              "speaker": "B",
+              "autoAdvance": true
+            }
+          ]
+        },
+        {
+          "text": "C",
+          "branch": [
+            {
+              "kind": "text",
+              "body": "MARKER_C",
+              "speaker": "C",
+              "autoAdvance": true
+            }
+          ]
+        }
+      ],
+      "cancelBranch": [
+        {
+          "kind": "text",
+          "body": "INACTIVE_CANCEL",
+          "emotion": "happy"
+        }
+      ]
+    },
+    {
+      "kind": "inputNumber",
+      "variableId": "answer",
+      "digits": 3,
+      "prompt": "Code"
+    },
+    {
+      "kind": "timer",
+      "action": "set",
+      "timerId": "timer1",
+      "seconds": 9
+    },
+    {
+      "kind": "timer",
+      "action": "set",
+      "timerId": "timer2",
+      "seconds": 17
+    },
+    {
+      "kind": "timer",
+      "action": "start",
+      "timerId": "timer2"
+    },
+    {
+      "kind": "timer",
+      "action": "stop",
+      "timerId": "timer2"
+    },
+    {
+      "kind": "text",
+      "body": "TIMER_READY"
+    },
+    {
+      "kind": "loop",
+      "body": [
+        {
+          "kind": "text",
+          "speaker": "Edited NPC",
+          "body": "Edited",
+          "emotion": "happy",
+          "autoAdvance": true
+        },
+        {
+          "kind": "loop",
+          "body": [
+            {
+              "kind": "breakLoop"
+            }
+          ]
+        },
+        {
+          "kind": "setFlag",
+          "flag": "u02-loop-completed",
+          "value": true
+        },
+        {
+          "kind": "breakLoop"
+        }
+      ]
+    },
+    {
+      "kind": "text",
+      "body": "AUTO_ADVANCED"
+    }
+  ],
+  "note": "QA-only authored timer setup, stable text barrier and appended outer-loop termination; original saved children and command payloads retained.",
+  "inputs": "Enter boot; face up; Z fork; Z choices; Escape B; keys4,2,Enter input; Z loop; no-input automatic completion",
+  "pass": {
+    "fork": "THEN",
+    "cancel": "MARKER_B",
+    "answer": 42,
+    "first": 91,
+    "timer2": 17,
+    "timer1": 9,
+    "timerActive2": false,
+    "speaker": "Edited NPC",
+    "emotion": "happy",
+    "loopCompleted": true
+  },
+  "reject": {
+    "forkOther5": "ELSE",
+    "cancel": "MARKER_C",
+    "first": 42,
+    "timer2": 60,
+    "speaker": "NPC"
+  }
+}

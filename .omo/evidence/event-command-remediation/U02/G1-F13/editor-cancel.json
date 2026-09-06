@@ -1,0 +1,64 @@
+{
+  "id": "G1-F13",
+  "index": 2,
+  "confirm": {
+    "status": "success",
+    "before": [
+      {
+        "value": {
+          "kind": "timer",
+          "action": "start",
+          "timerId": "timer1"
+        }
+      }
+    ],
+    "after": [
+      {
+        "value": {
+          "kind": "timer",
+          "action": "start",
+          "timerId": "timer2"
+        }
+      }
+    ],
+    "event": null,
+    "cleanup": {
+      "observer": true,
+      "timer": true,
+      "event": true,
+      "pagehide": true,
+      "abort": true
+    }
+  },
+  "saved": {
+    "kind": "timer",
+    "action": "start",
+    "timerId": "timer2"
+  },
+  "reopened": true,
+  "canceled": true,
+  "unchangedAfterCancel": true,
+  "geometry": [
+    {
+      "width": 1024,
+      "overflow": false,
+      "top": 434.5,
+      "bottom": 466.5,
+      "height": 768
+    },
+    {
+      "width": 1280,
+      "overflow": false,
+      "top": 450.5,
+      "bottom": 482.5,
+      "height": 800
+    },
+    {
+      "width": 1440,
+      "overflow": false,
+      "top": 500.5,
+      "bottom": 532.5,
+      "height": 900
+    }
+  ]
+}

@@ -6,7 +6,7 @@ Hostile-review fixes for event command forms: fork/loop rerender, setSwitch valu
 
 
 
-- `shouldRerenderCommandForm` rebuilds the edit dialog for fork condition kind / else presence / branch lengths and loop body length.
+- `shouldRerenderCommandForm` rebuilds fork forms when else presence or branch lengths change. Condition editors own kind/query changes and their local inactive drafts; loop editors own their child-list structure. Ordinary edits do not remount these forms.
 - Fork/loop mini-lists call `rerender()` after add/delete so the staged UI matches `replaceCommand`.
 - Main command list expands `loop` body with `: 반복 ?댁슜` markers (path uses `LOOP_BODY_BRANCH_INDEX`).
 - **?뚮━ ?ъ깮 () form** (): channel chips BGM/SE, searchable resource list (CC0 + EasyRPG), live meta, **誘몃━ ?ｊ린/?뺤?**, catalog browse. MIDI BGM marked non-playable in browser. Play audio exposes BGM vs SE channel select + resource picker; show picture has picture resource picker.
@@ -21,6 +21,15 @@ Hostile-review fixes for event command forms: fork/loop rerender, setSwitch valu
 - **?꾪닾 而ㅻ㎤??蹂寃?(`m2-092`) UX+?고???(2026-07-17):** ?꾩슜 ??????뚰떚/二쇱씤怨?쨌 조작 異붽?/?쒓굅/목�줉?ㅼ젙 쨌 而ㅻ㎤??카드 쨌 메뉴 諛??꾨━酉?. ?몄뀡 `actorBattleCommands` ?ㅻ쾭?쇱씠??+ `battleCommandsForActor({ overrideCommandIds })` + ?몄씠釉??뺣났. runtime-full. ?뚯뒪?? `test/changeBattleCommandsCommandBody.test.ts`. ?뚮옖: `docs/battle-command-ux-plan.html`.
 - **?꾩씠??蹂寃?(`changeItem`) 개수 蹂??(2026-07-17):** `amount` ?숈씪?섍쾶 `VariableOperand`. ?쇱? ?꾩씠???쎌빱 + ?곗궛 + 개수 ?뚯뒪(?レ옄/蹂?? + 蹂???쇱빱 + ?쒖옉 ?몃깽?좊━ ?????꾨━酉? ?고??꽷룹쟾???대깽?맞톝hape/李몄“/rename ?ы븿. ?뚯뒪?? `test/changeItemCommandBody.test.ts`.
 - **Page 3 留돠룹뿰異?forms (2026-07-17):** picker page 3 M2 titles (location/vehicle, screen tint쨌flash쨌shake, scroll, weather, picture, animation, tileset/parallax, encounter rate, key input) use real catalog field specs keyed to `m2Runtime` / `commandCatalog` (no generic `operation` on Tint/Flash/Weather). Rich shells root with `page3-command-body` (+ optional `actor-m2-command-body`), two-column intent/main + preview stage (weather/lighting/tint/flash/shake/picture helpers in `event-editor-rich-forms.css`). Native extras (`setLighting`/`addLight`/`removeLight`/`setWeather`/`showAnimation`/picture/tile) follow the same layout. Catalog remains backward compatible (extra fields ok; existing native kinds still map via `existingKind`).
+
+## Nested command drafts and branch identity (2026-09-06, U02)
+
+- Loop edits patch the current staged body, preserving unrelated children and text speaker/emotion/autoAdvance. Every child can open the full command editor; child Cancel and parent Cancel leave their respective source unchanged. Break detection stops at nested loops, whose breaks cannot exit their parent.
+- Condition target changes retain current comparison/value/present controls, including all/any/not rows. Mode drafts belong to each mounted condition editor, not a module-global cache. Fork evaluation updates without remounting leaf controls.
+- Deleting a choice before the cancel destination adjusts its one-based index to retain the same branch. Nonempty branch deletion asks for consent. Deleting the cancel destination requires another cancel policy first. Add/delete restores adjacent focus; inactive cancel-branch bytes remain intact.
+- Timer start without seconds resumes remaining time. The start-mode control distinguishes resume from restart and preserves the inactive seconds draft. Stop hides/disables seconds; explicit restart 0 and 60 retain their meanings.
+- Input Number never picks a variable during render. Its scoped `event-command-validate` hook blocks Confirm for empty/missing destinations and focuses the picker, supplementing the weighted-branch guard. Empty destination is an unsaved factory draft, not a valid imported reference.
+- Tests: `test/eventCommandRemediation/U02.test.ts`, `test/e2e/event-command-remediation-U02.spec.ts`, and `scripts/qa/runtime/event-command-remediation-u02.scenario.mjs`. Evidence: `.omo/evidence/event-command-remediation/U02/` and `U02-supervisor/`. The player recipe uses explicit QA setup/termination around preserved editor-confirmed payloads.
 
 ## Page 3 canonical fields and staged commits (2026-07-30)
 - Rich Page 3 forms, `m2Catalog`, summaries, and runtime now share these canonical fields: Move to Variable Location = `mapVariableId` / `xVariableId` / `yVariableId`; Get On/Off Vehicle = `boarded`; Set Vehicle Location = `vehicle` / `mapId` / `x` / `y`; Swap Event Location = `eventA` / `eventB`.

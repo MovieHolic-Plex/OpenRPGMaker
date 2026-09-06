@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "unit": "U02",
+  "task": "st_01a0763a",
+  "status": "green_with_preexisting_related_test_failure",
+  "source_head": "b52cefd54cc39205b5b138b3e6ac2d3a0166e5b9",
+  "red_base": "c66f5a8ac2f61005833783807c40477d045b2b35",
+  "H0": "b52cefd5 (application inputs unchanged from RED)",
+  "source_sha256": {
+    "src/editor/panels/eventEditor/commandBodyLoop.ts": "b70cc259ef1d78ec53dedb307b437fe746d4bd839d64930f36c26e9d052d6e9e",
+    "src/editor/panels/eventEditor/conditionForm.ts": "034985353ccd83cc788e282adef1b811d8bbf29dffaa6eee23b578e9b6726172",
+    "src/editor/panels/eventEditor/commandBodyCore.ts": "63e956b86933d0991eed0706d46c84e570503de04f3301d0311a04a84304ff3b",
+    "src/editor/panels/eventEditor/commandBodyChoices.ts": "6a3e99c0aa046682b4c49b7f9c8be6f3574312e837958c0a21e02bf4e9176b70",
+    "src/editor/panels/eventEditor/commandBodyInputNumber.ts": "ab3f75aa787b3e9166ec09690ca46182def57baeb178465508ba43c401d1452e",
+    "src/editor/panels/eventEditor/commandEditDialog.ts": "d12831d53cc31df44bd3cd49d807bdc2ea5393dcb61c931f96ad5ce8261a1d26",
+    "test/eventCommandRemediation/U02.test.ts": "9fb7c5d4e8333e35682a98ba9ba85b815aa902e26ca3086b3403fa689408ffc2",
+    "test/eventCommandRemediation/U02.fixture.ts": "b76ffc4df1f31b6005ad722f06c49de889964ffe3e6fe99ba86b0c44fd334e64",
+    "test/e2e/event-command-remediation-U02.spec.ts": "872090e7d8f6b6488f36ead25a7875a031d68cc1f62b1dcdb933ec969ce0b1c5",
+    "scripts/qa/runtime/event-command-remediation-u02.scenario.mjs": "2493bdd2ff3ebfcb1cc335513b0cce261be6f7295780fddf3b84099b84e45ba8"
+  },
+  "source_patch_sha256": "25e8c4f1030a5c65e053fd5fa56afb562b18df7566fdb9b953d4d823ae75654d",
+  "findings": [
+    {
+      "id": "G1-F4",
+      "status": "green",
+      "manifest": "G1-F4/manifest.json"
+    },
+    {
+      "id": "G1-F5",
+      "status": "green",
+      "manifest": "G1-F5/manifest.json"
+    },
+    {
+      "id": "G1-F13",
+      "status": "green",
+      "manifest": "G1-F13/manifest.json"
+    },
+    {
+      "id": "G1-F14",
+      "status": "green",
+      "manifest": "G1-F14/manifest.json"
+    },
+    {
+      "id": "G1-F15",
+      "status": "green",
+      "manifest": "G1-F15/manifest.json"
+    }
+  ],
+  "verification": [
+    {
+      "command": "npm test -- test/eventCommandRemediation/U02.test.ts test/eventEditorStagedState.test.ts test/forkCommandBody.test.ts test/commandContracts/loop.contract.test.ts test/commandContracts/timer.contract.test.ts --maxWorkers=2 --reporter=verbose --reporter=json --outputFile=.omo/evidence/event-command-remediation/U02/green-unit.json",
+      "exit": 1,
+      "result": "37/37 U02 and 32/33 adjacent pass. One pre-existing obsolete weighted selector fails; not suppressed.",
+      "artifact": "green-unit.log.gz"
+    },
+    {
+      "command": "git archive b52cefd5 src test scripts package.json tsconfig.json tsconfig.app.json vitest.config.ts vite.config.ts -> disposable /tmp snapshot; npm test -- test/eventEditorStagedState.test.ts --maxWorkers=2",
+      "exit": 1,
+      "result": "Same failure at line281 on untouched base; 13/14 pass; snapshot removed.",
+      "artifact": "baseline-related.log.gz"
+    },
+    {
+      "command": "npm test -- test/weightedBranchUx.test.ts --maxWorkers=2",
+      "exit": 0,
+      "result": "19/19 pass",
+      "artifact": "weighted-guard.log.gz"
+    },
+    {
+      "command": "U02_STANDALONE=1 U02_PLAYER=1 bun test/e2e/event-command-remediation-U02.spec.ts",
+      "exit": 0,
+      "result": "Firefox editor all five IDs, nested conditions, three viewports, real file import; Node/Chromium dedicated player all five IDs plus adversarial checks.",
+      "artifact": "surface-run.log"
+    },
+    {
+      "command": "node scripts/qa/runtime/event-command-remediation-u02.scenario.mjs .omo/evidence/event-command-remediation/U02/editor-saved.json",
+      "exit": 0,
+      "result": "Independent dedicated-player proof",
+      "artifact": "player-run.log"
+    },
+    {
+      "command": "node node_modules/vite-node/vite-node.mjs --script scripts/prepare-event-command-remediation.mts U02 /tmp/u02-fixture-dxqBFJ",
+      "exit": 0,
+      "result": "Real serializer roundtrip; temporary fixture removed",
+      "artifact": "fixture-green.log"
+    },
+    {
+      "command": "TypeScript compiler API, repository tsconfig, syntactic+semantic diagnostics on nine changed TS files (no emit); node --check scripts/qa/runtime/event-command-remediation-u02.scenario.mjs",
+      "exit": 0,
+      "result": "0 changed-file TypeScript diagnostics; JS syntax valid",
+      "artifact": "types-final.log"
+    },
+    {
+      "command": "lsp_diagnostics on all ten changed TS/JS files; git diff --check; owned resource absence checks",
+      "exit": 0,
+      "result": "LSP no diagnostics; stronger TS API caught and resolved two proof-script errors; whitespace and cleanup clean",
+      "artifact": "cleanup.log"
+    }
+  ],
+  "preexisting_failure": {
+    "file": "test/eventEditorStagedState.test.ts:281",
+    "observation": "weighted-branch-weight-0 missing after ed276cd5 percentage redesign",
+    "untouched_base_reproduction": "baseline-related.log.gz",
+    "scope": "Outside allowed U02 files; not changed. Lead should update this stale test to weighted-branch-chance-0 and percentage table semantics, preserving stagedBetweenEdits assertion."
+  },
+  "wiki_amendment": "wiki-amendment.md",
+  "commit_receipt": "commit-receipt.json (written after atomic commit)",
+  "corrections": [
+    "F5 other40 makes both predicates true; additional real-player other5 discriminator proves <=50.",
+    "Input Number empty target must be an unsaved factory draft entered through real picker; saved empty references fail import.",
+    "Timer hidden label CSS defect discovered by browser and fixed locally in timerBody; surface-timer-red.log retained.",
+    "Bun-hosted player Vite did not reach title; final orchestration uses H0 ordinary Node player process.",
+    "Player recipe records explicit QA-only timer setup, text barrier and loop termination; original saved command fields/nested children retained.",
+    "RED prep corrected invalid comment fixture, session-restored catalog and happy-dom label MouseEvent quirk before authoritative red.json."
+  ],
+  "limits": [
+    "No common/troop claim: assigned scenarios proved map hosts and full nested command dialogs.",
+    "Empty/missing target rejection and explicit restart0/60 include unit+parser seams; the runtime proves saved resume and input destination.",
+    "Screenshots captured and geometry checked; model image input unavailable, so no visual pixel-review claim.",
+    "No full suite, broad build, shared wiki/Design/snapshot edits, package installs, remote DB writes, push, PR, merge or rebase."
+  ],
+  "cleanup": {
+    "editor": "editor-cleanup.json",
+    "player": "player-cleanup.json",
+    "receipt": "cleanup.log",
+    "diskMirrors": "owned output/ai-activity and output/edit-activity removed",
+    "screenshots": "ignored, hash-listed in artifacts.json"
+  },
+  "raw_log_archives": {
+    "red.log": {
+      "archive": "red.log.gz",
+      "sha256_uncompressed": "650f3ad34bac2eb7403b5d33171f6a26134b19370300c7aed6e3c7294b7d3c89",
+      "reason": "Byte-exact terminal output preserved; raw files remain ignored locally. gzip -dc ARCHIVE reproduces the original log."
+    },
+    "green-unit.log": {
+      "archive": "green-unit.log.gz",
+      "sha256_uncompressed": "40fd5e34f5eb62a505d010b6d36658b805a7940793506cef65c36323f864ec41",
+      "reason": "Byte-exact terminal output preserved; raw files remain ignored locally. gzip -dc ARCHIVE reproduces the original log."
+    },
+    "baseline-related.log": {
+      "archive": "baseline-related.log.gz",
+      "sha256_uncompressed": "32ec78f1458b5c89c1a368f0a8b3630e5be47a0ef7d7b666d286863c985816eb",
+      "reason": "Byte-exact terminal output preserved; raw files remain ignored locally. gzip -dc ARCHIVE reproduces the original log."
+    },
+    "weighted-guard.log": {
+      "archive": "weighted-guard.log.gz",
+      "sha256_uncompressed": "c1f75fd15bea6a8f9245ab43528d9a2160f8baa839577725d04c6d5ea6a6cd65",
+      "reason": "Byte-exact terminal output preserved; raw files remain ignored locally. gzip -dc ARCHIVE reproduces the original log."
+    }
+  }
+}

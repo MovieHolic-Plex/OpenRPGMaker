@@ -258,7 +258,6 @@ describe("event command staged-state regressions", () => {
   });
 
   it("keeps consecutive Weighted Branch edits on the latest staged command", () => {
-    const resultVariableId = store.getCurrent().variables[0]?.id ?? "var_result";
     const initial: M2Command = {
       kind: "m2Command",
       commandId: "m2-211-weighted-branch",
@@ -278,11 +277,11 @@ describe("event command staged-state regressions", () => {
       ...afterLabel,
       fields: { ...afterLabel.fields, stagedBetweenEdits: "keep" },
     });
-    change(findByTestId(body, "weighted-branch-weight-0"), "3");
+    change(findByTestId(body, "weighted-branch-chance-0"), "75");
 
     expect(staged.current()).toMatchObject({
       fields: {
-        table: "대성공=3\n실패=1",
+        table: "대성공=75\n실패=25",
         stagedBetweenEdits: "keep",
       },
     });

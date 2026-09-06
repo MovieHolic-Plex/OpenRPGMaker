@@ -1,0 +1,99 @@
+{
+  "finding": "G1-F15",
+  "base": "c66f5a8ac2f61005833783807c40477d045b2b35",
+  "sourceReport": "red.json",
+  "counts": {
+    "failed": 4,
+    "passed": 3
+  },
+  "assertionResults": [
+    {
+      "ancestorTitles": [
+        "U02 G1-F15 explicit input-number destination and scoped Confirm validity"
+      ],
+      "fullName": "U02 G1-F15 explicit input-number destination and scoped Confirm validity G1-F15 rendering an empty destination never stages the first variable",
+      "status": "failed",
+      "title": "G1-F15 rendering an empty destination never stages the first variable",
+      "duration": 139.43638700000156,
+      "failureMessages": [
+        "AssertionError: expected \"spy\" to not be called at all, but actually been called 1 times\u001b[90m\n\nReceived: \n\n\u001b[1m  1st spy call:\n\n\u001b[22m    Array [\n      Array [],\n      Object {\n        \"digits\": 2,\n        \"kind\": \"inputNumber\",\n        \"prompt\": \"Original\",\n        \"showPad\": true,\n        \"variableId\": \"first\",\n      },\n    ]\n\u001b[39m\u001b[90m\n\nNumber of calls: \u001b[1m1\u001b[22m\n\u001b[39m\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1335:10)\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1036:22)\n    at Proxy.methodWrapper (file:///home/main/z-project/rpg-zzu/node_modules/chai/index.js:1686:25)\n    at /home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u02/test/eventCommandRemediation/U02.test.ts:283:37\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)",
+        "AssertionError: expected 'first' to be '' // Object.is equality\n    at /home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u02/test/eventCommandRemediation/U02.test.ts:284:41\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ],
+      "meta": {}
+    },
+    {
+      "ancestorTitles": [
+        "U02 G1-F15 explicit input-number destination and scoped Confirm validity"
+      ],
+      "fullName": "U02 G1-F15 explicit input-number destination and scoped Confirm validity G1-F15 Confirm blocks unresolved destination \"\" without applying",
+      "status": "failed",
+      "title": "G1-F15 Confirm blocks unresolved destination \"\" without applying",
+      "duration": 115.02968099999998,
+      "failureMessages": [
+        "AssertionError: expected \"spy\" to not be called at all, but actually been called 1 times\u001b[90m\n\nReceived: \n\n\u001b[1m  1st spy call:\n\n\u001b[22m    Array [\n      Object {\n        \"digits\": 2,\n        \"kind\": \"inputNumber\",\n        \"prompt\": \"Code\",\n        \"showPad\": true,\n        \"variableId\": \"first\",\n      },\n    ]\n\u001b[39m\u001b[90m\n\nNumber of calls: \u001b[1m1\u001b[22m\n\u001b[39m\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1335:10)\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1036:22)\n    at Proxy.methodWrapper (file:///home/main/z-project/rpg-zzu/node_modules/chai/index.js:1686:25)\n    at /home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u02/test/eventCommandRemediation/U02.test.ts:291:35\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:863:59\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)",
+        "AssertionError: expected false to be true // Object.is equality\n    at /home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u02/test/eventCommandRemediation/U02.test.ts:292:37\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:863:59\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ],
+      "meta": {}
+    },
+    {
+      "ancestorTitles": [
+        "U02 G1-F15 explicit input-number destination and scoped Confirm validity"
+      ],
+      "fullName": "U02 G1-F15 explicit input-number destination and scoped Confirm validity G1-F15 Confirm blocks unresolved destination \"deleted-variable\" without applying",
+      "status": "failed",
+      "title": "G1-F15 Confirm blocks unresolved destination \"deleted-variable\" without applying",
+      "duration": 93.81775800000469,
+      "failureMessages": [
+        "AssertionError: expected \"spy\" to not be called at all, but actually been called 1 times\u001b[90m\n\nReceived: \n\n\u001b[1m  1st spy call:\n\n\u001b[22m    Array [\n      Object {\n        \"digits\": 2,\n        \"kind\": \"inputNumber\",\n        \"prompt\": \"Code\",\n        \"showPad\": true,\n        \"variableId\": \"deleted-variable\",\n      },\n    ]\n\u001b[39m\u001b[90m\n\nNumber of calls: \u001b[1m1\u001b[22m\n\u001b[39m\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1335:10)\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1036:22)\n    at Proxy.methodWrapper (file:///home/main/z-project/rpg-zzu/node_modules/chai/index.js:1686:25)\n    at /home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u02/test/eventCommandRemediation/U02.test.ts:291:35\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:863:59\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)",
+        "AssertionError: expected false to be true // Object.is equality\n    at /home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u02/test/eventCommandRemediation/U02.test.ts:292:37\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:863:59\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ],
+      "meta": {}
+    },
+    {
+      "ancestorTitles": [
+        "U02 G1-F15 explicit input-number destination and scoped Confirm validity"
+      ],
+      "fullName": "U02 G1-F15 explicit input-number destination and scoped Confirm validity G1-F15 an empty variable catalog cannot be confirmed",
+      "status": "failed",
+      "title": "G1-F15 an empty variable catalog cannot be confirmed",
+      "duration": 243.7188129999995,
+      "failureMessages": [
+        "AssertionError: expected \"spy\" to not be called at all, but actually been called 1 times\u001b[90m\n\nReceived: \n\n\u001b[1m  1st spy call:\n\n\u001b[22m    Array [\n      Object {\n        \"digits\": 2,\n        \"kind\": \"inputNumber\",\n        \"prompt\": \"Original\",\n        \"showPad\": true,\n        \"variableId\": \"\",\n      },\n    ]\n\u001b[39m\u001b[90m\n\nNumber of calls: \u001b[1m1\u001b[22m\n\u001b[39m\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1335:10)\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1029:14)\n    at Proxy.methodWrapper (file:///home/main/z-project/rpg-zzu/node_modules/chai/index.js:1686:25)\n    at /home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u02/test/eventCommandRemediation/U02.test.ts:304:30\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)"
+      ],
+      "meta": {}
+    },
+    {
+      "ancestorTitles": [
+        "U02 G1-F15 explicit input-number destination and scoped Confirm validity"
+      ],
+      "fullName": "U02 G1-F15 explicit input-number destination and scoped Confirm validity G1-F15 explicit answer survives prompt, digits, keypad, parser and input resume",
+      "status": "passed",
+      "title": "G1-F15 explicit answer survives prompt, digits, keypad, parser and input resume",
+      "duration": 360.593581000001,
+      "failureMessages": [],
+      "meta": {}
+    },
+    {
+      "ancestorTitles": [
+        "U02 G1-F15 explicit input-number destination and scoped Confirm validity"
+      ],
+      "fullName": "U02 G1-F15 explicit input-number destination and scoped Confirm validity G1-F15 Cancel with an unresolved destination never applies a command",
+      "status": "passed",
+      "title": "G1-F15 Cancel with an unresolved destination never applies a command",
+      "duration": 171.24061999999685,
+      "failureMessages": [],
+      "meta": {}
+    },
+    {
+      "ancestorTitles": [
+        "U02 G1-F15 explicit input-number destination and scoped Confirm validity"
+      ],
+      "fullName": "U02 G1-F15 explicit input-number destination and scoped Confirm validity G1-F15 scoped validation must keep the existing weighted-branch guard",
+      "status": "passed",
+      "title": "G1-F15 scoped validation must keep the existing weighted-branch guard",
+      "duration": 127.92805799999769,
+      "failureMessages": [],
+      "meta": {}
+    }
+  ]
+}

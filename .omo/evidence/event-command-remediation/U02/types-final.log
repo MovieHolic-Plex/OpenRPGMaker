@@ -1,0 +1,19 @@
+src/editor/panels/eventEditor/commandBodyLoop.ts 0
+
+src/editor/panels/eventEditor/conditionForm.ts 0
+
+src/editor/panels/eventEditor/commandBodyCore.ts 0
+
+src/editor/panels/eventEditor/commandBodyChoices.ts 0
+
+src/editor/panels/eventEditor/commandBodyInputNumber.ts 0
+
+src/editor/panels/eventEditor/commandEditDialog.ts 0
+
+test/eventCommandRemediation/U02.test.ts 0
+
+test/eventCommandRemediation/U02.fixture.ts 0
+
+test/e2e/event-command-remediation-U02.spec.ts 0
+
+Changed-file TypeScript diagnostics: 0

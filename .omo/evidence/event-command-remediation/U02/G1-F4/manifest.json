@@ -1,0 +1,93 @@
+{
+  "findingID": "G1-F4",
+  "status": "green",
+  "red": {
+    "base": "c66f5a8ac2f61005833783807c40477d045b2b35",
+    "artifact": "../red-G1-F4.json",
+    "counts": {
+      "failed": 4,
+      "passed": 2
+    }
+  },
+  "green": {
+    "tests": 7,
+    "passed": 7,
+    "failed": 0,
+    "artifact": "../green-unit.json",
+    "testNames": [
+      "G1-F4 preserves text metadata through body edit, Confirm, parser and interpreter",
+      "G1-F4 nested-loop break does not hide the outer loop's warning",
+      "G1-F4 counts a fork-owned break but not a nested loop-owned break",
+      "G1-F4 patches the latest child and keeps an independently updated sibling",
+      "G1-F4 exposes a full nested text editor, not only a lossy textarea",
+      "G1-F4 parent Cancel never mutates the source nested commands",
+      "G1-F4 child Cancel and parent Cancel preserve independent source bytes"
+    ]
+  },
+  "editor": {
+    "status": "passed",
+    "artifact": "editor-cancel.json",
+    "confirmApply": "success",
+    "reopened": true,
+    "canceledWithoutMutation": true,
+    "exportReimport": true,
+    "viewports": [
+      [
+        1024,
+        768
+      ],
+      [
+        1280,
+        800
+      ],
+      [
+        1440,
+        900
+      ]
+    ],
+    "saved": {
+      "kind": "loop",
+      "body": [
+        {
+          "kind": "text",
+          "speaker": "Edited NPC",
+          "body": "Edited",
+          "emotion": "happy",
+          "autoAdvance": true
+        },
+        {
+          "kind": "loop",
+          "body": [
+            {
+              "kind": "breakLoop"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "player": {
+    "status": "passed",
+    "artifact": "../player/manifest.json",
+    "beats": [
+      "g1-f4",
+      "g1-f4-auto-advance"
+    ],
+    "observationCleanup": true
+  },
+  "retained": [
+    "speaker",
+    "emotion",
+    "autoAdvance",
+    "edited body",
+    "independently changed child/sibling",
+    "nested loop bytes",
+    "source on child/parent Cancel"
+  ],
+  "cleanup": {
+    "artifact": "../cleanup.log",
+    "browserContexts": "closed",
+    "servers": "closed",
+    "temporaryFixturesAndCaches": "removed"
+  }
+}

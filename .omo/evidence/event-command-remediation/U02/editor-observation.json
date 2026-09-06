@@ -1,0 +1,534 @@
+{
+  "traces": [
+    {
+      "id": "G1-F5",
+      "index": 0,
+      "confirm": {
+        "status": "success",
+        "before": [
+          {
+            "value": {
+              "kind": "fork",
+              "condition": {
+                "kind": "variable",
+                "variableId": "reward",
+                "op": ">=",
+                "value": 10
+              },
+              "then": [
+                {
+                  "kind": "text",
+                  "body": "THEN",
+                  "speaker": "Then speaker",
+                  "emotion": "happy"
+                }
+              ],
+              "else": [
+                {
+                  "kind": "text",
+                  "body": "ELSE",
+                  "speaker": "Else speaker",
+                  "autoAdvance": true
+                }
+              ]
+            }
+          }
+        ],
+        "after": [
+          {
+            "value": {
+              "kind": "fork",
+              "condition": {
+                "kind": "variable",
+                "variableId": "other",
+                "op": "<=",
+                "value": 50
+              },
+              "then": [
+                {
+                  "kind": "text",
+                  "body": "THEN",
+                  "speaker": "Then speaker",
+                  "emotion": "happy"
+                }
+              ],
+              "else": [
+                {
+                  "kind": "text",
+                  "body": "ELSE",
+                  "speaker": "Else speaker",
+                  "autoAdvance": true
+                }
+              ]
+            }
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "saved": {
+        "kind": "fork",
+        "condition": {
+          "kind": "variable",
+          "variableId": "other",
+          "op": "<=",
+          "value": 50
+        },
+        "then": [
+          {
+            "kind": "text",
+            "body": "THEN",
+            "speaker": "Then speaker",
+            "emotion": "happy"
+          }
+        ],
+        "else": [
+          {
+            "kind": "text",
+            "body": "ELSE",
+            "speaker": "Else speaker",
+            "autoAdvance": true
+          }
+        ]
+      },
+      "reopened": true,
+      "canceled": true,
+      "unchangedAfterCancel": true,
+      "geometry": [
+        {
+          "width": 1024,
+          "overflow": false,
+          "top": 621.0166625976562,
+          "bottom": 653.0166625976562,
+          "height": 768
+        },
+        {
+          "width": 1280,
+          "overflow": false,
+          "top": 637.0166625976562,
+          "bottom": 669.0166625976562,
+          "height": 800
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "top": 687.0166625976562,
+          "bottom": 719.0166625976562,
+          "height": 900
+        }
+      ]
+    },
+    {
+      "id": "G1-F14",
+      "index": 1,
+      "confirm": {
+        "status": "success",
+        "before": [
+          {
+            "value": {
+              "kind": "choices",
+              "prompt": "Choose",
+              "cancelBehavior": "choice2",
+              "options": [
+                {
+                  "text": "A",
+                  "branch": [
+                    {
+                      "kind": "text",
+                      "body": "MARKER_A",
+                      "speaker": "A",
+                      "autoAdvance": true
+                    }
+                  ]
+                },
+                {
+                  "text": "B",
+                  "branch": [
+                    {
+                      "kind": "text",
+                      "body": "MARKER_B",
+                      "speaker": "B",
+                      "autoAdvance": true
+                    }
+                  ]
+                },
+                {
+                  "text": "C",
+                  "branch": [
+                    {
+                      "kind": "text",
+                      "body": "MARKER_C",
+                      "speaker": "C",
+                      "autoAdvance": true
+                    }
+                  ]
+                }
+              ],
+              "cancelBranch": [
+                {
+                  "kind": "text",
+                  "body": "INACTIVE_CANCEL",
+                  "emotion": "happy"
+                }
+              ]
+            }
+          }
+        ],
+        "after": [
+          {
+            "value": {
+              "kind": "choices",
+              "prompt": "Choose",
+              "cancelBehavior": "choice1",
+              "options": [
+                {
+                  "text": "B",
+                  "branch": [
+                    {
+                      "kind": "text",
+                      "body": "MARKER_B",
+                      "speaker": "B",
+                      "autoAdvance": true
+                    }
+                  ]
+                },
+                {
+                  "text": "C",
+                  "branch": [
+                    {
+                      "kind": "text",
+                      "body": "MARKER_C",
+                      "speaker": "C",
+                      "autoAdvance": true
+                    }
+                  ]
+                }
+              ],
+              "cancelBranch": [
+                {
+                  "kind": "text",
+                  "body": "INACTIVE_CANCEL",
+                  "emotion": "happy"
+                }
+              ]
+            }
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "saved": {
+        "kind": "choices",
+        "prompt": "Choose",
+        "cancelBehavior": "choice1",
+        "options": [
+          {
+            "text": "B",
+            "branch": [
+              {
+                "kind": "text",
+                "body": "MARKER_B",
+                "speaker": "B",
+                "autoAdvance": true
+              }
+            ]
+          },
+          {
+            "text": "C",
+            "branch": [
+              {
+                "kind": "text",
+                "body": "MARKER_C",
+                "speaker": "C",
+                "autoAdvance": true
+              }
+            ]
+          }
+        ],
+        "cancelBranch": [
+          {
+            "kind": "text",
+            "body": "INACTIVE_CANCEL",
+            "emotion": "happy"
+          }
+        ]
+      },
+      "reopened": true,
+      "canceled": true,
+      "unchangedAfterCancel": true,
+      "geometry": [
+        {
+          "width": 1024,
+          "overflow": false,
+          "top": 539.4500122070312,
+          "bottom": 571.4500122070312,
+          "height": 768
+        },
+        {
+          "width": 1280,
+          "overflow": false,
+          "top": 555.4500122070312,
+          "bottom": 587.4500122070312,
+          "height": 800
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "top": 605.4500122070312,
+          "bottom": 637.4500122070312,
+          "height": 900
+        }
+      ]
+    },
+    {
+      "id": "G1-F13",
+      "index": 2,
+      "confirm": {
+        "status": "success",
+        "before": [
+          {
+            "value": {
+              "kind": "timer",
+              "action": "start",
+              "timerId": "timer1"
+            }
+          }
+        ],
+        "after": [
+          {
+            "value": {
+              "kind": "timer",
+              "action": "start",
+              "timerId": "timer2"
+            }
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "saved": {
+        "kind": "timer",
+        "action": "start",
+        "timerId": "timer2"
+      },
+      "reopened": true,
+      "canceled": true,
+      "unchangedAfterCancel": true,
+      "geometry": [
+        {
+          "width": 1024,
+          "overflow": false,
+          "top": 434.5,
+          "bottom": 466.5,
+          "height": 768
+        },
+        {
+          "width": 1280,
+          "overflow": false,
+          "top": 450.5,
+          "bottom": 482.5,
+          "height": 800
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "top": 500.5,
+          "bottom": 532.5,
+          "height": 900
+        }
+      ]
+    },
+    {
+      "id": "G1-F4",
+      "index": 3,
+      "confirm": {
+        "status": "success",
+        "before": [
+          {
+            "value": {
+              "kind": "loop",
+              "body": [
+                {
+                  "kind": "text",
+                  "body": "Original",
+                  "speaker": "NPC",
+                  "emotion": "happy",
+                  "autoAdvance": true
+                },
+                {
+                  "kind": "loop",
+                  "body": [
+                    {
+                      "kind": "breakLoop"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "after": [
+          {
+            "value": {
+              "kind": "loop",
+              "body": [
+                {
+                  "kind": "text",
+                  "speaker": "Edited NPC",
+                  "body": "Edited",
+                  "emotion": "happy",
+                  "autoAdvance": true
+                },
+                {
+                  "kind": "loop",
+                  "body": [
+                    {
+                      "kind": "breakLoop"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "saved": {
+        "kind": "loop",
+        "body": [
+          {
+            "kind": "text",
+            "speaker": "Edited NPC",
+            "body": "Edited",
+            "emotion": "happy",
+            "autoAdvance": true
+          },
+          {
+            "kind": "loop",
+            "body": [
+              {
+                "kind": "breakLoop"
+              }
+            ]
+          }
+        ]
+      },
+      "reopened": true,
+      "canceled": true,
+      "unchangedAfterCancel": true,
+      "geometry": [
+        {
+          "width": 1024,
+          "overflow": false,
+          "top": 553.5,
+          "bottom": 585.5,
+          "height": 768
+        },
+        {
+          "width": 1280,
+          "overflow": false,
+          "top": 569.5,
+          "bottom": 601.5,
+          "height": 800
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "top": 619.5,
+          "bottom": 651.5,
+          "height": 900
+        }
+      ]
+    },
+    {
+      "id": "G1-F15",
+      "index": 4,
+      "confirm": {
+        "status": "success",
+        "before": [
+          {
+            "missing": true
+          }
+        ],
+        "after": [
+          {
+            "value": {
+              "kind": "inputNumber",
+              "variableId": "answer",
+              "digits": 3,
+              "prompt": "Code"
+            }
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "saved": {
+        "kind": "inputNumber",
+        "variableId": "answer",
+        "digits": 3,
+        "prompt": "Code"
+      },
+      "reopened": true,
+      "canceled": true,
+      "unchangedAfterCancel": true,
+      "geometry": [
+        {
+          "width": 1024,
+          "overflow": false,
+          "top": 539.4500122070312,
+          "bottom": 571.4500122070312,
+          "height": 768
+        },
+        {
+          "width": 1280,
+          "overflow": false,
+          "top": 555.4500122070312,
+          "bottom": 587.4500122070312,
+          "height": 800
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "top": 605.4500122070312,
+          "bottom": 637.4500122070312,
+          "height": 900
+        }
+      ]
+    }
+  ],
+  "reimport": true,
+  "remoteWrites": [],
+  "context": "map and full nested command dialogs"
+}

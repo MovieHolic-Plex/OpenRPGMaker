@@ -51,9 +51,26 @@ export const SEASON_OPTIONS = [
  * 조건 분기 / 조건 편집용 폼.
  * bare select 스택이 아니라 라벨 붙은 세로 필드로 구성한다.
  */
-const conditionModeCache = new Map<string, Condition>();
+export function conditionForm(initial: Condition, onChange: (condition: Condition) => void): HTMLElement {
+  const host = el("div", {});
+  const drafts = new Map<string, Condition>();
+  let current = initial;
+  const publish = (next: Condition): void => {
+    const rebuild = current.kind !== next.kind
+      || (current.kind === "run" && next.kind === "run" && current.query !== next.query);
+    drafts.set(current.kind, structuredClone(current));
+    current = next;
+    onChange(next);
+    if (rebuild) render();
+  };
+  const render = (): void => {
+    host.replaceChildren(renderConditionForm(current, publish, drafts));
+  };
+  render();
+  return host;
+}
 
-export function conditionForm(cond: Condition, onChange: (condition: Condition) => void): HTMLElement {
+function renderConditionForm(cond: Condition, onChange: (condition: Condition) => void, conditionModeCache: Map<string, Condition>): HTMLElement {
   const wrap = el("div", {
     class: "event-condition-form",
     dataset: { testid: "event-condition-form" },
@@ -61,7 +78,6 @@ export function conditionForm(cond: Condition, onChange: (condition: Condition) 
 
   const mode = selectWithOptions(CONDITION_MODE_OPTIONS, cond.kind, "event-condition-mode");
   mode.addEventListener("change", () => {
-    conditionModeCache.set(cond.kind, structuredClone(cond));
     const cached = conditionModeCache.get(mode.value as Condition["kind"]);
     if (cached) { onChange(structuredClone(cached)); return; }
     switch (mode.value) {
@@ -193,7 +209,7 @@ function labeledSwitch(
   let currentSwitchId = cond.switchId;
   const sw = databasePicker("switch", cond.switchId, (switchId) => {
     currentSwitchId = switchId;
-    onChange({ kind: "switch", switchId, value: cond.value });
+    onChange({ kind: "switch", switchId, value: val.value === "true" });
     syncError();
   }, "event-condition-switch-target");
   const val = selectWithOptions(SWITCH_STATE_OPTIONS, String(cond.value), "event-condition-switch-value");
@@ -220,7 +236,7 @@ function labeledVariable(
   const variable = databasePicker("variable", cond.variableId, (variableId) => {
     currentVariableId = variableId;
     syncError();
-    onChange({ kind: "variable", variableId, op: cond.op, value: cond.value });
+    apply();
   }, "event-condition-variable-target");
   const op = selectWithOptions(CONDITION_OP_OPTIONS, cond.op, "event-condition-variable-op");
   const value = el("input", {
@@ -272,7 +288,7 @@ function labeledActor(
   const sel = actorPicker(cond.actorId, (actorId) => {
     currentActorId = actorId;
     syncError();
-    onChange({ kind: "actor", actorId, present: cond.present });
+    onChange({ kind: "actor", actorId, present: present.value === "true" });
   });
   syncError();
   const present = el("select", { dataset: { testid: "event-condition-actor-present" } }) as HTMLSelectElement;
@@ -299,7 +315,7 @@ function labeledItem(
   const sel = itemPicker(cond.itemId, (itemId) => {
     currentItemId = itemId;
     syncError();
-    onChange({ kind: "item", itemId, present: cond.present });
+    onChange({ kind: "item", itemId, present: present.value === "true" });
   });
   syncError();
   const present = el("select", { dataset: { testid: "event-condition-item-present" } }) as HTMLSelectElement;
@@ -528,8 +544,7 @@ function labeledGroup(
         el("div", { class: "event-condition-group-item-title", text: `조건 ${index + 1}` }),
         conditionForm(child, (nextChild) => {
           publish(
-            currentChildren.map((entry, i) => (i === index ? nextChild : entry)),
-            nextChild.kind !== child.kind
+            currentChildren.map((entry, i) => (i === index ? nextChild : entry))
           );
         }),
         el("button", {

@@ -1,0 +1,50 @@
+[
+  {
+    "command": "npm test -- test/eventCommandRemediation/U02.test.ts test/eventEditorStagedState.test.ts test/forkCommandBody.test.ts test/commandContracts/loop.contract.test.ts test/commandContracts/timer.contract.test.ts --maxWorkers=2 --reporter=verbose --reporter=json --outputFile=.omo/evidence/event-command-remediation/U02/green-unit.json",
+    "exit": 1,
+    "result": "37/37 U02 and 32/33 adjacent pass. One pre-existing obsolete weighted selector fails; not suppressed.",
+    "artifact": "green-unit.log.gz"
+  },
+  {
+    "command": "git archive b52cefd5 src test scripts package.json tsconfig.json tsconfig.app.json vitest.config.ts vite.config.ts -> disposable /tmp snapshot; npm test -- test/eventEditorStagedState.test.ts --maxWorkers=2",
+    "exit": 1,
+    "result": "Same failure at line281 on untouched base; 13/14 pass; snapshot removed.",
+    "artifact": "baseline-related.log.gz"
+  },
+  {
+    "command": "npm test -- test/weightedBranchUx.test.ts --maxWorkers=2",
+    "exit": 0,
+    "result": "19/19 pass",
+    "artifact": "weighted-guard.log.gz"
+  },
+  {
+    "command": "U02_STANDALONE=1 U02_PLAYER=1 bun test/e2e/event-command-remediation-U02.spec.ts",
+    "exit": 0,
+    "result": "Firefox editor all five IDs, nested conditions, three viewports, real file import; Node/Chromium dedicated player all five IDs plus adversarial checks.",
+    "artifact": "surface-run.log"
+  },
+  {
+    "command": "node scripts/qa/runtime/event-command-remediation-u02.scenario.mjs .omo/evidence/event-command-remediation/U02/editor-saved.json",
+    "exit": 0,
+    "result": "Independent dedicated-player proof",
+    "artifact": "player-run.log"
+  },
+  {
+    "command": "node node_modules/vite-node/vite-node.mjs --script scripts/prepare-event-command-remediation.mts U02 /tmp/u02-fixture-dxqBFJ",
+    "exit": 0,
+    "result": "Real serializer roundtrip; temporary fixture removed",
+    "artifact": "fixture-green.log"
+  },
+  {
+    "command": "TypeScript compiler API, repository tsconfig, syntactic+semantic diagnostics on nine changed TS files (no emit); node --check scripts/qa/runtime/event-command-remediation-u02.scenario.mjs",
+    "exit": 0,
+    "result": "0 changed-file TypeScript diagnostics; JS syntax valid",
+    "artifact": "types-final.log"
+  },
+  {
+    "command": "lsp_diagnostics on all ten changed TS/JS files; git diff --check; owned resource absence checks",
+    "exit": 0,
+    "result": "LSP no diagnostics; stronger TS API caught and resolved two proof-script errors; whitespace and cleanup clean",
+    "artifact": "cleanup.log"
+  }
+]

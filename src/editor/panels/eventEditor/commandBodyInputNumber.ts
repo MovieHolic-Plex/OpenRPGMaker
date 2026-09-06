@@ -11,19 +11,10 @@ const DIGIT_OPTIONS = [1, 2, 3, 4, 5, 6] as const;
 export function inputNumberBody(context: CommandEditContext, cmd: InputNumberCommand): HTMLElement {
   const wrap = el("div", {
     class: "input-number-command-body cream-command-form",
-    dataset: { testid: "input-number-command-body" },
+    dataset: { testid: "input-number-command-body", commandFormValidity: "true" },
   });
 
-  // Factory default may leave variableId empty; seed the first project variable once
-  // so the form is valid without forcing the author to open the picker.
   let currentVariableId = cmd.variableId;
-  if (!currentVariableId.trim()) {
-    const first = store.getCurrent().variables[0]?.id ?? "";
-    if (first) {
-      currentVariableId = first;
-      context.actions.replaceCommand(context.path, { ...cmd, variableId: first });
-    }
-  }
 
   /**
    * 마지막으로 **커밋한** 안내 문구.
@@ -46,9 +37,16 @@ export function inputNumberBody(context: CommandEditContext, cmd: InputNumberCom
 
   const variable = databasePicker("variable", currentVariableId, (nextId) => {
     currentVariableId = nextId;
+    variable.removeAttribute("aria-invalid");
     commit({ ...latestCmd(), variableId: nextId });
   });
   variable.dataset.testid = "input-number-variable";
+  wrap.addEventListener("event-command-validate", (event) => {
+    if (store.getCurrent().variables.some(({ id }) => id === currentVariableId)) return;
+    event.preventDefault();
+    variable.setAttribute("aria-invalid", "true");
+    variable.querySelector<HTMLElement>("button")?.focus();
+  });
 
   const digits = clampInputNumberDigits(cmd.digits);
   const digitGroup = el("div", {
@@ -156,8 +154,9 @@ export function inputNumberBody(context: CommandEditContext, cmd: InputNumberCom
 
   function latestCmd(): InputNumberCommand {
     // Prefer live control values so chip clicks do not clobber prompt/pad/variable.
+    const current = context.getCurrentCommand?.();
     const next: InputNumberCommand = {
-      kind: "inputNumber",
+      ...(current?.kind === "inputNumber" ? current : cmd),
       variableId: currentVariableId,
       digits: clampInputNumberDigits(digitsMirror.value || String(cmd.digits)),
     };

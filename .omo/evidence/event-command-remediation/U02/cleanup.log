@@ -1,0 +1,9 @@
+Owned resource cleanup (U02)
+State Recv-Q Send-Q Local Address:Port Peer Address:PortProcess
+ABSENT /tmp/u02-qa-3dbohe
+ABSENT /tmp/u02-baseline-DlHE7i
+ABSENT /tmp/u02-fixture-dxqBFJ
+ABSENT output/ai-activity
+ABSENT output/edit-activity
+Pre-existing tracked .vite-cache unchanged
+Browsers and disposable contexts closed in finally; player observer handles absent after beats and negative check (see player/surface.json and wrong-target.json).

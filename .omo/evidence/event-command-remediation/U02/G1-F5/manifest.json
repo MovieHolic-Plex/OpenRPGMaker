@@ -1,0 +1,99 @@
+{
+  "findingID": "G1-F5",
+  "status": "green",
+  "red": {
+    "base": "c66f5a8ac2f61005833783807c40477d045b2b35",
+    "artifact": "../red-G1-F5.json",
+    "counts": {
+      "failed": 8
+    }
+  },
+  "green": {
+    "tests": 11,
+    "passed": 11,
+    "failed": 0,
+    "artifact": "../green-unit.json",
+    "testNames": [
+      "G1-F5 retains <=50 when selecting another variable and preserves both branches",
+      "G1-F5 updates the evaluation data when a same-kind edit flips the verdict",
+      "G1-F5 switch target changes retain the latest false value",
+      "G1-F5 actor target changes retain the latest absent state",
+      "G1-F5 preserves latest nested variable edits inside all",
+      "G1-F5 preserves latest nested variable edits inside any",
+      "G1-F5 preserves latest nested variable edits inside not",
+      "G1-F5 does not import another dialog's inactive condition draft",
+      "G1-F5 keeps latest inactive leaf draft through nested all mode changes",
+      "G1-F5 keeps latest inactive leaf draft through nested any mode changes",
+      "G1-F5 keeps latest inactive leaf draft through nested not mode changes"
+    ]
+  },
+  "editor": {
+    "status": "passed",
+    "artifact": "editor-cancel.json",
+    "confirmApply": "success",
+    "reopened": true,
+    "canceledWithoutMutation": true,
+    "exportReimport": true,
+    "viewports": [
+      [
+        1024,
+        768
+      ],
+      [
+        1280,
+        800
+      ],
+      [
+        1440,
+        900
+      ]
+    ],
+    "saved": {
+      "kind": "fork",
+      "condition": {
+        "kind": "variable",
+        "variableId": "other",
+        "op": "<=",
+        "value": 50
+      },
+      "then": [
+        {
+          "kind": "text",
+          "body": "THEN",
+          "speaker": "Then speaker",
+          "emotion": "happy"
+        }
+      ],
+      "else": [
+        {
+          "kind": "text",
+          "body": "ELSE",
+          "speaker": "Else speaker",
+          "autoAdvance": true
+        }
+      ]
+    }
+  },
+  "player": {
+    "status": "passed",
+    "artifact": "../player/manifest.json",
+    "beats": [
+      "g1-f5"
+    ],
+    "observationCleanup": true,
+    "adversarial": "../player-adversarial/manifest.json (other5 -> THEN, not ELSE)"
+  },
+  "retained": [
+    "latest op/value/present",
+    "then/else branches",
+    "nested sibling conditions",
+    "per-form inactive drafts",
+    "source on Cancel"
+  ],
+  "cleanup": {
+    "artifact": "../cleanup.log",
+    "browserContexts": "closed",
+    "servers": "closed",
+    "temporaryFixturesAndCaches": "removed"
+  }
+}

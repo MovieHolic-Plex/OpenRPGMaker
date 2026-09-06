@@ -157,6 +157,9 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
         on: {
           click: () => {
             if (!validateWeightedBranchForm(formHost)) return;
+            for (const form of formHost.querySelectorAll<HTMLElement>("[data-command-form-validity]")) {
+              if (!form.dispatchEvent(new Event("event-command-validate", { cancelable: true }))) return;
+            }
             request.onApply(structuredClone(stagedCommand));
             close();
           },
@@ -275,16 +278,13 @@ export function shouldRerenderCommandForm(prev: Command, next: Command): boolean
   }
   if (prev.kind === "fork" && next.kind === "fork") {
     return (
-      prev.condition.kind !== next.condition.kind ||
-      (prev.condition.kind === "run" && next.condition.kind === "run" && prev.condition.query !== next.condition.query) ||
       Boolean(prev.else) !== Boolean(next.else) ||
       prev.then.length !== next.then.length ||
       (prev.else?.length ?? 0) !== (next.else?.length ?? 0)
     );
   }
-  if (prev.kind === "loop" && next.kind === "loop") {
-    return prev.body.length !== next.body.length;
-  }
+  // Loop and condition editors own their nested structure and inactive drafts.
+  if (prev.kind === "loop" && next.kind === "loop") return false;
   if (prev.kind === "setSwitch" && next.kind === "setSwitch") {
     // 값 종류(상수/전환/변수)가 바뀌면 변수 피커 노출이 달라지므로 폼을 다시 그린다.
     const prevKind = typeof prev.value === "object" && prev.value !== null

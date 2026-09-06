@@ -1,0 +1,72 @@
+{
+  "unit": "U02",
+  "findingIds": [
+    "G1-F4",
+    "G1-F5",
+    "G1-F13",
+    "G1-F14",
+    "G1-F15"
+  ],
+  "sourceCommit": "f3b816d8",
+  "status": "PASS",
+  "integrationBase": "69d77ffe",
+  "tests": [
+    {
+      "command": "npm test -- test/eventCommandRemediation/U02.test.ts test/eventEditorStagedState.test.ts test/forkCommandBody.test.ts test/commandContracts/loop.contract.test.ts test/commandContracts/timer.contract.test.ts test/weightedBranchUx.test.ts test/eventCommandRemediation/U03.test.ts --maxWorkers=2",
+      "passed": 101,
+      "failed": 0
+    },
+    {
+      "command": "npm test -- test/commandEditModalPreview.test.ts test/roguelikeRunEditor.test.ts test/setVariableCommandBody.test.ts --maxWorkers=2",
+      "passed": 39,
+      "failed": 0
+    },
+    {
+      "command": "npm test -- test/eventEditorStagedState.test.ts --maxWorkers=2",
+      "passed": 14,
+      "failed": 0
+    }
+  ],
+  "surface": {
+    "command": "U02_EVIDENCE_DIR=.omo/evidence/event-command-remediation/U02-supervisor U02_STANDALONE=1 U02_PLAYER=1 bun test/e2e/event-command-remediation-U02.spec.ts",
+    "exitCode": 0,
+    "editor": "All five IDs Confirm/Apply/reopen/Cancel/export/reimport; Firefox; 1024/1280/1440",
+    "player": "Dedicated Chromium player.html all five findings, other=5 discriminator and wrong-target rejection",
+    "artifacts": [
+      "editor-observation.json",
+      "player/manifest.json",
+      "player/wrong-target.json",
+      "player-adversarial/manifest.json"
+    ]
+  },
+  "adjacentRepairs": [
+    "Old weighted weight selector replaced with real chance75 and expected75/25, original stagedBetweenEdits assertion retained; RED/14GREEN captured.",
+    "Two outer-rerender policy booleans aligned with local condition/loop ownership; actual local DOM behavior covered by U02 original RED/GREEN and browser proof. Fork branch-presence true remains.",
+    "Removed unused legacy test variable after TS6133; no behavior/assertion removed.",
+    "Optional U02_EVIDENCE_DIR keeps supervisor output separate; no action/assertion changed."
+  ],
+  "diagnostics": "All changed product/test/runner TS files reported no LSP diagnostics after unused variable removal.",
+  "cleanup": {
+    "editor": {
+      "port": 45255,
+      "serverExited": true,
+      "browserClosed": true,
+      "owned": "/tmp/u02-qa-AMNzG1",
+      "temporaryDirectoryRemoved": true
+    },
+    "player": {
+      "port": 35721,
+      "serverClosed": true,
+      "browserClosed": true,
+      "cacheRemoved": true,
+      "memorySaveNamespacesDisposed": true
+    },
+    "portsVerifiedClosed": true,
+    "ownedDirectoryVerifiedAbsent": true
+  },
+  "limits": [
+    "No pixel-level model review",
+    "Full final gates still pending",
+    "Raw source-unit manifests remain separate and preserve original baselines"
+  ]
+}

@@ -1,0 +1,168 @@
+{
+  "id": "G1-F14",
+  "index": 1,
+  "confirm": {
+    "status": "success",
+    "before": [
+      {
+        "value": {
+          "kind": "choices",
+          "prompt": "Choose",
+          "cancelBehavior": "choice2",
+          "options": [
+            {
+              "text": "A",
+              "branch": [
+                {
+                  "kind": "text",
+                  "body": "MARKER_A",
+                  "speaker": "A",
+                  "autoAdvance": true
+                }
+              ]
+            },
+            {
+              "text": "B",
+              "branch": [
+                {
+                  "kind": "text",
+                  "body": "MARKER_B",
+                  "speaker": "B",
+                  "autoAdvance": true
+                }
+              ]
+            },
+            {
+              "text": "C",
+              "branch": [
+                {
+                  "kind": "text",
+                  "body": "MARKER_C",
+                  "speaker": "C",
+                  "autoAdvance": true
+                }
+              ]
+            }
+          ],
+          "cancelBranch": [
+            {
+              "kind": "text",
+              "body": "INACTIVE_CANCEL",
+              "emotion": "happy"
+            }
+          ]
+        }
+      }
+    ],
+    "after": [
+      {
+        "value": {
+          "kind": "choices",
+          "prompt": "Choose",
+          "cancelBehavior": "choice1",
+          "options": [
+            {
+              "text": "B",
+              "branch": [
+                {
+                  "kind": "text",
+                  "body": "MARKER_B",
+                  "speaker": "B",
+                  "autoAdvance": true
+                }
+              ]
+            },
+            {
+              "text": "C",
+              "branch": [
+                {
+                  "kind": "text",
+                  "body": "MARKER_C",
+                  "speaker": "C",
+                  "autoAdvance": true
+                }
+              ]
+            }
+          ],
+          "cancelBranch": [
+            {
+              "kind": "text",
+              "body": "INACTIVE_CANCEL",
+              "emotion": "happy"
+            }
+          ]
+        }
+      }
+    ],
+    "event": null,
+    "cleanup": {
+      "observer": true,
+      "timer": true,
+      "event": true,
+      "pagehide": true,
+      "abort": true
+    }
+  },
+  "saved": {
+    "kind": "choices",
+    "prompt": "Choose",
+    "cancelBehavior": "choice1",
+    "options": [
+      {
+        "text": "B",
+        "branch": [
+          {
+            "kind": "text",
+            "body": "MARKER_B",
+            "speaker": "B",
+            "autoAdvance": true
+          }
+        ]
+      },
+      {
+        "text": "C",
+        "branch": [
+          {
+            "kind": "text",
+            "body": "MARKER_C",
+            "speaker": "C",
+            "autoAdvance": true
+          }
+        ]
+      }
+    ],
+    "cancelBranch": [
+      {
+        "kind": "text",
+        "body": "INACTIVE_CANCEL",
+        "emotion": "happy"
+      }
+    ]
+  },
+  "reopened": true,
+  "canceled": true,
+  "unchangedAfterCancel": true,
+  "geometry": [
+    {
+      "width": 1024,
+      "overflow": false,
+      "top": 539.4500122070312,
+      "bottom": 571.4500122070312,
+      "height": 768
+    },
+    {
+      "width": 1280,
+      "overflow": false,
+      "top": 555.4500122070312,
+      "bottom": 587.4500122070312,
+      "height": 800
+    },
+    {
+      "width": 1440,
+      "overflow": false,
+      "top": 605.4500122070312,
+      "bottom": 637.4500122070312,
+      "height": 900
+    }
+  ]
+}

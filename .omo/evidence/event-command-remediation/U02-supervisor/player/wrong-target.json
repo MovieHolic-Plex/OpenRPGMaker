@@ -1,0 +1,22 @@
+{
+  "status": "timeout",
+  "before": [
+    {
+      "value": 91
+    }
+  ],
+  "after": [
+    {
+      "value": 91
+    }
+  ],
+  "event": null,
+  "cleanup": {
+    "observer": true,
+    "timer": true,
+    "event": true,
+    "pagehide": true,
+    "abort": true
+  },
+  "error": "eventCommand observation timed out"
+}

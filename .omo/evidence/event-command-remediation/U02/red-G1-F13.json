@@ -1,0 +1,71 @@
+{
+  "finding": "G1-F13",
+  "base": "c66f5a8ac2f61005833783807c40477d045b2b35",
+  "sourceReport": "red.json",
+  "counts": {
+    "failed": 2,
+    "passed": 3
+  },
+  "assertionResults": [
+    {
+      "ancestorTitles": [
+        "U02 G1-F13 timer resume authoring"
+      ],
+      "fullName": "U02 G1-F13 timer resume authoring G1-F13 changing timer identity preserves omitted seconds and resumes remaining 17",
+      "status": "failed",
+      "title": "G1-F13 changing timer identity preserves omitted seconds and resumes remaining 17",
+      "duration": 478.41752900000574,
+      "failureMessages": [
+        "AssertionError: expected { Object (kind, action, ...) } to deeply equal { Object (kind, action, ...) }\n    at /home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u02/test/eventCommandRemediation/U02.test.ts:186:24\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)",
+        "AssertionError: expected 60 to be 17 // Object.is equality\n    at /home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u02/test/eventCommandRemediation/U02.test.ts:189:42\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ],
+      "meta": {}
+    },
+    {
+      "ancestorTitles": [
+        "U02 G1-F13 timer resume authoring"
+      ],
+      "fullName": "U02 G1-F13 timer resume authoring G1-F13 explicit start seconds 0 stays an explicit restart",
+      "status": "passed",
+      "title": "G1-F13 explicit start seconds 0 stays an explicit restart",
+      "duration": 226.6607739999963,
+      "failureMessages": [],
+      "meta": {}
+    },
+    {
+      "ancestorTitles": [
+        "U02 G1-F13 timer resume authoring"
+      ],
+      "fullName": "U02 G1-F13 timer resume authoring G1-F13 explicit start seconds 60 stays an explicit restart",
+      "status": "passed",
+      "title": "G1-F13 explicit start seconds 60 stays an explicit restart",
+      "duration": 185.17759800000204,
+      "failureMessages": [],
+      "meta": {}
+    },
+    {
+      "ancestorTitles": [
+        "U02 G1-F13 timer resume authoring"
+      ],
+      "fullName": "U02 G1-F13 timer resume authoring G1-F13 stop does not expose an active seconds editor",
+      "status": "failed",
+      "title": "G1-F13 stop does not expose an active seconds editor",
+      "duration": 141.5998400000026,
+      "failureMessages": [
+        "AssertionError: expected false to be true // Object.is equality\n    at /home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u02/test/eventCommandRemediation/U02.test.ts:205:108\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ],
+      "meta": {}
+    },
+    {
+      "ancestorTitles": [
+        "U02 G1-F13 timer resume authoring"
+      ],
+      "fullName": "U02 G1-F13 timer resume authoring G1-F13 set and stop retain their interpreter semantics",
+      "status": "passed",
+      "title": "G1-F13 set and stop retain their interpreter semantics",
+      "duration": 172.0254169999971,
+      "failureMessages": [],
+      "meta": {}
+    }
+  ]
+}

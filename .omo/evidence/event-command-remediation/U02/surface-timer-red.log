@@ -1,0 +1,30 @@
+[rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] QWENCLOUD_API_KEY 가 없어 /api/qwen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] CPENROUTER_API_KEY 가 없어 /api/cpen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+
+  VITE v6.4.3  ready in 891 ms
+
+  ➜  Local:   http://127.0.0.1:46819/
+ 97 |       } else if (expected.kind === "timer") {
+ 98 |         await select(page, scope, "event-command-timer-id", "timer2");
+ 99 |         await select(page, scope, "event-command-timer-start-mode", "restart");
+100 |         await fill(scope, "event-command-timer-seconds", "23");
+101 |         await select(page, scope, "event-command-timer-start-mode", "resume");
+102 |         assert.equal(await scope.getByTestId("event-command-timer-seconds").isVisible(), false);
+                     ^
+AssertionError: Expected values to be strictly equal:
+
+true !== false
+
+ generatedMessage: true,
+     actual: true,
+   expected: false,
+   operator: "strictEqual",
+       diff: "simple",
+       code: "ERR_ASSERTION"
+
+      at proveEditor (/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u02/test/e2e/event-command-remediation-U02.spec.ts:102:16)
+      at standalone (/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u02/test/e2e/event-command-remediation-U02.spec.ts:206:25)
+      at processTicksAndRejections (native:7:39)
+
+Bun v1.4.2 (Linux x64)

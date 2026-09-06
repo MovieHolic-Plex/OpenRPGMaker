@@ -1,0 +1,74 @@
+{
+  "findingID": "G1-F13",
+  "status": "green",
+  "red": {
+    "base": "c66f5a8ac2f61005833783807c40477d045b2b35",
+    "artifact": "../red-G1-F13.json",
+    "counts": {
+      "failed": 2,
+      "passed": 3
+    }
+  },
+  "green": {
+    "tests": 6,
+    "passed": 6,
+    "failed": 0,
+    "artifact": "../green-unit.json",
+    "testNames": [
+      "G1-F13 changing timer identity preserves omitted seconds and resumes remaining 17",
+      "G1-F13 explicit start seconds 0 stays an explicit restart",
+      "G1-F13 explicit start seconds 60 stays an explicit restart",
+      "G1-F13 stop does not expose an active seconds editor",
+      "G1-F13 set and stop retain their interpreter semantics",
+      "G1-F13 resume omits inactive seconds while switching back restores the seconds draft"
+    ]
+  },
+  "editor": {
+    "status": "passed",
+    "artifact": "editor-cancel.json",
+    "confirmApply": "success",
+    "reopened": true,
+    "canceledWithoutMutation": true,
+    "exportReimport": true,
+    "viewports": [
+      [
+        1024,
+        768
+      ],
+      [
+        1280,
+        800
+      ],
+      [
+        1440,
+        900
+      ]
+    ],
+    "saved": {
+      "kind": "timer",
+      "action": "start",
+      "timerId": "timer2"
+    }
+  },
+  "player": {
+    "status": "passed",
+    "artifact": "../player/manifest.json",
+    "beats": [
+      "g1-f13"
+    ],
+    "observationCleanup": true
+  },
+  "retained": [
+    "omitted seconds for resume",
+    "explicit seconds0/60",
+    "inactive seconds draft",
+    "stop remaining time",
+    "other timer"
+  ],
+  "cleanup": {
+    "artifact": "../cleanup.log",
+    "browserContexts": "closed",
+    "servers": "closed",
+    "temporaryFixturesAndCaches": "removed"
+  }
+}

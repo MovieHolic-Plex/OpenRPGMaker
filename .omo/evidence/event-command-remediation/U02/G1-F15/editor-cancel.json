@@ -1,0 +1,62 @@
+{
+  "id": "G1-F15",
+  "index": 4,
+  "confirm": {
+    "status": "success",
+    "before": [
+      {
+        "missing": true
+      }
+    ],
+    "after": [
+      {
+        "value": {
+          "kind": "inputNumber",
+          "variableId": "answer",
+          "digits": 3,
+          "prompt": "Code"
+        }
+      }
+    ],
+    "event": null,
+    "cleanup": {
+      "observer": true,
+      "timer": true,
+      "event": true,
+      "pagehide": true,
+      "abort": true
+    }
+  },
+  "saved": {
+    "kind": "inputNumber",
+    "variableId": "answer",
+    "digits": 3,
+    "prompt": "Code"
+  },
+  "reopened": true,
+  "canceled": true,
+  "unchangedAfterCancel": true,
+  "geometry": [
+    {
+      "width": 1024,
+      "overflow": false,
+      "top": 539.4500122070312,
+      "bottom": 571.4500122070312,
+      "height": 768
+    },
+    {
+      "width": 1280,
+      "overflow": false,
+      "top": 555.4500122070312,
+      "bottom": 587.4500122070312,
+      "height": 800
+    },
+    {
+      "width": 1440,
+      "overflow": false,
+      "top": 605.4500122070312,
+      "bottom": 637.4500122070312,
+      "height": 900
+    }
+  ]
+}
