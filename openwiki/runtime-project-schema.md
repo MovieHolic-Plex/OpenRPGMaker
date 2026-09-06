@@ -17,6 +17,15 @@ local-first catch-up save. Coalescing is scoped to content lineage, so a replace
 migration can save independently of an older held save. Historical responses cannot
 clear a replacement flight, dirty state, receipt or autosave status.
 
+The faceset-repair await captures both its project object and content lineage.
+If a switch or immutable edit detaches that target, completion cannot mark the
+current project dirty or schedule its save. Likewise, synchronous `saving` status
+subscribers may replace the project: the old flush rechecks lineage before starting
+persistence and returns `disabled` without issuing a write or replacing the new
+lineage's flight. This result disables that stale request, not remote persistence.
+Same-lineage callback edits and repairs whose target remains current retain their
+normal save behavior. Deterministic coverage: `storeLifecycleReentrancy.test.ts`.
+
 Interior group composition and strict cabinet-kit migration are described in
 [the room harness page](editor-interior-room-harness.md). Placed map layers without
 per-cell provenance are preserved, including deliberate lower-layer props. No schema

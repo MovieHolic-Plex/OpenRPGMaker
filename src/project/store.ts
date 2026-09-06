@@ -1148,6 +1148,9 @@ class ProjectStore {
       return inFlightResult;
     }
     this.setAutoSaveState({ kind: "saving" });
+    // Status subscribers run synchronously and may replace the project (and even
+    // start its own flush). This request no longer authorizes a write after that.
+    if (this.contentLineage !== lineage) return { kind: "disabled" };
     const run = (async (): Promise<ProjectFlushResult> => {
       try {
         // Local-first catch-up: if paint lands during a save RTT, persist again
@@ -1334,16 +1337,22 @@ class ProjectStore {
     }
     // 업로드 시트의 진짜 절단은 canvas 가 필수라 동기 보정 배열 밖에서 돌린다.
     // 쪼갤 것이 없으면 await 조차 하지 않는다 — 로드 경로에 자시합을 더하면 지속화 순서가 바뀐다.
-    const facesRepaired = hasPendingFacesetSheetRepair(this.current)
-      ? await repairUploadedFacesetSheets(this.current)
+    const repairTarget = this.current;
+    const repairLineage = this.contentLineage;
+    const facesRepaired = hasPendingFacesetSheetRepair(repairTarget)
+      ? await repairUploadedFacesetSheets(repairTarget)
       : false;
+    // The repair mutates its captured object, not necessarily the current project.
+    // A normal edit can also replace that object without advancing load lineage.
+    if (this.current !== repairTarget || this.contentLineage !== repairLineage) return;
     if (facesRepaired) {
       this.markLocalMutation({ scope: "system", origin: "system", label: "Faceset sheet migration" });
       this.emit();
     }
     // Boot load must not block the editor on a full remote rewrite (~2MB+).
     // Schedule deferred auto-save so the shell can paint first.
-    if ((changed || facesRepaired) && persistIfChanged) this.scheduleAutoSave();
+    if ((changed || facesRepaired) && persistIfChanged
+      && this.current === repairTarget && this.contentLineage === repairLineage) this.scheduleAutoSave();
   }
 
   private refreshSupabaseResourceCache(): void {
