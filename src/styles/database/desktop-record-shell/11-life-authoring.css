@@ -207,6 +207,21 @@
   min-width: 0;
 }
 
+/* Search recovery occupies the existing species list's filter slot. */
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="db-monster-species-selection-notice"] {
+  padding: 0;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="db-monster-species-selection-notice"][hidden] {
+  display: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="db-monster-species-selection-notice"] > p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
 @media (min-width: 800px) {
   .database-modal-backdrop .database-modal-window .database-modal-body .db-body:has(.oprn-record-crops),
   .database-modal-backdrop .database-modal-window .database-modal-body .db-body:has(.oprn-record-characters),

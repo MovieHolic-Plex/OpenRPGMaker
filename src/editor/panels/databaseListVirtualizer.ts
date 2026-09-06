@@ -40,8 +40,7 @@ export function computeRowWindow(params: RowWindowParams): RowWindow {
   if (total <= threshold || params.viewportHeight <= 0) return { start: 0, end: total };
   const scrollTop = Math.max(0, params.scrollTop);
   const firstVisibleRow = Math.floor(scrollTop / rowHeight);
-  const visibleRowCount = Math.ceil(params.viewportHeight / rowHeight);
-  const endRow = Math.min(rows, firstVisibleRow + visibleRowCount + overscan);
+  const endRow = Math.min(rows, Math.ceil((scrollTop + params.viewportHeight) / rowHeight) + overscan);
   // 스크롤이 콘텐츠를 넘어서더라도 start 가 end 를 초과하지 않도록 클램프한다.
   const startRow = Math.min(Math.max(0, firstVisibleRow - overscan), endRow);
   return { start: startRow * columns, end: Math.min(total, endRow * columns) };
@@ -58,6 +57,8 @@ export type VirtualList = {
   readonly element: HTMLElement;
   // 현재 스크롤/높이를 다시 측정해 필요한 경우 보이는 슬라이스를 재렌더한다.
   render(): void;
+  // Reveal uses the same measured pitch and bounds as windowing/spacers.
+  scrollToIndex(index: number): void;
 };
 
 export type VirtualListOptions<T> = {
@@ -70,6 +71,9 @@ export type VirtualListOptions<T> = {
   // (브라우저에서 ResizeObserver 가 크기 변화를 render() 로 연결한다). 기본 1.
   readonly columns?: number | ((container: HTMLElement) => number);
   readonly className?: string;
+  // Opt-in CSS contract: block scroller, grid rowsHost, uniform border-box
+  // row heights, gaps only inside rowsHost (not between the spacers).
+  readonly measureRows?: boolean;
   readonly onScroll?: (scrollTop: number) => void;
 };
 
@@ -91,30 +95,57 @@ export function createVirtualList<T>(options: VirtualListOptions<T>): VirtualLis
 
   let current: RowWindow = { start: -1, end: -1 };
   let currentColumns = -1;
+  let pitch = rowHeight;
+  let gap = 0;
+  let insetTop = 0;
+  let insetBottom = 0;
+  let maxScrollTop = 0;
 
   const render = (): void => {
     const columns = normalizeColumns(resolveColumns(container));
+    // Apply responsive columns BEFORE measuring: card height can depend on width.
+    container.style.setProperty("--db-gallery-columns", String(columns));
+    const sample = rowsHost.firstElementChild;
+    if (options.measureRows && sample && typeof getComputedStyle === "function") {
+      const height = sample.getBoundingClientRect().height;
+      if (height > 0) {
+        const hostStyle = getComputedStyle(rowsHost);
+        const containerStyle = getComputedStyle(container);
+        gap = Number.parseFloat(hostStyle.rowGap) || 0;
+        pitch = height + gap;
+        insetTop = (Number.parseFloat(hostStyle.paddingTop) || 0) + (Number.parseFloat(containerStyle.paddingTop) || 0);
+        insetBottom = (Number.parseFloat(hostStyle.paddingBottom) || 0) + (Number.parseFloat(containerStyle.paddingBottom) || 0);
+      }
+    }
     const total = options.items.length;
     const rows = Math.ceil(total / columns);
+    const viewportHeight = readNumber(container, "clientHeight");
+    maxScrollTop = Math.max(0, insetTop + rows * pitch - (rows > 0 ? gap : 0) + insetBottom - viewportHeight);
+    let scrollTop = readNumber(container, "scrollTop");
+    // A wider gallery has fewer rows. Clamp against its NEW extent before
+    // computing a slice, rather than producing an empty host at the old offset.
+    if (options.measureRows && viewportHeight > 0 && scrollTop > maxScrollTop) {
+      scrollTop = maxScrollTop;
+      container.scrollTop = scrollTop;
+    }
     const next = computeRowWindow({
       total,
-      scrollTop: readNumber(container, "scrollTop"),
-      viewportHeight: readNumber(container, "clientHeight"),
-      rowHeight,
+      scrollTop: Math.max(0, scrollTop - insetTop),
+      viewportHeight,
+      rowHeight: pitch,
       columns,
       overscan: options.overscan,
       threshold: options.threshold,
     });
+    // Each omitted row owns one pitch, including its boundary gap. The host
+    // supplies the remaining rows' internal gaps and its padding exactly once.
+    const startRow = Math.floor(next.start / columns);
+    const endRow = Math.ceil(next.end / columns);
+    topSpacer.style.height = `${startRow * pitch}px`;
+    bottomSpacer.style.height = `${Math.max(0, rows - endRow) * pitch}px`;
     if (next.start === current.start && next.end === current.end && columns === currentColumns) return;
     current = next;
     currentColumns = columns;
-    // 열 수가 바뀌면(렌더 폭 변화) 행 경계도 바뀌므로 스페이서는 '행' 단위로 계산한다.
-    const startRow = Math.floor(next.start / columns);
-    const endRow = Math.ceil(next.end / columns);
-    topSpacer.style.height = `${startRow * rowHeight}px`;
-    bottomSpacer.style.height = `${Math.max(0, rows - endRow) * rowHeight}px`;
-    // CSS 그리드가 열 수를 알 수 있게 컨테이너에 커스텀 프로퍼티를 심는다(자식이 상속).
-    container.style.setProperty("--db-gallery-columns", String(columns));
     const rendered: HTMLElement[] = [];
     for (let index = next.start; index < next.end; index += 1) {
       rendered.push(options.renderRow(options.items[index], index));
@@ -134,7 +165,15 @@ export function createVirtualList<T>(options: VirtualListOptions<T>): VirtualLis
     observer.observe(container);
   }
   render();
-  return { element: container, render };
+  return {
+    element: container,
+    render,
+    scrollToIndex(index) {
+      render();
+      container.scrollTop = Math.min(maxScrollTop, Math.max(0, insetTop + Math.floor(index / currentColumns) * pitch));
+      render();
+    },
+  };
 }
 
 function readNumber(node: HTMLElement, key: "scrollTop" | "clientHeight"): number {
