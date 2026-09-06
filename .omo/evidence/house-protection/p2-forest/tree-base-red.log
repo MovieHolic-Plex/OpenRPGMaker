@@ -1,0 +1,52 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/houseProtectionForest.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-house-protection-p2-forest
+
+ ❯ test/houseProtectionForest.test.ts (16 tests | 1 failed) 2165ms
+   ✓ direct forest composition writers > preflights litter writes and still changes unowned cells 120ms
+   ✓ direct forest composition writers > preflights tone writes and still changes unowned cells 119ms
+   ✓ direct forest composition writers > preflights closure writes and still changes unowned cells 88ms
+   ✓ direct forest composition writers > preflights feather writes and still changes unowned cells 95ms
+   ✓ direct forest composition writers > preflights undergrowth writes and still changes unowned cells 73ms
+   ✓ direct forest composition writers > rejects an entire puddle footprint touching a house and uses the other clearing 105ms
+   ✓ direct forest composition writers > protects 4-neighbor autotile writes outside the requested area 77ms
+   ✓ direct forest composition writers > protects 8-neighbor autotile writes outside the requested area 75ms
+   ✓ forest placement and final transaction guard > protects single-tile bush placement before writing, while placing bushes outside 36ms
+   × forest placement and final transaction guard > skips an ungrouped tree-base candidate whose repair canopy would enter a house 79ms
+     → expected 290 to be 240 // Object.is equality
+   ✓ forest placement and final transaction guard > keeps whole conifer-tree candidates away from protected canopy cells even with avoidProtected=false 35ms
+   ✓ forest placement and final transaction guard > keeps whole broadleaf-tree candidates away from protected canopy cells even with avoidProtected=false 46ms
+   ✓ forest placement and final transaction guard > preserves ridge, empty/passable cells, deck attachment, human stamps and stacks in real dense composition 101ms
+   ✓ forest placement and final transaction guard > preserves ridge, empty/passable cells, deck attachment, human stamps and stacks in real impassable composition 92ms
+   ✓ forest placement and final transaction guard > commits dense forest through place_props after save/load, keeping the unchanged final guard  542ms
+   ✓ forest placement and final transaction guard > commits impassable forest through place_props after save/load, keeping the unchanged final guard  478ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/houseProtectionForest.test.ts > forest placement and final transaction guard > skips an ungrouped tree-base candidate whose repair canopy would enter a house
+AssertionError: expected 290 to be 240 // Object.is equality
+
+- Expected
++ Received
+
+- 240
++ 290
+
+ ❯ test/houseProtectionForest.test.ts:210:78
+    208|     // The trunk row is entirely outside ownership. Reject its first f…
+    209|     // candidates before writing, not just when the final invariant se…
+    210|     for (let x = 3; x < 7; x += 1) expect(map.lowerTiles[6 * map.width…
+       |                                                                              ^
+    211|     for (const x of [7, 8]) expect(map.lowerTiles[6 * map.width + x]).…
+    212|     expect(captureHouseProtection(project)).toEqual(before);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 15 passed (16)
+   Start at  09:22:19
+   Duration  14.46s (transform 8.03s, setup 0ms, collect 11.49s, tests 2.16s, environment 0ms, prepare 180ms)
