@@ -52,6 +52,7 @@ const TAB_TESTID: Record<string, string> = {
   villages: "db-tab-villages",
   commonEvents: "db-tab-common-events",
   system: "db-tab-system",
+  characterGraphics: "db-tab-character-graphics",
   terms: "db-tab-terms",
   switches: "db-tab-switches",
   variables: "db-tab-variables",

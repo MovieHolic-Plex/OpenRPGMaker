@@ -1,4 +1,5 @@
 import { assertGrowthShape } from "@/project/growth/validation";
+import { validateCharacterGraphicsProject } from "../characterGraphics";
 import { villageDesignIssue } from "../villageDesign";
 import type { Project, ProjectV1, ProjectV2 } from "../types";
 import { normalizeDatabaseRecords, normalizeSystemRecords } from "../databaseRecordModel";
@@ -121,6 +122,7 @@ export function validateProjectV4(data: JsonRecord): Project {
   project.mapTree = mapTree;
   project.mapConnections ??= [];
   project.villageInfoDocuments ??= [];
+  validateCharacterGraphicsProject(project);
   dropLegacyTerrainTemplates(project);
   normalizeEndings(project);
   normalizeStoryFlags(project);

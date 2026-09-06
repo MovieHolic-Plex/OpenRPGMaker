@@ -27,6 +27,11 @@ const ANIMATION_NODES: readonly SvgNodeSpec[] = [
 ];
 
 const TAB_ICONS: Record<DatabaseTab, readonly SvgNodeSpec[]> = {
+  characterGraphics: [
+    { tag: "rect", attrs: { x: "3", y: "3", width: "16", height: "16", rx: "3" } },
+    { tag: "circle", attrs: { cx: "11", cy: "9", r: "3" } },
+    { tag: "path", attrs: { d: "M6 18v-1a5 5 0 0 1 10 0v1" } },
+  ],
   promotionTree: [{ tag: "path", attrs: { d: "M11 4v7M5 11h12M5 11v6M17 11v6" } }, { tag: "circle", attrs: { cx: "11", cy: "4", r: "2" } }, { tag: "circle", attrs: { cx: "5", cy: "18", r: "2" } }, { tag: "circle", attrs: { cx: "17", cy: "18", r: "2" } }],
   skillTrees: [{ tag: "path", attrs: { d: "M5 17l6-12 6 12H5zM11 5v12" } }, { tag: "circle", attrs: { cx: "11", cy: "5", r: "2" } }, { tag: "circle", attrs: { cx: "5", cy: "17", r: "2" } }, { tag: "circle", attrs: { cx: "17", cy: "17", r: "2" } }],
   // 그룹 밖 고정 — 대시보드 격자
