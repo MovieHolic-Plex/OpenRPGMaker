@@ -1,0 +1,14 @@
+{
+  "event": "completed-regrowth-worktree-cleaned",
+  "task": "7",
+  "plan": ".omo/plans/life-systems-full-implementation.md",
+  "worktree": "/home/main/z-project/rpg-zzu-life-full-crop-regrowth",
+  "removeExit": 0,
+  "retainedCommit": "c804bcaec4d06b4d596324f18cc7b3b7e5bbbc27",
+  "allEvidenceTrackedAndIntegrated": true,
+  "unarchivedEvidence": 0,
+  "ownedLiveRuntimes": 0,
+  "activeTask8Unaffected": true,
+  "activeWorkflow": "dag_3b58f987-8a5d-46e0-99aa-0c64eaf6c1c9",
+  "generation": 2
+}

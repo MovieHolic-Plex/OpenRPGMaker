@@ -41,3 +41,14 @@ twice at1200s without a report, while targeted/manual evidence and build pass;
 six surface failures matched the original phase base. Do not absorb failures
 into baselines or pretend inherited limits are resolved. Whole-project gates
 and the51-feature/F01..F13/remote-persistence/final-review obligations remain.
+
+## Ready-only workflow recovery
+
+The initial graph counted three waiting turns as completed; none of those
+implementations or verification results were accepted. Their manual watchers
+were ownership-checked and removed. A settled run refused send, so generation2
+amends the SAME run: keep verified task7, execute ready task8, then independently
+verify its actual committed result in an isolated verification tree. Task10
+remains pending in the approved plan and preserved initial definition. After
+parent verifies/integrates8, add ready10 and rerun integrated verification through
+another amendment; never start a node whose parent handoff is still missing.
