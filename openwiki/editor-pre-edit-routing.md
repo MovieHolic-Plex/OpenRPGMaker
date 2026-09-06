@@ -14,9 +14,10 @@ Read this before editing editor-facing behavior. Identifies which workflow owns 
   same clipped footprint without a tile preview.
 - Freehand paint and erase interpolate between pointer samples. Fill, collision,
   event and stamp gestures remain discrete; one undo restores a whole stroke.
-- Multi-cell source stamps explicitly disable autotile shaping as well as hard
-  cluster expansion. `autoConnect: false` alone is insufficient: ordinary
-  autotile brushes still shape in Manual. Single-cell stamps keep that contract.
+- Multi-cell source stamps set `preservePattern` to bypass terrain shaping and
+  tree-pair repair, and disable hard cluster expansion. `autoConnect: false`
+  alone is insufficient: ordinary autotile brushes still shape in Manual.
+  Single-cell stamps keep ordinary terrain/tree brush behavior.
 - `mapEditHistory.recordMapEditIfChanged` retains the immutable before-map and
   records history only after an actual synchronous change. Brush strokes use it
   until their first mutation, then bypass comparison. No-op paint/fill/erase,

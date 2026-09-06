@@ -293,7 +293,33 @@
         "placed": true
       },
       "screenshot": "C8a-custom-atlas-stamp.png",
-      "artifact": "stamp-verified/results.json"
+      "artifact": "mixed-isolated/results.json"
+    },
+    {
+      "name": "C8-mixed-layers",
+      "status": "PASS",
+      "observed": {
+        "sourceCells": [
+          285,
+          286,
+          289,
+          290
+        ],
+        "layers": [
+          "upper",
+          "upper",
+          "lower",
+          "lower"
+        ],
+        "placed": [
+          285,
+          286,
+          289,
+          290
+        ]
+      },
+      "screenshot": "C8-mixed-layers.png",
+      "artifact": "mixed-isolated/results.json"
     }
   ],
   "viewportCount": 9,
@@ -301,7 +327,8 @@
   "cleanup": {
     "verifiedContext": true,
     "stampContext": true,
-    "workerTreesRemoved": true
+    "workerTreesRemoved": true,
+    "mixedContext": true
   },
   "pixelReview": {
     "status": "unavailable",
@@ -384,6 +411,21 @@
       "width": 1440,
       "height": 900,
       "signature": "89504e470d0a1a0a"
+    },
+    {
+      "path": "output/evidence/sidebar-brush-fixes/mixed-isolated/C8a-custom-atlas-stamp.png",
+      "bytes": 168776,
+      "width": 1440,
+      "height": 900,
+      "signature": "89504e470d0a1a0a"
+    },
+    {
+      "path": "output/evidence/sidebar-brush-fixes/mixed-isolated/C8-mixed-layers.png",
+      "bytes": 117520,
+      "width": 1440,
+      "height": 900,
+      "signature": "89504e470d0a1a0a"
     }
-  ]
+  ],
+  "finalPatternContract": "preservePattern disables terrain shaping and tree-pair repair only for multi-cell stamps"
 }

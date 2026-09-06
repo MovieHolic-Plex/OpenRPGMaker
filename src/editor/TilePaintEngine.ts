@@ -287,7 +287,7 @@ function applyPaletteStamp(input: {
     })),
     {
       autoConnect: single ? input.autoConnect : false,
-      shapeAutotiles: single,
+      preservePattern: !single,
       clusterExpand: false,
     },
   );

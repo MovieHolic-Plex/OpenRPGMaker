@@ -1,0 +1,10 @@
+# Mixed-layer source-stamp correction
+
+- Reviewer B1/C8 reproduced by the supervisor before editing: expected[285,286,289,290], actual[285,260,289,290]. Command: `npm test -- test/tileBrushState.test.ts -t "preserves mixed-layer" --maxWorkers=1`, exit1.
+- `preservePattern` replaces the narrower shaping flag and bypasses terrain shaping plus tree-pair repair for multi-cell stamps. Ordinary brushes and single-cell stamps retain their repair/shaping behavior.
+- Supervisor GREEN: `npm test -- test/tileBrushState.test.ts test/editScenePaintHistory.test.ts test/structureKitBrushConditions.test.ts test/tileBrushTools.test.ts test/tileActions.m1.test.ts --maxWorkers=4 && npm run typecheck:app`:82 tests/5 files, exit0. Changed TS and QA JS diagnostics clean. Full `npm run build` after the correction exited0.
+- Real browser: `runSidebarBrushQa({browser,baseUrl:"http://127.0.0.1:19841",outputDir:"output/evidence/sidebar-brush-fixes/mixed-isolated",scope:"ui",only:["C8a","C8-mixed"],proxyLocalRequests:true})`. Both source selection and placement PASS: all-lower[7,8,37,38] and mixed upper[285,286]/lower[289,290]. errors0, context closed.
+- `summary.json` now contains13 passing scenario receipts, replacing the older all-lower C8a receipt with this final-code rerun and adding the mixed-layer case. Other11 criteria were unaffected by the post-processing guard and remain approved evidence.
+- Browser cold boots initially failed dynamic module loading while shared Vite optimizer caches were being rewritten. The existing `VITE_CACHE_DIR` option was used with an isolated temporary directory; no product configuration/dependency changed. Fixture scrolling uses the current DOM; action and boot deadlines remain bounded.
+- No pixel-level approval claimed; the same tool limitation remains. Two new PNGs document the mixed-source test fixture. No remote project data was written.
+

@@ -3,7 +3,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 /** Supervisor-driven browser proof. All mutations stay in freshProject's local session. */
-export async function runSidebarBrushQa({ browser, baseUrl, outputDir, scope = "all", only = [] }) {
+export async function runSidebarBrushQa({ browser, baseUrl, outputDir, scope = "all", only = [], proxyLocalRequests = false }) {
   await mkdir(outputDir, { recursive: true });
   const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   const page = await context.newPage();
@@ -11,20 +11,21 @@ export async function runSidebarBrushQa({ browser, baseUrl, outputDir, scope = "
   const results = [];
   const errors = [];
   page.on("pageerror", error => errors.push(error.message));
-  // Chromium's host-network change cancellation also affects loopback imports.
-  // Keep the real browser page, but deliver local GET responses through Node/Bun.
-  await page.route("**/*", async route => {
-    const request = route.request();
-    if (request.method() !== "GET" || new URL(request.url()).origin !== new URL(baseUrl).origin) {
-      return route.continue();
-    }
-    const response = await fetch(request.url(), { signal: AbortSignal.timeout(60_000) });
-    await route.fulfill({
-      status: response.status,
-      headers: Object.fromEntries(response.headers),
-      body: Buffer.from(await response.arrayBuffer()),
+  // Opt in on hosts where Chromium cancels loopback imports on network changes.
+  if (proxyLocalRequests) {
+    await page.route("**/*", async route => {
+      const request = route.request();
+      if (request.method() !== "GET" || new URL(request.url()).origin !== new URL(baseUrl).origin) {
+        return route.continue();
+      }
+      const response = await fetch(request.url(), { signal: AbortSignal.timeout(60_000) });
+      await route.fulfill({
+        status: response.status,
+        headers: Object.fromEntries(response.headers),
+        body: Buffer.from(await response.arrayBuffer()),
+      });
     });
-  });
+  }
   await page.addInitScript(() => {
     window.sidebarSceneReady = new Promise((resolve, reject) => {
       const timeout = setTimeout(() => reject(new Error("EditScene did not publish its coordinate hook")), 90_000);
@@ -327,11 +328,48 @@ export async function runSidebarBrushQa({ browser, baseUrl, outputDir, scope = "
         ], [7, 8, 37, 38]);
         return { sourceCells: [7, 8, 37, 38], placed: true };
       });
+      await scenario("C8-mixed-layers", async () => {
+        await mode("standard");
+        await page.getByTestId("tile-search-input").fill("");
+        await page.getByTestId("tool-paint").click();
+        await page.evaluate(() => {
+          const { store, state } = window.sidebarQa;
+          store.update(project => {
+            const map = project.maps[state.get().currentMapId], tileset = project.tilesets[map.tilesetId];
+            // A narrow source-coordinate fixture exposes IDs that the bundled
+            // atlas would otherwise automatically interpret as a tree pair.
+            tileset.kind = "custom";
+            tileset.tilesPerRow = 4;
+            for (const tile of [285, 286]) tileset.priority[tile] = "upper";
+            for (const tile of [289, 290]) tileset.priority[tile] = "lower";
+          }, { scope: "project", label: "Local mixed-layer stamp fixture", origin: "system" });
+          state.set({ layer: "lower", selectedTile: 285, activePaletteStamp: null });
+        });
+        const first = page.locator('.chipset-tile[data-tile-index="285"]');
+        const last = page.locator('.chipset-tile[data-tile-index="290"]');
+        await last.evaluate(node => node.scrollIntoView({ block: "nearest", inline: "nearest" }));
+        const a = await first.boundingBox(), b = await last.boundingBox();
+        assert(a && b);
+        await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2);
+        await page.mouse.down();
+        await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2);
+        await page.mouse.up();
+        const selected = await state();
+        assert.deepEqual(selected.activePaletteStamp?.cells.map(cell => [cell.tile, cell.layer]), [
+          [285, "upper"], [286, "upper"], [289, "lower"], [290, "lower"],
+        ]);
+        const target = await visibleAnchor();
+        await click(target.x, target.y);
+        const after = await map(), i = target.y * after.width + target.x;
+        const placed = [after.upper[i], after.upper[i + 1], after.lower[i + after.width], after.lower[i + after.width + 1]];
+        assert.deepEqual(placed, [285, 286, 289, 290]);
+        return { sourceCells: [285, 286, 289, 290], layers: ["upper", "upper", "lower", "lower"], placed };
+      });
     }
   } finally {
     await context.close();
     cleanup = true;
-    await writeFile(join(outputDir, "results.json"), JSON.stringify({ baseUrl, scope, results, errors, cleanup }, null, 2));
+    await writeFile(join(outputDir, "results.json"), JSON.stringify({ baseUrl, scope, proxyLocalRequests, results, errors, cleanup }, null, 2));
   }
   return { results, errors, cleanup, outputDir };
 }

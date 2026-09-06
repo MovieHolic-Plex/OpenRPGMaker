@@ -60,6 +60,31 @@ beforeEach(() => {
 });
 
 describe("brush selection routes", () => {
+  it("preserves mixed-layer source cells instead of repairing them as bundled trees", () => {
+    const project = store.getCurrent();
+    const map = project.maps[project.startMapId];
+    const tileset = project.tilesets[map.tilesetId];
+    tileset.kind = "custom";
+    tileset.tilesPerRow = 4;
+    for (const tile of [285, 286]) tileset.priority[tile] = "upper";
+    for (const tile of [289, 290]) tileset.priority[tile] = "lower";
+    editorState.set({ activePaletteStamp: {
+      width: 2, height: 2, source: { startTile: 285, endTile: 290 },
+      cells: [
+        { dx: 0, dy: 0, layer: "upper", tile: 285 },
+        { dx: 1, dy: 0, layer: "upper", tile: 286 },
+        { dx: 0, dy: 1, layer: "lower", tile: 289 },
+        { dx: 1, dy: 1, layer: "lower", tile: 290 },
+      ],
+    } });
+    harness().engine.applyAtPointer({ x: 5, y: 5 } as never);
+    const after = store.getCurrent().maps[map.id];
+    expect([
+      after.upperTiles[5 * map.width + 5], after.upperTiles[5 * map.width + 6],
+      after.lowerTiles[6 * map.width + 5], after.lowerTiles[6 * map.width + 6],
+    ]).toEqual([285, 286, 289, 290]);
+  });
+
   it("preserves source variants when placing a multi-cell custom atlas stamp", () => {
     const project = store.getCurrent();
     const map = project.maps[project.startMapId];
