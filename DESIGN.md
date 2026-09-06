@@ -29,6 +29,35 @@
 - Persistence remains `table` + `resultVariableId`. Open and variable-only edits preserve authored table bytes. Name edits preserve numeric precision; storage-safe names replace equals with fullwidth equals and line breaks with spaces. Numeric parsing mirrors the runtime's first numeric field, including blank names/extra separators. Tiny positive percentages use significant digits rather than integer rounding; near-100% counterparts retain enough decimals to avoid false certainty (100% only within floating-point epsilon).
 - Personas: first-time author, keyboard/IME author, existing-project author. No extra theme, runtime change or dependency. Lead owns full build/gates and browser accessibility/geometry acceptance at 1024/1280/1440; unit DOM tests alone are not visual approval.
 
+## Walk encounters from a rectangle (2026-09-06)
+
+- Primary action: `걸을 때 적 만나기`. Use the existing left-drag selection tool,
+  then the visible selection chip. Explanation: `포켓몬 풀숲처럼, 이 안에서 걷다
+  보면 전투가 시작됩니다.` No tile painting, new schema, or runtime overlay.
+- Native modal-stack worksheet: named enemy artwork/checkbox search, selected
+  count, frequency presets, then `완료`. Reuse subdialog, `btn`, thumbnail and
+  labelled native controls; advanced weights/conditions use `details`.
+  Personas: first-time author, existing-table author, keyboard-only author.
+- Studio tokens (`--bg-raised`, `--bg-inset`, `--text-1/2`, `--accent`,
+  `--border-soft`), --font-ui 13px/1.5, help 12px/1.5, 32px minimum controls,
+  4/8/12/16/24 spacing, 6px controls and 8px groups. No decorative motion.
+  Width at most 760px; bounded scrolling body, fixed action footer. Desktop
+  acceptance 1024x768, 1280x800, 1440x900; controls wrap rather than shrink.
+- Canvas has a persistent labelled region-list button and translucent indigo
+  rectangle outlines; list entries identify coordinates and enemy names. Edit,
+  delete, reuse last settings and replace bounds from a fresh selection are
+  explicit actions. Identical rectangles form one editable group; overlaps mix
+  eligible entries according to relative weights, never an exclusive layer.
+- Frequency is map-wide. Preserve a positive rate until explicitly changed;
+  zero defaults to normal. Existing legacy encounters require an explicit
+  keep-everywhere or replace-with-regions choice. Other table entries survive.
+- Fields are local drafts. Cancel/Escape write nothing. Apply validates bounds,
+  references, conditions, locks, project identity and encounter-state freshness,
+  then records one project snapshot and one labelled store mutation including
+  generated troops. Delete removes rules, not tiles/troops. Empty catalog/search,
+  invalid input, stale state and lock errors have visible recovery text.
+  No fake loading. Real browser review is supervisor-owned.
+
 ## System settings workspace (2026-09-06)
 
 Database > System is a settings worksheet in the existing cool-white, slate and

@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **48쪽 / 1688KB / 약 480,853 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **48쪽 / 1692KB / 약 481,932 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -445,15 +445,16 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L85` Event editor aggregate gate (2026-07-30)
 - `L94` P2 spatial integrity (2026-08-25)
 
-### `openwiki/editor-workflows-misc.md` — 41KB · 144줄 · ~11,624 토큰
+### `openwiki/editor-workflows-misc.md` — 45KB · 199줄 · ~12,703 토큰
 
 - `L7` Other Editor Workflows
-  - `L10` Genre-neutral authoring launcher and journey (2026-08-24)
-- `L60` 편집기 z 층 밴드와 토스트 (2026-08-30, PR #308)
-- `L89` 초보 맵 사이드바 «목록 | 상세» 2단 탐색기 (2026-08-30, PR #311)
-- `L111` 커스텀 셀렉트는 열릴 때 modalStack 층이 된다 (2026-08-30)
-- `L125` 맵 설정 가독성·편집 연속성 (2026-09-05)
-- `L135` 왼쪽 사이드바 3모드 적대적 리뷰 (2026-09-05)
+  - `L9` 걸을 때 적 만나기 — rectangle authoring (2026-09-06)
+  - `L65` Genre-neutral authoring launcher and journey (2026-08-24)
+- `L115` 편집기 z 층 밴드와 토스트 (2026-08-30, PR #308)
+- `L144` 초보 맵 사이드바 «목록 | 상세» 2단 탐색기 (2026-08-30, PR #311)
+- `L166` 커스텀 셀렉트는 열릴 때 modalStack 층이 된다 (2026-08-30)
+- `L180` 맵 설정 가독성·편집 연속성 (2026-09-05)
+- `L190` 왼쪽 사이드바 3모드 적대적 리뷰 (2026-09-05)
 
 ### `openwiki/editor-workflows.md` — 2KB · 28줄 · ~586 토큰
 
