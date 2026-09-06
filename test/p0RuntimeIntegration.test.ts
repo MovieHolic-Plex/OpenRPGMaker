@@ -79,7 +79,7 @@ describe("P0 day transition integration", () => {
       receipt: {
         sourceDayKey,
         destinationDayKey: "1:summer:1",
-        stages: ["shipping", "calendar", "dailyWeather", "rainWatering", "farm", "forage", "energy", "makers", "animals"],
+        stages: ["recovery", "shipping", "calendar", "dailyWeather", "rainWatering", "farm", "forage", "energy", "makers", "animals"],
       },
     });
     expect(session.shippingQueue).toEqual({});
@@ -94,22 +94,25 @@ describe("P0 day transition integration", () => {
     expect(session).toEqual(frozen);
   });
 
-  it("fails closed when a stale queue or maker record is encountered", () => {
+  it("quarantines stale queue and legacy maker records without guessing payouts", () => {
     const project = runtimeProject();
     const session = startSession(project, 102);
     const sourceDayKey = calendarDayKey(session.gameTime!);
     session.shippingQueue = { item_deleted: 1 };
     const frozen = structuredClone(session);
-    expect(transitionToNextDay(project, session, sourceDayKey)).toMatchObject({ ok: false, reason: "shipping" });
-    expect(session).toEqual(frozen);
+    expect(transitionToNextDay(project, session, sourceDayKey).ok).toBe(true);
+    expect(session.inventory).toEqual(frozen.inventory);
+    expect(session.lifeRecovery?.claims["recovery:1"]).toMatchObject({ items: [{ itemId: "item_deleted", count: 1 }], unresolved: { record: 1 } });
 
     session.shippingQueue = {};
     session.makerInstances = {
       stale: { instanceId: "stale", makerId: "maker_deleted", status: "processing", startedAtMinute: 0, readyAtMinute: 1 },
     };
     const makerFrozen = structuredClone(session);
-    expect(transitionToNextDay(project, session, sourceDayKey)).toMatchObject({ ok: false, reason: "makers" });
-    expect(session).toEqual(makerFrozen);
+    expect(transitionToNextDay(project, session, calendarDayKey(session.gameTime!)).ok).toBe(true);
+    expect(session.inventory).toEqual(makerFrozen.inventory);
+    expect(session.makerInstances).toEqual({});
+    expect(session.lifeRecovery?.claims["recovery:2"]).toMatchObject({ items: [], unresolved: { record: makerFrozen.makerInstances?.stale } });
   });
 
   it("persists the exact-once transition key through the shared save path", () => {
@@ -223,7 +226,7 @@ describe("P0 day transition integration", () => {
 
     const result = runSceneTest(project, {
       mapId: project.startMapId,
-      start: { x: project.startX, y: project.startY },
+      start: { ...project.startPos },
       steps: [{ kind: "advanceDays", days: 2 }],
     });
 
@@ -249,7 +252,7 @@ describe("P0 day transition integration", () => {
 
     const result = runSceneTest(project, {
       mapId: project.startMapId,
-      start: { x: project.startX, y: project.startY },
+      start: { ...project.startPos },
       steps: [{ kind: "wait", ticks: 63 }],
     });
 
@@ -345,13 +348,13 @@ describe("P0 farm action integration", () => {
     expect(interactWithFarmPlot(project, session, map, 4, 5).kind).toBe("harvested");
     expect(session.lifeSkills?.life_farming?.xp).toBe(10);
 
-    session.placeables![placeableKey(map.id, 6, 5)] = { kind: "rock" };
+    session.placeables![placeableKey(map.id, 6, 5)] = { id: "rock", kind: "rock", mapId: map.id, x: 6, y: 5 };
     session.inventory.item_pickaxe = 1;
     session.equippedToolItemId = "item_pickaxe";
     expect(interactWithFarmPlot(project, session, map, 6, 5).kind).toBe("harvested");
     expect(session.lifeSkills?.life_mining?.xp).toBe(10);
 
-    session.placeables![placeableKey(map.id, 7, 5)] = { kind: "tree" };
+    session.placeables![placeableKey(map.id, 7, 5)] = { id: "tree", kind: "tree", mapId: map.id, x: 7, y: 5 };
     session.inventory.item_axe = 1;
     session.equippedToolItemId = "item_axe";
     expect(interactWithFarmPlot(project, session, map, 7, 5).kind).toBe("harvested");

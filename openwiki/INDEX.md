@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **47쪽 / 1584KB / 약 450,993 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **47쪽 / 1587KB / 약 451,821 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -21,8 +21,8 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-event-authoring.md` | 118KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 564 | ~34,433 |
 | `openwiki/editor-pre-edit-routing.md` | 69KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 197 | ~19,760 |
 | `openwiki/runtime-battle.md` | 118KB | 31KB | 358 | ~33,888 |
-| `openwiki/runtime-project-schema.md` | 63KB | 42KB | 233 | ~17,055 |
-| `openwiki/runtime-sessions.md` | 64KB | 45KB | 184 | ~17,079 |
+| `openwiki/runtime-project-schema.md` | 64KB | 42KB | 237 | ~17,293 |
+| `openwiki/runtime-sessions.md` | 66KB | 45KB | 194 | ~17,669 |
 | `openwiki/testing.md` | 107KB | 45KB | 715 | ~30,300 |
 
 ## 한국어 산문이 깨진 페이지
@@ -574,42 +574,44 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L163` 가구 밀기 애니메이션 (2026-09-05)
 - `L172` Recovered head emotes (2026-09-05)
 
-### `openwiki/runtime-project-schema.md` — 63KB · 233줄 · ~17,055 토큰 · 통째읽기 잘림
+### `openwiki/runtime-project-schema.md` — 64KB · 237줄 · ~17,293 토큰 · 통째읽기 잘림
 
 - `L3` Independent game Save5 boundary (2026-09-06)
-- `L9` Project-authored equipment slots (2026-09-05)
-- `L17` 기본 카탈로그 삭제 보존 (2026-09-05)
-- `L21` 전투 페이지 중복 ID 복구와 슬롯 참조 (2026-09-05)
-- `L34` 통행 컴포넌트 색인의 계약 (2026-08-30, PR #286)
-- `L42` 세계 법칙의 명시적 부재 (2026-09-05)
-- `L46` Project schema & persistence
-- `L113` Variable arithmetic & loop runtime (2026-08-07)
-- `L117` Canonical event-draft projection (2026-07-30)
-- `L123` P2 general buildings and home decorations (2026-08-25)
-- `L130` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
-- `L148` Boot normalizers must not create dangling references (2026-08-30)
-- `L174` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
-- `L208` 성장 트리 선택 확장 (2026-09-05)
-- `L214` 마을 설계서 (2026-09-05)
-- `L220` 공포 게임 제작 기능 (2026-09-05)
-  - `L224` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
-- `L228` NPC 표시 이름 (2026-09-05)
+- `L9` Life ownership in Save5 (2026-09-06)
+- `L13` Project-authored equipment slots (2026-09-05)
+- `L21` 기본 카탈로그 삭제 보존 (2026-09-05)
+- `L25` 전투 페이지 중복 ID 복구와 슬롯 참조 (2026-09-05)
+- `L38` 통행 컴포넌트 색인의 계약 (2026-08-30, PR #286)
+- `L46` 세계 법칙의 명시적 부재 (2026-09-05)
+- `L50` Project schema & persistence
+- `L117` Variable arithmetic & loop runtime (2026-08-07)
+- `L121` Canonical event-draft projection (2026-07-30)
+- `L127` P2 general buildings and home decorations (2026-08-25)
+- `L134` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
+- `L152` Boot normalizers must not create dangling references (2026-08-30)
+- `L178` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
+- `L212` 성장 트리 선택 확장 (2026-09-05)
+- `L218` 마을 설계서 (2026-09-05)
+- `L224` 공포 게임 제작 기능 (2026-09-05)
+  - `L228` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
+- `L232` NPC 표시 이름 (2026-09-05)
 
-### `openwiki/runtime-sessions.md` — 64KB · 184줄 · ~17,079 토큰 · 통째읽기 잘림
+### `openwiki/runtime-sessions.md` — 66KB · 194줄 · ~17,669 토큰 · 통째읽기 잘림
 
 - `L1` Save5 session boundary (2026-09-06)
 - `L9` Life recovery primitives and maker evidence (2026-09-06)
-- `L17` Esc 메뉴 작업 프레임 (2026-09-05)
-- `L47` 아이템 종류 전환과 실행 효과 (2026-09-05)
-- `L58` Roguelike run kernel and field rooms (Phase 0–3, 2026-08-24)
-- `L68` P1 daily-weather transition authority (2026-08-25)
-- `L77` Session state & life-sim
-- `L150` Editorial title screen (2026-08-26)
-- `L156` playerTouch trigger contract (2026-08-20)
-- `L160` Selected-event runtime sandbox (2026-07-30)
-- `L166` P2 spatial runtime and saves (2026-08-25)
-- `L174` 공포 게임 제작 기능 (2026-09-05)
-  - `L178` 메뉴 PR 통합 검증 (2026-09-05)
+- `L17` Lossless life snapshot reconciliation (2026-09-06)
+- `L27` Esc 메뉴 작업 프레임 (2026-09-05)
+- `L57` 아이템 종류 전환과 실행 효과 (2026-09-05)
+- `L68` Roguelike run kernel and field rooms (Phase 0–3, 2026-08-24)
+- `L78` P1 daily-weather transition authority (2026-08-25)
+- `L87` Session state & life-sim
+- `L160` Editorial title screen (2026-08-26)
+- `L166` playerTouch trigger contract (2026-08-20)
+- `L170` Selected-event runtime sandbox (2026-07-30)
+- `L176` P2 spatial runtime and saves (2026-08-25)
+- `L184` 공포 게임 제작 기능 (2026-09-05)
+  - `L188` 메뉴 PR 통합 검증 (2026-09-05)
 
 ### `openwiki/se-catalog.md` — 13KB · 228줄 · ~3,423 토큰
 

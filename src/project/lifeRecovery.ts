@@ -18,6 +18,7 @@ export type LifeRecoverySource = {
   readonly reason: string;
   /** Maker cancellation cutoff expressed in the job's ORIGINAL time basis. */
   readonly absoluteMinute?: number;
+  readonly unresolvedOnly?: boolean;
 };
 
 function record(value: unknown): value is Record<string, unknown> {
@@ -99,7 +100,7 @@ export function moveLifeRecoverySource(project: Project, session: PlaySession, s
   const original = owners[source.sourceId];
   if (!isLifeRecoveryJson(original)) return { ok: false, reason: "invalid-source" };
   let items: readonly ItemAmount[] = [];
-  switch (source.sourceKind) {
+  if (!source.unresolvedOnly) switch (source.sourceKind) {
     case "shippingQueue":
       items = [{ itemId: source.sourceId, count: session.shippingQueue?.[source.sourceId] ?? 0 }];
       break;
@@ -187,3 +188,5 @@ export function collectLifeRecoveryClaim(project: Project, session: PlaySession,
   Object.assign(session, draft);
   return { ok: true, claimIds: [claimId] };
 }
+
+export { LifeReconciliationError, parseLifeState, preserveUnresolvedLifeSource, reconcileLifeState } from "./lifeStateReconciliation";

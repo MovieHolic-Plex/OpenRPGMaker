@@ -1,0 +1,5 @@
+{
+  "command": "npm test -- test/lifeRecoveryPersistence.test.ts",
+  "exit": 1,
+  "durationSeconds": 11.314557075500488
+}

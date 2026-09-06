@@ -1,0 +1,231 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeRecoveryPersistence.test.ts test/p0SessionPersistence.test.ts test/p1SessionPersistence.test.ts test/p2SessionPersistence.test.ts test/p2SpatialPersistence.test.ts test/p0RuntimeIntegration.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+ ✓ test/p1SessionPersistence.test.ts (3 tests) 487ms
+   ✓ P1 farm-animal session persistence > round-trips runtime assignment, care receipts, cadence, and ready products  321ms
+ ✓ test/p2SessionPersistence.test.ts (4 tests) 907ms
+   ✓ P2 session persistence > round-trips collection, museum receipts, forage cursor/placeables, and fishing RNG  330ms
+   ✓ P2 session persistence > accepts a legacy RNG payload without fishing while preserving every old stream  302ms
+ ❯ test/p2SpatialPersistence.test.ts (3 tests | 1 failed) 812ms
+   ✓ P2 spatial persistence > round-trips records and preserves an explicitly emptied runtime collection  525ms
+   ✓ P2 spatial persistence > keeps authored placements only when legacy saves omit the new fields 167ms
+   × P2 spatial persistence > drops unknown, unsafe, out-of-bounds, and overlapping saved placements 116ms
+     → Life recovery snapshot/session: Life recovery farmBuildingPlacements/shed_unsafe: invalid-state
+ ❯ test/p0SessionPersistence.test.ts (9 tests | 4 failed) 1086ms
+   × P0 save snapshot regression > preserves life skills and shop economy through writer, parser, and apply 425ms
+     → expected { 'farm:2,3': { …(5) } } to deeply equal { 'farm:2,3': { …(5) } }
+   ✓ P0 save snapshot regression > loads a legacy snapshot with the optional progression fields omitted 110ms
+   ✓ P0 save snapshot regression > removes a cursor that does not match the canonical day-key grammar at parse time 95ms
+   ✓ P0 save snapshot regression > drops a non-safe saved year before it can poison a loaded day transition 99ms
+   ✓ P0 save snapshot regression > normalizes a safe-integer year that still exceeds the absolute-minute range 66ms
+   × P0 save snapshot regression > uses the same P0 snapshot state for autosave and checkpoints 90ms
+     → expected { switches: { …(20) }, …(86) } to match object { lifeSkills: { …(1) }, …(6) }
+(157 matching properties omitted from actual)
+   ✓ P0 save snapshot regression > removes zero shipping rows and drops arithmetically forged settlement history 77ms
+   × P0 save snapshot regression > drops P0 progress whose authored shipping, bundle, or maker definition was deleted 51ms
+     → expected [ 'bundle_mine' ] to deeply equal []
+   × P0 save snapshot regression > normalizes hostile skill, maker, and bundle receipt state against the current project 68ms
+     → expected {} to deeply equal { Object (skill_farming) }
+ ✓ test/lifeRecoveryPersistence.test.ts (11 tests) 1544ms
+ ❯ test/p0RuntimeIntegration.test.ts (16 tests | 2 failed) 1596ms
+   × P0 day transition integration > settles, advances calendar and farm, restores energy, then advances makers in one receipt 268ms
+     → expected { ok: true, receipt: { …(10) } } to match object { ok: true, receipt: { …(3) } }
+(29 matching properties omitted from actual)
+   × P0 day transition integration > fails closed when a stale queue or maker record is encountered 212ms
+     → expected { ok: true, receipt: { …(10) } } to match object { ok: false, reason: 'shipping' }
+(11 matching properties omitted from actual)
+   ✓ P0 day transition integration > persists the exact-once transition key through the shared save path 92ms
+   ✓ P0 day transition integration > routes a natural clock boundary through the same receipt path 75ms
+   ✓ P0 day transition integration > handles zero elapsed time and an exact boundary without skipping or duplicating a day 115ms
+   ✓ P0 day transition integration > advances a day whose shipping was already settled but has no transition cursor 81ms
+   ✓ P0 day transition integration > continues the day transition when authored daily energy restore is zero 78ms
+   ✓ P0 day transition integration > drops malformed, current-day, and non-adjacent save cursors while retaining the previous day 110ms
+   ✓ P0 day transition integration > restores a cursor across a project-specific season boundary 59ms
+   ✓ P0 day transition integration > gives the scene test runner the same day-transition authority at exact boundaries 134ms
+   ✓ P0 day transition integration > routes the scene test runner's natural exact clock boundary through the authority 76ms
+   ✓ P0 day transition integration > does not calculate absolute maker time when the maker package is disabled 68ms
+   ✓ P0 day transition integration > fails the maker stage atomically when absolute game time still overflows 62ms
+   ✓ P0 farm action integration > applies upgraded tool area and multiplier atomically 76ms
+   ✓ P0 farm action integration > changes no tile, inventory, placeable, energy, or XP when energy is insufficient 38ms
+   ✓ P0 farm action integration > awards XP only for successful crop, rock, and tree harvests 44ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/p0RuntimeIntegration.test.ts > P0 day transition integration > settles, advances calendar and farm, restores energy, then advances makers in one receipt
+AssertionError: expected { ok: true, receipt: { …(10) } } to match object { ok: true, receipt: { …(3) } }
+(29 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -2,10 +2,11 @@[39m
+[2m    "ok": true,[22m
+[2m    "receipt": {[22m
+[2m      "destinationDayKey": "1:summer:1",[22m
+[2m      "sourceDayKey": "1:spring:28",[22m
+[2m      "stages": [[22m
+[31m+       "recovery",[39m
+[2m        "shipping",[22m
+[2m        "calendar",[22m
+[2m        "dailyWeather",[22m
+[2m        "rainWatering",[22m
+[2m        "farm",[22m
+
+ ❯ test/p0RuntimeIntegration.test.ts:77:20
+     75|     const result = transitionToNextDay(project, session, sourceDayKey);
+     76|
+     77|     expect(result).toMatchObject({
+       |                    ^
+     78|       ok: true,
+     79|       receipt: {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  test/p0RuntimeIntegration.test.ts > P0 day transition integration > fails closed when a stale queue or maker record is encountered
+AssertionError: expected { ok: true, receipt: { …(10) } } to match object { ok: false, reason: 'shipping' }
+(11 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "ok": false,[39m
+[32m-   "reason": "shipping",[39m
+[31m+   "ok": true,[39m
+[2m  }[22m
+
+ ❯ test/p0RuntimeIntegration.test.ts:103:65
+    101|     session.shippingQueue = { item_deleted: 1 };
+    102|     const frozen = structuredClone(session);
+    103|     expect(transitionToNextDay(project, session, sourceDayKey)).toMatc…
+       |                                                                 ^
+    104|     expect(session).toEqual(frozen);
+    105|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  test/p0SessionPersistence.test.ts > P0 save snapshot regression > preserves life skills and shop economy through writer, parser, and apply
+AssertionError: expected { 'farm:2,3': { …(5) } } to deeply equal { 'farm:2,3': { …(5) } }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -2,8 +2,8 @@[39m
+[2m    "farm:2,3": {[22m
+[2m      "instanceId": "farm:2,3",[22m
+[2m      "makerId": "maker_preserves",[22m
+[2m      "readyAtMinute": 1940,[22m
+[2m      "startedAtMinute": 500,[22m
+[32m-     "status": "processing",[39m
+[31m+     "status": "ready",[39m
+[2m    },[22m
+[2m  }[22m
+
+ ❯ test/p0SessionPersistence.test.ts:118:37
+    116|     expect(restored.unlockedRegionIds).toEqual(["region_bridge"]);
+    117|     expect(restored.unlockedRecipeIds).toEqual(["recipe_preserves"]);
+    118|     expect(restored.makerInstances).toEqual(session.makerInstances);
+       |                                     ^
+    119|   });
+    120|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  test/p0SessionPersistence.test.ts > P0 save snapshot regression > uses the same P0 snapshot state for autosave and checkpoints
+AssertionError: expected { switches: { …(20) }, …(86) } to match object { lifeSkills: { …(1) }, …(6) }
+(157 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -14,11 +14,11 @@[39m
+[2m      "farm:4,5": {[22m
+[2m        "instanceId": "farm:4,5",[22m
+[2m        "makerId": "maker_preserves",[22m
+[2m        "readyAtMinute": 1100,[22m
+[2m        "startedAtMinute": 800,[22m
+[32m-       "status": "processing",[39m
+[31m+       "status": "ready",[39m
+[2m      },[22m
+[2m    },[22m
+[2m    "shippingQueue": {[22m
+[2m      "item_turnip": 3,[22m
+[2m    },[22m
+
+ ❯ test/p0SessionPersistence.test.ts:259:26
+    257|     if (autosave.kind !== "present") throw new Error("expected a parse…
+    258|     const autoRestored = applySaveSnapshot(project, autosave.snapshot);
+    259|     expect(autoRestored).toMatchObject({
+       |                          ^
+    260|       lifeSkills: session.lifeSkills,
+    261|       energy: 48,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  test/p0SessionPersistence.test.ts > P0 save snapshot regression > drops P0 progress whose authored shipping, bundle, or maker definition was deleted
+AssertionError: expected [ 'bundle_mine' ] to deeply equal []
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   "bundle_mine",[39m
+[31m+ ][39m
+
+ ❯ test/p0SessionPersistence.test.ts:354:41
+    352|     expect(restored.shippingHistory).toEqual([]);
+    353|     expect(restored.bundleContributions).toEqual({});
+    354|     expect(restored.completedBundleIds).toEqual([]);
+       |                                         ^
+    355|     expect(restored.bundleRewardAppliedIds).toEqual([]);
+    356|     expect(restored.unlockedRegionIds).toEqual([]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  test/p0SessionPersistence.test.ts > P0 save snapshot regression > normalizes hostile skill, maker, and bundle receipt state against the current project
+AssertionError: expected {} to deeply equal { Object (skill_farming) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- {[39m
+[32m-   "skill_farming": {[39m
+[32m-     "level": 3,[39m
+[32m-     "xp": 275,[39m
+[32m-   },[39m
+[32m- }[39m
+[31m+ {}[39m
+
+ ❯ test/p0SessionPersistence.test.ts:388:33
+    386|     const restored = applySaveSnapshot(project, snapshot);
+    387|
+    388|     expect(restored.lifeSkills).toEqual({ skill_farming: { xp: 275, le…
+       |                                 ^
+    389|     expect(restored.makerInstances).toEqual({});
+    390|     expect(restored.completedBundleIds).toEqual(["bundle_spring"]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  test/p2SpatialPersistence.test.ts > P2 spatial persistence > drops unknown, unsafe, out-of-bounds, and overlapping saved placements
+LifeReconciliationError: Life recovery snapshot/session: Life recovery farmBuildingPlacements/shed_unsafe: invalid-state
+ ❯ applySaveSnapshot src/player/saveSlots.ts:480:25
+    478| export function applySaveSnapshot(project: Project, input: SaveSnapsho…
+    479|   const parsed = parseSnapshotValue(input);
+    480|   if (!parsed.ok) throw new LifeReconciliationError("snapshot", "sessi…
+       |                         ^
+    481|   const snapshot = parsed.snapshot;
+    482|   const session = startSession(project);
+ ❯ test/p2SpatialPersistence.test.ts:122:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+
+ Test Files  3 failed | 3 passed (6)
+      Tests  7 failed | 39 passed (46)
+   Start at  08:54:10
+   Duration  17.02s (transform 13.86s, setup 0ms, collect 53.90s, tests 6.43s, environment 2ms, prepare 2.01s)

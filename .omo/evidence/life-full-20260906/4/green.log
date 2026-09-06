@@ -1,0 +1,25 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeRecoveryPersistence.test.ts test/p0SessionPersistence.test.ts test/p1SessionPersistence.test.ts test/p2SessionPersistence.test.ts test/p2SpatialPersistence.test.ts test/p0RuntimeIntegration.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+ ✓ test/p2SessionPersistence.test.ts (4 tests) 649ms
+ ✓ test/p1SessionPersistence.test.ts (3 tests) 963ms
+   ✓ P1 farm-animal session persistence > round-trips runtime assignment, care receipts, cadence, and ready products  684ms
+ ✓ test/p2SpatialPersistence.test.ts (3 tests) 1097ms
+   ✓ P2 spatial persistence > round-trips records and preserves an explicitly emptied runtime collection  650ms
+ ✓ test/p0SessionPersistence.test.ts (9 tests) 1457ms
+   ✓ P0 save snapshot regression > preserves life skills and shop economy through writer, parser, and apply  506ms
+ ✓ test/lifeRecoveryPersistence.test.ts (34 tests) 5304ms
+   ✓ lossless life persistence > keeps compatible shipping and unfinished legacy maker behavior  690ms
+   ✓ lossless life persistence > keeps contribution2 and recovers only excess3 after requirement5 becomes2  356ms
+   ✓ adversarial life codec boundaries > refuses all conversions on claim exhaustion without moving a prefix  1058ms
+   ✓ load refusal bounds and pure reconciliation > rejects total-bytes at the real Save5 reader without overwriting bytes  339ms
+ ✓ test/p0RuntimeIntegration.test.ts (16 tests) 1995ms
+
+ Test Files  6 passed (6)
+      Tests  69 passed (69)
+   Start at  09:06:37
+   Duration  24.26s (transform 21.87s, setup 0ms, collect 88.44s, tests 11.47s, environment 21ms, prepare 3.78s)

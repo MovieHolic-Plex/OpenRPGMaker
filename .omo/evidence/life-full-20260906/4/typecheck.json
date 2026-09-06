@@ -1,0 +1,15 @@
+{
+  "command": "npm run typecheck:app",
+  "wrapper": [
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=10s",
+    "240s",
+    "bash",
+    "-lc",
+    "npm run typecheck:app"
+  ],
+  "exit": 0,
+  "durationSeconds": 77.2520203590393,
+  "base": "f72853167278d2865a95b8600200313eb8ee08b0"
+}

@@ -1,0 +1,5 @@
+{
+  "command": "npm test -- test/lifeRecovery.test.ts test/lifeSaveVersion.test.ts test/autosave.test.ts test/p0Makers.test.ts test/p0Shipping.test.ts test/p0Bundles.test.ts test/p1FarmAnimals.test.ts test/p1DayTransitionIntegration.test.ts test/p1WeatherDayTransition.test.ts test/p2DayTransition.test.ts test/p0DayTransitionSceneFailure.test.ts test/p2SpatialTransactions.test.ts test/checkpointEndingRuntime.test.ts",
+  "exit": 0,
+  "durationSeconds": 41.45587730407715
+}

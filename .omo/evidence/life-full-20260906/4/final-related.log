@@ -1,0 +1,38 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeRecovery.test.ts test/lifeSaveVersion.test.ts test/autosave.test.ts test/p0Makers.test.ts test/p0Shipping.test.ts test/p0Bundles.test.ts test/p1FarmAnimals.test.ts test/p1DayTransitionIntegration.test.ts test/p1WeatherDayTransition.test.ts test/p2DayTransition.test.ts test/p0DayTransitionSceneFailure.test.ts test/p2SpatialTransactions.test.ts test/checkpointEndingRuntime.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+ ✓ test/p2DayTransition.test.ts (2 tests) 379ms
+ ✓ test/p1WeatherDayTransition.test.ts (4 tests) 572ms
+ ✓ test/p0Shipping.test.ts (9 tests) 858ms
+ ✓ test/p0Bundles.test.ts (9 tests) 1066ms
+ ✓ test/p2SpatialTransactions.test.ts (3 tests) 1061ms
+   ✓ P2 spatial atomic transactions > builds, moves, upgrades, and removes a general structure without touching P1 homes  541ms
+ ✓ test/p1DayTransitionIntegration.test.ts (5 tests) 925ms
+   ✓ P1 daily weather transition integration > initializes today's weather and visual state when a new session starts  330ms
+ ✓ test/p0Makers.test.ts (8 tests) 1149ms
+ ✓ test/autosave.test.ts (16 tests) 1500ms
+ ✓ test/p1FarmAnimals.test.ts (16 tests) 1884ms
+   ✓ P1 farm-animal runtime authority > assigns and moves an animal only to a compatible home with remaining capacity  310ms
+   ✓ P1 farm-animal runtime authority > rejects empty and unsafe feed stacks without changing inventory or animal care  319ms
+ ✓ test/lifeSaveVersion.test.ts (18 tests) 2393ms
+   ✓ Save5 version and original ownership boundary > writes independent Save5 even without life packages, leaving Project4 and live state unchanged  604ms
+   ✓ Save5 version and original ownership boundary > migrates manual and auto only in memory in namespace "  exported:game-a  "  326ms
+ ✓ test/lifeRecovery.test.ts (54 tests) 4791ms
+   ✓ life transaction evidence > freezes spent inputs, promised outputs, duration and calendar when starting  498ms
+   ✓ bounded recovery ownership > accepts claim 4096 then refuses claim 4097 without removing its owner or sequence  376ms
+   ✓ bounded recovery ownership > rejects a multi-claim split in advance when only one slot remains  412ms
+   ✓ recovery save boundary schema > accepts exactly 8 MiB total and rejects one extra byte without normalizing input  360ms
+   ✓ adversarial source conversion > validates a large JSON array without overflowing the call stack  312ms
+ ✓ test/p0DayTransitionSceneFailure.test.ts (4 tests) 952ms
+   ✓ P0 day-transition scene failure handling > keeps natural clock state unchanged and exposes a visible error  550ms
+ ✓ test/checkpointEndingRuntime.test.ts (5 tests) 1195ms
+   ✓ checkpointSave / killPlayer / triggerEnding > define_ending은 같은 조건 집합의 낮은 priority 엔딩을 warning으로 보고한다  764ms
+
+ Test Files  13 passed (13)
+      Tests  153 passed (153)
+   Start at  09:12:01
+   Duration  24.37s (transform 28.67s, setup 0ms, collect 141.84s, tests 18.73s, environment 23ms, prepare 7.17s)
