@@ -137,7 +137,9 @@ Architecture audit: task3 transaction module remains181 nonblank/non-line-commen
   "implementationCommitLookup": "git log --diff-filter=A --format=%H -- src/project/lifeStateReconciliation.ts",
   "predecessor": { "verdict": "confirmed", "blockers": 0, "matchesAncestor": true },
   "requiredTests": { "files": 6, "passed": 70, "failed": 0, "skipped": 0 },
-  "relatedTests": { "files": 13, "passed": 153, "failed": 0, "skipped": 0 },
+  "relatedTests": { "files": 14, "passed": 160, "failed": 0, "skipped": 0 },
+  "implementationCommit": "b668667bfaaf1846ee4b65215b690a07f092c7d1",
+  "latestRelatedReceipt": "autosave-parent-regression.json",
   "diagnostics": { "files": 14, "count": 0 },
   "typecheckExit": 0,
   "buildExit": 0,
@@ -158,3 +160,21 @@ Architecture audit: task3 transaction module remains181 nonblank/non-line-commen
   "independentTask4Verification": "parent must refresh stale VERIFY before task5"
 }
 ```
+
+## Parent autosave contract regression request
+
+Verified the request against committed implementation `b668667bfaaf1846ee4b65215b690a07f092c7d1`, tree `1db9f2d9dba6e23feba0df126961b229c34aafc2`, from a clean worktree. The concern describes an intermediate broad construction catch, not the committed boundary: `performAutosave` catches only `LifeReconciliationError` during construction and immediately rethrows every other construction exception. Storage retains its separate existing catch. No product correction or autosave redesign was needed in this follow-up.
+
+`git diff f72853167278d2865a95b8600200313eb8ee08b0 HEAD -- test/lifeSaveVersion.test.ts` is empty. Its unchanged18 tests retain the exact DataCloneError throw, prior checkpoint identity, original disk bytes and immediate same-time debounce retry assertions. That file already ran in the original related suite. The missing selection was `playerOpenSaveMenu.test.ts`; the new combined related selection now includes both requested files and all previous13 files.
+
+Fresh command, executed once with300-second bound:
+
+```sh
+npm test -- test/lifeRecovery.test.ts test/lifeSaveVersion.test.ts test/autosave.test.ts test/p0Makers.test.ts test/p0Shipping.test.ts test/p0Bundles.test.ts test/p1FarmAnimals.test.ts test/p1DayTransitionIntegration.test.ts test/p1WeatherDayTransition.test.ts test/p2DayTransition.test.ts test/p0DayTransitionSceneFailure.test.ts test/p2SpatialTransactions.test.ts test/checkpointEndingRuntime.test.ts test/playerOpenSaveMenu.test.ts
+```
+
+Result: **14 files /160 passed /0 failed /0 skipped, actual exit0**. `lifeSaveVersion.test.ts` executed18 tests; `playerOpenSaveMenu.test.ts` executed7. The latter drives the real player shell save-menu callback and keyboard/Storage path with the export store shim: exact Save5 write signal, quota refusal/cancelled observation cleanup, slot navigation, overwrite cancellation/re-entry and map/session save restrictions. It does not boot a real Phaser game and is not a player.html end-to-end claim. Its timer advancement exercises the observation-timeout behavior itself, not a sleep-based wait for saving.
+
+Receipts: `autosave-parent-regression.{log,json}`; JSON contains exact command/wrapper, implementation HEAD/tree, captured output and SHA256. `commands.json` includes the new run. The DoneClaim's related count is updated to160; earlier13-file153-pass entries remain accurate historical receipts. `initial-green.json` remains exit1 and is not accepted as GREEN.
+
+No source/test edits, new RED claim, diagnostic/build rerun, dependency change, push, PR, merge or remote write occurred in this evidence-only follow-up. Previously verified diagnostics/build apply to the unchanged product tree. The selected tests dispose save-write instrumentation, tear down the player shell and restore mocks/store state; the process exited. Full51coverage remains unchanged/not-run. The committed task4 implementation still needs fresh independent VERIFY before task5.
