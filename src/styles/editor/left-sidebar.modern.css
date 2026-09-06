@@ -916,6 +916,33 @@
   padding: var(--space-1);
 }
 
+.sidebar-brush-controls,
+.sidebar-brush-sizes,
+.basic-tile-search-feedback {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  flex: 0 0 auto;
+  color: var(--text-2);
+  font-size: var(--font-size-sm);
+}
+
+.sidebar-brush-controls {
+  padding-block: var(--space-1);
+}
+
+.sidebar-brush-state {
+  margin-left: auto;
+}
+
+.editor-layout .sidebar-brush-controls .btn,
+.editor-layout .basic-tile-search-feedback .btn {
+  min-height: var(--space-6);
+  min-width: var(--space-6);
+  padding: var(--space-1);
+}
+
 .sidebar-tool-label {
   font: var(--font-weight-medium) var(--font-size-sm)/var(--line-height-tight) var(--font-ui);
   white-space: nowrap;

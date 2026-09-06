@@ -7,6 +7,8 @@
 // - 상태는 모듈 레벨(재렌더에도 유지), 문서 리스너는 1회만 설치.
 
 import { editorState, type Layer, type Tool } from "@/editor/editorState";
+import { makeTileBrushControls } from "@/editor/panels/tilePaletteStampStatus";
+import { selectTileTool, selectPaletteStamp } from "@/editor/panels/tileToolbarActions";
 import { uiLabel } from "@/editor/uiCopy";
 import { getEditorChrome, subscribeEditorUiMode } from "@/editor/editorUiMode";
 import { openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
@@ -140,6 +142,7 @@ export function renderBasicLeftRail(container: HTMLElement): void {
   shell.append(makeToolsColumn(state.tool));
   shell.append(el("div", { class: "basic-rail-sep", attrs: { "aria-hidden": "true" } }));
   shell.append(makeLayerSwitcher(state.layer));
+  shell.append(makeTileBrushControls(state, () => renderBasicLeftRail(container)));
   shell.append(el("div", { class: "basic-rail-sep", attrs: { "aria-hidden": "true" } }));
   shell.append(makePanelToggles(state.selectedTile, state.layer, tileset));
   if (state.pendingEventCoordinate && state.layer === "event" && state.tool === "event") {
@@ -205,11 +208,7 @@ function makeToolsColumn(activeTool: Tool): HTMLElement {
         on: {
           click: () => {
             if (tool.id === "paint") {
-              editorState.set(
-                editorState.get().layer === "event"
-                  ? { tool: "paint", paintShape: "pen", layer: "lower" }
-                  : { tool: "paint", paintShape: "pen" },
-              );
+              selectTileTool("pen");
             } else if (tool.id === "event") editorState.set({ tool: "event", layer: "event" });
             else if (editorState.get().layer === "event") editorState.set({ tool: tool.id, layer: "lower" });
             else editorState.set({ tool: tool.id });
@@ -374,11 +373,17 @@ function makeMapFlyout(): HTMLElement {
 function makeTilesBody(selectedTile: number, layer: "lower" | "upper", tileset: TilesetDef): HTMLElement {
   return makeBasicTilePalette({
     selectedTile, layer, tileset, query: tileSearchQuery,
+    onCreatePaletteStamp: selectPaletteStamp,
     onQuery: (query) => {
       tileSearchQuery = query;
       if (lastContainer?.isConnected) renderBasicLeftRail(lastContainer);
       const sheet = lastContainer?.querySelector<HTMLElement>('[data-testid="basic-tile-grid"]');
       if (sheet) sheet.scrollTop = 0;
+    },
+    onResetQuery: () => {
+      tileSearchQuery = "";
+      if (lastContainer?.isConnected) renderBasicLeftRail(lastContainer);
+      lastContainer?.querySelector<HTMLElement>('[data-testid="basic-tile-search"]')?.focus();
     },
     onSelect: (index) => {
       const home = tileLayerHome(tileset, index);

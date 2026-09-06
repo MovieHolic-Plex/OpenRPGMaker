@@ -60,6 +60,29 @@ beforeEach(() => {
 });
 
 describe("brush selection routes", () => {
+  it("preserves source variants when placing a multi-cell custom atlas stamp", () => {
+    const project = store.getCurrent();
+    const map = project.maps[project.startMapId];
+    const tileset = project.tilesets[map.tilesetId];
+    tileset.kind = "custom";
+    for (const tile of [7, 8, 37, 38]) tileset.priority[tile] = "lower";
+    editorState.set({ activePaletteStamp: {
+      width: 2, height: 2, source: { startTile: 7, endTile: 38 },
+      cells: [
+        { dx: 0, dy: 0, layer: "lower", tile: 7 },
+        { dx: 1, dy: 0, layer: "lower", tile: 8 },
+        { dx: 0, dy: 1, layer: "lower", tile: 37 },
+        { dx: 1, dy: 1, layer: "lower", tile: 38 },
+      ],
+    } });
+    harness().engine.applyAtPointer({ x: 5, y: 5 } as never);
+    const after = store.getCurrent().maps[map.id];
+    expect([
+      after.lowerTiles[5 * map.width + 5], after.lowerTiles[5 * map.width + 6],
+      after.lowerTiles[6 * map.width + 5], after.lowerTiles[6 * map.width + 6],
+    ]).toEqual([7, 8, 37, 38]);
+  });
+
   it.each(["rect", "round"] as const)("preserves redo after a no-op shape %s click", (shape) => {
     const mapId = store.getCurrent().startMapId;
     recordProjectSnapshot(undefined, mapId, { kind: "map" });

@@ -1,0 +1,389 @@
+{
+  "commitBase": "d6376db3",
+  "scenarios": [
+    {
+      "name": "C1-size-2",
+      "status": "PASS",
+      "observed": {
+        "size": 2,
+        "painted": 4,
+        "anchor": {
+          "x": 44,
+          "y": 48
+        }
+      },
+      "screenshot": "C1-size-2.png",
+      "artifact": "verified/results.json"
+    },
+    {
+      "name": "C1-size-4",
+      "status": "PASS",
+      "observed": {
+        "size": 4,
+        "painted": 16,
+        "anchor": {
+          "x": 44,
+          "y": 48
+        }
+      },
+      "screenshot": "C1-size-4.png",
+      "artifact": "verified/results.json"
+    },
+    {
+      "name": "C2-sparse-stroke",
+      "status": "PASS",
+      "observed": {
+        "painted": 13,
+        "oneUndoRestored": true
+      },
+      "screenshot": "C2-sparse-stroke.png",
+      "artifact": "verified/results.json"
+    },
+    {
+      "name": "C3-noop-redo",
+      "status": "PASS",
+      "observed": {
+        "unchangedClick": true,
+        "redoRestored": true
+      },
+      "screenshot": "C3-noop-redo.png",
+      "artifact": "verified/results.json"
+    },
+    {
+      "name": "C6-picking-parity",
+      "status": "PASS",
+      "observed": {
+        "toolbar": [
+          85,
+          "upper"
+        ],
+        "right": [
+          85,
+          "upper"
+        ]
+      },
+      "screenshot": "C6-picking-parity.png",
+      "artifact": "verified/results.json"
+    },
+    {
+      "name": "C8b-kit-after-rect",
+      "status": "PASS",
+      "observed": {
+        "shape": "rect",
+        "stampCells": 4,
+        "placed": true
+      },
+      "screenshot": "C8b-kit-after-rect.png",
+      "artifact": "verified/results.json"
+    },
+    {
+      "name": "C8b-kit-after-round",
+      "status": "PASS",
+      "observed": {
+        "shape": "round",
+        "stampCells": 4,
+        "placed": true
+      },
+      "screenshot": "C8b-kit-after-round.png",
+      "artifact": "verified/results.json"
+    },
+    {
+      "name": "C8c-keyboard-stamp-reset",
+      "status": "PASS",
+      "observed": {
+        "keyboardClears": true,
+        "buttonClears": true
+      },
+      "screenshot": "C8c-keyboard-stamp-reset.png",
+      "artifact": "verified/results.json"
+    },
+    {
+      "name": "C4-modes-and-viewports",
+      "status": "PASS",
+      "observed": [
+        {
+          "mode": "beginner",
+          "width": 1440,
+          "height": 900,
+          "canvasWidth": 1152,
+          "size": {
+            "x": 139,
+            "y": 187,
+            "width": 32,
+            "height": 32,
+            "top": 187,
+            "right": 171,
+            "bottom": 219,
+            "left": 139
+          },
+          "overflow": false
+        },
+        {
+          "mode": "beginner",
+          "width": 1280,
+          "height": 800,
+          "canvasWidth": 992,
+          "size": {
+            "x": 139,
+            "y": 187,
+            "width": 32,
+            "height": 32,
+            "top": 187,
+            "right": 171,
+            "bottom": 219,
+            "left": 139
+          },
+          "overflow": false
+        },
+        {
+          "mode": "beginner",
+          "width": 1024,
+          "height": 768,
+          "canvasWidth": 736,
+          "size": {
+            "x": 139,
+            "y": 187,
+            "width": 32,
+            "height": 32,
+            "top": 187,
+            "right": 171,
+            "bottom": 219,
+            "left": 139
+          },
+          "overflow": false
+        },
+        {
+          "mode": "standard",
+          "width": 1440,
+          "height": 900,
+          "canvasWidth": 1134,
+          "size": {
+            "x": 141,
+            "y": 212,
+            "width": 32,
+            "height": 32,
+            "top": 212,
+            "right": 173,
+            "bottom": 244,
+            "left": 141
+          },
+          "overflow": false
+        },
+        {
+          "mode": "standard",
+          "width": 1280,
+          "height": 800,
+          "canvasWidth": 974,
+          "size": {
+            "x": 141,
+            "y": 212,
+            "width": 32,
+            "height": 32,
+            "top": 212,
+            "right": 173,
+            "bottom": 244,
+            "left": 141
+          },
+          "overflow": false
+        },
+        {
+          "mode": "standard",
+          "width": 1024,
+          "height": 768,
+          "canvasWidth": 718,
+          "size": {
+            "x": 141,
+            "y": 212,
+            "width": 32,
+            "height": 32,
+            "top": 212,
+            "right": 173,
+            "bottom": 244,
+            "left": 141
+          },
+          "overflow": false
+        },
+        {
+          "mode": "expert",
+          "width": 1440,
+          "height": 900,
+          "canvasWidth": 1114,
+          "size": {
+            "x": 141,
+            "y": 254,
+            "width": 32,
+            "height": 32,
+            "top": 254,
+            "right": 173,
+            "bottom": 286,
+            "left": 141
+          },
+          "overflow": false
+        },
+        {
+          "mode": "expert",
+          "width": 1280,
+          "height": 800,
+          "canvasWidth": 954,
+          "size": {
+            "x": 141,
+            "y": 254,
+            "width": 32,
+            "height": 32,
+            "top": 254,
+            "right": 173,
+            "bottom": 286,
+            "left": 141
+          },
+          "overflow": false
+        },
+        {
+          "mode": "expert",
+          "width": 1024,
+          "height": 768,
+          "canvasWidth": 698,
+          "size": {
+            "x": 141,
+            "y": 254,
+            "width": 32,
+            "height": 32,
+            "top": 254,
+            "right": 173,
+            "bottom": 286,
+            "left": 141
+          },
+          "overflow": false
+        }
+      ],
+      "screenshot": "C4-modes-and-viewports.png",
+      "artifact": "verified/results.json"
+    },
+    {
+      "name": "C5-representative-selection",
+      "status": "PASS",
+      "observed": {
+        "picked": 423,
+        "representative": 363,
+        "pressed": true
+      },
+      "screenshot": "C5-representative-selection.png",
+      "artifact": "verified/results.json"
+    },
+    {
+      "name": "C7-beginner-search",
+      "status": "PASS",
+      "observed": {
+        "matchCount": 0,
+        "reset": true,
+        "focusRestored": true
+      },
+      "screenshot": "C7-beginner-search.png",
+      "artifact": "verified/results.json"
+    },
+    {
+      "name": "C8a-custom-atlas-stamp",
+      "status": "PASS",
+      "observed": {
+        "sourceCells": [
+          7,
+          8,
+          37,
+          38
+        ],
+        "placed": true
+      },
+      "screenshot": "C8a-custom-atlas-stamp.png",
+      "artifact": "stamp-verified/results.json"
+    }
+  ],
+  "viewportCount": 9,
+  "errors": [],
+  "cleanup": {
+    "verifiedContext": true,
+    "stampContext": true,
+    "workerTreesRemoved": true
+  },
+  "pixelReview": {
+    "status": "unavailable",
+    "reason": "Read omitted image pixels for the active model and prior independent models; DOM geometry and real interactions were verified, not aesthetic fidelity."
+  },
+  "screenshots": [
+    {
+      "path": "output/evidence/sidebar-brush-fixes/verified/beginner-1440.png",
+      "bytes": 219608,
+      "width": 1440,
+      "height": 900,
+      "signature": "89504e470d0a1a0a"
+    },
+    {
+      "path": "output/evidence/sidebar-brush-fixes/verified/beginner-1280.png",
+      "bytes": 183164,
+      "width": 1280,
+      "height": 800,
+      "signature": "89504e470d0a1a0a"
+    },
+    {
+      "path": "output/evidence/sidebar-brush-fixes/verified/beginner-1024.png",
+      "bytes": 163871,
+      "width": 1024,
+      "height": 768,
+      "signature": "89504e470d0a1a0a"
+    },
+    {
+      "path": "output/evidence/sidebar-brush-fixes/verified/standard-1440.png",
+      "bytes": 187220,
+      "width": 1440,
+      "height": 900,
+      "signature": "89504e470d0a1a0a"
+    },
+    {
+      "path": "output/evidence/sidebar-brush-fixes/verified/standard-1280.png",
+      "bytes": 151471,
+      "width": 1280,
+      "height": 800,
+      "signature": "89504e470d0a1a0a"
+    },
+    {
+      "path": "output/evidence/sidebar-brush-fixes/verified/standard-1024.png",
+      "bytes": 135701,
+      "width": 1024,
+      "height": 768,
+      "signature": "89504e470d0a1a0a"
+    },
+    {
+      "path": "output/evidence/sidebar-brush-fixes/verified/expert-1440.png",
+      "bytes": 180552,
+      "width": 1440,
+      "height": 900,
+      "signature": "89504e470d0a1a0a"
+    },
+    {
+      "path": "output/evidence/sidebar-brush-fixes/verified/expert-1280.png",
+      "bytes": 147355,
+      "width": 1280,
+      "height": 800,
+      "signature": "89504e470d0a1a0a"
+    },
+    {
+      "path": "output/evidence/sidebar-brush-fixes/verified/expert-1024.png",
+      "bytes": 127958,
+      "width": 1024,
+      "height": 768,
+      "signature": "89504e470d0a1a0a"
+    },
+    {
+      "path": "output/evidence/sidebar-brush-fixes/verified/C7-beginner-search.png",
+      "bytes": 220482,
+      "width": 1440,
+      "height": 900,
+      "signature": "89504e470d0a1a0a"
+    },
+    {
+      "path": "output/evidence/sidebar-brush-fixes/stamp-verified/C8a-custom-atlas-stamp.png",
+      "bytes": 156459,
+      "width": 1440,
+      "height": 900,
+      "signature": "89504e470d0a1a0a"
+    }
+  ]
+}

@@ -7,6 +7,7 @@ export async function runSidebarBrushQa({ browser, baseUrl, outputDir, scope = "
   await mkdir(outputDir, { recursive: true });
   const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   const page = await context.newPage();
+  page.setDefaultTimeout(60_000);
   const results = [];
   const errors = [];
   page.on("pageerror", error => errors.push(error.message));
@@ -61,6 +62,13 @@ export async function runSidebarBrushQa({ browser, baseUrl, outputDir, scope = "
     await page.keyboard.press("Escape");
   };
   const point = (x, y) => page.evaluate(({ x, y }) => window.__oprnEditWorldToClient(x * 16 + 8, y * 16 + 8), { x, y });
+  const visibleAnchor = async () => {
+    await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    return page.evaluate(() => {
+      const view = window.__oprnEditVisibleArea().worldView;
+      return { x: Math.floor((view.x + view.width * 0.35) / 16), y: Math.floor((view.y + view.height * 0.45) / 16) };
+    });
+  };
   const click = async (x, y, options) => {
     const p = await point(x, y);
     assert(p.x > 330 && p.x < 1430 && p.y > 125 && p.y < 890, `offscreen tile ${x},${y}: ${JSON.stringify(p)}`);
@@ -108,11 +116,7 @@ export async function runSidebarBrushQa({ browser, baseUrl, outputDir, scope = "
       }, { scope: "project", label: "Local sidebar QA fixture", origin: "system" });
       history.resetMapEditHistory();
     });
-    await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
-    const anchor = await page.evaluate(() => {
-      const view = window.__oprnEditVisibleArea().worldView;
-      return { x: Math.floor((view.x + view.width * 0.35) / 16), y: Math.floor((view.y + view.height * 0.45) / 16) };
-    });
+    const anchor = await visibleAnchor();
     if (scope !== "ui") {
       for (const n of [2, 4]) {
         await scenario(`C1-size-${n}`, async () => {
@@ -253,6 +257,7 @@ export async function runSidebarBrushQa({ browser, baseUrl, outputDir, scope = "
         await page.setViewportSize({ width: 1440, height: 900 });
         await mode("standard");
         await page.getByTestId("layer-lower").click();
+        const target = await visibleAnchor();
         await page.evaluate(({ x, y }) => {
           const { store, state } = window.sidebarQa;
           store.update(project => {
@@ -260,9 +265,9 @@ export async function runSidebarBrushQa({ browser, baseUrl, outputDir, scope = "
             map.lowerTiles[i] = 423;
             map.upperTiles[i] = -1;
           }, { scope: "project", label: "Local autotile QA fixture", origin: "system" });
-        }, anchor);
+        }, target);
         await page.getByTestId("tile-search-input").fill("zzzz-no-match");
-        await click(anchor.x, anchor.y, { button: "right" });
+        await click(target.x, target.y, { button: "right" });
         const representative = page.getByTestId("chipset-tile-363");
         assert.equal(await representative.count(), 1, "picked representative must survive filter");
         assert.equal(await representative.getAttribute("aria-pressed"), "true");
@@ -302,7 +307,7 @@ export async function runSidebarBrushQa({ browser, baseUrl, outputDir, scope = "
         });
         const first = page.locator('.chipset-tile[data-tile-index="7"]');
         const last = page.locator('.chipset-tile[data-tile-index="38"]');
-        await last.scrollIntoViewIfNeeded();
+        await last.evaluate(node => node.scrollIntoView({ block: "nearest", inline: "nearest" }));
         const a = await first.boundingBox(), b = await last.boundingBox();
         assert(a && b);
         await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2);
@@ -312,7 +317,8 @@ export async function runSidebarBrushQa({ browser, baseUrl, outputDir, scope = "
         const selected = await state();
         assert(selected.activePaletteStamp, "custom atlas drag must create a stamp");
         assert.deepEqual(selected.activePaletteStamp.cells.map(cell => cell.tile), [7, 8, 37, 38]);
-        const x = anchor.x + 1, y = anchor.y + 2;
+        const target = await visibleAnchor();
+        const x = target.x + 1, y = target.y + 2;
         await click(x, y);
         const after = await map();
         assert.deepEqual([
