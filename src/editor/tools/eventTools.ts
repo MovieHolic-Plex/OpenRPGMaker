@@ -4,7 +4,7 @@ import { CONFIGURE_OBJECT_BEHAVIOR, PURSUIT_SCHEMA, parsePursuit } from "./horro
 //              / duplicate_event / remove_event / move_event.
 
 import { shadowedPageWarnings } from "@/project/eventPageShadow";
-import { eventRequiresPassableTile } from "@/project/eventPlacementRecovery";
+import { EventPlacementAnalysis, eventRequiresPassableTile } from "@/project/eventPlacementRecovery";
 import { isPassable, tileAt } from "@/project/collision";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
@@ -337,6 +337,7 @@ export function resolveEventPlacement(
   y: number,
   options: {
     readonly kind: "character" | "interaction";
+    readonly event?: GameEvent;
     readonly steppable?: boolean;
     readonly ignoreEventId?: string;
     readonly reserved?: ReadonlySet<string>;
@@ -345,6 +346,23 @@ export function resolveEventPlacement(
   },
 ): { x: number; y: number; adjusted: boolean } {
   const mustStandOnPassable = options.kind === "character" || options.steppable === true;
+  // Existing-event moves must validate the whole body against the CURRENT draft.
+  // A preceding move in the same assistant batch may have consumed this advice.
+  if (options.event) {
+    const analysis = new EventPlacementAnalysis(project, map);
+    for (let radius = 0; radius <= 3; radius++) {
+      for (let dy = -radius; dy <= radius; dy++) for (let dx = -radius; dx <= radius; dx++) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) !== radius) continue;
+        const moved = { ...options.event, x: x + dx, y: y + dy };
+        if (!analysis.validDestination(moved, mustStandOnPassable)) continue;
+        return { x: moved.x, y: moved.y, adjusted: radius !== 0 };
+      }
+    }
+    throw new ToolError(
+      `${options.label}의 몸·통행·이동·접근 조건을 만족하는 빈 자리가 (${x}, ${y}) 반경 3칸에 없습니다. run_lint 또는 get_map_region으로 현재 점유와 지형을 확인하고 다른 위치를 선택하세요.`,
+      { code: options.code, mapId: map.id, x, y },
+    );
+  }
   const requestedReserved = options.reserved?.has(`${x},${y}`) === true;
   if (!requestedReserved && isPassable(project, map, x, y)) return { x, y, adjusted: false };
   if (!requestedReserved && !mustStandOnPassable && passableLanding(project, map, x, y)) return { x, y, adjusted: false };
@@ -603,6 +621,7 @@ const placeNpc: ToolDefinition = {
       event = { id, x, y, trigger: { kind: "action" }, commands: [], pages };
     }
     event.name = name;
+    event.placementRole = "npc";
     const requestedCharacterId = typeof args.characterId === "string" && args.characterId.trim()
       ? args.characterId.trim()
       : undefined;
@@ -2348,6 +2367,7 @@ const moveEvent: ToolDefinition = {
     if (!inMapBounds(map, requestedX, requestedY)) throw new ToolError(`이동 위치가 맵 밖입니다: (${requestedX}, ${requestedY})`, { mapId: map.id, x: requestedX, y: requestedY });
     const placement = resolveEventPlacement(draft, map, requestedX, requestedY, {
       kind: eventRequiresPassableTile(event) ? "character" : "interaction",
+      event,
       steppable: eventIsSteppable(event),
       ignoreEventId: event.id,
       label: `이벤트 '${event.id}'`,
