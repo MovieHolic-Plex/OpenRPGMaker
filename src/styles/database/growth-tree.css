@@ -90,3 +90,24 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-catalog .db-field { grid-template-columns: minmax(0, 1fr); }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-catalog > * { flex-shrink: 0; }
+
+/* Art occupies existing node geometry; catalog and hero sizes use the studio scale. */
+.database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-catalog-art {
+  display: grid; place-items: center; flex: 0 0 var(--space-6);
+  width: var(--space-6); height: var(--space-6);
+  background: var(--bg-inset); border-radius: var(--radius-s); color: var(--growth-accent);
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-catalog-art img {
+  width: var(--space-5); height: var(--space-5); object-fit: contain; image-rendering: pixelated;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-inspector-art {
+  display: grid; place-items: center; float: right; margin-left: var(--space-2);
+  width: calc(var(--space-5) * 2); height: calc(var(--space-5) * 2);
+  background: var(--bg-inset); border-radius: var(--radius-m); color: var(--growth-accent);
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-inspector-art img {
+  width: var(--space-6); height: var(--space-6); object-fit: contain; image-rendering: pixelated;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .growth-studio :is(.growth-node-emblem, .growth-catalog-art, .growth-inspector-art) img {
+  pointer-events: none; user-select: none;
+}
