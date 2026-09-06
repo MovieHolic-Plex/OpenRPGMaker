@@ -39,6 +39,59 @@ function reply(content: string): ChatResult {
 afterEach(() => resetIntentDeclarationCache());
 
 describe("createLlmIntentDeclarer", () => {
+  it("repairs an invalid reward declaration before returning an executable intent", async () => {
+    const rewards = [{ target: { eventId: "npc_reward" }, grants: [{ kind: "item", id: "item_potion", count: 5 }], oneTime: true }];
+    const responses = [
+      { mode: "modify", npcRewards: [{ ...rewards[0], target: { eventId: "npc_reward", eventName: "Reward" } }] },
+      { mode: "modify", npcRewards: rewards },
+    ];
+    const requests: ChatRequest[] = [];
+    const declarer = createLlmIntentDeclarer({
+      getConfig: () => CONFIG,
+      chat: async (_config, request) => {
+        requests.push(request);
+        return reply(JSON.stringify(responses[requests.length - 1]));
+      },
+    });
+    const outcome = await declarer(FACTS);
+    expect(outcome.intent.npcRewards).toEqual(rewards);
+    expect(requests).toHaveLength(2);
+    expect(requests[1]?.messages.map((message) => message.role)).toEqual(["system", "user", "assistant", "user"]);
+    expect(outcome.error).toBeUndefined();
+  });
+
+  it.each(["invalid", "omitted", "network"] as const)("keeps an invalid reward contract blocking when repair is %s", async (repair) => {
+    let calls = 0;
+    const invalid = { mode: "modify", npcRewards: [{ target: {}, grants: [] }] };
+    const declarer = createLlmIntentDeclarer({
+      getConfig: () => CONFIG,
+      chat: async () => {
+        calls++;
+        if (calls === 2 && repair === "network") throw new Error("repair unavailable");
+        return reply(JSON.stringify(calls === 2 && repair === "omitted" ? { mode: "modify" } : invalid));
+      },
+    });
+    const outcome = await declarer(FACTS);
+    expect(calls).toBe(2);
+    expect(outcome.intent.npcRewards).toHaveProperty("invalidReason");
+    expect(outcome.error).toBeDefined();
+  });
+
+  it("does not cache an invalid reward declaration after its repair attempt", async () => {
+    let calls = 0;
+    const valid = [{ target: { eventId: "npc_reward" }, grants: [{ kind: "item", id: "item_potion", count: 5 }] }];
+    const declarer = createLlmIntentDeclarer({
+      getConfig: () => CONFIG,
+      chat: async () => reply(JSON.stringify({
+        mode: "modify",
+        npcRewards: ++calls <= 2 ? [{ target: {}, grants: [] }] : valid,
+      })),
+    });
+    expect((await declareIntentCached(declarer, FACTS)).intent.npcRewards).toHaveProperty("invalidReason");
+    expect((await declareIntentCached(declarer, FACTS)).intent.npcRewards).toEqual(valid);
+    expect(calls).toBe(3);
+  });
+
   it("carries request reward contracts through the actual JSON consumer and cache without final commands", async () => {
     const npcRewards = [{
       target: { eventName: "Mira", mapId: "map_start" },

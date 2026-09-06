@@ -62,6 +62,18 @@ const hasContract = (request: ChatRequest) => request.messages.some((message) =>
 afterEach(() => resetIntentDeclarationCache());
 
 describe("NPC reward request lifetime in AssistantSession", () => {
+  it("does not dispatch authoring or planner calls for an unrepairable reward declaration", async () => {
+    const h = harness([call("set_title_screen", { title: "Must not change" })], {
+      required: { invalidReason: "npcRewards: invalid target" },
+    });
+    const originalTitle = h.project.meta.title;
+    const result = await h.session.sendUserMessage("Create the requested reward NPC", h.onEvent, undefined, { autonomous: true });
+    expect(h.requests).toHaveLength(0);
+    expect(h.events.filter((event) => event.type === "tool_call")).toEqual([]);
+    expect(h.session.getProposedProject().meta.title).toBe(originalTitle);
+    expect(result.stoppedReason).toBe("error");
+  });
+
   it.each([
     { variant: "text", pass: false, noContract: false },
     { variant: "once", pass: true, noContract: false },

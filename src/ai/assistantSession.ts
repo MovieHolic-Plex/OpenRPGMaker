@@ -1605,6 +1605,18 @@ export class AssistantSession {
     this.eventBaseProposalKeys = new Map();
     this.skipPlannerThisTurn = false;
 
+    const rewardRequirements = this.npcRewardRequirements;
+    if (rewardRequirements && ("invalidReason" in rewardRequirements || rewardRequirements.length === 0)) {
+      const reason = "invalidReason" in rewardRequirements ? rewardRequirements.invalidReason : "npcRewards: missing requirements";
+      const assistantText = `보상 요구사항을 해석하지 못해 편집을 시작하지 않았습니다.\n${reason}\n다시 시도해 주세요.`;
+      this.lastTurnFailed = true;
+      this.messages.push({ role: "assistant", content: assistantText });
+      this.pushAudit({ kind: "status", text: `intent:invalid-npc-rewards ${reason}` });
+      this.pushAudit({ kind: "assistant", text: assistantText });
+      onEvent({ type: "assistant_message", content: assistantText });
+      return { assistantText, proposedCalls: [], stoppedReason: "error" };
+    }
+
     // 되묻기: 선언이 질문을 냈을 때만, chat 모드에서만 멈춘다.
     // F-05: auto/orchestrated 모드에서는 멈추지 않고 진행한다 — 의도 노트가 「되묻지 말고 택하라」고 알린다.
     let clarifyBypassed = false;

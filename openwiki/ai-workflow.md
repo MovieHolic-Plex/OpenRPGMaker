@@ -79,6 +79,11 @@ npcRewards?: readonly {
   Names/IDs need not exist until completion. NPC names resolve from `event.name`, falling back to
   the first-page display name used by starter authoring; map scope is optional but resolution must
   be unique. Item/species names also require a unique exact DB match.
+- The declaration client gives malformed `npcRewards` one JSON-shape repair within the original
+  20-second deadline. It retains the original non-reward intent fields and never accepts omission of
+  the reward contract as a repair. Failed repairs remain blocking and are not cached. The session
+  returns an error before planner/authoring calls for an invalid declaration; it cannot spend tools
+  trying to repair request metadata that authoring tools cannot change.
 - `verifyNpcRewardsPlayable(project: Project, required: NpcRewardRequirements | undefined):
   WorkItemOutcomeVerdict` in `workItemOutcome.ts` is the exported core gate. Undefined is a no-op;
   invalid/missing/ambiguous contracts fail. `AssistantSession` captures a clone alongside adventure
