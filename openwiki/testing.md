@@ -1,3 +1,17 @@
+## Canonical project storage versus AI history (2026-09-06)
+
+`test/noLocalProjectDb.test.ts` guards project/editor source against a local
+canonical-project database. A direct `typeof indexedDB` capability check does not
+read or write project data and is allowed. Every actual IndexedDB reference,
+including an alias, guarded open, window property or computed property access,
+remains rejected by the TypeScript AST check. SQLite and removed JSON fallback
+restrictions remain unchanged.
+
+Do not remove the guard to accommodate AI history: its IndexedDB implementation
+belongs to `src/ai/aiRecordDb.ts`. The editor may report whether that history is
+durable. Negative guard fixtures and a temporary actual project-source mutation
+prove that allowing capability detection does not allow a local project store.
+
 ## Database CSS ownership contracts (2026-09-06)
 
 The required surface gate includes `databaseAllTabsRenderWalk`, using the actual
