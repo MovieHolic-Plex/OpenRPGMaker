@@ -11,6 +11,7 @@ import {
 import type { Project } from "@/project/types";
 import { inMapBounds, passableCellCount, setLower, setUpper } from "./mapHelpers";
 import { poissonScatter } from "./naturalScatter";
+import { protectedHouseCells } from "./houseProtection";
 import { naturalnessArg, naturalnessLabel, rngForTool } from "./naturalToolArgs";
 import { isPathSurfaceTile, protectedEventCells, runScatterObject, type ScatterPacking } from "./placementTools";
 import { ToolError, type ToolExecResult } from "./types";
@@ -123,6 +124,7 @@ export function placePropsOnDraft(draft: Project, input: PlacePropsInput): ToolE
   // 시작칸·이벤트칸을 덮으면 무결성 게이트가 커밋 전체를 거부한다 — 그룹 경로는 이미 피하는데
   // 단일 타일 경로만 안 피했다(실측: dense 덤불이 시작칸을 막아 숲 시공이 통째로 반려됐다).
   const protectedCells = protectedEventCells(draft, map);
+  for (const { x, y } of protectedHouseCells(map)) protectedCells.add(`${x},${y}`);
   const inBounds = targets.some((cell) => inMapBounds(map, cell.x, cell.y));
   if (!inBounds) {
     throw new ToolError(
