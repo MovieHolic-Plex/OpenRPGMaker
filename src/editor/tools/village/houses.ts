@@ -19,6 +19,7 @@ import {
   HOUSE_MARGIN,
   pointInMap,
   rectsOverlap,
+  ROAD_TILES,
   shuffled,
   type BuiltHouse,
   type HouseCandidate,
@@ -248,6 +249,12 @@ export function buildHouses(
       if (!result.ok || !result.doorAt) {
         warnings.push(`집 시공 실패(${candidate.template.name}): ${result.reason ?? "문 좌표 없음"}`);
         continue;
+      }
+      // Only a successfully stamped new house replaces leftover streets under ridge caps/wing gaps.
+      // Existing ownership is excluded above; finish before sealing, never repair a completed house.
+      for (const { x, y } of houseFootprintCells(candidate.bbox, map)) {
+        const index = y * map.width + x;
+        if (ROAD_TILES.has(map.lowerTiles[index] ?? TILE.EMPTY)) map.lowerTiles[index] = TILE.GRASS;
       }
       const doorAt = result.doorAt;
       const topIndex = (doorAt.y - 1) * map.width + doorAt.x;
