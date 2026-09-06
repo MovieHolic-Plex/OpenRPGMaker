@@ -40,7 +40,9 @@ export function tilesetKnowledgeFingerprint(tileset: TilesetDef): string {
     tileGroups: tileset.tileGroups,
     tileMeta: tileset.tileMeta,
     tilesPerRow: tileset.tilesPerRow,
-  });
+  }, (_key, value: unknown) => isRecord(value)
+    ? Object.fromEntries(Object.entries(value).sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0))
+    : value);
 }
 
 function buildTilesetKnowledgePrompt(tileset: TilesetDef, feedback: readonly string[]): string {

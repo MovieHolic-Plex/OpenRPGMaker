@@ -11,7 +11,7 @@ export function aiJobsPlugin(runtime = {}) {
       const protocol = (preview ? server.config.preview.https : server.config.server.https) ? 'https' : 'http';
       return ['127.0.0.1', 'localhost', '[::1]'].map(host => `${protocol}://${host}:${address.port}`);
     };
-    const execution = typeof runtime === 'function' ? await runtime({ origin: () => origins()[0] }) : runtime;
+    const execution = typeof runtime === 'function' ? await runtime({ origin: () => origins()[0], cacheDir: server.config.cacheDir }) : runtime;
     const executeJob = execution.executeJob && (async (input, host, signal) => {
       if (!server.httpServer.listening) await once(server.httpServer, 'listening', { signal });
       signal.throwIfAborted();

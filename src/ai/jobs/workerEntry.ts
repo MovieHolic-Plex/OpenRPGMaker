@@ -1,4 +1,9 @@
 import { executeAssistantJob } from "./executors/assistantJob";
+import { executeDatabaseJob } from "./executors/databaseJob";
+import { executeEventCommandsJob } from "./executors/eventCommandsJob";
+import { executeImageJob } from "./executors/imageJob";
+import { executeTilesetJob } from "./executors/tilesetJob";
+import { executeRegionJob } from "./executors/regionJob";
 import type { AiJobInput, AiJobResult } from "./contracts";
 import type { AiJobHost } from "../../../scripts/lib/aiJobs/scheduler.mjs";
 
@@ -21,7 +26,17 @@ window.__executeAiJob = async (input, identity) => {
     saveCheckpoint: value => call("saveCheckpoint", value),
     providerOperation: value => call("providerOperation", value),
   };
-  if (input.family !== "assistant") throw new Error(`Job family executor not implemented: ${input.family}`);
-  return executeAssistantJob(input, host);
+  switch (input.family) {
+    case "assistant": return executeAssistantJob(input, host);
+    case "database": return executeDatabaseJob(input, host);
+    case "event-commands": return executeEventCommandsJob(input, host);
+    case "image": return executeImageJob(input, host);
+    case "tileset": return executeTilesetJob(input, host);
+    case "region": return executeRegionJob(input, host);
+    default: {
+      const unexpected: never = input;
+      throw new Error(`Unsupported AI job family: ${String(unexpected)}`);
+    }
+  }
 };
 if (window.__aiJobReady) await window.__aiJobReady();

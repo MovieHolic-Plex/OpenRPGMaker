@@ -6,6 +6,11 @@ import {
 } from "@/editor/tilesetAiNativeAnalysis";
 import { createBlankProject } from "@/project/defaults";
 import type { TilesetDef } from "@/project/types";
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { openAiJobsRepository } from "../scripts/lib/aiJobs/repository.mjs";
+import { jsonValue, parseProject } from "@/ai/jobs/checkpointState";
 
 function firstTileset(): TilesetDef {
   const project = createBlankProject();
@@ -15,6 +20,40 @@ function firstTileset(): TilesetDef {
 }
 
 describe("AI-native whole tileset analysis", () => {
+  it("retains review identity after canonical job storage without hiding a tileset change", async () => {
+    const seed = createBlankProject();
+    const tilesetId = seed.maps[seed.startMapId].tilesetId;
+    seed.tilesets[tilesetId].tileGroups = [{
+      id: "review-group", name: "Group", tileIds: [4, 5], defaultLayer: "lower",
+      role: "prop", description: "", placementRules: "", origin: "ai", source: "ai",
+    }];
+    const project = parseProject(jsonValue(seed));
+    const before = tilesetKnowledgeFingerprint(project.tilesets[tilesetId]);
+    const directory = await mkdtemp(join(tmpdir(), "tileset-review-identity-"));
+    const repository = await openAiJobsRepository({ directory });
+    try {
+      const ref = await repository.putJson(jsonValue(project));
+      const restored = parseProject(await repository.readJson(ref));
+      expect(restored.tilesets[tilesetId]).toEqual(project.tilesets[tilesetId]);
+      expect(tilesetKnowledgeFingerprint(restored.tilesets[tilesetId])).toBe(before);
+    } finally {
+      await repository.close();
+      await rm(directory, { recursive: true, force: true });
+    }
+  });
+
+  it.each(["tile size", "tile order"])("changes review identity for a meaningful %s change", kind => {
+    const before = firstTileset();
+    before.tileGroups = [{
+      id: "review-group", name: "Group", tileIds: [4, 5], defaultLayer: "lower",
+      role: "prop", description: "", placementRules: "", origin: "ai", source: "ai",
+    }];
+    const changed = structuredClone(before);
+    if (kind === "tile size") changed.tileSize += 1;
+    else changed.tileGroups = [{ ...before.tileGroups[0], tileIds: [5, 4] }];
+    expect(tilesetKnowledgeFingerprint(changed)).not.toBe(tilesetKnowledgeFingerprint(before));
+  });
+
   it("sends the whole image and returns detached typed proposals", async () => {
     // Given
     const tileset = firstTileset();

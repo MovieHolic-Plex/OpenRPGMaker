@@ -1,0 +1,154 @@
+[
+  {
+    "scenario": "assistant",
+    "family": "assistant",
+    "jobId": "69071d26-917e-4068-ae58-e0d3b378ab59",
+    "status": "succeeded",
+    "application": "awaiting-review",
+    "save": "unsaved",
+    "operations": [
+      "assistant/provider/0",
+      "assistant/provider/1",
+      "assistant/provider/2"
+    ],
+    "result": "a77271e4d69b11fcd6dc255f535b6b4cf523bf2430c92dad45250c58b0936b6a"
+  },
+  {
+    "scenario": "database",
+    "family": "database",
+    "jobId": "b3bc3863-c613-459c-95d2-17f3a4c80ae0",
+    "status": "succeeded",
+    "application": "awaiting-review",
+    "save": "unsaved",
+    "operations": [
+      "database/text",
+      "database/artwork"
+    ],
+    "result": "69d7b7c2cc8ba3ec6403751413474b3e227395be661734b91c32d838361419ae"
+  },
+  {
+    "scenario": "event-commands",
+    "family": "event-commands",
+    "jobId": "34fc4573-82db-4ce2-a469-14c692648ece",
+    "status": "succeeded",
+    "application": "awaiting-review",
+    "save": "unsaved",
+    "operations": [
+      "event-commands/assist/0"
+    ],
+    "result": "08447a2aee2c61afc362a04be6f72f7bad6386a5c1c4cfa4a2c19ae9702bd4c9"
+  },
+  {
+    "scenario": "image",
+    "family": "image",
+    "jobId": "d0e4601a-79de-46ce-8a16-3299c2ae6e65",
+    "status": "succeeded",
+    "application": "awaiting-review",
+    "save": "unsaved",
+    "operations": [
+      "image/provider/generate"
+    ],
+    "result": "a9b71497bacb4f0ec2e98098d5f41a2f79ef5219ab6e56b4803f4a17a4eb623c"
+  },
+  {
+    "scenario": "region",
+    "family": "region",
+    "jobId": "a5c7a20d-4549-4add-8b43-74c7b9744bcd",
+    "status": "succeeded",
+    "application": "awaiting-review",
+    "save": "unsaved",
+    "operations": [
+      "region/provider/0",
+      "region/provider/1",
+      "region/provider/2"
+    ],
+    "result": "99ba1a974e880b7dfd0f1359a35a062945a10c9ed1780301f7bdaea424fe200b"
+  },
+  {
+    "scenario": "tileset-knowledge-analysis",
+    "family": "tileset",
+    "jobId": "30c9d475-c8b8-42d2-b830-c1c4244555b4",
+    "status": "succeeded",
+    "application": "awaiting-review",
+    "save": "unsaved",
+    "operations": [
+      "tileset/knowledge-analysis/provider/0"
+    ],
+    "result": "a05a0c9ec693292f981a6f934de28e2d5b20612ba27ff83b644c4e7749bbbf70"
+  },
+  {
+    "scenario": "tileset-proposal-draft",
+    "family": "tileset",
+    "jobId": "bb6d7122-fbd9-4180-b1ee-376f5ab2466f",
+    "status": "succeeded",
+    "application": "awaiting-review",
+    "save": "unsaved",
+    "operations": [
+      "tileset/proposal-draft/provider/0"
+    ],
+    "result": "9b2b58de3a1b0f99e50f264e37010a77b9e0df80d7ae953fb92eba335f85a296"
+  },
+  {
+    "scenario": "tileset-question-followup",
+    "family": "tileset",
+    "jobId": "8810d70b-4ca7-4e59-8c22-9e6be79bc6d6",
+    "status": "succeeded",
+    "application": "awaiting-review",
+    "save": "unsaved",
+    "operations": [
+      "tileset/question-followup/provider/0"
+    ],
+    "result": "708010baa6f65aad2fe018acc1d0c621106c29284814ccca5e7124a887cc9e25"
+  },
+  {
+    "scenario": "tileset-structure-kit-metadata",
+    "family": "tileset",
+    "jobId": "610e7b70-e351-4cc4-89cc-90faa52929f4",
+    "status": "succeeded",
+    "application": "awaiting-review",
+    "save": "unsaved",
+    "operations": [
+      "tileset/structure-kit-metadata/provider/0"
+    ],
+    "result": "585767d21cbb0b738f3556ec1b2b1f069b5b5f7ca8f32e47a0d418cb704836ad"
+  },
+  {
+    "scenario": "tileset-cluster-edit",
+    "family": "tileset",
+    "jobId": "8cc96d68-a6de-4416-be9b-0349640b290c",
+    "status": "succeeded",
+    "application": "awaiting-review",
+    "save": "unsaved",
+    "operations": [
+      "tileset/cluster-edit/provider/0",
+      "tileset/cluster-edit/provider/1"
+    ],
+    "result": "2657c7c73650d1319d6976a8396b9c8cda9518006952fa29d2614c3d684aeac3"
+  },
+  {
+    "scenario": "tileset-range-classify",
+    "family": "tileset",
+    "jobId": "40c584cf-2a34-4e5d-bbc9-3305c22e24a9",
+    "status": "succeeded",
+    "application": "awaiting-review",
+    "save": "unsaved",
+    "operations": [
+      "tileset/range-classify/provider/0",
+      "tileset/range-classify/provider/1"
+    ],
+    "result": "c3ac6bc039cf7f53a2a4a4be0feea3e31fc5a7d88941d8437981e2bc64d02c0e"
+  },
+  {
+    "scenario": "tileset-unclassified-analysis",
+    "family": "tileset",
+    "jobId": "3508e248-1038-441e-a849-bc7a472f4896",
+    "status": "succeeded",
+    "application": "awaiting-review",
+    "save": "unsaved",
+    "operations": [
+      "tileset/unclassified-analysis/provider/0",
+      "tileset/unclassified-analysis/provider/1"
+    ],
+    "result": "51a04970e596330043c1c4dd80fb8a4aafd2c6eabf9810144238a30c0403f7ff"
+  }
+]

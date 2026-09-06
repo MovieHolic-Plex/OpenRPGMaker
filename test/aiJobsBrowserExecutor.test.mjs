@@ -79,6 +79,120 @@ test('actual provider fetch guard blocks SDK paid retry rather than silently spe
   assert.equal(dispatches, 1);
 });
 
+test('worker transport permits only the configured external Vite cache, not adjacent files', async () => {
+  const origin = 'http://127.0.0.1:19841';
+  const cacheDir = join(tmpdir(), 'ai-worker-cache fixture');
+  const bootstrap = `${origin}/ai-job-worker.html`;
+  const frame = { url: () => bootstrap };
+  const page = new EventEmitter();
+  const bindings = new Map();
+  const decisions = [];
+  let routeHandler, contextClosed = false, browserClosed = false;
+  const context = {
+    route: async (_pattern, handler) => { routeHandler = handler; },
+    routeWebSocket: async () => {},
+    newPage: async () => page,
+    close: async () => { contextClosed = true; },
+  };
+  page.mainFrame = () => frame;
+  page.exposeBinding = async (name, handler) => { bindings.set(name, handler); };
+  page.goto = async () => {
+    const paths = [
+      `${origin}/@fs${cacheDir}/deps/zod.js`,
+      `${origin}/@fs${join(tmpdir(), 'ai-worker-private')}/metadata.json`,
+      `${origin}/@fs${cacheDir}/..%2fprivate.json`,
+      'https://other.invalid/assets/runtime.js',
+    ];
+    for (const path of paths) {
+      await routeHandler({
+        request: () => ({ url: () => new URL(path).href, method: () => 'GET', isNavigationRequest: () => false }),
+        fetch: async () => ({ status: () => 200 }),
+        fulfill: async () => { decisions.push('allowed'); },
+        abort: async () => { decisions.push('blocked'); },
+      });
+    }
+    await bindings.get('__aiJobReady')({ page, frame });
+  };
+  page.evaluate = async () => decisions;
+  const chromium = {
+    executablePath: () => process.execPath,
+    launch: async () => ({
+      newContext: async () => context,
+      close: async () => { browserClosed = true; },
+    }),
+  };
+  const runtime = await createBrowserRuntime({ origin, cacheDir, chromium });
+  const result = await runtime.executeJob({}, { jobId: 'cache-job', attemptId: 'cache-attempt', dependencies: [] }, new AbortController().signal);
+  assert.deepEqual(result, ['allowed', 'blocked', 'blocked', 'blocked']);
+  assert.equal(contextClosed, true);
+  assert.equal(browserClosed, true);
+});
+
+test('asset routing failures stay owned by the job instead of escaping the async handler', async () => {
+  const origin = 'http://127.0.0.1:19841';
+  const page = new EventEmitter();
+  const controller = new AbortController();
+  let handler, escaped, closed = false;
+  const context = {
+    route: async (_pattern, callback) => { handler = callback; },
+    routeWebSocket: async () => {},
+    newPage: async () => page,
+    close: async () => { closed = true; page.emit('close'); },
+  };
+  page.mainFrame = () => ({ url: () => `${origin}/ai-job-worker.html` });
+  page.exposeBinding = async () => {};
+  page.goto = async () => {
+    // Playwright dispatches this callback independently of page.goto. Observe
+    // escaping errors rather than letting the test process itself crash.
+    void handler({
+      request: () => ({ url: () => `${origin}/assets/runtime.js`, method: () => 'GET', isNavigationRequest: () => false }),
+      fetch: async () => { throw new Error('asset connection reset'); },
+      abort: async () => {},
+    }).catch(error => { escaped = error; controller.abort(error); });
+  };
+  page.evaluate = async () => { throw new Error('Unloaded worker must not execute'); };
+  const runtime = await createBrowserRuntime({
+    origin, chromium: {
+      executablePath: () => process.execPath,
+      launch: async () => ({ newContext: async () => context, close: async () => {} }),
+    },
+  });
+  const outcome = await runtime.executeJob({}, { jobId: 'asset-job', attemptId: 'asset-attempt', dependencies: [] }, controller.signal)
+    .then(() => null, error => error);
+  assert.equal(escaped, undefined);
+  assert.match(outcome.message, /asset connection reset/);
+  assert.equal(closed, true);
+});
+
+test('real browser boot tolerates one reset of an allowed static GET without a provider call', { timeout: 30000 }, async t => {
+  let scriptRequests = 0;
+  const server = createServer((request, response) => {
+    if (request.url === '/assets/boot.js') {
+      scriptRequests++;
+      if (scriptRequests === 1) { request.socket.destroy(); return; }
+      response.writeHead(200, { 'Content-Type': 'text/javascript' });
+      response.end('window.__executeAiJob = async () => ({ booted: true }); await window.__aiJobReady();');
+      return;
+    }
+    response.writeHead(200, { 'Content-Type': 'text/html' });
+    response.end('<!doctype html><script type="module" src="/assets/boot.js"></script>');
+  });
+  t.after(async () => {
+    server.closeAllConnections();
+    await new Promise((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
+  });
+  const listening = new Promise(resolve => server.once('listening', resolve));
+  server.listen(0, '127.0.0.1');
+  await listening;
+  const runtime = await createBrowserRuntime({
+    origin: `http://127.0.0.1:${server.address().port}`,
+    dispatchProvider: async () => { throw new Error('Static loading must never dispatch a provider'); },
+  });
+  const result = await runtime.executeJob({}, { jobId: 'reset-job', attemptId: 'reset-attempt', dependencies: [] }, new AbortController().signal);
+  assert.deepEqual(result, { booted: true });
+  assert.equal(scriptRequests, 2);
+});
+
 
 test('persisted queued work waits for Vite listening before resolving the worker origin', { timeout: 10000 }, async () => {
   const directory = await mkdtemp(join(tmpdir(), 'ai-job-listener-test-'));
@@ -97,10 +211,14 @@ test('persisted queued work waits for Vite listening before resolving the worker
     repository = await openAiJobsRepository({ directory });
     await repository.admit({ idempotencyKey: 'restart-queued', input: await inputFor(repository) });
     await repository.close(); repository = null;
-    plugin = aiJobsPlugin({ executeJob: async (input, host) => {
-      executed.resolve(httpServer.listening); return resultFor(input, host);
-    } });
-    await plugin.configureServer({ httpServer, config: { root: process.cwd(), server: {}, preview: {}, logger: { error: error => { throw error; } } },
+    const cacheDir = join(directory, 'vite-cache');
+    plugin = aiJobsPlugin(async options => {
+      assert.equal(options.cacheDir, cacheDir);
+      return { executeJob: async (input, host) => {
+        executed.resolve(httpServer.listening); return resultFor(input, host);
+      } };
+    });
+    await plugin.configureServer({ httpServer, config: { root: process.cwd(), cacheDir, server: {}, preview: {}, logger: { error: error => { throw error; } } },
       middlewares: { use() {} }, close: async () => {} });
     const deadline = new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('Queued executor did not subscribe to Vite listening')), 3000); });
     await Promise.race([subscribed.promise, deadline]); clearTimeout(timer);
