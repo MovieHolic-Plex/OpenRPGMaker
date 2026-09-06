@@ -1,0 +1,6 @@
+
+> rpg-zzu@0.1.0 wt
+> node scripts/agent-worktree.mjs adopt life-full-p4-bounds-verify --path /home/main/z-project/rpg-zzu-life-full-p4-bounds-verify
+
+life-full-p4-bounds-verify  port=9841  /home/main/z-project/rpg-zzu-life-full-p4-bounds-verify
+   보정: node_modules 정션, .env.local 복사

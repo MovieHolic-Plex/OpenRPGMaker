@@ -1,0 +1,86 @@
+{
+  "images": {
+    "player-gift.png": {
+      "width": 1280,
+      "height": 960,
+      "sha256": "054d3fefa17ed7f405b4606e5a94dcdbd26c99489f9a4515ee4c9aafcabbc56f"
+    },
+    "editor-skills-1440.png": {
+      "width": 1440,
+      "height": 900,
+      "sha256": "492b72909ea780772a1cce33bf39a513dee468056da358f62e647e60ccd49fe1"
+    },
+    "editor-skills-1024.png": {
+      "width": 1024,
+      "height": 768,
+      "sha256": "54e31329568ac57daf9e1de1395a72e48b248fe19bada1cfa82b2542a5b8e98e"
+    },
+    "editor-weather-1024.png": {
+      "width": 1024,
+      "height": 768,
+      "sha256": "436719a8a6afb324c96f61fe42f20a6194e5ccfca8d24bf605616b0c113168d4"
+    },
+    "editor-roundtrip-check-1024.png": {
+      "width": 1024,
+      "height": 768,
+      "sha256": "54e31329568ac57daf9e1de1395a72e48b248fe19bada1cfa82b2542a5b8e98e"
+    },
+    "editor-weather-1440.png": {
+      "width": 1440,
+      "height": 900,
+      "sha256": "8db5c65da8d8bc2d57037f739d7b6c6a39092d9e8ef8cb9e33eaeca203290935"
+    },
+    "editor-crop-1440.png": {
+      "width": 1440,
+      "height": 900,
+      "sha256": "5fedaa8336e1581361eaf0d2d530f3012a19f7325843f8bad43ea5ee5b8ad52a"
+    },
+    "editor-birthday-1024.png": {
+      "width": 1024,
+      "height": 768,
+      "sha256": "ae5c14d1e192bf542b4a51b57935e637f9d8fb4f20d3f1d510b244289440181f"
+    },
+    "editor-warning-1024.png": {
+      "width": 1024,
+      "height": 768,
+      "sha256": "465c444cfe6cd49c4cb376d5c9e87bedcbbb1beeaa0116c139adcb2f3c8bb83a"
+    },
+    "editor-crop-1024.png": {
+      "width": 1024,
+      "height": 768,
+      "sha256": "b5554c1bcb34fe975ca329ea9655a01ec8905cbd0786b2c65bde4f4ee6ddcb84"
+    },
+    "player-explicit.png": {
+      "width": 1280,
+      "height": 960,
+      "sha256": "7924057b8b42d3a0c430b5c648b5d3ff6e43048883594b39627f6a8ac44ad82e"
+    },
+    "player-talk.png": {
+      "width": 1280,
+      "height": 960,
+      "sha256": "c8ab9357e30178ad19cb9cc87240b01d1575ebde69e1f9a97bd6ccb584804aab"
+    },
+    "editor-birthday-1440.png": {
+      "width": 1440,
+      "height": 900,
+      "sha256": "b95bdf3c61a5a983ae16627ffeaf54850aa0381a7340cdf04b31c5a9dd901f63"
+    },
+    "editor-cold-boot-timeout-1024.png": {
+      "width": 1024,
+      "height": 768,
+      "sha256": "e14c218fdc3c9797357b3db5b9539a28037fc2a46180cfcce18628e6587e20a0"
+    },
+    "player-shared-limit.png": {
+      "width": 1280,
+      "height": 960,
+      "sha256": "040e88f6e95e3a5c6d8f2501d5f1fa5b46419241dd28a2310b9bcf8118f7289f"
+    },
+    "editor-warning-1440.png": {
+      "width": 1440,
+      "height": 900,
+      "sha256": "ef5a049436d874c783f8b4d2f211c4cb358b22e254d97e25b5cd6cb8afa97cf6"
+    }
+  },
+  "visualApproval": false,
+  "reason": "read returned Current model does not support images; native DOM and keyboard are separately verified"
+}

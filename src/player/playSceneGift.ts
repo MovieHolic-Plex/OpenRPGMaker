@@ -3,7 +3,7 @@ import { showSceneEmote } from "@/player/playSceneEmotes";
 import { giftDayKey } from "@/project/session";
 import { store } from "@/project/store";
 import { formatFriendshipFeedback, giftRankForItem, giveGiftToNpc, giftResponseForKey } from "@/project/friendship";
-import { resolveGiftPrefs, resolveGiftResponses } from "@/project/characterProfiles";
+import { resolveCharacterSpeaker, resolveGiftPrefs, resolveGiftResponses } from "@/project/characterProfiles";
 import { resolveSocialKey } from "@/project/socialKey";
 import type { GameEvent } from "@/project/types";
 import type { ItemRecord } from "@/project/types/database";
@@ -45,7 +45,7 @@ async function showGiftMessage(scene: PlaySceneContext, event: GameEvent, body: 
   const dialogue = dialogueUi(scene);
   if (!dialogue) return;
   await dialogue.showText({
-    speaker: event.pages?.[0]?.name,
+    speaker: resolveCharacterSpeaker(store.getCurrent(), event),
     body,
     textContext: { session: scene.session, project: store.getCurrent() },
     playerTileY: scene.tileY,
@@ -101,7 +101,7 @@ async function showNoItems(scene: PlaySceneContext, event: GameEvent): Promise<v
   if (!dialogue) return;
   const responses = resolveGiftResponses(store.getCurrent(), event);
   await dialogue.showText({
-    speaker: event.pages?.[0]?.name,
+    speaker: resolveCharacterSpeaker(store.getCurrent(), event),
     body: giftResponseForKey(responses, "noItems"),
     textContext: { session: scene.session, project: store.getCurrent() },
     playerTileY: scene.tileY,

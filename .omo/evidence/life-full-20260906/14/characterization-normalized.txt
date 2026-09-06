@@ -1,0 +1,17 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeAuthoringBounds.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-authoring-bounds
+
+ ✓ test/lifeAuthoringBounds.test.ts (3 tests) 2629ms
+   ✓ legacy characterization > uses effective forecast 1 and rain intensity 0.5 without backfilling  488ms
+   ✓ legacy characterization > retains explicit forecast 3 and intensity 0.65 through render and roundtrip  1170ms
+   ✓ legacy characterization > preserves the legacy level1 reward and authored birthday on render/serialize  969ms
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  03:42:04
+   Duration  29.06s (transform 18.80s, setup 0ms, collect 25.05s, tests 2.63s, environment 423ms, prepare 201ms)
+

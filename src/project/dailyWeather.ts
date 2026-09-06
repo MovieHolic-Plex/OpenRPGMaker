@@ -14,8 +14,8 @@ import type { DailyWeatherState, PlaySession } from "@/project/session";
 import type { DailyWeatherConfig, DailyWeatherRule, Project } from "@/project/types";
 import { mulberry32 } from "@/util/rng";
 
-const DEFAULT_FORECAST_DAYS = 1;
-const DEFAULT_WEATHER_INTENSITY = 0.5;
+export const DEFAULT_FORECAST_DAYS = 1;
+export const DEFAULT_WEATHER_INTENSITY = 0.5;
 const DEFAULT_WEATHER_SEED = 1;
 
 type WeatherSessionSource = Pick<PlaySession, "gameTime" | "rng">;

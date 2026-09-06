@@ -1,0 +1,90 @@
+{
+  "images": [
+    {
+      "path": "player-gift.png",
+      "width": 1280,
+      "height": 960,
+      "sha256": "d1061cb8221018e70bf288c779cef20e8f58cb053c5584217ed1f26f47373546"
+    },
+    {
+      "path": "editor-skills-1440.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "492b72909ea780772a1cce33bf39a513dee468056da358f62e647e60ccd49fe1"
+    },
+    {
+      "path": "editor-skills-1024.png",
+      "width": 1024,
+      "height": 768,
+      "sha256": "54e31329568ac57daf9e1de1395a72e48b248fe19bada1cfa82b2542a5b8e98e"
+    },
+    {
+      "path": "editor-weather-1024.png",
+      "width": 1024,
+      "height": 768,
+      "sha256": "436719a8a6afb324c96f61fe42f20a6194e5ccfca8d24bf605616b0c113168d4"
+    },
+    {
+      "path": "editor-weather-1440.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "8db5c65da8d8bc2d57037f739d7b6c6a39092d9e8ef8cb9e33eaeca203290935"
+    },
+    {
+      "path": "editor-crop-1440.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "5fedaa8336e1581361eaf0d2d530f3012a19f7325843f8bad43ea5ee5b8ad52a"
+    },
+    {
+      "path": "editor-birthday-1024.png",
+      "width": 1024,
+      "height": 768,
+      "sha256": "e18f369c7ce9dfe8c80f12edb822c1b215467eaba4389e4a53f61cc2cab0798f"
+    },
+    {
+      "path": "editor-warning-1024.png",
+      "width": 1024,
+      "height": 768,
+      "sha256": "465c444cfe6cd49c4cb376d5c9e87bedcbbb1beeaa0116c139adcb2f3c8bb83a"
+    },
+    {
+      "path": "editor-crop-1024.png",
+      "width": 1024,
+      "height": 768,
+      "sha256": "9f5f3f6474d0fe688344f665cc5e9a8e52b8800a7b8e1ed6c4cacb2235288735"
+    },
+    {
+      "path": "player-explicit.png",
+      "width": 1280,
+      "height": 960,
+      "sha256": "84d958bc51fa8d083e753c4fc6e716115580d2d5db8422c22c7b8a8d95f79a6c"
+    },
+    {
+      "path": "player-talk.png",
+      "width": 1280,
+      "height": 960,
+      "sha256": "a12cfe7ec64218153508b1b0349c1a876475dff8d2c4d4ae6a88e36b1997026c"
+    },
+    {
+      "path": "editor-birthday-1440.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "b95bdf3c61a5a983ae16627ffeaf54850aa0381a7340cdf04b31c5a9dd901f63"
+    },
+    {
+      "path": "player-shared-limit.png",
+      "width": 1280,
+      "height": 960,
+      "sha256": "8c7c4a0a8dbbefb8d977fe21642893c09c88dbc89668f206e43a7bf12d9ed697"
+    },
+    {
+      "path": "editor-warning-1440.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "ef5a049436d874c783f8b4d2f211c4cb358b22e254d97e25b5cd6cb8afa97cf6"
+    }
+  ],
+  "visualApproval": false,
+  "toolResult": "Current model does not support images. The image will be omitted from this request."
+}

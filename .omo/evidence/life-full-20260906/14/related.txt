@@ -1,0 +1,63 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/databaseCharacterView.test.ts test/databaseCropView.test.ts test/databaseLifeCraftingView.test.ts test/p1LifeEditorAuthoring.test.ts test/toolActionAuthoringParity.test.ts test/p1WeatherCalendar.test.ts test/p0LifeSkillProgress.test.ts test/relationshipAuthoring.test.ts test/playSceneInterpreterCutsceneSkip.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-authoring-bounds
+
+ ✓ test/p1WeatherCalendar.test.ts (4 tests) 1528ms
+   ✓ P1 deterministic daily weather > derives the same authored outcome from only the session seed and calendar day key  1010ms
+ ✓ test/relationshipAuthoring.test.ts (9 tests) 1217ms
+   ✓ 관계 상태 저작 경로 > 전투에서 바뀐 관계가 세션으로 되돌아온다  702ms
+ ✓ test/p0LifeSkillProgress.test.ts (10 tests) 2335ms
+   ✓ P0 life-skill progression > applies every crossed level reward once and unlocks real crafting  1160ms
+ ✓ test/toolActionAuthoringParity.test.ts (44 tests) 8047ms
+   ✓ authored tool authority > keeps all four real defaults for absent and empty tables  536ms
+   ✓ authored tool authority > does not merge defaults into an existing one-row table on load  1322ms
+   ✓ authored tool authority > resolves any tool from inventory when hand is empty  486ms
+   ✓ authored tool authority > refuses a seed consumable even if it carries a farmTool field  470ms
+   ✓ authored tool authority > preserves explicit false through serialization and tills outside the region  1031ms
+   ✓ authored tool authority > refuses till outside the region when requiresFarmable is undefined  327ms
+   ✓ authored tool authority > refuses till outside the region when requiresFarmable is true  346ms
+ ✓ test/playSceneInterpreterCutsceneSkip.test.ts (4 tests) 877ms
+   ✓ skippable cutscene skip hint > shows the hint while a skippable cutscene blocks and clears it when the cutscene ends  454ms
+ ✓ test/databaseCharacterView.test.ts (9 tests) 4139ms
+   ✓ database character catalog > lists the union of profiles and event-used orphan characterIds  559ms
+   ✓ database character catalog > creates a profile for an orphan characterId without clearing event refs  785ms
+   ✓ database character catalog > edits profile fields and deletes only the profile  720ms
+   ✓ database character catalog > adds a unique profile from the toolbar  310ms
+   ✓ database character catalog > renders charset thumbs for used hosts and empty thumbs for unused/orphan-without-graphic  313ms
+   ✓ database character catalog > offers a first-resident action when the catalog is empty  638ms
+   ✓ database character catalog > summarizes resident connection issues and exposes system/event repair actions  396ms
+ ✓ test/databaseCropView.test.ts (6 tests) 5033ms
+   ✓ database crop view > re-renders the season checkboxes after unchecking all seasons forces a spring restore  1719ms
+   ✓ database crop view > adds an undo snapshot before add/delete and duplicate creates a name with the 사본 suffix  760ms
+   ✓ database crop view > requires a second click within the confirm window before deleting a crop  887ms
+   ✓ database crop view > offers a first-crop action in the empty state and opens the created record  684ms
+   ✓ database crop view > shows farming readiness and a derived crop loop summary  533ms
+   ✓ database crop view > reports unusable crop records and exposes direct repair actions  438ms
+ ✓ test/databaseLifeCraftingView.test.ts (14 tests) 33867ms
+   ✓ database life skill and crafting view > materializes real defaults only on first custom-table creation, as one undoable edit  2482ms
+   ✓ database life skill and crafting view > appends to existing tables without merging and preserves false through editing and load  1479ms
+   ✓ database life skill and crafting view > authors a life skill and level reward, then undo restores the prior record  3467ms
+   ✓ database life skill and crafting view > authors a recipe with ingredient and output item references  1727ms
+   ✓ database life skill and crafting view > authors upgrade, sell-price, and tool-action records through their detail forms  2304ms
+   ✓ database life skill and crafting view > rejects duplicate record ids and chooses an unused sell-price item  4741ms
+   ✓ database life skill and crafting view > blocks deletion while event commands reference the selected life records  634ms
+   ✓ database life skill and crafting view > authors recipe unlock requirements and tool capability fields  3557ms
+   ✓ database life skill and crafting view > clamps authored tool capability axes to the runtime-safe 9x9 limit  3130ms
+   ✓ database life skill and crafting view > creates energy and shipping settings and preserves disabled shipping values  2318ms
+   ✓ database life skill and crafting view > authors world unlock, bundle rewards, and maker processing without raw JSON  5425ms
+   ✓ database life skill and crafting view > rejects duplicate package ids, guards reward targets, and records undo  1801ms
+   ✓ database life skill and crafting view > blocks renaming referenced skill, recipe, upgrade, and world-unlock ids  408ms
+   ✓ database life skill and crafting view > keeps section switching in a tab strip and does not dump every section into the empty detail  376ms
+ ✓ test/p1LifeEditorAuthoring.test.ts (3 tests) 4256ms
+   ✓ P1 life editor authoring > exposes honest season/weather and animal/building tabs inside the life group  672ms
+   ✓ P1 life editor authoring > seeds a usable four-season weather table instead of leaving an empty shell  1840ms
+   ✓ P1 life editor authoring > creates connected species, building, and starting-animal records from the empty state  1735ms
+
+ Test Files  9 passed (9)
+      Tests  103 passed (103)
+   Start at  03:52:25
+   Duration  98.42s (transform 128.62s, setup 0ms, collect 506.66s, tests 61.30s, environment 2.62s, prepare 7.66s)
+

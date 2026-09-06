@@ -155,6 +155,15 @@ Party record tabs use the final section of `studio-v2.css`: actors, classes, ski
 - `생활` 그룹의 `낚시·채집·박물관` (`lifeCollections`) 탭은 fish species, fishing spots, seasonal forage areas, museum rewards를 구조화해서 목록·추가·이름 변경·삭제한다. 기본값 동작은 collection tracking까지 서로 참조가 맞는 최소 패키지를 만든다. 물고기 삭제는 해당 catch만 제거하고, catch가 하나도 남지 않은 낚시터만 함께 제거한다.
 - item 삭제는 물고기 지급, 채집 drop, 도감 추적, 박물관 eligibility/condition/item reward 참조가 남아 있으면 차단된다. map 삭제 확인은 낚시터/채집 구역 수를 표시하고 해당 맵의 행만 제거한다. UI가 참조 권위자가 되어서는 안 된다. 전역 lint/repair는 `src/project/io/references.ts`, map lifecycle은 `src/project/mapDeletion.ts`가 소유한다.
 
+## 생활 저작 경계와 자동 화자 (task14, 2026-09-06)
+
+- 주민 생일 입력의 상한은 `daysPerSeasonOf(timeSystem)`이다. 40일 달력의 40일을 허용하며, 현재 28일 달력에 남은 29일은 원래 값을 보여 주고 `aria-invalid`와 경고로 진단한다. 렌더는 날짜를 보정하거나 프로필을 생성하지 않는다.
+- 자동 선물 메뉴·선물 반응·대화 호감 피드백은 연결된 `characters[characterId].displayName`을 우선한다. 프로필이 없으면 기존 페이지 이름으로 돌아간다. 이벤트의 화자 없는 문장에도 연결 프로필 이름을 쓰지만, 명시한 `speaker`(빈 문자열 포함)는 유지하고 이벤트 밖 내레이션에는 이름을 발명하지 않는다. 같은 characterId의 호감과 일일 기록 공유는 그대로다.
+- 생략된 날씨 예보는 1일, 비·눈 등 강도는 0.5로 표시한다. 맑음은 강도를 소비하지 않고 0이며, 명시된 강도는 편집기에 그대로 남는다. 기본 확률표 생성이 저작하는 3일/0.65와 생략값을 혼동하지 않는다. 네이티브 range 입력은 type/min/max/step 설정 **후** value를 넣어 브라우저의 기본 step=1 반올림을 피한다.
+- 계절당 규칙은 기존 런타임/JSON 경계와 같은 최대 128개다. 129번째 추가는 두 추가 버튼 모두 스냅샷·store mutation 전에 거절한다. 최대 기술 레벨은 XP 곡선의 10이며 신규 레벨업 보상은 2..maxLevel이다. maxLevel=1이면 추가할 수 없다. 기존 level1 보상은 읽기·렌더 중 변경하지 않으며 레벨업으로 지급되지 않는다고 안내한다.
+- 작물 그림의 마지막 연결 항목이 성숙 상태를 담당한다. frame은 그림의 프레임, label은 편집용 이름이며 맵에는 번호나 이름을 그리지 않는다. 그림이 없을 때 폴백은 색 사각형이다. 미저작/명시 빈 배열/저작 배열과 자동 그림의 명시 고정 경계는 그대로다.
+- 회귀: `test/lifeAuthoringBounds.test.ts`. 실제 1024×768·1440×900 에디터 키보드/undo/redo/로컬 Project4 왕복과 별도 `player.html` 선물·대화 소비 증거는 `.omo/evidence/life-full-20260906/14/`에 있다. 원격 콘텐츠 저장이나 전체 생활 완주 검증은 아니다. 기존 Phase3 도구 규칙의 기본표·명시 false·순서 계약은 변경하지 않는다.
+
 ## 계절·날씨 / 동물·축사 저작 표면 (2026-08-25)
 
 - grouped Database navigation의 `생활` 그룹은 `농사·작물`, `주민 관계`, `생활 기술·제작`, `계절·날씨`, `동물·축사` 순서다. 새 탭의 stable ids는 `dailyWeather` / `farmAnimals`, testids는 `db-tab-daily-weather` / `db-tab-farm-animals`다.

@@ -3,6 +3,11 @@ import type { CharacterProfile, GameEvent, GiftPrefs, GiftResponses, Project } f
 
 export type CharacterBirthday = { readonly season: Season; readonly day: number };
 
+/** Automatic feedback labels share the linked resident identity; page names remain the fallback. */
+export function resolveCharacterSpeaker(project: Project, event: GameEvent): string | undefined {
+  return getCharacterProfile(project, event.characterId)?.displayName ?? event.pages?.[0]?.name;
+}
+
 /** Opt-in project.characters[characterId] lookup. Empty/missing characterId → undefined. */
 export function getCharacterProfile(
   project: Project,

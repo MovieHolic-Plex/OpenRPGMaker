@@ -647,7 +647,7 @@ function graphicStagesCard(record: CropRecord, rerender: () => void): HTMLElemen
     children.push(noticeBar({
       text: effective.length > 0
         ? "작물 id 또는 수확 아이템에서 자동 배선된 그림을 쓰는 중입니다 — 프로젝트 파일에는 저장되지 않습니다."
-        : "연결된 그림이 없어 밭에는 단계 번호 배지가 표시됩니다.",
+        : "연결된 그림이 없어 밭에는 색 사각형이 표시됩니다. 단계 번호나 라벨은 맵에 표시되지 않습니다.",
       tone: effective.length > 0 ? "info" : "warn",
       testid: "db-crop-graphic-auto-notice",
       ...(effective.length > 0
@@ -677,7 +677,7 @@ function graphicStagesCard(record: CropRecord, rerender: () => void): HTMLElemen
           el("small", { text: stage.label?.trim() || stageName(index, effective.length) }),
         ],
       }))
-      : [el("span", { class: "empty-hint", text: "밭에 그릴 그림이 아직 없습니다." })],
+      : [el("span", { class: "empty-hint", text: "밭에는 그림 대신 색 사각형이 표시됩니다." })],
   }));
 
   children.push(el("div", {
@@ -687,7 +687,7 @@ function graphicStagesCard(record: CropRecord, rerender: () => void): HTMLElemen
 
   return sectionCard({
     title: "성장 그래픽",
-    hint: `밭 한 칸에 그려지는 그림입니다. 마지막 ${rowCount}번째 칸은 수확 가능 상태 전용입니다.`,
+    hint: "밭 한 칸에 그려지는 그림입니다. 연결된 그림 배열의 마지막 그림은 수확 가능 상태 전용입니다. 프레임은 그림에서 사용할 칸이며, 라벨은 편집용으로 맵에 표시되지 않습니다.",
     testid: "db-crop-graphic-card",
     children: [
       ...children,

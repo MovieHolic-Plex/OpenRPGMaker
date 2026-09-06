@@ -1,0 +1,12 @@
+{
+  "command": [
+    "npm",
+    "run",
+    "openwiki:verify"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-authoring-bounds",
+  "head": "966f414c07729e7d9474c568cbaf19a94d2bc740",
+  "tree": "6ff79d95e11ba95ae47a9db97e106936728088fa",
+  "exit": 0,
+  "signal": null
+}

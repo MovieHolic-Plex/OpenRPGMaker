@@ -1,0 +1,31 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-authoring-bounds",
+  "port": 39841,
+  "surface": "native Firefox editor controls",
+  "remoteWrites": [],
+  "writes": [],
+  "errors": [
+    "DOM timeout ready"
+  ],
+  "runs": [
+    {
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "actions": [],
+      "failure": "page.evaluate: DOM timeout ready\nwindow.task14Dom/</timer<@debugger eval code:8:72\nsetTimeout handler*window.task14Dom/<@debugger eval code:8:33\nwindow.task14Dom@debugger eval code:4:38\n@debugger eval code:11:34\n@debugger eval code:12:7\n@debugger eval code:13:7\n\n    at /home/main/z-project/rpg-zzu-life-full-authoring-bounds/.omo/evidence/life-full-20260906/14/editor.mjs:42:18",
+      "body": "",
+      "contextClosed": true
+    }
+  ],
+  "limits": [
+    "Life navigation group is an existing pointer-only div",
+    "Project roundtrip uses public serialize/deserialize and local Storage, not the remote save dialog"
+  ],
+  "cleanup": {
+    "browserClosed": true,
+    "serverClosed": true,
+    "cacheRemoved": true
+  }
+}

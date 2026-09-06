@@ -1,0 +1,26 @@
+{
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "60s",
+    "npm",
+    "run",
+    "openwiki:index",
+    "--",
+    "--check"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p4-bounds-verify",
+  "head": "e486e536954d69c59c7bcc82602646cc6712c445",
+  "tree": "7a6a7b107ab05b34991440eccb559db3e1a81969",
+  "started": "2026-09-06T20:11:36.942Z",
+  "finished": "2026-09-06T20:12:57.467Z",
+  "exit": 1,
+  "signal": null,
+  "stdout": "\n> rpg-zzu@0.1.0 openwiki:index\n> node scripts/openwiki-index.mjs --check\n\n",
+  "stderr": "openwiki/INDEX.md 가 낡았다. `npm run openwiki:index` 를 돌려라.\n"
+}
