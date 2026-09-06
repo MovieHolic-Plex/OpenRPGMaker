@@ -663,7 +663,7 @@ const layPath: ToolDefinition = {
       }
       failWithExample("경로가 전부 맵 밖입니다 — points 좌표를 맵 안으로 고치세요", PATH_EXAMPLE);
     }
-    const reshaped = resolveAutotile(autotile, painted, map);
+    const reshaped = resolveAutotile(autotile, painted, map, (x, y) => mask(x, y) !== "structure");
     const warnings = roadRepairWarnings(repair);
     return withSoftConfirm({
       summary: `${map.name}에 '${group.name}' 길 ${painted.length}칸 — 자연도 ${naturalnessLabel(naturalness)}, 오토타일 재계산 ${reshaped}칸(inner corner 포함).`

@@ -12,7 +12,8 @@ import { store } from "@/project/store";
 import type { ChangeSummary, Project } from "@/project/types";
 import { commitChangeset, summarizeChanges } from "./changeset";
 import { runTool } from "./toolRunner";
-import type { ToolContext, ToolResult } from "./types";
+import { ToolError, type ToolContext, type ToolResult } from "./types";
+import { assertHouseProtection, captureHouseProtection } from "./houseProtection";
 import type { EditActivityField, EditActivityOrigin } from "@/editor/editActivityLog";
 import type { ProjectChangeAnnotation } from "@/project/store";
 
@@ -236,6 +237,15 @@ export async function applyProposedProject(
   options: ApplyProposedProjectOptions,
 ): Promise<ApplyProposedProjectResult> {
   const before = store.getCurrent();
+  // A detached preview may predate human edits or newly accepted houses.
+  // Capture the live baseline at application, before any history or store writes.
+  try {
+    assertHouseProtection(captureHouseProtection(before), proposed, []);
+  } catch (error) {
+    if (!(error instanceof ToolError)) throw error;
+    const issue = error.mapId ? `[${error.mapId}] ${error.message}` : error.message;
+    return { ok: false, reason: "commit-rejected", issue, issues: [issue] };
+  }
   const commit = commitChangeset(proposed, before);
   if (!commit.ok) {
     const blocking = commit.blocking.map((entry) =>

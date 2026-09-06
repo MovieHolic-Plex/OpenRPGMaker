@@ -1,4 +1,5 @@
 import { el } from '@/util/dom';
+import { growthArt } from './art';
 import type { TreePosition } from '@/project/growth/types';
 import type { TreeEdge } from '@/project/growth/graph';
 import { button } from './controls';
@@ -41,7 +42,7 @@ export function renderGrowthCanvas(o: GraphOptions): HTMLElement {
       attrs: { type: 'button', 'aria-label': `${n.name}, ${n.subtitle}`, 'aria-pressed': String(n.id === o.selected) },
       dataset: { testid: `growth-node-${n.id}`, nodeId: n.id },
       children: [
-        el('span', { class: 'growth-node-emblem', children: n.iconUrl ? [el('img', { attrs: { src: n.iconUrl, alt: '' } })] : [el('span', { text: n.badge })] }),
+        growthArt(n.iconUrl, n.badge, 'growth-node-emblem'),
         el('span', { class: 'growth-node-copy', children: [el('strong', { class: 'growth-node-name', text: n.name }), el('span', { text: n.subtitle })] }),
         el('span', { class: 'growth-node-port' }),
       ],

@@ -1,3 +1,4 @@
+import type { InteriorRoomShape } from "@/project/interiorRoomFootprint";
 // 타일셋에 붙는 개념 꾸러미 — 시설 → 장소 → 물건 → 능력 칩.
 // 데이터베이스 「맵 → 타일셋 → 개념 꾸러미」에서 저작하고, place_concept 이 그 나무를 읽어 시공한다.
 
@@ -157,6 +158,8 @@ export interface ConceptPlaceRecord {
   role?: ConceptPlaceRole;
   /** 바닥 크기 힌트. 생략 시 m. */
   size?: ConceptPlaceSize;
+  /** Connected floor shape; omitted means the legacy rectangle. */
+  shape?: InteriorRoomShape;
   /** 같은 장소 개수. 생략 시 1. */
   count?: number;
   /** 바닥 재질. 생략 시 나무. */

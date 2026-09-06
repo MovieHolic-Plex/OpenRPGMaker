@@ -1,4 +1,4 @@
-// 실내 칩셋용 개념 꾸러미 초안 묶음 — 여관 하나가 아니라 시설 아홉 종.
+// 실내 칩셋용 개념 꾸러미 초안 묶음. 시설마다 장소·가구 구성과 재질을 갖는다.
 // 장소 id 는 가능하면 BUILTIN_INTERIOR_ROOM_KINDS 와, 물건 objectId 는 INTERIOR_OBJECT_CATALOG 와 맞춘다.
 // 여기 값은 「초안」이다. 프로젝트에 시드된 뒤에는 tileset.scratchConceptBundles 가 정본이고,
 // 사용자가 데이터베이스 「맵 → 타일셋 → 개념 꾸러미」에서 고친 나무를 place_concept 이 그대로 읽는다.
@@ -9,6 +9,7 @@
 // 한 방의 북쪽 행은 정문/입구 통로 열을 빼고 s 4 · m 6 · l 8 칸이다. 초안은 그 안에서 짠다.
 import type { ConceptBundleRecord } from "@/project/types/conceptBundle";
 import { cloneConceptBundle, SCRATCH_INN_BUNDLE } from "./scratchInnBundle";
+import { EXPANDED_CONCEPT_FACILITIES } from "./conceptFacilityExpansion";
 
 export const SCRATCH_HOUSE_BUNDLE: ConceptBundleRecord = {
   id: "house",
@@ -27,7 +28,7 @@ export const SCRATCH_HOUSE_BUNDLE: ConceptBundleRecord = {
     { id: "cauldron", label: "가마솥", objectId: "cauldron", placeIds: ["kitchen"], chips: ["block"] },
     { id: "shelf_jars", label: "항아리 선반", objectId: "shelf_jars", placeIds: ["kitchen"], chips: ["wall"] },
     { id: "bucket", label: "물통", objectId: "bucket", placeIds: ["kitchen"], chips: ["block"] },
-    { id: "table_chairs", label: "식탁과 의자", objectId: "table_chairs", placeIds: ["living"], chips: ["block", "event"], required: true },
+    { id: "table_chairs", label: "식탁과 의자", objectId: "dining_table", placeIds: ["living"], chips: ["block", "event"], required: true },
     { id: "cabinet", label: "캐비닛", objectId: "cabinet", placeIds: ["living"], chips: ["block", "loot"] },
     { id: "picture", label: "그림", objectId: "picture", placeIds: ["living"], chips: ["wall"] },
     { id: "jars", label: "항아리", objectId: "jars", placeIds: ["living"], chips: ["block"] },
@@ -77,7 +78,7 @@ export const SCRATCH_TAVERN_BUNDLE: ConceptBundleRecord = {
   things: [
     { id: "counter", label: "술 카운터", objectId: "counter", placeIds: ["hall"], chips: ["block", "event"], required: true },
     { id: "table_long", label: "긴 탁자", objectId: "table_long", placeIds: ["hall"], chips: ["block"] },
-    { id: "table_chairs", label: "탁자와 의자", objectId: "table_chairs", placeIds: ["hall"], chips: ["block"] },
+    { id: "table_chairs", label: "탁자와 의자", objectId: "dining_table", placeIds: ["hall"], chips: ["block"] },
     { id: "table_chairs_second", label: "두 번째 손님 좌석", objectId: "table_chairs", placeIds: ["hall"], chips: ["block"] },
     { id: "hall_rug", label: "손님 좌석 돗자리", objectId: "rug_mat", placeIds: ["hall"], chips: ["pass", "floor"] },
     { id: "stool", label: "스툴", objectId: "stool", placeIds: ["hall"], chips: ["block"] },
@@ -87,7 +88,7 @@ export const SCRATCH_TAVERN_BUNDLE: ConceptBundleRecord = {
     { id: "window", label: "창문", objectId: "window", placeIds: ["hall", "guestroom"], chips: ["wall"] },
     { id: "stove", label: "화덕", objectId: "stove", placeIds: ["kitchen"], chips: ["block", "event"], required: true },
     { id: "cauldron", label: "가마솥", objectId: "cauldron", placeIds: ["kitchen"], chips: ["block"] },
-    { id: "kettle", label: "주전자", objectId: "kettle", placeIds: ["kitchen"], chips: ["block"] },
+    { id: "kettle", label: "항아리", objectId: "kettle", placeIds: ["kitchen"], chips: ["block"] },
     { id: "shelf_jars", label: "항아리 선반", objectId: "shelf_jars", placeIds: ["kitchen"], chips: ["wall"] },
     { id: "bed_h", label: "침대(가로)", objectId: "bed_h", placeIds: ["guestroom"], chips: ["block", "event", "sleep"], required: true },
     { id: "box", label: "잡화 상자", objectId: "box", placeIds: ["guestroom"], chips: ["block", "loot"] },
@@ -101,15 +102,14 @@ export const SCRATCH_LIBRARY_BUNDLE: ConceptBundleRecord = {
   facilities: [{ id: "library", label: "서재", placeIds: ["study", "reading"] }],
   places: [
     { id: "study", label: "개인 서재", role: "room", size: "m" },
-    { id: "reading", label: "열람실", role: "entrance", size: "l", floor: "plank" },
+    { id: "reading", label: "열람실", role: "entrance", size: "l", shape: "alcove", floor: "plank" },
   ],
   things: [
     { id: "bookshelf_west", label: "책장(서)", objectId: "bookshelf", placeIds: ["reading"], chips: ["block", "event"], required: true },
     { id: "bookshelf_east", label: "책장(동)", objectId: "bookshelf", placeIds: ["reading"], chips: ["block", "event"] },
-    { id: "table_chairs", label: "열람 탁자", objectId: "table_chairs", placeIds: ["reading"], chips: ["block"] },
+    { id: "table_chairs", label: "열람 탁자", objectId: "reading_table", placeIds: ["reading"], chips: ["block"] },
     { id: "clock", label: "괘종시계", objectId: "clock", placeIds: ["reading"], chips: ["wall", "event"] },
     { id: "window", label: "창문", objectId: "window", placeIds: ["reading", "study"], chips: ["wall"] },
-    { id: "rug_red", label: "붉은 카펫", objectId: "rug_red", placeIds: ["reading"], chips: ["pass", "floor"] },
     { id: "bookshelf", label: "책장", objectId: "bookshelf", placeIds: ["study"], chips: ["block", "event"], required: true },
     { id: "crystal", label: "수정구", objectId: "crystal", placeIds: ["study"], chips: ["block", "event"] },
     { id: "picture", label: "그림", objectId: "picture", placeIds: ["study"], chips: ["wall"] },
@@ -129,7 +129,7 @@ export const SCRATCH_SMITHY_BUNDLE: ConceptBundleRecord = {
   ],
   things: [
     { id: "stove", label: "화덕(단조로)", objectId: "stove", placeIds: ["workshop"], chips: ["block", "event"], required: true },
-    { id: "counter", label: "작업대", objectId: "counter", placeIds: ["workshop"], chips: ["block", "event"] },
+    { id: "counter", label: "단조 작업대와 도구", objectId: "work_table", placeIds: ["workshop"], chips: ["block", "event"] },
     { id: "armor", label: "갑옷 전시대", objectId: "armor", placeIds: ["workshop"], chips: ["block", "event"] },
     { id: "sword_rack", label: "검 거치대", objectId: "sword_rack", placeIds: ["workshop"], chips: ["wall"] },
     { id: "bucket", label: "물통", objectId: "bucket", placeIds: ["workshop"], chips: ["block"] },
@@ -153,11 +153,11 @@ export const SCRATCH_CHURCH_BUNDLE: ConceptBundleRecord = {
   facilities: [{ id: "church", label: "교회", placeIds: ["vestry", "chapel"] }],
   places: [
     { id: "vestry", label: "사제실", role: "room", size: "s" },
-    { id: "chapel", label: "예배당", role: "entrance", size: "l", floor: "stone" },
+    { id: "chapel", label: "예배당", role: "entrance", size: "l", shape: "alcove", floor: "stone" },
   ],
   things: [
     { id: "religious", label: "성상", objectId: "religious", placeIds: ["chapel", "vestry"], chips: ["wall", "event"], required: true },
-    { id: "altar", label: "제단", objectId: "table_long", placeIds: ["chapel"], chips: ["block", "event"] },
+    { id: "altar", label: "제단과 촛대", objectId: "altar_table", placeIds: ["chapel"], chips: ["block", "event"] },
     { id: "bust_west", label: "흉상(서)", objectId: "bust", placeIds: ["chapel"], chips: ["block", "event"] },
     { id: "bust_east", label: "흉상(동)", objectId: "bust", placeIds: ["chapel"], chips: ["block"] },
     { id: "rug_red", label: "붉은 카펫", objectId: "rug_red", placeIds: ["chapel"], chips: ["pass", "floor"] },
@@ -238,6 +238,7 @@ export const CONCEPT_FACILITY_TEMPLATES: readonly ConceptBundleRecord[] = [
   SCRATCH_CHURCH_BUNDLE,
   SCRATCH_WAREHOUSE_BUNDLE,
   SCRATCH_GUILD_BUNDLE,
+  ...EXPANDED_CONCEPT_FACILITIES,
 ];
 
 export function conceptFacilityTemplateById(id: string): ConceptBundleRecord | undefined {

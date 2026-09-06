@@ -1,6 +1,8 @@
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import type { FootprintWing, HouseKitId, HouseKitWindowsOption } from "@/editor/houseKit";
 import { runTool, type ToolContext, type ToolResult } from "@/editor/tools";
+import { houseFootprintCells } from "@/editor/tools/houseProtection";
+import { canMove } from "@/project/collision";
 import { derivePatternGrammar } from "@/editor/tools/v3/rmTypeExpander";
 import { buildEdgeCornerInnerVariantMap } from "@/project/defaults/autotileEngine";
 import { DIRT_ROAD_TILE } from "@/project/defaults/chipsetMapping";
@@ -125,9 +127,12 @@ export function applyBuildPalettePrimitiveToProject(
   const houseKit = resolveHouseKitId(options.houseKitId);
   const validationFailure = validateBuildPalettePrimitive(rect, primitive, houseShape);
   if (validationFailure) return { ok: false, summary: validationFailure, toolResults: [], project };
+  const startPos = primitive === "house" ? startOutsideManualHouse(project, rect) : project.startPos;
+  if (!startPos) return { ok: false, summary: "집 밖에 안전한 시작 위치가 없습니다. 다른 영역을 선택하세요.", toolResults: [], project };
   ensureBuildPaletteTileGroups(tileset);
 
-  const ctx: ToolContext = { project };
+  // Reserve a safe manual start before author_house seals its tiles, never carve the sealed house.
+  const ctx: ToolContext = { project: startPos === project.startPos ? project : { ...project, startPos } };
   const toolResults: ToolResult[] = [];
   const run = (name: string, args: Record<string, unknown>): boolean => {
     const result = runTool(ctx, name, args);
@@ -145,11 +150,36 @@ export function applyBuildPalettePrimitiveToProject(
   else if (primitive === "prop") ok = run("place_props", { mapId: rect.mapId, area: toToolRect(rect), material: "꽃", count: countForArea(rect, 10), naturalness: 0.45, seed: seedFor(rect, "prop") });
   else if (primitive === "npc") ok = run("place_npc", { mapId: rect.mapId, x: rect.x + Math.floor(rect.width / 2), y: rect.y + Math.floor(rect.height / 2), name: "주민", pages: [{ lines: ["안녕하세요."] }] });
 
+  if (!ok && primitive === "house") ctx.project = project;
   const failed = toolResults.find((result) => !result.ok);
-  const summary = failed
+  let summary = failed
     ? summarizeToolFailure(failed)
     : ok ? summarizeBuildPaletteSuccess(primitive, toolResults) : `${primitive} 시공에 실패했습니다.`;
+  if (ok && !failed && startPos !== project.startPos) summary += ` · 시작 위치 (${startPos.x},${startPos.y})로 이동`;
   return { ok: ok && !failed, summary, toolResults, project: ctx.project };
+}
+
+function startOutsideManualHouse(project: Project, rect: BuildPaletteSelection): Project["startPos"] | undefined {
+  if (rect.mapId !== project.startMapId) return project.startPos;
+  const map = project.maps[rect.mapId];
+  const footprint = new Set(houseFootprintCells(toToolRect(rect), map).map(({ x, y }) => `${x},${y}`));
+  if (!footprint.has(`${project.startPos.x},${project.startPos.y}`)) return project.startPos;
+  const unavailable = new Set([...footprint, ...map.events.map(({ x, y }) => `${x},${y}`)]);
+  let nearest: Project["startPos"] | undefined;
+  let distance = Infinity;
+  for (let y = 0; y < map.height; y += 1) {
+    for (let x = 0; x < map.width; x += 1) {
+      const candidateDistance = Math.abs(x - project.startPos.x) + Math.abs(y - project.startPos.y);
+      if (candidateDistance >= distance || unavailable.has(`${x},${y}`)) continue;
+      // Keep an actual exit outside the future house, not just a passable but trapped cell.
+      const hasExit = [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) =>
+        !unavailable.has(`${x + dx},${y + dy}`) && canMove(project, map, x, y, x + dx, y + dy));
+      if (!hasExit) continue;
+      nearest = { x, y };
+      distance = candidateDistance;
+    }
+  }
+  return nearest;
 }
 
 export function ensureBuildPaletteTileGroups(tileset: TilesetDef): void {

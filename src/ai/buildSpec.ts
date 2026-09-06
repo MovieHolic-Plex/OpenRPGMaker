@@ -433,6 +433,8 @@ export function builtCellsInRegions(map: GameMap, regions: readonly AffectedRegi
  *
  * 허가는 에셋의 선언이다 — `clear` 에셋의 `confirmDestroy:true`(철거) 또는 배치 에셋의 `overExisting`
  * (정리하고 배치 / 그대로 위에 배치). 밑그림 안이라도 선언이 없으면 기존 내용은 덮지 않는다.
+ * 이 일반 허가는 완성된 집 보호를 해제하지 않는다. toolRunner의 현재 프로젝트 기반
+ * 메타데이터·셀 불변식은 선택 영역과 이 선언을 받지 않으며 모든 쓰기에 별도로 적용된다.
  * 2026-09-03 적대적 리뷰: 구조물 보호가 제출 시점에만 돌아 밑그림 안에 지은 집을 같은 턴의 clear 가
  * 무검사로 지웠고, 밑그림 확정 뒤 사용자가 판 호수를 다음 턴의 채우기가 덮었다.
  */

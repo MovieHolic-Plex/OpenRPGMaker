@@ -11,6 +11,7 @@ import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import type { GameMap, Project } from "@/project/types";
 import { mulberry32 } from "@/util/rng";
 import { inMapBounds } from "../mapHelpers";
+import { uniqueHouseRegionId } from "../houseProtection";
 import {
   isYardDecorKind,
   type YardDecorKind,
@@ -1583,13 +1584,17 @@ function setVillageHarnessLayoutPlan(
   const multiStoryTarget = explicitTemplates.length === houses.length && explicitTemplates.every(Boolean)
     ? Number(houses.some((house) => house.stories > 1))
     : Number(map.width >= 46 && houses.length >= 6);
+  const oldHouses = (map.layoutPlan?.regions ?? []).filter((region) => region.role === "house");
+  const reservedIds = new Set<string>();
   setMapLayoutPlan(map, {
     version: 1,
     kind: "village-harness-natural-v2",
     seed,
     regions: [
+      ...oldHouses,
       {
-        id: "village_commons",
+        id: oldHouses.some((region) => region.id === "village_commons")
+          ? uniqueHouseRegionId(map, "village_commons", reservedIds) : "village_commons",
         role: "plaza",
         label: intent.plazaStyle === "market" ? "생활 장터와 중앙 녹지" : "중앙 녹지 광장",
         ...plaza.rect,
@@ -1605,8 +1610,8 @@ function setVillageHarnessLayoutPlan(
           `multistory-target:${multiStoryTarget}`,
         ],
       },
-      ...houses.map((house, index) => ({
-        id: `village_house_${index + 1}`,
+      ...houses.map((house) => ({
+        id: uniqueHouseRegionId(map, "village_house", reservedIds),
         role: "house",
         label: `${kitLabel[house.kitId]} ${house.stories > 1 ? `${house.stories}층 ` : ""}${house.templateId} 집`,
         ...house.bbox,

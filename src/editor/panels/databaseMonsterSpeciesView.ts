@@ -99,7 +99,7 @@ export function renderMonsterSpeciesTab(host: HTMLElement, rerender: () => void)
   toolbar.append(deleteSpeciesButton(rerender));
 
   const list = listPane({
-    title: "몬스터 종족",
+    title: "포획·성장 종족",
     // 필터가 걸리면 `보이는/전체` 로 적는다 — 필터 전 개수만 보여주면 행 0 개인데 "9개"가 된다.
     count: query && rows.length !== species.length ? `${rows.length}/${species.length}개` : species.length,
     search: listSearch({
@@ -129,7 +129,7 @@ export function renderMonsterSpeciesTab(host: HTMLElement, rerender: () => void)
       body: emptyState({
         icon: "◇",
         title: "종족이 없습니다",
-        body: "종족은 몬스터의 성장·포획 정보를 담습니다. 먼저 종족을 만들고 [몬스터] 탭에서 전투 스탯을 연결하세요.",
+        body: "포획·성장·종족값을 설정합니다. 전투 몬스터 탭에서 연결하며, 전투의 고정 능력치는 별도로 편집합니다.",
         action: {
           label: "첫 종족 만들기",
           kind: "primary",
@@ -194,7 +194,7 @@ function speciesHero(
     `진화 ${evolutions}개`,
   ];
   return detailHero({
-    eyebrow: "몬스터 종족",
+    eyebrow: "포획·성장 종족",
     title: record.name || "(이름 없음)",
     // 레코드 id 를 상세 창에 실제 텍스트로 노출한다 — 예전에는 목록 행의 title 속성에만
     // 있어서 "지금 편집 중인 게 어느 레코드인지" 를 화면에서 확인할 수 없었다.
@@ -263,19 +263,19 @@ function monsterPipelineHeader(project: ReturnType<typeof store.getCurrent>): HT
     children: [
       renderLifePanel({
         testid: "db-monster-pipeline",
-        title: "몬스터 종족",
+        title: "프로젝트 전체 준비 상태",
         headingTestid: "db-monster-species-intro",
         cards: [
           {
             testid: "db-monster-pipeline-links",
             icon: "link",
-            label: "몬스터",
+            label: "명시적 종족 연결",
             value: `${linkedEnemies.length}/${project.database.enemies.length}`,
-            detail: linkedEnemies.length > 0 ? "전투 몬스터가 종족을 참조합니다." : "몬스터 탭에서 포획 종족을 연결하세요.",
+            detail: "전체 전투 몬스터 기준 · 같은 ID 호환 연결 제외",
             state: linkedEnemies.length > 0 ? "ready" : "needs-setup",
             data: { linked: String(linkedEnemies.length), total: String(project.database.enemies.length) },
             action: {
-              label: "몬스터 열기",
+              label: "전투 몬스터 탭 열기",
               testid: "db-monster-pipeline-links-action",
               onClick: (event) => openTab(event, "db-tab-enemies"),
             },
@@ -285,11 +285,11 @@ function monsterPipelineHeader(project: ReturnType<typeof store.getCurrent>): HT
             icon: "map",
             label: "출현",
             value: `${spawnCount}개 · ${spawnMaps.length}맵`,
-            detail: spawnCount > 0 ? "맵의 출현 영역에서 전투 그룹이 등장합니다." : "맵에 fieldSpawns를 연결하세요.",
+            detail: spawnCount > 0 ? "프로젝트 모든 맵의 출현 영역입니다." : "맵에서 필드 출현 영역을 설정하세요.",
             state: spawnCount > 0 ? "ready" : "needs-setup",
             data: { spawns: String(spawnCount), maps: String(spawnMaps.length) },
             action: {
-              label: spawnCount > 0 ? "출현 맵 선택" : "맵 확인",
+              label: spawnCount > 0 ? "첫 출현 맵 선택" : "출현 맵 확인",
               testid: "db-monster-pipeline-spawns-action",
               onClick: selectSpawnMap,
             },
@@ -299,11 +299,11 @@ function monsterPipelineHeader(project: ReturnType<typeof store.getCurrent>): HT
             icon: "drop",
             label: "드롭",
             value: `${dropEnemies.length}종`,
-            detail: dropEnemies.length > 0 ? "유효한 아이템 드롭이 연결되어 있습니다." : "몬스터 보상에 드롭 아이템을 지정하세요.",
+            detail: dropEnemies.length > 0 ? "전체 전투 몬스터 중 아이템 드롭이 있는 수입니다." : "전투 몬스터의 보상에서 드롭을 지정하세요.",
             state: dropEnemies.length > 0 ? "ready" : "needs-setup",
             data: { count: String(dropEnemies.length) },
             action: {
-              label: "보상 열기",
+              label: "전투 몬스터 탭 열기",
               testid: "db-monster-pipeline-drops-action",
               onClick: (event) => openTab(event, "db-tab-enemies"),
             },
@@ -316,7 +316,7 @@ function monsterPipelineHeader(project: ReturnType<typeof store.getCurrent>): HT
             detail: project.system.monsterCollection === true ? "전투 중 포획 기능이 열립니다." : "종족은 전투 연결 정보로만 사용됩니다.",
             state: project.system.monsterCollection === true ? "ready" : "info",
             action: {
-              label: "시스템 열기",
+              label: "시스템 포획 설정 열기",
               testid: "db-monster-pipeline-mode-action",
               onClick: (event) => openTab(event, "db-tab-system", {
                 systemSection: "startup",
@@ -407,7 +407,7 @@ function speciesInspector(record: MonsterSpeciesRecord, rerender: () => void): H
       }),
       sectionCard({
         title: "그래픽",
-        hint: "전투 화면과 도감에 쓰이는 종족 이미지입니다.",
+        hint: "종족의 외형입니다. 연결된 전투 몬스터의 외형은 자동으로 바뀌지 않습니다.",
         children: graphicChildren(record, rerender),
         testid: "db-monster-species-graphic-card",
       }),
@@ -424,7 +424,7 @@ function speciesInspector(record: MonsterSpeciesRecord, rerender: () => void): H
       }),
       sectionCard({
         title: "종족값과 실제 능력치",
-        hint: "성장 공식에 쓰는 종족값입니다. 아래에서 레벨별 실제 능력치를 확인하세요.",
+        hint: "포획 후 성장 공식에 쓰는 기본값입니다. 전투 몬스터의 고정 능력치와 별개이며, 아래에서 레벨별 수치를 확인합니다.",
         children: [...statFields(record, preview.refresh), preview.element],
         testid: "db-monster-species-stats-card",
       }),
@@ -506,7 +506,7 @@ function linkedEnemiesCard(record: MonsterSpeciesRecord): HTMLElement {
   const enemies = store.getCurrent().database.enemies.filter((entry) => entry.speciesId === record.id);
   const rows =
     enemies.length === 0
-      ? [el("p", { class: "db-monster-species-linked-empty", text: "이 종족을 포획 종족으로 쓰는 몬스터가 없습니다." })]
+      ? [el("p", { class: "db-monster-species-linked-empty", text: "이 종족 ID를 지정한 전투 몬스터가 없습니다." })]
       : enemies.map((enemy) =>
           el("div", {
             class: "db-monster-species-linked-row",
@@ -514,7 +514,7 @@ function linkedEnemiesCard(record: MonsterSpeciesRecord): HTMLElement {
               el("span", { class: "db-monster-species-linked-name", text: enemy.name || "(이름 없음)" }),
               el("button", {
                 class: "db-ws-btn db-ws-btn-ghost",
-                text: "몬스터 열기",
+                text: "전투 몬스터 열기",
                 attrs: { type: "button" },
                 dataset: { testid: `db-monster-species-open-enemy-${enemy.id}` },
                 on: {
@@ -522,7 +522,7 @@ function linkedEnemiesCard(record: MonsterSpeciesRecord): HTMLElement {
                     const panelRoot = databasePanelRootFrom(event.currentTarget as HTMLElement | null);
                     setSelectedRecordId("enemies", enemy.id);
                     if (!panelRoot) {
-                      toast(`몬스터 탭에서 ${enemy.id}를 선택하세요`, "ok");
+                      toast(`전투 몬스터 탭에서 ${enemy.id}를 선택하세요`, "ok");
                       return;
                     }
                     switchDatabaseActiveTab("enemies", panelRoot);
@@ -534,8 +534,8 @@ function linkedEnemiesCard(record: MonsterSpeciesRecord): HTMLElement {
         );
 
   return sectionCard({
-    title: "이 종족을 쓰는 몬스터",
-    hint: enemies.length > 0 ? `${enemies.length}종이 참조합니다 — 참조가 남아 있으면 삭제할 수 없습니다.` : undefined,
+    title: "선택 종족의 명시적 연결",
+    hint: `전투 몬스터 ${enemies.length}개 · 같은 ID 호환 연결 제외. 참조가 남으면 삭제할 수 없습니다.`,
     children: [
       el("div", {
         class: "db-monster-species-linked-enemies",

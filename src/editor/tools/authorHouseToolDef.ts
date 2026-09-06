@@ -90,7 +90,7 @@ const EXAMPLE = {
 export const AUTHOR_HOUSE_TOOL: ToolDefinition = {
   name: "author_house",
   description:
-    "야외 맵에 집 한 채(single) 또는 여러 채(lots)를 원자적으로 시공한다.  집·대장간·상점 같은 건물의 **야외 외장**은 이 facade 로 짓는다 — 벽 타일로 직사각형을 채우지 말 것. 들어가서 걷는 집은 interior:\"linked-interior\"로 한 번에 짓는다(실내맵+문/출구 전이 자동). 개념 꾸러미 시설(여관·상점·술집·민가…)은 place_concept, 외장 없는 독립 실내 방만 start_interior_room_session."
+    "야외 맵에 집 한 채(single) 또는 여러 채(lots)를 원자적으로 시공한다.  집·대장간·상점 같은 건물의 **야외 외장**은 이 facade 로 짓는다 — 벽 타일로 직사각형을 채우지 말 것. 들어가서 걷는 집은 interior:\"linked-interior\"로 한 번에 짓는다(실내맵+문/출구 전이 자동). 개념 꾸러미 시설(여관·상점·술집·민가…)은 place_concept, 외장 없는 독립 실내 방도 get_concept_facility → place_concept(plan). 연결 실내는 현재 개념 꾸러미의 시설·장소·물건으로 시공한다."
     + "여러 채는 반드시 kind=lots + houses[]로 한 번에 호출한다(개별 반복 호출 금지). "
     + `**모양 다양성이 필수다: 집마다 서로 다른 templateId(${TEMPLATE_IDS.length}종 카탈로그)를 배정하고 kitId 도 섞어라.** `
     + "templateId 를 생략하면 wings 그대로의 사각형이 되어 결과가 단조로워진다. "

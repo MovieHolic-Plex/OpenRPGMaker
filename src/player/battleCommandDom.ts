@@ -16,6 +16,7 @@ import { battleCommandsForActor, type RuntimeBattleCommand } from "@/battle/batt
 import { battleSkillMpCost, battleSkillUseFailure, battleSkillUseFailureLabel } from "@/battle/battleSkillUse";
 import { targetScopeForCommand } from "@/battle/battleTargetResolver";
 import { BATTLE_KEY_PROMPT } from "@/player/keyBindings";
+import { mountBattleCommandCss } from "@/project/battleCommandCss";
 
 export type BattleCommandSubmenu =
   | { readonly kind: "skill"; readonly command: RuntimeBattleCommand }
@@ -40,6 +41,7 @@ export interface BattleCommandPanelOptions {
 export function commandPanel(snapshot: BattleSnapshot, options: BattleCommandPanelOptions): HTMLElement {
   const panel = document.createElement("div");
   panel.className = "battle-command-panel";
+  mountBattleCommandCss(panel, store.getCurrent().system.battleCommandCss ?? "");
   const terms = resolveTerms(store.getCurrent());
   // 누구의 차례인지 — 스킨이 `attr(data-actor-name)` 으로 카드 위 턴 칩을 그린다(rm2000).
   // 4인 파티에서 파티 카드의 강조 행만으로는 명령 카드와 시선이 멀어 "지금 누가 고르는지" 가

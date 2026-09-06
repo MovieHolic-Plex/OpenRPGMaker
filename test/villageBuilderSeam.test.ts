@@ -181,6 +181,32 @@ describe("buildVillageDomain", () => {
   });
 });
 
+describe("village completed-house registration", () => {
+  it("preserves earlier house regions, allocates unique IDs, and protects after reload", () => {
+    const context: ToolContext = { project: createExistingMapProject(100) };
+    const map = context.project.maps.map_existing;
+    if (!map) throw new Error("Missing map");
+    const oldHouse = { id: "village_house_1", role: "house", label: "Earlier house", x: 1, y: 1, w: 4, h: 4 };
+    map.layoutPlan = { version: 1, kind: "earlier", regions: [oldHouse] };
+    const built = runTool(context, "build_village", {
+      mapId: map.id, bounds: { x: 50, y: 50, w: 45, h: 45 }, houses: 2, seed: 7,
+      interior: false, doorEvent: false, fences: false, decor: false,
+    });
+    expect(built.ok, JSON.stringify(built.issues)).toBe(true);
+    context.project = cloneProject(context.project);
+    const houses = context.project.maps.map_existing?.layoutPlan?.regions.filter((region) => region.role === "house") ?? [];
+    expect(houses).toContainEqual(oldHouse);
+    expect(houses.length).toBe(3);
+    expect(new Set(houses.map((house) => house.id)).size).toBe(3);
+    const newHouse = houses.find((house) => house.id !== oldHouse.id);
+    if (!newHouse) throw new Error("Missing new house");
+    const before = serialize(context.project);
+    const erased = runTool(context, "tile_erase", { mapId: map.id, rect: newHouse });
+    expect(erased.issues?.[0]?.code).toBe("protected-house-write");
+    expect(serialize(context.project)).toBe(before);
+  });
+});
+
 describe("inspectVillageBuild", () => {
   it("classifies the requested exterior, created interiors, actual houses, and structural QA", () => {
     // Given

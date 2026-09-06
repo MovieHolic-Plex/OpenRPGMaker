@@ -106,6 +106,34 @@ describe("build_wall / build_roof (공정 1·3단계)", () => {
   });
 });
 
+describe("incremental primitives versus recorded completed houses", () => {
+  it.each([
+    { name: "build_wall", args: { rect: { x: 4, y: 6, w: 5, h: 3 }, material: "돌벽" } },
+    { name: "build_roof", args: { material: "빨간 지붕" } },
+    { name: "place_door", args: { at: { x: 5, y: 8 }, material: "문/입구" } },
+    { name: "place_window", args: { at: { x: 6, y: 7 }, material: "창문" } },
+  ])("$name remains incremental without metadata and rejects the same recorded-house write", ({ name, args }) => {
+    const { ctx, tileset } = context();
+    approve(tileset(), WALL_GROUP_ID);
+    addApprovedRoof(tileset());
+    const wall = runTool(ctx, "build_wall", { mapId: MAP_ID, rect: { x: 4, y: 6, w: 5, h: 3 }, material: "흰 집 벽" });
+    expect(wall.ok, JSON.stringify(wall.issues)).toBe(true);
+    const unfinished = structuredClone(ctx.project);
+    const incremental = runTool(ctx, name, { mapId: MAP_ID, ...args });
+    expect(incremental.ok, JSON.stringify(incremental.issues)).toBe(true);
+    expect(incremental.diff?.tilesChanged).toBeGreaterThan(0);
+    ctx.project = unfinished;
+    const map = ctx.project.maps[MAP_ID];
+    map.layoutPlan = { version: 1, kind: "completed", regions: [
+      { id: "complete", role: "house", label: "Complete", x: 4, y: 5, w: 5, h: 4 },
+    ] };
+    const before = structuredClone(ctx.project);
+    const recorded = runTool(ctx, name, { mapId: MAP_ID, ...args });
+    expect(recorded.issues?.[0]?.code).toBe("protected-house-write");
+    expect(ctx.project).toEqual(before);
+  });
+});
+
 describe("missing 어휘 실패 시 유사 그룹 후보 제시", () => {
   it("build_wall을 존재하지 않는 material로 호출하면 비슷한 라벨 후보를 에러 메시지에 담는다", () => {
     const { ctx } = context();

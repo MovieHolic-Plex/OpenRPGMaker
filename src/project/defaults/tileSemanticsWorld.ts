@@ -22,6 +22,7 @@
 // 조립: scripts/build-tile-semantics.mts (수기 편집 대신 이 스크립트로 재생성한다).
 
 import type { CombinedTownTileSemanticEntry } from "./tileSemanticsCombinedTown";
+import { applyChipsetLabelCorrections } from "./chipsetLabelCorrections";
 
 export type WorldTileSemanticEntry = CombinedTownTileSemanticEntry;
 
@@ -45,7 +46,7 @@ function one(
   return { index, label, role, passage, tags: [label, ...tags] };
 }
 
-export const WORLD_TILE_SEMANTICS: readonly WorldTileSemanticEntry[] = [
+export const WORLD_TILE_SEMANTICS: readonly WorldTileSemanticEntry[] = applyChipsetLabelCorrections("tex_easyrpg_chipset_world", [
   // ── 0행 (인덱스 0-29) ─────────────────────────────────────────────
   one(0, "초원 바다 해안 모서리", "coast", "solid", ["coast", "해안", "바다", "초원"]),
   one(1, "초원 바다 해안 변형", "coast", "solid", ["coast", "해안", "바다", "초원"]),
@@ -538,4 +539,4 @@ export const WORLD_TILE_SEMANTICS: readonly WorldTileSemanticEntry[] = [
   one(477, "붉은색 대형 소파 팔걸이 좌측", "furniture", "solid", ["furniture", "대형 붉은 왕좌 좌하단", "붉은색 대형 소파", "대형 붉은 왕좌"]),
   one(478, "붉은색 대형 소파 방석 중앙", "furniture", "solid", ["furniture", "대형 붉은 왕좌 중앙", "붉은색 대형 소파", "대형 붉은 왕좌"]),
   one(479, "붉은색 대형 소파 팔걸이 우측", "furniture", "solid", ["furniture", "대형 붉은 왕좌 우하단", "붉은색 대형 소파", "대형 붉은 왕좌"]),
-];
+]);

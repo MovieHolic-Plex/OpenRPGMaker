@@ -120,7 +120,7 @@ const HIGH_LEVEL_TOOL_ROUTING_BLOCK = [
   // 고칠 것인가"를 말하지 않아, "이 침실 좀 고쳐줘"가 신규 시공 경로를 탔다.
   "**대상 선택(라우팅보다 먼저):** 신규 표지(새/새로/추가/create)가 없으면 기존 산출물이 대상이다. '이/여기/지금'은 아래 현재 맵 요약의 mapId다. 수정 요청에 새 맵을 만들지 말고, '새로 만들지 마'면 create_map/duplicate_map/방 세션 시작을 쓰지 않는다.",
   "## 고수준 툴 우선",
-  "고수준 툴 우선 — 트랩/즉사=place_trap 또는 make_horror_loop, 체크포인트=place_trap의 checkpoint 관례, 퍼즐=compile_puzzle, 조사=place_examine_hotspots 또는 make_gallery_room(이브 갤러리 원큐), 컷신=script_cutscene 또는 script_cutscene_preset(투더문 프리셋), 추격=make_chase_scene, NPC=place_npc/make_villager(상태별 다중 페이지. 대사 시 faceset changeFace 자동), 상점=set_shop_stock, 사냥터=make_hunting_ground, 조명=set_lighting_volume/set_scene_mood, 수역=fill_region(circle+물 그룹), 야외 집=author_house(interior:\"linked-interior\" 기본, kind:\"single\" 또는 kind:\"lots\"), **마을=author_village(target:{kind:\"existing\",mapId} 또는 target:{kind:\"new\",mapId,name,width,height}, countPolicy:\"exact\", bounds 16x16 이상·기존맵 전체 재시공은 fullMap:true). 나무=list_village_tree_assets/plant_tree_clusters(broadleaf-2x2)**, 성채=build_castle, **시설 실내(여관 등)=place_concept(query). 타일셋 개념 꾸러미가 정본이며 사용자가 데이터베이스에서 고친 나무가 시공에 쓰인다. 방 종류 requiredRoles 로 여관을 합성하지 마라. 실내/방 맵 신규=place_concept 또는 start_interior_room_session 또는 run_interior_room_pipeline(반드시 새 mapId·이름). 기존 실내 맵 수정=그 mapId로 furnish_interior_space·fill_region·tile_erase·place_props(대상은 list_interior_room_sessions). 기존 맵 id로 세션 시작은 그 맵을 통째로 지우므로 map-exists로 거부된다. 실내 요청에는 author_house(exterior-only)/author_village 금지 — 다만 들어가서 걷는 집은 author_house(interior:\"linked-interior\")가 정답**, 월드=plan_world/build_world, 퀘스트=define_quest→verify_quest.",
+  "고수준 툴 우선 — 트랩/즉사=place_trap 또는 make_horror_loop, 체크포인트=place_trap의 checkpoint 관례, 퍼즐=compile_puzzle, 조사=place_examine_hotspots 또는 make_gallery_room(이브 갤러리 원큐), 컷신=script_cutscene 또는 script_cutscene_preset(투더문 프리셋), 추격=make_chase_scene, NPC=place_npc/make_villager(상태별 다중 페이지. 대사 시 faceset changeFace 자동), 상점=set_shop_stock, 사냥터=make_hunting_ground, 조명=set_lighting_volume/set_scene_mood, 수역=fill_region(circle+물 그룹), 야외 집=author_house(interior:\"linked-interior\" 기본, kind:\"single\" 또는 kind:\"lots\"), **마을=author_village(target:{kind:\"existing\",mapId} 또는 target:{kind:\"new\",mapId,name,width,height}, countPolicy:\"exact\", bounds 16x16 이상·기존맵 전체 재시공은 fullMap:true). 나무=list_village_tree_assets/plant_tree_clusters(broadleaf-2x2)**, 성채=build_castle, **모든 신규 실내(시설·일반 방)=get_concept_facility → place_concept(query, plan). 타일셋 개념 꾸러미가 정본이며 사용자가 데이터베이스에서 고친 나무가 시공에 쓰인다. 방 종류 requiredRoles 로 여관을 합성하지 마라. 실내/방 맵 신규=place_concept(반드시 새 mapId·이름); 방 세션도 개념 꾸러미의 장소·물건을 읽는다. 기존 실내 맵 수정=그 mapId로 furnish_interior_space·fill_region·tile_erase·place_props(대상은 list_interior_room_sessions). 기존 맵 id로 세션 시작은 그 맵을 통째로 지우므로 map-exists로 거부된다. 실내 요청에는 author_house(exterior-only)/author_village 금지 — 다만 들어가서 걷는 집은 author_house(interior:\"linked-interior\")가 정답**, 월드=plan_world/build_world, 퀘스트=define_quest→verify_quest.",
   "upsert_event/upsert_common_event는 위에 없는 커스텀 로직 전용.",
 ].join("\n");
 
@@ -152,7 +152,7 @@ const INTRO = [
   "    건물 평면은 wings 사각형들의 합집합으로 설계하세요. 길/모래는 paint_road(style=dirt/sand)가 오토타일로 성형합니다.",
   "    구조물 스탬프는 사람 팔레트 전용이다. 타일 시공에 쓰지 마세요.",
   "    **외장 없는 독립 실내·방·인테리어 요청은 야외 집이 아니다.** 현재 맵에 author_house(exterior-only)를 올리지 말고",
-  "    들어가서 걷는 집(외장+실내)은 author_house(interior:\"linked-interior\") 한 번이 정답이다. 시설(여관 등)은 get_concept_facility → plan 설계 → place_concept({query, mapId, plan})으로 **새 mapId**를 시공하세요. 그 외 독립 실내는 start_interior_room_session(또는 run_interior_room_pipeline)으로 **새 mapId·요청 이름**을 쓰세요",
+  "    들어가서 걷는 집(외장+실내)은 author_house(interior:\"linked-interior\") 한 번이 정답이다. 시설(여관 등)은 get_concept_facility → plan 설계 → place_concept({query, mapId, plan})으로 **새 mapId**를 시공하세요. 등록되지 않은 실내도 get_concept_facility로 sources의 장소·물건을 읽고 조합한 plan을 place_concept에 넘기세요. 집·마을의 연결 실내도 같은 꾸러미를 읽습니다",
   "    (rooms[] 역할 테마 → advance_interior_room_build 반복 → evaluate_interior_room). create_map만 하고 멈추지 마세요.",
   "    위반이 남았는데 '조정 중'처럼 얼버무리지 말고, 고쳤는지 남았는지를 정직하게 보고하세요.",
   "12. 기존 이벤트를 수정할 때는 get_event로 현재 페이지/커맨드를 먼저 읽고 그 위에 병합하세요.",
@@ -405,7 +405,7 @@ function conceptBundleSection(project: Project): string {
   const listed = listLiveConceptBundles(project);
   const lines = [
     "## 개념 꾸러미 (place_concept 이 읽음)",
-    "사용자가 데이터베이스 「맵 → 타일셋 → 개념 꾸러미」에서 고친 나무가 정본이다. 아래 시설을 지을 때 방 종류 필수 역할로 합성하지 말고 place_concept(query)를 호출하라.",
+    "사용자가 데이터베이스 「맵 → 타일셋 → 개념 꾸러미」에서 고친 나무가 정본이다. 모든 신규 실내는 get_concept_facility로 읽고 place_concept(query, plan)으로 짓는다. 없는 시설은 sources의 장소·물건을 조합한다. 집·마을의 연결 실내도 꾸러미를 소비한다.",
   ];
   if (listed.length === 0) {
     lines.push("- 지금 프로젝트에는 개념 꾸러미가 없다. 실내 칩셋이면 place_concept 첫 호출이 시설 초안(여관·민가·상점·술집·서재·대장간·교회·창고·길드)을 시드한다.");
@@ -472,7 +472,7 @@ function interiorCatalogSection(project: Project, mapId: string | undefined): st
   tilesetIds.add(INTERIOR_ROOM_TILESET_ID);
   const lines: string[] = [
     "## 타일셋 실내 문법 (start_interior_room_session / run_interior_room_pipeline 이 읽음)",
-    "가구 모양과 방 종류는 데이터베이스 구조물 탭의 그 타일셋 데이터다. 구조물 스탬프로 찍지 마라.",
+    "실내 내용물은 개념 꾸러미가 정본이다. 아래 방 종류·가구 모양은 보조 어휘이며 필수 역할로 내용을 합성하지 마라. 방 세션은 theme에 대응하는 꾸러미 장소를 읽는다.",
   ];
   let any = false;
   for (const tilesetId of tilesetIds) {

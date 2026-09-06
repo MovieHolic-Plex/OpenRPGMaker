@@ -1,3 +1,18 @@
+## 전투 명령 배치 스튜디오 (2026-09-05)
+
+- Custom CSS는 `databaseBattleCommandCss.ts`가 소유한다. 직업 배치 아래의 프로젝트 공통 편집기로 유효한 입력만 스타일 샘플에 즉시 반영하며 적용 시 history + store 변경을 남긴다. 잘못된 입력은 적용을 막고 마지막 유효 미리보기를 유지한다. 저장된 CSS 복원·다크 프리셋·기본 스킨 복귀를 제공한다.
+- 미적용 초안과 마지막 유효 미리보기는 프로젝트 식별자·저장된 CSS가 같은 동안 재렌더링에 보존한다. 직업 배치 직후 예약된 DB 렌더나 미리보기 토글이 입력을 지우면 안 된다. 프로젝트 또는 저장된 CSS가 바뀌면 초안을 새 기준으로 초기화한다. 기본 스킨 복귀는 아직 적용하지 않은 프리셋도 지우며 이 경우 불필요한 history를 만들지 않는다.
+- 공용 `restoreFocusAfterRerender`는 두 번의 DOM 교체를 계속 지원하되, 사용자가 다른 살아 있는 컨트롤로 포커스를 옮기면 남은 복귀 프레임을 중단한다. 새 복귀 요청은 이전 요청을 대체한다. 이전의 무조건 8프레임 복귀는 빠른 다음 클릭과 CSS 타이핑을 빼앗았다. `test/databaseFocusRestoration.test.ts`는 프레임 큐를 직접 진행해 타이밍 운에 기대지 않고 검증한다.
+- 저장 필드는 `system.battleCommandCss`이며 `battleCommandCss.ts`의 제한된 선택자·시각 속성 문법을 편집기/출하 플레이어가 공유한다. 임의 선택자, URL, CSS 변수, at-rule은 허용하지 않는다. `test/e2e/battle-command-css.spec.ts`는 패키지 내보내기/재가져오기, `scripts/qa-battle-command-css.mjs`는 편집한 데이터를 별도 player.html 하네스로 넘겨 실제 메뉴·키보드 실행을 검증한다.
+- `databaseUtilityRecordViews.ts`는 기존 카탈로그 CRUD/필드/testid와 지형·전투 화면을 유지한다. 새 `databaseBattleCommandStudio.ts`가 직업 선택, 네이티브 드래그 배치/재정렬, 버튼 대안, 상태 안내와 실제 메뉴 해석을 소유한다.
+- 카탈로그 팔레트와 선택한 직업의 저장된 `battleCommands` 보드가 나란히 온다. 카탈로그 편집은 그 아래의 기존 입력 필드이며 카드의 `원본 편집`으로 바로 이동한다. 카탈로그 순서는 직업 메뉴 순서가 아니다. 배치는 id를 유지한 값 복사이며 기존 직업 덮어쓰기를 전역 편집으로 동기화하지 않는다.
+- 직업 선택과 교체 가능 상황 체크는 편집기 상태뿐이다. `insertCatalogClassCommand` / `reorderEditableClassCommand`의 검증 모델을 사용하고 성공 때만 snapshot + labeled `store.update`를 남긴다. 제거는 남은 배열(기존 초과 행 포함)을 보존한다. 고정 `cmd_change`는 이동/제거 불가, 편집 가능한 행은 최대 6개다.
+- 드래그는 인메모리 세션 토큰과 DataTransfer 값, 시작 당시 직업 배열/카탈로그를 현재 store와 비교한다. malformed/stale/cross-class/duplicate/full은 데이터·history 무변경이다. 삽입 위치에 텍스트와 indigo 선을 표시하며 추가/위/아래/제거 버튼, 포커스 복귀, polite live 상태가 같은 편집 경로를 제공한다.
+- 리뷰 후 안전성 계약: 삭제된 선택 직업의 남은 버튼은 다른 직업으로 대체하지 않고 편집을 거부한 뒤 화면만 갱신한다. 기존 중복 ID 행은 직업 ID·메뉴 스냅샷·편집 행 인덱스로 구분하여 한 행만 삭제/이동하며, 모호한 ID 전용 이동은 거부한다. 카탈로그 새 ID는 모든 직업의 잔존 참조까지 예약한다. 포커스 복귀는 `data-testid` 문자열을 정확히 비교하므로 따옴표·역슬래시가 있는 저작 ID도 바꾸지 않는다.
+- 미리보기는 `battleCommandsForActor`를 선택 직업으로 호출한다. 주인공이 없는 프로젝트는 저장되지 않는 임시 주인공으로 해석한다. 빈 배열 기본 행동, 포획 gate, 교체 상황을 그대로 반영하며 실행 버튼처럼 보이지 않는다. 몬스터 전용 메뉴/스킨 및 실제 동료 상태는 이 편집기 미리보기와 별도다. 스키마/전투 런타임은 변경하지 않는다.
+- 집중 계약: `test/databaseBattleCommandStudio.test.ts`, `test/databaseBattleCommandsTab.test.ts`, `test/databaseBattleStudio.test.ts`, `test/e2e/battle-command-studio.spec.ts`. 브라우저는 실제 편집기, dragTo, 키보드, 제거/undo, 프로젝트 패키지 다운로드/재가져오기를 사용한다. evidence: `output/evidence/battle-command-studio-p1`.
+- 리뷰 회귀: `databaseBattleCommandStaleClass.test.ts`, `databaseBattleCommandDuplicateRows.test.ts`, `databaseBattleCommandCatalogIds.test.ts`, `test/e2e/battle-command-focus.spec.ts`. 미리보기 표시 이름은 `battleCommandKindLabel`과 프로젝트 용어를 사용한다.
+
 # Editor Database
 
 ## System settings workspace (2026-09-06)
@@ -50,6 +65,21 @@ notes below. The shared Database header/rail/footer/save path is unchanged.
   supplies real geometry/interactions/screenshots; no pixel visual approval or
   Lighthouse score is inferred on this host. Final gates and review are supervisor-owned.
 
+## Graphic 칩 사용자 교정 29건 (2026-09-05)
+
+- 정본은 `src/project/defaults/chipsetLabelCorrections.ts`. 사용자 교정 보고서
+  `reports/chipset-label-confirmed-v2-2026-09-05.html`의 6종 칩셋·29개 칩을 반영한다.
+  84번은 스테인드 글라스, 돌무더기는 캐기 전/후, 월드 317·347은 폭 1칸 벽이다.
+- 여섯 `tileSemantics*.ts` 배열은 원래 판독 결과 위에 정본 교정을 적용한다.
+  `scripts/build-tile-semantics.mts`도 같은 래퍼를 생성하므로 재생성으로 교정이 사라지지 않는다.
+- 하네스의 메타 생성 단계와 검색 테이블이 같은 교정을 사용한다. 이름·태그·역할·설명·반복성만
+  교정하며 맵 배치·통행성·레이어·그림은 바꾸지 않는다. 사용자 메타 및 이식한 칩은 보존한다.
+- 던전 255·256·257은 광산 벽 하단 좌/중/우이며 반복성은 `fixed / center / fixed`.
+  기본 구조는 가로 3칸·세로 2칸, 가운데 열을 가로 확장한다. 상단 칩 ID는 미확정이다.
+- 실내와 던전 소용돌이는 각각 125→155→185→215 순서다. 기존
+  `chipsetAnimation.ts`의 4fps 스트립이 이미 이 순서를 구현하므로 재생 로직은 변경하지 않는다.
+- 검증: `test/chipsetLabelCorrections.test.ts`에서 검색 대상 ID·반복성·바닥 계약·재생 순서·
+  사용자 메타 보존을 검사한다. UI와 프로젝트 저장명은 `tileMeta`를 소비한다.
 
 ## Custom equipment slot authoring (2026-09-05)
 
@@ -77,6 +107,15 @@ Actor initial-equipment pickers, build previews, equipment gallery/filter labels
 - 요약·착용 비교·외형·권한·고급 효과는 공용 `sectionCard`의 접기 기능으로 공간을 줄인다. 장비 능력치를 기본 카드보다 먼저 배치한다. 농사 도구는 일반 물품 또는 기존 도구에, 포획은 특수 아이템에, 액션 스윙은 액션 전투가 켜진 프로젝트의 무기에만 노출한다. 외형의 적용 범위는 해당 카드에서 설명한다. 현재 인벤토리·장비 메뉴·상점은 iconResourceId → imageResourceId 우선순위로 표시하므로 지원 메타데이터도 runtime으로 표시한다. 성장 씨앗은 ‘능력치 성장’, 스위치 효과는 ‘장치 켜기 (ON)’으로 구분한다.
 - **로드 시 기본 레코드 재주입 금지:** `ensureDefaultDatabaseIconResources`는 기존 행의 레거시/누락 아이콘만 보정한다. 빠진 아이템·장비·스킬·상태를 추가하지 않는다. 전체 기본 카탈로그는 새 프로젝트 생성 때만 들어간다. 삭제한 항목이 로드 후 다시 살아나는 것을 막는 계약이며 아래 과거 backfill 기록보다 우선한다.
 - 검증: `test/itemEquipmentAuthoringTrust.test.ts` (UI→직렬화→메뉴 사용, 삭제 후 로드 정규화, 효과·스킬·소모·권한 표면), 기존 `itemRuntimeUsability`/`equipmentCatalogRuntimeAxes` (기본 카탈로그 실제 실행), `test/e2e/items-equipment-trust.spec.ts` (Firefox 1024/1280/1440 화면과 UI 변경 결과).
+
+## 전투 몬스터와 포획·성장 종족 (Phase 1)
+
+- 표시 탭은 `전투 몬스터` / `포획·성장 종족`이다. 기존 `enemies` / `monsterSpecies` ID와 testid는 유지한다. 전투 몬스터는 출현 전투의 고정 능력치·행동·보상, 종족은 포획·성장·종족값을 소유한다. 연결은 능력치·외형의 지속 상속이 아니다.
+- 관계 표시는 `monsterSpeciesForEnemy`를 따른다. 명시적 연결, 미설정, 누락된 ID, 같은 ID 호환 연결을 구분하며 렌더링으로 저장값을 쓰지 않는다. `연결된 종족 열기`는 실제 연결을 연다.
+- 미연결은 `이 몬스터로 종족 만들기`, 연결됨은 `새 종족으로 연결 교체`다. 생성은 이름·외형·고정 능력치를 새 종족의 이름·외형·종족값으로 한 번 복사한다. 같은 레벨의 전투 수치가 같다는 뜻은 아니다. 교체 확인은 기존 종족을 보존하고 새 종족 생성과 링크 교체를 한 번에 실행 취소한다. 취소는 데이터를 바꾸지 않는다.
+- 외형 차이는 리소스·색조·투명·비행 네 필드를 비교한다. `종족 외형을 이 몬스터로 복사`는 이 네 필드만 한 번 덮어쓰며 능력치와 종족 원본을 바꾸지 않는다.
+- 종족 상단 준비 상태는 프로젝트 전체 집계다. 명시적 연결 수와 선택 종족 연결 목록은 같은 ID 호환 연결을 제외한다고 밝힌다. 상단 연결/드롭 액션은 `전투 몬스터 탭 열기`, 출현 액션은 `첫 출현 맵 선택`, 시스템 액션은 `시스템 포획 설정 열기`로 실제 목적지를 표시한다. 선택 종족 목록의 `전투 몬스터 열기`는 해당 레코드를 선택한다. 검색 복구·탭 이동 동작 자체는 Phase 2 범위로 남긴다.
+- 안내는 기존 hero/section hint/버튼에 배치한다. Studio 토큰·모달 크기·스크롤·키보드 계약은 그대로다. 관계 회귀는 `test/databaseEnemyRelationship.test.ts`; 문구 자체를 새 테스트로 고정하지 않는다.
 
 ## 몬스터 작업실 — 미리보기 · 행동 · 속성 (2026-09-05)
 
@@ -434,9 +473,14 @@ The Database modal was modernized in six waves while keeping every hard contract
 
 **2026-09-03 — 이 탭은 템플릿 편집기다.** 「AI 는 소비만」을 철회했다. 여기서 고친 시설은 모델이 `get_concept_facility` 로 읽는 **출발점**이고, 모델은 요청에 맞게 장소·물건을 고친 `plan` 을 `place_concept` 에 넘겨 방 수·크기·내용물이 다른 시설을 짓는다(`openwiki/editor-ai-tools.md` 2026-09-03 항목). 사용자가 `required` 로 박은 물건을 모델이 빼면 경고가 남는다. plan 없이 부르면 종전대로 템플릿 그대로다.
 
+- **2026-09-05 — 모든 AI 실내 생성의 정본:** 독립 방 세션·집·마을 연결 실내도 꾸러미를 읽는다. 미등록 시설 조회는 현재 장소·물건을 `sources`로 반환해 조합 설계를 지원한다. 삭제한 빈 꾸러미는 시공하지 않는다. 경로·검증: `openwiki/editor-interior-room-harness.md`의 「모든 AI 실내의 개념 꾸러미 계약」.
 - 데이터: `tileset.scratchConceptBundles`. undefined 는 시드 전, 빈 배열은 사용자가 지운 상태.
-- 실내 칩셋만 **시설 초안 묶음 아홉 종**을 시드한다(`CONCEPT_FACILITY_TEMPLATES`: 여관·민가·상점·술집·서재·대장간·교회·창고·길드, 여관이 첫째). 마을 칩셋에는 얹지 않는다. 옛 프로젝트에 여관만 시드돼 있으면 그대로다 — 나머지는 시설 띠의 「초안 넣기」로 골라 넣는다(재시드 아님, 사용자 선택).
+- 실내 칩셋만 **시설 초안 묶음 19종**을 시드한다(`CONCEPT_FACILITY_TEMPLATES`: 기존 여관·민가·상점·술집·서재·대장간·교회·창고·길드 + 진료소·병영·학교·관청·연금술 공방·빵집·농가·귀족 저택·사냥꾼 오두막·은행, 여관이 첫째). 마을 칩셋에는 얹지 않는다. 옛 프로젝트에 여관만 시드돼 있으면 그대로다 — 나머지는 시설 띠의 「초안 넣기」로 골라 넣는다(재시드 아님, 사용자 선택).
+- 기존 프로젝트에 일괄 추가: `npx tsx scripts/expand-concept-bundles.mts --project <id>`로 추가 예정 목록을 읽고 `--apply`로 저장한다. 기존 id/라벨은 보존하고 빈 배열은 거절한다. 프로젝트·타일셋 미러의 변경 시각을 비교해 충돌을 감지하며 저장 뒤 양쪽 원격 데이터와 앱 로드를 확인한다. 증거는 `output/evidence/concept-expansion/supabase-proof.json`.
 - 물건의 그림은 같은 타일셋 가구 킷/`INTERIOR_OBJECT_CATALOG` id 를 가리킨다. 픽셀을 복제하지 않는다.
+- **2026-09-05 — 용도 검수 보정:** 병실·병영·농가·저택·오두막 침대는 `event`만 사용한다. 현재 `sleep`은 유료 `inn` 동작이므로 수면 가능이라는 일반 의미로 붙이지 않는다. 여관·술집 객실의 숙박은 유지한다. 여관·저택의 피아노는 선택 가구다. 학교는 `study_desk`(기존 사각 탁자+앞쪽 걸상, 1×2) 두 세트를 교실마다 두고 책장은 자료실에 둔다. 은행은 거래 창구·장부·목제 보관장을 사용하며 금고 그림이나 금융 동작이 있는 것으로 표현하지 않는다. 최종 맵의 책상/걸상 쌍을 세 가지 seed로 검증한다.
+- `expand-concept-bundles.mts --baseline <이전 꾸러미 배열.json>`은 저장된 꾸러미가 검토 전 버전과 **완전히 같은 경우에만** 수정 초안으로 갱신한다. 다른 편집이 있으면 보존한다. `--evidence <경로>`로 별도 저장·재로드 증거를 남길 수 있다.
+- **2026-09-05 — 장소 구성 확장:** `conceptFacilityExpansion.ts`가 10개 시설과 30개 장소 구성을 추가해 총 19시설·51장소 레코드가 된다(반복 객실 수와 의미가 같은 장소를 합친 고유 개수는 아님). 접수·대기실과 기록 보관실은 공통 구성을 독립된 레코드로 펼친다. 농가·귀족 저택·사냥꾼 오두막은 크기·재질·가구 조합이 다른 주거 출발점이다. 새 픽셀 자산이나 진료·은행 거래 로직은 추가하지 않는다. `place_concept`/`get_concept_facility` 설명은 초안 라벨에서 생성하므로 새 시설의 자연어 도구 탐색도 같은 목록을 쓴다. 기존 저장 꾸러미와 명시적 빈 배열은 유지하며, 확장분을 기존 프로젝트에 적용하려면 「초안 넣기」 또는 명시적 데이터 저장을 사용한다.
 - 칩은 내장 8종(`pass`/`block`/`event`/`transfer`/`loot`/`sleep`/`floor`/`wall`) + 사용자 자유 칩. 산문 배치 규칙이 아니다. 자유 칩은 엔진 무동작 메모 태그 — 시공 분류·이벤트·점수·컨텍스트가 모르는 칩을 무시한다. 규칙은 `src/project/types/conceptBundle.ts` 의 `CONCEPT_FREE_CHIP_PATTERN` / `validateConceptChipId` 한 곳이다: 빈 id·32자 초과·영문·숫자·-_ 외 문자를 한글 이유로 거절하고, 내장 칩은 항상 통과한다. 인스펙터 추가·이름 변경(`scratchConceptTab`), plan `parseChips`, 타일셋 검증(`shapeResourceFields`)이 같은 검증기를 쓴다. 화면에서 내장 칩은 토글 버튼, 자유 칩은 id 입력으로 이름을 바꾸고 지우기 버튼으로 삭제한다. 잘못된 입력은 `scratch-concept-chip-error` 에 이유를 보여 주고 저장하지 않으며, 이름 변경 실패는 예전 id 로 되돌린다.
 - 화면: 타일셋 레일 + 장소 카드(가구 썸네일) + 인스펙터(큰 미리보기·이름·그림·그림 칠하기·칩 토글/자유 칩 편집·장소 소속).
 - 사용자가 고친다: 시설명, 장소 추가/삭제/이름, 물건 추가/삭제/이름/그림/그림 직접 칠하기, 칩 토글/자유 칩 추가·이름 변경·삭제, 장소 소속, 필수 여부. 모두 `store.update` 로 `scratchConceptBundles` 에 남고, 다음 `place_concept` 가 그 나무를 읽는다.
@@ -1032,3 +1076,10 @@ TURN/BATTLE MENU` 칩. 전투 애니메이션 타이밍 표 헤더 `사운드...
 - `animation-editor.css` owns animation composition using existing `--db-studio-*` tokens; the conflicting animation grids/responsive reductions were removed from `battle-studio.css` without changing other studios. The existing detail form owns vertical scroll; wide tables and pattern strips own local horizontal scroll. Computed primary controls are 13px / 32px high with indigo fill and 2px keyboard focus rings. No global resets, new framework, `!important`, runtime or data-schema changes.
 - Desktop Chromium measurement: stage 394×280 at 1024×768, 650×280 at 1280×800, 810×315 at 1440×900. Primary graphic name, choose/change and transport controls fit their clipping ancestors and pass center hit-testing at all three sizes. All Phase 1 ownership/cache-disposal and reduced-motion rules above remain unchanged.
 - Proof: `test/databaseAnimationFrameSelect.test.ts` binds the visible catalog name through cancel/confirm/clear (RED on the original configured-status string); `test/e2e/battle-animation-editor-ux.spec.ts` drives the real modal, controlled clock, picker and keyboard. Report/captures: `output/evidence/battle-animation-ux/p2-implementation.md`. The worker verified geometry, PNG integrity and changing stage pixels, not a visual verdict; independent visual approval belongs to the parent.
+## 검토한 실내 기본값의 원격 반영 (2026-09-05)
+
+`scripts/expand-concept-bundles.mts --project <id> --baseline <old-bundles.json> --tileset-baseline <old-tileset.json> --evidence <dir> --apply`는 검토 전 값과 정확히 같은 꾸러미/메타/그룹만 교체하고 새 id를 추가한다. 사용자 메타·잠금·독립 통행/priority 변경은 보존한다. 기존 furniture kit도 baseline 일치 시에만 바뀐다. 구조물 빈 배열은 사용자 삭제로 보존한다. JSON 경계를 거쳐 undefined 필드를 제거한 뒤 비교하며 projects 해시 CAS와 tileset mirror 갱신 후 원격 및 앱 재로드를 확인한다. 두 테이블 쓰기는 트랜잭션이 아니므로 중간 mirror 충돌은 오류로 남고 완료로 보고하지 않는다. 이번 대상은 `rpg-zzu-house-template-gallery`, 증거는 `output/evidence/concept-v2/supabase-proof.json`.
+
+## 특정 꾸러미의 명시적 교체 (2026-09-06)
+
+사용자가 특정 기본 꾸러미를 새로 만들라고 명시하면 `scripts/expand-concept-bundles.mts --project <id> --replace-bundle inn --evidence <dir> --apply`로 해당 id만 교체한다. 이 모드는 baseline 일치 조건 없이 지정한 꾸러미를 교체하므로 명시적 교체 요청에만 쓴다. 다른 꾸러미와 프로젝트 필드는 유지하며, 비어 있는 라이브러리에도 지정한 하나만 추가한다. CAS·저장 전 백업·raw/mirror/app 재로드 검증은 그대로 적용한다.

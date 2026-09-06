@@ -6,6 +6,7 @@ import { TILE } from "@/project/defaults/constants";
 import type { GameMap } from "@/project/types";
 import type { Rng } from "@/util/rng";
 import { ToolError } from "../types";
+import { houseFootprintCells, HOUSE_WALL_LADDER, roofDeckLadderAttachment } from "../houseProtection";
 import type { TerrainConstraintMasks } from "../villageTerrainPass";
 import type { VillageSketchSite } from "./sketch";
 import {
@@ -31,14 +32,7 @@ import {
 export function houseBlockedCells(houses: readonly BuiltHouse[]): Set<string> {
   const blocked = new Set<string>();
   for (const house of houses) {
-    // bbox.y-1(용마루 행) 포함 — bright 키트는 지붕 용마루 upper를 bbox 한 행 위에 그린다
-    // (houseKit.ts stampFootprintHouseKit). 길 페인터는 칠하면서 upper를 지우므로,
-    // 이 행을 막지 않으면 길이 지붕 상단 장식을 찢는다. 집의 "절대 침범 금지 영역"이다.
-    for (let y = Math.max(0, house.bbox.y - 1); y < house.bbox.y + house.bbox.h; y += 1) {
-      for (let x = house.bbox.x; x < house.bbox.x + house.bbox.w; x += 1) {
-        blocked.add(`${x},${y}`);
-      }
-    }
+    for (const cell of houseFootprintCells(house.bbox)) blocked.add(`${cell.x},${cell.y}`);
   }
   return blocked;
 }
@@ -308,7 +302,6 @@ export function buildHouses(
 
 /** 다리 판자와 동일 — 상위 O가 하위 X를 덮는 통행 오버라이드. houseVariety 가 옥상 데크 판정에 쓴다. */
 export const ROOF_DECK_PLANK = 199;
-const WALL_LADDER = 322; // 벽 사다리(상위, 통과 O)
 
 /**
  * 옥상 데크(파랑 평지붕 전용) — 지붕 몸통 안쪽에 판자(199)를 얹어 보행면으로 만들고,
@@ -327,10 +320,10 @@ export function applyRoofDeck(map: GameMap, bbox: Rect, doorAt: { readonly x: nu
     }
   }
   // 사다리 기둥: 문에서 먼 쪽 벽 열, 처마→벽→지면 1칸까지 강제 설치(창문은 사다리로 대체).
-  const ladderX = Math.abs(right - 2 - doorAt.x) >= Math.abs(left + 2 - doorAt.x) ? right - 2 : left + 2;
+  const { x: ladderX } = roofDeckLadderAttachment(bbox, doorAt);
   for (let y = eaveY; y <= bbox.y + bbox.h; y += 1) {
     if (!pointInMap(map, { x: ladderX, y })) break;
-    map.upperTiles[y * map.width + ladderX] = WALL_LADDER;
+    map.upperTiles[y * map.width + ladderX] = HOUSE_WALL_LADDER;
   }
 }
 

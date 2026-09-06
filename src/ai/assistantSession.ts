@@ -225,7 +225,7 @@ export type SessionEvent =
   | { type: "tool_call"; name: string; args: Record<string, unknown>; result: ToolResult; reason?: string }
   // 툴 실행 직전에 나가는 신호 이벤트 — 결과 도착 전에 "지금 무엇을 하는 중"을 그릴 수 있게 한다.
   // index는 이번 턴의 1-based 실행 서수.
-  | { type: "tool_started"; name: string; index: number }
+  | { type: "tool_started"; name: string; index: number; args?: Record<string, unknown> }
   | { type: "phase"; value: "plan" | "execute" | "review" }
   | { type: "status"; text: string }
   | { type: "work_plan"; plan: WorkPlan }
@@ -1228,7 +1228,9 @@ export class AssistantSession {
   //  1. 스코프(밑그림 필수·자동 확장) — SPATIAL_BUILD_TOOLS 만. 명세 밖 빈 영역은 자동 확장 warning 으로 통과.
   //  2. 기존 내용 보호 — 타일을 쓰는 모든 툴(SPATIAL 의 타일 쓰기 + TILE_WRITE_TOOLS 의 v3 프리미티브).
   //     기준선(사용자 맵)에 이미 있던 지어진 칸은 밑그림 **안이라도** 에셋 선언(clear+confirmDestroy,
-  //     overExisting) 없이는 덮지 않는다. 이 세션이 초안에 그린 것은 기준선에 없으므로 다시 손댈 수 있다.
+  //     overExisting) 없이는 덮지 않는다. 메타데이터 없는 증분 시공은 세션 안에서 다시 손댈 수 있다.
+  //  3. 완성된 집 보호 — toolRunner가 현재 프로젝트의 집 메타데이터와 실제 셀을 전역 비교한다.
+  //     같은 턴·새 맵도 보호하며, 선택 영역·밑그림 덮어쓰기 선언으로 해제되지 않는다.
   //     2026-09-03 적대적 리뷰: 보호가 제출 시점에만 돌아 밑그림 안에 지은 집을 같은 턴 clear 가 지웠고,
   //     확정 뒤 사용자가 판 호수를 다음 턴 채우기가 덮었고, 게이트 밖 tile_erase 가 절벽을 지웠다.
   private specGate(name: string, args: Record<string, unknown>): ToolResult | SpecGatePass {
@@ -1277,8 +1279,8 @@ export class AssistantSession {
           const at = guarded.sample ? `, 예: (${guarded.sample.x},${guarded.sample.y})` : "";
           return specGateResult(`스펙 게이트: '${name}' 차단 — 기존 구조물·지형 ${guarded.count}칸을 덮습니다${at}`, [
             "명세 밖 빈 영역은 자동 확장하지만, 기존 구조물 파괴 위험은 자동 보정하지 않습니다.",
-            "사용자 맵에 이미 있는 구조물·물·절벽은 밑그림 안이라도 선언 없이 덮지 않습니다(이 세션이 방금 그린 것은 예외).",
-            "철거가 의도면 그 영역을 덮는 clear 에셋에 confirmDestroy:true 를, 그 위에 지을 거면 배치 에셋에 overExisting:\"clear\"|\"keep\" 을 넣은 set_build_spec 을 제출한 뒤 다시 호출하세요.",
+            "일반 구조물·물·절벽은 밑그림 안이라도 선언 없이 덮지 않습니다. 메타데이터로 기록된 완성된 집은 같은 턴·새 맵에서도 별도로 보호됩니다.",
+            "완성된 집 밖의 철거가 의도면 clear 에셋에 confirmDestroy:true 를, 그 위에 지을 거면 배치 에셋에 overExisting:\"clear\"|\"keep\" 을 넣은 set_build_spec 을 제출하세요. 이 선언과 선택 영역도 완성된 집 보호를 해제하지 않습니다.",
             "기존 것을 피하려면 영역을 좁히세요.",
           ]);
         }
@@ -2390,9 +2392,9 @@ export class AssistantSession {
   }
 
   /** 툴 실행 직전 신호를 알린다(1-based 서수). 실행 로직은 건드리지 않는다. */
-  private emitToolStarted(onEvent: (event: SessionEvent) => void, name: string): void {
+  private emitToolStarted(onEvent: (event: SessionEvent) => void, name: string, args: Record<string, unknown>): void {
     this.turnToolStartedCount += 1;
-    onEvent({ type: "tool_started", name, index: this.turnToolStartedCount });
+    onEvent({ type: "tool_started", name, args, index: this.turnToolStartedCount });
   }
 
   /** 라이브 행·고스트가 한 프레임을 그릴 틈을 준다. 중단이면 양보하지 않는다. */
@@ -2447,7 +2449,7 @@ export class AssistantSession {
     const calls = selectVerificationCalls(layer, this.verificationHistory);
     const results: LayerVerdictInput[] = [];
     for (const call of calls) {
-      this.emitToolStarted(onEvent, call.name);
+      this.emitToolStarted(onEvent, call.name, call.args);
       await this.yieldForUi();
       const reason = harnessToolReason("verification", call.name);
       const result = runTool(this.ctx, call.name, call.args);
@@ -3007,7 +3009,7 @@ export class AssistantSession {
       if (SHOP_ROLE_NAME.test(name)) {
         this.pushAudit({ kind: "status", text: `spec-npc:shop-stock-missing ${name} — 상점 재고는 set_shop_stock 으로 채워야 상점이 열린다` });
       }
-      this.emitToolStarted(onEvent, "place_npc");
+      this.emitToolStarted(onEvent, "place_npc", args);
       const reason = harnessToolReason("spec-npc", name);
       const result = this.readEvidence.beforeWrite(this.ctx.project, "place_npc", args)
         ?? runTool(this.ctx, "place_npc", args, { dryRun: false });
@@ -3085,7 +3087,7 @@ export class AssistantSession {
         continue;
       }
       const args: Record<string, unknown> = { mapId, residents: sheet.sheet.residents };
-      this.emitToolStarted(onEvent, "author_npc_cast");
+      this.emitToolStarted(onEvent, "author_npc_cast", args);
       const reason = harnessToolReason("npc-cast", `${ctx.mapName} 주민 ${residents.length}명`);
       const result = this.readEvidence.beforeWrite(this.ctx.project, "author_npc_cast", args)
         ?? runTool(this.ctx, "author_npc_cast", args, { dryRun: false });
@@ -3586,7 +3588,7 @@ export class AssistantSession {
         const callReason = split.reason;
         const tool = getTool(name);
         if (typeof args.theme === "string" && args.theme.trim()) turnTheme = args.theme.trim();
-        this.emitToolStarted(onEvent, name);
+        this.emitToolStarted(onEvent, name, args);
         await this.yieldForUi(signal);
         if (tool?.mode === "write") writeToolAttempts += 1;
         // 프로토콜 보장: 이 호출에 대한 role:"tool" 응답을 반드시 남긴다. 응답 없이 라운드를 벗어나면

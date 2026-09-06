@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { renderDatabasePanel, setDatabaseActiveTab } from "@/editor/panels/database";
+import { databaseTabLabel, renderDatabasePanel, setDatabaseActiveTab } from "@/editor/panels/database";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
@@ -150,7 +150,7 @@ describe("database sidebar navigation", () => {
 
   it("uses domain-specific labels for monster, farming, and resident authoring", () => {
     const panelRoot = renderPanelHost();
-    expect(findTab(panelRoot, "db-tab-monster-species").textContent).toBe("몬스터 종족");
+    expect(findTab(panelRoot, "db-tab-monster-species").textContent).toBe(databaseTabLabel("monsterSpecies"));
     expect(findTab(panelRoot, "db-tab-crops").textContent).toBe("농사·작물");
     expect(findTab(panelRoot, "db-tab-characters").textContent).toBe("주민 관계");
     expect(findTab(panelRoot, "db-tab-daily-weather").textContent).toBe("계절·날씨");

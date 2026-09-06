@@ -1,0 +1,28 @@
+{
+  "port": 52385,
+  "launcherPid": 170848,
+  "processes": [
+    {
+      "pid": 170848,
+      "cwd": "/home/main/z-project/rpg-zzu-house-protection-p1",
+      "command": "npm run dev --h"
+    },
+    {
+      "pid": 170960,
+      "cwd": "/home/main/z-project/rpg-zzu-house-protection-p1",
+      "command": "sh"
+    },
+    {
+      "pid": 170963,
+      "cwd": "/home/main/z-project/rpg-zzu-house-protection-p1",
+      "command": "MainThread"
+    },
+    {
+      "pid": 171119,
+      "cwd": "/home/main/z-project/rpg-zzu-house-protection-p1",
+      "command": "esbuild"
+    }
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-house-protection-p1",
+  "ready": true
+}

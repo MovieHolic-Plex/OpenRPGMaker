@@ -9,7 +9,7 @@ import {
 import { placePropsOnDraft, type PlacePropsInput } from "@/editor/tools/placePropsDomain";
 import { HOUSE_KITS } from "@/editor/houseKit";
 import { createBlankProject } from "@/project/defaults";
-import { serialize } from "@/project/io";
+import { deserialize, serialize } from "@/project/io";
 import type { Project } from "@/project/types";
 import { runTool } from "@/editor/tools/toolRunner";
 import { sha256HexText } from "@/util/sha256";
@@ -81,6 +81,25 @@ describe("HouseKit domain seam baseline characterization", () => {
     expect(result.ok, JSON.stringify(result.issues)).toBe(true);
   });
 });
+describe("HouseKit durable completed-house registration", () => {
+  it.each(["single", "lots"])("registers %s footprints and preserves them through reload", (kind) => {
+    const ctx = { project: preparedProject() };
+    const house = { kitId: "blue-stone", wings: [{ x: 2, y: 2, w: 6, h: 6 }], interior: "exterior-only", yard: [] };
+    const result = runTool(ctx, "author_house", kind === "single"
+      ? { kind, mapId: ctx.project.startMapId, ...house }
+      : { kind, mapId: ctx.project.startMapId, houses: [house], seed: 7 });
+    expect(result.ok, JSON.stringify(result.issues)).toBe(true);
+    ctx.project = deserialize(serialize(ctx.project));
+    const regions = ctx.project.maps[ctx.project.startMapId]?.layoutPlan?.regions.filter((region) => region.role === "house");
+    expect(regions).toHaveLength(1);
+    expect(regions?.[0]).toMatchObject({ x: 2, y: 2, w: 6, h: 6, kitId: "blue-stone" });
+    const before = serialize(ctx.project);
+    const erased = runTool(ctx, "tile_erase", { mapId: ctx.project.startMapId, rect: { x: 2, y: 2, w: 6, h: 6 } });
+    expect(erased.issues?.[0]?.code).toBe("protected-house-write");
+    expect(serialize(ctx.project)).toBe(before);
+  });
+});
+
 describe("HouseKit domain seam", () => {
   const exteriorInput = (mapId: string): BuildHouseKitInput => ({
     mapId,

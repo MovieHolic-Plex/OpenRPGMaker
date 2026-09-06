@@ -36,7 +36,8 @@ export function stampTownHouseStyle(
   style: TownHouseShowcaseStyle,
   originX: number,
   originY: number,
-  skipPath?: TownPathSkip
+  skipPath?: TownPathSkip,
+  skipRoadFence?: TownPathSkip
 ): void {
   switch (style) {
     case "courtyard":
@@ -52,7 +53,7 @@ export function stampTownHouseStyle(
     case "road":
       // DB 추출 도어(329/359)를 사용하는 variant로 통일 — legacy template(116/146) 도어 사용 중단.
       // "wide" 변형을 써서 l/courtyard/multi와 각기 다른 houseShapeSignature를 만든다.
-      stampTemplateHouse(map, { approachHeight: 5, material: "wood", originX, originY, skipPath, variant: "wide" });
+      stampTemplateHouse(map, { approachHeight: 5, material: "wood", originX, originY, skipPath, skipFence: skipRoadFence, variant: "wide" });
       paintTownPathNetwork(map, [offsetTownRect(originX, originY, ROAD_SHOWCASE_CROSS_PATH)], skipPath);
       stampUpperPattern(map, originX + 2, originY + 9, [[TREE, -1, FLOWER], [TREE_BOTTOM, -1, -1]]);
       return;
@@ -68,7 +69,8 @@ export function stampTownCityPlot(
   style: TownCityPlotStyle,
   originX: number,
   originY: number,
-  skipPath?: TownPathSkip
+  skipPath?: TownPathSkip,
+  skipRoadFence?: TownPathSkip
 ): void {
   switch (style) {
     case "plaster":
@@ -81,7 +83,7 @@ export function stampTownCityPlot(
     case "multi":
     case "road":
     case "l":
-      stampTownHouseStyle(map, style, originX, originY, skipPath);
+      stampTownHouseStyle(map, style, originX, originY, skipPath, skipRoadFence);
       return;
   }
 }
@@ -113,6 +115,7 @@ function stampTemplateHouse(
     readonly originX: number;
     readonly originY: number;
     readonly skipPath?: TownPathSkip;
+    readonly skipFence?: TownPathSkip;
     readonly variant: DbHouseShapeVariant;
   }
 ): void {
@@ -121,6 +124,7 @@ function stampTemplateHouse(
     material: input.material,
     origin: { x: input.originX, y: input.originY },
     skipPath: input.skipPath,
+    skipFence: input.skipFence,
     variant: input.variant,
   });
 }

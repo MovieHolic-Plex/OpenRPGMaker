@@ -5,7 +5,8 @@ import { listConceptConnections } from "@/editor/interiorConceptEvents";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
-import { cloneConceptBundle, SCRATCH_INN_BUNDLE } from "@/project/defaults/scratchInnBundle";
+import { cloneConceptBundle } from "@/project/defaults/scratchInnBundle";
+import { SCRATCH_INN_BUNDLE } from "./fixtures/legacyConceptInn";
 import { validateTileset } from "@/project/io/shapeResourceFields";
 import type { ConceptBundleRecord } from "@/project/types";
 
@@ -17,8 +18,7 @@ function twoStoryInn(): ConceptBundleRecord {
   for (const place of bundle.places) {
     if (place.id === "corridor" || place.id === "bedroom") place.level = 2;
   }
-  const stairs = bundle.things.find((thing) => thing.id === "stairs")!;
-  stairs.placeIds = ["dining", "corridor"];
+  bundle.things.push({id:"stairs",label:"층 연결 계단",objectId:"stairs_small",placeIds:["dining","corridor"],chips:["transfer"],required:true});
   return bundle;
 }
 
