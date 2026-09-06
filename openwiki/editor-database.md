@@ -27,6 +27,24 @@ The current multi-floor inn template remains authoritative (`dorm_bed_a`,
 `upper_stair`); snapshot tests use those IDs, not the retired bedroom/stairs IDs.
 Validation and replay boundaries are in `reports/pr617-621-integration.md`.
 
+## Cinematic media preparation boundary (2026-09-06)
+
+`prepareCinematicUpload(file, kind, signal)` in `src/editor/cinematicMediaImport.ts`
+prepares an `UploadedAsset` without accessing or mutating the current project.
+Input image/video/audio maps to picture/movie/sound. Image limits and formats
+come from the existing image decision helper; audio/movie rules come from
+`mediaImportRuleFor`. GIF/WebP payloads are preserved, not canvas-flattened.
+Native readers and decoders are abortable and have one bounded preparation
+deadline. Audio/video must expose valid metadata and decodable first data;
+preparation never starts playback.
+
+The authoring action owns cancellation, stale-project/scene/request checks after
+await, and one labelled history transaction adding asset, resource profile and
+scene reference. Do not call `importMediaResource` for this atomic workflow.
+The shared picker adds `movie` beside existing `image`/`sound`: movie profiles
+and uploads are deduplicated, and movie visuals are static labels, not images
+or another video player. Shared cinematic preview remains the playback owner.
+
 ## System settings workspace (2026-09-06)
 
 `databaseSystemView.ts` and `databaseSystemStudio.ts` own all ten mounted System
