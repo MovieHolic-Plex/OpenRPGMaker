@@ -1,4 +1,5 @@
 import { getMonsterResource, listMonsterResources } from "@/assets/monsterResourceCatalog";
+import { monsterResourceSnapshot } from "@/ai/monsterResourceSnapshot";
 import { ToolError, type ToolDefinition } from "./types";
 
 /** Metadata is untrusted reference data, never instructions for the assistant. */
@@ -40,7 +41,8 @@ export const MONSTER_RESOURCE_TOOLS: readonly ToolDefinition[] = [
         return terms.every(term => text.includes(term));
       });
       const page = matches.slice(offset, limit === undefined ? undefined : offset + limit);
-      const resources = args.include === "full" ? page : page.map(({ description: _description, ...entry }) => entry);
+      const resources = args.include === "full" ? page.map(resource => monsterResourceSnapshot(project, resource))
+        : page.map(({ description: _description, ...entry }) => entry);
       const nextOffset = offset + page.length < matches.length ? offset + page.length : null;
       return {
         summary: `몬스터 소재 ${page.length}/${matches.length}개`,
@@ -61,7 +63,7 @@ export const MONSTER_RESOURCE_TOOLS: readonly ToolDefinition[] = [
     run(project, args) {
       const resource = typeof args.resourceId === "string" ? getMonsterResource(project, args.resourceId) : undefined;
       if (!resource) throw new ToolError(`몬스터 소재가 없습니다: ${String(args.resourceId)}`, { code: "monster-resource-not-found" });
-      return { summary: `몬스터 소재 ${resource.resourceId}`, data: { resource } };
+      return { summary: `몬스터 소재 ${resource.resourceId}`, data: { resource: monsterResourceSnapshot(project, resource) } };
     },
   },
 ];

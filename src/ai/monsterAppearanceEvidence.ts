@@ -2,6 +2,7 @@ import { getMonsterResource } from "@/assets/monsterResourceCatalog";
 import type { Project } from "@/project/types";
 import type { ToolResult } from "@/editor/tools/types";
 import type { ChatMessage } from "./llmClient";
+import { monsterResourceSnapshot } from "./monsterResourceSnapshot";
 
 export const MONSTER_READ_TOOLS = ["list_monster_resources", "get_monster_resource"] as const;
 export const MONSTER_APPEARANCE_WRITERS = ["upsert_enemy", "define_monster_species", "make_action_enemy"] as const;
@@ -86,7 +87,7 @@ export class MonsterAppearanceEvidence {
     }
     const resource = getMonsterResource(project, resourceId);
     if (!resource) return failure("monster-resource-required", `등록된 몬스터 소재가 아닙니다: ${resourceId}`);
-    if (this.full.get(resourceId) !== JSON.stringify(resource)) {
+    if (this.full.get(resourceId) !== JSON.stringify(monsterResourceSnapshot(project, resource))) {
       return failure("monster-resource-read-required", `get_monster_resource(resourceId:${JSON.stringify(resourceId)})로 현재 상세를 읽고 반환값을 확인한 다음 다시 호출하세요.`);
     }
     const tags = args.appearanceTags;

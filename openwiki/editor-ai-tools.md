@@ -41,6 +41,19 @@ compaction cannot turn an executed-but-undelivered full read into permission.
 `monsterAppearanceSession` tests the actual model-facing serialized catalog, not
 only the read tool; `monsterAppearanceTransport` tests budget loss explicitly.
 
+Full entries also include `assetIdentity`, a compact SHA-256 digest shared by the
+read response and current authorization snapshot (`ai/monsterResourceSnapshot.ts`).
+It hashes the raw resource ID plus the upload's encoded image source and render
+metadata, never returning base64. Replacing `assets.uploaded[id].dataUrl` at the
+same ID invalidates old evidence for new/changed assignments even when effective
+name/tags/description are unchanged; a fresh full read restores eligibility.
+The index remains compact and unchanged. Existing unchanged-art/stat-only edits
+still bypass selection evidence deliberately: this is not a gate on upload editing.
+Bundled/profile image sources are assumed fixed within the running asset build;
+this token does not fetch/revalidate remote bytes behind an unchanged URL.
+`monsterAppearanceAssetIdentity` covers replacement/reread across all three writers,
+both full-read paths, and the actual assistant session.
+
 **Limits of this check:** tags are the assistant's declared visible identity, not
 machine vision and not proof of the user's intent. Generic/shared tags may match
 many resources. The finite generic-word policy rejects known generic-only declarations,
