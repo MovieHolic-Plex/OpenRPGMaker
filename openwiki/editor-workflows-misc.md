@@ -44,10 +44,12 @@ profiles through the tool deletion path.
 | AI search and detail | `src/assets/resourceSearch.ts`, `src/editor/tools/queryTools.ts`, `src/editor/tools/audioDescriptionTools.ts` |
 | Event prompt candidates | `src/ai/eventAudioPrompt.ts`, separate from full-ID eligibility |
 
-An open music/sound picker subscribes to project/assets changes, refreshes descriptions and
+An open music/sound picker or audio-test dialog subscribes to project/assets changes, refreshes descriptions and
 search results, and invalidates a removed selected ID so it can't be confirmed. Closing the
 dialog releases its subscription; switching projects closes it. Reopened consumers use the
 latest project. Don't introduce per-surface fallback descriptions or global description storage.
+Reopening the audio-test dialog closes the previous instance through its modal teardown,
+including its store subscription and audio settings; removing its DOM alone leaks ownership.
 
 Coverage includes `test/audioDescriptionEditor.test.ts`,
 `test/audioDescriptionLifecycle.test.ts`, `test/audioDescriptionPickerSurfaces.test.ts`,

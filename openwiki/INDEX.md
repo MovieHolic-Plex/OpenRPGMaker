@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **48쪽 / 1694KB / 약 482,427 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **48쪽 / 1695KB / 약 482,584 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -21,7 +21,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-event-authoring.md` | 119KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 564 | ~34,648 |
 | `openwiki/editor-pre-edit-routing.md` | 72KB | 55KB ⚠상한 초과 — 절을 더 쪼개라 | 210 | ~20,571 |
 | `openwiki/runtime-battle.md` | 119KB | 31KB | 362 | ~34,124 |
-| `openwiki/runtime-project-schema.md` | 67KB | 42KB | 300 | ~18,306 |
+| `openwiki/runtime-project-schema.md` | 68KB | 42KB | 306 | ~18,412 |
 | `openwiki/runtime-sessions.md` | 60KB | 45KB | 168 | ~16,122 |
 | `openwiki/testing.md` | 122KB | 45KB | 892 | ~34,118 |
 
@@ -446,16 +446,16 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L85` Event editor aggregate gate (2026-07-30)
 - `L94` P2 spatial integrity (2026-08-25)
 
-### `openwiki/editor-workflows-misc.md` — 45KB · 194줄 · ~12,466 토큰
+### `openwiki/editor-workflows-misc.md` — 45KB · 196줄 · ~12,517 토큰
 
 - `L7` Other Editor Workflows
   - `L9` Audio descriptions and live resource ownership
-  - `L60` Genre-neutral authoring launcher and journey (2026-08-24)
-- `L110` 편집기 z 층 밴드와 토스트 (2026-08-30, PR #308)
-- `L139` 초보 맵 사이드바 «목록 | 상세» 2단 탐색기 (2026-08-30, PR #311)
-- `L161` 커스텀 셀렉트는 열릴 때 modalStack 층이 된다 (2026-08-30)
-- `L175` 맵 설정 가독성·편집 연속성 (2026-09-05)
-- `L185` 왼쪽 사이드바 3모드 적대적 리뷰 (2026-09-05)
+  - `L62` Genre-neutral authoring launcher and journey (2026-08-24)
+- `L112` 편집기 z 층 밴드와 토스트 (2026-08-30, PR #308)
+- `L141` 초보 맵 사이드바 «목록 | 상세» 2단 탐색기 (2026-08-30, PR #311)
+- `L163` 커스텀 셀렉트는 열릴 때 modalStack 층이 된다 (2026-08-30)
+- `L177` 맵 설정 가독성·편집 연속성 (2026-09-05)
+- `L187` 왼쪽 사이드바 3모드 적대적 리뷰 (2026-09-05)
 
 ### `openwiki/editor-workflows.md` — 2KB · 28줄 · ~586 토큰
 
@@ -606,32 +606,32 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L164` 가구 밀기 애니메이션 (2026-09-05)
 - `L173` Recovered head emotes (2026-09-05)
 
-### `openwiki/runtime-project-schema.md` — 67KB · 300줄 · ~18,306 토큰 · 통째읽기 잘림
+### `openwiki/runtime-project-schema.md` — 68KB · 306줄 · ~18,412 토큰 · 통째읽기 잘림
 
 - `L3` Project audio description overrides
   - `L32` Concurrent persistence
-  - `L47` Editor preservation and playable export
-- `L61` New-project save/reload verification (2026-09-05)
-- `L65` Project-authored equipment slots (2026-09-05)
-- `L73` 전투 명령 CSS (2026-09-05)
-- `L77` 기본 카탈로그 삭제 보존 (2026-09-05)
-- `L81` 전투 페이지 중복 ID 복구와 슬롯 참조 (2026-09-05)
-- `L94` 통행 컴포넌트 색인의 계약 (2026-08-30, PR #286)
-- `L102` 세계 법칙의 명시적 부재 (2026-09-05)
-- `L106` Project schema & persistence
-- `L173` Variable arithmetic & loop runtime (2026-08-07)
-- `L177` Canonical event-draft projection (2026-07-30)
-- `L183` P2 general buildings and home decorations (2026-08-25)
-- `L190` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
-- `L208` Boot normalizers must not create dangling references (2026-08-30)
-- `L234` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
-- `L268` 성장 트리 선택 확장 (2026-09-05)
-- `L274` 마을 설계서 (2026-09-05)
-- `L280` 공포 게임 제작 기능 (2026-09-05)
-  - `L284` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
-- `L288` NPC 표시 이름 (2026-09-05)
-- `L293` 연결 실내 도면의 영속성 (2026-09-05)
-- `L297` 개념 장소 형상 (2026-09-05)
+  - `L53` Editor preservation and playable export
+- `L67` New-project save/reload verification (2026-09-05)
+- `L71` Project-authored equipment slots (2026-09-05)
+- `L79` 전투 명령 CSS (2026-09-05)
+- `L83` 기본 카탈로그 삭제 보존 (2026-09-05)
+- `L87` 전투 페이지 중복 ID 복구와 슬롯 참조 (2026-09-05)
+- `L100` 통행 컴포넌트 색인의 계약 (2026-08-30, PR #286)
+- `L108` 세계 법칙의 명시적 부재 (2026-09-05)
+- `L112` Project schema & persistence
+- `L179` Variable arithmetic & loop runtime (2026-08-07)
+- `L183` Canonical event-draft projection (2026-07-30)
+- `L189` P2 general buildings and home decorations (2026-08-25)
+- `L196` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
+- `L214` Boot normalizers must not create dangling references (2026-08-30)
+- `L240` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
+- `L274` 성장 트리 선택 확장 (2026-09-05)
+- `L280` 마을 설계서 (2026-09-05)
+- `L286` 공포 게임 제작 기능 (2026-09-05)
+  - `L290` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
+- `L294` NPC 표시 이름 (2026-09-05)
+- `L299` 연결 실내 도면의 영속성 (2026-09-05)
+- `L303` 개념 장소 형상 (2026-09-05)
 
 ### `openwiki/runtime-sessions.md` — 60KB · 168줄 · ~16,122 토큰 · 통째읽기 잘림
 

@@ -44,6 +44,12 @@ adopts remote-only changes and avoids resending stale metadata on the next map s
 It replaces only the necessary root/description state, keeps live maps and mutation-generation
 handling, and emits synchronization without counting a new authored edit.
 
+Reconciliation is scoped to the submitted project's ownership epoch. Full project
+replacement/reset clears the old persisted baseline, so its next save is authoritative
+rather than a merge with the previous project. A late completion from an earlier epoch
+cannot reinstall that baseline or copy remote descriptions into the replacement.
+Ordinary edits and undo within one project keep the per-key reconciliation contract.
+
 ### Editor preservation and playable export
 
 Editor JSON, backups and `src/project/package.ts` packages preserve absent, empty, authored
