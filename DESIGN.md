@@ -20,6 +20,15 @@
   tileset art geometry and runtime/project-font previews are retained variants.
   UI fonts resolve through role tokens, including component-loaded shorthand.
 
+## Weighted outcome worksheet (2026-09-06)
+
+- `m2-211-weighted-branch` uses a task-first `확률로 결과 뽑기` form; the catalog retains `가중 분기` for discovery. Outcomes precede the destination variable. Each repeated row composes a labelled name, direct percent input, single-accent proportional meter, and `저장값` number. No instructional card, duplicated legend, raw table or automatic action-branch promise.
+- Editing one percent redistributes the remaining chance proportionally among other rows; if all other rows are zero, split the remainder equally. A compact `나머지 자동 조정` label makes that behavior explicit. One remaining outcome stays at 100%. Add assigns an equal share to the new row while retaining existing relative chances; remove renormalizes remaining rows. Named zero-percent rows persist and remain editable after Confirm/reopen, but have no stored result value because runtime ignores them. Removing the last positive row is disabled rather than enabling zero-chance rows. Authored all-zero tables remain unchanged and visibly block Confirm until a chance is set; a lone zero row can be repaired to 100%.
+- Native labelled controls, existing `databasePicker` and `editorIcons`, existing draft update path. Inputs remain mounted while typing; composition commits only when complete. Add focuses the new name, delete focuses the nearest remaining name. Invalid percentages show a local 0–100% error and leave persisted values unchanged. A Weighted Branch-only Confirm guard keeps the modal open and focuses the invalid control; other command forms are unaffected. The empty variable trigger is an explicit selection action; no variable is auto-picked.
+- Existing cream-form tokens only: `--bg-raised/inset`, `--text-1/2`, `--accent`, `--border-default`, `--danger`, `--focus-outline`; `--font-ui/mono`, 12px metadata, 13px controls, 14px names; `--space-1/2/3/4/6`, `--radius-s`, 32px minimum targets. Row meter is 4px, result-value chip uses the 4px inner radius. Fluid name track and wrapping destination retain the existing modal scroll owner, no new nested scroller or motion.
+- Persistence remains `table` + `resultVariableId`. Open and variable-only edits preserve authored table bytes. Name edits preserve numeric precision; storage-safe names replace equals with fullwidth equals and line breaks with spaces. Numeric parsing mirrors the runtime's first numeric field, including blank names/extra separators. Tiny positive percentages use significant digits rather than integer rounding; near-100% counterparts retain enough decimals to avoid false certainty (100% only within floating-point epsilon).
+- Personas: first-time author, keyboard/IME author, existing-project author. No extra theme, runtime change or dependency. Lead owns full build/gates and browser accessibility/geometry acceptance at 1024/1280/1440; unit DOM tests alone are not visual approval.
+
 ## System settings workspace (2026-09-06)
 
 Database > System is a settings worksheet in the existing cool-white, slate and

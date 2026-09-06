@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **48쪽 / 1683KB / 약 479,668 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **48쪽 / 1688KB / 약 480,853 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -36,7 +36,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-database.md` | 7 | 363, 367, 368, 369, 378, 403, 406 |
 | `openwiki/editor-event-authoring.md` | 16 | 151, 152, 155, 160, 161, 162, 163, 164 |
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
-| `openwiki/editor-event-commands.md` | 6 | 26, 39, 40, 42, 45, 46 |
+| `openwiki/editor-event-commands.md` | 6 | 39, 52, 53, 55, 58, 59 |
 | `openwiki/editor-observability.md` | 1 | 120 |
 | `openwiki/editor-pre-edit-routing.md` | 5 | 52, 61, 67, 69, 82 |
 | `openwiki/state-system.md` | 2 | 3, 84 |
@@ -366,15 +366,16 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L30` Show Picture preview opacity unit (2026-08-29)
 - `L35` 조명 백분율 입력 복구 (2026-09-05)
 
-### `openwiki/editor-event-commands.md` — 44KB · 117줄 · ~11,906 토큰 · 깨진 줄 6
+### `openwiki/editor-event-commands.md` — 49KB · 130줄 · ~13,091 토큰 · 깨진 줄 6
 
-- `L7` 상점: 진열 상품과 상품 상세 중심 편집 (2026-09-05)
-- `L18` Roguelike run control (2026-08-24)
-- `L58` 얼굴 상자(faceset-crop-box) 페인트 계약 (2026-08-28)
-- `L89` Staged edit, history, and nested drag invariants (2026-07-30)
-- `L96` Command picker, validation, and preview trust (2026-07-30)
-- `L103` 회상 스틸과 AI 그림 (2026-09-03)
-- `L114` Recovered native emote command (2026-09-05)
+- `L7` 확률로 결과 뽑기 / 가중 분기 (2026-09-06)
+- `L20` 상점: 진열 상품과 상품 상세 중심 편집 (2026-09-05)
+- `L31` Roguelike run control (2026-08-24)
+- `L71` 얼굴 상자(faceset-crop-box) 페인트 계약 (2026-08-28)
+- `L102` Staged edit, history, and nested drag invariants (2026-07-30)
+- `L109` Command picker, validation, and preview trust (2026-07-30)
+- `L116` 회상 스틸과 AI 그림 (2026-09-03)
+- `L127` Recovered native emote command (2026-09-05)
 
 ### `openwiki/editor-genre-packs.md` — 7KB · 42줄 · ~1,837 토큰
 
