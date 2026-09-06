@@ -437,10 +437,7 @@
   background-color: transparent;
   border: 0;
   border-radius: 0;
-  height: 12px;
-  margin: 0;
   padding: 0;
-  width: 12px;
 }
 
 /* 강제 고대비에서는 OS 네이티브로 돌려 시스템 고대비를 그대로 탄다.
