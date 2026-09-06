@@ -4,17 +4,21 @@
 
 import { describe, expect, it } from "vitest";
 import type { AiConfig, ChatRequest, ChatResult } from "@/ai/llmClient";
+import type { ReviewInput } from "@/ai/independentReview";
+import { toOpenAiTools } from "@/editor/tools";
+import { approvedReviewResponse, independentReviewPayload } from "./independentReviewFixture";
 import { scoreProject } from "@/evals/goldenTask";
-import { GOLDEN_TASKS, GOLDEN_SOLUTIONS, GOLDEN_INN, GOLDEN_INN_SOLUTION } from "@/evals/goldenTasks";
+import { GOLDEN_TASKS, GOLDEN_SOLUTIONS, GOLDEN_INN, GOLDEN_INN_SOLUTION, GOLDEN_SESSION } from "@/evals/goldenTasks";
 import { llmSolver, runGoldenSuite, runGoldenTask, toolSequenceSolver } from "@/evals/runner";
 
-const TEST_CONFIG: AiConfig = { baseUrl: "https://example.test/v1", model: "stub-model", apiKey: "test", maxToolCalls: 5, maxTokens: 2000 };
+// Allow writer, final response, and independent review/repair rounds in one budget.
+const TEST_CONFIG: AiConfig = { authMode: "apiKey", baseUrl: "https://example.test/v1", model: "stub-model", apiKey: "test", agentMode: "chat", maxToolCalls: 10, maxTokens: 16000 };
 
 describe("evals", () => {
   it("모든 골든 태스크가 정답 시퀀스로 통과한다(오프라인)", async () => {
     const { results, passRate, avgScore } = await runGoldenSuite(GOLDEN_TASKS, (task) => toolSequenceSolver(GOLDEN_SOLUTIONS[task.id] ?? []));
     for (const result of results) {
-      expect(result.score.passed, `${result.score.taskId}: ${JSON.stringify(result.score.matcherResults)}`).toBe(true);
+      expect(result.score.passed, `${result.score.taskId}: ${result.error ?? JSON.stringify(result.score.matcherResults)}`).toBe(true);
       expect(result.score.lintErrors).toBe(0);
     }
     expect(passRate).toBe(1);
@@ -31,8 +35,10 @@ describe("evals", () => {
     expect(result.score.score).toBeLessThan(1);
   });
 
-  it("모킹 LLM 툴콜 루프가 골든 태스크를 완성한다", async () => {
-    // 1라운드: 정답 시퀀스를 tool_calls로 방출 → 2라운드: 최종 응답(툴콜 없음).
+  it("모킹 LLM 여관 시퀀스는 렌더 증거 없이 성공으로 채점되지 않는다", async () => {
+    // Preserve the inn tool loop, but a writer's completion and even a reviewer
+    // approval cannot replace actual rendered coverage of the newly authored map.
+    const reviews: ReviewInput[] = [];
     const spec = {
       mapId: "m_town",
       title: "여관 밑그림",
@@ -45,7 +51,17 @@ describe("evals", () => {
       ...GOLDEN_INN_SOLUTION.slice(lastCreateMapIndex + 1),
     ];
     let round = 0;
-    const chat = async (_config: AiConfig, _req: ChatRequest): Promise<ChatResult> => {
+    const chat = async (_config: AiConfig, request: ChatRequest): Promise<ChatResult> => {
+      const review = independentReviewPayload(request);
+      const approval = approvedReviewResponse(request);
+      if (review && approval) {
+        expect(request.tools).toEqual([]);
+        expect(request.tool_choice).toBe("none");
+        expect(request.messages.flatMap(message => Array.isArray(message.content) ? message.content : [])
+          .filter(part => part.type === "image_url")).toEqual([]);
+        reviews.push(review);
+        return approval;
+      }
       round += 1;
       if (round === 1) {
         return {
@@ -64,9 +80,97 @@ describe("evals", () => {
       return { message: { role: "assistant", content: "여관을 지었습니다." }, finishReason: "stop" };
     };
     const result = await runGoldenTask(GOLDEN_INN, llmSolver({ config: TEST_CONFIG, chat }));
-    expect(result.score.passed).toBe(true);
+    expect(result.score.matcherResults).toEqual(GOLDEN_INN.matchers.map(matcher => ({ describe: matcher.describe, passed: true })));
+    expect(result.score.passed).toBe(false);
+    expect(result.error).toBeDefined();
+    expect(result.review?.status).toBe("changes_requested");
+    expect(reviews.length).toBeGreaterThan(0);
+    expect(reviews[0]?.originalRequest).toBe(GOLDEN_INN.prompt);
+    expect(reviews[0]?.requiredProblems.some(problem => problem.includes("show_map_region"))).toBe(true);
+    expect(result.review?.findings.some(finding => finding.target === "required-evidence" && finding.problem.includes("show_map_region"))).toBe(true);
     expect(result.audit).toBeDefined();
   });
+
+  it.each(["write", "read-only"] as const)("모킹 LLM 시작 상태 설정은 실제 변경과 독립 검수를 요구한다: %s", async mode => {
+    // Only the golden solution's map setup is pre-authored. All requested title,
+    // item and starting inventory changes must still come from the real LLM loop.
+    const solution = GOLDEN_SOLUTIONS[GOLDEN_SESSION.id]!;
+    expect(solution.slice(0, 2).map(call => call.name)).toEqual(["create_map", "set_start_position"]);
+    const { project: initial } = await toolSequenceSolver(solution.slice(0, 2))(GOLDEN_SESSION);
+    const task = { ...GOLDEN_SESSION, initialProject: () => structuredClone(initial) };
+    expect(scoreProject(initial, task).passed).toBe(false);
+    const mapId = initial.startMapId;
+    const calls = mode === "write" ? [
+      solution[2]!,
+      { name: "get_database_records", args: { collection: "items", ids: ["it_potion"], include: "full" } },
+      ...solution.slice(3),
+    ] : [{ name: "get_project_summary", args: {} }];
+    const reviews: ReviewInput[] = [];
+    const writerRequests: ChatRequest[] = [];
+    const result = await runGoldenTask(task, llmSolver({ config: TEST_CONFIG, chat: async (_config, request) => {
+      const review = independentReviewPayload(request);
+      const approval = approvedReviewResponse(request);
+      if (review && approval) {
+        expect(request.tools).toEqual([]);
+        expect(request.tool_choice).toBe("none");
+        expect(request.messages).toHaveLength(2);
+        reviews.push(review);
+        return approval;
+      }
+      writerRequests.push(request);
+      if (writerRequests.length === 1) {
+        expect(request.tools?.map(tool => tool.function.name)).toEqual(expect.arrayContaining(toOpenAiTools().map(tool => tool.function.name)));
+        const originalMessage = request.messages.find(message => typeof message.content === "string" && message.content.startsWith('{"originalContext":'));
+        expect(originalMessage).toBeDefined();
+        const context: unknown = JSON.parse(String(originalMessage!.content));
+        expect(context).toMatchObject({ originalContext: { target: { mapId }, entries: expect.arrayContaining([
+          expect.objectContaining({ entryId: "/project", value: expect.objectContaining({ meta: initial.meta, startMapId: mapId }) }),
+          expect.objectContaining({ entryId: "/system", value: initial.system }),
+        ]) } });
+      }
+      const index = writerRequests.length - 1;
+      const call = calls[index];
+      if (call) return { message: { role: "assistant", content: null, tool_calls: [{
+        id: `start_${index}`, type: "function", function: { name: call.name, arguments: JSON.stringify(call.args) },
+      }] }, finishReason: "tool_calls" };
+      return { message: { role: "assistant", content: "시작 상태를 확인했습니다." }, finishReason: "stop" };
+    } }));
+    expect(writerRequests.length).toBeGreaterThanOrEqual(2);
+    for (const [index, call] of calls.entries()) {
+      const reply = writerRequests[index + 1]?.messages.find(message => message.role === "tool" && message.tool_call_id === `start_${index}`);
+      expect(reply).toMatchObject({ name: call.name });
+      const output: unknown = JSON.parse(String(reply!.content));
+      expect(output).toMatchObject({ ok: true });
+    }
+    expect(result.audit).toBeDefined();
+    if (mode === "read-only") {
+      expect(result.score.passed).toBe(false);
+      expect(result.score.matcherResults.some(matcher => !matcher.passed)).toBe(true);
+      expect(reviews).toEqual([]);
+      expect(result.review?.status).not.toBe("approved");
+    } else {
+      expect(result.error, result.audit).toBeUndefined();
+      expect(result.score.passed, JSON.stringify(result.score)).toBe(true);
+      expect(result.score.score).toBe(1);
+      expect(result.score.lintErrors).toBe(0);
+      expect(reviews).toHaveLength(1);
+      expect(result.review).toMatchObject({ status: "approved", revision: reviews[0]!.revision, findings: [] });
+      expect(reviews[0]?.originalRequest).toBe(task.prompt);
+      expect(reviews[0]?.requiredProblems).toEqual([]);
+      expect(reviews[0]?.toolResults).toEqual(expect.arrayContaining(calls.map(call => expect.objectContaining({
+        name: call.name, args: call.args, result: expect.objectContaining({ ok: true }),
+      }))));
+      expect(reviews[0]?.changes.some(change => change.path === "/maps")).toBe(false);
+      expect(reviews[0]?.changes).toContainEqual(expect.objectContaining({
+        path: "/session", before: initial.session,
+        after: expect.objectContaining({ gold: 200, inventory: { it_potion: 3 } }),
+      }));
+      expect(reviews[0]?.changes).toContainEqual(expect.objectContaining({
+        path: "/system", before: initial.system,
+        after: expect.objectContaining({ titleScreen: expect.objectContaining({ title: "작은 모험" }) }),
+      }));
+    }
+  }, 60000);
 
   it("scoreProject가 부분 점수를 산출한다", () => {
     const project = GOLDEN_INN.initialProject();
