@@ -121,6 +121,7 @@ export type StepResult =
       offsetY?: number;
       zoom?: number;
     }
+  | { kind: "relocateEvents"; eventIds: readonly string[] }
   | { kind: "spawnEvent"; eventId: string }
   | { kind: "removeEvent"; eventId: string }
   | {

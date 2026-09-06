@@ -21,7 +21,7 @@ import { resolveEventPage } from "@/project/io";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import type { CommandExecution, Frame, InterpreterState, PendingStep, StepResult } from "@/player/interpreter/types";
 import { breakLoop, gotoLabel, pushFrame, pushLoopFrame } from "@/player/interpreter/stack";
-import { executeM2RuntimeCommand } from "@/player/interpreter/m2Runtime";
+import { executeM2RuntimeCommand, relocateM2Events } from "@/player/interpreter/m2Runtime";
 import { fieldBoolean, fieldNumber, fieldString } from "@/player/interpreter/m2RuntimeFields";
 import { waitConditionMet } from "@/player/interpreter/m2ModernRuntime";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
@@ -112,6 +112,11 @@ function executeM2Command(
 
   if (entry.title === "Camera Control" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     return pause("cameraControl", cameraControlStep(command.fields, state.currentEventId));
+  }
+
+  if (entry.title === "Set Event Location" || entry.title === "Swap Event Location") {
+    const eventIds = relocateM2Events(state.session, entry.title, command.fields, m2Context);
+    return eventIds.length ? pause("relocateEvents", { kind: "relocateEvents", eventIds }) : resumeNext(frame);
   }
 
   if (entry.title === "Spawn Event" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
@@ -282,7 +287,7 @@ function executeM2Command(
   }
 
   if (entry.title === "Set Weather Effects" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
-    const weather = parseWeather(fieldString(command.fields, "value", "none"));
+    const weather = parseWeather(state.session.m2Runtime?.screen.weather);
     return pause("setWeather", {
       kind: "setWeather",
       weather: weather.kind,

@@ -747,6 +747,12 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
         }
         step = interp.resume(undefined);
         break;
+      case "relocateEvents":
+        for (const eventId of step.eventIds) state.chasers.delete(eventId);
+        refreshChasers(state);
+        syncFollowCamera(state);
+        step = interp.resume(undefined);
+        break;
       case "spawnEvent":
       case "removeEvent":
       case "setEventGraphicPattern":
@@ -1842,7 +1848,10 @@ function advanceChasers(state: RunnerState, deltaMs: number): void {
       pathfind: view.movement.pathfind,
     });
     if (decision.kind === "move") {
-      state.eventPositions[eventId] = { x: decision.x, y: decision.y, direction: decision.dir };
+      const position = { x: decision.x, y: decision.y, direction: decision.dir };
+      const location = state.session.eventLocations[eventId];
+      if (location?.mapId === map.id) state.session.eventLocations[eventId] = { ...location, ...position };
+      state.eventPositions[eventId] = position;
     } else if (decision.kind === "touch" && view.trigger.kind === "eventTouch") {
       state.runtimeFailure = runEventView(state, view);
       if (state.runtimeFailure) return;

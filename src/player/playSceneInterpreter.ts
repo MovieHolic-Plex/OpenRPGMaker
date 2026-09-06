@@ -36,6 +36,7 @@ import { playPathfindMove } from "@/player/playScenePathfinding";
 import { conditionWaitScenes, isRuntimeEventIdle } from "@/player/runtimeConditionWait";
 import { playMovieOverlay } from "@/player/playSceneMovies";
 import { applyWeatherStep } from "@/player/playSceneWeather";
+import { applyEventRelocationStep } from "@/player/playSceneMapCommands";
 import { runtimeEventViewsForMap, type RuntimeEventView } from "@/project/runtimeEventState"
 import {
   CUTSCENE_END_LABEL,
@@ -524,6 +525,9 @@ async function consumeBlockingStep(
       }
       return resumeAfterSurface(scene, interpreter);
     }
+    case "relocateEvents":
+      applyEventRelocationStep(scene, step);
+      return resumeAfterSurface(scene, interpreter);
     case "spawnEvent":
       refreshSpawnedEvent(scene, step.eventId);
       return resumeAfterSurface(scene, interpreter);
