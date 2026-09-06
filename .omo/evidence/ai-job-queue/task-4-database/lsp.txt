@@ -1,0 +1,10 @@
+Language-server diagnostics tools, severity=all, absolute paths in this worktree:
+- src/ai/databaseGenerationCore.ts: No diagnostics found.
+- src/editor/aiDatabaseGeneration.ts: No diagnostics found.
+- src/ai/jobs/executors/databaseJob.ts: No diagnostics found (rechecked after final source edit).
+- test/aiDatabaseJob.test.ts: No diagnostics found.
+
+Caveat: initial source diagnostics also reported no errors for the incorrect
+Project.resources access; tsc caught that error. The access was fixed to
+assets.uploaded and the final real typecheck exits 0. Do not infer more from LSP
+than its recorded tool response.

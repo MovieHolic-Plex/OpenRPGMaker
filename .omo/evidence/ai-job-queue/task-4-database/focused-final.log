@@ -1,0 +1,33 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiDatabaseJob.test.ts test/aiDatabaseGeneration.test.ts test/databaseAiGenerateDialog.test.ts test/databaseAiGenerateLazyImport.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-aiq-database-silver
+
+ ✓ test/databaseAiGenerateLazyImport.test.ts (2 tests) 24ms
+ ✓ test/aiDatabaseGeneration.test.ts (24 tests) 116ms
+ ✓ test/databaseAiGenerateDialog.test.ts (7 tests) 456ms
+ ✓ test/aiDatabaseJob.test.ts (24 tests) 30625ms
+   ✓ isolated real session import graph > has no runtime editor/store/persistence boot edges  6043ms
+   ✓ database job output validation > has no transitive editor/store/panels/PWA boot imports  3599ms
+   ✓ database job output validation > checkpoints item text before held artwork and returns captured record facts and transparent refs  2183ms
+   ✓ database job output validation > checkpoints enemy text before held artwork and returns captured record facts and transparent refs  1865ms
+   ✓ database job output validation > retries failed artwork without regenerating text or reallocating IDs  1095ms
+   ✓ database job output validation > retries canvas failure from the immutable raw image, not the provider  1256ms
+   ✓ database job output validation > retries snapshot postprocessing failure with the processed image and identical deterministic record  1959ms
+   ✓ database job output validation > reuses ledger responses after checkpoint persistence failure at database/text  1184ms
+   ✓ database job output validation > reuses ledger responses after checkpoint persistence failure at database/artwork  1105ms
+   ✓ database job output validation > reuses ledger responses after checkpoint persistence failure at database/artwork-processed  1147ms
+   ✓ database job output validation > reuses ledger responses after checkpoint persistence failure at database/completed  1948ms
+   ✓ database job output validation > text-only generation needs no DOM, returns a proposal, and uses existing ID collision semantics  1042ms
+   ✓ database job output validation > malformed text creates no checkpoint, artwork, or snapshot: {"name":"Potion","type":"not-real"}  309ms
+   ✓ database job output validation > rejects truncated text, malformed artwork and forbidden canon without completing generation  1089ms
+   ✓ database job output validation > uses the shared artwork helper's 512px sizing before recording the processed artifact  1238ms
+   ✓ database job output validation > does not return forged artwork bindings from a completed checkpoint  1134ms
+   ✓ database job output validation > retains artwork when the real enemy tool rejects an invalid reference, without publishing a generated snapshot  1186ms
+
+ Test Files  4 passed (4)
+      Tests  57 passed (57)
+   Start at  20:39:20
+   Duration  54.24s (transform 32.74s, setup 0ms, collect 68.74s, tests 31.22s, environment 325ms, prepare 1.54s)
