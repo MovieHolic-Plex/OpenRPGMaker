@@ -4,7 +4,7 @@ Next.js 16 companion site for sharing OpenRPGMaker assets and games. Lives in `c
 
 ## Data
 
-- Tables `public.openrpg_assets` / `public.openrpg_games` on the shared dbserver Supabase (`dbserver:8100` PostgREST; Postgres via supavisor `dbserver:5433`, user `postgres.your-tenant-id`).
+- Tables `public.openrpg_assets` / `public.openrpg_games` / `public.openrpg_game_releases` on the shared dbserver Supabase (`dbserver:8100` PostgREST; Postgres via supavisor `dbserver:5433`, user `postgres.your-tenant-id`). Never use that shared service for automated release QA; the release integration test creates a private disposable PostgreSQL cluster.
 - Migrations: `community-site/db/0001_openrpg_community.sql` (tables, read-only RLS for anon), `0002_lock_down_writes.sql` (writes revoked from anon/authenticated — only the site's server-side `pg` pool writes).
 - Seed: `npx tsx community-site/db/seed-community.mts` (from repo root) — the seed game package is produced by the editor's own `createBlankProject` + `createProjectPackage`.
 - The site never uses PostgREST for reads/writes; it connects server-side via `COMMUNITY_DATABASE_URL` (see `community-site/.env.local`).
@@ -12,10 +12,47 @@ Next.js 16 companion site for sharing OpenRPGMaker assets and games. Lives in `c
 ## Interop contract (do not break)
 
 - Asset download = editor `UploadedAsset` JSON `{id,name,kind,dataUrl,meta}` (`src/project/types/base.ts:324`); `?format=raw` serves the original file.
-- Game download = `.oprn` package (stored zip, MIME `application/vnd.openrpg.project+zip`). Editor exports `.oprn` and imports both `.oprn` and legacy `.rpgzzu` (`src/project/package.ts` RPGZZU_* / LEGACY_RPGZZU_* constants).
-- Game upload validation runs the editor's own `readProjectPackage` via `npx tsx community-site/scripts/validate-package.mts` as a subprocess (`community-site/lib/editorPackageCheck.ts`). Do not replace this with a hand-rolled mirror — the mirror drifted twice in review. The subprocess approach exists because importing `@/project/io` into Next drags the whole editor graph into Next's typecheck program.
-- The validator subprocess uses an `.oprn` temporary filename, an executable-plus-argument array with `shell:false`, and stable value-free boundary errors. Do not interpolate upload paths into a shell command or expose child stderr to clients.
-- Interop proof: `npx tsx community-site/scripts/validate-interop.mts` (from repo root, dev server on :3000) — opens the site's downloads with the editor's own reader.
+- Published game download = exact uploaded web release ZIP (`application/zip`), not an editor source package. The actual UploadForm accepts `.zip` and explains the distinction in English/Korean. New `.oprn` uploads are rejected; existing source records remain downloadable unchanged (`application/vnd.openrpg.project+zip`).
+- Release validation uses the shared `src/project/gameRelease.ts` contract and **operator-controlled** runtime manifests. It never calls the current editor's `deserialize`, `readProjectPackage`, normalization or migration code. Never promote an uploaded runtime manifest/hash to operator trust.
+- `scripts/validate-package.mts`, `lib/editorPackageCheck.ts` and `scripts/validate-interop.mts` describe the historical source-package path, not release ZIP publication. Keep subprocess invocation shell-free and errors value-free if those legacy tools are used for offline interop work.
+
+## Immutable publication and playback (2026-09-06)
+
+- Apply `db/0006_immutable_game_releases.sql` once after 0001-0005, using an operator-owned server database role. It adds exact `bytea` ZIP storage, JSONB manifests, SHA-256 checks, deferred bidirectional listing/release foreign keys, and UPDATE/DELETE/TRUNCATE protection. Games have either legacy `package_base64` or a `release_id`, never both. Payload identity/slug/association cannot change; title, tags, counters and moderation can.
+- `lib/releaseUpload.ts` owns the bounded JSON/base64 ingress; `lib/releaseArchive.ts` strictly preflights the complete editor stored-ZIP format, then invokes `verifyGameRelease`. Duplicate/case-colliding paths, traversal, local/central disagreement, CRC mismatch, symlink attributes, compression, extra files and untrusted executable bytes are rejected before persistence.
+- Trust root: `COMMUNITY_RUNTIME_ARCHIVE_ROOT`, default `../.runtime-archive` relative to the community process working directory. Each `<runtimeTarget>/runtime.json` must come from the operator's retained runtime build (`scripts/lib/runtimeArchive.ts`), never from an upload. The bounded reader uses the same `parseRuntimeManifest` contract and digest verification. Runtime manifests are limited to 8 MiB; run on Node.js 24 LTS.
+- Every anonymous upload creates a new listing in one PostgreSQL transaction (`lib/releaseStore.ts`). An upload's `publication.gameId`, title, slug-like fields or author text confer no ownership and cannot update another listing. Publishing a new version means a new listing; identical releases may also be listed independently.
+- `/play/<slug>/` redirects pinned listings to `/play/<slug>/releases/<releaseId>/player.html`. The qualified directory also redirects to that explicit entry, avoiding Next's slash stripping without changing the HTML. Every file request checks the visible listing's exact release association, including on cache hits. Missing files/wrong associations return 404; no `public/player-static`, `/assets`, `/generated` or current editor fallback is consulted.
+- The route serves the retained HTML, project, runtime and assets byte-for-byte. `nosniff`, MIME types and a release-directory-scoped CSP prevent uploaded passive files from becoming same-origin executable code and block mutable root asset URLs. The producer must emit relative release URLs. CSP uses the validated public Host authority, not Next's internal localhost URL; reverse proxies must preserve public Host/protocol. SVG responses are sandboxed.
+- `/api/games/<slug>/releases/<releaseId>/download` returns the exact ZIP. The old download URL redirects pinned records to this qualified URL; legacy source downloads remain source-only. Qualified bytes are publicly immutable-cacheable for one year. Moderation is checked at origin, but cannot revoke bytes already cached/downloaded; purge an external CDN when hiding content.
+- Legacy `/play/<slug>/` returns a localized 503 explaining that no retained compatibility runtime is available. GET never converts or normalizes a legacy row. `lib/playRoute.ts` remains a historical tested helper, but the shipping Next adapter uses `lib/releaseRoutes.ts` exclusively.
+- Limits: 96 MiB ZIP; 64 MiB individual file; 4096 entries; 1 MiB release manifest; JSON body capped at base64 ZIP size plus 4 MiB; 30-second body deadline; two concurrent uploads and two cold release loads. The LRU retains at most two ZIPs / 192 MiB, with entry views sharing the ZIP buffer. The existing IP rate limiter is single-instance abuse throttling, not ownership authorization.
+
+### Release QA and migration commands
+
+The supervisor supplies `COMMUNITY_DATABASE_URL` privately. Do not write it into source or evidence. After explicit coordination with that database owner:
+
+```bash
+psql "$COMMUNITY_DATABASE_URL" -v ON_ERROR_STOP=1 -f community-site/db/0006_immutable_game_releases.sql
+```
+
+Focused validation from the repository root:
+
+```bash
+npm test -- --run test/communityReleaseArchive.test.ts test/communityPlayRoute.test.ts
+cd community-site
+./node_modules/.bin/tsc --noEmit --incremental false
+# Compile the community app for the production-HTTP test; supply a private DB URL.
+./node_modules/.bin/next build --webpack
+cd ..
+npx tsx --test test/communityReleaseIntegration.test.mjs
+```
+
+The integration command requires PostgreSQL 16 binaries (`COMMUNITY_TEST_PG_BIN` may override `/usr/lib/postgresql/16/bin`) and installed Chrome. It starts its own socket-only cluster, applies 0001-0006, awaits PostgreSQL/Next readiness events (no sleeps), and exercises actual production UploadForm/Next routes with narrow fixtures. Screenshots at 375/768/1280px are written to the OS temporary directory as `community-release-upload-<width>.png`. No shared DB, authored game content or persistent QA URL is used.
+
+The normal integrated release gate remains root `npm run build:community`; a direct Next build is app compilation, not proof of that gate. A snapshot worktree without producer outputs fails `prebuild` with `built-manifest-invalid`; Turbopack also rejects a root `node_modules` symlink pointing outside its inferred filesystem root. The webpack command above supports that isolated-worktree QA without weakening either gate.
+
+Manual producer integration: retain the producer runtime under the operator trust root, export a web ZIP, publish through `/en/upload` or `/ko/upload`, open the listing and its qualified play URL, and compare the downloaded ZIP digest with the upload. Deploy a different current editor/runtime and repeat the old URL/download. Its project/runtime/assets must be unchanged. Also test another listing with the wrong release id and an existing legacy source record.
 
 ## Feature map (v2, 2026-07-21)
 
@@ -25,7 +62,9 @@ Next.js 16 companion site for sharing OpenRPGMaker assets and games. Lives in `c
 - Licenses required on upload (`lib/kinds.ts` LICENSES), shown as badges. Reports table is server-only (anon select revoked, 0005).
 - Migrations: 0001 base, 0002 write lockdown, 0003 board, 0004 license/likes/status/cover, 0005 report privacy. Apply via supavisor 5433.
 
-## In-browser play (v3, 2026-07-21)
+## Historical in-browser play (v3, 2026-07-21; superseded)
+
+The following records the old implementation and its fidelity repairs. It is not the current publication/playback contract; do not restore mutable fallback or normalization to release routes.
 
 - `/play/<slug>/` serves the editor's Vite player bundle from `community-site/public/player-static` with an injected `<base>` + fetch shim (Next strips the trailing slash; the shim rewrites the boot `project.json` fetch).
 - The play route is split into a thin Next adapter (`app/play/[slug]/[[...path]]/route.ts`) and injected pure boundary (`lib/playRoute.ts`). The boundary checks game visibility/existence, package readability, and the real editor project schema before returning a shell; framework route params are treated as already decoded, while every generated path component is encoded exactly once.
