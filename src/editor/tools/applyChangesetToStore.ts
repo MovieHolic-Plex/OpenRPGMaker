@@ -308,7 +308,7 @@ export async function applyProposedProject(
   resetManualProjectCommitBaseline(appliedProject);
   let wikiWarning: string | undefined;
   if (JSON.stringify(store.getProjectIdentity()) !== wikiProjectIdentity) {
-    return { ok: true, commit: commitRow, applied: appliedProject, commitProject, wikiWarning: "프로젝트가 바뀌어 이전 작업의 위키 진행 기록을 갱신하지 않았습니다." };
+    return { ok: true, commit: commitRow, applied: store.getCurrent(), commitProject, wikiWarning: "프로젝트가 바뀌어 이전 작업의 위키 진행 기록을 갱신하지 않았습니다." };
   }
   if (appliedProject.world?.entities.some((entity) => entity.wiki)) {
     try {

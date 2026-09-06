@@ -14,6 +14,7 @@ import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
 import * as activityLog from "@/ai/activityLog";
 import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
+import { emptyWikiResponse, isWikiExtraction } from "./wikiTransportFixture";
 
 let restoreDom: (() => void) | null = null;
 let storage: Map<string, string>;
@@ -90,7 +91,8 @@ function stubChat(tools: readonly string[], bodies: readonly string[]): { intent
   storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), agentMode: "chat" }));
   vi.stubGlobal("fetch", vi.fn(async (url: unknown, init?: RequestInit) => {
     if (!String(url).endsWith("/v1/chat/completions")) return new Response("{}");
-    const payload: { stream: boolean; response_format?: { type: string }; messages: { role: string }[] } = JSON.parse(String(init?.body));
+    const payload: { stream: boolean; response_format?: { type: string }; messages: { role: string; content?: unknown }[] } = JSON.parse(String(init?.body));
+    if (isWikiExtraction(payload.messages)) return emptyWikiResponse();
     if (payload.response_format?.type === "json_object") {
       requests.intent += 1;
       expect(payload.stream).toBe(false);

@@ -11,6 +11,7 @@ import { editorState } from "@/editor/editorState";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
+import { emptyWikiResponse, isWikiExtraction } from "./wikiTransportFixture";
 
 let restoreDom: (() => void) | null = null;
 
@@ -65,7 +66,8 @@ function stubTransport(fail: () => Promise<Response>): { intent: number; chat: n
   const requests = { intent: 0, chat: 0 };
   vi.stubGlobal("fetch", vi.fn(async (url: unknown, init?: RequestInit) => {
     if (!String(url).endsWith("/v1/chat/completions")) return new Response("{}");
-    const payload: { response_format?: { type: string } } = JSON.parse(String(init?.body));
+    const payload: { response_format?: { type: string }; messages?: { content?: unknown }[] } = JSON.parse(String(init?.body));
+    if (isWikiExtraction(payload.messages)) return emptyWikiResponse();
     if (payload.response_format?.type === "json_object") {
       requests.intent += 1;
       // A single-step request isolates chat transport recovery, not planner retries.
