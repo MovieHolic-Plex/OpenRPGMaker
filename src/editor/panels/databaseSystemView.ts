@@ -21,8 +21,9 @@ import {
   DEFAULT_GUARD_STAMINA_DRAIN_PER_SEC,
   DEFAULT_PLAYER_IFRAMES_MS,
   DEFAULT_SWING_COOLDOWN_MS,
+  normalizeActionCombatConfig,
 } from "@/project/actionCombat";
-import { MAX_TITLE_BACKGROUND_LAYERS, normalizeTimeSystemConfig, normalizeTypeChart } from "@/project/databaseRecordModel";
+import { MAX_TITLE_BACKGROUND_LAYERS, normalizeMonsterCare, normalizeTimeSystemConfig, normalizeTypeChart } from "@/project/databaseRecordModel";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import {
   DEFAULT_DAY_END_HOUR,
@@ -70,6 +71,8 @@ import {
 import type { PlayResolution, SystemRecords } from "@/project/types";
 
 type SystemRefresh = (kind?: "values" | "effects") => void;
+const titleStageRefreshers = new WeakMap<HTMLElement, (kind: "values" | "effects") => void>();
+const systemNumberBindings = new WeakMap<HTMLInputElement, () => void>();
 
 const START_PARTY_SLOTS = 4;
 
@@ -394,7 +397,7 @@ function systemSectionNodes(
           });
           return select;
         })()),
-        numberField("기본 참전 수 (0 = 자동)", "db-field-system-active-slots", project.system.activeSlots ?? 0, (value) => {
+        numberField("기본 참전 수 (0 = 자동)", "db-field-system-active-slots", () => store.getCurrent().system.activeSlots ?? 0, (value) => {
           updateSystem((draft) => {
             draft.system.activeSlots = optionalPositiveInteger(value);
           }, "system:active-slots");
@@ -522,7 +525,7 @@ function systemSectionNodes(
           class: "db-title-workbench",
           dataset: { testid: "db-title-workbench" },
           children: [
-            titleScreenWorkbenchPreview(project, titleScreen),
+            titleScreenWorkbenchPreview(titleScreen),
             el("div", {
               class: "db-title-workbench-fields",
               children: [
@@ -658,7 +661,7 @@ function playResolutionFieldset(project: Project, rerender: SystemRefresh): HTML
     const next = presetResolution(presetSelect.value as PlayResolutionPreset);
     if (!next) return;
     updateSystem((draft) => storePlayResolution(draft.system, next));
-    rerender();
+    rerender("values");
   });
 
   return rm2k3Fieldset("게임 화면 해상도", [
@@ -668,14 +671,14 @@ function playResolutionFieldset(project: Project, rerender: SystemRefresh): HTML
       dataset: { testid: "db-system-resolution-help" },
     }),
     field("빠른 선택", presetSelect),
-    numberField("가로 (px)", "db-field-system-resolution-width", resolution.width, (value) => {
+    numberField("가로 (px)", "db-field-system-resolution-width", () => resolvePlayResolution(store.getCurrent().system).width, (value) => {
       updateSystem((draft) => {
         const current = resolvePlayResolution(draft.system);
         storePlayResolution(draft.system, { width: value, height: current.height });
       }, "system:play-resolution:width");
       rerender("values");
     }, { min: PLAY_RESOLUTION_LIMITS.minWidth, max: PLAY_RESOLUTION_LIMITS.maxWidth, step: 1 }),
-    numberField("세로 (px)", "db-field-system-resolution-height", resolution.height, (value) => {
+    numberField("세로 (px)", "db-field-system-resolution-height", () => resolvePlayResolution(store.getCurrent().system).height, (value) => {
       updateSystem((draft) => {
         const current = resolvePlayResolution(draft.system);
         storePlayResolution(draft.system, { width: current.width, height: value });
@@ -831,30 +834,26 @@ function optInSystemFields(project: Project, rerender: SystemRefresh): readonly 
   // 몬스터 돌봄 number fields
   if (system.monsterCare) {
     care.push(
-      numberField("돌봄 걸음/tick", "db-field-system-monster-care-steps", system.monsterCare.stepsPerTick ?? 50, (value) => {
+      numberField("돌봄 걸음/tick", "db-field-system-monster-care-steps", () => store.getCurrent().system.monsterCare?.stepsPerTick ?? 50, (value) => {
         updateSystem((draft) => {
-          draft.system.monsterCare ??= { stepsPerTick: 50, walkFriendship: 1, walkExp: 1, dailyCareCap: 30 };
-          draft.system.monsterCare.stepsPerTick = value;
-        });
+          draft.system.monsterCare = normalizeMonsterCare({ ...draft.system.monsterCare, stepsPerTick: value });
+        }, "system:monster-care:stepsPerTick");
       }),
-      numberField("산책 호감도", "db-field-system-monster-care-walk-friendship", system.monsterCare.walkFriendship ?? 1, (value) => {
+      numberField("산책 호감도", "db-field-system-monster-care-walk-friendship", () => store.getCurrent().system.monsterCare?.walkFriendship ?? 1, (value) => {
         updateSystem((draft) => {
-          draft.system.monsterCare ??= { stepsPerTick: 50, walkFriendship: 1, walkExp: 1, dailyCareCap: 30 };
-          draft.system.monsterCare.walkFriendship = value;
-        });
-      }),
-      numberField("산책 경험치", "db-field-system-monster-care-walk-exp", system.monsterCare.walkExp ?? 1, (value) => {
+          draft.system.monsterCare = normalizeMonsterCare({ ...draft.system.monsterCare, walkFriendship: value });
+        }, "system:monster-care:walkFriendship");
+      }, { min: 0, max: 1000 }),
+      numberField("산책 경험치", "db-field-system-monster-care-walk-exp", () => store.getCurrent().system.monsterCare?.walkExp ?? 1, (value) => {
         updateSystem((draft) => {
-          draft.system.monsterCare ??= { stepsPerTick: 50, walkFriendship: 1, walkExp: 1, dailyCareCap: 30 };
-          draft.system.monsterCare.walkExp = value;
-        });
-      }),
-      numberField("일일 돌봄 상한", "db-field-system-monster-care-daily-cap", system.monsterCare.dailyCareCap ?? 30, (value) => {
+          draft.system.monsterCare = normalizeMonsterCare({ ...draft.system.monsterCare, walkExp: value });
+        }, "system:monster-care:walkExp");
+      }, { min: 0, max: 999999 }),
+      numberField("일일 돌봄 상한", "db-field-system-monster-care-daily-cap", () => store.getCurrent().system.monsterCare?.dailyCareCap ?? 30, (value) => {
         updateSystem((draft) => {
-          draft.system.monsterCare ??= { stepsPerTick: 50, walkFriendship: 1, walkExp: 1, dailyCareCap: 30 };
-          draft.system.monsterCare.dailyCareCap = value;
-        });
-      }),
+          draft.system.monsterCare = normalizeMonsterCare({ ...draft.system.monsterCare, dailyCareCap: value });
+        }, "system:monster-care:dailyCareCap");
+      }, { min: 0, max: 999999 }),
     );
   }
 
@@ -898,9 +897,9 @@ function actionCombatDetailFields(config: NonNullable<SystemRecords["actionComba
     value: number,
   ): void => {
     updateSystem((draft) => {
-      draft.system.actionCombat ??= { enabled: true };
-      if (value === fallback) delete draft.system.actionCombat[key];
-      else draft.system.actionCombat[key] = value;
+      const next = normalizeActionCombatConfig({ ...(draft.system.actionCombat ?? { enabled: true }), [key]: value })!;
+      if (next[key] === fallback) delete next[key];
+      draft.system.actionCombat = next;
     }, `system:action-combat-${key}`);
   };
   const patchHud = (mutate: (hud: ActionCombatHudConfig) => void): void => {
@@ -932,7 +931,7 @@ function actionCombatDetailFields(config: NonNullable<SystemRecords["actionComba
     { label: "가드 스태미나/초", testid: "db-field-system-action-combat-guard-drain", key: "guardStaminaDrainPerSec", fallback: DEFAULT_GUARD_STAMINA_DRAIN_PER_SEC, min: 0, max: 100 },
   ];
   const fields: HTMLElement[] = numeric.map((spec) =>
-    numberField(spec.label, spec.testid, config[spec.key] ?? spec.fallback, (value) => patchNumber(spec.key, spec.fallback, value), {
+    numberField(spec.label, spec.testid, () => store.getCurrent().system.actionCombat?.[spec.key] ?? spec.fallback, (value) => patchNumber(spec.key, spec.fallback, value), {
       min: spec.min,
       max: spec.max,
     }),
@@ -1033,7 +1032,7 @@ function timeSystemFieldset(
   ];
   if (enabled && timeSystem) {
     children.push(
-      numberField("분/초 배속", "db-field-system-time-minutes-per-second", timeSystem.minutesPerRealSecond ?? DEFAULT_TIME_MINUTES_PER_REAL_SECOND, (value) => {
+      numberField("분/초 배속", "db-field-system-time-minutes-per-second", () => store.getCurrent().system.timeSystem?.minutesPerRealSecond ?? DEFAULT_TIME_MINUTES_PER_REAL_SECOND, (value) => {
         updateSystem((draft) => {
           draft.system.timeSystem = normalizeTimeSystemConfig({
             ...draft.system.timeSystem,
@@ -1041,8 +1040,8 @@ function timeSystemFieldset(
             minutesPerRealSecond: Number.isFinite(value) && value > 0 ? value : DEFAULT_TIME_MINUTES_PER_REAL_SECOND,
           });
         }, "system:time:minutes-per-second");
-      }),
-      numberField("하루 시작 시", "db-field-system-time-day-start", timeSystem.dayStartHour ?? DEFAULT_DAY_START_HOUR, (value) => {
+      }, undefined, { fractional: true }),
+      numberField("하루 시작 시", "db-field-system-time-day-start", () => store.getCurrent().system.timeSystem?.dayStartHour ?? DEFAULT_DAY_START_HOUR, (value) => {
         updateSystem((draft) => {
           draft.system.timeSystem = normalizeTimeSystemConfig({
             ...draft.system.timeSystem,
@@ -1051,7 +1050,7 @@ function timeSystemFieldset(
           });
         }, "system:time:day-start");
       }, { min: 0, max: 23 }),
-      numberField("하루 종료 시", "db-field-system-time-day-end", timeSystem.dayEndHour ?? DEFAULT_DAY_END_HOUR, (value) => {
+      numberField("하루 종료 시", "db-field-system-time-day-end", () => store.getCurrent().system.timeSystem?.dayEndHour ?? DEFAULT_DAY_END_HOUR, (value) => {
         updateSystem((draft) => {
           draft.system.timeSystem = normalizeTimeSystemConfig({
             ...draft.system.timeSystem,
@@ -1060,7 +1059,7 @@ function timeSystemFieldset(
           });
         }, "system:time:day-end");
       }, endHourBounds),
-      numberField("계절당 일수", "db-field-system-time-days-per-season", timeSystem.daysPerSeason ?? DEFAULT_DAYS_PER_SEASON, (value) => {
+      numberField("계절당 일수", "db-field-system-time-days-per-season", () => store.getCurrent().system.timeSystem?.daysPerSeason ?? DEFAULT_DAYS_PER_SEASON, (value) => {
         updateSystem((draft) => {
           draft.system.timeSystem = normalizeTimeSystemConfig({
             ...draft.system.timeSystem,
@@ -1097,17 +1096,7 @@ function timeSystemFieldset(
   const refreshClock = (): void => {
     const config = store.getCurrent().system.timeSystem;
     endHourBounds.min = (config?.dayStartHour ?? DEFAULT_DAY_START_HOUR) + 1;
-    for (const [id, value, min, max] of [
-      ["db-field-system-time-day-start", config?.dayStartHour ?? DEFAULT_DAY_START_HOUR, 0, 23],
-      ["db-field-system-time-day-end", config?.dayEndHour ?? DEFAULT_DAY_END_HOUR, endHourBounds.min, endHourBounds.max],
-    ] as const) {
-      const input = root.querySelector<HTMLInputElement>(`[data-testid="${id}"]`);
-      if (!input) continue; // Disabled time has no clock controls.
-      input.min = String(min);
-      input.value = String(value);
-      root.querySelector<HTMLButtonElement>(`[data-testid="${id}-dec"]`)!.disabled = value <= min;
-      root.querySelector<HTMLButtonElement>(`[data-testid="${id}-inc"]`)!.disabled = value >= max;
-    }
+    synchronizeSystemNumbers(root);
     refreshTimeSummary(root);
   };
   root.addEventListener("input", refreshClock);
@@ -1499,13 +1488,13 @@ function titleScreenDisplayFieldset(
         },
         rerender,
       }),
-      numberField("로고 X", "db-field-title-screen-logo-x", titleScreen.titleGraphic?.x ?? titleScreen.layout.titleX, (value) => {
+      numberField("로고 X", "db-field-title-screen-logo-x", () => { const title = store.getCurrent().system.titleScreen!; return title.titleGraphic?.x ?? title.layout.titleX; }, (value) => {
         updateTitleScreen((settings) => {
           patchTitleGraphic(settings, { x: clampStageCoordinate(value, 320) });
         }, "system:title-screen:logo-x");
         rerender("values");
       }, { min: 0, max: 320 }),
-      numberField("로고 Y", "db-field-title-screen-logo-y", titleScreen.titleGraphic?.y ?? titleScreen.layout.titleY, (value) => {
+      numberField("로고 Y", "db-field-title-screen-logo-y", () => { const title = store.getCurrent().system.titleScreen!; return title.titleGraphic?.y ?? title.layout.titleY; }, (value) => {
         updateTitleScreen((settings) => {
           patchTitleGraphic(settings, { y: clampStageCoordinate(value, 240) });
         }, "system:title-screen:logo-y");
@@ -1535,25 +1524,25 @@ function titleScreenDisplayFieldset(
       text: systemTitleResourceId ? `기본 배경 연결: ${systemResourceName("title", systemTitleResourceId)}` : "기본 배경 연결 없음",
       dataset: { testid: "db-title-workbench-system-title-id" },
     }),
-    numberField("타이틀 X", "db-field-title-screen-title-x", titleScreen.layout.titleX, (value) => {
+    numberField("타이틀 X", "db-field-title-screen-title-x", () => store.getCurrent().system.titleScreen!.layout.titleX, (value) => {
       updateTitleScreen((settings) => {
         settings.layout.titleX = clampStageCoordinate(value, 320);
       }, "system:title-screen:title-x");
       rerender("values");
     }, { min: 0, max: 320 }),
-    numberField("타이틀 Y", "db-field-title-screen-title-y", titleScreen.layout.titleY, (value) => {
+    numberField("타이틀 Y", "db-field-title-screen-title-y", () => store.getCurrent().system.titleScreen!.layout.titleY, (value) => {
       updateTitleScreen((settings) => {
         settings.layout.titleY = clampStageCoordinate(value, 240);
       }, "system:title-screen:title-y");
       rerender("values");
     }, { min: 0, max: 240 }),
-    numberField("선택지 X", "db-field-title-screen-menu-x", titleScreen.layout.menuX, (value) => {
+    numberField("선택지 X", "db-field-title-screen-menu-x", () => store.getCurrent().system.titleScreen!.layout.menuX, (value) => {
       updateTitleScreen((settings) => {
         settings.layout.menuX = clampStageCoordinate(value, 320);
       }, "system:title-screen:menu-x");
       rerender("values");
     }, { min: 0, max: 320 }),
-    numberField("선택지 Y", "db-field-title-screen-menu-y", titleScreen.layout.menuY, (value) => {
+    numberField("선택지 Y", "db-field-title-screen-menu-y", () => store.getCurrent().system.titleScreen!.layout.menuY, (value) => {
       updateTitleScreen((settings) => {
         settings.layout.menuY = clampStageCoordinate(value, 240);
       }, "system:title-screen:menu-y");
@@ -1879,18 +1868,18 @@ function titleScreenEffectsFieldset(titleScreen: TitleScreenSettings, rerender: 
         rerender();
       },
     ),
-    numberField("등장 지연(ms)", "db-field-title-screen-intro-delay", titleScreen.intro?.delayMs ?? 0, (value) => {
+    numberField("등장 지연(ms)", "db-field-title-screen-intro-delay", () => store.getCurrent().system.titleScreen!.intro?.delayMs ?? 0, (value) => {
       updateTitleScreen((settings) => {
         patchTitleIntro(settings, { delayMs: value });
       }, "system:title-screen:intro-delay");
       rerender("effects");
-    }),
-    numberField("메뉴 시차(ms)", "db-field-title-screen-intro-stagger", titleScreen.intro?.staggerMs ?? 90, (value) => {
+    }, { min: 0, max: 10000 }),
+    numberField("메뉴 시차(ms)", "db-field-title-screen-intro-stagger", () => store.getCurrent().system.titleScreen!.intro?.staggerMs ?? 90, (value) => {
       updateTitleScreen((settings) => {
         patchTitleIntro(settings, { staggerMs: value });
       }, "system:title-screen:intro-stagger");
       rerender("effects");
-    }),
+    }, { min: 0, max: 2000 }),
   ];
 
   return el("fieldset", {
@@ -1927,24 +1916,24 @@ function titleLayerRow(layer: TitleBackgroundLayer, index: number, rerender: Sys
         },
         rerender,
       }),
-      numberField("스크롤X(px/s)", `db-field-title-screen-layer-${index}-scroll-x`, layer.scrollXPerSec ?? 0, (value) => {
+      numberField("스크롤X(px/s)", `db-field-title-screen-layer-${index}-scroll-x`, () => store.getCurrent().system.titleScreen!.backgroundLayers![index]!.scrollXPerSec ?? 0, (value) => {
         updateTitleScreen((settings) => {
           patchTitleLayer(settings, index, { scrollXPerSec: value });
         }, `system:title-screen:layer-${index}-scroll-x`);
         rerender("effects");
-      }),
-      numberField("스크롤Y(px/s)", `db-field-title-screen-layer-${index}-scroll-y`, layer.scrollYPerSec ?? 0, (value) => {
+      }, { min: -480, max: 480 }, { fractional: true }),
+      numberField("스크롤Y(px/s)", `db-field-title-screen-layer-${index}-scroll-y`, () => store.getCurrent().system.titleScreen!.backgroundLayers![index]!.scrollYPerSec ?? 0, (value) => {
         updateTitleScreen((settings) => {
           patchTitleLayer(settings, index, { scrollYPerSec: value });
         }, `system:title-screen:layer-${index}-scroll-y`);
         rerender("effects");
-      }),
-      numberField("불투명도(%)", `db-field-title-screen-layer-${index}-opacity`, Math.round((layer.opacity ?? 1) * 100), (value) => {
+      }, { min: -480, max: 480 }, { fractional: true }),
+      numberField("불투명도(%)", `db-field-title-screen-layer-${index}-opacity`, () => (store.getCurrent().system.titleScreen!.backgroundLayers![index]!.opacity ?? 1) * 100, (value) => {
         updateTitleScreen((settings) => {
           patchTitleLayer(settings, index, { opacityPercent: value });
         }, `system:title-screen:layer-${index}-opacity`);
         rerender("effects");
-      }),
+      }, { min: 0, max: 100 }, { fractional: true }),
       el("button", {
         class: "btn small",
         text: "삭제",
@@ -2063,13 +2052,11 @@ function densitySliderField(
 }
 
 function titleScreenWorkbenchPreview(
-  project: Project,
   titleScreen: TitleScreenSettings,
 ): HTMLElement {
   // Every replay reads one current store snapshot. Text-only edits do not rebuild
   // this workbench, so the render-time project/settings must not drive the stage.
-  const buildStage = (): HTMLElement => {
-    const project = store.getCurrent();
+  const buildStage = (project: Project): HTMLElement => {
     const titleScreen = project.system.titleScreen ?? defaultTitleScreenSettings();
     const backgroundResourceId = titleScreen.backgroundResourceId ?? project.system.titleResourceId;
     const introLogoClass = titleIntroClass("logo", titleScreen.intro);
@@ -2179,7 +2166,17 @@ function titleScreenWorkbenchPreview(
     return stage;
   };
 
-  let stage = buildStage();
+  let stage = buildStage(store.getCurrent());
+  const refreshStage = (kind: "values" | "effects"): void => {
+    const current = store.getCurrent();
+    if (kind === "values") {
+      refreshTitleStageValues(stage, current);
+      return;
+    }
+    const next = buildStage(current);
+    stage.replaceWith(next);
+    stage = next;
+  };
   const replay = el("button", {
     class: "btn small",
     text: "연출 다시 재생",
@@ -2187,9 +2184,7 @@ function titleScreenWorkbenchPreview(
     dataset: { testid: "db-title-fx-replay" },
     on: {
       click: () => {
-        const next = buildStage();
-        stage.replaceWith(next);
-        stage = next;
+        refreshStage("effects");
       },
     },
   });
@@ -2202,8 +2197,9 @@ function titleScreenWorkbenchPreview(
     dataset: { testid: "db-title-bgm-play" },
     on: {
       click: () => {
-        if (!musicId) return;
-        playAudioCommand({ resourceId: musicId, loop: true }, project);
+        const current = store.getCurrent();
+        const resourceId = current.system.titleScreen?.musicResourceId;
+        if (resourceId) playAudioCommand({ resourceId, loop: true }, current);
       },
     },
   });
@@ -2218,7 +2214,7 @@ function titleScreenWorkbenchPreview(
       },
     },
   });
-  return el("div", {
+  const preview = el("div", {
     class: "db-title-workbench-preview",
     dataset: { testid: "db-title-workbench-preview" },
     children: [
@@ -2240,6 +2236,8 @@ function titleScreenWorkbenchPreview(
       }),
     ],
   });
+  titleStageRefreshers.set(preview, refreshStage);
+  return preview;
 }
 
 
@@ -2296,32 +2294,67 @@ function resourcePickerControl(options: Parameters<typeof baseResourcePickerCont
   return control;
 }
 
-/** Commit native numeric typing on change; steppers keep the shared input path. */
-function numberField(...args: Parameters<typeof baseNumberField>): HTMLElement {
-  const row = baseNumberField(...args);
-  const input = row.querySelector<HTMLInputElement>('input[type="number"]');
-  input?.addEventListener("input", (event) => {
+/** Canonical domain readers keep every committed number and stepper in sync. */
+function numberField(
+  label: string,
+  testid: string,
+  readValue: () => number,
+  onInput: (value: number) => void,
+  bounds?: Parameters<typeof baseNumberField>[4],
+  options?: Parameters<typeof baseNumberField>[5] & { readonly fractional?: boolean },
+): HTMLElement {
+  const row = baseNumberField(label, testid, readValue(), (value) => {
+    onInput(value);
+    synchronize();
+  }, bounds, options);
+  const input = row.querySelector<HTMLInputElement>("input")!;
+  const decrement = row.querySelector<HTMLButtonElement>(".db-number-stepper-dec")!;
+  const increment = row.querySelector<HTMLButtonElement>(".db-number-stepper-inc")!;
+  const synchronize = (): void => {
+    const committed = readValue();
+    input.value = String(committed);
+    if (bounds) {
+      input.min = String(bounds.min);
+      input.max = String(bounds.max);
+    }
+    decrement.disabled = options?.disabled === true || (bounds !== undefined && committed <= bounds.min);
+    increment.disabled = options?.disabled === true || (bounds !== undefined && committed >= bounds.max);
+  };
+  if (options?.fractional) input.step = "any";
+  systemNumberBindings.set(input, synchronize);
+  input.addEventListener("input", (event) => {
+    // Native digits remain untouched until change. Shared steppers dispatch an
+    // ordinary input Event and commit immediately through the same binding.
     if (typeof InputEvent !== "undefined" && event instanceof InputEvent) event.stopImmediatePropagation();
   }, true);
   return row;
 }
 
-/** Refresh only read-only output while typing, never replace the active input. */
-function refreshSystemDerived(form: HTMLElement, kind: "values" | "effects"): void {
-  const project = store.getCurrent();
+function synchronizeSystemNumbers(root: HTMLElement): void {
+  for (const input of root.querySelectorAll<HTMLInputElement>("input")) {
+    systemNumberBindings.get(input)?.();
+  }
+}
+
+/** Values and Replay share the live stage; transport controls never reparent. */
+function refreshTitleStageValues(stage: HTMLElement, project: Project): void {
+  const resolution = resolvePlayResolution(project.system);
+  const analysis = analyzePlayResolution(resolution, project.maps);
+  stage.dataset.playResolution = `${resolution.width}x${resolution.height}`;
+  stage.style.aspectRatio = `${analysis.aspectWidth} / ${analysis.aspectHeight}`;
   const title = project.system.titleScreen ?? defaultTitleScreenSettings();
-  const text = form.querySelector<HTMLElement>('[data-testid="db-title-workbench-title-text"]');
+  const text = stage.querySelector<HTMLElement>('[data-testid="db-title-workbench-title-text"]');
   if (text) {
     text.textContent = title.title || "(제목 없음)";
     text.style.left = `${title.layout.titleX / 320 * 100}%`;
     text.style.top = `${title.layout.titleY / 240 * 100}%`;
   }
-  const logo = form.querySelector<HTMLElement>('[data-testid="db-title-workbench-logo"]');
+  const logo = stage.querySelector<HTMLElement>('[data-testid="db-title-workbench-logo"]');
   if (logo && title.titleGraphic) {
     logo.style.left = `${title.titleGraphic.x / 320 * 100}%`;
     logo.style.top = `${title.titleGraphic.y / 240 * 100}%`;
   }
-  const menu = form.querySelector<HTMLElement>('[data-testid="db-title-workbench-menu-preview"]');
+  const menu = stage.querySelector<HTMLElement>('[data-testid="db-title-workbench-menu-preview"]');
   if (menu) {
     menu.style.left = `${title.layout.menuX / 320 * 100}%`;
     menu.style.top = `${title.layout.menuY / 240 * 100}%`;
@@ -2330,14 +2363,16 @@ function refreshSystemDerived(form: HTMLElement, kind: "values" | "effects"): vo
       if (item) item.textContent = option.label;
     }
   }
+}
+
+function refreshSystemDerived(form: HTMLElement, kind: "values" | "effects"): void {
+  const project = store.getCurrent();
+  synchronizeSystemNumbers(form);
+  const preview = form.querySelector<HTMLElement>('[data-testid="db-title-workbench-preview"]');
+  if (preview) titleStageRefreshers.get(preview)!(kind);
   const diagnostics = form.querySelector<HTMLElement>('[data-testid="db-system-resolution-diagnostics"]');
   diagnostics?.replaceWith(playResolutionDiagnostics(project, resolvePlayResolution(project.system)));
   const preset = form.querySelector<HTMLSelectElement>('[data-testid="db-field-system-resolution-preset"]');
   if (preset) preset.value = playResolutionPreset(resolvePlayResolution(project.system));
   refreshTimeSummary(form);
-  if (kind === "effects") {
-    form.querySelector('[data-testid="db-title-workbench-preview"]')?.replaceWith(
-      titleScreenWorkbenchPreview(project, title),
-    );
-  }
 }

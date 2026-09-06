@@ -55,12 +55,23 @@ notes below. The shared Database header/rail/footer/save path is unchanged.
   them. Coordinates remain legacy 320×240 proportions at any authored resolution.
   Nonstructural typing updates preview output without replacing the focused field;
   native numeric typing commits on change while shared steppers commit immediately.
+- Each System numeric binding supplies a canonical-value reader. After a commit,
+  the same input and its steppers reflect domain normalization and default
+  omission; intermediate native digits remain untouched. Action/care fields reuse
+  their existing project normalizers rather than inventing editor-only bounds.
+- Title value refresh updates the live stage's ratio and proportional positions.
+  Effect refresh and Replay share a stage controller that replaces only the
+  stage, never Play/Stop/Replay controls. Replacing the whole preview during blur
+  would swallow the pending pointer click. Do not infer refresh kind from the
+  transient `document.activeElement`, which can be BODY during native change.
 - CSS ownership is consolidated in `system-studio.css`. Only conflicting System
   declarations were removed from older sheets; outer modal/global controls and
   runtime preview styling remain shared. Responsive rows use available pane width.
 - Regression coverage: `databaseSystemModern`, `databaseSystemSections`,
   `databaseSystemView`, `databaseSystemStudio`, related font/resolution/title tests,
-  and `test/e2e/system-studio-visual.spec.ts`. Evidence lives under
+  and `test/e2e/system-studio-visual.spec.ts`,
+  `system-interaction-regressions.spec.ts`, `system-round2-regressions.spec.ts`.
+  Evidence lives under
   `.omo/evidence/system-modern/`; frozen BEFORE is never overwritten. Firefox
   supplies real geometry/interactions/screenshots; no pixel visual approval or
   Lighthouse score is inferred on this host. Final gates and review are supervisor-owned.
