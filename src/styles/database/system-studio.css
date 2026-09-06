@@ -60,7 +60,11 @@
   color: var(--db-studio-accent);
   border-color: var(--db-studio-accent-border);
   background: var(--db-studio-accent-soft);
-  font-weight: 600;
+  border-left-width: 3px;
+  border-left-color: var(--db-studio-accent);
+  font: 600 13px/1.5 var(--font-ui);
+  padding: 6px 10px;
+  white-space: nowrap;
 }
 .database-modal-backdrop .database-modal-window .db-system-form .db-system-sections {
   display: block;
@@ -276,7 +280,8 @@
 .database-modal-backdrop .database-modal-window .db-system-form .db-system-studio-panel-header { display: grid; gap: 8px; margin: 12px 0; }
 .database-modal-backdrop .database-modal-window .db-system-form .db-system-studio-panel-header h3 { margin: 0; font-size: 13px; }
 .database-modal-backdrop .database-modal-window .db-system-form :is(.db-system-studio-table-head, .db-system-studio-table-row) { display: grid; grid-template-columns: minmax(0, 1.4fr) 56px 52px minmax(0, 1fr); gap: 8px; padding: 8px 0; font-size: 12px; overflow-wrap: anywhere; border-bottom: 1px solid var(--db-studio-border-subtle); }
-.database-modal-backdrop .database-modal-window .db-system-form .db-system-studio-table-row b { font-weight: 500; }
+.database-modal-backdrop .database-modal-window .db-system-form .db-system-studio-table-row b { font-weight: 500; padding: 2px 6px; border-radius: 4px; }
+.database-modal-backdrop .database-modal-window .db-system-form .db-system-studio-table-row b.is-variable { background: var(--db-studio-accent-soft); color: var(--db-studio-accent); }
 .database-modal-backdrop .database-modal-window .db-system-form .db-system-studio-no-results { padding: 24px; display: grid; gap: 12px; justify-items: start; }
 /* Party / fonts / assets use the same property-row rhythm. */
 .database-modal-backdrop .database-modal-window .db-system-form .db-system-party-roster { display: grid; gap: 0; }
