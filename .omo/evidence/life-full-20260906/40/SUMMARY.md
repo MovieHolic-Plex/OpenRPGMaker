@@ -120,3 +120,22 @@ outside the repository and are removed before handoff. No remote DB writes,
 external network messages, push/PR/merge, history rewriting, root state edits,
 or integration-tree edits occurred. Browser routes reject non-local origins.
 Only the six owned implementation/test files and own40 evidence are committed.
+
+## Supervisor lossless packaging
+
+During serial integration, `git diff --check b7f68fe2 HEAD` returned 2 solely
+for original whitespace in `GREEN.log`, `RED.log`, and `build.log`. Their exact
+UTF-8 bytes are now retained as entries in `raw-log-archive.json`, using the
+same format as the phase-level archive. The paths above identify the original
+outputs inside that archive; no result, warning, error, or trailing byte was
+edited. Each entry carries the original repository path, byte length and SHA256.
+
+To print an original output, parse `raw-log-archive.json`, select its entry by
+`path`, then decode `content` from Base64. For example in Node.js:
+
+```js
+const fs = require('node:fs');
+const archive = JSON.parse(fs.readFileSync('.omo/evidence/life-full-20260906/40/raw-log-archive.json', 'utf8'));
+const entry = archive.entries.find(entry => entry.path.endsWith('/RED.log'));
+process.stdout.write(Buffer.from(entry.content, 'base64'));
+```
