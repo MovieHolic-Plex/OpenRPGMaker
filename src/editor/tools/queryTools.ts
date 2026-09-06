@@ -429,6 +429,7 @@ const listResources: ToolDefinition = {
       tileset: project.tilesets[DEFAULT_TILESET_ID],
       charsetLabels: project.charsetLabels,
       audioProject: project,
+      monsterProject: project,
     });
     const matches = all.slice(offset, offset + limit).map(match =>
       match.description === undefined

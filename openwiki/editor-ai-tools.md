@@ -1,5 +1,58 @@
 # Editor AI Tools & Vocabulary
 
+## Monster resource discovery and AI appearance evidence (2026-09-07)
+
+`list_monster_resources({})` returns the entire current monster index, without a default
+20/50-entry cap. Optional `query`, exact `ids`, `include: "index" | "full"`, `offset`
+and `limit` allow filtered/paged reads. The response contains `resources`, `include`,
+`total`, `returned`, `nextOffset`, `complete` and `unknownIds`. `complete` means the
+response covers the entire filtered result (offset zero and no next page); it does
+not claim that unknown requested IDs exist. Index entries omit description; full
+entries preserve the entire effective description. `get_monster_resource({resourceId})`
+returns `{resource}` with the exact current full entry or fails, never a substitute.
+All entries come from `assets/monsterResourceCatalog`, including project metadata
+overrides. Metadata-only stored keys do not register resources; explicit non-monster
+uploads cannot masquerade as monsters through prefixes or profiles.
+
+The three appearance writers (`upsert_enemy`, `define_monster_species`,
+`make_action_enemy`) accept root-level, tool-only `appearanceTags`. For a new/changed
+visible AI selection, use a raw exact monster ID, read its full current metadata,
+then declare 1-32 desired visible identity tags (each 1-64 characters). Every declared
+tag must match an effective resource tag after NFKC/case/outer-whitespace
+normalization. Tags are whole values, not fuzzy queries, substrings or enemy names.
+At least one matched tag must also contain a letter-bearing identity word outside
+`GENERIC_APPEARANCE_WORDS` in `ai/monsterAppearanceEvidence.ts`. This bounded exclusion
+set covers common creature/class labels (monster/enemy/creature/beast/animal/humanoid/
+undead/boss/minion and Korean counterparts), basic English/Korean colors, broad
+size/appearance words and asset-origin words. Whitespace/hyphen/underscore-separated
+combinations of these words do not evade the rule; numbers alone do not count.
+Specific user-authored tags remain legal: there is no closed species-name catalog.
+An arbitrary boss display name with goblin art is valid; declared goblin identity
+with slime art is not. The envelope is never persisted in enemy/species records.
+Existing unchanged art/stat edits and intentional transparency remain valid.
+Non-AI explicit-art/rename and reliable legacy identity-query behavior are preserved.
+
+`ToolReadEvidence` enforces this independently of the generic read-before-write
+contract. The session registers current-request read call IDs, then consumes only
+full successful results actually present in the post-compaction model request.
+Index pages, missing/failed results, unreturned IDs, stale metadata, historical user
+requests and same-batch unobserved reads cannot authorize a new selection. Budget
+compaction cannot turn an executed-but-undelivered full read into permission.
+`monsterAppearanceSession` tests the actual model-facing serialized catalog, not
+only the read tool; `monsterAppearanceTransport` tests budget loss explicitly.
+
+**Limits of this check:** tags are the assistant's declared visible identity, not
+machine vision and not proof of the user's intent. Generic/shared tags may match
+many resources. The finite generic-word policy rejects known generic-only declarations,
+not every synonym, compound or invented vague phrase; a nonexcluded tag is not a
+semantic proof. Incorrect or adversarially edited metadata may be internally
+consistent but visually wrong. The guard cannot prove that a model honestly chose
+tags from the user request rather than retrofitting them to an arbitrary resource.
+Names, tags and descriptions (including prompt-like text) are untrusted reference
+data, never instructions or a permission to change the user's request. Human/vision
+review of actual artwork is separate; reviewed status is owned by the catalog lane,
+not inferred by these tools. Provider image delivery is a separate transport gate.
+
 ## Audio description tools and event candidates
 
 Audio identity is `{ kind: "music" | "sound", resourceId: rawId }`. Search-result prefixes
