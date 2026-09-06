@@ -12,6 +12,7 @@ declare global {
   interface Window {
     __oprnEditCamera?: () => Camera;
     conversationScrollEnded: Promise<boolean>;
+    cancelConversationScroll: () => void;
     conversationNavigationEvent?: KeyboardEvent;
   }
 }
@@ -31,13 +32,16 @@ async function measure(page: Page) {
 async function armScroll(target: Locator) {
   await target.evaluate(node => {
     window.conversationScrollEnded = new Promise(resolve => {
-      const timer = setTimeout(() => { node.removeEventListener("scrollend", done); resolve(false); }, 5_000);
-      function done(event: Event) {
-        if (event.target !== node) return;
+      const timer = setTimeout(() => finish(false), 5_000);
+      function finish(ended: boolean) {
         clearTimeout(timer);
         node.removeEventListener("scrollend", done);
-        resolve(true);
+        resolve(ended);
       }
+      function done(event: Event) {
+        if (event.target === node) finish(true);
+      }
+      window.cancelConversationScroll = () => finish(false);
       node.addEventListener("scrollend", done);
     });
   });
@@ -60,7 +64,8 @@ async function navigate(page: Page, target: Locator, key: string, direction: "up
   else expect(after.top).toBeLessThan(before.top);
 }
 
-test("focused conversation and descendants own native navigation, not the map camera", async ({ page }) => {
+for (const owner of ["region", "descendant"] as const) {
+test(`conversation navigation hands ${owner} focus directly back to the clicked map`, async ({ page }) => {
   test.setTimeout(120_000);
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -137,23 +142,32 @@ test("focused conversation and descendants own native navigation, not the map ca
   await navigate(page, descendant, "ArrowDown", "down");
   await test.info().attach("conversation-navigation", { body: await page.screenshot(), contentType: "image/png" });
 
-  // Negative control through the same native event path: a mounted conversation
-  // must not disable map navigation after focus returns to the canvas.
+  // No composer detour: clicking the real canvas must release either the log
+  // itself or its focused action, even though Phaser's canvas is not focusable.
+  const focused = owner === "region" ? log : descendant;
+  await focused.evaluate(node => node.focus({ preventScroll: true }));
+  await expect(focused).toBeFocused();
   const canvas = page.getByTestId("edit-canvas").locator("canvas");
-  // Phaser's canvas is not tab-focusable. Its existing pointer handoff releases
-  // text-entry focus, so exercise the normal composer -> map transition.
-  await page.getByTestId("ai-input").click();
   const width = await canvas.evaluate(node => node.clientWidth);
   await canvas.click({ position: { x: width - 20, y: 20 } });
-  expect(await log.evaluate(node => node.contains(document.activeElement))).toBe(false);
+  const conversationStillFocused = await log.evaluate(node => node.contains(document.activeElement));
   const beforeCanvas = await measure(page);
+  // On regression the key scrolls the log; await that exact completion before
+  // measuring. On success it is prevented by map panning, so cancel the wait.
+  await armScroll(log);
   await page.keyboard.press("ArrowDown");
+  await page.evaluate(() => {
+    if (window.conversationNavigationEvent?.defaultPrevented) window.cancelConversationScroll();
+    return window.conversationScrollEnded;
+  });
   const afterCanvas = await measure(page);
   await test.info().attach("canvas-negative-control", {
-    body: JSON.stringify({ beforeCanvas, afterCanvas }, null, 2), contentType: "application/json",
+    body: JSON.stringify({ owner, conversationStillFocused, beforeCanvas, afterCanvas }, null, 2), contentType: "application/json",
   });
   expect(afterCanvas.camera?.scrollY).toBe((beforeCanvas.camera?.scrollY ?? NaN) + 96);
   expect(afterCanvas.camera?.scrollX).toBe(beforeCanvas.camera?.scrollX);
   expect(afterCanvas.top).toBe(beforeCanvas.top);
   expect(afterCanvas.prevented).toBe(true);
+  expect(conversationStillFocused).toBe(false);
 });
+}

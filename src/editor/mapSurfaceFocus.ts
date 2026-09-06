@@ -9,11 +9,11 @@
 
 import { isTextEditingElement } from "@/editor/hotkeys";
 
-/** 텍스트 필드가 포커스를 잡고 있으면 반납시킨다. 반납했으면 true. */
+/** 텍스트 필드나 탐색 키 소유 영역(자식 포함)의 포커스를 반납한다. 반납했으면 true. */
 export function releaseTextEntryFocus(): boolean {
   if (typeof document === "undefined") return false;
   const active = document.activeElement;
-  if (!isTextEditingElement(active)) return false;
+  if (!isTextEditingElement(active) && !active?.closest('[data-editor-navigation-owner="true"]')) return false;
   (active as HTMLElement).blur?.();
   return true;
 }

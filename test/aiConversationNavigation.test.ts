@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { historyHotkeyOwnedByPanel, isTextEditingFocus, shouldIgnoreEditorShortcut } from "@/editor/hotkeys";
+import { bindMapSurfaceFocusHandoff } from "@/editor/mapSurfaceFocus";
 
 const navigationKeys = ["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight", "PageDown", "PageUp", "Home", "End", " "];
 
@@ -61,6 +62,42 @@ describe("conversation navigation ownership", () => {
     }
     conversation.dataset.editorNavigationOwner = "false";
     expect(shouldIgnoreEditorShortcut(keyAt(conversation, "ArrowDown"))).toBe(false);
+  });
+
+  it.each(["region", "descendant"])("hands %s focus directly to a clicked canvas without synthetic history keys", (owner) => {
+    const button = document.createElement("button");
+    conversation.append(button);
+    const focused = owner === "region" ? conversation : button;
+    const host = document.createElement("div");
+    const canvas = document.createElement("canvas");
+    host.append(canvas);
+    document.body.append(host);
+    bindMapSurfaceFocusHandoff(host);
+    focused.focus();
+    expect(document.activeElement).toBe(focused);
+    const keyboardEvent = vi.fn();
+    document.addEventListener("keydown", keyboardEvent);
+    document.addEventListener("keyup", keyboardEvent);
+    try {
+      canvas.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
+      expect(keyboardEvent).not.toHaveBeenCalled();
+      expect(document.activeElement).toBe(document.body);
+      expect(shouldIgnoreEditorShortcut(keyAt(document.body, "ArrowDown"))).toBe(false);
+      expect(historyHotkeyOwnedByPanel()).toBe(false);
+    } finally {
+      document.removeEventListener("keydown", keyboardEvent);
+      document.removeEventListener("keyup", keyboardEvent);
+    }
+  });
+
+  it("keeps unrelated button focus when the map is clicked", () => {
+    const button = document.createElement("button");
+    const host = document.createElement("div");
+    document.body.append(button, host);
+    bindMapSurfaceFocusHandoff(host);
+    button.focus();
+    host.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
+    expect(document.activeElement).toBe(button);
   });
 
   it.each(["input", "textarea", "select"])("preserves %s shortcut and native text-history guards", (tag) => {
