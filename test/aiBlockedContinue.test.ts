@@ -32,7 +32,7 @@ function setup() {
   const f = fixture();
   const log = document.createElement("div");
   const noop = () => {};
-  const sendText = vi.fn(async (_text: string) => {});
+  const sendText = vi.fn<AiRunSurface["sendText"]>(async () => {});
   const surface: AiRunSurface = {
     panel: document.createElement("div"), log, sendButton: document.createElement("button"),
     controller: { session: f.session, auditHistory: [], statusTimeline: [] },
@@ -67,7 +67,7 @@ it("offers the real Continue control when required work blocks without a budget 
   const button = f.log.querySelector<HTMLButtonElement>("[data-testid=ai-continue-run]");
   expect(button).not.toBeNull();
   button?.click();
-  expect(f.sendText).toHaveBeenCalledExactlyOnceWith("계속");
+  expect(f.sendText).toHaveBeenCalledExactlyOnceWith("계속", undefined, { userResume: true });
 });
 
 it("keeps one Continue control when a question follows blocked work", async () => {
