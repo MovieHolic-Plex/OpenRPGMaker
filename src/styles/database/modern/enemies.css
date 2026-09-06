@@ -57,40 +57,15 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench .db-field > span {
-  color: var(--db-studio-text-2, var(--db-studio-text-2));
-  font: 500 12px/1.4 var(--font-ui);
-  letter-spacing: 0;
   min-width: 0;
   /* v2(2026-09-03): 라벨은 말줄임하지 않는다 — 「이동 간격(…」 이 실측된 자리다. 어절로 줄바꿈. */
   overflow: visible;
   text-overflow: clip;
-  text-transform: none;
   white-space: normal;
   word-break: keep-all;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench :is(input:not([type="radio"]), select) {
-  background-color: var(--db-studio-surface, var(--db-studio-surface));
-  border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.14));
-  border-radius: 6px;
-  color: var(--db-studio-text-1, var(--db-studio-text-1));
-  font: 400 13px/18px var(--font-ui);
-  min-height: 30px;
-  min-width: 0;
-  padding: 4px 8px;
-  width: 100%;
-}
-
 /* chevron 밴드(오른쪽 7~17px) 확보 — 위 단축이 8px 로 덮어 글자가 화살표를 침범한다. */
-.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench select {
-  padding-right: 24px;
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench :is(input:not([type="radio"]), select):focus-visible {
-  border-color: var(--db-studio-accent, var(--db-studio-accent));
-  outline: 2px solid var(--db-studio-accent-soft, rgba(74, 87, 214, 0.28));
-  outline-offset: 0;
-}
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench input[type="checkbox"] {
   accent-color: var(--db-studio-accent, var(--db-studio-accent));
@@ -609,26 +584,8 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-inspector-tabs {
-  border-bottom: 1px solid var(--db-studio-border-default);
-  display: grid;
   flex: 0 0 auto;
-  grid-template-columns: repeat(4, 1fr);
   padding: 0 12px;
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-inspector-tabs button {
-  background: transparent;
-  border: 0;
-  border-bottom: 2px solid transparent;
-  color: var(--db-studio-text-2);
-  cursor: pointer;
-  font: 500 13px/1.4 var(--font-ui);
-  min-height: 38px;
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-inspector-tabs button[aria-selected="true"] {
-  border-bottom-color: var(--db-studio-accent);
-  color: var(--db-studio-accent);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-inspector-body {

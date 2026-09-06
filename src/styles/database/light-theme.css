@@ -348,13 +348,6 @@
   margin: 0;
 }
 
-.database-modal-backdrop .database-modal-window .db-item-inspector-name .db-field > span {
-  color: var(--db-light-text-2);
-  font-size: 11px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
 .database-modal-backdrop .database-modal-window .db-item-inspector-name .db-field input[type="text"] {
   background: var(--db-light-bg-raised);
   border: 1px solid var(--db-light-border-default);
@@ -509,13 +502,6 @@
   margin: 0;
 }
 
-.database-modal-backdrop .database-modal-window .db-equipment-inspector-name .db-field > span {
-  color: var(--db-light-text-2);
-  font-size: 11px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
 .database-modal-backdrop .database-modal-window .db-equipment-inspector-name .db-field input[type="text"] {
   background: var(--db-light-bg-raised);
   border: 1px solid var(--db-light-border-default);
@@ -550,7 +536,7 @@
   border: 1px solid var(--db-light-accent-border);
   border-radius: 999px;
   color: var(--db-light-accent);
-  font: 600 12px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 600 12px/1.2 var(--font-ui);
   padding: 4px 10px;
   white-space: nowrap;
 }

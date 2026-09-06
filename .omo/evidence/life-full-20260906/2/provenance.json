@@ -1,0 +1,11 @@
+{
+  "base": "87de73785d1c309bbbe975636414f70bbc73a4b9",
+  "baseTree": "1b248f0fd4411ab953a2a61ade9470f5d4fcf9eb",
+  "phase1ReaderPath": "src/player/saveSlots.ts",
+  "fixture": "test/fixtures/life-full/saveSlots.phase1.ts",
+  "gitBlob": "d47f58197b24f781635cde0a2152a5bde0c3f689",
+  "sha256": "cad009384fac8632f23c9538ad0863acc4d806872e97223eb25a905a00c76703",
+  "byteIdenticalToBase": true,
+  "productionDiff": "19\t14\tsrc/player/saveSlots.ts",
+  "sourceFileSha256": "bda26622ecb16ff273710c3bdad5b1d0e9c46d4b49e38eaa737845fc7676b438"
+}

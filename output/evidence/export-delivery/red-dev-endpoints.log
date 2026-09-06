@@ -1,0 +1,184 @@
+[rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] QWENCLOUD_API_KEY 가 없어 /api/qwen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] CPENROUTER_API_KEY 가 없어 /api/cpen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+{"url":"/export-player/sdk-manifest.json","status":200,"type":"text/html","bytes":690,"prefix":"<!doctype html>\n<html lang=\"ko\">\n  <head>\n    <script type=\"module\" sr"}
+{"url":"/standalone-player/standalone.js","status":200,"type":"text/html","bytes":690,"prefix":"<!doctype html>\n<html lang=\"ko\">\n  <head>\n    <script type=\"module\" sr"}
+{"url":"/standalone-player/standalone.css","status":200,"type":"text/html","bytes":690,"prefix":"<!doctype html>\n<html lang=\"ko\">\n  <head>\n    <script type=\"module\" sr"}
+▶ normal dev delivers current, verifiable player bundles on a cold export
+  ✖ /export-player/sdk-manifest.json (54.9596ms)
+  ✖ /standalone-player/standalone.js (12.415808ms)
+  ✖ /standalone-player/standalone.css (1.09031ms)
+Error:   Failed to scan for dependencies from entries:
+  /home/main/.herdr/worktrees/rpg-zzu/worktree-silver-stone-6077-export-delivery-6077/index.html
+/home/main/.herdr/worktrees/rpg-zzu/worktree-silver-stone-6077-export-delivery-6077/benchmark.html
+
+  [31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mThe server is being restarted or closed. Request is outdated[0m [1m[35m[plugin vite:dep-scan][0m
+
+    ../../../../z-project/rpg-zzu/node_modules/esbuild/lib/main.js:1217:27:
+[37m      1217 │         let result = await [32m[37mcallback({
+           ╵                            [32m^[0m
+
+    at throwClosedServerError (file:///home/main/z-project/rpg-zzu/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:42185:15)
+    at EnvironmentPluginContainer.resolveId (file:///home/main/z-project/rpg-zzu/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:42364:9)
+    at resolveId (file:///home/main/z-project/rpg-zzu/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14314:40)
+    at resolve (file:///home/main/z-project/rpg-zzu/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14325:28)
+    at file:///home/main/z-project/rpg-zzu/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14534:34
+    at requestCallbacks.on-resolve (/home/main/z-project/rpg-zzu/node_modules/esbuild/lib/main.js:1217:28)
+    at handleRequest (/home/main/z-project/rpg-zzu/node_modules/esbuild/lib/main.js:628:17)
+    at handleIncomingPacket (/home/main/z-project/rpg-zzu/node_modules/esbuild/lib/main.js:653:7)
+    at Socket.readFromStdout (/home/main/z-project/rpg-zzu/node_modules/esbuild/lib/main.js:581:7)
+    at Socket.emit (node:events:508:28)
+
+  This error came from the "onResolve" callback registered here:
+
+    ../../../../z-project/rpg-zzu/node_modules/esbuild/lib/main.js:1141:20:
+[37m      1141 │       let promise = [32m[37msetup({
+           ╵                     [32m^[0m
+
+    at setup (file:///home/main/z-project/rpg-zzu/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14529:13)
+    at handlePlugins (/home/main/z-project/rpg-zzu/node_modules/esbuild/lib/main.js:1141:21)
+    at buildOrContextImpl (/home/main/z-project/rpg-zzu/node_modules/esbuild/lib/main.js:854:5)
+    at Object.buildOrContext (/home/main/z-project/rpg-zzu/node_modules/esbuild/lib/main.js:680:5)
+    at /home/main/z-project/rpg-zzu/node_modules/esbuild/lib/main.js:2035:68
+    at new Promise (<anonymous>)
+    at Object.context (/home/main/z-project/rpg-zzu/node_modules/esbuild/lib/main.js:2035:27)
+    at Object.context (/home/main/z-project/rpg-zzu/node_modules/esbuild/lib/main.js:1877:58)
+    at prepareEsbuildScanner (file:///home/main/z-project/rpg-zzu/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14266:24)
+
+  The plugin "vite:dep-scan" was triggered by this import
+
+    html:/home/main/.herdr/worktrees/rpg-zzu/worktree-silver-stone-6077-export-delivery-6077/index.html:1:7:
+[37m      1 │ import [32m"/src/main.ts"[37m
+        ╵        [32m~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mThe server is being restarted or closed. Request is outdated[0m [1m[35m[plugin vite:dep-scan][0m
+
+    ../../../../z-project/rpg-zzu/node_modules/esbuild/lib/main.js:1217:27:
+[37m      1217 │         let result = await [32m[37mcallback({
+           ╵                            [32m^[0m
+
+    at throwClosedServerError (file:///home/main/z-project/rpg-zzu/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:42185:15)
+    at EnvironmentPluginContainer.resolveId (file:///home/main/z-project/rpg-zzu/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:42364:9)
+    at resolveId (file:///home/main/z-project/rpg-zzu/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14314:40)
+    at resolve (file:///home/main/z-project/rpg-zzu/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14325:28)
+    at file:///home/main/z-project/rpg-zzu/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14534:34
+    at requestCallbacks.on-resolve (/home/main/z-project/rpg-zzu/node_modules/esbuild/lib/main.js:1217:28)
+    at handleRequest (/home/main/z-project/rpg-zzu/node_modules/esbuild/lib/main.js:628:17)
+    at handleIncomingPacket (/home/main/z-project/rpg-zzu/node_modules/esbuild/lib/main.js:653:7)
+    at Socket.readFromStdout (/home/main/z-project/rpg-zzu/node_modules/esbuild/lib/main.js:581:7)
+    at Socket.emit (node:events:508:28)
+
+  This error came from the "onResolve" callback registered here:
+
+    ../../../../z-project/rpg-zzu/node_modules/esbuild/lib/main.js:1141:20:
+[37m      1141 │       let promise = [32m[37msetup({
+           ╵                     [32m^[0m
+
+    at setup (file:///home/main/z-project/rpg-zzu/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14529:13)
+    at handlePlugins (/home/main/z-project/rpg-zzu/node_modules/esbuild/lib/main.js:1141:21)
+    at buildOrContextImpl (/home/main/z-project/rpg-zzu/node_modules/esbuild/lib/main.js:854:5)
+    at Object.buildOrContext (/home/main/z-project/rpg-zzu/node_modules/esbuild/lib/main.js:680:5)
+    at /home/main/z-project/rpg-zzu/node_modules/esbuild/lib/main.js:2035:68
+    at new Promise (<anonymous>)
+    at Object.context (/home/main/z-project/rpg-zzu/node_modules/esbuild/lib/main.js:2035:27)
+    at Object.context (/home/main/z-project/rpg-zzu/node_modules/esbuild/lib/main.js:1877:58)
+    at prepareEsbuildScanner (file:///home/main/z-project/rpg-zzu/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14266:24)
+
+  The plugin "vite:dep-scan" was triggered by this import
+
+    html:/home/main/.herdr/worktrees/rpg-zzu/worktree-silver-stone-6077-export-delivery-6077/benchmark.html:1:7:
+[37m      1 │ import [32m"/src/benchmark/ui/main.ts"[37m
+        ╵        [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+    at failureErrorWithLog (/home/main/z-project/rpg-zzu/node_modules/esbuild/lib/main.js:1467:15)
+    at /home/main/z-project/rpg-zzu/node_modules/esbuild/lib/main.js:926:25
+    at runOnEndCallbacks (/home/main/z-project/rpg-zzu/node_modules/esbuild/lib/main.js:1307:45)
+    at buildResponseToResult (/home/main/z-project/rpg-zzu/node_modules/esbuild/lib/main.js:924:7)
+    at /home/main/z-project/rpg-zzu/node_modules/esbuild/lib/main.js:936:9
+    at new Promise (<anonymous>)
+    at requestCallbacks.on-end (/home/main/z-project/rpg-zzu/node_modules/esbuild/lib/main.js:935:54)
+    at handleRequest (/home/main/z-project/rpg-zzu/node_modules/esbuild/lib/main.js:628:17)
+    at handleIncomingPacket (/home/main/z-project/rpg-zzu/node_modules/esbuild/lib/main.js:653:7)
+    at Socket.readFromStdout (/home/main/z-project/rpg-zzu/node_modules/esbuild/lib/main.js:581:7)
+✖ normal dev delivers current, verifiable player bundles on a cold export (2534.148732ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 0
+ℹ fail 4
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3317.913368
+
+✖ failing tests:
+
+test at test/devPlayerDelivery.test.mjs:31:13
+✖ /export-player/sdk-manifest.json (54.9596ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+    assert.ok(response.headers.get("content-type")?.includes(mime))
+
+      at TestContext.<anonymous> (file:///home/main/.herdr/worktrees/rpg-zzu/worktree-silver-stone-6077-export-delivery-6077/test/devPlayerDelivery.test.mjs:33:14)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.start (node:internal/test_runner/test:1003:17)
+      at TestContext.test (node:internal/test_runner/test:378:20)
+      at TestContext.<anonymous> (file:///home/main/.herdr/worktrees/rpg-zzu/worktree-silver-stone-6077-export-delivery-6077/test/devPlayerDelivery.test.mjs:31:13)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at test/devPlayerDelivery.test.mjs:31:13
+✖ /standalone-player/standalone.js (12.415808ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+    assert.ok(response.headers.get("content-type")?.includes(mime))
+
+      at TestContext.<anonymous> (file:///home/main/.herdr/worktrees/rpg-zzu/worktree-silver-stone-6077-export-delivery-6077/test/devPlayerDelivery.test.mjs:33:14)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.start (node:internal/test_runner/test:1003:17)
+      at TestContext.test (node:internal/test_runner/test:378:20)
+      at TestContext.<anonymous> (file:///home/main/.herdr/worktrees/rpg-zzu/worktree-silver-stone-6077-export-delivery-6077/test/devPlayerDelivery.test.mjs:31:13)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at test/devPlayerDelivery.test.mjs:31:13
+✖ /standalone-player/standalone.css (1.09031ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+    assert.ok(response.headers.get("content-type")?.includes(mime))
+
+      at TestContext.<anonymous> (file:///home/main/.herdr/worktrees/rpg-zzu/worktree-silver-stone-6077-export-delivery-6077/test/devPlayerDelivery.test.mjs:33:14)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.start (node:internal/test_runner/test:1003:17)
+      at TestContext.test (node:internal/test_runner/test:378:20)
+      at TestContext.<anonymous> (file:///home/main/.herdr/worktrees/rpg-zzu/worktree-silver-stone-6077-export-delivery-6077/test/devPlayerDelivery.test.mjs:31:13)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

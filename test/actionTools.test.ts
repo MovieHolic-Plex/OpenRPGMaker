@@ -35,6 +35,7 @@ describe("action combat AI tools", () => {
     const created = runTool(context, "make_action_enemy", {
       enemyId: "enemy_test_charger",
       name: "돌진 슬라임",
+      monsterResourceId: "generated-enemy-slime-01",
       stats: { maxHp: 40, attack: 12 },
       actionProfile: { contactDamage: 3, attack: { kind: "dash", windupMs: 400, recoverMs: 600, damage: 6, range: 4 } },
     });

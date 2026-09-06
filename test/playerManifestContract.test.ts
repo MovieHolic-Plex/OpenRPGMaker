@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
+import { BATTLER_IDLE_ANIMATIONS } from "@/assets/battlerIdleAnimations";
 import { readStoredZipEntry, readStoredZipEntryNames } from "@/project/packageZip";
 import {
   WEB_PLAYER_MANIFEST,
@@ -354,6 +355,11 @@ describe("player deployment manifest", () => {
     ])].sort((left, right) => left.localeCompare(right));
 
     expect(readStoredZipEntryNames(zipBytes)).toEqual(expectedPaths);
+    for (const idle of BATTLER_IDLE_ANIMATIONS.filter((entry) => entry.resourceId.endsWith("-back"))) {
+      for (const path of [idle.path.replace("/idle/", "/"), idle.path]) {
+        expect(readStoredZipEntry(zipBytes, path), path).toEqual(await fixture.fetchBytes(`/${path}`));
+      }
+    }
     for (const [filePath, bytes] of fixture.artifactBytes) {
       expect(await digestZipEntry(zipBytes, filePath)).toBe(await sha256HexBytes(bytes));
     }

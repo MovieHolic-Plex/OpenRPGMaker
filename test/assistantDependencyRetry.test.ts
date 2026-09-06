@@ -101,10 +101,10 @@ describe("batch prerequisites through AssistantSession", () => {
   });
 
   it.each([false, true])("failed record creation defers only ID dependents, then creation/read/correction succeeds (read contract=%s)", async (references) => {
-    const enemy = call("upsert_enemy", { enemy: { id: "enemy_dependency", name: "Dependency" } });
+    const enemy = call("upsert_enemy", { enemy: { id: "enemy_dependency", name: "Dependency", monsterResourceId: "generated-enemy-slime-01" } });
     const troop = call("upsert_troop", { troop: { id: "troop_dependency", name: "Dependency troop", enemyIds: ["enemy_dependency"] } });
     const { session, events, collect } = setup([
-      [call("upsert_enemy", { enemy: { id: "enemy_dependency", name: "Dependency", invalidField: true } }), troop, title(1), call("get_project_summary"), enemy, troop],
+      [call("upsert_enemy", { enemy: { id: "enemy_dependency", name: "Dependency", monsterResourceId: "generated-enemy-slime-01", invalidField: true } }), troop, title(1), call("get_project_summary"), enemy, troop],
       [call("get_database_records", { collection: "enemies", ids: ["enemy_dependency"] })],
       [troop],
     ], { references });
@@ -151,8 +151,8 @@ describe("stable target retry budgets through AssistantSession", () => {
   });
 
   it("does not charge downstream same-batch refusals against their independent retry target", async () => {
-    const failedEnemy = call("upsert_enemy", { enemy: { id: "enemy_budget", name: "Budget", invalidField: true } });
-    const enemy = call("upsert_enemy", { enemy: { id: "enemy_budget", name: "Budget" } });
+    const failedEnemy = call("upsert_enemy", { enemy: { id: "enemy_budget", name: "Budget", monsterResourceId: "generated-enemy-slime-01", invalidField: true } });
+    const enemy = call("upsert_enemy", { enemy: { id: "enemy_budget", name: "Budget", monsterResourceId: "generated-enemy-slime-01" } });
     const troop = call("upsert_troop", { troop: { id: "troop_budget", name: "Budget troop", enemyIds: ["enemy_budget"] } });
     const { session, events, collect } = setup([
       ...Array.from({ length: 3 }, () => [failedEnemy, troop, troop, troop, troop]),

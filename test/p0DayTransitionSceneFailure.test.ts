@@ -4,7 +4,7 @@ import { startSession } from "@/project/session";
 import { store } from "@/project/store";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 
-const fade = vi.hoisted(() => vi.fn(async () => undefined));
+const fade = vi.hoisted(() => vi.fn<typeof import("@/player/playSceneMapCommands")["fadeCamera"]>(async () => undefined));
 vi.mock("@/player/playSceneMapCommands", () => ({
   fadeCamera: fade,
   TRANSFER_FADE_DURATION_MS: 120,
@@ -24,7 +24,8 @@ function failingRuntime() {
   project.system.shipping = { enabled: true };
   const session = startSession(project, 401);
   session.gameTime = { year: 1, season: "spring", day: 1, hour: 25, minute: 50 };
-  session.shippingQueue = { item_deleted: 1 };
+  // Unknown items now recover successfully; malformed ownership must still block the scene.
+  session.shippingQueue = { item_deleted: -1 };
   return { project, session };
 }
 
@@ -88,7 +89,7 @@ describe("P0 day-transition scene failure handling", () => {
       expect(hook).not.toHaveBeenCalled();
       expect(refreshRuntimeSurfaces).not.toHaveBeenCalled();
       expect(syncRuntimeState).not.toHaveBeenCalled();
-      expect(overlays.at(-1)).toContain("shipping");
+      expect(overlays.at(-1)).toContain("recovery");
       expect(scene.timeSleepInProgress).toBe(false);
     } finally {
       store.replaceProject(previous);
@@ -150,8 +151,22 @@ describe("P0 day-transition scene failure handling", () => {
       const { scene, overlays } = sceneStub(session);
       scene.sleepUntilMorning = vi.fn(async () => false);
 
-      updateGameTime(scene, 1_000);
-      await vi.waitFor(() => expect(overlays.at(-1)).toContain("forced-sleep"));
+      let timeout: ReturnType<typeof setTimeout> | undefined;
+      const failed = new Promise<void>((resolve, reject) => {
+        const show = scene.showRuntimeOverlay;
+        scene.showRuntimeOverlay = (id, text) => {
+          show.call(scene, id, text);
+          if (text.includes("forced-sleep")) resolve();
+        };
+        timeout = setTimeout(() => reject(new Error("missing forced-sleep result")), 1_000);
+      });
+      try {
+        updateGameTime(scene, 1_000);
+        await failed;
+        expect(overlays.at(-1)).toContain("forced-sleep");
+      } finally {
+        clearTimeout(timeout);
+      }
     } finally {
       store.replaceProject(previous);
     }

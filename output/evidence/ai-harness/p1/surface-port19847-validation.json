@@ -1,0 +1,82 @@
+{
+  "pass": true,
+  "checkedAt": "2026-09-06T10:47:01.937Z",
+  "harnessCommit": "8a59f1e7651944f388dfc99e3c609bac9b9ba558",
+  "editorProjectId": "qa-ai-surface-9e93524e-f047-4733-850d-4edcd348f0e9",
+  "remoteProjectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+  "exactEditorExit": 0,
+  "exactRemoteExit": 0,
+  "mutationSubjectExit": 1,
+  "mutationKilled": "false-verified-after-real-content-mismatch",
+  "editorCleanup": {
+    "absentBeforeRun": true,
+    "pageListenersAndTimersClosed": true,
+    "browserClosed": true,
+    "serverClosed": true,
+    "cacheRemoved": true,
+    "portReleased": true,
+    "remote": {
+      "projectId": "qa-ai-surface-9e93524e-f047-4733-850d-4edcd348f0e9",
+      "kind": "deleted-and-absence-verified",
+      "commitIds": [
+        "80e6fd99-2a77-49a5-933c-e97f594cb4c6",
+        "70b28ff9-a885-4729-9ee4-d5444fa6695d",
+        "b37fd9c9-49cb-451c-b0c9-22b975520da9"
+      ]
+    },
+    "remoteDeletedAndAbsent": true,
+    "reusedListener": false,
+    "activeRoutes": 0
+  },
+  "remoteCleanup": {
+    "localTimersCleared": true,
+    "deferredSettled": true,
+    "ownership": {
+      "absentBeforeRun": true,
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "ownerTitle": "QA persistence proof 87289b68-3b25-422e-b493-5641626bb3f9",
+      "observed": {
+        "project_id": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+        "title": "QA persistence proof 87289b68-3b25-422e-b493-5641626bb3f9"
+      }
+    },
+    "remote": {
+      "kind": "deleted-and-absence-verified",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "commitIds": [
+        "d959e008-3de6-4645-afdb-5058fe9eb39c"
+      ]
+    },
+    "viteClosed": true,
+    "listenerStarted": false,
+    "globalsRestored": true,
+    "activeTransports": 0,
+    "pendingProofs": 0
+  },
+  "sourceHashes": {
+    "src/ai/assistantSession.ts": "da3d8e8b00a5cc6a58862de06044b1d8ea6c1bd2ed31a6d36ab5c5f9d9ceb937",
+    "src/project/store.ts": "7823f05b36f84ef5e2cf4532b6b3e11331228a650c7973117ce6c7f35f5c9645",
+    "scripts/qa/ai-harness-contracts.mjs": "f16661fec79f339d0d2324710e3791475913de3e0c354cdc86d0f0526abcb663"
+  },
+  "upstreamArtifactsPreserved": 44,
+  "textArtifactsSecretScanned": 81,
+  "configuredSecretValuesFound": 0,
+  "relatedTests": {
+    "exit": 1,
+    "passed": 89,
+    "preExistingFailures": 6
+  },
+  "typecheckExit": 0,
+  "buildExit": 0,
+  "lsp": "No diagnostics for four affected QA files",
+  "screenshots": {
+    "captured": 6,
+    "visualReview": false,
+    "reason": "Image tool reported model cannot view images"
+  },
+  "evidenceWhitespaceCheck": {
+    "exit": 2,
+    "onlyRawLogWhitespace": true,
+    "artifact": "surface-diff-check.log"
+  }
+}

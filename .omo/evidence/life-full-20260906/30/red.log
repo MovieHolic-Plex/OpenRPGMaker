@@ -1,0 +1,191 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeRecoveryRecordKeys.test.ts --maxWorkers=2 --minWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2-life-full-record-keys
+
+ ❯ test/lifeRecoveryRecordKeys.test.ts (21 tests | 8 failed) 1032ms
+   × life recovery own record keys > keeps the exact raw JSON __proto__ quantity owned at parse 14ms
+     → expected false to be true // Object.is equality
+   ✓ life recovery own record keys > retains compatible ordinary contributions without inventing claims 133ms
+   × life recovery own record keys > retains compatible __proto__ contributions without inventing claims 76ms
+     → expected [ [ '__proto__', {} ] ] to deeply equal [ [ '__proto__', { __proto__: 5 } ] ]
+   ✓ life recovery own record keys > retains compatible constructor contributions without inventing claims 62ms
+   ✓ life recovery own record keys > retains compatible toString contributions without inventing claims 55ms
+   ✓ life recovery own record keys > splits ordinary into progress2 and claim3 and pays exactly once 70ms
+   × life recovery own record keys > splits __proto__ into progress2 and claim3 and pays exactly once 41ms
+     → expected [ [ '__proto__', {} ] ] to deeply equal [ [ '__proto__', { __proto__: 2 } ] ]
+   × life recovery own record keys > splits constructor into progress2 and claim3 and pays exactly once 48ms
+     → expected false to be true // Object.is equality
+   × life recovery own record keys > splits toString into progress2 and claim3 and pays exactly once 35ms
+     → expected false to be true // Object.is equality
+   ✓ life recovery own record keys > preserves complete unknown ordinary source evidence with no guessed payout 40ms
+   × life recovery own record keys > preserves complete unknown __proto__ source evidence with no guessed payout 37ms
+     → expected [ '__proto__' ] to deeply equal []
+   ✓ life recovery own record keys > preserves complete unknown constructor source evidence with no guessed payout 46ms
+   ✓ life recovery own record keys > preserves complete unknown toString source evidence with no guessed payout 48ms
+   ✓ life recovery own record keys > preserves existing ordinary inventory when collecting a direct shipping claim 43ms
+   × life recovery own record keys > preserves existing __proto__ inventory when collecting a direct shipping claim 39ms
+     → expected [] to deep equally contain [ '__proto__', 4 ]
+   ✓ life recovery own record keys > preserves existing constructor inventory when collecting a direct shipping claim 39ms
+   ✓ life recovery own record keys > preserves existing toString inventory when collecting a direct shipping claim 40ms
+   ✓ life recovery own record keys > retains ordinary source and claim quantities on capacity and malformed rollback 42ms
+   × life recovery own record keys > retains __proto__ source and claim quantities on capacity and malformed rollback 39ms
+     → expected [Function] to throw an error
+   ✓ life recovery own record keys > retains constructor source and claim quantities on capacity and malformed rollback 44ms
+   ✓ life recovery own record keys > retains toString source and claim quantities on capacity and malformed rollback 40ms
+
+ Test Files  1 failed (1)
+      Tests  8 failed | 13 passed (21)
+   Start at  12:39:55
+   Duration  5.33s (transform 2.69s, setup 0ms, collect 3.94s, tests 1.03s, environment 0ms, prepare 76ms)
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/lifeRecoveryRecordKeys.test.ts > life recovery own record keys > keeps the exact raw JSON __proto__ quantity owned at parse
+AssertionError: expected false to be true // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+ ❯ test/lifeRecoveryRecordKeys.test.ts:46:82
+     44|     const input = JSON.parse(text);
+     45|     const parsed = parseLifeState(input);
+     46|     expect(Object.hasOwn(parsed.bundleContributions?.bundle ?? {}, "__…
+       |                                                                                  ^
+     47|     expect(parsed.bundleContributions?.bundle?.["__proto__"]).toBe(1);
+     48|     expect(JSON.stringify(input)).toBe(text);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  test/lifeRecoveryRecordKeys.test.ts > life recovery own record keys > retains compatible __proto__ contributions without inventing claims
+AssertionError: expected [ [ '__proto__', {} ] ] to deeply equal [ [ '__proto__', { __proto__: 5 } ] ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    [[22m
+[2m      "__proto__",[22m
+[32m-     {[39m
+[32m-       "__proto__": 5,[39m
+[32m-     },[39m
+[31m+     {},[39m
+[2m    ],[22m
+[2m  ][22m
+
+ ❯ test/lifeRecoveryRecordKeys.test.ts:56:64
+     54|     const { project, session } = fixture(id, true, 5);
+     55|     const restored = roundtrip(project, session);
+     56|     expect(Object.entries(restored.bundleContributions ?? {})).toEqual…
+       |                                                                ^
+     57|     expect(restored.lifeRecovery).toBeUndefined();
+     58|     expect(roundtrip(project, restored).bundleContributions).toEqual(r…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  test/lifeRecoveryRecordKeys.test.ts > life recovery own record keys > splits __proto__ into progress2 and claim3 and pays exactly once
+AssertionError: expected [ [ '__proto__', {} ] ] to deeply equal [ [ '__proto__', { __proto__: 2 } ] ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    [[22m
+[2m      "__proto__",[22m
+[32m-     {[39m
+[32m-       "__proto__": 2,[39m
+[32m-     },[39m
+[31m+     {},[39m
+[2m    ],[22m
+[2m  ][22m
+
+ ❯ test/lifeRecoveryRecordKeys.test.ts:64:64
+     62|     const { project, session } = fixture(id);
+     63|     const restored = roundtrip(project, session);
+     64|     expect(Object.entries(restored.bundleContributions ?? {})).toEqual…
+       |                                                                ^
+     65|     expect(Object.values(restored.lifeRecovery?.claims ?? {})).toMatch…
+     66|       { sourceId: id, items: [{ itemId: id, count: 3 }] },
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  test/lifeRecoveryRecordKeys.test.ts > life recovery own record keys > splits constructor into progress2 and claim3 and pays exactly once
+ FAIL  test/lifeRecoveryRecordKeys.test.ts > life recovery own record keys > splits toString into progress2 and claim3 and pays exactly once
+AssertionError: expected false to be true // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+ ❯ test/lifeRecoveryRecordKeys.test.ts:72:71
+     70|     const again = roundtrip(project, roundtrip(project, restored));
+     71|     expect(again.lifeRecovery).toEqual(restored.lifeRecovery);
+     72|     expect(collectLifeRecoveryClaim(project, again, "recovery:1").ok).…
+       |                                                                       ^
+     73|     expect(Object.entries(again.inventory)).toContainEqual([id, 3]);
+     74|     expect(collectLifeRecoveryClaim(project, again, "recovery:1")).toE…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  test/lifeRecoveryRecordKeys.test.ts > life recovery own record keys > preserves complete unknown __proto__ source evidence with no guessed payout
+AssertionError: expected [ '__proto__' ] to deeply equal []
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   "__proto__",[39m
+[31m+ ][39m
+
+ ❯ test/lifeRecoveryRecordKeys.test.ts:85:61
+     83|     const original = session.bundleContributions?.[id];
+     84|     const restored = roundtrip(project, session);
+     85|     expect(Object.keys(restored.bundleContributions ?? {})).toEqual([]…
+       |                                                             ^
+     86|     const claims = Object.values(restored.lifeRecovery?.claims ?? {});
+     87|     expect(claims).toHaveLength(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  test/lifeRecoveryRecordKeys.test.ts > life recovery own record keys > preserves existing __proto__ inventory when collecting a direct shipping claim
+AssertionError: expected [] to deep equally contain [ '__proto__', 4 ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [[39m
+[32m-   "__proto__",[39m
+[32m-   4,[39m
+[32m- ][39m
+[31m+ [][39m
+
+ ❯ test/lifeRecoveryRecordKeys.test.ts:105:47
+    103|     expect(moveLifeRecoverySource(project, session, { sourceKind: "shi…
+    104|     expect(collectLifeRecoveryClaim(project, session, "recovery:1").ok…
+    105|     expect(Object.entries(session.inventory)).toContainEqual([id, 4]);
+       |                                               ^
+    106|     expect(Object.entries(roundtrip(project, session).inventory)).toCo…
+    107|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  test/lifeRecoveryRecordKeys.test.ts > life recovery own record keys > retains __proto__ source and claim quantities on capacity and malformed rollback
+AssertionError: expected [Function] to throw an error
+ ❯ test/lifeRecoveryRecordKeys.test.ts:113:56
+    111|     session.lifeRecovery = { nextSequence: Number.MAX_SAFE_INTEGER, cl…
+    112|     const before = JSON.stringify(session);
+    113|     expect(() => createSaveSnapshot(project, session)).toThrow();
+       |                                                        ^
+    114|     expect(JSON.stringify(session)).toBe(before);
+    115|     delete session.lifeRecovery;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯

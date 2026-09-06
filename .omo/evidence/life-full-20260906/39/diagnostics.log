@@ -1,0 +1,3 @@
+{"path":"src/player/player.ts","diagnostics":[]}
+{"path":"src/player/playerStatusMenuController.ts","diagnostics":[]}
+{"path":"test/lifePlayerSaveFailures.test.ts","diagnostics":[]}

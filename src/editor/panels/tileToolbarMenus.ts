@@ -1,5 +1,4 @@
 import { getEditorChrome, subscribeEditorUiMode } from "@/editor/editorUiMode";
-import { EDITOR_BRUSH_SIZES } from "@/editor/editorState";
 import type { EditorState } from "@/editor/editorState";
 import { copySelection, pasteClipboard } from "@/editor/mapClipboard";
 import { mapHistoryEntryCount, renderMapHistoryPanel } from "@/editor/panels/mapHistoryPanel";
@@ -9,7 +8,6 @@ import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import {
   selectEyedropperTool,
   selectTileTool,
-  setTileBrushSize,
 } from "@/editor/panels/tileToolbarActions";
 import { makeSvgIcon } from "@/editor/panels/tileToolbarIcons";
 import type { SvgIconName } from "@/editor/panels/tileToolbarIcons";
@@ -261,15 +259,6 @@ export function makeOverflowDropdown(model: TileToolbarModel): HTMLElement {
       menu.append(renderMapHistoryPanel());
     }
 
-  }
-
-  menu.append(makeOverflowSectionLabel("브러시 크기"));
-  for (const size of EDITOR_BRUSH_SIZES) {
-    menu.append(makeOptionItem(`${size} x ${size}`, state.brushSize === size, false, () => {
-      setTileBrushSize(size);
-      closeToolbarMenus();
-      model.rerender();
-    }, `brush-size-${size}`));
   }
 
   wrapper.append(menu);

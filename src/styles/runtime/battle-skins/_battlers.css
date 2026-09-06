@@ -60,8 +60,10 @@
 }
 
 .battle-scene[data-battle-skin="pokemon"] .battle-enemy .battle-enemy-image {
-  width: 148px !important;
-  height: 148px !important;
+  --battle-enemy-base-width: 148px;
+  --battle-enemy-base-height: 148px;
+  width: calc(var(--battle-enemy-base-width) * var(--battle-enemy-scale, 1) * var(--battle-enemy-fit, 1)) !important;
+  height: calc(var(--battle-enemy-base-height) * var(--battle-enemy-scale, 1) * var(--battle-enemy-fit, 1)) !important;
 }
 
 /* ── 배틀러 idle 애니메이션 (2026-08-30) ─────────────────────────────────────

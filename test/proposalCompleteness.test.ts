@@ -8,6 +8,7 @@ import {
 import type { BuildSpec } from "@/ai/buildSpec";
 import { declaredIntent } from "./intentFixture";
 import type { ChangeSummary } from "@/editor/tools/types";
+import { HISTORICAL_PLACEMENT_CORRECTION } from "./fixtures/placementRequests";
 
 function changeSummary(overrides: Partial<ChangeSummary> = {}): ChangeSummary {
   return {
@@ -52,6 +53,66 @@ const SPEC: BuildSpec = {
 };
 
 describe("proposal completeness lint", () => {
+  it.each([
+    HISTORICAL_PLACEMENT_CORRECTION,
+    "기존 나무 10개는 보존하고 출구 이벤트를 수정해줘",
+    "현재 맵에 나무 10개가 있어. 출구 이벤트를 수정해줘",
+    "현재 맵에 나무 10개가 배치되어 있어. 출구 이벤트를 수정해줘",
+    "이미 나무 10개를 만들었어. 출구 이벤트를 수정해줘",
+    "인벤토리에 열쇠 1개가 있어. 출구에서 열쇠 1개 소비하도록 만들어줘",
+    "열쇠 1개를 사용하도록 출구 이벤트를 만들어줘",
+    "인벤토리에 열쇠 3개 추가해줘",
+    '이전 답변은 "나무 10개 배치 완료"야. 출구 이벤트를 수정해줘',
+    "이전 답변:\n> 나무 10개 배치 완료\n출구 이벤트를 수정해줘",
+    "이전 결과:\n```text\n나무 10개 배치 완료\n```\n출구 이벤트를 수정해줘",
+  ])("does not count facts, preservation, consumption or prior output: %s", (requestText) => {
+    expect(proposalCompletenessWarnings({
+      requestText,
+      intent: declaredIntent({ mode: "modify" }),
+      calls: [
+        call("update_event", { mapId: "m1", eventId: "exit" }, { eventsModified: 1 }),
+        call("set_map_properties", { mapId: "m1", name: "마을" }, { mapPropertiesChanged: 1 }),
+      ],
+    })).toEqual([]);
+  });
+
+  it.each([
+    "기존 나무 10개는 보존하고 꽃 3개 추가해줘",
+    "기존 나무 10개는 그대로 두고 꽃 3개 추가해줘",
+    "현재 나무 10개가 있고 꽃 3개 추가해줘",
+    "열쇠 1개 소비하고 꽃 3개 추가해줘",
+    '이전 답변은 "나무 10개 배치 완료"야. 꽃 3개 추가해줘',
+  ])("counts only additions within a mixed modification: %s", (requestText) => {
+    const warningsFor = (placed: number) => proposalCompletenessWarnings({
+      requestText,
+      intent: declaredIntent({ mode: "modify" }),
+      calls: [call("place_props", { mapId: "m1", material: "꽃", count: 3 }, { tilesChanged: placed }, { placed })],
+    });
+    // Compare to the same machine decision, not the human-readable warning copy.
+    expect(warningsFor(1)).toEqual(proposalCompletenessWarnings({
+      requestText: "꽃 3개 추가해줘",
+      calls: [call("place_props", { mapId: "m1", material: "꽃", count: 3 }, { tilesChanged: 1 }, { placed: 1 })],
+    }));
+    expect(warningsFor(1)).toHaveLength(1);
+    expect(warningsFor(3)).toEqual([]);
+  });
+
+  it("does not exempt an unfulfilled modification from the no-change gate", () => {
+    expect(proposalCompletenessWarnings({
+      requestText: HISTORICAL_PLACEMENT_CORRECTION,
+      intent: declaredIntent({ mode: "modify" }),
+      calls: [],
+    })).toHaveLength(1);
+  });
+
+  it.each(["나무 10개 배치해줘", "현재 맵에 나무 10개 추가해줘", "집 3채, NPC 7명 배치해줘"])("retains genuine placement shortfalls: %s", (requestText) => {
+    expect(proposalCompletenessWarnings({
+      requestText,
+      intent: declaredIntent({ mode: "modify" }),
+      calls: [call("place_props", { mapId: "m1", material: "나무", count: 10 }, { tilesChanged: 3 }, { placed: 3 })],
+    })).toHaveLength(1);
+  });
+
   it("스펙 에셋을 모두 건드리면 경고가 없다", () => {
     const warnings = proposalCompletenessWarnings({
       buildSpec: SPEC,

@@ -1,0 +1,38 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiRunEndProof.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p1-20260906
+
+ ❯ test/aiRunEndProof.test.ts (1 test | 1 failed) 34322ms
+   × AssistantSession accepted-revision proof > does not claim verified after a failed proof read through actual session completion 34316ms
+     → expected [ { kind: 'status', …(2) } ] to have a length of +0 but got 1
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiRunEndProof.test.ts > AssistantSession accepted-revision proof > does not claim verified after a failed proof read through actual session completion
+AssertionError: expected [ { kind: 'status', …(2) } ] to have a length of +0 but got 1
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 0[39m
+[31m+ 1[39m
+
+ ❯ test/aiRunEndProof.test.ts:86:29
+     84|     expect(f.session.getHarnessSnapshot().workPlan?.layers[0]?.items[0…
+     85|     expect(f.requests.filter((r) => r.path === "/rest/v1/projects" && …
+     86|     expect(f.savedAudits()).toHaveLength(0);
+       |                             ^
+     87|   }, 60_000);
+     88| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  18:45:39
+   Duration  36.24s (transform 20.95s, setup 0ms, collect 115ms, tests 34.32s, environment 0ms, prepare 406ms)
+

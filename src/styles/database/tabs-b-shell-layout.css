@@ -63,7 +63,7 @@
   border: 1px solid transparent;
   color: var(--text);
   cursor: default;
-  font: 400 12px/1.2 system-ui, -apple-system, "Segoe UI", sans-serif;
+  font: 400 12px/1.2 var(--font-ui);
   height: 20px;
   padding: 1px 8px;
 }
@@ -97,7 +97,7 @@
   border: 1px solid transparent;
   color: var(--text-primary);
   cursor: default;
-  font: 400 12px/1.25 system-ui, -apple-system, "Segoe UI", sans-serif;
+  font: 400 12px/1.25 var(--font-ui);
   min-height: 22px;
   padding: 2px 22px 2px 18px;
   text-align: left;
@@ -149,7 +149,7 @@
   color: var(--text);
   cursor: pointer;
   display: inline-flex;
-  font: 600 11px/1 system-ui, -apple-system, "Segoe UI", sans-serif;
+  font: 600 11px/1 var(--font-ui);
   gap: 3px;
   height: 22px;
   justify-content: center;
@@ -221,7 +221,7 @@
   color: var(--text-primary);
   display: inline-flex;
   flex: 0 0 auto;
-  font: 600 11px/1 system-ui, -apple-system, "Segoe UI", sans-serif;
+  font: 600 11px/1 var(--font-ui);
   height: 22px;
   padding: 0 6px;
   white-space: nowrap;

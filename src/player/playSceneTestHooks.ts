@@ -1,4 +1,5 @@
 import type Phaser from "phaser";
+import { buildLifeRuntimeSnapshot, type LifeRuntimeSnapshot, type RuntimeActionReceipt, type RuntimeDomOverlay } from "@/player/runtimeDom";
 import { describeSceneEmotes, type SceneEmoteDebug } from "@/player/playSceneEmotes";
 import type { Dir, Input } from "@/player/input";
 import { reseedSessionRng, type PlaySession } from "@/project/session";
@@ -22,7 +23,8 @@ export type RuntimeDebugHook = {
   playerRoute: (moves: readonly MoveCommand[]) => void;
   applyPreset: (preset: StatePreset) => void;
   setSeed: (seed: number) => void;
-  readState: () => {
+  readState: () => LifeRuntimeSnapshot & {
+    readonly actionReceipt?: RuntimeActionReceipt;
     horror: PlaySession["horror"];
     eventLocations: PlaySession["eventLocations"];
     currentMapId: string;
@@ -190,7 +192,7 @@ type ShadowDebugTarget = {
 };
 
 export function installPlaySceneTestHooks(
-  scene: Phaser.Scene,
+  scene: Phaser.Scene & { readonly runtimeDom?: RuntimeDomOverlay },
   input: Input,
   getSession: () => PlaySession,
   syncRuntimeState: () => void
@@ -263,6 +265,8 @@ export function installPlaySceneTestHooks(
     readState: () => {
       const session = getSession();
       return {
+        ...buildLifeRuntimeSnapshot(session),
+        ...(scene.runtimeDom?.actionReceipt ? { actionReceipt: scene.runtimeDom.actionReceipt } : {}),
         horror: session.horror ? structuredClone(session.horror) : undefined,
         eventLocations: structuredClone(session.eventLocations),
         currentMapId: session.currentMapId,

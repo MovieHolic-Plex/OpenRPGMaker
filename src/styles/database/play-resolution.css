@@ -32,12 +32,12 @@
 
 .database-modal-backdrop .db-system-resolution-facts dt {
   color: var(--db-studio-text-3);
-  font: 500 11px/1.2 "Malgun Gothic", system-ui, sans-serif;
+  font: 500 11px/1.2 var(--font-ui);
 }
 
 .database-modal-backdrop .db-system-resolution-facts dd {
   color: var(--db-studio-text-1);
-  font: 600 12px/1.2 "Malgun Gothic", system-ui, sans-serif;
+  font: 600 12px/1.2 var(--font-ui);
   margin: 0;
 }
 
@@ -45,7 +45,7 @@
   background: var(--db-studio-inset);
   border-left: 3px solid var(--db-studio-text-2);
   color: var(--db-studio-text-2);
-  font: 400 11px/1.4 "Malgun Gothic", system-ui, sans-serif;
+  font: 400 11px/1.4 var(--font-ui);
   margin: 0;
   padding: 7px 8px;
 }
@@ -64,7 +64,7 @@
 /* Type chart matrix — studio chip language, no A-E letters. */
 .database-modal-backdrop .db-type-chart-help {
   color: var(--db-studio-text-2);
-  font: 400 11px/1.4 "Malgun Gothic", system-ui, sans-serif;
+  font: 400 11px/1.4 var(--font-ui);
   margin: 0;
 }
 
@@ -81,12 +81,12 @@
 
 .database-modal-backdrop .db-type-chart-preview-legend {
   color: var(--db-studio-text-3);
-  font: 600 11px/1 "Malgun Gothic", system-ui, sans-serif;
+  font: 600 11px/1 var(--font-ui);
 }
 
 .database-modal-backdrop .db-type-chart-preview-line {
   color: var(--db-studio-text-2);
-  font: 400 11px/1.2 "Malgun Gothic", system-ui, sans-serif;
+  font: 400 11px/1.2 var(--font-ui);
 }
 
 .database-modal-backdrop .db-type-chart-wrap {
@@ -103,7 +103,7 @@
 .database-modal-backdrop .db-type-chart-matrix th,
 .database-modal-backdrop .db-type-chart-matrix td {
   border: 1px solid var(--db-studio-border-subtle);
-  font: 400 11px/1.2 "Malgun Gothic", system-ui, sans-serif;
+  font: 400 11px/1.2 var(--font-ui);
   padding: 4px;
   text-align: center;
 }
@@ -121,7 +121,7 @@
   border-radius: 6px;
   color: var(--db-studio-text-1);
   cursor: pointer;
-  font: 500 11px/1 "Malgun Gothic", system-ui, sans-serif;
+  font: 500 11px/1 var(--font-ui);
   min-height: 28px;
   min-width: 44px;
   padding: 0 6px;
@@ -231,7 +231,7 @@
 
 .database-modal-backdrop .db-system-preview-label {
   color: var(--db-studio-text-2);
-  font: 600 11px/1 "Malgun Gothic", system-ui, sans-serif;
+  font: 600 11px/1 var(--font-ui);
 }
 
 .database-modal-backdrop .db-system-preview-frame {
@@ -255,7 +255,7 @@
 .database-modal-backdrop .db-system-preview-well code,
 .database-modal-backdrop .db-title-workbench-system-title-id {
   color: var(--db-studio-text-3);
-  font: 400 11px/1.3 ui-monospace, monospace;
+  font: 400 11px/1.3 var(--font-mono);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

@@ -1,0 +1,721 @@
+{
+  "schemaVersion": 1,
+  "runId": "9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+  "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+  "startedAt": "2026-09-06T10:51:27.927Z",
+  "surface": "actual ProjectStore flush/verifyPersistedRevision via Vite SSR and live Supabase REST",
+  "sourceSha": "5c103676805e8016bfd5b1f5ef84e4d40fbd0ee9",
+  "storeSourceSha256": "7823f05b36f84ef5e2cf4532b6b3e11331228a650c7973117ce6c7f35f5c9645",
+  "harnessSha256": "587c91a13ebdf3aad6b2efaedd96b52ec44db9e33f72100aa9c2aab1aa8db083",
+  "scenario": "all",
+  "pass": true,
+  "actions": [
+    {
+      "sequence": 1,
+      "kind": "request",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3&select=project_id&limit=1",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 2,
+      "kind": "isolated-target-established",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "absent": true,
+      "beforeStoreImport": true
+    },
+    {
+      "sequence": 3,
+      "kind": "request",
+      "table": "projects",
+      "method": "POST",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?on_conflict=project_id",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 4,
+      "kind": "request",
+      "table": "maps",
+      "method": "DELETE",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 5,
+      "kind": "request",
+      "table": "maps",
+      "method": "POST",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?on_conflict=project_id%2Cmap_id",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 6,
+      "kind": "request",
+      "table": "tilesets",
+      "method": "DELETE",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 7,
+      "kind": "request",
+      "table": "tilesets",
+      "method": "POST",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?on_conflict=project_id%2Ctileset_id",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 8,
+      "kind": "request",
+      "table": "project_commits",
+      "method": "POST",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 9,
+      "kind": "request",
+      "table": "project_changes",
+      "method": "POST",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 10,
+      "kind": "request",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 11,
+      "kind": "request",
+      "table": "maps",
+      "method": "GET",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3&select=map_id%2Cmap_json",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 12,
+      "kind": "request",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 13,
+      "kind": "request",
+      "table": "maps",
+      "method": "GET",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3&select=map_id%2Cmap_json",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 14,
+      "kind": "request",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3&select=project_id%2Ctitle%2Ccurrent_json%2Ccurrent_sha256",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 15,
+      "kind": "request",
+      "table": "projects",
+      "method": "PATCH",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3&title=eq.QA+persistence+proof+9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 16,
+      "kind": "real-remote-content-changed",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "wireHashIntentionallyUnchanged": true
+    },
+    {
+      "sequence": 17,
+      "kind": "request",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 18,
+      "kind": "request",
+      "table": "maps",
+      "method": "GET",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3&select=map_id%2Cmap_json",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 19,
+      "kind": "request",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 20,
+      "kind": "request",
+      "table": "maps",
+      "method": "GET",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3&select=map_id%2Cmap_json",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 21,
+      "kind": "request",
+      "table": "projects",
+      "method": "PATCH",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3&title=eq.QA+persistence+proof+9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 22,
+      "kind": "real-remote-content-restored",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "sameReceipt": "c8507f4e-f19f-4842-bb48-b62f90b351cb"
+    },
+    {
+      "sequence": 23,
+      "kind": "request",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 24,
+      "kind": "request",
+      "table": "maps",
+      "method": "GET",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3&select=map_id%2Cmap_json",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 25,
+      "kind": "request",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 26,
+      "kind": "request",
+      "table": "maps",
+      "method": "GET",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3&select=map_id%2Cmap_json",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 27,
+      "kind": "request",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "mode": "injected-transport-503",
+      "network": false
+    },
+    {
+      "sequence": 28,
+      "kind": "injection",
+      "fault": "injected-transport-503",
+      "network": false
+    },
+    {
+      "sequence": 29,
+      "kind": "request",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 30,
+      "kind": "request",
+      "table": "maps",
+      "method": "GET",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3&select=map_id%2Cmap_json",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 31,
+      "kind": "request",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "mode": "injected-target",
+      "network": true
+    },
+    {
+      "sequence": 32,
+      "kind": "injection",
+      "fault": "injected-target",
+      "realReadCompleted": true,
+      "returnedProjectId": "injected-wrong-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3"
+    },
+    {
+      "sequence": 33,
+      "kind": "request",
+      "table": "maps",
+      "method": "GET",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3&select=map_id%2Cmap_json",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 34,
+      "kind": "request",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 35,
+      "kind": "request",
+      "table": "maps",
+      "method": "GET",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3&select=map_id%2Cmap_json",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 36,
+      "kind": "injection",
+      "fault": "store persistence disabled",
+      "remoteOutage": false
+    },
+    {
+      "sequence": 37,
+      "kind": "request",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "mode": "gated-real-read",
+      "network": true
+    },
+    {
+      "sequence": 38,
+      "kind": "injection",
+      "fault": "caller cancellation after real response",
+      "remoteOutage": false
+    },
+    {
+      "sequence": 39,
+      "kind": "request",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 40,
+      "kind": "request",
+      "table": "maps",
+      "method": "GET",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3&select=map_id%2Cmap_json",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 41,
+      "kind": "request",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "mode": "gated-real-read",
+      "network": true
+    },
+    {
+      "sequence": 42,
+      "kind": "request",
+      "table": "maps",
+      "method": "GET",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3&select=map_id%2Cmap_json",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 43,
+      "kind": "request",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 44,
+      "kind": "request",
+      "table": "maps",
+      "method": "GET",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3&select=map_id%2Cmap_json",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 45,
+      "kind": "request",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3&select=project_id%2Ctitle&limit=1",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 46,
+      "kind": "request",
+      "table": "projects",
+      "method": "DELETE",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3&title=eq.QA+persistence+proof+9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 47,
+      "kind": "request",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3&select=project_id",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 48,
+      "kind": "request",
+      "table": "maps",
+      "method": "GET",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3&select=project_id",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 49,
+      "kind": "request",
+      "table": "tilesets",
+      "method": "GET",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3&select=project_id",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 50,
+      "kind": "request",
+      "table": "project_commits",
+      "method": "GET",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?project_id=eq.qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3&select=project_id",
+      "mode": "real",
+      "network": true
+    },
+    {
+      "sequence": 51,
+      "kind": "request",
+      "table": "project_changes",
+      "method": "GET",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "query": "?commit_id=eq.8eb04b2e-b389-4732-b948-f66c6f0530f9&select=commit_id",
+      "mode": "real",
+      "network": true
+    }
+  ],
+  "steps": [
+    {
+      "name": "accepted-real-read",
+      "realRemote": true,
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "acceptedIdentity": "b44812d4a41c4601efc8ef3525e289831dc130832bd2ff24a9e31a8883996414",
+      "observedIdentity": "b44812d4a41c4601efc8ef3525e289831dc130832bd2ff24a9e31a8883996414",
+      "observedWireSha256": "14cfd749a5bee0f084b845af6e4b38ade0913bba702e901d3fc6ef11bf44cd11",
+      "npcId": "qa-proof-npc",
+      "dialogueToken": "qa-dialogue-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3"
+    },
+    {
+      "name": "matched-real-content",
+      "mode": "real",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "receiptId": "c8507f4e-f19f-4842-bb48-b62f90b351cb",
+      "kind": "verified",
+      "isCurrent": true,
+      "expected": "verified",
+      "actionSequences": [
+        12,
+        13
+      ]
+    },
+    {
+      "name": "changed-real-read",
+      "realRemote": true,
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "acceptedIdentity": "b44812d4a41c4601efc8ef3525e289831dc130832bd2ff24a9e31a8883996414",
+      "observedIdentity": "06fecdfccf513659692fab5fc171875678693f9faa40534c3a79861807d41b4e",
+      "observedWireSha256": "14cfd749a5bee0f084b845af6e4b38ade0913bba702e901d3fc6ef11bf44cd11",
+      "npcId": "qa-proof-npc",
+      "dialogueToken": "qa-dialogue-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3"
+    },
+    {
+      "name": "changed-real-content",
+      "mode": "real",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "receiptId": "c8507f4e-f19f-4842-bb48-b62f90b351cb",
+      "kind": "mismatch",
+      "reason": "content",
+      "expected": "mismatch",
+      "actionSequences": [
+        19,
+        20
+      ]
+    },
+    {
+      "name": "restored-real-read",
+      "realRemote": true,
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "acceptedIdentity": "b44812d4a41c4601efc8ef3525e289831dc130832bd2ff24a9e31a8883996414",
+      "observedIdentity": "b44812d4a41c4601efc8ef3525e289831dc130832bd2ff24a9e31a8883996414",
+      "observedWireSha256": "14cfd749a5bee0f084b845af6e4b38ade0913bba702e901d3fc6ef11bf44cd11",
+      "npcId": "qa-proof-npc",
+      "dialogueToken": "qa-dialogue-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3"
+    },
+    {
+      "name": "restored-same-receipt-retry",
+      "mode": "real",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "receiptId": "c8507f4e-f19f-4842-bb48-b62f90b351cb",
+      "kind": "verified",
+      "isCurrent": true,
+      "expected": "verified",
+      "actionSequences": [
+        25,
+        26
+      ]
+    },
+    {
+      "name": "injected-transport-503",
+      "mode": "injected-transport-503",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "receiptId": "c8507f4e-f19f-4842-bb48-b62f90b351cb",
+      "kind": "failed",
+      "expected": "failed",
+      "actionSequences": [
+        27,
+        28
+      ]
+    },
+    {
+      "name": "transport-failure-same-receipt-retry",
+      "mode": "real",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "receiptId": "c8507f4e-f19f-4842-bb48-b62f90b351cb",
+      "kind": "verified",
+      "isCurrent": true,
+      "expected": "verified",
+      "actionSequences": [
+        29,
+        30
+      ]
+    },
+    {
+      "name": "injected-target",
+      "mode": "injected-target",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "receiptId": "c8507f4e-f19f-4842-bb48-b62f90b351cb",
+      "kind": "mismatch",
+      "reason": "target",
+      "expected": "mismatch",
+      "actionSequences": [
+        31,
+        32,
+        33
+      ]
+    },
+    {
+      "name": "target-failure-same-receipt-retry",
+      "mode": "real",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "receiptId": "c8507f4e-f19f-4842-bb48-b62f90b351cb",
+      "kind": "verified",
+      "isCurrent": true,
+      "expected": "verified",
+      "actionSequences": [
+        34,
+        35
+      ]
+    },
+    {
+      "name": "injected-disabled",
+      "mode": "real",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "receiptId": "c8507f4e-f19f-4842-bb48-b62f90b351cb",
+      "kind": "disabled",
+      "expected": "disabled",
+      "actionSequences": []
+    },
+    {
+      "name": "injected-cancel-after-real-response",
+      "mode": "gated-real-read",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "receiptId": "c8507f4e-f19f-4842-bb48-b62f90b351cb",
+      "kind": "cancelled",
+      "expected": "cancelled",
+      "actionSequences": [
+        37,
+        38
+      ]
+    },
+    {
+      "name": "cancel-same-receipt-retry",
+      "mode": "real",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "receiptId": "c8507f4e-f19f-4842-bb48-b62f90b351cb",
+      "kind": "verified",
+      "isCurrent": true,
+      "expected": "verified",
+      "actionSequences": [
+        39,
+        40
+      ]
+    },
+    {
+      "name": "newer-local-edit-during-real-read",
+      "kind": "verified",
+      "isCurrent": false,
+      "sameLiveObject": true,
+      "dirty": true,
+      "emissions": 1
+    },
+    {
+      "name": "remote-still-accepted-after-local-race",
+      "realRemote": true,
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "acceptedIdentity": "b44812d4a41c4601efc8ef3525e289831dc130832bd2ff24a9e31a8883996414",
+      "observedIdentity": "b44812d4a41c4601efc8ef3525e289831dc130832bd2ff24a9e31a8883996414",
+      "observedWireSha256": "14cfd749a5bee0f084b845af6e4b38ade0913bba702e901d3fc6ef11bf44cd11",
+      "npcId": "qa-proof-npc",
+      "dialogueToken": "qa-dialogue-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3"
+    }
+  ],
+  "cleanup": {
+    "localTimersCleared": true,
+    "deferredSettled": true,
+    "ownership": {
+      "absentBeforeRun": true,
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "ownerTitle": "QA persistence proof 9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "observed": {
+        "project_id": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+        "title": "QA persistence proof 9136d6ba-6e46-43f1-88c7-e9f0fe5875c3"
+      }
+    },
+    "remote": {
+      "kind": "deleted-and-absence-verified",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "commitIds": [
+        "8eb04b2e-b389-4732-b948-f66c6f0530f9"
+      ]
+    },
+    "viteClosed": true,
+    "listenerStarted": false,
+    "globalsRestored": true,
+    "activeTransports": 0,
+    "pendingProofs": 0
+  },
+  "configuration": {
+    "origin": "http://dbserver:8100",
+    "configuredProjectId": "rpg-zzu-house-template-gallery",
+    "anonValidated": true,
+    "configuredProjectLoaded": false,
+    "configuredProjectAccessed": false,
+    "fixtureProjectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3"
+  },
+  "commitTransport": {
+    "status": 201,
+    "commitIds": [
+      "8eb04b2e-b389-4732-b948-f66c6f0530f9"
+    ]
+  },
+  "receipt": {
+    "revisionId": "c8507f4e-f19f-4842-bb48-b62f90b351cb",
+    "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+    "mutationGeneration": 1,
+    "contentIdentity": "b44812d4a41c4601efc8ef3525e289831dc130832bd2ff24a9e31a8883996414",
+    "sha256": "14cfd749a5bee0f084b845af6e4b38ade0913bba702e901d3fc6ef11bf44cd11"
+  },
+  "assertionsPassed": true,
+  "finishedAt": "2026-09-06T10:51:50.450Z"
+}

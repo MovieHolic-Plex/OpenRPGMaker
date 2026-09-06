@@ -1,0 +1,18 @@
+{
+  "command": "npm run typecheck:app",
+  "wrapper": [
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=10s",
+    "240s",
+    "bash",
+    "-lc",
+    "npm run typecheck:app"
+  ],
+  "exit": 0,
+  "durationSeconds": 104.22450804710388,
+  "head": "8c4f4f57c1473f024ee7bf9dad50cf859459f30d",
+  "tree": "f4876f1c27ec0cd5799d20b184470097acd2d304",
+  "capturedText": "\n> rpg-zzu@0.1.0 typecheck:app\n> tsc --noEmit -p tsconfig.app.json\n\n",
+  "sha256": "9e2e881b46f10347e10261b098fd6171273d8f45b9a5d52fc81a8473a713bdfe"
+}

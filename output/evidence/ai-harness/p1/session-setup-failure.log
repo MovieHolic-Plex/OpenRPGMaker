@@ -1,0 +1,13 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiRunEndProof.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p1-20260906
+
+No test files found, exiting with code 1
+
+filter: test/aiRunEndProof.test.ts
+include: test/**/*.test.ts
+exclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*, test/lakeVillageRebuildFinal.test.ts, test/**/*.bun.test.ts
+

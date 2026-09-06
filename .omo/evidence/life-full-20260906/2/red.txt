@@ -1,0 +1,375 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeSaveVersion.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+ ❯ test/lifeSaveVersion.test.ts (18 tests | 11 failed) 2740ms
+   × Save5 version and original ownership boundary > writes independent Save5 even without life packages, leaving Project4 and live state unchanged 367ms
+     → expected 4 to be 5 // Object.is equality
+   × Save5 version and original ownership boundary > migrates manual and auto only in memory in namespace null 469ms
+     → expected 4 to be 5 // Object.is equality
+   × Save5 version and original ownership boundary > migrates manual and auto only in memory in namespace "  exported:game-a  " 187ms
+     → expected 4 to be 5 // Object.is equality
+   × Save5 version and original ownership boundary > runs the frozen phase1 reader on actual old/new bytes, not a simulated version predicate 118ms
+     → expected { kind: 'present', slot: 1, …(1) } to match object { kind: 'corrupt', …(1) }
+(11 matching properties omitted from actual)
+   ✓ Save5 version and original ownership boundary > rejects unsupported wire version 3 without rewriting it 118ms
+   ✓ Save5 version and original ownership boundary > rejects unsupported wire version 6 without rewriting it 120ms
+   ✓ Save5 version and original ownership boundary > rejects unsupported wire version 999 without rewriting it 99ms
+   ✓ Save5 version and original ownership boundary > rejects unsupported wire version "5" without rewriting it 78ms
+   × Save5 version and original ownership boundary > never falls back from present malformed new bytes "" 146ms
+     → expected 'present' to be 'corrupt' // Object.is equality
+   × Save5 version and original ownership boundary > never falls back from present malformed new bytes "{broken" 64ms
+     → expected 'present' to be 'corrupt' // Object.is equality
+   × Save5 version and original ownership boundary > never falls back from present malformed new bytes "null" 116ms
+     → expected 'present' to be 'corrupt' // Object.is equality
+   × Save5 version and original ownership boundary > never falls back from present malformed new bytes "{\"schemaVersion\":5}" 73ms
+     → expected 'present' to be 'corrupt' // Object.is equality
+   × Save5 version and original ownership boundary > never falls back from present malformed new bytes "{\"schemaVersion\":6}" 89ms
+     → expected 'present' to be 'corrupt' // Object.is equality
+   ✓ Save5 version and original ownership boundary > does not borrow another namespace's legacy progress 68ms
+   ✓ Save5 version and original ownership boundary > preserves legacy bytes, previous new slot and live progress on quota (existing new=false) 130ms
+   × Save5 version and original ownership boundary > preserves legacy bytes, previous new slot and live progress on quota (existing new=true) 287ms
+     → expected '{"schemaVersion":4,"projectTitle":"새 …' to be '{\n  "schemaVersion": 4,\n  "projectT…' // Object.is equality
+   ✓ Save5 version and original ownership boundary > characterizes construction failure: throws explicitly, preserves checkpoint and disk, does not debounce retry 132ms
+   × Save5 version and original ownership boundary > creates Save5 memory checkpoints and resumes an independent session without mutating the live one 75ms
+     → expected 4 to be 5 // Object.is equality
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 11 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/lifeSaveVersion.test.ts > Save5 version and original ownership boundary > writes independent Save5 even without life packages, leaving Project4 and live state unchanged
+AssertionError: expected 4 to be 5 // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 5[39m
+[31m+ 4[39m
+
+ ❯ test/lifeSaveVersion.test.ts:44:36
+     42|     const before = structuredClone(session);
+     43|     const snapshot = saves.createSaveSnapshot(project, session);
+     44|     expect(snapshot.schemaVersion).toBe(5);
+       |                                    ^
+     45|     expect(SCHEMA_VERSION).toBe(4);
+     46|     expect(project.schemaVersion).toBe(4);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/11]⎯
+
+ FAIL  test/lifeSaveVersion.test.ts > Save5 version and original ownership boundary > migrates manual and auto only in memory in namespace null
+ FAIL  test/lifeSaveVersion.test.ts > Save5 version and original ownership boundary > migrates manual and auto only in memory in namespace "  exported:game-a  "
+AssertionError: expected 4 to be 5 // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 5[39m
+[31m+ 4[39m
+
+ ❯ test/lifeSaveVersion.test.ts:64:43
+     62|     expect(auto.kind).toBe("present");
+     63|     if (manual.kind !== "present" || auto.kind !== "present") throw ne…
+     64|     expect(manual.snapshot.schemaVersion).toBe(5);
+       |                                           ^
+     65|     expect(auto.snapshot.schemaVersion).toBe(5);
+     66|     expect(saves.applySaveSnapshot(project, manual.snapshot).variables…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/11]⎯
+
+ FAIL  test/lifeSaveVersion.test.ts > Save5 version and original ownership boundary > runs the frozen phase1 reader on actual old/new bytes, not a simulated version predicate
+AssertionError: expected { kind: 'present', slot: 1, …(1) } to match object { kind: 'corrupt', …(1) }
+(11 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "kind": "corrupt",[39m
+[32m-   "message": "Unsupported save schema",[39m
+[31m+   "kind": "present",[39m
+[2m  }[22m
+
+ ❯ test/lifeSaveVersion.test.ts:84:42
+     82|     expect(old.readSaveSlot(storage, 1).kind).toBe("present");
+     83|     storage.setItem(old.saveSlotKey(1), JSON.stringify(saves.createSav…
+     84|     expect(old.readSaveSlot(storage, 1)).toMatchObject({ kind: "corrup…
+       |                                          ^
+     85|   });
+     86|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/11]⎯
+
+ FAIL  test/lifeSaveVersion.test.ts > Save5 version and original ownership boundary > never falls back from present malformed new bytes ""
+ FAIL  test/lifeSaveVersion.test.ts > Save5 version and original ownership boundary > never falls back from present malformed new bytes "{broken"
+ FAIL  test/lifeSaveVersion.test.ts > Save5 version and original ownership boundary > never falls back from present malformed new bytes "null"
+ FAIL  test/lifeSaveVersion.test.ts > Save5 version and original ownership boundary > never falls back from present malformed new bytes "{\"schemaVersion\":5}"
+ FAIL  test/lifeSaveVersion.test.ts > Save5 version and original ownership boundary > never falls back from present malformed new bytes "{\"schemaVersion\":6}"
+AssertionError: expected 'present' to be 'corrupt' // Object.is equality
+
+Expected: [32m"[7mcorrup[27mt"[39m
+Received: [31m"[7mpresen[27mt"[39m
+
+ ❯ test/lifeSaveVersion.test.ts:104:49
+    102|     storage.setItem("oprn:save-slot:v5:1", broken);
+    103|     storage.setItem("oprn:save-slot:v5:auto", broken);
+    104|     expect(saves.readSaveSlot(storage, 1).kind).toBe("corrupt");
+       |                                                 ^
+    105|     expect(saves.readAutosave(storage).kind).toBe("corrupt");
+    106|     expect(storage.getItem(old.saveSlotKey(1))).toBe(raw);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/11]⎯
+
+ FAIL  test/lifeSaveVersion.test.ts > Save5 version and original ownership boundary > preserves legacy bytes, previous new slot and live progress on quota (existing new=true)
+AssertionError: expected '{"schemaVersion":4,"projectTitle":"새 …' to be '{\n  "schemaVersion": 4,\n  "projectT…' // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- {[39m
+[32m- [7m  [27m"schemaVersion":[7m [27m4,[39m
+[32m- [7m  [27m"projectTitle":[7m [27m"새 프로젝트",[39m
+[32m- [7m  [27m"savedAt":[7m [27m"2026-09-05T21:54:44.81[7m2[27mZ",[39m
+[32m- [7m  [27m"mapName":[7m [27m"빈 맵",[39m
+[32m- [7m  [27m"partyLevel":[7m [27m1,[39m
+[32m- [7m  [27m"playTimeSeconds":[7m [27m0,[39m
+[32m- [7m  [27m"session":[7m {[27m[39m
+[32m- [7m    [27m"switches":[7m {[27m[39m
+[32m- [7m      [27m"sw_0001":[7m [27mfalse,[39m
+[32m- [7m      [27m"sw_0002":[7m [27mfalse,[39m
+[32m- [7m      [27m"sw_0003":[7m [27mfalse,[39m
+[32m- [7m      [27m"sw_0004":[7m [27mfalse,[39m
+[32m- [7m      [27m"sw_0005":[7m [27mfalse,[39m
+[32m- [7m      [27m"sw_0006":[7m [27mfalse,[39m
+[32m- [7m      [27m"sw_0007":[7m [27mfalse,[39m
+[32m- [7m      [27m"sw_0008":[7m [27mfalse,[39m
+[32m- [7m      [27m"sw_0009":[7m [27mfalse,[39m
+[32m- [7m      [27m"sw_0010":[7m [27mfalse,[39m
+[32m- [7m      [27m"sw_0011":[7m [27mfalse,[39m
+[32m- [7m      [27m"sw_0012":[7m [27mfalse,[39m
+[32m- [7m      [27m"sw_0013":[7m [27mfalse,[39m
+[32m- [7m      [27m"sw_0014":[7m [27mfalse,[39m
+[32m- [7m      [27m"sw_0015":[7m [27mfalse,[39m
+[32m- [7m      [27m"sw_0016":[7m [27mfalse,[39m
+[32m- [7m      [27m"sw_0017":[7m [27mfalse,[39m
+[32m- [7m      [27m"sw_0018":[7m [27mfalse,[39m
+[32m- [7m      [27m"sw_0019":[7m [27mfalse,[39m
+[32m- [7m      [27m"sw_0020":[7m [27mfalse[39m
+[32m-     },[39m
+[32m- [7m    [27m"selfSwitches":[7m [27m{},[39m
+[32m- [7m    [27m"variables":[7m {[27m[39m
+[32m- [7m      [27m"var_0001":[7m [27m0,[39m
+[32m- [7m      [27m"var_0002":[7m [27m0,[39m
+[32m- [7m      [27m"var_0003":[7m [27m0,[39m
+[32m- [7m      [27m"var_0004":[7m [27m0,[39m
+[32m- [7m      [27m"var_0005":[7m [27m0,[39m
+[32m- [7m      [27m"var_0006":[7m [27m0,[39m
+[32m- [7m      [27m"var_0007":[7m [27m0,[39m
+[32m- [7m      [27m"var_0008":[7m [27m0,[39m
+[32m- [7m      [27m"var_0009":[7m [27m0,[39m
+[32m- [7m      [27m"var_0010":[7m [27m0,[39m
+[32m- [7m      [27m"var_0011":[7m [27m0,[39m
+[32m- [7m      [27m"var_0012":[7m [27m0,[39m
+[32m- [7m      [27m"var_0013":[7m [27m0,[39m
+[32m- [7m      [27m"var_0014":[7m [27m0,[39m
+[32m- [7m      [27m"var_0015":[7m [27m0,[39m
+[32m- [7m      [27m"var_0016":[7m [27m0,[39m
+[32m- [7m      [27m"var_0017":[7m [27m0,[39m
+[32m- [7m      [27m"var_0018":[7m [27m0,[39m
+[32m- [7m      [27m"var_0019":[7m [27m0,[39m
+[32m- [7m      [27m"var_0020":[7m [27m0,[39m
+[32m- [7m      [27m"progress":[7m [27m23[39m
+[32m-     },[39m
+[32m- [7m    [27m"timers":[7m [27m{},[39m
+[32m- [7m    [27m"gold":[7m [27m17,[39m
+[32m- [7m    [27m"inventory":[7m [27m{},[39m
+[32m- [7m    [27m"itemUseCharges":[7m [27m{},[39m
+[32m- [7m    [27m"killedFieldSpawns":[7m [27m{},[39m
+[32m- [7m    [27m"partyActorIds":[7m [[27m[39m
+[32m- [7m      [27m"actor_hero"[39m
+[32m-     ],[39m
+[32m- [7m    [27m"shippingQueue":[7m [27m{},[39m
+[32m- [7m    [27m"shippingHistory":[7m [27m[],[39m
+[32m- [7m    [27m"bundleContributions":[7m [27m{},[39m
+[32m- [7m    [27m"completedBundleIds":[7m [27m[],[39m
+[32m- [7m    [27m"bundleRewardAppliedIds":[7m [27m[],[39m
+[32m- [7m    [27m"unlockedRegionIds":[7m [27m[],[39m
+[32m- [7m    [27m"unlockedRecipeIds":[7m [27m[],[39m
+[32m- [7m    [27m"makerInstances":[7m [27m{},[39m
+[32m- [7m    [27m"monsterInstances":[7m [27m{},[39m
+[32m- [7m    [27m"monsterParty":[7m [27m[],[39m
+[32m- [7m    [27m"monsterBox":[7m [27m[],[39m
+[32m- [7m    [27m"actorSkillIds":[7m [27m{},[39m
+[32m- [7m    [27m"actorSkillPp":[7m [27m{},[39m
+[32m- [7m    [27m"actorExperience":[7m {[27m[39m
+[32m- [7m      [27m"actor_hero":[7m 0[27m[39m
+[32m-     },[39m
+[32m- [7m    [27m"actorLevels":[7m {[27m[39m
+[32m- [7m      [27m"actor_hero":[7m [27m1,[39m
+[32m- [7m      [27m"actor_guardian":[7m [27m1,[39m
+[32m- [7m      [27m"actor_mage":[7m [27m1,[39m
+[32m- [7m      [27m"actor_scout":[7m [27m1,[39m
+[32m- [7m      [27m"actor_cleric":[7m [27m1,[39m
+[32m- [7m      [27m"actor_ranger":[7m 1[27m[39m
+[32m-     },[39m
+[32m- [7m    [27m"actorVitals":[7m {[27m[39m
+[32m- [7m      [27m"actor_hero":[7m {[27m[39m
+[32m- [7m        [27m"hp":[7m [27m514,[39m
+[32m- [7m        [27m"mp":[7m [27m43,[39m
+[32m- [7m        [27m"maxHp":[7m [27m514,[39m
+[32m- [7m        [27m"maxMp":[7m [27m43[39m
+[32m-       }[39m
+[32m-     },[39m
+[32m- [7m    [27m"eventLocations":[7m [27m{},[39m
+[32m- [7m    [27m"erasedEventIds":[7m [27m[],[39m
+[32m- [7m    [27m"removedEventIds":[7m [27m{},[39m
+[32m- [7m    [27m"spawnedEvents":[7m [27m{},[39m
+[32m- [7m    [27m"camera":[7m {[27m[39m
+[32m- [7m      [27m"mode":[7m [27m"follow",[39m
+[32m- [7m      [27m"target":[7m {[27m[39m
+[32m- [7m        [27m"kind":[7m [27m"player"[39m
+[32m-       }[39m
+[32m-     },[39m
+[32m- [7m    [27m"lighting":[7m {[27m[39m
+[32m- [7m      [27m"ambient":[7m [27m0,[39m
+[32m- [7m      [27m"sources":[7m [27m[][39m
+[32m-     },[39m
+[32m- [7m    [27m"npcTravelStates":[7m [27m{},[39m
+[32m- [7m    [27m"npcActivities":[7m [27m{},[39m
+[32m- [7m    [27m"npcScheduleStates":[7m [27m{},[39m
+[32m- [7m    [27m"lifeSkills":[7m [27m{},[39m
+[32m- [7m    [27m"farmPlots":[7m [27m{},[39m
+[32m- [7m    [27m"friendship":[7m [27m{},[39m
+[32m- [7m    [27m"relationships":[7m [27m{},[39m
+[32m- [7m    [27m"dailyGifts":[7m [27m{},[39m
+[32m- [7m    [27m"dailyTalks":[7m [27m{},[39m
+[32m- [7m    [27m"monsterCareDaily":[7m [27m{},[39m
+[32m- [7m    [27m"chests":[7m [27m{},[39m
+[32m- [7m    [27m"placeables":[7m [27m{},[39m
+[32m- [7m    [27m"followers":[7m [27m[],[39m
+[32m- [7m    [27m"followerTrail":[7m [27m[],[39m
+[32m- [7m    [27m"currentMapId":[7m [27m"map_blank_start",[39m
+[32m- [7m    [27m"x":[7m [27m10,[39m
+[32m- [7m    [27m"y":[7m [27m8,[39m
+[32m- [7m    [27m"mapOverrides":[7m [27m{},[39m
+[32m- [7m    [27m"flags":[7m [27m{},[39m
+[32m- [7m    [27m"audio":[7m [27m{},[39m
+[32m- [7m    [27m"pictures":[7m [27m{},[39m
+[32m- [7m    [27m"actorEquipment":[7m {[27m[39m
+[32m- [7m      [27m"actor_hero":[7m {[27m[39m
+[32m- [7m        [27m"weapon":[7m [27m"equip_sword",[39m
+[32m- [7m        [27m"shield":[7m [27m"equip_oak_shield",[39m
+[32m- [7m        [27m"armor":[7m [27m"equip_leather_armor",[39m
+[32m- [7m        [27m"helmet":[7m [27m"equip_traveler_hat",[39m
+[32m- [7m        [27m"accessory":[7m [27m"equip_focus_charm"[39m
+[32m-       },[39m
+[32m- [7m      [27m"actor_guardian":[7m {[27m[39m
+[32m- [7m        [27m"weapon":[7m [27m"equip_sword",[39m
+[32m- [7m        [27m"shield":[7m [27m"equip_oak_shield",[39m
+[32m- [7m        [27m"armor":[7m [27m"equip_leather_armor",[39m
+[32m- [7m        [27m"helmet":[7m [27m"equip_traveler_hat",[39m
+[32m- [7m        [27m"accessory":[7m [27m"equip_focus_charm"[39m
+[32m-       },[39m
+[32m- [7m      [27m"actor_mage":[7m {[27m[39m
+[32m- [7m        [27m"weapon":[7m [27m"equip_mage_staff",[39m
+[32m- [7m        [27m"armor":[7m [27m"equip_mystic_robe",[39m
+[32m- [7m        [27m"helmet":[7m [27m"equip_traveler_hat",[39m
+[32m- [7m        [27m"accessory":[7m [27m"equip_focus_charm"[39m
+[32m-       },[39m
+[32m- [7m      [27m"actor_scout":[7m {[27m[39m
+[32m- [7m        [27m"weapon":[7m [27m"equip_scout_dagger",[39m
+[32m- [7m        [27m"armor":[7m [27m"equip_leather_armor",[39m
+[32m- [7m        [27m"helmet":[7m [27m"equip_traveler_hat",[39m
+[32m- [7m        [27m"accessory":[7m [27m"equip_focus_charm"[39m
+[32m-       },[39m
+[32m- [7m      [27m"actor_cleric":[7m {[27m[39m
+[32m- [7m        [27m"weapon":[7m [27m"equip_mage_staff",[39m
+[32m- [7m        [27m"shield":[7m [27m"equip_oak_shield",[39m
+[32m- [7m        [27m"armor":[7m [27m"equip_mystic_robe",[39m
+[32m- [7m        [27m"helmet":[7m [27m"equip_traveler_hat",[39m
+[32m- [7m        [27m"accessory":[7m [27m"equip_focus_charm"[39m
+[32m-       },[39m
+[32m- [7m      [27m"actor_ranger":[7m {[27m[39m
+[32m- [7m        [27m"weapon":[7m [27m"equip_scout_dagger",[39m
+[32m- [7m        [27m"armor":[7m [27m"equip_leather_armor",[39m
+[32m- [7m        [27m"helmet":[7m [27m"equip_traveler_hat",[39m
+[32m- [7m        [27m"accessory":[7m [27m"equip_focus_charm"[39m
+[32m-       }[39m
+[32m-     },[39m
+[32m- [7m    [27m"actorRows":[7m {[27m[39m
+[32m- [7m      [27m"actor_hero":[7m [27m"front"[39m
+[32m-     },[39m
+[32m- [7m    [27m"actorNames":[7m [27m{},[39m
+[32m- [7m    [27m"actorCharacterResourceIds":[7m [27m{},[39m
+[32m- [7m    [27m"classOverrides":[7m [27m{},[39m
+[32m- [7m    [27m"actorParamBonuses":[7m [27m{},[39m
+[32m- [7m    [27m"actorStateIds":[7m [27m{},[39m
+[32m- [7m    [27m"playTimeSeconds":[7m [27m0,[39m
+[32m- [7m    [27m"rng":[7m {[27m[39m
+[32m- [7m      [27m"seed":[7m [27m205,[39m
+[32m- [7m      [27m"streams":[7m {[27m[39m
+[32m- [7m        [27m"encounter":[7m {[27m[39m
+[32m- [7m          [27m"seed":[7m [27m4011933617,[39m
+[32m- [7m          [27m"state":[7m [27m4011933617[39m
+[32m-         },[39m
+[32m-         "battle": {[39m
+[32m- [7m          [27m"seed":[7m [27m1411303366,[39m
+[32m- [7m          [27m"state":[7m [27m1411303366[39m
+[32m-         },[39m
+[32m-         "movement": {[39m
+[32m- [7m          [27m"seed":[7m [27m493816161,[39m
+[32m- [7m          [27m"state":[7m [27m493816161[39m
+[32m-         },[39m
+[32m-         "fishing": {[39m
+[32m- [7m          [27m"seed":[7m [27m3384362050,[39m
+[32m- [7m          [27m"state":[7m [27m3384362050[39m
+[32m-         },[39m
+[32m-         "misc": {[39m
+[32m- [7m          [27m"seed":[7m [27m2849200972,[39m
+[32m- [7m          [27m"state":[7m [27m2849200972[39m
+[32m-         }[39m
+[32m-       }[39m
+[32m-     }[39m
+[32m-   }[39m
+[32m- }[39m
+[32m-[39m
+[31m+ {"schemaVersion":4,"projectTitle":"새 프로젝트","savedAt":"2026-09-05T21:54:44.81[7m4[27mZ","mapName":"빈 맵","partyLevel":1,"playTimeSeconds":0,"session":[7m{[27m"switches":[7m{[27m"sw_0001":false,"sw_0002":false,"sw_0003":false,"sw_0004":false,"sw_0005":false,"sw_0006":false,"sw_0007":false,"sw_0008":false,"sw_0009":false,"sw_0010":false,"sw_0011":false,"sw_0012":false,"sw_0013":false,"sw_0014":false,"sw_0015":false,"sw_0016":false,"sw_0017":false,"sw_0018":false,"sw_0019":false,"sw_0020":false[7m},[27m"selfSwitches":{},"variables":[7m{[27m"var_0001":0,"var_0002":0,"var_0003":0,"var_0004":0,"var_0005":0,"var_0006":0,"var_0007":0,"var_0008":0,"var_0009":0,"var_0010":0,"var_0011":0,"var_0012":0,"var_0013":0,"var_0014":0,"var_0015":0,"var_0016":0,"var_0017":0,"var_0018":0,"var_0019":0,"var_0020":0,"progress":23[7m},[27m"timers":{},"gold":17,"inventory":{},"itemUseCharges":{},"killedFieldSpawns":{},"partyActorIds":[7m[[27m"actor_hero"[7m],[27m"shippingQueue":{},"shippingHistory":[],"bundleContributions":{},"completedBundleIds":[],"bundleRewardAppliedIds":[],"unlockedRegionIds":[],"unlockedRecipeIds":[],"makerInstances":{},"monsterInstances":{},"monsterParty":[],"monsterBox":[],"actorSkillIds":{},"actorSkillPp":{},"actorExperience":[7m{[27m"actor_hero":[7m0},[27m"actorLevels":[7m{[27m"actor_hero":1,"actor_guardian":1,"actor_mage":1,"actor_scout":1,"actor_cleric":1,"actor_ranger":[7m1},[27m"actorVitals":[7m{[27m"actor_hero":[7m{[27m"hp":514,"mp":43,"maxHp":514,"maxMp":43[7m}},[27m"eventLocations":{},"erasedEventIds":[],"removedEventIds":{},"spawnedEvents":{},"camera":[7m{[27m"mode":"follow","target":[7m{[27m"kind":"player"[7m}},[27m"lighting":[7m{[27m"ambient":0,"sources":[][7m},[27m"npcTravelStates":{},"npcActivities":{},"npcScheduleStates":{},"lifeSkills":{},"farmPlots":{},"friendship":{},"relationships":{},"dailyGifts":{},"dailyTalks":{},"monsterCareDaily":{},"chests":{},"placeables":{},"followers":[],"followerTrail":[],"currentMapId":"map_blank_start","x":10,"y":8,"mapOverrides":{},"flags":{},"audio":{},"pictures":{},"actorEquipment":[7m{[27m"actor_hero":[7m{[27m"weapon":"equip_sword","shield":"equip_oak_shield","armor":"equip_leather_armor","helmet":"equip_traveler_hat","accessory":"equip_focus_charm"[7m},[27m"actor_guardian":[7m{[27m"weapon":"equip_sword","shield":"equip_oak_shield","armor":"equip_leather_armor","helmet":"equip_traveler_hat","accessory":"equip_focus_charm"[7m},[27m"actor_mage":[7m{[27m"weapon":"equip_mage_staff","armor":"equip_mystic_robe","helmet":"equip_traveler_hat","accessory":"equip_focus_charm"[7m},[27m"actor_scout":[7m{[27m"weapon":"equip_scout_dagger","armor":"equip_leather_armor","helmet":"equip_traveler_hat","accessory":"equip_focus_charm"[7m},[27m"actor_cleric":[7m{[27m"weapon":"equip_mage_staff","shield":"equip_oak_shield","armor":"equip_mystic_robe","helmet":"equip_traveler_hat","accessory":"equip_focus_charm"[7m},[27m"actor_ranger":[7m{[27m"weapon":"equip_scout_dagger","armor":"equip_leather_armor","helmet":"equip_traveler_hat","accessory":"equip_focus_charm"[7m}},[27m"actorRows":[7m{[27m"actor_hero":"front"[7m},[27m"actorNames":{},"actorCharacterResourceIds":{},"classOverrides":{},"actorParamBonuses":{},"actorStateIds":{},"playTimeSeconds":0,"rng":[7m{[27m"seed":205,"streams":[7m{[27m"encounter":[7m{[27m"seed":4011933617,"state":4011933617[7m},"battle":{[27m"seed":1411303366,"state":1411303366[7m},"movement":{[27m"seed":493816161,"state":493816161[7m},"fishing":{[27m"seed":3384362050,"state":3384362050[7m},"misc":{[27m"seed":2849200972,"state":2849200972[7m}}}}}[27m[39m
+
+ ❯ test/lifeSaveVersion.test.ts:137:49
+    135|     expect(warn).toHaveBeenCalledTimes(2);
+    136|     expect(session).toEqual(before);
+    137|     expect(storage.getItem(old.saveSlotKey(1))).toBe(raw);
+       |                                                 ^
+    138|     expect(storage.getItem(old.autosaveKey())).toBe(raw);
+    139|     expect(storage.getItem(saves.saveSlotKey(1))).toBe(manualBefore);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/11]⎯
+
+ FAIL  test/lifeSaveVersion.test.ts > Save5 version and original ownership boundary > creates Save5 memory checkpoints and resumes an independent session without mutating the live one
+AssertionError: expected 4 to be 5 // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 5[39m
+[31m+ 4[39m
+
+ ❯ test/lifeSaveVersion.test.ts:163:38
+    161|     session.gold = 101;
+    162|     const restored = restoreSessionCheckpoint(project, session);
+    163|     expect(checkpoint.schemaVersion).toBe(5);
+       |                                      ^
+    164|     expect(restored?.gold).toBe(17);
+    165|     expect(session.gold).toBe(101);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/11]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  11 failed | 7 passed (18)
+   Start at  06:54:26
+   Duration  18.85s (transform 11.16s, setup 0ms, collect 14.38s, tests 2.74s, environment 1ms, prepare 436ms)
+
+
+ACTUAL_EXIT=1

@@ -1,0 +1,1607 @@
+{
+  "base": "b7b02d97ad6cb3b493bd60691ec61970e8a0e37e",
+  "head": "4e2d1762264533a5826c48686648093c3fe69ebd",
+  "method": "TypeScript emitted static import/export edges, local src only; dynamic and external modules excluded",
+  "beforeCount": 81,
+  "afterCount": 276,
+  "added": [
+    "src/player/runtimeDom.ts",
+    "src/player/resourceDisplay.ts",
+    "src/project/store.ts",
+    "src/editor/eventPageClipboard.ts",
+    "src/project/io/rewriteLegacyDialogue.ts",
+    "src/project/defaults.ts",
+    "src/project/defaults/defaultAssets.ts",
+    "src/project/resourceProfiles.ts",
+    "src/project/defaults/pokemonChipsetPreset.ts",
+    "src/project/defaults/interiorTransparentPropLayerRepair.ts",
+    "src/project/defaults/starterHouseTransfer.ts",
+    "src/project/defaults/defaultDatabase.ts",
+    "src/assets/bgmStarterTracks.ts",
+    "src/project/defaults/defaultDatabaseBattleRecords.ts",
+    "src/project/databaseRecordModel.ts",
+    "src/battle/skins/registry.ts",
+    "src/project/databaseAnimationRecordModel.ts",
+    "src/project/actionCombat.ts",
+    "src/battle/action/guard.ts",
+    "src/project/databaseEnemyTroopRecordModel.ts",
+    "src/project/fontRegistry.ts",
+    "src/project/databaseUtilityRecordModel.ts",
+    "src/project/defaults/defaultDatabaseUtilityRecords.ts",
+    "src/project/skillModel.ts",
+    "src/project/genrePackId.ts",
+    "src/project/p0SystemRecords.ts",
+    "src/project/p2FoundationRecords.ts",
+    "src/project/spatialPlacements.ts",
+    "src/project/playResolution.ts",
+    "src/project/worldGenRules.ts",
+    "src/project/defaults/enemyActionArchetypes.ts",
+    "src/project/defaults/generatedEnemyRecords.ts",
+    "src/project/defaults/defaultDatabasePartyRecords.ts",
+    "src/project/defaults/defaultDatabaseClassRecords.ts",
+    "src/project/defaults/defaultDatabaseRecordIds.ts",
+    "src/project/defaults/generatedBattleEffectBindings.ts",
+    "src/project/defaults/defaultDatabaseEquipmentRecords.ts",
+    "src/project/defaults/defaultCatalogFillEquipment.ts",
+    "src/project/defaults/generatedItemRecords.ts",
+    "src/project/defaults/defaultDatabaseStarterRecords.ts",
+    "src/project/defaults/defaultDatabaseItemRecords.ts",
+    "src/project/defaults/defaultExpandedItemRecords.ts",
+    "src/project/defaults/defaultFeatureItemRecords.ts",
+    "src/project/defaults/defaultCatalogFillItems.ts",
+    "src/project/defaults/defaultMaps.ts",
+    "src/project/defaults/roadAutotile.ts",
+    "src/project/defaults/autotileGroups.ts",
+    "src/project/defaults/starterVillageNpcs.ts",
+    "src/editor/content/townShowcaseMaps.ts",
+    "src/project/defaults/townHousePatterns.ts",
+    "src/project/defaults/dbExtractedHouseVariants.ts",
+    "src/editor/content/dbExtractedHouseTemplate.ts",
+    "src/editor/houseKit.ts",
+    "src/editor/houseInteriors.ts",
+    "src/assets/seThemeVariants.ts",
+    "src/editor/interiorRoomPipeline.ts",
+    "src/editor/interiorHouseWallGrammar.ts",
+    "src/project/defaults/interiorHouseWallTiles.ts",
+    "src/editor/interiorConceptCompose.ts",
+    "src/editor/interiorConceptEvents.ts",
+    "src/editor/lootFeedback.ts",
+    "src/editor/interiorObjectCatalog.ts",
+    "src/editor/interiorRoomVocab.ts",
+    "src/editor/harnessSuggestion/structureKitRasterModel.ts",
+    "src/editor/harnessSuggestion/structureKitModel.ts",
+    "src/editor/harnessSuggestion/patternDetect.ts",
+    "src/project/defaults/interiorRoomKinds.ts",
+    "src/project/placementSurface.ts",
+    "src/project/defaults/townPathAutotile.ts",
+    "src/project/defaults/townArchitectureCityMap.ts",
+    "src/project/defaults/townArchitectureCityNpcs.ts",
+    "src/project/defaults/townArchitectureTestMap.ts",
+    "src/project/defaults/marketTownMap.ts",
+    "src/project/defaults/marketTownEvents.ts",
+    "src/project/defaults/defaultProject.ts",
+    "src/project/types.ts",
+    "src/project/types/base.ts",
+    "src/project/placeables.ts",
+    "src/project/defaults/scarloxyDemoGame.ts",
+    "src/project/defaults/scarloxyPokemonDemoGame.ts",
+    "src/project/moveRouteTarget.ts",
+    "src/project/defaults/scarloxyPokemonInteriors.ts",
+    "src/project/defaults/trainingExampleMaps.ts",
+    "src/project/defaults/dungeonThemedLayouts.ts",
+    "src/project/defaults/iceDiagonalTerrain.ts",
+    "src/project/defaults/snowMountain60.ts",
+    "src/project/defaults/iceGrandPlain64.ts",
+    "src/project/defaults/dewVillageLiving.ts",
+    "src/project/defaults/dewVillageDialogue.ts",
+    "src/project/defaults/legacyRateKeyRepair.ts",
+    "src/project/defaults/legacyAudioRepair.ts",
+    "src/project/defaults/modernNocturneGame.ts",
+    "src/editor/content/skyStairGame.ts",
+    "src/editor/tools/v3/terrainPolish.ts",
+    "src/editor/tools/v3/rmTypeExpander.ts",
+    "src/editor/tileLayerClassification.ts",
+    "src/editor/runtimeTileMetadata.ts",
+    "src/project/tilesetPalette.ts",
+    "src/project/tilesetKind.ts",
+    "src/project/tileVocabulary.ts",
+    "src/project/materialPolicy.ts",
+    "src/editor/tools/types.ts",
+    "src/editor/content/skyStairMaps.ts",
+    "src/assets/charsetFaceMap.ts",
+    "src/assets/charsetSemantics.ts",
+    "src/assets/charsetQuery.ts",
+    "src/project/defaults/snowGateTerrain.ts",
+    "src/assets/facesetSheetRepair.ts",
+    "src/assets/facesetSheetSlicing.ts",
+    "src/project/defaults/defaultDatabaseIconResources.ts",
+    "src/project/devProjectPersistence.ts",
+    "src/project/io.ts",
+    "src/project/io/backup.ts",
+    "src/project/io/errors.ts",
+    "src/project/io/guards.ts",
+    "src/project/commandKindRegistry.ts",
+    "src/project/io/migration.ts",
+    "src/project/io/shape.ts",
+    "src/project/growth/validation.ts",
+    "src/project/growth/graph.ts",
+    "src/project/villageDesign.ts",
+    "src/project/storyFlags.ts",
+    "src/project/world/canonNormalize.ts",
+    "src/project/world/canon.ts",
+    "src/project/world/guards.ts",
+    "src/project/world/types.ts",
+    "src/project/factions.ts",
+    "src/project/worldGraph/index.ts",
+    "src/project/worldGraph/guards.ts",
+    "src/project/worldGraph/types.ts",
+    "src/project/worldGraph/lint.ts",
+    "src/project/eventFootprintQuery.ts",
+    "src/project/defaults/houseTemplateCatalog.ts",
+    "src/project/io/references.ts",
+    "src/project/structurePlacements.ts",
+    "src/project/io/commandReferenceValidation.ts",
+    "src/project/io/resourceReferenceValidation.ts",
+    "src/assets/oprnGeneratedAssetPlan.ts",
+    "src/assets/generatedAssetManifest.ts",
+    "src/assets/generatedAssetConstants.ts",
+    "src/project/io/shapeCommandFields.ts",
+    "src/project/io/shapeLightingFields.ts",
+    "src/project/characterIdStamp.ts",
+    "src/project/io/shapeCharacterFields.ts",
+    "src/project/io/shapeEventFields.ts",
+    "src/project/io/shapeReferenceFields.ts",
+    "src/project/io/shapeFields.ts",
+    "src/project/io/shapeResourceFields.ts",
+    "src/project/types/conceptBundle.ts",
+    "src/project/terms.ts",
+    "src/project/io/validateTilesetKnowledgeFields.ts",
+    "src/project/io/shapeDatabaseFields.ts",
+    "src/project/upgrades.ts",
+    "src/project/io/pageResolution.ts",
+    "src/project/io/serialize.ts",
+    "src/project/supabaseProjectSync.ts",
+    "src/project/eventDrafts.ts",
+    "src/project/supabaseProjectConfig.ts",
+    "src/project/projectUrl.ts",
+    "src/project/supabaseProxyPath.ts",
+    "src/util/sha256.ts",
+    "src/project/eventDraftVault.ts",
+    "src/assets/supabaseResourceCache.ts",
+    "src/project/persistenceStatus.ts",
+    "src/project/projectCommitLog.ts",
+    "src/editor/tools/changeset.ts",
+    "src/editor/detachedDraftMemory.ts",
+    "src/project/lint/projectLint.ts",
+    "src/project/lint/horrorAuthoringLint.ts",
+    "src/project/eventCommands/m2Catalog.ts",
+    "src/project/eventCommands/m2CatalogData.ts",
+    "src/project/eventCommands/m2ModernCatalog.ts",
+    "src/project/eventCommands/m2PickerLayout.ts",
+    "src/project/eventCommands/runtimeSupport.ts",
+    "src/project/commandGuaranteeRegistry.ts",
+    "src/project/eventCommands/m2RuntimeClassificationData.ts",
+    "src/project/eventCommands/m2PartialEffectDeclarations.ts",
+    "src/project/eventPageShadow.ts",
+    "src/project/mapSizeLimits.ts",
+    "src/project/playerFootprint.ts",
+    "src/project/quest/questDef.ts",
+    "src/project/quest/questGraph.ts",
+    "src/project/lint/reachability.ts",
+    "src/project/storyFlagUsage.ts",
+    "src/project/lint/clusterRuleValidators.ts",
+    "src/assets/tileGrafts.ts",
+    "src/editor/editActivityLog.ts",
+    "src/ai/toolReason.ts",
+    "src/editor/editActivityEndpoint.ts",
+    "src/util/appStorage.ts",
+    "src/util/logger.ts",
+    "src/project/editorIdentity.ts",
+    "src/project/mapTree.ts",
+    "src/player/pictures/pictureResources.ts",
+    "src/player/pictures/pictureTween.ts"
+  ],
+  "removed": [],
+  "before": {
+    "src/player/playSceneTestHooks.ts": [
+      "src/player/playSceneEmotes.ts",
+      "src/project/session.ts",
+      "src/testing/debugSession.ts",
+      "src/player/playerRouteState.ts",
+      "src/util/rng.ts"
+    ],
+    "src/player/playSceneEmotes.ts": [
+      "src/assets/bundled.ts",
+      "src/project/emotes.ts"
+    ],
+    "src/assets/bundled.ts": [
+      "src/assets/inlineAssetStore.ts",
+      "src/assets/resourceSlicing.ts",
+      "src/assets/easyrpgRtp.ts",
+      "src/assets/chipsetTransparency.ts",
+      "src/project/defaults/chipsetAnimation.ts",
+      "src/assets/charsetCatalog.ts",
+      "src/assets/farmingSprites.ts",
+      "src/assets/generatedMonsterSprites.ts",
+      "src/project/farmModel.ts",
+      "src/assets/scarloxyPack.ts",
+      "src/project/emotes.ts",
+      "src/assets/chipsetTransparency.ts",
+      "src/assets/easyrpgRtp.ts"
+    ],
+    "src/assets/inlineAssetStore.ts": [],
+    "src/assets/resourceSlicing.ts": [],
+    "src/assets/easyrpgRtp.ts": [
+      "src/assets/resourceSlicing.ts"
+    ],
+    "src/assets/chipsetTransparency.ts": [
+      "src/assets/transparentColorKey.ts"
+    ],
+    "src/assets/transparentColorKey.ts": [],
+    "src/project/defaults/chipsetAnimation.ts": [],
+    "src/assets/charsetCatalog.ts": [
+      "src/assets/easyrpgRtp.ts",
+      "src/assets/farmingSprites.ts",
+      "src/assets/scarloxyPack.ts"
+    ],
+    "src/assets/farmingSprites.ts": [],
+    "src/assets/scarloxyPack.ts": [],
+    "src/assets/generatedMonsterSprites.ts": [
+      "src/assets/generatedAssetResourceResolver.ts"
+    ],
+    "src/assets/generatedAssetResourceResolver.ts": [
+      "src/assets/inlineAssetStore.ts",
+      "src/assets/cc0IconAssets.ts",
+      "src/assets/cc0AudioAssets.ts",
+      "src/assets/bgmCatalogResolver.ts",
+      "src/assets/seCatalogResolver.ts",
+      "src/assets/farmingSprites.ts",
+      "src/assets/generatedEffectSheets.ts",
+      "src/assets/scarloxyPack.ts",
+      "src/assets/easyrpgRtp.ts",
+      "src/assets/facesetFaceAssets.ts"
+    ],
+    "src/assets/cc0IconAssets.ts": [
+      "src/brand.ts"
+    ],
+    "src/brand.ts": [],
+    "src/assets/cc0AudioAssets.ts": [
+      "src/brand.ts"
+    ],
+    "src/assets/bgmCatalogResolver.ts": [
+      "src/assets/bgmCatalogRuntime.ts",
+      "src/assets/bgmCdn.ts"
+    ],
+    "src/assets/bgmCatalogRuntime.ts": [],
+    "src/assets/bgmCdn.ts": [],
+    "src/assets/seCatalogResolver.ts": [
+      "src/assets/seCatalogRuntime.ts"
+    ],
+    "src/assets/seCatalogRuntime.ts": [],
+    "src/assets/generatedEffectSheets.ts": [],
+    "src/assets/facesetFaceAssets.ts": [],
+    "src/project/farmModel.ts": [
+      "src/assets/farmingSprites.ts",
+      "src/project/gameTime.ts"
+    ],
+    "src/project/gameTime.ts": [],
+    "src/project/emotes.ts": [],
+    "src/project/session.ts": [
+      "src/project/conditionEvaluation.ts",
+      "src/project/gameTime.ts",
+      "src/project/relationshipState.ts",
+      "src/project/socialKey.ts",
+      "src/project/sessionVitals.ts",
+      "src/util/rng.ts",
+      "src/project/collections.ts",
+      "src/project/lightingRules.ts",
+      "src/project/itemTransitions.ts",
+      "src/project/roguelikeRun.ts",
+      "src/project/itemQuantities.ts",
+      "src/project/economyValues.ts",
+      "src/project/p1FoundationRecords.ts",
+      "src/project/dailyWeather.ts",
+      "src/player/interpreter/m2RuntimeState.ts",
+      "src/player/weather/weatherModel.ts",
+      "src/project/economyValues.ts"
+    ],
+    "src/project/conditionEvaluation.ts": [],
+    "src/project/relationshipState.ts": [],
+    "src/project/socialKey.ts": [],
+    "src/project/sessionVitals.ts": [
+      "src/project/actorModel.ts"
+    ],
+    "src/project/actorModel.ts": [
+      "src/project/actorFaceDefaults.ts",
+      "src/project/actorFaceDefaults.ts"
+    ],
+    "src/project/actorFaceDefaults.ts": [
+      "src/assets/facesetFaceAssets.ts"
+    ],
+    "src/util/rng.ts": [],
+    "src/project/collections.ts": [],
+    "src/project/lightingRules.ts": [],
+    "src/project/itemTransitions.ts": [
+      "src/project/itemQuantities.ts"
+    ],
+    "src/project/itemQuantities.ts": [],
+    "src/project/roguelikeRun.ts": [
+      "src/project/conditionEvaluation.ts"
+    ],
+    "src/project/economyValues.ts": [],
+    "src/project/p1FoundationRecords.ts": [
+      "src/project/gameTime.ts",
+      "src/project/itemQuantities.ts"
+    ],
+    "src/project/dailyWeather.ts": [
+      "src/project/gameTime.ts",
+      "src/project/p1FoundationRecords.ts",
+      "src/util/rng.ts"
+    ],
+    "src/player/interpreter/m2RuntimeState.ts": [],
+    "src/player/weather/weatherModel.ts": [],
+    "src/testing/debugSession.ts": [
+      "src/project/session.ts",
+      "src/project/sessionActorCommands.ts"
+    ],
+    "src/project/sessionActorCommands.ts": [
+      "src/project/sessionClass.ts",
+      "src/project/equipmentRules.ts",
+      "src/project/monsterCollection.ts"
+    ],
+    "src/project/sessionClass.ts": [
+      "src/project/growth/vitals.ts",
+      "src/project/actorModel.ts",
+      "src/project/itemTransitions.ts"
+    ],
+    "src/project/growth/vitals.ts": [
+      "src/project/actorModel.ts",
+      "src/project/growth/runtime.ts"
+    ],
+    "src/project/growth/runtime.ts": [
+      "src/project/growth/types.ts"
+    ],
+    "src/project/growth/types.ts": [],
+    "src/project/equipmentRules.ts": [
+      "src/project/equipmentSlots.ts"
+    ],
+    "src/project/equipmentSlots.ts": [
+      "src/util/id.ts"
+    ],
+    "src/util/id.ts": [],
+    "src/project/monsterCollection.ts": [
+      "src/util/rng.ts",
+      "src/project/actorModel.ts",
+      "src/project/followers.ts",
+      "src/project/itemTransitions.ts"
+    ],
+    "src/project/followers.ts": [
+      "src/assets/charsetCatalog.ts",
+      "src/assets/easyrpgRtp.ts",
+      "src/project/actorModel.ts",
+      "src/project/collision.ts"
+    ],
+    "src/project/collision.ts": [
+      "src/project/mapOverlayTiles.ts",
+      "src/project/tilesetPassage.ts",
+      "src/project/footprint.ts"
+    ],
+    "src/project/mapOverlayTiles.ts": [],
+    "src/project/tilesetPassage.ts": [
+      "src/project/tilesetHarness.ts"
+    ],
+    "src/project/tilesetHarness.ts": [
+      "src/project/tilesetHarness/combinedTown.ts",
+      "src/project/tilesetHarness/combinedTownGroups.ts",
+      "src/project/tilesetHarness/themePacks.ts"
+    ],
+    "src/project/tilesetHarness/combinedTown.ts": [
+      "src/project/defaults/constants.ts",
+      "src/project/defaults/chipsetMapping.ts",
+      "src/project/tilesetHarness/combinedTownGroups.ts",
+      "src/project/tilesetHarness/themePacks.ts",
+      "src/project/tileRoles.ts"
+    ],
+    "src/project/defaults/constants.ts": [
+      "src/assets/resourceSlicing.ts"
+    ],
+    "src/project/defaults/chipsetMapping.ts": [
+      "src/project/defaults/constants.ts",
+      "src/project/defaults/chipsetAnimation.ts",
+      "src/project/defaults/generatedChipsetTransparency.ts"
+    ],
+    "src/project/defaults/generatedChipsetTransparency.ts": [],
+    "src/project/tilesetHarness/combinedTownGroups.ts": [
+      "src/project/defaults/constants.ts",
+      "src/project/defaults/chipsetMapping.ts",
+      "src/project/defaults/lakeAutotile.ts"
+    ],
+    "src/project/defaults/lakeAutotile.ts": [
+      "src/project/defaults/chipsetAnimation.ts",
+      "src/project/defaults/chipsetMapping.ts"
+    ],
+    "src/project/tilesetHarness/themePacks.ts": [
+      "src/project/defaults/autotileEngine.ts",
+      "src/project/defaults/darkWallAutotile.ts",
+      "src/project/defaults/interiorTerrainAutotiles.ts",
+      "src/project/defaults/dungeonTerrainAutotiles.ts",
+      "src/project/defaults/tileSemanticsInterior.ts",
+      "src/project/defaults/tileSemanticsRetroDungeon.ts",
+      "src/project/defaults/tileSemanticsRetroExterior.ts",
+      "src/project/defaults/tileSemanticsRetroHouse.ts",
+      "src/project/defaults/tileSemanticsRetroWorld.ts",
+      "src/project/defaults/tileSemanticsShip.ts",
+      "src/project/defaults/tileSemanticsWorld.ts",
+      "src/assets/scarloxyPack.ts"
+    ],
+    "src/project/defaults/autotileEngine.ts": [],
+    "src/project/defaults/darkWallAutotile.ts": [
+      "src/project/defaults/autotileEngine.ts"
+    ],
+    "src/project/defaults/interiorTerrainAutotiles.ts": [
+      "src/project/defaults/autotileEngine.ts"
+    ],
+    "src/project/defaults/dungeonTerrainAutotiles.ts": [
+      "src/project/defaults/autotileEngine.ts"
+    ],
+    "src/project/defaults/tileSemanticsInterior.ts": [],
+    "src/project/defaults/tileSemanticsRetroDungeon.ts": [],
+    "src/project/defaults/tileSemanticsRetroExterior.ts": [],
+    "src/project/defaults/tileSemanticsRetroHouse.ts": [],
+    "src/project/defaults/tileSemanticsRetroWorld.ts": [],
+    "src/project/defaults/tileSemanticsShip.ts": [],
+    "src/project/defaults/tileSemanticsWorld.ts": [],
+    "src/project/tileRoles.ts": [],
+    "src/project/footprint.ts": [],
+    "src/player/playerRouteState.ts": []
+  },
+  "after": {
+    "src/player/playSceneTestHooks.ts": [
+      "src/player/runtimeDom.ts",
+      "src/player/playSceneEmotes.ts",
+      "src/project/session.ts",
+      "src/testing/debugSession.ts",
+      "src/player/playerRouteState.ts",
+      "src/util/rng.ts"
+    ],
+    "src/player/runtimeDom.ts": [
+      "src/assets/bundled.ts",
+      "src/project/session.ts",
+      "src/player/resourceDisplay.ts",
+      "src/player/pictures/pictureResources.ts",
+      "src/player/pictures/pictureTween.ts",
+      "src/project/store.ts",
+      "src/project/gameTime.ts"
+    ],
+    "src/assets/bundled.ts": [
+      "src/assets/inlineAssetStore.ts",
+      "src/assets/resourceSlicing.ts",
+      "src/assets/easyrpgRtp.ts",
+      "src/assets/chipsetTransparency.ts",
+      "src/project/defaults/chipsetAnimation.ts",
+      "src/assets/charsetCatalog.ts",
+      "src/assets/farmingSprites.ts",
+      "src/assets/generatedMonsterSprites.ts",
+      "src/project/farmModel.ts",
+      "src/assets/scarloxyPack.ts",
+      "src/project/emotes.ts",
+      "src/assets/chipsetTransparency.ts",
+      "src/assets/easyrpgRtp.ts"
+    ],
+    "src/assets/inlineAssetStore.ts": [],
+    "src/assets/resourceSlicing.ts": [],
+    "src/assets/easyrpgRtp.ts": [
+      "src/assets/resourceSlicing.ts"
+    ],
+    "src/assets/chipsetTransparency.ts": [
+      "src/assets/transparentColorKey.ts"
+    ],
+    "src/assets/transparentColorKey.ts": [],
+    "src/project/defaults/chipsetAnimation.ts": [],
+    "src/assets/charsetCatalog.ts": [
+      "src/assets/easyrpgRtp.ts",
+      "src/assets/farmingSprites.ts",
+      "src/assets/scarloxyPack.ts"
+    ],
+    "src/assets/farmingSprites.ts": [],
+    "src/assets/scarloxyPack.ts": [],
+    "src/assets/generatedMonsterSprites.ts": [
+      "src/assets/generatedAssetResourceResolver.ts"
+    ],
+    "src/assets/generatedAssetResourceResolver.ts": [
+      "src/assets/inlineAssetStore.ts",
+      "src/assets/cc0IconAssets.ts",
+      "src/assets/cc0AudioAssets.ts",
+      "src/assets/bgmCatalogResolver.ts",
+      "src/assets/seCatalogResolver.ts",
+      "src/assets/farmingSprites.ts",
+      "src/assets/generatedEffectSheets.ts",
+      "src/assets/scarloxyPack.ts",
+      "src/assets/easyrpgRtp.ts",
+      "src/assets/facesetFaceAssets.ts"
+    ],
+    "src/assets/cc0IconAssets.ts": [
+      "src/brand.ts"
+    ],
+    "src/brand.ts": [],
+    "src/assets/cc0AudioAssets.ts": [
+      "src/brand.ts"
+    ],
+    "src/assets/bgmCatalogResolver.ts": [
+      "src/assets/bgmCatalogRuntime.ts",
+      "src/assets/bgmCdn.ts"
+    ],
+    "src/assets/bgmCatalogRuntime.ts": [],
+    "src/assets/bgmCdn.ts": [],
+    "src/assets/seCatalogResolver.ts": [
+      "src/assets/seCatalogRuntime.ts"
+    ],
+    "src/assets/seCatalogRuntime.ts": [],
+    "src/assets/generatedEffectSheets.ts": [],
+    "src/assets/facesetFaceAssets.ts": [],
+    "src/project/farmModel.ts": [
+      "src/assets/farmingSprites.ts",
+      "src/project/gameTime.ts"
+    ],
+    "src/project/gameTime.ts": [],
+    "src/project/emotes.ts": [],
+    "src/project/session.ts": [
+      "src/project/conditionEvaluation.ts",
+      "src/project/gameTime.ts",
+      "src/project/relationshipState.ts",
+      "src/project/socialKey.ts",
+      "src/project/sessionVitals.ts",
+      "src/util/rng.ts",
+      "src/project/collections.ts",
+      "src/project/lightingRules.ts",
+      "src/project/itemTransitions.ts",
+      "src/project/roguelikeRun.ts",
+      "src/project/itemQuantities.ts",
+      "src/project/economyValues.ts",
+      "src/project/p1FoundationRecords.ts",
+      "src/project/dailyWeather.ts",
+      "src/player/interpreter/m2RuntimeState.ts",
+      "src/player/weather/weatherModel.ts",
+      "src/project/economyValues.ts"
+    ],
+    "src/project/conditionEvaluation.ts": [],
+    "src/project/relationshipState.ts": [],
+    "src/project/socialKey.ts": [],
+    "src/project/sessionVitals.ts": [
+      "src/project/actorModel.ts"
+    ],
+    "src/project/actorModel.ts": [
+      "src/project/actorFaceDefaults.ts",
+      "src/project/actorFaceDefaults.ts"
+    ],
+    "src/project/actorFaceDefaults.ts": [
+      "src/assets/facesetFaceAssets.ts"
+    ],
+    "src/util/rng.ts": [],
+    "src/project/collections.ts": [],
+    "src/project/lightingRules.ts": [],
+    "src/project/itemTransitions.ts": [
+      "src/project/itemQuantities.ts"
+    ],
+    "src/project/itemQuantities.ts": [],
+    "src/project/roguelikeRun.ts": [
+      "src/project/conditionEvaluation.ts"
+    ],
+    "src/project/economyValues.ts": [],
+    "src/project/p1FoundationRecords.ts": [
+      "src/project/gameTime.ts",
+      "src/project/itemQuantities.ts"
+    ],
+    "src/project/dailyWeather.ts": [
+      "src/project/gameTime.ts",
+      "src/project/p1FoundationRecords.ts",
+      "src/util/rng.ts"
+    ],
+    "src/player/interpreter/m2RuntimeState.ts": [],
+    "src/player/weather/weatherModel.ts": [],
+    "src/player/resourceDisplay.ts": [
+      "src/project/store.ts"
+    ],
+    "src/project/store.ts": [
+      "src/editor/eventPageClipboard.ts",
+      "src/project/io/rewriteLegacyDialogue.ts",
+      "src/project/defaults.ts",
+      "src/project/defaults/defaultProject.ts",
+      "src/project/defaults/defaultAssets.ts",
+      "src/assets/facesetSheetRepair.ts",
+      "src/project/defaults/interiorTransparentPropLayerRepair.ts",
+      "src/project/defaults/scarloxyPokemonInteriors.ts",
+      "src/project/defaults/defaultDatabaseIconResources.ts",
+      "src/project/defaults/defaultDatabase.ts",
+      "src/project/devProjectPersistence.ts",
+      "src/project/supabaseProjectSync.ts",
+      "src/project/eventDrafts.ts",
+      "src/project/io.ts",
+      "src/project/eventDraftVault.ts",
+      "src/assets/supabaseResourceCache.ts",
+      "src/project/projectUrl.ts",
+      "src/project/supabaseProjectConfig.ts",
+      "src/project/persistenceStatus.ts",
+      "src/project/projectCommitLog.ts",
+      "src/project/mapTree.ts",
+      "src/util/sha256.ts",
+      "src/util/id.ts",
+      "src/util/logger.ts",
+      "src/editor/editActivityLog.ts"
+    ],
+    "src/editor/eventPageClipboard.ts": [],
+    "src/project/io/rewriteLegacyDialogue.ts": [],
+    "src/project/defaults.ts": [
+      "src/project/defaults/constants.ts",
+      "src/project/defaults/defaultAssets.ts",
+      "src/project/defaults/pokemonChipsetPreset.ts",
+      "src/project/defaults/interiorTransparentPropLayerRepair.ts",
+      "src/project/defaults/starterHouseTransfer.ts",
+      "src/project/defaults/defaultDatabase.ts",
+      "src/project/defaults/defaultMaps.ts",
+      "src/project/defaults/defaultProject.ts",
+      "src/project/defaults/modernNocturneGame.ts",
+      "src/editor/content/skyStairGame.ts"
+    ],
+    "src/project/defaults/constants.ts": [
+      "src/assets/resourceSlicing.ts"
+    ],
+    "src/project/defaults/defaultAssets.ts": [
+      "src/assets/cc0IconAssets.ts",
+      "src/assets/cc0AudioAssets.ts",
+      "src/assets/bundled.ts",
+      "src/assets/easyrpgRtp.ts",
+      "src/assets/facesetFaceAssets.ts",
+      "src/assets/resourceSlicing.ts",
+      "src/project/resourceProfiles.ts",
+      "src/project/tilesetHarness.ts",
+      "src/project/defaults/constants.ts",
+      "src/project/defaults/chipsetMapping.ts"
+    ],
+    "src/project/resourceProfiles.ts": [
+      "src/assets/resourceSlicing.ts"
+    ],
+    "src/project/tilesetHarness.ts": [
+      "src/project/tilesetHarness/combinedTown.ts",
+      "src/project/tilesetHarness/combinedTownGroups.ts",
+      "src/project/tilesetHarness/themePacks.ts"
+    ],
+    "src/project/tilesetHarness/combinedTown.ts": [
+      "src/project/defaults/constants.ts",
+      "src/project/defaults/chipsetMapping.ts",
+      "src/project/tilesetHarness/combinedTownGroups.ts",
+      "src/project/tilesetHarness/themePacks.ts",
+      "src/project/tileRoles.ts"
+    ],
+    "src/project/defaults/chipsetMapping.ts": [
+      "src/project/defaults/constants.ts",
+      "src/project/defaults/chipsetAnimation.ts",
+      "src/project/defaults/generatedChipsetTransparency.ts"
+    ],
+    "src/project/defaults/generatedChipsetTransparency.ts": [],
+    "src/project/tilesetHarness/combinedTownGroups.ts": [
+      "src/project/defaults/constants.ts",
+      "src/project/defaults/chipsetMapping.ts",
+      "src/project/defaults/lakeAutotile.ts"
+    ],
+    "src/project/defaults/lakeAutotile.ts": [
+      "src/project/defaults/chipsetAnimation.ts",
+      "src/project/defaults/chipsetMapping.ts"
+    ],
+    "src/project/tilesetHarness/themePacks.ts": [
+      "src/project/defaults/autotileEngine.ts",
+      "src/project/defaults/darkWallAutotile.ts",
+      "src/project/defaults/interiorTerrainAutotiles.ts",
+      "src/project/defaults/dungeonTerrainAutotiles.ts",
+      "src/project/defaults/tileSemanticsInterior.ts",
+      "src/project/defaults/tileSemanticsRetroDungeon.ts",
+      "src/project/defaults/tileSemanticsRetroExterior.ts",
+      "src/project/defaults/tileSemanticsRetroHouse.ts",
+      "src/project/defaults/tileSemanticsRetroWorld.ts",
+      "src/project/defaults/tileSemanticsShip.ts",
+      "src/project/defaults/tileSemanticsWorld.ts",
+      "src/assets/scarloxyPack.ts"
+    ],
+    "src/project/defaults/autotileEngine.ts": [],
+    "src/project/defaults/darkWallAutotile.ts": [
+      "src/project/defaults/autotileEngine.ts"
+    ],
+    "src/project/defaults/interiorTerrainAutotiles.ts": [
+      "src/project/defaults/autotileEngine.ts"
+    ],
+    "src/project/defaults/dungeonTerrainAutotiles.ts": [
+      "src/project/defaults/autotileEngine.ts"
+    ],
+    "src/project/defaults/tileSemanticsInterior.ts": [],
+    "src/project/defaults/tileSemanticsRetroDungeon.ts": [],
+    "src/project/defaults/tileSemanticsRetroExterior.ts": [],
+    "src/project/defaults/tileSemanticsRetroHouse.ts": [],
+    "src/project/defaults/tileSemanticsRetroWorld.ts": [],
+    "src/project/defaults/tileSemanticsShip.ts": [],
+    "src/project/defaults/tileSemanticsWorld.ts": [],
+    "src/project/tileRoles.ts": [],
+    "src/project/defaults/pokemonChipsetPreset.ts": [
+      "src/project/tilesetHarness/combinedTownGroups.ts",
+      "src/project/defaults/chipsetMapping.ts",
+      "src/project/defaults/constants.ts"
+    ],
+    "src/project/defaults/interiorTransparentPropLayerRepair.ts": [
+      "src/project/mapOverlayTiles.ts",
+      "src/project/tilesetHarness.ts"
+    ],
+    "src/project/mapOverlayTiles.ts": [],
+    "src/project/defaults/starterHouseTransfer.ts": [
+      "src/assets/easyrpgRtp.ts",
+      "src/project/defaults/chipsetMapping.ts",
+      "src/project/defaults/constants.ts"
+    ],
+    "src/project/defaults/defaultDatabase.ts": [
+      "src/assets/bgmStarterTracks.ts",
+      "src/project/defaults/defaultDatabaseBattleRecords.ts",
+      "src/project/defaults/defaultDatabasePartyRecords.ts",
+      "src/project/defaults/defaultDatabaseStarterRecords.ts",
+      "src/project/defaults/defaultDatabaseItemRecords.ts",
+      "src/project/defaults/defaultDatabaseUtilityRecords.ts",
+      "src/project/defaults/constants.ts"
+    ],
+    "src/assets/bgmStarterTracks.ts": [],
+    "src/project/defaults/defaultDatabaseBattleRecords.ts": [
+      "src/project/databaseRecordModel.ts",
+      "src/project/monsterCollection.ts",
+      "src/project/defaults/constants.ts",
+      "src/project/defaults/enemyActionArchetypes.ts",
+      "src/project/defaults/generatedEnemyRecords.ts"
+    ],
+    "src/project/databaseRecordModel.ts": [
+      "src/project/actorModel.ts",
+      "src/battle/skins/registry.ts",
+      "src/project/databaseAnimationRecordModel.ts",
+      "src/project/actionCombat.ts",
+      "src/project/databaseEnemyTroopRecordModel.ts",
+      "src/project/fontRegistry.ts",
+      "src/project/databaseUtilityRecordModel.ts",
+      "src/project/defaults/defaultDatabase.ts",
+      "src/project/gameTime.ts",
+      "src/project/monsterCollection.ts",
+      "src/project/farmModel.ts",
+      "src/project/skillModel.ts",
+      "src/project/genrePackId.ts",
+      "src/project/p0SystemRecords.ts",
+      "src/project/p1FoundationRecords.ts",
+      "src/project/p2FoundationRecords.ts",
+      "src/project/spatialPlacements.ts",
+      "src/project/playResolution.ts",
+      "src/project/worldGenRules.ts",
+      "src/project/databaseEnemyTroopRecordModel.ts"
+    ],
+    "src/battle/skins/registry.ts": [],
+    "src/project/databaseAnimationRecordModel.ts": [],
+    "src/project/actionCombat.ts": [
+      "src/battle/action/guard.ts"
+    ],
+    "src/battle/action/guard.ts": [],
+    "src/project/databaseEnemyTroopRecordModel.ts": [
+      "src/project/actorModel.ts",
+      "src/project/actionCombat.ts"
+    ],
+    "src/project/fontRegistry.ts": [],
+    "src/project/databaseUtilityRecordModel.ts": [
+      "src/project/actorModel.ts",
+      "src/project/defaults/defaultDatabaseUtilityRecords.ts"
+    ],
+    "src/project/defaults/defaultDatabaseUtilityRecords.ts": [],
+    "src/project/monsterCollection.ts": [
+      "src/util/rng.ts",
+      "src/project/actorModel.ts",
+      "src/project/followers.ts",
+      "src/project/itemTransitions.ts"
+    ],
+    "src/project/followers.ts": [
+      "src/assets/charsetCatalog.ts",
+      "src/assets/easyrpgRtp.ts",
+      "src/project/actorModel.ts",
+      "src/project/collision.ts"
+    ],
+    "src/project/collision.ts": [
+      "src/project/mapOverlayTiles.ts",
+      "src/project/tilesetPassage.ts",
+      "src/project/footprint.ts"
+    ],
+    "src/project/tilesetPassage.ts": [
+      "src/project/tilesetHarness.ts"
+    ],
+    "src/project/footprint.ts": [],
+    "src/project/skillModel.ts": [],
+    "src/project/genrePackId.ts": [],
+    "src/project/p0SystemRecords.ts": [
+      "src/project/itemQuantities.ts"
+    ],
+    "src/project/p2FoundationRecords.ts": [
+      "src/project/gameTime.ts",
+      "src/project/p1FoundationRecords.ts"
+    ],
+    "src/project/spatialPlacements.ts": [
+      "src/project/economyValues.ts",
+      "src/project/itemQuantities.ts"
+    ],
+    "src/project/playResolution.ts": [],
+    "src/project/worldGenRules.ts": [],
+    "src/project/defaults/enemyActionArchetypes.ts": [],
+    "src/project/defaults/generatedEnemyRecords.ts": [
+      "src/project/databaseRecordModel.ts",
+      "src/project/defaults/enemyActionArchetypes.ts"
+    ],
+    "src/project/defaults/defaultDatabasePartyRecords.ts": [
+      "src/project/actorModel.ts",
+      "src/project/defaults/constants.ts",
+      "src/project/defaults/defaultDatabaseClassRecords.ts",
+      "src/project/defaults/defaultDatabaseEquipmentRecords.ts",
+      "src/project/defaults/defaultDatabaseRecordIds.ts",
+      "src/project/defaults/generatedBattleEffectBindings.ts",
+      "src/assets/facesetFaceAssets.ts"
+    ],
+    "src/project/defaults/defaultDatabaseClassRecords.ts": [
+      "src/project/actorModel.ts",
+      "src/project/databaseRecordModel.ts",
+      "src/project/defaults/constants.ts",
+      "src/project/defaults/defaultDatabaseRecordIds.ts",
+      "src/project/defaults/generatedBattleEffectBindings.ts"
+    ],
+    "src/project/defaults/defaultDatabaseRecordIds.ts": [
+      "src/project/defaults/constants.ts"
+    ],
+    "src/project/defaults/generatedBattleEffectBindings.ts": [
+      "src/assets/generatedEffectSheets.ts"
+    ],
+    "src/project/defaults/defaultDatabaseEquipmentRecords.ts": [
+      "src/project/databaseRecordModel.ts",
+      "src/project/defaults/constants.ts",
+      "src/project/defaults/defaultCatalogFillEquipment.ts",
+      "src/project/defaults/generatedItemRecords.ts",
+      "src/project/defaults/defaultDatabaseRecordIds.ts"
+    ],
+    "src/project/defaults/defaultCatalogFillEquipment.ts": [
+      "src/project/databaseRecordModel.ts",
+      "src/project/defaults/defaultDatabaseRecordIds.ts"
+    ],
+    "src/project/defaults/generatedItemRecords.ts": [
+      "src/project/databaseRecordModel.ts",
+      "src/project/defaults/constants.ts",
+      "src/project/defaults/defaultDatabaseRecordIds.ts"
+    ],
+    "src/project/defaults/defaultDatabaseStarterRecords.ts": [
+      "src/assets/scarloxyPack.ts",
+      "src/assets/generatedEffectSheets.ts",
+      "src/project/defaults/generatedBattleEffectBindings.ts",
+      "src/project/databaseAnimationRecordModel.ts",
+      "src/project/databaseRecordModel.ts",
+      "src/project/defaults/constants.ts",
+      "src/project/defaults/defaultDatabaseItemRecords.ts"
+    ],
+    "src/project/defaults/defaultDatabaseItemRecords.ts": [
+      "src/project/databaseRecordModel.ts",
+      "src/project/defaults/constants.ts",
+      "src/project/defaults/generatedItemRecords.ts",
+      "src/project/defaults/defaultExpandedItemRecords.ts",
+      "src/project/defaults/defaultFeatureItemRecords.ts",
+      "src/project/defaults/defaultCatalogFillItems.ts",
+      "src/project/defaults/generatedBattleEffectBindings.ts"
+    ],
+    "src/project/defaults/defaultExpandedItemRecords.ts": [
+      "src/project/databaseRecordModel.ts"
+    ],
+    "src/project/defaults/defaultFeatureItemRecords.ts": [
+      "src/project/databaseRecordModel.ts",
+      "src/project/farmModel.ts"
+    ],
+    "src/project/defaults/defaultCatalogFillItems.ts": [
+      "src/project/databaseRecordModel.ts"
+    ],
+    "src/project/defaults/defaultMaps.ts": [
+      "src/util/id.ts",
+      "src/project/defaults/chipsetMapping.ts",
+      "src/project/defaults/constants.ts",
+      "src/project/defaults/roadAutotile.ts",
+      "src/project/defaults/starterVillageNpcs.ts",
+      "src/editor/content/townShowcaseMaps.ts",
+      "src/project/defaults/marketTownMap.ts"
+    ],
+    "src/util/id.ts": [],
+    "src/project/defaults/roadAutotile.ts": [
+      "src/project/defaults/autotileEngine.ts",
+      "src/project/defaults/autotileGroups.ts",
+      "src/project/defaults/chipsetMapping.ts"
+    ],
+    "src/project/defaults/autotileGroups.ts": [
+      "src/project/defaults/autotileEngine.ts",
+      "src/project/defaults/chipsetMapping.ts",
+      "src/project/defaults/constants.ts"
+    ],
+    "src/project/defaults/starterVillageNpcs.ts": [
+      "src/assets/easyrpgRtp.ts",
+      "src/assets/facesetFaceAssets.ts"
+    ],
+    "src/editor/content/townShowcaseMaps.ts": [
+      "src/util/id.ts",
+      "src/project/defaults/constants.ts",
+      "src/project/defaults/townHousePatterns.ts",
+      "src/project/defaults/townPathAutotile.ts",
+      "src/project/defaults/townArchitectureCityMap.ts",
+      "src/project/defaults/townArchitectureTestMap.ts",
+      "src/editor/content/dbExtractedHouseTemplate.ts"
+    ],
+    "src/project/defaults/townHousePatterns.ts": [
+      "src/project/defaults/dbExtractedHouseVariants.ts",
+      "src/project/defaults/townPathAutotile.ts"
+    ],
+    "src/project/defaults/dbExtractedHouseVariants.ts": [
+      "src/project/defaults/chipsetMapping.ts",
+      "src/project/defaults/constants.ts",
+      "src/editor/content/dbExtractedHouseTemplate.ts",
+      "src/project/defaults/townPathAutotile.ts"
+    ],
+    "src/editor/content/dbExtractedHouseTemplate.ts": [
+      "src/util/id.ts",
+      "src/editor/houseKit.ts",
+      "src/project/mapOverlayTiles.ts",
+      "src/project/defaults/constants.ts",
+      "src/project/defaults/roadAutotile.ts"
+    ],
+    "src/editor/houseKit.ts": [
+      "src/project/defaults/constants.ts",
+      "src/editor/houseInteriors.ts"
+    ],
+    "src/editor/houseInteriors.ts": [
+      "src/assets/easyrpgRtp.ts",
+      "src/assets/seThemeVariants.ts",
+      "src/editor/interiorRoomPipeline.ts",
+      "src/project/defaults/constants.ts"
+    ],
+    "src/assets/seThemeVariants.ts": [
+      "src/util/rng.ts"
+    ],
+    "src/editor/interiorRoomPipeline.ts": [
+      "src/editor/interiorHouseWallGrammar.ts",
+      "src/project/defaults/interiorHouseWallTiles.ts",
+      "src/project/defaults/constants.ts",
+      "src/project/defaults/darkWallAutotile.ts",
+      "src/project/defaults/autotileGroups.ts",
+      "src/editor/interiorConceptCompose.ts",
+      "src/editor/interiorConceptEvents.ts",
+      "src/editor/interiorObjectCatalog.ts",
+      "src/editor/interiorRoomVocab.ts",
+      "src/project/defaults/interiorRoomKinds.ts",
+      "src/project/placementSurface.ts"
+    ],
+    "src/editor/interiorHouseWallGrammar.ts": [
+      "src/project/defaults/interiorHouseWallTiles.ts",
+      "src/project/defaults/autotileGroups.ts",
+      "src/project/defaults/autotileEngine.ts",
+      "src/project/defaults/constants.ts"
+    ],
+    "src/project/defaults/interiorHouseWallTiles.ts": [],
+    "src/editor/interiorConceptCompose.ts": [
+      "src/editor/interiorHouseWallGrammar.ts",
+      "src/project/defaults/constants.ts",
+      "src/project/defaults/interiorHouseWallTiles.ts",
+      "src/util/rng.ts"
+    ],
+    "src/editor/interiorConceptEvents.ts": [
+      "src/editor/lootFeedback.ts",
+      "src/project/io/rewriteLegacyDialogue.ts"
+    ],
+    "src/editor/lootFeedback.ts": [
+      "src/assets/easyrpgRtp.ts",
+      "src/assets/seThemeVariants.ts"
+    ],
+    "src/editor/interiorObjectCatalog.ts": [
+      "src/editor/interiorRoomPipeline.ts"
+    ],
+    "src/editor/interiorRoomVocab.ts": [
+      "src/editor/harnessSuggestion/structureKitRasterModel.ts",
+      "src/editor/harnessSuggestion/structureKitModel.ts"
+    ],
+    "src/editor/harnessSuggestion/structureKitRasterModel.ts": [
+      "src/assets/bundled.ts",
+      "src/editor/harnessSuggestion/structureKitModel.ts",
+      "src/project/defaults/constants.ts"
+    ],
+    "src/editor/harnessSuggestion/structureKitModel.ts": [
+      "src/editor/harnessSuggestion/patternDetect.ts",
+      "src/project/defaults/chipsetMapping.ts",
+      "src/project/defaults/constants.ts"
+    ],
+    "src/editor/harnessSuggestion/patternDetect.ts": [],
+    "src/project/defaults/interiorRoomKinds.ts": [],
+    "src/project/placementSurface.ts": [
+      "src/project/collision.ts",
+      "src/project/defaults/constants.ts"
+    ],
+    "src/project/defaults/townPathAutotile.ts": [
+      "src/project/defaults/chipsetMapping.ts",
+      "src/project/defaults/constants.ts"
+    ],
+    "src/project/defaults/townArchitectureCityMap.ts": [
+      "src/util/id.ts",
+      "src/project/defaults/chipsetMapping.ts",
+      "src/project/defaults/constants.ts",
+      "src/project/defaults/dbExtractedHouseVariants.ts",
+      "src/project/defaults/townArchitectureCityNpcs.ts",
+      "src/project/defaults/townPathAutotile.ts"
+    ],
+    "src/project/defaults/townArchitectureCityNpcs.ts": [
+      "src/assets/easyrpgRtp.ts"
+    ],
+    "src/project/defaults/townArchitectureTestMap.ts": [
+      "src/util/id.ts",
+      "src/project/defaults/constants.ts",
+      "src/project/defaults/townPathAutotile.ts"
+    ],
+    "src/project/defaults/marketTownMap.ts": [
+      "src/util/id.ts",
+      "src/project/defaults/dbExtractedHouseVariants.ts",
+      "src/project/defaults/townPathAutotile.ts",
+      "src/project/defaults/constants.ts",
+      "src/project/defaults/chipsetMapping.ts",
+      "src/project/defaults/marketTownEvents.ts"
+    ],
+    "src/project/defaults/marketTownEvents.ts": [
+      "src/assets/easyrpgRtp.ts",
+      "src/project/defaults/constants.ts"
+    ],
+    "src/project/defaults/defaultProject.ts": [
+      "src/project/types.ts",
+      "src/assets/easyrpgRtp.ts",
+      "src/project/databaseRecordModel.ts",
+      "src/project/farmModel.ts",
+      "src/project/defaults/defaultFeatureItemRecords.ts",
+      "src/project/defaults/constants.ts",
+      "src/project/defaults/defaultDatabasePartyRecords.ts",
+      "src/project/placeables.ts",
+      "src/project/defaults/defaultAssets.ts",
+      "src/project/defaults/defaultDatabase.ts",
+      "src/project/defaults/scarloxyDemoGame.ts",
+      "src/project/defaults/scarloxyPokemonDemoGame.ts",
+      "src/project/defaults/trainingExampleMaps.ts",
+      "src/project/defaults/dungeonThemedLayouts.ts",
+      "src/project/defaults/snowMountain60.ts",
+      "src/project/defaults/iceGrandPlain64.ts",
+      "src/project/defaults/dewVillageLiving.ts",
+      "src/project/defaults/dewVillageDialogue.ts",
+      "src/project/defaults/autotileGroups.ts",
+      "src/project/defaults/autotileEngine.ts",
+      "src/project/defaults/chipsetMapping.ts",
+      "src/project/defaults/legacyRateKeyRepair.ts",
+      "src/project/defaults/legacyAudioRepair.ts",
+      "src/project/defaults/defaultMaps.ts"
+    ],
+    "src/project/types.ts": [
+      "src/project/types/base.ts"
+    ],
+    "src/project/types/base.ts": [],
+    "src/project/placeables.ts": [
+      "src/project/session.ts",
+      "src/project/itemQuantities.ts"
+    ],
+    "src/project/defaults/scarloxyDemoGame.ts": [
+      "src/brand.ts",
+      "src/assets/easyrpgRtp.ts",
+      "src/project/databaseRecordModel.ts",
+      "src/project/defaults/constants.ts",
+      "src/project/defaults/defaultMaps.ts"
+    ],
+    "src/project/defaults/scarloxyPokemonDemoGame.ts": [
+      "src/brand.ts",
+      "src/project/monsterCollection.ts",
+      "src/project/moveRouteTarget.ts",
+      "src/project/databaseRecordModel.ts",
+      "src/project/defaults/constants.ts",
+      "src/project/defaults/defaultMaps.ts",
+      "src/project/defaults/scarloxyDemoGame.ts",
+      "src/project/defaults/scarloxyPokemonInteriors.ts"
+    ],
+    "src/project/moveRouteTarget.ts": [],
+    "src/project/defaults/scarloxyPokemonInteriors.ts": [
+      "src/project/defaults/constants.ts",
+      "src/project/defaults/scarloxyDemoGame.ts"
+    ],
+    "src/project/defaults/trainingExampleMaps.ts": [
+      "src/util/id.ts",
+      "src/project/defaults/constants.ts"
+    ],
+    "src/project/defaults/dungeonThemedLayouts.ts": [
+      "src/project/defaults/autotileEngine.ts",
+      "src/project/defaults/dungeonTerrainAutotiles.ts",
+      "src/project/defaults/iceDiagonalTerrain.ts"
+    ],
+    "src/project/defaults/iceDiagonalTerrain.ts": [],
+    "src/project/defaults/snowMountain60.ts": [
+      "src/project/defaults/dungeonTerrainAutotiles.ts",
+      "src/project/defaults/iceDiagonalTerrain.ts"
+    ],
+    "src/project/defaults/iceGrandPlain64.ts": [
+      "src/project/defaults/iceDiagonalTerrain.ts"
+    ],
+    "src/project/defaults/dewVillageLiving.ts": [
+      "src/project/collision.ts"
+    ],
+    "src/project/defaults/dewVillageDialogue.ts": [],
+    "src/project/defaults/legacyRateKeyRepair.ts": [],
+    "src/project/defaults/legacyAudioRepair.ts": [
+      "src/assets/cc0AudioAssets.ts",
+      "src/assets/bgmStarterTracks.ts",
+      "src/assets/easyrpgRtp.ts"
+    ],
+    "src/project/defaults/modernNocturneGame.ts": [
+      "src/assets/easyrpgRtp.ts",
+      "src/brand.ts",
+      "src/project/types.ts",
+      "src/project/defaults/constants.ts",
+      "src/project/databaseRecordModel.ts",
+      "src/project/defaults/defaultAssets.ts",
+      "src/project/defaults/defaultDatabase.ts",
+      "src/project/defaults/defaultMaps.ts"
+    ],
+    "src/editor/content/skyStairGame.ts": [
+      "src/brand.ts",
+      "src/project/types.ts",
+      "src/project/databaseRecordModel.ts",
+      "src/project/databaseEnemyTroopRecordModel.ts",
+      "src/project/defaults/constants.ts",
+      "src/project/defaults/defaultDatabaseRecordIds.ts",
+      "src/project/defaults/defaultAssets.ts",
+      "src/project/defaults/defaultDatabase.ts",
+      "src/project/defaults/defaultProject.ts",
+      "src/editor/tools/v3/terrainPolish.ts",
+      "src/editor/content/skyStairMaps.ts"
+    ],
+    "src/editor/tools/v3/terrainPolish.ts": [
+      "src/project/defaults/autotileGroups.ts",
+      "src/editor/tools/v3/rmTypeExpander.ts"
+    ],
+    "src/editor/tools/v3/rmTypeExpander.ts": [
+      "src/project/defaults/autotileEngine.ts",
+      "src/project/defaults/autotileGroups.ts",
+      "src/editor/tileLayerClassification.ts",
+      "src/project/tileVocabulary.ts",
+      "src/editor/tools/types.ts"
+    ],
+    "src/editor/tileLayerClassification.ts": [
+      "src/editor/runtimeTileMetadata.ts",
+      "src/project/defaults/chipsetMapping.ts",
+      "src/project/tilesetHarness.ts",
+      "src/project/tilesetKind.ts"
+    ],
+    "src/editor/runtimeTileMetadata.ts": [
+      "src/project/tilesetHarness.ts",
+      "src/project/tilesetPalette.ts"
+    ],
+    "src/project/tilesetPalette.ts": [],
+    "src/project/tilesetKind.ts": [],
+    "src/project/tileVocabulary.ts": [
+      "src/project/tileRoles.ts",
+      "src/project/materialPolicy.ts"
+    ],
+    "src/project/materialPolicy.ts": [],
+    "src/editor/tools/types.ts": [],
+    "src/editor/content/skyStairMaps.ts": [
+      "src/assets/charsetFaceMap.ts",
+      "src/assets/charsetQuery.ts",
+      "src/assets/easyrpgRtp.ts",
+      "src/editor/houseKit.ts",
+      "src/project/collision.ts",
+      "src/project/defaults/chipsetMapping.ts",
+      "src/project/defaults/constants.ts",
+      "src/project/defaults/defaultAssets.ts",
+      "src/project/defaults/defaultMaps.ts",
+      "src/project/defaults/snowGateTerrain.ts",
+      "src/editor/content/skyStairGame.ts"
+    ],
+    "src/assets/charsetFaceMap.ts": [
+      "src/assets/charsetSemantics.ts",
+      "src/assets/facesetFaceAssets.ts",
+      "src/assets/easyrpgRtp.ts"
+    ],
+    "src/assets/charsetSemantics.ts": [],
+    "src/assets/charsetQuery.ts": [
+      "src/assets/charsetSemantics.ts"
+    ],
+    "src/project/defaults/snowGateTerrain.ts": [
+      "src/project/defaults/dungeonTerrainAutotiles.ts",
+      "src/project/defaults/autotileEngine.ts",
+      "src/project/defaults/iceDiagonalTerrain.ts"
+    ],
+    "src/assets/facesetSheetRepair.ts": [
+      "src/assets/facesetSheetSlicing.ts"
+    ],
+    "src/assets/facesetSheetSlicing.ts": [
+      "src/assets/resourceSlicing.ts"
+    ],
+    "src/project/defaults/defaultDatabaseIconResources.ts": [
+      "src/project/defaults/defaultDatabaseRecordIds.ts",
+      "src/project/defaults/constants.ts",
+      "src/project/defaults/defaultDatabaseItemRecords.ts"
+    ],
+    "src/project/devProjectPersistence.ts": [
+      "src/project/io.ts"
+    ],
+    "src/project/io.ts": [
+      "src/project/io/backup.ts",
+      "src/project/io/errors.ts",
+      "src/project/io/migration.ts",
+      "src/project/io/pageResolution.ts",
+      "src/project/io/serialize.ts"
+    ],
+    "src/project/io/backup.ts": [
+      "src/project/types.ts",
+      "src/project/io/errors.ts",
+      "src/project/io/guards.ts"
+    ],
+    "src/project/io/errors.ts": [],
+    "src/project/io/guards.ts": [
+      "src/project/commandKindRegistry.ts",
+      "src/project/io/errors.ts"
+    ],
+    "src/project/commandKindRegistry.ts": [],
+    "src/project/io/migration.ts": [
+      "src/project/defaults.ts",
+      "src/assets/facesetFaceAssets.ts",
+      "src/assets/facesetSheetSlicing.ts",
+      "src/project/types.ts",
+      "src/project/io/guards.ts",
+      "src/project/io/shape.ts"
+    ],
+    "src/project/io/shape.ts": [
+      "src/project/growth/validation.ts",
+      "src/project/villageDesign.ts",
+      "src/project/databaseRecordModel.ts",
+      "src/project/storyFlags.ts",
+      "src/project/world/canonNormalize.ts",
+      "src/project/world/guards.ts",
+      "src/project/factions.ts",
+      "src/project/worldGraph/index.ts",
+      "src/project/tilesetPalette.ts",
+      "src/project/p1FoundationRecords.ts",
+      "src/project/spatialPlacements.ts",
+      "src/project/defaults/houseTemplateCatalog.ts",
+      "src/project/io/guards.ts",
+      "src/project/io/references.ts",
+      "src/project/io/shapeCommandFields.ts",
+      "src/project/characterIdStamp.ts",
+      "src/project/io/shapeCharacterFields.ts",
+      "src/project/io/shapeFields.ts"
+    ],
+    "src/project/growth/validation.ts": [
+      "src/project/growth/types.ts",
+      "src/project/growth/graph.ts"
+    ],
+    "src/project/growth/types.ts": [],
+    "src/project/growth/graph.ts": [],
+    "src/project/villageDesign.ts": [],
+    "src/project/storyFlags.ts": [],
+    "src/project/world/canonNormalize.ts": [
+      "src/project/io/errors.ts",
+      "src/project/world/canon.ts"
+    ],
+    "src/project/world/canon.ts": [],
+    "src/project/world/guards.ts": [
+      "src/project/io/errors.ts",
+      "src/project/world/types.ts"
+    ],
+    "src/project/world/types.ts": [],
+    "src/project/factions.ts": [],
+    "src/project/worldGraph/index.ts": [
+      "src/project/worldGraph/guards.ts",
+      "src/project/worldGraph/lint.ts"
+    ],
+    "src/project/worldGraph/guards.ts": [
+      "src/project/io/errors.ts",
+      "src/project/worldGraph/types.ts"
+    ],
+    "src/project/worldGraph/types.ts": [],
+    "src/project/worldGraph/lint.ts": [
+      "src/project/collision.ts",
+      "src/project/eventFootprintQuery.ts",
+      "src/project/worldGraph/guards.ts"
+    ],
+    "src/project/eventFootprintQuery.ts": [
+      "src/project/footprint.ts"
+    ],
+    "src/project/defaults/houseTemplateCatalog.ts": [],
+    "src/project/io/references.ts": [
+      "src/project/equipmentSlots.ts",
+      "src/project/growth/validation.ts",
+      "src/project/io/guards.ts",
+      "src/project/structurePlacements.ts",
+      "src/project/io/commandReferenceValidation.ts",
+      "src/project/io/resourceReferenceValidation.ts",
+      "src/project/factions.ts",
+      "src/project/monsterCollection.ts",
+      "src/project/collision.ts",
+      "src/project/spatialPlacements.ts"
+    ],
+    "src/project/equipmentSlots.ts": [
+      "src/util/id.ts"
+    ],
+    "src/project/structurePlacements.ts": [
+      "src/project/defaults/constants.ts",
+      "src/project/mapOverlayTiles.ts",
+      "src/util/id.ts"
+    ],
+    "src/project/io/commandReferenceValidation.ts": [
+      "src/project/equipmentSlots.ts",
+      "src/project/io/guards.ts",
+      "src/project/io/resourceReferenceValidation.ts"
+    ],
+    "src/project/io/resourceReferenceValidation.ts": [
+      "src/assets/generatedAssetResourceResolver.ts",
+      "src/assets/bgmCatalogRuntime.ts",
+      "src/assets/cc0IconAssets.ts",
+      "src/assets/cc0AudioAssets.ts",
+      "src/assets/easyrpgRtp.ts",
+      "src/assets/facesetFaceAssets.ts",
+      "src/assets/farmingSprites.ts",
+      "src/assets/generatedEffectSheets.ts",
+      "src/assets/oprnGeneratedAssetPlan.ts",
+      "src/assets/scarloxyPack.ts",
+      "src/assets/seCatalogRuntime.ts",
+      "src/project/io/guards.ts"
+    ],
+    "src/assets/oprnGeneratedAssetPlan.ts": [
+      "src/assets/generatedAssetManifest.ts"
+    ],
+    "src/assets/generatedAssetManifest.ts": [
+      "src/project/resourceProfiles.ts",
+      "src/assets/generatedAssetConstants.ts",
+      "src/assets/generatedAssetConstants.ts"
+    ],
+    "src/assets/generatedAssetConstants.ts": [],
+    "src/project/io/shapeCommandFields.ts": [
+      "src/project/equipmentSlots.ts",
+      "src/project/emotes.ts",
+      "src/project/io/errors.ts",
+      "src/project/io/guards.ts",
+      "src/project/io/shapeLightingFields.ts",
+      "src/project/gameTime.ts",
+      "src/project/relationshipState.ts"
+    ],
+    "src/project/io/shapeLightingFields.ts": [
+      "src/project/io/guards.ts"
+    ],
+    "src/project/characterIdStamp.ts": [],
+    "src/project/io/shapeCharacterFields.ts": [
+      "src/project/io/guards.ts",
+      "src/project/io/shapeEventFields.ts",
+      "src/project/gameTime.ts"
+    ],
+    "src/project/io/shapeEventFields.ts": [
+      "src/project/io/guards.ts",
+      "src/project/footprint.ts",
+      "src/project/io/shapeCommandFields.ts",
+      "src/project/io/shapeLightingFields.ts",
+      "src/project/io/shapeReferenceFields.ts",
+      "src/project/gameTime.ts"
+    ],
+    "src/project/io/shapeReferenceFields.ts": [
+      "src/project/io/guards.ts"
+    ],
+    "src/project/io/shapeFields.ts": [
+      "src/project/io/shapeResourceFields.ts",
+      "src/project/io/shapeEventFields.ts",
+      "src/project/io/shapeDatabaseFields.ts",
+      "src/project/io/shapeReferenceFields.ts"
+    ],
+    "src/project/io/shapeResourceFields.ts": [
+      "src/project/types/conceptBundle.ts",
+      "src/project/tilesetPalette.ts",
+      "src/project/terms.ts",
+      "src/project/io/guards.ts",
+      "src/project/io/shapeReferenceFields.ts",
+      "src/project/io/validateTilesetKnowledgeFields.ts"
+    ],
+    "src/project/types/conceptBundle.ts": [],
+    "src/project/terms.ts": [
+      "src/project/defaults/defaultDatabase.ts"
+    ],
+    "src/project/io/validateTilesetKnowledgeFields.ts": [
+      "src/project/io/guards.ts"
+    ],
+    "src/project/io/shapeDatabaseFields.ts": [
+      "src/project/equipmentSlots.ts",
+      "src/project/genrePackId.ts",
+      "src/project/upgrades.ts",
+      "src/project/itemQuantities.ts",
+      "src/project/p1FoundationRecords.ts",
+      "src/project/p2FoundationRecords.ts",
+      "src/project/gameTime.ts",
+      "src/project/spatialPlacements.ts",
+      "src/project/economyValues.ts",
+      "src/project/io/guards.ts",
+      "src/project/io/shapeEventFields.ts"
+    ],
+    "src/project/upgrades.ts": [
+      "src/project/session.ts",
+      "src/project/itemQuantities.ts"
+    ],
+    "src/project/io/pageResolution.ts": [
+      "src/project/conditionEvaluation.ts",
+      "src/project/gameTime.ts",
+      "src/project/session.ts",
+      "src/project/socialKey.ts",
+      "src/project/roguelikeRun.ts",
+      "src/project/relationshipState.ts"
+    ],
+    "src/project/io/serialize.ts": [
+      "src/project/types.ts",
+      "src/project/io/errors.ts",
+      "src/project/io/guards.ts",
+      "src/project/io/migration.ts",
+      "src/project/io/shape.ts"
+    ],
+    "src/project/supabaseProjectSync.ts": [
+      "src/brand.ts",
+      "src/project/io.ts",
+      "src/project/defaults/defaultAssets.ts",
+      "src/project/defaults/defaultDatabase.ts",
+      "src/project/defaults/defaultDatabaseEquipmentRecords.ts",
+      "src/project/defaults/defaultDatabaseItemRecords.ts",
+      "src/project/defaults/defaultDatabaseStarterRecords.ts",
+      "src/project/io/references.ts",
+      "src/project/eventDrafts.ts",
+      "src/project/supabaseProjectConfig.ts",
+      "src/util/sha256.ts",
+      "src/util/id.ts",
+      "src/project/supabaseProjectConfig.ts"
+    ],
+    "src/project/eventDrafts.ts": [],
+    "src/project/supabaseProjectConfig.ts": [
+      "src/project/projectUrl.ts",
+      "src/project/supabaseProxyPath.ts"
+    ],
+    "src/project/projectUrl.ts": [],
+    "src/project/supabaseProxyPath.ts": [],
+    "src/util/sha256.ts": [],
+    "src/project/eventDraftVault.ts": [
+      "src/project/supabaseProjectConfig.ts"
+    ],
+    "src/assets/supabaseResourceCache.ts": [],
+    "src/project/persistenceStatus.ts": [
+      "src/project/supabaseProjectConfig.ts"
+    ],
+    "src/project/projectCommitLog.ts": [
+      "src/editor/tools/changeset.ts",
+      "src/editor/editActivityLog.ts",
+      "src/util/logger.ts",
+      "src/project/editorIdentity.ts",
+      "src/project/eventDrafts.ts",
+      "src/project/io.ts",
+      "src/project/supabaseProjectSync.ts"
+    ],
+    "src/editor/tools/changeset.ts": [
+      "src/editor/detachedDraftMemory.ts",
+      "src/project/lint/projectLint.ts"
+    ],
+    "src/editor/detachedDraftMemory.ts": [],
+    "src/project/lint/projectLint.ts": [
+      "src/project/lint/horrorAuthoringLint.ts",
+      "src/project/eventCommands/m2Catalog.ts",
+      "src/project/eventPageShadow.ts",
+      "src/project/eventCommands/runtimeSupport.ts",
+      "src/assets/cc0AudioAssets.ts",
+      "src/assets/easyrpgRtp.ts",
+      "src/project/farmModel.ts",
+      "src/project/mapSizeLimits.ts",
+      "src/project/collision.ts",
+      "src/project/eventFootprintQuery.ts",
+      "src/project/footprint.ts",
+      "src/project/playerFootprint.ts",
+      "src/project/io.ts",
+      "src/project/io/references.ts",
+      "src/project/quest/questDef.ts",
+      "src/project/quest/questGraph.ts",
+      "src/project/storyFlags.ts",
+      "src/project/storyFlagUsage.ts",
+      "src/project/worldGraph/index.ts",
+      "src/project/lint/clusterRuleValidators.ts",
+      "src/project/lint/reachability.ts",
+      "src/assets/tileGrafts.ts"
+    ],
+    "src/project/lint/horrorAuthoringLint.ts": [
+      "src/project/collision.ts"
+    ],
+    "src/project/eventCommands/m2Catalog.ts": [
+      "src/project/eventCommands/m2CatalogData.ts",
+      "src/project/eventCommands/m2ModernCatalog.ts",
+      "src/project/eventCommands/m2PickerLayout.ts",
+      "src/project/eventCommands/runtimeSupport.ts"
+    ],
+    "src/project/eventCommands/m2CatalogData.ts": [],
+    "src/project/eventCommands/m2ModernCatalog.ts": [],
+    "src/project/eventCommands/m2PickerLayout.ts": [],
+    "src/project/eventCommands/runtimeSupport.ts": [
+      "src/project/commandGuaranteeRegistry.ts",
+      "src/project/eventCommands/m2RuntimeClassificationData.ts",
+      "src/project/eventCommands/m2PartialEffectDeclarations.ts",
+      "src/project/eventCommands/m2RuntimeClassificationData.ts",
+      "src/project/eventCommands/m2PartialEffectDeclarations.ts"
+    ],
+    "src/project/commandGuaranteeRegistry.ts": [],
+    "src/project/eventCommands/m2RuntimeClassificationData.ts": [],
+    "src/project/eventCommands/m2PartialEffectDeclarations.ts": [],
+    "src/project/eventPageShadow.ts": [],
+    "src/project/mapSizeLimits.ts": [],
+    "src/project/playerFootprint.ts": [
+      "src/project/footprint.ts"
+    ],
+    "src/project/quest/questDef.ts": [],
+    "src/project/quest/questGraph.ts": [
+      "src/project/conditionEvaluation.ts",
+      "src/project/collision.ts",
+      "src/project/lint/reachability.ts",
+      "src/project/storyFlags.ts",
+      "src/project/storyFlagUsage.ts",
+      "src/project/quest/questDef.ts"
+    ],
+    "src/project/lint/reachability.ts": [
+      "src/project/collision.ts"
+    ],
+    "src/project/storyFlagUsage.ts": [],
+    "src/project/lint/clusterRuleValidators.ts": [
+      "src/project/placementSurface.ts"
+    ],
+    "src/assets/tileGrafts.ts": [
+      "src/assets/resourceSlicing.ts"
+    ],
+    "src/editor/editActivityLog.ts": [
+      "src/ai/toolReason.ts",
+      "src/editor/editActivityEndpoint.ts",
+      "src/util/appStorage.ts",
+      "src/util/logger.ts"
+    ],
+    "src/ai/toolReason.ts": [],
+    "src/editor/editActivityEndpoint.ts": [],
+    "src/util/appStorage.ts": [
+      "src/brand.ts"
+    ],
+    "src/util/logger.ts": [
+      "src/util/appStorage.ts"
+    ],
+    "src/project/editorIdentity.ts": [
+      "src/util/id.ts"
+    ],
+    "src/project/mapTree.ts": [],
+    "src/player/pictures/pictureResources.ts": [
+      "src/assets/generatedAssetResourceResolver.ts"
+    ],
+    "src/player/pictures/pictureTween.ts": [],
+    "src/player/playSceneEmotes.ts": [
+      "src/assets/bundled.ts",
+      "src/project/emotes.ts"
+    ],
+    "src/testing/debugSession.ts": [
+      "src/project/session.ts",
+      "src/project/sessionActorCommands.ts"
+    ],
+    "src/project/sessionActorCommands.ts": [
+      "src/project/sessionClass.ts",
+      "src/project/equipmentRules.ts",
+      "src/project/monsterCollection.ts"
+    ],
+    "src/project/sessionClass.ts": [
+      "src/project/growth/vitals.ts",
+      "src/project/actorModel.ts",
+      "src/project/itemTransitions.ts"
+    ],
+    "src/project/growth/vitals.ts": [
+      "src/project/actorModel.ts",
+      "src/project/growth/runtime.ts"
+    ],
+    "src/project/growth/runtime.ts": [
+      "src/project/growth/types.ts"
+    ],
+    "src/project/equipmentRules.ts": [
+      "src/project/equipmentSlots.ts"
+    ],
+    "src/player/playerRouteState.ts": []
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p2",
+  "head": "62c70a3093f6a891f209cc9c3d02a6140dccffed",
+  "tree": "e6fb5e9a92ad4c570420e4755880d78d532c7d68",
+  "diffSha256": "1b10b539d385f52def550443a44266526e1cbc6863177c3bc3344bb8f10583a8",
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "node",
+    ".omo/evidence/life-full-20260906/5/q1/diagnostics.mjs"
+  ],
+  "started": "2026-09-06T02:49:55.933Z",
+  "exit": 0,
+  "signal": null,
+  "output": "{\"file\":\"src/player/audio/audioEngine.ts\",\"diagnostics\":[]}\n{\"file\":\"src/player/audio/index.ts\",\"diagnostics\":[]}\n{\"file\":\"src/player/player.ts\",\"diagnostics\":[]}\n{\"file\":\"test/audioQaInstrumentation.test.ts\",\"diagnostics\":[]}\n{\"file\":\"test/playerAudioQaLifecycle.test.ts\",\"diagnostics\":[]}\n{\"file\":\"test/audioEnginePlaybackControls.test.ts\",\"diagnostics\":[]}\n{\"file\":\"test/playerRunControls.test.ts\",\"diagnostics\":[]}\n{\"file\":\"test/playerKeydownSessionGuard.test.ts\",\"diagnostics\":[]}\n{\"file\":\"test/playBootRecovery.test.ts\",\"diagnostics\":[]}\n{\"file\":\"test/playerOpenSaveMenu.test.ts\",\"diagnostics\":[]}\n{\"file\":\"test/e2e/oprn-audio-test-dialog.spec.ts\",\"diagnostics\":[]}\n{\"files\":11,\"diagnostics\":0}\n",
+  "sha256": "2cd4365ff2c4a83bb63c5014bca2fe71c789d1fe776318e8f10dd8cc721b9b4d"
+}

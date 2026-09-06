@@ -184,6 +184,14 @@ const KOREAN_MONSTER_STEMS: Readonly<Record<string, readonly string[]>> = {
   부유하는: ["flying", "floating"],
 };
 
+// Compound creature identities belong to these exact resources, not every asset
+// containing "leaf" or "fire" (a leafling/mantis is not a leaf fox).
+const RESOURCE_IDENTITY_TAGS: Readonly<Record<string, readonly string[]>> = {
+  "generated-enemy-leaf-fox": ["풀잎여우", "풀잎 여우", "풀잎", "여우"],
+  "generated-enemy-fire-pup": ["불꽃강아지", "불꽃 강아지", "불씨강아지", "불씨 강아지", "불꽃", "불씨", "강아지"],
+  "generated-enemy-sparkit-fire": ["스파킷"],
+};
+
 /** 어간 → 그 어간을 가리키는 한국어 낱말들. 리소스 태그를 붙일 때 쓰는 역색인. */
 const KOREAN_WORDS_BY_STEM: ReadonlyMap<string, readonly string[]> = (() => {
   const index = new Map<string, string[]>();
@@ -213,6 +221,7 @@ function idWords(value: string): string[] {
 export function koreanMonsterTags(...values: readonly string[]): string[] {
   const tags = new Set<string>();
   for (const value of values) {
+    for (const tag of RESOURCE_IDENTITY_TAGS[value] ?? []) tags.add(tag);
     for (const word of idWords(value)) {
       for (const korean of KOREAN_WORDS_BY_STEM.get(word) ?? []) tags.add(korean);
     }

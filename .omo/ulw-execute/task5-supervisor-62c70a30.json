@@ -1,0 +1,10 @@
+{
+  "commit": "62c70a3093f6a891f209cc9c3d02a6140dccffed",
+  "tree": "e6fb5e9a92ad4c570420e4755880d78d532c7d68",
+  "exit": 0,
+  "tests": 11,
+  "files": 2,
+  "index": "current",
+  "actualOutput": "status: completed exit_code: 0\n\n> rpg-zzu@0.1.0 test\n> node scripts/run-vitest.mjs run --configLoader bundle test/debugSession.test.ts test/lifeQaObservability.test.ts\n\n\n RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2\n\n ✓ test/debugSession.test.ts (4 tests) 410ms\n ✓ test/lifeQaObservability.test.ts (7 tests) 538ms\n\n Test Files  2 passed (2)\n      Tests  11 passed (11)\n   Start at  11:29:06\n   Duration  13.84s (transform 9.44s, setup 0ms, collect 20.59s, tests 949ms, environment 1ms, prepare 738ms)\n\n\n> rpg-zzu@0.1.0 openwiki:index\n> node scripts/openwiki-index.mjs --check\n\nopenwiki/INDEX.md 최신.",
+  "productEquivalence": "git diff --exit-code 4e2d1762 HEAD -- src scripts succeeded before tests; prior real player proof uses identical product code"
+}

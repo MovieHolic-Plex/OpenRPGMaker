@@ -1,0 +1,149 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-load-errors",
+  "head": "e9522cb11c4e09d09fddc45c18d805d53a61b976",
+  "tree": "47999d20959f54014ac1526adba0b27aa5842edd",
+  "surface": "dedicated player.html/exportProjectStoreShim; controlled failure-input fixture, not earned gameplay",
+  "deadlineMs": 120000,
+  "actionDeadlineMs": 10000,
+  "sourceHashes": {
+    "src/player/player.ts": "ef42c64ff5b9efe7233fb5b43f18a424400fd97c34faa3db5866c0a2ca369593",
+    "src/player/playerStatusMenuController.ts": "e4bd1b24758c62338b1a871712222b2412b9c4b8c01c9cdd45af9295f2504155",
+    "test/lifePlayerSaveFailures.test.ts": "be9b05decffb3c598ef0e8cac0fc27ca423b7af1e137ed4056836007f5684035"
+  },
+  "runs": [
+    {
+      "name": "title-autosave",
+      "running": false,
+      "actions": "real keyboard; actual shell callback/Storage/apply",
+      "message": {
+        "text": "자동 저장을 불러올 수 없습니다",
+        "role": "status",
+        "children": 0
+      },
+      "guidanceCount": 1,
+      "diskUnchanged": true,
+      "qaStateUnchanged": true,
+      "currentSceneIdentityPreserved": false,
+      "noRestoredCanvas": true
+    },
+    {
+      "name": "title-manual",
+      "running": false,
+      "actions": "real keyboard; actual shell callback/Storage/apply",
+      "message": {
+        "text": "1번 저장 칸을 불러올 수 없습니다",
+        "role": "status",
+        "children": 0
+      },
+      "guidanceCount": 1,
+      "diskUnchanged": true,
+      "qaStateUnchanged": true,
+      "currentSceneIdentityPreserved": false,
+      "noRestoredCanvas": true
+    },
+    {
+      "name": "running-manual",
+      "running": true,
+      "actions": "real keyboard; actual shell callback/Storage/apply",
+      "message": {
+        "text": "1번 저장 칸을 불러올 수 없습니다",
+        "role": "status",
+        "children": 0
+      },
+      "guidanceCount": 1,
+      "diskUnchanged": true,
+      "qaStateUnchanged": true,
+      "currentSceneIdentityPreserved": true,
+      "noRestoredCanvas": false
+    },
+    {
+      "name": "running-autosave",
+      "running": true,
+      "actions": "real keyboard; actual shell callback/Storage/apply",
+      "message": {
+        "text": "자동 저장을 불러올 수 없습니다",
+        "role": "status",
+        "children": 0
+      },
+      "guidanceCount": 1,
+      "diskUnchanged": true,
+      "qaStateUnchanged": true,
+      "currentSceneIdentityPreserved": true,
+      "noRestoredCanvas": false
+    }
+  ],
+  "errors": [],
+  "requestsFailed": [],
+  "httpErrors": [],
+  "consoleErrors": [],
+  "public": {
+    "readers": [
+      {
+        "name": "manual",
+        "kind": "present",
+        "precheck": null,
+        "applyError": {
+          "name": "LifeReconciliationError",
+          "sourceKind": "shippingQueue",
+          "sourceId": "raw",
+          "reason": "capacity"
+        }
+      },
+      {
+        "name": "auto",
+        "kind": "present",
+        "precheck": null,
+        "applyError": {
+          "name": "LifeReconciliationError",
+          "sourceKind": "shippingQueue",
+          "sourceId": "raw",
+          "reason": "capacity"
+        }
+      }
+    ],
+    "writerRefused": true,
+    "shippingQueue": {
+      "raw": 3
+    },
+    "claims": 4096,
+    "nextSequence": 4097,
+    "validRecovery": true,
+    "snapshotCreatedShippingEnabled": true,
+    "currentShippingEnabled": false,
+    "liveAndSourceUnchanged": true,
+    "fixtureSha256": "00b4daa54d7cfcb3d3fa2a9727626b542a8ea3537e8fc41e19f79ebaf740af10",
+    "fixtureBytes": 2292998,
+    "slots": {
+      "task39:save-slot:v5:1": {
+        "bytes": 578650,
+        "sha256": "b96f6e8ff7a19fa933faa8e5ebd832edd28a9b4c67eea68679dbb019a6ead944"
+      },
+      "task39:save-slot:v5:auto": {
+        "bytes": 578650,
+        "sha256": "b96f6e8ff7a19fa933faa8e5ebd832edd28a9b4c67eea68679dbb019a6ead944"
+      },
+      "task39:save-slot:1": {
+        "bytes": 3273,
+        "sha256": "001248f0a45e56d390289c520f184e7fae933350b9f8136440e35d1308488ca2"
+      },
+      "task39:save-slot:auto": {
+        "bytes": 3273,
+        "sha256": "001248f0a45e56d390289c520f184e7fae933350b9f8136440e35d1308488ca2"
+      }
+    }
+  },
+  "url": "http://127.0.0.1:42507/player.html",
+  "port": 42507,
+  "browserName": "firefox",
+  "browserVersion": "151.0",
+  "navigationStatus": 200,
+  "ok": true,
+  "cleanup": {
+    "contextsClosed": true,
+    "browserClosed": true,
+    "serversClosed": true,
+    "portProbe": "ECONNREFUSED",
+    "ownCachesRemoved": true,
+    "remoteWrites": 0
+  }
+}

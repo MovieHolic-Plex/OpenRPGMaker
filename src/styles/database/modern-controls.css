@@ -81,21 +81,8 @@
   box-shadow: 0 0 0 100px var(--db-studio-surface) inset;
 }
 
-/* ── number: 공유 스테퍼를 제공한 뒤 네이티브 스피너 제거 ──────────────── */
-
-/* databaseControls.ts 의 numberField()가 모든 공유 숫자 입력에 마우스용 −/+ 버튼을
-   제공한다. 대안이 먼저 생겼으므로 이제 브라우저별 작은 스피너를 숨긴다. */
-.database-modal-backdrop .database-modal-window input[type="number"] {
-  -moz-appearance: textfield;
-  appearance: textfield;
-}
-
-.database-modal-backdrop .database-modal-window input[type="number"]::-webkit-outer-spin-button,
-.database-modal-backdrop .database-modal-window input[type="number"]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  appearance: none;
-  margin: 0;
-}
+/* Numeric spinner suppression belongs only to the composite in studio-v2.css.
+   Bare change-committed Life/actor numbers keep their native increment UI. */
 
 /* Disabled native controls retain their own baseline; composite interiors are
    owned by studio-v2.css. */

@@ -1,0 +1,209 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeRecoveryRecordKeys.test.ts --config .omo/evidence/life-full-20260906/30/finite-use/vitest.config.mjs --maxWorkers=2 --minWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2-life-full-record-keys
+
+ ❯ test/lifeRecoveryRecordKeys.test.ts (37 tests | 6 failed) 2857ms
+   ✓ life recovery own record keys > keeps the exact raw JSON __proto__ quantity owned at parse 4ms
+   ✓ life recovery own record keys > retains compatible ordinary contributions without inventing claims 104ms
+   ✓ life recovery own record keys > retains compatible __proto__ contributions without inventing claims 57ms
+   ✓ life recovery own record keys > retains compatible constructor contributions without inventing claims 53ms
+   ✓ life recovery own record keys > retains compatible toString contributions without inventing claims 54ms
+   ✓ life recovery own record keys > splits ordinary into progress2 and claim3 and pays exactly once 55ms
+   ✓ life recovery own record keys > splits __proto__ into progress2 and claim3 and pays exactly once 55ms
+   ✓ life recovery own record keys > splits constructor into progress2 and claim3 and pays exactly once 40ms
+   ✓ life recovery own record keys > splits toString into progress2 and claim3 and pays exactly once 46ms
+   ✓ life recovery own record keys > preserves complete unknown ordinary source evidence with no guessed payout 45ms
+   ✓ life recovery own record keys > preserves complete unknown __proto__ source evidence with no guessed payout 43ms
+   ✓ life recovery own record keys > preserves complete unknown constructor source evidence with no guessed payout 53ms
+   ✓ life recovery own record keys > preserves complete unknown toString source evidence with no guessed payout 36ms
+   ✓ life recovery own record keys > preserves existing ordinary inventory when collecting a direct shipping claim 37ms
+   ✓ life recovery own record keys > preserves existing __proto__ inventory when collecting a direct shipping claim 37ms
+   ✓ life recovery own record keys > preserves existing constructor inventory when collecting a direct shipping claim 31ms
+   ✓ life recovery own record keys > preserves existing toString inventory when collecting a direct shipping claim 28ms
+   ✓ life recovery own record keys > retains ordinary source and claim quantities on capacity and malformed rollback 31ms
+   ✓ life recovery own record keys > retains __proto__ source and claim quantities on capacity and malformed rollback 26ms
+   ✓ life recovery own record keys > retains constructor source and claim quantities on capacity and malformed rollback 30ms
+   ✓ life recovery own record keys > retains toString source and claim quantities on capacity and malformed rollback 29ms
+   ✓ finite-use recovery record keys > preserves ordinary charge2 through actual shipping claim3 collection 149ms
+   × finite-use recovery record keys > preserves __proto__ charge2 through actual shipping claim3 collection 139ms
+     → expected [] to deeply equal [ [ '__proto__', 2 ] ]
+   ✓ finite-use recovery record keys > preserves constructor charge2 through actual shipping claim3 collection 121ms
+   ✓ finite-use recovery record keys > preserves toString charge2 through actual shipping claim3 collection 110ms
+   ✓ finite-use recovery record keys > preserves own ordinary charge2 at normalize, writer, Storage reader and apply 120ms
+   × finite-use recovery record keys > preserves own __proto__ charge2 at normalize, writer, Storage reader and apply 112ms
+     → expected [] to deeply equal [ [ '__proto__', 2 ] ]
+   ✓ finite-use recovery record keys > preserves own constructor charge2 at normalize, writer, Storage reader and apply 109ms
+   ✓ finite-use recovery record keys > preserves own toString charge2 at normalize, writer, Storage reader and apply 120ms
+   ✓ finite-use recovery record keys > counts numeric ordinary charges1..4 and depletes on successfulUse5 116ms
+   × finite-use recovery record keys > counts numeric __proto__ charges1..4 and depletes on successfulUse5 116ms
+     → expected [] to deeply equal [ [ '__proto__', 1 ] ]
+   × finite-use recovery record keys > counts numeric constructor charges1..4 and depletes on successfulUse5 167ms
+     → expected [ [ 'constructor', …(1) ] ] to deeply equal [ [ 'constructor', 1 ] ]
+   × finite-use recovery record keys > counts numeric toString charges1..4 and depletes on successfulUse5 116ms
+     → expected [ [ 'toString', …(1) ] ] to deeply equal [ [ 'toString', 1 ] ]
+   ✓ finite-use recovery record keys > keeps ordinary finite cursor and claim on overflow or invalid count 103ms
+   × finite-use recovery record keys > keeps __proto__ finite cursor and claim on overflow or invalid count 118ms
+     → expected [] to deeply equal [ [ '__proto__', 2 ] ]
+   ✓ finite-use recovery record keys > keeps constructor finite cursor and claim on overflow or invalid count 129ms
+   ✓ finite-use recovery record keys > keeps toString finite cursor and claim on overflow or invalid count 114ms
+
+ Test Files  1 failed (1)
+      Tests  6 failed | 31 passed (37)
+   Start at  13:17:32
+   Duration  7.26s (transform 2.77s, setup 0ms, collect 4.06s, tests 2.86s, environment 0ms, prepare 74ms)
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/lifeRecoveryRecordKeys.test.ts > finite-use recovery record keys > preserves __proto__ charge2 through actual shipping claim3 collection
+AssertionError: expected [] to deeply equal [ [ '__proto__', 2 ] ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [[39m
+[32m-   [[39m
+[32m-     "__proto__",[39m
+[32m-     2,[39m
+[32m-   ],[39m
+[32m- ][39m
+[31m+ [][39m
+
+ ❯ cursor test/lifeRecoveryRecordKeys.test.ts:149:56
+    147|   function cursor(state: { inventory: Readonly<Record<string, number>>…
+    148|     expect(Object.entries(state.inventory)).toEqual([[id, count]]);
+    149|     expect(Object.entries(state.itemUseCharges ?? {})).toEqual([[id, c…
+       |                                                        ^
+    150|     expect(Object.getOwnPropertyDescriptors(Object.prototype)).toEqual…
+    151|   }
+ ❯ test/lifeRecoveryRecordKeys.test.ts:161:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  test/lifeRecoveryRecordKeys.test.ts > finite-use recovery record keys > preserves own __proto__ charge2 at normalize, writer, Storage reader and apply
+AssertionError: expected [] to deeply equal [ [ '__proto__', 2 ] ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [[39m
+[32m-   [[39m
+[32m-     "__proto__",[39m
+[32m-     2,[39m
+[32m-   ],[39m
+[32m- ][39m
+[31m+ [][39m
+
+ ❯ cursor test/lifeRecoveryRecordKeys.test.ts:149:56
+    147|   function cursor(state: { inventory: Readonly<Record<string, number>>…
+    148|     expect(Object.entries(state.inventory)).toEqual([[id, count]]);
+    149|     expect(Object.entries(state.itemUseCharges ?? {})).toEqual([[id, c…
+       |                                                        ^
+    150|     expect(Object.getOwnPropertyDescriptors(Object.prototype)).toEqual…
+    151|   }
+ ❯ test/lifeRecoveryRecordKeys.test.ts:173:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  test/lifeRecoveryRecordKeys.test.ts > finite-use recovery record keys > counts numeric __proto__ charges1..4 and depletes on successfulUse5
+AssertionError: expected [] to deeply equal [ [ '__proto__', 1 ] ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [[39m
+[32m-   [[39m
+[32m-     "__proto__",[39m
+[32m-     1,[39m
+[32m-   ],[39m
+[32m- ][39m
+[31m+ [][39m
+
+ ❯ cursor test/lifeRecoveryRecordKeys.test.ts:149:56
+    147|   function cursor(state: { inventory: Readonly<Record<string, number>>…
+    148|     expect(Object.entries(state.inventory)).toEqual([[id, count]]);
+    149|     expect(Object.entries(state.itemUseCharges ?? {})).toEqual([[id, c…
+       |                                                        ^
+    150|     expect(Object.getOwnPropertyDescriptors(Object.prototype)).toEqual…
+    151|   }
+ ❯ test/lifeRecoveryRecordKeys.test.ts:191:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  test/lifeRecoveryRecordKeys.test.ts > finite-use recovery record keys > counts numeric constructor charges1..4 and depletes on successfulUse5
+AssertionError: expected [ [ 'constructor', …(1) ] ] to deeply equal [ [ 'constructor', 1 ] ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    [[22m
+[2m      "constructor",[22m
+[32m-     1,[39m
+[31m+     "function Object() { [native code] }1",[39m
+[2m    ],[22m
+[2m  ][22m
+
+ ❯ cursor test/lifeRecoveryRecordKeys.test.ts:149:56
+    147|   function cursor(state: { inventory: Readonly<Record<string, number>>…
+    148|     expect(Object.entries(state.inventory)).toEqual([[id, count]]);
+    149|     expect(Object.entries(state.itemUseCharges ?? {})).toEqual([[id, c…
+       |                                                        ^
+    150|     expect(Object.getOwnPropertyDescriptors(Object.prototype)).toEqual…
+    151|   }
+ ❯ test/lifeRecoveryRecordKeys.test.ts:191:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  test/lifeRecoveryRecordKeys.test.ts > finite-use recovery record keys > counts numeric toString charges1..4 and depletes on successfulUse5
+AssertionError: expected [ [ 'toString', …(1) ] ] to deeply equal [ [ 'toString', 1 ] ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    [[22m
+[2m      "toString",[22m
+[32m-     1,[39m
+[31m+     "function toString() { [native code] }1",[39m
+[2m    ],[22m
+[2m  ][22m
+
+ ❯ cursor test/lifeRecoveryRecordKeys.test.ts:149:56
+    147|   function cursor(state: { inventory: Readonly<Record<string, number>>…
+    148|     expect(Object.entries(state.inventory)).toEqual([[id, count]]);
+    149|     expect(Object.entries(state.itemUseCharges ?? {})).toEqual([[id, c…
+       |                                                        ^
+    150|     expect(Object.getOwnPropertyDescriptors(Object.prototype)).toEqual…
+    151|   }
+ ❯ test/lifeRecoveryRecordKeys.test.ts:191:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  test/lifeRecoveryRecordKeys.test.ts > finite-use recovery record keys > keeps __proto__ finite cursor and claim on overflow or invalid count
+AssertionError: expected [] to deeply equal [ [ '__proto__', 2 ] ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [[39m
+[32m-   [[39m
+[32m-     "__proto__",[39m
+[32m-     2,[39m
+[32m-   ],[39m
+[32m- ][39m
+[31m+ [][39m
+
+ ❯ cursor test/lifeRecoveryRecordKeys.test.ts:149:56
+    147|   function cursor(state: { inventory: Readonly<Record<string, number>>…
+    148|     expect(Object.entries(state.inventory)).toEqual([[id, count]]);
+    149|     expect(Object.entries(state.itemUseCharges ?? {})).toEqual([[id, c…
+       |                                                        ^
+    150|     expect(Object.getOwnPropertyDescriptors(Object.prototype)).toEqual…
+    151|   }
+ ❯ test/lifeRecoveryRecordKeys.test.ts:207:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯

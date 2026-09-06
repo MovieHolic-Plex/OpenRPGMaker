@@ -1,0 +1,23 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/p1FoundationSchema.test.ts test/p1SessionPersistence.test.ts test/lifeRecoveryPersistence.test.ts test/lifeRecoveryRecordKeys.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+ ✓ test/p1SessionPersistence.test.ts (3 tests) 265ms
+ ✓ test/p1FoundationSchema.test.ts (9 tests) 2125ms
+   ✓ P1 weather and farm-animal authored schema > keeps legacy projects byte-stable without optional P1 authored fields  445ms
+   ✓ P1 weather and farm-animal authored schema > rejects unknown weather kinds, unsafe numbers, duplicate ids, and oversized arrays  1040ms
+ ✓ test/lifeRecoveryPersistence.test.ts (40 tests) 3436ms
+   ✓ adversarial life codec boundaries > refuses all conversions on claim exhaustion without moving a prefix  623ms
+   ✓ bounded animal restoration > quarantines animals beyond the runtime bound instead of dropping a saved suffix  688ms
+ ✓ test/lifeRecoveryRecordKeys.test.ts (37 tests) 3827ms
+
+ Test Files  4 passed (4)
+      Tests  89 passed (89)
+   Start at  14:58:40
+   Duration  9.53s (transform 4.54s, setup 0ms, collect 18.08s, tests 9.65s, environment 1ms, prepare 861ms)
+
+
+ACTUAL_EXIT=0

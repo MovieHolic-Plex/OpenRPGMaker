@@ -20,6 +20,7 @@ import { applyDatabaseChanges } from "@/editor/panels/databaseModalPersistence";
 import { startModalDrag, stopModalDrag } from "@/editor/panels/databaseModalWindowDrag";
 import { resetDatabaseRecordViewSession } from "@/editor/panels/databaseRecordViews";
 import { stopSkillAnimationStagesIn } from "@/editor/panels/databaseSkillAnimationStage";
+import { disposeDatabaseCinematicsIn } from "@/editor/panels/databaseCinematicView";
 import { inventoryCatalogSession, selectedRecordIdForSession, setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
 import { isStructureKitEditorOpen } from "@/editor/panels/structureKitEditorDialog";
 import { DATABASE_APPLY_BUTTON_HINT, DATABASE_FOOTER_ACTION_TEST_IDS, databaseFooterStatusText } from "@/editor/panels/databaseWorkbench";
@@ -117,7 +118,11 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
   }
   activeModal?.close();
   // close() 가 backdrop 을 지우지만, 혹시 핸들 없이 남은 고아 DOM 도 방어적으로 제거.
-  document.querySelector("[data-testid='database-modal']")?.remove();
+  const orphan = document.querySelector<HTMLElement>("[data-testid='database-modal']");
+  if (orphan) {
+    disposeDatabaseCinematicsIn(orphan);
+    orphan.remove();
+  }
   // Cross-record links establish selection before opening. Reset unrelated view state,
   // not the catalog target; apply the legacy equipment route after that reset.
   const requestedTab = initialTab ?? getDatabaseActiveTab();
@@ -130,6 +135,9 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
     setSelectedRecordId(catalogCollection, catalogRecordId);
   }
   if (initialTab) setDatabaseActiveTab(initialTab);
+  const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  // Topbar rerenders can replace the opener while the modal remains mounted.
+  const openerTestId = opener?.dataset.testid;
   const dirtySession = createDatabaseModalDirtySession();
   // 사이드 도킹(M8): 모달⇄우측 도크 토글 상태. localStorage 에 저장돼 다음 오픈 시 복원된다.
   let dockMode = false;
@@ -303,11 +311,16 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
     unsubscribeActiveTab();
     aiBar.dispose();
     stopSkillAnimationStagesIn(backdrop);
+    disposeDatabaseCinematicsIn(backdrop);
     backdrop.remove();
     document.removeEventListener("keydown", controller.handleKeyDown);
     document.removeEventListener("keydown", handleHistoryKeyDown);
     stopModalDrag();
     activeModal = null;
+    const returnTarget = opener?.isConnected ? opener : openerTestId
+      ? Array.from(document.querySelectorAll<HTMLElement>("[data-testid]")).find(node => node.dataset.testid === openerTestId)
+      : undefined;
+    if (returnTarget?.isConnected) returnTarget.focus();
   };
   const hideDirtyPrompt = (): void => dirtyPrompt.replaceChildren();
   const saveAndMarkClean = async (): Promise<boolean> => {

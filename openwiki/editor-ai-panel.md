@@ -36,6 +36,25 @@ Regression: `assistantMultiMapSpec`, `aiTurnAppliedAccounting`,
 `aiCompletionAccounting`, `assistantMapPreservationGuard`, `aiSpecGateHardening`.
 Evidence: `.omo/evidence/assistant-audit-pr/maps/`.
 
+## Plan authoring has no small-plan quota (2026-09-06)
+
+`workPlan.ts` no longer recommends 8 todos, 4 items for a village, fixed layer
+counts or 200-character instructions. Independently executable/retryable/verifiable
+results remain separate items; layers group them without reducing the requested
+scope. Large plans are permitted, not padded with invented work.
+
+Planner and `set_work_plan` retain complete goals and item fields. Emergency
+fallbacks retain the full original request rather than its first 400/600/800
+characters. Current instructions and remaining titles are not locally shortened
+when presenting the plan to the model. Declared volume is no longer capped at 50;
+negative/nonfinite values retain their existing boundary normalization.
+
+Execution budgets, user abort and repeated-failure guards are separate and remain
+in force. Provider context/output capacity is still a transport constraint, not
+permission to shrink the authored plan. `test/workPlanSize.test.ts` covers 320
+independent items, complete parsed payloads and declared volume above 50; prompt
+prose is reviewed rather than pinned by string tests.
+
 ## Acceptance sticky note (2026-09-06)
 
 `aiStickyChecklist.ts` is a body-mounted read-only projection of backend
@@ -62,22 +81,39 @@ restores those contracts without changing browser checklist ownership.
 immutable snapshots. Planner decisions and `set_work_plan` accept
 `acceptance: [{ id, title, criteria }]`. Replanning, completing, skipping or clearing
 execution steps cannot erase existing promises or weaken valid criteria.
-`repair_acceptance` repairs only missing/malformed criteria.
+`repair_acceptance` repairs only missing/malformed criteria. Each newly adopted
+promise captures its request's pre-write applied snapshot, not the conversation's
+initial project or the draft at adoption time. The session captures that snapshot
+before planning/tools; milestone rebases, repairs, duplicate IDs, replans and
+manual/synthetic continuations cannot move it. New requests may add promises
+against newer applied content without replacing earlier promises or baselines.
 
 Checks inspect actual scoped map dimensions, map/event counts, original target
 changes, protected map/region content, conservative static reachability and
-explicit image review. New-map names bind once to a unique new ID. Static route
+explicit image review. New-map names bind once to a unique new ID relative to the
+first promise for that name; later baselines cannot resolve its ambiguity. Static route
 checks do not claim conditional transfer or runtime playthrough support.
 Image checks require successfully rendered and delivered `show_map_region`
 coverage (actual clipped bounds, exact union), then a later explicit
 `review_acceptance({itemId, verdict:"pass"|"fail", note})`. Only an explicit pass
 verifies the image condition; a failed review revokes an earlier pass and retains
 its observation in the evidence disclosure.
-Changes invalidate old receipts; a draft is not applied verification.
+`assistantImageEvidence.ts` owns the single receipt store used by both acceptance
+and terminal adventure coverage. DB-only writes and non-resetting follow-ups retain
+current images; map content, its tileset and shared asset changes retire applicable
+receipts, including captures pending delivery. Undo cannot revive retired receipts
+or reviews. Failed/empty rendering and metadata alone add no coverage. Applied-state
+checks filter evidence without retiring a reviewed draft that has not yet been
+applied; draft images never verify the old applied map. Normal finalization and both
+execution-budget exits use this same currentness. Image verification remains separate
+from structural adventure checks and is not game-completion/playthrough proof.
 
 `AssistantSession` consults acceptance at final-response and autonomous-continuation
 boundaries even when the execution plan is finished. Existing bounded repair
 limits remain; unmet promises produce an incomplete result and blocked note.
+Run-end persistence proof also retains this acceptance gate: a completed/skipped
+execution plan cannot schedule proof while promises remain unmet. PR647's
+accepted-revision proof is read-only and retryable, not a replacement for acceptance.
 `refreshAcceptance` reevaluates canonical store changes, including manual edits
 and undo after completion. Request interpretation is still model-authored:
 this is not proof that every natural-language clause was extracted. Missing
@@ -86,7 +122,8 @@ There is no new approval step, genre quota, remote schema or cross-device ledger
 The note's lifetime is the current conversation/session, not a saved project.
 
 Regression entry points: `test/assistantAcceptance.test.ts`,
-`test/assistantAcceptanceSession.test.ts`, `test/aiStickyChecklist.test.ts`,
+`test/assistantAcceptanceSession.test.ts`, `test/assistantImageEvidence.test.ts`,
+`test/assistantVisualEvidenceSession.test.ts`, `test/aiStickyChecklist.test.ts`,
 `test/e2e/ai-sticky-checklist.spec.ts`. Evidence: `output/evidence/assistant-sticky/`.
 
 ## 브라우저 포커스와 도구 실행 대기 (2026-09-05)
@@ -555,7 +592,12 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 
 - **Milestone auto-apply:** in autonomous runs a completed work item is applied through the shared `applyProposedProject` (`src/editor/tools/applyChangesetToStore.ts:164`) — `getProposedProject()` → `commitChangeset` validation → undo snapshot (`recordProjectSnapshot`) → `store.replace` → awaited `recordProjectCommit`; the proposal snapshot is applied, tools are NOT re-executed (no auto-generated-id divergence). There is no approval classification any more: every completed milestone with writes is applied. A commit-gate rejection is an apply failure, not an approval wait: it emits the compatibility event `proposal_paused`, logs `agent_run:milestone-apply-failed`, states that the project store was not changed, and stops only the current autonomous run. `sendUserMessage` clears that per-turn failure state so the next user request can author and apply again; successful `rebaseProject` clears it too. Completeness warnings no longer pause; they are logged.
 - **Verification is advisory (2026-08-30):** each completed layer still runs `src/ai/agentVerification.ts` canonical calls (map/world → `run_lint` + `evaluate_game_quality`; quest/story → `run_lint` + `verify_quest` with the run's most recent authored questId; final → `run_lint` + `play_walkthrough` with the layer's own authored scenario, falling back to `verify_quest` × all questIds), but the verdict only produces audit rows: `agent_run:verification-pass` when clean, `agent_run:verification-advisory` + `agent_run:verification-note` when blocking issues exist. A layer is checked **once** (`markLayerVerified`). There is no retry budget, no repair re-kick and no `verification_failed` stop — `MAX_REPAIR_REKICKS`/`MAX_VERIFICATION_ATTEMPTS`/`STOP_REASON`/`evaluateRetry` were deleted. 근거(실측 2026-08-30): 부팅 정규화기가 넣은 선재 참조 위반 54건이 매 시도 동일하게 잡혀, 에이전트가 만들지도 않았고 고칠 수도 없는 손상으로 3회 예산을 태우고 217초에 런이 죽었다 — 48턴 예산은 손도 대지 못했다. `evaluate_game_quality` still reports blocking only on projectLint errors.
-- **Run-end proof:** when the plan completes in an autonomous run, `maybeRunEndProof` (`assistantSession.ts:1346`) runs `store.flush()` → `store.reloadFromRemote()` when remote persistence is enabled. `ProjectFlushResult`'s `saved` kind carries `sha256` (`src/project/store.ts:70`); the run records `agent_run_saved projectId=… sha256=… commit=… reload=…` (assistantSession.ts:1387) with the newest commit row fetched through the existing `list_project_commits` read tool — in node/headless that degrades to `agent_run:commit-evidence-unavailable`. With remote persistence disabled the run records `agent_run_local_only` and skips the round-trip.
+- **P1 accepted-revision proof (2026-09-06):** `AssistantSession.proveAppliedRevision(onEvent?, signal?)` calls `store.flush()` and requires its actual `saved.receipt`, then awaits `store.verifyPersistedRevision(receipt, { signal })`. It never calls `reloadFromRemote()` or queries the newest commit. Autonomous completion uses this path after a complete plan with no pending writes or apply failure; `aiTurnRunner` also uses it after an ordinary proposal is actually applied. Existing auto-apply, undo, separate region approval, ask/plan/resume and explicit/advisory verification policies remain unchanged.
+  - `RunEndProofState` carries `status: attempted | failed | succeeded`, `verified`, optional `receipt`, `proof`, `reason` and correlated `commitId`. Read it through `getRunEndProof()`, `getHarnessSnapshot().runEndProof`, or the `persistence_proof` event. The getters recheck currentness: a historical `succeeded` state can have `verified:false` after a newer edit. A matching read overtaken by an edit is session `failed/stale`, while its embedded store proof remains `kind:verified, isCurrent:false`. Proof doesn't replace the live editor or roll back changes.
+  - Failed, cancelled, disabled, missing-receipt, target/content-mismatch and stale results cannot emit `agent_run_saved`. That audit sentinel includes project id, accepted revision, normalized content identity, optional wire hash and optional commit id only after a current matching proof. Plan completion and storage proof are separate facts, not a new whole-goal completion verdict.
+  - A successful current proof avoids another read. Failures remain retryable for the same accepted receipt; explicit `retryLastTurn()` can retry proof without replaying LLM/tools when no draft writes remain, except ask/plan-only turns. `canRetryLastTurn()` still means an LLM-error retry is available, not a new persistence retry button. The real editor evidence uses existing composer continuation.
+  - Commit metadata comes only from the actual apply result. `applyChangesetToStore.ts` captures `commitProject` immediately after apply, before awaiting the commit log; the session associates its `commitId` only if that object still matches the current store at flush consumption. Commit-log `persisted:false` isn't project-save failure, and proof can succeed without a commit id.
+  - Sources: [session](../src/ai/assistantSession.ts), [apply adapter](../src/editor/tools/applyChangesetToStore.ts), [proposal adapter](../src/editor/panels/aiProposalCard.ts), [turn runner](../src/editor/panels/aiTurnRunner.ts). See the [store contract](runtime-project-schema.md#p1-accepted-save-receipts-and-read-only-proof-2026-09-06) and [P1 evidence report](../output/evidence/ai-harness/p1/README.md) for exact commands, failure evidence and limits.
 
 - **Panel surface (superseded 2026-09-03 — see 「할 일 목록은 계획 수명이다」 in the shell section):** the run whisper — one status line (`ai-run-status`), the `done/total` count (`ai-autonomous-progress`), a thin progress bar (`ai-run-progress`), and `중지` (`ai-run-stop`, wired to `abortActiveTurn`) — sits on top of an **always-visible item checklist** (`ai-work-list`); only the `⚡ 자율 실행 중` chip, budget (`예산 N/48`), goal and milestone feed live behind `자세히` (`ai-run-details`). The list is not torn down at run end: it stays with `data-active="false"` (`모두 완료` or `<item> — 대기 중`) until the next plan or a conversation boundary. Panel auto-collapse (`AUTO_COLLAPSE_AFTER_AI_MS`) is disabled while `active`.
 

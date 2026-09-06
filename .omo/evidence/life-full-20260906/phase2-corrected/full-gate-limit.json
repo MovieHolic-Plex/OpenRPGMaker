@@ -1,0 +1,27 @@
+{
+  "head": "d84001e88b5e0b7f8ff3074de0ec5f6cdbcbf41e",
+  "attempts": [
+    {
+      "path": "gates.json",
+      "exit": 124,
+      "vitestReport": false
+    },
+    {
+      "path": "gate-trace/execution.json",
+      "exit": 124,
+      "vitestReport": false
+    }
+  ],
+  "tracedBoundary": {
+    "completed": "npx tsc --noEmit -p tsconfig.app.json",
+    "exit": 0,
+    "unfinished": "node scripts/run-vitest.mjs run --configLoader bundle --reporter=json --outputFile .omo/gates-vitest-report.json"
+  },
+  "resources": {
+    "loadavg": "92.60 128.24 157.61 84/11006 2532429\n",
+    "advertisedCores": 32,
+    "cgroupV2Files": "Not present at probed paths; no quota/memory limit inferred"
+  },
+  "interpretation": "Observed substantial host contention, not a proved cause of either historical timeout. No complete current full-Vitest results and no no-new-failure claim. No timeout increases or third unchanged full-suite attempt.",
+  "next": "Run previously unreached CSS/surface axes separately; supply exact limitations and cumulative targeted/manual evidence to independent reviewer."
+}

@@ -1,0 +1,14 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/p0CommerceFinalSafety.test.ts test/p0EconomySafetyFollowup.test.ts --maxWorkers=2 --minWorkers=1 --no-cache
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2-life-full-record-keys
+
+ ✓ test/p0EconomySafetyFollowup.test.ts (18 tests) 633ms
+ ✓ test/p0CommerceFinalSafety.test.ts (16 tests) 665ms
+
+ Test Files  2 passed (2)
+      Tests  34 passed (34)
+   Start at  12:49:27
+   Duration  5.82s (transform 3.73s, setup 0ms, collect 9.54s, tests 1.30s, environment 1ms, prepare 171ms)

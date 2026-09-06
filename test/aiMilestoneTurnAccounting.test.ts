@@ -18,6 +18,7 @@ import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { fixedDeclarer } from "./intentFixture";
+import { HISTORICAL_PLACEMENT_CORRECTION } from "./fixtures/placementRequests";
 
 function installHermeticEnv(project: Project): void {
   vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
@@ -107,6 +108,31 @@ function steps(): ChatResult[] {
 }
 
 describe("마일스톤 턴 정산", () => {
+  it.each([
+    [HISTORICAL_PLACEMENT_CORRECTION, "done"],
+    ["기존 나무 10개는 보존하고 꽃 3개 추가해줘", "in_progress"],
+    ["나무 10개 배치해줘", "in_progress"],
+  ])("auto-completion distinguishes modification facts from missing placements: %s", async (requestText, expectedStatus) => {
+    const project = createBlankProject();
+    installHermeticEnv(project);
+    let round = 0;
+    const session = new AssistantSession(project, {
+      config: { ...ORCH_CONFIG, agentMode: "chat", maxToolCalls: 2 },
+      declareIntent: fixedDeclarer({ mode: "modify", needsPlan: false }),
+      chat: async (): Promise<ChatResult> => {
+        if (round++ === 0) return toolCallResult("set_work_plan", {
+          goal: requestText,
+          layers: [{ title: "수정", items: [{ title: "수정", instruction: requestText, successTools: ["set_map_properties"] }] }],
+        }, "plan_quantity");
+        return toolCallResult("set_map_properties", { mapId: project.startMapId, name: "마을" }, "write_quantity");
+      },
+    });
+    const result = await session.sendUserMessage(requestText);
+    expect(result.proposedCalls.some((call) => call.name === "set_map_properties" && call.result.ok)).toBe(true);
+    expect(session.getProposedProject().maps[project.startMapId]?.name).toBe("마을");
+    expect(session.getHarnessSnapshot().workPlan?.layers[0]?.items[0]?.status).toBe(expectedStatus);
+  }, 30000);
+
   it("한 항목이 실행 한도로 나뉘어도 앞선 성공과 미적용 제안을 이어서 완료한다", async () => {
     const project = createBlankProject();
     installHermeticEnv(project);

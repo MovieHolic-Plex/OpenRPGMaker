@@ -1,0 +1,7 @@
+--- a/src/project/store.ts
++++ b/src/project/store.ts
+@@ -858,1 +858,1 @@
+-      if (observedIdentity !== receipt.contentIdentity) return { kind: "verified", receipt, isCurrent: this.isPersistenceReceiptCurrent(receipt) };
++      if (observedIdentity !== receipt.contentIdentity) return { kind: "mismatch", receipt, reason: "content" };
+
+patching file src/project/store.ts

@@ -1,0 +1,8 @@
+# Diagnostic excerpt; assertion dumps omitted.
+> node scripts/run-vitest.mjs run --configLoader bundle test/webExportCatalogAudio.test.ts -t rejects
+ ❯ test/webExportCatalogAudio.test.ts (5 tests | 2 failed | 3 skipped) 27325ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  test/webExportCatalogAudio.test.ts > catalog audio export > rejects empty asset bytes instead of writing a broken ZIP
+ FAIL  test/webExportCatalogAudio.test.ts > catalog audio export > rejects HTML fallback asset bytes instead of writing a broken ZIP
+ Test Files  1 failed (1)
+      Tests  2 failed | 3 skipped (5)

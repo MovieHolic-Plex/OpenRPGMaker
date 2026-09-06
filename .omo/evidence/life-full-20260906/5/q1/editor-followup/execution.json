@@ -1,0 +1,42 @@
+{
+  "head": "f86474547028cddf795c8e431b2195b7edccd201",
+  "tree": "8386dd1efe4338f705d6a7accdbdefaa3b0beb6a",
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p2",
+  "pid": 1672941,
+  "port": 41331,
+  "freeze": "1",
+  "started": "2026-09-06T03:04:23.364Z",
+  "command": [
+    "npm",
+    "run",
+    "test:e2e",
+    "--",
+    "--config",
+    ".omo/evidence/life-full-20260906/5/q1/editor-followup/playwright.config.ts",
+    "test/e2e/oprn-audio-test-dialog.spec.ts",
+    "--project=chromium",
+    "--workers=1",
+    "--retries=0"
+  ],
+  "server": {
+    "ownerPid": 1672941,
+    "cwd": "/home/main/z-project/rpg-zzu-life-full-p2",
+    "url": "http://127.0.0.1:41331",
+    "fresh": true,
+    "reuse": false,
+    "hmr": false,
+    "watch": null,
+    "cache": "/home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/5/q1/editor-followup/vite-cache"
+  },
+  "testPid": 1673248,
+  "exit": 1,
+  "signal": null,
+  "serverClosed": true,
+  "portCleanup": "ECONNREFUSED",
+  "removed": [
+    "/home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/5/q1/editor-followup/vite-cache"
+  ],
+  "trackedFilesUnchanged": 10482,
+  "finished": "2026-09-06T03:06:16.504Z",
+  "outputSha256": "30b56f10cf75cbb703f39b9ea2868cf50419c4e2e07fa701cd64437a5b720abf"
+}

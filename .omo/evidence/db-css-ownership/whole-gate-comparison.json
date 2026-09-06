@@ -1,0 +1,171 @@
+{
+  "base": "49067218aebf889d98c2dc05be08231787483427",
+  "candidate": "376394f690d8f0c454cfb46633a9caad58772746",
+  "command": "taskset -c 0-7 npm run gates -- --json",
+  "wholeGateExitCode": 1,
+  "baseline": {
+    "total": 14457,
+    "passed": 14273,
+    "failed": 169
+  },
+  "candidateTests": {
+    "total": 14471,
+    "passed": 14279,
+    "failed": 177
+  },
+  "typecheck": {
+    "name": "typecheck:app",
+    "exitCode": 0,
+    "errorCount": 0,
+    "files": {}
+  },
+  "cssExitCode": 0,
+  "surfaceExitCode": 1,
+  "newlyFailed": [
+    {
+      "file": "test/commitEditActivityAttachment.test.ts",
+      "name": "커밋 row 에 실리는 편집 행위 기록 AI 적용 커밋의 patch_json 에 그 행위가 origin·라벨과 함께 실린다",
+      "durationMs": 30152.691985000005,
+      "errorKind": "STACK_TRACE_ERROR",
+      "focusedBaseline": "passed",
+      "focusedCandidate": "passed"
+    },
+    {
+      "file": "test/commitEditActivityAttachment.test.ts",
+      "name": "커밋 row 에 실리는 편집 행위 기록 두 번째 커밋은 첫 커밋이 이미 실은 엔트리를 다시 싣지 않는다",
+      "durationMs": 30038.860099999998,
+      "errorKind": "STACK_TRACE_ERROR",
+      "focusedBaseline": "passed",
+      "focusedCandidate": "passed"
+    },
+    {
+      "file": "test/databaseActions.test.ts",
+      "name": "Database actions creates, edits, duplicates, deletes, and exports every database collection",
+      "durationMs": 15624.601004,
+      "errorKind": "STACK_TRACE_ERROR",
+      "focusedBaseline": "passed",
+      "focusedCandidate": "passed"
+    },
+    {
+      "file": "test/databaseModalDirtySession.test.ts",
+      "name": "database modal dirty session discards a session-only edit even when the undo stack was already saturated at MAX_HISTORY before the session opened",
+      "durationMs": 47585.639472999996,
+      "errorKind": "STACK_TRACE_ERROR",
+      "focusedBaseline": "passed",
+      "focusedCandidate": "passed"
+    },
+    {
+      "file": "test/databaseOverviewDashboard.test.ts",
+      "name": "database overview dashboard renders stat chips immediately with counts from the project data",
+      "durationMs": 60170.75174200001,
+      "errorKind": "STACK_TRACE_ERROR",
+      "focusedBaseline": "passed",
+      "focusedCandidate": "passed"
+    },
+    {
+      "file": "test/databaseOverviewDashboard.test.ts",
+      "name": "database overview dashboard lazy compute: charts container is empty before idle callback, populated after flush",
+      "durationMs": 15076.490804000001,
+      "errorKind": "STACK_TRACE_ERROR",
+      "focusedBaseline": "passed",
+      "focusedCandidate": "passed"
+    },
+    {
+      "file": "test/databaseOverviewDashboard.test.ts",
+      "name": "database overview dashboard attack-stagnation jump opens the classes tab, not skills",
+      "durationMs": 15054.018653000006,
+      "errorKind": "STACK_TRACE_ERROR",
+      "focusedBaseline": "passed",
+      "focusedCandidate": "passed"
+    },
+    {
+      "file": "test/databaseOverviewTab.test.ts",
+      "name": "database overview tab shell summarizes the authored game across world, story, cast, systems, and readiness",
+      "durationMs": 60151.517083000006,
+      "errorKind": "STACK_TRACE_ERROR",
+      "focusedBaseline": "passed",
+      "focusedCandidate": "passed"
+    },
+    {
+      "file": "test/moveRouteCatalogPersistence.test.ts",
+      "name": "이동 경로 팔레트 persistence BREAK: 팔레트의 모든 명령이 하나씩 serialize→deserialize 를 통과한다",
+      "durationMs": 18751.946983,
+      "errorKind": "STACK_TRACE_ERROR",
+      "focusedBaseline": "passed",
+      "focusedCandidate": "passed"
+    },
+    {
+      "file": "test/regionSelectionPastePreview.test.ts",
+      "name": "북여넣기 미리보기 모드 복사 후 enterPastePreview → confirmPastePreview로 실제 붙여넣기",
+      "durationMs": 15116.931485999998,
+      "errorKind": "STACK_TRACE_ERROR",
+      "focusedBaseline": "passed",
+      "focusedCandidate": "passed"
+    },
+    {
+      "file": "test/regionSelectionPastePreview.test.ts",
+      "name": "북여넣기 미리보기 모드 cancelPastePreview로 미리보기 취소 — 맵 변화 없음",
+      "durationMs": 15047.658306000005,
+      "errorKind": "STACK_TRACE_ERROR",
+      "focusedBaseline": "passed",
+      "focusedCandidate": "passed"
+    },
+    {
+      "file": "test/villageBuilder.test.ts",
+      "name": "build_village 스케치가 이긴 집 배치는 격자 열에 서지 않는다",
+      "durationMs": 15242.999584999998,
+      "errorKind": "STACK_TRACE_ERROR",
+      "focusedBaseline": "passed",
+      "focusedCandidate": "passed"
+    }
+  ],
+  "absentBaselineFailures": [
+    {
+      "file": "test/databaseRadioCustomGuard.test.ts",
+      "name": "database radio custom guard radio 제외 없는 bare input 결합이 없다"
+    },
+    {
+      "file": "test/databaseViewToggle.test.ts",
+      "name": "database per-collection view mode session toggle buttons exist with correct aria-pressed and active class"
+    },
+    {
+      "file": "test/databaseViewToggle.test.ts",
+      "name": "database per-collection view mode session elements/terrain/utility tabs never render the view toggle"
+    },
+    {
+      "file": "test/fontFamilyTokenGuard.test.ts",
+      "name": "폰트 토큰 가드 소비지점 CSS 의 모든 font-family 가 역할 토큰까지 도달한다"
+    }
+  ],
+  "sameCommandFocusedComparison": {
+    "files": [
+      "test/commitEditActivityAttachment.test.ts",
+      "test/databaseActions.test.ts",
+      "test/databaseModalDirtySession.test.ts",
+      "test/databaseOverviewDashboard.test.ts",
+      "test/databaseOverviewTab.test.ts",
+      "test/moveRouteCatalogPersistence.test.ts",
+      "test/regionSelectionPastePreview.test.ts",
+      "test/villageBuilder.test.ts"
+    ],
+    "options": "--maxWorkers=2 --reporter=default --reporter=json",
+    "baseline": {
+      "total": 94,
+      "passed": 94,
+      "failed": 0
+    },
+    "candidate": {
+      "total": 94,
+      "passed": 94,
+      "failed": 0
+    }
+  },
+  "interpretation": "Whole gate remains exit1. Twelve additional whole-suite failures did not reproduce under the identical focused command on either frozen checkout. No confirmed new behavior regression from this comparison; full-suite-only timing/load sensitivity remains explicitly unresolved, not renamed all-tests-pass.",
+  "surface": "Six unchanged event-editor snapshot assertion failures; required DB axis executed and passed.",
+  "earlierIncompleteRuns": [
+    "Default checkpoint gates30min timeout",
+    "Four-core checkpoint gates30min timeout"
+  ],
+  "supplementalDelta": "Exact-owner helper/inventory supplement independently passed 5 files/27 tests and both inventory generators; product source is unchanged from the full-gate candidate.",
+  "supplementalFiles": [{"path":"scripts/audit-db-css-ownership.mjs","sha256":"650bb082b0f8b078dd5e680c91b95eeef36fb4c26f5400d5964f09ff8ab6de90"},{"path":"scripts/lib/db-css-owner-proof.mjs","sha256":"b8b1a4b59efeb7e8874eca42bfb5391e62a40b2eeda67f6c49f2f2fd45992cf0"},{"path":"test/databaseCssOwnerProof.test.ts","sha256":"7b6b50675f9d26dfb558bbdfeca162dbe35203004f2f9e601708136c4f4f2b39"}]
+}

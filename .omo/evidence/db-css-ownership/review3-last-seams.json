@@ -1,0 +1,303 @@
+{
+  "config": {
+    "argv": [
+      "/usr/local/bin/node",
+      "/home/main/z-project/rpg-zzu-db-css-review2-fixes-20260906/node_modules/.bin/playwright",
+      "test",
+      "--config",
+      "playwright.db-css.config.ts",
+      "--project",
+      "firefox",
+      "--workers",
+      "1",
+      "--grep",
+      "animation keyboard|System fonts|CRUD confirmation",
+      "--output",
+      "output/evidence/db-css-ownership/firefox/last-seams-results",
+      "--reporter",
+      "list,json"
+    ],
+    "configFile": "/home/main/z-project/rpg-zzu-db-css-review2-fixes-20260906/playwright.db-css.config.ts",
+    "rootDir": "/home/main/z-project/rpg-zzu-db-css-review2-fixes-20260906/test/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/home/main/z-project/rpg-zzu-db-css-review2-fixes-20260906/output/evidence/db-css-ownership/firefox/last-seams-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/home/main/z-project/rpg-zzu-db-css-review2-fixes-20260906/test/e2e",
+        "testIgnore": [
+          "**/_*.spec.ts"
+        ],
+        "testMatch": [
+          "**/database-css-ownership.spec.ts"
+        ],
+        "timeout": 120000
+      },
+      {
+        "outputDir": "/home/main/z-project/rpg-zzu-db-css-review2-fixes-20260906/output/evidence/db-css-ownership/firefox/last-seams-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/home/main/z-project/rpg-zzu-db-css-review2-fixes-20260906/test/e2e",
+        "testIgnore": [
+          "**/_*.spec.ts"
+        ],
+        "testMatch": [
+          "**/database-css-ownership.spec.ts"
+        ],
+        "timeout": 120000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.61.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "database-css-ownership.spec.ts",
+      "file": "database-css-ownership.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "animation keyboard and resource dialog at 1440x900",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 22089,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T11:16:05.609Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-f3c4da161fae80bac18b",
+          "file": "database-css-ownership.spec.ts",
+          "line": 495,
+          "column": 3
+        },
+        {
+          "title": "animation keyboard and resource dialog at 1024x900",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 24715,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T11:16:38.945Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-e0e83399038dab733517",
+          "file": "database-css-ownership.spec.ts",
+          "line": 495,
+          "column": 3
+        },
+        {
+          "title": "animation keyboard and resource dialog at 1024x768",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 21570,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T11:17:11.307Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-e6e9b767339f8c0d6b9c",
+          "file": "database-css-ownership.spec.ts",
+          "line": 495,
+          "column": 3
+        },
+        {
+          "title": "System fonts and runtime preview variants",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 16801,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T11:17:41.587Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-ec94b5f3b4f5b09e0ac3",
+          "file": "database-css-ownership.spec.ts",
+          "line": 666,
+          "column": 1
+        },
+        {
+          "title": "CRUD confirmation and representative shared text contrast",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 38637,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-09-06T11:18:06.394Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0dc145400095013530d9-b48bc3f1eeb5723c1924",
+          "file": "database-css-ownership.spec.ts",
+          "line": 783,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-09-06T11:16:04.603Z",
+    "duration": 169443.455,
+    "expected": 5,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

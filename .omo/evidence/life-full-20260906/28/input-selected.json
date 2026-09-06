@@ -1,0 +1,777 @@
+{
+  "currentCommit": "4e2d1762264533a5826c48686648093c3fe69ebd",
+  "phaseBase": "87de73785d1c309bbbe975636414f70bbc73a4b9",
+  "currentWorktree": "/home/main/z-project/rpg-zzu-life-full-p2",
+  "fullReportPath": "/home/main/z-project/rpg-zzu-life-full-p2/.omo/gates-vitest-report.json",
+  "fullReportSha256": "a36b2120415caf4e3587ebd33b7939a69c58b0f33be5aeb71d0d9c334324a6d3",
+  "counts": {
+    "total": 13624,
+    "passed": 13422,
+    "failed": 187,
+    "pending": 15,
+    "failedFiles": 97
+  },
+  "newFailureFiles": [
+    "test/aiActivityLiveRow.test.ts",
+    "test/aiChatObservability.test.ts",
+    "test/aiChatPanelTransportError.test.ts",
+    "test/aiSelectionChipScope.test.ts",
+    "test/databaseItemInspector.test.ts",
+    "test/databaseModalDirtySession.test.ts",
+    "test/databaseNavMode.test.ts",
+    "test/databaseOverviewDashboard.test.ts",
+    "test/databaseOverviewTab.test.ts",
+    "test/databaseRadioCustomGuard.test.ts",
+    "test/databaseSidebarKeyboard.test.ts",
+    "test/databaseSidebarNav.test.ts",
+    "test/databaseTabIcons.test.ts",
+    "test/debugSession.test.ts",
+    "test/editorProjectE2EBridge.test.ts",
+    "test/eventEditorM2Surface.baseline.test.ts",
+    "test/eventEditorPortalSurface.baseline.test.ts",
+    "test/forestDensity.test.ts",
+    "test/gen1DemoContent.test.ts",
+    "test/modalEscapeLayerGate.test.ts",
+    "test/moveRouteCatalogPersistence.test.ts",
+    "test/noLocalProjectDb.test.ts",
+    "test/regionSelectionPastePreview.test.ts",
+    "test/roleNameComparisonGate.test.ts",
+    "test/uxcLoadFailure.test.ts"
+  ],
+  "failedResults": [
+    {
+      "name": "test/aiActivityLiveRow.test.ts",
+      "status": "failed",
+      "message": "",
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "AI \ub3c4\uad6c \ub77c\uc774\ube0c \ud65c\ub3d9 \ud589"
+          ],
+          "fullName": "AI \ub3c4\uad6c \ub77c\uc774\ube0c \ud65c\ub3d9 \ud589 \uc131\uacf5\ud55c \uc870\ud68c \ub3c4\uad6c\ub294 \uc644\ub8cc \ud589\uc744 \ub0a8\uae30\uc9c0 \uc54a\uace0 \ud134 \uc885\ub8cc \uc2dc \uce94\ubc84\uc2a4 \uce69 \uc0c1\ud0dc\ub3c4 \uc9c0\uc6b4\ub2e4",
+          "status": "failed",
+          "title": "\uc131\uacf5\ud55c \uc870\ud68c \ub3c4\uad6c\ub294 \uc644\ub8cc \ud589\uc744 \ub0a8\uae30\uc9c0 \uc54a\uace0 \ud134 \uc885\ub8cc \uc2dc \uce94\ubc84\uc2a4 \uce69 \uc0c1\ud0dc\ub3c4 \uc9c0\uc6b4\ub2e4",
+          "duration": 891.9129709999979,
+          "failureMessages": [
+            "AssertionError: expected \"spy\" to be called 1 times, but got 0 times\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/aiActivityLiveRow.test.ts:220:20\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AI \ub3c4\uad6c \ub77c\uc774\ube0c \ud65c\ub3d9 \ud589"
+          ],
+          "fullName": "AI \ub3c4\uad6c \ub77c\uc774\ube0c \ud65c\ub3d9 \ud589 \ub2e4\uc74c \ub3c4\uad6c \uc2dc\uc791\uc740 \uc774\uc804 \uc608\uc57d\uc744 \uba3c\uc800 \ud655\uc815\ud558\uace0 \ud134 \uc885\ub8cc\ub294 \ub9c8\uc9c0\ub9c9 \uc608\uc57d\uae4c\uc9c0 \ube44\uc6b4\ub2e4",
+          "status": "failed",
+          "title": "\ub2e4\uc74c \ub3c4\uad6c \uc2dc\uc791\uc740 \uc774\uc804 \uc608\uc57d\uc744 \uba3c\uc800 \ud655\uc815\ud558\uace0 \ud134 \uc885\ub8cc\ub294 \ub9c8\uc9c0\ub9c9 \uc608\uc57d\uae4c\uc9c0 \ube44\uc6b4\ub2e4",
+          "duration": 941.9969300000084,
+          "failureMessages": [
+            "AssertionError: expected \"spy\" to be called 1 times, but got 0 times\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/aiActivityLiveRow.test.ts:292:20\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+          ],
+          "meta": {}
+        }
+      ]
+    },
+    {
+      "name": "test/aiChatObservability.test.ts",
+      "status": "failed",
+      "message": "",
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "\ubcd1\ud569 \ucd94\ub860 \uc6d0\ubb38 \uc804\uccb4 \uc5f4\ub78c (V3C \u2461)"
+          ],
+          "fullName": "\ubcd1\ud569 \ucd94\ub860 \uc6d0\ubb38 \uc804\uccb4 \uc5f4\ub78c (V3C \u2461) \ub3c4\uad6c \uc0ac\uc774 \ucd94\ub860\uc774 \ud55c \ube14\ub85d\uc73c\ub85c \ubcd1\ud569\ub3fc\ub3c4 \uac01 \ucd94\ub860\uc758 \uc6d0\ubb38 \uc804\uccb4\uac00 \uc544\uc774\ud15c\uc73c\ub85c \ub0a8\uace0 \ud1a0\uae00\uc740 \ud69f\uc218\ub97c \ud45c\uc2dc\ud55c\ub2e4",
+          "status": "failed",
+          "title": "\ub3c4\uad6c \uc0ac\uc774 \ucd94\ub860\uc774 \ud55c \ube14\ub85d\uc73c\ub85c \ubcd1\ud569\ub3fc\ub3c4 \uac01 \ucd94\ub860\uc758 \uc6d0\ubb38 \uc804\uccb4\uac00 \uc544\uc774\ud15c\uc73c\ub85c \ub0a8\uace0 \ud1a0\uae00\uc740 \ud69f\uc218\ub97c \ud45c\uc2dc\ud55c\ub2e4",
+          "duration": 865.0861129999976,
+          "failureMessages": [
+            "AssertionError: expected null to be truthy\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/aiChatObservability.test.ts:216:26\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "\uc2e4\uc2dc\uac04 \uace0\uc2a4\ud2b8 \ud504\ub9ac\ubdf0 \uc5f0\uacb0"
+          ],
+          "fullName": "\uc2e4\uc2dc\uac04 \uace0\uc2a4\ud2b8 \ud504\ub9ac\ubdf0 \uc5f0\uacb0 \ucc44\ud305 \ud134\uc758 \uc131\uacf5\ud55c \uc4f0\uae30 tool_call \ub4a4 \uc138\uc158 draft diff \uace0\uc2a4\ud2b8\ub97c \ubc1c\ud589\ud55c\ub2e4",
+          "status": "failed",
+          "title": "\ucc44\ud305 \ud134\uc758 \uc131\uacf5\ud55c \uc4f0\uae30 tool_call \ub4a4 \uc138\uc158 draft diff \uace0\uc2a4\ud2b8\ub97c \ubc1c\ud589\ud55c\ub2e4",
+          "duration": 863.4629739999946,
+          "failureMessages": [
+            "AssertionError: expected [] to deeply equal ArrayContaining{\u2026}\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/aiChatObservability.test.ts:303:22\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+          ],
+          "meta": {}
+        }
+      ]
+    },
+    {
+      "name": "test/aiChatPanelTransportError.test.ts",
+      "status": "failed",
+      "message": "",
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "transport failure paints recovery CTA and keeps Send mounted"
+          ],
+          "fullName": "transport failure paints recovery CTA and keeps Send mounted refused fetch: is-turn-running cleared, system error bubble + ai-error-open-settings, ai-send stays disabled with ai-abort visible",
+          "status": "failed",
+          "title": "refused fetch: is-turn-running cleared, system error bubble + ai-error-open-settings, ai-send stays disabled with ai-abort visible",
+          "duration": 1562.1193679999997,
+          "failureMessages": [
+            "AssertionError: expected null to be truthy\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/aiChatPanelTransportError.test.ts:68:59\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+          ],
+          "meta": {}
+        }
+      ]
+    },
+    {
+      "name": "test/aiSelectionChipScope.test.ts",
+      "status": "failed",
+      "message": "",
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "\ub300\uae30 \uc0c1\ud0dc\uc5d0\uc11c\ub3c4 \uc120\ud0dd \uce69\uc740 \ubcf4\uc778\ub2e4"
+          ],
+          "fullName": "\ub300\uae30 \uc0c1\ud0dc\uc5d0\uc11c\ub3c4 \uc120\ud0dd \uce69\uc740 \ubcf4\uc778\ub2e4 idle \ud328\ub110\uc5d0\uc11c has-selection-scope \uce69 \ud638\uc2a4\ud2b8\uc758 \uc0ac\uc6a9 display \ub294 none \uc774 \uc544\ub2c8\ub2e4",
+          "status": "failed",
+          "title": "idle \ud328\ub110\uc5d0\uc11c has-selection-scope \uce69 \ud638\uc2a4\ud2b8\uc758 \uc0ac\uc6a9 display \ub294 none \uc774 \uc544\ub2c8\ub2e4",
+          "duration": 257.6299519999957,
+          "failureMessages": [
+            "AssertionError: expected 'block' to be 'none' // Object.is equality\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/aiSelectionChipScope.test.ts:133:54\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runFiles (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1787:3)"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "\ucef4\ud3ec\uc800 \ud78c\ud2b8\ub294 \uc228\uc744 \ub54c \uc790\ub9ac\ub97c \ube44\uc6b4\ub2e4"
+          ],
+          "fullName": "\ucef4\ud3ec\uc800 \ud78c\ud2b8\ub294 \uc228\uc744 \ub54c \uc790\ub9ac\ub97c \ube44\uc6b4\ub2e4 \uc785\ub825 \ud3ec\ucee4\uc2a4\uac00 \uc5c6\uc744 \ub54c \ud78c\ud2b8\uc758 \uc0ac\uc6a9 display \ub294 none \uc774\ub2e4(visibility:hidden \uc740 156px \ub97c \uba39\uc5c8\ub2e4)",
+          "status": "failed",
+          "title": "\uc785\ub825 \ud3ec\ucee4\uc2a4\uac00 \uc5c6\uc744 \ub54c \ud78c\ud2b8\uc758 \uc0ac\uc6a9 display \ub294 none \uc774\ub2e4(visibility:hidden \uc740 156px \ub97c \uba39\uc5c8\ub2e4)",
+          "duration": 467.20283599999675,
+          "failureMessages": [
+            "Error: ENOENT: no such file or directory, open '/home/main/z-project/rpg-zzu-life-full-p2/src/styles/database/tabs-b-assistant-panel/14-assistant-ux-repair.css'\n    at readFileSync (node:fs:440:20)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/aiSelectionChipScope.test.ts:143:17\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+          ],
+          "meta": {}
+        }
+      ]
+    },
+    {
+      "name": "test/databaseItemInspector.test.ts",
+      "status": "failed",
+      "message": "",
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "database item inspector form"
+          ],
+          "fullName": "database item inspector form weapon type shows an equipment-tab door instead of the legacy equipment form",
+          "status": "failed",
+          "title": "weapon type shows an equipment-tab door instead of the legacy equipment form",
+          "duration": 422.4516009999934,
+          "failureMessages": [
+            "AssertionError: expected '\u2694\ucc29\uc6a9 \uc7a5\ube44\ub294 \ubcc4\ub3c4 \ud56d\ubaa9\uc73c\ub85c \ub9cc\ub4ed\ub2c8\ub2e4\uc774 \ud56d\ubaa9\uc740 \uc774\uc804 \ud615\uc2dd\uc758 \ube44\ucc29\uc6a9 \u2026' to contain '\uc7a5\ube44 \ud0ed'\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/databaseItemInspector.test.ts:486:75\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+          ],
+          "meta": {}
+        }
+      ]
+    },
+    {
+      "name": "test/databaseModalDirtySession.test.ts",
+      "status": "failed",
+      "message": "",
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "database modal dirty session"
+          ],
+          "fullName": "database modal dirty session discards a session-only edit even when the undo stack was already saturated at MAX_HISTORY before the session opened",
+          "status": "failed",
+          "title": "discards a session-only edit even when the undo stack was already saturated at MAX_HISTORY before the session opened",
+          "duration": 48568.786311,
+          "failureMessages": [
+            "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/databaseModalDirtySession.test.ts:77:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
+          ],
+          "meta": {}
+        }
+      ]
+    },
+    {
+      "name": "test/databaseNavMode.test.ts",
+      "status": "failed",
+      "message": "",
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "database navigation by editor mode"
+          ],
+          "fullName": "database navigation by editor mode \uadf8\ub8f9 \ud5e4\ub354\uac00 \uc548\uc5d0 \ub4e0 \ud0ed \uc774\ub984\uacfc \ub808\ucf54\ub4dc \ud569\uacc4\ub97c \uc54c\ub824\uc900\ub2e4 \u2014 \ub77c\ubca8 \ud14d\uc2a4\ud2b8\ub294 \uadf8\ub300\ub85c",
+          "status": "failed",
+          "title": "\uadf8\ub8f9 \ud5e4\ub354\uac00 \uc548\uc5d0 \ub4e0 \ud0ed \uc774\ub984\uacfc \ub808\ucf54\ub4dc \ud569\uacc4\ub97c \uc54c\ub824\uc900\ub2e4 \u2014 \ub77c\ubca8 \ud14d\uc2a4\ud2b8\ub294 \uadf8\ub300\ub85c",
+          "duration": 194.0931319999945,
+          "failureMessages": [
+            "AssertionError: expected '\ub9f5' to be '\uc138\uacc4' // Object.is equality\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/databaseNavMode.test.ts:80:69\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+          ],
+          "meta": {}
+        }
+      ]
+    },
+    {
+      "name": "test/databaseOverviewDashboard.test.ts",
+      "status": "failed",
+      "message": "",
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "database overview dashboard"
+          ],
+          "fullName": "database overview dashboard scatter chart draws one circle per enemy with a <title> tooltip and boss styling",
+          "status": "failed",
+          "title": "scatter chart draws one circle per enemy with a <title> tooltip and boss styling",
+          "duration": 15085.149805999994,
+          "failureMessages": [
+            "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/databaseOverviewDashboard.test.ts:183:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database overview dashboard"
+          ],
+          "fullName": "database overview dashboard renders issue cards matching the detector output with jump buttons",
+          "status": "failed",
+          "title": "renders issue cards matching the detector output with jump buttons",
+          "duration": 15037.75594100001,
+          "failureMessages": [
+            "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/databaseOverviewDashboard.test.ts:216:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database overview dashboard"
+          ],
+          "fullName": "database overview dashboard jump button switches to the target tab via switchDatabaseActiveTab (G006)",
+          "status": "failed",
+          "title": "jump button switches to the target tab via switchDatabaseActiveTab (G006)",
+          "duration": 15031.744890000002,
+          "failureMessages": [
+            "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/databaseOverviewDashboard.test.ts:240:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database overview dashboard"
+          ],
+          "fullName": "database overview dashboard attack-stagnation jump opens the classes tab, not skills",
+          "status": "failed",
+          "title": "attack-stagnation jump opens the classes tab, not skills",
+          "duration": 15033.262873,
+          "failureMessages": [
+            "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/databaseOverviewDashboard.test.ts:259:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database overview dashboard"
+          ],
+          "fullName": "database overview dashboard curve section shows a visible HP/attack legend",
+          "status": "failed",
+          "title": "curve section shows a visible HP/attack legend",
+          "duration": 15015.590907999984,
+          "failureMessages": [
+            "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/databaseOverviewDashboard.test.ts:272:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database overview dashboard"
+          ],
+          "fullName": "database overview dashboard AI \ubd84\uc11d button dispatches the modal's database-ai-toggle click (aria-expanded)",
+          "status": "failed",
+          "title": "AI \ubd84\uc11d button dispatches the modal's database-ai-toggle click (aria-expanded)",
+          "duration": 15023.871058999997,
+          "failureMessages": [
+            "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/databaseOverviewDashboard.test.ts:286:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database overview dashboard"
+          ],
+          "fullName": "database overview dashboard clean project shows empty-state cards instead of blank canvases",
+          "status": "failed",
+          "title": "clean project shows empty-state cards instead of blank canvases",
+          "duration": 15052.364646000002,
+          "failureMessages": [
+            "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/databaseOverviewDashboard.test.ts:308:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database overview dashboard"
+          ],
+          "fullName": "database overview dashboard empty project renders empty states without NaN paths",
+          "status": "failed",
+          "title": "empty project renders empty states without NaN paths",
+          "duration": 15025.279317999986,
+          "failureMessages": [
+            "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/databaseOverviewDashboard.test.ts:329:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
+          ],
+          "meta": {}
+        }
+      ]
+    },
+    {
+      "name": "test/databaseOverviewTab.test.ts",
+      "status": "failed",
+      "message": "",
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "database overview tab shell"
+          ],
+          "fullName": "database overview tab shell empty project renders chips with 0 counts without crashing",
+          "status": "failed",
+          "title": "empty project renders chips with 0 counts without crashing",
+          "duration": 15072.855034,
+          "failureMessages": [
+            "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/databaseOverviewTab.test.ts:116:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database overview tab shell"
+          ],
+          "fullName": "database overview tab shell persists across hard reload: stored 'overview' lands on the overview tab",
+          "status": "failed",
+          "title": "persists across hard reload: stored 'overview' lands on the overview tab",
+          "duration": 15025.271803999989,
+          "failureMessages": [
+            "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/databaseOverviewTab.test.ts:149:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database overview tab shell"
+          ],
+          "fullName": "database overview tab shell setDatabaseActiveTab('overview') + renderDatabasePanel renders the overview tab",
+          "status": "failed",
+          "title": "setDatabaseActiveTab('overview') + renderDatabasePanel renders the overview tab",
+          "duration": 15016.578047000003,
+          "failureMessages": [
+            "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/databaseOverviewTab.test.ts:164:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database overview tab shell"
+          ],
+          "fullName": "database overview tab shell stat chips are buttons that switch to the matching tab (G006)",
+          "status": "failed",
+          "title": "stat chips are buttons that switch to the matching tab (G006)",
+          "duration": 15091.052704000002,
+          "failureMessages": [
+            "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/databaseOverviewTab.test.ts:188:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database overview tab shell"
+          ],
+          "fullName": "database overview tab shell databaseTabLabel resolves the overview label for the AI footer",
+          "status": "failed",
+          "title": "databaseTabLabel resolves the overview label for the AI footer",
+          "duration": 15008.544085999994,
+          "failureMessages": [
+            "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/databaseOverviewTab.test.ts:203:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
+          ],
+          "meta": {}
+        }
+      ]
+    },
+    {
+      "name": "test/databaseRadioCustomGuard.test.ts",
+      "status": "failed",
+      "message": "",
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "database radio custom guard"
+          ],
+          "fullName": "database radio custom guard radio \uc81c\uc678 \uc5c6\ub294 bare input \uacb0\ud569\uc774 \uc5c6\ub2e4",
+          "status": "failed",
+          "title": "radio \uc81c\uc678 \uc5c6\ub294 bare input \uacb0\ud569\uc774 \uc5c6\ub2e4",
+          "duration": 442.9423979999997,
+          "failureMessages": [
+            "AssertionError: bare input \uacb0\ud569\uc774 radio \uae4c\uc9c0 \ud568\uaed8 \uce60\ud55c\ub2e4: expected [ Array(1) ] to deeply equal []\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/databaseRadioCustomGuard.test.ts:214:57\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+          ],
+          "meta": {}
+        }
+      ]
+    },
+    {
+      "name": "test/databaseSidebarKeyboard.test.ts",
+      "status": "failed",
+      "message": "",
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "database sidebar keyboard navigation"
+          ],
+          "fullName": "database sidebar keyboard navigation pins Tab focus order: sidebar DOM order = overview entry + TAB_GROUPS order",
+          "status": "failed",
+          "title": "pins Tab focus order: sidebar DOM order = overview entry + TAB_GROUPS order",
+          "duration": 974.3196420000022,
+          "failureMessages": [
+            "AssertionError: expected [ 'db-tab-overview', \u2026(38) ] to deeply equal [ 'db-tab-overview', \u2026(38) ]\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/databaseSidebarKeyboard.test.ts:122:60\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database sidebar keyboard navigation"
+          ],
+          "fullName": "database sidebar keyboard navigation keeps every sidebar tab reachable in sequence when walked with Tab-style focus",
+          "status": "failed",
+          "title": "keeps every sidebar tab reachable in sequence when walked with Tab-style focus",
+          "duration": 169.0759590000016,
+          "failureMessages": [
+            "AssertionError: expected [ 'db-tab-overview', \u2026(38) ] to deeply equal [ 'db-tab-overview', \u2026(38) ]\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/databaseSidebarKeyboard.test.ts:195:60\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+          ],
+          "meta": {}
+        }
+      ]
+    },
+    {
+      "name": "test/databaseSidebarNav.test.ts",
+      "status": "failed",
+      "message": "",
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "database sidebar navigation"
+          ],
+          "fullName": "database sidebar navigation keeps all registered tab testids, including the unified inventory catalog",
+          "status": "failed",
+          "title": "keeps all registered tab testids, including the unified inventory catalog",
+          "duration": 397.9217059999937,
+          "failureMessages": [
+            "AssertionError: expected 39 to be 37 // Object.is equality\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/databaseSidebarNav.test.ts:132:28\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+          ],
+          "meta": {}
+        }
+      ]
+    },
+    {
+      "name": "test/databaseTabIcons.test.ts",
+      "status": "failed",
+      "message": "",
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "database tab icons"
+          ],
+          "fullName": "database tab icons covers every rail tab, overview included",
+          "status": "failed",
+          "title": "covers every rail tab, overview included",
+          "duration": 629.8970039999986,
+          "failureMessages": [
+            "AssertionError: expected 39 to be 38 // Object.is equality\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/databaseTabIcons.test.ts:67:30\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database tab icons"
+          ],
+          "fullName": "database tab icons renders the icon as the first child while the label owns textContent",
+          "status": "failed",
+          "title": "renders the icon as the first child while the label owns textContent",
+          "duration": 188.8440089999931,
+          "failureMessages": [
+            "AssertionError: expected 39 to be 38 // Object.is equality\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/databaseTabIcons.test.ts:128:28\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+          ],
+          "meta": {}
+        }
+      ]
+    },
+    {
+      "name": "test/debugSession.test.ts",
+      "status": "failed",
+      "message": "",
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "debugSession \u2014 \ub7f0\ud0c0\uc784 \ub514\ubc84\uadf8 \uc870\uc791"
+          ],
+          "fullName": "debugSession \u2014 \ub7f0\ud0c0\uc784 \ub514\ubc84\uadf8 \uc870\uc791 applyDebugOp\uac00 \uc2a4\uc704\uce58/\ubcc0\uc218/\uc544\uc774\ud15c/\uace8\ub4dc/\ud154\ub808\ud3ec\ud2b8\ub97c \ubc18\uc601\ud55c\ub2e4",
+          "status": "failed",
+          "title": "applyDebugOp\uac00 \uc2a4\uc704\uce58/\ubcc0\uc218/\uc544\uc774\ud15c/\uace8\ub4dc/\ud154\ub808\ud3ec\ud2b8\ub97c \ubc18\uc601\ud55c\ub2e4",
+          "duration": 15012.780637,
+          "failureMessages": [
+            "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/debugSession.test.ts:15:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
+          ],
+          "meta": {}
+        }
+      ]
+    },
+    {
+      "name": "test/editorProjectE2EBridge.test.ts",
+      "status": "failed",
+      "message": "",
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "mounted project E2E bridge"
+          ],
+          "fullName": "mounted project E2E bridge maps authorized initialization and reload to the mounted singleton with exact proof",
+          "status": "failed",
+          "title": "maps authorized initialization and reload to the mounted singleton with exact proof",
+          "duration": 15026.646701999998,
+          "failureMessages": [
+            "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/editorProjectE2EBridge.test.ts:94:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
+          ],
+          "meta": {}
+        }
+      ]
+    },
+    {
+      "name": "test/eventEditorM2Surface.baseline.test.ts",
+      "status": "failed",
+      "message": "",
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "M2 \uba85\ub839 \ud3fc \ud45c\uba74 \uc2a4\ub0c5\uc0f7"
+          ],
+          "fullName": "M2 \uba85\ub839 \ud3fc \ud45c\uba74 \uc2a4\ub0c5\uc0f7 \uae30\uc900\uc120\uacfc \uc77c\uce58\ud55c\ub2e4",
+          "status": "failed",
+          "title": "\uae30\uc900\uc120\uacfc \uc77c\uce58\ud55c\ub2e4",
+          "duration": 28.470948999995016,
+          "failureMessages": [
+            "AssertionError: [M2(commandId)] \ud45c\uba74\uc774 \uae30\uc900\uc120\uacfc \ub2e4\ub974\ub2e4 (2\uac74)\n  m2-025-change-actor-faceset: testid \uc2e0\uaddc 2\uc885 [change-actor-faceset-ai-queue, change-actor-faceset-ai-queue-list] | \ud0dc\uadf8 \uac1c\uc218 [div 132\u2192134, p 3\u21924] | \ud074\ub798\uc2a4 \uc2e0\uaddc 4\uac1c [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list]\n  m2-069-change-parallax-back: testid \uc2e0\uaddc 2\uc885 [change-parallax-back-ai-queue, change-parallax-back-ai-queue-list] | \ud0dc\uadf8 \uac1c\uc218 [div 15\u219217, p 4\u21925] | \ud074\ub798\uc2a4 \uc2e0\uaddc 4\uac1c [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list]: expected [ \u2026(2) ] to deeply equal []\n    at assertSurfaceGate (/home/main/z-project/rpg-zzu-life-full-p2/test/surfaceGateSupport.ts:280:5)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/eventEditorM2Surface.baseline.test.ts:188:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+          ],
+          "meta": {}
+        }
+      ]
+    },
+    {
+      "name": "test/eventEditorPortalSurface.baseline.test.ts",
+      "status": "failed",
+      "message": "",
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "\ud3ec\ud138(\ud53c\ucee4/\ubaa8\ub2ec) \ud45c\uba74 \uc2a4\ub0c5\uc0f7"
+          ],
+          "fullName": "\ud3ec\ud138(\ud53c\ucee4/\ubaa8\ub2ec) \ud45c\uba74 \uc2a4\ub0c5\uc0f7 \uae30\uc900\uc120\uacfc \uc77c\uce58\ud55c\ub2e4",
+          "status": "failed",
+          "title": "\uae30\uc900\uc120\uacfc \uc77c\uce58\ud55c\ub2e4",
+          "duration": 51.28093699999954,
+          "failureMessages": [
+            "AssertionError: [\ud3ec\ud138(\ud53c\ucee4/\ubaa8\ub2ec)] \ud45c\uba74\uc774 \uae30\uc900\uc120\uacfc \ub2e4\ub974\ub2e4 (2\uac74)\n  commandPickerTab3: \ud0dc\uadf8 circle 18\u219216, div 60\u219259, path 102\u2192101, span 125\u2192124, svg 101\u2192100\n  npcGraphic: testid \uc2e0\uaddc 5\uc885: npc-charset-label-input, npc-charset-tags-input, npc-charset-teach, npc-charset-teach-save, npc-charset-teach-status | \ud074\ub798\uc2a4 \uc2e0\uaddc 3\uc885: npc-charset-teach, npc-charset-teach-heading, npc-charset-teach-status | \ucee8\ud2b8\ub864 \uc2e0\uaddc 3\uac1c: npc-charset-label-input, npc-charset-tags-input, npc-charset-teach-save | \ub77c\ubca8 \uc18c\uc2e4 1\uc885: \uce90\ub9ad\ud130 \uc2ac\ub86f # | \ud0dc\uadf8 button 32\u219233, div 15\u219216, input 8\u219210, p 0\u21922 | testidCount 46\u219251 | controlCount 40\u219243 | classCount 34\u219237: expected [ \u2026(2) ] to deeply equal []\n    at assertSurfaceGate (/home/main/z-project/rpg-zzu-life-full-p2/test/surfaceGateSupport.ts:280:5)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/eventEditorPortalSurface.baseline.test.ts:284:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+          ],
+          "meta": {}
+        }
+      ]
+    },
+    {
+      "name": "test/forestDensity.test.ts",
+      "status": "failed",
+      "message": "",
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "plant_tree_clusters"
+          ],
+          "fullName": "plant_tree_clusters \uae30\ubcf8(dense)\uc774 \uc120\uc5b8\ud55c \ucee4\ubc84\ub9ac\uc9c0\uc5d0 \ub2ff\uace0 \uadf8 \uc9c0\ub300\ub97c \uc2e4\uc81c\ub85c \ub9c9\ub294\ub2e4",
+          "status": "failed",
+          "title": "\uae30\ubcf8(dense)\uc774 \uc120\uc5b8\ud55c \ucee4\ubc84\ub9ac\uc9c0\uc5d0 \ub2ff\uace0 \uadf8 \uc9c0\ub300\ub97c \uc2e4\uc81c\ub85c \ub9c9\ub294\ub2e4",
+          "duration": 2490.3147099999915,
+          "failureMessages": [
+            "AssertionError: \uc601\uc5ed\uc758 30% \uac00 \uc544\uc9c1 \uac78\uc5b4\uc11c \ud1b5\uacfc\ub41c\ub2e4: expected 0.3003472222222222 to be less than 0.3\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/forestDensity.test.ts:227:8\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "place_props density \u2014 \ubaa8\ub378\uc774 \uc2e4\uc81c\ub85c \ub2ff\ub294 \ub77c\uc774\ube0c \ud234"
+          ],
+          "fullName": "place_props density \u2014 \ubaa8\ub378\uc774 \uc2e4\uc81c\ub85c \ub2ff\ub294 \ub77c\uc774\ube0c \ud234 \ud65c\uc5fd\uc218 density=dense \uac00 count \uc5c6\uc774\ub3c4 \uc232\uc744 \ub9cc\ub4e0\ub2e4",
+          "status": "failed",
+          "title": "\ud65c\uc5fd\uc218 density=dense \uac00 count \uc5c6\uc774\ub3c4 \uc232\uc744 \ub9cc\ub4e0\ub2e4",
+          "duration": 514.9997279999952,
+          "failureMessages": [
+            "AssertionError: expected 0.3003472222222222 to be less than 0.3\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/forestDensity.test.ts:298:47\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:863:59\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+          ],
+          "meta": {}
+        }
+      ]
+    },
+    {
+      "name": "test/gen1DemoContent.test.ts",
+      "status": "failed",
+      "message": "",
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "Scarloxy Gen1 authored content"
+          ],
+          "fullName": "Scarloxy Gen1 authored content authors persistent major statuses, finite PP, a Poke Ball, and trainer semantics",
+          "status": "failed",
+          "title": "authors persistent major statuses, finite PP, a Poke Ball, and trainer semantics",
+          "duration": 167.05403800000022,
+          "failureMessages": [
+            "TypeError: actual value must be number or bigint, received \"undefined\"\n    at assertTypes (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/utils/dist/helpers.js:25:9)\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1210:3)\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1029:14)\n    at Proxy.methodWrapper (file:///home/main/z-project/rpg-zzu/node_modules/chai/index.js:1686:25)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/gen1DemoContent.test.ts:55:84\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)"
+          ],
+          "meta": {}
+        }
+      ]
+    },
+    {
+      "name": "test/modalEscapeLayerGate.test.ts",
+      "status": "failed",
+      "message": "",
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "Escape \uacc4\uce35 \uac8c\uc774\ud2b8"
+          ],
+          "fullName": "Escape \uacc4\uce35 \uac8c\uc774\ud2b8 body \uc5d0 \uc624\ubc84\ub808\uc774\ub97c \ubd99\uc774\ub294 \ud30c\uc77c\uc740 modalStack \uc5d0 \ucc38\uc5ec\ud558\uac70\ub098 \uc774\uc720\uc640 \ud568\uaed8 \uba74\uc81c\ub41c\ub2e4",
+          "status": "failed",
+          "title": "body \uc5d0 \uc624\ubc84\ub808\uc774\ub97c \ubd99\uc774\ub294 \ud30c\uc77c\uc740 modalStack \uc5d0 \ucc38\uc5ec\ud558\uac70\ub098 \uc774\uc720\uc640 \ud568\uaed8 \uba74\uc81c\ub41c\ub2e4",
+          "duration": 211.645309,
+          "failureMessages": [
+            "AssertionError: body \uc5d0 \ub744\uc6b4 \uc0c8 \uc624\ubc84\ub808\uc774\uac00 Escape \uacc4\uce35\uc5d0 \ucc38\uc5ec\ud558\uc9c0 \uc54a\ub294\ub2e4. registerModal/unregisterModal \uc744 \uc9dd\uc9c0\uc5b4 \uc4f0\uac70\ub098, \uc815\ub9d0 \uacc4\uce35\uc774 \uc544\ub2c8\uba74 EXEMPT \uc5d0 \uc774\uc720\ub97c \uc801\uc5b4\ub77c.: expected [ 'panels/newProjectDialog.ts' ] to deeply equal []\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/modalEscapeLayerGate.test.ts:90:7\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Escape \uacc4\uce35 \uac8c\uc774\ud2b8"
+          ],
+          "fullName": "Escape \uacc4\uce35 \uac8c\uc774\ud2b8 \uc774\ubc88\uc5d0 \uace0\uce5c \ud45c\uba74\ub4e4\uc740 \uba74\uc81c\uac00 \uc544\ub2c8\ub77c \uc2e4\uc81c\ub85c \ub4f1\ub85d\ud55c\ub2e4",
+          "status": "failed",
+          "title": "\uc774\ubc88\uc5d0 \uace0\uce5c \ud45c\uba74\ub4e4\uc740 \uba74\uc81c\uac00 \uc544\ub2c8\ub77c \uc2e4\uc81c\ub85c \ub4f1\ub85d\ud55c\ub2e4",
+          "duration": 5.008589000000029,
+          "failureMessages": [
+            "AssertionError: \ud68c\uadc0: \uc774 \ud45c\uba74\ub4e4\uc740 modalStack \uc5d0 \ub4f1\ub85d\ub418\uc5b4 \uc788\uc5b4\uc57c \ud55c\ub2e4: expected [ 'panels/worldPanel.ts' ] to deeply equal []\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/modalEscapeLayerGate.test.ts:124:60\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+          ],
+          "meta": {}
+        }
+      ]
+    },
+    {
+      "name": "test/moveRouteCatalogPersistence.test.ts",
+      "status": "failed",
+      "message": "",
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "\uc774\ub3d9 \uacbd\ub85c \ud314\ub808\ud2b8 persistence"
+          ],
+          "fullName": "\uc774\ub3d9 \uacbd\ub85c \ud314\ub808\ud2b8 persistence BREAK: \ud314\ub808\ud2b8\uc758 \ubaa8\ub4e0 \uba85\ub839\uc774 \ud558\ub098\uc529 serialize\u2192deserialize \ub97c \ud1b5\uacfc\ud55c\ub2e4",
+          "status": "failed",
+          "title": "BREAK: \ud314\ub808\ud2b8\uc758 \ubaa8\ub4e0 \uba85\ub839\uc774 \ud558\ub098\uc529 serialize\u2192deserialize \ub97c \ud1b5\uacfc\ud55c\ub2e4",
+          "duration": 15963.495861,
+          "failureMessages": [
+            "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/moveRouteCatalogPersistence.test.ts:82:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
+          ],
+          "meta": {}
+        }
+      ]
+    },
+    {
+      "name": "test/noLocalProjectDb.test.ts",
+      "status": "failed",
+      "message": "",
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "canonical project persistence has no local DB fallback"
+          ],
+          "fullName": "canonical project persistence has no local DB fallback does not reference IndexedDB SQLite or local JSON fallback in runtime source",
+          "status": "failed",
+          "title": "does not reference IndexedDB SQLite or local JSON fallback in runtime source",
+          "duration": 334.1098989999999,
+          "failureMessages": [
+            "AssertionError: expected [ Array(1) ] to deeply equal []\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/noLocalProjectDb.test.ts:59:23\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+          ],
+          "meta": {}
+        }
+      ]
+    },
+    {
+      "name": "test/regionSelectionPastePreview.test.ts",
+      "status": "failed",
+      "message": "",
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "renderSelectionActionChips \u2014 \ubcf5\uc0ac/\ubd99\uc5ec\ub123\uae30/\uc9c0\uc6b0\uae30/\ud574\uc81c \ubc84\ud2bc"
+          ],
+          "fullName": "renderSelectionActionChips \u2014 \ubcf5\uc0ac/\ubd99\uc5ec\ub123\uae30/\uc9c0\uc6b0\uae30/\ud574\uc81c \ubc84\ud2bc AI \uc791\uc5c5\uc774 \uccab \ubc84\ud2bc\uc774\uace0, \ud06c\uae30 \ud14d\uc2a4\ud2b8\ub294 \ubc14\uc5d0 \uc5c6\ub2e4",
+          "status": "failed",
+          "title": "AI \uc791\uc5c5\uc774 \uccab \ubc84\ud2bc\uc774\uace0, \ud06c\uae30 \ud14d\uc2a4\ud2b8\ub294 \ubc14\uc5d0 \uc5c6\ub2e4",
+          "duration": 15049.707666999995,
+          "failureMessages": [
+            "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/regionSelectionPastePreview.test.ts:193:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
+          ],
+          "meta": {}
+        }
+      ]
+    },
+    {
+      "name": "test/roleNameComparisonGate.test.ts",
+      "status": "failed",
+      "message": "",
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "A-2 \uac8c\uc774\ud2b8 \u2014 \uc5ed\ud560 \uc774\ub984 \ube44\uad50 \uc794\uc5ec"
+          ],
+          "fullName": "A-2 \uac8c\uc774\ud2b8 \u2014 \uc5ed\ud560 \uc774\ub984 \ube44\uad50 \uc794\uc5ec \ud5c8\uc6a9 \ubaa9\ub85d \ubc16\uc5d0\uc11c \ud0c0\uc77c \uc5ed\ud560 \uc774\ub984\uc744 \uc9c1\uc811 \ube44\uad50\ud558\uc9c0 \uc54a\ub294\ub2e4",
+          "status": "failed",
+          "title": "\ud5c8\uc6a9 \ubaa9\ub85d \ubc16\uc5d0\uc11c \ud0c0\uc77c \uc5ed\ud560 \uc774\ub984\uc744 \uc9c1\uc811 \ube44\uad50\ud558\uc9c0 \uc54a\ub294\ub2e4",
+          "duration": 1828.36319,
+          "failureMessages": [
+            "AssertionError: expected [ \u2026(2) ] to deeply equal []\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/roleNameComparisonGate.test.ts:154:23\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+          ],
+          "meta": {}
+        }
+      ]
+    },
+    {
+      "name": "test/uxcLoadFailure.test.ts",
+      "status": "failed",
+      "message": "",
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "UXC D01 \ud504\ub85c\uc81d\ud2b8 \ub85c\ub4dc \uc2e4\ud328 \ud3f4\ubc31"
+          ],
+          "fullName": "UXC D01 \ud504\ub85c\uc81d\ud2b8 \ub85c\ub4dc \uc2e4\ud328 \ud3f4\ubc31 \uc624\ub958 \uc6d0\ubb38\uc744 \uc228\uae30\uace0 \uc548\uc804\ud55c \ubcf5\uad6c \ubc29\ubc95\uacfc \uc608\uc81c/\uc0c8 \ud504\ub85c\uc81d\ud2b8 CTA\ub97c \uc81c\uacf5\ud55c\ub2e4",
+          "status": "failed",
+          "title": "\uc624\ub958 \uc6d0\ubb38\uc744 \uc228\uae30\uace0 \uc548\uc804\ud55c \ubcf5\uad6c \ubc29\ubc95\uacfc \uc608\uc81c/\uc0c8 \ud504\ub85c\uc81d\ud2b8 CTA\ub97c \uc81c\uacf5\ud55c\ub2e4",
+          "duration": 15105.930175,
+          "failureMessages": [
+            "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/uxcLoadFailure.test.ts:125:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
+          ],
+          "meta": {}
+        }
+      ]
+    }
+  ]
+}

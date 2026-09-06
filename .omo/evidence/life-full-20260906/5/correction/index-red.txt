@@ -1,0 +1,5 @@
+
+> rpg-zzu@0.1.0 openwiki:index
+> node scripts/openwiki-index.mjs --check
+
+openwiki/INDEX.md 가 낡았다. `npm run openwiki:index` 를 돌려라.

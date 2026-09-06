@@ -514,7 +514,7 @@
 
   .oprn-record-actors .oprn-record-list-pane h3 {
     color: var(--text-1);
-    font: 700 17px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 700 17px/1.2 var(--font-ui);
     margin: 0 0 12px;
   }
 
@@ -528,7 +528,7 @@
     border-radius: 4px;
     box-sizing: border-box;
     color: var(--text-1);
-    font: 400 16px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 400 16px/1.2 var(--font-ui);
     height: 38px;
     padding: 5px 8px;
     width: 100%;
@@ -546,7 +546,7 @@
     border: 0;
     border-bottom: 1px solid var(--border-subtle);
     color: var(--text-1);
-    font: 500 16px/1.25 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 500 16px/1.25 var(--font-ui);
     min-height: 36px;
     padding: 0 14px;
   }
@@ -583,7 +583,7 @@
 
   .oprn-record-actors .oprn-record-count {
     color: var(--text-1);
-    font: 500 15px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 500 15px/1 var(--font-ui);
   }
 
   .oprn-record-actors .db-toolbar {
@@ -591,19 +591,6 @@
     gap: 8px;
     grid-template-columns: repeat(3, 1fr);
     margin-top: 8px;
-  }
-
-  .oprn-record-actors .db-toolbar .btn {
-    background: var(--bg-raised);
-    border: 1px solid var(--border-subtle);
-    border-radius: 4px;
-    color: var(--text-1);
-    font: 600 14px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
-    min-height: 32px;
-  }
-
-  .oprn-record-actors .db-toolbar .btn.danger {
-    color: var(--danger);
   }
 
   .oprn-record-actors .oprn-record-detail-pane {
@@ -697,7 +684,7 @@
   .oprn-record-actors .actor-panel legend {
     color: var(--text-1);
     float: left;
-    font: 700 17px/1.1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 700 17px/1.1 var(--font-ui);
     margin: -6px 0 12px;
     padding: 0;
     width: 100%;
@@ -710,7 +697,7 @@
   .oprn-record-actors .actor-classic-sheet label,
   .oprn-record-actors .actor-classic-sheet .field {
     color: var(--text-2);
-    font: 500 16px/1.25 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 500 16px/1.25 var(--font-ui);
     gap: 12px;
     grid-template-columns: 92px minmax(0, 1fr);
     margin: 0 0 7px;
@@ -722,7 +709,7 @@
     border: 1px solid var(--border-subtle);
     border-radius: 4px;
     color: var(--text-1);
-    font: 400 16px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 400 16px/1.2 var(--font-ui);
     height: 32px;
     padding: 3px 8px;
   }
@@ -765,7 +752,7 @@
     border: 1px solid var(--border-subtle);
     border-radius: 4px;
     color: var(--text-2);
-    font: 600 14px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 600 14px/1 var(--font-ui);
     height: 32px;
   }
 
@@ -807,7 +794,7 @@
 
   .oprn-record-actors .actor-basic-stat-row {
     color: var(--text-1);
-    font: 500 16px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 500 16px/1.2 var(--font-ui);
   }
 
   .oprn-record-actors .actor-basic-stat-row strong {
@@ -824,7 +811,7 @@
     border: 1px solid var(--border-subtle);
     border-bottom: 0;
     color: var(--text-1);
-    font: 600 15px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 600 15px/1 var(--font-ui);
     height: 48px;
     min-width: 92px;
     padding: 0 14px;
@@ -857,7 +844,7 @@
     background: var(--bg-raised);
     border: 1px solid var(--border-subtle);
     color: var(--text-1);
-    font: 600 16px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 600 16px/1 var(--font-ui);
     grid-template-columns: 80px minmax(0, 1fr) 58px;
     min-height: 34px;
     padding: 0 8px;
@@ -904,7 +891,7 @@
     background: var(--bg-raised);
     border-bottom: 1px solid var(--border-subtle);
     color: var(--text-1);
-    font: 700 16px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 700 16px/1 var(--font-ui);
     min-height: 32px;
     padding: 0 10px;
   }

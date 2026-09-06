@@ -1,0 +1,9 @@
+{"path":"src/project/lifeStateReconciliation.ts","diagnostics":[]}
+{"path":"src/project/itemTransitions.ts","diagnostics":[]}
+{"path":"src/project/session.ts","diagnostics":[]}
+{"path":"test/lifeRecoveryRecordKeys.test.ts","diagnostics":[]}
+{"command":["/usr/local/bin/node","--check",".omo/evidence/life-full-20260906/30/diagnostics.mjs"],"exit":0,"stdout":"","stderr":""}
+{"command":["/usr/local/bin/node","--check",".omo/evidence/life-full-20260906/30/run.mjs"],"exit":0,"stdout":"","stderr":""}
+{"command":["/usr/local/bin/node","--check",".omo/evidence/life-full-20260906/30/reserved-key-probe.mjs"],"exit":0,"stdout":"","stderr":""}
+{"command":["/usr/local/bin/node","--check",".omo/evidence/life-full-20260906/30/public-roundtrip.mjs"],"exit":0,"stdout":"","stderr":""}
+{"command":["/usr/local/bin/node","--check",".omo/evidence/life-full-20260906/30/public-roundtrip.initial.mjs"],"exit":0,"stdout":"","stderr":""}

@@ -1,0 +1,52 @@
+{
+  "candidate": "d84001e88b5e0b7f8ff3074de0ec5f6cdbcbf41e",
+  "tree": "7b9fd7d4cbc04e99f3f7a2ed9005e8eb91ea3345",
+  "parentEvidenceReady": true,
+  "fullGatePassed": false,
+  "fullVitestStatus": "INCOMPLETE: two stock-gate invocations timed out at1200s; traced app tsc passed and full Vitest never returned/published JSON.",
+  "evidenceRoot": ".omo/evidence/life-full-20260906/",
+  "currentReceipts": {
+    "diagnostics": "phase2-corrected/diagnostics.json",
+    "build": "phase2-corrected/build.json",
+    "index": "phase2-corrected/index.json",
+    "firstGate": "phase2-corrected/gates.json",
+    "tracedGate": "phase2-corrected/gate-trace/execution.json",
+    "limits": "phase2-corrected/full-gate-limit.json",
+    "css": "phase2-corrected/remaining-css.json",
+    "surface": "phase2-corrected/remaining-surface.json",
+    "surfaceComparison": "phase2-corrected/surface-comparison.json"
+  },
+  "observed": {
+    "changedTypeScriptFiles": 52,
+    "diagnostics": 0,
+    "buildExit": 0,
+    "indexExit": 0,
+    "cssExit": 0,
+    "surfaceExit": 1,
+    "surfaceAxes": 9,
+    "surfaceSkippedAxes": 0,
+    "surfaceTests": 113,
+    "surfaceFailures": 6,
+    "surfaceFailuresIdenticalToPhaseBase": true
+  },
+  "directParentEvidence": {
+    "player": "39/parent/SUMMARY.md",
+    "playerReceipt": "39/parent/execution.json",
+    "nativePlayer": "39/parent/firefox/browser-results.json",
+    "consumer": "40/parent/SUMMARY.md",
+    "consumerNativeStorage": "40/parent/http-transport/execution.json"
+  },
+  "limits": [
+    "Do not infer zero new whole-suite failures or current full-Vitest counts.",
+    "Host contention was observed, but exact historical timeout causation is unproven.",
+    "160test and71test commands are separate overlapping targeted runs, not a combined unique-test count.",
+    "Manual-save refusal remains real shell/controller/Storage with mocked scene endpoints.",
+    "Task40 browser uses disclosed Node-HTTP transport; task39 Firefox is native.",
+    "Images are retained but not visually read by the current model; DOM geometry is not aesthetic image review."
+  ],
+  "cleanup": {
+    "completed": "Both source task worktrees removed after all evidence/commits were preserved; parent manual QA resources closed.",
+    "pending": "Parent-owned generated dist/cache, current locked review worktree and current receipt archival will be cleaned before PR handoff, after reviewer finishes using this tree."
+  },
+  "decision": "This marker releases the evidence dependency, not approval. Reviewer independently judges scoped Phase2 readiness and any remaining blockers; full six-phase goal is not complete."
+}

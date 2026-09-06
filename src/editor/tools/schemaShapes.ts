@@ -42,14 +42,22 @@ export const RECT_SCHEMA: JsonSchema = {
  */
 export const COMMAND_SCHEMA: JsonSchema = {
   type: "object",
+  description:
+    'Command 예: {kind:"changeItem",itemId:"조회한 ID",op:"-=",amount:1}, ' +
+    '{kind:"setSwitch",switchId:"조회한 ID",value:true}, {kind:"triggerEnding",endingId:"정의한 ID"}. ' +
+    'triggerEnding의 endingId 생략 시 조건으로 선택한다. switch/item은 조건 kind이며 실행 명령이 아니다.',
   properties: {
     // kind 를 자유 문자열로 두면 모델이 존재하지 않는 kind 를 만들어 보낸다(2026-08-23 실측:
     // pages[0].choices[0].commands[0].kind 가 unknown 으로 거부). 단일 진실 소스 enum 을 노출한다.
     kind: { type: "string", enum: [...COMMAND_KINDS] },
     text: { type: "string" },
-    // 필드는 노출하되 단일 타입으로 유니온 값을 막지 않는다. variant 검증은 shape 검증기가 한다.
-    value: { description: 'setSelfSwitch/setFlag: boolean. setSwitch: boolean | "toggle" | {kind:"var",id}. setVariable: number | {kind:"var",id}. changeFactionStance: number.' },
+    // 단일 type/union 금지 provider 계약 때문에 다형 값만 type을 생략한다.
+    // 타입과 필수 값은 기존 kind별 커맨드 shape 검증기가 엄격히 검사한다.
+    value: {
+      description: 'setSwitch: boolean 또는 "toggle" 또는 {kind:"var",id}. setVariable: number 또는 {kind:"var",id}. setSelfSwitch/setFlag: boolean. changeFactionStance: number.',
+    },
     op: { type: "string", enum: ["=", "+=", "-=", "*=", "/="], description: "changeItem/changeGold: =|+=|-=. setVariable: =|+=|-=|*=|/=. 아이템 지급은 changeItem + itemId + op:+= + amount." },
+    endingId: { type: "string", description: "triggerEnding 대상 ending ID. 생략하면 조건에 맞는 엔딩을 선택." },
     id: { type: "string" },
     mapId: { type: "string" },
     x: { type: "integer" },
@@ -130,13 +138,14 @@ export const CUTSCENE_BEAT_SCHEMA: JsonSchema = {
 
 /**
  * `Condition` (project/types/events) — 리프 + all/any/not 복합까지 17 variant.
- * `value` 는 boolean|number 이므로 필드를 선언하되 type 제약은 생략한다.
- * oneOf/anyOf/type 배열 없이 모델이 값을 쓸 수 있게 하고 실제 검증은 condition shape에 위임한다.
+ * `value` 는 boolean|number 로 갈리므로 단일 type을 강제하지 않는다.
+ * 필수 값과 타입은 validateConditionShape가 kind별로 검사한다.
  */
 export const CONDITION_SCHEMA: JsonSchema = {
   type: "object",
   description:
     "kind=switch → switchId + value(boolean). kind=variable → variableId + op + value(number). " +
+    'kind=item → itemId + present(boolean), 예: {kind:"item",itemId:"조회한 ID",present:true}. ' +
     "kind=all|any → conditions[]. kind=not → condition. kind=selfSwitch → key + value(boolean).",
   properties: {
     kind: {
@@ -145,12 +154,13 @@ export const CONDITION_SCHEMA: JsonSchema = {
       // 단일 진실 소스는 commandKindRegistry.CONDITION_KINDS 다.
       enum: [...CONDITION_KINDS],
     },
-    value: { description: "switch/selfSwitch: boolean. variable/friendshipAtLeast: number." },
     state: { type: "string", enum: [...RELATIONSHIP_STATES] },
     switchId: { type: "string" },
     variableId: { type: "string" },
     itemId: { type: "string" },
     actorId: { type: "string" },
+    value: { description: "switch/selfSwitch: boolean 필수. variable/friendshipAtLeast: number 필수. run: query별 boolean 또는 number." },
+    present: { type: "boolean", description: "item/actor 조건: true=보유/합류, false=미보유/미합류. 필수." },
     op: { type: "string", enum: ["==", ">=", "<=", ">", "<", "!="] },
     amount: { type: "integer" },
     phase: { type: "string", enum: ["morning", "day", "evening", "night"] },

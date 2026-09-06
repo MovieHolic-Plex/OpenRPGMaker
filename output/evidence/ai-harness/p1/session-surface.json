@@ -1,0 +1,312 @@
+{
+  "surface": "AssistantSession.sendUserMessage/retryLastTurn/proveAppliedRevision via Vite SSR",
+  "transport": "deterministic, no live remote",
+  "projectId": "p1-session-surface-fixture",
+  "steps": [
+    {
+      "action": "completion-503",
+      "proof": {
+        "status": "failed",
+        "verified": false,
+        "reason": "failed",
+        "receipt": {
+          "revisionId": "68fecd74-2aa7-4265-af7b-cea32f2ab1d5",
+          "projectId": "p1-session-surface-fixture",
+          "mutationGeneration": 1,
+          "contentIdentity": "6a86e350348de1933b6596357cf607a59d7f5f072b4904380e577616979c3951",
+          "sha256": "43417d6a61e469c4a64d4d17f0317b8c6898d7660d4c3d98bdfc44270f2071b7"
+        },
+        "commitId": "b7094c2b-a357-4087-80a1-c5a123c169d8",
+        "proof": {
+          "kind": "failed",
+          "receipt": {
+            "revisionId": "68fecd74-2aa7-4265-af7b-cea32f2ab1d5",
+            "projectId": "p1-session-surface-fixture",
+            "mutationGeneration": 1,
+            "contentIdentity": "6a86e350348de1933b6596357cf607a59d7f5f072b4904380e577616979c3951",
+            "sha256": "43417d6a61e469c4a64d4d17f0317b8c6898d7660d4c3d98bdfc44270f2071b7"
+          },
+          "message": "unavailable"
+        }
+      },
+      "appliedCalls": [
+        "set_title_screen"
+      ],
+      "savedAudits": 0
+    },
+    {
+      "action": "same-revision-retry",
+      "proof": {
+        "status": "succeeded",
+        "verified": true,
+        "receipt": {
+          "revisionId": "68fecd74-2aa7-4265-af7b-cea32f2ab1d5",
+          "projectId": "p1-session-surface-fixture",
+          "mutationGeneration": 1,
+          "contentIdentity": "6a86e350348de1933b6596357cf607a59d7f5f072b4904380e577616979c3951",
+          "sha256": "43417d6a61e469c4a64d4d17f0317b8c6898d7660d4c3d98bdfc44270f2071b7"
+        },
+        "commitId": "b7094c2b-a357-4087-80a1-c5a123c169d8",
+        "proof": {
+          "kind": "verified",
+          "receipt": {
+            "revisionId": "68fecd74-2aa7-4265-af7b-cea32f2ab1d5",
+            "projectId": "p1-session-surface-fixture",
+            "mutationGeneration": 1,
+            "contentIdentity": "6a86e350348de1933b6596357cf607a59d7f5f072b4904380e577616979c3951",
+            "sha256": "43417d6a61e469c4a64d4d17f0317b8c6898d7660d4c3d98bdfc44270f2071b7"
+          },
+          "isCurrent": true
+        }
+      },
+      "llmCallsAdded": 0
+    },
+    {
+      "action": "succeeded-dedup",
+      "requestsAdded": 0
+    },
+    {
+      "action": "new-revision-local-edit-during-read",
+      "proof": {
+        "status": "failed",
+        "verified": false,
+        "reason": "stale",
+        "receipt": {
+          "revisionId": "641f1e4d-c2b4-4555-961c-9126d37f0c7d",
+          "projectId": "p1-session-surface-fixture",
+          "mutationGeneration": 2,
+          "contentIdentity": "d1bf45765c959f1a5794489ecb3db0db296c9a7a798bb58c613df67b69446b0e",
+          "sha256": "c2d900a45af8af5f08c5de8db14d5d5631d9f03d8a50341685864be06efd8fa1"
+        },
+        "commitId": null,
+        "proof": {
+          "kind": "verified",
+          "receipt": {
+            "revisionId": "641f1e4d-c2b4-4555-961c-9126d37f0c7d",
+            "projectId": "p1-session-surface-fixture",
+            "mutationGeneration": 2,
+            "contentIdentity": "d1bf45765c959f1a5794489ecb3db0db296c9a7a798bb58c613df67b69446b0e",
+            "sha256": "c2d900a45af8af5f08c5de8db14d5d5631d9f03d8a50341685864be06efd8fa1"
+          },
+          "isCurrent": false
+        }
+      },
+      "title": "newer-human-edit",
+      "dirty": true,
+      "liveIdentityPreserved": true
+    }
+  ],
+  "events": [
+    {
+      "status": "attempted",
+      "verified": false
+    },
+    {
+      "status": "attempted",
+      "verified": false,
+      "receipt": {
+        "revisionId": "68fecd74-2aa7-4265-af7b-cea32f2ab1d5",
+        "projectId": "p1-session-surface-fixture",
+        "mutationGeneration": 1,
+        "contentIdentity": "6a86e350348de1933b6596357cf607a59d7f5f072b4904380e577616979c3951",
+        "sha256": "43417d6a61e469c4a64d4d17f0317b8c6898d7660d4c3d98bdfc44270f2071b7"
+      },
+      "commitId": "b7094c2b-a357-4087-80a1-c5a123c169d8"
+    },
+    {
+      "status": "failed",
+      "verified": false,
+      "reason": "failed",
+      "receipt": {
+        "revisionId": "68fecd74-2aa7-4265-af7b-cea32f2ab1d5",
+        "projectId": "p1-session-surface-fixture",
+        "mutationGeneration": 1,
+        "contentIdentity": "6a86e350348de1933b6596357cf607a59d7f5f072b4904380e577616979c3951",
+        "sha256": "43417d6a61e469c4a64d4d17f0317b8c6898d7660d4c3d98bdfc44270f2071b7"
+      },
+      "commitId": "b7094c2b-a357-4087-80a1-c5a123c169d8",
+      "proof": {
+        "kind": "failed",
+        "receipt": {
+          "revisionId": "68fecd74-2aa7-4265-af7b-cea32f2ab1d5",
+          "projectId": "p1-session-surface-fixture",
+          "mutationGeneration": 1,
+          "contentIdentity": "6a86e350348de1933b6596357cf607a59d7f5f072b4904380e577616979c3951",
+          "sha256": "43417d6a61e469c4a64d4d17f0317b8c6898d7660d4c3d98bdfc44270f2071b7"
+        },
+        "message": "unavailable"
+      }
+    },
+    {
+      "status": "attempted",
+      "verified": false
+    },
+    {
+      "status": "attempted",
+      "verified": false,
+      "receipt": {
+        "revisionId": "68fecd74-2aa7-4265-af7b-cea32f2ab1d5",
+        "projectId": "p1-session-surface-fixture",
+        "mutationGeneration": 1,
+        "contentIdentity": "6a86e350348de1933b6596357cf607a59d7f5f072b4904380e577616979c3951",
+        "sha256": "43417d6a61e469c4a64d4d17f0317b8c6898d7660d4c3d98bdfc44270f2071b7"
+      },
+      "commitId": "b7094c2b-a357-4087-80a1-c5a123c169d8"
+    },
+    {
+      "status": "succeeded",
+      "verified": true,
+      "receipt": {
+        "revisionId": "68fecd74-2aa7-4265-af7b-cea32f2ab1d5",
+        "projectId": "p1-session-surface-fixture",
+        "mutationGeneration": 1,
+        "contentIdentity": "6a86e350348de1933b6596357cf607a59d7f5f072b4904380e577616979c3951",
+        "sha256": "43417d6a61e469c4a64d4d17f0317b8c6898d7660d4c3d98bdfc44270f2071b7"
+      },
+      "commitId": "b7094c2b-a357-4087-80a1-c5a123c169d8",
+      "proof": {
+        "kind": "verified",
+        "receipt": {
+          "revisionId": "68fecd74-2aa7-4265-af7b-cea32f2ab1d5",
+          "projectId": "p1-session-surface-fixture",
+          "mutationGeneration": 1,
+          "contentIdentity": "6a86e350348de1933b6596357cf607a59d7f5f072b4904380e577616979c3951",
+          "sha256": "43417d6a61e469c4a64d4d17f0317b8c6898d7660d4c3d98bdfc44270f2071b7"
+        },
+        "isCurrent": true
+      }
+    },
+    {
+      "status": "attempted",
+      "verified": false
+    },
+    {
+      "status": "attempted",
+      "verified": false,
+      "receipt": {
+        "revisionId": "641f1e4d-c2b4-4555-961c-9126d37f0c7d",
+        "projectId": "p1-session-surface-fixture",
+        "mutationGeneration": 2,
+        "contentIdentity": "d1bf45765c959f1a5794489ecb3db0db296c9a7a798bb58c613df67b69446b0e",
+        "sha256": "c2d900a45af8af5f08c5de8db14d5d5631d9f03d8a50341685864be06efd8fa1"
+      },
+      "commitId": null
+    },
+    {
+      "status": "failed",
+      "verified": false,
+      "reason": "stale",
+      "receipt": {
+        "revisionId": "641f1e4d-c2b4-4555-961c-9126d37f0c7d",
+        "projectId": "p1-session-surface-fixture",
+        "mutationGeneration": 2,
+        "contentIdentity": "d1bf45765c959f1a5794489ecb3db0db296c9a7a798bb58c613df67b69446b0e",
+        "sha256": "c2d900a45af8af5f08c5de8db14d5d5631d9f03d8a50341685864be06efd8fa1"
+      },
+      "commitId": null,
+      "proof": {
+        "kind": "verified",
+        "receipt": {
+          "revisionId": "641f1e4d-c2b4-4555-961c-9126d37f0c7d",
+          "projectId": "p1-session-surface-fixture",
+          "mutationGeneration": 2,
+          "contentIdentity": "d1bf45765c959f1a5794489ecb3db0db296c9a7a798bb58c613df67b69446b0e",
+          "sha256": "c2d900a45af8af5f08c5de8db14d5d5631d9f03d8a50341685864be06efd8fa1"
+        },
+        "isCurrent": false
+      }
+    }
+  ],
+  "requests": [
+    {
+      "path": "/rest/v1/project_commits",
+      "method": "POST",
+      "projectId": null
+    },
+    {
+      "path": "/rest/v1/project_changes",
+      "method": "POST",
+      "projectId": null
+    },
+    {
+      "path": "/rest/v1/projects",
+      "method": "POST",
+      "projectId": null
+    },
+    {
+      "path": "/rest/v1/maps",
+      "method": "DELETE",
+      "projectId": "eq.p1-session-surface-fixture"
+    },
+    {
+      "path": "/rest/v1/maps",
+      "method": "POST",
+      "projectId": null
+    },
+    {
+      "path": "/rest/v1/tilesets",
+      "method": "DELETE",
+      "projectId": "eq.p1-session-surface-fixture"
+    },
+    {
+      "path": "/rest/v1/tilesets",
+      "method": "POST",
+      "projectId": null
+    },
+    {
+      "path": "/rest/v1/projects",
+      "method": "GET",
+      "projectId": "eq.p1-session-surface-fixture"
+    },
+    {
+      "path": "/rest/v1/projects",
+      "method": "GET",
+      "projectId": "eq.p1-session-surface-fixture"
+    },
+    {
+      "path": "/rest/v1/maps",
+      "method": "GET",
+      "projectId": "eq.p1-session-surface-fixture"
+    },
+    {
+      "path": "/rest/v1/projects",
+      "method": "GET",
+      "projectId": "eq.p1-session-surface-fixture"
+    },
+    {
+      "path": "/rest/v1/projects",
+      "method": "PATCH",
+      "projectId": "eq.p1-session-surface-fixture"
+    },
+    {
+      "path": "/rest/v1/projects",
+      "method": "GET",
+      "projectId": "eq.p1-session-surface-fixture"
+    },
+    {
+      "path": "/rest/v1/maps",
+      "method": "GET",
+      "projectId": "eq.p1-session-surface-fixture"
+    },
+    {
+      "path": "/rest/v1/project_commits",
+      "method": "POST",
+      "projectId": null
+    },
+    {
+      "path": "/rest/v1/project_changes",
+      "method": "POST",
+      "projectId": null
+    }
+  ],
+  "cleanup": {
+    "viteClosed": true,
+    "transportRestored": true,
+    "autosaveCleared": true,
+    "activityTimersCleared": true,
+    "deferredSettled": true,
+    "remoteFixturesCreated": 0,
+    "listenerStarted": false
+  },
+  "pass": true
+}

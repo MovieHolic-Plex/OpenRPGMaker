@@ -5,7 +5,10 @@ vi.mock("@/app/mode", () => mode);
 vi.mock("@/project/store", () => import("@/player/exportProjectStoreShim"));
 vi.mock("@/assets/bundledAssetWarmup", () => ({ warmBundledPlayAssets: vi.fn() }));
 vi.mock("@/player/runtimeJuice", () => ({ emitRuntimeJuice: vi.fn() }));
-vi.mock("@/player/audio", () => ({ playAudioCommand: vi.fn(), stopAudioCommand: vi.fn() }));
+vi.mock("@/player/audio", async (importOriginal) => ({
+  ...await importOriginal<typeof import("@/player/audio")>(),
+  playAudioCommand: vi.fn(), stopAudioCommand: vi.fn(),
+}));
 import { EventEmitter } from "node:events";
 import { showGameOverScreen } from "@/player/playSceneOverlays";
 import { renderPlayer, teardownPlayer, type PlayerRunControls } from "@/player/player";

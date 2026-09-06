@@ -1,0 +1,18 @@
+import { spawnSync, execFileSync } from 'node:child_process';
+import { writeFile, readFile } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+const out = dirname(fileURLToPath(import.meta.url));
+const [head,tree] = execFileSync('git',['rev-parse','HEAD','HEAD^{tree}'],{encoding:'utf8'}).trim().split('\n');
+if(head!=='d84001e88b5e0b7f8ff3074de0ec5f6cdbcbf41e')throw new Error('Unexpected HEAD');
+const command=['--timeout','900','/tmp/rpg-zzu-life-full-qa-01a0727b.lock','timeout','--signal=TERM','--kill-after=15s','1200s','npm','run','gates','--','--json'];
+const started=new Date().toISOString();
+const result=spawnSync('flock',command,{encoding:'utf8',maxBuffer:64*1024*1024,env:{...process.env,VITE_CACHE_DIR:join(out,'vite-cache'),NODE_OPTIONS:((process.env.NODE_OPTIONS??'')+' --import='+join(out,'trace.mjs')).trim()}});
+const report='.omo/gates-vitest-report.json';
+const receipt={head,tree,command:['flock',...command],started,finished:new Date().toISOString(),exit:result.status,signal:result.signal,error:result.error?.message,stdout:result.stdout??'',stderr:result.stderr??'',vitestReportPresent:existsSync(report)};
+if(receipt.vitestReportPresent)await writeFile(join(out,'vitest-report.json'),await readFile(report),{flag:'wx'});
+await writeFile(join(out,'execution.json'),JSON.stringify(receipt,null,2)+'\n',{flag:'wx'});
+process.stdout.write(receipt.stdout);process.stderr.write(receipt.stderr);
+console.log('GATE_DIAGNOSTIC_END exit='+receipt.exit);
+process.exitCode=result.status??1;

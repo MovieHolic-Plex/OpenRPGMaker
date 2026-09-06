@@ -35,7 +35,7 @@
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-button:hover { border-color: var(--growth-accent); background: var(--growth-tint); }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-button.is-primary { background: var(--growth-accent); border-color: var(--growth-accent); color: var(--on-accent); }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-button:disabled { opacity: .45; cursor: not-allowed; }
-  .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio :is(button, input, textarea, select):focus-visible { outline: 2px solid var(--growth-accent); outline-offset: 3px; }
+  .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio :is(button, input:not([type="radio"]), textarea, select):focus-visible { outline: 2px solid var(--growth-accent); outline-offset: 3px; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-viewport:focus-visible { outline: 2px solid var(--growth-accent); outline-offset: -2px; }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-canvas { position: relative; display: grid; grid-template-rows: minmax(0, 1fr) auto; min-width: 0; min-height: 0; overflow: hidden; background: var(--bg-inset); }
   .database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-viewport { position: relative; min-height: 0; width: 100%; height: 100%; overflow: auto; background-image: radial-gradient(var(--border-default) 1px, transparent 1px); background-size: 20px 20px; }

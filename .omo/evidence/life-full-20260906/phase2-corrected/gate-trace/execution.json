@@ -1,0 +1,26 @@
+{
+  "head": "d84001e88b5e0b7f8ff3074de0ec5f6cdbcbf41e",
+  "tree": "7b9fd7d4cbc04e99f3f7a2ed9005e8eb91ea3345",
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "1200s",
+    "npm",
+    "run",
+    "gates",
+    "--",
+    "--json"
+  ],
+  "started": "2026-09-06T09:44:22.719Z",
+  "finished": "2026-09-06T10:04:22.754Z",
+  "exit": 124,
+  "signal": null,
+  "stdout": "\n> rpg-zzu@0.1.0 gates\n> node scripts/verify-gates.mjs --json\n\n",
+  "stderr": "GATE_SUBPROCESS_START 1 npx tsc --noEmit -p tsconfig.app.json\nGATE_SUBPROCESS_END 1 exit=0\nGATE_SUBPROCESS_START 2 node scripts/run-vitest.mjs run --configLoader bundle --reporter=json --outputFile /home/main/z-project/rpg-zzu-life-full-p2-corrected-review/.omo/gates-vitest-report.json\n",
+  "vitestReportPresent": false
+}

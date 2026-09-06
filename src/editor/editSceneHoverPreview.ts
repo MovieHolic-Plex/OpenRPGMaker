@@ -2,6 +2,7 @@ import type Phaser from "phaser";
 import { TILE_SIZE } from "@/assets/bundled";
 import { createChipsetTileObject } from "@/editor/chipsetTileRender";
 import { editorState } from "@/editor/editorState";
+import { brushStrokePoints } from "@/editor/TilePaintEngine";
 import { store } from "@/project/store";
 import type { MapId } from "@/project/types";
 
@@ -28,7 +29,7 @@ export function renderHoverTilePreview(spec: HoverPreviewSpec): void {
   const tileset = store.getCurrent().tilesets[map.tilesetId];
   if (!tileset) return;
   const state = editorState.get();
-  if (state.selectedTile < 0 || (state.tool !== "paint" && state.tool !== "fill")) return;
+  if (state.tool !== "paint" && state.tool !== "fill" && state.tool !== "erase") return;
   if (spec.centerX < 0 || spec.centerY < 0 || spec.centerX >= map.width || spec.centerY >= map.height) return;
   if (state.tool === "paint" && state.activePaletteStamp) {
     for (const cell of state.activePaletteStamp.cells) {
@@ -45,18 +46,19 @@ export function renderHoverTilePreview(spec: HoverPreviewSpec): void {
     }
     return;
   }
-  const size = state.tool === "paint" && state.paintShape === "pen" ? state.brushSize : 1;
-  const offset = Math.floor(size / 2);
-  for (let y = spec.centerY - offset; y <= spec.centerY + offset; y++) {
-    for (let x = spec.centerX - offset; x <= spec.centerX + offset; x++) {
-      if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
+  const erasing = state.tool === "erase" || state.selectedTile < 0;
+  if (state.selectedTile < 0 && state.tool !== "erase" && state.layer !== "upper") return;
+  const size = state.tool === "erase" || (state.tool === "paint" && state.paintShape === "pen") ? state.brushSize : 1;
+  for (const { x, y } of brushStrokePoints({ centerX: spec.centerX, centerY: spec.centerY, size })) {
+    if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
+    if (!erasing) {
       const preview = createChipsetTileObject(spec.scene, map, tileset, x, y, state.selectedTile);
       preview.setAlpha(0.62);
       spec.layer.add(preview);
-      const marker = spec.scene.add.rectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, 0x3bc9db, 0.18);
-      marker.setOrigin(0, 0);
-      marker.setStrokeStyle(1, 0xe7f5ff, 0.85);
-      spec.layer.add(marker);
     }
+    const marker = spec.scene.add.rectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, erasing ? 0xff6b6b : 0x3bc9db, 0.18);
+    marker.setOrigin(0, 0);
+    marker.setStrokeStyle(1, 0xe7f5ff, 0.85);
+    spec.layer.add(marker);
   }
 }

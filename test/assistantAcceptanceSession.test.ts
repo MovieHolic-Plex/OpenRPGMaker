@@ -43,6 +43,18 @@ function snapshot(session: AssistantSession): unknown {
 const target = { mapId: createBlankProject().startMapId };
 
 describe("acceptance controls actual session termination", () => {
+  it("does not schedule run-end persistence proof for a completed plan with unmet acceptance", async () => {
+    const fixture = script([[{ name: "set_work_plan", args: { ...work, acceptance: [
+      { id: "size", title: "Required size", criteria: [{ kind: "mapDimensions", target, width: 99, height: 99 }] },
+    ] } }, { name: "skip_work_item", args: {} }]]);
+    const prove = vi.spyOn(fixture.session, "proveAppliedRevision");
+    await fixture.run(true);
+    expect(fixture.session.getWorkPlan()?.layers[0]?.items[0]?.status).toBe("skipped");
+    expect(fixture.session.getAcceptanceSnapshot()?.status).toBe("blocked");
+    expect(prove).not.toHaveBeenCalled();
+    expect(fixture.session.getRunEndProof()).toBeNull();
+  });
+
   it("does not turn a review without an explicit passing verdict into completion", async () => {
     // Given delivered image coverage and a review that never declares a pass.
     const project = createBlankProject(), map = project.maps[project.startMapId];

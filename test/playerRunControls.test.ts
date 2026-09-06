@@ -11,6 +11,7 @@ vi.mock("@/assets/bundledAssetWarmup", () => ({ warmBundledPlayAssets: vi.fn() }
 // 연출(주스)·BGM 은 이 테스트의 검증 대상이 아니고 타이머/오디오 노이즈만 만든다.
 vi.mock("@/player/runtimeJuice", () => ({ emitRuntimeJuice: vi.fn(() => ({})) }));
 vi.mock("@/player/audio", () => ({
+  getAudioEngine: vi.fn(() => ({ setQaInstrumentation: vi.fn() })),
   playAudioCommand: vi.fn(),
   stopAudioCommand: vi.fn(),
 }));

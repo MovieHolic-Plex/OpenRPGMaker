@@ -21,6 +21,7 @@ const DEFAULT_PROJECT_TITLE = PRODUCT_BRAND;
 export { DEFAULT_SUPABASE_PROJECT_ID } from "./supabaseProjectConfig";
 
 type SupabaseProjectRow = {
+  readonly project_id: string | null;
   readonly current_json: unknown;
   readonly current_sha256: string | null;
 };
@@ -123,6 +124,7 @@ export type SupabaseProjectCommitListItem = {
 };
 
 type SupabaseProjectSnapshot = {
+  readonly projectId: string | null;
   readonly project: Project;
   readonly sha256: string | null;
 };
@@ -151,6 +153,14 @@ export async function loadProjectFromSupabase(config = supabaseProjectConfig()):
   const project = (await loadProjectSnapshotFromSupabase(config))?.project ?? null;
   if (project && config) void hydrateLastRemoteCommitTip(config);
   return project;
+}
+
+/** Same normalized/hybrid read as editor load, without commit-tip hydration or store mutation. */
+export async function loadProjectForPersistenceProof(
+  config: SupabaseProjectConfig,
+  signal?: AbortSignal,
+): Promise<SupabaseProjectSnapshot | null> {
+  return loadProjectSnapshotFromSupabase(config, { includeProjectId: true, signal });
 }
 
 export async function listSupabaseProjects(config: SupabaseProjectListConfig): Promise<readonly SupabaseProjectListItem[]> {
@@ -212,11 +222,12 @@ export async function loadSupabaseProjectPreview(
 
 async function loadProjectSnapshotFromSupabase(
   config = supabaseProjectConfig(),
-  options: { readonly overlayMaps?: boolean } = {},
+  options: { readonly overlayMaps?: boolean; readonly includeProjectId?: boolean; readonly signal?: AbortSignal } = {},
 ): Promise<SupabaseProjectSnapshot | null> {
   if (!config) return null;
-  const response = await fetch(supabaseProjectUrl(config), {
+  const response = await fetch(supabaseProjectUrl(config, options.includeProjectId), {
     headers: supabaseJsonHeaders(config, "read"),
+    signal: options.signal,
   });
   if (!response.ok) {
     throw new SupabaseProjectSyncError(await response.text(), response.status);
@@ -229,7 +240,7 @@ async function loadProjectSnapshotFromSupabase(
   // Patch/conflict loads pass overlayMaps:false so concurrent merge still compares current_json.
   if (options.overlayMaps !== false) {
     try {
-      const mapRows = await loadMapRowsFromSupabase(config);
+      const mapRows = await loadMapRowsFromSupabase(config, options.signal);
       if (mapRows.length > 0) overlayMapsFromRows(project, mapRows);
     } catch (error) {
       if (!isOptionalTableMissingError(error)) throw error;
@@ -238,6 +249,7 @@ async function loadProjectSnapshotFromSupabase(
   return {
     project,
     sha256: row.current_sha256,
+    projectId: row.project_id,
   };
 }
 
@@ -457,8 +469,8 @@ function mergeAiActivityLogRows(
     .slice(0, limit);
 }
 
-async function fetchJsonArray(url: string, config: SupabaseProjectConfig): Promise<Record<string, unknown>[]> {
-  const response = await fetch(url, { headers: supabaseJsonHeaders(config, "read") });
+async function fetchJsonArray(url: string, config: SupabaseProjectConfig, signal?: AbortSignal): Promise<Record<string, unknown>[]> {
+  const response = await fetch(url, { headers: supabaseJsonHeaders(config, "read"), signal });
   if (!response.ok) {
     throw new SupabaseProjectSyncError(await response.text(), response.status);
   }
@@ -610,9 +622,9 @@ export async function listProjectCommitsFromSupabase(
   return rows;
 }
 
-function supabaseProjectUrl(config: SupabaseProjectConfig): string {
+function supabaseProjectUrl(config: SupabaseProjectConfig, includeProjectId = false): string {
   const query = new URLSearchParams({
-    select: "current_json,current_sha256",
+    select: includeProjectId ? "project_id,current_json,current_sha256" : "current_json,current_sha256",
     project_id: `eq.${config.projectId}`,
   });
   return `${config.url}/rest/v1/projects?${query.toString()}`;
@@ -725,6 +737,7 @@ async function parseProjectRows(response: Response): Promise<readonly SupabasePr
       throw new SupabaseProjectSyncError("Supabase project row is missing current_json");
     }
     return {
+      project_id: typeof entry.project_id === "string" ? entry.project_id : null,
       current_json: entry.current_json,
       current_sha256: typeof entry.current_sha256 === "string" ? entry.current_sha256 : null,
     };
@@ -1200,12 +1213,12 @@ function insertMapTreeNode(node: MapTreeNode, parentId: string | null, index: nu
   return { ...node, children: node.children.map((child) => insertMapTreeNode(child, parentId, index, childNode)) };
 }
 
-async function loadMapRowsFromSupabase(config: SupabaseProjectConfig): Promise<readonly Record<string, unknown>[]> {
+async function loadMapRowsFromSupabase(config: SupabaseProjectConfig, signal?: AbortSignal): Promise<readonly Record<string, unknown>[]> {
   const query = new URLSearchParams({
     project_id: `eq.${config.projectId}`,
     select: "map_id,map_json",
   });
-  return await fetchJsonArray(`${config.url}/rest/v1/maps?${query.toString()}`, config);
+  return await fetchJsonArray(`${config.url}/rest/v1/maps?${query.toString()}`, config, signal);
 }
 
 function overlayMapsFromRows(project: Project, rows: readonly Record<string, unknown>[]): void {

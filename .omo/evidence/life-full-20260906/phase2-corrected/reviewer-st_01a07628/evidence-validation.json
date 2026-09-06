@@ -1,0 +1,226 @@
+{
+  "verifiedAncestors": {
+    "2": "f1024a22",
+    "3": "f7285316",
+    "4": "b7b02d97",
+    "5": "f8647454",
+    "30": "6ac1eedb",
+    "39": "2d6096e2",
+    "40": "f336552d"
+  },
+  "frozenReader": {
+    "exact": true,
+    "sha256": "cad009384fac8632f23c9538ad0863acc4d806872e97223eb25a905a00c76703"
+  },
+  "finalSourceIdentity": [
+    {
+      "task": "39",
+      "path": "src/player/player.ts",
+      "sha256": "ef42c64ff5b9efe7233fb5b43f18a424400fd97c34faa3db5866c0a2ca369593",
+      "verifiedCommitExact": true
+    },
+    {
+      "task": "39",
+      "path": "src/player/playerStatusMenuController.ts",
+      "sha256": "e4bd1b24758c62338b1a871712222b2412b9c4b8c01c9cdd45af9295f2504155",
+      "verifiedCommitExact": true
+    },
+    {
+      "task": "39",
+      "path": "test/lifePlayerSaveFailures.test.ts",
+      "sha256": "be9b05decffb3c598ef0e8cac0fc27ca423b7af1e137ed4056836007f5684035",
+      "verifiedCommitExact": true
+    },
+    {
+      "task": "40",
+      "path": "scripts/playtest-driver3.cjs",
+      "sha256": "781b7548dcd4d51aac983eb6348bf03ab5758568a1cd5c2bf9751f383104eac5",
+      "verifiedCommitExact": true
+    },
+    {
+      "task": "40",
+      "path": "scripts/playtest-driver4.cjs",
+      "sha256": "25ebafd860f9b5305cc619bfeb213095bed00a9c390a9f10e59d17d793621048",
+      "verifiedCommitExact": true
+    },
+    {
+      "task": "40",
+      "path": "scripts/playtest-driver5.cjs",
+      "sha256": "7fdd8cbc5d3b4147679a4cfd5a4850bc045bc424500821eee4363b6c7350363f",
+      "verifiedCommitExact": true
+    },
+    {
+      "task": "40",
+      "path": "scripts/playtest-driver6.cjs",
+      "sha256": "757c4fc92ed886088d16e2e9a5fa12e7478861f9ff220ca5f95bcb9032f04d7c",
+      "verifiedCommitExact": true
+    },
+    {
+      "task": "40",
+      "path": "scripts/capture-fullscreen-scale.cjs",
+      "sha256": "3a95338da82933256f40d4bcf79eb00a28790ee821b6302abbfa0c59414c7627",
+      "verifiedCommitExact": true
+    },
+    {
+      "task": "40",
+      "path": "test/lifeSaveConsumers.test.ts",
+      "sha256": "71650453859b6508f24947a016e83c1ab0cfad67700c48f261f9b78b72cbce22",
+      "verifiedCommitExact": true
+    }
+  ],
+  "nativeFirefox": {
+    "sourceHashesMatch": true,
+    "url": "http://127.0.0.1:41881/player.html",
+    "runs": [
+      {
+        "name": "title-autosave",
+        "running": false,
+        "actions": "real keyboard; actual shell callback/Storage/apply",
+        "message": {
+          "text": "자동 저장을 불러올 수 없습니다",
+          "role": "status",
+          "children": 0
+        },
+        "guidanceCount": 1,
+        "diskUnchanged": true,
+        "qaStateUnchanged": true,
+        "currentSceneIdentityPreserved": false,
+        "noRestoredCanvas": true
+      },
+      {
+        "name": "title-manual",
+        "running": false,
+        "actions": "real keyboard; actual shell callback/Storage/apply",
+        "message": {
+          "text": "1번 저장 칸을 불러올 수 없습니다",
+          "role": "status",
+          "children": 0
+        },
+        "guidanceCount": 1,
+        "diskUnchanged": true,
+        "qaStateUnchanged": true,
+        "currentSceneIdentityPreserved": false,
+        "noRestoredCanvas": true
+      },
+      {
+        "name": "running-manual",
+        "running": true,
+        "actions": "real keyboard; actual shell callback/Storage/apply",
+        "message": {
+          "text": "1번 저장 칸을 불러올 수 없습니다",
+          "role": "status",
+          "children": 0
+        },
+        "guidanceCount": 1,
+        "diskUnchanged": true,
+        "qaStateUnchanged": true,
+        "currentSceneIdentityPreserved": true,
+        "noRestoredCanvas": false
+      },
+      {
+        "name": "running-autosave",
+        "running": true,
+        "actions": "real keyboard; actual shell callback/Storage/apply",
+        "message": {
+          "text": "자동 저장을 불러올 수 없습니다",
+          "role": "status",
+          "children": 0
+        },
+        "guidanceCount": 1,
+        "diskUnchanged": true,
+        "qaStateUnchanged": true,
+        "currentSceneIdentityPreserved": true,
+        "noRestoredCanvas": false
+      }
+    ],
+    "cleanup": {
+      "contextsClosed": true,
+      "browserClosed": true,
+      "serversClosed": true,
+      "portProbe": "ECONNREFUSED",
+      "ownCachesRemoved": true,
+      "remoteWrites": 0
+    }
+  },
+  "httpTransport": {
+    "responses": 196,
+    "allHttp200": true,
+    "errors": 0,
+    "note": "Metadata checked; response bodies are not archived for independent byte re-hashing. Probe source forwards actual fetch bytes unchanged."
+  },
+  "archivedFullReports": {
+    "base-full-vitest": {
+      "bytes": 4916250,
+      "sha256": "54546bb8a672c769afd986145d5be8f70f890748bd8c73c86bc5be53499e5784",
+      "counts": {
+        "numTotalTestSuites": 4457,
+        "numPassedTestSuites": 4268,
+        "numFailedTestSuites": 189,
+        "numPendingTestSuites": 0,
+        "numTotalTests": 13487,
+        "numPassedTests": 13307,
+        "numFailedTests": 165,
+        "numPendingTests": 15,
+        "numTodoTests": 0
+      },
+      "failureCount": 165
+    },
+    "final-full-vitest": {
+      "bytes": 4979081,
+      "sha256": "171352124d85b283ca04a9544e48826bf2f1f80c7272b1cb02089a3d524d34ef",
+      "counts": {
+        "numTotalTestSuites": 4484,
+        "numPassedTestSuites": 4293,
+        "numFailedTestSuites": 191,
+        "numPendingTestSuites": 0,
+        "numTotalTests": 13669,
+        "numPassedTests": 13488,
+        "numFailedTests": 166,
+        "numPendingTests": 15,
+        "numTodoTests": 0
+      },
+      "failureCount": 166
+    }
+  },
+  "parentRunSummaries": {
+    "39/parent/execution.json": {
+      "sha256": "d02136a4a897cd6d484b391663cd6009afa9a0883e9e7a1fe714963de084f734",
+      "exit": 0,
+      "testSummaries": [
+        " Test Files  9 passed (9)",
+        "      Tests  160 passed (160)"
+      ],
+      "lines": 54
+    },
+    "39/parent-failed-suite.json": {
+      "sha256": "0a20aaa0ef53f7da9f058fdafb30aaa3c8eb9217cd5a5fe2aadf73cc7a71dca8",
+      "exit": 1,
+      "testSummaries": [
+        " Test Files  1 failed | 8 passed (9)",
+        "      Tests  1 failed | 158 passed (159)"
+      ],
+      "lines": 88
+    },
+    "40/parent/first-execution.json": {
+      "sha256": "9778c1e21a5ca4fcc697269327d92c0b569c9bf50880506aca9fa9b72dc40bca",
+      "exit": 1,
+      "testSummaries": [
+        " Test Files  3 passed (3)",
+        "      Tests  71 passed (71)"
+      ],
+      "lines": 43
+    },
+    "40/parent/diagnostic-execution.json": {
+      "sha256": "a8a507443106cbb3b5c61b60a481ae716c521fddcf22435edcf084bae3801a5c",
+      "exit": 1,
+      "testSummaries": [],
+      "lines": 13
+    },
+    "40/parent/http-transport/execution.json": {
+      "sha256": "5004a75af2ad0a6246ab086c4122a6783166e5d5079ba45fc18218860da3b72a",
+      "exit": 0,
+      "testSummaries": [],
+      "lines": 12
+    }
+  }
+}
