@@ -1,5 +1,25 @@
 # RPG ZZU Design System
 
+## Database CSS ownership (2026-09-06)
+
+- `studio-v2.css` owns shared DB shell spacing, ordinary 12.5px captions,
+  32px controls, cards, list rows and shared CRUD chrome. Domain sheets own
+  composition, not another copy of these roles. `sidebar.css` owns rail geometry;
+  `workspace-modern.css` owns the shared section navigation primitive.
+- A shared number stepper is one 32px border box, 8px radius, with a single
+  outer hover/focus treatment. The inner input has no border, radius or shadow.
+  Its 28px side buttons collapse at the existing 120px container threshold.
+  Native input/change timing, labels, bounds and disabled behavior remain intact.
+- Equivalent section tabs use the workspace underline grammar (34px, 13px/600).
+  Add/Duplicate/Delete share 32px, 12.5px/600 targets: neutral add/duplicate,
+  danger-text delete; explicit primary submit actions remain filled.
+- `animation-editor.css` owns animation authoring scroll and preview-first
+  composition, with stage height at least 280px. Classes/Troops detail forms
+  each own their main vertical scroll; useful inner lists/tables remain scrollable.
+- World document 36px controls, System 32–36px targets, the 36px actor portrait,
+  tileset art geometry and runtime/project-font previews are retained variants.
+  UI fonts resolve through role tokens, including component-loaded shorthand.
+
 ## System settings workspace (2026-09-06)
 
 Database > System is a settings worksheet in the existing cool-white, slate and

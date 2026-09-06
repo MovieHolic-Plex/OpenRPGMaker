@@ -97,140 +97,14 @@
   margin: 0;
 }
 
-/* ── 공유 숫자 스테퍼: [−] [input] [+] ───────────────────────────────── */
-
-.database-modal-backdrop .database-modal-window .db-number-stepper {
-  align-items: stretch;
-  background: var(--db-studio-surface);
-  border: 1px solid var(--db-studio-border-default);
-  border-radius: 6px;
-  box-sizing: border-box;
-  /* 자기 폭을 기준으로 단추를 접기 위한 컨테이너. 아래 @container 참고. */
-  container-type: inline-size;
-  display: inline-flex;
-  min-height: 30px;
-  min-width: 0;
-  overflow: hidden;
-  width: 100%;
-}
-
-.database-modal-backdrop .database-modal-window .db-number-stepper > input[type="number"] {
-  background: var(--db-studio-surface);
-  border: 0;
-  border-radius: 0;
-  box-sizing: border-box;
-  color: var(--db-studio-text-1);
-  flex: 1 1 auto;
-  font: inherit;
-  min-height: 28px;
-  min-width: 0;
-  outline: 0;
-  padding: 3px 8px;
-  text-align: center;
-  width: 100%;
-}
-
-.database-modal-backdrop .database-modal-window .db-number-stepper:focus-within {
-  border-color: var(--db-studio-accent);
-  box-shadow: 0 0 0 2px var(--db-studio-accent-soft);
-}
-
-/* 잠긴 스테퍼는 눈으로도 잠겨 보여야 한다. `disabled` 만 걸고 색을 그대로 두면
-   (진영 「처치당 가중치」가 그랬다 — opacity 1.0 실측) 사용자는 입력이 고장 난 줄 안다.
-   대비 하한을 지키려고 텍스트는 text-2 로 두고 배경만 inset 으로 낮춘다. */
-.database-modal-backdrop .database-modal-window .db-number-stepper.is-disabled {
-  background-color: var(--db-studio-inset);
-  border-style: dashed;
-}
-
-.database-modal-backdrop .database-modal-window .db-number-stepper.is-disabled > input[type="number"] {
-  background-color: transparent;
-  color: var(--db-studio-text-2);
-  cursor: not-allowed;
-}
-
-/* `background:` 단축은 쓰지 않는다 — background-image 를 none 으로 리셋해 select 의
-   chevron(두 겹 background-image)이 사라진다. databaseSelectChevronGuard 가 이걸 잡는다. */
-.database-modal-backdrop .database-modal-window input:disabled,
+/* Disabled native controls retain their own baseline; composite interiors are
+   owned by studio-v2.css. */
+.database-modal-backdrop .database-modal-window input:disabled:not(.db-number-stepper input),
 .database-modal-backdrop .database-modal-window select:disabled {
   background-color: var(--db-studio-inset);
   border-style: dashed;
   color: var(--db-studio-text-2);
   cursor: not-allowed;
-}
-
-.database-modal-backdrop .database-modal-window .db-number-stepper-button {
-  align-items: center;
-  background: var(--db-studio-inset);
-  border: 0;
-  color: var(--db-studio-text-2);
-  cursor: pointer;
-  display: inline-flex;
-  flex: 0 0 30px;
-  justify-content: center;
-  margin: 0;
-  min-height: 28px;
-  padding: 0;
-  width: 30px;
-}
-
-.database-modal-backdrop .database-modal-window .db-number-stepper-dec {
-  border-right: 1px solid var(--db-studio-border-default);
-}
-
-.database-modal-backdrop .database-modal-window .db-number-stepper-inc {
-  border-left: 1px solid var(--db-studio-border-default);
-}
-
-.database-modal-backdrop .database-modal-window .db-number-stepper-button:hover:not(:disabled) {
-  background: var(--db-studio-accent-soft);
-  color: var(--db-studio-accent);
-}
-
-.database-modal-backdrop .database-modal-window .db-number-stepper-button:active:not(:disabled) {
-  background: var(--db-studio-accent-border);
-  color: var(--db-studio-accent-active);
-}
-
-.database-modal-backdrop .database-modal-window .db-number-stepper-button:focus-visible {
-  outline: 2px solid var(--db-studio-accent);
-  outline-offset: -2px;
-}
-
-.database-modal-backdrop .database-modal-window .db-number-stepper-button:disabled {
-  color: var(--db-studio-text-3);
-  cursor: default;
-  opacity: 0.55;
-}
-
-.database-modal-backdrop .database-modal-window .db-number-stepper-icon {
-  display: block;
-  height: 14px;
-  pointer-events: none;
-  width: 14px;
-}
-
-/* ── 좁은 칸: 단추를 접고 값을 살린다 ──────────────────────────────────
-   −/+ 단추는 30px + 30px + 테두리 2px = 62px 를 고정으로 먹는다. 탭별 스탯
-   그리드는 값 칸을 66~86px 로 주는 곳이 있어(enemies `.db-enemy-stat-grid`,
-   terrain `.db-terrain-quick-row`), 그 자리에서는 입력칸 콘텐츠 폭이 0~8px 로
-   접혀 **값 자체가 안 보였다**. 실측 17건(enemies 13 · terrain 4).
-
-   그래서 스테퍼 자신의 inline-size 를 컨테이너로 삼아, 값을 3자리 이상 보여줄
-   수 없는 폭에서는 단추를 접는다. 단추가 접혀도 위/아래 방향키 증감은 그대로
-   동작한다(네이티브 number 입력의 키보드 계약). 폭이 넉넉한 곳은 그대로 −/+ 를 쓴다.
-
-   기준 120px: 단추 62px 를 뺀 58px 상자에서 좌우 패딩 16px 를 빼면 42px —
-   4자리(예: 9999)까지 12~13px 글자로 들어간다.
-   `scripts/qa/db-ux-narrow-number-audit.mjs` 가 눌린 칸 0건을 기계로 고정한다.
-
-   주의: @container 는 특이성을 올려주지 않는다. 짧은 선택자로 쓰면 위의
-   `.database-modal-backdrop .database-modal-window .db-number-stepper-button`(0,3,0) 에
-   지므로, 같은 깊이를 그대로 적어 준다. */
-@container (max-width: 120px) {
-  .database-modal-backdrop .database-modal-window .db-number-stepper-button {
-    display: none;
-  }
 }
 
 /* ── range: 스튜디오 트랙 + thumb ─────────────────────────────────────── */
