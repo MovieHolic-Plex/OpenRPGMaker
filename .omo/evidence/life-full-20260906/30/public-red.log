@@ -1,0 +1,17 @@
+{"result":"parsed","directOwner":false,"unresolvedOwner":false,"parsed":{"bundleContributions":{"bundle":{}}}}
+{"cleanup":"middleware-only Vite closed","remoteWrites":0}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: A positive source amount must retain an owner or explicitly refuse parsing
+    at file:///home/main/z-project/rpg-zzu-life-full-p2-life-full-record-keys/.omo/evidence/life-full-20260906/30/reserved-key-probe.mjs:31:12 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.11.1

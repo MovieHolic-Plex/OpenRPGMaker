@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **47쪽 / 1596KB / 약 454,029 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **47쪽 / 1597KB / 약 454,374 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -22,7 +22,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-pre-edit-routing.md` | 69KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 197 | ~19,760 |
 | `openwiki/runtime-battle.md` | 118KB | 31KB | 358 | ~33,888 |
 | `openwiki/runtime-project-schema.md` | 64KB | 42KB | 237 | ~17,293 |
-| `openwiki/runtime-sessions.md` | 69KB | 45KB | 206 | ~18,456 |
+| `openwiki/runtime-sessions.md` | 71KB | 45KB | 210 | ~18,801 |
 | `openwiki/testing.md` | 113KB | 45KB | 739 | ~31,721 |
 
 ## 한국어 산문이 깨진 페이지
@@ -594,24 +594,24 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L228` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
 - `L232` NPC 표시 이름 (2026-09-05)
 
-### `openwiki/runtime-sessions.md` — 69KB · 206줄 · ~18,456 토큰 · 통째읽기 잘림
+### `openwiki/runtime-sessions.md` — 71KB · 210줄 · ~18,801 토큰 · 통째읽기 잘림
 
 - `L1` QA-only life observation (2026-09-06)
   - `L7` Audio QA capability and shell lifetime (2026-09-06)
 - `L13` Save5 session boundary (2026-09-06)
 - `L21` Life recovery primitives and maker evidence (2026-09-06)
 - `L29` Lossless life snapshot reconciliation (2026-09-06)
-- `L39` Esc 메뉴 작업 프레임 (2026-09-05)
-- `L69` 아이템 종류 전환과 실행 효과 (2026-09-05)
-- `L80` Roguelike run kernel and field rooms (Phase 0–3, 2026-08-24)
-- `L90` P1 daily-weather transition authority (2026-08-25)
-- `L99` Session state & life-sim
-- `L172` Editorial title screen (2026-08-26)
-- `L178` playerTouch trigger contract (2026-08-20)
-- `L182` Selected-event runtime sandbox (2026-07-30)
-- `L188` P2 spatial runtime and saves (2026-08-25)
-- `L196` 공포 게임 제작 기능 (2026-09-05)
-  - `L200` 메뉴 PR 통합 검증 (2026-09-05)
+- `L43` Esc 메뉴 작업 프레임 (2026-09-05)
+- `L73` 아이템 종류 전환과 실행 효과 (2026-09-05)
+- `L84` Roguelike run kernel and field rooms (Phase 0–3, 2026-08-24)
+- `L94` P1 daily-weather transition authority (2026-08-25)
+- `L103` Session state & life-sim
+- `L176` Editorial title screen (2026-08-26)
+- `L182` playerTouch trigger contract (2026-08-20)
+- `L186` Selected-event runtime sandbox (2026-07-30)
+- `L192` P2 spatial runtime and saves (2026-08-25)
+- `L200` 공포 게임 제작 기능 (2026-09-05)
+  - `L204` 메뉴 PR 통합 검증 (2026-09-05)
 
 ### `openwiki/se-catalog.md` — 13KB · 228줄 · ~3,423 토큰
 

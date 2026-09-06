@@ -972,7 +972,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
 
 function parseItemUseCharges(value: unknown): Record<string, number> {
   if (!isRecord(value)) return {};
-  const charges: Record<string, number> = {};
+  const charges: Record<string, number> = Object.create(null);
   for (const [itemId, charge] of Object.entries(value)) {
     if (typeof charge === "number" && Number.isFinite(charge)) charges[itemId] = charge;
   }

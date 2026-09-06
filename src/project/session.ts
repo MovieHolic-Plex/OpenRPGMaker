@@ -599,7 +599,8 @@ export function changeItemsAtomically(
   const nextCounts = new Map<string, number>();
   const actions: ItemTransitionAction[] = [];
   for (const operation of operations) {
-    const current = nextCounts.get(operation.itemId) ?? session.inventory[operation.itemId] ?? 0;
+    const current = nextCounts.get(operation.itemId)
+      ?? (Object.hasOwn(session.inventory, operation.itemId) ? session.inventory[operation.itemId] : 0);
     const next = resolveItemQuantity(current, operation.op, operation.amount);
     if (next === undefined) return false;
     nextCounts.set(operation.itemId, next);
