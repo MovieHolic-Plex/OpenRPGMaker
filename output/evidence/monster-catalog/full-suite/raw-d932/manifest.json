@@ -1,0 +1,111 @@
+{
+  "revision": "d932aa66b322412929d04a43af9f7f2b228f2884",
+  "note": "Native JSON values preserved; trailing whitespace normalized to one newline.",
+  "files": [
+    {
+      "path": ".omo/monster-expected-files.json",
+      "bytes": 189218,
+      "sha256": "7456a09de6b1aac24690b9dc5b37c1cd640d9cfd1fc5827741dd99706ad873b8"
+    },
+    {
+      "path": ".omo/gates-baseline.json",
+      "bytes": 5126,
+      "sha256": "61284f4906cfa9db806b6a37ab7c6e5c89b45c7b8405382d4d86a7890e49f18c"
+    },
+    {
+      "path": ".omo/monster-shards/plan.json",
+      "bytes": 653,
+      "sha256": "a2b6af04aeff6f27b1dfc860b68931e7d6bfce240d2031fc45b4863b9d33b3b8"
+    },
+    {
+      "path": ".omo/monster-shards/exits.json",
+      "bytes": 1926,
+      "sha256": "86f98c869e3e9614ab5d50bae7772ed3675635b808a9c6c76be2ab82681bcc9a"
+    },
+    {
+      "path": ".omo/monster-shards/aggregate.json",
+      "bytes": 354237,
+      "sha256": "74534a1437bf4de59c703e73c972db5356e189b91136231bcda41a12eead6d06"
+    },
+    {
+      "path": ".omo/monster-shards/shard-01.json",
+      "bytes": 412582,
+      "sha256": "988515db1e37c5452585496251745670eb06906824fa0ac7810fe08d9864480f"
+    },
+    {
+      "path": ".omo/monster-shards/shard-02.json",
+      "bytes": 392118,
+      "sha256": "7701558f56117740fd63395d7a0c07d6e06815a4708f46550e81e33c008c22f4"
+    },
+    {
+      "path": ".omo/monster-shards/shard-03.json",
+      "bytes": 393518,
+      "sha256": "6f94cab3af23f838775571e6e65437b3ce37b2d062d72fcbbf9ef1ac5b3807ac"
+    },
+    {
+      "path": ".omo/monster-shards/shard-04.json",
+      "bytes": 369078,
+      "sha256": "3573cb93ac8ed8c1da02d827625cd0dcd4b9cce5641e43e99c0413aac4518b17"
+    },
+    {
+      "path": ".omo/monster-shards/shard-05.json",
+      "bytes": 404233,
+      "sha256": "02195517ff8ce0786de6ce6369dd430304eb1f9ce1608cce0cab7c22ba587e62"
+    },
+    {
+      "path": ".omo/monster-shards/shard-06.json",
+      "bytes": 327230,
+      "sha256": "c74e9612d87f5cf0d93831912cd62121f6228f4feeb2980e72d4c005f74058bd"
+    },
+    {
+      "path": ".omo/monster-shards/shard-07.json",
+      "bytes": 395766,
+      "sha256": "ecd3d0a9f30481b36a9532e9827028a455f8e8ae99ddcfa5159b67d965b61714"
+    },
+    {
+      "path": ".omo/monster-shards/shard-08.json",
+      "bytes": 360638,
+      "sha256": "86cd3a39c4114cf938affd86e5e9b611a0afe85fc56623580b2682393c1c28ba"
+    },
+    {
+      "path": ".omo/monster-shards/shard-09.json",
+      "bytes": 446398,
+      "sha256": "c9cb1245b0c439059cf05b128c1178d91e1c8fe7081357f8443a42854c39639b"
+    },
+    {
+      "path": ".omo/monster-shards/shard-10.json",
+      "bytes": 506863,
+      "sha256": "3a0d8fcd5635fba61a7c71ab2fdcda4d4899fd5091bb50c1183e177bb9e31939"
+    },
+    {
+      "path": ".omo/monster-shards/shard-11.json",
+      "bytes": 424707,
+      "sha256": "51cf6c8c9d3c319fe0d158b0b2bf13f32f9912805a155a948795b2d045be04a5"
+    },
+    {
+      "path": ".omo/monster-shards/shard-12.json",
+      "bytes": 373714,
+      "sha256": "24c93a04e6904c7255aba741e53baef61078fa692fb796446d62103d39b49850"
+    },
+    {
+      "path": ".omo/monster-shards/shard-13.json",
+      "bytes": 306107,
+      "sha256": "91beb468c26589f5b20605e8eb4cd8ce92581f9bdca39f10656ee0c32106b271"
+    },
+    {
+      "path": ".omo/monster-shards/shard-14.json",
+      "bytes": 358221,
+      "sha256": "7873aa8fd48f5d1fb8e508afa01f8e2a44f691740cebaca0891c8fd1a325e16a"
+    },
+    {
+      "path": ".omo/monster-shards/shard-15.json",
+      "bytes": 414423,
+      "sha256": "a0d97965ed08dc852fa411a48e862c12a4cb17482431cf61998a7fdb9f7a9843"
+    },
+    {
+      "path": ".omo/monster-shards/shard-16.json",
+      "bytes": 394910,
+      "sha256": "d54f62c6abe051ab0aa70e29159406abb31a98819e5b4482c030ce1a8355d731"
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+[
+  {
+    "path": "test/aiAssistantSession.test.ts",
+    "pristineBlob": "c23d35b6acd7d83fcf050fe2be62c92d54f2ae37",
+    "frozenIntegrationBlob": "c23d35b6acd7d83fcf050fe2be62c92d54f2ae37",
+    "identical": true
+  },
+  {
+    "path": "test/aiEditorCapabilityParity.test.ts",
+    "pristineBlob": "19535aa916d27b597df4d9a6f4e135be0d3fe935",
+    "frozenIntegrationBlob": "19535aa916d27b597df4d9a6f4e135be0d3fe935",
+    "identical": true
+  },
+  {
+    "path": "test/aiEditorFullToolCoverage.test.ts",
+    "pristineBlob": "b2d8f63dcf00b405b8db4c9f22d99e09fdd380a2",
+    "frozenIntegrationBlob": "b2d8f63dcf00b405b8db4c9f22d99e09fdd380a2",
+    "identical": true
+  },
+  {
+    "path": "test/elementRatesPartialAccept.test.ts",
+    "pristineBlob": "1db139b53ce86116e3cae544f7a39e48c4cf259f",
+    "frozenIntegrationBlob": "1db139b53ce86116e3cae544f7a39e48c4cf259f",
+    "identical": true
+  },
+  {
+    "path": "test/emberQuestToolReplay.test.ts",
+    "pristineBlob": "25588f75adca71ce10d6f6fbae14445c660a7739",
+    "frozenIntegrationBlob": "25588f75adca71ce10d6f6fbae14445c660a7739",
+    "identical": true
+  },
+  {
+    "path": "test/questGraph.test.ts",
+    "pristineBlob": "0850f28a9311a337215a2dde235463d68cfe0f7c",
+    "frozenIntegrationBlob": "0850f28a9311a337215a2dde235463d68cfe0f7c",
+    "identical": true
+  },
+  {
+    "path": "test/refactorTools.test.ts",
+    "pristineBlob": "a0712766e1de2f5b4c21f6ad2e3eef25d4909919",
+    "frozenIntegrationBlob": "a0712766e1de2f5b4c21f6ad2e3eef25d4909919",
+    "identical": true
+  },
+  {
+    "path": "test/softConfirmUxFixes.test.ts",
+    "pristineBlob": "f2116d535a6ef371b601d2a21c99f42d00f68aaa",
+    "frozenIntegrationBlob": "f2116d535a6ef371b601d2a21c99f42d00f68aaa",
+    "identical": true
+  },
+  {
+    "path": "test/tilesetAiWorkspaceModal.test.ts",
+    "pristineBlob": "7a85bc5f2582adf5a70f19631663437d1a98da33",
+    "frozenIntegrationBlob": "7a85bc5f2582adf5a70f19631663437d1a98da33",
+    "identical": true
+  },
+  {
+    "path": "test/webExportBattleDependencies.test.ts",
+    "pristineBlob": "7cc08ef2d28293aae9a2db8f8fc639397945d086",
+    "frozenIntegrationBlob": "7cc08ef2d28293aae9a2db8f8fc639397945d086",
+    "identical": true
+  },
+  {
+    "path": "test/worldAiExclusion.test.ts",
+    "pristineBlob": "dc6f9b32bb513b4fbe6fcc51c5547a6f84175c19",
+    "frozenIntegrationBlob": "dc6f9b32bb513b4fbe6fcc51c5547a6f84175c19",
+    "identical": true
+  }
+]

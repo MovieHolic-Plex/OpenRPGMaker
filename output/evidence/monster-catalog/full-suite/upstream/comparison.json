@@ -1,0 +1,108 @@
+[
+  {
+    "file": "evals.test.ts",
+    "upstreamTests": 4,
+    "integrationTests": 4,
+    "integrationFailures": [
+      "evals 모든 골든 태스크가 정답 시퀀스로 통과한다(오프라인)"
+    ],
+    "upstreamFailures": [
+      "evals 모든 골든 태스크가 정답 시퀀스로 통과한다(오프라인)"
+    ],
+    "identicalNormalizedFailureMessages": {
+      "evals 모든 골든 태스크가 정답 시퀀스로 통과한다(오프라인)": true
+    }
+  },
+  {
+    "file": "forestDensity.test.ts",
+    "upstreamTests": 25,
+    "integrationTests": 25,
+    "integrationFailures": [
+      "plant_tree_clusters 기본(dense)이 선언한 커버리지에 닿고 그 지대를 실제로 막는다",
+      "place_props density — 모델이 실제로 닿는 라이브 툴 활엽수 density=dense 가 count 없이도 숲을 만든다"
+    ],
+    "upstreamFailures": [
+      "plant_tree_clusters 기본(dense)이 선언한 커버리지에 닿고 그 지대를 실제로 막는다",
+      "place_props density — 모델이 실제로 닿는 라이브 툴 활엽수 density=dense 가 count 없이도 숲을 만든다"
+    ],
+    "identicalNormalizedFailureMessages": {
+      "plant_tree_clusters 기본(dense)이 선언한 커버리지에 닿고 그 지대를 실제로 막는다": true,
+      "place_props density — 모델이 실제로 닿는 라이브 툴 활엽수 density=dense 가 count 없이도 숲을 만든다": true
+    }
+  },
+  {
+    "file": "eventEditorShowAnimationPreview.test.ts",
+    "upstreamTests": 10,
+    "integrationTests": 10,
+    "integrationFailures": [
+      "showAnimation 본문 애니메이션 표시면 반복 재생은 마지막 프레임 다음에 0으로 돌아가 계속 전진한다",
+      "showAnimation 본문 애니메이션 표시면 프레임 콜백은 첫 렌더와 매 틱의 인덱스와 전체 프레임 수를 알린다",
+      "showAnimation 본문 애니메이션 표시면 기존 1회 재생은 끝에서 멈추고 첫 프레임으로 돌아간다"
+    ],
+    "upstreamFailures": [
+      "showAnimation 본문 애니메이션 표시면 반복 재생은 마지막 프레임 다음에 0으로 돌아가 계속 전진한다",
+      "showAnimation 본문 애니메이션 표시면 프레임 콜백은 첫 렌더와 매 틱의 인덱스와 전체 프레임 수를 알린다",
+      "showAnimation 본문 애니메이션 표시면 기존 1회 재생은 끝에서 멈추고 첫 프레임으로 돌아간다"
+    ],
+    "identicalNormalizedFailureMessages": {
+      "showAnimation 본문 애니메이션 표시면 반복 재생은 마지막 프레임 다음에 0으로 돌아가 계속 전진한다": true,
+      "showAnimation 본문 애니메이션 표시면 프레임 콜백은 첫 렌더와 매 틱의 인덱스와 전체 프레임 수를 알린다": true,
+      "showAnimation 본문 애니메이션 표시면 기존 1회 재생은 끝에서 멈추고 첫 프레임으로 돌아간다": true
+    }
+  },
+  {
+    "file": "assistantDependencyRetry.test.ts",
+    "upstreamTests": 12,
+    "integrationTests": 12,
+    "integrationFailures": [
+      "batch prerequisites through AssistantSession failed record creation defers only ID dependents, then creation/read/correction succeeds (read contract=false)",
+      "batch prerequisites through AssistantSession failed record creation defers only ID dependents, then creation/read/correction succeeds (read contract=true)",
+      "stable target retry budgets through AssistantSession does not charge downstream same-batch refusals against their independent retry target"
+    ],
+    "upstreamFailures": [],
+    "identicalNormalizedFailureMessages": {}
+  },
+  {
+    "file": "aiImageGenerateQueue.test.ts",
+    "upstreamTests": 11,
+    "integrationTests": 11,
+    "integrationFailures": [
+      "aiImageGenerateField queue 프롬프트를 비우지 않고 여러 작업을 쌓는다",
+      "aiImageGenerateField queue 끝난 작업은 에셋으로 등록하고 onInserted 를 부른다",
+      "aiImageGenerateField queue 실패한 작업은 목록에 남고 다시 시도할 수 있다",
+      "aiImageGenerateField queue 대기 중인 작업은 목록에서 취소할 수 있다",
+      "aiImageGenerateField queue store 재진입 리마운트에도 에셋 등록은 한 번만 한다",
+      "aiImageGenerateField queue 레코드를 바꾸면 진행 중 작업의 완료가 새 레코드에 닿지 않는다"
+    ],
+    "upstreamFailures": [
+      "aiImageGenerateField queue 프롬프트를 비우지 않고 여러 작업을 쌓는다",
+      "aiImageGenerateField queue 끝난 작업은 에셋으로 등록하고 onInserted 를 부른다",
+      "aiImageGenerateField queue 실패한 작업은 목록에 남고 다시 시도할 수 있다",
+      "aiImageGenerateField queue 대기 중인 작업은 목록에서 취소할 수 있다",
+      "aiImageGenerateField queue store 재진입 리마운트에도 에셋 등록은 한 번만 한다",
+      "aiImageGenerateField queue 레코드를 바꾸면 진행 중 작업의 완료가 새 레코드에 닿지 않는다"
+    ],
+    "identicalNormalizedFailureMessages": {
+      "aiImageGenerateField queue 프롬프트를 비우지 않고 여러 작업을 쌓는다": true,
+      "aiImageGenerateField queue 끝난 작업은 에셋으로 등록하고 onInserted 를 부른다": true,
+      "aiImageGenerateField queue 실패한 작업은 목록에 남고 다시 시도할 수 있다": true,
+      "aiImageGenerateField queue 대기 중인 작업은 목록에서 취소할 수 있다": true,
+      "aiImageGenerateField queue store 재진입 리마운트에도 에셋 등록은 한 번만 한다": true,
+      "aiImageGenerateField queue 레코드를 바꾸면 진행 중 작업의 완료가 새 레코드에 닿지 않는다": true
+    }
+  },
+  {
+    "file": "roleNameComparisonGate.test.ts",
+    "upstreamTests": 3,
+    "integrationTests": 3,
+    "integrationFailures": [
+      "A-2 게이트 — 역할 이름 비교 잔여 허용 목록 밖에서 타일 역할 이름을 직접 비교하지 않는다"
+    ],
+    "upstreamFailures": [
+      "A-2 게이트 — 역할 이름 비교 잔여 허용 목록 밖에서 타일 역할 이름을 직접 비교하지 않는다"
+    ],
+    "identicalNormalizedFailureMessages": {
+      "A-2 게이트 — 역할 이름 비교 잔여 허용 목록 밖에서 타일 역할 이름을 직접 비교하지 않는다": true
+    }
+  }
+]

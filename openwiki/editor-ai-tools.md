@@ -41,6 +41,15 @@ compaction cannot turn an executed-but-undelivered full read into permission.
 `monsterAppearanceSession` tests the actual model-facing serialized catalog, not
 only the read tool; `monsterAppearanceTransport` tests budget loss explicitly.
 
+An appearance-read refusal leaves a newly declared record unavailable even though
+the producer did not execute. `AssistantSession` tracks that absent ID for the
+current batch, so dependent troops and transitive encounter writes receive
+`record-dependency-failed` deferrals rather than consuming their own retry targets.
+Unrelated writes continue. A successful creation clears the unavailable ID;
+a failed/deferred update does not invalidate a record that already exists.
+`assistantDependencyRetry` covers both generic-read modes, delivered appearance
+reads, transitive recovery and existing-record references.
+
 Full entries also include `assetIdentity`, a compact SHA-256 digest shared by the
 read response and current authorization snapshot (`ai/monsterResourceSnapshot.ts`).
 It hashes the raw resource ID plus the upload's encoded image source and render
