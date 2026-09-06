@@ -11,15 +11,12 @@ import {
   EASYRPG_SYSTEM2_ASSETS,
   EASYRPG_SYSTEM_ASSETS,
   EASYRPG_TITLE_ASSETS,
-  EASYRPG_MUSIC_ASSETS,
-  EASYRPG_SOUND_ASSETS,
   charsetFrameSource,
 } from "@/assets/easyrpgRtp";
 import { FACESET_FACE_ASSETS, LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetFaceAssets";
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
-import { CC0_MUSIC_ASSETS, CC0_SOUND_ASSETS } from "@/assets/cc0AudioAssets";
-import { BGM_CATALOG, bgmTrackLabel } from "@/assets/bgmCatalog";
-import { SE_CATALOG } from "@/assets/seCatalog";
+import { listAudioResources } from "@/assets/audioResourceCatalog";
+import { audioDescriptionView, audioPlayback } from "./audioResourcePresentation";
 import {
   SCARLOXY_BACKDROP_ASSETS,
   SCARLOXY_MONSTER_ASSETS,
@@ -109,6 +106,10 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
   const indexPanel = el("div", { class: "db-resource-picker-index-panel" });
 
   const refreshList = (): void => {
+    const project = store.getCurrent();
+    const catalog = listDatabaseResourceOptions(options.kind, project);
+    if ((options.kind === "music" || options.kind === "sound")
+      && selectedId && !catalog.some(entry => entry.id === selectedId)) selectedId = "";
     const query = search.value.trim().toLowerCase();
     const filtered = catalog.filter((entry) => {
       if (!query) return true;
@@ -131,6 +132,7 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
   };
 
   const refreshPreview = (): void => {
+    const project = store.getCurrent();
     preview.replaceChildren(
       resourceVisual(selectedId, options.kind, project, "선택 리소스", "db-resource-picker-preview-visual", {
         characterIndex,
@@ -170,7 +172,10 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
     }
   };
 
-  search.addEventListener("input", () => refreshList());
+  search.addEventListener("input", () => {
+    refreshList();
+    refreshPreview();
+  });
   refreshList();
   refreshPreview();
   refreshIndexPanel();
@@ -205,11 +210,23 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
     });
   }
 
-  openDialog(prefix, options.title, [
+  let unsubscribe: (() => void) | undefined;
+  const closeDialog = openDialog(prefix, options.title, [
     search,
     el("div", { class: "db-resource-picker-grid", children: [list, preview] }),
     indexPanel,
-  ], actions);
+  ], actions, undefined, () => unsubscribe?.());
+  if (options.kind === "music" || options.kind === "sound") {
+    unsubscribe = store.subscribe((_project, change) => {
+      if (change.projectSwitch) {
+        closeDialog();
+        return;
+      }
+      if (change.scope !== "project" && change.scope !== "assets") return;
+      refreshList();
+      refreshPreview();
+    });
+  }
 }
 
 const AI_GENERATABLE_PICKER_KINDS: Readonly<Record<string, "title" | "backdrop" | "monster">> = {
@@ -385,27 +402,11 @@ export function listDatabaseResourceOptions(
       for (const asset of EASYRPG_TITLE_ASSETS) add(asset.id, asset.name);
       break;
     case "music":
-      // 카탈로그(281곡)를 맨 앞에 둔다 — 이게 이 에디터의 기본 BGM 세트다.
-      // brief 를 검색어에 넣어야 "비 오는 실내" 처럼 장면 문장으로 곡을 찾을 수 있다.
-      for (const track of BGM_CATALOG) {
-        add(track.id, bgmTrackLabel(track), [...track.tags, track.titleEn, track.trackCode, track.brief]);
-      }
-      for (const asset of CC0_MUSIC_ASSETS) add(asset.id, asset.name);
-      for (const asset of EASYRPG_MUSIC_ASSETS) add(asset.id, asset.name);
-      break;
     case "sound":
-      // 카탈로그(456개)를 맨 앞에 둔다 — 이게 이 에디터의 기본 효과음 세트다.
-      // EasyRPG RTP 96개는 뒤에 남긴다(CC-BY 이지만 기존 프로젝트가 참조하고 있다).
-      for (const entry of SE_CATALOG) {
-        add(entry.id, `${entry.title} — ${entry.category} (${entry.seconds.toFixed(2)}s)`, [
-          ...entry.tags,
-          entry.category,
-          entry.baseName,
-        ]);
-      }
-      for (const asset of CC0_SOUND_ASSETS) add(asset.id, asset.name);
-      for (const asset of EASYRPG_SOUND_ASSETS) add(asset.id, asset.name);
-      break;
+      return listAudioResources(kind, project).map(resource => ({
+        ...resource,
+        searchTerms: [...resource.tags, resource.description],
+      }));
     case "system":
       for (const asset of EASYRPG_SYSTEM_ASSETS) add(asset.id, asset.name);
       break;
@@ -529,13 +530,13 @@ function resourceVisual(
 ): HTMLElement {
   if (!resourceId) return el("span", { class: `${className} db-resource-picker-empty`, text: "(없음)" });
   const url = resolveAssetResourceUrl(resourceId, { project });
-  if (!url) return resourceFailureVisual(className, label);
 
   if (kind === "music" || kind === "sound") {
-    const playable = !url.toLowerCase().endsWith(".mid");
+    const playback = audioPlayback(resourceId, project);
+    const { playable, midi } = playback;
     const play = el("button", {
       class: "btn",
-      text: playable ? "미리 듣기" : "MIDI 비재생",
+      text: playable ? "미리 듣기" : midi ? "MIDI 비재생" : "미리 듣기 불가",
       attrs: playable ? { type: "button" } : { type: "button", disabled: "" },
       dataset: { testid: "db-resource-picker-audio-play" },
       on: playable ? {
@@ -552,11 +553,17 @@ function resourceVisual(
       children: [
         el("div", { class: "db-resource-picker-audio-title", text: kind === "music" ? "BGM" : "SE" }),
         el("div", { class: "db-resource-picker-audio-id", text: resourceId }),
-        el("div", { class: "db-resource-picker-audio-url", text: url }),
+        el("div", { class: "db-resource-picker-audio-url", text: playback.url ?? "" }),
+        // List thumbnails stay compact; selected and inline previews show full metadata.
+        ...(className.includes("option-thumb") ? [] : [
+          audioDescriptionView(listAudioResources(kind, project).find(entry => entry.id === resourceId)),
+        ]),
         play,
       ],
     });
   }
+
+  if (!url) return resourceFailureVisual(className, label);
 
   if (kind === "charset") {
     const source = charsetFrameSource({ characterIndex: crop.characterIndex, direction: "down", pattern: 1 });

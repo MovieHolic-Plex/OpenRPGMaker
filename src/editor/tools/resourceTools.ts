@@ -189,6 +189,7 @@ const deleteResource: ToolDefinition = {
     }
     delete draft.assets.uploaded[resourceId];
     if (asset.kind === "music" || asset.kind === "sound") {
+      draft.resourceProfiles = draft.resourceProfiles.filter(profile => profile.assetId !== resourceId);
       resetAudioDescriptionOnProject(draft, { kind: asset.kind, resourceId });
     }
     return { summary: `리소스 삭제 ${resourceId}`, data: { resourceId } };

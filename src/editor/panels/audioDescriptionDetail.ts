@@ -1,15 +1,8 @@
-import type { AudioDescriptionSource, AudioResource } from "@/assets/audioResourceCatalog";
+import { AUDIO_DESCRIPTION_SOURCE_LABELS, type AudioResource } from "@/assets/audioResourceCatalog";
 import { AUDIO_DESCRIPTION_MAX_LENGTH, getAudioDescriptionOverride } from "@/project/audioDescriptions";
 import { resolveAudioSource } from "@/player/audio/audioResources";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
-
-const SOURCE_LABELS = {
-  project: "프로젝트 설명",
-  "catalog-brief": "곡 기획 설명",
-  "metadata-derived": "메타데이터 기반 설명",
-  missing: "설명 없음",
-} as const satisfies Record<AudioDescriptionSource, string>;
 
 type AudioDetailActions = {
   readonly import: () => void;
@@ -81,7 +74,7 @@ export function createAudioDescriptionDetail(resource: AudioResource, actions: A
     const project = store.getCurrent();
     name.textContent = current.name;
     identity.textContent = `${current.kind === "music" ? "BGM" : "SE"} · ${current.id}`;
-    source.textContent = SOURCE_LABELS[current.descriptionSource];
+    source.textContent = AUDIO_DESCRIPTION_SOURCE_LABELS[current.descriptionSource];
     source.dataset.source = current.descriptionSource;
     reset.disabled = getAudioDescriptionOverride(project.audioDescriptions, {
       kind: current.kind, resourceId: current.id,

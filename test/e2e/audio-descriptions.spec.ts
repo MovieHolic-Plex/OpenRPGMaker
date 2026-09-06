@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { expect, test, type Page } from "@playwright/test";
+import { prepareAudioEditor } from "./audioDescriptionHarness";
 
 test.describe.configure({ retries: 0 });
 
@@ -55,39 +56,7 @@ for (const viewport of [{ width: 1024, height: 768 }, { width: 1440, height: 900
   test.describe(`${viewport.width}x${viewport.height}`, () => {
     test.use({ viewport });
     test.beforeEach(async ({ page }) => {
-      await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
-      await page.goto("/?freshProject=1", { waitUntil: "domcontentloaded" });
-      await expect(page.getByTestId("toolbar-resource-manager")).toBeVisible({ timeout: 60000 });
-      // Keep the fixture about audio authoring, not the bundled 16-map adventure.
-      await page.evaluate(async () => {
-        const storePath = "/src/project/store.ts";
-        const defaultsPath = "/src/project/defaults.ts";
-        const selectionPath = "/src/editor/mapSelection.ts";
-        const [{ store }, { createBlankProject }, { focusProjectStartMap }]: [
-          typeof import("../../src/project/store"),
-          typeof import("../../src/project/defaults"),
-          typeof import("../../src/editor/mapSelection"),
-        ] = await Promise.all([import(storePath), import(defaultsPath), import(selectionPath)]);
-        if (!store.isLoaded()) {
-          await new Promise<void>((resolve, reject) => {
-            const deadline = AbortSignal.timeout(60000);
-            const expired = () => {
-              unsubscribe();
-              reject(new Error("Project load did not complete"));
-            };
-            const unsubscribe = store.subscribe(() => {
-              if (!store.isLoaded()) return;
-              unsubscribe();
-              deadline.removeEventListener("abort", expired);
-              resolve();
-            });
-            deadline.addEventListener("abort", expired, { once: true });
-          });
-        }
-        if (store.isRemotePersistenceEnabled()) throw new Error("Audio QA requires a temporary session");
-        store.replaceProject(createBlankProject());
-        focusProjectStartMap();
-      });
+      await prepareAudioEditor(page);
     });
 
     test("edits, reopens, clears, resets and undoes through the resource manager", async ({ page }, info) => {

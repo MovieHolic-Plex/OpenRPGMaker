@@ -27,6 +27,13 @@ export type AudioDescriptionSource =
   | "metadata-derived"
   | "missing";
 
+export const AUDIO_DESCRIPTION_SOURCE_LABELS = {
+  project: "프로젝트 설명",
+  "catalog-brief": "곡 기획 설명",
+  "metadata-derived": "메타데이터 기반 설명",
+  missing: "설명 없음",
+} as const satisfies Readonly<Record<AudioDescriptionSource, string>>;
+
 export type AudioResource = {
   readonly id: string;
   readonly kind: AudioResourceKind;

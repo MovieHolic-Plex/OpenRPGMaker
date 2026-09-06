@@ -4,6 +4,31 @@ import type { ToolContext } from "@/editor/tools/types";
 import { audioDescriptionToolProject, MUSIC_ID, SOUND_ID } from "./support/audioDescriptionToolProject";
 
 describe("uploaded resource description lifecycle", () => {
+  it("removes an imported audio profile when its asset is deleted", () => {
+    const project = audioDescriptionToolProject();
+    project.resourceProfiles.push({ kind: "music", name: "Imported", assetId: MUSIC_ID });
+    const ctx: ToolContext = { project };
+
+    const result = runTool(ctx, "delete_resource", { resourceId: MUSIC_ID });
+
+    expect(result.ok).toBe(true);
+    expect(ctx.project.resourceProfiles.some(profile => profile.assetId === MUSIC_ID)).toBe(false);
+    expect(runTool(ctx, "get_audio_resource", { kind: "music", resourceId: MUSIC_ID }).ok).toBe(false);
+  });
+
+  it("retains a referenced imported audio asset and its profile", () => {
+    const project = audioDescriptionToolProject();
+    project.resourceProfiles.push({ kind: "music", name: "Imported", assetId: MUSIC_ID });
+    project.system.defaultBgmResourceId = MUSIC_ID;
+    const before = structuredClone(project);
+    const ctx: ToolContext = { project };
+
+    const result = runTool(ctx, "delete_resource", { resourceId: MUSIC_ID });
+
+    expect(result.ok).toBe(false);
+    expect(ctx.project).toEqual(before);
+  });
+
   it.each(["music", "sound"] as const)("writes a description when upserting new %s", (kind) => {
     // Given
     const ctx: ToolContext = { project: audioDescriptionToolProject() };
