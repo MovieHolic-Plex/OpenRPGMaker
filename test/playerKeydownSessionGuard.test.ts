@@ -14,6 +14,7 @@ vi.mock("@/app/mode", () => modeMocks);
 vi.mock("@/assets/bundledAssetWarmup", () => ({ warmBundledPlayAssets: vi.fn() }));
 vi.mock("@/player/runtimeJuice", () => ({ emitRuntimeJuice: vi.fn(() => ({})) }));
 vi.mock("@/player/audio", () => ({
+  getAudioEngine: vi.fn(() => ({ setQaInstrumentation: vi.fn() })),
   playAudioCommand: vi.fn(),
   stopAudioCommand: vi.fn(),
   stopAllAudio: vi.fn(),

@@ -14,6 +14,14 @@ Run heavyweight suites, builds and browser proofs serially. The original title-r
 
 Generate `openwiki/INDEX.md` **after staging the final evidence-inclusive file set**: its basename checks consume `git ls-files`, so a pre-staging check can pass while the committed index is stale. Check it again against the final committed tracked set.
 
+### Task5 Q1 audio boundary correction (2026-09-06)
+
+`test/audioQaInstrumentation.test.ts` constructs the real AudioEngine with omitted/false/true capabilities, exercises queue unlock and real media-element control/stop paths (only browser play/pause are stubbed in happy-dom), and checks publication, detached state, resource recording and ownership-safe revocation. `test/playerAudioQaLifecycle.test.ts` keeps the real shell/audio singleton and exported store shim to cover enabled-to-omitted/false replacement and teardown. Existing playback assertions remain; the QA-specific control test and editor audio-dialog browser probe explicitly opt in.
+
+`.omo/evidence/life-full-20260906/5/q1/browser-proof.mjs` extends the prior real keyboard proof to omitted/false/true boots. Its known-owner enumeration adds both audio QA globals, plus actor/media hooks, without removing any prior name; it also records **all** own `__oprn*` properties to expose unknown owners without misclassifying legitimate boot/juice diagnostics. Native media `playing`/`error` listeners are armed before player construction, DOM readiness before Enter/Escape, and scene receipt listeners before each actual z. The proof retains the prior acceptance/rejection, mirror and detached-read assertions, compares QA audio state to the public API, verifies requested start BGM, and revokes globals via real shell teardown. Native `playing`, unpaused state and readyState establish browser playback/decode evidence, not a claim about audible speaker output. No result injection, fixed sleeps, polling, timing retries, cache warmups or increased deadlines.
+
+Use `flock --timeout 900 /tmp/rpg-zzu-life-full-qa-01a0727b.lock` for serial heavyweight validation under this execution. Q1 receipts preserve the original failures and supervisor/VERIFY files; the two unrelated registry-fixture errors still run and remain failures, not a changed baseline. Re-generate INDEX only after final evidence-inclusive staging and check the committed tree.
+
 ## 기존 실패 비교는 진단 내용까지 확인한다 (2026-09-05)
 
 같은 main의 실패 파일·테스트 이름·중복 횟수가 같아도 회귀가 없다는 충분한 증거는 아니다.

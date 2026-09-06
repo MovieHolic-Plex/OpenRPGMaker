@@ -40,6 +40,12 @@ async function openAudioDialog(page: Page): Promise<void> {
   await page.goto("/?freshProject=1&audioTestDialog=1", { timeout: 90_000 });
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 60_000 });
   await expect(page.getByTestId("toolbar-sound-test")).toBeVisible({ timeout: 30_000 });
+  // This editor-only probe deliberately opts into the same audio QA capability.
+  await page.evaluate(async () => {
+    const audioModulePath = "/src/player/audio/index.ts";
+    const { getAudioEngine } = await import(audioModulePath);
+    getAudioEngine({ qaInstrumentation: true });
+  });
   await page.getByTestId("toolbar-sound-test").click();
   await expect(page.getByTestId("audio-test-dialog")).toBeVisible({ timeout: 15_000 });
 }

@@ -1,3 +1,88 @@
+# Task5 Q1 correction - gate real audio QA owners
+
+## Outcome and revision binding (st_01a07495)
+
+Q1 is corrected: the actual exported player with `qaInstrumentation` omitted or false publishes neither `__oprnAudioState` nor `__oprnAudioObserved`; true retains detached state and resource-request observation. Normal playback and the public internal audio APIs remain operational. The prior B1/B2/B3 correction and tasks2/3/4 were not redone. This is a correction claim with executed evidence, not independent acceptance or completion of the full life-system plan.
+
+- Worktree/branch: `/home/main/z-project/rpg-zzu-life-full-p2`, `agent/life-full-p2`.
+- Entry/reviewed commit: `62c70a3093f6a891f209cc9c3d02a6140dccffed`; tree `e6fb5e9a92ad4c570420e4755880d78d532c7d68`.
+- Verified product/test/wiki tree before adding correction evidence: `be75ff0fc01771669cb8b07da9f4d4d29fceb238`, actual `git write-tree` exit0. `q1/verified-files.json` binds every changed source/test/wiki file by SHA256. Product/test/wiki content was not changed after these validators.
+- Delivery is one new commit, subject `fix(audio): gate QA observation by player capability`. Its exact final SHA/tree is printed by the post-commit check and can be obtained with `git log -1 --format='%H %T' -- .omo/evidence/life-full-20260906/5/SUMMARY.md`. The self-containing final commit hash is not fabricated in this file.
+- Parent/root: `01a0727b-398a-7481-b557-b198013542c1`. Evidence root: `.omo/evidence/life-full-20260906/5/q1/`; paths below are relative to it unless stated otherwise.
+
+Read full current `5/VERIFY.md` first, full approved Scope/task5, AGENTS, quickstart, PROJECT_WIKI, focused INDEX/runtime/testing pages and programming/TypeScript/debugging skills. Full predecessor `4/VERIFY.md` confirms b7b02d97/acceptance0/blockers0; `git merge-base --is-ancestor b7b02d97 HEAD` exited0. All CLAUDE.md were ignored. Current VERIFY remains unchanged and still contains the independent needs-fix finding at the prior revision; this producer summary does not overwrite that review.
+
+## Smallest ownership correction
+
+Only three production files change:
+
+1. `audio/audioEngine.ts`: default constructor capability is off. An explicit true capability installs an engine-owned function/array; `play()` records requests only while that observation owner exists. Revocation deletes only identical owned publications and drops recording, without stopping playback, resetting controls or changing `audioStateSnapshot()`. Repeated enable does not erase evidence; disable then enable starts a fresh array. The removed unguarded helper is replaced by this capability-controlled publication, not blanket global deletion.
+2. `audio/index.ts`: existing singleton construction accepts the explicit capability, and explicit subsequent configuration updates that same engine. Ordinary no-argument consumers retain the current capability and all existing play/stop/resume/public-state call contracts.
+3. `player.ts`: the existing shell configures that singleton before any title audio and revokes observation on shell teardown/replacement. Scene creation alone would be too late. Stop-all, map changes and returning to title do not end the shell's observation lifetime. No speculative multi-player framework, new audio engine, per-scene owner, dependency or save state is introduced.
+
+`playBootDiagnostics.ts` and `runtimeJuice.ts` are byte-unchanged. Normal boot still exposes their legitimate three observed globals. The public engine controls, queue/unlock, looping/one-shot, fades, pan, volume and stop paths are preserved. The resource list proves request dispatch (including queued requests), not audible sound.
+
+Two focused tests add real-engine and real-shell lifecycle coverage. The existing audio controls test explicitly opts in only for its QA-hook case; all 34 original assertion lines remain. The editor audio-dialog browser test explicitly opts in before using its QA hook, preserving all 54 assertions. Four shell tests receive only the newly required audio mock member; their existing 76 assertion lines remain. Those mocks are not used as evidence for audio integration: the new shell test keeps real player/audio/singleton/export-store modules. `audio.json` records the byte-equal assertion audit (164 lines across six changed existing tests).
+
+## RED first, then a single final GREEN
+
+`run.mjs` records exact argv/cwd/parent HEAD/tree, timestamps, real child status/signal, stdout+stderr, output SHA256 and tracked-diff SHA256. The tests were initially untracked; that diff hash is **not** represented as a hash of their source. Actual failure output, final committed assertions, and the explicitly described cleanup-only change bind the regression. There was no separate RED commit.
+
+- **Accepted Q1 RED**, before any production edit: `red.json`/`.txt`, 11:43:00, exit1, 4 failed/12 passed across the new five engine cases and all eleven original audio controls cases. Real `new AudioEngine()` and `new AudioEngine({qaInstrumentation:false})` each expose the state hook at construction and both globals after an actual queued play/unlock. All playback/public-state assertions in those off cases still ran via soft absence assertions. The true case and all original controls cases pass. Two new lifecycle cases also fail because the capability method does not exist. This reproduces Q1, not an import/fixture error.
+- `lifecycle-red.json`/`.txt`, 11:44:06, exit1, three failures before production edit. The pre-fix singleton does not publish the requested enabled function/array pair reliably across shell lifetimes; these cases stop at their initial publication assertion, so they are not misreported as independently reaching teardown failure. The exact off-global RED above is the decisive regression.
+- Product correction then applied. New engine-test teardown was strengthened to revoke its owned observation as well as stop audio; no assertion was removed or changed.
+- **First and only final focused run:** `green.json`/`.txt`, 11:47:37, exit0, 26 passed/0 failed/0 skipped: new engine5, real shell3, unchanged controls11, prior life observability7. No timing retries, sleeps, polling, raised timeout or cache prewarm.
+
+All heavy executions below were serial and used `flock --timeout 900 /tmp/rpg-zzu-life-full-qa-01a0727b.lock`. The wrapper itself was invoked as `node .omo/evidence/life-full-20260906/5/q1/run.mjs <label> <exact command below>`.
+
+```sh
+# red -> exit1, 4 failed/12 passed
+flock --timeout 900 /tmp/rpg-zzu-life-full-qa-01a0727b.lock npm test -- test/audioQaInstrumentation.test.ts test/audioEnginePlaybackControls.test.ts
+# lifecycle-red -> exit1, 3 failed
+flock --timeout 900 /tmp/rpg-zzu-life-full-qa-01a0727b.lock npm test -- test/playerAudioQaLifecycle.test.ts
+# green -> exit0, 26 passed
+flock --timeout 900 /tmp/rpg-zzu-life-full-qa-01a0727b.lock npm test -- test/audioQaInstrumentation.test.ts test/playerAudioQaLifecycle.test.ts test/audioEnginePlaybackControls.test.ts test/lifeQaObservability.test.ts
+# related -> exit1, 318 passed/2 pre-existing failures; no skips
+flock --timeout 900 /tmp/rpg-zzu-life-full-qa-01a0727b.lock npm test -- test/audioEngine.test.ts test/cc0AudioPlayback.test.ts test/battleAudio.test.ts test/runtimeAudioIndicator.test.ts test/playerRuntimeAudioIds.test.ts test/playAudioCommandBody.test.ts test/runtimeJuice.test.ts test/playBootDiagnostics.test.ts test/playBootRecovery.test.ts test/playerRunControls.test.ts test/playerKeydownSessionGuard.test.ts test/playerOpenSaveMenu.test.ts test/runtimeQaInstrumentationBoundary.test.ts test/runtimeQaReport.test.ts test/runtimeQaGate.test.ts test/sceneTestRunner.test.ts test/debugSession.test.ts test/runtimeDebugPanel.test.ts test/playSceneFarmFeedback.test.ts test/npcActionFacing.test.ts test/runtimeMovementStability.test.ts test/actionDebounceFootprint.test.ts test/lifeSaveVersion.test.ts test/lifeRecoveryPersistence.test.ts test/p0SessionPersistence.test.ts test/p2SpatialPersistence.test.ts test/autosave.test.ts
+```
+
+The related run at11:48:05 is **not green**. Its only two failures are the preserved `actionDebounceFootprint.test.ts:145,158` fixtures: `TypeError: Cannot read properties of undefined (reading 'registry')`, `syncCutsceneHudVisibility` at `playSceneMapRuntime.ts:657:27`, via `syncRuntimeState:563` and `captureScene:139`. These are the exact independently documented prior errors. Their test/source and the baseline were not modified, excluded, weakened or skipped. All related audio, task5, shell and save cases otherwise pass. Full gates and task28 unresolved timing/order findings were not rerun or relabeled resolved.
+
+| Label / exact command after wrapper | Actual result |
+| --- | --- |
+| diagnostics: `flock --timeout 900 /tmp/rpg-zzu-life-full-qa-01a0727b.lock node .omo/evidence/life-full-20260906/5/q1/diagnostics.mjs` | Exit0; real TS language service, all11 changed TS files, zero syntactic/semantic diagnostics, **before typecheck/build**. |
+| typecheck: `flock --timeout 900 /tmp/rpg-zzu-life-full-qa-01a0727b.lock npm run typecheck:app` | Exit0. |
+| build: `flock --timeout 900 /tmp/rpg-zzu-life-full-qa-01a0727b.lock npm run build` | Exit0; app tsc/Vite, exported player/SDK and standalone completed. Existing circular record-picker, mixed-import, asset-resolution and large-chunk warnings retained. |
+| browser-execution: `flock --timeout 900 /tmp/rpg-zzu-life-full-qa-01a0727b.lock env VITE_CACHE_DIR=.omo/evidence/life-full-20260906/5/q1/browser-cache node .omo/evidence/life-full-20260906/5/q1/browser-proof.mjs` | Exit0; one actual omitted/false/true run, after build, no overlap or retry. |
+| cleanup-execution: `node .omo/evidence/life-full-20260906/5/q1/cleanup.mjs` | Exit0; real ownership/hash/port/removal checks, `cleanup.json`. |
+| audio-audit: `node .omo/evidence/life-full-20260906/5/q1/audit.mjs` | Exit0; original assertions, raw receipt hashes/log normalization, actual audio observations and protected-input diff, `audio.json`. |
+| final-syntax: `bash -c 'for file in .omo/evidence/life-full-20260906/5/q1/*.mjs; do node --check "$file" || exit $?; done'` | Exit0; all authored correction programs. |
+
+## Actual player and audio evidence
+
+Dedicated `startPlayerQaServer`, `vite.player-qa.config.ts`, actual exported-store shim, **http://127.0.0.1:44517/player.html**, Chromium **149.0.7827.55**, headless `--no-sandbox --use-gl=swiftshader --disable-gpu`, viewport1280x960. The unchanged original local fixture `5/project.json` SHA256 is `f995e7c27d284593e5fb0101954872405b9eb7b68ffd5f5fd8e55b8181b4bbfc`. No editor shell, successful state injection, fabricated event or remote content is used.
+
+- **Omitted and false:** actual Enter starts the game; a prearmed DOM observer then Escape opens the real menu. The prior eight-name QA enumeration is extended to include both audio owners and actor/media hooks (none removed); own-property assertions give globals[], mirrors0, markers0. Broad own `__oprn*` collection reports exactly `__oprnRuntimeJuice`, `__oprnJuiceLog`, `__oprnPlayBootLog`, preserving their legitimate owners instead of deleting by prefix.
+- **True:** actual keyboard z after prearmed `oprn:action` tills2,3/energy1->0 with receipt1. Second z yields receipt2/handledfalse/missing-seed then insufficient-energy. All prior rejection whole-public-state, mirror equality, optional absence and detached-read assertions remain and pass. QA audio state equals the real imported public `audioStateSnapshot()` (bgm0.7/se0.8/rate1/pan0/fade600), and resource observation includes `cc0-bgm-rtp-fld-003`.
+- **Actual native playback, all three modes:** listeners were armed in init before any engine/audio construction, not after input. The authored start BGM `rtp-fld-003-amber-meadow-end-final_f5dafd12.mp3` emits native `playing`, `paused:false`, `readyState:4`, `playbackRate:1`, no media error. Samples include currentTime0/0.001423 and in-progress fade volume0.096..0.154; they are observations, not stable-time assertions. This is actual browser decode/playback evidence. It does **not** claim audible output from physical speakers.
+- **Lifecycle:** real imported `teardownPlayer()` plus ordinary stop-all cleanup leaves neither QA audio global nor audio DOM element in all three contexts. Unit/public-shell tests additionally prove observation-only revocation does not pause playing elements, old resource arrays stop recording, enable starts a new list, and the same singleton survives true->omitted/false replacement.
+- All pre-teardown page/console/HTTP/request-error assertions pass. The retained live request-failure arrays subsequently contain one BGM `net::ERR_ABORTED` per context after that assertion during explicit teardown/context close; those are **not erased or reported as zero final failures**. `audio.json` distinguishes post-assertion aborts from the passed playback/error boundary. Native audio error arrays contain no error event.
+- Actual scene readiness at5141/4150/3933ms and title at2587/1661/1640ms are measurements, not waits. Original120000ms DOM failure deadlines and existing10000ms action deadline remain. The single server's normal reuse across three contexts is not a cache-warmup command.
+
+`browser.json` contains complete observations; `browser-execution.json`/`.txt` contain the exact actual exit/output. Captures are `player-omitted.png`, `player-false.png`, `player-on.png`. The image tool reports this model does not support viewing images; visual-quality adjudication is explicitly unverified. The editor audio-dialog spec's opt-in change is diagnostic-checked and preserves its assertions; its full editor-only journey was not rerun under this runtime-focused correction.
+
+## Cleanup, preservation, index and limits
+
+`entry.json` hashes320 prior evidence files before changes. `cleanup.json` proves all320 remained byte-identical at cleanup, including every VERIFY, parent supervisor output and prior SUMMARY. This new section is prepended later; the entire prior SUMMARY remains verbatim below, including accepted and rejected historical receipts/claims. Those historical narrow off-global claims are superseded by Q1's expanded observation, not rewritten as broad proof.
+
+Each context/browser/server was awaited closed in finally; fresh TCP check44517 returned ECONNREFUSED. Cleanup removed exactly task-created non-symlink/untracked `dist` and `5/q1/browser-cache`. Shared lock file, node_modules, pre-existing caches, supervisor artifacts and old evidence were untouched. New engine-test cleanup revokes observation/stops tracks. No temporary build/server/cache remains; committed evidence/screenshots are intentionally retained.
+
+Protected-input `git diff --exit-code 62c70a30 -- WISH.md package.json package-lock.json vitest.config.ts .omo/gates-baseline.json test/actionDebounceFootprint.test.ts test/fixtures/life-full/coverage.json src/player/runtimeJuice.ts src/player/playBootDiagnostics.ts src/player/saveSlots.ts src/project/session.ts scripts/lib/runtimeQaRun.mjs` exited0. `git diff --check` and pre-evidence `git diff --cached --check` exited0. No dependency install, remote write, push, PR, merge, history rewrite or task2/3/4 reimplementation.
+
+Final `openwiki/INDEX.md` generation occurs only after staging the complete evidence-inclusive tracked file set; exact generation/check/wiki/diff commands, raw outputs and exits are retained together in `q1/finalization.json`. The post-commit command checks INDEX again and prints the actual final commit/tree plus protected hashes and clean tracked status. This task stops at the verified Q1 correction commit; later gameplay, full51 journeys, parent full gates, independent acceptance and physical-audio/visual-quality adjudication are not claimed.
+
+---
+
 # Task5 - QA-only life observability
 
 ## Correction DoneClaim - B1/B2/B3 (st_01a07471)

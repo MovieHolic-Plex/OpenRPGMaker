@@ -87,8 +87,30 @@ export class AudioEngine {
   private webAudioUnavailable = false;
   private readonly panners: WeakMap<HTMLAudioElement, StereoPannerNode> = new WeakMap();
 
-  constructor() {
-    this.installStateObservationHook();
+  private qaObservation: { readonly readState: () => AudioStateSnapshot; readonly resources: string[] } | null = null;
+
+  constructor(options: { readonly qaInstrumentation?: boolean } = {}) {
+    this.setQaInstrumentation(options.qaInstrumentation === true);
+  }
+
+  // The player shell owns this capability, including title audio and shell teardown.
+  // Revocation removes only our QA publications; it never stops or resets playback.
+  setQaInstrumentation(enabled: boolean): void {
+    if (typeof window === "undefined") return;
+    const holder: Window & {
+      __oprnAudioState?: () => AudioStateSnapshot;
+      __oprnAudioObserved?: string[];
+    } = window;
+    if (enabled === true) {
+      if (this.qaObservation) return;
+      this.qaObservation = { readState: () => this.audioStateSnapshot(), resources: [] };
+      holder.__oprnAudioState = this.qaObservation.readState;
+      holder.__oprnAudioObserved = this.qaObservation.resources;
+    } else if (this.qaObservation) {
+      if (holder.__oprnAudioState === this.qaObservation.readState) delete holder.__oprnAudioState;
+      if (holder.__oprnAudioObserved === this.qaObservation.resources) delete holder.__oprnAudioObserved;
+      this.qaObservation = null;
+    }
   }
 
   // 사용자 입력 언락 리스너 설치(1회). 브라우저 자동재생 정책 대응.
@@ -189,12 +211,8 @@ export class AudioEngine {
   // playAudio 명령 처리. url 이 이미 해석된 상태로 전달된다.
   play(channel: AudioChannel, resourceId: string, url: string, loop: boolean, options?: AudioPlayOptions): void {
     if (typeof window === "undefined" || typeof Audio === "undefined") return;
-    // Browser-QA 관찰 훅: 재생 지시를 받은 리소스를 기록한다(로드/재생 도달 증명).
-    if (typeof window !== "undefined") {
-      const holder = window as unknown as { __oprnAudioObserved?: string[] };
-      if (!Array.isArray(holder.__oprnAudioObserved)) holder.__oprnAudioObserved = [];
-      holder.__oprnAudioObserved.push(resourceId);
-    }
+    // QA-only request observation, not proof of audible output or successful decoding.
+    this.qaObservation?.resources.push(resourceId);
     const fadeInMs = options?.fadeInMs;
     const playbackRate = options?.playbackRate;
     const pan = options?.pan;
@@ -412,13 +430,6 @@ export class AudioEngine {
       this.webAudioUnavailable = true;
       return null;
     }
-  }
-
-  // QA 관찰 훅: `window.__oprnAudioState()` 로 현재 적용값을 읽는다.
-  private installStateObservationHook(): void {
-    if (typeof window === "undefined") return;
-    (window as unknown as { __oprnAudioState?: () => AudioStateSnapshot }).__oprnAudioState = () =>
-      this.audioStateSnapshot();
   }
 
   private startPlayback(audio: HTMLAudioElement, resourceId: string): void {
