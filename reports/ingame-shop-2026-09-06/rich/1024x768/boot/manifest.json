@@ -1,0 +1,38 @@
+{
+  "scenarioId": "ingame-shop-1024x768",
+  "projectPath": "reports/ingame-shop-2026-09-06/qa-fixture.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "field-start",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lantern_village",
+        "x": 14,
+        "y": 18,
+        "gold": 300,
+        "battleResult": null
+      }
+    },
+    {
+      "index": 1,
+      "id": "entrance",
+      "shot": "02-entrance.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lantern_village",
+        "x": 14,
+        "y": 18,
+        "gold": 300,
+        "battleResult": null
+      }
+    }
+  ]
+}
