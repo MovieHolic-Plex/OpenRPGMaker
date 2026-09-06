@@ -140,6 +140,19 @@ without mutating the caller's seed. Regression tests:
   `file://`, checks failure surfaces, then checks current-engine Test Play.
   It retains `game.zip`, `game.html`, `release.json` and browser evidence for the
   parent's immutable-community-route QA. Run without `--publication` for legacy.
+- `node scripts/qa-publication-controls.mjs <older-release-report> <output-dir>`
+  owns an isolated Vite server and Firefox profile. It imports a private copy
+  with a retained older runtime, then checks staged upgrade, two viewport sizes,
+  cancellation/focus, fork cancellation, and explicit predecessor acceptance.
+  The older report and installed default must name different retained runtimes.
+- `node scripts/qa-community-release.mjs <private-local-community-origin> <game.zip> <output-dir>`
+  uploads the actual editor QA ZIP through the community form, checks its
+  immutable redirect and byte-identical download, then plays through the quest,
+  sideview battle, save and reload under the community CSP. Use only a private
+  local community database. The gameplay fixture explicitly selects `rm2003`;
+  an unspecified style can correctly select frontview with no ally sprites.
+  QA preserves complete request URLs when matching previously decoded audio
+  cancellations; release-qualified URLs can exceed 200 characters.
 - `npx vite-node scripts/qa-release-artifact.mts` runs the real ZIP/HTML exporters
   against the retained installed runtime with a narrow blank engine fixture and
   refuses every non-selected-archive fetch. It writes files and a digest report
