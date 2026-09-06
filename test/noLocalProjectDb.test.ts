@@ -41,7 +41,7 @@ function forbiddenLocalDbReferences(text: string): readonly string[] {
     ? ts.createSourceFile("runtime.ts", text, ts.ScriptTarget.Latest, true)
     : null;
   const usesIndexedDb = (node: ts.Node): boolean => {
-    if ((ts.isIdentifier(node) || ts.isStringLiteral(node)) && node.text === "indexedDB") {
+    if ((ts.isIdentifier(node) || ts.isStringLiteralLike(node)) && node.text === "indexedDB") {
       // A capability check cannot read or write project data. Every actual access,
       // including aliases and computed property access, remains forbidden here.
       return !(ts.isIdentifier(node) && ts.isTypeOfExpression(node.parent));
@@ -85,6 +85,7 @@ describe("canonical project persistence has no local DB fallback", () => {
     'const factory = indexedDB; factory.open("project");',
     'window.indexedDB.open("project");',
     'globalThis["indexedDB"].open("project");',
+    'globalThis[`indexedDB`].open("project");',
   ])("rejects actual local database access: %s", (source) => {
     expect(forbiddenLocalDbReferences(source)).toContain("indexedDB");
   });
