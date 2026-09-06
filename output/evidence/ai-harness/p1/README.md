@@ -47,6 +47,27 @@ Initial boot, port, import and command-timeout failures remain recorded and
 aren't counted as successful behavioral RED. See [session-proof.md](session-proof.md)
 and [surface.md](surface.md) for their exact limits.
 
+## R1 boundary corrections and follow-up
+
+Review of `7671a7dc` found three counterexamples that the original passing
+surfaces did not cover. Each correction has independent failing-first tests
+and an actual API probe:
+
+- [Receipt lineage](r1-001.md): an accepted save finishing after load/reload/adoption
+  remains historically provable but cannot regain current-editor authority.
+- [Apply correlation](r1-002.md): synchronous subscriber edits cannot borrow the
+  earlier AI apply's commit id; the mutation-boundary snapshot is retained.
+- [Proof publication](r1-003.md): reentrant or overlapping attempts cannot publish
+  stale success or overwrite the newer attempt's state.
+
+GitHub records PR #647 merged at `2026-09-06T12:06:45Z`, with head `7671a7dc`
+and merge commit `c26f7398`, before final ultrabrain approval. That merge is not
+retroactively approved by these corrections. A successor corrective PR must
+receive fresh combined-tree verification and exact-head ultrabrain approval
+before its merge; P2 cannot start until that P1 delivery and cleanup are complete.
+The historical runs below and the individual worker reports are not a claim
+that this follow-up has passed its final integration gate.
+
 ## Exact real-surface acceptance
 
 ```sh
