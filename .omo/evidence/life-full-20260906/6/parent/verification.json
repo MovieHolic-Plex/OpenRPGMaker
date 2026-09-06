@@ -1,0 +1,25 @@
+{
+  "sourceHead": "8cf7652c54f3d7083f857b2b5f28450c1b2bf7a8",
+  "implementation": "48195f5753556572db0c13e40f6945b9547bbea3",
+  "command": "npm test -- test/lifeSkillDisabledHarvest.test.ts test/p0LifeSkillProgress.test.ts test/p2LifeRuntime.test.ts test/p2HostileAudit.test.ts test/farmingRuntime.test.ts test/seasonalForage.test.ts test/p0RuntimeIntegration.test.ts --maxWorkers=2 --no-file-parallelism; then node .omo/evidence/life-full-20260906/6/parent/public-probe.mjs, each under the recorded flock and300s deadline",
+  "exit": 0,
+  "observedMonitorOutput": [
+    " Test Files  7 passed (7)",
+    "      Tests  126 passed (126)",
+    "{\"publicTransactions\":30,\"fullStateRecords\":\"public-state.json\",\"mockedAuthorities\":false,\"nativePlayerInput\":false}",
+    "{\"viteClosed\":true,\"httpListenerStarted\":false}"
+  ],
+  "outputBoundary": "These are the actual monitor-delivered decisive lines. Full stdout was not retained by the parent after kernel state loss; producer full raw logs remain separately preserved.",
+  "publicRecords": "public-state.json",
+  "transactions": 30,
+  "rollbackCases": 15,
+  "domains": [
+    "crop",
+    "rock",
+    "tree",
+    "fish",
+    "forage"
+  ],
+  "diagnostics": "All four changed source/test paths had no LSP diagnostics before parent replay",
+  "nativePlayerInput": false
+}
