@@ -6,6 +6,33 @@ import { characterSpriteX, characterSpriteY } from "@/player/characterDepth";
 import { runSceneTest, type SceneStep } from "@/testing/sceneTestRunner";
 
 describe("run_scene_test", () => {
+  it("executes the existing choice cancellation branch for index minus one", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    project.switches.push({ id: "sw_cancelled", name: "Cancelled" });
+    map.events.push({
+      id: "ev_cancel_choice", x: 2, y: 3, trigger: { kind: "action" }, commands: [],
+      pages: [{
+        id: "cancel-page", name: "Cancel choice", conditions: [], graphic: { transparent: true },
+        trigger: { kind: "action" }, priority: "same", overlapForbidden: true,
+        movement: { type: "fixed", speed: 3, frequency: 3 },
+        commands: [{
+          kind: "choices", options: [{ text: "Continue", branch: [] }],
+          cancelBehavior: "branch",
+          cancelBranch: [{ kind: "setSwitch", switchId: "sw_cancelled", value: true }],
+        }],
+      }],
+    });
+
+    const result = runSceneTest(project, {
+      mapId: map.id, start: { x: 2, y: 2 },
+      steps: [{ kind: "interact" }, { kind: "choose", index: -1 }, { kind: "expect", switchOn: "sw_cancelled" }],
+    });
+
+    expect(result.ok, result.failureReason).toBe(true);
+    expect(result.finalState.switchesOn).toContain("sw_cancelled");
+  });
+
   it("accepts structurally compatible start points from existing scene callers", () => {
     const project = createBlankProject();
     const start = { x: 2, y: 2, dir: "right" };
@@ -35,6 +62,7 @@ describe("run_scene_test", () => {
     { kind: "move", dir: "right", to: { x: 3, y: 2 } },
     { kind: "move", to: { x: 1.5, y: 2 } },
     { kind: "wait", ticks: -1 },
+    { kind: "choose", index: -2 },
     { kind: "expect", enemyDefeated: true },
     { kind: "attack" },
   ])("rejects malformed steps before executing an earlier valid step: %j", malformed => {

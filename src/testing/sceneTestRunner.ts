@@ -326,7 +326,9 @@ function isSceneStep(value: unknown): value is SceneStep {
     case "interact": return shape({ eventId: sceneText });
     case "snapshotRewards": case "retryCheckpoint": return shape({});
     case "gift": return shape({ eventId: sceneText, itemId: sceneText }, ["itemId"]);
-    case "choose": return shape({ index: sceneCount }, ["index"]);
+    case "choose": return shape({
+      index: entry => typeof entry === "number" && Number.isSafeInteger(entry) && entry >= -1,
+    }, ["index"]);
     case "advanceDays": return shape({ days: sceneCount }, ["days"]);
     case "expect": return Object.keys(value).length > 1 && shape(sceneExpectFields);
     default: return false;

@@ -25,6 +25,13 @@ are not represented as an aesthetic pass. See `post-merge-validation.json`.
 
 ## Verified result
 
+The integrated gate approved `b31389d39`. Its optional scene-cancellation note
+was then addressed: the existing `choose` index `-1` executes the interpreter's
+cancel branch, while indices below `-1` remain invalid. The actual cancellation
+regression failed before the fix; all **64 cancellation/reward/action checks**
+passed afterward. This focused follow-up supplements the 359-test integration
+run rather than representing a new whole-repository green run.
+
 Remote project: `oprn-6d2d581f84`, title `검과 회피 검증`.
 After `store.flush()` returned `saved`, the actual Supabase loader returned:
 
