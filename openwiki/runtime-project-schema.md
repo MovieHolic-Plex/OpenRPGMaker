@@ -1,5 +1,22 @@
 # Runtime Project Schema & Persistence
 
+## Opening and game-over cinematic settings (2026-09-06)
+
+`SystemRecords.opening?: CinematicSequence` and `gameOver?: GameOverSettings` are additive, opt-in project-v4 authoring records. No schema bump, server migration, or default/demo content is needed. `src/project/cinematicSettings.ts` owns the mutable authored types and pure normalization; all four types are re-exported through `@/project/types`:
+
+- `CinematicMotion = "none" | "fade" | "pan" | "zoom"`.
+- `CinematicScene` is a discriminated union with common `id`, `narration`, optional `narrationAudioResourceId`, and `durationMs`. A `text` scene has no media or motion field; an `image` scene requires `resourceId` and `motion`; a `video` scene requires `resourceId` and has no motion field.
+- `CinematicSequence = { enabled: boolean; skippable: boolean; scenes: CinematicScene[] }`.
+- `GameOverSettings` has optional `sequence`, `title`, `message`, `retryLabel`, `titleLabel`, and `backgroundResourceId` fields.
+
+`CINEMATIC_SCENE_LIMIT = 100` and `CINEMATIC_DURATION_MAX_MS = 120000` are exported from the focused module. `normalizeCinematicSequence(sequence: CinematicSequence): CinematicSequence` and `normalizeGameOverSettings(settings: GameOverSettings): GameOverSettings` accept typed records; the `normalizeSystemRecords` whitelist calls them only for present settings. Missing settings stay missing, empty authored records/sequences and disabled content survive, and normalization preserves ordering and exact text (including blank strings and whitespace). IDs are trimmed; optional empty IDs are omitted on typed direct normalization. Normalization does not mutate input and is idempotent; it is not a replacement for wire validation.
+
+`io/shapeDatabaseFields.validateSystem` checks these records before typed cloning/normalization. It rejects non-objects, unknown or variant-inappropriate fields, missing required fields, incorrect field types, blank IDs, duplicate scene IDs (after trimming, scoped to each sequence), more than 100 scenes, and non-finite/non-integer durations outside `0..120000`. Image motion must be one of the four values above. `io/resourceReferenceValidation.validateSystemResources` validates image/video/narration/background IDs through the existing known-resource authority even when a sequence is disabled. This is existence validation, not media decoding or MIME compatibility validation.
+
+The duration contract for playback consumers is: zero means keyboard advance for image/text; videos advance on completion, with a positive duration acting as an authored maximum. Text is stored literally; renderers must use safe native text rendering. This model increment does not implement playback, new-game routing, game-over menus, or editor authoring UI.
+
+`webExportAssets` already traverses nested project strings outside uploaded payloads, so no cinematic asset collector is added. Disabled sequences retain uploaded media in `prepareWebExport`, including narration referenced nowhere else. Uploaded video filenames now use `.mp4`, `.webm`, or `.ogv` for the media types accepted by the existing movie importer (rather than the former `.png` fallback); image/GIF/WebP and audio handling is unchanged. `test/cinematicSettings.test.ts` covers legacy absence, disabled/empty retention, deterministic serialize/deserialize, strict rejection, resource validation, and actual export-entry bytes for image/video/audio/background, with unused uploads pruned.
+
 ## Project-authored equipment slots (2026-09-05)
 
 `ProjectDatabaseRecords.equipmentSlots?: EquipmentSlotRecord[]` is an additive v4 catalog of `{ id, label }`. Omission keeps the five built-ins. `src/project/equipmentSlots.ts` merges built-ins with authored label overrides and custom slots; built-in IDs cannot be removed. IDs are stable ASCII identifiers, not labels. `EquipmentRecord.slot`, `ActorInitialEquipment`, and `changeEquipment.slot` reference these IDs. Actor normalization preserves every slot key; shape/reference validation rejects duplicate/unsafe catalog IDs, empty labels, and dangling equipment/actor/event slot references. No migration or schema bump is needed for catalog-free projects.
