@@ -1,0 +1,75 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/cinematicSequence.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-wish-cinematics-p1
+
+ ❯ test/cinematicSequence.test.ts (23 tests | 3 failed) 1011ms
+   ✓ shared sequence playback > leaves the host unchanged for absent, disabled or empty settings 120ms
+   ✓ shared sequence playback > leaves the host unchanged for absent, disabled or empty settings 58ms
+   ✓ shared sequence playback > leaves the host unchanged for absent, disabled or empty settings 45ms
+   ✓ shared sequence playback > renders safe text and advances ordered image/text scenes by distinct presses 57ms
+   ✓ shared sequence playback > consumes all input and pointer channels without activating playback via pointer 45ms
+   ✓ shared sequence playback > skips only when authored and removes its key listener on completion 58ms
+   ✓ shared sequence playback > advances timed scenes exactly once and cancels the previous deadline on keyboard advance 39ms
+   ✓ shared sequence playback > advances video on ended once, clears sources and rejects stale ended events 43ms
+   ✓ shared sequence playback > enforces the authored video maximum 35ms
+   ✓ shared sequence playback > exposes retry after rejected autoplay and continues even an unskippable video 40ms
+   ✓ shared sequence playback > clears the blocked state after a successful narration retry 44ms
+   ✓ shared sequence playback > makes narration rejection visible and permits continuation 41ms
+   ✓ shared sequence playback > permits continuation with a missing 'image' reference 40ms
+   ✓ shared sequence playback > permits continuation with a missing 'video' reference 35ms
+   × shared sequence playback > retains the authored maximum after native-error 40ms
+     → expected 'video' to be 'text' // Object.is equality
+   × shared sequence playback > retains the authored maximum after missing-reference 32ms
+     → expected 'video' to be 'text' // Object.is equality
+   × shared sequence playback > turns a stalled video load into recoverable error 35ms
+     → expected 'playing' to be 'error' // Object.is equality
+   ✓ shared sequence playback > cleans media, timers and listeners on abort 32ms
+   ✓ shared sequence playback > cleans media, timers and listeners on teardown 40ms
+   ✓ shared sequence playback > does not mount when already aborted 31ms
+   ✓ shared sequence playback > aborts when the host is detached 34ms
+   ✓ shared sequence playback > ignores late play rejection after advance 35ms
+   ✓ shared sequence playback > disables image motion when reduced motion is requested 30ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/cinematicSequence.test.ts > shared sequence playback > retains the authored maximum after native-error
+ FAIL  test/cinematicSequence.test.ts > shared sequence playback > retains the authored maximum after missing-reference
+AssertionError: expected 'video' to be 'text' // Object.is equality
+
+Expected: "text"
+Received: "video"
+
+ ❯ test/cinematicSequence.test.ts:157:36
+    155|     expect(root().dataset.mediaState).toBe("error");
+    156|     await vi.advanceTimersByTimeAsync(100);
+    157|     expect(root().dataset.sceneId).toBe("text");
+       |                                    ^
+    158|   });
+    159|   it("turns a stalled video load into recoverable error", async () => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  test/cinematicSequence.test.ts > shared sequence playback > turns a stalled video load into recoverable error
+AssertionError: expected 'playing' to be 'error' // Object.is equality
+
+Expected: "error"
+Received: "playing"
+
+ ❯ test/cinematicSequence.test.ts:161:39
+    159|   it("turns a stalled video load into recoverable error", async () => {
+    160|     start([video]); await vi.advanceTimersByTimeAsync(10_000);
+    161|     expect(root().dataset.mediaState).toBe("error");
+       |                                       ^
+    162|     key("Enter"); expect(await playback.done).toBe("completed");
+    163|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 20 passed (23)
+   Start at  15:13:25
+   Duration  4.90s (transform 2.34s, setup 0ms, collect 3.17s, tests 1.01s, environment 232ms, prepare 121ms)

@@ -508,6 +508,23 @@ The float assistant is **one glass instrument**, `div.ai-deck` inside the transp
 - The Resource Manager modal follows the classic RM2K3 resource window composition: left category list, center resource list, right command/format/preview rail, and bottom close/help controls.
 - Resource Manager clone metrics live as local `--rm-resource-*` CSS variables on `.resource-modal-window`; use those variables for pane widths, row height, command button height, preview height, and footer button width rather than scattering one-off dimensions.
 
+### Cinematic playback (2026-09-06)
+
+- Shared opening/game-over playback uses the existing logical play stage, native
+  image/video/text elements and runtime typography, never editor Studio chrome.
+  Black letterboxing preserves image/video aspect ratios; narration is 14 logical
+  pixels/1.5 with 8px padding and an 80% black caption backing. Keyboard hints are
+  9px/1.5; the fullscreen overlay has 16px inset content and 8px gaps.
+- Authored image motion is transform/opacity only: fade 0..1, pan -3%..3% at
+  1.1 scale, zoom 1..1.12. Duration comes from the authored scene (8s for a manual
+  scene), plays once and holds its last frame. Reduced motion removes all three.
+  These are authored slideshow motions, not interface spring transitions.
+- States are ready/loading/playing/blocked/error. Blocked media exposes R retry
+  and confirm continuation; missing/broken media still permits continuation in
+  an unskippable sequence. There are no pointer controls or native title tooltips.
+- Game-over labels retain the current terminal cursor menu and system graphic;
+  the optional authored background fills the stage beneath it at 65% opacity.
+
 ### Play presentation
 
 - Play viewport is `320×240` logical pixels (`PLAY_RESOLUTION.width`/`PLAY_RESOLUTION.height`), then scaled by the largest whole-number factor that fits inside the test-play/player shell with nearest-neighbor rendering.

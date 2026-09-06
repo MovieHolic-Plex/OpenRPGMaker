@@ -1,3 +1,70 @@
+## Opening and game-over cinematics (2026-09-06)
+
+- Persisted opt-in fields are `system.opening?: CinematicSequence` and
+  `system.gameOver?: GameOverSettings`; see `runtime-project-schema.md` for strict
+  normalization/validation. No event-movie or ending behavior is repurposed.
+- `src/player/cinematicSequence.ts` exports
+  `playCinematicSequence({ host, project, sequence, signal })` returning
+  `{ done: Promise<"completed" | "skipped" | "aborted">, teardown() }`.
+  It is DOM-only and receives the project explicitly, so editor preview can use
+  the same player without a Phaser scene, global store or runtime session.
+  Disabled/empty/missing sequences leave the host untouched. `teardown` and abort
+  are idempotent; detached hosts also abort via a MutationObserver.
+- Confirm is Z/Enter/Space (not the legacy field E alias); Escape skips only an
+  authored skippable sequence. Window capture consumes the whole key event before
+  title/menu/Phaser handlers and ignores repeated confirm/skip/retry and IME actions.
+  ArrowUp/Down scroll narration by 24 logical pixels; PageUp/Down scroll 90% of its
+  visible height, and Home/End reach either end. Scrolling accepts OS repeat and
+  assigns scrollTop synchronously (browser-clamped), never advancing or falling
+  through to gameplay. A scrolling hint appears only for measured overflow;
+  a scene-owned ResizeObserver updates it on layout changes and disconnects on
+  cleanup, without polling or extra timers. Pointer interaction cannot advance.
+  Text is native textContent. Image motion is transform/opacity
+  only and has both JS and CSS reduced-motion paths; GIF/WebP use native images.
+- Image/text duration 0 waits for confirm. Positive duration advances exactly
+  once, including after media errors. Video `ended` advances naturally; positive
+  duration is its maximum. Video and narration pause, lose their sources and
+  call load() on advance, skip, error, abort or teardown. Old media events and
+  late play() rejections cannot affect a later scene. Blocked autoplay exposes
+  R retry and confirm continuation. Initial video loading and each R retry show
+  continuation and arm a fresh 10-second load deadline, cancelled by successful
+  playback or cleanup. Native `waiting`/unbuffered `stalled` events expose immediate
+  confirm continuation without releasing media; `playing` clears that status and
+  disables video continuation again. Buffered `stalled` alone does not unlock
+  healthy playback. There is no post-start playback-duration cap: only an authored
+  positive duration limits healthy video. Initial/retry waiting retains its load
+  deadline; repeated waiting events never extend it. Missing/broken video remains
+  continuable even when unskippable. Stall RED/GREEN and fault-injected exported
+  player evidence: `output/evidence/cinematics-stall.md`.
+- `player.ts` runs opening before preflight/map boot for title New Game, normal
+  autoStartRun and fresh restart. Loaded sessions, startOverride/test-here and
+  selected-event tests bypass it. stopGame cancels opening, and its controller
+  identity gates the async handoff; teardown also cancels pending title confirm.
+  Existing load/save/checkpoint paths remain separate from fresh-run opening.
+- `playSceneOverlays.ts` keeps `game-over-screen` mounted around both sequence and
+  terminal menu. Existing movement/time/minimap/shell consumers therefore stay
+  blocked without changing their selectors. It releases held input on entry;
+  per-host replacement plus scene shutdown/destroy detach playback, terminal
+  cursor listeners and DOM. Authored labels/background apply; an event message
+  takes precedence over the configured default, including explicit empty text.
+  Retry remains conditional on hasCheckpoint. Without a sequence/background the
+  legacy immediate panel and underlying-map presentation remain intact.
+- `runtime/playSurface.css` owns cinematic presentation in the shared `playerRuntime.css` closure
+  (exported player and editor). Uploaded video MIME resolution uses the existing
+  generatedAssetResourceResolver; no movie-command fallback behavior changed.
+- Proof: `cinematicSequence`, `playerCinematics`, `cinematicSettings` and the
+  existing title/checkpoint/defeat/run-controls tests. Run
+  `npm run qa:runtime -- --scenario cinematic-sequences` for actual `player.html`
+  behavior, not the editor shell. Its fixture generator uses a blank map and one
+  checkpoint/kill command pair, never a demo or remote DB project. The 5KB WebM
+  is a synthetic 32x24 color frame; narration is generated silent PCM WAV.
+  Scenario transitions subscribe to DOM/media events before actions and use
+  bounded deadlines, not sleeps/polling. It proves rejected autoplay/retry,
+  native ended, media errors, reduced motion, no input fallthrough, repeat,
+  checkpoint retry, repeated game over and host cleanup. Read SUMMARY.md first.
+  Evidence and the separately reproduced baseline CSS omission failure are in
+  `output/evidence/cinematics-p1/runtime.md`.
+
 ## Esc 메뉴 작업 프레임 (2026-09-05)
 
 이 절이 아래의 edge-dock / 상단 파티 고정 / 하위 창 숨김 설명을 대체한다.

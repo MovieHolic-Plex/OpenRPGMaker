@@ -142,6 +142,9 @@ function uploadedAssetExtension(dataUrl: string): string {
   if (media.includes("image/jpeg")) return "jpg";
   if (media.includes("image/webp")) return "webp";
   if (media.includes("image/gif")) return "gif";
+  if (media.includes("video/mp4")) return "mp4";
+  if (media.includes("video/webm")) return "webm";
+  if (media.includes("video/ogg")) return "ogv";
   if (media.includes("audio/mpeg")) return "mp3";
   if (media.includes("audio/wav")) return "wav";
   if (media.includes("audio/ogg")) return "ogg";
