@@ -1243,6 +1243,10 @@ export class AssistantSession {
     return this.acceptance !== null && this.acceptance.getSnapshot().status !== "verified";
   }
 
+  private explicitVerificationOpen(): boolean {
+    return this.turnExpectsChange() && this.verificationEvidence.problems("explicit").length > 0;
+  }
+
   private acceptanceIncompleteText(): string {
     const snapshot = this.getAcceptanceSnapshot();
     return `완료 검증이 아직 미완성입니다.\n${snapshot?.items.filter(item => item.status !== "verified")
@@ -1550,10 +1554,11 @@ export class AssistantSession {
       this.pushAudit({ kind: "status", text: "agent_run:stopped-apply-failed — 마일스톤 적용 실패로 현재 자율 실행을 멈춥니다 (프로젝트 저장소 변경 없음)" });
       return false;
     }
-    if (this.acceptanceOpen() && this.acceptanceRepairAttempts >= MAX_RALPH_ATTEMPTS_PER_ITEM) return false;
     const acceptanceOpen = this.acceptanceOpen();
+    const verificationOpen = this.explicitVerificationOpen();
+    if ((acceptanceOpen || verificationOpen) && this.acceptanceRepairAttempts >= MAX_RALPH_ATTEMPTS_PER_ITEM) return false;
     const volumeOpen = this.volumeUnmetNow();
-    if ((!this.workPlan || isWorkPlanComplete(this.workPlan)) && !volumeOpen && !acceptanceOpen) return false;
+    if ((!this.workPlan || isWorkPlanComplete(this.workPlan)) && !volumeOpen && !acceptanceOpen && !verificationOpen) return false;
     if (this.autoRunSteps >= AGENT_RUN_MAX_TOTAL_STEPS) {
       this.pushAudit({
         kind: "status",
@@ -1579,7 +1584,7 @@ export class AssistantSession {
     }
     // 계획이 끝났거나 없어도 볼륨 막대가 비면 코드가 다음 턴을 연다. 사용자 「계속」이 아니다.
     if (volumeOpen && assistantTextLooksLikeQuestion(assistantText)) return false;
-    return volumeOpen || acceptanceOpen;
+    return volumeOpen || acceptanceOpen || verificationOpen;
   }
 
   /** 드라이버의 질문 판별용 원문 — 계획 게시판 접미어(행 끝 정규식 오염)를 제거한 최종 응답. */
@@ -1820,7 +1825,7 @@ export class AssistantSession {
     signal?: AbortSignal,
   ): Promise<IntentDeclaration> {
     if (!instruction) return emptyIntentDeclaration();
-    const hasActivePlan = Boolean(this.workPlan && !isWorkPlanComplete(this.workPlan)) || this.acceptanceOpen();
+    const hasActivePlan = Boolean(this.workPlan && !isWorkPlanComplete(this.workPlan)) || this.acceptanceOpen() || this.explicitVerificationOpen();
     const scope = this.turnScope;
     const selection = scope
       ? { mapId: scope.mapId, x: scope.region.x, y: scope.region.y, width: scope.region.width, height: scope.region.height }
@@ -2622,7 +2627,7 @@ export class AssistantSession {
   /** Completion schedules proof only after all pending writes have actually been applied. */
   private async maybeRunEndProof(onEvent: (event: SessionEvent) => void, signal?: AbortSignal): Promise<void> {
     if (!this.workPlan || !this.milestoneAutoApply || this.milestoneApplyFailed) return;
-    if (!isWorkPlanComplete(this.workPlan) || this.acceptanceOpen() || this.turnProposals.size > 0 || signal?.aborted) return;
+    if (!isWorkPlanComplete(this.workPlan) || this.acceptanceOpen() || this.explicitVerificationOpen() || this.turnProposals.size > 0 || signal?.aborted) return;
     await this.proveAppliedRevision(onEvent, signal);
   }
 
@@ -3583,13 +3588,14 @@ export class AssistantSession {
             instruction: "Apply acceptance progress", status: "done" }, onEvent);
         }
         this.publishAcceptance(onEvent);
-        if (this.acceptanceOpen() && this.turnComposerMode !== "ask") {
+        const verificationProblems = this.turnExpectsChange() ? this.verificationEvidence.problems("explicit") : [];
+        if ((this.acceptanceOpen() || verificationProblems.length > 0) && this.turnComposerMode !== "ask") {
           if (!this.milestoneApplyFailed && this.acceptanceRepairAttempts < MAX_RALPH_ATTEMPTS_PER_ITEM
             && spentOutputTokens < this.config.maxTokens) {
             this.acceptanceRepairAttempts += 1;
             phase = "execute";
             this.emitPhase(onEvent, "execute");
-            this.pushOrchestrationMessage(`Acceptance repair ${this.acceptanceRepairAttempts}/${MAX_RALPH_ATTEMPTS_PER_ITEM}. Do not claim success, skip, shrink or recreate completed content. Repair missing criteria with repair_acceptance; satisfy original promises with real tools; explicitly review delivered images with review_acceptance. Drafts are not applied verification.\n${JSON.stringify(this.getAcceptanceSnapshot())}`);
+            this.pushOrchestrationMessage(`Acceptance repair ${this.acceptanceRepairAttempts}/${MAX_RALPH_ATTEMPTS_PER_ITEM}. Do not claim success, skip, shrink or recreate completed content. Repair missing criteria with repair_acceptance; satisfy original promises with real tools; explicitly review delivered images with review_acceptance. Drafts are not applied verification. Fix failed explicit checks and rerun stale checks after the last write.\n${JSON.stringify(this.getAcceptanceSnapshot())}\n${verificationProblems.join("\n")}`);
             continue;
           }
           this.acceptance?.stop();

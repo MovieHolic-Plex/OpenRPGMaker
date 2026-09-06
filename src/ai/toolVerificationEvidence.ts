@@ -45,8 +45,8 @@ export class ToolVerificationEvidence {
     return checks.length > 0 && checks.every((check) => check.verdict.pass && !check.stale);
   }
 
-  problems(): readonly string[] {
-    return [...new Set([...this.checks.values()].flatMap(({ name, verdict, stale }) => {
+  problems(source: "all" | "explicit" = "all"): readonly string[] {
+    return [...new Set([...this.checks.values()].filter(check => source === "all" || check.explicit).flatMap(({ name, verdict, stale }) => {
       const issues = verdict.blockingIssues.map((issue) => `${name}: ${issue}`);
       if (stale) issues.push(`${name}: 변경 후 재검증 필요`);
       return issues;
