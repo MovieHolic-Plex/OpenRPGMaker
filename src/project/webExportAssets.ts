@@ -89,7 +89,7 @@ const USAGE_WALK_CATALOG_KEY = "resourceProfiles";
 
 function collectProjectStrings(project: Project): Set<string> {
   const values = new Set<string>();
-  collectStrings(project, values);
+  collectStrings({ ...project, audioDescriptions: undefined }, values);
   // 소스에 박힌 재생 — 프로젝트 문자열에는 없지만 플레이어가 반드시 읽는다.
   for (const id of PLAYER_RUNTIME_AUDIO_RESOURCE_IDS) values.add(id);
   return values;

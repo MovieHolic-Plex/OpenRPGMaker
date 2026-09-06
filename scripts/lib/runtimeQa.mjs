@@ -13,6 +13,7 @@ export const DEFAULT_SEED = 1;
 
 /** 시나리오가 쓸 수 있는 op 종류. 목록 밖은 정규화 단계에서 거부한다. */
 export const OP_KINDS = [
+  "audioAction",
   "seed",
   "setVitals",
   "dir",
@@ -133,6 +134,17 @@ export function renderSummary(report) {
     const reason = !beat.shot ? "—" : failed ? "게이트 실패 — 즉시 확인" : "시각 확인 대기";
     lines.push(
       `| ${beat.id} | ${beat.note ?? "—"} | ${failed ? "실패" : "통과"} | ${beat.shot ?? "—"} | ${reason} |`,
+    );
+  }
+
+  const audioBeats = report.beats.filter((beat) => (beat.audio?.length ?? 0) > 0);
+  if (audioBeats.length > 0) {
+    lines.push(
+      "", "## Audio evidence", "", "```json",
+      JSON.stringify(audioBeats.map(({ id, actions, state, audio }) => ({
+        id, actions, state, audio,
+      })), null, 2),
+      "```",
     );
   }
 

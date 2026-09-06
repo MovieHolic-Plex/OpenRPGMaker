@@ -1,3 +1,5 @@
+import assert from "node:assert/strict";
+import { runAudioAction } from "./runtimeQaAudio.mjs";
 // 런타임 QA 하네스 — 부수효과 담당(vite 서버 · 브라우저 구동 · 디스크 쓰기).
 // 순수 판정 로직은 ./runtimeQa.mjs 에 있고 여기서 소비만 한다.
 // 설계: docs/superpowers/specs/2026-08-28-runtime-vision-qa-design.md
@@ -148,6 +150,12 @@ async function waitForRuntimePredicate(page, predicate, argument, timeoutMs = 30
 
 async function applyOp(page, op, runState) {
   switch (op.kind) {
+    case "audioAction": {
+      const evidence = await runAudioAction(page, op);
+      runState.audio.push(evidence);
+      assert.equal(evidence.error, null, JSON.stringify(evidence));
+      return;
+    }
     case "waitForEmote":
       await page.waitForFunction(
         ({ target, frame }) => window.__oprnEmotes?.().some((emote) =>
@@ -599,6 +607,7 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
   // op 들 사이에 살아 있는 런 상태(그림자 픽셀 측정용 표본 프레임).
   const runState = {};
   for (const [index, beat] of scenario.beats.entries()) {
+    runState.audio = [];
     // op 이 던져도 런을 죽이지 않는다. 던진 사유를 그 비트의 실패로 기록하고
     // 계속 진행해야 리포트·샷이 남는다 — 초기 구현은 raw 스택만 남기고 죽어서
     // 정작 진단할 증거가 하나도 없었다(실측).
@@ -664,6 +673,8 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
       failures,
       shadowInk: shadowInk ?? undefined,
       state: observed.state,
+      actions: beat.ops,
+      ...(runState.audio.length > 0 ? { audio: runState.audio } : {}),
       // 배치 근거는 리포트에 남긴다 — PNG 를 열지 않고도 수치로 판정할 수 있어야 한다.
       battlers: observed.battlers ?? undefined,
       ...((beat.expect?.emoteCountAtLeast != null || beat.expect?.emoteFrames || beat.expect?.emoteTargets)
