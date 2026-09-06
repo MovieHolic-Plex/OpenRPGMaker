@@ -46,6 +46,51 @@ authoring. Generic world CRUD and blanket lint/digests remain excluded.
 
 ## Pre-edit routing
 
+### Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
+
+- Standard `mapTree=false` means a focused, always-mounted tile/event task host,
+  not an empty maps-only layout. `resolveLeftDockPanels` pins that host without
+  overwriting stored Expert docks. Standard does not offer ineffective dock
+  toggles. Expert retains its tree auto/manual height, splitter and collapse.
+- `sidebarMapHeader` renders current map and map settings above common layers.
+  Standard opens `renderMapList(..., {variant: "switcher"})`: the existing
+  two-column map explorer, with search always available and no dock-collapse
+  coupling. Expert reveals its existing tree; if its map dock was disabled it
+  uses the same explorer. No duplicate map IDs/selection implementation.
+- Paint/erase/fill/select and undo stay primary. Expert adds direct eyedropper.
+  `tileToolOptions` supplies labelled Tools, clipboard, pan/collision and the
+  Standard shape select; Expert has the same shape select beside brush options.
+  Shape choices call the existing `selectTileTool`, preserving reset behavior.
+- Beginner keeps its existing brush buttons and rail behavior. Standard/Expert
+  use a unique `brush-size-select` only for freehand paint/erase (no active stamp
+  or shape paint). Size is retained when hidden. Event owns its surface with no
+  duplicate event tool or tile search/brush controls. Layers remain in the same
+  position before and after a layer/mode change.
+- `tile-category-select` beside search replaces category chips; it uses the same
+  filter state/calculation. Reset clears both filters and focuses search. Native
+  atlas geometry, tile selection, stamp gestures and sheet scroll are unchanged.
+- `tileToolbarMenus` owns one labelled inspection/history menu and issue badge.
+  Expert pin checkboxes store command IDs per mode under
+  `oprn:sidebar-inspection-pins:<mode>`; pinned commands leave the menu action
+  list and become direct labelled buttons. Ctrl+K `sidebar-inspection-*` commands
+  open that same state. Storage failure retains session pins and logs a warning.
+- `sidebarSurface` owns bounded nonmodal map/tools/brush-assist/structure-kit
+  overlays: outside dismissal, Escape including search, opener focus, viewport
+  anchoring and mutually exclusive surface opening. Mode changes dismiss them.
+  Assist/kit expansion never consumes sheet height. Connection state remains
+  visible; selected-tile reveal/properties and tileset-to-map-settings route stay
+  compact below the sheet. No automatic onboarding or project persistence edits.
+- CSS remains in `left-sidebar.modern.css`; measurements use the actual
+  `.chipset-sheet` viewport, not its ancestors. Acceptance: Standard >=60% of
+  sidebar height at 1440x900; 1024x768/1280x800/1440x900 have no clipped chrome or
+  toolbar horizontal scroll and >=520px canvas. Parent owns whole gates/build
+  and independent visual/ultrabrain acceptance. Evidence and reproducible driver:
+  `output/evidence/sidebar-focus`, `scripts/qa/sidebar-focus.mjs`.
+- Regression seams: `sidebarFocusModes.test.ts` (real DOM/state, shape/size,
+  search, pin storage, command access, focus), retained `sidebarModeWorkflow`,
+  `sidebarBrushUi`, map/dock, toolbar and keyboard suites. Presentation assertions
+  follow moved controls without removing actual state/reset/undo coverage.
+
 ### Automatic usage guides disabled (2026-09-06)
 
 - Editor rendering and post-welcome boot paths no longer automatically invoke
