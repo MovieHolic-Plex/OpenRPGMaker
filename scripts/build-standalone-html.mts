@@ -27,11 +27,18 @@ async function loadProject(source: string | undefined): Promise<Project> {
 }
 
 const result = await createStandaloneHtmlExport(await loadProject(argOf("project")), {
-  fetchBytes: async (path) => new Uint8Array(readFileSync(
-    path.startsWith(STANDALONE_BUNDLE_BASE)
-      ? join("dist", path)
-      : join("public", path),
-  )),
+  fetchBytes: async (path) => {
+    if (/^https?:\/\//i.test(path)) {
+      const response = await fetch(path);
+      if (!response.ok || response.headers.get("content-type")?.toLowerCase().includes("text/html")) {
+        throw new Error(`오디오 재료 요청 실패 (HTTP ${response.status})`);
+      }
+      return new Uint8Array(await response.arrayBuffer());
+    }
+    return new Uint8Array(readFileSync(
+      path.startsWith(STANDALONE_BUNDLE_BASE) ? join("dist", path) : join("public", path),
+    ));
+  },
 });
 const out = argOf("out") ?? `dist/${result.fileName}`;
 writeFileSync(out, new Uint8Array(await result.blob.arrayBuffer()));

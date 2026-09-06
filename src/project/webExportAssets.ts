@@ -1,6 +1,8 @@
 import { BUNDLED_IMAGE_ASSETS, TEX_DIALOGUE_FRAME, TEX_TILESET } from "@/assets/bundled";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { battlerIdleAnimation } from "@/assets/battlerIdleAnimations";
+import { findBgmRuntimeEntry } from "@/assets/bgmCatalogRuntime";
+import { bgmTrackUrl } from "@/assets/bgmCdn";
 import { BATTLER_PLACEMENTS } from "@/battle/battlerPlacements";
 import { skinPartySpriteUrl } from "@/battle/partySpriteResources";
 import { resolveSkinId } from "@/battle/skins/registry";
@@ -39,8 +41,10 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
       continue;
     }
     const url = resolveAssetResourceUrl(id, { project });
-    const path = localPublicPath(url);
-    if (path) assets.set(path, { kind: "public", sourcePath: path, zipPath: path, resourceId: id });
+    // The editor may stream catalog music from a CDN; the shipped player uses its local path.
+    const catalogTrack = findBgmRuntimeEntry(id);
+    const path = localPublicPath(catalogTrack ? bgmTrackUrl(catalogTrack.fileName, {}) : url);
+    if (path && url) assets.set(path, { kind: "public", sourcePath: localPublicPath(url) ?? url, zipPath: path, resourceId: id });
   }
   for (const id of usedUploadedIds) {
     const asset = project.assets.uploaded[id];
@@ -62,6 +66,15 @@ export function collectUsedUploadedAssetIds(project: Project): Set<string> {
 
 export function estimateAssetBytes(asset: WebExportAsset): number {
   return asset.kind === "uploaded" ? dataUrlBytes(asset.asset.dataUrl).length : 0;
+}
+
+export function exportAssetSourceUrl(sourcePath: string): string {
+  return /^https?:\/\//i.test(sourcePath) ? sourcePath : `/${sourcePath.replace(/^\//, "")}`;
+}
+
+export function invalidExportDependencyBytes(bytes: Uint8Array): boolean {
+  const prefix = new TextDecoder().decode(bytes.subarray(0, 512)).trimStart();
+  return bytes.length === 0 || /^(?:<!doctype\s+html\b|<(?:html|head|body)\b)/i.test(prefix);
 }
 
 export function dataUrlBytes(dataUrl: string): Uint8Array {

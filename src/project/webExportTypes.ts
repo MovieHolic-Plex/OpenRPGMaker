@@ -3,6 +3,7 @@ import type { Project, UploadedAsset } from "@/project/types";
 export type WebExportAsset =
   | {
       readonly kind: "public";
+      /** A public path, or a configured catalog CDN URL fetched into zipPath. */
       readonly sourcePath: string;
       readonly zipPath: string;
       readonly resourceId?: string;

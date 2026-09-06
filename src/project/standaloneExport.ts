@@ -11,6 +11,7 @@ import {
   standaloneHtmlFileName,
 } from "@/project/standaloneHtml";
 import { prepareWebExport } from "@/project/webExport";
+import { exportAssetSourceUrl, invalidExportDependencyBytes } from "@/project/webExportAssets";
 import type { Project } from "@/project/types";
 
 /** 스탠드얼론 번들이 놓이는 곳. vite.standalone.config.ts 의 outDir 과 짝이다. */
@@ -63,8 +64,7 @@ export async function createStandaloneHtmlExport(
       throw new Error(`실행형 HTML 재료를 못 받았습니다: ${path} (${error instanceof Error ? error.message : String(error)})`);
     }
     // A 200 SPA fallback is not a player bundle or media, even with a misleading MIME.
-    const prefix = decodeText(bytes.subarray(0, 512)).trimStart();
-    if (bytes.length === 0 || /^(?:<!doctype\s+html\b|<(?:html|head|body)\b)/i.test(prefix)) {
+    if (invalidExportDependencyBytes(bytes)) {
       throw new Error(`실행형 HTML 재료가 비어 있거나 HTML 입니다: ${path}`);
     }
     return bytes;
@@ -100,7 +100,7 @@ export async function createStandaloneHtmlExport(
 }
 
 async function loadDataUrl(path: string, fetchBytes: StandaloneFetchBytes): Promise<string> {
-  return `data:${mimeOf(path)};base64,${base64Of(await fetchBytes(`/${path.replace(/^\//, "")}`))}`;
+  return `data:${mimeOf(path)};base64,${base64Of(await fetchBytes(exportAssetSourceUrl(path)))}`;
 }
 
 function mimeOf(path: string): string {
