@@ -1,0 +1,69 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiRequiredOutcomes.test.ts -t pre-declaration --maxWorkers 2 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-20260906
+
+ ❯ test/aiRequiredOutcomes.test.ts (35 tests | 1 failed | 34 skipped) 5361ms
+   ↓ canonical requirements > keeps required skipped obligations when a replan tries to weaken them
+   ↓ canonical requirements > allows optional skipped work without labeling it verified
+   ↓ canonical requirements > fails closed for malformed declarations null
+   ↓ canonical requirements > fails closed for malformed declarations %j
+   ↓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"mapDimensions","target":{"mapId":"map_blank_start"},"width":99,"height":99}],"required":"false"}
+   ↓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"invented","passed":true}]}
+   ↓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":null,"required":false}
+   ↓ canonical requirements > preserves requirements and item links through the planner parser
+   ↓ canonical requirements > keeps a bare legacy scheduler plan unassessed
+   ↓ canonical requirements > assesses existing explicit acceptance without requiring the new field
+   ↓ canonical requirements > binds original text and scope at the host boundary despite fabricated source and withdrawal
+   ↓ canonical requirements > withdraws only the named current requirement through the user-only API
+   ↓ canonical requirements > keeps sibling obligations when the user withdraws just one
+   ↓ canonical requirements > rejects model tool withdrawal even with fabricated user provenance
+   ↓ canonical requirements > rejects stale goal withdrawal actions
+   ↓ canonical requirements > does not erase old obligations on a model resetsContext claim
+   ↓ canonical requirements > archives an incomplete goal when the user explicitly starts a new goal
+   ↓ exact scoped verdict authority > evaluates explicit evidence without tool-name credit
+   ↓ exact scoped verdict authority > evaluates wrong-target evidence without tool-name credit
+   ↓ exact scoped verdict authority > evaluates stale evidence without tool-name credit
+   ↓ exact scoped verdict authority > evaluates advisory evidence without tool-name credit
+   ↓ exact scoped verdict authority > evaluates advisory-after-stale evidence without tool-name credit
+   ↓ exact scoped verdict authority > evaluates advisory-after-explicit evidence without tool-name credit
+   ↓ exact scoped verdict authority > evaluates negative evidence without tool-name credit
+   ↓ exact scoped verdict authority > evaluates model evidence without tool-name credit
+   ↓ exact scoped verdict authority > does not verify an unapplied draft from a passing scoped verdict
+   ↓ exact scoped verdict authority > retires scoped verdicts after applied content changes even if later undone
+   × exact scoped verdict authority > rejects pre-declaration evidence after an external rebase 5348ms
+     → expected 'verified' to be 'blocked' // Object.is equality
+   ↓ exact scoped verdict authority > credits a real scoped tool response through the session dispatcher
+   ↓ question-safe continuation > preserves blocked work and counters for ask
+   ↓ question-safe continuation > preserves blocked work and counters for question
+   ↓ question-safe continuation > preserves repeated failure counters while answering a question
+   ↓ question-safe continuation > does not reactivate from fabricated continuation source
+   ↓ question-safe continuation > reactivates blocked work only with explicit user resume
+   ↓ question-safe continuation > retains goal evidence and repair counters during ask
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiRequiredOutcomes.test.ts > exact scoped verdict authority > rejects pre-declaration evidence after an external rebase
+AssertionError: expected 'verified' to be 'blocked' // Object.is equality
+
+Expected: [32m"[7mblock[27med"[39m
+Received: [31m"[7mverifi[27med"[39m
+
+ ❯ test/aiRequiredOutcomes.test.ts:206:55
+    204|     await f.run([[plan([{ id: "route", title: "Route", criteria: [{ ki…
+    205|     // Then the pre-change verdict cannot satisfy the new contract.
+    206|     expect(f.session.getAcceptanceSnapshot()?.status).toBe("blocked");
+       |                                                       ^
+    207|   });
+    208| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 34 skipped (35)
+   Start at  01:43:54
+   Duration  34.28s (transform 18.12s, setup 0ms, collect 27.59s, tests 5.36s, environment 0ms, prepare 202ms)
+
