@@ -1,0 +1,110 @@
+import { canMove, inBounds, isPassable } from "@/project/collision";
+import { passageBounds } from "@/project/footprint";
+import type { GameMap, Project } from "@/project/types";
+import type { AcceptanceCriterion, AcceptanceItemSnapshot, AcceptanceRegion, AcceptanceTarget } from "./assistantAcceptance";
+
+type Evidence = AcceptanceItemSnapshot["evidence"][number];
+export function acceptanceFingerprint(value: unknown): string {
+  // Exact canonical content identity, not a model-supplied digest or a lossy hash.
+  return JSON.stringify(value, (_key, entry: unknown) =>
+    entry && typeof entry === "object" && !Array.isArray(entry)
+      ? Object.fromEntries(Object.entries(entry).sort(([a], [b]) => a.localeCompare(b))) : entry);
+}
+export function resolveAcceptanceMap(project: Project, target: AcceptanceTarget, bindings: ReadonlyMap<string, string>): GameMap | undefined {
+  const id = "mapId" in target ? target.mapId : bindings.get(target.newMapName) ?? "";
+  return Object.hasOwn(project.maps, id) ? project.maps[id] : undefined;
+}
+export function contains(region: AcceptanceRegion, point: { readonly x: number; readonly y: number }): boolean {
+  return point.x >= region.x && point.y >= region.y && point.x < region.x + region.w && point.y < region.y + region.h;
+}
+export function validRegion(map: GameMap, region: AcceptanceRegion): boolean {
+  return inBounds(map, region.x, region.y) && inBounds(map, region.x + region.w - 1, region.y + region.h - 1);
+}
+export function scopedMapContent(map: GameMap, region?: AcceptanceRegion): unknown {
+  if (!region) return map;
+  const cells = [];
+  for (let y = region.y; y < region.y + region.h; y += 1) {
+    for (let x = region.x; x < region.x + region.w; x += 1) {
+      const i = y * map.width + x;
+      cells.push([map.lowerTiles[i], map.upperTiles[i], map.lowerTileStacks?.[i], map.upperTileStacks?.[i]]);
+    }
+  }
+  return { tilesetId: map.tilesetId, tileSize: map.tileSize, cells, events: map.events.filter(event => contains(region, event)) };
+}
+export function visualFingerprint(project: Project, map: GameMap): string {
+  return acceptanceFingerprint([map, project.tilesets[map.tilesetId], project.assets]);
+}
+export function criterionTargets(criterion: AcceptanceCriterion): readonly AcceptanceTarget[] {
+  return criterion.kind === "mapCount" ? criterion.targets : [criterion.target];
+}
+export interface AcceptanceEvaluation {
+  readonly project: Project;
+  readonly baseline: Project;
+  readonly bindings: ReadonlyMap<string, string>;
+  readonly reviewed: (map: GameMap, region: AcceptanceRegion) => boolean;
+}
+export function evaluateAcceptanceCriterion(criterion: AcceptanceCriterion, input: AcceptanceEvaluation): Evidence {
+  const expected = JSON.stringify(criterion);
+  if (criterion.kind === "mapCount") {
+    const maps = criterion.targets.map(target => resolveAcceptanceMap(input.project, target, input.bindings));
+    const count = new Set(maps.filter(map => map !== undefined).map(map => map.id)).size;
+    return { expected, observed: `${count} scoped maps`, passed: count === criterion.count };
+  }
+  const map = resolveAcceptanceMap(input.project, criterion.target, input.bindings);
+  if (!map) return { expected, observed: "Target map missing or new-map binding unresolved", passed: false };
+  const region = "region" in criterion ? criterion.region : undefined;
+  if (region && !validRegion(map, region)) return { expected, observed: "Region outside target map", passed: false };
+  switch (criterion.kind) {
+    case "mapDimensions": return { expected, observed: `${map.width}x${map.height}`, passed: map.width === criterion.width && map.height === criterion.height };
+    case "eventCount": {
+      const count = region ? map.events.filter(event => contains(region, event)).length : map.events.length;
+      return { expected, observed: `${count} scoped events`, passed: count === criterion.count };
+    }
+    case "targetChange": case "preserve": {
+      const before = input.baseline.maps[map.id];
+      const same = Boolean(before && (!region || validRegion(before, region))
+        && acceptanceFingerprint(scopedMapContent(before, region)) === acceptanceFingerprint(scopedMapContent(map, region)));
+      const passed = criterion.kind === "preserve" ? same : Boolean(before && !same);
+      return { expected, observed: !before ? "No original target baseline" : same ? "Unchanged from original baseline" : "Changed from original baseline", passed };
+    }
+    case "reachability": {
+      const passed = conservativeReachability(input.project, map, criterion);
+      return { expected, observed: passed ? "All targets reachable with conservative event blockers" : "Route blocked, out of bounds, or conditional movement unsupported", passed };
+    }
+    case "imageReviewed": {
+      const passed = input.reviewed(map, region ?? { x: 0, y: 0, w: map.width, h: map.height });
+      return { expected, observed: passed ? "Delivered image coverage explicitly reviewed for current content" : "Current image coverage and attributed review required", passed };
+    }
+    default: return assertNever(criterion);
+  }
+}
+function assertNever(value: never): never { throw new Error(`Unhandled acceptance criterion: ${String(value)}`); }
+
+function conservativeReachability(project: Project, map: GameMap, criterion: Extract<AcceptanceCriterion, { kind: "reachability" }>): boolean {
+  const points = [criterion.from, ...criterion.to];
+  if (points.some(point => !inBounds(map, point.x, point.y) || !isPassable(project, map, point.x, point.y))) return false;
+  // Never assume a switch/page/route will open a path. Every potentially solid
+  // authored page blocks its passage footprint; no runtime state is fabricated.
+  const blockers = map.events.flatMap(event => {
+    if (!event.pages?.length) return [passageBounds(event.x, event.y, { width: 1, height: 1 }, 1)];
+    return event.pages.filter(page => page.priority === "same" && page.overlapForbidden !== false)
+      .map(page => passageBounds(event.x, event.y, page.footprint ?? { width: 1, height: 1 }, page.passRows ?? page.footprint?.height ?? 1));
+  });
+  if (map.events.some(event => event.moveRoute || event.pages?.some(page => page.priority === "same"
+    && page.overlapForbidden !== false && page.movement.type !== "fixed"))) return false;
+  const blocked = (x: number, y: number): boolean => blockers.some(rect => x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom);
+  if (points.some(point => blocked(point.x, point.y))) return false;
+  const seen = new Set<string>([`${criterion.from.x},${criterion.from.y}`]);
+  const queue = [criterion.from];
+  for (let head = 0; head < queue.length; head += 1) {
+    const current = queue[head];
+    if (!current) break;
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      const x = current.x + dx, y = current.y + dy, key = `${x},${y}`;
+      if (seen.has(key) || blocked(x, y) || !canMove(project, map, current.x, current.y, x, y)) continue;
+      seen.add(key);
+      queue.push({ x, y });
+    }
+  }
+  return criterion.to.every(point => seen.has(`${point.x},${point.y}`));
+}

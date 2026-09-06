@@ -1,0 +1,24 @@
+{
+  "server": "http://127.0.0.1:10331",
+  "cwd": "/home/main/z-project/rpg-zzu-db-css-ownership-20260906",
+  "revision": "49067218aebf889d98c2dc05be08231787483427",
+  "failures": [
+    {
+      "artifact": "test-results/database-css-ownership-sha-881fa-is-one-32px-control-at-1440-firefox/trace.zip",
+      "error": {
+        "name": "",
+        "message": "Error: default\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 3\u001b[39m\n\u001b[31m+ Received  + 3\u001b[39m\n\n\u001b[2m  Object {\u001b[22m\n\u001b[32m-   \"border\": \"0px\",\u001b[39m\n\u001b[32m-   \"height\": 32,\u001b[39m\n\u001b[32m-   \"radius\": \"0px\",\u001b[39m\n\u001b[31m+   \"border\": \"1px\",\u001b[39m\n\u001b[31m+   \"height\": 34,\u001b[39m\n\u001b[31m+   \"radius\": \"8px\",\u001b[39m\n\u001b[2m    \"shadow\": \"none\",\u001b[22m\n\u001b[2m  }\u001b[22m",
+        "stack": "Error: default\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 3\u001b[39m\n\u001b[31m+ Received  + 3\u001b[39m\n\n\u001b[2m  Object {\u001b[22m\n\u001b[32m-   \"border\": \"0px\",\u001b[39m\n\u001b[32m-   \"height\": 32,\u001b[39m\n\u001b[32m-   \"radius\": \"0px\",\u001b[39m\n\u001b[31m+   \"border\": \"1px\",\u001b[39m\n\u001b[31m+   \"height\": 34,\u001b[39m\n\u001b[31m+   \"radius\": \"8px\",\u001b[39m\n\u001b[2m    \"shadow\": \"none\",\u001b[22m\n\u001b[2m  }\u001b[22m\n    at /home/main/z-project/rpg-zzu-db-css-ownership-20260906/test/e2e/database-css-ownership.spec.ts:76:38"
+      }
+    },
+    {
+      "artifact": "test-results/database-css-ownership-ani-a2e61-wns-lower-authoring-at-1440-firefox/trace.zip",
+      "error": {
+        "name": "",
+        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoMatch\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected pattern: \u001b[32m/^(auto|scroll)$/\u001b[39m\nReceived string:  \u001b[31m\"visible\"\u001b[39m",
+        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoMatch\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected pattern: \u001b[32m/^(auto|scroll)$/\u001b[39m\nReceived string:  \u001b[31m\"visible\"\u001b[39m\n    at /home/main/z-project/rpg-zzu-db-css-ownership-20260906/test/e2e/database-css-ownership.spec.ts:43:30"
+      }
+    }
+  ],
+  "runner": "external 240s timeout after two assertion failures; remaining cases not completed"
+}

@@ -156,7 +156,7 @@
   flex-direction: column;
   align-items: stretch;
 }
-.database-modal-backdrop .database-modal-window .db-animation-panel :is(input[type="text"], input[type="number"], select) {
+.database-modal-backdrop .database-modal-window .db-animation-panel :is(input[type="text"], input[type="number"]:not(.db-number-stepper input), select) {
   background-color: var(--db-studio-surface);
   border: 1px solid var(--db-studio-border-default);
   border-radius: 8px;

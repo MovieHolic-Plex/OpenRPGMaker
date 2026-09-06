@@ -2,12 +2,13 @@ import { equipmentSlots, equipmentSlotLabel } from "@/project/equipmentSlots";
 import { createGrowthMenu, growthMenuTabs } from "@/player/playerGrowthMenu";
 import { canUseMenuItemOnActor } from "@/player/playerItemUse";
 import { activeItemEffects, itemAllowsMenu } from "@/project/itemUsage";
-import { growthEffects } from "@/project/growth/runtime";
+import { actorOwnedSkillIds } from '@/project/growth/runtime';
+import { actorDerivedStats } from '@/battle/battleBattlers';
 import { menuItemUnavailableReason, previewMenuItemTarget } from "@/player/playerItemUse";
 import type { SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
 import { canEquip, effectiveActorEquipment, equipmentSlotAccepts } from "@/project/equipmentRules";
 import { resolveActorName, resolveActorFaceResourceId } from "@/project/sessionActorCommands";
-import { defaultActorFaceResourceId, normalizeActorRecord, parameterValueAtLevel } from "@/project/actorModel";
+import { defaultActorFaceResourceId, normalizeActorRecord } from "@/project/actorModel";
 import type { StatusMenuStatDelta } from "@/player/playerStatusMenuDetailTypes";
 import { effectiveActorClassId } from "@/project/sessionClass";
 import type { PlaySession } from "@/project/session";
@@ -558,13 +559,7 @@ function partyActors(project: Project, session: PlaySession): readonly ActorReco
 }
 
 function learnedSkills(project: Project, session: PlaySession, actor: ActorRecord): readonly SkillRecord[] {
-  const skillIds = new Set<string>();
-  const classRecord = project.database.classes.find((record) => record.id === effectiveActorClassId(project, session, actor.id));
-  const level = actorLevel(session, actor);
-  for (const learned of classRecord?.learnedSkills ?? []) if (learned.level <= level) skillIds.add(learned.skillId);
-  for (const learned of actor.learnedSkills) if (learned.level <= level) skillIds.add(learned.skillId);
-  for (const skillId of session.actorSkillIds[actor.id] ?? []) skillIds.add(skillId);
-  for (const skillId of growthEffects(project, session, actor.id).skillIds) skillIds.add(skillId);
+  const skillIds = new Set(actorOwnedSkillIds(project, session, actor.id));
   return project.database.skills.filter((skill) => skillIds.has(skill.id));
 }
 
@@ -688,12 +683,12 @@ function actorStatTotal(
 ): number {
   const { project, session } = options;
   const level = session.actorLevels[actor.id] ?? actor.initialLevel;
-  const curves = normalizeActorRecord(actor).parameterCurves;
   const worn: ActorInitialEquipment = { ...actorEquipment(project, session, actor), [slotId]: candidateId };
-  return equipmentSlots(project).reduce(
-    (total, slot) => total + equipmentStats(project, worn[slot.id])[statKey],
-    parameterValueAtLevel(curves[statKey], level) + (session.actorParamBonuses?.[actor.id]?.[statKey] ?? 0) + growthEffects(project, session, actor.id).bonuses[statKey]
-  );
+  return actorDerivedStats(project, normalizeActorRecord(actor), {
+    level, classOverrides: session.classOverrides, promotionLineage: session.promotionLineage,
+    growthProgress: session.growthProgress, paramBonuses: session.actorParamBonuses?.[actor.id],
+    equipment: effectiveActorEquipment(project, actor, worn, effectiveActorClassId(project, session, actor.id)),
+  })[statKey];
 }
 
 function equipmentStatDelta(

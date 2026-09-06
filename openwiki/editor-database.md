@@ -1,3 +1,17 @@
+## Shared database CSS ownership (2026-09-06)
+
+`studio-v2.css` owns the shared numeric composite: one 32px border box and
+28px side buttons, with the existing 120px container collapse. Its generic
+input, focus, disabled and card-input rules exclude the composite interior.
+The earlier duplicate stepper chrome in `modern-controls.css` is removed;
+that sheet retains native checkbox/radio/range/select behavior. Animation's
+vertical scroll belongs to `animation-editor.css`; `battle-studio.css` no
+longer overrides it with visible overflow. No playback or mutation paths change.
+Rendered regressions: `test/e2e/database-css-ownership.spec.ts`, run with
+`playwright.db-css.config.ts` (Chromium and Firefox supported, zero retries).
+A frozen dev server caches transforms: after an edit restart only the owned
+worktree server before measuring, and bind evidence to its cwd/revision.
+
 ## 전투 명령 배치 스튜디오 (2026-09-05)
 
 - Custom CSS는 `databaseBattleCommandCss.ts`가 소유한다. 직업 배치 아래의 프로젝트 공통 편집기로 유효한 입력만 스타일 샘플에 즉시 반영하며 적용 시 history + store 변경을 남긴다. 잘못된 입력은 적용을 막고 마지막 유효 미리보기를 유지한다. 저장된 CSS 복원·다크 프리셋·기본 스킨 복귀를 제공한다.

@@ -4,8 +4,8 @@ export const growthEvidenceRoot = 'output/evidence/growth-presets/p1';
 export const growthViewports = [[1024, 768], [1280, 800], [1440, 900]];
 
 // Subscribe before the triggering browser action; the timer only bounds failure.
-export async function armDomState(page, predicate, argument) {
-  await page.evaluate(({ source, argument }) => {
+export async function armDomState(page, predicate, argument, timeoutMs = 15000) {
+  await page.evaluate(({ source, argument, timeoutMs }) => {
     const check = () => Function('value', `return (${source})(value)`)(argument);
     window.__growthQaState = new Promise((resolve, reject) => {
       const finish = () => {
@@ -15,12 +15,12 @@ export async function armDomState(page, predicate, argument) {
       const observer = new MutationObserver(finish);
       const timeout = setTimeout(() => {
         observer.disconnect(); reject(new Error(`Growth QA state deadline: ${source}`));
-      }, 15000);
+      }, timeoutMs);
       observer.observe(document.documentElement, { subtree: true, childList: true, attributes: true, characterData: true });
       finish();
     });
     window.__growthQaState.catch(error => { window.__growthQaStateError = error.message; });
-  }, { source: predicate.toString(), argument });
+  }, { source: predicate.toString(), argument, timeoutMs });
 }
 export async function finishDomState(page) { await page.evaluate(() => window.__growthQaState); }
 

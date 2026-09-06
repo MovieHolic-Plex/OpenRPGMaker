@@ -28595,59 +28595,55 @@
   },
   "weighted-branch-add": {
    "props": [
-    "border-style",
-    "justify-self",
-    "width"
+    "min-height"
    ],
    "decls": [
-    "border-style:dashed",
-    "justify-self:stretch",
-    "width:100%"
+    "min-height:var(--space-6)"
    ],
    "sheets": [
     "src/styles/editor/event-editor.part-2.css"
    ]
   },
-  "weighted-branch-bar": {
+  "weighted-branch-chance-field": {
+   "props": [
+    "display",
+    "gap",
+    "min-width"
+   ],
+   "decls": [
+    "display:grid",
+    "gap:var(--space-1)",
+    "min-width:0"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.part-2.css"
+   ]
+  },
+  "weighted-branch-chance-input": {
    "props": [
     "background",
     "border",
     "border-radius",
-    "display",
-    "height",
-    "overflow",
+    "color",
+    "font",
+    "min-height",
+    "min-width",
+    "padding",
+    "text-align",
     "width"
    ],
    "decls": [
-    "background:color-mix(in srgb, var(--bg-raised, #fffdf8) 80%, rgba(42,37,33,.12))",
-    "border-radius:999px",
-    "border:1px solid var(--border-subtle, rgba(42,37,33,.12))",
-    "display:flex",
-    "height:16px",
-    "overflow:hidden",
+    "background:var(--bg-raised)",
+    "border-radius:var(--radius-s)",
+    "border:var(--stroke-1) solid var(--border-default)",
+    "color:var(--text-1)",
+    "font:500 14px/1.5 var(--font-ui)",
+    "font:600 13px/1.5 var(--font-mono)",
+    "min-height:var(--space-6)",
+    "min-width:0",
+    "padding:var(--space-1) var(--space-2)",
+    "text-align:right",
     "width:100%"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.part-2.css"
-   ]
-  },
-  "weighted-branch-bar-empty": {
-   "props": [
-    "margin"
-   ],
-   "decls": [
-    "margin:0"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.part-2.css"
-   ]
-  },
-  "weighted-branch-bar-seg": {
-   "props": [
-    "min-width"
-   ],
-   "decls": [
-    "min-width:0"
    ],
    "sheets": [
     "src/styles/editor/event-editor.part-2.css"
@@ -28656,63 +28652,97 @@
   "weighted-branch-command-body": {
    "props": [
     "align-items",
+    "background",
+    "border",
+    "border-color",
+    "border-radius",
+    "color",
     "display",
+    "font",
     "gap",
     "grid-template-columns",
-    "min-width"
+    "min-height",
+    "min-width",
+    "outline",
+    "outline-offset",
+    "padding",
+    "text-align",
+    "width"
    ],
    "decls": [
     "align-items:end",
+    "background:var(--bg-inset)",
+    "background:var(--bg-raised)",
+    "border-color:var(--danger)",
+    "border-radius:var(--radius-s)",
+    "border:var(--stroke-1) solid var(--border-default)",
+    "color:var(--text-1)",
+    "color:var(--text-2)",
     "display:grid",
+    "font:500 14px/1.5 var(--font-ui)",
+    "font:600 13px/1.5 var(--font-mono)",
     "gap:10px",
-    "gap:14px",
+    "gap:var(--space-2)",
+    "gap:var(--space-4)",
+    "grid-template-columns:minmax(0, 1fr) minmax(0, 7em) var(--space-6)",
     "grid-template-columns:repeat(auto-fit, minmax(180px, 1fr))",
-    "min-width:0"
+    "min-height:var(--space-6)",
+    "min-width:0",
+    "outline-offset:var(--stroke-2)",
+    "outline:var(--focus-outline)",
+    "padding:var(--space-1) var(--space-2)",
+    "padding:var(--space-3)",
+    "text-align:right",
+    "width:100%"
    ],
    "sheets": [
     "src/styles/editor/event-editor.part-2.css",
     "src/styles/editor/event-editor.part-3/04-auto-fit.css"
    ]
   },
-  "weighted-branch-field": {
+  "weighted-branch-destination": {
    "props": [
+    "align-items",
+    "border-top",
     "display",
+    "flex",
+    "flex-wrap",
     "gap",
-    "min-width"
+    "min-height",
+    "min-width",
+    "overflow-wrap",
+    "padding-top",
+    "white-space"
    ],
    "decls": [
-    "display:grid",
-    "gap:8px",
-    "min-width:0"
+    "align-items:center",
+    "border-top:var(--stroke-1) solid var(--border-default)",
+    "display:flex",
+    "flex-wrap:wrap",
+    "flex:1 1 auto",
+    "gap:var(--space-2)",
+    "min-height:var(--space-6)",
+    "min-width:0",
+    "overflow-wrap:anywhere",
+    "padding-top:var(--space-3)",
+    "white-space:normal"
    ],
    "sheets": [
     "src/styles/editor/event-editor.part-2.css"
    ]
   },
-  "weighted-branch-guide": {
+  "weighted-branch-error": {
    "props": [
-    "background",
-    "border",
-    "border-radius",
     "color",
     "display",
     "font",
-    "gap",
-    "margin",
-    "padding"
+    "grid-column"
    ],
    "decls": [
-    "background:color-mix(in srgb, var(--bg-raised, #fffdf8) 86%, var(--accent, #4a57d6) 14%)",
-    "border-radius:10px",
-    "border:1px solid color-mix(in srgb, var(--border-subtle, rgba(42,37,33,.12)) 65%, var(--accent, #4a57d6) 35%)",
-    "color:var(--text-1, #2a2521)",
-    "color:var(--text-2, #6b5f52)",
-    "display:grid",
-    "font:500 12px/1.5 \"segoe ui\", \"malgun gothic\", system-ui, sans-serif",
-    "font:700 12px/1.3 \"segoe ui\", \"malgun gothic\", system-ui, sans-serif",
-    "gap:8px",
-    "margin:0",
-    "padding:12px 14px"
+    "color:var(--danger)",
+    "display:none",
+    "font:500 var(--font-size-sm)/1.5 var(--font-ui)",
+    "grid-column:1 / -1"
    ],
    "sheets": [
     "src/styles/editor/event-editor.part-2.css"
@@ -28723,23 +28753,17 @@
     "background",
     "border-radius",
     "color",
-    "display",
-    "font",
-    "height",
-    "place-items",
-    "width"
+    "font-family",
+    "font-weight",
+    "padding-inline"
    ],
    "decls": [
-    "background:color-mix(in srgb, var(--bg-raised, #fffdf8) 70%, var(--text-3, #6b5f52) 30%)",
-    "background:color-mix(in srgb, var(--bg-surface) 80%, var(--bg-surface) 20%)",
-    "border-radius:999px",
+    "background:var(--bg-inset)",
+    "border-radius:var(--space-1)",
     "color:var(--text-1)",
-    "color:var(--text-2)",
-    "display:grid",
-    "font:700 11px/1 \"jetbrains mono\", ui-monospace, monospace",
-    "height:24px",
-    "place-items:center",
-    "width:34px"
+    "font-family:var(--font-mono)",
+    "font-weight:var(--font-weight-semibold)",
+    "padding-inline:var(--space-2)"
    ],
    "sheets": [
     "src/styles/editor/event-editor.part-2.css"
@@ -28751,8 +28775,8 @@
     "font"
    ],
    "decls": [
-    "color:var(--text-2, #5c5348)",
-    "font:600 12px/1.3 \"segoe ui\", \"malgun gothic\", system-ui, sans-serif"
+    "color:var(--text-2)",
+    "font:var(--font-weight-semibold) var(--font-size-sm)/1.5 var(--font-ui)"
    ],
    "sheets": [
     "src/styles/editor/event-editor.part-2.css"
@@ -28765,85 +28789,106 @@
     "border-radius",
     "color",
     "font",
+    "min-height",
     "min-width",
     "padding",
     "width"
    ],
    "decls": [
-    "background:var(--event-popup-field, var(--bg-raised, #efe9dc))",
-    "border-radius:8px",
-    "border:1px solid var(--border-soft, var(--border-subtle, rgba(42,37,33,.20)))",
-    "color:var(--text-1, #2a2521)",
-    "font:500 12px/1.3 \"segoe ui\", \"malgun gothic\", system-ui, sans-serif",
+    "background:var(--bg-raised)",
+    "border-radius:var(--radius-s)",
+    "border:var(--stroke-1) solid var(--border-default)",
+    "color:var(--text-1)",
+    "font:500 14px/1.5 var(--font-ui)",
+    "min-height:var(--space-6)",
     "min-width:0",
-    "padding:7px 8px",
+    "padding:var(--space-1) var(--space-2)",
     "width:100%"
    ],
    "sheets": [
     "src/styles/editor/event-editor.part-2.css"
    ]
   },
-  "weighted-branch-legend": {
-   "props": [
-    "display",
-    "flex-wrap",
-    "gap"
-   ],
-   "decls": [
-    "display:flex",
-    "flex-wrap:wrap",
-    "gap:8px 12px"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.part-2.css"
-   ]
-  },
-  "weighted-branch-legend-item": {
+  "weighted-branch-mapping": {
    "props": [
     "align-items",
     "color",
     "display",
     "font",
+    "gap",
+    "grid-column"
+   ],
+   "decls": [
+    "align-items:center",
+    "color:var(--text-2)",
+    "display:flex",
+    "font:500 var(--font-size-sm)/1.5 var(--font-ui)",
+    "gap:var(--space-1)",
+    "grid-column:1 / -1"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.part-2.css"
+   ]
+  },
+  "weighted-branch-meter": {
+   "props": [
+    "background",
+    "grid-column",
+    "height",
+    "overflow"
+   ],
+   "decls": [
+    "background:var(--bg-inset)",
+    "grid-column:1 / -1",
+    "height:var(--space-1)",
+    "overflow:hidden"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.part-2.css"
+   ]
+  },
+  "weighted-branch-meter-fill": {
+   "props": [
+    "background",
+    "display",
+    "height"
+   ],
+   "decls": [
+    "background:var(--accent)",
+    "display:block",
+    "height:100%"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.part-2.css"
+   ]
+  },
+  "weighted-branch-name-field": {
+   "props": [
+    "display",
+    "gap",
+    "min-width"
+   ],
+   "decls": [
+    "display:grid",
+    "gap:var(--space-1)",
+    "min-width:0"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.part-2.css"
+   ]
+  },
+  "weighted-branch-percent-control": {
+   "props": [
+    "align-items",
+    "color",
+    "display",
     "gap"
    ],
    "decls": [
     "align-items:center",
-    "color:var(--text-2, #6b5f52)",
-    "display:inline-flex",
-    "font:500 11px/1.35 \"segoe ui\", \"malgun gothic\", system-ui, sans-serif",
-    "gap:6px"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.part-2.css"
-   ]
-  },
-  "weighted-branch-legend-swatch": {
-   "props": [
-    "border-radius",
-    "display",
-    "height",
-    "width"
-   ],
-   "decls": [
-    "border-radius:3px",
-    "display:inline-block",
-    "height:10px",
-    "width:10px"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.part-2.css"
-   ]
-  },
-  "weighted-branch-pct": {
-   "props": [
-    "color",
-    "font",
-    "text-align"
-   ],
-   "decls": [
-    "color:var(--text-1)",
-    "font:700 12px/1 \"jetbrains mono\", ui-monospace, monospace",
-    "text-align:right"
+    "color:var(--text-2)",
+    "display:flex",
+    "gap:var(--space-1)"
    ],
    "sheets": [
     "src/styles/editor/event-editor.part-2.css"
@@ -28851,11 +28896,13 @@
   },
   "weighted-branch-remove": {
    "props": [
+    "min-height",
     "min-width",
     "padding-inline"
    ],
    "decls": [
-    "min-width:32px",
+    "min-height:var(--space-6)",
+    "min-width:var(--space-6)",
     "padding-inline:0"
    ],
    "sheets": [
@@ -28875,15 +28922,15 @@
     "padding"
    ],
    "decls": [
-    "align-items:center",
-    "background:color-mix(in srgb, var(--bg-raised, #fffdf8) 92%, var(--accent, #4a57d6) 8%)",
-    "border-radius:10px",
-    "border:1px solid var(--border-subtle, rgba(42,37,33,.12))",
-    "display:grid !important",
-    "gap:8px",
-    "grid-template-columns:42px minmax(0, 1.4fr) 72px 56px 36px !important",
+    "align-items:end",
+    "background:var(--bg-raised)",
+    "border-radius:var(--radius-s)",
+    "border:var(--stroke-1) solid var(--border-default)",
+    "display:grid",
+    "gap:var(--space-2)",
+    "grid-template-columns:minmax(0, 1fr) minmax(0, 7em) var(--space-6)",
     "min-width:0",
-    "padding:8px"
+    "padding:var(--space-3)"
    ],
    "sheets": [
     "src/styles/editor/event-editor.part-2.css"
@@ -28897,63 +28944,28 @@
    ],
    "decls": [
     "display:grid",
-    "gap:8px",
+    "gap:var(--space-1)",
+    "gap:var(--space-3)",
     "min-width:0"
    ],
    "sheets": [
     "src/styles/editor/event-editor.part-2.css"
    ]
   },
-  "weighted-branch-summary-live": {
+  "weighted-branch-toolbar": {
    "props": [
-    "margin"
+    "align-items",
+    "display",
+    "flex-wrap",
+    "gap",
+    "justify-content"
    ],
    "decls": [
-    "margin:0"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.part-2.css"
-   ]
-  },
-  "weighted-branch-variable-warn": {
-   "props": [
-    "color",
-    "font",
-    "margin"
-   ],
-   "decls": [
-    "color:var(--text-1)",
-    "font:500 11px/1.45 \"segoe ui\", \"malgun gothic\", system-ui, sans-serif",
-    "margin:0"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.part-2.css"
-   ]
-  },
-  "weighted-branch-weight-input": {
-   "props": [
-    "background",
-    "border",
-    "border-radius",
-    "color",
-    "font",
-    "font-family",
-    "min-width",
-    "padding",
-    "text-align",
-    "width"
-   ],
-   "decls": [
-    "background:var(--event-popup-field, var(--bg-raised, #efe9dc))",
-    "border-radius:8px",
-    "border:1px solid var(--border-soft, var(--border-subtle, rgba(42,37,33,.20)))",
-    "color:var(--text-1, #2a2521)",
-    "font-family:var(--font-mono)",
-    "font:500 12px/1.3 \"segoe ui\", \"malgun gothic\", system-ui, sans-serif",
-    "min-width:0",
-    "padding:7px 8px",
-    "text-align:center",
-    "width:100%"
+    "align-items:center",
+    "display:flex",
+    "flex-wrap:wrap",
+    "gap:var(--space-2)",
+    "justify-content:space-between"
    ],
    "sheets": [
     "src/styles/editor/event-editor.part-2.css"

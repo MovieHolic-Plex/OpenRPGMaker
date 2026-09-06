@@ -1,5 +1,58 @@
 # Editor AI Panel & Tools
 
+## Acceptance sticky note (2026-09-06)
+
+`aiStickyChecklist.ts` is a body-mounted read-only projection of backend
+`AcceptanceSnapshot`, separate from ephemeral work-plan/book chrome. The runner
+forwards acceptance events only from its current non-aborted owner and publishes
+the backend terminal snapshot after the existing `ownsTurn(true)` finalization
+guard, so abort retains blocked evidence without reviving retired conversations.
+The panel's store subscription refreshes retained acceptance on edits/undo; new
+chat, history/rewind, project/reset and teardown clear the note. No snapshot is
+written into project data or conversation history. Native keyed details/buttons
+retain open/focus state; navigation resolves actual maps via `focusEditorRegion`.
+Geometry uses measured `--editor-left-safe`, toolbar clearance and compact defaults
+without overriding manual expansion. Styles: `assistant-sticky-checklist.css`.
+Tests: `aiStickyChecklist`, `aiWorkPlanTerminalFocus`, `aiRetryWorkPlanLifecycle`.
+Viewport listeners and `matchMedia` are optional, matching the panel's existing
+headless DOM contract. The PR637/638 integration exposed twelve
+`aiChatSessionScope` failures from eager `window` access; the viewport guard
+restores those contracts without changing browser checklist ownership.
+
+### Session-owned acceptance contract
+
+`assistantAcceptance.ts` parses structured promises separately from the replaceable
+`WorkPlan`; `assistantAcceptanceLedger.ts` retains their original baselines and
+immutable snapshots. Planner decisions and `set_work_plan` accept
+`acceptance: [{ id, title, criteria }]`. Replanning, completing, skipping or clearing
+execution steps cannot erase existing promises or weaken valid criteria.
+`repair_acceptance` repairs only missing/malformed criteria.
+
+Checks inspect actual scoped map dimensions, map/event counts, original target
+changes, protected map/region content, conservative static reachability and
+explicit image review. New-map names bind once to a unique new ID. Static route
+checks do not claim conditional transfer or runtime playthrough support.
+Image checks require successfully rendered and delivered `show_map_region`
+coverage (actual clipped bounds, exact union), then a later explicit
+`review_acceptance({itemId, verdict:"pass"|"fail", note})`. Only an explicit pass
+verifies the image condition; a failed review revokes an earlier pass and retains
+its observation in the evidence disclosure.
+Changes invalidate old receipts; a draft is not applied verification.
+
+`AssistantSession` consults acceptance at final-response and autonomous-continuation
+boundaries even when the execution plan is finished. Existing bounded repair
+limits remain; unmet promises produce an incomplete result and blocked note.
+`refreshAcceptance` reevaluates canonical store changes, including manual edits
+and undo after completion. Request interpretation is still model-authored:
+this is not proof that every natural-language clause was extracted. Missing
+spatial criteria fail closed rather than being inferred from tool success.
+There is no new approval step, genre quota, remote schema or cross-device ledger.
+The note's lifetime is the current conversation/session, not a saved project.
+
+Regression entry points: `test/assistantAcceptance.test.ts`,
+`test/assistantAcceptanceSession.test.ts`, `test/aiStickyChecklist.test.ts`,
+`test/e2e/ai-sticky-checklist.spec.ts`. Evidence: `output/evidence/assistant-sticky/`.
+
 ## 브라우저 포커스와 도구 실행 대기 (2026-09-05)
 
 - 도구 실행 직전의 `AssistantSession.yieldForUi` → `src/ai/yieldToUi.ts`가 이벤트 루프를 양보한다. 포커스가 있는 보이는 문서는 rAF를 기다려 라이브 행·고스트가 그려질 틈을 준다. `document.visibilityState === "hidden"` 또는 `document.hasFocus() === false`이면 `MessageChannel` 태스크로 양보한다. `Promise.resolve()`만 쓰면 입력·중단 이벤트가 굶으므로 대체하지 않는다.

@@ -788,10 +788,17 @@ function renderActiveTab(
   }
   switch (tab) {
     case "promotionTree":
-      renderGrowthTreeTab(body, "promotion");
-      break;
     case "skillTrees":
-      renderGrowthTreeTab(body, "skill");
+      renderGrowthTreeTab(body, tab === 'promotionTree' ? 'promotion' : 'skill', undefined, target => {
+        const destination = target === 'promotion' ? 'promotionTree' : target === 'skill' ? 'skillTrees' : 'actors';
+        evictDatabaseTabView(tabRenderCacheFor(container), destination);
+        switchDatabaseActiveTab(destination, container);
+        if (target === 'actors') {
+          const selector = body.querySelector<HTMLElement>('[data-testid="db-picker-class"]');
+          selector?.scrollIntoView({ block: 'nearest' });
+          selector?.focus();
+        }
+      });
       break;
     case "actors":
     case "classes":
