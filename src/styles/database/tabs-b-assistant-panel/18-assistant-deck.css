@@ -526,7 +526,8 @@
 }
 
 .ai-chat-log .ai-answer-link[data-ref-kind="ambiguous"] {
-  color: var(--gold-deep);
+  /* AA at 78% glass over black, including the hover/focus accent tint. */
+  color: color-mix(in srgb, var(--gold-deep) 75%, var(--text-1));
 }
 
 /* 언급된 자료 썸네일(14 레이어에서 이관). 픽셀 아트라 보간하지 않는다. */
