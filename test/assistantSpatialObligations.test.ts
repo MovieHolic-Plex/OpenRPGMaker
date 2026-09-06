@@ -100,8 +100,8 @@ describe("spatial milestone completion evidence", () => {
     const session = new AssistantSession(project);
     session["milestoneAutoApply"] = applied;
     session["workPlan"] = workPlanFromSetToolArgs({ goal: "Separate NPC groups", layers: [{ title: "NPCs", items: [
-      { id: "first", title: "First group", instruction: "NPC 2명 배치해 줘", successTools: ["place_npc"] },
-      { id: "later", title: "Later group", instruction: "NPC 3명 추가해 줘", successTools: ["place_npc"] },
+      { id: "first", title: "First group", instruction: "NPC 2명 배치해 줘", successTools: ["place_npc"], mapTargets: [project.startMapId] },
+      { id: "later", title: "Later group", instruction: "NPC 3명 추가해 줘", successTools: ["place_npc"], mapTargets: [project.startMapId] },
     ] }] });
     if (spatialSpec) session["activeSpec"] = { mapId: project.startMapId, assets: [{ id: "npcs", kind: "npc", x: 1, y: 7, w: 10, h: 3 }] };
     const place = (id: string, x: number) => {
@@ -109,22 +109,23 @@ describe("spatial milestone completion evidence", () => {
       const result = runTool(session["ctx"], "place_npc", args);
       expect(result.ok).toBe(true);
       expect(result.diff?.eventsAdded).toBe(1);
+      session["recordToolResult"]("place_npc", args, result);
       session["upsertProposal"](session["turnProposals"], { name: "place_npc", args, result, summary: result.summary, destructive: false });
     };
     place("first-a", 2);
     place("first-b", 3);
-    await session["noteSuccessfulTools"](["place_npc"], () => {});
+    await session["noteSuccessfulTools"]([...session["turnSuccessfulTools"]], () => {});
     expect(session.getWorkPlan()?.currentItemId).toBe("later");
     expect(session["turnAppliedMilestoneCalls"]).toHaveLength(applied ? 2 : 0);
     // When the next item succeeds at only one of its three requested placements.
     place("later-a", 4);
-    await session["noteSuccessfulTools"](["place_npc"], () => {});
+    await session["noteSuccessfulTools"]([...session["turnSuccessfulTools"]], () => {});
     // Then successful tool names and earlier NPCs cannot complete the later quantity.
     expect(session.getWorkPlan()?.layers[0]?.items.map(item => item.status)).toEqual(["done", "in_progress"]);
     // Completing this item's remaining two placements permits advancement without replay.
     place("later-b", 5);
     place("later-c", 6);
-    await session["noteSuccessfulTools"](["place_npc"], () => {});
+    await session["noteSuccessfulTools"]([...session["turnSuccessfulTools"]], () => {});
     expect(session.getWorkPlan()?.layers[0]?.items.map(item => item.status)).toEqual(["done", "done"]);
   });
 
