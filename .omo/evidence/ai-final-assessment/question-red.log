@@ -1,0 +1,45 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/assistantFinalAssessment.test.ts --testNamePattern=factual question --maxWorkers=2 --minWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-final-assessment-0906
+
+ ❯ test/assistantFinalAssessment.test.ts (9 tests | 1 failed | 8 skipped) 3293ms
+   × current final artifact assessment > does not convert a factual question about an unfinished game into a repair run 3288ms
+     → expected 5 to be 1 // Object.is equality
+   ↓ current final artifact assessment > assesses existing endings without plan/history and keeps warning-only quality advisory (wired=false)
+   ↓ current final artifact assessment > assesses existing endings without plan/history and keeps warning-only quality advisory (wired=true)
+   ↓ current final artifact assessment > selects quality again for an ending authored after the earlier check
+   ↓ current final artifact assessment > retains acceptance, structure/icon and ending defects at final termination
+   ↓ current final artifact assessment > retains acceptance, structure/icon and ending defects at max-tool-calls termination
+   ↓ current final artifact assessment > retains acceptance, structure/icon and ending defects at token-budget termination
+   ↓ current final artifact assessment > exposes all categories before repair and repairing acceptance does not erase others or replay milestones
+   ↓ current final artifact assessment > exposes all categories before repair and repairing ending does not erase others or replay milestones
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/assistantFinalAssessment.test.ts > current final artifact assessment > does not convert a factual question about an unfinished game into a repair run
+AssertionError: expected 5 to be 1 // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 5[39m
+
+ ❯ test/assistantFinalAssessment.test.ts:68:23
+     66|     const result = await session.sendUserMessage("Explain the project"…
+     67|     // Then the question does not acquire a completion/repair obligati…
+     68|     expect(responses).toBe(1);
+       |                       ^
+     69|     expect(result.completionAssessment?.checks).toEqual([]);
+     70|     expect(result.assistantText).toBe("FACTUAL_ANSWER");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 8 skipped (9)
+   Start at  23:10:51
+   Duration  24.15s (transform 13.91s, setup 0ms, collect 19.86s, tests 3.29s, environment 0ms, prepare 171ms)

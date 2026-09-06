@@ -140,10 +140,13 @@ describe("필수 검증의 실행 성공과 통과는 별도 계약", () => {
     expect(result.assistantText).toContain("lint 오류 14건");
   });
 
-  it.each([false, true])("레이어 자동 통과는 재검증 의무를 만들지 않고 명시 검사만 유지한다 (explicit=%s)", async (explicit) => {
-    const quality = vi.spyOn(getTool("evaluate_game_quality")!, "run")
+  it.each([false, true])("final assessment reruns earlier quality on the current artifact without replaying work (explicit=%s)", async (explicit) => {
+    const qualityTool = getTool("evaluate_game_quality");
+    const lintTool = getTool("run_lint");
+    if (!qualityTool || !lintTool) throw new Error("Required verification tool missing");
+    const quality = vi.spyOn(qualityTool, "run")
       .mockReturnValue({ summary: "품질 통과", data: { verdict: { blocked: false } } });
-    const lintRun = vi.spyOn(getTool("run_lint")!, "run").mockReturnValue(clean);
+    vi.spyOn(lintTool, "run").mockReturnValue(clean);
     vi.spyOn(store, "isRemotePersistenceEnabled").mockReturnValue(false);
     // Persistence is outside this test: keep the real tool/plan/advisory order,
     // but apply the second layer's draft through an in-memory boundary.
@@ -157,10 +160,11 @@ describe("필수 검증의 실행 성공과 통과는 별도 계약", () => {
     ], ["set_title_screen"], true);
     const result = await session.sendUserMessage("프로젝트 확인 후 제목을 수정해줘", () => {}, undefined, { autonomous: true });
     expect(result.workPlan?.layers.flatMap((layer) => layer.items.map((item) => item.status))).toEqual(["done", "done"]);
-    expect(quality).toHaveBeenCalledTimes(explicit ? 2 : 1);
-    expect(lintRun).toHaveBeenCalledTimes(2);
-    expect(result.assistantText.includes("evaluate_game_quality: 변경 후 재검증 필요")).toBe(explicit);
-    expect(result.assistantText.includes("검증이 아직 통과되지 않았습니다")).toBe(explicit);
+    expect(quality.mock.calls[0]?.[0]).not.toEqual(session.getProposedProject());
+    expect(quality.mock.calls.at(-1)?.[0]).toEqual(session.getProposedProject());
+    expect(result.completionAssessment?.checks.map(check => check.name)).toEqual(["run_lint", "evaluate_game_quality"]);
+    expect(result.completionAssessment?.verification).toEqual([]);
+    expect(result.appliedCalls?.map(call => call.name)).toEqual(["set_title_screen"]);
   });
 
   it("다음 항목은 자기 대상의 검증으로 완료하며 이전 항목의 stale 검사는 최종 보고에 보존한다", async () => {

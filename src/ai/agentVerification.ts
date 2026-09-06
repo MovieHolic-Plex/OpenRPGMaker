@@ -12,7 +12,8 @@
 //                        play_walkthrough call args (do/expect steps, walkthroughRunner
 //                        shape)}] — or, if the layer has no such call,
 //                        [run_lint, verify_quest × ALL questIds in run history]
-// run_lint is always first; every layer adds nothing beyond the table.
+// run_lint is always first. Authored endings require quality assessment as well;
+// final assessment repeats earlier quality checks on the current artifact.
 //
 // CAUTION (verified in code): generate_walkthrough output is run_scene_test input
 // (`kind` steps), NOT play_walkthrough input (`do`/`expect` steps) — this module never
@@ -26,8 +27,8 @@
 // 54 pre-existing violations on every attempt. The gate burned its 3 attempts on damage the
 // agent had not caused and could not repair (every cleanup commit was refused by the commit
 // gate), killing the run at 217s with the 48-turn budget untouched.
-// evaluate_game_quality still reports blocking ONLY on projectLint errors (toolRegistry
-// evaluate_game_quality verdict contract: data.verdict.blocked).
+// evaluate_game_quality reports objective errors, including empty maps and missing
+// ending invocations (data.verdict.blocked), not subjective quality or playthrough proof.
 
 export const RUN_LINT_TOOL = "run_lint";
 export const EVALUATE_GAME_QUALITY_TOOL = "evaluate_game_quality";
@@ -61,6 +62,8 @@ export interface LayerDescriptor {
   readonly title: string;
   readonly kind?: string;
   readonly isFinal?: boolean;
+  /** Current artifact requires quality assessment, even without authoring history. */
+  readonly assessGameQuality?: boolean;
   readonly items?: readonly {
     readonly id?: string;
     readonly title?: string;
@@ -210,6 +213,11 @@ export function selectVerificationCalls(
   if (kind === "map") {
     calls.push({ name: EVALUATE_GAME_QUALITY_TOOL, args: {} });
     return calls;
+  }
+
+  if (layer.assessGameQuality || history.some(record => record.ok &&
+    (record.name === "define_ending" || (kind === "final" && record.name === EVALUATE_GAME_QUALITY_TOOL)))) {
+    calls.push({ name: EVALUATE_GAME_QUALITY_TOOL, args: {} });
   }
 
   if (kind === "quest") {

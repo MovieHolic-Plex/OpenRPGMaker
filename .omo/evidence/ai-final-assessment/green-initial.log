@@ -1,0 +1,18 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/assistantFinalAssessment.test.ts --maxWorkers=2 --minWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-final-assessment-0906
+
+ ✓ test/assistantFinalAssessment.test.ts (6 tests) 14379ms
+   ✓ current final artifact assessment > retains acceptance, structure/icon and ending defects at final termination  3455ms
+   ✓ current final artifact assessment > retains acceptance, structure/icon and ending defects at max-tool-calls termination  1414ms
+   ✓ current final artifact assessment > retains acceptance, structure/icon and ending defects at token-budget termination  1451ms
+   ✓ current final artifact assessment > exposes all categories before repair and repairing acceptance does not erase others or replay milestones  3728ms
+   ✓ current final artifact assessment > exposes all categories before repair and repairing ending does not erase others or replay milestones  4324ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  22:55:35
+   Duration  29.65s (transform 10.08s, setup 0ms, collect 14.72s, tests 14.38s, environment 0ms, prepare 106ms)

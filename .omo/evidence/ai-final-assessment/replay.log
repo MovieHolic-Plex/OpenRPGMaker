@@ -1,0 +1,44 @@
+{
+  "sourcePath": "/home/main/z-project/rpg-zzu-ai-playable-adversarial-0906/output/evidence/ai-playable-final/round2/first-project.json",
+  "sourceSha256": "919653337f89abafa70f093539e61c11c723310a494cb1721b6c92cd36d31559",
+  "stoppedReason": "max-tool-calls",
+  "checks": [
+    {
+      "name": "run_lint",
+      "ok": true
+    },
+    {
+      "name": "evaluate_game_quality",
+      "ok": true,
+      "issues": [
+        {
+          "code": "runtime-support:setEventGraphicPattern",
+          "severity": "warning"
+        },
+        {
+          "code": "runtime-support:setEventGraphicPattern",
+          "severity": "warning"
+        },
+        {
+          "code": "runtime-support:setSelfSwitch",
+          "severity": "warning"
+        },
+        {
+          "code": "runtime-support:setSelfSwitch",
+          "severity": "warning"
+        },
+        {
+          "code": "authoring:shared-object-graphic",
+          "severity": "warning"
+        },
+        {
+          "code": "ending-uninvoked",
+          "severity": "error"
+        }
+      ]
+    }
+  ],
+  "terminalVerification": [
+    "evaluate_game_quality: 엔딩 '새로운 여정'(ending_escape)을 실행하는 triggerEnding 명령이 없습니다. define_ending과 setSwitch는 엔딩을 실행하지 않습니다. 도달 가능한 이벤트 commands에 {\"kind\":\"triggerEnding\",\"endingId\":\"ending_escape\"} 또는 조건 선택용 {\"kind\":\"triggerEnding\"}을 연결한 뒤 실제 완주를 검증하세요."
+  ]
+}

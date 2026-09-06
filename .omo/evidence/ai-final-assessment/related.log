@@ -1,0 +1,41 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/assistantFinalAssessment.test.ts test/assistantVerificationEvidence.test.ts test/aiRunEndProof.test.ts test/aiMilestoneTurnAccounting.test.ts --maxWorkers=2 --minWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-final-assessment-0906
+
+ ✓ test/assistantFinalAssessment.test.ts (8 tests) 30780ms
+   ✓ current final artifact assessment > assesses existing endings without plan/history and keeps warning-only quality advisory (wired=false)  6984ms
+   ✓ current final artifact assessment > assesses existing endings without plan/history and keeps warning-only quality advisory (wired=true)  1894ms
+   ✓ current final artifact assessment > retains acceptance, structure/icon and ending defects at final termination  5363ms
+   ✓ current final artifact assessment > retains acceptance, structure/icon and ending defects at max-tool-calls termination  1619ms
+   ✓ current final artifact assessment > retains acceptance, structure/icon and ending defects at token-budget termination  1951ms
+   ✓ current final artifact assessment > exposes all categories before repair and repairing acceptance does not erase others or replay milestones  6169ms
+   ✓ current final artifact assessment > exposes all categories before repair and repairing ending does not erase others or replay milestones  6794ms
+ ✓ test/aiMilestoneTurnAccounting.test.ts (6 tests) 23631ms
+   ✓ 마일스톤 턴 정산 > auto-completion distinguishes modification facts from missing placements: 방금 실제 플레이에서 황동 열쇠를 얻은 뒤 북쪽 출구가 "열었다"라는 대사만 하고 끝났어. 열쇠는 여전히 1개이고 엔딩이 나오지 않아. 이 문제를 고쳐 줘. 먼저 현재 두 맵과 출구/촌장/상자 이벤트의 실제 명령을 읽어라. 이미 만든 집, 길, 나무, 두 맵의 크기, 왕복 이동, 상자, 촌장과 안내 표지판 문구 「우물은 북쪽, 지하실은 동쪽」은 보존해야 해. 수정 범위는 북쪽 출구의 열쇠 1개 소비 및 엔딩 실행, 마을 이름을 "마을"로 바꾸는 것뿐이야. 참고로 화면은 "완료 기준 검증 완료 2/2, 맵 시각 리뷰 완료"인데 답변은 "모험 구성이 아직 미완성, 두 맵 시각 확인 누락"이라고 해. 앞의 초록 체크를 근거로 이미 완성됐다고 판단하지 말고 실제 데이터를 근거로 모순을 설명해. 끝난 뒤 두 맵을 실제 그림으로 확인하고 미검증은 미검증이라고 말해.  1389ms
+   ✓ 마일스톤 턴 정산 > auto-completion distinguishes modification facts from missing placements: 기존 나무 10개는 보존하고 꽃 3개 추가해줘  1079ms
+   ✓ 마일스톤 턴 정산 > auto-completion distinguishes modification facts from missing placements: 나무 10개 배치해줘  1606ms
+   ✓ 마일스톤 턴 정산 > 한 항목이 실행 한도로 나뉘어도 앞선 성공과 미적용 제안을 이어서 완료한다  3592ms
+   ✓ 마일스톤 턴 정산 > 마일스톤 쓰기는 자동 계속(false) 후에도 정산에 남는다  8428ms
+   ✓ 마일스톤 턴 정산 > 마일스톤 쓰기는 자동 계속(true) 후에도 정산에 남는다  7535ms
+ ✓ test/aiRunEndProof.test.ts (18 tests) 93685ms
+   ✓ AssistantSession accepted-revision proof > projects initialized proof events and rechecks freshness after the final status subscriber  5872ms
+   ✓ AssistantSession accepted-revision proof > rechecks edit from a synchronous proof subscriber  4424ms
+   ✓ AssistantSession accepted-revision proof > rechecks cancel from a synchronous proof subscriber  4960ms
+   ✓ AssistantSession accepted-revision proof > returns the latest emitted state when a status subscriber starts a cancelled proof  4111ms
+   ✓ AssistantSession accepted-revision proof > does not claim verified after a failed proof read through actual session completion  3257ms
+   ✓ AssistantSession accepted-revision proof > retries failed proof for the same plan/revision, deduplicates success, and reproves a changed revision  9246ms
+   ✓ AssistantSession accepted-revision proof > does not promote cancelled during the read or replace editor state  4312ms
+   ✓ AssistantSession accepted-revision proof > does not promote disabled during the read or replace editor state  8073ms
+   ✓ AssistantSession accepted-revision proof > does not promote target during the read or replace editor state  4490ms
+   ✓ AssistantSession accepted-revision proof > does not promote content during the read or replace editor state  5844ms
+   ✓ AssistantSession accepted-revision proof > does not promote local-edit during the read or replace editor state  6995ms
+   ✓ AssistantSession accepted-revision proof > uses the real apply commit, not a newest remote commit read  4680ms
+   ✓ AssistantSession accepted-revision proof > project proof can succeed when the separate commit log fails  4448ms
+   ✓ AssistantSession accepted-revision proof > proves a normal no-plan apply through the reusable path without replaying the tool  5871ms
+   ✓ AssistantSession accepted-revision proof > does not correlate a later human edit with an in-flight apply commit  4647ms
+   ✓ AssistantSession accepted-revision proof > retryLastTurn retries failed proof without replaying the LLM or applied tools  4293ms
+   ✓ AssistantSession accepted-revision proof > retryLastTurn proves already applied milestones after a recovered LLM failure  7236ms
+   ✓ AssistantSession accepted-revision proof > a clean saved response without an accepted receipt cannot become proof  922ms

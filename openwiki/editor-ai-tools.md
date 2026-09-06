@@ -364,6 +364,20 @@ author_village와 buildVillageDomain이 DB 설계서의 고정값·집 수 범�
 
 ## 모험 저작 완료와 재시도 (2026-09-05)
 
+Final-artifact assessment (2026-09-06, R12): `agentVerification` adds
+`evaluate_game_quality` for authored endings and repeats earlier quality checks at
+completion. `AssistantSession` assesses the current draft independently of the
+once-per-layer sweep, including tool/token-budget termination. Its
+`completion_assessment` event and `TurnResult.completionAssessment` retain the
+acceptance snapshot (including R7 field diagnostics), adventure structure/icon/
+image gaps, current check results, and unresolved verification findings together.
+The same combined state reaches the model before bounded repair selection and is
+composed into one terminal report, never replacing one failure category with another.
+Repairing one category does not reset promises/baselines or replay applied milestones.
+Missing `triggerEnding` invocation requests content repair; general advisory lint
+does not become a fatal gate. Static checks and persistence receipts remain distinct
+from actual playthrough proof.
+
 의도 선언의 선택적 `adventure`(village/dungeon/party/battle)는 전체 모험 저작 요청에만 붙인다. 단순 NPC 추가·질문·DB 시드 요청에 키워드로 덧붙이지 않는다. 세션은 선언을 자동 계속과 계획 교체 뒤에도 보존하고, 최종 경로 양쪽에서 `adventureCompletionProblems`를 실행한다. 구조 타일 없는 시작 마을, 도달 가능한 탐험 맵 전이·전투 연결 부재, 시작 파티/합류 부재를 보완 지시로 돌려주며 4회 뒤에도 미완성이면 완료 응답을 대체한다. 최종 쓰기 뒤 모든 맵 전체 show_map_region 조회와 저작 아이템 아이콘도 요구한다. 이것은 정적 최소 조건이며 페이지 조건·미술 완성도·재미를 증명하지 않는다. 출하 런타임과 직접 시각 검사는 별도로 한다.
 
 place_npc는 NPC의 name을 페이지 제목과 분리해 저장한다. 이름 없는 재시도는 가까운 동명 이벤트를, 같은 명시 ID는 해당 이벤트를 재사용하며 위치·일정을 보존한다. 다른 명시 ID는 의도적 복수 배치다. 새 착용 장비는 upsert_equipment를 써야 하며 upsert_item의 레거시 장비 종류 신규 생성은 거절한다(기존 레거시 수정은 허용). 저수준 text.body의 문자형 역슬래시+n은 실제 줄바꿈으로 고치도록 거절하되 배우 이름 제어문자는 유지한다.

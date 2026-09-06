@@ -1,0 +1,128 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/assistantFinalAssessment.test.ts test/agentVerification.test.ts test/assistantVerificationEvidence.test.ts test/assistantAcceptanceSession.test.ts test/assistantVisualEvidenceSession.test.ts test/aiEndingCompletionRegression.test.ts test/aiRunEndProof.test.ts test/aiMilestoneTurnAccounting.test.ts test/aiAssistantTurnCleanup.test.ts test/aiComposerModeSession.test.ts --maxWorkers=2 --minWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-final-assessment-0906
+
+ ✓ test/assistantFinalAssessment.test.ts (9 tests) 22111ms
+   ✓ current final artifact assessment > does not convert a factual question about an unfinished game into a repair run  845ms
+   ✓ current final artifact assessment > assesses existing endings without plan/history and keeps warning-only quality advisory (wired=false)  2841ms
+   ✓ current final artifact assessment > assesses existing endings without plan/history and keeps warning-only quality advisory (wired=true)  1455ms
+   ✓ current final artifact assessment > retains acceptance, structure/icon and ending defects at final termination  3554ms
+   ✓ current final artifact assessment > retains acceptance, structure/icon and ending defects at max-tool-calls termination  1527ms
+   ✓ current final artifact assessment > retains acceptance, structure/icon and ending defects at token-budget termination  2779ms
+   ✓ current final artifact assessment > exposes all categories before repair and repairing acceptance does not erase others or replay milestones  3937ms
+   ✓ current final artifact assessment > exposes all categories before repair and repairing ending does not erase others or replay milestones  5170ms
+ ✓ test/assistantVisualEvidenceSession.test.ts (12 tests) 26120ms
+   ✓ one visual evidence lifecycle > preserves delivered reviewed maps after a DB-only write at final termination  1862ms
+   ✓ one visual evidence lifecycle > preserves delivered reviewed maps after a DB-only write at max-tool-calls termination  3110ms
+   ✓ one visual evidence lifecycle > preserves delivered reviewed maps after a DB-only write at token-budget termination  3225ms
+   ✓ one visual evidence lifecycle > does not credit metadata when rendering is empty  1877ms
+   ✓ one visual evidence lifecycle > does not credit metadata when rendering is failed  1859ms
+   ✓ visual evidence invalidation and review boundaries > invalidates only the changed map after a real resize and does not revive it on undo  3985ms
+   ✓ visual evidence invalidation and review boundaries > retains current images across a follow-up without a new render  2194ms
+   ✓ visual evidence invalidation and review boundaries > does not verify missing explicit review  1509ms
+   ✓ visual evidence invalidation and review boundaries > does not verify same-response explicit review  1292ms
+   ✓ visual evidence invalidation and review boundaries > does not verify fail explicit review  2147ms
+   ✓ visual evidence invalidation and review boundaries > requires coverage of every promised map  1218ms
+   ✓ visual evidence invalidation and review boundaries > does not turn verified map images into game-completion proof  1828ms
+ ✓ test/aiRunEndProof.test.ts (18 tests) 61224ms
+   ✓ AssistantSession accepted-revision proof > projects initialized proof events and rechecks freshness after the final status subscriber  2260ms
+   ✓ AssistantSession accepted-revision proof > rechecks edit from a synchronous proof subscriber  2123ms
+   ✓ AssistantSession accepted-revision proof > rechecks cancel from a synchronous proof subscriber  1886ms
+   ✓ AssistantSession accepted-revision proof > returns the latest emitted state when a status subscriber starts a cancelled proof  1511ms
+   ✓ AssistantSession accepted-revision proof > does not claim verified after a failed proof read through actual session completion  2447ms
+   ✓ AssistantSession accepted-revision proof > retries failed proof for the same plan/revision, deduplicates success, and reproves a changed revision  6889ms
+   ✓ AssistantSession accepted-revision proof > does not promote cancelled during the read or replace editor state  3080ms
+   ✓ AssistantSession accepted-revision proof > does not promote disabled during the read or replace editor state  3278ms
+   ✓ AssistantSession accepted-revision proof > does not promote target during the read or replace editor state  3673ms
+   ✓ AssistantSession accepted-revision proof > does not promote content during the read or replace editor state  5019ms
+   ✓ AssistantSession accepted-revision proof > does not promote local-edit during the read or replace editor state  4936ms
+   ✓ AssistantSession accepted-revision proof > uses the real apply commit, not a newest remote commit read  4088ms
+   ✓ AssistantSession accepted-revision proof > project proof can succeed when the separate commit log fails  3664ms
+   ✓ AssistantSession accepted-revision proof > proves a normal no-plan apply through the reusable path without replaying the tool  3669ms
+   ✓ AssistantSession accepted-revision proof > does not correlate a later human edit with an in-flight apply commit  3939ms
+   ✓ AssistantSession accepted-revision proof > retryLastTurn retries failed proof without replaying the LLM or applied tools  4034ms
+   ✓ AssistantSession accepted-revision proof > retryLastTurn proves already applied milestones after a recovered LLM failure  4290ms
+   ✓ AssistantSession accepted-revision proof > a clean saved response without an accepted receipt cannot become proof  434ms
+ ✓ test/assistantAcceptanceSession.test.ts (20 tests) 15618ms
+   ✓ session acceptance ownership > exposes the session-owned acceptance snapshot independently of WorkPlan  335ms
+   ✓ acceptance controls actual session termination > does not schedule run-end persistence proof for a completed plan with unmet acceptance  674ms
+   ✓ acceptance controls actual session termination > does not turn a review without an explicit passing verdict into completion  1214ms
+   ✓ acceptance controls actual session termination > withdraws an earlier pass when a later explicit review fails  1042ms
+   ✓ acceptance controls actual session termination > continues then blocks insufficient dimensions and quantity even after skip completes the plan  581ms
+   ✓ acceptance controls actual session termination > retains original denominator when skip and set_work_plan try to shrink promises  865ms
+   ✓ acceptance controls actual session termination > invalidates an attributed image review after a subsequent real map write  1286ms
+   ✓ applied acceptance lifecycle through real tools > repairs exact dimensions after plan completion and invalidates on applied undo  2043ms
+   ✓ applied acceptance lifecycle through real tools > blocks and retains the ledger when aborted while the next model response is held  766ms
+   ✓ applied acceptance lifecycle through real tools > never credits a review authored in the same response as the image request  845ms
+   ✓ applied acceptance lifecycle through real tools > requires visible contract repair for a spatial plan missing criteria  511ms
+   ✓ applied acceptance lifecycle through real tools > keeps legacy nonspatial and read-only requests free of fabricated map promises  354ms
+   ✓ recorded provider acceptance repair failures (R7) > identifies the missing scope atomically in recorded repair 0  1034ms
+   ✓ recorded provider acceptance repair failures (R7) > identifies the missing scope atomically in recorded repair 1  814ms
+   ✓ recorded provider acceptance repair failures (R7) > identifies the missing scope atomically in recorded repair 2  618ms
+   ✓ recorded provider acceptance repair failures (R7) > identifies the missing scope atomically in recorded repair 3  614ms
+   ✓ recorded provider acceptance repair failures (R7) > identifies the missing scope atomically in recorded repair 4  638ms
+   ✓ returns distinct repair and review diagnostics through the actual session handler  680ms
+   ✓ exposes planner acceptance diagnostics before the first generation response ({"id":"bad","title":"Bad","criteria":[{"kind":"mapCount","count":2}]})  491ms
+ ✓ test/aiMilestoneTurnAccounting.test.ts (6 tests) 16128ms
+   ✓ 마일스톤 턴 정산 > auto-completion distinguishes modification facts from missing placements: 방금 실제 플레이에서 황동 열쇠를 얻은 뒤 북쪽 출구가 "열었다"라는 대사만 하고 끝났어. 열쇠는 여전히 1개이고 엔딩이 나오지 않아. 이 문제를 고쳐 줘. 먼저 현재 두 맵과 출구/촌장/상자 이벤트의 실제 명령을 읽어라. 이미 만든 집, 길, 나무, 두 맵의 크기, 왕복 이동, 상자, 촌장과 안내 표지판 문구 「우물은 북쪽, 지하실은 동쪽」은 보존해야 해. 수정 범위는 북쪽 출구의 열쇠 1개 소비 및 엔딩 실행, 마을 이름을 "마을"로 바꾸는 것뿐이야. 참고로 화면은 "완료 기준 검증 완료 2/2, 맵 시각 리뷰 완료"인데 답변은 "모험 구성이 아직 미완성, 두 맵 시각 확인 누락"이라고 해. 앞의 초록 체크를 근거로 이미 완성됐다고 판단하지 말고 실제 데이터를 근거로 모순을 설명해. 끝난 뒤 두 맵을 실제 그림으로 확인하고 미검증은 미검증이라고 말해.  1483ms
+   ✓ 마일스톤 턴 정산 > auto-completion distinguishes modification facts from missing placements: 기존 나무 10개는 보존하고 꽃 3개 추가해줘  1400ms
+   ✓ 마일스톤 턴 정산 > auto-completion distinguishes modification facts from missing placements: 나무 10개 배치해줘  1029ms
+   ✓ 마일스톤 턴 정산 > 한 항목이 실행 한도로 나뉘어도 앞선 성공과 미적용 제안을 이어서 완료한다  2496ms
+   ✓ 마일스톤 턴 정산 > 마일스톤 쓰기는 자동 계속(false) 후에도 정산에 남는다  4893ms
+   ✓ 마일스톤 턴 정산 > 마일스톤 쓰기는 자동 계속(true) 후에도 정산에 남는다  4816ms
+ ✓ test/assistantVerificationEvidence.test.ts (20 tests) 12579ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > run_lint ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  1029ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > check_reachability ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  721ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > verify_quest ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  660ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > play_walkthrough ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  752ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > run_scene_test ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  971ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > evaluate_game_quality ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  1522ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 같은 검사 재실패는 앞선 성공을 제거하고, 이후 실제 재통과는 복구한다  675ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 쓰기 이후에는 이전 검증 성공으로 완료할 수 없고 다시 검사해야 한다  570ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 재검사 없는 쓰기는 최종 보고에서도 검증 통과로 남지 않는다  701ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 실행되지 않은 잘못된 인자는 고친 호출로 복구할 수 있다  758ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > warning-only lint는 통과하며 거부된 쓰기는 성공 근거를 무효화하지 않는다  627ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 레이어의 선재 lint 오류는 자문을 유지하면서 최종 응답에 보고한다  340ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > final assessment reruns earlier quality on the current artifact without replaying work (explicit=false)  1154ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > final assessment reruns earlier quality on the current artifact without replaying work (explicit=true)  913ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 다음 항목은 자기 대상의 검증으로 완료하며 이전 항목의 stale 검사는 최종 보고에 보존한다  710ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 실패한 walkthrough 실행은 레이어의 성공 시나리오로 기록하지 않는다  327ms
+ ✓ test/aiEndingCompletionRegression.test.ts (13 tests) 10634ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > reproduces the saved correction: item consumed, switch retained, no ending, exit relocked  892ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > control: an explicit invocation undefined executes the persisted epilogue and ending  931ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > control: an explicit invocation 'ending_regression' executes the persisted epilogue and ending  939ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > does not certify completion when the sole defined ending has no invocation anywhere  820ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > permits defining an ending before authoring its invocation  636ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > does not impose an ending on a open-ended game  340ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > does not impose an ending on a native-ending game  336ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > matches each defined ending against named invocations  1172ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > matches each defined ending against condition-selected invocations  798ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > does not mistake obsolete root commands for invocations when pages own execution  1060ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > accepts a nested common-event invocation and executes it through the exit  1523ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > accepts legacy root invocations when no pages replace them  900ms
+ ✓ test/aiAssistantTurnCleanup.test.ts (14 tests) 5646ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on final without changing retained data  587ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on error without changing retained data  533ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on aborted without changing retained data  574ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on throw without changing retained data  519ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on abort-throw without changing retained data  546ms
+   ✓ assistant owner-turn presentation cleanup > clears the owner ghost on final when no region approval owns it  334ms
+   ✓ assistant owner-turn presentation cleanup > clears the owner ghost on error when no region approval owns it  308ms
+   ✓ assistant owner-turn presentation cleanup > clears the owner ghost on throw when no region approval owns it  339ms
+   ✓ assistant owner-turn presentation cleanup > retires after an applied proposal without altering outcome accounting  370ms
+   ✓ assistant owner-turn presentation cleanup > retires unseen automatic spec expansion before a follow-up turn can sync it  331ms
+   ✓ assistant owner-turn presentation cleanup > an orphaned completion cannot retire its replacement turn's blueprint  364ms
+ ✓ test/aiComposerModeSession.test.ts (6 tests) 3030ms
+   ✓ 컴포저 모드 — 질문(ask) > 쓰기 툴 스키마를 모델에 노출하지 않는다 (읽기 툴은 남는다)  362ms
+   ✓ 컴포저 모드 — 질문(ask) > 모델이 쓰기 툴을 불러도 거부하고 프로젝트 초안은 불변이다  714ms
+   ✓ 컴포저 모드 — 계획(plan) > 플래너만 돌려 계획 카드를 내고 그 턴은 실행 없이 끝난다 (자율 진입도 자동 계속 0회)  405ms
+   ✓ 컴포저 모드 — 계획(plan) > 계획 뒤 「계속」은 툴 루프를 돌려 실행한다  989ms
+ ✓ test/agentVerification.test.ts (41 tests) 98ms
+
+ Test Files  10 passed (10)
+      Tests  159 passed (159)
+   Start at  23:11:38
+   Duration  123.22s (transform 14.22s, setup 0ms, collect 60.39s, tests 173.19s, environment 3ms, prepare 1.59s)

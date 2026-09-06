@@ -50,6 +50,7 @@ import type { ComposerMode } from "@/ai/composerMode";
 import { store, type ProjectPersistenceReceipt, type ProjectPersistenceProof } from "@/project/store";
 import {
   PLAY_WALKTHROUGH_TOOL,
+  EVALUATE_GAME_QUALITY_TOOL,
   VERIFICATION_TOOL_NAMES,
   parseLayerVerdict,
   selectVerificationCalls,
@@ -246,6 +247,7 @@ export type SessionEvent =
   | { type: "status"; text: string }
   | { type: "work_plan"; plan: WorkPlan }
   | { type: "acceptance"; snapshot: AcceptanceSnapshot | null }
+  | { type: "completion_assessment"; assessment: CompletionAssessment }
   // ── 마일스톤 자동 적용(todo 4) ─────────────────────────────────────
   // 자율 런에서 작업 항목 완료가 안전 검사를 통과해 스토어에 자동 적용됐다.
   | { type: "milestone_applied"; title: string; toolCount: number; commitId: string | null }
@@ -269,6 +271,13 @@ export interface ProposedCall {
   reason?: string;
 }
 
+export interface CompletionAssessment {
+  readonly acceptance: AcceptanceSnapshot | null;
+  readonly adventure: readonly string[];
+  readonly verification: readonly string[];
+  readonly checks: readonly LayerVerdictInput[];
+}
+
 export interface TurnResult {
   assistantText: string;
   proposedCalls: ProposedCall[]; // 성공한 쓰기 툴콜(수락 시 store에 적용할 시퀀스).
@@ -278,6 +287,7 @@ export interface TurnResult {
   workPlan?: WorkPlan;
   /** 이 사용자 목표가 태운 토큰·경과·과정. 채팅에는 토큰 줄만, 로그에는 전부. */
   recap?: RunRecap;
+  readonly completionAssessment?: CompletionAssessment;
   /**
    * 이 턴에 **마일스톤으로 이미 저장소에 적용된** 쓰기 툴콜. `proposedCalls` 와 서로 배타적이다:
    * 마일스톤 적용은 `turnProposals` 를 비우므로(maybeAutoApplyMilestone) 적용된 몫은
@@ -929,6 +939,7 @@ export class AssistantSession {
   // 자문 검증이 직접 실행한 툴콜은 히스토리에 기록하지 않는다(모델 저작만).
   /** 런 누적 툴콜 히스토리(검증 선택용) — 쓰기 툴 + play_walkthrough 만 기록한다. */
   private verificationHistory: VerificationCallRecord[] = [];
+  private completionQualityRequired = false;
   /** 이 플랜에서 이미 자문 검증을 돌린 레이어 id(플랜 id 기준 — replan 시 자연 리셋). */
   private verifiedPlanId: string | null = null;
   private verifiedLayerIds = new Set<string>();
@@ -1258,7 +1269,10 @@ export class AssistantSession {
   private acceptanceIncompleteText(): string {
     const snapshot = this.getAcceptanceSnapshot();
     return `완료 검증이 아직 미완성입니다.\n${snapshot?.items.filter(item => item.status !== "verified")
-      .map(item => `- ${item.title}: ${item.reason ?? "unverified"}\n${item.evidence.filter(e => !e.passed).map(e => `  ${e.expected} → ${e.observed}`).join("\n")}`).join("\n") ?? ""}`;
+      .map(item => `- ${item.title}: ${item.reason ?? "unverified"}\n${[
+        ...(item.issues ?? []).map(issue => `  ${JSON.stringify(issue)}`),
+        ...item.evidence.filter(e => !e.passed).flatMap(e => [`  ${e.expected} → ${e.observed}`, ...(e.issues ?? []).map(issue => `  ${JSON.stringify(issue)}`)]),
+      ].join("\n")}`).join("\n") ?? ""}`;
   }
 
   private applyAcceptanceTool(name: string, args: Record<string, unknown>): ToolResult {
@@ -1707,6 +1721,7 @@ export class AssistantSession {
     if (!this.turnIsDriverContinue && intent.source !== "continuation") {
       this.readEvidence.begin(intent.readBeforeWrite);
       this.verificationEvidence.clear();
+      this.completionQualityRequired = false;
     }
     beginAssistantToolDomainTurn(intent);
     this.currentTurnToolDomains = computeActiveToolDomains(intent);
@@ -2408,6 +2423,7 @@ export class AssistantSession {
   /** Keep transport/execution ok intact; only actual passing checks satisfy successTools. */
   private recordToolResult(name: string, args: Record<string, unknown>, result: ToolResult, countAsSuccess = true): void {
     this.syncSuccessfulToolsToCurrentWorkItem();
+    if (name === EVALUATE_GAME_QUALITY_TOOL) this.completionQualityRequired = true;
     if (result.ok) for (const [tool, field, collection] of [["upsert_item", "item", "items"], ["upsert_equipment", "equipment", "equipment"]] as const) {
       const record = args[field] as { id?: unknown } | undefined;
       if (name === tool && record && typeof record.id === "string") this.adventureIconRecords.set(`${collection}/${record.id}`, { collection, id: record.id });
@@ -2604,8 +2620,9 @@ export class AssistantSession {
    */
   private async executeVerificationAdvisory(
     layer: LayerDescriptor,
-    onEvent: (event: SessionEvent) => void
-  ): Promise<void> {
+    onEvent: (event: SessionEvent) => void,
+    scope: "layer" | "completion" = "layer",
+  ): Promise<LayerVerdictInput[]> {
     const calls = selectVerificationCalls(layer, this.verificationHistory);
     const results: LayerVerdictInput[] = [];
     for (const call of calls) {
@@ -2630,22 +2647,23 @@ export class AssistantSession {
     const verdict = parseLayerVerdict(results);
     const layerId = layer.id ?? "";
     const label = layerId !== "" ? layerId : layer.title;
-    this.markLayerVerified(layerId);
+    const auditPrefix = scope === "layer" ? "agent_run:verification" : "agent_run:completion-check";
     if (verdict.pass) {
       this.pushAudit({
         kind: "status",
-        text: `agent_run:verification-pass layer=${label} calls=${calls.map((c) => c.name).join(",")} warnings=${verdict.warnings.length}`,
+        text: `${auditPrefix}-pass layer=${label} calls=${calls.map((c) => c.name).join(",")} warnings=${verdict.warnings.length}`,
       });
-      return;
+      return results;
     }
     this.pushAudit({
       kind: "status",
-      text: `agent_run:verification-advisory layer=${label} blocking=${verdict.blockingIssues.length} warnings=${verdict.warnings.length} — 자문이므로 런을 중단하지 않는다`,
+      text: `${auditPrefix}-advisory layer=${label} blocking=${verdict.blockingIssues.length} warnings=${verdict.warnings.length} — 자문이므로 런을 중단하지 않는다`,
     });
     for (const issue of verdict.blockingIssues.slice(0, 8)) {
-      this.pushAudit({ kind: "status", text: `agent_run:verification-note layer=${label} — ${issue}` });
+      this.pushAudit({ kind: "status", text: `${auditPrefix}-note layer=${label} — ${issue}` });
     }
     onEvent({ type: "status", text: `검증 지적 ${verdict.blockingIssues.length}건 (자문) — 진행은 계속합니다.` });
+    return results;
   }
 
   /**
@@ -2663,9 +2681,38 @@ export class AssistantSession {
         id: layer.id,
         title: layer.title,
         isFinal: li === plan.layers.length - 1,
+        assessGameQuality: Boolean(this.ctx.project.endings?.length),
         items: layer.items,
       }, onEvent);
+      this.markLayerVerified(layer.id);
     }
+  }
+
+  /** Read-only final checks are independent of the once-per-layer milestone sweep. */
+  private async assessCompletion(onEvent: (event: SessionEvent) => void): Promise<CompletionAssessment> {
+    const finalLayer = this.workPlan?.layers.at(-1);
+    const layer: LayerDescriptor = {
+      id: finalLayer?.id, title: "Final artifact", isFinal: true,
+      assessGameQuality: this.completionQualityRequired || Boolean(this.ctx.project.endings?.length),
+    };
+    const checks = this.turnComposerMode !== "ask" && this.turnIntent?.mode !== "question" && !this.lastTurnPlanOnly
+      && selectVerificationCalls(layer, this.verificationHistory).length > 1
+      ? await this.executeVerificationAdvisory(layer, onEvent, "completion") : [];
+    this.publishAcceptance(onEvent);
+    const assessment: CompletionAssessment = {
+      acceptance: this.getAcceptanceSnapshot(), adventure: this.adventureProblems(),
+      verification: this.verificationEvidence.problems(), checks,
+    };
+    onEvent({ type: "completion_assessment", assessment });
+    return assessment;
+  }
+
+  private completionIncompleteText(assessment: CompletionAssessment): string {
+    return [
+      ...(assessment.acceptance && assessment.acceptance.status !== "verified" ? [this.acceptanceIncompleteText()] : []),
+      ...(assessment.adventure.length ? [`모험 구성이 아직 미완성입니다.\n${assessment.adventure.map(problem => `- ${problem}`).join("\n")}`] : []),
+      ...(assessment.verification.length ? [`검증이 아직 통과되지 않았습니다.\n${assessment.verification.map(problem => `- ${problem}`).join("\n")}`] : []),
+    ].join("\n\n");
   }
 
   /** Completion schedules proof only after all pending writes have actually been applied. */
@@ -2805,29 +2852,23 @@ export class AssistantSession {
   }
 
   /** 사용자 목표가 끝날 때 토큰·경과·과정을 감사에 남기고 채팅용 한 줄을 보낸다. */
-  private finishRunRecap(
+  private async finishRunRecap(
     result: TurnResult,
     startedAt: number,
     usageBefore: SessionUsageTotals,
     auditFrom: number,
     onEvent: (event: SessionEvent) => void,
-  ): TurnResult {
+  ): Promise<TurnResult> {
     this.publishAcceptance(onEvent);
     if (this.acceptanceOpen() && !this.lastTurnPlanOnly && this.turnComposerMode !== "ask") {
       this.acceptance?.stop();
-      this.publishAcceptance(onEvent);
-      result = { ...result, assistantText: this.acceptanceIncompleteText() };
-      onEvent({ type: "assistant_message", content: result.assistantText });
     }
-    const adventureProblems = this.adventureProblems();
-    if (adventureProblems.length) {
-      result = { ...result, assistantText: `모험 구성이 아직 미완성입니다.\n${adventureProblems.map(p => `- ${p}`).join("\n")}` };
-      onEvent({ type: "assistant_message", content: result.assistantText });
-    }
-    const verificationProblems = this.verificationEvidence.problems();
-    if (verificationProblems.length > 0) {
-      const notice = `검증이 아직 통과되지 않았습니다.\n${verificationProblems.slice(0, 8).map((problem) => `- ${problem}`).join("\n")}`;
-      result = { ...result, assistantText: `${result.assistantText.trim()}\n\n${notice}`.trim() };
+    // Budget termination can bypass the model's final response entirely.
+    const assessment = await this.assessCompletion(onEvent);
+    const notice = this.lastTurnPlanOnly || this.turnComposerMode === "ask" ? "" : this.completionIncompleteText(assessment);
+    if (notice) {
+      const prefix = result.stoppedReason === "final" ? "" : result.assistantText.trim();
+      result = { ...result, assistantText: [prefix, notice].filter(Boolean).join("\n\n") };
       onEvent({ type: "assistant_message", content: result.assistantText });
     }
     const recap = buildRunRecap({
@@ -2839,7 +2880,7 @@ export class AssistantSession {
     });
     this.pushAudit({ kind: "status", text: `run-recap ${serializeRunRecap(recap)}` });
     onEvent({ type: "run_recap", recap });
-    return { ...result, recap };
+    return { ...result, recap, completionAssessment: assessment };
   }
 
   // 감사 항목에 ISO 타임스탬프를 붙여 기록한다(결함 ⑬ — 타임라인 export).
@@ -3663,33 +3704,26 @@ export class AssistantSession {
           await this.maybeAutoApplyMilestone({ id: `${this.acceptance.id}:${this.turnToolStartedCount}`, title: this.acceptance.goal,
             instruction: "Apply acceptance progress", status: "done" }, onEvent);
         }
-        this.publishAcceptance(onEvent);
-        if (this.acceptanceOpen() && this.turnComposerMode !== "ask") {
-          if (!this.milestoneApplyFailed && this.acceptanceRepairAttempts < MAX_RALPH_ATTEMPTS_PER_ITEM
-            && spentOutputTokens < this.config.maxTokens) {
-            this.acceptanceRepairAttempts += 1;
-            phase = "execute";
-            this.emitPhase(onEvent, "execute");
-            this.pushOrchestrationMessage(`Acceptance repair ${this.acceptanceRepairAttempts}/${MAX_RALPH_ATTEMPTS_PER_ITEM}. Do not claim success, skip, shrink or recreate completed content. Repair missing criteria with repair_acceptance; satisfy original promises with real tools; explicitly review delivered images with review_acceptance. Drafts are not applied verification.\n${JSON.stringify(this.getAcceptanceSnapshot())}`);
-            continue;
-          }
-          this.acceptance?.stop();
-          this.publishAcceptance(onEvent);
-          assistantText = this.acceptanceIncompleteText();
-          onEvent({ type: "assistant_message", content: assistantText });
-          return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "final" };
-        }
-      }
-
-      // Goal-level contract survives plan replacement and applies to both final paths.
-      if ((phase === "review" || !(assistantMsg.tool_calls?.length)) && !this.milestoneApplyFailed) {
-        const problems = this.adventureProblems();
-        if (problems.length && this.adventureRepairAttempts < 4) {
-          this.adventureRepairAttempts += 1;
+        const assessment = await this.assessCompletion(onEvent);
+        const acceptanceOpen = this.turnComposerMode !== "ask" && this.acceptanceOpen();
+        const contentOpen = assessment.adventure.length > 0 || assessment.checks.some(check =>
+          check.result.issues?.some(issue => issue.code === "ending-uninvoked"));
+        const repairAcceptance = acceptanceOpen && this.acceptanceRepairAttempts < MAX_RALPH_ATTEMPTS_PER_ITEM;
+        const repairContent = contentOpen && this.adventureRepairAttempts < 4;
+        if (!this.milestoneApplyFailed && spentOutputTokens < this.config.maxTokens && (repairAcceptance || repairContent)) {
+          if (repairAcceptance) this.acceptanceRepairAttempts += 1;
+          if (repairContent) this.adventureRepairAttempts += 1;
           phase = "execute";
           this.emitPhase(onEvent, "execute");
-          this.pushOrchestrationMessage(`모험 완료 검사 미통과 (${this.adventureRepairAttempts}/4). 완료라고 보고하지 말고 누락을 실제 도구로 보완하세요. 기존 산출물을 다시 만들지 마세요.\n${problems.join("\n")}\n${ADVENTURE_AUTHORING_GUIDE}`);
+          this.pushOrchestrationMessage(`Final artifact repair. Do not claim success, skip, shrink or recreate completed content. Repair missing criteria with repair_acceptance; satisfy original promises with real tools; explicitly review delivered images with review_acceptance. Drafts are not applied verification. Fix missing ending invocations in executable commands and rerun the relevant checks; static assessment is not playthrough proof.\n${JSON.stringify(assessment)}\n${ADVENTURE_AUTHORING_GUIDE}`);
           continue;
+        }
+        if (acceptanceOpen || contentOpen) {
+          this.acceptance?.stop();
+          this.publishAcceptance(onEvent);
+          assistantText = this.completionIncompleteText({ ...assessment, acceptance: this.getAcceptanceSnapshot() });
+          onEvent({ type: "assistant_message", content: assistantText });
+          return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "final" };
         }
       }
 

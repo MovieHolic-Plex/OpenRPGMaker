@@ -1,0 +1,135 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/assistantFinalAssessment.test.ts --maxWorkers=2 --minWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-final-assessment-0906
+
+ ❯ test/assistantFinalAssessment.test.ts (6 tests | 6 failed) 7106ms
+   × current final artifact assessment > selects quality again for an ending authored after the earlier check 17ms
+     → expected [ 'run_lint' ] to deeply equal [ 'run_lint', 'evaluate_game_quality' ]
+   × current final artifact assessment > retains acceptance, structure/icon and ending defects at final termination 1399ms
+     → expected { type: 'tool_call', …(4) } to match object { result: { ok: true, …(2) } }
+(56 matching properties omitted from actual)
+   × current final artifact assessment > retains acceptance, structure/icon and ending defects at max-tool-calls termination 1046ms
+     → expected { type: 'tool_call', …(4) } to match object { result: { ok: true, …(2) } }
+(56 matching properties omitted from actual)
+   × current final artifact assessment > retains acceptance, structure/icon and ending defects at token-budget termination 1072ms
+     → expected { type: 'tool_call', …(4) } to match object { result: { ok: true, …(2) } }
+(56 matching properties omitted from actual)
+   × current final artifact assessment > exposes all categories before repair and repairing acceptance does not erase others or replay milestones 1734ms
+     → expected undefined to match object { type: 'completion_assessment', …(1) }
+   × current final artifact assessment > exposes all categories before repair and repairing ending does not erase others or replay milestones 1837ms
+     → expected undefined to match object { type: 'completion_assessment', …(1) }
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/assistantFinalAssessment.test.ts > current final artifact assessment > selects quality again for an ending authored after the earlier check
+AssertionError: expected [ 'run_lint' ] to deeply equal [ 'run_lint', 'evaluate_game_quality' ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    "run_lint",[22m
+[32m-   "evaluate_game_quality",[39m
+[2m  ][22m
+
+ ❯ test/assistantFinalAssessment.test.ts:57:121
+     55|     // Given the recorded order; when ending/final layers finish; then…
+     56|     const history = [earlyQuality, definition].map(call => ({ ...call,…
+     57|     for (const title of ["Ending", "Final"]) expect(selectVerification…
+       |                                                                                                                         ^
+     58|   });
+     59|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  test/assistantFinalAssessment.test.ts > current final artifact assessment > retains acceptance, structure/icon and ending defects at final termination
+ FAIL  test/assistantFinalAssessment.test.ts > current final artifact assessment > retains acceptance, structure/icon and ending defects at max-tool-calls termination
+ FAIL  test/assistantFinalAssessment.test.ts > current final artifact assessment > retains acceptance, structure/icon and ending defects at token-budget termination
+AssertionError: expected { type: 'tool_call', …(4) } to match object { result: { ok: true, …(2) } }
+(56 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "result": {[22m
+[2m      "data": {[22m
+[2m        "coverage": {[22m
+[2m          "endings": {[22m
+[32m-           "uninvokedIds": [[39m
+[32m-             "ending_escape",[39m
+[32m-           ],[39m
+[31m+           "uninvokedIds": [],[39m
+[2m          },[22m
+[2m        },[22m
+[2m      },[22m
+[32m-     "issues": ArrayContaining [[39m
+[32m-       ObjectContaining {[39m
+[32m-         "code": "ending-uninvoked",[39m
+[31m+     "issues": [[39m
+[31m+       {[39m
+[31m+         "code": "empty-map",[39m
+[31m+         "mapId": "map_blank_start",[39m
+[31m+         "message": "'빈 맵'(map_blank_start) 은 만들기만 하고 지형·구조·이벤트가 하나도 없습니다(20×15, 바닥 타일 1종, 상단 레이어 비어 있음, 이벤트 0). 시작 맵이라 차단하지는 않지만 플레이어가 빈 벌판에서 시작합니다.",[39m
+[31m+         "severity": "warning",[39m
+[2m        },[22m
+[2m      ],[22m
+[2m      "ok": true,[22m
+[2m    },[22m
+[2m  }[22m
+
+ ❯ test/assistantFinalAssessment.test.ts:68:27
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  test/assistantFinalAssessment.test.ts > current final artifact assessment > exposes all categories before repair and repairing acceptance does not erase others or replay milestones
+ FAIL  test/assistantFinalAssessment.test.ts > current final artifact assessment > exposes all categories before repair and repairing ending does not erase others or replay milestones
+AssertionError: expected undefined to match object { type: 'completion_assessment', …(1) }
+
+[32m- Expected:[39m
+{
+  "assessment": {
+    "acceptance": {
+      "items": [
+        {
+          "id": "maps",
+          "status": "blocked",
+        },
+        {
+          "id": "kept",
+          "status": "verified",
+        },
+      ],
+    },
+    "adventure": ArrayContaining [
+      Any<String>,
+    ],
+    "verification": ArrayContaining [
+      Any<String>,
+    ],
+  },
+  "type": "completion_assessment",
+}
+
+[31m+ Received:[39m
+undefined
+
+ ❯ test/assistantFinalAssessment.test.ts:91:40
+     89|     const result = await f.run(true);
+     90|     // Then all categories were exposed before the model chose a repai…
+     91|     expect(f.assessmentsAtResponse[3]).toMatchObject({ type: "completi…
+       |                                        ^
+     92|       acceptance: { items: [{ id: "maps", status: "blocked" }, { id: "…
+     93|       adventure: expect.arrayContaining([expect.any(String)]), verific…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed (6)
+   Start at  22:52:46
+   Duration  19.79s (transform 8.48s, setup 0ms, collect 12.22s, tests 7.11s, environment 0ms, prepare 79ms)
