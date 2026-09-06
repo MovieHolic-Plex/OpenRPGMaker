@@ -1,0 +1,13 @@
+{
+  "format": 1,
+  "policy": "Original auxiliary log bytes preserved exactly; decode content as base64. See archive-manifest.json for original paths.",
+  "entries": [
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/reviewer-st_01a07628/monitor.log",
+      "sha256": "4e163769198904b0f8d21760253430736a537b56f596f2603dc268e346df7af6",
+      "bytes": 27,
+      "encoding": "base64",
+      "content": "QVJNRUQgMjQ2NzA2MwpSRUFEWSByZW5hbWUK"
+    }
+  ]
+}

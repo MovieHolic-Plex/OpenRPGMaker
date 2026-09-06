@@ -1,0 +1,54 @@
+{
+  "baseFailures": 165,
+  "archivedFinalFailures": 166,
+  "shared": 165,
+  "sameFullMessagesAfterRoot": 160,
+  "residualMessages": [
+    {
+      "key": [
+        "test/actionDebounceFootprint.test.ts",
+        "__oprnDebug 스냅샷이 두 사각을 실어 보낸다 3x3 + passRows 1 이면 몸 사각과 통행 사각이 다르게 실린다"
+      ],
+      "diff": "--- base\n\n+++ archived-final\n\n@@ -1,5 +1,5 @@\n\n TypeError: Cannot read properties of undefined (reading 'registry')\n-    at syncCutsceneHudVisibility (<ROOT>/src/player/playSceneMapRuntime.ts:655:27)\n+    at syncCutsceneHudVisibility (<ROOT>/src/player/playSceneMapRuntime.ts:657:27)\n     at syncRuntimeState (<ROOT>/src/player/playSceneMapRuntime.ts:563:3)\n     at captureScene (<ROOT>/test/actionDebounceFootprint.test.ts:139:5)\n     at <ROOT>/test/actionDebounceFootprint.test.ts:145:19"
+    },
+    {
+      "key": [
+        "test/actionDebounceFootprint.test.ts",
+        "__oprnDebug 스냅샷이 두 사각을 실어 보낸다 발자국 저작이 없으면 두 사각이 앵커 한 칸으로 같다 — 항등"
+      ],
+      "diff": "--- base\n\n+++ archived-final\n\n@@ -1,5 +1,5 @@\n\n TypeError: Cannot read properties of undefined (reading 'registry')\n-    at syncCutsceneHudVisibility (<ROOT>/src/player/playSceneMapRuntime.ts:655:27)\n+    at syncCutsceneHudVisibility (<ROOT>/src/player/playSceneMapRuntime.ts:657:27)\n     at syncRuntimeState (<ROOT>/src/player/playSceneMapRuntime.ts:563:3)\n     at captureScene (<ROOT>/test/actionDebounceFootprint.test.ts:139:5)\n     at <ROOT>/test/actionDebounceFootprint.test.ts:158:19"
+    },
+    {
+      "key": [
+        "test/detsukuruBrandStrings.test.ts",
+        "탈-쯔구르: 출하 문자열 src 안에 RPG Maker 계보 표현이 남아 있지 않다"
+      ],
+      "diff": "--- base\n\n+++ archived-final\n\n@@ -1,8 +1,8 @@\n\n AssertionError: 금지 표현 6건:\n src/player/input.ts:228 [RPG Maker 제품명] * 보관하는 경로는 없다 — RPG Maker 처럼 걷는 중에 온 탭은 그 프레임에 소비되고 버려진다.\n src/player/input.ts:341 [RPG Maker 제품명] // 매 프레임 호출. 엣지 이벤트 갱신. RPG Maker 의 Input.update 처럼 「지금 눌림」을 읽고, 프레임 사이에\n-src/player/playSceneMovement.ts:64 [RPG Maker 제품명] * 주인공 이동의 논리 프레임. RPG Maker 는 걸음을 시간이 아니라 프레임으로 가른다(MV: 2^speed/256\n-src/player/playSceneMovement.ts:153 [RPG Maker 제품명] * RPG Maker 의 Game_Player.update 한 프레임: 안 걷고 있으면 입력(또는 강제 루트)으로 걸음을 시작하고,\n+src/player/playSceneMovement.ts:67 [RPG Maker 제품명] * 주인공 이동의 논리 프레임. RPG Maker 는 걸음을 시간이 아니라 프레임으로 가른다(MV: 2^speed/256\n+src/player/playSceneMovement.ts:156 [RPG Maker 제품명] * RPG Maker 의 Game_Player.update 한 프레임: 안 걷고 있으면 입력(또는 강제 루트)으로 걸음을 시작하고,\n src/player/playSceneTypes.ts:173 [RPG Maker 제품명] /** 이번 걸음에서 지나간 논리 프레임. 걸음은 round(moveDurationMs / 틱) 프레임에 정확히 끝난다(RPG Maker 식). */\n src/player/runtimeDebugPanel.ts:20 [구 저장 키 접두사 rpg-zzu] // 구 접두사 `rpg-zzu:` 로 직접 쓰면 부팅 시 migrateLegacyStorageKeys 가 새 접두사로: expected [ …(6) ] to deeply equal []\n     at <ROOT>/test/detsukuruBrandStrings.test.ts:201:79"
+    },
+    {
+      "key": [
+        "test/eventEditorTrustLoop.test.ts",
+        "event editor trust loop restores focus, caret, open details, and scroll across reactive rerenders"
+      ],
+      "diff": "--- base\n\n+++ archived-final\n\n@@ -6,6 +6,6 @@\n\n     at new Promise (<anonymous>)\n     at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n     at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n+    at runNextTicks (node:internal/process/task_queues:64:5)\n+    at processTimers (node:internal/timers:538:9)\n     at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n-    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n-    at runFiles (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1787:3)"
+    },
+    {
+      "key": [
+        "test/storePersistence.test.ts",
+        "Project store remote persistence does not write to Supabase before the canonical project has loaded"
+      ],
+      "diff": "--- base\n\n+++ archived-final\n\n@@ -7,7 +7,7 @@\n\n \u001b[22m    Array [\n       \"/__oprn/edit-activity\",\n       Object {\n-        \"body\": \"{\"entries\":[{\"seq\":0,\"at\":\"2026-09-06T05:35:09.223Z\",\"scope\":\"project\",\"label\":null,\"origin\":\"human\",\"generation\":1,\"reason\":\"사람이 편집\"}]}\",\n+        \"body\": \"{\"entries\":[{\"seq\":0,\"at\":\"2026-09-06T06:16:00.065Z\",\"scope\":\"project\",\"label\":null,\"origin\":\"human\",\"generation\":1,\"reason\":\"사람이 편집\"}]}\",\n         \"headers\": Object {\n           \"Content-Type\": \"application/json\",\n         },"
+    }
+  ],
+  "finalOnly": [
+    {
+      "key": [
+        "test/databaseOverviewDashboard.test.ts",
+        "database overview dashboard empty project renders empty states without NaN paths"
+      ],
+      "message": "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/databaseOverviewDashboard.test.ts:329:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
+    }
+  ],
+  "baseOnly": [],
+  "scope": "Historical report comparison only; not a result for d84001e8"
+}
