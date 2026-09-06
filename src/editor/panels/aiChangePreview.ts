@@ -61,6 +61,7 @@ const CHIP_RULES: readonly ChipRule[] = [
   ["mapsRemoved", (n) => `맵 삭제 ${n}`],
   ["mapPropertiesChanged", (n) => `맵 속성 ${n}`],
   ["audioDescriptionsChanged", (n) => `오디오 설명 ${n}`],
+  ["monsterMetadataChanged", (n) => `몬스터 소재 ${n}`],
   ["dbRecordsChanged", (n) => `DB ${n}`],
   ["tilesetsChanged", (n) => `타일셋 ${n}`],
   ["switchesAdded", (n) => `스위치 +${n}`],

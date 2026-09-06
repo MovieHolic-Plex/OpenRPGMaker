@@ -1,0 +1,26 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/monsterMetadataPersistence.test.ts test/monsterMetadataAccounting.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-monster-model-0907
+
+ ✓ test/monsterMetadataAccounting.test.ts (8 tests) 4826ms
+   ✓ monster metadata accounting > keeps metadata-only changes visible when presenting proposal and commit summaries  454ms
+   ✓ monster metadata accounting > preserves tile-only safety compatibility when metadata count is undefined  1190ms
+   ✓ monster metadata accounting > preserves tile-only safety compatibility when metadata count is 0  1240ms
+   ✓ monster metadata accounting > preserves tile-only safety compatibility when metadata count is 1  657ms
+   ✓ monster metadata accounting > parses optional metadata totals when a construction outcome count is undefined  319ms
+   ✓ monster metadata accounting > parses optional metadata totals when a construction outcome count is 0  601ms
+   ✓ monster metadata accounting > parses optional metadata totals when a construction outcome count is 1  356ms
+ ✓ test/monsterMetadataPersistence.test.ts (5 tests) 41716ms
+   ✓ monster metadata concurrent persistence > merges per-field local deltas when a real conditional save loses its first SHA race  6355ms
+   ✓ monster metadata concurrent persistence > reconciles remote fields without recording an edit when consecutive map saves complete  11705ms
+   ✓ monster metadata concurrent persistence > preserves fresh fields and live maps when a save response arrives late  12874ms
+   ✓ monster metadata concurrent persistence > does not adopt old metadata when a different project replaces the submitted lineage  7151ms
+   ✓ monster metadata concurrent persistence > retains baseline and fresh input when a deferred write fails  3628ms
+
+ Test Files  2 passed (2)
+      Tests  13 passed (13)
+   Start at  03:27:39
+   Duration  56.06s (transform 24.54s, setup 0ms, collect 47.70s, tests 46.54s, environment 1ms, prepare 698ms)

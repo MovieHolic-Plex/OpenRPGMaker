@@ -274,6 +274,7 @@ function constructionDiff(diff: ChangeSummary): ConstructionDiffTotals {
     palettePresetsModified: diff.palettePresetsModified,
     endingsChanged: diff.endingsChanged,
     audioDescriptionsChanged: diff.audioDescriptionsChanged ?? 0,
+    monsterMetadataChanged: diff.monsterMetadataChanged ?? 0,
     sessionChanged: diff.sessionChanged,
     systemChanged: diff.systemChanged,
   };

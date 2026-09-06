@@ -142,6 +142,7 @@ export function fallbackDiffParts(calls: readonly ProposedCall[]): string[] {
     nounCount("타일", diff.tilesChanged),
     nounCount("맵 설정", diff.mapPropertiesChanged ?? 0),
     nounCount("오디오 설명", diff.audioDescriptionsChanged ?? 0),
+    nounCount("몬스터 소재", diff.monsterMetadataChanged ?? 0),
     nounCount("맵", diff.mapsAdded),
     nounCount("맵 삭제", diff.mapsRemoved),
     nounCount("NPC", npcCount),
@@ -186,6 +187,7 @@ export function proposalHumanSummaryLine(calls: readonly ProposedCall[]): string
       ? `타일 ${remainingTileChanges}`
       : null,
     semanticParts.length > 0 ? nounCount("오디오 설명", diff.audioDescriptionsChanged ?? 0) : null,
+    semanticParts.length > 0 ? nounCount("몬스터 소재", diff.monsterMetadataChanged ?? 0) : null,
   ].filter((part): part is string => part !== null);
   return parts.length > 0 ? parts.join(" · ") : `변경 ${calls.length}`;
 }

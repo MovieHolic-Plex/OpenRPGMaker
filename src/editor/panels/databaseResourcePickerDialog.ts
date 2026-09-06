@@ -7,7 +7,6 @@ import {
   CHARSET_SHEET_ROWS,
   EASYRPG_BACKDROP_ASSETS,
   EASYRPG_BATTLE_ASSETS,
-  EASYRPG_MONSTER_ASSETS,
   EASYRPG_SYSTEM2_ASSETS,
   EASYRPG_SYSTEM_ASSETS,
   EASYRPG_TITLE_ASSETS,
@@ -16,10 +15,10 @@ import {
 import { FACESET_FACE_ASSETS, LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetFaceAssets";
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
 import { listAudioResources } from "@/assets/audioResourceCatalog";
+import { listMonsterResources } from "@/assets/monsterResourceCatalog";
 import { audioDescriptionView, audioPlayback } from "./audioResourcePresentation";
 import {
   SCARLOXY_BACKDROP_ASSETS,
-  SCARLOXY_MONSTER_ASSETS,
   SCARLOXY_MONSTER_ICON_ASSETS,
   SCARLOXY_UI_ICON_ASSETS,
 } from "@/assets/scarloxyPack";
@@ -403,9 +402,11 @@ export function listDatabaseResourceOptions(
       for (const asset of CHARSET_ASSETS) add(asset.id, asset.name);
       break;
     case "monster":
-      for (const asset of EASYRPG_MONSTER_ASSETS) add(asset.id, asset.name);
-      for (const asset of SCARLOXY_MONSTER_ASSETS) add(asset.id, asset.name);
-      break;
+      return listMonsterResources(project).map(resource => ({
+        id: resource.resourceId,
+        name: resource.name,
+        searchTerms: [...resource.tags, resource.description],
+      }));
     case "title":
       for (const asset of EASYRPG_TITLE_ASSETS) add(asset.id, asset.name);
       break;
