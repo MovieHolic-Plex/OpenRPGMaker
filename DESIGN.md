@@ -114,15 +114,22 @@ existing purse emblem; actual party faces remain explicitly labelled as party.
 ## Walk encounters from a rectangle (2026-09-06)
 
 - Primary action: `걸을 때 적 만나기`. Use the existing left-drag selection tool,
-  then the visible selection chip. Explanation: `포켓몬 풀숲처럼, 이 안에서 걷다
-  보면 전투가 시작됩니다.` No tile painting, new schema, or runtime overlay.
-- Native modal-stack worksheet: named enemy artwork/checkbox search, selected
-  count, frequency presets, then `완료`. Reuse subdialog, `btn`, thumbnail and
-  labelled native controls; advanced weights/conditions use `details`.
+  then the visible selection chip. Explanation: `포켓몬 풀숲처럼, 걷다 보면 선택한
+  그룹 중 하나와 전투합니다.` No tile painting, new schema, or runtime overlay.
+- Group-first modal worksheet: compact selected-group rows show authored names,
+  composition thumbnails/counts (including hidden members), weight and live relative
+  share. `+ 그룹 추가` opens a separate searchable existing-group picker with
+  selected, empty and no-results states. No individual-enemy selection or troop
+  generation. Each row owns its conditions disclosure, edit and remove actions.
+  Reuse subdialog, `btn`, thumbnails and labelled native controls. Weight typing
+  updates only share outputs, preserving input focus. Shares describe the current
+  worksheet, not actual eligibility among overlapping/conditional rules.
   Personas: first-time author, existing-table author, keyboard-only author.
 - Studio tokens (`--bg-raised`, `--bg-inset`, `--text-1/2`, `--accent`,
   `--border-soft`), --font-ui 13px/1.5, help 12px/1.5, 32px minimum controls,
-  4/8/12/16/24 spacing, 6px controls and 8px groups. No decorative motion.
+  4/8/12/16/24 spacing and shared 6px radius. Row titles are 14px; numeric
+  tracks use 64px weight / 72px share, 32px thumbnails, tabular figures. Picker
+  width is at most 560px with a 320px list cap. No decorative motion.
   Width at most 760px; bounded scrolling body, fixed action footer. Desktop
   acceptance 1024x768, 1280x800, 1440x900; controls wrap rather than shrink.
 - Canvas has a persistent labelled region-list button and translucent indigo
@@ -135,8 +142,12 @@ existing purse emblem; actual party faces remain explicitly labelled as party.
   keep-everywhere or replace-with-regions choice. Other table entries survive.
 - Fields are local drafts. Cancel/Escape write nothing. Apply validates bounds,
   references, conditions, locks, project identity and encounter-state freshness,
-  then records one project snapshot and one labelled store mutation including
-  generated troops. Delete removes rules, not tiles/troops. Empty catalog/search,
+  then records one map-only snapshot and one labelled map mutation. Authored
+  groups, including previously generated groups and duplicate condition variants,
+  are never merged, migrated or deleted. Group editing opens the existing database
+  then reveals the selected troop; closing it restores the same in-memory draft.
+  Missing groups stay visible and block save, with replace/remove recovery. Empty
+  databases offer direct group editing. Delete removes rules, not tiles/troops. Empty picker/search,
   invalid input, stale state and lock errors have visible recovery text.
   No fake loading. Real browser review is supervisor-owned.
 
