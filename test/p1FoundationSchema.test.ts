@@ -14,7 +14,7 @@ import { createBlankProject } from "@/project/defaults";
 import { deserialize, serialize } from "@/project/io";
 import { startSession } from "@/project/session";
 import { createLegacyLifeProject } from "./fixtures/life-full/legacyProject";
-import { LifeReconciliationError } from "@/project/lifeRecovery";
+import { collectLifeRecoveryClaim, LifeReconciliationError } from "@/project/lifeRecovery";
 
 class MemoryStorage implements Storage {
   private readonly values = new Map<string, string>();
@@ -400,7 +400,15 @@ describe("P1 daily weather and farm-animal session persistence", () => {
     });
     expect(restored.inventory).toEqual((directBefore.session as unknown as MutableUnknown).inventory);
     expect(restored.gold).toBe((directBefore.session as unknown as MutableUnknown).gold);
+    const beforeCollection = structuredClone(restored);
+    const claimId = Object.keys(claims)[0];
+    if (!claimId) throw new Error("expected unresolved recovery claim");
+    expect(collectLifeRecoveryClaim(project, restored as never, claimId)).toEqual({ ok: false, reason: "unresolved" });
+    expect(restored).toEqual(beforeCollection);
 
+    const initialRecovery = structuredClone(restored.lifeRecovery);
+    const initialInventory = structuredClone(restored.inventory);
+    const initialGold = restored.gold;
     const roundTrip = (state: MutableUnknown) => {
       const snapshot = createSaveSnapshot(project, state as never);
       expect(saveToSlot(storage, 2, snapshot).ok).toBe(true);
@@ -411,8 +419,14 @@ describe("P1 daily weather and farm-animal session persistence", () => {
     };
     const repeated = roundTrip(restored);
     const repeatedAgain = roundTrip(repeated);
+    expect(repeated.lifeRecovery).toEqual(initialRecovery);
+    expect(repeatedAgain.lifeRecovery).toEqual(initialRecovery);
+    expect(repeated.inventory).toEqual(initialInventory);
+    expect(repeatedAgain.inventory).toEqual(initialInventory);
+    expect(repeated.gold).toBe(initialGold);
+    expect(repeatedAgain.gold).toBe(initialGold);
+    expect(repeated.farmAnimals).toEqual({});
     expect(repeatedAgain.farmAnimals).toEqual({});
-    expect(repeatedAgain.lifeRecovery).toEqual(repeated.lifeRecovery);
 
     const repeatedRead = readSaveSlot(storage, 2);
     expect(repeatedRead.kind).toBe("present");

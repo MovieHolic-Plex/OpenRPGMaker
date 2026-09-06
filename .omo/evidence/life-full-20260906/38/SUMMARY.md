@@ -10,14 +10,15 @@ Exit: 1 (captured in RED.txt). Failure: LifeReconciliationError farmAnimals/farm
 ## After
 Command: npm test -- test/p1FoundationSchema.test.ts test/p1SessionPersistence.test.ts test/lifeRecoveryPersistence.test.ts test/lifeRecoveryRecordKeys.test.ts
 Exit: 0; 4 files, 89 tests passed.
-Diagnostics: language-service diagnostics for test/p1FoundationSchema.test.ts: no diagnostics found.
+Diagnostics: language-service diagnostics was invoked twice for test/p1FoundationSchema.test.ts but timed out waiting for fresh diagnostics (3 seconds each); no clean diagnostic result is claimed.
 git diff --check: exit 0.
 
 ## Coverage added
 - Exact typed LifeReconciliationError fields are asserted for unrepresentable farm-animal source, captured from the actual thrown value.
 - The complete live session, including NaN/Infinity, is compared unchanged after the failed writer; a confirmed non-null prior slot byte string from saveSlotKey(2) remains unchanged after the combined failed save action.
 - A separate valid-animal writer control preserves the NaN-weather assertion; JSON-safe hostile direct input retains exactly one empty-items unresolved original, no authored-animal resurrection, no payout, unchanged input/inventory/gold, and the direct meteor-weather rejection.
-- Two subsequent snapshots are created from restored states and saved/read/applied, proving stable claim sequence and no active animal.
+- The sole unresolved claim is passed to the actual collector; an explicit missing-ID guard protects claim selection, the collector returns exactly `{ ok: false, reason: "unresolved" }`, and the entire restored state remains unchanged.
+- Two subsequent snapshots are created from restored states and saved/read/applied; both recovery states equal the initial recovery, and both cycles preserve initial inventory/gold with no active animal.
 - Initial review gaps disclosed: the first commit used an incorrect hardcoded slot key, did not assert non-null prior bytes or the combined failed-save action, used an asymmetric matcher cast, did not preserve direct-input/inventory/gold explicitly, replayed the original snapshot instead of creating round-trip snapshots, and omitted the separate valid-animal NaN-weather writer control.
 - Existing valid-animal and legacy-omission controls remain untouched.
 
