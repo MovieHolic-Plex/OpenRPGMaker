@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "baseCommit": "49067218a",
+  "records": [
+    {
+      "scenario": "movement controls",
+      "records": [
+        {
+          "control": "ai-resize-handle",
+          "key": "ArrowLeft",
+          "before": 480,
+          "after": 480
+        },
+        {
+          "control": "ai-studio-split-scenes",
+          "before": "--studio-scenes-w: 252px; --studio-chat-w: 400px; --studio-deck-h: 236px;",
+          "after": "--studio-scenes-w: 268px; --studio-chat-w: 400px; --studio-deck-h: 236px;"
+        },
+        {
+          "control": "ai-studio-split-chat",
+          "before": "--studio-scenes-w: 252px; --studio-chat-w: 400px; --studio-deck-h: 236px;",
+          "after": "--studio-scenes-w: 252px; --studio-chat-w: 416px; --studio-deck-h: 236px;"
+        },
+        {
+          "control": "ai-studio-split-deck",
+          "before": "--studio-scenes-w: 252px; --studio-chat-w: 400px; --studio-deck-h: 236px;",
+          "after": "--studio-scenes-w: 252px; --studio-chat-w: 400px; --studio-deck-h: 252px;"
+        },
+        {
+          "control": "ai-studio-scene-search",
+          "visibleScenes": [
+            "달빛 숲40×40 · 이벤트 5"
+          ]
+        },
+        {
+          "control": "ai-studio-scene"
+        },
+        {
+          "control": "ai-studio-scene-fold",
+          "roundtrip": true
+        },
+        {
+          "control": "ai-studio-tool-filter",
+          "cards": [
+            "NPC 배치",
+            "이벤트 찾기",
+            "NPC 생활 이동…",
+            "상자 놓기",
+            "세이브 지점 놓기",
+            "대사 없는 NPC…",
+            "이벤트 쓰기",
+            "일과 정하기",
+            "주민 만들기",
+            "품목 정하기",
+            "이벤트 복제",
+            "이벤트 설명",
+            "이벤트 읽기",
+            "NPC/캐릭터셋 …",
+            "진영",
+            "세계 짓기",
+            "화면 이동"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "idle resize vs input focus",
+      "idleBefore": {
+        "width": 480,
+        "style": "480px",
+        "classes": "ai-chat-panel chat-dock-float is-assistant-idle",
+        "aria": "480"
+      },
+      "idleAfter": {
+        "width": 480,
+        "style": "496px",
+        "classes": "ai-chat-panel chat-dock-float is-assistant-idle",
+        "aria": "480"
+      },
+      "dragged": {
+        "width": 480,
+        "style": "560px",
+        "classes": "ai-chat-panel chat-dock-float is-assistant-idle",
+        "aria": "480"
+      },
+      "focused": {
+        "width": 560,
+        "style": "560px",
+        "classes": "ai-chat-panel chat-dock-float is-assistant-idle is-composer-focused",
+        "aria": "480"
+      }
+    }
+  ]
+}

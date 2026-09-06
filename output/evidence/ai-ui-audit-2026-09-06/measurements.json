@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "baseCommit": "49067218a",
+  "provenance": "Transcribed from this session's actual Chromium tool results and contemporaneous notebook. The first kernel's in-memory aggregate was lost; this is not presented as a raw browser trace.",
+  "desktopViewport": [1440, 900],
+  "float": {
+    "deck": {"x": 948, "y": 745, "width": 480, "height": 141},
+    "menuTop": 499,
+    "preferenceTop": 574.5,
+    "contextTop": 602.0625,
+    "menuRepeatCloses": true,
+    "outsideClickCloses": true,
+    "escapeClosesEachPopover": true,
+    "modeRadioValues": {"ask": "true", "plan": "true", "do": "true"},
+    "collapsedDeckDisplay": "none",
+    "restoredDeckDisplay": "flex"
+  },
+  "history": {
+    "deck": {"x": 315, "y": 57, "width": 503, "height": 835},
+    "menu": {"x": 562, "y": -189, "width": 248, "height": 240},
+    "preference": {"x": 315, "y": -113.5, "width": 495, "height": 164.5},
+    "context": {"x": 627.609375, "y": -85.9375, "width": 182.390625, "height": 136.9375},
+    "sameMenuActionLeavesHistoryOpen": true,
+    "collapsedDeck": {"x": 1379, "y": 49, "width": 47, "height": 799, "display": "flex"},
+    "collapsedInputVisible": true,
+    "collapsedRestoreVisible": true,
+    "collapsedCollapseButtonVisible": true
+  },
+  "historyToStudio": {
+    "panelClasses": "ai-chat-panel is-assistant-idle chat-dock-float is-history-open is-studio",
+    "oldDeck": {"x": 0, "y": 48, "width": 1440, "height": 637.6875, "display": "flex"},
+    "exitPointerClick": "Timed out after 5000ms; ai-glass-log, ai-studio-monitor, and ai-studio-split-deck intercepted the click during scrolling",
+    "directStudioDeckDisplay": "none",
+    "topbarToggleRecovery": true
+  },
+  "studioCollapse": {
+    "gridBefore": "252px 8px 712px 8px 400px",
+    "gridAfter": "252px 8px 712px 8px 400px",
+    "inlineScenesWidth": "252px",
+    "inlineChatWidth": "400px",
+    "expectedCollapsedColumnWidthFromCss": "52px",
+    "tabsSelectedAfterClick": ["work", "changes", "activity", "tools"],
+    "toolCardFilledInput": "author_house",
+    "directStudioExitWorked": true
+  },
+  "settings": {
+    "topbar": {
+      "selectedFont": "large",
+      "storedFont": "large",
+      "panelFont": "normal",
+      "selectedAutonomy": "max",
+      "composerAutonomy": "balanced",
+      "selectedOpacity": "100",
+      "panelOpacity": "100%",
+      "temperatureChoices": 0
+    },
+    "panelMenu": {
+      "selectedFont": "small",
+      "panelFont": "small",
+      "selectedAutonomy": "confirm",
+      "composerAutonomy": "confirm",
+      "temperatureChoices": 3,
+      "temperatureValuesUpdated": ["ink-only", "map-first", "quiet-gold"]
+    }
+  },
+  "focus": {
+    "settingsShiftTabFromClose": {"insideModal": false, "focusedTestid": "authoring-journey-toggle"},
+    "settingsEscapeAfterLeak": {"focusedTestid": "authoring-journey-toggle", "restoredToOpener": false},
+    "historyShiftTabFromClose": {"insideModal": false, "focusedTestid": "authoring-journey-toggle"}
+  },
+  "preferences": {
+    "rowsAfterAdd": 1,
+    "initialPinned": "true",
+    "afterPinToggle": "false",
+    "rowsAfterDelete": 0,
+    "rowsAfterClear": 0
+  },
+  "emptyActions": {
+    "exportVisibleMenuEnabled": true,
+    "exportHiddenDelegateDisabled": true,
+    "exportNewToast": false,
+    "compactToast": "압축할 대화가 없습니다.",
+    "sendPointerToast": "보낼 지시를 입력하세요"
+  },
+  "limitations": [
+    "No product changes or live provider completion verification.",
+    "Screenshots captured but model could not inspect pixels; findings use DOM geometry, actual interaction and source.",
+    "Conditional project-mutating controls are statically inventoried, not remotely executed."
+  ]
+}
