@@ -1,4 +1,7 @@
 import { LifeReconciliationError, parseLifeState, preserveUnresolvedLifeSource, reconcileLifeState } from "@/project/lifeRecovery";
+import { isSaveIdentity, publicationSaveKey, requireSaveIdentity, saveIdentity, saveIdentityBlocker, type SaveIdentity } from "./savePublication";
+import { PublicationError } from "../project/publication";
+export { setSavePublication } from "./savePublication";
 import { isDetectionEncounterCompletions } from '@/project/npcBehavior';
 import { hasEquipmentSlot } from "@/project/equipmentSlots";
 import { isHorrorState } from "@/project/horrorState";
@@ -113,7 +116,8 @@ export type SaveOrigin = "manual" | "auto";
 export type AutosaveTrigger = "transfer" | "battleVictory";
 
 export type SaveSnapshot = {
-  readonly schemaVersion: typeof SAVE_SCHEMA_VERSION;
+  readonly schemaVersion: typeof SAVE_SCHEMA_VERSION | 6;
+  readonly identity?: SaveIdentity;
   readonly projectTitle: string;
   readonly savedAt: string;
   readonly mapName?: string;
@@ -245,12 +249,16 @@ export type SaveSlotReadResult =
   | { readonly kind: "present"; readonly slot: SaveSlotIndex; readonly snapshot: SaveSnapshot };
 
 export function saveSlotKey(slot: SaveSlotIndex): string {
+  const pinned = publicationSaveKey(slot);
+  if (pinned) return pinned;
   if (saveSlotStorageNamespace) return `${saveSlotStorageNamespace}:save-slot:v5:${slot}`;
   return `${SAVE_SLOT_PREFIX}${slot}`;
 }
 
 /** 전용 오토세이브 키 — 수동 3슬롯(SaveSlotIndex)과 완전히 분리된 별도 칸. */
 export function autosaveKey(): string {
+  const pinned = publicationSaveKey("auto");
+  if (pinned) return pinned;
   if (saveSlotStorageNamespace) return `${saveSlotStorageNamespace}:save-slot:v5:auto`;
   return `${SAVE_SLOT_PREFIX}auto`;
 }
@@ -269,7 +277,7 @@ export function writeAutosave(storage: Storage, snapshot: SaveSnapshot): void {
 }
 
 export function readAutosave(storage: Storage): AutosaveReadResult {
-  const text = storage.getItem(autosaveKey()) ?? storage.getItem(legacySaveKey("auto"));
+  const text = storage.getItem(autosaveKey()) ?? (publicationSaveKey("auto") ? null : storage.getItem(legacySaveKey("auto")));
   if (text === null) return { kind: "empty" };
   let value: unknown;
   try {
@@ -291,7 +299,8 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
   const normalizedItems = normalizeItemTransitionState(session, project.database.items);
   const bundleReceiptIds = normalizedBundleReceiptIds(session.completedBundleIds, session.bundleRewardAppliedIds);
   return {
-    schemaVersion: SAVE_SCHEMA_VERSION,
+    schemaVersion: project.meta.publication ? 6 : SAVE_SCHEMA_VERSION,
+    ...(project.meta.publication ? { identity: saveIdentity(project.meta.publication) } : {}),
     projectTitle: project.meta.title,
     savedAt: new Date().toISOString(),
     mapName: project.maps[session.currentMapId]?.name ?? "",
@@ -448,6 +457,8 @@ function isQuotaExceededError(error: unknown): boolean {
 // 실측 결함: 저장 당시의 맵이 지워진 슬롯을 그대로 적용하면 부팅이 project.maps[id].width 에서
 // 터져 배포 플레이어가 "맵·에셋 불러오는 중…" 화면에 영구히 갇혔다. 적용 전에 막는다.
 export function snapshotLoadBlocker(project: Project, snapshot: SaveSnapshot): string | null {
+  const identityBlocker = saveIdentityBlocker(project.meta.publication, snapshot.identity);
+  if (identityBlocker) return identityBlocker;
   if (!project.maps[snapshot.session.currentMapId]) return "저장 당시의 맵이 이 프로젝트에 없습니다";
   for (const equipment of Object.values(snapshot.session.actorEquipment ?? {})) {
     if (Object.keys(equipment).some((slot) => !hasEquipmentSlot(project, slot))) return "저장 당시의 장비 부위가 이 프로젝트에 없습니다";
@@ -456,7 +467,7 @@ export function snapshotLoadBlocker(project: Project, snapshot: SaveSnapshot): s
 }
 
 export function readSaveSlot(storage: Storage, slot: SaveSlotIndex): SaveSlotReadResult {
-  const text = storage.getItem(saveSlotKey(slot)) ?? storage.getItem(legacySaveKey(slot));
+  const text = storage.getItem(saveSlotKey(slot)) ?? (publicationSaveKey(slot) ? null : storage.getItem(legacySaveKey(slot)));
   if (text === null) return { kind: "empty", slot };
   let value: unknown;
   try {
@@ -483,6 +494,7 @@ export function getSaveSlotStatus(
 }
 
 export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySession {
+  requireSaveIdentity(project.meta.publication, input.identity);
   const parsed = parseSnapshotValue(input);
   if (!parsed.ok) throw new LifeReconciliationError("snapshot", "session", parsed.message);
   const snapshot = { ...input, session: { ...input.session, ...parseLifeState(input.session) } };
@@ -767,7 +779,8 @@ type ParsedSnapshotResult =
 // Save4 migrates in memory; Save5 is intentionally unreadable by the previous reader.
 function parseSnapshotValue(value: unknown): ParsedSnapshotResult {
   if (!isRecord(value)) return { ok: false, message: "Save slot is not an object" };
-  if (value.schemaVersion !== 4 && value.schemaVersion !== SAVE_SCHEMA_VERSION) return { ok: false, message: "Unsupported save schema" };
+  if (value.schemaVersion !== 4 && value.schemaVersion !== 5 && value.schemaVersion !== 6) return { ok: false, message: "Unsupported save schema" };
+  if (value.schemaVersion === 6 ? !isSaveIdentity(value.identity) : value.identity !== undefined) return { ok: false, message: "Unsupported save schema" };
   if (typeof value.projectTitle !== "string") return { ok: false, message: "Missing project title" };
   if (typeof value.savedAt !== "string") return { ok: false, message: "Missing saved time" };
   if (!isRecord(value.session)) return { ok: false, message: "Missing session" };
@@ -776,7 +789,8 @@ function parseSnapshotValue(value: unknown): ParsedSnapshotResult {
   return {
     ok: true,
     snapshot: {
-      schemaVersion: SAVE_SCHEMA_VERSION,
+      schemaVersion: value.schemaVersion === 6 ? 6 : SAVE_SCHEMA_VERSION,
+      ...(isSaveIdentity(value.identity) ? { identity: value.identity } : {}),
       projectTitle: value.projectTitle,
       savedAt: value.savedAt,
       mapName: typeof value.mapName === "string" ? value.mapName : undefined,
@@ -795,6 +809,33 @@ function leadPartyLevel(project: Project, session: PlaySession): number | undefi
   const actor = project.database.actors.find((record) => record.id === actorId);
   return session.actorLevels[actorId] ?? actor?.initialLevel;
 }
+
+/** Explicit copy only: never enumerates storage and never rewrites the source. */
+export function importSaveCopy(options: {
+  readonly project: Project;
+  readonly storage: Storage;
+  readonly sourceKey: string;
+  readonly slot: SaveSlotIndex;
+  readonly adoptLegacy?: boolean;
+}): void {
+  const { project, storage, sourceKey, slot } = options;
+  const publication = project.meta.publication;
+  if (!publication) throw new PublicationError("save-incompatible");
+  const target = publicationSaveKey(slot, publication);
+  if (!target || sourceKey === target || storage.getItem(target) !== null) throw new PublicationError("save-incompatible");
+  const raw = storage.getItem(sourceKey);
+  if (raw === null) throw new PublicationError("save-incompatible");
+  const parsed = parseSnapshotValue(parseUniqueSaveJson(raw));
+  if (!parsed.ok) throw new PublicationError("save-incompatible");
+  const source = parsed.snapshot;
+  const adopted = !source.identity && options.adoptLegacy === true
+    ? { ...source, schemaVersion: 6 as const, identity: saveIdentity(publication) } : source;
+  if (snapshotLoadBlocker(project, adopted)) throw new PublicationError("save-incompatible");
+  const restored = applySaveSnapshot(project, adopted);
+  const copy = createSaveSnapshot(project, restored);
+  storage.setItem(target, JSON.stringify(copy));
+}
+
 
 /** 얼굴은 낱장 파일 한 장(리소스 id 하나)다. 그러나 예전 세이본은 (시트 id, 셀 번호) 짝을
  *  따로 직렬화해 넣었다 — 그 셀 번호를 버리면 오래된 세이본이 전부 칸 0 얼굴로 보이게 된다.

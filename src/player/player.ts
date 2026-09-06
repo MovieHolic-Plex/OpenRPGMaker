@@ -27,6 +27,7 @@ import {
   readAutosave,
   readSaveSlot,
   snapshotLoadBlocker,
+  setSavePublication,
   type SaveSlotIndex,
 } from "@/player/saveSlots";
 import { resetAutosaveDebounce } from "@/player/autosave";
@@ -139,6 +140,7 @@ const TITLE_CONFIRM_JUICE_MS = 180;
 
 export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {}): void {
   teardownShell?.();
+  setSavePublication(store.getCurrent().meta.publication);
   clearChildren(main);
   const audioEngine = getAudioEngine({ qaInstrumentation: options.qaInstrumentation === true });
 

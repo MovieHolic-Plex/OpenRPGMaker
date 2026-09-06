@@ -1,5 +1,25 @@
 # Runtime Project Schema & Persistence
 
+## Explicit publication identity and Save6 (2026-09-06)
+
+Project4 optionally carries `meta.publication`: `gameId`, `versionLabel`, a full
+SHA-256 `runtimeTarget`, `saveCompatibilityId`, and directional
+`acceptedSaveCompatibilityIds`. `publication.ts` validates without repairing or
+generating identity. Only explicit prepare/fork/upgrade operations create IDs.
+Rename, ordinary persistence and `.oprn` package round-trips preserve them.
+Upgrade preserves game identity and starts a new save lineage; fork changes both.
+
+Identity-bearing snapshots use Save6 and
+`oprn:game:<gameId>:lineage:<saveCompatibilityId>:save-slot:v6:<slot|auto>`.
+`renderPlayer` installs the publication namespace for editor and exported play.
+Legacy projects still write Save5 and retain the existing Save4/5 read/fallback
+rules. Legacy readers do not accept Save6. Save6 without identity is invalid.
+`applySaveSnapshot` rejects wrong-game/unaccepted-lineage snapshots before state
+restoration. `importSaveCopy` accepts one explicitly named storage key, requires
+explicit legacy adoption for Save4/5, validates a separate session, and writes
+only an empty destination slot. It never scans storage or changes source bytes.
+Tests: `publication.test.ts`, `publicationSaves.test.ts`, `lifeSaveVersion.test.ts`.
+
 ## P1 accepted-save receipts and read-only proof (2026-09-06)
 
 `ProjectFlushResult` keeps its existing variants; `saved` optionally includes a
