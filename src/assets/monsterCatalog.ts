@@ -1,4 +1,5 @@
 import type { MonsterMetadata } from "@/project/types";
+import monsterCatalogData from "./monsterCatalogData.json";
 
-/** Foundation scaffold only. Entries require the lead's original-artwork review. */
-export const MONSTER_CATALOG: Readonly<Record<string, MonsterMetadata>> = Object.freeze({});
+/** Original-artwork observations and source hashes are recorded in monsterCatalogReview.json. */
+export const MONSTER_CATALOG: Readonly<Record<string, MonsterMetadata>> = Object.freeze(monsterCatalogData);
