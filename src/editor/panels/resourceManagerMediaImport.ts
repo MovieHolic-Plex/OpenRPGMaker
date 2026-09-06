@@ -59,6 +59,8 @@ const MEDIA_IMPORT_RULES: Partial<Record<ResourceKind, MediaImportRule>> = {
 };
 
 /** 이 종류가 미디어 파일 가져오기 경로를 타는지. 이미지 종류면 null. */
+export function mediaImportRuleFor(kind: "music" | "sound" | "movie"): MediaImportRule;
+export function mediaImportRuleFor(kind: ResourceKind): MediaImportRule | null;
 export function mediaImportRuleFor(kind: ResourceKind): MediaImportRule | null {
   return MEDIA_IMPORT_RULES[kind] ?? null;
 }

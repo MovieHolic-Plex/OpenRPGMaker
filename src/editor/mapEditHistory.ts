@@ -178,6 +178,36 @@ export function recordProjectSnapshot(label?: string, mapId?: string | null, opt
 }
 
 /**
+ * Run a synchronous map edit, inserting its before-state only if it changed data.
+ * Store updates replace maps rather than mutating them, so retaining the before
+ * reference is enough until commit. No project clone/serialization is needed.
+ * Stroke callers stop using this boundary after their first actual mutation.
+ */
+export function recordMapEditIfChanged(
+  mapId: MapId,
+  edit: () => void,
+  options: { readonly includeTilesets?: boolean } = {},
+): boolean {
+  const before = store.getCurrent();
+  const beforeMap = before.maps[mapId];
+  edit();
+  const after = store.getCurrent();
+  const mapChanged = beforeMap !== after.maps[mapId]
+    && JSON.stringify(beforeMap) !== JSON.stringify(after.maps[mapId]);
+  const tilesetsChanged = options.includeTilesets && before.tilesets !== after.tilesets
+    && JSON.stringify(before.tilesets) !== JSON.stringify(after.tilesets);
+  if (!beforeMap || (!mapChanged && !tilesetsChanged)) return false;
+  lastCoalesceKey = null;
+  pushSnapshot({
+    kind: "map",
+    mapId,
+    before: mapWithCommittedEvents(beforeMap),
+    ...(options.includeTilesets ? { beforeTilesets: structuredClone(before.tilesets) } : {}),
+  }, undefined, mapId);
+  return true;
+}
+
+/**
  * 텍스트/숫자 입력 스트림처럼 keystroke 마다 호출되는 편집 직전에 사용.
  * 같은 key 가 연속으로 들어오는 동안에는 최초 1회(편집 시작 직전 상태)만 스냅샷하고
  * 이후는 무시한다. 다른 필드/이산 편집이 끼어들면 key 가 바뀌어 다시 스냅샷된다.

@@ -1,0 +1,122 @@
+{
+  "numTotalTests": 16,
+  "numPassedTests": 16,
+  "numFailedTests": 0,
+  "success": true,
+  "testResults": [
+    {
+      "file": "test/databaseOverviewDashboard.test.ts",
+      "status": "passed",
+      "assertionResults": [
+        {
+          "fullName": "database overview dashboard renders stat chips immediately with counts from the project data",
+          "status": "passed",
+          "duration": 37806.406455000004,
+          "failureMessages": []
+        },
+        {
+          "fullName": "database overview dashboard lazy compute: charts container is empty before idle callback, populated after flush",
+          "status": "passed",
+          "duration": 6199.226686000002,
+          "failureMessages": []
+        },
+        {
+          "fullName": "database overview dashboard curve chart renders two non-empty SVG paths with gridlines and Lv1..Lv50 labels",
+          "status": "passed",
+          "duration": 3667.2170899999983,
+          "failureMessages": []
+        },
+        {
+          "fullName": "database overview dashboard scatter chart draws one circle per enemy with a <title> tooltip and boss styling",
+          "status": "passed",
+          "duration": 2418.6242150000035,
+          "failureMessages": []
+        },
+        {
+          "fullName": "database overview dashboard renders issue cards matching the detector output with jump buttons",
+          "status": "passed",
+          "duration": 2284.873526000003,
+          "failureMessages": []
+        },
+        {
+          "fullName": "database overview dashboard jump button switches to the target tab via switchDatabaseActiveTab (G006)",
+          "status": "passed",
+          "duration": 2005.313040000001,
+          "failureMessages": []
+        },
+        {
+          "fullName": "database overview dashboard attack-stagnation jump opens the classes tab, not skills",
+          "status": "passed",
+          "duration": 4683.397730000004,
+          "failureMessages": []
+        },
+        {
+          "fullName": "database overview dashboard curve section shows a visible HP/attack legend",
+          "status": "passed",
+          "duration": 5543.020325000005,
+          "failureMessages": []
+        },
+        {
+          "fullName": "database overview dashboard AI 분석 button dispatches the modal's database-ai-toggle click (aria-expanded)",
+          "status": "passed",
+          "duration": 3533.3896340000065,
+          "failureMessages": []
+        },
+        {
+          "fullName": "database overview dashboard clean project shows empty-state cards instead of blank canvases",
+          "status": "passed",
+          "duration": 4924.917168999993,
+          "failureMessages": []
+        },
+        {
+          "fullName": "database overview dashboard empty project renders empty states without NaN paths",
+          "status": "passed",
+          "duration": 2739.1029639999906,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "file": "test/mapEditLocks.test.ts",
+      "status": "passed",
+      "assertionResults": [
+        {
+          "fullName": "잠금 소유자 라벨 내부 '브라우저 xxxx' 라벨을 사람이 읽을 문구로 바꾼다",
+          "status": "passed",
+          "duration": 2508.839104,
+          "failureMessages": []
+        },
+        {
+          "fullName": "맵 편집 잠금 가져오기 기존 소유자 조회 없이 현재 세션으로 upsert하고 held 상태로 바꾼다",
+          "status": "passed",
+          "duration": 1036.744279,
+          "failureMessages": []
+        }
+      ]
+    },
+    {
+      "file": "test/walkthroughRunner.test.ts",
+      "status": "passed",
+      "assertionResults": [
+        {
+          "fullName": "walkthroughRunner — 잿불의 유산 완주 kind 모양과 do/expect 혼합 오류를 한 스텝도 실행하기 전에 거부한다",
+          "status": "passed",
+          "duration": 2217.61663,
+          "failureMessages": []
+        },
+        {
+          "fullName": "walkthroughRunner — 잿불의 유산 완주 3퀘스트 + 엔딩을 헤드리스로 완주한다",
+          "status": "passed",
+          "duration": 327.95967599999994,
+          "failureMessages": []
+        },
+        {
+          "fullName": "walkthroughRunner — 잿불의 유산 완주 고의 파손(낡은 열쇠 지급 제거) 시 광산 문에서 막히고 실패 스텝을 리포트한다",
+          "status": "passed",
+          "duration": 329.450793,
+          "failureMessages": []
+        }
+      ]
+    }
+  ]
+}

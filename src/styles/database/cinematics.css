@@ -1,0 +1,160 @@
+/* Cinematic authoring extends Database Studio; runtime owns stage rendering.
+   Keep the list and detail as independent scroll surfaces at desktop widths. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws.db-cinematic-workspace {
+  grid-template-columns: minmax(calc(var(--space-6) * 5), calc(var(--space-6) * 6)) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  gap: var(--space-3);
+  min-width: 0;
+  min-height: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-cinematic-workspace .db-ws-list-pane {
+  padding: var(--space-2);
+  gap: var(--space-2);
+}
+
+.db-cinematic-workspace .db-cinematic-list-toolbar {
+  grid-row: 5;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.db-cinematic-workspace .db-cinematic-list-toolbar > .db-ws-btn {
+  width: 100%;
+}
+
+.db-cinematic-workspace .db-cinematic-scene-form,
+.db-cinematic-workspace .db-cinematic-menu-form,
+.db-cinematic-workspace .db-cinematic-media {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.db-cinematic-workspace .db-cinematic-menu-form:empty,
+.db-cinematic-workspace .db-cinematic-status:empty {
+  display: none;
+}
+
+.db-cinematic-workspace .db-cinematic-scene-toolbar,
+.db-cinematic-workspace .db-cinematic-preview-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.db-cinematic-workspace .db-cinematic-scene-toolbar > .db-ws-btn,
+.db-cinematic-workspace .db-cinematic-preview-toolbar > .db-ws-btn {
+  flex: 0 0 auto;
+  min-height: var(--space-6);
+}
+
+.db-cinematic-workspace .db-cinematic-preview-toolbar > h4 {
+  flex: 1 1 auto;
+  margin: 0;
+  color: var(--db-studio-text-1);
+  font: inherit;
+  font-weight: 600;
+}
+
+.db-cinematic-workspace .db-cinematic-note,
+.db-cinematic-workspace .db-cinematic-status {
+  margin: 0;
+  color: var(--db-studio-text-2);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.db-cinematic-workspace .db-cinematic-status:not(:empty) {
+  padding: var(--space-3);
+  background: var(--db-studio-inset);
+  border-radius: var(--radius-s);
+}
+
+.db-cinematic-workspace .db-cinematic-media {
+  padding-block: var(--space-2);
+}
+
+.db-cinematic-workspace .db-cinematic-media input[type="file"] {
+  min-width: 0;
+  max-width: 100%;
+  width: 100%;
+  color: var(--db-studio-text-2);
+  font: inherit;
+}
+
+.db-cinematic-workspace .db-cinematic-media input[type="file"]::file-selector-button {
+  min-height: var(--space-6);
+  margin-inline-end: var(--space-2);
+  padding-inline: var(--space-3);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: var(--radius-s);
+  background: var(--db-studio-surface);
+  color: var(--db-studio-text-1);
+  font: inherit;
+  cursor: pointer;
+}
+
+.db-cinematic-workspace .db-cinematic-media input[type="file"]:focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: var(--space-1);
+}
+
+.db-cinematic-workspace .db-cinematic-scene-form textarea,
+.db-cinematic-workspace .db-cinematic-menu-form textarea {
+  width: 100%;
+  min-width: 0;
+  resize: vertical;
+}
+
+.db-cinematic-workspace .db-cinematic-preview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: var(--radius-s);
+  background: var(--db-studio-surface);
+  scroll-margin-block: var(--space-3);
+}
+
+.db-cinematic-workspace .db-cinematic-preview[hidden] {
+  display: none;
+}
+
+.db-cinematic-workspace .db-cinematic-preview-stage {
+  position: relative;
+  width: 100%;
+  height: min(calc(var(--space-6) * 12), 44vh);
+  min-height: calc(var(--space-6) * 6);
+  overflow: hidden;
+  background: var(--db-studio-inset);
+}
+
+/* The shipped play surface computes scale/placement from its logical
+   resolution. Do not resize narration, images or videos independently here. */
+.db-cinematic-workspace .db-cinematic-preview-stage > .play-viewport {
+  height: 100%;
+  min-height: 0;
+  width: 100%;
+}
+
+@media (max-width: 1100px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-ws.db-cinematic-workspace {
+    grid-template-columns: calc(var(--space-6) * 5) minmax(0, 1fr);
+    gap: var(--space-2);
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-cinematic-workspace .db-ws-detail-body {
+    padding: var(--space-2);
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-cinematic-workspace .db-field {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-1);
+  }
+}

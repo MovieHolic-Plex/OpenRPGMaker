@@ -43,6 +43,7 @@ import {
 export type DatabaseResourcePickerKind =
   | "icon"
   | "image"
+  | "movie"
   | "monster"
   | "faceset"
   | "charset"
@@ -370,6 +371,13 @@ export function listDatabaseResourceOptions(
   };
 
   switch (kind) {
+    case "movie":
+      for (const profile of project.resourceProfiles) {
+        if (profile.kind === "movie" && profile.assetId) {
+          add(profile.assetId, profile.name || profile.assetId);
+        }
+      }
+      break;
     case "faceset":
       // 낱장 얼굴 112장. 분할 전 시트 id 는 저장본 호환을 위해 등록만 남고 피커에서는 빠진다.
       for (const asset of FACESET_FACE_ASSETS) add(asset.id, asset.name);
@@ -448,6 +456,7 @@ export function listDatabaseResourceOptions(
 }
 
 function matchesGeneratedKind(kind: DatabaseResourcePickerKind, resourceKind: ResourceKind | undefined, id: string): boolean {
+  if (kind === "movie") return resourceKind === "movie";
   if (kind === "faceset") {
     // 분할 전 4×4 시트는 얼굴 한 장이 아니다 — 등록만 남기고 피커 목록에서는 제외한다.
     if (LEGACY_FACESET_SHEET_IDS.includes(id)) return false;
@@ -502,6 +511,7 @@ function uploadedMatchesKind(
   id: string
 ): boolean {
   if (!uploadedKind) return matchesGeneratedKind(kind, undefined, id);
+  if (kind === "movie") return uploadedKind === "movie";
   if (kind === "icon" || kind === "image") {
     return uploadedKind === "picture" || uploadedKind === "monster" || uploadedKind === "system" || matchesGeneratedKind(kind, undefined, id);
   }
@@ -528,6 +538,16 @@ function resourceVisual(
   crop: { readonly characterIndex: number; readonly hue?: number }
 ): HTMLElement {
   if (!resourceId) return el("span", { class: `${className} db-resource-picker-empty`, text: "(없음)" });
+  // Selection is not playback. The cinematic sequence preview owns the player.
+  // Handle movie identities before the image URL/failure path, including profiles
+  // whose source is currently unavailable.
+  if (kind === "movie") {
+    return el("span", {
+      class: className,
+      text: "동영상",
+      attrs: { "aria-label": `${label} 동영상`, title: resourceId },
+    });
+  }
   const url = resolveAssetResourceUrl(resourceId, { project });
   if (!url) return resourceFailureVisual(className, label);
 
