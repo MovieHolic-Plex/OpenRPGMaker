@@ -1,0 +1,36 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/assistantVerificationEvidence.test.ts test/workItemOutcome.test.ts --maxWorkers 2 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-20260906
+
+ ✓ test/workItemOutcome.test.ts (14 tests) 3370ms
+   ✓ 산출물 게이트 — create_map 직후 상태 판별 > create_map 직후의 맵은 미저작으로 본다  811ms
+   ✓ 산출물 게이트 — create_map 직후 상태 판별 > 만든 맵이 비어 있으면 사유에 맵 이름과 다음 행동이 담긴다  490ms
+   ✓ WorkPlan 완료 게이트 회귀 — 만들고 안 채운 맵 > successTools 를 채워도 산출물이 비면 자동 완료를 막는다  401ms
+   ✓ WorkPlan 완료 게이트 회귀 — 만들고 안 채운 맵 > 맵을 채우면 같은 항목이 자동 완료된다  310ms
+   ✓ WorkPlan 완료 게이트 회귀 — 만들고 안 채운 맵 > 명시 complete_work_item 도 같은 게이트를 통과해야 한다  344ms
+ ✓ test/assistantVerificationEvidence.test.ts (20 tests) 13540ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > run_lint ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  1392ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > check_reachability ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  785ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > verify_quest ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  685ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > play_walkthrough ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  704ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > run_scene_test ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  728ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > evaluate_game_quality ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  772ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 같은 검사 재실패는 앞선 성공을 제거하고, 이후 실제 재통과는 복구한다  545ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 쓰기 이후에는 이전 검증 성공으로 완료할 수 없고 다시 검사해야 한다  985ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 재검사 없는 쓰기는 최종 보고에서도 검증 통과로 남지 않는다  618ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 실행되지 않은 잘못된 인자는 고친 호출로 복구할 수 있다  1037ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > warning-only lint는 통과하며 거부된 쓰기는 성공 근거를 무효화하지 않는다  993ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 레이어의 선재 lint 오류는 자문을 유지하면서 최종 응답에 보고한다  585ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 레이어 자동 통과는 재검증 의무를 만들지 않고 명시 검사만 유지한다 (explicit=false)  1012ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 레이어 자동 통과는 재검증 의무를 만들지 않고 명시 검사만 유지한다 (explicit=true)  1196ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 다음 항목은 자기 대상의 검증으로 완료하며 이전 항목의 stale 검사는 최종 보고에 보존한다  888ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 실패한 walkthrough 실행은 레이어의 성공 시나리오로 기록하지 않는다  398ms
+
+ Test Files  2 passed (2)
+      Tests  34 passed (34)
+   Start at  01:13:53
+   Duration  37.24s (transform 17.44s, setup 0ms, collect 44.52s, tests 16.91s, environment 1ms, prepare 317ms)
+
