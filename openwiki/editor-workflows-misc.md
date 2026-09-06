@@ -6,6 +6,16 @@ Map/event search, audio test, help modal, themed dungeons, resource manager, vil
 
 ## Other Editor Workflows
 
+### New-project name and player title (2026-09-07)
+
+`store.loadNewRemoteProject` and `store.loadNewRemoteProjectTransactionally`
+apply an explicit project name to both `meta.title` and an absent/default
+`system.titleScreen.title`. A deliberately different player title is preserved;
+existing projects are not renamed on load. The transactional path names its
+cloned candidate before saving, so remote verification covers the player title
+without mutating the caller's seed. Regression tests:
+`loadNewRemoteProject.test.ts`, `transactionalNewRemoteProject.test.ts`.
+
 ### 걸을 때 적 만나기 — rectangle authoring (2026-09-06)
 
 - Select with the sidebar's **선택** tool and left-drag, then click the visible
