@@ -1,0 +1,31 @@
+10 | const authored = runTool({ project }, "upsert_event", { mapId, event: { id: "currency_smoke", name: "Chief", x: 2, y: 3, trigger: { kind: "action" }, commands: [{ kind: "fork", condition: { kind: "selfSwitch", key: "A", value: false }, then: [{ kind: "changeGold", op: "+=", amount: 20 }, { kind: "setSelfSwitch", key: "A", value: true }] }] } });
+11 | assert.equal(authored.ok, true);
+12 | const original = JSON.stringify(project);
+13 | const required = parseNpcRewardRequirements([{ target: { eventId: "currency_smoke" }, grants: [{ kind: "gold", count: 20 }], oneTime: true }]);
+14 | const npc = verifyNpcRewardsPlayable(project, required);
+15 | assert.deepEqual(npc, { ok: true });
+            ^
+AssertionError: Expected values to be strictly deep-equal:
++ actual - expected
+
+  {
++   ok: false,
++   reason: 'NPC reward target {"eventId":"currency_smoke"}: expected one exact match, found 0'
+-   ok: true
+  }
+
+ generatedMessage: true,
+     actual: {
+  ok: false,
+  reason: "NPC reward target {\"eventId\":\"currency_smoke\"}: expected one exact match, found 0",
+},
+   expected: {
+  ok: true,
+},
+   operator: "deepStrictEqual",
+       diff: "simple",
+       code: "ERR_ASSERTION"
+
+      at /home/main/z-project/rpg-zzu-ai-npc-gold-0907/[eval]:15:8
+
+Bun v1.4.2 (Linux x64)

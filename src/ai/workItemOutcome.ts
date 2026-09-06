@@ -115,6 +115,11 @@ export function verifyNpcRewardsPlayable(
     const { map, event } = match;
     const first: SceneExpectStep = { kind: "expect", interactionComplete: true, inventoryDelta: {}, ownedMonsterDelta: {} };
     for (const grant of requirement.grants) {
+      if (grant.kind === "gold") {
+        if (first.goldDelta !== undefined) return { ok: false, reason: `NPC ${event.id}: duplicate gold requirement; declare the total count once` };
+        first.goldDelta = grant.count ?? { atLeast: 1 };
+        continue;
+      }
       const records = grant.kind === "item" ? project.database.items : project.database.monsterSpecies ?? [];
       const rewards = records.filter((record) => grant.id !== undefined ? record.id === grant.id : record.name === grant.name);
       const reward = rewards[0];
@@ -153,6 +158,7 @@ export function verifyNpcRewardsPlayable(
         ...(requirement.repeatChoices ?? []).map((index): SceneStep => ({ kind: "choose", index })),
         {
           kind: "expect", interactionComplete: true,
+          goldDelta: 0,
           inventoryDelta: Object.fromEntries(project.database.items.map((item) => [item.id, 0])),
           ownedMonsterDelta: Object.fromEntries((project.database.monsterSpecies ?? []).map((species) => [species.id, 0])),
         },

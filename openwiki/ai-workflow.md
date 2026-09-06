@@ -59,15 +59,15 @@ This page describes how an agent should operate on this project using the local 
 **Opt-in NPC reward acceptance (2026-09-06; core plus session completion wiring):**
 `IntentDeclaration.npcRewards` is declared by the existing `intentDeclarationClient` JSON request,
 using `INTENT_SYSTEM_PROMPT` and `parseIntentDeclaration`. Only explicit create/modify requests
-for NPC item/collected-monster grants opt in; ordinary dialogue, questions and removals omit it.
+for NPC currency/item/collected-monster grants opt in; ordinary dialogue, questions and removals omit it.
 No natural-language regex or final-command inference supplies these expectations.
 
 ```ts
 npcRewards?: readonly {
   target: ({ eventId: string } | { eventName: string }) & { mapId?: string };
-  grants: readonly (({ id: string } | { name: string }) & {
+  grants: readonly ({ kind: "gold"; count?: number; id?: never; name?: never } | (({ id: string } | { name: string }) & {
     kind: "item" | "monster"; count?: number;
-  })[];
+  }))[];
   oneTime?: boolean;
   choices?: readonly number[];
   repeatChoices?: readonly number[];
@@ -80,11 +80,19 @@ npcRewards?: readonly {
   Names/IDs need not exist until completion. NPC names resolve from `event.name`, falling back to
   the first-page display name used by starter authoring; map scope is optional but resolution must
   be unique. Item/species names also require a unique exact DB match.
+- First-class currency (2026-09-07): `{kind:"gold",count:20}` has no ID/name and bypasses
+  item/species lookup. Any currency ID/name field (including null) fails admission. Count is
+  still exact when supplied and positive when omitted. Currency is authored with native
+  `changeGold`; neither the parser nor completion coerces localized item names. A legitimate
+  item ID `gold` or name `골드` remains inventory-only. Mixed grants require every currency,
+  item and monster delta. Duplicate gold requirements fail rather than overwrite a count.
 - The declaration client gives malformed `npcRewards` one JSON-shape repair within the original
   20-second deadline. It retains the original non-reward intent fields and never accepts omission of
   the reward contract as a repair. Failed repairs remain blocking and are not cached. The session
   returns an error before planner/authoring calls for an invalid declaration; it cannot spend tools
   trying to repair request metadata that authoring tools cannot change.
+  Shape-repair guidance requires an ID/name only for item/monster grants, never gold. Valid item
+  declarations are not reinterpreted or reset, even if the item is named `골드`.
 - `verifyNpcRewardsPlayable(project: Project, required: NpcRewardRequirements | undefined):
   WorkItemOutcomeVerdict` in `workItemOutcome.ts` is the exported core gate. Undefined is a no-op;
   invalid/missing/ambiguous contracts fail. `AssistantSession` captures a clone alongside adventure
@@ -102,19 +110,34 @@ npcRewards?: readonly {
 - Each NPC gets a fresh local scene starting on a passable unoccupied adjacent tile. The gate checks
   local interaction, not travel from the game start or quest prerequisites. `oneTime:true` runs two
   interactions in the SAME session, with runtime page re-selection and the declared zero-based
-  choices. First deltas must match; the repeat must change no item/species counts. Text, claimed
+  choices. First deltas must match; the repeat must change no gold balance or item/species counts,
+  including currency paid on the repeat of an item-only obligation. Text, claimed
   switches, preexisting inventory and `changeParty` cannot satisfy a reward.
-- Scene/tool evidence: `snapshotRewards` checkpoints inventory and owned species counts;
+- Scene/tool evidence: `snapshotRewards` checkpoints `session.gold`, inventory and owned species counts;
+  `expect.goldDelta` accepts an exact signed safe integer or `{atLeast:integer}` against that
+  same scene session (scene-start baseline when no snapshot was taken). `finalState.gold` exposes
+  that session's final balance on success and failure. `expect.gold` and `currencyDelta` are not
+  supported aliases; malformed/unknown assertions fail tool preflight before executing steps.
+  The provider schema exposes `goldDelta` without a type restriction, like walkthrough `value`,
+  because strict provider schemas prohibit the scalar/object union; runtime preflight owns validation.
   `expect.inventoryDelta` / `ownedMonsterDelta` map IDs to exact integers or `{atLeast:1}`;
   `interactionComplete:true` rejects a still-pending choice. `interact.eventId` asserts the physically
   selected NPC instead of directly executing authored commands. Out-of-range choices fail.
   `finalState.ownedMonsterCounts`, `monsterParty`, `monsterBox` prove party-full box delivery through
   `monsterInstances`. `give_starter_monsters` already authors the guarded choice event; no new kit.
 - Tests: `test/npcRewardAcceptance.test.ts`, `test/npcRewardSession.test.ts`,
-  `test/intentDeclarationClient.test.ts`, existing scene/quest gates. Session tests run actual
+  `test/npcGoldReward.test.ts`, `test/intentDeclarationClient.test.ts`, existing scene/quest gates.
+  Currency regressions use native 37 -> 57 -> 57 interactions, inventory/currency separation,
+  exact-count failures, provider normalization, unchanged verification-history identity and the
+  same session lifecycle suite for gold and item/monster contracts. Session tests run actual
   `sendUserMessage`, real authoring tools, and the real scene verifier with a scripted model boundary.
   Evidence: `.omo/evidence/assistant-tool-reliability/rewards` (session follow-up: `session-wiring/`). Existing unrelated capture failures in
   `monsterCollection.test.ts:125,166` remain untouched; no battle or content/DB changes.
+- Currency support does not add prerequisite/journey acceptance. A chief that pays only after a
+  key is acquired still fails this fresh local gate until that separate contract is implemented;
+  do not move reward timing or seed switches to hide the limitation. Archived Round8's item
+  substitution remains failed currency evidence. No live declaration/ledger/game is repaired by
+  this source change. Evidence: `.omo/evidence/npc-gold-0907/`.
 
 ## After changing files
 

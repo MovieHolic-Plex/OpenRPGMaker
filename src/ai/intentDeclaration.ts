@@ -25,10 +25,11 @@ export type NpcRewardTarget = (
 ) & { readonly mapId?: string };
 
 export type NpcRewardGrant = (
-  | { readonly id: string; readonly name?: never }
-  | { readonly name: string; readonly id?: never }
+  | { readonly kind: "gold"; readonly id?: never; readonly name?: never }
+  | (({ readonly id: string; readonly name?: never } | { readonly name: string; readonly id?: never }) & {
+    readonly kind: "item" | "monster";
+  })
 ) & {
-  readonly kind: "item" | "monster";
   /** Exact positive delta when specified; otherwise any positive delta. */
   readonly count?: number;
 };
@@ -133,7 +134,7 @@ Fields:
 - "actionCombat": 실제 필드 액션 전투(공격 적중·처치·피격·회피·스태미나·원거리 적·보상)의 작동을 요구하면 {"targets":[{"mapId":"기존 실제 ID"} 또는 {"newMapName":"새로 만들 정확한 맵 이름"}]}로 필수 검증 대상을 선언한다. 턴제 전투, 장르 질문, 액션을 제외한 요청은 생략한다. 단어가 아니라 요청한 행동으로 판단한다. 이 선언은 계획 교체나 acceptance 수리로 지울 수 없는 완료 조건이다.
 - "statefulNpcs": 사용자가 상태에 따라 달라지는 NPC 행동/대사를 명시했을 때만 true. 보통의 한 페이지 안내 NPC, 인사, 상점이라는 이유로 true를 만들지 않는다.
 
-- "npcRewards": ONLY for explicit create/modify requests to make an NPC grant items or collected monsters. Omit for ordinary dialogue/NPCs, questions, and reward removal requests. Array example: [{"target":{"eventId":"known_event_id"},"grants":[{"kind":"item","id":"known_item_id","count":2}],"oneTime":true}]. Grant kind may also be "monster". When an ID is unknown, replace target eventId with eventName, or grant id with name. Each reference must contain exactly ONE of those keys, never both; omit unused keys rather than writing null. Optional mapId belongs inside target. Preserve every requested grant. count is a positive integer for an explicit amount; omit count for an unspecified positive amount. oneTime=true ONLY when requested. Choices are zero-based and only declared when requested; repeatChoices describes the second interaction, normally omitted. Use IDs only when known, otherwise exact names (must resolve uniquely at completion); do not invent IDs or substitute actors/changeParty for collected monsters. If the requested target/reward cannot be identified, include an incomplete requirement so completion remains blocked, not an omitted contract. These expectations come from the REQUEST, never the eventual event commands, and must not be weakened to pass completion.
+- "npcRewards": ONLY for explicit create/modify requests to make an NPC grant currency, items or collected monsters. Omit for ordinary dialogue/NPCs, questions, and reward removal requests. Array example: [{"target":{"eventId":"known_event_id"},"grants":[{"kind":"item","id":"known_item_id","count":2}],"oneTime":true}]. Grant kind may also be "monster" or "gold". Currency uses {"kind":"gold","count":20} with NO id/name, not an inventory item. Do not reinterpret an item named gold/골드 as currency or invent a gold item to represent money. When an ID is unknown, replace target eventId with eventName, or item/monster grant id with name. Each target or item/monster reference must contain exactly ONE of those keys, never both; omit unused keys rather than writing null. Optional mapId belongs inside target. Preserve every requested grant. count is a positive integer for an explicit amount; omit count for an unspecified positive amount. oneTime=true ONLY when requested. Choices are zero-based and only declared when requested; repeatChoices describes the second interaction, normally omitted. Use IDs only when known, otherwise exact names (must resolve uniquely at completion); do not invent IDs or substitute actors/changeParty for collected monsters. If the requested target/reward cannot be identified, include an incomplete requirement so completion remains blocked, not an omitted contract. These expectations come from the REQUEST, never the eventual event commands, and must not be weakened to pass completion.
 - "summary": 요청을 한 문장으로.
 
 Rules:
@@ -225,9 +226,14 @@ export function parseNpcRewardRequirements(raw: unknown): NpcRewardRequirements 
     if (!Array.isArray(entry.grants) || entry.grants.length === 0) return invalid("grants are required");
     const grants: NpcRewardGrant[] = [];
     for (const grant of entry.grants) {
-      if (!isRecord(grant) || (grant.kind !== "item" && grant.kind !== "monster")) return invalid("grant kind must be item or monster");
+      if (!isRecord(grant) || (grant.kind !== "item" && grant.kind !== "monster" && grant.kind !== "gold")) return invalid("grant kind must be item, monster or gold");
       if (grant.count !== undefined && (typeof grant.count !== "number" || !Number.isSafeInteger(grant.count) || grant.count <= 0)) return invalid("count must be a positive integer");
       const count = typeof grant.count === "number" ? { count: grant.count } : {};
+      if (grant.kind === "gold") {
+        if ("id" in grant || "name" in grant) return invalid("gold grants must omit id and name");
+        grants.push({ kind: "gold", ...count });
+        continue;
+      }
       if (text(grant.id) && grant.name === undefined) grants.push({ kind: grant.kind, id: grant.id, ...count });
       else if (text(grant.name) && grant.id === undefined) grants.push({ kind: grant.kind, name: grant.name, ...count });
       else return invalid("grant needs exactly one id or exact name");
@@ -462,7 +468,7 @@ export function formatIntentNote(intent: IntentDeclaration, options: { readonly 
   if (intent.statefulNpcs) lines.push("[NPC 완료 계약] 명시적으로 요청된 상태별 NPC 행동을 구현하라. 일반 안내 NPC까지 다중 페이지로 확대하지 않는다.");
 
   if (intent.npcRewards) {
-    lines.push(`[NPC reward contract] ${JSON.stringify(intent.npcRewards)} — preserve these request expectations. Verify real interaction inventory/owned-monster deltas; text, switches and changeParty are not grants. For oneTime, interact again in the SAME session with runtime page re-selection and prove zero additional rewards. Do not remove grants or weaken this contract to complete. give_starter_monsters can author a guarded starter choice event.`);
+    lines.push(`[NPC reward contract] ${JSON.stringify(intent.npcRewards)} — preserve these request expectations. Verify real interaction goldDelta for currency and inventory/owned-monster deltas for items/monsters; inventoryDelta.gold is only an item ID, never currency. Author currency with native changeGold, not an invented gold item. Text, switches and changeParty are not grants. For oneTime, interact again in the SAME session with runtime page re-selection and prove zero additional gold/item/monster rewards. Do not remove grants or weaken this contract to complete. give_starter_monsters can author a guarded starter choice event.`);
   }
   if (intent.readBeforeWrite) {
     lines.push(`[조회 선행 계약] 첫 쓰기 전에 ${intent.readBeforeWrite.project ? "get_project_summary와 대상 get_map_region, find_events, " : ""}${intent.readBeforeWrite.collections.map((name) => `get_database_records(collection:"${name}")`).join(", ")}를 성공시켜 반환값을 읽어라. 기존 DB 수정은 include:"full", ids:[실제 ID]로 원본을 확인한다. 새 레코드도 참조 전에 다시 조회한다. 조회 실패와 같은 응답의 쓰기는 실행되지 않는다.`);

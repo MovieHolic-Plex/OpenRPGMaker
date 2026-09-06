@@ -143,6 +143,7 @@ export type SceneExpectStep = {
   cropStageAt?: { x: number; y: number; stage: number; mapId?: string };
   inventoryCount?: { itemId: string; count: number } | Record<string, number>;
   /** Deltas from scene start or the latest snapshotRewards step. */
+  goldDelta?: number | { atLeast: number };
   inventoryDelta?: Record<string, number | { atLeast: number }>;
   ownedMonsterDelta?: Record<string, number | { atLeast: number }>;
   interactionComplete?: boolean;
@@ -185,6 +186,7 @@ export interface SceneTestResult {
     readonly switchesOn: readonly string[];
     readonly variables: Record<string, number>;
     readonly inventory: Record<string, number>;
+    readonly gold: number;
     readonly ownedMonsterCounts: Record<string, number>;
     readonly monsterParty: readonly string[];
     readonly monsterBox: readonly string[];
@@ -245,7 +247,7 @@ interface RunnerState {
     { mode: "choices"; choiceCount: number } | { mode: "animation" }
   )) | null;
   runtimeFailure: string | null;
-  rewardBaseline: { inventory: Record<string, number>; monsters: Record<string, number> };
+  rewardBaseline: { gold: number; inventory: Record<string, number>; monsters: Record<string, number> };
 }
 
 /** Ownership is party + box membership, resolved through instances (not actor party). */
@@ -262,6 +264,7 @@ type SceneFieldCheck = (value: unknown) => boolean;
 const sceneRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value);
 const sceneNumber: SceneFieldCheck = value => typeof value === "number" && Number.isFinite(value);
+const sceneInteger: SceneFieldCheck = value => typeof value === "number" && Number.isSafeInteger(value);
 const sceneCount: SceneFieldCheck = value => typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
 const sceneText: SceneFieldCheck = value => typeof value === "string" && value.trim().length > 0;
 const sceneBoolean: SceneFieldCheck = value => typeof value === "boolean";
@@ -303,6 +306,7 @@ const sceneExpectFields: Readonly<Record<keyof Omit<SceneExpectStep, "kind">, Sc
   cropStageAt: value => sceneShape(value, { x: sceneCount, y: sceneCount, stage: sceneCount, mapId: sceneText }, ["x", "y", "stage"]),
   inventoryCount: value => sceneNumbers(value) || sceneShape(value, { itemId: sceneText, count: sceneCount }, ["itemId", "count"]),
   inventoryDelta: sceneRewardDeltas, ownedMonsterDelta: sceneRewardDeltas,
+  goldDelta: value => sceneInteger(value) || sceneShape(value, { atLeast: sceneInteger }, ["atLeast"]),
   interactionComplete: sceneBoolean,
   friendshipAtLeast: value => sceneNumbers(value) || sceneShape(value, { npcKey: sceneText, value: sceneNumber }, ["npcKey", "value"]),
   shopStock: value => sceneShape(value, { eventId: sceneText, itemIds: sceneStrings, prices: sceneNumbers, mapId: sceneText }, ["eventId", "itemIds"]),
@@ -383,7 +387,7 @@ export function runSceneTest(project: Project, input: SceneTestInput): SceneTest
     gameOver: false,
     held: null,
     runtimeFailure: null,
-    rewardBaseline: { inventory: { ...session.inventory }, monsters: ownedMonsterCounts(session) },
+    rewardBaseline: { gold: session.gold, inventory: { ...session.inventory }, monsters: ownedMonsterCounts(session) },
   };
   initializeFieldSpawnsForRunner(state);
   syncFollowCamera(state);
@@ -426,7 +430,7 @@ function runStep(state: RunnerState, step: SceneStep): string | null {
     case "interact":
       return runInteractStep(state, step.eventId);
     case "snapshotRewards":
-      state.rewardBaseline = { inventory: { ...state.session.inventory }, monsters: ownedMonsterCounts(state.session) };
+      state.rewardBaseline = { gold: state.session.gold, inventory: { ...state.session.inventory }, monsters: ownedMonsterCounts(state.session) };
       state.log.push(`reward baseline ${JSON.stringify(state.rewardBaseline)}`);
       return null;
     case "gift":
@@ -1355,6 +1359,12 @@ function runExpectStep(state: RunnerState, step: SceneExpectStep): string | null
   if (step.interactionComplete !== undefined && (state.held === null) !== step.interactionComplete) {
     return "Interaction completion does not match expectation.";
   }
+  if (step.goldDelta !== undefined) {
+    const delta = state.session.gold - state.rewardBaseline.gold;
+    const matches = typeof step.goldDelta === "number" ? delta === step.goldDelta : delta >= step.goldDelta.atLeast;
+    state.log.push(`reward delta gold: baseline=${state.rewardBaseline.gold}, current=${state.session.gold}, delta=${delta}`);
+    if (!matches) return `gold: expected delta ${JSON.stringify(step.goldDelta)}, actual ${delta}`;
+  }
   for (const [kind, expected, current, baseline] of [
     ["inventory", step.inventoryDelta, state.session.inventory, state.rewardBaseline.inventory],
     ["ownedMonsters", step.ownedMonsterDelta, ownedMonsterCounts(state.session), state.rewardBaseline.monsters],
@@ -2053,6 +2063,7 @@ function result(
       switchesOn: Object.entries(session.switches).filter(([, value]) => value).map(([key]) => key),
       variables: { ...session.variables },
       inventory: { ...session.inventory },
+      gold: session.gold,
       ownedMonsterCounts: ownedMonsterCounts(session),
       monsterParty: [...session.monsterParty],
       monsterBox: [...session.monsterBox],

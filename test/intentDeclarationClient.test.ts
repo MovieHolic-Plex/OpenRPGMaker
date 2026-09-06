@@ -39,6 +39,36 @@ function reply(content: string): ChatResult {
 afterEach(() => resetIntentDeclarationCache());
 
 describe("createLlmIntentDeclarer", () => {
+  it.each([false, true])("preserves exact reference-free gold through admission/cache, shape repair=%s", async repair => {
+    const rewards = [{ target: { eventName: "Chief" }, grants: [{ kind: "gold", count: 20 }], oneTime: true }];
+    const requests: ChatRequest[] = [];
+    const declarer = createLlmIntentDeclarer({
+      getConfig: () => CONFIG,
+      chat: async (_config, request) => {
+        requests.push(request);
+        return reply(JSON.stringify({ mode: requests.length === 1 ? "modify" : "create", npcRewards:
+          repair && requests.length === 1 ? [{ ...rewards[0], grants: [{ kind: "gold", count: 20, id: null }] }] : rewards }));
+      },
+    });
+    const first = await declareIntentCached(declarer, FACTS);
+    expect(first.intent.npcRewards).toEqual(rewards);
+    expect(first.intent.mode).toBe("modify");
+    expect(first.error).toBeUndefined();
+    expect((await declareIntentCached(declarer, FACTS)).intent.npcRewards).toEqual(rewards);
+    expect(requests).toHaveLength(repair ? 2 : 1);
+  });
+
+  it("does not shape-repair or coerce the captured localized item declaration", async () => {
+    const rewards = [{ target: { eventName: "촌장" }, grants: [{ kind: "item", name: "골드", count: 20 }], oneTime: true }];
+    let calls = 0;
+    const declarer = createLlmIntentDeclarer({ getConfig: () => CONFIG, chat: async () => {
+      calls++;
+      return reply(JSON.stringify({ mode: "modify", npcRewards: rewards }));
+    } });
+    expect((await declarer(FACTS)).intent.npcRewards).toEqual(rewards);
+    expect(calls).toBe(1);
+  });
+
   it("repairs an invalid reward declaration before returning an executable intent", async () => {
     const rewards = [{ target: { eventId: "npc_reward" }, grants: [{ kind: "item", id: "item_potion", count: 5 }], oneTime: true }];
     const responses = [
