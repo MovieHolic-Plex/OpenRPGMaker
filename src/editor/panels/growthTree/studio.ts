@@ -2,6 +2,7 @@ import { store } from '@/project/store';
 import { classGrowthArt, nodeGrowthArt, treeGrowthArt } from '@/assets/growthTreeArt';
 import { resolveAssetResourceUrl } from '@/assets/generatedAssetResourceResolver';
 import { growthArt } from './art';
+import { presetBrowser } from './presetBrowser';
 import type { Project, ClassPromotionRequirement } from '@/project/types';
 import { emptyGrowth, GROWTH_PARAMETERS, GROWTH_PARAMETER_LABELS, type SkillTree, type SkillTreeNode } from '@/project/growth/types';
 import { arrangeTree, promotionEdges, wouldCreateCycle } from '@/project/growth/graph';
@@ -15,7 +16,7 @@ import { renderGrowthCanvas, type GraphNode } from './canvas';
 import '@/styles/database/growth-tree.css';
 
 type Mode = 'promotion' | 'skill';
-interface StudioState { treeId?: string; selected?: string; connecting?: string; zoom: number; search: string; preview: boolean; previewActor?: string; previewLevel: number; simulation: GrowthSession; message?: string }
+interface StudioState { treeId?: string; selected?: string; connecting?: string; zoom: number; search: string; preview: boolean; previewActor?: string; previewLevel: number; simulation: GrowthSession; message?: string; canvasX?: number; canvasY?: number }
 const states = new WeakMap<HTMLElement, Record<Mode, StudioState>>();
 export function renderGrowthTreeTab(host: HTMLElement, mode: Mode): void {
   const init = (): StudioState => ({ zoom: .8, search: '', preview: false, previewLevel: 10, simulation: { variables: {}, actorLevels: {}, growthProgress: {} } });
@@ -24,6 +25,8 @@ export function renderGrowthTreeTab(host: HTMLElement, mode: Mode): void {
   const state = both[mode];
   const root = el('div', { class: `growth-studio growth-${mode}`, dataset: { testid: `growth-studio-${mode}` } });
   host.append(root);
+  let browsing = false;
+  const closePresets = (): void => { browsing = false; draw(); root.querySelector<HTMLElement>('[data-testid="growth-presets-open"]')?.focus(); };
   const commit = (label: string, mutate: (p: Project) => void): void => { editGrowth(label, mutate); state.message = undefined; draw(); };
   const message = (text: string): void => { state.message = text; draw(); };
   const mutateTree = (label: string, fn: (t: SkillTree) => void): void => commit(label, p => editTree(p, state.treeId!, fn));
@@ -47,7 +50,7 @@ export function renderGrowthTreeTab(host: HTMLElement, mode: Mode): void {
   const draw = (): void => {
     const active = document.activeElement instanceof HTMLElement && root.contains(document.activeElement) ? document.activeElement.dataset.testid : undefined;
     const scroll = root.querySelector<HTMLElement>('.growth-viewport');
-    const scrollPos = { x: scroll?.scrollLeft ?? 0, y: scroll?.scrollTop ?? 0 };
+    const scrollPos = { x: scroll?.scrollLeft ?? state.canvasX ?? 0, y: scroll?.scrollTop ?? state.canvasY ?? 0 };
     const inspectorScroll = root.querySelector<HTMLElement>('.growth-inspector')?.scrollTop ?? 0;
     const p = store.getCurrent(), g = p.growth ?? emptyGrowth();
     if (!g.skillTrees.some(t => t.id === state.treeId)) state.treeId = g.skillTrees[0]?.id;
@@ -70,6 +73,28 @@ export function renderGrowthTreeTab(host: HTMLElement, mode: Mode): void {
       el('div', { class: 'growth-heading', children: [el('span', { class: 'growth-eyebrow', text: mode === 'promotion' ? '직업의 다음 장' : '가능성을 연결하다' }), el('h2', { text: title }), note(mode === 'promotion' ? '직업을 연결하고, 새로운 길이 열리는 조건을 설계하세요.' : '스킬과 패시브를 엮어 캐릭터마다 다른 성장의 길을 만드세요.')] }),
       el('div', { class: 'growth-metrics', children: [metric(mode === 'promotion' ? '직업' : '노드', nodes.length), metric('연결', edges.length), metric(mode === 'promotion' ? '연결된 스킬 트리' : '스킬 트리', g.skillTrees.length)] }),
     ] });
+    const openPresets = button('프리셋', 'growth-presets-open', () => {
+      browsing = true; state.connecting = undefined; draw();
+      root.querySelector<HTMLElement>('.growth-preset-card')?.focus();
+    }, true);
+    openPresets.disabled = state.preview;
+    header.append(openPresets);
+    if (browsing) {
+      root.replaceChildren(header, presetBrowser(mode, closePresets, result => {
+        browsing = false; state.treeId = result.addedTreeIds[0] ?? state.treeId;
+        state.selected = mode === 'promotion' ? result.addedClassIds[0] : result.addedNodeIds[0];
+        state.search = ''; state.connecting = undefined; draw();
+        const selected = root.querySelector<HTMLElement>('.growth-node.is-selected');
+        const viewport = root.querySelector<HTMLElement>('.growth-viewport');
+        if (selected && viewport) {
+          viewport.scrollLeft = Math.max(0, parseFloat(selected.style.left) * state.zoom - viewport.clientWidth / 2 + 90 * state.zoom);
+          viewport.scrollTop = Math.max(0, parseFloat(selected.style.top) * state.zoom - viewport.clientHeight / 2 + 49 * state.zoom);
+          state.canvasX = viewport.scrollLeft; state.canvasY = viewport.scrollTop;
+          selected.focus({ preventScroll: true });
+        }
+      }));
+      return;
+    }
     const tools: HTMLElement[] = [];
     if (mode === 'skill') {
       tools.push(button('+ 스킬 노드', 'growth-add-skill', () => addNode('skill'), true), button('+ 패시브 노드', 'growth-add-parameter', () => addNode('parameter')));
@@ -79,7 +104,7 @@ export function renderGrowthTreeTab(host: HTMLElement, mode: Mode): void {
     const connect = button(state.connecting ? '연결 취소' : '선택 노드에서 연결', 'growth-connect', () => { state.connecting = state.connecting ? undefined : state.selected; draw(); });
     connect.disabled = !state.selected || state.preview; tools.push(connect);
     const toolbar = el('div', { class: 'growth-toolbar', children: [el('span', { class: 'growth-toolbar-title', text: mode === 'promotion' ? '직업 계보' : tree?.name ?? '새 트리를 만들어 시작하세요' }), ...tools] });
-    const canvas = renderGrowthCanvas({ nodes, edges, selected: state.selected, connecting: state.connecting, zoom: state.zoom,
+    const canvas = renderGrowthCanvas({ nodes, edges, selected: state.selected, connecting: state.connecting, zoom: state.zoom, readOnly: state.preview,
       onSelect: selectNode, onZoom: z => { state.zoom = z; draw(); },
       onMove: (id, pos) => { if (!state.preview) commit('성장 노드 이동', actual => { if (mode === 'promotion') moveClass(actual, id, pos); else editNode(actual, state.treeId!, id, n => Object.assign(n, pos)); }); },
       onArrange: () => { if (!state.preview) commit('성장 트리 자동 배치', actual => { if (mode === 'promotion') { actual.growth ??= emptyGrowth(); actual.growth.classPositions = auto; } else editTree(actual, state.treeId!, t => t.nodes.forEach(n => Object.assign(n, auto[n.id]))); }); },
@@ -90,7 +115,9 @@ export function renderGrowthTreeTab(host: HTMLElement, mode: Mode): void {
       el('div', { class: `growth-status${state.message || issues.length ? ' has-issue' : ''}`, attrs: { role: 'status' }, dataset: { testid: 'growth-status' }, text: state.message ?? (state.connecting ? '도착 노드를 선택하세요. 선행 조건으로 연결됩니다.' : issues[0] ?? '노드를 끌어 배치 · Alt + 방향키로 미세 이동 · Ctrl + 휠로 확대') }),
     ] }), inspector] }));
     const nextScroll = root.querySelector<HTMLElement>('.growth-viewport'); if (nextScroll) { nextScroll.scrollLeft = scrollPos.x; nextScroll.scrollTop = scrollPos.y; }
+    nextScroll?.addEventListener('scroll', () => { state.canvasX = nextScroll.scrollLeft; state.canvasY = nextScroll.scrollTop; });
     const nextInspector = root.querySelector<HTMLElement>('.growth-inspector'); if (nextInspector) nextInspector.scrollTop = inspectorScroll;
+    if (state.preview) root.querySelectorAll<HTMLInputElement | HTMLButtonElement | HTMLSelectElement>('.growth-catalog input, .growth-catalog select, [data-testid="growth-add-tree"]').forEach(control => { control.disabled = true; });
     if (active) Array.from(root.querySelectorAll<HTMLElement>('[data-testid]')).find(e => e.dataset.testid === active)?.focus({ preventScroll: true });
   };
   const addTree = (): void => {
@@ -201,6 +228,7 @@ export function renderGrowthTreeTab(host: HTMLElement, mode: Mode): void {
     children.push(button('이 트리 투자 초기화', 'growth-preview-reset', () => message(resetSkillTree(p, state.simulation, actorId, tree.id) ?? '포인트를 환급했습니다.')));
     return children;
   };
+  root.addEventListener('keydown', event => { if (browsing && event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closePresets(); } });
   draw();
 }
 function metric(label: string, value: number): HTMLElement { return el('div', { class: 'growth-metric', children: [el('strong', { class: 'growth-metric-value', text: String(value).padStart(2, '0') }), el('span', { text: label })] }); }

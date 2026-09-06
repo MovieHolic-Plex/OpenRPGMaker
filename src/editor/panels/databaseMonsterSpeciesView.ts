@@ -75,7 +75,7 @@ export function renderMonsterSpeciesTab(host: HTMLElement, rerender: () => void)
   const project = store.getCurrent();
   const species = project.database.monsterSpecies ?? [];
   if (!selectedSpeciesId || !species.some((record) => record.id === selectedSpeciesId)) {
-    selectedSpeciesId = species[0]?.id;
+    setSelectedMonsterSpeciesId(species[0]?.id, { reveal: species.length > 0 });
   }
   const selected = species.find((record) => record.id === selectedSpeciesId);
   const search = el("input", {

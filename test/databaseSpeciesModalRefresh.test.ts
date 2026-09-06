@@ -188,6 +188,11 @@ describe("species scroll through real deferred database modal refresh", () => {
     await afterSpeciesRenders(1, () => { expect(undoMapEdit()).toBe(true); });
     expect(store.getCurrent().database).toEqual(before);
     expect(getMapEditHistoryState().canUndo).toBe(false);
+    expectVisibleSelection(before.monsterSpecies![0]!.id);
+    const reveals = speciesReveals.length;
+    await afterSpeciesRenders(1, () => { click(`db-monster-species-row-${before.monsterSpecies![0]!.id}`); });
+    expectVisibleSelection(before.monsterSpecies![0]!.id);
+    expect(speciesReveals).toHaveLength(reveals);
   });
 
   it("respects user scrolling before and after the queued refresh, including zero, until another explicit reveal", async () => {

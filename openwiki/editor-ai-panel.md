@@ -472,3 +472,41 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 ## 모험 완료와 실제 적용 횟수 (2026-09-05)
 
 모험 저작 의도 선언이 있을 때 세션은 최종 응답 전 구조적 플레이 연결과 마지막 시각 조회를 확인한다. 계획 3/3 또는 lint 0만으로 완료 응답을 허용하지 않는다. 부족하면 보완 지시를 주고, 남으면 미완성 항목을 최종 응답으로 표시한다. run recap writes는 아직 적용하지 않은 제안과 이미 적용한 마일스톤 호출을 함께 센다.
+
+
+## Assistant clean conversation — Phase 1 (2026-09-06)
+
+This contract supersedes the older applied-only blueprint retirement, idle checklist retention,
+and assistant suggestion-row/chip descriptions above. Glass, opacity and icon styling are unchanged.
+
+- `aiTurnRunner` settles progress by actual writes exactly as before, then retires temporary
+  blueprint presentation in the owner-only `finally` for success, no-write, rejection, error,
+  abort and thrown endings. Sync the retained active spec before retirement so internally
+  auto-expanded shapes cannot reappear on the next turn. `BuildSpec`, audit and applied-call
+  accounting are not cleared or falsely completed. An orphan cannot clean a replacement turn.
+- Ghost cleanup returns the shared preview surface to `getPendingRegionApply()` when present:
+  install that draft's map provider before publishing its project diff. Preview subscribers
+  synchronously compose and cache tile neighborhoods, so reversing these calls uses stale terrain.
+  Same-project new chat/history restore preserves the independent region. An actual project
+  identity change synchronously discards the outgoing region before asynchronous history lookup;
+  a new project's draft registered during that lookup survives later adoption.
+- `settleWorkPlanTurn` removes the live checklist/feed and closes its live book; session plan
+  and audit history survive. Inactive plans do not remount through refresh or studio entry.
+  Every accepted `executeTurn`, including manual retry, initializes live plan ownership from
+  the retained plan and original run options. When removal takes the focused book/checklist,
+  focus returns to the composer; another control or error dialog keeps its focus.
+- Composer focus/idle/new-chat and studio briefing no longer produce director/example promotions.
+  Explicit `[선택지]` content remains in live and restored transcript text, without promoted
+  quick-reply buttons; pending-question engagement is still tracked. Retry, settings, tool
+  actions, undo and history remain. Database presets and their authoring tools are unrelated.
+- Regression seams: `aiAssistantTurnCleanup` (owner terminal matrix, pending region ghost,
+  automatic expansion and orphan protection), `aiAutonomousRunSurface`, `aiPanelChrome`,
+  `aiStudioShell`, `aiConversationLog`, `aiTurnAppliedAccounting`. Async tests await the exact
+  held-state/terminal signal, never fixed sleeps or arbitrary microtask counts.
+- Review regressions: `aiRegionPreviewHandoff`, `aiRegionChatBoundary`,
+  `aiRetryWorkPlanLifecycle`, `aiWorkPlanTerminalFocus`. Real-editor coverage:
+  `test/e2e/assistant-clean-glass.spec.ts` and `test/e2e/ai-composer-mode.spec.ts`.
+- `agentBlueprintTurnEnd` retains actual-write assertions with updated retirement expectations
+  and event-driven completion. Its existing SSE response fixture is incompatible with the
+  default non-streaming provider request; lead reproduced 6 failures / 1 pass on unchanged
+  `e07cd4f8`. That production transport is deliberately not changed by this phase.

@@ -63,7 +63,10 @@ describe("컴포저 입력과 시작 화면 배타", () => {
     expandPanel(panel);
     expect(findByTestId(panel, "ai-command-bar")).toBeTruthy();
     expect(findByTestId(panel, "ai-chat-log")).toBeTruthy();
-    expect(findByTestId(panel, "ai-quick-replies")).toBeTruthy();
+    expect(findByTestId(panel, "ai-quick-replies")).toBeNull();
+    expect(findByTestId(panel, "ai-composer-chips")).toBeNull();
+    expect(findByTestId(panel, "ai-input")).toBeTruthy();
+    expect(findByTestId(panel, "ai-send")).toBeTruthy();
     expect(panel.dataset.logSlot).toBe("glass");
     expect(findByTestId(panel, "ai-rising-overlay")).toBeNull();
     expect(countUniqueByTestId(panel, "ai-start-screen")).toBe(0);
@@ -82,6 +85,8 @@ describe("컴포저 입력과 시작 화면 배타", () => {
     expect(findByTestId(panel, "ai-slash-list")).toBeNull();
     expect(findByTestId(panel, "ai-slash-host")).toBeNull();
     expect(input.value).toBe("/");
+    expect(findByTestId(panel, "ai-composer-chips")).toBeNull();
+    expect(findByTestId(panel, "ai-quick-replies")).toBeNull();
     expect(countUniqueByTestId(panel, "ai-start-screen")).toBe(0);
     expect(findByTestId(panel, "ai-rising-overlay")).toBeNull();
   });
@@ -98,6 +103,8 @@ describe("컴포저 입력과 시작 화면 배타", () => {
     input.value = "";
     input.dispatchEvent(new Event("input"));
 
+    expect(findByTestId(panel, "ai-composer-chips")).toBeNull();
+    expect(findByTestId(panel, "ai-quick-replies")).toBeNull();
     expect(countUniqueByTestId(panel, "ai-start-screen")).toBe(0);
     expect(findByTestId(panel, "ai-rising-overlay")).toBeNull();
   });
@@ -127,6 +134,8 @@ describe("컴포저 입력과 시작 화면 배타", () => {
     input.value = "";
     input.dispatchEvent(new Event("input"));
 
+    expect(findByTestId(panel, "ai-composer-chips")).toBeNull();
+    expect(findByTestId(panel, "ai-quick-replies")).toBeNull();
     expect(countUniqueByTestId(panel, "ai-start-screen")).toBe(0);
     expect(findByTestId(panel, "ai-rising-overlay")).toBeNull();
   });

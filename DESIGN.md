@@ -1,5 +1,51 @@
 # RPG ZZU Design System
 
+## System settings workspace (2026-09-06)
+
+Database > System is a settings worksheet in the existing cool-white, slate and
+indigo Studio, not a dashboard. Shared modal header, rail, footer and save stay
+unchanged. Vanilla DOM, databaseControls, databaseWorkspace sections and resource
+pickers remain the component system; no dependencies or theme are added.
+
+- Ten native navigation buttons occupy a fixed single-line horizontal reel.
+  Container/button classes are distinct; selected is aria-current, focus indigo.
+  All sections stay mounted and inactive sections hidden. Navigation is history-free.
+- `.db-system-sections` owns vertical scrolling in the bounded form; only the
+  type matrix owns horizontal content scrolling. Structural references:
+  [scroll-body-shell](https://github.com/changeroa/StyleGallery/blob/main/patterns/viewport-shell/scroll-body-shell.md)
+  and [reel](https://github.com/changeroa/StyleGallery/blob/main/patterns/in-line-grouping/reel.md).
+- Controls: --font-ui, 13px/1.5, 32–36px targets; help 12px/1.5; headings 18px/1.5.
+  Aligned label/help/control rows, 6px controls, 8px sections, 4/8/12/16/24px spaces.
+  Chrome uses existing --db-studio-* tokens. No gradients, glyph icons or lifts.
+  Rows stack below 600px available content width, never by shrinking text.
+- Overview is a searchable index for all nine editing destinations with authored
+  summaries, no-results/reset, subordinate progress links and play-test. Optional
+  initial troop and day-end event are not warnings. Title summary includes resume
+  and explains its runtime autosave condition rather than claiming a live preview.
+- Party uses four numbered face/selector rows and explicit empty slots. Removal
+  compacts the roster while preserving order/session sync. Display has presets,
+  bounded pixel dimensions, ratio frame and actual map/tile analysis. Fonts pair
+  each selector with Korean/Latin/numeric specimens and keep the default reset.
+- Resources show named assets, choose/change/clear and real empty/failure states;
+  legacy title linkage is explained. Startup groups battle/audio/rewards and
+  explains automatic active slots at zero. Features retain legacy action-combat
+  details, support-ended context, monster care and linked data counts.
+- Time reports the configured day, not a live clock. Disabling sets enabled:false
+  and preserves authored configuration (normalizer supports it); this deliberately
+  fixes the audit's destructive off/on reset. Undo remains available.
+- Type-chart direct entry has a visible action and F2 on each editable cell,
+  Escape and focus restoration. Cycling, diagonal and 0–4 semantics stay intact.
+- Title composition plus display/menu/audio/effects preserve every field/hook.
+  Coordinates remain proportional to legacy 320×240. Resume is previewed under
+  an explicit autosave-available assumption. Layer parallax remains preserved.
+  Text typing updates derived preview nodes without replacing the focused input;
+  structural edits restore focus/scroll where the control survives.
+- Accessibility: native labels, explicit disabled reasons, readable Korean and
+  keyboard-complete actions. Personas: new author, dense-data author, keyboard
+  author. Verify Firefox at 1440×900/1024×768 and populated/empty/edit/undo/reopen.
+  Chromium fails ERR_NETWORK_CHANGED here; no Lighthouse score or pixel visual
+  approval is claimed. Independent visual review is owned by the supervisor.
+
 ## Monster role clarity (Phase 1)
 
 - Visible tabs are `전투 몬스터` (`enemies`) and `포획·성장 종족` (`monsterSpecies`); IDs and testids remain stable.
@@ -365,7 +411,7 @@ The float assistant is **one glass instrument**, `div.ai-deck` inside the transp
 - **Transcript**: `.ai-command-row` keeps the two-track grid contract (04), but the `@>` prefix is hidden; user turns are right-aligned `--accent-muted` bubbles (max 78%), assistant turns are left-aligned sans prose 14px/1.55, system rows are 12px meta. Mono only for coordinates.
 - **Work timeline** (`.ai-tool-activity`): a card with header `작업 N단계` (open while running) / `작업 N단계 · 라벨 → 라벨` (collapsed when the turn ends) / `조회 N건`. Rows are `map chip 46×32 · Korean label (aiToolLabels) / summary · ✓`. Map chips crop the touched region from the project (aiMapChip → renderRegionSnapshot). Function names are `title` only.
 - **Receipt card** (`.ai-change-card`): badge `적용됨`, title `우물 1 · 상인 2 · 바닥 9칸`, chips, `지금 → 적용 후` pair with tag labels on the shots, footer `넓게 보기` / `되돌리기`.
-- **Composer**: borderless textarea 14.5px + one 36px row: mode segment `지시 / 질문 / 계획` (ask/plan append one `[컨텍스트]` line), context pins (map · selection), undo pill, model chip (standard/expert only), 34px round send (indigo) that becomes a black round stop while running. Suggestions render **inside** the deck above the composer: `맵 진단` hint + three sentence rows (ranked by the brief). No detached popover box, no key-hint text (it is the textarea `title`).
+- **Composer**: borderless textarea 14.5px + one 36px row: mode segment `지시 / 질문 / 계획` (ask/plan append one `[컨텍스트]` line), context pins (map · selection), undo pill, model chip (standard/expert only), 34px round send (indigo) that becomes a black round stop while running. Assistant preset/suggestion promotions are not mounted (including focus, empty chat, studio briefing and quick-reply chips). Explicit choices remain readable in the transcript. Live blueprint, ghost and work-plan chrome ends with its owner turn; independently pending region approvals keep their preview. No key-hint text (it is the textarea `title`).
 - **Menu** `⋯`: 248px, icon + label + right meta (context %, tool count, model), opens **upward** from the rail. The idle-screen choice (`ai-command-temperature-*`) lives in the settings modal section `대기 화면`, not in the menu.
 - **Collapsed pill** (`.ai-collapsed-restore`, 44px): dot + `조수` + state sentence + pending-count badge; carries the same five states.
 - **Locks kept**: no face, no header plate, single float dock, popovers are `hidden` when closed (no transparent full layers), glass alpha ≥ .78, saturate ≤ 1.08, secondary text on glass uses `--text-2`.
@@ -405,6 +451,8 @@ The float assistant is **one glass instrument**, `div.ai-deck` inside the transp
 - At compact widths the picker becomes a single-column scroll surface with full-width actions. Technical fields remain keyboard reachable only after the disclosure is opened.
 
 ### Database panels
+
+- **Growth preset collection, Phase 2 (2026-09-06).** The existing studio header opens an in-studio collection, not another modal framework. Three equal-width role cards compose the growth button and art slot; landscape covers use a 3:2 slot, original pixels, `--radius-s`, and the existing spacing scale. Selected cards use indigo border/tint/focus ring. Existing typography and system font remain unchanged. The read-only graph reuses 180×98 semantic-art nodes at readable zoom and an independently scrollable viewport; a text ledger repeats prerequisites, levels and costs for accessible reading. The collection/details scroll together above a separate always-visible footer, at 1024/1280/1440 desktop widths. Escape/cancel restore the opener. Preview has no project mutations; explicit addition is a single undo boundary. Failed art retains a labelled fallback, and failed allocation is visible text, never fabricated preview content.
 
 - **Party growth trees (2026-09-05).** `growth-tree.css` keeps promotion and skill trees in the same indigo selection/focus language: neutral list pane, recessed graph, white toolbar and inspector, and inset 700-weight inspector group headers. Zoom/arrange controls occupy their own bottom grid row, never the scrollable node area; buttons are at least 32px square. Graph names clamp to two lines within the existing fixed node geometry, while full names remain in the accessible label and wrapping inspector title. No graph coordinates, controls, or persistence behavior change.
 - **Growth art, Phase 1 (2026-09-05).** Existing bundled semantic role icons populate graph emblems, catalog rows, selected inspector heroes, and runtime growth entries. Classes distinguish warrior/mage/healer/ranger/rogue/guardian; skill effects and all six parameters have meaningful symbols. No raw animation sheets, new art fields, preset UI, or global theme changes. Keep the current token source (cool-white/indigo despite historical cream wording), 180×98 graph nodes, existing typography, and independent pane scrolling. Catalog art uses 32px slots/24px images; inspector art uses 48px slots/32px images, expressed through the existing spacing scale and radius tokens. Images are decorative and non-draggable; failed editor loads restore a text badge while adjacent names and accessible labels remain intact. Runtime reuses the existing single-image icon contract and keyboard-only controls. Browser acceptance at 1024×768 and shipped export coverage remain part of surface proof, not inferred from DOM unit tests.

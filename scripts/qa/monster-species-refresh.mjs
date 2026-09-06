@@ -13,6 +13,7 @@ import { firefox } from 'playwright';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const run = process.env.MONSTER_QA_RUN ?? 'baseline';
+const undoOnly = process.env.MONSTER_QA_UNDO_ONLY === '1';
 assert.match(run, /^[\w-]+$/);
 const out = resolve(root, process.env.MONSTER_QA_OUTPUT ?? `output/evidence/monster-concepts/b1/${run}`);
 const host = process.env.MONSTER_QA_HOST ?? '127.0.0.9';
@@ -28,7 +29,7 @@ const digest = value => createHash('sha256').update(value).digest('hex');
 const sources = ['databaseModal', 'database', 'databaseMonsterSpeciesView', 'databaseEnemyRecordView', 'databaseRecordViewSession'].map(name => `src/editor/panels/${name}.ts`);
 const hashes = () => Object.fromEntries(sources.map(path => [path, digest(readFileSync(resolve(root, path)))]));
 const ownership = () => execFileSync('ss', ['-ltnp', `sport = :${port}`], { encoding: 'utf8' });
-const results = { run, root, head: git('rev-parse', 'HEAD'), branch: git('branch', '--show-current'), base, target,
+const results = { run, undoOnly, root, head: git('rev-parse', 'HEAD'), branch: git('branch', '--show-current'), base, target,
   started: new Date().toISOString(), sourceHashes: hashes(), actions: [], defects: [], errors: [], blockedRequests: [], cleanup: {} };
 let server, browser, context, page, phase = 'bootstrap', serverLog = '', closing = false;
 const check = (condition, kind, facts) => { if (!condition) results.defects.push({ phase, kind, facts }); };
@@ -144,7 +145,7 @@ async function undo(expectedDatabase) {
   await armStore(`JSON.stringify(project.database) === ${JSON.stringify(expectedDatabase)}`); await armRenders();
   await page.keyboard.press('Control+z'); await storeDone(); const refresh = await refreshDone();
   assert.equal(await database(), expectedDatabase, 'One native undo must restore the exact database');
-  return { databaseHash: digest(expectedDatabase), nativeRemounts: refresh.renders.length };
+  return { databaseHash: digest(expectedDatabase), nativeRemounts: refresh.renders.length, ...refresh };
 }
 async function userScroll() {
   const before = await page.evaluate(() => window.__qaMeasure());
@@ -238,7 +239,7 @@ try {
       const row = workspace.querySelector('[data-record-id][aria-pressed="true"]'), list = workspace.querySelector('.db-ws-list');
       const r = row?.getBoundingClientRect(), lr = list.getBoundingClientRect(), hit = r && document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
       const id = row?.dataset.recordId, record = window.__oprnEditorStore.getCurrent().database.monsterSpecies.find(record => record.id === id);
-      return { id, scrollTop: list.scrollTop, rowTop: r?.top, rowBottom: r?.bottom, listTop: lr.top, listBottom: lr.bottom,
+      return { id, attached: !!row?.isConnected, scrollTop: list.scrollTop, rowTop: r?.top, rowBottom: r?.bottom, listTop: lr.top, listBottom: lr.bottom,
         visible: !!r && r.top >= lr.top - 1 && r.bottom <= lr.bottom + 1, hit: !!row && (hit === row || row.contains(hit)),
         selectedId: window.__qaSpecies?.getSelectedMonsterSpeciesId(), hero: workspace.querySelector('.db-ws-hero-sub')?.textContent,
         inspectorMatches: workspace.querySelector('[data-testid="db-monster-species-name"]')?.value === record?.name,
@@ -251,7 +252,7 @@ try {
     };
   });
   await armDOM(`document.querySelector('[data-testid="database-modal"]')`); await page.getByTestId('toolbar-database').click(); await domDone();
-  matrix: for (const viewport of [{ width: 1024, height: 768 }, { width: 1280, height: 800 }, { width: 1440, height: 900 }]) for (const kind of ['linked', 'add', 'duplicate', 'from-enemy']) {
+  matrix: for (const viewport of [{ width: 1024, height: 768 }, { width: 1280, height: 800 }, { width: 1440, height: 900 }]) for (const kind of undoOnly ? ['add', 'duplicate', 'from-enemy'] : ['linked', 'add', 'duplicate', 'from-enemy']) {
     const { width } = viewport;
     phase = `${width}-${kind}`; console.log(`RUN ${phase}`);
     await page.setViewportSize(viewport);
@@ -281,6 +282,30 @@ try {
       assert.equal(after.enemies[0].speciesId, expected); assert.equal(after.monsterSpecies.at(-1).name, before.enemies[0].name);
       assert.deepEqual(after.monsterSpecies.at(-1).baseStats, before.enemies[0].stats);
     }
+    if (undoOnly) {
+      // Ctrl+Z is the next user action after creation: no wheel, field edit,
+      // focus manipulation, or locator screenshot that could scroll the modal.
+      const atomicUndo = await undo(beforeActionDatabase), fallback = before.monsterSpecies[0].id;
+      const final = atomicUndo.final, undoWrites = await changeCount() - writesBefore - 1;
+      assert.equal(undoWrites, 1, 'One native undo must restore creation in one store write');
+      const history = await page.evaluate(() => window.__qaHistory.getMapEditHistoryState());
+      assert.equal(history.canUndo, false, 'No extra undo entries'); assert.equal(history.canRedo, true);
+      check(final.attached && final.visible && final.hit, 'fallback-selection-hidden-after-native-undo', atomicUndo);
+      check(final.id === fallback && final.selectedId === fallback && final.hero === fallback && final.inspectorMatches
+        && final.selectedCount === 1 && final.search === '', 'undo-selection-inspector-disagree', final);
+      const viewportMetadata = await page.evaluate(() => ({ width: innerWidth, height: innerHeight, devicePixelRatio }));
+      assert.deepEqual({ width: viewportMetadata.width, height: viewportMetadata.height }, viewport, 'Exact R1 viewport');
+      const screenshot = `${phase}-after-undo.png`;
+      await page.screenshot({ path: resolve(out, screenshot), animations: 'disabled' });
+      const passed = results.defects.length === startDefects;
+      const stoppedAtFirstProductDefect = process.env.MONSTER_QA_BASELINE === '1' && !passed;
+      results.actions.push({ phase, viewport, viewportMetadata, passed, fixture, expected, refresh, actionWrites: 1,
+        scroll: { notPerformed: true }, atomicUndo, undoWrites, history, fallback, screenshot,
+        screenshotHash: digest(readFileSync(resolve(out, screenshot))), stoppedAtFirstProductDefect });
+      save('actions.json', results); console.log(`${passed ? 'PASS' : 'FAIL'} ${phase}`);
+      if (stoppedAtFirstProductDefect) break matrix;
+      continue;
+    }
     const screenshot = `${phase}.png`; await page.locator('.database-modal-window').screenshot({ path: resolve(out, screenshot), animations: 'disabled' });
     if (process.env.MONSTER_QA_BASELINE === '1' && results.defects.length > startDefects) {
       results.actions.push({ phase, viewport, passed: false, fixture, expected, refresh, navigationAddedWrites: kind === 'linked' ? 0 : undefined,
@@ -293,7 +318,7 @@ try {
       navigationAddedWrites: kind === 'linked' ? 0 : undefined, scroll, atomicUndo, screenshot, screenshotHash: digest(readFileSync(resolve(out, screenshot))) });
     save('actions.json', results); console.log(`${results.defects.length === startDefects ? 'PASS' : 'FAIL'} ${phase}`);
   }
-  if (process.env.MONSTER_QA_BASELINE !== '1') assert.equal(results.actions.length, 12);
+  if (process.env.MONSTER_QA_BASELINE !== '1') assert.equal(results.actions.length, undoOnly ? 9 : 12);
   results.status = results.defects.length ? 'product-defects' : 'passed';
 } catch (error) {
   results.status = 'runner-error'; results.failure = { phase, message: error.message, stack: error.stack }; console.error(error);
@@ -318,4 +343,3 @@ try {
   console.log(JSON.stringify({ status: results.status, actions: results.actions.length, defects: results.defects.length, failure: results.failure, cleanup: results.cleanup }, null, 2));
   process.exitCode = results.exitCode;
 }
-
