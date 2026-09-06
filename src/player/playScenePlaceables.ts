@@ -12,7 +12,7 @@
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { TILE_SIZE } from "@/assets/bundled";
 import { characterDepth, characterSpriteX, characterSpriteY } from "@/player/characterDepth";
-import { resolveEventSpriteTexture } from "@/player/eventSpriteResources";
+import { resolveEventSpriteTexture, resolveSpatialGraphicTexture } from "@/player/eventSpriteResources";
 import { resolveForageAt } from "@/project/seasonalForage";
 import type { GameTime } from "@/project/gameTime";
 import type { PlaceableObjectState } from "@/project/placeables";
@@ -124,7 +124,7 @@ function addSpatialSprite(scene: PlaceableOverlayScene, project: Project, spec: 
   if (placement.x < 0 || placement.y < 0
     || (scene.map.width !== undefined && placement.x + size.width > scene.map.width)
     || (scene.map.height !== undefined && placement.y + size.height > scene.map.height)) return;
-  const resolved = resolveEventSpriteTexture(project, resourceId, 0);
+  const resolved = resolveSpatialGraphicTexture(project, resourceId);
   const sprite = scene.add.sprite?.(
     (placement.x + size.width / 2) * TILE_SIZE,
     (placement.y + size.height) * TILE_SIZE,

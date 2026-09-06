@@ -217,6 +217,7 @@ The existing growth stages project `max(0, totalInitialGrowthDays - regrowDaysRe
 - `spatialOccupancy.ts` includes both P2 runtime collections and treats legacy placeables/chests as occupied single cells, while never converting them into P2 records. Moving/rotating/upgrading excludes only the target instance from collision checks.
 - Save wire parsing is bounded in `saveSlotSpatialValidation.ts`; `spatialPlacementRestore.ts` then applies project-aware type/map/level/orientation/collision checks for both parsed saves and direct checkpoints. An explicitly saved `{}` is authoritative and keeps a cleared layout empty. A legacy save that omits a field retains its authored `startSession` placement.
 - The Life Ledger adds the stable `spaces` tab (`life-ledger-tab-spaces`) with summaries `life-ledger-space-building-<instanceId>` / `life-ledger-space-decoration-<instanceId>` and safe upgrade/rotation actions. It uses `/assets/farming/life-ui/decorating-card.png`.
+- Farm building and decoration overlays resolve `graphicResourceId` / facing variants through `resolveSpatialGraphicTexture`. Referenced EasyRPG pictures (including the editor default `easyrpg-picture-cloud`) load under that catalog id via `loadBundledAssets`; event charset mapping is unchanged. After public placement mutations, tile overlays rebuild only through `refreshRuntimeSurfaces` (`renderTiles` + `renderPlaceableOverlays`), not `refreshRuntimeEntities`.
 
 
 ## 공포 게임 제작 기능 (2026-09-05)
