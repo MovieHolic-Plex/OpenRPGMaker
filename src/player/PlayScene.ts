@@ -455,7 +455,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     this.showRuntimeOverlay("battle-scene", troopId || "battle");
   }
 
-  playBattle(step: Extract<StepResult, { kind: "battleProcessing" }>): Promise<BattleResult | null> {
+  playBattle(step: Extract<StepResult, { kind: "battleProcessing" }>, isCurrent?: () => boolean): Promise<BattleResult | null> {
     this.battleAbortController?.abort();
     const controller = new AbortController();
     this.battleAbortController = controller;
@@ -465,8 +465,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     const session = this.session;
     const startedAt = performance.now();
     return import("@/player/playSceneBattle").then(({ playBattle }) => {
-      if (controller.signal.aborted || this.session !== session) return null;
-      return playBattle(this, step, startedAt);
+      if (controller.signal.aborted || this.session !== session || isCurrent?.() === false) return null;
+      return playBattle(this, step, startedAt, isCurrent);
     }).finally(() => {
       this.events.off("shutdown", abort);
       this.events.off("destroy", abort);

@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **48쪽 / 1771KB / 약 503,317 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **48쪽 / 1782KB / 약 506,652 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -18,12 +18,12 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-ai-panel.md` | 277KB | 95KB ⚠상한 초과 — 절을 더 쪼개라 | 616 | ~80,208 |
 | `openwiki/editor-ai-tools.md` | 99KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 370 | ~28,330 |
 | `openwiki/editor-database.md` | 244KB | 55KB ⚠상한 초과 — 절을 더 쪼개라 | 1258 | ~70,289 |
-| `openwiki/editor-event-authoring.md` | 119KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 564 | ~34,648 |
+| `openwiki/editor-event-authoring.md` | 120KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 574 | ~34,884 |
 | `openwiki/editor-event-commands.md` | 50KB | 32KB | 132 | ~13,431 |
 | `openwiki/editor-pre-edit-routing.md` | 75KB | 55KB ⚠상한 초과 — 절을 더 쪼개라 | 248 | ~21,334 |
 | `openwiki/runtime-battle.md` | 125KB | 31KB | 434 | ~35,858 |
 | `openwiki/runtime-project-schema.md` | 76KB | 44KB | 322 | ~20,399 |
-| `openwiki/runtime-sessions.md` | 77KB | 46KB | 278 | ~20,410 |
+| `openwiki/runtime-sessions.md` | 77KB | 46KB | 283 | ~20,565 |
 | `openwiki/testing.md` | 124KB | 46KB | 841 | ~34,728 |
 
 ## 한국어 산문이 깨진 페이지
@@ -333,7 +333,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1251` 검토한 실내 기본값의 원격 반영 (2026-09-05)
 - `L1255` 특정 꾸러미의 명시적 교체 (2026-09-06)
 
-### `openwiki/editor-event-authoring.md` — 119KB · 564줄 · ~34,648 토큰 · 통째읽기 잘림 · 깨진 줄 16
+### `openwiki/editor-event-authoring.md` — 120KB · 574줄 · ~34,884 토큰 · 통째읽기 잘림 · 깨진 줄 16
 
 - `L3` 이벤트 편집기 가독성 — 읽는 글자와 꾸미는 글자 (2026-09-03 후속)
 - `L16` 이벤트 편집기 문법 고정 — P0 (2026-09-03)
@@ -364,6 +364,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L537` 조건 미리보기는 모르면 모른다고 말한다
   - `L546` 조건 문구에 내부 토큰을 넣지 마라
 - `L561` 공포 게임 제작 기능 (2026-09-05)
+  - `L566` NPC 발견·추격 저작 (2026-09-06)
 
 ### `openwiki/editor-event-command-fixes.md` — 13KB · 38줄 · ~3,273 토큰 · 깨진 줄 11
 
@@ -481,14 +482,16 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L190` 연결 프리셋과 그래프 (2026-09-06)
 - `L224` 검증
 
-### `openwiki/horror-authoring.md` — 8KB · 97줄 · ~2,480 토큰
+### `openwiki/horror-authoring.md` — 17KB · 183줄 · ~5,424 토큰
 
 - `L6` 저작 표면
 - `L21` 데이터와 런타임
-- `L38` 가구 밀기 애니메이션 (2026-09-05 후속 체험 수정)
-- `L61` 실내 제작과 검증
-- `L72` 검증 경로
-- `L86` 전체 게이트 후속 수정 (2026-09-05)
+- `L38` 연결 방 추격 연속성 (2026-09-06)
+- `L64` NPC 발견 이벤트와 공통 전투 소유권 (2026-09-06)
+- `L124` 가구 밀기 애니메이션 (2026-09-05 후속 체험 수정)
+- `L147` 실내 제작과 검증
+- `L158` 검증 경로
+- `L172` 전체 게이트 후속 수정 (2026-09-05)
 
 ### `openwiki/interior-tile-benchmark.md` — 9KB · 149줄 · ~2,679 토큰
 
@@ -650,7 +653,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L315` 연결 실내 도면의 영속성 (2026-09-05)
 - `L319` 개념 장소 형상 (2026-09-05)
 
-### `openwiki/runtime-sessions.md` — 77KB · 278줄 · ~20,410 토큰 · 통째읽기 잘림
+### `openwiki/runtime-sessions.md` — 77KB · 283줄 · ~20,565 토큰 · 통째읽기 잘림
 
 - `L1` Opening and game-over cinematics (2026-09-06)
 - `L68` QA-only life observation (2026-09-06)
@@ -668,7 +671,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L254` Selected-event runtime sandbox (2026-07-30)
 - `L260` P2 spatial runtime and saves (2026-08-25)
 - `L268` 공포 게임 제작 기능 (2026-09-05)
-  - `L272` 메뉴 PR 통합 검증 (2026-09-05)
+  - `L277` 메뉴 PR 통합 검증 (2026-09-05)
 
 ### `openwiki/se-catalog.md` — 13KB · 228줄 · ~3,423 토큰
 

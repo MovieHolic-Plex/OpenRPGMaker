@@ -1,3 +1,4 @@
+import { updateDetectionEncounters } from "./npcDetectionEncounter";
 import { advanceFurniturePush, beginFurniturePush, clearFurniturePush, furniturePushFrames } from './furniturePushAnimation';
 import { advancePursuitDoors, isPlayerHiding, pushObject, toggleHiding } from "./horrorRuntime";
 import { refreshRuntimeEntities } from "./playSceneMapRuntime";
@@ -90,6 +91,7 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
     scene.syncRuntimeState();
     return;
   }
+  updateDetectionEncounters(scene, deltaMs);
   const world = { project: store.getCurrent(), map: scene.map, session: scene.session, positions: scene.eventPositions };
   if (!scene.running && advancePursuitDoors(world, deltaMs)) refreshRuntimeEntities(scene);
   scene.player.setVisible?.(!isPlayerHiding(world));

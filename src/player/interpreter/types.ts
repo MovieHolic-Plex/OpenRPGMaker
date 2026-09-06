@@ -180,6 +180,7 @@ export interface Frame {
 }
 
 export interface InterpreterState {
+  continueAfterTransfer?: boolean;
   stack: Frame[];
   waitUntil?: { elapsedMs: number; intervalMs: number };
   isEventIdle?: (target: string) => boolean;
@@ -199,6 +200,8 @@ export interface InterpreterState {
 }
 
 export interface InterpreterOptions {
+  /** An admitted detection command list may continue after its own transfer; legacy callers still terminate. */
+  readonly continueAfterTransfer?: boolean;
   readonly getEventPositions?: () => import("@/project/runtimeEventState").RuntimeEventPositions;
   readonly isEventIdle?: (target: string) => boolean;
   readonly eventPositions?: import("@/project/runtimeEventState").RuntimeEventPositions;

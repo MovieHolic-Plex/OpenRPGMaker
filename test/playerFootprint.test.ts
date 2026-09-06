@@ -17,7 +17,7 @@ import {
   findBlockingRuntimeEventAtInMap,
   initialRuntimeEventPositions,
 } from "@/project/runtimeEventState";
-import { startSession } from "@/project/session";
+import { setMapTileOverride, startSession } from "@/project/session";
 import { store } from "@/project/store";
 import { applySaveSnapshot, createSaveSnapshot, readSaveSlot, saveToSlot, type SaveSnapshot } from "@/player/saveSlots";
 import { characterSpriteX, characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
@@ -26,7 +26,7 @@ import { findBlockingEventForPlayerBody, playerCanStep } from "@/player/playScen
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import type { CharacterFootprint, GameEvent, GameMap, Project } from "@/project/types";
 import { resolveDiagonalStep } from "@/player/input";
-import { mockSprite, type MockSprite } from "./runtimeEventPageFixtures";
+import { event, page, mockSprite, type MockSprite } from "./runtimeEventPageFixtures";
 
 const GOLEM: CharacterFootprint = { width: 3, height: 3 };
 const UNIT: CharacterFootprint = { width: 1, height: 1 };
@@ -270,6 +270,31 @@ function transferScene(project: Project, map: GameMap): { scene: PlaySceneContex
 }
 
 describe("transferTo — 주인공 발자국을 존중한다", () => {
+  it.each(['runtimeTile', 'footprint'] as const)('queues the final player landing after %s resolution', async kind => {
+    const { project, map } = grassProject();
+    const destination: GameMap = { ...structuredClone(map), id: 'pursuit_destination', events: [] };
+    project.maps[destination.id] = destination;
+    const monsterPage = page('monster_page', 'same', { kind: 'action' });
+    monsterPage.movement = { type: 'chase', speed: 4, frequency: 4,
+      pursuit: { scope: 'connected', doorDelayMs: 500, searchMs: 4000, onLost: 'wait' } };
+    map.events.push(event('monster', 7, 8, [monsterPage]));
+    if (kind === 'footprint') { project.system.playerFootprint = GOLEM; wall(destination, 10, 6); }
+    store.replace(project);
+    const { scene } = transferScene(project, map);
+    scene.autonomousNPCs = new Map();
+    scene.session.x = 9; scene.session.y = 8;
+    scene.session.horror = { pursuits: { monster: {
+      home: { mapId: map.id, x: 7, y: 8 }, active: true, searchMs: 0, doors: [],
+    } } };
+    if (kind === 'runtimeTile') setMapTileOverride(scene.session, destination.id, 'lower', 8 * map.width + 10, TILE.WALL);
+    scene.loadMap = () => { scene.map = structuredClone(destination); scene.session.currentMapId = destination.id; scene.eventPositions = {}; };
+    await transferTo(scene, { kind: 'transfer', mapId: destination.id, x: 10, y: 8, fade: 'none' });
+    const landing = { x: scene.session.x, y: scene.session.y };
+    expect(landing).not.toEqual({ x: 10, y: 8 });
+    expect(scene.session.horror.pursuits.monster?.doors[0]).toMatchObject({ mapId: destination.id, ...landing });
+    expect(destination.lowerTiles[8 * map.width + 10]).toBe(TILE.GRASS);
+  });
+
   it("몸이 안 들어가는 칸으로 워프하면 가까운 유효 칸으로 내려앉는다", async () => {
     const { project, map } = grassProject();
     project.system.playerFootprint = GOLEM; // passRows 생략 → 몸 전체가 통행 사각

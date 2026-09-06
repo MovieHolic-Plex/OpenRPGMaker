@@ -41,18 +41,23 @@ export function showBattleScene(scene: PlaySceneContext, troopId: string): void 
 
 type BattleHostScene = Pick<PlaySceneContext, "session" | "tileY" | "battleAbortController">
   & Parameters<typeof dialogueHost>[0]
+  & Partial<Pick<PlaySceneContext, "events">>
   & { readonly map: Pick<PlaySceneContext["map"], "height"> };
 
 export function playBattle(
   scene: BattleHostScene,
   step: Extract<StepResult, { kind: "battleProcessing" }>,
-  startedAt: number
+  startedAt: number,
+  isCurrent: () => boolean = () => true
 ): Promise<BattleResult | null> {
   const signal = scene.battleAbortController?.signal;
-  if (signal?.aborted) return Promise.resolve(null);
+  if (signal?.aborted || !isCurrent()) return Promise.resolve(null);
   const host = dialogueHost(scene);
   if (!host) return Promise.reject(new Error("Battle dialogue host missing"));
-  const session = scene.session;
+  const session = scene.session, map = scene.map;
+  let settled = false, shutdown = false;
+  const owns = (): boolean => !shutdown && !signal?.aborted && scene.session === session && scene.map === map && isCurrent();
+  const current = (): boolean => !settled && owns();
   const project = store.getCurrent();
   // canonical/legacy 선택자를 한 번만 해석하고 같은 파티를 모든 전투 소비자에게 넘긴다.
   const { requested: usePartyMonsters, partyMonsters, monsterPartyMode } = resolveMonsterBattleParty(project, scene.session);
@@ -117,6 +122,7 @@ export function playBattle(
     // Terrain at the player's tile feeds battle backdrop when troop has no preview.
     captureLocation: { mapId: scene.session.currentMapId, x: scene.session.x, y: scene.session.y },
     onMonsterCaptured: (capture) => {
+      if (!current()) return;
       giveMonster(project, session, {
         speciesId: capture.speciesId,
         level: capture.level,
@@ -129,12 +135,14 @@ export function playBattle(
         skillPp: capture.skillPp,
       });
     },
-    rng: () => nextSessionRandom(session, "battle"),
+    rng: () => current() ? nextSessionRandom(session, "battle") : 0.5,
     playAudio: (resourceId, loop) => {
+      if (!current()) return;
       playAudioCommand({ resourceId, loop }, project);
       session.audio.bgm = { resourceId, loop };
     },
     stopAudio: () => {
+      if (!current()) return;
       stopAudioCommand();
       session.audio.bgm = undefined;
     },
@@ -142,36 +150,43 @@ export function playBattle(
   return new Promise<BattleResult | null>((resolve, reject) => {
     let battleScene: BattleDomController | undefined;
     let exitTransition: BattleTransition | undefined;
-    let settled = false;
     let exiting = false;
     let closingDom = false;
     const entrySkin = getBattleSkin(resolveSkinId(project.system.battleUiStyle));
     const entryTransition = createSkinBattleTransition(host, entrySkin.transition);
-    const current = (): boolean => !settled && !signal?.aborted && scene.session === session;
     const cleanup = (): void => {
       signal?.removeEventListener("abort", abort);
+      scene.events?.off("shutdown", onShutdown);
+      scene.events?.off("destroy", onShutdown);
+      scene.events?.off("update", checkOwner);
       runtime.cancel();
       entryTransition.destroy();
       exitTransition?.destroy();
       battleScene?.destroy();
+      battleScene = undefined;
     };
+    const onShutdown = (): void => { shutdown = true; abort(); };
+    const checkOwner = (): void => { if (!current()) abort(); };
     const abort = (): void => {
       if (settled) return;
       settled = true;
       cleanup();
       // A session load/shutdown owns its new audio. Only a live host removal
       // without session cancellation restores this battle's field audio.
-      if (!signal?.aborted && scene.session === session) exitBattleAudio(project, session, savedAudio);
+      if (owns()) exitBattleAudio(project, session, savedAudio);
       resolve(null);
     };
     const fail = (error: unknown): void => {
       if (settled) return;
       settled = true;
       cleanup();
-      if (!signal?.aborted && scene.session === session) exitBattleAudio(project, session, savedAudio);
+      if (owns()) exitBattleAudio(project, session, savedAudio);
       reject(error);
     };
     signal?.addEventListener("abort", abort, { once: true });
+    scene.events?.once("shutdown", onShutdown);
+    scene.events?.once("destroy", onShutdown);
+    scene.events?.on("update", checkOwner);
     void entryTransition.cover().then(() => {
       if (!current()) { abort(); return; }
       battleScene = mountBattleScene({
@@ -200,6 +215,7 @@ export function playBattle(
             if (!current()) { abort(); return; }
             closingDom = true;
             battleScene?.destroy();
+            battleScene = undefined;
             await transition.reveal();
             if (!current()) { abort(); return; }
             // Commit once, after all cancellable presentation has completed.

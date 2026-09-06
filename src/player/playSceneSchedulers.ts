@@ -1,3 +1,4 @@
+import { queueScheduledBattle, resumeScheduledBattle } from "./scheduledBattle";
 import { isRuntimeEventIdle } from "@/player/runtimeConditionWait";
 import { showSceneEmote } from "@/player/playSceneEmotes";
 import {
@@ -76,6 +77,7 @@ export function updateParallelEvents(scene: PlaySceneContext, deltaMs: number): 
     const key = `${event.event.id}:${pageId}`;
     const process = scene.parallelProcesses.get(key) ?? createParallelProcess(scene, event, pageId);
     if (process.stopped || process.pendingTimeTransition) continue;
+    if (process.pendingBattle) { resumeScheduledBattle(scene, key, process, consumeParallelSteps); continue; }
     if (process.waitMs > 0) {
       process.waitMs = Math.max(0, process.waitMs - deltaMs);
       if (process.waitMs > 0) continue;
@@ -88,6 +90,7 @@ export function updateParallelEvents(scene: PlaySceneContext, deltaMs: number): 
     const key = `common:${commonEvent.id}`;
     const process = scene.parallelProcesses.get(key) ?? createCommonParallelProcess(scene, commonEvent);
     if (process.stopped || process.pendingTimeTransition) continue;
+    if (process.pendingBattle) { resumeScheduledBattle(scene, key, process, consumeParallelSteps); continue; }
     if (process.waitMs > 0) {
       process.waitMs = Math.max(0, process.waitMs - deltaMs);
       if (process.waitMs > 0) continue;
@@ -161,6 +164,10 @@ function consumeParallelSteps(
     guard += 1;
     if (result.kind === "wait") {
       process.waitMs = result.ms;
+      return;
+    }
+    if (result.kind === "battleProcessing") {
+      queueScheduledBattle(scene, key, process, result, consumeParallelSteps);
       return;
     }
     if (result.kind === "pathfindMove") {
@@ -257,8 +264,7 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
       void scene.transferTo(step);
       return true;
     case "battleProcessing":
-      scene.showBattleScene(step.troopId);
-      return true;
+      return false; // Foreground handoff is awaited by the scheduler, never an overlay-only step.
     case "timer":
       applyTimerStep(scene, step);
       return true;
