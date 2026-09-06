@@ -1,4 +1,5 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
+import { Agent, get } from "node:http";
 
 interface Camera {
   readonly scrollX: number;
@@ -76,6 +77,28 @@ test(`conversation navigation hands ${owner} focus directly back to the clicked 
     localStorage.setItem("oprn:ai-config", JSON.stringify({ agentMode: "chat" }));
     window.addEventListener("keydown", event => { window.conversationNavigationEvent = event; });
   });
+  // Optional unchanged static-GET relay for shared-host Chromium netlink failures.
+  // No retry, idle socket reuse, altered UI response, or production server reuse.
+  if (process.env.E2E_STATIC_RELAY === "1") {
+    const origin = new URL(test.info().project.use.baseURL!).origin;
+    const agent = new Agent({ keepAlive: false, maxSockets: 8 });
+    page.once("close", () => agent.destroy());
+    await page.route(`${origin}/**`, async (route) => {
+      const url = new URL(route.request().url());
+      if (route.request().method() !== "GET" || !(url.pathname === "/" || /^\/(src|assets|@vite|@id|@fs|node_modules)\//.test(url.pathname))) return route.fallback();
+      const response = await new Promise<{ status: number; headers: Record<string, string>; body: Buffer }>((resolve, reject) => {
+        const request = get(url, { agent }, (incoming) => {
+          const chunks: Buffer[] = [];
+          incoming.on("data", (chunk: Buffer) => chunks.push(chunk));
+          incoming.once("error", reject);
+          incoming.once("end", () => resolve({ status: incoming.statusCode!, headers: Object.fromEntries(Object.entries(incoming.headers).filter((entry): entry is [string, string] => typeof entry[1] === "string")), body: Buffer.concat(chunks) }));
+        });
+        request.once("error", reject);
+        request.setTimeout(60_000, () => request.destroy(new Error(`Static GET timeout: ${url.pathname}`)));
+      });
+      await route.fulfill(response);
+    });
+  }
   await page.route("**/rest/v1/**", route => route.fulfill({ json: [] }));
   await page.route("**/__oprn/ai-activity", route => route.fulfill({ json: { ok: true } }));
   const transcript = Array.from({ length: 40 }, (_, i) => `NAVIGATION-PARAGRAPH-${i}: Read this conversation without moving the map camera.`).join("\n\n");
