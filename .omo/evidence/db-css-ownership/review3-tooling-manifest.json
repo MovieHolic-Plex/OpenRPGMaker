@@ -1,0 +1,21 @@
+{
+  "candidate": "376394f690d8f0c454cfb46633a9caad58772746",
+  "unchangedManifestFiles": 12,
+  "changes": [
+    {
+      "path": "scripts/audit-db-css-ownership.mjs",
+      "before": "4c8d34570dbe78c87a5b9674e1d70435624bf280fd0ea608bea6f13f1ac6808f",
+      "after": "650bb082b0f8b078dd5e680c91b95eeef36fb4c26f5400d5964f09ff8ab6de90"
+    },
+    {
+      "path": "scripts/lib/db-css-owner-proof.mjs",
+      "before": "4b7506e8947580b8cf91f4abe08a864383098b180064f90cd98169f9525ed55f",
+      "after": "b8b1a4b59efeb7e8874eca42bfb5391e62a40b2eeda67f6c49f2f2fd45992cf0"
+    },
+    {
+      "path": "test/databaseCssOwnerProof.test.ts",
+      "before": "58f680753b19df08083bc71fd5696d373acc9ab9eaf2c22eeb58cdb78803fcd5",
+      "after": "7b6b50675f9d26dfb558bbdfeca162dbe35203004f2f9e601708136c4f4f2b39"
+    }
+  ]
+}
