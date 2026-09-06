@@ -1,4 +1,5 @@
 import type { EmoteKind } from "@/project/emotes";
+import type { AudioChannel, AudioTrackState } from "@/project/session";
 import type {
   ChoiceCancelBehavior,
   Command,
@@ -92,7 +93,7 @@ export type StepResult =
       waitForPicture?: boolean;
     }
   | { kind: "erasePicture"; pictureId: string }
-  | { kind: "playAudio"; resourceId: string; loop: boolean }
+  | ({ kind: "playAudio"; channel?: AudioChannel } & AudioTrackState)
   | { kind: "stopAudio" }
   | { kind: "setLighting"; ambient: number; color?: string; transitionMs: number }
   | { kind: "setWeather"; weather: WeatherKind; intensity: number; transitionMs: number }

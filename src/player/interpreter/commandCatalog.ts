@@ -23,7 +23,7 @@ import type { CommandExecution, Frame, InterpreterState, PendingStep, StepResult
 import { breakLoop, gotoLabel, pushFrame, pushLoopFrame } from "@/player/interpreter/stack";
 import { executeM2RuntimeCommand, relocateM2Events } from "@/player/interpreter/m2Runtime";
 import { fieldBoolean, fieldNumber, fieldString } from "@/player/interpreter/m2RuntimeFields";
-import { waitConditionMet } from "@/player/interpreter/m2ModernRuntime";
+import { recordSoundLayer, waitConditionMet } from "@/player/interpreter/m2ModernRuntime";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import { planScreenEffect } from "@/player/interpreter/screenEffectPlan";
 import type { RuntimeCameraTarget } from "@/project/sessionRuntimeTypes"
@@ -149,12 +149,9 @@ function executeM2Command(
     });
   }
 
-  if (entry.title === "Sound Layer" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
-    return pause("playAudio", {
-      kind: "playAudio",
-      resourceId: fieldString(command.fields, "resourceId", ""),
-      loop: true,
-    });
+  if (entry.title === "Sound Layer") {
+    const audio = recordSoundLayer(state.session, ensureM2Runtime(state.session), command.fields);
+    return pause("playAudio", { kind: "playAudio", ...audio });
   }
 
   if (entry.title === "Wait Until") {

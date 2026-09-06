@@ -34,16 +34,20 @@ import { applyDailyWeatherForDate } from "@/project/dailyWeather";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import { weatherToRuntimeString } from "@/player/weather/weatherModel";
 
-export type AudioChannel = "bgm" | "bgs" | "me" | "se";
+export type AudioChannel = "bgm" | "bgs" | "ambient" | "me" | "se";
 
 export type AudioTrackState = {
   readonly resourceId: string;
   readonly loop: boolean;
+  /** Authored track volume, 0..100; independent of the user mixer. */
+  readonly volume?: number;
+  readonly fadeInMs?: number;
 };
 
 export type AudioCommandState = {
   bgm?: AudioTrackState;
   bgs?: AudioTrackState;
+  ambient?: AudioTrackState;
   me?: AudioTrackState;
   se?: AudioTrackState;
 };
@@ -720,13 +724,15 @@ export function getMapTile(
 }
 
 export function setAudioState(
-  session: PlaySession,
-  state: { readonly channel?: AudioChannel; readonly resourceId: string; readonly loop: boolean }
+  session: { audio: AudioCommandState },
+  state: AudioTrackState & { readonly channel?: AudioChannel }
 ): void {
   const channel = state.channel ?? (state.loop ? "bgm" : "se");
   session.audio[channel] = {
     resourceId: state.resourceId,
     loop: state.loop,
+    ...(state.volume === undefined ? {} : { volume: state.volume }),
+    ...(state.fadeInMs === undefined ? {} : { fadeInMs: state.fadeInMs }),
   };
 }
 

@@ -11,9 +11,9 @@ const args = process.argv.slice(2);
 const scenario = args[args.indexOf("--scenario") + 1];
 const phaseIndex = args.indexOf("--phase");
 const phase = phaseIndex >= 0 ? args[phaseIndex + 1] : "surface";
-assert.equal(scenario, "map-effects", "Choose an implemented repair scenario");
+assert(["map-effects", "audio-layers"].includes(scenario), "Choose an implemented repair scenario");
 assert(["red", "green", "surface"].includes(phase), "Unknown evidence phase");
-const out = join(root, "output/evidence/event-command-repairs/map", phase);
+const out = join(root, `output/evidence/event-command-repairs/${scenario === "audio-layers" ? "audio" : "map"}`, phase);
 await mkdir(out, { recursive: true });
 const report = {
   scenario, phase, head: execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim(),
@@ -32,10 +32,13 @@ async function observe(expression, action, timeout = 20_000) {
       let settled = false;
       let timer;
       const observer = new MutationObserver(check);
+      const mediaEvents = ["playing", "ended", "volumechange", "timeupdate", "pause"];
+      for (const event of mediaEvents) document.addEventListener(event, check, true);
       function finish(pass) {
         if (settled) return;
         settled = true;
         observer.disconnect();
+        for (const event of mediaEvents) document.removeEventListener(event, check, true);
         clearTimeout(timer);
         resolve({ pass, text: document.body?.innerText.slice(0, 800) });
       }
@@ -77,6 +80,57 @@ async function shot(name) {
   report.screenshots.push(path);
 }
 
+async function audioSnapshot(label) {
+  const tracks = await page.evaluate(() => [...document.querySelectorAll('audio[data-oprn-audio]')].map(audio => ({
+    id: Object.keys(window.__repairAudioSources).find(id => window.__repairAudioSources[id] === audio.src),
+    volume: audio.volume, loop: audio.loop, paused: audio.paused, currentTime: audio.currentTime,
+  })));
+  report.observations.push({ label, tracks });
+  return tracks;
+}
+
+async function runAudioScenario() {
+  await marker("AUDIO START");
+  assert.deepEqual(await page.evaluate(() => window.__oprnAudioState().volume), { bgm: 0.7, se: 0.8 });
+  for (const [text, id, volume, loop] of [
+    ["BGM READY", "qa_bgm", 0.7, true],
+    ["BGS READY", "qa_bgs", 0.441, true],
+    ["SE READY", "qa_se", 0.504, false],
+    ["AMBIENT MUTED", "qa_ambient", 0, true],
+    ["AMBIENT READY", "qa_ambient", 0.175, true],
+  ]) {
+    await marker(text);
+    await observe(
+      `[...document.querySelectorAll('audio[data-oprn-audio]')].some(a => a.src === window.__repairAudioSources[${JSON.stringify(id)}] && !a.paused && a.currentTime > 0 && a.loop === ${loop} && Math.abs(a.volume - ${volume}) < 0.000001)`,
+    );
+    const tracks = await audioSnapshot(text);
+    if (id !== "qa_bgm") assert(tracks.some(a => a.id === "qa_bgm" && a.loop && !a.paused && Math.abs(a.volume - 0.7) < 0.000001));
+    if (id === "qa_se" || id === "qa_ambient") assert(tracks.some(a => a.id === "qa_bgs" && a.loop && !a.paused));
+    await shot(text.toLowerCase().replaceAll(" ", "-"));
+  }
+  await observe(`!!document.querySelector('[data-testid="save-slot-1"]')`, "Enter");
+  await observe('localStorage.getItem("qa:event-command-repairs:save-slot:1") !== null', "Enter");
+  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("qa:event-command-repairs:save-slot:1")));
+  assert.equal(saved.session.audio.bgs.volume, 63);
+  assert.equal(saved.session.audio.ambient.volume, 25);
+  await observe(`JSON.parse(document.querySelector('[data-testid="status-menu-debug-json"]').textContent).mode === "main"`, "Escape");
+  await marker("AUDIO SAVED", "Escape");
+  await observe(`!!document.querySelector('[data-testid="player-load-window"]')`, "Enter");
+  await observe('[...document.querySelectorAll("audio[data-oprn-audio]")].every(a => !Object.values(window.__repairAudioSources).includes(a.src) || !a.loop)');
+  await observe(`!document.querySelector('[data-testid="player-load-window"]') && !document.querySelector('[data-testid="dialogue-box"]')`, "Enter");
+  for (const id of ["qa_bgm", "qa_bgs", "qa_ambient"]) {
+    await observe(`[...document.querySelectorAll('audio[data-oprn-audio]')].some(a => a.src === window.__repairAudioSources[${JSON.stringify(id)}] && a.loop && !a.paused && a.currentTime > 0)`);
+  }
+  const restored = await audioSnapshot("restored loops");
+  assert(Math.abs(restored.find(a => a.id === "qa_ambient").volume - 0.175) < 0.000001);
+  assert(Math.abs(restored.find(a => a.id === "qa_bgs").volume - 0.441) < 0.000001);
+  report.mediaEvents = await page.evaluate(() => window.__repairMediaEvents);
+  assert(report.mediaEvents.some(e => e.id === "qa_se" && e.name === "playing" && !e.loop));
+  assert(!report.mediaEvents.some(e => e.name === "error"));
+  await observe('window.__oprnDebug?.readState().x === 4', "ArrowRight");
+  await shot("restored-input");
+}
+
 try {
   server = await startPlayerQaServer();
   report.url = server.url;
@@ -99,20 +153,35 @@ try {
     async route => route.fulfill({ response: await route.fetch() }));
   await page.routeWebSocket(url => url.host === new URL(server.url).host, () => {});
   await page.goto(`${server.url}/__repair-bootstrap`);
-  const project = await page.evaluate(async () => {
+  const project = await page.evaluate(async scenario => {
+    if (scenario === "audio-layers") {
+      const { audioCommandRepairsProject } = await import("/test/fixtures/eventCommandAudioRepairs.ts");
+      return audioCommandRepairsProject();
+    }
     const { mapCommandRepairsProject } = await import("/test/fixtures/eventCommandRepairs.ts");
     return mapCommandRepairsProject();
-  });
+  }, scenario);
   await page.route("**/__repair-project.json", route => route.fulfill({
     contentType: "application/json", body: JSON.stringify(project),
   }));
-  await page.addInitScript(() => {
+  await page.addInitScript(sources => {
+    window.__repairAudioSources = sources;
+    window.__repairMediaEvents = [];
+    for (const name of ["playing", "ended", "error"]) document.addEventListener(name, event => {
+      if (!(event.target instanceof HTMLAudioElement)) return;
+      const audio = event.target;
+      const id = Object.keys(sources).find(key => sources[key] === audio.src);
+      if (id) window.__repairMediaEvents.push({ id, name, time: audio.currentTime, volume: audio.volume, loop: audio.loop });
+    }, true);
     window.__OPENRPG_BOOT__ = {
       projectUrl: "/__repair-project.json", saveNamespace: "qa:event-command-repairs", qaInstrumentation: true,
     };
-  });
+  }, Object.fromEntries(Object.entries(project.assets.uploaded).filter(([id]) => id.startsWith("qa_")).map(([id, asset]) => [id, asset.dataUrl])));
   await page.goto(`${server.url}/player.html`, { waitUntil: "domcontentloaded" });
   await observe('!!document.querySelector(\'[data-testid="title-screen"]\')', undefined, 120_000);
+  if (scenario === "audio-layers") {
+    await runAudioScenario();
+  } else {
   await marker("REPAIR START");
   await marker("LOCATION COMPLETE");
   const location = await snapshot("location");
@@ -142,6 +211,7 @@ try {
   );
   await observe('window.__oprnDebug?.readState().x === 4', "ArrowRight");
   await shot("04-input-restored");
+  }
   assert.deepEqual(report.errors, []);
   report.pass = true;
 } catch (error) {

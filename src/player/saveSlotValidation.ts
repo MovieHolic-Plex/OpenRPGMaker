@@ -437,6 +437,8 @@ export function parseAudioState(value: Record<string, unknown>): ParsedAudioStat
   if (!me.ok) return { ok: false, message: "Invalid me audio" };
   const se = parseAudioTrack(value.se);
   if (!se.ok) return { ok: false, message: "Invalid se audio" };
+  const ambient = parseAudioTrack(value.ambient);
+  if (!ambient.ok) return { ok: false, message: "Invalid ambient audio" };
   return {
     ok: true,
     value: {
@@ -444,6 +446,7 @@ export function parseAudioState(value: Record<string, unknown>): ParsedAudioStat
       bgs: bgs.value,
       me: me.value,
       se: se.value,
+      ambient: ambient.value,
     },
   };
 }
@@ -545,5 +548,14 @@ function parseAudioTrack(value: unknown): ParsedAudioTrack {
   if (!isRecord(value)) return { ok: false };
   if (typeof value.resourceId !== "string") return { ok: false };
   if (typeof value.loop !== "boolean") return { ok: false };
-  return { ok: true, value: { resourceId: value.resourceId, loop: value.loop } };
+  const volume = value.volume;
+  const fadeInMs = value.fadeInMs;
+  if (volume !== undefined && (typeof volume !== "number" || !Number.isFinite(volume) || volume < 0 || volume > 100)) return { ok: false };
+  if (fadeInMs !== undefined && (typeof fadeInMs !== "number" || !Number.isFinite(fadeInMs) || fadeInMs < 0)) return { ok: false };
+  return { ok: true, value: {
+    resourceId: value.resourceId,
+    loop: value.loop,
+    ...(volume === undefined ? {} : { volume }),
+    ...(fadeInMs === undefined ? {} : { fadeInMs }),
+  } };
 }
