@@ -52,3 +52,8 @@ verify its actual committed result in an isolated verification tree. Task10
 remains pending in the approved plan and preserved initial definition. After
 parent verifies/integrates8, add ready10 and rerun integrated verification through
 another amendment; never start a node whose parent handoff is still missing.
+
+Generation3 starts task10 only after the actual parent/independent task8 checks
+and serial documentation integration pass. Verified task7/task8 nodes are reused;
+the final verifier is rerun on the completed field-input HEAD with all Phase3
+contracts. The original task10 scope was deferred, not removed from the goal.
