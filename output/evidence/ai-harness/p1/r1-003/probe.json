@@ -1,0 +1,89 @@
+{
+  "sha": "7671a7dcb0fce1d52d05d1eb95ee38bc21e7688e",
+  "tree": "f904c90fad5e09dcbea1e791cd7fc323939843d4",
+  "transport": "deterministic HTTP only; no real remote or product edits",
+  "scenarios": [
+    {
+      "name": "reentrant-cancelled-proof-at-success-event",
+      "outer": {
+        "status": "failed",
+        "verified": false,
+        "reason": "cancelled",
+        "commitId": null
+      },
+      "inner": {
+        "status": "failed",
+        "verified": false,
+        "reason": "cancelled",
+        "commitId": null
+      },
+      "current": {
+        "status": "failed",
+        "verified": false,
+        "reason": "cancelled",
+        "commitId": null
+      },
+      "savedAuditCount": 0,
+      "auditTokens": [
+        "agent_run:proof-failed"
+      ]
+    }
+  ],
+  "requests": [
+    {
+      "path": "/rest/v1/projects",
+      "query": "?on_conflict=project_id",
+      "method": "POST"
+    },
+    {
+      "path": "/rest/v1/maps",
+      "query": "?project_id=eq.p1-review-boundary-fixture",
+      "method": "DELETE"
+    },
+    {
+      "path": "/rest/v1/maps",
+      "query": "?on_conflict=project_id%2Cmap_id",
+      "method": "POST"
+    },
+    {
+      "path": "/rest/v1/tilesets",
+      "query": "?project_id=eq.p1-review-boundary-fixture",
+      "method": "DELETE"
+    },
+    {
+      "path": "/rest/v1/tilesets",
+      "query": "?on_conflict=project_id%2Ctileset_id",
+      "method": "POST"
+    },
+    {
+      "path": "/rest/v1/projects",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.p1-review-boundary-fixture",
+      "method": "GET"
+    },
+    {
+      "path": "/rest/v1/maps",
+      "query": "?project_id=eq.p1-review-boundary-fixture&select=map_id%2Cmap_json",
+      "method": "GET"
+    },
+    {
+      "path": "/rest/v1/project_commits",
+      "query": "",
+      "method": "POST"
+    },
+    {
+      "path": "/rest/v1/project_changes",
+      "query": "",
+      "method": "POST"
+    }
+  ],
+  "cleanup": {
+    "serverClosed": true,
+    "listenerStarted": false,
+    "timersCleared": true,
+    "globalsRestored": true,
+    "pendingTransports": 0,
+    "realRemoteWrites": 0
+  },
+  "completed": true,
+  "contractFailures": []
+}

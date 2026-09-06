@@ -1,0 +1,63 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiApplyCommitCorrelation.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p1-r1-commit-20260906
+
+ ❯ test/aiApplyCommitCorrelation.test.ts (6 tests | 2 failed) 29621ms
+   × actual apply commit correlation (resetProject=false) > proves synchronous-subscriber content without donating commit identity 4301ms
+     → expected 'f0f8ae45-84ae-4d5c-b1ea-555ca6eff676' to be null // Object.is equality
+   ✓ actual apply commit correlation (resetProject=false) > proves healthy content without donating commit identity  6318ms
+   ✓ actual apply commit correlation (resetProject=false) > proves async-commit-edit content without donating commit identity  3885ms
+   × actual apply commit correlation (resetProject=true) > proves synchronous-subscriber content without donating commit identity 6691ms
+     → expected '83cd61d3-e783-476f-9eb4-904ce16ab629' to be null // Object.is equality
+   ✓ actual apply commit correlation (resetProject=true) > proves healthy content without donating commit identity  3652ms
+   ✓ actual apply commit correlation (resetProject=true) > proves async-commit-edit content without donating commit identity  4770ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiApplyCommitCorrelation.test.ts > actual apply commit correlation (resetProject=false) > proves synchronous-subscriber content without donating commit identity
+AssertionError: expected 'f0f8ae45-84ae-4d5c-b1ea-555ca6eff676' to be null // Object.is equality
+
+[32m- Expected:[39m 
+null
+
+[31m+ Received:[39m 
+"f0f8ae45-84ae-4d5c-b1ea-555ca6eff676"
+
+ ❯ test/aiApplyCommitCorrelation.test.ts:141:30
+    139|       expect(proof).toMatchObject({ status: "succeeded", verified: tru…
+    140|       expect(f.row()?.current_json.meta.title).toBe(applied.applied.me…
+    141|       expect(proof.commitId).toBe(scenario === "healthy" ? applied.com…
+       |                              ^
+    142|       expect(applied.commitProject?.meta.title).toBe("actual-ai-apply"…
+    143|       if (scenario === "healthy") expect(applied.commitProject).toBe(s…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/aiApplyCommitCorrelation.test.ts > actual apply commit correlation (resetProject=true) > proves synchronous-subscriber content without donating commit identity
+AssertionError: expected '83cd61d3-e783-476f-9eb4-904ce16ab629' to be null // Object.is equality
+
+[32m- Expected:[39m 
+null
+
+[31m+ Received:[39m 
+"83cd61d3-e783-476f-9eb4-904ce16ab629"
+
+ ❯ test/aiApplyCommitCorrelation.test.ts:141:30
+    139|       expect(proof).toMatchObject({ status: "succeeded", verified: tru…
+    140|       expect(f.row()?.current_json.meta.title).toBe(applied.applied.me…
+    141|       expect(proof.commitId).toBe(scenario === "healthy" ? applied.com…
+       |                              ^
+    142|       expect(applied.commitProject?.meta.title).toBe("actual-ai-apply"…
+    143|       if (scenario === "healthy") expect(applied.commitProject).toBe(s…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 4 passed (6)
+   Start at  21:30:00
+   Duration  56.98s (transform 17.72s, setup 0ms, collect 25.39s, tests 29.62s, environment 8ms, prepare 365ms)
+

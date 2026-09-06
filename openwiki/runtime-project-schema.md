@@ -16,8 +16,8 @@ editor. The optional wire/server hash alone doesn't establish content equality.
 If accepted content can't normalize, saving logs the error and returns no receipt.
 
 `store.verifyPersistedRevision(receipt, { signal? })` accepts the exact
-store-issued object. A private WeakMap holds its captured Supabase configuration;
-copied or reconstructed tokens fail. `loadProjectForPersistenceProof` reuses the
+store-issued object. A private WeakMap holds its captured Supabase configuration
+and load/adoption lineage; copied or reconstructed tokens fail. `loadProjectForPersistenceProof` reuses the
 normalized/hybrid loader with observed `project_id` and cancellation, without
 commit-tip hydration. It performs a remote read, not `reloadFromRemote()`: no
 live-project replacement, dirty reset, draft change, URL change, or store event.
@@ -27,11 +27,16 @@ Results are `verified` with `isCurrent`, `mismatch` with `reason: target | conte
 `disabled`, `cancelled`, or `failed` with a message. Missing rows and read errors
 fail. Each verifier call makes a fresh attempt, so a failed receipt can retry.
 `isPersistenceReceiptCurrent(receipt)` checks loaded/enabled state, the latest
-receipt reference, mutation generation and captured target configuration. A
-matching historical read may return `verified` with `isCurrent:false`; consumers
-mustn't promote newer live state from that result and must recheck currentness
-when consuming it after an await. Neither save responses nor proof reads replace
-newer local edits.
+receipt reference, mutation generation, load/adoption lineage and captured target
+configuration. Adoption, successful remote reload and reconnect advance lineage
+and clear the current receipt. Saves capture lineage before submission; a late
+receipt from an earlier lineage remains available for historical verification,
+but can't become current again or overwrite a replacement lineage's receipt.
+This separate counter leaves local-edit generation and local-first catch-up saves
+unchanged. A matching historical read may return `verified` with `isCurrent:false`;
+consumers mustn't promote newer live state from that result and must recheck
+currentness when consuming it after an await. Neither save responses nor proof
+reads replace newer local edits.
 
 Sources: [store types and methods](../src/project/store.ts) and
 [proof loader](../src/project/supabaseProjectSync.ts). The
