@@ -1,0 +1,138 @@
+{
+  "initial": [
+    {
+      "class": "event-subdialog-window wide",
+      "top": 24,
+      "bottom": 744,
+      "height": 720,
+      "minHeight": "auto",
+      "maxHeight": "720px",
+      "overflow": "hidden",
+      "clientHeight": 718,
+      "scrollHeight": 718
+    },
+    {
+      "class": "event-subdialog-body",
+      "top": 76.85000610351562,
+      "bottom": 743.0000305175781,
+      "height": 666.1500244140625,
+      "minHeight": "0px",
+      "maxHeight": "none",
+      "overflow": "auto",
+      "clientHeight": 666,
+      "scrollHeight": 747
+    },
+    {
+      "class": "event-command-edit-dialog",
+      "top": 90.85000610351562,
+      "bottom": 807.8500061035156,
+      "height": 717,
+      "minHeight": "auto",
+      "maxHeight": "none",
+      "overflow": "visible",
+      "clientHeight": 717,
+      "scrollHeight": 717
+    },
+    {
+      "class": "event-command-edit-columns",
+      "top": 90.85000610351562,
+      "bottom": 763.8500061035156,
+      "height": 673,
+      "minHeight": "auto",
+      "maxHeight": "none",
+      "overflow": "visible",
+      "clientHeight": 673,
+      "scrollHeight": 673
+    },
+    {
+      "class": "m2-resource-preview",
+      "top": 280.8500061035156,
+      "bottom": 763.8500061035156,
+      "height": 483,
+      "minHeight": "54px",
+      "maxHeight": "none",
+      "overflow": "hidden",
+      "clientHeight": 481,
+      "scrollHeight": 481
+    },
+    {
+      "class": "event-command-edit-actions",
+      "top": 775.8499755859375,
+      "bottom": 807.8499755859375,
+      "height": 32,
+      "minHeight": "auto",
+      "maxHeight": "none",
+      "overflow": "visible",
+      "clientHeight": 32,
+      "scrollHeight": 32
+    }
+  ],
+  "scrolled": [
+    {
+      "class": "event-subdialog-window wide",
+      "top": 24,
+      "bottom": 744,
+      "height": 720,
+      "minHeight": "auto",
+      "maxHeight": "720px",
+      "overflow": "hidden",
+      "clientHeight": 718,
+      "scrollHeight": 718
+    },
+    {
+      "class": "event-subdialog-body",
+      "top": 76.85000610351562,
+      "bottom": 743.0000305175781,
+      "height": 666.1500244140625,
+      "minHeight": "0px",
+      "maxHeight": "none",
+      "overflow": "auto",
+      "clientHeight": 666,
+      "scrollHeight": 747
+    },
+    {
+      "class": "event-command-edit-dialog",
+      "top": 9.850006103515625,
+      "bottom": 726.8500061035156,
+      "height": 717,
+      "minHeight": "auto",
+      "maxHeight": "none",
+      "overflow": "visible",
+      "clientHeight": 717,
+      "scrollHeight": 717
+    },
+    {
+      "class": "event-command-edit-columns",
+      "top": 9.850006103515625,
+      "bottom": 682.8500061035156,
+      "height": 673,
+      "minHeight": "auto",
+      "maxHeight": "none",
+      "overflow": "visible",
+      "clientHeight": 673,
+      "scrollHeight": 673
+    },
+    {
+      "class": "m2-resource-preview",
+      "top": 199.85000610351562,
+      "bottom": 682.8500061035156,
+      "height": 483,
+      "minHeight": "54px",
+      "maxHeight": "none",
+      "overflow": "hidden",
+      "clientHeight": 481,
+      "scrollHeight": 481
+    },
+    {
+      "class": "event-command-edit-actions",
+      "top": 694.8499755859375,
+      "bottom": 726.8499755859375,
+      "height": 32,
+      "minHeight": "auto",
+      "maxHeight": "none",
+      "overflow": "visible",
+      "clientHeight": 32,
+      "scrollHeight": 32
+    }
+  ]
+}

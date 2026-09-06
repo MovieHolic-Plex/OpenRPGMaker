@@ -1,0 +1,61 @@
+{
+  "unit": "U07",
+  "sourceCommits": [
+    "1fe3060b981bf59104f6bfe042780427ca622810",
+    "17d5c5a4b59f1b7bfca22c67964264050ef6ae0f"
+  ],
+  "integrationBase": "9ab8d407e",
+  "focused": {
+    "passed": 152,
+    "failed": 0,
+    "workers": 1,
+    "report": "../checkpoints/u07-integration.json"
+  },
+  "editor": {
+    "flows": 17,
+    "exportImport": true,
+    "aiHttpCalls": 2,
+    "report": "surface-VoQxSZ/editor-observations.json"
+  },
+  "player": {
+    "scenarios": 3,
+    "beats": 11,
+    "failures": [],
+    "report": "surface-VoQxSZ/player-observations.json",
+    "walk": {
+      "status": "success",
+      "moving": true,
+      "textureKey": "u07-charset-new",
+      "frame": {
+        "name": 12,
+        "x": 0,
+        "y": 32,
+        "width": 24,
+        "height": 32
+      }
+    },
+    "idle": {
+      "status": "success",
+      "moving": false,
+      "textureKey": "u07-charset-new",
+      "frame": {
+        "name": 13,
+        "x": 24,
+        "y": 32,
+        "width": 24,
+        "height": 32
+      }
+    }
+  },
+  "static": {
+    "freshLspErrors": 0,
+    "typecheckAppExit": 0,
+    "buildAppExit": 0
+  },
+  "cleanup": {
+    "editor": "surface-VoQxSZ/editor-cleanup.json",
+    "player": "surface-VoQxSZ/player-cleanup.json"
+  },
+  "scope": "Picker/runtime-upload fixes only. Other mapped parallax/travel/vehicle/checkpoint consumer work remains in its original units.",
+  "visual": "Geometry and screenshots captured; available model omits image pixels, so no pixel-level verdict claimed."
+}

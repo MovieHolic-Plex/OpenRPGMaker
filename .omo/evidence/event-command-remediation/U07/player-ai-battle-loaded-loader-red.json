@@ -1,0 +1,49 @@
+{
+  "url": "http://127.0.0.1:33163/player.html",
+  "editor": false,
+  "pending": false,
+  "loadedPlayer": {
+    "resourceId": "u07-charset-new",
+    "textureKey": "__MISSING",
+    "textureExists": false,
+    "frame": {
+      "name": "__BASE",
+      "x": 0,
+      "y": 0,
+      "width": 32,
+      "height": 32
+    },
+    "source": {
+      "width": 32,
+      "height": 32
+    },
+    "frames": [
+      {
+        "id": 24,
+        "missing": true
+      },
+      {
+        "id": 25,
+        "missing": true
+      },
+      {
+        "id": 26,
+        "missing": true
+      }
+    ],
+    "other": {
+      "mutated": false
+    }
+  },
+  "sprite": {
+    "textureKey": "__MISSING",
+    "frame": "__BASE",
+    "resourceId": "u07-charset-new",
+    "kind": "charset",
+    "moving": false,
+    "x": 40,
+    "y": 64
+  },
+  "backdrop": "url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAIAAADYYG7QAAAAQUlEQVR4nO3OQQ0AMBAEofNvupWx8yBBAHf3YvYDISEhoZj9QEhISChmPxASEhKK2Q+EhISEYvYDISEhoZj9oB368AX3eWaj93YAAAAASUVORK5CYII=\")",
+  "face": "generated-face_dc85360b-74a3-40e8-aaf3-9dbbaecec5d6-bust"
+}

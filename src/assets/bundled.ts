@@ -18,10 +18,11 @@ import { CHIPSET_ANIMATION_FPS, CHIPSET_ANIMATION_STRIPS } from "@/project/defau
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import { FARMING_CROP_SPRITE_ASSETS } from "@/assets/farmingSprites";
 import { generatedMonsterSpriteUrl, isGeneratedMonsterSprite } from "@/assets/generatedMonsterSprites";
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { cropGraphicStages } from "@/project/farmModel";
 import { SCARLOXY_CHIPSET_ASSETS } from "@/assets/scarloxyPack";
 import { EMOTE_ASSET_PATH, EMOTE_FRAME_SIZE, EMOTE_KINDS, EMOTE_TEXTURE_KEY } from "@/project/emotes";
-import type { Project } from "@/project/types";
+import type { Project, UploadedAsset } from "@/project/types";
 export { isColorKeyedChipsetTextureKey } from "@/assets/chipsetTransparency";
 
 export const TEX_TILESET = "tex_tiles_default";
@@ -120,6 +121,10 @@ export function loadBundledAssets(scene: Phaser.Scene, project?: Project): void 
     if (usedTextures && !usedTextures.has(asset.id)) continue;
     scene.load.image(asset.id, withInlineAsset(asset.path));
   }
+  for (const asset of referencedUploadedCharsets(project, usedTextures)) {
+    const url = resolveAssetResourceUrl(asset.id, { project });
+    if (url !== null) scene.load.image(asset.id, url);
+  }
   for (const id of usedTextures ?? []) {
     // Project-owned sprites/uploads keep their existing texture ownership.
     if (project?.assets.sprites[id] || project?.assets.uploaded[id]) continue;
@@ -169,6 +174,9 @@ export function registerBundledFrames(scene: Phaser.Scene, project?: Project): v
       .map((asset) => asset.textureKey),
   ]);
   registerEasyRpgCharsetTextures(scene, usedTextures);
+  for (const asset of referencedUploadedCharsets(project, usedTextures)) {
+    if (scene.textures.exists(asset.id)) registerCharsetTextureFrames(scene.textures.get(asset.id));
+  }
   registerFarmingCropFrames(scene, usedTextures);
   registerEmoteFrames(scene);
 }
@@ -270,7 +278,7 @@ function projectBundledTextureKeys(project: Project): Set<string> {
   collectProjectStrings(project, strings);
   const keys = new Set<string>([TEX_TILESET, TEX_DIALOGUE_FRAME]);
   for (const id of strings) {
-    if (isGeneratedMonsterSprite(id)) keys.add(id);
+    if (isGeneratedMonsterSprite(id) || project.assets.uploaded[id]?.kind === "charset") keys.add(id);
   }
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
     if (strings.has(asset.textureKey)) keys.add(asset.textureKey);
@@ -289,6 +297,12 @@ function projectBundledTextureKeys(project: Project): Set<string> {
     if (strings.has(asset.id) || cropAssetIds.has(asset.id)) keys.add(asset.id);
   }
   return keys;
+}
+
+function referencedUploadedCharsets(project: Project | undefined, usedTextures: ReadonlySet<string> | null): readonly UploadedAsset[] {
+  return Object.values(project?.assets.uploaded ?? {}).filter(asset =>
+    asset.kind === "charset" && usedTextures?.has(asset.id) && !project?.assets.sprites[asset.id]
+    && !CHARSET_ASSETS.some(bundled => bundled.id === asset.id || bundled.textureKey === asset.id));
 }
 
 function collectProjectStrings(value: unknown, out: Set<string>): void {

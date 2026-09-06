@@ -17,6 +17,7 @@ import {
   charsetFrameSource,
 } from "@/assets/easyrpgRtp";
 import { el } from "@/util/dom";
+import { store } from "@/project/store";
 import type { ActorRecord, Project } from "@/project/types";
 
 export {
@@ -76,6 +77,17 @@ export type RecordPickerHandle = {
 
 const RICH_ICON_SIZE = 24;
 
+/** Picker/AI callbacks can return assets registered after the select was built. */
+export function setResourcePickerValue(select: HTMLSelectElement, resourceId: string): void {
+  const project = store.getCurrent();
+  const name = project.resourceProfiles.find(profile => profile.assetId === resourceId)?.name
+    ?? project.assets.uploaded[resourceId]?.name;
+  if (!Array.from(select.options).some(option => option.value === resourceId)) {
+    select.append(el("option", { text: name ?? `현재 값: ${resourceId}`, attrs: { value: resourceId } }));
+  }
+  select.value = resourceId;
+}
+
 export function recordPickerWithPreview<T extends RecordPickerRecordLike>(
   options: RecordPickerOptions<T>
 ): RecordPickerHandle {
@@ -93,6 +105,9 @@ export function recordPickerWithPreview<T extends RecordPickerRecordLike>(
     const option = el("option", { text: record.name.trim() || "(이름 없음)", attrs: { value: record.id } });
     (currentGroup ?? select).append(option);
   }
+  if (options.selectedId && !options.records.some(record => record.id === options.selectedId)) {
+    select.append(el("option", { text: `현재 값: ${options.selectedId}`, attrs: { value: options.selectedId } }));
+  }
   select.value = options.selectedId;
 
   const card = el("span", {
@@ -107,7 +122,7 @@ export function recordPickerWithPreview<T extends RecordPickerRecordLike>(
       card.dataset.empty = "true";
       card.append(
         initialBadge("?"),
-        el("span", { class: "record-picker-card-name empty", text: `(${options.placeholder})` })
+        el("span", { class: "record-picker-card-name empty", text: select.value ? `목록에 없는 항목: ${select.value}` : `(${options.placeholder})` })
       );
       return;
     }

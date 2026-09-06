@@ -1,0 +1,17 @@
+src/editor/panels/eventEditor/commandBodyM2.ts 756
+src/editor/panels/eventEditor/recordPicker.ts 611
+src/editor/panels/eventEditor/dom.ts 39
+src/editor/panels/eventEditor/commandBodyM2Actor.ts 1174
+src/editor/panels/eventEditor/commandBodyM2Page3.ts 1928
+src/player/playerSpriteResources.ts 65
+src/assets/bundled.ts 369
+test/eventCommandRemediation/U07.test.ts 258
+test/eventCommandRemediation/U07.fixture.ts 61
+test/eventCommandRemediation/U07/browserControls.ts 51
+test/eventCommandRemediation/U07/editorFixture.ts 54
+test/eventCommandRemediation/U07/loader.test.ts 79
+test/eventCommandRemediation/U07/playerObservation.mjs 71
+test/eventCommandRemediation/U07/playerSprite.test.ts 41
+test/eventCommandRemediation/U07/runEditor.mts 55
+test/e2e/event-command-remediation-U07.spec.ts 142
+scripts/qa/runtime/event-command-remediation-u07.scenario.mjs 161

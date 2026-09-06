@@ -1,0 +1,2052 @@
+[
+  {
+    "id": "map",
+    "beats": 3,
+    "surface": {
+      "url": "http://127.0.0.1:43405/player.html",
+      "editor": false,
+      "pending": false,
+      "loadedPlayer": {
+        "loads": [
+          {
+            "key": "tex_tiles_default",
+            "url": "assets/easyrpg-chipset-exterior.png"
+          },
+          {
+            "key": "tex_easyrpg_chipset_dungeon__raw_chipset",
+            "url": "assets/easyrpg-chipset-dungeon-transparent.png"
+          },
+          {
+            "key": "tex_easyrpg_chipset_interior__raw_chipset",
+            "url": "assets/easyrpg-chipset-interior-transparent.png"
+          },
+          {
+            "key": "tex_easyrpg_chipset_ship",
+            "url": "assets/easyrpg-chipset-ship-transparent.png"
+          },
+          {
+            "key": "tex_easyrpg_chipset_world",
+            "url": "assets/easyrpg-chipset-world-transparent.png"
+          },
+          {
+            "key": "tex_easyrpg_chipset_retro_dungeon__raw_chipset",
+            "url": "assets/easyrpg-chipset-retro-dungeon-transparent.png"
+          },
+          {
+            "key": "tex_easyrpg_chipset_retro_exterior",
+            "url": "assets/easyrpg-chipset-retro-exterior-transparent.png"
+          },
+          {
+            "key": "tex_easyrpg_chipset_retro_house",
+            "url": "assets/easyrpg-chipset-retro-house-transparent.png"
+          },
+          {
+            "key": "tex_easyrpg_chipset_combined_town",
+            "url": "assets/easyrpg-chipset-combined-town-transparent.png"
+          },
+          {
+            "key": "tex_easyrpg_chipset_retro_world",
+            "url": "assets/easyrpg-chipset-retro-world-transparent.png"
+          },
+          {
+            "key": "tex_modern_exteriors_nocturne",
+            "url": "assets/modern-exteriors/modern-city-atlas.png"
+          },
+          {
+            "key": "tex_scarloxy_chipset_grassland",
+            "url": "assets/scarloxy/scarloxy-chipset-grassland.png"
+          },
+          {
+            "key": "tex_scarloxy_chipset_wilds",
+            "url": "assets/scarloxy/scarloxy-chipset-wilds.png"
+          },
+          {
+            "key": "tex_scarloxy_chipset_indoor",
+            "url": "assets/scarloxy/scarloxy-chipset-indoor.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_actor1__raw",
+            "url": "assets/easyrpg/charset/Actor1.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_actor2__raw",
+            "url": "assets/easyrpg/charset/Actor2.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_actor3__raw",
+            "url": "assets/easyrpg/charset/Actor3.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_actor4__raw",
+            "url": "assets/easyrpg/charset/Actor4.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_animal__raw",
+            "url": "assets/easyrpg/charset/Animal.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_monster1__raw",
+            "url": "assets/easyrpg/charset/Monster1.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_monster2__raw",
+            "url": "assets/easyrpg/charset/Monster2.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_monster3__raw",
+            "url": "assets/easyrpg/charset/Monster3.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_object1__raw",
+            "url": "assets/easyrpg/charset/Object1.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_object2__raw",
+            "url": "assets/easyrpg/charset/Object2.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_people1__raw",
+            "url": "assets/easyrpg/charset/People1.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_people2__raw",
+            "url": "assets/easyrpg/charset/People2.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_people3__raw",
+            "url": "assets/easyrpg/charset/People3.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_people4__raw",
+            "url": "assets/easyrpg/charset/People4.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_people5__raw",
+            "url": "assets/easyrpg/charset/People5.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_template__raw",
+            "url": "assets/easyrpg/charset/Template.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_vehicles__raw",
+            "url": "assets/easyrpg/charset/Vehicles.png"
+          },
+          {
+            "key": "tex_scarloxy_charset_people1__raw",
+            "url": "assets/scarloxy/scarloxy-charset-people1.png"
+          },
+          {
+            "key": "tex_scarloxy_charset_people2__raw",
+            "url": "assets/scarloxy/scarloxy-charset-people2.png"
+          },
+          {
+            "key": "tex_farming_charset_chicken__raw",
+            "url": "assets/farming/animals/chicken.png"
+          },
+          {
+            "key": "tex_farming_charset_cow__raw",
+            "url": "assets/farming/animals/cow.png"
+          },
+          {
+            "key": "u07-charset-old",
+            "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEACAIAAACcTTzhAAADW0lEQVR4nO3OAQnAQBAEsfNvulXxLAyBCMh9d8Aj+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2A/pl/DDXHUPTgAAAABJRU5ErkJggg=="
+          },
+          {
+            "key": "u07-charset-new",
+            "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEACAIAAACcTTzhAAADW0lEQVR4nO3OAQnAQBAEsfNvulXxLAyBCMjdfcAz+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A1g8IBPDDS4B2TwAAAABJRU5ErkJggg=="
+          },
+          {
+            "key": "generated-enemy-slime-01",
+            "url": "/assets/generated/starter/monster-slime-01.png"
+          },
+          {
+            "key": "generated-enemy-bat-01",
+            "url": "/assets/generated/starter/monster-bat-01.png"
+          },
+          {
+            "key": "generated-enemy-golem-01",
+            "url": "/assets/generated/starter/monster-golem-01.png"
+          },
+          {
+            "key": "generated-enemy-dragon-01",
+            "url": "/assets/generated/starter/monster-dragon-01.png"
+          },
+          {
+            "key": "generated-enemy-skeleton-01",
+            "url": "/assets/generated/starter/monster-skeleton-01.png"
+          },
+          {
+            "key": "generated-enemy-slime-blue",
+            "url": "/assets/generated/starter/monster-slime-blue.png"
+          },
+          {
+            "key": "generated-enemy-slime-red",
+            "url": "/assets/generated/starter/monster-slime-red.png"
+          },
+          {
+            "key": "generated-enemy-slime-green",
+            "url": "/assets/generated/starter/monster-slime-green.png"
+          },
+          {
+            "key": "generated-enemy-slime-metal",
+            "url": "/assets/generated/starter/monster-slime-metal.png"
+          },
+          {
+            "key": "generated-enemy-slime-king",
+            "url": "/assets/generated/starter/monster-slime-king.png"
+          },
+          {
+            "key": "generated-enemy-slime-cube",
+            "url": "/assets/generated/starter/monster-slime-cube.png"
+          },
+          {
+            "key": "generated-enemy-ooze-black",
+            "url": "/assets/generated/starter/monster-ooze-black.png"
+          },
+          {
+            "key": "generated-enemy-ooze-acid",
+            "url": "/assets/generated/starter/monster-ooze-acid.png"
+          },
+          {
+            "key": "generated-enemy-bat-cave",
+            "url": "/assets/generated/starter/monster-bat-cave.png"
+          },
+          {
+            "key": "generated-enemy-bat-vampire",
+            "url": "/assets/generated/starter/monster-bat-vampire.png"
+          },
+          {
+            "key": "generated-enemy-bee-giant",
+            "url": "/assets/generated/starter/monster-bee-giant.png"
+          },
+          {
+            "key": "generated-enemy-spider-cave",
+            "url": "/assets/generated/starter/monster-spider-cave.png"
+          },
+          {
+            "key": "generated-enemy-spider-widow",
+            "url": "/assets/generated/starter/monster-spider-widow.png"
+          },
+          {
+            "key": "generated-enemy-scorpion-sand",
+            "url": "/assets/generated/starter/monster-scorpion-sand.png"
+          },
+          {
+            "key": "generated-enemy-beetle-horn",
+            "url": "/assets/generated/starter/monster-beetle-horn.png"
+          },
+          {
+            "key": "generated-enemy-mantis-blade",
+            "url": "/assets/generated/starter/monster-mantis-blade.png"
+          },
+          {
+            "key": "generated-enemy-centipede-fire",
+            "url": "/assets/generated/starter/monster-centipede-fire.png"
+          },
+          {
+            "key": "generated-enemy-moth-dust",
+            "url": "/assets/generated/starter/monster-moth-dust.png"
+          },
+          {
+            "key": "generated-enemy-worm-sand",
+            "url": "/assets/generated/starter/monster-worm-sand.png"
+          },
+          {
+            "key": "generated-enemy-ant-soldier",
+            "url": "/assets/generated/starter/monster-ant-soldier.png"
+          },
+          {
+            "key": "generated-enemy-wolf-grey",
+            "url": "/assets/generated/starter/monster-wolf-grey.png"
+          },
+          {
+            "key": "generated-enemy-wolf-dire",
+            "url": "/assets/generated/starter/monster-wolf-dire.png"
+          },
+          {
+            "key": "generated-enemy-boar-tusk",
+            "url": "/assets/generated/starter/monster-boar-tusk.png"
+          },
+          {
+            "key": "generated-enemy-bear-brown",
+            "url": "/assets/generated/starter/monster-bear-brown.png"
+          },
+          {
+            "key": "generated-enemy-tiger-saber",
+            "url": "/assets/generated/starter/monster-tiger-saber.png"
+          },
+          {
+            "key": "generated-enemy-rat-giant",
+            "url": "/assets/generated/starter/monster-rat-giant.png"
+          },
+          {
+            "key": "generated-enemy-bird-hawk",
+            "url": "/assets/generated/starter/monster-bird-hawk.png"
+          },
+          {
+            "key": "generated-enemy-snake-viper",
+            "url": "/assets/generated/starter/monster-snake-viper.png"
+          },
+          {
+            "key": "generated-enemy-cat-shadow",
+            "url": "/assets/generated/starter/monster-cat-shadow.png"
+          },
+          {
+            "key": "generated-enemy-goat-mountain",
+            "url": "/assets/generated/starter/monster-goat-mountain.png"
+          },
+          {
+            "key": "generated-enemy-crab-rock",
+            "url": "/assets/generated/starter/monster-crab-rock.png"
+          },
+          {
+            "key": "generated-enemy-hound-hell",
+            "url": "/assets/generated/starter/monster-hound-hell.png"
+          },
+          {
+            "key": "generated-enemy-ape-stone",
+            "url": "/assets/generated/starter/monster-ape-stone.png"
+          },
+          {
+            "key": "generated-enemy-deer-forest",
+            "url": "/assets/generated/starter/monster-deer-forest.png"
+          },
+          {
+            "key": "generated-enemy-skeleton-bone",
+            "url": "/assets/generated/starter/monster-skeleton-bone.png"
+          },
+          {
+            "key": "generated-enemy-skeleton-archer",
+            "url": "/assets/generated/starter/monster-skeleton-archer.png"
+          },
+          {
+            "key": "generated-enemy-skeleton-knight",
+            "url": "/assets/generated/starter/monster-skeleton-knight.png"
+          },
+          {
+            "key": "generated-enemy-zombie-rot",
+            "url": "/assets/generated/starter/monster-zombie-rot.png"
+          },
+          {
+            "key": "generated-enemy-ghoul-grave",
+            "url": "/assets/generated/starter/monster-ghoul-grave.png"
+          },
+          {
+            "key": "generated-enemy-ghost-pale",
+            "url": "/assets/generated/starter/monster-ghost-pale.png"
+          },
+          {
+            "key": "generated-enemy-wraith-dark",
+            "url": "/assets/generated/starter/monster-wraith-dark.png"
+          },
+          {
+            "key": "generated-enemy-lich-frost",
+            "url": "/assets/generated/starter/monster-lich-frost.png"
+          },
+          {
+            "key": "generated-enemy-mummy-bandage",
+            "url": "/assets/generated/starter/monster-mummy-bandage.png"
+          },
+          {
+            "key": "generated-enemy-banshee-wail",
+            "url": "/assets/generated/starter/monster-banshee-wail.png"
+          },
+          {
+            "key": "generated-enemy-revenant-vengeful",
+            "url": "/assets/generated/starter/monster-revenant-vengeful.png"
+          },
+          {
+            "key": "generated-enemy-bonepile-crawler",
+            "url": "/assets/generated/starter/monster-bonepile-crawler.png"
+          },
+          {
+            "key": "generated-enemy-spirit-fire",
+            "url": "/assets/generated/starter/monster-spirit-fire.png"
+          },
+          {
+            "key": "generated-enemy-spirit-water",
+            "url": "/assets/generated/starter/monster-spirit-water.png"
+          },
+          {
+            "key": "generated-enemy-spirit-earth",
+            "url": "/assets/generated/starter/monster-spirit-earth.png"
+          },
+          {
+            "key": "generated-enemy-spirit-wind",
+            "url": "/assets/generated/starter/monster-spirit-wind.png"
+          },
+          {
+            "key": "generated-enemy-spirit-light",
+            "url": "/assets/generated/starter/monster-spirit-light.png"
+          },
+          {
+            "key": "generated-enemy-spirit-dark",
+            "url": "/assets/generated/starter/monster-spirit-dark.png"
+          },
+          {
+            "key": "generated-enemy-wisp-blue",
+            "url": "/assets/generated/starter/monster-wisp-blue.png"
+          },
+          {
+            "key": "generated-enemy-sylph-air",
+            "url": "/assets/generated/starter/monster-sylph-air.png"
+          },
+          {
+            "key": "generated-enemy-undine-sea",
+            "url": "/assets/generated/starter/monster-undine-sea.png"
+          },
+          {
+            "key": "generated-enemy-salamander-flame",
+            "url": "/assets/generated/starter/monster-salamander-flame.png"
+          },
+          {
+            "key": "generated-enemy-golem-stone",
+            "url": "/assets/generated/starter/monster-golem-stone.png"
+          },
+          {
+            "key": "generated-enemy-golem-iron",
+            "url": "/assets/generated/starter/monster-golem-iron.png"
+          },
+          {
+            "key": "generated-enemy-golem-clay",
+            "url": "/assets/generated/starter/monster-golem-clay.png"
+          },
+          {
+            "key": "generated-enemy-golem-crystal",
+            "url": "/assets/generated/starter/monster-golem-crystal.png"
+          },
+          {
+            "key": "generated-enemy-armor-living",
+            "url": "/assets/generated/starter/monster-armor-living.png"
+          },
+          {
+            "key": "generated-enemy-sword-flying",
+            "url": "/assets/generated/starter/monster-sword-flying.png"
+          },
+          {
+            "key": "generated-enemy-mimic-chest",
+            "url": "/assets/generated/starter/monster-mimic-chest.png"
+          },
+          {
+            "key": "generated-enemy-scarecrow-field",
+            "url": "/assets/generated/starter/monster-scarecrow-field.png"
+          },
+          {
+            "key": "generated-enemy-puppet-string",
+            "url": "/assets/generated/starter/monster-puppet-string.png"
+          },
+          {
+            "key": "generated-enemy-totem-cursed",
+            "url": "/assets/generated/starter/monster-totem-cursed.png"
+          },
+          {
+            "key": "generated-enemy-goblin-scout",
+            "url": "/assets/generated/starter/monster-goblin-scout.png"
+          },
+          {
+            "key": "generated-enemy-goblin-brute",
+            "url": "/assets/generated/starter/monster-goblin-brute.png"
+          },
+          {
+            "key": "generated-enemy-orc-warrior",
+            "url": "/assets/generated/starter/monster-orc-warrior.png"
+          },
+          {
+            "key": "generated-enemy-orc-shaman",
+            "url": "/assets/generated/starter/monster-orc-shaman.png"
+          },
+          {
+            "key": "generated-enemy-kobold-digger",
+            "url": "/assets/generated/starter/monster-kobold-digger.png"
+          },
+          {
+            "key": "generated-enemy-bandit-mask",
+            "url": "/assets/generated/starter/monster-bandit-mask.png"
+          },
+          {
+            "key": "generated-enemy-mage-rogue",
+            "url": "/assets/generated/starter/monster-mage-rogue.png"
+          },
+          {
+            "key": "generated-enemy-knight-fallen",
+            "url": "/assets/generated/starter/monster-knight-fallen.png"
+          },
+          {
+            "key": "generated-enemy-lizardman-spear",
+            "url": "/assets/generated/starter/monster-lizardman-spear.png"
+          },
+          {
+            "key": "generated-enemy-harpy-cliff",
+            "url": "/assets/generated/starter/monster-harpy-cliff.png"
+          },
+          {
+            "key": "generated-enemy-minotaur-maze",
+            "url": "/assets/generated/starter/monster-minotaur-maze.png"
+          },
+          {
+            "key": "generated-enemy-centaur-plains",
+            "url": "/assets/generated/starter/monster-centaur-plains.png"
+          },
+          {
+            "key": "generated-enemy-troll-cave",
+            "url": "/assets/generated/starter/monster-troll-cave.png"
+          },
+          {
+            "key": "generated-enemy-ogre-club",
+            "url": "/assets/generated/starter/monster-ogre-club.png"
+          },
+          {
+            "key": "generated-enemy-imp-mischief",
+            "url": "/assets/generated/starter/monster-imp-mischief.png"
+          },
+          {
+            "key": "generated-enemy-fish-piranha",
+            "url": "/assets/generated/starter/monster-fish-piranha.png"
+          },
+          {
+            "key": "generated-enemy-squid-deep",
+            "url": "/assets/generated/starter/monster-squid-deep.png"
+          },
+          {
+            "key": "generated-enemy-shark-land",
+            "url": "/assets/generated/starter/monster-shark-land.png"
+          },
+          {
+            "key": "generated-enemy-eel-electric",
+            "url": "/assets/generated/starter/monster-eel-electric.png"
+          },
+          {
+            "key": "generated-enemy-griffin-sky",
+            "url": "/assets/generated/starter/monster-griffin-sky.png"
+          },
+          {
+            "key": "generated-enemy-wyvern-cliff",
+            "url": "/assets/generated/starter/monster-wyvern-cliff.png"
+          },
+          {
+            "key": "generated-enemy-roc-giant",
+            "url": "/assets/generated/starter/monster-roc-giant.png"
+          },
+          {
+            "key": "generated-enemy-gargoyle-stone",
+            "url": "/assets/generated/starter/monster-gargoyle-stone.png"
+          },
+          {
+            "key": "generated-enemy-phoenix-rebirth",
+            "url": "/assets/generated/starter/monster-phoenix-rebirth.png"
+          },
+          {
+            "key": "generated-enemy-dragon-whelp",
+            "url": "/assets/generated/starter/monster-dragon-whelp.png"
+          },
+          {
+            "key": "generated-enemy-dragon-red",
+            "url": "/assets/generated/starter/monster-dragon-red.png"
+          },
+          {
+            "key": "generated-enemy-dragon-blue",
+            "url": "/assets/generated/starter/monster-dragon-blue.png"
+          },
+          {
+            "key": "generated-enemy-dragon-bone",
+            "url": "/assets/generated/starter/monster-dragon-bone.png"
+          },
+          {
+            "key": "generated-enemy-hydra-three",
+            "url": "/assets/generated/starter/monster-hydra-three.png"
+          },
+          {
+            "key": "generated-enemy-behemoth-horn",
+            "url": "/assets/generated/starter/monster-behemoth-horn.png"
+          },
+          {
+            "key": "generated-enemy-demon-lord",
+            "url": "/assets/generated/starter/monster-demon-lord.png"
+          },
+          {
+            "key": "generated-enemy-angel-fallen",
+            "url": "/assets/generated/starter/monster-angel-fallen.png"
+          },
+          {
+            "key": "generated-enemy-eye-floating",
+            "url": "/assets/generated/starter/monster-eye-floating.png"
+          },
+          {
+            "key": "generated-enemy-plant-carnivore",
+            "url": "/assets/generated/starter/monster-plant-carnivore.png"
+          },
+          {
+            "key": "tex_dialogue_frame",
+            "url": "assets/dialogue-frame.png"
+          },
+          {
+            "key": "tex_generated_emotes",
+            "url": "assets/generated-emotes.png"
+          }
+        ],
+        "pixel": [
+          0,
+          0,
+          255,
+          255
+        ],
+        "resourceId": "u07-charset-new",
+        "textureKey": "u07-charset-new",
+        "textureExists": true,
+        "frame": {
+          "name": 25,
+          "x": 24,
+          "y": 64,
+          "width": 24,
+          "height": 32
+        },
+        "source": {
+          "width": 288,
+          "height": 256
+        },
+        "frames": [
+          {
+            "id": 24,
+            "x": 0,
+            "y": 64,
+            "width": 24,
+            "height": 32
+          },
+          {
+            "id": 25,
+            "x": 24,
+            "y": 64,
+            "width": 24,
+            "height": 32
+          },
+          {
+            "id": 26,
+            "x": 48,
+            "y": 64,
+            "width": 24,
+            "height": 32
+          }
+        ],
+        "other": {
+          "graphic": "easyrpg-charset-actor2",
+          "face": "u07-faceset-old-bust",
+          "record": {
+            "characterGraphic": "easyrpg-charset-actor2",
+            "faceset": "u07-faceset-old-bust"
+          }
+        }
+      },
+      "sprite": {
+        "textureKey": "u07-charset-new",
+        "frame": 25,
+        "resourceId": "u07-charset-new",
+        "kind": "charset",
+        "moving": false,
+        "x": 40,
+        "y": 64
+      }
+    },
+    "geometry": [
+      {
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        },
+        "x": 32,
+        "y": 24,
+        "width": 960,
+        "height": 720
+      },
+      {
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "x": 160,
+        "y": 40,
+        "width": 960,
+        "height": 720
+      },
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "x": 240,
+        "y": 90,
+        "width": 960,
+        "height": 720
+      }
+    ],
+    "remoteWrites": []
+  },
+  {
+    "id": "battle",
+    "beats": 4,
+    "surface": {
+      "url": "http://127.0.0.1:43405/player.html",
+      "editor": false,
+      "pending": false,
+      "loadedPlayer": {
+        "loads": [
+          {
+            "key": "tex_tiles_default",
+            "url": "assets/easyrpg-chipset-exterior.png"
+          },
+          {
+            "key": "tex_easyrpg_chipset_dungeon__raw_chipset",
+            "url": "assets/easyrpg-chipset-dungeon-transparent.png"
+          },
+          {
+            "key": "tex_easyrpg_chipset_interior__raw_chipset",
+            "url": "assets/easyrpg-chipset-interior-transparent.png"
+          },
+          {
+            "key": "tex_easyrpg_chipset_ship",
+            "url": "assets/easyrpg-chipset-ship-transparent.png"
+          },
+          {
+            "key": "tex_easyrpg_chipset_world",
+            "url": "assets/easyrpg-chipset-world-transparent.png"
+          },
+          {
+            "key": "tex_easyrpg_chipset_retro_dungeon__raw_chipset",
+            "url": "assets/easyrpg-chipset-retro-dungeon-transparent.png"
+          },
+          {
+            "key": "tex_easyrpg_chipset_retro_exterior",
+            "url": "assets/easyrpg-chipset-retro-exterior-transparent.png"
+          },
+          {
+            "key": "tex_easyrpg_chipset_retro_house",
+            "url": "assets/easyrpg-chipset-retro-house-transparent.png"
+          },
+          {
+            "key": "tex_easyrpg_chipset_combined_town",
+            "url": "assets/easyrpg-chipset-combined-town-transparent.png"
+          },
+          {
+            "key": "tex_easyrpg_chipset_retro_world",
+            "url": "assets/easyrpg-chipset-retro-world-transparent.png"
+          },
+          {
+            "key": "tex_modern_exteriors_nocturne",
+            "url": "assets/modern-exteriors/modern-city-atlas.png"
+          },
+          {
+            "key": "tex_scarloxy_chipset_grassland",
+            "url": "assets/scarloxy/scarloxy-chipset-grassland.png"
+          },
+          {
+            "key": "tex_scarloxy_chipset_wilds",
+            "url": "assets/scarloxy/scarloxy-chipset-wilds.png"
+          },
+          {
+            "key": "tex_scarloxy_chipset_indoor",
+            "url": "assets/scarloxy/scarloxy-chipset-indoor.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_actor1__raw",
+            "url": "assets/easyrpg/charset/Actor1.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_actor2__raw",
+            "url": "assets/easyrpg/charset/Actor2.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_actor3__raw",
+            "url": "assets/easyrpg/charset/Actor3.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_actor4__raw",
+            "url": "assets/easyrpg/charset/Actor4.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_animal__raw",
+            "url": "assets/easyrpg/charset/Animal.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_monster1__raw",
+            "url": "assets/easyrpg/charset/Monster1.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_monster2__raw",
+            "url": "assets/easyrpg/charset/Monster2.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_monster3__raw",
+            "url": "assets/easyrpg/charset/Monster3.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_object1__raw",
+            "url": "assets/easyrpg/charset/Object1.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_object2__raw",
+            "url": "assets/easyrpg/charset/Object2.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_people1__raw",
+            "url": "assets/easyrpg/charset/People1.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_people2__raw",
+            "url": "assets/easyrpg/charset/People2.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_people3__raw",
+            "url": "assets/easyrpg/charset/People3.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_people4__raw",
+            "url": "assets/easyrpg/charset/People4.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_people5__raw",
+            "url": "assets/easyrpg/charset/People5.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_template__raw",
+            "url": "assets/easyrpg/charset/Template.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_vehicles__raw",
+            "url": "assets/easyrpg/charset/Vehicles.png"
+          },
+          {
+            "key": "tex_scarloxy_charset_people1__raw",
+            "url": "assets/scarloxy/scarloxy-charset-people1.png"
+          },
+          {
+            "key": "tex_scarloxy_charset_people2__raw",
+            "url": "assets/scarloxy/scarloxy-charset-people2.png"
+          },
+          {
+            "key": "tex_farming_charset_chicken__raw",
+            "url": "assets/farming/animals/chicken.png"
+          },
+          {
+            "key": "tex_farming_charset_cow__raw",
+            "url": "assets/farming/animals/cow.png"
+          },
+          {
+            "key": "u07-charset-old",
+            "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEACAIAAACcTTzhAAADW0lEQVR4nO3OAQnAQBAEsfNvulXxLAyBCMh9d8Aj+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2A/pl/DDXHUPTgAAAABJRU5ErkJggg=="
+          },
+          {
+            "key": "u07-charset-new",
+            "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEACAIAAACcTTzhAAADW0lEQVR4nO3OAQnAQBAEsfNvulXxLAyBCMjdfcAz+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A1g8IBPDDS4B2TwAAAABJRU5ErkJggg=="
+          },
+          {
+            "key": "generated-enemy-slime-01",
+            "url": "/assets/generated/starter/monster-slime-01.png"
+          },
+          {
+            "key": "generated-enemy-bat-01",
+            "url": "/assets/generated/starter/monster-bat-01.png"
+          },
+          {
+            "key": "generated-enemy-golem-01",
+            "url": "/assets/generated/starter/monster-golem-01.png"
+          },
+          {
+            "key": "generated-enemy-dragon-01",
+            "url": "/assets/generated/starter/monster-dragon-01.png"
+          },
+          {
+            "key": "generated-enemy-skeleton-01",
+            "url": "/assets/generated/starter/monster-skeleton-01.png"
+          },
+          {
+            "key": "generated-enemy-slime-blue",
+            "url": "/assets/generated/starter/monster-slime-blue.png"
+          },
+          {
+            "key": "generated-enemy-slime-red",
+            "url": "/assets/generated/starter/monster-slime-red.png"
+          },
+          {
+            "key": "generated-enemy-slime-green",
+            "url": "/assets/generated/starter/monster-slime-green.png"
+          },
+          {
+            "key": "generated-enemy-slime-metal",
+            "url": "/assets/generated/starter/monster-slime-metal.png"
+          },
+          {
+            "key": "generated-enemy-slime-king",
+            "url": "/assets/generated/starter/monster-slime-king.png"
+          },
+          {
+            "key": "generated-enemy-slime-cube",
+            "url": "/assets/generated/starter/monster-slime-cube.png"
+          },
+          {
+            "key": "generated-enemy-ooze-black",
+            "url": "/assets/generated/starter/monster-ooze-black.png"
+          },
+          {
+            "key": "generated-enemy-ooze-acid",
+            "url": "/assets/generated/starter/monster-ooze-acid.png"
+          },
+          {
+            "key": "generated-enemy-bat-cave",
+            "url": "/assets/generated/starter/monster-bat-cave.png"
+          },
+          {
+            "key": "generated-enemy-bat-vampire",
+            "url": "/assets/generated/starter/monster-bat-vampire.png"
+          },
+          {
+            "key": "generated-enemy-bee-giant",
+            "url": "/assets/generated/starter/monster-bee-giant.png"
+          },
+          {
+            "key": "generated-enemy-spider-cave",
+            "url": "/assets/generated/starter/monster-spider-cave.png"
+          },
+          {
+            "key": "generated-enemy-spider-widow",
+            "url": "/assets/generated/starter/monster-spider-widow.png"
+          },
+          {
+            "key": "generated-enemy-scorpion-sand",
+            "url": "/assets/generated/starter/monster-scorpion-sand.png"
+          },
+          {
+            "key": "generated-enemy-beetle-horn",
+            "url": "/assets/generated/starter/monster-beetle-horn.png"
+          },
+          {
+            "key": "generated-enemy-mantis-blade",
+            "url": "/assets/generated/starter/monster-mantis-blade.png"
+          },
+          {
+            "key": "generated-enemy-centipede-fire",
+            "url": "/assets/generated/starter/monster-centipede-fire.png"
+          },
+          {
+            "key": "generated-enemy-moth-dust",
+            "url": "/assets/generated/starter/monster-moth-dust.png"
+          },
+          {
+            "key": "generated-enemy-worm-sand",
+            "url": "/assets/generated/starter/monster-worm-sand.png"
+          },
+          {
+            "key": "generated-enemy-ant-soldier",
+            "url": "/assets/generated/starter/monster-ant-soldier.png"
+          },
+          {
+            "key": "generated-enemy-wolf-grey",
+            "url": "/assets/generated/starter/monster-wolf-grey.png"
+          },
+          {
+            "key": "generated-enemy-wolf-dire",
+            "url": "/assets/generated/starter/monster-wolf-dire.png"
+          },
+          {
+            "key": "generated-enemy-boar-tusk",
+            "url": "/assets/generated/starter/monster-boar-tusk.png"
+          },
+          {
+            "key": "generated-enemy-bear-brown",
+            "url": "/assets/generated/starter/monster-bear-brown.png"
+          },
+          {
+            "key": "generated-enemy-tiger-saber",
+            "url": "/assets/generated/starter/monster-tiger-saber.png"
+          },
+          {
+            "key": "generated-enemy-rat-giant",
+            "url": "/assets/generated/starter/monster-rat-giant.png"
+          },
+          {
+            "key": "generated-enemy-bird-hawk",
+            "url": "/assets/generated/starter/monster-bird-hawk.png"
+          },
+          {
+            "key": "generated-enemy-snake-viper",
+            "url": "/assets/generated/starter/monster-snake-viper.png"
+          },
+          {
+            "key": "generated-enemy-cat-shadow",
+            "url": "/assets/generated/starter/monster-cat-shadow.png"
+          },
+          {
+            "key": "generated-enemy-goat-mountain",
+            "url": "/assets/generated/starter/monster-goat-mountain.png"
+          },
+          {
+            "key": "generated-enemy-crab-rock",
+            "url": "/assets/generated/starter/monster-crab-rock.png"
+          },
+          {
+            "key": "generated-enemy-hound-hell",
+            "url": "/assets/generated/starter/monster-hound-hell.png"
+          },
+          {
+            "key": "generated-enemy-ape-stone",
+            "url": "/assets/generated/starter/monster-ape-stone.png"
+          },
+          {
+            "key": "generated-enemy-deer-forest",
+            "url": "/assets/generated/starter/monster-deer-forest.png"
+          },
+          {
+            "key": "generated-enemy-skeleton-bone",
+            "url": "/assets/generated/starter/monster-skeleton-bone.png"
+          },
+          {
+            "key": "generated-enemy-skeleton-archer",
+            "url": "/assets/generated/starter/monster-skeleton-archer.png"
+          },
+          {
+            "key": "generated-enemy-skeleton-knight",
+            "url": "/assets/generated/starter/monster-skeleton-knight.png"
+          },
+          {
+            "key": "generated-enemy-zombie-rot",
+            "url": "/assets/generated/starter/monster-zombie-rot.png"
+          },
+          {
+            "key": "generated-enemy-ghoul-grave",
+            "url": "/assets/generated/starter/monster-ghoul-grave.png"
+          },
+          {
+            "key": "generated-enemy-ghost-pale",
+            "url": "/assets/generated/starter/monster-ghost-pale.png"
+          },
+          {
+            "key": "generated-enemy-wraith-dark",
+            "url": "/assets/generated/starter/monster-wraith-dark.png"
+          },
+          {
+            "key": "generated-enemy-lich-frost",
+            "url": "/assets/generated/starter/monster-lich-frost.png"
+          },
+          {
+            "key": "generated-enemy-mummy-bandage",
+            "url": "/assets/generated/starter/monster-mummy-bandage.png"
+          },
+          {
+            "key": "generated-enemy-banshee-wail",
+            "url": "/assets/generated/starter/monster-banshee-wail.png"
+          },
+          {
+            "key": "generated-enemy-revenant-vengeful",
+            "url": "/assets/generated/starter/monster-revenant-vengeful.png"
+          },
+          {
+            "key": "generated-enemy-bonepile-crawler",
+            "url": "/assets/generated/starter/monster-bonepile-crawler.png"
+          },
+          {
+            "key": "generated-enemy-spirit-fire",
+            "url": "/assets/generated/starter/monster-spirit-fire.png"
+          },
+          {
+            "key": "generated-enemy-spirit-water",
+            "url": "/assets/generated/starter/monster-spirit-water.png"
+          },
+          {
+            "key": "generated-enemy-spirit-earth",
+            "url": "/assets/generated/starter/monster-spirit-earth.png"
+          },
+          {
+            "key": "generated-enemy-spirit-wind",
+            "url": "/assets/generated/starter/monster-spirit-wind.png"
+          },
+          {
+            "key": "generated-enemy-spirit-light",
+            "url": "/assets/generated/starter/monster-spirit-light.png"
+          },
+          {
+            "key": "generated-enemy-spirit-dark",
+            "url": "/assets/generated/starter/monster-spirit-dark.png"
+          },
+          {
+            "key": "generated-enemy-wisp-blue",
+            "url": "/assets/generated/starter/monster-wisp-blue.png"
+          },
+          {
+            "key": "generated-enemy-sylph-air",
+            "url": "/assets/generated/starter/monster-sylph-air.png"
+          },
+          {
+            "key": "generated-enemy-undine-sea",
+            "url": "/assets/generated/starter/monster-undine-sea.png"
+          },
+          {
+            "key": "generated-enemy-salamander-flame",
+            "url": "/assets/generated/starter/monster-salamander-flame.png"
+          },
+          {
+            "key": "generated-enemy-golem-stone",
+            "url": "/assets/generated/starter/monster-golem-stone.png"
+          },
+          {
+            "key": "generated-enemy-golem-iron",
+            "url": "/assets/generated/starter/monster-golem-iron.png"
+          },
+          {
+            "key": "generated-enemy-golem-clay",
+            "url": "/assets/generated/starter/monster-golem-clay.png"
+          },
+          {
+            "key": "generated-enemy-golem-crystal",
+            "url": "/assets/generated/starter/monster-golem-crystal.png"
+          },
+          {
+            "key": "generated-enemy-armor-living",
+            "url": "/assets/generated/starter/monster-armor-living.png"
+          },
+          {
+            "key": "generated-enemy-sword-flying",
+            "url": "/assets/generated/starter/monster-sword-flying.png"
+          },
+          {
+            "key": "generated-enemy-mimic-chest",
+            "url": "/assets/generated/starter/monster-mimic-chest.png"
+          },
+          {
+            "key": "generated-enemy-scarecrow-field",
+            "url": "/assets/generated/starter/monster-scarecrow-field.png"
+          },
+          {
+            "key": "generated-enemy-puppet-string",
+            "url": "/assets/generated/starter/monster-puppet-string.png"
+          },
+          {
+            "key": "generated-enemy-totem-cursed",
+            "url": "/assets/generated/starter/monster-totem-cursed.png"
+          },
+          {
+            "key": "generated-enemy-goblin-scout",
+            "url": "/assets/generated/starter/monster-goblin-scout.png"
+          },
+          {
+            "key": "generated-enemy-goblin-brute",
+            "url": "/assets/generated/starter/monster-goblin-brute.png"
+          },
+          {
+            "key": "generated-enemy-orc-warrior",
+            "url": "/assets/generated/starter/monster-orc-warrior.png"
+          },
+          {
+            "key": "generated-enemy-orc-shaman",
+            "url": "/assets/generated/starter/monster-orc-shaman.png"
+          },
+          {
+            "key": "generated-enemy-kobold-digger",
+            "url": "/assets/generated/starter/monster-kobold-digger.png"
+          },
+          {
+            "key": "generated-enemy-bandit-mask",
+            "url": "/assets/generated/starter/monster-bandit-mask.png"
+          },
+          {
+            "key": "generated-enemy-mage-rogue",
+            "url": "/assets/generated/starter/monster-mage-rogue.png"
+          },
+          {
+            "key": "generated-enemy-knight-fallen",
+            "url": "/assets/generated/starter/monster-knight-fallen.png"
+          },
+          {
+            "key": "generated-enemy-lizardman-spear",
+            "url": "/assets/generated/starter/monster-lizardman-spear.png"
+          },
+          {
+            "key": "generated-enemy-harpy-cliff",
+            "url": "/assets/generated/starter/monster-harpy-cliff.png"
+          },
+          {
+            "key": "generated-enemy-minotaur-maze",
+            "url": "/assets/generated/starter/monster-minotaur-maze.png"
+          },
+          {
+            "key": "generated-enemy-centaur-plains",
+            "url": "/assets/generated/starter/monster-centaur-plains.png"
+          },
+          {
+            "key": "generated-enemy-troll-cave",
+            "url": "/assets/generated/starter/monster-troll-cave.png"
+          },
+          {
+            "key": "generated-enemy-ogre-club",
+            "url": "/assets/generated/starter/monster-ogre-club.png"
+          },
+          {
+            "key": "generated-enemy-imp-mischief",
+            "url": "/assets/generated/starter/monster-imp-mischief.png"
+          },
+          {
+            "key": "generated-enemy-fish-piranha",
+            "url": "/assets/generated/starter/monster-fish-piranha.png"
+          },
+          {
+            "key": "generated-enemy-squid-deep",
+            "url": "/assets/generated/starter/monster-squid-deep.png"
+          },
+          {
+            "key": "generated-enemy-shark-land",
+            "url": "/assets/generated/starter/monster-shark-land.png"
+          },
+          {
+            "key": "generated-enemy-eel-electric",
+            "url": "/assets/generated/starter/monster-eel-electric.png"
+          },
+          {
+            "key": "generated-enemy-griffin-sky",
+            "url": "/assets/generated/starter/monster-griffin-sky.png"
+          },
+          {
+            "key": "generated-enemy-wyvern-cliff",
+            "url": "/assets/generated/starter/monster-wyvern-cliff.png"
+          },
+          {
+            "key": "generated-enemy-roc-giant",
+            "url": "/assets/generated/starter/monster-roc-giant.png"
+          },
+          {
+            "key": "generated-enemy-gargoyle-stone",
+            "url": "/assets/generated/starter/monster-gargoyle-stone.png"
+          },
+          {
+            "key": "generated-enemy-phoenix-rebirth",
+            "url": "/assets/generated/starter/monster-phoenix-rebirth.png"
+          },
+          {
+            "key": "generated-enemy-dragon-whelp",
+            "url": "/assets/generated/starter/monster-dragon-whelp.png"
+          },
+          {
+            "key": "generated-enemy-dragon-red",
+            "url": "/assets/generated/starter/monster-dragon-red.png"
+          },
+          {
+            "key": "generated-enemy-dragon-blue",
+            "url": "/assets/generated/starter/monster-dragon-blue.png"
+          },
+          {
+            "key": "generated-enemy-dragon-bone",
+            "url": "/assets/generated/starter/monster-dragon-bone.png"
+          },
+          {
+            "key": "generated-enemy-hydra-three",
+            "url": "/assets/generated/starter/monster-hydra-three.png"
+          },
+          {
+            "key": "generated-enemy-behemoth-horn",
+            "url": "/assets/generated/starter/monster-behemoth-horn.png"
+          },
+          {
+            "key": "generated-enemy-demon-lord",
+            "url": "/assets/generated/starter/monster-demon-lord.png"
+          },
+          {
+            "key": "generated-enemy-angel-fallen",
+            "url": "/assets/generated/starter/monster-angel-fallen.png"
+          },
+          {
+            "key": "generated-enemy-eye-floating",
+            "url": "/assets/generated/starter/monster-eye-floating.png"
+          },
+          {
+            "key": "generated-enemy-plant-carnivore",
+            "url": "/assets/generated/starter/monster-plant-carnivore.png"
+          },
+          {
+            "key": "tex_dialogue_frame",
+            "url": "assets/dialogue-frame.png"
+          },
+          {
+            "key": "tex_generated_emotes",
+            "url": "assets/generated-emotes.png"
+          }
+        ],
+        "pixel": [
+          0,
+          0,
+          255,
+          255
+        ],
+        "resourceId": "u07-charset-new",
+        "textureKey": "u07-charset-new",
+        "textureExists": true,
+        "frame": {
+          "name": 25,
+          "x": 24,
+          "y": 64,
+          "width": 24,
+          "height": 32
+        },
+        "source": {
+          "width": 288,
+          "height": 256
+        },
+        "frames": [
+          {
+            "id": 24,
+            "x": 0,
+            "y": 64,
+            "width": 24,
+            "height": 32
+          },
+          {
+            "id": 25,
+            "x": 24,
+            "y": 64,
+            "width": 24,
+            "height": 32
+          },
+          {
+            "id": 26,
+            "x": 48,
+            "y": 64,
+            "width": 24,
+            "height": 32
+          }
+        ],
+        "other": {
+          "graphic": "easyrpg-charset-actor2",
+          "face": "u07-faceset-old-bust",
+          "record": {
+            "characterGraphic": "easyrpg-charset-actor2",
+            "faceset": "u07-faceset-old-bust"
+          }
+        }
+      },
+      "sprite": {
+        "textureKey": "u07-charset-new",
+        "frame": 25,
+        "resourceId": "u07-charset-new",
+        "kind": "charset",
+        "moving": false,
+        "x": 40,
+        "y": 64
+      },
+      "backdrop": "url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAIAAADYYG7QAAAAQUlEQVR4nO3OQQ0AMBAEofNvupWx8yBBAHf3YvYDISEhoZj9QEhISChmPxASEhKK2Q+EhISEYvYDISEhoZj9oB368AX3eWaj93YAAAAASUVORK5CYII=\")",
+      "face": "u07-faceset-new-bust"
+    },
+    "geometry": [
+      {
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        },
+        "x": 32,
+        "y": 24,
+        "width": 960,
+        "height": 720
+      },
+      {
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "x": 160,
+        "y": 40,
+        "width": 960,
+        "height": 720
+      },
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "x": 240,
+        "y": 90,
+        "width": 960,
+        "height": 720
+      }
+    ],
+    "remoteWrites": []
+  },
+  {
+    "id": "ai-battle",
+    "beats": 4,
+    "surface": {
+      "url": "http://127.0.0.1:43405/player.html",
+      "editor": false,
+      "pending": false,
+      "loadedPlayer": {
+        "loads": [
+          {
+            "key": "tex_tiles_default",
+            "url": "assets/easyrpg-chipset-exterior.png"
+          },
+          {
+            "key": "tex_easyrpg_chipset_dungeon__raw_chipset",
+            "url": "assets/easyrpg-chipset-dungeon-transparent.png"
+          },
+          {
+            "key": "tex_easyrpg_chipset_interior__raw_chipset",
+            "url": "assets/easyrpg-chipset-interior-transparent.png"
+          },
+          {
+            "key": "tex_easyrpg_chipset_ship",
+            "url": "assets/easyrpg-chipset-ship-transparent.png"
+          },
+          {
+            "key": "tex_easyrpg_chipset_world",
+            "url": "assets/easyrpg-chipset-world-transparent.png"
+          },
+          {
+            "key": "tex_easyrpg_chipset_retro_dungeon__raw_chipset",
+            "url": "assets/easyrpg-chipset-retro-dungeon-transparent.png"
+          },
+          {
+            "key": "tex_easyrpg_chipset_retro_exterior",
+            "url": "assets/easyrpg-chipset-retro-exterior-transparent.png"
+          },
+          {
+            "key": "tex_easyrpg_chipset_retro_house",
+            "url": "assets/easyrpg-chipset-retro-house-transparent.png"
+          },
+          {
+            "key": "tex_easyrpg_chipset_combined_town",
+            "url": "assets/easyrpg-chipset-combined-town-transparent.png"
+          },
+          {
+            "key": "tex_easyrpg_chipset_retro_world",
+            "url": "assets/easyrpg-chipset-retro-world-transparent.png"
+          },
+          {
+            "key": "tex_modern_exteriors_nocturne",
+            "url": "assets/modern-exteriors/modern-city-atlas.png"
+          },
+          {
+            "key": "tex_scarloxy_chipset_grassland",
+            "url": "assets/scarloxy/scarloxy-chipset-grassland.png"
+          },
+          {
+            "key": "tex_scarloxy_chipset_wilds",
+            "url": "assets/scarloxy/scarloxy-chipset-wilds.png"
+          },
+          {
+            "key": "tex_scarloxy_chipset_indoor",
+            "url": "assets/scarloxy/scarloxy-chipset-indoor.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_actor1__raw",
+            "url": "assets/easyrpg/charset/Actor1.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_actor2__raw",
+            "url": "assets/easyrpg/charset/Actor2.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_actor3__raw",
+            "url": "assets/easyrpg/charset/Actor3.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_actor4__raw",
+            "url": "assets/easyrpg/charset/Actor4.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_animal__raw",
+            "url": "assets/easyrpg/charset/Animal.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_monster1__raw",
+            "url": "assets/easyrpg/charset/Monster1.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_monster2__raw",
+            "url": "assets/easyrpg/charset/Monster2.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_monster3__raw",
+            "url": "assets/easyrpg/charset/Monster3.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_object1__raw",
+            "url": "assets/easyrpg/charset/Object1.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_object2__raw",
+            "url": "assets/easyrpg/charset/Object2.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_people1__raw",
+            "url": "assets/easyrpg/charset/People1.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_people2__raw",
+            "url": "assets/easyrpg/charset/People2.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_people3__raw",
+            "url": "assets/easyrpg/charset/People3.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_people4__raw",
+            "url": "assets/easyrpg/charset/People4.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_people5__raw",
+            "url": "assets/easyrpg/charset/People5.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_template__raw",
+            "url": "assets/easyrpg/charset/Template.png"
+          },
+          {
+            "key": "tex_easyrpg_charset_vehicles__raw",
+            "url": "assets/easyrpg/charset/Vehicles.png"
+          },
+          {
+            "key": "tex_scarloxy_charset_people1__raw",
+            "url": "assets/scarloxy/scarloxy-charset-people1.png"
+          },
+          {
+            "key": "tex_scarloxy_charset_people2__raw",
+            "url": "assets/scarloxy/scarloxy-charset-people2.png"
+          },
+          {
+            "key": "tex_farming_charset_chicken__raw",
+            "url": "assets/farming/animals/chicken.png"
+          },
+          {
+            "key": "tex_farming_charset_cow__raw",
+            "url": "assets/farming/animals/cow.png"
+          },
+          {
+            "key": "u07-charset-old",
+            "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEACAIAAACcTTzhAAADW0lEQVR4nO3OAQnAQBAEsfNvulXxLAyBCMh9d8Aj+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2A/pl/DDXHUPTgAAAABJRU5ErkJggg=="
+          },
+          {
+            "key": "u07-charset-new",
+            "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEACAIAAACcTTzhAAADW0lEQVR4nO3OAQnAQBAEsfNvulXxLAyBCMjdfcAz+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A2H4AYfsBhO0HELYfQNh+AGH7AYTtBxC2H0DYfgBh+wGE7QcQth9A1g8IBPDDS4B2TwAAAABJRU5ErkJggg=="
+          },
+          {
+            "key": "generated-enemy-slime-01",
+            "url": "/assets/generated/starter/monster-slime-01.png"
+          },
+          {
+            "key": "generated-enemy-bat-01",
+            "url": "/assets/generated/starter/monster-bat-01.png"
+          },
+          {
+            "key": "generated-enemy-golem-01",
+            "url": "/assets/generated/starter/monster-golem-01.png"
+          },
+          {
+            "key": "generated-enemy-dragon-01",
+            "url": "/assets/generated/starter/monster-dragon-01.png"
+          },
+          {
+            "key": "generated-enemy-skeleton-01",
+            "url": "/assets/generated/starter/monster-skeleton-01.png"
+          },
+          {
+            "key": "generated-enemy-slime-blue",
+            "url": "/assets/generated/starter/monster-slime-blue.png"
+          },
+          {
+            "key": "generated-enemy-slime-red",
+            "url": "/assets/generated/starter/monster-slime-red.png"
+          },
+          {
+            "key": "generated-enemy-slime-green",
+            "url": "/assets/generated/starter/monster-slime-green.png"
+          },
+          {
+            "key": "generated-enemy-slime-metal",
+            "url": "/assets/generated/starter/monster-slime-metal.png"
+          },
+          {
+            "key": "generated-enemy-slime-king",
+            "url": "/assets/generated/starter/monster-slime-king.png"
+          },
+          {
+            "key": "generated-enemy-slime-cube",
+            "url": "/assets/generated/starter/monster-slime-cube.png"
+          },
+          {
+            "key": "generated-enemy-ooze-black",
+            "url": "/assets/generated/starter/monster-ooze-black.png"
+          },
+          {
+            "key": "generated-enemy-ooze-acid",
+            "url": "/assets/generated/starter/monster-ooze-acid.png"
+          },
+          {
+            "key": "generated-enemy-bat-cave",
+            "url": "/assets/generated/starter/monster-bat-cave.png"
+          },
+          {
+            "key": "generated-enemy-bat-vampire",
+            "url": "/assets/generated/starter/monster-bat-vampire.png"
+          },
+          {
+            "key": "generated-enemy-bee-giant",
+            "url": "/assets/generated/starter/monster-bee-giant.png"
+          },
+          {
+            "key": "generated-enemy-spider-cave",
+            "url": "/assets/generated/starter/monster-spider-cave.png"
+          },
+          {
+            "key": "generated-enemy-spider-widow",
+            "url": "/assets/generated/starter/monster-spider-widow.png"
+          },
+          {
+            "key": "generated-enemy-scorpion-sand",
+            "url": "/assets/generated/starter/monster-scorpion-sand.png"
+          },
+          {
+            "key": "generated-enemy-beetle-horn",
+            "url": "/assets/generated/starter/monster-beetle-horn.png"
+          },
+          {
+            "key": "generated-enemy-mantis-blade",
+            "url": "/assets/generated/starter/monster-mantis-blade.png"
+          },
+          {
+            "key": "generated-enemy-centipede-fire",
+            "url": "/assets/generated/starter/monster-centipede-fire.png"
+          },
+          {
+            "key": "generated-enemy-moth-dust",
+            "url": "/assets/generated/starter/monster-moth-dust.png"
+          },
+          {
+            "key": "generated-enemy-worm-sand",
+            "url": "/assets/generated/starter/monster-worm-sand.png"
+          },
+          {
+            "key": "generated-enemy-ant-soldier",
+            "url": "/assets/generated/starter/monster-ant-soldier.png"
+          },
+          {
+            "key": "generated-enemy-wolf-grey",
+            "url": "/assets/generated/starter/monster-wolf-grey.png"
+          },
+          {
+            "key": "generated-enemy-wolf-dire",
+            "url": "/assets/generated/starter/monster-wolf-dire.png"
+          },
+          {
+            "key": "generated-enemy-boar-tusk",
+            "url": "/assets/generated/starter/monster-boar-tusk.png"
+          },
+          {
+            "key": "generated-enemy-bear-brown",
+            "url": "/assets/generated/starter/monster-bear-brown.png"
+          },
+          {
+            "key": "generated-enemy-tiger-saber",
+            "url": "/assets/generated/starter/monster-tiger-saber.png"
+          },
+          {
+            "key": "generated-enemy-rat-giant",
+            "url": "/assets/generated/starter/monster-rat-giant.png"
+          },
+          {
+            "key": "generated-enemy-bird-hawk",
+            "url": "/assets/generated/starter/monster-bird-hawk.png"
+          },
+          {
+            "key": "generated-enemy-snake-viper",
+            "url": "/assets/generated/starter/monster-snake-viper.png"
+          },
+          {
+            "key": "generated-enemy-cat-shadow",
+            "url": "/assets/generated/starter/monster-cat-shadow.png"
+          },
+          {
+            "key": "generated-enemy-goat-mountain",
+            "url": "/assets/generated/starter/monster-goat-mountain.png"
+          },
+          {
+            "key": "generated-enemy-crab-rock",
+            "url": "/assets/generated/starter/monster-crab-rock.png"
+          },
+          {
+            "key": "generated-enemy-hound-hell",
+            "url": "/assets/generated/starter/monster-hound-hell.png"
+          },
+          {
+            "key": "generated-enemy-ape-stone",
+            "url": "/assets/generated/starter/monster-ape-stone.png"
+          },
+          {
+            "key": "generated-enemy-deer-forest",
+            "url": "/assets/generated/starter/monster-deer-forest.png"
+          },
+          {
+            "key": "generated-enemy-skeleton-bone",
+            "url": "/assets/generated/starter/monster-skeleton-bone.png"
+          },
+          {
+            "key": "generated-enemy-skeleton-archer",
+            "url": "/assets/generated/starter/monster-skeleton-archer.png"
+          },
+          {
+            "key": "generated-enemy-skeleton-knight",
+            "url": "/assets/generated/starter/monster-skeleton-knight.png"
+          },
+          {
+            "key": "generated-enemy-zombie-rot",
+            "url": "/assets/generated/starter/monster-zombie-rot.png"
+          },
+          {
+            "key": "generated-enemy-ghoul-grave",
+            "url": "/assets/generated/starter/monster-ghoul-grave.png"
+          },
+          {
+            "key": "generated-enemy-ghost-pale",
+            "url": "/assets/generated/starter/monster-ghost-pale.png"
+          },
+          {
+            "key": "generated-enemy-wraith-dark",
+            "url": "/assets/generated/starter/monster-wraith-dark.png"
+          },
+          {
+            "key": "generated-enemy-lich-frost",
+            "url": "/assets/generated/starter/monster-lich-frost.png"
+          },
+          {
+            "key": "generated-enemy-mummy-bandage",
+            "url": "/assets/generated/starter/monster-mummy-bandage.png"
+          },
+          {
+            "key": "generated-enemy-banshee-wail",
+            "url": "/assets/generated/starter/monster-banshee-wail.png"
+          },
+          {
+            "key": "generated-enemy-revenant-vengeful",
+            "url": "/assets/generated/starter/monster-revenant-vengeful.png"
+          },
+          {
+            "key": "generated-enemy-bonepile-crawler",
+            "url": "/assets/generated/starter/monster-bonepile-crawler.png"
+          },
+          {
+            "key": "generated-enemy-spirit-fire",
+            "url": "/assets/generated/starter/monster-spirit-fire.png"
+          },
+          {
+            "key": "generated-enemy-spirit-water",
+            "url": "/assets/generated/starter/monster-spirit-water.png"
+          },
+          {
+            "key": "generated-enemy-spirit-earth",
+            "url": "/assets/generated/starter/monster-spirit-earth.png"
+          },
+          {
+            "key": "generated-enemy-spirit-wind",
+            "url": "/assets/generated/starter/monster-spirit-wind.png"
+          },
+          {
+            "key": "generated-enemy-spirit-light",
+            "url": "/assets/generated/starter/monster-spirit-light.png"
+          },
+          {
+            "key": "generated-enemy-spirit-dark",
+            "url": "/assets/generated/starter/monster-spirit-dark.png"
+          },
+          {
+            "key": "generated-enemy-wisp-blue",
+            "url": "/assets/generated/starter/monster-wisp-blue.png"
+          },
+          {
+            "key": "generated-enemy-sylph-air",
+            "url": "/assets/generated/starter/monster-sylph-air.png"
+          },
+          {
+            "key": "generated-enemy-undine-sea",
+            "url": "/assets/generated/starter/monster-undine-sea.png"
+          },
+          {
+            "key": "generated-enemy-salamander-flame",
+            "url": "/assets/generated/starter/monster-salamander-flame.png"
+          },
+          {
+            "key": "generated-enemy-golem-stone",
+            "url": "/assets/generated/starter/monster-golem-stone.png"
+          },
+          {
+            "key": "generated-enemy-golem-iron",
+            "url": "/assets/generated/starter/monster-golem-iron.png"
+          },
+          {
+            "key": "generated-enemy-golem-clay",
+            "url": "/assets/generated/starter/monster-golem-clay.png"
+          },
+          {
+            "key": "generated-enemy-golem-crystal",
+            "url": "/assets/generated/starter/monster-golem-crystal.png"
+          },
+          {
+            "key": "generated-enemy-armor-living",
+            "url": "/assets/generated/starter/monster-armor-living.png"
+          },
+          {
+            "key": "generated-enemy-sword-flying",
+            "url": "/assets/generated/starter/monster-sword-flying.png"
+          },
+          {
+            "key": "generated-enemy-mimic-chest",
+            "url": "/assets/generated/starter/monster-mimic-chest.png"
+          },
+          {
+            "key": "generated-enemy-scarecrow-field",
+            "url": "/assets/generated/starter/monster-scarecrow-field.png"
+          },
+          {
+            "key": "generated-enemy-puppet-string",
+            "url": "/assets/generated/starter/monster-puppet-string.png"
+          },
+          {
+            "key": "generated-enemy-totem-cursed",
+            "url": "/assets/generated/starter/monster-totem-cursed.png"
+          },
+          {
+            "key": "generated-enemy-goblin-scout",
+            "url": "/assets/generated/starter/monster-goblin-scout.png"
+          },
+          {
+            "key": "generated-enemy-goblin-brute",
+            "url": "/assets/generated/starter/monster-goblin-brute.png"
+          },
+          {
+            "key": "generated-enemy-orc-warrior",
+            "url": "/assets/generated/starter/monster-orc-warrior.png"
+          },
+          {
+            "key": "generated-enemy-orc-shaman",
+            "url": "/assets/generated/starter/monster-orc-shaman.png"
+          },
+          {
+            "key": "generated-enemy-kobold-digger",
+            "url": "/assets/generated/starter/monster-kobold-digger.png"
+          },
+          {
+            "key": "generated-enemy-bandit-mask",
+            "url": "/assets/generated/starter/monster-bandit-mask.png"
+          },
+          {
+            "key": "generated-enemy-mage-rogue",
+            "url": "/assets/generated/starter/monster-mage-rogue.png"
+          },
+          {
+            "key": "generated-enemy-knight-fallen",
+            "url": "/assets/generated/starter/monster-knight-fallen.png"
+          },
+          {
+            "key": "generated-enemy-lizardman-spear",
+            "url": "/assets/generated/starter/monster-lizardman-spear.png"
+          },
+          {
+            "key": "generated-enemy-harpy-cliff",
+            "url": "/assets/generated/starter/monster-harpy-cliff.png"
+          },
+          {
+            "key": "generated-enemy-minotaur-maze",
+            "url": "/assets/generated/starter/monster-minotaur-maze.png"
+          },
+          {
+            "key": "generated-enemy-centaur-plains",
+            "url": "/assets/generated/starter/monster-centaur-plains.png"
+          },
+          {
+            "key": "generated-enemy-troll-cave",
+            "url": "/assets/generated/starter/monster-troll-cave.png"
+          },
+          {
+            "key": "generated-enemy-ogre-club",
+            "url": "/assets/generated/starter/monster-ogre-club.png"
+          },
+          {
+            "key": "generated-enemy-imp-mischief",
+            "url": "/assets/generated/starter/monster-imp-mischief.png"
+          },
+          {
+            "key": "generated-enemy-fish-piranha",
+            "url": "/assets/generated/starter/monster-fish-piranha.png"
+          },
+          {
+            "key": "generated-enemy-squid-deep",
+            "url": "/assets/generated/starter/monster-squid-deep.png"
+          },
+          {
+            "key": "generated-enemy-shark-land",
+            "url": "/assets/generated/starter/monster-shark-land.png"
+          },
+          {
+            "key": "generated-enemy-eel-electric",
+            "url": "/assets/generated/starter/monster-eel-electric.png"
+          },
+          {
+            "key": "generated-enemy-griffin-sky",
+            "url": "/assets/generated/starter/monster-griffin-sky.png"
+          },
+          {
+            "key": "generated-enemy-wyvern-cliff",
+            "url": "/assets/generated/starter/monster-wyvern-cliff.png"
+          },
+          {
+            "key": "generated-enemy-roc-giant",
+            "url": "/assets/generated/starter/monster-roc-giant.png"
+          },
+          {
+            "key": "generated-enemy-gargoyle-stone",
+            "url": "/assets/generated/starter/monster-gargoyle-stone.png"
+          },
+          {
+            "key": "generated-enemy-phoenix-rebirth",
+            "url": "/assets/generated/starter/monster-phoenix-rebirth.png"
+          },
+          {
+            "key": "generated-enemy-dragon-whelp",
+            "url": "/assets/generated/starter/monster-dragon-whelp.png"
+          },
+          {
+            "key": "generated-enemy-dragon-red",
+            "url": "/assets/generated/starter/monster-dragon-red.png"
+          },
+          {
+            "key": "generated-enemy-dragon-blue",
+            "url": "/assets/generated/starter/monster-dragon-blue.png"
+          },
+          {
+            "key": "generated-enemy-dragon-bone",
+            "url": "/assets/generated/starter/monster-dragon-bone.png"
+          },
+          {
+            "key": "generated-enemy-hydra-three",
+            "url": "/assets/generated/starter/monster-hydra-three.png"
+          },
+          {
+            "key": "generated-enemy-behemoth-horn",
+            "url": "/assets/generated/starter/monster-behemoth-horn.png"
+          },
+          {
+            "key": "generated-enemy-demon-lord",
+            "url": "/assets/generated/starter/monster-demon-lord.png"
+          },
+          {
+            "key": "generated-enemy-angel-fallen",
+            "url": "/assets/generated/starter/monster-angel-fallen.png"
+          },
+          {
+            "key": "generated-enemy-eye-floating",
+            "url": "/assets/generated/starter/monster-eye-floating.png"
+          },
+          {
+            "key": "generated-enemy-plant-carnivore",
+            "url": "/assets/generated/starter/monster-plant-carnivore.png"
+          },
+          {
+            "key": "tex_dialogue_frame",
+            "url": "assets/dialogue-frame.png"
+          },
+          {
+            "key": "tex_generated_emotes",
+            "url": "assets/generated-emotes.png"
+          }
+        ],
+        "pixel": [
+          0,
+          0,
+          255,
+          255
+        ],
+        "resourceId": "u07-charset-new",
+        "textureKey": "u07-charset-new",
+        "textureExists": true,
+        "frame": {
+          "name": 25,
+          "x": 24,
+          "y": 64,
+          "width": 24,
+          "height": 32
+        },
+        "source": {
+          "width": 288,
+          "height": 256
+        },
+        "frames": [
+          {
+            "id": 24,
+            "x": 0,
+            "y": 64,
+            "width": 24,
+            "height": 32
+          },
+          {
+            "id": 25,
+            "x": 24,
+            "y": 64,
+            "width": 24,
+            "height": 32
+          },
+          {
+            "id": 26,
+            "x": 48,
+            "y": 64,
+            "width": 24,
+            "height": 32
+          }
+        ],
+        "other": {
+          "graphic": "easyrpg-charset-actor2",
+          "face": "u07-faceset-old-bust",
+          "record": {
+            "characterGraphic": "easyrpg-charset-actor2",
+            "faceset": "u07-faceset-old-bust"
+          }
+        }
+      },
+      "sprite": {
+        "textureKey": "u07-charset-new",
+        "frame": 25,
+        "resourceId": "u07-charset-new",
+        "kind": "charset",
+        "moving": false,
+        "x": 40,
+        "y": 64
+      },
+      "backdrop": "url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAIAAADYYG7QAAAAQUlEQVR4nO3OQQ0AMBAEofNvupWx8yBBAHf3YvYDISEhoZj9QEhISChmPxASEhKK2Q+EhISEYvYDISEhoZj9oB368AX3eWaj93YAAAAASUVORK5CYII=\")",
+      "face": "generated-face_1e48b341-ffe3-4137-9e27-91965d512e41-bust"
+    },
+    "geometry": [
+      {
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        },
+        "x": 32,
+        "y": 24,
+        "width": 960,
+        "height": 720
+      },
+      {
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "x": 160,
+        "y": 40,
+        "width": 960,
+        "height": 720
+      },
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "x": 240,
+        "y": 90,
+        "width": 960,
+        "height": 720
+      }
+    ],
+    "remoteWrites": []
+  }
+]

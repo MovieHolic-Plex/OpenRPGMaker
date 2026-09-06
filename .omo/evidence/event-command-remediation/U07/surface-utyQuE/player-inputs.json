@@ -1,0 +1,387 @@
+{
+  "sourceFile": ".omo/evidence/event-command-remediation/U07/surface-utyQuE/editor-exported.json",
+  "sourceHash": "cb1d19b8526e5db7a77e1e015e9354861ecbf7278ae94c4854de7153f190a0b7",
+  "commands": [
+    {
+      "kind": "m2Command",
+      "commandId": "m2-024-change-actor-graphic",
+      "fields": {
+        "target": "actor_hero",
+        "value": "u07-charset-new"
+      }
+    },
+    {
+      "kind": "m2Command",
+      "commandId": "m2-025-change-actor-faceset",
+      "fields": {
+        "target": "actor_hero",
+        "value": "u07-faceset-new-bust"
+      }
+    },
+    {
+      "kind": "m2Command",
+      "commandId": "m2-069-change-parallax-back",
+      "fields": {
+        "resourceId": "u07-backdrop-new",
+        "value": "u07-backdrop-new",
+        "target": "u07-backdrop-new",
+        "operation": "set"
+      }
+    },
+    {
+      "kind": "m2Command",
+      "commandId": "m2-102-change-battleback",
+      "fields": {
+        "resourceId": "u07-backdrop-new"
+      }
+    },
+    {
+      "kind": "m2Command",
+      "commandId": "m2-026-change-vehicle-graphic",
+      "fields": {
+        "target": "",
+        "operation": "set",
+        "value": "u07-charset-new"
+      }
+    },
+    {
+      "kind": "m2Command",
+      "commandId": "m2-203-spawn-event",
+      "fields": {
+        "prefabId": "u07-event-b",
+        "eventId": "u07-host",
+        "mapId": "u07-map-12",
+        "x": 0,
+        "y": 9
+      }
+    },
+    {
+      "kind": "m2Command",
+      "commandId": "m2-204-remove-event",
+      "fields": {
+        "eventId": "u07-event-b"
+      }
+    },
+    {
+      "kind": "m2Command",
+      "commandId": "m2-207-region-trigger",
+      "fields": {
+        "regionId": "",
+        "eventId": "u07-event-b",
+        "action": "enter",
+        "switchId": "u07-switch-23"
+      }
+    },
+    {
+      "kind": "m2Command",
+      "commandId": "m2-027-change-system-bgm",
+      "fields": {
+        "resourceId": "u07-music-new",
+        "volume": 100
+      }
+    },
+    {
+      "kind": "m2Command",
+      "commandId": "m2-028-change-system-se",
+      "fields": {
+        "resourceId": "u07-sound-new",
+        "volume": 100
+      }
+    },
+    {
+      "kind": "m2Command",
+      "commandId": "m2-029-change-system-graphic",
+      "fields": {
+        "target": "",
+        "operation": "set",
+        "value": "u07-system-new"
+      }
+    },
+    {
+      "kind": "m2Command",
+      "commandId": "m2-074-set-escape-location",
+      "fields": {
+        "target": "",
+        "mapId": "u07-map-12",
+        "x": 0,
+        "y": 9
+      }
+    },
+    {
+      "kind": "m2Command",
+      "commandId": "m2-217-data-query",
+      "fields": {
+        "query": "playerX",
+        "target": "",
+        "variableId": "u07-reward-17"
+      }
+    },
+    {
+      "kind": "m2Command",
+      "commandId": "m2-213-checkpoint-save",
+      "fields": {
+        "slotId": "u07-manual-9",
+        "label": "",
+        "restoreOnGameOver": false
+      }
+    },
+    {
+      "kind": "m2Command",
+      "commandId": "m2-214-ui-command",
+      "fields": {
+        "surface": "toast",
+        "message": "U07 changed message",
+        "durationMs": 0
+      }
+    },
+    {
+      "kind": "m2Command",
+      "commandId": "m2-025-change-actor-faceset",
+      "fields": {
+        "target": "actor_hero",
+        "value": "generated-face_dc85360b-74a3-40e8-aaf3-9dbbaecec5d6-bust"
+      }
+    },
+    {
+      "kind": "m2Command",
+      "commandId": "m2-069-change-parallax-back",
+      "fields": {
+        "resourceId": "backdrop_img_a9e8e081-3100-4da1-8702-cd5e9a5417a7",
+        "value": "backdrop_img_a9e8e081-3100-4da1-8702-cd5e9a5417a7",
+        "target": "backdrop_img_a9e8e081-3100-4da1-8702-cd5e9a5417a7",
+        "operation": "set"
+      }
+    }
+  ],
+  "cases": [
+    {
+      "id": "map",
+      "program": [
+        {
+          "kind": "m2Command",
+          "commandId": "m2-024-change-actor-graphic",
+          "fields": {
+            "target": "u07_other",
+            "value": "easyrpg-charset-actor2"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-025-change-actor-faceset",
+          "fields": {
+            "target": "u07_other",
+            "value": "u07-faceset-old-bust"
+          }
+        },
+        {
+          "kind": "text",
+          "body": "U07_OTHER"
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-024-change-actor-graphic",
+          "fields": {
+            "target": "actor_hero",
+            "value": "u07-charset-new"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-025-change-actor-faceset",
+          "fields": {
+            "target": "actor_hero",
+            "value": "u07-faceset-new-bust"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-069-change-parallax-back",
+          "fields": {
+            "resourceId": "u07-backdrop-new",
+            "value": "u07-backdrop-new",
+            "target": "u07-backdrop-new",
+            "operation": "set"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-026-change-vehicle-graphic",
+          "fields": {
+            "target": "",
+            "operation": "set",
+            "value": "u07-charset-new"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-204-remove-event",
+          "fields": {
+            "eventId": "u07-event-b"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-074-set-escape-location",
+          "fields": {
+            "target": "",
+            "mapId": "u07-map-12",
+            "x": 0,
+            "y": 9
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-217-data-query",
+          "fields": {
+            "query": "playerX",
+            "target": "",
+            "variableId": "u07-reward-17"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-213-checkpoint-save",
+          "fields": {
+            "slotId": "u07-manual-9",
+            "label": "",
+            "restoreOnGameOver": false
+          }
+        },
+        {
+          "kind": "text",
+          "body": "U07_MAP"
+        }
+      ]
+    },
+    {
+      "id": "battle",
+      "faceId": "u07-faceset-new-bust",
+      "parallaxId": "u07-backdrop-new",
+      "program": [
+        {
+          "kind": "m2Command",
+          "commandId": "m2-024-change-actor-graphic",
+          "fields": {
+            "target": "u07_other",
+            "value": "easyrpg-charset-actor2"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-025-change-actor-faceset",
+          "fields": {
+            "target": "u07_other",
+            "value": "u07-faceset-old-bust"
+          }
+        },
+        {
+          "kind": "text",
+          "body": "U07_OTHER"
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-024-change-actor-graphic",
+          "fields": {
+            "target": "actor_hero",
+            "value": "u07-charset-new"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-025-change-actor-faceset",
+          "fields": {
+            "target": "actor_hero",
+            "value": "u07-faceset-new-bust"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-069-change-parallax-back",
+          "fields": {
+            "resourceId": "u07-backdrop-new",
+            "value": "u07-backdrop-new",
+            "target": "u07-backdrop-new",
+            "operation": "set"
+          }
+        },
+        {
+          "kind": "battleProcessing",
+          "troopId": "troop_slime",
+          "canEscape": true,
+          "canLose": true,
+          "battleFlow": "strict",
+          "onWin": [],
+          "onEscape": [],
+          "onLose": []
+        }
+      ]
+    },
+    {
+      "id": "ai-battle",
+      "faceId": "generated-face_dc85360b-74a3-40e8-aaf3-9dbbaecec5d6-bust",
+      "parallaxId": "backdrop_img_a9e8e081-3100-4da1-8702-cd5e9a5417a7",
+      "program": [
+        {
+          "kind": "m2Command",
+          "commandId": "m2-024-change-actor-graphic",
+          "fields": {
+            "target": "u07_other",
+            "value": "easyrpg-charset-actor2"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-025-change-actor-faceset",
+          "fields": {
+            "target": "u07_other",
+            "value": "u07-faceset-old-bust"
+          }
+        },
+        {
+          "kind": "text",
+          "body": "U07_OTHER"
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-024-change-actor-graphic",
+          "fields": {
+            "target": "actor_hero",
+            "value": "u07-charset-new"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-025-change-actor-faceset",
+          "fields": {
+            "target": "actor_hero",
+            "value": "generated-face_dc85360b-74a3-40e8-aaf3-9dbbaecec5d6-bust"
+          }
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-069-change-parallax-back",
+          "fields": {
+            "resourceId": "backdrop_img_a9e8e081-3100-4da1-8702-cd5e9a5417a7",
+            "value": "backdrop_img_a9e8e081-3100-4da1-8702-cd5e9a5417a7",
+            "target": "backdrop_img_a9e8e081-3100-4da1-8702-cd5e9a5417a7",
+            "operation": "set"
+          }
+        },
+        {
+          "kind": "battleProcessing",
+          "troopId": "troop_slime",
+          "canEscape": true,
+          "canLose": true,
+          "battleFlow": "strict",
+          "onWin": [],
+          "onEscape": [],
+          "onLose": []
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Parallax, escape location, vehicle graphic and checkpoint remain recorded contracts; no live parallax/travel/vehicle movement/checkpoint restore claimed.",
+    "System BGM/SE field normalization belongs to U14; no immediate playback is claimed. Spawn and region runtime semantics belong to U10/U19."
+  ]
+}

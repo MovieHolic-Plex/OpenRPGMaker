@@ -1,0 +1,26 @@
+{
+  "walk": {
+    "status": "success",
+    "moving": true,
+    "textureKey": "u07-charset-new",
+    "frame": {
+      "name": 12,
+      "x": 0,
+      "y": 32,
+      "width": 24,
+      "height": 32
+    }
+  },
+  "idle": {
+    "status": "success",
+    "moving": false,
+    "textureKey": "u07-charset-new",
+    "frame": {
+      "name": 13,
+      "x": 24,
+      "y": 32,
+      "width": 24,
+      "height": 32
+    }
+  }
+}

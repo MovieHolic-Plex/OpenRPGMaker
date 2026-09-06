@@ -78,3 +78,11 @@ Hostile-review fixes for event command forms: fork/loop rerender, setSwitch valu
 - The live custom-graphic checkbox is the enable authority. Off removes the saved `graphic`; mounted inactive controls retain edits through off/name-edit/on. Graphic edits preserve unrelated fields such as `scale`, while clearing the sprite ID removes that reference. Cancel does not persist the draft.
 - Runtime appearance is unchanged: an actor ID resolves its actor-default graphic, while a graphic-only follower uses its custom graphic. This change does not implement actor custom overrides.
 - Coverage: `test/eventCommandRemediation/U06.test.ts`, `test/e2e/event-command-remediation-U06.spec.ts`, and `scripts/qa/runtime/event-command-remediation-u06.scenario.mjs`. The editor checks actual `.oprn` export/import, and the dedicated player checks exact follower identities with a wrong-target discriminator.
+
+## Stable resource selections and field labels (2026-09-06, U07)
+
+- Same-kind forms retain their mounted controls. Generic resource/record selections update local names, images and map cards when the value changes; switch/variable names resolve on first render. Missing IDs remain explicit rather than becoming the first or empty value.
+- `setResourcePickerValue` adds a late picker/AI result before assigning the native select value. Actor and parallax previews read current store data. Resource-kind policy and U05 invalid-actor guards remain authoritative.
+- `dom.field` associates each label with its actual control, including wrapped inputs and picker triggers. Generated IDs use the existing `randomUuid` utility, preserving supported HTTP contexts without `crypto.randomUUID`.
+- Uploaded player charsets require both resource resolution and loader registration. The resolver accepts genuine charset uploads; `bundled.ts` loads referenced uploads through the canonical URL and registers the existing charset frames. Upload alpha, bundled color keys, aliases and texture ownership are preserved.
+- Coverage includes the original U07 cases, HTTP ID compatibility, actual uploaded idle/walk frames, untargeted actor state, 17 editor flows and three dedicated-player scenarios. Parallax/travel/vehicle/checkpoint consumer gaps remain separately tracked; these picker fixes do not claim to implement those effects.

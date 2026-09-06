@@ -1,0 +1,25 @@
+{
+  "validator": "lsp_diagnostics tool",
+  "result": "No diagnostics found",
+  "paths": [
+    "src/editor/panels/eventEditor/dom.ts",
+    "src/editor/panels/eventEditor/recordPicker.ts",
+    "src/editor/panels/eventEditor/commandBodyM2.ts",
+    "src/editor/panels/eventEditor/commandBodyM2Actor.ts",
+    "src/editor/panels/eventEditor/commandBodyM2Page3.ts",
+    "src/player/playerSpriteResources.ts",
+    "src/assets/bundled.ts",
+    "test/eventCommandRemediation/U07.test.ts",
+    "test/eventCommandRemediation/U07.fixture.ts",
+    "test/eventCommandRemediation/U07/browserControls.ts",
+    "test/eventCommandRemediation/U07/editorFixture.ts",
+    "test/eventCommandRemediation/U07/runEditor.mts",
+    "test/eventCommandRemediation/U07/playerSprite.test.ts",
+    "test/eventCommandRemediation/U07/loader.test.ts",
+    "test/eventCommandRemediation/U07/playerObservation.mjs",
+    "test/e2e/event-command-remediation-U07.spec.ts",
+    "scripts/qa/runtime/event-command-remediation-u07.scenario.mjs"
+  ],
+  "freshDiagnosticNote": "One final actor-file request timed out at 3000ms; the targeted fresh request then returned no diagnostics. Other requests completed normally.",
+  "fullBuildOrIntegratedGates": "not run; lead-owned"
+}

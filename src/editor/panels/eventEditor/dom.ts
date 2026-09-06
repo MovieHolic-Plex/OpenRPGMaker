@@ -1,10 +1,18 @@
 import { el } from "@/util/dom";
+import { randomUuid } from "@/util/id";
 import { COMMAND_KIND_OPTIONS, optionValue, type SelectOption } from "./options";
 import type { Command } from "@/project/types";
 
 export function field(label: string, control: HTMLElement): HTMLElement {
   const row = el("div", { class: "field" });
-  row.append(el("label", { text: label }), control);
+  const labelElement = el("label", { text: label });
+  row.append(labelElement, control);
+  const selector = 'input:not([type="hidden"]):not([aria-hidden="true"]), textarea, select:not([aria-hidden="true"]), button';
+  const target = row.querySelector<HTMLElement>(selector);
+  if (target) {
+    if (!target.id) target.id = `event-field-${randomUuid()}`;
+    labelElement.htmlFor = target.id;
+  }
   return row;
 }
 

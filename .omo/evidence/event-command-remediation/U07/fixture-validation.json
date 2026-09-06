@@ -1,0 +1,170 @@
+{
+  "issues": [
+    {
+      "severity": "warning",
+      "code": "runtime.partial",
+      "message": "이 명령은 실제 게임에서 일부 효과만 실행됩니다.",
+      "pageId": "u07-page",
+      "commandPath": [
+        1
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "runtime.partial",
+      "message": "이 명령은 실제 게임에서 일부 효과만 실행됩니다.",
+      "pageId": "u07-page",
+      "commandPath": [
+        2
+      ]
+    },
+    {
+      "severity": "error",
+      "code": "reference.resource.missing",
+      "message": "M2 리소스이(가) 선택되지 않았습니다.",
+      "pageId": "u07-page",
+      "commandPath": [
+        2
+      ],
+      "field": {
+        "testId": "m2-command-resourceId-input"
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "runtime.partial",
+      "message": "이 명령은 실제 게임에서 일부 효과만 실행됩니다.",
+      "pageId": "u07-page",
+      "commandPath": [
+        3
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "runtime.partial",
+      "message": "이 명령은 실제 게임에서 일부 효과만 실행됩니다.",
+      "pageId": "u07-page",
+      "commandPath": [
+        4
+      ]
+    },
+    {
+      "severity": "error",
+      "code": "reference.event.missing",
+      "message": "M2 생성 원본 이벤트이(가) 선택되지 않았습니다.",
+      "pageId": "u07-page",
+      "commandPath": [
+        5
+      ],
+      "field": {
+        "testId": "m2-command-prefabId-input"
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "runtime.partial",
+      "message": "이 명령은 실제 게임에서 일부 효과만 실행됩니다.",
+      "pageId": "u07-page",
+      "commandPath": [
+        7
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "runtime.partial",
+      "message": "이 명령은 실제 게임에서 일부 효과만 실행됩니다.",
+      "pageId": "u07-page",
+      "commandPath": [
+        8
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "runtime.partial",
+      "message": "이 명령은 실제 게임에서 일부 효과만 실행됩니다.",
+      "pageId": "u07-page",
+      "commandPath": [
+        9
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "runtime.partial",
+      "message": "이 명령은 실제 게임에서 일부 효과만 실행됩니다.",
+      "pageId": "u07-page",
+      "commandPath": [
+        10
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "runtime.partial",
+      "message": "이 명령은 실제 게임에서 일부 효과만 실행됩니다.",
+      "pageId": "u07-page",
+      "commandPath": [
+        11
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "runtime.partial",
+      "message": "이 명령은 실제 게임에서 일부 효과만 실행됩니다.",
+      "pageId": "u07-page",
+      "commandPath": [
+        12
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "runtime.partial",
+      "message": "이 명령은 실제 게임에서 일부 효과만 실행됩니다.",
+      "pageId": "u07-page",
+      "commandPath": [
+        13
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "runtime.partial",
+      "message": "이 명령은 실제 게임에서 일부 효과만 실행됩니다.",
+      "pageId": "u07-page",
+      "commandPath": [
+        14
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "runtime.partial",
+      "message": "이 명령은 실제 게임에서 일부 효과만 실행됩니다.",
+      "pageId": "u07-page",
+      "commandPath": [
+        15
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "runtime.partial",
+      "message": "이 명령은 실제 게임에서 일부 효과만 실행됩니다.",
+      "pageId": "u07-page",
+      "commandPath": [
+        16
+      ]
+    },
+    {
+      "severity": "error",
+      "code": "reference.resource.missing",
+      "message": "M2 리소스이(가) 선택되지 않았습니다.",
+      "pageId": "u07-page",
+      "commandPath": [
+        16
+      ],
+      "field": {
+        "testId": "m2-command-resourceId-input"
+      }
+    }
+  ],
+  "errorCount": 3,
+  "warningCount": 14,
+  "infoCount": 0,
+  "canCommit": false
+}

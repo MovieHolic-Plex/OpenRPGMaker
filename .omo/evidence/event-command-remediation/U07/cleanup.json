@@ -1,0 +1,19 @@
+{
+  "status": "verified-green",
+  "originalInputsSha256Check": "5 of 5 OK",
+  "ownedTemporaryDirectoriesRemaining": 0,
+  "editorFinalServerPort": 46461,
+  "playerFinalServerPort": 45675,
+  "ownedServerAndBrowserClosure": "successful finally receipts in surface-utyQuE/editor-cleanup.json and player-cleanup.json",
+  "editorAttempt7": "outer 300-second command timeout terminated the owned process tree; subsequent process listing found no owned server, owned tmp-editor-v7ckUC was removed",
+  "temporaryProbeSourceFilesRemoved": ["test/eventCommandRemediation/U07/geometryProbe.ts", "test/eventCommandRemediation/U07/preflight.mts"],
+  "workingDiffCheckExit": 0,
+  "stagedDiffCheckExit": 0,
+  "staging": "deliberately selected source, tests and portable evidence; staged diff checked before commit",
+  "commitPolicy": "one atomic verified U07 commit; hash supplied in final handoff",
+  "remoteWrites": 0,
+  "paidGenerations": 0,
+  "screenshots": "retained locally, not staged; Read omitted images, no pixel approval",
+  "logs": "original raw receipts preserved; lossless gzip copies selected for evidence packaging",
+  "loaderTests": "owned Firefox/server/cache/fixtures cleaned by finally/afterAll; final seven loader tests passed"
+}

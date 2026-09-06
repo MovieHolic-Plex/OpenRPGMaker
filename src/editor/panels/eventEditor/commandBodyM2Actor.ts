@@ -12,6 +12,7 @@ import {
   recordIconElement,
   recordPickerWithPreview,
   segmentedSelect,
+  setResourcePickerValue,
   type SegmentOption,
 } from "./recordPicker";
 import { faceDisplayModeOf, renderFaceGallery, renderFacesetCrop } from "./facesetPreview";
@@ -669,7 +670,7 @@ function changeActorGraphicCommandBody(context: CommandEditContext, cmd: M2Comma
           currentId: resourceId,
           onConfirm: (result) => {
             resourceId = result.resourceId;
-            resourceSelect.value = resourceId;
+            setResourcePickerValue(resourceSelect, resourceId);
             commit();
           },
         });
@@ -690,7 +691,7 @@ function changeActorGraphicCommandBody(context: CommandEditContext, cmd: M2Comma
 
   const renderPreview = () => {
     const record = actors.find((entry) => entry.id === actor.select.value);
-    const icon = imageIconOf(project, resourceId || undefined);
+    const icon = imageIconOf(store.getCurrent(), resourceId || undefined);
     preview.replaceChildren(
       el("div", {
         class: "actor-m2-preview-actor",
@@ -791,7 +792,7 @@ function changeActorFacesetCommandBody(context: CommandEditContext, cmd: M2Comma
           currentId: resourceId,
           onConfirm: (result) => {
             resourceId = result.resourceId;
-            resourceSelect.value = resourceId;
+            setResourcePickerValue(resourceSelect, resourceId);
             commit();
           },
         });
@@ -815,7 +816,7 @@ function changeActorFacesetCommandBody(context: CommandEditContext, cmd: M2Comma
     selectedId: resourceId,
     onSelect: (nextId) => {
       resourceId = nextId;
-      resourceSelect.value = nextId;
+      setResourcePickerValue(resourceSelect, nextId);
       commit();
     },
   });
@@ -882,7 +883,7 @@ function changeActorFacesetCommandBody(context: CommandEditContext, cmd: M2Comma
                 queueKey: `change-actor-faceset:${context.path.join(".")}`,
                 onInserted: (id) => {
                   resourceId = id;
-                  resourceSelect.value = id;
+                  setResourcePickerValue(resourceSelect, id);
                   commit();
                 },
               })

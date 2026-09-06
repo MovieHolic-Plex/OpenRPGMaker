@@ -1,0 +1,20 @@
+[
+  {
+    "id": "map",
+    "message": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'easyrpg-charset-actor1'\n- 'u07-charset-new'\n",
+    "actual": "easyrpg-charset-actor1",
+    "expected": "u07-charset-new"
+  },
+  {
+    "id": "battle",
+    "message": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'easyrpg-charset-actor1'\n- 'u07-charset-new'\n",
+    "actual": "easyrpg-charset-actor1",
+    "expected": "u07-charset-new"
+  },
+  {
+    "id": "ai-battle",
+    "message": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'easyrpg-charset-actor1'\n- 'u07-charset-new'\n",
+    "actual": "easyrpg-charset-actor1",
+    "expected": "u07-charset-new"
+  }
+]

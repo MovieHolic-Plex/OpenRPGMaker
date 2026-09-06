@@ -13,6 +13,7 @@ import {
   recordIconElement,
   recordPickerWithPreview,
   segmentedSelect,
+  setResourcePickerValue,
   type SegmentOption,
 } from "./recordPicker";
 import { pictureSlotCaption } from "./options";
@@ -1493,7 +1494,6 @@ function changeTilesetBody(context: CommandEditContext, cmd: M2Command): HTMLEle
 
 function changeParallaxBackBody(context: CommandEditContext, cmd: M2Command): HTMLElement {
   const wrap = shell("page3-command-body actor-m2-command-body", "change-parallax-back-command-body");
-  const project = store.getCurrent();
   let resourceId = String(cmd.fields.value ?? cmd.fields.resourceId ?? "").trim();
   const resourceSelect = resourceIdSelect(resourceId, "change-parallax-back-resource-select", "backdrop");
   const pickBtn = el("button", {
@@ -1509,7 +1509,7 @@ function changeParallaxBackBody(context: CommandEditContext, cmd: M2Command): HT
           currentId: resourceId,
           onConfirm: (result) => {
             resourceId = result.resourceId;
-            resourceSelect.value = resourceId;
+            setResourcePickerValue(resourceSelect, resourceId);
             commit();
           },
         });
@@ -1529,6 +1529,7 @@ function changeParallaxBackBody(context: CommandEditContext, cmd: M2Command): HT
     renderPreview();
   };
   const renderPreview = () => {
+    const project = store.getCurrent();
     const icon = imageIconOf(project, resourceId || undefined);
     const url = icon?.kind === "image" ? icon.url : null;
     const state = !resourceId ? "empty" : url === null ? "missing" : "ready";
@@ -1593,7 +1594,7 @@ function changeParallaxBackBody(context: CommandEditContext, cmd: M2Command): HT
             queueKey: `change-parallax-back:${context.path.join(".")}`,
             onInserted: (id) => {
               resourceId = id;
-              resourceSelect.value = id;
+              setResourcePickerValue(resourceSelect, id);
               commit();
             },
           })

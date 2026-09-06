@@ -501,19 +501,24 @@ function resourcePickerControl(request: ResourcePickerRequest): HTMLElement {
     select.append(el("option", { text: `${item.name} (${item.id})`, attrs: { value: item.id } }));
   }
   select.value = request.value;
-  select.addEventListener("change", () => updateField(request.context, request.cmd, request.key, select.value));
-
+  const name = el("div", {
+    class: "m2-resource-selected-name", text: selectedName, dataset: { testid: testIds.selectedName },
+  });
+  let preview = resourcePreview({ item: selectedItem, project, selectedName, semantic: request.semantic, testId: testIds.preview, value: request.value });
+  select.addEventListener("change", () => {
+    const current = store.getCurrent();
+    const item = resourcePickerItems(current.resourceProfiles, Object.values(current.assets.uploaded), request.semantic.resourceKinds)
+      .find(item => item.id === select.value);
+    const selectedName = item?.name ?? (select.value ? `목록에 없는 리소스: ${select.value}` : "선택 없음");
+    name.textContent = selectedName;
+    const next = resourcePreview({ item, project: current, selectedName, semantic: request.semantic, testId: testIds.preview, value: select.value });
+    preview.replaceWith(next);
+    preview = next;
+    updateField(request.context, request.cmd, request.key, select.value);
+  });
   return el("div", {
     class: "m2-resource-picker",
-    children: [
-      select,
-      el("div", {
-        class: "m2-resource-selected-name",
-        text: selectedName,
-        dataset: { testid: testIds.selectedName },
-      }),
-      resourcePreview({ item: selectedItem, project, selectedName, semantic: request.semantic, testId: testIds.preview, value: request.value }),
-    ],
+    children: [select, name, preview],
   });
 }
 
@@ -525,7 +530,9 @@ function m2SwitchVariableControl(options: {
   readonly kind: "switch" | "variable";
   readonly value: string;
 }): HTMLElement {
-  let selectedName = options.value ? `목록에 없는 항목: ${options.value}` : "선택 없음";
+  let selectedName = options.value
+    ? store.getCurrent()[options.kind === "switch" ? "switches" : "variables"].find(entry => entry.id === options.value)?.name ?? `목록에 없는 항목: ${options.value}`
+    : "선택 없음";
   const nameEl = el("div", {
     class: "m2-record-selected-name",
     text: selectedName,
@@ -534,6 +541,7 @@ function m2SwitchVariableControl(options: {
   const picker = switchVariablePicker({
     kind: options.kind,
     selectedId: options.value,
+    keepMissingId: true,
     className: "m2-record-modal-picker",
     pickerTestId: `m2-command-${options.key}-record-open`,
     selectTestId: `m2-command-${options.key}-record-select`,
@@ -562,12 +570,17 @@ function recordPickerControl(request: RecordPickerRequest): HTMLElement {
     select.append(el("option", { text: item.name.trim() || "(이름 없음)", attrs: { value: item.id } }));
   }
   select.value = request.value;
-  select.addEventListener("change", () => updateField(request.context, request.cmd, request.key, select.value));
+  const name = el("div", { class: "m2-record-selected-name", text: selectedName, dataset: { testid: `m2-command-${request.key}-record-selected-name` } });
+  select.addEventListener("change", () => {
+    name.textContent = request.semantic.items.find(item => item.id === select.value)?.name
+      ?? (select.value ? `목록에 없는 항목: ${select.value}` : "선택 없음");
+    updateField(request.context, request.cmd, request.key, select.value);
+  });
   return el("div", {
     class: "m2-record-picker",
     children: [
       select,
-      el("div", { class: "m2-record-selected-name", text: selectedName, dataset: { testid: `m2-command-${request.key}-record-selected-name` } }),
+      name,
     ],
   });
 }

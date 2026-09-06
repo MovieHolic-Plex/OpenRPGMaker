@@ -28,6 +28,9 @@ export function resolvePlayerSpriteResource(project: Project, session: PlaySessi
   if (charsetAsset) {
     return createCharsetSpriteResource(charsetAsset.id, charsetAsset.textureKey);
   }
+  if (resourceId && project.assets.uploaded[resourceId]?.kind === "charset") {
+    return createCharsetSpriteResource(resourceId, resourceId);
+  }
   const defaultResourceId = actorId ? defaultActorCharacterResourceId({ id: actorId }) : undefined;
   const defaultCharsetAsset = defaultResourceId ? findCharsetAsset(defaultResourceId) : undefined;
   if (defaultCharsetAsset) {

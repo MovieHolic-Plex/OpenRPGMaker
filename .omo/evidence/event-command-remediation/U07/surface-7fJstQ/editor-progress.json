@@ -1,0 +1,2492 @@
+[
+  {
+    "position": 0,
+    "index": 24,
+    "expected": {
+      "kind": "m2Command",
+      "commandId": "m2-024-change-actor-graphic",
+      "fields": {
+        "target": "actor_hero",
+        "value": "u07-charset-new"
+      }
+    },
+    "dimensions": [
+      {
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        },
+        "overflow": false,
+        "focused": "change-actor-graphic-resource-picker",
+        "controls": [
+          {
+            "x": 725,
+            "y": 567.566650390625,
+            "right": 801,
+            "bottom": 599.566650390625,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 809,
+            "y": 567.566650390625,
+            "right": 885,
+            "bottom": 599.566650390625,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 725,
+            "y": 567.566650390625,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 809,
+            "y": 567.566650390625,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      },
+      {
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "overflow": false,
+        "focused": "change-actor-graphic-resource-picker",
+        "controls": [
+          {
+            "x": 853,
+            "y": 583.566650390625,
+            "right": 929,
+            "bottom": 615.566650390625,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 937,
+            "y": 583.566650390625,
+            "right": 1013,
+            "bottom": 615.566650390625,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 853,
+            "y": 583.566650390625,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 937,
+            "y": 583.566650390625,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      },
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "overflow": false,
+        "focused": "change-actor-graphic-resource-picker",
+        "controls": [
+          {
+            "x": 933,
+            "y": 633.566650390625,
+            "right": 1009,
+            "bottom": 665.566650390625,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 1017,
+            "y": 633.566650390625,
+            "right": 1093,
+            "bottom": 665.566650390625,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 933,
+            "y": 633.566650390625,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 1017,
+            "y": 633.566650390625,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      }
+    ],
+    "confirmed": {
+      "status": "success",
+      "before": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-024-change-actor-graphic",
+            "fields": {
+              "target": "actor_hero",
+              "value": "u07-charset-old"
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-024-change-actor-graphic",
+            "fields": {
+              "target": "actor_hero",
+              "value": "u07-charset-new"
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    "reopened": [
+      {
+        "id": "change-actor-graphic-target-mode",
+        "value": "actor"
+      },
+      {
+        "id": "change-actor-graphic-actor-select",
+        "value": "actor_hero"
+      },
+      {
+        "id": "change-actor-graphic-resource-select",
+        "value": "u07-charset-new"
+      }
+    ],
+    "canceled": true
+  },
+  {
+    "position": 1,
+    "index": 25,
+    "expected": {
+      "kind": "m2Command",
+      "commandId": "m2-025-change-actor-faceset",
+      "fields": {
+        "target": "actor_hero",
+        "value": "u07-faceset-new-bust"
+      }
+    },
+    "dimensions": [
+      {
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        },
+        "overflow": false,
+        "focused": "change-actor-faceset-resource-picker",
+        "controls": [
+          {
+            "x": 725,
+            "y": 669.2999877929688,
+            "right": 801,
+            "bottom": 701.2999877929688,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 809,
+            "y": 669.2999877929688,
+            "right": 885,
+            "bottom": 701.2999877929688,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 725,
+            "y": 669.2999877929688,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 809,
+            "y": 669.2999877929688,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      },
+      {
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "overflow": false,
+        "focused": "change-actor-faceset-resource-picker",
+        "controls": [
+          {
+            "x": 853,
+            "y": 696.5,
+            "right": 929,
+            "bottom": 728.5,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 937,
+            "y": 696.5,
+            "right": 1013,
+            "bottom": 728.5,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 853,
+            "y": 696.5,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 937,
+            "y": 696.5,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      },
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "overflow": false,
+        "focused": "change-actor-faceset-resource-picker",
+        "controls": [
+          {
+            "x": 933,
+            "y": 781.5,
+            "right": 1009,
+            "bottom": 813.5,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 1017,
+            "y": 781.5,
+            "right": 1093,
+            "bottom": 813.5,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 933,
+            "y": 781.5,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 1017,
+            "y": 781.5,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      }
+    ],
+    "confirmed": {
+      "status": "success",
+      "before": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-025-change-actor-faceset",
+            "fields": {
+              "target": "actor_hero",
+              "value": "u07-faceset-old-bust"
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-025-change-actor-faceset",
+            "fields": {
+              "target": "actor_hero",
+              "value": "u07-faceset-new-bust"
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    "reopened": [
+      {
+        "id": "change-actor-faceset-target-mode",
+        "value": "actor"
+      },
+      {
+        "id": "change-actor-faceset-actor-select",
+        "value": "actor_hero"
+      },
+      {
+        "id": "change-actor-faceset-resource-select",
+        "value": "u07-faceset-new-bust"
+      },
+      {
+        "id": "change-actor-faceset-ai-prompt",
+        "value": ""
+      }
+    ],
+    "canceled": true
+  },
+  {
+    "position": 2,
+    "index": 69,
+    "expected": {
+      "kind": "m2Command",
+      "commandId": "m2-069-change-parallax-back",
+      "fields": {
+        "resourceId": "u07-backdrop-new",
+        "value": "u07-backdrop-new",
+        "target": "u07-backdrop-new",
+        "operation": "set"
+      }
+    },
+    "dimensions": [
+      {
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        },
+        "overflow": false,
+        "focused": "change-parallax-back-resource-picker",
+        "controls": [
+          {
+            "x": 725,
+            "y": 567.816650390625,
+            "right": 801,
+            "bottom": 599.816650390625,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 809,
+            "y": 567.816650390625,
+            "right": 885,
+            "bottom": 599.816650390625,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 725,
+            "y": 567.816650390625,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 809,
+            "y": 567.816650390625,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      },
+      {
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "overflow": false,
+        "focused": "change-parallax-back-resource-picker",
+        "controls": [
+          {
+            "x": 853,
+            "y": 583.816650390625,
+            "right": 929,
+            "bottom": 615.816650390625,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 937,
+            "y": 583.816650390625,
+            "right": 1013,
+            "bottom": 615.816650390625,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 853,
+            "y": 583.816650390625,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 937,
+            "y": 583.816650390625,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      },
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "overflow": false,
+        "focused": "change-parallax-back-resource-picker",
+        "controls": [
+          {
+            "x": 933,
+            "y": 633.816650390625,
+            "right": 1009,
+            "bottom": 665.816650390625,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 1017,
+            "y": 633.816650390625,
+            "right": 1093,
+            "bottom": 665.816650390625,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 933,
+            "y": 633.816650390625,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 1017,
+            "y": 633.816650390625,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      }
+    ],
+    "confirmed": {
+      "status": "success",
+      "before": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-069-change-parallax-back",
+            "fields": {
+              "resourceId": "u07-backdrop-old",
+              "value": "u07-backdrop-old"
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-069-change-parallax-back",
+            "fields": {
+              "resourceId": "u07-backdrop-new",
+              "value": "u07-backdrop-new",
+              "target": "u07-backdrop-new",
+              "operation": "set"
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    "reopened": [
+      {
+        "id": "change-parallax-back-resource-select",
+        "value": "u07-backdrop-new"
+      },
+      {
+        "id": "change-parallax-back-ai-prompt",
+        "value": ""
+      }
+    ],
+    "canceled": true
+  },
+  {
+    "position": 3,
+    "index": 102,
+    "expected": {
+      "kind": "m2Command",
+      "commandId": "m2-102-change-battleback",
+      "fields": {
+        "resourceId": "u07-backdrop-new"
+      }
+    },
+    "dimensions": [
+      {
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        },
+        "overflow": false,
+        "focused": "m2-command-resourceId-picker",
+        "controls": [
+          {
+            "x": 725,
+            "y": 775.8499755859375,
+            "right": 801,
+            "bottom": 807.8499755859375,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 809,
+            "y": 775.8499755859375,
+            "right": 885,
+            "bottom": 807.8499755859375,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 725,
+            "y": 694.8499755859375,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 809,
+            "y": 694.8499755859375,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      },
+      {
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "overflow": false,
+        "focused": "m2-command-resourceId-picker",
+        "controls": [
+          {
+            "x": 853,
+            "y": 727.0499877929688,
+            "right": 929,
+            "bottom": 759.0499877929688,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 937,
+            "y": 727.0499877929688,
+            "right": 1013,
+            "bottom": 759.0499877929688,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 853,
+            "y": 727.0499877929688,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 937,
+            "y": 727.0499877929688,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      },
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "overflow": false,
+        "focused": "m2-command-resourceId-picker",
+        "controls": [
+          {
+            "x": 933,
+            "y": 803,
+            "right": 1009,
+            "bottom": 835,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 1017,
+            "y": 803,
+            "right": 1093,
+            "bottom": 835,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 933,
+            "y": 803,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 1017,
+            "y": 803,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      }
+    ],
+    "confirmed": {
+      "status": "success",
+      "before": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-102-change-battleback",
+            "fields": {
+              "resourceId": "u07-backdrop-old"
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-102-change-battleback",
+            "fields": {
+              "resourceId": "u07-backdrop-new"
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    "reopened": [
+      {
+        "id": "m2-command-resourceId-picker",
+        "value": "u07-backdrop-new"
+      }
+    ],
+    "canceled": true
+  },
+  {
+    "position": 4,
+    "index": 26,
+    "expected": {
+      "kind": "m2Command",
+      "commandId": "m2-026-change-vehicle-graphic",
+      "fields": {
+        "target": "",
+        "operation": "set",
+        "value": "u07-charset-new"
+      }
+    },
+    "dimensions": [
+      {
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        },
+        "overflow": false,
+        "focused": "m2-command-value-resource-picker",
+        "controls": [
+          {
+            "x": 725,
+            "y": 904.0999755859375,
+            "right": 801,
+            "bottom": 936.0999755859375,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 809,
+            "y": 904.0999755859375,
+            "right": 885,
+            "bottom": 936.0999755859375,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 725,
+            "y": 695.0999755859375,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 809,
+            "y": 695.0999755859375,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      },
+      {
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "overflow": false,
+        "focused": "m2-command-value-resource-picker",
+        "controls": [
+          {
+            "x": 853,
+            "y": 727.13330078125,
+            "right": 929,
+            "bottom": 759.13330078125,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 937,
+            "y": 727.13330078125,
+            "right": 1013,
+            "bottom": 759.13330078125,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 853,
+            "y": 727.1333618164062,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 937,
+            "y": 727.1333618164062,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      },
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "overflow": false,
+        "focused": "m2-command-value-resource-picker",
+        "controls": [
+          {
+            "x": 933,
+            "y": 827.316650390625,
+            "right": 1009,
+            "bottom": 859.316650390625,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 1017,
+            "y": 827.316650390625,
+            "right": 1093,
+            "bottom": 859.316650390625,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 933,
+            "y": 827.316650390625,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 1017,
+            "y": 827.316650390625,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      }
+    ],
+    "confirmed": {
+      "status": "success",
+      "before": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-026-change-vehicle-graphic",
+            "fields": {
+              "target": "",
+              "operation": "set",
+              "value": "u07-charset-old"
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-026-change-vehicle-graphic",
+            "fields": {
+              "target": "",
+              "operation": "set",
+              "value": "u07-charset-new"
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    "reopened": [
+      {
+        "id": "m2-command-target-option-select",
+        "value": ""
+      },
+      {
+        "id": "m2-command-operation-option-select",
+        "value": "set"
+      },
+      {
+        "id": "m2-command-value-resource-picker",
+        "value": "u07-charset-new"
+      }
+    ],
+    "canceled": true
+  },
+  {
+    "position": 5,
+    "index": 203,
+    "expected": {
+      "kind": "m2Command",
+      "commandId": "m2-203-spawn-event",
+      "fields": {
+        "prefabId": "u07-event-b",
+        "eventId": "u07-host",
+        "mapId": "u07-map-12",
+        "x": 0,
+        "y": 9
+      }
+    },
+    "dimensions": [
+      {
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        },
+        "overflow": false,
+        "focused": "m2-command-mapId-record-select",
+        "controls": [
+          {
+            "x": 725,
+            "y": 609.25,
+            "right": 801,
+            "bottom": 641.25,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 809,
+            "y": 609.25,
+            "right": 885,
+            "bottom": 641.25,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 725,
+            "y": 609.25,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 809,
+            "y": 609.25,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      },
+      {
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "overflow": false,
+        "focused": "m2-command-mapId-record-select",
+        "controls": [
+          {
+            "x": 853,
+            "y": 625.25,
+            "right": 929,
+            "bottom": 657.25,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 937,
+            "y": 625.25,
+            "right": 1013,
+            "bottom": 657.25,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 853,
+            "y": 625.25,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 937,
+            "y": 625.25,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      },
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "overflow": false,
+        "focused": "m2-command-mapId-record-select",
+        "controls": [
+          {
+            "x": 933,
+            "y": 675.25,
+            "right": 1009,
+            "bottom": 707.25,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 1017,
+            "y": 675.25,
+            "right": 1093,
+            "bottom": 707.25,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 933,
+            "y": 675.25,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 1017,
+            "y": 675.25,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      }
+    ],
+    "confirmed": {
+      "status": "success",
+      "before": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-203-spawn-event",
+            "fields": {
+              "prefabId": "u07-event-b",
+              "eventId": "u07-host",
+              "mapId": "u07-map-04",
+              "x": 7,
+              "y": 9
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-203-spawn-event",
+            "fields": {
+              "prefabId": "u07-event-b",
+              "eventId": "u07-host",
+              "mapId": "u07-map-12",
+              "x": 0,
+              "y": 9
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    "reopened": [
+      {
+        "id": "m2-command-prefabId-input",
+        "value": "u07-event-b"
+      },
+      {
+        "id": "m2-command-eventId-record-select",
+        "value": "u07-host"
+      },
+      {
+        "id": "m2-command-mapId-record-select",
+        "value": "u07-map-12"
+      },
+      {
+        "id": "m2-command-x-input",
+        "value": "0"
+      },
+      {
+        "id": "m2-command-y-input",
+        "value": "9"
+      }
+    ],
+    "canceled": true
+  },
+  {
+    "position": 6,
+    "index": 204,
+    "expected": {
+      "kind": "m2Command",
+      "commandId": "m2-204-remove-event",
+      "fields": {
+        "eventId": "u07-event-b"
+      }
+    },
+    "dimensions": [
+      {
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        },
+        "overflow": false,
+        "focused": "m2-command-eventId-record-select",
+        "controls": [
+          {
+            "x": 725,
+            "y": 496.3666687011719,
+            "right": 801,
+            "bottom": 528.3666687011719,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 809,
+            "y": 496.3666687011719,
+            "right": 885,
+            "bottom": 528.3666687011719,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 725,
+            "y": 496.3666687011719,
+            "width": 76,
+            "height": 32.000030517578125
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 809,
+            "y": 496.3666687011719,
+            "width": 76,
+            "height": 32.000030517578125
+          }
+        ]
+      },
+      {
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "overflow": false,
+        "focused": "m2-command-eventId-record-select",
+        "controls": [
+          {
+            "x": 853,
+            "y": 512.36669921875,
+            "right": 929,
+            "bottom": 544.36669921875,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 937,
+            "y": 512.36669921875,
+            "right": 1013,
+            "bottom": 544.36669921875,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 853,
+            "y": 512.3666381835938,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 937,
+            "y": 512.3666381835938,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      },
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "overflow": false,
+        "focused": "m2-command-eventId-record-select",
+        "controls": [
+          {
+            "x": 933,
+            "y": 562.36669921875,
+            "right": 1009,
+            "bottom": 594.36669921875,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 1017,
+            "y": 562.36669921875,
+            "right": 1093,
+            "bottom": 594.36669921875,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 933,
+            "y": 562.3666381835938,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 1017,
+            "y": 562.3666381835938,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      }
+    ],
+    "confirmed": {
+      "status": "success",
+      "before": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-204-remove-event",
+            "fields": {
+              "eventId": "u07-host"
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-204-remove-event",
+            "fields": {
+              "eventId": "u07-event-b"
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    "reopened": [
+      {
+        "id": "m2-command-eventId-record-select",
+        "value": "u07-event-b"
+      }
+    ],
+    "canceled": true
+  },
+  {
+    "position": 7,
+    "index": 207,
+    "expected": {
+      "kind": "m2Command",
+      "commandId": "m2-207-region-trigger",
+      "fields": {
+        "regionId": "",
+        "eventId": "u07-event-b",
+        "action": "enter",
+        "switchId": "u07-switch-23"
+      }
+    },
+    "dimensions": [
+      {
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        },
+        "overflow": false,
+        "focused": "m2-command-eventId-record-select",
+        "controls": [
+          {
+            "x": 725,
+            "y": 597.25,
+            "right": 801,
+            "bottom": 629.25,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 809,
+            "y": 597.25,
+            "right": 885,
+            "bottom": 629.25,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 725,
+            "y": 597.25,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 809,
+            "y": 597.25,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      },
+      {
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "overflow": false,
+        "focused": "m2-command-eventId-record-select",
+        "controls": [
+          {
+            "x": 853,
+            "y": 613.25,
+            "right": 929,
+            "bottom": 645.25,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 937,
+            "y": 613.25,
+            "right": 1013,
+            "bottom": 645.25,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 853,
+            "y": 613.25,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 937,
+            "y": 613.25,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      },
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "overflow": false,
+        "focused": "m2-command-eventId-record-select",
+        "controls": [
+          {
+            "x": 933,
+            "y": 663.25,
+            "right": 1009,
+            "bottom": 695.25,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 1017,
+            "y": 663.25,
+            "right": 1093,
+            "bottom": 695.25,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 933,
+            "y": 663.25,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 1017,
+            "y": 663.25,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      }
+    ],
+    "confirmed": {
+      "status": "success",
+      "before": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-207-region-trigger",
+            "fields": {
+              "regionId": "",
+              "eventId": "u07-host",
+              "action": "enter",
+              "switchId": "u07-switch-23"
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-207-region-trigger",
+            "fields": {
+              "regionId": "",
+              "eventId": "u07-event-b",
+              "action": "enter",
+              "switchId": "u07-switch-23"
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    "reopened": [
+      {
+        "id": "m2-command-regionId-input",
+        "value": ""
+      },
+      {
+        "id": "m2-command-eventId-record-select",
+        "value": "u07-event-b"
+      },
+      {
+        "id": "m2-command-action-option-select",
+        "value": "enter"
+      },
+      {
+        "id": "m2-command-switchId-record-select",
+        "value": "u07-switch-23"
+      }
+    ],
+    "canceled": true
+  },
+  {
+    "position": 8,
+    "index": 27,
+    "expected": {
+      "kind": "m2Command",
+      "commandId": "m2-027-change-system-bgm",
+      "fields": {
+        "resourceId": "u07-music-new",
+        "volume": 100
+      }
+    },
+    "dimensions": [
+      {
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        },
+        "overflow": false,
+        "focused": "m2-command-resourceId-picker",
+        "controls": [
+          {
+            "x": 725,
+            "y": 528.5,
+            "right": 801,
+            "bottom": 560.5,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 809,
+            "y": 528.5,
+            "right": 885,
+            "bottom": 560.5,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 725,
+            "y": 528.5,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 809,
+            "y": 528.5,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      },
+      {
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "overflow": false,
+        "focused": "m2-command-resourceId-picker",
+        "controls": [
+          {
+            "x": 853,
+            "y": 544.5,
+            "right": 929,
+            "bottom": 576.5,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 937,
+            "y": 544.5,
+            "right": 1013,
+            "bottom": 576.5,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 853,
+            "y": 544.5,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 937,
+            "y": 544.5,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      },
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "overflow": false,
+        "focused": "m2-command-resourceId-picker",
+        "controls": [
+          {
+            "x": 933,
+            "y": 594.5,
+            "right": 1009,
+            "bottom": 626.5,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 1017,
+            "y": 594.5,
+            "right": 1093,
+            "bottom": 626.5,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 933,
+            "y": 594.5,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 1017,
+            "y": 594.5,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      }
+    ],
+    "confirmed": {
+      "status": "success",
+      "before": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-027-change-system-bgm",
+            "fields": {
+              "resourceId": "u07-music-old",
+              "volume": 100
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-027-change-system-bgm",
+            "fields": {
+              "resourceId": "u07-music-new",
+              "volume": 100
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    "reopened": [
+      {
+        "id": "m2-command-resourceId-picker",
+        "value": "u07-music-new"
+      },
+      {
+        "id": "m2-command-volume-input",
+        "value": "100"
+      }
+    ],
+    "canceled": true
+  },
+  {
+    "position": 9,
+    "index": 28,
+    "expected": {
+      "kind": "m2Command",
+      "commandId": "m2-028-change-system-se",
+      "fields": {
+        "resourceId": "u07-sound-new",
+        "volume": 100
+      }
+    },
+    "dimensions": [
+      {
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        },
+        "overflow": false,
+        "focused": "m2-command-resourceId-picker",
+        "controls": [
+          {
+            "x": 725,
+            "y": 528.5,
+            "right": 801,
+            "bottom": 560.5,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 809,
+            "y": 528.5,
+            "right": 885,
+            "bottom": 560.5,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 725,
+            "y": 528.5,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 809,
+            "y": 528.5,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      },
+      {
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "overflow": false,
+        "focused": "m2-command-resourceId-picker",
+        "controls": [
+          {
+            "x": 853,
+            "y": 544.5,
+            "right": 929,
+            "bottom": 576.5,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 937,
+            "y": 544.5,
+            "right": 1013,
+            "bottom": 576.5,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 853,
+            "y": 544.5,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 937,
+            "y": 544.5,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      },
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "overflow": false,
+        "focused": "m2-command-resourceId-picker",
+        "controls": [
+          {
+            "x": 933,
+            "y": 594.5,
+            "right": 1009,
+            "bottom": 626.5,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 1017,
+            "y": 594.5,
+            "right": 1093,
+            "bottom": 626.5,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 933,
+            "y": 594.5,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 1017,
+            "y": 594.5,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      }
+    ],
+    "confirmed": {
+      "status": "success",
+      "before": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-028-change-system-se",
+            "fields": {
+              "resourceId": "u07-sound-old",
+              "volume": 100
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-028-change-system-se",
+            "fields": {
+              "resourceId": "u07-sound-new",
+              "volume": 100
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    "reopened": [
+      {
+        "id": "m2-command-resourceId-picker",
+        "value": "u07-sound-new"
+      },
+      {
+        "id": "m2-command-volume-input",
+        "value": "100"
+      }
+    ],
+    "canceled": true
+  },
+  {
+    "position": 10,
+    "index": 29,
+    "expected": {
+      "kind": "m2Command",
+      "commandId": "m2-029-change-system-graphic",
+      "fields": {
+        "target": "",
+        "operation": "set",
+        "value": "u07-system-new"
+      }
+    },
+    "dimensions": [
+      {
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        },
+        "overflow": false,
+        "focused": "m2-command-value-resource-picker",
+        "controls": [
+          {
+            "x": 725,
+            "y": 882.6500244140625,
+            "right": 801,
+            "bottom": 914.6500244140625,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 809,
+            "y": 882.6500244140625,
+            "right": 885,
+            "bottom": 914.6500244140625,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 725,
+            "y": 694.6500244140625,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 809,
+            "y": 694.6500244140625,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      },
+      {
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "overflow": false,
+        "focused": "m2-command-value-resource-picker",
+        "controls": [
+          {
+            "x": 853,
+            "y": 726.7000122070312,
+            "right": 929,
+            "bottom": 758.7000122070312,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 937,
+            "y": 726.7000122070312,
+            "right": 1013,
+            "bottom": 758.7000122070312,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 853,
+            "y": 726.7000122070312,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 937,
+            "y": 726.7000122070312,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      },
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "overflow": false,
+        "focused": "m2-command-value-resource-picker",
+        "controls": [
+          {
+            "x": 933,
+            "y": 826.9666748046875,
+            "right": 1009,
+            "bottom": 858.9666748046875,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 1017,
+            "y": 826.9666748046875,
+            "right": 1093,
+            "bottom": 858.9666748046875,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 933,
+            "y": 826.9666748046875,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 1017,
+            "y": 826.9666748046875,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      }
+    ],
+    "confirmed": {
+      "status": "success",
+      "before": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-029-change-system-graphic",
+            "fields": {
+              "target": "",
+              "operation": "set",
+              "value": "u07-system-old"
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-029-change-system-graphic",
+            "fields": {
+              "target": "",
+              "operation": "set",
+              "value": "u07-system-new"
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    "reopened": [
+      {
+        "id": "m2-command-target-input",
+        "value": ""
+      },
+      {
+        "id": "m2-command-operation-option-select",
+        "value": "set"
+      },
+      {
+        "id": "m2-command-value-resource-picker",
+        "value": "u07-system-new"
+      }
+    ],
+    "canceled": true
+  },
+  {
+    "position": 11,
+    "index": 74,
+    "expected": {
+      "kind": "m2Command",
+      "commandId": "m2-074-set-escape-location",
+      "fields": {
+        "target": "",
+        "mapId": "u07-map-12",
+        "x": 0,
+        "y": 9
+      }
+    },
+    "dimensions": [
+      {
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        },
+        "overflow": false,
+        "focused": "m2-command-mapId-record-select",
+        "controls": [
+          {
+            "x": 725,
+            "y": 562.36669921875,
+            "right": 801,
+            "bottom": 594.36669921875,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 809,
+            "y": 562.36669921875,
+            "right": 885,
+            "bottom": 594.36669921875,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 725,
+            "y": 562.3666381835938,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 809,
+            "y": 562.3666381835938,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      },
+      {
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "overflow": false,
+        "focused": "m2-command-mapId-record-select",
+        "controls": [
+          {
+            "x": 853,
+            "y": 578.36669921875,
+            "right": 929,
+            "bottom": 610.36669921875,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 937,
+            "y": 578.36669921875,
+            "right": 1013,
+            "bottom": 610.36669921875,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 853,
+            "y": 578.3666381835938,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 937,
+            "y": 578.3666381835938,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      },
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "overflow": false,
+        "focused": "m2-command-mapId-record-select",
+        "controls": [
+          {
+            "x": 933,
+            "y": 628.36669921875,
+            "right": 1009,
+            "bottom": 660.36669921875,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 1017,
+            "y": 628.36669921875,
+            "right": 1093,
+            "bottom": 660.36669921875,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 933,
+            "y": 628.3666381835938,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 1017,
+            "y": 628.3666381835938,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      }
+    ],
+    "confirmed": {
+      "status": "success",
+      "before": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-074-set-escape-location",
+            "fields": {
+              "target": "",
+              "mapId": "u07-map-04",
+              "x": 7,
+              "y": 9
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-074-set-escape-location",
+            "fields": {
+              "target": "",
+              "mapId": "u07-map-12",
+              "x": 0,
+              "y": 9
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    "reopened": [
+      {
+        "id": "m2-command-target-input",
+        "value": ""
+      },
+      {
+        "id": "m2-command-mapId-record-select",
+        "value": "u07-map-12"
+      },
+      {
+        "id": "m2-command-x-input",
+        "value": "0"
+      },
+      {
+        "id": "m2-command-y-input",
+        "value": "9"
+      }
+    ],
+    "canceled": true
+  },
+  {
+    "position": 12,
+    "index": 217,
+    "expected": {
+      "kind": "m2Command",
+      "commandId": "m2-217-data-query",
+      "fields": {
+        "query": "playerX",
+        "target": "",
+        "variableId": "u07-reward-17"
+      }
+    },
+    "dimensions": [
+      {
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        },
+        "overflow": false,
+        "focused": "m2-command-variableId-record-open",
+        "controls": [
+          {
+            "x": 725,
+            "y": 550.36669921875,
+            "right": 801,
+            "bottom": 582.36669921875,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 809,
+            "y": 550.36669921875,
+            "right": 885,
+            "bottom": 582.36669921875,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 725,
+            "y": 550.3666381835938,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 809,
+            "y": 550.3666381835938,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      },
+      {
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "overflow": false,
+        "focused": "m2-command-variableId-record-open",
+        "controls": [
+          {
+            "x": 853,
+            "y": 566.36669921875,
+            "right": 929,
+            "bottom": 598.36669921875,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 937,
+            "y": 566.36669921875,
+            "right": 1013,
+            "bottom": 598.36669921875,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 853,
+            "y": 566.3666381835938,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 937,
+            "y": 566.3666381835938,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      },
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "overflow": false,
+        "focused": "m2-command-variableId-record-open",
+        "controls": [
+          {
+            "x": 933,
+            "y": 616.36669921875,
+            "right": 1009,
+            "bottom": 648.36669921875,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "x": 1017,
+            "y": 616.36669921875,
+            "right": 1093,
+            "bottom": 648.36669921875,
+            "width": 76,
+            "height": 32
+          }
+        ],
+        "reachable": [
+          {
+            "id": "event-command-edit-ok",
+            "x": 933,
+            "y": 616.3666381835938,
+            "width": 76,
+            "height": 32
+          },
+          {
+            "id": "event-command-edit-cancel",
+            "x": 1017,
+            "y": 616.3666381835938,
+            "width": 76,
+            "height": 32
+          }
+        ]
+      }
+    ],
+    "confirmed": {
+      "status": "success",
+      "before": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-217-data-query",
+            "fields": {
+              "query": "playerX",
+              "target": "",
+              "variableId": "u07-reward-17"
+            }
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": {
+            "kind": "m2Command",
+            "commandId": "m2-217-data-query",
+            "fields": {
+              "query": "playerX",
+              "target": "",
+              "variableId": "u07-reward-17"
+            }
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    "reopened": [
+      {
+        "id": "m2-command-query-option-select",
+        "value": "playerX"
+      },
+      {
+        "id": "m2-command-target-input",
+        "value": ""
+      },
+      {
+        "id": "m2-command-variableId-record-select",
+        "value": "u07-reward-17"
+      }
+    ],
+    "canceled": true
+  }
+]

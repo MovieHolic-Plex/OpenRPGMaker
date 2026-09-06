@@ -1,0 +1,22 @@
+{
+  "status": "timeout",
+  "before": [
+    {
+      "value": "u07-charset-new"
+    }
+  ],
+  "after": [
+    {
+      "value": "u07-charset-new"
+    }
+  ],
+  "event": null,
+  "cleanup": {
+    "observer": true,
+    "timer": true,
+    "event": true,
+    "pagehide": true,
+    "abort": true
+  },
+  "error": "eventCommand observation timed out"
+}
