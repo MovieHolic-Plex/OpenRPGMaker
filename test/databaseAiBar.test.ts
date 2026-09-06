@@ -18,6 +18,7 @@ import {
   summarizeDatabaseAiTurn,
   type DatabaseAiBarHandle,
 } from "@/editor/panels/databaseAiBar";
+import { databaseTabLabel } from "@/editor/panels/database";
 
 type Scheduled = { fn: () => void; ms: number; cancelled: boolean };
 
@@ -94,7 +95,7 @@ describe("databaseAiSuggestions — 탭·선택에 맞춘 제안", () => {
 describe("databaseAiContextFooter — 채팅 파이프라인 호환 풋터", () => {
   it("탭 라벨과 선택 레코드를 한 줄로 붙인다", () => {
     const footer = databaseAiContextFooter({ tab: "enemies", record: { name: "슬라임", id: "enemy_slime" } });
-    expect(footer).toBe("[컨텍스트] 에디터 전체 요청 · 현재 화면: 데이터베이스 DB 탭 몬스터, 선택 레코드: 슬라임(enemy_slime)");
+    expect(footer).toBe(`[컨텍스트] 에디터 전체 요청 · 현재 화면: 데이터베이스 DB 탭 ${databaseTabLabel("enemies")}, 선택 레코드: 슬라임(enemy_slime)`);
   });
 
   it("레코드가 없으면 탭까지만 말한다", () => {
@@ -223,7 +224,7 @@ describe("createDatabaseAiBar — DOM 계약", () => {
 
     expect(send).toHaveBeenCalledTimes(1);
     const message = send.mock.calls[0]?.[0] ?? "";
-    expect(message.startsWith("선택한 몬스터를 중반 난이도로 맞춰줘\n\n[컨텍스트] 에디터 전체 요청 · 현재 화면: 데이터베이스 DB 탭 몬스터")).toBe(true);
+    expect(message.startsWith(`선택한 몬스터를 중반 난이도로 맞춰줘\n\n[컨텍스트] 에디터 전체 요청 · 현재 화면: 데이터베이스 DB 탭 ${databaseTabLabel("enemies")}`)).toBe(true);
     expect(message).toContain("선택 레코드: 슬라임(enemy_slime)");
     expect((window as { __oprnDbAiLastRequest?: { message: string } }).__oprnDbAiLastRequest?.message).toBe(message);
     // 입력은 비고 보내기는 잠긴다. 요청 원문은 턴 영역이 이어받는다.

@@ -1,5 +1,15 @@
 # RPG ZZU Design System
 
+## Monster role clarity (Phase 1)
+
+- Visible tabs are `전투 몬스터` (`enemies`) and `포획·성장 종족` (`monsterSpecies`); IDs and testids remain stable.
+- Battle monsters own fixed encounter stats, actions and rewards. Species own capture, growth and base values. Linking does not continuously inherit stats or appearance.
+- Keep role guidance in the existing hero subtitle and local section hints, not new banners/cards. Reuse `detailHero`, `sectionCard`, native controls and `db-ws-btn`; Studio tokens, typography, focus behavior, scroll ownership and modal geometry remain unchanged.
+- Effective links expose open-linked-species; creation without a link names the enemy as source. Linked creation explicitly replaces the link with a new species, preserving the old record, with the existing confirmation and atomic undo.
+- Creation copies enemy name/appearance/fixed stats once into species name/appearance/base values, not equal stats at the same level. Appearance copying names species-to-enemy direction and resource/hue/transparency/flying fields; stats remain unchanged.
+- The readiness strip is project-wide. Explicit-link counts and selected-species usage exclude same-ID compatibility links and say so. Destination labels distinguish a whole tab from a selected record and the first spawn map from all maps. No Phase 2 search/navigation changes belong here.
+- Browser acceptance remains 1024x768, 1280x800 and 1440x900: local guidance/actions must wrap and remain reachable in existing scroll containers, without horizontal overflow or focus regressions.
+
 ## Worldbuilding document workspace (2026-09-06)
 
 This slice follows the existing Database Studio primitives and tokens. It is a

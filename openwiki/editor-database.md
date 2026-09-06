@@ -27,6 +27,15 @@ Actor initial-equipment pickers, build previews, equipment gallery/filter labels
 - **로드 시 기본 레코드 재주입 금지:** `ensureDefaultDatabaseIconResources`는 기존 행의 레거시/누락 아이콘만 보정한다. 빠진 아이템·장비·스킬·상태를 추가하지 않는다. 전체 기본 카탈로그는 새 프로젝트 생성 때만 들어간다. 삭제한 항목이 로드 후 다시 살아나는 것을 막는 계약이며 아래 과거 backfill 기록보다 우선한다.
 - 검증: `test/itemEquipmentAuthoringTrust.test.ts` (UI→직렬화→메뉴 사용, 삭제 후 로드 정규화, 효과·스킬·소모·권한 표면), 기존 `itemRuntimeUsability`/`equipmentCatalogRuntimeAxes` (기본 카탈로그 실제 실행), `test/e2e/items-equipment-trust.spec.ts` (Firefox 1024/1280/1440 화면과 UI 변경 결과).
 
+## 전투 몬스터와 포획·성장 종족 (Phase 1)
+
+- 표시 탭은 `전투 몬스터` / `포획·성장 종족`이다. 기존 `enemies` / `monsterSpecies` ID와 testid는 유지한다. 전투 몬스터는 출현 전투의 고정 능력치·행동·보상, 종족은 포획·성장·종족값을 소유한다. 연결은 능력치·외형의 지속 상속이 아니다.
+- 관계 표시는 `monsterSpeciesForEnemy`를 따른다. 명시적 연결, 미설정, 누락된 ID, 같은 ID 호환 연결을 구분하며 렌더링으로 저장값을 쓰지 않는다. `연결된 종족 열기`는 실제 연결을 연다.
+- 미연결은 `이 몬스터로 종족 만들기`, 연결됨은 `새 종족으로 연결 교체`다. 생성은 이름·외형·고정 능력치를 새 종족의 이름·외형·종족값으로 한 번 복사한다. 같은 레벨의 전투 수치가 같다는 뜻은 아니다. 교체 확인은 기존 종족을 보존하고 새 종족 생성과 링크 교체를 한 번에 실행 취소한다. 취소는 데이터를 바꾸지 않는다.
+- 외형 차이는 리소스·색조·투명·비행 네 필드를 비교한다. `종족 외형을 이 몬스터로 복사`는 이 네 필드만 한 번 덮어쓰며 능력치와 종족 원본을 바꾸지 않는다.
+- 종족 상단 준비 상태는 프로젝트 전체 집계다. 명시적 연결 수와 선택 종족 연결 목록은 같은 ID 호환 연결을 제외한다고 밝힌다. 상단 연결/드롭 액션은 `전투 몬스터 탭 열기`, 출현 액션은 `첫 출현 맵 선택`, 시스템 액션은 `시스템 포획 설정 열기`로 실제 목적지를 표시한다. 선택 종족 목록의 `전투 몬스터 열기`는 해당 레코드를 선택한다. 검색 복구·탭 이동 동작 자체는 Phase 2 범위로 남긴다.
+- 안내는 기존 hero/section hint/버튼에 배치한다. Studio 토큰·모달 크기·스크롤·키보드 계약은 그대로다. 관계 회귀는 `test/databaseEnemyRelationship.test.ts`; 문구 자체를 새 테스트로 고정하지 않는다.
+
 ## 몬스터 작업실 — 미리보기 · 행동 · 속성 (2026-09-05)
 
 - `databaseEnemyRecordView.ts`는 기존 11개 필드 패널과 `updateDatabaseRecord` 경로를 유지하고,

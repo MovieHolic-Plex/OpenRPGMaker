@@ -161,7 +161,10 @@ describe("database cross-tab navigation (G006 Phase 4)", () => {
     const host = renderEnemyForm(enemy.id);
     const create = findByTestId(host, "db-enemy-create-species");
     expect(create).not.toBeNull();
-    expect(create?.textContent).toBe("종족 생성");
+    expect(create).toBeInstanceOf(HTMLButtonElement);
+    expect(create?.tagName).toBe("BUTTON");
+    expect(create?.getAttribute("type")).toBe("button");
+    expect(create?.disabled).toBe(false);
     create?.click();
 
     const after = store.getCurrent();
