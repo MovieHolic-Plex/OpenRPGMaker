@@ -13,5 +13,10 @@ These are basic extraction results, not a visual quality score.
 - Snow (earlier unchanged village closeup): broad white ground around two
   roofed buildings.
 
-Source images: the four marked shots in `runtime-final-walk/SUMMARY.md` and the
+Confirmed again on the latest runtime: multiple trees and two roofed village
+buildings; a snow-covered outpost with separate stone structures on both sides;
+a sandy ruin with separate side/lower masonry; and the laboratory's large water
+area and shoreline.
+
+Source images: the four marked shots in `runtime-current-final/SUMMARY.md` and the
 earlier snow-village shot in `runtime-final/07-landmark-7.png`.

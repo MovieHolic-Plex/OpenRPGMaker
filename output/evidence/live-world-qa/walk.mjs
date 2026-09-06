@@ -18,7 +18,7 @@ const report = {
   arrivals: [], cleanup: {},
 };
 const server = await startPlayerQaServer();
-const browser = await chromium.launch({ headless: true, args: ["--no-sandbox", "--disable-dev-shm-usage", "--use-gl=swiftshader", "--disable-gpu"] });
+const browser = await chromium.launch({ headless: true, args: ["--no-sandbox", "--disable-dev-shm-usage", "--disable-features=LocalNetworkAccessChecks", "--use-gl=swiftshader", "--disable-gpu"] });
 const context = await browser.newContext({ viewport: report.viewport });
 const page = await context.newPage();
 page.on("crash", () => {

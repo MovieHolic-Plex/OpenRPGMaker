@@ -31,7 +31,7 @@ ${process.env.QA_FEEDBACK_FILE ? readFileSync(process.env.QA_FEEDBACK_FILE, "utf
 save("prompt.txt", prompt);
 save("run-config.json", { projectId, attempt, resume, pid: process.pid, provider: "google-antigravity", model: "gemini-3.7-flash", autonomyLevel: "max" });
 
-const browser = await chromium.launch({ headless: true, args: ["--no-sandbox", "--disable-dev-shm-usage", "--use-gl=swiftshader", "--disable-gpu"] });
+const browser = await chromium.launch({ headless: true, args: ["--no-sandbox", "--disable-dev-shm-usage", "--disable-features=LocalNetworkAccessChecks", "--use-gl=swiftshader", "--disable-gpu"] });
 const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
 const agent = new Agent({ keepAlive: false, maxSockets: 12 });
 let page;

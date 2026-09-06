@@ -29,12 +29,12 @@ the assistant's work.
 | --- | --- | --- |
 | C1: isolated remote project | Empty baseline saved through the shipped API and loaded; normal editor confirmed remote persistence and the explicit QA ID | Local `final-baseline-proof.json`, `final-connection.json` |
 | C2: actual model and decomposition | Real HTTP model requests; original 19-item plan incorrectly collapsed to five in the RED run; later repairs retained independent work IDs and blocked invalid completion | Local `connected-events.jsonl`, `remaining-retry-events.jsonl`; regression tests below |
-| C2: full visual inspection | Actual model invoked 36 successful `show_map_region` calls, covering all 16,384 world cells; no game-map changes during the final inspection | Local `final-review-result.json`, `final-review-events.jsonl` |
+| C2: full visual inspection | On the latest integrated code, actual model requests carried 203 tool schemas and invoked 36 successful `show_map_region` calls covering all 16,384 world cells; game maps stayed unchanged | `model-proof.json`; local `integrated-result.json`, `integrated-events.jsonl` |
 | C3: physical content | Broad forest, snow, sand, coastal water, stone ridge structures and masonry ruins; original houses/guides/start preserved | `structural-analysis.json`; selected runtime screenshots |
-| C3: official shipped-player boot | `npm run qa:runtime -- --scenario live-world-start --project output/evidence/live-world-qa/final-review-project.json --out output/evidence/live-world-qa/runtime-official` passed both beats | `runtime-official/SUMMARY.md`, `runtime-official/manifest.json` |
-| C3: eight actual arrivals | Directional input through the real engine, 416 observed tile arrivals, eight landmarks, nine passing beats, no runtime errors | `runtime-final-walk/SUMMARY.md`, `manifest.json`, `steps.jsonl` |
-| C4: regressions | Focused integrated run: 72 tests passed in nine files; app typecheck and app build exited 0 | Local `merged-scope-green.log`, `merged-scope-build.log` |
-| C4: adjacent checks | House/protection suite: 96 passed, six pre-existing failures matching unchanged controls; failures were not deleted or weakened | Local `final-house-regressions.log`, `house-atomic-child-baseline-regressions.log` |
+| C3: official shipped-player boot | `NODE_OPTIONS="--import=./output/evidence/live-world-qa/runtime-relay.mjs" npm run qa:runtime -- --scenario live-world-start --project output/evidence/live-world-qa/integrated-project.json --out output/evidence/live-world-qa/runtime-current-final-official` passed both beats with zero errors | `runtime-current-final-official/SUMMARY.md`, `runtime-current-final-official/manifest.json` |
+| C3: eight actual arrivals | On the latest runtime, directional input through the real engine produced 416 observed tile arrivals, eight landmarks, nine passing beats and no runtime errors | `runtime-current-final/SUMMARY.md`, `manifest.json`, `steps.jsonl` |
+| C4: regressions | Final integrated run: 112 tests passed in 16 files with no unhandled worker error; app typecheck and app build exited 0 | Local `latest-main-final-checks.log` |
+| C4: adjacent checks | Earlier house/protection control: 96 passed, six pre-existing failures matching unchanged controls; failures were not deleted or weakened | Local `final-house-regressions.log`, `house-atomic-child-baseline-regressions.log` |
 
 Read each runtime `SUMMARY.md` before opening its selected images. The boot
 scenario is not movement proof; the complete input trace is separate.
@@ -76,12 +76,22 @@ Tests include `workPlanIdentity`, `assistantFinalAudit`,
 - A renderer crash stalled an attempt after successful remote writes. Remote
   progress was preserved; the crashed browser was closed. The QA scripts now
   observe renderer crashes and avoid constrained shared-memory allocation.
+- On the latest tree the default Chromium host profile timed out before title.
+  With byte-identical static GET relay, both boot beats passed but Chromium reported
+  blocked local-network Vite WebSockets. The host-only profile now permits local
+  network access; the official CLI then passed without filtering those errors.
+  No model, DB or game-data response is replaced by the relay.
 - Immediate tap and held-direction driver failures were retained. The final
   driver queues a single direction tap at an animation-frame boundary and awaits
   exact scene/session/rendered arrival. It never sets player coordinates.
-- The final broad suite still has six known failures: two construction-outcome
+- The earlier broad control had six known failures: two construction-outcome
   equality expectations, invalid-wing normalization, yard-shortfall code
   expectation, sign-yard capacity, and a forest fixture missing `image.type`.
+- Two integration runs had passing assertions but a Vitest worker RPC timeout;
+  neither was counted as green. The heavy multi-map fixture now uses its existing
+  `yieldToUi` hook with Node `setImmediate`, allowing RPC acknowledgements between
+  synchronous tools. The planner-isolation fixture prepares real original context
+  before priming old evidence. All original assertions and timeouts remain.
 
 ## Reproduction
 
@@ -97,6 +107,7 @@ QA_PROJECT_ID=rpg-zzu-qa-world-UNIQUE QA_ATTEMPT=reproduction \
 # Read the retained final project using the shipped API:
 node node_modules/vite-node/vite-node.mjs --script \
   output/evidence/live-world-qa/read-remote.mts
+NODE_OPTIONS="--import=./output/evidence/live-world-qa/runtime-relay.mjs" \
 npm run qa:runtime -- --scenario live-world-start \
   --project output/evidence/live-world-qa/latest-remote-project.json
 QA_PROJECT_FILE=output/evidence/live-world-qa/latest-remote-project.json \
