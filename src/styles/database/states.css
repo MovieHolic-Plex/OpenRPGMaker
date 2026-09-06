@@ -43,7 +43,7 @@
 
 .database-modal-body .oprn-detail-states > .db-field:first-child > span {
   color: var(--text-1);
-  font: 700 14px/20px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 700 14px/20px var(--font-ui);
 }
 
 .database-modal-body .oprn-detail-states > .db-field:first-child > input {
@@ -91,7 +91,7 @@
    그 클래스의 grid-area: summary 때문에 온톨로지 요약 칸으로 튀어간다. */
 .database-modal-body .db-state-runtime-hint {
   color: var(--text-secondary);
-  font: 400 12px/16px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  font: 400 12px/16px var(--font-ui);
   grid-column: 1 / -1;
 }
 
@@ -118,7 +118,7 @@
 
 .database-modal-body .db-state-control > span {
   color: var(--oprn-text);
-  font: 400 12px/16px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  font: 400 12px/16px var(--font-ui);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -131,7 +131,7 @@
   border-style: solid;
   border-width: 1px;
   color: var(--oprn-text);
-  font: 400 12px/16px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  font: 400 12px/16px var(--font-ui);
   min-height: 20px;
   min-width: 0;
   padding: 1px 4px;
@@ -177,7 +177,7 @@
 .database-modal-body .db-state-check span,
 .database-modal-body .db-state-reference-panel h4,
 .database-modal-body .db-state-summary {
-  font: 400 12px/16px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  font: 400 12px/16px var(--font-ui);
 }
 
 .database-modal-body .db-state-reference-panel h4 {
@@ -195,7 +195,7 @@
 }
 
 .database-modal-body .db-state-rate-row b {
-  font: 700 12px/16px "Cascadia Mono", Consolas, monospace;
+  font: 700 12px/16px var(--font-mono);
   text-align: center;
 }
 
@@ -216,7 +216,7 @@
   border-style: solid;
   border-width: 1px;
   display: grid;
-  font: 700 12px/1 Tahoma, "Malgun Gothic", sans-serif;
+  font: 700 12px/1 var(--font-ui);
   height: 74px;
   justify-items: center;
 }

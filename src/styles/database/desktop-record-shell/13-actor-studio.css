@@ -45,7 +45,7 @@
   .db-actor-studio-heading h3,
   .database-modal-body .db-actor-studio-workspace .db-studio-table-pane h3 {
     color: var(--text-1);
-    font: 700 15px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 700 15px/1.2 var(--font-ui);
     margin: 0;
   }
 
@@ -116,7 +116,7 @@
     border-radius: 0;
     color: var(--text-1);
     cursor: pointer;
-    font: 500 13px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 500 13px/1.2 var(--font-ui);
     min-height: 58px;
     padding: 7px 18px;
     text-align: left;
@@ -139,7 +139,7 @@
     min-width: 0;
   }
 
-  .db-actor-identity-cell .db-list-thumb,
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-actor-identity-cell .db-list-thumb,
   .db-actor-identity-cell .db-list-thumb-crop,
   .db-actor-avatar-fallback {
     border: 0;
@@ -149,12 +149,6 @@
     flex: 0 0 36px;
     height: 36px;
     width: 36px;
-  }
-
-  /* 크기는 studio-theme.css 의 36px 예외가 소유한다 — 여기는 radius 만 덮는다
-     (studio-theme 4px 를 이기는 9px, PR #540 후속). box-shadow 는 위 short rule 소유. */
-  .database-modal-backdrop .database-modal-window .db-actor-studio-workspace .db-actor-identity-cell .db-list-thumb {
-    border-radius: 9px;
   }
 
   .db-actor-avatar-fallback {
@@ -268,10 +262,6 @@
     padding: 12px 18px;
   }
 
-  .database-modal-body .db-actor-studio-workspace .db-toolbar .btn {
-    min-width: 76px;
-  }
-
   .database-modal-body .db-actor-studio-workspace .db-studio-inspector-pane {
     border-left: 0;
     border-radius: 0 8px 8px 0;
@@ -315,36 +305,7 @@
   }
 
   .database-modal-body .db-actor-studio-workspace .actor-section-tabs {
-    background: var(--bg-raised);
-    border-bottom: 1px solid var(--border-subtle);
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
     padding: 0 12px;
-  }
-
-  .database-modal-body .db-actor-studio-workspace .actor-section-tab {
-    background: transparent;
-    border: 0;
-    border-bottom: 2px solid transparent;
-    color: var(--text-2);
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: 800;
-    min-height: 46px;
-    padding: 0 8px;
-  }
-
-  .database-modal-body .db-actor-studio-workspace .actor-section-tab:hover,
-  .database-modal-body .db-actor-studio-workspace .actor-section-tab:focus-visible {
-    background: var(--bg-inset);
-    color: var(--text-1);
-    outline: 0;
-  }
-
-  .database-modal-body .db-actor-studio-workspace .actor-section-tab.active {
-    background: transparent;
-    border-bottom-color: var(--accent);
-    color: var(--accent);
   }
 
   .database-modal-body .db-actor-studio-workspace .actor-section-body {

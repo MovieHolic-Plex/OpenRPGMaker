@@ -135,6 +135,9 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
     setSelectedRecordId(catalogCollection, catalogRecordId);
   }
   if (initialTab) setDatabaseActiveTab(initialTab);
+  const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  // Topbar rerenders can replace the opener while the modal remains mounted.
+  const openerTestId = opener?.dataset.testid;
   const dirtySession = createDatabaseModalDirtySession();
   // 사이드 도킹(M8): 모달⇄우측 도크 토글 상태. localStorage 에 저장돼 다음 오픈 시 복원된다.
   let dockMode = false;
@@ -314,6 +317,10 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
     document.removeEventListener("keydown", handleHistoryKeyDown);
     stopModalDrag();
     activeModal = null;
+    const returnTarget = opener?.isConnected ? opener : openerTestId
+      ? Array.from(document.querySelectorAll<HTMLElement>("[data-testid]")).find(node => node.dataset.testid === openerTestId)
+      : undefined;
+    if (returnTarget?.isConnected) returnTarget.focus();
   };
   const hideDirtyPrompt = (): void => dirtyPrompt.replaceChildren();
   const saveAndMarkClean = async (): Promise<boolean> => {

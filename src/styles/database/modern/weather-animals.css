@@ -42,7 +42,7 @@
   align-items: center;
   color: var(--db-studio-text-3);
   display: flex;
-  font: 500 11px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 500 11px/1 var(--font-ui);
   justify-content: center;
   width: 100%;
 }
@@ -76,7 +76,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-wa-legend-label {
   color: var(--db-studio-text-2);
-  font: 500 11.5px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 500 11.5px/1.4 var(--font-ui);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -84,7 +84,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-wa-legend-value {
   color: var(--db-studio-text-1);
-  font: 700 11.5px/1.4 "Cascadia Mono", Consolas, monospace;
+  font: 700 11.5px/1.4 var(--font-mono);
 }
 
 /* ── 규칙 표 ────────────────────────────────────────────────────────────── */
@@ -108,7 +108,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-wa-thead .db-wa-col {
   color: var(--db-studio-text-3);
-  font: 700 10px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 700 10px/1.4 var(--font-ui);
   letter-spacing: 0.03em;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -156,7 +156,7 @@
   border-radius: 6px;
   color: var(--db-studio-text-3);
   cursor: pointer;
-  font: 500 11px/1.35 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 500 11px/1.35 var(--font-ui);
   padding: 5px 8px;
 }
 
@@ -175,7 +175,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-wa-foot-label {
   color: var(--db-studio-text-3);
-  font: 600 11px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 600 11px/1.4 var(--font-ui);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-wa-table-foot > .db-ws-btn {
@@ -207,12 +207,12 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-wa-mini-name {
   color: var(--db-studio-text-1);
-  font: 600 12px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 600 12px/1.4 var(--font-ui);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-wa-mini-count {
   color: var(--db-studio-text-3);
-  font: 500 11px/1.4 "Cascadia Mono", Consolas, monospace;
+  font: 500 11px/1.4 var(--font-mono);
   text-align: right;
 }
 
@@ -229,7 +229,7 @@
   box-sizing: border-box;
   color: var(--db-studio-text-2);
   display: inline-block;
-  font: 500 11.5px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 500 11.5px/1.5 var(--font-ui);
   justify-self: start;
   max-width: 100%;
   overflow: hidden;
@@ -275,7 +275,7 @@
   color: var(--db-studio-text-2);
   cursor: pointer;
   display: inline-flex;
-  font: 600 11px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 600 11px/1 var(--font-ui);
   gap: 5px;
   padding: 5px 9px;
 }
@@ -292,7 +292,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-wa-chip-tab-count {
   color: var(--db-studio-text-3);
-  font: 700 10px/1 "Cascadia Mono", Consolas, monospace;
+  font: 700 10px/1 var(--font-mono);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-wa-chip-tab.active .db-wa-chip-tab-count {
@@ -370,7 +370,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-wa-map-caption {
   color: var(--db-studio-text-2);
-  font: 500 11.5px/1.5 "Cascadia Mono", Consolas, monospace;
+  font: 500 11.5px/1.5 var(--font-mono);
   min-width: 0;
 }
 
@@ -389,7 +389,7 @@
   color: var(--db-studio-text-2);
   cursor: pointer;
   display: inline-flex;
-  font: 500 11.5px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 500 11.5px/1 var(--font-ui);
   gap: 5px;
   padding: 4px 9px 4px 6px;
 }
@@ -417,7 +417,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-wa-preview-label {
   color: var(--db-studio-text-3);
-  font: 600 11px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 600 11px/1.4 var(--font-ui);
   margin: 0;
 }
 
@@ -453,7 +453,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-wa-preview-rule-name {
   color: var(--db-studio-text-1);
-  font: 600 11.5px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 600 11.5px/1.4 var(--font-ui);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -461,13 +461,13 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-wa-preview-rule-weight {
   color: var(--db-studio-text-3);
-  font: 500 11px/1.4 "Cascadia Mono", Consolas, monospace;
+  font: 500 11px/1.4 var(--font-mono);
   white-space: nowrap;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-wa-preview-rule-percent {
   color: var(--db-studio-text-1);
-  font: 700 11.5px/1.4 "Cascadia Mono", Consolas, monospace;
+  font: 700 11.5px/1.4 var(--font-mono);
   text-align: right;
 }
 
@@ -484,13 +484,13 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-wa-fact-label {
   color: var(--db-studio-text-3);
-  font: 700 11px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 700 11px/1.5 var(--font-ui);
   margin: 0;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-wa-fact-text {
   color: var(--db-studio-text-2);
-  font: 400 11.5px/1.55 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 400 11.5px/1.55 var(--font-ui);
   margin: 0;
   min-width: 0;
 }

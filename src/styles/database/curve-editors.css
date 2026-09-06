@@ -51,7 +51,7 @@
 }
 
 .database-modal-backdrop .db-class-dialog header strong {
-  font: 600 14px/1.2 "Malgun Gothic", system-ui, sans-serif;
+  font: 600 14px/1.2 var(--font-ui);
   color: var(--db-studio-text-1);
 }
 
@@ -62,7 +62,7 @@
   border: 1px solid var(--db-studio-border-default);
   border-radius: 6px;
   color: var(--db-studio-text-2);
-  font: 600 12px/1 "Malgun Gothic", system-ui, sans-serif;
+  font: 600 12px/1 var(--font-ui);
   min-height: 32px;
   min-width: 72px;
   padding: 6px 12px;
@@ -97,7 +97,7 @@
   border-bottom: 2px solid transparent;
   color: var(--db-studio-text-2);
   flex: 0 0 auto;
-  font: 600 13px/32px "Malgun Gothic", system-ui, sans-serif;
+  font: 600 13px/32px var(--font-ui);
   min-height: 36px;
   padding: 0 10px;
   cursor: pointer;
@@ -167,7 +167,7 @@
 .database-modal-backdrop .db-class-dialog-number {
   color: var(--db-studio-text-2);
   display: grid;
-  font: 600 12px/1.2 "Malgun Gothic", system-ui, sans-serif;
+  font: 600 12px/1.2 var(--font-ui);
   gap: 5px;
 }
 
@@ -176,7 +176,7 @@
   border: 1px solid var(--db-studio-border-default);
   border-radius: 6px;
   color: var(--db-studio-text-1);
-  font: 400 13px/1.2 "Malgun Gothic", system-ui, sans-serif;
+  font: 400 13px/1.2 var(--font-ui);
   min-height: 32px;
   padding: 4px 8px;
   width: 100%;
@@ -202,7 +202,7 @@
 
 .database-modal-backdrop .db-class-dialog-side .db-advanced-panel legend {
   color: var(--db-studio-text-3);
-  font: 600 11px/1.2 "Malgun Gothic", system-ui, sans-serif;
+  font: 600 11px/1.2 var(--font-ui);
   letter-spacing: 0.04em;
   text-transform: uppercase;
   margin: 0 0 4px;
@@ -233,7 +233,7 @@
   border: 1px solid var(--db-studio-border-subtle);
   border-radius: 8px;
   display: grid;
-  font: 500 11px/18px ui-monospace, monospace;
+  font: 500 11px/18px var(--font-mono);
   font-variant-numeric: tabular-nums;
   gap: 0 10px;
   grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));

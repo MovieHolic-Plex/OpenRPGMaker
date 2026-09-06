@@ -121,8 +121,7 @@
   padding: 1px 6px;
   font-size: 11px;
 }
-.db-detail,
-.db-detail-form {
+.db-detail {
   margin: var(--space-1) 0 var(--space-2);
   padding: var(--space-2);
   background: var(--bg);

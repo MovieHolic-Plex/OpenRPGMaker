@@ -37,7 +37,7 @@
   }
 
   .db-class-dialog header strong {
-    font: 700 16px/22px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 700 16px/22px var(--font-ui);
   }
 
   .db-class-dialog header button,
@@ -47,7 +47,7 @@
     border: 1px solid var(--border-subtle);
     border-radius: 4px;
     color: var(--text-1);
-    font: 600 13px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 600 13px/1 var(--font-ui);
     min-height: 32px;
     min-width: 76px;
     padding: 6px 12px;
@@ -74,7 +74,7 @@
     border-bottom: 3px solid transparent;
     color: var(--text-1);
     flex: 0 0 auto;
-    font: 600 13px/32px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 600 13px/32px var(--font-ui);
     min-height: 36px;
     padding: 0 10px;
   }
@@ -135,7 +135,7 @@
   .db-class-dialog-number {
     color: var(--text-1);
     display: grid;
-    font: 600 13px/18px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 600 13px/18px var(--font-ui);
     gap: 5px;
   }
 
@@ -144,7 +144,7 @@
     border: 1px solid var(--border-subtle);
     border-radius: 4px;
     color: var(--text-1);
-    font: 400 14px/1.25 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 400 14px/1.25 var(--font-ui);
     min-height: 32px;
     padding: 4px 8px;
     width: 100%;
@@ -160,7 +160,7 @@
 
   .db-class-dialog-side .db-advanced-panel legend {
     color: var(--text-1);
-    font: 700 14px/20px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    font: 700 14px/20px var(--font-ui);
     margin: 0 0 2px;
   }
 

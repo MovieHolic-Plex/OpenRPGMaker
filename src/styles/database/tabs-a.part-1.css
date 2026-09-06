@@ -36,7 +36,7 @@
   border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   color: var(--text-primary);
   cursor: pointer;
-  font: 700 11px/1 system-ui, -apple-system, "Segoe UI", sans-serif;
+  font: 700 11px/1 var(--font-ui);
   min-height: 24px;
   min-width: 34px;
   padding: 4px 6px;
@@ -91,7 +91,7 @@
   background: rgba(248, 245, 236, 0.82);
   color: var(--text-1);
   display: none;
-  font: 700 7px/1 ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font: 700 7px/1 var(--font-mono);
   inset: auto 0 0 0;
   overflow: hidden;
   padding: 1px 0;
@@ -370,7 +370,7 @@
   color: var(--text-1);
   cursor: pointer;
   display: inline-flex;
-  font: 700 14px/1 Arial, sans-serif;
+  font: 700 14px/1 var(--font-ui);
   height: 18px;
   justify-content: center;
   min-height: 18px;

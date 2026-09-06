@@ -16,7 +16,7 @@
 
   .database-modal-window:has(.oprn-record-enemies) .database-footer-status {
     color: var(--text-1);
-    font: 400 14px/20px "Malgun Gothic", "Segoe UI", sans-serif;
+    font: 400 14px/20px var(--font-ui);
   }
 
   .database-modal-window:has(.oprn-record-enemies) .database-footer-button {
@@ -24,7 +24,7 @@
     border: 1px solid var(--border-subtle);
     border-radius: 4px;
     color: var(--text-1);
-    font: 700 14px/40px "Malgun Gothic", "Segoe UI", sans-serif;
+    font: 700 14px/40px var(--font-ui);
     height: 44px;
   }
 

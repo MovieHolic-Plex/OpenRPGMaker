@@ -19,11 +19,15 @@
   border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.16));
   box-sizing: border-box;
   display: inline-grid;
-  height: 32px;
   image-rendering: pixelated;
   overflow: hidden;
   place-items: center;
   position: relative;
+}
+
+/* Non-DB consumers retain 32px; DB row and actor dimensions have scoped owners. */
+.db-list-thumb:not(.database-modal-window .db-list-thumb) {
+  height: 32px;
   width: 32px;
 }
 

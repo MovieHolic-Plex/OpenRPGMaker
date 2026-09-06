@@ -308,7 +308,7 @@ function recordListPane(section: RecordSection, records: readonly LifeRecord[], 
         testid: "db-life-list-empty",
       }),
     toolbar: listToolbar([
-      { label: "+ 추가", kind: "primary", testid: "db-life-add", onClick: () => addRecord(section, rerender) },
+      { label: "+ 추가", testid: "db-life-add", onClick: () => addRecord(section, rerender) },
       { label: "복제", testid: "db-life-duplicate", disabled: records.length === 0, onClick: () => duplicateRecord(section, rerender) },
       { label: "삭제", kind: "danger", testid: "db-life-delete", disabled: records.length === 0, onClick: () => deleteRecord(section, rerender) },
     ]),

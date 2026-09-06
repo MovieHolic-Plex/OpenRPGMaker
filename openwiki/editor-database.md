@@ -12,6 +12,33 @@ Rendered regressions: `test/e2e/database-css-ownership.spec.ts`, run with
 A frozen dev server caches transforms: after an edit restart only the owned
 worktree server before measuring, and bind evidence to its cwd/revision.
 
+Shared section navigation now belongs to `workspace-modern.css`; equivalent
+actor/enemy controls reuse its 34px grammar. CRUD chrome and 12.5px captions
+belong to `studio-v2.css`, with document/System variants kept scoped. Bare Life
+numeric inputs retain native spinners and their change-only commit semantics.
+Modal-body overflow belongs to `sidebar.css`; cards, legends and list ordinals
+to `studio-v2.css`; ordinary 24px DB rows to `record-list-modern.css`; 36px actor
+portraits to `desktop-record-shell/13-actor-studio.css`. `record-thumbs.css` keeps
+non-DB 32px defaults. Grid-card actions retain intrinsic width through the
+workspace's direct-child `justify-self: start` constraint.
+The shared danger token is #B91C1C after the earlier color failed contrast on
+its actual hover tint. Database close restores the connected opener, or its
+logical replacement after a topbar rerender, without stealing focus on tab reuse.
+
+`npm run audit:db-css-ownership` records the import graph, scoped role owners,
+retained-important reasons and removed-declaration mappings. Owner proof requires
+the exact normalized selector, file, at-rule context and property (including
+valid shorthand coverage); descendant/prefix matches are not replacements.
+Narrowed rules split retained and excluded consumers rather than assigning an
+unrelated intrinsic default. Required DB surface execution consumes per-file
+Vitest results and rejects missing, zero-assertion, skipped or failed coverage.
+The audit defaults to the merge-base with `origin/main`, so unrelated upstream
+style changes are not attributed to this branch. An explicit positional revision
+replays a historical comparison. A valid baseline missing a newly added sheet
+contributes zero declarations; invalid revisions and unreadable existing blobs
+remain errors. Historical comparisons spanning unrelated removals fail closed
+until those removals have real ownership evidence.
+
 ## 전투 몬스터 표시 크기 (2026-09-06)
 
 - 전투 몬스터 → 외형 → 그래픽의 `전투 표시 크기 (%)`는 기존 `sliderStepperField`를 사용한다. 숫자/슬라이더 testid는 `db-field-enemy-battle-scale-stepper` / `-slider`; 10~300%, 1% 단위, 기본 100%다.

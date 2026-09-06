@@ -30,7 +30,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-skill-studio .db-skill-composer-label {
   color: var(--db-studio-text-2, var(--db-studio-text-2));
-  font: 700 10.5px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  font: 700 10.5px/1.2 var(--font-ui);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
