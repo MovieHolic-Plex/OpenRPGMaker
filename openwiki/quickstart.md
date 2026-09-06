@@ -78,6 +78,18 @@ already provisioned Supabase access plus an **existing application project id**.
 - Linux verification does **not** establish Finder/macOS behavior. The narrow
   `.github/workflows/mac-onboarding.yml` job is dormant while Actions are disabled.
 
+## 1b. 전체 BGM은 Release 팩으로 설치
+
+그림·효과음·기본 BGM 3곡은 Git에 있지만, 전체 281곡(약 1.304 GB)은
+비공개 [bgm-v1 Release](https://github.com/MovieHolic-Plex/rpg-zzu/releases/tag/bgm-v1)에서 따로 받는다.
+`npm ci` 뒤 `gh auth login` + `npm run bgm:install` + `npm run bgm:verify`.
+gh가 없으면 Release의 `rpg-zzu-bgm-v1.tar`를 받아
+`npm run bgm:install -- --archive "/받은/파일/경로"`를 실행한다. 약 5 GB 여유 공간 권장.
+기존 설치가 정상이면 재실행은 다운로드하지 않는다. 자동 실행/설정 마법사에는 다운로드를 붙이지 않았다.
+로컬 재생은 `VITE_BGM_CDN_BASE`를 비워야 한다. 워크트리에 복사된 env의 CDN 값이
+로컬 설치보다 우선할 수 있다. 설치 후 개발 서버 재시작, 프로덕션은 설치 후 재빌드한다.
+SHA-256 검증·손상 복구·잠금 복구·관리자 제작 명령은 `openwiki/bgm-catalog.md`.
+
 ## 2. 검증 — 무엇이 진짜 게이트인가
 
 | 명령 | 무엇을 재나 | 기준선 (실측) | 언제 쓰나 |
