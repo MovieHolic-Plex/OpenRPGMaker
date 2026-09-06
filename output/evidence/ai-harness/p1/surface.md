@@ -22,15 +22,34 @@ The remote harness is reused unchanged. No duplicate remote implementation,
 product mutation, new agent, merge, push, user config edit, or other phase was
 introduced. Existing OpenWiki updates belong to the following docs node.
 
-The exact editor run captures production base `476d7a7c` and harness SHA-256
+The corrected-port exact editor run captures HEAD `23bc6838` and harness SHA-256
 `f16661fec79f339d0d2324710e3791475913de3e0c354cdc86d0f0526abcb663`.
 Those harness bytes are committed in `8a59f1e7`; committing did not change them.
 The unchanged session and store hashes are in `editor/actions.json.sourceHashes`.
 
+## Authorized port correction
+
+The lead reassigned both development and C002 exact acceptance to **41583**.
+The unchanged harness was rerun once with that literal `QA_PORT`, the prescribed
+`editor` evidence directory, and `--scenario proof-failure`; exit 0. All payloads,
+assertions, exclusive startup probe, isolation and cleanup remain unchanged.
+No process on 19847 was inspected, waited for, reused, or stopped for this rerun.
+The source/test gate inputs and shared `.omo/gates*` reports were not modified;
+no supervisor gate was run concurrently. Earlier test/build results below remain
+historical validation of the identical source, not claims of a rerun.
+
+Original refused-port evidence remains in `editor-port-collision.*`. The prior
+19847 successful capture was archived byte-for-byte as `editor-port19847-final/`
+and matching `.log/.receipt` before replacing the canonical `editor` artifacts.
+Its validation receipt is preserved as `surface-port19847-validation.json`.
+Current development and acceptance invocations both use 41583, never those
+historical ports. `surface-validation.json` and the artifact manifest now describe
+the corrected-port acceptance run.
+
 ## Exact commands and exit codes
 
 ```sh
-QA_PORT=19847 EVIDENCE_DIR=output/evidence/ai-harness/p1/editor xvfb-run -a node scripts/qa/ai-harness-contracts.mjs --scenario proof-failure
+QA_PORT=41583 EVIDENCE_DIR=output/evidence/ai-harness/p1/editor xvfb-run -a node scripts/qa/ai-harness-contracts.mjs --scenario proof-failure
 node scripts/qa/ai-harness-remote-proof.mjs --create-isolated-project --scenario all --report output/evidence/ai-harness/p1/remote.json
 npm test -- test/aiRunEndProof.test.ts test/storePersistenceProof.test.ts test/storePersistence.test.ts test/supabaseProjectSync.test.ts test/aiComposerModeSession.test.ts test/aiMilestoneTurnAccounting.test.ts test/aiAssistantTurnCleanup.test.ts
 npm run typecheck:app
@@ -79,17 +98,17 @@ is not used as a substitute for remote proof. All browser project requests are
 ownership-guarded; unrelated activity/conversation writes are blocked and
 recorded, not fulfilled as successful persistence.
 
-Exact editor project: `qa-ai-surface-9e93524e-f047-4733-850d-4edcd348f0e9`.
-Accepted receipt: `c662629b-2c3b-4c85-ab93-33b2d056efd9`, generation 2.
+Exact editor project: `qa-ai-surface-573bdbb5-c9ac-4ebe-a319-d9a588659949`.
+Accepted receipt: `27e9f6dc-5193-4351-a8ba-984ee3e36166`, generation 2.
 
 | Observation | Normalized identity / machine outcome |
 | --- | --- |
-| Accepted save and independent normalized read | `76b3ce9efe7c214955da4d9b682ba2611b03b2849b936723cffb0f68d7966bf5` |
-| Real remote PATCH, intentionally unchanged wire hash | observed `d36eed2d2d20e133e5dd3522c9388c14f2a79d0c64187e933f6ba03f35cefa61` |
+| Accepted save and independent normalized read | `7bcdf606d3624451986bfb726f0f707646a9a3ca81906f7b71e301521d6c8872` |
+| Real remote PATCH, intentionally unchanged wire hash | observed `1a1bf47838f313e1f286408f80f80c23686b953e77bede29a9d5e83e1fecc840` |
 | Actual completion read after PATCH | `failed`, `verified:false`, `reason:mismatch-content`, saved-audit sentinel count 0 |
 | Restored remote + real composer continuation | same exact receipt, `succeeded`, `verified:true`; observed identity equals accepted |
 | New local edit during a gated real read | `failed/stale`, `verified:false`; embedded historical proof `verified/isCurrent:false`; live object/bytes preserved, dirty true |
-| Final composer continuation saves newer edit | `succeeded`, `verified:true`, dirty false; observed `167d38b3921b39cda3a0dd0ca9205f8250af2086090f80e0e049ee9e7f3e20b7` equals latest accepted receipt |
+| Final composer continuation saves newer edit | `succeeded`, `verified:true`, dirty false; observed `f3af2195373e244e546693b1809aedeec96c309deb741bc0a753f667642cc429` equals latest accepted receipt |
 
 The same-revision retry performs no additional project write and no tool replay.
 Across all four composer turns there is one session, one title write, and one
@@ -144,7 +163,8 @@ fixture. `editor-boot-config-failure.*` exposed this new script's accidental
 baseline's existing 60-second bound, not a retry of broken product startup.
 `editor-development.*` then passed on 19851. The other owner subsequently freed
 19847 without any kill/reuse by this node, and the exact required command passed
-once on the final script. No port blocker remains.
+once on the final script. These are historical runs, not the currently assigned
+acceptance port. No port blocker remains.
 
 ## Combined-tree remote proof and historical evidence
 
@@ -172,19 +192,20 @@ matches the current required report. No old proof is relabeled as this run.
 
 ## Cleanup and bounded DoneClaim
 
-All four projects actually created by this node were deleted and root/maps/
+All five projects actually created by this node were deleted and root/maps/
 tilesets/commits/changes absence verified by their owning scripts:
 
 - Mutation RED: `qa-ai-surface-58d4f90e-6f7c-4f04-b1a6-4b6fa81b0347`.
 - Development GREEN: `qa-ai-surface-7045c20b-4d21-409a-bd4b-62ae4644b40e`.
-- Exact editor GREEN: `qa-ai-surface-9e93524e-f047-4733-850d-4edcd348f0e9`.
+- Historical 19847 editor GREEN: `qa-ai-surface-9e93524e-f047-4733-850d-4edcd348f0e9`.
+- Corrected 41583 editor GREEN: `qa-ai-surface-573bdbb5-c9ac-4ebe-a319-d9a588659949`.
 - Exact remote GREEN: `qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9`.
 
 Failed preflight/boot runs created no remote row. Browser contexts, owned Vite
 process groups, observers, routes, private caches and timers are closed. The
 exact editor report has zero active routes; remote has zero transports/proofs
 and no listener. Exclusive port rebinding succeeds; a subsequent `ss` check
-shows neither 19847 nor 19851 listening. No other process was stopped.
+shows 41583 not listening after the corrected run. No other process was stopped.
 
 **DoneClaim:** scoped P1 harness delivery has faithful browser mutation RED,
 exact-command browser and live-remote GREEN, saved/read normalized identities,

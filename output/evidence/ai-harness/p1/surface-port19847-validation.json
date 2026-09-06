@@ -1,8 +1,8 @@
 {
   "pass": true,
-  "checkedAt": "2026-09-06T10:50:11.999Z",
+  "checkedAt": "2026-09-06T10:47:01.937Z",
   "harnessCommit": "8a59f1e7651944f388dfc99e3c609bac9b9ba558",
-  "editorProjectId": "qa-ai-surface-573bdbb5-c9ac-4ebe-a319-d9a588659949",
+  "editorProjectId": "qa-ai-surface-9e93524e-f047-4733-850d-4edcd348f0e9",
   "remoteProjectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
   "exactEditorExit": 0,
   "exactRemoteExit": 0,
@@ -16,12 +16,12 @@
     "cacheRemoved": true,
     "portReleased": true,
     "remote": {
-      "projectId": "qa-ai-surface-573bdbb5-c9ac-4ebe-a319-d9a588659949",
+      "projectId": "qa-ai-surface-9e93524e-f047-4733-850d-4edcd348f0e9",
       "kind": "deleted-and-absence-verified",
       "commitIds": [
-        "632fc80f-0aae-4d4c-ba6a-1d4dc56bb230",
-        "bd8b6559-b901-4719-808a-c6f90a6a925d",
-        "5e1f36af-fe0c-4ad1-92df-c3129b0e5376"
+        "80e6fd99-2a77-49a5-933c-e97f594cb4c6",
+        "70b28ff9-a885-4729-9ee4-d5444fa6695d",
+        "b37fd9c9-49cb-451c-b0c9-22b975520da9"
       ]
     },
     "remoteDeletedAndAbsent": true,
@@ -59,7 +59,7 @@
     "scripts/qa/ai-harness-contracts.mjs": "f16661fec79f339d0d2324710e3791475913de3e0c354cdc86d0f0526abcb663"
   },
   "upstreamArtifactsPreserved": 44,
-  "textArtifactsSecretScanned": 86,
+  "textArtifactsSecretScanned": 81,
   "configuredSecretValuesFound": 0,
   "relatedTests": {
     "exit": 1,
@@ -78,13 +78,5 @@
     "exit": 2,
     "onlyRawLogWhitespace": true,
     "artifact": "surface-diff-check.log"
-  },
-  "acceptancePort": 41583,
-  "editorSourceSha": "23bc68380da0061ec1d293d205a05ac0b6453881",
-  "portCorrection": {
-    "authorized": true,
-    "sourceAndTestsUnchanged": true,
-    "supervisorGatesRun": false,
-    "priorValidation": "surface-port19847-validation.json"
   }
 }
