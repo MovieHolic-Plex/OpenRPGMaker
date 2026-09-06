@@ -38,7 +38,7 @@ export const VERIFY_NPC_REWARD_TOOL: OpenAiToolSchema = {
   type: "function",
   function: {
     name: "verify_npc_reward",
-    description: "Replay a legitimate prerequisite route from authored game start, then host-owned NPC claim/repeat against the captured requirementIndex. mapId asserts the current map; walk executes intermediate touch transfers. Only actions, never state or expectations. Author prerequisite maps/chests first, separate transfer links next, reward NPC and verification last using set_work_plan. A failed replay remains pending; do not move reward timing or skip gates.",
+    description: "Replay a legitimate prerequisite route from authored game start, then host-owned NPC claim/repeat against the captured requirementIndex. Arguments are exactly requirementIndex and prelude; omit reason (exception to the usual tool reason rule). mapId asserts the current map; walk executes intermediate touch transfers. Only actions, never state or expectations. Author prerequisite maps/chests first, separate transfer links next, reward NPC and verification last using set_work_plan. A failed replay remains pending; do not move reward timing or skip gates.",
     parameters: {
       type: "object", additionalProperties: false, required: ["requirementIndex", "prelude"],
       properties: {

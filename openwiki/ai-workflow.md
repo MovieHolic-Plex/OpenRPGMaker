@@ -143,6 +143,8 @@ npcRewards?: readonly {
   editor mutation or a historical scene receipt. The contract note lists zero-based indices
   and exact selectors. The complete raw input is validated before execution. Unknown fields,
   including generic `reason`, are rejected; this tool alone bypasses reason-schema decoration.
+  The global contextBuilder reason instruction and tool description explicitly name the same
+  exception; ordinary tool schemas still require reason. Tests assert wire fields, not prose.
 - Actions: `walk {mapId,to,adjacent?}`, one-tile `move {mapId,dir}`, `face {mapId,dir}`,
   `interact {mapId,eventId}` and `choose {mapId,index}`. Every mapId asserts the current map,
   never teleports. No state, start position, RNG, grants/counts, choices for protected phases,
@@ -168,6 +170,9 @@ npcRewards?: readonly {
   is unsupported throughout witness execution, including nested/common-event frames. Optional
   interpreter hooks make instruction/loop/stack exhaustion unverified instead of normal done.
   Ordinary scene/game execution has no such hooks and retains its behavior.
+  Proof start positions and transfer landings use the shared `isPassableLanding` authority,
+  not legacy directional-bit OR: a one-way tile without a compatible exit is unverified even
+  when an adjacent NPC can pay without walking. Ordinary movement/scene behavior is unchanged.
 - Native text, choices, supported state/reward/flow commands and cosmetic chest frame changes
   work. Native authored waits up to 60000ms each are simulated, not wall-clock sleeps. Battle,
   shop, number/key/name input, calendar hooks, movement-route/relocation, M2 fallback and other

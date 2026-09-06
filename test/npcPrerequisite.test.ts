@@ -4,6 +4,7 @@ import { runSceneTest } from "@/testing/sceneTestRunner";
 import { createInterpreter } from "@/player/interpreter";
 import { startSession } from "@/project/session";
 import { isVerifyNpcRewardInput } from "@/ai/npcRewardWitness";
+import { isPassable, isPassableLanding } from "@/project/collision";
 import { CHIEF, KEY, event, page, prerequisiteFixture } from "./npcPrerequisiteFixture";
 
 const run = (f: ReturnType<typeof prerequisiteFixture>) => verifyNpcRewardsPlayable(f.project, [f.requirement], new Map([[f.requirement, f.witness]]));
@@ -41,6 +42,48 @@ describe("NPC prerequisite protected runtime replay", () => {
     if (variant === "start-blocked") f.village.events.push(event("block", 2, 2, [page("block", [])]));
     expect(run(f).ok).toBe(false);
   });
+  it.each(["start", "transfer"] as const)("R3 rejects a stranded directional %s beside a paying NPC", origin => {
+    const f = prerequisiteFixture();
+    f.chief.pages = [f.chief.pages![1], f.chief.pages![2]];
+    f.chief.pages[0].conditions = [];
+    const tileset = f.project.tilesets[f.village.tilesetId];
+    const strandedTile = tileset.passability.length;
+    tileset.passability.push({ up: false, down: false, left: false, right: true });
+    const landing = 2 * f.village.width + 4;
+    const neighbor = landing + 1;
+    const neighborFloor = f.village.lowerTiles[neighbor];
+    f.village.lowerTiles[landing] = strandedTile;
+    f.village.lowerTiles[neighbor] = strandedTile; // No compatible left-entry bit.
+    f.village.upperTiles[landing] = -1;
+    f.village.upperTiles[neighbor] = -1;
+    f.prelude.splice(0);
+    if (origin === "start") {
+      f.project.startPos = { x: 4, y: 2 };
+    } else {
+      f.project.startMapId = f.cellar.id;
+      f.cellar.events.push(event("stranded_transfer", 3, 2, [page("transfer", [
+        { kind: "transfer", mapId: f.village.id, x: 4, y: 2 },
+      ], [], { kind: "playerTouch" }, false)]));
+      f.prelude.push({ kind: "move", mapId: f.cellar.id, dir: "right" });
+    }
+    expect(isPassable(f.project, f.village, 4, 2)).toBe(true);
+    expect(isPassableLanding(f.project, f.village, 4, 2)).toBe(false);
+    // Ordinary scene semantics remain unchanged; only proof enforces landing authority.
+    const ordinary = runSceneTest(f.project, { mapId: f.project.startMapId, start: f.project.startPos, steps: [
+      ...f.prelude.map(({ mapId: _mapId, ...action }) => action),
+      { kind: "face", dir: "right" }, { kind: "interact", eventId: CHIEF }, { kind: "expect", goldDelta: 20 },
+    ] });
+    expect(ordinary.ok, ordinary.failureReason).toBe(true);
+    const before = structuredClone(f.project);
+    const rejected = run(f);
+    expect(rejected.ok, JSON.stringify(rejected)).toBe(false);
+    expect(rejected.evidence?.[0]?.final.gold).toBe(37);
+    expect(f.project).toEqual(before);
+    f.village.lowerTiles[neighbor] = neighborFloor;
+    expect(isPassableLanding(f.project, f.village, 4, 2)).toBe(true);
+    expect(run(f).ok).toBe(true);
+  });
+
   it.each([0, 10])("R4 chest's prior +20 cannot satisfy chief +%s", amount => {
     const f = prerequisiteFixture();
     f.chest.pages![0].commands.unshift({ kind: "changeGold", op: "+=", amount: 20 });

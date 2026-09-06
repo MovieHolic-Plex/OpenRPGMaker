@@ -33,6 +33,8 @@ describe("request-bound verify_npc_reward session tool", () => {
     const schema = h.requests[0]?.tools?.find(t => t.function.name === "verify_npc_reward")?.function.parameters;
     expect(schema).toMatchObject({ additionalProperties: false, required: ["requirementIndex", "prelude"] });
     expect(Object.keys((schema as { properties: object }).properties).sort()).toEqual(["prelude", "requirementIndex"]);
+    const ordinarySchema = h.requests[0]?.tools?.find(t => t.function.name === "set_build_spec")?.function.parameters;
+    expect(ordinarySchema).toMatchObject({ properties: { reason: { type: "string" } }, required: expect.arrayContaining(["reason"]) });
     expect(h.session.getProposedProject()).toEqual(before);
   });
   it.each([

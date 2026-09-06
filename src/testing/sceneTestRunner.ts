@@ -1,5 +1,5 @@
 import { buildLifeRuntimeSnapshot, type LifeRuntimeSnapshot } from "@/player/runtimeDom";
-import { canMove, isPassable } from "@/project/collision";
+import { canMove, isPassable, isPassableLanding } from "@/project/collision";
 import { BattleEventInputRequiredError, createBattleRuntime, type BattleResult } from "@/battle/runtime";
 import { resolveEventPage } from "@/project/io";
 import { checkReachability } from "@/project/lint/reachability";
@@ -145,7 +145,7 @@ function proofPosition(state: RunnerState): string | null {
   const { currentMapId, x, y } = state.session;
   const map = currentMap(state);
   return !map || !Number.isSafeInteger(x) || !Number.isSafeInteger(y)
-    || !isPassable(state.project, map, x, y)
+    || !isPassableLanding(state.project, map, x, y)
     || findBlockingRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, x, y)
     ? `Invalid start/transfer landing: ${currentMapId} (${x},${y})` : null;
 }
