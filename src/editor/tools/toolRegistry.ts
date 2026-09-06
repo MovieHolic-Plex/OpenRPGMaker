@@ -20,6 +20,7 @@ import { INVESTIGATION_TOOLS } from "./investigationTools";
 import { NARRATIVE_HORROR_TEMPLATE_TOOLS } from "./narrativeHorrorTemplateTools";
 import { LIGHTING_TOOLS } from "./lightingTools";
 import { ACTION_TOOLS } from "./actionTools";
+import { PROJECT_WIKI_TOOLS } from "./projectWikiTools";
 import { MAP_TOOLS } from "./mapTools";
 import { MONSTER_SYSTEM_TOOLS } from "./monsterSystemTools";
 import { PALETTE_PRESET_TOOLS } from "./palettePresetTools";
@@ -151,6 +152,7 @@ function withDomain(tools: readonly ToolDefinition[], domain: ToolDomain): reado
 // 레지스트리 순서: canonical construction → 정공법(v3) → 활성 맵/이벤트… → 레거시(deprecated) 엔진 호환.
 export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   FIND_TOOLS,
+  ...PROJECT_WIKI_TOOLS,
   ...PROJECT_TOOLS,
   ...withDomain(VOCABULARY_TOOLS_V3, "tile"),
   AUTHOR_HOUSE_TOOL,

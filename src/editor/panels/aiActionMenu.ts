@@ -26,6 +26,7 @@ export interface AiActionMenuActions {
   readonly openInstructions: () => void;
   readonly compactContext: () => void;
   readonly openSettings: () => void;
+  readonly refreshWiki?: () => void;
 }
 
 export interface AiActionMenuItems {
@@ -37,7 +38,7 @@ export interface AiActionMenuItems {
 export type AiActionMenuMeta = Partial<Record<"compact" | "instructions" | "tools" | "settings", () => string | null>>;
 
 interface ItemSpec {
-  readonly key: keyof AiActionMenuMeta | "export" | "history";
+  readonly key: keyof AiActionMenuMeta | "export" | "history" | "wiki";
   readonly label: string;
   readonly icon: DeckIconName;
   readonly testid: string | null;
@@ -56,7 +57,7 @@ export function createAiActionMenuItems(options: {
   const itemClass = header ? "ai-more-menu-item" : "ai-command-menu-item";
   // 데크(2026-09-03): 아이콘 + 라벨 + 오른쪽 메타. 텍스트만 있던 6줄 목록이 640px 팝오버의 절반을 비웠다.
   const build = (spec: ItemSpec): HTMLButtonElement => {
-    const metaText = spec.key === "export" || spec.key === "history" ? null : options.meta?.[spec.key]?.() ?? null;
+    const metaText = spec.key === "export" || spec.key === "history" || spec.key === "wiki" ? null : options.meta?.[spec.key]?.() ?? null;
     return el("button", {
       class: itemClass,
       attrs: {
@@ -129,6 +130,14 @@ export function createAiActionMenuItems(options: {
   });
 
   return {
-    items: [compact, instructions, exportItem, history, tools, settings],
+    items: [
+      compact, instructions,
+      ...(options.actions.refreshWiki ? [build({
+        key: "wiki", icon: "book", label: "이전 대화로 설정집 정리",
+        testid: header ? "ai-more-wiki" : "ai-command-menu-wiki",
+        run: options.actions.refreshWiki,
+      })] : []),
+      exportItem, history, tools, settings,
+    ],
   };
 }

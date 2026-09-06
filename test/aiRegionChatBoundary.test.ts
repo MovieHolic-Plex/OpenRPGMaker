@@ -11,6 +11,7 @@ import { getPendingRegionApply, setPendingRegionApply } from "@/editor/regionTas
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { installFakeDom } from "./fakeDom";
+import { emptyWikiResponse, isWikiExtraction } from "./wikiTransportFixture";
 
 const activity = vi.hoisted(() => ({ record: vi.fn<typeof import("@/ai/activityLog").recordAiActivity>() }));
 vi.mock("@/ai/activityLog", async (original) => ({
@@ -137,8 +138,9 @@ describe("independent region presentation at chat boundaries", () => {
       return buildAiActivityLogRecord(entry);
     });
     vi.stubGlobal("fetch", vi.fn((_url: unknown, init?: RequestInit) => {
-      const body: { messages?: unknown; response_format?: unknown } = JSON.parse(String(init?.body ?? "{}"));
+      const body: { messages?: { content?: unknown }[]; response_format?: unknown } = JSON.parse(String(init?.body ?? "{}"));
       if (!Array.isArray(body.messages)) return Promise.resolve(new Response("{}"));
+      if (isWikiExtraction(body.messages)) return Promise.resolve(emptyWikiResponse());
       if (body.response_format) return Promise.resolve(new Response(JSON.stringify({
         choices: [{ message: { role: "assistant", content: '{"mode":"other","needsPlan":false}' }, finish_reason: "stop" }],
       })));

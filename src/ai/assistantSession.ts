@@ -1048,6 +1048,7 @@ export class AssistantSession {
       ...this.contextOptions,
       budgetChars: this.appliedBudgetChars,
       preferenceMemorySection: buildPreferenceMemorySection(this.contextOptions.projectScopeKey),
+      wikiQuery: this.currentTurnInstruction,
     };
   }
 
@@ -2401,6 +2402,10 @@ export class AssistantSession {
       // 커밋 게이트 차단 — 저장소는 그대로 두고 현재 자율 런만 중단한다.
       this.failMilestoneApply(completed, `적용 검증 실패: ${applied.issue ?? "무결성 오류"}`, [], onEvent);
       return;
+    }
+    if (applied.wikiWarning) {
+      this.pushAudit({ kind: "status", text: `게임 변경은 적용됐지만 위키 진행 기록은 갱신하지 못했습니다: ${applied.wikiWarning}` });
+      onEvent({ type: "status", text: `위키 진행 기록 갱신 실패: ${applied.wikiWarning}` });
     }
     this.pushAudit({
       kind: "status",

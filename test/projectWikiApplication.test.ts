@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
+import { applyRegionProjectWithHistory } from "@/editor/regionTask/runRegionTask";
 
 vi.mock("@/project/projectCommitLog", async (importOriginal) => ({
   ...await importOriginal<typeof import("@/project/projectCommitLog")>(),
@@ -20,6 +21,19 @@ afterEach(() => {
 });
 
 describe("wiki ownership at authoring application", () => {
+  it("preserves the live wiki when a region draft is applied", () => {
+    const project = createBlankProject();
+    const proposed = structuredClone(project);
+    project.world = { entities: [{
+      id: "w_new", type: "guideline", name: "New decision", summary: "Manual correction", origin: "user",
+    }], relations: [] };
+    store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
+    store.replace(project);
+
+    applyRegionProjectWithHistory(proposed, "Region test", proposed.startMapId);
+
+    expect(store.getCurrent().world).toEqual(project.world);
+  });
   it("preserves newer manual wiki edits when an older authoring proposal is applied", async () => {
     const baseline = createBlankProject();
     baseline.world = {

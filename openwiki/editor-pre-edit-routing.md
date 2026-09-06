@@ -4,6 +4,11 @@
 
 Read this before editing editor-facing behavior. Identifies which workflow owns a request and lists agent cautions.
 
+**2026-09-07 project wiki:** read [project-wiki.md](project-wiki.md) before changing
+world-document AI integration. The former blanket exclusion is superseded by
+awaited editor-owned wiki checkpoints, sourced relevant retrieval and combat
+authoring. Generic world CRUD and blanket lint/digests remain excluded.
+
 ## Pre-edit routing
 
 ### Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)

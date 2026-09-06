@@ -35,7 +35,7 @@ export function projectWikiContext(project: Project, options: { readonly query: 
       const text = `${entity.name} ${entity.summary} ${entity.tags?.join(" ") ?? ""} ${entity.body?.slice(0, 4000) ?? ""}`.toLowerCase();
       const relevance = terms.reduce((sum, term) => sum + Number(text.includes(term)), 0);
       const declaration = entity.wiki?.kind === "declaration";
-      const score = relevance * 20 + (declaration ? 10 : 0) + (mapSpecific(entity) ? 5 : 0) + (declaration && entity.wiki?.basis === "explicit" ? 5 : 0);
+      const score = relevance * 20 + (declaration ? 10000 : 0) + (mapSpecific(entity) ? 5 : 0) + (declaration && entity.wiki?.basis === "explicit" ? 1000 : 0);
       return { entity, score, relevant: relevance > 0 || declaration || mapSpecific(entity) };
     })
     .filter((entry) => entry.relevant)

@@ -131,7 +131,7 @@ function readOnlyAction(toolName: string): ActionForms | undefined {
   if (READ_ONLY_VILLAGE.has(toolName)) return ACTIONS.inspectVillage;
   if (READ_ONLY_QUALITY.has(toolName)) return ACTIONS.inspectQuality;
   if (READ_ONLY_QUEST.has(toolName)) return ACTIONS.inspectQuest;
-  if (/^(?:get|list|show|query|analyze|find|suggest|preview|render|explain|check|evaluate)_/.test(toolName)) {
+  if (/^(?:get|read|list|show|query|analyze|find|suggest|preview|render|explain|check|evaluate)_/.test(toolName)) {
     return ACTIONS.inspect;
   }
   if (/^(?:lint)_/.test(toolName) || toolName === "tile_query" || toolName === "run_lint") {

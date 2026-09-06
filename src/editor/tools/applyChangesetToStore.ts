@@ -9,6 +9,7 @@ import { loadAiConfig } from "@/ai/llmClient";
 import { currentAgentEditorIdentity, currentHumanEditorIdentity } from "@/project/editorIdentity";
 import { combineDiffs, recordProjectCommit, recordProjectCommitFireAndForget, resetManualProjectCommitBaseline, summaryForDiff, type CommitLogInput, type CommitRow } from "@/project/projectCommitLog";
 import { store } from "@/project/store";
+import { createProjectWikiCoordinator } from "@/editor/projectWikiCoordinator";
 import type { ChangeSummary, Project } from "@/project/types";
 import { commitChangeset, summarizeChanges } from "./changeset";
 import { runTool } from "./toolRunner";
@@ -211,7 +212,7 @@ export interface ApplyProposedProjectOptions {
 }
 
 export type ApplyProposedProjectResult =
-  | { readonly ok: true; readonly commit: CommitRow; readonly applied: Project }
+  | { readonly ok: true; readonly commit: CommitRow; readonly applied: Project; readonly wikiWarning?: string }
   | {
     readonly ok: false;
     readonly reason: "commit-rejected";
@@ -237,6 +238,7 @@ export async function applyProposedProject(
   options: ApplyProposedProjectOptions,
 ): Promise<ApplyProposedProjectResult> {
   const before = store.getCurrent();
+  const wikiProjectIdentity = JSON.stringify(store.getProjectIdentity());
   // Wiki checkpoints and human codex edits own world documents independently of
   // detached authoring previews. A title/map proposal must not restore an old wiki.
   const appliedProject = { ...proposed };
@@ -301,5 +303,16 @@ export async function applyProposedProject(
     };
   }
   resetManualProjectCommitBaseline(appliedProject);
-  return { ok: true, commit: commitRow, applied: store.getCurrent() };
+  let wikiWarning: string | undefined;
+  if (JSON.stringify(store.getProjectIdentity()) !== wikiProjectIdentity) {
+    return { ok: true, commit: commitRow, applied: appliedProject, wikiWarning: "프로젝트가 바뀌어 이전 작업의 위키 진행 기록을 갱신하지 않았습니다." };
+  }
+  if (appliedProject.world?.entities.some((entity) => entity.wiki)) {
+    try {
+      await createProjectWikiCoordinator().observe(options.summary, options.toolNames);
+    } catch (cause) {
+      wikiWarning = cause instanceof Error ? cause.message : String(cause);
+    }
+  }
+  return { ok: true, commit: commitRow, applied: store.getCurrent(), ...(wikiWarning ? { wikiWarning } : {}) };
 }

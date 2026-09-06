@@ -8,6 +8,22 @@ function doc(id: string, overrides: Partial<WorldEntity> = {}): WorldEntity {
 }
 
 describe("bounded wiki retrieval", () => {
+  it("keeps explicit project decisions ahead of a long history of matching progress", () => {
+    const project = createBlankProject();
+    project.world = { entities: [
+      doc("w_core"),
+      ...Array.from({ length: 12 }, (_, i) => doc(`w_progress_${i}`, {
+        name: "monster placement", summary: "monster",
+        wiki: { kind: "progress", basis: "observed",
+          sources: [{ id: `a${i}`, kind: "application", text: "Applied", at: i + 2 }] },
+      })),
+    ], relations: [] };
+
+    const result = projectWikiContext(project, { query: "monster placement" });
+
+    expect(result.selectedIds[0]).toBe("w_core");
+    expect(result.selectedIds).toHaveLength(8);
+  });
   it("selects relevant lore without combat keywords and excludes unrelated maps", () => {
     const project = createBlankProject();
     project.world = { entities: [doc("w_moon", { name: "Glass moon", summary: "The moon is glass", wiki: { kind: "knowledge", basis: "explicit", sources: [{ id: "moon", kind: "user", text: "Glass moon", at: 1 }] } }), doc("w_other", { refs: [{ kind: "map", id: "other-map" }] })], relations: [] };
