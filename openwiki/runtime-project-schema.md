@@ -20,6 +20,13 @@ explicit legacy adoption for Save4/5, validates a separate session, and writes
 only an empty destination slot. It never scans storage or changes source bytes.
 Tests: `publication.test.ts`, `publicationSaves.test.ts`, `lifeSaveVersion.test.ts`.
 
+The runtime load panel offers copy-and-load controls only for explicitly accepted
+predecessor lineage keys, including their autosave, into the first empty manual
+slot. Existing destination slots are never overwritten. Legacy adoption remains
+an explicit `importSaveCopy({sourceKey, adoptLegacy: true, ...})` operation on a
+known key, not title/slug discovery. Runtime archive/export operations and browser
+QA commands are in `editor-workflows-misc.md` under Versioned publication.
+
 ## P1 accepted-save receipts and read-only proof (2026-09-06)
 
 `ProjectFlushResult` keeps its existing variants; `saved` optionally includes a

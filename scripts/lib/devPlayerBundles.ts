@@ -3,15 +3,21 @@ import { spawn } from "node:child_process";
 import { mkdir, mkdtemp, readFile, rm } from "node:fs/promises";
 import { extname, join, relative, resolve, sep } from "node:path";
 import { writePlayerDeploymentManifest } from "./playerDeploymentManifest.mjs";
+import { retainRuntime, RUNTIME_ARCHIVE_FOLDER } from "./runtimeArchive";
+import { runtimeArchiveMiddleware } from "./runtimeArchiveMiddleware";
 
 /** Build the two shipped players on first export, never serve Vite's SPA fallback. */
 export function devPlayerBundlesPlugin(): Plugin {
   let pending: Promise<void> | undefined;
+  let archivePending: Promise<void> | undefined;
   let outputRoot: string | undefined;
   let unwatch: (() => void) | undefined;
   return {
     name: "rpgzzu-dev-player-bundles",
     apply: "serve",
+    configurePreviewServer(server) {
+      server.middlewares.use(runtimeArchiveMiddleware(server.config.root));
+    },
     async configureServer(server) {
       const { root, cacheDir } = server.config;
       await mkdir(cacheDir, { recursive: true });
@@ -20,6 +26,7 @@ export function devPlayerBundlesPlugin(): Plugin {
       const playerRoot = outputRoot;
       let revision = 0;
       let builtRevision = -1;
+      let archivedRevision = -1;
       const changed = (file: string) => {
         const name = relative(root, file).split(sep).join("/");
         if (/^(src\/|public\/|scripts\/lib\/player|vite\.(player|standalone)\.config\.ts$|player\.html$|package(-lock)?\.json$)/.test(name)) revision++;
@@ -58,6 +65,17 @@ export function devPlayerBundlesPlugin(): Plugin {
         return pending;
       };
       server.middlewares.use((req, res, next) => {
+        if (req.url?.startsWith("/runtime-archive/")) return runtimeArchiveMiddleware(root, async () => {
+          await ensureBuilt();
+          if (archivedRevision === builtRevision) return;
+          archivePending ??= (async () => {
+            const current = builtRevision;
+            await retainRuntime({ repoRoot: root, archiveRoot: join(root, RUNTIME_ARCHIVE_FOLDER), webRoot: join(playerRoot, "export-player"),
+              standaloneRoot: join(playerRoot, "standalone-player"), publicRoot: join(root, "public") });
+            archivedRevision = current;
+          })().finally(() => { archivePending = undefined; });
+          await archivePending;
+        })(req, res, next);
         const match = /^\/(export-player|standalone-player)\/(.*?)(?:\?.*)?$/.exec(req.url ?? "");
         if (!match) return next();
         void (async () => {
@@ -87,7 +105,7 @@ export function devPlayerBundlesPlugin(): Plugin {
     },
     async closeBundle() {
       unwatch?.();
-      try { await pending; }
+      try { await Promise.all([pending, archivePending]); }
       finally { if (outputRoot) await rm(outputRoot, { recursive: true, force: true }); }
     },
   };

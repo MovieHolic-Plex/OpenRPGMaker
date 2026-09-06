@@ -73,6 +73,59 @@ without mutating the caller's seed. Regression tests:
 
 ### Game export delivery (2026-09-06)
 
+#### Versioned publication (opt-in)
+
+- `프로젝트 → 게임 및 배포` stages preparation, version label, explicit engine
+  upgrade, fork and accepted save lineages. Apply uses the normal annotated store
+  mutation; Cancel/Escape does not persist the draft and restores opener focus.
+  Upgrade offers only the installed engine, starts a new save lineage, and offers
+  an explicit checkbox to accept its immediate predecessor. No marketplace or
+  anonymous listing mutation is introduced. Test Play labels itself a current
+  editor-engine preview, not a selected-engine preview.
+- `.runtime-archive/<sha256>/` is operator-controlled, append-only storage outside
+  destructive `dist`. It retains web, standalone, both SDK manifests and public
+  assets. Back it up and deploy it with the editor/community operator data; never
+  populate it from uploads. `runtime.json` binds Project4, Save4/5/6 and collector
+  contract 1. Unsupported metadata or missing targets fail without substitution.
+  Collector behavior changes must bump that contract; old targets must not be
+  reinterpreted with a different collector.
+- `npm run build` retains both freshly built variants. For runtime-only work:
+  `npm run build:player && npm run build:standalone:bundle && npm run archive:runtime`.
+  Retention runs the existing SDK/deployment/source/secret checks, compares the
+  standalone SDK against the same sources, copies one file at a time and rehashes
+  the staged inventory before atomic installation. A duplicate digest verifies
+  the existing bytes rather than replacing them. `default.json` alone is mutable.
+  Dev prepares this archive when publication requests the installed target;
+  selected-target GETs never build or substitute the default.
+- Identity-bearing ZIP exports contain exact prepared project bytes, SDK,
+  executable closure and assets plus `release.json`. Its canonical body digest
+  excludes the manifest itself. The entire selected runtime's required inventory
+  is retained: current conditional pruning cannot prove an older engine's closure.
+  Legacy non-publication exports keep their existing pruning tests and behavior.
+- Standalone HTML keeps inert base64 script/project/style payloads, both SDKs,
+  raw CSS, decoded asset hashes, runtime provenance and a release ID. Its bootstrap
+  verifies the complete inventory, runtime digest, project identity and original
+  versus transformed executable/style bytes before launching. Self-contained
+  provenance is not operator trust: community accepts only ZIPs verified against
+  its independently retained runtime manifest, never arbitrary uploaded HTML/JS.
+- Run visible export/offline/save-load QA with
+  `npm run qa:export -- --editor-url http://127.0.0.1:<worktree-port> --publication --out verify-shots/release-versioning`.
+  This uses an isolated local project and blocks remote writes. It exercises real
+  menu preparation and downloads, verifies the ZIP, plays root/nested URLs and
+  `file://`, checks failure surfaces, then checks current-engine Test Play.
+  It retains `game.zip`, `game.html`, `release.json` and browser evidence for the
+  parent's immutable-community-route QA. Run without `--publication` for legacy.
+- `npx vite-node scripts/qa-release-artifact.mts` runs the real ZIP/HTML exporters
+  against the retained installed runtime with a narrow blank engine fixture and
+  refuses every non-selected-archive fetch. It writes files and a digest report
+  under `verify-shots/release-artifact`; it is artifact verification, not browser
+  gameplay evidence and never writes to a database.
+  `node scripts/qa-release-offline.mjs` then opens that HTML over `file://`, blocks
+  HTTP requests, boots and moves through real keyboard input, using prearmed
+  DOM/frame signals rather than sleeps. It writes `.qa.json` and a screenshot
+  beside the HTML. The full editor-menu/export harness remains the acceptance
+  path for authored gameplay and save/load.
+
 - Project menu web ZIP and standalone HTML exports use real production player builds even during ordinary Vite development. `scripts/lib/devPlayerBundles.ts`, registered by `vite.config.ts`, builds both player variants on the first export request; no manual `build:player` step is needed.
 - Builds run in production child processes, not inside the editor's development module environment. Concurrent requests share one build; relevant source/public changes invalidate it. Each server owns a temporary output directory under its cache and removes it on close.
 - `/export-player/` and `/standalone-player/` requests are handled before SPA fallback. Build failure or an absent file returns an error rather than editor HTML or stale output. The existing menu catches rejected exports before `downloadBlob`; required media failures are no longer an informational warning after a broken HTML download.

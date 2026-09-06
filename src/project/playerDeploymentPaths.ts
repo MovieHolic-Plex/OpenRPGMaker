@@ -1,7 +1,7 @@
-import runtimeAssetInventory from "@/player/runtimeAssets.json" with { type: "json" };
-import { contractFailure, WebExportContractError, type WebExportContractErrorCode } from "@/project/playerDeploymentErrors";
-import type { DeploymentFileRecord } from "@/project/playerDeploymentTypes";
-import { unicodeCaseFoldKey } from "@/project/unicodeCaseFold.js";
+import runtimeAssetInventory from "../player/runtimeAssets.json" with { type: "json" };
+import { contractFailure, WebExportContractError, type WebExportContractErrorCode } from "./playerDeploymentErrors";
+import type { DeploymentFileRecord } from "./playerDeploymentTypes";
+import { unicodeCaseFoldKey } from "./unicodeCaseFold.js";
 
 const decoder = new TextDecoder("utf-8", { fatal: true });
 

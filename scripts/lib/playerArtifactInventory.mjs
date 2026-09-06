@@ -14,6 +14,7 @@ export const PLAYER_SOURCE_INPUT_INVENTORY = Object.freeze([
   ...[
     "player.html",
     "vite.player.config.ts",
+    "vite.standalone.config.ts",
     "package.json",
     "package-lock.json",
     "scripts/build-player-sdk.mjs",

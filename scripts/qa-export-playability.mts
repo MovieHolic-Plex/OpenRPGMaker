@@ -7,6 +7,8 @@ import { pathToFileURL } from "node:url";
 import { chromium, type Page } from "@playwright/test";
 import { deserialize, serialize } from "@/project/io";
 import { readStoredZipEntry, readStoredZipEntryNames } from "@/project/packageZip";
+import { parseReleaseManifest, releaseManifestFromZip, verifyGameRelease } from "@/project/gameRelease";
+import { readTrustedRuntime, RUNTIME_ARCHIVE_FOLDER } from "./lib/runtimeArchive";
 import { exerciseExport, installExportObservations, verifyEditorTestPlay } from "./lib/exportPlayability.mjs";
 
 function arg(name: string, fallback: string): string {
@@ -16,6 +18,7 @@ function arg(name: string, fallback: string): string {
 
 const editorUrl = arg("editor-url", "http://127.0.0.1:9841");
 const apiTransport = process.argv.includes("--api-transport");
+const publicationMode = process.argv.includes("--publication");
 const outDir = resolve(arg("out", "verify-shots/export-playability"));
 const temp = await mkdtemp(join(tmpdir(), "oprn-export-qa-"));
 await mkdir(outDir, { recursive: true });
@@ -149,12 +152,27 @@ try {
   await (await chooser).setFiles(fixturePath);
   await page.getByTestId("menu-project").filter({ hasText: project.meta.title }).waitFor({ state: "visible" });
   console.log("QA editor: fixture imported, download web ZIP and HTML");
+  if (publicationMode) {
+    await menu(page, "menu-project-publication");
+    await page.getByTestId("publication-prepare").click({ timeout: 360000 });
+    await page.getByTestId("publication-version").fill("qa-release-A");
+    await page.getByTestId("publication-apply").click();
+  }
   const zipPath = await download(page, "menu-project-export-web", "game.zip");
   const htmlPath = await download(page, "menu-project-export-standalone", "game.html");
   await page.screenshot({ path: join(outDir, "editor-downloads.png") });
   results.push({ kind: "editor-downloads", pass: true });
 
   const zip = new Uint8Array(await readFile(zipPath));
+  if (publicationMode) {
+    const manifest = await parseReleaseManifest(releaseManifestFromZip(zip));
+    const trusted = await readTrustedRuntime(resolve(RUNTIME_ARCHIVE_FOLDER), manifest.publication.runtimeTarget);
+    await verifyGameRelease(zip, trusted);
+    await writeFile(join(outDir, "release.json"), JSON.stringify(manifest, null, 2));
+    await writeFile(join(outDir, "game.zip"), zip);
+    await writeFile(join(outDir, "game.html"), await readFile(htmlPath));
+    results.push({ kind: "release-integrity", releaseId: manifest.releaseId, runtimeTarget: trusted.runtimeTarget, pass: true });
+  }
   for (const [kind, prefix] of [["root", "/"], ["nested", "/games/demo/"], ["html", null]] as const) {
     console.log(`QA ${kind}: actual gameplay and save/load`);
     const server = prefix === null ? null : await serveZip(zip, prefix);
@@ -176,8 +194,8 @@ try {
     }
   }
 
-  results.push(await rejectBadExport(page, "**/standalone-player/standalone.js", "<!doctype html><html>Wrong bundle</html>", 200));
-  results.push(await rejectBadExport(page, "**/assets/generated/battle-skins/sprites/hero-01-back.png", "Missing required image", 404));
+  results.push(await rejectBadExport(page, publicationMode ? "**/runtime-archive/*/standalone/standalone.js" : "**/standalone-player/standalone.js", "<!doctype html><html>Wrong bundle</html>", 200));
+  results.push(await rejectBadExport(page, publicationMode ? "**/runtime-archive/*/public/assets/generated/battle-skins/sprites/hero-01-back.png" : "**/assets/generated/battle-skins/sprites/hero-01-back.png", "Missing required image", 404));
   await page.screenshot({ path: join(outDir, "rejected-export.png") });
 
   await page.getByTestId("mode-play").click();
