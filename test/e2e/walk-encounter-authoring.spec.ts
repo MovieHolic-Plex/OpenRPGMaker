@@ -20,6 +20,19 @@ async function armProjectChange(page: Page, expectedRows: number): Promise<void>
   }, expectedRows);
 }
 
+async function armSurface(page: Page, id: string): Promise<void> {
+  await page.evaluate((id) => {
+    (window as BrowserSignals).walkChange = new Promise<void>((resolve, reject) => {
+      const observer = new MutationObserver(() => {
+        if (!document.querySelector(`[data-testid="${id}"]`)) return;
+        clearTimeout(deadline); observer.disconnect(); resolve();
+      });
+      const deadline = setTimeout(() => { observer.disconnect(); reject(new Error(`No ${id} surface`)); }, 10_000);
+      observer.observe(document.body, { childList: true, subtree: true });
+    });
+  }, id);
+}
+
 async function dragRegion(page: Page, x: number, y: number): Promise<void> {
   const points = await page.evaluate(async ({ x, y }) => {
     const path = "/src/editor/editorState.ts";
@@ -115,33 +128,55 @@ for (const [width, height] of [[1024, 768], [1280, 800], [1440, 900]]) {
     await dragRegion(page, 7, 5);
     await assertReachable(page, "selection-chip-walk-encounter");
     await clickVisibleControl(page, page.getByTestId("selection-chip-walk-encounter"));
-    await page.locator('[data-testid^="walk-enemy-"]').first().check();
+    await clickVisibleControl(page, page.getByTestId("walk-encounter-add-group"));
+    await page.screenshot({ path: testInfo.outputPath(`picker-${width}.png`) });
+    await clickVisibleControl(page, page.locator('[data-testid^="walk-group-"]').first());
+    await clickVisibleControl(page, page.locator('[data-testid^="walk-group-"]').nth(1));
+    await clickVisibleControl(page, page.getByTestId("walk-encounter-picker-done"));
+    await page.getByTestId("walk-encounter-weight-0").fill("3");
+    expect(await page.getByTestId("walk-encounter-share-0").textContent()).toBe("75%");
+    expect(await page.getByTestId("walk-encounter-share-1").textContent()).toBe("25%");
+    const targetGroup = await page.evaluate(async () => {
+      const path = "/src/project/store.ts";
+      const { store } = await import(path) as typeof import("../../src/project/store");
+      return store.getCurrent().database.troops[1]!.id;
+    });
+    await armSurface(page, "database-modal");
+    await clickVisibleControl(page, page.getByTestId("walk-encounter-edit-group-1"));
+    await page.evaluate(() => (window as BrowserSignals).walkChange);
+    expect(await page.getByTestId(`db-record-row-${targetGroup}`).count()).toBe(1);
+    await armSurface(page, "walk-encounter-modal");
+    await clickVisibleControl(page, page.getByTestId("database-modal-close"));
+    await page.evaluate(() => (window as BrowserSignals).walkChange);
+    expect(await page.getByTestId("walk-encounter-weight-0").inputValue()).toBe("3");
     await page.getByTestId("walk-encounter-frequency").evaluate((node) => node.scrollIntoView({ block: "nearest", behavior: "instant" }));
     await assertReachable(page, "walk-encounter-frequency");
     await page.getByTestId("walk-encounter-frequency").selectOption("60");
     if (await page.getByTestId("walk-encounter-legacy").count()) await page.getByTestId("walk-encounter-legacy").selectOption("replace");
     await assertReachable(page, "walk-encounter-save");
     await page.screenshot({ path: testInfo.outputPath(`form-${width}.png`) });
-    await armProjectChange(page, 1);
+    await armProjectChange(page, 2);
     await clickVisibleControl(page, page.getByTestId("walk-encounter-save"));
     await page.evaluate(() => (window as BrowserSignals).walkChange);
 
     await dragRegion(page, 11, 5);
     await clickVisibleControl(page, page.getByTestId("selection-chip-walk-encounter"));
     await clickVisibleControl(page, page.getByTestId("walk-encounter-reuse"));
-    await armProjectChange(page, 2);
+    await armProjectChange(page, 4);
     await clickVisibleControl(page, page.getByTestId("walk-encounter-save"));
     await page.evaluate(() => (window as BrowserSignals).walkChange);
-    await armProjectChange(page, 1);
+    await armProjectChange(page, 2);
     await clickVisibleControl(page, page.getByTestId("oprn-tool-undo"));
     await page.evaluate(() => (window as BrowserSignals).walkChange);
 
     await clickVisibleControl(page, page.getByTestId("walk-encounter-list-open"));
     expect(await page.locator('[data-testid^="walk-encounter-region-"]').count()).toBe(1);
     await clickVisibleControl(page, page.getByTestId("walk-encounter-edit-0"));
-    await clickVisibleControl(page, page.getByTestId("walk-encounter-advanced").locator("summary"));
+    await clickVisibleControl(page, page.getByTestId("walk-encounter-conditions-0").locator("summary"));
+    await page.getByTestId("walk-encounter-min-level-0").fill("3");
+    expect(await page.getByTestId("walk-encounter-conditions-1").evaluate((node) => (node as HTMLDetailsElement).open)).toBe(false);
     await assertReachable(page, "walk-encounter-save");
-    await page.screenshot({ path: testInfo.outputPath(`advanced-${width}.png`) });
+    await page.screenshot({ path: testInfo.outputPath(`conditions-${width}.png`) });
     await page.keyboard.press("Escape");
     await clickVisibleControl(page, page.getByTestId("walk-encounter-list-open"));
     await clickVisibleControl(page, page.getByTestId("walk-encounter-edit-0"));
