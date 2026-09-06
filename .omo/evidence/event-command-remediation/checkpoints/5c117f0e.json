@@ -1,0 +1,26 @@
+{
+  "applicationCommit": "5c117f0ef993a6cca4bf916dbafe7b361c929be7",
+  "scope": "U01/H0/U03/U02 integrated checkpoint; remaining findings are not complete",
+  "typecheck": {
+    "command": "npm run typecheck:app",
+    "exitCode": 0,
+    "monitor": "mon_XXY6C87SPEGDYJCB"
+  },
+  "build": {
+    "command": "npm run build:app",
+    "exitCode": 0,
+    "seconds": 58.47,
+    "monitor": "mon_YJGMZADN8CQRX4DK",
+    "warnings": [
+      "existing mixed static/dynamic imports",
+      "existing chunks above500kB"
+    ]
+  },
+  "cleanup": {
+    "ownedDistExisted": true,
+    "ownedDistRemoved": true
+  },
+  "resolvedFindingCount": 7,
+  "totalFindings": 106,
+  "fullFinalGates": "pending; pre-fix broad attempt timedout30min"
+}

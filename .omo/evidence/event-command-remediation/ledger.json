@@ -71,13 +71,24 @@
         "native:loop",
         "m2:m2-083-loop"
       ],
-      "status": "in_progress",
+      "status": "resolved",
       "unit": "U02",
-      "red": [],
-      "green": [],
-      "surface": [],
-      "commits": [],
-      "resolution": null
+      "red": [
+        ".omo/evidence/event-command-remediation/U02/red-G1-F4.json"
+      ],
+      "green": [
+        ".omo/evidence/event-command-remediation/staged-test/green.json",
+        ".omo/evidence/event-command-remediation/staged-test/rerender-green.json"
+      ],
+      "surface": [
+        ".omo/evidence/event-command-remediation/U02-supervisor/summary.json",
+        ".omo/evidence/event-command-remediation/U02-supervisor/editor-observation.json",
+        ".omo/evidence/event-command-remediation/U02-supervisor/player/manifest.json"
+      ],
+      "commits": [
+        "5c117f0ef993a6cca4bf916dbafe7b361c929be7"
+      ],
+      "resolution": "Latest loop children and text metadata preserved; full child editor and loop-owned break detection verified."
     },
     "G1-F5": {
       "title": "조건 대상 변경이 직전 비교값을 되돌리고 판정은 낡게 남는다",
@@ -86,13 +97,24 @@
         "native:fork",
         "m2:m2-080-conditional-branch"
       ],
-      "status": "in_progress",
+      "status": "resolved",
       "unit": "U02",
-      "red": [],
-      "green": [],
-      "surface": [],
-      "commits": [],
-      "resolution": null
+      "red": [
+        ".omo/evidence/event-command-remediation/U02/red-G1-F5.json"
+      ],
+      "green": [
+        ".omo/evidence/event-command-remediation/staged-test/green.json",
+        ".omo/evidence/event-command-remediation/staged-test/rerender-green.json"
+      ],
+      "surface": [
+        ".omo/evidence/event-command-remediation/U02-supervisor/summary.json",
+        ".omo/evidence/event-command-remediation/U02-supervisor/editor-observation.json",
+        ".omo/evidence/event-command-remediation/U02-supervisor/player/manifest.json"
+      ],
+      "commits": [
+        "5c117f0ef993a6cca4bf916dbafe7b361c929be7"
+      ],
+      "resolution": "Condition callbacks use latest controls; inactive drafts local to each editor and live evaluation verified."
     },
     "G1-F6": {
       "title": "전투의 완전 실행 선언이 대화·선택·시간의 실제 효과를 과장",
@@ -237,13 +259,24 @@
         "native:timer",
         "m2:m2-008-control-timer"
       ],
-      "status": "in_progress",
+      "status": "resolved",
       "unit": "U02",
-      "red": [],
-      "green": [],
-      "surface": [],
-      "commits": [],
-      "resolution": null
+      "red": [
+        ".omo/evidence/event-command-remediation/U02/red-G1-F13.json"
+      ],
+      "green": [
+        ".omo/evidence/event-command-remediation/staged-test/green.json",
+        ".omo/evidence/event-command-remediation/staged-test/rerender-green.json"
+      ],
+      "surface": [
+        ".omo/evidence/event-command-remediation/U02-supervisor/summary.json",
+        ".omo/evidence/event-command-remediation/U02-supervisor/editor-observation.json",
+        ".omo/evidence/event-command-remediation/U02-supervisor/player/manifest.json"
+      ],
+      "commits": [
+        "5c117f0ef993a6cca4bf916dbafe7b361c929be7"
+      ],
+      "resolution": "Resume preserves omitted seconds and remaining17; restart/stop controls and visibility verified."
     },
     "G1-F14": {
       "title": "선택지 삭제가 취소 도착점과 숨은 본문을 바꾼다",
@@ -252,13 +285,24 @@
         "native:choices",
         "m2:m2-004-show-choices"
       ],
-      "status": "in_progress",
+      "status": "resolved",
       "unit": "U02",
-      "red": [],
-      "green": [],
-      "surface": [],
-      "commits": [],
-      "resolution": null
+      "red": [
+        ".omo/evidence/event-command-remediation/U02/red-G1-F14.json"
+      ],
+      "green": [
+        ".omo/evidence/event-command-remediation/staged-test/green.json",
+        ".omo/evidence/event-command-remediation/staged-test/rerender-green.json"
+      ],
+      "surface": [
+        ".omo/evidence/event-command-remediation/U02-supervisor/summary.json",
+        ".omo/evidence/event-command-remediation/U02-supervisor/editor-observation.json",
+        ".omo/evidence/event-command-remediation/U02-supervisor/player/manifest.json"
+      ],
+      "commits": [
+        "5c117f0ef993a6cca4bf916dbafe7b361c929be7"
+      ],
+      "resolution": "Deletion preserves cancel branch identity, asks for nonempty deletion consent and restores focus."
     },
     "G1-F15": {
       "title": "열기만 해도 첫 변수를 입력 결과 저장 대상으로 확정",
@@ -267,13 +311,24 @@
         "native:inputNumber",
         "m2:m2-005-input-number"
       ],
-      "status": "in_progress",
+      "status": "resolved",
       "unit": "U02",
-      "red": [],
-      "green": [],
-      "surface": [],
-      "commits": [],
-      "resolution": null
+      "red": [
+        ".omo/evidence/event-command-remediation/U02/red-G1-F15.json"
+      ],
+      "green": [
+        ".omo/evidence/event-command-remediation/staged-test/green.json",
+        ".omo/evidence/event-command-remediation/staged-test/rerender-green.json"
+      ],
+      "surface": [
+        ".omo/evidence/event-command-remediation/U02-supervisor/summary.json",
+        ".omo/evidence/event-command-remediation/U02-supervisor/editor-observation.json",
+        ".omo/evidence/event-command-remediation/U02-supervisor/player/manifest.json"
+      ],
+      "commits": [
+        "5c117f0ef993a6cca4bf916dbafe7b361c929be7"
+      ],
+      "resolution": "No automatic destination during render; scoped Confirm validation requires an existing explicitly selected variable."
     },
     "G1-F16": {
       "title": "변수 요금을 편집할 수 없고 연출 단위가 없다",
