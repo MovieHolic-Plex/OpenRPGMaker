@@ -320,7 +320,7 @@ function stepZoom(direction: 1 | -1): void {
 
 function toolPatch(tool: Exclude<Tool, "event">, layer?: Layer): Partial<EditorState> {
   if (tool === "paint") {
-    return layer ? { tool, layer, paintShape: "pen" } : { tool, paintShape: "pen" };
+    return { tool, ...(layer ? { layer } : {}), paintShape: "pen", activePaletteStamp: null };
   }
   return layer ? { tool, layer } : { tool };
 }

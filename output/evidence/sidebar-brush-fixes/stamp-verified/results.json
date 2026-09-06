@@ -1,0 +1,22 @@
+{
+  "baseUrl": "http://127.0.0.1:19841",
+  "scope": "all",
+  "results": [
+    {
+      "name": "C8a-custom-atlas-stamp",
+      "status": "PASS",
+      "observed": {
+        "sourceCells": [
+          7,
+          8,
+          37,
+          38
+        ],
+        "placed": true
+      },
+      "screenshot": "C8a-custom-atlas-stamp.png"
+    }
+  ],
+  "errors": [],
+  "cleanup": true
+}
