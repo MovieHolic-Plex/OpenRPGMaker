@@ -1,0 +1,38 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/supabaseProjectConfig.test.ts test/supabaseProxyPath.test.ts test/supabaseProjectSync.test.ts test/vitePreviewProxy.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1
+
+ ✓ test/supabaseProxyPath.test.ts (6 tests) 36ms
+ ✓ test/vitePreviewProxy.test.ts (1 test) 349ms
+   ✓ Vite production preview proxy > routes CPEN through the same server-side proxy when the key is configured  344ms
+ ✓ test/supabaseProjectConfig.test.ts (6 tests) 922ms
+   ✓ Supabase project runtime config > uses legacy browser DB config only when Vite env is empty  625ms
+ ✓ test/supabaseProjectSync.test.ts (29 tests) 49641ms
+   ✓ Supabase project sync > loads a Supabase current_json row through the project parser  1810ms
+   ✓ Supabase project sync > uses the app canonical Supabase project id when the env id is omitted  2191ms
+   ✓ Supabase project sync > 옛 전투 애니메이션 묶음의 실제 행을 복구해 아이템을 실행 가능한 상태로 불러온다  4414ms
+   ✓ Supabase project sync > 참조된 옛 장비 아이템 19종을 명시적 대응 장비의 한국어 안내 행으로 보존한다  1513ms
+   ✓ Supabase project sync > 액션 탄약과 상점 상태에서만 참조한 옛 아이템 행을 보존한다  941ms
+   ✓ Supabase project sync > 손대지 않은 영문 아이템 껍데기만 고치고 필요한 스킬만 추가한다  985ms
+   ✓ Supabase project sync > treats Supabase current_json as canonical — does not backfill removed database records  669ms
+   ✓ Supabase project sync > repairs legacy sprite references from Supabase rows before project use  1686ms
+   ✓ Supabase project sync > drops Supabase village info documents for maps that no longer exist  971ms
+   ✓ Supabase project sync > saves the project as a Supabase projects upsert payload  317ms
+   ✓ Supabase project sync > keeps current_json as canonical when optional normalized tables are absent  473ms
+   ✓ Supabase project sync > merges a changed map into the latest project without replacing other maps  3431ms
+   ✓ Supabase project sync > does not stop a stale same-map save before it overwrites a newer DB map  1887ms
+   ✓ Supabase project sync > does not false-conflict when the load path repairs a saved map (shop commands)  2206ms
+   ✓ Supabase project sync > does not false-conflict when only the repair pipeline differs (dangling refs elsewhere)  3274ms
+   ✓ Supabase project sync > does not false-conflict on jsonb key reordering (alphabetical vs insertion order)  3537ms
+   ✓ Supabase project sync > preserves concurrent saves from separate editors touching different maps  7475ms
+   ✓ Supabase project sync > preserves concurrent map tree additions from separate editors  7662ms
+   ✓ Supabase project sync > does not undo a remote same-map reparent when saving only that map content  3158ms
+   ✓ Supabase project sync > overlays map_json from maps table onto current_json on load  712ms
+
+ Test Files  4 passed (4)
+      Tests  42 passed (42)
+   Start at  04:03:40
+   Duration  73.45s (transform 15.11s, setup 0ms, collect 22.03s, tests 50.95s, environment 1ms, prepare 2.29s)
