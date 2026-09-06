@@ -1,0 +1,114 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeSkillDisabledHarvest.test.ts test/p0LifeSkillProgress.test.ts test/p2LifeRuntime.test.ts test/p2HostileAudit.test.ts test/farmingRuntime.test.ts test/seasonalForage.test.ts test/p0RuntimeIntegration.test.ts --maxWorkers=2 --no-file-parallelism
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-harvest-xp
+
+ ✓ test/farmingRuntime.test.ts (29 tests) 1916ms
+ ✓ test/p0RuntimeIntegration.test.ts (16 tests) 1514ms
+ ❯ test/lifeSkillDisabledHarvest.test.ts (49 tests | 6 failed) 2378ms
+   × crop automatic harvest XP > keeps the real reward when skillSystem is disabled 198ms
+     → expected { kind: 'ignored', x: 1, y: 1, …(1) } to match object { kind: 'harvested', …(3) }
+(3 matching properties omitted from actual)
+   × crop automatic harvest XP > keeps the real reward when skillSystem is omitted 109ms
+     → expected { kind: 'ignored', x: 1, y: 1, …(1) } to match object { kind: 'harvested', …(3) }
+(3 matching properties omitted from actual)
+   ✓ crop automatic harvest XP > keeps the real reward when skillSystem is enabled 144ms
+   ✓ crop automatic harvest XP > rolls back the entire active transaction for an invalid switch reward 115ms
+   ✓ crop automatic harvest XP > rolls back the entire active transaction for an invalid recipe reward 68ms
+   ✓ crop automatic harvest XP > preserves complete state at inventory capacity with XP enabled 69ms
+   ✓ crop automatic harvest XP > preserves complete state at inventory capacity with XP disabled 48ms
+   × rock automatic harvest XP > keeps the real reward when skillSystem is disabled 44ms
+     → expected { kind: 'ignored', x: 1, y: 1, …(1) } to match object { kind: 'harvested', …(3) }
+(3 matching properties omitted from actual)
+   × rock automatic harvest XP > keeps the real reward when skillSystem is omitted 44ms
+     → expected { kind: 'ignored', x: 1, y: 1, …(1) } to match object { kind: 'harvested', …(3) }
+(3 matching properties omitted from actual)
+   ✓ rock automatic harvest XP > keeps the real reward when skillSystem is enabled 33ms
+   ✓ rock automatic harvest XP > rolls back the entire active transaction for an invalid switch reward 39ms
+   ✓ rock automatic harvest XP > rolls back the entire active transaction for an invalid recipe reward 32ms
+   ✓ rock automatic harvest XP > preserves complete state at inventory capacity with XP enabled 40ms
+   ✓ rock automatic harvest XP > preserves complete state at inventory capacity with XP disabled 37ms
+   × tree automatic harvest XP > keeps the real reward when skillSystem is disabled 33ms
+     → expected { kind: 'ignored', x: 1, y: 1, …(1) } to match object { kind: 'harvested', …(3) }
+(3 matching properties omitted from actual)
+   × tree automatic harvest XP > keeps the real reward when skillSystem is omitted 37ms
+     → expected { kind: 'ignored', x: 1, y: 1, …(1) } to match object { kind: 'harvested', …(3) }
+(3 matching properties omitted from actual)
+   ✓ tree automatic harvest XP > keeps the real reward when skillSystem is enabled 29ms
+   ✓ tree automatic harvest XP > rolls back the entire active transaction for an invalid switch reward 27ms
+   ✓ tree automatic harvest XP > rolls back the entire active transaction for an invalid recipe reward 30ms
+   ✓ tree automatic harvest XP > preserves complete state at inventory capacity with XP enabled 30ms
+   ✓ tree automatic harvest XP > preserves complete state at inventory capacity with XP disabled 35ms
+   ✓ fish automatic harvest XP > keeps the real reward when skillSystem is disabled 34ms
+   ✓ fish automatic harvest XP > keeps the real reward when skillSystem is omitted 32ms
+   ✓ fish automatic harvest XP > keeps the real reward when skillSystem is enabled 28ms
+   ✓ fish automatic harvest XP > rolls back the entire active transaction for an invalid switch reward 29ms
+   ✓ fish automatic harvest XP > rolls back the entire active transaction for an invalid recipe reward 38ms
+   ✓ fish automatic harvest XP > preserves complete state at inventory capacity with XP enabled 27ms
+   ✓ fish automatic harvest XP > preserves complete state at inventory capacity with XP disabled 29ms
+   ✓ forage automatic harvest XP > keeps the real reward when skillSystem is disabled 34ms
+   ✓ forage automatic harvest XP > keeps the real reward when skillSystem is omitted 29ms
+   ✓ forage automatic harvest XP > keeps the real reward when skillSystem is enabled 36ms
+   ✓ forage automatic harvest XP > rolls back the entire active transaction for an invalid switch reward 40ms
+   ✓ forage automatic harvest XP > rolls back the entire active transaction for an invalid recipe reward 41ms
+   ✓ forage automatic harvest XP > preserves complete state at inventory capacity with XP enabled 33ms
+   ✓ forage automatic harvest XP > preserves complete state at inventory capacity with XP disabled 30ms
+   ✓ crop energy refusal > preserves all state with XP enabled 44ms
+   ✓ crop energy refusal > preserves all state with XP disabled 27ms
+   ✓ rock energy refusal > preserves all state with XP enabled 30ms
+   ✓ rock energy refusal > preserves all state with XP disabled 44ms
+   ✓ tree energy refusal > preserves all state with XP enabled 35ms
+   ✓ tree energy refusal > preserves all state with XP disabled 30ms
+   ✓ fish energy refusal > preserves all state with XP enabled 34ms
+   ✓ fish energy refusal > preserves all state with XP disabled 44ms
+   ✓ explicit XP and fishing qualification stay independent > keeps explicit APIs disabled when skillSystem is disabled 39ms
+   ✓ explicit XP and fishing qualification stay independent > keeps explicit APIs disabled when skillSystem is omitted 32ms
+   ✓ explicit XP and fishing qualification stay independent > still rejects insufficient fishing skill with XP disabled 52ms
+   ✓ explicit XP and fishing qualification stay independent > still rejects insufficient fishing skill with XP omitted 89ms
+   ✓ explicit XP and fishing qualification stay independent > allows earned fishing qualification without adding XP when disabled 81ms
+   ✓ explicit XP and fishing qualification stay independent > allows earned fishing qualification without adding XP when omitted 87ms
+ ✓ test/p0LifeSkillProgress.test.ts (10 tests) 620ms
+ ✓ test/p2HostileAudit.test.ts (10 tests) 741ms
+ ✓ test/p2LifeRuntime.test.ts (8 tests) 789ms
+ ✓ test/seasonalForage.test.ts (4 tests) 307ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/lifeSkillDisabledHarvest.test.ts > crop automatic harvest XP > keeps the real reward when skillSystem is disabled
+ FAIL  test/lifeSkillDisabledHarvest.test.ts > crop automatic harvest XP > keeps the real reward when skillSystem is omitted
+ FAIL  test/lifeSkillDisabledHarvest.test.ts > rock automatic harvest XP > keeps the real reward when skillSystem is disabled
+ FAIL  test/lifeSkillDisabledHarvest.test.ts > rock automatic harvest XP > keeps the real reward when skillSystem is omitted
+ FAIL  test/lifeSkillDisabledHarvest.test.ts > tree automatic harvest XP > keeps the real reward when skillSystem is disabled
+ FAIL  test/lifeSkillDisabledHarvest.test.ts > tree automatic harvest XP > keeps the real reward when skillSystem is omitted
+AssertionError: expected { kind: 'ignored', x: 1, y: 1, …(1) } to match object { kind: 'harvested', …(3) }
+(3 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "count": 1,[39m
+[32m-   "itemId": "item_berry",[39m
+[32m-   "kind": "harvested",[39m
+[32m-   "source": "crop",[39m
+[31m+   "kind": "ignored",[39m
+[2m  }[22m
+
+ ❯ test/lifeSkillDisabledHarvest.test.ts:77:20
+     75|     const before = structuredClone(f.session);
+     76|     const result = f.perform();
+     77|     expect(result).toMatchObject(f.success);
+       |                    ^
+     78|     expect(f.session.inventory[f.itemId]).toBe((before.inventory[f.ite…
+     79|     expect(f.session.energy).toBe(Number(before.energy) - f.energy);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+
+ Test Files  1 failed | 6 passed (7)
+      Tests  6 failed | 120 passed (126)
+   Start at  19:56:02
+   Duration  33.30s (transform 10.45s, setup 0ms, collect 20.97s, tests 8.26s, environment 5ms, prepare 995ms)
+

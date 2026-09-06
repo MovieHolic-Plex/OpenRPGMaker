@@ -1,0 +1,15 @@
+{
+  "implementationHead": "48195f5753556572db0c13e40f6945b9547bbea3",
+  "implementationTree": "4e3da6ec2b8811d24fb1f13ef5d1d92429aa5678",
+  "removedOwnedGeneratedOutput": [
+    "dist"
+  ],
+  "port42359Listener": "State Recv-Q Send-Q Local Address:Port Peer Address:PortProcess\n",
+  "httpServerStarted": false,
+  "browserStarted": false,
+  "sharedTrackedCachesRemoved": false,
+  "publicRecords": 30,
+  "fullStateEqualFailures": 15,
+  "allOwnersNonNull": true,
+  "trackedStatusBeforeEvidenceCommit": ""
+}

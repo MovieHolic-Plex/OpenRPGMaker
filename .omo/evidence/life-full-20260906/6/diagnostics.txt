@@ -1,0 +1,4 @@
+{"path":"src/player/farming.ts","diagnostics":[]}
+{"path":"src/project/fishing.ts","diagnostics":[]}
+{"path":"src/project/seasonalForage.ts","diagnostics":[]}
+{"path":"test/lifeSkillDisabledHarvest.test.ts","diagnostics":[{"code":2540,"category":1,"start":8099,"message":"Cannot assign to 'minSkillLevel' because it is a read-only property."},{"code":2540,"category":1,"start":8722,"message":"Cannot assign to 'minSkillLevel' because it is a read-only property."}]}

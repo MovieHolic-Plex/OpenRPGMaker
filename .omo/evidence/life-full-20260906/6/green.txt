@@ -1,0 +1,20 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeSkillDisabledHarvest.test.ts test/p0LifeSkillProgress.test.ts test/p2LifeRuntime.test.ts test/p2HostileAudit.test.ts test/farmingRuntime.test.ts test/seasonalForage.test.ts test/p0RuntimeIntegration.test.ts --maxWorkers=2 --no-file-parallelism
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-harvest-xp
+
+ ✓ test/lifeSkillDisabledHarvest.test.ts (49 tests) 2338ms
+ ✓ test/farmingRuntime.test.ts (29 tests) 1646ms
+ ✓ test/p0RuntimeIntegration.test.ts (16 tests) 1144ms
+ ✓ test/p2LifeRuntime.test.ts (8 tests) 623ms
+ ✓ test/p2HostileAudit.test.ts (10 tests) 659ms
+ ✓ test/p0LifeSkillProgress.test.ts (10 tests) 655ms
+ ✓ test/seasonalForage.test.ts (4 tests) 139ms
+
+ Test Files  7 passed (7)
+      Tests  126 passed (126)
+   Start at  20:06:57
+   Duration  25.59s (transform 7.64s, setup 0ms, collect 15.70s, tests 7.20s, environment 2ms, prepare 656ms)
+
