@@ -1,4 +1,4 @@
-// Beginner flyout uses the same source cells, layer rules and keyboard grid as
+// Beginner persistent panel uses the same source cells, layer rules and keyboard grid as
 // the docked palette. A small arbitrary sample hides most usable materials.
 import type { TilesetDef } from "@/project/types";
 import { isCustomTileset } from "@/project/tilesetKind";
@@ -24,6 +24,7 @@ export function makeBasicTilePalette(options: {
 }): HTMLElement {
   const { tileset, selectedTile, layer, query } = options;
   const section = el("div", { class: "basic-rail-section", dataset: { testid: "basic-tiles-section" } });
+  section.append(el("p", { class: "basic-paint-guide", text: "타일을 고르고 맵에 칠하세요" }));
   section.append(el("div", {
     class: "basic-selected-tile",
     text: `${layer === "lower" ? "바닥" : "덧그림"} · ${basicTileLabel(tileset, selectedTile)}`,

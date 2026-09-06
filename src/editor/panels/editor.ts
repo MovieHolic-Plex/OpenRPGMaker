@@ -1,4 +1,4 @@
-﻿import { destroyGame, getGame, startEditGame } from "@/app/mode";
+import { destroyGame, getGame, startEditGame } from "@/app/mode";
 import { scheduleEditorAssetWarmup } from "@/assets/editorAssetWarmup";
 import {
   DEFAULT_ASSISTANT_TEMPERATURE,
@@ -92,9 +92,8 @@ const MAP_TREE_COLLAPSED_FALLBACK_HEIGHT = 44;
  */
 const PALETTE_SHEET_RESERVE_HEIGHT = 280;
 const EDITOR_LAYOUT_KEY = "oprn:editor-layout:v4";
-// 초보 아이콘 레일의 출하 폭. CSS `--basic-rail-width` 가 원천이고 이 상수는 폭을 읽지 못할
-// 때(fake DOM, 첫 페인트 전)의 폴백이다. 48px 로 되돌리면 14px 한국어 라벨 2줄이 잘린다.
-const BASIC_RAIL_FALLBACK_WIDTH = 72;
+// CSS `--basic-rail-width` owns the beginner panel width; this is its pre-layout fallback.
+const BASIC_RAIL_FALLBACK_WIDTH = 288;
 
 type LoadedEditorLayout = {
   readonly leftWidth: number;
@@ -572,7 +571,7 @@ function applyLayout(): void {
   if (chrome.paletteRail) {
     leftRoot.style.display = "";
     // Standard/expert leave an inline width. min-width in the rail stylesheet
-    // cannot override it: clear it before measuring the 72px CSS-owned rail.
+    // cannot override it: clear it before measuring the CSS-owned beginner panel.
     leftRoot.style.width = "";
     leftResizer.style.display = "none";
     // `--editor-left-safe` 는 실폭에서 파생한다. 리사이저 여유는 비-레일 분기와 같은 계산이고
@@ -661,8 +660,14 @@ function fitMapTreeHeight(): void {
   const panelHeight = measuredHeight(leftRoot, 0);
   const ratioCap = panelHeight > 0 ? Math.floor(panelHeight * MAP_TREE_AUTO_MAX_RATIO) : MAP_TREE_AUTO_MAX_HEIGHT;
   const sheetCap = paletteSheetReserveCap(panelHeight);
-  const max = Math.max(MAP_TREE_AUTO_MIN_HEIGHT, Math.min(MAP_TREE_AUTO_MAX_HEIGHT, ratioCap, sheetCap));
-  const next = clamp(desired + MAP_TREE_AUTO_SLACK, MAP_TREE_AUTO_MIN_HEIGHT, max);
+  // Keep the existing three-row list viewport usable when expert tools consume
+  // more palette chrome; the sheet's preferred reserve must not starve maps.
+  const list = leftMapRoot.querySelector<HTMLElement>(".map-tree-list");
+  const minimum = Math.max(MAP_TREE_AUTO_MIN_HEIGHT, list
+    ? Math.ceil(measuredHeight(leftMapRoot, 0) - measuredHeight(list, 0) + Math.min(108, listContentHeight(list)))
+    : 0);
+  const max = Math.max(minimum, Math.min(MAP_TREE_AUTO_MAX_HEIGHT, ratioCap, sheetCap));
+  const next = clamp(desired + MAP_TREE_AUTO_SLACK, minimum, max);
   if (next === mapTreeAutoHeight) return;
   mapTreeAutoHeight = next;
   applyLayout();

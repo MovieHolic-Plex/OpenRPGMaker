@@ -5,7 +5,8 @@ import { makeSvgIcon } from "@/editor/panels/tileToolbarIcons";
 import type { SvgIconName } from "@/editor/panels/tileToolbarIcons";
 import { isTileToolbarItemActive, selectMapModeTool, selectTileTool } from "@/editor/panels/tileToolbarActions";
 import type { TileToolId } from "@/editor/panels/tileToolbarActions";
-import { makeOverflowDropdown } from "@/editor/panels/tileToolbarMenus";
+import { getEditorChrome } from "@/editor/editorUiMode";
+import { makeInspectorDropdown, makeRuleAuditDropdown, makeHistoryDropdown, makeOverflowDropdown } from "@/editor/panels/tileToolbarMenus";
 import type { TileToolbarModel } from "@/editor/panels/tileToolbarMenus";
 import { store } from "@/project/store";
 
@@ -117,6 +118,14 @@ export function makeTileToolbar(model: TileToolbarModel): HTMLElement {
   row.append(scroll);
   // 좁은 팔레트에서도 1줄을 유지하기 위해 검사/기록/인스펙터는 ⋯ overflow 로 흡수.
   row.append(makeOverflowDropdown(model));
+  if (getEditorChrome().advancedSidebarControls) {
+    row.append(el("div", {
+      class: "sidebar-advanced-tools",
+      attrs: { role: "group", "aria-label": "고급 검사" },
+      dataset: { testid: "sidebar-advanced-tools" },
+      children: [makeInspectorDropdown(model), makeRuleAuditDropdown(model), makeHistoryDropdown(model)],
+    }));
+  }
 
   return row;
 }

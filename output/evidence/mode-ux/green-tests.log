@@ -1,0 +1,50 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/sidebarModeWorkflow.test.ts test/basicTilePalette.test.ts test/basicLeftRail.test.ts test/basicRailFlyout.test.ts test/tilePaletteSelection.test.ts test/tilePaletteGrid.test.ts test/tilePaletteGridRoving.test.ts test/tileToolbarOverflowReach.test.ts test/tileToolbarOverflowDismiss.test.ts test/tileToolbarAria.test.ts test/tileToolbarMapModeClickWiring.test.ts test/sidebarFocus.test.ts test/sidebarKeyboardNav.test.ts test/editorUiMode.test.ts test/leftDockPanels.test.ts --maxWorkers=4
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-calm-stone-5ef1
+
+ ✓ test/sidebarKeyboardNav.test.ts (6 tests) 1463ms
+   ✓ Sidebar Keyboard Navigation & Focus Survival Integration > Standard mode (renderTilePalette) > maintains focus on the same tool button across re-renders when activated  625ms
+ ✓ test/tilePaletteGridRoving.test.ts (6 tests) 1874ms
+   ✓ tile palette grid roving tabindex > exposes exactly one tab stop across the whole grid  430ms
+   ✓ tile palette grid roving tabindex > ArrowRight moves focus one column along the row  325ms
+   ✓ tile palette grid roving tabindex > ArrowDown moves focus one full row down, ArrowUp comes back  319ms
+ ✓ test/basicLeftRail.test.ts (17 tests) 2655ms
+ ✓ test/basicTilePalette.test.ts (4 tests) 159ms
+ ✓ test/tilePaletteGrid.test.ts (17 tests) 122ms
+ ✓ test/tileToolbarMapModeClickWiring.test.ts (3 tests) 1008ms
+   ✓ 렌더된 표준 도구막대의 맵 모드 클릭 배선 > 장면 놓기 버튼 클릭은 tool 과 layer 를 함께 이벤트로 바꾼다  450ms
+ ✓ test/editorUiMode.test.ts (9 tests) 31ms
+ ✓ test/tilePaletteSelection.test.ts (6 tests) 783ms
+ ✓ test/sidebarFocus.test.ts (11 tests) 42ms
+ ✓ test/basicRailFlyout.test.ts (9 tests) 12ms
+ ✓ test/leftDockPanels.test.ts (8 tests) 26896ms
+   ✓ 좌측 도크 구성은 워크스페이스 레이아웃을 따른다 > 맵 패널을 닫으면 맵 호스트가 좌측 도크에서 사라진다  15781ms
+   ✓ 좌측 도크 구성은 워크스페이스 레이아웃을 따른다 > 좌측 도크가 비어도 호스트가 최소 하나는 남는다 (.left-panel 은 비지 않는다)  2661ms
+   ✓ 좌측 도크 구성은 워크스페이스 레이아웃을 따른다 > 초보 모드는 레이아웃이 타일을 숨기라 해도 타일 호스트를 고정한다  2188ms
+   ✓ 좌측 도크 구성은 워크스페이스 레이아웃을 따른다 > 초보 레일의 --editor-left-safe 는 실제 레일 폭에서 파생한다  2327ms
+   ✓ 패널 메뉴는 실제로 되는 선택지만 제시한다 > 초보 모드에서는 레일 플라이아웃만 제공하고 렌더되지 않는 도크 토글은 어디에도 내놓지 않는다  3375ms
+ ✓ test/tileToolbarOverflowReach.test.ts (3 tests) 1170ms
+   ✓ 도구막대 오버플로 도달성 > 스크롤되는 도구들은 내부 컨테이너에, ⋯ 는 그 형제로 남는다  407ms
+   ✓ 도구막대 오버플로 도달성 > 열린 드롭다운은 잘리는 스크롤 컨테이너의 자손이 아니다  499ms
+ ✓ test/tileToolbarOverflowDismiss.test.ts (5 tests) 2711ms
+   ✓ 도구막대 오버플로 닫기 > Escape 로 닫고 포커스를 ⋯ 트리거로 되돌린다  637ms
+   ✓ 도구막대 오버플로 닫기 > 입력 중 Escape 는 가로채지 않는다 (초보 레일과 동일한 가드)  353ms
+   ✓ 도구막대 오버플로 닫기 > 바깥 pointerdown 은 닫고, 드롭다운·트리거 안의 pointerdown 은 유지한다  439ms
+   ✓ 도구막대 오버플로 닫기 > 인스펙터·규칙·기록 패널이 열려 있어도 Escape 로 전부 닫는다  539ms
+   ✓ 도구막대 오버플로 닫기 > 문서 리스너는 렌더마다 쌓이지 않는다  740ms
+ ✓ test/tileToolbarAria.test.ts (2 tests) 290ms
+ ✓ test/sidebarModeWorkflow.test.ts (11 tests) 6065ms
+   ✓ mode-specific sidebar painting workflow > provides visible beginner undo wired to actual map history and its change event  423ms
+   ✓ mode-specific sidebar painting workflow > keeps standard daily tools direct and advanced actions reachable once through More  571ms
+   ✓ mode-specific sidebar painting workflow > opens expert oprn-tool-inspector directly and returns Escape focus to its own trigger  1159ms
+   ✓ mode-specific sidebar painting workflow > opens expert toolbar-toggle-ruleAudit directly and returns Escape focus to its own trigger  1132ms
+   ✓ mode-specific sidebar painting workflow > opens expert toolbar-toggle-history directly and returns Escape focus to its own trigger  1132ms
+   ✓ mode-specific sidebar painting workflow > preserves selected tile and tool across mode changes while remounting the beginner picker  452ms
+
+ Test Files  15 passed (15)
+      Tests  117 passed (117)
+   Start at  07:08:14
+   Duration  51.25s (transform 36.63s, setup 0ms, collect 102.64s, tests 45.28s, environment 1.48s, prepare 1.83s)

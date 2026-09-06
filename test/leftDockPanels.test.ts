@@ -7,7 +7,7 @@
 //  · 동시에 `.left-panel` 이 비지 않는다는 2026-08-26 불변식은 지켜야 한다 —
 //    구성이 비면 레지스트리 선호 기본값으로 되돌리고, 초보 모드는 레일 호스트인
 //    `tiles` 를 고정한다(끄면 사이드바가 빈다).
-//  · 폭: 초보 레일의 실제 렌더 폭은 72px 이고 `--editor-left-safe` 는 거기서 파생해야 한다
+//  · 폭: 초보 레일의 실제 렌더 폭은 288px 이고 `--editor-left-safe` 는 거기서 파생해야 한다
 //    (하드코딩 60px 이면 어시스턴트 오버레이의 12px 여백이 0 이 된다).
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createBlankProject } from "@/project/defaults";
@@ -20,7 +20,7 @@ const LAYOUT_VERSION = "2026-07-24-maptree-300";
 const WORKSPACE_KEY = "oprn:workspace:v1";
 const UI_MODE_KEY = "oprn:editor-ui-mode";
 /** editor-ui-modes.css `--basic-rail-width` 와 같은 값 — 실측 렌더 폭이다. */
-const RAIL_WIDTH_PX = 72;
+const RAIL_WIDTH_PX = 288;
 
 class MemoryStorage implements Storage {
   private readonly values = new Map<string, string>();
