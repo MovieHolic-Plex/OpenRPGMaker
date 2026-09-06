@@ -370,13 +370,26 @@
         "m2:m2-001-show-text",
         "m2:m2-209-advanced-dialogue"
       ],
-      "status": "pending",
+      "status": "resolved",
       "unit": "U28",
-      "red": [],
-      "green": [],
-      "surface": [],
-      "commits": [],
-      "resolution": null
+      "red": [
+        ".omo/evidence/event-command-remediation/U28/G1-F18/red.json",
+        ".omo/evidence/event-command-remediation/U28/G1-F18/availability-red.json"
+      ],
+      "green": [
+        ".omo/evidence/event-command-remediation/U28/G1-F18/adjacent.json",
+        ".omo/evidence/event-command-remediation/checkpoints/text-tools-integration.json",
+        ".omo/evidence/event-command-remediation/U28/G1-F18/supervisor-summary.json"
+      ],
+      "surface": [
+        ".omo/evidence/event-command-remediation/U28/G1-F18/surface-U5xuRo/native/editor-observations.json",
+        ".omo/evidence/event-command-remediation/U28/G1-F18/surface-U5xuRo/raw209/editor-observations.json",
+        ".omo/evidence/event-command-remediation/U28/G1-F18/surface-U5xuRo/player-observations.json"
+      ],
+      "commits": [
+        "5d4680616acf51f3d9b67e53dd3746a4bbba983e"
+      ],
+      "resolution": "Text tools insert the explicitly chosen actor/variable after picker confirmation, preserving caret/range, metadata, Cancel and current records after creation. Existing numeric grammar and alias priority are retained; unrepresentable/shadowed IDs remain visibly disabled and keyboard-ineligible. Native, M2-001 creation and M2-209 load-normalized paths are covered. Integrated editor/package import and player rendering prove Other29, rejecting wrong actor/value expectations."
     },
     "G1-F19": {
       "title": "감정 서비스의 필수 대상 풀을 작성할 수 없다",
