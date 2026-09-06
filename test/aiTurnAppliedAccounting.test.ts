@@ -11,6 +11,8 @@ import { createBlankProject } from "@/project/defaults";
 import { runTool } from "@/editor/tools/toolRunner";
 import { store } from "@/project/store";
 import { installFakeDom } from "./fakeDom";
+import { HISTORICAL_PLACEMENT_CORRECTION } from "./fixtures/placementRequests";
+import { isProposalCompletenessWarning } from "@/ai/proposalCompleteness";
 
 const observed = vi.hoisted(() => ({
   activity: vi.fn(async () => ({})),
@@ -118,6 +120,23 @@ describe("running-tool event target forwarding", () => {
 });
 
 describe("턴 표면의 이미 적용된 쓰기 정산", () => {
+  it.each([
+    [HISTORICAL_PLACEMENT_CORRECTION, 0],
+    ["기존 나무 10개는 보존하고 꽃 3개 추가해줘", 1],
+    ["나무 10개 배치해줘", 1],
+    ["이름을 바꿔줘\n[컨텍스트] 현재 맵: 나무 10개 추가해줘 (map_blank_start)", 0],
+  ] satisfies ReadonlyArray<readonly [string, number]>)("displays placement warnings only for requested additions: %s", async (requestText, expected) => {
+    const h = setup();
+    const args = { mapId: store.getCurrent().startMapId, name: "마을" };
+    const result = runTool({ project: store.getCurrent() }, "set_map_properties", args);
+    expect(result.ok, result.summary).toBe(true);
+    await h.runner.executeTurn(h.session, requestText, async () => ({
+      assistantText: "", proposedCalls: [],
+      appliedCalls: [{ name: "set_map_properties", args, result, summary: result.summary }], stoppedReason: "final",
+    }));
+    expect(h.appendBubble.mock.calls.filter(([, text]) => isProposalCompletenessWarning(text))).toHaveLength(expected);
+  });
+
   it("활동 로그 변환기와 JSON 왕복이 적용 건수를 보존한다", () => {
     const record = buildAiActivityLogRecord({
       channel: "chat", instruction: "타이틀 변경", toolCalls: [], audit: [],

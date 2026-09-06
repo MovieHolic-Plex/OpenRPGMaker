@@ -3,6 +3,7 @@
 // coverage first, then only low-risk request/count heuristics when there is no spec.
 
 import { affectedRegions, type AffectedRegion, type BuildSpec, type SpecAsset } from "./buildSpec";
+import { stripContextFooter } from "./contextFooter";
 import type { IntentDeclaration } from "./intentDeclaration";
 import { QUICK_REPLY_MARKER } from "./interviewPrompt";
 import type { ChangeSummary } from "@/editor/tools/types";
@@ -34,12 +35,14 @@ export interface ProposalCompletenessInput {
 
 export function proposalCompletenessWarnings(input: ProposalCompletenessInput): string[] {
   const intent = input.intent && input.intent.source === "llm" ? input.intent : null;
+  // Both session gates and the runner must count user requests, not editor facts.
+  const requestText = stripContextFooter(input.requestText ?? "");
   const base = input.buildSpec
     ? buildSpecCompletenessWarnings(input.buildSpec, input.calls)
-    : heuristicCompletenessWarnings(input.requestText ?? "", input.calls, input.assistantText ?? "", intent);
+    : heuristicCompletenessWarnings(requestText, input.calls, input.assistantText ?? "", intent);
   return dedupe([
     ...base,
-    ...interiorCompletenessWarnings(input.requestText ?? "", input.calls, intent),
+    ...interiorCompletenessWarnings(requestText, input.calls, intent),
     ...questGraphCompletenessWarnings(input.calls),
   ]);
 }
@@ -438,8 +441,20 @@ function hasMeaningfulDiff(diff: ChangeSummary | undefined): boolean {
 }
 
 function requestedPlacementCount(text: string): number | null {
-  const withoutDimensions = text.replace(/\d+\s*(?:x|×)\s*\d+/gi, " ");
-  const matches = [...withoutDimensions.matchAll(/(\d{1,3})\s*(개체|그루|송이|마리|채|명|곳|개|대)/g)];
+  // This fallback is a placement lint, not arithmetic over every counter in a
+  // correction. Quoted output is evidence, and preservation/consumption clauses
+  // cannot borrow a later addition's verb. Keep coordinated objects together.
+  const request = text
+    .replace(/```[\s\S]*?```|~~~[\s\S]*?~~~/g, " ")
+    .replace(/^\s*>.*$/gm, " ")
+    .replace(/"[^"\n]*"|'[^'\n]*'|“[^”]*”|‘[^’]*’|「[^」]*」|`[^`\n]*`/g, " ")
+    .replace(/\d+\s*(?:x|×)\s*\d+/gi, " ");
+  const clauses = request.split(/[.!?;\n]|(?<=하고|하며|있고|이고|지만|두고|두며|한 채|한 뒤)\s+/u);
+  const placements = clauses.filter((clause) => {
+    if (!/(?:배치|추가|생성|설치)(?:\s*(?:해|하|할|부탁)|\s*$)|만들(?:어|자|고)|지어|심어|놓아|놔|\b(add|place|build|create|plant)\b/i.test(clause)) return false;
+    return !/(보존|유지|그대로|소비|소모|사용|차감|인벤토리|소지|보유)|\b(inventory|consume|keep|preserve)\b/i.test(clause);
+  });
+  const matches = placements.flatMap((clause) => [...clause.matchAll(/(\d{1,3})\s*(개체|그루|송이|마리|채|명|곳|개|대)/g)]);
   const counts = matches
     .map((match) => Number.parseInt(match[1] ?? "", 10))
     .filter((count) => Number.isInteger(count) && count > 0);
