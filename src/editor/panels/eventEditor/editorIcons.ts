@@ -41,6 +41,7 @@ export type EditorIconName =
   | "warning"
   | "info"
   | "drag"
+  | "minimize"
   | "expand"
   | "collapse"
   | "person"
@@ -104,6 +105,7 @@ const SPECS: Readonly<Record<EditorIconName, readonly SvgNodeSpec[]>> = {
   warning: [path("M11 3.5l8.5 15H2.5L11 3.5z"), path("M11 9v4"), dot("11", "16", "0.9")],
   info: [{ tag: "circle", attrs: { cx: "11", cy: "11", r: "8" } }, path("M11 10v5"), dot("11", "7", "0.9")],
   drag: [dot("8", "6"), dot("14", "6"), dot("8", "11"), dot("14", "11"), dot("8", "16"), dot("14", "16")],
+  minimize: [path("M5 11h12")],
   expand: [path("M4 8.5V4h4.5M18 8.5V4h-4.5M4 13.5V18h4.5M18 13.5V18h-4.5")],
   collapse: [path("M8.5 4v4.5H4M13.5 4v4.5H18M8.5 18v-4.5H4M13.5 18v-4.5H18")],
   person: [{ tag: "circle", attrs: { cx: "11", cy: "7.5", r: "3.5" } }, path("M4 19c.7-4 3.5-6 7-6s6.3 2 7 6")],

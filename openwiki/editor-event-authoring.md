@@ -1,5 +1,47 @@
 # Editor Event Authoring
 
+## Event editor window controls (2026-09-06)
+
+- `eventEditor/modal.ts` retains one mounted editor while minimized, rather than
+  closing or creating another draft. The top-right group uses native SVG buttons:
+  `event-editor-window-minimize`, `event-editor-window-fullscreen`, and the
+  existing `event-editor-modal-close`. Full-view rendering/geometry is still
+  owned by `modalFullscreen.ts`; drag/resize keep their existing owners.
+- The final `event-editor.balanced.css` rules override the old full-viewport
+  default with an inset, bounded normal window and right-aligned 32px controls.
+  Full view uses the existing 6px viewport inset and restores prior inline size
+  and translation. Double-click ignores button SVG/summary targets; Alt+Enter
+  and Escape retain their previous maximize/restore behavior.
+- Minimize suspends refresh **before blur**, preserving native pending fields,
+  dynamic DOM, selection and caret through background map/selection updates.
+  It removes the modal stack entry, focus trap and body-open class and hides the
+  whole backdrop. `hotkeys.ts` ignores hidden retained event modals for both
+  general map shortcuts and history ownership. `event-editor-window-restore` is a named keyboard-reachable
+  chip, not a modal. Restore reinstates the saved event/page selection while
+  refresh is still suspended, then returns keyboard focus to the retained field.
+  Same-event map reopening dispatches restore, including new unsaved drafts.
+- Store subscriptions remain only to preserve draft validity while dormant:
+  deletion with an empty vault closes; `projectSwitch` or project identity change
+  tears down without discarding/writing the incoming project's same-ID draft.
+  Ordinary undo/AI replace continues to honor the existing draft vault contract.
+- Close cleanup is shared by normal close, switch, project replacement and the
+  existing `oprn:event-editor-close` event. A body detach observer also disposes
+  externally removed modals. All subscriptions, checkpoints, custom-select and
+  fullscreen listeners, restore chip and focus ownership end there. Pending
+  discard confirms are bound to their owning editor and canceled on teardown;
+  stale asynchronous approvals cannot reopen an editor in a new project.
+- Switching to a different event restores a dormant window before flushing and
+  asking to discard; declining keeps editing. Minimize/restore does not steal
+  focus from a higher modal. Save/Apply/Cancel and local command history remain
+  unchanged; no app-wide window manager or persistence schema was introduced.
+- Deterministic happy-dom coverage: `test/eventEditorWindowControls.test.ts`.
+  Browser surface scenario: `test/e2e/event-editor-window-controls.spec.ts`, using
+  a local-only blank session and real native pointer/keyboard controls at
+  1024x768, 1280x800, 1440x900. Run with
+  `DEV_SERVER_PORT=<worktree-port> E2E_RETRIES=0 npx playwright test test/e2e/event-editor-window-controls.spec.ts`.
+  It has no fixed sleeps or polling loop; output includes normal/minimized/
+  maximized/saved screenshots. Lead owns full gates and independent visual QA.
+
 ## 이벤트 편집기 가독성 — 읽는 글자와 꾸미는 글자 (2026-09-03 후속)
 
 P0 문법 고정 뒤에도 「가독성이 여전히 떨어진다」는 피드백이 와서, 목록 보기를 다시 실측하고 고쳤다. 실측은 `scripts/qa-event-editor-ux.mjs` 의 C13~C16 이고, 증거는 `.omo/evidence/event-editor-ux/readability-red/`(고치기 전) 와 `readability-green/`(고친 뒤) 이다.

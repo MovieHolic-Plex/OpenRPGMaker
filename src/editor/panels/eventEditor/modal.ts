@@ -11,14 +11,14 @@ import {
 } from "@/editor/eventDraftActions";
 import { updateEventPage } from "@/editor/eventPages";
 import { eventDraftDiffById, eventDraftHasUserChanges } from "@/project/eventDrafts";
-import { showConfirm } from "@/editor/ui/modal";
+import { showConfirm, type ConfirmOptions } from "@/editor/ui/modal";
 import { validateEventDraft, type EventDraftValidation } from "@/editor/eventDraftValidator";
 import { openSelectedEventTestModal } from "@/editor/panels/testPlayModal";
 import { store, type AutoSaveState } from "@/project/store";
 import type { EventPage, MapId } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { renderEditorIcon } from "./editorIcons";
-import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
+import { isTopModal, hasOpenModalLayer, registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { clearEventAiLiveDock } from "./aiAssist";
 import {
   openActiveEventCommandPicker,
@@ -44,6 +44,7 @@ import { toast } from "@/util/toast";
 const EVENT_EDITOR_MODAL_TEST_ID = "event-editor-modal";
 const EVENT_EDITOR_CLOSE_EVENT = "oprn:event-editor-close";
 const EVENT_EDITOR_CHECKPOINT_MS = 1500;
+const EVENT_EDITOR_RESTORE_EVENT = "oprn:event-editor-restore";
 
 type OpenEventEditorRequest = {
   readonly mapId: MapId;
@@ -51,6 +52,11 @@ type OpenEventEditorRequest = {
 };
 
 export function openEventEditorModal(mapId: MapId, eventId: string): void {
+  if (isEventEditorModalOpenFor(mapId, eventId)) {
+    document.querySelector(`[data-testid='${EVENT_EDITOR_MODAL_TEST_ID}']`)
+      ?.dispatchEvent(new CustomEvent(EVENT_EDITOR_RESTORE_EVENT));
+    return;
+  }
   guardedCloseExistingEventEditorModal(() => {
     if (!beginExistingEventDraft(mapId, eventId)) return;
     openDraftEventEditorModal({ mapId, eventId });
@@ -74,6 +80,9 @@ function guardedCloseExistingEventEditorModal(next: () => void): void {
     next();
     return;
   }
+  if (existing.dataset.switchGuard === "true") return;
+  if (hasOpenModalLayer() && !isTopModal(existing)) return;
+  existing.dispatchEvent(new CustomEvent(EVENT_EDITOR_RESTORE_EVENT));
   const prevMapId = existing.dataset.mapId as MapId | undefined;
   const prevEventId = existing.dataset.eventId;
   flushPendingModalField(existing);
@@ -85,17 +94,28 @@ function guardedCloseExistingEventEditorModal(next: () => void): void {
     next();
     return;
   }
-  void showConfirm({
+  existing.dataset.switchGuard = "true";
+  void confirmEventEditor(existing, {
     title: "편집 중인 이벤트",
     message: "먼저 열린 이벤트에 적용하지 않은 변경이 있어요.\n버리고 다른 이벤트를 열까요?",
     confirmLabel: "버리고 열기",
     cancelLabel: "계속 편집",
     danger: true,
   }).then((discard) => {
-    if (!discard) return;
+    delete existing.dataset.switchGuard;
+    if (!existing.isConnected || existing.dataset.closed === "true" || !discard) return;
     closeExistingEventEditorModal();
     next();
   });
+}
+
+/** A pending discard decision cannot outlive its editor or cross a project switch. */
+function confirmEventEditor(parent: HTMLElement, options: ConfirmOptions): Promise<boolean> {
+  const result = showConfirm(options);
+  const dialog = document.querySelector('[data-testid="app-confirm-modal"]');
+  const cancel = (): void => dialog?.querySelector<HTMLElement>('[data-testid="app-modal-cancel"]')?.click();
+  parent.addEventListener(EVENT_EDITOR_CLOSE_EVENT, cancel);
+  return result.finally(() => parent.removeEventListener(EVENT_EDITOR_CLOSE_EVENT, cancel));
 }
 
 function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
@@ -122,25 +142,81 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
   body.append(dynamicBody, stableBody);
   const customSelects = installEventEditorCustomSelects(backdrop);
   let closed = false;
+  let minimized = false;
   let closeGuardOpen = false;
+  let disposeFocusTrap = (): void => {};
+  const projectIdentity = store.getProjectIdentity();
+  const ownerDocument = document;
+  const opener = ownerDocument.activeElement instanceof HTMLElement ? ownerDocument.activeElement : null;
+  let editingFocus: HTMLElement | null = null;
+  let editingSelection: { readonly start: number; readonly end: number } | null = null;
+  let minimizedPageId: string | null = null;
+  const restoreChip = el("button", {
+    class: "event-editor-window-restore",
+    attrs: { type: "button" },
+    dataset: { testid: "event-editor-window-restore" },
+    children: [renderEditorIcon("expand"), el("span", { text: "이벤트 편집 계속" })],
+    on: { click: () => restoreWindow() },
+  });
+  backdrop.addEventListener("focusin", (event) => {
+    if (event.target instanceof HTMLElement && !event.target.closest(".event-editor-window-controls")) {
+      editingFocus = event.target;
+    }
+  });
+  const restoreWindow = (): void => {
+    if (closed || (hasOpenModalLayer() && !isTopModal(backdrop))) return;
+    if (minimized) {
+      // Keep refresh suspended while the canvas selection returns to this draft.
+      editorState.set({ currentMapId: request.mapId, selectedEventId: request.eventId, selectedEventPageId: minimizedPageId });
+      minimized = false;
+      backdrop.hidden = false;
+      restoreChip.remove();
+      document.body.classList.add("event-editor-modal-open");
+      registerModal(backdrop, requestModalEscape);
+      disposeFocusTrap = installFocusTrap(backdrop, windowEl);
+    }
+    if (editingFocus?.isConnected) {
+      editingFocus.focus({ preventScroll: true });
+      if (editingSelection && (editingFocus instanceof HTMLInputElement || editingFocus instanceof HTMLTextAreaElement)) {
+        editingFocus.setSelectionRange(editingSelection.start, editingSelection.end);
+      }
+    } else focusFirstDialogControl(backdrop);
+  };
+  const minimizeWindow = (): void => {
+    if (closed || minimized || closeGuardOpen || !isTopModal(backdrop)) return;
+    minimizedPageId = editorState.get().selectedEventPageId;
+    editingSelection = null;
+    if (editingFocus instanceof HTMLInputElement || editingFocus instanceof HTMLTextAreaElement) {
+      const { selectionStart, selectionEnd } = editingFocus;
+      editingSelection = selectionStart === null || selectionEnd === null ? null : { start: selectionStart, end: selectionEnd };
+    }
+    // Suspend before blur: native change handlers may emit a store refresh.
+    minimized = true;
+    flushPendingModalField(backdrop);
+    checkpointEventDraft(request.mapId, request.eventId);
+    const name = backdrop.querySelector<HTMLInputElement>('[data-testid="event-editor-name"]')?.value ?? request.eventId;
+    const label = `이벤트 편집 계속: ${name}`;
+    restoreChip.setAttribute("aria-label", label);
+    restoreChip.title = label;
+    const text = restoreChip.querySelector("span");
+    if (text) text.textContent = label;
+    backdrop.hidden = true;
+    unregisterModal(backdrop);
+    disposeFocusTrap();
+    document.body.classList.remove("event-editor-modal-open");
+    document.body.append(restoreChip);
+    restoreChip.focus({ preventScroll: true });
+  };
+  backdrop.addEventListener(EVENT_EDITOR_RESTORE_EVENT, restoreWindow);
   let disposeWindowFullscreen = (): void => {};
   let exitWindowFullscreen = (): boolean => false;
   const closeHandler = (saved = false): void => {
     if (closed) return;
-    closed = true;
-    setCommandSelectionListener(undefined);
-    clearCommandInspector();
-    setCommandInspectorHost(undefined);
-    unregisterModal(backdrop);
     backdrop.dispatchEvent(new CustomEvent(EVENT_EDITOR_CLOSE_EVENT, { detail: { saved: saved === true } }));
     backdrop.remove();
-    if (typeof document !== "undefined" && !document.querySelector("[data-testid='event-editor-modal']")) {
-      document.body.classList.remove("event-editor-modal-open");
-    }
-    disposeFocusTrap();
   };
   const requestClose = (): void => {
-    if (closed || closeGuardOpen) return;
+    if (closed || closeGuardOpen || minimized || !isTopModal(backdrop)) return;
     flushPendingModalField(backdrop);
     if (!eventDraftHasUserChanges(store.getCurrent(), request.mapId, request.eventId)) {
       closeHandler(false);
@@ -149,7 +225,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     const isNew = store.getCurrent().maps[request.mapId]?.events
       .find((event) => event.id === request.eventId)?.draft?.kind === "new";
     closeGuardOpen = true;
-    void showConfirm({
+    void confirmEventEditor(backdrop, {
       title: "적용하지 않은 변경",
       message: isNew
         ? "만들던 새 이벤트가 아직 프로젝트에 반영되지 않았어요.\n버리고 닫을까요?"
@@ -161,6 +237,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
       danger: true,
     }).then((discard) => {
       closeGuardOpen = false;
+      if (closed) return;
       if (discard) {
         closeHandler(false);
         return;
@@ -170,15 +247,21 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     });
   };
   const requestModalEscape = (): void => {
+    if (closed || minimized) return;
+    // modalStack removes its entry before calling us, even if closing is declined.
+    unregisterModal(backdrop);
+    registerModal(backdrop, requestModalEscape);
     if (exitWindowFullscreen()) {
-      unregisterModal(backdrop);
-      registerModal(backdrop, requestModalEscape);
       return;
     }
     requestClose();
   };
   registerModal(backdrop, requestModalEscape);
   const header = renderModalHeader(request.mapId, request.eventId, closeHandler, requestClose);
+  header.querySelector('[data-testid="event-editor-window-minimize"]')?.addEventListener("click", minimizeWindow);
+  // Pointer activation must not blur/rebuild the active command field before
+  // minimize can retain it. Keyboard activation uses the remembered editing focus.
+  header.querySelector(".event-editor-window-controls")?.addEventListener("pointerdown", (event) => event.preventDefault());
   attachWindowDrag(header, windowEl);
   const fullscreenButton = header.querySelector<HTMLButtonElement>("[data-testid='event-editor-window-fullscreen']");
   if (fullscreenButton) {
@@ -200,11 +283,15 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
   });
   let stableRendered = false;
   const refresh = () => {
+    if (closed || minimized) return;
     const scrollSnapshots = captureEventEditorScroll(dynamicBody);
     const interactionSnapshot = captureEventEditorInteraction(dynamicBody);
     try {
       const live = store.getCurrent().maps[request.mapId]?.events.some((event) => event.id === request.eventId);
-      if (!live) store.restoreEventDraftFromVault(request.mapId, request.eventId);
+      if (!live && !store.restoreEventDraftFromVault(request.mapId, request.eventId)) {
+        closeHandler(true);
+        return;
+      }
       if (!stableRendered) {
         clearChildren(stableBody);
         renderEventEditorStable(stableBody, request.mapId, request.eventId);
@@ -235,7 +322,19 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
       console.error("[event-editor] failed to restore editor chrome", error);
     }
   };
-  const unsubscribeStore = store.subscribe(refresh);
+  const unsubscribeStore = store.subscribe((_project, change) => {
+    const identity = store.getProjectIdentity();
+    if (change.projectSwitch || identity.kind !== projectIdentity.kind || identity.id !== projectIdentity.id) {
+      closeHandler(true);
+      return;
+    }
+    const live = store.getCurrent().maps[request.mapId]?.events.some(event => event.id === request.eventId);
+    if (!live && !store.restoreEventDraftFromVault(request.mapId, request.eventId)) {
+      closeHandler(true);
+      return;
+    }
+    refresh();
+  });
   const unsubscribeEditor = editorState.subscribe(refresh);
   const unsubscribeAutoSave = store.subscribeAutoSave(() => {
     refreshModalFooterStatus(footer, request);
@@ -245,8 +344,26 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     const diff = eventDraftDiffById(store.getCurrent(), request.mapId, request.eventId);
     if (diff && diff.changes.length > 0) checkpointEventDraft(request.mapId, request.eventId);
   }, EVENT_EDITOR_CHECKPOINT_MS);
-  backdrop.addEventListener("keydown", (event) => handleModalKeyDown(event, request));
+  backdrop.addEventListener("keydown", (event) => {
+    if (!closed && !minimized && isTopModal(backdrop)) handleModalKeyDown(event, request);
+  });
+  const detachObserver = typeof MutationObserver === "undefined" ? null : new MutationObserver(() => {
+    if (!backdrop.isConnected) closeHandler(false);
+  });
+  detachObserver?.observe(document.body, { childList: true });
   backdrop.addEventListener(EVENT_EDITOR_CLOSE_EVENT, (event) => {
+    if (closed) return;
+    closed = true;
+    backdrop.dataset.closed = "true";
+    detachObserver?.disconnect();
+    setCommandSelectionListener(undefined);
+    clearCommandInspector();
+    setCommandInspectorHost(undefined);
+    unregisterModal(backdrop);
+    disposeFocusTrap();
+    restoreChip.remove();
+    // A discard decision can settle after its document was detached or replaced.
+    ownerDocument.body.classList.remove("event-editor-modal-open");
     clearEventCommandNavigation();
     const saved = event instanceof CustomEvent && event.detail?.saved === true;
     disposeWindowFullscreen();
@@ -258,13 +375,19 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     unsubscribeEditor();
     unsubscribeAutoSave();
     if (!saved) discardEventDraft(request.mapId, request.eventId);
+    // Let all child cleanup listeners run while the parent remains attached.
+    queueMicrotask(() => backdrop.remove());
+    if (typeof document !== "undefined" && document === ownerDocument && opener?.isConnected && !hasOpenModalLayer()) {
+      opener.focus({ preventScroll: true });
+    }
   });
   const openedAt = performance.now();
   let openLeakSwallowed = false;
   backdrop.addEventListener(
     "dblclick",
     (event) => {
-      if (openLeakSwallowed || performance.now() - openedAt >= 800) return;
+      // Only swallow the opening canvas double-click, never titlebar controls.
+      if (event.target !== backdrop || openLeakSwallowed || performance.now() - openedAt >= 800) return;
       openLeakSwallowed = true;
       event.stopPropagation();
       event.preventDefault();
@@ -443,29 +566,40 @@ function renderModalHeader(
             }},
           }),
           el("button", {
-            class: "icon-btn event-editor-modal-close",
-            children: [renderEditorIcon("close")],
-            attrs: { type: "button", title: "닫기", "aria-label": "닫기" },
-            dataset: { testid: "event-editor-modal-close" },
-            on: { click: () => requestClose() },
-          }),
-          el("button", {
             attrs: { type: "button", style: "display: none;" },
             dataset: { testid: "event-editor-ok" },
             on: { click: saveAction },
           }),
-          el("button", {
-            class: "event-editor-window-control event-editor-window-fullscreen",
-            children: [renderEditorIcon("expand")],
-            attrs: {
-              type: "button",
-              title: "전체 보기 (Alt+Enter)",
-              "aria-label": "전체 보기",
-              "aria-keyshortcuts": "Alt+Enter",
-              "aria-pressed": "false",
-              style: "display: none;",
-            },
-            dataset: { testid: "event-editor-window-fullscreen" },
+          el("div", {
+            class: "event-editor-window-controls",
+            attrs: { role: "group", "aria-label": "이벤트 편집 창" },
+            children: [
+              el("button", {
+                class: "event-editor-window-control",
+                children: [renderEditorIcon("minimize")],
+                attrs: { type: "button", title: "최소화", "aria-label": "이벤트 편집 창 최소화" },
+                dataset: { testid: "event-editor-window-minimize" },
+              }),
+              el("button", {
+                class: "event-editor-window-control event-editor-window-fullscreen",
+                children: [renderEditorIcon("expand")],
+                attrs: {
+                  type: "button",
+                  title: "전체 보기 (Alt+Enter)",
+                  "aria-label": "전체 보기",
+                  "aria-keyshortcuts": "Alt+Enter",
+                  "aria-pressed": "false",
+                },
+                dataset: { testid: "event-editor-window-fullscreen" },
+              }),
+              el("button", {
+                class: "event-editor-window-control event-editor-modal-close",
+                children: [renderEditorIcon("close")],
+                attrs: { type: "button", title: "닫기", "aria-label": "닫기" },
+                dataset: { testid: "event-editor-modal-close" },
+                on: { click: () => requestClose() },
+              }),
+            ],
           }),
         ],
       }),
@@ -744,7 +878,7 @@ function footerButtonAccessibleName(text: string): string {
 
 function installFocusTrap(backdropEl: HTMLElement, windowEl: HTMLElement): () => void {
   const trap = (event: KeyboardEvent): void => {
-    if (event.key !== "Tab") return;
+    if (event.key !== "Tab" || !isTopModal(backdropEl)) return;
     const focusable = Array.from(
       windowEl.querySelectorAll<HTMLElement>(
         "button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex='-1'])",
@@ -762,7 +896,6 @@ function installFocusTrap(backdropEl: HTMLElement, windowEl: HTMLElement): () =>
   backdropEl.addEventListener("keydown", trap);
   return () => backdropEl.removeEventListener("keydown", trap);
 }
-let disposeFocusTrap: () => void = () => {};
 function focusFirstDialogControl(root: HTMLElement): void {
   const first = root.querySelector<HTMLElement>(
     ".event-editor-modal-body input:not(:disabled), " +
