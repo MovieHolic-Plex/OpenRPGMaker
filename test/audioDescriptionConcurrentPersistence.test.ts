@@ -47,6 +47,35 @@ async function openStore(project: Project) {
 }
 
 describe("audio description concurrent persistence", () => {
+  it.each([
+    { name: "missing", descriptions: undefined },
+    { name: "cleared", descriptions: { music: { replacement: "" } } },
+    { name: "authored", descriptions: { music: { replacement: "PROJECT_B_ONLY" } } },
+  ])("keeps replacement project descriptions $name while an old save completes", async ({ descriptions }) => {
+    const base = audioDescriptionProject(undefined);
+    base.meta.title = "PROJECT_A";
+    const remote = audioDescriptionProject({ music: { remote_only_A: "REMOTE_PROJECT_A" } }, base);
+    const transport = createAudioDescriptionTransport(remote, persistenceSignal);
+    vi.stubGlobal("fetch", transport.fetch);
+    const store = await openStore(base);
+    store.updateMap(base.startMapId, map => { map.name = "A_EDIT"; });
+    const held = transport.holdNextPatch();
+    const pending = store.flush();
+    await held.entered();
+    const replacement = audioDescriptionProject(descriptions, base);
+    replacement.meta.title = "PROJECT_B";
+    store.replaceProject(replacement);
+    held.release();
+    await pending;
+    await transport.waitForCommits(1);
+    expect(store.getCurrent().meta.title).toBe("PROJECT_B");
+    expect(store.getCurrent().audioDescriptions).toEqual(descriptions);
+    expect(transport.accepted.map(project => project.meta.title)).toEqual(["PROJECT_A", "PROJECT_B"]);
+    expect(transport.accepted[1]?.audioDescriptions).toEqual(descriptions);
+    expect((await loadProjectFromSupabase(CONFIG))?.audioDescriptions).toEqual(descriptions);
+    expect(store.hasUnsavedChanges()).toBe(false);
+  }, 30_000);
+
   it.each([false, true])("cancels transport waits when already aborted is %s", async (alreadyAborted) => {
     const controller = new AbortController();
     const reason = new Error("cancelled by owning test");

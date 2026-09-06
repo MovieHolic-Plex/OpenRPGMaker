@@ -218,6 +218,8 @@ class ProjectStore {
   private dirtySinceLastPersist = false;
   /** Bumps on every local edit. Used so in-flight remote saves cannot rewind paint. */
   private mutationGeneration = 0;
+  /** Separates project replacement from edits within the same in-flight save. */
+  private projectEpoch = 0;
   /**
    * Read-only player snapshot used by editor sandbox tests. Mutations and every
    * persistence path continue to operate on `current`, so a test run cannot
@@ -628,6 +630,7 @@ class ProjectStore {
     try {
       const project = await loadProjectFromSupabase();
       if (project) {
+        this.projectEpoch += 1;
         this.current = preserveEventDraftsOnProject(project, this.current);
         clearCopiedEventPage();
         syncEventDraftVaultFromProject(this.current);
@@ -676,6 +679,7 @@ class ProjectStore {
       if (!project) {
         return { kind: "failed", message: "DB에서 프로젝트를 찾을 수 없습니다.", projectId };
       }
+      this.projectEpoch += 1;
       this.current = preserveEventDraftsOnProject(project, this.current);
       syncEventDraftVaultFromProject(this.current);
       this.remotePersistenceEnabled = true;
@@ -727,6 +731,10 @@ class ProjectStore {
   ): void {
     ensureSwitchVariableSlots(project);
     removeLegacySpriteReferences(project);
+    if (options.preserveEventDrafts === false || options.change?.projectSwitch === true) {
+      this.projectEpoch += 1;
+      this.persistedBaseline = null;
+    }
     if (options.change?.projectSwitch === true) clearCopiedEventPage();
     // Default: keep open event editor drafts across undo/AI/accept/remote merges.
     // Pass preserveEventDrafts:false only for intentional full project switches
@@ -830,6 +838,8 @@ class ProjectStore {
     clearEventDraftVault();
     clearCopiedEventPage();
     persistEventDraftVaultNow();
+    this.projectEpoch += 1;
+    this.persistedBaseline = null;
     this.current = createBlankProject();
     if (this.loadedRemoteProjectId === null) this.beginLocalProjectSession();
     this.markLocalMutation({ scope: "project", label: "전체 초기화" });
@@ -1111,6 +1121,7 @@ class ProjectStore {
     }
     // Snapshot local state at submit time. Paint during await must win over the response.
     const generationAtSubmit = this.mutationGeneration;
+    const epochAtSubmit = this.projectEpoch;
     const submittedProject = projectWithoutEventDrafts(this.current);
     // 커밋 로그가 쓸 diff baseline — **이 저장 직전에 서버가 갖고 있던 내용**이다.
     // 아래에서 `this.persistedBaseline` 을 저장 결과로 갈아치우므로 여기서 잡아두지 않으면
@@ -1123,6 +1134,8 @@ class ProjectStore {
       : await saveProjectToSupabase(submittedProject);
     if (result.kind === "not-configured") return result;
     if (result.kind === "conflict") return result;
+    // A replacement owns its own baseline; the old response cannot reconcile into it.
+    if (this.projectEpoch !== epochAtSubmit) return result;
     const savedProject = result.project ?? submittedProject;
     // Baseline tracks what the server accepted — not what the editor is showing.
     this.persistedBaseline = structuredClone(projectWithoutEventDrafts(savedProject));
@@ -1160,6 +1173,7 @@ class ProjectStore {
    * for the current DB project id.
    */
   private adoptProject(project: Project, options: { readonly restoreVault: boolean }): void {
+    this.projectEpoch += 1;
     clearEventDraftVault();
     clearCopiedEventPage();
     if (options.restoreVault) {
