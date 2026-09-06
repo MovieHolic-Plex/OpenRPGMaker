@@ -1,0 +1,399 @@
+{
+  "traces": [
+    {
+      "index": 0,
+      "command": {
+        "kind": "m2Command",
+        "commandId": "m2-086-erase-event",
+        "fields": {
+          "futureOption": "retained",
+          "eventId": "selectedOther"
+        }
+      },
+      "confirmed": {
+        "status": "success",
+        "before": [
+          {
+            "value": {
+              "kind": "m2Command",
+              "commandId": "m2-086-erase-event",
+              "fields": {
+                "futureOption": "retained"
+              }
+            }
+          }
+        ],
+        "after": [
+          {
+            "value": {
+              "kind": "m2Command",
+              "commandId": "m2-086-erase-event",
+              "fields": {
+                "futureOption": "retained",
+                "eventId": "selectedOther"
+              }
+            }
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "geometry": [
+        {
+          "width": 1024,
+          "height": 768,
+          "overflow": false,
+          "actions": [
+            {
+              "x": 725,
+              "y": 506.3999938964844,
+              "right": 801,
+              "bottom": 538.3999938964844,
+              "width": 76,
+              "height": 32
+            },
+            {
+              "x": 809,
+              "y": 506.3999938964844,
+              "right": 885,
+              "bottom": 538.3999938964844,
+              "width": 76,
+              "height": 32
+            }
+          ],
+          "focused": null
+        },
+        {
+          "width": 1280,
+          "height": 800,
+          "overflow": false,
+          "actions": [
+            {
+              "x": 853,
+              "y": 522.4000244140625,
+              "right": 929,
+              "bottom": 554.4000244140625,
+              "width": 76,
+              "height": 32
+            },
+            {
+              "x": 937,
+              "y": 522.4000244140625,
+              "right": 1013,
+              "bottom": 554.4000244140625,
+              "width": 76,
+              "height": 32
+            }
+          ],
+          "focused": null
+        },
+        {
+          "width": 1440,
+          "height": 900,
+          "overflow": false,
+          "actions": [
+            {
+              "x": 933,
+              "y": 572.4000244140625,
+              "right": 1009,
+              "bottom": 604.4000244140625,
+              "width": 76,
+              "height": 32
+            },
+            {
+              "x": 1017,
+              "y": 572.4000244140625,
+              "right": 1093,
+              "bottom": 604.4000244140625,
+              "width": 76,
+              "height": 32
+            }
+          ],
+          "focused": null
+        }
+      ],
+      "canceled": true
+    },
+    {
+      "index": 1,
+      "command": {
+        "kind": "m2Command",
+        "commandId": "m2-086-erase-event",
+        "fields": {
+          "eventId": ""
+        }
+      },
+      "confirmed": {
+        "status": "success",
+        "before": [
+          {
+            "value": {
+              "kind": "m2Command",
+              "commandId": "m2-086-erase-event",
+              "fields": {
+                "eventId": "selectedOther"
+              }
+            }
+          }
+        ],
+        "after": [
+          {
+            "value": {
+              "kind": "m2Command",
+              "commandId": "m2-086-erase-event",
+              "fields": {
+                "eventId": ""
+              }
+            }
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "geometry": [
+        {
+          "width": 1024,
+          "height": 768,
+          "overflow": false,
+          "actions": [
+            {
+              "x": 725,
+              "y": 506.3999938964844,
+              "right": 801,
+              "bottom": 538.3999938964844,
+              "width": 76,
+              "height": 32
+            },
+            {
+              "x": 809,
+              "y": 506.3999938964844,
+              "right": 885,
+              "bottom": 538.3999938964844,
+              "width": 76,
+              "height": 32
+            }
+          ],
+          "focused": null
+        },
+        {
+          "width": 1280,
+          "height": 800,
+          "overflow": false,
+          "actions": [
+            {
+              "x": 853,
+              "y": 522.4000244140625,
+              "right": 929,
+              "bottom": 554.4000244140625,
+              "width": 76,
+              "height": 32
+            },
+            {
+              "x": 937,
+              "y": 522.4000244140625,
+              "right": 1013,
+              "bottom": 554.4000244140625,
+              "width": 76,
+              "height": 32
+            }
+          ],
+          "focused": null
+        },
+        {
+          "width": 1440,
+          "height": 900,
+          "overflow": false,
+          "actions": [
+            {
+              "x": 933,
+              "y": 572.4000244140625,
+              "right": 1009,
+              "bottom": 604.4000244140625,
+              "width": 76,
+              "height": 32
+            },
+            {
+              "x": 1017,
+              "y": 572.4000244140625,
+              "right": 1093,
+              "bottom": 604.4000244140625,
+              "width": 76,
+              "height": 32
+            }
+          ],
+          "focused": null
+        }
+      ],
+      "canceled": true
+    },
+    {
+      "index": 2,
+      "command": {
+        "kind": "m2Command",
+        "commandId": "m2-086-erase-event",
+        "fields": {
+          "eventId": "unknownEvent"
+        }
+      },
+      "confirmed": {
+        "status": "success",
+        "before": [
+          {
+            "value": {
+              "kind": "m2Command",
+              "commandId": "m2-086-erase-event",
+              "fields": {
+                "eventId": "unknownEvent"
+              }
+            }
+          }
+        ],
+        "after": [
+          {
+            "value": {
+              "kind": "m2Command",
+              "commandId": "m2-086-erase-event",
+              "fields": {
+                "eventId": "unknownEvent"
+              }
+            }
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "geometry": [
+        {
+          "width": 1024,
+          "height": 768,
+          "overflow": false,
+          "actions": [
+            {
+              "x": 725,
+              "y": 506.3999938964844,
+              "right": 801,
+              "bottom": 538.3999938964844,
+              "width": 76,
+              "height": 32
+            },
+            {
+              "x": 809,
+              "y": 506.3999938964844,
+              "right": 885,
+              "bottom": 538.3999938964844,
+              "width": 76,
+              "height": 32
+            }
+          ],
+          "focused": null
+        },
+        {
+          "width": 1280,
+          "height": 800,
+          "overflow": false,
+          "actions": [
+            {
+              "x": 853,
+              "y": 522.4000244140625,
+              "right": 929,
+              "bottom": 554.4000244140625,
+              "width": 76,
+              "height": 32
+            },
+            {
+              "x": 937,
+              "y": 522.4000244140625,
+              "right": 1013,
+              "bottom": 554.4000244140625,
+              "width": 76,
+              "height": 32
+            }
+          ],
+          "focused": null
+        },
+        {
+          "width": 1440,
+          "height": 900,
+          "overflow": false,
+          "actions": [
+            {
+              "x": 933,
+              "y": 572.4000244140625,
+              "right": 1009,
+              "bottom": 604.4000244140625,
+              "width": 76,
+              "height": 32
+            },
+            {
+              "x": 1017,
+              "y": 572.4000244140625,
+              "right": 1093,
+              "bottom": 604.4000244140625,
+              "width": 76,
+              "height": 32
+            }
+          ],
+          "focused": null
+        }
+      ],
+      "canceled": true
+    }
+  ],
+  "exportImport": true,
+  "remoteWrites": [],
+  "pageErrors": [],
+  "consoleErrors": [
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]"
+  ],
+  "failedRequests": [
+    {
+      "url": "http://127.0.0.1:17831/v1/browser/hello",
+      "failure": {
+        "errorText": "NS_ERROR_DOM_BAD_URI"
+      }
+    },
+    {
+      "url": "http://127.0.0.1:17831/v1/browser/hello",
+      "failure": {
+        "errorText": "NS_ERROR_DOM_BAD_URI"
+      }
+    },
+    {
+      "url": "http://127.0.0.1:17831/v1/browser/hello",
+      "failure": {
+        "errorText": "NS_ERROR_DOM_BAD_URI"
+      }
+    },
+    {
+      "url": "http://127.0.0.1:17831/v1/browser/hello",
+      "failure": {
+        "errorText": "NS_ERROR_DOM_BAD_URI"
+      }
+    }
+  ]
+}

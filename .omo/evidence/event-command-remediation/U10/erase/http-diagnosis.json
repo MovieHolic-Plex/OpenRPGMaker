@@ -1,0 +1,39 @@
+{
+  "probes": [
+    {
+      "path": "/",
+      "status": 200,
+      "type": "text/html",
+      "bytes": 690,
+      "elapsedMs": 95
+    },
+    {
+      "path": "/src/main.ts",
+      "status": 200,
+      "type": "text/javascript",
+      "bytes": 12868,
+      "elapsedMs": 321
+    },
+    {
+      "path": "/src/styles/index.css",
+      "status": 200,
+      "type": "text/javascript",
+      "bytes": 7531053,
+      "elapsedMs": 13056
+    },
+    {
+      "path": "/src/styles/index.css?direct",
+      "status": 200,
+      "type": "text/css",
+      "bytes": 7407513,
+      "elapsedMs": 13031
+    }
+  ],
+  "finding": "HTML and main module responded normally; CSS responses were about7.5MB and took13s to transform. Exact Firefox abort mechanism is not established.",
+  "change": "Replay now waits for the required stylesheet response before creating the browser. Application code, fixture, assertions and acceptance timeouts remain unchanged.",
+  "previousAttempts": [
+    "surface-oo0z6D",
+    "surface-dnDRoS",
+    "surface-OCZf42"
+  ]
+}

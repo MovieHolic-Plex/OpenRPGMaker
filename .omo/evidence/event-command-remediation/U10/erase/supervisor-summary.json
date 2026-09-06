@@ -1,0 +1,45 @@
+{
+  "finding": "G1-F1",
+  "sourceCommit": "366b7d5c04b192ff7055c109a96a74543c4b1ab5",
+  "focused": {
+    "passed": 142,
+    "failed": 0,
+    "workers": 1,
+    "report": "../../checkpoints/erase-integration-serial.json"
+  },
+  "priorAttempt": {
+    "passed": 141,
+    "failed": 1,
+    "report": "../../checkpoints/erase-integration.json",
+    "note": "An unchanged synchronous U05 case exceeded the existing15s test deadline; the serialized run retained that deadline and every assertion."
+  },
+  "editor": {
+    "cases": 3,
+    "report": "surface-Avtoua/editor-observations.json"
+  },
+  "player": {
+    "cases": 4,
+    "temporaryEraseRestored": true,
+    "report": "surface-Avtoua/player-observations.json"
+  },
+  "static": {
+    "typecheckAppExit": 0,
+    "buildAppExit": 0,
+    "productionLspErrors": 0
+  },
+  "preparation": {
+    "receipt": "surface-Avtoua/style-preflight.json",
+    "note": "Required CSS response prepared before browser creation; no app or acceptance timeout change. Exact earlier Firefox abort mechanism is not established.",
+    "failedBoots": [
+      "surface-oo0z6D",
+      "surface-dnDRoS",
+      "surface-OCZf42"
+    ]
+  },
+  "cleanup": {
+    "editor": "surface-Avtoua/editor-cleanup.json",
+    "player": "surface-Avtoua/player-cleanup.json",
+    "httpProbeServer": "bash_96 closed; owned cache removed"
+  },
+  "visual": "Geometry and screenshots captured at1024/1280/1440; available model omits image pixels, so no pixel-level verdict is claimed."
+}

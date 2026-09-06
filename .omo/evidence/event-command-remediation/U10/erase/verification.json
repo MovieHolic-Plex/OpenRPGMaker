@@ -1,0 +1,100 @@
+{
+  "base": "5d4680616acf51f3d9b67e53dd3746a4bbba983e",
+  "finding": "G1-F1",
+  "red": {
+    "failed": 4,
+    "passed": 3,
+    "pendingOutsideFilter": 19,
+    "exit": 1
+  },
+  "green": {
+    "passed": 81,
+    "failed": 0,
+    "pending": 0,
+    "exit": 0
+  },
+  "extraction": {
+    "eraseGroupSha256": "a744137189a3ba57e4bcf0e6a0223a34a0ec4854ab2703b28af3fe19db4fea17",
+    "pendingGroupSha256": "4891dd3b4e661c0517b805bb75791847f1fa6dc7f0460b471d15d696fd990622",
+    "bodiesByteIdentical": true,
+    "fixtureSha256": "6e3ca0bc140a7a00bac89619c88da4a715d3f4d732d0b3864ed63483bb7751aa",
+    "fixtureByteIdentical": true,
+    "residualFileSha256": "95250a541a11d266090de02a8bd61a4d0f8b980830623c277f33f06f7b3879e4"
+  },
+  "editor": {
+    "cases": 3,
+    "geometries": 9,
+    "exportImport": true,
+    "remoteWrites": []
+  },
+  "player": {
+    "cases": [
+      {
+        "id": "selected",
+        "before": [
+          "host",
+          "selectedOther"
+        ],
+        "after": [
+          "host"
+        ],
+        "followingMarker": "success"
+      },
+      {
+        "id": "current",
+        "before": [
+          "host",
+          "selectedOther"
+        ],
+        "after": [
+          "selectedOther"
+        ],
+        "followingMarker": "success"
+      },
+      {
+        "id": "unknown",
+        "before": [
+          "host",
+          "selectedOther"
+        ],
+        "after": [
+          "host",
+          "selectedOther"
+        ],
+        "followingMarker": "success"
+      },
+      {
+        "id": "common-host",
+        "before": [
+          "host",
+          "selectedOther"
+        ],
+        "after": [
+          "host"
+        ],
+        "followingMarker": "success"
+      }
+    ],
+    "geometries": 12,
+    "mapReloadRestored": true,
+    "errors": [],
+    "writes": []
+  },
+  "imageRead": "Two PNG Read calls omitted image pixels because the current model does not support images. No visual pixel-QA claim.",
+  "checks": {
+    "typecheckApp": 0,
+    "buildApp": 0,
+    "pureFixtureExport": 0,
+    "changedTsDiagnostics": "all committed files 0; residual imports corrected and rechecked 0",
+    "jsSyntax": 0
+  },
+  "pending": {
+    "file": "test/eventCommandRemediation/U10.test.ts",
+    "cases": 19,
+    "findings": [
+      "G3-F19",
+      "G3-F20"
+    ],
+    "status": "uncommitted, unresolved, not rerun in this slice; original provenance retained"
+  }
+}

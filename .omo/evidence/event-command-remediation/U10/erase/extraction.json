@@ -1,0 +1,9 @@
+{
+  "originalEraseGroup": "a744137189a3ba57e4bcf0e6a0223a34a0ec4854ab2703b28af3fe19db4fea17",
+  "extractedEraseGroup": "a744137189a3ba57e4bcf0e6a0223a34a0ec4854ab2703b28af3fe19db4fea17",
+  "originalPendingGroups": "4891dd3b4e661c0517b805bb75791847f1fa6dc7f0460b471d15d696fd990622",
+  "retainedPendingGroups": "4891dd3b4e661c0517b805bb75791847f1fa6dc7f0460b471d15d696fd990622",
+  "originalFixtureUnchanged": true,
+  "finalExtractedGroupSha256": "5d892d67c857636b7c0f105d1cb936c812cb2c356716a6530d63da2d89efda5e",
+  "separatorNote": "The sole inter-group blank line became an extra EOF blank line after extraction; removed to satisfy git diff --check. All describe/it bodies, assertions, fixtures and inputs remain byte-identical."
+}

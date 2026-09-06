@@ -218,7 +218,7 @@ function executeM2Command(
   }
 
   if (entry.title === "Erase Event" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
-    return pause("eraseEvent", { kind: "eraseEvent", eventId: state.currentEventId });
+    return pause("eraseEvent", { kind: "eraseEvent", eventId: fieldString(command.fields, "eventId", "") || state.currentEventId });
   }
 
   if (entry.title === "Wait for All Movement" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {

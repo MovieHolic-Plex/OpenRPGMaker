@@ -1,0 +1,14 @@
+{
+  "error": "AssertionError [ERR_ASSERTION]: {\"status\":\"timeout\",\"before\":[{\"value\":false},{\"missing\":true}],\"after\":[{\"value\":false},{\"missing\":true}],\"event\":null,\"cleanup\":{\"observer\":true,\"timer\":true,\"event\":true,\"pagehide\":true,\"abort\":true},\"error\":\"eventCommand observation timed out\"}\n+ actual - expected\n\n+ 'timeout'\n- 'success'\n",
+  "pageErrors": [],
+  "consoleErrors": [],
+  "failedRequests": [
+    {
+      "url": "http://127.0.0.1:43451/src/styles/index.css",
+      "failure": {
+        "errorText": "NS_ERROR_ABORT"
+      }
+    }
+  ],
+  "body": ""
+}

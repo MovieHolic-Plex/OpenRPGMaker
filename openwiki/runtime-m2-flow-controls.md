@@ -6,7 +6,7 @@ M2 runtime commands: event processing, erase, graphic pattern, movement, checkpo
 
 
 - `End Event Processing` terminates the current interpreter run, including common-event and map-event call frames.
-- `Erase Event` emits a scene step that records the current event id in `session.erasedEventIds`, removes its active movement routes, and refreshes runtime surfaces.
+- `Erase Event` passes its saved `fields.eventId` to the scene step. Only the existing empty/omitted current-event encoding falls back to the calling host. The scene records that target in `session.erasedEventIds`, removes its active movement routes and sprite, and refreshes runtime surfaces. Unknown IDs and current-event execution without a host do not erase an unrelated event. This is temporary erasure, not a persistent Remove Event tombstone; map reload restores the event.
 - `setEventGraphicPattern` is a native event command / tool for runtime-only sprite frame changes. The interpreter emits a scene step; `PlayScene` stores the absolute frame in `eventGraphicPatternOverrides` and applies `sprite.setFrame(pattern)`. Overrides survive `refreshRuntimeSurfaces` / wait mid-sequence and clear on map reset. Authored event-page graphics stay unchanged so map reload/page refresh (without an override) returns to the saved graphic. **Object1 door open** uses the same character slot and walk-column 0 while changing **direction** down → right → up (`houseDoorFrameIndex` steps 0/1/2 → frames e.g. ch0: 24,12,0; ch4: 72,60,48) — not left/center/right on the down row. House door pages author `animationType: "fixedGraphic"` so action-turn/idle remapping cannot snap the door closed.
 - `Wait for All Movement` waits for command-issued `moveEvent` routes and forced player routes to finish; page autonomous movement is not treated as a blocking command / tool route.
 - `Stop All Movement` cancels command-issued event routes and forced player routes without mutating authored page movement.
@@ -30,6 +30,18 @@ M2 runtime commands: event processing, erase, graphic pattern, movement, checkpo
 - `src/testing/sceneTestRunner.ts` is the headless scene validation harness behind the read tool `run_scene_test`. It creates a fresh `PlaySession`, drives the real interpreter, advances a deterministic 16ms clock, and models camera tween completion plus session-backed spawn/remove, field-spawn contact battles/respawn counts, follower trail, chase movement, lighting transitions/sources, weather, calendar time, NPC schedule placement/activity, friendship gifts, seasonal shop stock, farm plot interactions/growth, transient map animations, picture, audio, cutscene lock, switch, variable, event-position, map, game-over, checkpoint retry, and ending expectations without mutating the authored project. Use `gift` steps for deterministic NPC gifts, `retryCheckpoint` to restore after game over, `set` only for headless debug setup/fallbacks, `endingReached` to assert `triggerEnding`, `fieldSpawnCount` for Phase 8b hunting spawns, `followerCount`/`followerAt` for party followers, `eventAt`/`eventOnMap` for scheduled or transferred NPCs, `eventDistanceToPlayerLessThan` for chase approach checks, `lightingAmbient`/`lightAt`/`lightCount` for lighting assertions, `weatherKind`/`animationPlaying` for Phase 6b atmosphere timing, `advanceDays` plus `gameTimeAt`/`timePhase` for calendar assertions, `friendshipAtLeast`/`shopStock` for life-loop assertions, and `cropStageAt`/`inventoryCount` for farming assertions.
 
 - Authoring: event preset wires action + .
+
+### Selected Erase Event regression (2026-09-06, G1-F1)
+
+`test/eventCommandRemediation/U10.erase.test.ts` retains the original seven
+scene-consumer cases: selected target, called common frames with/without a host,
+explicit current-host, unknown IDs and no-host safety. The editor replay checks
+Confirm, parent Apply, reopen, Cancel and actual package export/import. The
+dedicated player checks actual sprite membership, following commands and map
+reload restoration. Replay with
+`bun run test/eventCommandRemediation/U10/replay.mts`; the runner prepares the
+required stylesheet response before browser interception without changing
+acceptance deadlines. G3-F19/G3-F20 remain separate pending findings.
 
 
 ## Storage chest authoring

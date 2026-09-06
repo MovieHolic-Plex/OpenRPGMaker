@@ -1,0 +1,10 @@
+npm test -- test/eventCommandRemediation/U10.test.ts --maxWorkers=2 -t 'G1-F1' --reporter=verbose --reporter=json --outputFile=.omo/evidence/event-command-remediation/U10/erase/red.json
+5d4680616acf51f3d9b67e53dd3746a4bbba983e
+d1d95685f907e7fae160da873abbf6ed8a092f8b4ef1ea91930563a54cc2c842  test/eventCommandRemediation/U10.test.ts
+6e3ca0bc140a7a00bac89619c88da4a715d3f4d732d0b3864ed63483bb7751aa  test/eventCommandRemediation/U10.fixture.ts
+339875b5fc3ad88b22574e03cc29780920713122fbbe3140d3a39ad79de0b327  src/player/interpreter/commandCatalog.ts
+822220e68bbf3340e10628c8e925154ca5747611338963d2ab8ee126d4ca51d3  src/player/interpreter/m2Runtime.ts
+cc1afe1e38fae7709b1f1475aa9684ac6e1dfd79f84d1816352caf7f3a99ce92  src/player/interpreter/m2RuntimeFields.ts
+a12537645792bd4a4836ea1393f98a8ca88678e1b6efed298495370545f6c545  src/player/playSceneInterpreter.ts
+8822990ac75a02bd8662a2dddf5e9365a2f1c5fdd4cc32b326f8d482adb7962b  src/project/runtimeEventState.ts
+e6b4bf57de76bd60c22b33ab94f6067ea96ec7f96b86ba136e8b9ab8cf9a6eb8  src/editor/panels/eventEditor/commandBodyM2.ts

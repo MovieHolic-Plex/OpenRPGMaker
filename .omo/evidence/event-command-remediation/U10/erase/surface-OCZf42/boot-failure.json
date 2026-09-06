@@ -1,0 +1,33 @@
+{
+  "error": "AssertionError [ERR_ASSERTION]: {\"status\":\"timeout\",\"before\":[{\"value\":false},{\"missing\":true}],\"after\":[{\"value\":false},{\"missing\":true}],\"event\":null,\"cleanup\":{\"observer\":true,\"timer\":true,\"event\":true,\"pagehide\":true,\"abort\":true},\"error\":\"eventCommand observation timed out\"}\n+ actual - expected\n\n+ 'timeout'\n- 'success'\n",
+  "pageErrors": [],
+  "consoleErrors": [],
+  "failedRequests": [
+    {
+      "url": "http://127.0.0.1:33213/src/styles/index.css",
+      "failure": {
+        "errorText": "NS_ERROR_ABORT"
+      }
+    }
+  ],
+  "bootResponses": [
+    {
+      "path": "/",
+      "status": 200
+    },
+    {
+      "path": "/src/main.ts",
+      "status": 200
+    }
+  ],
+  "document": {
+    "url": "http://127.0.0.1:33213/",
+    "state": "complete",
+    "title": "OPRN Studio",
+    "scripts": [
+      "/@vite/client",
+      "/src/main.ts"
+    ]
+  },
+  "body": ""
+}

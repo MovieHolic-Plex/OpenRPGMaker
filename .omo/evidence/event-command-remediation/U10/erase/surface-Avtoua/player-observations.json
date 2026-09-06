@@ -1,0 +1,1018 @@
+{
+  "editorSha256": "ade3261bed002f6e6ec1b7498aa2beff65cc06711e97d472b653b3f4c7e159c4",
+  "receipts": [
+    {
+      "temporaryErase": {
+        "away": {
+          "status": "success",
+          "before": [
+            {
+              "value": "map_intro"
+            }
+          ],
+          "after": [
+            {
+              "value": "map_12"
+            }
+          ],
+          "event": null,
+          "cleanup": {
+            "observer": true,
+            "timer": true,
+            "event": true,
+            "pagehide": true,
+            "abort": true
+          }
+        },
+        "home": {
+          "status": "success",
+          "before": [
+            {
+              "value": "map_12"
+            }
+          ],
+          "after": [
+            {
+              "value": "map_intro"
+            }
+          ],
+          "event": null,
+          "cleanup": {
+            "observer": true,
+            "timer": true,
+            "event": true,
+            "pagehide": true,
+            "abort": true
+          }
+        },
+        "restored": {
+          "player": {
+            "x": 40,
+            "y": 64,
+            "depth": 200064,
+            "liftPx": 0,
+            "airborne": false,
+            "visible": true,
+            "scaleX": 1,
+            "scaleY": 1
+          },
+          "shadows": {},
+          "events": {
+            "host": {
+              "alpha": 1,
+              "frame": 0,
+              "textureKey": "tex_easyrpg_charset_people1",
+              "x": 40,
+              "y": 48,
+              "depth": 200048,
+              "liftPx": 0
+            },
+            "selectedOther": {
+              "alpha": 1,
+              "frame": 0,
+              "textureKey": "tex_easyrpg_charset_people1",
+              "x": 72,
+              "y": 48,
+              "depth": 200048,
+              "liftPx": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "case": "selected",
+      "command": {
+        "kind": "m2Command",
+        "commandId": "m2-086-erase-event",
+        "fields": {
+          "futureOption": "retained",
+          "eventId": "selectedOther"
+        }
+      },
+      "program": [
+        {
+          "kind": "text",
+          "body": "U10_READY"
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-086-erase-event",
+          "fields": {
+            "futureOption": "retained",
+            "eventId": "selectedOther"
+          }
+        },
+        {
+          "kind": "setSwitch",
+          "switchId": "eraseFollowed",
+          "value": true
+        },
+        {
+          "kind": "text",
+          "body": "U10_AFTER_ERASE"
+        }
+      ],
+      "titleTrace": {
+        "status": "success",
+        "before": [
+          {
+            "value": false
+          }
+        ],
+        "after": [
+          {
+            "value": true
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "boot": {
+        "status": "success",
+        "before": [
+          {
+            "missing": true
+          }
+        ],
+        "after": [
+          {
+            "value": {
+              "x": 2,
+              "y": 3
+            }
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "ready": {
+        "status": "success",
+        "before": [
+          {
+            "value": false
+          },
+          {
+            "missing": true
+          }
+        ],
+        "after": [
+          {
+            "value": true
+          },
+          {
+            "value": "U10_READY"
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "followed": {
+        "status": "success",
+        "before": [
+          {
+            "value": true
+          },
+          {
+            "value": "U10_READY"
+          },
+          {
+            "value": false
+          }
+        ],
+        "after": [
+          {
+            "value": true
+          },
+          {
+            "value": "U10_AFTER_ERASE"
+          },
+          {
+            "value": true
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "before": {
+        "player": {
+          "x": 40,
+          "y": 64,
+          "depth": 200064,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "shadows": {},
+        "events": {
+          "host": {
+            "alpha": 1,
+            "frame": 25,
+            "textureKey": "tex_easyrpg_charset_people1",
+            "x": 40,
+            "y": 48,
+            "depth": 200048,
+            "liftPx": 0
+          },
+          "selectedOther": {
+            "alpha": 1,
+            "frame": 0,
+            "textureKey": "tex_easyrpg_charset_people1",
+            "x": 72,
+            "y": 48,
+            "depth": 200048,
+            "liftPx": 0
+          }
+        }
+      },
+      "after": {
+        "player": {
+          "x": 40,
+          "y": 64,
+          "depth": 200064,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "shadows": {},
+        "events": {
+          "host": {
+            "alpha": 1,
+            "frame": 25,
+            "textureKey": "tex_easyrpg_charset_people1",
+            "x": 40,
+            "y": 48,
+            "depth": 200048,
+            "liftPx": 0
+          }
+        }
+      },
+      "geometry": [
+        {
+          "width": 960,
+          "height": 720,
+          "url": "http://127.0.0.1:38499/player.html",
+          "editor": false,
+          "pending": false,
+          "x": 32,
+          "y": 24,
+          "right": 992,
+          "bottom": 744
+        },
+        {
+          "width": 960,
+          "height": 720,
+          "url": "http://127.0.0.1:38499/player.html",
+          "editor": false,
+          "pending": false,
+          "x": 160,
+          "y": 40,
+          "right": 1120,
+          "bottom": 760
+        },
+        {
+          "width": 960,
+          "height": 720,
+          "url": "http://127.0.0.1:38499/player.html",
+          "editor": false,
+          "pending": false,
+          "x": 240,
+          "y": 90,
+          "right": 1200,
+          "bottom": 810
+        }
+      ],
+      "errors": [],
+      "writes": []
+    },
+    {
+      "case": "current",
+      "command": {
+        "kind": "m2Command",
+        "commandId": "m2-086-erase-event",
+        "fields": {
+          "eventId": ""
+        }
+      },
+      "program": [
+        {
+          "kind": "text",
+          "body": "U10_READY"
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-086-erase-event",
+          "fields": {
+            "eventId": ""
+          }
+        },
+        {
+          "kind": "setSwitch",
+          "switchId": "eraseFollowed",
+          "value": true
+        },
+        {
+          "kind": "text",
+          "body": "U10_AFTER_ERASE"
+        }
+      ],
+      "titleTrace": {
+        "status": "success",
+        "before": [
+          {
+            "value": false
+          }
+        ],
+        "after": [
+          {
+            "value": true
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "boot": {
+        "status": "success",
+        "before": [
+          {
+            "missing": true
+          }
+        ],
+        "after": [
+          {
+            "value": {
+              "x": 2,
+              "y": 3
+            }
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "ready": {
+        "status": "success",
+        "before": [
+          {
+            "value": false
+          },
+          {
+            "missing": true
+          }
+        ],
+        "after": [
+          {
+            "value": true
+          },
+          {
+            "value": "U10_READY"
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "followed": {
+        "status": "success",
+        "before": [
+          {
+            "value": true
+          },
+          {
+            "value": "U10_READY"
+          },
+          {
+            "value": false
+          }
+        ],
+        "after": [
+          {
+            "value": true
+          },
+          {
+            "value": "U10_AFTER_ERASE"
+          },
+          {
+            "value": true
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "before": {
+        "player": {
+          "x": 40,
+          "y": 64,
+          "depth": 200064,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "shadows": {},
+        "events": {
+          "host": {
+            "alpha": 1,
+            "frame": 25,
+            "textureKey": "tex_easyrpg_charset_people1",
+            "x": 40,
+            "y": 48,
+            "depth": 200048,
+            "liftPx": 0
+          },
+          "selectedOther": {
+            "alpha": 1,
+            "frame": 0,
+            "textureKey": "tex_easyrpg_charset_people1",
+            "x": 72,
+            "y": 48,
+            "depth": 200048,
+            "liftPx": 0
+          }
+        }
+      },
+      "after": {
+        "player": {
+          "x": 40,
+          "y": 64,
+          "depth": 200064,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "shadows": {},
+        "events": {
+          "selectedOther": {
+            "alpha": 1,
+            "frame": 0,
+            "textureKey": "tex_easyrpg_charset_people1",
+            "x": 72,
+            "y": 48,
+            "depth": 200048,
+            "liftPx": 0
+          }
+        }
+      },
+      "geometry": [
+        {
+          "width": 960,
+          "height": 720,
+          "url": "http://127.0.0.1:38499/player.html",
+          "editor": false,
+          "pending": false,
+          "x": 32,
+          "y": 24,
+          "right": 992,
+          "bottom": 744
+        },
+        {
+          "width": 960,
+          "height": 720,
+          "url": "http://127.0.0.1:38499/player.html",
+          "editor": false,
+          "pending": false,
+          "x": 160,
+          "y": 40,
+          "right": 1120,
+          "bottom": 760
+        },
+        {
+          "width": 960,
+          "height": 720,
+          "url": "http://127.0.0.1:38499/player.html",
+          "editor": false,
+          "pending": false,
+          "x": 240,
+          "y": 90,
+          "right": 1200,
+          "bottom": 810
+        }
+      ],
+      "errors": [],
+      "writes": []
+    },
+    {
+      "case": "unknown",
+      "command": {
+        "kind": "m2Command",
+        "commandId": "m2-086-erase-event",
+        "fields": {
+          "eventId": "unknownEvent"
+        }
+      },
+      "program": [
+        {
+          "kind": "text",
+          "body": "U10_READY"
+        },
+        {
+          "kind": "m2Command",
+          "commandId": "m2-086-erase-event",
+          "fields": {
+            "eventId": "unknownEvent"
+          }
+        },
+        {
+          "kind": "setSwitch",
+          "switchId": "eraseFollowed",
+          "value": true
+        },
+        {
+          "kind": "text",
+          "body": "U10_AFTER_ERASE"
+        }
+      ],
+      "titleTrace": {
+        "status": "success",
+        "before": [
+          {
+            "value": false
+          }
+        ],
+        "after": [
+          {
+            "value": true
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "boot": {
+        "status": "success",
+        "before": [
+          {
+            "missing": true
+          }
+        ],
+        "after": [
+          {
+            "value": {
+              "x": 2,
+              "y": 3
+            }
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "ready": {
+        "status": "success",
+        "before": [
+          {
+            "value": false
+          },
+          {
+            "missing": true
+          }
+        ],
+        "after": [
+          {
+            "value": true
+          },
+          {
+            "value": "U10_READY"
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "followed": {
+        "status": "success",
+        "before": [
+          {
+            "value": true
+          },
+          {
+            "value": "U10_READY"
+          },
+          {
+            "value": false
+          }
+        ],
+        "after": [
+          {
+            "value": true
+          },
+          {
+            "value": "U10_AFTER_ERASE"
+          },
+          {
+            "value": true
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "before": {
+        "player": {
+          "x": 40,
+          "y": 64,
+          "depth": 200064,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "shadows": {},
+        "events": {
+          "host": {
+            "alpha": 1,
+            "frame": 25,
+            "textureKey": "tex_easyrpg_charset_people1",
+            "x": 40,
+            "y": 48,
+            "depth": 200048,
+            "liftPx": 0
+          },
+          "selectedOther": {
+            "alpha": 1,
+            "frame": 0,
+            "textureKey": "tex_easyrpg_charset_people1",
+            "x": 72,
+            "y": 48,
+            "depth": 200048,
+            "liftPx": 0
+          }
+        }
+      },
+      "after": {
+        "player": {
+          "x": 40,
+          "y": 64,
+          "depth": 200064,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "shadows": {},
+        "events": {
+          "host": {
+            "alpha": 1,
+            "frame": 25,
+            "textureKey": "tex_easyrpg_charset_people1",
+            "x": 40,
+            "y": 48,
+            "depth": 200048,
+            "liftPx": 0
+          },
+          "selectedOther": {
+            "alpha": 1,
+            "frame": 0,
+            "textureKey": "tex_easyrpg_charset_people1",
+            "x": 72,
+            "y": 48,
+            "depth": 200048,
+            "liftPx": 0
+          }
+        }
+      },
+      "geometry": [
+        {
+          "width": 960,
+          "height": 720,
+          "url": "http://127.0.0.1:38499/player.html",
+          "editor": false,
+          "pending": false,
+          "x": 32,
+          "y": 24,
+          "right": 992,
+          "bottom": 744
+        },
+        {
+          "width": 960,
+          "height": 720,
+          "url": "http://127.0.0.1:38499/player.html",
+          "editor": false,
+          "pending": false,
+          "x": 160,
+          "y": 40,
+          "right": 1120,
+          "bottom": 760
+        },
+        {
+          "width": 960,
+          "height": 720,
+          "url": "http://127.0.0.1:38499/player.html",
+          "editor": false,
+          "pending": false,
+          "x": 240,
+          "y": 90,
+          "right": 1200,
+          "bottom": 810
+        }
+      ],
+      "errors": [],
+      "writes": []
+    },
+    {
+      "case": "common-host",
+      "command": {
+        "kind": "m2Command",
+        "commandId": "m2-086-erase-event",
+        "fields": {
+          "futureOption": "retained",
+          "eventId": "selectedOther"
+        }
+      },
+      "program": [
+        {
+          "kind": "text",
+          "body": "U10_READY"
+        },
+        {
+          "kind": "callCommonEvent",
+          "commonEventId": "u10_common"
+        },
+        {
+          "kind": "setSwitch",
+          "switchId": "eraseFollowed",
+          "value": true
+        },
+        {
+          "kind": "text",
+          "body": "U10_AFTER_ERASE"
+        }
+      ],
+      "titleTrace": {
+        "status": "success",
+        "before": [
+          {
+            "value": false
+          }
+        ],
+        "after": [
+          {
+            "value": true
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "boot": {
+        "status": "success",
+        "before": [
+          {
+            "missing": true
+          }
+        ],
+        "after": [
+          {
+            "value": {
+              "x": 2,
+              "y": 3
+            }
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "ready": {
+        "status": "success",
+        "before": [
+          {
+            "value": false
+          },
+          {
+            "missing": true
+          }
+        ],
+        "after": [
+          {
+            "value": true
+          },
+          {
+            "value": "U10_READY"
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "followed": {
+        "status": "success",
+        "before": [
+          {
+            "value": true
+          },
+          {
+            "value": "U10_READY"
+          },
+          {
+            "value": false
+          }
+        ],
+        "after": [
+          {
+            "value": true
+          },
+          {
+            "value": "U10_AFTER_ERASE"
+          },
+          {
+            "value": true
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "before": {
+        "player": {
+          "x": 40,
+          "y": 64,
+          "depth": 200064,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "shadows": {},
+        "events": {
+          "host": {
+            "alpha": 1,
+            "frame": 25,
+            "textureKey": "tex_easyrpg_charset_people1",
+            "x": 40,
+            "y": 48,
+            "depth": 200048,
+            "liftPx": 0
+          },
+          "selectedOther": {
+            "alpha": 1,
+            "frame": 0,
+            "textureKey": "tex_easyrpg_charset_people1",
+            "x": 72,
+            "y": 48,
+            "depth": 200048,
+            "liftPx": 0
+          }
+        }
+      },
+      "after": {
+        "player": {
+          "x": 40,
+          "y": 64,
+          "depth": 200064,
+          "liftPx": 0,
+          "airborne": false,
+          "visible": true,
+          "scaleX": 1,
+          "scaleY": 1
+        },
+        "shadows": {},
+        "events": {
+          "host": {
+            "alpha": 1,
+            "frame": 25,
+            "textureKey": "tex_easyrpg_charset_people1",
+            "x": 40,
+            "y": 48,
+            "depth": 200048,
+            "liftPx": 0
+          }
+        }
+      },
+      "geometry": [
+        {
+          "width": 960,
+          "height": 720,
+          "url": "http://127.0.0.1:38499/player.html",
+          "editor": false,
+          "pending": false,
+          "x": 32,
+          "y": 24,
+          "right": 992,
+          "bottom": 744
+        },
+        {
+          "width": 960,
+          "height": 720,
+          "url": "http://127.0.0.1:38499/player.html",
+          "editor": false,
+          "pending": false,
+          "x": 160,
+          "y": 40,
+          "right": 1120,
+          "bottom": 760
+        },
+        {
+          "width": 960,
+          "height": 720,
+          "url": "http://127.0.0.1:38499/player.html",
+          "editor": false,
+          "pending": false,
+          "x": 240,
+          "y": 90,
+          "right": 1200,
+          "bottom": 810
+        }
+      ],
+      "errors": [],
+      "writes": []
+    }
+  ],
+  "noHostCoverage": "Original seven-case test uses actual runCommands scene consumer with no host, including common frames. No claim of editor context or parallel scheduler support is made."
+}

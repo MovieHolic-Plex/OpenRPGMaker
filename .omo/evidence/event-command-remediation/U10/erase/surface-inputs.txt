@@ -1,0 +1,6 @@
+node node_modules/vite-node/vite-node.mjs --script test/eventCommandRemediation/U10/replay.mts
+dea48697f46e318496357532e23343a6fad9b454c8edfb174029c808db89afa1  src/player/interpreter/commandCatalog.ts
+6e3ca0bc140a7a00bac89619c88da4a715d3f4d732d0b3864ed63483bb7751aa  test/eventCommandRemediation/U10.fixture.ts
+3fb3ff77fda5af207d6eac6c90f0a2717f5524a5e6e4be7267c8a5035e7cc17f  test/eventCommandRemediation/U10/replay.mts
+6d0198642f049a344cfad9739e3832795c7d636789881cce5675e4b93bd97e77  test/e2e/event-command-remediation-U10-erase.spec.ts
+b9fa7ba767cf66b960028d04343b4f04b7fca8cc0d0b3e7dc212ee553bd67029  scripts/qa/runtime/event-command-remediation-u10-erase.scenario.mjs

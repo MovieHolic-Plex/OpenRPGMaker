@@ -1,0 +1,2 @@
+node node_modules/vite-node/vite-node.mjs --script scripts/prepare-event-command-remediation.mts U10 .omo/evidence/event-command-remediation/U10/erase/pure-fixture-original
+6e3ca0bc140a7a00bac89619c88da4a715d3f4d732d0b3864ed63483bb7751aa  test/eventCommandRemediation/U10.fixture.ts

@@ -1,0 +1,44 @@
+{
+  "failedEditor": {
+    "port": 38931,
+    "browserClosed": true,
+    "contextsClosed": true,
+    "serverClosed": true,
+    "cacheRemoved": true
+  },
+  "editor": {
+    "port": 43553,
+    "browserClosed": true,
+    "contextsClosed": true,
+    "serverClosed": true,
+    "cacheRemoved": true
+  },
+  "player": {
+    "port": 40355,
+    "browserClosed": true,
+    "serverClosed": true,
+    "contextsClosed": true
+  },
+  "successfulScreenshotsRetainedUncommitted": 25,
+  "filesystemCleanup": {
+    "completed": true,
+    "removedAfterArchival": [
+      "pure-fixture-original/project.json",
+      "surface-zQ7Es6/editor-exported.json",
+      "surface-zQ7Es6/editor-export.oprn"
+    ],
+    "removedOwnedBuild": [
+      "dist/",
+      ".vite-cache/u10-erase-build/"
+    ],
+    "archives": [
+      "original-fixture-project.json.gz",
+      "editor-exported.json.gz"
+    ]
+  },
+  "upstreamLookup": "No upstream configured; git rev-parse lookup exit 128 after preceding cleanup operations succeeded.",
+  "residualUncommitted": [
+    "test/eventCommandRemediation/U10.test.ts"
+  ],
+  "journal": "Removed before commit; findings promoted to README.md and verification.json."
+}
