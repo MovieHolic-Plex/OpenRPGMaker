@@ -1,0 +1,35 @@
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra
+
+ ✓ test/p2SpatialTransactions.test.ts (3 tests) 307ms
+ ✓ test/p2SpatialPersistence.test.ts (3 tests) 352ms
+ ✓ test/p0SessionPersistence.test.ts (9 tests) 710ms
+ ✓ test/lifeSaveVersion.test.ts (18 tests) 1164ms
+ ✓ test/p1FarmAnimals.test.ts (16 tests) 1475ms
+ ✓ test/p2SpatialSchema.test.ts (3 tests) 1326ms
+   ✓ P2 spatial authored schema > round-trips independent building/decor definitions and instantiates keyed runtime placements  360ms
+   ✓ P2 spatial authored schema > rejects duplicate ids, unsafe footprints, non-contiguous levels, and unknown orientations  721ms
+ ✓ test/lifeRecovery.test.ts (54 tests) 2522ms
+ ✓ test/p2SpatialReferenceIntegrity.test.ts (4 tests) 910ms
+ ✓ test/p1ReferenceIntegrity.test.ts (5 tests) 449ms
+ ✓ test/lifeRecoveryPersistence.test.ts (40 tests) 3828ms
+   ✓ adversarial life codec boundaries > refuses all conversions on claim exhaustion without moving a prefix  606ms
+   ✓ bounded animal restoration > quarantines animals beyond the runtime bound instead of dropping a saved suffix  650ms
+ ✓ test/p1FoundationSchema.test.ts (9 tests) 2871ms
+   ✓ P1 weather and farm-animal authored schema > round-trips authored weather, species, homes, and project-start animals  380ms
+   ✓ P1 weather and farm-animal authored schema > keeps legacy projects byte-stable without optional P1 authored fields  667ms
+   ✓ P1 weather and farm-animal authored schema > rejects unknown weather kinds, unsafe numbers, duplicate ids, and oversized arrays  1375ms
+ ✓ test/linkedAnimalHousing.test.ts (20 tests) 3014ms
+   ✓ linked animal housing > roundtrips authored Project4 homes and rejects dual references, missing capacity and unknown species  728ms
+   ✓ linked animal housing > voluntary demolition at 4096 recovery claims preserves the whole herd and refunds nothing  1042ms
+ ✓ test/lifeRecoveryRecordKeys.test.ts (37 tests) 3733ms
+ ✓ test/spatialPaymentReceipts.test.ts (21 tests) 4686ms
+   ✓ cumulative spatial payment receipts > H1 aggregates 64 historical rows plus a repeated upgrade item before any cost-input limit  496ms
+   ✓ cumulative spatial payment receipts > retains every one of 16 levels of 64 distinct accepted costs  554ms
+   ✓ cumulative spatial payment receipts > refuses a two-claim conversion with only one slot free, preserving the entire source and previous save  976ms
+
+ Test Files  14 passed (14)
+      Tests  242 passed (242)
+   Start at  07:34:00
+   Duration  12.93s (transform 12.73s, setup 0ms, collect 93.90s, tests 27.35s, environment 5ms, prepare 3.56s)
+

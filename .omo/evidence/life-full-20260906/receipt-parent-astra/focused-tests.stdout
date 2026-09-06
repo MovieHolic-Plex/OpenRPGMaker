@@ -1,0 +1,4 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/spatialPaymentReceipts.test.ts test/linkedAnimalHousing.test.ts test/p1FarmAnimals.test.ts test/p1FoundationSchema.test.ts test/p2SpatialSchema.test.ts test/p2SpatialTransactions.test.ts test/p2SpatialPersistence.test.ts test/p2SpatialReferenceIntegrity.test.ts test/lifeRecovery.test.ts test/lifeRecoveryPersistence.test.ts test/lifeSaveVersion.test.ts test/p0SessionPersistence.test.ts test/p1ReferenceIntegrity.test.ts test/lifeRecoveryRecordKeys.test.ts --config /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/.omo/evidence/life-full-20260906/receipt-parent-astra/vitest.config.ts --configLoader runner
+

@@ -1,0 +1,12 @@
+import ts from 'typescript';
+import {writeFileSync} from 'node:fs';
+const config=ts.readConfigFile('tsconfig.json',ts.sys.readFile);
+if(config.error) throw new Error(ts.flattenDiagnosticMessageText(config.error.messageText,'\n'));
+const parsed=ts.parseJsonConfigFileContent(config.config,ts.sys,process.cwd());
+const program=ts.createProgram(parsed.fileNames,parsed.options);
+const files=['src/project/spatialPlacementTransactions.ts','src/project/lifeRecovery.ts','test/spatialPaymentReceipts.test.ts'];
+const diagnostics=[...parsed.errors,...files.flatMap(file=>{const source=program.getSourceFile(file);if(!source)throw new Error(`Missing ${file}`);return [...program.getSyntacticDiagnostics(source),...program.getSemanticDiagnostics(source)];})];
+const formatted=ts.formatDiagnosticsWithColorAndContext(diagnostics,{getCanonicalFileName:n=>n,getCurrentDirectory:()=>process.cwd(),getNewLine:()=> '\n'});
+writeFileSync(new URL('./diagnostic-results.json',import.meta.url),JSON.stringify({method:'TypeScript compiler API; no LSP claim',files,count:diagnostics.length,diagnostics:formatted},null,2)+'\n',{flag:'wx'});
+console.log(formatted||'No syntactic or semantic diagnostics on changed product/test files.');
+process.exitCode=diagnostics.length?1:0;

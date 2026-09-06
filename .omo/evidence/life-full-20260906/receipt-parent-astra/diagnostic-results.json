@@ -1,0 +1,10 @@
+{
+  "method": "TypeScript compiler API; no LSP claim",
+  "files": [
+    "src/project/spatialPlacementTransactions.ts",
+    "src/project/lifeRecovery.ts",
+    "test/spatialPaymentReceipts.test.ts"
+  ],
+  "count": 0,
+  "diagnostics": ""
+}

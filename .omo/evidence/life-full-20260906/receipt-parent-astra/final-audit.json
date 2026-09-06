@@ -1,0 +1,32 @@
+{
+  "status": "",
+  "worktree": "worktree /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra\nHEAD 0e2af2591f33bab3e1f56f1847e499a1cce0681f\ndetached\nlocked Parent Astra receipt validation archival",
+  "ownedRootScratchChecks": {
+    "dist": {
+      "exists": false,
+      "symlink": false
+    },
+    ".vite": {
+      "exists": false,
+      "symlink": false
+    },
+    ".vite-cache": {
+      "exists": true,
+      "symlink": false
+    },
+    ".env": {
+      "exists": false,
+      "symlink": false
+    },
+    ".env.local": {
+      "exists": false,
+      "symlink": false
+    }
+  },
+  "scratchAbsent": true,
+  "retainedViteCache": "Tracked HEAD files only, byte-equal to HEAD; not owned runtime scratch",
+  "retainedViteCacheFiles": [
+    ".vite-cache/deps/_metadata.json",
+    ".vite-cache/deps/package.json"
+  ]
+}
