@@ -1,0 +1,2134 @@
+[
+  {
+    "id": "00-entrance",
+    "shot": "00-entrance.png",
+    "viewport": {
+      "width": 640,
+      "height": 480
+    },
+    "url": "http://127.0.0.1:40579/player.html",
+    "gold": 300,
+    "inventory": {
+      "item_potion": 1,
+      "item_antidote": 2
+    },
+    "actorEquipment": {
+      "actor_hero": {
+        "weapon": "equip_sword",
+        "shield": "equip_oak_shield",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_guardian": {
+        "weapon": "equip_sword",
+        "shield": "equip_oak_shield",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_mage": {
+        "weapon": "equip_mage_staff",
+        "armor": "equip_mystic_robe",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_scout": {
+        "weapon": "equip_scout_dagger",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_cleric": {
+        "weapon": "equip_mage_staff",
+        "shield": "equip_oak_shield",
+        "armor": "equip_mystic_robe",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_ranger": {
+        "weapon": "equip_scout_dagger",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      }
+    },
+    "x": 14,
+    "y": 18,
+    "merchantGold": null,
+    "totalAmount": null,
+    "geometry": {
+      ".runtime-shop-shell": {
+        "x": 8,
+        "y": 49.421875,
+        "width": 624,
+        "height": 381.140625,
+        "right": 632,
+        "bottom": 430.5625
+      },
+      "[data-testid=\"shop-player-gold\"]": {
+        "x": 73,
+        "y": 214.796875,
+        "width": 494,
+        "height": 23.1875,
+        "right": 567,
+        "bottom": 237.984375
+      }
+    },
+    "warnings": [],
+    "layoutFailures": [],
+    "artworkUrls": [],
+    "artwork": [],
+    "failures": []
+  },
+  {
+    "id": "01-stock",
+    "shot": "01-stock.png",
+    "viewport": {
+      "width": 640,
+      "height": 480
+    },
+    "url": "http://127.0.0.1:40579/player.html",
+    "gold": 300,
+    "inventory": {
+      "item_potion": 1,
+      "item_antidote": 2
+    },
+    "actorEquipment": {
+      "actor_hero": {
+        "weapon": "equip_sword",
+        "shield": "equip_oak_shield",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_guardian": {
+        "weapon": "equip_sword",
+        "shield": "equip_oak_shield",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_mage": {
+        "weapon": "equip_mage_staff",
+        "armor": "equip_mystic_robe",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_scout": {
+        "weapon": "equip_scout_dagger",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_cleric": {
+        "weapon": "equip_mage_staff",
+        "shield": "equip_oak_shield",
+        "armor": "equip_mystic_robe",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_ranger": {
+        "weapon": "equip_scout_dagger",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      }
+    },
+    "x": 14,
+    "y": 18,
+    "merchantGold": 200,
+    "mode": "buy",
+    "selected": "shop-buy-item_potion",
+    "quantity": "1",
+    "quantityMax": "6",
+    "total": "합계 50G",
+    "totalAmount": 50,
+    "status": "무엇을 구매하시겠습니까?",
+    "equippedText": "보유1",
+    "geometry": {
+      ".runtime-shop-shell": {
+        "x": 8,
+        "y": 8,
+        "width": 624,
+        "height": 464,
+        "right": 632,
+        "bottom": 472
+      },
+      ".runtime-shop-topbar": {
+        "x": 9,
+        "y": 9,
+        "width": 622,
+        "height": 61.578125,
+        "right": 631,
+        "bottom": 70.578125
+      },
+      ".runtime-shop-item-list": {
+        "x": 17,
+        "y": 117.171875,
+        "width": 369.640625,
+        "height": 239.046875,
+        "right": 386.640625,
+        "bottom": 356.21875
+      },
+      ".runtime-shop-item-row.selected": {
+        "x": 21,
+        "y": 118.171875,
+        "width": 361.640625,
+        "height": 55.59375,
+        "right": 382.640625,
+        "bottom": 173.765625
+      },
+      ".runtime-shop-side": {
+        "x": 394.640625,
+        "y": 70.578125,
+        "width": 236.359375,
+        "height": 293.640625,
+        "right": 631,
+        "bottom": 364.21875
+      },
+      ".runtime-shop-prompt-panel": {
+        "x": 9,
+        "y": 364.21875,
+        "width": 622,
+        "height": 106.78125,
+        "right": 631,
+        "bottom": 471
+      },
+      "[data-testid=\"shop-quantity-input\"]": {
+        "x": 83,
+        "y": 403.40625,
+        "width": 32,
+        "height": 32,
+        "right": 115,
+        "bottom": 435.40625
+      },
+      "[data-testid=\"shop-quantity-total\"]": {
+        "x": 163,
+        "y": 409.25,
+        "width": 55.796875,
+        "height": 20.296875,
+        "right": 218.796875,
+        "bottom": 429.546875
+      },
+      "[data-testid=\"shop-confirm\"]": {
+        "x": 499,
+        "y": 402.609375,
+        "width": 56,
+        "height": 33.59375,
+        "right": 555,
+        "bottom": 436.203125
+      },
+      "[data-testid=\"shop-item-cancel\"]": {
+        "x": 563,
+        "y": 402.609375,
+        "width": 56,
+        "height": 33.59375,
+        "right": 619,
+        "bottom": 436.203125
+      },
+      "[data-testid=\"shop-player-gold\"]": {
+        "x": 514.953125,
+        "y": 17,
+        "width": 104.046875,
+        "height": 23.1875,
+        "right": 619,
+        "bottom": 40.1875
+      }
+    },
+    "warnings": [],
+    "layoutFailures": [],
+    "artworkUrls": [
+      "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+      "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
+      "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+    ],
+    "artwork": [
+      {
+        "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+        "loaded": true,
+        "width": 128,
+        "height": 128
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
+        "loaded": true,
+        "width": 128,
+        "height": 128
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+        "loaded": true,
+        "width": 128,
+        "height": 128
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      }
+    ],
+    "failures": []
+  },
+  {
+    "id": "02-quantity",
+    "shot": "02-quantity.png",
+    "viewport": {
+      "width": 640,
+      "height": 480
+    },
+    "url": "http://127.0.0.1:40579/player.html",
+    "gold": 300,
+    "inventory": {
+      "item_potion": 1,
+      "item_antidote": 2
+    },
+    "actorEquipment": {
+      "actor_hero": {
+        "weapon": "equip_sword",
+        "shield": "equip_oak_shield",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_guardian": {
+        "weapon": "equip_sword",
+        "shield": "equip_oak_shield",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_mage": {
+        "weapon": "equip_mage_staff",
+        "armor": "equip_mystic_robe",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_scout": {
+        "weapon": "equip_scout_dagger",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_cleric": {
+        "weapon": "equip_mage_staff",
+        "shield": "equip_oak_shield",
+        "armor": "equip_mystic_robe",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_ranger": {
+        "weapon": "equip_scout_dagger",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      }
+    },
+    "x": 14,
+    "y": 18,
+    "merchantGold": 200,
+    "mode": "buy",
+    "selected": "shop-buy-item_potion",
+    "quantity": "3",
+    "quantityMax": "6",
+    "total": "합계 150G",
+    "totalAmount": 150,
+    "status": "무엇을 구매하시겠습니까?",
+    "equippedText": "보유1",
+    "geometry": {
+      ".runtime-shop-shell": {
+        "x": 8,
+        "y": 8,
+        "width": 624,
+        "height": 464,
+        "right": 632,
+        "bottom": 472
+      },
+      ".runtime-shop-topbar": {
+        "x": 9,
+        "y": 9,
+        "width": 622,
+        "height": 61.578125,
+        "right": 631,
+        "bottom": 70.578125
+      },
+      ".runtime-shop-item-list": {
+        "x": 17,
+        "y": 117.171875,
+        "width": 369.640625,
+        "height": 239.046875,
+        "right": 386.640625,
+        "bottom": 356.21875
+      },
+      ".runtime-shop-item-row.selected": {
+        "x": 21,
+        "y": 118.171875,
+        "width": 361.640625,
+        "height": 55.59375,
+        "right": 382.640625,
+        "bottom": 173.765625
+      },
+      ".runtime-shop-side": {
+        "x": 394.640625,
+        "y": 70.578125,
+        "width": 236.359375,
+        "height": 293.640625,
+        "right": 631,
+        "bottom": 364.21875
+      },
+      ".runtime-shop-prompt-panel": {
+        "x": 9,
+        "y": 364.21875,
+        "width": 622,
+        "height": 106.78125,
+        "right": 631,
+        "bottom": 471
+      },
+      "[data-testid=\"shop-quantity-input\"]": {
+        "x": 83,
+        "y": 403.40625,
+        "width": 32,
+        "height": 32,
+        "right": 115,
+        "bottom": 435.40625
+      },
+      "[data-testid=\"shop-quantity-total\"]": {
+        "x": 163,
+        "y": 409.25,
+        "width": 63.8125,
+        "height": 20.296875,
+        "right": 226.8125,
+        "bottom": 429.546875
+      },
+      "[data-testid=\"shop-confirm\"]": {
+        "x": 499,
+        "y": 402.609375,
+        "width": 56,
+        "height": 33.59375,
+        "right": 555,
+        "bottom": 436.203125
+      },
+      "[data-testid=\"shop-item-cancel\"]": {
+        "x": 563,
+        "y": 402.609375,
+        "width": 56,
+        "height": 33.59375,
+        "right": 619,
+        "bottom": 436.203125
+      },
+      "[data-testid=\"shop-player-gold\"]": {
+        "x": 514.953125,
+        "y": 17,
+        "width": 104.046875,
+        "height": 23.1875,
+        "right": 619,
+        "bottom": 40.1875
+      }
+    },
+    "warnings": [],
+    "layoutFailures": [],
+    "artworkUrls": [
+      "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+      "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
+      "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+    ],
+    "artwork": [
+      {
+        "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+        "loaded": true,
+        "width": 128,
+        "height": 128
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
+        "loaded": true,
+        "width": 128,
+        "height": 128
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+        "loaded": true,
+        "width": 128,
+        "height": 128
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      }
+    ],
+    "failures": []
+  },
+  {
+    "id": "03-purchased",
+    "shot": "03-purchased.png",
+    "viewport": {
+      "width": 640,
+      "height": 480
+    },
+    "url": "http://127.0.0.1:40579/player.html",
+    "gold": 150,
+    "inventory": {
+      "item_potion": 4,
+      "item_antidote": 2
+    },
+    "actorEquipment": {
+      "actor_hero": {
+        "weapon": "equip_sword",
+        "shield": "equip_oak_shield",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_guardian": {
+        "weapon": "equip_sword",
+        "shield": "equip_oak_shield",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_mage": {
+        "weapon": "equip_mage_staff",
+        "armor": "equip_mystic_robe",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_scout": {
+        "weapon": "equip_scout_dagger",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_cleric": {
+        "weapon": "equip_mage_staff",
+        "shield": "equip_oak_shield",
+        "armor": "equip_mystic_robe",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_ranger": {
+        "weapon": "equip_scout_dagger",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      }
+    },
+    "tradeCounts": {
+      "item_potion": {
+        "sold": 0,
+        "bought": 3
+      }
+    },
+    "x": 14,
+    "y": 18,
+    "merchantGold": 350,
+    "mode": "buy",
+    "selected": "shop-buy-item_potion",
+    "quantity": "3",
+    "quantityMax": "6",
+    "total": "합계 150G",
+    "totalAmount": 150,
+    "status": "회복약 구매 — -150G",
+    "equippedText": "보유4",
+    "geometry": {
+      ".runtime-shop-shell": {
+        "x": 8,
+        "y": 8,
+        "width": 624,
+        "height": 464,
+        "right": 632,
+        "bottom": 472
+      },
+      ".runtime-shop-topbar": {
+        "x": 9,
+        "y": 9,
+        "width": 622,
+        "height": 61.578125,
+        "right": 631,
+        "bottom": 70.578125
+      },
+      ".runtime-shop-item-list": {
+        "x": 17,
+        "y": 117.171875,
+        "width": 369.640625,
+        "height": 239.046875,
+        "right": 386.640625,
+        "bottom": 356.21875
+      },
+      ".runtime-shop-item-row.selected": {
+        "x": 21,
+        "y": 118.171875,
+        "width": 361.640625,
+        "height": 55.59375,
+        "right": 382.640625,
+        "bottom": 173.765625
+      },
+      ".runtime-shop-side": {
+        "x": 394.640625,
+        "y": 70.578125,
+        "width": 236.359375,
+        "height": 293.640625,
+        "right": 631,
+        "bottom": 364.21875
+      },
+      ".runtime-shop-prompt-panel": {
+        "x": 9,
+        "y": 364.21875,
+        "width": 622,
+        "height": 106.78125,
+        "right": 631,
+        "bottom": 471
+      },
+      "[data-testid=\"shop-quantity-input\"]": {
+        "x": 83,
+        "y": 403.40625,
+        "width": 32,
+        "height": 32,
+        "right": 115,
+        "bottom": 435.40625
+      },
+      "[data-testid=\"shop-quantity-total\"]": {
+        "x": 163,
+        "y": 409.25,
+        "width": 63.8125,
+        "height": 20.296875,
+        "right": 226.8125,
+        "bottom": 429.546875
+      },
+      "[data-testid=\"shop-confirm\"]": {
+        "x": 499,
+        "y": 402.609375,
+        "width": 56,
+        "height": 33.59375,
+        "right": 555,
+        "bottom": 436.203125
+      },
+      "[data-testid=\"shop-item-cancel\"]": {
+        "x": 563,
+        "y": 402.609375,
+        "width": 56,
+        "height": 33.59375,
+        "right": 619,
+        "bottom": 436.203125
+      },
+      "[data-testid=\"shop-player-gold\"]": {
+        "x": 514.953125,
+        "y": 17,
+        "width": 104.046875,
+        "height": 23.1875,
+        "right": 619,
+        "bottom": 40.1875
+      }
+    },
+    "warnings": [
+      "stale quantity max: DOM 6, current funds/inventory 3"
+    ],
+    "layoutFailures": [],
+    "artworkUrls": [
+      "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+      "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
+      "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+    ],
+    "artwork": [
+      {
+        "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+        "loaded": true,
+        "width": 128,
+        "height": 128
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
+        "loaded": true,
+        "width": 128,
+        "height": 128
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+        "loaded": true,
+        "width": 128,
+        "height": 128
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      }
+    ],
+    "failures": []
+  },
+  {
+    "id": "04-equipment",
+    "shot": "04-equipment.png",
+    "viewport": {
+      "width": 640,
+      "height": 480
+    },
+    "url": "http://127.0.0.1:40579/player.html",
+    "gold": 150,
+    "inventory": {
+      "item_potion": 4,
+      "item_antidote": 2
+    },
+    "actorEquipment": {
+      "actor_hero": {
+        "weapon": "equip_sword",
+        "shield": "equip_oak_shield",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_guardian": {
+        "weapon": "equip_sword",
+        "shield": "equip_oak_shield",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_mage": {
+        "weapon": "equip_mage_staff",
+        "armor": "equip_mystic_robe",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_scout": {
+        "weapon": "equip_scout_dagger",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_cleric": {
+        "weapon": "equip_mage_staff",
+        "shield": "equip_oak_shield",
+        "armor": "equip_mystic_robe",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_ranger": {
+        "weapon": "equip_scout_dagger",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      }
+    },
+    "tradeCounts": {
+      "item_potion": {
+        "sold": 0,
+        "bought": 3
+      }
+    },
+    "x": 14,
+    "y": 18,
+    "merchantGold": 350,
+    "mode": "buy",
+    "selected": "shop-buy-equip_sword",
+    "quantity": "1",
+    "quantityMax": "3",
+    "total": "합계 100G",
+    "totalAmount": 100,
+    "status": "회복약 구매 — -150G",
+    "equippedText": "보유0장비2",
+    "statsText": "공격▲8",
+    "geometry": {
+      ".runtime-shop-shell": {
+        "x": 8,
+        "y": 8,
+        "width": 624,
+        "height": 464,
+        "right": 632,
+        "bottom": 472
+      },
+      ".runtime-shop-topbar": {
+        "x": 9,
+        "y": 9,
+        "width": 622,
+        "height": 61.578125,
+        "right": 631,
+        "bottom": 70.578125
+      },
+      ".runtime-shop-item-list": {
+        "x": 17,
+        "y": 117.171875,
+        "width": 369.640625,
+        "height": 239.046875,
+        "right": 386.640625,
+        "bottom": 356.21875
+      },
+      ".runtime-shop-item-row.selected": {
+        "x": 21,
+        "y": 237.359375,
+        "width": 361.640625,
+        "height": 55.59375,
+        "right": 382.640625,
+        "bottom": 292.953125
+      },
+      ".runtime-shop-side": {
+        "x": 394.640625,
+        "y": 70.578125,
+        "width": 236.359375,
+        "height": 293.640625,
+        "right": 631,
+        "bottom": 364.21875
+      },
+      ".runtime-shop-prompt-panel": {
+        "x": 9,
+        "y": 364.21875,
+        "width": 622,
+        "height": 106.78125,
+        "right": 631,
+        "bottom": 471
+      },
+      "[data-testid=\"shop-quantity-input\"]": {
+        "x": 83,
+        "y": 403.40625,
+        "width": 32,
+        "height": 32,
+        "right": 115,
+        "bottom": 435.40625
+      },
+      "[data-testid=\"shop-quantity-total\"]": {
+        "x": 163,
+        "y": 409.25,
+        "width": 63.8125,
+        "height": 20.296875,
+        "right": 226.8125,
+        "bottom": 429.546875
+      },
+      "[data-testid=\"shop-confirm\"]": {
+        "x": 499,
+        "y": 402.609375,
+        "width": 56,
+        "height": 33.59375,
+        "right": 555,
+        "bottom": 436.203125
+      },
+      "[data-testid=\"shop-item-cancel\"]": {
+        "x": 563,
+        "y": 402.609375,
+        "width": 56,
+        "height": 33.59375,
+        "right": 619,
+        "bottom": 436.203125
+      },
+      "[data-testid=\"shop-player-gold\"]": {
+        "x": 514.953125,
+        "y": 17,
+        "width": 104.046875,
+        "height": 23.1875,
+        "right": 619,
+        "bottom": 40.1875
+      }
+    },
+    "warnings": [
+      "stale quantity max: DOM 3, current funds/inventory 1"
+    ],
+    "layoutFailures": [],
+    "artworkUrls": [
+      "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+      "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
+      "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+    ],
+    "artwork": [
+      {
+        "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+        "loaded": true,
+        "width": 128,
+        "height": 128
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
+        "loaded": true,
+        "width": 128,
+        "height": 128
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+        "loaded": true,
+        "width": 128,
+        "height": 128
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      }
+    ],
+    "failures": []
+  },
+  {
+    "id": "05-equipment-bought",
+    "shot": "05-equipment-bought.png",
+    "viewport": {
+      "width": 640,
+      "height": 480
+    },
+    "url": "http://127.0.0.1:40579/player.html",
+    "gold": 50,
+    "inventory": {
+      "item_potion": 4,
+      "item_antidote": 2,
+      "equip_sword": 1
+    },
+    "actorEquipment": {
+      "actor_hero": {
+        "weapon": "equip_sword",
+        "shield": "equip_oak_shield",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_guardian": {
+        "weapon": "equip_sword",
+        "shield": "equip_oak_shield",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_mage": {
+        "weapon": "equip_mage_staff",
+        "armor": "equip_mystic_robe",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_scout": {
+        "weapon": "equip_scout_dagger",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_cleric": {
+        "weapon": "equip_mage_staff",
+        "shield": "equip_oak_shield",
+        "armor": "equip_mystic_robe",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_ranger": {
+        "weapon": "equip_scout_dagger",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      }
+    },
+    "tradeCounts": {
+      "item_potion": {
+        "sold": 0,
+        "bought": 3
+      },
+      "equip_sword": {
+        "sold": 0,
+        "bought": 1
+      }
+    },
+    "x": 14,
+    "y": 18,
+    "merchantGold": 450,
+    "mode": "buy",
+    "selected": "shop-buy-equip_sword",
+    "quantity": "1",
+    "quantityMax": "3",
+    "total": "합계 100G",
+    "totalAmount": 100,
+    "status": "청동 검 구매 — -100G",
+    "equippedText": "보유1장비2",
+    "statsText": "공격▲8",
+    "geometry": {
+      ".runtime-shop-shell": {
+        "x": 8,
+        "y": 8,
+        "width": 624,
+        "height": 464,
+        "right": 632,
+        "bottom": 472
+      },
+      ".runtime-shop-topbar": {
+        "x": 9,
+        "y": 9,
+        "width": 622,
+        "height": 61.578125,
+        "right": 631,
+        "bottom": 70.578125
+      },
+      ".runtime-shop-item-list": {
+        "x": 17,
+        "y": 117.171875,
+        "width": 369.640625,
+        "height": 239.046875,
+        "right": 386.640625,
+        "bottom": 356.21875
+      },
+      ".runtime-shop-item-row.selected": {
+        "x": 21,
+        "y": 237.359375,
+        "width": 361.640625,
+        "height": 55.59375,
+        "right": 382.640625,
+        "bottom": 292.953125
+      },
+      ".runtime-shop-side": {
+        "x": 394.640625,
+        "y": 70.578125,
+        "width": 236.359375,
+        "height": 293.640625,
+        "right": 631,
+        "bottom": 364.21875
+      },
+      ".runtime-shop-prompt-panel": {
+        "x": 9,
+        "y": 364.21875,
+        "width": 622,
+        "height": 106.78125,
+        "right": 631,
+        "bottom": 471
+      },
+      "[data-testid=\"shop-quantity-input\"]": {
+        "x": 83,
+        "y": 403.40625,
+        "width": 32,
+        "height": 32,
+        "right": 115,
+        "bottom": 435.40625
+      },
+      "[data-testid=\"shop-quantity-total\"]": {
+        "x": 163,
+        "y": 409.25,
+        "width": 63.8125,
+        "height": 20.296875,
+        "right": 226.8125,
+        "bottom": 429.546875
+      },
+      "[data-testid=\"shop-confirm\"]": {
+        "x": 499,
+        "y": 402.609375,
+        "width": 56,
+        "height": 33.59375,
+        "right": 555,
+        "bottom": 436.203125
+      },
+      "[data-testid=\"shop-item-cancel\"]": {
+        "x": 563,
+        "y": 402.609375,
+        "width": 56,
+        "height": 33.59375,
+        "right": 619,
+        "bottom": 436.203125
+      },
+      "[data-testid=\"shop-player-gold\"]": {
+        "x": 524.109375,
+        "y": 17,
+        "width": 94.890625,
+        "height": 23.1875,
+        "right": 619,
+        "bottom": 40.1875
+      }
+    },
+    "warnings": [
+      "stale quantity max: DOM 3, current funds/inventory 1"
+    ],
+    "layoutFailures": [],
+    "artworkUrls": [
+      "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+      "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
+      "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+    ],
+    "artwork": [
+      {
+        "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+        "loaded": true,
+        "width": 128,
+        "height": 128
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
+        "loaded": true,
+        "width": 128,
+        "height": 128
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+        "loaded": true,
+        "width": 128,
+        "height": 128
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      }
+    ],
+    "failures": []
+  },
+  {
+    "id": "06-insufficient-gold",
+    "shot": "06-insufficient-gold.png",
+    "viewport": {
+      "width": 640,
+      "height": 480
+    },
+    "url": "http://127.0.0.1:40579/player.html",
+    "gold": 50,
+    "inventory": {
+      "item_potion": 4,
+      "item_antidote": 2,
+      "equip_sword": 1
+    },
+    "actorEquipment": {
+      "actor_hero": {
+        "weapon": "equip_sword",
+        "shield": "equip_oak_shield",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_guardian": {
+        "weapon": "equip_sword",
+        "shield": "equip_oak_shield",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_mage": {
+        "weapon": "equip_mage_staff",
+        "armor": "equip_mystic_robe",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_scout": {
+        "weapon": "equip_scout_dagger",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_cleric": {
+        "weapon": "equip_mage_staff",
+        "shield": "equip_oak_shield",
+        "armor": "equip_mystic_robe",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_ranger": {
+        "weapon": "equip_scout_dagger",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      }
+    },
+    "tradeCounts": {
+      "item_potion": {
+        "sold": 0,
+        "bought": 3
+      },
+      "equip_sword": {
+        "sold": 0,
+        "bought": 1
+      }
+    },
+    "x": 14,
+    "y": 18,
+    "merchantGold": 450,
+    "mode": "buy",
+    "selected": "shop-buy-item_elixir",
+    "quantity": "1",
+    "quantityMax": "1",
+    "total": "합계 600G",
+    "totalAmount": 600,
+    "status": "소지금이 부족합니다.",
+    "equippedText": "보유0",
+    "geometry": {
+      ".runtime-shop-shell": {
+        "x": 8,
+        "y": 8,
+        "width": 624,
+        "height": 464,
+        "right": 632,
+        "bottom": 472
+      },
+      ".runtime-shop-topbar": {
+        "x": 9,
+        "y": 9,
+        "width": 622,
+        "height": 61.578125,
+        "right": 631,
+        "bottom": 70.578125
+      },
+      ".runtime-shop-item-list": {
+        "x": 17,
+        "y": 117.171875,
+        "width": 369.640625,
+        "height": 239.046875,
+        "right": 386.640625,
+        "bottom": 356.21875
+      },
+      ".runtime-shop-item-row.selected": {
+        "x": 21,
+        "y": 296.953125,
+        "width": 361.640625,
+        "height": 55.59375,
+        "right": 382.640625,
+        "bottom": 352.546875
+      },
+      ".runtime-shop-side": {
+        "x": 394.640625,
+        "y": 70.578125,
+        "width": 236.359375,
+        "height": 293.640625,
+        "right": 631,
+        "bottom": 364.21875
+      },
+      ".runtime-shop-prompt-panel": {
+        "x": 9,
+        "y": 364.21875,
+        "width": 622,
+        "height": 106.78125,
+        "right": 631,
+        "bottom": 471
+      },
+      "[data-testid=\"shop-quantity-input\"]": {
+        "x": 83,
+        "y": 403.40625,
+        "width": 32,
+        "height": 32,
+        "right": 115,
+        "bottom": 435.40625
+      },
+      "[data-testid=\"shop-quantity-total\"]": {
+        "x": 163,
+        "y": 409.25,
+        "width": 63.8125,
+        "height": 20.296875,
+        "right": 226.8125,
+        "bottom": 429.546875
+      },
+      "[data-testid=\"shop-confirm\"]": {
+        "x": 499,
+        "y": 402.609375,
+        "width": 56,
+        "height": 33.59375,
+        "right": 555,
+        "bottom": 436.203125
+      },
+      "[data-testid=\"shop-item-cancel\"]": {
+        "x": 563,
+        "y": 402.609375,
+        "width": 56,
+        "height": 33.59375,
+        "right": 619,
+        "bottom": 436.203125
+      },
+      "[data-testid=\"shop-player-gold\"]": {
+        "x": 524.109375,
+        "y": 17,
+        "width": 94.890625,
+        "height": 23.1875,
+        "right": 619,
+        "bottom": 40.1875
+      }
+    },
+    "warnings": [],
+    "layoutFailures": [],
+    "artworkUrls": [
+      "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+      "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
+      "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+    ],
+    "artwork": [
+      {
+        "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+        "loaded": true,
+        "width": 128,
+        "height": 128
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/ether-blue.png",
+        "loaded": true,
+        "width": 128,
+        "height": 128
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+        "loaded": true,
+        "width": 128,
+        "height": 128
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      }
+    ],
+    "failures": []
+  },
+  {
+    "id": "07-sold",
+    "shot": "07-sold.png",
+    "viewport": {
+      "width": 640,
+      "height": 480
+    },
+    "url": "http://127.0.0.1:40579/player.html",
+    "gold": 100,
+    "inventory": {
+      "item_potion": 2,
+      "item_antidote": 2,
+      "equip_sword": 1
+    },
+    "actorEquipment": {
+      "actor_hero": {
+        "weapon": "equip_sword",
+        "shield": "equip_oak_shield",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_guardian": {
+        "weapon": "equip_sword",
+        "shield": "equip_oak_shield",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_mage": {
+        "weapon": "equip_mage_staff",
+        "armor": "equip_mystic_robe",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_scout": {
+        "weapon": "equip_scout_dagger",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_cleric": {
+        "weapon": "equip_mage_staff",
+        "shield": "equip_oak_shield",
+        "armor": "equip_mystic_robe",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_ranger": {
+        "weapon": "equip_scout_dagger",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      }
+    },
+    "tradeCounts": {
+      "item_potion": {
+        "sold": 2,
+        "bought": 3
+      },
+      "equip_sword": {
+        "sold": 0,
+        "bought": 1
+      }
+    },
+    "x": 14,
+    "y": 18,
+    "merchantGold": 400,
+    "mode": "sell",
+    "selected": "shop-sell-item_potion",
+    "quantity": "2",
+    "quantityMax": "4",
+    "total": "합계 50G",
+    "totalAmount": 50,
+    "status": "회복약 판매 — +50G",
+    "equippedText": "보유2",
+    "geometry": {
+      ".runtime-shop-shell": {
+        "x": 8,
+        "y": 8,
+        "width": 624,
+        "height": 464,
+        "right": 632,
+        "bottom": 472
+      },
+      ".runtime-shop-topbar": {
+        "x": 9,
+        "y": 9,
+        "width": 622,
+        "height": 61.578125,
+        "right": 631,
+        "bottom": 70.578125
+      },
+      ".runtime-shop-item-list": {
+        "x": 17,
+        "y": 117.171875,
+        "width": 369.640625,
+        "height": 239.046875,
+        "right": 386.640625,
+        "bottom": 356.21875
+      },
+      ".runtime-shop-item-row.selected": {
+        "x": 21,
+        "y": 121.171875,
+        "width": 361.640625,
+        "height": 55.59375,
+        "right": 382.640625,
+        "bottom": 176.765625
+      },
+      ".runtime-shop-side": {
+        "x": 394.640625,
+        "y": 70.578125,
+        "width": 236.359375,
+        "height": 293.640625,
+        "right": 631,
+        "bottom": 364.21875
+      },
+      ".runtime-shop-prompt-panel": {
+        "x": 9,
+        "y": 364.21875,
+        "width": 622,
+        "height": 106.78125,
+        "right": 631,
+        "bottom": 471
+      },
+      "[data-testid=\"shop-quantity-input\"]": {
+        "x": 83,
+        "y": 403.40625,
+        "width": 32,
+        "height": 32,
+        "right": 115,
+        "bottom": 435.40625
+      },
+      "[data-testid=\"shop-quantity-total\"]": {
+        "x": 163,
+        "y": 409.25,
+        "width": 55.796875,
+        "height": 20.296875,
+        "right": 218.796875,
+        "bottom": 429.546875
+      },
+      "[data-testid=\"shop-confirm\"]": {
+        "x": 499,
+        "y": 402.609375,
+        "width": 56,
+        "height": 33.59375,
+        "right": 555,
+        "bottom": 436.203125
+      },
+      "[data-testid=\"shop-item-cancel\"]": {
+        "x": 563,
+        "y": 402.609375,
+        "width": 56,
+        "height": 33.59375,
+        "right": 619,
+        "bottom": 436.203125
+      },
+      "[data-testid=\"shop-player-gold\"]": {
+        "x": 514.953125,
+        "y": 17,
+        "width": 104.046875,
+        "height": 23.1875,
+        "right": 619,
+        "bottom": 40.1875
+      }
+    },
+    "warnings": [
+      "stale quantity max: DOM 4, current funds/inventory 2"
+    ],
+    "layoutFailures": [],
+    "artworkUrls": [
+      "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+      "http://127.0.0.1:40579/assets/cc0/jetrel/icons/antidote-green.png",
+      "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+    ],
+    "artwork": [
+      {
+        "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+        "loaded": true,
+        "width": 128,
+        "height": 128
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/antidote-green.png",
+        "loaded": true,
+        "width": 128,
+        "height": 128
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+        "loaded": true,
+        "width": 128,
+        "height": 128
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      }
+    ],
+    "failures": []
+  },
+  {
+    "id": "08-last-copy",
+    "shot": "08-last-copy.png",
+    "viewport": {
+      "width": 640,
+      "height": 480
+    },
+    "url": "http://127.0.0.1:40579/player.html",
+    "gold": 130,
+    "inventory": {
+      "item_potion": 2,
+      "equip_sword": 1
+    },
+    "actorEquipment": {
+      "actor_hero": {
+        "weapon": "equip_sword",
+        "shield": "equip_oak_shield",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_guardian": {
+        "weapon": "equip_sword",
+        "shield": "equip_oak_shield",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_mage": {
+        "weapon": "equip_mage_staff",
+        "armor": "equip_mystic_robe",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_scout": {
+        "weapon": "equip_scout_dagger",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_cleric": {
+        "weapon": "equip_mage_staff",
+        "shield": "equip_oak_shield",
+        "armor": "equip_mystic_robe",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_ranger": {
+        "weapon": "equip_scout_dagger",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      }
+    },
+    "tradeCounts": {
+      "item_potion": {
+        "sold": 2,
+        "bought": 3
+      },
+      "equip_sword": {
+        "sold": 0,
+        "bought": 1
+      },
+      "item_antidote": {
+        "sold": 2,
+        "bought": 0
+      }
+    },
+    "x": 14,
+    "y": 18,
+    "merchantGold": 370,
+    "mode": "sell",
+    "selected": "shop-sell-equip_sword",
+    "quantity": "1",
+    "quantityMax": "1",
+    "total": "합계 50G",
+    "totalAmount": 50,
+    "status": "해독초 판매 — +30G",
+    "equippedText": "보유1장비2",
+    "statsText": "공격▲8",
+    "geometry": {
+      ".runtime-shop-shell": {
+        "x": 8,
+        "y": 8,
+        "width": 624,
+        "height": 464,
+        "right": 632,
+        "bottom": 472
+      },
+      ".runtime-shop-topbar": {
+        "x": 9,
+        "y": 9,
+        "width": 622,
+        "height": 61.578125,
+        "right": 631,
+        "bottom": 70.578125
+      },
+      ".runtime-shop-item-list": {
+        "x": 17,
+        "y": 117.171875,
+        "width": 369.640625,
+        "height": 239.046875,
+        "right": 386.640625,
+        "bottom": 356.21875
+      },
+      ".runtime-shop-item-row.selected": {
+        "x": 21,
+        "y": 180.765625,
+        "width": 361.640625,
+        "height": 55.59375,
+        "right": 382.640625,
+        "bottom": 236.359375
+      },
+      ".runtime-shop-side": {
+        "x": 394.640625,
+        "y": 70.578125,
+        "width": 236.359375,
+        "height": 293.640625,
+        "right": 631,
+        "bottom": 364.21875
+      },
+      ".runtime-shop-prompt-panel": {
+        "x": 9,
+        "y": 364.21875,
+        "width": 622,
+        "height": 106.78125,
+        "right": 631,
+        "bottom": 471
+      },
+      "[data-testid=\"shop-quantity-input\"]": {
+        "x": 83,
+        "y": 403.40625,
+        "width": 32,
+        "height": 32,
+        "right": 115,
+        "bottom": 435.40625
+      },
+      "[data-testid=\"shop-quantity-total\"]": {
+        "x": 163,
+        "y": 409.25,
+        "width": 55.796875,
+        "height": 20.296875,
+        "right": 218.796875,
+        "bottom": 429.546875
+      },
+      "[data-testid=\"shop-confirm\"]": {
+        "x": 499,
+        "y": 402.609375,
+        "width": 56,
+        "height": 33.59375,
+        "right": 555,
+        "bottom": 436.203125
+      },
+      "[data-testid=\"shop-item-cancel\"]": {
+        "x": 563,
+        "y": 402.609375,
+        "width": 56,
+        "height": 33.59375,
+        "right": 619,
+        "bottom": 436.203125
+      },
+      "[data-testid=\"shop-player-gold\"]": {
+        "x": 514.953125,
+        "y": 17,
+        "width": 104.046875,
+        "height": 23.1875,
+        "right": 619,
+        "bottom": 40.1875
+      }
+    },
+    "warnings": [],
+    "layoutFailures": [],
+    "artworkUrls": [
+      "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+      "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+    ],
+    "artwork": [
+      {
+        "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+        "loaded": true,
+        "width": 128,
+        "height": 128
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/bronze-sword.png",
+        "loaded": true,
+        "width": 128,
+        "height": 128
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      }
+    ],
+    "failures": []
+  },
+  {
+    "id": "09-equipment-sold",
+    "shot": "09-equipment-sold.png",
+    "viewport": {
+      "width": 640,
+      "height": 480
+    },
+    "url": "http://127.0.0.1:40579/player.html",
+    "gold": 180,
+    "inventory": {
+      "item_potion": 2
+    },
+    "actorEquipment": {
+      "actor_hero": {
+        "weapon": "equip_sword",
+        "shield": "equip_oak_shield",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_guardian": {
+        "weapon": "equip_sword",
+        "shield": "equip_oak_shield",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_mage": {
+        "weapon": "equip_mage_staff",
+        "armor": "equip_mystic_robe",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_scout": {
+        "weapon": "equip_scout_dagger",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_cleric": {
+        "weapon": "equip_mage_staff",
+        "shield": "equip_oak_shield",
+        "armor": "equip_mystic_robe",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_ranger": {
+        "weapon": "equip_scout_dagger",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      }
+    },
+    "tradeCounts": {
+      "item_potion": {
+        "sold": 2,
+        "bought": 3
+      },
+      "equip_sword": {
+        "sold": 1,
+        "bought": 1
+      },
+      "item_antidote": {
+        "sold": 2,
+        "bought": 0
+      }
+    },
+    "x": 14,
+    "y": 18,
+    "merchantGold": 320,
+    "mode": "sell",
+    "selected": "shop-sell-item_potion",
+    "quantity": "1",
+    "quantityMax": "4",
+    "total": "합계 25G",
+    "totalAmount": 25,
+    "status": "청동 검 판매 — +50G",
+    "equippedText": "보유2",
+    "geometry": {
+      ".runtime-shop-shell": {
+        "x": 8,
+        "y": 8,
+        "width": 624,
+        "height": 464,
+        "right": 632,
+        "bottom": 472
+      },
+      ".runtime-shop-topbar": {
+        "x": 9,
+        "y": 9,
+        "width": 622,
+        "height": 61.578125,
+        "right": 631,
+        "bottom": 70.578125
+      },
+      ".runtime-shop-item-list": {
+        "x": 17,
+        "y": 117.171875,
+        "width": 369.640625,
+        "height": 239.046875,
+        "right": 386.640625,
+        "bottom": 356.21875
+      },
+      ".runtime-shop-item-row.selected": {
+        "x": 21,
+        "y": 121.171875,
+        "width": 361.640625,
+        "height": 55.59375,
+        "right": 382.640625,
+        "bottom": 176.765625
+      },
+      ".runtime-shop-side": {
+        "x": 394.640625,
+        "y": 70.578125,
+        "width": 236.359375,
+        "height": 293.640625,
+        "right": 631,
+        "bottom": 364.21875
+      },
+      ".runtime-shop-prompt-panel": {
+        "x": 9,
+        "y": 364.21875,
+        "width": 622,
+        "height": 106.78125,
+        "right": 631,
+        "bottom": 471
+      },
+      "[data-testid=\"shop-quantity-input\"]": {
+        "x": 83,
+        "y": 403.40625,
+        "width": 32,
+        "height": 32,
+        "right": 115,
+        "bottom": 435.40625
+      },
+      "[data-testid=\"shop-quantity-total\"]": {
+        "x": 163,
+        "y": 409.25,
+        "width": 55.796875,
+        "height": 20.296875,
+        "right": 218.796875,
+        "bottom": 429.546875
+      },
+      "[data-testid=\"shop-confirm\"]": {
+        "x": 499,
+        "y": 402.609375,
+        "width": 56,
+        "height": 33.59375,
+        "right": 555,
+        "bottom": 436.203125
+      },
+      "[data-testid=\"shop-item-cancel\"]": {
+        "x": 563,
+        "y": 402.609375,
+        "width": 56,
+        "height": 33.59375,
+        "right": 619,
+        "bottom": 436.203125
+      },
+      "[data-testid=\"shop-player-gold\"]": {
+        "x": 514.953125,
+        "y": 17,
+        "width": 104.046875,
+        "height": 23.1875,
+        "right": 619,
+        "bottom": 40.1875
+      }
+    },
+    "warnings": [
+      "stale quantity max: DOM 4, current funds/inventory 2"
+    ],
+    "layoutFailures": [],
+    "artworkUrls": [
+      "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+      "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png"
+    ],
+    "artwork": [
+      {
+        "url": "http://127.0.0.1:40579/assets/cc0/jetrel/icons/potion-red.png",
+        "loaded": true,
+        "width": 128,
+        "height": 128
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor1/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/Actor2/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People1/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      },
+      {
+        "url": "http://127.0.0.1:40579/assets/easyrpg/faceset/People2/00.png",
+        "loaded": true,
+        "width": 48,
+        "height": 48
+      }
+    ],
+    "failures": []
+  },
+  {
+    "id": "10-field-return",
+    "shot": "10-field-return.png",
+    "viewport": {
+      "width": 640,
+      "height": 480
+    },
+    "url": "http://127.0.0.1:40579/player.html",
+    "gold": 180,
+    "inventory": {
+      "item_potion": 2
+    },
+    "actorEquipment": {
+      "actor_hero": {
+        "weapon": "equip_sword",
+        "shield": "equip_oak_shield",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_guardian": {
+        "weapon": "equip_sword",
+        "shield": "equip_oak_shield",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_mage": {
+        "weapon": "equip_mage_staff",
+        "armor": "equip_mystic_robe",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_scout": {
+        "weapon": "equip_scout_dagger",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_cleric": {
+        "weapon": "equip_mage_staff",
+        "shield": "equip_oak_shield",
+        "armor": "equip_mystic_robe",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_ranger": {
+        "weapon": "equip_scout_dagger",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      }
+    },
+    "tradeCounts": {
+      "item_potion": {
+        "sold": 2,
+        "bought": 3
+      },
+      "equip_sword": {
+        "sold": 1,
+        "bought": 1
+      },
+      "item_antidote": {
+        "sold": 2,
+        "bought": 0
+      }
+    },
+    "x": 14,
+    "y": 18,
+    "merchantGold": null,
+    "totalAmount": null,
+    "geometry": {},
+    "warnings": [],
+    "layoutFailures": [],
+    "artworkUrls": [],
+    "artwork": [],
+    "failures": []
+  }
+]
