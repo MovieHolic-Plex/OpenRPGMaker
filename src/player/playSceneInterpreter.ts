@@ -202,7 +202,7 @@ export async function runCommands(
   try {
     let result = interpreter.start();
     scene.refreshRuntimeSurfaces();
-    while (result.kind !== "done" && scene.session === activeSession) {
+    while (result.kind !== "done" && skipController.isActive()) {
       if (isCutsceneSkippable(scene.session)) {
         scene.showRuntimeOverlay("cutscene-skip-hint", "Esc Esc: 컷신 건너뛰기");
       }
@@ -211,7 +211,7 @@ export async function runCommands(
   } finally {
     skipController.dispose();
     releaseCutsceneControlForOwner(activeSession, currentEventId);
-    if (scene.session === activeSession) {
+    if (skipController.isActive()) {
       scene.clearRuntimeOverlay("cutscene-skip-hint");
       scene.running = options.allowNested === true ? previousRunning : false;
       scene.lastActionTargetKey = "";
@@ -223,12 +223,20 @@ export async function runCommands(
 }
 
 type CutsceneSkipController = {
+  isActive(): boolean;
   dispose(): void;
   takeResult(): StepResult | null;
   waitForSkip(): Promise<void>;
 };
 
 function createCutsceneSkipController(scene: PlaySceneContext, interpreter: Interpreter): CutsceneSkipController {
+  const session = scene.session;
+  const events = scene.events;
+  let stopped = false;
+  const stop = (): void => { stopped = true; };
+  const isActive = (): boolean => !stopped && scene.session === session;
+  events?.once("shutdown", stop);
+  events?.once("destroy", stop);
   let lastEscapeAt = 0;
   let result: StepResult | null = null;
   let waiters: Array<() => void> = [];
@@ -238,7 +246,7 @@ function createCutsceneSkipController(scene: PlaySceneContext, interpreter: Inte
     for (const resolve of pending) resolve();
   };
   const requestSkip = (event: KeyboardEvent): void => {
-    if (event.key !== "Escape" || !isCutsceneSkippable(scene.session) || result) return;
+    if (!isActive() || event.key !== "Escape" || !isCutsceneSkippable(scene.session) || result) return;
     const now = performance.now();
     const secondEscape = now - lastEscapeAt <= 900;
     lastEscapeAt = now;
@@ -250,8 +258,11 @@ function createCutsceneSkipController(scene: PlaySceneContext, interpreter: Inte
   };
   document.addEventListener("keydown", requestSkip);
   return {
+    isActive,
     dispose(): void {
       document.removeEventListener("keydown", requestSkip);
+      events?.off("shutdown", stop);
+      events?.off("destroy", stop);
       waiters = [];
     },
     takeResult(): StepResult | null {
@@ -448,16 +459,30 @@ async function consumeBlockingStep(
       }
       return resumeWithValue(scene, interpreter, scene.session.battleResult);
     }
-    case "showPicture":
+    case "showPicture": {
       showPictureState(scene.session, step);
       scene.showRuntimeOverlay("picture-overlay", resourceDisplayName(step.resourceId, step.pictureId || step.resourceId));
       scene.syncRuntimeState();
+      const pictures = scene.runtimeDom;
+      const completion = pictures.waitForPicture(step.pictureId);
+      const events = scene.events;
+      const cancelPictures = (): void => pictures.clearPictures();
+      // Even wait:false pictures keep a lifetime until their animation completes.
+      events?.once("shutdown", cancelPictures);
+      events?.once("destroy", cancelPictures);
+      void completion.then(() => {
+        events?.off("shutdown", cancelPictures);
+        events?.off("destroy", cancelPictures);
+      });
       if (step.waitForPicture === true) {
-        await waitWithCutsceneSkip(step.durationMs ?? 0, skipController);
+        await Promise.race([completion, skipController.waitForSkip()]);
+        if (!skipController.isActive()) return { kind: "done" };
         const skipped = skipController.takeResult();
         if (skipped) return skipped;
+        // Replacing or erasing this picture settles the operation, not the live event.
       }
       return resumeInterpreter(interpreter);
+    }
     case "erasePicture":
       erasePictureState(scene.session, step.pictureId);
       scene.clearRuntimeOverlay("picture-overlay");

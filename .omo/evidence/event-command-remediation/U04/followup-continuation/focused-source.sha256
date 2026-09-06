@@ -1,0 +1,3 @@
+522f267069c8b45953188ff28a4c9a881cc63fdc4f7d0c1e509e3f2369c11a2a  src/player/runtimeDom.ts
+a12537645792bd4a4836ea1393f98a8ca88678e1b6efed298495370545f6c545  src/player/playSceneInterpreter.ts
+be26a27ed0215309106905bd67fe7cd9698e5af9dcb9fe3a7a37bbd97b81fcc9  scripts/qa/runtime/event-command-remediation-u04.scenario.mjs

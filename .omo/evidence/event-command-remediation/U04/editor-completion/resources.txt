@@ -1,0 +1,3 @@
+EDITOR_PORT=59951
+EDITOR_CACHE=/tmp/u04-editor-completion-cache-st01a0763b
+State Recv-Q Send-Q Local Address:Port Peer Address:PortProcess

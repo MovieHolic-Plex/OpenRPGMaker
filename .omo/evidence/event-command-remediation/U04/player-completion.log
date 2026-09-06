@@ -1,0 +1,32 @@
+g3-f10-500-true: fresh browser boot
+g3-f10-500-true: dedicated player PASS
+g3-f10-500-false: fresh browser boot
+g3-f10-500-false: dedicated player PASS
+g3-f10-500-omitted: fresh browser boot
+g3-f10-500-omitted: dedicated player PASS
+g3-f10-0-true: fresh browser boot
+g3-f10-0-true: dedicated player PASS
+g3-f10-0-false: fresh browser boot
+g3-f10-0-false: dedicated player PASS
+g3-f10-0-omitted: fresh browser boot
+g3-f10-0-omitted: dedicated player PASS
+g5-f2-true-true: fresh browser boot
+g5-f2-true-true: dedicated player PASS
+g5-f2-true-false: fresh browser boot
+g5-f2-true-false: dedicated player PASS
+g5-f2-false-true: fresh browser boot
+g5-f2-false-true: dedicated player PASS
+g5-f2-false-false: fresh browser boot
+g5-f2-false-false: dedicated player PASS
+g5-f2-omitted: fresh browser boot
+g5-f2-omitted: dedicated player PASS
+g5-f2-defaults: fresh browser boot
+g5-f2-defaults: dedicated player PASS
+g5-f2-true-false-error: fresh browser boot
+g5-f2-true-false-error: dedicated player PASS
+g5-f2-true-false-abort: fresh browser boot
+g5-f2-true-false-abort: dedicated player navigation abort PASS
+G5-F2 cinematic URL: real decoding/native ended/map boot/source release PASS
+U04 player cleanup: contexts/server closed; temporary fixtures and cache removed
+
+Exit code: 0

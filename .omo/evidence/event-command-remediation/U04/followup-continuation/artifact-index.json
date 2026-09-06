@@ -1,0 +1,104 @@
+[
+  {
+    "path": "focused-green.json",
+    "sha256": "55e50460fc816473ac6658adf7e536317711075c09fa3c85eaf2cb3f99f976f7",
+    "bytes": 16405,
+    "screenshotIgnored": false
+  },
+  {
+    "path": "green.json",
+    "sha256": "ac366ccdae2ccbf1e407ecf5974a9d5f804e9678f7b8cd7610b58d8afa0235a3",
+    "bytes": 43218,
+    "screenshotIgnored": false
+  },
+  {
+    "path": "original-base.json",
+    "sha256": "8928baae673d944e625ebeda034197aa184a40b43f9fbabbae03365058c04ae7",
+    "bytes": 14120,
+    "screenshotIgnored": false
+  },
+  {
+    "path": "player-fixture-attempt/cleanup.json",
+    "sha256": "07990ca729e6edf0e9c2aba547485aa0f2bd4c1bfa3b60856608140a2a788e54",
+    "bytes": 214,
+    "screenshotIgnored": false
+  },
+  {
+    "path": "player-fixture-attempt/g3-f10-continuation-replacement/02-g3-f10-continuation-replacement.png",
+    "sha256": "9dd5731cc0552a69a70dd033126a1966176adf4a040b9dbd430cc9e664bc2918",
+    "bytes": 48936,
+    "screenshotIgnored": true
+  },
+  {
+    "path": "player-fixture-attempt/g3-f10-continuation-replacement.json",
+    "sha256": "e2d614d6b0a4e50cbbdd4dff94c7ac1f08368a37f28b615d4e2488654c779d64",
+    "bytes": 7760,
+    "screenshotIgnored": false
+  },
+  {
+    "path": "player-focused/cleanup.json",
+    "sha256": "032d4fd3bd78efcf7c0528749e51222008e7736ee9c9a34161de7e8bd647068e",
+    "bytes": 214,
+    "screenshotIgnored": false
+  },
+  {
+    "path": "player-focused/g3-f10-continuation-erase/02-g3-f10-continuation-erase.png",
+    "sha256": "2715d8220f77b97155d8a950b705f3bec936756f314da0044ef069901ecf3e02",
+    "bytes": 29869,
+    "screenshotIgnored": true
+  },
+  {
+    "path": "player-focused/g3-f10-continuation-erase.json",
+    "sha256": "a482ca4d500deba57c12b89a20ed69720cc0b897a30358bb969f68f50690dbf1",
+    "bytes": 4659,
+    "screenshotIgnored": false
+  },
+  {
+    "path": "player-focused/g3-f10-continuation-replacement/02-g3-f10-continuation-replacement.png",
+    "sha256": "229ff01d29dba61a7e79e25fcbc3b29e87f542c618a1ce42a9d73f364f989021",
+    "bytes": 30777,
+    "screenshotIgnored": true
+  },
+  {
+    "path": "player-focused/g3-f10-continuation-replacement.json",
+    "sha256": "f178d8ed07ae89744663cd0366947941b4bc4eb15dbdda870cbf390420eb990c",
+    "bytes": 6724,
+    "screenshotIgnored": false
+  },
+  {
+    "path": "red.json",
+    "sha256": "a1869666c2ddcfae79b016dc07946337dc8ecd60c5ea1be0cf5d02de51089937",
+    "bytes": 15066,
+    "screenshotIgnored": false
+  },
+  {
+    "path": "retarget-red.json",
+    "sha256": "3d617cb45df71aef52256e13d3aa4c543dacc9db3ea4d18e4129a52601714570",
+    "bytes": 17482,
+    "screenshotIgnored": false
+  },
+  {
+    "path": "untargeted-player-attempt/cleanup.json",
+    "sha256": "7ab3a440f5a973f431eaa7b7a46f9ed8e1228d33cd8c931f03713b485ca68f5c",
+    "bytes": 195,
+    "screenshotIgnored": false
+  },
+  {
+    "path": "untargeted-player-attempt/g3-f10-500-true/01-u04-boot.png",
+    "sha256": "9133608d31e78cfbfcf920e451fe2ba7c30a1d34cdf95516db41f0c6c62dc84d",
+    "bytes": 23767,
+    "screenshotIgnored": true
+  },
+  {
+    "path": "untargeted-player-attempt/g3-f10-500-true/02-g3-f10.png",
+    "sha256": "a47f4075bc7418d0c4bba6380a071f49e741e0ccf36b48158697a501a5b63130",
+    "bytes": 29819,
+    "screenshotIgnored": true
+  },
+  {
+    "path": "untargeted-player-attempt/g3-f10-500-true-failure.json",
+    "sha256": "409004f10dd199e3d180a52a36c41d213b03f7c957d86564859fc0885fa56ec1",
+    "bytes": 784,
+    "screenshotIgnored": false
+  }
+]

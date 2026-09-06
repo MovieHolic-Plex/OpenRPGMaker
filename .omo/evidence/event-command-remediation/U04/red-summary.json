@@ -1,0 +1,140 @@
+{
+  "base": "c66f5a8a",
+  "command": "npm test -- test/eventCommandRemediation/U04.test.ts --maxWorkers=2 --reporter=verbose --reporter=json --outputFile=.omo/evidence/event-command-remediation/U04/red.json",
+  "exitCode": 1,
+  "total": 28,
+  "passed": 14,
+  "failed": 14,
+  "findings": {
+    "G3-F10": {
+      "total": 12,
+      "passed": 6,
+      "failed": 6,
+      "cases": [
+        {
+          "name": "G3-F10 native showPicture optional wait preservation coordinate edit preserves wait=true at duration=500 through Confirm/deserialize/reopen",
+          "status": "failed"
+        },
+        {
+          "name": "G3-F10 native showPicture optional wait preservation coordinate edit preserves wait=false at duration=500 through Confirm/deserialize/reopen",
+          "status": "failed"
+        },
+        {
+          "name": "G3-F10 native showPicture optional wait preservation coordinate edit preserves wait=undefined at duration=500 through Confirm/deserialize/reopen",
+          "status": "passed"
+        },
+        {
+          "name": "G3-F10 native showPicture optional wait preservation coordinate edit preserves wait=true at duration=+0 through Confirm/deserialize/reopen",
+          "status": "failed"
+        },
+        {
+          "name": "G3-F10 native showPicture optional wait preservation coordinate edit preserves wait=false at duration=+0 through Confirm/deserialize/reopen",
+          "status": "failed"
+        },
+        {
+          "name": "G3-F10 native showPicture optional wait preservation coordinate edit preserves wait=undefined at duration=+0 through Confirm/deserialize/reopen",
+          "status": "passed"
+        },
+        {
+          "name": "G3-F10 native showPicture optional wait preservation exposes an editable wait toggle; authored true survives a later coordinate edit",
+          "status": "failed"
+        },
+        {
+          "name": "G3-F10 native showPicture optional wait preservation exposes an editable wait toggle; authored false survives a later coordinate edit",
+          "status": "failed"
+        },
+        {
+          "name": "G3-F10 native showPicture optional wait preservation parser/interpreter characterization: unedited wait=true is not lost downstream",
+          "status": "passed"
+        },
+        {
+          "name": "G3-F10 native showPicture optional wait preservation parser/interpreter characterization: unedited wait=false is not lost downstream",
+          "status": "passed"
+        },
+        {
+          "name": "G3-F10 native showPicture optional wait preservation parser/interpreter characterization: unedited wait=undefined is not lost downstream",
+          "status": "passed"
+        },
+        {
+          "name": "'G3-F10' Cancel discards staged edits without mutating the input",
+          "status": "passed"
+        }
+      ]
+    },
+    "G5-F2": {
+      "total": 16,
+      "passed": 8,
+      "failed": 8,
+      "cases": [
+        {
+          "name": "G5-F2 native playMovie default-true and explicit-false contract omitted wait opens as true, matching the interpreter",
+          "status": "failed"
+        },
+        {
+          "name": "G5-F2 native playMovie default-true and explicit-false contract omitted skippable opens as true, matching the interpreter",
+          "status": "failed"
+        },
+        {
+          "name": "G5-F2 native playMovie default-true and explicit-false contract resource edit retains independent wait=true skippable=true",
+          "status": "passed"
+        },
+        {
+          "name": "G5-F2 native playMovie default-true and explicit-false contract resource edit retains independent wait=true skippable=false",
+          "status": "failed"
+        },
+        {
+          "name": "G5-F2 native playMovie default-true and explicit-false contract resource edit retains independent wait=false skippable=true",
+          "status": "failed"
+        },
+        {
+          "name": "G5-F2 native playMovie default-true and explicit-false contract resource edit retains independent wait=false skippable=false",
+          "status": "failed"
+        },
+        {
+          "name": "G5-F2 native playMovie default-true and explicit-false contract explicit toggle selection saves wait=true skippable=true, not default-true omission",
+          "status": "passed"
+        },
+        {
+          "name": "G5-F2 native playMovie default-true and explicit-false contract explicit toggle selection saves wait=true skippable=false, not default-true omission",
+          "status": "failed"
+        },
+        {
+          "name": "G5-F2 native playMovie default-true and explicit-false contract explicit toggle selection saves wait=false skippable=true, not default-true omission",
+          "status": "failed"
+        },
+        {
+          "name": "G5-F2 native playMovie default-true and explicit-false contract explicit toggle selection saves wait=false skippable=false, not default-true omission",
+          "status": "failed"
+        },
+        {
+          "name": "G5-F2 native playMovie default-true and explicit-false contract parser/interpreter characterization: unedited flags {} retain their semantics",
+          "status": "passed"
+        },
+        {
+          "name": "G5-F2 native playMovie default-true and explicit-false contract parser/interpreter characterization: unedited flags {\"wait\":true,\"skippable\":true} retain their semantics",
+          "status": "passed"
+        },
+        {
+          "name": "G5-F2 native playMovie default-true and explicit-false contract parser/interpreter characterization: unedited flags {\"wait\":true,\"skippable\":false} retain their semantics",
+          "status": "passed"
+        },
+        {
+          "name": "G5-F2 native playMovie default-true and explicit-false contract parser/interpreter characterization: unedited flags {\"wait\":false,\"skippable\":true} retain their semantics",
+          "status": "passed"
+        },
+        {
+          "name": "G5-F2 native playMovie default-true and explicit-false contract parser/interpreter characterization: unedited flags {\"wait\":false,\"skippable\":false} retain their semantics",
+          "status": "passed"
+        },
+        {
+          "name": "'G5-F2' Cancel discards staged edits without mutating the input",
+          "status": "passed"
+        }
+      ]
+    }
+  },
+  "sha256": {
+    "test/eventCommandRemediation/U04.test.ts": "911a172a2db9a945cdff5178c342a3d0b040a03070d15db2a69bfc6643ce9044",
+    "test/eventCommandRemediation/U04.fixture.ts": "5ace2624ccc59fc9c79ffce9baee687700dd4a498f8745732ec4a000f27274be"
+  }
+}

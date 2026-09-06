@@ -1,0 +1,23 @@
+{
+  "error": "AssertionError [ERR_ASSERTION]: {\"picture\":{\"at\":14820,\"opacity\":0},\"complete\":{\"at\":15369},\"sentinel\":{\"at\":15360,\"pictureOpacity\":0.499},\"movie\":null,\"events\":[],\"activeMovieListeners\":0,\"totalMovieListeners\":0}\n\nfalse !== true\n",
+  "errors": [],
+  "url": "http://127.0.0.1:41035/player.html",
+  "body": "g3-f10\n▼\nhost-page\nhost-page\nselectedOther\npicA",
+  "probe": {
+    "picture": {
+      "at": 14820,
+      "opacity": 0
+    },
+    "complete": {
+      "at": 15369
+    },
+    "sentinel": {
+      "at": 15360,
+      "pictureOpacity": 0.499
+    },
+    "movie": null,
+    "events": [],
+    "activeMovieListeners": 0,
+    "totalMovieListeners": 0
+  }
+}

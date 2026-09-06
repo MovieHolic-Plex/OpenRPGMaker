@@ -1,0 +1,94 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/eventCommandRemediation/U04.test.ts test/showPictureForm.test.ts test/playMovieEditorBody.test.ts test/playMovieRuntime.test.ts --maxWorkers=2 --reporter=verbose --reporter=json --outputFile=.omo/evidence/event-command-remediation/U04/green.json
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u04
+
+ ✓ test/showPictureForm.test.ts > 그림 표시 폼 > 확대·투명도·회전·전환시간 칸이 모두 있다 249ms
+ ✓ test/showPictureForm.test.ts > 그림 표시 폼 > 입력한 값이 커맨드에 실린다 185ms
+ ✓ test/showPictureForm.test.ts > 그림 표시 폼 > 기존 값이 있으면 칸에 채워진다 134ms
+ ✓ test/showPictureForm.test.ts > 그림 표시 폼 > 범위 밖 값은 폼에서 접어 런타임까지 새지 않는다 101ms
+ ✓ test/showPictureForm.test.ts > 그림 표시 폼 > 회전은 한 바퀴를 넘겨도 접지 않는다 152ms
+ ✓ test/showPictureForm.test.ts > 그림 표시 폼 > 좌표만 바꿔도 기존 변환값이 날아가지 않는다 117ms
+ ✓ test/showPictureForm.test.ts > 그림 표시 폼 > 미리보기 문구가 런타임과 같은 좌상단 앵커라고 알린다 103ms
+ ✓ test/showPictureForm.test.ts > 그림 표시 폼 > 미리보기 불투명도는 퍼센트를 그대로 반영한다 119ms
+ ✓ test/showPictureForm.test.ts > 그림 표시 폼 > 미리보기 불투명도는 입력 변경을 따라간다 102ms
+ ✓ test/showPictureForm.test.ts > 그림 표시 폼 > AI로 만들기 칸이 있다 94ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G3-F10 native showPicture optional wait preservation > coordinate edit preserves wait=true at duration=500 through Confirm/deserialize/reopen 536ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G3-F10 native showPicture optional wait preservation > coordinate edit preserves wait=false at duration=500 through Confirm/deserialize/reopen 480ms
+ × test/showPictureForm.test.ts > 그림 표시 폼 > 프롬프트로 그림을 만들면 업로드 리소스가 커맨드에 실린다 1132ms
+   → expected 0 to be greater than 0
+ ✓ test/showPictureForm.test.ts > 그림 표시 폼 > 빈 프롬프트는 요청하지 않는다 201ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G3-F10 native showPicture optional wait preservation > coordinate edit preserves wait=undefined at duration=500 through Confirm/deserialize/reopen 522ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G3-F10 native showPicture optional wait preservation > coordinate edit preserves wait=true at duration=+0 through Confirm/deserialize/reopen 490ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G3-F10 native showPicture optional wait preservation > coordinate edit preserves wait=false at duration=+0 through Confirm/deserialize/reopen 349ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G3-F10 native showPicture optional wait preservation > coordinate edit preserves wait=undefined at duration=+0 through Confirm/deserialize/reopen 420ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G3-F10 native showPicture optional wait preservation > exposes an editable wait toggle; authored true survives a later coordinate edit 437ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G3-F10 native showPicture optional wait preservation > exposes an editable wait toggle; authored false survives a later coordinate edit 451ms
+ ✓ test/playMovieEditorBody.test.ts > playMovie 편집기 본문 > 동영상 리소스 목록은 미디어 타입이 동영상인 업로드만 담는다 352ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G3-F10 native showPicture optional wait preservation > parser/interpreter characterization: unedited wait=true is not lost downstream 501ms
+ ✓ test/playMovieEditorBody.test.ts > playMovie 편집기 본문 > 리소스 URL 은 업로드 동영상만 통과시키고 그림 데이터는 거른다 195ms
+ ✓ test/playMovieEditorBody.test.ts > playMovie 편집기 본문 > 본문이 동영상 픽커와 항목을 그린다 150ms
+ ✓ test/playMovieEditorBody.test.ts > playMovie 편집기 본문 > 미리보기 표시면이 선택한 동영상을 실제 <video> 로 걸어 둔다 142ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G3-F10 native showPicture optional wait preservation > parser/interpreter characterization: unedited wait=false is not lost downstream 475ms
+ ✓ test/playMovieEditorBody.test.ts > playMovie 편집기 본문 > 리소스가 없으면 번들 샘플 클립을 재생면에 걸고 그 사실을 밝힌다 165ms
+ ✓ test/playMovieEditorBody.test.ts > playMovie 편집기 본문 > 픽커 선택이 명령의 resourceId 를 갱신한다 201ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G3-F10 native showPicture optional wait preservation > parser/interpreter characterization: unedited wait=undefined is not lost downstream 493ms
+ ✓ test/playMovieEditorBody.test.ts > playMovie 편집기 본문 > 완료 대기·스킵 허용 토글이 명령 모양에 그대로 반영된다 222ms
+ ✓ test/playMovieEditorBody.test.ts > playMovie 편집기 본문 > 번들 샘플 클립 파일이 dev 서버 경로 그대로 레포에 있다 198ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G5-F2 native playMovie default-true and explicit-false contract > omitted wait opens as true, matching the interpreter 410ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G5-F2 native playMovie default-true and explicit-false contract > omitted skippable opens as true, matching the interpreter 434ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G5-F2 native playMovie default-true and explicit-false contract > resource edit retains independent wait=true skippable=true 402ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G5-F2 native playMovie default-true and explicit-false contract > resource edit retains independent wait=true skippable=false 410ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G5-F2 native playMovie default-true and explicit-false contract > resource edit retains independent wait=false skippable=true 457ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G5-F2 native playMovie default-true and explicit-false contract > resource edit retains independent wait=false skippable=false 344ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G5-F2 native playMovie default-true and explicit-false contract > explicit toggle selection saves wait=true skippable=true, not default-true omission 318ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G5-F2 native playMovie default-true and explicit-false contract > explicit toggle selection saves wait=true skippable=false, not default-true omission 421ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G5-F2 native playMovie default-true and explicit-false contract > explicit toggle selection saves wait=false skippable=true, not default-true omission 356ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G5-F2 native playMovie default-true and explicit-false contract > explicit toggle selection saves wait=false skippable=false, not default-true omission 347ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G5-F2 native playMovie default-true and explicit-false contract > parser/interpreter characterization: unedited flags {} retain their semantics 307ms
+ ✓ test/playMovieRuntime.test.ts > playMovie 인터프리터 일시정지 > wait/skippable 기본값을 true 로 채운 pause step 을 낸다 104ms
+ ✓ test/playMovieRuntime.test.ts > playMovie 인터프리터 일시정지 > wait:false / skippable:false 를 그대로 전달한다 74ms
+ ✓ test/playMovieRuntime.test.ts > playMovie 인터프리터 일시정지 > resume 전에는 다음 커맨드로 진행하지 않는다 83ms
+ ✓ test/playMovieRuntime.test.ts > playMovie 재생 URL 해석 > 등록된 리소스는 프로필 해석 결과를 쓴다 59ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G5-F2 native playMovie default-true and explicit-false contract > parser/interpreter characterization: unedited flags {"wait":true,"skippable":true} retain their semantics 291ms
+ ✓ test/playMovieRuntime.test.ts > playMovie 재생 URL 해석 > 해석 불가한 id 는 public 동영상 경로로 폴백한다 72ms
+ ✓ test/playMovieRuntime.test.ts > playMovie 재생 URL 해석 > 빈 리소스 id 는 재생 대상이 없다 78ms
+ ✓ test/playMovieRuntime.test.ts > playMovie 재생 URL 해석 > 확장자가 붙은 id 는 확장자를 유지한다 68ms
+ ✓ test/playMovieRuntime.test.ts > playMovie 런타임 배선 > wait:true blocks until video ended: 'playMovie' 86ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G5-F2 native playMovie default-true and explicit-false contract > parser/interpreter characterization: unedited flags {"wait":true,"skippable":false} retain their semantics 319ms
+ ✓ test/playMovieRuntime.test.ts > playMovie 런타임 배선 > wait:true blocks until video ended: 'm2Command' 65ms
+ ✓ test/playMovieRuntime.test.ts > playMovie 런타임 배선 > video error 도 인터프리터를 재개시킨다(멈추지 않는다) 76ms
+ ✓ test/playMovieRuntime.test.ts > playMovie 런타임 배선 > skippable:true 는 확인 키로 건너뛴다 128ms
+ ✓ test/playMovieRuntime.test.ts > playMovie 런타임 배선 > skippable:false 는 확인 키를 무시하고 ended 만 기다린다 98ms
+ ✓ test/playMovieRuntime.test.ts > playMovie 런타임 배선 > wait:false 는 즉시 다음 커맨드로 넘어가고 영상은 계속 재생된다 86ms
+ ✓ test/playMovieRuntime.test.ts > playMovie 런타임 배선 > 병행 처리 경로도 playMovie step 을 오버레이로 소비한다 54ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G5-F2 native playMovie default-true and explicit-false contract > parser/interpreter characterization: unedited flags {"wait":false,"skippable":true} retain their semantics 340ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G5-F2 native playMovie default-true and explicit-false contract > parser/interpreter characterization: unedited flags {"wait":false,"skippable":false} retain their semantics 410ms
+ ✓ test/eventCommandRemediation/U04.test.ts > 'G3-F10' Cancel discards staged edits without mutating the input 187ms
+ ✓ test/eventCommandRemediation/U04.test.ts > 'G5-F2' Cancel discards staged edits without mutating the input 165ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/showPictureForm.test.ts > 그림 표시 폼 > 프롬프트로 그림을 만들면 업로드 리소스가 커맨드에 실린다
+AssertionError: expected 0 to be greater than 0
+ ❯ test/showPictureForm.test.ts:190:43
+    188|     findByTestId(body, "show-picture-ai-generate")?.click();
+    189|     await vi.waitFor(() => {
+    190|       expect(current().resourceId.length).toBeGreaterThan(0);
+       |                                           ^
+    191|     });
+    192|     const resourceId = current().resourceId;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 3 passed (4)
+      Tests  1 failed | 61 passed (62)
+   Start at  19:46:07
+   Duration  24.04s (transform 12.52s, setup 0ms, collect 28.15s, tests 16.53s, environment 1ms, prepare 581ms)
+
+JSON report written to /home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u04/.omo/evidence/event-command-remediation/U04/green.json
+
+Exit code: 1

@@ -1,0 +1,35 @@
+{
+  "status": "complete",
+  "runs": [
+    {
+      "artifact": "player-focused/cleanup.json",
+      "serverPort": 35593,
+      "serverClosed": true,
+      "browsersClosedByCase": true,
+      "temporaryRemoved": "/tmp/u04-continuation-qGiNPC",
+      "cacheRemoved": "/tmp/u04-continuation-cache-tQN2l7",
+      "completedCases": 2
+    },
+    {
+      "artifact": "player-fixture-attempt/cleanup.json",
+      "serverPort": 33809,
+      "serverClosed": true,
+      "browsersClosedByCase": true,
+      "temporaryRemoved": "/tmp/u04-continuation-tGehoM",
+      "cacheRemoved": "/tmp/u04-continuation-cache-br8T9l",
+      "completedCases": 0
+    },
+    {
+      "artifact": "untargeted-player-attempt/cleanup.json",
+      "serverPort": 45331,
+      "serverClosed": true,
+      "browserClosed": true,
+      "temporaryRemoved": "/tmp/u04-player-eTjgVE",
+      "cacheRemoved": "/tmp/u04-player-cache-hcVD4L",
+      "completedCases": 0
+    }
+  ],
+  "ownedBrowsersServersClosed": true,
+  "temporaryFixturesCachesRemoved": true,
+  "screenshots": "Ignored and hash-listed; never staged"
+}

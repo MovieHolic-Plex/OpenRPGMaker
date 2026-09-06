@@ -1,0 +1,133 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/eventCommandRemediation/U04.test.ts test/showPictureForm.test.ts test/playMovieEditorBody.test.ts test/playMovieRuntime.test.ts test/pictureWeatherDom.test.ts test/pictureTween.test.ts test/playSceneInterpreterCutsceneSkip.test.ts --maxWorkers=2 --reporter=verbose --reporter=json --outputFile=.omo/evidence/event-command-remediation/U04/followup-continuation/green.json
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u04
+
+ ✓ test/showPictureForm.test.ts > 그림 표시 폼 > 확대·투명도·회전·전환시간 칸이 모두 있다 1394ms
+ ✓ test/showPictureForm.test.ts > 그림 표시 폼 > 입력한 값이 커맨드에 실린다 982ms
+ ✓ test/showPictureForm.test.ts > 그림 표시 폼 > 기존 값이 있으면 칸에 채워진다 355ms
+ ✓ test/showPictureForm.test.ts > 그림 표시 폼 > 범위 밖 값은 폼에서 접어 런타임까지 새지 않는다 375ms
+ ✓ test/showPictureForm.test.ts > 그림 표시 폼 > 회전은 한 바퀴를 넘겨도 접지 않는다 326ms
+ ✓ test/showPictureForm.test.ts > 그림 표시 폼 > 좌표만 바꿔도 기존 변환값이 날아가지 않는다 198ms
+ ✓ test/showPictureForm.test.ts > 그림 표시 폼 > 미리보기 문구가 런타임과 같은 좌상단 앵커라고 알린다 130ms
+ ✓ test/showPictureForm.test.ts > 그림 표시 폼 > 미리보기 불투명도는 퍼센트를 그대로 반영한다 128ms
+ ✓ test/showPictureForm.test.ts > 그림 표시 폼 > 미리보기 불투명도는 입력 변경을 따라간다 151ms
+ ✓ test/showPictureForm.test.ts > 그림 표시 폼 > AI로 만들기 칸이 있다 174ms
+ ✓ test/showPictureForm.test.ts > 그림 표시 폼 > 프롬프트로 그림을 만들면 업로드 리소스가 커맨드에 실린다 392ms
+ ✓ test/showPictureForm.test.ts > 그림 표시 폼 > 빈 프롬프트는 요청하지 않는다 354ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G3-F10 native showPicture optional wait preservation > coordinate edit preserves wait=true at duration=500 through Confirm/deserialize/reopen 3444ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G3-F10 native showPicture optional wait preservation > coordinate edit preserves wait=false at duration=500 through Confirm/deserialize/reopen 2312ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G3-F10 native showPicture optional wait preservation > coordinate edit preserves wait=undefined at duration=500 through Confirm/deserialize/reopen 1337ms
+ ✓ test/playMovieEditorBody.test.ts > playMovie 편집기 본문 > 동영상 리소스 목록은 미디어 타입이 동영상인 업로드만 담는다 1080ms
+ ✓ test/playMovieEditorBody.test.ts > playMovie 편집기 본문 > 리소스 URL 은 업로드 동영상만 통과시키고 그림 데이터는 거른다 1195ms
+ ✓ test/playMovieEditorBody.test.ts > playMovie 편집기 본문 > 본문이 동영상 픽커와 항목을 그린다 871ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G3-F10 native showPicture optional wait preservation > coordinate edit preserves wait=true at duration=+0 through Confirm/deserialize/reopen 2751ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G3-F10 native showPicture optional wait preservation > coordinate edit preserves wait=false at duration=+0 through Confirm/deserialize/reopen 677ms
+ ✓ test/playMovieEditorBody.test.ts > playMovie 편집기 본문 > 미리보기 표시면이 선택한 동영상을 실제 <video> 로 걸어 둔다 889ms
+ ✓ test/playMovieEditorBody.test.ts > playMovie 편집기 본문 > 리소스가 없으면 번들 샘플 클립을 재생면에 걸고 그 사실을 밝힌다 829ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G3-F10 native showPicture optional wait preservation > coordinate edit preserves wait=undefined at duration=+0 through Confirm/deserialize/reopen 427ms
+ ✓ test/playMovieEditorBody.test.ts > playMovie 편집기 본문 > 픽커 선택이 명령의 resourceId 를 갱신한다 455ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G3-F10 native showPicture optional wait preservation > exposes an editable wait toggle; authored true survives a later coordinate edit 1173ms
+ ✓ test/playMovieEditorBody.test.ts > playMovie 편집기 본문 > 완료 대기·스킵 허용 토글이 명령 모양에 그대로 반영된다 747ms
+ ✓ test/playMovieEditorBody.test.ts > playMovie 편집기 본문 > 번들 샘플 클립 파일이 dev 서버 경로 그대로 레포에 있다 764ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G3-F10 native showPicture optional wait preservation > exposes an editable wait toggle; authored false survives a later coordinate edit 764ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G3-F10 native showPicture optional wait preservation > parser/interpreter characterization: unedited wait=true is not lost downstream 773ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G3-F10 native showPicture optional wait preservation > parser/interpreter characterization: unedited wait=false is not lost downstream 503ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G3-F10 native showPicture optional wait preservation > parser/interpreter characterization: unedited wait=undefined is not lost downstream 431ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G5-F2 native playMovie default-true and explicit-false contract > omitted wait opens as true, matching the interpreter 447ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G5-F2 native playMovie default-true and explicit-false contract > omitted skippable opens as true, matching the interpreter 570ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G5-F2 native playMovie default-true and explicit-false contract > resource edit retains independent wait=true skippable=true 924ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G5-F2 native playMovie default-true and explicit-false contract > resource edit retains independent wait=true skippable=false 628ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G5-F2 native playMovie default-true and explicit-false contract > resource edit retains independent wait=false skippable=true 972ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G5-F2 native playMovie default-true and explicit-false contract > resource edit retains independent wait=false skippable=false 1429ms
+ ✓ test/playMovieRuntime.test.ts > playMovie 인터프리터 일시정지 > wait/skippable 기본값을 true 로 채운 pause step 을 낸다 547ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G5-F2 native playMovie default-true and explicit-false contract > explicit toggle selection saves wait=true skippable=true, not default-true omission 764ms
+ ✓ test/playMovieRuntime.test.ts > playMovie 인터프리터 일시정지 > wait:false / skippable:false 를 그대로 전달한다 157ms
+ ✓ test/playMovieRuntime.test.ts > playMovie 인터프리터 일시정지 > resume 전에는 다음 커맨드로 진행하지 않는다 207ms
+ ✓ test/playMovieRuntime.test.ts > playMovie 재생 URL 해석 > 등록된 리소스는 프로필 해석 결과를 쓴다 170ms
+ ✓ test/playMovieRuntime.test.ts > playMovie 재생 URL 해석 > 해석 불가한 id 는 public 동영상 경로로 폴백한다 188ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G5-F2 native playMovie default-true and explicit-false contract > explicit toggle selection saves wait=true skippable=false, not default-true omission 705ms
+ ✓ test/playMovieRuntime.test.ts > playMovie 재생 URL 해석 > 빈 리소스 id 는 재생 대상이 없다 325ms
+ ✓ test/playMovieRuntime.test.ts > playMovie 재생 URL 해석 > 확장자가 붙은 id 는 확장자를 유지한다 185ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G5-F2 native playMovie default-true and explicit-false contract > explicit toggle selection saves wait=false skippable=true, not default-true omission 622ms
+ ✓ test/playMovieRuntime.test.ts > playMovie 런타임 배선 > wait:true blocks until video ended: 'playMovie' 189ms
+ ✓ test/playMovieRuntime.test.ts > playMovie 런타임 배선 > wait:true blocks until video ended: 'm2Command' 179ms
+ ✓ test/playMovieRuntime.test.ts > playMovie 런타임 배선 > video error 도 인터프리터를 재개시킨다(멈추지 않는다) 81ms
+ ✓ test/playMovieRuntime.test.ts > playMovie 런타임 배선 > skippable:true 는 확인 키로 건너뛴다 122ms
+ ✓ test/playMovieRuntime.test.ts > playMovie 런타임 배선 > skippable:false 는 확인 키를 무시하고 ended 만 기다린다 129ms
+ ✓ test/playMovieRuntime.test.ts > playMovie 런타임 배선 > wait:false 는 즉시 다음 커맨드로 넘어가고 영상은 계속 재생된다 113ms
+ ✓ test/playMovieRuntime.test.ts > playMovie 런타임 배선 > 병행 처리 경로도 playMovie step 을 오버레이로 소비한다 156ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G5-F2 native playMovie default-true and explicit-false contract > explicit toggle selection saves wait=false skippable=false, not default-true omission 661ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G5-F2 native playMovie default-true and explicit-false contract > parser/interpreter characterization: unedited flags {} retain their semantics 2312ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G5-F2 native playMovie default-true and explicit-false contract > parser/interpreter characterization: unedited flags {"wait":true,"skippable":true} retain their semantics 1426ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G5-F2 native playMovie default-true and explicit-false contract > parser/interpreter characterization: unedited flags {"wait":true,"skippable":false} retain their semantics 754ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G5-F2 native playMovie default-true and explicit-false contract > parser/interpreter characterization: unedited flags {"wait":false,"skippable":true} retain their semantics 298ms
+ ✓ test/eventCommandRemediation/U04.test.ts > G5-F2 native playMovie default-true and explicit-false contract > parser/interpreter characterization: unedited flags {"wait":false,"skippable":false} retain their semantics 396ms
+ ✓ test/eventCommandRemediation/U04.test.ts > 'G3-F10' Cancel discards staged edits without mutating the input 165ms
+ ✓ test/eventCommandRemediation/U04.test.ts > 'G5-F2' Cancel discards staged edits without mutating the input 240ms
+ ✓ test/playSceneInterpreterCutsceneSkip.test.ts > skippable cutscene skip hint > shows the hint while a skippable cutscene blocks and clears it when the cutscene ends 494ms
+ ✓ test/playSceneInterpreterCutsceneSkip.test.ts > skippable cutscene skip hint > leaves the hint hidden when the cutscene is not skippable 414ms
+ ✓ test/playSceneInterpreterCutsceneSkip.test.ts > skippable cutscene blocking waits > skips a camera wait on double Escape 309ms
+ ✓ test/playSceneInterpreterCutsceneSkip.test.ts > skippable cutscene blocking waits > skips a move-event wait on double Escape 647ms
+ ✓ test/pictureWeatherDom.test.ts > syncPictureLayer — 실 이미지 렌더 > 해석되는 리소스는 <img>, 미해석 리소스는 텍스트 라벨로 폴백 6ms
+ ✓ test/pictureWeatherDom.test.ts > syncPictureLayer — 실 이미지 렌더 > z-order 는 픽처 번호를 따른다 1ms
+ ✓ test/pictureWeatherDom.test.ts > syncPictureLayer — 실 이미지 렌더 > 사라진 픽처 슬롯은 제거된다 1ms
+ ✓ test/pictureWeatherDom.test.ts > syncPictureLayer — 실 이미지 렌더 > durationMs=0 이면 scale/opacity 를 즉시 적용 1ms
+ ✓ test/pictureWeatherDom.test.ts > syncPictureLayer — 첫 표시 + 전환 시간(페이드인) > 첫 표시에 durationMs 가 있어도 위치·확대는 즉시 적용된다 99ms
+ ✓ test/pictureWeatherDom.test.ts > syncPictureLayer — 첫 표시 + 전환 시간(페이드인) > rAF 미지원 환경에서는 페이드인을 생략하고 목표 상태로 확정한다 65ms
+ ✓ test/pictureWeatherDom.test.ts > syncPictureLayer — 첫 표시 + 전환 시간(페이드인) > 프레임마다 같은 상태를 동기화해도 페이드인이 목표 불투명도까지 완료된다 64ms
+ ✓ test/pictureWeatherDom.test.ts > syncPictureLayer — 첫 표시 + 전환 시간(페이드인) > 진행 중 새 Move Picture 목표는 현재 표시값에서 새 트윈을 시작한다 144ms
+ ✓ test/pictureWeatherDom.test.ts > syncPictureLayer — 첫 표시 + 전환 시간(페이드인) > settled slot의 새 Move Picture 목표도 duration 동안 트윈한다 109ms
+ ✓ test/pictureTween.test.ts > pictureTransformFromState > 선택 필드 미지정 시 RM2K3 기본값으로 채운다 3ms
+ ✓ test/pictureTween.test.ts > pictureTransformFromState > 선택 필드를 반영하고 opacity/scale 을 안전 범위로 클램프한다 1ms
+ ✓ test/pictureTween.test.ts > tweenProgress > duration<=0 이면 즉시 완료(1) 1ms
+ ✓ test/pictureTween.test.ts > tweenProgress > 경과/지속 비율을 0~1 로 클램프한다 0ms
+ ✓ test/pictureTween.test.ts > interpolatePictureTransform > t=0 이면 시작값, t=1 이면 목표값 3ms
+ ✓ test/pictureTween.test.ts > interpolatePictureTransform > t=0.5 이면 중간값 1ms
+ ✓ test/pictureTween.test.ts > interpolatePictureTransform > t 범위를 벗어나면 클램프 3ms
+ ✓ test/pictureTween.test.ts > pictureTransformsEqual > 미세 오차는 동일로 취급 1ms
+ ✓ test/pictureTween.test.ts > pictureZIndex > pictureId 끝의 숫자를 z-order 로 사용 5ms
+ ✓ test/pictureTween.test.ts > CSS 변환 > scale 은 %→배율, rotation 은 deg 0ms
+ ✓ test/pictureTween.test.ts > CSS 변환 > opacity 는 0~1 로 정규화 0ms
+ ✓ test/pictureWeatherDom.test.ts > syncPictureLayer — 첫 표시 + 전환 시간(페이드인) > durationMs<=0 인 새 목표는 즉시 적용한다 152ms
+ ✓ test/pictureWeatherDom.test.ts > syncPictureLayer — 첫 표시 + 전환 시간(페이드인) > 두 픽처의 Move Picture 트윈은 서로 간섭하지 않는다 68ms
+ ✓ test/pictureWeatherDom.test.ts > syncPictureLayer — 첫 표시 + 전환 시간(페이드인) > 프레임마다 바뀌는 목표는 표시값에서 재시작하고 마지막 목표에 수렴한다 69ms
+ ✓ test/pictureWeatherDom.test.ts > syncPictureLayer — 첫 표시 + 전환 시간(페이드인) > Move 완료 후 같은 세션의 새 overlay는 stale fade 없이 목표를 즉시 표시한다 88ms
+ ✓ test/pictureWeatherDom.test.ts > syncPictureLayer — 첫 표시 + 전환 시간(페이드인) > applySession 형태의 인게임 로드는 기존 slot에 저장 변환을 즉시 적용한다 82ms
+ ✓ test/pictureWeatherDom.test.ts > syncPictureLayer — 첫 표시 + 전환 시간(페이드인) > 세이브를 storage 왕복해 복원한 픽처는 authored opacity로 즉시 표시된다 102ms
+ ✓ test/pictureWeatherDom.test.ts > syncPictureLayer — 첫 표시 + 전환 시간(페이드인) > 이미 떠 있는 픽처의 이동은 현재 상태에서 트윈한다(0 으로 리셋하지 않는다) 135ms
+ ✓ test/pictureWeatherDom.test.ts > runTransitionPhase — 모자이크/블라인드 오버레이 > rAF 미지원 환경에서 out 단계는 오버레이를 남기고 최종 프레임 적용 1ms
+ ✓ test/pictureWeatherDom.test.ts > runTransitionPhase — 모자이크/블라인드 오버레이 > blinds in 단계는 완료 후 오버레이를 제거 1ms
+ ✓ test/pictureWeatherDom.test.ts > G3-F10 renderer/interpreter completion and cancellation > elapsed duration without the final rendered update cannot release the command 430ms
+ ✓ test/pictureWeatherDom.test.ts > G3-F10 renderer/interpreter completion and cancellation > duration zero is immediate with wait=true 545ms
+ ✓ test/pictureWeatherDom.test.ts > G3-F10 renderer/interpreter completion and cancellation > duration zero is immediate with wait=false 293ms
+ ✓ test/pictureWeatherDom.test.ts > G3-F10 renderer/interpreter completion and cancellation > duration zero is immediate with wait=undefined 278ms
+ ✓ test/pictureWeatherDom.test.ts > G3-F10 renderer/interpreter completion and cancellation > wait=false continues without advancing the renderer 222ms
+ ✓ test/pictureWeatherDom.test.ts > G3-F10 renderer/interpreter completion and cancellation > wait=undefined continues without advancing the renderer 283ms
+ ✓ test/pictureWeatherDom.test.ts > G3-F10 renderer/interpreter completion and cancellation > G3-F10 original continuation contract: same-session replacement preserves following commands 243ms
+ ✓ test/pictureWeatherDom.test.ts > G3-F10 renderer/interpreter completion and cancellation > G3-F10 original continuation contract: same-session erase preserves following commands 199ms
+ ✓ test/pictureWeatherDom.test.ts > G3-F10 renderer/interpreter completion and cancellation > G3-F10 original continuation contract: same-session resolved-coordinate retarget preserves following commands 432ms
+ ✓ test/pictureWeatherDom.test.ts > G3-F10 renderer/interpreter completion and cancellation > replacement cancels picture observers but continues the live event once 265ms
+ ✓ test/pictureWeatherDom.test.ts > G3-F10 renderer/interpreter completion and cancellation > erase cancels picture observers but continues the live event once 279ms
+ ✓ test/pictureWeatherDom.test.ts > G3-F10 renderer/interpreter completion and cancellation > G3-F10 same-generation retarget keeps the current waiter until the retargeted final frame 335ms
+ ✓ test/pictureWeatherDom.test.ts > G3-F10 renderer/interpreter completion and cancellation > G3-F10 same-generation retarget without transition intent completes after its existing immediate DOM update 265ms
+ ✓ test/pictureWeatherDom.test.ts > G3-F10 renderer/interpreter completion and cancellation > G3-F10 resource replacement cancels picture observers even with the same object identity 333ms
+ ✓ test/pictureWeatherDom.test.ts > G3-F10 renderer/interpreter completion and cancellation > shutdown cancels the wait and renderer without refreshing a dead scene 313ms
+ ✓ test/pictureWeatherDom.test.ts > G3-F10 renderer/interpreter completion and cancellation > destroy cancels the wait and renderer without refreshing a dead scene 208ms
+ ✓ test/pictureWeatherDom.test.ts > G3-F10 renderer/interpreter completion and cancellation > session replacement after final frame=false cannot resume the stale interpreter 291ms
+ ✓ test/pictureWeatherDom.test.ts > G3-F10 renderer/interpreter completion and cancellation > session replacement after final frame=true cannot resume the stale interpreter 361ms
+ ✓ test/pictureWeatherDom.test.ts > G3-F10 renderer/interpreter completion and cancellation > shutdown also owns a still-animating wait=false picture after its command has returned 276ms
+ ✓ test/pictureWeatherDom.test.ts > G3-F10 renderer/interpreter completion and cancellation > shutdown also owns a still-animating wait=undefined picture after its command has returned 235ms
+ ✓ test/pictureWeatherDom.test.ts > G3-F10 renderer/interpreter completion and cancellation > shutdown between the final DOM write and promise continuation cannot execute the sentinel 167ms
+ ✓ test/pictureWeatherDom.test.ts > G3-F10 renderer/interpreter completion and cancellation > cutscene skip interrupts the wait without a timer or a later stale continuation 346ms
+
+ Test Files  7 passed (7)
+      Tests  117 passed (117)
+   Start at  22:00:59
+   Duration  79.20s (transform 31.74s, setup 0ms, collect 88.04s, tests 52.16s, environment 11ms, prepare 2.65s)
+
+JSON report written to /home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u04/.omo/evidence/event-command-remediation/U04/followup-continuation/green.json
+
+Exit code: 0

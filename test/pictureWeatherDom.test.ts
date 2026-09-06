@@ -1,5 +1,11 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { EventEmitter } from "node:events";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { RuntimeDomOverlay } from "@/player/runtimeDom";
+import { runCommands } from "@/player/playSceneInterpreter";
+import { CUTSCENE_END_LABEL } from "@/player/cutsceneControl";
+import type { PlaySceneContext } from "@/player/playSceneTypes";
+import { store } from "@/project/store";
+import type { Command, Project } from "@/project/types";
 import { runTransitionPhase } from "@/player/transitions/transitionOverlay";
 import { showPictureState } from "@/project/session";
 import { createSaveSnapshot, applySaveSnapshot, readSaveSlot, saveToSlot } from "@/player/saveSlots";
@@ -370,5 +376,310 @@ describe("runTransitionPhase — 모자이크/블라인드 오버레이", () => 
     const host = new TestHost();
     await runTransitionPhase(asHost(host), "blinds", "in", 500);
     expect(findByTestId(host, "runtime-transition-overlay")).toBeNull();
+  });
+});
+
+describe("G3-F10 renderer/interpreter completion and cancellation", () => {
+  const SENTINEL = "u04-after-picture";
+  const SKIPPED = "u04-skip-completed";
+  const command = (waitForPicture: boolean | undefined, durationMs = 500): Extract<Command, { kind: "showPicture" }> => ({
+    kind: "showPicture", pictureId: "pic1", resourceId: "hero", x: 10, y: 20,
+    scale: 50, opacity: 128, rotation: 15, durationMs,
+    ...(waitForPicture === undefined ? {} : { waitForPicture }),
+  });
+  const after: Command = { kind: "setSwitch", switchId: SENTINEL, value: true };
+  let previousProject: Project;
+
+  beforeEach(() => {
+    restore?.();
+    restore = installFakeDom({ animationFrames: "manual" });
+    previousProject = store.getCurrent();
+    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+    vi.stubGlobal("window", globalThis);
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+    store.replace(previousProject);
+  });
+
+  function fixture() {
+    const project = createBlankProject();
+    store.replace(project);
+    const session = startSession(project, 4);
+    session.switches[SENTINEL] = false;
+    session.switches[SKIPPED] = false;
+    session.pictures.other = pic({ pictureId: "other", x: 77, y: 9, opacity: 255 });
+    const host = new TestHost();
+    let clock = 0;
+    const overlay = new RuntimeDomOverlay(() => asHost(host), { pictureNow: () => clock });
+    const events = new EventEmitter();
+    const dialogue = {
+      close: vi.fn(), hide: vi.fn(), showText: vi.fn(async () => undefined),
+      showChoices: vi.fn(async () => 0), showNumberInput: vi.fn(async () => 0),
+    };
+    const scene = {
+      session, runtimeDom: overlay, events, running: false, inputEnabled: true,
+      map: { height: 8 }, tileY: 3, eventPositions: {},
+      game: { registry: { get: (key: string) => key === "dialogue" ? dialogue : undefined } },
+      setInputEnabled: vi.fn((value: boolean) => { scene.inputEnabled = value; }),
+      syncRuntimeState: vi.fn(() => overlay.syncPictureLayer(scene.session.pictures)),
+      refreshRuntimeSurfaces: vi.fn(() => overlay.syncPictureLayer(scene.session.pictures)),
+      showRuntimeOverlay: vi.fn(), clearRuntimeOverlay: vi.fn(),
+    } as unknown as PlaySceneContext;
+    return { project, session, host, overlay, events, dialogue, scene,
+      frame(at: number) { clock = at; flushFakeAnimationFrames(0, 1); },
+      opacity: () => Number(findByTestId(host, "picture-pic1")!.style.opacity),
+    };
+  }
+
+  it("elapsed duration without the final rendered update cannot release the command", async () => {
+    const f = fixture();
+    const finished = vi.fn();
+    const running = runCommands(f.scene, [command(true), after]);
+    void running.then(finished);
+    expect(f.opacity()).toBe(0);
+    // Timer time advances, but the renderer receives no frame. This reproduces
+    // the real browser race without depending on scheduling luck or an epsilon.
+    await vi.advanceTimersByTimeAsync(500);
+    expect.soft(f.session.switches[SENTINEL]).toBe(false);
+    expect.soft(finished).not.toHaveBeenCalled();
+    expect(f.opacity()).toBe(0);
+    const completed = f.overlay.waitForPicture("pic1");
+    f.frame(499);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(f.opacity()).toBe(0.501);
+    expect(f.session.switches[SENTINEL]).toBe(false);
+    expect(finished).not.toHaveBeenCalled();
+    f.frame(500);
+    expect(await completed).toBe("completed");
+    await running;
+    expect(f.opacity()).toBe(0.502);
+    expect(f.session.switches[SENTINEL]).toBe(true);
+    expect(findByTestId(f.host, "picture-other")!.style.left).toBe("77px");
+    expect(f.events.eventNames()).toEqual([]);
+  });
+
+  it.each([true, false, undefined])("duration zero is immediate with wait=%s", async wait => {
+    const f = fixture();
+    await runCommands(f.scene, [command(wait, 0), after]);
+    expect(await f.overlay.waitForPicture("pic1")).toBe("completed");
+    expect(await f.overlay.waitForPicture("missing")).toBe("cancelled");
+    expect(f.opacity()).toBe(0.502);
+    expect(f.session.switches[SENTINEL]).toBe(true);
+    expect(vi.getTimerCount()).toBe(0);
+    expect(f.events.eventNames()).toEqual([]);
+  });
+
+  it.each([false, undefined])("wait=%s continues without advancing the renderer", async wait => {
+    const f = fixture();
+    await runCommands(f.scene, [command(wait), after]);
+    expect(f.session.switches[SENTINEL]).toBe(true);
+    expect(f.opacity()).toBe(0);
+    f.frame(500);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(f.opacity()).toBe(0.502);
+    expect(f.events.eventNames()).toEqual([]);
+  });
+
+  // This test deliberately uses only APIs present at c66f5a8a, so the same test
+  // characterizes original behavior and detects whole-event termination at 15bcc2267.
+  it.each(["replacement", "erase", "resolved-coordinate retarget"] as const)("G3-F10 original continuation contract: same-session %s preserves following commands", async operation => {
+    const f = fixture();
+    const running = runCommands(f.scene, [command(true), after]);
+    expect(f.opacity()).toBe(0);
+    expect(f.session.switches[SENTINEL]).toBe(false);
+    if (operation === "erase") delete f.session.pictures.pic1;
+    else {
+      f.session.variables["u04-target-x"] = 300;
+      showPictureState(f.session, {
+        ...command(true, 2000),
+        x: operation === "replacement" ? 300 : f.session.variables["u04-target-x"]!,
+      });
+    }
+    f.scene.syncRuntimeState();
+    await vi.advanceTimersByTimeAsync(500);
+    await running;
+    expect(f.scene.session).toBe(f.session);
+    expect(f.session.switches[SENTINEL]).toBe(true);
+    expect(findByTestId(f.host, "picture-other")!.style.left).toBe("77px");
+    f.frame(2000);
+    expect(f.session.switches[SENTINEL]).toBe(true);
+  });
+
+  it.each(["replacement", "erase"] as const)("%s cancels picture observers but continues the live event once", async operation => {
+    const f = fixture();
+    const finished = vi.fn();
+    const running = runCommands(f.scene, [command(true), after]);
+    void running.then(finished);
+    const first = f.overlay.waitForPicture("pic1");
+    const second = f.overlay.waitForPicture("pic1");
+    if (operation === "erase") delete f.session.pictures.pic1;
+    else showPictureState(f.session, { ...command(true, 2000), x: 300 });
+    f.scene.syncRuntimeState();
+    expect(await first).toBe("cancelled");
+    expect(await second).toBe("cancelled");
+    const replacement = f.overlay.waitForPicture("pic1");
+    await vi.advanceTimersByTimeAsync(0);
+    await running;
+    expect(f.session.switches[SENTINEL]).toBe(true);
+    expect(finished).toHaveBeenCalledOnce();
+    f.frame(2000);
+    expect(await replacement).toBe(operation === "erase" ? "cancelled" : "completed");
+    expect(f.session.switches[SENTINEL]).toBe(true);
+    expect(finished).toHaveBeenCalledOnce();
+    expect(findByTestId(f.host, "picture-other")!.style.left).toBe("77px");
+    if (operation === "erase") expect(findByTestId(f.host, "picture-pic1")).toBeNull();
+    else expect(findByTestId(f.host, "picture-pic1")!.style.left).toBe("300px");
+    expect(f.events.eventNames()).toEqual([]);
+  });
+
+  it("G3-F10 same-generation retarget keeps the current waiter until the retargeted final frame", async () => {
+    const f = fixture();
+    const running = runCommands(f.scene, [command(true), after]);
+    const generation = f.session.pictures.pic1!;
+    f.session.variables["target-x"] = 10;
+    // A resolved coordinate can change without reauthoring the picture object.
+    Object.defineProperty(generation, "x", { get: () => f.session.variables["target-x"]! });
+    const completion = f.overlay.waitForPicture("pic1");
+    const settled = vi.fn();
+    void completion.then(settled);
+    f.frame(250);
+    expect(f.opacity()).toBe(0.251);
+    f.session.variables["target-x"] = 300;
+    showPictureState(f.session, generation); // Same generation, explicit transition intent.
+    f.scene.syncRuntimeState();
+    expect(f.session.pictures.pic1).toBe(generation);
+    await vi.advanceTimersByTimeAsync(500);
+    expect.soft(settled).not.toHaveBeenCalled();
+    expect.soft(f.session.switches[SENTINEL]).toBe(false);
+    f.frame(500);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(findByTestId(f.host, "picture-pic1")!.style.left).toBe("155px");
+    expect(f.opacity()).toBe(0.376);
+    expect.soft(f.session.switches[SENTINEL]).toBe(false);
+    f.frame(750);
+    expect(await completion).toBe("completed");
+    await running;
+    expect(f.session.switches[SENTINEL]).toBe(true);
+    expect(findByTestId(f.host, "picture-pic1")!.style.left).toBe("300px");
+    expect(f.opacity()).toBe(0.502);
+    expect(settled).toHaveBeenCalledOnce();
+    expect(settled).toHaveBeenCalledWith("completed");
+    expect(f.events.eventNames()).toEqual([]);
+  });
+
+  it("G3-F10 same-generation retarget without transition intent completes after its existing immediate DOM update", async () => {
+    const f = fixture();
+    const running = runCommands(f.scene, [command(true), after]);
+    const generation = f.session.pictures.pic1!;
+    const completion = f.overlay.waitForPicture("pic1");
+    Object.defineProperty(generation, "x", { get: () => 300 });
+    f.scene.syncRuntimeState(); // No new transition intent: preserve the immediate-update rule.
+    expect(findByTestId(f.host, "picture-pic1")!.style.left).toBe("300px");
+    expect(f.opacity()).toBe(0.502);
+    expect(await completion).toBe("completed");
+    await running;
+    expect(f.session.switches[SENTINEL]).toBe(true);
+    expect(f.events.eventNames()).toEqual([]);
+  });
+
+  it("G3-F10 resource replacement cancels picture observers even with the same object identity", async () => {
+    const f = fixture();
+    const running = runCommands(f.scene, [command(true), after]);
+    const generation = f.session.pictures.pic1!;
+    const completion = f.overlay.waitForPicture("pic1");
+    Object.defineProperty(generation, "resourceId", { value: "replacement-resource" });
+    f.scene.syncRuntimeState();
+    expect(f.session.pictures.pic1).toBe(generation);
+    expect(await completion).toBe("cancelled");
+    await running;
+    expect(f.session.switches[SENTINEL]).toBe(true);
+    f.frame(500);
+    expect(f.events.eventNames()).toEqual([]);
+  });
+
+  it.each(["shutdown", "destroy"])("%s cancels the wait and renderer without refreshing a dead scene", async event => {
+    const f = fixture();
+    const running = runCommands(f.scene, [command(true), after]);
+    const refreshes = vi.mocked(f.scene.refreshRuntimeSurfaces).mock.calls.length;
+    f.events.emit(event);
+    await vi.advanceTimersByTimeAsync(500);
+    await running;
+    expect(f.session.switches[SENTINEL]).toBe(false);
+    expect(f.scene.refreshRuntimeSurfaces).toHaveBeenCalledTimes(refreshes);
+    expect(f.dialogue.close).not.toHaveBeenCalled();
+    expect(findByTestId(f.host, "picture-pic1")).toBeNull();
+    expect(f.events.eventNames()).toEqual([]);
+    f.frame(5000);
+    expect(findByTestId(f.host, "picture-pic1")).toBeNull();
+  });
+
+  it.each([false, true])("session replacement after final frame=%s cannot resume the stale interpreter", async renderFinalFrame => {
+    const f = fixture();
+    const running = runCommands(f.scene, [command(true), after]);
+    if (renderFinalFrame) f.frame(500);
+    f.scene.session = startSession(f.project, 8);
+    f.scene.session.pictures = structuredClone(f.session.pictures);
+    f.scene.syncRuntimeState();
+    await vi.advanceTimersByTimeAsync(500);
+    await running;
+    expect(f.session.switches[SENTINEL]).toBe(false);
+    expect(f.scene.session.switches[SENTINEL]).not.toBe(true);
+    expect(f.opacity()).toBe(0.502);
+    expect(f.dialogue.close).not.toHaveBeenCalled();
+  });
+
+  it.each([false, undefined])("shutdown also owns a still-animating wait=%s picture after its command has returned", async wait => {
+    const f = fixture();
+    const cancelFrame = vi.spyOn(globalThis, "cancelAnimationFrame");
+    await runCommands(f.scene, [command(wait)]);
+    f.overlay.syncVisibleHud({ timers: { unaffected: 10 }, timerActive: { unaffected: true } });
+    const cancelled = f.overlay.waitForPicture("pic1");
+    f.events.emit("shutdown");
+    expect(await cancelled).toBe("cancelled");
+    expect(cancelFrame).toHaveBeenCalledOnce();
+    expect(findByTestId(f.host, "picture-pic1")).toBeNull();
+    expect(findByTestId(f.host, "runtime-timer-hud")).not.toBeNull();
+    expect(f.events.eventNames()).toEqual([]);
+    f.overlay.clearPictures();
+    f.frame(5000);
+    expect(cancelFrame).toHaveBeenCalledOnce();
+  });
+
+  it("shutdown between the final DOM write and promise continuation cannot execute the sentinel", async () => {
+    const f = fixture();
+    const running = runCommands(f.scene, [command(true), after]);
+    f.frame(500);
+    expect(f.opacity()).toBe(0.502);
+    f.events.emit("shutdown");
+    await running;
+    expect(f.session.switches[SENTINEL]).toBe(false);
+    expect(f.dialogue.close).not.toHaveBeenCalled();
+    expect(f.events.eventNames()).toEqual([]);
+  });
+
+  it("cutscene skip interrupts the wait without a timer or a later stale continuation", async () => {
+    const f = fixture();
+    vi.spyOn(performance, "now").mockReturnValue(1000);
+    const running = runCommands(f.scene, [
+      { kind: "cutsceneControl", mode: "begin", skippable: true }, command(true), after,
+      { kind: "label", name: CUTSCENE_END_LABEL }, { kind: "cutsceneControl", mode: "end" },
+      { kind: "setSwitch", switchId: SKIPPED, value: true },
+    ]);
+    for (const _ of [0, 1]) {
+      const event = new Event("keydown", { cancelable: true });
+      Object.assign(event, { key: "Escape" });
+      document.dispatchEvent(event);
+    }
+    await running;
+    expect(f.session.switches[SENTINEL]).toBe(false);
+    expect(f.session.switches[SKIPPED]).toBe(true);
+    expect.soft(vi.getTimerCount()).toBe(0);
+    f.frame(500);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(f.session.switches[SENTINEL]).toBe(false);
+    expect(f.events.eventNames()).toEqual([]);
   });
 });

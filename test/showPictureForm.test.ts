@@ -5,6 +5,7 @@
  * types/events.ts:315-318) 폼이 커밋하는 필드는 pictureId/resourceId/x/y 넷뿐이었다.
  * 감독이 "60%로 줄여 15도 기울여 페이드인" 을 하려면 AI 툴이나 JSON 손편집으로 우회해야 했다.
  */
+import { EventEmitter, once } from "node:events";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { showPictureBody } from "@/editor/panels/eventEditor/commandBodyPage3Native";
 import { createBlankProject } from "@/project/defaults";
@@ -15,7 +16,7 @@ import { FakeElement, findByTestId, installFakeDom, renderWithFakeDom } from "./
 
 type ShowPicture = Extract<Command, { kind: "showPicture" }>;
 
-function stagedContext(initial: ShowPicture): {
+function stagedContext(initial: ShowPicture, onReplacement?: () => void): {
   readonly context: CommandEditContext;
   readonly current: () => ShowPicture;
 } {
@@ -26,7 +27,10 @@ function stagedContext(initial: ShowPicture): {
       actions: {
         addCommand: vi.fn(),
         insertCommand: vi.fn(),
-        replaceCommand: (_path, command) => { staged = structuredClone(command) as ShowPicture; },
+        replaceCommand: (_path, command) => {
+          staged = structuredClone(command) as ShowPicture;
+          onReplacement?.();
+        },
         deleteCommand: vi.fn(),
         moveCommand: vi.fn(),
         moveCommandTo: vi.fn(),
@@ -52,6 +56,7 @@ beforeEach(() => {
   store.replace(createBlankProject());
 });
 afterEach(() => {
+  vi.unstubAllGlobals();
   restoreDom?.();
 });
 
@@ -180,15 +185,29 @@ describe("그림 표시 폼", () => {
         ),
       ),
     );
-    const { context, current } = stagedContext(BASE);
+    // A replaced form must stop receiving queue completions; the live form must not.
+    const staleReplacement = vi.fn();
+    const stale = stagedContext(BASE, staleReplacement);
+    const detached = renderWithFakeDom(() => showPictureBody(stale.context, BASE));
+    (document.body as unknown as FakeElement).append(detached);
+    detached.remove();
+    expect(detached.isConnected).toBe(false);
+
+    const replacements = new EventEmitter();
+    const { context, current } = stagedContext(BASE, () => replacements.emit("replace"));
     const body = renderWithFakeDom(() => showPictureBody(context, BASE));
+    (document.body as unknown as FakeElement).append(body);
+    expect(body.isConnected).toBe(true);
     const prompt = findByTestId(body, "show-picture-ai-prompt");
     expect(prompt).not.toBeNull();
     if (prompt) prompt.value = "달빛 창가";
-    findByTestId(body, "show-picture-ai-generate")?.click();
-    await vi.waitFor(() => {
-      expect(current().resourceId.length).toBeGreaterThan(0);
-    });
+    const replaced = once(replacements, "replace", { signal: AbortSignal.timeout(5000) });
+    findByTestId(body, "show-picture-ai-generate")!.click();
+    await replaced;
+    expect(current().resourceId.length).toBeGreaterThan(0);
+    expect(staleReplacement).not.toHaveBeenCalled();
+    expect(stale.current()).toEqual(BASE);
+    expect(replacements.listenerCount("replace")).toBe(0);
     const resourceId = current().resourceId;
     expect(store.getCurrent().assets.uploaded[resourceId]?.kind).toBe("picture");
     expect(store.getCurrent().assets.uploaded[resourceId]?.dataUrl).toBe(png);

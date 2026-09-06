@@ -1,0 +1,257 @@
+{
+  "scenarioId": "g3-f10-continuation-replacement",
+  "projectPath": "../../../../../../tmp/u04-continuation-tGehoM/g3-f10-continuation-replacement.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "u04-boot",
+      "shot": null,
+      "failures": [],
+      "eventCommands": [
+        {
+          "op": {
+            "kind": "eventCommand",
+            "trigger": {
+              "kind": "key",
+              "key": "Enter"
+            },
+            "observe": [
+              {
+                "source": "state",
+                "path": [
+                  "mapId"
+                ],
+                "equals": "map_intro"
+              },
+              {
+                "source": "state",
+                "path": [
+                  "player"
+                ],
+                "equals": {
+                  "x": 2,
+                  "y": 3
+                }
+              }
+            ],
+            "timeoutMs": 120000
+          },
+          "status": "success",
+          "before": [
+            {
+              "missing": true
+            },
+            {
+              "missing": true
+            }
+          ],
+          "after": [
+            {
+              "value": "map_intro"
+            },
+            {
+              "value": {
+                "x": 2,
+                "y": 3
+              }
+            }
+          ],
+          "event": null,
+          "cleanup": {
+            "observer": true,
+            "timer": true,
+            "event": true,
+            "pagehide": true,
+            "abort": true
+          }
+        }
+      ],
+      "state": {
+        "currentMapId": "map_intro",
+        "x": 2,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null
+      }
+    },
+    {
+      "index": 1,
+      "id": "g3-f10-continuation-replacement",
+      "note": "Authored parallel picture operation must not terminate the live foreground event",
+      "shot": "02-g3-f10-continuation-replacement.png",
+      "failures": [
+        "op eventCommand 실패: eventCommand observation timed out"
+      ],
+      "eventCommands": [
+        {
+          "op": {
+            "kind": "eventCommand",
+            "trigger": {
+              "kind": "action"
+            },
+            "observe": [
+              {
+                "source": "state",
+                "path": [
+                  "switches",
+                  "u04-followup-done"
+                ],
+                "equals": true
+              },
+              {
+                "source": "state",
+                "path": [
+                  "switches",
+                  "u04-followup-sentinel"
+                ],
+                "equals": true
+              },
+              {
+                "source": "state",
+                "path": [
+                  "switches",
+                  "u04-followup-too-late"
+                ],
+                "equals": false
+              },
+              {
+                "source": "state",
+                "path": [
+                  "player"
+                ],
+                "equals": {
+                  "x": 2,
+                  "y": 3
+                }
+              },
+              {
+                "source": "state",
+                "path": [
+                  "pictures",
+                  "unaffected",
+                  "x"
+                ],
+                "equals": 77
+              },
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"dialogue-box\"]",
+                "read": "present",
+                "equals": true
+              },
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"picture-wrong-target\"]",
+                "read": "present",
+                "equals": false
+              },
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"picture-picA\"]",
+                "read": "present",
+                "equals": true
+              },
+              {
+                "source": "state",
+                "path": [
+                  "pictures",
+                  "picA",
+                  "x"
+                ],
+                "equals": 90
+              }
+            ],
+            "timeoutMs": 15000
+          },
+          "status": "timeout",
+          "before": [
+            {
+              "value": true
+            },
+            {
+              "value": false
+            },
+            {
+              "value": false
+            },
+            {
+              "value": {
+                "x": 2,
+                "y": 3
+              }
+            },
+            {
+              "value": 77
+            },
+            {
+              "value": false
+            },
+            {
+              "value": false
+            },
+            {
+              "value": true
+            },
+            {
+              "value": 90
+            }
+          ],
+          "after": [
+            {
+              "value": true
+            },
+            {
+              "value": true
+            },
+            {
+              "value": true
+            },
+            {
+              "value": {
+                "x": 2,
+                "y": 3
+              }
+            },
+            {
+              "value": 77
+            },
+            {
+              "value": true
+            },
+            {
+              "value": false
+            },
+            {
+              "value": true
+            },
+            {
+              "value": 90
+            }
+          ],
+          "event": null,
+          "cleanup": {
+            "observer": true,
+            "timer": true,
+            "event": true,
+            "pagehide": true,
+            "abort": true
+          },
+          "error": "eventCommand observation timed out"
+        }
+      ],
+      "state": {
+        "currentMapId": "map_intro",
+        "x": 2,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null
+      }
+    }
+  ]
+}

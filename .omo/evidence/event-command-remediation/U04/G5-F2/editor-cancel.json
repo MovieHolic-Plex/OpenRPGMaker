@@ -1,0 +1,60 @@
+{
+  "cases": [
+    {
+      "name": "g5-f2-true-true",
+      "expected": {
+        "kind": "playMovie",
+        "resourceId": "u04-movie",
+        "wait": true,
+        "skippable": true
+      },
+      "cancelRetained": true,
+      "wrongTargetUnchanged": true
+    },
+    {
+      "name": "g5-f2-true-false",
+      "expected": {
+        "kind": "playMovie",
+        "resourceId": "u04-movie",
+        "wait": true,
+        "skippable": false
+      },
+      "cancelRetained": true,
+      "wrongTargetUnchanged": true
+    },
+    {
+      "name": "g5-f2-false-true",
+      "expected": {
+        "kind": "playMovie",
+        "resourceId": "u04-movie",
+        "wait": false,
+        "skippable": true
+      },
+      "cancelRetained": true,
+      "wrongTargetUnchanged": true
+    },
+    {
+      "name": "g5-f2-false-false",
+      "expected": {
+        "kind": "playMovie",
+        "resourceId": "u04-movie",
+        "wait": false,
+        "skippable": false
+      },
+      "cancelRetained": true,
+      "wrongTargetUnchanged": true
+    },
+    {
+      "name": "g5-f2-omitted",
+      "expected": {
+        "kind": "playMovie",
+        "resourceId": "u04-movie",
+        "wait": false,
+        "skippable": false
+      },
+      "cancelRetained": true,
+      "wrongTargetUnchanged": true
+    }
+  ],
+  "realFileReimportReopenedAll": true
+}

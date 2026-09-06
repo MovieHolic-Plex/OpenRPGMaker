@@ -135,16 +135,17 @@ describe("playMovie 편집기 본문", () => {
     select.value = "movie-ending";
     select.dispatchEvent(new Event("change"));
 
-    expect(lastCommand(replaceCommand)).toEqual({ kind: "playMovie", resourceId: "movie-ending" });
+    expect(lastCommand(replaceCommand)).toEqual({ kind: "playMovie", resourceId: "movie-ending", wait: true, skippable: true });
     expect(findByTestId(body, "play-movie-preview-video")?.getAttribute("src")).toBe(MP4_DATA_URL);
   });
 
   it("완료 대기·스킵 허용 토글이 명령 모양에 그대로 반영된다", () => {
     const replaceCommand = vi.fn();
-    const body = movieBody({ kind: "playMovie", resourceId: "movie-opening" }, replaceCommand);
+    // G5-F2: omission means true at runtime; start explicitly off so both clicks edit.
+    const body = movieBody({ kind: "playMovie", resourceId: "movie-opening", wait: false, skippable: false }, replaceCommand);
 
     (findByTestId(body, "play-movie-wait-select-segment-true") as FakeElement).dispatchEvent(new Event("click"));
-    expect(lastCommand(replaceCommand)).toEqual({ kind: "playMovie", resourceId: "movie-opening", wait: true });
+    expect(lastCommand(replaceCommand)).toEqual({ kind: "playMovie", resourceId: "movie-opening", wait: true, skippable: false });
 
     (findByTestId(body, "play-movie-skippable-select-segment-true") as FakeElement).dispatchEvent(new Event("click"));
     expect(lastCommand(replaceCommand)).toEqual({
@@ -158,6 +159,7 @@ describe("playMovie 편집기 본문", () => {
     expect(lastCommand(replaceCommand)).toEqual({
       kind: "playMovie",
       resourceId: "movie-opening",
+      wait: false,
       skippable: true,
     });
   });

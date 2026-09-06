@@ -1,0 +1,95 @@
+{
+  "unit": "U04",
+  "findingIDs": [
+    "G3-F10",
+    "G5-F2"
+  ],
+  "editor": {
+    "channel": "fresh Firefox context, local expert editor, H0 local seed and remote-write guard",
+    "target": "host map event, scoped event-command-edit-dialog; selectedOther must remain unchanged",
+    "inputs": [
+      "Space on selected command row",
+      "show-picture-x-input: 10 -> 30",
+      "visible native wait/skippable segment buttons",
+      "Confirm then event-editor-apply",
+      "Space reopen",
+      "distinct edit then Cancel",
+      "real filechooser export/reimport and reopen every case"
+    ],
+    "cases": {
+      "picture": "wait true/false/omitted x duration 500/0",
+      "movie": "all four explicit boolean combinations, plus omitted -> false/false"
+    },
+    "PASS": [
+      "exact saved command equality",
+      "untouched transforms, assets, database and other commands equal",
+      "selectedOther unchanged",
+      "true defaults and explicit false survive import",
+      "actual 32px-wide PNG decodes",
+      "no attempted remote writes",
+      "Confirm reachable and no horizontal overflow at 1024x768, 1280x800, 1440x900"
+    ]
+  },
+  "player": {
+    "channel": "fresh Firefox browser/context per case, dedicated player.html via runRuntimeQa, exported command isolated behind a real map event action",
+    "inputs": [
+      "Enter at title",
+      "existing __oprnInput.face(up) then __oprnInput.action() after hooks",
+      "Escape and Z real keyboard input",
+      "native video playback/seek for ended",
+      "error fault injection only after real decoding",
+      "real navigation/pagehide for abort"
+    ],
+    "picture_PASS": [
+      "native image load, naturalWidth 32",
+      "picA x30/y20 scale0.5 rotation15",
+      "player stays 2,3; wrong-target picture absent",
+      "wait:true/500 sentinel after authored duration and at final renderer opacity 0.502",
+      "false/omitted with duration500 continue before transition completion",
+      "duration0 retains authored boolean"
+    ],
+    "movie_PASS": [
+      "playing is native and decodes exported URL",
+      "first playing event pauses the media clock to prevent key tests racing clip duration",
+      "wait:false sentinel appears before ended; wait:true sentinel absent while held",
+      "Escape does not remove overlay",
+      "Z removes skippable movie but not non-skippable movie",
+      "native ended/error cleanup removes overlay and pauses media",
+      "five movie-owner listener registrations return to zero",
+      "navigation abort produces H0 aborted trace and clears all observation resources",
+      "same URL also decodes in opening cinematic and native ended enters map, pauses video and releases src"
+    ],
+    "cleanup_PASS": [
+      "no retained __eventCommandQa",
+      "contexts and browsers closed",
+      "owned server stopped",
+      "temporary fixture directories and unique caches removed"
+    ]
+  },
+  "corrections": [
+    "plan # selectors are data-testid values",
+    "native picture tween is rAF-based, not a CSS transitionend event",
+    "native movie skip key is confirm/Z; Escape is a negative control",
+    "abort proof is real document navigation/pagehide, not a fabricated video abort event",
+    "wait:false dialogue may legitimately be consumed by a later confirm key; its earlier continuation is the assertion",
+    "the original copied PNG was corrupt; corrected fixture triggered fresh RED against byte-identical c66f5a8a owner before restoring GREEN"
+  ],
+  "rendererCompletion": {
+    "scopeAuthorized": [
+      "src/player/runtimeDom.ts",
+      "src/player/playSceneInterpreter.ts",
+      "test/pictureWeatherDom.test.ts"
+    ],
+    "findingID": "G3-F10",
+    "leadExtraTask": true,
+    "PASS": [
+      "500ms timer advancement without a final frame leaves sentinel false",
+      "partial frame plus async continuation drain leaves sentinel false",
+      "final DOM update resolves completed and permits sentinel",
+      "replacement/erase/session replacement/shutdown/destroy cancel stale continuations",
+      "zero/false/omitted semantics and interpolation remain unchanged",
+      "browser final DOM timestamp <= sentinel timestamp with exact opacity 0.502; no epsilon proxy"
+    ],
+    "api": "api-ownership.md"
+  }
+}

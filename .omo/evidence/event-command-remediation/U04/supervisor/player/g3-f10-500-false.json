@@ -1,0 +1,40 @@
+{
+  "command": {
+    "kind": "showPicture",
+    "pictureId": "picA",
+    "resourceId": "u04-picture",
+    "x": 30,
+    "y": 20,
+    "scale": 50,
+    "opacity": 128,
+    "rotation": 15,
+    "durationMs": 500,
+    "waitForPicture": false
+  },
+  "before": {
+    "picture": {
+      "at": 12979,
+      "opacity": 0
+    },
+    "complete": null,
+    "sentinel": {
+      "at": 12999,
+      "pictureOpacity": 0
+    },
+    "movie": null,
+    "events": [],
+    "activeMovieListeners": 0,
+    "totalMovieListeners": 0
+  },
+  "report": "g3-f10-500-false/manifest.json",
+  "playerUrl": "http://127.0.0.1:44389/player.html",
+  "writes": [],
+  "rendered": {
+    "left": "30px",
+    "top": "20px",
+    "transform": "scale(0.5) rotate(15deg)",
+    "opacity": 0.195,
+    "render": "image",
+    "imageWidth": 32
+  }
+}

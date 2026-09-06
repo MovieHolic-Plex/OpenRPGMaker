@@ -1,0 +1,37 @@
+{
+  "status": "blocked",
+  "finding": "G3-F10",
+  "sourceHead": "b52cefd54cc39205b5b138b3e6ac2d3a0166e5b9",
+  "observation": {
+    "error": "AssertionError [ERR_ASSERTION]: {\"picture\":{\"at\":14820,\"opacity\":0},\"complete\":{\"at\":15369},\"sentinel\":{\"at\":15360,\"pictureOpacity\":0.499},\"movie\":null,\"events\":[],\"activeMovieListeners\":0,\"totalMovieListeners\":0}\n\nfalse !== true\n",
+    "errors": [],
+    "url": "http://127.0.0.1:41035/player.html",
+    "body": "g3-f10\n\u25bc\nhost-page\nhost-page\nselectedOther\npicA",
+    "probe": {
+      "picture": {
+        "at": 14820,
+        "opacity": 0
+      },
+      "complete": {
+        "at": 15369
+      },
+      "sentinel": {
+        "at": 15360,
+        "pictureOpacity": 0.499
+      },
+      "movie": null,
+      "events": [],
+      "activeMovieListeners": 0,
+      "totalMovieListeners": 0
+    }
+  },
+  "cause": "playSceneInterpreter waits durationMs on a timer; RuntimeDom completes the tween on a separate rAF. The timer can release the sentinel before the final renderer frame.",
+  "proposedScope": [
+    "src/player/runtimeDom.ts",
+    "src/player/playSceneInterpreter.ts",
+    "test/pictureWeatherDom.test.ts"
+  ],
+  "proposedFix": "Signal picture tween completion from the actual renderer; await that signal when waitForPicture is true. Keep zero-duration, removal, teardown and cutscene-skip settlement explicit. Do not pad the timer.",
+  "sourceFilesChangedForThisIssue": [],
+  "remainingProof": "remaining-editor-cases.json excludes only the already-recorded failing case to finish independent coverage; this is not an overall GREEN run."
+}

@@ -1,0 +1,234 @@
+{
+  "report": "g3-f10-continuation-erase/manifest.json",
+  "operation": "erase",
+  "foreground": [
+    {
+      "kind": "displayTextSettings",
+      "format": "normal",
+      "position": "bottom",
+      "preventObscuringPlayer": false,
+      "allowEventMovementDuringWait": true
+    },
+    {
+      "kind": "setSwitch",
+      "switchId": "u04-followup-sentinel",
+      "value": false
+    },
+    {
+      "kind": "setSwitch",
+      "switchId": "u04-followup-too-late",
+      "value": false
+    },
+    {
+      "kind": "setSwitch",
+      "switchId": "u04-followup-done",
+      "value": false
+    },
+    {
+      "kind": "setSwitch",
+      "switchId": "u04-followup-ready",
+      "value": true
+    },
+    {
+      "kind": "showPicture",
+      "pictureId": "picA",
+      "resourceId": "u04-picture",
+      "x": 30,
+      "y": 20,
+      "scale": 50,
+      "opacity": 128,
+      "rotation": 15,
+      "durationMs": 500,
+      "waitForPicture": true
+    },
+    {
+      "kind": "setSwitch",
+      "switchId": "u04-followup-sentinel",
+      "value": true
+    },
+    {
+      "kind": "text",
+      "body": "g3-f10-erase-continued"
+    }
+  ],
+  "producer": [
+    {
+      "kind": "fork",
+      "condition": {
+        "kind": "switch",
+        "switchId": "u04-followup-sentinel",
+        "value": false
+      },
+      "then": [
+        {
+          "kind": "showPicture",
+          "pictureId": "unaffected",
+          "resourceId": "u04-picture",
+          "x": 77,
+          "y": 20,
+          "scale": 50,
+          "opacity": 128,
+          "rotation": 15,
+          "durationMs": 0,
+          "waitForPicture": false
+        },
+        {
+          "kind": "erasePicture",
+          "pictureId": "picA"
+        },
+        {
+          "kind": "setSwitch",
+          "switchId": "u04-followup-done",
+          "value": true
+        }
+      ],
+      "else": [
+        {
+          "kind": "setSwitch",
+          "switchId": "u04-followup-too-late",
+          "value": true
+        },
+        {
+          "kind": "setSwitch",
+          "switchId": "u04-followup-done",
+          "value": true
+        }
+      ]
+    },
+    {
+      "kind": "setSwitch",
+      "switchId": "u04-followup-ready",
+      "value": false
+    }
+  ],
+  "snapshots": [
+    {
+      "picture": null,
+      "ready": false,
+      "done": false,
+      "sentinel": false,
+      "tooLate": false
+    },
+    {
+      "picture": null,
+      "ready": false,
+      "done": false,
+      "sentinel": false,
+      "tooLate": false
+    },
+    {
+      "picture": null,
+      "ready": false,
+      "done": false,
+      "sentinel": false,
+      "tooLate": false
+    },
+    {
+      "picture": null,
+      "ready": false,
+      "done": false,
+      "sentinel": false,
+      "tooLate": false
+    },
+    {
+      "picture": null,
+      "ready": false,
+      "done": true,
+      "sentinel": false,
+      "tooLate": false
+    },
+    {
+      "picture": null,
+      "ready": false,
+      "done": false,
+      "sentinel": false,
+      "tooLate": false
+    },
+    {
+      "picture": null,
+      "ready": false,
+      "done": true,
+      "sentinel": false,
+      "tooLate": false
+    },
+    {
+      "picture": null,
+      "ready": true,
+      "done": false,
+      "sentinel": false,
+      "tooLate": false
+    },
+    {
+      "picture": null,
+      "ready": false,
+      "done": true,
+      "sentinel": false,
+      "tooLate": false
+    },
+    {
+      "picture": {
+        "kind": "showPicture",
+        "pictureId": "picA",
+        "resourceId": "u04-picture",
+        "x": 30,
+        "y": 20,
+        "scale": 50,
+        "opacity": 128,
+        "rotation": 15,
+        "durationMs": 500,
+        "waitForPicture": true
+      },
+      "ready": true,
+      "done": false,
+      "sentinel": false,
+      "tooLate": false
+    },
+    {
+      "picture": null,
+      "ready": false,
+      "done": true,
+      "sentinel": false,
+      "tooLate": false
+    },
+    {
+      "picture": {
+        "kind": "showPicture",
+        "pictureId": "picA",
+        "resourceId": "u04-picture",
+        "x": 30,
+        "y": 20,
+        "scale": 50,
+        "opacity": 128,
+        "rotation": 15,
+        "durationMs": 500,
+        "waitForPicture": true
+      },
+      "ready": true,
+      "done": false,
+      "sentinel": false,
+      "tooLate": false
+    },
+    {
+      "picture": null,
+      "ready": false,
+      "done": true,
+      "sentinel": false,
+      "tooLate": false
+    },
+    {
+      "picture": null,
+      "ready": false,
+      "done": true,
+      "sentinel": false,
+      "tooLate": false
+    },
+    {
+      "picture": null,
+      "ready": false,
+      "done": true,
+      "sentinel": true,
+      "tooLate": false
+    }
+  ],
+  "writes": []
+}

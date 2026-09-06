@@ -1,0 +1,72 @@
+[
+  {
+    "kind": "showPicture",
+    "pictureId": "picA",
+    "resourceId": "u04-picture",
+    "x": 30,
+    "y": 20,
+    "scale": 50,
+    "opacity": 128,
+    "rotation": 15,
+    "durationMs": 500,
+    "waitForPicture": true
+  },
+  {
+    "kind": "showPicture",
+    "pictureId": "picA",
+    "resourceId": "u04-picture",
+    "x": 30,
+    "y": 20,
+    "scale": 50,
+    "opacity": 128,
+    "rotation": 15,
+    "durationMs": 500,
+    "waitForPicture": false
+  },
+  {
+    "kind": "showPicture",
+    "pictureId": "picA",
+    "resourceId": "u04-picture",
+    "x": 30,
+    "y": 20,
+    "scale": 50,
+    "opacity": 128,
+    "rotation": 15,
+    "durationMs": 500
+  },
+  {
+    "kind": "showPicture",
+    "pictureId": "picA",
+    "resourceId": "u04-picture",
+    "x": 30,
+    "y": 20,
+    "scale": 50,
+    "opacity": 128,
+    "rotation": 15,
+    "durationMs": 0,
+    "waitForPicture": true
+  },
+  {
+    "kind": "showPicture",
+    "pictureId": "picA",
+    "resourceId": "u04-picture",
+    "x": 30,
+    "y": 20,
+    "scale": 50,
+    "opacity": 128,
+    "rotation": 15,
+    "durationMs": 0,
+    "waitForPicture": false
+  },
+  {
+    "kind": "showPicture",
+    "pictureId": "picA",
+    "resourceId": "u04-picture",
+    "x": 30,
+    "y": 20,
+    "scale": 50,
+    "opacity": 128,
+    "rotation": 15,
+    "durationMs": 0
+  }
+]

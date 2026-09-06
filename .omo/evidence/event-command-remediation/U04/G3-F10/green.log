@@ -1,0 +1,29 @@
+From ../green-release.json (111/111) and ../renderer-final.json (34/34)
+G3-F10 native showPicture optional wait preservation coordinate edit preserves wait=true at duration=500 through Confirm/deserialize/reopen: passed
+G3-F10 native showPicture optional wait preservation coordinate edit preserves wait=false at duration=500 through Confirm/deserialize/reopen: passed
+G3-F10 native showPicture optional wait preservation coordinate edit preserves wait=undefined at duration=500 through Confirm/deserialize/reopen: passed
+G3-F10 native showPicture optional wait preservation coordinate edit preserves wait=true at duration=+0 through Confirm/deserialize/reopen: passed
+G3-F10 native showPicture optional wait preservation coordinate edit preserves wait=false at duration=+0 through Confirm/deserialize/reopen: passed
+G3-F10 native showPicture optional wait preservation coordinate edit preserves wait=undefined at duration=+0 through Confirm/deserialize/reopen: passed
+G3-F10 native showPicture optional wait preservation exposes an editable wait toggle; authored true survives a later coordinate edit: passed
+G3-F10 native showPicture optional wait preservation exposes an editable wait toggle; authored false survives a later coordinate edit: passed
+G3-F10 native showPicture optional wait preservation parser/interpreter characterization: unedited wait=true is not lost downstream: passed
+G3-F10 native showPicture optional wait preservation parser/interpreter characterization: unedited wait=false is not lost downstream: passed
+G3-F10 native showPicture optional wait preservation parser/interpreter characterization: unedited wait=undefined is not lost downstream: passed
+'G3-F10' Cancel discards staged edits without mutating the input: passed
+G3-F10 renderer/interpreter completion and cancellation elapsed duration without the final rendered update cannot release the command: passed
+G3-F10 renderer/interpreter completion and cancellation duration zero is immediate with wait=true: passed
+G3-F10 renderer/interpreter completion and cancellation duration zero is immediate with wait=false: passed
+G3-F10 renderer/interpreter completion and cancellation duration zero is immediate with wait=undefined: passed
+G3-F10 renderer/interpreter completion and cancellation wait=false continues without advancing the renderer: passed
+G3-F10 renderer/interpreter completion and cancellation wait=undefined continues without advancing the renderer: passed
+G3-F10 renderer/interpreter completion and cancellation replacement cancels the old command without stale continuation: passed
+G3-F10 renderer/interpreter completion and cancellation erase cancels the old command without stale continuation: passed
+G3-F10 renderer/interpreter completion and cancellation shutdown cancels the wait and renderer without refreshing a dead scene: passed
+G3-F10 renderer/interpreter completion and cancellation destroy cancels the wait and renderer without refreshing a dead scene: passed
+G3-F10 renderer/interpreter completion and cancellation session replacement after final frame=false cannot resume the stale interpreter: passed
+G3-F10 renderer/interpreter completion and cancellation session replacement after final frame=true cannot resume the stale interpreter: passed
+G3-F10 renderer/interpreter completion and cancellation shutdown also owns a still-animating wait=false picture after its command has returned: passed
+G3-F10 renderer/interpreter completion and cancellation shutdown also owns a still-animating wait=undefined picture after its command has returned: passed
+G3-F10 renderer/interpreter completion and cancellation shutdown between the final DOM write and promise continuation cannot execute the sentinel: passed
+G3-F10 renderer/interpreter completion and cancellation cutscene skip interrupts the wait without a timer or a later stale continuation: passed

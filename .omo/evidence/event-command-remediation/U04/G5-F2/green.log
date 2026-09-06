@@ -1,0 +1,17 @@
+From ../green-release.json (111/111) and ../renderer-final.json (34/34)
+G5-F2 native playMovie default-true and explicit-false contract omitted wait opens as true, matching the interpreter: passed
+G5-F2 native playMovie default-true and explicit-false contract omitted skippable opens as true, matching the interpreter: passed
+G5-F2 native playMovie default-true and explicit-false contract resource edit retains independent wait=true skippable=true: passed
+G5-F2 native playMovie default-true and explicit-false contract resource edit retains independent wait=true skippable=false: passed
+G5-F2 native playMovie default-true and explicit-false contract resource edit retains independent wait=false skippable=true: passed
+G5-F2 native playMovie default-true and explicit-false contract resource edit retains independent wait=false skippable=false: passed
+G5-F2 native playMovie default-true and explicit-false contract explicit toggle selection saves wait=true skippable=true, not default-true omission: passed
+G5-F2 native playMovie default-true and explicit-false contract explicit toggle selection saves wait=true skippable=false, not default-true omission: passed
+G5-F2 native playMovie default-true and explicit-false contract explicit toggle selection saves wait=false skippable=true, not default-true omission: passed
+G5-F2 native playMovie default-true and explicit-false contract explicit toggle selection saves wait=false skippable=false, not default-true omission: passed
+G5-F2 native playMovie default-true and explicit-false contract parser/interpreter characterization: unedited flags {} retain their semantics: passed
+G5-F2 native playMovie default-true and explicit-false contract parser/interpreter characterization: unedited flags {"wait":true,"skippable":true} retain their semantics: passed
+G5-F2 native playMovie default-true and explicit-false contract parser/interpreter characterization: unedited flags {"wait":true,"skippable":false} retain their semantics: passed
+G5-F2 native playMovie default-true and explicit-false contract parser/interpreter characterization: unedited flags {"wait":false,"skippable":true} retain their semantics: passed
+G5-F2 native playMovie default-true and explicit-false contract parser/interpreter characterization: unedited flags {"wait":false,"skippable":false} retain their semantics: passed
+'G5-F2' Cancel discards staged edits without mutating the input: passed

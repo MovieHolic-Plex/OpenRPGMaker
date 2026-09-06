@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "unit": "U04",
+  "findingID": "G3-F10",
+  "status": "green",
+  "sourceHeadBeforeCommit": "b52cefd54cc39205b5b138b3e6ac2d3a0166e5b9",
+  "RED": {
+    "base": "c66f5a8a",
+    "artifact": "../red.json",
+    "failed": 6,
+    "passed": 6,
+    "correctedMediaFreshRED": "../red-refreshed.json"
+  },
+  "GREEN": {
+    "aggregate": "../green-release.json",
+    "aggregatePassed": 111,
+    "unitFilePassed": 12,
+    "rendererInterpreterPassed": 16,
+    "rendererFinal": "../renderer-final.json"
+  },
+  "editor": {
+    "status": "passed",
+    "log": "../editor-completion/run.log",
+    "observations": "../editor-completion/editor-cases.json",
+    "cases": 6,
+    "confirmApplyReopenCancelRealImport": true,
+    "wrongTargetAndUnrelatedFieldsPreserved": true,
+    "pngDecodedWidth": 32,
+    "viewports": [
+      [
+        1024,
+        768
+      ],
+      [
+        1280,
+        800
+      ],
+      [
+        1440,
+        900
+      ]
+    ]
+  },
+  "player": {
+    "status": "passed",
+    "log": "../player-completion.log",
+    "summary": "../player-completion/SUMMARY.md",
+    "observations": "../player-completion/observations.json",
+    "cases": [
+      "g3-f10-0-false",
+      "g3-f10-0-omitted",
+      "g3-f10-0-true",
+      "g3-f10-500-false",
+      "g3-f10-500-omitted",
+      "g3-f10-500-true"
+    ],
+    "caseCount": 6
+  },
+  "cleanup": {
+    "status": "complete",
+    "artifact": "../cleanup.json"
+  },
+  "commitReceipt": "../commit-receipt.json (post-commit receipt)",
+  "addedFinding": {
+    "leadExtraTask": true,
+    "status": "resolved-under-G3-F10",
+    "description": "Duration timer could release a command before final rendered picture update; replacement/erase/shutdown/session replacement could resume obsolete commands.",
+    "deterministicRED": "../runtime-renderer-red.json",
+    "deterministicFailed": 8,
+    "originalBrowserRED": "../runtime-blocker.json",
+    "apiOwnership": "../api-ownership.md",
+    "verified": {
+      "picture": {
+        "at": 27897,
+        "opacity": 0
+      },
+      "complete": {
+        "at": 28399
+      },
+      "sentinel": {
+        "at": 28472,
+        "pictureOpacity": 0.502
+      },
+      "movie": null,
+      "events": [],
+      "activeMovieListeners": 0,
+      "totalMovieListeners": 0
+    }
+  },
+  "followupContinuation": {
+    "status": "green",
+    "rootTask": "U04 \uadf8\ub9bc \ucde8\uc18c\uc640 \uc774\ubca4\ud2b8 \uc218\uba85 \uc885\ub8cc \uad6c\ubd84",
+    "manifest": "../followup-continuation/manifest.json",
+    "supersedes": "The interpretation in 15bcc2267 that same-session picture cancellation terminates its author event, and that a same-generation target change cancels its waiter. Historical verification numbers/receipts are unchanged."
+  }
+}

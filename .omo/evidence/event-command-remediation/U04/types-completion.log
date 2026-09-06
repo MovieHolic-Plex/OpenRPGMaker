@@ -1,0 +1,10 @@
+src/editor/panels/eventEditor/commandBodyPage3Native.ts: 0 diagnostics
+src/player/runtimeDom.ts: 0 diagnostics
+src/player/playSceneInterpreter.ts: 0 diagnostics
+test/pictureWeatherDom.test.ts: 0 diagnostics
+test/eventCommandRemediation/U04.test.ts: 0 diagnostics
+test/eventCommandRemediation/U04.fixture.ts: 0 diagnostics
+test/e2e/event-command-remediation-U04.spec.ts: 0 diagnostics
+test/playMovieEditorBody.test.ts: 0 diagnostics
+test/showPictureForm.test.ts: 0 diagnostics
+Exit code: 0

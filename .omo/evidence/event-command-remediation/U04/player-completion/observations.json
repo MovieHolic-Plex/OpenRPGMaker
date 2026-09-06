@@ -1,0 +1,1490 @@
+{
+  "source": "Raw per-case JSON files alongside this file; data URL strings replaced only by SHA-256/length.",
+  "cases": {
+    "cinematic-url": {
+      "report": "cinematic-url/manifest.json",
+      "decoded": {
+        "readyState": 4,
+        "source": {
+          "dataUrlSha256": "3291fee5e154f30ef147073c073bf049cd0728bff7fe420b24cd0a9af47bc58b",
+          "mediaType": "video/webm",
+          "utf8Bytes": 105499
+        }
+      },
+      "trace": {
+        "status": "success",
+        "before": [
+          {
+            "missing": true
+          },
+          {
+            "value": true
+          }
+        ],
+        "after": [
+          {
+            "value": "map_intro"
+          },
+          {
+            "value": false
+          }
+        ],
+        "event": {
+          "type": "ended",
+          "selector": ".cinematic-video"
+        },
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "cleanup": {
+        "paused": true,
+        "source": null,
+        "connected": false
+      }
+    },
+    "g3-f10-0-false": {
+      "command": {
+        "kind": "showPicture",
+        "pictureId": "picA",
+        "resourceId": "u04-picture",
+        "x": 30,
+        "y": 20,
+        "scale": 50,
+        "opacity": 128,
+        "rotation": 15,
+        "durationMs": 0,
+        "waitForPicture": false
+      },
+      "before": {
+        "picture": {
+          "at": 16641,
+          "opacity": 0.502
+        },
+        "complete": {
+          "at": 16641
+        },
+        "sentinel": {
+          "at": 16693,
+          "pictureOpacity": 0.502
+        },
+        "movie": null,
+        "events": [],
+        "activeMovieListeners": 0,
+        "totalMovieListeners": 0
+      },
+      "report": "g3-f10-0-false/manifest.json",
+      "playerUrl": "http://127.0.0.1:42237/player.html",
+      "writes": [],
+      "rendered": {
+        "left": "30px",
+        "top": "20px",
+        "transform": "scale(0.5) rotate(15deg)",
+        "opacity": 0.502,
+        "render": "image",
+        "imageWidth": 32
+      }
+    },
+    "g3-f10-0-omitted": {
+      "command": {
+        "kind": "showPicture",
+        "pictureId": "picA",
+        "resourceId": "u04-picture",
+        "x": 30,
+        "y": 20,
+        "scale": 50,
+        "opacity": 128,
+        "rotation": 15,
+        "durationMs": 0
+      },
+      "before": {
+        "picture": {
+          "at": 23173,
+          "opacity": 0.502
+        },
+        "complete": {
+          "at": 23173
+        },
+        "sentinel": {
+          "at": 23208,
+          "pictureOpacity": 0.502
+        },
+        "movie": null,
+        "events": [],
+        "activeMovieListeners": 0,
+        "totalMovieListeners": 0
+      },
+      "report": "g3-f10-0-omitted/manifest.json",
+      "playerUrl": "http://127.0.0.1:42237/player.html",
+      "writes": [],
+      "rendered": {
+        "left": "30px",
+        "top": "20px",
+        "transform": "scale(0.5) rotate(15deg)",
+        "opacity": 0.502,
+        "render": "image",
+        "imageWidth": 32
+      }
+    },
+    "g3-f10-0-true": {
+      "command": {
+        "kind": "showPicture",
+        "pictureId": "picA",
+        "resourceId": "u04-picture",
+        "x": 30,
+        "y": 20,
+        "scale": 50,
+        "opacity": 128,
+        "rotation": 15,
+        "durationMs": 0,
+        "waitForPicture": true
+      },
+      "before": {
+        "picture": {
+          "at": 18543,
+          "opacity": 0.502
+        },
+        "complete": {
+          "at": 18543
+        },
+        "sentinel": {
+          "at": 18639,
+          "pictureOpacity": 0.502
+        },
+        "movie": null,
+        "events": [],
+        "activeMovieListeners": 0,
+        "totalMovieListeners": 0
+      },
+      "report": "g3-f10-0-true/manifest.json",
+      "playerUrl": "http://127.0.0.1:42237/player.html",
+      "writes": [],
+      "rendered": {
+        "left": "30px",
+        "top": "20px",
+        "transform": "scale(0.5) rotate(15deg)",
+        "opacity": 0.502,
+        "render": "image",
+        "imageWidth": 32
+      }
+    },
+    "g3-f10-500-false": {
+      "command": {
+        "kind": "showPicture",
+        "pictureId": "picA",
+        "resourceId": "u04-picture",
+        "x": 30,
+        "y": 20,
+        "scale": 50,
+        "opacity": 128,
+        "rotation": 15,
+        "durationMs": 500,
+        "waitForPicture": false
+      },
+      "before": {
+        "picture": {
+          "at": 22161,
+          "opacity": 0
+        },
+        "complete": null,
+        "sentinel": {
+          "at": 22209,
+          "pictureOpacity": 0
+        },
+        "movie": null,
+        "events": [],
+        "activeMovieListeners": 0,
+        "totalMovieListeners": 0
+      },
+      "report": "g3-f10-500-false/manifest.json",
+      "playerUrl": "http://127.0.0.1:42237/player.html",
+      "writes": [],
+      "rendered": {
+        "left": "30px",
+        "top": "20px",
+        "transform": "scale(0.5) rotate(15deg)",
+        "opacity": 0.373,
+        "render": "image",
+        "imageWidth": 32
+      }
+    },
+    "g3-f10-500-omitted": {
+      "command": {
+        "kind": "showPicture",
+        "pictureId": "picA",
+        "resourceId": "u04-picture",
+        "x": 30,
+        "y": 20,
+        "scale": 50,
+        "opacity": 128,
+        "rotation": 15,
+        "durationMs": 500
+      },
+      "before": {
+        "picture": {
+          "at": 20494,
+          "opacity": 0
+        },
+        "complete": null,
+        "sentinel": {
+          "at": 20558,
+          "pictureOpacity": 0
+        },
+        "movie": null,
+        "events": [],
+        "activeMovieListeners": 0,
+        "totalMovieListeners": 0
+      },
+      "report": "g3-f10-500-omitted/manifest.json",
+      "playerUrl": "http://127.0.0.1:42237/player.html",
+      "writes": [],
+      "rendered": {
+        "left": "30px",
+        "top": "20px",
+        "transform": "scale(0.5) rotate(15deg)",
+        "opacity": 0.502,
+        "render": "image",
+        "imageWidth": 32
+      }
+    },
+    "g3-f10-500-true": {
+      "command": {
+        "kind": "showPicture",
+        "pictureId": "picA",
+        "resourceId": "u04-picture",
+        "x": 30,
+        "y": 20,
+        "scale": 50,
+        "opacity": 128,
+        "rotation": 15,
+        "durationMs": 500,
+        "waitForPicture": true
+      },
+      "before": {
+        "picture": {
+          "at": 27897,
+          "opacity": 0
+        },
+        "complete": {
+          "at": 28399
+        },
+        "sentinel": {
+          "at": 28472,
+          "pictureOpacity": 0.502
+        },
+        "movie": null,
+        "events": [],
+        "activeMovieListeners": 0,
+        "totalMovieListeners": 0
+      },
+      "report": "g3-f10-500-true/manifest.json",
+      "playerUrl": "http://127.0.0.1:42237/player.html",
+      "writes": [],
+      "rendered": {
+        "left": "30px",
+        "top": "20px",
+        "transform": "scale(0.5) rotate(15deg)",
+        "opacity": 0.502,
+        "render": "image",
+        "imageWidth": 32
+      },
+      "sentinelAtFullOpacity": true
+    },
+    "g5-f2-defaults": {
+      "command": {
+        "kind": "playMovie",
+        "resourceId": "u04-movie"
+      },
+      "before": {
+        "picture": null,
+        "complete": null,
+        "sentinel": null,
+        "movie": {
+          "at": 13192,
+          "duration": 3,
+          "decoded": true,
+          "source": {
+            "dataUrlSha256": "3291fee5e154f30ef147073c073bf049cd0728bff7fe420b24cd0a9af47bc58b",
+            "mediaType": "video/webm",
+            "utf8Bytes": 105499
+          },
+          "connected": true,
+          "paused": true
+        },
+        "events": [
+          {
+            "type": "playing",
+            "at": 13192,
+            "currentTime": 0,
+            "readyState": 4,
+            "trusted": true
+          }
+        ],
+        "activeMovieListeners": 5,
+        "totalMovieListeners": 5
+      },
+      "report": "g5-f2-defaults/manifest.json",
+      "playerUrl": "http://127.0.0.1:42237/player.html",
+      "writes": [],
+      "escape": {
+        "status": "success",
+        "before": [
+          {
+            "value": true
+          }
+        ],
+        "after": [
+          {
+            "value": true
+          }
+        ],
+        "event": {
+          "type": "keydown",
+          "selector": "*"
+        },
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "closeMenu": {
+        "status": "success",
+        "before": [
+          {
+            "value": true
+          },
+          {
+            "value": true
+          }
+        ],
+        "after": [
+          {
+            "value": false
+          },
+          {
+            "value": true
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "confirmKeyTarget": "BODY",
+      "skip": {
+        "status": "success",
+        "before": [
+          {
+            "value": true
+          },
+          {
+            "value": false
+          }
+        ],
+        "after": [
+          {
+            "value": false
+          },
+          {
+            "value": true
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "after": {
+        "picture": null,
+        "complete": null,
+        "sentinel": {
+          "at": 13847,
+          "pictureOpacity": null
+        },
+        "movie": {
+          "at": 13192,
+          "duration": 3,
+          "decoded": true,
+          "source": {
+            "dataUrlSha256": "3291fee5e154f30ef147073c073bf049cd0728bff7fe420b24cd0a9af47bc58b",
+            "mediaType": "video/webm",
+            "utf8Bytes": 105499
+          },
+          "connected": false,
+          "paused": true
+        },
+        "events": [
+          {
+            "type": "playing",
+            "at": 13192,
+            "currentTime": 0,
+            "readyState": 4,
+            "trusted": true
+          }
+        ],
+        "activeMovieListeners": 0,
+        "totalMovieListeners": 5
+      }
+    },
+    "g5-f2-false-false": {
+      "command": {
+        "kind": "playMovie",
+        "resourceId": "u04-movie",
+        "wait": false,
+        "skippable": false
+      },
+      "before": {
+        "picture": null,
+        "complete": null,
+        "sentinel": {
+          "at": 14819,
+          "pictureOpacity": null
+        },
+        "movie": {
+          "at": 14854,
+          "duration": 3,
+          "decoded": true,
+          "source": {
+            "dataUrlSha256": "3291fee5e154f30ef147073c073bf049cd0728bff7fe420b24cd0a9af47bc58b",
+            "mediaType": "video/webm",
+            "utf8Bytes": 105499
+          },
+          "connected": true,
+          "paused": true
+        },
+        "events": [
+          {
+            "type": "playing",
+            "at": 14854,
+            "currentTime": 0,
+            "readyState": 4,
+            "trusted": true
+          }
+        ],
+        "activeMovieListeners": 5,
+        "totalMovieListeners": 5
+      },
+      "report": "g5-f2-false-false/manifest.json",
+      "playerUrl": "http://127.0.0.1:42237/player.html",
+      "writes": [],
+      "escape": {
+        "status": "success",
+        "before": [
+          {
+            "value": true
+          }
+        ],
+        "after": [
+          {
+            "value": true
+          }
+        ],
+        "event": {
+          "type": "keydown",
+          "selector": "*"
+        },
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "confirmKeyTarget": "BODY",
+      "nonSkippable": {
+        "status": "success",
+        "before": [
+          {
+            "value": true
+          }
+        ],
+        "after": [
+          {
+            "value": true
+          }
+        ],
+        "event": {
+          "type": "keydown",
+          "selector": "*"
+        },
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "finish": {
+        "status": "success",
+        "before": [
+          {
+            "value": true
+          }
+        ],
+        "after": [
+          {
+            "value": false
+          }
+        ],
+        "event": {
+          "type": "ended",
+          "selector": "[data-testid=\"runtime-movie-video\"]"
+        },
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "after": {
+        "picture": null,
+        "complete": null,
+        "sentinel": {
+          "at": 14819,
+          "pictureOpacity": null
+        },
+        "movie": {
+          "at": 14854,
+          "duration": 3,
+          "decoded": true,
+          "source": {
+            "dataUrlSha256": "3291fee5e154f30ef147073c073bf049cd0728bff7fe420b24cd0a9af47bc58b",
+            "mediaType": "video/webm",
+            "utf8Bytes": 105499
+          },
+          "connected": false,
+          "paused": true
+        },
+        "events": [
+          {
+            "type": "playing",
+            "at": 14854,
+            "currentTime": 0,
+            "readyState": 4,
+            "trusted": true
+          },
+          {
+            "type": "playing",
+            "at": 15194,
+            "currentTime": 2.95,
+            "readyState": 4,
+            "trusted": true
+          },
+          {
+            "type": "playing",
+            "at": 15299,
+            "currentTime": 2.950053,
+            "readyState": 4,
+            "trusted": true
+          },
+          {
+            "type": "ended",
+            "at": 15351,
+            "currentTime": 3,
+            "readyState": 2,
+            "trusted": true
+          }
+        ],
+        "activeMovieListeners": 0,
+        "totalMovieListeners": 5
+      }
+    },
+    "g5-f2-false-true": {
+      "command": {
+        "kind": "playMovie",
+        "resourceId": "u04-movie",
+        "wait": false,
+        "skippable": true
+      },
+      "before": {
+        "picture": null,
+        "complete": null,
+        "sentinel": {
+          "at": 17235,
+          "pictureOpacity": null
+        },
+        "movie": {
+          "at": 17257,
+          "duration": 3,
+          "decoded": true,
+          "source": {
+            "dataUrlSha256": "3291fee5e154f30ef147073c073bf049cd0728bff7fe420b24cd0a9af47bc58b",
+            "mediaType": "video/webm",
+            "utf8Bytes": 105499
+          },
+          "connected": true,
+          "paused": true
+        },
+        "events": [
+          {
+            "type": "playing",
+            "at": 17256,
+            "currentTime": 0,
+            "readyState": 4,
+            "trusted": true
+          }
+        ],
+        "activeMovieListeners": 5,
+        "totalMovieListeners": 5
+      },
+      "report": "g5-f2-false-true/manifest.json",
+      "playerUrl": "http://127.0.0.1:42237/player.html",
+      "writes": [],
+      "escape": {
+        "status": "success",
+        "before": [
+          {
+            "value": true
+          }
+        ],
+        "after": [
+          {
+            "value": true
+          }
+        ],
+        "event": {
+          "type": "keydown",
+          "selector": "*"
+        },
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "confirmKeyTarget": "BODY",
+      "skip": {
+        "status": "success",
+        "before": [
+          {
+            "value": true
+          }
+        ],
+        "after": [
+          {
+            "value": false
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "after": {
+        "picture": null,
+        "complete": null,
+        "sentinel": {
+          "at": 17235,
+          "pictureOpacity": null
+        },
+        "movie": {
+          "at": 17257,
+          "duration": 3,
+          "decoded": true,
+          "source": {
+            "dataUrlSha256": "3291fee5e154f30ef147073c073bf049cd0728bff7fe420b24cd0a9af47bc58b",
+            "mediaType": "video/webm",
+            "utf8Bytes": 105499
+          },
+          "connected": false,
+          "paused": true
+        },
+        "events": [
+          {
+            "type": "playing",
+            "at": 17256,
+            "currentTime": 0,
+            "readyState": 4,
+            "trusted": true
+          }
+        ],
+        "activeMovieListeners": 0,
+        "totalMovieListeners": 5
+      }
+    },
+    "g5-f2-omitted": {
+      "command": {
+        "kind": "playMovie",
+        "resourceId": "u04-movie",
+        "wait": false,
+        "skippable": false
+      },
+      "before": {
+        "picture": null,
+        "complete": null,
+        "sentinel": {
+          "at": 16877,
+          "pictureOpacity": null
+        },
+        "movie": {
+          "at": 16934,
+          "duration": 3,
+          "decoded": true,
+          "source": {
+            "dataUrlSha256": "3291fee5e154f30ef147073c073bf049cd0728bff7fe420b24cd0a9af47bc58b",
+            "mediaType": "video/webm",
+            "utf8Bytes": 105499
+          },
+          "connected": true,
+          "paused": true
+        },
+        "events": [
+          {
+            "type": "playing",
+            "at": 16934,
+            "currentTime": 0,
+            "readyState": 4,
+            "trusted": true
+          }
+        ],
+        "activeMovieListeners": 5,
+        "totalMovieListeners": 5
+      },
+      "report": "g5-f2-omitted/manifest.json",
+      "playerUrl": "http://127.0.0.1:42237/player.html",
+      "writes": [],
+      "escape": {
+        "status": "success",
+        "before": [
+          {
+            "value": true
+          }
+        ],
+        "after": [
+          {
+            "value": true
+          }
+        ],
+        "event": {
+          "type": "keydown",
+          "selector": "*"
+        },
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "confirmKeyTarget": "BODY",
+      "nonSkippable": {
+        "status": "success",
+        "before": [
+          {
+            "value": true
+          }
+        ],
+        "after": [
+          {
+            "value": true
+          }
+        ],
+        "event": {
+          "type": "keydown",
+          "selector": "*"
+        },
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "finish": {
+        "status": "success",
+        "before": [
+          {
+            "value": true
+          }
+        ],
+        "after": [
+          {
+            "value": false
+          }
+        ],
+        "event": {
+          "type": "ended",
+          "selector": "[data-testid=\"runtime-movie-video\"]"
+        },
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "after": {
+        "picture": null,
+        "complete": null,
+        "sentinel": {
+          "at": 16877,
+          "pictureOpacity": null
+        },
+        "movie": {
+          "at": 16934,
+          "duration": 3,
+          "decoded": true,
+          "source": {
+            "dataUrlSha256": "3291fee5e154f30ef147073c073bf049cd0728bff7fe420b24cd0a9af47bc58b",
+            "mediaType": "video/webm",
+            "utf8Bytes": 105499
+          },
+          "connected": false,
+          "paused": true
+        },
+        "events": [
+          {
+            "type": "playing",
+            "at": 16934,
+            "currentTime": 0,
+            "readyState": 4,
+            "trusted": true
+          },
+          {
+            "type": "playing",
+            "at": 17193,
+            "currentTime": 2.95,
+            "readyState": 4,
+            "trusted": true
+          },
+          {
+            "type": "playing",
+            "at": 17261,
+            "currentTime": 2.95004,
+            "readyState": 4,
+            "trusted": true
+          },
+          {
+            "type": "ended",
+            "at": 17297,
+            "currentTime": 3,
+            "readyState": 2,
+            "trusted": true
+          }
+        ],
+        "activeMovieListeners": 0,
+        "totalMovieListeners": 5
+      }
+    },
+    "g5-f2-true-false-abort": {
+      "command": {
+        "kind": "playMovie",
+        "resourceId": "u04-movie",
+        "wait": true,
+        "skippable": false
+      },
+      "before": {
+        "picture": null,
+        "complete": null,
+        "sentinel": null,
+        "movie": {
+          "at": 15820,
+          "duration": 3,
+          "decoded": true,
+          "source": {
+            "dataUrlSha256": "3291fee5e154f30ef147073c073bf049cd0728bff7fe420b24cd0a9af47bc58b",
+            "mediaType": "video/webm",
+            "utf8Bytes": 105499
+          },
+          "connected": true,
+          "paused": true
+        },
+        "events": [
+          {
+            "type": "playing",
+            "at": 15820,
+            "currentTime": 0,
+            "readyState": 4,
+            "trusted": true
+          }
+        ],
+        "activeMovieListeners": 5,
+        "totalMovieListeners": 5
+      },
+      "report": "g5-f2-true-false-abort/manifest.json",
+      "playerUrl": "http://127.0.0.1:42237/player.html",
+      "writes": [],
+      "abort": {
+        "status": "aborted",
+        "before": [
+          {
+            "value": true
+          }
+        ],
+        "after": [
+          {
+            "value": true
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        },
+        "error": "eventCommand aborted",
+        "channel": "real navigation/pagehide (not a fabricated video abort event)",
+        "documentDisposed": true
+      }
+    },
+    "g5-f2-true-false-error": {
+      "command": {
+        "kind": "playMovie",
+        "resourceId": "u04-movie",
+        "wait": true,
+        "skippable": false
+      },
+      "before": {
+        "picture": null,
+        "complete": null,
+        "sentinel": null,
+        "movie": {
+          "at": 11850,
+          "duration": 3,
+          "decoded": true,
+          "source": {
+            "dataUrlSha256": "3291fee5e154f30ef147073c073bf049cd0728bff7fe420b24cd0a9af47bc58b",
+            "mediaType": "video/webm",
+            "utf8Bytes": 105499
+          },
+          "connected": true,
+          "paused": true
+        },
+        "events": [
+          {
+            "type": "playing",
+            "at": 11850,
+            "currentTime": 0,
+            "readyState": 4,
+            "trusted": true
+          }
+        ],
+        "activeMovieListeners": 5,
+        "totalMovieListeners": 5
+      },
+      "report": "g5-f2-true-false-error/manifest.json",
+      "playerUrl": "http://127.0.0.1:42237/player.html",
+      "writes": [],
+      "escape": {
+        "status": "success",
+        "before": [
+          {
+            "value": true
+          }
+        ],
+        "after": [
+          {
+            "value": true
+          }
+        ],
+        "event": {
+          "type": "keydown",
+          "selector": "*"
+        },
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "closeMenu": {
+        "status": "success",
+        "before": [
+          {
+            "value": true
+          },
+          {
+            "value": true
+          }
+        ],
+        "after": [
+          {
+            "value": false
+          },
+          {
+            "value": true
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "confirmKeyTarget": "BODY",
+      "nonSkippable": {
+        "status": "success",
+        "before": [
+          {
+            "value": true
+          }
+        ],
+        "after": [
+          {
+            "value": true
+          }
+        ],
+        "event": {
+          "type": "keydown",
+          "selector": "*"
+        },
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "finish": {
+        "status": "success",
+        "before": [
+          {
+            "value": true
+          },
+          {
+            "value": false
+          }
+        ],
+        "after": [
+          {
+            "value": false
+          },
+          {
+            "value": true
+          }
+        ],
+        "event": {
+          "type": "error",
+          "selector": "[data-testid=\"runtime-movie-video\"]"
+        },
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "after": {
+        "picture": null,
+        "complete": null,
+        "sentinel": {
+          "at": 12738,
+          "pictureOpacity": null
+        },
+        "movie": {
+          "at": 11850,
+          "duration": 3,
+          "decoded": true,
+          "source": {
+            "dataUrlSha256": "3291fee5e154f30ef147073c073bf049cd0728bff7fe420b24cd0a9af47bc58b",
+            "mediaType": "video/webm",
+            "utf8Bytes": 105499
+          },
+          "connected": false,
+          "paused": true
+        },
+        "events": [
+          {
+            "type": "playing",
+            "at": 11850,
+            "currentTime": 0,
+            "readyState": 4,
+            "trusted": true
+          },
+          {
+            "type": "error",
+            "at": 12643,
+            "currentTime": 0,
+            "readyState": 4,
+            "trusted": false
+          }
+        ],
+        "activeMovieListeners": 0,
+        "totalMovieListeners": 5
+      }
+    },
+    "g5-f2-true-false": {
+      "command": {
+        "kind": "playMovie",
+        "resourceId": "u04-movie",
+        "wait": true,
+        "skippable": false
+      },
+      "before": {
+        "picture": null,
+        "complete": null,
+        "sentinel": null,
+        "movie": {
+          "at": 17040,
+          "duration": 3,
+          "decoded": true,
+          "source": {
+            "dataUrlSha256": "3291fee5e154f30ef147073c073bf049cd0728bff7fe420b24cd0a9af47bc58b",
+            "mediaType": "video/webm",
+            "utf8Bytes": 105499
+          },
+          "connected": true,
+          "paused": true
+        },
+        "events": [
+          {
+            "type": "playing",
+            "at": 17040,
+            "currentTime": 0,
+            "readyState": 4,
+            "trusted": true
+          }
+        ],
+        "activeMovieListeners": 5,
+        "totalMovieListeners": 5
+      },
+      "report": "g5-f2-true-false/manifest.json",
+      "playerUrl": "http://127.0.0.1:42237/player.html",
+      "writes": [],
+      "escape": {
+        "status": "success",
+        "before": [
+          {
+            "value": true
+          }
+        ],
+        "after": [
+          {
+            "value": true
+          }
+        ],
+        "event": {
+          "type": "keydown",
+          "selector": "*"
+        },
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "closeMenu": {
+        "status": "success",
+        "before": [
+          {
+            "value": true
+          },
+          {
+            "value": true
+          }
+        ],
+        "after": [
+          {
+            "value": false
+          },
+          {
+            "value": true
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "confirmKeyTarget": "BODY",
+      "nonSkippable": {
+        "status": "success",
+        "before": [
+          {
+            "value": true
+          }
+        ],
+        "after": [
+          {
+            "value": true
+          }
+        ],
+        "event": {
+          "type": "keydown",
+          "selector": "*"
+        },
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "finish": {
+        "status": "success",
+        "before": [
+          {
+            "value": true
+          },
+          {
+            "value": false
+          }
+        ],
+        "after": [
+          {
+            "value": false
+          },
+          {
+            "value": true
+          }
+        ],
+        "event": {
+          "type": "ended",
+          "selector": "[data-testid=\"runtime-movie-video\"]"
+        },
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "after": {
+        "picture": null,
+        "complete": null,
+        "sentinel": {
+          "at": 18559,
+          "pictureOpacity": null
+        },
+        "movie": {
+          "at": 17040,
+          "duration": 3,
+          "decoded": true,
+          "source": {
+            "dataUrlSha256": "3291fee5e154f30ef147073c073bf049cd0728bff7fe420b24cd0a9af47bc58b",
+            "mediaType": "video/webm",
+            "utf8Bytes": 105499
+          },
+          "connected": false,
+          "paused": true
+        },
+        "events": [
+          {
+            "type": "playing",
+            "at": 17040,
+            "currentTime": 0,
+            "readyState": 4,
+            "trusted": true
+          },
+          {
+            "type": "playing",
+            "at": 18378,
+            "currentTime": 2.95,
+            "readyState": 4,
+            "trusted": true
+          },
+          {
+            "type": "playing",
+            "at": 18449,
+            "currentTime": 2.950031,
+            "readyState": 4,
+            "trusted": true
+          },
+          {
+            "type": "ended",
+            "at": 18504,
+            "currentTime": 3,
+            "readyState": 2,
+            "trusted": true
+          }
+        ],
+        "activeMovieListeners": 0,
+        "totalMovieListeners": 5
+      }
+    },
+    "g5-f2-true-true": {
+      "command": {
+        "kind": "playMovie",
+        "resourceId": "u04-movie",
+        "wait": true,
+        "skippable": true
+      },
+      "before": {
+        "picture": null,
+        "complete": null,
+        "sentinel": null,
+        "movie": {
+          "at": 23908,
+          "duration": 3,
+          "decoded": true,
+          "source": {
+            "dataUrlSha256": "3291fee5e154f30ef147073c073bf049cd0728bff7fe420b24cd0a9af47bc58b",
+            "mediaType": "video/webm",
+            "utf8Bytes": 105499
+          },
+          "connected": true,
+          "paused": true
+        },
+        "events": [
+          {
+            "type": "playing",
+            "at": 23908,
+            "currentTime": 0,
+            "readyState": 4,
+            "trusted": true
+          }
+        ],
+        "activeMovieListeners": 5,
+        "totalMovieListeners": 5
+      },
+      "report": "g5-f2-true-true/manifest.json",
+      "playerUrl": "http://127.0.0.1:42237/player.html",
+      "writes": [],
+      "escape": {
+        "status": "success",
+        "before": [
+          {
+            "value": true
+          }
+        ],
+        "after": [
+          {
+            "value": true
+          }
+        ],
+        "event": {
+          "type": "keydown",
+          "selector": "*"
+        },
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "closeMenu": {
+        "status": "success",
+        "before": [
+          {
+            "value": true
+          },
+          {
+            "value": true
+          }
+        ],
+        "after": [
+          {
+            "value": false
+          },
+          {
+            "value": true
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "confirmKeyTarget": "BODY",
+      "skip": {
+        "status": "success",
+        "before": [
+          {
+            "value": true
+          },
+          {
+            "value": false
+          }
+        ],
+        "after": [
+          {
+            "value": false
+          },
+          {
+            "value": true
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "after": {
+        "picture": null,
+        "complete": null,
+        "sentinel": {
+          "at": 25197,
+          "pictureOpacity": null
+        },
+        "movie": {
+          "at": 23908,
+          "duration": 3,
+          "decoded": true,
+          "source": {
+            "dataUrlSha256": "3291fee5e154f30ef147073c073bf049cd0728bff7fe420b24cd0a9af47bc58b",
+            "mediaType": "video/webm",
+            "utf8Bytes": 105499
+          },
+          "connected": false,
+          "paused": true
+        },
+        "events": [
+          {
+            "type": "playing",
+            "at": 23908,
+            "currentTime": 0,
+            "readyState": 4,
+            "trusted": true
+          }
+        ],
+        "activeMovieListeners": 0,
+        "totalMovieListeners": 5
+      }
+    }
+  }
+}

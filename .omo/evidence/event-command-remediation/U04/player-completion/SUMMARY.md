@@ -1,0 +1,15 @@
+- g3-f10-500-true/manifest.json: PASS
+- g3-f10-500-false/manifest.json: PASS
+- g3-f10-500-omitted/manifest.json: PASS
+- g3-f10-0-true/manifest.json: PASS
+- g3-f10-0-false/manifest.json: PASS
+- g3-f10-0-omitted/manifest.json: PASS
+- g5-f2-true-true/manifest.json: PASS
+- g5-f2-true-false/manifest.json: PASS
+- g5-f2-false-true/manifest.json: PASS
+- g5-f2-false-false/manifest.json: PASS
+- g5-f2-omitted/manifest.json: PASS
+- g5-f2-defaults/manifest.json: PASS
+- g5-f2-true-false-error/manifest.json: PASS
+- g5-f2-true-false-abort/manifest.json: PASS
+- cinematic-url/manifest.json: PASS

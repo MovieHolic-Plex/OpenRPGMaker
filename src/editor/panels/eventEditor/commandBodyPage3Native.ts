@@ -1002,13 +1002,13 @@ export function playMovieBody(
   });
   const wait = segmentedSelect({
     options: BOOL_SEGMENTS,
-    value: cmd.wait === true ? "true" : "false",
+    value: cmd.wait !== false ? "true" : "false",
     testid: "play-movie-wait-select",
     ariaLabel: "완료 대기",
   });
   const skippable = segmentedSelect({
     options: BOOL_SEGMENTS,
-    value: cmd.skippable === true ? "true" : "false",
+    value: cmd.skippable !== false ? "true" : "false",
     testid: "play-movie-skippable-select",
     ariaLabel: "스킵 허용",
   });
@@ -1070,8 +1070,8 @@ export function playMovieBody(
     context.actions.replaceCommand(context.path, {
       kind: "playMovie",
       resourceId: resource.select.value,
-      ...(wait.select.value === "true" ? { wait: true } : {}),
-      ...(skippable.select.value === "true" ? { skippable: true } : {}),
+      wait: wait.select.value === "true",
+      skippable: skippable.select.value === "true",
     });
     renderPreview();
   };
@@ -1123,6 +1123,13 @@ export function showPictureBody(
   const opacity = numberInput(opacityToPercent(cmd.opacity ?? 255), "불투명도(%)", "show-picture-opacity-input");
   const rotation = numberInput(cmd.rotation ?? 0, "회전(도)", "show-picture-rotation-input");
   const durationMs = numberInput(cmd.durationMs ?? 0, "전환 시간 — 0이면 즉시", "show-picture-duration-input");
+  let waitForPicture = cmd.waitForPicture;
+  const wait = segmentedSelect({
+    options: BOOL_SEGMENTS,
+    value: waitForPicture === true ? "true" : "false",
+    testid: "show-picture-wait-select",
+    ariaLabel: "완료 대기",
+  });
   const preview = el("div", {
     class: "actor-m2-preview page3-command-preview",
     dataset: { testid: "show-picture-preview" },
@@ -1154,6 +1161,7 @@ export function showPictureBody(
       // 회전은 한 바퀴를 넘겨도 뜻이 통하므로 접지 않고 그대로 싣는다.
       rotation: parseInt(rotation.value, 10) || 0,
       durationMs: intInRange(durationMs, 0, 0, 60_000),
+      ...(waitForPicture !== undefined ? { waitForPicture } : {}),
     });
     renderPreview();
   };
@@ -1216,6 +1224,11 @@ export function showPictureBody(
       })
     );
   };
+
+  wait.select.addEventListener("change", () => {
+    waitForPicture = wait.select.value === "true";
+    commit();
+  });
 
   for (const control of [pictureId, resourceId, x, y, scale, opacity, rotation, durationMs]) {
     control.addEventListener("change", commit);
@@ -1304,6 +1317,7 @@ export function showPictureBody(
               el("div", { class: "actor-m2-inline page3-coord-row", children: [x, y] })
             ),
             fieldBlock("위치 프리셋", presets),
+            fieldBlock("완료 대기", wait.root),
             fieldBlock(
               "크기 · 불투명도",
               el("div", { class: "actor-m2-inline page3-coord-row", children: [scale, opacity] })

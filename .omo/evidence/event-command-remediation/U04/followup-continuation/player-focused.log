@@ -1,0 +1,5 @@
+g3-f10-continuation-replacement: authored parallel operation -> live foreground sentinel PASS
+g3-f10-continuation-erase: authored parallel operation -> live foreground sentinel PASS
+Focused U04 cleanup: browsers/server closed; temporary fixtures/cache removed
+
+Exit code: 0

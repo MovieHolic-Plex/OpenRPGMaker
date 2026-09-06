@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "unit": "U04",
+  "findingID": "G5-F2",
+  "status": "green",
+  "sourceHeadBeforeCommit": "b52cefd54cc39205b5b138b3e6ac2d3a0166e5b9",
+  "RED": {
+    "base": "c66f5a8a",
+    "artifact": "../red.json",
+    "failed": 8,
+    "passed": 8,
+    "correctedMediaFreshRED": "../red-refreshed.json"
+  },
+  "GREEN": {
+    "aggregate": "../green-release.json",
+    "aggregatePassed": 111,
+    "unitFilePassed": 16,
+    "rendererInterpreterPassed": 0,
+    "rendererFinal": "../renderer-final.json"
+  },
+  "editor": {
+    "status": "passed",
+    "log": "../editor-completion/run.log",
+    "observations": "../editor-completion/editor-cases.json",
+    "cases": 5,
+    "confirmApplyReopenCancelRealImport": true,
+    "wrongTargetAndUnrelatedFieldsPreserved": true,
+    "pngDecodedWidth": 32,
+    "viewports": [
+      [
+        1024,
+        768
+      ],
+      [
+        1280,
+        800
+      ],
+      [
+        1440,
+        900
+      ]
+    ]
+  },
+  "player": {
+    "status": "passed",
+    "log": "../player-completion.log",
+    "summary": "../player-completion/SUMMARY.md",
+    "observations": "../player-completion/observations.json",
+    "cases": [
+      "cinematic-url",
+      "g5-f2-defaults",
+      "g5-f2-false-false",
+      "g5-f2-false-true",
+      "g5-f2-omitted",
+      "g5-f2-true-false-abort",
+      "g5-f2-true-false-error",
+      "g5-f2-true-false",
+      "g5-f2-true-true"
+    ],
+    "caseCount": 9
+  },
+  "cleanup": {
+    "status": "complete",
+    "artifact": "../cleanup.json"
+  },
+  "commitReceipt": "../commit-receipt.json (post-commit receipt)"
+}

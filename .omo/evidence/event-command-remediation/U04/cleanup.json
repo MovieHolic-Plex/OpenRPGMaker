@@ -1,0 +1,87 @@
+{
+  "status": "complete",
+  "sourceHeadBeforeCommit": "b52cefd54cc39205b5b138b3e6ac2d3a0166e5b9",
+  "ownedPortsClosed": [
+    33539,
+    34115,
+    35563,
+    36361,
+    40879,
+    40955,
+    41035,
+    42145,
+    42237,
+    43423,
+    59951
+  ],
+  "runtimeRuns": [
+    {
+      "artifact": "player/cleanup.json",
+      "serverPort": 41035,
+      "serverClosed": true,
+      "browserClosed": true,
+      "temporaryRemoved": "/tmp/u04-player-ro7fCo",
+      "cacheRemoved": "/tmp/u04-player-cache-EqQGql",
+      "completedCases": 0
+    },
+    {
+      "artifact": "player-attempt1/cleanup.json",
+      "serverPort": 33539,
+      "serverClosed": true,
+      "browserClosed": true,
+      "temporaryRemoved": "/tmp/u04-player-UvF8IC",
+      "cacheRemoved": "/tmp/u04-player-cache-RD4uFf",
+      "completedCases": 5
+    },
+    {
+      "artifact": "player-attempt2/cleanup.json",
+      "serverPort": 42145,
+      "serverClosed": true,
+      "browserClosed": true,
+      "temporaryRemoved": "/tmp/u04-player-ULFwTn",
+      "cacheRemoved": "/tmp/u04-player-cache-RGkDVb",
+      "completedCases": 1
+    },
+    {
+      "artifact": "player-attempt3/cleanup.json",
+      "serverPort": 36361,
+      "serverClosed": true,
+      "browserClosed": true,
+      "temporaryRemoved": "/tmp/u04-player-2wAHiL",
+      "cacheRemoved": "/tmp/u04-player-cache-kYpeog",
+      "completedCases": 0
+    },
+    {
+      "artifact": "player-completion/cleanup.json",
+      "serverPort": 42237,
+      "serverClosed": true,
+      "browserClosed": true,
+      "temporaryRemoved": "/tmp/u04-player-VwygxW",
+      "cacheRemoved": "/tmp/u04-player-cache-ENIhgs",
+      "completedCases": 15
+    },
+    {
+      "artifact": "player-movie/cleanup.json",
+      "serverPort": 34115,
+      "serverClosed": true,
+      "browserClosed": true,
+      "temporaryRemoved": "/tmp/u04-player-MwdZI8",
+      "cacheRemoved": "/tmp/u04-player-cache-vJvvPF",
+      "completedCases": 9
+    },
+    {
+      "artifact": "player-remaining/cleanup.json",
+      "serverPort": 40879,
+      "serverClosed": true,
+      "browserClosed": true,
+      "temporaryRemoved": "/tmp/u04-player-L7hO3F",
+      "cacheRemoved": "/tmp/u04-player-cache-fbPgcV",
+      "completedCases": 6
+    }
+  ],
+  "editorCachesRemoved": true,
+  "fixtureLoaderTempRemoved": true,
+  "browsersAndContextsClosed": true,
+  "retained": "Ignored screenshots, serialized editor evidence and raw reports; no live /tmp fixture directories or owned QA caches.",
+  "commitReceipt": "commit-receipt.json (written after commit)"
+}

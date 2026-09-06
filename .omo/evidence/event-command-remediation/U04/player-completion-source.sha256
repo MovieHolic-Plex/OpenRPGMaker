@@ -1,0 +1,4 @@
+df5e7813a3c7e022d660951a980f656e7d51f4c28b5aa61f8deb7d051c49fe78  src/editor/panels/eventEditor/commandBodyPage3Native.ts
+23679f0c5046eac2ceadca54deeca3abefe0d51ab965834c5a8946fa4d19eab6  src/player/runtimeDom.ts
+d6bbf26ca79ffadc47161e16a920b4df17b977e2544e46229b43b152a7e47748  src/player/playSceneInterpreter.ts
+10f591b7b78d1239b893386085920b7d87aa4e8337f877115f67ca87e93147e3  scripts/qa/runtime/event-command-remediation-u04.scenario.mjs

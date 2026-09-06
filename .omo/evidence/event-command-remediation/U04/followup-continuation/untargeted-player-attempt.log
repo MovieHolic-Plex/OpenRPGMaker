@@ -1,0 +1,21 @@
+g3-f10-500-true: fresh browser boot
+U04 player cleanup: contexts/server closed; temporary fixtures and cache removed
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: [["op eventCommand 실패: eventCommand observation timed out","런타임 훅 없음 — 상태를 읽을 수 없다(mapId 확인 불가)","런타임 훅 없음 — 상태를 읽을 수 없다(x 확인 불가)","런타임 훅 없음 — 상태를 읽을 수 없다(y 확인 불가)"],[]]
+    at proveCase (file:///home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u04/scripts/qa/runtime/event-command-remediation-u04.scenario.mjs:167:12)
+    at async proveU04 (file:///home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u04/scripts/qa/runtime/event-command-remediation-u04.scenario.mjs:394:46)
+    at async file:///home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u04/scripts/qa/runtime/event-command-remediation-u04.scenario.mjs:417:3 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.11.1
+
+Exit code: 1

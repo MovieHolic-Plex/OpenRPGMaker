@@ -1,0 +1,54 @@
+{
+  "unit": "U04",
+  "integrationBase": "e8d245223",
+  "sourceCommits": [
+    "15bcc2267",
+    "158369572"
+  ],
+  "sourceBlobHashes": {
+    "src/editor/panels/eventEditor/commandBodyPage3Native.ts": "3cc2d54ad651da13b91e41e5b824cb36e4e260af",
+    "src/player/runtimeDom.ts": "ee50ef0626e728ab3a5c537e802d7ef660671a3b",
+    "src/player/playSceneInterpreter.ts": "ada7e09de25d37f7772fcb3037d3c845ed40b9f4"
+  },
+  "focusedTests": {
+    "passed": 216,
+    "failed": 0,
+    "exitCode": 0,
+    "report": "../../checkpoints/u04-integration-green.json"
+  },
+  "editor": {
+    "cases": 11,
+    "exitCode": 0,
+    "report": "editor-report.json",
+    "observations": "editor-cases.json",
+    "realImportReopened": true,
+    "remoteWrites": 0
+  },
+  "player": {
+    "cases": 15,
+    "summary": "player/SUMMARY.md"
+  },
+  "continuation": {
+    "cases": 2,
+    "summary": "player-continuation/SUMMARY.md",
+    "exitCode": 0
+  },
+  "staticChecks": {
+    "productionLspDiagnostics": 0,
+    "typecheckAppExitCode": 0,
+    "buildAppExitCode": 0,
+    "buildSeconds": 54.8,
+    "diffCheckExitCode": 0
+  },
+  "visual": {
+    "captureCount": 8,
+    "geometry": "No horizontal overflow; Confirm visible and at least32px high at1024x768/1280x800/1440x900.",
+    "pixelAssessment": "Not assessed: Read omitted images for both lead and U04 Astra worker. No visual PASS claimed."
+  },
+  "cleanup": {
+    "editorServer": "bash_45 stopped",
+    "editorCache": "/tmp/u04-supervisor-editor removed",
+    "player": "player/cleanup.json",
+    "continuation": "player-continuation/cleanup.json"
+  }
+}

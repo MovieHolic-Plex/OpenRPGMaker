@@ -1,0 +1,26 @@
+[WebServer] [rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[WebServer] [rpg-zzu] QWENCLOUD_API_KEY 가 없어 /api/qwen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[WebServer] [rpg-zzu] CPENROUTER_API_KEY 가 없어 /api/cpen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+
+Running 1 test using 1 worker
+
+U04 editor ready; all edge cases authored in one temporary event
+g3-f10-500-true: Confirm/Apply/reopen/Cancel PASS
+g3-f10-500-false: Confirm/Apply/reopen/Cancel PASS
+g3-f10-500-omitted: Confirm/Apply/reopen/Cancel PASS
+g3-f10-0-true: Confirm/Apply/reopen/Cancel PASS
+g3-f10-0-false: Confirm/Apply/reopen/Cancel PASS
+g3-f10-0-omitted: Confirm/Apply/reopen/Cancel PASS
+g5-f2-true-true: Confirm/Apply/reopen/Cancel PASS
+g5-f2-true-false: Confirm/Apply/reopen/Cancel PASS
+g5-f2-false-true: Confirm/Apply/reopen/Cancel PASS
+g5-f2-false-false: Confirm/Apply/reopen/Cancel PASS
+g5-f2-omitted: Confirm/Apply/reopen/Cancel PASS
+U04 editor PASS: six picture cases, four movie combinations, omitted-to-off; all reopened after real file import; no remote writes
+  ✓  1 [chromium] › test/e2e/event-command-remediation-U04.spec.ts:79:1 › G3-F10 / G5-F2 real map editor Confirm/reopen/Cancel/export-import and adversarial preservation (8.9m)
+
+  Slow test file: [chromium] › test/e2e/event-command-remediation-U04.spec.ts (8.9m)
+  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+  1 passed (9.2m)
+
+Exit code: 0

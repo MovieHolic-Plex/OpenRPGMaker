@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "unit": "U04",
+  "task_id": "st_01a0763b",
+  "status": "green",
+  "resolvedIDs": [
+    "G3-F10",
+    "G5-F2"
+  ],
+  "blockedIDs": [],
+  "sourceHeadBeforeCommit": "b52cefd54cc39205b5b138b3e6ac2d3a0166e5b9",
+  "baseTree": "41aa444ebfd968c557a5f73750c4d38041cd2dc1",
+  "redBase": "c66f5a8a",
+  "workingFilesSha256": {
+    "src/editor/panels/eventEditor/commandBodyPage3Native.ts": "df5e7813a3c7e022d660951a980f656e7d51f4c28b5aa61f8deb7d051c49fe78",
+    "src/player/runtimeDom.ts": "23679f0c5046eac2ceadca54deeca3abefe0d51ab965834c5a8946fa4d19eab6",
+    "src/player/playSceneInterpreter.ts": "d6bbf26ca79ffadc47161e16a920b4df17b977e2544e46229b43b152a7e47748",
+    "test/eventCommandRemediation/U04.test.ts": "b2a6d016da6f1055e99bdbe6fb18747c5803d9b9707ed721930e60bc03a13855",
+    "test/eventCommandRemediation/U04.fixture.ts": "371fe0195186acff9287f29bf699353b2e79d855d2ab48ae5b9b58aef4449830",
+    "test/e2e/event-command-remediation-U04.spec.ts": "8a21f36ecc1ada534af844bc04421237ef4634ab66bf31086bbfe7bc1e9c6bbb",
+    "scripts/qa/runtime/event-command-remediation-u04.scenario.mjs": "10f591b7b78d1239b893386085920b7d87aa4e8337f877115f67ca87e93147e3",
+    "test/pictureWeatherDom.test.ts": "c2e2bd894b1eadaae5c092e72d8513a82128849dd4a3fc99cbc1527468693af5",
+    "test/playMovieEditorBody.test.ts": "4d1e116bdffdb59de49137e2a193add1a6f897325a0bd758a457c9c2d8aaaf71",
+    "test/showPictureForm.test.ts": "1d9e2e42b548aadb053991ca36191369f5b85d357f1977e1c963694d4acdd73b"
+  },
+  "findings": {
+    "G3-F10": {
+      "status": "green",
+      "manifest": "G3-F10/manifest.json"
+    },
+    "G5-F2": {
+      "status": "green",
+      "manifest": "G5-F2/manifest.json"
+    }
+  },
+  "commit_subject": "fix(events): preserve media flags and await rendered picture completion",
+  "commit_receipt": "commit-receipt.json (written after atomic commit, not part of its own hash)",
+  "verification": [
+    {
+      "command": "npm test -- test/eventCommandRemediation/U04.test.ts test/showPictureForm.test.ts test/playMovieEditorBody.test.ts test/playMovieRuntime.test.ts test/pictureWeatherDom.test.ts test/pictureTween.test.ts test/playSceneInterpreterCutsceneSkip.test.ts --maxWorkers=2 --reporter=verbose --reporter=json --outputFile=.omo/evidence/event-command-remediation/U04/green-release.json",
+      "exit": 0,
+      "passed": 111,
+      "artifact": "green-release.log"
+    },
+    {
+      "command": "npm test -- test/pictureWeatherDom.test.ts --maxWorkers=2 --reporter=verbose --reporter=json --outputFile=.omo/evidence/event-command-remediation/U04/renderer-final.json",
+      "exit": 0,
+      "passed": 34,
+      "artifact": "renderer-final.log",
+      "reason": "Additional partial-frame async checkpoint strengthens the same deterministic test after aggregate GREEN."
+    },
+    {
+      "command": "U04_EVIDENCE_DIR=.omo/evidence/event-command-remediation/U04/editor-completion node node_modules/@playwright/test/cli.js test test/e2e/event-command-remediation-U04.spec.ts --workers=1 --retries=0",
+      "exit": 0,
+      "cases": 11,
+      "artifact": "editor-completion/run.log",
+      "browser": "Firefox; repository project label remains chromium",
+      "serverEnvironment": "Unique free port and VITE_CACHE_DIR; E2E_FREEZE_DEV_SERVER=1; VITE_SUPABASE_URL/ANON_KEY blank; VITE_SUPABASE_USE_PROXY=0"
+    },
+    {
+      "command": "node scripts/qa/runtime/event-command-remediation-u04.scenario.mjs .omo/evidence/event-command-remediation/U04/editor-completion/editor-project.json .omo/evidence/event-command-remediation/U04/editor-completion/editor-cases.json .omo/evidence/event-command-remediation/U04/player-completion",
+      "exit": 0,
+      "cases": 15,
+      "artifact": "player-completion.log",
+      "browser": "Fresh Firefox browser/context per case; dedicated player.html only"
+    },
+    {
+      "command": "TypeScript compiler API syntactic+semantic diagnostics for all nine changed TS files, no emit",
+      "exit": 0,
+      "artifact": "types-completion.log"
+    },
+    {
+      "command": "LSP diagnostics on changed files; final pictureWeatherDom refresh after partial-frame checkpoint; node --check scripts/qa/runtime/event-command-remediation-u04.scenario.mjs; git diff --check",
+      "result": "No diagnostics or syntax/whitespace errors"
+    },
+    {
+      "command": "node node_modules/vite-node/vite-node.mjs --script scripts/prepare-event-command-remediation.mts U04 <unique temporary directory>",
+      "exit": 0,
+      "artifact": "fixture-release.log",
+      "cleanup": "temporary directory and unique loader cache removed"
+    }
+  ],
+  "extraIssues": [
+    {
+      "kind": "authorized-adjacent-test-harness-repair",
+      "file": "test/showPictureForm.test.ts",
+      "leadRegistered": true,
+      "status": "resolved",
+      "RED": "green.json / green.log preserve the original FAILING aggregate: 61 passed, 1 failed; not final GREEN.",
+      "fix": "Mount live fake-DOM form; subscribe before generation; detached mounted-then-removed form receives no replacement; all resource/asset assertions retained. No polling or isConnected override."
+    },
+    {
+      "kind": "renderer/interpreter ordering and lifecycle",
+      "findingID": "G3-F10",
+      "leadExtraTask": true,
+      "status": "resolved",
+      "RED": "runtime-renderer-red.json plus original runtime-blocker.json",
+      "scope": [
+        "src/player/runtimeDom.ts",
+        "src/player/playSceneInterpreter.ts",
+        "test/pictureWeatherDom.test.ts"
+      ],
+      "ownership": "api-ownership.md"
+    },
+    {
+      "kind": "U04 fixture PNG corruption",
+      "status": "resolved",
+      "RED": "player-attempt3-png.log",
+      "fix": "CRC-valid 32x24 PNG with actual browser decoding assertions; fresh field RED on byte-identical c66f5a8a owner before restoring GREEN."
+    }
+  ],
+  "qaCorrections": [
+    "Initial renderer/interpreter fixture omitted required dialogueUi methods; runtime-seam-setup-failure.* is setup failure, not RED. Corrected fixture then reproduced 8 genuine RED failures before runtime edits.",
+    "Initial editor total timeout corrected by authoring all edge cases once and doing one final real import; no edge assertion removed.",
+    "Chromium localhost ERR_NETWORK_CHANGED captured; fresh Firefox used without network retries or suppressions.",
+    "Exact compiler caught optional-flag table inference missed by LSP; fixed type annotation only.",
+    "Escape opens the general menu without skipping media. Close it before Z; observe document keydown regardless of focus and assert overlay again after dispatch.",
+    "Abort proof uses real navigation/pagehide; error is explicit native-media boundary fault injection after decoding.",
+    "Picture browser proof now asserts actual final-DOM-before-sentinel ordering and exact opacity, not epsilon-adjusted elapsed time."
+  ],
+  "preserved": [
+    "all original RED logs/base and original 15360ms/0.499 versus 15369ms/0.502 browser evidence",
+    "weighted guard",
+    "raw opacity and interpolation math; pictures/pictureTween.ts unchanged",
+    "duration zero and false/omitted picture waits",
+    "movie wait/skippable four combinations; cinematic media URL",
+    "project/save schema and unrelated effects",
+    "shared wiki/Design/snapshots untouched; amendment supplied separately",
+    "no full suite/build/gates, push/merge/rebase"
+  ],
+  "apiOwnership": "api-ownership.md",
+  "cleanup": "cleanup.json",
+  "wikiAmendment": "wiki-amendment.md",
+  "visualLimit": "Screenshots and viewport geometry captured; image tool reports model does not support images, so no human-equivalent pixel review is claimed.",
+  "historicalReceipts": "Original red*, failing green.json/log, former passing unit/editor reports and failed QA attempts remain intact. runtime-blocker.json is historical RED, superseded by this GREEN manifest.",
+  "rawLogArchives": [
+    {
+      "raw": "red.log",
+      "archive": "red.log.gz",
+      "rawSha256": "8be9543b6414ea8b2171615c9cc7a49bf4d07aec59b4a9251bde0a3caa7ea817",
+      "archiveSha256": "f6c5f79bb935ad211466072cf78b5564e3f8eec9d66b599abe3f28bd8d7e7583",
+      "reason": "Captured Vitest output contains formatter trailing spaces. Original raw files remain unchanged locally; the committed archive preserves every byte without source/diff whitespace exceptions."
+    },
+    {
+      "raw": "red-refreshed.log",
+      "archive": "red-refreshed.log.gz",
+      "rawSha256": "26a340f1a793f25d345e7d9d169c4a30800920ca37375a3f75f8a2592f3e6f4c",
+      "archiveSha256": "4ec84b34a92bc3b55d91cf08a95ff40ebba9dfdccaa63c90289d5bb11c351274",
+      "reason": "Captured Vitest output contains formatter trailing spaces. Original raw files remain unchanged locally; the committed archive preserves every byte without source/diff whitespace exceptions."
+    },
+    {
+      "raw": "runtime-renderer-red.log",
+      "archive": "runtime-renderer-red.log.gz",
+      "rawSha256": "d6fbeac74b342db0f9b9bf1cc56374e98018ee93b6228354103d1cc7fc5242e4",
+      "archiveSha256": "01ced735456cd943a240d7b4346b5d8e57ebb748754b7b0a103ab1297b4028d7",
+      "reason": "Captured Vitest output contains formatter trailing spaces. Original raw files remain unchanged locally; the committed archive preserves every byte without source/diff whitespace exceptions."
+    }
+  ],
+  "followupContinuation": {
+    "status": "green",
+    "rootTask": "U04 \uadf8\ub9bc \ucde8\uc18c\uc640 \uc774\ubca4\ud2b8 \uc218\uba85 \uc885\ub8cc \uad6c\ubd84",
+    "manifest": "followup-continuation/manifest.json",
+    "supersedes": "The interpretation in 15bcc2267 that same-session picture cancellation terminates its author event, and that a same-generation target change cancels its waiter. Historical verification numbers/receipts are unchanged."
+  }
+}

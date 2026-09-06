@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "unit": "U04",
+  "findingID": "G3-F10",
+  "rootTask": "U04 \uadf8\ub9bc \ucde8\uc18c\uc640 \uc774\ubca4\ud2b8 \uc218\uba85 \uc885\ub8cc \uad6c\ubd84",
+  "status": "green",
+  "baseCommit": "15bcc226703d9503d5f1cd8b3a9c2532af6f9c91",
+  "originalBehaviorBase": "c66f5a8a",
+  "sourceSha256": {
+    "src/player/runtimeDom.ts": "522f267069c8b45953188ff28a4c9a881cc63fdc4f7d0c1e509e3f2369c11a2a",
+    "src/player/playSceneInterpreter.ts": "a12537645792bd4a4836ea1393f98a8ca88678e1b6efed298495370545f6c545",
+    "test/pictureWeatherDom.test.ts": "064d35dbba75705826384422a7db57d8bb8547f0402c7aca47ae7e5d8108b5ce",
+    "scripts/qa/runtime/event-command-remediation-u04.scenario.mjs": "be26a27ed0215309106905bd67fe7cd9698e5af9dcb9fe3a7a37bbd97b81fcc9"
+  },
+  "commitRule": "NEW focused commit; 15bcc2267 is not amended",
+  "commitReceipt": "commit-receipt.json (written after commit)",
+  "semantics": {
+    "sameObjectSameResourceTargetChange": "Keep the existing waiter. Transition intent retargets from current displayed values; complete only after the retargeted final DOM write. Without intent, preserve the existing immediate-update rule and complete after that write.",
+    "authoredObjectOrResourceReplacementOrErase": "Settle old picture observers as cancelled; the same live author event continues once.",
+    "sceneLifetimeEnded": "isActive still stops stale execution after session replacement/shutdown/destroy, regardless of picture result.",
+    "skip": "Existing cutscene end-label behavior unchanged.",
+    "API": "Signature and result union unchanged. PictureCompletion.cancelled describes the picture operation, not event lifetime."
+  },
+  "proofs": [
+    {
+      "kind": "original-base characterization",
+      "command": "npm test -- test/pictureWeatherDom.test.ts -t \"G3-F10 original continuation contract\" --maxWorkers=2 --reporter=verbose --reporter=json --outputFile=.omo/evidence/event-command-remediation/U04/followup-continuation/original-base.json",
+      "exit": 0,
+      "selectedPassed": 3,
+      "scope": "The same baseline-compatible tests with both runtime source files byte-identical to c66f5a8a; 15bcc2267 runtime restored byte-for-byte afterward. Other tests were CLI-filtered, not changed or skipped in source.",
+      "artifacts": [
+        "original-base.json",
+        "original-base.log"
+      ]
+    },
+    {
+      "kind": "15bcc2267 RED",
+      "command": "npm test -- test/pictureWeatherDom.test.ts -t \"G3-F10 original continuation contract\" --maxWorkers=2 --reporter=verbose --reporter=json --outputFile=.omo/evidence/event-command-remediation/U04/followup-continuation/red.json",
+      "exit": 1,
+      "selectedFailed": 3,
+      "actual": "Following sentinel false instead of true for replacement, erase and a newly authored object with a resolved coordinate.",
+      "artifacts": [
+        "red.json",
+        "red.log.gz"
+      ]
+    },
+    {
+      "kind": "same-generation retarget RED",
+      "command": "npm test -- test/pictureWeatherDom.test.ts -t \"G3-F10 same-generation retarget\" --maxWorkers=2 --reporter=verbose --reporter=json --outputFile=.omo/evidence/event-command-remediation/U04/followup-continuation/retarget-red.json",
+      "exit": 1,
+      "selectedFailed": 2,
+      "source": "15bcc2267 renderer unchanged; caller-only continuation fix present",
+      "actual": "Current waiter cancelled and sentinel ran before retargeted final frame; no-intent same-generation update incorrectly reported cancelled.",
+      "artifacts": [
+        "retarget-red.json",
+        "retarget-red.log.gz"
+      ]
+    },
+    {
+      "kind": "focused GREEN",
+      "command": "npm test -- test/pictureWeatherDom.test.ts --maxWorkers=2 --reporter=verbose --reporter=json --outputFile=.omo/evidence/event-command-remediation/U04/followup-continuation/focused-green.json",
+      "exit": 0,
+      "passed": 40,
+      "artifacts": [
+        "focused-green.json",
+        "focused-green.log"
+      ]
+    },
+    {
+      "kind": "dedicated-player GREEN",
+      "command": "node .omo/evidence/event-command-remediation/U04/followup-continuation/player-proof.mjs .omo/evidence/event-command-remediation/U04/editor-completion/editor-project.json",
+      "exit": 0,
+      "passed": 2,
+      "cases": [
+        "authored parallel replacement -> same foreground sentinel",
+        "authored parallel erase -> same foreground sentinel"
+      ],
+      "artifacts": [
+        "player-focused.log",
+        "player-focused/SUMMARY.md"
+      ],
+      "channels": "Fresh Firefox contexts, player.html, real Enter boot and existing action bridge; authored displayTextSettings enables parallel updates; no delay/retry-based cancellation trigger. Captured original picture snapshot precedes cancellation and sentinel."
+    },
+    {
+      "kind": "diagnostics",
+      "result": "Changed-file LSP diagnostics clean; exact TypeScript compiler syntactic+semantic diagnostics zero for both production files and pictureWeatherDom.test.ts; node --check for scenario/proof scripts",
+      "artifact": "types.log"
+    }
+  ],
+  "correctedExpectations": {
+    "tests": "The two cancellation tests introduced in 15bcc2267 now require continuation instead of false sentinel. Their renderer cancellation, multiple-observer, replacement completion, unrelated-picture and cleanup assertions remain; exactly-once continuation was added.",
+    "basis": "Three passing original-base characterizations, then three genuine RED failures on 15bcc2267; expectations were not changed to hide a failing fix.",
+    "distinction": "The third original characterization creates a NEW resolved-coordinate picture object. Separate same-generation getter-backed coordinate tests establish retained-waiter behavior."
+  },
+  "preservedProvenance": {
+    "original111Aggregate": "../green-release.json unchanged",
+    "original34Renderer": "../renderer-final.json unchanged",
+    "original11Editor": "../editor-completion unchanged",
+    "original15Player": "../player-completion unchanged",
+    "earlierFollowupAggregate117": "green.json/green.log completed before verification-efficiency clarification; retained as recorded, not relabeled. No further unchanged movie/editor reruns."
+  },
+  "qaCorrections": [
+    {
+      "artifact": "untargeted-player-attempt.log",
+      "detail": "Broader attempted rerun failed its short cold-boot readiness bound. It is not acceptance evidence; stopped after verification scope clarification."
+    },
+    {
+      "artifact": "player-fixture-attempt.log",
+      "detail": "Gated producer commands were mistakenly also in the legacy root fallback, so they ran before action and after page deactivation. Corrected only the QA fixture: empty legacy commands, page-owned producer, explicit boot checks that done/sentinel are false. No production fix or suppression."
+    }
+  ],
+  "rawLogArchives": [
+    {
+      "raw": "red.log",
+      "archive": "red.log.gz",
+      "rawSha256": "ee20de9adac93c4ecb5b77cb524d8e015f129ff43010348dde47d9fdf8c170cc",
+      "lossless": true
+    },
+    {
+      "raw": "retarget-red.log",
+      "archive": "retarget-red.log.gz",
+      "rawSha256": "d11089e38e30856d0b61dc63d58481933d8c9d93fbf318a4ae0f6b88e0c7d053",
+      "lossless": true
+    }
+  ],
+  "cleanup": {
+    "serverPort": 35593,
+    "serverClosed": true,
+    "browsersClosedByCase": true,
+    "temporaryRemoved": "/tmp/u04-continuation-qGiNPC",
+    "cacheRemoved": "/tmp/u04-continuation-cache-tQN2l7",
+    "completedCases": 2
+  },
+  "unchanged": [
+    "No interpolation/duration/opacity math or intent-branch changes",
+    "No lifecycle/isActive or skip-guard changes",
+    "No movie/editor source changes",
+    "No shared wiki/Design/snapshot changes",
+    "No amend, push, merge, rebase, full-suite/build/integrated sweep"
+  ],
+  "apiClarification": "../api-ownership.md",
+  "cleanupAllRuns": "cleanup.json"
+}

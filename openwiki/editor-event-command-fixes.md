@@ -44,3 +44,12 @@ Hostile-review fixes for event command forms: fork/loop rerender, setSwitch valu
 ## 조명 백분율 입력 복구 (2026-09-05)
 
 `setLightingBody`의 숫자와 슬라이더는 모두 0~100이며 저장·미리보기에서만 100으로 나눈다. `ambient`는 어둠의 불투명도라 50은 0.5, 100은 완전 암전이다. 프리셋도 두 입력을 백분율로 동기화한다. `test/setLightingPercent.test.ts`와 `node scripts/qa/recovery-lighting.mjs`가 숫자·슬라이더·프리셋·실제 모달 적용을 검증한다. 브라우저 근거: `verify-shots/recovery-lighting/`.
+
+## Native media flags and picture completion (2026-09-06, U04)
+
+- Show Picture exposes `waitForPicture` and preserves explicit true/false during other field edits, including zero duration. Omission stays omitted until the user changes the toggle.
+- Play Movie treats omitted `wait` and `skippable` as true. Switching either off stores explicit false. Native movie skipping uses confirm keys such as Z; Escape is not the movie skip key.
+- `RuntimeDomOverlay.waitForPicture(pictureId)` observes the generation after `syncPictureLayer`. Completion follows the final DOM transform, not a parallel duration timer. Same-object/resource retargeting retains observers until the retargeted final write; authored object/resource replacement or erase resolves prior observers as `cancelled`.
+- Picture cancellation releases the operation but continues its live event once. Session replacement, scene shutdown and destroy still prevent stale continuation. `clearPictures()` cancels the picture frame and observers without clearing unrelated HUD/effects. The interpreter binds cleanup to the captured renderer even for non-waiting pictures; independent consumers must wire their own teardown.
+- Timing/interpolation remains in `pictures/pictureTween.ts`; completion bookkeeping adds no saved-project fields. The detailed contract is `.omo/evidence/event-command-remediation/U04/api-ownership.md`.
+- Coverage: `test/eventCommandRemediation/U04.test.ts`, `test/pictureWeatherDom.test.ts`, adjacent picture/movie tests, `test/e2e/event-command-remediation-U04.spec.ts`, and `scripts/qa/runtime/event-command-remediation-u04.scenario.mjs`. Tests distinguish elapsed timer time from delivered final frames and mount async generation forms before subscribing and triggering.

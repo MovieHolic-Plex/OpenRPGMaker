@@ -24,9 +24,13 @@ import type { PlayResolution } from "@/project/types";
 
 type RuntimeAssetProject = Pick<Project, "assets">;
 
+export type PictureCompletion = "completed" | "cancelled";
+
 // 픽처 슬롯(픽처 번호별). 이미지/텍스트 라벨 중 하나를 담고, Move Picture 트윈 상태를 보관한다.
 type PictureSlot = {
   readonly container: HTMLElement;
+  picture: PictureState;
+  readonly waiters: Set<(result: PictureCompletion) => void>;
   img: HTMLImageElement | null;
   label: HTMLElement | null;
   resourceId: string;
@@ -387,6 +391,31 @@ export class RuntimeDomOverlay {
     return node;
   }
 
+  /** Observe the current picture generation after syncPictureLayer. Only the
+   * final DOM write completes it; replacing/erasing that generation cancels it. */
+  waitForPicture(pictureId: string): Promise<PictureCompletion> {
+    const slot = this.pictureSlots.get(pictureId);
+    if (!slot) return Promise.resolve("cancelled");
+    if (slot.durationMs <= 0) return Promise.resolve("completed");
+    return new Promise(resolve => slot.waiters.add(resolve));
+  }
+
+  /** Scene-picture teardown only: do not disturb timers, lighting or other HUD. */
+  clearPictures(): void {
+    if (this.pictureRafId !== 0) cancelAnimationFrame(this.pictureRafId);
+    this.pictureRafId = 0;
+    for (const slot of this.pictureSlots.values()) {
+      slot.container.remove();
+      this.settlePicture(slot, "cancelled");
+    }
+    this.pictureSlots.clear();
+  }
+
+  private settlePicture(slot: PictureSlot, result: PictureCompletion): void {
+    for (const resolve of slot.waiters) resolve(result);
+    slot.waiters.clear();
+  }
+
   // 픽처 레이어를 실제 이미지로 렌더한다. 리소스가 이미지로 해석되면 <img> 슬롯을,
   // 아니면 기존 텍스트 라벨을 배치한다(폴백/테스트 호환). z-order 는 픽처 번호로 유도하고,
   // durationMs 와 실행 중인 Show/Move Picture 의 일회성 의도가 함께 있을 때만 트윈한다.
@@ -410,6 +439,7 @@ export class RuntimeDomOverlay {
       if (present.has(id)) continue;
       slot.container.remove();
       this.pictureSlots.delete(id);
+      this.settlePicture(slot, "cancelled");
     }
     this.ensurePictureTicker();
   }
@@ -431,6 +461,8 @@ export class RuntimeDomOverlay {
       layer.append(container);
       slot = {
         container,
+        picture,
+        waiters: new Set(),
         img: null,
         label: null,
         resourceId: "",
@@ -442,6 +474,13 @@ export class RuntimeDomOverlay {
       };
       this.pictureSlots.set(picture.pictureId, slot);
     }
+    const replaced = slot.picture !== picture;
+    // A resolved target change can retarget this generation without replacing it.
+    // Keep its observers until the existing intent/rendering path settles the tween.
+    if (replaced || slot.resourceId !== picture.resourceId) {
+      this.settlePicture(slot, "cancelled");
+    }
+    slot.picture = picture;
     this.syncPictureMedia(slot, picture, project);
     slot.container.style.zIndex = String(20 + pictureZIndex(picture.pictureId));
     const duration = picture.durationMs ?? 0;
@@ -459,12 +498,13 @@ export class RuntimeDomOverlay {
       slot.to = target;
       slot.startedAt = this.pictureNow();
       slot.durationMs = duration;
-    } else if (created || duration <= 0 || !pictureTransformsEqual(slot.to, target)) {
+    } else if (created || duration <= 0 || !pictureTransformsEqual(slot.to, target) || (replaced && !transitionRequested)) {
       slot.from = target;
       slot.to = target;
       slot.durationMs = 0;
       slot.displayed = target;
       applyPictureTransform(slot.container, target);
+      this.settlePicture(slot, "completed");
     }
   }
 
@@ -505,6 +545,11 @@ export class RuntimeDomOverlay {
 
   // 진행 중인 픽처 트윈이 있으면 requestAnimationFrame 으로 프레임마다 보간을 적용한다.
   private ensurePictureTicker(): void {
+    if (![...this.pictureSlots.values()].some(slot => slot.durationMs > 0)) {
+      if (this.pictureRafId !== 0) cancelAnimationFrame(this.pictureRafId);
+      this.pictureRafId = 0;
+      return;
+    }
     if (this.pictureRafId !== 0) return;
     if (typeof requestAnimationFrame !== "function") {
       // rAF 미지원 환경(테스트 등)에서는 트윈 없이 최종 상태로 즉시 확정한다.
@@ -530,6 +575,7 @@ export class RuntimeDomOverlay {
         slot.durationMs = 0;
         slot.from = slot.to;
         slot.displayed = slot.to;
+        this.settlePicture(slot, "completed");
       } else {
         animating = true;
       }
@@ -544,6 +590,7 @@ export class RuntimeDomOverlay {
       slot.durationMs = 0;
       slot.from = slot.to;
       applyPictureTransform(slot.container, slot.to);
+      this.settlePicture(slot, "completed");
     }
   }
 

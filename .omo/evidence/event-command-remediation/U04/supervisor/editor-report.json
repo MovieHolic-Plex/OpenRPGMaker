@@ -1,0 +1,170 @@
+{
+  "config": {
+    "argv": [
+      "/usr/local/bin/node",
+      "/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906/node_modules/.bin/playwright",
+      "test",
+      "test/e2e/event-command-remediation-U04.spec.ts",
+      "--workers=1",
+      "--retries=0",
+      "--reporter=line,json"
+    ],
+    "configFile": "/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906/playwright.config.ts",
+    "rootDir": "/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906/test/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906/test/e2e",
+        "testIgnore": [
+          "**/_*.spec.ts"
+        ],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "line"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.61.0",
+    "workers": 1,
+    "webServer": {
+      "command": "npm run dev -- --host 127.0.0.1 --port 39874 --strictPort",
+      "env": {
+        "DEV_SERVER_NO_TLS": "1",
+        "E2E_FREEZE_DEV_SERVER": "1"
+      },
+      "url": "http://127.0.0.1:39874",
+      "reuseExistingServer": true,
+      "timeout": 30000
+    }
+  },
+  "suites": [
+    {
+      "title": "event-command-remediation-U04.spec.ts",
+      "file": "event-command-remediation-U04.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "G3-F10 / G5-F2 real map editor Confirm/reopen/Cancel/export-import and adversarial preservation",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 600000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 373572,
+                  "errors": [],
+                  "stdout": [
+                    {
+                      "text": "U04 editor ready; all edge cases authored in one temporary event\n"
+                    },
+                    {
+                      "text": "g3-f10-500-true: Confirm/Apply/reopen/Cancel PASS\n"
+                    },
+                    {
+                      "text": "g3-f10-500-false: Confirm/Apply/reopen/Cancel PASS\n"
+                    },
+                    {
+                      "text": "g3-f10-500-omitted: Confirm/Apply/reopen/Cancel PASS\n"
+                    },
+                    {
+                      "text": "g3-f10-0-true: Confirm/Apply/reopen/Cancel PASS\n"
+                    },
+                    {
+                      "text": "g3-f10-0-false: Confirm/Apply/reopen/Cancel PASS\n"
+                    },
+                    {
+                      "text": "g3-f10-0-omitted: Confirm/Apply/reopen/Cancel PASS\n"
+                    },
+                    {
+                      "text": "g5-f2-true-true: Confirm/Apply/reopen/Cancel PASS\n"
+                    },
+                    {
+                      "text": "g5-f2-true-false: Confirm/Apply/reopen/Cancel PASS\n"
+                    },
+                    {
+                      "text": "g5-f2-false-true: Confirm/Apply/reopen/Cancel PASS\n"
+                    },
+                    {
+                      "text": "g5-f2-false-false: Confirm/Apply/reopen/Cancel PASS\n"
+                    },
+                    {
+                      "text": "g5-f2-omitted: Confirm/Apply/reopen/Cancel PASS\n"
+                    },
+                    {
+                      "text": "U04 editor PASS: six picture cases, four movie combinations, omitted-to-off; all reopened after real file import; no remote writes\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-06T13:41:05.979Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ec9738f8911e9d5aaef5-07ae1f5c6f05eced7f1a",
+          "file": "event-command-remediation-U04.spec.ts",
+          "line": 79,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-09-06T13:40:41.593Z",
+    "duration": 400546.362,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

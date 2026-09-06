@@ -1,0 +1,105 @@
+{
+  "cases": [
+    {
+      "name": "g3-f10-500-true",
+      "expected": {
+        "kind": "showPicture",
+        "pictureId": "picA",
+        "resourceId": "u04-picture",
+        "x": 30,
+        "y": 20,
+        "scale": 50,
+        "opacity": 128,
+        "rotation": 15,
+        "durationMs": 500,
+        "waitForPicture": true
+      },
+      "cancelRetained": true,
+      "wrongTargetUnchanged": true
+    },
+    {
+      "name": "g3-f10-500-false",
+      "expected": {
+        "kind": "showPicture",
+        "pictureId": "picA",
+        "resourceId": "u04-picture",
+        "x": 30,
+        "y": 20,
+        "scale": 50,
+        "opacity": 128,
+        "rotation": 15,
+        "durationMs": 500,
+        "waitForPicture": false
+      },
+      "cancelRetained": true,
+      "wrongTargetUnchanged": true
+    },
+    {
+      "name": "g3-f10-500-omitted",
+      "expected": {
+        "kind": "showPicture",
+        "pictureId": "picA",
+        "resourceId": "u04-picture",
+        "x": 30,
+        "y": 20,
+        "scale": 50,
+        "opacity": 128,
+        "rotation": 15,
+        "durationMs": 500
+      },
+      "cancelRetained": true,
+      "wrongTargetUnchanged": true
+    },
+    {
+      "name": "g3-f10-0-true",
+      "expected": {
+        "kind": "showPicture",
+        "pictureId": "picA",
+        "resourceId": "u04-picture",
+        "x": 30,
+        "y": 20,
+        "scale": 50,
+        "opacity": 128,
+        "rotation": 15,
+        "durationMs": 0,
+        "waitForPicture": true
+      },
+      "cancelRetained": true,
+      "wrongTargetUnchanged": true
+    },
+    {
+      "name": "g3-f10-0-false",
+      "expected": {
+        "kind": "showPicture",
+        "pictureId": "picA",
+        "resourceId": "u04-picture",
+        "x": 30,
+        "y": 20,
+        "scale": 50,
+        "opacity": 128,
+        "rotation": 15,
+        "durationMs": 0,
+        "waitForPicture": false
+      },
+      "cancelRetained": true,
+      "wrongTargetUnchanged": true
+    },
+    {
+      "name": "g3-f10-0-omitted",
+      "expected": {
+        "kind": "showPicture",
+        "pictureId": "picA",
+        "resourceId": "u04-picture",
+        "x": 30,
+        "y": 20,
+        "scale": 50,
+        "opacity": 128,
+        "rotation": 15,
+        "durationMs": 0
+      },
+      "cancelRetained": true,
+      "wrongTargetUnchanged": true
+    }
+  ],
+  "realFileReimportReopenedAll": true
+}

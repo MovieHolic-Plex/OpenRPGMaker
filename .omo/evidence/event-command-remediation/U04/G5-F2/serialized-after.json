@@ -1,0 +1,32 @@
+[
+  {
+    "kind": "playMovie",
+    "resourceId": "u04-movie",
+    "wait": true,
+    "skippable": true
+  },
+  {
+    "kind": "playMovie",
+    "resourceId": "u04-movie",
+    "wait": true,
+    "skippable": false
+  },
+  {
+    "kind": "playMovie",
+    "resourceId": "u04-movie",
+    "wait": false,
+    "skippable": true
+  },
+  {
+    "kind": "playMovie",
+    "resourceId": "u04-movie",
+    "wait": false,
+    "skippable": false
+  },
+  {
+    "kind": "playMovie",
+    "resourceId": "u04-movie",
+    "wait": false,
+    "skippable": false
+  }
+]

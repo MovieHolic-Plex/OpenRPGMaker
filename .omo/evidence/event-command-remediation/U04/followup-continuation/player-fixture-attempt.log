@@ -1,0 +1,19 @@
+Focused U04 cleanup: browsers/server closed; temporary fixtures/cache removed
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: [[],["op eventCommand 실패: eventCommand observation timed out"]]
+    at provePictureCancellationContinuation (file:///home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u04/scripts/qa/runtime/event-command-remediation-u04.scenario.mjs:372:12)
+    at async file:///home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u04/.omo/evidence/event-command-remediation/U04/followup-continuation/player-proof.mjs:21:19 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.11.1
+
+Exit code: 1

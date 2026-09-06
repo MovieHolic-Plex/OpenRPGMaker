@@ -1,0 +1,2 @@
+- g3-f10-continuation-replacement/manifest.json: PASS
+- g3-f10-continuation-erase/manifest.json: PASS

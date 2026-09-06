@@ -1,0 +1,769 @@
+[
+  {
+    "name": "g3-f10-500-true",
+    "index": 0,
+    "initial": {
+      "kind": "showPicture",
+      "pictureId": "picA",
+      "resourceId": "u04-picture",
+      "x": 10,
+      "y": 20,
+      "scale": 50,
+      "opacity": 128,
+      "rotation": 15,
+      "durationMs": 500,
+      "waitForPicture": true
+    },
+    "expected": {
+      "kind": "showPicture",
+      "pictureId": "picA",
+      "resourceId": "u04-picture",
+      "x": 30,
+      "y": 20,
+      "scale": 50,
+      "opacity": 128,
+      "rotation": 15,
+      "durationMs": 500,
+      "waitForPicture": true
+    },
+    "trace": {
+      "status": "success",
+      "before": [
+        {
+          "value": {
+            "kind": "showPicture",
+            "pictureId": "picA",
+            "resourceId": "u04-picture",
+            "x": 10,
+            "y": 20,
+            "scale": 50,
+            "opacity": 128,
+            "rotation": 15,
+            "durationMs": 500,
+            "waitForPicture": true
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": {
+            "kind": "showPicture",
+            "pictureId": "picA",
+            "resourceId": "u04-picture",
+            "x": 30,
+            "y": 20,
+            "scale": 50,
+            "opacity": 128,
+            "rotation": 15,
+            "durationMs": 500,
+            "waitForPicture": true
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    "dimensions": [
+      {
+        "overflow": false,
+        "confirm": {
+          "top": 669.2999877929688,
+          "bottom": 701.2999877929688,
+          "height": 32
+        },
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        }
+      },
+      {
+        "overflow": false,
+        "confirm": {
+          "top": 696.5,
+          "bottom": 728.5,
+          "height": 32
+        },
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        }
+      },
+      {
+        "overflow": false,
+        "confirm": {
+          "top": 781.5,
+          "bottom": 813.5,
+          "height": 32
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        }
+      }
+    ],
+    "cancelRetained": true,
+    "wrongTargetUnchanged": true,
+    "unrelatedCommandsUnchanged": true
+  },
+  {
+    "name": "g3-f10-500-false",
+    "index": 4,
+    "initial": {
+      "kind": "showPicture",
+      "pictureId": "picA",
+      "resourceId": "u04-picture",
+      "x": 10,
+      "y": 20,
+      "scale": 50,
+      "opacity": 128,
+      "rotation": 15,
+      "durationMs": 500,
+      "waitForPicture": false
+    },
+    "expected": {
+      "kind": "showPicture",
+      "pictureId": "picA",
+      "resourceId": "u04-picture",
+      "x": 30,
+      "y": 20,
+      "scale": 50,
+      "opacity": 128,
+      "rotation": 15,
+      "durationMs": 500,
+      "waitForPicture": false
+    },
+    "trace": {
+      "status": "success",
+      "before": [
+        {
+          "value": {
+            "kind": "showPicture",
+            "pictureId": "picA",
+            "resourceId": "u04-picture",
+            "x": 10,
+            "y": 20,
+            "scale": 50,
+            "opacity": 128,
+            "rotation": 15,
+            "durationMs": 500,
+            "waitForPicture": false
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": {
+            "kind": "showPicture",
+            "pictureId": "picA",
+            "resourceId": "u04-picture",
+            "x": 30,
+            "y": 20,
+            "scale": 50,
+            "opacity": 128,
+            "rotation": 15,
+            "durationMs": 500,
+            "waitForPicture": false
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    "dimensions": [],
+    "cancelRetained": true,
+    "wrongTargetUnchanged": true,
+    "unrelatedCommandsUnchanged": true
+  },
+  {
+    "name": "g3-f10-500-omitted",
+    "index": 5,
+    "initial": {
+      "kind": "showPicture",
+      "pictureId": "picA",
+      "resourceId": "u04-picture",
+      "x": 10,
+      "y": 20,
+      "scale": 50,
+      "opacity": 128,
+      "rotation": 15,
+      "durationMs": 500
+    },
+    "expected": {
+      "kind": "showPicture",
+      "pictureId": "picA",
+      "resourceId": "u04-picture",
+      "x": 30,
+      "y": 20,
+      "scale": 50,
+      "opacity": 128,
+      "rotation": 15,
+      "durationMs": 500
+    },
+    "trace": {
+      "status": "success",
+      "before": [
+        {
+          "value": {
+            "kind": "showPicture",
+            "pictureId": "picA",
+            "resourceId": "u04-picture",
+            "x": 10,
+            "y": 20,
+            "scale": 50,
+            "opacity": 128,
+            "rotation": 15,
+            "durationMs": 500
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": {
+            "kind": "showPicture",
+            "pictureId": "picA",
+            "resourceId": "u04-picture",
+            "x": 30,
+            "y": 20,
+            "scale": 50,
+            "opacity": 128,
+            "rotation": 15,
+            "durationMs": 500
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    "dimensions": [],
+    "cancelRetained": true,
+    "wrongTargetUnchanged": true,
+    "unrelatedCommandsUnchanged": true
+  },
+  {
+    "name": "g3-f10-0-true",
+    "index": 6,
+    "initial": {
+      "kind": "showPicture",
+      "pictureId": "picA",
+      "resourceId": "u04-picture",
+      "x": 10,
+      "y": 20,
+      "scale": 50,
+      "opacity": 128,
+      "rotation": 15,
+      "durationMs": 0,
+      "waitForPicture": true
+    },
+    "expected": {
+      "kind": "showPicture",
+      "pictureId": "picA",
+      "resourceId": "u04-picture",
+      "x": 30,
+      "y": 20,
+      "scale": 50,
+      "opacity": 128,
+      "rotation": 15,
+      "durationMs": 0,
+      "waitForPicture": true
+    },
+    "trace": {
+      "status": "success",
+      "before": [
+        {
+          "value": {
+            "kind": "showPicture",
+            "pictureId": "picA",
+            "resourceId": "u04-picture",
+            "x": 10,
+            "y": 20,
+            "scale": 50,
+            "opacity": 128,
+            "rotation": 15,
+            "durationMs": 0,
+            "waitForPicture": true
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": {
+            "kind": "showPicture",
+            "pictureId": "picA",
+            "resourceId": "u04-picture",
+            "x": 30,
+            "y": 20,
+            "scale": 50,
+            "opacity": 128,
+            "rotation": 15,
+            "durationMs": 0,
+            "waitForPicture": true
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    "dimensions": [],
+    "cancelRetained": true,
+    "wrongTargetUnchanged": true,
+    "unrelatedCommandsUnchanged": true
+  },
+  {
+    "name": "g3-f10-0-false",
+    "index": 7,
+    "initial": {
+      "kind": "showPicture",
+      "pictureId": "picA",
+      "resourceId": "u04-picture",
+      "x": 10,
+      "y": 20,
+      "scale": 50,
+      "opacity": 128,
+      "rotation": 15,
+      "durationMs": 0,
+      "waitForPicture": false
+    },
+    "expected": {
+      "kind": "showPicture",
+      "pictureId": "picA",
+      "resourceId": "u04-picture",
+      "x": 30,
+      "y": 20,
+      "scale": 50,
+      "opacity": 128,
+      "rotation": 15,
+      "durationMs": 0,
+      "waitForPicture": false
+    },
+    "trace": {
+      "status": "success",
+      "before": [
+        {
+          "value": {
+            "kind": "showPicture",
+            "pictureId": "picA",
+            "resourceId": "u04-picture",
+            "x": 10,
+            "y": 20,
+            "scale": 50,
+            "opacity": 128,
+            "rotation": 15,
+            "durationMs": 0,
+            "waitForPicture": false
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": {
+            "kind": "showPicture",
+            "pictureId": "picA",
+            "resourceId": "u04-picture",
+            "x": 30,
+            "y": 20,
+            "scale": 50,
+            "opacity": 128,
+            "rotation": 15,
+            "durationMs": 0,
+            "waitForPicture": false
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    "dimensions": [],
+    "cancelRetained": true,
+    "wrongTargetUnchanged": true,
+    "unrelatedCommandsUnchanged": true
+  },
+  {
+    "name": "g3-f10-0-omitted",
+    "index": 8,
+    "initial": {
+      "kind": "showPicture",
+      "pictureId": "picA",
+      "resourceId": "u04-picture",
+      "x": 10,
+      "y": 20,
+      "scale": 50,
+      "opacity": 128,
+      "rotation": 15,
+      "durationMs": 0
+    },
+    "expected": {
+      "kind": "showPicture",
+      "pictureId": "picA",
+      "resourceId": "u04-picture",
+      "x": 30,
+      "y": 20,
+      "scale": 50,
+      "opacity": 128,
+      "rotation": 15,
+      "durationMs": 0
+    },
+    "trace": {
+      "status": "success",
+      "before": [
+        {
+          "value": {
+            "kind": "showPicture",
+            "pictureId": "picA",
+            "resourceId": "u04-picture",
+            "x": 10,
+            "y": 20,
+            "scale": 50,
+            "opacity": 128,
+            "rotation": 15,
+            "durationMs": 0
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": {
+            "kind": "showPicture",
+            "pictureId": "picA",
+            "resourceId": "u04-picture",
+            "x": 30,
+            "y": 20,
+            "scale": 50,
+            "opacity": 128,
+            "rotation": 15,
+            "durationMs": 0
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    "dimensions": [],
+    "cancelRetained": true,
+    "wrongTargetUnchanged": true,
+    "unrelatedCommandsUnchanged": true
+  },
+  {
+    "name": "g5-f2-true-true",
+    "index": 9,
+    "initial": {
+      "kind": "playMovie",
+      "resourceId": "u04-movie",
+      "wait": false,
+      "skippable": false
+    },
+    "expected": {
+      "kind": "playMovie",
+      "resourceId": "u04-movie",
+      "wait": true,
+      "skippable": true
+    },
+    "trace": {
+      "status": "success",
+      "before": [
+        {
+          "value": {
+            "kind": "playMovie",
+            "resourceId": "u04-movie",
+            "wait": false,
+            "skippable": false
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": {
+            "kind": "playMovie",
+            "resourceId": "u04-movie",
+            "wait": true,
+            "skippable": true
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    "dimensions": [],
+    "cancelRetained": true,
+    "wrongTargetUnchanged": true,
+    "unrelatedCommandsUnchanged": true
+  },
+  {
+    "name": "g5-f2-true-false",
+    "index": 10,
+    "initial": {
+      "kind": "playMovie",
+      "resourceId": "u04-movie",
+      "wait": false,
+      "skippable": true
+    },
+    "expected": {
+      "kind": "playMovie",
+      "resourceId": "u04-movie",
+      "wait": true,
+      "skippable": false
+    },
+    "trace": {
+      "status": "success",
+      "before": [
+        {
+          "value": {
+            "kind": "playMovie",
+            "resourceId": "u04-movie",
+            "wait": false,
+            "skippable": true
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": {
+            "kind": "playMovie",
+            "resourceId": "u04-movie",
+            "wait": true,
+            "skippable": false
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    "dimensions": [],
+    "cancelRetained": true,
+    "wrongTargetUnchanged": true,
+    "unrelatedCommandsUnchanged": true
+  },
+  {
+    "name": "g5-f2-false-true",
+    "index": 11,
+    "initial": {
+      "kind": "playMovie",
+      "resourceId": "u04-movie",
+      "wait": true,
+      "skippable": false
+    },
+    "expected": {
+      "kind": "playMovie",
+      "resourceId": "u04-movie",
+      "wait": false,
+      "skippable": true
+    },
+    "trace": {
+      "status": "success",
+      "before": [
+        {
+          "value": {
+            "kind": "playMovie",
+            "resourceId": "u04-movie",
+            "wait": true,
+            "skippable": false
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": {
+            "kind": "playMovie",
+            "resourceId": "u04-movie",
+            "wait": false,
+            "skippable": true
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    "dimensions": [],
+    "cancelRetained": true,
+    "wrongTargetUnchanged": true,
+    "unrelatedCommandsUnchanged": true
+  },
+  {
+    "name": "g5-f2-false-false",
+    "index": 12,
+    "initial": {
+      "kind": "playMovie",
+      "resourceId": "u04-movie",
+      "wait": true,
+      "skippable": true
+    },
+    "expected": {
+      "kind": "playMovie",
+      "resourceId": "u04-movie",
+      "wait": false,
+      "skippable": false
+    },
+    "trace": {
+      "status": "success",
+      "before": [
+        {
+          "value": {
+            "kind": "playMovie",
+            "resourceId": "u04-movie",
+            "wait": true,
+            "skippable": true
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": {
+            "kind": "playMovie",
+            "resourceId": "u04-movie",
+            "wait": false,
+            "skippable": false
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    "dimensions": [
+      {
+        "overflow": false,
+        "confirm": {
+          "top": 550.066650390625,
+          "bottom": 582.066650390625,
+          "height": 32
+        },
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        }
+      },
+      {
+        "overflow": false,
+        "confirm": {
+          "top": 566.066650390625,
+          "bottom": 598.066650390625,
+          "height": 32
+        },
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        }
+      },
+      {
+        "overflow": false,
+        "confirm": {
+          "top": 616.066650390625,
+          "bottom": 648.066650390625,
+          "height": 32
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        }
+      }
+    ],
+    "cancelRetained": true,
+    "wrongTargetUnchanged": true,
+    "unrelatedCommandsUnchanged": true
+  },
+  {
+    "name": "g5-f2-omitted",
+    "index": 2,
+    "initial": {
+      "kind": "playMovie",
+      "resourceId": "u04-movie"
+    },
+    "expected": {
+      "kind": "playMovie",
+      "resourceId": "u04-movie",
+      "wait": false,
+      "skippable": false
+    },
+    "trace": {
+      "status": "success",
+      "before": [
+        {
+          "value": {
+            "kind": "playMovie",
+            "resourceId": "u04-movie"
+          }
+        }
+      ],
+      "after": [
+        {
+          "value": {
+            "kind": "playMovie",
+            "resourceId": "u04-movie",
+            "wait": false,
+            "skippable": false
+          }
+        }
+      ],
+      "event": null,
+      "cleanup": {
+        "observer": true,
+        "timer": true,
+        "event": true,
+        "pagehide": true,
+        "abort": true
+      }
+    },
+    "dimensions": [],
+    "cancelRetained": true,
+    "wrongTargetUnchanged": true,
+    "unrelatedCommandsUnchanged": true
+  }
+]
