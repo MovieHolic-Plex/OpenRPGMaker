@@ -794,6 +794,8 @@ Chromium local network 검사만 캡처 실행 인자로 끈다. 일반 출하 �
 
 런타임 QA의 선택적 `inventoryCounts`/`ownedMonsterCounts`는 요청한 ID만 manifest에 기록한다. 몬스터 수는 파티와 보관함의 소유 인스턴스를 합쳐 세며, 훅이나 관측 데이터가 없으면 0으로 간주하지 않고 실패한다. 관련 회귀는 `runtimeQaGate`, `runtimeQaInstrumentationBoundary`, `runtimeQaReport`다.
 
+실제 모델 후속 검증에서 `giveMonster`의 `speciesId`/`level`, 장면 스텝의 `dir`/`to`/`ticks`/`index`가 노출 스키마에 빠져 인자가 다른 필드로 반복 전송됐다. 해당 필드의 노출과 컴파일러 계약은 `npcCommandContract`가 검사한다. `sceneVerificationRepair`는 명시 NPC ID·단언·선택지·보상 기준점이 같은 검사에서 이동/방향을 고친 재실행이 과거 실패를 해소하는지 검사한다. 기대 보상이나 NPC 대상을 바꾼 별개 검사는 기존 실패를 지울 수 없다.
+
 ## 실내 조립·형상 검증 (2026-09-05)
 
 `test/interiorConceptAssemblies.test.ts`가 19시설×3seed 시공, 상판 소품의 전체 셀, 벽시계 위치, 장소 shape 직렬화·검증, 메타/통행 사용자 오버라이드 보존을 검사한다. 관련 13파일·253테스트 및 앱 타입 게이트가 통과했다. 이번 전체 gates 실행은 최종 리포트를 남기기 전 exit 143으로 종료되어 전체 기준선 비교를 완료하지 못했다. 원인 미확정이며 전체 통과로 보고하지 않는다. 로컬 증거는 `output/evidence/concept-v2/validation.json` 및 `focused-tests.log`.
