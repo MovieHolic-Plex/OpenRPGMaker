@@ -51,7 +51,7 @@ export interface MutableBattler {
   readonly recordId: ActorId | EnemyId;
   // 전투 중 전직(promoteActor)이 클래스를 갱신할 수 있어 mutable.
   classId?: string;
-  readonly level?: number;
+  level?: number;
   readonly faceResourceId?: string;
   readonly battleCharacterResourceId?: string;
   // 아군측 배틀러가 파티 몬스터에서 합성된 경우 원 인스턴스/종족 식별자.

@@ -2,6 +2,7 @@ import { hasEquipmentSlot } from "@/project/equipmentSlots";
 import { isHorrorState } from "@/project/horrorState";
 import { isPromotionLineage } from '@/project/growth/requirements';
 import { isGrowthProgress } from "@/project/growth/validation";
+import { refreshGrowthVitals } from '@/project/growth/vitals';
 import { SCHEMA_VERSION, type ActorInitialEquipment, type CharacterFootprint, type Project } from "@/project/types";
 import { normalizeRelationships } from "@/project/relationshipState";
 import { normalizeCharacterFootprint } from "@/project/footprint";
@@ -626,6 +627,9 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.promotionLineage) session.promotionLineage = structuredClone(snapshot.session.promotionLineage);
   if (snapshot.session.classOverrides) session.classOverrides = structuredClone(snapshot.session.classOverrides);
   if (snapshot.session.actorParamBonuses) session.actorParamBonuses = structuredClone(snapshot.session.actorParamBonuses);
+  // Authored curves/nodes may have changed since saving. Keep the historical
+  // investment ledger, but project current maxima only after every bonus restores.
+  for (const actor of project.database.actors) refreshGrowthVitals(project, session, actor.id);
   if (snapshot.session.actorStateIds) session.actorStateIds = structuredClone(snapshot.session.actorStateIds);
   if (typeof snapshot.session.playTimeSeconds === "number") session.playTimeSeconds = snapshot.session.playTimeSeconds;
   const restoredGameTime = normalizeRestorableGameTime(project, snapshot.session.gameTime);

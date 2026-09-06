@@ -21,6 +21,6 @@ export function effectivePromotionLineage(project: Project, session: ActorClassS
   if (!current) return [];
   const override = session.classOverrides?.[actorId];
   const earned = session.promotionLineage?.[actorId];
-  if ((override && !validActorClassOverride(project, session, actorId)) || !earned?.includes(current)) return [current];
+  if ((override !== undefined && !validActorClassOverride(project, session, actorId)) || !earned?.includes(current)) return [current];
   return [...new Set(earned.filter(id => project.database.classes.some(c => c.id === id)))];
 }

@@ -1,10 +1,19 @@
 import type { ClassPromotionRequirement, Project } from '@/project/types';
 import type { NodeRankRequirement } from '@/project/growth/types';
 import { button, note, numberInput, section, selectInput } from './controls';
+import { qualifiedSkillEdges } from './actions';
+import { wouldCreateCycle } from '@/project/growth/graph';
+import { qualifiedNodeId } from '@/project/growth/requirements';
 
 /** Native controls shared by node prerequisites and promotion admission gates. */
 export function nodeRequirementControls(project: Project, prefix: string, requirements: readonly NodeRankRequirement[], save: (requirements: NodeRankRequirement[]) => void, exclude?: {treeId: string; nodeId: string}): HTMLElement[] {
-  const trees = (project.growth?.skillTrees ?? []).map(t => ({...t, nodes:t.nodes.filter(n => exclude?.treeId !== t.id || exclude.nodeId !== n.id)})).filter(t => t.nodes.length);
+  const edges = exclude ? qualifiedSkillEdges(project) : [];
+  // Add and tree switching must both start on an authorable prerequisite,
+  // not a dependent that validation rejects before its selectors can be used.
+  const trees = (project.growth?.skillTrees ?? []).map(t => ({
+    ...t,
+    nodes: t.nodes.filter(n => !exclude || !wouldCreateCycle(edges, qualifiedNodeId(t.id, n.id), qualifiedNodeId(exclude.treeId, exclude.nodeId))),
+  })).filter(t => t.nodes.length);
   const rows = requirements.map((r, index) => {
     const tree = trees.find(t => t.id === r.treeId);
     const node = tree?.nodes.find(n => n.id === r.nodeId);

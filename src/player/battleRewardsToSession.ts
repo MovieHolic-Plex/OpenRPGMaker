@@ -37,12 +37,20 @@ export function applyBattleRewardsToSession(
   if (outcome.result === "victory" || outcome.result === "escape" || (outcome.result === "defeat" && outcome.canLose === true)) {
     // Transfer class, lineage and permanent skills before vitals. Never replay
     // arbitrary reclass: it would erase the earned promotion chain.
-    applyBattleClassOverridesToSession(session, project, outcome.eventState);
+    applyBattleClassOverridesToSession(session, outcome.eventState);
     applyBattleVitalsToSession(session, outcome.actors ?? []);
     // 파티 몬스터가 싸운 경우, 전투 종료 HP를 인스턴스에 되돌려쓴다(경험치 가산보다 먼저).
     applyBattleMonsterVitalsToSession(session, outcome.actors ?? []);
     applyBattleStatesToSession(session, outcome.actors ?? []);
     applyBattleEventStateToSession(session, outcome.eventState);
+    // Derived maxima follow final levels/class/growth, never stale battler maxima.
+    // Restore battle damage first, then clamp without healing (before reward level-ups).
+    const growthActorIds = new Set([
+      ...Object.keys(outcome.eventState?.actorLevels ?? {}),
+      ...Object.keys(outcome.eventState?.classOverrides ?? {}),
+      ...Object.keys(outcome.eventState?.growthProgress ?? {}),
+    ]);
+    for (const actorId of growthActorIds) refreshGrowthVitals(project, session, actorId);
   }
   if (outcome.result !== "victory") return [];
   const earnedExp = Math.max(0, Math.trunc(outcome.rewards.exp));
@@ -119,7 +127,6 @@ function applyBattleStatesToSession(session: PlaySession, actors: readonly Battl
 // end at the same class while earning lineage and permanent skills in between.
 function applyBattleClassOverridesToSession(
   session: PlaySession,
-  project: Project,
   eventState: BattleEventStateSnapshot | undefined
 ): void {
   if (!eventState) return;
@@ -127,8 +134,6 @@ function applyBattleClassOverridesToSession(
   if (eventState.promotionLineage !== undefined) session.promotionLineage = structuredClone(eventState.promotionLineage);
   if (eventState.growthProgress !== undefined) session.growthProgress = structuredClone(eventState.growthProgress);
   if (eventState.actorSkillIds) session.actorSkillIds = Object.fromEntries(Object.entries(eventState.actorSkillIds).map(([id, skills]) => [id, [...skills]]));
-  if (eventState.actorLevels) Object.assign(session.actorLevels, eventState.actorLevels);
-  for (const actorId of Object.keys(eventState.classOverrides ?? {})) refreshGrowthVitals(project, session, actorId);
 }
 
 // 전투 이벤트 상태(아이템 소모, 전투 이벤트가 바꾼 스위치/변수/골드/파티/스킬)를 세션에 되돌려 쓴다.

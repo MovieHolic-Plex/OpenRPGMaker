@@ -571,8 +571,9 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         options.state.actorLevels ??= {};
         for (const actor of resolveActorTargets(command.actorId)) {
           const id = actor.recordId;
-          const current = options.state.actorLevels[id] ?? 1;
-          options.state.actorLevels[id] = Math.max(1, Math.min(99, applyVitalOperation(current, command.op, command.amount)));
+          const current = options.state.actorLevels[id] ?? actor.level ?? 1;
+          actor.level = options.state.actorLevels[id] = Math.max(1, Math.min(99, applyVitalOperation(current, command.op, command.amount)));
+          options.refreshActorDerivedStats?.(actor, { refreshSkills: true });
         }
         logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `changeLevel ${command.actorId}` });
         return false;

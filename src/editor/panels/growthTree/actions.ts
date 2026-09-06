@@ -64,7 +64,7 @@ export function duplicateSkillTree(tree: SkillTree, id: string): SkillTree {
   for (const node of copy.nodes) for (const requirement of node.requiredNodes ?? []) if (requirement.treeId === tree.id) requirement.treeId = id;
   return copy;
 }
-function qualifiedSkillEdges(project: Project): {from: string; to: string}[] {
+export function qualifiedSkillEdges(project: Project): {from: string; to: string}[] {
   return (project.growth?.skillTrees ?? []).flatMap(t => t.nodes.flatMap(n => [...n.prerequisites.map(nodeId => ({treeId:t.id,nodeId})), ...(n.requiredNodes ?? [])].map(r => ({from:qualifiedNodeId(r.treeId,r.nodeId),to:qualifiedNodeId(t.id,n.id)}))));
 }
 export function setSkillNodeRequirements(project: Project, treeId: string, nodeId: string, requirements: NodeRankRequirement[]): string | undefined {

@@ -17,8 +17,8 @@ function fixture() {
   project.growth = {...emptyGrowth(),initialPoints:10,skillTrees:trees};
   return {project,actor,klass,trees};
 }
-function surface(mode: 'promotion' | 'skill') {
-  const data = fixture(); store.replace(data.project); resetMapEditHistory();
+function surface(mode: 'promotion' | 'skill', prepare?: (data: ReturnType<typeof fixture>) => void) {
+  const data = fixture(); prepare?.(data); store.replace(data.project); resetMapEditHistory();
   const host = document.createElement('div'); document.body.append(host); renderGrowthTreeTab(host,mode);
   const click = (id:string) => { const button = host.querySelector<HTMLButtonElement>(`[data-testid="${id}"]`); if (!button) throw new Error(`missing ${id}`); button.click(); };
   const change = (id:string,value:string) => { const input = host.querySelector<HTMLInputElement | HTMLSelectElement>(`[data-testid="${id}"]`); if (!input) throw new Error(`missing ${id}`); input.value=value; input.dispatchEvent(new Event('change',{bubbles:true})); };
@@ -56,6 +56,37 @@ it('authors inheritance and qualified prerequisite tree/node/rank with undo', ()
   expect(store.getCurrent().growth?.skillTrees[0]?.nodes[0]?.requiredNodes).toEqual([{treeId:'next',nodeId:'root',rank:2}]);
   expect(undoMapEdit()).toBe(true);
   expect(store.getCurrent().growth?.skillTrees[0]?.nodes[0]?.requiredNodes?.[0]?.rank).toBe(1);
+});
+it('R4 adds a valid other-tree prerequisite when the first local candidate is a dependent', () => {
+  const {host,click,change}=surface('skill', ({trees}) => {
+    const base=trees[0], root=base?.nodes[0]; if (!base || !root) throw new Error('root missing');
+    base.nodes.push({...structuredClone(root),id:'skill',prerequisites:['root']});
+  });
+  expect(getMapEditHistoryEntries()).toHaveLength(0);
+  click('growth-required-add');
+  expect(host.querySelector<HTMLSelectElement>('[data-testid="growth-required-0-tree"]')?.value).toBe('next');
+  expect(store.getCurrent().growth?.skillTrees[0]?.nodes[0]?.requiredNodes).toEqual([{treeId:'next',nodeId:'root',rank:1}]);
+  expect(getMapEditHistoryEntries()).toHaveLength(1);
+  change('growth-required-0-rank','2');
+  expect(store.getCurrent().growth?.skillTrees[0]?.nodes[0]?.requiredNodes?.[0]?.rank).toBe(2);
+  expect(undoMapEdit()).toBe(true);
+  expect(store.getCurrent().growth?.skillTrees[0]?.nodes[0]?.requiredNodes?.[0]?.rank).toBe(1);
+});
+it('R4 switches prerequisite trees past a cyclic first node using native selectors', () => {
+  const {host,click,change}=surface('skill', ({trees}) => {
+    const base=trees[0], next=trees[1], root=base?.nodes[0]; if (!base || !next || !root) throw new Error('root missing');
+    base.nodes.push({...structuredClone(root),id:'skill',prerequisites:['root']}, {...structuredClone(root),id:'safe'});
+    next.nodes.unshift({...structuredClone(root),id:'dependent',requiredNodes:[{treeId:'base',nodeId:'skill',rank:1}]});
+    root.requiredNodes=[{treeId:'base',nodeId:'safe',rank:1}];
+  });
+  change('growth-required-0-tree','next');
+  expect(host.querySelector<HTMLSelectElement>('[data-testid="growth-required-0-node"]')?.value).toBe('root');
+  expect(store.getCurrent().growth?.skillTrees[0]?.nodes[0]?.requiredNodes).toEqual([{treeId:'next',nodeId:'root',rank:1}]);
+  expect(getMapEditHistoryEntries()).toHaveLength(1);
+  change('growth-required-0-tree','base');
+  expect(store.getCurrent().growth?.skillTrees[0]?.nodes[0]?.requiredNodes).toEqual([{treeId:'base',nodeId:'safe',rank:1}]);
+  click('growth-required-0-remove');
+  expect(store.getCurrent().growth?.skillTrees[0]?.nodes[0]?.requiredNodes).toEqual([]);
 });
 it('authors promotion skill/rank/point gates through native controls', () => {
   const {click,change,klass}=surface('promotion'); click(`growth-list-${klass.id}`);

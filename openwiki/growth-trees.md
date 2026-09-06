@@ -146,6 +146,23 @@ HP/MP는 하향 제한만 하며 회복하지 않는다. 기존 레벨업 회복
 `skillTreeDeletionBlocker`는 외부 노드/승급 조건의 참조를 보호한다. 같은 트리 내부 참조는
 노드 삭제 시 해제되며, 복제에서는 자기 트리 ID만 새 ID로 매핑하고 외부 참조는 유지한다.
 
+### Runtime review corrections (2026-09-06)
+
+- Battle `changeLevel` synchronizes the battler level and derived stats/skills immediately;
+  a later promotion therefore uses the final event level. Write-back restores battle damage
+  and event state before recomputing maxima, without healing. Victory preview reads that same
+  battle-owned party, levels, XP and class overrides; reward level-up gain healing stays separate.
+- Save restoration recomputes HP/MP maxima only after class, lineage, growth and permanent
+  bonuses are restored. Lowered ranks, deleted nodes and invalid overrides clamp current vitals
+  downward without changing historical rank/spent; unchanged projects preserve current vitals.
+- Empty and nonexistent present class overrides both discard unrelated effective lineage.
+  Missing overrides retain the existing optional-field semantics.
+- Native prerequisite Add and tree switching exclude self/dependent nodes using the same
+  qualified graph as authoring validation. A cyclic first candidate cannot block access to
+  valid other-tree selectors. Promotion gates (no dependent node) keep all candidates.
+- Regression seams: `test/growthIntegratedFixes.test.ts` and the R4 native-control cases in
+  `test/growthIntegratedStudio.test.ts`. Preset files and `studio.ts` are not changed by this fix.
+
 ### 통합 API
 
 - 타입: `project/growth/types.ts`의 `NodeRankRequirement`, `PromotionLineage`와 위 선택 필드.

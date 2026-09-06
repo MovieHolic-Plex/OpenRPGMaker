@@ -2382,21 +2382,19 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     return previewMonsterExperience(options.project, instances, earnedExp, participantIds);
   }
 
-  // 세션 파티 정보가 주어졌으면 승리 획득 exp 기준 레벨업 미리보기를 계산(결과 화면 표시용).
+  // Preview the same final battle authority that reward write-back applies.
   // 실제 세션 적립/성장은 battleRewardsToSession 이 담당하며 동일 로직으로 일치한다.
   function computeLevelUpPreview(earnedExp: number, enemyLevel: number | undefined): BattleLevelUpResult[] {
-    const party = options.party;
-    if (!party) return [];
     const results: BattleLevelUpResult[] = [];
     const seen = new Set<string>();
-    const actorIds = rewardActorIds(options.project, party.partyActorIds ?? actors.map((actor) => actor.recordId), [...participatingActorIds]);
+    const actorIds = rewardActorIds(options.project, battleEventState.partyActorIds ?? actors.map((actor) => actor.recordId), [...participatingActorIds]);
     for (const actorId of actorIds) {
       if (seen.has(actorId)) continue;
       seen.add(actorId);
-      const level = party.levels[actorId] ?? 1;
+      const level = battleEventState.actorLevels?.[actorId] ?? 1;
       const adjustedExp = expForRewardActor(earnedExp, level, enemyLevel, options.project.system.rewardPolicy);
-      const totalExp = (party.experience[actorId] ?? 0) + adjustedExp;
-      const result = computeActorLevelUp(options.project, actorId, level, totalExp, { classOverrides: party.classOverrides });
+      const totalExp = (battleEventState.actorExperience?.[actorId] ?? 0) + adjustedExp;
+      const result = computeActorLevelUp(options.project, actorId, level, totalExp, { classOverrides: battleEventState.classOverrides });
       if (result) results.push(result);
     }
     return results;
