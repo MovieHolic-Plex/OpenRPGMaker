@@ -1052,10 +1052,16 @@ function updateActionHudModel(scene: PlaySceneContext, state: ActionCombatSceneS
   syncActorVitals(project, scene.session.actorVitals, leadId);
   const vitals = scene.session.actorVitals[leadId];
   if (!vitals) return;
-  const signature = `${vitals.hp}/${vitals.maxHp}|${Math.round(state.stamina)}|${state.config.stamina}|${state.skillSlotIds.join(",")}|${state.activeSkillSlot}|${state.guarding}`;
+  const actor = project.database.actors.find(entry => entry.id === leadId);
+  if (!actor) return;
+  const weaponId = effectiveActorEquipment(project, actor, scene.session.actorEquipment?.[leadId],
+    effectiveActorClassId(project, scene.session, leadId)).weapon;
+  const weaponName = project.database.equipment.find(equipment => equipment.id === weaponId)?.name ?? "맨손";
+  const signature = `${weaponId}/${weaponName}|${vitals.hp}/${vitals.maxHp}|${Math.round(state.stamina)}|${state.config.stamina}|${state.skillSlotIds.join(",")}|${state.activeSkillSlot}|${state.guarding}`;
   if (signature === state.lastHudSignature) return;
   state.lastHudSignature = signature;
   state.hud.update({
+    weaponName,
     hp: vitals.hp,
     maxHp: vitals.maxHp,
     stamina: Math.round(state.stamina),

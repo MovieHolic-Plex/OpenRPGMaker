@@ -1,5 +1,20 @@
 # RPG ZZU Design System
 
+## Action combat identity and controls (2026-09-07)
+
+- Keep the existing 320x240 logical play stage, keyboard-only input and runtime
+  window tokens. The action HUD gains the equipped weapon name and binding-derived
+  attack/dodge guidance; it does not gain an interactive panel or a new overlay.
+- Reuse `--runtime-ui-font`, `--runtime-font-size-9`, `--runtime-window-text`,
+  `--runtime-window-shadow` and `--space-*`. Guidance wraps within the stage and
+  remains non-interactive; menus and dialogue continue to hide the action HUD.
+- The farming hand chip is hidden on action maps without a farmable area. Mixed
+  action/farming maps keep it explicitly labelled as farming, separate from the
+  weapon. Non-action hand-slot behavior is unchanged.
+- A supplied new-project name replaces only an absent/default player title.
+  An intentionally different authored title is preserved. This does not rename
+  maps on load or replace authored title artwork.
+
 ## In-game shop trade counter (2026-09-06)
 
 Runtime only: this is not the shop-command editor. `runtime/shop.css` owns a
