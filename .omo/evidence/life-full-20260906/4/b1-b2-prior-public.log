@@ -1,0 +1,23 @@
+{"surface":"real public contribute -> Save5 Storage -> read/apply -> claim receipt","donated":5,"progress":2,"claim":3,"inventoryBeforeReceipt":5,"inventoryAfterReceipt":8,"conservedTotal":10,"reloads":2,"duplicatePayout":false,"liveUnchanged":true}
+{"completedTombstone":true,"dormantRights":2,"repeatedReward":false,"earnedGold":9}
+{"oldClockMinute":29,"changedStart":8,"canceled":[{"itemId":"raw","count":3}],"reissued":false}
+{"oldClockMinute":30,"changedStart":8,"canceled":[{"itemId":"product","count":2}],"reissued":false}
+[autosave] failed to reconcile life state: LifeReconciliationError: Life recovery lifeRecovery/claims: invalid-state
+    at parseLifeState (/home/main/z-project/rpg-zzu-life-full-p2/src/project/lifeStateReconciliation.ts:37:110)
+    at prepareLifeSnapshot (/home/main/z-project/rpg-zzu-life-full-p2/src/player/saveSlots.ts:834:89)
+    at createSaveSnapshot (/home/main/z-project/rpg-zzu-life-full-p2/src/player/saveSlots.ts:142:19)
+    at Module.performAutosave (/home/main/z-project/rpg-zzu-life-full-p2/src/player/autosave.ts:26:54)
+    at file:///home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/4/public-probe.mjs:96:25 {
+  sourceKind: 'lifeRecovery',
+  sourceId: 'claims',
+  reason: 'invalid-state'
+}
+{"reconciliationFailure":"reported","currentLiveUnchanged":true,"priorAutosaveUnchanged":true,"priorCheckpointUnchanged":true,"dayRollback":true,"malformedRead":"corrupt","malformedRawUnchanged":true}
+[autosave] failed to write autosave (ignored): DOMException [QuotaExceededError]: quota
+    at new DOMException (node:internal/per_context/domexception:76:18)
+    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/4/public-probe.mjs:123:49)
+    at writeAutosave (/home/main/z-project/rpg-zzu-life-full-p2/src/player/saveSlots.ts:123:11)
+    at Module.performAutosave (/home/main/z-project/rpg-zzu-life-full-p2/src/player/autosave.ts:36:44)
+    at file:///home/main/z-project/rpg-zzu-life-full-p2/.omo/evidence/life-full-20260906/4/public-probe.mjs:127:25
+{"laterStage":"energy","wholeDayRolledBack":true,"quotaFailure":true,"successfulClaimNotRolledBack":true,"currentInventory":3}
+{"teardown":"Storage cleared; happy-dom and middleware-only Vite closed","httpListener":false,"remoteWrites":0,"playerHtml":"not-run; public persistence seam exercised"}

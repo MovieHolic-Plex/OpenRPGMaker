@@ -181,7 +181,170 @@
       "tree": "1db9f2d9dba6e23feba0df126961b229c34aafc2",
       "sha256": "88c1157edb6c151096e999d4c32283548958369f71fae0990a93ec4e9d356ba3",
       "log": "autosave-parent-regression.log"
+    },
+    {
+      "receipt": "b1-b2-build.json",
+      "command": "npm run build",
+      "wrapper": [
+        "timeout",
+        "--signal=TERM",
+        "--kill-after=10s",
+        "900s",
+        "bash",
+        "-lc",
+        "npm run build"
+      ],
+      "exit": 0,
+      "durationSeconds": 204.87077689170837,
+      "head": "8c4f4f57c1473f024ee7bf9dad50cf859459f30d",
+      "tree": "f4876f1c27ec0cd5799d20b184470097acd2d304",
+      "sha256": "5de4c14feaeaa6bf82c4b9a75827a89fd987f71c3a3acfbca3e977f93a9b5f6a"
+    },
+    {
+      "receipt": "b1-b2-diagnostics.json",
+      "command": "node .omo/evidence/life-full-20260906/4/diagnostics.mjs",
+      "wrapper": [
+        "timeout",
+        "--signal=TERM",
+        "--kill-after=10s",
+        "240s",
+        "bash",
+        "-lc",
+        "node .omo/evidence/life-full-20260906/4/diagnostics.mjs"
+      ],
+      "exit": 0,
+      "durationSeconds": 63.609110832214355,
+      "head": "8c4f4f57c1473f024ee7bf9dad50cf859459f30d",
+      "tree": "f4876f1c27ec0cd5799d20b184470097acd2d304",
+      "sha256": "5c71a4ccde34e275542c2b241ff8a3cea1ed7466ada1770d28a75becc39020bb"
+    },
+    {
+      "receipt": "b1-b2-green.json",
+      "command": "npm test -- test/lifeRecoveryPersistence.test.ts test/p0SessionPersistence.test.ts test/p1SessionPersistence.test.ts test/p2SessionPersistence.test.ts test/p2SpatialPersistence.test.ts test/p0RuntimeIntegration.test.ts",
+      "wrapper": [
+        "timeout",
+        "--signal=TERM",
+        "--kill-after=10s",
+        "300s",
+        "bash",
+        "-lc",
+        "npm test -- test/lifeRecoveryPersistence.test.ts test/p0SessionPersistence.test.ts test/p1SessionPersistence.test.ts test/p2SessionPersistence.test.ts test/p2SpatialPersistence.test.ts test/p0RuntimeIntegration.test.ts"
+      ],
+      "exit": 0,
+      "durationSeconds": 36.54014539718628,
+      "head": "8c4f4f57c1473f024ee7bf9dad50cf859459f30d",
+      "tree": "f4876f1c27ec0cd5799d20b184470097acd2d304",
+      "sha256": "714a635ad36bea8435945fa57a3455be76e21c0d3d65707e0dff997547a90d81"
+    },
+    {
+      "receipt": "b1-b2-prior-public.json",
+      "command": "node .omo/evidence/life-full-20260906/4/public-probe.mjs",
+      "wrapper": [
+        "timeout",
+        "--signal=TERM",
+        "--kill-after=10s",
+        "180s",
+        "bash",
+        "-lc",
+        "node .omo/evidence/life-full-20260906/4/public-probe.mjs"
+      ],
+      "exit": 0,
+      "durationSeconds": 22.33745288848877,
+      "head": "8c4f4f57c1473f024ee7bf9dad50cf859459f30d",
+      "tree": "f4876f1c27ec0cd5799d20b184470097acd2d304",
+      "sha256": "358d29a5428f06db3e7f212088bf640f9aeb53050bec1d34863362c96d34fa91"
+    },
+    {
+      "receipt": "b1-b2-public.json",
+      "command": "node .omo/evidence/life-full-20260906/4/b1-b2-public-probe.mjs",
+      "wrapper": [
+        "timeout",
+        "--signal=TERM",
+        "--kill-after=10s",
+        "180s",
+        "bash",
+        "-lc",
+        "node .omo/evidence/life-full-20260906/4/b1-b2-public-probe.mjs"
+      ],
+      "exit": 0,
+      "durationSeconds": 18.79938817024231,
+      "head": "8c4f4f57c1473f024ee7bf9dad50cf859459f30d",
+      "tree": "f4876f1c27ec0cd5799d20b184470097acd2d304",
+      "sha256": "2875d1cecca2202eb5506f0848e70dbc049da382beefa8d33be94b94bd341516"
+    },
+    {
+      "receipt": "b1-b2-red.json",
+      "command": "npm test -- test/lifeRecoveryPersistence.test.ts test/p0SessionPersistence.test.ts test/p1SessionPersistence.test.ts test/p2SessionPersistence.test.ts test/p2SpatialPersistence.test.ts test/p0RuntimeIntegration.test.ts",
+      "wrapper": [
+        "timeout",
+        "--signal=TERM",
+        "--kill-after=10s",
+        "300s",
+        "bash",
+        "-lc",
+        "npm test -- test/lifeRecoveryPersistence.test.ts test/p0SessionPersistence.test.ts test/p1SessionPersistence.test.ts test/p2SessionPersistence.test.ts test/p2SpatialPersistence.test.ts test/p0RuntimeIntegration.test.ts"
+      ],
+      "exit": 1,
+      "durationSeconds": 10.59936261177063,
+      "head": "8c4f4f57c1473f024ee7bf9dad50cf859459f30d",
+      "tree": "f4876f1c27ec0cd5799d20b184470097acd2d304",
+      "sha256": "43bbd66d8e57965a0c857532ae64e93ecf197dd9517e1612f3376d3f495d239d"
+    },
+    {
+      "receipt": "b1-b2-related.json",
+      "command": "npm test -- test/lifeRecovery.test.ts test/lifeSaveVersion.test.ts test/autosave.test.ts test/p0Makers.test.ts test/p0Shipping.test.ts test/p0Bundles.test.ts test/p1FarmAnimals.test.ts test/p1DayTransitionIntegration.test.ts test/p1WeatherDayTransition.test.ts test/p2DayTransition.test.ts test/p0DayTransitionSceneFailure.test.ts test/p2SpatialTransactions.test.ts test/checkpointEndingRuntime.test.ts test/playerOpenSaveMenu.test.ts test/customSeasonSave.test.ts test/p0SafetyHardening.test.ts",
+      "wrapper": [
+        "timeout",
+        "--signal=TERM",
+        "--kill-after=10s",
+        "300s",
+        "bash",
+        "-lc",
+        "npm test -- test/lifeRecovery.test.ts test/lifeSaveVersion.test.ts test/autosave.test.ts test/p0Makers.test.ts test/p0Shipping.test.ts test/p0Bundles.test.ts test/p1FarmAnimals.test.ts test/p1DayTransitionIntegration.test.ts test/p1WeatherDayTransition.test.ts test/p2DayTransition.test.ts test/p0DayTransitionSceneFailure.test.ts test/p2SpatialTransactions.test.ts test/checkpointEndingRuntime.test.ts test/playerOpenSaveMenu.test.ts test/customSeasonSave.test.ts test/p0SafetyHardening.test.ts"
+      ],
+      "exit": 0,
+      "durationSeconds": 57.83846569061279,
+      "head": "8c4f4f57c1473f024ee7bf9dad50cf859459f30d",
+      "tree": "f4876f1c27ec0cd5799d20b184470097acd2d304",
+      "sha256": "2f4d84cd4ea012c0faa65cb41da86e215966f9efa3d39ab24fdf5afb2ea5b910"
+    },
+    {
+      "receipt": "b1-b2-typecheck.json",
+      "command": "npm run typecheck:app",
+      "wrapper": [
+        "timeout",
+        "--signal=TERM",
+        "--kill-after=10s",
+        "240s",
+        "bash",
+        "-lc",
+        "npm run typecheck:app"
+      ],
+      "exit": 0,
+      "durationSeconds": 104.22450804710388,
+      "head": "8c4f4f57c1473f024ee7bf9dad50cf859459f30d",
+      "tree": "f4876f1c27ec0cd5799d20b184470097acd2d304",
+      "sha256": "9e2e881b46f10347e10261b098fd6171273d8f45b9a5d52fc81a8473a713bdfe"
+    },
+    {
+      "receipt": "b1-b2-wiki.json",
+      "command": "npm run openwiki:index -- --check && npm run openwiki:verify && git diff --check",
+      "exit": 0,
+      "durationSeconds": 2.4689416885375977,
+      "head": "8c4f4f57c1473f024ee7bf9dad50cf859459f30d",
+      "sha256": "d536a65674539059a9ba219af9dc7272867e3e00f60566ef2df21ac243eefa49"
     }
   ],
-  "logging": "Logs trim trailing whitespace only; raw-output.json preserves exact captured subprocess text and its UTF-8 SHA256. subprocess text mode applies universal-newline decoding. Exits are child process exits, never pipeline tail status. Final commands use GNU timeout; initial commands used subprocess.run timeout bounds."
+  "logging": "Logs trim trailing whitespace only; raw-output.json preserves exact captured subprocess text and its UTF-8 SHA256. subprocess text mode applies universal-newline decoding. Exits are child process exits, never pipeline tail status. Final commands use GNU timeout; initial commands used subprocess.run timeout bounds.",
+  "b1B2Correction": {
+    "baseCommit": "8c4f4f57c1473f024ee7bf9dad50cf859459f30d",
+    "baseTree": "f4876f1c27ec0cd5799d20b184470097acd2d304",
+    "verifiedCodeTestsWikiTree": "81141dbd62cf20ad6669143f45ae5812ae4fe87b",
+    "refusalVerifier": "st_01a0741b",
+    "blockers": [
+      "B1",
+      "B2"
+    ],
+    "receiptPrefix": "b1-b2-"
+  }
 }

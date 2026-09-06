@@ -7,7 +7,7 @@ import { resolveSellPrice } from "./upgrades";
 import { parseFarmAnimalStateRecord, restoreFarmAnimalStates } from "./p1FoundationRecords";
 import { restoreSpatialPlacementRecords } from "./spatialPlacementRestore";
 import { parseFarmBuildingPlacementRecord, parseHomeDecorationPlacementRecord } from "@/player/saveSlotSpatialValidation";
-import { isMakerInstancesRecord, isRecord } from "@/player/saveSlotValidation";
+import { isFarmPlotsRecord, isMakerInstancesRecord, isRecord } from "@/player/saveSlotValidation";
 
 export class LifeReconciliationError extends Error {
   readonly name = "LifeReconciliationError";
@@ -37,7 +37,9 @@ export function preserveUnresolvedLifeSource(
 }
 
 /** Parse before any lossy codec. Unknown legacy shapes are owners of unresolved evidence. */
-export function parseLifeState(raw: Partial<Record<LifeSourceKind | "lifeRecovery", unknown>>): ParsedLifeState {
+export function parseLifeState(raw: Partial<Record<LifeSourceKind | "lifeRecovery" | "farmPlots", unknown>>): ParsedLifeState {
+  // Reject before the codec can erase valid neighbors and change spatial occupancy.
+  if (raw.farmPlots !== undefined && !isFarmPlotsRecord(raw.farmPlots)) throw new LifeReconciliationError("farmPlots", "farmPlots", "invalid-occupancy");
   if (raw.lifeRecovery !== undefined && !isLifeRecoveryState(raw.lifeRecovery)) throw new LifeReconciliationError("lifeRecovery", "claims", "invalid-state");
   const result: ParsedLifeState = { lifeRecovery: structuredClone(raw.lifeRecovery) };
   const fields = ["shippingQueue", "bundleContributions", "makerInstances", "farmAnimals", "farmBuildingPlacements", "homeDecorationPlacements"] as const;

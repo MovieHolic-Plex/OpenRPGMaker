@@ -367,3 +367,92 @@ describe("bounded animal restoration", () => {
     expect(roundtrip(project, restored).lifeRecovery).toEqual(restored.lifeRecovery);
   });
 });
+
+
+describe("independent task4 verifier counterexamples", () => {
+  it.each(["writer", "disk"] as const)("B1 quarantines a recognizable opaque placeable through %s with exactly one original owner", (surface) => {
+    const { project, session } = fixture();
+    const sourceId = `${project.startMapId}:2,2`;
+    const original = { id: "legacy", mapId: project.startMapId, x: 2, y: 2, kind: "legacy-machine", paid: { itemId: "old-input", count: 3 }, oldJob: { progress: 7 } };
+    const snapshot = createSaveSnapshot(project, session);
+    session.placeables = { [sourceId]: original };
+    const before = structuredClone(session);
+    if (surface === "writer") {
+      const written = createSaveSnapshot(project, session);
+      expect(written.session.placeables).toEqual({});
+      expect(Object.values(written.session.lifeRecovery?.claims ?? {})).toMatchObject([{ items: [], unresolved: { record: original } }]);
+      expect(saveToSlot(localStorage, 1, written).ok).toBe(true);
+    } else {
+      Object.assign(snapshot.session, { placeables: { [sourceId]: original } });
+      localStorage.setItem(saveSlotKey(1), JSON.stringify(snapshot));
+    }
+    const raw = localStorage.getItem(saveSlotKey(1));
+    const read = readSaveSlot(localStorage, 1);
+    if (read.kind !== "present") throw new Error(read.kind);
+    const restored = applySaveSnapshot(project, read.snapshot);
+    expect(localStorage.getItem(saveSlotKey(1))).toBe(raw);
+    expect(session).toEqual(before);
+    expect(restored.placeables).toEqual({});
+    const claims = Object.values(restored.lifeRecovery?.claims ?? {});
+    expect(claims).toHaveLength(1);
+    expect(claims[0]).toMatchObject({ sourceKind: "placeables", sourceId, items: [], unresolved: { record: original } });
+    const frozen = structuredClone(restored);
+    expect(collectLifeRecoveryClaim(project, restored, "recovery:1").ok).toBe(false);
+    expect(restored).toEqual(frozen);
+    expect(roundtrip(project, roundtrip(project, restored)).lifeRecovery).toEqual(restored.lifeRecovery);
+  });
+
+  function damagedOccupancy() {
+    const { project, session } = fixture();
+    project.database.farmBuildingTypes = [{ id: "shed", name: "Shed", levels: [{ level: 1, footprint: { width: 1, height: 1 }, capacity: 1, graphicResourceId: "easyrpg-picture-cloud" }] }];
+    const snapshot = createSaveSnapshot(project, session);
+    const fields = {
+      farmPlots: { [project.startMapId]: {
+        "2,2": { tilled: true, watered: true, stage: 1, cropId: "old-crop" },
+        "3,3": { tilled: "legacy", watered: false },
+      } },
+      farmBuildingPlacements: { shed: { instanceId: "shed", typeId: "shed", level: 1, mapId: project.startMapId, x: 2, y: 2, orientation: "down" } },
+    };
+    Object.assign(snapshot.session, fields);
+    Object.assign(session, fields);
+    return { project, session, snapshot };
+  }
+  it("B2 refuses the exact mixed valid/malformed plot slot before accepting a colliding shed", () => {
+    const { project, session, snapshot } = damagedOccupancy();
+    const before = structuredClone(session);
+    const raw = JSON.stringify(snapshot);
+    localStorage.setItem(saveSlotKey(2), raw);
+    expect(readSaveSlot(localStorage, 2).kind).toBe("corrupt");
+    expect(() => applySaveSnapshot(project, snapshot)).toThrow();
+    expect(localStorage.getItem(saveSlotKey(2))).toBe(raw);
+    expect(session).toEqual(before);
+    expect(JSON.stringify(snapshot)).toBe(raw);
+  });
+  it("B2 refuses writer and autosave without replacing the prior slot or current live ownership", () => {
+    const { project, session, snapshot } = damagedOccupancy();
+    const prior = createSaveSnapshot(project, startSession(project, 44));
+    expect(saveToSlot(localStorage, 1, prior).ok).toBe(true);
+    expect(performAutosave(project, startSession(project, 45), localStorage, "transfer")).not.toBeNull();
+    const manual = localStorage.getItem(saveSlotKey(1));
+    const auto = localStorage.getItem(autosaveKey());
+    const before = structuredClone(session);
+    expect(() => saveToSlot(localStorage, 1, createSaveSnapshot(project, session))).toThrow();
+    expect(performAutosave(project, session, localStorage, "transfer")).toBeNull();
+    expect(localStorage.getItem(saveSlotKey(1))).toBe(manual);
+    expect(localStorage.getItem(autosaveKey())).toBe(auto);
+    expect(session).toEqual(before);
+    expect(snapshot.session.farmPlots).toEqual(before.farmPlots);
+  });
+  it("B2 refuses the whole day before changing occupancy, recovery, or prior receipts", () => {
+    const { project, session } = damagedOccupancy();
+    session.lifeRecovery = { nextSequence: 2, claims: { "recovery:1": { id: "recovery:1", sourceKind: "shippingQueue", sourceId: "raw", reason: "removed", items: [{ itemId: "raw", count: 1 }] } } };
+    session.shippingQueue = { raw: 3 };
+    project.system.shipping = { enabled: false };
+    session.completedBundleIds = ["prior-completion"];
+    session.bundleRewardAppliedIds = ["prior-completion"];
+    session.shippingHistory = [{ dayKey: "1:winter:28", entries: [], total: 0, credited: 0 }];
+    const before = structuredClone(session);
+    expect(transitionToNextDay(project, session, "1:spring:1")).toMatchObject({ ok: false, reason: "recovery", stage: "recovery", sourceKind: "farmPlots" });
+    expect(session).toEqual(before);
+  });
+});

@@ -1,5 +1,7 @@
 # Task4: lossless life snapshot reconciliation
 
+**Current producer correction:** independent verifier `st_01a0741b` refused `8c4f4f57` for two demonstrated gaps (B1 opaque placeable prefix loss; B2 malformed occupancy accepted). Both are corrected and reverified below under "B1/B2 correction". Earlier done claims are historical, not independent approval. VERIFY.md is preserved unchanged; fresh independent confirmation is still required.
+
 Task4 is implemented and verified in `agent/life-full-p2`. This replaces the stale blocked producer SUMMARY. It does **not** replace the independent task4 VERIFY at old HEAD `5c528ca3`; the parent must obtain fresh task4 verification before task5 starts.
 
 ## Identity, gate and immutable provenance
@@ -178,3 +180,110 @@ Result: **14 files /160 passed /0 failed /0 skipped, actual exit0**. `lifeSaveVe
 Receipts: `autosave-parent-regression.{log,json}`; JSON contains exact command/wrapper, implementation HEAD/tree, captured output and SHA256. `commands.json` includes the new run. The DoneClaim's related count is updated to160; earlier13-file153-pass entries remain accurate historical receipts. `initial-green.json` remains exit1 and is not accepted as GREEN.
 
 No source/test edits, new RED claim, diagnostic/build rerun, dependency change, push, PR, merge or remote write occurred in this evidence-only follow-up. Previously verified diagnostics/build apply to the unchanged product tree. The selected tests dispose save-write instrumentation, tear down the player shell and restore mocks/store state; the process exited. Full51coverage remains unchanged/not-run. The committed task4 implementation still needs fresh independent VERIFY before task5.
+
+## B1/B2 correction after independent refusal
+
+The parent accepted verifier `st_01a0741b`'s two counterexamples as task4 incompleteness. I read the **entire current VERIFY.md first**, before any other action in this correction turn. Its refusal is justified: the earlier70-test suite and public probe did not exercise a successful partial placeable parse or a malformed occupancy neighbor. Those earlier successes are not substituted for the new evidence and the refusal is not hidden or overwritten.
+
+### Provenance and minimal change
+
+- Correction base: `8c4f4f57c1473f024ee7bf9dad50cf859459f30d`, tree `f4876f1c27ec0cd5799d20b184470097acd2d304`; initial worktree clean.
+- Task3 gate reread: confirmed, acceptance0, blockers0; f7285316 remains an actual ancestor (exit0).
+- Verified corrected code/tests/wiki tree before evidence staging: `81141dbd62cf20ad6669143f45ae5812ae4fe87b`.
+- Correction commit subject: `fix(save): preserve opaque assets and reject invalid occupancy`. This correction section and its evidence ship with that atomic commit; its containing commit is the correction identity, avoiding a circular self-hash. The parent receives the resulting SHA separately.
+- Only two production files change: `saveSlots.ts` adds the supported-field check before placeable reconstruction; `lifeStateReconciliation.ts` validates raw optional farmPlots with the existing predicate at the shared pre-filter boundary. The existing recovery quarantine, typed autosave failure path, day draft, spatial collision predicate and all other parsers are unchanged.
+- The existing `lifeRecoveryPersistence.test.ts` gains five deterministic tests; none of its35 earlier tests or any other existing test is altered. The runtime-session wiki and generated index record the corrected rejection contract.
+
+**B1:** `restorePlaceables` previously kept recognizable id/map/x/y/kind but silently discarded opaque fields. Unsupported fields now prevent reconstructive acceptance, so the existing wrapper removes that source from the draft and creates one bounded unresolved claim containing the full original. The exact verifier payload uses kind `legacy-machine`, `paid:{itemId:"old-input",count:3}` and `oldJob:{progress:7}` at `map_blank_start:2,2`. Its opaque paid amount is **not** interpreted as a refund. Writer and disk reader/apply tests prove source absent, exactly one claim, deep-equal original, empty payable items, refused receipt, unchanged writer input and no reissue over two further roundtrips.
+
+**B2:** `parseLifeState` now rejects a present farmPlots value failing the existing whole-collection validator, before parsing can replace it with undefined. This is the minimal whole-load rejection accepted by the parent, not partial salvage or a general parser rewrite. Reader returns corrupt; direct apply/writer throw typed `LifeReconciliationError`; autosave returns null; day returns recovery failure with sourceKind/sourceId farmPlots. The exact verifier input contains valid tilled2,2 with `old-crop`, malformed3,3 with `tilled:"legacy"`, and the valid1x1 shed at2,2. Disk bytes, current live state, inventory, source owners and prior receipts remain unchanged on refusal. A public positive control removes only the malformed neighbor: the valid plot survives and the colliding shed is still quarantined. Spatial occupancy was not weakened.
+
+### Failure-first and fresh verification
+
+All `b1-b2-*.json` command receipts retain exact command/wrapper, actual exit, base HEAD/tree, captured stdout/stderr text and its SHA256. Readable `.log` files trim only trailing whitespace. GNU timeout bounds the actual child exit; no monitor tool was available. All final validations passed in one execution, without timing retries.
+
+| Receipt | Actual result |
+| --- | --- |
+| `b1-b2-red.{log,json}` | **Before production edits**, exact required six-file suite: exit1, **5 failed/70 passed**. Both B1 surfaces lose original data; B2 reader returns present, writer does not throw, and day succeeds. These are assertion failures at the exact real seams, not import/fixture errors. |
+| `b1-b2-green.{log,json}` | Same exact required command: exit0, **6 files/75 passed**, including all40 recovery-persistence tests;0 failed/skipped. |
+| `b1-b2-related.{log,json}` | Expanded affected suite: exit0, **16 files/169 passed**,0 failed/skipped. Includes unchanged lifeSaveVersion18, autosave16 and playerOpenSaveMenu7, ownership/recovery54, spatial/day/checkpoint and custom-calendar regressions. |
+| `b1-b2-diagnostics.{log,json}` | Actual TypeScript language service checks all14 task4 TS files, including all3 touched by this correction: **0 diagnostics**, exit0. Touched-file all-severity LSP also reports none. |
+| `b1-b2-typecheck.{log,json}` | `npm run typecheck:app`, after diagnostics: exit0. |
+| `b1-b2-build.{log,json}` | `npm run build`: app, player/SDK and standalone all complete, **exit0 in204.87s**, within900-second bound. Existing unresolved-at-build-time asset URLs, mixed imports and chunk-size warnings remain visible. |
+| `b1-b2-public.{log,json}` | New public Vite SSR/real Storage probe: **exit0**, four asserted JSON observations for B1, B2, valid-occupancy control and cleanup. |
+| `b1-b2-prior-public.{log,json}` | Existing public probe unchanged and rerun on corrected code: **exit0**, all seven observations still pass (2+3 conservation, rights, original-clock cancellation, malformed/quota/later-stage rollback). |
+| `b1-b2-wiki.json` | Index check, wiki verification and git diff check: exit0. Staged diff check also passes. |
+
+Required command, unchanged:
+
+```sh
+npm test -- test/lifeRecoveryPersistence.test.ts test/p0SessionPersistence.test.ts test/p1SessionPersistence.test.ts test/p2SessionPersistence.test.ts test/p2SpatialPersistence.test.ts test/p0RuntimeIntegration.test.ts
+```
+
+Affected related command:
+
+```sh
+npm test -- test/lifeRecovery.test.ts test/lifeSaveVersion.test.ts test/autosave.test.ts test/p0Makers.test.ts test/p0Shipping.test.ts test/p0Bundles.test.ts test/p1FarmAnimals.test.ts test/p1DayTransitionIntegration.test.ts test/p1WeatherDayTransition.test.ts test/p2DayTransition.test.ts test/p0DayTransitionSceneFailure.test.ts test/p2SpatialTransactions.test.ts test/checkpointEndingRuntime.test.ts test/playerOpenSaveMenu.test.ts test/customSeasonSave.test.ts test/p0SafetyHardening.test.ts
+```
+
+Public/validation commands:
+
+```sh
+node .omo/evidence/life-full-20260906/4/b1-b2-public-probe.mjs
+node .omo/evidence/life-full-20260906/4/public-probe.mjs
+node .omo/evidence/life-full-20260906/4/diagnostics.mjs
+npm run typecheck:app
+npm run build
+npm run openwiki:index -- --check
+npm run openwiki:verify
+git diff --check
+```
+
+Prior coverage inspection found valid farm-first, opaque-without-prefix, stale-item and removed-forage cases, but neither precise counterexample. Custom calendar and safety-hardening fixtures preserve valid boolean plot state; no previous rejection assertions needed changing. Two exploratory searches for guessed test filenames exited2 because those files do not exist; actual files were located with rg and included by their real names, not silently substituted in the required selection.
+
+### Public evidence, adversarial audit and cleanup
+
+`b1-b2-public-probe.mjs` imports the actual reader/writer/apply/recovery/autosave/day authorities and uses real happy-dom Storage, with no target replacement or structuredClone mock. `b1-b2-roundtrip.json` is extracted from the two executed probes' actual output. It is module-surface evidence, not a player.html or gameplay-earned-resource claim.
+
+- **cancel/resume:** B1 receipt refuses to pay; repeated reader/writer/apply preserves the same single claim/sequence. The unchanged prior probe still proves maker resume/cancellation and no duplicate receipt.
+- **malformed:** exact B2 mixed collection refuses as a whole before any plot loss or altered spatial decision; existing bounded recovery and malformed save tests stay green.
+- **stale:** opaque recognizable old-machine data remains a complete original, not a recognized prefix; old-crop plot still occupies2,2 despite absent crop definition.
+- **flaky:** all new tests/probes are synchronous with fixed seeded fixtures and explicit day keys. No sleeps, polling, injected success result or timing-luck retry.
+- **dirty:** clean entry; explicit five-file product/test/wiki staging plus named task4 evidence only. VERIFY/root plan/Boulder/WISH, task9/task11 sources and dependencies remain untouched.
+- **misleading output:** independent refusal and its two failures are retained, new RED is real exit1, all counts belong to the corrected execution. Historical GREEN does not override the refusal. Build warnings and expected typed error warnings are not suppressed.
+
+Both probes clear Storage and close happy-dom/Vite in finally; no HTTP listener was opened and both child processes exited. The task-created dist directory was absent at entry, contained0 tracked files and was removed after preserving build evidence. All test/compiler/build commands exited; no runtime hooks or browser/server remain. No push/PR/merge, remote write, dependency edit, full non-life parser rewrite, task9 clock expansion or task11 housing/receipt payout was added. Full51coverage remains unchanged/not-run. Fresh independent task4 verification is still required before task5; this producer does not modify its own VERIFY verdict.
+
+### B1/B2 correction DoneClaim
+
+```json
+{
+  "taskId": "st_01a073f5",
+  "taskNumber": 4,
+  "status": "done",
+  "done": true,
+  "correction": ["B1 opaque recognizable placeable original", "B2 invalid persistent occupancy rejection"],
+  "refusalVerifier": "st_01a0741b",
+  "baseCommit": "8c4f4f57c1473f024ee7bf9dad50cf859459f30d",
+  "baseTree": "f4876f1c27ec0cd5799d20b184470097acd2d304",
+  "verifiedCodeTestsWikiTree": "81141dbd62cf20ad6669143f45ae5812ae4fe87b",
+  "commitSubject": "fix(save): preserve opaque assets and reject invalid occupancy",
+  "red": { "exit": 1, "failed": 5, "passed": 70 },
+  "requiredTests": { "exit": 0, "files": 6, "passed": 75, "failed": 0, "skipped": 0 },
+  "relatedTests": { "exit": 0, "files": 16, "passed": 169, "failed": 0, "skipped": 0 },
+  "diagnostics": { "files": 14, "count": 0 },
+  "typecheckExit": 0,
+  "buildExit": 0,
+  "counterexamplePublicProbeExit": 0,
+  "priorPublicProbeExit": 0,
+  "B1": "one unresolved full-original owner, no inferred payout, no reissue",
+  "B2": "reader/apply/writer/autosave/day refuse invalid occupancy without disk/live/receipt changes",
+  "spatialChecks": "unchanged; valid plot still blocks shed",
+  "existingTests": "all preserved, no old assertion changes",
+  "full51coverage": "not-run; unchanged",
+  "remoteWrites": 0,
+  "pushPrMerge": false,
+  "teardown": "complete",
+  "independentVerification": "fresh parent verification required; existing VERIFY untouched"
+}
+```

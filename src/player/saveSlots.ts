@@ -687,8 +687,12 @@ function restorePlaceables(project: Project, value: PlaySession["placeables"] | 
   if (!value || typeof value !== "object" || Array.isArray(value)) return {};
   const itemIds = new Set(project.database.items.map((item) => item.id));
   const result: Record<string, PlaceableObjectState> = {};
+  const fields = new Set(["id", "mapId", "x", "y", "kind", "itemId", "seasonalDrops", "forageSpawn"]);
   for (const [key, raw] of Object.entries(value).slice(0, P2_SESSION_RECORD_LIMIT)) {
     if (!raw || typeof raw !== "object" || Array.isArray(raw)) continue;
+    // A recognizable prefix is not proof that opaque legacy job/payment fields can be discarded.
+    // Leave the entire source for prepareLifeSnapshot to quarantine without inferred payouts.
+    if (Object.keys(raw).some((field) => !fields.has(field))) continue;
     const candidate = raw as Record<string, any>;
     const mapId = typeof candidate.mapId === "string" ? candidate.mapId.trim() : "";
     const id = typeof candidate.id === "string" ? candidate.id.trim() : "";
