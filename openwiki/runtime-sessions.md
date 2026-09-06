@@ -28,7 +28,7 @@ New maker jobs copy inputs actually consumed, promised outputs, duration and res
 
 ## Lossless life snapshot reconciliation (2026-09-06)
 
-`src/project/lifeStateReconciliation.ts` owns `parseLifeState` and pure `reconcileLifeState` (also exported from `lifeRecovery.ts`). The shared writer clones live state, restores persistent placeables/plots/chests before checking spatial placements, reconciles animals, then shipping/bundles/makers. Apply validates a separate draft and commits only by returning that draft. Compatible makers are synchronized at restored game time only after reconciliation; natural ticks, command clocks and UI timing remain outside this task. Cancellations use each frozen job's original calendar before normalizing the restored date to current settings.
+`src/project/lifeStateReconciliation.ts` owns `parseLifeState` and pure `reconcileLifeState` (also exported from `lifeRecovery.ts`). The shared writer clones live state, restores persistent placeables/plots/chests before checking spatial placements, reconciles animals, then shipping/bundles/makers. Apply validates a separate draft and commits only by returning that draft. Compatible makers are synchronized at restored game time only after reconciliation. Natural game minutes, authored time advances, and set-time also synchronize through the existing clock/day authorities; ledger rendering never advances jobs. Cancellations use each frozen job's original calendar before normalizing the restored date to current settings.
 
 Unknown legacy records and rejected placements/animals/placeables retain complete unresolved JSON with zero inferred payout. A recognizable placeable prefix does not authorize dropping opaque fields: unsupported fields such as legacy paid/oldJob data cause whole-record quarantine before reconstruction. The shared life parser rejects an invalid farm-plot collection before any lossy projection; one malformed neighbor cannot erase valid persistent occupancy and permit a colliding placement. This same rejection protects writer/autosave and the whole-day draft. Runtime animal limits quarantine excess saved owners instead of dropping the suffix; explicitly empty saved animals/placements do not resurrect authored starts. Runtime spatial payment/decor receipts survive the codec; payment capture, linked housing and spatial receipt payout remain later spatial transaction work. Missing legacy homes still follow the existing explicit legacy-building compatibility path, not inferred spatial links.
 
@@ -207,3 +207,9 @@ Esc 메뉴의 대상 유지·회복량 미리보기와 메뉴 입력 회귀 수�
 
 
 #593 후속 커밋은 선택 행에 공통 규칙과 같은 `border-radius: 3px`, `margin: 0`, `min-height: 0` 및 `bottom: auto`를 명시한다. 따라서 CSS 실사용 기준선은 상점 PR의 원래 기준선을 유지하며 메뉴의 속성 누락 검사는 통과한다.
+
+## Maker clock deadlines (2026-09-06)
+
+`syncMakersToGameTime` in `src/project/makers.ts` uses the existing authored active-day absolute-minute clock. `advanceTimeAcrossDayBoundaries` and `setTimeWithMakers` reconcile on a draft at the prior clock, change time, synchronize deadlines, and commit together. Zero-minute advances do not replace owners. Ready jobs never regress on backward set-time. Definition edits preserve frozen contracts; cancellation still uses the original time basis and never infers legacy spent inputs.
+
+`updateGameTime` processes a frame's completed game minutes atomically, retains menu/battle/cutscene pause, and preserves the last completed fixed-step clock for forced-sleep hooks. A failed forced sleep or later authored-day stage restores the operation's session. The headless runner shares minute/set-time authorities, retains its existing day-end hook policy, and preserves residual minutes when starting exactly at day end. Regression: `test/makerClockIntegration.test.ts`.

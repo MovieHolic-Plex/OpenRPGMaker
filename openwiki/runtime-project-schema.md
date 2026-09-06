@@ -8,6 +8,8 @@ Manual keys are `oprn:save-slot:v5:1..3` and autosave is `oprn:save-slot:v5:auto
 
 ## Life ownership in Save5 (2026-09-06)
 
+When saved maker jobs depend on a present clock, writer/parser/apply reject malformed dates rather than dropping the clock while keeping its jobs. Frozen jobs also reject absolute-minute overflow in their original basis. Legacy omitted clocks retain the initial-clock fallback; project-free parsing does not impose the default calendar on legacy jobs. Save5/Project4 versions and key namespaces are unchanged.
+
 Optional `session.lifeRecovery` now crosses writer, manual/auto Storage, parser and apply unchanged after bounded validation. Shared pure life reconciliation runs before known-content filters; incompatible sources are moved to claims or preserved as unpayable original JSON, never silently deleted. Completion/reward tombstones and region/recipe IDs retain dormant rights. Claim quantities/counts, monotonic sequence, 64 KiB raw UTF-8 and 8 MiB total limits are reject-without-trimming boundaries. Duplicate JSON object keys are rejected by both disk readers. Existing Save4 migration and v5 key isolation remain unchanged. Source removal plus claim creation and explicit receipt plus inventory transfer are separate atomic draft transactions. See `runtime-sessions.md` for restoration order, cancellation clocks and task boundaries; regression `test/lifeRecoveryPersistence.test.ts` executes the actual codec.
 
 ## Project-authored equipment slots (2026-09-05)
