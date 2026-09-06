@@ -1,28 +1,27 @@
-7:28:20 PM [vite] (client) Re-optimizing dependencies because vite config has changed
 [edit-activity] (라벨 없음: project)
 [project-commits] 저장 baseline 이 없어 실제 diff 를 못 낸다 — 시스템 변경으로 기록한다 { summary: '변경 저장: 시스템' }
 [edit-activity] (라벨 없음: project)
 {
   "pass": true,
-  "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
-  "report": "/home/main/z-project/rpg-zzu-ai-harness-p1-20260906/output/evidence/ai-harness/p1/remote.json",
+  "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
+  "report": "/home/main/z-project/rpg-zzu-ai-harness-p1-remote-20260906/output/evidence/ai-harness/p1/remote.json",
   "cleanup": {
     "localTimersCleared": true,
     "deferredSettled": true,
     "ownership": {
       "absentBeforeRun": true,
-      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
-      "ownerTitle": "QA persistence proof 87289b68-3b25-422e-b493-5641626bb3f9",
+      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
+      "ownerTitle": "QA persistence proof 577b3786-69b8-413e-8654-6ec813ffac52",
       "observed": {
-        "project_id": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
-        "title": "QA persistence proof 87289b68-3b25-422e-b493-5641626bb3f9"
+        "project_id": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
+        "title": "QA persistence proof 577b3786-69b8-413e-8654-6ec813ffac52"
       }
     },
     "remote": {
       "kind": "deleted-and-absence-verified",
-      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
       "commitIds": [
-        "d959e008-3de6-4645-afdb-5058fe9eb39c"
+        "318a8c38-3d7a-430e-8f70-ea46515717a3"
       ]
     },
     "viteClosed": true,
@@ -32,10 +31,10 @@
     "pendingProofs": 0
   },
   "receipt": {
-    "revisionId": "f3a61432-92cc-4cc6-8697-453703fbc940",
-    "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+    "revisionId": "beb8781c-fa30-4c08-9903-80892b2a751d",
+    "projectId": "qa-ai-proof-577b3786-69b8-413e-8654-6ec813ffac52",
     "mutationGeneration": 1,
-    "contentIdentity": "28540a0f484856b8218cf87fc4a3df375d6bf7e4ff1302a7c9f4bcf10cc9985e",
-    "sha256": "5ef0ab75483ac46ddbb93760876717d78afd76f35677d92782353729ae149941"
+    "contentIdentity": "4922e7929e1675758d960fc2e68c503fc7b4cf7988a6f766d5a4251e6ebe6d72",
+    "sha256": "a6801b84699a2f909118aeb49f86a252a8ce6748a58404d737d7e42d6683cc48"
   }
 }

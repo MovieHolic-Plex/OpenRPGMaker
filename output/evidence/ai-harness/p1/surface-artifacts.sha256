@@ -1,3 +1,10 @@
+4428593ea2601b2a6b02dd3e1b6cbcd100bc119ffc3c53c98b4181997d13dc1c  output/evidence/ai-harness/p1/combined-remote-actions.jsonl
+89cd85d1183a2c915672fda4937a8836292bef0c51eb43399942724f587ffd19  output/evidence/ai-harness/p1/combined-remote-prior.json
+eb87b683f3dce497f2e6baffe25880a20099b272749ed1e0bb308aff7f04fe4c  output/evidence/ai-harness/p1/combined-remote-prior.log
+19eaf43821a7660ec323a87c8457bf74823beb296c39f5e01aa8a683aa50f061  output/evidence/ai-harness/p1/combined-remote-prior.receipt
+70cc9a8a5e02e768e722f8842da642dd2bef7c6f22be1b00522673678717f1b6  output/evidence/ai-harness/p1/combined-remote.json
+71ab8ca27f2056e918b81b6373ad42d64795895e8b4947da1872ef21d2c117ba  output/evidence/ai-harness/p1/combined-remote.log
+19eaf43821a7660ec323a87c8457bf74823beb296c39f5e01aa8a683aa50f061  output/evidence/ai-harness/p1/combined-remote.receipt
 2333780e699904058dd4b653f0c0c26b19c8337dc8a96769ba6c28e9c93fc5a0  output/evidence/ai-harness/p1/editor-boot-config-failure.log
 cf205dbb8cea84897b488abcc281bf96698d5e94b1096b16657b4caba9082a22  output/evidence/ai-harness/p1/editor-boot-config-failure.receipt
 b5f338364fae8fdb56d54f3fbcfdf48852d33d6a6ecb321a5da9b2773b4db706  output/evidence/ai-harness/p1/editor-boot-config-failure/actions.json
@@ -90,9 +97,10 @@ a2533be15d16611c2bcbd20dfaac71918406080ffc54a4c2ccdcdbdecdc80280  output/evidenc
 68da707d7c3e6b13a6a9c1b898a8711296a408ebc3ab4a3a7fdfbb07cefab6a3  output/evidence/ai-harness/p1/remote-worker-final.log
 5078505df1dbd62830cc6583f099c92000f379c2d0cf2517886a0f744ab71cc6  output/evidence/ai-harness/p1/remote-worker-final.receipt
 9e02e8aa85533c7592cb62022871eed6c2c4587719b57fdaededf9ba079e30ea  output/evidence/ai-harness/p1/remote-worker.md
-89cd85d1183a2c915672fda4937a8836292bef0c51eb43399942724f587ffd19  output/evidence/ai-harness/p1/remote.json
-eb87b683f3dce497f2e6baffe25880a20099b272749ed1e0bb308aff7f04fe4c  output/evidence/ai-harness/p1/remote.log
-19eaf43821a7660ec323a87c8457bf74823beb296c39f5e01aa8a683aa50f061  output/evidence/ai-harness/p1/remote.receipt
+76adeb6f61979c646bb7745ec83d2f23c0851d7b8f5d68bff5e24539b41000cc  output/evidence/ai-harness/p1/remote.json
+68da707d7c3e6b13a6a9c1b898a8711296a408ebc3ab4a3a7fdfbb07cefab6a3  output/evidence/ai-harness/p1/remote.log
+5078505df1dbd62830cc6583f099c92000f379c2d0cf2517886a0f744ab71cc6  output/evidence/ai-harness/p1/remote.receipt
+695b01b028693df8f14b06cc3abe3aec50d2b4b2e7b1fbab909fa1196c0453ae  output/evidence/ai-harness/p1/surface-before-remote-path-validation.json
 f6e75e1e69cb05476e3a98af0f7d0adaaadc75e00fcc63aaf316edd1394bf118  output/evidence/ai-harness/p1/surface-build.log
 19eaf43821a7660ec323a87c8457bf74823beb296c39f5e01aa8a683aa50f061  output/evidence/ai-harness/p1/surface-build.receipt
 090a5605ea3e4811b62497a0f20fe65d95025de5706ee98c0923d9b52352a303  output/evidence/ai-harness/p1/surface-diff-check.log
@@ -102,8 +110,8 @@ f4d442202da0705033874335897dcbfd2d23877af362b17df9c0356c30a093f9  output/evidenc
 cf205dbb8cea84897b488abcc281bf96698d5e94b1096b16657b4caba9082a22  output/evidence/ai-harness/p1/surface-tests.receipt
 9e2e881b46f10347e10261b098fd6171273d8f45b9a5d52fc81a8473a713bdfe  output/evidence/ai-harness/p1/surface-typecheck.log
 19eaf43821a7660ec323a87c8457bf74823beb296c39f5e01aa8a683aa50f061  output/evidence/ai-harness/p1/surface-typecheck.receipt
-695b01b028693df8f14b06cc3abe3aec50d2b4b2e7b1fbab909fa1196c0453ae  output/evidence/ai-harness/p1/surface-validation.json
-0dbe72c02870edee7a85160c35e395b2ba11306d8ffff61329f452c018aa2b53  output/evidence/ai-harness/p1/surface.md
+9b8cc9646deca8497b06e876c48ef5705b2c8425d4a0c4c9640eb9385ac3d6bc  output/evidence/ai-harness/p1/surface-validation.json
+a0d61cf07ed705ff57edc0f07be5dda2f430c616c02c5c998fb5d4d320af8ae8  output/evidence/ai-harness/p1/surface.md
 f16661fec79f339d0d2324710e3791475913de3e0c354cdc86d0f0526abcb663  scripts/qa/ai-harness-contracts.mjs
 587c91a13ebdf3aad6b2efaedd96b52ec44db9e33f72100aa9c2aab1aa8db083  scripts/qa/ai-harness-remote-proof.mjs
 c2b52ed6813788417e6899fcdf9c0f94b16784105b6d08b2800567c990f16656  scripts/qa/ai-harness-vite.config.mjs

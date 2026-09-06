@@ -50,7 +50,7 @@ the corrected-port acceptance run.
 
 ```sh
 QA_PORT=41583 EVIDENCE_DIR=output/evidence/ai-harness/p1/editor xvfb-run -a node scripts/qa/ai-harness-contracts.mjs --scenario proof-failure
-node scripts/qa/ai-harness-remote-proof.mjs --create-isolated-project --scenario all --report output/evidence/ai-harness/p1/remote.json
+node scripts/qa/ai-harness-remote-proof.mjs --create-isolated-project --scenario all --report output/evidence/ai-harness/p1/combined-remote.json
 npm test -- test/aiRunEndProof.test.ts test/storePersistenceProof.test.ts test/storePersistence.test.ts test/supabaseProjectSync.test.ts test/aiComposerModeSession.test.ts test/aiMilestoneTurnAccounting.test.ts test/aiAssistantTurnCleanup.test.ts
 npm run typecheck:app
 npm run build
@@ -59,7 +59,7 @@ npm run build
 | Command | Actual result | Artifact stem |
 | --- | --- | --- |
 | Exact editor | **0**, six screenshots, all assertions pass | `editor.log`, `editor.receipt`, `editor/actions.json` |
-| Exact remote | **0**, 15 scenario observations | `remote.log`, `remote.receipt`, `remote.json` |
+| Exact combined remote | **0**, 15 scenario observations | `combined-remote.log`, `combined-remote.receipt`, `combined-remote.json` |
 | Related tests, one invocation | **1**, 89 passed / six pre-existing failures, seven files | `surface-tests.log`, `.receipt` |
 | App typecheck | **0** | `surface-typecheck.log`, `.receipt` |
 | Full app/player/standalone build | **0** | `surface-build.log`, `.receipt` |
@@ -168,12 +168,13 @@ acceptance port. No port blocker remains.
 
 ## Combined-tree remote proof and historical evidence
 
-Exact remote project: `qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9`.
-Accepted revision: `f3a61432-92cc-4cc6-8697-453703fbc940`, generation 1.
+Exact combined remote project: `qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3`.
+Execution HEAD: `5c103676`, unchanged harness and store source.
+Accepted revision: `c8507f4e-f19f-4842-bb48-b62f90b351cb`, generation 1.
 Accepted/initial/restored normalized identity:
-`28540a0f484856b8218cf87fc4a3df375d6bf7e4ff1302a7c9f4bcf10cc9985e`.
+`b44812d4a41c4601efc8ef3525e289831dc130832bd2ff24a9e31a8883996414`.
 Changed real remote identity:
-`593fe42850a93fec95a64422cf657d41ef43d5ff944d8ab8bf8d6dc43f6f634e`.
+`06fecdfccf513659692fab5fc171875678693f9faa40534c3a79861807d41b4e`.
 
 The unchanged harness proves real accepted match, real changed-content mismatch,
 restore/same-receipt retry, and newer-local-state preservation. Its 503, returned
@@ -181,25 +182,40 @@ wrong target, disabled-store and caller-cancel cases are explicitly labeled
 injections, **not asserted real service outages**. Successful transport and all
 save/load normalization are real. The NPC dialogue sentinel survives readback.
 
-The imported worker's original `remote.json/.log/.receipt` were archived
-byte-for-byte as `remote-worker-final.json/.log/.receipt` before the required
-combined-tree command rewrote the prescribed report names. All other upstream
-metadata/mutation evidence remains unchanged. Its original inventory
-`remote-artifacts.sha256` describes that earlier run, not the combined report;
-validation maps the three archived names when checking it. Original
-`remote-actions.jsonl` matches the archive; `remote-combined-actions.jsonl`
-matches the current required report. No old proof is relabeled as this run.
+The lead revised C001 to use the distinct `combined-remote.json` report path.
+Before restoring anything, this node archived its previously captured combined
+`remote.json/.log/.receipt` as `combined-remote-prior.json/.log/.receipt`.
+Only the three imported producer files were then restored from their verified
+original archive using targeted file patches, not git checkout/reset. They now
+match producer commit `476d7a7c` byte-for-byte at their original paths. All 44
+entries in the untouched `remote-artifacts.sha256` validate directly, without
+path remapping; the original mutation artifacts remain intact.
+
+The new exact command above ran once and wrote only `combined-remote.json`,
+`combined-remote.log` and `combined-remote.receipt`. Its extracted actions are
+`combined-remote-actions.jsonl`. The original `remote-actions.jsonl` still matches
+the producer's `remote.json`; `remote-combined-actions.jsonl` remains the prior
+combined attempt's unchanged action list. `remote-worker-final.*` remains an
+additional byte-identical producer archive. No old proof is relabeled as the
+new acceptance run. The preceding aggregate validation is preserved as
+`surface-before-remote-path-validation.json`.
+
+This correction made no product, test, or test-helper changes and repeated no
+unrelated tests/build/browser runs. It launched no `npm run gates` command and
+wrote no shared `.omo/gates*` report while the supervisor gate was running.
+The browser assignment remains explicit `QA_PORT=41583`.
 
 ## Cleanup and bounded DoneClaim
 
-All five projects actually created by this node were deleted and root/maps/
+All six projects actually created by this node were deleted and root/maps/
 tilesets/commits/changes absence verified by their owning scripts:
 
 - Mutation RED: `qa-ai-surface-58d4f90e-6f7c-4f04-b1a6-4b6fa81b0347`.
 - Development GREEN: `qa-ai-surface-7045c20b-4d21-409a-bd4b-62ae4644b40e`.
 - Historical 19847 editor GREEN: `qa-ai-surface-9e93524e-f047-4733-850d-4edcd348f0e9`.
 - Corrected 41583 editor GREEN: `qa-ai-surface-573bdbb5-c9ac-4ebe-a319-d9a588659949`.
-- Exact remote GREEN: `qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9`.
+- Prior combined remote GREEN: `qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9`.
+- Revised-path combined remote GREEN: `qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3`.
 
 Failed preflight/boot runs created no remote row. Browser contexts, owned Vite
 process groups, observers, routes, private caches and timers are closed. The

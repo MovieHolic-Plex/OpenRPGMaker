@@ -1,9 +1,9 @@
 {
   "pass": true,
-  "checkedAt": "2026-09-06T10:53:18.394Z",
+  "checkedAt": "2026-09-06T10:50:11.999Z",
   "harnessCommit": "8a59f1e7651944f388dfc99e3c609bac9b9ba558",
   "editorProjectId": "qa-ai-surface-573bdbb5-c9ac-4ebe-a319-d9a588659949",
-  "remoteProjectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+  "remoteProjectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
   "exactEditorExit": 0,
   "exactRemoteExit": 0,
   "mutationSubjectExit": 1,
@@ -33,18 +33,18 @@
     "deferredSettled": true,
     "ownership": {
       "absentBeforeRun": true,
-      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
-      "ownerTitle": "QA persistence proof 9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+      "ownerTitle": "QA persistence proof 87289b68-3b25-422e-b493-5641626bb3f9",
       "observed": {
-        "project_id": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
-        "title": "QA persistence proof 9136d6ba-6e46-43f1-88c7-e9f0fe5875c3"
+        "project_id": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
+        "title": "QA persistence proof 87289b68-3b25-422e-b493-5641626bb3f9"
       }
     },
     "remote": {
       "kind": "deleted-and-absence-verified",
-      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "projectId": "qa-ai-proof-87289b68-3b25-422e-b493-5641626bb3f9",
       "commitIds": [
-        "8eb04b2e-b389-4732-b948-f66c6f0530f9"
+        "d959e008-3de6-4645-afdb-5058fe9eb39c"
       ]
     },
     "viteClosed": true,
@@ -59,7 +59,7 @@
     "scripts/qa/ai-harness-contracts.mjs": "f16661fec79f339d0d2324710e3791475913de3e0c354cdc86d0f0526abcb663"
   },
   "upstreamArtifactsPreserved": 44,
-  "textArtifactsSecretScanned": 94,
+  "textArtifactsSecretScanned": 86,
   "configuredSecretValuesFound": 0,
   "relatedTests": {
     "exit": 1,
@@ -86,10 +86,5 @@
     "sourceAndTestsUnchanged": true,
     "supervisorGatesRun": false,
     "priorValidation": "surface-port19847-validation.json"
-  },
-  "combinedRemoteReport": "combined-remote.json",
-  "combinedRemoteSourceSha": "5c103676805e8016bfd5b1f5ef84e4d40fbd0ee9",
-  "producerEvidenceRestored": true,
-  "upstreamManifestValidatedWithoutRemapping": 44,
-  "priorCombinedReport": "combined-remote-prior.json"
+  }
 }
