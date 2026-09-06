@@ -702,3 +702,35 @@ Disclose excluded factors in one concise note: defense, skill power, type chart/
 - Reuse studio section cards, labeled buttons, 4px spacing, shared radius and monospace code text. The preview is explicitly a style sample, not a simulated battle. The runtime resolver supplies its labels.
 - CSS has a deliberately small vocabulary: `.menu`, `.command`, `.label`, `.command:focus-visible`, `.command:disabled`. Only visual properties are accepted; no URLs, external resources, arbitrary selectors, at-rules, positioning or scripts. Valid edits preview immediately. Invalid drafts keep the last valid preview and disable Apply with a visible error.
 - Apply makes one undoable project change. Revert restores the saved text; reset removes the override. A preset is only a draft until Apply. Scoped runtime styles are mounted and removed with each command panel; they never target editor chrome or other game windows.
+
+## AI acceptance sticky note (2026-09-06)
+
+- A read-only session note lives outside the chat deck, aligned to the measured
+  `--editor-left-safe` canvas edge plus `--space-3`. It never covers the 288px
+  palette. Its top clears the measured canvas toolbar; fallback is 112px.
+  Width is 272px, bounded by remaining viewport space; maximum height is 480px
+  and the viewport remainder. New local geometry tokens own these dimensions.
+- Reuse vanilla `el`, `deckIcon`, native button/details and the Studio palette:
+  raised white paper, subtle border, indigo top rule, `--shadow-pop`, radius-m,
+  `--font-ui`, 12px metadata, 13px body, 14px goal, line-height 1.5 and existing
+  4/8/12/16px spacing tokens. No yellow paper, rotation, emoji or new dependency.
+- Fixed header (goal, verified/total, collapse) and a single scrolling body follow
+  StyleGallery scroll-body-shell. Each keyed disclosure retains its open state
+  and keyboard focus across updates; expected/observed/reason are plain text.
+  Map actions resolve current project maps and use `focusEditorRegion`.
+- Pending, working, verifying, verified and blocked are backend truth, not editable
+  checkboxes. Status text accompanies every icon/color. Only verified counts.
+  Current activity is subordinate to the goal; a completed note remains after
+  turn completion while existing work-plan/book chrome keeps its ephemeral life.
+- Collapse becomes a compact goal/count chip. At <=1100px width or <=700px height
+  default to compact, without overriding a manual expansion/collapse choice.
+  New chat, history/rewind, project/reset and teardown clear note and preference.
+- Motion adapts beui checkbox/raw: a short check-stroke reveal only on entry to
+  verified, using `--transition-med`; reduced motion removes it entirely. No
+  looping animation. Native keyboard actions, `--focus-outline`, overflow wrapping
+  for long Korean/IDs, and opaque text-1/text-2 backgrounds serve novice authors,
+  keyboard authors and dense-project authors. Body owns editor navigation keys.
+- Backend owns `AcceptanceSnapshot`, acceptance events and refresh on store/undo.
+  UI never synthesizes verification or persists snapshots into project/history.
+  Browser matrix: 1024x768, 1280x800, 1440x900 plus narrow component showcase.
+  Independent final visual review and integrated backend typecheck are lead-owned.
