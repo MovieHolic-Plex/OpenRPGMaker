@@ -243,10 +243,6 @@ export function shopItemRow(options: {
   button.dataset.category = goods.category;
   // 합계 계산이 선택 행의 단가를 읽어간다.
   button.dataset.unitPrice = String(price);
-  // 수량 상한도 행에 싣는다. 스테퍼·입력칸·합계가 각자 99를 하드코딩하고 있어서
-  // 살 수 없는 수량까지 올라간 뒤 거절당하는 막다른 길이 생겼다(RM2003 은 애초에
-  // std::min(max, gold / price) 로 못 고르게 한다).
-  button.dataset.maxQty = String(affordableQuantityMax(goods, mode, scene.session.gold, merchantGold, owned));
   button.setAttribute("role", "listitem");
   button.append(
     shopItemIcon(goods),
@@ -349,6 +345,8 @@ export function applyAffordability(
   const price = listingPrice(goods, mode);
   const blocked = mode === "sell" ? merchantGold < price : gold < price;
   const reason = mode === "sell" ? "상인 소지금 부족" : "소지금 부족";
+  // 생성과 거래 후 갱신 모두 같은 상한을 싣는다. 스테퍼·입력칸·합계가 이 값을 읽는다.
+  row.dataset.maxQty = String(affordableQuantityMax(goods, mode, gold, merchantGold, owned));
   row.classList.toggle("is-unaffordable", blocked);
   if (blocked) row.dataset.unaffordable = "1";
   else delete row.dataset.unaffordable;

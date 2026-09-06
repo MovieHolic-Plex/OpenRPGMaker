@@ -28,7 +28,9 @@ export function resolveShopBuyUnitPrice(
   listedPrice: number,
 ): number {
   const listed = Math.max(0, Math.trunc(listedPrice));
-  const dbPrice = project.database.items.find((item) => item.id === itemId)?.price ?? listed;
+  const dbPrice = project.database.items.find((item) => item.id === itemId)?.price
+    ?? project.database.equipment.find((item) => item.id === itemId)?.price
+    ?? listed;
   const floorAt = haggleBuyFloor(Math.max(listed, dbPrice));
   const economy = command.economy;
   const counts = session.shopTradeCounts?.[itemId] ?? { sold: 0, bought: 0 };
@@ -62,7 +64,9 @@ export function resolvePricedShopStock(
   merchantEvent?: ShopMerchantEvent,
 ): ResolvedShopStockItem[] {
   return resolveShopStock(project, session, command, merchantEvent).map((row) => {
-    const dbPrice = project.database.items.find((item) => item.id === row.itemId)?.price ?? 0;
+    const dbPrice = project.database.items.find((item) => item.id === row.itemId)?.price
+      ?? project.database.equipment.find((item) => item.id === row.itemId)?.price
+      ?? 0;
     const listed = row.price ?? dbPrice;
     return { itemId: row.itemId, price: resolveShopBuyUnitPrice(project, session, command, row.itemId, listed) };
   });

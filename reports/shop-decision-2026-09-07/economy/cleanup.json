@@ -1,0 +1,32 @@
+[
+  {
+    "resource": "/home/main/.herdr/worktrees/rpg-zzu/worktree-clear-harbor-3da2/.vite-cache/shop-decision-player-8U5lZq",
+    "registeredAt": "2026-09-06T19:48:55.895Z",
+    "closed": true,
+    "closedAt": "2026-09-06T19:49:57.174Z"
+  },
+  {
+    "resource": "http://127.0.0.1:46637",
+    "registeredAt": "2026-09-06T19:49:30.545Z",
+    "closed": true,
+    "closedAt": "2026-09-06T19:49:57.132Z"
+  },
+  {
+    "resource": "chromium",
+    "registeredAt": "2026-09-06T19:49:30.920Z",
+    "closed": true,
+    "closedAt": "2026-09-06T19:49:57.130Z"
+  },
+  {
+    "resource": "browser-context",
+    "registeredAt": "2026-09-06T19:49:30.954Z",
+    "closed": true,
+    "closedAt": "2026-09-06T19:49:56.405Z"
+  },
+  {
+    "resource": "player-page",
+    "registeredAt": "2026-09-06T19:49:31.243Z",
+    "closed": true,
+    "closedAt": "2026-09-06T19:49:56.363Z"
+  }
+]

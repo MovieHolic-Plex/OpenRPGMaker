@@ -103,7 +103,8 @@ export function applySocialShopPrices(
   const floor = Math.max(0.5, multiplier);
   return items.map((entry) => {
     const basePrice =
-      entry.price ?? project.database.items.find((item) => item.id === entry.itemId)?.price;
+      entry.price ?? project.database.items.find((item) => item.id === entry.itemId)?.price
+      ?? project.database.equipment.find((item) => item.id === entry.itemId)?.price;
     if (typeof basePrice !== "number" || !Number.isFinite(basePrice)) return { itemId: entry.itemId };
     const discounted = Math.max(0, Math.floor(basePrice * floor));
     const sellFloor = Math.floor(basePrice / 2);
