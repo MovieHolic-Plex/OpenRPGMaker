@@ -123,12 +123,19 @@ function shopTagline(step: ShopStep): string {
 
 export function renderShopItems(request: ShopItemsRenderRequest): HTMLElement {
   const goods = request.items.map(toGoods);
-  const shell = el("div", { class: "runtime-shop-shell runtime-shop-items-shell" });
+  const shell = el("div", {
+    class: "runtime-shop-shell runtime-shop-items-shell",
+    dataset: { shopMode: request.mode },
+  });
   const first = goods[0];
 
   // ── 상단 바: 정체성(상인·가게) + 모드 탭 + 소지금. 한 줄에 "여기가 어디고 내가 얼마 있나"가 다 있다.
   const topbar = el("div", { class: "runtime-shop-topbar" });
-  topbar.append(shopBrandBlock(request.scene, shopTitle(request.step), shopListHeaderText(request.step.messageType)));
+  topbar.append(shopBrandBlock(
+    request.scene,
+    shopTitle(request.step),
+    request.mode === "sell" ? "판매 · 내 소지품을 상인에게" : "구매 · 상인의 진열 상품"
+  ));
   if (request.onMode) {
     const modes = shopMenuActions(request.step).filter((action): action is ShopMode => action !== "cancel");
     if (modes.length > 1) topbar.append(shopModeTabs(modes, request.mode, request.terms, request.onMode));

@@ -1,5 +1,41 @@
 # RPG ZZU Design System
 
+## In-game shop trade counter (2026-09-06)
+
+Runtime only: this is not the shop-command editor. `runtime/shop.css` owns a
+single inset glass counter, with a single-column stock list and a generous
+selected-item display. The existing DOM slots, authored item resources, currency,
+quantity, affordability and keyboard/gamepad controller remain authoritative.
+No merchant artwork is inferred from the player's party: the brand uses the
+existing purse emblem; actual party faces remain explicitly labelled as party.
+
+- Local `--shop-*` aliases inherit `--runtime-glass-*` surface, inset, card,
+  text, muted, hairline, accent, shadow and radius tokens. No global game reskin.
+  Category display washes derive from glass accent (equipment), success
+  (consumable), warning (material), and glass muted (special); labels carry the
+  identity as well as color. These are material lighting, not rarity claims.
+- Local geometry scale: 4/8/12/16/24/32px spacing; 1px hairlines, 2px focus,
+  shared 4/6px corners. Local screen-pixel type: 12 metadata, 14 body, 16 section,
+  24 item heading, 32 entry heading; compact 10/12/14/16. Font remains the authored
+  `--runtime-ui-font`. Numeric values use tabular figures.
+- Local size tokens: stock art 48px (compact 32px, minimum viewport 24px),
+  display art 224px (compact 96px, minimum viewport identity strip 24px), party
+  art 32px, control 32px (minimum viewport 24px); display column 38%. The display uses
+  recessed glass, category light and a fine inset frame, not additional cards.
+- Buying/selling has a persistent explicit label even for one-mode shops. Price
+  leads owned count in stock rows; quantity-mode totals remain next to confirm.
+  Unaffordable items retain readable art/text and selectable rows; lock and price
+  color express the restriction. Selected rows use a solid leading rule and ring,
+  never movement, hover or pointer-only cues.
+- Overlay stays outside `.play-stage` scale. At 1280x960 the display and inventory
+  share the counter. At 640x480 they remain side by side with compact art. At
+  320x240 the display becomes a compact identity/description strip; secondary
+  party and equipment stats give way to stock, wallet, quantity and controls.
+  List scrolling remains controller-owned; no multi-column item navigation.
+- No new motion lifetime: existing entry fade and transaction feedback remain,
+  with reduced-motion support. Validate through shipping `player.html`, not the
+  editor shell; supervisor owns final screenshots and visual acceptance.
+
 ## System settings workspace (2026-09-06)
 
 Database > System is a settings worksheet in the existing cool-white, slate and
