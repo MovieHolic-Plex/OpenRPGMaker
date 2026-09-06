@@ -35,6 +35,7 @@ import {
 } from "@/ai/npcCast";
 import { buildWorldDigest, normalizeProjectWorld } from "@/project/world";
 import { applyProposedProject, type ApplyProposedProjectResult } from "@/editor/tools/applyChangesetToStore";
+import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
 import { isDestructiveOutcome } from "@/ai/approvalPolicy";
 import { contextFooterMapId, stripContextFooter } from "@/ai/contextFooter";
 import {
@@ -1051,6 +1052,8 @@ export class AssistantSession {
   private readonly getTurnSelection?: () => TurnSelectionSnapshot | null | undefined;
   private readonly declareIntent: IntentDeclarer | null;
   private readonly prepareProjectWiki: AssistantSessionOptions["prepareProjectWiki"];
+  private draftBaseline: AuthoredProjectBaseline;
+  private draftBaselineCurrent = true;
 
   constructor(project: Project, options: AssistantSessionOptions = {}) {
     this.config = options.config ?? loadAiConfig();
@@ -1071,6 +1074,7 @@ export class AssistantSession {
     this.getTurnSelection = options.getTurnSelection;
     this.declareIntent = options.declareIntent ?? null;
     this.prepareProjectWiki = options.prepareProjectWiki;
+    this.draftBaseline = new AuthoredProjectBaseline(project);
     this.baselineProject = structuredClone(project);
     this.ctx = { project: cloneDetachedDraft(project) };
     this.acceptanceRequestBaseline = structuredClone(project);
@@ -1188,8 +1192,12 @@ export class AssistantSession {
   }
 
   isDraftReviewApproved(project = this.ctx.project): boolean {
-    return !this.activeTurnSignal?.aborted && this.resultReview?.status === "approved"
+    return this.draftBaselineCurrent && !this.activeTurnSignal?.aborted && this.resultReview?.status === "approved"
       && this.approvedReviewIdentity === JSON.stringify(project);
+  }
+
+  getDraftBaseline(): AuthoredProjectBaseline {
+    return this.draftBaseline;
   }
 
   getResultReview(): ResultReview | null {
@@ -1207,6 +1215,8 @@ export class AssistantSession {
   // 세션 폐기(dropSession)와 달리 대화 기억을 잃지 않는다 — "채팅 세션 단위 전체 기억"(#6)의 핵심.
   rebaseProject(project: Project): void {
     if (this.approvedReviewIdentity !== JSON.stringify(project)) this.approvedReviewIdentity = null;
+    this.draftBaseline = new AuthoredProjectBaseline(project);
+    this.draftBaselineCurrent = true;
     this.pruneRemovedMapSpecs(this.ctx.project, project);
     this.baselineProject = structuredClone(project);
     this.ctx = { project: cloneDetachedDraft(project) };
@@ -1278,7 +1288,12 @@ export class AssistantSession {
 
   /** Applied-state refresh for store changes/undo, including after completion. */
   refreshAcceptance(project: Project, onEvent?: (event: SessionEvent) => void): void {
-    if (this.approvedReviewIdentity !== JSON.stringify(project)) this.approvedReviewIdentity = null;
+    // Latch a changed authored base even while no approval exists yet. A later
+    // reviewer response (or an undo) cannot make that old draft current again.
+    if (!this.draftBaseline.matches(project)) {
+      this.draftBaselineCurrent = false;
+      this.approvedReviewIdentity = null;
+    }
     this.imageEvidence.current(project);
     if (!this.acceptance) return;
     this.acceptanceAppliedProject = structuredClone(project);
@@ -1737,6 +1752,12 @@ export class AssistantSession {
           delete this.baselineProject.world;
           delete this.ctx.project.world;
         }
+        // Adopt only the independently owned pre-turn documents, never concurrent
+        // authored changes returned with the coordinator's live world snapshot.
+        if (!this.draftBaselineCurrent || !this.draftBaseline.matches(this.baselineProject)) {
+          throw new Error("independent-review-stale-baseline: regenerate from the current project before review");
+        }
+        this.draftBaseline = new AuthoredProjectBaseline(this.baselineProject);
         this.rebuildSystemPrompt();
       } catch (cause) {
         const error = cause instanceof Error ? cause.message : String(cause);
@@ -2672,6 +2693,7 @@ export class AssistantSession {
     if (calls.length === 0) return; // 이번 턴에 마일스톤 쓰기가 없으면 적용 대상이 없다.
     const proposed = this.getProposedProject();
     const applied = await applyProposedProject(proposed, {
+      baseline: this.draftBaseline,
       source: "agent-milestone",
       agentName: this.config.model,
       summary: `마일스톤: ${completed.title}`,
@@ -2680,6 +2702,11 @@ export class AssistantSession {
       reason: calls.map((call) => call.reason).filter(isUsableToolReason).join(" · ") || `마일스톤 적용: ${completed.title}`,
     });
     if (!applied.ok) {
+      if (applied.reason === "stale-baseline") {
+        this.draftBaselineCurrent = false;
+        this.approvedReviewIdentity = null;
+        this.resultReview = { status: "error", revision: this.reviewRevision, findings: [], summary: applied.issue ?? applied.reason };
+      }
       // 커밋 게이트 차단 — 저장소는 그대로 두고 현재 자율 런만 중단한다.
       this.failMilestoneApply(completed, `적용 검증 실패: ${applied.issue ?? "무결성 오류"}`, [], onEvent);
       return;
@@ -3575,6 +3602,8 @@ export class AssistantSession {
     let review: ResultReview;
     try {
       if (signal?.aborted) throw new Error("independent-review-cancelled");
+      if (!this.draftBaselineCurrent) throw new Error("independent-review-stale-baseline: regenerate from the current project before review");
+      const baseline = this.draftBaseline;
       if (this.reviewDraftTransform) {
         const prepared = this.reviewDraftTransform(this.getProposedProject());
         if (JSON.stringify(prepared) !== JSON.stringify(this.ctx.project)) {
@@ -3624,6 +3653,7 @@ export class AssistantSession {
       const response = await this.chat(config, request);
       if (signal?.aborted) throw new Error("independent-review-cancelled");
       if (identity !== JSON.stringify(this.ctx.project)) throw new Error("independent-review-stale-revision");
+      if (!this.draftBaselineCurrent || baseline !== this.draftBaseline) throw new Error("independent-review-stale-baseline: regenerate from the current project before review");
       review = parseIndependentReview(response, revision, requiredProblems);
       if (review.status === "approved") {
         this.approvedReviewIdentity = identity;
@@ -3958,6 +3988,8 @@ export class AssistantSession {
           }
           await this.maybeAutoApplyMilestone({ id: `review-${review.revision}`, title: this.workPlan?.goal ?? this.currentTurnInstruction,
             instruction: "Apply independently approved draft", status: "done" }, onEvent);
+          if (!this.draftBaselineCurrent) return { assistantText: this.resultReview?.summary ?? "Stale authored baseline",
+            error: this.resultReview?.summary, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "error" };
         }
         // Only the independent review's conclusion may describe a changed result.
         assistantText = this.npcRewardFinalText(proposedByKey.size > 0 || this.turnAppliedMilestoneCalls.length > 0

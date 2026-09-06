@@ -323,6 +323,7 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
     const label = `클러스터 수정: ${model.group?.name ?? model.title}`;
     clearAgentGhostPreview();
     const applied = await applyProposedProject(proposed, {
+      baseline: session.getDraftBaseline(),
       source: "agent",
       agentName: resolveSurfaceAiConfig("cluster").model,
       summary: label,
@@ -331,6 +332,7 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
       snapshotMapId: currentMapId(),
     });
     if (!applied.ok) {
+      if (applied.reason === "stale-baseline") session.refreshAcceptance(store.getCurrent());
       const message = `적용 실패: ${applied.issue ?? "무결성 오류"}`;
       status.textContent = "적용 실패";
       appendBubble("system", message);

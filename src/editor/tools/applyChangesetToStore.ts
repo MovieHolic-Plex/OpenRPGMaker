@@ -9,6 +9,7 @@ import { loadAiConfig } from "@/ai/llmClient";
 import { currentAgentEditorIdentity, currentHumanEditorIdentity } from "@/project/editorIdentity";
 import { combineDiffs, recordProjectCommit, recordProjectCommitFireAndForget, resetManualProjectCommitBaseline, summaryForDiff, type CommitLogInput, type CommitRow } from "@/project/projectCommitLog";
 import { store } from "@/project/store";
+import type { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
 import { createProjectWikiCoordinator } from "@/editor/projectWikiCoordinator";
 import type { ChangeSummary, Project } from "@/project/types";
 import { commitChangeset, summarizeChanges } from "./changeset";
@@ -196,6 +197,8 @@ export function applyToolSequenceToStore(
 // 적용하므로 자동 생성 id 프리뷰와 적용이 갈라지지 않는다.
 
 export interface ApplyProposedProjectOptions {
+  /** Immutable authority captured when the detached draft was created. */
+  readonly baseline: AuthoredProjectBaseline;
   readonly source: "agent" | "agent-milestone";
   /** 에이전트 신원 이름. 기본: loadAiConfig().model(카드 현행 동작과 동일). */
   readonly agentName?: string;
@@ -215,7 +218,7 @@ export type ApplyProposedProjectResult =
   | { readonly ok: true; readonly commit: CommitRow; readonly applied: Project; readonly commitProject?: Project; readonly wikiWarning?: string }
   | {
     readonly ok: false;
-    readonly reason: "commit-rejected";
+    readonly reason: "commit-rejected" | "stale-baseline";
     /** 대표 사유 한 줄(상태 텍스트·토스트용). */
     readonly issue?: string;
     /**
@@ -238,6 +241,10 @@ export async function applyProposedProject(
   options: ApplyProposedProjectOptions,
 ): Promise<ApplyProposedProjectResult> {
   const before = store.getCurrent();
+  if (!options.baseline.matches(before, options.resetProject === true)) {
+    const issue = "초안을 만든 뒤 프로젝트가 수정되었습니다. 최신 프로젝트에서 다시 생성하고 독립 검수를 받아주세요.";
+    return { ok: false, reason: "stale-baseline", issue, issues: [issue] };
+  }
   const wikiProjectIdentity = JSON.stringify(store.getProjectIdentity());
   // Wiki checkpoints and human codex edits own world documents independently of
   // detached authoring previews. A title/map proposal must not restore an old wiki.

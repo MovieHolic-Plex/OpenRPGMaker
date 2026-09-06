@@ -1,3 +1,4 @@
+import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
 import type { ChatResult } from "@/ai/llmClient";
@@ -24,12 +25,13 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-function previewRename(): Project {
+function previewRename(): { proposed: Project; baseline: AuthoredProjectBaseline } {
+  const baseline = new AuthoredProjectBaseline(store.getCurrent());
   const ctx = { project: store.getCurrent() };
   const result = mutateProject(ctx, (draft) => { houseMap(draft).name = "AI rename"; });
   expect(result.ok, JSON.stringify(result.issues)).toBe(true);
   expect(ctx.project).not.toBe(store.getCurrent());
-  return ctx.project;
+  return { proposed: ctx.project, baseline };
 }
 
 const HUMAN_EDITS = ["lowerTiles", "upperTiles", "lowerTileStacks", "upperTileStacks"] as const;
@@ -61,18 +63,18 @@ function expectNoApplication(observed: ReturnType<typeof observeApplication>, ac
 for (const source of ["agent", "agent-milestone"] as const) {
   describe(`${source} live house baseline`, () => {
     it.each(HUMAN_EDITS)("atomically rejects a stale preview after human %s edits", async (layer) => {
-      const proposed = previewRename();
+      const { proposed, baseline } = previewRename();
       const previewBytes = serialize(proposed);
       store.update((draft) => editHouse(draft, layer), { scope: "project", origin: "human" });
       const accepted = store.getCurrent();
       const acceptedBytes = serialize(accepted);
       const observed = observeApplication();
 
-      const result = await applyProposedProject(proposed, { source, summary: "Rename", toolNames: [] });
+      const result = await applyProposedProject(proposed, { baseline, source, summary: "Rename", toolNames: [] });
 
       expect(result.ok).toBe(false);
       if (result.ok) throw new Error("Stale house preview was applied");
-      expect(result.reason).toBe("commit-rejected");
+      expect(result.reason).toBe("stale-baseline");
       expect(result.issue).toBeTruthy();
       expect(result.issues).toEqual([result.issue]);
       expectNoApplication(observed, accepted, acceptedBytes);
@@ -81,14 +83,14 @@ for (const source of ["agent", "agent-milestone"] as const) {
 
     it.each([false, true])("retains a house completed after preview, including resetProject=%s", async (resetProject) => {
       store.update((draft) => { delete houseMap(draft).layoutPlan; });
-      const proposed = previewRename();
+      const { proposed, baseline } = previewRename();
       store.update((draft) => { houseMap(draft).layoutPlan = houseMap(completedHouseProject()).layoutPlan; },
         { scope: "project", origin: "human" });
       const accepted = store.getCurrent();
       const acceptedBytes = serialize(accepted);
       const observed = observeApplication();
 
-      const result = await applyProposedProject(proposed, { source, summary: "Rename", toolNames: [], resetProject });
+      const result = await applyProposedProject(proposed, { baseline, source, summary: "Rename", toolNames: [], resetProject });
 
       expect(result.ok).toBe(false);
       expectNoApplication(observed, accepted, acceptedBytes);
@@ -96,10 +98,10 @@ for (const source of ["agent", "agent-milestone"] as const) {
     });
 
     it("applies an unchanged-store preview with one undo entry and one commit", async () => {
-      const proposed = previewRename();
+      const { proposed, baseline } = previewRename();
       const observed = observeApplication();
 
-      const result = await applyProposedProject(proposed, { source, summary: "Rename", toolNames: [] });
+      const result = await applyProposedProject(proposed, { baseline, source, summary: "Rename", toolNames: [] });
 
       expect(result.ok).toBe(true);
       expect(houseMap(store.getCurrent()).name).toBe("AI rename");
@@ -111,9 +113,9 @@ for (const source of ["agent", "agent-milestone"] as const) {
     it("uses current human tile and stack edits as the next accepted baseline", async () => {
       store.update((draft) => { for (const layer of HUMAN_EDITS) editHouse(draft, layer); },
         { scope: "project", origin: "human" });
-      const proposed = previewRename();
+      const { proposed, baseline } = previewRename();
 
-      const result = await applyProposedProject(proposed, { source, summary: "Rename", toolNames: [] });
+      const result = await applyProposedProject(proposed, { baseline, source, summary: "Rename", toolNames: [] });
 
       expect(result.ok).toBe(true);
       const map = houseMap(store.getCurrent());
@@ -125,21 +127,22 @@ for (const source of ["agent", "agent-milestone"] as const) {
       expect(map.upperTileStacks?.[index]).toEqual([199, 322]);
     });
 
-    it("does not turn raw walls or non-house regions into a stale-project lock", async () => {
+    it("also protects intervening authored edits outside completed houses", async () => {
       store.update((draft) => {
         const region = houseMap(draft).layoutPlan?.regions[0];
         if (!region) throw new Error("Missing fixture region");
         region.role = "custom";
       });
-      const proposed = previewRename();
+      const { proposed, baseline } = previewRename();
       store.update((draft) => editHouse(draft, "upperTiles"), { scope: "project", origin: "human" });
 
-      const result = await applyProposedProject(proposed, { source, summary: "Rename", toolNames: [] });
+      const result = await applyProposedProject(proposed, { baseline, source, summary: "Rename", toolNames: [] });
 
-      expect(result.ok).toBe(true);
+      expect(result).toMatchObject({ ok: false, reason: "stale-baseline" });
       const map = houseMap(store.getCurrent());
-      expect(map.upperTiles[4 * map.width + 5]).toBe(-1);
-      expect(map.name).toBe("AI rename");
+      expect(map.upperTiles[4 * map.width + 5]).toBe(322);
+      expect(map.name).not.toBe("AI rename");
+      expect(history.getMapEditHistoryEntries()).toHaveLength(0);
     });
   });
 }
