@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **49쪽 / 1895KB / 약 536,079 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **49쪽 / 1905KB / 약 538,646 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -23,7 +23,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-pre-edit-routing.md` | 80KB | 55KB ⚠상한 초과 — 절을 더 쪼개라 | 322 | ~22,660 |
 | `openwiki/editor-workflows-misc.md` | 57KB | 29KB | 359 | ~15,790 |
 | `openwiki/runtime-battle.md` | 127KB | 31KB | 447 | ~36,176 |
-| `openwiki/runtime-project-schema.md` | 83KB | 44KB | 429 | ~22,444 |
+| `openwiki/runtime-project-schema.md` | 84KB | 44KB | 437 | ~22,592 |
 | `openwiki/runtime-sessions.md` | 85KB | 48KB | 311 | ~22,520 |
 | `openwiki/testing.md` | 142KB | 48KB | 1054 | ~39,508 |
 
@@ -51,7 +51,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 |---|---|---|
 | `openwiki/agent-worktrees.md` | 2 | `result.md`, `task.json` |
 | `openwiki/ai-workflow.md` | 3 | `latest.json`, `src/ai/plannerSkip.ts`, `test/volumeContractSession.test.ts` |
-| `openwiki/bgm-catalog.md` | 1 | `catalog.raw.json` |
+| `openwiki/bgm-catalog.md` | 2 | `artifacts/bgm-release/bgm-release-v1.json`, `catalog.raw.json` |
 | `openwiki/editor-ai-panel.md` | 33 | `.omo/evidence/assistant-glass-fold/measure.json`, `.omo/evidence/autonomous-ai-rpg/task-8-autonomous-ai-rpg.md`, `15-assistant-readable.css`, `17-assistant-modern-shell.css`, `after/measure.json`, `aiCommandBar.ts`, `aiGlassPanelWidth.test.ts`, `aiSkillDrawer.ts`, `aiVolatileController.ts`, `assistant-skills.css`, `chat-dock-switch.spec.ts`, `chatDock.ts`, `intentClarify.ts`, `newmain-after-measure.json`, `output/evidence/assistant-clean-glass/phase-2/implementation.md`, `output/evidence/assistant-ui-modern/newmain-before-measure.json`, `regionIntentRouter.ts`, `scripts/qa/assistant-side-seam-hittest.mjs`, `src/ai/intentClarify.ts`, `src/ai/plannerSkip.ts`, `src/ai/skills.ts`, `src/editor/chatDock.ts`, `test/aiGlassFold.test.ts`, `test/aiGlassPanelWidth.test.ts`, `test/chatDock.test.ts`, `test/e2e/_assistant-glass-shots.spec.ts`, `test/e2e/_glass-dock-report.spec.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/plannerSkip.test.ts`, `test/regionIntentExposure.test.ts`, `test/turnGuideSharedRules.test.ts`, `test/volumeContractSession.test.ts`, `test/workspaceBarAssistantDock.test.ts` |
 | `openwiki/editor-ai-tools.md` | 4 | `aiCommandBar.ts`, `aiProposalModal.ts`, `test/intentClarify.test.ts`, `test/volumeContractSession.test.ts` |
 | `openwiki/editor-database.md` | 18 | `enemy-art-NNN.png`, `form-hierarchy-modern.css`, `output/evidence/battle-animation-ux/p1-implementation.md`, `output/evidence/battle-animation-ux/p2-implementation.md`, `output/evidence/battle-rules-ux/st_01a07318-manual-qa.md`, `output/evidence/battle-rules-ux/verification.md`, `output/evidence/concept-expansion/supabase-proof.json`, `output/evidence/concept-v2/supabase-proof.json`, `output/evidence/monster-concepts/b1/fix.md`, `output/evidence/monster-concepts/p2/verification.md`, `output/evidence/monster-concepts/r1/fix.md`, `output/evidence/system-studio/system-studio-backed-settings-1586x992.png`, `reports/generated-effect-showcase-2026-08-24.html`, `reveal-fix.md`, `scripts/generate-default-item-icons.mts`, `scripts/lib/effectSheet/paintersMonster.mjs`, `scripts/lib/effectSheet/paintersUtility.mjs`, `troops.part-1.css` |
@@ -193,17 +193,19 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L131` 함정 목록
 - `L161` 실린 자산의 실측값
 
-### `openwiki/bgm-catalog.md` — 10KB · 156줄 · ~2,444 토큰
+### `openwiki/bgm-catalog.md` — 13KB · 214줄 · ~3,354 토큰
 
 - `L6` Why this exists
 - `L17` Facts an agent needs
-- `L39` Files and ownership
-- `L55` Regenerating
-  - `L65` sha256 caveat
-- `L73` CDN wiring
-- `L95` How authors reach the tracks
-- `L112` Project audio descriptions
-- `L143` Traps
+- `L34` Files and ownership
+- `L55` Release pack installation (2026-09-07)
+- `L86` Producing and publishing the pinned pack
+- `L113` Regenerating
+  - `L123` sha256 caveat
+- `L131` CDN wiring
+- `L153` How authors reach the tracks
+- `L170` Project audio descriptions
+- `L201` Traps
 
 ### `openwiki/castle-map.md` — 4KB · 69줄 · ~1,003 토큰
 
@@ -459,20 +461,20 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 - `L5` Storage chest authoring
 
-### `openwiki/editor-validation.md` — 30KB · 161줄 · ~7,970 토큰
+### `openwiki/editor-validation.md` — 34KB · 223줄 · ~9,194 토큰
 
 - `L3` AI blocked-event relocation recovery (2026-09-06)
-- `L38` AI 타일 후검증 (2026-09-05)
-- `L43` 이벤트 초안 검증 표면 (2026-08-28)
-- `L48` event-unreachable lint rule (2026-08-27)
-- `L52` P2 생활 시스템 무결성 (2026-08-25)
-- `L57` 생활 저작 표면 집중 검증 (2026-08-24)
-- `L73` AI editor-wide tool validation (2026-08-25)
-- `L79` Roguelike run validation (2026-08-24)
-- `L86` Validation Expectations
-- `L110` Desktop UI integration matrix (2026-08-11)
-- `L120` Event editor aggregate gate (2026-07-30)
-- `L129` P2 spatial integrity (2026-08-25)
+- `L97` AI 타일 후검증 (2026-09-05)
+- `L102` 이벤트 초안 검증 표면 (2026-08-28)
+- `L107` event-unreachable lint rule (2026-08-27)
+- `L114` P2 생활 시스템 무결성 (2026-08-25)
+- `L119` 생활 저작 표면 집중 검증 (2026-08-24)
+- `L135` AI editor-wide tool validation (2026-08-25)
+- `L141` Roguelike run validation (2026-08-24)
+- `L148` Validation Expectations
+- `L172` Desktop UI integration matrix (2026-08-11)
+- `L182` Event editor aggregate gate (2026-07-30)
+- `L191` P2 spatial integrity (2026-08-25)
 
 ### `openwiki/editor-workflows-misc.md` — 57KB · 359줄 · ~15,790 토큰 · 통째읽기 잘림
 
@@ -576,15 +578,16 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L65` Combat acceptance slice
 - `L77` Verification
 
-### `openwiki/quickstart.md` — 15KB · 164줄 · ~4,352 토큰
+### `openwiki/quickstart.md` — 16KB · 176줄 · ~4,637 토큰
 
 - `L6` 0. 여기서 에이전트가 실제로 헤매는 이유 (실측 2026-08-30)
 - `L17` 1. 환경 — 여기가 틀리면 이후 전부 헛수고
 - `L45` 1a. Mac novice launcher / private setup (Phase 1, 2026-09-06)
-- `L81` 2. 검증 — 무엇이 진짜 게이트인가
-- `L101` 3. 어디를 고치나 — 기능 → 진입 파일
-- `L146` 4. 위키를 읽는 법
-- `L158` 5. 끝났다고 말할 수 있는 조건
+- `L81` 1b. 전체 BGM은 Release 팩으로 설치
+- `L93` 2. 검증 — 무엇이 진짜 게이트인가
+- `L113` 3. 어디를 고치나 — 기능 → 진입 파일
+- `L158` 4. 위키를 읽는 법
+- `L170` 5. 끝났다고 말할 수 있는 조건
 
 ### `openwiki/runtime-action-combat.md` — 26KB · 300줄 · ~6,633 토큰
 
@@ -659,7 +662,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L175` 가구 밀기 애니메이션 (2026-09-05)
 - `L184` Recovered head emotes (2026-09-05)
 
-### `openwiki/runtime-project-schema.md` — 83KB · 429줄 · ~22,444 토큰 · 통째읽기 잘림
+### `openwiki/runtime-project-schema.md` — 84KB · 437줄 · ~22,592 토큰 · 통째읽기 잘림
 
 - `L3` Explicit publication identity and Save6 (2026-09-06)
 - `L30` P1 accepted-save receipts and read-only proof (2026-09-06)
@@ -690,8 +693,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L409` 공포 게임 제작 기능 (2026-09-05)
   - `L413` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
 - `L417` NPC 표시 이름 (2026-09-05)
-- `L422` 연결 실내 도면의 영속성 (2026-09-05)
-- `L426` 개념 장소 형상 (2026-09-05)
+- `L430` 연결 실내 도면의 영속성 (2026-09-05)
+- `L434` 개념 장소 형상 (2026-09-05)
 
 ### `openwiki/runtime-sessions.md` — 85KB · 311줄 · ~22,520 토큰 · 통째읽기 잘림
 
