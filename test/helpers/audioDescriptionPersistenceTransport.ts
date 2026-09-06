@@ -23,11 +23,14 @@ function signal<T>(): Signal<T> {
   return { promise, resolve: resolveValue };
 }
 
-function bounded<T>(promise: Promise<T>): Promise<T> {
-  // Native AbortSignal deadlines remain active while autosave timers are frozen.
-  const deadline = AbortSignal.timeout(10_000);
+function bounded<T>(promise: Promise<T>, deadline: AbortSignal): Promise<T> {
+  // The owning test bounds the entire operation, including real serialization.
   return new Promise<T>((resolve, reject) => {
-    const expired = () => reject(new TypeError("Persistence transport signal timed out"));
+    const expired = () => reject(deadline.reason);
+    if (deadline.aborted) {
+      expired();
+      return;
+    }
     deadline.addEventListener("abort", expired, { once: true });
     void promise.then(
       (value) => {
@@ -61,7 +64,7 @@ export function audioDescriptionProject(
   return project;
 }
 
-export function createAudioDescriptionTransport(source: Project) {
+export function createAudioDescriptionTransport(source: Project, deadline: AbortSignal) {
   let project = structuredClone(source);
   let sha256 = "initial-sha";
   let rejectedCas = 0;
@@ -146,7 +149,7 @@ export function createAudioDescriptionTransport(source: Project) {
       const response = signal<number>();
       gates.push({ entered, response });
       return {
-        entered: () => bounded(entered.promise),
+        entered: () => bounded(entered.promise, deadline),
         release: (status = 200) => response.resolve(status),
       };
     },
@@ -154,7 +157,7 @@ export function createAudioDescriptionTransport(source: Project) {
       if (completedCommits >= count) return Promise.resolve();
       const completion = signal<void>();
       commitSignals.set(count, completion);
-      return bounded(completion.promise);
+      return bounded(completion.promise, deadline);
     },
   };
 }

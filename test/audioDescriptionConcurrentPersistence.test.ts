@@ -1,13 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { loadProjectFromSupabase, saveProjectMapPatchToSupabase, saveProjectToSupabase } from "@/project/supabaseProjectSync";
-import type { Project } from "@/project/types";
+import type { AudioDescriptionOverrides, Project } from "@/project/types";
 import {
   AUDIO_PERSISTENCE_CONFIG as CONFIG,
   audioDescriptionProject,
   createAudioDescriptionTransport,
 } from "./helpers/audioDescriptionPersistenceTransport";
 
-beforeEach(() => {
+let persistenceSignal: AbortSignal;
+
+beforeEach(({ signal }) => {
+  persistenceSignal = signal;
   vi.useFakeTimers();
   vi.resetModules();
   vi.stubEnv("VITE_SUPABASE_ANON_KEY", CONFIG.anonKey);
@@ -44,7 +47,32 @@ async function openStore(project: Project) {
 }
 
 describe("audio description concurrent persistence", () => {
-  it.each([
+  it.each([false, true])("cancels transport waits when already aborted is %s", async (alreadyAborted) => {
+    const controller = new AbortController();
+    const reason = new Error("cancelled by owning test");
+    const transport = createAudioDescriptionTransport(
+      audioDescriptionProject(undefined),
+      controller.signal,
+    );
+    const held = transport.holdNextPatch();
+    const nativeTimeout = vi.spyOn(AbortSignal, "timeout");
+    if (alreadyAborted) controller.abort(reason);
+    const rejected = Promise.all([
+      expect(transport.waitForCommits(1)).rejects.toBe(reason),
+      expect(held.entered()).rejects.toBe(reason),
+    ]);
+    if (!alreadyAborted) controller.abort(reason);
+    await rejected;
+    expect(nativeTimeout).not.toHaveBeenCalled();
+  }, 30_000);
+
+  it.each<{
+    name: string;
+    base: AudioDescriptionOverrides | undefined;
+    local: AudioDescriptionOverrides | undefined;
+    remote: AudioDescriptionOverrides | undefined;
+    expected: AudioDescriptionOverrides | undefined;
+  }>([
     {
       name: "unchanged local key",
       base: { music: { raw: "B" } }, local: { music: { raw: "B" } },
@@ -96,13 +124,13 @@ describe("audio description concurrent persistence", () => {
       remote: { music: { constructor: "R" } },
       expected: { music: { ["__proto__"]: " \tL\n ", constructor: "R" } },
     },
-  ] as const)("merges descriptions after a conditional-write race when $name", async (scenario) => {
+  ])("merges descriptions after a conditional-write race when $name", async (scenario) => {
     // Given
     const base = audioDescriptionProject(scenario.base);
     const local = audioDescriptionProject(scenario.local, base);
     const remote = audioDescriptionProject(scenario.remote, base);
     const inputs = structuredClone({ base, local, remote });
-    const transport = createAudioDescriptionTransport(base);
+    const transport = createAudioDescriptionTransport(base, persistenceSignal);
     vi.stubGlobal("fetch", transport.fetch);
     const held = transport.holdNextPatch();
     // When: another real save wins the first SHA race.
@@ -130,7 +158,7 @@ describe("audio description concurrent persistence", () => {
   ] as const)("preserves $name through consecutive map saves without recording a user edit", async ({ remote }) => {
     // Given
     const base = audioDescriptionProject({ music: { raw: "B" } });
-    const transport = createAudioDescriptionTransport(audioDescriptionProject(remote, base));
+    const transport = createAudioDescriptionTransport(audioDescriptionProject(remote, base), persistenceSignal);
     vi.stubGlobal("fetch", transport.fetch);
     const store = await openStore(base);
     const { subscribeEditActivity } = await import("@/editor/editActivityLog");
@@ -143,12 +171,16 @@ describe("audio description concurrent persistence", () => {
     });
     const commits = transport.waitForCommits(2);
     // When
-    for (const name of ["MAP_1", "MAP_2"]) {
-      store.updateMap(base.startMapId, (map) => { map.name = name; }, { label: name });
-      submitted.push(store.getCurrent());
-      await store.flush();
-    }
-    await commits;
+    await Promise.all([
+      commits,
+      (async () => {
+        for (const name of ["MAP_1", "MAP_2"]) {
+          store.updateMap(base.startMapId, (map) => { map.name = name; }, { label: name });
+          submitted.push(store.getCurrent());
+          await store.flush();
+        }
+      })(),
+    ]);
     stopStore();
     stopActivity();
     const loaded = await loadProjectFromSupabase(CONFIG);
@@ -173,7 +205,7 @@ describe("audio description concurrent persistence", () => {
     // Given
     const base = audioDescriptionProject({ music: { raw: "B" } });
     const remote = audioDescriptionProject({ music: { raw: "R", remote: "R" } }, base);
-    const transport = createAudioDescriptionTransport(remote);
+    const transport = createAudioDescriptionTransport(remote, persistenceSignal);
     vi.stubGlobal("fetch", transport.fetch);
     const store = await openStore(base);
     store.update((draft) => { draft.audioDescriptions = { music: { raw: "S" } }; }, { scope: "project", label: "DESC_S" });
@@ -182,20 +214,25 @@ describe("audio description concurrent persistence", () => {
     const catchup = transport.holdNextPatch();
     const commits = transport.waitForCommits(2);
     // When
-    const pending = store.flush();
-    await first.entered();
-    store.update((draft) => {
-      if (fresh === undefined) delete draft.audioDescriptions;
-      else draft.audioDescriptions = fresh;
-    }, { scope: "project", label: "DESC_F" });
-    store.updateMap(base.startMapId, (map) => { map.name = "MAP_F"; });
-    const freshProject = store.getCurrent();
-    first.release();
-    await catchup.entered();
-    const reconciled = store.getCurrent();
-    catchup.release();
-    const result = await pending;
-    await commits;
+    const [, { freshProject, reconciled, result }] = await Promise.all([
+      commits,
+      (async () => {
+        const pending = store.flush();
+        await first.entered();
+        store.update((draft) => {
+          if (fresh === undefined) delete draft.audioDescriptions;
+          else draft.audioDescriptions = fresh;
+        }, { scope: "project", label: "DESC_F" });
+        store.updateMap(base.startMapId, (map) => { map.name = "MAP_F"; });
+        const freshProject = store.getCurrent();
+        first.release();
+        await catchup.entered();
+        const reconciled = store.getCurrent();
+        catchup.release();
+        const result = await pending;
+        return { freshProject, reconciled, result };
+      })(),
+    ]);
     const loaded = await loadProjectFromSupabase(CONFIG);
     // Then
     expect(result.kind).toBe("saved");
@@ -215,7 +252,7 @@ describe("audio description concurrent persistence", () => {
     // Given
     const base = audioDescriptionProject({ music: { raw: "B" } });
     const remote = audioDescriptionProject({ music: { raw: "R", remote: "R" } }, base);
-    const transport = createAudioDescriptionTransport(remote);
+    const transport = createAudioDescriptionTransport(remote, persistenceSignal);
     vi.stubGlobal("fetch", transport.fetch);
     const store = await openStore(base);
     store.update((draft) => { draft.audioDescriptions = { music: { raw: "L" } }; }, { scope: "project" });
