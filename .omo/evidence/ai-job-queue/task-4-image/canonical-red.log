@@ -1,0 +1,55 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiImageJob.test.ts -t retries real flattening and completed output
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-aiq-image-silver
+
+ ❯ test/aiImageJob.test.ts (15 tests | 1 failed | 14 skipped) 25682ms
+   ↓ isolated real session import graph > has no runtime editor/store/persistence boot edges
+   ↓ real image-family execution > keeps a held provider result bound to the captured project, ID, and two title fields
+   × real image-family execution > retries real flattening and completed output through canonical persisted checkpoints without repeating the paid operation 9124ms
+     → page.evaluate: ProjectFormatError: Image checkpoint binding mismatch
+    at assert (http://127.0.0.1:19843/src/project/io/guards.ts:52:25)
+    at executeImageJob (http://127.0.0.1:19843/src/ai/jobs/executors/imageJob.ts:75:5)
+    at async eval (eval at evaluate (:303:30), <anonymous>:34:27)
+    at async <anonymous>:329:30
+   ↓ real image-family execution > does not accept invalid image bytes as successful generation and retains them for inspection
+   ↓ real image-family execution > retains processed artwork if project snapshot persistence fails
+   ↓ real image-family execution > replays a ledger response after worker interruption without changing the paid request or resource ID
+   ↓ real image-family execution > keeps title slot 'titleScreen.backgroundResourceId' 'system' separate from the shared title resource
+   ↓ real image-family execution > keeps title slot 'titleScreen.titleGraphic.resourceId' 'system' separate from the shared title resource
+   ↓ real image-family execution > keeps title slot undefined 'title-layer' separate from the shared title resource
+   ↓ real image-family execution > returns a reviewed show-picture command proposal without generating a saved-project patch
+   ↓ real image-family execution > returns a reviewed change-face command proposal without generating a saved-project patch
+   ↓ real image-family execution > returns a reviewed actor-faceset command proposal without generating a saved-project patch
+   ↓ real image-family execution > returns a reviewed parallax command proposal without generating a saved-project patch
+   ↓ real image-family execution > rejects malformed payload/project/checkpoint and missing destinations before paid work
+   ↓ real image-family execution > has no transitive store, panel, editor boot, or PWA imports
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiImageJob.test.ts > real image-family execution > retries real flattening and completed output through canonical persisted checkpoints without repeating the paid operation
+Error: page.evaluate: ProjectFormatError: Image checkpoint binding mismatch
+    at assert (http://127.0.0.1:19843/src/project/io/guards.ts:52:25)
+    at executeImageJob (http://127.0.0.1:19843/src/ai/jobs/executors/imageJob.ts:75:5)
+    at async eval (eval at evaluate (:303:30), <anonymous>:34:27)
+    at async <anonymous>:329:30
+ ❯ assert ../../../../src/project/io/guards.ts:52:25
+ ❯ executeImageJob ../../../../src/ai/jobs/executors/imageJob.ts:75:5
+ ❯ run test/aiImageJob.test.ts:96:29
+     94| async function run(input: AiJobInput & { family: "image" }, host: AiJo…
+     95|   activeHost = host;
+     96|   const result = await page.evaluate(async ({ serializedInput, jobId, …
+       |                             ^
+     97|     const input: AiJobInput & { family: "image" } = JSON.parse(seriali…
+     98|     const executeImageJob = window.executeImageTestJob;
+ ❯ test/aiImageJob.test.ts:220:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 14 skipped (15)
+   Start at  20:58:19
+   Duration  40.18s (transform 7.21s, setup 0ms, collect 12.96s, tests 25.68s, environment 0ms, prepare 459ms)

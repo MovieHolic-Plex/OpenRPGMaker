@@ -1,5 +1,5 @@
 import type { AiJobHost } from "../../../../scripts/lib/aiJobs/scheduler.mjs";
-import type { AiJobInput, AiJobResult, BlobRef } from "../contracts";
+import type { AiJobInput, AiJobResult, BlobRef, JsonValue } from "../contracts";
 import { jsonObject, jsonValue, parseProject } from "../checkpointState";
 import { imageRef, imageString, parseImageJobDestination, parseImageJobPayload, type ImageJobDestination, type ImageJobProposal } from "../imagePayload";
 import { decodeImageJobArtwork, imageJobDataUrl, postprocessImageJobArtwork } from "../imageJobArtwork";
@@ -9,6 +9,17 @@ import { insertGeneratedPictureAsset } from "@/editor/generatedPictureAsset";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import type { Project } from "@/project/types";
 export type { ImageJobPayload, ImageJobDestination, ImageJobProposal } from "../imagePayload";
+
+/** Persistence canonicalizes object keys; identity must retain every value and
+ * array position, but must not depend on insertion order at any object depth. */
+function bindingIdentity(value: JsonValue): string {
+  if (Array.isArray(value)) return `[${value.map(bindingIdentity).join(",")}]`;
+  if (value !== null && typeof value === "object") {
+    const entries = Object.entries(value).sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0);
+    return `{${entries.map(([key, item]) => `${JSON.stringify(key)}:${bindingIdentity(item)}`).join(",")}}`;
+  }
+  return JSON.stringify(value);
+}
 
 interface ImageStage {
   artifact: BlobRef;
@@ -82,7 +93,7 @@ export async function executeImageJob(input: AiJobInput & { family: "image" }, h
   if (checkpoint) {
     assert(checkpoint.jobId === host.jobId && checkpoint.stageKey.startsWith("image/"), "Wrong image checkpoint job or stage");
     const state = requireRecord("image checkpoint", checkpoint.state);
-    assert(state.version === 1 && JSON.stringify(jsonObject(state.binding)) === JSON.stringify(binding), "Image checkpoint binding mismatch");
+    assert(state.version === 1 && bindingIdentity(jsonObject(state.binding)) === bindingIdentity(binding), "Image checkpoint binding mismatch");
     responseRef = state.responseRef === null ? null : imageRef(state.responseRef, "application/json");
     image = state.image === null ? null : parseImageStage(state.image);
     completed = requireBoolean("completed", state.completed);

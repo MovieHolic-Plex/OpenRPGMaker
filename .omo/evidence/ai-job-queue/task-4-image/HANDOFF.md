@@ -1,6 +1,11 @@
 # Task 4 image-family adapter
 
 Branch: `agent/aiq-image-silver`. Base: `9647fac2`.
+
+**Canonical-checkpoint correction:** the initial 28-test proof below used an
+in-memory checkpoint fixture and did not establish repository roundtrip safety.
+The subsequent fix and actual-repository RED/GREEN are recorded at the end;
+those results supersede the initial retry proof.
 Scope: image executor, two image-specific helpers, focused test and this evidence.
 No shared runtime, provider adapter/client, other family, canvas helper, UI, package,
 Vite configuration, editor store, or parent-worktree file was changed.
@@ -208,5 +213,62 @@ Full six-family browser acceptance, full app/player build and whole gates remain
 supervisor-owned and were deliberately not duplicated. This handoff claims only
 focused real-browser image execution and the compiler/tests above.
 
-Commit: this HANDOFF ships in the same atomic commit as the implementation;
-obtain its exact SHA with `git log -1 --format=%H -- src/ai/jobs/executors/imageJob.ts`.
+Initial implementation commit: `8135afdd40dbdaa263063bea216cedb1774da6e1`.
+The canonical-checkpoint correction below is a NEW fix commit, not an amendment.
+Its exact SHA is returned to the supervisor and can also be read with
+`git log -1 --format=%H -- src/ai/jobs/executors/imageJob.ts`.
+
+## Canonical-checkpoint correction
+
+The supervisor identified a genuine integration blocker: repository.putJson uses
+canonicalJson (recursively sorted object keys), and the scheduler reads checkpoint
+state back from those bytes. Comparing insertion-order JSON.stringify strings
+therefore rejected unchanged persisted bindings. The old in-memory fixture
+preserved object insertion order and concealed this failure.
+
+The executor now compares recursive canonical content. Every key/value, primitive
+type and array position remains significant; only object property insertion order
+is irrelevant. Existing version, job, target, project, ref, artifact and stage
+checks remain unchanged. There is no checkpoint migration or public API change.
+No shared runtime or other family files were edited.
+
+The image test host now uses the ACTUAL openAiJobsRepository for every JSON/binary
+write and read. It retains only a checkpoint ref, loads the envelope from its
+canonical disk bytes on every attempt, and can close/reopen the repository before
+retry. It no longer stores a live checkpoint object. Temporary repositories are
+closed and removed after each test. The paid provider remains the controlled host
+boundary; the executor, image client, canvas, decoder and storage are real.
+
+Evidence commands, all in this worktree:
+
+| Command | Exit | Evidence |
+| --- | --- | --- |
+| `npm test -- test/aiImageJob.test.ts -t 'retries real flattening and completed output'` BEFORE production fix | 1 | `canonical-red.log`: actual repository reopen -> Image checkpoint binding mismatch after one saved paid response and local canvas failure |
+| `npm run typecheck:app` AFTER production fix | 0 | `canonical-typecheck-app.log` |
+| `./node_modules/.bin/tsc --noEmit -p .omo/evidence/ai-job-queue/task-4-image/tsconfig.image-test.json` AFTER final test changes | 0 | `canonical-typecheck-test.log` (empty success output) |
+| `npm test -- test/aiImageJob.test.ts test/imageGenerationClient.test.ts test/generatedPictureAsset.test.ts` final | 0 | `canonical-green.log`: 29 tests / 3 files, no skips |
+
+One intermediate full run exited 1: the new seven-invocation negative regression
+exceeded its old 30-second deadline under real disk/browser load. Its pending
+invocation then exposed the fixture's mutable shared-host flaw, causing the next
+test's unexpected paid-call assertion. This was not suppressed: browser host
+calls now carry a unique invocation token, and each invocation resolves only its
+own host. The integration suite has a bounded 90-second per-test deadline (not a
+sleep/poll); the final negative case finished in about 30.4 seconds. The final
+full invocation above passed in one run. The intermediate output is retained
+locally as `canonical-harness-failure.log`.
+
+The regression verifies canonical ordering at both binding and nested target
+levels, then closes/reopens the repository after failed postprocessing, retries
+real flattening, closes/reopens again, and retries completed output. Exactly ONE
+provider call remains; allocated-face-bust, artifact refs, proposal and generated
+snapshot ref are unchanged. A separate persisted-checkpoint test rejects changed
+command-path order, draft revision, command content, project ID and resource ID,
+then confirms the original binding still replays with one paid call.
+
+Final LSP checks: no diagnostics on imageJob.ts and aiImageJob.test.ts. The existing
+transitive runtime graph assertions still pass, including no store/panel/PWA boot.
+Final `ss -ltnp 'sport = :19843'` exited 0 with no listener; `/tmp` contained no
+remaining ai-image-canonical-* repository directories. No paid call, remote
+project write, shared-runtime edit, build or whole-gates run was performed.
+Selected logs have trailing whitespace normalized for git diff checks.

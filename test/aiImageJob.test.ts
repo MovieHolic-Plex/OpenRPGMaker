@@ -1,5 +1,7 @@
-import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
-import { createHash } from "node:crypto";
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { openAiJobsRepository } from "../scripts/lib/aiJobs/repository.mjs";
 import { resolve } from "node:path";
 import { createServer, type ViteDevServer } from "vite";
 import { chromium, type Browser, type Page } from "playwright";
@@ -17,16 +19,19 @@ import { runtimeGraph } from "./aiJobWorkerIsolation.test";
 // flattening and project insertion. Only the durable host/provider is controlled.
 declare global {
   interface Window {
-    imageTestHost(method: string, args: JsonValue): Promise<JsonValue>;
+    imageTestHost(runId: number, method: string, args: JsonValue): Promise<JsonValue>;
     executeImageTestJob: typeof import("@/ai/jobs/executors/imageJob").executeImageJob;
   }
 }
 let server: ViteDevServer;
 let browser: Browser;
 let page: Page;
-let activeHost: AiJobHost;
+const invocationHosts = new Map<number, AiJobHost>();
+let invocationId = 0;
 let sourceDataUrl: string;
 const root = resolve(import.meta.dirname, "..");
+const repositoryCleanups: (() => Promise<void>)[] = [];
+afterEach(async () => { await Promise.all(repositoryCleanups.splice(0).map(cleanup => cleanup())); });
 
 beforeAll(async () => {
   server = await createServer({ root, configFile: false, envFile: false, envDir: false,
@@ -51,19 +56,21 @@ beforeAll(async () => {
     const response = await page.request.get(url.href, { maxRedirects: 0, maxRetries: 0 });
     await route.fulfill({ response });
   });
-  await page.exposeFunction("imageTestHost", async (method: string, args: JsonValue) => {
+  await page.exposeFunction("imageTestHost", async (runId: number, method: string, args: JsonValue) => {
+    const host = invocationHosts.get(runId);
+    if (!host) throw new Error("Image test invocation has ended");
     const r = jsonObject(args);
     switch (method) {
-      case "loadCheckpoint": return activeHost.loadCheckpoint();
-      case "saveCheckpoint": return activeHost.saveCheckpoint({ stageKey: String(r.stageKey), state: jsonObject(r.state), artifacts: parseRefs(r.artifacts) });
-      case "readJson": return activeHost.readJson(parseRef(r));
-      case "putJson": return activeHost.putJson(r.value!);
-      case "readBlob": return [...await activeHost.readBlob(parseRef(r))];
+      case "loadCheckpoint": return host.loadCheckpoint();
+      case "saveCheckpoint": return host.saveCheckpoint({ stageKey: String(r.stageKey), state: jsonObject(r.state), artifacts: parseRefs(r.artifacts) });
+      case "readJson": return host.readJson(parseRef(r));
+      case "putJson": return host.putJson(r.value!);
+      case "readBlob": return [...await host.readBlob(parseRef(r))];
       case "putBlob": {
         if (!Array.isArray(r.bytes)) throw new Error("Invalid wire bytes");
-        return activeHost.putBlob(Uint8Array.from(r.bytes.map(Number)), String(r.mediaType));
+        return host.putBlob(Uint8Array.from(r.bytes.map(Number)), String(r.mediaType));
       }
-      case "providerOperation": return activeHost.providerOperation({ key: String(r.key), request: r.request! });
+      case "providerOperation": return host.providerOperation({ key: String(r.key), request: r.request! });
       default: throw new Error(`Unexpected host method ${method}`);
     }
   });
@@ -88,11 +95,12 @@ function parseRefs(value: unknown): BlobRef[] {
   return value.map(parseRef);
 }
 async function run(input: AiJobInput & { family: "image" }, host: AiJobHost): Promise<AiJobResult> {
-  activeHost = host;
-  const result = await page.evaluate(async ({ serializedInput, jobId, attemptId }) => {
+  const runId = ++invocationId;
+  invocationHosts.set(runId, host);
+  const result = await page.evaluate(async ({ serializedInput, jobId, attemptId, runId }) => {
     const input: AiJobInput & { family: "image" } = JSON.parse(serializedInput);
     const executeImageJob = window.executeImageTestJob;
-    const call = window.imageTestHost;
+    const call = (method: string, args: JsonValue) => window.imageTestHost(runId, method, args);
     const ref = (v: JsonValue): BlobRef => {
       const r = v as JsonObject;
       return { sha256: String(r.sha256), byteLength: Number(r.byteLength), mediaType: String(r.mediaType) };
@@ -114,26 +122,30 @@ async function run(input: AiJobInput & { family: "image" }, host: AiJobHost): Pr
       providerOperation: async value => call("providerOperation", { ...value }),
     };
     return JSON.stringify(await executeImageJob(input, host));
-  }, { serializedInput: JSON.stringify(input), jobId: host.jobId, attemptId: host.attemptId });
+  }, { serializedInput: JSON.stringify(input), jobId: host.jobId, attemptId: host.attemptId, runId })
+    .finally(() => { invocationHosts.delete(runId); });
   return JSON.parse(result);
 }
 async function fixture(options: { payload?: Partial<ImageJobPayload>; target?: ImageJobDestination } = {}) {
-  const bytes = new Map<string, Uint8Array>();
-  let checkpoint: AiJobCheckpoint | null = null;
-  const put = async (data: Uint8Array, mediaType: string): Promise<BlobRef> => {
-    const sha256 = createHash("sha256").update(data).digest("hex");
-    bytes.set(sha256, data.slice()); return { sha256, byteLength: data.length, mediaType };
-  };
+  const directory = await mkdtemp(resolve(tmpdir(), "ai-image-canonical-"));
+  let repository = await openAiJobsRepository({ directory });
+  repositoryCleanups.push(async () => { await repository.close(); await rm(directory, { recursive: true }); });
+  let checkpointRef: BlobRef | null = null;
+  // Match the scheduler: persist the envelope through repository.putJson, retain
+  // only its ref, and deserialize its canonical bytes on every checkpoint load.
+  const checkpoint = async (): Promise<AiJobCheckpoint | null> => checkpointRef
+    ? JSON.parse(new TextDecoder().decode(await repository.readBlob(checkpointRef))) : null;
   const host: AiJobHost = {
     jobId: "image-job", attemptId: "attempt-1", dependencies: [],
-    putBlob: put,
-    readBlob: async ref => { const data = bytes.get(ref.sha256); if (!data) throw new Error("Missing blob"); return data.slice(); },
-    putJson: async value => put(new TextEncoder().encode(JSON.stringify(value)), "application/json"),
-    readJson: async ref => JSON.parse(new TextDecoder().decode(await host.readBlob(ref))),
-    loadCheckpoint: async () => structuredClone(checkpoint),
+    putBlob: (data, mediaType) => repository.putBlob(data, mediaType),
+    readBlob: ref => repository.readBlob(ref),
+    putJson: value => repository.putJson(value),
+    readJson: ref => repository.readJson(ref),
+    loadCheckpoint: checkpoint,
     saveCheckpoint: async value => {
-      checkpoint = { ...structuredClone(value), version: 1, jobId: host.jobId, attemptId: host.attemptId, inputSha256: "f".repeat(64) };
-      return host.putJson(jsonValue(checkpoint));
+      checkpointRef = await host.putJson(jsonValue({ ...value, version: 1, jobId: host.jobId,
+        attemptId: host.attemptId, inputSha256: "f".repeat(64) }));
+      return checkpointRef;
     },
     providerOperation: vi.fn(async () => ({ image: { dataUrl: sourceDataUrl, mimeType: "image/png", model: IMAGE_GENERATION_MODEL, provider: IMAGE_GENERATION_PROVIDER_ID } })),
   };
@@ -143,7 +155,9 @@ async function fixture(options: { payload?: Partial<ImageJobPayload>; target?: I
     target: jsonObject(options.target ?? { kind: "system", field: "titleResourceId" }),
     payload: jsonObject(jsonValue({ prompt: "wide landscape, no text", resourceId: "allocated-title", name: "Landscape", kind: "title", postprocess: "none", ...options.payload })),
   };
-  return { input, host, project, bytes, checkpoint: () => structuredClone(checkpoint) };
+  return { input, host, project, checkpoint,
+    reopen: async () => { await repository.close(); repository = await openAiJobsRepository({ directory }); },
+  };
 }
 function deferred<T>() {
   let resolve!: (value: T) => void;
@@ -160,7 +174,7 @@ async function pixels(ref: BlobRef, host: AiJobHost) {
   }, { bytes: [...await host.readBlob(ref)], mediaType: ref.mediaType });
 }
 
-describe("real image-family execution", { timeout: 30_000 }, () => {
+describe("real image-family execution", { timeout: 90_000 }, () => {
   it("keeps a held provider result bound to the captured project, ID, and two title fields", async () => {
     const f = await fixture();
     const started = deferred<void>(), response = deferred<JsonValue>();
@@ -170,7 +184,7 @@ describe("real image-family execution", { timeout: 30_000 }, () => {
     const before = JSON.stringify(f.project);
     const pending = run(f.input, f.host);
     await Promise.race([started.promise, pending.then(() => { throw new Error("Finished before provider barrier"); })]);
-    expect(f.checkpoint()?.stageKey).toBe("image/start");
+    expect((await f.checkpoint())?.stageKey).toBe("image/start");
     response.resolve({ image: { dataUrl: sourceDataUrl, mimeType: "image/png" } });
     const result = await pending;
     expect(result.project).toEqual(f.input.project);
@@ -190,7 +204,7 @@ describe("real image-family execution", { timeout: 30_000 }, () => {
     expect(f.host.providerOperation).toHaveBeenCalledTimes(1);
   });
 
-  it("retries real flattening after canvas failure without repeating the paid operation", async () => {
+  it("retries real flattening and completed output through canonical persisted checkpoints without repeating the paid operation", async () => {
     const project = createBlankProject();
     const f = await fixture({ payload: { resourceId: "allocated-face-bust", kind: "faceset", postprocess: "flatten" },
       target: { kind: "database", table: "actors", recordId: project.database.actors[0]!.id, field: "faceResourceId" } });
@@ -202,8 +216,12 @@ describe("real image-family execution", { timeout: 30_000 }, () => {
       };
     });
     await expect(run(f.input, f.host)).rejects.toThrow("canvas unavailable");
-    expect(f.checkpoint()?.stageKey).toBe("image/provider-response");
-    expect(f.checkpoint()?.state.responseRef).not.toBeNull();
+    expect((await f.checkpoint())?.stageKey).toBe("image/provider-response");
+    expect((await f.checkpoint())?.state.responseRef).not.toBeNull();
+    const savedBinding = jsonObject((await f.checkpoint())?.state.binding);
+    expect(Object.keys(savedBinding)).toEqual(["baseSnapshot", "payload", "project", "target"]);
+    expect(Object.keys(jsonObject(savedBinding.target))).toEqual(["field", "kind", "recordId", "table"]);
+    await f.reopen();
     const result = await run(f.input, { ...f.host, attemptId: "attempt-2" });
     expect(f.host.providerOperation).toHaveBeenCalledTimes(1);
     const resource = jsonObject(jsonObject(result.payload.proposal).resource);
@@ -212,6 +230,12 @@ describe("real image-family execution", { timeout: 30_000 }, () => {
     const draft = parseProject(await f.host.readJson(result.generatedSnapshot!));
     expect(draft.database.actors[0]?.faceResourceId).toBe("allocated-face-bust");
     expect(draft.resourceProfiles.filter(r => r.assetId === "allocated-face-bust")).toHaveLength(1);
+    await f.reopen();
+    const completed = await run(f.input, { ...f.host, attemptId: "attempt-3" });
+    expect(completed.generatedSnapshot).toEqual(result.generatedSnapshot);
+    expect(completed.payload).toEqual(result.payload);
+    expect(completed.artifacts).toEqual(result.artifacts);
+    expect(f.host.providerOperation).toHaveBeenCalledTimes(1);
   });
 
   it("does not accept invalid image bytes as successful generation and retains them for inspection", async () => {
@@ -219,8 +243,8 @@ describe("real image-family execution", { timeout: 30_000 }, () => {
     f.host.providerOperation = vi.fn(async () => ({ image: { dataUrl: "data:image/png;base64,bm90IGFuIGltYWdl", mimeType: "image/png" } }));
     await expect(run(f.input, f.host)).rejects.toThrow("cannot be decoded");
     await expect(run(f.input, { ...f.host, attemptId: "attempt-2" })).rejects.toThrow("cannot be decoded");
-    expect(f.checkpoint()?.state.completed).toBe(false);
-    expect(f.checkpoint()?.state.image).toBeNull();
+    expect((await f.checkpoint())?.state.completed).toBe(false);
+    expect((await f.checkpoint())?.state.image).toBeNull();
     expect(f.host.providerOperation).toHaveBeenCalledTimes(1);
   });
 
@@ -232,12 +256,12 @@ describe("real image-family execution", { timeout: 30_000 }, () => {
       return put(value);
     };
     await expect(run(f.input, f.host)).rejects.toThrow("snapshot write failed");
-    expect(f.checkpoint()?.stageKey).toBe("image/artwork");
-    const image = f.checkpoint()?.state.image;
+    expect((await f.checkpoint())?.stageKey).toBe("image/artwork");
+    const image = (await f.checkpoint())?.state.image;
     f.host.putJson = put;
     f.host.putBlob = vi.fn(f.host.putBlob);
     await run(f.input, { ...f.host, attemptId: "attempt-2" });
-    expect(f.checkpoint()?.state.image).toEqual(image);
+    expect((await f.checkpoint())?.state.image).toEqual(image);
     expect(f.host.putBlob).not.toHaveBeenCalled();
     expect(f.host.providerOperation).toHaveBeenCalledTimes(1);
   });
@@ -256,7 +280,7 @@ describe("real image-family execution", { timeout: 30_000 }, () => {
       throw new Error("worker interrupted after durable provider response");
     });
     await expect(run(f.input, f.host)).rejects.toThrow("worker interrupted");
-    expect(f.checkpoint()?.stageKey).toBe("image/start");
+    expect((await f.checkpoint())?.stageKey).toBe("image/start");
     const result = await run(f.input, { ...f.host, attemptId: "attempt-2" });
     expect(dispatched).toBe(1);
     expect(jsonObject(jsonObject(result.payload.proposal).resource).id).toBe("allocated-title");
@@ -304,6 +328,26 @@ describe("real image-family execution", { timeout: 30_000 }, () => {
     if (binding === "parallax") expect(updated.fields).toMatchObject({ value: "reviewed-image-bust", resourceId: "reviewed-image-bust", target: "reviewed-image-bust", operation: "set" });
     else if (binding === "actor-faceset") expect(updated.fields).toEqual({ target: "actor:hero", value: "reviewed-image-bust" });
     else expect(updated.resourceId).toBe("reviewed-image-bust");
+  });
+
+  it("rejects changed target content, command path order, project identity and resource IDs after canonical persistence", async () => {
+    const target: ImageJobDestination = { kind: "event-draft", draftId: "draft-1", draftRevision: "e".repeat(64),
+      owner: { kind: "map-event", mapId: "map-A", eventId: "event-A", pageId: "page-A" },
+      commandPath: [0, -2, 1], binding: "show-picture",
+      command: { kind: "showPicture", pictureId: "p1", resourceId: "old", x: 12, y: 34 } };
+    const f = await fixture({ target, payload: { kind: "picture" } });
+    const completed = await run(f.input, f.host);
+    await f.reopen();
+    const changedInputs: (AiJobInput & { family: "image" })[] = [
+      { ...f.input, target: { ...f.input.target, commandPath: [1, -2, 0] } },
+      { ...f.input, target: { ...f.input.target, draftRevision: "d".repeat(64) } },
+      { ...f.input, target: { ...f.input.target, command: { ...target.command, x: 99 } } },
+      { ...f.input, project: { ...f.input.project, projectId: "other-project" } },
+      { ...f.input, payload: { ...f.input.payload, resourceId: "other-image" } },
+    ];
+    for (const input of changedInputs) await expect(run(input, f.host)).rejects.toThrow("Image checkpoint binding mismatch");
+    expect(await run(f.input, { ...f.host, attemptId: "attempt-2" })).toMatchObject({ payload: completed.payload, artifacts: completed.artifacts });
+    expect(f.host.providerOperation).toHaveBeenCalledTimes(1);
   });
 
   it("rejects malformed payload/project/checkpoint and missing destinations before paid work", async () => {
