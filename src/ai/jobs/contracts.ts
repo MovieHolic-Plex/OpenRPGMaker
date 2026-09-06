@@ -60,8 +60,20 @@ export interface AiJob {
   readonly activeAttemptId: string | null;
   readonly resultRef: BlobRef | null;
   readonly reportRef: BlobRef | null;
+  /** Optional only for version-1 records admitted before checkpoint support. */
+  readonly checkpointRef?: BlobRef | null;
   readonly applicationEvidence: JsonObject | null;
   readonly saveEvidence: JsonObject | null;
+}
+export interface AiJobCheckpoint {
+  readonly version: 1;
+  readonly jobId: string;
+  readonly attemptId: string;
+  readonly inputSha256: string;
+  readonly stageKey: string;
+  /** Cumulative private draft, allocated IDs, tool results and next deterministic step. */
+  readonly state: JsonObject;
+  readonly artifacts: readonly BlobRef[];
 }
 export interface AiJobAttempt {
   readonly id: string;

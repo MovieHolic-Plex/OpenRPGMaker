@@ -1,0 +1,29 @@
+✖ save-only retry moves applied+failed to applied+saved for the same receipt and exact applied hash (637.675784ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1169.688728
+
+✖ failing tests:
+
+test at test/aiJobsHttp.test.mjs:192:1
+✖ save-only retry moves applied+failed to applied+saved for the same receipt and exact applied hash (637.675784ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  404 !== 200
+
+      at TestContext.<anonymous> (file:///home/main/.herdr/worktrees/rpg-zzu/worktree-silver-harbor-d2a7/test/aiJobsHttp.test.mjs:206:10)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 404,
+    expected: 200,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

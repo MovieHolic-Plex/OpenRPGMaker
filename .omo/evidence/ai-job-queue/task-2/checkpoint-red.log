@@ -1,0 +1,34 @@
+✖ generation host exposes durable checkpoint save/load, not only orphan blob writes (213.131807ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1333.871446
+
+✖ failing tests:
+
+test at test/aiJobsScheduler.test.mjs:22:1
+✖ generation host exposes durable checkpoint save/load, not only orphan blob writes (213.131807ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+    [
+  +   'undefined',
+  +   'undefined'
+  -   'function',
+  -   'function'
+    ]
+
+      at TestContext.<anonymous> (file:///home/main/.herdr/worktrees/rpg-zzu/worktree-silver-harbor-d2a7/test/aiJobsScheduler.test.mjs:30:10)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'undefined', 'undefined' ],
+    expected: [ 'function', 'function' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

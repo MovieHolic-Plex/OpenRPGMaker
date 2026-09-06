@@ -1,0 +1,49 @@
+✖ HTTP rejects a foreign Origin rather than admitting paid work (65.004623ms)
+✖ cancel is durable before returning, including queued work (139.785922ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 0
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 399.752747
+
+✖ failing tests:
+
+test at test/aiJobsHttp.test.mjs:7:1
+✖ HTTP rejects a foreign Origin rather than admitting paid work (65.004623ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  202 !== 403
+
+      at TestContext.<anonymous> (file:///home/main/.herdr/worktrees/rpg-zzu/worktree-silver-harbor-d2a7/test/aiJobsHttp.test.mjs:13:10)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 202,
+    expected: 403,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/aiJobsScheduler.test.mjs:9:1
+✖ cancel is durable before returning, including queued work (139.785922ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + 'queued'
+  - 'cancelled'
+
+      at TestContext.<anonymous> (file:///home/main/.herdr/worktrees/rpg-zzu/worktree-silver-harbor-d2a7/test/aiJobsScheduler.test.mjs:18:10)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'queued',
+    expected: 'cancelled',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

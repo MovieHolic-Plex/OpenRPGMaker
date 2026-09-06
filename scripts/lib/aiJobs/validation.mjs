@@ -64,6 +64,11 @@ export function validateResult(v) {
   if (v.generatedSnapshot !== null) validateRef(v.generatedSnapshot);
   v.artifacts.forEach(validateRef);
 }
+export function validateCheckpoint(v) {
+  keys(v, ['version', 'jobId', 'attemptId', 'inputSha256', 'stageKey', 'state', 'artifacts']);
+  requireValue(v.version === 1 && text(v.jobId) && text(v.attemptId) && /^[a-f0-9]{64}$/.test(v.inputSha256) && text(v.stageKey) && object(v.state) && Array.isArray(v.artifacts), 'Invalid checkpoint');
+  v.artifacts.forEach(validateRef);
+}
 export function jobStates(job) { return Object.fromEntries(Object.keys(states).map(key => [key, job[key]])); }
 function validateStates(v) { for (const [key, values] of Object.entries(states)) requireValue(values.includes(v[key]), `Invalid ${key} state`); }
 export function isOutcome(before, after) {
@@ -80,10 +85,10 @@ export function validateSnapshot(s) {
   for (const rows of [s.jobs, s.attempts, s.operations]) requireValue(rows.every(r => text(r.id)) && new Set(rows.map(r => r.id)).size === rows.length, 'Duplicate/invalid record ID');
   requireValue(new Set(s.jobs.map(j => j.idempotencyKey)).size === s.jobs.length, 'Duplicate idempotency key');
   for (const j of s.jobs) {
-    keys(j, ['id', 'idempotencyKey', 'family', 'project', 'inputRef', 'createdAt', 'updatedAt', 'generation', 'report', 'application', 'save', 'activeAttemptId', 'resultRef', 'reportRef', 'applicationEvidence', 'saveEvidence']);
+    keys(j, ['id', 'idempotencyKey', 'family', 'project', 'inputRef', 'createdAt', 'updatedAt', 'generation', 'report', 'application', 'save', 'activeAttemptId', 'resultRef', 'reportRef', 'applicationEvidence', 'saveEvidence', ...('checkpointRef' in j ? ['checkpointRef'] : [])]);
     requireValue(text(j.idempotencyKey) && families.includes(j.family) && time(j.createdAt) && time(j.updatedAt) && j.updatedAt >= j.createdAt, 'Invalid job');
     identity(j.project); validateRef(j.inputRef); validateStates(j);
-    for (const ref of [j.resultRef, j.reportRef]) if (ref !== null) validateRef(ref);
+    for (const ref of [j.resultRef, j.reportRef, j.checkpointRef ?? null]) if (ref !== null) validateRef(ref);
     for (const evidence of [j.applicationEvidence, j.saveEvidence]) requireValue(evidence === null || object(evidence), 'Invalid evidence');
     requireValue(j.generation !== 'succeeded' || j.resultRef !== null, 'Successful generation needs a result');
     requireValue(!['ready', 'partial'].includes(j.report) || j.reportRef !== null, 'Ready report needs an artifact');

@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { openStorage } from './storage.mjs';
-import { AiJobsRepositoryError, canonicalJson, isOutcome, jobStates, requireValue, sha256, validateHistory, validateInput, validateResult, validateSnapshot } from './validation.mjs';
+import { AiJobsRepositoryError, canonicalJson, isOutcome, jobStates, requireValue, sha256, validateCheckpoint, validateHistory, validateInput, validateResult, validateSnapshot } from './validation.mjs';
 export { AiJobsRepositoryError } from './validation.mjs';
 
 /** @param {import('./repository.mjs').AiJobsRepositoryOptions} options */
@@ -47,6 +47,12 @@ export async function openAiJobsRepository(options) {
         for (const ref of [result.baseSnapshot, ...result.artifacts, ...(result.generatedSnapshot ? [result.generatedSnapshot] : [])]) await check(ref);
       }
       if (job.reportRef) await check(job.reportRef);
+      if (job.checkpointRef) {
+        const checkpoint = await storage.readJson(job.checkpointRef);
+        validateCheckpoint(checkpoint);
+        requireValue(checkpoint.jobId === job.id && checkpoint.inputSha256 === job.inputRef.sha256 && snapshot.attempts.some(a => a.id === checkpoint.attemptId && a.jobId === job.id && a.stage === 'generation'), 'Checkpoint/job identity mismatch');
+        for (const ref of checkpoint.artifacts) await check(ref);
+      }
     }
     for (const operation of snapshot.operations) {
       await check(operation.requestRef);
@@ -136,7 +142,7 @@ export async function openAiJobsRepository(options) {
           const timestamp = now();
           const job = { id: randomUUID(), idempotencyKey: key, family: input.family, project: input.project, inputRef, createdAt: timestamp, updatedAt: timestamp,
             generation: 'queued', report: 'pending', application: 'not-requested', save: 'not-requested', activeAttemptId: null,
-            resultRef: null, reportRef: null, applicationEvidence: null, saveEvidence: null };
+            resultRef: null, reportRef: null, checkpointRef: null, applicationEvidence: null, saveEvidence: null };
           const next = structuredClone(state);
           next.jobs.push(job); next.revision += 1;
           appendEvent(next, job, 'admitted', timestamp);

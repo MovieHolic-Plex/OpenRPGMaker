@@ -14,6 +14,7 @@ import { handleCompanionRequest, isCompanionPath } from "./scripts/lib/ohMyPiHtt
 import { createOhMyPiAdapters, stopOhMyPiWorker } from "./scripts/lib/ohMyPiPiAi.mjs";
 import type { OhMyPiAdapters } from "./scripts/lib/ohMyPiPiAi.mjs";
 import { readRequestJson, writeCompanionResult } from "./scripts/lib/companionHttpUtil.mjs";
+import { aiJobsPlugin } from "./scripts/lib/aiJobs/vitePlugin.mjs";
 
 const DEFAULT_DEV_SERVER_PORT = 9999;
 
@@ -596,7 +597,7 @@ export default defineConfig(({ mode }) => {
   // 재최적화하다 "Failed to scan for dependencies" 로 서버가 죽는다(실측: 액션 전투 QA 중 3회).
   // VITE_CACHE_DIR 을 주면 워크트리 전용 캐시를 써서 이 충돌을 없앤다.
   cacheDir: process.env.VITE_CACHE_DIR,
-  plugins: [aiActivityDiskPlugin(), editActivityDiskPlugin(), codexOAuthPlugin(), localOnlyAiProxyPlugin()],
+  plugins: [aiJobsPlugin(), aiActivityDiskPlugin(), editActivityDiskPlugin(), codexOAuthPlugin(), localOnlyAiProxyPlugin()],
   // src/styles/index.css 는 @import 로 243개 파일을 한 모듈로 인라인한다. 소스맵이 없으면
   // DevTools 가 그 모든 규칙을 `index.css` 한 파일로 귀속시켜, 계산된 스타일에서 소유 파일을
   // 역추적할 수 없다. !important 1,051개와 "재배열 금지" 순서 계약 40여 개가 걸린 시트에서
