@@ -123,7 +123,7 @@ async function renderStage(
   if (pixelWidth <= 0 || pixelHeight <= 0) return null;
 
   const image = await loadTilesetImage(tileset);
-  if (!image.complete || image.naturalWidth === 0) return null;
+  if ("complete" in image && (!image.complete || image.naturalWidth === 0)) return null;
 
   // 타일을 곧바로 2px 로 그리면 소스 사각형이 서브픽셀이 되어 격자가 뭉개진다.
   // 중간 캔버스에 정수 배율로 그린 뒤 한 번만 축소한다. 큰 미리보기(상세 칸)는 목표가

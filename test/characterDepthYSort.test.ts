@@ -35,12 +35,30 @@ describe("map upper tile depth (furniture y-sort vs ★ canopy)", () => {
     expect(playerSouth).toBeGreaterThan(tableDepth);
   });
 
+  it("keeps a directional ○ bridge below characters, preserving ★ and × behavior", () => {
+    const project = createBlankProject();
+    const ts = project.tilesets.easyrpg_chipset_world;
+    ts.priority[443] = "lower";
+    ts.passability[443] = { up: false, down: false, left: true, right: true };
+    expect(passageMarkForTile(ts, 443)).toBe("o");
+    for (const priority of ["below", "same", "above"] as const) {
+      expect(mapUpperTileDepth(ts, 443, 36)).toBeLessThan(characterDepth(priority, characterSpriteY(36)));
+    }
+    expect(isAlwaysAboveCharacterUpperTile(ts, 443)).toBe(false);
+    ts.passability[443] = { up: false, down: false, left: false, right: false };
+    expect(mapUpperTileDepth(ts, 443, 36)).toBe(characterDepth("same", characterSpriteY(36)));
+  });
+
   it("routes solid upper furniture to root (y-sort) and ★ canopy to upperTileLayer", () => {
     const project = createBlankProject();
     const map = project.maps[project.startMapId];
     map.lowerTiles.fill(TILE.GRASS);
     map.upperTiles.fill(-1);
     map.upperTiles[2 * map.width + 2] = 234; // solid table
+    const ts = project.tilesets[map.tilesetId];
+    ts.passability[235] = { up: false, down: false, left: true, right: true };
+    ts.priority[235] = "lower";
+    map.upperTiles[3 * map.width + 3] = 235;
     map.upperTiles[1 * map.width + 1] = 260; // tree canopy ★
     store.replace(project);
 
@@ -90,6 +108,9 @@ describe("map upper tile depth (furniture y-sort vs ★ canopy)", () => {
 
     renderTiles(scene);
 
+    const floorDepth = mapUpperTileDepth(ts, 235, 3);
+    expect(rootKids.some(img => img.depth === floorDepth)).toBe(true);
+    expect(floorDepth).toBeLessThan(characterDepth("below", characterSpriteY(3)));
     const canopy = upperKids.find((img) => img.depth === MAP_UPPER_LAYER_DEPTH);
     expect(canopy).toBeTruthy();
 

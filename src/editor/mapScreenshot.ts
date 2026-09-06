@@ -1,4 +1,4 @@
-import { drawMapTileLayers, loadTilesetImage, MapTileDrawError } from "@/editor/mapTileDraw";
+import { drawMapTileLayers, loadTilesetImage, MapTileDrawError, type TilesetCanvasImage } from "@/editor/mapTileDraw";
 import type { GameMap, Project } from "@/project/types";
 
 /** 큰 맵은 배율 낮춤 — 브라우저 캔버스 한도·메모리 초과 방지 */
@@ -39,7 +39,7 @@ export async function createMapScreenshot(project: Project, map: GameMap): Promi
   const tileset = project.tilesets[map.tilesetId];
   if (!tileset) throw new MapScreenshotError("현재 맵의 타일셋을 찾지 못했습니다.");
 
-  let image: HTMLImageElement;
+  let image: TilesetCanvasImage;
   try {
     image = await loadTilesetImage(tileset);
   } catch (error) {
@@ -48,7 +48,7 @@ export async function createMapScreenshot(project: Project, map: GameMap): Promi
   }
 
   // CORS 타일셋이 taint 되면 toBlob 실패 — 동일 출처 보장 후 재시도
-  if (!image.complete || image.naturalWidth === 0) {
+  if ("complete" in image && (!image.complete || image.naturalWidth === 0)) {
     throw new MapScreenshotError("타일셋 이미지가 아직 로드되지 않았습니다.");
   }
 

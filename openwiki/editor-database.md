@@ -15,6 +15,18 @@
 
 # Editor Database
 
+## Concept navigation integration (2026-09-06)
+
+PR617's concept-first Map rail is integrated with the current unified inventory
+catalog: 32 primary destinations, only `scratchConcepts` and `tilesets` under Map,
+and `commonEvents` under System. Legacy Map destinations remain contextual/search
+routes. `equipment` search finds the single `items` destination; programmatic
+`equipment` navigation retains the catalog's equipment-filter/selection behavior.
+The navigation setter applies tileset facets once without bypassing that alias.
+The current multi-floor inn template remains authoritative (`dorm_bed_a`,
+`upper_stair`); snapshot tests use those IDs, not the retired bedroom/stairs IDs.
+Validation and replay boundaries are in `reports/pr617-621-integration.md`.
+
 ## System settings workspace (2026-09-06)
 
 `databaseSystemView.ts` and `databaseSystemStudio.ts` own all ten mounted System
