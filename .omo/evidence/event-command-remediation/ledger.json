@@ -467,13 +467,23 @@
       "commandIds": [
         "m2:m2-092-change-battle-commands"
       ],
-      "status": "pending",
+      "status": "resolved",
       "unit": "U05",
-      "red": [],
-      "green": [],
-      "surface": [],
-      "commits": [],
-      "resolution": null
+      "red": [
+        ".omo/evidence/event-command-remediation/U05/red.json"
+      ],
+      "green": [
+        ".omo/evidence/event-command-remediation/checkpoints/u05-u06-integration.json",
+        ".omo/evidence/event-command-remediation/U05/supervisor/summary.json"
+      ],
+      "surface": [
+        ".omo/evidence/event-command-remediation/U05/supervisor/editor-lQxFsv/report.json",
+        ".omo/evidence/event-command-remediation/U05/supervisor/player-CY2SNi/player-observation.json"
+      ],
+      "commits": [
+        "e2b38f0003bb51fe9842faec82d8b40820917190"
+      ],
+      "resolution": "092 stores an actual actor ID or explicit party; its legacy actor-plus-actorId reader preserves individual scope and rejects incomplete individuals. Real next-actor battle menus prove the untargeted actor is unchanged."
     },
     "G2-F2": {
       "title": "전투 이벤트 피커도 맵용 가용성을 사용해 전투 전용 11종을 선택할 수 없다",
@@ -521,13 +531,25 @@
         "native:changeExp",
         "m2:m2-012-change-exp"
       ],
-      "status": "pending",
+      "status": "resolved",
       "unit": "U05",
-      "red": [],
-      "green": [],
-      "surface": [],
-      "commits": [],
-      "resolution": null
+      "red": [
+        ".omo/evidence/event-command-remediation/U05/red.json",
+        ".omo/evidence/event-command-remediation/U05/inline-variable-red.log.gz"
+      ],
+      "green": [
+        ".omo/evidence/event-command-remediation/checkpoints/u05-u06-integration.json",
+        ".omo/evidence/event-command-remediation/U05/supervisor/summary.json"
+      ],
+      "surface": [
+        ".omo/evidence/event-command-remediation/U05/supervisor/editor-lQxFsv/report.json",
+        ".omo/evidence/event-command-remediation/U05/supervisor/player-CY2SNi/player-observation.json",
+        ".omo/evidence/event-command-remediation/U05/supervisor/editor-lQxFsv/inline-variable-editor-observation.json"
+      ],
+      "commits": [
+        "e2b38f0003bb51fe9842faec82d8b40820917190"
+      ],
+      "resolution": "EXP retains variable operands and mounted numeric/variable drafts through target/operation edits. Real inline variable creation refreshes current labels, preview and validation after the store replaces the project. Confirm, outer save, import and runtime values agree."
     },
     "G2-F5": {
       "title": "전후 미리보기가 실행 산식과 달라 숫자·순서를 잘못 약속한다",
@@ -560,13 +582,23 @@
         "m2:m2-014-change-parameters",
         "m2:m2-021-damage-processing"
       ],
-      "status": "pending",
+      "status": "resolved",
       "unit": "U05",
-      "red": [],
-      "green": [],
-      "surface": [],
-      "commits": [],
-      "resolution": null
+      "red": [
+        ".omo/evidence/event-command-remediation/U05/red.json"
+      ],
+      "green": [
+        ".omo/evidence/event-command-remediation/checkpoints/u05-u06-integration.json",
+        ".omo/evidence/event-command-remediation/U05/supervisor/summary.json"
+      ],
+      "surface": [
+        ".omo/evidence/event-command-remediation/U05/supervisor/editor-lQxFsv/report.json",
+        ".omo/evidence/event-command-remediation/U05/supervisor/player-CY2SNi/player-observation.json"
+      ],
+      "commits": [
+        "e2b38f0003bb51fe9842faec82d8b40820917190"
+      ],
+      "resolution": "Explicit numeric mode wins over an inactive variable ID for parameter and damage commands. Reopen, presets and later edits remain numeric; player values distinguish numeric inputs from variable values."
     },
     "G2-F7": {
       "title": "상태 칩의 자동 선택이 초안과 다르고 없는 상태를 다른 상태로 치환한다",
@@ -574,13 +606,23 @@
       "commandIds": [
         "m2:m2-019-change-state"
       ],
-      "status": "pending",
+      "status": "resolved",
       "unit": "U05",
-      "red": [],
-      "green": [],
-      "surface": [],
-      "commits": [],
-      "resolution": null
+      "red": [
+        ".omo/evidence/event-command-remediation/U05/red.json"
+      ],
+      "green": [
+        ".omo/evidence/event-command-remediation/checkpoints/u05-u06-integration.json",
+        ".omo/evidence/event-command-remediation/U05/supervisor/summary.json"
+      ],
+      "surface": [
+        ".omo/evidence/event-command-remediation/U05/supervisor/editor-lQxFsv/report.json",
+        ".omo/evidence/event-command-remediation/U05/supervisor/player-CY2SNi/player-observation.json"
+      ],
+      "commits": [
+        "e2b38f0003bb51fe9842faec82d8b40820917190"
+      ],
+      "resolution": "Missing state IDs and set/toggle operations remain represented without first-state substitution. Missing or empty-catalog selections cannot Confirm until explicitly corrected; player target states and untargeted states are verified."
     },
     "G2-F8": {
       "title": "개인 선택의 빈 값과 파티 전체가 같은 저장값이라 의도하지 않은 전체 변경이 가능하다",
@@ -596,13 +638,23 @@
         "native:changeExp",
         "m2:m2-012-change-exp"
       ],
-      "status": "pending",
+      "status": "resolved",
       "unit": "U05",
-      "red": [],
-      "green": [],
-      "surface": [],
-      "commits": [],
-      "resolution": null
+      "red": [
+        ".omo/evidence/event-command-remediation/U05/red.json"
+      ],
+      "green": [
+        ".omo/evidence/event-command-remediation/checkpoints/u05-u06-integration.json",
+        ".omo/evidence/event-command-remediation/U05/supervisor/summary.json"
+      ],
+      "surface": [
+        ".omo/evidence/event-command-remediation/U05/supervisor/editor-lQxFsv/report.json",
+        ".omo/evidence/event-command-remediation/U05/supervisor/player-CY2SNi/player-observation.json"
+      ],
+      "commits": [
+        "e2b38f0003bb51fe9842faec82d8b40820917190"
+      ],
+      "resolution": "Actor identity, EXP and Learn Skill forms distinguish explicit party mode from incomplete individual selections. Invalid individual edits cannot persist party through Confirm or inline Apply; legacy empty-party execution remains supported."
     },
     "G2-F9": {
       "title": "리소스 선택 창·AI 결과가 기존 select 목록에 없으면 선택값이 사라진다",
@@ -1488,13 +1540,23 @@
       "commandIds": [
         "native:removeFollower"
       ],
-      "status": "pending",
+      "status": "resolved",
       "unit": "U06",
-      "red": [],
-      "green": [],
-      "surface": [],
-      "commits": [],
-      "resolution": null
+      "red": [
+        ".omo/evidence/event-command-remediation/U06/red-refresh.json"
+      ],
+      "green": [
+        ".omo/evidence/event-command-remediation/checkpoints/u05-u06-integration.json",
+        ".omo/evidence/event-command-remediation/U06/supervisor-summary.json"
+      ],
+      "surface": [
+        ".omo/evidence/event-command-remediation/U06/surface-OJLoBq/editor-observations.json",
+        ".omo/evidence/event-command-remediation/U06/surface-OJLoBq/player/manifest.json"
+      ],
+      "commits": [
+        "4c619edc7dfde3a3c8214fd6b6f19fffd85c52ff"
+      ],
+      "resolution": "Only explicit all mode stores all:true. Empty/whitespace individual names block Confirm and focus the input; corrected named removal affects only Bob, preserving Alice and monster state."
     },
     "G5-F4": {
       "title": "모습 파일 선택은 미리보기만 바꾸고 저장되지 않는다",
@@ -1516,13 +1578,24 @@
       "commandIds": [
         "native:addFollower"
       ],
-      "status": "pending",
+      "status": "resolved",
       "unit": "U06",
-      "red": [],
-      "green": [],
-      "surface": [],
-      "commits": [],
-      "resolution": null
+      "red": [
+        ".omo/evidence/event-command-remediation/U06/red-refresh.json",
+        ".omo/evidence/event-command-remediation/U06/red-preservation-corrected.json"
+      ],
+      "green": [
+        ".omo/evidence/event-command-remediation/checkpoints/u05-u06-integration.json",
+        ".omo/evidence/event-command-remediation/U06/supervisor-summary.json"
+      ],
+      "surface": [
+        ".omo/evidence/event-command-remediation/U06/surface-OJLoBq/editor-observations.json",
+        ".omo/evidence/event-command-remediation/U06/surface-OJLoBq/player/manifest.json"
+      ],
+      "commits": [
+        "4c619edc7dfde3a3c8214fd6b6f19fffd85c52ff"
+      ],
+      "resolution": "Explicit graphic off removes the saved graphic. Inactive edited fields survive off/name-edit/on; unrelated scale survives edits. Reopen, Cancel, actual package import and the existing actor-default versus graphic-only runtime contracts are verified."
     },
     "G5-F6": {
       "title": "시작/종료 전환 뒤 조건부 건너뛰기 컨트롤이 갱신되지 않는다",
