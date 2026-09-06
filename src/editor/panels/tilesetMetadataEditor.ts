@@ -49,25 +49,6 @@ let selectedTile = 0;
 let editMode: TilesetEditMode = "passage";
 /** 방향별 통행. 리렌더마다 접히면 연속으로 방향을 못 고친다. */
 let compassOpen = true;
-/** 마지막으로 폴더 facet 을 적용한 좌측 탭. 같은 탭의 리렌더에서는 모드를 건드리지 않는다. */
-let appliedFolderTab: string | null = null;
-
-/** 섹션 탭 ↔ 좌측 타일셋 폴더 자식 탭. 두 내비게이션이 같은 것을 가리키므로 함께 움직인다. */
-const SECTION_FOLDER_TAB: Record<TilesetSectionTab, string> = {
-  rules: "tilesets",
-  knowledge: "tilesetUnlabeled",
-  compose: "tilesetAutotile",
-};
-
-// database.ts 가 등록한다. 순환 import 를 피하려고 콜백으로 받는다.
-// 실제로 탭을 옮기고 다시 그렸으면 true 를 준다 — false 면 호출자가 직접 rerender 한다.
-let folderTabRequest: ((tab: string) => boolean) | null = null;
-
-/** 섹션 탭을 누르면 좌측 폴더 자식 탭도 같이 옮기도록 database 패널이 등록한다. */
-export function setTilesetFolderTabRequestHandler(handler: ((tab: string) => boolean) | null): void {
-  folderTabRequest = handler;
-}
-
 const PASSAGE_META: Record<PassageMark, NonNullable<TileAiMetadata["passage"]>> = {
   o: "passable",
   x: "solid",
@@ -645,16 +626,8 @@ export function setTilesetMetadataEditMode(mode: TilesetEditMode, rerender: () =
   setMode(mode, rerender);
 }
 
-/**
- * 세계 → 타일셋 폴더 자식이 본문을 그릴 때 편집 모드만 맞춘다. rerender 는 탭 렌더가 한다.
- *
- * 폴더 탭이 실제로 바뀐 첫 렌더에서만 모드를 강제한다. 예전에는 매 렌더마다 강제해서
- * setMode("terrain") 이 자기가 부른 rerender 에 곧바로 덮여 지형·타일 지식·구성 탭이 전부
- * 죽어 있었다.
- */
+/** Legacy route shortcuts only. Call on navigation, not on local redraw. */
 export function applyTilesetFolderFacet(tab: string): void {
-  if (appliedFolderTab === tab) return;
-  appliedFolderTab = tab;
   if (tab === "tilesetAutotile") {
     editMode = "autotile";
     setUnlabeledOnlyFilter(false);
@@ -665,13 +638,7 @@ export function applyTilesetFolderFacet(tab: string): void {
     setUnlabeledOnlyFilter(true);
     return;
   }
-  editMode = "passage";
-  setUnlabeledOnlyFilter(false);
-}
-
-/** 테스트·모달 재진입용. 다음 applyTilesetFolderFacet 가 다시 모드를 맞추게 한다. */
-export function resetTilesetFolderFacet(): void {
-  appliedFolderTab = null;
+  // The primary tileset route retains the author's last internal section/mode.
 }
 
 export function getTilesetMetadataEditMode(): TilesetEditMode {
@@ -687,9 +654,6 @@ export function getTilesetSectionTab(): TilesetSectionTab {
 export function setTilesetSectionTab(tab: TilesetSectionTab, rerender: () => void): void {
   if (getTilesetSectionTab() === tab) return;
   editMode = TILESET_TAB_MODES[tab][0];
-  // 좌측 폴더 자식 탭도 같은 곳을 가리키게 한다. 그쪽이 렌더를 다시 돌리면 rerender 는 생략.
-  appliedFolderTab = SECTION_FOLDER_TAB[tab];
-  if (folderTabRequest?.(appliedFolderTab)) return;
   rerender();
 }
 

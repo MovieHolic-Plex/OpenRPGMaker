@@ -127,6 +127,29 @@ The system is a Vite + TypeScript + Phaser browser app: DOM panels and controls 
 
 ## 2. Color
 
+### Concept-first Map authoring — phase 1 (2026-09-05)
+
+- Database **맵** has two primary destinations: **개념 꾸러미** (`scratchConcepts`) and
+  **타일셋** (`tilesets`). There is no tileset folder or hidden legacy rail. **공용 이벤트**
+  belongs to System. All original tab IDs remain routable and searchable, including retired names.
+- Context actions sit above the workspace: concepts → **부품 보관함**, **기존 방 규칙**,
+  **기존 마을 설계**; villages → **공통 생성 기본값**; tilesets → **지형 효과**.
+  Children have a parent return button, retain shared tileset/concept selection, highlight their
+  primary root, and include their ancestors in the modal breadcrumb.
+- Concepts use a compact tileset selector, illustrated facility choices from referenced artwork,
+  place cards, and a thing inspector. Place selection only inspects things in that place. Selecting
+  or painting a thing selects its containing place; graphic-editor close returns to that selection.
+  References, saves, local graphic history, and catalog-copy behavior remain intact.
+- Tilesets have one internal navigation: **통행·지형 / 자동 연결 / 타일 설명**. Existing modes
+  and the unlabeled filter remain. Legacy autotile/unlabeled jumps open matching modes but highlight
+  the tileset primary. Child return retains the mode instead of restoring stale DOM. Other Database
+  tab caches and animation playback intent are unchanged.
+- Existing CSS owners and cool-white tokens govern the layout. Actions wrap; on narrow desktop
+  containers the concept inspector follows the places instead of squeezing them. Target widths:
+  1024, 1280, 1440px. No dependency, schema, migration, or authored-content changes.
+  `structureKits`, `interiorRoomKinds`, `scratchConceptBundles`, terrains and villages coexist;
+  room migration and village composition remain future phases, not shipped capabilities.
+
 ### Active editor shell — cool white studio
 
 There is **one shipped editor shell theme**: cool white + slate + indigo `#4A57D6` in `src/styles/tokens.css`. Ladder: `canvas/inset #EEF1F4 < base/surface #F7F8F8 < raised/overlay #FFFFFF`. Text `#0F172A/#475569/#64748B`. Legacy `--gold` is an indigo alias. `color-scheme: light`. No theme toggle.

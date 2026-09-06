@@ -4,6 +4,7 @@ import { handleHistoryHotkey } from "@/editor/hotkeys";
 import {
   databaseTabGroupLabel,
   databaseTabLabel,
+  databaseTabPath,
   getDatabaseActiveTab,
   refreshDatabasePanel,
   renderDatabasePanel,
@@ -64,7 +65,7 @@ function windowIcon(name: WindowIconName): SVGSVGElement {
 /** 헤더 브레드크럼 "그룹 › 탭" 을 현재 활성 탭으로 다시 쓴다. 개요처럼 그룹 밖 탭은 탭 이름만 남긴다. */
 function writeCrumb(crumb: HTMLElement, tab: DatabaseTab): void {
   const group = databaseTabGroupLabel(tab);
-  const label = databaseTabLabel(tab);
+  const path = databaseTabPath(tab);
   crumb.replaceChildren(
     ...(group
       ? [
@@ -72,7 +73,10 @@ function writeCrumb(crumb: HTMLElement, tab: DatabaseTab): void {
         el("span", { class: "database-modal-crumb-sep", text: "›", attrs: { "aria-hidden": "true" } }),
       ]
       : []),
-    el("span", { class: "database-modal-crumb-tab", text: label }),
+    ...path.flatMap((entry, index) => [
+      ...(index > 0 ? [el("span", { class: "database-modal-crumb-sep", text: "›", attrs: { "aria-hidden": "true" } })] : []),
+      el("span", { class: "database-modal-crumb-tab", text: databaseTabLabel(entry), dataset: { tab: entry } }),
+    ]),
   );
   crumb.dataset.tab = tab;
 }

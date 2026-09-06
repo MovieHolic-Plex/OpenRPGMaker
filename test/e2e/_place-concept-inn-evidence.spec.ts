@@ -139,7 +139,7 @@ async function openConceptTab(page: Page): Promise<void> {
     if (await group.count()) await group.click();
   }
   await tab.click({ force: true });
-  await page.getByTestId(`scratch-concept-tileset-${INTERIOR_TILESET_ID}`).click();
+  await page.getByTestId("scratch-concept-tileset-select").selectOption(INTERIOR_TILESET_ID);
   await expect(page.getByTestId("scratch-concept-board")).toBeVisible();
 }
 
