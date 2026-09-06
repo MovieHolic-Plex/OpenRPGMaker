@@ -2,7 +2,7 @@ import { missingAcceptance, type AcceptanceSnapshot, type AcceptancePromise } fr
 import { AssistantAcceptanceLedger } from "./assistantAcceptanceLedger";
 import { AssistantImageEvidence, coveredByImages, type AcceptanceImageReceipt } from "./assistantImageEvidence";
 import { ACCEPTANCE_SCHEMA, ACCEPTANCE_TOOLS } from "./assistantAcceptanceTools";
-import { adventureToolNames, adventureCompletionProblems, ADVENTURE_AUTHORING_GUIDE, type AdventureRequirements } from "./adventureCompletion";
+import { adventureCompletionProblems, ADVENTURE_AUTHORING_GUIDE, type AdventureRequirements } from "./adventureCompletion";
 // ai/assistantSession.ts
 // 어시스턴트 세션: user msg → LLM → tool_calls → runTool(dryRun 누적) → tool 메시지 → … → 최종 응답.
 // - 쓰기 툴은 로컬 draft(ctx.project)에 누적되어 연쇄 툴콜이 이전 결과를 본다(store는 건드리지 않음).
@@ -59,7 +59,7 @@ import {
   type VerificationCallRecord,
 } from "./agentVerification";
 import type { LintIssue } from "@/project/lint/projectLint";
-import { beginAssistantToolDomainTurn, computeActiveToolDomains, recordAssistantToolDomainUse } from "@/editor/assistantToolMode";
+import { beginAssistantToolDomainTurn, recordAssistantToolDomainUse } from "@/editor/assistantToolMode";
 import { cloneDetachedDraft } from "@/editor/detachedDraftMemory";
 import { extractVocabSoftConfirm } from "@/project/tileVocabulary";
 import type { Project } from "@/project/types";
@@ -70,9 +70,7 @@ import {
   type ConversationTurnContext,
   type TurnSelectionSnapshot,
 } from "./conversationTurnContext";
-import { capabilityEscalationSchemas, clampTurnToolSchemas } from "./capabilityEscalation";
 import { buildPreferenceMemorySection } from "./preferenceMemory";
-import { mentionedToolSchemas, planRequiredToolSchemas, toolSchemasForNames } from "./planToolExposure";
 import { compactMessagesForRequest, resolveRequestCharBudget, resolveWorkingContextTokens } from "./messageBudget";
 import {
   buildCompactedMessages,
@@ -211,7 +209,6 @@ const MAX_ESCALATED_TOOLS_PER_TURN = 16;
  * 스펙 게이트 거부처럼 인자를 바꾸지 않으면 영원히 같은 결과인 실패가 여기서 끊긴다.
  */
 const MAX_REPEATED_TOOL_FAILURES_PER_ITEM = 4;
-const MAX_BASE_TURN_TOOL_SCHEMAS = 40;
 
 function discoveredToolNames(result: ToolResult): string[] {
   if (!result.ok || typeof result.data !== "object" || result.data === null || Array.isArray(result.data)) return [];
@@ -804,7 +801,7 @@ export interface AssistantSessionOptions {
   peekPendingUserMessage?: () => string | null;
   // 비전 이미지 렌더러(브라우저 전용). 없으면 텍스트 전용(Node/테스트에서 동일 동작).
   renderImages?: ToolImageRenderer;
-  // 이전 모드 스코핑 호환 옵션. 현재는 computeActiveToolDomains()가 UI 도메인을 직접 계산한다.
+  // Legacy scoped-consumer option. The session exposes the complete active catalog.
   toolMode?: () => ToolDomain | undefined;
   /**
    * 턴 시점 선택 영역 조회(에디터 UI 상태). 사용자 감사 항목의 상황 스냅샷에만 쓰이며
@@ -883,7 +880,6 @@ export class AssistantSession {
   /** 이번 턴에 실행을 시작한 툴 수 — tool_started 이벤트의 1-based 서수 원천. */
   private turnToolStartedCount = 0;
   private eventBaseProposalKeys = new Map<string, string>();
-  private currentTurnToolDomains: ReadonlySet<ToolDomain> | undefined;
   private currentTurnRequestText = "";
   /** 이번 턴의 사용자 발화만(가이드·footer 없음) — 툴 이름 언급·능력 승격·의도 선언의 입력. */
   private currentTurnInstruction = "";
@@ -1669,7 +1665,7 @@ export class AssistantSession {
     }
 
     // 의도 선언: 모델이 한 번 읽어 구조화한다(수정/생성·실내/야외·시설·되묻기·계획·툴). 코드는 이 선언만
-    // 소비한다. 선언자가 없거나 실패하면 중립 폴백 — 되묻지 않고, 툴은 UI 도메인·핀·이름 언급·승격만.
+    // Neutral fallback retains the full tool catalog when declaration is unavailable.
     // 질문 모드는 사용자가 직접 고른 사실이라 선언의 create/modify 를 덮어쓴다 — 안 그러면 플래너·쓰기 기대가 문장 판정으로 돈다.
     const intent = this.applyComposerModeToIntent(await this.declareTurnIntent(instruction, onEvent, signal));
     this.turnIntent = intent;
@@ -1701,7 +1697,6 @@ export class AssistantSession {
       this.verificationEvidence.clear();
     }
     beginAssistantToolDomainTurn(intent);
-    this.currentTurnToolDomains = computeActiveToolDomains(intent);
 
     // 스펙 게이트 턴 초기화: 사용자 선택 영역([컨텍스트])은 이 턴의 암묵적 명세가 된다.
     this.currentTurnIndex += 1;
@@ -3537,16 +3532,11 @@ export class AssistantSession {
 
   private async runTurnLoop(onEvent: (event: SessionEvent) => void, signal?: AbortSignal): Promise<TurnResult> {
     this.lastTurnFailed = false;
-    // 컨텍스트 도메인 스코핑: 턴 시작 사용자 메시지 기준의 도메인 유니온을 기본 작업 세트로 쓴다.
-    const domains = this.currentTurnToolDomains ?? computeActiveToolDomains(this.turnIntent);
     // WorkPlan 툴(set/get_work_plan, complete/skip_work_item)은 **계획을 실제로 쓰는 턴에만**
     // 붙인다. 예전에는 무조건 붙어서, 오케스트레이션이 꺼진 기본 설정(감독=실행 모델 동일)에서
     // 플래너가 돌지도 않는데 4개가 매 요청에 실려 갔다(실측: 45개 중 4개).
     // 조건은 아래 `orchestrated` 와 같아야 한다 — 계획 단계를 알리면서 계획 툴을 숨기면 모순이다.
     const planToolsOn = (this.orchestrationEnabled() || Boolean(this.workPlan)) && !this.skipPlannerThisTurn;
-    // 계획 요구 툴(todo 8 실측): successTools/지시문에 명시된 툴은 도메인 게이트·40툴 상한에
-    // 떨어져도 계획이 활성인 동안 반드시 노출한다(plan_world/play_walkthrough/build_village 등).
-    // 도메인 캡 목록과 합집합을 만들고 중복은 제거한다(CPEN 128툴 상한 내 유지).
     const proposedByKey = this.turnProposals;
     let assistantText = "";
     const orchestrated = (this.orchestrationEnabled() || Boolean(this.workPlan)) && !this.skipPlannerThisTurn;
@@ -3573,61 +3563,20 @@ export class AssistantSession {
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "aborted", error: "사용자가 중단했습니다" };
       }
       let result: ChatResult;
-      const baseTools = toOpenAiTools(undefined, { domains });
-      // 이름 언급·선언 툴은 사용자 발화와 의도 선언에서만 온다. footer/가이드 같은 기계 텍스트는 보지 않는다.
-      const mentioned = mentionedToolSchemas(this.currentTurnInstruction);
-      const declared = toolSchemasForNames(this.turnIntent?.tools ?? []);
-      const planRequired = this.workPlan ? planRequiredToolSchemas(this.workPlan) : [];
-      const questPersist = this.currentTurnToolDomains?.has("quest")
-        ? toolSchemasForNames(["author_story_arc", "define_quest", "create_quest", "verify_quest", "lint_quest", "generate_walkthrough"])
-        : [];
-      const discoveryEscalated = toolSchemasForNames(this.turnEscalatedToolNames);
-      const requiredByName = new Map(
-        [
-          ...mentioned,
-          ...declared,
-          ...toolSchemasForNames(adventureToolNames(this.adventureRequirements)),
-          ...toolSchemasForNames(this.readEvidence.requiredReadTools()),
-          ...planRequired,
-          ...questPersist,
-          ...discoveryEscalated,
-          SET_BUILD_SPEC_TOOL,
-          ...(planToolsOn ? WORK_PLAN_TOOLS : []),
-          ...(this.acceptance ? ACCEPTANCE_TOOLS : []),
-        ].map((tool) => [tool.function.name, tool] as const),
-      );
-      const requiredNames = new Set(requiredByName.keys());
-      const requiredTools = [...requiredByName.values()].filter((tool) => tool.function.name !== "find_tools");
-      const baseCandidates = baseTools
-        .filter((tool) => !requiredNames.has(tool.function.name) && tool.function.name !== "find_tools")
-        .slice(0, MAX_BASE_TURN_TOOL_SCHEMAS);
-      // 자연어 능력 승격: 사용자가 정확한 레지스트리 이름을 안 써도 요청 문장과 실제로 매칭되는
-      // 툴을 같은 라운드에 얹는다. 도메인 40 상한에 밀려 "그 기능이 없습니다"로 답하던 회귀 방지.
-      // 승격분은 required 와 같이 도메인 게이트 밖에서 살아남고, 대신 도메인 작업 세트의 꼬리
-      // (도메인 쿼터가 마지막에 채운, 요청과 가장 관련 없는 항목)를 그만큼 내준다 — 라운드당
-      // 예약 없는 작업 툴 수는 40으로 유지된다.
-      const capability = capabilityEscalationSchemas(
-        this.currentTurnInstruction,
-        new Set([...baseCandidates.map((tool) => tool.function.name), ...requiredNames, "find_tools"]),
-      );
-      const capabilityNames = new Set(capability.map((tool) => tool.function.name));
-      const baseExposed = baseCandidates.slice(0, Math.max(0, MAX_BASE_TURN_TOOL_SCHEMAS - capability.length));
-      const tools = clampTurnToolSchemas(
-        [...baseExposed, ...requiredTools, ...capability, ...toolSchemasForNames(["find_tools"])],
-        capabilityNames,
-      )
-        // 질문 모드: 쓰기 스키마는 모델에 보이지 않는다. 문장으로 "바꾸지 마라"고 부탁하는 대신 능력을 뺀다.
+      // Full native schemas are the working catalog, not a domain-ranked shortlist.
+      // Session-only tools retain their lifecycle gates; ask mode removes every write.
+      const tools = [
+        ...toOpenAiTools(),
+        SET_BUILD_SPEC_TOOL,
+        ...(planToolsOn ? WORK_PLAN_TOOLS : []),
+        ...(this.acceptance ? ACCEPTANCE_TOOLS : []),
+      ]
         .filter((tool) => this.turnComposerMode !== "ask" || !isWriteToolName(tool.function.name))
         .map((tool) => injectToolReasonIntoOpenAiTool(tool));
       const toolsChars = JSON.stringify(tools).length;
-      const exposedNames = new Set(tools.map((tool) => tool.function.name));
-      const capabilityExposed = [...capabilityNames].filter((name) => exposedNames.has(name));
-      if (capabilityExposed.length > 0) {
-        this.pushAudit({ kind: "status", text: `tools:escalated ${capabilityExposed.join(",")} (capability)` });
-      }
       this.pushAudit({
         kind: "status",
-        text: `tools:exposed ${tools.length} — ${tools.map((tool) => tool.function.name).join(",")}${capabilityExposed.length > 0 ? ` | capability:${capabilityExposed.join(",")}` : ""}`.slice(0, 2000),
+        text: `tools:exposed ${tools.length} — ${tools.map((tool) => tool.function.name).join(",")}`,
       });
       // 컨텍스트 압축(요약)은 요청 조립보다 **먼저** 돈다: 대화 자체를 줄이지 못하면
       // 아래 문자 클램프가 오래된 assistant/tool 을 통째로 버려 기억이 소리 없이 사라진다.

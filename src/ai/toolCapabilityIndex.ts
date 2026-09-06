@@ -1,11 +1,7 @@
 // ai/toolCapabilityIndex.ts
 // 시스템 프롬프트에 붙는 "툴 능력 색인" 조립기. 순수 함수(브라우저 접근 금지, 프로젝트 불필요).
-//
-// 왜 필요한가(실측): 활성 툴은 148개인데 한 라운드에 노출되는 스키마는 최대 40개다.
-// 노출되지 않은 툴은 모델에게 "없는 기능"이라 사용자에게 "그 기능이 없습니다"라고 오보하며
-// work item 을 skip 했다(openwiki/editor-ai-tools.md 2026-08-23 기록).
-// 스키마는 라운드마다 바뀌어도 **존재 목록**은 고정이므로, 이름만 담은 색인을 상시 싣는다.
-// 설명·스키마는 넣지 않는다 — 이 섹션은 문서가 아니라 존재 색인이다(예산 절약).
+// Native tool definitions carry complete descriptions and schemas from the first request.
+// This index is navigation only, never a substitute for those definitions.
 
 import { activeTools } from "@/editor/tools";
 import type { ToolDefinition, ToolDomain } from "@/editor/tools";
@@ -51,7 +47,7 @@ export function buildToolCapabilityIndex(tools: readonly ToolDefinition[] = acti
 
   const lines: string[] = [
     `${TOOL_CAPABILITY_INDEX_HEADING}(활성 ${live.length}개 · 이름만)`,
-    "이 목록의 툴은 전부 존재한다. 이번 라운드 tool 스키마만 40개로 잘려 있을 뿐이다.",
+    "활성 도구의 전체 설명과 입력 스키마는 처음부터 tools에 제공된다. 질문 모드에서는 조회 도구만 호출할 수 있다.",
   ];
   for (const { label } of AREA_ORDER) {
     const names = byLabel.get(label);
@@ -65,8 +61,8 @@ export function buildToolCapabilityIndex(tools: readonly ToolDefinition[] = acti
     "",
     RULE_HEADING,
     "1. 목록에 있는 이름은 전부 호출 가능한 실제 기능이다.",
-    "2. 스키마가 이번 라운드에 없으면 find_tools(query)로 불러와 다음 라운드에 호출한다.",
-    "3. 목록에 있는 기능을 \"그 기능이 없습니다\"·\"지원하지 않습니다\"라고 보고하거나 work item 을 skip 하는 것은 결함이다 — find_tools 로 에스컬레이션한다.",
+    "2. find_tools(query)는 필요한 도구를 찾는 검색 보조이며, 스키마를 열기 위한 필수 단계가 아니다.",
+    "3. 목록에 있는 기능을 \"그 기능이 없습니다\"·\"지원하지 않습니다\"라고 보고하거나 work item 을 skip 하는 것은 결함이다 — 실제 도구 정의와 실행 결과를 확인한다.",
     "4. 단, UX 정책의 진짜 엔진 한계(3D, 실시간 액션 전투, 외부 API/플러그인, 실제 배포 미지원)는 그대로다.",
   );
   return lines.join("\n");

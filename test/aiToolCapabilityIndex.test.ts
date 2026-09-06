@@ -33,14 +33,12 @@ describe("tool capability index", () => {
     expect(names.length).toBeGreaterThan(100);
   });
 
-  it("states the never-say-missing rule and the find_tools escalation route", () => {
-    const index = buildToolCapabilityIndex();
-
-    expect(index).toContain("find_tools");
-    expect(index).toContain("그 기능이 없습니다");
-    expect(index).toContain("지원하지 않습니다");
-    // 엔진 진짜 한계는 색인이 뒤집지 않는다.
-    expect(index).toContain("3D");
+  it("indexes only the supplied active capabilities", () => {
+    const readTools = activeTools().filter((tool) => tool.mode === "read");
+    const body = buildToolCapabilityIndex(readTools).split("### 색인 사용 규칙")[0] ?? "";
+    const listed = body.split("\n").filter((line) => line.startsWith("- "))
+      .flatMap((line) => (line.split(": ")[1] ?? "").split(", "));
+    expect(listed.sort()).toEqual(readTools.map((tool) => tool.name).sort());
   });
 
   it("never advertises a deprecated (superseded) tool", () => {
@@ -77,7 +75,6 @@ describe("tool capability index", () => {
 
     expect(missing).toEqual([]);
     expect(prompt).toContain("find_tools(query)");
-    expect(prompt).toContain("그 기능이 없습니다");
   });
 
   it("does not push the pre-existing prompt over its budget", () => {

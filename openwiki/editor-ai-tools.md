@@ -1,5 +1,32 @@
 # Editor AI Tools & Vocabulary
 
+## Full native tool exposure (2026-09-06)
+
+`AssistantSession.runTurnLoop` sends every active editor tool's complete native description
+and input schema from the first working request. It no longer uses UI/intent domains,
+40-tool quotas, natural-language promotion slots, or a global 128-tool tail clamp to choose
+capabilities. `toolRegistry.toOpenAiTools` still honors an explicit domain filter for scoped
+callers, but retains **every** eligible definition in registry order. There is no pin list.
+Deprecated tools remain hidden; ask mode removes registry and session write schemas and
+still rejects attempted writes at execution. WorkPlan and acceptance tools retain their
+existing lifecycle gates. Schema validation, read-evidence gates, detached drafts,
+cancellation and usage accounting stay in the existing execution pipeline.
+
+The capability index is navigation alongside native schemas, not a promise to unlock
+missing tools later. `find_tools` is optional search, not an exposure prerequisite.
+The supported subscription adapters have no local function-count clipping: Antigravity
+uses Cloud Code Assist `functionDeclarations`; Codex uses a zstd Responses request with
+`input` entries of type `additional_tools`. Do not impose old CPEN/Chat Completions/Vertex
+limits on these transports. Lead evidence accepted 198 native definitions on Antigravity
+with HTTP 200; Codex live acceptance remains unverified without connected credentials.
+An upstream rejection is surfaced unchanged, never retried with a smaller capability set.
+No domain delegation is needed for the supported, observed full-native path.
+
+Regression seams: `aiToolDiscoveryEscalation`, `toolExposureQuota`, `toolDomainScoping`,
+`aiToolCapabilityIndex`, `aiComposerModeSession`, and `ohMyPiFullCatalog.bun.test.ts`.
+The transport fixture crosses counts 40/41, 127/128/129 and 198/207 using the installed
+adapters and verifies names, descriptions, nested schemas and explicit upstream errors.
+
 ## Audio description tools and event candidates
 
 Audio identity is `{ kind: "music" | "sound", resourceId: rawId }`. Search-result prefixes

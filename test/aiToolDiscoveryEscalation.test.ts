@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { AssistantSession } from "@/ai/assistantSession";
-import { runTool } from "@/editor/tools";
-import type { ChatRequest, ChatResult } from "@/ai/llmClient";
+import { AssistantSession, isWriteToolName } from "@/ai/assistantSession";
+import { activeTools, allTools, runTool, toOpenAiTools } from "@/editor/tools";
+import { LlmError, type ChatRequest, type ChatResult } from "@/ai/llmClient";
 import { createBlankProject } from "@/project/defaults/defaultProject";
 
 const CHAT_CONFIG = {
@@ -31,6 +31,53 @@ function final(text: string): ChatResult {
 }
 
 describe("AI tool discovery escalation", () => {
+  it.each(["google-antigravity", "openai-codex"])("exposes every active native schema on the first %s request without evicting core reads", async (providerId) => {
+    const requests: ChatRequest[] = [];
+    const session = new AssistantSession(createBlankProject(), {
+      config: { ...CHAT_CONFIG, authMode: "chatgpt", providerId, baseUrl: "/v1" },
+      chat: async (_config, request) => { requests.push(request); return final("확인했습니다."); },
+    });
+    await session.sendUserMessage("타이틀 화면 바꿔줘", () => {});
+    const tools = requests[0]?.tools ?? [];
+    const byName = new Map(tools.map((tool) => [tool.function.name, tool]));
+    expect(activeTools().length).toBeGreaterThan(128);
+    for (const tool of toOpenAiTools()) expect(byName.get(tool.function.name)).toEqual(tool);
+    for (const name of ["get_database_records", "get_project_summary", "list_resources"]) expect(byName.has(name)).toBe(true);
+    for (const tool of allTools().filter((tool) => tool.deprecated)) expect(byName.has(tool.name)).toBe(false);
+    expect(byName.size).toBe(tools.length);
+  });
+
+  it("exposes every active read schema and no writes in question mode", async () => {
+    const requests: ChatRequest[] = [];
+    const session = new AssistantSession(createBlankProject(), {
+      config: CHAT_CONFIG,
+      chat: async (_config, request) => { requests.push(request); return final("확인했습니다."); },
+    });
+    await session.sendUserMessage("전체 도구와 프로젝트를 확인해줘", () => {}, undefined, { composerMode: "ask" });
+    const tools = requests[0]?.tools ?? [];
+    const names = tools.map((tool) => tool.function.name);
+    expect(names).toEqual(expect.arrayContaining(activeTools().filter((tool) => tool.mode === "read").map((tool) => tool.name)));
+    expect(names.filter(isWriteToolName)).toEqual([]);
+  });
+
+  it("reports provider rejection instead of retrying with a pruned catalog", async () => {
+    const project = createBlankProject();
+    const requests: ChatRequest[] = [];
+    const session = new AssistantSession(project, {
+      config: CHAT_CONFIG,
+      chat: async (_config, request) => {
+        requests.push(request);
+        throw new LlmError("tool catalog rejected by fixture upstream", 422);
+      },
+    });
+    const result = await session.sendUserMessage("전체 도구를 확인해줘", () => {});
+    expect(requests).toHaveLength(1);
+    expect(requests[0]?.tools?.map((tool) => tool.function.name)).toEqual(expect.arrayContaining(activeTools().map((tool) => tool.name)));
+    expect(result.stoppedReason).toBe("error");
+    expect(result.error).toContain("tool catalog rejected by fixture upstream");
+    expect(session.getProposedProject()).toEqual(project);
+  });
+
   it("finds the project-settings facade from Korean and field-name queries", () => {
     for (const query of ["프로젝트 설정", "제목 저자 용어", "terms author"]) {
       const result = runTool({ project: createBlankProject() }, "find_tools", { query });
@@ -39,7 +86,7 @@ describe("AI tool discovery escalation", () => {
     }
   });
 
-  it("discovers an unexposed tool and exposes its schema on the next round", async () => {
+  it("keeps discovered schemas available without changing the complete working catalog", async () => {
     const requests: ChatRequest[] = [];
     const responses = [toolCall("find_tools", { query: "엔딩" }), final("찾았습니다.")];
     const session = new AssistantSession(createBlankProject(), {
@@ -57,11 +104,9 @@ describe("AI tool discovery escalation", () => {
     const firstNames = requests[0]?.tools?.map((tool) => tool.function.name) ?? [];
     const secondNames = requests[1]?.tools?.map((tool) => tool.function.name) ?? [];
     expect(firstNames).toContain("find_tools");
-    expect(firstNames).not.toContain("define_ending");
-    const reserved = new Set(["find_tools", "set_build_spec", "author_story_arc", "define_quest", "create_quest", "verify_quest", "lint_quest", "generate_walkthrough"]);
-    expect(firstNames.filter((name) => !reserved.has(name)).length, firstNames.join(",")).toBeLessThanOrEqual(40);
+    expect(firstNames).toEqual(expect.arrayContaining(activeTools().map((tool) => tool.name)));
     expect(secondNames).toContain("define_ending");
-    expect(secondNames.length).toBeLessThanOrEqual(96);
+    expect(secondNames).toEqual(firstNames);
     const statusTexts = session.getAuditEntries().flatMap((entry) => entry.kind === "status" ? [entry.text] : []);
     expect(statusTexts.filter((text) => text.startsWith("tools:exposed")).length).toBe(2);
     expect(statusTexts.some((text) => text.startsWith("tools:escalated ") && text.includes("define_ending"))).toBe(true);
