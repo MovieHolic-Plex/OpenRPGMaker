@@ -1,0 +1,20 @@
+command: npm test -- test/titleScreenSettingsNormalize.test.ts test/titleScreenMusic.test.ts test/titleScreenMenuLabels.test.ts
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/titleScreenSettingsNormalize.test.ts test/titleScreenMusic.test.ts test/titleScreenMenuLabels.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p1
+
+ ✓ test/titleScreenMusic.test.ts (3 tests) 269ms
+ ✓ test/titleScreenSettingsNormalize.test.ts (16 tests) 986ms
+   ✓ titleScreen settings normalize expansion > round-trips authored backgroundLayers/particles/intro through serialize→deserialize  722ms
+ ✓ test/titleScreenMenuLabels.test.ts (6 tests) 12ms
+
+ Test Files  3 passed (3)
+      Tests  25 passed (25)
+   Start at  06:28:09
+   Duration  11.48s (transform 8.47s, setup 0ms, collect 25.62s, tests 1.27s, environment 1ms, prepare 1.23s)
+
+
+exit code: 0

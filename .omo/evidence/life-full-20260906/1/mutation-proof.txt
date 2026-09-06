@@ -1,0 +1,21 @@
+Bounded mutation failure receipt; unmodified ANSI transcript retained locally as mutation-red.txt.
+Command: npm test -- test/p0ProjectSchema.test.ts test/p2SpatialEditorAuthoring.test.ts -t "omits only the redundant|preserves authored|omits the zero badge"
+Test-only parser wrapper called actual.deserialize, then deleted any resource-bearing title
+or reinserted {mode:"text",x:32,y:62} when no resource existed.
+Test-only history wrapper called actual.undoMapEdit then actual.redoMapEdit and returned true.
+No production source was edited; assertions themselves were not mutated.
+
+FAIL omits only the redundant text-only title seed on the first load
+  expected { mode: 'text', x: 32, y: 62 } to be undefined
+FAIL preserves authored text title graphics across repeated loads
+  expected undefined to deeply equal { mode:'text',resourceId:'oprn-title-field',x:19,y:73 }
+FAIL preserves authored graphic title graphics across repeated loads
+  expected undefined to deeply equal { mode:'graphic',resourceId:'oprn-title-field',x:19,y:73 }
+FAIL preserves authored both title graphics across repeated loads
+  expected undefined to deeply equal { mode:'both',resourceId:'oprn-title-field',x:19,y:73 }
+FAIL omits the zero badge after deletion and restores counts through undo and redo
+  expected [] to deeply equal [building]; successful-undo result did not restore the record.
+
+Test Files 2 failed (2); Tests 5 failed | 10 excluded by name filter (15); exit code 1.
+Both mutations restored via apply_patch. SHA256 receipt: mutation-before.sha256 + mutation-restored.txt.
+Final unfiltered four-file run: 28 passed, zero failed/skipped; exit code 0 (green.txt).

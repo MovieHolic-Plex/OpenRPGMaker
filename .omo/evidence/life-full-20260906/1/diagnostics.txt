@@ -1,0 +1,7 @@
+LSP tool initially reported no diagnostics for all five TS files. Final count-test refresh timed out (3000ms); final-tree fallback uses TypeScript language-service API.
+test/p0ProjectSchema.test.ts: 0 diagnostics
+test/p1FoundationSchema.test.ts: 0 diagnostics
+test/p2ProjectSchema.test.ts: 0 diagnostics
+test/p2SpatialEditorAuthoring.test.ts: 0 diagnostics
+test/fixtures/life-full/legacyProject.ts: 0 diagnostics
+exit code: 0

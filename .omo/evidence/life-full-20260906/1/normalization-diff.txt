@@ -1,0 +1,7 @@
+6:21:55 AM [vite] (client) Re-optimizing dependencies because vite config has changed
+HEAD=1aff8c3f; N(P)=deserialize(serialize(P)); public API via vite SSR import
+{"beforeBytes":2291858,"afterBytes":2291813,"PNEqual":false,"NNNEqual":true}
+P -> N(P)
+KEYS $.system.titleScreen ["title","backgroundResourceId","layout","menuLabels","menuVisibility","titleGraphic","showInputHint"] => ["title","backgroundResourceId","layout","menuLabels","menuVisibility","showInputHint"]
+VALUE $.system.titleScreen.titleGraphic {"mode":"text","x":32,"y":62} => undefined
+N(P) -> N(N(P))

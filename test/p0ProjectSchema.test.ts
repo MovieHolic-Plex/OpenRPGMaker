@@ -4,6 +4,7 @@ import { createBlankProject } from "@/project/defaults";
 import { deserialize, serialize } from "@/project/io";
 import { collectProjectReferenceIssues } from "@/project/io/references";
 import { startSession } from "@/project/session";
+import { createLegacyLifeProject } from "./fixtures/life-full/legacyProject";
 
 function addItem(project: ReturnType<typeof createBlankProject>, id: string): void {
   const record = normalizeItemRecord({ id, name: id, scope: "none", price: 20 });
@@ -63,7 +64,7 @@ describe("P0 authored system records", () => {
 
   it("keeps old projects free of newly invented optional fields and byte-stable", () => {
     // Break caught: normalization injects empty P0 objects into projects that never authored them.
-    const project = createBlankProject();
+    const project = createLegacyLifeProject();
     const before = serialize(project);
     const loaded = deserialize(before);
     expect(loaded.system.energy).toBeUndefined();
@@ -72,6 +73,32 @@ describe("P0 authored system records", () => {
     expect(loaded.system.worldUnlocks).toBeUndefined();
     expect(loaded.system.makers).toBeUndefined();
     expect(serialize(loaded)).toBe(before);
+    expect(serialize(deserialize(serialize(loaded)))).toBe(before);
+  });
+
+  it("omits only the redundant text-only title seed on the first load", () => {
+    const project = createBlankProject();
+    const before = serialize(project);
+    expect(project.system.titleScreen?.titleGraphic).toEqual({ mode: "text", x: 32, y: 62 });
+
+    const loaded = deserialize(before);
+
+    expect(loaded.system.titleScreen?.titleGraphic).toBeUndefined();
+    expect(serialize(loaded)).toBe(serialize(createLegacyLifeProject()));
+    expect(serialize(deserialize(serialize(loaded)))).toBe(serialize(loaded));
+    expect(serialize(project)).toBe(before);
+  });
+
+  it.each(["text", "graphic", "both"] as const)("preserves authored %s title graphics across repeated loads", (mode) => {
+    const project = createLegacyLifeProject();
+    const title = project.system.titleScreen;
+    if (!title) throw new Error("missing title fixture");
+    title.titleGraphic = { mode, resourceId: "oprn-title-field", x: 19, y: 73 };
+
+    const loaded = deserialize(serialize(project));
+
+    expect(loaded.system.titleScreen?.titleGraphic).toEqual(title.titleGraphic);
+    expect(serialize(deserialize(serialize(loaded)))).toBe(serialize(loaded));
   });
 
   it("rejects malformed P0 package shapes before normalization", () => {
