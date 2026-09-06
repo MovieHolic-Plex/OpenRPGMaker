@@ -41,6 +41,7 @@ import type { RuntimeDomOverlay } from "@/player/runtimeDom";
 import type { FarmInteractionResult } from "@/player/farming";
 import { farmIntentForHand, interactWithFarmPlot, farmIgnoreMessage } from "@/player/farming";
 import { showFarmFeedbackMessage } from "@/player/playSceneZoneFeedback";
+import { interactWithLifeField } from "@/player/lifeFieldInteraction";
 import { tryChestInteraction } from "@/player/playSceneChest";
 import { tryActionCombatSwing, tryActionSkillCast } from "@/player/playSceneActionCombat";
 import { applyBattleDefeat } from "@/player/playSceneDefeat";
@@ -504,6 +505,7 @@ function performAction(
     return true;
   }
   if (tryChestInteraction(scene as any, tx, ty)) return true;
+  if (attemptLifeInteraction(scene, tx, ty)) return true;
   const facingFarm = attemptFarmInteraction(scene, tx, ty, farmAttempts);
   if (facingFarm.handled) return true;
   // RM2K3 관례: 정면에 없으면 발밑(하위 우선순위) 액션 이벤트를 조사한다.
@@ -516,6 +518,7 @@ function performAction(
     return true;
   }
   if (tryChestInteraction(scene as any, scene.tileX, scene.tileY)) return true;
+  if (attemptLifeInteraction(scene, scene.tileX, scene.tileY)) return true;
   const underfootFarm = attemptFarmInteraction(scene, scene.tileX, scene.tileY, farmAttempts);
   if (underfootFarm.handled) return true;
   // 한 번의 A 입력에 안내 문구는 최대 하나. 정면과 발밑 두 번 시도하므로 여기서 한 번만 띄운다.
@@ -523,6 +526,18 @@ function performAction(
   const message = underfootFarm.message ?? facingFarm.message;
   if (message) showFarmFeedbackMessage(scene, message);
   return false;
+}
+
+function attemptLifeInteraction(scene: ActionEventSceneContext, x: number, y: number): boolean {
+  const result = interactWithLifeField(store.getCurrent(), scene.session, { mapId: scene.map.id, x, y });
+  if (result.kind === "unhandled") return false;
+  if (result.kind === "refused") showFarmFeedbackMessage(scene, result.message);
+  else {
+    scene.lastActionTargetKey = "";
+    scene.refreshRuntimeSurfaces?.();
+    scene.syncRuntimeState?.();
+  }
+  return true;
 }
 
 type FarmAttempt = { readonly handled: boolean; readonly message: string | null };

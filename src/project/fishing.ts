@@ -1,3 +1,5 @@
+import { inBounds } from "@/project/collision";
+import { resolveToolUseOnTile, toolActionRulesOf } from "@/project/toolActions";
 import { incrementCollection, canIncrementCollection } from "@/project/collections";
 import { spendEnergy } from "@/project/energy";
 import { timePhaseFor } from "@/project/gameTime";
@@ -12,22 +14,34 @@ export type FishingAvailabilityResult =
   | { readonly ok: false; readonly reason: "disabled" | "no-spot" | "unavailable" | "invalid-state" };
 export type FishingCatchResult =
   | { readonly ok: true; readonly spotId: string; readonly fishId: string; readonly itemId: string }
-  | { readonly ok: false; readonly reason: "disabled" | "no-spot" | "unavailable" | "invalid-state" | "energy" | "inventory" | "collection" | "xp" };
+  | { readonly ok: false; readonly reason: "disabled" | "no-spot" | "unavailable" | "invalid-state" | "energy" | "inventory" | "collection" | "xp" | "tool" };
 
 export function resolveFishingAvailability(project: Project, session: PlaySession, location: FishingLocation): FishingAvailabilityResult {
   const config = project.system.fishing;
   if (!config?.enabled) return { ok: false, reason: "disabled" };
-  if (!Number.isSafeInteger(location.x) || !Number.isSafeInteger(location.y)) return { ok: false, reason: "invalid-state" };
-  const spot = config.spots.find((entry) => entry.mapId === location.mapId && inRect(location.x, location.y, entry.area));
+  const map = project.maps[location.mapId];
+  if (!map || !Number.isSafeInteger(location.x) || !Number.isSafeInteger(location.y)
+    || !inBounds(map, location.x, location.y)) return { ok: false, reason: "invalid-state" };
+  const spot = fishingSpotAt(project, location);
   if (!spot) return { ok: false, reason: "no-spot" };
   const fishIds = availableRules(project, session, spot.catches).map((rule) => rule.fishId);
   return fishIds.length ? { ok: true, spotId: spot.id, fishIds } : { ok: false, reason: "unavailable" };
 }
 
+/** Authored regions only; membership is separate from eligibility/refusal. */
+export function fishingSpotAt(project: Project, location: FishingLocation) {
+  return project.system.fishing?.spots.find((entry) => entry.mapId === location.mapId && inRect(location.x, location.y, entry.area));
+}
+
 export function attemptFishingCatch(project: Project, session: PlaySession, location: FishingLocation): FishingCatchResult {
   const availability = resolveFishingAvailability(project, session, location);
   if (!availability.ok) return availability;
-  if (!session.collections) return { ok: false, reason: "invalid-state" };
+  const map = project.maps[location.mapId];
+  if (!map || !session.collections) return { ok: false, reason: "invalid-state" };
+  if (toolActionRulesOf(project).some((rule) => rule.action === "fish")
+    && !resolveToolUseOnTile(project, session, map, location.x, location.y, "fish")) {
+    return { ok: false, reason: "tool" };
+  }
   const spot = project.system.fishing!.spots.find((entry) => entry.id === availability.spotId)!;
   const rules = availableRules(project, session, spot.catches);
   const total = rules.reduce((sum, rule) => sum + rule.weight, 0);

@@ -1,0 +1,43 @@
+{
+  "baseHead": "fb0588d9383f2b3c85a421bfe706a56e8c40742b",
+  "unchangedTestSha256": "ddfdb2a6bed9d246f41ade2ef4988d9988068addedd908be987dd518f3202767",
+  "unchangedFailureFunction": "syncCutsceneHudVisibility",
+  "functionSha256": "d0053b8acaea5ce23b7ef95d5440c6c43d81d6e0af76ffa0aed18e9233702345",
+  "committedPriorEvidence": ".omo/evidence/life-full-20260906/phase2-gate-triage-input.json",
+  "prior": {
+    "name": "test/actionDebounceFootprint.test.ts",
+    "status": "failed",
+    "message": "",
+    "assertionResults": [
+      {
+        "ancestorTitles": [
+          "__oprnDebug 스냅샷이 두 사각을 실어 보낸다"
+        ],
+        "fullName": "__oprnDebug 스냅샷이 두 사각을 실어 보낸다 3x3 + passRows 1 이면 몸 사각과 통행 사각이 다르게 실린다",
+        "status": "failed",
+        "title": "3x3 + passRows 1 이면 몸 사각과 통행 사각이 다르게 실린다",
+        "duration": 489.13549700000294,
+        "failureMessages": [
+          "TypeError: Cannot read properties of undefined (reading 'registry')\n    at syncCutsceneHudVisibility (/home/main/z-project/rpg-zzu-life-full-p2/src/player/playSceneMapRuntime.ts:657:27)\n    at syncRuntimeState (/home/main/z-project/rpg-zzu-life-full-p2/src/player/playSceneMapRuntime.ts:563:3)\n    at captureScene (/home/main/z-project/rpg-zzu-life-full-p2/test/actionDebounceFootprint.test.ts:139:5)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/actionDebounceFootprint.test.ts:145:19\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)"
+        ],
+        "meta": {}
+      },
+      {
+        "ancestorTitles": [
+          "__oprnDebug 스냅샷이 두 사각을 실어 보낸다"
+        ],
+        "fullName": "__oprnDebug 스냅샷이 두 사각을 실어 보낸다 발자국 저작이 없으면 두 사각이 앵커 한 칸으로 같다 — 항등",
+        "status": "failed",
+        "title": "발자국 저작이 없으면 두 사각이 앵커 한 칸으로 같다 — 항등",
+        "duration": 302.9267899999977,
+        "failureMessages": [
+          "TypeError: Cannot read properties of undefined (reading 'registry')\n    at syncCutsceneHudVisibility (/home/main/z-project/rpg-zzu-life-full-p2/src/player/playSceneMapRuntime.ts:657:27)\n    at syncRuntimeState (/home/main/z-project/rpg-zzu-life-full-p2/src/player/playSceneMapRuntime.ts:563:3)\n    at captureScene (/home/main/z-project/rpg-zzu-life-full-p2/test/actionDebounceFootprint.test.ts:139:5)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/actionDebounceFootprint.test.ts:158:19\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)"
+        ],
+        "meta": {}
+      }
+    ]
+  },
+  "currentLog": "related-final.txt.gz",
+  "currentFailures": 2,
+  "newFailures": 0
+}

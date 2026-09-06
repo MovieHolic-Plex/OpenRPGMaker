@@ -1,3 +1,4 @@
+import { inBounds } from "@/project/collision";
 import { calendarDayKey, daysPerSeasonOf, SEASONS, type GameTime } from "@/project/gameTime";
 import { isItemQuantity, ITEM_QUANTITY_MAX } from "@/project/itemQuantities";
 import { awardLifeSkillXp } from "@/project/lifeSkillProgress";
@@ -12,7 +13,7 @@ export type ForageAdvanceResult =
   | { readonly ok: false; readonly reason: "disabled" | "invalid-date" | "already-advanced" | "stale-day" | "invalid-state" };
 export type ForageCollectResult =
   | { readonly ok: true; readonly itemId: string }
-  | { readonly ok: false; readonly reason: "disabled" | "missing" | "stale" | "inventory" | "collection" | "xp" };
+  | { readonly ok: false; readonly reason: "disabled" | "missing" | "stale" | "expired" | "inventory" | "collection" | "xp" };
 
 export function advanceSeasonalForage(project: Project, session: PlaySession, date: GameTime): ForageAdvanceResult {
   const config = project.system.seasonalForage;
@@ -77,8 +78,11 @@ export function advanceSeasonalForage(project: Project, session: PlaySession, da
   return { ok: true, dayKey, spawned, removed };
 }
 
-export function collectForageAt(project: Project, session: PlaySession, mapId: string, x: number, y: number): ForageCollectResult {
+/** Read-only target check shared by collection and the overlay. */
+export function resolveForageAt(project: Project, session: Pick<PlaySession, "placeables" | "gameTime">, mapId: string, x: number, y: number): ForageCollectResult {
   if (!project.system.seasonalForage?.enabled) return { ok: false, reason: "disabled" };
+  const map = project.maps[mapId];
+  if (!map || !Number.isSafeInteger(x) || !Number.isSafeInteger(y) || !inBounds(map, x, y)) return { ok: false, reason: "stale" };
   const object = session.placeables?.[placeableKey(mapId, x, y)];
   if (!object?.forageSpawn || object.kind !== "forage") return { ok: false, reason: "missing" };
   const area = project.system.seasonalForage.areas.find((entry) => entry.id === object.forageSpawn!.areaId);
@@ -86,10 +90,22 @@ export function collectForageAt(project: Project, session: PlaySession, mapId: s
   const itemId = object.itemId;
   const spawned = parseDayKey(project, object.forageSpawn.spawnedDayKey);
   const expectedItemId = entry && spawned ? placeableDropItemId(entry, spawned.season) : undefined;
-  if (!area || !entry || area.mapId !== mapId || !pointInArea(area, x, y) || !itemId
+  if (!area || !entry || object.mapId !== mapId || object.x !== x || object.y !== y
+    || area.mapId !== mapId || !pointInArea(area, x, y) || !itemId
     || itemId !== expectedItemId || !project.database.items.some((item) => item.id === itemId)) {
     return { ok: false, reason: "stale" };
   }
+  const date = session.gameTime;
+  if (!spawned || !date || !validDate(project, date)) return { ok: false, reason: "stale" };
+  const age = dayOrdinal(project, calendarDayKey(date)) - dayOrdinal(project, object.forageSpawn.spawnedDayKey);
+  if (age < 0 || date.season !== spawned.season || age >= area.despawnAfterDays) return { ok: false, reason: "expired" };
+  return { ok: true, itemId };
+}
+
+export function collectForageAt(project: Project, session: PlaySession, mapId: string, x: number, y: number): ForageCollectResult {
+  const target = resolveForageAt(project, session, mapId, x, y);
+  if (!target.ok) return target;
+  const { itemId } = target;
   const current = session.inventory[itemId] ?? 0;
   if (!isItemQuantity(current) || current >= ITEM_QUANTITY_MAX) return { ok: false, reason: "inventory" };
   const draft = structuredClone(session);
