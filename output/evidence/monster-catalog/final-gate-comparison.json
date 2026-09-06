@@ -74,6 +74,8 @@
   "fullTestRerun": {
     "workers": 4,
     "report": ".omo/monster-final-vitest.json",
-    "status": "running"
+    "status": "timed_out",
+    "timeoutSeconds": 3600,
+    "reportProduced": false
   }
 }

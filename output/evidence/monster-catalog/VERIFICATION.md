@@ -32,7 +32,7 @@ images and generic-only identity declarations are rejected.
 | Exported runtime | PASS: player.html/shim route, two beats, no runtime errors; visible green humanoid with spiked club, no editor chrome | `runtime/SUMMARY.md`, `runtime/02-goblin-battle.png`, `final-visual-runtime-proof.json` |
 | Final CSS gate | PASS: no baseline regression | parent monitor `FINAL_FIXED_CSS_EXIT=0` |
 | Surface gate | Seven failures are pre-existing: exact 23 failure signatures match pristine upstream `142db78e9` | parent comparison record; no baseline/snapshot relaxed |
-| Full repository tests | First all-in-one gate exceeded 30-minute command deadline; not a pass. Complete observable rerun with four workers is pending | `.omo/monster-final-vitest.json` when finished |
+| Full repository tests | Both the 30-minute all-in-one gate and 60-minute four-worker rerun timed out without a complete JSON report. Neither is a pass; verification remains incomplete. | `.omo/monster-final-vitest.json` was not produced |
 | Ultrabrain approval and PR merge | PENDING | Final review must approve the exact revision before merge |
 
 ## Actual QA target and export
