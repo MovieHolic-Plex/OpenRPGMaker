@@ -188,6 +188,38 @@ describe("forest placement and final transaction guard", () => {
     expect(map.upperTiles.filter((tile) => tile === 289).length).toBeGreaterThan(0);
   });
 
+  it("skips an ungrouped tree-base candidate whose repair canopy would enter a house", () => {
+    const project = setup();
+    const map = houseMap(project);
+    const tileset = project.tilesets[map.tilesetId]!;
+    // Ungrouped tile metadata is a supported resolver fallback, including soft
+    // materials. Keep the real label/role; do not mock resolution or accept IDs.
+    tileset.tileGroups = tileset.tileGroups!.filter((group) => !group.tileIds.includes(290));
+    const material = tileset.tileMeta![290]!.label;
+    expect(vocabulary.resolveMaterialByLabel(tileset, material, {
+      preferGroup: true, preferRoles: ["prop", "terrain"],
+    })).toMatchObject({ status: "soft", kind: "tile", tileId: 290 });
+    own(map, { x: 3, y: 3, w: 4, h: 3 });
+    stackSentinels(map);
+    const before = captureHouseProtection(project);
+    const ctx = { project: structuredClone(project) };
+    const input = { mapId: map.id, material, area: { x: 3, y: 6, w: 8, h: 1 }, count: 2, packing: "dense" as const, seed: 7 };
+    props.placePropsOnDraft(project, input);
+    // The trunk row is entirely outside ownership. Reject its first four
+    // candidates before writing, not just when the final invariant sees repair.
+    for (let x = 3; x < 7; x += 1) expect(map.lowerTiles[6 * map.width + x]).toBe(TILE.GRASS);
+    for (const x of [7, 8]) expect(map.lowerTiles[6 * map.width + x]).toBe(290);
+    expect(captureHouseProtection(project)).toEqual(before);
+    const result = runTool(ctx, "place_props", input);
+    expect(result.ok, JSON.stringify(result.issues)).toBe(true);
+    expect(result.data).toMatchObject({ placed: 2, tileId: 290 });
+    expect(captureHouseProtection(ctx.project)).toEqual(before);
+    for (const x of [7, 8]) {
+      expect(houseMap(ctx.project).lowerTiles[6 * map.width + x]).toBe(290);
+      expect(houseMap(ctx.project).upperTiles[5 * map.width + x]).toBe(260);
+    }
+  });
+
   it.each(["conifer-tree", "broadleaf-tree"])("keeps whole %s candidates away from protected canopy cells even with avoidProtected=false", (kind) => {
     const project = setup();
     const map = houseMap(project);

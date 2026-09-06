@@ -1,0 +1,186 @@
+
+> rpg-zzu@0.1.0 build
+> tsc --noEmit -p tsconfig.app.json && vite build --configLoader runner && npm run build:player && npm run build:standalone:bundle
+
+[rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] QWENCLOUD_API_KEY 가 없어 /api/qwen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] CPENROUTER_API_KEY 가 없어 /api/cpen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+vite v6.4.3 building for production...
+transforming...
+✓ 1367 modules transformed.
+Export "openRecordPickerPanel" of module "src/editor/panels/eventEditor/recordPickerPanel.ts" was reexported through module "src/editor/panels/eventEditor/recordPickerDialog.ts" while both modules are dependencies of each other and will end up in different chunks by current Rollup settings. This scenario is not well supported at the moment as it will produce a circular dependency between chunks and will likely lead to broken execution order.
+Either change the import in "src/editor/panels/databaseEnemyActionDialog.ts" to point directly to the exporting module or reconfigure "output.manualChunks" to ensure these modules end up in the same chunk.
+rendering chunks...
+[plugin vite:reporter]
+(!) /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/player/playSceneInterpreter.ts is dynamically imported by /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/player/PlayScene.ts but also statically imported by /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/player/PlayScene.ts, /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/player/playSceneMapRuntime.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter]
+(!) /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/editor/editorUiMode.ts is dynamically imported by /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/app/mode.ts but also statically imported by /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/editor/coachMarks.ts, /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/editor/commandRegistry.ts, /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/editor/panels/aiAgentBrief.ts, /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/editor/panels/aiChatPanel.ts, /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/editor/panels/aiConversationLog.ts, /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/editor/panels/aiProposalCard.ts, /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/editor/panels/basicLeftRail.ts, /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/editor/panels/database.ts, /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/editor/panels/editor.ts, /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/editor/panels/editorZoomToolbar.ts, /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/editor/panels/menu.ts, /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/editor/panels/tilePalette.ts, /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/editor/panels/workspaceBar.ts, /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/editor/workspace/workspaceStore.ts, /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/main.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter]
+(!) /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/project/devProjectPersistence.ts is dynamically imported by /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/app/mode.ts but also statically imported by /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/editor/panels/editor.ts, /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/project/store.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter]
+(!) /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/player/audio/index.ts is dynamically imported by /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/app/mode.ts but also statically imported by /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/editor/panels/audioTestDialog.ts, /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/editor/panels/databaseResourcePickerDialog.ts, /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/editor/panels/databaseSystemView.ts, /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/editor/panels/eventEditor/commandBodyAdvanced.ts, /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/player/PlayScene.ts, /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/player/battleAudio.ts, /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/player/characterHopRuntime.ts, /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/player/mapBgm.ts, /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/player/playSceneActionCombat.ts, /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/player/playSceneBattle.ts, /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/player/playSceneInterpreter.ts, /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/player/playSceneMapAnimations.ts, /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/player/playSceneSchedulers.ts, /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/player/player.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter]
+(!) /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/player/player.ts is dynamically imported by /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/app/mode.ts, /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/app/mode.ts but also statically imported by /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/editor/panels/testPlayModal.ts, dynamic import will not move module into another chunk.
+
+computing gzip size...
+dist/benchmark.html                                         0.77 kB │ gzip:     0.47 kB
+dist/index.html                                             0.82 kB │ gzip:     0.48 kB
+dist/assets/phaser.min-CwlHMuXa.js                      1,196.12 kB
+dist/assets/benchmark-CNDwkXV0.css                          6.54 kB │ gzip:     2.15 kB
+dist/assets/databaseModal-CGU9hPQw.css                    116.18 kB │ gzip:    13.42 kB
+dist/assets/main-DxNjJve0.css                           1,884.09 kB │ gzip:   269.60 kB
+dist/assets/pwa-CRridmjp.js                                 0.25 kB │ gzip:     0.20 kB
+dist/assets/welcomeGenreSystemPresetAction-B_e7nCKA.js      0.45 kB │ gzip:     0.30 kB
+dist/assets/mapSelection-DloxwC12.js                        0.62 kB │ gzip:     0.38 kB
+dist/assets/modulepreload-polyfill-B5Qt9EMX.js              0.71 kB │ gzip:     0.40 kB
+dist/assets/welcomeGenrePresetApply-D-IfdpUX.js             0.75 kB │ gzip:     0.49 kB
+dist/assets/aiBootIntent-C515MLT1.js                        0.93 kB │ gzip:     0.45 kB
+dist/assets/mapUrlSync-D9eSGW8w.js                          1.22 kB │ gzip:     0.64 kB
+dist/assets/eventSpriteResources-BHwaz_LT.js                1.39 kB │ gzip:     0.66 kB
+dist/assets/mapTileDraw-ctsu7Sbw.js                         1.75 kB │ gzip:     0.77 kB
+dist/assets/worldEntries-UODmzAiK.js                        1.83 kB │ gzip:     0.94 kB
+dist/assets/editorCameraFocus-DnvAy7HO.js                   1.94 kB │ gzip:     0.85 kB
+dist/assets/tileShapeTools-B_dZ9h8y.js                      3.19 kB │ gzip:     1.28 kB
+dist/assets/workspaceStore-TljRHa3Q.js                      3.53 kB │ gzip:     1.56 kB
+dist/assets/defaults-D18PZ9hT.js                            4.60 kB │ gzip:     2.08 kB
+dist/assets/playSceneBattle-DOT1s9cX.js                     5.02 kB │ gzip:     1.96 kB
+dist/assets/coachMarks-C4rLG9GY.js                          5.33 kB │ gzip:     2.39 kB
+dist/assets/applyChangesetToStore-DM2EnGV7.js               6.50 kB │ gzip:     2.76 kB
+dist/assets/benchmark-BdOMv0KF.js                           7.03 kB │ gzip:     2.47 kB
+dist/assets/teamWorkflowUi-8n44Yrtc.js                      9.51 kB │ gzip:     3.44 kB
+dist/assets/transientEditorChrome-CS6jS605.js              11.79 kB │ gzip:     4.30 kB
+dist/assets/dbConnectionSettings-Cc2vsFaM.js               13.35 kB │ gzip:     5.01 kB
+dist/assets/helpModal-Bve6Dlnq.js                          14.36 kB │ gzip:     5.68 kB
+dist/assets/databaseAiGenerateDialog-aWwN1Dh5.js           16.35 kB │ gzip:     7.22 kB
+dist/assets/downloadBlob-DKBWwUuD.js                       19.17 kB │ gzip:     7.45 kB
+dist/assets/menu-CXZjhZNs.js                               34.61 kB │ gzip:    11.82 kB
+dist/assets/structureKitEditorDialog-Bn9KkFjs.js           41.91 kB │ gzip:    14.35 kB
+dist/assets/aiStudioMode-r0kOng-T.js                       53.93 kB │ gzip:    18.31 kB
+dist/assets/EditScene-BRwrH-By.js                         101.98 kB │ gzip:    30.85 kB
+dist/assets/tilePalette-BNeLTKCg.js                       141.42 kB │ gzip:    44.38 kB
+dist/assets/editor-46pd9hUD.js                            217.97 kB │ gzip:    73.06 kB
+dist/assets/PlayScene-DyUwpY3T.js                         228.12 kB │ gzip:    71.59 kB
+dist/assets/saveActions-D2UBKmDC.js                       323.91 kB │ gzip:   114.54 kB
+dist/assets/databaseModal-CKhhgmQs.js                   1,085.89 kB │ gzip:   324.91 kB
+dist/assets/main-NiR8GNG-.js                            7,005.33 kB │ gzip: 1,556.21 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 27.86s
+
+> rpg-zzu@0.1.0 build:player
+> vite build --config vite.player.config.ts --configLoader runner && node scripts/build-player-sdk.mjs
+
+vite v6.4.3 building for production...
+transforming...
+
+/assets/fonts/neodgm.woff2 referenced in /assets/fonts/neodgm.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/fonts/Galmuri9.woff2 referenced in /assets/fonts/Galmuri9.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/fonts/Galmuri11.woff2 referenced in /assets/fonts/Galmuri11.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/fonts/Galmuri11-Bold.woff2 referenced in /assets/fonts/Galmuri11-Bold.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/ui/windowskin-warm.png referenced in /assets/ui/windowskin-warm.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/generated/battle-reference-forest.png referenced in /generated/battle-reference-forest.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-sword.png referenced in /assets/generated/starter/battle-icon-sword.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-fire.png referenced in /assets/generated/starter/battle-icon-fire.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-shield.png referenced in /assets/generated/starter/battle-icon-shield.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-cross.png referenced in /assets/generated/starter/battle-icon-cross.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-bag.png referenced in /assets/generated/starter/battle-icon-bag.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-boot.png referenced in /assets/generated/starter/battle-icon-boot.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-exp.png referenced in /assets/generated/starter/battle-icon-exp.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-gold.png referenced in /assets/generated/starter/battle-icon-gold.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-shard.png referenced in /assets/generated/starter/battle-icon-shard.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-world.png referenced in /assets/generated/starter/battle-icon-world.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-next.png referenced in /assets/generated/starter/battle-icon-next.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+✓ 533 modules transformed.
+rendering chunks...
+[plugin vite:reporter]
+(!) /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/player/playSceneInterpreter.ts is dynamically imported by /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/player/PlayScene.ts but also statically imported by /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/player/PlayScene.ts, /home/main/z-project/rpg-zzu-house-protection-p2-forest/src/player/playSceneMapRuntime.ts, dynamic import will not move module into another chunk.
+
+computing gzip size...
+dist/export-player/player.html                             0.38 kB │ gzip:   0.26 kB
+dist/export-player/player-manifest.json                    0.98 kB │ gzip:   0.32 kB
+dist/export-player/assets/phaser.min-CwlHMuXa.js       1,196.12 kB
+dist/export-player/assets/player-Bd6CwQlZ.css            289.80 kB │ gzip:  46.04 kB
+dist/export-player/assets/playSceneBattle-BS60nXl4.js      4.93 kB │ gzip:   1.90 kB
+dist/export-player/assets/PlayScene-C-NVnuJJ.js          404.05 kB │ gzip: 123.67 kB
+dist/export-player/player.js                           1,601.36 kB │ gzip: 395.92 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 8.36s
+sdk-manifest: 7 files + 45 runtime assets, artifact 8105162218eb9b7e, source b949b28ba4207527, schema v4
+
+> rpg-zzu@0.1.0 build:standalone:bundle
+> vite build --config vite.standalone.config.ts --configLoader runner
+
+vite v6.4.3 building for production...
+transforming...
+
+/assets/fonts/neodgm.woff2 referenced in /assets/fonts/neodgm.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/fonts/Galmuri9.woff2 referenced in /assets/fonts/Galmuri9.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/fonts/Galmuri11.woff2 referenced in /assets/fonts/Galmuri11.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/fonts/Galmuri11-Bold.woff2 referenced in /assets/fonts/Galmuri11-Bold.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/ui/windowskin-warm.png referenced in /assets/ui/windowskin-warm.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/generated/battle-reference-forest.png referenced in /generated/battle-reference-forest.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-sword.png referenced in /assets/generated/starter/battle-icon-sword.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-fire.png referenced in /assets/generated/starter/battle-icon-fire.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-shield.png referenced in /assets/generated/starter/battle-icon-shield.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-cross.png referenced in /assets/generated/starter/battle-icon-cross.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-bag.png referenced in /assets/generated/starter/battle-icon-bag.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-boot.png referenced in /assets/generated/starter/battle-icon-boot.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-exp.png referenced in /assets/generated/starter/battle-icon-exp.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-gold.png referenced in /assets/generated/starter/battle-icon-gold.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-shard.png referenced in /assets/generated/starter/battle-icon-shard.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-world.png referenced in /assets/generated/starter/battle-icon-world.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-next.png referenced in /assets/generated/starter/battle-icon-next.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+✓ 535 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/standalone-player/standalone.css    289.80 kB │ gzip:  46.04 kB
+dist/standalone-player/standalone.js   3,492.66 kB │ gzip: 859.00 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 18.24s

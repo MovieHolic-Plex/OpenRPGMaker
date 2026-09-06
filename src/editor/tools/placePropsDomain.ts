@@ -9,6 +9,7 @@ import {
   type VocabSoftConfirm,
 } from "@/project/tileVocabulary";
 import type { Project } from "@/project/types";
+import { isTreeTrunkTileId } from "@/project/tilesetHarness";
 import { inMapBounds, passableCellCount, setLower, setUpper } from "./mapHelpers";
 import { poissonScatter } from "./naturalScatter";
 import { protectedHouseCells } from "./houseProtection";
@@ -141,6 +142,8 @@ export function placePropsOnDraft(draft: Project, input: PlacePropsInput): ToolE
     if (!isPassable(draft, map, cell.x, cell.y)) continue;
     if (isPathSurfaceTile(map.lowerTiles[index])) continue;
     if (protectedCells.has(`${cell.x},${cell.y}`)) continue;
+    // Ungrouped tree bases still acquire a canopy one row north during repair.
+    if (isTreeTrunkTileId(tileId) && protectedCells.has(`${cell.x},${cell.y - 1}`)) continue;
     if (home === "upper") setUpper(map, cell.x, cell.y, tileId);
     else setLower(map, cell.x, cell.y, tileId);
     placed += 1;

@@ -6,6 +6,10 @@ Branch: `agent/house-protection-p2-forest`.
 Immutable production baseline: `e238eb1908b0f6fcdc32011d6e2419797f442704` (merged Phase 1).
 Contract read from the primary Phase 2 worktree's `.omo/evidence/house-protection/p2/contract.md`.
 
+Initial unit: `2b19732360cebbf143553b10fefe41fadbf4f8b8`. Its historical results
+are retained below; the supervisor-requested tree-base follow-up is recorded at
+the end with its own RED/GREEN and updated verification.
+
 ## Delivered boundary
 
 - `src/editor/tools/forestComposition.ts`: capture `protectedHouseCells` before
@@ -135,11 +139,60 @@ Ultraworked with [omo](https://github.com/code-yeongyu/oh-my-openagent)
 
 Co-authored-by: sisyphus-dev-ai <sisyphus-dev-ai@users.noreply.github.com>
 
-## Verified source SHA-256
+## Initial unit verified source SHA-256
 
 ```text
 dd3dda8292f82e78e2484dc18b4d2e03a072824a16fcd3dc970a1b77c3fba4ab  src/editor/tools/forestComposition.ts
 9d327705d4c165e6b9398f14cbd04c8ff0f7c690bbe7db83062a63bf407afca8  src/editor/tools/placePropsDomain.ts
 e512d8d228027de1fd83719d5fa0bf5038288cb1e876a8cba537cf533b7bc30e  test/houseProtectionForest.test.ts
 55a1b98603fdc72b1d2dc5cb0caeab46f8e7c45e81ab7bbdc87897a0c4743b8a  .omo/evidence/house-protection/p2-forest/exercise.mts
+```
+
+## Supervisor follow-up: supported ungrouped tree-base boundary
+
+The bundled labels for trunks 290/291/292/293 resolve to patterned conifer,
+dry-tree or broadleaf groups with `preferGroup:true`; those already use Phase 1
+whole-footprint rejection. Numeric tile IDs and group IDs were not made into new
+material inputs.
+
+However, `resolveMaterialByLabel` explicitly supports ungrouped tile metadata,
+including soft-confirmed materials. Keeping the existing label/role for 290 and
+removing only its containing groups in a fixture makes `침엽수 하단` resolve through
+the real resolver to `{ status: "soft", kind: "tile", tileId: 290 }`. The public
+`place_props` tool accepts that input. A runtime probe reproduced an atomic
+`protected-house-write` failure at the repair canopy `(3,5)` after placing a trunk
+at `(3,6)`, even though candidates `(7,6)` and `(8,6)` were viable.
+
+The fix adds one existing trunk-ID predicate and a preflight for the cell one row
+north to `placePropsDomain.ts`. A protected repair canopy rejects the candidate
+before either layer's trunk write, leaving the count available for other targets.
+This uses the existing house/event protection set. It does not change material
+resolution, tree repair, shared signatures, or the Phase 1 final invariant.
+
+One no-mock boundary regression verifies the real resolver result, the direct
+placement path's untouched rejected trunk cells, two viable outside trunks, and
+successful public tool commit with repaired outside canopies and exact house
+layer/stack snapshots.
+
+Verification of the follow-up (same commands as above):
+
+- `tree-base-red.log`: exit **1**, **1 failed / 15 passed** before production edits;
+  rejected candidate contained trunk **290**, expected unchanged grass **240**.
+- `tree-base-green.log`: exit **0**, **16 passed** in one run after the preflight.
+- `tree-base-related.log`: exit **1**, **174 passed / 7 failed**, 19 files. The exact
+  seven failure identities match `baseline-related.log`; no new failures. The two
+  density assertions still report `0.3003472222222222` versus `< 0.3`, and the five
+  cluster-placement failures remain unchanged.
+- LSP `all` diagnostics: none for `placePropsDomain.ts` or the updated test file.
+- `tree-base-typecheck.log`: application typecheck exit **0**.
+- `tree-base-build.log`: full build exit **0**, retaining asset/chunk warnings.
+- `tree-base-exercise.log`: real 50x50/100x100 tool exercise exit **0**, with the
+  same 1380/5702 objects placed and exact preservation/save-load/erase rejection.
+- `git diff --check`: clean.
+
+Latest changed-source SHA-256 (supersedes these two entries in the initial unit):
+
+```text
+bb201a5fc36a09ecde405ca60886e12de0ff5f374024205263043d2eac18b7e3  src/editor/tools/placePropsDomain.ts
+4f765966e38ca8a312a453b4b3fc3218de20a02edf0efc60b68f7685ac61c2a0  test/houseProtectionForest.test.ts
 ```
