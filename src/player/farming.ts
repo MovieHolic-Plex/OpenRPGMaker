@@ -322,7 +322,7 @@ function tryHarvestPlot(
   // 고사/DB 미등록 작물은 호출자가 `needsClearing` 으로 먼저 걸러낸다 — 여기선 정상 작물만 본다.
   const crop = cropById(project, existing.cropId);
   if (!crop || existing.dead || !isCropReady(crop, existing)) return undefined;
-  const count = Math.max(1, Math.trunc(crop.harvestCount || 1));
+  const count = Math.max(0, Math.trunc(crop.harvestCount ?? 1));
   if (!changeItem(session, crop.harvestItemId, "+=", count)) return ignored(tileX, tileY, "inventory-full");
   plots[key] = harvestNextPlotState(crop, existing);
   return { kind: "harvested", x: tileX, y: tileY, cropId: crop.id, itemId: crop.harvestItemId, count, source: "crop" };
@@ -479,6 +479,12 @@ export function cropStageForGrowthDays(crop: CropRecord, growthDays: number): nu
   return crop.stages.length;
 }
 
+/** Regrowth projects onto the existing stages without letting initial growth shorten its timer. */
+export function cropStageForPlot(crop: CropRecord, plot: FarmPlotState): number {
+  if (plot.regrowDaysRemaining === undefined) return plot.stage ?? 0;
+  return cropStageForGrowthDays(crop, totalGrowthDays(crop) - plot.regrowDaysRemaining);
+}
+
 function advanceFarmPlotsOneDay(project: Project, session: PlaySession, season: Season): void {
   const maps = session.farmPlots ?? {};
   for (const [mapId, plots] of Object.entries(maps)) {
@@ -497,11 +503,16 @@ function advanceFarmPlotsOneDay(project: Project, session: PlaySession, season: 
         nextPlots[key] = plot.watered ? { ...plot, watered: false } : plot;
         continue;
       }
-      const growthDays = Math.max(0, Math.trunc(plot.growthDays ?? 0)) + 1;
+      const regrowDaysRemaining = plot.regrowDaysRemaining === undefined
+        ? undefined : Math.max(0, plot.regrowDaysRemaining - 1);
+      const growthDays = regrowDaysRemaining === undefined
+        ? Math.max(0, Math.trunc(plot.growthDays ?? 0)) + 1
+        : Math.max(0, totalGrowthDays(crop) - regrowDaysRemaining);
       nextPlots[key] = {
         ...plot,
         watered: false,
         dead: false,
+        ...(regrowDaysRemaining === undefined ? {} : { regrowDaysRemaining }),
         growthDays,
         stage: cropStageForGrowthDays(crop, growthDays),
       };
@@ -515,20 +526,22 @@ function harvestNextPlotState(crop: CropRecord, plot: FarmPlotState): FarmPlotSt
   if (!crop.regrow) {
     return { tilled: true, watered: false };
   }
-  const total = totalGrowthDays(crop);
-  const growthDays = Math.max(0, total - Math.max(1, Math.trunc(crop.regrow.days)));
+  const regrowDaysRemaining = Math.max(1, Math.trunc(crop.regrow.days));
+  const growthDays = Math.max(0, totalGrowthDays(crop) - regrowDaysRemaining);
   return {
     ...plot,
     tilled: true,
     watered: false,
     dead: false,
     cropId: crop.id,
+    regrowDaysRemaining,
     growthDays,
     stage: cropStageForGrowthDays(crop, growthDays),
   };
 }
 
 function isCropReady(crop: CropRecord, plot: FarmPlotState): boolean {
+  if (plot.regrowDaysRemaining !== undefined) return plot.regrowDaysRemaining === 0;
   return (plot.stage ?? 0) >= crop.stages.length || (plot.growthDays ?? 0) >= totalGrowthDays(crop);
 }
 
