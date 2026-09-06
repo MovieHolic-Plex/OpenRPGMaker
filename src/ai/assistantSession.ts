@@ -2625,14 +2625,16 @@ export class AssistantSession {
   /** Historical success is not authority for a newer editor revision. */
   getRunEndProof(): RunEndProofState | null {
     const state = this.runEndProof;
-    if (!state) return null;
+    return state ? this.projectRunEndProof(state) : null;
+  }
+
+  private projectRunEndProof(state: RunEndProofState): RunEndProofState {
     return { ...state, verified: state.status === "succeeded" && !!state.receipt
       && store.isPersistenceReceiptCurrent(state.receipt) };
   }
 
   private emitRunEndProof(state: RunEndProofState, onEvent: (event: SessionEvent) => void): void {
-    this.runEndProof = state;
-    onEvent({ type: "persistence_proof", state: this.getRunEndProof()! });
+    onEvent({ type: "persistence_proof", state: this.projectRunEndProof(state) });
   }
 
   /** Shared by autonomous completion and ordinary applied proposals; failures remain retryable. */
@@ -2646,7 +2648,7 @@ export class AssistantSession {
     let commitId: string | null = null;
     const fail = (reason: string, proof?: ProjectPersistenceProof): RunEndProofState => {
       const state: RunEndProofState = { status: "failed", verified: false, reason, receipt, commitId, proof };
-      this.emitRunEndProof(state, onEvent);
+      this.emitRunEndProof(this.runEndProof = state, onEvent);
       this.pushAudit({ kind: "status", text: `agent_run:proof-failed reason=${reason} revision=${receipt?.revisionId ?? "none"}` });
       onEvent({ type: "status", text: `저장 증명 미완료(${reason}) — 다시 검증할 수 있습니다.` });
       return state;
@@ -2656,7 +2658,7 @@ export class AssistantSession {
       this.pushAudit({ kind: "status", text: "agent_run_local_only — remote persistence 비활성으로 저장 증명을 건너뜁니다" });
       return fail("disabled");
     }
-    this.emitRunEndProof({ status: "attempted", verified: false }, onEvent);
+    this.emitRunEndProof(this.runEndProof = { status: "attempted", verified: false }, onEvent);
     try {
       const applied = this.lastAppliedProject;
       const flushResult = await store.flush();
@@ -2666,13 +2668,13 @@ export class AssistantSession {
       if (!receipt) return fail("missing-receipt");
       // Concurrent edits during apply/flush cannot borrow that apply's commit metadata.
       if (applied?.project === store.getCurrent() && store.isPersistenceReceiptCurrent(receipt)) commitId = applied.commitId;
-      this.emitRunEndProof({ status: "attempted", verified: false, receipt, commitId }, onEvent);
+      this.emitRunEndProof(this.runEndProof = { status: "attempted", verified: false, receipt, commitId }, onEvent);
       const proof = await store.verifyPersistedRevision(receipt, { signal });
       if (signal?.aborted) return fail("cancelled", proof);
       if (proof.kind !== "verified") return fail(proof.kind === "mismatch" ? `mismatch-${proof.reason}` : proof.kind, proof);
       if (!proof.isCurrent || !store.isPersistenceReceiptCurrent(receipt)) return fail("stale", proof);
       const state: RunEndProofState = { status: "succeeded", verified: true, receipt, commitId, proof };
-      this.emitRunEndProof(state, onEvent);
+      this.emitRunEndProof(this.runEndProof = state, onEvent);
       // Recheck after synchronous event subscribers as well as the awaited read.
       if (!store.isPersistenceReceiptCurrent(receipt) || signal?.aborted) return fail(signal?.aborted ? "cancelled" : "stale", proof);
       this.pushAudit({
@@ -2680,7 +2682,7 @@ export class AssistantSession {
         text: `agent_run_saved projectId=${receipt.projectId} revision=${receipt.revisionId} contentIdentity=${receipt.contentIdentity} sha256=${receipt.sha256 ?? "none"} commit=${commitId ?? "unavailable"} verified=true`,
       });
       onEvent({ type: "status", text: `저장 증명 완료 — projectId=${receipt.projectId} revision=${receipt.revisionId}` });
-      return this.getRunEndProof()!;
+      return this.projectRunEndProof(this.runEndProof);
     } catch (error) {
       this.pushAudit({ kind: "status", text: `agent_run:save-failed — ${error instanceof Error ? error.message : String(error)}` });
       return fail(signal?.aborted ? "cancelled" : "failed");
