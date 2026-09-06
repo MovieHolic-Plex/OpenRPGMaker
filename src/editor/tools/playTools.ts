@@ -9,7 +9,9 @@ import { COORD_SCHEMA } from "./schemaShapes";
 const playWalkthrough: ToolDefinition = {
   name: "play_walkthrough",
   description:
-    "시나리오 스텝을 브라우저 없이 실행해 완주 가능성/막힘 지점을 검증한다. 스텝: " +
+    "브라우저 없이 명령 흐름을 검사하며 실제 키보드 플레이 증거는 아니다. " +
+    "moveTo는 좌표 이동만 하고 playerTouch/eventTouch를 자동 실행하지 않는다. " +
+    "이동문은 interact로 해당 이벤트를 실행한 뒤 mapId를 검사한다. 실제 터치 발동은 플레이어에서 별도 확인한다. 스텝: " +
     "{do:'interact',eventId} / {do:'choose',index} / {do:'moveTo',mapId,x,y} / {do:'battle',expect:'victory'|'defeat'} / " +
     "{expect:'switch'|'item'|'variable'|'mapId'|'gold'|'ended', ...}. 도달 스텝/실패 지점/최종 상태를 반환한다.",
   mode: "read",

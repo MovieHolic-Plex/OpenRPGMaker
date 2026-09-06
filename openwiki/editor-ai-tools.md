@@ -1,5 +1,13 @@
 # Editor AI Tools & Vocabulary
 
+## Logical walkthrough versus real player traversal (2026-09-07)
+
+`play_walkthrough`의 `moveTo`는 좌표를 이동시키지만 `playerTouch`/`eventTouch`를 발동하지 않는다.
+이동문 명령을 검사하려면 해당 이벤트 ID로 `interact`한 뒤 `mapId`를 확인한다.
+따라서 이동문 좌표에 `moveTo`한 직후 다른 맵을 기대하는 시나리오의 실패만으로 전송 엔진 결함을 단정하지 않는다.
+논리 검사 통과와 실제 키보드 이동·터치 발동은 별도 증거다. 런타임 QA 하네스에서 실제 왕복을 확인한다.
+이 설명은 도구 사용 계약의 명확화이며 실행기·전송·통행 판정의 동작 변경이 아니다.
+
 ## Tile-query selector and filter boundaries (2026-09-07)
 
 `tile_query`의 `similar`/`unclassified`는 `labels`/`vocab`/`unapproved`와 같은 선택 순서를 쓴다:
